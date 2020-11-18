@@ -1,0 +1,12 @@
+tag 3b4d89104e078238cef18532bb85817bde803b03 v90001-1.0.1
+Author:	Jim Whitehead <jnwhiteh@gmail.com>
+Date:	Thu Oct 15 22:35:07 2020 +0200
+
+Tagging v90001-1.0.11
+
+commit a4b6706f6b37fc06a855b6d077c4cd3d1e782556
+Author: Jim Whitehead <jnwhiteh@gmail.com>
+Date:   Thu Oct 15 22:34:38 2020 +0200
+
+    Fix an issue with nameplates
+

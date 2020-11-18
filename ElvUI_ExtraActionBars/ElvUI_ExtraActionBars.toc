@@ -1,0 +1,11 @@
+## Interface: 80200
+## Author: Blazeflack
+## Version: 2.37
+## Title: |cff1784d1ElvUI|r ExtraActionBars
+## Notes: Adds 4 extra actionbars to ElvUI.
+## RequiredDeps: ElvUI
+## X-Tukui-ProjectFolders: ElvUI_ExtraActionBars
+
+locales.lua
+config.lua
+core.lua

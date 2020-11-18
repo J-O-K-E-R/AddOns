@@ -1,0 +1,10 @@
+## Interface: 90001
+## Title: |cfffe7b2cElvUI|r |cffffffffCustomTags|r
+## Version: 1.06
+## Author: Azilroka, Blazeflack
+## RequiredDeps: ElvUI
+## X-Tukui-ProjectID: 147
+## X-Tukui-ProjectFolders: ElvUI_CustomTags
+
+Core.lua
+

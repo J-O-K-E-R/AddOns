@@ -1,0 +1,10 @@
+lightweight tag 624e3bfde0a29794ad347d6b4264aa434797a706 Plater-v9.0.1.316-Retail
+Author:	Tercio Jose <terciob19@hotmail.com>
+Date:	Thu Nov 12 18:47:23 2020 -0300
+
+commit 624e3bfde0a29794ad347d6b4264aa434797a706
+Author: Tercio Jose <terciob19@hotmail.com>
+Date:   Thu Nov 12 18:47:23 2020 -0300
+
+    Added "OverrideTriggers" option at the script library, if override triggers are true, while updating the script all old triggers are removed.
+

@@ -1,0 +1,12 @@
+tag e743a5fe68a6b7b264e91cc61a874463af8d551c 9.0.10
+Author:	Mike "Xodiv" Battersby <mib@post.com>
+Date:	Tue Nov 10 21:19:13 2020 +1100
+
+Fix for UpdateAllBags error in 9.0.9
+
+commit af36ef0eb32cfe27ecabefcfc6d11b5cf77f535b
+Author: Mike "Xodiv" Battersby <mib@post.com>
+Date:   Tue Nov 10 21:18:55 2020 +1100
+
+    Fix for bad fix in 9.0.9
+
