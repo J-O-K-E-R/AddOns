@@ -106,7 +106,7 @@ local function RenderLinks(str, nameOnly)
         elseif type == 'item' then
             local name, link, _, _, _, _, _, _, _, icon = GetItemInfo(id)
             if link and icon then
-                if nameOnly then return name end
+                if nameOnly then return name..(suffix or '') end
                 return '|T'..icon..':0:0:1:-1|t '..link
             end
         elseif type == 'daily' or type == 'quest' then
@@ -170,6 +170,19 @@ local function PlayerHasItem(item, count)
 end
 
 -------------------------------------------------------------------------------
+------------------------------ DATABASE FUNCTIONS -----------------------------
+-------------------------------------------------------------------------------
+
+local function GetDatabaseTable(...)
+    local db = _G[ADDON_NAME.."DB"]
+    for _, key in ipairs({...}) do
+        if db[key] == nil then db[key] = {} end
+        db = db[key]
+    end
+    return db
+end
+
+-------------------------------------------------------------------------------
 ------------------------------ LOCALE FUNCTIONS -------------------------------
 -------------------------------------------------------------------------------
 
@@ -228,6 +241,7 @@ end
 
 ns.AsIDTable = AsIDTable
 ns.AsTable = AsTable
+ns.GetDatabaseTable = GetDatabaseTable
 ns.NameResolver = NameResolver
 ns.NewLocale = NewLocale
 ns.PlayerHasItem = PlayerHasItem

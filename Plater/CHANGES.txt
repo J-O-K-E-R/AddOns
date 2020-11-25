@@ -1,10 +1,10 @@
-lightweight tag 624e3bfde0a29794ad347d6b4264aa434797a706 Plater-v9.0.1.316-Retail
-Author:	Tercio Jose <terciob19@hotmail.com>
-Date:	Thu Nov 12 18:47:23 2020 -0300
+lightweight tag 2e15d1d46932fbc28f93dd126cb9e1c2224d41ca Plater-v9.0.1.319-Retail
+Author:	Continuity <continuity@gmx.net>
+Date:	Mon Nov 23 22:22:13 2020 +0100
 
-commit 624e3bfde0a29794ad347d6b4264aa434797a706
-Author: Tercio Jose <terciob19@hotmail.com>
-Date:   Thu Nov 12 18:47:23 2020 -0300
+commit 2e15d1d46932fbc28f93dd126cb9e1c2224d41ca
+Author: Continuity <continuity@gmx.net>
+Date:   Mon Nov 23 22:22:13 2020 +0100
 
-    Added "OverrideTriggers" option at the script library, if override triggers are true, while updating the script all old triggers are removed.
+    - regression fix
 

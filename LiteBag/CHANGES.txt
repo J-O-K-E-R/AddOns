@@ -1,12 +1,13 @@
-tag e743a5fe68a6b7b264e91cc61a874463af8d551c 9.0.10
+tag 3d269d03bdac7f7012a212514aa84efbd7568014 9.0.11
 Author:	Mike "Xodiv" Battersby <mib@post.com>
-Date:	Tue Nov 10 21:19:13 2020 +1100
+Date:	Thu Nov 19 16:30:08 2020 +1100
 
-Fix for UpdateAllBags error in 9.0.9
+LiteBag 9.0.11
+- Update ToC for 9.0.2 / SL release
 
-commit af36ef0eb32cfe27ecabefcfc6d11b5cf77f535b
+commit 847f59831ac3fd90b5ce2b6b94195d2852a40baa
 Author: Mike "Xodiv" Battersby <mib@post.com>
-Date:   Tue Nov 10 21:18:55 2020 +1100
+Date:   Thu Nov 19 16:29:41 2020 +1100
 
-    Fix for bad fix in 9.0.9
+    Update ToC for 9.0.2
 

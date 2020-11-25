@@ -6,6 +6,7 @@ local CurrentRollValue = 0
 local Rolls = {}
 local Players = {}
 local isCGHost = false
+local NewGame = false
 local ChatGrabChannel
 local rollCmd = SLASH_RANDOM1:upper()
 local GameInProgress = false
@@ -111,16 +112,15 @@ local SetTemplateDark = function(self)
 	self:SetBackdropColor(0.17, 0.17, 0.17)
 end
 
-local SendAddonMessage = SendAddonMessage
-
-local SendEvent = function(event, arg1)
-	local Channel
 	local IsInRaid = IsInRaid
 	local IsInGroup = IsInGroup
 	local IsInGuild = IsInGuild
 	local LE_PARTY_CATEGORY_HOME = LE_PARTY_CATEGORY_HOME
 	local LE_PARTY_CATEGORY_INSTANCE = LE_PARTY_CATEGORY_INSTANCE
 	local SendAddonMessage = SendAddonMessage
+local SendEvent = function(event, arg1)
+	local Channel
+
 -- ADD: Conditional variables to each that allow the current chat channel to be shown in the CGHost panel.
 	if IsInRaid() then
 		Channel = (not IsInRaid(LE_PARTY_CATEGORY_HOME) and IsInRaid(LE_PARTY_CATEGORY_INSTANCE)) and "INSTANCE_CHAT" or "RAID" or chatmethod
@@ -277,7 +277,15 @@ AcceptRolls:SetPoint("TOPLEFT", EditBox, "BOTTOMLEFT", 0, -2)
 SetTemplateDark(AcceptRolls)
 AcceptRolls:SetScript("OnEnter", ButtonOnEnter)
 AcceptRolls:SetScript("OnLeave", ButtonOnLeave)
-AcceptRolls:SetScript("OnMouseUp", function(self)
+AcceptRolls:SetScript("OnMouseUp", function()
+if AcceptRolls.Label:GetText() == "Host Game" then
+SendEvent("RESET_Host")
+AcceptRolls.Label:SetText("New Game")
+else
+StartNewGame()
+end
+end)
+function StartNewGame()
 	if GameMode_Button_Button:GetText() == "< Game Mode >" then
 		SendEvent("SET_ROLL", CrossGambling_EditBox:GetText())
 		CrossGambling["lastroll"] = CrossGambling_EditBox:GetText()
@@ -286,25 +294,22 @@ AcceptRolls:SetScript("OnMouseUp", function(self)
     CrossGambling_EditBox:SetAutoFocus(false)
   	CrossGambling_EditBox:ClearFocus()
 
-
 	elseif GameMode_Button_Button:GetText() == "< 501 >" or "< BigTwo >" then
     SendEvent("SET_ROLL",CrossGambling["GameMode1"])
 	SendEvent("START_GAME")
-
   else
 		print("[|cffaad2a7IG|r] Please enter a wager before starting a new game!")
 	end
 	
-			isCGHost = true
+		isCGHost = true
 		GameInProgress = true
-		AcceptingRolls = true
-end)
-
+		AcceptingRolls = false
+end
 AcceptRolls.Label = AcceptRolls:CreateFontString(nil, "OVERLAY")
 AcceptRolls.Label:SetPoint("CENTER", AcceptRolls, 0, 0)
 AcceptRolls.Label:SetFont(Font, 12)
 AcceptRolls.Label:SetJustifyH("CENTER")
-AcceptRolls.Label:SetText("New Game")
+AcceptRolls.Label:SetText("Host Game")
 AcceptRolls.Label:SetShadowOffset(1.25, -1.25)
 AcceptRolls.Label:SetShadowColor(0, 0, 0)
 
@@ -465,6 +470,7 @@ CGEnter.Label:SetShadowOffset(1.25, -1.25)
 CGEnter.Label:SetShadowColor(0, 0, 0)
 
 function CrossGambling_OnClickRoll2()
+	if(AcceptingRolls == true) then
    if CGEnter.Label:GetText() == "Join Game" then
 	local InOrOut = "1"	
     SendEvent(format("CHAT_MSG:%s:%s:%s", PlayerName, PlayerClass, InOrOut))
@@ -477,6 +483,7 @@ function CrossGambling_OnClickRoll2()
     SendEvent(format("CHAT_MSG:%s:%s:%s", PlayerName, PlayerClass, InOrOut))
 	CGEnter.Label:SetText("Join Game")
    end
+  end
 end
 
 local RollMe = CreateFrame("Frame", nil, CGHost, BackdropTemplateMixin and "BackdropTemplate")
@@ -486,7 +493,7 @@ SetTemplateDark(RollMe)
 RollMe:SetScript("OnEnter", ButtonOnEnter)
 RollMe:SetScript("OnLeave", ButtonOnLeave)
 RollMe:SetScript("OnMouseUp", function(self)
-	 local Roll = GetRoll()
+local Roll = GetRoll()
 if(ChatFrame:IsShown()) then
 SendEvent("PLAYER_ROLL", PlayerName..":"..tostring(Roll))
 else 
@@ -539,6 +546,8 @@ end)
 LastCall:SetScript("OnLeave", ButtonOnLeave)
 LastCall:SetScript("OnMouseUp", function(self)
 	SendEvent("LastCall")
+	StartRolling = true
+	
 end)
 
 LastCall.Label = LastCall:CreateFontString(nil, "OVERLAY")
@@ -560,7 +569,14 @@ RollGame:HookScript("OnEnter", function(self)
 end)
 RollGame:SetScript("OnLeave", ButtonOnLeave)
 RollGame:SetScript("OnMouseUp", function(self)
+	if(StartRolling == true) then
 	SendEvent("CLOSE_GAME")
+	StartRolling = false
+	else
+	CrossGambling_OnClickROLL()
+	end
+	
+	AcceptingRolls = false
 end)
 
 RollGame.Label = RollGame:CreateFontString(nil, "OVERLAY")
@@ -901,13 +917,13 @@ GUI.BottomLabel:SetShadowOffset(1.25, -1.25)
 GUI.BottomLabel:SetShadowColor(0, 0, 0)
 GUI.BottomLabel:SetText("Roll Tracker")
 
-UIConfig = CreateFrame("Frame", "AuraTrackerConfig", SlotzContainer, "UIPanelDialogTemplate");
+UIConfig = CreateFrame("Frame", "CGConfig", SlotzContainer, "UIPanelDialogTemplate");
 UIConfig:SetSize(222, 167);
 UIConfig:SetPoint("CENTER", SlotzContainer, "CENTER", -2, 12)
 	
 UIConfig.ScrollFrame = CreateFrame("ScrollFrame", nil, UIConfig, "UIPanelScrollFrameTemplate");
-UIConfig.ScrollFrame:SetPoint("TOPLEFT", AuraTrackerConfigDialogBG, "TOPLEFT", 4, -8);
-UIConfig.ScrollFrame:SetPoint("BOTTOMRIGHT", AuraTrackerConfigDialogBG, "BOTTOMRIGHT", -3, 4);
+UIConfig.ScrollFrame:SetPoint("TOPLEFT", CGConfigDialogBG, "TOPLEFT", 4, -8);
+UIConfig.ScrollFrame:SetPoint("BOTTOMRIGHT", CGConfigDialogBG, "BOTTOMRIGHT", -3, 4);
 UIConfig.ScrollFrame:SetClipsChildren(true);
 UIConfig.ScrollFrame:SetScript("OnMouseWheel", ScrollFrame_OnMouseWheel);	
 local content1 = SetTabs(UIConfig, 1, "Appearance");
@@ -927,7 +943,6 @@ local PlayerRoll = function(player)
 
 			Players[i].Total:SetText(Comma(Roll))
 
-			CheckRolls()
 
 		end
 	end
@@ -1098,7 +1113,8 @@ local CG_Rolls = function()
 	end
 
 	-- If the user is set as an CGHost (meaning they started the game), and if silent mode is disabled, they will report the results to the current channel.
-if(isCGHost) then
+if (Diff ~= 0) then
+	if(isCGHost) then
 		if(ChatFrame:IsShown() and CrossGambling["isHouseCut"] == false) then
 			SendEvent(format("CHAT_MSG:%s:%s:%s owes %s %sg", PlayerName, PlayerClass, Loser[1], Winner[1], Comma(GameMode2)))
 			SendEvent("RESET_GAME")
@@ -1118,6 +1134,10 @@ if(isCGHost) then
 	
 		CrossGambling["stats"][Winner[1]] = CrossGambling["stats"][Winner[1]] + GameMode2
 		CrossGambling["stats"][Loser[1]] = CrossGambling["stats"][Loser[1]] - GameMode2
+		
+	end
+else
+		SendChatMessage(format("It was a tie! No payouts on this roll!"), ReportChannel, nil)	
 end
 
 	for i = #Rolls, 1, -1 do
@@ -1141,6 +1161,19 @@ local CheckRolls = function()
 
 	if (Count == NumPlayers) then
 		CG_Rolls()
+	end
+end
+
+function CrossGambling_OnClickROLL()
+	for i=1, #Players do
+	if (not Players[i].HasRolled) then
+	     if(ChatFrame:IsShown() == true and isCGHost == true ) then
+		SendEvent(format("CHAT_MSG:%s:%s:%s", tostring(Players[i].Name):gsub("^%l", string.upper), PlayerClass, "still needs to roll."))
+		else
+		SendChatMessage(format("%s %s", tostring(Players[i].Name):gsub("^%l", string.upper),"still needs to roll."), ReportChannel, nil)
+		end
+	end
+		
 	end
 end
 
@@ -1177,10 +1210,10 @@ local Events = {}
 function CrossGambling_OnClickCHAT()
 	if(CrossGambling["chat"] == nil) then CrossGambling["chat"] = 1; end
 
-	CrossGambling["chat"] = (CrossGambling["chat"] % #chatmethods) + 1;
+	CrossGambling["chat"] = (CrossGambling["chat"] % #chatmethods) + 1
 
-	chatmethod = chatmethods[CrossGambling["chat"]];
-	CrossGambling_CHAT_Button:SetText(chatmethod);
+	chatmethod = chatmethods[CrossGambling["chat"]]
+	CrossGambling_CHAT_Button:SetText(chatmethod)
 end
 
 -- Will work on later 
@@ -1241,6 +1274,14 @@ end
   end
 end
 
+Events["RESET_Host"] = function()
+        isCGHost = false
+        EnableButton(AcceptRolls)
+        DisableButton(RollGame)
+		DisableButton(RollMe)
+		DisableButton(LastCall)
+	    CGEnter.Label:SetText("Join Game")
+end
 Events["RESET_GAME"] = function()
 	    isCGHost = false
         EnableButton(AcceptRolls)
@@ -1251,12 +1292,14 @@ Events["RESET_GAME"] = function()
 end
 
 Events["ADD_PLAYER"] = function(name)
+if(AcceptingRolls == true) then
 	if(CrossGambling_ChkBan(tostring(name)) == 0) then
 	AddPlayer(name)
     elseif(isCGHost == true) then 
 	RemovePlayer(name)
 	SendChatMessage(format(" Sorry %s is banned.", name), ReportChannel, nil)
 	end
+end
 end
 
 Events["REMOVE_PLAYER"] = function(name)
@@ -1281,7 +1324,8 @@ Events["SET_ROLL"] = function(value)
 end
 
 Events["START_GAME"] = function()
-  if(ChatFrame:IsShown() == true and isCGHost == true ) then
+AcceptingRolls = true
+  if(ChatFrame:IsShown() == true and isCGHost == true and GameInProgress == true) then
    EnableButton(LastCall)
   	if GameMode_Button_Button:GetText() == "< Game Mode >" then
 local RollNotification = "has started a roll!"
@@ -1295,7 +1339,7 @@ local RollNotification = "has started a roll!"
 	SendEvent(format("CHAT_MSG:%s:%s:%s:%s", PlayerName, PlayerClass, "Current Bet", CrossGambling_EditBox:GetText()))
 	CrossGambling["GameMode"] = CrossGambling["GameMode1"]
 end
-    elseif(ChatFrame:IsShown() == false and isCGHost == true ) then
+    elseif(ChatFrame:IsShown() == false and isCGHost == true and GameInProgress == true ) then
 	 EnableButton(LastCall)
 		if GameMode_Button_Button:GetText() == "< Game Mode >" then
 	SendChatMessage(format(" CrossGambling: User's Roll - ( %s %s", CurrentRollValue, ") - Type 1 to Join  (-1 to withdraw)"), ReportChannel, nil)
@@ -1307,7 +1351,16 @@ end
 end
 
  end
+ 	for i = 1, #Players do
+		Players[1].HasRolled = false
+		Players[1].Total:SetText("")
+		RemovePlayer(Players[1].Name)
+	
+end
 		DisableButton(AcceptRolls)
+		if(isCGHost) then
+		EnableButton(AcceptRolls)
+	    end
         DisableButton(RollGame)
 		DisableButton(RollMe)
 		SendEvent("REMOVE_PLAYER", PlayerName)
@@ -1317,23 +1370,22 @@ end
 
 
 Events["LastCall"] = function()
- if(ChatFrame:IsShown() == true and  isCGHost == true ) then
+ if(ChatFrame:IsShown() == true and  isCGHost == true and GameInProgress == true ) then
   	local RollNotification = "Last Call!"
     SendEvent(format("CHAT_MSG:%s:%s:%s", PlayerName, PlayerClass, RollNotification))
 	EnableButton(RollGame)
-    elseif(ChatFrame:IsShown() == false and isCGHost == true) then
+    elseif(ChatFrame:IsShown() == false and isCGHost == true and GameInProgress == true) then
 	SendChatMessage(" Last Call to Enter", ReportChannel, nil)
 	EnableButton(RollGame)
 end
-
 end
 
-
 Events["CLOSE_GAME"] = function()
- if(ChatFrame:IsShown() == true and  isCGHost == true ) then
+AcceptingRolls = false
+if(ChatFrame:IsShown() == true and  isCGHost == true and GameInProgress == true ) then
   	local RollNotification = "Press Roll Me!"
     SendEvent(format("CHAT_MSG:%s:%s:%s", PlayerName, PlayerClass, RollNotification))
-    elseif(ChatFrame:IsShown() == false and isCGHost == true) then
+    elseif(ChatFrame:IsShown() == false and isCGHost == true and GameInProgress == true) then
 	SendChatMessage(" Entries have closed. Roll now!", ReportChannel, nil)
 	SendChatMessage(format(" Type /roll %s", CurrentRollValue), ReportChannel, nil)
 		EnableButton(AcceptRolls)
@@ -1544,8 +1596,10 @@ if (event == "PLAYER_ENTERING_WORLD") then
 		if(not CrossGambling["house"]) then CrossGambling["house"] = 0; end
 		if(not CrossGambling["GuildCut"]) then CrossGambling["GuildCut"] = 10; end
 		if(not CrossGambling["isHouseCut"]) then CrossGambling["isHouseCut"] = false; end
-    GuildCut:SetText(""..CrossGambling["GuildCut"])
-	   CrossGambling_EditBox:SetText(""..CrossGambling["lastroll"]);
+		GuildCut:SetText(""..CrossGambling["GuildCut"])
+		chatmethod = chatmethods[CrossGambling["chat"]];
+		CrossGambling_CHAT_Button:SetText(chatmethod); 
+		CrossGambling_EditBox:SetText(""..CrossGambling["lastroll"]);
 		if(CrossGambling["isHouseCut"] == false) then
 		CrossGambling_HouseCut.Label:SetText("Guild Cut (OFF)");
 		else
@@ -1558,28 +1612,28 @@ if (event == "PLAYER_ENTERING_WORLD") then
 		GUI:Hide();	
 		isCGHost = false
 		end
-	end
-	if(chatmethod == "PARTY" and (event == "CHAT_MSG_PARTY" or event == "CHAT_MSG_PARTY_LEADER") and CrossGambling["chat"] == 1) then
+		end
+		if(chatmethod == "PARTY" and (event == "CHAT_MSG_PARTY" or event == "CHAT_MSG_PARTY_LEADER") and AcceptingRolls == true and CrossGambling["chat"] == 1) then
 		if(message == "1") then
 			ChatAddPlayer(sender)
 		elseif(message == "-1") then
 			ChatRemovePlayer(sender)
 		end
-	elseif(chatmethod == "RAID" and (event == "CHAT_MSG_RAID" or event == "CHAT_MSG_RAID_LEADER")   and CrossGambling["chat"] == 2) then
-		if(message == "2") then
+		elseif(chatmethod == "RAID" and (event == "CHAT_MSG_RAID" or event == "CHAT_MSG_RAID_LEADER") and AcceptingRolls == true and CrossGambling["chat"] == 2) then
+		if(message == "1") then
 			ChatAddPlayer(sender)
 		elseif(message == "-1") then
 			ChatRemovePlayer(sender)
 		end
-    elseif(chatmethod == "GUILD" and (event == "CHAT_MSG_GUILD" or event == "CHAT_MSG_GUILD") and CrossGambling["chat"] == 3) then
-		if(message == "2") then
+		elseif(chatmethod == "GUILD" and (event == "CHAT_MSG_GUILD" or event == "CHAT_MSG_GUILD") and AcceptingRolls == true and CrossGambling["chat"] == 3) then
+		if(message == "1") then
 			ChatAddPlayer(sender)
 		elseif(message == "-1") then
 			ChatRemovePlayer(sender)
 		end
-	end
+		end
 
-	if (event == "CHAT_MSG_SYSTEM" ) then
+	if (event == "CHAT_MSG_SYSTEM") then
 			local tempString1 = tostring(message)
 			ParseChatRoll(tempString1)
 	end
@@ -1589,23 +1643,23 @@ end)
 function CrossGambling_JoinStats(msg)
 	local i = string.find(msg, " ");
 	if((not i) or i == -1 or string.find(msg, "[", 1, true) or string.find(msg, "]", 1, true)) then
-		CGChatFrame:AddMessage("");
+		DEFAULT_CHAT_FRAME:AddMessage("");
 		return;
 	end
 	local mainname = string.sub(msg, 1, i-1);
 	local altname = string.sub(msg, i+1);
-	CGChatFrame:AddMessage(string.format("Joined alt '%s' -> main '%s'", altname, mainname));
+	DEFAULT_CHAT_FRAME:AddMessage(string.format("Joined alt '%s' -> main '%s'", altname, mainname));
 	CrossGambling["joinstats"][altname] = mainname;
 end
 
 function CrossGambling_UnjoinStats(altname)
 	if(altname ~= nil and altname ~= "") then
-		CGChatFrame:AddMessage(string.format("Unjoined alt '%s' from any other characters", altname));
+		DEFAULT_CHAT_FRAME:AddMessage(string.format("Unjoined alt '%s' from any other characters", altname));
 		CrossGambling["joinstats"][altname] = nil;
 	else
 		local i, e;
 		for i, e in pairs(CrossGambling["joinstats"]) do
-			CGChatFrame:AddMessage(string.format("currently joined: alt '%s' -> main '%s'", i, e));
+			DEFAULT_CHAT_FRAME:AddMessage(string.format("currently joined: alt '%s' -> main '%s'", i, e));
 		end
 	end
 end

@@ -1,9 +1,9 @@
-## Interface: 90001
+## Interface: 90002
 ## Title: Plater
 ## Notes: Nameplate addon designed for advanced users.
 ## SavedVariables: PlaterDB
 ## SavedVariablesPerCharacter: PlaterDBChr
-## Version: Plater-v9.0.1.316-Retail
+## Version: Plater-v9.0.1.319-Retail
 
 #@no-lib-strip@
 libs\libs.xml
@@ -35,4 +35,5 @@ Plater_ChangeLog.lua
 Plater_Docs.lua
 Plater_BossModsSupport.lua
 Plater_Animations.lua
+Plater_Profiling.lua
 #Plater_SpellPrediction.lua

@@ -43,6 +43,9 @@ local AlphaBlending = ALPHA_BLEND_AMOUNT + 0.0654785
 local unpack = unpack
 local ipairs = ipairs
 local pairs = pairs
+local rawset = rawset
+local rawget = rawget
+local error = error
 local InCombatLockdown = InCombatLockdown
 local UnitIsPlayer = UnitIsPlayer
 local UnitClassification = UnitClassification
@@ -65,9 +68,10 @@ local min = math.min
 
 local PixelUtil = _G.PixelUtil
 
-local LibSharedMedia = LibStub:GetLibrary ("LibSharedMedia-3.0")
-local LCG = LibStub:GetLibrary("LibCustomGlow-1.0")
-local LibRangeCheck = LibStub:GetLibrary ("LibRangeCheck-2.0")
+local LibSharedMedia = LibStub:GetLibrary ("LibSharedMedia-3.0") -- https://www.curseforge.com/wow/addons/libsharedmedia-3-0
+local LCG = LibStub:GetLibrary("LibCustomGlow-1.0") -- https://github.com/Stanzilla/LibCustomGlow
+local LibRangeCheck = LibStub:GetLibrary ("LibRangeCheck-2.0") -- https://www.curseforge.com/wow/addons/librangecheck-2-0/
+local LibTranslit = LibStub:GetLibrary ("LibTranslit-1.0") -- https://github.com/Vardex/LibTranslit
 local _
 
 local Plater = DF:CreateAddOn ("Plater", "PlaterDB", PLATER_DEFAULT_SETTINGS, { --options table
@@ -777,6 +781,10 @@ Plater.DefaultSpellRangeListF = {
 	local DB_HEALTHCUTOFF_AT = 0.2
 	local DB_HEALTHCUTOFF_AT_UPPER = 0.8
 	
+	--store translit option
+	local DB_USE_NAME_TRANSLIT = false
+	local TRANSLIT_MARK = "*"
+	
 	--store the npc id cache
 	local DB_NPCIDS_CACHE = {}
 
@@ -926,6 +934,11 @@ Plater.DefaultSpellRangeListF = {
 			
 			elseif (class == "ROGUE") then				
 				if IsPlayerSpell(328085) then --Blindside
+					lowExecute = 0.35
+				end
+			
+			elseif (class == "DEATHKNIGHT") then
+				if IsPlayerSpell(343294) then --Soul Reaper
 					lowExecute = 0.35
 				end
 			
@@ -1587,6 +1600,8 @@ Plater.DefaultSpellRangeListF = {
 		DB_CASTBAR_HIDE_FRIENDLY = profile.hide_friendly_castbars
 		
 		DB_CAPTURED_SPELLS = profile.captured_spells
+		
+		DB_USE_NAME_TRANSLIT = profile.use_name_translit
 
 		--refresh lists
 		Plater.RefreshDBLists()
@@ -2191,7 +2206,11 @@ Plater.DefaultSpellRangeListF = {
 				local plateFrame = C_NamePlate.GetNamePlateForUnit (unitID)
 				if (plateFrame) then
 					local unitFrame = plateFrame.unitFrame
-					plateFrame [MEMBER_NAME] = UnitName (unitID)
+					local unitName = UnitName (unitID)
+					if DB_USE_NAME_TRANSLIT then
+						unitName = LibTranslit:Transliterate(unitName, TRANSLIT_MARK)
+					end
+					plateFrame [MEMBER_NAME] = unitName
 					plateFrame [MEMBER_NAMELOWER] = lower (plateFrame [MEMBER_NAME])
 					unitFrame [MEMBER_NAME] = plateFrame [MEMBER_NAME]
 					unitFrame [MEMBER_NAMELOWER] = plateFrame [MEMBER_NAMELOWER]
@@ -2842,7 +2861,7 @@ Plater.DefaultSpellRangeListF = {
 				plateFrame.unitFrame.aggroGlowLower:Hide()
 				
 			--> widget container
-				plateFrame.unitFrame.WidgetContainer = CreateFrame("frame", nil, plateFrame.unitFrame, "UIWidgetContainerTemplate")
+				plateFrame.unitFrame.WidgetContainer = CreateFrame("frame", nil, plateFrame.unitFrame, "UIWidgetContainerNoResizeTemplate")
 				Plater.SetAnchor (plateFrame.unitFrame.WidgetContainer, Plater.db.profile.widget_bar_anchor, plateFrame.unitFrame)
 				plateFrame.unitFrame.WidgetContainer:SetScale(Plater.db.profile.widget_bar_scale)
 				plateFrame.unitFrame.WidgetContainer:UnregisterForWidgetSet()
@@ -2991,7 +3010,11 @@ Plater.DefaultSpellRangeListF = {
 			
 			--cache values
 			plateFrame [MEMBER_GUID] = UnitGUID (unitID) or ""
-			plateFrame [MEMBER_NAME] = UnitName (unitID) or ""
+			local unitName = UnitName (unitID) or ""
+			if DB_USE_NAME_TRANSLIT then
+				unitName = LibTranslit:Transliterate(unitName, TRANSLIT_MARK)
+			end
+			plateFrame [MEMBER_NAME] = unitName
 			plateFrame [MEMBER_NAMELOWER] = lower (plateFrame [MEMBER_NAME])
 			plateFrame ["namePlateClassification"] = UnitClassification (unitID)
 			
@@ -3299,7 +3322,9 @@ Plater.DefaultSpellRangeListF = {
 	function Plater.EventHandler (_, event, ...) --private
 		local func = eventFunctions [event]
 		if (func) then
+			Plater.StartLogPerformanceCore("Plater-Core", "Events", event)
 			func (event, ...)
+			Plater.EndLogPerformanceCore("Plater-Core", "Events", event)
 		else
 			Plater:Msg ("no registered function for event " .. (event or "unknown event"))
 		end
@@ -3334,6 +3359,16 @@ Plater.DefaultSpellRangeListF = {
 		end
 	end
 	
+	function Plater.SetFontOutlineAndShadow (fontString, outline, shadowColor, shadowXOffSet, shadowYOffSet)
+		--update the outline
+		DF:SetFontOutline (fontString, outline)
+		
+		--update shadow color and shadow offset
+		if (shadowColor) then
+			local r, g, b, a = DF:ParseColors (shadowColor)
+			DF:SetFontShadow (fontString, r, g, b, a, shadowXOffSet, shadowYOffSet)
+		end
+	end
 	
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --> addon initialization
@@ -3656,17 +3691,6 @@ function Plater.OnInit() --private --~oninit ~init
 						Plater.CurrentTargetResourceFrame:SetPoint ("bottom", buffFrame.healthBar, "top", 0, Plater.db.profile.resources.y_offset_target)
 					end
 				end
-			end
-		end
-	
-		function Plater.SetFontOutlineAndShadow (fontString, outline, shadowColor, shadowXOffSet, shadowYOffSet)
-			--update the outline
-			DF:SetFontOutline (fontString, outline)
-			
-			--update shadow color and shadow offset
-			if (shadowColor) then
-				local r, g, b, a = DF:ParseColors (shadowColor)
-				DF:SetFontShadow (fontString, r, g, b, a, shadowXOffSet, shadowYOffSet)
 			end
 		end
 	
@@ -4000,8 +4024,10 @@ function Plater.OnInit() --private --~oninit ~init
 					castBar.BorderShield:Hide()
 				end
 			else
+				local castBarHeight = castBar:GetHeight()
 				castBar.Icon:ClearAllPoints()
 				PixelUtil.SetPoint (castBar.Icon, "left", castBar, "left", 0, 0)
+				PixelUtil.SetSize (castBar.Icon, castBarHeight, castBarHeight)
 				castBar.BorderShield:ClearAllPoints()
 				PixelUtil.SetPoint (castBar.BorderShield, "left", castBar, "left", 0, 0)
 			end
@@ -4157,6 +4183,9 @@ function Plater.OnInit() --private --~oninit ~init
 					
 					if (self.unit and Plater.db.profile.castbar_target_show and not UnitIsUnit (self.unit, "player")) then
 						local targetName = UnitName (self.unit .. "target")
+						if DB_USE_NAME_TRANSLIT then
+							targetName = LibTranslit:Transliterate(targetName, TRANSLIT_MARK)
+						end
 						if (targetName) then
 
 							local canShowTargetName = true
@@ -4283,6 +4312,13 @@ function Plater.OnInit() --private --~oninit ~init
 			--this is not a nameplate, perhaps another frame from the framework
 			return
 		end
+		
+		Plater.StartLogPerformanceCore("Plater-Core", "Health", "OnUpdateHealth")
+
+		-- update - for whatever weird reason max health event does not give proper values sometimes...
+		local maxHealth = UnitHealthMax (self.displayedUnit)
+		self:SetMinMaxValues (0, maxHealth)
+		self.currentHealthMax = maxHealth
 
 		local plateFrame = self.PlateFrame
 		local currentHealth = self.currentHealth
@@ -4361,13 +4397,19 @@ function Plater.OnInit() --private --~oninit ~init
 			
 			Plater.CheckLifePercentText (unitFrame)
 		end
+		
+		Plater.EndLogPerformanceCore("Plater-Core", "Health", "OnUpdateHealth")
 	end
 
 	--self is the healthBar (it's parent is the unitFrame)
 	function Plater.OnUpdateHealthMax (self)
+		Plater.StartLogPerformanceCore("Plater-Core", "Health", "OnUpdateHealthMax")
+		
 		--the framework already set the min max values
-		self.CurrentHealthMax = self.currentHealthMax -- o.0 hãããnnn
+		self.CurrentHealthMax = self.currentHealthMax
 		Plater.CheckLifePercentText (self.unitFrame)
+		
+		Plater.EndLogPerformanceCore("Plater-Core", "Health", "OnUpdateHealthMax")
 	end
 
 	function Plater.OnHealthChange (self, unitId)
@@ -4731,7 +4773,6 @@ end
 			PixelUtil.SetHeight (castBar, castBarHeight)
 			PixelUtil.SetSize (castBar.BorderShield, castBarHeight * 1.4, castBarHeight * 1.4)
 			PixelUtil.SetSize (castBar.Spark, profile.cast_statusbar_spark_width, castBarHeight)
-			--PixelUtil.SetSize (castBar.Icon, castBarHeight, castBarHeight)
 			Plater.UpdateCastbarIcon(castBar)
 
 		--power bar
@@ -4849,6 +4890,7 @@ end
 	
 	-- ~ontick ~onupdate ~tick
 	function Plater.NameplateTick (tickFrame, deltaTime) --private
+		Plater.StartLogPerformanceCore("Plater-Core", "Update", "NameplateTick")
 
 		tickFrame.ThrottleUpdate = tickFrame.ThrottleUpdate - deltaTime
 		local unitFrame = tickFrame.unitFrame
@@ -4952,9 +4994,11 @@ end
 			end
 			
 			--if not in combat, check if can show the percent health out of combat
-			if (actorTypeDBConfig.percent_text_enabled and ((profile.use_player_combat_state and PLAYER_IN_COMBAT or unitFrame.InCombat)) or actorTypeDBConfig.percent_text_ooc) then
+			if (actorTypeDBConfig.percent_text_enabled and (((profile.use_player_combat_state and PLAYER_IN_COMBAT or unitFrame.InCombat)) or actorTypeDBConfig.percent_text_ooc)) then
 				Plater.UpdateLifePercentText (healthBar, unitFrame.unit, actorTypeDBConfig.percent_show_health, actorTypeDBConfig.percent_show_percent, actorTypeDBConfig.percent_text_show_decimals)
 				healthBar.lifePercent:Show()
+			else
+				healthBar.lifePercent:Hide()
 			end
 						
 			--if the unit tapped? (gray color)
@@ -5121,6 +5165,8 @@ end
 					healthBar.AnimateFunc (healthBar, deltaTime)
 				end
 			end
+			
+		Plater.EndLogPerformanceCore("Plater-Core", "Update", "NameplateTick")
 	end
 	
 	local set_aggro_color = function (self, r, g, b) --self = unitName
@@ -6080,11 +6126,15 @@ end
 		if (Plater.db.profile.use_player_combat_state and PLAYER_IN_COMBAT or unitFrame.InCombat) then
 			if (actorTypeDBConfig.percent_text_enabled) then
 				Plater.UpdateLifePercentText (unitFrame.healthBar, unitFrame.unit, actorTypeDBConfig.percent_show_health, actorTypeDBConfig.percent_show_percent, actorTypeDBConfig.percent_text_show_decimals)
+			else
+				unitFrame.healthBar.lifePercent:Hide()
 			end
 		else
 			--if not in combat, check if can show the percent health out of combat
 			if (actorTypeDBConfig.percent_text_enabled and actorTypeDBConfig.percent_text_ooc) then
 				Plater.UpdateLifePercentText (unitFrame.healthBar, unitFrame.unit, actorTypeDBConfig.percent_show_health, actorTypeDBConfig.percent_show_percent, actorTypeDBConfig.percent_text_show_decimals)
+			else
+				unitFrame.healthBar.lifePercent:Hide()
 			end
 		end
 	end
@@ -6217,6 +6267,8 @@ end
 
 	-- ~updateplate ~update ~updatenameplate
 	function Plater.UpdatePlateFrame (plateFrame, actorType, forceUpdate, justAdded)
+		Plater.StartLogPerformanceCore("Plater-Core", "Update", "UpdatePlateFrame")
+		
 		actorType = actorType or plateFrame.actorType
 		
 		if (not actorType) then
@@ -6572,6 +6624,8 @@ end
 		if (plateFrame.OnTickFrame.actorType == actorType and plateFrame.OnTickFrame.unit == unitFrame [MEMBER_UNITID]) then
 			Plater.NameplateTick (plateFrame.OnTickFrame, 10)
 		end
+		
+		Plater.EndLogPerformanceCore("Plater-Core", "Update", "UpdatePlateFrame")
 	end
 
 	-- ~border
@@ -7510,6 +7564,9 @@ end
 			for _, plateFrame in ipairs (Plater.GetAllShownPlates()) do
 				if (plateFrame.unitFrame.castBar:IsShown()) then
 					if (plateFrame [MEMBER_GUID] == targetGUID) then
+						if DB_USE_NAME_TRANSLIT then
+							sourceName = LibTranslit:Transliterate(sourceName, TRANSLIT_MARK)
+						end
 						plateFrame.unitFrame.castBar.Text:SetText (INTERRUPTED .. " [" .. Plater.SetTextColorByClass (sourceName, sourceName) .. "]")
 						plateFrame.unitFrame.castBar.IsInterrupted = true
 						--> check and stop the casting script if any
@@ -8781,10 +8838,10 @@ end
 		
 		--get the table which stores the information for a single script
 		ScriptGetInfo = function (self, globalScriptObject, widgetScriptContainer, isHookScript)
-			widgetScriptContainer = widgetScriptContainer or self:GetScriptContainer()
+			widgetScriptContainer = widgetScriptContainer or self:ScriptGetContainer()
 			
 			--using the memory address of the original scriptObject from db.profile as the map key
-			local scriptInfo = widgetScriptContainer [globalScriptObject.DBScriptObject]
+			local scriptInfo = widgetScriptContainer [globalScriptObject.DBScriptObject.scriptId]
 			if (
 				(not scriptInfo) or 
 				(scriptInfo.GlobalScriptObject.NeedHotReload) or 
@@ -8792,22 +8849,29 @@ end
 			) then
 				local forceHotReload = scriptInfo and scriptInfo.GlobalScriptObject.NeedHotReload
 			
-				scriptInfo = {
+				-- keep script info and update as needed
+				scriptInfo = scriptInfo or {
 					GlobalScriptObject = globalScriptObject, 
 					HotReload = -1, 
 					Env = {}, 
 					IsActive = false
 				}
+				scriptInfo.GlobalScriptObject = globalScriptObject
+				scriptInfo.GlobalScriptObject.Build = PLATER_HOOK_BUILD
+				scriptInfo.GlobalScriptObject.NeedHotReload = false
 
 				if (globalScriptObject.HasConstructor and (not scriptInfo.Initialized or (isHookScript and forceHotReload))) then
+					local modName = scriptInfo.GlobalScriptObject.DBScriptObject.Name
+					Plater.StartLogPerformance("Mod-RunHooks", modName, "Constructor")
 					local okay, errortext = pcall (globalScriptObject.Constructor, self, self.displayedUnit or self.unit or self:GetParent()[MEMBER_UNITID], self, scriptInfo.Env, PLATER_GLOBAL_MOD_ENV [scriptInfo.GlobalScriptObject.DBScriptObject.scriptId])
+					Plater.EndLogPerformance("Mod-RunHooks", modName, "Constructor")
 					if (not okay) then
-						Plater:Msg ((isHookScript and "Mod" or "Script") .. " |cFFAAAA22" .. scriptInfo.GlobalScriptObject.DBScriptObject.Name .. "|r Constructor error: " .. errortext)
+						Plater:Msg ("Mod |cFFAAAA22" .. modName .. "|r Constructor error: " .. errortext)
 					end
 					scriptInfo.Initialized = true
 				end
 				
-				widgetScriptContainer [globalScriptObject.DBScriptObject] = scriptInfo
+				widgetScriptContainer [globalScriptObject.DBScriptObject.scriptId] = scriptInfo
 			end
 			
 			return scriptInfo
@@ -8822,9 +8886,12 @@ end
 
 				--dispatch the constructor
 				local unitFrame = self.unitFrame or self
+				local scriptName = scriptInfo.GlobalScriptObject.DBScriptObject.Name
+				Plater.StartLogPerformance("Scripts", scriptName, "Constructor")
 				local okay, errortext = pcall (scriptInfo.GlobalScriptObject ["ConstructorCode"], self, unitFrame.displayedUnit or unitFrame.unit or unitFrame.PlateFrame[MEMBER_UNITID], unitFrame, scriptInfo.Env, PLATER_GLOBAL_SCRIPT_ENV [scriptInfo.GlobalScriptObject.DBScriptObject.scriptId])
+				Plater.EndLogPerformance("Scripts", scriptName, "Constructor")
 				if (not okay) then
-					Plater:Msg ("Script |cFFAAAA22" .. scriptInfo.GlobalScriptObject.DBScriptObject.Name .. "|r Constructor error: " .. errortext)
+					Plater:Msg ("Script |cFFAAAA22" .. scriptName .. "|r Constructor error: " .. errortext)
 				end
 			end
 		end,
@@ -8840,9 +8907,12 @@ end
 			
 			--dispatch the runtime script
 			local unitFrame = self.unitFrame or self
+			local scriptName = scriptInfo.GlobalScriptObject.DBScriptObject.Name
+			Plater.StartLogPerformance("Scripts", scriptName, "OnUpdate")
 			local okay, errortext = pcall (scriptInfo.GlobalScriptObject ["UpdateCode"], self, unitFrame.displayedUnit or unitFrame.unit or unitFrame.PlateFrame[MEMBER_UNITID], unitFrame, scriptInfo.Env, PLATER_GLOBAL_SCRIPT_ENV [scriptInfo.GlobalScriptObject.DBScriptObject.scriptId])
+			Plater.EndLogPerformance("Scripts", scriptName, "OnUpdate")
 			if (not okay) then
-				Plater:Msg ("Script |cFFAAAA22" .. scriptInfo.GlobalScriptObject.DBScriptObject.Name .. "|r OnUpdate error: " .. errortext)
+				Plater:Msg ("Script |cFFAAAA22" .. scriptName .. "|r OnUpdate error: " .. errortext)
 			end
 		end,
 		
@@ -8852,9 +8922,12 @@ end
 			local unitFrame = self.unitFrame or self
 			scriptInfo.Env._DefaultWidth = self:GetWidth()
 			scriptInfo.Env._DefaultHeight = self:GetHeight()
+			local scriptName = scriptInfo.GlobalScriptObject.DBScriptObject.Name
+			Plater.StartLogPerformance("Scripts", scriptName, "OnShow")
 			local okay, errortext = pcall (scriptInfo.GlobalScriptObject ["OnShowCode"], self, unitFrame.displayedUnit or unitFrame.unit or unitFrame.PlateFrame[MEMBER_UNITID], unitFrame, scriptInfo.Env, PLATER_GLOBAL_SCRIPT_ENV [scriptInfo.GlobalScriptObject.DBScriptObject.scriptId])
+			Plater.EndLogPerformance("Scripts", scriptName, "OnShow")
 			if (not okay) then
-				Plater:Msg ("Script |cFFAAAA22" .. scriptInfo.GlobalScriptObject.DBScriptObject.Name .. "|r OnShow error: " .. errortext)
+				Plater:Msg ("Script |cFFAAAA22" .. scriptName .. "|r OnShow error: " .. errortext)
 			end
 			
 			scriptInfo.IsActive = true
@@ -8865,9 +8938,12 @@ end
 		ScriptRunOnHide = function (self, scriptInfo)
 			--dispatch the on hide script
 			local unitFrame = self.unitFrame or self
+			local scriptName = scriptInfo.GlobalScriptObject.DBScriptObject.Name
+			Plater.StartLogPerformance("Scripts", scriptName, "OnHide")
 			local okay, errortext = pcall (scriptInfo.GlobalScriptObject ["OnHideCode"], self, unitFrame.displayedUnit or unitFrame.unit or unitFrame.PlateFrame[MEMBER_UNITID], unitFrame, scriptInfo.Env, PLATER_GLOBAL_SCRIPT_ENV [scriptInfo.GlobalScriptObject.DBScriptObject.scriptId])
+			Plater.EndLogPerformance("Scripts", scriptName, "OnHide")
 			if (not okay) then
-				Plater:Msg ("Script |cFFAAAA22" .. scriptInfo.GlobalScriptObject.DBScriptObject.Name .. "|r OnHide error: " .. errortext)
+				Plater:Msg ("Script |cFFAAAA22" .. scriptName .. "|r OnHide error: " .. errortext)
 			end
 			
 			scriptInfo.IsActive = false
@@ -8877,27 +8953,36 @@ end
 		--run the Initialization script, called during compile time
 		ScriptRunInitialization = function (globalScriptObject)
 			--dispatch the init script
+			local scriptName = globalScriptObject.DBScriptObject.Name
+			Plater.StartLogPerformance("Scripts", scriptName, "Initialization")
 			local okay, errortext = pcall (globalScriptObject ["Initialization"], PLATER_GLOBAL_SCRIPT_ENV [globalScriptObject.DBScriptObject.scriptId])
+			Plater.EndLogPerformance("Scripts", scriptName, "Initialization")
 			if (not okay) then
-				Plater:Msg ("Script |cFFAAAA22" .. globalScriptObject.DBScriptObject.Name .. "|r Initialization error: " .. errortext)
+				Plater:Msg ("Script |cFFAAAA22" .. scriptName .. "|r Initialization error: " .. errortext)
 			end
 		end,
 		
 		ScriptRunHook = function (self, scriptInfo, hookName, frame)
 			--dispatch a hook for the script
 			--at the moment, self is always the unit frame
+			local modName = scriptInfo.GlobalScriptObject.DBScriptObject.Name
+			Plater.StartLogPerformance("Mod-RunHooks", modName, hookName)
 			local okay, errortext = pcall (scriptInfo.GlobalScriptObject [hookName], frame or self, self.displayedUnit, self, scriptInfo.Env, PLATER_GLOBAL_MOD_ENV [scriptInfo.GlobalScriptObject.DBScriptObject.scriptId])
+			Plater.EndLogPerformance("Mod-RunHooks", modName, hookName)
 			if (not okay) then
-				Plater:Msg ("Mod |cFFAAAA22" .. scriptInfo.GlobalScriptObject.DBScriptObject.Name .. "|r code for |cFFBB8800" .. hookName .. "|r error: " .. errortext)
+				Plater:Msg ("Mod |cFFAAAA22" .. modName .. "|r code for |cFFBB8800" .. hookName .. "|r error: " .. errortext)
 			end
 		end,
 		
 		--run only once without attach to the script or hook
 		ScriptRunNoAttach = function (hookInfo, hookName)
 			local func = hookInfo [hookName]
+			local modName = hookInfo.DBScriptObject.Name
+			Plater.StartLogPerformance("Mod-RunHooks", modName, " -NoAttach- " .. hookName)
 			local okay, errortext = pcall (func, PLATER_GLOBAL_MOD_ENV [hookInfo.DBScriptObject.scriptId])
+			Plater.EndLogPerformance("Mod-RunHooks", modName, " -NoAttach- " .. hookName)
 			if (not okay) then
-				Plater:Msg ("Mod |cFFAAAA22" .. hookInfo.DBScriptObject.Name .. "|r code for |cFFBB8800" .. hookName .. "|r error: " .. errortext)
+				Plater:Msg ("Mod |cFFAAAA22" .. modName .. "|r code for |cFFBB8800" .. hookName .. "|r error: " .. errortext)
 			end
 		end,
 		
@@ -9089,173 +9174,252 @@ end
 	-- ~scripts
 
 	Plater.CoreVersion = 1
-
-	--from weakauras
-	--source https://github.com/WeakAuras/WeakAuras2/blob/520951a4b49b64cb49d88c1a8542d02bbcdbe412/WeakAuras/AuraEnvironment.lua#L66
-	local blockedFunctions = {
-		-- Lua functions that may allow breaking out of the environment
-		getfenv = true,
-		getfenv = true,
-		loadstring = true,
-		pcall = true,
-		xpcall = true,
-		getglobal = true,
-		
-		-- blocked WoW API
-		SendMail = true,
-		SetTradeMoney = true,
-		AddTradeMoney = true,
-		PickupTradeMoney = true,
-		PickupPlayerMoney = true,
-		TradeFrame = true,
-		MailFrame = true,
-		EnumerateFrames = true,
-		RunScript = true,
-		AcceptTrade = true,
-		SetSendMailMoney = true,
-		EditMacro = true,
-		SlashCmdList = true,
-		DevTools_DumpCommand = true,
-		hash_SlashCmdList = true,
-		CreateMacro = true,
-		SetBindingMacro = true,
-		GuildDisband = true,
-		GuildUninvite = true,
-		securecall = true,
-		
-		--additional
-		setmetatable = true,
-	}
 	
 	--internal Plater functions
+	--in the list/false: can't be overwritten; true->can't be read at all
 	local privateFunctions = {
-		CompileAllScripts = true,
-		GetAllScripts = true,
-		ScriptMetaFunctions = true,
-		DecompressData = true,
-		CompressData = true,
-		ExportProfileToString = true,
-		WipeAndRecompileAllScripts = true,
-		AllHookGlobalContainers = true,
-		WipeHookContainers = true,
-		GetContainerForHook = true,
-		CurrentlyLoadedHooks = true,
-		DestructorScriptHooks = true,
-		RunDestructorForHook = true,
-		CompileHook = true,
-		CompileScript = true,
-		CheckScriptTriggerOverlap = true,
-		GetScriptObject = true,
-		GetScriptDB = true,
-		GetScriptType = true,
-		GetDecodedScriptType = true,
-		ImportScriptsFromLibrary = true,
-		ImportScriptString = true,
-		AddScript = true,
-		BuildScriptObjectFromIndexTable = true,
-		DecodeImportedString = true,
-		PrepareTableToExport = true,
-		ScriptReceivedFromGroup = true,
-		ExportScriptToGroup = true,
-		ShowImportScriptConfirmation = true,
-		DispatchTalentUpdateHookEvent  = true,
-		ScheduleHookForCombat = true,
-		ScheduleRunFunctionForEvent = true,
-		RunFunctionForEvent = true,
-		EventHandler = true,
-		RegisterRefreshDBCallback = true,
-		FireRefreshDBCallback = true,
-		--RefreshDBUpvalues = true,
-		--RefreshDBLists = true,
-		--UpdateAuraCache = true,
-		ApplyPatches = true,
-		RefreshConfig = true,
-		RefreshConfigProfileChanged = true,
-		RefreshConfig = true,
-		SaveConsoleVariables = true,
-		GetSettings = true,
-		CodeTypeNames = true,
-		HookScripts = true,
-		HookScriptsDesc = true,
-		IncreaseHookBuildID = true,
-		IncreaseRefreshID = true,
-		SpecList = true,
-		UpdateSettingsCache = true,
-		ActorTypeSettingsCache = true,
-		RunScheduledUpdate = true,
-		ScheduleUpdateForNameplate = true,
-		EventHandlerFrame = true,
-		OnInit = true,
-		HookLoadCallback = true,
-		CheckFirstRun = true,
-		CommHandler = true,
-		CommReceived = true,
-		GetAllShownPlates = true,
-		GetHashKey = true,
-		IsShowingResourcesOnTarget = true,
-		OnRetailNamePlateShow = true,
-		UpdateSelfPlate = true,
-		CastBarOnShow_Hook = true,
-		CastBarOnEvent_Hook = true,
-		CastBarOnTick_Hook = true,
-		OnEnterAura = true,
-		OnLeaveAur = true,
-		RefreshAuras = true,
-		CreateAuraIcon = true,
-		RefreshColorOverride = true,
-		ChangeHealthBarColor_Internal = true,
-		UpdateAllPlates = true,
-		FullRefreshAllPlates = true,
-		UpdatePlateClickSpace = true,
-		NameplateTick = true,
-		OnPlayerTargetChanged = true,
-		UpdateTarget = true,
-		UpdatePlateText = true,
-		CheckLifePercentText = true,
-		UpdateAllNames = true,
-		UpdateLevelTextAndColor = true,
-		UpdatePlateFrame = true,
-		ForceChangeBorderColor = true,
-		UpdatePlateBorders = true,
-		UpdateRaidMarkersOnAllNameplates = true,
-		RefreshAutoToggle = true,
-		ParseHealthSettingForPlayer = true,
-		CreateAlphaAnimation = true,
-		CreateHighlightNameplate = true,
-		CreateHealthFlashFrame = true,
-		CreateAggroFlashFrame = true,
-		CreateScaleAnimation = true,
-		DoNameplateAnimation = true,
-		RefreshIsEditingAnimations = true,
-		IsNpcInIgnoreList = true,
-		CanChangePlateSize = true,
-		RefreshOmniCCGroup = true,
-		CreatePlaterButtonAtInterfaceOptions = true,
-		SetCVarsOnFirstRun = true,
-		GetActorSubName = true,
-		QuestLogUpdated = true,
-		QuestLogUpdated = true,
-		GetNpcIDFromGUID = true,
-		GetNpcID = true,
-		ForceTickOnAllNameplates = true,
-		UpdateUIParentScale = true,
-		UpdateUIParentLevels = true,
-		UpdateUIParentTargetLevels = true,
-		RefreshTankCache = true,
-		ForceFindPetOwner = true,
+		["Plater"] = {
+			["CompileAllScripts"] = true,
+			["GetAllScripts"] = true,
+			["ScriptMetaFunctions"] = true,
+			["DecompressData"] = true,
+			["CompressData"] = true,
+			["ExportProfileToString"] = true,
+			["WipeAndRecompileAllScripts"] = true,
+			["AllHookGlobalContainers"] = true,
+			["WipeHookContainers"] = true,
+			["GetContainerForHook"] = true,
+			["CurrentlyLoadedHooks"] = true,
+			["DestructorScriptHooks"] = true,
+			["RunDestructorForHook"] = true,
+			["CompileHook"] = true,
+			["CompileScript"] = true,
+			["CheckScriptTriggerOverlap"] = true,
+			["GetScriptObject"] = true,
+			["GetScriptDB"] = true,
+			["GetScriptType"] = true,
+			["GetDecodedScriptType"] = true,
+			["ImportScriptsFromLibrary"] = true,
+			["ImportScriptString"] = true,
+			["AddScript"] = true,
+			["BuildScriptObjectFromIndexTable"] = true,
+			["DecodeImportedString"] = true,
+			["PrepareTableToExport"] = true,
+			["ScriptReceivedFromGroup"] = true,
+			["ExportScriptToGroup"] = true,
+			["ShowImportScriptConfirmation"] = true,
+			["DispatchTalentUpdateHookEvent "] = true,
+			["ScheduleHookForCombat"] = true,
+			["ScheduleRunFunctionForEvent"] = true,
+			["RunFunctionForEvent"] = true,
+			["EventHandler"] = true,
+			["RegisterRefreshDBCallback"] = true,
+			["FireRefreshDBCallback"] = true,
+			["RefreshDBUpvalues"] = false,
+			["RefreshDBLists"] = false,
+			["UpdateAuraCache"] = false,
+			["ApplyPatches"] = true,
+			["RefreshConfig"] = true,
+			["RefreshConfigProfileChanged"] = true,
+			["RefreshConfig"] = true,
+			["SaveConsoleVariables"] = true,
+			["GetSettings"] = true,
+			["CodeTypeNames"] = true,
+			["HookScripts"] = true,
+			["HookScriptsDesc"] = true,
+			["IncreaseHookBuildID"] = true,
+			["IncreaseRefreshID"] = true,
+			["SpecList"] = true,
+			["UpdateSettingsCache"] = true,
+			["ActorTypeSettingsCache"] = true,
+			["RunScheduledUpdate"] = true,
+			["ScheduleUpdateForNameplate"] = true,
+			["EventHandlerFrame"] = true,
+			["OnInit"] = true,
+			["HookLoadCallback"] = true,
+			["CheckFirstRun"] = true,
+			["CommHandler"] = true,
+			["CommReceived"] = true,
+			["GetAllShownPlates"] = false,
+			["GetHashKey"] = true,
+			["IsShowingResourcesOnTarget"] = true,
+			["OnRetailNamePlateShow"] = true,
+			["UpdateSelfPlate"] = true,
+			["CastBarOnShow_Hook"] = true,
+			["CastBarOnEvent_Hook"] = true,
+			["CastBarOnTick_Hook"] = true,
+			["RefreshAuras"] = true,
+			["CreateAuraIcon"] = true,
+			["RefreshColorOverride"] = true,
+			["ChangeHealthBarColor_Internal"] = true,
+			["UpdateAllPlates"] = true,
+			["FullRefreshAllPlates"] = true,
+			["UpdatePlateClickSpace"] = true,
+			["NameplateTick"] = true,
+			["OnPlayerTargetChanged"] = true,
+			["UpdateTarget"] = true,
+			["UpdatePlateText"] = true,
+			["CheckLifePercentText"] = true,
+			["UpdateAllNames"] = true,
+			["UpdateLevelTextAndColor"] = true,
+			["UpdatePlateFrame"] = true,
+			["ForceChangeBorderColor"] = true,
+			["UpdatePlateBorders"] = true,
+			["UpdateRaidMarkersOnAllNameplates"] = true,
+			["RefreshAutoToggle"] = true,
+			["ParseHealthSettingForPlayer"] = true,
+			["CreateAlphaAnimation"] = true,
+			["CreateHighlightNameplate"] = true,
+			["CreateHealthFlashFrame"] = true,
+			["CreateAggroFlashFrame"] = true,
+			["CreateScaleAnimation"] = true,
+			["DoNameplateAnimation"] = true,
+			["RefreshIsEditingAnimations"] = true,
+			["IsNpcInIgnoreList"] = true,
+			["CanChangePlateSize"] = true,
+			["RefreshOmniCCGroup"] = true,
+			["CreatePlaterButtonAtInterfaceOptions"] = true,
+			["SetCVarsOnFirstRun"] = true,
+			["GetActorSubName"] = false,
+			["QuestLogUpdated"] = true,
+			["GetNpcIDFromGUID"] = false,
+			["GetNpcID"] = false,
+			["ForceTickOnAllNameplates"] = true,
+			["UpdateUIParentScale"] = true,
+			["UpdateUIParentLevels"] = true,
+			["UpdateUIParentTargetLevels"] = true,
+			["RefreshTankCache"] = true,
+			["ForceFindPetOwner"] = true,
+		},
+		
+		["DetailsFramework"] = {
+			["SetEnvironment"] = true,
+		},
+
+		["WeakAuras"] = {
+			["Add"] = true,
+			["AddMany"] = true,
+			["Delete"] = true,
+			["NewAura"] = true,
+		},
+		
+		["C_GuildInfo"] = {
+			["RemoveFromGuild"] = true,
+		},
+		
+		
+		--block mail, trades, action house, banks
+		["C_AuctionHouse"] 	= true,
+		["C_Bank"] = true,
+		["C_GuildBank"] = true,
+		["SetSendMailMoney"] = true,
+		["SendMail"]		= true,
+		["SetTradeMoney"]	= true,
+		["AddTradeMoney"]	= true,
+		["PickupTradeMoney"]	= true,
+		["PickupPlayerMoney"]	= true,
+		["AcceptTrade"]		= true,
+
+		--frames
+		["BankFrame"] 		= true,
+		["TradeFrame"]		= true,
+		["GuildBankFrame"] 	= true,
+		["MailFrame"]		= true,
+		["EnumerateFrames"] = true,
+
+		--block run code inside code
+		["RunScript"] = true,
+		["securecall"] = true,
+		["getfenv"] = true,
+		["getfenv"] = true,
+		["loadstring"] = true,
+		["pcall"] = true,
+		["xpcall"] = true,
+		["getglobal"] = true,
+		["setmetatable"] = true,
+		["DevTools_DumpCommand"] = true,
+
+		--avoid creating macros
+		["SetBindingMacro"] = true,
+		["CreateMacro"] = true,
+		["EditMacro"] = true,
+		["hash_SlashCmdList"] = true,
+		["SlashCmdList"] = true,
+
+		--block guild commands
+		["GuildDisband"] = true,
+		["GuildUninvite"] = true,
+
+		--other things
+		["C_GMTicketInfo"] = true,
+
+		--deny messing addons with script support
+		["PlaterDB"] = true,
+		["_detalhes_global"] = true,
+		["WeakAurasSaved"] = true,
 	}
 	
-	local functionFilter = setmetatable ({}, {__index = function (env, key)
-		if (key == "_G") then
-			return env
-			
-		elseif (blockedFunctions [key] or privateFunctions [key]) then
-			return nil
-			
-		else	
-			return _G [key]
+	--UNUSED (for now)
+	--this allows full shadowing on 'Plater' global with the filter above
+	local function buildShadowTable(privateFunctionsTable, tableKey, shadowTable)
+		if not privateFunctionsTable then return end
+		shadowTable = shadowTable or {}
+		
+		--ViragDevTool_AddData({privateFunctionsTable, tableKey, shadowTable}, "buildShadowTable")
+		local shadowValuesTable = {}
+		if tableKey then
+			shadowTable[tableKey] = {}
+			shadowTable = shadowTable[tableKey]
 		end
-	end})	
+		--ViragDevTool_AddData({tableKey, shadowValuesTable}, "buildShadowTable_tables")
+		for key, value in pairs(privateFunctionsTable) do
+			--ViragDevTool_AddData({key, value}, "buildShadowTable_ITER")
+			if type(value) == "table" then
+				buildShadowTable(value, key, shadowTable)
+			else
+				--ViragDevTool_AddData({key, value}, "buildShadowTable_ADD")
+				shadowValuesTable [key] = value
+			end
+		end
+		
+		--ViragDevTool_AddData({shadowValuesTable, tableKey}, "buildShadowTable_SET")
+		setmetatable(shadowTable, {
+			__index = function (env, key)
+				--ViragDevTool_AddData({env, key, tableKey, tableKey and _G[tableKey] or _G}, "GET")
+				if shadowValuesTable [key] then -- if true, don't return value
+					return nil
+				else
+					return rawget(tableKey and _G[tableKey] or _G, key)
+				end
+			end,
+			
+			__newindex = function (t, k, v)
+				--ViragDevTool_AddData({t, k, v, tableKey, tableKey and _G[tableKey] or _G}, "SET")
+				if shadowValuesTable [k] ~= nil then -- if in the list: don't overwrite
+					error ("'" .. tableKey .. "." .. k .. "' is protected and may not be overwritten.")
+				else
+					rawset(tableKey and _G[tableKey] or _G, k, v)
+				end
+			end,
+		})
+		
+		--ViragDevTool_AddData({shadowTable}, "buildShadowTable_return")
+		return shadowTable
+	end
+	
+	local ShadowTable = nil
+	local getShadowTable = function()
+		if not ShadowTable then
+			ShadowTable = buildShadowTable(privateFunctions)
+		end
+		return ShadowTable
+	end
+	
+	local platerModEnvironment = {} -- needed for DF:SetEnvironment to have a common mod/script environment in Plater
+	local platerModEnvironment2 = getShadowTable()
+	local function SetPlaterEnvironment(func)
+		_G.setfenv(func, platerModEnvironment2)
+	end
 
 	function Plater.WipeAndRecompileAllScripts (scriptType, noHotReload)
 		if (scriptType == "script") then
@@ -9368,7 +9532,13 @@ end
 				Plater:Msg ("failed to compile destructor for script " .. scriptObject.Name .. ": " .. errortext)
 			else
 				--store the function to execute
-				setfenv (compiledScript, functionFilter)
+				--setfenv (compiledScript, functionFilter)
+				if not Plater.db.profile.shadowMode then
+					DF:SetEnvironment(compiledScript, nil, platerModEnvironment)
+				elseif Plater.db.profile.shadowMode == 1 then
+					SetPlaterEnvironment(compiledScript)
+				end
+				
 				local func = compiledScript()
 				
 				--iterate among all nameplates
@@ -9407,18 +9577,19 @@ end
 		--check if the script is valid and if is enabled
 		if (not scriptObject) then
 			return
-			
-		elseif (not scriptObject.Enabled) then
-			--check if this hook is currently loaded
+		end
+		
+		if not scriptObject.scriptId then
+			scriptObject.scriptId = tostring(scriptObject)
+		end
+		
+		--check if this hook is currently loaded
+		if (not scriptObject.Enabled) then
 			if (Plater.CurrentlyLoadedHooks [scriptObject.scriptId]) then
 				Plater.CurrentlyLoadedHooks [scriptObject.scriptId] = false
 				Plater.RunDestructorForHook (scriptObject)
 			end
 			return
-		end
-		
-		if not scriptObject.scriptId then
-			scriptObject.scriptId = tostring(scriptObject)
 		end
 		
 		do --check integrity
@@ -9523,7 +9694,13 @@ end
 					Plater.DestructorScriptHooks [scriptObject.scriptId] = globalScriptObject
 				else
 					--store the function to execute inside the global script object
-					setfenv (compiledScript, functionFilter)
+					--setfenv (compiledScript, functionFilter)
+					if not Plater.db.profile.shadowMode then
+						DF:SetEnvironment(compiledScript, nil, platerModEnvironment)
+					elseif Plater.db.profile.shadowMode == 1 then
+						SetPlaterEnvironment(compiledScript)
+					end
+					
 					globalScriptObject [hookName] = compiledScript()
 					
 					--insert the script in the global script container, no need to check if already exists, hook containers cache are cleaned before script compile
@@ -9614,7 +9791,12 @@ end
 				Plater:Msg ("failed to compile " .. scriptType .. " for script " .. scriptObject.Name .. ": " .. errortext)
 			else
 				--get the function to execute
-				setfenv (compiledScript, functionFilter)
+				--setfenv (compiledScript, functionFilter)
+				if not Plater.db.profile.shadowMode then
+					DF:SetEnvironment(compiledScript, nil, platerModEnvironment)
+				elseif Plater.db.profile.shadowMode == 1 then
+					SetPlaterEnvironment(compiledScript)
+				end
 				scriptFunctions [scriptType] = compiledScript()
 			end
 		end
@@ -9678,8 +9860,9 @@ end
 					}
 					mainScriptTable [triggerId] = globalScriptObject
 					
-				else --hot reload
+				else --hot reload and update
 					globalScriptObject.HotReload = globalScriptObject.HotReload + 1
+					globalScriptObject.DBScriptObject = scriptObject
 					
 				end
 				
@@ -10625,6 +10808,49 @@ function SlashCmdList.PLATER (msg, editbox)
 		end
 	
 		return
+
+	elseif (msg == "rare") then
+		local waitTick = function(tickerObject)
+			for _, plateFrame in ipairs (Plater.GetAllShownPlates()) do
+				local unitClassification = UnitClassification(plateFrame.unitFrame[MEMBER_UNITID])
+				if (unitClassification == "rareelite") then
+					FlashClientIcon()
+					Plater:Msg("(debug) rare spawned!")
+				end
+			end
+		end
+
+		if (not Plater.rare_ticker) then
+			Plater:Msg("Plater will flash the taskbar wow icon when a rare spawns.")
+			Plater.rare_ticker = _G.C_Timer.NewTicker(3, waitTick)
+		else
+			Plater.rare_ticker:Cancel()
+			Plater.rare_ticker = nil
+			Plater:Msg("Plater stopped looking for rares.")
+		end
+		
+		return
+	
+	elseif (msg == "profstart") then
+		Plater.EnableProfiling()
+		
+		return
+	
+	elseif (msg == "profstartcore") then
+		Plater.EnableProfiling(true)
+		
+		return
+	
+	elseif (msg == "profstop") then
+		Plater.DisableProfiling()
+		
+		return
+	
+	elseif (msg == "profprint") then
+		Plater.ShowPerfData()
+		
+		return
+	
 	end
 	
 	Plater.OpenOptionsPanel()
