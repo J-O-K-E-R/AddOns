@@ -1,10 +1,28 @@
-lightweight tag 2e15d1d46932fbc28f93dd126cb9e1c2224d41ca Plater-v9.0.1.319-Retail
+lightweight tag e966040d83f5fbf1cc84cb2f515732ab0c363764 Plater-v9.0.1.320-Retail
 Author:	Continuity <continuity@gmx.net>
-Date:	Mon Nov 23 22:22:13 2020 +0100
+Date:	Thu Nov 26 22:18:10 2020 +0100
 
-commit 2e15d1d46932fbc28f93dd126cb9e1c2224d41ca
+commit e966040d83f5fbf1cc84cb2f515732ab0c363764
 Author: Continuity <continuity@gmx.net>
-Date:   Mon Nov 23 22:22:13 2020 +0100
+Date:   Thu Nov 26 22:18:10 2020 +0100
 
-    - regression fix
+    - updating focus alpha behavior to be consistent with target behavior
+
+commit 33451b5c48079ef8336eac86600bc8e87d01bc60
+Author: Continuity <continuity@gmx.net>
+Date:   Wed Nov 25 22:04:25 2020 +0100
+
+    - fixing widgets
+
+commit 99e1ea7c7a6110dee38bab9d14f557420d1ab979
+Author: Continuity <continuity@gmx.net>
+Date:   Wed Nov 25 01:35:12 2020 +0100
+
+    - failsafe for health max update workaround
+
+commit 77d8b9b2d43ce3808a96570ee7d95f91f07421db
+Author: Continuity <continuity@gmx.net>
+Date:   Wed Nov 25 01:20:37 2020 +0100
+
+    - some fixes for better wodget behavior
 

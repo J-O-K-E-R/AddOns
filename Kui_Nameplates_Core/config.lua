@@ -29,6 +29,7 @@ local DEFAULT_BAR = 'Kui status bar'
 local default_config = {
     bar_texture = DEFAULT_BAR,
     bar_animation = 3,
+    bar_spark = true, -- NEX XXX requires reload
     combat_hostile = 1,
     combat_friendly = 1,
     ignore_uiscale = false,
@@ -964,21 +965,33 @@ function core:InitialiseConfig()
     end
     --@end-alpha@]=]
 
-    if KuiNameplatesCoreSaved and
-       not KuiNameplatesCoreSaved['226_AURAS_TRANSITION']
-    then
-        -- XXX TEMP 2.26.x
-        -- rewrite old auras_cd/auras_count vars on all profiles where set
-        local function upd(prefix,profile)
-            local px = tonumber(profile[prefix..'_point_x'] or default_config[prefix..'_point_x'])
-            local py = tonumber(profile[prefix..'_point_y'] or default_config[prefix..'_point_y'])
-            profile[prefix..'_point'] = px * py
-            profile[prefix..'_x'] = tonumber(profile[prefix..'_offset_x'])
-            profile[prefix..'_y'] = tonumber(profile[prefix..'_offset_y'])
+    if KuiNameplatesCoreSaved then
+        -- XXX TEMP 2.27
+        if not KuiNameplatesCoreSaved['226_AURAS_TRANSITION'] then
+            -- rewrite old auras_cd/auras_count vars on all profiles where set
+            local function upd(prefix,profile)
+                local px = tonumber(profile[prefix..'_point_x'] or default_config[prefix..'_point_x'])
+                local py = tonumber(profile[prefix..'_point_y'] or default_config[prefix..'_point_y'])
+                profile[prefix..'_point'] = px * py
+                profile[prefix..'_x'] = tonumber(profile[prefix..'_offset_x'])
+                profile[prefix..'_y'] = tonumber(profile[prefix..'_offset_y'])
+            end
+            for _,profile in pairs(KuiNameplatesCoreSaved.profiles) do
+                upd('auras_cd',profile)
+                upd('auras_count',profile)
+            end
         end
-        for _,profile in pairs(KuiNameplatesCoreSaved.profiles) do
-            upd('auras_cd',profile)
-            upd('auras_count',profile)
+        if not KuiNameplatesCoreSaved['226_TARGET_SIZE'] then
+            -- disable frame_target_size on extant profiles if
+            -- frame_{width/height} is greater than the target size
+            for _,profile in pairs(KuiNameplatesCoreSaved.profiles) do
+                if (profile.frame_target_size or profile.frame_target_size == nil) and
+                   ((profile.frame_width and profile.frame_width > (profile.frame_width_target or default_config.frame_width_target)) or
+                   (profile.frame_height and profile.frame_height > (profile.frame_height_target or default_config.frame_height_target)))
+                then
+                    profile.frame_target_size = false
+                end
+            end
         end
     end
 
@@ -986,7 +999,9 @@ function core:InitialiseConfig()
     self.config:RegisterConfigChanged(self,'ConfigChanged')
     UpdateProfile()
 
-    KuiNameplatesCoreSaved['226_AURAS_TRANSITION'] = true -- XXX TEMP 2.26.x
+    -- XXX TEMP 2.27
+    KuiNameplatesCoreSaved['226_AURAS_TRANSITION'] = true
+    KuiNameplatesCoreSaved['226_TARGET_SIZE'] = true
 
     -- run config loaded functions
     for k,f in pairs(configLoaded) do
