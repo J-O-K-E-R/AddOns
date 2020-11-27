@@ -1,5 +1,5 @@
-## Interface: 90001
-## Version: v1.9
+## Interface: 90002
+## Version: v2.0
 ## Title: BlockChinese
 ## Notes: Blocks Chinese Chat
 ## Author: Ketho @ EU-Boulderfist

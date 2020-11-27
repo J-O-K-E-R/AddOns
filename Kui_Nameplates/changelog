@@ -1,21 +1,21 @@
-
-* fix import/export/dump slash commands
-
-* enable class power on holy/prot paladins
-* show class powers on any target
-
-* fix lua error when opening bar texture dropdown
-
-* fix lua error when forbidden nameplates are created
-* fix config page copy/reset
-
-* increase frame glow maximum brightness
-* reduce frame shadow alpha slightly
+* add quest icon
+* add option to resize the current target
+* add option to disable resizing of frames flagged as minus
+* add options for raid icon size and position
+* add options for frame clickbox padding
+* add options to show/hide class powers on friendly or hostile targets
+* add options to resize frame glow for target and threat
+* add classpowers_y,classpowers_y_nameonly,classpowers_y_personal (not exposed)
+* add spark to healthbar
+* move classpowers on personal to bottom by default
+* move name text slightly
 * change default frame sizes
-* increase class powers bar size
-* fix global scale doesn't apply to class powers or boss mods when changed
-* fix global scale doesn't apply to class powers bar
-* fix lua error when creating class powers bar
-* (beta/prepatch) fix default nameplates become visible sometimes
+* normal frames with hidden names no longer use frame_height_minus
+* update locales, add esES
+* fix combo points aren't shown in cat form
+* fix use_blizzard_powers is inconsistent (maybe)
+* correctly update level/health text position on threat change
+* remove castbar_shield
+* remove cvar_max_distance (disabled on client)
 * bump toc
 
