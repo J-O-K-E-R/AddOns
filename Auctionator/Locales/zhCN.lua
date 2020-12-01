@@ -192,7 +192,6 @@ L["NAME"] = "名称"
 L["NEXT_SCAN_MESSAGE"] = "再过 %s 分 %s 秒可以开始完整扫描。"
 L["NO_RESULTS"] = "没有找到结果。"
 L["NONE"] = "无"
---[[Translation missing --]]
 L["NUMBER_SEPARATOR"] = ","
 L["OPEN_ADDON_OPTIONS"] = "打开插件设定选项"
 L["OWNED_COLUMN"] = "我卖的?"

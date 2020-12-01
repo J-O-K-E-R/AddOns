@@ -198,7 +198,7 @@ L["NEXT_SCAN_MESSAGE"] = [=[Se podrá iniciar un escaneo completo en %s minutos 
 ]=]
 L["NO_RESULTS"] = "No se han encontrado resultados."
 L["NONE"] = "Ninguno"
-L["NUMBER_SEPARATOR"] = ","
+L["NUMBER_SEPARATOR"] = "."
 L["OPEN_ADDON_OPTIONS"] = "Abrir las opciones del addon"
 L["OWNED_COLUMN"] = "¿Propiedad?"
 L["PERCENTAGE"] = "Porcentaje"
