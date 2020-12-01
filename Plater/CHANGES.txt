@@ -1,28 +1,34 @@
-lightweight tag e966040d83f5fbf1cc84cb2f515732ab0c363764 Plater-v9.0.1.320-Retail
+lightweight tag 11ce1ecd18f817413140d629ae78ac289ef348fd Plater-v9.0.1.321-Retail
 Author:	Continuity <continuity@gmx.net>
-Date:	Thu Nov 26 22:18:10 2020 +0100
+Date:	Sat Nov 28 14:25:46 2020 +0100
 
-commit e966040d83f5fbf1cc84cb2f515732ab0c363764
+commit 11ce1ecd18f817413140d629ae78ac289ef348fd
 Author: Continuity <continuity@gmx.net>
-Date:   Thu Nov 26 22:18:10 2020 +0100
+Date:   Sat Nov 28 14:25:46 2020 +0100
 
-    - updating focus alpha behavior to be consistent with target behavior
+    - changelog update
 
-commit 33451b5c48079ef8336eac86600bc8e87d01bc60
+commit 12b4113e6b9342a09d7e83e70d5548ba6d6e05f0
 Author: Continuity <continuity@gmx.net>
-Date:   Wed Nov 25 22:04:25 2020 +0100
+Date:   Sat Nov 28 14:19:36 2020 +0100
 
-    - fixing widgets
+    - one las condemn
 
-commit 99e1ea7c7a6110dee38bab9d14f557420d1ab979
+commit 860639cdffeddcef2aa356db5b4475df07281531
+Author: Tercio Jose <terciob19@hotmail.com>
+Date:   Fri Nov 27 17:03:50 2020 -0300
+
+    Fix script, update framework
+
+commit 3a9ae43cfc9654feb05c46d0724a40e370314566
 Author: Continuity <continuity@gmx.net>
-Date:   Wed Nov 25 01:35:12 2020 +0100
+Date:   Fri Nov 27 13:07:58 2020 +0100
 
-    - failsafe for health max update workaround
+    - another round of condemn
 
-commit 77d8b9b2d43ce3808a96570ee7d95f91f07421db
+commit 3723223379d6e18b538d476081cd49914e4bd555
 Author: Continuity <continuity@gmx.net>
-Date:   Wed Nov 25 01:20:37 2020 +0100
+Date:   Fri Nov 27 12:48:37 2020 +0100
 
-    - some fixes for better wodget behavior
+    - fixing Condemn execute for warriors
 
