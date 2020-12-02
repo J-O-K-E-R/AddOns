@@ -1,10 +1,11 @@
 # BigWigs
 
-## [v188.1](https://github.com/BigWigsMods/BigWigs/tree/v188.1) (2020-11-23)
-[Full Changelog](https://github.com/BigWigsMods/BigWigs/compare/v188...v188.1) [Previous Releases](https://github.com/BigWigsMods/BigWigs/releases)
+## [v188.2](https://github.com/BigWigsMods/BigWigs/tree/v188.2) (2020-12-02)
+[Full Changelog](https://github.com/BigWigsMods/BigWigs/compare/v188.1...v188.2) [Previous Releases](https://github.com/BigWigsMods/BigWigs/releases)
 
 - bump version  
-- CastleNathria/Sludgefist: Add a bar for Fractured Boulder, Add Gruesome Rage warning, change icon to Primary for Chain Slam  
-- CastleNathria/Shriekwing: Remove an unused spell  
-- Update deDE (#863)  
-- Update deDE (#862)  
+- Media: Remove some old compat code  
+- Loader: Fix a regression from 83e56e39d8b84f06f858427deaa298c7ef23624e breaking the display of DBM users in the version check  
+- Update zhCN (#866)  
+- Update deDE (#865)  
+- CastleNathria: Add locale files  
