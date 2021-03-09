@@ -74,6 +74,9 @@
 	local TheNightfallen = GetFactionInfoByID (1859) or "1"
 	local TheWardens = GetFactionInfoByID (1894) or "1"
 
+	local SPELLID_SANGUINE_HEAL = 226510
+	local sanguineActorName = GetSpellInfo(SPELLID_SANGUINE_HEAL)
+
 	local IsFactionNpc = {
 		[KirinTor] = true,
 		[Valarjar] = true,
@@ -217,28 +220,27 @@
 		
 			--> � um player
 			if (_bit_band (flag, OBJECT_TYPE_PLAYER) ~= 0) then
-			
+				
 				if (not _detalhes.ignore_nicktag) then
 					novo_objeto.displayName = _detalhes:GetNickname (nome, false, true) --> serial, default, silent
+					if (novo_objeto.displayName and novo_objeto.displayName ~= "") then
+						--don't display empty nicknames
+						if (novo_objeto.displayName:find(" ")) then
+							if (_detalhes.remove_realm_from_name) then
+								novo_objeto.displayName = nome:gsub (("%-.*"), "")
+							else
+								novo_objeto.displayName = nome
+							end
+						end
+					end
 				end
+
 				if (not novo_objeto.displayName) then
 					if (_detalhes.remove_realm_from_name) then
 						novo_objeto.displayName = nome:gsub (("%-.*"), "")
 					else
 						novo_objeto.displayName = nome
-					end				
-					--[=[
-				
-					if (_IsInInstance() and _detalhes.remove_realm_from_name) then
-						novo_objeto.displayName = nome:gsub (("%-.*"), "")
-						
-					elseif (_detalhes.remove_realm_from_name) then
-						novo_objeto.displayName = nome:gsub (("%-.*"), "%*") --nome = nil
-						
-					else
-						novo_objeto.displayName = nome
 					end
-					--]=]
 				end
 				
 				if (_detalhes.all_players_are_group or _detalhes.immersion_enabled) then
@@ -426,11 +428,14 @@
 		
 		pet_tooltip_frame:SetOwner (WorldFrame, "ANCHOR_NONE")
 		pet_tooltip_frame:SetHyperlink ("unit:" .. serial or "")
+
+		Details.tabela_vigente.raid_roster_indexed = Details.tabela_vigente.raid_roster_indexed or {}
 		
 		local line1 = _G ["DetailsPetOwnerFinderTextLeft2"]
 		local text1 = line1 and line1:GetText()
 		if (text1 and text1 ~= "") then
-			for playerName, _ in _pairs (_detalhes.tabela_vigente.raid_roster) do
+			for _, playerName in ipairs(Details.tabela_vigente.raid_roster_indexed) do
+			--for playerName, _ in _pairs (_detalhes.tabela_vigente.raid_roster) do
 				local pName = playerName
 				playerName = playerName:gsub ("%-.*", "") --remove realm name
 
@@ -457,7 +462,8 @@
 		local line2 = _G ["DetailsPetOwnerFinderTextLeft3"]
 		local text2 = line2 and line2:GetText()
 		if (text2 and text2 ~= "") then
-			for playerName, _ in _pairs (_detalhes.tabela_vigente.raid_roster) do
+			--for playerName, _ in _pairs (_detalhes.tabela_vigente.raid_roster) do
+			for _, playerName in ipairs(Details.tabela_vigente.raid_roster_indexed) do
 				local pName = playerName
 				playerName = playerName:gsub ("%-.*", "") --remove realm name
 
@@ -697,6 +703,11 @@
 
 			end
 		
+			--sanguine affix
+			if (nome == sanguineActorName) then
+				novo_objeto.grupo = true
+			end
+
 	------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	-- grava o objeto no mapa do container
 			local size = #self._ActorTable+1

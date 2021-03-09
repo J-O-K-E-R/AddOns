@@ -318,7 +318,6 @@ function text:Initialise()
     local health_text_friend_dmg = text:CreateDropDown('health_text_friend_dmg')
     local health_text_hostile_max = text:CreateDropDown('health_text_hostile_max')
     local health_text_hostile_dmg = text:CreateDropDown('health_text_hostile_dmg')
-    local health_text_percent_symbol = text:CreateCheckBox('health_text_percent_symbol',true)
 
     health_text_friend_max.SelectTable = health_text_SelectTable
     health_text_friend_dmg.SelectTable = health_text_SelectTable
@@ -331,13 +330,11 @@ function text:Initialise()
     health_text_friend_dmg:SetPoint('LEFT',health_text_friend_max,'RIGHT',10,0)
     health_text_hostile_max:SetPoint('TOPLEFT',health_text_friend_max,'BOTTOMLEFT')
     health_text_hostile_dmg:SetPoint('LEFT',health_text_hostile_max,'RIGHT',10,0)
-    health_text_percent_symbol:SetPoint('TOPLEFT',health_text_hostile_max,'BOTTOMLEFT',0,-5)
 
     health_text_friend_max.enabled = function(p) return p.health_text end
     health_text_friend_dmg.enabled = health_text_friend_max.enabled
     health_text_hostile_max.enabled = health_text_friend_max.enabled
     health_text_hostile_dmg.enabled = health_text_friend_max.enabled
-    health_text_percent_symbol.enabled = health_text_friend_max.enabled
 
     local nc_sep = self:CreateSeparator('name_colour_sep')
     local nc_wb = self:CreateCheckBox('name_colour_white_in_bar_mode')
@@ -364,7 +361,7 @@ function text:Initialise()
         return p.name_text and not p.class_colour_enemy_names
     end
 
-    nc_sep:SetPoint('TOP',0,-375)
+    nc_sep:SetPoint('TOP',0,-350)
     nc_wb:SetPoint('TOP',nc_sep,'BOTTOM',0,-10)
     nc_wb:SetPoint('LEFT',10,0)
     nc_nh:SetPoint('TOPLEFT',nc_wb,'BOTTOMLEFT',4,0)
@@ -635,6 +632,7 @@ function castbars:Initialise()
     local castbar_personal = self:CreateCheckBox('castbar_showpersonal')
     local castbar_icon = self:CreateCheckBox('castbar_icon')
     local castbar_name = self:CreateCheckBox('castbar_name')
+    local castbar_shield = self:CreateCheckBox('castbar_shield')
     local castbar_all = self:CreateCheckBox('castbar_showall')
     local castbar_friend = self:CreateCheckBox('castbar_showfriend',true)
     local castbar_enemy = self:CreateCheckBox('castbar_showenemy',true)
@@ -655,7 +653,9 @@ function castbars:Initialise()
 
     castbar_enable:SetPoint('TOPLEFT',10,-10)
     castbar_name:SetPoint('TOPLEFT',castbar_enable,'BOTTOMLEFT')
-    castbar_icon:SetPoint('TOPLEFT',castbar_name,'BOTTOMLEFT')
+    castbar_shield:SetPoint('TOPLEFT',castbar_name,'BOTTOMLEFT')
+
+    castbar_icon:SetPoint('TOPLEFT',castbar_shield,'BOTTOMLEFT',0,0)
 
     castbar_personal:SetPoint('TOPLEFT',castbar_icon,'BOTTOMLEFT',0,-10)
     castbar_all:SetPoint('TOPLEFT',castbar_personal,'BOTTOMLEFT')
@@ -672,7 +672,7 @@ function castbars:Initialise()
     castbar_detach_height:SetWidth(120)
     castbar_detach_offset:SetWidth(120)
 
-    castbar_layout_sep:SetPoint('TOP',0,-230)
+    castbar_layout_sep:SetPoint('TOP',0,-260)
     castbar_detach:SetPoint('LEFT',10,0)
     castbar_detach:SetPoint('TOP',castbar_layout_sep,'BOTTOM',0,-10)
     castbar_detach_combine:SetPoint('TOPLEFT',castbar_detach,'BOTTOMLEFT',10,0)
@@ -693,6 +693,7 @@ function castbars:Initialise()
         return p.castbar_icon and (not p.castbar_detach or not p.castbar_detach_combine)
     end
     castbar_name.enabled = castbar_colour.enabled
+    castbar_shield.enabled = castbar_colour.enabled
     castbar_all.enabled = castbar_colour.enabled
     castbar_height.enabled = function(p) return p.castbar_enable and not p.castbar_detach end
     castbar_friend.enabled = function(p) return p.castbar_enable and p.castbar_showall end
@@ -768,6 +769,7 @@ function classpowers:Initialise()
     local classpowers_colour_inactive = self:CreateColourPicker('classpowers_colour_inactive')
     local on_friends = self:CreateCheckBox('classpowers_on_friends',true)
     local on_enemies = self:CreateCheckBox('classpowers_on_enemies',true)
+    local classpowers_y = self:CreateSlider('classpowers_y',-50,50,nil,'offset_y')
 
     classpowers_enable:SetPoint('TOPLEFT',10,-10)
     classpowers_on_target:SetPoint('TOPLEFT',classpowers_enable,'BOTTOMLEFT',10,0)
@@ -778,7 +780,8 @@ function classpowers:Initialise()
     classpowers_colour_overflow:SetPoint('TOP',classpowers_colour,'BOTTOM')
     classpowers_colour_inactive:SetPoint('TOP',classpowers_colour_overflow,'BOTTOM')
 
-    classpowers_size:SetPoint('TOP',0,-140)
+    classpowers_size:SetPoint('TOPLEFT',10,-140)
+    classpowers_y:SetPoint('LEFT',classpowers_size,'RIGHT',20,0)
 
     function classpowers_colour:Get()
         -- get colour from current class
@@ -810,6 +813,7 @@ function classpowers:Initialise()
     local function classpowers_enabled(p) return p.classpowers_enable end
     classpowers_on_target.enabled = classpowers_enabled
     classpowers_size.enabled = classpowers_enabled
+    classpowers_y.enabled = classpowers_enabled
     on_friends.enabled = function(p)
         return classpowers_enabled(p) and p.classpowers_on_target
     end

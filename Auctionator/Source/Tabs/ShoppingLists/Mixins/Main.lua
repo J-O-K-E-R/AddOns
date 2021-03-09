@@ -6,6 +6,7 @@ local ListItemSelected = Auctionator.ShoppingLists.Events.ListItemSelected
 local EditListItem = Auctionator.ShoppingLists.Events.EditListItem
 local DialogOpened = Auctionator.ShoppingLists.Events.DialogOpened
 local DialogClosed = Auctionator.ShoppingLists.Events.DialogClosed
+local ShowHistoricalPrices = Auctionator.ShoppingLists.Events.ShowHistoricalPrices
 
 function AuctionatorShoppingListTabMixin:OnLoad()
   Auctionator.Debug.Message("AuctionatorShoppingListTabMixin:OnLoad()")
@@ -17,6 +18,8 @@ function AuctionatorShoppingListTabMixin:OnLoad()
   self:SetUpEditItemDialog()
   self:SetUpExportDialog()
   self:SetUpImportDialog()
+  self:SetUpExportCSVDialog()
+  self:SetUpItemHistoryDialog()
 
   -- Add Item button starts in the default state until a list is selected
   self.AddItem:Disable()
@@ -30,7 +33,7 @@ function AuctionatorShoppingListTabMixin:SetUpEvents()
 
   -- Auctionator Events
   Auctionator.EventBus:RegisterSource(self, "Auctionator Shopping List Tab")
-  Auctionator.EventBus:Register(self, { ListSelected, ListDeleted, ListItemSelected, EditListItem, DialogOpened, DialogClosed })
+  Auctionator.EventBus:Register(self, { ListSelected, ListDeleted, ListItemSelected, EditListItem, DialogOpened, DialogClosed, ShowHistoricalPrices })
 end
 
 function AuctionatorShoppingListTabMixin:SetUpAddItemDialog()
@@ -63,6 +66,18 @@ function AuctionatorShoppingListTabMixin:SetUpImportDialog()
   self.importDialog:SetPoint("CENTER")
 end
 
+function AuctionatorShoppingListTabMixin:SetUpExportCSVDialog()
+  self.exportCSVDialog = CreateFrame("Frame", "AuctionatorCopyTextFrame", self, "AuctionatorExportTextFrame")
+  self.exportCSVDialog:SetPoint("CENTER")
+  self.exportCSVDialog:SetOpeningEvents(DialogOpened, DialogClosed)
+end
+
+function AuctionatorShoppingListTabMixin:SetUpItemHistoryDialog()
+  self.itemHistoryDialog = CreateFrame("Frame", "AuctionatorItemHistoryFrame", self, "AuctionatorItemHistoryTemplate")
+  self.itemHistoryDialog:SetPoint("CENTER")
+  self.itemHistoryDialog:Init()
+end
+
 function AuctionatorShoppingListTabMixin:OnShow()
   if self.selectedList ~= nil then
     self.AddItem:Enable()
@@ -78,20 +93,26 @@ function AuctionatorShoppingListTabMixin:ReceiveEvent(eventName, eventData)
   if eventName == ListSelected then
     self.selectedList = eventData
     self.AddItem:Enable()
-  elseif eventName == ListDeleted and #Auctionator.ShoppingLists.Lists == 0 then
-    -- If no more lists, need to clean up the UI
+  elseif eventName == ListDeleted then
     self.Rename:Disable()
     self.AddItem:Disable()
     self.ManualSearch:Disable()
 
   elseif eventName == DialogOpened then
+    self.isDialogOpen = true
     self.AddItem:Disable()
     self.Export:Disable()
     self.Import:Disable()
+    self.ExportCSV:Disable()
   elseif eventName == DialogClosed then
+    self.isDialogOpen = false
     self.AddItem:Enable()
     self.Export:Enable()
     self.Import:Enable()
+    self.ExportCSV:Enable()
+
+  elseif eventName == ShowHistoricalPrices and not self.isDialogOpen then
+    self.itemHistoryDialog:Show()
 
   elseif eventName == EditListItem then
     self.editingItemIndex = eventData
@@ -140,4 +161,11 @@ end
 
 function AuctionatorShoppingListTabMixin:ExportListsClicked()
   self.exportDialog:Show()
+end
+
+function AuctionatorShoppingListTabMixin:ExportCSVClicked()
+  self.DataProvider:GetCSV(function(result)
+    self.exportCSVDialog:SetExportString(result)
+    self.exportCSVDialog:Show()
+  end)
 end

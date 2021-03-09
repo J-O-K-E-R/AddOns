@@ -1,6 +1,96 @@
 -- We should probably move this into another file too
 local MESSAGES = {
   {
+    Version = "9.0.7",
+    Description = AUCTIONATOR_L_SPLASH_907_DESCRIPTION,
+    Sections = {
+      {
+        Title = AUCTIONATOR_L_SPLASH_907_FEATURES_HEADER,
+        Entries = {
+          AUCTIONATOR_L_SPLASH_907_FEATURES_1,
+          AUCTIONATOR_L_SPLASH_907_FEATURES_2,
+          AUCTIONATOR_L_SPLASH_907_FEATURES_3,
+          AUCTIONATOR_L_SPLASH_907_FEATURES_4,
+        }
+      },
+      {
+        Title = AUCTIONATOR_L_SPLASH_907_UNANNOUNCED_HEADER,
+        Entries = {
+          AUCTIONATOR_L_SPLASH_907_UNANNOUNCED_1,
+        }
+      },
+    }
+  },
+  {
+    Version = "9.0.5",
+    Description = AUCTIONATOR_L_SPLASH_905_DESCRIPTION,
+    Sections = {
+      {
+        Title = AUCTIONATOR_L_SPLASH_905_UPDATES_HEADER,
+        Entries = {
+          AUCTIONATOR_L_SPLASH_905_UPDATES_1,
+        }
+      },
+    }
+  },
+  {
+    Version = "9.0.4",
+    Description = AUCTIONATOR_L_SPLASH_904_DESCRIPTION,
+    Sections = {
+      {
+        Title = AUCTIONATOR_L_SPLASH_904_FEATURES_HEADER,
+        Entries = {
+          AUCTIONATOR_L_SPLASH_904_FEATURES_1,
+        }
+      },
+    }
+  },
+  {
+    Version = "9.0.3",
+    Description = AUCTIONATOR_L_SPLASH_903_DESCRIPTION,
+    Sections = {
+      {
+        Title = AUCTIONATOR_L_SPLASH_903_FEATURES_HEADER,
+        Entries = {
+          AUCTIONATOR_L_SPLASH_903_FEATURES_1,
+          AUCTIONATOR_L_SPLASH_903_FEATURES_2,
+        }
+      },
+    }
+  },
+  {
+    Version = "9.0.2",
+    Description = AUCTIONATOR_L_SPLASH_902_DESCRIPTION,
+    Sections = {
+      {
+        Title = AUCTIONATOR_L_SPLASH_902_FEATURES_HEADER,
+        Entries = {
+          AUCTIONATOR_L_SPLASH_902_FEATURES_1,
+        }
+      },
+    }
+  },
+  {
+    Version = "9.0.1",
+    Description = AUCTIONATOR_L_SPLASH_901_DESCRIPTION,
+    Sections = {
+      {
+        Title = AUCTIONATOR_L_SPLASH_901_FEATURES_HEADER,
+        Entries = {
+          AUCTIONATOR_L_SPLASH_901_FEATURES_1,
+          AUCTIONATOR_L_SPLASH_901_FEATURES_2,
+        }
+      },
+      {
+        Title = AUCTIONATOR_L_SPLASH_901_CHANGES_HEADER,
+        Entries = {
+          AUCTIONATOR_L_SPLASH_901_CHANGES_1,
+          AUCTIONATOR_L_SPLASH_901_CHANGES_2,
+        }
+      },
+    }
+  },
+  {
     Version = "8.3.4",
     Description = AUCTIONATOR_L_SPLASH_834_DESCRIPTION,
     Sections = {

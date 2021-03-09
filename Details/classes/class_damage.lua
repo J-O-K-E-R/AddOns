@@ -91,6 +91,8 @@
 	
 	local tooltip_temp_table = {}
 
+	local OBJECT_TYPE_FRIENDLY_NPC 	=	0x00000A18
+
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --> exported functions
 
@@ -201,6 +203,20 @@
 							return false
 						end
 						return true
+					end
+				end
+				return false
+			end
+
+			function Details:IsFriendlyNpc()
+				local flag = self.flag_original
+				if (flag) then
+					if (bit.band(flag, 0x00000008) ~= 0) then
+						if (bit.band(flag, 0x00000010) ~= 0) then
+							if (bit.band(flag, 0x00000800) ~= 0) then
+								return true
+							end
+						end
 					end
 				end
 				return false
@@ -330,6 +346,8 @@
 				else
 					if (not is_player_class [actor.classe] and actor.flag_original and _bit_band (actor.flag_original, 0x00000020) ~= 0) then --> neutral
 						return _unpack (Details.class_colors.NEUTRAL)
+					elseif (actor.color) then
+						return _unpack(actor.color)
 					else
 						return _unpack (Details.class_colors [actor.classe or "UNKNOW"])
 					end
@@ -603,10 +621,10 @@
 									end
 								end
 							end
-						end                
-					end             
-				end        
-			end    
+						end            
+					end         
+				end    
+			end
 		end
 
 		table.sort (Targets, Details.Sort2)
@@ -2299,15 +2317,14 @@ function atributo_damage:RefreshWindow (instancia, tabela_do_combate, forcar, ex
 			totalBarIsShown = true
 			
 			if (following and myPos and myPos > instancia.rows_fit_in_window and instancia.barraS[2] < myPos) then
+				conteudo[myPos]:RefreshLine (instancia, lineContainer, whichRowLine, myPos, total, sub_atributo, forcar, keyName, combat_time, percentage_type, use_animations, bars_show_data, bars_brackets, bars_separator) 
+				whichRowLine = whichRowLine+1
 				for i = iter_last-1, instancia.barraS[1], -1 do 
 					if (conteudo[i]) then
 						conteudo[i]:RefreshLine (instancia, lineContainer, whichRowLine, i, total, sub_atributo, forcar, keyName, combat_time, percentage_type, use_animations, bars_show_data, bars_brackets, bars_separator) 
 						whichRowLine = whichRowLine+1
 					end
 				end
-				
-				conteudo[myPos]:RefreshLine (instancia, lineContainer, whichRowLine, myPos, total, sub_atributo, forcar, keyName, combat_time, percentage_type, use_animations, bars_show_data, bars_brackets, bars_separator) 
-				whichRowLine = whichRowLine+1
 			else
 				for i = iter_last, instancia.barraS[1], -1 do 
 					if (conteudo[i]) then
@@ -2318,15 +2335,14 @@ function atributo_damage:RefreshWindow (instancia, tabela_do_combate, forcar, ex
 			end
 		else
 			if (following and myPos and myPos > instancia.rows_fit_in_window and instancia.barraS[2] < myPos) then
+				conteudo[myPos]:RefreshLine (instancia, lineContainer, whichRowLine, myPos, total, sub_atributo, forcar, keyName, combat_time, percentage_type, use_animations, bars_show_data, bars_brackets, bars_separator) 
+				whichRowLine = whichRowLine+1
 				for i = instancia.barraS[2]-1, instancia.barraS[1], -1 do 
 					if (conteudo[i]) then
 						conteudo[i]:RefreshLine (instancia, lineContainer, whichRowLine, i, total, sub_atributo, forcar, keyName, combat_time, percentage_type, use_animations, bars_show_data, bars_brackets, bars_separator) 
 						whichRowLine = whichRowLine+1
 					end
 				end
-				
-				conteudo[myPos]:RefreshLine (instancia, lineContainer, whichRowLine, myPos, total, sub_atributo, forcar, keyName, combat_time, percentage_type, use_animations, bars_show_data, bars_brackets, bars_separator) 
-				whichRowLine = whichRowLine+1
 			else
 				-- /run print (Details:GetInstance(1).barraS[2]) -- vai do 5 ao 1 -- qual barra come�a no 1 -- i = 5 at� 1 -- player 5 atualiza na barra 1 / player 1 atualiza na barra 5
 				for i = instancia.barraS[2], instancia.barraS[1], -1 do 
@@ -4605,12 +4621,10 @@ end
 ------ Detalhe Info Damage Done e Dps
 --local defenses_table = {c = {117/255, 58/255, 0/255}, p = 0}
 --local normal_table = {c = {255/255, 180/255, 0/255, 0.5}, p = 0}
---local multistrike_table = {c = {223/255, 249/255, 45/255, 0.5}, p = 0}
 --local critical_table = {c = {249/255, 74/255, 45/255, 0.5}, p = 0}
 
 local defenses_table = {c = {1, 1, 1, 0.5}, p = 0}
 local normal_table = {c = {1, 1, 1, 0.5}, p = 0}
-local multistrike_table = {c = {1, 1, 1, 0.5}, p = 0}
 local critical_table = {c = {1, 1, 1, 0.5}, p = 0}
 
 local data_table = {}
@@ -4763,10 +4777,8 @@ function atributo_damage:MontaDetalhesDamageDone (spellid, barra, instancia)
 		end
 		
 		gump:SetaDetalheInfoTexto ( index, 100,
-			--Loc ["STRING_GERAL"],
 			cast_string,
 			Loc ["STRING_DAMAGE"]..": "..Details:ToK (esta_magia.total), 
-			--Loc ["STRING_MULTISTRIKE"] .. ": " .. _cstr ("%.1f", esta_magia.counter/esta_magia.m_amt*100) .. "%", 
 			schooltext, --offhand,
 			Loc ["STRING_AVERAGE"] .. ": " .. Details:comma_value (media), 
 			this_dps,
@@ -4845,40 +4857,12 @@ function atributo_damage:MontaDetalhesDamageDone (spellid, barra, instancia)
 			t3[8] = (outros_desvios+erros) .. " / " .. _cstr ("%.1f", porcentagem_defesas) .. "%"
 
 		end
-	
-	--> multistrike
-		--[=[
-			if (esta_magia.m_amt > 0) then
-			
-				local normal_hits = esta_magia.m_amt
-				local normal_dmg = esta_magia.m_dmg
-				
-				local media_normal = normal_dmg/normal_hits
-				local T = (meu_tempo*normal_dmg)/esta_magia.total
-				local P = media/media_normal*100
-				T = P*T/100
-				
-				data[#data+1] = t4
-				multistrike_table.p = esta_magia.m_amt/total_hits*100
-
-				t4[1] = esta_magia.m_amt
-				t4[2] = multistrike_table
-				t4[3] = Loc ["STRING_MULTISTRIKE_HITS"]
-				t4[4] = "On Critical: " .. esta_magia.m_crit
-				t4[5] = "On Normals: " .. (esta_magia.m_amt - esta_magia.m_crit)
-				t4[6] = Loc ["STRING_AVERAGE"] .. ": " .. Details:comma_value (esta_magia.m_dmg/esta_magia.m_amt)
-				t4[7] = Loc ["STRING_DPS"] .. ": " .. Details:comma_value (esta_magia.m_dmg/T)
-				t4[8] = esta_magia.m_amt .. " / " .. _cstr ("%.1f", esta_magia.m_amt/total_hits*100) .. "%"
-
-			end
-		--]=]
 
 	--Details:BuildPlayerDetailsSpellChart()
 	--DetailsPlayerDetailSmallChart.ShowChart (Details.playerDetailWindow.grupos_detalhes [5].bg, info.instancia.showing, info.instancia.showing.cleu_events, self.nome, false, spellid, 1, 2, 3, 4, 5, 6, 7, 8, 15)
 	
 	--> spell damage chart
 	--events: 1 2 3 4 5 6 7 8 15
-		
 	
 	_table_sort (data, Details.Sort1)
 	

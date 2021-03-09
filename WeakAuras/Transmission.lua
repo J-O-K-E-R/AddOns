@@ -1129,7 +1129,7 @@ local function scamCheck(codes, data)
 
   if (data.conditions) then
     for _, condition in ipairs(data.conditions) do
-      if (condition) then
+      if (condition and condition.changes) then
         for _, property in ipairs(condition.changes) do
           if ((property.property == "chat" or property.property == "customcode") and type(property.value) == "table" and property.value.custom) then
             checkCustomCondition(codes, L["%s - Condition Custom Chat"]:format(data.id), property.value.custom);
@@ -1566,12 +1566,8 @@ local function ShowDisplayTooltip(data, children, matchInfo, icon, icons, import
               end
             elseif(trigger.type == "aura2") then
               tinsert(tooltip, {2, L["Trigger:"], L["Aura"], 1, 1, 1, 1, 1, 1});
-            elseif(trigger.type == "event" or trigger.type == "status") then
-              if(trigger.type == "event") then
-                tinsert(tooltip, {2, L["Trigger:"], (Private.event_types[trigger.event] or L["Undefined"]), 1, 1, 1, 1, 1, 1});
-              else
-                tinsert(tooltip, {2, L["Trigger:"], (Private.status_types[trigger.event] or L["Undefined"]), 1, 1, 1, 1, 1, 1});
-              end
+            elseif(Private.category_event_prototype[trigger.type]) then
+              tinsert(tooltip, {2, L["Trigger:"], (Private.event_prototypes[trigger.event].name or L["Undefined"]), 1, 1, 1, 1, 1, 1});
               if(trigger.event == "Combat Log" and trigger.subeventPrefix and trigger.subeventSuffix) then
                 tinsert(tooltip, {2, L["Message type:"], (Private.subevent_prefix_types[trigger.subeventPrefix] or L["Undefined"]).." "..(Private.subevent_suffix_types[trigger.subeventSuffix] or L["Undefined"]), 1, 1, 1, 1, 1, 1});
               end
@@ -1688,7 +1684,7 @@ function WeakAuras.Import(inData, target)
     return nil, "Invalid import data."
   end
   local status, msg = true, ""
-  if type(target) ~= nil then
+  if type(target) ~= 'nil' then
     local targetData
     local uid = type(target) == 'table' and target.uid or target
     if type(uid) == 'string' then
@@ -1827,11 +1823,9 @@ Comm:RegisterComm("WeakAuras", function(prefix, message, distribution, sender)
       local matchInfo = MatchInfo(data, children)
       ShowDisplayTooltip(data, children, matchInfo, icon, icons, sender, true)
     elseif(received.m == "dR") then
-      --if(WeakAuras.linked[received.d]) then
-      TransmitDisplay(received.d, sender);
-    --else
-    --    TransmitError("not authorized", sender);
-    --end
+      if(Private.linked and Private.linked[received.d]) then
+        TransmitDisplay(received.d, sender);
+      end
     elseif(received.m == "dE") then
       tooltipLoading = nil;
       if(received.eM == "dne") then

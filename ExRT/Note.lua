@@ -5,46 +5,43 @@ local VExRT = nil
 local module = ExRT:New("Note",ExRT.L.message)
 local ELib,L = ExRT.lib,ExRT.L
 
-local GetTime, CombatLogGetCurrentEventInfo = GetTime, CombatLogGetCurrentEventInfo
-local string_gsub, strsplit, tonumber, format, string_match, floor, string_find, type = string.gsub, strsplit, tonumber, format, string.match, floor, string.find, type
+local GetTime, GetSpecializationInfo = GetTime, GetSpecializationInfo
+local string_gsub, strsplit, tonumber, format, string_match, floor, string_find, type, string_gmatch = string.gsub, strsplit, tonumber, format, string.match, floor, string.find, type, string.gmatch
 
 local GetSpecialization = GetSpecialization
 if ExRT.isClassic then
 	GetSpecialization = ExRT.NULLfunc
 end
 
-module.db.iconsList = {
-	"|TInterface\\TargetingFrame\\UI-RaidTargetingIcon_1:0|t",
-	"|TInterface\\TargetingFrame\\UI-RaidTargetingIcon_2:0|t",
-	"|TInterface\\TargetingFrame\\UI-RaidTargetingIcon_3:0|t",
-	"|TInterface\\TargetingFrame\\UI-RaidTargetingIcon_4:0|t",
-	"|TInterface\\TargetingFrame\\UI-RaidTargetingIcon_5:0|t",
-	"|TInterface\\TargetingFrame\\UI-RaidTargetingIcon_6:0|t",
-	"|TInterface\\TargetingFrame\\UI-RaidTargetingIcon_7:0|t",
-	"|TInterface\\TargetingFrame\\UI-RaidTargetingIcon_8:0|t",
-}
 module.db.otherIconsList = {
-	{"{"..L.classLocalizate["WARRIOR"] .."}","|TInterface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES:16:16:0:0:256:256:0:64:0:64|t","Interface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES",0,0.25,0,0.25},
-	{"{"..L.classLocalizate["PALADIN"] .."}","|TInterface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES:16:16:0:0:256:256:0:64:128:192|t","Interface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES",0,0.25,0.5,0.75},
-	{"{"..L.classLocalizate["HUNTER"] .."}","|TInterface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES:16:16:0:0:256:256:0:64:64:128|t","Interface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES",0,0.25,0.25,0.5},
-	{"{"..L.classLocalizate["ROGUE"] .."}","|TInterface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES:16:16:0:0:256:256:127:190:0:64|t","Interface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES",0.49609375,0.7421875,0,0.25},
-	{"{"..L.classLocalizate["PRIEST"] .."}","|TInterface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES:16:16:0:0:256:256:127:190:64:128|t","Interface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES",0.49609375,0.7421875,0.25,0.5},
-	{"{"..L.classLocalizate["DEATHKNIGHT"] .."}","|TInterface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES:16:16:0:0:256:256:64:128:128:192|t","Interface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES",0.25,0.5,0.5,0.75},
-	{"{"..L.classLocalizate["SHAMAN"] .."}","|TInterface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES:16:16:0:0:256:256:64:127:64:128|t","Interface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES",0.25,0.49609375,0.25,0.5},
-	{"{"..L.classLocalizate["MAGE"] .."}","|TInterface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES:16:16:0:0:256:256:64:127:0:64|t","Interface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES",0.25,0.49609375,0,0.25},
-	{"{"..L.classLocalizate["WARLOCK"] .."}","|TInterface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES:16:16:0:0:256:256:190:253:64:128|t","Interface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES",0.7421875,0.98828125,0.25,0.5},
-	{"{"..L.classLocalizate["MONK"] .."}","|TInterface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES:16:16:0:0:256:256:128:189:128:192|t","Interface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES",0.5,0.73828125,0.5,0.75},
-	{"{"..L.classLocalizate["DRUID"] .."}","|TInterface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES:16:16:0:0:256:256:190:253:0:64|t","Interface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES",0.7421875,0.98828125,0,0.25},
-	{"{"..L.classLocalizate["DEMONHUNTER"] .."}","|TInterface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES:16:16:0:0:256:256:190:253:128:192|t","Interface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES",0.7421875,0.98828125,0.5,0.75},
-	{"{wow}","|TInterface\\FriendsFrame\\Battlenet-WoWicon:16|t","Interface\\FriendsFrame\\Battlenet-WoWicon"},
-	{"{d3}","|TInterface\\FriendsFrame\\Battlenet-D3icon:16|t","Interface\\FriendsFrame\\Battlenet-D3icon"},
-	{"{sc2}","|TInterface\\FriendsFrame\\Battlenet-Sc2icon:16|t","Interface\\FriendsFrame\\Battlenet-Sc2icon"},
-	{"{bnet}","|TInterface\\FriendsFrame\\Battlenet-Portrait:16|t","Interface\\FriendsFrame\\Battlenet-Portrait"},
-	{"{alliance}","|TInterface\\FriendsFrame\\PlusManz-Alliance:16|t","Interface\\FriendsFrame\\PlusManz-Alliance"},
-	{"{horde}","|TInterface\\FriendsFrame\\PlusManz-Horde:16|t","Interface\\FriendsFrame\\PlusManz-Horde"},
-	{"{tank}","|TInterface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES:16:16:0:0:64:64:0:19:22:41|t","Interface\\LFGFrame\\UI-LFG-ICON-ROLES",0,0.26171875,0.26171875,0.5234375},
-	{"{healer}","|TInterface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES:16:16:0:0:64:64:20:39:1:20|t","Interface\\LFGFrame\\UI-LFG-ICON-ROLES",0.26171875,0.5234375,0,0.26171875},
-	{"{dps}","|TInterface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES:16:16:0:0:64:64:20:39:22:41|t","Interface\\LFGFrame\\UI-LFG-ICON-ROLES",0.26171875,0.5234375,0.26171875,0.5234375},
+	{"{"..L.classLocalizate["WARRIOR"] .."}",crop=":16:16:0:0:256:256:0:64:0:64","Interface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES",0,0.25,0,0.25},
+	{"{"..L.classLocalizate["PALADIN"] .."}",crop=":16:16:0:0:256:256:0:64:128:192","Interface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES",0,0.25,0.5,0.75},
+	{"{"..L.classLocalizate["HUNTER"] .."}",crop=":16:16:0:0:256:256:0:64:64:128","Interface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES",0,0.25,0.25,0.5},
+	{"{"..L.classLocalizate["ROGUE"] .."}",crop=":16:16:0:0:256:256:127:190:0:64","Interface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES",0.49609375,0.7421875,0,0.25},
+	{"{"..L.classLocalizate["PRIEST"] .."}",crop=":16:16:0:0:256:256:127:190:64:128","Interface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES",0.49609375,0.7421875,0.25,0.5},
+	{"{"..L.classLocalizate["DEATHKNIGHT"] .."}",crop=":16:16:0:0:256:256:64:128:128:192","Interface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES",0.25,0.5,0.5,0.75},
+	{"{"..L.classLocalizate["SHAMAN"] .."}",crop=":16:16:0:0:256:256:64:127:64:128","Interface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES",0.25,0.49609375,0.25,0.5},
+	{"{"..L.classLocalizate["MAGE"] .."}",crop=":16:16:0:0:256:256:64:127:0:64","Interface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES",0.25,0.49609375,0,0.25},
+	{"{"..L.classLocalizate["WARLOCK"] .."}",crop=":16:16:0:0:256:256:190:253:64:128","Interface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES",0.7421875,0.98828125,0.25,0.5},
+	{"{"..L.classLocalizate["MONK"] .."}",crop=":16:16:0:0:256:256:128:189:128:192","Interface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES",0.5,0.73828125,0.5,0.75},
+	{"{"..L.classLocalizate["DRUID"] .."}",crop=":16:16:0:0:256:256:190:253:0:64","Interface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES",0.7421875,0.98828125,0,0.25},
+	{"{"..L.classLocalizate["DEMONHUNTER"] .."}",crop=":16:16:0:0:256:256:190:253:128:192","Interface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES",0.7421875,0.98828125,0.5,0.75},
+	{"{wow}","Interface\\FriendsFrame\\Battlenet-WoWicon"},
+	{"{d3}","Interface\\FriendsFrame\\Battlenet-D3icon"},
+	{"{sc2}","Interface\\FriendsFrame\\Battlenet-Sc2icon"},
+	{"{bnet}","Interface\\FriendsFrame\\Battlenet-Portrait"},
+	{"{bnet1}","Interface\\FriendsFrame\\Battlenet-Battleneticon"},
+	{"{alliance}","Interface\\FriendsFrame\\PlusManz-Alliance"},
+	{"{horde}","Interface\\FriendsFrame\\PlusManz-Horde"},
+	{"{hots}","Interface\\FriendsFrame\\Battlenet-HotSicon"},
+	{"{ow}","Interface\\FriendsFrame\\Battlenet-Overwatchicon"},
+	{"{sc1}","Interface\\FriendsFrame\\Battlenet-SCicon"},
+	{"{barcade}","Interface\\FriendsFrame\\Battlenet-BlizzardArcadeCollectionicon"},
+	{"{crashb}","Interface\\FriendsFrame\\Battlenet-CrashBandicoot4icon"},
+
+	{"{tank}",path="Interface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES",crop=":16:16:0:0:64:64:0:19:22:41","Interface\\LFGFrame\\UI-LFG-ICON-ROLES",0,0.26171875,0.26171875,0.5234375},
+	{"{healer}",path="Interface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES",crop=":16:16:0:0:64:64:20:39:1:20","Interface\\LFGFrame\\UI-LFG-ICON-ROLES",0.26171875,0.5234375,0,0.26171875},
+	{"{dps}",path="Interface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES",crop=":16:16:0:0:64:64:20:39:22:41","Interface\\LFGFrame\\UI-LFG-ICON-ROLES",0.26171875,0.5234375,0.26171875,0.5234375},
 }
 
 if ExRT.isClassic then
@@ -80,13 +77,21 @@ local encounter_time_c = module.db.encounter_time_c
 local encounter_time_wa_uids = module.db.encounter_time_wa_uids
 local encounter_id = module.db.encounter_id
 
+local predefSpellIcons = {	--some talents replace icons for basic spells
+	[47536] = 237548,
+	[1022] = 135964,
+}
+
 local function GSUB_Icon(spellID)
 	spellID = tonumber(spellID)
 
-	local spellTexture = select(3,GetSpellInfo(spellID))
-	spellTexture = "|T"..(spellTexture or "Interface\\Icons\\INV_MISC_QUESTIONMARK")..":16|t"
+	local preicon = predefSpellIcons[spellID]
+	if preicon then
+		return "|T"..preicon..":16|t"
+	end
 
-	return spellTexture
+	local spellTexture = select(3,GetSpellInfo(spellID))
+	return "|T"..(spellTexture or "Interface\\Icons\\INV_MISC_QUESTIONMARK")..":16|t"
 end
 
 local function GSUB_Player(anti,list,msg)
@@ -194,6 +199,40 @@ local function GSUB_Class(anti,list,msg)
 	end
 end
 
+local function GSUB_ClassUnique(list,msg)
+	list = {strsplit(",",list)}
+	local classInParty = {}
+	for _, name, subgroup, class, guid, rank, level, online, isDead, combatRole in ExRT.F.IterateRoster, ExRT.F.GetRaidDiffMaxGroup() do
+		if class then
+			classInParty[ classList[class:lower()] or 0 ] = true
+		end
+	end
+
+	local found = nil
+
+	for i=1,#list do
+		list[i] = list[i]:gsub("|c........",""):gsub("|r",""):lower()
+		local classID = classList[ list[i] ]
+		if classID and classInParty[classID] then
+			found = classID
+			break
+		end
+	end
+
+	local myClassIndex = select(3,UnitClass("player"))
+	if found == myClassIndex then
+		found = true
+	else
+		found = false
+	end
+
+	if found then
+		return msg
+	else
+		return ""
+	end
+end
+
 local function GSUB_Race(anti,list,msg)
 	list = {strsplit(",",list)}
 	local myRace = select(2,UnitRace("player")):lower()
@@ -243,77 +282,108 @@ formats:
 {time:0:30,e,customevent}	--start on ExRT.F.Note_Timer(customevent) function or "/rt note starttimer customevent" 
 {time:2:30,wa:nzoth_hs1}	--run weakauras custom event EXRT_NOTE_TIME_EVENT with arg1 = nzoth_hs1, arg2 = time left (event runs every second when timer has 5 seconds or lower), arg3 = note line text
 ]]
-local function GSUB_Time(t,msg)
-	local lineTime
-	if string_find(t,":") then
-		lineTime = tonumber(string_match(t,"(%d+):") or "0",nil) * 60 + tonumber(string_match(t,":(%d+)") or "0",nil)
-	else
-		lineTime = tonumber(string_match(t,"^(%d+)") or "0",nil)
-	end
 
-	local phase = string_match(t,",p(%d+)")
+local function GSUB_Time(preText,t,msg,newlinesym)
+	local timeText, opts = strsplit(",", t, 2)
 
-	if not module.db.encounter_time then
-		return "|cffffed88"..(phase and "P"..phase.." " or "")..format("%d:%02d|r ",floor(lineTime/60),lineTime % 60)..msg.."\n"
-	end
-
-	local currTime = GetTime() - module.db.encounter_time
-
-	local wa_event_uid = string_match(t,",[wW][aA]:([^,]+)")
-
-	local CLEU = string_match(t,",(S[^,}]+)")
-	if CLEU then
-		t = module.db.encounter_counters_time[CLEU]
-		if t then
-			currTime = GetTime() - t
+	local time = tonumber(timeText)
+	if not time then
+		local min, sec = strsplit(":", timeText)
+		if min and sec then
+			time = (tonumber(min) or 0) * 60 + (tonumber(sec) or 0)
 		else
-			return "|cffffed88"..format("%d:%02d|r ",floor(lineTime/60),lineTime % 60)..msg.."\n"
+			time = -1
 		end
 	end
+	local prefixText
 
-	local phaseText = ""
-	if phase then
-		t = encounter_time_p[tonumber(phase)]
-		if not t then
-			return "|cffffed88"..format("P%s %d:%02d|r ",phase,floor(lineTime/60),lineTime % 60)..msg.."\n"
-		end
-		currTime = GetTime() - t
+	local anyType
+	local now = GetTime()
+	local waEventID
+	
+	local optNow
+	while opts do
+		optNow, opts = strsplit(",", opts, 2)
 
-		phaseText = "P"..phase.." "
-	end
-
-	if type(t)=='string' then
-		local custom_event = string_match(t,",e,(.+)")
-		if custom_event then
-			t = encounter_time_c[custom_event]
-			if not t then
-				return "|cffffed88"..format("%d:%02d|r ",floor(lineTime/60),lineTime % 60)..msg.."\n"
+		if optNow == "e" then
+			if opts then
+				optNow, opts = strsplit(",", opts, 2)
+			else
+				optNow = nil
 			end
-			currTime = GetTime() - t
-		end
-	end
+			if optNow then
+				local customEventStart = encounter_time_c[optNow]
+				if customEventStart then
+					time = customEventStart + time - now
+					--prefixText = "C "
+					anyType = 1
+				else
+					anyType = 2
+				end
+			end
+		elseif optNow:sub(1,1) == "p" then
+			local phase = optNow:sub( optNow:sub(2,2) == ":" and 3 or 2 )
+			if phase then
+				local prefixText = "P"..phase.." "
 
-	if (currTime >= lineTime or lineTime - currTime <= 20) and wa_event_uid and type(WeakAuras)=="table" then
-		local timeleft = currTime >= lineTime and 0 or ceil(lineTime - currTime)
-		if timeleft <= 5 or timeleft % 5 == 0 then
-			local wa_event_uid_cache = timeleft..":"..wa_event_uid
-			if not encounter_time_wa_uids[wa_event_uid_cache] then
-				encounter_time_wa_uids[wa_event_uid_cache] = true
-				if WeakAuras.ScanEvents and type(WeakAuras.ScanEvents)=="function" then
-					WeakAuras.ScanEvents("EXRT_NOTE_TIME_EVENT",wa_event_uid,timeleft,msg)
+				local phaseStart = encounter_time_p[phase]
+
+				if phaseStart then
+					time = phaseStart + time - now
+					anyType = 1
+				else
+					anyType = 2
+				end			
+			end
+		else
+			local prefix, arg1 = strsplit(":", optNow, 2)
+			if prefix == "wa" then
+				waEventID = (waEventID and waEventID.."," or "")..arg1
+			elseif prefix == "SCC" or prefix == "SCS" or prefix == "SAA" or prefix == "SAR" then
+				local eventStart = module.db.encounter_counters_time[optNow]
+				if eventStart then
+					time = eventStart + time - now
+					--prefixText = "E "
+					anyType = 1
+				else
+					anyType = 2
 				end
 			end
 		end
 	end
 
-	if currTime >= lineTime then
-		return "|cff555555"..msg:gsub("|c........",""):gsub("|r","").."|r\n"
-	elseif lineTime - currTime <= 10 then
-		t = lineTime - currTime
-		return "|cff00ff00"..phaseText..format("%d:%02d ",floor(t/60),t % 60)..msg:gsub("|c........",""):gsub("|r",""):gsub(ExRT.SDB.charName,"|r|cffff0000>%1<|r|cff00ff00").."|r\n"
+	if not anyType and module.db.encounter_time then
+		time = module.db.encounter_time + time - now
+	end
+
+	if waEventID and time <= 20 and type(WeakAuras)=="table" and ((module.db.encounter_time and not anyType) or anyType == 1) then
+		local timeleft = time < 0 and 0 or ceil(time)
+		if timeleft <= 5 or timeleft % 5 == 0 then
+			for waEventIDnow in string_gmatch(waEventID, "[^,]+") do
+				local wa_event_uid_cache = timeleft..":"..waEventIDnow
+				if not encounter_time_wa_uids[wa_event_uid_cache] then
+					encounter_time_wa_uids[wa_event_uid_cache] = true
+					if WeakAuras.ScanEvents and type(WeakAuras.ScanEvents)=="function" then
+						WeakAuras.ScanEvents("EXRT_NOTE_TIME_EVENT",waEventIDnow,timeleft,msg)
+					end
+				end
+			end
+		end
+	end
+
+	if time > 10 or not module.db.encounter_time or anyType == 2 then
+		return preText.."|cffffed88"..(prefixText or "")..format("%d:%02d|r ",floor(time/60),time % 60)..msg..newlinesym
+	elseif time < 0 then
+		if VExRT.Note.TimerPassedHide then
+			return ""
+		else
+			return preText.."|cff555555"..(prefixText or "")..msg:gsub("|c........",""):gsub("|r","").."|r"..newlinesym
+		end
 	else
-		t = lineTime - currTime
-		return "|cffffed88"..phaseText..format("%d:%02d|r ",floor(t/60),t % 60)..msg.."\n"
+		if time <= 5 and msg:find(ExRT.SDB.charName) then
+			module.db.glowStatus = true
+		end
+		return preText.."|cff00ff00"..(prefixText or "")..format("%d:%02d ",floor(time/60),time % 60)..msg:gsub("|c........",""):gsub("|r",""):gsub(ExRT.SDB.charName,"|r|cffff0000>%1<|r|cff00ff00").."|r"..newlinesym
 	end
 end
 
@@ -321,7 +391,16 @@ local function GSUB_Phase(anti,phase,msg)
 	if not module.db.encounter_time then
 		return msg
 	else
-		local isPhase = encounter_time_p[tonumber(phase)]
+		local isPhase
+		local phaseNum = tonumber(phase)
+		if phaseNum then
+			isPhase = encounter_time_p[phaseNum]
+		elseif phase:sub(1,1) == "," then
+			local cond1,cond2 = strsplit(",",phase:sub(2),nil)
+			isPhase = cond1 and module.db.encounter_counters_time[cond1] and (not cond2 or not module.db.encounter_counters_time[cond2])
+		else
+			isPhase = encounter_time_p[phase]
+		end
 		if (isPhase and anti == "") or (not isPhase and anti == "!") then
 			return msg
 		else
@@ -330,100 +409,92 @@ local function GSUB_Phase(anti,phase,msg)
 	end
 end
 
-local function txtWithIcons(t)
-	t = t or ""
+local allIcons = {}
+for i=1,8 do
+	local icon = "|TInterface\\TargetingFrame\\UI-RaidTargetingIcon_"..i..":0|t"
+	allIcons[ module.db.iconsLocalizatedNames[i] ] = icon
+	allIcons[ "{rt"..i.."}" ] = icon
 
-	if not t:find("{self}") then
-		t = t..(t~="" and t~=" " and "\n" or "").."{self}"
+	for _,lang in pairs(iconsLangs) do
+		allIcons[ module.db["icons"..lang.."Names"][i] ] = icon
 	end
-	t = string_gsub(t,"{self}",VExRT.Note.SelfText or "")
+end
+for i=1,#module.db.otherIconsList do
+	local iconData = module.db.otherIconsList[i]	
+	allIcons[ iconData[1] ] = "|T"..(iconData.path or iconData[2])..(iconData.crop or ":16").."|t"
+end
 
-	t = string_gsub(t,"{[Ee]:([^}]+)}(.-){/[Ee]}",GSUB_Encounter)
+local function GSUB_RaidIcon(text)
+	return allIcons[text]
+end
 
-	for i=1,8 do
-		t = string_gsub(t,module.db.iconsLocalizatedNames[i],module.db.iconsList[i])
-		t = string_gsub(t,"{rt"..i.."}",module.db.iconsList[i])
-		for _,lang in pairs(iconsLangs) do
-			t = string_gsub(t,module.db["icons"..lang.."Names"][i],module.db.iconsList[i])
+local txtWithIcons
+do
+	local preTimerText
+	txtWithIcons = function(t, onlyTimerUpdate)
+		if not onlyTimerUpdate or not preTimerText then
+			t = t or ""
+	
+			if t:find("{self}") then
+				t = string_gsub(t,"{self}",VExRT.Note.SelfText or "")
+			else
+				t = t..(t~="" and t~=" " and "\n" or "")..(VExRT.Note.SelfText or "")
+			end
+			
+			local spec = GetSpecialization()
+			if spec then
+				local role = select(5,GetSpecializationInfo(spec))
+				if role ~= "HEALER" then t = string_gsub(t,"{[Hh]}.-{/[Hh]}","") end
+				if role ~= "TANK" then t = string_gsub(t,"{[Tt]}.-{/[Tt]}","") end
+				if role ~= "DAMAGER" then t = string_gsub(t,"{[Dd]}.-{/[Dd]}","") end
+			end
+	
+			t =    t:gsub("{0}.-{/0}","")
+				:gsub("(\n{!?[CcPpGg]:?[^}]+})\n","%1")
+				:gsub("\n({/[CcPpGg]}\n)","%1")
+				:gsub("{(!?)[Pp]:([^}]+)}(.-){/[Pp]}",GSUB_Player)
+				:gsub("{(!?)[Cc]:([^}]+)}(.-){/[Cc]}",GSUB_Class)
+				:gsub("{[Cc][Ll][Aa][Ss][Ss][Uu][Nn][Ii][Qq][Uu][Ee]:([^}]+)}(.-){/[Cc][Ll][Aa][Ss][Ss][Uu][Nn][Ii][Qq][Uu][Ee]}",GSUB_ClassUnique)
+				:gsub("{(!?)[Gg](%d+)}(.-){/[Gg]}",GSUB_Group)
+				:gsub("{(!?)[Rr][Aa][Cc][Ee]:([^}]+)}(.-){/[Rr][Aa][Cc][Ee]}",GSUB_Race)
+				:gsub("{[Ee]:([^}]+)}(.-){/[Ee]}",GSUB_Encounter)
+				:gsub("{(!?)[Pp]([^}:][^}]*)}(.-){/[Pp]}",GSUB_Phase)
+				:gsub("{icon:([^}]+)}","|T%1:16|t")
+				:gsub("{spell:(%d+)}",GSUB_Icon)
+				:gsub("%b{}",GSUB_RaidIcon)
+				:gsub("||([cr])","|%1")
+				:gsub( "\n+$", "")
+	
+			preTimerText = t
+		else
+			t = preTimerText
 		end
+	
+		return t:gsub("([^\n]*){time:([0-9:%.]+[^{}]*)}([^\n]*)(\n?)",GSUB_Time)
+			:gsub("%b{}",""), nil		
 	end
-	t = string_gsub(t,"||c","|c")
-	t = string_gsub(t,"||r","|r")
-	for i=1,#module.db.otherIconsList do
-		t = string_gsub(t,module.db.otherIconsList[i][1],module.db.otherIconsList[i][2])
-	end
-	t = string_gsub(t,"{icon:([^}]+)}","|T%1:16|t")
-
-	t = string_gsub(t,"{spell:(%d+)}",GSUB_Icon)
-
-	local isHealer,isDD,isTank = false,false,false
-	local spec = GetSpecialization()
-	if spec then
-		local role = select(5,GetSpecializationInfo(spec))
-		if role == "HEALER" then isHealer = true end
-		if role == "TANK" then isTank = true end
-		if role == "DAMAGER" then isDD = true end
-	end
-	if not isHealer then t = string_gsub(t,"{[Hh]}.-{/[Hh]}","") end
-	if not isTank then t = string_gsub(t,"{[Tt]}.-{/[Tt]}","") end
-	if not isDD then t = string_gsub(t,"{[Dd]}.-{/[Dd]}","") end
-	t = string_gsub(t,"{0}.-{/0}","")
-
-	t = string_gsub(t,"(\n{!?[CcPpGg]:?[^}]+})\n","%1")
-	t = string_gsub(t,"\n({/[CcPpGg]}\n)","%1")
-
-	t = string_gsub(t,"{(!?)[Pp]:([^}]+)}(.-){/[Pp]}",GSUB_Player)
-
-	t = string_gsub(t,"{(!?)[Pp](%d+)}(.-){/[Pp]}",GSUB_Phase)
-
-	t = string_gsub(t,"{(!?)[Cc]:([^}]+)}(.-){/[Cc]}",GSUB_Class)
-
-	t = string_gsub(t,"{(!?)[Gg](%d+)}(.-){/[Gg]}",GSUB_Group)
-
-	t = string_gsub(t,"{(!?)[Rr][Aa][Cc][Ee]:([^}]+)}(.-){/[Rr][Aa][Cc][Ee]}",GSUB_Race)
-
-	t = string_gsub(t.."\n","{time:([0-9:]+[^{}]*)}(.-)\n",GSUB_Time)
-
-	t = string_gsub(t,"%b{}","")
-
-	t = string_gsub(t, "\n+$", "")
-
-	return t
 end
 
 function module.options:Load()
 	self:CreateTilte()
 
 	module.db.otherIconsAdditionalList = ExRT.isClassic and {} or {
-		31821,62618,97462,98008,115310,64843,740,265202,108280,31884,196718,15286,64901,47536,246287,33891,16191,0,
+		31821,62618,97462,98008,115310,64843,740,265202,108280,31884,196718,15286,64901,47536,246287,109964,33891,16191,0,
 		47788,33206,6940,102342,114030,1022,116849,633,204018,207399,0,
 		2825,32182,80353,0,
 		106898,192077,46968,119381,179057,192058,30283,0,
 		29166,32375,114018,108199,49576,0,
 		0,
-		341489,328897,344111,343365,340324,342923,328857,328921,340047,343005,342863,341684,330711,342074,0,
-		334757,338609,335114,334797,334960,334852,334860,334504,334884,334404,334893,334971,334708,338615,343259,334695,339639,338593,335303,0,
+		341489,345397,328897,343365,340324,342923,328857,328921,345425,343005,342863,341684,330711,342074,0,
+		334695,338609,345902,334797,334960,334852,334860,334504,334884,334404,334893,334971,334708,338615,343259,335114,334757,339639,338593,335303,0,
 		333145,337865,325442,328248,325590,325877,341308,335581,328885,329561,325665,328731,329509,335598,326430,341473,326078,333002,328254,329539,336398,326455,329470,323402,339251,326456,328579,343026,325440,0,
 		329770,340533,325361,340860,325399,328437,340870,328880,327414,329458,327887,326271,340842,0,
 		329455,329774,329298,334522,334755,338614,329742,332375,332294,332295,0,
-		325225,331844,331573,325908,331527,325769,325382,326538,325384,342287,325718,331550,325184,341746,324983,342320,335322,325596,341590,329618,0,
-		327503,331634,330968,328334,328497,330978,342859,342852,331708,334909,334948,330965,335778,330964,327773,342847,327475,330967,327619,337110,0,
-		335354,335300,340803,331209,332318,332443,341294,331212,332197,341102,341482,335297,341250,332969,339189,332687,335361,335295,332572,0,
+		325225,331844,331573,325908,331527,325382,326538,325384,342287,331550,325718,342280,325117,325184,341746,324983,342320,335322,325596,341590,329618,0,
+		346692,331634,330968,346934,346694,330978,328497,330848,346035,330964,327503,346681,334909,346945,346891,330965,346690,346651,346303,346939,346660,347350,337110,327619,346790,0,
+		335354,335300,340803,331209,332318,332443,331212,332197,341102,341482,335297,341250,332969,339189,332687,335361,335295,332572,0,
 		334765,333913,344740,342733,334929,333387,343881,336212,332683,339728,343086,343898,339690,344655,342425,342256,336231,342985,339645,343063,340038,334771,342741,332412,339693,339885,329636,342253,0,
 		332734,341366,338689,330137,344313,338738,330627,330580,338582,326707,327227,327842,335875,329906,326851,332585,344776,327089,332797,328098,340685,332619,326823,338683,338510,327123,326824,330871,329974,341391,326699,338685,328936,336008,335873,329785,327992,328839,328276,338687,336162,327796,0,
-		0,
-		307013,313175,306735,311362,306015,314347,308682,305978,307017,306289,306111,306824,314373,312490,306794,313250,312266,307053,307974,0,
-		314992,306005,306387,308872,305722,309315,307399,308903,314337,306301,307805,307839,308158,305663,308044,305675,0,
-		313210,307784,309652,307785,307864,313208,309687,307445,313239,309657,307937,312741,307977,0,
-		305575,311551,314298,311383,316211,306495,313264,306228,314202,312406,314300,309654,313198,305792,306876,314179,0,
-		313460,313461,313129,307968,307201,310402,307217,307202,307582,307637,313676,313692,307227,313652,307232,315311,307569,308166,307213,307334,313441,0,
-		312530,312329,311849,307471,308177,307472,312099,312332,314736,306932,306692,312528,307358,307945,312529,306934,312328,306942,306448,0,
-		310329,310361,310563,310478,310246,308953,310078,315712,308373,310584,308947,310288,310358,308661,310567,308956,308995,317001,310406,310614,310552,0,
-		310319,310788,314396,275269,318383,314502,309961,318396,316813,311143,310322,312486,311401,0,
-		317157,315933,307177,307371,307317,310325,307729,307218,307639,307284,310311,306878,307421,307359,307057,315931,307297,307019,315769,315932,307343,0,
-		306733,306865,306819,312996,306184,306874,306634,306115,313114,312750,306279,309852,316065,309985,309755,306257,313395,310003,306866,313109,313398,309777,306168,306090,306732,313399,313227,306881,314484,0,
-		312158,316847,317165,307044,313322,313330,317627,307340,307131,317896,306984,307079,307008,307058,316701,312333,313364,307048,307831,307092,313334,311980,307832,316307,307042,315947,307306,306973,315954,0,
-		309991,318449,318969,315772,310134,315710,318688,317066,310042,318768,309713,313793,313195,313400,312078,317292,309592,313955,310333,316271,313610,312873,308996,313184,313609,315709,308997,318896,311176,309990,316711,317874,314889,312155,0,
 	}
 
 	function self:DebugGetIcons(notUseJJBox)
@@ -478,19 +549,13 @@ function module.options:Load()
 	end
 	--/run GExRT.A.Note.options:DebugGetIcons()
 
-	module.db.encountersList = ExRT.isClassic and {} or {
-		{1735,2398,2418,2402,2383,2405,2406,2412,2399,2417,2407},
-		{EXPANSION_NAME8..": "..DUNGEONS,-1182,-1183,-1184,-1185,-1186,-1187,-1188,-1189},
-		{1582,2329,2327,2334,2328,2336,2333,2331,2335,2343,2345,2337,2344}, 
-		{1512,2298,2305,2289,2304,2303,2311,2293,2299},
-		{L.S_ZoneT23Storms,2269,2273},
-		{1358,2265,2263,2284,2266,2285,2271,2268,2272,2276,2280,2281},
-		{1148,2144,2141,2136,2134,2128,2145,2135,2122},
-		{EXPANSION_NAME7..": "..DUNGEONS,-1012,-968,-1041,-1022,-1030,-1023,-1002,-1001,-1036,-1021},
-		{909,2076,2074,2064,2070,2075,2082,2069,2088,2073,2063,2092},
-		{850,2032,2048,2036,2037,2050,2054,2052,2038,2051},
-		{764,1849,1865,1867,1871,1862,1886,1842,1863,1872,1866},
-	}
+	if not ExRT.isClassic then
+		module.db.encountersList = ExRT.F.GetEncountersList(true,false,true)
+		tinsert(module.db.encountersList,ExRT.F.table_find(module.db.encountersList,1582,1) or #module.db.encountersList,{EXPANSION_NAME8..": "..DUNGEONS,-1182,-1183,-1184,-1185,-1186,-1187,-1188,-1189})
+		tinsert(module.db.encountersList,ExRT.F.table_find(module.db.encountersList,909,1) or #module.db.encountersList,{EXPANSION_NAME7..": "..DUNGEONS,-1012,-968,-1041,-1022,-1030,-1023,-1002,-1001,-1036,-1021})
+	else
+		module.db.encountersList = {}
+	end
 
 	module.db.mapToEncounter = {
 		--BfD
@@ -710,6 +775,7 @@ function module.options:Load()
 
 		module.options.buttonsend:SetShown(index == 1)
 		module.options.buttoncopy:SetShown(index > 2)
+		module.options.buttoncopyPersonal:SetShown(index > 2)
 
 		BlackNoteNow = nil
 		NoteIsSelfNow = nil
@@ -1126,7 +1192,22 @@ function module.options:Load()
 		end
 	end
 
-	self.buttoncopy = ELib:Button(self.tab.tabs[1],L.messageButCopy):Size(0,30):Point("LEFT",self.NotesList,"TOPRIGHT",4,0):Point("BOTTOM",self,"BOTTOM",0,2):Point("RIGHT",self,"RIGHT",-2,0):OnClick(function (self)
+	self.buttoncopyPersonal = ELib:Button(self.tab.tabs[1],L.NoteMoveToPersonal):Size(180,30):Point("BOTTOM",self,"BOTTOM",0,2):Point("RIGHT",self,"RIGHT",-2,0):OnClick(function (self)
+		if not BlackNoteNow then
+			return
+		end
+		VExRT.Note.SelfText = VExRT.Note.Black[BlackNoteNow]
+
+		module.options.NotesList:SetListValue(2)
+
+		module.options.NotesList.selected = 2
+		module.options.NotesList:Update()
+
+		module.frame:UpdateText()
+	end) 
+	self.buttoncopyPersonal:Hide()
+
+	self.buttoncopy = ELib:Button(self.tab.tabs[1],L.messageButCopy):Size(0,30):Point("LEFT",self.NotesList,"TOPRIGHT",4,0):Point("BOTTOM",self,"BOTTOM",0,2):Point("RIGHT",self.buttoncopyPersonal,"LEFT",-5,0):OnClick(function (self)
 		if not BlackNoteNow then
 			return
 		end
@@ -1186,13 +1267,14 @@ function module.options:Load()
 		button:SetSize(18,18)
 		button:SetPoint("TOPLEFT", 170+(i-1)*20,-30)
 		button.back = button:CreateTexture(nil, "BACKGROUND")
-		button.back:SetTexture(module.db.otherIconsList[i][3])
-		if module.db.otherIconsList[i][4] then
-			button.back:SetTexCoord(unpack(module.db.otherIconsList[i],4,7))
+		local iconData = module.db.otherIconsList[i]
+		button.back:SetTexture(iconData[2])
+		if iconData[3] then
+			button.back:SetTexCoord(unpack(iconData,3,6))
 		end
 		button.back:SetAllPoints()
 		button:RegisterForClicks("LeftButtonDown")
-		button.iconText = module.db.otherIconsList[i][1]
+		button.iconText = iconData[1]
 		button:SetScript("OnClick", AddTextToEditBox)
 	end
 
@@ -1216,16 +1298,26 @@ function module.options:Load()
 		return self
 	end
 
-	for i=13,#module.db.otherIconsList-3 do
-		local icon = CreateOtherIcon(5+(i-13)*20,-2,module.db.otherIconsList[i][3],module.db.otherIconsList[i][1])
-		if module.db.otherIconsList[i][4] then
-			icon.texture:SetTexCoord( unpack(module.db.otherIconsList[i],4,7) )
-		end
-	end
 	do
 		local GetSpellInfo = GetSpellInfo
-		local line = 2
+		local line = 1
 		local inLine = 0
+		for i=13,#module.db.otherIconsList-3 do
+			local iconData = module.db.otherIconsList[i]
+			local icon = CreateOtherIcon(5+inLine*20,-2-(line-1)*20,iconData[2],iconData[1])
+			if iconData[3] then
+				icon.texture:SetTexCoord( unpack(iconData,3,6) )
+			end
+			inLine = inLine + 1
+			if inLine > 12 then
+				line = line + 1
+				inLine = 0
+			end
+		end
+		if inLine > 0 then
+			line = line + 1
+		end
+		inLine = 0
 		for i=1,#module.db.otherIconsAdditionalList do
 			local spellID = module.db.otherIconsAdditionalList[i]
 			if spellID == 0 then
@@ -1240,6 +1332,9 @@ function module.options:Load()
 				end
 			else
 				local _,_,spellTexture = GetSpellInfo( spellID )
+				if predefSpellIcons[spellID] then
+					spellTexture = predefSpellIcons[spellID]
+				end
 
 				CreateOtherIcon(5+inLine*20,-2-(line-1)*20,spellTexture,"{spell:"..spellID.."}")
 				inLine = inLine + 1
@@ -1532,6 +1627,88 @@ function module.options:Load()
 		module.frame:SetPoint("CENTER",UIParent, "CENTER", 0, 0)
 	end) 
 
+	ELib:DecorationLine(self.tab.tabs[2]):Point("LEFT",0,0):Point("RIGHT",0,0):Size(0,1):Point("TOP",self.ButtonToCenter,"BOTTOM",0,-5)
+	ELib:Text(self.tab.tabs[2],L.NoteTimers,14):Point("TOP",self.ButtonToCenter,"BOTTOM",0,-9):Point("LEFT",20,0):Color()
+
+	self.chkTimersHIdePassed = ELib:Check(self.tab.tabs[2],L.NoteTimersHidePassed,VExRT.Note.TimerPassedHide):Point("TOPLEFT",self.ButtonToCenter,"BOTTOMLEFT",0,-25):OnClick(function(self) 
+		if self:GetChecked() then
+			VExRT.Note.TimerPassedHide = true
+		else
+			VExRT.Note.TimerPassedHide = nil
+		end
+	end) 
+
+	self.chkTimersGlow = ELib:Check(self.tab.tabs[2],L.NoteTimersGlow,VExRT.Note.TimerGlow):Point("TOPLEFT",self.chkTimersHIdePassed,"BOTTOMLEFT",0,-5):OnClick(function(self) 
+		if self:GetChecked() then
+			VExRT.Note.TimerGlow = true
+		else
+			VExRT.Note.TimerGlow = nil
+		end
+	end) 
+
+	local testGlowDelay
+	local function TestGlow()
+		module.frame:HideGlow()
+		module.frame:ShowGlow()
+		if testGlowDelay then
+			testGlowDelay:Cancel()
+		end
+		testGlowDelay = C_Timer.NewTimer(3,function()
+			module.frame:HideGlow()
+		end)
+	end
+
+	self.frameTypeGlow1 = ELib:Radio(self.tab.tabs[2],""):Point("LEFT",self.chkTimersGlow,425,0):OnClick(function() 
+		self.frameTypeGlow1:SetChecked(true)
+		self.frameTypeGlow2:SetChecked(false)
+		self.frameTypeGlow3:SetChecked(false)
+		VExRT.Note.TimerGlowType = 1
+
+		TestGlow()
+	end)
+	self.frameTypeGlow1.f = CreateFrame("Frame",nil,self.frameTypeGlow1)
+	self.frameTypeGlow1.f:SetPoint("LEFT",self.frameTypeGlow1,"RIGHT",5,0)
+	self.frameTypeGlow1.f:SetSize(40,15)
+
+	self.frameTypeGlow2 = ELib:Radio(self.tab.tabs[2],""):Point("LEFT",self.frameTypeGlow1,100,0):OnClick(function() 
+		self.frameTypeGlow1:SetChecked(false)
+		self.frameTypeGlow2:SetChecked(true)
+		self.frameTypeGlow3:SetChecked(false)
+		VExRT.Note.TimerGlowType = 2
+
+		TestGlow()
+	end)
+	self.frameTypeGlow2.f = CreateFrame("Frame",nil,self.frameTypeGlow2)
+	self.frameTypeGlow2.f:SetPoint("LEFT",self.frameTypeGlow2,"RIGHT",5,0)
+	self.frameTypeGlow2.f:SetSize(40,15)
+
+	self.frameTypeGlow3 = ELib:Radio(self.tab.tabs[2],""):Point("LEFT",self.frameTypeGlow2,100,0):OnClick(function() 
+		self.frameTypeGlow1:SetChecked(false)
+		self.frameTypeGlow2:SetChecked(false)
+		self.frameTypeGlow3:SetChecked(true)
+		VExRT.Note.TimerGlowType = 3
+
+		TestGlow()
+	end)
+	self.frameTypeGlow3.f = CreateFrame("Frame",nil,self.frameTypeGlow3)
+	self.frameTypeGlow3.f:SetPoint("LEFT",self.frameTypeGlow3,"RIGHT",5,0)
+	self.frameTypeGlow3.f:SetSize(40,15)
+
+	local LCG = LibStub("LibCustomGlow-1.0",true)
+	if LCG then
+		LCG.PixelGlow_Start(self.frameTypeGlow1.f,nil,nil,nil,nil,2,1,1) 
+		LCG.ButtonGlow_Start(self.frameTypeGlow2.f)
+		LCG.AutoCastGlow_Start(self.frameTypeGlow3.f)
+	end
+
+	if VExRT.Note.TimerGlowType == 2 then
+		self.frameTypeGlow2:SetChecked(true)
+	elseif VExRT.Note.TimerGlowType == 3 then
+		self.frameTypeGlow3:SetChecked(true)
+	else
+		self.frameTypeGlow1:SetChecked(true)
+	end
+
 	if VExRT.Note.Text1 then 
 		self.NoteEditBox.EditBox:SetText(VExRT.Note.Text1) 
 	end
@@ -1564,7 +1741,8 @@ function module.options:Load()
 		"|cffffff00{time:|r|cff00ff001:06,p2|r|cffffff00}|r - "..L.NoteHelpAdv1..
 		"|n|cffffff00{time:|r|cff00ff000:30,SCC:17:2|r|cffffff00}|r - "..L.NoteHelpAdv2..
 		"|n|cffffff00{time:|r|cff00ff002:00,e,customevent|r|cffffff00}|r - "..L.NoteHelpAdv3..
-		"|n|cffffff00{time:|r|cff00ff000:45,wa:nzoth_hs1|r|cffffff00}|r - "..L.NoteHelpAdv4
+		"|n|cffffff00{time:|r|cff00ff000:45,wa:nzoth_hs1|r|cffffff00}|r - "..L.NoteHelpAdv4..
+		"|n"..L.NoteHelpAdv5.."|cffe6ff15{time:0:30,SCC:17:2,wa:eventName1,wa:eventName2}|r |cffff9f05{time:1:40,p:Shade of Kael'thas}|r |cffe6ff15{p,SCC:17:2}Until end of the fight{/p}|r |cffff9f05{p,SCC:17:2,SCC:17:3}Until second condition{/p}|r |cffe6ff15{pShade of Kael'thas}Phase with name{/p}|r"
 	):Point("LEFT",10,0):Point("RIGHT",-10,0):Point("TOP",self.advancedHelp,"BOTTOM",0,-20):Color():Shown(false)
 
 	module:RegisterEvents("GROUP_ROSTER_UPDATE")
@@ -1613,7 +1791,7 @@ module.frame.sf:SetPoint("TOPLEFT",0,0)
 module.frame.sf:SetAllPoints()
 module.frame.sf.C = CreateFrame("Frame", nil, module.frame.sf) 
 module.frame.sf:SetScrollChild(module.frame.sf.C)
-module.frame.sf.C:SetHeight(2000)
+module.frame.sf.C:SetSize(200,20000)
 module.frame.sf:Hide()
 
 ELib:FixPreloadFont(module.frame,function() 
@@ -1634,11 +1812,43 @@ function module.frame:UpdateFont()
 	end
 end
 
-function module.frame:UpdateText()
+function module.frame:UpdateText(onlyTimerUpdate)
+	module.db.glowStatus = nil
 	if VExRT.Note.ShowOnlyPersonal then
-		self.text:SetText(txtWithIcons(""))
+		self.text:SetText(txtWithIcons("", onlyTimerUpdate))
 	else
-		self.text:SetText(txtWithIcons(VExRT.Note.Text1 or "")) 
+		self.text:SetText(txtWithIcons(VExRT.Note.Text1 or "", onlyTimerUpdate)) 
+	end
+	if module.db.glowStatus and not self.GlowShowed then
+		module.frame:ShowGlow()
+		self.GlowShowed = true
+	elseif not module.db.glowStatus and self.GlowShowed then
+		module.frame:HideGlow()
+		self.GlowShowed = false
+	end
+end
+
+local glowColor = {0,1,0,1}
+function module.frame:ShowGlow()
+	local LCG = LibStub("LibCustomGlow-1.0",true)
+	if not LCG then
+		return
+	end
+
+	if VExRT.Note.TimerGlowType == 2 then
+		LCG.ButtonGlow_Start(self)
+	elseif VExRT.Note.TimerGlowType == 3 then
+		LCG.AutoCastGlow_Start(self,glowColor,16,nil,2)
+	else
+		LCG.PixelGlow_Start(self,glowColor,nil,nil,nil,3,1,1) 
+	end
+end
+function module.frame:HideGlow()
+	local LCG = LibStub("LibCustomGlow-1.0",true)
+	if LCG then
+		LCG.ButtonGlow_Stop(self)
+		LCG.AutoCastGlow_Stop(self)
+		LCG.PixelGlow_Stop(self)
 	end
 end
 
@@ -1684,6 +1894,11 @@ function module.frame.text:FixLag()
 	self:SetPoint("TOPLEFT",5,-5)
 	self:SetPoint("BOTTOMRIGHT",-5,5)
 end
+
+module.frame.sf:Show()
+module.frame.text:FixLag()
+
+module.frame.text:SetNonSpaceWrap(true)
 
 module.frame.buttonResize = CreateFrame("Frame",nil,module.frame)
 module.frame.buttonResize:SetSize(15,15)
@@ -1868,7 +2083,10 @@ local gruevent = {}
 
 function module.main:ADDON_LOADED()
 	VExRT = _G.VExRT
-	VExRT.Note = VExRT.Note or {}
+	VExRT.Note = VExRT.Note or {
+		OnlyPromoted = true,
+		OptionsFormatting = true,
+	}
 	VExRT.Note.Black = VExRT.Note.Black or {}
 	VExRT.Note.AutoLoad = VExRT.Note.AutoLoad or {}
 
@@ -1912,25 +2130,6 @@ function module.main:ADDON_LOADED()
 		module.frame.buttonResize:Hide()
 	else
 		ExRT.lib.AddShadowComment(module.frame,nil,L.message)
-	end
-
-	if VExRT.Addon.Version < 3225 then
-		for i=1,12 do
-			if not VExRT.Note.Black[i] then
-				for j=i,12 do
-					VExRT.Note.Black[j] = VExRT.Note.Black[j+1]
-				end
-			end
-		end
-	end
-	if VExRT.Addon.Version < 3865 then
-		--VExRT.Note.EnableWhenReceive = true
-	end
-	if VExRT.Addon.Version < 3895 then
-		VExRT.Note.OnlyPromoted = true
-	end
-	if VExRT.Addon.Version < 3960 then
-		VExRT.Note.OptionsFormatting = true
 	end
 
 	VExRT.Note.BlackNames = VExRT.Note.BlackNames or {}
@@ -2100,12 +2299,11 @@ do
 						return
 					end
 
-					local phase = text:match ("%d+")
-					phase = tonumber (phase or "")
+					local phase = text:match("%d+") or phase
 					if phase then
 						wipe(encounter_time_p)
 						encounter_time_p[phase] = GetTime()
-						if module.frame:IsVisible() then
+						if module.frame:IsShown() then
 							module.frame:UpdateText()
 						end
 					end
@@ -2117,13 +2315,12 @@ do
 			BossPhasesBossmodAdded = true
 		elseif type(DBM)=='table' and DBM.RegisterCallback then
 			DBM:RegisterCallback("DBM_Announce", function(event, message, icon, etype, spellId, modId)
-				if etype == "stagechange" then
-					local phase = message:match("%d+")
-					phase = tonumber(phase or "")
+				if etype == "stagechange" or etype == "stage" then
+					local phase = message:match("%d+") or message
 					if phase then
 						wipe(encounter_time_p)
 						encounter_time_p[phase] = GetTime()
-						if module.frame:IsVisible() then
+						if module.frame:IsShown() then
 							module.frame:UpdateText()
 						end
 					end
@@ -2134,19 +2331,15 @@ do
 		end
 	end
 
-
+	local phaseCombatEvents = {}
 	function module.main:ENCOUNTER_START(encounterID, encounterName, difficultyID, groupSize)
-		local updateTextReq
 		local noteText = (VExRT.Note.Text1 or "")..(VExRT.Note.SelfText or "")
 		if encounterID and encounterName then
 			encounter_id[tostring(encounterID)] = true
 			encounter_id[encounterName] = true
-			if noteText:find("{[Ee]:([^}]+)}.-{/[Ee]}") then
-				updateTextReq = true
-			end
 		end
 		local timeInText = noteText:find("{time:([0-9:]+[^{}]*)}")
-		local phaseInText = noteText:find("{[Pp](%d+)}(.-){/[Pp]}")
+		local phaseInText = noteText:find("{[Pp]([^}:][^}]*)}(.-){/[Pp]}")
 		if timeInText or (phaseInText and ((type(BigWigsLoader)=='table') or (type(DBM)=='table'))) then
 			wipe(encounter_time_c)
 			wipe(encounter_time_wa_uids)
@@ -2155,45 +2348,57 @@ do
 			end
 			module.db.encounter_time = GetTime()
 			encounter_time_p[1] = module.db.encounter_time
-			updateTextReq = true
 			BossPhasesBossmod()
 
-			if timeInText and noteText:find("{time:[0-9:]+[^}]*,S[^{},]+") then
-				wipe(module.db.encounter_counters.SCC)
-				wipe(module.db.encounter_counters.SCS)
-				wipe(module.db.encounter_counters.SAA)
-				wipe(module.db.encounter_counters.SAR)
-				local anyEvent
-				string_gsub(noteText,"{time:[0-9:]+[^}]*,(S[^{},]+)[,}]",function(str)
-					local event,spellID,count = strsplit(":",str)
-					if tonumber(count or "") and tonumber(spellID or "") and event and module.db.encounter_counters[event] then
-						anyEvent = true
-						module.db.encounter_counters[event][tonumber(spellID)] = 0
-					end
-				end)
-				if anyEvent then
-					wipe(module.db.encounter_counters_time)
-					module:RegisterEvents("COMBAT_LOG_EVENT_UNFILTERED")
+			wipe(module.db.encounter_counters.SCC)
+			wipe(module.db.encounter_counters.SCS)
+			wipe(module.db.encounter_counters.SAA)
+			wipe(module.db.encounter_counters.SAR)
+			local anyEvent
+			string_gsub(noteText,"{time:[0-9:]+[^}]*,(S[^{},]+)[,}]",function(str)
+				local event,spellID,count = strsplit(":",str)
+				if tonumber(count or "") and tonumber(spellID or "") and event and module.db.encounter_counters[event] then
+					anyEvent = true
+					module.db.encounter_counters[event][tonumber(spellID)] = 0
 				end
+			end)
+			wipe(phaseCombatEvents)
+			string_gsub(noteText,"{[Pp],(S[^{},]+),?(S?[^{},]*)[,}]",function(str1,str2)
+				for _,str in pairs({str1,str2}) do
+					if str ~= "" then
+						local event,spellID,count = strsplit(":",str)
+						if tonumber(count or "") and tonumber(spellID or "") and event and module.db.encounter_counters[event] then
+							anyEvent = true
+							module.db.encounter_counters[event][tonumber(spellID)] = 0
+							phaseCombatEvents[str] = true
+						end
+					end
+				end
+			end)
+			if anyEvent then
+				wipe(module.db.encounter_counters_time)
+				module:RegisterEvents("COMBAT_LOG_EVENT_UNFILTERED")
 			end
-		end
-		if updateTextReq then
-			module.frame.sf:Show()
-			module.frame.text:FixLag()
 		end
 		module.frame:UpdateText()
 	end
 	function module.main:ENCOUNTER_END()
 		wipe(encounter_id)
-		--if ((VExRT.Note.Text1 or "")..(VExRT.Note.SelfText or "")):find("{time:([0-9:]+[^{}]*)}") then
-			module:UnregisterTimer()
-			module.db.encounter_time = nil
-			wipe(encounter_time_p)
-			wipe(encounter_time_c)
-			wipe(encounter_time_wa_uids)
 
-			module:UnregisterEvents("COMBAT_LOG_EVENT_UNFILTERED")
-		--end
+		module:UnregisterTimer()
+		module.db.encounter_time = nil
+		wipe(encounter_time_p)
+		wipe(encounter_time_c)
+		wipe(encounter_time_wa_uids)
+
+		module:UnregisterEvents("COMBAT_LOG_EVENT_UNFILTERED")
+
+		wipe(module.db.encounter_counters.SCC)
+		wipe(module.db.encounter_counters.SCS)
+		wipe(module.db.encounter_counters.SAA)
+		wipe(module.db.encounter_counters.SAR)
+		wipe(module.db.encounter_counters_time)
+
 		module.frame:UpdateText()
 	end
 	local tmr = 0
@@ -2201,8 +2406,8 @@ do
 		tmr = tmr + elapsed
 		if tmr > 1 then
 			tmr = 0
-			if module.frame:IsVisible() then
-				module.frame:UpdateText()
+			if module.frame:IsShown() then
+				module.frame:UpdateText(true)
 			end
 		end
 	end
@@ -2219,24 +2424,38 @@ do
 	local SCS = module.db.encounter_counters.SCS
 	local SAA = module.db.encounter_counters.SAA
 	local SAR = module.db.encounter_counters.SAR
-	function module.main:COMBAT_LOG_EVENT_UNFILTERED()
-		local _,event,_,_,_,_,_,_,_,_,_,spellID = CombatLogGetCurrentEventInfo()
-		if event == "SPELL_CAST_SUCCESS" and SCC[spellID] then
-			SCC[spellID] = SCC[spellID] + 1
-			ECT[ "SCC:"..spellID..":"..SCC[spellID] ] = GetTime()
-			ECT[ "SCC:"..spellID..":"..0 ] = GetTime()
-		elseif event == "SPELL_CAST_START" and SCS[spellID] then
-			SCS[spellID] = SCS[spellID] + 1
-			ECT[ "SCS:"..spellID..":"..SCS[spellID] ] = GetTime()
-			ECT[ "SCS:"..spellID..":"..0 ] = GetTime()
-		elseif event == "SPELL_AURA_APPLIED" and SAA[spellID] then
-			SAA[spellID] = SAA[spellID] + 1
-			ECT[ "SAA:"..spellID..":"..SAA[spellID] ] = GetTime()
-			ECT[ "SAA:"..spellID..":"..0 ] = GetTime()
-		elseif event == "SPELL_AURA_REMOVED" and SAR[spellID] then
-			SAR[spellID] = SAR[spellID] + 1
-			ECT[ "SAR:"..spellID..":"..SAR[spellID] ] = GetTime()
-			ECT[ "SAR:"..spellID..":"..0 ] = GetTime()
+	local function AddCounter(table,tableName,spellID)
+		table[spellID] = SCC[spellID] + 1
+
+		local key_w_counter = tableName..":"..spellID..":"..table[spellID]
+		local key_wo_counter = tableName..":"..spellID..":"..0
+		local t = GetTime()
+		ECT[ key_w_counter ] = t
+		ECT[ key_wo_counter ] = t
+		if phaseCombatEvents[key_w_counter] or phaseCombatEvents[key_wo_counter] then
+			if module.frame:IsShown() then
+				module.frame:UpdateText()
+			end
+		end
+	end
+
+	function module.main.COMBAT_LOG_EVENT_UNFILTERED(_,event,_,_,_,_,_,_,_,_,_,spellID)
+		if event == "SPELL_CAST_SUCCESS" then
+			if SCC[spellID] then
+				return AddCounter(SCC,"SCC",spellID)
+			end
+		elseif event == "SPELL_CAST_START" then
+			if SCS[spellID] then
+				return AddCounter(SCS,"SCS",spellID)
+			end
+		elseif event == "SPELL_AURA_APPLIED" then
+			if SAA[spellID] then
+				return AddCounter(SAA,"SAA",spellID)
+			end
+		elseif event == "SPELL_AURA_REMOVED" then
+			if SAR[spellID] then
+				return AddCounter(SAR,"SAR",spellID)
+			end
 		end
 	end
 

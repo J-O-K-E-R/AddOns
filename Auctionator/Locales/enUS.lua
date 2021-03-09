@@ -14,9 +14,10 @@ AUCTIONATOR_LOCALES.enUS = function()
   L["CONFIG_AUTOSCAN"] = "Run autoscan when Auction House is opened."
   L["CONFIG_AUTOSCAN_TOOLTIP_HEADER"] = "Autoscan"
   L["CONFIG_AUTOSCAN_TOOLTIP_TEXT"] = "Run a full scan when the auction house is opened. If not selected, you may run a full scan by clicking the 'Full Scan' button in the auction house."
-  L["CONFIG_ALTERNATE_SCAN"] = "Use alternate slower scan mode by default"
-  L["CONFIG_ALTERNATE_SCAN_HEADER"] = "Alternate Scan Mode"
-  L["CONFIG_ALTERNATE_SCAN_TEXT"] = "The fast scan mode can cause disconnections on busy servers. This setting uses a slower and less likely to disconnect, scan method."
+  L["CONFIG_AUTOSCAN_INTERVAL_HEADER"] = "Interval between autoscans"
+  L["CONFIG_AUTOSCAN_INTERVAL"] = "Set to the number of minutes to wait between autoscans"
+  L["CONFIG_AUTOSCAN_INTERVAL_TOOLTIP_HEADER"] = "Autoscan Delay Interval"
+  L["CONFIG_AUTOSCAN_INTERVAL_TOOLTIP_TEXT"] = "By default an scan doesn't happen every time you open the Auction House. It waits until a fixed time has elapsed since the last scan."
 
   L["CONFIG_DEVELOPER"] = "Developer Settings"
   L["CONFIG_DEBUG"] = "Toggle debug output."
@@ -44,7 +45,7 @@ AUCTIONATOR_LOCALES.enUS = function()
   L["CONFIG_AUCTION_TOOLTIP"] = "Show auction tooltips."
   L["AUCTION_TOOLTIP_TOOLTIP_HEADER"] = "Auction Tooltip Information"
   L["AUCTION_TOOLTIP_TOOLTIP_TEXT"] = "Show auction information in tooltip on mouseover."
-  L["CONFIG_ENCHANT_TOOLTIP"] = "Show enchant tooltips (WoD, Legion & BfA only.)"
+  L["CONFIG_ENCHANT_TOOLTIP"] = "Show enchant tooltips (WoD, Legion, BfA & Shadowlands only.)"
   L["ENCHANT_TOOLTIP_TOOLTIP_HEADER"] = "Enchant Tooltip Information"
   L["ENCHANT_TOOLTIP_TOOLTIP_TEXT"] = "Show enchant information in tooltip on mouseover."
   L["CONFIG_STACK_TOOLTIP"] = "Show stack price when holding shift."
@@ -65,6 +66,8 @@ AUCTIONATOR_LOCALES.enUS = function()
   L["CONFIG_UNDERCUT_SCAN_NOT_LIFO"] = "Include gear and pets in undercut scans"
   L["CONFIG_UNDERCUT_SCAN_NOT_LIFO_TOOLTIP_HEADER"] = "Gear/Pets Undercut Scans"
   L["CONFIG_UNDERCUT_SCAN_NOT_LIFO_TOOLTIP_TEXT"] = "Leave this on to include any pets and gear auctions when using the undercut scan. Turn this off to exclude pets and gear."
+  L["CONFIG_CANCEL_UNDERCUT_SHORTCUT"] = "A shortcut to cancel the next undercut item found is"
+  L["CONFIG_CANCEL_UNDERCUT_SHORTCUT_TOOLTIP_TEXT"] = "Click and then press the buttons that you wish to use as the shortcut. This shortcut will only be active in the Cancelling tab and won't affect any other shortcuts bound to the buttons."
 
   L["SALES_PREFERENCE"] = "Sales Preference"
   L["PERCENTAGE"] = "Percentage"
@@ -81,7 +84,6 @@ AUCTIONATOR_LOCALES.enUS = function()
 
   L["CONFIG_ADVANCED_CATEGORY"] = "Advanced"
   L["CONFIG_ADVANCED_TEXT"] = "Only look here if you know what you're doing"
-  L["CONFIG_FULL_SCAN_STEP_SIZE"] = "Full scan step size"
   L["CONFIG_SCAN_SETTINGS"] = "Scan Settings"
 
   L["AUTHOR_HEADER"] = "Author"
@@ -118,8 +120,6 @@ AUCTIONATOR_LOCALES.enUS = function()
   L["NEXT_SCAN_MESSAGE"] = "A full scan may be started in %s minutes and %s seconds."
   L["FULL_SCAN_FAILED"] = "Full scan failed to complete."
   L["FINISHED_PROCESSING"] = "Finished processing %s items."
-  L["STARTING_FULL_SCAN_ALTERNATE"] = "Starting a full scan (alternate mode)."
-  L["FULL_SCAN_ALTERNATE_FAILED"] = "Full scan (alternate mode) failed to complete."
 
   L["TOO_MANY_SEARCH_RESULTS"] = "Too many search results. Limiting results displayed."
   L["LIST_DELETE_ERROR"] = "An error occurred attempting to delete a list."
@@ -168,6 +168,7 @@ AUCTIONATOR_LOCALES.enUS = function()
   L["RESULTS_NAME_COLUMN"] = "Name"
   L["RESULTS_AVAILABLE_COLUMN"] = "Available"
   L["ITEM_LEVEL_COLUMN"] = "Item Level"
+  L["SELLERS_COLUMN"] = "Seller(s)"
   L["OWNED_COLUMN"] = "Owned?"
 
   L["FULL_SCAN_BUTTON"] = "Full Scan"
@@ -230,6 +231,40 @@ AUCTIONATOR_LOCALES.enUS = function()
   L["SPLASH_834_MISCELLANEOUS_HEADER"] = "Miscellaneous"
   L["SPLASH_834_MISCELLANEOUS_1"] = "Search the AH for reagents from the crafting window (a \"Search\" button appears when both the crafting window and the AH are open)"
 
+  L["SPLASH_901_DESCRIPTION"] = "Biggest changes in this release are customisable columns for item listings and the changes to the full scan. As always there are various bugfixes."
+
+  L["SPLASH_901_FEATURES_HEADER"] = "New Features"
+  L["SPLASH_901_FEATURES_1"] = "Customisable columns on all results views. Do a right click on any column header to see the options."
+  L["SPLASH_901_FEATURES_2"] = "Small tabs option for when too many addons add tabs to the Auction House"
+  L["SPLASH_901_CHANGES_HEADER"] = "Changes"
+  L["SPLASH_901_CHANGES_1"] = "Replaced the full scan with a different method to avoid getting disconnected on busy servers."
+  L["SPLASH_901_CHANGES_2"] = "The autoscan option now defaults to off."
+  L["SPLASH_902_DESCRIPTION"] = "Along with the various bugfixes, there is one new feature."
+
+  L["SPLASH_902_FEATURES_HEADER"] = "New Features"
+  L["SPLASH_902_FEATURES_1"] = "A new \"Your History\" section on the Selling tab to show the prices of past auctions you have created."
+  L["SPLASH_903_DESCRIPTION"] = "One bugfix, and a couple of new features."
+
+  L["SPLASH_903_FEATURES_HEADER"] = "Features"
+  L["SPLASH_903_FEATURES_1"] = "A new \"Export Results\" button has been added to the Shopping tab to export the current search results in CSV format, suitable for importing into Excel."
+  L["SPLASH_903_FEATURES_2"] = "Favourite items in the Selling tab now stay visible even if they are no longer in your bag. This update resets your favourites list."
+
+  L["SPLASH_904_DESCRIPTION"] = "Bugfixes and a new history view"
+  L["SPLASH_904_FEATURES_HEADER"] = "Features"
+  L["SPLASH_904_FEATURES_1"] = "Right-clicking on a result in the Shopping tab will now open a dialog showing its price history."
+  L["SPLASH_905_DESCRIPTION"] = "Bugfixes and minor visual changes"
+  L["SPLASH_905_UPDATES_HEADER"] = "Updates"
+  L["SPLASH_905_UPDATES_1"] = "Smoother interactions in the Cancelling tab."
+
+  L["SPLASH_907_DESCRIPTION"] = "A few new features and the usual bugfixes."
+  L["SPLASH_907_FEATURES_HEADER"] = "Features"
+  L["SPLASH_907_FEATURES_1"] = "Gear with item levels of at least 168 are now differentiated in tooltip auction prices."
+  L["SPLASH_907_FEATURES_2"] = "A new \"Skip\" button will show to skip posting the current item when the option \"Automatically select the next item in your bag\" is on."
+  L["SPLASH_907_FEATURES_3"] = "New keybinding options added for posting, skipping and cancelling. For example you can now set the space key to post or cancel, without impacting any other bindings. Find them in the \"Selling: Shortcuts\" and \"Cancelling\" options."
+  L["SPLASH_907_FEATURES_4"] = "The Cancelling tab has a new search box."
+  L["SPLASH_907_UNANNOUNCED_HEADER"] = "Unannounced features from 9.0.6"
+  L["SPLASH_907_UNANNOUNCED_1"] = "An optional \"Seller(s)\" column (to see who is selling the auctions) has been added to the Selling tab. To activate it right-click a column header (e.g. \"Owned?\") in the current auctions listings."
+
   L["SPLASH_HIDE_MESSAGE"] = "Do not show until next update"
 
   L["LIST_ADD_ITEM_HEADER"] = "Add Shopping List Item"
@@ -256,6 +291,7 @@ AUCTIONATOR_LOCALES.enUS = function()
   L["SELECT_ALL"] = "Select All"
   L["UNSELECT_ALL"] = "Unselect All"
   L["CONFIRM"] = "Confirm"
+  L["ITEM_PRICE_HISTORY"] = "Item Price History"
 
   L["ANY_LOWER"] = "any"
 
@@ -263,12 +299,12 @@ AUCTIONATOR_LOCALES.enUS = function()
 
   L["UNDERCUT_SCAN"] = "Undercut Scan"
   L["CANCEL_UNDERCUT"] = "Cancel Undercut"
-  L["CANCEL_UNDERCUT_BUTTON_MACRO"] = "Cancel Undercut Button Macro"
   L["NAME"] = "Name"
   L["QUANTITY"] = "Quantity"
   L["MAX"] = "Max"
   L["UNIT_PRICE"] = "Unit Price"
-  L["TIME_LEFT_H"] = "Time Left (h)"
+  L["UPPER_UNIT_PRICE"] = "Upper Unit Price"
+  L["TIME_LEFT"] = "Time Left"
   L["IS_UNDERCUT"] = "Undercut?"
   L["UNDERCUT_YES"] ="Yes"
   L["UNDERCUT_NO"] = "No"
@@ -305,9 +341,10 @@ AUCTIONATOR_LOCALES.enUS = function()
 
   L["BUYOUT_PRICE"] = "Buyout Price"
   L["BID_PRICE"] = "Bid Price"
+  L["BIDDER"] = "Bidder"
   L["DURATION"] = "Duration"
   L["POST"] = "Post"
-  L["POST_BUTTON_MACRO"] = "Post Button Macro"
+  L["SKIP"] = "Skip"
   L["DEPOSIT"] = "Deposit:"
   L["TOTAL_PRICE"] = "Total Price:"
 
@@ -315,8 +352,15 @@ AUCTIONATOR_LOCALES.enUS = function()
   L["DEFAULT_TAB_TEXT"] = "shows as the default tab"
   L["NONE"] = "None"
 
+  L["CONFIG_SMALL_TABS"] = "Use small tabs for the Auction House (reopen the Auction House for it to take effect)"
+  L["CONFIG_SMALL_TABS_TOOLTIP_HEADER"] = "Small Tabs"
+  L["CONFIG_SMALL_TABS_TOOLTIP_TEXT"] = "When too many addons add tabs to the Auction House they can end up overflowing past the end of the Auction House window. This setting makes the tabs smaller so they fit better."
+
   L["CONFIG_SELLING_CATEGORY"] = "Selling"
   L["CONFIG_SELLING_TEXT"] = "Options to change the behaviour of the Selling tab"
+
+  L["CONFIG_SELLING_SHORTCUTS_CATEGORY"] = "Selling: Shortcuts"
+  L["CONFIG_SELLING_SHORTCUTS_TEXT"] = "Options for keyboard and mouse shortcuts inside the Selling tab"
 
   L["CONFIG_PRICE_HISTORY"] = "Show historical prices in the selling tab (reload required)"
   L["CONFIG_PRICE_HISTORY_TOOLTIP_HEADER"] = "Price History"
@@ -336,10 +380,18 @@ AUCTIONATOR_LOCALES.enUS = function()
   L["CONFIG_SELLING_AUTO_SELECT_NEXT"] = "Automatically select the next item in your bag"
   L["CONFIG_SELLING_AUTO_SELECT_NEXT_TOOLTIP_HEADER"] = "Automatic item selection"
   L["CONFIG_SELLING_AUTO_SELECT_NEXT_TOOLTIP_TEXT"] = "When posting automatically select the next item in the bag view."
+  L["CONFIG_SELLING_MISSING_FAVOURITES"] = "Always show favourite items, including when not in your bag."
+  L["CONFIG_SELLING_MISSING_FAVOURITES_TOOLTIP_HEADER"] = "Missing favourites visible"
+  L["CONFIG_SELLING_MISSING_FAVOURITES_TOOLTIP_TEXT"] = "Show favourite items in the bag view even when they aren't in your bag."
+  L["CONFIG_SELLING_POST_SHORTCUT"] = "A keyboard/mouse shortcut to post the current item is"
+  L["CUSTOM_KEYBOARD_SHORTCUTS"] = "Custom keyboard shortcuts"
+  L["CONFIG_SELLING_POST_SHORTCUT_TOOLTIP_TEXT"] = "Click and then press the buttons that you wish to use as the shortcut. This shortcut will only be active in the Selling tab and won't affect any other shortcuts bound to the buttons."
+  L["CONFIG_SELLING_SKIP_SHORTCUT"] = "A shortcut to skip posting the currently selected item is"
   L["CONFIG_BAG"] = "Bag"
 
   L["HIDE"] = "Hide"
   L["RESTORE_ALL"] = "Restore All"
+  L["UNHIDE_ALL_HIDDEN_ITEMS"] = "Unhide all hidden items"
   L["FAVOURITES"] = "Favourites"
   L["ADD_FAVOURITE"] = "Add Favourite"
   L["REMOVE_FAVOURITE"] = "Remove Favourite"
@@ -362,6 +414,9 @@ AUCTIONATOR_LOCALES.enUS = function()
   L["CONFIG_SELLING_GEAR_VENDOR_PRICE_MULTIPLIER_SUFFIX"] = "Set to 0 for no price"
   L["CONFIG_SELLING_GEAR_VENDOR_PRICE_MULTIPLIER_TOOLTIP_HEADER"] = "Gear Vendor Price Default"
   L["CONFIG_SELLING_GEAR_VENDOR_PRICE_MULTIPLIER_TOOLTIP_TEXT"] = "This lets you set a default price for gear as a multiple of the vendor price. This is used for any gear Auctionator doesn't have a price for. Set this to 0 to not set a price."
+  L["CONFIG_SELLING_GEAR_USE_ILVL_VARIANTS"] = "For gear, use item level and title when selecting the price to compete with"
+  L["CONFIG_SELLING_GEAR_USE_ILVL_VARIANTS_TOOLTIP_HEADER"] = "Use Item Level and Title"
+  L["CONFIG_SELLING_GEAR_USE_ILVL_VARIANTS_TOOLTIP_TEXT"] = "Normally gear is compared with any other gear that is similar, but without taking item level and the \"of the\" titles into account. This will make them be taken into account."
 
   L["CLASSIC_SUPPORT_ERROR"] = "This version of Auctionator DOES NOT support Classic. Stuff may break and not work."
 
@@ -369,6 +424,11 @@ AUCTIONATOR_LOCALES.enUS = function()
 
   L["REAGENT_SEARCH"] = "Reagent Search"
   L["NUMBER_SEPARATOR"] = ","
+  L["TOTAL_ON_SALE"] = "Total on sale: %s"
+  L["REALM_HISTORY"] = "Realm History"
+  L["YOUR_HISTORY"] = "Your History"
+  L["EXPORT_RESULTS"] = "Export Results"
+  L["TO_CRAFT_COLON"] = "To Craft:"
 
   return L
 end

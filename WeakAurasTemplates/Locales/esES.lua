@@ -7,29 +7,21 @@ end
 local L = WeakAuras.L
 
 -- WeakAuras/Templates
-	--[[Translation missing --]]
-	L[" Debuff"] = " Debuff"
-	--[[Translation missing --]]
-	L["<70% Mana"] = "<70% Mana"
-	--[[Translation missing --]]
-	L[">70% Mana"] = ">70% Mana"
+	L[" Debuff"] = "Perjuicio"
+	L["<70% Mana"] = "<70% de maná"
+	L[">70% Mana"] = ">70% de maná"
 	L["Abilities"] = "Habilidades"
-	--[[Translation missing --]]
-	L["Ability"] = "Ability"
-	--[[Translation missing --]]
-	L["Add Triggers"] = "Add Triggers"
+	L["Ability"] = "Habilidad"
+	L["Add Triggers"] = "Añadir disparadores"
 	L["Always Active"] = "Siempre activo"
 	L["Always Show"] = "Mostrar siempre"
 	L["Always show the aura, highlight it if debuffed."] = "Mostrar siempre el aura, resaltarla si hay perjuicios."
-	--[[Translation missing --]]
-	L["Always show the aura, turns grey if on cooldown."] = "Always show the aura, turns grey if on cooldown."
+	L["Always show the aura, turns grey if on cooldown."] = "Siempre muestra el aura, se vuelve gris si está en tiempo de reutilización."
 	L["Always show the aura, turns grey if the debuff not active."] = "Mostrar siempre el aura, se vuelve gris si el perjuicio no está activo."
-	--[[Translation missing --]]
-	L["Always shows highlights if enchant missing."] = "Always shows highlights if enchant missing."
+	L["Always shows highlights if enchant missing."] = "Siempre se muestra resplandeciente si no hay encantamiento."
 	L["Always shows the aura, grey if buff not active."] = "Muestra siempre el aura, se vuelve gris si el beneficio no está activo."
 	L["Always shows the aura, highlight it if buffed."] = "Muestra siempre el aura, la resalta si el beneficio está activo."
-	--[[Translation missing --]]
-	L["Always shows the aura, highlight when active, turns blue on insufficient resources."] = "Always shows the aura, highlight when active, turns blue on insufficient resources."
+	L["Always shows the aura, highlight when active, turns blue on insufficient resources."] = "Muestra siempre el aura, la resalta si está activa, se vuelve azul si no hay suficientes recursos."
 	--[[Translation missing --]]
 	L["Always shows the aura, highlight while proc is active, blue on insufficient resources."] = "Always shows the aura, highlight while proc is active, blue on insufficient resources."
 	--[[Translation missing --]]
@@ -50,6 +42,8 @@ local L = WeakAuras.L
 	L["Always shows the aura, turns red when out of range, blue on insufficient resources."] = "Always shows the aura, turns red when out of range, blue on insufficient resources."
 	--[[Translation missing --]]
 	L["Always shows the aura, turns red when out of range."] = "Always shows the aura, turns red when out of range."
+	--[[Translation missing --]]
+	L["Always shows the aura."] = "Always shows the aura."
 	--[[Translation missing --]]
 	L["Back"] = "Back"
 	--[[Translation missing --]]
@@ -138,6 +132,8 @@ local L = WeakAuras.L
 	L["Only shows the aura when the ability is on cooldown."] = "Only shows the aura when the ability is on cooldown."
 	--[[Translation missing --]]
 	L["Only shows the aura when the ability is ready to use."] = "Only shows the aura when the ability is ready to use."
+	--[[Translation missing --]]
+	L["Other cooldown"] = "Other cooldown"
 	L["Pet alive"] = "Mascota viva"
 	L["Pet Behavior"] = "Comportamiento de mascota"
 	--[[Translation missing --]]
@@ -150,6 +146,8 @@ local L = WeakAuras.L
 	L["Resources"] = "Resources"
 	--[[Translation missing --]]
 	L["Resources and Shapeshift Form"] = "Resources and Shapeshift Form"
+	--[[Translation missing --]]
+	L["Rogue cooldown"] = "Rogue cooldown"
 	--[[Translation missing --]]
 	L["Runes"] = "Runes"
 	--[[Translation missing --]]
@@ -223,4 +221,6 @@ local L = WeakAuras.L
 	L["Unknown Item"] = "Unknown Item"
 	--[[Translation missing --]]
 	L["Unknown Spell"] = "Unknown Spell"
+	--[[Translation missing --]]
+	L["Warrior cooldown"] = "Warrior cooldown"
 

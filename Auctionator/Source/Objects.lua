@@ -1,6 +1,5 @@
 Auctionator = {
   Debug = {},
-  Database = {},
   Constants = {},
   Utilities = {},
   Events = {},
@@ -9,7 +8,6 @@ Auctionator = {
   State = {
     Loaded = false,
     CurrentVersion = nil,
-    LiveDB = nil,
   },
 
   SavedState = {},
@@ -26,8 +24,10 @@ Auctionator = {
   Cancelling = {},
   Enchant = {},
   Selling = {},
+  Components = {},
   ReagentSearch = {},
-  FullScan = {},
+  IncrementalScan = {},
+  PostingHistory = {},
 
   Tabs = {
     State = {

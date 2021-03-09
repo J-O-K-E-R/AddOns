@@ -1,0 +1,32 @@
+------------------------------------------------------------------------
+r212 | dratr | 2021-01-27 19:42:40 +0000 (Wed, 27 Jan 2021) | 2 lines
+Changed paths:
+   M /trunk/LoggerHead.toc
+
+Bump version to hopefully get curseforge packager to run again
+
+------------------------------------------------------------------------
+r211 | dratr | 2021-01-08 21:55:31 +0000 (Fri, 08 Jan 2021) | 2 lines
+Changed paths:
+   M /trunk/LoggerHead.toc
+
+Version bump
+
+------------------------------------------------------------------------
+r210 | dratr | 2021-01-08 21:52:44 +0000 (Fri, 08 Jan 2021) | 3 lines
+Changed paths:
+   M /trunk/LoggerHead.lua
+
+Add Torghast as a loggable difficulty.
+
+
+------------------------------------------------------------------------
+r209 | dratr | 2021-01-08 01:08:51 +0000 (Fri, 08 Jan 2021) | 3 lines
+Changed paths:
+   M /trunk/.pkgmeta
+
+Disable nolib creation as new curse client is pulling nolib version by
+default causing problems for most users
+
+------------------------------------------------------------------------
+

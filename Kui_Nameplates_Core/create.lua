@@ -55,8 +55,7 @@ local TARGET_GLOW,TARGET_GLOW_COLOUR,FRAME_GLOW_THREAT,FRAME_GLOW_SIZE,
       FRAME_GLOW_SIZE_TARGET,FRAME_GLOW_SIZE_THREAT
 local THREAT_BRACKETS,THREAT_BRACKETS_SIZE
 local CASTBAR_DETACH,CASTBAR_MATCH_FRAME_WIDTH
-local CLASSPOWERS_ON_FRIENDS,CLASSPOWERS_ON_ENEMIES
-local CLASSPOWERS_Y,CLASSPOWERS_Y_NAMEONLY,CLASSPOWERS_Y_PERSONAL
+local CLASSPOWERS_ON_FRIENDS,CLASSPOWERS_ON_ENEMIES,CLASSPOWERS_Y
 
 -- helper functions ############################################################
 local CreateStatusBar
@@ -118,7 +117,7 @@ do
 
         if spark then
             local texture = bar:GetStatusBarTexture()
-            spark = bar:CreateTexture(nil,'ARTWORK',nil,spark_level or 7)
+            spark = bar:CreateTexture(nil,'ARTWORK',nil,spark_level or 3)
             spark:SetTexture(KUI_MEDIA..'t/spark')
             spark:SetWidth(12)
 
@@ -270,11 +269,10 @@ do
         CLASSPOWERS_ON_FRIENDS = core.profile.classpowers_on_friends
         CLASSPOWERS_ON_ENEMIES = core.profile.classpowers_on_enemies
         CLASSPOWERS_Y = core:Scale(core.profile.classpowers_y)
-        CLASSPOWERS_Y_NAMEONLY = core:Scale(core.profile.classpowers_y_nameonly)
-        CLASSPOWERS_Y_PERSONAL = core:Scale(core.profile.classpowers_y_personal)
     end
     function core:SetLocals()
         -- set config locals to reduce table lookup
+        -- yes this is a bit extreme isn't it
         UpdateMediaLocals()
         p1()
         p2()
@@ -878,12 +876,14 @@ do
                 f.ThreatGlow:SetSize(FRAME_GLOW_SIZE_TARGET)
                 f.ThreatGlow:SetVertexColor(unpack(TARGET_GLOW_COLOUR))
                 f.TargetGlow:SetVertexColor(unpack(TARGET_GLOW_COLOUR))
+                f.TargetGlow:SetAlpha(1)
                 f.TargetGlow:Show()
             elseif MOUSEOVER_GLOW and f.state.highlight and not f.state.target then
                 -- mouseover glow
                 f.ThreatGlow:SetSize(FRAME_GLOW_SIZE_TARGET)
                 f.ThreatGlow:SetVertexColor(unpack(MOUSEOVER_GLOW_COLOUR))
                 f.TargetGlow:SetVertexColor(unpack(MOUSEOVER_GLOW_COLOUR))
+                f.TargetGlow:SetAlpha(1)
                 f.TargetGlow:Show()
             else
                 f.TargetGlow:Hide()
@@ -930,24 +930,13 @@ do
     end
     local function Arrows_SetVertexColor(self,...)
         self.l:SetVertexColor(...)
+        self.l:SetAlpha(1)
         self.r:SetVertexColor(...)
+        self.r:SetAlpha(1)
     end
     local function Arrows_UpdatePosition(self)
-        if not CASTBAR_DETACH and
-            self.parent.state.casting and
-            self.parent.SpellIcon and
-            self.parent.SpellIcon:IsVisible()
-        then
-            -- move for non-detached cast bar spell icon
-            self.l:SetPoint('RIGHT',self.parent.bg,'LEFT',
-                TARGET_ARROWS_INSET-self.parent.SpellIcon.bg:GetWidth(),0)
-        else
-            self.l:SetPoint('RIGHT',self.parent.bg,'LEFT',
-                TARGET_ARROWS_INSET,0)
-        end
-
-        self.r:SetPoint('LEFT',self.parent.bg,'RIGHT',
-            -TARGET_ARROWS_INSET,0)
+        self.l:SetPoint('RIGHT',self.parent.bg,'LEFT',TARGET_ARROWS_INSET,0)
+        self.r:SetPoint('LEFT',self.parent.bg,'RIGHT',-TARGET_ARROWS_INSET,0)
     end
     local function Arrows_SetSize(self,size)
         self.l:SetSize(size,size)
@@ -966,9 +955,7 @@ do
             f.TargetArrows.r:SetTexture(TARGET_ARROWS_TEXTURE)
             f.TargetArrows:SetVertexColor(unpack(TARGET_GLOW_COLOUR))
             f.TargetArrows:SetSize(TARGET_ARROWS_SIZE)
-
             f.TargetArrows:Show()
-            f.TargetArrows:UpdatePosition()
         else
             f.TargetArrows:Hide()
         end
@@ -977,10 +964,10 @@ do
         if not TARGET_ARROWS or f.TargetArrows then return end
 
         local left = f.HealthBar:CreateTexture(nil,'ARTWORK',nil,4)
-        left:SetBlendMode('ADD')
+        left:SetBlendMode('BLEND')
 
         local right = f.HealthBar:CreateTexture(nil,'ARTWORK',nil,4)
-        right:SetBlendMode('ADD')
+        right:SetBlendMode('BLEND')
         right:SetTexCoord(1,0,0,1)
 
         local arrows = {
@@ -1001,9 +988,9 @@ end
 -- castbar #####################################################################
 do
     local CASTBAR_ENABLED,CASTBAR_HEIGHT,CASTBAR_COLOUR,CASTBAR_UNIN_COLOUR,
-          CASTBAR_SHOW_ICON,CASTBAR_SHOW_NAME,
+          CASTBAR_SHOW_ICON,CASTBAR_SHOW_NAME,CASTBAR_SHOW_SHIELD,
           CASTBAR_NAME_VERTICAL_OFFSET,CASTBAR_ANIMATE,
-          CASTBAR_ANIMATE_CHANGE_COLOUR,CASTBAR_SPACING,
+          CASTBAR_ANIMATE_CHANGE_COLOUR,CASTBAR_SPACING,SHIELD_SIZE,
           CASTBAR_DETACH_HEIGHT,CASTBAR_DETACH_WIDTH,
           CASTBAR_DETACH_OFFSET,CASTBAR_DETACH_COMBINE,CASTBAR_DETACH_NAMEONLY,
           CASTBAR_RATIO,CASTBAR_ICON_SIDE
@@ -1017,25 +1004,13 @@ do
         if CASTBAR_DETACH or not f.SpellIcon or not f.SpellIcon.bg then return end
         f.SpellIcon.bg:SetWidth(ceil(f.CastBar.bg:GetHeight() + f.bg:GetHeight() + CASTBAR_SPACING))
     end
-    local function CastBarSetColour(castbar,colour,glow_too)
+    local function CastBarSetColour(castbar,colour)
         -- set colour, assuming colour is a 3/4-length table,
         -- and set alpha depending on detach-combine/spell icon settings
         castbar:SetStatusBarColor(unpack(colour))
 
-        if glow_too then
-            -- glow inherits colour
-            castbar.top:SetVertexColor(unpack(colour))
-            castbar.bottom:SetVertexColor(unpack(colour))
-        elseif GLOW_AS_SHADOW then
-            castbar.top:SetVertexColor(0,0,0,.2)
-            castbar.bottom:SetVertexColor(0,0,0,.2)
-        else
-            castbar.top:SetVertexColor(0,0,0,0)
-            castbar.bottom:SetVertexColor(0,0,0,0)
-        end
-
         if CASTBAR_DETACH_COMBINE and CASTBAR_SHOW_ICON then
-            -- reduce alpha when combined
+            -- reduced alpha for spell icon
             castbar:GetStatusBarTexture():SetAlpha(.7)
         else
             castbar:GetStatusBarTexture():SetAlpha(1)
@@ -1054,8 +1029,16 @@ do
 
         if f.cast_state.interruptible then
             CastBarSetColour(f.CastBar,CASTBAR_COLOUR)
+
+            if f.elements.SpellShield then
+                f.SpellShield:Hide()
+            end
         else
-            CastBarSetColour(f.CastBar,CASTBAR_UNIN_COLOUR,true)
+            CastBarSetColour(f.CastBar,CASTBAR_UNIN_COLOUR)
+
+            if f.elements.SpellShield then
+                f.SpellShield:Show()
+            end
         end
 
         f.CastBar:Show()
@@ -1067,6 +1050,12 @@ do
 
         if CASTBAR_SHOW_ICON and f.SpellIcon then
             f.SpellIcon:Show()
+
+            if CASTBAR_DETACH then
+                f.SpellIcon.bg:Hide()
+            else
+                f.SpellIcon.bg:Show()
+            end
         end
 
         if CASTBAR_SHOW_NAME and f.SpellName then
@@ -1075,10 +1064,6 @@ do
 
         if FADE_AVOID_CASTING then
             plugin_fading:UpdateFrame(f)
-        end
-
-        if TARGET_ARROWS then
-            f:UpdateTargetArrows()
         end
     end
     local function HideCastBar(f,hide_cause,force)
@@ -1103,6 +1088,10 @@ do
             end
             if f.SpellIcon then
                 f.SpellIcon:Hide()
+                f.SpellIcon.bg:Hide()
+            end
+            if f.SpellShield then
+                f.SpellShield:Hide()
             end
         else
             -- soft hide; set state colours, text, start animation
@@ -1137,10 +1126,6 @@ do
 
         if FADE_AVOID_CASTING then
             plugin_fading:UpdateFrame(f)
-        end
-
-        if TARGET_ARROWS then
-            f:UpdateTargetArrows()
         end
     end
     local function UpdateCastBar(f)
@@ -1202,6 +1187,11 @@ do
                 f.CastBar.bg:SetPoint('TOP',f.bg,'BOTTOM',0,-CASTBAR_DETACH_OFFSET)
             end
 
+            if CASTBAR_SHOW_SHIELD and f.SpellShield then
+                f.SpellShield:ClearAllPoints()
+                f.SpellShield:SetPoint('CENTER',f.CastBar.bg,'LEFT',1,0)
+            end
+
             if CASTBAR_SHOW_ICON and f.SpellIcon then
                 if CASTBAR_DETACH_COMBINE then
                     -- overlay spell icon on bar
@@ -1234,6 +1224,16 @@ do
             f.CastBar:SetPoint('TOPLEFT',f.CastBar.bg,1,-1)
             f.CastBar:SetPoint('BOTTOMRIGHT',f.CastBar.bg,-1,1)
 
+            if CASTBAR_SHOW_SHIELD and f.SpellShield then
+                f.SpellShield:ClearAllPoints()
+
+                if CASTBAR_SHOW_ICON and f.SpellIcon and CASTBAR_ICON_SIDE == 2 then
+                    f.SpellShield:SetPoint('CENTER',f.CastBar.bg,'RIGHT',1,0)
+                else
+                    f.SpellShield:SetPoint('CENTER',f.CastBar.bg,'LEFT',1,0)
+                end
+            end
+
             if CASTBAR_SHOW_ICON and f.SpellIcon then
                 f.SpellIcon:ClearAllPoints()
                 f.SpellIcon.bg:ClearAllPoints()
@@ -1259,14 +1259,21 @@ do
     local function CreateSpellIcon(f)
         local icon = f.CastBar:CreateTexture(nil, 'BACKGROUND', nil, 2)
         f.handler:RegisterElement('SpellIcon', icon)
-        return icon
-    end
-    local function CreateSpellIconBackground(f)
+
         local bg = f.CastBar:CreateTexture(nil,'BACKGROUND',nil,1)
         bg:SetTexture(kui.m.t.solid)
         bg:SetVertexColor(0,0,0,.9)
-        f.SpellIcon.bg = bg
-        return bg
+        icon.bg = bg
+    end
+    local function CreateSpellShield(f)
+        -- cast shield
+        local shield = f.CastBar:CreateTexture(nil, 'ARTWORK', nil, 3)
+        shield:SetTexture(MEDIA..'shield3')
+        shield:SetSize(SHIELD_SIZE,SHIELD_SIZE)
+        shield:SetVertexColor(.8, .8, 1)
+        shield:Hide()
+
+        f.handler:RegisterElement('SpellShield', shield)
     end
     local function CreateSpellName(f)
         local spellname = CreateFontString(f.CastBar,FONT_SIZE_SMALL)
@@ -1274,7 +1281,6 @@ do
         spellname:Hide()
 
         f.handler:RegisterElement('SpellName', spellname)
-        return spellname
     end
     local function CreateAnimGroup(f)
         -- bar highlight texture
@@ -1318,8 +1324,8 @@ do
         if CASTBAR_SHOW_ICON and not f.SpellIcon then
             CreateSpellIcon(f)
         end
-        if CASTBAR_SHOW_ICON and not CASTBAR_DETACH and not f.SpellIcon.bg then
-            CreateSpellIconBackground(f)
+        if CASTBAR_SHOW_SHIELD and not f.SpellShield then
+            CreateSpellShield(f)
         end
         if CASTBAR_ANIMATE and not f.CastBar.AnimGroup then
             CreateAnimGroup(f)
@@ -1341,25 +1347,6 @@ do
 
         castbar.bg = bg
 
-        -- XXX glow
-        local top = castbar:CreateTexture(nil,'BACKGROUND',nil,-5)
-        top:SetTexture(MEDIA..'target-glow')
-        top:SetTexCoord(1,0,1,0)
-        top:SetPoint('BOTTOMLEFT',bg,'TOPLEFT',0,0)
-        top:SetPoint('BOTTOMRIGHT',bg,'TOPRIGHT',0,0)
-        top:SetHeight(6)
-        top:SetVertexColor(0,0,0,.2)
-        castbar.top = top
-
-        local bottom = castbar:CreateTexture(nil,'BACKGROUND',nil,-5)
-        bottom:SetTexture(MEDIA..'target-glow')
-        bottom:SetPoint('TOPLEFT',bg,'BOTTOMLEFT',0,0)
-        bottom:SetPoint('TOPRIGHT',bg,'BOTTOMRIGHT',0,0)
-        bottom:SetHeight(6)
-        bottom:SetVertexColor(0,0,0,.2)
-        castbar.bottom = bottom
-
-        -- register base elements
         f.handler:RegisterElement('CastBar', castbar)
 
         CreateOptionalElementsMaybe(f)
@@ -1382,10 +1369,12 @@ do
         CASTBAR_UNIN_COLOUR = self.profile.castbar_unin_colour
         CASTBAR_SHOW_ICON = self.profile.castbar_icon
         CASTBAR_SHOW_NAME = self.profile.castbar_name
+        CASTBAR_SHOW_SHIELD = self.profile.castbar_shield
         CASTBAR_NAME_VERTICAL_OFFSET = ScaleTextOffset(self.profile.castbar_name_vertical_offset)
         CASTBAR_ANIMATE = self.profile.castbar_animate
         CASTBAR_ANIMATE_CHANGE_COLOUR = self.profile.castbar_animate_change_colour
         CASTBAR_SPACING = self.profile.castbar_spacing
+        SHIELD_SIZE = self:Scale(self.profile.castbar_shield_size)
 
         CASTBAR_DETACH = self.profile.castbar_detach
         CASTBAR_DETACH_HEIGHT = self:Scale(self.profile.castbar_detach_height)
@@ -1399,26 +1388,12 @@ do
         for _,f in addon:Frames() do
             CreateOptionalElementsMaybe(f)
 
-            if f.SpellIcon then
-                -- determine spell icon visibility...
-                if CASTBAR_SHOW_ICON then
-                    f.SpellIcon:Show()
-
-                    -- determine icon background visibility...
-                    if f.SpellIcon.bg then
-                        if CASTBAR_DETACH then
-                            f.SpellIcon.bg:Hide()
-                        else
-                            f.SpellIcon.bg:Show()
-                        end
-                    end
+            if f.SpellShield then
+                if CASTBAR_SHOW_SHIELD then
+                    f.handler:EnableElement('SpellShield')
+                    f.SpellShield:SetSize(SHIELD_SIZE,SHIELD_SIZE)
                 else
-                    -- hide icon and background
-                    f.SpellIcon:Hide()
-
-                    if f.SpellIcon.bg then
-                        f.SpellIcon.bg:Hide()
-                    end
+                    f.handler:DisableElement('SpellShield')
                 end
             end
 
@@ -1917,15 +1892,12 @@ do
         end
 
         -- override frame position
+        -- XXX we ~could~ use pixel-corrected positions but it doesn't matter
+        -- too much with textures; @classpowers2 fixes this anyway
         cpf:ClearAllPoints()
         if parent.IN_NAMEONLY then
-            if parent.GuildText and parent.GuildText:IsShown() then
-                cpf:SetPoint('TOP',parent.GuildText,'BOTTOM',0,CLASSPOWERS_Y_NAMEONLY)
-            else
-                cpf:SetPoint('TOP',parent.NameText,'BOTTOM',0,CLASSPOWERS_Y_NAMEONLY)
-            end
-        elseif parent.state.personal then
-            cpf:SetPoint('CENTER',parent.bg,'BOTTOM',0,CLASSPOWERS_Y_PERSONAL)
+            -- (we add a -2 here as a margin between text
+            cpf:SetPoint('TOP',parent.GuildText and parent.GuildText:IsShown() and parent.GuildText or parent.NameText,'BOTTOM',0,CLASSPOWERS_Y-2)
         else
             cpf:SetPoint('CENTER',parent.bg,'BOTTOM',0,CLASSPOWERS_Y)
         end

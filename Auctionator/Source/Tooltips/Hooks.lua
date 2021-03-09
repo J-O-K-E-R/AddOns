@@ -229,7 +229,20 @@ hooksecurefunc (GameTooltip, "SetTradeTargetItem",
 -- Occurs when mousing over items in the Refer-a-Friend frame, and a few other places
 hooksecurefunc (GameTooltip, "SetItemByID",
   function (tip, itemID)
-    if not itemID or itemID == 0 then
+    if not itemID then
+      return
+    end
+
+    local itemLink = select(2, GetItemInfo(itemID))
+
+    Auctionator.Tooltip.ShowTipWithPricing(tip, itemLink, 1)
+  end
+);
+
+-- Occurs mainly with addons (Blizzard and otherwise)
+hooksecurefunc (GameTooltip, "SetHyperlink",
+  function (tip, itemID)
+    if not itemID then
       return
     end
 
@@ -242,20 +255,28 @@ hooksecurefunc (GameTooltip, "SetItemByID",
 function Auctionator.Tooltip.LateHooks()
   -- As AuctionHouseUtil doesn't exist until the AH is opened this cannot be
   -- called before the AH opens.
+  -- Only shows disenchant information as the auction price is already displayed
+  -- and an itemKey is too inaccurate to use for a vendor price.
   hooksecurefunc(AuctionHouseUtil, "SetAuctionHouseTooltip",
     function(owner, rowData)
       if rowData.itemLink then
-        Auctionator.Tooltip.ShowTipWithPricing(GameTooltip, rowData.itemLink, rowData.count ~= nil and rowData.count or 1 )
+        -- Already set with SetHyperlink
+        return
 
       elseif rowData.itemKey then
         if rowData.itemKey.battlePetSpeciesID ~= 0 then
           return
         end
+        local itemInfo = { GetItemInfo(rowData.itemKey.itemID) }
 
-        local itemLink = select(2, GetItemInfo(rowData.itemKey.itemID))
+        if #itemInfo ~= 0 then
+          local disenchantStatus = Auctionator.Enchant.DisenchantStatus(itemInfo)
+          local disenchantPrice = Auctionator.Enchant.GetDisenchantAuctionPrice(itemInfo[2])
 
-        if itemLink ~= nil then
-          Auctionator.Tooltip.ShowTipWithPricing(GameTooltip, itemLink, rowData.count ~= nil and rowData.count or 1)
+          if disenchantStatus ~= nil then
+            Auctionator.Tooltip.AddDisenchantTip(GameTooltip, disenchantPrice, disenchantStatus)
+            GameTooltip:Show()
+          end
         end
       end
     end

@@ -10,7 +10,7 @@ local NewGame = false
 local ChatGrabChannel
 local rollCmd = SLASH_RANDOM1:upper()
 local GameInProgress = false
-local AcceptingRolls = false
+local AcceptingOnes = false
 local maxRoll
 local minRoll
 local ReportChannel = ""
@@ -284,6 +284,7 @@ AcceptRolls.Label:SetText("New Game")
 else
 StartNewGame()
 end
+AcceptingRolls = false
 end)
 function StartNewGame()
 	if GameMode_Button_Button:GetText() == "< Game Mode >" then
@@ -303,7 +304,7 @@ function StartNewGame()
 	
 		isCGHost = true
 		GameInProgress = true
-		AcceptingRolls = false
+		AcceptingOnes = false
 end
 AcceptRolls.Label = AcceptRolls:CreateFontString(nil, "OVERLAY")
 AcceptRolls.Label:SetPoint("CENTER", AcceptRolls, 0, 0)
@@ -470,7 +471,7 @@ CGEnter.Label:SetShadowOffset(1.25, -1.25)
 CGEnter.Label:SetShadowColor(0, 0, 0)
 
 function CrossGambling_OnClickRoll2()
-	if(AcceptingRolls == true) then
+	if(AcceptingOnes == true) then
    if CGEnter.Label:GetText() == "Join Game" then
 	local InOrOut = "1"	
     SendEvent(format("CHAT_MSG:%s:%s:%s", PlayerName, PlayerClass, InOrOut))
@@ -575,8 +576,8 @@ RollGame:SetScript("OnMouseUp", function(self)
 	else
 	CrossGambling_OnClickROLL()
 	end
-	
-	AcceptingRolls = false
+	AcceptingRolls = true
+	AcceptingOnes = false
 end)
 
 RollGame.Label = RollGame:CreateFontString(nil, "OVERLAY")
@@ -640,7 +641,8 @@ SetTemplateDark(Close)
 Close:SetScript("OnEnter", ButtonOnEnter)
 Close:SetScript("OnLeave", ButtonOnLeave)
 Close:SetScript("OnMouseUp", function(self)
-      GUI:Hide()
+    GUI:Hide()
+	CrossGambling["active"] = 0;
 end)
 
 
@@ -845,7 +847,7 @@ GUI.BottomLabel:SetShadowOffset(1.25, -1.25)
 GUI.BottomLabel:SetShadowColor(0, 0, 0)
 GUI.BottomLabel:SetText("Silent On: Recommended every one has addon.")
 
-local UIConfig
+local CGConfigMenu
 local function ScrollFrame_OnMouseWheel(self, delta)
 	local newValue = self:GetVerticalScroll() - (delta * 20);
 	
@@ -861,12 +863,12 @@ end
 local function Tab_OnClick(self)
 	PanelTemplates_SetTab(self:GetParent(), self:GetID());
 	
-	local scrollChild = UIConfig.ScrollFrame:GetScrollChild();
+	local scrollChild = CGConfigMenu.ScrollFrame:GetScrollChild();
 	if (scrollChild) then
 		scrollChild:Hide();
 	end
 	
-	UIConfig.ScrollFrame:SetScrollChild(self.content);
+	CGConfigMenu.ScrollFrame:SetScrollChild(self.content);
 	self.content:Show();	
 end
 
@@ -882,7 +884,7 @@ local function SetTabs(frame, numTabs, ...)
 		tab:SetText(select(i, ...));
 		tab:SetScript("OnClick", Tab_OnClick);
 		
-		tab.content = CreateFrame("Frame", nil, UIConfig.ScrollFrame);
+		tab.content = CreateFrame("Frame", nil, CGConfigMenu.ScrollFrame);
 		tab.content:SetSize(308, 500);
 		tab.content:Hide();
 		
@@ -917,16 +919,16 @@ GUI.BottomLabel:SetShadowOffset(1.25, -1.25)
 GUI.BottomLabel:SetShadowColor(0, 0, 0)
 GUI.BottomLabel:SetText("Roll Tracker")
 
-UIConfig = CreateFrame("Frame", "CGConfig", SlotzContainer, "UIPanelDialogTemplate");
-UIConfig:SetSize(222, 167);
-UIConfig:SetPoint("CENTER", SlotzContainer, "CENTER", -2, 12)
+CGConfigMenu = CreateFrame("Frame", "CGConfig", SlotzContainer, "UIPanelDialogTemplate");
+CGConfigMenu:SetSize(222, 167);
+CGConfigMenu:SetPoint("CENTER", SlotzContainer, "CENTER", -2, 12)
 	
-UIConfig.ScrollFrame = CreateFrame("ScrollFrame", nil, UIConfig, "UIPanelScrollFrameTemplate");
-UIConfig.ScrollFrame:SetPoint("TOPLEFT", CGConfigDialogBG, "TOPLEFT", 4, -8);
-UIConfig.ScrollFrame:SetPoint("BOTTOMRIGHT", CGConfigDialogBG, "BOTTOMRIGHT", -3, 4);
-UIConfig.ScrollFrame:SetClipsChildren(true);
-UIConfig.ScrollFrame:SetScript("OnMouseWheel", ScrollFrame_OnMouseWheel);	
-local content1 = SetTabs(UIConfig, 1, "Appearance");
+CGConfigMenu.ScrollFrame = CreateFrame("ScrollFrame", nil, CGConfigMenu, "UIPanelScrollFrameTemplate");
+CGConfigMenu.ScrollFrame:SetPoint("TOPLEFT", CGConfigDialogBG, "TOPLEFT", 4, -8);
+CGConfigMenu.ScrollFrame:SetPoint("BOTTOMRIGHT", CGConfigDialogBG, "BOTTOMRIGHT", -3, 4);
+CGConfigMenu.ScrollFrame:SetClipsChildren(true);
+CGConfigMenu.ScrollFrame:SetScript("OnMouseWheel", ScrollFrame_OnMouseWheel);	
+local content1 = SetTabs(CGConfigMenu, 1, "Appearance");
 	
 local PlayerSlotz = CreateFrame("Frame", nil, content1, BackdropTemplateMixin and "BackdropTemplate")
 PlayerSlotz:SetPoint("CENTER", content1, "CENTER", 2, 0)
@@ -1134,7 +1136,11 @@ if (Diff ~= 0) then
 	
 		CrossGambling["stats"][Winner[1]] = CrossGambling["stats"][Winner[1]] + GameMode2
 		CrossGambling["stats"][Loser[1]] = CrossGambling["stats"][Loser[1]] - GameMode2
-		
+	function RemoveLastRoll()
+		CrossGambling["stats"][Winner[1]] = CrossGambling["stats"][Winner[1]] - GameMode2
+		CrossGambling["stats"][Loser[1]] = CrossGambling["stats"][Loser[1]] + GameMode2
+end	
+
 	end
 else
 		SendChatMessage(format("It was a tie! No payouts on this roll!"), ReportChannel, nil)	
@@ -1144,6 +1150,7 @@ end
 		tremove(Rolls, 1)
 	end
 end
+
 
 
 
@@ -1193,13 +1200,13 @@ end
 function Minimap_Toggle()
 	if CrossGambling["minimap"] then
 		-- minimap is shown, set to false, and hide
+		GUI:Show()
 		CrossGambling["minimap"] = false
-	    GUI:Show()	
         isCGHost = false		
      else
 		-- minimap is now shown, set to true, and show
-		CrossGambling["minimap"] = true
 		GUI:Hide()
+		CrossGambling["minimap"] = true
 		CrossGambling["active"] = 0;
 		isCGHost = false
 	end
@@ -1292,7 +1299,7 @@ Events["RESET_GAME"] = function()
 end
 
 Events["ADD_PLAYER"] = function(name)
-if(AcceptingRolls == true) then
+if(AcceptingOnes == true) then
 	if(CrossGambling_ChkBan(tostring(name)) == 0) then
 	AddPlayer(name)
     elseif(isCGHost == true) then 
@@ -1307,6 +1314,7 @@ Events["REMOVE_PLAYER"] = function(name)
 end
 
 Events["PLAYER_ROLL"] = function(name, value)
+ if(AcceptingRolls == true) then
 	for i = 1, #Players do
 		if (Players[i].Name == name and not Players[i].HasRolled) then
 			Players[i].HasRolled = true
@@ -1318,13 +1326,14 @@ Events["PLAYER_ROLL"] = function(name, value)
 		end
 	end
 end
+end
 
 Events["SET_ROLL"] = function(value)
 	CurrentRollValue = tonumber(value)
 end
 
 Events["START_GAME"] = function()
-AcceptingRolls = true
+AcceptingOnes = true
   if(ChatFrame:IsShown() == true and isCGHost == true and GameInProgress == true) then
    EnableButton(LastCall)
   	if GameMode_Button_Button:GetText() == "< Game Mode >" then
@@ -1381,7 +1390,7 @@ end
 end
 
 Events["CLOSE_GAME"] = function()
-AcceptingRolls = false
+AcceptingOnes = false
 if(ChatFrame:IsShown() == true and  isCGHost == true and GameInProgress == true ) then
   	local RollNotification = "Press Roll Me!"
     SendEvent(format("CHAT_MSG:%s:%s:%s", PlayerName, PlayerClass, RollNotification))
@@ -1401,7 +1410,7 @@ end
 
 function ParseChatRoll(tempString2)
 	local tempString1 = tempString2
-	local player, junk, actualRoll, range = strsplit(" ", tempString1)
+	local player, actualRoll, minRoll, maxRoll = strmatch(tempString1, "^([^ ]+) .+ (%d+) %((%d+)-(%d+)%)%.?$")
 
 	function CheckPlayers(player)
 		for i=1, #Players do
@@ -1413,10 +1422,9 @@ function ParseChatRoll(tempString2)
 	end
 
 
-	if junk == "rolls" and CheckPlayers(player)==true then
-		minRoll, maxRoll = strsplit("-",range)
-		minRoll = tonumber(strsub(minRoll,2))
-		maxRoll = tonumber(strsub(maxRoll,1,-2))
+	if CheckPlayers(player)==true then
+		minRoll = tonumber(minRoll)
+		maxRoll = tonumber(maxRoll)
 		actualRoll = tonumber(actualRoll)
 
 
@@ -1449,6 +1457,7 @@ function CrossGambling_SlashCmd(msg)
 		Print("", "", "unban - Unban's the user");
 		Print("", "", "listban - Shows ban list");
 		Print("", "", "house - Toggles guild house cut");
+		Print("", "", "removelastroll - Removes the last roll");
 		msgPrint = 1;
 	end
 	if (msg == "hide") then
@@ -1486,7 +1495,11 @@ function CrossGambling_SlashCmd(msg)
 		CrossGambling_UnjoinStats(strsub(msg, 13));
 		msgPrint = 1;
 	end
-
+    if (msg == "removelastroll") then
+		RemoveLastRoll()
+		msgPrint = 1;
+	end
+	
 	if (string.sub(msg, 1, 3) == "ban") then
 		CrossGambling_AddBan(strsub(msg, 5));
 		msgPrint = 1;
@@ -1613,19 +1626,19 @@ if (event == "PLAYER_ENTERING_WORLD") then
 		isCGHost = false
 		end
 		end
-		if(chatmethod == "PARTY" and (event == "CHAT_MSG_PARTY" or event == "CHAT_MSG_PARTY_LEADER") and AcceptingRolls == true and CrossGambling["chat"] == 1) then
+		if(chatmethod == "PARTY" and (event == "CHAT_MSG_PARTY" or event == "CHAT_MSG_PARTY_LEADER") and AcceptingOnes == true and CrossGambling["chat"] == 1) then
 		if(message == "1") then
 			ChatAddPlayer(sender)
 		elseif(message == "-1") then
 			ChatRemovePlayer(sender)
 		end
-		elseif(chatmethod == "RAID" and (event == "CHAT_MSG_RAID" or event == "CHAT_MSG_RAID_LEADER") and AcceptingRolls == true and CrossGambling["chat"] == 2) then
+		elseif(chatmethod == "RAID" and (event == "CHAT_MSG_RAID" or event == "CHAT_MSG_RAID_LEADER") and AcceptingOnes == true and CrossGambling["chat"] == 2) then
 		if(message == "1") then
 			ChatAddPlayer(sender)
 		elseif(message == "-1") then
 			ChatRemovePlayer(sender)
 		end
-		elseif(chatmethod == "GUILD" and (event == "CHAT_MSG_GUILD" or event == "CHAT_MSG_GUILD") and AcceptingRolls == true and CrossGambling["chat"] == 3) then
+		elseif(chatmethod == "GUILD" and (event == "CHAT_MSG_GUILD" or event == "CHAT_MSG_GUILD") and AcceptingOnes == true and CrossGambling["chat"] == 3) then
 		if(message == "1") then
 			ChatAddPlayer(sender)
 		elseif(message == "-1") then

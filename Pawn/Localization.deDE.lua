@@ -1,6 +1,6 @@
 ﻿-- Pawn by Vger-Azjol-Nerub
 -- www.vgermods.com
--- © 2006-2020 Green Eclipse.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
+-- © 2006-2021 Green Eclipse.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
 -- See Readme.htm for more information.
 
 -- 
@@ -614,9 +614,12 @@ Weitere Informationen zu dieser Einstellung findest du in der Readme-Datei.]=],
 	}
 }
 
--- Special case: weapon speed uses a different word on Classic.
+-- Special case: weapon speed and Mail use different words on Classic.
 -- So, patch things up here.
 if VgerCore.IsClassic then
+	PawnLocal.Mail = "Schwere Rüstung"
+	PawnLocal.MailInfo = "Punkte, die zugewiesen werden sollen, wenn der Gegenstand Schwere Rüstung ist."
+	PawnLocal.TooltipParsing.Mail = "^Schwere Rüstung$"
 	PawnLocal.TooltipParsing.Speed = "^Tempo #$"
 end
 

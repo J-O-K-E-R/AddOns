@@ -1,8 +1,13 @@
 local function isDisenchantable(itemInfo)
   return
-    #itemInfo == 0 or
-    itemInfo[Auctionator.Constants.ITEM_INFO.CLASS] == LE_ITEM_CLASS_WEAPON or
-    itemInfo[Auctionator.Constants.ITEM_INFO.CLASS] == LE_ITEM_CLASS_ARMOR
+    #itemInfo == 0 or (
+      (
+        itemInfo[Auctionator.Constants.ITEM_INFO.CLASS] == LE_ITEM_CLASS_WEAPON or
+        itemInfo[Auctionator.Constants.ITEM_INFO.CLASS] == LE_ITEM_CLASS_ARMOR
+      ) and
+      itemInfo[Auctionator.Constants.ITEM_INFO.RARITY] >= Auctionator.Constants.QUALITY.UNCOMMON and
+      itemInfo[Auctionator.Constants.ITEM_INFO.RARITY] <= Auctionator.Constants.QUALITY.EPIC
+    )
 end
 
 function Auctionator.Enchant.DisenchantStatus(itemInfo)
@@ -41,7 +46,7 @@ function Auctionator.Enchant.GetDisenchantAuctionPrice(itemLink)
   local price = 0
 
   for reagentKey, meanDrop in pairs(disenchantInfo) do
-    local reagentPrice = Auctionator.Database.GetPrice(reagentKey)
+    local reagentPrice = Auctionator.Database:GetPrice(reagentKey)
 
     if reagentPrice == nil then
       return nil

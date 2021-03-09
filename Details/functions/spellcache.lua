@@ -110,6 +110,13 @@ do
 			
 			[228649] = {name = GetSpellInfo (228649) .. " (Passive)"}, --Monk Mistweaver Blackout kick - Passive Teachings of the Monastery
 			
+			[339538] = {name = GetSpellInfo (224266) .. " (Templar's Vindication)"}, --
+
+			[108271] = {name = GetSpellInfo (108271), icon = "Interface\\Addons\\Details\\images\\icon_astral_shift"}, --
+
+			--> shadowlands trinkets
+			[345020] = {name = GetSpellInfo (345020) .. " (Trinket)"},
+
 			--> bfa trinkets
 			[278155] = {name = GetSpellInfo (278155) .. " (Trinket)"}, --[Twitching Tentacle of Xalzaix]
 			[279664] = {name = GetSpellInfo (279664) .. " (Trinket)"}, --[Vanquished Tendril of G'huun]

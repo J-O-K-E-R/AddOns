@@ -434,7 +434,6 @@ Off Screen]=]
 	L["Entry limit"] = "Entry limit"
 	--[[Translation missing --]]
 	L["Entry Name Source"] = "Entry Name Source"
-	L["Event"] = "Evento"
 	L["Event Type"] = "Tipo di Evento"
 	--[[Translation missing --]]
 	L["Event(s)"] = "Event(s)"
@@ -670,6 +669,8 @@ Supports multiple entries, separated by commas
 	L["Import"] = "Import"
 	--[[Translation missing --]]
 	L["Import a display from an encoded string"] = "Import a display from an encoded string"
+	--[[Translation missing --]]
+	L["Indent Size"] = "Indent Size"
 	--[[Translation missing --]]
 	L["Information"] = "Information"
 	--[[Translation missing --]]
@@ -1071,7 +1072,7 @@ Supports multiple entries, separated by commas
 	--[[Translation missing --]]
 	L["Shows a spell icon with an optional cooldown overlay"] = "Shows a spell icon with an optional cooldown overlay"
 	--[[Translation missing --]]
-	L["Shows a stop motion textures"] = "Shows a stop motion textures"
+	L["Shows a stop motion texture"] = "Shows a stop motion texture"
 	--[[Translation missing --]]
 	L["Shows a texture that changes based on duration"] = "Shows a texture that changes based on duration"
 	--[[Translation missing --]]
@@ -1150,8 +1151,6 @@ Supports multiple entries, separated by commas
 	L["Start Collapsed"] = "Start Collapsed"
 	--[[Translation missing --]]
 	L["Start of %s"] = "Start of %s"
-	--[[Translation missing --]]
-	L["Status"] = "Status"
 	--[[Translation missing --]]
 	L["Stealable"] = "Stealable"
 	--[[Translation missing --]]

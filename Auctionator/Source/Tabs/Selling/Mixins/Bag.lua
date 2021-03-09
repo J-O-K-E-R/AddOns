@@ -52,6 +52,9 @@ function AuctionatorSellingBagFrameMixin:Init(dataProvider)
   self.dataProvider:SetOnUpdateCallback(function()
     self:Refresh()
   end)
+  self.dataProvider:SetOnSearchEndedCallback(function()
+    self:Refresh()
+  end)
 
   self:Refresh()
 end
@@ -90,11 +93,29 @@ function AuctionatorSellingBagFrameMixin:SetupFavourites()
   local entry
 
   self.items[FAVOURITE] = {}
+  local seenKeys = {}
 
   for index = 1, bagItemCount do
     entry = self.dataProvider:GetEntryAt(index)
     if Auctionator.Selling.IsFavourite(entry) then
+      seenKeys[Auctionator.Selling.UniqueBagKey(entry)] = true
       table.insert(self.items[FAVOURITE], CopyTable(entry))
+    end
+  end
+
+  if Auctionator.Config.Get(Auctionator.Config.Options.SELLING_MISSING_FAVOURITES) then
+    local moreFavourites = Auctionator.Selling.GetAllFavourites()
+
+    --Make favourite order independent of the order that the favourites were
+    --added.
+    table.sort(moreFavourites, function(left, right)
+      return Auctionator.Selling.UniqueBagKey(left) < Auctionator.Selling.UniqueBagKey(right)
+    end)
+
+    for _, fav in ipairs(moreFavourites) do
+      if seenKeys[Auctionator.Selling.UniqueBagKey(fav)] == nil then
+        table.insert(self.items[FAVOURITE], CopyTable(fav))
+      end
     end
   end
 end
@@ -102,7 +123,8 @@ end
 function AuctionatorSellingBagFrameMixin:Update()
   Auctionator.Debug.Message("AuctionatorSellingBagFrameMixin:Update()")
 
-  local height = 0
+  local minHeight = 0
+  local maxHeight = 0
   local classItems = {}
   local lastItem = nil
 
@@ -125,9 +147,10 @@ function AuctionatorSellingBagFrameMixin:Update()
 
     frame:AddItems(classItems)
 
-    height = height + frame.SectionTitle:GetHeight()
+    minHeight = minHeight + frame.SectionTitle:GetHeight()
+    maxHeight = maxHeight + frame:GetHeight()
   end
 
-  self:SetSize(self.frameMap[1]:GetRowWidth(), height)
-  self.ScrollFrame.ItemListingFrame:SetSize(self.frameMap[1]:GetRowWidth(), height)
+  self:SetSize(self.frameMap[1]:GetRowWidth(), maxHeight)
+  self.ScrollFrame.ItemListingFrame:SetSize(self.frameMap[1]:GetRowWidth(), minHeight)
 end

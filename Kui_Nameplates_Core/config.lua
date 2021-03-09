@@ -36,7 +36,7 @@ local default_config = {
     glow_as_shadow = true,
     state_icons = true,
     target_glow = true,
-    target_glow_colour = { .3, .7, 1, .8 },
+    target_glow_colour = { .3, .7, 1, .6 },
     mouseover_glow = false,
     mouseover_glow_colour = { .3, .7, 1, .5 },
     mouseover_highlight = true,
@@ -46,8 +46,8 @@ local default_config = {
     frame_glow_size_threat = 8,
     target_arrows = false,
     target_arrows_size = 28,
-    target_arrows_inset = 0, -- NEX
-    target_arrows_texture = 'interface/addons/kui_nameplates_core/media/target-arrow', -- NEX
+    target_arrows_inset = 3, -- NEX
+    target_arrows_texture = 'interface/addons/kui_nameplates_core/media/targetarrows3', -- NEX
     use_blizzard_personal = false,
     use_blizzard_powers = false,
     frame_vertical_offset = 0, -- NEX
@@ -124,7 +124,7 @@ local default_config = {
     health_text_friend_dmg = 5,
     health_text_hostile_max = 1,
     health_text_hostile_dmg = 4,
-    health_text_percent_symbol = false,
+    health_text_percent_symbol = false, -- NEX
 
     colour_hated = {.7,.2,.1},
     colour_neutral = {1,.8,0},
@@ -197,18 +197,20 @@ local default_config = {
     castbar_showpersonal = false,
     castbar_icon = true,
     castbar_name = true,
+    castbar_shield = true,
+    castbar_shield_size = 16,
     castbar_showall = true,
     castbar_showfriend = true,
     castbar_showenemy = true,
     castbar_animate = true,
     castbar_animate_change_colour = true,
-    castbar_name_vertical_offset = -1,
+    castbar_name_vertical_offset = 6,
     castbar_spacing = 1, -- NEX
-    castbar_height = 6,
+    castbar_height = 8,
     castbar_detach = false,
-    castbar_detach_height = 18,
-    castbar_detach_width = 36,
-    castbar_detach_offset = 5,
+    castbar_detach_height = 22,
+    castbar_detach_width = 38,
+    castbar_detach_offset = 6,
     castbar_detach_combine = true,
     castbar_detach_nameonly = false,
     castbar_detach_match_frame_width = false, -- NEX
@@ -234,8 +236,7 @@ local default_config = {
     classpowers_bar_width = 80,
     classpowers_bar_height = 5,
     classpowers_y = 1,
-    classpowers_y_nameonly = -4,
-    classpowers_y_personal = -8,
+    classpowers_y_personal = -8, -- XXX remove with 226_CLASSPOWERS_Y
 
     classpowers_colour_deathknight = {1,.2,.3},
     classpowers_colour_druid       = {1,1,.1},
@@ -614,6 +615,8 @@ configChanged.castbar_colour = configChangedCastBar
 configChanged.castbar_unin_colour = configChangedCastBar
 configChanged.castbar_icon = configChangedCastBar
 configChanged.castbar_name = configChangedCastBar
+configChanged.castbar_shield = configChangedCastBar
+configChanged.castbar_shield_size = configChangedCastBar
 configChanged.castbar_animate = configChangedCastBar
 configChanged.castbar_animate_change_colour = configChangedCastBar
 configChanged.castbar_name_vertical_offset = configChangedCastBar
@@ -993,6 +996,17 @@ function core:InitialiseConfig()
                 end
             end
         end
+        if not KuiNameplatesCoreSaved['226_CLASSPOWERS_Y'] then
+            -- i did a quick-fix so now i have to do more work to undo it yay
+            -- (on all profiles, if set, copy classpowers_y_personal to classpowers_y)
+            for _,profile in pairs(KuiNameplatesCoreSaved.profiles) do
+                local on_personal = profile.classpowers_on_target == false
+                local y_personal = profile.classpowers_y_personal or default_config.classpowers_y_personal
+                if on_personal and y_personal then
+                    profile.classpowers_y = y_personal
+                end
+            end
+        end
     end
 
     self.config = kc:Initialise('KuiNameplatesCore',default_config)
@@ -1002,6 +1016,7 @@ function core:InitialiseConfig()
     -- XXX TEMP 2.27
     KuiNameplatesCoreSaved['226_AURAS_TRANSITION'] = true
     KuiNameplatesCoreSaved['226_TARGET_SIZE'] = true
+    KuiNameplatesCoreSaved['226_CLASSPOWERS_Y'] = true
 
     -- run config loaded functions
     for k,f in pairs(configLoaded) do

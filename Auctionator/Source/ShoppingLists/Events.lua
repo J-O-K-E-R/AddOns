@@ -16,7 +16,6 @@ Auctionator.ShoppingLists.Events = {
   ListSearchIncrementalUpdate = "AUCTIONATOR_LIST_SEARCH_INCREMENTAL_UPDATE",
   ListSearchEnded = "AUCTIONATOR_LIST_SEARCH_ENDED",
   ListSearchRequested = "AUCTIONATOR_LIST_SEARCH_REQUESTED",
-  ListDataProviderEmpty = "AUCTIONATOR_LIST_DATA_PROVIDER_EMPTY",
 
   CreateDialogOnAccept = "AUCTIONATOR_CREATE_DIALOG_ON_ACCEPT",
   DeleteDialogOnAccept = "AUCTIONATOR_DELETE_DIALOG_ON_ACCEPT",
@@ -24,4 +23,6 @@ Auctionator.ShoppingLists.Events = {
 
   DialogOpened = "SHOPPING_DIALOG_OPENED",
   DialogClosed = "SHOPPING_DIALOG_CLOSED",
+
+  ShowHistoricalPrices = "SHOPPING_SHOW_HISTORICAL_PRICES",
 }

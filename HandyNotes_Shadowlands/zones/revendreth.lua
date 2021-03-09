@@ -36,6 +36,7 @@ local map = Map({ id=1525, settings=true })
 map.nodes[53247300] = Rare({
     id=166393,
     quest=59854,
+    -- TODO: maybe doesn't need WQ anymore? check back later
     note=L["amalgamation_of_filth_note"],
     rewards={
         Achievement({id=14310, criteria=48814}),
@@ -56,7 +57,8 @@ map.nodes[25304850] = Rare({
         Transmog({item=179924, slot=L["leather"]}), -- Light-Infused Jacket
         Transmog({item=179653, slot=L["mail"]}), -- Light-Infused Hauberk
         Transmog({item=179925, slot=L["plate"]}), -- Light-Infused Breastplate
-        Item({item=180688}) -- Infused Remnant of Light
+        Item({item=180688}), -- Infused Remnant of Light
+        Pet({item=180586, id=2892}) -- Lightbinders
     }
 }) -- Amalgamation of Light
 
@@ -112,6 +114,7 @@ map.nodes[37084742] = Rare({
 map.nodes[43055183] = Rare({
     id=161310,
     quest=58441,
+    note=L["executioner_adrastia_note"],
     rewards={
         Achievement({id=14310, criteria=48807}),
         Transmog({item=180502, slot=L["leather"]}) -- Adrastia's Executioner Gloves
@@ -127,6 +130,7 @@ map.nodes[62484716] = Rare({
     note=L["famu_note"],
     rewards={
         Achievement({id=14310, criteria=48815}),
+        Transmog({item=183739, slot=L["cloth"]}), -- Endmire Wristwarmers
         Mount({item=180582, id=1379}), -- Endmire Flyer
     }
 }) -- Famu the Infinite
@@ -138,7 +142,7 @@ map.nodes[32641545] = Rare({
     requires=ns.requirement.GarrisonTalent(1259, L["anima_channeled"]),
     note=L["madalav_note"],
     rewards={
-        Transmog({item=180939, slot=L["cosmetic"]}) -- Mantle of the Forgemaster's Dark Blades
+        Transmog({item=180939, slot=L["cosmetic"], covenant=VENTHYR}) -- Mantle of the Forgemaster's Dark Blades
     },
     pois={
         POI({32661483}) -- Madalav's Hammer
@@ -150,7 +154,8 @@ map.nodes[20485298] = Rare({
     quest=60173,
     note=L["grand_arcanist_dimitri_note"],
     rewards={
-        Achievement({id=14310, criteria=48821})
+        Achievement({id=14310, criteria=48821}),
+        Transmog({item=180503, slot=L["dagger"]}) -- Grand Arcanist's Soulblade
     }
 }) -- Grand Arcanist Dimitri
 
@@ -162,11 +167,10 @@ map.nodes[45847919] = Rare({
     note=L["harika_note"],
     rewards={
         Transmog({item=183720, slot=L["leather"]}), -- Dredbatskin Jerkin
-        Mount({item=180461, id=1310}) -- Horrid Brood Dredwing
+        Mount({item=180461, id=1310, covenant=VENTHYR}) -- Horrid Brood Dredwing
     },
     pois={
-        POI({43257769}), -- Ballista Bolt
-        POI({41187469, 40917690}) -- Dredhollow Tools
+        POI({43257769}) -- Ballista Bolt
     }
 }) -- Harika the Horrid
 
@@ -206,7 +210,7 @@ map.nodes[67978179] = Rare({
     rewards={
         Achievement({id=14310, criteria=48809}),
         Transmog({item=183736, slot=L["cloth"]}), -- Pride Resistant Handwraps
-        Pet({item=180585, id=2897}) -- Bottled Up Emotions
+        Pet({item=180585, id=2897}) -- Bottled Up Rage
     }
 }) -- Leeched Soul
 
@@ -226,7 +230,7 @@ map.nodes[49003490] = Rare({
     note=L["manifestation_of_wrath_note"],
     rewards={
         Achievement({id=14310, criteria=48822}),
-        Pet({item=180585, id=2897}) -- Bottled Up Emotions
+        Pet({item=180585, id=2897}) -- Bottled Up Rage
     }
 }) -- Manifestation of Wrath
 
@@ -261,7 +265,7 @@ map.nodes[34045555] = Rare({
 }) -- Sire Ladinas
 
 map.nodes[78934975] = Rare({
-    id=160385,
+    id=160392,
     quest=58130,
     note=L["soulstalker_doina_note"],
     rewards={
@@ -283,7 +287,8 @@ map.nodes[66507080] = Rare({
     quest=59595,
     rewards={
         Achievement({id=14310, criteria=48812}),
-        Item({item=179363, quest=60517}) -- The Toll of the Road
+        -- Item({item=179363, quest=60517}) -- The Toll of the Road
+        -- quest id for this never actually flips true?
     }
 }) -- Tollkeeper Varaboss
 
@@ -304,7 +309,17 @@ map.nodes[38607200] = Rare({
     note=L["worldedge_gorger_note"],
     rewards={
         Achievement({id=14310, criteria=48805}),
-        Item({item=180583, quest=61188}) -- Impressionable Gorger Spawn
+        Item({
+            item=180583,
+            quest=61188,
+            IsObtained = function (self)
+                if select(11, C_MountJournal.GetMountInfoByID(1391)) then
+                    return true
+                end
+                return Item.IsObtained(self)
+            end
+        }), -- Impressionable Gorger Spawn
+        Mount({item=182589, id=1391}) -- Loyal Gorger
     }
 }) -- Worldedge Gorger
 
@@ -888,61 +903,57 @@ map.nodes[64076201] = Dredbat({ pois={ Arrow({64076201, 70125719}) } })
 ------------------------------ ABSOLUTION FOR ALL -----------------------------
 -------------------------------------------------------------------------------
 
-local Fugitive = Class('Fugitive', NPC, {
-    id=160149,
-    icon=236247,
-    note=L["fugitive_soul_note"],
-    group=ns.groups.FUGITIVES,
-    rewards={
-        Achievement({id=14274, criteria={id=1, qty=true, suffix=L["souls_absolved"]}})
-    }
-})
+local SOULS = {
+    64894834, 65404450, 65704610, 65904250, 66274301, 67894205, 68165149,
+    68604460, 69215297, 70045363, 70105630, 70205500, 70494580, 70604340,
+    70605200, 70605200, 70804400, 71004180, 71305350, 71504690, 71584367,
+    71595309, 71705440, 72224482, 72304440, 72605510, 72624360, 72795195,
+    74455192, 75174702
+}
 
-map.nodes[65404450] = Fugitive()
-map.nodes[65704610] = Fugitive()
-map.nodes[65904250] = Fugitive()
-map.nodes[68604460] = Fugitive()
-map.nodes[70105630] = Fugitive()
-map.nodes[70205500] = Fugitive()
-map.nodes[70604340] = Fugitive()
-map.nodes[70605200] = Fugitive()
-map.nodes[70605200] = Fugitive()
-map.nodes[70804400] = Fugitive()
-map.nodes[71004180] = Fugitive()
-map.nodes[71305350] = Fugitive()
-map.nodes[71504690] = Fugitive()
-map.nodes[71705440] = Fugitive()
-map.nodes[72304440] = Fugitive()
-map.nodes[72605510] = Fugitive()
+for _, coord in ipairs(SOULS) do
+    map.nodes[coord] = NPC({
+        id=156150,
+        icon='peg_yw',
+        scale=1,
+        note=L["fugitive_soul_note"],
+        group=ns.groups.FUGITIVES,
+        rewards={
+            Achievement({id=14274, criteria={id=1, qty=true, suffix=L["souls_absolved"]}})
+        }
+    })
+end
 
-local Ritualist = Class('Ritualist', NPC, {
-    id=166150,
-    icon=458226,
-    note=L["avowed_ritualist_note"],
-    group=ns.groups.FUGITIVES,
-    rewards={
-        Achievement({id=14274, criteria={id=1, qty=true, suffix=L["souls_absolved"]}})
-    }
-})
+local RITUALISTS = {
+    65305069, 65324883, 66585357, 67204610, 69204650, 69304210, 71704790,
+    72004600, 72505390
+}
 
-map.nodes[72505390] = Ritualist()
-map.nodes[71704790] = Ritualist()
-map.nodes[72004600] = Ritualist()
-map.nodes[69304210] = Ritualist()
-map.nodes[67204610] = Ritualist()
-map.nodes[69204650] = Ritualist()
+for _, coord in ipairs(RITUALISTS) do
+    map.nodes[coord] = NPC({
+        id=159406,
+        icon='peg_bk',
+        scale=1.2,
+        note=L["avowed_ritualist_note"],
+        group=ns.groups.FUGITIVES,
+        rewards={
+            Achievement({id=14274, criteria={id=1, qty=true, suffix=L["souls_absolved"]}})
+        }
+    })
+end
 
 -------------------------------------------------------------------------------
 ------------------------ ITS ALWAYS SINNY IN REVENDRETH -----------------------
 -------------------------------------------------------------------------------
 
-local Inquisitor = Class('Inquisitor', Collectible, {
-    icon=3528307,
+local Inquisitor = Class('Inquisitor', NPC, {
+    icon='peg_rd',
+    scale=1.3,
     group=ns.groups.INQUISITORS,
     pois={ POI({72995199}) } -- Archivist Fane
 })
 
-map.nodes[76205210] = Inquisitor({
+map.nodes[76185212] = Inquisitor({
     id=159151,
     note=L["inquisitor_note"],
     requires=ns.requirement.Item(172999),
@@ -951,7 +962,7 @@ map.nodes[76205210] = Inquisitor({
     }
 }) -- Inquisitor Traian
 
-map.nodes[64704640] = Inquisitor({
+map.nodes[64714638] = Inquisitor({
     id=156918,
     note=L["inquisitor_note"],
     requires=ns.requirement.Item(172998),
@@ -960,7 +971,7 @@ map.nodes[64704640] = Inquisitor({
     }
 }) -- Inquisitor Otilia
 
-map.nodes[67304340] = Inquisitor({
+map.nodes[67274339] = Inquisitor({
     id=156919,
     note=L["inquisitor_note"],
     requires=ns.requirement.Item(172997),
@@ -969,7 +980,7 @@ map.nodes[67304340] = Inquisitor({
     }
 }) -- Inquisitor Petre
 
-map.nodes[69804720] = Inquisitor({
+map.nodes[69764722] = Inquisitor({
     id=156916,
     note=L["inquisitor_note"],
     requires=ns.requirement.Item(172996),
@@ -978,7 +989,7 @@ map.nodes[69804720] = Inquisitor({
     }
 }) -- Inquisitor Sorin
 
-map.nodes[75304420] = Inquisitor({
+map.nodes[75304415] = Inquisitor({
     id=159152,
     note=L["high_inquisitor_note"],
     requires=ns.requirement.Item(173000),
@@ -987,7 +998,7 @@ map.nodes[75304420] = Inquisitor({
     }
 }) -- High Inquisitor Gabi
 
-map.nodes[71204240] = Inquisitor({
+map.nodes[71254236] = Inquisitor({
     id=159153,
     note=L["high_inquisitor_note"],
     requires=ns.requirement.Item(173001),
@@ -996,7 +1007,7 @@ map.nodes[71204240] = Inquisitor({
     }
 }) -- High Inquisitor Radu
 
-map.nodes[72105320] = Inquisitor({
+map.nodes[72085313] = Inquisitor({
     id=159155,
     note=L["high_inquisitor_note"],
     requires=ns.requirement.Item(173006),
@@ -1005,7 +1016,7 @@ map.nodes[72105320] = Inquisitor({
     }
 }) -- High Inquisitor Dacian
 
-map.nodes[69805230] = Inquisitor({
+map.nodes[69775225] = Inquisitor({
     id=159154,
     note=L["high_inquisitor_note"],
     requires=ns.requirement.Item(173005),
@@ -1014,7 +1025,7 @@ map.nodes[69805230] = Inquisitor({
     }
 }) -- High Inquisitor Magda
 
-map.nodes[69704540] = Inquisitor({
+map.nodes[69664542] = Inquisitor({
     id=159157,
     note=L["grand_inquisitor_note"],
     requires=ns.requirement.Item(173008),
@@ -1023,7 +1034,7 @@ map.nodes[69704540] = Inquisitor({
     }
 }) -- Grand Inquisitor Aurica
 
-map.nodes[64505270] = Inquisitor({
+map.nodes[64485273] = Inquisitor({
     id=159156,
     note=L["grand_inquisitor_note"],
     requires=ns.requirement.Item(173007),
@@ -1038,7 +1049,7 @@ map.nodes[64505270] = Inquisitor({
 
 -- Daily completion: 61843
 
-map.nodes[59305700] = NPC({
+map.nodes[59305700] = Collectible({
     id=173499,
     icon=3601543,
     quest={
@@ -1064,7 +1075,7 @@ map.nodes[59305700] = NPC({
 
 -- daily completed: 62107
 
-local Blanchy = Class('Blanchy', NPC, {
+local Blanchy = Class('Blanchy', Collectible, {
     id=173468,
     icon=2143082,
     quest={62038, 62042, 62047, 62049, 62048, 62050},

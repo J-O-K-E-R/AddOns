@@ -24,7 +24,12 @@ function AuctionatorUndercutScanMixin:OnLoad()
   self:SetCancel()
 end
 
+function AuctionatorUndercutScanMixin:OnShow()
+  SetOverrideBinding(self, false, Auctionator.Config.Get(Auctionator.Config.Options.CANCEL_UNDERCUT_SHORTCUT), "CLICK AuctionatorCancelUndercutButton:LeftButton")
+end
+
 function AuctionatorUndercutScanMixin:OnHide()
+  ClearOverrideBindings(self)
   FrameUtil.UnregisterFrameForEvents(self, CANCELLING_EVENTS)
 end
 
@@ -42,13 +47,7 @@ function AuctionatorUndercutScanMixin:StartScan()
   self.StartScanButton:SetEnabled(false)
   self:SetCancel()
 
-  if C_AuctionHouse.GetNumOwnedAuctions() > 0 then
-    self.scanIndex = C_AuctionHouse.GetNumOwnedAuctions() + 1
-    self:NextStep()
-
-  else
-    self:GetParent().DataProvider:QueryAuctions()
-  end
+  self:GetParent().DataProvider:QueryAuctions()
 end
 
 function AuctionatorUndercutScanMixin:SetCancel()
@@ -66,14 +65,20 @@ function AuctionatorUndercutScanMixin:EndScan()
 end
 
 local function ShouldInclude(itemKey)
-  return Auctionator.Config.Get(Auctionator.Config.Options.UNDERCUT_SCAN_NOT_LIFO) or
-        (itemKey.itemLevel == 0 and itemKey.battlePetSpeciesID == 0)
+  if Auctionator.Config.Get(Auctionator.Config.Options.UNDERCUT_SCAN_NOT_LIFO) then
+    return true
+  else
+    local classID = select(6, GetItemInfoInstant(itemKey.itemID))
+
+    return classID ~= LE_ITEM_CLASS_WEAPON and classID ~= LE_ITEM_CLASS_ARMOR and
+          itemKey.battlePetSpeciesID == 0
+  end
 end
 function AuctionatorUndercutScanMixin:NextStep()
   Auctionator.Debug.Message("next step")
-  self.scanIndex = self.scanIndex - 1
+  self.scanIndex = self.scanIndex + 1
 
-  if self.scanIndex < 1 then
+  if self.scanIndex > C_AuctionHouse.GetNumOwnedAuctions() then
     self:EndScan()
     return
   end
@@ -82,6 +87,8 @@ function AuctionatorUndercutScanMixin:NextStep()
   local itemKeyString = Auctionator.Utilities.ItemKeyString(self.currentAuction.itemKey)
 
   if (self.currentAuction.status == 1 or
+      self.currentAuction.bidder ~= nil or
+      self.currentAuction.itemKey.itemID == Auctionator.Constants.WOW_TOKEN_ID or
       not ShouldInclude(self.currentAuction.itemKey)) then
     Auctionator.Debug.Message("undercut scan skip")
 
@@ -107,7 +114,7 @@ function AuctionatorUndercutScanMixin:OnEvent(eventName, ...)
     if not self.currentAuction then
       Auctionator.Debug.Message("next step auto")
 
-      self.scanIndex = C_AuctionHouse.GetNumOwnedAuctions() + 1
+      self.scanIndex = 0
 
       self:NextStep()
     else

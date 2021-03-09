@@ -1,0 +1,14 @@
+v3.5.0
+- 9.0.5 TOC update
+v3.4.9
+- locale error fix
+v3.4.8
+- mapping updates
+- locale fixes
+v3.4.7
+- affix list fix
+- fix enemy info model frame strata
+v3.4.6
+- nil fix
+v3.4.5
+- Dungeon Data is included once again

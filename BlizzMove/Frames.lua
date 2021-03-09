@@ -1,4 +1,4 @@
-if not BlizzMoveAPI then return end
+if not BlizzMoveAPI then return; end
 
 BlizzMoveAPI:RegisterFrames(
 {
@@ -37,6 +37,14 @@ BlizzMoveAPI:RegisterFrames(
 			["ReputationFrame"] =
 			{
 				MinVersion = 0,
+				SubFrames =
+				{
+					["ReputationDetailFrame"] =
+					{
+						MinVersion = 0,
+						Detachable = true,
+					},
+				},
 			},
 			["SkillFrame"] =
 			{
@@ -83,9 +91,22 @@ BlizzMoveAPI:RegisterFrames(
 		MinVersion = 0,
 		SubFrames =
 		{
+			["IgnoreListFrameScrollFrame"] =
+			{
+				MinVersion = 0,
+			},
 			["RaidInfoFrame"] =
 			{
 				MinVersion = 0,
+				Detachable = true,
+			},
+			["RecruitAFriendFrame.RecruitList.ScrollFrame"] =
+			{
+				MinVersion = 90000, -- Added when?
+			},
+			["FriendsFrameBattlenetFrame.BroadcastFrame"] =
+			{
+				MinVersion = 70000, -- Added when?
 				Detachable = true,
 			},
 			["FriendsListFrameScrollFrame"] =
@@ -212,6 +233,14 @@ BlizzMoveAPI:RegisterFrames(
 	{
 		MinVersion = 0,
 	},
+	["RecruitAFriendRecruitmentFrame"] =
+	{
+		MinVersion = 50000, -- Added when?
+	},
+	["RecruitAFriendRewardsFrame"] =
+	{
+		MinVersion = 82000, -- Added when?
+	},
 	["SpellBookFrame"] =
 	{
 		MinVersion = 0,
@@ -283,6 +312,24 @@ BlizzMoveAPI:RegisterAddOnFrames(
 		["AlliedRacesFrame"] =
 		{
 			MinVersion = 70300,
+		},
+	},
+	["Blizzard_AnimaDiversionUI"] =
+	{
+		["AnimaDiversionFrame"] =
+		{
+			MinVersion = 90000,
+			SubFrames =
+			{
+				["AnimaDiversionFrame.ScrollContainer"] =
+				{
+					MinVersion = 90000,
+				},
+				["AnimaDiversionFrame.ReinforceProgressFrame"] =
+				{
+					MinVersion = 90000,
+				},
+			}
 		},
 	},
 	["Blizzard_ArchaeologyUI"] =
@@ -601,6 +648,41 @@ BlizzMoveAPI:RegisterAddOnFrames(
 		{
 			MinVersion = 80000,
 		},
+		["CovenantMissionFrame"] =
+		{
+			MinVersion = 90000,
+			SubFrames =
+			{
+				["CovenantMissionFrame.MissionTab"] =
+				{
+					MinVersion = 90000,
+				},
+				["CovenantMissionFrame.MissionTab.MissionPage"] =
+				{
+					MinVersion = 90000,
+				},
+				["CovenantMissionFrame.MissionTab.MissionPage.CostFrame"] =
+				{
+					MinVersion = 90000,
+				},
+				["CovenantMissionFrame.MissionTab.MissionPage.StartMissionFrame"] =
+				{
+					MinVersion = 90000,
+				},
+				["CovenantMissionFrameMissions.MaterialFrame"] =
+				{
+					MinVersion = 90000,
+				},
+				["CovenantMissionFrameFollowersListScrollFrameScrollChild"] =
+				{
+					MinVersion = 90000,
+				},
+				["CovenantMissionFrameFollowers.MaterialFrame"] =
+				{
+					MinVersion = 90000,
+				},
+			},
+		},
 	},
 	["Blizzard_GlyphUI"] =
 	{
@@ -745,11 +827,32 @@ BlizzMoveAPI:RegisterAddOnFrames(
 			MaxVersion = 70300, -- Removed when?
 		},
 	},
+	["Blizzard_RuneforgeUI"] =
+	{
+		["RuneforgeFrame"] =
+		{
+			MinVersion = 90000,
+		},
+	},
 	["Blizzard_ScrappingMachineUI"] =
 	{
 		["ScrappingMachineFrame"] =
 		{
 			MinVersion = 80000,
+		},
+	},
+	["Blizzard_Soulbinds"] =
+	{
+		["SoulbindViewer"] =
+		{
+			MinVersion = 90000,
+			SubFrames =
+			{
+				["SoulbindViewer.ConduitList.Charges"] =
+				{
+					MinVersion = 90000,
+				},
+			},
 		},
 	},
 	["Blizzard_TalentUI"] =
@@ -811,6 +914,13 @@ BlizzMoveAPI:RegisterAddOnFrames(
 		["WarfrontsPartyPoseFrame"] =
 		{
 			MinVersion = 80000,
+		},
+	},
+	["Blizzard_WeeklyRewards"] =
+	{
+		["WeeklyRewardsFrame"] =
+		{
+			MinVersion = 90000,
 		},
 	},
 });
