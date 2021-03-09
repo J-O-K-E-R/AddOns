@@ -1,34 +1,46 @@
-lightweight tag 11ce1ecd18f817413140d629ae78ac289ef348fd Plater-v9.0.1.321-Retail
+lightweight tag 9af2da600067b0a842f9e416b428cbb26554dc93 Plater-v9.0.2.326b-Retail
 Author:	Continuity <continuity@gmx.net>
-Date:	Sat Nov 28 14:25:46 2020 +0100
+Date:	Thu Feb 25 15:45:45 2021 +0100
 
-commit 11ce1ecd18f817413140d629ae78ac289ef348fd
+commit 9af2da600067b0a842f9e416b428cbb26554dc93
 Author: Continuity <continuity@gmx.net>
-Date:   Sat Nov 28 14:25:46 2020 +0100
+Date:   Thu Feb 25 15:45:45 2021 +0100
 
-    - changelog update
+    - correcting tooltip
 
-commit 12b4113e6b9342a09d7e83e70d5548ba6d6e05f0
+commit 64b947b707cdfbc4c6325441f343f9259110cc47
 Author: Continuity <continuity@gmx.net>
-Date:   Sat Nov 28 14:19:36 2020 +0100
+Date:   Thu Feb 25 12:12:16 2021 +0100
 
-    - one las condemn
+    - change tracking type and coloring priority for auras
 
-commit 860639cdffeddcef2aa356db5b4475df07281531
+commit d0b50c8c0c9a6eae6384a05edda51caf6f58d952
+Author: Continuity <continuity@gmx.net>
+Date:   Thu Feb 25 11:26:01 2021 +0100
+
+    - removing duplicate
+
+commit e3bc3ebb4cb267c61a34284dc0cbf4466fb00aec
+Author: Spencer Steers <spencersteers@gmail.com>
+Date:   Thu Feb 25 03:11:53 2021 -0700
+
+    - fix extra icon border not showing for offensive / defensive auras (#87)
+
+commit bef9e1f3ba0300979558aefa9a01a2aa0cea1807
+Author: Continuity <continuity@gmx.net>
+Date:   Thu Feb 25 00:23:22 2021 +0100
+
+    - fixing issues with CheckAuras
+
+commit 541b56d4a9b2d5dd1d6a2e8e8f360f3147df29ad
 Author: Tercio Jose <terciob19@hotmail.com>
-Date:   Fri Nov 27 17:03:50 2020 -0300
+Date:   Wed Feb 24 13:44:18 2021 -0300
 
-    Fix script, update framework
+    Framework update
 
-commit 3a9ae43cfc9654feb05c46d0724a40e370314566
-Author: Continuity <continuity@gmx.net>
-Date:   Fri Nov 27 13:07:58 2020 +0100
+commit 541b56d4a9b2d5dd1d6a2e8e8f360f3147df29ad
+Author: Tercio Jose <terciob19@hotmail.com>
+Date:   Wed Feb 24 13:44:18 2021 -0300
 
-    - another round of condemn
-
-commit 3723223379d6e18b538d476081cd49914e4bd555
-Author: Continuity <continuity@gmx.net>
-Date:   Fri Nov 27 12:48:37 2020 +0100
-
-    - fixing Condemn execute for warriors
+    Framework update
 
