@@ -195,11 +195,8 @@ L["FAQ_Elv_5"] = "|cff30ee30Q: Was sind ElvUI-Schrägstriche (Chat) Kommandos?|r
 L["FAQ_sle_1"] = "|cff30ee30Q: Was mache ich, wenn ich auf einen Fehler in Shadow & Light stoße?|r\n|cff9482c9A:|r Pretty much the same as for ElvUI (see it's FAQ section) but you'll have to provide S&L version too."
 L["FAQ_sle_2"] = "|cff30ee30Q: Hat Shadow & Light die gleiche Sprachrichtlinie wie ElvUI?|r\n|cff9482c9A:|r Yes but S&L actually has two official languages - English and Russian."
 L["FAQ_sle_3"] = "|cff30ee30Q: Warum unterscheiden sich die Screenshots des Layouts auf der Download-Seite von denen, die ich im Spiel sehe?|r\n|cff9482c9A:|r Because we just forgot to update those."
-L["FAQ_sle_4"] = "|cff30ee30Q: Warum sehe ich im Chat einige seltsame Symbole neben den Namen einiger Leute?|r\n|cff9482c9A:|r Those icons are provided by S&L and are associated with people we'd like to highlight in any way.\nFor example: |TInterface\\AddOns\\ElvUI_SLE\\media\\textures\\SLE_Chat_Logo:12:28|t is the main icon for development team of Shadow & Light, and |TInterface\\AddOns\\ElvUI_SLE\\media\\textures\\SLE_Chat_Logo_Alt:14:14|t is another one that Repooc likes to use. |TInterface\\AddOns\\ElvUI_SLE\\media\\textures\\Chat_Test:16:16|t is awarded to those who help find bugs."
+L["FAQ_sle_4"] = "|cff30ee30Q: Warum sehe ich im Chat einige seltsame Symbole neben den Namen einiger Leute?|r\n|cff9482c9A:|r Those icons are provided by S&L and are associated with people we'd like to highlight in any way.\nFor example: |TInterface\\AddOns\\ElvUI_SLE\\media\\textures\\chat\\SLE_Chat_Logo:12:28|t is the main icon for development team of Shadow & Light, and |TInterface\\AddOns\\ElvUI_SLE\\media\\textures\\chat\\SLE_Chat_Logo_Alt:14:14|t is another one that Repooc likes to use. |TInterface\\AddOns\\ElvUI_SLE\\media\\textures\\Chat_Test:16:16|t is awarded to those who help find bugs."
 L["FAQ_sle_5"] = "|cff30ee30Q: Wie kann ich mit euch in Kontakt treten??|r\n|cff9482c9A:|r For obvious reasons, we are not giving out our contact details freely. So your best bet is using tukui.org forums or even in our Discord."
-L["Farm Portal Bar"] = "Farm Portal Leisten"
-L["Farm Seed Bars"] = "Farm Samen Leisten"
-L["Farm Tool Bar"] = "Farm Tool Leisten"
 L["Farm"] = true
 L["Filter DPS meters' Spam"] = "Filtere DPS Meter Spam"
 L["Fish Key"] = "Fischen Taste"
@@ -440,9 +437,6 @@ L["S&L Mail"] = "S&L Post"
 L["S&L UI Buttons"] = "S&L UI Tasten"
 L["S&L: All"] = "S&L: Alles"
 L["S&L: Backgrounds"] = "S&L: Hintergründe"
-L["S&L: Farm Portal Bar"] = "S&L: Farm Portal Leiste"
-L["S&L: Farm Seed Bars"] = "S&L: Farm Samen Leiste"
-L["S&L: Farm Tool Bar"] = "S&L: Farm Hilfsmittel Leiste"
 L["S&L: Garrison Tools Bar"] = "S&L: Garnisions Hilfsmittel Leiste"
 L["S&L: Misc"] = "S&L: Verschiedenes"
 L["Scroll"] = "Rolle"
@@ -588,6 +582,7 @@ L["Stage Background"] = "Hintergrund"
 L["Start fishing even if you are mounted."] = "Beginne mit dem Angeln, auch wenn Du aufgememountet bist."
 L["Statusbar Color"] = "Statusleisten Farbe"
 L["Statusbars"] = "Statusleisten"
+L["Strict String Replacement"] = true
 L["String Replacement"] = "String Ersetzung"
 L["Submodules and Coding:"] = "Submodule und Codierung:"
 L["Subpages are blocks of 10 items. This option set how many of subpages will be shown on a single page."] = "Unterseiten sind Blöcke mit 10 Elementen. Diese Option legt fest, wie viele Unterseiten auf einer einzelnen Seite angezeigt werden."
@@ -696,6 +691,7 @@ L["SLE_EM_TAGS_HELP"] = [[Following tags and parameters are eligible for setting
 |cff3cbf27pvp|r - wenn auf BG, Arena oder Welt-PvP-Bereich. Verfügbare Argumente: pvp, arena;
 |cff3cbf27difficulty|r - definiert die Schwierigkeit der Instanz. Argumente sind: normal, heroic, lfr, challenge, mythic;
 |cff3cbf27effectivelevel|r - Effektives Level bezieht sich auf Ihr Level, wenn Du skaliert bist, z.B. Zeitwanderung
+|cff3cbf27warmode|r - checks if you have warmode enabled
 
 Example: [solo] Set1; [party:4, spec:3] Set2; [instance:raid, difficulty:heroic] Set3
 ]]

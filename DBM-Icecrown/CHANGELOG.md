@@ -1,9 +1,19 @@
 # <DBM> Icecrown Citadel
 
-## [r297](https://github.com/DeadlyBossMods/DBM-WotLK/tree/r297) (2020-11-17)
-[Full Changelog](https://github.com/DeadlyBossMods/DBM-WotLK/compare/r296...r297) [Previous Releases](https://github.com/DeadlyBossMods/DBM-WotLK/releases)
+## [r299](https://github.com/DeadlyBossMods/DBM-WotLK/tree/r299) (2021-06-29)
+[Full Changelog](https://github.com/DeadlyBossMods/DBM-WotLK/compare/r298...r299) [Previous Releases](https://github.com/DeadlyBossMods/DBM-WotLK/releases)
 
-- bump toc  
-- Throttle ward of life adds on FL  
-- Fix over copy paste  
-- Sync some changes fromm classic to retail naxx, since these modules will still be backported yet again, in classic wrath  
+- toc bump  
+- Migrate wrath mods to new staging  
+- Merge pull request #11 from DeadlyBossMods/QartemisT-patch-1  
+    All Rights Reserved license  
+- All Rights Reserved license  
+- Merge pull request #10 from DeadlyBossMods/debom  
+    Debom files  
+- Debom files  
+- De-BOM some TOC files  
+- I sitll like consistency  
+- Purge project data from TOCs not used for packaging  
+- Add Wago project ID  
+- Update ci.yml  
+    Wago  

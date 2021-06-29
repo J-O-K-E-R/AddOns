@@ -65,7 +65,7 @@ function RSNpcPOI.GetNpcPOI(npcID, mapID, npcInfo, alreadyFoundInfo)
 	end
 	POI.foundTime = alreadyFoundInfo and alreadyFoundInfo.foundTime
 	POI.isDead = RSNpcDB.IsNpcKilled(npcID)
-	POI.isDiscovered = POI.isDead or alreadyFoundInfo
+	POI.isDiscovered = POI.isDead or alreadyFoundInfo ~= nil
 	POI.isFriendly = RSNpcDB.IsInternalNpcFriendly(npcID)
 	POI.achievementLink = RSAchievementDB.GetNotCompletedAchievementLink(npcID, mapID)
 	if (npcInfo) then
@@ -101,7 +101,7 @@ local function IsNpcPOIFiltered(npcID, mapID, artID, zoneQuestID, questTitles, v
 	end
 
 	-- Skip if the entity is filtered
-	if (RSConfigDB.IsNpcFiltered(npcID) and not RSNpcDB.IsWorldMap(npcID)) then
+	if (RSConfigDB.IsNpcFiltered(npcID) and not RSNpcDB.IsWorldMap(npcID) and (not RSConfigDB.IsNpcFilteredOnlyOnWorldMap() or (RSConfigDB.IsNpcFilteredOnlyOnWorldMap() and not RSGeneralDB.IsRecentlySeen(npcID)))) then
 		RSLogger:PrintDebugMessageEntityID(npcID, string.format("Saltado NPC [%s]: Filtrado en opciones.", npcID))
 		return true
 	end

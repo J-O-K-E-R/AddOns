@@ -77,21 +77,27 @@ local encounter_time_c = module.db.encounter_time_c
 local encounter_time_wa_uids = module.db.encounter_time_wa_uids
 local encounter_id = module.db.encounter_id
 
-local predefSpellIcons = {	--some talents replace icons for basic spells
+local predefSpellIcons = {	--some talents can replace icons for basic spells
 	[47536] = 237548,
 	[1022] = 135964,
 }
 
-local function GSUB_Icon(spellID)
+local function GSUB_Icon(spellID,iconSize)
 	spellID = tonumber(spellID)
+
+	if not iconSize or iconSize == "" then
+		iconSize = 16
+	else
+		iconSize = min(tonumber(iconSize),40)
+	end
 
 	local preicon = predefSpellIcons[spellID]
 	if preicon then
-		return "|T"..preicon..":16|t"
+		return "|T"..preicon..":"..iconSize.."|t"
 	end
 
 	local spellTexture = select(3,GetSpellInfo(spellID))
-	return "|T"..(spellTexture or "Interface\\Icons\\INV_MISC_QUESTIONMARK")..":16|t"
+	return "|T"..(spellTexture or "Interface\\Icons\\INV_MISC_QUESTIONMARK")..":"..iconSize.."|t"
 end
 
 local function GSUB_Player(anti,list,msg)
@@ -300,6 +306,7 @@ local function GSUB_Time(preText,t,msg,newlinesym)
 	local anyType
 	local now = GetTime()
 	local waEventID
+	local addGlow
 	
 	local optNow
 	while opts do
@@ -335,6 +342,10 @@ local function GSUB_Time(preText,t,msg,newlinesym)
 					anyType = 2
 				end			
 			end
+		elseif optNow == "glow" then
+			addGlow = 1
+		elseif optNow == "glowall" then
+			addGlow = 2
 		else
 			local prefix, arg1 = strsplit(":", optNow, 2)
 			if prefix == "wa" then
@@ -360,7 +371,7 @@ local function GSUB_Time(preText,t,msg,newlinesym)
 		local timeleft = time < 0 and 0 or ceil(time)
 		if timeleft <= 5 or timeleft % 5 == 0 then
 			for waEventIDnow in string_gmatch(waEventID, "[^,]+") do
-				local wa_event_uid_cache = timeleft..":"..waEventIDnow
+				local wa_event_uid_cache = waEventIDnow..":"..timeleft..":"..preText..t..msg..newlinesym
 				if not encounter_time_wa_uids[wa_event_uid_cache] then
 					encounter_time_wa_uids[wa_event_uid_cache] = true
 					if WeakAuras.ScanEvents and type(WeakAuras.ScanEvents)=="function" then
@@ -380,7 +391,7 @@ local function GSUB_Time(preText,t,msg,newlinesym)
 			return preText.."|cff555555"..(prefixText or "")..msg:gsub("|c........",""):gsub("|r","").."|r"..newlinesym
 		end
 	else
-		if time <= 5 and msg:find(ExRT.SDB.charName) then
+		if time <= 5 and ((msg:find(ExRT.SDB.charName) and (VExRT.Note.TimerGlow or addGlow == 1)) or (addGlow == 2)) then
 			module.db.glowStatus = true
 		end
 		return preText.."|cff00ff00"..(prefixText or "")..format("%d:%02d ",floor(time/60),time % 60)..msg:gsub("|c........",""):gsub("|r",""):gsub(ExRT.SDB.charName,"|r|cffff0000>%1<|r|cff00ff00").."|r"..newlinesym
@@ -394,7 +405,7 @@ local function GSUB_Phase(anti,phase,msg)
 		local isPhase
 		local phaseNum = tonumber(phase)
 		if phaseNum then
-			isPhase = encounter_time_p[phaseNum]
+			isPhase = encounter_time_p[phase]
 		elseif phase:sub(1,1) == "," then
 			local cond1,cond2 = strsplit(",",phase:sub(2),nil)
 			isPhase = cond1 and module.db.encounter_counters_time[cond1] and (not cond2 or not module.db.encounter_counters_time[cond2])
@@ -460,7 +471,7 @@ do
 				:gsub("{[Ee]:([^}]+)}(.-){/[Ee]}",GSUB_Encounter)
 				:gsub("{(!?)[Pp]([^}:][^}]*)}(.-){/[Pp]}",GSUB_Phase)
 				:gsub("{icon:([^}]+)}","|T%1:16|t")
-				:gsub("{spell:(%d+)}",GSUB_Icon)
+				:gsub("{spell:(%d+):?(%d*)}",GSUB_Icon)
 				:gsub("%b{}",GSUB_RaidIcon)
 				:gsub("||([cr])","|%1")
 				:gsub( "\n+$", "")
@@ -957,7 +968,7 @@ function module.options:Load()
 			BlackNoteNow = BlackNoteNow - 1
 		end
 		module.options.NotesList:SetListValue(2+BlackNoteNow)
-		module.options.NotesList.selected = 2+BlackNoteNow
+		module.options.NotesList.selected = 2+(BlackNoteNow or 0)	--blacknote_id can be nil if all blacks are removed
 		module.options.NotesList:Update()
 	end)
 	self.RemoveDraft:HideBorders()
@@ -1627,24 +1638,24 @@ function module.options:Load()
 		module.frame:SetPoint("CENTER",UIParent, "CENTER", 0, 0)
 	end) 
 
-	ELib:DecorationLine(self.tab.tabs[2]):Point("LEFT",0,0):Point("RIGHT",0,0):Size(0,1):Point("TOP",self.ButtonToCenter,"BOTTOM",0,-5)
-	ELib:Text(self.tab.tabs[2],L.NoteTimers,14):Point("TOP",self.ButtonToCenter,"BOTTOM",0,-9):Point("LEFT",20,0):Color()
+	ELib:DecorationLine(self.tab.tabs[2]):Point("LEFT",0,0):Point("RIGHT",0,0):Size(0,1):Point("TOP",self.ButtonToCenter,"BOTTOM",0,-5):Shown(not ExRT.isClassic)
+	ELib:Text(self.tab.tabs[2],L.NoteTimers,14):Point("TOP",self.ButtonToCenter,"BOTTOM",0,-9):Point("LEFT",20,0):Color():Shown(not ExRT.isClassic)
 
-	self.chkTimersHIdePassed = ELib:Check(self.tab.tabs[2],L.NoteTimersHidePassed,VExRT.Note.TimerPassedHide):Point("TOPLEFT",self.ButtonToCenter,"BOTTOMLEFT",0,-25):OnClick(function(self) 
+	self.chkTimersHidePassed = ELib:Check(self.tab.tabs[2],L.NoteTimersHidePassed,VExRT.Note.TimerPassedHide):Point("TOPLEFT",self.ButtonToCenter,"BOTTOMLEFT",0,-25):OnClick(function(self) 
 		if self:GetChecked() then
 			VExRT.Note.TimerPassedHide = true
 		else
 			VExRT.Note.TimerPassedHide = nil
 		end
-	end) 
+	end):Shown(not ExRT.isClassic)
 
-	self.chkTimersGlow = ELib:Check(self.tab.tabs[2],L.NoteTimersGlow,VExRT.Note.TimerGlow):Point("TOPLEFT",self.chkTimersHIdePassed,"BOTTOMLEFT",0,-5):OnClick(function(self) 
+	self.chkTimersGlow = ELib:Check(self.tab.tabs[2],L.NoteTimersGlow,VExRT.Note.TimerGlow):Point("TOPLEFT",self.chkTimersHidePassed,"BOTTOMLEFT",0,-5):OnClick(function(self) 
 		if self:GetChecked() then
 			VExRT.Note.TimerGlow = true
 		else
 			VExRT.Note.TimerGlow = nil
 		end
-	end) 
+	end):Shown(not ExRT.isClassic)
 
 	local testGlowDelay
 	local function TestGlow()
@@ -1665,7 +1676,7 @@ function module.options:Load()
 		VExRT.Note.TimerGlowType = 1
 
 		TestGlow()
-	end)
+	end):Shown(not ExRT.isClassic)
 	self.frameTypeGlow1.f = CreateFrame("Frame",nil,self.frameTypeGlow1)
 	self.frameTypeGlow1.f:SetPoint("LEFT",self.frameTypeGlow1,"RIGHT",5,0)
 	self.frameTypeGlow1.f:SetSize(40,15)
@@ -1677,7 +1688,7 @@ function module.options:Load()
 		VExRT.Note.TimerGlowType = 2
 
 		TestGlow()
-	end)
+	end):Shown(not ExRT.isClassic)
 	self.frameTypeGlow2.f = CreateFrame("Frame",nil,self.frameTypeGlow2)
 	self.frameTypeGlow2.f:SetPoint("LEFT",self.frameTypeGlow2,"RIGHT",5,0)
 	self.frameTypeGlow2.f:SetSize(40,15)
@@ -1689,7 +1700,7 @@ function module.options:Load()
 		VExRT.Note.TimerGlowType = 3
 
 		TestGlow()
-	end)
+	end):Shown(not ExRT.isClassic)
 	self.frameTypeGlow3.f = CreateFrame("Frame",nil,self.frameTypeGlow3)
 	self.frameTypeGlow3.f:SetPoint("LEFT",self.frameTypeGlow3,"RIGHT",5,0)
 	self.frameTypeGlow3.f:SetSize(40,15)
@@ -1734,16 +1745,30 @@ function module.options:Load()
 	):Point("TOPLEFT",10,-20):Point("TOPRIGHT",-10,-20):Color()
 
 	self.advancedHelp = ELib:Button(self.tab.tabs[3],L.NoteHelpAdvanced):Size(400,20):Point("TOP",self.textHelp,"BOTTOM",0,-20):OnClick(function() 
-		module.options.textHelpAdv:SetShown(not module.options.textHelpAdv:IsShown())
+		--module.options.textHelpAdv:SetShown(not module.options.textHelpAdv:IsShown())
+		module.options.advancedScroll:SetShown(not module.options.advancedScroll:IsShown())
 	end):Shown(not ExRT.isClassic)
 
-	self.textHelpAdv = ELib:Text(self.tab.tabs[3],
+	self.advancedScroll = ELib:ScrollFrame(self.tab.tabs[3]):Size(850,100):Point("TOP",self.advancedHelp,"BOTTOM",0,-20):Point("BOTTOM",self.tab.tabs[3],"BOTTOM",0,0):Height(400):Shown(false)
+	self.advancedScroll.C:SetWidth(850 - 16)
+	ELib:Border(self.advancedScroll,0)
+	ELib:DecorationLine(self.advancedScroll):Point("TOPLEFT",0,1):Point("BOTTOMRIGHT",'x',"TOPRIGHT",0,0)
+
+	self.textHelpAdv = ELib:Text(self.advancedScroll.C,
 		"|cffffff00{time:|r|cff00ff001:06,p2|r|cffffff00}|r - "..L.NoteHelpAdv1..
 		"|n|cffffff00{time:|r|cff00ff000:30,SCC:17:2|r|cffffff00}|r - "..L.NoteHelpAdv2..
 		"|n|cffffff00{time:|r|cff00ff002:00,e,customevent|r|cffffff00}|r - "..L.NoteHelpAdv3..
+		"|n|cffffff00{time:|r|cff00ff003:40,glowall|r|cffffff00}|r - "..L.NoteHelpAdv6..
+		"|n|cffffff00{time:|r|cff00ff004:15,glow|r|cffffff00}|r - "..L.NoteHelpAdv7..
 		"|n|cffffff00{time:|r|cff00ff000:45,wa:nzoth_hs1|r|cffffff00}|r - "..L.NoteHelpAdv4..
-		"|n"..L.NoteHelpAdv5.."|cffe6ff15{time:0:30,SCC:17:2,wa:eventName1,wa:eventName2}|r |cffff9f05{time:1:40,p:Shade of Kael'thas}|r |cffe6ff15{p,SCC:17:2}Until end of the fight{/p}|r |cffff9f05{p,SCC:17:2,SCC:17:3}Until second condition{/p}|r |cffe6ff15{pShade of Kael'thas}Phase with name{/p}|r"
-	):Point("LEFT",10,0):Point("RIGHT",-10,0):Point("TOP",self.advancedHelp,"BOTTOM",0,-20):Color():Shown(false)
+		"|n   WA Function example:|n   Events: |cffffff00EXRT_NOTE_TIME_EVENT|r|n   |cffff8bf3function(event,...)|n     if event == \"EXRT_NOTE_TIME_EVENT\" then|n       local timerName, timeLeft, noteText = ...|n       if timerName == \"nzoth_hs1\" and timeLeft == 3 then|n         return true|n       end|n     end|n   end|r|n"..
+		"|n"..L.NoteHelpAdv5.."|n |cffe6ff15{time:0:30,SCC:17:2,wa:eventName1,wa:eventName2}|r|n |cffff9f05{time:1:40,p:Shade of Kael'thas}|r|n |cffe6ff15{p,SCC:17:2}Until end of the fight{/p}|r|n |cffff9f05{p,SCC:17:2,SCC:17:3}Until second condition{/p}|r|n |cffe6ff15{pShade of Kael'thas}Phase with name{/p}|r|n |cffff9f05{time:0:20,p2,wa:use_hs,glowall}|r"
+	):Point("LEFT",10,0):Point("RIGHT",-10,0):Point("TOP",0,-5):Color()
+
+	local height = self.textHelpAdv:GetHeight()
+	if height and height > 100 then
+		self.advancedScroll:Height(height + 10)
+	end
 
 	module:RegisterEvents("GROUP_ROSTER_UPDATE")
 
@@ -2302,7 +2327,9 @@ do
 					local phase = text:match("%d+") or phase
 					if phase then
 						wipe(encounter_time_p)
-						encounter_time_p[phase] = GetTime()
+						local t = GetTime()
+						encounter_time_p[phase] = t
+						encounter_time_p[text] = t
 						if module.frame:IsShown() then
 							module.frame:UpdateText()
 						end
@@ -2319,7 +2346,9 @@ do
 					local phase = message:match("%d+") or message
 					if phase then
 						wipe(encounter_time_p)
-						encounter_time_p[phase] = GetTime()
+						local t = GetTime()
+						encounter_time_p[phase] = t
+						encounter_time_p[message] = t
 						if module.frame:IsShown() then
 							module.frame:UpdateText()
 						end
@@ -2425,7 +2454,7 @@ do
 	local SAA = module.db.encounter_counters.SAA
 	local SAR = module.db.encounter_counters.SAR
 	local function AddCounter(table,tableName,spellID)
-		table[spellID] = SCC[spellID] + 1
+		table[spellID] = table[spellID] + 1
 
 		local key_w_counter = tableName..":"..spellID..":"..table[spellID]
 		local key_wo_counter = tableName..":"..spellID..":"..0
@@ -2516,6 +2545,22 @@ function module:slash(arg)
 				end
 			end
 		end
+	elseif arg and arg:find("^note phase ") then
+		local phase = arg:match("^note phase (.-)$")
+		if phase then
+			wipe(encounter_time_p)
+			encounter_time_p[phase] = GetTime()
+			print("Set phase",phase)
+			if module.frame:IsShown() then
+				module.frame:UpdateText()
+			end
+		end
+	elseif arg == "help" then
+		print("|cff00ff00/rt note|r - hide/show note")
+		print("|cff00ff00/rt editnote|r - open notes tab")
+		print("|cff00ff00/rt note set |cffffff00NOTENAME|r|r - set & send note with NOTENAME name")
+		print("|cff00ff00/rt note timer|r - simulate boss encounter start [for timers feature]")
+		print("|cff00ff00/rt note starttimer |cffffff00TIMERNAME|r|r - start custom timer")
 	end
 end
 

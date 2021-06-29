@@ -1,4 +1,4 @@
-local E, L, V, P, G = unpack(select(2, ...)); --Import: Engine, Locales, PrivateDB, ProfileDB, GlobalDB
+local E, L, V, P, G = unpack(select(2, ...)) --Import: Engine, Locales, PrivateDB, ProfileDB, GlobalDB
 local S = E:GetModule('Skins')
 
 local _G = _G
@@ -7,10 +7,8 @@ local ipairs = ipairs
 local unpack = unpack
 
 local hooksecurefunc = hooksecurefunc
-local IsAddOnLoaded = IsAddOnLoaded
 local CreateFrame = CreateFrame
 
-local LFG_ICONS = [[Interface\LFGFrame\UI-LFG-ICONS-ROLEBACKGROUNDS]]
 local function SkinNavBarButtons(self)
 	if (self:GetParent():GetName() == 'EncounterJournal' and not E.private.skins.blizzard.encounterjournal) or (self:GetParent():GetName() == 'WorldMapFrame' and not E.private.skins.blizzard.worldmap) or (self:GetParent():GetName() == 'HelpFrameKnowledgebase' and not E.private.skins.blizzard.help) then
 		return
@@ -51,7 +49,7 @@ function S:BlizzardMiscFrames()
 	for i = 1, #skins do
 		local frame = _G[skins[i]]
 		frame:StripTextures()
-		frame:CreateBackdrop('Transparent', nil, nil, nil, nil, nil, nil, i == 1) -- arg8: set AutoCompleteBox backdrop to same frame level
+		frame:SetTemplate('Transparent')
 	end
 
 	S:HandleButton(_G.StaticPopup1ExtraButton)
@@ -62,7 +60,7 @@ function S:BlizzardMiscFrames()
 		if isDPS then
 			local icon = entry['RoleIcon'..nextRoleIcon]
 			if icon then
-				icon:SetTexture(LFG_ICONS)
+				icon:SetTexture(E.Media.Textures.RolesHQ)
 				icon:SetTexCoord(_G.LFDQueueFrameRoleButtonDPS.background:GetTexCoord())
 				nextRoleIcon = nextRoleIcon + 1
 			end
@@ -70,7 +68,7 @@ function S:BlizzardMiscFrames()
 		if isHealer then
 			local icon = entry['RoleIcon'..nextRoleIcon]
 			if icon then
-				icon:SetTexture(LFG_ICONS)
+				icon:SetTexture(E.Media.Textures.RolesHQ)
 				icon:SetTexCoord(_G.LFDQueueFrameRoleButtonHealer.background:GetTexCoord())
 				nextRoleIcon = nextRoleIcon + 1
 			end
@@ -78,7 +76,7 @@ function S:BlizzardMiscFrames()
 		if isTank then
 			local icon = entry['RoleIcon'..nextRoleIcon]
 			if icon then
-				icon:SetTexture(LFG_ICONS)
+				icon:SetTexture(E.Media.Textures.RolesHQ)
 				icon:SetTexCoord(_G.LFDQueueFrameRoleButtonTank.background:GetTexCoord())
 			end
 		end
@@ -86,16 +84,16 @@ function S:BlizzardMiscFrames()
 
 	hooksecurefunc('QueueStatusFrame_Update', function()
 		for frame in _G.QueueStatusFrame.statusEntriesPool:EnumerateActive() do
-			frame.HealersFound.Texture:SetTexture(LFG_ICONS)
-			frame.TanksFound.Texture:SetTexture(LFG_ICONS)
-			frame.DamagersFound.Texture:SetTexture(LFG_ICONS)
+			frame.HealersFound.Texture:SetTexture(E.Media.Textures.RolesHQ)
+			frame.TanksFound.Texture:SetTexture(E.Media.Textures.RolesHQ)
+			frame.DamagersFound.Texture:SetTexture(E.Media.Textures.RolesHQ)
 			frame.HealersFound.Texture:SetTexCoord(_G.LFDQueueFrameRoleButtonHealer.background:GetTexCoord())
 			frame.TanksFound.Texture:SetTexCoord(_G.LFDQueueFrameRoleButtonTank.background:GetTexCoord())
 			frame.DamagersFound.Texture:SetTexCoord(_G.LFDQueueFrameRoleButtonDPS.background:GetTexCoord())
 		end
 	end)
 
-	if not IsAddOnLoaded('ConsolePortUI_Menu') then
+	if not E:IsAddOnEnabled('ConsolePortUI_Menu') then
 		-- reskin all esc/menu buttons
 		for _, Button in pairs({_G.GameMenuFrame:GetChildren()}) do
 			if Button.IsObjectType and Button:IsObjectType('Button') then
@@ -104,13 +102,13 @@ function S:BlizzardMiscFrames()
 		end
 
 		_G.GameMenuFrame:StripTextures()
-		_G.GameMenuFrame:CreateBackdrop('Transparent')
+		_G.GameMenuFrame:SetTemplate('Transparent')
 		_G.GameMenuFrame.Header:StripTextures()
 		_G.GameMenuFrame.Header:ClearAllPoints()
 		_G.GameMenuFrame.Header:Point('TOP', _G.GameMenuFrame, 0, 7)
 	end
 
-	if IsAddOnLoaded('OptionHouse') then
+	if E:IsAddOnEnabled('OptionHouse') then
 		S:HandleButton(_G.GameMenuButtonOptionHouse)
 	end
 
@@ -120,7 +118,7 @@ function S:BlizzardMiscFrames()
 	hooksecurefunc('CinematicFrame_OnDisplaySizeChanged', function(s)
 		if s and s.closeDialog and not s.closeDialog.template then
 			s.closeDialog:StripTextures()
-			s.closeDialog:CreateBackdrop('Transparent', nil, nil, nil, nil, nil, nil, true)
+			s.closeDialog:SetTemplate('Transparent')
 			s:SetScale(_G.UIParent:GetScale())
 			local dialogName = s.closeDialog.GetName and s.closeDialog:GetName()
 			local closeButton = s.closeDialog.ConfirmButton or (dialogName and _G[dialogName..'ConfirmButton'])
@@ -137,7 +135,7 @@ function S:BlizzardMiscFrames()
 		if s and s.CloseDialog and not s.CloseDialog.template then
 			s:SetScale(_G.UIParent:GetScale())
 			s.CloseDialog:StripTextures()
-			s.CloseDialog:CreateBackdrop('Transparent', nil, nil, nil, nil, nil, nil, true)
+			s.CloseDialog:SetTemplate('Transparent')
 			S:HandleButton(s.CloseDialog.ConfirmButton)
 			S:HandleButton(s.CloseDialog.ResumeButton)
 		end
@@ -181,13 +179,24 @@ function S:BlizzardMiscFrames()
 	}
 
 	_G.LFDRoleCheckPopup:StripTextures()
-	_G.LFDRoleCheckPopup:CreateBackdrop('Transparent')
+	_G.LFDRoleCheckPopup:SetTemplate('Transparent')
 	S:HandleButton(_G.LFDRoleCheckPopupAcceptButton)
 	S:HandleButton(_G.LFDRoleCheckPopupDeclineButton)
 
 	for _, roleButton in pairs(roleButtons) do
-		S:HandleCheckBox(roleButton.checkButton or roleButton.CheckButton, true)
+		S:HandleCheckBox(roleButton.checkButton or roleButton.CheckButton, nil, nil, true)
 		roleButton:DisableDrawLayer('OVERLAY')
+
+	--[=[ these use the ready check icons, which are more square
+		for i=1, roleButton:GetNumRegions() do
+			local region = select(i, roleButton:GetRegions())
+			if region and region:IsObjectType('Texture') then
+				if region:GetTexture() == [[Interface\LFGFrame\UI-LFG-ICON-ROLES]] then
+					region:SetTexture(E.Media.Textures.RoleIcons)
+				end
+			end
+		end
+	]=]
 	end
 
 	-- reskin popup buttons
@@ -200,7 +209,7 @@ function S:BlizzardMiscFrames()
 			end
 		end)
 		StaticPopup:StripTextures()
-		StaticPopup:CreateBackdrop('Transparent')
+		StaticPopup:SetTemplate('Transparent')
 
 		for j = 1, 4 do
 			local button = StaticPopup['button'..j]
@@ -226,7 +235,7 @@ function S:BlizzardMiscFrames()
 		_G['StaticPopup'..i..'EditBox'].backdrop:Point('TOPLEFT', -2, -4)
 		_G['StaticPopup'..i..'EditBox'].backdrop:Point('BOTTOMRIGHT', 2, 4)
 		_G['StaticPopup'..i..'ItemFrameNameFrame']:Kill()
-		_G['StaticPopup'..i..'ItemFrame']:CreateBackdrop()
+		_G['StaticPopup'..i..'ItemFrame']:SetTemplate()
 		_G['StaticPopup'..i..'ItemFrame']:StyleButton()
 		S:HandleIconBorder(_G['StaticPopup'..i..'ItemFrame'].IconBorder)
 		_G['StaticPopup'..i..'ItemFrameIconTexture']:SetTexCoord(unpack(E.TexCoords))
@@ -249,27 +258,28 @@ function S:BlizzardMiscFrames()
 		_G.GhostFrame:StripTextures()
 		_G.GhostFrame:ClearAllPoints()
 		_G.GhostFrame:Point('TOP', E.UIParent, 'TOP', 0, -150)
-		_G.GhostFrameContentsFrame:CreateBackdrop('Transparent')
+		_G.GhostFrameContentsFrame:SetTemplate('Transparent')
 		_G.GhostFrameContentsFrameText:Point('TOPLEFT', 53, 0)
 		_G.GhostFrameContentsFrameIcon:SetTexCoord(unpack(E.TexCoords))
 		_G.GhostFrameContentsFrameIcon:Point('RIGHT', _G.GhostFrameContentsFrameText, 'LEFT', -12, 0)
-		local b = CreateFrame('Frame', nil, _G.GhostFrameContentsFrameIcon:GetParent(), 'BackdropTemplate')
-		local p = E.PixelMode and 1 or 2
-		b:Point('TOPLEFT', _G.GhostFrameContentsFrameIcon, -p, p)
-		b:Point('BOTTOMRIGHT', _G.GhostFrameContentsFrameIcon, p, -p)
+
+		local x = E.PixelMode and 1 or 2
+		local button = CreateFrame('Frame', nil, _G.GhostFrameContentsFrameIcon:GetParent())
+		button:Point('TOPLEFT', _G.GhostFrameContentsFrameIcon, -x, x)
+		button:Point('BOTTOMRIGHT', _G.GhostFrameContentsFrameIcon, x, -x)
 		_G.GhostFrameContentsFrameIcon:Size(37,38)
-		_G.GhostFrameContentsFrameIcon:SetParent(b)
-		b:CreateBackdrop()
+		_G.GhostFrameContentsFrameIcon:SetParent(button)
+		button:SetTemplate()
 	end
 
 	_G.OpacityFrame:StripTextures()
-	_G.OpacityFrame:CreateBackdrop('Transparent')
+	_G.OpacityFrame:SetTemplate('Transparent')
 
 	--DropDownMenu
 	hooksecurefunc('UIDropDownMenu_CreateFrames', function(level, index)
-		local listFrame = _G['DropDownList'..level];
-		local listFrameName = listFrame:GetName();
-		local expandArrow = _G[listFrameName..'Button'..index..'ExpandArrow'];
+		local listFrame = _G['DropDownList'..level]
+		local listFrameName = listFrame:GetName()
+		local expandArrow = _G[listFrameName..'Button'..index..'ExpandArrow']
 		if expandArrow then
 			local normTex = expandArrow:GetNormalTexture()
 			expandArrow:SetNormalTexture(E.Media.Textures.ArrowUp)
@@ -279,12 +289,16 @@ function S:BlizzardMiscFrames()
 		end
 
 		local Backdrop = _G[listFrameName..'Backdrop']
-		if not Backdrop.template then Backdrop:StripTextures() end
-		Backdrop:CreateBackdrop('Transparent')
+		if Backdrop and not Backdrop.template then
+			Backdrop:StripTextures()
+			Backdrop:SetTemplate('Transparent')
+		end
 
 		local menuBackdrop = _G[listFrameName..'MenuBackdrop']
-		if not menuBackdrop.template then menuBackdrop:StripTextures() end
-		menuBackdrop:CreateBackdrop('Transparent')
+		if menuBackdrop and not menuBackdrop.template then
+			menuBackdrop:StripTextures()
+			menuBackdrop:SetTemplate('Transparent')
+		end
 	end)
 
 	hooksecurefunc('UIDropDownMenu_SetIconImage', function(icon, texture)
@@ -297,7 +311,7 @@ function S:BlizzardMiscFrames()
 
 	hooksecurefunc('ToggleDropDownMenu', function(level)
 		if not level then
-			level = 1;
+			level = 1
 		end
 
 		local r, g, b = unpack(E.media.rgbvaluecolor)
@@ -317,10 +331,9 @@ function S:BlizzardMiscFrames()
 				button:CreateBackdrop()
 			end
 
-			button.backdrop:Hide()
-
 			if not button.notCheckable then
 				uncheck:SetTexture()
+
 				local _, co = check:GetTexCoord()
 				if co == 0 then
 					check:SetTexture([[Interface\Buttons\UI-CheckBox-Check]])
@@ -339,6 +352,7 @@ function S:BlizzardMiscFrames()
 				button.backdrop:Show()
 				check:SetTexCoord(0, 1, 0, 1)
 			else
+				button.backdrop:Hide()
 				check:Size(16, 16)
 			end
 		end
@@ -351,14 +365,14 @@ function S:BlizzardMiscFrames()
 	SideDressUpFrame:StripTextures()
 	SideDressUpFrame.BGTopLeft:Hide()
 	SideDressUpFrame.BGBottomLeft:Hide()
-	SideDressUpFrame:CreateBackdrop('Transparent')
+	SideDressUpFrame:SetTemplate('Transparent')
 
 	-- StackSplit
 	local StackSplitFrame = _G.StackSplitFrame
 	StackSplitFrame:StripTextures()
-	StackSplitFrame:CreateBackdrop('Transparent')
+	StackSplitFrame:SetTemplate('Transparent')
 
-	StackSplitFrame.bg1 = CreateFrame('Frame', nil, StackSplitFrame, 'BackdropTemplate')
+	StackSplitFrame.bg1 = CreateFrame('Frame', nil, StackSplitFrame)
 	StackSplitFrame.bg1:SetTemplate('Transparent')
 	StackSplitFrame.bg1:Point('TOPLEFT', 10, -15)
 	StackSplitFrame.bg1:Point('BOTTOMRIGHT', -10, 55)

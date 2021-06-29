@@ -24,7 +24,7 @@ local RSUtils = private.ImportLib("RareScannerUtils")
 
 ---============================================================================
 -- Not discovered entities
---- In order to avoid long process time, it caches these list on load
+--- In order to avoid long process time, it caches this list on load
 ---============================================================================
 
 local notDiscoveredContainerIDs = {}
@@ -62,7 +62,7 @@ function RSContainerPOI.GetContainerPOI(containerID, mapID, containerInfo, alrea
 	end
 	POI.foundTime = alreadyFoundInfo and alreadyFoundInfo.foundTime
 	POI.isOpened = RSContainerDB.IsContainerOpened(containerID)
-	POI.isDiscovered = POI.isOpened or alreadyFoundInfo
+	POI.isDiscovered = POI.isOpened or alreadyFoundInfo ~= nil
 	POI.achievementLink = RSAchievementDB.GetNotCompletedAchievementLink(containerID, mapID)
 	if (containerInfo) then
 		POI.worldmap = containerInfo.worldmap
@@ -103,7 +103,7 @@ local function IsContainerPOIFiltered(containerID, mapID, zoneQuestID, vignetteG
 	end
 
 	-- Skip if the entity is filtered
-	if (RSConfigDB.IsContainerFiltered(containerID) and not RSContainerDB.IsWorldMap(containerID)) then
+	if (RSConfigDB.IsContainerFiltered(containerID) and not RSContainerDB.IsWorldMap(containerID) and (not RSConfigDB.IsContainerFilteredOnlyOnWorldMap() or (RSConfigDB.IsContainerFilteredOnlyOnWorldMap() and not RSGeneralDB.IsRecentlySeen(containerID)))) then
 		RSLogger:PrintDebugMessageEntityID(containerID, string.format("Saltado Contenedor [%s]: Filtrado en opciones.", containerID))
 		return true
 	end

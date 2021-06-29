@@ -141,7 +141,7 @@
 	function _detalhes:InitializeCustomDisplayWindow()
 		local DetailsCustomPanel = CreateFrame ("frame", "DetailsCustomPanel", UIParent,"BackdropTemplate")
 		DetailsCustomPanel.Frame = DetailsCustomPanel
-		DetailsCustomPanel.__name = "Custom Displays"
+		DetailsCustomPanel.__name = Loc ["STRING_SCRIPTS_TITLE"]
 		DetailsCustomPanel.real_name = "DETAILS_CUSTOMDISPLAY"
 		--DetailsCustomPanel.__icon = [[Interface\FriendsFrame\UI-FriendsList-Small-Up]]
 		DetailsCustomPanel.__icon = [[Interface\AddOns\Details\images\icons]]
@@ -812,7 +812,7 @@
 				for key, value in pairs (custom_object) do
 					if (object_keys [key]) then
 						if (type (value) == "table") then
-							export_object [key] = table_deepcopy (value)
+							export_object [key] = Details.CopyTable (value)
 						else
 							export_object [key] = value
 						end
@@ -1846,7 +1846,7 @@
 				apply1:SetPoint ("left", font_size2, "right", 2, 0)
 				apply1:SetTemplate (CONST_CODETEXTENTRYBUTTON_TEMPLATE)
 				
-				local open_API = gump:NewButton (supportFrame, nil, "$parentOpenAPI", "openAPIbutton", CONST_EDITBOX_BUTTON_WIDTH, CONST_EDITBOX_BUTTON_HEIGHT, _detalhes.OpenAPI, nil, nil, nil, "API")
+				local open_API = gump:NewButton (supportFrame, nil, "$parentOpenAPI", "openAPIbutton", CONST_EDITBOX_BUTTON_WIDTH, CONST_EDITBOX_BUTTON_HEIGHT, function()end, nil, nil, nil, "API") --_detalhes.OpenAPI - opening the api was cancelling the editing process
 				open_API:SetPoint ("left", apply1, "right", 2, 0)
 				open_API:SetTemplate (CONST_CODETEXTENTRYBUTTON_TEMPLATE)
 				

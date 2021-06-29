@@ -1,7 +1,7 @@
 # <DBM> World Bosses (BfA)
 
-## [r1-12-g90866b8](https://github.com/DeadlyBossMods/DBM-BfA/tree/90866b86b88b820070af20ee2985a1a12e1ec4f6) (2021-03-09)
-[Full Changelog](https://github.com/DeadlyBossMods/DBM-BfA/compare/r1...90866b86b88b820070af20ee2985a1a12e1ec4f6) [Previous Releases](https://github.com/DeadlyBossMods/DBM-BfA/releases)
+## [r2](https://github.com/DeadlyBossMods/DBM-BfA/tree/r2) (2021-03-09)
+[Full Changelog](https://github.com/DeadlyBossMods/DBM-BfA/compare/r1...r2) [Previous Releases](https://github.com/DeadlyBossMods/DBM-BfA/releases)
 
 - TOC Bump  
 - Localized mod names in Russian (#2)  

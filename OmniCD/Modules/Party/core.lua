@@ -72,77 +72,57 @@ function P:Refresh(full)
 	local key = self.test and self.testZone or instanceType
 	key = key == "none" and E.profile.Party.noneZoneSetting or (key == "scenario" and E.profile.Party.scenarioZoneSetting) or key
 	E.db = E.profile.Party[key]
+	P.profile = E.profile.Party -- TODO: migrate
+	P.db = E.db
 
 	if full then
-		self:UpdateFontObj() -- shared frames still needs to be updated on every call
-		self:UpdateTextureObj()
+		--self:UpdateFonts() -- TODO: shared frames still needs to be updated on every call
+		self:UpdateTextures()
+		self:UpateTimerFormat()
 		self:PLAYER_ENTERING_WORLD(nil, nil, true)
 	else
 		E:SetActiveUnitFrameData()
 		self:UpdatePositionValues()
 		self:UpdateExPositionValues()
+		self:UpdateRaidPriority()
 		self:UpdateBars()
 		self:UpdatePosition()
 		self:UpdateExPosition()
 	end
 end
 
-function P:UpdateFontObj()
-	local db_anchor = E.profile.General.fonts.anchor
-	for i = 1, #self.bars do
-		local f = self.bars[i]
-		E.SetFontObj(f.anchor.text, db_anchor)
-	end
-
-	for i = 1, #self.unusedBars do
-		local f = self.unusedBars[i]
-		E.SetFontObj(f.anchor.text, db_anchor)
-	end
-
-	for _, f in pairs(self.extraBars) do
-		E.SetFontObj(f.anchor.text, db_anchor)
-		E.SetWidth(f.anchor)
-	end
-
-	self.TestMod:SetAnchor(self.testZone)
-
-	local db_icon = E.profile.General.fonts.icon
-	local db_statusBar = E.profile.General.fonts.statusBar
-	for _, info in pairs(self.groupInfo) do
-		local icons = info.spellIcons
-		for _, icon in pairs(icons) do
-			local statusBar = icon.statusBar
-			if statusBar then
-				E.SetFontObj(statusBar.Text, db_statusBar)
-				E.SetFontObj(statusBar.CastingBar.Text, db_statusBar)
-				E.SetFontObj(statusBar.CastingBar.Timer, db_statusBar)
-			end
-			E.SetFontObj(icon.Name, db_icon)
-		end
-	end
-
-	for i = 1, #self.unusedIcons do
-		local icon = self.unusedIcons[i]
-		E.SetFontObj(icon.Name, db_icon)
-	end
-
-	for i = 1, #self.unusedStatusBars do
-		local statusBar = self.unusedStatusBars[i]
-		E.SetFontObj(statusBar.Text, db_statusBar)
-		E.SetFontObj(statusBar.CastingBar.Text, db_statusBar)
-		E.SetFontObj(statusBar.CastingBar.Timer, db_statusBar)
-	end
-end
-
-function P:UpdateTextureObj()
-	local texture = E.LSM:Fetch("statusbar", E.profile.General.textures.statusBar.bar)
+function P:UpdateTextures()
+	local texture = E.Libs.LSM:Fetch("statusbar", E.profile.General.textures.statusBar.bar)
 	self:ConfigTextures()
 
 	for i = 1, #self.unusedStatusBars do
 		local statusBar = self.unusedStatusBars[i]
 		statusBar.BG:SetTexture(texture)
 		statusBar.CastingBar:SetStatusBarTexture(texture)
-		statusBar.CastingBar.BG:SetTexture(E.LSM:Fetch("statusbar", E.profile.General.textures.statusBar.BG))
+		statusBar.CastingBar.BG:SetTexture(E.Libs.LSM:Fetch("statusbar", E.profile.General.textures.statusBar.BG))
+	end
+end
+
+function P:UpateTimerFormat()
+	local db = E.profile.General.cooldownText.statusBar
+	self.mmss = db.mmss
+	self.ss = db.ss
+	self.mmssColor = db.mmssColor
+	self.ssColor = db.ssColor
+end
+
+function P:UpdateEnabledSpells()
+	wipe(self.spell_enabled) -- wipe upvalue
+
+	for _, v in pairs(E.spell_db) do
+		local n = #v
+		for i = 1, n do
+			local t = v[i]
+			local id = t.spellID
+			if self.IsEnabledSpell(id) then
+				self.spell_enabled[id] = true
+			end
+		end
 	end
 end
 
@@ -159,14 +139,16 @@ function P:UpdatePositionValues()
 	self.containerOfsX = db.offsetX * growX
 	self.containerOfsY = -db.offsetY
 	self.columns = db.columns
-	self.doubleRow = db.layout == "doubleRow"
+	self.multiline = db.layout ~= "vertical" and db.layout ~= "horizontal"
+	self.tripleline = db.layout == "tripleRow" or db.layout == "tripleColumn"
 	self.breakPoint = E.db.priority[db.breakPoint]
+	self.breakPoint2 = E.db.priority[db.breakPoint2]
 	self.displayInactive = db.displayInactive
 
 	local growUpward = db.growUpward
 	local growY = growUpward and 1 or -1
-	local px = E.NumPixels / E.db.icons.scale
-	if db.layout == "vertical" then
+	local px = E.PixelMult / E.db.icons.scale
+	if db.layout == "vertical" or  db.layout == "doubleColumn" or db.layout == "tripleColumn" then
 		self.point2 = growUpward and "BOTTOMRIGHT" or "TOPRIGHT"
 		self.relativePoint2 = growUpward and "TOPRIGHT" or "BOTTOMRIGHT"
 		self.ofsX = growX * (E.BASE_ICON_SIZE + db.paddingX  * px)
@@ -180,17 +162,6 @@ function P:UpdatePositionValues()
 		self.ofsY = growY * (E.BASE_ICON_SIZE + db.paddingY * px)
 		self.ofsX2 = growX * db.paddingX * px
 		self.ofsY2 = 0
-		--[[ xml
-		if growUpward then
-			self.point3 = growLeft and "BOTTOMRIGHT" or "BOTTOMLEFT"
-		else
-			self.point3 = self.point2
-		end
-		self.relativePoint3 = self.point2
-		self.modRowOfsX = E.db.icons.modRowOfsX * growX
-		self.modRowOfsY = growUpward and db.paddingY * px or -E.BASE_ICON_SIZE - db.paddingY * px
-		self.ofsX4 = growX * db.paddingX * px / E.db.icons.modRowScale
-		--]]
 	end
 end
 
@@ -242,6 +213,7 @@ function P:IsTalent(talentID, guid)
 		return false
 	end
 
+	-- TODO: move to inspect (warmode)
 	if talent == "PVP" then
 		return self.isPvP
 	elseif talent == "R" then
@@ -280,19 +252,13 @@ function P:IsDeBuffActive(unit, spellID)
 	end
 end
 
-function P:ConfirmReload(text, data, arg)
-	local dialog = StaticPopup_Show("OMNICD_RELOADUI", text)
-	dialog.data = data
-	dialog.data2 = arg
-	dialog:SetFrameStrata("TOOLTIP")
-end
-
 function P:UI_SCALE_CHANGED() -- [61]
-	E:SetNumPixels()
+	E:SetPixelMult()
 	self:ConfigSize(nil, true)
 	for key in pairs(self.extraBars) do
 		self:ConfigExSize(key, true)
 	end
+	--E.UpdateBackdrops() -- TODO: doesn't fix ace
 end
 
 E["Party"] = P

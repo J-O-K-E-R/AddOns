@@ -1,3 +1,6 @@
+**18.0.6**
+Update for 9.0.5.
+
 **18.0.5**
 Various buff/debuff fixes.
 * Added Frames:

@@ -1,4 +1,4 @@
-local E, L, V, P, G = unpack(select(2, ...)); --Import: Engine, Locales, PrivateDB, ProfileDB, GlobalDB
+local E, L, V, P, G = unpack(select(2, ...)) --Import: Engine, Locales, PrivateDB, ProfileDB, GlobalDB
 local S = E:GetModule('Skins')
 
 local _G = _G
@@ -57,7 +57,7 @@ local function HotkeyColor(self, r, g, b)
 end
 
 local function SkinItemButton(item)
-	item:CreateBackdrop('Transparent', nil, nil, nil, nil, nil, true)
+	item:SetTemplate('Transparent')
 	item:StyleButton()
 	item:SetNormalTexture(nil)
 
@@ -96,7 +96,7 @@ local function HandleItemButton(block)
 	end
 
 	if item.backdrop then
-		item.backdrop:SetFrameLevel(item:GetFrameLevel() - 1)
+		item.backdrop:SetFrameLevel(3)
 	end
 end
 
@@ -176,19 +176,24 @@ local function PositionFindGroupButton(block, button)
 		if block.groupFinderButton and b == block.groupFinderButton and block.itemButton and button == block.itemButton then
 			-- this fires when there is a group button and a item button to the left of it
 			-- we push the item button away from the group button (to the left)
-			button:Point(a, b, c, d-(E.PixelMode and -1 or 1), e);
+			button:Point(a, b, c, d-(E.PixelMode and -1 or 1), e)
 		elseif b == block and block.groupFinderButton and button == block.groupFinderButton then
 			-- this fires when there is a group finder button
 			-- we push the group finder button down slightly
-			button:Point(a, b, c, d, e-(E.PixelMode and 2 or -1));
+			button:Point(a, b, c, d, e-(E.PixelMode and 2 or -1))
 		end
 	end
 end
 
 local function SkinFindGroupButton(block)
-	if block.hasGroupFinderButton and block.groupFinderButton then
-		S:HandleButton(block.groupFinderButton, nil, nil, nil, nil, nil, nil, nil, 3)
-		block.groupFinderButton:Size(20)
+	local button = block.hasGroupFinderButton and block.groupFinderButton
+	if button then
+		S:HandleButton(button)
+		button:Size(20)
+
+		if button.backdrop then
+			button.backdrop:SetFrameLevel(3)
+		end
 	end
 end
 
@@ -223,6 +228,7 @@ function S:ObjectiveTrackerFrame()
 	hooksecurefunc('ObjectiveTracker_Expand',TrackerStateChanged)
 	hooksecurefunc('ObjectiveTracker_Collapse',TrackerStateChanged)
 	hooksecurefunc('QuestObjectiveSetupBlockButton_Item', HandleItemButton)
+	hooksecurefunc(_G.BONUS_OBJECTIVE_TRACKER_MODULE, "AddObjective", HandleItemButton)
 	hooksecurefunc('BonusObjectiveTrackerProgressBar_SetValue',ColorProgressBars)			--[Color]: Bonus Objective Progress Bar
 	hooksecurefunc('ObjectiveTrackerProgressBar_SetValue',ColorProgressBars)				--[Color]: Quest Progress Bar
 	hooksecurefunc('ScenarioTrackerProgressBar_SetValue',ColorProgressBars)					--[Color]: Scenario Progress Bar

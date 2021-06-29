@@ -31,18 +31,18 @@ E.IsTableExact = function(a, b)
 	return true
 end
 
-E.RemoveTableDuplicates = function(dest, src)
+E.RemoveEmptyDuplicateTables = function(dest, src)
 	local copy = {}
 	for k, v in pairs(dest) do
 		local srcV = src[k]
-		if type(v) == 'table' and type(srcV) == 'table' then
-			copy[k] = E.RemoveTableDuplicates(v, srcV)
+		if type(v) == "table" and type(srcV) == "table" then
+			copy[k] = E.RemoveEmptyDuplicateTables(v, srcV)
 		elseif v ~= srcV then
 			copy[k] = v
 		end
 	end
 
-	return copy
+	return next(copy) and copy
 end
 
 E.GetModuleEnabled = function(k)
@@ -57,21 +57,6 @@ E.SetModuleEnabled = function(k, v)
 		module:Enable()
 	else
 		module:Disable()
-	end
-end
-
-E.UpdateEnabledSpells = function(module)
-	wipe(module.spell_enabled)
-
-	for _, v in pairs(E.spell_db) do
-		local n = #v
-		for i = 1, n do
-			local t = v[i]
-			local id = t.spellID
-			if module.IsEnabledSpell(id) then
-				module.spell_enabled[id] = true
-			end
-		end
 	end
 end
 
@@ -108,18 +93,6 @@ E.LoadPosition = function(f, key)
 	end
 end
 
-E.UpdatePosition = function(f)
-	if not f.isExBar then return end
-
-	E.LoadPosition(f)
-
-	local parentWidth = UIParent:GetWidth()
-	local clamp = f.db.center and (1 - parentWidth)/2 or 0
-	f:SetClampRectInsets(clamp, -clamp, 0, 0)
-	clamp = f.db.center and (f.anchor:GetWidth() - parentWidth)/2 or 0
-	f.anchor:SetClampRectInsets(clamp, -clamp, 0, 0)
-end
-
 function OmniCD_AnchorOnMouseDown(self)
 	local bar = self:GetParent()
 	bar:StartMoving()
@@ -129,7 +102,7 @@ function OmniCD_AnchorOnMouseUp(self)
 	local bar = self:GetParent()
 	bar:StopMovingOrSizing()
 	SavePosition(bar)
-	LibStub("AceConfigRegistry-3.0"):NotifyChange("OmniCD")
+	E.Libs.ACR:NotifyChange("OmniCD")
 end
 
 E.SetWidth = function(anchor)
@@ -239,4 +212,80 @@ E.UnregisterEvents = function(f, t)
 	end
 end
 
-E.noop = function() end
+E.Noop = function() end
+
+do
+	local backdropFrames = {}
+	local backdropStyle = {}
+	local textureUVs = {
+		"TopLeftCorner",
+		"TopRightCorner",
+		"BottomLeftCorner",
+		"BottomRightCorner",
+		"TopEdge",
+		"BottomEdge",
+		"LeftEdge",
+		"RightEdge",
+		"Center"
+	}
+
+	E.DisablePixelSnap = function(obj)
+		obj:SetTexelSnappingBias(0.0)
+		obj:SetSnapToPixelGrid(false)
+	end
+
+	E.BackdropTemplate = function(frame, style, bgFile, edgeFile, edgeSize)
+		style = style or "default"
+
+		local backdrop = backdropStyle[style]
+		if not backdrop then
+			backdrop = {
+				bgFile = bgFile or E.TEXTURES.White8x8,
+				edgeFile = edgeFile or E.TEXTURES.White8x8,
+				edgeSize = (edgeSize or 1) * E.PixelMult,
+			}
+
+			backdropStyle[style] = backdrop
+		end
+
+		frame:SetBackdrop(backdrop)
+
+		for _, pieceName in ipairs(textureUVs) do
+			local region = frame[pieceName];
+			if region then
+				E.DisablePixelSnap(region)
+			end
+		end
+
+		backdropFrames[frame] = backdrop
+	end
+
+	E.UpdateBackdrops = function()
+		for style, backdrop in pairs(backdropStyle) do
+			backdrop.edgeSize = E.PixelMult
+		end
+		for frame, backdrop in pairs(backdropFrames) do
+			frame:SetBackdrop(backdrop)
+		end
+	end
+end
+
+E.SortHashToArray = function(src, db)
+	local t = {}
+	for k in pairs(src) do
+		t[#t + 1] = {db[k], k}
+	end
+
+	table.sort(t, function(a, b)
+		return a[1] > b[1]
+	end)
+
+	local sorted = {}
+	for i = 1, #t do
+		local v = t[i][2]
+		sorted[i] = v
+	end
+	t = nil
+
+	return sorted
+end

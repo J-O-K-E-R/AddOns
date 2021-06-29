@@ -1,4 +1,4 @@
-local E, L, V, P, G = unpack(select(2, ...)); --Import: Engine, Locales, PrivateDB, ProfileDB, GlobalDB
+local E, L, V, P, G = unpack(select(2, ...)) --Import: Engine, Locales, PrivateDB, ProfileDB, GlobalDB
 local DT = E:GetModule('DataTexts')
 local TT = E:GetModule('Tooltip')
 local LDB = E.Libs.LDB
@@ -8,6 +8,7 @@ local _G = _G
 local tostring, format, type, pcall = tostring, format, type, pcall
 local tinsert, ipairs, pairs, wipe, sort = tinsert, ipairs, pairs, wipe, sort
 local next, strfind, strlen, strsplit = next, strfind, strlen, strsplit
+local hooksecurefunc = hooksecurefunc
 local CloseDropDownMenus = CloseDropDownMenus
 local CreateFrame = CreateFrame
 local EasyMenu = EasyMenu
@@ -39,6 +40,7 @@ DT.SelectedDatatext = nil
 DT.HyperList = HyperList
 DT.RegisteredPanels = {}
 DT.RegisteredDataTexts = {}
+DT.DataTextList = {}
 DT.LoadedInfo = {}
 DT.PanelPool = {
 	InUse = {},
@@ -72,7 +74,7 @@ function DT:SetEasyMenuAnchor(menu, dt)
 end
 
 --> [HyperDT Credits] <--
---> Original Work: NihilisticPandemonium
+--> Original Work: Nihilistzsche
 --> Modified by Azilroka! :)
 
 function DT:SingleHyperMode(_, key, active)
@@ -170,7 +172,7 @@ function DT:FetchFrame(givenName)
 		frame = poolFrame
 		DT.PanelPool.Free[poolName] = nil
 	else
-		frame = CreateFrame('Frame', name, E.UIParent, 'BackdropTemplate')
+		frame = CreateFrame('Frame', name, E.UIParent)
 		DT.PanelPool.Count = DT.PanelPool.Count + 1
 	end
 
@@ -206,8 +208,8 @@ function DT:ReleasePanel(givenName)
 	end
 end
 
-function DT:BuildPanelFrame(name, db, fromInit)
-	db = db or E.global.datatexts.customPanels[name] or DT:Panel_DefaultGlobalSettings(name)
+function DT:BuildPanelFrame(name, fromInit)
+	local db = DT:GetPanelSettings(name)
 
 	local Panel = DT:FetchFrame(name)
 	Panel:ClearAllPoints()
@@ -283,11 +285,6 @@ function DT:SetupObjectLDB(name, obj)
 	local data = DT:RegisterDatatext(name, 'Data Broker', nil, onEvent, nil, onClick, onEnter, onLeave)
 	E.valueColorUpdateFuncs[onCallback] = true
 	data.isLibDataBroker = true
-
-	-- Update config if it has been loaded
-	if DT.PanelLayoutOptions then
-		DT:PanelLayoutOptions()
-	end
 end
 
 function DT:RegisterLDB()
@@ -342,10 +339,16 @@ function DT:RegisterPanel(panel, numPoints, anchor, xOff, yOff, vertical)
 	panel.vertical = vertical
 end
 
-function DT:Panel_DefaultGlobalSettings(name)
+function DT:GetPanelSettings(name)
 	local db = E:CopyTable({}, G.datatexts.newPanelInfo)
 
-	E.global.datatexts.customPanels[name] = db
+	local customPanels = E.global.datatexts.customPanels
+	local customPanel = customPanels[name]
+	if customPanel then
+		db = E:CopyTable(db, customPanel)
+	end
+
+	customPanels[name] = db
 
 	return db
 end
@@ -382,7 +385,6 @@ function DT:AssignPanelToDataText(dt, data, event, ...)
 		if not data.objectEvent then
 			dt:SetScript('OnEvent', data.eventFunc)
 		end
-
 		data.eventFunc(dt, ev, ...)
 	end
 
@@ -774,14 +776,16 @@ function DT:Initialize()
 	DT:RegisterLDB() -- LibDataBroker
 	DT:RegisterCustomCurrencyDT() -- Register all the user created currency datatexts from the 'CustomCurrency' DT.
 
-	for name, db in pairs(E.global.datatexts.customPanels) do
-		DT:BuildPanelFrame(name, db, true)
+	for name in pairs(E.global.datatexts.customPanels) do
+		DT:BuildPanelFrame(name, true)
 	end
 
 	do -- we need to register the panels to access them for the text
 		DT.BattleStats.LEFT.panel = _G.LeftChatDataPanel.dataPanels
 		DT.BattleStats.RIGHT.panel = _G.RightChatDataPanel.dataPanels
 	end
+
+	hooksecurefunc(_G.C_CurrencyInfo, 'SetCurrencyBackpack', function() DT:ForceUpdate_DataText('Currencies') end)
 
 	DT:PopulateData()
 	DT:RegisterHyperDT()
@@ -843,6 +847,7 @@ function DT:RegisterDatatext(name, category, events, eventFunc, updateFunc, clic
 	end
 
 	DT.RegisteredDataTexts[name] = data
+	DT.DataTextList[name] = localizedName or name
 
 	return data
 end

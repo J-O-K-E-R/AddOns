@@ -1,5 +1,4 @@
 local SLE, T, E, L, V, P, G = unpack(select(2, ...))
-if select(2, GetAddOnInfo('ElvUI_KnightFrame')) and IsAddOnLoaded('ElvUI_KnightFrame') then return end --Don't break korean code :D
 local Armory = SLE:GetModule("Armory_Core")
 local IA = SLE:NewModule("Armory_Inspect", "AceEvent-3.0", "AceConsole-3.0", "AceHook-3.0");
 local M = E:GetModule("Misc")
@@ -140,6 +139,16 @@ function IA:Update_BG()
 		_G['InspectPaperDollFrame'].SLE_Armory_BG:SetTexture(E.db.sle.armory.inspect.background.customTexture)
 	elseif E.db.sle.armory.inspect.background.selectedBG == 'CLASS' then
 		_G['InspectPaperDollFrame'].SLE_Armory_BG:SetTexture([[Interface\AddOns\ElvUI_SLE\media\textures\armory\]]..E.myclass)
+	elseif E.db.sle.armory.inspect.background.selectedBG == 'Covenant' then
+		local covenant = SLE.ArmoryConfigBackgroundValues.Covenants[C_Covenants.GetActiveCovenantID()]
+		local bgtexture = SLE:TextureExists([[Interface\AddOns\ElvUI_SLE\media\textures\armory\Cov_]]..covenant) and [[Interface\AddOns\ElvUI_SLE\media\textures\armory\Cov_]]..covenant or nil
+
+		_G["InspectPaperDollFrame"].SLE_Armory_BG:SetTexture(bgtexture)
+	elseif E.db.sle.armory.inspect.background.selectedBG == 'Covenant2' then
+		local covenant = SLE.ArmoryConfigBackgroundValues.Covenants[C_Covenants.GetActiveCovenantID()]
+		local bgtexture = (SLE:TextureExists([[Interface\AddOns\ElvUI_SLE\media\textures\armory\Cov_]]..covenant..'2') and [[Interface\AddOns\ElvUI_SLE\media\textures\armory\Cov_]]..covenant..'2') or (SLE:TextureExists([[Interface\AddOns\ElvUI_SLE\media\textures\armory\Cov_]]..covenant) and [[Interface\AddOns\ElvUI_SLE\media\textures\armory\Cov_]]..covenant) or nil
+
+		_G["InspectPaperDollFrame"].SLE_Armory_BG:SetTexture(bgtexture)
 	else
 		_G['InspectPaperDollFrame'].SLE_Armory_BG:SetTexture(SLE.ArmoryConfigBackgroundValues.BlizzardBackdropList[E.db.sle.armory.inspect.background.selectedBG] or [[Interface\AddOns\ElvUI_SLE\media\textures\armory\]]..E.db.sle.armory.inspect.background.selectedBG)
 	end

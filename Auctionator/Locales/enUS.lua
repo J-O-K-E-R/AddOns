@@ -18,6 +18,9 @@ AUCTIONATOR_LOCALES.enUS = function()
   L["CONFIG_AUTOSCAN_INTERVAL"] = "Set to the number of minutes to wait between autoscans"
   L["CONFIG_AUTOSCAN_INTERVAL_TOOLTIP_HEADER"] = "Autoscan Delay Interval"
   L["CONFIG_AUTOSCAN_INTERVAL_TOOLTIP_TEXT"] = "By default an scan doesn't happen every time you open the Auction House. It waits until a fixed time has elapsed since the last scan."
+  L["CONFIG_ALTERNATE_SCAN"] = "Use alternate slower scan mode by default"
+  L["CONFIG_ALTERNATE_SCAN_HEADER"] = "Alternate Scan Mode"
+  L["CONFIG_ALTERNATE_SCAN_TEXT"] = "The fast scan mode can cause disconnections on busy servers. This setting uses a slower and less likely to disconnect, scan method."
 
   L["CONFIG_DEVELOPER"] = "Developer Settings"
   L["CONFIG_DEBUG"] = "Toggle debug output."
@@ -86,6 +89,9 @@ AUCTIONATOR_LOCALES.enUS = function()
   L["CONFIG_ADVANCED_TEXT"] = "Only look here if you know what you're doing"
   L["CONFIG_SCAN_SETTINGS"] = "Scan Settings"
 
+  L["CONFIG_QUANTITIES_CATEGORY"] = "Selling: Quantities"
+  L["CONFIG_QUANTITIES_TEXT"] = "Choose the default quantity used for the different item categories."
+
   L["AUTHOR_HEADER"] = "Author"
   L["CONTRIBUTORS_HEADER"] = "Contributors"
   L["TRANSLATORS_HEADER"] = "Translators"
@@ -117,9 +123,12 @@ AUCTIONATOR_LOCALES.enUS = function()
   L["BUYOUT_AUCTION_INFO"] = "%s buyout at %s"
 
   L["STARTING_FULL_SCAN"] = "Starting a full scan."
+  L["FULL_SCAN_IN_PROGRESS"] = "Full scan in progress."
   L["NEXT_SCAN_MESSAGE"] = "A full scan may be started in %s minutes and %s seconds."
   L["FULL_SCAN_FAILED"] = "Full scan failed to complete."
   L["FINISHED_PROCESSING"] = "Finished processing %s items."
+  L["STARTING_FULL_SCAN_ALTERNATE"] = "Starting a full scan (alternate mode)."
+  L["FULL_SCAN_ALTERNATE_FAILED"] = "Full scan (alternate mode) failed to complete."
 
   L["TOO_MANY_SEARCH_RESULTS"] = "Too many search results. Limiting results displayed."
   L["LIST_DELETE_ERROR"] = "An error occurred attempting to delete a list."
@@ -169,6 +178,7 @@ AUCTIONATOR_LOCALES.enUS = function()
   L["RESULTS_AVAILABLE_COLUMN"] = "Available"
   L["ITEM_LEVEL_COLUMN"] = "Item Level"
   L["SELLERS_COLUMN"] = "Seller(s)"
+  L["SELLERS_OVERFLOW_TEXT"] = "%s, and %s more"
   L["OWNED_COLUMN"] = "Owned?"
 
   L["FULL_SCAN_BUTTON"] = "Full Scan"
@@ -265,6 +275,12 @@ AUCTIONATOR_LOCALES.enUS = function()
   L["SPLASH_907_UNANNOUNCED_HEADER"] = "Unannounced features from 9.0.6"
   L["SPLASH_907_UNANNOUNCED_1"] = "An optional \"Seller(s)\" column (to see who is selling the auctions) has been added to the Selling tab. To activate it right-click a column header (e.g. \"Owned?\") in the current auctions listings."
 
+  L["SPLASH_9010_DESCRIPTION"] = "Revamped selling quantity settings, if you have custom quantities set you'll likely need to set them again for this update."
+  L["SPLASH_9010_FEATURES_HEADER"] = "Features"
+  L["SPLASH_9010_FEATURES_1"] = "The default quantities for use in the Selling tab are now set based on the item's type. Find them in the \"Selling: Quantities\" options"
+  L["SPLASH_9010_UNANNOUNCED_HEADER"] = "Unannounced features from 9.0.9"
+  L["SPLASH_9010_UNANNOUNCED_1"] = "A new \"Show bid price option when listing an item\" option, found in \"Selling\" options, to allow bid prices to be set from the Selling tab"
+
   L["SPLASH_HIDE_MESSAGE"] = "Do not show until next update"
 
   L["LIST_ADD_ITEM_HEADER"] = "Add Shopping List Item"
@@ -291,7 +307,7 @@ AUCTIONATOR_LOCALES.enUS = function()
   L["SELECT_ALL"] = "Select All"
   L["UNSELECT_ALL"] = "Unselect All"
   L["CONFIRM"] = "Confirm"
-  L["ITEM_PRICE_HISTORY"] = "Item Price History"
+  L["X_PRICE_HISTORY"] = "%s Price History"
 
   L["ANY_LOWER"] = "any"
 
@@ -365,6 +381,9 @@ AUCTIONATOR_LOCALES.enUS = function()
   L["CONFIG_PRICE_HISTORY"] = "Show historical prices in the selling tab (reload required)"
   L["CONFIG_PRICE_HISTORY_TOOLTIP_HEADER"] = "Price History"
   L["CONFIG_PRICE_HISTORY_TOOLTIP_TEXT"] = "If this option is off the price history pane in the Selling tab will be hidden."
+  L["CONFIG_SELLING_SHOW_BID_PRICE"] = "Show bid price option when listing an item (reload required)"
+  L["CONFIG_SELLING_SHOW_BID_PRICE_TOOLTIP_HEADER"] = "Bid Options"
+  L["CONFIG_SELLING_SHOW_BID_PRICE_TOOLTIP_TEXT"] = "Controls whether the bid price option appears when posting an item."
   L["CONFIG_BAG_COLLAPSED"] = "Bag sections start collapsed (reload required)"
   L["CONFIG_BAG_COLLAPSED_TOOLTIP_HEADER"] = "Bag collapsing on start"
   L["CONFIG_BAG_COLLAPSED_TOOLTIP_TEXT"] = "If this option is on the bag sections will start closed, instead of open."
@@ -390,7 +409,8 @@ AUCTIONATOR_LOCALES.enUS = function()
   L["CONFIG_BAG"] = "Bag"
 
   L["HIDE"] = "Hide"
-  L["RESTORE_ALL"] = "Restore All"
+  L["UNHIDE"] = "Unhide"
+  L["UNHIDE_ALL"] = "Unhide All"
   L["UNHIDE_ALL_HIDDEN_ITEMS"] = "Unhide all hidden items"
   L["FAVOURITES"] = "Favourites"
   L["ADD_FAVOURITE"] = "Add Favourite"
@@ -405,10 +425,9 @@ AUCTIONATOR_LOCALES.enUS = function()
   L["DISABLED"] = "Disabled"
   L["AUCTIONATOR"] = "Auctionator"
 
-  L["DEFAULT_QUANTITY"] = "Default Quantity"
   L["GEAR_VENDOR_PRICE_MULTIPLIER"] = "Gear vendor price multiplier"
 
-  L["CONFIG_SELLING_DEFAULT_QUANTITY_SUFFIX"] = "Set to 0 for maximum amount"
+  L["CONFIG_SELLING_DEFAULT_QUANTITY_SUFFIX"] = "Set to 0 for max. amount"
   L["CONFIG_SELLING_DEFAULT_QUANTITY_TOOLTIP_HEADER"] = "Default Posting Quantity"
   L["CONFIG_SELLING_DEFAULT_QUANTITY_TOOLTIP_TEXT"] = "This lets you change the default amount used when posting an item. Set this to 0 to use the maximum possible amount."
   L["CONFIG_SELLING_GEAR_VENDOR_PRICE_MULTIPLIER_SUFFIX"] = "Set to 0 for no price"

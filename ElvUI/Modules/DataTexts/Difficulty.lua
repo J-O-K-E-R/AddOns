@@ -1,9 +1,8 @@
-local E, L, V, P, G = unpack(select(2, ...)); --Import: Engine, Locales, PrivateDB, ProfileDB, GlobalDB
+local E, L, V, P, G = unpack(select(2, ...)) --Import: Engine, Locales, PrivateDB, ProfileDB, GlobalDB
 local DT = E:GetModule('DataTexts')
 
 local _G = _G
-local pairs = pairs
-local format = format
+local pairs, format = pairs, format
 local GetDungeonDifficultyID, GetRaidDifficultyID, GetLegacyRaidDifficultyID = GetDungeonDifficultyID, GetRaidDifficultyID, GetLegacyRaidDifficultyID
 local SetDungeonDifficultyID, SetRaidDifficultyID, SetLegacyRaidDifficultyID = SetDungeonDifficultyID, SetRaidDifficultyID, SetLegacyRaidDifficultyID
 local GetInstanceInfo, GetDifficultyInfo, ResetInstances = GetInstanceInfo, GetDifficultyInfo, ResetInstances
@@ -20,26 +19,26 @@ local RightClickMenu, DiffLabel = {
 	{ text = _G.PLAYER_DIFFICULTY1, checked = function() return GetDungeonDifficultyID() == 1 end, func = function() SetDungeonDifficultyID(1) end },
 	{ text = _G.PLAYER_DIFFICULTY2, checked = function() return GetDungeonDifficultyID() == 2 end, func = function() SetDungeonDifficultyID(2) end },
 	{ text = _G.PLAYER_DIFFICULTY6, checked = function() return GetDungeonDifficultyID() == 23 end, func = function() SetDungeonDifficultyID(23) end },
-	{ text = '', isTitle = true, notCheckable = true };
+	{ text = '', isTitle = true, notCheckable = true },
 	{ text = _G.RAID_DIFFICULTY, isTitle = true, notCheckable = true},
 	{ text = _G.PLAYER_DIFFICULTY1, checked = function() return GetRaidDifficultyID() == 14 end, func = function() SetRaidDifficultyID(14) end },
 	{ text = _G.PLAYER_DIFFICULTY2, checked = function() return GetRaidDifficultyID() == 15 end, func = function() SetRaidDifficultyID(15) end },
 	{ text = _G.PLAYER_DIFFICULTY6, checked = function() return GetRaidDifficultyID() == 16 end, func = function() SetRaidDifficultyID(16) end },
-	{ text = '', isTitle = true, notCheckable = true };
+	{ text = '', isTitle = true, notCheckable = true },
 	{ text = _G.UNIT_FRAME_DROPDOWN_SUBSECTION_TITLE_LEGACY_RAID, isTitle = true, notCheckable = true },
 	{ text = _G.RAID_DIFFICULTY1, checked = function() return GetLegacyRaidDifficultyID() == 3 end, func = function() SetLegacyRaidDifficultyID(3) end },
 	{ text = _G.RAID_DIFFICULTY1..' '.._G.PLAYER_DIFFICULTY2, checked = function() return GetLegacyRaidDifficultyID() == 5 end, func = function() SetLegacyRaidDifficultyID(5) end },
 	{ text = _G.RAID_DIFFICULTY2, checked = function() return GetLegacyRaidDifficultyID() == 4 end, func = function() SetLegacyRaidDifficultyID(4) end },
 	{ text = _G.RAID_DIFFICULTY2..' '.._G.PLAYER_DIFFICULTY2, checked = function() return GetLegacyRaidDifficultyID() == 6 end, func = function() SetLegacyRaidDifficultyID(6) end },
-	{ text = '', isTitle = true, notCheckable = true };
+	{ text = '', isTitle = true, notCheckable = true },
 	{ text = _G.RESET_INSTANCES, notCheckable = true, func = function() ResetInstances() end},
 }, {}
 
 
 for i = 1, 200 do
-	if GetDifficultyInfo(i) then
-		local Name = GetDifficultyInfo(i)
-		if not DiffLabel[i] then DiffLabel[i] = Name end
+	local Name = GetDifficultyInfo(i)
+	if Name and not DiffLabel[i] then
+		DiffLabel[i] = Name
 	end
 end
 
@@ -93,7 +92,7 @@ local function GetLabelTexture(ID)
 	for Name, Info in pairs(IDTexture) do
 		for _, Num in pairs(Info) do
 			if Num == ID then
-				return Name == 'LEGACY' and LegacyTexture or RaidTexture
+				return (Name == 'LEGACY' and LegacyTexture) or RaidTexture
 			end
 		end
 	end
@@ -127,13 +126,13 @@ local function OnEnter()
 	DT.tooltip:AddLine(' ')
 
 	if DungeonDifficultyID then
-		DT.tooltip:AddLine(format('%s %s', DungeonTexture, DiffLabel[DungeonDifficultyID]), 1, 1, 1)
+		DT.tooltip:AddLine(format('%s %s', DungeonTexture, GetDiffIDLabel(DungeonDifficultyID)), 1, 1, 1)
 	end
 	if RaidDifficultyID then
-		DT.tooltip:AddLine(format('%s %s', RaidTexture, DiffLabel[RaidDifficultyID]), 1, 1, 1)
+		DT.tooltip:AddLine(format('%s %s', RaidTexture, GetDiffIDLabel(RaidDifficultyID)), 1, 1, 1)
 	end
 	if LegacyRaidDifficultyID then
-		DT.tooltip:AddLine(format('%s %s', LegacyTexture, DiffLabel[LegacyRaidDifficultyID]), 1, 1, 1)
+		DT.tooltip:AddLine(format('%s %s', LegacyTexture, GetDiffIDLabel(LegacyRaidDifficultyID)), 1, 1, 1)
 	end
 
 	DT.tooltip:Show()

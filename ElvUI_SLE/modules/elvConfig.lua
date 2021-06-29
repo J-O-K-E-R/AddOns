@@ -1,28 +1,28 @@
 ﻿local SLE, T, E, L, V, P, G = unpack(select(2, ...))
 local EC = SLE:NewModule('ElvConfig', 'AceEvent-3.0')
 
-function EC:UpdateActionbars()
-	-- Change Actionbars min button spacing
-	for i=1, 10 do
-		E.Options.args.actionbar.args.playerBars.args['bar'..i].args.buttonGroup.args.buttonspacing.min = -4
-	end
-	E.Options.args.actionbar.args.barPet.args.buttonGroup.args.buttonspacing.min = -4
-	E.Options.args.actionbar.args.stanceBar.args.buttonGroup.args.buttonspacing.min = -4
-end
-
-function EC:UpdateUitframes()
-	-- Change Group frames min spacing
+function EC:UpdateUnitframes()
 	E.Options.args.unitframe.args.groupUnits.args.boss.args.generalGroup.args.positionsGroup.args.spacing.min = -4
+
 	E.Options.args.unitframe.args.groupUnits.args.arena.args.generalGroup.args.positionsGroup.args.spacing.min = -4
+
 	E.Options.args.unitframe.args.groupUnits.args.party.args.generalGroup.args.positionsGroup.args.horizontalSpacing.min = -4
+	E.Options.args.unitframe.args.groupUnits.args.party.args.generalGroup.args.positionsGroup.args.horizontalSpacing.max = 100 --Roxanne
 	E.Options.args.unitframe.args.groupUnits.args.party.args.generalGroup.args.positionsGroup.args.verticalSpacing.min = -4
+
 	E.Options.args.unitframe.args.groupUnits.args.raid.args.generalGroup.args.positionsGroup.args.horizontalSpacing.min = -4
+	E.Options.args.unitframe.args.groupUnits.args.raid.args.generalGroup.args.positionsGroup.args.horizontalSpacing.max = 100 --Roxanne
 	E.Options.args.unitframe.args.groupUnits.args.raid.args.generalGroup.args.positionsGroup.args.verticalSpacing.min = -4
+
 	E.Options.args.unitframe.args.groupUnits.args.raid40.args.generalGroup.args.positionsGroup.args.horizontalSpacing.min = -4
+	E.Options.args.unitframe.args.groupUnits.args.raid40.args.generalGroup.args.positionsGroup.args.horizontalSpacing.max = 100 --Roxanne
 	E.Options.args.unitframe.args.groupUnits.args.raid40.args.generalGroup.args.positionsGroup.args.verticalSpacing.min = -4
+
 	E.Options.args.unitframe.args.groupUnits.args.raidpet.args.generalGroup.args.positionsGroup.args.horizontalSpacing.min = -4
 	E.Options.args.unitframe.args.groupUnits.args.raidpet.args.generalGroup.args.positionsGroup.args.verticalSpacing.min = -4
+
 	E.Options.args.unitframe.args.groupUnits.args.tank.args.generalGroup.args.positionsGroup.args.verticalSpacing.min = -4
+
 	E.Options.args.unitframe.args.groupUnits.args.assist.args.generalGroup.args.positionsGroup.args.verticalSpacing.min = -4
 
 	-- Change Portrait max camDistanceScale
@@ -41,8 +41,7 @@ end
 function EC:ADDON_LOADED(event, addon)
 	if addon ~= 'ElvUI_OptionsUI' then return end
 	EC:UnregisterEvent(event)
-	EC:UpdateActionbars()
-	EC:UpdateUitframes()
+	EC:UpdateUnitframes()
 end
 
 function EC:Initialize()

@@ -1,12 +1,14 @@
-## Interface: 90002
+## Interface: 90100
 ## Title: LiteBag
 ## Notes: A minimal one-bag solution for inventory and bank.|nType |cff00ff00/litebag|r in chat for options.
 ## Notes-frFR: Regroupe tous les sacs en un seul (pour l'inventaire et la banque).|nAccédez aux réglages d'interface avec la commande |cff00ff00/litebag|r
-## Version: 9.0.11
+## Version: 9.1.0
 ## Author: Xodiv-Nagrand
 ## Email: mib@post.com
 ## OptionalDependencies: Masque
 ## SavedVariablesPerCharacter: LiteBag_OptionsDB
+
+!TaintFix.lua
 
 Localization.lua
 

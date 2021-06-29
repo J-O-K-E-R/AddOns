@@ -1,7 +1,7 @@
 ﻿local SLE, T, E, L, V, P, G = unpack(select(2, ...))
 
 --Chat icon paths--
-local slePath = [[|TInterface\AddOns\ElvUI_SLE\media\textures\]]
+local slePath = [[|TInterface\AddOns\ElvUI_SLE\media\textures\chat\]]
 local blizzPath = [[|TInterface\ICONS\]]
 local repooc = slePath..[[SLE_Chat_Logo:12:24|t ]]
 local sllogo = slePath..[[Logo:14:14|t ]]
@@ -11,9 +11,12 @@ local test = slePath..[[Chat_Test:16:16|t ]]
 local blizzicon = blizzPath..[[%s:12:12:0:0:64:64:4:60:4:60|t]]
 -- local rpg = slePath..[[Chat_RPG:13:35|t]]
 
+-- TTV Chat Icon
+local ttvicon = slePath..[[Daveedium:11:21|t ]]
+
 local orc = blizzPath..[[Achievement_Character_Orc_Male:16:16|t ]]
 --local coppericon = [[|TInterface\MONEYFRAME\UI-CopperIcon:12:12|t]]
-local silvericon = [[|TInterface\MONEYFRAME\UI-SilverIcon:12:12|t]]
+--local silvericon = [[|TInterface\MONEYFRAME\UI-SilverIcon:12:12|t]]
 local goldicon = [[|TInterface\MONEYFRAME\UI-GoldIcon:12:12|t]]
 
 SLE.ArmoryConfigBackgroundValues = {
@@ -25,15 +28,20 @@ SLE.ArmoryConfigBackgroundValues = {
 		["Castle"] = "Castle",
 		["Alliance-text"] = FACTION_ALLIANCE,
 		["Horde-text"] = FACTION_HORDE,
-		["Alliance-bliz"] = FACTION_ALLIANCE.." 2",
-		["Horde-bliz"] = FACTION_HORDE.." 2",
 		["Arena-bliz"] = ARENA,
 		["CLASS"] = CLASS,
+		['Covenant'] = L["Covenant"],
+		['Covenant2'] = L["Covenant"]..' 2',
 	},
 	BlizzardBackdropList = {
-		["Alliance-bliz"] = [[Interface\LFGFrame\UI-PVP-BACKGROUND-Alliance]],
-		["Horde-bliz"] = [[Interface\LFGFrame\UI-PVP-BACKGROUND-Horde]],
 		["Arena-bliz"] = [[Interface\PVPFrame\PvpBg-NagrandArena-ToastBG]]
+	},
+	Covenants = {
+		[0] = 'None',
+		[1] = 'Kyrian',
+		[2] = 'Venthyr',
+		[3] = 'NightFae',
+		[4] = 'Necrolord',
 	},
 }
 
@@ -69,6 +77,11 @@ SLE.rolePaths = {
 		HEALER = [[Interface\AddOns\ElvUI_SLE\media\textures\role\blizz-healer]],
 		DAMAGER = [[Interface\AddOns\ElvUI_SLE\media\textures\role\blizz-dps]]
 	},
+	["BlizzardCircle"] = {
+		TANK = [[Interface\AddOns\ElvUI_SLE\media\textures\role\blizz-tank-circle]],
+		HEALER = [[Interface\AddOns\ElvUI_SLE\media\textures\role\blizz-healer-circle]],
+		DAMAGER = [[Interface\AddOns\ElvUI_SLE\media\textures\role\blizz-dps-circle]]
+	},
 	["MiirGui"] = {
 		TANK = [[Interface\AddOns\ElvUI_SLE\media\textures\role\mg-tank]],
 		HEALER = [[Interface\AddOns\ElvUI_SLE\media\textures\role\mg-healer]],
@@ -84,11 +97,16 @@ SLE.rolePaths = {
 		HEALER = [[Interface\AddOns\ElvUI_SLE\media\textures\role\philmod-healer]],
 		DAMAGER = [[Interface\AddOns\ElvUI_SLE\media\textures\role\philmod-dps]]
 	},
+	["ReleafUI"] = {
+		TANK = [[Interface\AddOns\ElvUI_SLE\media\textures\role\releaf-tank]],
+		HEALER = [[Interface\AddOns\ElvUI_SLE\media\textures\role\releaf-healer]],
+		DAMAGER = [[Interface\AddOns\ElvUI_SLE\media\textures\role\releaf-dps]]
+	},
 }
 
 SLE.ScenarioBlockLogos = {
 	["NONE"] = "",
-	["SLE"] = [[Interface\AddOns\ElvUI_SLE\media\textures\Logo]],
+	["SLE"] = [[Interface\AddOns\ElvUI_SLE\media\textures\chat\Logo]],
 }
 
 --Epty Tables
@@ -162,7 +180,7 @@ SLE.SpecialChatIcons = {
 		["Andorhal"] = {
 			["Dapooc"] = repooc,
 			["Rovert"] = repooc,
-			["Sliceoflife"] = repooc
+			["Sliceoflife"] = repooc,
 		},
 		["Illidan"] = {
 			--Darth's toon
@@ -176,13 +194,21 @@ SLE.SpecialChatIcons = {
 			["Lapooc"] = test,
 			["Warpooc"] = repooc,
 			["Repooc"] = repooc,
-			["Cursewordz"] = repooc
+			["Cursewordz"] = repooc,
 		},
 		["Stormrage"] = {
 			["Sifpooc"] = repooc,
-			["Urgfelstorm"] = blizzicon:format("inv_misc_bomb_02"),
-			["Vaxum"] = goldicon,
-			["Lloosh"] = silvericon --Patreon & Repooc's Guild Mate
+			["Urgfelstorm"] = blizzicon:format("inv_misc_bomb_02"),	-- Urg & Repooc's Guild Mate
+			["Vaxum"]		= goldicon,	-- Vax & Repooc's Guild Mate
+			["Lloosh"]		= goldicon,	-- Lloosh & Repooc's Guild Mate
+			["Marshmeela"]	= goldicon,	-- Lloosh & Repooc's Guild Mate
+			["Looshana"]	= goldicon,	-- Lloosh & Repooc's Guild Mate
+			["Looshaina"]	= goldicon, -- Lloosh & Repooc's Guild Mate
+			["Looshally"]	= goldicon, -- Lloosh & Repooc's Guild Mate
+			["Looshella"]	= goldicon, -- Lloosh & Repooc's Guild Mate
+		},
+		["Kel'Thuzad"] = {
+			["Daveedium"] = ttvicon, -- Twitch streamer I been doing HSire kills with
 		},
 		["WyrmrestAccord"] = {
 			["Dapooc"] = repooc,

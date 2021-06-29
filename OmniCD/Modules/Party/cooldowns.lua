@@ -101,10 +101,10 @@ function P:ResetCooldown(icon)
 	end
 end
 
-function P:ResetAllIcons(isEncounterEnd)
+function P:ResetAllIcons(reason)
 	for _, info in pairs(self.groupInfo) do
 		for spellID, icon in pairs(info.spellIcons) do -- [70]
-			if not isEncounterEnd or (not E.spell_noReset[spellID] and icon.duration >= 180) then
+			if reason ~= "encounterEnd" or (not E.spell_noReset[spellID] and icon.duration >= 180) then
 				local statusBar = icon.statusBar
 				if icon.active then
 					local maxcharges = icon.maxcharges
@@ -116,9 +116,6 @@ function P:ResetAllIcons(isEncounterEnd)
 					icon.active = nil
 					icon.icon:SetDesaturated(false)
 					icon.cooldown:Clear()
-					if icon.isHighlighted then
-						self:RemoveHighlight(icon)
-					end
 
 					local bar = icon:GetParent():GetParent()
 					local key = bar.key
@@ -131,16 +128,29 @@ function P:ResetAllIcons(isEncounterEnd)
 				end
 
 				if info.preActiveIcons[spellID] then
+					if spellID == 323436 and info.bar.timer_inCombatTicker then
+						info.bar.timer_inCombatTicker:Cancel()
+					end
+
 					info.preActiveIcons[spellID] = nil
 					if statusBar then
 						self:SetExStatusBarColor(icon, statusBar.key)
 					end
 					icon.icon:SetVertexColor(1, 1, 1)
 				end
+
+				if icon.isHighlighted then
+					self:RemoveHighlight(icon)
+				end
+
+				if reason == "joinedPvP" and spellID == 323436 then
+					info.auras.purifySoulStacks = nil
+					icon.Count:SetText("")
+				end
 			end
 		end
 
-		if not self.displayInactive then -- isEncounterEnd can have active icons
+		if not self.displayInactive then -- [71]
 			self:SetIconLayout(info.bar)
 		end
 	end
@@ -193,6 +203,7 @@ function P:UpdateCooldown(icon, reducedTime, updateUnitBarCharges, mult)
 			modRate = info.modRate
 		end
 	end
+
 	local statusBar = icon.statusBar
 
 	if updateUnitBarCharges then
@@ -311,7 +322,7 @@ function P:StartCooldown(icon, cd, recharge, noGlow)
 	local bar = icon:GetParent():GetParent()
 	local key = bar.key
 	if type(key) == "number" then
-		icon:SetAlpha(E.db.icons.activeAlpha)
+		icon:SetAlpha(E.db.icons.activeAlpha) -- TODO: Set alpha inside highlighting (check if timer skins behave)
 		if not self.displayInactive then -- [100]
 			self:SetIconLayout(bar)
 		end
@@ -332,17 +343,19 @@ function P:StartCooldown(icon, cd, recharge, noGlow)
 		end
 	end
 
-	--[[ xml
-	noGlow = noGlow or icon.isCropped
-	--]]
 	if E.OmniCC and not icon.isHighlighted or (not E.OmniCC and not self:HighlightIcon(icon)) then
-		if not recharge and not noGlow then
-			self:SetGlow(icon)
+		-- TODO: Set alpha for non highlighting (check if timer skins behave)
+
+		if not recharge and not noGlow and E.db.highlight.glow then
+			--self:SetGlow(icon)
+			icon.AnimFrame:Show() -- XML drawlayer set to overlay to fix Transition being covered
+			icon.AnimFrame.Anim:Play()
 		end
 
 		if not E.OmniCC then -- [13]
 			self:SetCooldownElements(icon, charges)
 		end
+
 		icon.icon:SetDesaturated(E.db.icons.desaturateActive and (not charges or charges == 0))
 	end
 end

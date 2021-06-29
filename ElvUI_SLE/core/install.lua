@@ -85,47 +85,47 @@ function PI:DarthSetup()
 
 		E.db["actionbar"]["bar1"]["point"] = "TOPLEFT"
 		E.db["actionbar"]["bar1"]["buttonsPerRow"] = 6
-		E.db["actionbar"]["bar1"]["buttonsize"] = 44
-		E.db["actionbar"]["bar1"]["buttonspacing"] = -1
+		E.db["actionbar"]["bar1"]["buttonSize"] = 44
+		E.db["actionbar"]["bar1"]["buttonSpacing"] = -1
 
 		E.db["actionbar"]["bar2"]["enabled"] = true
 		E.db["actionbar"]["bar2"]["point"] = "TOPLEFT"
-		E.db["actionbar"]["bar2"]["buttonsize"] = 36
-		E.db["actionbar"]["bar2"]["buttonspacing"] = -1
+		E.db["actionbar"]["bar2"]["buttonSize"] = 36
+		E.db["actionbar"]["bar2"]["buttonSpacing"] = -1
 		E.db["actionbar"]["bar2"]["buttonsPerRow"] = 4
 		E.db["actionbar"]["bar2"]["visibility"] = "[petbattle] hide; show"
 
-		E.db["actionbar"]["bar3"]["buttonsize"] = 36
+		E.db["actionbar"]["bar3"]["buttonSize"] = 36
 		E.db["actionbar"]["bar3"]["point"] = "TOPLEFT"
 		E.db["actionbar"]["bar3"]["buttons"] = 12
-		E.db["actionbar"]["bar3"]["buttonspacing"] = -1
+		E.db["actionbar"]["bar3"]["buttonSpacing"] = -1
 		E.db["actionbar"]["bar3"]["buttonsPerRow"] = 4
 		E.db["actionbar"]["bar3"]["visibility"] = "[petbattle] hide; show"
 
-		E.db["actionbar"]["bar4"]["buttonsize"] = 38
+		E.db["actionbar"]["bar4"]["buttonSize"] = 38
 		E.db["actionbar"]["bar4"]["point"] = "TOPLEFT"
-		E.db["actionbar"]["bar4"]["buttonspacing"] = -1
+		E.db["actionbar"]["bar4"]["buttonSpacing"] = -1
 		E.db["actionbar"]["bar4"]["buttonsPerRow"] = 2
 		E.db["actionbar"]["bar4"]["visibility"] = "[petbattle] hide; show"
 		E.db["actionbar"]["bar4"]["backdrop"] = false
 
-		E.db["actionbar"]["bar5"]["buttonsize"] = 38
+		E.db["actionbar"]["bar5"]["buttonSize"] = 38
 		E.db["actionbar"]["bar5"]["point"] = "TOPLEFT"
 		E.db["actionbar"]["bar5"]["buttons"] = 12
-		E.db["actionbar"]["bar5"]["buttonspacing"] = -1
+		E.db["actionbar"]["bar5"]["buttonSpacing"] = -1
 		E.db["actionbar"]["bar5"]["buttonsPerRow"] = 2
 		E.db["actionbar"]["bar5"]["visibility"] = "[petbattle] hide; show"
 
 		E.db["actionbar"]["bar6"]["visibility"] = "[petbattle] hide; show"
 
 		E.db["actionbar"]["stanceBar"]["style"] = "classic"
-		E.db["actionbar"]["stanceBar"]["buttonsize"] = 24
+		E.db["actionbar"]["stanceBar"]["buttonSize"] = 24
 
 		E.db["actionbar"]["barPet"]["point"] = "TOPLEFT"
-		E.db["actionbar"]["barPet"]["buttonspacing"] = -1
+		E.db["actionbar"]["barPet"]["buttonSpacing"] = -1
 		E.db["actionbar"]["barPet"]["buttonsPerRow"] = 5
 		E.db["actionbar"]["barPet"]["backdrop"] = false
-		E.db["actionbar"]["barPet"]["buttonsize"] = 20
+		E.db["actionbar"]["barPet"]["buttonSize"] = 20
 	end
 	--Auras
 	do
@@ -730,9 +730,6 @@ function PI:DarthSetup()
 		E.db["movers"]["SLE_BG_2_Mover"] = "BOTTOMRIGHT,ElvUIParent,BOTTOM,-257,21"
 		E.db["movers"]["SLE_BG_3_Mover"] = "BOTTOMLEFT,ElvUIParent,BOTTOM,257,21"
 		E.db["movers"]["SLE_BG_4_Mover"] = "BOTTOM,ElvUIParent,BOTTOM,0,189"
-		E.db["movers"]["SLE_FarmPortalMover"] = "BOTTOMLEFT,SLE_ToolsToolbarsAnchor,TOPLEFT,0,1"
-		E.db["movers"]["SLE_FarmSeedMover"] = "LEFT,ElvUIParent,LEFT,24,-160"
-		E.db["movers"]["SLE_FarmToolMover"] = "BOTTOMLEFT,SLE_SeedToolbarsAnchor,TOPLEFT,0,1"
 		E.db["movers"]["SLE_GarrisonToolMover"] = "LEFT,ElvUIParent,LEFT,24,0"
 		E.db["movers"]["SLE_Location_Mover"] = "TOP,ElvUIParent,TOP,0,0"
 		E.db["movers"]["SLE_UIButtonsMover"] = "TOPRIGHT,ElvUIParent,TOPRIGHT,-227,-174"

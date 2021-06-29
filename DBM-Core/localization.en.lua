@@ -2,8 +2,8 @@ DBM_CORE_L = {}
 
 local L = DBM_CORE_L
 
-L.DEADLY_BOSS_MODS					= "Deadly Boss Mods"
-L.DBM								= "DBM"
+L.DEADLY_BOSS_MODS					= "Deadly Boss Mods" -- NO TRANSLATE
+L.DBM								= "DBM" -- NO TRANSLATE
 
 if C_DateAndTime and C_DateAndTime.GetCurrentCalendarTime then
 	local dateTable = C_DateAndTime.GetCurrentCalendarTime()
@@ -207,7 +207,7 @@ L.PIZZA_SYNC_INFO					= "|Hplayer:%1$s|h[%1$s]|h sent you a " .. L.DBM .. " time
 L.PIZZA_CONFIRM_IGNORE				= "Do you really want to ignore " .. L.DBM .. " timers from %s for this session?"
 L.PIZZA_ERROR_USAGE					= "Usage: /dbm [broadcast] timer <time> <text>. <time> must be 3 or greater."
 
-L.MINIMAP_TOOLTIP_HEADER			= L.DEADLY_BOSS_MODS--Technically redundant
+L.MINIMAP_TOOLTIP_HEADER			= L.DEADLY_BOSS_MODS --Technically redundant
 L.MINIMAP_TOOLTIP_FOOTER			= "Hold shift and drag to move"
 
 L.RANGECHECK_HEADER					= "Range Check (%dy)"
@@ -264,7 +264,6 @@ L.SLASHCMD_HELP2					= {
 	"/dbm break <min>: Sends a break timer for <min> minutes to the raid (requires promoted. alias: break).",
 	"/dbm version: Performs a boss mod version check (alias: ver).",
 	"/dbm version2: Performs a boss mod version check that also whispers out of date users (alias: ver2).",
-	"/dbm lockout: Asks raid members for their current raid instance lockouts (aliases: lockouts, ids) (requires promoted).",
 	"/dbm lag: Performs a raid-wide latency check.",
 	"/dbm durability: Performs a raid-wide durability check."
 }
@@ -431,7 +430,7 @@ L.AUTO_SPEC_WARN_TEXTS = {
 	stack							= "%%d stacks of %s on you",
 	switch							= "%s - switch targets",
 	switchcount						= "%s - switch targets (%%s)",
-	gtfo							= "%%s under you - move away",
+	gtfo							= "%%s damage - move away",
 	adds							= "Incoming Adds - switch targets",
 	addscustom						= "Incoming Adds - %%s",
 	targetchange					= "Target Change - switch to %%s"
@@ -630,24 +629,6 @@ L.SPEED_CLEAR_TIMER_TEXT			= "Best Clear"
 L.COMBAT_RES_TIMER_TEXT				= "Next CR Charge"
 L.TIMER_RESPAWN						= "%s Respawn"
 
-
-L.REQ_INSTANCE_ID_PERMISSION		= "%s requested to see your current instance IDs and progress.\nDo you want to send this information to %s? He or she will be able to request this information during your current session (i. e. until you relog)."
-L.ERROR_NO_RAID						= "You need to be in a raid group to use this feature."
-L.INSTANCE_INFO_REQUESTED			= "Sent request for raid lockout information to the raid group.\nPlease note that the users will be asked for permission before sending the data to you, so it might take a minute until we get all responses."
-L.INSTANCE_INFO_STATUS_UPDATE		= "Got responses from %d players of %d " .. L.DBM .. " users: %d sent data, %d denied the request. Waiting %d more seconds for responses... "
-L.INSTANCE_INFO_ALL_RESPONSES		= "Received responses from all raid members"
-L.INSTANCE_INFO_DETAIL_DEBUG		= "Sender: %s ResultType: %s InstanceName: %s InstanceID: %s Difficulty: %d Size: %d Progress: %s"
-L.INSTANCE_INFO_DETAIL_HEADER		= "%s, difficulty %s:"
-L.INSTANCE_INFO_DETAIL_INSTANCE		= "    ID %s, progress %d: %s"
-L.INSTANCE_INFO_DETAIL_INSTANCE2	= "    Progress %d: %s"
-L.INSTANCE_INFO_NOLOCKOUT			= "There is no raid lockout information in your raid group."
-L.INSTANCE_INFO_STATS_DENIED		= "Denied the request: %s"
-L.INSTANCE_INFO_STATS_AWAY			= "Away: %s"
-L.INSTANCE_INFO_STATS_NO_RESPONSE	= "No recent " .. L.DBM .. " version installed: %s"
-L.INSTANCE_INFO_RESULTS				= "Instance ID scan results. Note that instances might show up more than once if there are players with localized WoW clients in your raid."
-L.INSTANCE_INFO_SHOW_RESULTS		= "Players yet to respond: %s\n|HDBM:showRaidIdResults|h|cff3588ff[Show results now]|r|h"
---L.INSTANCE_INFO_SHOW_RESULTS		= "Players yet to respond: %s"
-
 L.LAG_CHECKING						= "Checking raid Latency... "
 L.LAG_HEADER						= L.DEADLY_BOSS_MODS.. " - Latency Results"
 L.LAG_ENTRY							= "%s: World delay [%d ms] / Home delay [%d ms]"
@@ -659,30 +640,30 @@ L.DUR_ENTRY							= "%s: Durability [%d percent] / Gear broken [%s]"
 L.LAG_FOOTER						= "No Response: %s"
 
 --Role Icons
-L.TANK_ICON							= "|TInterface\\EncounterJournal\\UI-EJ-Icons.blp:20:20:0:0:255:66:6:21:7:27|t"
-L.DAMAGE_ICON						= "|TInterface\\EncounterJournal\\UI-EJ-Icons.blp:20:20:0:0:255:66:39:55:7:27|t"
-L.HEALER_ICON						= "|TInterface\\EncounterJournal\\UI-EJ-Icons.blp:20:20:0:0:255:66:70:86:7:27|t"
+L.TANK_ICON							= "|TInterface\\EncounterJournal\\UI-EJ-Icons.blp:20:20:0:0:255:66:6:21:7:27|t" -- NO TRANSLATE
+L.DAMAGE_ICON						= "|TInterface\\EncounterJournal\\UI-EJ-Icons.blp:20:20:0:0:255:66:39:55:7:27|t" -- NO TRANSLATE
+L.HEALER_ICON						= "|TInterface\\EncounterJournal\\UI-EJ-Icons.blp:20:20:0:0:255:66:70:86:7:27|t" -- NO TRANSLATE
 
-L.TANK_ICON_SMALL					= "|TInterface\\EncounterJournal\\UI-EJ-Icons.blp:12:12:0:0:255:66:6:21:7:27|t"
-L.DAMAGE_ICON_SMALL					= "|TInterface\\EncounterJournal\\UI-EJ-Icons.blp:12:12:0:0:255:66:39:55:7:27|t"
-L.HEALER_ICON_SMALL					= "|TInterface\\EncounterJournal\\UI-EJ-Icons.blp:12:12:0:0:255:66:70:86:7:27|t"
+L.TANK_ICON_SMALL					= "|TInterface\\EncounterJournal\\UI-EJ-Icons.blp:12:12:0:0:255:66:6:21:7:27|t" -- NO TRANSLATE
+L.DAMAGE_ICON_SMALL					= "|TInterface\\EncounterJournal\\UI-EJ-Icons.blp:12:12:0:0:255:66:39:55:7:27|t" -- NO TRANSLATE
+L.HEALER_ICON_SMALL					= "|TInterface\\EncounterJournal\\UI-EJ-Icons.blp:12:12:0:0:255:66:70:86:7:27|t" -- NO TRANSLATE
 --Importance Icons
-L.HEROIC_ICON						= "|TInterface\\EncounterJournal\\UI-EJ-Icons.blp:22:22:0:0:255:66:102:118:7:27|t"
-L.DEADLY_ICON						= "|TInterface\\EncounterJournal\\UI-EJ-Icons.blp:22:22:0:0:255:66:133:153:7:27|t"
-L.IMPORTANT_ICON					= "|TInterface\\EncounterJournal\\UI-EJ-Icons.blp:20:20:0:0:255:66:168:182:7:27|t"
-L.MYTHIC_ICON						= "|TInterface\\EncounterJournal\\UI-EJ-Icons.blp:22:22:0:0:255:66:133:153:40:58|t"
+L.HEROIC_ICON						= "|TInterface\\EncounterJournal\\UI-EJ-Icons.blp:22:22:0:0:255:66:102:118:7:27|t" -- NO TRANSLATE
+L.DEADLY_ICON						= "|TInterface\\EncounterJournal\\UI-EJ-Icons.blp:22:22:0:0:255:66:133:153:7:27|t" -- NO TRANSLATE
+L.IMPORTANT_ICON					= "|TInterface\\EncounterJournal\\UI-EJ-Icons.blp:20:20:0:0:255:66:168:182:7:27|t" -- NO TRANSLATE
+L.MYTHIC_ICON						= "|TInterface\\EncounterJournal\\UI-EJ-Icons.blp:22:22:0:0:255:66:133:153:40:58|t" -- NO TRANSLATE
 
-L.HEROIC_ICON_SMALL					= "|TInterface\\EncounterJournal\\UI-EJ-Icons.blp:14:14:0:0:255:66:102:118:7:27|t"
-L.DEADLY_ICON_SMALL					= "|TInterface\\EncounterJournal\\UI-EJ-Icons.blp:14:14:0:0:255:66:133:153:7:27|t"
-L.IMPORTANT_ICON_SMALL				= "|TInterface\\EncounterJournal\\UI-EJ-Icons.blp:12:12:0:0:255:66:168:182:7:27|t"
+L.HEROIC_ICON_SMALL					= "|TInterface\\EncounterJournal\\UI-EJ-Icons.blp:14:14:0:0:255:66:102:118:7:27|t" -- NO TRANSLATE
+L.DEADLY_ICON_SMALL					= "|TInterface\\EncounterJournal\\UI-EJ-Icons.blp:14:14:0:0:255:66:133:153:7:27|t" -- NO TRANSLATE
+L.IMPORTANT_ICON_SMALL				= "|TInterface\\EncounterJournal\\UI-EJ-Icons.blp:12:12:0:0:255:66:168:182:7:27|t" -- NO TRANSLATE
 --Type Icons
-L.INTERRUPT_ICON					= "|TInterface\\EncounterJournal\\UI-EJ-Icons.blp:20:20:0:0:255:66:198:214:7:27|t"
-L.MAGIC_ICON						= "|TInterface\\EncounterJournal\\UI-EJ-Icons.blp:20:20:0:0:255:66:229:247:7:27|t"
-L.CURSE_ICON						= "|TInterface\\EncounterJournal\\UI-EJ-Icons.blp:20:20:0:0:255:66:6:21:40:58|t"
-L.POISON_ICON						= "|TInterface\\EncounterJournal\\UI-EJ-Icons.blp:20:20:0:0:255:66:39:55:40:58|t"
-L.DISEASE_ICON						= "|TInterface\\EncounterJournal\\UI-EJ-Icons.blp:20:20:0:0:255:66:70:86:40:58|t"
-L.ENRAGE_ICON						= "|TInterface\\EncounterJournal\\UI-EJ-Icons.blp:20:20:0:0:255:66:102:118:40:58|t"
-L.BLEED_ICON						= "|TInterface\\EncounterJournal\\UI-EJ-Icons.blp:20:20:0:0:255:66:168:182:40:58|t"
+L.INTERRUPT_ICON					= "|TInterface\\EncounterJournal\\UI-EJ-Icons.blp:20:20:0:0:255:66:198:214:7:27|t" -- NO TRANSLATE
+L.MAGIC_ICON						= "|TInterface\\EncounterJournal\\UI-EJ-Icons.blp:20:20:0:0:255:66:229:247:7:27|t" -- NO TRANSLATE
+L.CURSE_ICON						= "|TInterface\\EncounterJournal\\UI-EJ-Icons.blp:20:20:0:0:255:66:6:21:40:58|t" -- NO TRANSLATE
+L.POISON_ICON						= "|TInterface\\EncounterJournal\\UI-EJ-Icons.blp:20:20:0:0:255:66:39:55:40:58|t" -- NO TRANSLATE
+L.DISEASE_ICON						= "|TInterface\\EncounterJournal\\UI-EJ-Icons.blp:20:20:0:0:255:66:70:86:40:58|t" -- NO TRANSLATE
+L.ENRAGE_ICON						= "|TInterface\\EncounterJournal\\UI-EJ-Icons.blp:20:20:0:0:255:66:102:118:40:58|t" -- NO TRANSLATE
+L.BLEED_ICON						= "|TInterface\\EncounterJournal\\UI-EJ-Icons.blp:20:20:0:0:255:66:168:182:40:58|t" -- NO TRANSLATE
 
 --LDB
 L.LDB_TOOLTIP_HELP1					= "Click to open " .. L.DBM
@@ -690,16 +671,4 @@ L.SILENTMODE_IS						= "SilentMode is "
 
 L.LDB_LOAD_MODS						= "Load boss mods"
 
-L.LDB_CAT_SL						= EXPANSION_NAME8
-L.LDB_CAT_BFA						= EXPANSION_NAME7
-L.LDB_CAT_LEG						= EXPANSION_NAME6
-L.LDB_CAT_WOD						= EXPANSION_NAME5
-L.LDB_CAT_MOP						= EXPANSION_NAME4
-L.LDB_CAT_CATA						= EXPANSION_NAME3
-L.LDB_CAT_WOTLK						= EXPANSION_NAME2
-L.LDB_CAT_BC						= EXPANSION_NAME1
-L.LDB_CAT_CLASSIC 					= EXPANSION_NAME0
-L.LDB_CAT_OTHER						= "Other Boss Mods"
-
-L.LDB_CAT_GENERAL					= "General"
 L.LDB_ENABLE_BOSS_MOD				= "Enable boss mod"

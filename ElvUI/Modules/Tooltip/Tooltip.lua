@@ -1,4 +1,4 @@
-local E, L, V, P, G = unpack(select(2, ...)); --Import: Engine, Locales, PrivateDB, ProfileDB, GlobalDB
+local E, L, V, P, G = unpack(select(2, ...)) --Import: Engine, Locales, PrivateDB, ProfileDB, GlobalDB
 local TT = E:GetModule('Tooltip')
 local AB = E:GetModule('ActionBars')
 local Skins = E:GetModule('Skins')
@@ -13,6 +13,9 @@ local strfind, format, strmatch, gmatch, gsub = strfind, format, strmatch, gmatc
 local CanInspect = CanInspect
 local CreateFrame = CreateFrame
 local GameTooltip_ClearMoney = GameTooltip_ClearMoney
+local GameTooltip_ClearStatusBars = GameTooltip_ClearStatusBars
+local GameTooltip_ClearProgressBars = GameTooltip_ClearProgressBars
+local GameTooltip_ClearWidgetSet = GameTooltip_ClearWidgetSet
 local GetCreatureDifficultyColor = GetCreatureDifficultyColor
 local GetGuildInfo = GetGuildInfo
 local GetInspectSpecialization = GetInspectSpecialization
@@ -65,6 +68,7 @@ local UnitRealmRelationship = UnitRealmRelationship
 local UnitSex = UnitSex
 
 local C_QuestLog_GetQuestIDForLogIndex = C_QuestLog.GetQuestIDForLogIndex
+local C_ChallengeMode_GetDungeonScoreRarityColor = C_ChallengeMode.GetDungeonScoreRarityColor
 local C_CurrencyInfo_GetCurrencyListLink = C_CurrencyInfo.GetCurrencyListLink
 local C_CurrencyInfo_GetBackpackCurrencyInfo = C_CurrencyInfo.GetBackpackCurrencyInfo
 local C_MountJournal_GetMountIDs = C_MountJournal.GetMountIDs
@@ -72,6 +76,7 @@ local C_MountJournal_GetMountInfoByID = C_MountJournal.GetMountInfoByID
 local C_MountJournal_GetMountInfoExtraByID = C_MountJournal.GetMountInfoExtraByID
 local C_PetJournalGetPetTeamAverageLevel = C_PetJournal.GetPetTeamAverageLevel
 local C_PetBattles_IsInBattle = C_PetBattles.IsInBattle
+local C_PlayerInfo_GetPlayerMythicPlusRatingSummary = C_PlayerInfo.GetPlayerMythicPlusRatingSummary
 local PRIEST_COLOR = RAID_CLASS_COLORS.PRIEST
 local UNKNOWN = UNKNOWN
 
@@ -94,7 +99,8 @@ end
 
 function TT:GameTooltip_SetDefaultAnchor(tt, parent)
 	if E.private.tooltip.enable ~= true then return end
-	if tt:IsForbidden() or not TT.db.visibility then return end
+	if tt:IsForbidden() then return end
+	if not TT.db.visibility then return end
 	if tt:GetAnchorType() ~= 'ANCHOR_NONE' then return end
 
 	if InCombatLockdown() and not TT:IsModKeyDown(TT.db.visibility.combatOverride) then
@@ -139,7 +145,6 @@ function TT:GameTooltip_SetDefaultAnchor(tt, parent)
 		end
 	end
 
-	local ElvUI_ContainerFrame = ElvUI_ContainerFrame
 	local RightChatPanel = _G.RightChatPanel
 	local TooltipMover = _G.TooltipMover
 	local _, anchor = tt:GetPoint()
@@ -271,11 +276,23 @@ function TT:SetUnitText(tt, unit)
 			end
 		end
 
+		if TT.db.mythicDataEnable then
+			if TT.db.dungeonScore then
+				local data = C_PlayerInfo_GetPlayerMythicPlusRatingSummary(unit)
+				local seasonScore = data and data.currentSeasonScore
+
+				if seasonScore then
+					local color = TT.db.dungeonScoreColor and C_ChallengeMode_GetDungeonScoreRarityColor(seasonScore)
+					GameTooltip:AddDoubleLine(L["Mythic+ Score:"], seasonScore, nil, nil, nil, color and color.r or 1, color and color.g or 1, color and color.b or 1)
+				end
+			end
+		end
+
 		if TT.db.showElvUIUsers then
 			local addonUser = E.UserList[nameRealm]
 			if addonUser then
-				local v,r,g,b = addonUser == E.version, unpack(E.media.rgbvaluecolor)
-				GameTooltip:AddDoubleLine(L["ElvUI Version:"], addonUser, r,g,b, v and 0 or 1, v and 1 or 0, 0)
+				local same = addonUser == E.version
+				GameTooltip:AddDoubleLine(L["ElvUI Version:"], format('%.2f', addonUser), nil, nil, nil, same and 0.2 or 1, same and 1 or 0.2, 0.2)
 			end
 		end
 
@@ -283,7 +300,7 @@ function TT:SetUnitText(tt, unit)
 	else
 		local levelLine = TT:GetLevelLine(tt, 2)
 		if levelLine then
-			local isPetWild, isPetCompanion = UnitIsWildBattlePet(unit), UnitIsBattlePetCompanion(unit);
+			local isPetWild, isPetCompanion = UnitIsWildBattlePet(unit), UnitIsBattlePetCompanion(unit)
 			local creatureClassification = UnitClassification(unit)
 			local creatureType = UnitCreatureType(unit) or ''
 			local pvpFlag, classificationString, diffColor = '', ''
@@ -492,18 +509,20 @@ function TT:GameTooltip_OnTooltipSetUnit(tt)
 		end
 
 		if TT.db.targetInfo and IsInGroup() then
+			local isInRaid = IsInRaid()
 			for i = 1, GetNumGroupMembers() do
-				local groupUnit = (IsInRaid() and 'raid'..i or 'party'..i);
+				local groupUnit = (isInRaid and 'raid' or 'party')..i
 				if UnitIsUnit(groupUnit..'target', unit) and not UnitIsUnit(groupUnit,'player') then
-					local _, class = UnitClass(groupUnit);
+					local _, class = UnitClass(groupUnit)
 					local classColor = E:ClassColor(class) or PRIEST_COLOR
 					tinsert(targetList, format('|c%s%s|r', classColor.colorStr, UnitName(groupUnit)))
 				end
 			end
+
 			local numList = #targetList
 			if numList > 0 then
-				tt:AddLine(format('%s (|cffffffff%d|r): %s', L["Targeted By:"], numList, tconcat(targetList, ', ')), nil, nil, nil, true);
-				wipe(targetList);
+				tt:AddLine(format('%s (|cffffffff%d|r): %s', L["Targeted By:"], numList, tconcat(targetList, ', ')), nil, nil, nil, true)
+				wipe(targetList)
 			end
 		end
 	end
@@ -514,11 +533,12 @@ function TT:GameTooltip_OnTooltipSetUnit(tt)
 
 	-- NPC ID's
 	if unit and not isPlayerUnit and TT:IsModKeyDown() then
-		if C_PetBattles_IsInBattle() then return end
-		local guid = UnitGUID(unit) or ''
-		local id = tonumber(strmatch(guid, '%-(%d-)%-%x-$'), 10)
-		if id then
-			tt:AddLine(format(IDLine, _G.ID, id))
+		if not C_PetBattles_IsInBattle() then
+			local guid = UnitGUID(unit) or ''
+			local id = tonumber(strmatch(guid, '%-(%d-)%-%x-$'), 10)
+			if id then
+				tt:AddLine(format(IDLine, _G.ID, id))
+			end
 		end
 	end
 
@@ -559,6 +579,32 @@ end
 function TT:GameTooltip_OnTooltipCleared(tt)
 	if tt:IsForbidden() then return end
 	tt.itemCleared = nil
+
+	-- This code is to reset stuck widgets.
+	GameTooltip_ClearMoney(tt)
+	GameTooltip_ClearStatusBars(tt)
+	GameTooltip_ClearProgressBars(tt)
+	GameTooltip_ClearWidgetSet(tt)
+
+	if tt.ItemTooltip then
+		tt.ItemTooltip:Hide()
+	end
+end
+
+function TT:EmbeddedItemTooltip_ID(tt, id)
+	if tt:IsForbidden() then return end
+	if tt.Tooltip:IsShown() and TT:IsModKeyDown() then
+		tt.Tooltip:AddLine(format(IDLine, _G.ID, id))
+		tt.Tooltip:Show()
+	end
+end
+
+function TT:EmbeddedItemTooltip_QuestReward(tt)
+	if tt:IsForbidden() then return end
+	if tt.Tooltip:IsShown() and TT:IsModKeyDown() then
+		tt.Tooltip:AddLine(format(IDLine, _G.ID, tt.itemID or tt.spellID))
+		tt.Tooltip:Show()
+	end
 end
 
 function TT:GameTooltip_OnTooltipSetItem(tt)
@@ -748,6 +794,7 @@ function TT:QuestID(tt)
 	local id = tt.questLogIndex and C_QuestLog_GetQuestIDForLogIndex(tt.questLogIndex) or tt.questID
 	if id and TT:IsModKeyDown() then
 		GameTooltip:AddLine(format(IDLine, _G.ID, id))
+		if GameTooltip.ItemTooltip:IsShown() then GameTooltip:AddLine(' ') end
 		GameTooltip:Show()
 	end
 end
@@ -766,7 +813,7 @@ end
 function TT:RepositionBNET(frame, _, anchor)
 	if anchor ~= _G.BNETMover then
 		frame:ClearAllPoints()
-		frame:Point(_G.BNETMover.anchorPoint or 'TOPLEFT', _G.BNETMover, _G.BNETMover.anchorPoint or 'TOPLEFT');
+		frame:Point(_G.BNETMover.anchorPoint or 'TOPLEFT', _G.BNETMover, _G.BNETMover.anchorPoint or 'TOPLEFT')
 	end
 end
 
@@ -812,7 +859,7 @@ function TT:Initialize()
 	TT.db = E.db.tooltip
 
 	TT.MountIDs = {}
-	local mountIDs = C_MountJournal_GetMountIDs();
+	local mountIDs = C_MountJournal_GetMountIDs()
 	for _, mountID in ipairs(mountIDs) do
 		TT.MountIDs[select(2, C_MountJournal_GetMountInfoByID(mountID))] = mountID
 	end
@@ -844,6 +891,11 @@ function TT:Initialize()
 
 	TT:SecureHook('SetItemRef')
 	TT:SecureHook('GameTooltip_SetDefaultAnchor')
+	TT:SecureHook('EmbeddedItemTooltip_SetItemByID', 'EmbeddedItemTooltip_ID')
+	TT:SecureHook('EmbeddedItemTooltip_SetSpellWithTextureByID', 'EmbeddedItemTooltip_ID')
+	TT:SecureHook('EmbeddedItemTooltip_SetCurrencyByID', 'EmbeddedItemTooltip_ID')
+	TT:SecureHook('EmbeddedItemTooltip_SetItemByQuestReward', 'EmbeddedItemTooltip_QuestReward')
+	TT:SecureHook('EmbeddedItemTooltip_SetSpellByQuestReward', 'EmbeddedItemTooltip_QuestReward')
 	TT:SecureHook(GameTooltip, 'SetToyByItemID')
 	TT:SecureHook(GameTooltip, 'SetCurrencyToken')
 	TT:SecureHook(GameTooltip, 'SetCurrencyTokenByID')

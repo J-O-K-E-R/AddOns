@@ -36,6 +36,12 @@ end
 
 AuctionatorSaleItemMixin = {}
 
+function AuctionatorSaleItemMixin:OnLoad()
+  if Auctionator.Config.Get(Auctionator.Config.Options.SHOW_SELLING_BID_PRICE) then
+    self.BidPrice:Show()
+  end
+end
+
 function AuctionatorSaleItemMixin:OnShow()
   Auctionator.EventBus:Register(self, {
     Auctionator.Selling.Events.BagItemClicked,
@@ -225,6 +231,13 @@ function AuctionatorSaleItemMixin:UpdateVisuals()
 
     self.Icon:HideCount()
 
+    -- Fade the (optionally visible) bid price if posting a commodity
+    if self.itemInfo.itemType == Auctionator.Constants.ITEM_TYPES.COMMODITY then
+      self.BidPrice:SetAlpha(0.5)
+    else
+      self.BidPrice:SetAlpha(1)
+    end
+
   else
     -- No item, reset all the visuals
     self.TitleArea.Text:SetText("")
@@ -288,17 +301,11 @@ function AuctionatorSaleItemMixin:SetDuration()
 end
 
 function AuctionatorSaleItemMixin:SetQuantity()
-  local defaultQuantity
-
-  if Auctionator.Utilities.IsNotLIFOItemKey(self.itemInfo.itemKey) then
-    defaultQuantity = Auctionator.Config.Get(Auctionator.Config.Options.NOT_LIFO_DEFAULT_QUANTITY)
-  else
-    defaultQuantity = Auctionator.Config.Get(Auctionator.Config.Options.LIFO_DEFAULT_QUANTITY)
-  end
+  local defaultQuantity = Auctionator.Config.Get(Auctionator.Config.Options.DEFAULT_QUANTITIES)[self.itemInfo.classId]
 
   if self.itemInfo.count == 0 then
     self.Quantity:SetNumber(0)
-  elseif defaultQuantity > 0 then
+  elseif defaultQuantity ~= nil and defaultQuantity > 0 then
     -- If a default quantity has been selected (ie non-zero amount)
     self.Quantity:SetNumber(math.min(self.itemInfo.count, defaultQuantity, self:GetPostLimit()))
   else
@@ -327,7 +334,7 @@ function AuctionatorSaleItemMixin:DoSearch(itemInfo, ...)
     self.expectedItemKey = itemInfo.itemKey
     Auctionator.AH.SendSearchQuery(itemInfo.itemKey, {sortingOrder}, true)
   end
-  Auctionator.EventBus:Fire(self, Auctionator.Selling.Events.SellSearchStart)
+  Auctionator.EventBus:Fire(self, Auctionator.Selling.Events.SellSearchStart, self.expectedItemKey)
 end
 
 function AuctionatorSaleItemMixin:Reset()
@@ -342,6 +349,7 @@ function AuctionatorSaleItemMixin:UpdateSalesPrice(salesPrice)
   else
     self.Price:SetAmount(NormalizePrice(salesPrice))
   end
+  self.BidPrice:Clear()
 end
 
 function AuctionatorSaleItemMixin:SetEquipmentMultiplier(itemLink)
@@ -499,6 +507,9 @@ function AuctionatorSaleItemMixin:GetPostButtonState()
     -- Positive price
     self.Price:GetAmount() > 0 and
 
+    -- Bid price is not bigger than buyout
+    self.BidPrice:GetAmount() <= self.Price:GetAmount() and
+
     -- Not throttled (to avoid silent post failure)
     Auctionator.AH.IsNotThrottled()
 end
@@ -533,12 +544,19 @@ function AuctionatorSaleItemMixin:PostItem()
 
   local quantity = self.Quantity:GetNumber()
   local duration = self:GetDuration()
+  local startingBid = self.BidPrice:GetAmount()
   local buyout = self.Price:GetAmount()
+  local bidAmountReported = nil -- Only includes bid price when non-zero and for an item
 
   self.MultisellProgress:SetDetails(self.itemInfo.iconTexture, quantity)
 
   if self.itemInfo.itemType == Auctionator.Constants.ITEM_TYPES.ITEM then
-    C_AuctionHouse.PostItem(self.itemInfo.location, duration, quantity, nil, buyout)
+    if startingBid ~= 0 then
+      bidAmountReported = startingBid
+      C_AuctionHouse.PostItem(self.itemInfo.location, duration, quantity, startingBid, buyout)
+    else
+      C_AuctionHouse.PostItem(self.itemInfo.location, duration, quantity, nil, buyout)
+    end
   else
     C_AuctionHouse.PostCommodity(self.itemInfo.location, duration, quantity, buyout)
   end
@@ -549,6 +567,7 @@ function AuctionatorSaleItemMixin:PostItem()
       itemLink = self.itemInfo.itemLink,
       quantity = quantity,
       buyoutAmount = buyout,
+      bidAmount = bidAmountReported,
     }
   )
 

@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod("Freya", "DBM-Ulduar")
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20200530203003")
+mod:SetRevision("20210614230125")
 
 mod:SetCreatureID(32906)
 mod:SetEncounterID(1133)
@@ -53,12 +53,11 @@ mod:AddRangeFrameOption(8, 63571)
 local adds = {}
 mod.vb.altIcon = true
 mod.vb.iconId = 6
-mod.vb.phase = 1
 
 function mod:OnCombatStart(delay)
 	self.vb.altIcon = true
 	self.vb.iconId = 6
-	self.vb.phase = 1
+	self:SetStage(1)
 	enrage:Start()
 	table.wipe(adds)
 	timerAlliesOfNature:Start(10-delay)
@@ -126,7 +125,7 @@ end
 function mod:SPELL_AURA_REMOVED(args)
 	if args.spellId == 62519 then
 		warnPhase2:Show()
-		self.vb.phase = 2
+		self:SetStage(2)
 	elseif args:IsSpellID(62861, 62438) then
 		if self.Options.SetIconOnRoots then
 			self:RemoveIcon(args.destName)
@@ -140,7 +139,7 @@ end
 function mod:UNIT_DIED(args)
 	local cid = self:GetCIDFromGUID(args.destGUID)
 	if cid == 33202 or cid == 32916 or cid == 32919 then
-		if self:AntiSpam(17, 1) and not self:IsTrivial(85) then
+		if self:AntiSpam(17, 1) and not self:IsTrivial() then
 			timerSimulKill:Start()
 			warnSimulKill:Show()
 		end

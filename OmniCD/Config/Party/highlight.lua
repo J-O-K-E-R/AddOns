@@ -11,8 +11,7 @@ for k, v in pairs(E.spell_marked) do
 		--E.Write("Removing Invalid ID (Enhanced): |cffffd200" .. k)
 	else
 		local id = v == true and k or v
-		local name = GetSpellInfo(id)
-		local icon = GetSpellTexture(id)
+		local name, _, icon = GetSpellInfo(id)
 		name = format("|T%s:18|t %s", icon, name)
 		markEnhancedDesc[#markEnhancedDesc + 1] = name
 	end
@@ -20,7 +19,7 @@ end
 markEnhancedDesc = E.FormatConcat(markEnhancedDesc, "%s\n")
 
 local highlight = {
-	name = "|TInterface\\OptionsFrame\\UI-OptionsFrame-NewFeatureIcon:0:0:0:-1|t" .. HIGHLIGHTING,
+	name = HIGHLIGHTING,
 	order = 35,
 	type = "group",
 	get = function(info) return E.DB.profile.Party[info[2]].highlight[info[#info]] end,
@@ -45,12 +44,14 @@ local highlight = {
 					order = 1,
 					type = "toggle",
 				},
+				--[[
 				glowColor = {
 					name = COLOR,
 					order = 2,
 					type = "select",
 					values = E.L_GLOW_ATLAS,
 				},
+				]]
 			}
 		},
 		highlight = {
@@ -90,18 +91,18 @@ local highlight = {
 						end
 					end,
 					values = E.L_HIGHLIGHTS,
-					descStyle = "inline",
+					--descStyle = "inline",
 				},
 			}
 		},
 		markEnhanced = {
-			disabled = function(info) return E.DB.profile.Party[info[2]].highlight.markEnhanced end,
+			disabled = function(info) return not E.DB.profile.Party[info[2]].icons.markEnhanced end,
 			name = L["Mark Enhanced Spells"],
 			order = 30,
 			type = "group",
 			inline = true,
 			args = {
-				markEnhanced = {
+				markEnhanced = { -- exists under icons, not highlight
 					disabled = false,
 					name = ENABLE,
 					desc = L["Mark icons with a red dot to indicate enhanced spells"] .. "\n\n" .. markEnhancedDesc,
@@ -115,7 +116,7 @@ local highlight = {
 					desc = L["%d: spellID.\n%d-%d: spellID-talentID (Mark spell if talent is selected)."] .. "\n\n" .. L["Use a semi-colon(;) to seperate multiple IDs."],
 					order = 2,
 					type = "input",
-					multiline = 1,
+					--multiline = 1, -- no support for this yet
 					width = "full",
 					get = function(info)
 						local t = E.DB.profile.Party[info[2]].highlight.markedSpells.str

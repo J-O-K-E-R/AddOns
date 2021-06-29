@@ -4,6 +4,7 @@ local _G = _G
 local IsInRaid = IsInRaid
 local UnitGUID = UnitGUID
 local P = E["Party"]
+local isColdStartDC = true
 
 function P:IsCRFActive() -- [21]
 	return IsInRaid() and not self.isInArena or self.useCRF
@@ -13,11 +14,11 @@ local function FindAnchorFrame(guid) --[87]
 	if E.customUF.enabled and E.db.position.uf ~= "blizz" then
 		if not P.isInDungeon and GetNumGroupMembers() > 5 then return end -- MDI
 
-		for i = 1, 5 do
+		for i = 1, E.customUF.index do
 			local f = _G[E.customUF.frame .. i]
-			if f and f:GetPoint() then -- [93]
+			if f then -- [93]
 				local unit = f[E.customUF.unit]
-				if unit and UnitGUID(unit) == guid then return f end
+				if unit and (E.db.position.uf ~= "HealBot" or (unit ~="target" and unit ~= "focus")) and UnitGUID(unit) == guid then return f end
 			end
 		end
 
@@ -51,23 +52,24 @@ function P:SetOffset(f)
 	f.container:ClearAllPoints()
 	--f.container:SetPoint(self.point, f, self.containerOfsX, self.containerOfsY)
 	f.container:SetPoint("TOPLEFT", f, self.containerOfsX, self.containerOfsY)
-
-	--[[ xml
-	if self.doubleRow and E.db.icons.modRowEnabled then
-		f.bottomRow:ClearAllPoints()
-		f.bottomRow:SetPoint("TOPLEFT", f.container, self.modRowOfsX, self.modRowOfsY)
-	end
-	--]]
 end
 
 function P:UpdatePosition()
-	if self.disabled then
+	if P.disabled then
 		return
 	end
 
-	self:HideBars() -- [63]
+	if isColdStartDC then
+		isColdStartDC = nil
+		-- Grid2 !@#$%^&*
+		if IsAddOnLoaded("Blizzard_CompactRaidFrames") and IsAddOnLoaded("Blizzard_CUFProfiles") then
+			self:UpdateCRFCVars()
+		end
+	end
 
-	for guid, info in pairs(self.groupInfo) do
+	P:HideBars() -- [63]
+
+	for guid, info in pairs(P.groupInfo) do
 		local f = info.bar
 		if E.db.position.detached then
 			E.LoadPosition(f)
@@ -76,13 +78,13 @@ function P:UpdatePosition()
 			local frame = FindAnchorFrame(guid)
 			if frame then
 				f:ClearAllPoints()
-				f:SetPoint(self.point, frame, self.relativePoint)
+				f:SetPoint(P.point, frame, P.relativePoint)
 				f:Show()
 			end
 		end
 
-		self:SetAnchorPosition(f)
-		self:SetOffset(f)
+		P:SetAnchorPosition(f)
+		P:SetOffset(f)
 	end
 end
 
@@ -94,6 +96,12 @@ function P:CVAR_UPDATE(cvar, value)
 			self:UpdatePosition()
 		end
 	end
+end
+
+function P:UpdateCRFCVars() -- [103]
+	self.useCRF = C_CVar.GetCVarBool("useCompactPartyFrames")
+	self.useKGT = CompactRaidFrameManager_GetSetting("KeepGroupsTogether")
+	self.isShownCRFM = CompactRaidFrameManager_GetSetting("IsShown")
 end
 
 do
@@ -118,12 +126,12 @@ do
 		end
 
 		-- Grid2
-		if ( not IsAddOnLoaded("Blizzard_CompactRaidFrames") or not IsAddOnLoaded("Blizzard_CUFProfiles") ) then return end
+		if ( not IsAddOnLoaded("Blizzard_CompactRaidFrames") or not IsAddOnLoaded("Blizzard_CUFProfiles") ) then
+			return
+		end
 
-		self.useCRF = C_CVar.GetCVarBool("useCompactPartyFrames")
-		self.useKGT = CompactRaidFrameManager_GetSetting("KeepGroupsTogether")
-		self.isShownCRFM = CompactRaidFrameManager_GetSetting("IsShown")
-		self.activeRaidProfile = GetActiveRaidProfile()
+		self:UpdateCRFCVars()
+		--self.activeRaidProfile = GetActiveRaidProfile()
 
 		hooksecurefunc("CompactRaidFrameManager_SetSetting", function(arg) -- [64]
 			if arg == "IsShown" then

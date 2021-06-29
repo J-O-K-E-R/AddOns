@@ -1,4 +1,4 @@
-local E, L, V, P, G = unpack(select(2, ...)); --Import: Engine, Locales, PrivateDB, ProfileDB, GlobalDB
+local E, L, V, P, G = unpack(select(2, ...)) --Import: Engine, Locales, PrivateDB, ProfileDB, GlobalDB
 local DB = E:GetModule('DataBars')
 local LSM = E.Libs.LSM
 
@@ -21,7 +21,7 @@ function DB:OnLeave()
 end
 
 function DB:CreateBar(name, key, updateFunc, onEnter, onClick, points)
-	local holder = CreateFrame('Frame', name..'Holder', E.UIParent, 'BackdropTemplate')
+	local holder = CreateFrame('Frame', name..'Holder', E.UIParent)
 	holder:SetTemplate(DB.db.transparent and 'Transparent')
 	holder:SetScript('OnEnter', onEnter)
 	holder:SetScript('OnLeave', DB.OnLeave)
@@ -92,6 +92,8 @@ function DB:UpdateAll()
 		bar.holder:Size(bar.db.width, bar.db.height)
 		bar.holder:SetTemplate(DB.db.transparent and 'Transparent')
 		bar.holder:EnableMouse(not bar.db.clickThrough)
+		bar.holder:SetFrameLevel(bar.db.frameLevel)
+		bar.holder:SetFrameStrata(bar.db.frameStrata)
 		bar.text:FontTemplate(LSM:Fetch('font', bar.db.font), bar.db.fontSize, bar.db.fontOutline)
 		bar:SetStatusBarTexture(texture)
 		bar:SetReverseFill(bar.db.reverseFill)

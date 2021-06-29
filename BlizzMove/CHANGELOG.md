@@ -1,6 +1,8 @@
 # BlizzMove
 
-## [v3.0.9](https://github.com/Kiatra/BlizzMove/tree/v3.0.9) (2020-12-29)
-[Full Changelog](https://github.com/Kiatra/BlizzMove/commits/v3.0.9) [Previous Releases](https://github.com/Kiatra/BlizzMove/releases)
+## [v3.1.0](https://github.com/Kiatra/BlizzMove/tree/v3.1.0) (2021-06-20)
+[Full Changelog](https://github.com/Kiatra/BlizzMove/commits/v3.1.0) [Previous Releases](https://github.com/Kiatra/BlizzMove/releases)
 
-- Add a quick check, preventing frames from being processed twice  
+- Added UI Widget containers as default-disabled frames (#70)  
+    Added an error message for frames that are incorrectly marked as incompatible  
+    Added a button in the main config info screen, to search for plugins  

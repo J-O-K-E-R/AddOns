@@ -28,7 +28,8 @@ C.Values = {
 		RIGHT_UP = format(L["%s and then %s"], L["Right"], L["Up"]),
 		LEFT_DOWN = format(L["%s and then %s"], L["Left"], L["Down"]),
 		LEFT_UP = format(L["%s and then %s"], L["Left"], L["Up"]),
-	}
+	},
+	AllPoints = { TOPLEFT = 'TOPLEFT', LEFT = 'LEFT', BOTTOMLEFT = 'BOTTOMLEFT', RIGHT = 'RIGHT', TOPRIGHT = 'TOPRIGHT', BOTTOMRIGHT = 'BOTTOMRIGHT', CENTER = 'CENTER', TOP = 'TOP', BOTTOM = 'BOTTOM' }
 }
 
 C.StateSwitchGetText = function(_, TEXT)
@@ -64,7 +65,7 @@ end
 
 E.Libs.AceConfig:RegisterOptionsTable('ElvUI', E.Options)
 E.Libs.AceConfigDialog:SetDefaultSize('ElvUI', E:Config_GetDefaultSize())
-E.Options.name = format('%s: |cff99ff33%s|r', L["Version"], E.version)
+E.Options.name = format('%s: |cff99ff33%.2f|r', L["Version"], E.version)
 
 local DONATORS = {
 	'Dandruff',
@@ -118,8 +119,9 @@ local DEVELOPERS = {
 	'|cff0070DEAzilroka|r',
 	'|cff9482c9Darth Predator|r',
 	'|T134297:15:15:0:0:64:64:5:59:5:59|t |cffff7d0aMerathilis|r',
-	'|TInterface/AddOns/ElvUI/Media/ChatLogos/FoxWarlock:15:15:0:0:64:64:5:59:5:59|t |cffff2020NihilisticPandemonium|r',
-	E:TextGradient('Simpy but my name needs to be longer.', 1,.3,.3,1,.3,.3, 1,1,1,1,1,1, 1,.3,.3,1,.3,.3, 1,1,1,1,1,1, 1,.3,.3,1,.3,.3)
+	'|TInterface/AddOns/ElvUI/Media/ChatLogos/FoxWarlock:15:15:0:0:64:64:5:59:5:59|t |cffff2020Nihilistzsche|r',
+	'|TInterface/AddOns/ElvUI/Media/ChatLogos/Beer:15:15:0:0:64:64:5:59:5:59|t |cfff48cbaRepooc|r',
+	E:TextGradient('Simpy but my name needs to be longer.', 1,.42,.78, 1,.56,.68, .66,.99,.98, .77,.52,1, 1,.48,.81, .98,.95,.68)
 }
 
 local TESTERS = {
@@ -129,7 +131,6 @@ local TESTERS = {
 	'Tirain',
 	'Phima',
 	'Veiled',
-	'Repooc',
 	'Alex',
 	'Nidra',
 	'Kurhyus',

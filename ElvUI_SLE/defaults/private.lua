@@ -47,7 +47,7 @@ V["sle"] = {
 			["points"] = {},
 		},
 		shadows = {
-			enable = true, -- TODO: Still need to implement this
+			enable = true,
 		},
 	},
 	["unitframe"] = {
@@ -178,7 +178,6 @@ if G["profileCopy"] then
 		},
 		["legacy"] = {
 			["garrison"] = true,
-			["farm"] = true,
 			["orderhall"] = true,
 			["warwampaign"] = true,
 		},

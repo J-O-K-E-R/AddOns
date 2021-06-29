@@ -1,6 +1,3 @@
-local _, addonTable = ...;
-local zc = addonTable.zc;
-
 local L = Auctionator.Locales.Apply
 
 local waitingForPricing = false
@@ -50,7 +47,9 @@ function Auctionator.Tooltip.ShowTipWithPricingDBKey(tooltipFrame, dbKeys, itemL
     local bindType = itemInfo[Auctionator.Constants.ITEM_INFO.BIND_TYPE]
     cannotAuction = bindType == LE_ITEM_BIND_ON_ACQUIRE or bindType == LE_ITEM_BIND_QUEST;
     local sellPrice = itemInfo[Auctionator.Constants.ITEM_INFO.SELL_PRICE]
-    if sellPrice ~= nil then
+    local isArtifact = itemInfo[Auctionator.Constants.ITEM_INFO.RARITY] == Enum.ItemQuality.Artifact
+    local isLegendary = itemInfo[Auctionator.Constants.ITEM_INFO.RARITY] == Enum.ItemQuality.Legendary
+    if sellPrice ~= nil and not isArtifact and not isLegendary then
       vendorPrice = sellPrice * (showStackPrices and itemCount or 1);
     end
 
@@ -108,7 +107,7 @@ function Auctionator.Tooltip.ShowTipWithMultiplePricing(tooltipFrame, itemEntrie
     tooltipFrame:AddDoubleLine(
       Auctionator.Locales.Apply("TOTAL_ITEMS_COLORED", itemCount),
       WHITE_FONT_COLOR:WrapTextInColorCode(
-        zc.priceToMoneyString(total)
+        Auctionator.Utilities.CreatePaddedMoneyString(total)
       )
     )
 
@@ -123,7 +122,7 @@ function Auctionator.Tooltip.AddVendorTip(tooltipFrame, vendorPrice, countString
     tooltipFrame:AddDoubleLine(
       L("VENDOR") .. countString,
       WHITE_FONT_COLOR:WrapTextInColorCode(
-        zc.priceToMoneyString(vendorPrice)
+        Auctionator.Utilities.CreatePaddedMoneyString(vendorPrice)
       )
     )
   end
@@ -143,7 +142,7 @@ function Auctionator.Tooltip.AddAuctionTip (tooltipFrame, auctionPrice, countStr
       tooltipFrame:AddDoubleLine(
         L("AUCTION") .. countString,
         WHITE_FONT_COLOR:WrapTextInColorCode(
-          zc.priceToMoneyString(auctionPrice)
+          Auctionator.Utilities.CreatePaddedMoneyString(auctionPrice)
         )
       )
     else
@@ -168,7 +167,7 @@ function Auctionator.Tooltip.AddDisenchantTip (
     tooltipFrame:AddDoubleLine(
       L("DISENCHANT"),
       WHITE_FONT_COLOR:WrapTextInColorCode(
-        zc.priceToMoneyString(disenchantPrice)
+        Auctionator.Utilities.CreatePaddedMoneyString(disenchantPrice)
       )
     )
   elseif disenchantStatus.isDisenchantable and
@@ -199,7 +198,7 @@ function Auctionator.Tooltip.AddPetTip(
     BattlePetTooltip:AddLine(
       L("AUCTION") .. PET_TOOLTIP_SPACING ..
       WHITE_FONT_COLOR:WrapTextInColorCode(
-        zc.priceToMoneyString(price)
+        Auctionator.Utilities.CreatePaddedMoneyString(price)
       )
     )
   else

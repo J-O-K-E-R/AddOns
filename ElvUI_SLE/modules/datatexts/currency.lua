@@ -1,5 +1,6 @@
 local _, _, E, L = unpack(select(2, ...))
 local DT = E:GetModule('DataTexts')
+local B = E:GetModule('Bags')
 
 local _G = _G
 local type, wipe, pairs, ipairs, sort = type, wipe, pairs, ipairs, sort
@@ -25,12 +26,16 @@ local PRIEST_COLOR = RAID_CLASS_COLORS.PRIEST
 local C_CurrencyInfo_GetBackpackCurrencyInfo = C_CurrencyInfo.GetBackpackCurrencyInfo
 local C_CurrencyInfo_GetCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo
 local BONUS_ROLL_REWARD_MONEY = BONUS_ROLL_REWARD_MONEY
-
 local iconString = '|T%s:16:16:0:0:64:64:4:60:4:60|t'
+local C_Item_IsAnimaItemByID = C_Item.IsAnimaItemByID
+local GetContainerNumSlots, GetContainerItemLink, GetContainerItemInfo = GetContainerNumSlots, GetContainerItemLink, GetContainerItemInfo
+local GetItemSpell = GetItemSpell
+local ANIMA = ANIMA
 
 local menuList = {}
 
 DT.CurrencyList = { GOLD = BONUS_ROLL_REWARD_MONEY, BACKPACK = 'Backpack' }
+local animaSpellID = { [347555] = 3, [345706] = 5, [336327] = 35, [336456] = 250 }
 
 local function sortFunction(a, b)
 	return a.amount > b.amount
@@ -77,16 +82,18 @@ end
 local function GetInfo(id)
 	local info = C_CurrencyInfo_GetCurrencyInfo(id)
 	if info then
-		return info.name, info.quantity, (info.iconFileID and format(iconString, info.iconFileID)) or '136012'
-	else
-		return '', '', '136012'
+		return info.name, info.quantity, info.maxQuantity, (info.iconFileID and format(iconString, info.iconFileID)) or '136012'
 	end
 end
 
 local function AddInfo(id)
-	local name, num, icon = GetInfo(id)
+	local name, num, max, icon = GetInfo(id)
 	if name then
-		DT.tooltip:AddDoubleLine(format('%s %s', icon, name), BreakUpLargeNumbers(num), 1, 1, 1, 1, 1, 1)
+		local textRight = '%s'
+		if E.global.datatexts.settings.Currencies.maxCurrency and max and max > 0 then
+			textRight = '%s / '..BreakUpLargeNumbers(max)
+		end
+		DT.tooltip:AddDoubleLine(format('%s %s', icon, name), format(textRight, BreakUpLargeNumbers(num)), 1, 1, 1, 1, 1, 1)
 	end
 end
 
@@ -166,7 +173,7 @@ local function OnEvent(self)
 		local id = tonumber(displayed)
 		if not id then return end
 
-		local name, num, icon = GetInfo(id)
+		local name, num, _, icon = GetInfo(id)
 		if not name then return end
 
 		local style = E.global.datatexts.settings.Currencies.displayStyle
@@ -178,6 +185,27 @@ local function OnEvent(self)
 			self.text:SetFormattedText('%s %s %s', icon, E:AbbreviateString(name), E:ShortValue(num))
 		end
 	end
+end
+
+local function getTotalAnima()
+	local total = 0
+
+	for i = 0, NUM_BAG_SLOTS do
+		local bagName = GetBagName(i)
+		if bagName then
+			for slotID = 1, GetContainerNumSlots(i) do
+				local link = GetContainerItemLink(i, slotID)
+				local count = select(2, GetContainerItemInfo(i, slotID))
+
+				if link and C_Item_IsAnimaItemByID(link) then
+					local _, spellID = GetItemSpell(link)
+					total = total + animaSpellID[spellID] * count
+				end
+			end
+		end
+	end
+
+	return total
 end
 
 local myGold = {}
@@ -275,6 +303,13 @@ local function OnEnter()
 		DT.tooltip:AddLine(' ')
 	end
 
+	local anima = getTotalAnima()
+	if anima > 0 then
+		DT.tooltip:AddDoubleLine(ANIMA, anima, 0, .8, 1, 1, 1, 1)
+
+		DT.tooltip:AddLine(' ')
+	end
+
 	DT.tooltip:AddDoubleLine(L["WoW Token:"], E:FormatMoney(C_WowTokenPublic_GetCurrentMarketPrice() or 0, style, textOnly), 0, .8, 1, 1, 1, 1)
 
 	-- ElvUI Gold DT -> Watched Backpack Currencies
@@ -290,6 +325,11 @@ local function OnEnter()
 	-- 		end
 	-- 	end
 	-- end
+	local grayValue = B:GetGraysValue()
+	if grayValue > 0 then
+		DT.tooltip:AddLine(' ')
+		DT.tooltip:AddDoubleLine(L["Grays"], E:FormatMoney(grayValue, style, textOnly), nil, nil, nil, 1, 1, 1)
+	end
 
 	DT.tooltip:AddLine(' ')
 	DT.tooltip:AddLine(resetCountersFormatter)

@@ -833,7 +833,7 @@ do
     ---@param anchor string @`ANCHOR_TOPLEFT`, `ANCHOR_NONE`, `ANCHOR_CURSOR`, etc.
     ---@param offsetX number @Optional offset X for some of the anchors.
     ---@param offsetY number @Optional offset Y for some of the anchors.
-    ---@return boolean, boolean @If owner was set arg1 is true. If owner was updated arg2 is true. Otherwise both will be set to face to indicate we did not update the Owner of the widget.
+    ---@return boolean, boolean, boolean @If owner was set arg1 is true. If owner was updated arg2 is true. Otherwise both will be set to face to indicate we did not update the Owner of the widget. If the owner is set to the preferred owner arg3 is true.
     function util:SetOwnerSafely(object, owner, anchor, offsetX, offsetY)
         if type(object) ~= "table" or type(object.GetOwner) ~= "function" then
             return
@@ -841,16 +841,16 @@ do
         local currentOwner = object:GetOwner()
         if not currentOwner then
             object:SetOwner(owner, anchor, offsetX, offsetY)
-            return true
+            return true, false, true
         end
         offsetX, offsetY = offsetX or 0, offsetY or 0
         local currentAnchor, currentOffsetX, currentOffsetY = object:GetAnchorType()
         currentOffsetX, currentOffsetY = currentOffsetX or 0, currentOffsetY or 0
         if currentAnchor ~= anchor or (currentOffsetX ~= offsetX and abs(currentOffsetX - offsetX) > 0.01) or (currentOffsetY ~= offsetY and abs(currentOffsetY - offsetY) > 0.01) then
             object:SetOwner(owner, anchor, offsetX, offsetY)
-            return true
+            return true, true, true
         end
-        return false, true
+        return false, true, currentOwner == owner
     end
 
     ---@param text string @The format string like "Greetings %s! How are you?"
@@ -1980,14 +1980,15 @@ do
     local function BinarySearchGetIndexFromName(data, name, startIndex, endIndex)
         local minIndex = startIndex
         local maxIndex = endIndex
-        local mid, current
+        local mid, current, cmp
 
         while minIndex <= maxIndex do
             mid = floor((maxIndex + minIndex) / 2)
             current = data[mid]
-            if current == name then
-                return mid
-            elseif current < name then
+            cmp = strcmputf8i(current, name)
+            if cmp == 0 then
+                return mid, current
+            elseif cmp < 0 then
                 minIndex = mid + 1
             else
                 maxIndex = mid - 1
@@ -2013,11 +2014,21 @@ do
     ---@param provider DataProvider
     ---@return table, number, string
     local function SearchForBucketByName(provider, lookup, data, name, realm)
+        local internalRealm = realm
         local realmData = data[realm]
+        if not realmData then
+            for rn, rd in pairs(data) do
+                if rn ~= realm and strcmputf8i(rn, realm) == 0 then
+                    internalRealm = rn
+                    realmData = rd
+                    break
+                end
+            end
+        end
         if not realmData then
             return
         end
-        local nameIndex = BinarySearchGetIndexFromName(realmData, name, 2, #realmData)
+        local nameIndex, internalName = BinarySearchGetIndexFromName(realmData, name, 2, #realmData)
         if not nameIndex then
             return
         end
@@ -2038,7 +2049,7 @@ do
         elseif provider.data == ns.PROVIDER_DATA_TYPE.PvP then
             -- TODO
         end
-        return bucket, baseOffset, guid, name, realm
+        return bucket, baseOffset, guid, internalName, internalRealm
     end
 
     local function ReadBitsFromString(data, offset, length)
@@ -2274,16 +2285,18 @@ do
         local maxDungeonIndex = 0
         local maxDungeonTime = 999
         local maxDungeonLevel = 0
+        local maxDungeonScore = 0
         local maxDungeonUpgrades = 0
         for i = 1, #keystoneData.all.runs do
             local run = keystoneData.all.runs[i]
             results.dungeons[i] = run.level
             results.dungeonUpgrades[i] = run.upgrades
             results.dungeonTimes[i] = run.fraction
-            if run.level > maxDungeonLevel or (run.level == maxDungeonLevel and run.fraction < maxDungeonTime) then
+            if run.score > maxDungeonScore or (run.score == maxDungeonScore and run.fraction < maxDungeonTime) then
                 maxDungeonIndex = i
                 maxDungeonTime = run.fraction
                 maxDungeonLevel = run.level
+                maxDungeonScore = run.score
                 maxDungeonUpgrades = run.upgrades
             end
         end
@@ -3773,11 +3786,18 @@ do
         if not fullName or not util:IsMaxLevel(level) then
             return
         end
-        local ownerSet, ownerExisted = util:SetOwnerSafely(GameTooltip, FriendsTooltip, "ANCHOR_BOTTOMRIGHT", -FriendsTooltip:GetWidth(), -4)
+        local ownerSet, ownerExisted, ownerSetSame = util:SetOwnerSafely(GameTooltip, FriendsTooltip, "ANCHOR_BOTTOMRIGHT", -FriendsTooltip:GetWidth(), -4)
+        -- HOTFIX: attempt to fix the issue with a bnet friend with a notification causes the update to be called each frame without a proper hide event and this makes it so we append an empty line due to the smart padding check
+        do
+            local firstText = GameTooltipTextLeft1:GetText()
+            if not firstText or firstText == "" or firstText == " " then
+                ownerExisted = false
+            end
+        end
         if render:ShowProfile(GameTooltip, fullName, faction, render.Preset.UnitSmartPadding(ownerExisted)) then
             return
         end
-        if ownerSet then
+        if ownerSet and not ownerExisted and ownerSetSame then
             GameTooltip:Hide()
         end
     end
@@ -3815,11 +3835,11 @@ do
         if not info or not info.fullName or not util:IsMaxLevel(info.level) then
             return
         end
-        local ownerSet, ownerExisted = util:SetOwnerSafely(GameTooltip, self, "ANCHOR_LEFT")
+        local ownerSet, ownerExisted, ownerSetSame = util:SetOwnerSafely(GameTooltip, self, "ANCHOR_LEFT")
         if render:ShowProfile(GameTooltip, info.fullName, ns.PLAYER_FACTION, render.Preset.UnitSmartPadding(ownerExisted)) then
             return
         end
-        if ownerSet then
+        if ownerSet and not ownerExisted and ownerSetSame then
             GameTooltip:Hide()
         end
     end
@@ -4314,6 +4334,25 @@ do
         end
     end
 
+    local hooked
+
+    local function TopBannerManager_Show(self)
+        if hooked then
+            return
+        end
+        local frame = _G.ChallengeModeCompleteBanner
+        if not frame or frame ~= self then
+            return
+        end
+        hooked = true
+        hooksecurefunc(frame, "PlayBanner", OnChallengeModeCompleteBannerPlay)
+        local mapID, level, time, onTime, keystoneUpgradeLevels, practiceRun = C_ChallengeMode.GetCompletionInfo()
+        if not practiceRun then
+            local bannerData = { mapID = mapID, level = level, time = time, onTime = onTime, keystoneUpgradeLevels = keystoneUpgradeLevels } ---@type ChallengeModeCompleteBannerData
+            OnChallengeModeCompleteBannerPlay(frame, bannerData)
+        end
+    end
+
     local function CheckCachedData()
         local cachedRuns = _G.RaiderIO_CachedRuns
         if not cachedRuns then
@@ -4338,19 +4377,19 @@ do
     end
 
     function fanfare:CanLoad()
-        return config:IsEnabled() and _G.ChallengeModeCompleteBanner and config:Get("debugMode") -- TODO: do not load this module by default (it's not yet tested well enough) but we do load it if debug mode is enabled
+        return config:IsEnabled() and config:Get("debugMode") -- TODO: do not load this module by default (it's not yet tested well enough) but we do load it if debug mode is enabled
     end
 
     function fanfare:OnLoad()
         self:Enable()
         KEYSTONE_DATE = provider:GetProvidersDates()
         CheckCachedData()
-        hooksecurefunc(_G.ChallengeModeCompleteBanner, "PlayBanner", OnChallengeModeCompleteBannerPlay)
+        hooksecurefunc("TopBannerManager_Show", TopBannerManager_Show)
     end
 
-    -- DEBUG: force show the end screen for UR+15 (1950 is the timer)
+    -- DEBUG: force show the end screen for MIST+15 (1800/1440/1080 is the timer)
     -- /run wipe(RaiderIO_CachedRuns)
-    -- /run C_ChallengeMode.GetCompletionInfo=function()return 251, 15, 1950, true, 1, false end
+    -- /run C_ChallengeMode.GetCompletionInfo=function()return 375, 15, 1800, true, 1, false end
     -- /run for _,f in ipairs({GetFramesRegisteredForEvent("CHALLENGE_MODE_COMPLETED")})do f:GetScript("OnEvent")(f,"CHALLENGE_MODE_COMPLETED")end
 
 end
@@ -4604,11 +4643,11 @@ do
         if not fullName then
             return false
         end
-        local ownerSet, ownerExisted = util:SetOwnerSafely(GameTooltip, parent, "ANCHOR_NONE", 0, 0)
+        local ownerSet, ownerExisted, ownerSetSame = util:SetOwnerSafely(GameTooltip, parent, "ANCHOR_NONE", 0, 0)
         if render:ShowProfile(GameTooltip, fullName, ns.PLAYER_FACTION, render.Preset.Unit(render.Flags.MOD_STICKY), currentResult) then
             return true, fullName
         end
-        if ownerSet then
+        if ownerSet and not ownerExisted and ownerSetSame then
             GameTooltip:Hide()
         end
         return false
@@ -4686,11 +4725,11 @@ do
         if not fullName or not util:IsMaxLevel(level) then
             return
         end
-        local ownerSet, ownerExisted = util:SetOwnerSafely(GameTooltip, self, "ANCHOR_TOPLEFT", 0, 0)
+        local ownerSet, ownerExisted, ownerSetSame = util:SetOwnerSafely(GameTooltip, self, "ANCHOR_TOPLEFT", 0, 0)
         if render:ShowProfile(GameTooltip, fullName, ns.PLAYER_FACTION, render.Preset.UnitSmartPadding(ownerExisted)) then
             return
         end
-        if ownerSet then
+        if ownerSet and not ownerExisted and ownerSetSame then
             GameTooltip:Hide()
         end
     end
@@ -4769,11 +4808,11 @@ do
         if (clubType and clubType ~= Enum.ClubType.Guild and clubType ~= Enum.ClubType.Character) or not nameAndRealm or not util:IsMaxLevel(level, true) then
             return
         end
-        local ownerSet, ownerExisted = util:SetOwnerSafely(GameTooltip, self, "ANCHOR_LEFT", 0, 0)
+        local ownerSet, ownerExisted, ownerSetSame = util:SetOwnerSafely(GameTooltip, self, "ANCHOR_LEFT", 0, 0)
         if render:ShowProfile(GameTooltip, nameAndRealm, faction, render.Preset.UnitSmartPadding(ownerExisted)) then
             return
         end
-        if ownerSet then
+        if ownerSet and not ownerExisted and ownerSetSame then
             GameTooltip:Hide()
         end
     end
@@ -5221,7 +5260,7 @@ do
 
     local function CreateGuildWeeklyFrame()
         ---@type GuildWeeklyFrame
-        local frame = CreateFrame("Frame", nil, ChallengesFrame, BackdropTemplateMixin and "BackdropTemplate")
+        local frame = CreateFrame("Frame", "RaiderIO_GuildWeeklyFrame", ChallengesFrame, BackdropTemplateMixin and "BackdropTemplate")
         frame.maxVisible = 5
         -- inherit from the mixin
         for k, v in pairs(GuildWeeklyFrameMixin) do

@@ -10,18 +10,20 @@ function Comms:Enable()
 		return
 	end
 
-	self:RegisterEventUnitPower()
 	--[AC] self:RegisterEvent("CHAT_MSG_ADDON")
 	self:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
-	self:RegisterEvent("UNIT_PET")
-	self:RegisterEvent("COVENANT_CHOSEN")
-	self:RegisterEvent("SOULBIND_ACTIVATED")
-	self:RegisterEvent("SOULBIND_NODE_LEARNED")
-	self:RegisterEvent("SOULBIND_NODE_UNLEARNED")
-	self:RegisterEvent("SOULBIND_NODE_UPDATED")
-	self:RegisterEvent("SOULBIND_CONDUIT_INSTALLED")
-	self:RegisterEvent("SOULBIND_PATH_CHANGED")
-	self:RegisterUnitEvent("PLAYER_SPECIALIZATION_CHANGED", "player")
+	if not E.isBCC then
+		self:RegisterEventUnitPower()
+		self:RegisterEvent("UNIT_PET")
+		self:RegisterEvent("COVENANT_CHOSEN")
+		self:RegisterEvent("SOULBIND_ACTIVATED")
+		self:RegisterEvent("SOULBIND_NODE_LEARNED")
+		self:RegisterEvent("SOULBIND_NODE_UNLEARNED")
+		self:RegisterEvent("SOULBIND_NODE_UPDATED")
+		self:RegisterEvent("SOULBIND_CONDUIT_INSTALLED")
+		self:RegisterEvent("SOULBIND_PATH_CHANGED")
+		self:RegisterUnitEvent("PLAYER_SPECIALIZATION_CHANGED", "player")
+	end
 	self:SetScript("OnEvent", function(self, event, ...)
 		self[event](self, ...)
 	end)
@@ -44,9 +46,9 @@ function Comms:Disable()
 end
 
 function Comms:PLAYER_SPECIALIZATION_CHANGED()
-	E.Comms:InspectPlayer()
-	E.Comms:SendSync()
-	E.Comms:RegisterEventUnitPower()
+	self:InspectPlayer()
+	self:SendSync()
+	self:RegisterEventUnitPower()
 end
 
 function Comms:UNIT_PET(unit) -- [73]

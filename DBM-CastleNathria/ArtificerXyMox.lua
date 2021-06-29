@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod(2418, "DBM-CastleNathria", nil, 1190)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20210218153232")
+mod:SetRevision("20210614184808")
 mod:SetCreatureID(166644)
 mod:SetEncounterID(2405)
 mod:SetUsedIcons(1, 2)
@@ -70,27 +70,22 @@ local timerUnleashPowerCD							= mod:NewCDTimer(40.8, 342854, nil, nil, nil, 5,
 
 --local berserkTimer								= mod:NewBerserkTimer(600)
 
---mod:AddRangeFrameOption(10, 310277)
---mod:AddInfoFrameOption(308377, true)
 mod:AddSetIconOption("SetIconOnTear", 328437, true, false, {1, 2})
 
-mod.vb.phase = 0
 mod.vb.spartCount = 0
 mod.vb.tearIcon = 1
 mod.vb.annihilationCount = 0
 mod.vb.destructionCount = 0
---mod.vb.lastRotation = 0--0 tear, 1 ghosts, 2 roots, 3 annihilate, 4 Second tear, 5 Empty
 mod.vb.unleashCount = 0
 mod.vb.p3FirstCast = 0--1- Tear, 2 - Annihilate
 mod.vb.hyperInProgress = false
 
 function mod:OnCombatStart(delay)
-	self.vb.phase = 1
+	self:SetStage(1)
 	self.vb.spartCount = 0
 	self.vb.tearIcon = 1
 	self.vb.annihilationCount = 0
 	self.vb.destructionCount = 0
---	self.vb.lastRotation = 1--Technically Tear is first in any phase, followed by activator, but neither are part of Spell Rotation script, so variable is set accordingly for that
 	self.vb.unleashCount = 0
 	self.vb.p3FirstCast = 0--1- Tear, 2 - Annihilate
 	self.vb.hyperInProgress = false
@@ -102,20 +97,8 @@ function mod:OnCombatStart(delay)
 	timerRiftBlastCD:Start(20.3-delay)
 	timerFleetingSpiritsCD:Start(25)
 	timerGlyphofDestructionCD:Start(31.6-delay, 1)--SUCCESS
---	if self.Options.RangeFrame then
---		DBM.RangeCheck:Show(4)
---	end
 --	berserkTimer:Start(-delay)
 end
-
---function mod:OnCombatEnd(wipe, secondRun)
---	if self.Options.InfoFrame then
---		DBM.InfoFrame:Hide()
---	end
---	if self.Options.RangeFrame then
---		DBM.RangeCheck:Hide()
---	end
---end
 
 function mod:SPELL_CAST_START(args)
 	local spellId = args.spellId
@@ -160,7 +143,7 @@ function mod:SPELL_CAST_START(args)
 	elseif spellId == 329770 then--Root of Extinction first cast
 --		warnSeedsofExtinction:Show()
 		if self.vb.phase < 2 then--In case user playing in language with unlocalized phase 2 yell
-			self.vb.phase = 2
+			self:SetStage(2)
 			timerDimensionalTearCD:Stop()
 			timerFleetingSpiritsCD:Stop()
 		end
@@ -173,7 +156,7 @@ function mod:SPELL_CAST_START(args)
 		timerExtinction:Start()
 	elseif spellId == 328880 then--Phase Change 3 (Edge of Annihilation)
 		if self.vb.phase < 3 then--In case boss doesn't cast 342310, which happens in rare cases
-			self.vb.phase = 3
+			self:SetStage(3)
 			self.vb.p3FirstCast = 0--1- Tear, 2 - Annihilate
 			timerDimensionalTearCD:Stop()
 			timerSeedsofExtinctionCD:Stop()
@@ -243,7 +226,7 @@ function mod:SPELL_CAST_SUCCESS(args)
 	elseif spellId == 325399 then
 		self.vb.hyperInProgress = false
 	elseif spellId == 181089 then
-		self.vb.phase = self.vb.phase + 1
+		self:SetStage(0)
 		if self.vb.phase == 2 then
 			warnPhase:Show(DBM_CORE_L.AUTO_ANNOUNCE_TEXTS.stage:format(2))
 			warnPhase:Play("ptwo")
@@ -333,7 +316,6 @@ function mod:SPELL_AURA_APPLIED(args)
 		warnPossession:CombinedShow(1, args.destName)
 	end
 end
---mod.SPELL_AURA_APPLIED_DOSE = mod.SPELL_AURA_APPLIED
 
 function mod:SPELL_AURA_REMOVED(args)
 	local spellId = args.spellId
@@ -367,75 +349,7 @@ function mod:CHAT_MSG_RAID_BOSS_EMOTE(msg)
 	if msg:find("spell:327887") then
 		warnSpirits:Show()
 		if self.vb.phase == 1 then
---			self.vb.lastRotation = 1--0 rift, 1 ghosts, 2 roots, 3 annihilate
 			timerDimensionalTearCD:Start(20.2)
 		end
 	end
 end
-
---[[
---Will be removed if encounter event methods seem to be glitch free
-function mod:CHAT_MSG_MONSTER_YELL(msg)
-	if msg == L.Phase2 or msg:find(L.Phase2) or msg == L.Phase2Demonic or msg:find(L.Phase2Demonic) then
-		self:SendSync("Phase2")
-	elseif msg == L.Phase3 or msg:find(L.Phase3) or msg == L.Phase3Demonic or msg:find(L.Phase3Demonic) then
-		self:SendSync("Phase3")
-	end
-end
-
-function mod:OnSync(msg)
-	if not self:IsInCombat() then return end
-	if msg == "Phase2" then
-		self.vb.phase = 2
-		warnPhase:Show(DBM_CORE_L.AUTO_ANNOUNCE_TEXTS.stage:format(2))
-		warnPhase:Play("ptwo")
-		timerStasisTrapCD:Stop()
-		timerRiftBlastCD:Stop()
-		timerHyperlightSparkCD:Stop()
-		timerGlyphofDestructionCD:Stop()--Glyph is auto cast on transition yells, in addition starts a custom non 36 timer for first one in each phase
-		timerFleetingSpiritsCD:Stop()
-		timerDimensionalTearCD:Stop()
-		--If hyper is in progress, boss actually finishes it and the phase change CD isn't triggered
-		if not self.vb.hyperInProgress then
-			timerHyperlightSparkCD:Start(5.5)
-		else--When this happens, it doesn't get recast for a full minute
-			timerHyperlightSparkCD:Start(60)
-		end
-		timerDimensionalTearCD:Start(14)
-		timerRiftBlastCD:Start(20)
-		timerSeedsofExtinctionCD:Start(21.6)
-		timerGlyphofDestructionCD:Start(27.8, self.vb.destructionCount+1)--SUCCESS
-		if self:IsHard() then
-			timerStasisTrapCD:Start(10.7)
-		end
-	elseif msg == "Phase3" then
-		self.vb.phase = 3
-		self.vb.p3FirstCast = 0--1- Tear, 2 - Annihilate/Unleashed
-		warnPhase:Show(DBM_CORE_L.AUTO_ANNOUNCE_TEXTS.stage:format(3))
-		warnPhase:Play("pthree")
-		timerStasisTrapCD:Stop()
-		timerRiftBlastCD:Stop()
-		timerHyperlightSparkCD:Stop()
-		timerGlyphofDestructionCD:Stop()--Glyph is auto cast on transition yells, in addition starts a custom non 36 timer for first one in each phase
-		timerSeedsofExtinctionCD:Stop()
-		timerDimensionalTearCD:Stop()
-		--If hyper is in progress, boss actually finishes it and the phase change CD isn't triggered
-		if not self.vb.hyperInProgress then
-			timerHyperlightSparkCD:Start(5.5)--5.5-7
-		else--When this happens, it doesn't get recast for a full minute
-			timerHyperlightSparkCD:Start(60)
-		end
-		timerDimensionalTearCD:Start(14.4)
-		timerRiftBlastCD:Start(45.9)
-		timerGlyphofDestructionCD:Start(53.5, self.vb.destructionCount+1)--SUCCESS
-		if self:IsHard() then
-			timerStasisTrapCD:Start(10.7)
-		end
-		if self:IsMythic() then
-			timerUnleashPowerCD:Start(20)--Time until phase 3 activation edge of annihilation spell
-		else
-			timerEdgeofAnnihilationCD:Start(27)--Time until actual annihilation cast, not edge of annihilation
-		end
-	end
-end
---]]

@@ -335,11 +335,12 @@ do
                 name = Loc ["STRING_OPTIONS_ED"],
                 desc = Loc ["STRING_OPTIONS_ED_DESC"],
             },
+
             {--auto erase trash segments
                 type = "toggle",
-                get = function() return _detalhes.overall_clear_logout end,
+                get = function() return _detalhes.trash_auto_remove end,
                 set = function (self, fixedparam, value)
-                    _detalhes:SetOverallResetOptions(nil, nil, value)
+                    _detalhes.trash_auto_remove = value
                     afterUpdate()
                 end,
                 name = Loc ["STRING_OPTIONS_CLEANUP"],
@@ -374,7 +375,7 @@ do
                     afterUpdate()
                 end,
                 min = 1,
-                max = 30,
+                max = 40,
                 step = 1,
                 name = Loc ["STRING_OPTIONS_MAXSEGMENTS"],
                 desc = Loc ["STRING_OPTIONS_MAXSEGMENTS_DESC"],
@@ -388,7 +389,7 @@ do
                     afterUpdate()
                 end,
                 min = 1,
-                max = 30,
+                max = 40,
                 step = 1,
                 name = Loc ["STRING_OPTIONS_SEGMENTSSAVE"],
                 desc = Loc ["STRING_OPTIONS_SEGMENTSSAVE_DESC"],
@@ -656,7 +657,7 @@ do
 
         }
 
-        DF:BuildMenu(sectionFrame, sectionOptions, startX, startY-20, heightSize, true, options_text_template, options_dropdown_template, options_switch_template, true, options_slider_template, options_button_template)
+        DF:BuildMenu(sectionFrame, sectionOptions, startX, startY-20, heightSize+20, true, options_text_template, options_dropdown_template, options_switch_template, true, options_slider_template, options_button_template)
     end
 
     tinsert(Details.optionsSection, buildSection) --optionsSection is declared on boot.lua
@@ -710,7 +711,7 @@ do
                 for key, value in pairs (currentInstance) do
                     if (_detalhes.instance_defaults[key] ~= nil) then
                         if (type (value) == "table") then
-                            savedObject[key] = table_deepcopy(value)
+                            savedObject[key] = Details.CopyTable(value)
                         else
                             savedObject[key] = value
                         end
@@ -737,7 +738,7 @@ do
                 for key, value in pairs (skinObject) do
                     if (key ~= "skin" and not _detalhes.instance_skin_ignored_values[key]) then
                         if (type (value) == "table") then
-                            instance[key] = table_deepcopy (value)
+                            instance[key] = Details.CopyTable (value)
                         else
                             instance[key] = value
                         end
@@ -1327,6 +1328,39 @@ do
                 desc = Loc ["STRING_OPTIONS_BAR_COLORBYCLASS_DESC"],
             },
 
+            {type = "blank"},
+            {type = "label", get = function() return "Arena Team Color" end, text_template = subSectionTitleTextTemplate},
+			{--team 1 color
+                type = "color",
+                get = function()
+                    local r, g, b = unpack(Details.class_colors.ARENA_GREEN)
+                    return {r, g, b, 1}
+                end,
+                set = function (self, r, g, b, a)
+                    Details.class_colors.ARENA_GREEN[1] = r
+                    Details.class_colors.ARENA_GREEN[2] = g
+                    Details.class_colors.ARENA_GREEN[3] = b
+                    afterUpdate()
+                end,
+                name = Loc ["STRING_COLOR"],
+                desc = "Arena team color",
+            },
+			{--team 2 color
+                type = "color",
+                get = function()
+                    local r, g, b = unpack(Details.class_colors.ARENA_YELLOW)
+                    return {r, g, b, 1}
+                end,
+                set = function (self, r, g, b, a)
+                    Details.class_colors.ARENA_YELLOW[1] = r
+                    Details.class_colors.ARENA_YELLOW[2] = g
+                    Details.class_colors.ARENA_YELLOW[3] = b
+                    afterUpdate()
+                end,
+                name = Loc ["STRING_COLOR"],
+                desc = "Arena team color",
+            },
+
             {type = "breakline"},
             {type = "label", get = function() return Loc ["STRING_OPTIONS_TEXT_ROWICONS_ANCHOR"] end, text_template = subSectionTitleTextTemplate},
 
@@ -1530,7 +1564,7 @@ do
             },
         }
 
-        DF:BuildMenu(sectionFrame, sectionOptions, startX, startY-20, heightSize, true, options_text_template, options_dropdown_template, options_switch_template, true, options_slider_template, options_button_template)
+        DF:BuildMenu(sectionFrame, sectionOptions, startX, startY-20, heightSize+20, true, options_text_template, options_dropdown_template, options_switch_template, true, options_slider_template, options_button_template)
     end
 
     tinsert(Details.optionsSection, buildSection)
@@ -6280,6 +6314,7 @@ do
     tinsert(Details.optionsSection, buildSection)
 end
 
+-- ~18 - mythic dungeon section
 do
     local buildSection = function(sectionFrame)
 

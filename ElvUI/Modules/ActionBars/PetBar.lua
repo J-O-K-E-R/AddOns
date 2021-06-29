@@ -1,4 +1,4 @@
-local E, L, V, P, G = unpack(select(2, ...)); --Import: Engine, Locales, PrivateDB, ProfileDB, GlobalDB
+local E, L, V, P, G = unpack(select(2, ...)) --Import: Engine, Locales, PrivateDB, ProfileDB, GlobalDB
 local AB = E:GetModule('ActionBars')
 
 local _G = _G
@@ -26,7 +26,7 @@ bar:SetFrameStrata('LOW')
 bar.buttons = {}
 
 function AB:UpdatePet(event, unit)
-	if event == 'UNIT_AURA' and unit ~= 'pet' then return end
+	if (event == 'UNIT_FLAGS' or event == 'UNIT_PET') and unit ~= 'pet' then return end
 
 	for i = 1, NUM_PET_ACTION_SLOTS, 1 do
 		local name, texture, isToken, isActive, autoCastAllowed, autoCastEnabled, spellID = GetPetActionInfo(i)
@@ -89,12 +89,12 @@ end
 function AB:PositionAndSizeBarPet()
 	local db = AB.db.barPet
 
-	local buttonSpacing = db.buttonspacing
+	local buttonSpacing = db.buttonSpacing
 	local backdropSpacing = db.backdropSpacing
 	local buttonsPerRow = db.buttonsPerRow
 	local numButtons = db.buttons
-	local buttonWidth = db.buttonsize
-	local buttonHeight = db.keepSizeRatio and db.buttonsize or db.buttonHeight
+	local buttonWidth = db.buttonSize
+	local buttonHeight = db.keepSizeRatio and db.buttonSize or db.buttonHeight
 	local point = db.point
 	local visibility = db.visibility
 
@@ -128,6 +128,7 @@ function AB:PositionAndSizeBarPet()
 
 	local _, horizontal, anchorUp, anchorLeft = AB:GetGrowth(point)
 	local button, lastButton, lastColumnButton, anchorRowButton, lastShownButton, autoCast
+	local useMasque = MasqueGroup and E.private.actionbar.masque.petBar
 
 	for i = 1, NUM_PET_ACTION_SLOTS do
 		button = _G['PetActionButton'..i]
@@ -155,7 +156,7 @@ function AB:PositionAndSizeBarPet()
 
 		autoCast:SetOutside(button, autoCastWidth, autoCastHeight)
 		AB:HandleButton(bar, button, i, lastButton, lastColumnButton)
-		AB:StyleButton(button, nil, MasqueGroup and E.private.actionbar.masque.petBar)
+		AB:StyleButton(button, nil, useMasque, true)
 	end
 
 	AB:HandleBackdropMultiplier(bar, backdropSpacing, buttonSpacing, db.widthMult, db.heightMult, anchorUp, anchorLeft, horizontal, lastShownButton, anchorRowButton)
@@ -164,7 +165,7 @@ function AB:PositionAndSizeBarPet()
 	visibility = gsub(visibility, '[\n\r]','')
 	RegisterStateDriver(bar, 'show', visibility)
 
-	if MasqueGroup and E.private.actionbar.masque.petBar then
+	if useMasque then
 		MasqueGroup:ReSkin()
 
 		for _, btn in ipairs(bar.buttons) do
@@ -187,19 +188,13 @@ function AB:UpdatePetBindings()
 		local button = _G['PetActionButton'..i]
 		if not button then break end
 
-		if AB.db.hotkeytext and not (button.db and button.db.hideHotkey) then
-			local key = GetBindingKey('BONUSACTIONBUTTON'..i)
-			button.HotKey:Show()
-			button.HotKey:SetText(key)
-			AB:FixKeybindText(button)
-		else
-			button.HotKey:Hide()
-		end
+		button.HotKey:SetText(GetBindingKey('BONUSACTIONBUTTON'..i))
+		AB:FixKeybindText(button)
 	end
 end
 
 function AB:CreateBarPet()
-	bar.backdrop = CreateFrame('Frame', nil, bar, 'BackdropTemplate')
+	bar.backdrop = CreateFrame('Frame', nil, bar)
 	bar.backdrop:SetTemplate(AB.db.transparent and 'Transparent')
 	bar.backdrop:SetFrameLevel(0)
 

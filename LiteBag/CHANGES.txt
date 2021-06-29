@@ -1,13 +1,14 @@
-tag 3d269d03bdac7f7012a212514aa84efbd7568014 9.0.11
-Author:	Mike "Xodiv" Battersby <mib@post.com>
-Date:	Thu Nov 19 16:30:08 2020 +1100
+tag 1da197a7cf26d979cb803da24822e0439f3a5efa 9.1.0
+Author:	Mike Battersby <mib@post.com>
+Date:	Tue Jun 29 17:16:21 2021 +1000
 
-LiteBag 9.0.11
-- Update ToC for 9.0.2 / SL release
+LiteBag 9.1.0
 
-commit 847f59831ac3fd90b5ce2b6b94195d2852a40baa
-Author: Mike "Xodiv" Battersby <mib@post.com>
-Date:   Thu Nov 19 16:29:41 2020 +1100
+ - Support WoW 9.1 Chains of Domination
 
-    Update ToC for 9.0.2
+commit 3dfde49bdb4ba0b91acd9cba849537fc0d6bf41c
+Author: Mike Battersby <mib@post.com>
+Date:   Tue Jun 29 17:14:29 2021 +1000
+
+    Update ToC for 9.1
 

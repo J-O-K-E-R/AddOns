@@ -2180,7 +2180,7 @@ function EncounterDetails:OnEvent (_, event, ...)
 				local PLUGIN_LOCALIZED_NAME = Loc ["STRING_PLUGIN_NAME"]
 				local PLUGIN_REAL_NAME = "DETAILS_PLUGIN_ENCOUNTER_DETAILS"
 				local PLUGIN_ICON = [[Interface\Scenarios\ScenarioIcon-Boss]]
-				local PLUGIN_AUTHOR = "Details! Team"
+				local PLUGIN_AUTHOR = "Terciob"
 				local PLUGIN_VERSION = "v1.06"
 				
 				local default_settings = {

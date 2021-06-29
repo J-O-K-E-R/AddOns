@@ -12,7 +12,7 @@ local C_TransmogCollection_GetIllusionSourceInfo = C_TransmogCollection.GetIllus
 local HandleModifiedItemClick = HandleModifiedItemClick
 local C_TransmogCollection_GetInspectSources = C_TransmogCollection.GetInspectSources
 local GetSpecialization, GetSpecializationInfo, GetInspectSpecialization = GetSpecialization, GetSpecializationInfo, GetInspectSpecialization
-
+local InCombatLockdown = InCombatLockdown
 local CA, IA, SA
 Armory.Constants = {}
 
@@ -188,7 +188,12 @@ function Armory:UpdatePageInfo(frame, which, guid, event)
 			if Slot.TransmogInfo then
 				if which == 'Character' then
 					local transmogLocation = TransmogUtil.GetTransmogLocation(Slot.ID, Enum.TransmogType.Appearance, Enum.TransmogModification.None)
-					Slot.TransmogInfo.Link = select(6, C_TransmogCollection_GetAppearanceSourceInfo(select(3, C_Transmog_GetSlotVisualInfo(transmogLocation))));
+					if not transmogLocation then return end
+
+					local itemBaseSourceID = select(3, C_Transmog_GetSlotVisualInfo(transmogLocation))
+					if not itemBaseSourceID then return end
+
+					Slot.TransmogInfo.Link = select(6, C_TransmogCollection_GetAppearanceSourceInfo(itemBaseSourceID))
 				elseif which == 'Inspect' then
 					Slot.TransmogInfo.Link = Armory:GetTransmogInfo(Slot, which, unit)
 				else
@@ -321,10 +326,14 @@ end
 --Deals with dem enchants
 function Armory:ProcessEnchant(which, Slot, enchantTextShort, enchantText)
 	if not E.db.sle.armory.enchantString.enable then return end
+	local strict = E.db.sle.armory.enchantString.strict
+
 	if E.db.sle.armory.enchantString.replacement then
 		for _, enchData in pairs(SLE_ArmoryDB.EnchantString) do
-			if enchData.original == enchantText then
+			if strict and enchantText == enchData.original then
 				enchantText = enchData.new
+			elseif not strict and enchData.original and enchData.new then
+				enchantText = gsub(enchantText, E:EscapeString(enchData.original), enchData.new)
 			end
 		end
 	end
@@ -442,19 +451,27 @@ function Armory:UpdateInspectInfo()
 	if not E.db.general.itemLevel.displayInspectInfo then M:ClearPageInfo(_G['InspectFrame'], 'Inspect') end
 end
 
-function Armory:UpdateCharacterInfo()
-	if E.db.sle.armory.character.enable then M:UpdatePageInfo(_G['CharacterFrame'], 'Character') end
-	if not E.db.general.itemLevel.displayCharacterInfo then M:ClearPageInfo(_G['CharacterFrame'], 'Character') end
+function Armory:UpdateCharacterInfo(event)
+	if event == 'CRITERIA_UPDATE' and InCombatLockdown() then return end
+
+	if E.db.sle.armory.character.enable then
+		M:UpdatePageInfo(_G['CharacterFrame'], 'Character')
+	end
+	if not E.db.general.itemLevel.displayCharacterInfo then
+		M:ClearPageInfo(_G['CharacterFrame'], 'Character')
+	end
 end
 
 function Armory:ToggleItemLevelInfo()
 	if E.db.general.itemLevel.displayCharacterInfo then
 		-- Armory:UnregisterEvent('AZERITE_ESSENCE_UPDATE')
+		Armory:UnregisterEvent('CRITERIA_UPDATE')
 		Armory:UnregisterEvent('PLAYER_EQUIPMENT_CHANGED')
 		Armory:UnregisterEvent('UPDATE_INVENTORY_DURABILITY')
 		-- Armory:UnregisterEvent('PLAYER_AVG_ITEM_LEVEL_UPDATE')
 	else
 		-- Armory:RegisterEvent('AZERITE_ESSENCE_UPDATE', 'UpdateCharacterInfo')
+		Armory:RegisterEvent('CRITERIA_UPDATE', 'UpdateCharacterInfo')
 		Armory:RegisterEvent('PLAYER_EQUIPMENT_CHANGED', 'UpdateCharacterInfo')
 		Armory:RegisterEvent('UPDATE_INVENTORY_DURABILITY', 'UpdateCharacterInfo')
 		-- Armory:RegisterEvent('PLAYER_AVG_ITEM_LEVEL_UPDATE', 'UpdateCharacterItemLevel')
@@ -504,7 +521,7 @@ function Armory:Initialize()
 	end
 
 	function Armory:ForUpdateAll()
-		SLE:GetModule('Armory_Character'):ToggleArmory();
+		SLE:GetModule('Armory_Character'):ToggleArmory()
 		M:UpdatePageInfo(_G.CharacterFrame, 'Character')
 		if not E.db.general.itemLevel.displayCharacterInfo then M:ClearPageInfo(_G.CharacterFrame, 'Character') end
 

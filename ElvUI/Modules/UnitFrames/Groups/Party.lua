@@ -1,4 +1,4 @@
-local E, L, V, P, G = unpack(select(2, ...)); --Import: Engine, Locales, PrivateDB, ProfileDB, GlobalDB
+local E, L, V, P, G = unpack(select(2, ...)) --Import: Engine, Locales, PrivateDB, ProfileDB, GlobalDB
 local UF = E:GetModule('UnitFrames')
 
 local _, ns = ...
@@ -28,6 +28,7 @@ function UF:Construct_PartyFrames()
 		self.Name = UF:Construct_NameText(self)
 		self.RaidTargetIndicator = UF:Construct_RaidIcon(self)
 		self.AuraHighlight = UF:Construct_AuraHighlight(self)
+		self.ThreatIndicator = UF:Construct_Threat(self)
 
 		self.originalParent = self:GetParent()
 
@@ -38,6 +39,7 @@ function UF:Construct_PartyFrames()
 
 		if self.childType == 'pet' then
 			self.AuraWatch = UF:Construct_AuraWatch(self)
+			self.HealthPrediction = UF:Construct_HealComm(self)
 		end
 
 		self.unitframeType = 'party'..self.childType
@@ -162,9 +164,13 @@ function UF:Update_PartyFrames(frame, db)
 
 		if frame.childType == 'pet' then
 			frame.Health.colorPetByUnitClass = db.colorPetByUnitClass
+
+			UF:Configure_HealthBar(frame) -- keep over HealComm and after colorPetByUnitClass
 			UF:Configure_AuraWatch(frame)
+			UF:Configure_HealComm(frame)
+		else
+			UF:Configure_HealthBar(frame)
 		end
-		UF:Configure_HealthBar(frame)
 	else
 		frame:Size(frame.UNIT_WIDTH, frame.UNIT_HEIGHT)
 
@@ -175,15 +181,14 @@ function UF:Update_PartyFrames(frame, db)
 		UF:Configure_PhaseIcon(frame)
 		UF:Configure_Power(frame)
 		UF:Configure_Portrait(frame)
-		UF:Configure_Threat(frame)
 		UF:Configure_RaidDebuffs(frame)
 		UF:Configure_Castbar(frame)
 		UF:Configure_ResurrectionIcon(frame)
 		UF:Configure_SummonIcon(frame)
 		UF:Configure_RoleIcon(frame)
-		UF:Configure_HealComm(frame)
 		UF:Configure_RaidRoleIcons(frame)
 		UF:Configure_AuraWatch(frame)
+		UF:Configure_HealComm(frame)
 		UF:Configure_ReadyCheckIcon(frame)
 		UF:Configure_ClassBar(frame)
 		UF:Configure_AltPowerBar(frame)
@@ -192,6 +197,7 @@ function UF:Update_PartyFrames(frame, db)
 
 	UF:UpdateNameSettings(frame)
 	UF:Configure_RaidIcon(frame)
+	UF:Configure_Threat(frame)
 	UF:Configure_Fader(frame)
 	UF:Configure_Cutaway(frame)
 	UF:Configure_AuraHighlight(frame)

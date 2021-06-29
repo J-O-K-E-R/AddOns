@@ -1,7 +1,15 @@
 local E, L, C = select(2, ...):unpack()
 
+local GetNumSpecializationsForClassID = GetNumSpecializationsForClassID
+local GetSpecializationInfoForClassID = GetSpecializationInfoForClassID
+local GetSpecializationInfoByID = GetSpecializationInfoByID
+if E.isBCC then
+	GetNumSpecializationsForClassID = function() return 0 end
+	GetSpecializationInfoForClassID = E.Noop
+	GetSpecializationInfoByID = E.Noop
+end
+
 local spell_db = E.spell_db
-local AceDialog = LibStub("AceConfigDialog-3.0")
 local title = L["Spell Editor"]
 
 local defaultBackup = {}
@@ -16,7 +24,7 @@ for i = 1, MAX_CLASSES do
 		specIDs[#specIDs + 1] = id
 	end
 end
-classValues["TRINKET"] = format("|T%s:16|t %s (%s)", "Interface\\Icons\\inv_60pvp_trinket2d", INVTYPE_TRINKET, ALL_CLASSES)
+classValues["TRINKET"] = format("|T%s:16|t %s (%s)", E.ICO.TRINKET, INVTYPE_TRINKET, ALL_CLASSES)
 
 local function GetClassIndexBySpellID(id)
 	for class, v in pairs(spell_db) do
@@ -29,27 +37,28 @@ local function GetClassIndexBySpellID(id)
 	end
 end
 
+-- TODO: clean this up. gives me a headache everytime.
 function E:UpdateSpell(id, isInit, oldClass, oldType) -- [39]
 	local class, i = GetClassIndexBySpellID(id)
 	local v = OmniCDDB.cooldowns[id]
 	local vclass, vtype, force
 	if v then
 		vclass, vtype = v.class, v.type
-		if class ~= vclass then
-			if class then
+		if class ~= vclass then -- custom spell
+			if class then -- class change custom
 				tremove(spell_db[class], i)
-			else
+			else -- add new custom
 				force = true
 			end
 			spell_db[vclass][#spell_db[vclass] + 1] = v
-		elseif not v.custom and not defaultBackup[id] then
+		elseif not v.custom and not defaultBackup[id] then -- add new default spell
 			defaultBackup[id] = self.DeepCopy(spell_db[class][i])
 			spell_db[class][i] = v
 			if E.L_HIGHLIGHTS[vtype] then
 				self.Cooldowns:RegisterRemoveHighlightByCLEU(v.buff or id)
 			end
 			return
-		else
+		else -- type change etc for default/custom
 			spell_db[class][i] = v
 		end
 
@@ -58,10 +67,10 @@ function E:UpdateSpell(id, isInit, oldClass, oldType) -- [39]
 		end
 	else
 		v = defaultBackup[id]
-		if v then
+		if v then -- delete default
 			vclass, vtype = v.class, v.type
 			spell_db[class][i] = self.DeepCopy(v)
-		else
+		else -- delete custom
 			tremove(spell_db[class], i)
 		end
 	end
@@ -172,7 +181,7 @@ local customSpellInfo = {
 			end
 			OmniCDDB.cooldowns[id] = nil
 			E.DB.profile.Party.customPriority[id] = nil
-			E.options.args.spellEditor.args.editor.args[sId] = nil
+			E.options.args.SpellEditor.args.editor.args[sId] = nil
 
 			E:UpdateSpell(id, nil, oldClass, oldType)
 		end,
@@ -235,8 +244,9 @@ local customSpellInfo = {
 	lb1 = {
 		name = "\n", order = 7, type = "description",
 	},
+	-- TODO:
+	--[=[
 	customPriority = {
-		disabled = true, -- TODO:
 		name = L["Custom Priority"],
 		desc = L["Enter value to set a custom spell priority. This value is applied to all zones."],
 		order = 8,
@@ -265,6 +275,7 @@ local customSpellInfo = {
 	lb2 = {
 		name = "", order = 9, type = "description",
 	},
+	--]=]
 	talentId = {
 		hidden = isOthersCategory,
 		name = L["Talent ID"],
@@ -365,8 +376,10 @@ local customSpellInfo = {
 	lb4 = {
 		name = "\n", order = 16, type = "description",
 	},
+	-- TODO:
+	--[=[
 	addToAlerts = {
-		disabled = true, -- TODO: Do I want to add this plugin?
+		disabled = true,
 		name = "+ " .. L["Add to Alerts"],
 		desc = L["Add spell to Spell Alerts"],
 		order = 17,
@@ -375,102 +388,105 @@ local customSpellInfo = {
 
 		end,
 	}
+	--]=]
 }
 
-local customSpellSpecInfo = {
-	enabled = {
-		name = ENABLE,
-		desc = L["Enable if the spell is a base ability for this specialization"],
-		order = 1,
-		type = "toggle",
-		get = function(info)
-			local id = GetSpellID(info, 2)
-			local specID = GetSpecID(info)
-			local spec = OmniCDDB.cooldowns[id].spec
-			if not spec then return true end
-			for i = 1, #spec do
-				if spec[i] == specID then return true end
-			end
-		end,
-		set = function(info, value)
-			local id = GetSpellID(info, 2)
-			local specID = GetSpecID(info)
-			if not OmniCDDB.cooldowns[id].spec then
-				OmniCDDB.cooldowns[id].spec = {}
-				for i = 1, #specIDs do
-					local class = select(6, GetSpecializationInfoByID(specIDs[i]))
-					if OmniCDDB.cooldowns[id].class == class then
-						tinsert(OmniCDDB.cooldowns[id].spec, specIDs[i])
+if not E.isBCC then
+	local customSpellSpecInfo = {
+		enabled = {
+			name = ENABLE,
+			desc = L["Enable if the spell is a base ability for this specialization"],
+			order = 1,
+			type = "toggle",
+			get = function(info)
+				local id = GetSpellID(info, 2)
+				local specID = GetSpecID(info)
+				local spec = OmniCDDB.cooldowns[id].spec
+				if not spec then return true end
+				for i = 1, #spec do
+					if spec[i] == specID then return true end
+				end
+			end,
+			set = function(info, value)
+				local id = GetSpellID(info, 2)
+				local specID = GetSpecID(info)
+				if not OmniCDDB.cooldowns[id].spec then
+					OmniCDDB.cooldowns[id].spec = {}
+					for i = 1, #specIDs do
+						local class = select(6, GetSpecializationInfoByID(specIDs[i]))
+						if OmniCDDB.cooldowns[id].class == class then
+							tinsert(OmniCDDB.cooldowns[id].spec, specIDs[i])
+						end
 					end
 				end
-			end
-			for i = #OmniCDDB.cooldowns[id].spec, 1, -1 do
-				if not value and OmniCDDB.cooldowns[id].spec[i] == specID then
-					tremove(OmniCDDB.cooldowns[id].spec, i)
-					break
+				for i = #OmniCDDB.cooldowns[id].spec, 1, -1 do
+					if not value and OmniCDDB.cooldowns[id].spec[i] == specID then
+						tremove(OmniCDDB.cooldowns[id].spec, i)
+						break
+					end
 				end
+				if value then
+					tinsert(OmniCDDB.cooldowns[id].spec, specID)
+				end
+
+				E:UpdateSpell(id)
+			end,
+		},
+		hd1 = {
+			name = "", order = 2, type = "header",
+		},
+		duration = {
+			name = L["Cooldown"],
+			desc = L["Set to override the global cooldown setting for this specialization"],
+			order = 3,
+			type = "range",
+			min = 1, max = 999, softMax = 300, step = 1,
+		},
+		charges = {
+			name = L["Charges"],
+			order = 4,
+			type = "range",
+			min = 1, max = 10, step = 1,
+		},
+	}
+
+	local customSpellSpecGroup = {
+		hidden = function(info)
+			local specID = GetSpecID(info, 0)
+			if not specID then return end -- [77]
+
+			local id = GetSpellID(info)
+			local class = OmniCDDB.cooldowns[id].class
+			if class == "TRINKET" then return true end
+			if class ~= select(6, GetSpecializationInfoByID(specID)) then return true end
+		end,
+		icon = function(info) local specID = GetSpecID(info, 0) return select(4,GetSpecializationInfoByID(specID)) end,
+		name = function(info) local specID = GetSpecID(info, 0) return select(2,GetSpecializationInfoByID(specID)) end,
+		type = "group",
+		get = function(info)
+			local option = info[#info]
+			local id = GetSpellID(info, 2)
+			local specID = GetSpecID(info)
+			return OmniCDDB.cooldowns[id][option][specID] or OmniCDDB.cooldowns[id][option].default
+		end,
+		set = function(info, value)
+			local option = info[#info]
+			local id = GetSpellID(info, 2)
+			local specID = GetSpecID(info)
+			if value == OmniCDDB.cooldowns[id][option].default then
+				value = nil
 			end
-			if value then
-				tinsert(OmniCDDB.cooldowns[id].spec, specID)
-			end
+			OmniCDDB.cooldowns[id][option][specID] = value
 
 			E:UpdateSpell(id)
 		end,
-	},
-	hd1 = {
-		name = "", order = 2, type = "header",
-	},
-	duration = {
-		name = L["Cooldown"],
-		desc = L["Set to override the global cooldown setting for this specialization"],
-		order = 3,
-		type = "range",
-		min = 1, max = 999, softMax = 300, step = 1,
-	},
-	charges = {
-		name = L["Charges"],
-		order = 4,
-		type = "range",
-		min = 1, max = 10, step = 1,
-	},
-}
+		args = customSpellSpecInfo
+	}
 
-local customSpellSpecGroup = {
-	hidden = function(info)
-		local specID = GetSpecID(info, 0)
-		if not specID then return end -- [77]
-
-		local id = GetSpellID(info)
-		local class = OmniCDDB.cooldowns[id].class
-		if class == "TRINKET" then return true end
-		if class ~= select(6, GetSpecializationInfoByID(specID)) then return true end
-	end,
-	icon = function(info) local specID = GetSpecID(info, 0) return select(4,GetSpecializationInfoByID(specID)) end,
-	name = function(info) local specID = GetSpecID(info, 0) return select(2,GetSpecializationInfoByID(specID)) end,
-	type = "group",
-	get = function(info)
-		local option = info[#info]
-		local id = GetSpellID(info, 2)
-		local specID = GetSpecID(info)
-		return OmniCDDB.cooldowns[id][option][specID] or OmniCDDB.cooldowns[id][option].default
-	end,
-	set = function(info, value)
-		local option = info[#info]
-		local id = GetSpellID(info, 2)
-		local specID = GetSpecID(info)
-		if value == OmniCDDB.cooldowns[id][option].default then
-			value = nil
-		end
-		OmniCDDB.cooldowns[id][option][specID] = value
-
-		E:UpdateSpell(id)
-	end,
-	args = customSpellSpecInfo
-}
-
-for i = 1, #specIDs do
-	local specID = specIDs[i]
-	customSpellInfo["spec" .. specID] = customSpellSpecGroup
+	for i = 1, #specIDs do
+		local specID = specIDs[i]
+		customSpellInfo["spec" .. specID] = customSpellSpecGroup
+	end
 end
 
 local customSpellGroup = {
@@ -492,7 +508,7 @@ E.EditSpell = function(_, value)
 	end
 
 	if OmniCDDB.cooldowns[id] then
-		return AceDialog:SelectGroup(E.AddOn, "spellEditor", "editor", value)
+		return E.Libs.ACD:SelectGroup(E.AddOn, "SpellEditor", "editor", value)
 	end
 
 	local class, i = GetClassIndexBySpellID(id)
@@ -522,22 +538,17 @@ E.EditSpell = function(_, value)
 			["buff"] = id,
 			["name"] = name,
 		}
-
-		local spell = Spell:CreateFromSpellID(id)
-		spell:ContinueOnSpellLoad(function()
-			OmniCDDB.cooldowns[id]["desc"] = spell:GetSpellDescription()
-		end)
 	end
 
-	E.options.args.spellEditor.args.editor.args[value] = customSpellGroup
+	E.options.args.SpellEditor.args.editor.args[value] = customSpellGroup
 
 	E:UpdateSpell(id)
-	AceDialog:SelectGroup(E.AddOn, "spellEditor", "editor", value)
+	E.Libs.ACD:SelectGroup(E.AddOn, "SpellEditor", "editor", value)
 end
 
-local spellEditor = {
+local SpellEditor = {
 	name = title,
-	order = 1000,
+	order = 900,
 	type = "group",
 	childGroups = "tab",
 	get = function(info)
@@ -611,11 +622,11 @@ function E:AddSpellEditor()
 			--E.Write("Removing Invalid ID (User Added): |cffffd200" .. id)
 		else
 			id = tostring(id)
-			spellEditor.args.editor.args[id] = customSpellGroup
+			SpellEditor.args.editor.args[id] = customSpellGroup
 		end
 	end
 
-	self.options.args["spellEditor"] = spellEditor
+	self.options.args["SpellEditor"] = SpellEditor
 
 	self:AddSpellPickers()
 end

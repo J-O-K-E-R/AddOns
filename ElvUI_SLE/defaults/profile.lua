@@ -150,10 +150,11 @@ P["sle"] = {
 				BLOCK = true,
 			},
 		},
-		["enchantString"] = {
-			["enable"] = true,
+		enchantString = {
+			enable = true,
 			-- ["fullText"] = false,
-			["replacement"] = true,
+			replacement = true,
+			strict = true,
 		},
 	},
 	--Backgrounds
@@ -222,7 +223,7 @@ P["sle"] = {
 			point = 'TOPRIGHT',
 			xOffset = -1,
 			yOffset = -1,
-			icon = 'EQUIPMGR',
+			icon = 'EQUIPLOCK',
 			customTexture = "",
 			color = {
 				r = 1,
@@ -397,14 +398,6 @@ P["sle"] = {
 				["active"] = true,
 				["enable"] = false,
 			},
-		},
-		["farm"] = {
-			["active"] = true,
-			["buttonsize"] = 30,
-			["autotarget"] = false,
-			["seedor"] = "TOP",
-			["quest"] = false,
-			["enable"] = false,
 		},
 		["orderhall"] = {
 			["autoOrder"] = {
@@ -610,7 +603,7 @@ P["sle"] = {
 				["cdFormat"] = "DEFAULT",
 				["ignoreMissingInfo"] = false,
 				["showHearthstones"] = true,
-				["hsPrio"] = "54452,64488,93672,142542,162973,163045,165669,165670,165802,166746,166747,168907,172179",
+				["hsPrio"] = "54452,64488,93672,142542,162973,163045,165669,165670,165802,166746,166747,168907,172179,182773,183716,180290,184353",
 				["showToys"] = true,
 				["showSpells"] = true,
 				["showEngineer"] = true,
@@ -982,24 +975,25 @@ P["sle"] = {
 		},
 	},
 	--Tooltip
-	["tooltip"] = {
-		["showFaction"] = false,
-		["alwaysCompareItems"] = false,
-		["RaidProg"] = {
-			["enable"] = false,
-			["NameStyle"] = "SHORT",
-			["DifStyle"] = "SHORT",
-			["raids"] = {
-				["nightmare"] = false,
-				["trial"] = false,
-				["nighthold"] = false,
-				["sargeras"] = false,
-				["antorus"] = false,
-				["uldir"] = true,
-				["daz"] = true,
-				["sc"] = true,
-				["ep"] = true,
-				["nzoth"] = true,
+	tooltip = {
+		showFaction = false,
+		alwaysCompareItems = false,
+		RaidProg = {
+			enable = false,
+			NameStyle = "SHORT",
+			DifStyle = "SHORT",
+			raids = {
+				nightmare = false,
+				trial = false,
+				nighthold = false,
+				sargeras = false,
+				antorus = false,
+				uldir = false,
+				daz = false,
+				sc = false,
+				ep = false,
+				nzoth = false,
+				nathria = true,
 			},
 		},
 	},

@@ -1,7 +1,7 @@
-﻿local SLE, T, E, L, _, _, _ = unpack(select(2, ...))
-local Pr = SLE:GetModule("Professions")
-local B = E:GetModule("Bags")
-local lib = LibStub("LibProcessable")
+﻿local SLE, _, E, L, _, _, _ = unpack(select(2, ...))
+local Pr = SLE:GetModule('Professions')
+local B = E:GetModule('Bags')
+local lib = LibStub('LibProcessable')
 local LCG = LibStub('LibCustomGlow-1.0')
 
 --GLOBALS: unpack, select, CreateFrame, VIDEO_OPTIONS_ENABLED, VIDEO_OPTIONS_DISABLED
@@ -16,52 +16,56 @@ Pr.DeconstructMode = false
 local relicItemTypeLocalized, relicItemSubTypeLocalized
 Pr.ItemTable = {
 	--Stuff that can't be DEed or should not be by default
-	["DoNotDE"]={
-		["49715"] = true, --Rose helm
-		["44731"] = true, --Rose offhand
-		["21524"] = true, --Red winter veil hat
-		["51525"] = true, --Green winter vail hat
-		["70923"] = true, --Sweater
-		["34486"] = true, --Orgri achieve fish
-		["11287"] = true, --Lesser Magic Wand
-		["11288"] = true, --Greater Magic Wand
-		["116985"] = true, --Archeology Mail Hat
-		["136629"] = true, --Eng reagent rifle
-		["136630"] = true, --Eng reagent rifle 2
+	['DoNotDE']={
+		['49715'] = true, --Rose helm
+		['44731'] = true, --Rose offhand
+		['21524'] = true, --Red winter veil hat
+		['51525'] = true, --Green winter vail hat
+		['70923'] = true, --Sweater
+		['34486'] = true, --Orgri achieve fish
+		['11287'] = true, --Lesser Magic Wand
+		['11288'] = true, --Greater Magic Wand
+		['116985'] = true, --Archeology Mail Hat
+		['136629'] = true, --Eng reagent rifle
+		['136630'] = true, --Eng reagent rifle 2
 	},
 	--Bnet bound treasures in Pandaria
-	["PandariaBoA"] = {
-		["85776"] = true,["85777"] = true,["86124"] = true,["86196"] = true,["86198"] = true,
-		["86199"] = true,["86218"] = true,["86394"] = true,["86518"] = true,["86519"] = true,
-		["86520"] = true,["86521"] = true,["86522"] = true,["86523"] = true,["86524"] = true,
-		["86527"] = true,["86529"] = true,["88723"] = true,
-		["86525"] = true, --Not really a BoA but still a powerful shit
-		["86526"] = true, --Not really a BoA but still a powerful shit
+	['PandariaBoA'] = {
+		['85776'] = true,['85777'] = true,['86124'] = true,['86196'] = true,['86198'] = true,
+		['86199'] = true,['86218'] = true,['86394'] = true,['86518'] = true,['86519'] = true,
+		['86520'] = true,['86521'] = true,['86522'] = true,['86523'] = true,['86524'] = true,
+		['86527'] = true,['86529'] = true,['88723'] = true,
+		['86525'] = true, --Not really a BoA but still a powerful shit
+		['86526'] = true, --Not really a BoA but still a powerful shit
 	},
 	--Stuff with cooking bonus
-	["Cooking"] = {
-		["46349"] = true, --Chef's Hat
-		["86559"] = true, --Frying Pan
-		["86558"] = true, --Rolling Pin
-		["86468"] = true, --Apron
+	['Cooking'] = {
+		['46349'] = true, --Chef's Hat
+		['86559'] = true, --Frying Pan
+		['86558'] = true, --Rolling Pin
+		['86468'] = true, --Apron
 	},
 	--Stuff for fishing
-	["Fishing"] = {
-		["33820"] = true, --Weather-Beaten Fishing Hat
-		["118393"] = true, --Tentacled Hat
-		["19022"] = true, --Nat Pagle's Extreme Angler FC-5000
-		["19970"] = true, --Arcanite Fishing Pole
-		["25978"] = true, --Seth's Graphite Fishing Pole
-		["44050"] = true, --Mastercraft Kalu'ak Fishing Pole
-		["45858"] = true, --Nat's Lucky Fishing Pole
-		["45991"] = true, --Bone Fishing Pole
-		["45992"] = true, --Jeweled Fishing Pole
+	['Fishing'] = {
+		['33820'] = true, --Weather-Beaten Fishing Hat
+		['118393'] = true, --Tentacled Hat
+		['19022'] = true, --Nat Pagle's Extreme Angler FC-5000
+		['19970'] = true, --Arcanite Fishing Pole
+		['25978'] = true, --Seth's Graphite Fishing Pole
+		['44050'] = true, --Mastercraft Kalu'ak Fishing Pole
+		['45858'] = true, --Nat's Lucky Fishing Pole
+		['45991'] = true, --Bone Fishing Pole
+		['45992'] = true, --Jeweled Fishing Pole
 	},
 	--Quest dis
-	["Quest"] = {
-		["137195"] = true, --Highmountain armor
-		["137221"] = true, --Ravencrest sigil
-		["137286"] = true, --Demon runes
+	['Quest'] = {
+		['137195'] = true, -- Highmountain armor
+		['137221'] = true, -- Ravencrest sigil
+		['137286'] = true, -- Demon runes
+		['181991'] = true, -- Scout's bow
+		['182021'] = true, -- Kyrian Spear
+		['182067'] = true, -- Rapier
+		['182043'] = true, -- Antique Necromancer's Staff
 	},
 }
 Pr.Keys = {
@@ -89,7 +93,7 @@ end
 function Pr:Blacklisting(skill)
 	local ignoreItems = E.global.sle[skill].Blacklist
 	ignoreItems = gsub(ignoreItems, ',%s', ',') --remove spaces that follow a comma
-	Pr["BuildBlacklist"..skill](self, strsplit(",", ignoreItems))
+	Pr['BuildBlacklist'..skill](self, strsplit(',', ignoreItems))
 end
 
 function Pr:BuildBlacklistDE(...)
@@ -190,37 +194,45 @@ end
 
 function Pr:DeconstructParser(tt)
 	if not Pr.DeconstructMode then return end
+
 	local item, link = tt:GetItem()
 	if not link then return end
-	local itemString = strmatch(link, "item[%-?%d:]+")
-	if not itemString then return end
-	local _, id = strsplit(":", itemString)
-	if not id or id == "" then return end
-	if(item and not InCombatLockdown()) and (Pr.DeconstructMode == true or (E.global.sle.LOCK.TradeOpen and self:GetOwner():GetName() == "TradeRecipientItem7ItemButton")) then
-		local r, g, b
-		if lib:IsOpenable(id) and Pr:IsUnlockable(link) then
-			r, g, b = 0, 1, 1
-			Pr:ApplyDeconstruct(link, Pr.LOCKname, "spell", r, g, b)
-		elseif lib:IsOpenableProfession(id) and Pr:IsUnlockable(link) then
-			r, g, b = 0, 1, 1
-			local hasKey = HaveKey()
-			Pr:ApplyDeconstruct(link, hasKey, "item", r, g, b)
-		elseif lib:IsProspectable(id) then
-			r, g, b = 1, 0, 0
-			Pr:ApplyDeconstruct(link, Pr.PROSPECTname, "spell", r, g, b)
-		elseif lib:IsMillable(id) then
-			r, g, b = 1, 0, 0
-			Pr:ApplyDeconstruct(link, Pr.MILLname, "spell", r, g, b)
-		elseif Pr.DEname then
-			local isArtRelic, class, subclass
-			local normalItem = (lib:IsDisenchantable(id) and Pr:IsBreakable(link))
-			if not normalItem then
-				class, subclass = select(6, GetItemInfo(item))
-				isArtRelic = (class == relicItemTypeLocalized and subclass == relicItemSubTypeLocalized)
-			end
-			if normalItem or Pr.ItemTable["Quest"][id] or isArtRelic then
+
+	local owner = tt:GetOwner()
+	local ownerName = owner and owner.GetName and owner:GetName()
+	if ownerName and (strfind(ownerName, 'ElvUI_Container') or strfind(ownerName, 'ElvUI_BankContainer')) then
+		local itemString = strmatch(link, "item[%-?%d:]+")
+		if not itemString then return end
+
+		local _, id = strsplit(":", itemString)
+		if not id or id == "" then return end
+
+		if(item and not InCombatLockdown()) and (Pr.DeconstructMode == true or (E.global.sle.LOCK.TradeOpen and self:GetOwner():GetName() == "TradeRecipientItem7ItemButton")) then
+			local r, g, b
+			if lib:IsOpenable(id) and Pr:IsUnlockable(link) then
+				r, g, b = 0, 1, 1
+				Pr:ApplyDeconstruct(link, Pr.LOCKname, "spell", r, g, b)
+			elseif lib:IsOpenableProfession(id) and Pr:IsUnlockable(link) then
+				r, g, b = 0, 1, 1
+				local hasKey = HaveKey()
+				Pr:ApplyDeconstruct(link, hasKey, "item", r, g, b)
+			elseif lib:IsProspectable(id) then
 				r, g, b = 1, 0, 0
-				Pr:ApplyDeconstruct(link, Pr.DEname, "spell", r, g, b)
+				Pr:ApplyDeconstruct(link, Pr.PROSPECTname, "spell", r, g, b)
+			elseif lib:IsMillable(id) then
+				r, g, b = 1, 0, 0
+				Pr:ApplyDeconstruct(link, Pr.MILLname, "spell", r, g, b)
+			elseif Pr.DEname then
+				local isArtRelic, class, subclass
+				local normalItem = (lib:IsDisenchantable(id) and Pr:IsBreakable(link))
+				if not normalItem then
+					class, subclass = select(6, GetItemInfo(item))
+					isArtRelic = (class == relicItemTypeLocalized and subclass == relicItemSubTypeLocalized)
+				end
+				if normalItem or Pr.ItemTable["Quest"][id] or isArtRelic then
+					r, g, b = 1, 0, 0
+					Pr:ApplyDeconstruct(link, Pr.DEname, "spell", r, g, b)
+				end
 			end
 		end
 	end
@@ -250,7 +262,7 @@ function Pr:Construct_BagButton()
 	Pr.DeconstructButton:GetNormalTexture():SetInside()
 
 	Pr.DeconstructButton:StyleButton(nil, true)
-	Pr.DeconstructButton:SetScript("OnClick", function(self, ...)
+	Pr.DeconstructButton:SetScript("OnClick", function(frame)
 		Pr.DeconstructMode = not Pr.DeconstructMode
 		if Pr.DeconstructMode then
 			Pr.DeconstructButton:SetNormalTexture("Interface\\ICONS\\INV_Rod_EnchantedCobalt")
@@ -260,7 +272,7 @@ function Pr:Construct_BagButton()
 			ActionButton_HideOverlayGlow(Pr.DeconstructButton)
 		end
 		Pr.DeconstructButton.ttText2 = format(L["Allow you to disenchant/mill/prospect/unlock items.\nClick to toggle.\nCurrent state: %s."], Pr:GetDeconMode())
-		B.Tooltip_Show(self)
+		B.Tooltip_Show(frame)
 	end)
 	--Moving Elv's stuff
 	_G["ElvUI_ContainerFrame"].vendorGraysButton:SetPoint("RIGHT", Pr.DeconstructButton, "LEFT", -5, 0)
@@ -273,25 +285,25 @@ function Pr:ConstructRealDecButton()
 	Pr.DeconstructionReal:SetFrameStrata("TOOLTIP")
 	Pr.DeconstructionReal.TipLines = {}
 
-	Pr.DeconstructionReal.OnLeave = function(self)
+	Pr.DeconstructionReal.OnLeave = function(frame)
 		if(InCombatLockdown()) then
-			self:SetAlpha(0)
-			self:RegisterEvent('PLAYER_REGEN_ENABLED')
+			frame:SetAlpha(0)
+			frame:RegisterEvent('PLAYER_REGEN_ENABLED')
 		else
-			self:ClearAllPoints()
-			self:SetAlpha(1)
+			frame:ClearAllPoints()
+			frame:SetAlpha(1)
 			if _G["GameTooltip"] then _G["GameTooltip"]:Hide() end
-			self:Hide()
-			LCG.AutoCastGlow_Stop(self)
-			LCG.ButtonGlow_Stop(self)
-			ActionButton_HideOverlayGlow(self)
+			frame:Hide()
+			LCG.AutoCastGlow_Stop(frame)
+			LCG.ButtonGlow_Stop(frame)
+			ActionButton_HideOverlayGlow(frame)
 		end
 	end
 
-	Pr.DeconstructionReal.SetTip = function(self)
-		_G["GameTooltip"]:SetOwner(self,"ANCHOR_LEFT",0,4)
+	Pr.DeconstructionReal.SetTip = function(f)
+		_G["GameTooltip"]:SetOwner(f,"ANCHOR_LEFT",0,4)
 		_G["GameTooltip"]:ClearLines()
-		_G["GameTooltip"]:SetBagItem(self.Bag, self.Slot)
+		_G["GameTooltip"]:SetBagItem(f.Bag, f.Slot)
 	end
 
 	Pr.DeconstructionReal:SetScript("OnEnter", Pr.DeconstructionReal.SetTip)

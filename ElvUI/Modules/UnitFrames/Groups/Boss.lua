@@ -1,4 +1,4 @@
-local E, L, V, P, G = unpack(select(2, ...)); --Import: Engine, Locales, PrivateDB, ProfileDB, GlobalDB
+local E, L, V, P, G = unpack(select(2, ...)) --Import: Engine, Locales, PrivateDB, ProfileDB, GlobalDB
 local UF = E:GetModule('UnitFrames')
 
 local _, ns = ...
@@ -7,7 +7,6 @@ assert(ElvUF, 'ElvUI was unable to locate oUF.')
 
 local _G = _G
 local CreateFrame = CreateFrame
-local IsAddOnLoaded = IsAddOnLoaded
 local MAX_BOSS_FRAMES = MAX_BOSS_FRAMES
 -- GLOBALS: BossHeaderMover
 
@@ -22,6 +21,7 @@ function UF:Construct_BossFrames(frame)
 	frame.Power.displayAltPower = true
 	frame.PowerPrediction = UF:Construct_PowerPrediction(frame)
 	frame.Name = UF:Construct_NameText(frame)
+	frame.AuraWatch = UF:Construct_AuraWatch(frame)
 	frame.Portrait3D = UF:Construct_Portrait(frame, 'model')
 	frame.Portrait2D = UF:Construct_Portrait(frame, 'texture')
 	frame.InfoPanel = UF:Construct_InfoPanel(frame)
@@ -68,7 +68,7 @@ function UF:Update_BossFrames(frame, db)
 		frame.BOTTOM_OFFSET = UF:GetHealthBottomOffset(frame)
 	end
 
-	if not IsAddOnLoaded('Clique') then
+	if not E:IsAddOnEnabled('Clique') then
 		if db.middleClickFocus then
 			frame:SetAttribute('type3', 'focus')
 		elseif frame:GetAttribute('type3') == 'focus' then
@@ -93,6 +93,7 @@ function UF:Update_BossFrames(frame, db)
 	UF:Configure_CustomTexts(frame)
 	UF:Configure_Fader(frame)
 	UF:Configure_Cutaway(frame)
+	UF:Configure_AuraWatch(frame)
 
 	frame:ClearAllPoints()
 	if frame.index == 1 then

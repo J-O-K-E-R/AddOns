@@ -195,11 +195,8 @@ L["FAQ_Elv_5"] = "|cff30ee30В: Какие команды чата есть в E
 L["FAQ_sle_1"] = "|cff30ee30В: Что делать, если я получаю сообщения об ошибках в Shadow & Light?|r\n|cff9482c9О:|r Примерно то же самое, что и для ElvUI (см. другой раздел справки).\nТолько теперь понадобится еще и указать версию S&L."
 L["FAQ_sle_2"] = "|cff30ee30В: Применима ли языковая политика форумов ElvUI к Shadow & Light?|r\n|cff9482c9О:|r Да. За исключением того, что для S&L официальных языков поддержки два - английский и русский."
 L["FAQ_sle_3"] = "|cff30ee30В: Почему шаблоны интерфейса в игре не похожи на то, что я видел на скриншотах на странице аддона?|r\n|cff9482c9О:|r Потому что мы просто забыли их обновить."
-L["FAQ_sle_4"] = "|cff30ee30В: Почему я вижу странные иконки около имен некоторых людей в чате?|r\n|cff9482c9О:|r Эти ионки обозначают людей, которых мы хотели выделить по той или иной причине.\nНапример: |TInterface\\AddOns\\ElvUI_SLE\\media\\textures\\SLE_Chat_Logo:12:28|t это иконка для разработчиков, а |TInterface\\AddOns\\ElvUI_SLE\\media\\textures\\SLE_Chat_Logo_Alt:16:16|t это иконка, которую иногда использует Repooc. |TInterface\\AddOns\\ElvUI_SLE\\media\\textures\\Chat_Test:16:16|t для людей, которые в свое время помогли вычислить хитрый баг."
+L["FAQ_sle_4"] = "|cff30ee30В: Почему я вижу странные иконки около имен некоторых людей в чате?|r\n|cff9482c9О:|r Эти ионки обозначают людей, которых мы хотели выделить по той или иной причине.\nНапример: |TInterface\\AddOns\\ElvUI_SLE\\media\\textures\\chat\\SLE_Chat_Logo:12:28|t это иконка для разработчиков, а |TInterface\\AddOns\\ElvUI_SLE\\media\\textures\\chat\\SLE_Chat_Logo_Alt:16:16|t это иконка, которую иногда использует Repooc. |TInterface\\AddOns\\ElvUI_SLE\\media\\textures\\Chat_Test:16:16|t для людей, которые в свое время помогли вычислить хитрый баг."
 L["FAQ_sle_5"] = "|cff30ee30В: Как я могу связаться с авторами?|r\n|cff9482c9О:|r По очевидным причинам мы не раздаем свои контакты всем желающим. Так что лучшим методом являются форумы tukui.org."
-L["Farm Portal Bar"] = "Панель порталов"
-L["Farm Seed Bars"] = "Панели семян"
-L["Farm Tool Bar"] = "Панель инструментов"
 L["Farm"] = "Ферма"
 L["Filter DPS meters' Spam"] = "Фильтровать отчеты о УВС"
 L["Fish Key"] = "Модификатор рыбалки"
@@ -440,9 +437,6 @@ L["S&L Mail"] = "S&L Почта"
 L["S&L UI Buttons"] = "Меню S&L"
 L["S&L: All"] = "S&L: Все"
 L["S&L: Backgrounds"] = "S&L: Фоновые фреймы"
-L["S&L: Farm Portal Bar"] = "S&L: Порталы фермы "
-L["S&L: Farm Seed Bars"] = "S&L: Семена"
-L["S&L: Farm Tool Bar"] = "S&L: Инструменты фермы"
 L["S&L: Garrison Tools Bar"] = "S&L: Инструменты гарнизона"
 L["S&L: Misc"] = "S&L: Прочее"
 L["Scroll"] = "Свиток"
@@ -588,6 +582,7 @@ L["Stage Background"] = "Фон стадии"
 L["Start fishing even if you are mounted."] = "Забрасывать удочку даже, если вы на средстве передвижения."
 L["Statusbar Color"] = "Цвет полос состояния"
 L["Statusbars"] = "Полосы состояния"
+L["Strict String Replacement"] = true
 L["String Replacement"] = "Замена текста"
 L["Submodules and Coding:"] = "Модули и код:"
 L["Subpages are blocks of 10 items. This option set how many of subpages will be shown on a single page."] = "Субстраницы это блоки из 10 предметов. Эта опция показывает сколько субстраниц будет показано на одной странице."
@@ -695,6 +690,7 @@ L["SLE_EM_TAGS_HELP"] = [[Следующие тэги и параметры мо
 |cff3cbf27pvp|r - для полей боя, арен и открытых пвп зон. Параметры: ПвП, арена;
 |cff3cbf27difficulty|r - Определяет сложность подземелья. Параметры: нормал, героик, лфр, испытание, мифик;
 |cff3cbf27effectivelevel|r - effective level refers to your level when you are scaled, e.g. timewalking
+|cff3cbf27warmode|r - checks if you have warmode enabled
 
 Пример: [solo] Set1; [party:4, spec:3] Set2; [instance:raid, difficulty:heroic] Set3
 ]]

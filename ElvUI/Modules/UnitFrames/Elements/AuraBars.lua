@@ -1,7 +1,8 @@
-local E, L, V, P, G = unpack(select(2, ...)); --Import: Engine, Locales, PrivateDB, ProfileDB, GlobalDB
-local UF = E:GetModule('UnitFrames');
+local E, L, V, P, G = unpack(select(2, ...)) --Import: Engine, Locales, PrivateDB, ProfileDB, GlobalDB
+local UF = E:GetModule('UnitFrames')
 
 local _G = _G
+local ipairs = ipairs
 local unpack = unpack
 local CreateFrame = CreateFrame
 
@@ -83,15 +84,13 @@ function UF:Configure_AuraBars(frame)
 		auraBars.spacing = db.aurabar.spacing
 		auraBars.friendlyAuraType = db.aurabar.friendlyAuraType
 		auraBars.enemyAuraType = db.aurabar.enemyAuraType
+		auraBars.disableMouse = db.aurabar.clickThrough
+		auraBars.filterList = UF:ConvertFilters(auraBars, db.aurabar.priority)
 
-		local index = 1
-		while auraBars[index] do
-			local button = auraBars[index]
-			if button then
-				button.db = auraBars.db
-			end
-
-			index = index + 1
+		for _, statusBar in ipairs(auraBars) do
+			statusBar.db = auraBars.db
+			UF:Update_FontString(statusBar.timeText)
+			UF:Update_FontString(statusBar.nameText)
 		end
 
 		local colors = UF.db.colors.auraBarBuff

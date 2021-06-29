@@ -4,12 +4,11 @@ LFGSpamFilterAddon = LFGSpamFilter
 
 LFGSpamFilter.frame = CreateFrame('Frame')
 LFGSpamFilter.ready = false
-LFGSpamFilter.splash = false
+LFGSpamFilter.splashed = false
 LFGSpamFilter.reportingGroup = false
-LFGSpamFilter.configVersion = 3
+LFGSpamFilter.configVersion = 4
 LFGSpamFilter.eventHandlers = {
     ADDON_LOADED = 'onAddonLoaded',
-    LFG_LIST_SEARCH_RESULT_UPDATED = 'onSearchResultUpdated',
 }
 LFGSpamFilter.hookCache = {
     onButtonEnter = function (button) LFGSpamFilter:onButtonEnter(button) end,
@@ -20,7 +19,7 @@ LFGSpamFilter.commands = {
         method = 'runHelpCommand',
     },
     info = {
-        help = 'show configuration and stats',
+        help = 'show filter configuration and stats',
         method = 'runInfoCommand',
     },
     toggle = {
@@ -59,9 +58,11 @@ LFGSpamFilter.commands = {
         method = 'runButtonCommand',
         acceptsArgument = true,
     },
-    undo = {
-        help = 'undo the last ban',
-        method = 'runUndoCommand',
+    unban = {
+        usage = '[player]',
+        help = 'remove the given (or last reported) player from the blacklist',
+        method = 'runUnbanCommand',
+        acceptsArgument = true,
     },
     ['clear-blacklist'] = {
         help = 'clear the blacklist',
@@ -70,6 +71,12 @@ LFGSpamFilter.commands = {
     ['factory-reset'] = {
         help = 'reset all options and data',
         method = 'runFactoryResetCommand',
+    },
+    splash = {
+        usage = 'on|off',
+        help = 'enable or disable the chat notification',
+        method = 'runSplashCommand',
+        acceptsArgument = true,
     },
 }
 LFGSpamFilter.commandList = {
@@ -80,9 +87,10 @@ LFGSpamFilter.commandList = {
     'max-age',
     'no-voice',
     'button',
-    'undo',
+    'unban',
     'clear-blacklist',
     'factory-reset',
+    'splash',
 }
 
 function LFGSpamFilter:say(msg, ...)
@@ -143,6 +151,7 @@ function LFGSpamFilter:setDefaultConfiguration()
         maxAge = 4 * 3600,
         noVoice = true,
         lastMaintenance = time(),
+        splash = true,
     }
 end
 
@@ -157,6 +166,8 @@ function LFGSpamFilter:migrateConfiguration()
             if LFGSpamFilterAddonConfig.blacklistEnabled ~= false then
                 LFGSpamFilterAddonConfig.blacklistEnabled = true
             end
+        elseif from == 3 then
+            LFGSpamFilterAddonConfig.splash = true
         end
     end
 
@@ -225,14 +236,13 @@ function LFGSpamFilter:runHelpCommand()
 end
 
 function LFGSpamFilter:runInfoCommand()
-    self:say('configuration:')
+    self:say('filter configuration:')
     print('|cff47bbfffiltering:|r', self:formatBool(LFGSpamFilterAddonConfig.enabled))
     print('|cff47bbffreporting:|r', self:formatBool(LFGSpamFilterAddonConfig.report))
     print('|cff47bbffblacklist:|r', self:formatBool(LFGSpamFilterAddonConfig.blacklistEnabled))
     if LFGSpamFilterAddonConfig.maxAge > 0 then print('|cff47bbffmax age:|r', string.format('|cff00ff00%.2f hours|r', LFGSpamFilterAddonConfig.maxAge / 3600))
     else print('|cff47bbffmax age:|r', self:formatBool(false)) end
     print('|cff47bbffno voice:|r', self:formatBool(LFGSpamFilterAddonConfig.noVoice))
-    print('|cff47bbffbutton:|r', self:formatBool(LFGSpamFilterAddonConfig.button))
     self:say('statistics:')
     print('|cff47bbffreports:|r', LFGSpamFilterAddonConfig.stats.reports)
     print('|cff47bbfffilter hits:|r', LFGSpamFilterAddonConfig.stats.filtered)
@@ -247,6 +257,7 @@ function LFGSpamFilter:runToggleCommand(argument)
     end
 
     self:say('filtering is now %s', self:formatBool(LFGSpamFilterAddonConfig.enabled))
+    self:updateLfgList()
 end
 
 function LFGSpamFilter:runReportCommand(argument)
@@ -257,6 +268,7 @@ end
 function LFGSpamFilter:runBlacklistCommand(argument)
     LFGSpamFilterAddonConfig.blacklistEnabled = self:parseBoolCommandArgument(argument)
     self:say('blacklist usage is now %s', self:formatBool(LFGSpamFilterAddonConfig.blacklistEnabled))
+    self:updateLfgList()
 end
 
 function LFGSpamFilter:runMaxAgeCommand(argument)
@@ -270,16 +282,20 @@ function LFGSpamFilter:runMaxAgeCommand(argument)
 
     LFGSpamFilterAddonConfig.maxAge = argument * 3600
 
+
     if LFGSpamFilterAddonConfig.maxAge == 0 then
         self:say('group age filtering has been |cffff0000disabled|r')
     else
         self:say('max group age has been set to |cff00ff00%.2f hours|r', LFGSpamFilterAddonConfig.maxAge / 3600)
     end
+
+    self:updateLfgList()
 end
 
 function LFGSpamFilter:runNoVoiceCommand(argument)
     LFGSpamFilterAddonConfig.noVoice = self:parseBoolCommandArgument(argument)
     self:say('voice chat filtering is now %s', self:formatBool(LFGSpamFilterAddonConfig.noVoice))
+    self:updateLfgList()
 end
 
 function LFGSpamFilter:runButtonCommand(argument)
@@ -288,34 +304,41 @@ function LFGSpamFilter:runButtonCommand(argument)
     self:say('quick report button is now %s', self:formatBool(LFGSpamFilterAddonConfig.button))
 end
 
-function LFGSpamFilter:runUndoCommand()
-    if not LFGSpamFilterAddonConfig.lastBan then
-        self:say('nothing to undo')
-        return
+function LFGSpamFilter:runUnbanCommand(argument)
+    if argument == nil then
+        if LFGSpamFilterAddonConfig.lastBan and LFGSpamFilterAddonConfig.lastBan.player then
+            argument = LFGSpamFilterAddonConfig.lastBan.player
+        else
+            error('provide a player name', 0)
+        end
+    else
+        argument = self:normalizePlayerName(argument)
     end
 
-    self:unbanGroup(LFGSpamFilterAddonConfig.lastBan.id)
-    self:removeGroupFromFilter(LFGSpamFilterAddonConfig.lastBan.id)
-
-    if LFGSpamFilterAddonConfig.lastBan.player then
-        self:removeFromBlacklist(LFGSpamFilterAddonConfig.lastBan.player)
+    if self:isBlacklisted(argument) then
+        self:removeFromBlacklist(argument)
+        self:say('removed %s from the blacklist (note: the reported group remains hidden)', argument)
+    else
+        error(string.format('%s is not on the blacklist', argument), 0)
     end
-
-    LFGSpamFilterAddonConfig.lastBan = nil
-    self:updateLfgList()
-    self:say('undid last ban')
 end
 
 function LFGSpamFilter:runClearBlacklistCommand()
     local numBlacklisted = self:getBlacklistSize()
     self:clearBlacklist()
     self:say('removed %d players from blacklist', numBlacklisted)
+    self:updateLfgList()
 end
 
 function LFGSpamFilter:runFactoryResetCommand()
     self:setDefaultConfiguration()
-    self:updateLfgList()
     self:say('all options and data have been reset')
+    self:updateLfgList()
+end
+
+function LFGSpamFilter:runSplashCommand(argument)
+    LFGSpamFilterAddonConfig.splash = self:parseBoolCommandArgument(argument)
+    self:say('splash message is now %s', self:formatBool(LFGSpamFilterAddonConfig.splash))
 end
 
 function LFGSpamFilter:parseBoolCommandArgument(argument)
@@ -342,13 +365,14 @@ function LFGSpamFilter:initHooks()
     hooksecurefunc('LFGListUtil_SortSearchResults', function (results) self:filter(results) end)
     hooksecurefunc('LFGListSearchEntry_Update', function (button) self:updateButton(button) end)
     hooksecurefunc(C_LFGList, 'ReportSearchResult', function (id, reason) self:postReportGroup(id, reason) end)
+    hooksecurefunc('LFGListSearchPanel_UpdateResults', function () self:postResultsUpdate() end)
     LFGListFrame:HookScript('OnHide', function () self:onLfgListHide() end)
 end
 
 function LFGSpamFilter:maintenance()
     -- run maintenance once a week
     if time() - LFGSpamFilterAddonConfig.lastMaintenance > 604800 then
-        self:cleanupBlacklist(7776000) -- remove blacklisted players not seen for over 3 months
+        self:cleanupBlacklist(31536000) -- remove blacklisted players not seen for over a year
         LFGSpamFilterAddonConfig.lastMaintenance = time()
     end
 end
@@ -359,7 +383,7 @@ function LFGSpamFilter:doSplash()
         GetAddOnMetadata(addonName, 'Version'),
         GetAddOnMetadata(addonName, 'Author')
     )
-    self.splash = true
+    self.splashed = true
 end
 
 function LFGSpamFilter:filter(results)
@@ -367,7 +391,7 @@ function LFGSpamFilter:filter(results)
         return
     end
 
-    if not self.splash then
+    if not self.splashed and LFGSpamFilterAddonConfig.splash then
         self:doSplash()
     end
 
@@ -416,16 +440,6 @@ function LFGSpamFilter:accept(info)
         )
 end
 
-function LFGSpamFilter:onSearchResultUpdated(id)
-    if self.ready and self:isLfgListOpen() then
-        local info = C_LFGList.GetSearchResultInfo(id)
-
-        if info and not self:accept(info) then
-            self:updateLfgList()
-        end
-    end
-end
-
 function LFGSpamFilter:updateButton(button)
     if not button._LFGSpamFilterHooked then
         button:HookScript('OnEnter', self.hookCache.onButtonEnter)
@@ -455,7 +469,6 @@ function LFGSpamFilter:onBanButtonClick()
     if id then
         self:banGroup(id)
         self:reportGroup(id)
-        self:addGroupToFilter(id)
         self:updateLfgList()
     end
 end
@@ -474,7 +487,6 @@ function LFGSpamFilter:updateLfgList()
     end
 
     LFGListSearchPanel_UpdateResultList(LFGListFrame.SearchPanel)
-    LFGListSearchPanel_UpdateResults(LFGListFrame.SearchPanel)
 end
 
 function LFGSpamFilter:normalizePlayerName(name)
@@ -502,29 +514,6 @@ function LFGSpamFilter:banGroup(id)
     end
 end
 
-function LFGSpamFilter:unbanGroup(id)
-    local info = C_LFGList.GetSearchResultInfo(id)
-
-    if info and info.leaderName then
-        self:removeFromBlacklist(self:normalizePlayerName(info.leaderName))
-    end
-end
-
-function LFGSpamFilter:addGroupToFilter(id)
-    LFGListSearchPanel_AddFilteredID(LFGListFrame.SearchPanel, id)
-end
-
-function LFGSpamFilter:removeGroupFromFilter(id)
-    if LFGListFrame.SearchPanel.filteredIDs then
-        for i, filteredId in ipairs(LFGListFrame.SearchPanel.filteredIDs) do
-            if filteredId == id then
-                table.remove(LFGListFrame.SearchPanel.filteredIDs, i)
-                break
-            end
-        end
-    end
-end
-
 function LFGSpamFilter:reportGroup(id)
     if LFGSpamFilterAddonConfig.report then
         self.reportingGroup = true
@@ -546,6 +535,11 @@ function LFGSpamFilter:postReportGroup(id, reason)
     if not self.reportingGroup then
         self:banGroup(id)
     end
+end
+
+function LFGSpamFilter:postResultsUpdate()
+    -- hide ban button when results are updated as it may be attached to a different group now
+    LFGSpamFilterBanButton:Hide()
 end
 
 function LFGSpamFilter:blacklistPlayer(normalizedName)

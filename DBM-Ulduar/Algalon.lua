@@ -3,7 +3,7 @@ local L		= mod:GetLocalizedStrings()
 
 mod.statTypes = "normal"
 
-mod:SetRevision("20200912041819")
+mod:SetRevision("20210614230125")
 mod:SetCreatureID(32871)
 mod:SetEncounterID(1130)
 mod:DisableEEKillDetection()--EE always fires wipe
@@ -47,27 +47,28 @@ local timerPhasePunch			= mod:NewTargetTimer(45, 64412, nil, "Tank", 2, 5, nil, 
 local timerNextPhasePunch		= mod:NewNextTimer(15.5, 64412, nil, "Tank", 2, 5, nil, DBM_CORE_L.TANK_ICON)
 local enrageTimer				= mod:NewBerserkTimer(360)
 
-mod:AddInfoFrameOption(64122, true)
+--mod:AddInfoFrameOption(64122, true)--Disabled until post squish health is known. Wowhead is not parsing data correctly
 
 local sentLowHP = {}
 local warnedLowHP = {}
 mod.vb.warned_preP2 = false
 
 function mod:OnCombatStart(delay)
+	self:SetStage(1)
 	self.vb.warned_preP2 = false
 	table.wipe(sentLowHP)
 	table.wipe(warnedLowHP)
-	if self.Options.InfoFrame and not self:IsTrivial(80) then
-		DBM.InfoFrame:SetHeader(L.HealthInfo)
-		DBM.InfoFrame:Show(5, "health", 18000)
-	end
+--	if self.Options.InfoFrame and not self:IsTrivial() then
+--		DBM.InfoFrame:SetHeader(L.HealthInfo)
+--		DBM.InfoFrame:Show(5, "health", 18000)
+--	end
 end
 
-function mod:OnCombatEnd()
-	if self.Options.InfoFrame then
-		DBM.InfoFrame:Hide()
-	end
-end
+--function mod:OnCombatEnd()
+--	if self.Options.InfoFrame then
+--		DBM.InfoFrame:Hide()
+--	end
+--end
 
 function mod:SPELL_CAST_START(args)
 	if args:IsSpellID(64584, 64443) then 	-- Big Bang
@@ -149,6 +150,8 @@ function mod:UNIT_SPELLCAST_SUCCEEDED(uId, _, spellId)
 		timerNextBigBang:Start(90)
 		enrageTimer:Start(360)
 	elseif spellId == 65256 then--Self Stun (phase 2)
+		self:SetStage(2)
+		self.vb.warned_preP2 = true
 		timerNextCollapsingStar:Stop()
 		warnPhase2:Show()
 	end

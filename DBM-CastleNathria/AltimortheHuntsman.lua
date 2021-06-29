@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod(2429, "DBM-CastleNathria", nil, 1190)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20210127002919")
+mod:SetRevision("20210614184808")
 mod:SetCreatureID(165066)
 mod:SetEncounterID(2418)
 mod:SetUsedIcons(1, 2, 3)
@@ -14,15 +14,11 @@ mod:RegisterCombat("combat")
 mod:RegisterEventsInCombat(
 	"SPELL_CAST_START 335114 334404 334971 334797 334757 334852",
 	"SPELL_CAST_SUCCESS 334945 334797",
-	"SPELL_AURA_APPLIED 334971 334860 334945 334852 335111 335112 335113",
+	"SPELL_AURA_APPLIED 334971 334860 334945 334852 335111 335112 335113 334504",
 	"SPELL_AURA_APPLIED_DOSE 334971 334860",
 	"SPELL_AURA_REMOVED 334945 334860 334852 335111 335112 335113",
 	"SPELL_AURA_REMOVED_DOSE 334860",
---	"SPELL_PERIODIC_DAMAGE",
---	"SPELL_PERIODIC_MISSED",
-	"UNIT_DIED",
---	"RAID_BOSS_WHISPER"
-	"UNIT_SPELLCAST_SUCCEEDED boss1"
+	"UNIT_DIED"
 )
 
 --TODO, handling of mythic Sinseeker buffs by detecting which hound buffs it currently has (by using phase probably)
@@ -87,12 +83,9 @@ local timerPetrifyingHowlCD						= mod:NewCDTimer(20.6, 334852, 135241, nil, nil
 --local berserkTimer							= mod:NewBerserkTimer(600)
 
 mod:AddRangeFrameOption("5/6/10")
---mod:AddInfoFrameOption(308377, true)
 mod:AddSetIconOption("SetIconOnSinSeeker", 335114, true, false, {1, 2, 3})--335111 335112 335113
 mod:AddSetIconOption("SetIconOnShades", 334757, true, true, {4, 5})
---mod:AddNamePlateOption("NPAuraOnVolatileCorruption", 312595)
 
-mod.vb.phase = 1
 mod.vb.sinSeekerCount = 0
 mod.vb.activeSeekers = 0
 --NYI, more data needed to substanciate
@@ -168,7 +161,7 @@ end
 
 function mod:OnCombatStart(delay)
 	transitionwindow = 0
-	self.vb.phase = 1
+	self:SetStage(1)
 	self.vb.sinSeekerCount = 0
 	self.vb.activeSeekers = 0
 	playerSinSeeker = false
@@ -177,22 +170,13 @@ function mod:OnCombatStart(delay)
 	--Margore on pull on heroic testing, but can this change?
 	timerJaggedClawsCD:Start(10.1-delay)
 	timerViciousLungeCD:Start(18.1-delay)--SUCCESS of debuff, not Command Margore-335119
---	if self.Options.NPAuraOnVolatileCorruption then
---		DBM:FireEvent("BossMod_EnableHostileNameplates")
---	end
 --	berserkTimer:Start(-delay)--Confirmed normal and heroic
 end
 
 function mod:OnCombatEnd()
---	if self.Options.InfoFrame then
---		DBM.InfoFrame:Hide()
---	end
 	if self.Options.RangeFrame then
 		DBM.RangeCheck:Hide()
 	end
---	if self.Options.NPAuraOnVolatileCorruption then
---		DBM.Nameplate:Hide(true, nil, nil, nil, true, true)
---	end
 end
 
 function mod:SPELL_CAST_START(args)
@@ -201,7 +185,6 @@ function mod:SPELL_CAST_START(args)
 		self.vb.sinSeekerCount = self.vb.sinSeekerCount + 1
 		--Mythic, Dog1: 49, Dog2: 60, Dog3: 50, dogs dead: 39.9
 		--Normal, Dog1: 50-51, Dog2: 60-61, Dog3: 50-51, dogs dead: 24.3
-
 		local timer = self:IsMythic() and (self.vb.phase == 4 and 25 or 60.2) or (self.vb.phase == 4 and 24.3 or 50)--self.vb.phase == 2 and 61.1 or
 		timerSinseekerCD:Start(timer, self.vb.sinSeekerCount+1)
 		if self.vb.phase == 3 and self:IsMythic() then
@@ -313,6 +296,35 @@ function mod:SPELL_AURA_APPLIED(args)
 			yellSinseekerFades:Countdown(spellId, nil, icon)
 		end
 		warnSinseeker:CombinedShow(spellId == 335113 and 0.1 or 2.5, args.destName)
+	elseif spellId == 334504 then
+		local cid = self:GetCIDFromGUID(args.sourceGUID)
+		if cid == 169457 then--Bargast
+			self:SetStage(2)
+			warnPhase:Show(DBM_CORE_L.AUTO_ANNOUNCE_TEXTS.stage:format(2))
+			warnPhase:Play("ptwo")
+			--Start Next Dog
+			--timerSpreadshotCD:Start()--Used instantly
+			timerSinseekerCD:Stop()
+			timerRipSoulCD:Start(10)
+			timerShadesofBargastCD:Start(17.5)
+			timerSinseekerCD:Start(31.8, self.vb.sinSeekerCount+1)
+			transitionwindow = 0
+		elseif cid == 169457 then--Bargast
+			self:SetStage(3)
+			warnPhase:Show(DBM_CORE_L.AUTO_ANNOUNCE_TEXTS.stage:format(3))
+			warnPhase:Play("pthree")
+			--Start Next Dog
+			timerSpreadshotCD:Start(6.3)
+			timerPetrifyingHowlCD:Start(13.9)
+			timerSinseekerCD:Stop()
+			if transitionwindow == 2 then--Cast within transition window
+				--It was cast going into phase change, which causes it to incurr it's full 50 second cd on this event
+				timerSinseekerCD:Start(50, self.vb.sinSeekerCount+1)
+			else
+				timerSinseekerCD:Start(28.3, self.vb.sinSeekerCount+1)--Need fresh transcriptor log to verify this
+			end
+			transitionwindow = 0
+		end
 	end
 end
 mod.SPELL_AURA_APPLIED_DOSE = mod.SPELL_AURA_APPLIED
@@ -367,76 +379,11 @@ function mod:UNIT_DIED(args)
 		timerPetrifyingHowlCD:Stop()
 		timerSpreadshotCD:Stop()
 		--Start Phase 4 stuff because no hunters bond here, still has a small chance to clip sinseeker timer that got off at end of phase 3
-		self.vb.phase = 4
+		self:SetStage(4)
 		warnPhase:Show(DBM_CORE_L.AUTO_ANNOUNCE_TEXTS.stage:format(4))
 		warnPhase:Play("pfour")
 		--New timer starts, except when it doesn't and it just casts 60 seconds after phase 3 version
 		timerSinseekerCD:Stop()
 		timerSinseekerCD:Start(6.2, self.vb.sinSeekerCount+1)
-	end
-end
-
---[[
-function mod:SPELL_PERIODIC_DAMAGE(_, _, _, _, destGUID, _, _, _, spellId, spellName)
-	if spellId == 270290 and destGUID == UnitGUID("player") and self:AntiSpam(2, 2) then
-		specWarnGTFO:Show(spellName)
-		specWarnGTFO:Play("watchfeet")
-	end
-end
-mod.SPELL_PERIODIC_MISSED = mod.SPELL_PERIODIC_DAMAGE
-
---Hacky, but works super well
---Not currently needed though since targetting info in combat log, IF that ever changes, backup method
-function mod:RAID_BOSS_WHISPER(msg)
-	msg = msg:lower()
-	if msg:find("ability_hunter_assassinate2") then
-		specWarnSinseeker:Show()
-		specWarnSinseeker:Play("runout")
-		yellSinseeker:Yell()
-		yellSinseekerFades:Countdown(4)
-	end
-end
-
-function mod:OnTranscriptorSync(msg, targetName)
-	msg = msg:lower()
-	if msg:find("ability_hunter_assassinate2") and targetName then
-		targetName = Ambiguate(targetName, "none")
-		if self:AntiSpam(4, targetName) then
-			warnSinseeker:CombinedShow(0.75, targetName)
-		end
-	end
-end
---]]
-
-function mod:UNIT_SPELLCAST_SUCCEEDED(uId, _, spellId)
-	if spellId == 334504 then--Huntsman's Bond (only boss1 is registered so dog casts SHOULD be ignored)
-		if self:GetUnitCreatureId(uId) == 165066 and self:AntiSpam(3, 1) then--Antispam will break when boss can be beaten by characters really fast 2-3 expansions from now
-			self.vb.phase = self.vb.phase + 1
-			if self.vb.phase == 2 then
-				warnPhase:Show(DBM_CORE_L.AUTO_ANNOUNCE_TEXTS.stage:format(2))
-				warnPhase:Play("ptwo")
-				--Start Next Dog. Move if order changes or is variable
-				--timerSpreadshotCD:Start()--Used instantly
-				timerSinseekerCD:Stop()
-				timerRipSoulCD:Start(10)
-				timerShadesofBargastCD:Start(17.5)
-				timerSinseekerCD:Start(31.8, self.vb.sinSeekerCount+1)
-				transitionwindow = 0
-			elseif self.vb.phase == 3 then
-				warnPhase:Show(DBM_CORE_L.AUTO_ANNOUNCE_TEXTS.stage:format(3))
-				warnPhase:Play("pthree")
-				--Start Next Dog. Move if order changes or is variable
-				timerSpreadshotCD:Start(6.3)
-				timerPetrifyingHowlCD:Start(13.9)
-				timerSinseekerCD:Stop()
-				if transitionwindow == 2 then--Cast within transition window
-					--It was cast going into phase change, which causes it to incurr it's full 50 second cd on this event
-					timerSinseekerCD:Start(50, self.vb.sinSeekerCount+1)
-				else
-					timerSinseekerCD:Start(28.3, self.vb.sinSeekerCount+1)--Need fresh transcriptor log to verify this
-				end
-				transitionwindow = 0
-			end
-		end
 	end
 end

@@ -1,4 +1,6 @@
 select(2, ...).FlightPathDB = {
+	-- Uncomment the global comment and /rl to see which Flight Paths are not properly Sourced (shows up as *NEW*)
+	--[[]]
 	nil, -- [1]
 	{
 		["name"] = "Stormwind, Elwynn",
@@ -47,10 +49,12 @@ select(2, ...).FlightPathDB = {
 	{
 		["name"] = "Refuge Pointe, Arathi",
 		["faction"] = 2,
+		["coord"] = { 39.8, 47.4, 14 },
 	}, -- [16]
 	{
 		["name"] = "Hammerfall, Arathi",
 		["faction"] = 1,
+		["coord"] = { 68.2, 33.4, 14 },
 	}, -- [17]
 	{
 		["name"] = "Booty Bay, Stranglethorn",
@@ -148,7 +152,12 @@ select(2, ...).FlightPathDB = {
 		["name"] = "Bilgewater Harbor, Azshara",
 		["faction"] = 1,
 	}, -- [44]
-	nil, -- [45]
+	{
+		["name"] = "Nethergarde Keep, Blasted Lands",
+		["description"] = "Speak to Zidormi to visit the past to access this point.",
+		["coord"] = { 61.2, 21.6, 17 },
+		["faction"] = 2,
+	}, -- [45]
 	nil, -- [46]
 	nil, -- [47]
 	nil, -- [48]
@@ -186,16 +195,23 @@ select(2, ...).FlightPathDB = {
 		["name"] = "Splintertree Post, Ashenvale",
 		["faction"] = 1,
 	}, -- [61]
+	-- Two druid-only 'flight paths' which come back as flight paths but do not have flight masters nor show up on Flight Master maps so cannot be 'collected'
 	{
-		["u"] = 1,
+		["u"] = 1,	-- NEVER_IMPLEMENTED
 		["name"] = "Nighthaven, Moonglade",
 		["faction"] = 2,
-	}, -- [62]
+		["coord"] = { 44.0, 45.4, 80 },
+		["c"] = { 11, }, -- Druid
+		["description"] = "This is registered as a flight path in the game data, but does not show on any flight maps, and cannot be collected.",
+	},	-- [62]
 	{
-		["u"] = 1,
+		["u"] = 1,	-- NEVER_IMPLEMENTED
 		["name"] = "Nighthaven, Moonglade",
 		["faction"] = 1,
-	}, -- [63]
+		["coord"] = { 44.2, 45.6, 80 },
+		["c"] = { 11, }, -- Druid
+		["description"] = "This is registered as a flight path in the game data, but does not show on any flight maps, and cannot be collected.",
+	},	-- [63]
 	nil, -- [64]
 	{
 		["name"] = "Talonbranch Glade, Felwood",
@@ -227,10 +243,14 @@ select(2, ...).FlightPathDB = {
 	}, -- [71]
 	{
 		["name"] = "Cenarion Hold, Silithus",
+		["description"] = "Speak to Zidormi to visit the past to access this point.",
+		["coord"] = { 52.8, 34.6, 81 },
 		["faction"] = 1,
 	}, -- [72]
 	{
 		["name"] = "Cenarion Hold, Silithus",
+		["description"] = "Speak to Zidormi to visit the past to access this point.",
+		["coord"] = { 54.4, 32.8, 81 },
 		["faction"] = 2,
 	}, -- [73]
 	{
@@ -462,11 +482,6 @@ select(2, ...).FlightPathDB = {
 		["name"] = "Mirkfallon Post, Stonetalon Mountains",
 		["faction"] = 2,
 	},
-	[2162] = {
-		["u"] = 1,
-		["name"] = "Devoted Sanctuary, Vol'dun",
-		["faction"] = 0,
-	},
 	[2164] = {
 		["name"] = "Isle of Fangs, Zuldazar",
 		["faction"] = 1,
@@ -622,48 +637,72 @@ select(2, ...).FlightPathDB = {
 		["name"] = "The Harborage, Swamp of Sorrows",
 		["faction"] = 2,
 	},
+	[601] = {
+		["name"] = "Galen's Fall, Arathi",
+		["coord"] = { 13.4, 34.8, 14 },
+		["faction"] = 1,
+		-- TODO: requires sourceQuests/altQuests as it is not collectible for my main
+	},
+	[602] = {
+		["name"] = "Surwich, Blasted Lands",
+		["description"] = "Speak to Zidormi to visit the past to access this point.",
+		["coord"] = { 47.0, 89.2, 17 },
+		["faction"] = 2,
+	},
+	[603] = {
+		["name"] = "Sunveil Excursion, Blasted Lands",
+		["description"] = "Speak to Zidormi to visit the past to access this point.",
+		["coord"] = { 50.8, 72.8, 17 },
+		["faction"] = 1,
+	},
+	[604] = {
+		["name"] = "Dreadmaul Hold, Blasted Lands",
+		["description"] = "Speak to Zidormi to visit the past to access this point.",
+		["coord"] = { 43.6, 14.2, 17 },
+		["faction"] = 1,
+	},
 	[2398] = {
 		["name"] = "Bleak Redoubt, Maldraxxus",
 	},
 	[2404] = {
-		["faction"] = 1,
-		["name"] = "Newhome",
 		["coord"] = {
 			47.5, -- [1]
 			63.3, -- [2]
 			1355, -- [3]
 		},
+		["name"] = "Newhome",
+		["faction"] = 1,
 	},
 	[2406] = {
-		["faction"] = 2,
-		["name"] = "Elun'alor Temple",
 		["coord"] = {
 			74, -- [1]
 			40, -- [2]
 			1355, -- [3]
 		},
+		["name"] = "Elun'alor Temple",
+		["faction"] = 2,
 	},
 	[151] = {
 		["name"] = "Swamprat Post, Zangarmarsh",
 		["faction"] = 1,
 	},
 	[2410] = {
-		["faction"] = 2,
-		["name"] = "Ashen Strand",
 		["coord"] = {
 			31.8, -- [1]
 			38.1, -- [2]
 			1355, -- [3]
 		},
+		["name"] = "Ashen Strand",
+		["faction"] = 2,
 	},
 	[2412] = {
-		["faction"] = 1,
-		["name"] = "Wreck of the Hungry Riverbeast",
 		["coord"] = {
 			36.1, -- [1]
 			82.3, -- [2]
 			1355, -- [3]
 		},
+		["name"] = "Wreck of the Hungry Riverbeast",
+		["faction"] = 1,
 	},
 	[605] = {
 		["name"] = "Voldrin's Hold, Vashj'ir",
@@ -762,14 +801,14 @@ select(2, ...).FlightPathDB = {
 		["faction"] = 2,
 	},
 	[2482] = {
-		["faction"] = 1,
-		["description"] = "Must complete the zone storyline to unlock this path.",
-		["name"] = "The Tidal Conflux",
 		["coord"] = {
 			51.1, -- [1]
 			23.6, -- [2]
 			1355, -- [3]
 		},
+		["name"] = "The Tidal Conflux",
+		["description"] = "Must complete the zone storyline to unlock this path.",
+		["faction"] = 1,
 	},
 	[622] = {
 		["name"] = "Raven Hill, Duskwood",
@@ -791,10 +830,10 @@ select(2, ...).FlightPathDB = {
 		["name"] = "Halls of Atonement, Revendreth",
 	},
 	[315] = {
+		["name"] = "Acherus: The Ebon Hold",
 		["c"] = {
 			6, -- [1]
 		},
-		["name"] = "Acherus: The Ebon Hold",
 		["faction"] = 0,
 	},
 	[630] = {
@@ -816,10 +855,6 @@ select(2, ...).FlightPathDB = {
 		["name"] = "Dustwind Dig, Badlands",
 		["faction"] = 2,
 	},
-	[2530] = {
-		["name"] = "Dreamsong Fenn, Ardenweald",
-		["u"] = 1,
-	},
 	[634] = {
 		["name"] = "Dragon's Mouth, Badlands",
 		["faction"] = 2,
@@ -834,6 +869,9 @@ select(2, ...).FlightPathDB = {
 	[2544] = {
 		["name"] = "Mistfall Village, Vale of Eternal Blossoms",
 		["faction"] = 0,
+	},
+	[2548] = {
+		["name"] = "Sinfall, Revendreth",
 	},
 	[160] = {
 		["name"] = "Evergrove, Blade's Edge Mountains",
@@ -869,11 +907,12 @@ select(2, ...).FlightPathDB = {
 		["faction"] = 1,
 	},
 	[646] = {
-		["altQuests"] = {
-			27438, -- [1]
-		},
 		["name"] = "Forsaken Forward Command, Gilneas",
 		["faction"] = 1,
+		["altQuests"] = { 27438 }, -- The Great Escape
+		["sourceQuests"] = { 27290 },	-- To Forsaken Forward Command
+		["description"] = "Becomes available during |cFFFFD700To Forsaken Forward Command|r and is no longer available after |cFFFFD700The Great Escape|r.",
+		["coord"] = { 57.2, 17.8, 217 },
 	},
 	[1293] = {
 		["name"] = "Tushui Landing, Timeless Isle",
@@ -1389,10 +1428,14 @@ select(2, ...).FlightPathDB = {
 	},
 	[1537] = {
 		["name"] = "Shattered Landing, Blasted Lands",
+		["description"] = "Must be in the current version of Blasted Lands to access this point.",
+		["coord"] = { 73.0, 48.6, 17 },
 		["faction"] = 1,
 	},
 	[1538] = {
 		["name"] = "Shattered Beachhead, Blasted Lands",
+		["description"] = "Must be in the current version of Blasted Lands to access this point.",
+		["coord"] = { 67.6, 28.0, 17 },
 		["faction"] = 2,
 	},
 	[2053] = {
@@ -1418,11 +1461,6 @@ select(2, ...).FlightPathDB = {
 	[387] = {
 		["name"] = "Honor's Stand, Southern Barrens",
 		["faction"] = 2,
-	},
-	[2071] = {
-		["u"] = 1,
-		["name"] = "Dreadpearl, Zuldazar",
-		["faction"] = 0,
 	},
 	[388] = {
 		["name"] = "Northwatch Hold, Southern Barrens",
@@ -1664,8 +1702,8 @@ select(2, ...).FlightPathDB = {
 		["faction"] = 0,
 	},
 	[2403] = {
-		["description"] = "Must complete the |cFFFFD700On Ghostly Wings|r quest to unlock this path.",
 		["name"] = "Kelya's Grave",
+		["description"] = "Must complete the |cFFFFD700On Ghostly Wings|r quest to unlock this path.",
 		["coord"] = {
 			74.2, -- [1]
 			24.9, -- [2]
@@ -1673,62 +1711,62 @@ select(2, ...).FlightPathDB = {
 		},
 	},
 	[2405] = {
-		["faction"] = 1,
-		["name"] = "Zin'Azshari",
 		["coord"] = {
 			79.5, -- [1]
 			37.9, -- [2]
 			1355, -- [3]
 		},
+		["name"] = "Zin'Azshari",
+		["faction"] = 1,
 	},
 	[2407] = {
-		["faction"] = 2,
-		["name"] = "Utama's Stand",
 		["coord"] = {
 			61.7, -- [1]
 			36.5, -- [2]
 			1355, -- [3]
 		},
+		["name"] = "Utama's Stand",
+		["faction"] = 2,
 	},
 	[2409] = {
-		["faction"] = 2,
-		["name"] = "Wreck of the Old Blanchy",
 		["coord"] = {
 			44.5, -- [1]
 			85.5, -- [2]
 			1355, -- [3]
 		},
+		["name"] = "Wreck of the Old Blanchy",
+		["faction"] = 2,
 	},
 	[2411] = {
-		["faction"] = 1,
-		["name"] = "Ashen Strand",
 		["coord"] = {
 			34.5, -- [1]
 			37.3, -- [2]
 			1355, -- [3]
 		},
+		["name"] = "Ashen Strand",
+		["faction"] = 1,
 	},
 	[1719] = {
 		["name"] = "Thunder Totem, Highmountain",
 		["faction"] = 0,
 	},
 	[2437] = {
-		["faction"] = 1,
-		["name"] = "Ekka's Hideaway",
 		["coord"] = {
 			64, -- [1]
 			51.8, -- [2]
 			1355, -- [3]
 		},
+		["name"] = "Ekka's Hideaway",
+		["faction"] = 1,
 	},
 	[2441] = {
-		["faction"] = 1,
-		["name"] = "Prospectus Bay, Mechagon",
 		["coord"] = {
 			73.5, -- [1]
 			25.8, -- [2]
 			1462, -- [3]
 		},
+		["name"] = "Prospectus Bay, Mechagon",
+		["faction"] = 1,
 	},
 	[1738] = {
 		["name"] = "Cullen's Post, Stormheim",
@@ -1783,10 +1821,10 @@ select(2, ...).FlightPathDB = {
 		["faction"] = 0,
 	},
 	[1760] = {
-		["name"] = "Trueshot Lodge, Highmountain",
 		["c"] = {
 			3, -- [1]
 		},
+		["name"] = "Trueshot Lodge, Highmountain",
 		["faction"] = 0,
 	},
 	[1761] = {
@@ -1849,10 +1887,6 @@ select(2, ...).FlightPathDB = {
 	[2561] = {
 		["name"] = "Renounced Bastille, Maldraxxus",
 	},
-	[2565] = {
-		["name"] = "Starlit Overlook, Ardenweald",
-		["u"] = 1,
-	},
 	[2569] = {
 		["name"] = "Plague Watch, Maldraxxus",
 	},
@@ -1867,10 +1901,10 @@ select(2, ...).FlightPathDB = {
 		["name"] = "Claw's Edge, Ardenweald",
 	},
 	[1815] = {
-		["name"] = "The Dreamgrove, Val'sharah",
 		["c"] = {
 			11, -- [1]
 		},
+		["name"] = "The Dreamgrove, Val'sharah",
 		["faction"] = 0,
 	},
 	[456] = {
@@ -1937,13 +1971,6 @@ select(2, ...).FlightPathDB = {
 			3, -- [1]
 		},
 	},
-	[1849] = {
-		["u"] = 1,
-		["name"] = "Dalaran",
-		["c"] = {
-			3, -- [1]
-		},
-	},
 	[1850] = {
 		["name"] = "Eastern Highmountain",
 		["c"] = {
@@ -1979,11 +2006,14 @@ select(2, ...).FlightPathDB = {
 		["faction"] = 0,
 	},
 	[1862] = {
+		["name"] = "Acherus: The Ebon Hold",
 		["c"] = {
 			6, -- [1]
 		},
-		["name"] = "Acherus: The Ebon Hold",
 		["faction"] = 0,
+		["sourceQuests"] = {
+			39017,	-- HQT representing if the player has completed any of their artifacts (assumed)
+		},
 	},
 	[1863] = {
 		["name"] = "Hafr Fjall, Stormheim",
@@ -2017,41 +2047,31 @@ select(2, ...).FlightPathDB = {
 		["name"] = "Telaar, Nagrand",
 		["faction"] = 2,
 	},
-	[1054] = {
-		["name"] = "Gao-Ran Battlefront, Townlong Steppes",
-		["faction"] = 0,
+	[2488] = {
+		["name"] = "Darkhaven, Revendreth",
 	},
-	[525] = {
-		["name"] = "Legion's Rest, Vashj'ir",
-		["faction"] = 1,
+	[2514] = {
+		["name"] = "Pridefall Hamlet, Revendreth",
 	},
-	[1018] = {
-		["name"] = "Temple of the White Tiger, Kun-Lai Summit",
-		["faction"] = 0,
+	[2035] = {
+		["name"] = "Fletcher's Hollow, Drustvar",
+		["faction"] = 2,
 	},
 	[2528] = {
 		["name"] = "Elysian Hold, Bastion",
 	},
-	[1017] = {
-		["name"] = "Binan Village, Kun-Lai Summit",
-		["faction"] = 0,
-	},
-	[663] = {
-		["name"] = "Victor's Point, Twilight Highlands",
+	[2033] = {
+		["name"] = "Fallhaven, Drustvar",
 		["faction"] = 2,
 	},
-	[1572] = {
-		["name"] = "Rilzit's Holdfast, Nagrand",
-		["faction"] = 0,
+	[2586] = {
+		["name"] = "Hibernal Hollow, Ardenweald",
 	},
-	[1057] = {
-		["name"] = "Shrine of Seven Stars, Vale of Eternal Blossoms",
-		["faction"] = 2,
+	[2585] = {
+		["name"] = "Tirna Vaal, Ardenweald",
 	},
-	[2059] = {
-		["u"] = 1,
-		["name"] = "Southwind Village, Silithus",
-		["faction"] = 1,
+	[2584] = {
+		["name"] = "Glitterfall Basin, Ardenweald",
 	},
 	[2529] = {
 		["name"] = "Hero's Rest, Bastion",
@@ -2060,79 +2080,79 @@ select(2, ...).FlightPathDB = {
 		["name"] = "Fuselight, Badlands",
 		["faction"] = 0,
 	},
-	[537] = {
-		["name"] = "Razor Hill, Durotar",
-		["faction"] = 1,
+	[2520] = {
+		["name"] = "Sagehaven, Bastion",
 	},
-	[1567] = {
-		["u"] = 1,
-		["name"] = "Temple of Karabor, Shadowmoon Valley",
-		["faction"] = 2,
+	[1053] = {
+		["name"] = "Longying Outpost, Townlong Steppes",
+		["faction"] = 0,
 	},
 	[120] = {
 		["name"] = "Garadar, Nagrand",
 		["faction"] = 1,
 	},
-	[1539] = {
-		["name"] = "Skysea Ridge, Gorgrond",
-		["faction"] = 0,
+	[2483] = {
+		["coord"] = {
+			49.8, -- [1]
+			23.6, -- [2]
+			1355, -- [3]
+		},
+		["name"] = "The Tidal Conflux",
+		["description"] = "Must complete the zone storyline to unlock this path.",
+		["faction"] = 2,
 	},
 	[1019] = {
 		["name"] = "Eastwind Rest, Kun-Lai Summit",
 		["faction"] = 1,
 	},
-	[1221] = {
-		["name"] = "Beeble's Wreck, Isle Of Giants",
+	[2037] = {
+		["name"] = "Barbthorn Ridge, Drustvar",
 		["faction"] = 2,
 	},
 	[1023] = {
 		["name"] = "Kota Basecamp, Kun-Lai Summit",
 		["faction"] = 0,
 	},
-	[522] = {
-		["name"] = "Silver Tide Hollow, Vashj'ir",
+	[460] = {
+		["name"] = "Brill, Tirisfal Glades",
+		["faction"] = 1,
+	},
+	[1071] = {
+		["name"] = "Soggy's Gamble, Dread Wastes",
 		["faction"] = 0,
 	},
-	[1055] = {
-		["name"] = "Rensai's Watchpost, Townlong Steppes",
-		["faction"] = 0,
-	},
-	[991] = {
-		["name"] = "Sentinel Basecamp, Krasarang Wilds",
-		["faction"] = 2,
-	},
-	[1442] = {
-		["name"] = "Beastwatch, Gorgrond",
+	[667] = {
+		["name"] = "Ruins of Southshore, Hillsbrad",
 		["faction"] = 1,
 	},
-	[1058] = {
-		["name"] = "Shrine of Two Moons, Vale of Eternal Blossoms",
+	[2045] = {
+		["name"] = "Garden of the Loa, Zuldazar",
 		["faction"] = 1,
 	},
-	[536] = {
-		["name"] = "Sen'jin Village, Durotar",
-		["faction"] = 1,
-	},
-	[245] = {
-		["name"] = "Valiance Keep, Borean Tundra",
+	[2056] = {
+		["name"] = "Fallhaven, Drustvar",
 		["faction"] = 2,
 	},
-	[1294] = {
-		["name"] = "Huojin Landing, Timeless Isle",
-		["faction"] = 1,
-	},
-	[2012] = {
-		["name"] = "Xibala, Zuldazar",
-		["faction"] = 2,
-	},
-	[2408] = {
-		["faction"] = 2,
-		["name"] = "Mezzamere",
+	[2442] = {
 		["coord"] = {
-			39.9, -- [1]
-			54.1, -- [2]
-			1355, -- [3]
+			77.8, -- [1]
+			40.9, -- [2]
+			1462, -- [3]
 		},
+		["name"] = "Overspark Expedition Camp, Mechagon",
+		["faction"] = 2,
+	},
+	[1462] = {
+		["name"] = "Terokkar Refuge, Talador",
+		["faction"] = 0,
+	},
+	[126] = {
+		["name"] = "Thunderlord Stronghold, Blade's Edge Mountains",
+		["faction"] = 1,
+	},
+	[2074] = {
+		["name"] = "Bridgeport, Tiragarde Sound",
+		["faction"] = 2,
 	},
 	[966] = {
 		["name"] = "Paw'Don Village, Jade Forest",
@@ -2146,33 +2166,33 @@ select(2, ...).FlightPathDB = {
 		["name"] = "The Arboretum, Jade Forest",
 		["faction"] = 0,
 	},
-	[1462] = {
-		["name"] = "Terokkar Refuge, Talador",
+	[2075] = {
+		["name"] = "Seeker's Outpost, Zuldazar",
 		["faction"] = 0,
 	},
 	[968] = {
 		["name"] = "Jade Temple Grounds, Jade Forest",
 		["faction"] = 0,
 	},
-	[2083] = {
-		["name"] = "Tradewinds Market, Tiragarde Sound",
-		["faction"] = 2,
+	[1195] = {
+		["name"] = "Domination Point, Krasarang Wilds",
+		["faction"] = 1,
 	},
 	[969] = {
 		["name"] = "Sri-La Village, Jade Forest",
 		["faction"] = 0,
 	},
-	[246] = {
-		["name"] = "Fizzcrank Airstrip, Borean Tundra",
+	[2087] = {
+		["name"] = "Outrigger Post, Tiragarde Sound",
 		["faction"] = 2,
 	},
 	[970] = {
 		["name"] = "Emperor's Omen, Jade Forest",
 		["faction"] = 0,
 	},
-	[1222] = {
-		["name"] = "Bozzle's Wreck, Isle Of Giants",
-		["faction"] = 1,
+	[2089] = {
+		["name"] = "Seekers Vista, Stormsong Valley",
+		["faction"] = 0,
 	},
 	[971] = {
 		["name"] = "Tian Monastery, Jade Forest",
@@ -2186,20 +2206,20 @@ select(2, ...).FlightPathDB = {
 		["name"] = "Pearlfin Village, Jade Forest",
 		["faction"] = 2,
 	},
-	[1195] = {
-		["name"] = "Domination Point, Krasarang Wilds",
+	[2091] = {
+		["name"] = "Stonetusk Watch, Stormsong Valley",
 		["faction"] = 1,
 	},
 	[973] = {
 		["name"] = "Honeydew Village, Jade Forest",
 		["faction"] = 1,
 	},
-	[2093] = {
-		["name"] = "Ironmaul Overlook, Stormsong Valley",
+	[248] = {
+		["name"] = "Apothecary Camp, Howling Fjord",
 		["faction"] = 1,
 	},
-	[247] = {
-		["name"] = "Stars' Rest, Dragonblight",
+	[2110] = {
+		["name"] = "Shatterstone Harbor, Vol'dun",
 		["faction"] = 2,
 	},
 	[122] = {
@@ -2210,17 +2230,17 @@ select(2, ...).FlightPathDB = {
 		["name"] = "Wintergarde Keep, Dragonblight",
 		["faction"] = 2,
 	},
-	[1454] = {
-		["name"] = "Exarch's Refuge, Talador",
+	[2092] = {
+		["name"] = "Diretusk Hollow, Stormsong Valley",
 		["faction"] = 1,
 	},
-	[1941] = {
-		["name"] = "Deliverance Point, Broken Shore",
+	[2102] = {
+		["name"] = "Roughneck Camp, Tiragarde Sound",
+		["faction"] = 2,
+	},
+	[2120] = {
+		["name"] = "Tortaka Refuge, Vol'dun",
 		["faction"] = 0,
-	},
-	[248] = {
-		["name"] = "Apothecary Camp, Howling Fjord",
-		["faction"] = 1,
 	},
 	[1953] = {
 		["name"] = "Zul'jan, Nazmir",
@@ -2238,41 +2258,41 @@ select(2, ...).FlightPathDB = {
 		["name"] = "Forlorn Ruins, Nazmir",
 		["faction"] = 1,
 	},
-	[1957] = {
-		["name"] = "Port of Zandalar, Zuldazar",
-		["faction"] = 1,
+	[245] = {
+		["name"] = "Valiance Keep, Borean Tundra",
+		["faction"] = 2,
 	},
-	[2092] = {
-		["name"] = "Diretusk Hollow, Stormsong Valley",
-		["faction"] = 1,
+	[599] = {
+		["name"] = "Bogpaddle, Swamp of Sorrows",
+		["faction"] = 0,
 	},
 	[1959] = {
 		["name"] = "The Great Seal",
 		["faction"] = 1,
 	},
-	[521] = {
-		["name"] = "Smuggler's Scar, Vashj'ir",
+	[1580] = {
+		["name"] = "Everbloom Overlook, Gorgrond",
 		["faction"] = 0,
 	},
-	[2111] = {
-		["name"] = "Vorrik's Sanctum, Vol'dun",
+	[2135] = {
+		["name"] = "Krazzlefrazz Outpost, Drustvar",
 		["faction"] = 1,
 	},
-	[2138] = {
-		["name"] = "Fort Daelin, Stormsong Valley",
-		["faction"] = 2,
+	[1029] = {
+		["name"] = "Tavern in the Mists, The Veiled Stair",
+		["faction"] = 0,
 	},
-	[1450] = {
-		["name"] = "Shattrath City, Talador",
+	[513] = {
+		["name"] = "Fizzle & Pozzik's Speedbarge, Thousand Needles",
 		["faction"] = 0,
 	},
 	[123] = {
 		["name"] = "Shadowmoon Village, Shadowmoon Valley",
 		["faction"] = 1,
 	},
-	[1965] = {
-		["name"] = "Nesingwary's Gameland, Zuldazar",
-		["faction"] = 0,
+	[246] = {
+		["name"] = "Fizzcrank Airstrip, Borean Tundra",
+		["faction"] = 2,
 	},
 	[1966] = {
 		["name"] = "Warbeast Kraal, Zuldazar",
@@ -2282,29 +2302,41 @@ select(2, ...).FlightPathDB = {
 		["name"] = "Pang's Stead, Valley of the Four Winds",
 		["faction"] = 0,
 	},
-	[1029] = {
-		["name"] = "Tavern in the Mists, The Veiled Stair",
-		["faction"] = 0,
+	[2144] = {
+		["name"] = "Goldtusk Inn, Vol'dun",
+		["faction"] = 1,
 	},
 	[985] = {
 		["name"] = "Halfhill, Valley of the Four Winds",
 		["faction"] = 0,
 	},
-	[513] = {
-		["name"] = "Fizzle & Pozzik's Speedbarge, Thousand Needles",
-		["faction"] = 0,
+	[555] = {
+		["name"] = "Farstrider Lodge, Loch Modan",
+		["faction"] = 2,
 	},
 	[986] = {
 		["name"] = "Zhu's Watch, Krasarang Wilds",
 		["faction"] = 0,
 	},
-	[2097] = {
-		["name"] = "Deadwash, Stormsong Valley",
-		["faction"] = 2,
+	[1928] = {
+		["name"] = "Krokul Hovel, Krokuun",
+		["faction"] = 0,
 	},
-	[987] = {
-		["name"] = "Thunder Cleft, Krasarang Wilds",
+	[1967] = {
+		["name"] = "Shattered Fields, Krokuun",
+		["faction"] = 0,
+	},
+	[1975] = {
+		["name"] = "Zeb'ahari, Zuldazar",
 		["faction"] = 1,
+	},
+	[1976] = {
+		["name"] = "Destiny Point, Krokuun",
+		["faction"] = 0,
+	},
+	[247] = {
+		["name"] = "Stars' Rest, Dragonblight",
+		["faction"] = 2,
 	},
 	[1974] = {
 		["name"] = "Xibala, Zuldazar",
@@ -2314,9 +2346,9 @@ select(2, ...).FlightPathDB = {
 		["name"] = "The Incursion, Krasarang Wilds",
 		["faction"] = 2,
 	},
-	[2067] = {
-		["name"] = "Timberfell Outpost, Tiragarde Sound",
-		["faction"] = 1,
+	[1115] = {
+		["name"] = "The Lion's Redoubt, Dread Wastes",
+		["faction"] = 2,
 	},
 	[989] = {
 		["name"] = "Stoneplow, Valley of the Four Winds",
@@ -2334,12 +2366,24 @@ select(2, ...).FlightPathDB = {
 		["name"] = "Wildhammer Stronghold, Shadowmoon Valley",
 		["faction"] = 2,
 	},
-	[1981] = {
-		["name"] = "Shadowguard Incursion, Mac'Aree",
-		["faction"] = 0,
+	[991] = {
+		["name"] = "Sentinel Basecamp, Krasarang Wilds",
+		["faction"] = 2,
 	},
 	[1982] = {
 		["name"] = "Triumvirate's End, Mac'Aree",
+		["faction"] = 0,
+	},
+	[1988] = {
+		["name"] = "Hope's Landing, Antoran Wastes",
+		["faction"] = 0,
+	},
+	[1992] = {
+		["name"] = "Light's Purchase, Antoran Wastes",
+		["faction"] = 0,
+	},
+	[1993] = {
+		["name"] = "The Veiled Den, Antoran Wastes",
 		["faction"] = 0,
 	},
 	[992] = {
@@ -2354,9 +2398,9 @@ select(2, ...).FlightPathDB = {
 		["name"] = "Marista, Krasarang Wilds",
 		["faction"] = 0,
 	},
-	[651] = {
-		["name"] = "The Menders' Stead, Western Plaguelands",
-		["faction"] = 0,
+	[1117] = {
+		["name"] = "Serpent's Spine, Kun-Lai Summit",
+		["faction"] = 1,
 	},
 	[1388] = {
 		["name"] = "Throm'Var, Frostfire Ridge",
@@ -2370,29 +2414,29 @@ select(2, ...).FlightPathDB = {
 		["name"] = "Camp Oneqwah, Grizzly Hills",
 		["faction"] = 1,
 	},
-	[1117] = {
-		["name"] = "Serpent's Spine, Kun-Lai Summit",
-		["faction"] = 1,
+	[651] = {
+		["name"] = "The Menders' Stead, Western Plaguelands",
+		["faction"] = 0,
 	},
 	[1991] = {
 		["name"] = "Prophet's Reflection, Mac'Aree",
 		["faction"] = 0,
 	},
-	[1115] = {
-		["name"] = "The Lion's Redoubt, Dread Wastes",
-		["faction"] = 2,
+	[1981] = {
+		["name"] = "Shadowguard Incursion, Mac'Aree",
+		["faction"] = 0,
 	},
-	[1975] = {
-		["name"] = "Zeb'ahari, Zuldazar",
+	[2067] = {
+		["name"] = "Timberfell Outpost, Tiragarde Sound",
 		["faction"] = 1,
 	},
-	[555] = {
-		["name"] = "Farstrider Lodge, Loch Modan",
-		["faction"] = 2,
-	},
-	[2144] = {
-		["name"] = "Goldtusk Inn, Vol'dun",
+	[987] = {
+		["name"] = "Thunder Cleft, Krasarang Wilds",
 		["faction"] = 1,
+	},
+	[2097] = {
+		["name"] = "Deadwash, Stormsong Valley",
+		["faction"] = 2,
 	},
 	[125] = {
 		["name"] = "Sylvanaar, Blade's Edge Mountains",
@@ -2402,132 +2446,122 @@ select(2, ...).FlightPathDB = {
 		["name"] = "Conquest Hold, Grizzly Hills",
 		["faction"] = 1,
 	},
-	[2135] = {
-		["name"] = "Krazzlefrazz Outpost, Drustvar",
+	[1965] = {
+		["name"] = "Nesingwary's Gameland, Zuldazar",
+		["faction"] = 0,
+	},
+	[1450] = {
+		["name"] = "Shattrath City, Talador",
+		["faction"] = 0,
+	},
+	[2138] = {
+		["name"] = "Fort Daelin, Stormsong Valley",
+		["faction"] = 2,
+	},
+	[2111] = {
+		["name"] = "Vorrik's Sanctum, Vol'dun",
 		["faction"] = 1,
 	},
-	[1580] = {
-		["name"] = "Everbloom Overlook, Gorgrond",
+	[521] = {
+		["name"] = "Smuggler's Scar, Vashj'ir",
 		["faction"] = 0,
-	},
-	[599] = {
-		["name"] = "Bogpaddle, Swamp of Sorrows",
-		["faction"] = 0,
-	},
-	[2120] = {
-		["name"] = "Tortaka Refuge, Vol'dun",
-		["faction"] = 0,
-	},
-	[2102] = {
-		["name"] = "Roughneck Camp, Tiragarde Sound",
-		["faction"] = 2,
 	},
 	[2003] = {
 		["name"] = "City Center, Mac'Aree",
 		["faction"] = 0,
 	},
-	[2110] = {
-		["name"] = "Shatterstone Harbor, Vol'dun",
-		["faction"] = 2,
+	[1957] = {
+		["name"] = "Port of Zandalar, Zuldazar",
+		["faction"] = 1,
 	},
 	[251] = {
 		["name"] = "Fordragon Hold, Dragonblight",
 		["faction"] = 2,
 	},
-	[2091] = {
-		["name"] = "Stonetusk Watch, Stormsong Valley",
-		["faction"] = 1,
-	},
-	[2089] = {
-		["name"] = "Seekers Vista, Stormsong Valley",
+	[1941] = {
+		["name"] = "Deliverance Point, Broken Shore",
 		["faction"] = 0,
 	},
-	[2087] = {
-		["name"] = "Outrigger Post, Tiragarde Sound",
-		["faction"] = 2,
+	[1454] = {
+		["name"] = "Exarch's Refuge, Talador",
+		["faction"] = 1,
+	},
+	[2093] = {
+		["name"] = "Ironmaul Overlook, Stormsong Valley",
+		["faction"] = 1,
 	},
 	[2009] = {
 		["name"] = "Warport Rastari, Zuldazar",
 		["faction"] = 1,
 	},
-	[2075] = {
-		["name"] = "Seeker's Outpost, Zuldazar",
-		["faction"] = 0,
+	[1222] = {
+		["name"] = "Bozzle's Wreck, Isle Of Giants",
+		["faction"] = 1,
 	},
-	[2074] = {
-		["name"] = "Bridgeport, Tiragarde Sound",
+	[2083] = {
+		["name"] = "Tradewinds Market, Tiragarde Sound",
 		["faction"] = 2,
 	},
-	[126] = {
-		["name"] = "Thunderlord Stronghold, Blade's Edge Mountains",
-		["faction"] = 1,
+	[2012] = {
+		["name"] = "Xibala, Zuldazar",
+		["faction"] = 2,
 	},
 	[252] = {
 		["name"] = "Wyrmrest Temple, Dragonblight",
 		["faction"] = 0,
 	},
-	[2442] = {
-		["faction"] = 2,
-		["name"] = "Overspark Expedition Camp, Mechagon",
+	[2408] = {
 		["coord"] = {
-			77.8, -- [1]
-			40.9, -- [2]
-			1462, -- [3]
+			39.9, -- [1]
+			54.1, -- [2]
+			1355, -- [3]
 		},
-	},
-	[2066] = {
-		["u"] = 1,
-		["name"] = "Atal'Gral, Zuldazar",
-		["faction"] = 0,
-	},
-	[2056] = {
-		["name"] = "Fallhaven, Drustvar",
+		["name"] = "Mezzamere",
 		["faction"] = 2,
 	},
-	[2045] = {
-		["name"] = "Garden of the Loa, Zuldazar",
+	[1294] = {
+		["name"] = "Huojin Landing, Timeless Isle",
 		["faction"] = 1,
 	},
-	[667] = {
-		["name"] = "Ruins of Southshore, Hillsbrad",
+	[536] = {
+		["name"] = "Sen'jin Village, Durotar",
 		["faction"] = 1,
 	},
-	[1071] = {
-		["name"] = "Soggy's Gamble, Dread Wastes",
+	[1058] = {
+		["name"] = "Shrine of Two Moons, Vale of Eternal Blossoms",
+		["faction"] = 1,
+	},
+	[1442] = {
+		["name"] = "Beastwatch, Gorgrond",
+		["faction"] = 1,
+	},
+	[1055] = {
+		["name"] = "Rensai's Watchpost, Townlong Steppes",
 		["faction"] = 0,
 	},
-	[460] = {
-		["name"] = "Brill, Tirisfal Glades",
-		["faction"] = 1,
+	[522] = {
+		["name"] = "Silver Tide Hollow, Vashj'ir",
+		["faction"] = 0,
 	},
 	[253] = {
 		["name"] = "Amberpine Lodge, Grizzly Hills",
 		["faction"] = 2,
 	},
-	[2037] = {
-		["name"] = "Barbthorn Ridge, Drustvar",
+	[1221] = {
+		["name"] = "Beeble's Wreck, Isle Of Giants",
 		["faction"] = 2,
 	},
 	[2023] = {
 		["name"] = "Freehold, Tiragarde Sound",
 		["faction"] = 0,
 	},
-	[2483] = {
-		["faction"] = 2,
-		["description"] = "Must complete the zone storyline to unlock this path.",
-		["name"] = "The Tidal Conflux",
-		["coord"] = {
-			49.8, -- [1]
-			23.6, -- [2]
-			1355, -- [3]
-		},
-	},
-	[1053] = {
-		["name"] = "Longying Outpost, Townlong Steppes",
+	[1539] = {
+		["name"] = "Skysea Ridge, Gorgrond",
 		["faction"] = 0,
 	},
-	[2520] = {
-		["name"] = "Sagehaven, Bastion",
+	[537] = {
+		["name"] = "Razor Hill, Durotar",
+		["faction"] = 1,
 	},
 	[2027] = {
 		["name"] = "Temple of the Prophet, Zuldazar",
@@ -2541,31 +2575,122 @@ select(2, ...).FlightPathDB = {
 		["name"] = "Venomspite, Dragonblight",
 		["faction"] = 1,
 	},
-	[2584] = {
-		["name"] = "Glitterfall Basin, Ardenweald",
-	},
-	[2585] = {
-		["name"] = "Tirna Vaal, Ardenweald",
-	},
-	[2586] = {
-		["name"] = "Hibernal Hollow, Ardenweald",
-	},
-	[2033] = {
-		["name"] = "Fallhaven, Drustvar",
+	[1057] = {
+		["name"] = "Shrine of Seven Stars, Vale of Eternal Blossoms",
 		["faction"] = 2,
+	},
+	[1572] = {
+		["name"] = "Rilzit's Holdfast, Nagrand",
+		["faction"] = 0,
+	},
+	[663] = {
+		["name"] = "Victor's Point, Twilight Highlands",
+		["faction"] = 2,
+	},
+	[1017] = {
+		["name"] = "Binan Village, Kun-Lai Summit",
+		["faction"] = 0,
 	},
 	[2034] = {
 		["name"] = "Hangman's Point, Drustvar",
 		["faction"] = 2,
 	},
-	[2035] = {
-		["name"] = "Fletcher's Hollow, Drustvar",
+	[1018] = {
+		["name"] = "Temple of the White Tiger, Kun-Lai Summit",
+		["faction"] = 0,
+	},
+	[525] = {
+		["name"] = "Legion's Rest, Vashj'ir",
+		["faction"] = 1,
+	},
+	[1054] = {
+		["name"] = "Gao-Ran Battlefront, Townlong Steppes",
+		["faction"] = 0,
+	},
+	-- Kyrian Travel Network Nodes
+	[2626] = {
+		["name"] = "Hero's Rest, Bastion",
+	},
+	[2630] = {
+		["name"] = "Aspirant's Rest, Bastion",
+	},
+	[2625] = {
+		["name"] = "Elysian Hold, Bastion",
+	},
+	[2631] = {
+		["name"] = "Xandaria's Vigil, Bastion",
+	},
+	[2634] = {
+		["name"] = "Seat of Eternal Hymns, Bastion",
+	},
+	[2633] = {
+		["name"] = "Temple of Purity, Bastion",
+	},
+	[2632] = {
+		["name"] = "Sagehaven, Bastion",
+	},
+	[2636] = {
+		["name"] = "Terrace of the Collectors, Bastion",
+	},
+	[2635] = {
+		["name"] = "Temple of Humility, Bastion",
+	},
+	--]]
+
+	-- Never Implemented Flight Paths (in-game data says they exist but also that's a lie)
+	[1567] = {
+		["u"] = 1,	-- NEVER_IMPLEMENTED
+		["name"] = "Temple of Karabor, Shadowmoon Valley",
 		["faction"] = 2,
 	},
-	[2514] = {
-		["name"] = "Pridefall Hamlet, Revendreth",
+	[1849] = {
+		["u"] = 1,	-- NEVER_IMPLEMENTED
+		["name"] = "Dalaran",
+		["c"] = { 3, }, -- Hunter
 	},
-	[2488] = {
-		["name"] = "Darkhaven, Revendreth",
+	[2059] = {
+		["u"] = 1,	-- NEVER_IMPLEMENTED
+		["name"] = "Southwind Village, Silithus",
+		["faction"] = 1,
+	},
+	[2066] = {
+		["u"] = 1,	-- NEVER_IMPLEMENTED
+		["name"] = "Atal'Gral, Zuldazar",
+		["faction"] = 0,
+	},
+	[2071] = {
+		["u"] = 1,	-- NEVER_IMPLEMENTED
+		["name"] = "Dreadpearl, Zuldazar",
+		["faction"] = 0,
+	},
+	[2162] = {
+		["u"] = 1,	-- NEVER_IMPLEMENTED
+		["name"] = "Devoted Sanctuary, Vol'dun",
+		["faction"] = 0,
+	},
+	[2401] = {
+		["name"] = "Alliance Outpost, Exile's Reach Outpost",
+		["faction"] = 2,
+		["u"] = 1,	-- NEVER_IMPLEMENTED
+		-- TODO: likely requires customCollect/sourceQuests/altQuests?
+	},
+	[2402] = {
+		["name"] = "Ogre Citadel, Exile's Reach Island",
+		["faction"] = 2,
+		["u"] = 1,	-- NEVER_IMPLEMENTED
+		-- TODO: likely requires customCollect/sourceQuests/altQuests?
+	},
+	[2530] = {
+		["name"] = "Dreamsong Fenn, Ardenweald",
+		["u"] = 1,	-- NEVER_IMPLEMENTED
+	},
+	[2555] = {
+		["name"] = "The Maw",
+		["faction"] = 0,
+		["u"] = 1,	-- NEVER_IMPLEMENTED
+	},
+	[2565] = {
+		["name"] = "Starlit Overlook, Ardenweald",
+		["u"] = 1,	-- NEVER_IMPLEMENTED
 	},
 };

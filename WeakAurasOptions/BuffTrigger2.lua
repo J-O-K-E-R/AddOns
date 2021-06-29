@@ -107,17 +107,17 @@ local function CreateNameOptions(aura_options, data, trigger, size, isExactSpell
       type = "execute",
       width = 0.2,
       order = baseOrder + i / 100 + 0.0002,
-      hidden = hiddenFunction
+      hidden = hiddenFunction,
+      control = "WeakAurasIcon"
     }
 
     if isExactSpellId then
-      aura_options[iconOption].name = ""
-      aura_options[iconOption].desc = function()
-        local name = GetSpellInfo(trigger[optionKey] and trigger[optionKey][i])
+      aura_options[iconOption].name = function()
+        local name = GetSpellInfo(WeakAuras.SafeToNumber(trigger[optionKey] and trigger[optionKey][i]))
         return name
       end
       aura_options[iconOption].image = function()
-        local icon = select(3, GetSpellInfo(trigger.auraspellids and trigger.auraspellids[i]))
+        local icon = select(3, GetSpellInfo(trigger[optionKey] and trigger[optionKey][i]))
         return icon and tostring(icon) or "", 18, 18
       end
       aura_options[iconOption].disabled = function()
@@ -740,10 +740,38 @@ local function GetBuffTriggerOptions(data, triggernum)
       width = WeakAuras.normalWidth,
       hidden = function() return not (trigger.type == "aura2" and (trigger.unit == "group" or trigger.unit == "raid" or trigger.unit == "party") and not trigger.useRaidRole) end
     },
+    useArenaSpec = {
+      type = "toggle",
+      width = WeakAuras.normalWidth,
+      name = WeakAuras.newFeatureString .. L["Filter by Arena Spec"],
+      order = 67.3,
+      hidden = function() return
+        not (WeakAuras.IsRetail() and trigger.type == "aura2" and trigger.unit == "arena")
+      end
+    },
+    arena_spec = {
+      type = "multiselect",
+      width = WeakAuras.normalWidth,
+      name = L["Specialization"],
+      values = OptionsPrivate.Private.spec_types_all,
+      hidden = function()
+        return not (WeakAuras.IsRetail() and trigger.type == "aura2" and trigger.unit == "arena" and trigger.useArenaSpec)
+      end,
+      order = 67.4
+    },
+    arena_specSpace = {
+      type = "description",
+      name = "",
+      order = 67.4,
+      width = WeakAuras.normalWidth,
+      hidden = function()
+        return not (WeakAuras.IsRetail() and trigger.type == "aura2" and trigger.unit == "arena" and not trigger.useArenaSpec)
+      end,
+    },
     ignoreSelf = {
       type = "toggle",
       name = L["Ignore Self"],
-      order = 67.3,
+      order = 67.5,
       width = WeakAuras.doubleWidth,
       hidden = function() return not (trigger.type == "aura2" and (trigger.unit == "group" or trigger.unit == "raid" or trigger.unit == "party" or trigger.unit == "nameplate")) end
     },

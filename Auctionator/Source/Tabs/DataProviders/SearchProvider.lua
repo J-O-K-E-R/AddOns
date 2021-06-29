@@ -27,7 +27,7 @@ local SEARCH_PROVIDER_LAYOUT = {
     headerText = AUCTIONATOR_L_ITEM_LEVEL_COLUMN,
     headerParameters = { "level" },
     cellTemplate = "AuctionatorStringCellTemplate",
-    cellParameters = { "level" },
+    cellParameters = { "levelPretty" },
   },
   {
     headerTemplate = "AuctionatorStringColumnHeaderTemplate",
@@ -84,10 +84,12 @@ function AuctionatorSearchDataProviderMixin:OnHide()
   })
 end
 
-function AuctionatorSearchDataProviderMixin:ReceiveEvent(eventName)
+function AuctionatorSearchDataProviderMixin:ReceiveEvent(eventName, itemKey)
   if eventName == Auctionator.Selling.Events.SellSearchStart then
     self:Reset()
     self.onSearchStarted()
+    -- Used to prevent a sale causing the view to sometimes change to another item
+    self.expectedItemKey = itemKey
   elseif eventName == Auctionator.Selling.Events.BagItemClicked then
     self.onResetScroll()
   elseif eventName == Auctionator.Cancelling.Events.RequestCancel then
@@ -128,23 +130,23 @@ function AuctionatorSearchDataProviderMixin:Sort(fieldName, sortDirection)
 end
 
 function AuctionatorSearchDataProviderMixin:OnEvent(eventName, itemRef, auctionID)
-  if eventName == "COMMODITY_SEARCH_RESULTS_UPDATED" then
+  if eventName == "COMMODITY_SEARCH_RESULTS_UPDATED" and self.expectedItemKey.itemID == itemRef then
     self:Reset()
     self:AppendEntries(self:ProcessCommodityResults(itemRef), true)
 
-  -- Get item search results, excluding individual auction updates (which cause
-  -- the display to blank)
-  elseif eventName == "ITEM_SEARCH_RESULTS_UPDATED" then
+  elseif (eventName == "ITEM_SEARCH_RESULTS_UPDATED" and
+          Auctionator.Utilities.ItemKeyString(self.expectedItemKey) == Auctionator.Utilities.ItemKeyString(itemRef)
+        ) then
     self.onPreserveScroll()
     self:Reset()
     self:AppendEntries(self:ProcessItemResults(itemRef), true)
 
-  elseif eventName == "COMMODITY_PURCHASE_SUCCEEDED" then
-    self:RefreshView()
+  else
+    if eventName == "AUCTION_CANCELED" then
+      self:UnregisterEvent("AUCTION_CANCELED")
+    end
 
-  elseif eventName == "AUCTION_CANCELED" then
-    self:UnregisterEvent("AUCTION_CANCELED")
-
+    self.onPreserveScroll()
     self:RefreshView()
   end
 end
@@ -171,10 +173,12 @@ function AuctionatorSearchDataProviderMixin:ProcessCommodityResults(itemID)
       price = resultInfo.unitPrice,
       bidPrice = nil,
       owners = resultInfo.owners,
-      otherSellers = Auctionator.Utilities.StringJoin(resultInfo.owners, ", "),
+      totalNumberOfOwners = resultInfo.totalNumberOfOwners,
+      otherSellers = Auctionator.Utilities.StringJoin(resultInfo.owners, PLAYER_LIST_DELIMITER),
       quantity = resultInfo.quantity,
       quantityFormatted = Auctionator.Utilities.DelimitThousands(resultInfo.quantity),
-      level = "0",
+      level = 0,
+      levelPretty = "0",
       timeLeftPretty = Auctionator.Utilities.FormatTimeLeft(resultInfo.timeLeftSeconds),
       timeLeft = resultInfo.timeLeftSeconds or 0, --Used in sorting
       auctionID = resultInfo.auctionID,
@@ -182,6 +186,10 @@ function AuctionatorSearchDataProviderMixin:ProcessCommodityResults(itemID)
       itemType = Auctionator.Constants.ITEM_TYPES.COMMODITY,
       canBuy = not (resultInfo.containsOwnerItem or resultInfo.containsAccountItem)
     }
+
+    if #entry.owners > 0 and #entry.owners < entry.totalNumberOfOwners then
+      entry.otherSellers = AUCTIONATOR_L_SELLERS_OVERFLOW_TEXT:format(entry.otherSellers, entry.totalNumberOfOwners - #entry.owners)
+    end
 
     if resultInfo.containsOwnerItem then
       -- Test if the auction has been loaded for cancelling
@@ -220,9 +228,11 @@ function AuctionatorSearchDataProviderMixin:ProcessItemResults(itemKey)
     local entry = {
       price = resultInfo.buyoutAmount,
       bidPrice = resultInfo.bidAmount,
-      level = tostring(resultInfo.itemKey.itemLevel or 0),
+      level = resultInfo.itemKey.itemLevel or 0,
+      levelPretty = "",
       owners = resultInfo.owners,
-      otherSellers = Auctionator.Utilities.StringJoin(resultInfo.owners, ", "),
+      totalNumberOfOwners = resultInfo.totalNumberOfOwners,
+      otherSellers = Auctionator.Utilities.StringJoin(resultInfo.owners, PLAYER_LIST_DELIMITER),
       timeLeftPretty = Auctionator.Utilities.FormatTimeLeftBand(resultInfo.timeLeft),
       timeLeft = resultInfo.timeLeft, --Used in sorting and the vanilla AH tooltip code
       quantity = resultInfo.quantity,
@@ -233,12 +243,17 @@ function AuctionatorSearchDataProviderMixin:ProcessItemResults(itemKey)
       canBuy = resultInfo.buyoutAmount ~= nil and not (resultInfo.containsOwnerItem or resultInfo.containsAccountItem)
     }
 
+    if #entry.owners > 0 and #entry.owners < entry.totalNumberOfOwners then
+      entry.otherSellers = AUCTIONATOR_L_SELLERS_OVERFLOW_TEXT:format(entry.otherSellers, entry.totalNumberOfOwners - #entry.owners)
+    end
+
     if resultInfo.itemKey.battlePetSpeciesID ~= 0 and entry.itemLink ~= nil then
-      entry.level = tostring(Auctionator.Utilities.GetPetLevelFromLink(entry.itemLink))
+      entry.level = Auctionator.Utilities.GetPetLevelFromLink(entry.itemLink)
+      entry.levelPretty = tostring(entry.level)
     end
 
     local qualityColor = Auctionator.Utilities.GetQualityColorFromLink(entry.itemLink)
-    entry.level = "|c" .. qualityColor .. entry.level .. "|r"
+    entry.levelPretty = "|c" .. qualityColor .. entry.level .. "|r"
 
     if resultInfo.containsOwnerItem then
       -- Test if the auction has been loaded for cancelling

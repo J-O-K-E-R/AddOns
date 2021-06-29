@@ -1,4 +1,4 @@
-local E, L, V, P, G =unpack(select(2, ...)); --Import: Engine, Locales, PrivateDB, ProfileDB, GlobalDB, Localize Underscore
+local E, L, V, P, G =unpack(select(2, ...)) --Import: Engine, Locales, PrivateDB, ProfileDB, GlobalDB, Localize Underscore
 local NP = E:GetModule('NamePlates')
 local UF = E:GetModule('UnitFrames')
 local CH = E:GetModule('Chat')
@@ -234,6 +234,7 @@ function E:SetupLayout(layout, noDataReset, noDisplayMsg)
 	if not noDataReset then
 		E.db.layoutSet = layout
 		E.db.layoutSetting = layout
+		E.db.convertPages = true
 
 		--Unitframes
 		E:CopyTable(E.db.unitframe.units, P.unitframe.units)
@@ -246,16 +247,16 @@ function E:SetupLayout(layout, noDataReset, noDisplayMsg)
 
 		--ActionBars
 			E.db.actionbar.bar1.buttons = 8
-			E.db.actionbar.bar1.buttonsize = 50
-			E.db.actionbar.bar1.buttonspacing = 1
+			E.db.actionbar.bar1.buttonSize = 50
+			E.db.actionbar.bar1.buttonSpacing = 1
 			E.db.actionbar.bar2.buttons = 9
-			E.db.actionbar.bar2.buttonsize = 38
-			E.db.actionbar.bar2.buttonspacing = 1
+			E.db.actionbar.bar2.buttonSize = 38
+			E.db.actionbar.bar2.buttonSpacing = 1
 			E.db.actionbar.bar2.enabled = true
 			E.db.actionbar.bar2.visibility = '[petbattle] hide; show'
 			E.db.actionbar.bar3.buttons = 8
-			E.db.actionbar.bar3.buttonsize = 50
-			E.db.actionbar.bar3.buttonspacing = 1
+			E.db.actionbar.bar3.buttonSize = 50
+			E.db.actionbar.bar3.buttonSpacing = 1
 			E.db.actionbar.bar3.buttonsPerRow = 10
 			E.db.actionbar.bar3.visibility = '[petbattle] hide; show'
 			E.db.actionbar.bar4.enabled = false
@@ -581,7 +582,7 @@ function E:SetPage(PageNum)
 	f.Desc3:FontTemplate(nil, 16)
 
 	if PageNum == 1 then
-		f.SubTitle:SetFormattedText(L["Welcome to ElvUI version %s!"], E.version)
+		f.SubTitle:SetFormattedText(L["Welcome to ElvUI version %.2f!"], E.version)
 		f.Desc1:SetText(L["This install process will help you learn some of the features in ElvUI has to offer and also prepare your user interface for usage."])
 		f.Desc2:SetText(L["The in-game configuration menu can be accessed by typing the /ec command. Press the button below if you wish to skip the installation process."])
 		f.Desc3:SetText(L["Please press the continue button to go onto the next step."])
@@ -611,19 +612,23 @@ function E:SetPage(PageNum)
 		f.Desc1:SetText(L["Please click the button below to setup your Profile Settings."])
 		f.Desc2:SetText(L["New Profile will create a fresh profile for this character."] .. '\n' .. L["Shared Profile will select the default profile."])
 
+		InstallOption1Button:SetText(L["Shared Profile"])
 		InstallOption1Button:Show()
 		InstallOption1Button:SetScript('OnClick', function()
 			E.data:SetProfile('Default')
-			E:NextPage()
+			if E.db.layoutSet then
+				E:SetPage(9)
+			else
+				E:NextPage()
+			end
 		end)
 
-		InstallOption1Button:SetText(L["Shared Profile"])
+		InstallOption2Button:SetText(L["New Profile"])
 		InstallOption2Button:Show()
 		InstallOption2Button:SetScript('OnClick', function()
 			E.data:SetProfile(E.mynameRealm)
 			E:NextPage()
 		end)
-		InstallOption2Button:SetText(L["New Profile"])
 	elseif PageNum == 5 then
 		f.SubTitle:SetText(L["Theme Setup"])
 		f.Desc1:SetText(L["Choose a theme layout you wish to use for your initial setup."])
@@ -715,7 +720,7 @@ function E:SetPage(PageNum)
 		InstallOption3Button:SetText(_G.STAT_CATEGORY_RANGED)
 	elseif PageNum == 8 then
 		f.SubTitle:SetText(L["Auras"])
-		f.Desc1:SetText(L["Select the type of aura system you want to use with ElvUI's unitframes. Set to Aura Bar & Icons to use both aura bars and icons, set to icons only to only see icons."])
+		f.Desc1:SetText(L["Select the type of aura system you want to use with ElvUI's unitframes. Set to Aura Bars to use both aura bars and icons, set to Icons Only to only see icons."])
 		f.Desc2:SetText(L["If you have an icon or aurabar that you don't want to display simply hold down shift and right click the icon for it to disapear."])
 		f.Desc3:SetText(L["Importance: |cffD3CF00Medium|r"])
 		f.Desc3:FontTemplate(nil, 18)
@@ -804,7 +809,7 @@ function E:Install()
 
 	--Create Frame
 	if not ElvUIInstallFrame then
-		local f = CreateFrame('Button', 'ElvUIInstallFrame', E.UIParent, 'BackdropTemplate')
+		local f = CreateFrame('Button', 'ElvUIInstallFrame', E.UIParent)
 		f.SetPage = E.SetPage
 		f:Size(550, 400)
 		f:SetTemplate('Transparent')
@@ -822,7 +827,7 @@ function E:Install()
 		f.Title:Point('TOP', 0, -5)
 		f.Title:SetText(L["ElvUI Installation"])
 
-		f.Next = CreateFrame('Button', 'InstallNextButton', f, 'UIPanelButtonTemplate, BackdropTemplate')
+		f.Next = CreateFrame('Button', 'InstallNextButton', f, 'UIPanelButtonTemplate')
 		f.Next:Size(110, 25)
 		f.Next:Point('BOTTOMRIGHT', -5, 5)
 		f.Next:SetText(CONTINUE)
@@ -830,7 +835,7 @@ function E:Install()
 		f.Next:SetScript('OnClick', E.NextPage)
 		S:HandleButton(f.Next, true)
 
-		f.Prev = CreateFrame('Button', 'InstallPrevButton', f, 'UIPanelButtonTemplate, BackdropTemplate')
+		f.Prev = CreateFrame('Button', 'InstallPrevButton', f, 'UIPanelButtonTemplate')
 		f.Prev:Size(110, 25)
 		f.Prev:Point('BOTTOMLEFT', 5, 5)
 		f.Prev:SetText(PREVIOUS)
@@ -859,7 +864,7 @@ function E:Install()
 		f.Status.text:Point('CENTER')
 		f.Status.text:SetText(CURRENT_PAGE..' / '..MAX_PAGE)
 
-		f.Slider = CreateFrame('Slider', 'InstallSlider', f, 'BackdropTemplate')
+		f.Slider = CreateFrame('Slider', 'InstallSlider', f)
 		f.Slider:SetOrientation('HORIZONTAL')
 		f.Slider:Height(15)
 		f.Slider:Width(400)
@@ -876,14 +881,14 @@ function E:Install()
 		f.Slider.Cur:Point('BOTTOM', f.Slider, 'TOP', 0, 10)
 		f.Slider.Cur:FontTemplate(nil, 22)
 
-		f.Option1 = CreateFrame('Button', 'InstallOption1Button', f, 'UIPanelButtonTemplate, BackdropTemplate')
+		f.Option1 = CreateFrame('Button', 'InstallOption1Button', f, 'UIPanelButtonTemplate')
 		f.Option1:Size(160, 30)
 		f.Option1:Point('BOTTOM', 0, 45)
 		f.Option1:SetText('')
 		f.Option1:Hide()
 		S:HandleButton(f.Option1, true)
 
-		f.Option2 = CreateFrame('Button', 'InstallOption2Button', f, 'UIPanelButtonTemplate, BackdropTemplate')
+		f.Option2 = CreateFrame('Button', 'InstallOption2Button', f, 'UIPanelButtonTemplate')
 		f.Option2:Size(110, 30)
 		f.Option2:Point('BOTTOMLEFT', f, 'BOTTOM', 4, 45)
 		f.Option2:SetText('')
@@ -892,16 +897,16 @@ function E:Install()
 		f.Option2:SetScript('OnHide', function() f.Option1:Width(160); f.Option1:ClearAllPoints(); f.Option1:Point('BOTTOM', 0, 45) end)
 		S:HandleButton(f.Option2, true)
 
-		f.Option3 = CreateFrame('Button', 'InstallOption3Button', f, 'UIPanelButtonTemplate, BackdropTemplate')
+		f.Option3 = CreateFrame('Button', 'InstallOption3Button', f, 'UIPanelButtonTemplate')
 		f.Option3:Size(100, 30)
 		f.Option3:Point('LEFT', f.Option2, 'RIGHT', 4, 0)
 		f.Option3:SetText('')
 		f.Option3:Hide()
-		f.Option3:SetScript('OnShow', function() f.Option1:Width(100); f.Option1:ClearAllPoints(); f.Option1:Point('RIGHT', f.Option2, 'LEFT', -4, 0); f.Option2:Width(100); f.Option2:ClearAllPoints(); f.Option2:Point('BOTTOM', f, 'BOTTOM', 0, 45)  end)
+		f.Option3:SetScript('OnShow', function() f.Option1:Width(100); f.Option1:ClearAllPoints(); f.Option1:Point('RIGHT', f.Option2, 'LEFT', -4, 0); f.Option2:Width(100); f.Option2:ClearAllPoints(); f.Option2:Point('BOTTOM', f, 'BOTTOM', 0, 45) end)
 		f.Option3:SetScript('OnHide', function() f.Option1:Width(160); f.Option1:ClearAllPoints(); f.Option1:Point('BOTTOM', 0, 45); f.Option2:Width(110); f.Option2:ClearAllPoints(); f.Option2:Point('BOTTOMLEFT', f, 'BOTTOM', 4, 45) end)
 		S:HandleButton(f.Option3, true)
 
-		f.Option4 = CreateFrame('Button', 'InstallOption4Button', f, 'UIPanelButtonTemplate, BackdropTemplate')
+		f.Option4 = CreateFrame('Button', 'InstallOption4Button', f, 'UIPanelButtonTemplate')
 		f.Option4:Size(100, 30)
 		f.Option4:Point('LEFT', f.Option3, 'RIGHT', 4, 0)
 		f.Option4:SetText('')
@@ -937,9 +942,14 @@ function E:Install()
 		f.Desc3:Point('TOPLEFT', 20, -175)
 		f.Desc3:Width(f:GetWidth() - 40)
 
-		local close = CreateFrame('Button', 'InstallCloseButton', f, 'UIPanelCloseButton, BackdropTemplate')
+		local close = CreateFrame('Button', 'InstallCloseButton', f, 'UIPanelCloseButton')
 		close:Point('TOPRIGHT', f, 'TOPRIGHT')
-		close:SetScript('OnClick', function() f:Hide() end)
+		close:SetScript('OnClick', function()
+			-- Wasn't sure if we should run the InstallComplete function which will reload the ui for just clicking X to close it...
+			-- Simpy, Azil and I were sure what your thoughts on just saying it's complete
+			E.private.install_complete = E.version
+			f:Hide()
+		end)
 		S:HandleCloseButton(close)
 
 		local logo = f:CreateTexture('InstallTutorialImage', 'OVERLAY')

@@ -28,8 +28,7 @@ L["All friendly players, including those not in your group"] = "자신의 파티
 L["Amount"] = "수치"
 L["Announce"] = "알리기"
 L["Announce deaths"] = "죽음 알리기"
---[[Translation missing --]]
-L["Announce deaths in LFR"] = "Announce deaths in LFR"
+L["Announce deaths in LFR"] = "공찾에서 죽음 알리기"
 L["Announce deaths with an unknown cause"] = "알 수 없는 이유로 인한 죽음 알리기"
 L["Announces/10 seconds limit"] = "10초 동안 알릴 횟수"
 L["Auras"] = "효과"
@@ -129,8 +128,7 @@ L["This data is used to display actions of other players when a death happened. 
 L["Threshold"] = "임계값"
 L["Time"] = "시간"
 L["Time format"] = "시간 형식"
---[[Translation missing --]]
-L["ui:filters:select-cds"] = "Select CDs..."
+L["ui:filters:select-cds"] = "생존기 선택..."
 L["ui:quick-spell-search"] = "빠른 주문 검색:"
 L["ui:quick-spell-search:mode:highlight"] = "검색된 주문 강조"
 L["ui:quick-spell-search:mode:only-found-spells"] = "검색된 주문 + 생존기만 표시"

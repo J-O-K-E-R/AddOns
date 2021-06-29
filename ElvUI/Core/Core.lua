@@ -1,6 +1,6 @@
 local ElvUI = select(2, ...)
 ElvUI[2] = ElvUI[1].Libs.ACL:GetLocale('ElvUI', ElvUI[1]:GetLocale()) -- Locale doesn't exist yet, make it exist.
-local E, L, V, P, G = unpack(ElvUI); --Import: Engine, Locales, PrivateDB, ProfileDB, GlobalDB
+local E, L, V, P, G = unpack(ElvUI) --Import: Engine, Locales, PrivateDB, ProfileDB, GlobalDB
 
 local _G = _G
 local tonumber, pairs, ipairs, error, unpack, select, tostring = tonumber, pairs, ipairs, error, unpack, select, tostring
@@ -26,12 +26,16 @@ local IsInRaid = IsInRaid
 local SetCVar = SetCVar
 local ReloadUI = ReloadUI
 local UnitGUID = UnitGUID
+local GetBindingKey = GetBindingKey
+local SetBinding = SetBinding
+local SaveBindings = SaveBindings
+local GetCurrentBindingSet = GetCurrentBindingSet
 
 local ERR_NOT_IN_COMBAT = ERR_NOT_IN_COMBAT
 local LE_PARTY_CATEGORY_HOME = LE_PARTY_CATEGORY_HOME
 local LE_PARTY_CATEGORY_INSTANCE = LE_PARTY_CATEGORY_INSTANCE
 local C_ChatInfo_SendAddonMessage = C_ChatInfo.SendAddonMessage
--- GLOBALS: ElvUIPlayerBuffs, ElvUIPlayerDebuffs
+-- GLOBALS: ElvCharacterDB, ElvUIPlayerBuffs, ElvUIPlayerDebuffs
 
 --Modules
 local ActionBars = E:GetModule('ActionBars')
@@ -52,7 +56,7 @@ local LSM = E.Libs.LSM
 
 --Constants
 E.noop = function() end
-E.title = format('|cff1784d1%s |r', 'ElvUI')
+E.title = format('%s%s|r', E.InfoColor, 'ElvUI')
 E.version = tonumber(GetAddOnMetadata('ElvUI', 'Version'))
 E.myfaction, E.myLocalizedFaction = UnitFactionGroup('player')
 E.mylevel = UnitLevel('player')
@@ -70,7 +74,6 @@ E.screenwidth, E.screenheight = GetPhysicalScreenSize()
 E.resolution = format('%dx%d', E.screenwidth, E.screenheight)
 E.NewSign = [[|TInterface\OptionsFrame\UI-OptionsFrame-NewFeatureIcon:14:14|t]] -- not used by ElvUI yet, but plugins like BenikUI and MerathilisUI use it.
 E.TexturePath = [[Interface\AddOns\ElvUI\Media\Textures\]] -- for plugins?
-E.InfoColor = '|cff1784d1'
 E.UserList = {}
 
 -- oUF Defines
@@ -343,6 +346,53 @@ function E:UpdateMedia()
 
 	E:ValueFuncCall()
 	E:UpdateBlizzardFonts()
+end
+
+function E:GeneralMedia_ApplyToAll()
+	local font = E.db.general.font
+	local fontSize = E.db.general.fontSize
+
+	E.db.bags.itemLevelFont = font
+	E.db.bags.itemLevelFontSize = fontSize
+	E.db.bags.countFont = font
+	E.db.bags.countFontSize = fontSize
+	E.db.nameplates.font = font
+	--E.db.nameplate.fontSize = fontSize --Dont use this because nameplate font it somewhat smaller than the rest of the font sizes
+	--E.db.nameplate.buffs.font = font
+	--E.db.nameplate.buffs.fontSize = fontSize --Dont use this because nameplate font it somewhat smaller than the rest of the font sizes
+	--E.db.nameplate.debuffs.font = font
+	--E.db.nameplate.debuffs.fontSize = fontSize --Dont use this because nameplate font it somewhat smaller than the rest of the font sizes
+	E.db.actionbar.font = font
+	--E.db.actionbar.fontSize = fontSize	--This may not look good if a big font size is chosen
+	E.db.auras.buffs.countFont = font
+	E.db.auras.buffs.countFontSize = fontSize
+	E.db.auras.buffs.timeFont = font
+	E.db.auras.buffs.timeFontSize = fontSize
+	E.db.auras.debuffs.countFont = font
+	E.db.auras.debuffs.countFontSize = fontSize
+	E.db.auras.debuffs.timeFont = font
+	E.db.auras.debuffs.timeFontSize = fontSize
+	E.db.chat.font = font
+	E.db.chat.fontSize = fontSize
+	E.db.chat.tabFont = font
+	E.db.chat.tabFontSize = fontSize
+	E.db.datatexts.font = font
+	E.db.datatexts.fontSize = fontSize
+	E.db.general.minimap.locationFont = font
+	E.db.tooltip.font = font
+	E.db.tooltip.fontSize = fontSize
+	E.db.tooltip.headerFontSize = fontSize
+	E.db.tooltip.textFontSize = fontSize
+	E.db.tooltip.smallTextFontSize = fontSize
+	E.db.tooltip.healthBar.font = font
+	--E.db.tooltip.healthbar.fontSize = fontSize -- Size is smaller than default
+	E.db.unitframe.font = font
+	--E.db.unitframe.fontSize = fontSize -- Size is smaller than default
+	E.db.unitframe.units.party.rdebuffs.font = font
+	E.db.unitframe.units.raid.rdebuffs.font = font
+	E.db.unitframe.units.raid40.rdebuffs.font = font
+
+	E:StaggeredUpdateAll(nil, true)
 end
 
 do	--Update font/texture paths when they are registered by the addon providing them
@@ -633,7 +683,7 @@ function E:RemoveTableDuplicates(cleanTable, checkTable, generatedKeys)
 		E:Print('Bad argument #1 to \'RemoveTableDuplicates\' (table expected)')
 		return
 	end
-	if type(checkTable) ~=  'table' then
+	if type(checkTable) ~= 'table' then
 		E:Print('Bad argument #2 to \'RemoveTableDuplicates\' (table expected)')
 		return
 	end
@@ -674,7 +724,7 @@ function E:FilterTableFromBlacklist(cleanTable, blacklistTable)
 		E:Print('Bad argument #1 to \'FilterTableFromBlacklist\' (table expected)')
 		return
 	end
-	if type(blacklistTable) ~=  'table' then
+	if type(blacklistTable) ~= 'table' then
 		E:Print('Bad argument #2 to \'FilterTableFromBlacklist\' (table expected)')
 		return
 	end
@@ -853,7 +903,7 @@ do	--Split string by multi-character delimiter (the strsplit / string.split func
 		assert(type (delim) == 'string' and strlen(delim) > 0, 'bad delimiter')
 
 		local start = 1
-		wipe(splitTable)  -- results table
+		wipe(splitTable) -- results table
 
 		-- find each instance of a string followed by the delimiter
 		while true do
@@ -1254,6 +1304,73 @@ function E:DBConvertSL()
 		E:CopyTable(E.global.unitframe.aurawatch, E.global.unitframe.buffwatch)
 		E.global.unitframe.buffwatch = nil
 	end
+
+	-- ActionBar 12.18 changes
+	for i = 1, 10 do
+		local bar = E.db.actionbar['bar'..i]
+		if bar.buttonsize then
+			bar.buttonSize = bar.buttonsize
+			bar.buttonsize = nil
+		end
+		if bar.buttonspacing then
+			bar.buttonSpacing = bar.buttonspacing
+			bar.buttonspacing = nil
+		end
+	end
+	if E.db.actionbar.barPet.buttonsize then
+		E.db.actionbar.barPet.buttonSize = E.db.actionbar.barPet.buttonsize
+		E.db.actionbar.barPet.buttonsize = nil
+	end
+	if E.db.actionbar.stanceBar.buttonsize then
+		E.db.actionbar.stanceBar.buttonSize = E.db.actionbar.stanceBar.buttonsize
+		E.db.actionbar.stanceBar.buttonsize = nil
+	end
+	if E.db.actionbar.barPet.buttonspacing then
+		E.db.actionbar.barPet.buttonSpacing = E.db.actionbar.barPet.buttonspacing
+		E.db.actionbar.barPet.buttonspacing = nil
+	end
+	if E.db.actionbar.stanceBar.buttonspacing then
+		E.db.actionbar.stanceBar.buttonSpacing = E.db.actionbar.stanceBar.buttonspacing
+		E.db.actionbar.stanceBar.buttonspacing = nil
+	end
+
+	-- Convert Pages
+	if E.db.actionbar.convertPages then
+		E.db.convertPages = E.db.actionbar.convertPages
+		E.db.actionbar.convertPages = nil
+	end
+	if not E.db.convertPages then
+		local bar2, bar3, bar5, bar6 = E.db.actionbar.bar2, E.db.actionbar.bar3, E.db.actionbar.bar5, E.db.actionbar.bar6
+		E.db.actionbar.bar2, E.db.actionbar.bar3, E.db.actionbar.bar5, E.db.actionbar.bar6 = E:CopyTable({}, bar6), E:CopyTable({}, bar5), E:CopyTable({}, bar2), E:CopyTable({}, bar3)
+
+		if E.db.movers then
+			local bar2mover, bar3mover, bar5mover, bar6mover = E.db.movers.ElvAB_2, E.db.movers.ElvAB_3, E.db.movers.ElvAB_5, E.db.movers.ElvAB_6
+			if bar6mover == 'BOTTOM,ElvUI_Bar2,TOP,0,2' then bar6mover = ActionBars.barDefaults.bar2.position end
+			E.db.movers.ElvAB_2, E.db.movers.ElvAB_3, E.db.movers.ElvAB_5, E.db.movers.ElvAB_6 = bar6mover, bar5mover, bar2mover, bar3mover
+		end
+
+		E.db.convertPages = true
+	end
+
+	-- UnitFrame
+	if E.db.unitframe.units.party.groupBy == 'ROLE2' or E.db.unitframe.units.party.groupBy == 'CLASSROLE' then
+		E.db.unitframe.units.party.groupBy = 'ROLE'
+	end
+	if E.db.unitframe.units.raid.groupBy == 'ROLE2' or E.db.unitframe.units.raid.groupBy == 'CLASSROLE' then
+		E.db.unitframe.units.raid.groupBy = 'ROLE'
+	end
+	if E.db.unitframe.units.raid40.groupBy == 'ROLE2' or E.db.unitframe.units.raid40.groupBy == 'CLASSROLE' then
+		E.db.unitframe.units.raid40.groupBy = 'ROLE'
+	end
+	if E.db.unitframe.units.raidpet.groupBy == 'ROLE2' or E.db.unitframe.units.raidpet.groupBy == 'CLASSROLE' then
+		E.db.unitframe.units.raidpet.groupBy = 'ROLE'
+	end
+
+	for name, infoTable in pairs(G.unitframe.aurafilters) do -- cause people change things they aren't supposed to.
+		if E.global.unitframe.aurafilters[name] and E.global.unitframe.aurafilters[name].type ~= infoTable.type then
+			E.global.unitframe.aurafilters[name].type = infoTable.type
+		end
+	end
 end
 
 function E:UpdateDB()
@@ -1317,13 +1434,11 @@ function E:UpdateLayout(skipCallback)
 end
 
 function E:UpdateActionBars(skipCallback)
-	ActionBars:ExtraButtons_UpdateAlpha()
-	ActionBars:ExtraButtons_UpdateScale()
-	ActionBars:ExtraButtons_GlobalFade()
 	ActionBars:ToggleCooldownOptions()
 	ActionBars:UpdateButtonSettings()
 	ActionBars:UpdateMicroPositionDimensions()
 	ActionBars:UpdatePetCooldownSettings()
+	ActionBars:UpdateExtraButtons()
 
 	if not skipCallback then
 		E.callbacks:Fire('StaggeredUpdate')
@@ -1714,6 +1829,28 @@ function E:DBConversions()
 	end
 
 	-- development converts, always call
+
+	E:ConvertActionBarKeybinds()
+end
+
+function E:ConvertActionBarKeybinds()
+	if not ElvCharacterDB.ConvertKeybindings then
+		for oldKeybind, newKeybind in pairs({ ELVUIBAR6BUTTON = 'ELVUIBAR2BUTTON', EXTRABAR7BUTTON = 'ELVUIBAR7BUTTON', EXTRABAR8BUTTON = 'ELVUIBAR8BUTTON', EXTRABAR9BUTTON = 'ELVUIBAR9BUTTON', EXTRABAR10BUTTON = 'ELVUIBAR10BUTTON' }) do
+			for i = 1, 12 do
+				local keys = { GetBindingKey(format('%s%d', oldKeybind, i)) }
+				if next(keys) then
+					for _, key in pairs(keys) do
+						SetBinding(key, format('%s%d', newKeybind, i))
+					end
+				end
+			end
+		end
+
+		local cur = GetCurrentBindingSet()
+		if cur and cur > 0 then SaveBindings(cur) end
+
+		ElvCharacterDB.ConvertKeybindings = true
+	end
 end
 
 function E:RefreshModulesDB()

@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod("Sindragosa", "DBM-Icecrown", 4)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20200524145648")
+mod:SetRevision("20210614230125")
 mod:SetCreatureID(36853)
 mod:SetEncounterID(1105)
 mod:SetModelID(30362)
@@ -65,7 +65,6 @@ local beaconIconTargets	= {}
 local unchainedTargets	= {}
 mod.vb.warned_P2 = false
 mod.vb.warnedfailed = false
-mod.vb.phase = 0
 mod.vb.unchainedIcons = 7
 mod.vb.activeBeacons	= false
 local playerUnchained = false
@@ -144,6 +143,7 @@ local function warnUnchainedTargets(self)
 end
 
 function mod:OnCombatStart(delay)
+	self:SetStage(1)
 	berserkTimer:Start(-delay)
 	timerNextAirphase:Start(50-delay)
 	timerNextBlisteringCold:Start(33-delay)
@@ -155,7 +155,6 @@ function mod:OnCombatStart(delay)
 	self.vb.unchainedIcons = 7
 	playerUnchained = false
 	playerBeaconed = false
-	self.vb.phase = 1
 	self.vb.activeBeacons = false
 end
 
@@ -223,7 +222,7 @@ function mod:SPELL_AURA_APPLIED(args)
 		else
 			self:Schedule(0.3, warnUnchainedTargets, self)
 		end
-	elseif args.spellId == 70106 and not self:IsTrivial(100) then	--Chilled to the bone (melee)
+	elseif args.spellId == 70106 and not self:IsTrivial() then	--Chilled to the bone (melee)
 		if args:IsPlayer() then
 			timerChilledtotheBone:Start()
 			if (args.amount or 1) >= 4 then
@@ -233,7 +232,7 @@ function mod:SPELL_AURA_APPLIED(args)
 				warnChilledtotheBone:Show(args.amount or 1)
 			end
 		end
-	elseif args.spellId == 69766 and not self:IsTrivial(100) then	--Instability (casters)
+	elseif args.spellId == 69766 and not self:IsTrivial() then	--Instability (casters)
 		if args:IsPlayer() then
 			timerInstability:Start()
 			if (args.amount or 1) >= 4 then
@@ -273,7 +272,7 @@ mod.SPELL_AURA_APPLIED_DOSE = mod.SPELL_AURA_APPLIED
 
 function mod:SPELL_CAST_SUCCESS(args)
 	if args.spellId == 70117 then--Icy Grip Cast, not blistering cold, but adds an extra 1sec to the warning
-		if not self:IsTrivial(100) then
+		if not self:IsTrivial() then
 			specWarnBlisteringCold:Show()
 			specWarnBlisteringCold:Play("runout")
 		end
@@ -330,7 +329,7 @@ function mod:CHAT_MSG_MONSTER_YELL(msg)
 		warnGroundphaseSoon:Schedule(40)
 		self.vb.activeBeacons = true
 	elseif (msg == L.YellPhase2 or msg:find(L.YellPhase2)) or (msg == L.YellPhase2Dem or msg:find(L.YellPhase2Dem)) then
-		self.vb.phase = 2
+		self:SetStage(2)
 		warnPhase2:Show()
 		timerNextBeacon:Start(7)
 		timerNextAirphase:Cancel()

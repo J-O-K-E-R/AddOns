@@ -73,7 +73,7 @@ L["CONFIG_DEBUG"] = "디버그 모드"
 L["CONFIG_DEBUG_TOOLTIP_HEADER"] = "옥셔네이터 디버그"
 L["CONFIG_DEBUG_TOOLTIP_TEXT"] = "디버그 메시지를 채팅창에 출력합니다."
 L["CONFIG_DEVELOPER"] = "개발자 설정"
-L["CONFIG_ENCHANT_TOOLTIP"] = "인챈트 툴팁을 표시합니다(드레노어의 전쟁군주, 군단, 격변의 아제로스, 어둠땅만 지원)"
+L["CONFIG_ENCHANT_TOOLTIP"] = "인챈트 툴팁을 표시합니다(드군, 군단, 격아, 어둠땅만 지원)"
 L["CONFIG_FULL_SCAN_STEP_SIZE"] = "애드온 설치 시 튕기는 현상이 발생하면 숫자를 줄이세요"
 L["CONFIG_LIFO_CATEGORY"] = "판매: 일반"
 L["CONFIG_MAIL_TOOLTIP"] = "우체통 툴팁을 표시함"
@@ -85,6 +85,10 @@ L["CONFIG_PRICE_HISTORY_TOOLTIP_TEXT"] = "체크 해제시 판매 탭 하단의 
 L["CONFIG_PROFILE_CATEGORY"] = "프로필"
 L["CONFIG_PROFILE_TEXT"] = "캐릭터 별 프로필 설정을 변경합니다."
 L["CONFIG_PROFILE_TOGGLE"] = "이 캐릭터만 적용"
+--[[Translation missing --]]
+L["CONFIG_QUANTITIES_CATEGORY"] = "Selling: Quantities"
+--[[Translation missing --]]
+L["CONFIG_QUANTITIES_TEXT"] = "Choose the default quantity used for the different item categories."
 L["CONFIG_SCAN_SETTINGS"] = "검색설정"
 L["CONFIG_SCANNING"] = "검색설정"
 L["CONFIG_SELLING_AUTO_SELECT_NEXT"] = "경매 시작시 다음 아이템을 선택"
@@ -111,7 +115,7 @@ L["CONFIG_SELLING_ICON_SIZE_TOOLTIP_HEADER"] = "아이콘 크기"
 L["CONFIG_SELLING_ICON_SIZE_TOOLTIP_TEXT"] = "판매 탭의 아이콘 크기를 조절합니다. (기본 42)"
 L["CONFIG_SELLING_LIFO_HEADER"] = "판매: 일반"
 L["CONFIG_SELLING_LIFO_TEXT"] = "일반 품목을 최저가를 %로 계산할 지 골드로 계산할지 설정합니다. 최저가가 아닐 경우, 현재 경매장의 최저가로 계산됩니다."
-L["CONFIG_SELLING_MISSING_FAVOURITES"] = "항상 즐겨찾기 아이테믈 표시합니다(가방에 없는 경우도 포함)"
+L["CONFIG_SELLING_MISSING_FAVOURITES"] = "항상 즐겨찾기 아이템믈 표시합니다(가방에 없는 경우도 포함)"
 L["CONFIG_SELLING_MISSING_FAVOURITES_TOOLTIP_HEADER"] = "누락된 즐겨찾기 아이템 보기"
 --[[Translation missing --]]
 L["CONFIG_SELLING_MISSING_FAVOURITES_TOOLTIP_TEXT"] = "Show favourite items in the bag view even when they aren't in your bag."
@@ -126,14 +130,20 @@ L["CONFIG_SELLING_SHORTCUTS_CATEGORY"] = "Selling: Shortcuts"
 --[[Translation missing --]]
 L["CONFIG_SELLING_SHORTCUTS_TEXT"] = "Options for keyboard and mouse shortcuts inside the Selling tab"
 --[[Translation missing --]]
+L["CONFIG_SELLING_SHOW_BID_PRICE"] = "Show bid price option when listing an item (reload required)"
+--[[Translation missing --]]
+L["CONFIG_SELLING_SHOW_BID_PRICE_TOOLTIP_HEADER"] = "Bid Options"
+--[[Translation missing --]]
+L["CONFIG_SELLING_SHOW_BID_PRICE_TOOLTIP_TEXT"] = "Controls whether the bid price option appears when posting an item."
+--[[Translation missing --]]
 L["CONFIG_SELLING_SKIP_SHORTCUT"] = "A shortcut to skip posting the currently selected item is"
 L["CONFIG_SELLING_TEXT"] = "판매하기 탭의 설정을 변경합니다."
 L["CONFIG_SHOPPING_CATEGORY"] = "구매목록"
 L["CONFIG_SHOPPING_LIST"] = "구매목록 설정"
 L["CONFIG_SHOPPING_TEXT"] = "구매목록의 설정을 변경합니다."
-L["CONFIG_SMALL_TABS"] = "경마장에 작은 탭을 사용합니다 (경매장을 다시 열면 적용)"
+L["CONFIG_SMALL_TABS"] = "경매장에 작은 탭을 사용합니다 (경매장을 다시 열면 적용)"
 L["CONFIG_SMALL_TABS_TOOLTIP_HEADER"] = "작은 탭"
-L["CONFIG_SMALL_TABS_TOOLTIP_TEXT"] = "너무 많은 애드온이 경매장에 탭을 추가하면 경매장 창 끝을 지나 넘칠 수 있습니다. 이 설정은 탭을 더 작게 만들어 이를 더 잘 맞추게 합니다."
+L["CONFIG_SMALL_TABS_TOOLTIP_TEXT"] = "다른 경매자 애드온을 통해 경매장에 탭이 추가되면 경매장 창 끝이 넘어갈 수 있습니다. 이 설정은 더 작은 탭을 만듭니다."
 L["CONFIG_STACK_TOOLTIP"] = "쉬프트로 전체 가격 표시"
 L["CONFIG_TOOLTIPS_CATEGORY"] = "툴팁"
 L["CONFIG_TOOLTIPS_TEXT"] = "게임 내 툴팁에 대한 설정을 변경합니다."
@@ -189,6 +199,8 @@ L["FINISHED_PROCESSING"] = "불러오기 완료"
 L["FULL_SCAN_ALTERNATE_FAILED"] = "일반 검색 실패"
 L["FULL_SCAN_BUTTON"] = "전체 검색"
 L["FULL_SCAN_FAILED"] = "전체 검색 실패"
+--[[Translation missing --]]
+L["FULL_SCAN_IN_PROGRESS"] = "Full scan in progress."
 L["GEAR_VENDOR_PRICE_MULTIPLIER"] = "상점에 판매하는 가격의 배수로 장비를 판매"
 L["HIDE"] = "숨기기"
 L["IMPORT"] = "가져오기"
@@ -264,6 +276,8 @@ L["SEARCH"] = "검색"
 L["SEARCH_TERM"] = "이름 추가"
 L["SELECT_ALL"] = "모두 선택"
 L["SELLERS_COLUMN"] = "판매자(들)"
+--[[Translation missing --]]
+L["SELLERS_OVERFLOW_TEXT"] = "%s, and %s more"
 L["SELLING_TAB"] = "판매하기"
 L["SELLING_TAB_HEADER"] = "옥셔네이터 - 판매하기"
 L["SET_VALUE"] = "가격별 설정"
@@ -339,6 +353,16 @@ L["SPLASH_901_FEATURES_1"] = "Customisable columns on all results views. Do a ri
 L["SPLASH_901_FEATURES_2"] = "Small tabs option for when too many addons add tabs to the Auction House"
 --[[Translation missing --]]
 L["SPLASH_901_FEATURES_HEADER"] = "New Features"
+--[[Translation missing --]]
+L["SPLASH_9010_DESCRIPTION"] = "Revamped selling quantity settings, if you have custom quantities set you'll likely need to set them again for this update."
+--[[Translation missing --]]
+L["SPLASH_9010_FEATURES_1"] = "The default quantities for use in the Selling tab are now set based on the item's type. Find them in the \"Selling: Quantities\" options"
+--[[Translation missing --]]
+L["SPLASH_9010_FEATURES_HEADER"] = "Features"
+--[[Translation missing --]]
+L["SPLASH_9010_UNANNOUNCED_1"] = "A new \"Show bid price option when listing an item\" option, found in \"Selling\" options, to allow bid prices to be set from the Selling tab"
+--[[Translation missing --]]
+L["SPLASH_9010_UNANNOUNCED_HEADER"] = "Unannounced features from 9.0.9"
 --[[Translation missing --]]
 L["SPLASH_902_DESCRIPTION"] = "Along with the various bugfixes, there is one new feature."
 --[[Translation missing --]]
@@ -416,7 +440,11 @@ L["UNDERCUT_TOOLTIP_HEADER"] = "최저가 설정"
 L["UNDERCUT_TOOLTIP_TEXT"] = "판매에 적합한 최저가를 설정합니다. (ex. 1골드를 입력하면 경매장에 등록할 물건의 최저가 -1골드가 됩니다.)"
 L["UNDERCUT_UNKNOWN"] = "?"
 L["UNDERCUT_YES"] = "O"
-L["UNHIDE_ALL_HIDDEN_ITEMS"] = "숨김 아이템 숨김 취소"
+--[[Translation missing --]]
+L["UNHIDE"] = "Unhide"
+--[[Translation missing --]]
+L["UNHIDE_ALL"] = "Unhide All"
+L["UNHIDE_ALL_HIDDEN_ITEMS"] = "숨겨진 아이템 모두 보이기"
 L["UNIT_PRICE"] = "가격"
 L["UNKNOWN"] = "모름"
 L["UNSELECT_ALL"] = "모두선택 취소"
@@ -427,7 +455,7 @@ L["VENDOR_TOOLTIP_TOOLTIP_HEADER"] = "상점가 툴팁"
 L["VENDOR_TOOLTIP_TOOLTIP_TEXT"] = "상점가를 툴팁에 표시합니다."
 L["VERSION_HEADER"] = "버전"
 L["VERSION_MESSAGE"] = "%s 버전"
-L["YOUR_HISTORY"] = "당신의 기록"
+L["YOUR_HISTORY"] = "올린 아이템 기록"
 
   return L
 end

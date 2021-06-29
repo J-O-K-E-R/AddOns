@@ -97,6 +97,9 @@ B.AddonsList = {
 		ChallengesKeystoneFrame = true,
 		-- ChallengesLeaderboardFrame = false,
 	},
+	Blizzard_Channels = {
+		ChannelFrame = true,
+	},
 	Blizzard_Collections = {
 		CollectionsJournal = true,
 		WardrobeFrame = true,
@@ -120,6 +123,7 @@ B.AddonsList = {
 		GarrisonShipyardFrame = true,
 		OrderHallMissionFrame = true,
 		BFAMissionFrame = true,
+		CovenantMissionFrame = true,
 	},
 	Blizzard_GMChatUI = {
 		GMChatStatusFrame = true,
@@ -242,6 +246,7 @@ end
 local function LoadPosition(self)
 	if self.IsMoving == true then return end
 	local Name = self:GetName()
+
 	if not self:GetPoint() then --Some frames don't have set positions when show script runs (e.g. CharacterFrame). For those set default position and save that.
 		if B.SpecialDefaults[Name] then
 			local a,b,c,d,e = unpack(B.SpecialDefaults[Name])
@@ -325,17 +330,6 @@ function B:SLETalkingHead()
 	end
 end
 
-function B:BlizzTest(_, addon)
-	if addon == 'Blizzard_TalkingHeadUI' then
-		hooksecurefunc('TalkingHeadFrame_PlayCurrent', function()
-			-- -- SLE:Print('TalkingHead Frame initilized PlayCurrent')
-			if E.db.sle.skins.talkinghead.hide then
-				_G.TalkingHeadFrame:Hide()
-			end
-		end)
-	end
-end
-
 function B:UpdateAll()
 	B.db = E.db.sle.blizzard
 	B:ErrorFrameSize()
@@ -396,7 +390,10 @@ function B:Initialize()
 		self:Hook('UIParent_ManageFramePosition', function()
 			for FrameName, state in pairs(B.Frames) do
 				local frame = _G[FrameName]
-				if state and frame and frame:IsShown() then LoadPosition(frame) end
+				if state and frame and frame:IsShown() then
+					if FrameName == 'CharacterFrame' or FrameName == 'WorldMapFrame' then return end
+					LoadPosition(frame)
+				end
 			end
 		end, true)
 	end

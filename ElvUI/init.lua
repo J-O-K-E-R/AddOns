@@ -1,10 +1,10 @@
 --[[
 	~AddOn Engine~
 	To load the AddOn engine add this to the top of your file:
-		local E, L, V, P, G = unpack(select(2, ...)); --Import: Engine, Locales, PrivateDB, ProfileDB, GlobalDB
+		local E, L, V, P, G = unpack(select(2, ...)) --Import: Engine, Locales, PrivateDB, ProfileDB, GlobalDB
 
 	To load the AddOn engine inside another addon add this to the top of your file:
-		local E, L, V, P, G = unpack(ElvUI); --Import: Engine, Locales, PrivateDB, ProfileDB, GlobalDB
+		local E, L, V, P, G = unpack(ElvUI) --Import: Engine, Locales, PrivateDB, ProfileDB, GlobalDB
 ]]
 
 local _G = _G
@@ -16,13 +16,13 @@ local CreateFrame = CreateFrame
 local InCombatLockdown = InCombatLockdown
 local GetAddOnEnableState = GetAddOnEnableState
 local GetAddOnMetadata = GetAddOnMetadata
-local GetLocale = GetLocale
-local GetTime = GetTime
 local HideUIPanel = HideUIPanel
 local hooksecurefunc = hooksecurefunc
 local IsAddOnLoaded = IsAddOnLoaded
 local DisableAddOn = DisableAddOn
 local ReloadUI = ReloadUI
+local GetLocale = GetLocale
+local GetTime = GetTime
 
 local GameMenuButtonAddons = GameMenuButtonAddons
 local GameMenuButtonLogout = GameMenuButtonLogout
@@ -30,6 +30,11 @@ local GameMenuFrame = GameMenuFrame
 -- GLOBALS: ElvCharacterDB, ElvPrivateDB, ElvDB, ElvCharacterData, ElvPrivateData, ElvData
 
 _G.BINDING_HEADER_ELVUI = GetAddOnMetadata(..., 'Title')
+for _, barNumber in pairs({2, 7, 8, 9, 10}) do
+	for slot = 1, 12 do
+		_G[format('BINDING_NAME_ELVUIBAR%dBUTTON%d', barNumber, slot)] = format('ActionBar %d Button %d', barNumber, slot)
+	end
+end
 
 local AceAddon, AceAddonMinor = _G.LibStub('AceAddon-3.0')
 local CallbackHandler = _G.LibStub('CallbackHandler-1.0')
@@ -39,6 +44,7 @@ local E = AceAddon:NewAddon(AddOnName, 'AceConsole-3.0', 'AceEvent-3.0', 'AceTim
 E.DF = {profile = {}, global = {}}; E.privateVars = {profile = {}} -- Defaults
 E.Options = {type = 'group', args = {}, childGroups = 'ElvUI_HiddenTree'}
 E.callbacks = E.callbacks or CallbackHandler:New(E)
+E.locale = GetLocale()
 
 Engine[1] = E
 Engine[2] = {}
@@ -60,7 +66,7 @@ E.DebugTools = E:NewModule('DebugTools','AceEvent-3.0','AceHook-3.0')
 E.Distributor = E:NewModule('Distributor','AceEvent-3.0','AceTimer-3.0','AceComm-3.0','AceSerializer-3.0')
 E.Layout = E:NewModule('Layout','AceEvent-3.0')
 E.Minimap = E:NewModule('Minimap','AceHook-3.0','AceEvent-3.0','AceTimer-3.0')
-E.Misc = E:NewModule('Misc','AceEvent-3.0','AceTimer-3.0')
+E.Misc = E:NewModule('Misc','AceEvent-3.0','AceTimer-3.0', 'AceHook-3.0')
 E.ModuleCopy = E:NewModule('ModuleCopy','AceEvent-3.0','AceTimer-3.0','AceComm-3.0','AceSerializer-3.0')
 E.NamePlates = E:NewModule('NamePlates','AceHook-3.0','AceEvent-3.0','AceTimer-3.0')
 E.PluginInstaller = E:NewModule('PluginInstaller')
@@ -71,6 +77,8 @@ E.TotemBar = E:NewModule('Totems','AceEvent-3.0')
 E.UnitFrames = E:NewModule('UnitFrames','AceTimer-3.0','AceEvent-3.0','AceHook-3.0')
 E.WorldMap = E:NewModule('WorldMap','AceHook-3.0','AceEvent-3.0','AceTimer-3.0')
 
+E.InfoColor = '|cff1784d1' -- blue
+E.InfoColor2 = '|cff9b9b9b' -- silver
 E.twoPixelsPlease = false -- changing this option is not supported! :P
 
 -- Item Qualitiy stuff - used by MerathilisUI
@@ -83,10 +91,9 @@ E.QualityColors[-1] = {r = 0, g = 0, b = 0}
 E.QualityColors[Enum.ItemQuality.Poor] = {r = .61, g = .61, b = .61}
 E.QualityColors[Enum.ItemQuality.Common] = {r = 0, g = 0, b = 0}
 
-do
-	local locale = GetLocale()
+do -- this is different from E.locale because we need to convert for ace locale files
 	local convert = {enGB = 'enUS', esES = 'esMX', itIT = 'enUS'}
-	local gameLocale = convert[locale] or locale or 'enUS'
+	local gameLocale = convert[E.locale] or E.locale or 'enUS'
 
 	function E:GetLocale()
 		return gameLocale
@@ -116,7 +123,7 @@ do
 	E:AddLib('LDB', 'LibDataBroker-1.1')
 	E:AddLib('DualSpec', 'LibDualSpec-1.0')
 	E:AddLib('SimpleSticky', 'LibSimpleSticky-1.0')
-	E:AddLib('SpellRange', 'SpellRange-1.0')
+	E:AddLib('RangeCheck', 'LibRangeCheck-2.0-ElvUI')
 	E:AddLib('ButtonGlow', 'LibButtonGlow-1.0', true)
 	E:AddLib('ItemSearch', 'LibItemSearch-1.2-ElvUI')
 	E:AddLib('Compress', 'LibCompress')
@@ -208,7 +215,7 @@ function E:OnInitialize()
 		E:StaticPopup_Show('TUKUI_ELVUI_INCOMPATIBLE')
 	end
 
-	local GameMenuButton = CreateFrame('Button', nil, GameMenuFrame, 'GameMenuButtonTemplate, BackdropTemplate')
+	local GameMenuButton = CreateFrame('Button', nil, GameMenuFrame, 'GameMenuButtonTemplate')
 	GameMenuButton:SetScript('OnClick', function()
 		E:ToggleOptionsUI() --We already prevent it from opening in combat
 		if not InCombatLockdown() then

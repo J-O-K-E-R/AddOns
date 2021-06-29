@@ -1,4 +1,4 @@
-local E, L, V, P, G = unpack(select(2, ...)); --Import: Engine, Locales, PrivateDB, ProfileDB, GlobalDB
+local E, L, V, P, G = unpack(select(2, ...)) --Import: Engine, Locales, PrivateDB, ProfileDB, GlobalDB
 local NP = E:GetModule('NamePlates')
 local CH = E:GetModule('Chat')
 local LSM = E.Libs.LSM
@@ -83,21 +83,17 @@ end
 
 function NP:Castbar_PostCastStart(unit)
 	self:CheckInterrupt(unit)
-	NP:StyleFilterUpdate(self.__owner, 'FAKE_Casting')
 end
 
 function NP:Castbar_PostCastFail()
 	self:SetStatusBarColor(NP.db.colors.castInterruptedColor.r, NP.db.colors.castInterruptedColor.g, NP.db.colors.castInterruptedColor.b)
-	NP:StyleFilterUpdate(self.__owner, 'FAKE_Casting')
 end
 
 function NP:Castbar_PostCastInterruptible(unit)
 	self:CheckInterrupt(unit)
 end
 
-function NP:Castbar_PostCastStop()
-	NP:StyleFilterUpdate(self.__owner, 'FAKE_Casting')
-end
+function NP:Castbar_PostCastStop() end
 
 function NP:Construct_Castbar(nameplate)
 	local Castbar = CreateFrame('StatusBar', nameplate:GetName()..'Castbar', nameplate)
@@ -108,7 +104,7 @@ function NP:Construct_Castbar(nameplate)
 
 	NP.StatusBars[Castbar] = true
 
-	Castbar.Button = CreateFrame('Frame', nil, Castbar, 'BackdropTemplate')
+	Castbar.Button = CreateFrame('Frame', nil, Castbar)
 	Castbar.Button:SetTemplate()
 
 	Castbar.Icon = Castbar.Button:CreateTexture(nil, 'ARTWORK')

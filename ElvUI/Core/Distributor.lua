@@ -1,4 +1,4 @@
-local E, L, V, P, G = unpack(select(2, ...)); --Import: Engine, Locales, PrivateDB, ProfileDB, GlobalDB
+local E, L, V, P, G = unpack(select(2, ...)) --Import: Engine, Locales, PrivateDB, ProfileDB, GlobalDB
 local D = E:GetModule('Distributor')
 local NP = E:GetModule('NamePlates')
 local LibCompress = E.Libs.Compress
@@ -268,7 +268,12 @@ local blacklistedKeys = {
 			classColorMentionExcludedNames = true
 		},
 		datatexts = {
-			newPanelInfo = true
+			newPanelInfo = true,
+			settings = {
+				Currencies = {
+					tooltipData = true
+				}
+			}
 		},
 		nameplate = {
 			effectiveHealth = true,
@@ -287,8 +292,7 @@ local blacklistedKeys = {
 			effectiveAura = true,
 			effectiveHealthSpeed = true,
 			effectivePowerSpeed = true,
-			effectiveAuraSpeed = true,
-			spellRangeCheck = true
+			effectiveAuraSpeed = true
 		}
 	},
 }
@@ -296,7 +300,9 @@ local blacklistedKeys = {
 --Keys that auto or user generated tables.
 D.GeneratedKeys = {
 	profile = {
+		convertPages = true,
 		movers = true,
+		actionbar = {},
 		nameplates = { -- this is supposed to have an 's' because yeah, oh well
 			filters = true
 		},
@@ -330,6 +336,10 @@ do
 	local units = D.GeneratedKeys.profile.unitframe.units
 	for unit in pairs(P.unitframe.units) do
 		units[unit] = {customTexts = true}
+	end
+
+	for i = 1, 10 do
+		D.GeneratedKeys.profile.actionbar['bar'..i] = { paging = true }
 	end
 end
 

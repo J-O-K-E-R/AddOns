@@ -1,15 +1,15 @@
 ﻿local SLE, T, E, L, V, P, G = unpack(select(2, ...))
 local EM = SLE:NewModule('EquipManager', 'AceHook-3.0', 'AceEvent-3.0')
-local GetRealZoneText = GetRealZoneText
-EM.Processing = false
 
 --GLOBALS: unpack, select, CreateFrame, CharacterFrame
 local _G = _G
 local format = format
 local UnitEffectiveLevel = UnitEffectiveLevel
 local C_EquipmentSet = C_EquipmentSet
+local GetRealZoneText = GetRealZoneText
 
 EM.Conditions = {}
+EM.Processing = false
 
 local Difficulties = {
 	[1] = 'normal', --5ppl normal
@@ -37,8 +37,10 @@ local Difficulties = {
 	[45] = 'pvp', -- PvP Scenario (Islands)
 	[147] = 'normal', -- Warfront
 	[149] = 'heroic', -- Heroic Warfront
+	[150] = 'timewalking', -- Timewalking Campaign (Chromie Time)
 	[151] = 'timewalking', -- LFR Timewalking Raids
 	[152] = 'horrificvision', -- Horrific Vision of Stormwind|Orgrimmar
+	[167] = 'torghast', -- Torghast
 }
 
 --Table of tags conditions for gear switching
@@ -181,6 +183,9 @@ EM.TagsTable = {
 	--Well, it's just true :D
 	['NoCondition'] = function()
 		return true
+	end,
+	['warmode'] = function()
+		return C_PvP.IsWarModeDesired()
 	end,
 }
 
@@ -348,7 +353,7 @@ EM.Equip = Equip
 --Creating a lock button. Prevents gear from auto equip
 function EM:CreateLock()
 	if _G.SLE_Equip_Lock_Button or not EM.db.lockbutton then return end
-	local button = CreateFrame('Button', 'SLE_Equip_Lock_Button', _G.CharacterFrame)
+	local button = CreateFrame('Button', 'SLE_Equip_Lock_Button', _G.PaperDollFrame)
 	button:Size(20, 20)
 	button:Point('BOTTOMLEFT', _G.CharacterFrame, 'BOTTOMLEFT', 4, 4)
 	button:SetFrameLevel(_G.CharacterModelFrame:GetFrameLevel() + 2)
@@ -361,12 +366,6 @@ function EM:CreateLock()
 		_G.GameTooltip:Hide()
 	end)
 	E:GetModule('Skins'):HandleButton(button)
-
-	-- button.TitleText = button:CreateFontString(nil, 'OVERLAY')
-	-- button.TitleText:FontTemplate()
-	-- button.TitleText:SetPoint('BOTTOMLEFT', button, 'TOPLEFT', 0, 0)
-	-- button.TitleText:SetJustifyH('LEFT')
-	-- button.TitleText:SetText("|cff9482c9S&L|r")
 
 	button.Icon = button:CreateTexture(nil, 'OVERLAY')
 	button.Icon:SetAllPoints()
@@ -386,9 +385,9 @@ end
 
 EM.Events = {}
 function EM:RegisterNewEvent(event)
-	if not self.Events[event] then
-		self:RegisterEvent(event, Equip)
-		self.Events[event] = true
+	if not EM.Events[event] then
+		EM:RegisterEvent(event, Equip)
+		EM.Events[event] = true
 	end
 end
 
@@ -396,16 +395,17 @@ function EM:Initialize()
 	EM.db = E.private.sle.equip
 	if not SLE.initialized or not EM.db.enable then return end
 	EM.lock = false
-	self:RegisterEvent('PLAYER_ENTERING_WORLD', Equip)
-	self:RegisterEvent('LOADING_SCREEN_DISABLED', Equip)
-	self:RegisterEvent('ACTIVE_TALENT_GROUP_CHANGED', Equip)
-	self:RegisterEvent('PLAYER_LEVEL_CHANGED', Equip)
-	self:RegisterEvent('GROUP_ROSTER_UPDATE', Equip)
+	EM:RegisterEvent('PLAYER_ENTERING_WORLD', Equip)
+	EM:RegisterEvent('LOADING_SCREEN_DISABLED', Equip)
+	EM:RegisterEvent('ACTIVE_TALENT_GROUP_CHANGED', Equip)
+	EM:RegisterEvent('PLAYER_LEVEL_CHANGED', Equip)
+	EM:RegisterEvent('GROUP_ROSTER_UPDATE', Equip)
+	EM:RegisterEvent('PLAYER_FLAGS_CHANGED', Equip)
 
 	--Initial apply options
 	EM:TagsProcess(EM.db.conditions)
 
-	self:CreateLock()
+	EM:CreateLock()
 end
 
 SLE:RegisterModule(EM:GetName())

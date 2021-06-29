@@ -24,8 +24,8 @@ RSConstants.LOOT_ITEM_ID = nil
 -- Current versions
 ---============================================================================
 
-RSConstants.CURRENT_DB_VERSION = 39
-RSConstants.CURRENT_LOOT_DB_VERSION = 51
+RSConstants.CURRENT_DB_VERSION = 41
+RSConstants.CURRENT_LOOT_DB_VERSION = 53
 
 ---============================================================================
 -- Special events
@@ -59,7 +59,7 @@ RSConstants.PROFILE_DEFAULTS = {
 			scanInstances = true,
 			scanOnTaxi = true,
 			scanOnPetBattle = true,
-			scanWorldmapVignette = true,
+			scanWorldmapVignette = false,
 			filteredRares = {},
 			filteredContainers = {},
 			filteredZones = {},
@@ -103,6 +103,15 @@ RSConstants.PROFILE_DEFAULTS = {
 			filtersToggled = true,
 			filterOnlyMap = false
 		},
+		collections = {
+			filteredOnlyOnWorldMap = false,
+			autoFilteringOnCollect = true,
+			createProfileBackup = true,
+			searchingPets = true,
+			searchingMounts = true,
+			searchingToys = true,
+			searchingAppearances = true
+		},
 		map = {
 			displayNpcIcons = true,
 			displayContainerIcons = true,
@@ -110,15 +119,15 @@ RSConstants.PROFILE_DEFAULTS = {
 			disableLastSeenFilter = false,
 			displayFriendlyNpcIcons = false,
 			displayNotDiscoveredMapIcons = true,
-			displayOldNotDiscoveredMapIcons = false,
+			displayOldNotDiscoveredMapIcons = true,
 			keepShowingAfterDead = false,
 			keepShowingAfterDeadReseteable = false,
 			keepShowingAfterCollected = false,
 			keepShowingAfterCompleted = false,
 			maxSeenTime = 0,
-			maxSeenTimeContainer = 5,
+			maxSeenTimeContainer = 0,
 			maxSeenTimeEvent = 5,
-			scale = 1.0,
+			scale = 0.8,
 			minimapscale = 0.7,
 			showingWorldMapSearcher = true,
 			cleanWorldMapSearcherOnChange = true,
@@ -232,17 +241,35 @@ RSConstants.ASCENDED_COUNCIL_NPCS = { 170832, 170833, 170834, 170835, 170836 }
 RSConstants.FOUR_PEOPLE_NPCS = { 170301, 169827, 170301, 170302 }
 RSConstants.BOUNDING_SHRROM_CONTAINERS = { 349793, 349797, 353330 }
 RSConstants.RIPE_PURIAN_CONTAINERS = { 353643, 353503, 353205, 353500, 352754, 353516, 353325, 353019, 353252, 353314, 352998 }
+
+-- NPCs that spawn after completing an event
 RSConstants.NPCS_WITH_PRE_EVENT = {
 	[164102] = 164093;
 	[167874] = 167851;
 	[168053] = 167721;
+	[165206] = 165230;
+	[160675] = 176347;
+}
+
+-- NPCs that spawn after killing another NPC
+RSConstants.NPCS_WITH_PRE_NPCS = {
+	[165175] = 165152;
+	[165206] = 165230;
+	[166521] = 166483;
+	[160675] = 176347;
 }
 	
 -- 156480 Next door entity inside Torghast
 -- 155660 Summons from the Depths
 RSConstants.INGNORED_VIGNETTES = { 156480, 155660, 163373 }
-RSConstants.NPCS_WITH_EVENT_VIGNETTE = { 154330, 164547, 164477, 160629, 175012, 157833, 166398, 164064, 162829, 157964, 162844, 171317, 170774, 162849, 170301, 170302, 170711, 170634, 170731, 172862, 172577, 158025, 158278 }
+RSConstants.NPCS_WITH_EVENT_VIGNETTE = { 154330, 164547, 164477, 160629, 175012, 157833, 166398, 164064, 162829, 157964, 162844, 171317, 170774, 162849, 170301, 170302, 170711, 170634, 170731, 172862, 172577, 158025, 158278, 170303 }
 RSConstants.NPCS_WITH_MULTIPLE_SPAWNS = { 69768, 69769, 69841, 69842, 70323 }
+
+---============================================================================
+-- MountIDs
+---============================================================================
+
+RSConstants.MOUNTS_WITHOUT_SOURCE = { 1314, 1411 } 
 
 ---============================================================================
 -- ItemIDs
@@ -415,6 +442,13 @@ RSConstants.STEP4 = "4"
 RSConstants.STEP5 = "5"
 RSConstants.STEP6 = "6"
 RSConstants.STEP7 = "7"
+
+---============================================================================
+-- Dialogs
+---============================================================================
+
+RSConstants.APPLY_COLLECTIONS_LOOT_FILTERS = "RARESCANNER_APPLY_COLLECTIONS_LOOT_FILTERS"
+RSConstants.START_COLLECTIONS_SCAN = "RARESCANNER_START_COLLECTIONS_SCAN"
 
 ---============================================================================
 -- Others

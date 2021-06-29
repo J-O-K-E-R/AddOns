@@ -1,4 +1,4 @@
-local E, L, V, P, G = unpack(select(2, ...)); --Import: Engine, Locales, PrivateDB, ProfileDB, GlobalDB
+local E, L, V, P, G = unpack(select(2, ...)) --Import: Engine, Locales, PrivateDB, ProfileDB, GlobalDB
 local M = E:GetModule('Minimap')
 local LSM = E.Libs.LSM
 
@@ -28,8 +28,9 @@ local ToggleGuildFrame = ToggleGuildFrame
 local ToggleHelpFrame = ToggleHelpFrame
 local ToggleLFDParentFrame = ToggleLFDParentFrame
 local hooksecurefunc = hooksecurefunc
-local Minimap = _G.Minimap
+
 local WorldMapFrame = _G.WorldMapFrame
+local Minimap = _G.Minimap
 
 -- GLOBALS: GetMinimapShape
 
@@ -42,7 +43,7 @@ _G.UIDropDownMenu_Initialize(ElvUIMiniMapTrackingDropDown, _G.MiniMapTrackingDro
 ElvUIMiniMapTrackingDropDown.noResize = true
 
 --Create the minimap micro menu
-local menuFrame = CreateFrame('Frame', 'MinimapRightClickMenu', E.UIParent, 'BackdropTemplate')
+local menuFrame = CreateFrame('Frame', 'MinimapRightClickMenu', E.UIParent)
 local menuList = {
 	{text = _G.CHARACTER_BUTTON,
 	func = function() ToggleCharacter('PaperDollFrame') end},
@@ -238,7 +239,7 @@ do
 	local isResetting
 	local function ResetZoom()
 		Minimap:SetZoom(0)
-		_G.MinimapZoomIn:Enable(); --Reset enabled state of buttons
+		_G.MinimapZoomIn:Enable() --Reset enabled state of buttons
 		_G.MinimapZoomOut:Disable()
 		isResetting = false
 	end
@@ -279,6 +280,8 @@ function M:UpdateSettings()
 	end
 
 	M.HandleGarrisonButton()
+
+	_G.MiniMapMailIcon:SetTexture(E.Media.MailIcons[E.db.general.minimap.icons.mail.texture] or E.Media.MailIcons.Mai3)
 
 	local GameTimeFrame = _G.GameTimeFrame
 	if GameTimeFrame then
@@ -362,8 +365,6 @@ function M:Initialize()
 	mmholder:Point('TOPRIGHT', E.UIParent, 'TOPRIGHT', -3, -3)
 	mmholder:Size(Minimap:GetSize())
 
-	Minimap:SetQuestBlobRingAlpha(0)
-	Minimap:SetArchBlobRingAlpha(0)
 	Minimap:CreateBackdrop()
 	Minimap:SetFrameLevel(Minimap:GetFrameLevel() + 2)
 	Minimap:ClearAllPoints()
@@ -400,13 +401,13 @@ function M:Initialize()
 		frame:Kill()
 	end
 
-	_G.MiniMapMailIcon:SetTexture(E.Media.Textures.Mail)
-
 	-- Every GarrisonLandingPageMinimapButton_UpdateIcon() call reanchor the button
 	hooksecurefunc('GarrisonLandingPageMinimapButton_UpdateIcon', M.HandleGarrisonButton)
 
 	--Hide the BlopRing on Minimap
+	Minimap:SetArchBlobRingAlpha(0)
 	Minimap:SetArchBlobRingScalar(0)
+	Minimap:SetQuestBlobRingAlpha(0)
 	Minimap:SetQuestBlobRingScalar(0)
 
 	if E.private.general.minimap.hideClassHallReport then

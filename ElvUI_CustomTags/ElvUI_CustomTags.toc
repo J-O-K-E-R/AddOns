@@ -1,8 +1,10 @@
-## Interface: 90001
+## Interface: 90005
 ## Title: |cfffe7b2cElvUI|r |cffffffffCustomTags|r
-## Version: 1.07
+## Version: 1.09
 ## Author: Azilroka, Blazeflack
 ## RequiredDeps: ElvUI
+## X-Curse-Project-ID: 473233
+## X-Wago-ID: Xb6X8o6p
 ## X-Tukui-ProjectID: 147
 ## X-Tukui-ProjectFolders: ElvUI_CustomTags
 

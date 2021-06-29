@@ -8,6 +8,7 @@ Auctionator.Config.Options = {
   SHIFT_STACK_TOOLTIPS = "shift_stack_tooltips",
   AUTOSCAN = "autoscan_2",
   AUTOSCAN_INTERVAL = "autoscan_interval",
+  REPLICATE_SCAN = "replicate_scan_2",
   AUTO_LIST_SEARCH = "auto_list_search",
   DEFAULT_LIST = "default_list_2",
 
@@ -28,12 +29,12 @@ Auctionator.Config.Options = {
   SELLING_MISSING_FAVOURITES = "selling_missing_favourites",
   SELLING_POST_SHORTCUT = "selling_post_shortcut",
   SELLING_SKIP_SHORTCUT = "selling_skip_shortcut",
+  SHOW_SELLING_BID_PRICE = "show_selling_bid_price",
 
   NOT_LIFO_AUCTION_DURATION = "not_lifo_auction_duration",
   NOT_LIFO_AUCTION_SALES_PREFERENCE = "not_lifo_auction_sales_preference",
   NOT_LIFO_UNDERCUT_PERCENTAGE = "not_lifo_undercut_percentage",
   NOT_LIFO_UNDERCUT_STATIC_VALUE = "not_lifo_undercut_static_value",
-  NOT_LIFO_DEFAULT_QUANTITY = "not_lifo_default_quantity",
   GEAR_PRICE_MULTIPLIER = "gear_vendor_price_multiplier",
   SELLING_GEAR_USE_ILVL = "gear_use_ilvl",
 
@@ -41,7 +42,8 @@ Auctionator.Config.Options = {
   LIFO_AUCTION_SALES_PREFERENCE = "lifo_auction_sales_preference",
   LIFO_UNDERCUT_PERCENTAGE = "lifo_undercut_percentage",
   LIFO_UNDERCUT_STATIC_VALUE = "lifo_undercut_static_value",
-  LIFO_DEFAULT_QUANTITY = "lifo_default_quantity",
+
+  DEFAULT_QUANTITIES = "default_quantities",
 
   PRICE_HISTORY_DAYS = "price_history_days",
   POSTING_HISTORY_LENGTH = "auctions_history_length",
@@ -89,6 +91,7 @@ local defaults = {
   [Auctionator.Config.Options.SHIFT_STACK_TOOLTIPS] = true,
   [Auctionator.Config.Options.AUTOSCAN] = false,
   [Auctionator.Config.Options.AUTOSCAN_INTERVAL] = 15,
+  [Auctionator.Config.Options.REPLICATE_SCAN] = true,
   [Auctionator.Config.Options.AUTO_LIST_SEARCH] = true,
   [Auctionator.Config.Options.DEFAULT_LIST] = Auctionator.Constants.NO_LIST,
   [Auctionator.Config.Options.AUCTION_CHAT_LOG] = true,
@@ -105,12 +108,12 @@ local defaults = {
   [Auctionator.Config.Options.SELLING_MISSING_FAVOURITES] = true,
   [Auctionator.Config.Options.SELLING_POST_SHORTCUT] = "",
   [Auctionator.Config.Options.SELLING_SKIP_SHORTCUT] = "",
+  [Auctionator.Config.Options.SHOW_SELLING_BID_PRICE] = false,
 
   [Auctionator.Config.Options.NOT_LIFO_AUCTION_DURATION] = 48,
   [Auctionator.Config.Options.NOT_LIFO_AUCTION_SALES_PREFERENCE] = Auctionator.Config.SalesTypes.PERCENTAGE,
   [Auctionator.Config.Options.NOT_LIFO_UNDERCUT_PERCENTAGE] = 0,
   [Auctionator.Config.Options.NOT_LIFO_UNDERCUT_STATIC_VALUE] = 0,
-  [Auctionator.Config.Options.NOT_LIFO_DEFAULT_QUANTITY] = 1,
   [Auctionator.Config.Options.GEAR_PRICE_MULTIPLIER] = 0,
   [Auctionator.Config.Options.SELLING_GEAR_USE_ILVL] = false,
 
@@ -118,7 +121,21 @@ local defaults = {
   [Auctionator.Config.Options.LIFO_AUCTION_SALES_PREFERENCE] = Auctionator.Config.SalesTypes.PERCENTAGE,
   [Auctionator.Config.Options.LIFO_UNDERCUT_PERCENTAGE] = 0,
   [Auctionator.Config.Options.LIFO_UNDERCUT_STATIC_VALUE] = 0,
-  [Auctionator.Config.Options.LIFO_DEFAULT_QUANTITY] = 0,
+
+  [Auctionator.Config.Options.DEFAULT_QUANTITIES] = {
+    [LE_ITEM_CLASS_WEAPON]           = 1,
+    [LE_ITEM_CLASS_ARMOR]            = 1,
+    [LE_ITEM_CLASS_CONTAINER]        = 0,
+    [LE_ITEM_CLASS_GEM]              = 0,
+    [LE_ITEM_CLASS_ITEM_ENHANCEMENT] = 0,
+    [LE_ITEM_CLASS_CONSUMABLE]       = 0,
+    [LE_ITEM_CLASS_GLYPH]            = 0,
+    [LE_ITEM_CLASS_TRADEGOODS]       = 0,
+    [LE_ITEM_CLASS_RECIPE]           = 0,
+    [LE_ITEM_CLASS_BATTLEPET]        = 1,
+    [LE_ITEM_CLASS_QUESTITEM]        = 0,
+    [LE_ITEM_CLASS_MISCELLANEOUS]    = 0,
+  },
 
   [Auctionator.Config.Options.PRICE_HISTORY_DAYS] = 21,
   [Auctionator.Config.Options.POSTING_HISTORY_LENGTH] = 10,
@@ -142,7 +159,7 @@ local defaults = {
   [Auctionator.Config.Options.COLUMNS_POSTING_HISTORY] = {},
 }
 
-local function isValidOption(name)
+function Auctionator.Config.IsValidOption(name)
   for _, option in pairs(Auctionator.Config.Options) do
     if option == name then
       return true
@@ -167,7 +184,7 @@ end
 function Auctionator.Config.Set(name, value)
   if AUCTIONATOR_CONFIG == nil then
     error("AUCTIONATOR_CONFIG not initialized")
-  elseif not isValidOption(name) then
+  elseif not Auctionator.Config.IsValidOption(name) then
     error("Invalid option '" .. name .. "'")
   elseif AUCTIONATOR_CHARACTER_CONFIG ~= nil then
     AUCTIONATOR_CHARACTER_CONFIG[name] = value

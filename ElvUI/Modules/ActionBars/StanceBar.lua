@@ -1,10 +1,9 @@
-local E, L, V, P, G = unpack(select(2, ...)); --Import: Engine, Locales, PrivateDB, ProfileDB, GlobalDB
+local E, L, V, P, G = unpack(select(2, ...)) --Import: Engine, Locales, PrivateDB, ProfileDB, GlobalDB
 local AB = E:GetModule('ActionBars')
 
 local _G = _G
 local gsub = gsub
 local format, ipairs = format, ipairs
-local CooldownFrame_Set = CooldownFrame_Set
 local CreateFrame = CreateFrame
 local GetBindingKey = GetBindingKey
 local GetNumShapeshiftForms = GetNumShapeshiftForms
@@ -29,12 +28,10 @@ function AB:UPDATE_SHAPESHIFT_COOLDOWN()
 		if i <= numForms then
 			cooldown = _G['ElvUI_StanceBarButton'..i..'Cooldown']
 			start, duration, enable = GetShapeshiftFormCooldown(i)
-			CooldownFrame_Set(cooldown, start, duration, enable)
+			cooldown:SetCooldown(start, duration, enable)
 			cooldown:SetDrawBling(cooldown:GetEffectiveAlpha() > 0.5) --Cooldown Bling Fix
 		end
 	end
-
-	AB:StyleShapeShift('UPDATE_SHAPESHIFT_COOLDOWN')
 end
 
 function AB:StyleShapeShift()
@@ -57,6 +54,7 @@ function AB:StyleShapeShift()
 			if not texture then texture = WispSplode end
 
 			button.icon:SetTexture(texture)
+			button.icon:SetInside()
 
 			if not button.useMasque then
 				cooldown:SetAlpha(1)
@@ -103,7 +101,7 @@ end
 function AB:PositionAndSizeBarShapeShift()
 	local db = AB.db.stanceBar
 
-	local buttonSpacing = db.buttonspacing
+	local buttonSpacing = db.buttonSpacing
 	local backdropSpacing = db.backdropSpacing
 	local buttonsPerRow = db.buttonsPerRow
 	local numButtons = db.buttons
@@ -146,30 +144,25 @@ function AB:PositionAndSizeBarShapeShift()
 		end
 
 		if i > numButtons then
+			button:SetScale(0.0001)
 			button:SetAlpha(0)
 			button.handleBackdrop = nil
 		else
+			button:SetScale(1)
 			button:SetAlpha(db.alpha)
 			lastShownButton = button
 			button.handleBackdrop = true -- keep over HandleButton
 		end
 
 		AB:HandleButton(bar, button, i, lastButton, lastColumnButton)
+		AB:StyleButton(button, nil, useMasque, true)
 
 		if useMasque then
 			MasqueGroup:AddButton(bar.buttons[i])
-		end
-
-		if not button.FlyoutUpdateFunc then
-			AB:StyleButton(button, nil, useMasque, true)
-
-			if not useMasque then
-				if db.style == 'darkenInactive' then
-					button.checked:SetBlendMode('BLEND')
-				else
-					button.checked:SetBlendMode('ADD')
-				end
-			end
+		elseif db.style == 'darkenInactive' then
+			button.checked:SetBlendMode('BLEND')
+		else
+			button.checked:SetBlendMode('ADD')
 		end
 	end
 
@@ -240,14 +233,8 @@ function AB:UpdateStanceBindings()
 		local button = _G['ElvUI_StanceBarButton'..i]
 		if not button then break end
 
-		if AB.db.hotkeytext and not (button.db and button.db.hideHotkey) then
-			button.HotKey:Show()
-			button.HotKey:SetText(GetBindingKey('SHAPESHIFTBUTTON'..i))
-
-			AB:FixKeybindText(button)
-		else
-			button.HotKey:Hide()
-		end
+		button.HotKey:SetText(GetBindingKey('SHAPESHIFTBUTTON'..i))
+		AB:FixKeybindText(button)
 	end
 end
 
@@ -265,5 +252,5 @@ function AB:CreateBarShapeShift()
 	AB:RegisterEvent('UPDATE_SHAPESHIFT_USABLE', 'StyleShapeShift')
 	AB:RegisterEvent('ACTIONBAR_PAGE_CHANGED', 'StyleShapeShift')
 
-	E:CreateMover(bar, 'ShiftAB', L["Stance Bar"], nil, -3, nil, 'ALL,ACTIONBARS', nil, 'actionbar,stanceBar', true)
+	E:CreateMover(bar, 'ShiftAB', L["Stance Bar"], nil, -3, nil, 'ALL,ACTIONBARS', nil, 'actionbar,stanceBar')
 end

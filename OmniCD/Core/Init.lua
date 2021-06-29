@@ -13,14 +13,18 @@ function NS:unpack()
 	return self[1], self[2], self[3], self[4]
 end
 
-function AddOn:SetNumPixels()
+function AddOn:SetPixelMult()
 	local _, screenheight = GetPhysicalScreenSize()
 	local uiUnitFactor = 768 / screenheight
 	local uiScale = UIParent:GetScale()
-	self.NumPixels = uiUnitFactor / uiScale
+	self.PixelMult = uiUnitFactor / uiScale
 end
 
-NS[1]:SetNumPixels()
+NS[1].Libs = {}
+NS[1].Libs.ACD = LibStub("AceConfigDialog-3.0-OmniCD")
+NS[1].Libs.ACR = LibStub("AceConfigRegistry-3.0")
+
+NS[1]:SetPixelMult()
 NS[1].userGUID = UnitGUID("player")
 NS[1].userName = UnitName("player")
 NS[1].userRealm = GetRealmName()
@@ -36,5 +40,6 @@ NS[1].Notes = GetAddOnMetadata(AddOnName, "Notes")
 NS[1].License = GetAddOnMetadata(AddOnName, "X-License")
 NS[1].WoWPatch, NS[1].WoWBuild, NS[1].WoWPatchReleaseDate, NS[1].TocVersion = GetBuildInfo()
 NS[1].LoginMessage = NS[1].userClassHexColor .. AddOnName .. " v" .. NS[1].Version .. "|r - /oc"
+NS[1].isBCC = WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC
 
 OmniCD = NS
