@@ -3,6 +3,9 @@
 local Plater = _G.Plater
 local DF = _G.DetailsFramework
 
+local IS_WOW_PROJECT_MAINLINE = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
+local IS_WOW_PROJECT_NOT_MAINLINE = WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE
+
 --stop yellow lines on my editor
 local tinsert = _G.tinsert
 local min = _G.min
@@ -22,9 +25,11 @@ local GetSpellInfo = _G.GetSpellInfo
 local floor = _G.floor
 local UnitAuraSlots = _G.UnitAuraSlots
 local UnitAuraBySlot = _G.UnitAuraBySlot
+local UnitAura = _G.UnitAura
 local BackdropTemplateMixin = _G.BackdropTemplateMixin
 local NamePlateTooltip = _G.NamePlateTooltip
 local BUFF_MAX_DISPLAY = _G.BUFF_MAX_DISPLAY
+local _
 
 local DB_AURA_GROW_DIRECTION
 local DB_AURA_GROW_DIRECTION2
@@ -32,12 +37,15 @@ local DB_AURA_PADDING
 local DB_AURA_SEPARATE_BUFFS
 local DB_SHOW_PURGE_IN_EXTRA_ICONS
 local DB_SHOW_ENRAGE_IN_EXTRA_ICONS
+local DB_SHOW_MAGIC_IN_EXTRA_ICONS
 local DB_DEBUFF_BANNED
 local DB_AURA_SHOW_IMPORTANT
 local DB_AURA_SHOW_BYPLAYER
+local DB_AURA_SHOW_BYOTHERPLAYERS
 local DB_BUFF_BANNED
 local DB_AURA_SHOW_DISPELLABLE
 local DB_AURA_SHOW_ENRAGE
+local DB_AURA_SHOW_MAGIC
 local DB_AURA_SHOW_BYUNIT
 local DB_AURA_ALPHA
 
@@ -130,28 +138,30 @@ local AUTO_TRACKING_EXTRA_DEBUFFS = {}
 		for i = 1, amountFramesShown do
 			local iconFrame = iconFrameContainer [i]
 			local texture = iconFrame.texture
-			
-			if (aurasDuplicated [texture]) then
-				tinsert (aurasDuplicated [texture], {iconFrame, iconFrame.RemainingTime})
+			local spellName = iconFrame.SpellName
+			local index = spellName .. texture
+
+			if (aurasDuplicated [index]) then
+				tinsert (aurasDuplicated [index], {iconFrame, iconFrame.RemainingTime})
 			else
-				aurasDuplicated [texture] = {
+				aurasDuplicated [index] = {
 					{iconFrame, iconFrame.RemainingTime}
 				}
 			end
 		end
 
-		for texture, iconFramesTable in pairs (aurasDuplicated) do
+		for index, iconFramesTable in pairs (aurasDuplicated) do
 			--how many auras with the same name the unit has
 			local amountOfSimilarAuras = #iconFramesTable
+			local totalStacks = iconFramesTable [1][1].Stacks > 0 and iconFramesTable [1][1].Stacks or 1
 			
 			if (amountOfSimilarAuras > 1) then
-				--reverse order: the aura with the less time left is shown
-				--if the aura with less time isn't the first occurence of this aura, it'll create some empty gaps
-			--	if (Plater.db.profile.aura_consolidate_timeleft_lower) then
-			--		table.sort (iconFramesTable, DF.SortOrder2R)
-			--	else
-			--		table.sort (iconFramesTable, DF.SortOrder2)
-			--	end
+				--sort order: the aura with the least time left is shown by default
+				if (Plater.db.profile.aura_consolidate_timeleft_lower) then
+					table.sort (iconFramesTable, DF.SortOrder2R)
+				else
+					table.sort (iconFramesTable, DF.SortOrder2)
+				end
 				
 				--hide all auras except for the first occurrence of this aura
 				for i = 2, amountOfSimilarAuras do
@@ -160,13 +170,15 @@ local AUTO_TRACKING_EXTRA_DEBUFFS = {}
 					iconFrame:Hide()
 					iconFrame.InUse = false
 					
+					totalStacks = totalStacks + (iconFrame.Stacks > 0 and iconFrame.Stacks or 1)
+					
 					--decrease the amount of auras shown on the buff frame
 					self.amountAurasShown = self.amountAurasShown - 1
 				end
 				
 				--set the stack amount number to indicate how many auras similar to this the unit has
 				local stackLabel = iconFramesTable [1][1].StackText
-				stackLabel:SetText (amountOfSimilarAuras)
+				stackLabel:SetText (totalStacks)
 				stackLabel:Show()
 			end
 		end
@@ -200,8 +212,8 @@ local AUTO_TRACKING_EXTRA_DEBUFFS = {}
 			
 			--get the table where all icon frames are stored in
 			local iconFrameContainer = self.PlaterBuffList
-			--get the amount of auras shown in the frame, this variable should be always reliable
-			local amountFramesShown = self.amountAurasShown
+			--get the amount of auras shown in the frame; iterate over all if not sorting
+			local amountFramesShown = #iconFrameContainer
 			
 			if (profile.aura_sort) then
 				local iconFrameContainerCopy = {}
@@ -214,6 +226,8 @@ local AUTO_TRACKING_EXTRA_DEBUFFS = {}
 				end
 				iconFrameContainer = iconFrameContainerCopy
 				table.sort (iconFrameContainer, Plater.AuraIconsSortFunction)
+				--when sorted, this is reliable
+				amountFramesShown = index
 			end
 		
 			local growDirection
@@ -554,6 +568,10 @@ local AUTO_TRACKING_EXTRA_DEBUFFS = {}
 		local auraIconFrame = self.PlaterBuffList [i]
 		self.NextAuraIcon = self.NextAuraIcon + 1
 		
+		auraIconFrame:SetAlpha(1)
+		auraIconFrame.Icon:SetDesaturated(false)
+		auraIconFrame.Cooldown:Show()
+
 		return auraIconFrame, self
     end
     
@@ -975,11 +993,27 @@ local AUTO_TRACKING_EXTRA_DEBUFFS = {}
 			local buffIndex = 0
 			local continuationToken
 			repeat -- until continuationToken == nil
-				local slots = { UnitAuraSlots(unit, "HELPFUL", BUFF_MAX_DISPLAY, continuationToken) }
-				continuationToken = slots[1]
-				for i=2, #slots do
-					local slot = slots[i];
-					local name, texture, count, actualAuraType, duration, expirationTime, caster, canStealOrPurge, nameplateShowPersonal, spellId, canApplyAura, isBossDebuff, isCastByPlayer, nameplateShowAll = UnitAuraBySlot(unit, slot)
+				local numSlots = 0
+				local slots
+				if IS_WOW_PROJECT_MAINLINE then
+					slots = { UnitAuraSlots(unit, "HELPFUL", BUFF_MAX_DISPLAY, continuationToken) }
+					continuationToken = slots[1]
+					numSlots = #slots
+				else
+					numSlots = BUFF_MAX_DISPLAY + 1
+				end
+				
+				for i=2, numSlots do
+					local name, texture, count, actualAuraType, duration, expirationTime, caster, canStealOrPurge, nameplateShowPersonal, spellId, canApplyAura, isBossDebuff, isCastByPlayer, nameplateShowAll
+					if IS_WOW_PROJECT_MAINLINE then
+						local slot = slots[i]
+						name, texture, count, actualAuraType, duration, expirationTime, caster, canStealOrPurge, nameplateShowPersonal, spellId, canApplyAura, isBossDebuff, isCastByPlayer, nameplateShowAll, timeMod = UnitAuraBySlot(unit, slot)
+					else
+						name, texture, count, actualAuraType, duration, expirationTime, caster, canStealOrPurge, nameplateShowPersonal, spellId, canApplyAura, isBossDebuff, isCastByPlayer, nameplateShowAll, timeMod = UnitAura(unit, i-1, "HELPFUL")
+						if not name then
+							break
+						end
+					end
 					
 					buffIndex = buffIndex + 1
 					
@@ -1000,7 +1034,7 @@ local AUTO_TRACKING_EXTRA_DEBUFFS = {}
 						--> check for special auras auto added by setting like 'show crowd control' or 'show dispellable'
 						--> SPECIAL_AURAS_AUTO_ADDED has a list of crowd control not do not have a list of dispellable, so check if canStealOrPurge.
 						--> in addition, we want to check if enrage tracking is enabled and show enrage effects
-						if (SPECIAL_AURAS_AUTO_ADDED [name] or SPECIAL_AURAS_AUTO_ADDED [spellId] or (DB_SHOW_PURGE_IN_EXTRA_ICONS and canStealOrPurge) or (DB_SHOW_ENRAGE_IN_EXTRA_ICONS and actualAuraType == AURA_TYPE_ENRAGE)) then
+						if (SPECIAL_AURAS_AUTO_ADDED [name] or SPECIAL_AURAS_AUTO_ADDED [spellId] or (DB_SHOW_PURGE_IN_EXTRA_ICONS and canStealOrPurge) or (DB_SHOW_ENRAGE_IN_EXTRA_ICONS and actualAuraType == AURA_TYPE_ENRAGE) or (DB_SHOW_MAGIC_IN_EXTRA_ICONS and actualAuraType == AURA_TYPE_MAGIC)) then
 							Plater.AddExtraIcon (self, name, texture, count, actualAuraType, duration, expirationTime, caster, canStealOrPurge, nameplateShowPersonal, spellId, "HELPFUL", buffIndex)
 						
 						--> check for special auras added by the user it self
@@ -1016,11 +1050,27 @@ local AUTO_TRACKING_EXTRA_DEBUFFS = {}
 			local debuffIndex = 0
 			local continuationToken
 			repeat -- until continuationToken == nil
-				local slots = { UnitAuraSlots(unit, "HARMFUL", BUFF_MAX_DISPLAY, continuationToken) }
-				continuationToken = slots[1]
-				for i=2, #slots do
-					local slot = slots[i];
-					local name, texture, count, actualAuraType, duration, expirationTime, caster, canStealOrPurge, nameplateShowPersonal, spellId, canApplyAura, isBossDebuff, isCastByPlayer, nameplateShowAll = UnitAuraBySlot(unit, slot)
+				local numSlots = 0
+				local slots
+				if IS_WOW_PROJECT_MAINLINE then
+					slots = { UnitAuraSlots(unit, "HARMFUL", BUFF_MAX_DISPLAY, continuationToken) }
+					continuationToken = slots[1]
+					numSlots = #slots
+				else
+					numSlots = BUFF_MAX_DISPLAY + 1
+				end
+				
+				for i=2, numSlots do
+					local name, texture, count, actualAuraType, duration, expirationTime, caster, canStealOrPurge, nameplateShowPersonal, spellId, canApplyAura, isBossDebuff, isCastByPlayer, nameplateShowAll
+					if IS_WOW_PROJECT_MAINLINE then
+						local slot = slots[i]
+						name, texture, count, actualAuraType, duration, expirationTime, caster, canStealOrPurge, nameplateShowPersonal, spellId, canApplyAura, isBossDebuff, isCastByPlayer, nameplateShowAll, timeMod = UnitAuraBySlot(unit, slot)
+					else
+						name, texture, count, actualAuraType, duration, expirationTime, caster, canStealOrPurge, nameplateShowPersonal, spellId, canApplyAura, isBossDebuff, isCastByPlayer, nameplateShowAll, timeMod = UnitAura(unit, i-1, "HARMFUL")
+						if not name then
+							break
+						end
+					end
 					
 					debuffIndex = debuffIndex + 1
 					
@@ -1060,6 +1110,8 @@ local AUTO_TRACKING_EXTRA_DEBUFFS = {}
 	end
 	
 	function Plater.UpdateAuras_Manual (self, unit, isPersonal)
+		Plater.StartLogPerformanceCore("Plater-Core", "Update", "UpdateAuras_Manual")
+		
 		Plater.ResetAuraContainer (self)
 		
 		if isPersonal then
@@ -1076,10 +1128,14 @@ local AUTO_TRACKING_EXTRA_DEBUFFS = {}
 
 		--> hide not used aura frames
 		Plater.HideNonUsedAuraIcons (self)
+		
+		Plater.EndLogPerformanceCore("Plater-Core", "Update", "UpdateAuras_Manual")
 	end
 
 	--> track auras automatically when the user has automatic aura tracking selected in the options panel
 	function Plater.UpdateAuras_Automatic (self, unit)
+		Plater.StartLogPerformanceCore("Plater-Core", "Update", "UpdateAuras_Automatic")
+		
 		Plater.ResetAuraContainer (self)
 		local unitAuraCache = self.unitFrame.AuraCache
 		
@@ -1087,11 +1143,27 @@ local AUTO_TRACKING_EXTRA_DEBUFFS = {}
 			local debuffIndex = 0
 			local continuationToken
 			repeat -- until continuationToken == nil
-				local slots = { UnitAuraSlots(unit, "HARMFULL", BUFF_MAX_DISPLAY, continuationToken) }
-				continuationToken = slots[1]
-				for i=2, #slots do
-					local slot = slots[i];
-					local name, texture, count, actualAuraType, duration, expirationTime, caster, canStealOrPurge, nameplateShowPersonal, spellId, canApplyAura, isBossDebuff, isCastByPlayer, nameplateShowAll = UnitAuraBySlot(unit, slot)
+				local numSlots = 0
+				local slots
+				if IS_WOW_PROJECT_MAINLINE then
+					slots = { UnitAuraSlots(unit, "HARMFULL", BUFF_MAX_DISPLAY, continuationToken) }
+					continuationToken = slots[1]
+					numSlots = #slots
+				else
+					numSlots = BUFF_MAX_DISPLAY + 1
+				end
+				
+				for i=2, numSlots do
+					local name, texture, count, actualAuraType, duration, expirationTime, caster, canStealOrPurge, nameplateShowPersonal, spellId, canApplyAura, isBossDebuff, isCastByPlayer, nameplateShowAll
+					if IS_WOW_PROJECT_MAINLINE then
+						local slot = slots[i]
+						name, texture, count, actualAuraType, duration, expirationTime, caster, canStealOrPurge, nameplateShowPersonal, spellId, canApplyAura, isBossDebuff, isCastByPlayer, nameplateShowAll, timeMod = UnitAuraBySlot(unit, slot)
+					else
+						name, texture, count, actualAuraType, duration, expirationTime, caster, canStealOrPurge, nameplateShowPersonal, spellId, canApplyAura, isBossDebuff, isCastByPlayer, nameplateShowAll, timeMod = UnitAura(unit, i-1, "HARMFUL")
+						if not name then
+							break
+						end
+					end
 					
 					debuffIndex = debuffIndex + 1
 					
@@ -1105,7 +1177,7 @@ local AUTO_TRACKING_EXTRA_DEBUFFS = {}
 					unitAuraCache.hasEnrage = unitAuraCache.hasEnrage or actualAuraType == AURA_TYPE_ENRAGE
 
 					--check if the debuff isn't filtered out
-					if (not DB_DEBUFF_BANNED [name]) then
+					if (not DB_DEBUFF_BANNED [name] and not DB_DEBUFF_BANNED [spellId]) then
 				
 						--> if true it'll show all auras - this can be called from scripts to debug aura things
 						if (Plater.DebugAuras) then
@@ -1121,6 +1193,10 @@ local AUTO_TRACKING_EXTRA_DEBUFFS = {}
 						--> is casted by the player
 						elseif (DB_AURA_SHOW_BYPLAYER and caster and (UnitIsUnit (caster, "player") or UnitIsUnit (caster, "pet") or Plater.PlayerPetCache[UnitGUID(caster)])) then
 							can_show_this_debuff = true
+							
+						--> is casted by other players
+						elseif (DB_AURA_SHOW_BYOTHERPLAYERS and isCastByPlayer and caster and not UnitIsUnit (caster, "player")) then
+							can_show_this_debuff = true	
 							
 						--> user added this buff to track in the buff tracking tab
 						elseif (AUTO_TRACKING_EXTRA_DEBUFFS [name] or AUTO_TRACKING_EXTRA_DEBUFFS [spellId]) then
@@ -1154,12 +1230,28 @@ local AUTO_TRACKING_EXTRA_DEBUFFS = {}
 			local buffIndex = 0
 			local continuationToken
 			repeat -- until continuationToken == nil
-				local slots = { UnitAuraSlots(unit, "HELPFUL", BUFF_MAX_DISPLAY, continuationToken) }
-				continuationToken = slots[1]
-				for i=2, #slots do
-					local slot = slots[i];
-					local name, texture, count, actualAuraType, duration, expirationTime, caster, canStealOrPurge, nameplateShowPersonal, spellId, canApplyAura, isBossDebuff, isCastByPlayer, nameplateShowAll = UnitAuraBySlot(unit, slot)
-
+				local numSlots = 0
+				local slots
+				if IS_WOW_PROJECT_MAINLINE then
+					slots = { UnitAuraSlots(unit, "HELPFUL", BUFF_MAX_DISPLAY, continuationToken) }
+					continuationToken = slots[1]
+					numSlots = #slots
+				else
+					numSlots = BUFF_MAX_DISPLAY + 1
+				end
+				
+				for i=2, numSlots do
+					local name, texture, count, actualAuraType, duration, expirationTime, caster, canStealOrPurge, nameplateShowPersonal, spellId, canApplyAura, isBossDebuff, isCastByPlayer, nameplateShowAll
+					if IS_WOW_PROJECT_MAINLINE then
+						local slot = slots[i]
+						name, texture, count, actualAuraType, duration, expirationTime, caster, canStealOrPurge, nameplateShowPersonal, spellId, canApplyAura, isBossDebuff, isCastByPlayer, nameplateShowAll, timeMod = UnitAuraBySlot(unit, slot)
+					else
+						name, texture, count, actualAuraType, duration, expirationTime, caster, canStealOrPurge, nameplateShowPersonal, spellId, canApplyAura, isBossDebuff, isCastByPlayer, nameplateShowAll, timeMod = UnitAura(unit, i-1, "HELPFUL")
+						if not name then
+							break
+						end
+					end
+					
 					buffIndex = buffIndex + 1
 					
 					local auraType = "BUFF"
@@ -1173,7 +1265,7 @@ local AUTO_TRACKING_EXTRA_DEBUFFS = {}
 					if (((SPECIAL_AURAS_USER_LIST [name] or SPECIAL_AURAS_USER_LIST [spellId]) and not (SPECIAL_AURAS_USER_LIST_MINE [name] or SPECIAL_AURAS_USER_LIST_MINE [spellId])) or ((SPECIAL_AURAS_USER_LIST_MINE [name] or SPECIAL_AURAS_USER_LIST_MINE [spellId]) and caster and (UnitIsUnit (caster, "player") or UnitIsUnit (caster, "pet")))) then
 						Plater.AddExtraIcon (self, name, texture, count, actualAuraType, duration, expirationTime, caster, canStealOrPurge, nameplateShowPersonal, spellId, "HELPFUL", buffIndex)
 						
-					elseif (not DB_BUFF_BANNED [name]) then
+					elseif (not DB_BUFF_BANNED [name] and not DB_BUFF_BANNED [spellId]) then
 						--> if true it'll show all auras - this can be called from scripts to debug aura things
 						if (Plater.DebugAuras) then
 							if (duration and duration < 60) then
@@ -1186,7 +1278,7 @@ local AUTO_TRACKING_EXTRA_DEBUFFS = {}
 						--> check for special auras auto added by setting like 'show crowd control' or 'show dispellable'
 						--> SPECIAL_AURAS_AUTO_ADDED has a list of crowd control not do not have a list of dispellable, so check if canStealOrPurge
 						--> in addition, we want to check if enrage tracking is enabled and show enrage effects
-						if (SPECIAL_AURAS_AUTO_ADDED [name] or SPECIAL_AURAS_AUTO_ADDED [spellId] or (DB_SHOW_PURGE_IN_EXTRA_ICONS and canStealOrPurge) or (DB_SHOW_ENRAGE_IN_EXTRA_ICONS and actualAuraType == AURA_TYPE_ENRAGE)) then
+						if (SPECIAL_AURAS_AUTO_ADDED [name] or SPECIAL_AURAS_AUTO_ADDED [spellId] or (DB_SHOW_PURGE_IN_EXTRA_ICONS and canStealOrPurge) or (DB_SHOW_ENRAGE_IN_EXTRA_ICONS and actualAuraType == AURA_TYPE_ENRAGE) or (DB_SHOW_MAGIC_IN_EXTRA_ICONS and actualAuraType == AURA_TYPE_MAGIC)) then
 							Plater.AddExtraIcon (self, name, texture, count, actualAuraType, duration, expirationTime, caster, canStealOrPurge, nameplateShowPersonal, spellId, "HELPFUL", buffIndex)
 						else
 							--> important aura
@@ -1204,11 +1296,21 @@ local AUTO_TRACKING_EXTRA_DEBUFFS = {}
 								local auraIconFrame, buffFrame = Plater.GetAuraIcon (self, true)
 								Plater.AddAura (buffFrame, auraIconFrame, buffIndex, name, texture, count, auraType, duration, expirationTime, caster, canStealOrPurge, nameplateShowPersonal, spellId, nil, nil, nil, nil, actualAuraType)
 							
+							--> is magic
+							elseif (DB_AURA_SHOW_MAGIC and actualAuraType == AURA_TYPE_MAGIC) then
+								local auraIconFrame, buffFrame = Plater.GetAuraIcon (self, true)
+								Plater.AddAura (buffFrame, auraIconFrame, buffIndex, name, texture, count, auraType, duration, expirationTime, caster, canStealOrPurge, nameplateShowPersonal, spellId, nil, nil, nil, nil, actualAuraType)
+							
 							--> is casted by the player
 							elseif (DB_AURA_SHOW_BYPLAYER and caster and UnitIsUnit (caster, "player")) then
 								local auraIconFrame, buffFrame = Plater.GetAuraIcon (self, true)
 								Plater.AddAura (buffFrame, auraIconFrame, buffIndex, name, texture, count, auraType, duration, expirationTime, caster, canStealOrPurge, nameplateShowPersonal, spellId, nil, nil, nil, nil, actualAuraType)
-							
+								
+							--> is casted by other players
+							elseif (DB_AURA_SHOW_BYOTHERPLAYERS and isCastByPlayer and caster and not UnitIsUnit (caster, "player")) then
+								local auraIconFrame, buffFrame = Plater.GetAuraIcon (self, true)
+								Plater.AddAura (buffFrame, auraIconFrame, buffIndex, name, texture, count, auraType, duration, expirationTime, caster, canStealOrPurge, nameplateShowPersonal, spellId, nil, nil, nil, nil, actualAuraType)
+								
 							--> is casted by the unit it self
 							elseif (DB_AURA_SHOW_BYUNIT and caster and UnitIsUnit (caster, unit) and not isCastByPlayer) then
 								local auraIconFrame, buffFrame = Plater.GetAuraIcon (self, true)
@@ -1228,6 +1330,8 @@ local AUTO_TRACKING_EXTRA_DEBUFFS = {}
 		
 		--hide non used icons
 			Plater.HideNonUsedAuraIcons (self)
+			
+		Plater.EndLogPerformanceCore("Plater-Core", "Update", "UpdateAuras_Automatic")
 	end
 
 	--used in scripts to get a specific buff from the unit, return full information
@@ -1252,10 +1356,10 @@ local AUTO_TRACKING_EXTRA_DEBUFFS = {}
 			continuationToken = slots[1]
 			for i=2, #slots do
 				local slot = slots[i];
-				local name, texture, count, actualAuraType, duration, expirationTime, caster, canStealOrPurge, nameplateShowPersonal, spellId, canApplyAura, isBossDebuff, isCastByPlayer, nameplateShowAll = UnitAuraBySlot(unitId, slot)
+				local name, texture, count, actualAuraType, duration, expirationTime, caster, canStealOrPurge, nameplateShowPersonal, spellId, canApplyAura, isBossDebuff, isCastByPlayer, nameplateShowAll, timeMod = UnitAuraBySlot(unitId, slot)
 				if (name) then
 					if (name:lower()  == spellName) then
-						return name, texture, count, actualAuraType, duration, expirationTime, caster, canStealOrPurge, nameplateShowPersonal, spellId, canApplyAura, isBossDebuff, isCastByPlayer, nameplateShowAll
+						return name, texture, count, actualAuraType, duration, expirationTime, caster, canStealOrPurge, nameplateShowPersonal, spellId, canApplyAura, isBossDebuff, isCastByPlayer, nameplateShowAll, timeMod
 					end
 				end
 			end
@@ -1267,10 +1371,10 @@ local AUTO_TRACKING_EXTRA_DEBUFFS = {}
 			continuationToken = slots[1]
 			for i=2, #slots do
 				local slot = slots[i];
-				local name, texture, count, actualAuraType, duration, expirationTime, caster, canStealOrPurge, nameplateShowPersonal, spellId, canApplyAura, isBossDebuff, isCastByPlayer, nameplateShowAll = UnitAuraBySlot(unitId, slot)
+				local name, texture, count, actualAuraType, duration, expirationTime, caster, canStealOrPurge, nameplateShowPersonal, spellId, canApplyAura, isBossDebuff, isCastByPlayer, nameplateShowAll, timeMod = UnitAuraBySlot(unitId, slot)
 				if (name) then
 					if (name:lower()  == spellName) then
-						return name, texture, count, actualAuraType, duration, expirationTime, caster, canStealOrPurge, nameplateShowPersonal, spellId, canApplyAura, isBossDebuff, isCastByPlayer, nameplateShowAll
+						return name, texture, count, actualAuraType, duration, expirationTime, caster, canStealOrPurge, nameplateShowPersonal, spellId, canApplyAura, isBossDebuff, isCastByPlayer, nameplateShowAll, timeMod
 					end
 				end
 			end
@@ -1278,6 +1382,8 @@ local AUTO_TRACKING_EXTRA_DEBUFFS = {}
 	end
 
 	function Plater.UpdateAuras_Self_Automatic (self)
+		Plater.StartLogPerformanceCore("Plater-Core", "Update", "UpdateAuras_Self_Automatic")
+		
 		Plater.ResetAuraContainer (self)
 		local unitAuraCache = self.unitFrame.AuraCache
 		local noBuffDurationLimitation = Plater.db.profile.aura_show_all_duration_buffs_personal
@@ -1287,12 +1393,28 @@ local AUTO_TRACKING_EXTRA_DEBUFFS = {}
 			local debuffIndex = 0
 			local continuationToken
 			repeat -- until continuationToken == nil
-				local slots = { UnitAuraSlots("player", "HARMFUL", BUFF_MAX_DISPLAY, continuationToken) }
-				continuationToken = slots[1]
-				for i=2, #slots do
-					local slot = slots[i];
-					local name, texture, count, actualAuraType, duration, expirationTime, caster, canStealOrPurge, nameplateShowPersonal, spellId, canApplyAura, isBossDebuff, isCastByPlayer, nameplateShowAll = UnitAuraBySlot("player", slot)
-					
+				local numSlots = 0
+				local slots
+				if IS_WOW_PROJECT_MAINLINE then
+					slots = { UnitAuraSlots("player", "HARMFUL", BUFF_MAX_DISPLAY, continuationToken) }
+					continuationToken = slots[1]
+					numSlots = #slots
+				else
+					numSlots = BUFF_MAX_DISPLAY + 1
+				end
+				
+				for i=2, numSlots do
+					local name, texture, count, actualAuraType, duration, expirationTime, caster, canStealOrPurge, nameplateShowPersonal, spellId, canApplyAura, isBossDebuff, isCastByPlayer, nameplateShowAll
+					if IS_WOW_PROJECT_MAINLINE then
+						local slot = slots[i]
+						name, texture, count, actualAuraType, duration, expirationTime, caster, canStealOrPurge, nameplateShowPersonal, spellId, canApplyAura, isBossDebuff, isCastByPlayer, nameplateShowAll, timeMod = UnitAuraBySlot("player", slot)
+					else
+						name, texture, count, actualAuraType, duration, expirationTime, caster, canStealOrPurge, nameplateShowPersonal, spellId, canApplyAura, isBossDebuff, isCastByPlayer, nameplateShowAll, timeMod = UnitAura("player", i-1, "HARMFUL")
+						if not name then
+							break
+						end
+					end
+
 					debuffIndex = debuffIndex + 1
 					
 					local auraType = "DEBUFF"
@@ -1302,7 +1424,7 @@ local AUTO_TRACKING_EXTRA_DEBUFFS = {}
 					unitAuraCache.canStealOrPurge = unitAuraCache.canStealOrPurge or canStealOrPurge
 					unitAuraCache.hasEnrage = unitAuraCache.hasEnrage or actualAuraType == AURA_TYPE_ENRAGE
 						
-					if (not DB_DEBUFF_BANNED [name]) then
+					if (not DB_DEBUFF_BANNED [name] and not DB_DEBUFF_BANNED [spellId]) then
 						local auraIconFrame, buffFrame = Plater.GetAuraIcon (self)
 						Plater.AddAura (buffFrame, auraIconFrame, debuffIndex, name, texture, count, auraType, duration, expirationTime, caster, canStealOrPurge, nameplateShowPersonal, spellId, false, false, true, true, actualAuraType)
 						
@@ -1328,12 +1450,28 @@ local AUTO_TRACKING_EXTRA_DEBUFFS = {}
 		if (Plater.db.profile.aura_show_buffs_personal) then
 			local continuationToken
 			repeat -- until continuationToken == nil
-				local slots = { UnitAuraSlots("player", "HELPFUL|PLAYER", BUFF_MAX_DISPLAY, continuationToken) }
-				continuationToken = slots[1]
-				for i=2, #slots do
-					local slot = slots[i];
-					local name, texture, count, actualAuraType, duration, expirationTime, caster, canStealOrPurge, nameplateShowPersonal, spellId, canApplyAura, isBossDebuff, isCastByPlayer, nameplateShowAll = UnitAuraBySlot("player", slot)
-					
+				local numSlots = 0
+				local slots
+				if IS_WOW_PROJECT_MAINLINE then
+					slots = { UnitAuraSlots("player", "HELPFUL|PLAYER", BUFF_MAX_DISPLAY, continuationToken) }
+					continuationToken = slots[1]
+					numSlots = #slots
+				else
+					numSlots = BUFF_MAX_DISPLAY + 1
+				end
+				
+				for i=2, numSlots do
+					local name, texture, count, actualAuraType, duration, expirationTime, caster, canStealOrPurge, nameplateShowPersonal, spellId, canApplyAura, isBossDebuff, isCastByPlayer, nameplateShowAll
+					if IS_WOW_PROJECT_MAINLINE then
+						local slot = slots[i]
+						name, texture, count, actualAuraType, duration, expirationTime, caster, canStealOrPurge, nameplateShowPersonal, spellId, canApplyAura, isBossDebuff, isCastByPlayer, nameplateShowAll, timeMod = UnitAuraBySlot("player", slot)
+					else
+						name, texture, count, actualAuraType, duration, expirationTime, caster, canStealOrPurge, nameplateShowPersonal, spellId, canApplyAura, isBossDebuff, isCastByPlayer, nameplateShowAll, timeMod = UnitAura("player", i-1, "HELPFUL|PLAYER")
+						if not name then
+							break
+						end
+					end
+
 					buffIndex = buffIndex + 1
 					
 					local auraType = "BUFF"
@@ -1344,7 +1482,7 @@ local AUTO_TRACKING_EXTRA_DEBUFFS = {}
 					unitAuraCache.hasEnrage = unitAuraCache.hasEnrage or actualAuraType == AURA_TYPE_ENRAGE
 					
 					--> only show buffs casted by the player it self and less than 1 minute in duration
-					if (not DB_BUFF_BANNED [name] and (noBuffDurationLimitation or (duration and (duration > 0 and duration < 60)) and (caster and UnitIsUnit (caster, "player")))) then
+					if ((not DB_BUFF_BANNED [name] and not DB_BUFF_BANNED [spellId]) and (noBuffDurationLimitation or (duration and (duration > 0 and duration < 60)) and (caster and UnitIsUnit (caster, "player")))) then
 						local auraIconFrame, buffFrame = Plater.GetAuraIcon (self, true)
 						Plater.AddAura (buffFrame, auraIconFrame, buffIndex, name, texture, count, auraType, duration, expirationTime, caster, canStealOrPurge, nameplateShowPersonal, spellId, false, false, false, true, actualAuraType)
 
@@ -1357,12 +1495,14 @@ local AUTO_TRACKING_EXTRA_DEBUFFS = {}
 		
 		--> hide not used aura frames
 		Plater.HideNonUsedAuraIcons (self)
+		
+		Plater.EndLogPerformanceCore("Plater-Core", "Update", "UpdateAuras_Self_Automatic")
     end
     
 
 
     --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
---> aura test - when the options panel is opened at the buff settings
+--> aura ~test - when the options panel is opened at the buff settings
 
 	function Plater.CreateAuraTesting()
 
@@ -1378,109 +1518,111 @@ local AUTO_TRACKING_EXTRA_DEBUFFS = {}
 				auraOptionsFrame.NextTime = 0.016
 				
 				for _, plateFrame in ipairs (Plater.GetAllShownPlates()) do
+					if plateFrame.unitFrame.PlaterOnScreen then
 
-					local buffFrame = plateFrame.unitFrame.BuffFrame
-					local buffFrame2 = plateFrame.unitFrame.BuffFrame2
-					local unitAuraCache = plateFrame.unitFrame.AuraCache
+						local buffFrame = plateFrame.unitFrame.BuffFrame
+						local buffFrame2 = plateFrame.unitFrame.BuffFrame2
+						local unitAuraCache = plateFrame.unitFrame.AuraCache
+						
+						buffFrame:SetAlpha (DB_AURA_ALPHA)
+						buffFrame2:SetAlpha (DB_AURA_ALPHA)
+						
+						--> reset next aura icon to use
+						buffFrame.NextAuraIcon = 1
+						buffFrame2.NextAuraIcon = 1
 					
-					buffFrame:SetAlpha (DB_AURA_ALPHA)
-					buffFrame2:SetAlpha (DB_AURA_ALPHA)
-					
-					--> reset next aura icon to use
-					buffFrame.NextAuraIcon = 1
-					buffFrame2.NextAuraIcon = 1
-				
-					if (not DB_AURA_SEPARATE_BUFFS) then
-						for index, auraTable in ipairs (auraOptionsFrame.AuraTesting.DEBUFF) do
-							local auraIconFrame = Plater.GetAuraIcon (buffFrame)
-							if (not auraTable.ApplyTime or auraTable.ApplyTime+auraTable.Duration < GetTime()) then
-								auraTable.ApplyTime = GetTime() + math.random (3, 12)
+						if (not DB_AURA_SEPARATE_BUFFS) then
+							for index, auraTable in ipairs (auraOptionsFrame.AuraTesting.DEBUFF) do
+								local auraIconFrame = Plater.GetAuraIcon (buffFrame)
+								if (not auraTable.ApplyTime or auraTable.ApplyTime+auraTable.Duration < GetTime()) then
+									auraTable.ApplyTime = GetTime() + math.random (3, 12)
+								end
+								
+								if (not UnitIsUnit (plateFrame.unitFrame [MEMBER_UNITID], "player")) then
+									Plater.AddAura (buffFrame, auraIconFrame, index, auraTable.SpellName, auraTable.SpellTexture, auraTable.Count, "DEBUFF", auraTable.Duration, auraTable.ApplyTime+auraTable.Duration, "player", false, false, auraTable.SpellID, nil, nil, nil, nil, auraTable.Type)
+								else
+									Plater.AddAura (buffFrame, auraIconFrame, index, auraTable.SpellName, auraTable.SpellTexture, auraTable.Count, "DEBUFF", auraTable.Duration, auraTable.ApplyTime+auraTable.Duration, "player", false, false, auraTable.SpellID, false, false, true, true, auraTable.Type)
+								end
+								
+								unitAuraCache[auraTable.SpellName] = true
+								unitAuraCache[auraTable.SpellID] = true
+								
+								Plater.UpdateIconAspecRatio (auraIconFrame)
 							end
 							
-							if (not UnitIsUnit (plateFrame.unitFrame [MEMBER_UNITID], "player")) then
-								Plater.AddAura (buffFrame, auraIconFrame, index, auraTable.SpellName, auraTable.SpellTexture, auraTable.Count, "DEBUFF", auraTable.Duration, auraTable.ApplyTime+auraTable.Duration, "player", false, false, auraTable.SpellID, nil, nil, nil, nil, auraTable.Type)
-							else
-								Plater.AddAura (buffFrame, auraIconFrame, index, auraTable.SpellName, auraTable.SpellTexture, auraTable.Count, "DEBUFF", auraTable.Duration, auraTable.ApplyTime+auraTable.Duration, "player", false, false, auraTable.SpellID, false, false, true, true, auraTable.Type)
+							for index, auraTable in ipairs (auraOptionsFrame.AuraTesting.BUFF) do
+								local auraIconFrame = Plater.GetAuraIcon (buffFrame)
+								if (not auraTable.ApplyTime or auraTable.ApplyTime+auraTable.Duration < GetTime()) then
+									auraTable.ApplyTime = GetTime() + math.random (3, 12)
+								end
+								
+								if (not UnitIsUnit (plateFrame.unitFrame [MEMBER_UNITID], "player")) then
+									Plater.AddAura (buffFrame, auraIconFrame, index, auraTable.SpellName, auraTable.SpellTexture, auraTable.Count, "DEBUFF", auraTable.Duration, auraTable.ApplyTime+auraTable.Duration, "player", false, false, auraTable.SpellID, true, nil, nil, nil, auraTable.Type)
+								else
+									Plater.AddAura (buffFrame, auraIconFrame, index, auraTable.SpellName, auraTable.SpellTexture, auraTable.Count, "DEBUFF", auraTable.Duration, auraTable.ApplyTime+auraTable.Duration, "player", false, false, auraTable.SpellID, false, false, false, true, auraTable.Type)
+								end
+								
+								unitAuraCache[auraTable.SpellName] = true
+								unitAuraCache[auraTable.SpellID] = true
+								
+								Plater.UpdateIconAspecRatio (auraIconFrame)
 							end
 							
-							unitAuraCache[auraTable.SpellName] = true
-							unitAuraCache[auraTable.SpellID] = true
-							
-							Plater.UpdateIconAspecRatio (auraIconFrame)
+							--hide icons on the second buff frame
+							for i = 1, #buffFrame2.PlaterBuffList do
+								local icon = buffFrame2.PlaterBuffList [i]
+								if (icon) then
+									icon.ShowAnimation:Stop()
+									icon:Hide()
+									icon.InUse = false
+								end
+							end
 						end
 						
-						for index, auraTable in ipairs (auraOptionsFrame.AuraTesting.BUFF) do
-							local auraIconFrame = Plater.GetAuraIcon (buffFrame)
-							if (not auraTable.ApplyTime or auraTable.ApplyTime+auraTable.Duration < GetTime()) then
-								auraTable.ApplyTime = GetTime() + math.random (3, 12)
-							end
-							
-							if (not UnitIsUnit (plateFrame.unitFrame [MEMBER_UNITID], "player")) then
-								Plater.AddAura (buffFrame, auraIconFrame, index, auraTable.SpellName, auraTable.SpellTexture, auraTable.Count, "DEBUFF", auraTable.Duration, auraTable.ApplyTime+auraTable.Duration, "player", false, false, auraTable.SpellID, true, nil, nil, nil, auraTable.Type)
-							else
-								Plater.AddAura (buffFrame, auraIconFrame, index, auraTable.SpellName, auraTable.SpellTexture, auraTable.Count, "DEBUFF", auraTable.Duration, auraTable.ApplyTime+auraTable.Duration, "player", false, false, auraTable.SpellID, false, false, false, true, auraTable.Type)
-							end
-							
-							unitAuraCache[auraTable.SpellName] = true
-							unitAuraCache[auraTable.SpellID] = true
-							
-							Plater.UpdateIconAspecRatio (auraIconFrame)
-						end
-						
-						--hide icons on the second buff frame
-						for i = 1, #buffFrame2.PlaterBuffList do
-							local icon = buffFrame2.PlaterBuffList [i]
-							if (icon) then
-								icon.ShowAnimation:Stop()
-								icon:Hide()
-								icon.InUse = false
-							end
-						end
-					end
-					
-					if (DB_AURA_SEPARATE_BUFFS) then
+						if (DB_AURA_SEPARATE_BUFFS) then
 
-						for index, auraTable in ipairs (auraOptionsFrame.AuraTesting.DEBUFF) do
-							local auraIconFrame = Plater.GetAuraIcon (buffFrame)
-							if (not auraTable.ApplyTime or auraTable.ApplyTime+auraTable.Duration < GetTime()) then
-								auraTable.ApplyTime = GetTime() + math.random (3, 12)
+							for index, auraTable in ipairs (auraOptionsFrame.AuraTesting.DEBUFF) do
+								local auraIconFrame = Plater.GetAuraIcon (buffFrame)
+								if (not auraTable.ApplyTime or auraTable.ApplyTime+auraTable.Duration < GetTime()) then
+									auraTable.ApplyTime = GetTime() + math.random (3, 12)
+								end
+								
+								if (not UnitIsUnit (plateFrame.unitFrame [MEMBER_UNITID], "player")) then
+									Plater.AddAura (buffFrame, auraIconFrame, index, auraTable.SpellName, auraTable.SpellTexture, auraTable.Count, "DEBUFF", auraTable.Duration, auraTable.ApplyTime+auraTable.Duration, "player", false, false, auraTable.SpellID, nil, nil, nil, nil, auraTable.Type)
+								else
+									Plater.AddAura (buffFrame, auraIconFrame, index, auraTable.SpellName, auraTable.SpellTexture, auraTable.Count, "DEBUFF", auraTable.Duration, auraTable.ApplyTime+auraTable.Duration, "player", false, false, auraTable.SpellID, false, false, true, true, auraTable.Type)
+								end
+								
+								unitAuraCache[auraTable.SpellName] = true
+								unitAuraCache[auraTable.SpellID] = true
+								unitAuraCache.hasEnrage = unitAuraCache.hasEnrage or auraTable.Type == AURA_TYPE_ENRAGE
 							end
 							
-							if (not UnitIsUnit (plateFrame.unitFrame [MEMBER_UNITID], "player")) then
-								Plater.AddAura (buffFrame, auraIconFrame, index, auraTable.SpellName, auraTable.SpellTexture, auraTable.Count, "DEBUFF", auraTable.Duration, auraTable.ApplyTime+auraTable.Duration, "player", false, false, auraTable.SpellID, nil, nil, nil, nil, auraTable.Type)
-							else
-								Plater.AddAura (buffFrame, auraIconFrame, index, auraTable.SpellName, auraTable.SpellTexture, auraTable.Count, "DEBUFF", auraTable.Duration, auraTable.ApplyTime+auraTable.Duration, "player", false, false, auraTable.SpellID, false, false, true, true, auraTable.Type)
+							for index, auraTable in ipairs (auraOptionsFrame.AuraTesting.BUFF) do
+								local auraIconFrame, frame = Plater.GetAuraIcon (buffFrame, true)
+								if (not auraTable.ApplyTime or auraTable.ApplyTime+auraTable.Duration < GetTime()) then
+									auraTable.ApplyTime = GetTime() + math.random (3, 12)
+								end
+								
+								if (not UnitIsUnit (plateFrame.unitFrame [MEMBER_UNITID], "player")) then
+									Plater.AddAura (frame, auraIconFrame, index, auraTable.SpellName, auraTable.SpellTexture, auraTable.Count, "BUFF", auraTable.Duration, auraTable.ApplyTime+auraTable.Duration, "player", false, false, auraTable.SpellID, true, nil, nil, nil, auraTable.Type)
+								else
+									Plater.AddAura (frame, auraIconFrame, index, auraTable.SpellName, auraTable.SpellTexture, auraTable.Count, "BUFF", auraTable.Duration, auraTable.ApplyTime+auraTable.Duration, "player", false, false, auraTable.SpellID, true, false, false, false, auraTable.Type)
+									--Plater.AddAura (frame, auraIconFrame, index, auraTable.SpellName, auraTable.SpellTexture, auraTable.Count, "BUFF", auraTable.Duration, auraTable.ApplyTime+auraTable.Duration, "player", false, false, auraTable.SpellID, false, false, false, true, auraTable.Type)
+								end
+								
+								unitAuraCache[auraTable.SpellName] = true
+								unitAuraCache[auraTable.SpellID] = true
+								unitAuraCache.hasEnrage = unitAuraCache.hasEnrage or auraTable.Type == AURA_TYPE_ENRAGE
 							end
-							
-							unitAuraCache[auraTable.SpellName] = true
-							unitAuraCache[auraTable.SpellID] = true
-							unitAuraCache.hasEnrage = unitAuraCache.hasEnrage or auraTable.Type == AURA_TYPE_ENRAGE
 						end
 						
-						for index, auraTable in ipairs (auraOptionsFrame.AuraTesting.BUFF) do
-							local auraIconFrame, frame = Plater.GetAuraIcon (buffFrame, true)
-							if (not auraTable.ApplyTime or auraTable.ApplyTime+auraTable.Duration < GetTime()) then
-								auraTable.ApplyTime = GetTime() + math.random (3, 12)
-							end
-							
-							if (not UnitIsUnit (plateFrame.unitFrame [MEMBER_UNITID], "player")) then
-								Plater.AddAura (frame, auraIconFrame, index, auraTable.SpellName, auraTable.SpellTexture, auraTable.Count, "BUFF", auraTable.Duration, auraTable.ApplyTime+auraTable.Duration, "player", false, false, auraTable.SpellID, true, nil, nil, nil, auraTable.Type)
-							else
-								Plater.AddAura (frame, auraIconFrame, index, auraTable.SpellName, auraTable.SpellTexture, auraTable.Count, "BUFF", auraTable.Duration, auraTable.ApplyTime+auraTable.Duration, "player", false, false, auraTable.SpellID, true, false, false, false, auraTable.Type)
-								--Plater.AddAura (frame, auraIconFrame, index, auraTable.SpellName, auraTable.SpellTexture, auraTable.Count, "BUFF", auraTable.Duration, auraTable.ApplyTime+auraTable.Duration, "player", false, false, auraTable.SpellID, false, false, false, true, auraTable.Type)
-							end
-							
-							unitAuraCache[auraTable.SpellName] = true
-							unitAuraCache[auraTable.SpellID] = true
-							unitAuraCache.hasEnrage = unitAuraCache.hasEnrage or auraTable.Type == AURA_TYPE_ENRAGE
+						Plater.HideNonUsedAuraIcons (buffFrame)
+						Plater.AlignAuraFrames (buffFrame)
+						
+						if (DB_AURA_SEPARATE_BUFFS) then
+							Plater.AlignAuraFrames (buffFrame.BuffFrame2)
 						end
-					end
-					
-					Plater.HideNonUsedAuraIcons (buffFrame)
-					Plater.AlignAuraFrames (buffFrame)
-					
-					if (DB_AURA_SEPARATE_BUFFS) then
-						Plater.AlignAuraFrames (buffFrame.BuffFrame2)
 					end
 				end
 			end
@@ -1517,6 +1659,7 @@ local AUTO_TRACKING_EXTRA_DEBUFFS = {}
 
 		DB_SHOW_PURGE_IN_EXTRA_ICONS = profile.extra_icon_show_purge
 		DB_SHOW_ENRAGE_IN_EXTRA_ICONS = profile.extra_icon_show_enrage
+		DB_SHOW_MAGIC_IN_EXTRA_ICONS = profile.extra_icon_show_magic
 
 		--list of auras the user added into the track list for special auras
 		wipe (SPECIAL_AURAS_USER_LIST)
@@ -1569,7 +1712,7 @@ local AUTO_TRACKING_EXTRA_DEBUFFS = {}
 		--> add auras added by the player into the special aura container
 		for index, spellId in ipairs (profile.extra_icon_auras) do
 			local spellName = GetSpellInfo (spellId)
-			if (spellName) then
+			if (spellName) or type(spellId) == "string" then -- either valid ID or name
 				SPECIAL_AURAS_USER_LIST [spellId] = true
 			end
         end
@@ -1577,7 +1720,7 @@ local AUTO_TRACKING_EXTRA_DEBUFFS = {}
 		for spellId, state in pairs (profile.extra_icon_auras_mine) do
 			if (state) then
 				local spellName = GetSpellInfo (spellId)
-				if (spellName) then
+				if (spellName) or type(spellId) == "string" then -- either valid ID or name
 					--> mine list only store if the user checked the 'only mine' box
 					--> if the user remove the spell, that spell isn't removed from the 'only mine' list
 					--> so need to check if the spell on 'only mine' list is included in the special aura list
@@ -1592,37 +1735,6 @@ local AUTO_TRACKING_EXTRA_DEBUFFS = {}
 	function Plater.RefreshAuraCache()
 		local profile = Plater.db.profile
 		
-		--> load spells filtered out, use the spellname instead of the spellId
-			if (not DB_BUFF_BANNED) then
-				DB_BUFF_BANNED = {}
-				DB_DEBUFF_BANNED = {}
-			else
-				wipe (DB_BUFF_BANNED)
-				wipe (DB_DEBUFF_BANNED)
-			end
-		
-			for spellId, state in pairs (profile.aura_tracker.buff_banned) do
-				local spellName = GetSpellInfo (spellId)
-				if (spellName) then
-					if state then
-						DB_BUFF_BANNED [spellName] = true
-					else
-						DB_BUFF_BANNED [spellId] = true
-					end
-				end
-			end
-			
-			for spellId, state in pairs (profile.aura_tracker.debuff_banned) do
-				local spellName = GetSpellInfo (spellId)
-				if (spellName) then
-					if state then
-						DB_DEBUFF_BANNED [spellName] = true
-					else
-						DB_DEBUFF_BANNED [spellId] = true
-					end
-				end
-			end
-		
 		DB_AURA_ENABLED = profile.aura_enabled
 		DB_AURA_ALPHA = profile.aura_alpha
 		
@@ -1631,7 +1743,9 @@ local AUTO_TRACKING_EXTRA_DEBUFFS = {}
 		DB_AURA_SHOW_IMPORTANT = profile.aura_show_important
 		DB_AURA_SHOW_DISPELLABLE = profile.aura_show_dispellable
 		DB_AURA_SHOW_ENRAGE = profile.aura_show_enrage
+		DB_AURA_SHOW_MAGIC = profile.aura_show_magic
 		DB_AURA_SHOW_BYPLAYER = profile.aura_show_aura_by_the_player
+		DB_AURA_SHOW_BYOTHERPLAYERS = profile.aura_show_aura_by_other_players
 		DB_AURA_SHOW_BYUNIT = profile.aura_show_buff_by_the_unit
 		DB_AURA_PADDING = profile.aura_padding
 
@@ -1642,18 +1756,19 @@ local AUTO_TRACKING_EXTRA_DEBUFFS = {}
     end
     
     function Plater.UpdateAuraCache()
+		local profile = Plater.db.profile
 		--manual tracking has an indexed table to store what to track
 		--the extra auras for automatic tracking has a hash table with spellIds
 		
 		--manual aura tracking
-			local manualBuffsToTrack = Plater.db.profile.aura_tracker.buff
-			local manualDebuffsToTrack = Plater.db.profile.aura_tracker.debuff
+			local manualBuffsToTrack = profile.aura_tracker.buff
+			local manualDebuffsToTrack = profile.aura_tracker.debuff
 
 			wipe (MANUAL_TRACKING_DEBUFFS)
 			wipe (MANUAL_TRACKING_BUFFS)
 			
 			for i = 1, #manualDebuffsToTrack do
-				local spellName = GetSpellInfo (manualDebuffsToTrack [i])
+				local spellName = GetSpellInfo (tonumber(manualDebuffsToTrack [i]) or manualDebuffsToTrack [i])
 				if (spellName) then
 					MANUAL_TRACKING_DEBUFFS [spellName] = true
 				else
@@ -1663,7 +1778,7 @@ local AUTO_TRACKING_EXTRA_DEBUFFS = {}
 			end
 
 			for i = 1, #manualBuffsToTrack do
-				local spellName = GetSpellInfo (manualBuffsToTrack [i])
+				local spellName = GetSpellInfo (tonumber(manualBuffsToTrack [i]) or manualBuffsToTrack [i])
 				if (spellName) then
 					MANUAL_TRACKING_BUFFS [spellName] = true
 				else
@@ -1673,8 +1788,8 @@ local AUTO_TRACKING_EXTRA_DEBUFFS = {}
 			end
 
 		--extra auras to track on automatic aura tracking
-			local extraBuffsToTrack = Plater.db.profile.aura_tracker.buff_tracked
-			local extraDebuffsToTrack = Plater.db.profile.aura_tracker.debuff_tracked
+			local extraBuffsToTrack = profile.aura_tracker.buff_tracked
+			local extraDebuffsToTrack = profile.aura_tracker.debuff_tracked
 			
 			wipe (AUTO_TRACKING_EXTRA_BUFFS)
 			wipe (AUTO_TRACKING_EXTRA_DEBUFFS)
@@ -1683,7 +1798,7 @@ local AUTO_TRACKING_EXTRA_DEBUFFS = {}
 			CAN_TRACK_EXTRA_DEBUFFS = false
 
 			for spellId, flag in pairs (extraBuffsToTrack) do
-				local spellName = GetSpellInfo (spellId)
+				local spellName = GetSpellInfo (tonumber(spellId) or spellId)
 				if (spellName) then
 					if flag then
 						AUTO_TRACKING_EXTRA_BUFFS [spellName] = true
@@ -1695,7 +1810,7 @@ local AUTO_TRACKING_EXTRA_DEBUFFS = {}
 			end
 			
 			for spellId, flag in pairs (extraDebuffsToTrack) do
-				local spellName = GetSpellInfo (spellId)
+				local spellName = GetSpellInfo (tonumber(spellId) or spellId)
 				if (spellName) then
 					if flag then
 						AUTO_TRACKING_EXTRA_DEBUFFS [spellName] = true
@@ -1706,7 +1821,7 @@ local AUTO_TRACKING_EXTRA_DEBUFFS = {}
 				end
 			end
 			
-			if (Plater.db.profile.aura_show_crowdcontrol and DF.CrowdControlSpells) then
+			if (profile.aura_show_crowdcontrol and DF.CrowdControlSpells) then
 				for spellId, _ in pairs (DF.CrowdControlSpells) do
 					local spellName = GetSpellInfo (spellId)
 					if (spellName) then
@@ -1718,7 +1833,7 @@ local AUTO_TRACKING_EXTRA_DEBUFFS = {}
 				end
 			end
 			
-			if (Plater.db.profile.aura_show_offensive_cd and DF.CooldownsAttack) then
+			if (profile.aura_show_offensive_cd and DF.CooldownsAttack) then
 				for spellId, _ in pairs (DF.CooldownsAttack) do
 					local spellName = GetSpellInfo (spellId)
 					if (spellName) then
@@ -1730,7 +1845,7 @@ local AUTO_TRACKING_EXTRA_DEBUFFS = {}
 				end
 			end
 			
-			if (Plater.db.profile.aura_show_defensive_cd and DF.CooldownsAllDeffensive) then
+			if (profile.aura_show_defensive_cd and DF.CooldownsAllDeffensive) then
 				for spellId, _ in pairs (DF.CooldownsAllDeffensive) do
 					local spellName = GetSpellInfo (spellId)
 					if (spellName) then
@@ -1738,6 +1853,37 @@ local AUTO_TRACKING_EXTRA_DEBUFFS = {}
 						AUTO_TRACKING_EXTRA_BUFFS [spellId] = true
 						DEFENSIVE_AURA_IDS [spellId] = true
 						CAN_TRACK_EXTRA_BUFFS = true
+					end
+				end
+			end
+			
+			--> load spells filtered out, use the spellname instead of the spellId
+			if (not DB_BUFF_BANNED) then
+				DB_BUFF_BANNED = {}
+				DB_DEBUFF_BANNED = {}
+			else
+				wipe (DB_BUFF_BANNED)
+				wipe (DB_DEBUFF_BANNED)
+			end
+		
+			for spellId, state in pairs (profile.aura_tracker.buff_banned) do
+				local spellName = GetSpellInfo (tonumber(spellId) or spellId)
+				if (spellName) then
+					if state then
+						DB_BUFF_BANNED [spellName] = true
+					else
+						DB_BUFF_BANNED [spellId] = true
+					end
+				end
+			end
+			
+			for spellId, state in pairs (profile.aura_tracker.debuff_banned) do
+				local spellName = GetSpellInfo (tonumber(spellId) or spellId)
+				if (spellName) then
+					if state then
+						DB_DEBUFF_BANNED [spellName] = true
+					else
+						DB_DEBUFF_BANNED [spellId] = true
 					end
 				end
 			end

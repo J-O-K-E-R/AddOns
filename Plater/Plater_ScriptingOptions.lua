@@ -123,6 +123,7 @@ function Plater.CreateScriptingOptionsPanel(parent, mainFrame)
                 userFrame.listFrames[i]:Hide()
             end
             userFrame.nextListFrameIndex = 0
+			userFrame.listScrollFrame:Hide()
         end
 
         function userFrame.GetListFrame()
@@ -367,7 +368,10 @@ function Plater.CreateScriptingOptionsPanel(parent, mainFrame)
                     if (option) then
                         local line = self:GetLine(i)
                         line.Icon:SetTexture(option.Icon)
+
                         line.OptionNameLabel:SetText(option.Name)
+                        DF:TruncateText (line.OptionNameLabel, line:GetWidth()-67)
+
                         line.TypeLabel:SetText(listOfAvailableOptions[option.Type])
                         line.RemoveButton.optionIndex = index
                         line.optionIndex = index
@@ -1091,6 +1095,7 @@ function Plater.CreateScriptingOptionsPanel(parent, mainFrame)
                     local posY = i - 1
                     listFrame:SetPoint("topright", mainFrame.ScriptOptionsPanelUser.listScrollFrame.scrollChild, "topright", -25, (-posY*205) - 21)
                     listFrame.titleText:SetText(title)
+					mainFrame.ScriptOptionsPanelUser.listScrollFrame:Show()
                 end
                 mainFrame.ScriptOptionsPanelUser.listScrollFrame.scrollChild:SetSize(mainFrame.ScriptOptionsPanelUser.listScrollFrame:GetWidth(), #listFramesNeeded * 205 + 21)
 

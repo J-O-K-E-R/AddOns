@@ -1,9 +1,11 @@
-## Interface: 90002
+## Interface: 90100
 ## Title: Plater
 ## Notes: Nameplate addon designed for advanced users.
 ## SavedVariables: PlaterDB
 ## SavedVariablesPerCharacter: PlaterDBChr
-## Version: Plater-v9.0.2.326b-Retail
+## Version: Plater-v339-Retail
+## X-Curse-Project-ID: 100547
+## X-Wago-ID: kRNLep6o
 
 #@no-lib-strip@
 libs\libs.xml
@@ -21,9 +23,12 @@ locales\ruRU.lua
 locales\zhCN.lua
 locales\zhTW.lua
 
+Plater.xml
+
 Plater_DefaultSettings.lua
 
 Plater.lua
+Plater_Comms.lua
 Plater_Auras.lua
 Plater_Resources.lua
 Plater_OptionsPanel.lua
@@ -36,5 +41,6 @@ Plater_ChangeLog.lua
 Plater_Docs.lua
 Plater_BossModsSupport.lua
 Plater_Animations.lua
+Plater_CastColorPanels.lua
 Plater_Profiling.lua
 #Plater_SpellPrediction.lua

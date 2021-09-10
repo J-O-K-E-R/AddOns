@@ -35,6 +35,7 @@ LibSharedMedia:Register ("font", "Accidental Presidency", [[Interface\Addons\Pla
 LibSharedMedia:Register ("font", "TrashHand", [[Interface\Addons\Plater\fonts\TrashHand.TTF]])
 LibSharedMedia:Register ("font", "Harry P", [[Interface\Addons\Plater\fonts\HARRYP__.TTF]])
 LibSharedMedia:Register ("font", "FORCED SQUARE", [[Interface\Addons\Plater\fonts\FORCED SQUARE.ttf]])
+LibSharedMedia:Register ("font", "Roboto", [[Interface\Addons\Plater\fonts\roboto.ttf]])
 
 --font templates
 DF:InstallTemplate ("font", "PLATER_SCRIPTS_NAME", {color = "orange", size = 10, font = "Friz Quadrata TT"})

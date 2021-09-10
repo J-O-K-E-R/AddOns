@@ -1,13 +1,125 @@
 
 
 
-local Plater = Plater
+local Plater = Plater or {} -- for build execution
 local _
 
 function Plater.GetChangelogTable()
 	if (not Plater.ChangeLogTable) then
 		Plater.ChangeLogTable = {
+
+			{1630347577,  "Bug Fix", "August 30th, 2021", "Fixing an issue with player pet nameplates.", "cont1nuity"},
+			{1630313665,  "New Feature", "August 30th, 2021", "Added 'Plater.IsUnitPet (unitFrame)' which returns 'isPet, isPlayerPet, {ownerGUID, ownerName, petName}' if available.", "cont1nuity"},
+			{1630313665,  "Backend Change", "August 27th, 2021", "Added 'unitFrame.IsInRange' when plater range check is enabled.", "cont1nuity"},
+			{1630313665,  "Bug Fix", "August 25th, 2021", "Fixing an issue with proper cast bar initialization on login/reload when the unit was already casting.", "cont1nuity"},
+			{1630313665,  "Backend Change", "August 19th, 2021", "Enhancements to profiling (data and formatting).", "cont1nuity"},
+			{1630313665,  "Backend Change", "August 13th, 2021", "Interrupt class coloring works for players outside your group now.", "cont1nuity"},
+			{1630313665,  "Bug Fix", "August 10th, 2021", "Fixing an issue with cast bars not being re-enabled correctly when units become attackable and friendly cast bars are disabled.", "cont1nuity"},
+			{1630313665,  "New Feature", "August 10th, 2021", "Adding option to show 'magic' type buffs.", "cont1nuity"},
+			{1630313665,  "New Feature", "August 10th, 2021", "Adding option to show auras cast by other players.", "cont1nuity"},
+			{1630313665,  "Bug Fix", "August 9th, 2021", "Fixing an issue with target indicators not scaling correctly in some cases.", "cont1nuity"},
+			{1630313665,  "New Feature", "August 6th, 2021", "Adding tab names and headers to the search tab results.", "cont1nuity"},
+			{1630313665,  "Bug Fix", "August 5th, 2021", "Fixing rare div by zero issue.", "cont1nuity"},
+			
+			{1625966028,  "Backend Change", "July 30th, 2021", "Improvements on showing/hiding friendly player healthbars depending on health state.", "cont1nuity"},
+			{1625966028,  "Backend Change", "July 24th, 2021", "Storing 'InterruptSourceName' and 'InterruptSourceGUID' on the castBar.", "cont1nuity"},
+			{1625966028,  "New Feature", "July 24th, 2021", "Adding 'Deinitialization' hook for mods to run when the mod is unloaded.", "cont1nuity"},
+			{1625966028,  "Bug Fix", "July 24th, 2021", "Fixed 'modTable' being 'nil' in the Destructor code.", "cont1nuity"},
+			{1625966028,  "New Feature", "July 21st, 2021", "Introducing 'Plater.ForceInCombatUnits' as a list of unit-IDs for units which should be treated as 'in combat' when the player is in combat.", "cont1nuity"},
+			{1625966028,  "Bug Fix", "July 16th, 2021", "Fixed the Fated Conjunction timer which was off about 200ms.", "Terciob"},
+			{1625966028,  "Backend Change", "July 10th, 2021", "Fixing nameplate color in 'Aura - Blink Time Left' script.", "cont1nuity"},
+			{1625966028,  "Backend Change", "July 10th, 2021", "Changed the way caches are stored.", "Terciob"},
+
+			{1625732512,  "Bug Fix", "July 8th, 2021", "Fixing an issue with older mods/scripts imports not working properly.", "cont1nuity"},
+			{1625732512,  "Bug Fix", "July 8th, 2021", "Fixing an issue with color alpha changes not being carried out properly.", "cont1nuity"},
+
+			{1625732511,  "New Feature", "July 8th, 2021", "New scripts: 'Cast - Alert + Timer [P]', 'Cast - Castbar is Timer [P]' and 'Cast - Important Target [P]' + spell trigger updates for existing ones.", "Terciob"},
+			{1625732511,  "Bug Fix", "July 7th, 2021", "Mod Load-Conditions for Encounter IDs should now work consistently after importing from wago.io again.", "cont1nuity"},
+			{1625732511,  "Bug Fix", "July 4th, 2021", "Manual and automatic aura tracking lists should now work consistently after importing from wago.io again.", "cont1nuity"},
+			{1625732511,  "Bug Fix", "July 4th, 2021", "'Buff Tracking' lists should now work properly after importing a profile.", "cont1nuity"},
+			{1625732511,  "New Feature", "July 4th, 2021", "Adding 'Cast Colors' tab to easily automate cast bar colors.", "Terciob"},
+			{1625732511,  "Bug Fix", "July 4th, 2021", "Better handling of faults during script/mod imports.", "cont1nuity"},
+			{1625732511,  "Bug Fix", "July 2nd, 2021", "Enabling enemy player class color setting.", "cont1nuity"},
+			
+			{1625133487,  "Bug Fix", "July 1st, 2021", "Adding consistency checks for broken mod / script imports.", "cont1nuity"},
+			
+			{1624829303,  "Bug Fix", "June 30th, 2021", "Draw indicators above healthbar borders.", "cont1nuity"},
+			{1624829303,  "Backend Change", "June 29th, 2021", "Failsafe checks for 'Plater.HideHealthBar' when selecting to show name-only mode.", "cont1nuity"},
+			{1624829303,  "Backend Change", "June 29th, 2021", "ToC update for 9.1.0 retail client.", "cont1nuity"},
+			{1624829303,  "Bug Fix", "June 27th, 2021", "Fixing an issue with the NPC Color Picker and '/plater addnpc' not working properly.", "cont1nuity"},
+			
+			{1624299952,  "Backend Change", "June 21st, 2021", "Profiling now logs FPS.", "cont1nuity"},
+			{1624299952,  "Backend Change", "June 21st, 2021", "Switching back to official LibRangeCheck.", "cont1nuity"},
+			{1624299952,  "Backend Change", "June 16th, 2021", "Enabling execute range indicator for paladins in TBC.", "cont1nuity"},
+			{1624299952,  "Bug Fix", "June 14th, 2021", "Correctly reset namepalte scale.", "cont1nuity"},
+			{1624299952,  "Backend Change", "June 8th, 2021", "Removing redundant calls.", "cont1nuity"},
+			{1624299952,  "Backend Change", "June 8th, 2021", "Nameplate update ticks are now spread across multiple frames for smother update cycles.", "cont1nuity"},
+			{1624299952,  "Backend Change", "June 8th, 2021", "Performance logging now captures unit aura updates and quest checks.", "cont1nuity"},
+			{1624299952,  "Bug Fix", "June 8th, 2021", "Fixing an issue with unit name updates.", "cont1nuity"},
+			
+			{1621935367,  "New Feature", "June 3rd, 2021", "New function 'Plater.SetNameplateScale(unitFrame, scale)' to a custom nameplate scale factor.", "cont1nuity"},
+			{1621935367,  "New Feature", "May 30th, 2021", "Mod 'Send Comm Message' hook to periodically send comms via 'Plater.SendComm(...)' calls to the exact same mod of another user in party or raid.", "cont1nuity"},
+			{1621935367,  "New Feature", "May 25th, 2021", "Mod 'Receive Comm Message' hook to react to 'Plater.SendComm(...)' calls from the exact same mod of another user in party or raid.", "Terciob"},
+			{1621935367,  "Backend Change", "May 28th, 2021", "Enhancements on mod/script code limitations and security.", "cont1nuity"},
+			{1621935367,  "Backend Change", "May 26th, 2021", "'Quick Hide on Death' now uses the corresponding CVar setting to disable the hide animation in TBC.", "cont1nuity"},
+			{1621935367,  "Backend Change", "May 26th, 2021", "Adding x-offset options for cast-bars.", "cont1nuity"},
+			{1621935367,  "Backend Change", "May 25th, 2021", "Mod hook 'Player Power Update' now provides the energy type as additional payload in the vararg parameter.", "cont1nuity"},
+			{1621935367,  "Bug Fix", "May 25th, 2021", "Alpha of non-targets should now work correctly again.", "cont1nuity"},
+			{1621935367,  "Backend Change", "May 25th, 2021", "Enabling execute range indicator for warriors in TBC.", "cont1nuity"},
+			{1621935367,  "Bug Fix", "May 25th, 2021", "'Combo Points' mod now handles targeted combo points correctly in TBC.", "cont1nuity"},
+			
+			{1621880868,  "Bug Fix", "May 24th, 2021", "Hiding unavailable options on TBC client.", "Terciob"},
+			{1621880868,  "Backend Change", "May 23rd, 2021", "'Target always on screen' will now keep it on screen on top side as well.", "cont1nuity"},
+			{1621880868,  "New Feature", "May 20th, 2021", "Adding option to show healthbars for not attackable units (npcs and players).", "cont1nuity"},
+			{1621880868,  "Bug Fix", "May 20th, 2021", "Hiding 'Personal Bar' options in classic.", "cont1nuity"},
+			{1621880868,  "Bug Fix", "May 19th, 2021", "Fixing mod load conditions and 'Combo Points [Plater]' mod.", "cont1nuity"},
+			{1621880868,  "Backend Change", "May 19th, 2021", "Adding support for Questie quest tracking.", "cont1nuity"},
+			{1621880868,  "Backend Change", "May 19th, 2021", "Support for 'nameplateNotSelectedAlpha' (defaults to 1 for compatibility).", "cont1nuity"},
+			{1621880868,  "Backend Change", "May 18th, 2021", "Support for Burning Crusade Classic client.", "cont1nuity"},
+			{1621880868,  "Bug Fix", "May 17th, 2021", "Fixing wrong frame alignment of version text in the options panel.", "cont1nuity"},
+			{1621880868,  "Bug Fix", "May 12th, 2021", "Fixing non-existant tanks leading to erros during threat checks.", "cont1nuity"},
+			{1621880868,  "New Feature", "May 10th, 2021", "Adding option to show either shortest or longest duration of stacked aura.", "cont1nuity"},
+			{1621880868,  "Bug Fix", "May 10th, 2021", "Consolidate similar auras by texture and name instead of texture only.", "cont1nuity"},
+			{1621880868,  "Backend Change", "May 7th, 2021", "Keeping default mod/script enabled state after updates.", "cont1nuity"},
+			{1621880868,  "Bug Fix", "May 7th, 2021", "Updating 'Attacking Specific Unit' mod with color resets, border coloring and options.", "cont1nuity"},
+			{1621880868,  "New Feature", "May 5th, 2021", "Allowing to enable/disable specific Actor Types and chose between Plater or Blizzard nameplates.", "cont1nuity"},
+			{1621880868,  "Backend Change", "May 2nd, 2021", "Buff Special tracking is now working with aura names.", "cont1nuity"},
+			
+			{1619548649,  "Backend Change", "April 26th, 2021", "Adding 'namePlateThreatOffTankIsTanking' and 'namePlateThreatOffTankName' fields.", "cont1nuity"},
+			{1619548649,  "Backend Change", "April 23rd, 2021", "Code cleanup for BG/Arena player information.", "cont1nuity"},
+			{1619548649,  "Bug Fix", "April 21st, 2021", "Fixing several default script visual effects.", "cont1nuity"},
+			{1619548649,  "Backend Change", "April 21st, 2021", "Updating locked API.", "cont1nuity"},
+			{1619548649,  "Backend Change", "April 21st, 2021", "Profiling is now correctly disabled.", "cont1nuity"},
+			{1619548649,  "Backend Change", "April 21st, 2021", "Fixing global leak.", "cont1nuity"},
+			{1619548649,  "Backend Change", "April 11th, 2021", "Allowing 'UpdateLevelTextAndColor' again.", "cont1nuity"},
 		
+			{1617654022,  "Bug Fix", "April 2nd, 2021", "Fixing non-existing tanks during threat checks.", "cont1nuity"},
+			{1617654022,  "Bug Fix", "Arpil 1st, 2021", "Fixing default friendly range check ranges for low level chars.", "cont1nuity"},
+			{1617654022,  "Bug Fix", "March 29th, 2021", "Ensure personal bar color is updated properly.", "cont1nuity"},
+			{1617654022,  "New Feature", "March 25th, 2021", "Adding profiling actions to LDB-Icon.", "cont1nuity"},
+			{1617654022,  "Bug Fix", "March 25th, 2021", "Sanity checks for profiling data.", "cont1nuity"},
+			{1617654022,  "Bug Fix", "March 25th, 2021", "Fixing profiling for range check.", "cont1nuity"},
+			{1617654022,  "Bug Fix", "March 24th, 2021", "Fixing BG player role info cache.", "xeropresence"},
+			{1617654022,  "Backend Changes", "March 23rd, 2021", "Adjusting frame levels to allow better overlapping of different nameplates.", "cont1nuity"},
+			{1617654022,  "Bug Fix", "March 23rd, 2021", "Fixing the 'Pins' indicator size.", "cont1nuity"},
+			{1617654022,  "Backend Changes", "March 23rd, 2021", "Adjusted the health-/castbar border draw layers.", "cont1nuity"},
+			{1617654022,  "Backend Changes", "March 22nd, 2021", "Changed the mod/script code restrictions.", "cont1nuity"},
+			
+			{1616411319,  "Backend Changes", "March 21st, 2021", "Adjust healthbar / castbar border frame levels."},
+			{1616411319,  "Backend Changes", "March 19th, 2021", "Get spec-information in arena and BG."},
+			{1616411319,  "Bug Fix", "March 18th, 2021", "Fixing an issue with aura consolidation disabled not showing all auras properly."},
+			{1616411319,  "Bug Fix", "March 17th, 2021", "Fixing perfomance logging for health update."},
+			{1616411319,  "Backend Changes", "March 15th, 2021", "Resetting colors upon nameplate added."},
+			{1616411319,  "Bug Fix", "March 10th, 2021", "Fixing tracking/untracking via spellID."},
+			{1616411319,  "Backend Changes", "March 9th, 2021", "Toc update."},
+			{1616411319,  "Backend Changes", "March 8rd, 2021", "Updating target indicators to better scale with bars."},
+			{1616411319,  "Backend Changes", "March 1st, 2021", "Hide list options scroll frame if unused."},
+			{1616411319,  "Backend Changes", "February 27th, 2021", "Add 'Plater.GetUnitBGInfo(unit)' to access BG player score board information. (xeropresence)"},
+		
+			{1614264576,  "Bug Fix", "February 25th, 2021", "Fixing minimap icon right-click menu."},
+			{1614264576,  "Backend Changes", "February 25th, 2021", "Changed the way aura icon border colors are priotized."},
+			{1614264576,  "Bug Fix", "February 25th, 2021", "Fixing Buff Special icon border not showing properly for offensive and devensive CDs."},
+			
 			{1614089754,  "Backend Changes", "February 21st, 2021", "Plater options menu now opens on higher layer."},
 			{1614089754,  "Bug Fix", "February 21st, 2021", "Fixing aura icon row offset for bottom anchors."},
 			{1614089754,  "Options Changes", "February 20th, 2021", "New text outline options: 'Monochrome Outline' and 'Monochrome Thick Outline'."},
@@ -388,4 +500,55 @@ function Plater.GetChangelogTable()
 	end
 	
 	return Plater.ChangeLogTable
+end
+
+function Plater.GetChangeLogText(requiredInfo)
+	if not requiredInfo then return end
+	
+	local changeLogTable = Plater.GetChangelogTable()
+	-- build printable table
+	local timestamp
+	local clByAuthor = {}
+	for _, entry in ipairs(changeLogTable) do
+		
+		if not timestamp or (requiredInfo and requiredInfo == "all") then
+			timestamp = entry[1]
+		end
+	
+		if timestamp == entry[1] then
+			local author = entry[5] or "Unknown Author"
+			if not clByAuthor[author] then
+				clByAuthor[author] = {}
+				clByAuthor[author].data = {}
+				clByAuthor[author].entries = 0
+			end
+
+			clByAuthor[author].entries = clByAuthor[author].entries + 1
+			clByAuthor[author].data[clByAuthor[author].entries] = entry
+		end
+	end
+	
+	-- build text
+	local text
+	for author, entry in pairs(clByAuthor) do
+		text = (text and (text .. "\n") or "") .. "@" .. author .. ":\n"
+		
+		for _, data in ipairs(entry.data) do
+			text = text .. "- " .. data[4] .. "\n"
+		end
+		
+	end
+	
+	return text
+end
+
+if arg and arg[1] then
+	local requiredInfo
+	if arg[1] == "all" or arg[1] == "latest" then
+		requiredInfo = arg[1]
+	else
+		return
+	end
+	
+	print(Plater.GetChangeLogText(requiredInfo))
 end
