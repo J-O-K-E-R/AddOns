@@ -29,7 +29,6 @@ LibSharedMedia:Register ("statusbar", "KuiBar", [[Interface\AddOns\Plater\images
 LibSharedMedia:Register ("statusbar", "KuiBarShaded", [[Interface\AddOns\Plater\images\innerShade]])
 LibSharedMedia:Register ("statusbar", "KuiBarSolid", [[Interface\AddOns\Plater\images\solid]])
 
-LibSharedMedia:Register ("font", "Roboto", [[Interface\Addons\Plater\fonts\roboto.ttf]])
 LibSharedMedia:Register ("font", "Oswald", [[Interface\Addons\Plater\fonts\Oswald-Regular.otf]])
 LibSharedMedia:Register ("font", "Nueva Std Cond", [[Interface\Addons\Plater\fonts\NuevaStd-Cond.otf]])
 LibSharedMedia:Register ("font", "Accidental Presidency", [[Interface\Addons\Plater\fonts\Accidental Presidency.ttf]])
@@ -47,6 +46,26 @@ DF:InstallTemplate ("font", "PLATER_BUTTON_DISABLED", {color = {1/3, .8/3, .2/3}
 --button templates
 DF:InstallTemplate ("button", "PLATER_BUTTON_DISABLED", {backdropcolor = {.4, .4, .4, .3}, backdropbordercolor = {0, 0, 0, .5}}, "OPTIONS_BUTTON_TEMPLATE")
 DF:InstallTemplate ("button", "PLATER_BUTTON_SELECTED", {backdropbordercolor = {1, .7, .1, 1},}, "OPTIONS_BUTTON_TEMPLATE")
+
+DF:InstallTemplate ("dropdown", "PLATER_DROPDOWN_OPTIONS", {
+	backdrop = {
+		edgeFile = [[Interface\Buttons\WHITE8X8]],
+		edgeSize = 1,
+		bgFile = [[Interface\Tooltips\UI-Tooltip-Background]],
+		tileSize = 64,
+		tile = true
+	},
+
+	backdropcolor = {.3, .3, .3, .8},
+	backdropbordercolor = {0, 0, 0, 1},
+	onentercolor = {.3, .3, .3, .9},
+	onenterbordercolor = {1, 1, 1, 1},
+
+	dropicon = "Interface\\BUTTONS\\arrow-Down-Down",
+	dropiconsize = {16, 16},
+	dropiconpoints = {-2, -3},
+})
+
 
 -- those two may be removed, as they are covered by settings now
 DF:NewColor ("PLATER_FRIEND", .71, 1, 1, 1)
@@ -75,7 +94,18 @@ PLATER_DEFAULT_SETTINGS = {
 		--store as [NpcID] = {enabled1, enabled2, colorID}
 		--enabled1 is if the color is enabled overall, enabled2 is if the color is only for scripts
 		npc_colors = {},
-	
+
+		--store the cast colors customized by the user
+		cast_colors = {},
+		cast_color_settings = {
+			enabled = true,
+			width = 12,
+			height_offset = 0,
+			alpha = 0.8,
+			anchor = {side = 11, x = 0, y = 0},
+			layer = "Artwork",
+		},
+
 		click_space = {140, 28},
 		click_space_friendly = {140, 28},
 		click_space_always_show = false,
@@ -95,6 +125,7 @@ PLATER_DEFAULT_SETTINGS = {
 		plate_config  = {
 			friendlyplayer = {
 				enabled = true,
+				module_enabled = true,
 				only_damaged = true,
 				only_thename = false,
 				click_through = true,
@@ -109,6 +140,7 @@ PLATER_DEFAULT_SETTINGS = {
 				mana = {100, 3},
 				mana_incombat = {100, 3},
 				buff_frame_y_offset = 10,
+				castbar_offset_x = 0,
 				castbar_offset = 0,
 				
 				actorname_text_spacing = 10,
@@ -168,6 +200,7 @@ PLATER_DEFAULT_SETTINGS = {
 			
 			enemyplayer = {
 				enabled = true,
+				module_enabled = true,
 				show_guild_name = false,
 				
 				use_playerclass_color = true,
@@ -182,6 +215,7 @@ PLATER_DEFAULT_SETTINGS = {
 				mana_incombat = {100, 4},
 				
 				buff_frame_y_offset = 0,
+				castbar_offset_x = 0,
 				castbar_offset = 0,
 				
 				actorname_text_spacing = 12,
@@ -254,6 +288,7 @@ PLATER_DEFAULT_SETTINGS = {
 				all_names = true,
 				relevance_state = 4,
 				enabled = true,
+				module_enabled = true,
 				
 				health = {112, 12},
 				cast = {112, 10},
@@ -264,6 +299,7 @@ PLATER_DEFAULT_SETTINGS = {
 				mana_incombat = {100, 4},
 				
 				buff_frame_y_offset = 0,
+				castbar_offset_x = 0,
 				castbar_offset = 0,
 				
 				actorname_text_spacing = 10,
@@ -336,6 +372,7 @@ PLATER_DEFAULT_SETTINGS = {
 			
 			enemynpc = {
 				enabled = true,
+				module_enabled = true,
 				all_names = true,
 				
 				health = {112, 12},
@@ -347,6 +384,7 @@ PLATER_DEFAULT_SETTINGS = {
 				mana_incombat = {100, 4},
 				
 				buff_frame_y_offset = 0,
+				castbar_offset_x = 0,
 				castbar_offset = 0,
 				
 				actorname_text_spacing = 10,
@@ -421,6 +459,7 @@ PLATER_DEFAULT_SETTINGS = {
 
 			player = {
 				enabled = true,
+				module_enabled = true,
 				click_through = false,
 				health = {150, 12},
 				health_incombat = {150, 12},
@@ -432,6 +471,7 @@ PLATER_DEFAULT_SETTINGS = {
 				healthbar_enabled = true,
 				healthbar_color = {0.564706, 0.933333, 0.564706, 1},
 				healthbar_color_by_hp = false,
+				castbar_offset_x = 0,
 				castbar_offset = 0, --not used?
 				
 				castbar_enabled = true,
@@ -533,11 +573,15 @@ PLATER_DEFAULT_SETTINGS = {
 		
 		quick_hide = false, --hide the nameplate when the unit hits 0 health points | making disabled by default, this maybe is bugging hunters FD
 		
+		show_healthbars_on_not_attackable = false,
+		
 		enable_masque_support = false,
 		
 		use_name_translit = false,
 		
 		use_player_combat_state = false,
+		
+		shadowMode = 1,
 		
 		last_news_time = 0,
 		disable_omnicc_on_auras = false,
@@ -579,10 +623,10 @@ PLATER_DEFAULT_SETTINGS = {
 		ui_parent_buff_special_strata = "BACKGROUND",
 		ui_parent_cast_strata = "BACKGROUND", --testing, the castbar should be in front of everythings
 		ui_parent_target_strata = "LOW", --testing, the current target nameplate should be in this strata
-		ui_parent_buff_level = 10,
-		ui_parent_buff2_level = 10,
-		ui_parent_buff_special_level = 10,
-		ui_parent_cast_level = 10,
+		ui_parent_buff_level = 0,
+		ui_parent_buff2_level = 0,
+		ui_parent_buff_special_level = 0,
+		ui_parent_cast_level = 0,
 		ui_parent_scale_tune = 0, --testing, a slider to change the unit frame scale / goal is to have a fine tune knob to adjust the overall size when using this feature
 		
 		resources = {
@@ -600,6 +644,7 @@ PLATER_DEFAULT_SETTINGS = {
 		minor_height_scale = 0.95,
 		
 		--> widget settings
+		usePlaterWidget = false,
 		widget_bar_scale = 0.75,
 		widget_bar_anchor = {side = 4, x = 0, y = 0},
 		
@@ -626,6 +671,7 @@ PLATER_DEFAULT_SETTINGS = {
 		
 		--> store spells from the latest event the player has been into
 		captured_spells = {},
+		captured_casts = {},
 
 		--script tab
 		script_data = {},
@@ -742,6 +788,7 @@ PLATER_DEFAULT_SETTINGS = {
 		extra_icon_show_purge = false, --extra frame show purge
 		extra_icon_show_purge_border = {0, .925, 1, 1},
 		extra_icon_show_enrage = false, --extra frame show purge
+		extra_icon_show_magic = false,
 		extra_icon_show_enrage_border = {0.85, 0.2, 0.1, 1},
 		extra_icon_show_offensive = false,
 		extra_icon_show_offensive_border = {0, .65, .1, 1},
@@ -760,7 +807,9 @@ PLATER_DEFAULT_SETTINGS = {
 		aura_show_important = true,
 		aura_show_dispellable = true,
 		aura_show_enrage = false,
+		aura_show_magic = false,
 		aura_show_aura_by_the_player = true,
+		aura_show_aura_by_other_players = false,
 		aura_show_buff_by_the_unit = true,
 		aura_border_colors_by_type = false,
 		aura_show_crowdcontrol = false,
@@ -2522,6 +2571,7 @@ PLATER_DEFAULT_SETTINGS = {
 		},
 		
 		aggro_can_check_notank = false,
+		tank_threat_colors = false,
 		
 		show_aggro_flash = false,
 		show_aggro_glow = true,
