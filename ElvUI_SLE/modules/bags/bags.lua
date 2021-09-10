@@ -1,18 +1,19 @@
 local SLE, T, E, L, V, P, G = unpack(select(2, ...))
-local SB = SLE:NewModule("Bags", 'AceHook-3.0')
-local Pr
-local B = E:GetModule('Bags')
+local SB = SLE.Bags
+local B = E.Bags
+
 --GLOBALS: hooksecurefunc
 local _G = _G
+local Pr
 
---Updating slot for deconstruct glow hide when item disappears
+-- Updating slot for deconstruct glow hide when item disappears
 function SB:UpdateSlot(bagID, slotID)
 	if (self.Bags[bagID] and self.Bags[bagID].numSlots ~= GetContainerNumSlots(bagID)) or not self.Bags[bagID] or not self.Bags[bagID][slotID] then
-		return;
+		return
 	end
 
-	local slot = self.Bags[bagID][slotID];
-	if not Pr then Pr = SLE:GetModule("Professions") end
+	local slot = self.Bags[bagID][slotID]
+	if not Pr then Pr = SLE.Professions end
 	if not Pr.DeconstructionReal then return end
 	if Pr.DeconstructionReal:IsShown() and Pr.DeconstructionReal.Bag == bagID and Pr.DeconstructionReal.Slot == slotID then
 		if not slot.hasItem then
@@ -26,7 +27,7 @@ function SB:HookBags(isBank)
 	for _, bagFrame in pairs(B.BagFrames) do
 		--Hooking slots for deconstruct. Bank is not allowed
 		if not bagFrame.SLE_DeconstructHooked and not isBank then
-			hooksecurefunc(bagFrame, "UpdateSlot", SB.UpdateSlot)
+			hooksecurefunc(bagFrame, 'UpdateSlot', SB.UpdateSlot)
 			bagFrame.SLE_UpdateHooked = true
 		end
 	end
@@ -41,10 +42,10 @@ function SB:Initialize()
 	SB:ForUpdateAll()
 
 	--Applying stuff to already existing bags
-	self:HookBags();
-	hooksecurefunc(B, "Layout", function(self, isBank)
+	self:HookBags()
+	hooksecurefunc(B, 'Layout', function(_, isBank)
 		SB:HookBags(isBank)
-	end);
+	end)
 
 	--This table is for initial update of a frame, cause applying transparent trmplate breaks color borders
 	SB.InitialUpdates = {
@@ -54,13 +55,13 @@ function SB:Initialize()
 	}
 
 	--Fix borders for bag frames
-	hooksecurefunc(B, "OpenBank", function()
+	hooksecurefunc(B, 'OpenBank', function()
 		if not SB.InitialUpdates.Bank then --For bank, just update on first show
 			B:Layout(true)
 			SB.InitialUpdates.Bank = true
 		end
 		if not SB.InitialUpdates.ReagentBankButton then --For reagent bank, hook to toggle button and update layout when first clicked
-			_G["ElvUI_BankContainerFrame"].reagentToggle:HookScript("OnClick", function()
+			_G.ElvUI_BankContainerFrame.reagentToggle:HookScript('OnClick', function()
 				if not SB.InitialUpdates.ReagentBank then
 					B:Layout(true)
 					SB.InitialUpdates.ReagentBank = true

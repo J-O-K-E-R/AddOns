@@ -12,13 +12,12 @@ V["sle"] = {
 		["conditions"] = "",
 		["lockbutton"] = false,
 	},
+	media = {
+		enable = true,
+	},
 	--Minimap Module
 	["minimap"] = {
 		rectangle = false,
-	},
-	["vehicle"] = {
-		["enable"] = false,
-		["numButtons"] = 7,
 	},
 	["professions"] = {
 		["deconButton"] = {
@@ -38,9 +37,7 @@ V["sle"] = {
 			["relureThreshold"] = 8,
 		},
 	},
-
 	["module"] = {
-		["screensaver"] = false,
 		["blizzmove"] = {
 			["enable"] = true,
 			["remember"] = false,
@@ -85,6 +82,9 @@ V["sle"] = {
 				["showBothTimers"] = false,
 				["showMarks"] = true,
 			},
+			torghastPowers = {
+				enable = false,
+			},
 		},
 		["petbattles"] = {
 			["enable"] = true,
@@ -105,7 +105,9 @@ V["sle"] = {
 		["level"] = 5,
 		["transparent"] = "Default",
 	},
-
+	viewport = {
+		enable = false,
+	},
 	["characterGoldsSorting"] = {},
 	}
 
@@ -214,7 +216,7 @@ if G["profileCopy"] then
 		["raidmarkers"] = {
 			["general"] = true,
 		},
-		["screensaver"] = {
+		["afk"] = {
 			["general"] = true,
 		},
 		["shadows"] = {

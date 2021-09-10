@@ -64,6 +64,8 @@ Auctionator.Config.Options = {
   COLUMNS_HISTORICAL_PRICES = "historical_prices",
   COLUMNS_POSTING_HISTORY = "columns_posting_history",
   COLUMNS_CANCELLING = "columns_cancelling",
+
+  CRAFTING_COST_SHOW_PROFIT = "crafting_cost_show_profit",
 }
 
 Auctionator.Config.SalesTypes = {
@@ -123,18 +125,18 @@ local defaults = {
   [Auctionator.Config.Options.LIFO_UNDERCUT_STATIC_VALUE] = 0,
 
   [Auctionator.Config.Options.DEFAULT_QUANTITIES] = {
-    [LE_ITEM_CLASS_WEAPON]           = 1,
-    [LE_ITEM_CLASS_ARMOR]            = 1,
-    [LE_ITEM_CLASS_CONTAINER]        = 0,
-    [LE_ITEM_CLASS_GEM]              = 0,
-    [LE_ITEM_CLASS_ITEM_ENHANCEMENT] = 0,
-    [LE_ITEM_CLASS_CONSUMABLE]       = 0,
-    [LE_ITEM_CLASS_GLYPH]            = 0,
-    [LE_ITEM_CLASS_TRADEGOODS]       = 0,
-    [LE_ITEM_CLASS_RECIPE]           = 0,
-    [LE_ITEM_CLASS_BATTLEPET]        = 1,
-    [LE_ITEM_CLASS_QUESTITEM]        = 0,
-    [LE_ITEM_CLASS_MISCELLANEOUS]    = 0,
+    [Enum.ItemClass.Weapon]           = 1,
+    [Enum.ItemClass.Armor]            = 1,
+    [Enum.ItemClass.Container]        = 0,
+    [Enum.ItemClass.Gem]              = 0,
+    [Enum.ItemClass.ItemEnhancement]  = 0,
+    [Enum.ItemClass.Consumable]       = 0,
+    [Enum.ItemClass.Glyph]            = 0,
+    [Enum.ItemClass.Tradegoods]       = 0,
+    [Enum.ItemClass.Recipe]           = 0,
+    [Enum.ItemClass.Battlepet]        = 1,
+    [Enum.ItemClass.Questitem]        = 0,
+    [Enum.ItemClass.Miscellaneous]    = 0,
   },
 
   [Auctionator.Config.Options.PRICE_HISTORY_DAYS] = 21,
@@ -157,6 +159,8 @@ local defaults = {
   [Auctionator.Config.Options.COLUMNS_SELLING_SEARCH] = {},
   [Auctionator.Config.Options.COLUMNS_HISTORICAL_PRICES] = {},
   [Auctionator.Config.Options.COLUMNS_POSTING_HISTORY] = {},
+
+  [Auctionator.Config.Options.CRAFTING_COST_SHOW_PROFIT] = false,
 }
 
 function Auctionator.Config.IsValidOption(name)

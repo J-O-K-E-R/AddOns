@@ -3,8 +3,6 @@ AuctionatorMultiSearchMixin = {}
 function AuctionatorMultiSearchMixin:InitSearch(completionCallback, incrementCallback)
   Auctionator.Debug.Message("AuctionatorMultiSearchMixin:InitSearch()")
 
-  self:RegisterProviderEvents()
-
   self.complete = true
   self.onSearchComplete = completionCallback or function()
     Auctionator.Debug.Message("Search completed.")
@@ -14,27 +12,42 @@ function AuctionatorMultiSearchMixin:InitSearch(completionCallback, incrementCal
   end
 end
 
-function AuctionatorMultiSearchMixin:OnSearchEvent(event, ...)
-  if not self.complete then
-    self:OnSearchEventReceived(event, ...)
-  end
+function AuctionatorMultiSearchMixin:OnEvent(event, ...)
+  self:OnSearchEventReceived(event, ...)
 end
 
 function AuctionatorMultiSearchMixin:Search(terms)
   Auctionator.Debug.Message("AuctionatorMultiSearchMixin:Search()", terms)
 
   self.complete = false
-  self.results = {}
+  self.partialResults = {}
+  self.fullResults = {}
+
+  self:RegisterProviderEvents()
 
   self:SetTerms(terms)
+  self:InitializeNewSearchGroup()
+end
+
+function AuctionatorMultiSearchMixin:AbortSearch()
+  self:UnregisterProviderEvents()
+  local isComplete = self.complete
+  self.complete = true
+  if not isComplete then
+    self.onSearchComplete(self.partialResults)
+  end
+end
+
+function AuctionatorMultiSearchMixin:SearchGroupReady()
   self:NextSearch()
 end
 
 function AuctionatorMultiSearchMixin:AddResults(results)
   Auctionator.Debug.Message("AuctionatorSearchProviderMixin:AddResults()")
 
-  for index = 0, #results do
-    table.insert(self.results, results[index])
+  for index = 1, #results do
+    table.insert(self.partialResults, results[index])
+    table.insert(self.fullResults, results[index])
   end
 
   if self:HasCompleteTermResults() then
@@ -47,12 +60,15 @@ function AuctionatorMultiSearchMixin:NextSearch()
     self.onNextSearch(
       self:GetCurrentSearchIndex(),
       self:GetSearchTermCount(),
-      self.results
+      self.partialResults
     )
+    self.partialResults = {}
     self:GetSearchProvider()(self:GetNextSearchParameter())
   else
     Auctionator.Debug.Message("AuctionatorMultiSearchMixin:NextSearch Complete")
+
     self.complete = true
-    self.onSearchComplete(self.results)
+    self:UnregisterProviderEvents()
+    self.onSearchComplete(self.fullResults)
   end
 end

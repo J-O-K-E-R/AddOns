@@ -1,8 +1,7 @@
 AUCTIONATOR_LOCALES.deDE = function()
   local L = {}
 
-L = L or {}
-L["ADD_FAVOURITE"] = "Favorit hinzufügen"
+  L["ADD_FAVOURITE"] = "Favorit hinzufügen"
 L["ADD_ITEM"] = "Hinzufügen"
 L["ADD_TERM_TO_LIST_DIALOG"] = "Begriff nach dem gesucht werden soll:"
 L["ALT_LEFT_CLICK"] = "Alt Linksklick"
@@ -63,6 +62,9 @@ L["CONFIG_CANCELLING_TEXT"] = "Optionen zum Ändern des Verhaltens des Unterbote
 L["CONFIG_CHAT_LOG"] = "Zeige neu erstellte Auktionen im Chat an."
 L["CONFIG_CHAT_LOG_TOOLTIP_HEADER"] = "Auktions Chat Log"
 L["CONFIG_CHAT_LOG_TOOLTIP_TEXT"] = "Wenn diese Option deaktiviert ist, werden keine Informationen für neu erstellte Auktionen im Chat angezeigt."
+L["CONFIG_CRAFTING_COST_SHOW_PROFIT"] = "Gewinn anzeigen, anstatt die Herstellungskosten"
+L["CONFIG_CRAFTING_COST_SHOW_PROFIT_TOOLTIP_HEADER"] = "Herstellungskosten zeigt Gewinn"
+L["CONFIG_CRAFTING_COST_SHOW_PROFIT_TOOLTIP_TEXT"] = "Wenn das Auktionshaus geöffnet ist, zeigt der Handwerksbildschirm die Kosten für das Herstellen eines Gegenstands. Aktiviere diese Option, um stattdessen den Gewinn anzuzeigen."
 L["CONFIG_DEBUG"] = "Zeige Debugmeldungen an."
 L["CONFIG_DEBUG_TOOLTIP_HEADER"] = "Auctionator Debug"
 L["CONFIG_DEBUG_TOOLTIP_TEXT"] = "Wird von den Entwicklern verwendet, um Debugmeldungen im Chat auszugeben."
@@ -199,7 +201,7 @@ L["LIST_EDIT_ITEM_HEADER"] = "Einkaufslisteneintrag bearbeiten"
 L["LIST_EXPORT_HEADER"] = "Einkaufslisten exportieren"
 L["LIST_IMPORT_HEADER"] = "Einkaufslisten importieren"
 L["LIST_SEARCH_START"] = "Suche nach Gegenständen in %s..."
-L["LIST_SEARCH_STATUS"] = "Suche nach\nGegenstand %s/%s in\n%s"
+L["LIST_SEARCH_STATUS"] = "Suche nach\\nGegenstand %s/%s in\\n%s"
 L["MAIL_TOOLTIP_TOOLTIP_HEADER"] = "Mailbox Tooltip Infos"
 L["MAIL_TOOLTIP_TOOLTIP_TEXT"] = "Zeigt Auctionator-Informationen zu Gegenständen in der Mailbox an."
 L["MAX"] = "max."
@@ -347,6 +349,11 @@ L["SPLASH_907_FEATURES_4"] = "Der Unterbotenreiter verfügt über ein neues Such
 L["SPLASH_907_FEATURES_HEADER"] = "Funktionen"
 L["SPLASH_907_UNANNOUNCED_1"] = "Eine optionale Spalte \"Verkäufer\" (um zu sehen, wer die Auktionen verkauft) wurde dem Verkaufenreiter hinzugefügt. Um dies zu aktivieren, klicke mit der rechten Maustaste auf eine Spaltenüberschrift (z. B. \"Eigenes?\") In den aktuellen Auktionsauflistungen."
 L["SPLASH_907_UNANNOUNCED_HEADER"] = "Unangekündigte Funktionen ab 9.0.6"
+L["SPLASH_9105_DESCRIPTION"] = "Es wurde eine neue Suchmethode für Einkaufslisten hinzugefügt, mit der die Preise für Tausende von Gegenständen in 14 Sekunden (ca. 42 Sekunden auf einem voll besiedelten Realm) gescannt und gefiltert werden können - vorher konnte dies 20 oder mehr Minuten dauern! In Kombination mit den Goldpreisfiltern ist dies von unschätzbarem Wert für die Suche nach dem perfekten Deal."
+L["SPLASH_9105_FEATURES_1"] = "Sehr schnelle Einkaufslistensuche bei der Suche nach mehr als 50 Artikeln."
+L["SPLASH_9105_FEATURES_2"] = "Es wurde eine Schaltfläche hinzugefügt, mit der der Preishistorie-Dialog auf der Registerkarte \"Einkaufen\" auf die rechte Seite der Ergebnisliste verschoben werden kann (klicken Sie mit der rechten Maustaste auf ein beliebiges Ergebnis, um eine Preishistorie anzuzeigen)."
+L["SPLASH_9105_FEATURES_3"] = "Option zur Anzeige des Gewinns anstelle der Herstellungskosten im Handwerksfenster, wenn das Auktionshaus geöffnet ist."
+L["SPLASH_9105_FEATURES_HEADER"] = "Neueste Funktionen"
 L["SPLASH_HIDE_MESSAGE"] = "Erst beim nächsten Update wieder anzeigen"
 L["SPLASH_SCREEN_HEADER"] = "Willkommen bei Auctionator"
 L["STACK_AUCTION_INFO"] = "%s für %s (jedes zu %s)"
@@ -395,6 +402,7 @@ L["VENDOR_TOOLTIP_TOOLTIP_TEXT"] = "Zeigt den Händlerpreis im Tooltip an."
 L["VERSION_HEADER"] = "Version"
 L["VERSION_MESSAGE"] = "Version %s"
 L["YOUR_HISTORY"] = "Deine Historie"
+
 
   return L
 end

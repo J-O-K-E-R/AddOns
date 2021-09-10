@@ -1,5 +1,5 @@
 local SLE, T, E, L, V, P, G = unpack(select(2, ...))
-local DT = E:GetModule('DataTexts')
+local DT = E.DataTexts
 local LibQTip = LibStub('LibQTip-1.0')
 local DT_myrealm = gsub(E.myrealm,"[%s%-]","")
 
@@ -346,7 +346,8 @@ end
 function OnEnter(self, _, noUpdate)
 	if not IsInGuild() then return end
 	if E.db.sle.dt.guild.combat and InCombatLockdown() then return end
-	local hexColor = E:RGBToHex(unpack(E.media.rgbvaluecolor))
+	local valuec = E.db.general.valuecolor
+	local hexColor = E:RGBToHex(valuec.r, valuec.g, valuec.b)
 
 	LDB_ANCHOR = self
 

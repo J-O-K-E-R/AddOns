@@ -1,6 +1,6 @@
 local SLE, T, E, L, V, P, G = unpack(select(2, ...))
-local NP = E:GetModule('NamePlates')
-local N = SLE:NewModule("Nameplates", 'AceHook-3.0', 'AceEvent-3.0', 'AceTimer-3.0')
+local NP = E.NamePlates
+local N = SLE.Nameplates
 
 -- GLOBALS: unpack, select, format, UnitName, hooksecurefunc, UnitIsPlayer, C_NamePlate
 local format = format
@@ -13,10 +13,10 @@ local rosterTimer
 N.GroupMembers = {}
 
 function N:CreateThreatIndicator(nameplate)
-	nameplate.SLE_threatInfo = nameplate.Health:CreateFontString(nil, "OVERLAY")
-	nameplate.SLE_threatInfo:SetPoint("BOTTOMLEFT", nameplate.Health, "BOTTOMLEFT", E.db.sle.nameplates.threat.xoffset, E.db.sle.nameplates.threat.yoffset)
-	nameplate.SLE_threatInfo:SetJustifyH("LEFT")
-	nameplate.SLE_threatInfo:SetFont(E.LSM:Fetch("font", E.db.sle.nameplates.threat.font), E.db.sle.nameplates.threat.size, E.db.sle.nameplates.threat.fontOutline)
+	nameplate.SLE_threatInfo = nameplate.Health:CreateFontString(nil, 'OVERLAY')
+	nameplate.SLE_threatInfo:SetPoint('BOTTOMLEFT', nameplate.Health, 'BOTTOMLEFT', E.db.sle.nameplates.threat.xoffset, E.db.sle.nameplates.threat.yoffset)
+	nameplate.SLE_threatInfo:SetJustifyH('LEFT')
+	nameplate.SLE_threatInfo:SetFont(E.LSM:Fetch('font', E.db.sle.nameplates.threat.font), E.db.sle.nameplates.threat.size, E.db.sle.nameplates.threat.fontOutline)
 end
 
 hooksecurefunc(NP, 'ThreatIndicator_PostUpdate', function(threat, unit)
@@ -24,7 +24,7 @@ hooksecurefunc(NP, 'ThreatIndicator_PostUpdate', function(threat, unit)
 	if threat.__owner.SLE_threatInfo then
 		threat.__owner.SLE_threatInfo:SetText() --Reseting text to empty
 
-		if E.db.sle.nameplates.threat.enable and threat.__owner.frameType == "ENEMY_NPC" then
+		if E.db.sle.nameplates.threat.enable and threat.__owner.frameType == 'ENEMY_NPC' then
 			if not unit then
 				for i=1, 4 do
 					if threat.__owner.guid == UnitGUID(format('boss%d', i)) then
@@ -36,11 +36,11 @@ hooksecurefunc(NP, 'ThreatIndicator_PostUpdate', function(threat, unit)
 			if unit and not UnitIsPlayer(unit) and UnitCanAttack('player', unit) then
 				local status, percent = select(2, UnitDetailedThreatSituation('player', unit))
 				if (status) then
-					threat.__owner.SLE_threatInfo:SetFormattedText('%s%.0f%%|r', E:RGBToHex(GetThreatStatusColor(status)), percent or "")
+					threat.__owner.SLE_threatInfo:SetFormattedText('%s%.0f%%|r', E:RGBToHex(GetThreatStatusColor(status)), percent or '')
 				end
 			end
 		else
-			threat.__owner.SLE_threatInfo:SetText("")
+			threat.__owner.SLE_threatInfo:SetText('')
 		end
 	end
 end)
@@ -114,9 +114,11 @@ function N:UpdateRoster()
 	wipe(N.GroupMembers)
 
 	local groupSize = IsInRaid() and GetNumGroupMembers() or IsInGroup() and GetNumSubgroupMembers() or 0
-	local groupType = IsInRaid() and "raid" or IsInGroup() and "party" or "solo"
+	local groupType = IsInRaid() and 'raid' or IsInGroup() and 'party' or 'solo'
 
-	for index = 1, groupSize do AddToRoster(groupType..index) end
+	for index = 1, groupSize do
+		AddToRoster(groupType..index)
+	end
 
 	if groupType == 'party' then
 		AddToRoster('player')
@@ -149,8 +151,8 @@ function N:NamePlateCallBackSLE(nameplate, event, unit)
 end
 
 --Creating additional nameplate elements
-function N:CreateNameplate(frame, unit)
-	if not frame or not unit then return end
+function N:CreateNameplate(frame)
+	if not frame then return end
 
 	if not frame.SLE_threatInfo then
 		N:CreateThreatIndicator(frame)
@@ -162,40 +164,26 @@ end
 
 
 function N:UpdatePlate(nameplate)
+	N.db = E.db.sle.nameplates
 	if nameplate.SLE_threatInfo then
-		nameplate.SLE_threatInfo:SetFont(E.LSM:Fetch('font', E.db.sle.nameplates.threat.font), E.db.sle.nameplates.threat.size, E.db.sle.nameplates.threat.fontOutline)
-		nameplate.SLE_threatInfo:SetPoint('BOTTOMLEFT', nameplate.Health, 'BOTTOMLEFT', E.db.sle.nameplates.threat.xoffset, E.db.sle.nameplates.threat.yoffset)
-		if not E.db.sle.nameplates.threat.enable then nameplate.SLE_threatInfo:SetText('') end
+		nameplate.SLE_threatInfo:SetFont(E.LSM:Fetch('font', N.db.threat.font), N.db.threat.size, N.db.threat.fontOutline)
+		nameplate.SLE_threatInfo:SetPoint('BOTTOMLEFT', nameplate.Health, 'BOTTOMLEFT', N.db.threat.xoffset, N.db.threat.yoffset)
+		if not N.db.threat.enable then nameplate.SLE_threatInfo:SetText('') end
 	end
 
 	if nameplate.SLE_targetcount then
-		nameplate.SLE_targetcount:SetFont(E.LSM:Fetch('font', E.db.sle.nameplates.targetcount.font), E.db.sle.nameplates.targetcount.size, E.db.sle.nameplates.targetcount.fontOutline)
-		nameplate.SLE_targetcount:SetPoint('BOTTOMRIGHT', nameplate.Health, 'BOTTOMRIGHT', E.db.sle.nameplates.targetcount.xoffset, E.db.sle.nameplates.targetcount.yoffset)
-		if E.db.sle.nameplates.targetcount.enable then N:UpdateCount(nil, 'player', true) else nameplate.SLE_targetcount:SetText(''); nameplate.SLE_TargetedByCounter = 0 end
+		nameplate.SLE_targetcount:SetFont(E.LSM:Fetch('font', N.db.targetcount.font), N.db.targetcount.size, N.db.targetcount.fontOutline)
+		nameplate.SLE_targetcount:SetPoint('BOTTOMRIGHT', nameplate.Health, 'BOTTOMRIGHT', N.db.targetcount.xoffset, N.db.targetcount.yoffset)
+		if N.db.targetcount.enable then N:UpdateCount(nil, 'player', true) else nameplate.SLE_targetcount:SetText(''); nameplate.SLE_TargetedByCounter = 0 end
 	end
 end
 
 function N:Initialize()
 	if not SLE.initialized or not E.private.nameplates.enable then return end
-	--DB Conversion
-	if E.db.sle.nameplates.targetcount and type(E.db.sle.nameplates.targetcount) == "boolean" then
-		local oldEnable = E.db.sle.nameplates.targetcount
-		E.db.sle.nameplates.targetcount = {
-			["enable"] = oldEnable,
-			["font"] = "PT Sans Narrow",
-			["size"] = 12,
-			["fontOutline"] = "OUTLINE",
-		}
-	end
-	if E.db.sle.nameplates.showthreat then
-		E.db.sle.nameplates.threat.enable = E.db.sle.nameplates.showthreat
-		E.db.sle.nameplates.showthreat = nil
-	end
-
-	--* Adds RedArrow to ElvUI Textures Table for Nameplate Target Arrow selection
+	N.db = E.db.sle.nameplates
 
 	--Hooking to ElvUI's nameplates
-	hooksecurefunc(NP, 'Style', N.CreateNameplate)
+	hooksecurefunc(NP, 'StylePlate', N.CreateNameplate)
 	hooksecurefunc(NP, 'UpdatePlate', N.UpdatePlate)
 
 	N:RegisterEvent('GROUP_ROSTER_UPDATE', 'StartRosterUpdate')
@@ -203,24 +191,13 @@ function N:Initialize()
 	hooksecurefunc(NP, 'NamePlateCallBack', N.NamePlateCallBackSLE)
 
 	--This function call is to update target count, cause right after creating it doesn't show up
-	E:Delay(.3, function() N:UpdateCount(nil,"player", true) end)
+	-- E:Delay(.3, function() N:UpdateCount(nil, 'player', true) end)
 
 	function N:ForUpdateAll()
-		--Additional DB conversion
-		if E.db.sle.nameplates.targetcount and type(E.db.sle.nameplates.targetcount) == "boolean" then
-			local oldEnable = E.db.sle.nameplates.targetcount
-			E.db.sle.nameplates.targetcount = {
-				["enable"] = oldEnable,
-				["font"] = "PT Sans Narrow",
-				["size"] = 12,
-				["fontOutline"] = "OUTLINE",
-			}
-		end
-		if E.db.sle.nameplates.showthreat then
-			E.db.sle.nameplates.threat.enable = E.db.sle.nameplates.showthreat
-			E.db.sle.nameplates.showthreat = nil
-		end
+		N.db = E.db.sle.nameplates
+		N:UpdateCount(nil, 'player', true)
 	end
+	N:ForUpdateAll()
 end
 
 SLE:RegisterModule(N:GetName())

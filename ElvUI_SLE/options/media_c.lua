@@ -1,5 +1,5 @@
 local SLE, T, E, L = unpack(select(2, ...))
-local M = SLE:GetModule('Media')
+local M = SLE.Media
 
 local allFont = 'PT Sans Narrow'
 local allSize = 12
@@ -15,10 +15,19 @@ local function configTable()
 		order = 20,
 		childGroups = 'tab',
 		args = {
+			enable = {
+				order = 1,
+				type = 'toggle',
+				name = L["Enable"],
+				get = function(info) return E.private.sle.media[info[#info]] end,
+				set = function(info, value) E.private.sle.media[info[#info]] = value; E:StaticPopup_Show('PRIVATE_RL') end,
+
+			},
 			zonefonts = {
 				type = 'group',
 				name = L["Zone Text"],
 				order = 3,
+				disabled = function() return not E.private.sle.media.enable end,
 				args = {
 					intro = ACH:Spacer(1),
 					test = {
@@ -124,9 +133,10 @@ local function configTable()
 				},
 			},
 			miscfonts = {
+				order = 4,
 				type = 'group',
 				name = L["Misc Texts"],
-				order = 4,
+				disabled = function() return not E.private.sle.media.enable end,
 				args = {
 					mail = {
 						type = 'group',
@@ -270,9 +280,10 @@ local function configTable()
 				},
 			},
 			applyAll = {
+				order = 60,
 				type = 'group',
 				name = L["Apply Font To All"],
-				order = 60,
+				disabled = function() return not E.private.sle.media.enable end,
 				args = {
 					font = {
 						type = 'select', dialogControl = 'LSM30_Font',
@@ -280,7 +291,7 @@ local function configTable()
 						name = L["Font"],
 						values = AceGUIWidgetLSMlists.font,
 						get = function(_) return allFont end,
-						set = function(_, value) allFont = value; end,
+						set = function(_, value) allFont = value end,
 					},
 					size = {
 						order = 2,
@@ -288,14 +299,14 @@ local function configTable()
 						type = 'range',
 						min = 6, max = 20, step = 1,
 						get = function(_) return allSize end,
-						set = function(_, value) allSize = value; end,
+						set = function(_, value) allSize = value end,
 					},
 					outline = {
 						order = 3,
 						name = L["Font Outline"],
 						type = 'select',
 						get = function(_) return allOutline end,
-						set = function(_, value) allOutline = value; end,
+						set = function(_, value) allOutline = value end,
 						values = T.Values.FontFlags,
 					},
 					applyFontToAll = {
@@ -307,7 +318,7 @@ local function configTable()
 							E.PopupDialogs["SLE_APPLY_FONT_WARNING"].allFont = allFont
 							E.PopupDialogs["SLE_APPLY_FONT_WARNING"].allSize = allSize
 							E.PopupDialogs["SLE_APPLY_FONT_WARNING"].allOutline = allOutline
-							E:StaticPopup_Show("SLE_APPLY_FONT_WARNING");
+							E:StaticPopup_Show("SLE_APPLY_FONT_WARNING")
 						end,
 					},
 				},

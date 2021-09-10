@@ -1,6 +1,6 @@
 local SLE, T, E, L, V, P, G = unpack(select(2, ...))
-local MM = SLE:GetModule("Minimap")
-local DTP = SLE:GetModule('Datatexts')
+local MM = SLE.Minimap
+local DTP = SLE.Datatexts
 
 local MINIMAP_LABEL = MINIMAP_LABEL
 
@@ -53,7 +53,7 @@ local function configTable()
 
 	--*Override ElvUI Minimap size options as we don't want them to use to small of a map and have to reload after changing the setting
 	if E.private.sle.minimap.rectangle then
-		E.Options.args.maps.args.minimap.args.generalGroup.args.size = {
+		E.Options.args.maps.args.minimap.args.size = {
 			order = 2,
 			type = "range",
 			name = L["Size"],

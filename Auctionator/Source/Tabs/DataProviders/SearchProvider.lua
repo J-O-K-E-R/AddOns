@@ -71,7 +71,6 @@ function AuctionatorSearchDataProviderMixin:OnShow()
     Auctionator.Cancelling.Events.RequestCancel,
   })
 
-  self.processCountPerUpdate = 200
   self:Reset()
 end
 
@@ -130,11 +129,12 @@ function AuctionatorSearchDataProviderMixin:Sort(fieldName, sortDirection)
 end
 
 function AuctionatorSearchDataProviderMixin:OnEvent(eventName, itemRef, auctionID)
-  if eventName == "COMMODITY_SEARCH_RESULTS_UPDATED" and self.expectedItemKey.itemID == itemRef then
+  if eventName == "COMMODITY_SEARCH_RESULTS_UPDATED" and self.expectedItemKey ~= nil and
+          self.expectedItemKey.itemID == itemRef then
     self:Reset()
     self:AppendEntries(self:ProcessCommodityResults(itemRef), true)
 
-  elseif (eventName == "ITEM_SEARCH_RESULTS_UPDATED" and
+  elseif (eventName == "ITEM_SEARCH_RESULTS_UPDATED" and self.expectedItemKey ~= nil and
           Auctionator.Utilities.ItemKeyString(self.expectedItemKey) == Auctionator.Utilities.ItemKeyString(itemRef)
         ) then
     self.onPreserveScroll()
@@ -167,7 +167,7 @@ function AuctionatorSearchDataProviderMixin:ProcessCommodityResults(itemID)
   local entries = {}
   local anyOwnedNotLoaded = false
 
-  for index = C_AuctionHouse.GetNumCommoditySearchResults(itemID), 1, -1 do
+  for index = 1, C_AuctionHouse.GetNumCommoditySearchResults(itemID) do
     local resultInfo = C_AuctionHouse.GetCommoditySearchResultInfo(itemID, index)
     local entry = {
       price = resultInfo.unitPrice,
@@ -223,7 +223,7 @@ function AuctionatorSearchDataProviderMixin:ProcessItemResults(itemKey)
   local entries = {}
   local anyOwnedNotLoaded = false
 
-  for index = C_AuctionHouse.GetNumItemSearchResults(itemKey), 1, -1 do
+  for index = 1, C_AuctionHouse.GetNumItemSearchResults(itemKey) do
     local resultInfo = C_AuctionHouse.GetItemSearchResultInfo(itemKey, index)
     local entry = {
       price = resultInfo.buyoutAmount,

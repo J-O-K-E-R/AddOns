@@ -1,5 +1,5 @@
 ﻿local SLE, T, E, L, V, P, G = unpack(select(2, ...))
-local C = SLE:GetModule("Chat")
+local C = SLE.Chat
 
 --GLOBALS: UIParent, ChatFrame_AddMessageEventFilter, ChatFrame_RemoveMessageEventFilter
 local format = format
@@ -111,7 +111,7 @@ function C:filterLine(event, source, msg, ...)
 		local newID = 0
 
 		if msg:match(line) then
-			local curTime = GetTime();
+			local curTime = GetTime()
 
 			if strfind(msg, "|cff(.+)|r") then
 				msg = gsub(msg, "|cff%w%w%w%w%w%w", "")
@@ -194,10 +194,10 @@ local function SetItemRef(link, text, button, chatframe)
 			local meterID = tonumber(id)
 
 			-- put stuff in the ItemRefTooltip from FrameXML
-			ShowUIPanel(ItemRefTooltip);
+			ShowUIPanel(ItemRefTooltip)
 
 			if ( not ItemRefTooltip:IsShown() ) then
-				ItemRefTooltip:SetOwner(UIParent, "ANCHOR_PRESERVE");
+				ItemRefTooltip:SetOwner(UIParent, "ANCHOR_PRESERVE")
 			end
 
 			ItemRefTooltip:ClearLines()
@@ -214,7 +214,7 @@ local function SetItemRef(link, text, button, chatframe)
 	end
 
 	if IsAltKeyDown() and linktype == "player" and E.db.sle.chat.invite.altInv then
-		InviteUnit(id)
+		C_PartyInfo.InviteUnit(id)
 
 		return nil
 	elseif linktype == "invite" then
@@ -223,7 +223,7 @@ local function SetItemRef(link, text, button, chatframe)
 
 			FriendsFrame_BattlenetInvite(nil, bnetID)
 		else
-			InviteUnit(id)
+			C_PartyInfo.InviteUnit(id)
 		end
 
 		return nil

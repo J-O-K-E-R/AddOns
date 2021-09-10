@@ -1,5 +1,5 @@
--- Generated from CurseForge on Tue Apr  6 07:03:32 UTC 2021
-local _, ns = ...
+-- Generated from CurseForge on Sun Aug 15 07:09:09 UTC 2021
+local ns = select(2, ...) ---@type ns @The addon namespace.
 
 if ns:IsSameLocale("zhTW") then
 	local L = ns.L or ns:NewLocale()
@@ -184,6 +184,16 @@ L["RAID_BOSS_NYA_6"] = "薩德哈"
 L["RAID_BOSS_NYA_7"] = "卓雷阿葛斯"
 L["RAID_BOSS_NYA_8"] = "伊蓋諾斯"
 L["RAID_BOSS_NYA_9"] = "薇希歐娜"
+L["RAID_BOSS_SOD_1"] = "泰拉古魯"
+L["RAID_BOSS_SOD_10"] = "希瓦娜斯風行者"
+L["RAID_BOSS_SOD_2"] = "獄主之眼"
+L["RAID_BOSS_SOD_3"] = "九魂使"
+L["RAID_BOSS_SOD_4"] = "耐祖奧的殘骸"
+L["RAID_BOSS_SOD_5"] = "靈魂撕裂者多瑪贊"
+L["RAID_BOSS_SOD_6"] = "痛苦工匠拉茲內爾"
+L["RAID_BOSS_SOD_7"] = "首創者的守護者"
+L["RAID_BOSS_SOD_8"] = "述命者羅卡洛"
+L["RAID_BOSS_SOD_9"] = "科爾蘇加德"
 L["RAID_BOSS_ULD_1"] = "塔羅克"
 L["RAID_BOSS_ULD_2"] = "母親大人"
 L["RAID_BOSS_ULD_3"] = "噬臭者"

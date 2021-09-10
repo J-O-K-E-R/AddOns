@@ -1,12 +1,46 @@
 local SLE, T, E, L, V, P, G = unpack(select(2, ...))
 
+local UF_Auras = {
+	buffs = {
+		enable = false,
+		threshold = 4,
+	},
+	debuffs = {
+		enable = false,
+		threshold = 4,
+	},
+}
+
 P["sle"] = {
-	--Actionbars
-	["actionbars"] = {
-		["vehicle"] = {
-			["buttonsize"] = 40,
-			["buttonspacing"] = 2,
-			["template"] = "Transparent",
+	--Actionbar
+	actionbar = {
+		vehicle = {
+			enabled = true,
+			mouseover = false,
+			clickThrough = false,
+			keepSizeRatio = true,
+			buttonsPerRow = 7,
+			point = 'TOPLEFT',
+			backdrop = true,
+			heightMult = 1,
+			widthMult = 1,
+			backdropSpacing = 2,
+			buttonSize = 40,
+			buttonHeight = 40,
+			buttonSpacing = 2,
+			alpha = 1,
+			showGrid = true,
+			hotkeyColor = { r = 1, g = 1, b = 1 },
+			hotkeyFont = 'Homespun',
+			hotkeyFontOutline = 'MONOCHROMEOUTLINE',
+			hotkeyFontSize = 12,
+			hotkeytext = true,
+			hotkeyTextPosition = 'TOPRIGHT',
+			hotkeyTextXOffset = 0,
+			hotkeyTextYOffset = -3,
+			useHotkeyColor = false,
+			frameStrata = 'LOW',
+			frameLevel = 1,
 		},
 	},
 	--Armory
@@ -163,8 +197,8 @@ P["sle"] = {
 			["enabled"] = false,
 			["trans"] = false,
 			["texture"] = "",
-			["width"] = (E.eyefinity or E.screenwidth)/4 + 32,
-			["height"] = E.screenheight/6 - 13,
+			["width"] = (E.eyefinity or E.ultrawide or E.physicalWidth)/4 + 32,
+			["height"] = E.physicalHeight/6 - 13,
 			["xoffset"] = 0,
 			["yoffset"] = 0,
 			["pethide"] = true,
@@ -177,8 +211,8 @@ P["sle"] = {
 			["enabled"] = false,
 			["trans"] = false,
 			["texture"] = "",
-			["width"] = (E.eyefinity or E.screenwidth)/10 - 4,
-			["height"] = E.screenheight/5 + 11,
+			["width"] = (E.eyefinity or E.ultrawide or E.physicalWidth)/10 - 4,
+			["height"] = E.physicalHeight/5 + 11,
 			["xoffset"] = 0,
 			["yoffset"] = 0,
 			["pethide"] = true,
@@ -191,8 +225,8 @@ P["sle"] = {
 			["enabled"] = false,
 			["trans"] = false,
 			["texture"] = "",
-			["width"] = (E.eyefinity or E.screenwidth)/10 - 4,
-			["height"] = E.screenheight/5 + 11,
+			["width"] = (E.eyefinity or E.ultrawide or E.physicalWidth)/10 - 4,
+			["height"] = E.physicalHeight/5 + 11,
 			["xoffset"] = 0,
 			["yoffset"] = 0,
 			["pethide"] = true,
@@ -205,8 +239,8 @@ P["sle"] = {
 			["enabled"] = false,
 			["trans"] = false,
 			["texture"] = "",
-			["width"] = (E.eyefinity or E.screenwidth)/4 + 32,
-			["height"] = E.screenheight/20 + 5,
+			["width"] = (E.eyefinity or E.ultrawide or E.physicalWidth)/4 + 32,
+			["height"] = E.physicalHeight/20 + 5,
 			["xoffset"] = 0,
 			["yoffset"] = 0,
 			["pethide"] = true,
@@ -688,61 +722,314 @@ P["sle"] = {
 		["mouseover"] = false,
 		["notooltip"] = false,
 	},
-	--Screensaver
-	["screensaver"] = {
-		["keydown"] = false,
-		["title"] = {
-			["font"] = "PT Sans Narrow",
-			["size"] = 28,
-			["outline"] = "OUTLINE",
+	--AFK
+	afk = {
+		enable = false,
+		customGraphics = {},
+		defaultGraphics = {
+			classCrest = {
+				enable = true,
+				styleOptions = 'sltheme',
+				width = 140,
+				height = 140,
+				xOffset = 0,
+				yOffset = 0,
+				inversePoint = false,
+				anchorPoint = 'BOTTOMRIGHT',
+				attachTo = 'SL_BottomPanel',
+			},
+			exPack = {
+				enable = true,
+				styleOptions = 'sltheme',
+				width = 256,
+				height = 256,
+				xOffset = 0,
+				yOffset = 0,
+				inversePoint = false,
+				anchorPoint = 'TOP',
+				attachTo = 'SL_TopPanel',
+			},
+			factionCrest = {
+				enable = true,
+				styleOptions = 'sltheme',
+				width = 128,
+				height = 128,
+				xOffset = -floor(GetScreenWidth()/6),
+				yOffset = -71,
+				inversePoint = false,
+				anchorPoint = 'TOP',
+				attachTo = 'SL_TopPanel',
+			},
+			factionLogo = {
+				enable = true,
+				styleOptions = 'sltheme',
+				width = 140,
+				height = 140,
+				xOffset = 0,
+				yOffset = 0,
+				inversePoint = false,
+				anchorPoint = 'BOTTOMLEFT',
+				attachTo = 'SL_BottomPanel',
+			},
+			raceCrest = {
+				enable = true,
+				styleOptions = 'sltheme',
+				width = 128,
+				height = 128,
+				xOffset = floor(GetScreenWidth()/6),
+				yOffset = -71,
+				inversePoint = false,
+				anchorPoint = 'TOP',
+				attachTo = 'SL_TopPanel',
+			},
+			slLogo = {
+				enable = true,
+				styleOptions = 'original',
+				width = 270,
+				height = 135,
+				xOffset = floor(GetScreenWidth()/10),
+				yOffset = 70,
+				inversePoint = false,
+				anchorPoint = 'BOTTOM',
+				attachTo = 'SL_BottomPanel',
+			},
+			benikuiLogo = {
+				enable = false,
+				styleOptions = 'original',
+				width = 275,
+				height = 138,
+				xOffset = floor(GetScreenWidth()/4),
+				yOffset = 70,
+				inversePoint = false,
+				anchorPoint = 'BOTTOM',
+				attachTo = 'SL_BottomPanel',
+			},
+			elvuiLogo = {
+				enable = true,
+				styleOptions = 'sltheme',
+				width = 275,
+				height = 118,
+				xOffset = -floor(GetScreenWidth()/10),
+				yOffset = 78,
+				inversePoint = false,
+				anchorPoint = 'BOTTOM',
+				attachTo = 'SL_BottomPanel',
+			},
+			merauiLogo = {
+				enable = false,
+				styleOptions = 'sltheme',
+				width = 275,
+				height = 138,
+				xOffset = -GetScreenWidth()/4,
+				yOffset = 70,
+				inversePoint = false,
+				anchorPoint = 'BOTTOM',
+				attachTo = 'SL_BottomPanel',
+			},
 		},
-		["subtitle"] = {
-			["font"] = "PT Sans Narrow",
-			["size"] = 15,
-			["outline"] = "OUTLINE",
+		defaultTexts = {
+			SL_AFKMessage = {
+				enable = true,
+				font = "PT Sans Narrow",
+				outline = "OUTLINE",
+				size = 28,
+				inversePoint = false,
+				anchorPoint = 'TOP',
+				attachTo = 'SL_TopPanel',
+				xOffset = -25,
+				yOffset = -2,
+			},
+			SL_AFKTimePassed = {
+				enable = true,
+				font = "PT Sans Narrow",
+				outline = "OUTLINE",
+				size = 28,
+				inversePoint = true,
+				anchorPoint = 'RIGHT',
+				attachTo = 'SL_AFKMessage',
+				xOffset = 0,
+				yOffset = 0,
+				countdown = false,
+			},
+			SL_SubText = {
+				enable = true,
+				font = "PT Sans Narrow",
+				outline = "OUTLINE",
+				size = 15,
+				inversePoint = true,
+				anchorPoint = 'BOTTOM',
+				attachTo = 'SL_AFKMessage',
+				xOffset = 25,
+				yOffset = 0,
+			},
+			-- SL_PlayerTitle = {
+			-- 	enable = true,
+			-- 	font = "PT Sans Narrow",
+			-- 	outline = "OUTLINE",
+			-- 	size = 28,
+			-- 	inversePoint = true,
+			-- 	anchorPoint = 'LEFT',
+			-- 	attachTo = 'SL_PlayerName',
+			-- 	xOffset = 0,
+			-- 	yOffset = 0,
+			-- },
+			SL_PlayerName = {
+				enable = true,
+				font = "PT Sans Narrow",
+				outline = "OUTLINE",
+				size = 28,
+				inversePoint = true,
+				anchorPoint = 'TOPRIGHT',
+				attachTo = 'SL_TopPanel',
+				xOffset = -20,
+				yOffset = -65,
+			},
+			-- SL_PlayerServer = {
+			-- 	enable = true,
+			-- 	font = "PT Sans Narrow",
+			-- 	outline = "OUTLINE",
+			-- 	size = 28,
+			-- 	inversePoint = true,
+			-- 	anchorPoint = 'TOPRIGHT',
+			-- 	attachTo = 'SL_TopPanel',
+			-- 	xOffset = -20,
+			-- 	yOffset = -40,
+			-- },
+			-- SL_PlayerServer = {
+			-- 	enable = true,
+			-- 	font = "PT Sans Narrow",
+			-- 	outline = "OUTLINE",
+			-- 	size = 15,
+			-- 	inversePoint = true,
+			-- 	anchorPoint = 'BOTTOMRIGHT',
+			-- 	attachTo = 'SL_PlayerName',
+			-- 	xOffset = 0,
+			-- 	yOffset = 0,
+			-- },
+			SL_PlayerClass = {
+				enable = true,
+				font = 'PT Sans Narrow',
+				outline = 'OUTLINE',
+				size = 15,
+				inversePoint = true,
+				anchorPoint = 'BOTTOMRIGHT',
+				attachTo = 'SL_GuildRank',
+				xOffset = 0,
+				yOffset = 0,
+			},
+			SL_PlayerLevel = {
+				enable = true,
+				font = 'PT Sans Narrow',
+				outline = 'OUTLINE',
+				size = 15,
+				inversePoint = true,
+				anchorPoint = 'LEFT',
+				attachTo = 'SL_PlayerClass',
+				xOffset = -2,
+				yOffset = 0,
+			},
+			SL_GuildName = {
+				enable = true,
+				font = 'PT Sans Narrow',
+				outline = 'OUTLINE',
+				size = 15,
+				inversePoint = true,
+				anchorPoint = 'LEFT',
+				attachTo = 'SL_GuildRank',
+				xOffset = 0,
+				yOffset = 0,
+			},
+			SL_GuildRank = {
+				enable = true,
+				font = 'PT Sans Narrow',
+				outline = "OUTLINE",
+				size = 15,
+				inversePoint = true,
+				anchorPoint = 'BOTTOMRIGHT',
+				attachTo = 'SL_PlayerName',
+				xOffset = 0,
+				yOffset = 0,
+			},
+			SL_Date = {
+				enable = true,
+				font = 'PT Sans Narrow',
+				outline = 'OUTLINE',
+				size = 20,
+				inversePoint = false,
+				anchorPoint = 'LEFT',
+				attachTo = 'SL_TopPanel',
+				xOffset = 40,
+				yOffset = 10,
+			},
+			SL_Time = {
+				enable = true,
+				font = 'PT Sans Narrow',
+				outline = 'OUTLINE',
+				size = 15,
+				inversePoint = true,
+				anchorPoint = 'BOTTOM',
+				attachTo = 'SL_Date',
+				xOffset = 0,
+				yOffset = -2,
+				hour24 = true,
+			},
+			SL_ScrollFrame = {
+				enable = true,
+				font = 'PT Sans Narrow',
+				outline = 'OUTLINE',
+				size = 20,
+				inversePoint = true,
+				anchorPoint = 'CENTER',
+				attachTo = 'SL_BottomPanel',
+				xOffset = 0,
+				yOffset = 0,
+			},
 		},
-		["date"] = {
-			["font"] = "PT Sans Narrow",
-			["size"] = 15,
-			["outline"] = "OUTLINE",
-			["xOffset"] = 0,
-			["yOffset"] = 0,
-			["hour24"] = true,
+		panels = {
+			top = {
+				width = 0,
+				height = 135,
+				template = 'Transparent',
+			},
+			bottom = {
+				width = 0,
+				height = 135,
+				template = 'Transparent',
+			},
 		},
-		["player"] = {
-			["font"] = "PT Sans Narrow",
-			["size"] = 15,
-			["outline"] = "OUTLINE",
-			["xOffset"] = 0,
-			["yOffset"] = 0,
+		chat = {
+			show = true,
+			inversePoint = false,
+			anchorPoint = 'TOPLEFT',
+			xOffset = 0,
+			yOffset = 0,
 		},
-		["tips"] = {
-			["font"] = "PT Sans Narrow",
-			["size"] = 20,
-			["outline"] = "OUTLINE",
+		musicSelection = 'NONE',
+		['keydown'] = true,
+		['title'] = {
+			['font'] = 'PT Sans Narrow',
+			['size'] = 28,
+			['outline'] = 'OUTLINE',
 		},
-		["crest"] = {
-			["size"] = 128,
-			["xOffset_faction"] = 0,
-			["yOffset_faction"] = 0,
-			["xOffset_race"] = 0,
-			["yOffset_race"] = 0,
+		['subtitle'] = {
+			['font'] = 'PT Sans Narrow',
+			['size'] = 15,
+			['outline'] = 'OUTLINE',
 		},
-		["xpack"] = 150,
-		["height"] = 135,
-		["playermodel"] = {
-			["enable"] = true,
-			["anim"] = 4,
-			["distance"] = 4.5,
-			["holderXoffset"] = 0,
-			["holderYoffset"] = 0,
-			["rotation"] = 0,
+		['height'] = 135,
+		['playermodel'] = {
+			['enable'] = true,
+			['anim'] = 4,
+			['distance'] = 4.5,
+			['holderXoffset'] = 0,
+			['holderYoffset'] = 0,
+			['rotation'] = 0,
 		},
-		["animTime"] = 0,
-		["animBounce"] = true,
-		["animType"] = "SlideIn",
-		["tipThrottle"] = 15,
-		["panelTemplate"] = "Transparent",
+		['animTime'] = 0,
+		['animBounce'] = true,
+		['animType'] = 'SlideIn',
+		['tipThrottle'] = 15,
+		['panelTemplate'] = 'Transparent',
 	},
 	--Shadows
 	shadows = {
@@ -813,11 +1100,11 @@ P["sle"] = {
 				buttons = false,
 				size = 3,
 			},
-			-- vehicle = { -- TODO: Add Enhanced Vehicle UI Later
-			-- 	backdrop = false,
-			-- 	buttons = false,
-			-- 	size = 3,
-			-- },
+			vehicle = {
+				backdrop = false,
+				buttons = false,
+				size = 3,
+			},
 		},
 		chat = {
 			LeftChatPanel = {
@@ -878,6 +1165,14 @@ P["sle"] = {
 			},
 		},
 		minimap = {
+			backdrop = false,
+			size = 3,
+		},
+		objectiveframe = {
+			backdrop = false,
+			size = 3,
+		},
+		torghastPowers = {
 			backdrop = false,
 			size = 3,
 		},
@@ -1042,87 +1337,31 @@ P["sle"] = {
 					["yoffset"] = 0,
 					["level"] = true,
 				},
-				["auras"] = {
-					["buffs"] = {
-						["threshold"] = 4,
-					},
-					["debuffs"] = {
-						["threshold"] = 4,
-					},
-				},
+				auras = CopyTable(UF_Auras),
 			},
 			["pet"] = {
-				["auras"] = {
-					["buffs"] = {
-						["threshold"] = 4,
-					},
-					["debuffs"] = {
-						["threshold"] = 4,
-					},
-				},
+				auras = CopyTable(UF_Auras),
 			},
 			["pettarget"] = {
-				["auras"] = {
-					["buffs"] = {
-						["threshold"] = 4,
-					},
-					["debuffs"] = {
-						["threshold"] = 4,
-					},
-				},
+				auras = CopyTable(UF_Auras),
 			},
 			["target"] = {
 				["pvpIconText"] = {
 					["level"] = true,
 				},
-				["auras"] = {
-					["buffs"] = {
-						["threshold"] = 4,
-					},
-					["debuffs"] = {
-						["threshold"] = 4,
-					},
-				},
+				auras = CopyTable(UF_Auras),
 			},
 			["targettarget"] = {
-				["auras"] = {
-					["buffs"] = {
-						["threshold"] = 4,
-					},
-					["debuffs"] = {
-						["threshold"] = 4,
-					},
-				},
+				auras = CopyTable(UF_Auras),
 			},
 			["targettargettarget"] = {
-				["auras"] = {
-					["buffs"] = {
-						["threshold"] = 4,
-					},
-					["debuffs"] = {
-						["threshold"] = 4,
-					},
-				},
+				auras = CopyTable(UF_Auras),
 			},
 			["focus"] = {
-				["auras"] = {
-					["buffs"] = {
-						["threshold"] = 4,
-					},
-					["debuffs"] = {
-						["threshold"] = 4,
-					},
-				},
+				auras = CopyTable(UF_Auras),
 			},
 			["focustarget"] = {
-				["auras"] = {
-					["buffs"] = {
-						["threshold"] = 4,
-					},
-					["debuffs"] = {
-						["threshold"] = 4,
-					},
-				},
+				auras = CopyTable(UF_Auras),
 			},
 			["party"] = {
 				["offline"] = {
@@ -1145,14 +1384,7 @@ P["sle"] = {
 					["xoffset"] = 0,
 					["yoffset"] = 0,
 				},
-				["auras"] = {
-					["buffs"] = {
-						["threshold"] = 4,
-					},
-					["debuffs"] = {
-						["threshold"] = 4,
-					},
-				},
+				auras = CopyTable(UF_Auras),
 			},
 			["raid"] = {
 				["offline"] = {
@@ -1175,14 +1407,7 @@ P["sle"] = {
 					["xoffset"] = 0,
 					["yoffset"] = 0,
 				},
-				["auras"] = {
-					["buffs"] = {
-						["threshold"] = 4,
-					},
-					["debuffs"] = {
-						["threshold"] = 4,
-					},
-				},
+				auras = CopyTable(UF_Auras),
 			},
 			["raid40"] = {
 				["offline"] = {
@@ -1201,41 +1426,23 @@ P["sle"] = {
 					["texture"] = "SKULL",
 					["CustomTexture"] = "",
 				},
-				["auras"] = {
-					["buffs"] = {
-						["threshold"] = 4,
-					},
-					["debuffs"] = {
-						["threshold"] = 4,
-					},
-				},
+				auras = CopyTable(UF_Auras),
 				["role"] = {
 					["xoffset"] = 0,
 					["yoffset"] = 0,
 				},
 			},
 			["boss"] = {
-				["auras"] = {
-					["buffs"] = {
-						["threshold"] = 4,
-					},
-					["debuffs"] = {
-						["threshold"] = 4,
-					},
-				},
+				auras = CopyTable(UF_Auras),
 			},
 			["arena"] = {
-				["auras"] = {
-					["buffs"] = {
-						["threshold"] = 4,
-					},
-					["debuffs"] = {
-						["threshold"] = 4,
-					},
-				},
+				auras = CopyTable(UF_Auras),
 			},
 		},
-		["roleicons"] = "ElvUI",
+		roleIcons = {
+			enable = false,
+			icons = 'ElvUI',
+		},
 		["statusTextures"] = {
 			["powerTexture"] = "ElvUI Norm",
 			["castTexture"] = "ElvUI Norm",

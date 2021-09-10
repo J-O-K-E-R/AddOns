@@ -108,10 +108,6 @@ function SLE:BagSearch(itemId)
 	end
 end
 
---Additional tutorials if any
-function SLE:AddTutorials()
-end
-
 --S&L print
 function SLE:Print(msg, msgtype)
 	if msgtype == 'error' then
@@ -227,37 +223,6 @@ function SLE:TextureExists(path)
 	return (tx:GetTexture() ~= '?')
 end
 
---When we need to get mutiple modules in a file
-function SLE:GetElvModules(...)
-	local returns = {}
-	local num = select("#", ...) --Getting the number of modules passed
-	for i = 1, num do
-		local name = select(i, ...)
-		if type(name) == "string" then --Checking if *cough* someone send not string as a module name
-			local mod = E:GetModule(name)
-			tinsert(returns, #(returns) + 1, mod)
-		else
-			error([[Usage: SLE:GetElvModules(): expected a string as a module name got a ]] .. type(name), 2)
-		end
-	end
-	return unpack(returns) --Returning modules back
-end
-
-function SLE:GetModules(...)
-	local returns = {}
-	local num = select("#", ...)
-	for i = 1, num do
-		local name = select(i, ...)
-		if type(name) == 'string' then
-			local mod = SLE:GetModule(name)
-			tinsert(returns, #(returns) + 1, mod)
-		else
-			error([[Usage: SLE:GetModules(): expected a string as a module name got a ]] .. type(name), 2)
-		end
-	end
-	return unpack(returns)
-end
-
 --Trying to determine the region player is in, not entirely reliable cause based on atypet not an actual region id
 function SLE:GetRegion()
 	local lib = LibStub('LibRealmInfo')
@@ -333,7 +298,7 @@ function SLE:UpdateAll()
 	end
 
 	if not SLE._Compatibility['oRA3'] then
-		SLE:GetModule('BlizzRaid'):CreateAndUpdateIcons()
+		SLE.BlizzRaid:CreateAndUpdateIcons()
 	end
 
 	SLE:SetCompareItems()
@@ -431,25 +396,34 @@ local function LevelUpBG(frame, topcolor, bottomcolor)
 	if not frame then
 		return
 	end
-	frame.bg = frame:CreateTexture(nil, 'BACKGROUND')
+	if not frame.bg then
+		frame.bg = frame:CreateTexture(nil, 'BACKGROUND')
+	end
 	frame.bg:SetTexture([[Interface\LevelUp\LevelUpTex]])
+	frame.bg:ClearAllPoints()
 	frame.bg:SetPoint('CENTER')
-	frame.bg:Point('TOPLEFT', frame, 0, 8)
-	frame.bg:Point('BOTTOMRIGHT', frame, 0, -2)
+	frame.bg:Point('TOPLEFT', frame)
+	frame.bg:Point('BOTTOMRIGHT', frame)
 	frame.bg:SetTexCoord(0.00195313, 0.63867188, 0.03710938, 0.23828125)
 	frame.bg:SetVertexColor(1, 1, 1, 0.7)
 
-	frame.lineTop = frame:CreateTexture(nil, 'BACKGROUND')
+	if not frame.lineTop then
+		frame.lineTop = frame:CreateTexture(nil, 'BACKGROUND')
+	end
 	frame.lineTop:SetDrawLayer('BACKGROUND', 2)
 	frame.lineTop:SetTexture([[Interface\LevelUp\LevelUpTex]])
-	frame.lineTop:SetPoint('TOP', frame.bg)
+	frame.lineTop:ClearAllPoints()
+	frame.lineTop:SetPoint('TOP', frame.bg, 0, 4)
 	frame.lineTop:SetTexCoord(0.00195313, 0.81835938, 0.01953125, 0.03320313)
 	frame.lineTop:Size(frame:GetWidth(), 7)
 
-	frame.lineBottom = frame:CreateTexture(nil, 'BACKGROUND')
+	if not frame.lineBottom then
+		frame.lineBottom = frame:CreateTexture(nil, 'BACKGROUND')
+	end
 	frame.lineBottom:SetDrawLayer('BACKGROUND', 2)
 	frame.lineBottom:SetTexture([[Interface\LevelUp\LevelUpTex]])
-	frame.lineBottom:SetPoint('BOTTOM', frame.bg)
+	frame.lineBottom:ClearAllPoints()
+	frame.lineBottom:SetPoint('BOTTOM', frame.bg, 0, -2)
 	frame.lineBottom:SetTexCoord(0.00195313, 0.81835938, 0.01953125, 0.03320313)
 	frame.lineBottom:Size(frame:GetWidth(), 7)
 

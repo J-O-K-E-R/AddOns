@@ -1,5 +1,5 @@
--- Generated from CurseForge on Tue Apr  6 07:03:31 UTC 2021
-local _, ns = ...
+-- Generated from CurseForge on Sun Aug 15 07:09:08 UTC 2021
+local ns = select(2, ...) ---@type ns @The addon namespace.
 
 if ns:IsSameLocale("zhCN") then
 	local L = ns.L or ns:NewLocale()
@@ -180,6 +180,26 @@ L["RAID_BOSS_NYA_6"] = "无厌者夏德哈"
 L["RAID_BOSS_NYA_7"] = "德雷阿佳丝"
 L["RAID_BOSS_NYA_8"] = "伊格诺斯"
 L["RAID_BOSS_NYA_9"] = "维克修娜"
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_SOD_1"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_SOD_10"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_SOD_2"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_SOD_3"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_SOD_4"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_SOD_5"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_SOD_6"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_SOD_7"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_SOD_8"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_SOD_9"] = ""--]] 
 L["RAID_BOSS_ULD_1"] = "塔罗克"
 L["RAID_BOSS_ULD_2"] = "纯净圣母"
 L["RAID_BOSS_ULD_3"] = "腐臭吞噬者"

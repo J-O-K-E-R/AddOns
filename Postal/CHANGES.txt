@@ -1,8 +1,28 @@
 ------------------------------------------------------------------------
-r445 | Zimzarina | 2021-03-11 17:09:57 +0000 (Thu, 11 Mar 2021) | 1 line
+r487 | Zimzarina | 2021-09-06 17:29:43 +0000 (Mon, 06 Sep 2021) | 1 line
+Changed paths:
+   A /trunk/Modules/QuickAttach.lua
+   M /trunk/Postal.toc
+
+Added new feature QuickAttach.
+------------------------------------------------------------------------
+r486 | Zimzarina | 2021-09-06 15:54:57 +0000 (Mon, 06 Sep 2021) | 1 line
+Changed paths:
+   M /trunk/Postal-BCC.to
+
+Added additional new localization strings for upcoming feature QuickAttach.
+------------------------------------------------------------------------
+r485 | Zimzarina | 2021-09-06 05:28:03 +0000 (Mon, 06 Sep 2021) | 2 lines
+Changed paths:
+   M /trunk/Postal.lua
+
+Added default settings for upcoming feature QuickAttach.
+
+------------------------------------------------------------------------
+r484 | Zimzarina | 2021-09-06 05:15:49 +0000 (Mon, 06 Sep 2021) | 1 line
 Changed paths:
    M /trunk/Postal.toc
 
-TOC Update.
+Added new localization string for upcoming feature QuickAttach.
 ------------------------------------------------------------------------
 

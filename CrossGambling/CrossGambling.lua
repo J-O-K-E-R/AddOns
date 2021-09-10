@@ -40,6 +40,12 @@ local options = {
             type = "execute",
             func = "HideGUI"
 		},
+        minimap = {
+            name = "Minimap",
+            desc = "Show/Hide Minimap Icon",
+            type = "execute",
+            func = "minimap"
+		}, 
         allstats = {
             name = "All Stats",
             desc = "Shows all Stats(Out of Order in Guild)",
@@ -50,7 +56,7 @@ local options = {
             name = "Fame/Shame",
             desc = "Shows Top 3 Winners/Losers(Out of Order in Guild)",
             type = "execute",
-            func = "fameshame"
+            func = "reportStats"
         },
         joinstats = {
             name = "Join Stats",
@@ -169,13 +175,23 @@ function CrossGambling:OnInitialize()
 	DEFAULT_CHAT_FRAME:AddMessage("|cffffff00<Cross Gambling> loaded /cg to use");
     minimapIcon:Register("CrossGamblingIcon", minimapLDB, self.db.global.minimap)
 	if (self.db.global.theme == uiThemes[2]) then
-	self:ConstructUI()
+		self:ConstructUI()
 	elseif (self.db.global.theme == uiThemes[1]) then
-	self:ConstructUI2()
+		self:ConstructUI2()
+	end
+	function CrossGambling:minimap(info)
+		if self.db.global.minimap.hide == false then 
+			minimapIcon:Hide("CrossGamblingIcon")
+			self.db.global.minimap.hide = true
+		elseif self.db.global.minimap.hide == true then
+			minimapIcon:Show("CrossGamblingIcon")
+			self.db.global.minimap.hide = false
+		end
 	end
     
 	self:drawEvents()
 end
+
 
 function CrossGambling:ShowGUI(info)
 	if (self.db.global.theme == uiThemes[1]) then

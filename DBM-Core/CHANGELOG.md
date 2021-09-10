@@ -1,34 +1,26 @@
 # Deadly Boss Mods Core
 
-## [9.1.0](https://github.com/DeadlyBossMods/DeadlyBossMods/tree/9.1.0) (2021-06-29)
-[Full Changelog](https://github.com/DeadlyBossMods/DeadlyBossMods/compare/9.0.30...9.1.0) [Previous Releases](https://github.com/DeadlyBossMods/DeadlyBossMods/releases)
+## [9.1.12](https://github.com/DeadlyBossMods/DeadlyBossMods/tree/9.1.12) (2021-08-31)
+[Full Changelog](https://github.com/DeadlyBossMods/DeadlyBossMods/compare/9.1.11...9.1.12) [Previous Releases](https://github.com/DeadlyBossMods/DeadlyBossMods/releases)
 
-- Fix two mistakes  
-- Full trash mod for new dungeon now drycoded  
-    Prep for release with toc bumps  
-- Kill off instance lockout feature, it uses a lot of local variable and literally no one uses that feature. Also fixed a bug where a lot of the other sync handlers got in middle of the do/end of instance feature over years.  
-- Improve sync security by making guild syncs use their own handler similar to how whispers are handled, preventing any troll syncs sent to guild that don't belong there to be rejected.  
-- Oh yeah, an add this for "hard" mode  
-- So'leah drycode  
-- Even retail benefits from this, add range 28  
-- Add another public facing stage api, this time one that lets mods or weak auras request current stage a mod is in (if applicable) for either specific mod by mod id OR by simply doing request without modId, and having DBM just give a return for first mod in combat table  
-- Fix function name  
-- Fulfil request to prio melee over ranged for threat icons. This is very ugly but should work.  
-- closing ends are apparently hard  
-- fixed missing closing end  
-- Update painsmith from mythic testing, which i apparently forgot to do after testing do to all the BCC stuff.  
-    ALso did a pass on other stuff from hotfixes and my testing notes I never finished gong through.  
-- Switch most of painsmiths spells back to combat log events that were corrected  
-- Time Capn drycode  
-- dumb  
-- Another boss drycode, including it's hard mode. obviously as a drycode though it's not done/fully functional yet  
-- Added drycode for Mailroom  
-    Added drycode for  Oasis  
-    Preliminary hard mode support for encounders drycoded so far  
-- Update localization.cn.lua (#597)  
-- Dumb shit  
-- Not used to report actually reporting more than one issue, so i didn't even check if there was a second one.  
-- Fix bad copy/paste  
-- Two spell renames  
-    Two Tazavesh drycodes  
-- bump alpha  
+- prevent duplicate timer entries through additional validation check  
+    Don't call unnessesary stop calls during timer updates on generals and nerzhul. The cleanup is already handled in the :Update method so performing it twice is just wasted cpu and redundant debug  
+    Minor timer adjustments  
+- silence yell above 8 players  
+- Don't need to clear icon multiple times. just once. another micro performance improvement to fragments icon code  
+- Fixed bug where grimm portent yell on fatescribe was non sensicle  
+    Cleaned up the nines fragments code and maybe fix a bug with fragment yells/icons if more than 3 exist at same time on heroic or more than 4 exist at same time on mythic plus small performance change (calculating uid multiple times is silly, it doesn't change  
+- Update koKR (#655)  
+- Fix count issue (#654)  
+    Some idiot forgot to use pairs to iter items  
+- Don't debug report wipe on boss mods that don't have proper combat.  
+- suspend news update until there it is needed again one day.  
+- Fixed invalid variable name in darkness timer  
+- Add additional protection while at it in remote chancec event is added to other mobs (probably won't be, they have spawn events already )  
+- unrelated note, soul shard marking was broken on KT because it was using wrong GUID, fix that at least.  
+- Fixed nerzhul incrementing phase twice on phase change, resulting in timers to go off the rails bonkers  
+- LFR adjustments to castle based on debug feedback.  
+- two minor timer corrections  
+- More P1 LFR data  
+- Fixed bug that caused arrow countdown yell not to actually use the right option/prototype. How something was broken for MONTHS before a single user reported it is beyond me. Why don't people report bugs :\ Special thanks to the person who came forward now.  
+- bump alpha revision  

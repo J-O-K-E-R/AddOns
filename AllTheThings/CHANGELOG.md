@@ -1,41 +1,24 @@
 # AllTheThings
 
-## [SL-2.3.4a](https://github.com/DFortun81/AllTheThings/tree/SL-2.3.4a) (2021-06-21)
-[Full Changelog](https://github.com/DFortun81/AllTheThings/compare/SL-2.3.3...SL-2.3.4a) [Previous Releases](https://github.com/DFortun81/AllTheThings/releases)
+## [SL-2.4.2](https://github.com/DFortun81/AllTheThings/tree/SL-2.4.2) (2021-08-31)
+[Full Changelog](https://github.com/DFortun81/AllTheThings/compare/SL-2.4.1...SL-2.4.2) [Previous Releases](https://github.com/DFortun81/AllTheThings/releases)
 
-### HOTFIX
+### Highlight of this update
 
-Version 2.3.4a includes a hotfix for popout windows (you could get it why right-clicking Midsummer Fire Festival).
+Added a new Settings option (Features > Modules & Lists) to enable using ad-hoc window updates. This is still experimental feature but feel free to try it and report any bugs on our Discord!
 
-### Highlights of this update
+### Notable changes:
 
-#### Screenshot option! 📸
-
-Enable "Collected Things Trigger a Screenshot" to trigger a Screenshot when collecting Things!
-
-It's in the Features tab of Settings.
-
-#### Do Not Auto-Refresh when changing settings ⚙
-
-If you like fiddling with your settings sometimes, enable this option (at the top of the main Settings tab) to only refresh your Collection manually (Shift+Click) or when using keybinds. We will add helful reminder to refresh on the mode string if you have this enabled (so your mode will look like "After Refresh: Completionist Psycho").
-
-### Other notable fixes:
-
-- Daily quests should now reset completion on daily reset (same for other repeatable quests)
-- The Breadcrumb skip warning will now attempt to include the name of said breadcrumb (Quest 'CoolName' [1234] will prevent collection of Breadcrumb Quest 'PurpleName' [123])
-- Tracking all trackable Things (dailies, treasures, etc) should work more reliably now
-- Fixed wrong difficulty detection when reentering instanced content (going into Heroic BrF after being in Normal, etc)
-- Collecting Heirlooms no longer causes refresh lag (have you bought them all?)
-- We've updated our technology and now PvP things can have unobtainable tags (think PvP + "Removed from game" combinations, etc)
-- PvP Classic vendors/etc fixes
-- Added Vicious mounts from BfA to vendors as removed (next week you'll be able to buy them)
-- Some Battle Pet quest fixes for account wide quests
-- **DO NOT BUY** Interdimensional/Pocket Pet Portals, they will become obsolete next week!
-- Pet Battles and Pet Journal categories are now combined in the Battle Pets category
-- Selfie filters were moved into Toy Box
-- Fixed some quests that got borked when syncing TBC-Classic ATT with Retail version. This is an ongoing process, so please report any shenanigans you see in The Burning Crusade content
-- More fixes for Things that are cost of other Things
-- "Drum Circle" achievement in Thunder Totem can be soloed now apparently
-- Good luck completing Kyrian Feat of Strength "To the Moon"!
-- More refinement to Legion class halls
-- Various quest fixes
+- Changing ATT Modes will properly change visibility of the purchases in a list/tooltip even if they didn't meet the filters when originally created (currencies/cost items). If there are any issues with tooltips regarding these changes please post in #errors
+- Fixed popouts of a cost item created via right-clicking to properly populate all of their purchases even when the Item is normally ignored to prevent Minilist spam (Burning Blossoms, etc.) or when it is a BoE item used to make purchases only another character would be able to make based on the user's Ignore BoE filter setting.
+- Added initial implementation of an 'all quests window' for those who are curious. Can be opened using '/att quests'. Do not Force-Refresh while the window is open!
+- Hopefully a slight improvement to Quest name retrieval performance...
+- Fixed function used by the AH Module (haven't tested if that fixes it at all...)
+- Added logic to properly handle recursive filtering for auto-filled purchases in popout windows/tooltips
+- Achievement Criteria groups will now properly use their source Achievement's restrictive information (class/race) when they are pulled into search results separate from the achievement (i.e. in tooltips on creatures). Explanation: you won't see Horde only achievement criteria in tooltips while on your Alliance character (with Account Mode disabled).
+- Fixed showing drop source creatures in the Model frame for Items
+- Added the Promotions section and moved a bunch of old "World Event" stuff that wasn't really a world event into it.
+- Moved Legion Invasions under Expansion Features.
+- Optimized logic for filling purchases so that Marks of Honor don't destroy your game, and everything else gets to be un-noticeably quicker
+- Default Quest Chain Requirement logic will now include Breadcrumbs for visibility since they will now respect their collectibility via Settings
+- Various fixes

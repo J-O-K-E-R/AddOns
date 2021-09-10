@@ -1,8 +1,7 @@
 AUCTIONATOR_LOCALES.koKR = function()
   local L = {}
 
-L = L or {}
-L["ADD_FAVOURITE"] = "즐겨찾기 추가"
+  L["ADD_FAVOURITE"] = "즐겨찾기 추가"
 L["ADD_ITEM"] = "아이템 추가"
 L["ADD_TERM_TO_LIST_DIALOG"] = "이름으로 목록 추가"
 L["ALT_LEFT_CLICK"] = "클릭"
@@ -41,12 +40,9 @@ L["CONFIG_AUTO_LIST_SEARCH"] = "자동으로 구매목록을 검색"
 L["CONFIG_AUTO_LIST_SEARCH_TOOLTIP_HEADER"] = "자동으로 구매목록 검색"
 L["CONFIG_AUTO_LIST_SEARCH_TOOLTIP_TEXT"] = "구매목록을 선택하면 자동으로 구매목록에 추가된 품목을 검색합니다. 해당옵션이 꺼져있으면 하단의 검색 버튼으로도 검색이 가능합니다."
 L["CONFIG_AUTOSCAN"] = "경매장을 열 때 자동으로 구매목록 검색"
---[[Translation missing --]]
-L["CONFIG_AUTOSCAN_INTERVAL"] = "Set to the number of minutes to wait between autoscans"
---[[Translation missing --]]
-L["CONFIG_AUTOSCAN_INTERVAL_HEADER"] = "Interval between autoscans"
---[[Translation missing --]]
-L["CONFIG_AUTOSCAN_INTERVAL_TOOLTIP_HEADER"] = "Autoscan Delay Interval"
+L["CONFIG_AUTOSCAN_INTERVAL"] = "자동으로 검색할 때 걸리는 시간(분) 설정하기"
+L["CONFIG_AUTOSCAN_INTERVAL_HEADER"] = "자동 검색 사이의 간격 설정 "
+L["CONFIG_AUTOSCAN_INTERVAL_TOOLTIP_HEADER"] = "자동 검색 사이의 간격 설정"
 --[[Translation missing --]]
 L["CONFIG_AUTOSCAN_INTERVAL_TOOLTIP_TEXT"] = "By default an scan doesn't happen every time you open the Auction House. It waits until a fixed time has elapsed since the last scan."
 L["CONFIG_AUTOSCAN_TOOLTIP_HEADER"] = "자동검색"
@@ -69,6 +65,12 @@ L["CONFIG_CANCELLING_TEXT"] = "취소하기 탭의 설정을 변경합니다."
 L["CONFIG_CHAT_LOG"] = "경매를 시작할 때 채팅창에 표시"
 L["CONFIG_CHAT_LOG_TOOLTIP_HEADER"] = "채팅창 설정"
 L["CONFIG_CHAT_LOG_TOOLTIP_TEXT"] = "경매시작 시 채팅창에 표시합니다."
+--[[Translation missing --]]
+L["CONFIG_CRAFTING_COST_SHOW_PROFIT"] = "Show profit instead of crafting cost"
+--[[Translation missing --]]
+L["CONFIG_CRAFTING_COST_SHOW_PROFIT_TOOLTIP_HEADER"] = "Crafting Cost Show Profit"
+--[[Translation missing --]]
+L["CONFIG_CRAFTING_COST_SHOW_PROFIT_TOOLTIP_TEXT"] = "When the Auction House is open the crafting screen will show the cost of crafting an item. Enable this option to show the profit instead."
 L["CONFIG_DEBUG"] = "디버그 모드"
 L["CONFIG_DEBUG_TOOLTIP_HEADER"] = "옥셔네이터 디버그"
 L["CONFIG_DEBUG_TOOLTIP_TEXT"] = "디버그 메시지를 채팅창에 출력합니다."
@@ -404,6 +406,16 @@ L["SPLASH_907_FEATURES_HEADER"] = "Features"
 L["SPLASH_907_UNANNOUNCED_1"] = "An optional \"Seller(s)\" column (to see who is selling the auctions) has been added to the Selling tab. To activate it right-click a column header (e.g. \"Owned?\") in the current auctions listings."
 --[[Translation missing --]]
 L["SPLASH_907_UNANNOUNCED_HEADER"] = "Unannounced features from 9.0.6"
+--[[Translation missing --]]
+L["SPLASH_9105_DESCRIPTION"] = "Added a new search method for shopping lists that can scan and filter prices for thousands of items in 14s (around 42s on a full population realm) - previously this could take 20+ minutes! This is invaluable for sniping the perfect deal when combined with the gold price filters."
+--[[Translation missing --]]
+L["SPLASH_9105_FEATURES_1"] = "Very fast shopping list search when searching for more than 50 items."
+--[[Translation missing --]]
+L["SPLASH_9105_FEATURES_2"] = "Added a button to move the price history dialog in the \"Shopping\" tab to the right of the results listing (right click any result to see a price history)."
+--[[Translation missing --]]
+L["SPLASH_9105_FEATURES_3"] = "Option to show profit instead of crafting cost in the crafting window when the Auction House is open."
+--[[Translation missing --]]
+L["SPLASH_9105_FEATURES_HEADER"] = "Recent Features"
 L["SPLASH_HIDE_MESSAGE"] = "다음 업데이트까지 보이지 않기"
 L["SPLASH_SCREEN_HEADER"] = "옥셔네이터에 오신걸 환영합니다!"
 L["STACK_AUCTION_INFO"] = "%s  (전체 %s, 각 %s)"
@@ -456,6 +468,7 @@ L["VENDOR_TOOLTIP_TOOLTIP_TEXT"] = "상점가를 툴팁에 표시합니다."
 L["VERSION_HEADER"] = "버전"
 L["VERSION_MESSAGE"] = "%s 버전"
 L["YOUR_HISTORY"] = "올린 아이템 기록"
+
 
   return L
 end

@@ -1,10 +1,10 @@
 local SLE, T, E, L, V, P, G = unpack(select(2, ...))
-local Gar = SLE:NewModule("Garrison", 'AceEvent-3.0')
+local Gar = SLE.Garrison
 local _G = _G
 local B = LibStub("LibBabble-SubZone-3.0")
 local BL = B:GetLookupTable()
 local garrisonzones = { BL["Salvage Yard"], BL["Frostwall Mine"], BL["Lunarfall Excavation"]}
-local Tools = SLE:GetModule("Toolbars")
+local Tools = SLE.Toolbars
 local buildID = {
 	[8] = "War",
 	[9] = "War",
@@ -64,7 +64,7 @@ function Gar:CreateToolbars()
 	--  TODO: This GarrisonAnchor was global and dont think it was intended... keep an eye out for issues if any reported due to old module
 	local GarrisonAnchor = CreateFrame("Frame", "SLE_GarrisonToolbarAnchor", E.UIParent)
 	GarrisonAnchor:SetFrameStrata("BACKGROUND")
-	GarrisonAnchor:Point("LEFT", E.UIParent, "LEFT", 24, 0);
+	GarrisonAnchor:Point("LEFT", E.UIParent, "LEFT", 24, 0)
 
 	GarrisonAnchor.Bars = {}
 	GarrisonAnchor.NumBars = 1
@@ -125,8 +125,8 @@ function Gar:Initialize()
 		Gar.db = E.db.sle.legacy.garrison
 	end
 
-	self:RegisterEvent("SHIPMENT_CRAFTER_INFO");
-	self:RegisterEvent("SHIPMENT_CRAFTER_CLOSED");
+	self:RegisterEvent("SHIPMENT_CRAFTER_INFO")
+	self:RegisterEvent("SHIPMENT_CRAFTER_CLOSED")
 end
 
 SLE:RegisterModule(Gar:GetName())

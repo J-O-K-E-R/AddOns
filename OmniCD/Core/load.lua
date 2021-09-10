@@ -130,7 +130,7 @@ do
 			if ver and ver > version then
 				local diff = ver - version
 				local text = diff > 10 and L["Major update"] or (diff > 1 and L["Minor update"]) or L["Hotfix"]
-				text = format("|cfff16436 " .. L["A new update is available. (%s)"], text)
+				text = format("|cfff16436 " .. L["A new update is available. (|cff99cdff%s)"], text)
 				if E.DB.profile.notifyNew then
 					E.Write(text)
 				end

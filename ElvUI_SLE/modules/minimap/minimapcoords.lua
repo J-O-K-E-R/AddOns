@@ -1,6 +1,6 @@
 local SLE, T, E, L, V, P, G = unpack(select(2, ...))
-local M = E:GetModule('Minimap')
-local MM = SLE:NewModule("Minimap", 'AceHook-3.0', 'AceEvent-3.0')
+local M = E.Minimap
+local MM = SLE.Minimap
 
 --GLOBALS: unpack, select, format, _G, UIFrameFadeIn, InCombatLockdown, CreateFrame, hooksecurefunc, SLECoordsHolder
 local _G = _G
@@ -75,11 +75,11 @@ function MM:CreateCoordsFrame()
 	SLECoordsHolder:SetScript('OnUpdate', MM.UpdateCoords)
 
 	_G.Minimap:HookScript('OnEnter', function()
-		if not E.db.sle.minimap.coords.mouseover or not E.private.general.minimap.enable or not E.db.sle.minimap.coords.enable then return; end
+		if not E.db.sle.minimap.coords.mouseover or not E.private.general.minimap.enable or not E.db.sle.minimap.coords.enable then return end
 		SLECoordsHolder:Show()
 	end)
 	_G.Minimap:HookScript('OnLeave', function()
-		if not E.db.sle.minimap.coords.mouseover or not E.private.general.minimap.enable or not E.db.sle.minimap.coords.enable then return; end
+		if not E.db.sle.minimap.coords.mouseover or not E.private.general.minimap.enable or not E.db.sle.minimap.coords.enable then return end
 		SLECoordsHolder:Hide()
 	end)
 

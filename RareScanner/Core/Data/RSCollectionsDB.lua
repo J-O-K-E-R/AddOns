@@ -4,6 +4,8 @@
 local LibStub = _G.LibStub
 local ADDON_NAME, private = ...
 
+local LibDialog = LibStub("LibDialog-1.0")
+
 local RSCollectionsDB = private.NewLib("RareScannerCollectionsDB")
 
 -- Locales
@@ -500,8 +502,8 @@ end
 
 local function UpdateNotCollectedAppearanceItemIDs()
 	private.dbchar.not_colleted_appearances_item_ids = {}
-	local numCategories = RSUtils.GetTableLength(Enum.TransmogCollectionType) + 1
-	for i = 1, numCategories + 1 do
+	local numCategories = RSUtils.GetTableLength(Enum.TransmogCollectionType)
+	for i = 1, numCategories - 1 do
 		local visualsList = C_TransmogCollection.GetCategoryAppearances(i)
 		if (visualsList) then
 			for j = 1, #visualsList do
@@ -655,7 +657,7 @@ local function UpdateEntitiesCollections()
 	RSLogger:PrintMessage(AL["LOG_DONE"])
 	
 	-- Ask for setting loot filters
-	StaticPopup_Show(RSConstants.APPLY_COLLECTIONS_LOOT_FILTERS)
+	LibDialog:Spawn(RSConstants.APPLY_COLLECTIONS_LOOT_FILTERS)
 end
 
 local loaded = false

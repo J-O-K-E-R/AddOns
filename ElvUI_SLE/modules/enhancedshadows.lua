@@ -1,8 +1,8 @@
 local SLE, T, E, L, V, P, G = unpack(select(2, ...))
-local ENH = SLE:NewModule('EnhancedShadows', 'AceEvent-3.0')
-local DT = E:GetModule('DataTexts')
-local LO = E:GetModule('Layout')
-local MM = E:GetModule('Minimap')
+local ENH = SLE.EnhancedShadows
+local DT = E.DataTexts
+local LO = E.Layout
+local MM = E.Minimap
 
 local _G = _G
 local CreateFrame = CreateFrame
@@ -87,11 +87,11 @@ function ENH:ProcessShadow(frame, parent, level, db)
 	if not frame then return end
 
 	local name = frame:GetName()
-	level = (level >= 0 and level or 0)
+	level = (level and level >= 0 and level) or 0
 	frame.enhshadow = frame:CreateShadow(nil, true)
 	frame.enhshadow:SetParent(parent and parent or frame)
 	frame.enhshadow:SetFrameLevel(level)
-	frame.enhshadow.size = db.size
+	frame.enhshadow.size = db and db.size or 3
 
 	if name then
 		frame.enhshadow.name = name
@@ -216,17 +216,16 @@ function ENH:CreateABShadows()
 		end
 	end
 
-	-- TODO: Add Enhanced Vehicle UI Later
-	-- do
-	-- -- S&L Enhanced Vehicle Bar
-	-- 	local frame = _G.ElvUISL_EnhancedVehicleBar
-	-- 	ENH:ProcessShadow(frame, nil, frame:GetFrameLevel(), ENH.db.actionbars.vehicle)
-	-- 	for i = 1, 12 do
-	-- 		local button = _G['ElvUISL_EnhancedVehicleBarButton'..i]
-	-- 		if not button then break end
-	-- 		ENH:ProcessShadow(button, button.backdrop, button:GetFrameLevel(), ENH.db.actionbars.vehicle)
-	-- 	end
-	-- end
+	do
+		-- S&L Dedicated Vehicle Bar
+		local frame = _G.SL_DedicatedVehicleBar
+		ENH:ProcessShadow(frame, nil, frame:GetFrameLevel(), ENH.db.actionbars.vehicle)
+		for i = 1, 7 do
+			local button = _G['SL_DedicatedVehicleBarButton'..i]
+			if not button then break end
+			ENH:ProcessShadow(button, button.backdrop, button:GetFrameLevel(), ENH.db.actionbars.vehicle)
+		end
+	end
 end
 
 function ENH:ToggleABShadows()
@@ -246,20 +245,19 @@ function ENH:ToggleABShadows()
 		end
 	end
 
-	-- TODO: Add Enhanced Vehicle UI Later
-	-- S&L Enhanced Vehicle Bar
-	-- do
-	-- 	local frame = _G.ElvUISL_EnhancedVehicleBar
-	-- 	if frame and frame.enhshadow then
-	-- 		frame.enhshadow:SetShown(ENH.db.actionbars.vehicle.backdrop)
-	-- 	end
-	-- 	for i = 1, 12 do
-	-- 		local button = _G['ElvUISL_EnhancedVehicleBarButton'..i]
-	-- 		if button and button.enhshadow then
-	-- 			button.enhshadow:SetShown(ENH.db.actionbars.vehicle.buttons)
-	-- 		end
-	-- 	end
-	-- end
+	do
+		-- S&L Dedicated Vehicle Bar
+		local frame = _G.SL_DedicatedVehicleBar
+		if frame and frame.enhshadow then
+			frame.enhshadow:SetShown(ENH.db.actionbars.vehicle.backdrop)
+		end
+		for i = 1, 7 do
+			local button = _G['SL_DedicatedVehicleBarButton'..i]
+			if button and button.enhshadow then
+				button.enhshadow:SetShown(ENH.db.actionbars.vehicle.buttons)
+			end
+		end
+	end
 
 	do
 		-- Pet Bar
@@ -463,6 +461,28 @@ function ENH:HandleElvUIPanels()
 	end
 end
 
+function ENH:HandleObjectiveFrame()
+	do
+		local frame = _G.ScenarioStageBlock_SLE_Block
+		if frame and frame.enhshadow then
+			frame.enhshadow:SetShown(E.db.sle.shadows.objectiveframe.backdrop)
+		end
+	end
+
+	do
+		local frame = _G.ScenarioBlocksFrame.MawBuffsBlock.SLE_Block
+		if frame and frame.enhshadow then
+			frame.enhshadow:SetShown(E.db.sle.shadows.torghastPowers.backdrop)
+		end
+	end
+	do
+		local frame = _G.ScenarioBlocksFrame.MawBuffsBlock.Container.List
+		if frame and frame.enhshadow then
+			frame.enhshadow:SetShown(E.db.sle.shadows.torghastPowers.backdrop)
+		end
+	end
+end
+
 function ENH:ADDON_LOADED(event, addon)
 	if addon ~= 'ElvUI_OptionsUI' then return end
 	ENH:UnregisterEvent(event)
@@ -503,15 +523,14 @@ function ENH:Initialize()
 	ENH:HandleElvUIPanels()
 
 	SLE:UpdateMedia()
-	-- ENH:UpdateShadows()
+	ENH:UpdateShadows()
+
 	function ENH:ForUpdateAll()
 		ENH:UpdateShadows()
 	end
 
-	hooksecurefunc(LO, "BottomPanelVisibility", ENH.HandleElvUIPanels)
-	hooksecurefunc(LO, "TopPanelVisibility", ENH.HandleElvUIPanels)
-	-- hooksecurefunc(LO, "ToggleChatPanels", ENH.HandleChatPanels)
-
+	hooksecurefunc(LO, 'BottomPanelVisibility', ENH.HandleElvUIPanels)
+	hooksecurefunc(LO, 'TopPanelVisibility', ENH.HandleElvUIPanels)
 end
 
 SLE:RegisterModule(ENH:GetName())

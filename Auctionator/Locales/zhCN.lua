@@ -1,8 +1,7 @@
 AUCTIONATOR_LOCALES.zhCN = function()
   local L = {}
 
-L = L or {}
-L["ADD_FAVOURITE"] = "加入收藏"
+  L["ADD_FAVOURITE"] = "加入收藏"
 L["ADD_ITEM"] = "加入物品"
 L["ADD_TERM_TO_LIST_DIALOG"] = "输入搜寻关键字来加入:"
 L["ALT_LEFT_CLICK"] = "Alt + 左键点击"
@@ -63,6 +62,9 @@ L["CONFIG_CANCELLING_TEXT"] = "更改取消标签页面行为的选项。"
 L["CONFIG_CHAT_LOG"] = "在聊天视窗显示拍卖讯息"
 L["CONFIG_CHAT_LOG_TOOLTIP_HEADER"] = "拍卖聊天记录"
 L["CONFIG_CHAT_LOG_TOOLTIP_TEXT"] = "停用此选项时，将不会扫描你的拍卖看是否有新的变化。"
+L["CONFIG_CRAFTING_COST_SHOW_PROFIT"] = "显示利润而不是制作成本"
+L["CONFIG_CRAFTING_COST_SHOW_PROFIT_TOOLTIP_HEADER"] = "制作成本显示利润"
+L["CONFIG_CRAFTING_COST_SHOW_PROFIT_TOOLTIP_TEXT"] = "当拍卖行打开时，制造窗口将显示制作物品的成本。 启用此选项以显示利润。"
 L["CONFIG_DEBUG"] = "输出除错讯息"
 L["CONFIG_DEBUG_TOOLTIP_HEADER"] = "拍卖小帮手除错"
 L["CONFIG_DEBUG_TOOLTIP_TEXT"] = "仅供维护人员使用，将除错讯息输出到聊天视窗。"
@@ -79,10 +81,8 @@ L["CONFIG_PRICE_HISTORY_TOOLTIP_TEXT"] = "停用此选项时，将会隐藏销�
 L["CONFIG_PROFILE_CATEGORY"] = "设定档"
 L["CONFIG_PROFILE_TEXT"] = "角色专用设定"
 L["CONFIG_PROFILE_TOGGLE"] = "设定只会套用到这个角色"
---[[Translation missing --]]
-L["CONFIG_QUANTITIES_CATEGORY"] = "Selling: Quantities"
---[[Translation missing --]]
-L["CONFIG_QUANTITIES_TEXT"] = "Choose the default quantity used for the different item categories."
+L["CONFIG_QUANTITIES_CATEGORY"] = "销售：数量"
+L["CONFIG_QUANTITIES_TEXT"] = "选择用于不同物品类别的默认数量。"
 L["CONFIG_SCAN_SETTINGS"] = "扫描设定"
 L["CONFIG_SCANNING"] = "完整扫描设定"
 L["CONFIG_SELLING_AUTO_SELECT_NEXT"] = "自动选择背包中的下一个物品"
@@ -323,16 +323,11 @@ L["SPLASH_901_DESCRIPTION"] = "此版本中最大的变更是可自定义的物�
 L["SPLASH_901_FEATURES_1"] = "所有结果视图上的字段都可自定义。右击任何字段标题以查看选项。"
 L["SPLASH_901_FEATURES_2"] = "小型标签页选项，用于当过多的插件将标签添加到拍卖行时。"
 L["SPLASH_901_FEATURES_HEADER"] = "新功能"
---[[Translation missing --]]
-L["SPLASH_9010_DESCRIPTION"] = "Revamped selling quantity settings, if you have custom quantities set you'll likely need to set them again for this update."
---[[Translation missing --]]
-L["SPLASH_9010_FEATURES_1"] = "The default quantities for use in the Selling tab are now set based on the item's type. Find them in the \"Selling: Quantities\" options"
---[[Translation missing --]]
-L["SPLASH_9010_FEATURES_HEADER"] = "Features"
---[[Translation missing --]]
-L["SPLASH_9010_UNANNOUNCED_1"] = "A new \"Show bid price option when listing an item\" option, found in \"Selling\" options, to allow bid prices to be set from the Selling tab"
---[[Translation missing --]]
-L["SPLASH_9010_UNANNOUNCED_HEADER"] = "Unannounced features from 9.0.9"
+L["SPLASH_9010_DESCRIPTION"] = "改进了销售数量设置，如果您设置过自定义数量，可能需要为此次更新重新设置它们。"
+L["SPLASH_9010_FEATURES_1"] = "销售标签页中使用的默认数量现在根据商品类型单独设置。 在“销售：数量”选项中找到它们"
+L["SPLASH_9010_FEATURES_HEADER"] = "新功能"
+L["SPLASH_9010_UNANNOUNCED_1"] = "在“销售”选项中添加了一个新的“列出项目时显示出价选项”选项，以允许从“销售”标签页中设置出价"
+L["SPLASH_9010_UNANNOUNCED_HEADER"] = "9.0.9 版本的未公布功能"
 L["SPLASH_902_DESCRIPTION"] = "除了各种错误修正，还有一项新功能。"
 L["SPLASH_902_FEATURES_1"] = "销售标签页中新增了一个“你的历史记录”区块来显示您过去创建的拍卖价格。"
 L["SPLASH_902_FEATURES_HEADER"] = "新功能"
@@ -354,6 +349,16 @@ L["SPLASH_907_FEATURES_4"] = "“取消”标签页添加了一个新的搜索�
 L["SPLASH_907_FEATURES_HEADER"] = "功能"
 L["SPLASH_907_UNANNOUNCED_1"] = "销售标签页中添加了可选的“卖家”栏位（可以看见是谁出售的物品）。右键点击当前拍卖列表的栏位标题（例如：“我卖的？”）启用。"
 L["SPLASH_907_UNANNOUNCED_HEADER"] = "9.0.6添加但未公布的功能"
+--[[Translation missing --]]
+L["SPLASH_9105_DESCRIPTION"] = "Added a new search method for shopping lists that can scan and filter prices for thousands of items in 14s (around 42s on a full population realm) - previously this could take 20+ minutes! This is invaluable for sniping the perfect deal when combined with the gold price filters."
+--[[Translation missing --]]
+L["SPLASH_9105_FEATURES_1"] = "Very fast shopping list search when searching for more than 50 items."
+--[[Translation missing --]]
+L["SPLASH_9105_FEATURES_2"] = "Added a button to move the price history dialog in the \"Shopping\" tab to the right of the results listing (right click any result to see a price history)."
+--[[Translation missing --]]
+L["SPLASH_9105_FEATURES_3"] = "Option to show profit instead of crafting cost in the crafting window when the Auction House is open."
+--[[Translation missing --]]
+L["SPLASH_9105_FEATURES_HEADER"] = "Recent Features"
 L["SPLASH_HIDE_MESSAGE"] = "下次更新前不要再显示"
 L["SPLASH_SCREEN_HEADER"] = "欢迎使用拍卖小帮手 Auctionator"
 L["STACK_AUCTION_INFO"] = "%s 总共 %s (每个 %s)"
@@ -402,6 +407,7 @@ L["VENDOR_TOOLTIP_TOOLTIP_TEXT"] = "鼠标指向时，在鼠标提示中显示�
 L["VERSION_HEADER"] = "版本"
 L["VERSION_MESSAGE"] = "版本 %s"
 L["YOUR_HISTORY"] = "你的历史记录"
+
 
   return L
 end

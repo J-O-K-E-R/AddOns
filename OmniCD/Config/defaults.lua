@@ -2,7 +2,6 @@ local E, L, C = select(2, ...):unpack()
 
 C["loginMsg"] = false
 C["notifyNew"] = false
---C["optionScale"] = 1 -- opt scale
 
 C["Party"] = {
 	visibility = {
@@ -102,7 +101,9 @@ C["Party"] = {
 				["paddingY"] = -1,
 				["showName"] = true,
 				["growUpward"] = false,
+				["growLeft"] = false,
 				["progressBar"] = true,
+				["hideBar"] = false,
 				["textColors"] = {
 					["activeColor"] = {r=1,g=1,b=1},
 					["inactiveColor"] = {r=1,g=1,b=1},
@@ -133,10 +134,13 @@ C["Party"] = {
 						["recharge"] = false,
 					},
 				},
-				["statusBarWidth"] = 205,
 				["reverseFill"] = true,
 				["useIconAlpha"] = false,
 				["hideSpark"] = false,
+				["hideBorder"] = false,
+				["statusBarWidth"] = 205,
+				["textOfsX"] = 3,
+				["textOfsY"] = 0,
 			},
 			["raidCDBar"] = {
 				["enabled"] = false,
@@ -152,14 +156,18 @@ C["Party"] = {
 				["group6"] = {},
 				["group7"] = {},
 				["group8"] = {},
-				--["groupDetached"] = {},
+				["groupDetached"] = {},
+				["groupGrowUpward"] = {},
+				["groupGrowLeft"] = {},
 				["groupPadding"] = 0,
 				["scale"] = 0.5,
 				["paddingX"] = -1,
 				["paddingY"] = -1,
 				["showName"] = true,
 				["growUpward"] = false,
+				["growLeft"] = false,
 				["progressBar"] = true,
+				["hideBar"] = false,
 				["textColors"] = {
 					["activeColor"] = {r=1,g=1,b=1},
 					["rechargeColor"] = {r=1,g=1,b=1},
@@ -190,10 +198,13 @@ C["Party"] = {
 						["recharge"] = false,
 					},
 				},
-				["statusBarWidth"] = 205,
 				["reverseFill"] = true,
 				["useIconAlpha"] = false,
 				["hideSpark"] = false,
+				["hideBorder"] = false,
+				["statusBarWidth"] = 205,
+				["textOfsX"] = 3,
+				["textOfsY"] = 0,
 				["hideDisabledSpells"] = true,
 			},
 		},

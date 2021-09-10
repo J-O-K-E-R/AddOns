@@ -1,14 +1,14 @@
-tag 1da197a7cf26d979cb803da24822e0439f3a5efa 9.1.0
+tag 712a4836e1c125c4ff64cec95826eac4819f66f2 9.1.1
 Author:	Mike Battersby <mib@post.com>
-Date:	Tue Jun 29 17:16:21 2021 +1000
+Date:	Thu Jul 1 09:52:39 2021 +1000
 
-LiteBag 9.1.0
+LiteBag 9.1.1
 
- - Support WoW 9.1 Chains of Domination
+ - Updated tutorial help checks to try to match Blizzard
 
-commit 3dfde49bdb4ba0b91acd9cba849537fc0d6bf41c
+commit 9dadb12b902830a93ad6a2d527a38e451d109776
 Author: Mike Battersby <mib@post.com>
-Date:   Tue Jun 29 17:14:29 2021 +1000
+Date:   Thu Jul 1 09:52:11 2021 +1000
 
-    Update ToC for 9.1
+    Try to update tutorial checks for blizzard changes
 

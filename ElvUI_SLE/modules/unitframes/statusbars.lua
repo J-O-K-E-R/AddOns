@@ -1,6 +1,6 @@
 local SLE, T, E, L, V, P, G = unpack(select(2, ...))
-local SUF = SLE:GetModule("UnitFrames")
-local UF = E:GetModule('UnitFrames')
+local SUF = SLE.UnitFrames
+local UF = E.UnitFrames
 --GLOBALS: hooksecurefunc
 local _G = _G
 local MAX_BOSS_FRAMES = MAX_BOSS_FRAMES
@@ -39,7 +39,7 @@ end
 function SUF:CastBarHook()
 	local units = {"Player", "Target", "Focus"}
 	for _, unit in pairs(units) do
-		local unitframe = _G["ElvUF_"..unit];
+		local unitframe = _G["ElvUF_"..unit]
 		local castbar = unitframe and unitframe.Castbar
 		if castbar then
 			hooksecurefunc(castbar, "PostCastStart", SUF.PostCast)

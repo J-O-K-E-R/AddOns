@@ -141,8 +141,6 @@ function AuctionatorCancellingDataProviderMixin:OnEvent(eventName, auctionID, ..
 end
 
 function AuctionatorCancellingDataProviderMixin:ReceiveEvent(eventName, eventData, ...)
-  AuctionatorItemKeyLoadingMixin.ReceiveEvent(self, eventName, eventData, ...)
-
   if eventName == Auctionator.Cancelling.Events.RequestCancel then
     table.insert(self.waitingforCancellation, eventData)
 
@@ -174,8 +172,8 @@ end
 function AuctionatorCancellingDataProviderMixin:FilterAuction(auctionInfo)
   local searchString = self:GetParent().SearchFilter:GetText()
   if searchString ~= "" then
-    --Uses that the item link for an auction contains its name
-    return string.match(string.lower(auctionInfo.itemLink), string.lower(searchString))
+    local name = Auctionator.Utilities.GetNameFromLink(auctionInfo.itemLink)
+    return string.find(string.lower(name), string.lower(searchString), 1, true)
   else
     return true
   end
@@ -187,7 +185,7 @@ function AuctionatorCancellingDataProviderMixin:PopulateAuctions()
   local results = {}
   local total = 0
 
-  for index = C_AuctionHouse.GetNumOwnedAuctions(), 1, -1  do
+  for index = 1, C_AuctionHouse.GetNumOwnedAuctions() do
     local info = C_AuctionHouse.GetOwnedAuctionInfo(index)
 
     --Only look at unsold and uncancelled (yet) auctions

@@ -1,5 +1,5 @@
 local SLE, T, E, L, V, P, G = unpack(select(2, ...))
-local S = E:GetModule('Skins')
+local S = E.Skins
 
 --GLOBALS: unpack, select, CreateFrame
 local _G = _G
@@ -39,7 +39,7 @@ local function LoadSkin()
 			local itemId = GetInventoryItemID("player", slotId)
 
 			if itemId then
-				local rarity = GetInventoryItemQuality("player", slotId);
+				local rarity = GetInventoryItemQuality("player", slotId)
 				if rarity and rarity > 1 then
 					target:SetBackdropBorderColor(GetItemQualityColor(rarity))
 				else

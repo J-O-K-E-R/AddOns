@@ -1,6 +1,6 @@
 local SLE, T, E, L, V, P, G = unpack(select(2, ...))
-local DT = E:GetModule('DataTexts')
-local DTP = SLE:GetModule('Datatexts')
+local DT = E.DataTexts
+local DTP = SLE.Datatexts
 
 local pairs, strjoin = pairs, strjoin
 local HasNewMail = HasNewMail
@@ -8,7 +8,7 @@ local GetLatestThreeSenders = GetLatestThreeSenders
 local HAVE_MAIL_FROM = HAVE_MAIL_FROM
 local MAIL_LABEL = MAIL_LABEL
 
-local icon = [[|TInterface\MINIMAP\TRACKING\Mailbox.blp:14:14|t]];
+local icon = [[|TInterface\MINIMAP\TRACKING\Mailbox.blp:14:14|t]]
 local displayString, lastPanel = ''
 
 function DTP:MailUp()

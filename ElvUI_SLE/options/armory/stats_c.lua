@@ -1,6 +1,6 @@
 ﻿local SLE, T, E, L, V, P, G = unpack(select(2, ...))
-local SA = SLE:GetModule('Armory_Stats')
-local M = E:GetModule('Misc')
+local SA = SLE.Armory_Stats
+local M = E.Misc
 
 local function configTable()
 	if not SLE.initialized then return end
@@ -12,7 +12,7 @@ local function configTable()
 		disabled = function() return SLE._Compatibility['DejaCharacterStats'] or not E.db.sle.armory.stats.enable end,
 		hidden = function() return not E.private.skins.blizzard.enable or not E.private.skins.blizzard.character end,
 		get = function(info) return E.db.sle.armory.stats[info[#info]] end,
-		set = function(info, value) E.db.sle.armory.stats[info[#info]] = value; PaperDollFrame_UpdateStats(); M:UpdateCharacterItemLevel(); end,
+		set = function(info, value) E.db.sle.armory.stats[info[#info]] = value; PaperDollFrame_UpdateStats(); M:UpdateCharacterItemLevel() end,
 		args = {
 			OnlyPrimary = {
 				order = 1,
@@ -179,8 +179,20 @@ local function configTable()
 						type = 'group',
 						name = STAT_CATEGORY_ATTRIBUTES,
 						args = {
-							HEALTH = { order = 1,type = 'toggle',name = HEALTH,},
-							POWER = { order = 2,type = 'toggle',name = _G[select(2, UnitPowerType('player'))],},
+							HEALTH = {
+								order = 1,
+								type = 'toggle',
+								name = HEALTH,
+							},
+							POWER = {
+								order = 2,
+								type = 'toggle',
+								name = function()
+									local power = _G[select(2, UnitPowerType('player'))] or L["Power"]
+									return power
+								end,
+
+							},
 							ALTERNATEMANA = { order = 3,type = 'toggle',name = ALTERNATE_RESOURCE_TEXT,},
 							MOVESPEED = { order = 4,type = 'toggle',name = STAT_SPEED,},
 						},

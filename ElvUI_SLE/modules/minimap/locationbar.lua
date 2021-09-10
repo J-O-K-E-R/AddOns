@@ -1,7 +1,7 @@
 ﻿local SLE, T, E, L, V, P, G = unpack(select(2, ...))
-local M = E:GetModule('Minimap')
-local MM, DD = SLE:GetModules('Minimap', 'Dropdowns')
-local LP = SLE:NewModule('LocationPanel', 'AceTimer-3.0', 'AceEvent-3.0')
+local M = E.Minimap
+local MM, DD = SLE.Minimap, SLE.Dropdowns
+local LP = SLE.LocationPanel
 
 
 local _G = _G
@@ -237,6 +237,15 @@ LP.Spells = {
 		[15] = {text = GetSpellInfo(159898),icon = SLE:GetIconFromID('spell', 159898),secure = {buttonType = 'spell',ID = 159898}, UseTooltip = true},-- Skies
 		[16] = {text = GetSpellInfo(159901),icon = SLE:GetIconFromID('spell', 159901),secure = {buttonType = 'spell',ID = 159901}, UseTooltip = true},-- Verdant
 		[17] = {text = GetSpellInfo(159897),icon = SLE:GetIconFromID('spell', 159897),secure = {buttonType = 'spell',ID = 159897}, UseTooltip = true},-- Vigilant
+		[18] = {text = GetSpellInfo(354468),icon = SLE:GetIconFromID('spell', 354468),secure = {buttonType = 'spell',ID = 354468}, UseTooltip = true},-- De Other Side
+		[19] = {text = GetSpellInfo(354465),icon = SLE:GetIconFromID('spell', 354465),secure = {buttonType = 'spell',ID = 354465}, UseTooltip = true},-- Halls of Atonement
+		[20] = {text = GetSpellInfo(354464),icon = SLE:GetIconFromID('spell', 354464),secure = {buttonType = 'spell',ID = 354464}, UseTooltip = true},-- Mists of Tirna Scithe
+		[21] = {text = GetSpellInfo(354463),icon = SLE:GetIconFromID('spell', 354463),secure = {buttonType = 'spell',ID = 354463}, UseTooltip = true},-- Plaguefall
+		[22] = {text = GetSpellInfo(354469),icon = SLE:GetIconFromID('spell', 354469),secure = {buttonType = 'spell',ID = 354469}, UseTooltip = true},-- Sanguine Depths
+		[23] = {text = GetSpellInfo(354466),icon = SLE:GetIconFromID('spell', 354466),secure = {buttonType = 'spell',ID = 354466}, UseTooltip = true},-- Spires of Ascension
+		[24] = {text = GetSpellInfo(354462),icon = SLE:GetIconFromID('spell', 354462),secure = {buttonType = 'spell',ID = 354462}, UseTooltip = true},-- Necrotic Wake
+		[25] = {text = GetSpellInfo(354467),icon = SLE:GetIconFromID('spell', 354467),secure = {buttonType = 'spell',ID = 354467}, UseTooltip = true},-- Theater of Pain
+
 	},
 }
 
@@ -283,7 +292,7 @@ function LP:CreateLocationPanel()
 end
 
 function LP:OnClick(btn)
-	local zoneText = GetRealZoneText() or UNKNOWN;
+	local zoneText = GetRealZoneText() or UNKNOWN
 	if btn == 'LeftButton' then
 		if IsShiftKeyDown() and LP.db.linkcoords then
 			local edit_box = ChatEdit_ChooseBoxForSend()
@@ -338,7 +347,7 @@ function LP:UpdateCoords(elapsed)
 
 	--Location
 	local subZoneText = GetMinimapZoneText() or ''
-	local zoneText = GetRealZoneText() or UNKNOWN;
+	local zoneText = GetRealZoneText() or UNKNOWN
 	local displayLine
 	if LP.db.zoneText then
 		if (subZoneText ~= '') and (subZoneText ~= zoneText) then
@@ -645,7 +654,7 @@ function LP:PopulateDropdown(click)
 	MENU_WIDTH = LP.db.portals.customWidth and LP.db.portals.customWidthValue or _G.SLE_LocationPanel:GetWidth()
 	SLE:DropDown(LP.MainMenu, LP.Menu1, anchor, point, 0, 1, _G.SLE_LocationPanel, MENU_WIDTH, LP.db.portals.justify)
 
-	collectgarbage('collect');
+	collectgarbage('collect')
 end
 
 function LP:GetProf()

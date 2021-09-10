@@ -1,6 +1,6 @@
 local SLE, T, E, L, V, P = unpack(select(2, ...))
-local Sk = SLE:GetModule('Skins')
-local B = SLE:GetModule('Blizzard')
+local Sk = SLE.Skins
+local B = SLE.Blizzard
 
 local IsAddOnLoaded = IsAddOnLoaded
 
@@ -172,7 +172,7 @@ local function configTable()
 								desc = L["Sets the texture for statusbars in quest tracker, e.g. bonus objectives/timers."],
 								disabled = function() return not E.private.sle.skins.objectiveTracker.enable or not E.private.skins.blizzard.enable or not E.private.skins.blizzard.objectiveTracker or not E.private.sle.skins.objectiveTracker.BGbackdrop or E.private.sle.skins.objectiveTracker.scenarioBG end,
 								set = function(info, value)
-									E.private.sle.skins.objectiveTracker[info[#info]] = value;
+									E.private.sle.skins.objectiveTracker[info[#info]] = value
 									Sk:UpdateObjectiveFrameLogos()
 								end,
 								values = {
@@ -189,7 +189,7 @@ local function configTable()
 								width = 'full',
 								hidden = function() return E.private.sle.skins.objectiveTracker.skinnedTextureLogo ~= 'CUSTOM' end,
 								set = function(info, value)
-									E.private.sle.skins.objectiveTracker[info[#info]] = value;
+									E.private.sle.skins.objectiveTracker[info[#info]] = value
 									Sk:UpdateObjectiveFrameLogos()
 								end,
 							},
@@ -226,9 +226,26 @@ local function configTable()
 								desc = L["Show timers for both milestones at the same time if available."],
 								disabled = function() return not E.private.sle.skins.objectiveTracker.enable or not E.private.sle.skins.objectiveTracker.keyTimers.enable end,
 								get = function(info) return E.private.sle.skins.objectiveTracker.keyTimers[info[#info]] end,
-								set = function(info, value) E.private.sle.skins.objectiveTracker.keyTimers[info[#info]] = value; end,
+								set = function(info, value) E.private.sle.skins.objectiveTracker.keyTimers[info[#info]] = value end,
 							},
 						},
+					},
+					torghastPowers = {
+						order = 6,
+						type = 'group',
+						name = L["Torghast Powers"],
+						guiInline = true,
+						get = function(info) return E.private.sle.skins.objectiveTracker.torghastPowers[info[#info]] end,
+						set = function(info, value) E.private.sle.skins.objectiveTracker.torghastPowers[info[#info]] = value; E:StaticPopup_Show('PRIVATE_RL') end,
+						args = {
+							enable = {
+								order = 1,
+								type = 'toggle',
+								name = L["Enable"],
+								desc = L["Torghast Powers Bar that contains your powers in the objective tracker will have the ElvUI look."],
+								disabled = function() return not E.private.sle.skins.objectiveTracker.enable end,
+							},
+						}
 					},
 				},
 			},

@@ -1,6 +1,6 @@
 AuctionatorShoppingListTableBuilderMixin = CreateFromMixins(TableBuilderMixin)
 
-AuctionatorScrollListMixin = CreateFromMixins(AuctionatorAdvancedSearchProviderMixin)
+AuctionatorScrollListMixin = {}
 
 function AuctionatorScrollListMixin:OnLoad()
   Auctionator.Debug.Message("AuctionatorScrollListMixin:OnLoad()")
@@ -10,19 +10,25 @@ function AuctionatorScrollListMixin:OnLoad()
   self:SetLineTemplate("AuctionatorScrollListLineTemplate")
   self.getNumEntries = self.GetNumEntries
 
-  self:InitSearch(
-    function(results)
-      self:EndSearch(results)
-    end,
-    function(current, total, results)
-      if self.currentList == nil then
-        return
-      end
+  self.searchProviders = {
+    CreateFrame("FRAME", nil, nil, "AuctionatorDirectSearchProviderTemplate"),
+    CreateFrame("FRAME", nil, nil, "AuctionatorCachingSearchProviderTemplate"),
+  }
+  for _, searchProvider in ipairs(self.searchProviders) do
+    searchProvider:InitSearch(
+      function(results)
+        self:EndSearch(results)
+      end,
+      function(current, total, partialResults)
+        if self.currentList == nil then
+          return
+        end
 
-      Auctionator.EventBus:Fire(self, Auctionator.ShoppingLists.Events.ListSearchIncrementalUpdate, results)
-      self.ResultsText:SetText(Auctionator.Locales.Apply("LIST_SEARCH_STATUS", current, total, self.currentList.name))
-    end
-  )
+        Auctionator.EventBus:Fire(self, Auctionator.ShoppingLists.Events.ListSearchIncrementalUpdate, partialResults)
+        self.ResultsText:SetText(Auctionator.Locales.Apply("LIST_SEARCH_STATUS", current, total, self.currentList.name))
+      end
+    )
+  end
 end
 
 function AuctionatorScrollListMixin:SetUpEvents()
@@ -41,10 +47,6 @@ function AuctionatorScrollListMixin:SetUpEvents()
   })
 end
 
-function AuctionatorScrollListMixin:OnEvent(eventName, ...)
-  self:OnSearchEvent(eventName, ...)
-end
-
 function AuctionatorScrollListMixin:GetAllSearchTerms()
   local searchTerms = {}
 
@@ -57,7 +59,6 @@ end
 
 function AuctionatorScrollListMixin:ReceiveEvent(eventName, eventData, ...)
   Auctionator.Debug.Message("AuctionatorScrollListMixin:ReceiveEvent()", eventName, eventData)
-  AuctionatorAdvancedSearchProviderMixin.ReceiveEvent(self, eventName, eventData, ...)
 
   if eventName == Auctionator.ShoppingLists.Events.ListSelected then
     self.currentList = eventData
@@ -69,6 +70,7 @@ function AuctionatorScrollListMixin:ReceiveEvent(eventName, eventData, ...)
     self:RefreshScrollFrame()
   elseif eventName == Auctionator.ShoppingLists.Events.ListDeleted then
     self.currentList = nil
+    self:AbortRunningSearches()
 
     self:RefreshScrollFrame()
   elseif eventName == Auctionator.ShoppingLists.Events.ListItemSelected then
@@ -87,6 +89,8 @@ function AuctionatorScrollListMixin:ReceiveEvent(eventName, eventData, ...)
 end
 
 function AuctionatorScrollListMixin:StartSearch(searchTerms)
+  self:AbortRunningSearches()
+
   self.ResultsText:SetText(Auctionator.Locales.Apply("LIST_SEARCH_START", self.currentList.name))
   self.ResultsText:Show()
 
@@ -98,12 +102,22 @@ function AuctionatorScrollListMixin:StartSearch(searchTerms)
     Auctionator.ShoppingLists.Events.ListSearchStarted,
     #self.currentList.items
   )
-  self:Search(searchTerms)
+  if #searchTerms < 50 and not (IsShiftKeyDown() and IsControlKeyDown()) then
+    self.searchProviders[1]:Search(searchTerms)
+  else
+    self.searchProviders[2]:Search(searchTerms)
+  end
 end
 
 function AuctionatorScrollListMixin:EndSearch(results)
   self:HideSpinner()
   Auctionator.EventBus:Fire(self, Auctionator.ShoppingLists.Events.ListSearchEnded, results)
+end
+
+function AuctionatorScrollListMixin:AbortRunningSearches()
+  for _, searchProvider in ipairs(self.searchProviders) do
+    searchProvider:AbortSearch()
+  end
 end
 
 function AuctionatorScrollListMixin:HideSpinner()
@@ -132,6 +146,10 @@ end
 function AuctionatorScrollListMixin:OnShow()
   self:Init()
   self:RefreshScrollFrame()
+end
+
+function AuctionatorScrollListMixin:OnHide()
+  self:AbortRunningSearches()
 end
 
 function AuctionatorScrollListMixin:Init()

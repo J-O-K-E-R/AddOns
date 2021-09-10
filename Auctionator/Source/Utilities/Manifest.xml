@@ -5,7 +5,6 @@
   <Script file="DBKeyFromBrowseResult.lua"/>
   <Script file="IsPetItemKey.lua"/>
   <Script file="Message.lua"/>
-  <Script file="StringContains.lua"/>
   <Script file="ReverseArray.lua"/>
   <Script file="Table.lua" />
   <Script file="Debug.lua"/>
@@ -22,6 +21,7 @@
   <Script file="IsShortcutActive.lua"/>
   <Script file="GetPetLevelFromLink.lua"/>
   <Script file="GetQualityColorFromLink.lua"/>
+  <Script file="GetNameFromLink.lua"/>
   <Script file="ClassicWoWCheck.lua"/>
   <Script file="FormatTime.lua"/>
   <Script file="StringJoin.lua"/>

@@ -24,11 +24,6 @@ BlizzMoveAPI:RegisterFrames(
 			{
 				MinVersion = 0,
 			},
-			["PetPaperDollFrame"] =
-			{
-				MinVersion = 20000, -- Added pre 20400
-				MaxVersion = 70300, -- Removed when?
-			},
 			["CompanionFrame"] =
 			{
 				MinVersion = 40000, -- Added when?
@@ -139,7 +134,6 @@ BlizzMoveAPI:RegisterFrames(
 			},
 			["FriendsFrameBattlenetFrame.BroadcastFrame"] =
 			{
-				MinVersion = 70000, -- Added when?
 				Detachable = true,
 			},
 			["FriendsListFrameScrollFrame"] =
@@ -152,7 +146,11 @@ BlizzMoveAPI:RegisterFrames(
 			},
 			["WhoListScrollFrame"] =
 			{
-				MinVersion = 0,
+				SilenceCompatabilityWarnings = true,
+				MinVersion = 30000,
+				-- Somehow breaks things in TBC, but also isn't needed there
+				-- For classic it's not needed, but oddly also doesn't break things
+				-- For retail it is needed
 			},
 		},
 	},
@@ -183,6 +181,11 @@ BlizzMoveAPI:RegisterFrames(
 	["ItemTextFrame"] =
 	{
 		MinVersion = 0,
+	},
+	["LFGParentFrame"] =
+	{
+		MinVersion = 20502,
+		MaxVersion = 70000, -- Removed when?
 	},
 	["LootFrame"] =
 	{
@@ -305,6 +308,7 @@ BlizzMoveAPI:RegisterFrames(
 	["WorldMapFrame"] =
 	{
 		MinVersion = 40000, -- No longer fullscreen when?
+		SilenceCompatabilityWarnings = true,
 		SubFrames =
 		{
 			["QuestMapFrame"] =
@@ -430,6 +434,7 @@ BlizzMoveAPI:RegisterAddOnFrames(
 		{
 			MinVersion = 30000, -- Added pre 30300
 			MaxVersion = 90000, -- still exists, but shouldn't be movable (fullscreen)
+			SilenceCompatabilityWarnings = true
 		},
 	},
 	["Blizzard_BindingUI"] =
@@ -746,7 +751,7 @@ BlizzMoveAPI:RegisterAddOnFrames(
 	{
 		["GuildBankFrame"] =
 		{
-			MinVersion = 30000, -- Added pre 30300
+			MinVersion = 20502,
 		},
 	},
 	["Blizzard_GuildControlUI"] =

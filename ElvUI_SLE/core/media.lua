@@ -1,5 +1,5 @@
 ﻿local SLE, T, E, L, V, P, G = unpack(select(2, ...))
-local M = SLE:NewModule('Media', 'AceHook-3.0')
+local M = SLE.Media
 
 --GLOBALS: hooksecurefunc
 local _G = _G
@@ -24,9 +24,9 @@ local ClassColor = RAID_CLASS_COLORS[E.myclass]
 local function ZoneTextPos()
 	_G["SubZoneTextString"]:ClearAllPoints()
 	if ( _G["PVPInfoTextString"]:GetText() == "" ) then
-		_G["SubZoneTextString"]:SetPoint("TOP", "ZoneTextString", "BOTTOM", 0, -E.db.sle.media.fonts.subzone.offset);
+		_G["SubZoneTextString"]:SetPoint("TOP", "ZoneTextString", "BOTTOM", 0, -E.db.sle.media.fonts.subzone.offset)
 	else
-		_G["SubZoneTextString"]:SetPoint("TOP", "PVPInfoTextString", "BOTTOM", 0, -E.db.sle.media.fonts.subzone.offset);
+		_G["SubZoneTextString"]:SetPoint("TOP", "PVPInfoTextString", "BOTTOM", 0, -E.db.sle.media.fonts.subzone.offset)
 	end
 end
 
@@ -117,7 +117,7 @@ function M:TextShow()
 end
 
 function M:Initialize()
-	if not SLE.initialized then return end
+	if not SLE.initialized or not E.private.sle.media.enable then return end
 	hooksecurefunc(E, "UpdateBlizzardFonts", M.SetBlizzFonts)
 	hooksecurefunc("SetZoneText", ZoneTextPos)
 	M.SetBlizzFonts()

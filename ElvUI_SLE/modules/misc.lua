@@ -1,10 +1,12 @@
 local SLE, T, E, L, V, P, G = unpack(select(2, ...))
-local M = SLE:NewModule('Misc', 'AceHook-3.0', 'AceEvent-3.0')
+local M = SLE.Misc
 
 local _G = _G
+M.ViewportInitialized = false
 
 --Viewports
 function M:SetAllPoints(...)
+	if SLE._Compatibility['SunnArt'] or not M.ViewportInitialized or not E.private.sle.viewport.enable then return end
 	M:SetViewport()
 end
 
@@ -16,7 +18,7 @@ end
 end]]
 
 function M:SetViewport()
-	if SLE._Compatibility['SunnArt'] then return end --Other viewport addon is enabled
+	if SLE._Compatibility['SunnArt'] or not M.ViewportInitialized or not E.private.sle.viewport.enable then return end
 	local scale = E.global.general.UIScale
 
 	_G.WorldFrame:ClearAllPoints()
@@ -94,21 +96,28 @@ function M:Initialize()
 	if _G.RaidUtility_ShowButton then M:RaidUtility_Hook() end
 
 	--Viewport
-	function CinematicFrame_CancelCinematic()
-		if ( CinematicFrame.isRealCinematic ) then
-			StopCinematic();
-		elseif ( CanCancelScene() ) then
-			CancelScene();
-		else
-			VehicleExit();
-		end
-	end
+	-- function CinematicFrame_CancelCinematic()
+	-- 	if ( CinematicFrame.isRealCinematic ) then
+	-- 		StopCinematic()
+	-- 	elseif ( CanCancelScene() ) then
+	-- 		CancelScene()
+	-- 	else
+	-- 		VehicleExit()
+	-- 	end
+	-- end
 
 	--Some high level bullshit
 	-- WorldFrame.ORClear = WorldFrame.ClearAllPoints
 	-- WorldFrame.ClearAllPoints = M.ClearAllPoints
+
+	if SLE._Compatibility['SunnArt'] or not E.private.sle.viewport.enable then return end
+	M.ViewportInitialized = true
 	WorldFrame.ORSetAll = WorldFrame.SetAllPoints
 	WorldFrame.SetAllPoints = M.SetAllPoints
+
+	-- Possible Fix for Cut Scene issues during a raid
+	CinematicFrame:SetScript("OnShow", nil)
+	CinematicFrame:SetScript("OnHide", nil)
 
 	M:SetViewport()
 	hooksecurefunc(E, 'PixelScaleChanged', M.SetViewport)

@@ -52,6 +52,19 @@ function Auctionator.ReagentSearch.GetSkillReagentsTotal()
   return total
 end
 
+function Auctionator.ReagentSearch.GetAHProfit()
+  local recipeIndex = TradeSkillFrame.RecipeList:GetSelectedRecipeID()
+  local recipeLink = C_TradeSkillUI.GetRecipeItemLink(recipeIndex)
+
+  local currentAH = Auctionator.API.v1.GetAuctionPriceByItemLink(AUCTIONATOR_L_REAGENT_SEARCH, recipeLink)
+  if currentAH == nil then
+    currentAH = 0
+  end
+  local toCraft = Auctionator.ReagentSearch.GetSkillReagentsTotal()
+
+  return math.max(0, math.floor(currentAH * 0.95 - toCraft))
+end
+
 -- Add a button to the tradeskill frame to search the AH for the reagents.
 -- The button (see Mixins/Button.lua) will be hidden when the AH is closed.
 -- The total price is shown in a FontString next to the button
@@ -70,16 +83,19 @@ end
 
 function Auctionator.ReagentSearch.CacheVendorPrices()
   for i = 1, GetMerchantNumItems() do
-    local price = select(3, GetMerchantItemInfo(i))
-    local itemLink = GetMerchantItemLink(i)
-    local dbKey = Auctionator.Utilities.BasicDBKeyFromLink(itemLink)
-    if dbKey ~= nil and price ~= 0 then
-      local oldPrice = AUCTIONATOR_VENDOR_PRICE_CACHE[dbKey]
-      if oldPrice ~= nil then
-        AUCTIONATOR_VENDOR_PRICE_CACHE[dbKey] = math.min(price, oldPrice)
-      else
-        AUCTIONATOR_VENDOR_PRICE_CACHE[dbKey] = price
-      end
+    local itemID = GetMerchantItemID(i)
+    if itemID ~= nil then
+      local item = Item:CreateFromItemID(itemID)
+      item:ContinueOnItemLoad(function()
+        local price, stack, numAvailable = select(3, GetMerchantItemInfo(i))
+        local itemLink = GetMerchantItemLink(i)
+        local dbKey = Auctionator.Utilities.BasicDBKeyFromLink(itemLink)
+        if dbKey ~= nil and price ~= 0 and numAvailable == -1 then
+          AUCTIONATOR_VENDOR_PRICE_CACHE[dbKey] = price / stack
+        elseif dbKey ~= nil then
+          AUCTIONATOR_VENDOR_PRICE_CACHE[dbKey] = nil
+        end
+      end)
     end
   end
 end

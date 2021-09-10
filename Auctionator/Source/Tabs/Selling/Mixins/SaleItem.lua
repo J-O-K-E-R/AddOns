@@ -22,7 +22,7 @@ local function NormalizePrice(price)
 end
 
 local function IsEquipment(itemInfo)
-  return itemInfo.classId == LE_ITEM_CLASS_WEAPON or itemInfo.classId == LE_ITEM_CLASS_ARMOR
+  return itemInfo.classId == Enum.ItemClass.Weapon or itemInfo.classId == Enum.ItemClass.Armor
 end
 
 local function IsValidItem(item)
@@ -191,18 +191,6 @@ function AuctionatorSaleItemMixin:ReceiveEvent(event, ...)
 
     self:UpdateSalesPrice(buyoutAmount)
 
-  elseif event == Auctionator.AH.Events.ItemKeyInfo then
-    local itemKey, itemInfo = ...
-    if Auctionator.Utilities.ItemKeyString(self.itemInfo.itemKey) ==
-        Auctionator.Utilities.ItemKeyString(itemKey) then
-      Auctionator.EventBus:Unregister(self, {Auctionator.AH.Events.ItemKeyInfo})
-
-      self.itemInfo.keyName = AuctionHouseUtil.GetItemDisplayTextFromItemKey(
-        itemKey, itemInfo, false
-      )
-      self:UpdateVisuals()
-    end
-
   elseif event == Auctionator.Selling.Events.RefreshSearch then
     self:RefreshButtonClicked()
   end
@@ -226,8 +214,7 @@ function AuctionatorSaleItemMixin:UpdateVisuals()
   self.Icon:SetItemInfo(self.itemInfo)
 
   if self.itemInfo ~= nil then
-
-    self.TitleArea.Text:SetText(self:GetItemName())
+    self:SetItemName()
 
     self.Icon:HideCount()
 
@@ -246,15 +233,18 @@ end
 
 -- The exact item name is only loaded when needed as it slows down loading the
 -- bag items too much to do in BagDataProvider.
-function AuctionatorSaleItemMixin:GetItemName()
+function AuctionatorSaleItemMixin:SetItemName()
   if self.itemInfo.keyName ~= nil then
-    return self.itemInfo.keyName
+    self.TitleArea.Text:SetText(self.itemInfo.keyName)
 
   else
-    Auctionator.EventBus:Register(self, {Auctionator.AH.Events.ItemKeyInfo})
-    Auctionator.AH.GetItemKeyInfo(self.itemInfo.itemKey)
-
-    return ""
+    Auctionator.AH.GetItemKeyInfo(self.itemInfo.itemKey, function(itemInfo)
+      self.itemInfo.keyName = AuctionHouseUtil.GetItemDisplayTextFromItemKey(
+        self.itemInfo.itemKey, itemInfo, false
+      )
+      self.TitleArea.Text:SetText(self.itemInfo.keyName)
+      self:UpdateVisuals()
+    end)
   end
 end
 
@@ -466,7 +456,6 @@ function AuctionatorSaleItemMixin:ProcessItemResults(itemKey)
 
   if result == nil then
     -- This item was not found in the AH, so use the lowest price from the dbKey
-    -- TODO: DB price does not account for iLvl
     postingPrice = Auctionator.Database:GetFirstPrice(dbKeys)
   elseif result ~= nil and result.containsOwnerItem then
     -- Posting an item I have alread posted, and that is the current lowest price, so just

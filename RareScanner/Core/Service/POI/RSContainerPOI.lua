@@ -32,7 +32,7 @@ local notDiscoveredContainerIDs = {}
 function RSContainerPOI.InitializeNotDiscoveredContainers()
 	for containerID, _ in pairs (RSContainerDB.GetAllInternalContainerInfo()) do
 		if (not RSGeneralDB.GetAlreadyFoundEntity(containerID)) then
-			tinsert(notDiscoveredContainerIDs, containerID)
+			notDiscoveredContainerIDs[containerID] = true
 		end
 	end
 end
@@ -111,12 +111,10 @@ local function IsContainerPOIFiltered(containerID, mapID, zoneQuestID, vignetteG
 	-- Skip if the entity appears only while a quest event is going on and it isnt active
 	if (zoneQuestID) then
 		local active = false
-		if (RSUtils.Contains(C_QuestLog.GetActiveThreatMaps(), mapID)) then
-			for _, questID in ipairs(zoneQuestID) do
-				if (C_TaskQuest.IsActive(questID) or C_QuestLog.IsQuestFlaggedCompleted(questID)) then
-					active = true
-					break
-				end
+		for _, questID in ipairs(zoneQuestID) do
+			if (C_TaskQuest.IsActive(questID) or C_QuestLog.IsQuestFlaggedCompleted(questID)) then
+				active = true
+				break
 			end
 		end
 
@@ -161,7 +159,7 @@ function RSContainerPOI.GetMapNotDiscoveredContainerPOIs(mapID, vignetteGUIDs, o
 	end
 
 	local POIs = {}
-	for _, containerID in ipairs(notDiscoveredContainerIDs) do
+	for containerID, _ in pairs(notDiscoveredContainerIDs) do
 		local filtered = false
 		local containerInfo = RSContainerDB.GetInternalContainerInfo(containerID)
 

@@ -1,4 +1,4 @@
-﻿-- Localization for Korean (Korea) Clients.
+-- Localization for Korean (Korea) Clients.
 if GetLocale() ~= "koKR" then return; end
 local app = select(2, ...);
 local L = app.L;
@@ -24,10 +24,12 @@ local L = app.L;
 	--TODO: L.RACE_LOCKED = "Race Locked";
 	--TODO: L.PLEASE_REPORT_MESSAGE = ": Please report this to the ATT Discord in #errors! Thanks!";
 	--TODO: L.NOT_AVAILABLE_IN_PL = "Not available in Personal Loot.";
-	--TODO: L.MARKS_OF_HONOR_DESC = "Marks of Honor must be viewed in a Popout window to see all of the normal 'Contains' content\n(Type '/att ' in chat then Shift-Click to link the item)";
+	--TODO: L.MARKS_OF_HONOR_DESC = "Marks of Honor must be viewed in a Popout window to see all of the normal 'Contains' content\n(Type '/att ' in chat then Shift-Click to link the item)\n\n|cFFfe040fAfter purchasing and using an ensemble, relogging & a forced ATT refresh (in this order) may be required to register all the items correctly.|r";
 	--TODO: L.ITEM_GIVES_REP = "Provides Reputation with '";
 	--TODO: L.COST = "Cost";
 	--TODO: L.COST_DESC = "This contains the visual breakdown of what is required to obtain or purchase this Thing";
+	--TODO: L.SOURCES = "Source(s)";
+	--TODO: L.SOURCES_DESC = "Shows the Source of this Thing.\n\nParticularly, a specific Vendor/NPC, Quest, Encounter, etc.";
 	--TODO: L.WRONG_FACTION = "You might need to be on the other faction to view this.";
 	--TODO: L.ARTIFACT_INTRO_REWARD = "Awarded for completing the introductory quest for this Artifact.";
 	--TODO: L.WE_JUST_HATE_TIMEWALKING = "Timewalking difficulties needlessly create new Source IDs for items despite having the exact same name, appearance, and display in the Collections Tab.\n\nA plea to the Blizzard Devs: Please clean up the Source ID database and have your Timewalking / Titanforged item variants use the same Source ID as their base assuming the appearances and names are exactly the same. Not only will this make your database much cleaner, but it will also make Completionists excited for rather than dreading the introduction of more Timewalking content.\n\n - Crieve, the Very Bitter Account Completionist that had 99% Ulduar completion and now only has 64% because your team duplicated the Source IDs rather than reuse the existing one.";
@@ -186,6 +188,7 @@ local L = app.L;
 	--TODO: L.CACHED_RECIPES_2 = " known recipes!";
 	--TODO: L.WORLD_QUESTS = "World Quests";
 	--TODO: L.WORLD_QUESTS_DESC = "These are World Quests and other time-limited Things that are currently available somewhere. Go get 'em!";
+	--TODO: L.QUESTS_DESC = "Shows all possible QuestID's in the game in ascending numeric order.";
 	--TODO: L.UPDATE_WORLD_QUESTS = "Update World Quests Now";
 	--TODO: L.UPDATE_WORLD_QUESTS_DESC = "Sometimes the World Quest API is slow or fails to return new data. If you wish to forcibly refresh the data without changing zones, click this button now!\n\nAlt + Click to include currently-available Things which may not be time-limited";
 	--TODO: L.CLEAR_WORLD_QUESTS = "Clear World Quests";
@@ -202,7 +205,7 @@ local L = app.L;
 	--TODO: L.AH_SCAN_SUCCESSFUL_2 = " item(s).";
 	--TODO: L.REAGENT_CACHE_OUT_OF_DATE = "Reagent Cache is out-of-date and will be re-cached when opening your professions!";
 	--TODO: L.QUEST_LOOP = "Likely just broke out of an infinite source quest loop.";
-	--TODO: L.QUEST_PREVENTS_BREADCRUMB_COLLECTION_FORMAT = "Quest '%s' [%d] will prevent collection of Breadcrumb Quest '%s' [%d]";
+	--TODO: L.QUEST_PREVENTS_BREADCRUMB_COLLECTION_FORMAT = "Quest '%s' %s will prevent collection of Breadcrumb Quest '%s' %s";
 	--TODO: L.QUEST_OBJECTIVE_INVALID = "Invalid Quest Objective";
 	--TODO: L.REFRESHING_COLLECTION = "Refreshing collection...";
 	--TODO: L.DONE_REFRESHING = "Done refreshing collection.";
@@ -272,7 +275,6 @@ local L = app.L;
 		--TODO: L.ACHIEVEMENTS_CHECKBOX_TOOLTIP = "Enable this option to track achievements.";
 		--TODO: L.TMOG_CHECKBOX = "Appearances / Transmog";
 		--TODO: L.TMOG_CHECKBOX_TOOLTIP = "Enable this option to track appearance acquisition.\n\nNOTE: Disabling this option also disables all fanfares and acquisition logic.  You can use this toggle as a way to prevent lag spikes while doing important group content, but bear in mind the computation will need to occur once re-enabled.\n\nTracked Account Wide by Default.";
-		--TODO: L.AZERITE_ESSENCES_CHECKBOX = "Azerite Essences";
 		--TODO: L.AZERITE_ESSENCES_CHECKBOX_TOOLTIP = "Enable this option to track Azerite Essences.\n\nTracked per character by default.";
 		--TODO: L.BATTLE_PETS_CHECKBOX = "Battle Pets / Companions";
 		--TODO: L.BATTLE_PETS_CHECKBOX_TOOLTIP = "Enable this option to track battle pets and companions. These can be found in the open world or via boss drops in various Dungeons and Raids as well as from Vendors and Reputation.\n\nTracked Account Wide by Default.";
@@ -298,6 +300,9 @@ local L = app.L;
 		--TODO: L.RECIPES_CHECKBOX_TOOLTIP = "Enable this option to track recipes for your professions.\n\nNOTE: You must open your professions list in order to cache these.";
 		--TODO: L.REPUTATIONS_CHECKBOX = "Reputations";
 		--TODO: L.REPUTATIONS_CHECKBOX_TOOLTIP = "Enable this option to track reputations.\n\nOnce you reach Exalted or Best Friend with a reputation, it will be marked Collected.\n\nYou may have to do a manual refresh for this to update correctly.";
+		--TODO: L.RUNEFORGELEGENDARIES_CHECKBOX = "|T"..app.asset("Expansion_SL")..":0|t Runecarving Powers";
+		--TODO: L.RUNEFORGELEGENDARIES_CHECKBOX_TOOLTIP = "Enable this option to track Shadowlands Runecarving Powers.";
+		--TODO: L.SOULBINDCONDUITS_CHECKBOX_TOOLTIP = "Enable this option to track Shadowlands Soulbind Conduits.";
 		--TODO: L.TITLES_CHECKBOX = "Titles";
 		--TODO: L.TITLES_CHECKBOX_TOOLTIP = "Enable this option to track titles.\n\nThese can make your character stand out and look like you've played for awhile. Typically only new players do not have a title active.";
 		--TODO: L.TOYS_CHECKBOX = "Toys";
@@ -347,6 +352,8 @@ local L = app.L;
 		--TODO: L.ACCOUNT_WIDE_QUESTS_TOOLTIP = "Quest completion is typically per Character, but this will consider a Quest as completed if ANY Character has completed that specific Quest.";
 		--TODO: L.ACCOUNT_WIDE_RECIPES_TOOLTIP = "Recipes are not normally tracked account wide in Blizzard's database, but we can do that.\n\nIt is impossible to collect them all on one character, so with this, you can give your alts and their professions meaning.";
 		--TODO: L.ACCOUNT_WIDE_REPUTATIONS_TOOLTIP = "Reputations are now tracked account wide in Blizzard's database for achievements, so turning this on may be a good idea.";
+		--TODO: L.ACCOUNT_WIDE_RUNEFORGELEGENDARIES_TOOLTIP = "Not sure this will help at all for collection... enjoy moving at least one character of every class through every Covenant and Renown progression...";
+		--TODO: L.ACCOUNT_WIDE_SOULBINDCONDUITS_TOOLTIP = "Enable this to consider a Soulbind Conduit as collected for all characters if at least one character has learned it.";
 		--TODO: L.ACCOUNT_WIDE_TITLES_TOOLTIP = "Most titles are tracked account wide, but some prestigious titles in WoW are locked to the character that earned them.\n\nToggle this if you don't care about that and want to see those titles marked Collected for your alts.";
 
 	-- Filters tab
@@ -448,6 +455,8 @@ local L = app.L;
 	-- Features tab
 		--TODO: L.FEATURES_TAB = "Features";
 		--TODO: L.MODULES_LABEL = "Modules & Mini Lists";
+		--TODO: L.ADHOC_UPDATES_CHECKBOX = "Use Ad-Hoc Window Updates";
+		--TODO: L.ADHOC_UPDATES_CHECKBOX_TOOLTIP = "Enable this option if you want only visible ATT windows to be updated.\n\nThis can greatly reduce loading times and prevent large framerate spikes in some situations.";
 		--TODO: L.SKIP_CUTSCENES_CHECKBOX = "Automatically Skip Cutscenes";
 		--TODO: L.SKIP_CUTSCENES_CHECKBOX_TOOLTIP = "Enable this option if you want ATT to automatically skip all cutscenes on your behalf.";
 		--TODO: L.AUTO_BOUNTY_CHECKBOX = "Automatically Open the Bounty List";
@@ -483,7 +492,7 @@ local L = app.L;
 	-- About tab
 		--TODO: L.ABOUT = "About";
 		--TODO: L.ABOUT_1 = " |CFFFFFFFFis a collection tracking addon that shows you where and how to get everything in the game! We have a large community of users on our Discord (link at the bottom) where you can ask questions, submit suggestions as well as report bugs or missing items. If you find something collectible or a quest that isn't documented, you can tell us on the Discord, or for the more technical savvy, we have a Git that you may contribute directly to.\n\nWhile we do strive for completion, there's a lot of stuff getting added into the game each patch, so if we're missing something, please understand that we're a small team trying to keep up with changes as well as collect things ourselves. :D\n\nFeel free to ask me questions when I'm streaming and I'll try my best to answer it, even if it's not directly related to ATT (general WoW addon programming as well).\n\n- |r|Cffff8000Crieve|CFFFFFFFF\n\nPS: Check out All The Things Classic and TBC Classic!\n\nYes, I intend to play Classic WoW, but between working full time and developing the two versions of the addon, there won't be a lot of time for raiding.\n\nNo, ATT is not the addon that places icons on your bag icons. That's CanIMogIt and Caerdon Wardrobe!\n\nFor online collection comparing check out DataForAzeroth.com from shoogen!|r";
-		--TODO: L.ABOUT_2 = "Additional Contributors: |CFFFFFFFF(in no particular order)\nDaktar, Lucetia, Slumber, Gold, Avella, Aiue, Dead Serious, Oiche, Oxlotus, Eiltherune, Blueyleader, Iyanden, Pr3vention, BigBlaris, Talonzor, Mogwai, Heallie, Eckhardt, Boohyaka, Sadidorf, Sanctuari, Molkree, Runawaynow, Braghe, Myrhial and the rest of the ALL THE THINGS Discord!\n\nSpecial Shoutout to AmiYuy (CanIMogIt) and Caerdon (Caerdon Wardrobe).|r  ";
+		--TODO: L.ABOUT_2 = "Additional Contributors: |CFFFFFFFF(in no particular order)\nDaktar, Lucetia, Slumber, Gold, Avella, Aiue, Dead Serious, Oiche, Oxlotus, Eiltherune, Blueyleader, Iyanden, Pr3vention, BigBlaris, Talonzor, Mogwai, Heallie, Eckhardt, Boohyaka, Sadidorf, Sanctuari, Molkree, Runawaynow, Braghe, Myrhial, Darkal and the rest of the ALL THE THINGS Discord!\n\nSpecial Shoutout to AmiYuy (CanIMogIt) and Caerdon (Caerdon Wardrobe).|r  ";
 		--TODO: L.ABOUT_3 = "\n|CFFFFFFFFYou should absolutely download their addons to get the collection icons on items in your bags!|r";
 
 	-- Binding Localizations
@@ -541,7 +550,7 @@ local L = app.L;
 		--TODO: L.INCOMPLETE"] = "|T" .. app.asset("incomplete") .. ":0|t |cff15abffIncomplete|r";	-- Acquired the colors and icon from CanIMogIt.
 		--TODO: L.KNOWN_ON_CHARACTER"] = "|T" .. app.asset("known") .. ":0|t |cff15abffKnown on current character|r";
 		--TODO: L.UNKNOWN_ON_CHARACTER"] = "|T" .. app.asset("unknown") .. ":0|t |cffff9333Unknown on current character|r";
-		--TODO: L.COST_TEXT = "|T" .. app.asset("star") .. ":0|t |cffffff00Currency|r";
+		--TODO: L.COST_TEXT = "|T" .. app.asset("Currency") .. ":0|t |cff0891ffCurrency|r";
 
 local a = L.ABBREVIATIONS;
 for key,value in pairs({
@@ -631,7 +640,6 @@ for key,value in pairs({
 		--TODO: [-55] = "Pirates' Day",
 		--TODO: [-59] = "Day of the Dead",
 		--TODO: [-62] = "Stranglethorn Fishing Extravaganza",
-		--TODO: [-65] = GetSpellInfo(190357).." "..select(1,GetCategoryInfo(15268)),-- Blizzard Promotions
 		--TODO: [-72] = "Sargerei War Council",
 		--TODO: [-78] = "Timed Event",
 		--TODO: [-79] = "First Chest",
@@ -734,26 +742,22 @@ for key,value in pairs({
 		--TODO: [-526] = "Legion: Legion Invasion",
 		--TODO: [-527] = "Battle for Azeroth: War of the Thorns",
 		--TODO: [-528] = "Broken Isles",							-- Broken Isles [Mole Machine]
-		--TODO: [-531] = "2008 Spirit of Competition Event",
-		--TODO: [-532] = "Heroes of the Storm Promotion",
-		--TODO: [-533] = "Hearthstone Promotion",
+		--TODO: [-531] = "Spirit of Competition",
+		--TODO: [-532] = "Heroes of the Storm",
+		--TODO: [-533] = "Hearthstone",
 		--TODO: [-534] = "Collector's Edition",
 
-		--TODO: [-538] = "Diablo 20th Anniversary Promotion",
+		--TODO: [-537] = "Diablo 20th Anniversary",
+		--TODO: [-538] = "The Ahn'Qiraj War Effort",
 		--TODO: [-539] = "The Scepter of the Shifting Sands",
 		--TODO: [-540] = "The Scourge Invasion",
+		--TODO: [-541] = "The Silithyst Must Flow",
+		[-542] = "어둠의 문 열기",
 		--TODO: [-543] = "Legion Invasions",
 		--TODO: [-544] = "WoW Collector's Edition",
-		--TODO: [-547] = "EU Only",
-		--TODO: [-548] = "China Only",
-		--TODO: [-549] = "Korea Only",
 		--TODO: [-550] = "Starcraft Collector's Edition",
 		--TODO: [-551] = "Diablo Collector's Edition",
-		--TODO: [-556] = "Arena Tournament",
-
-		--TODO: [-563] = "Azeroth's Choppers",
-
-		--TODO: [-650] = "Quest Items",								-- Quest Items
+		[-579] = "다크 포털 패스",
 
 	-- PvP Header
 		-- Special Season Tags
@@ -825,12 +829,16 @@ for key,value in pairs({
 		--TODO: [-910] = "Hunt: Alpha Devourers",					-- Hunt: Alpha Devourers
 		--TODO: [-911] = "Hunt: Shadehounds",						-- Hunt: Shadehounds
 		--TODO: [-912] = "Hunt: Winged Soul Eaters",				-- Hunt: Winged Soul Eaters
+		--TODO: [-913] = "Tormentors of Torghast",					-- Tormentors of Torghast
 		--TODO: [-914] = "Adventures",								-- Adventures
 		--TODO: [-915] = "Anima Conductor",							-- Anima Conductor
 		--TODO: [-916] = "Tier 1: Flowing Tendrils",				-- Tier 1: Flowing Tendrils
 		--TODO: [-917] = "Tier 2: Streaming Threads",				-- Tier 2: Streaming Threads
 		--TODO: [-918] = "Tier 3: Flowing Power",					-- Tier 3: Flowing Power
 		--TODO: [-919] = "Night Mare",								-- Night Mare
+		[-977] = "방랑자 멜리",											-- Maelie the Wanderer
+		[-979] = "중개자 베켄 & 중개자 베노트",								-- Broker Ve'ken & Broker Ve'nott
+		--TODO: [-980] = "Shared Treasures",						-- Shared Treasures
 
 		-- SL Maldraxxus/Necrolord
 			--TODO: [-920] = "Covenant: Necrolord",					-- Covenant: Necrolord
@@ -899,6 +907,7 @@ for key,value in pairs({
 			--TODO: [-970] = "Set C",								-- Set C
 			--TODO: [-971] = "Set D",								-- Set D
 
+			--TODO: [-976] = "Korthian Sets",						-- Korthian Sets
 			--TODO: [-1001] = "The Black Vault",
 
 	-- Warrior order hall lore items
@@ -1042,6 +1051,7 @@ for key,value in pairs({
 		--TODO: [-10080] = "Horrific Visions",
 		--TODO: [-10081] = "Corrupted Area",
 		--TODO: [-10082] = "Lost Area",
+		--TODO: [-10083] = "Covenant Assaults",						-- Covenant Assaults
 
 		-- Shadowlands Achievement Header
 			-- Achieve 14339 Sub-Criteira
@@ -1155,7 +1165,9 @@ for key,value in pairs({
 	[6751] = "이상한 열매의 식물",	-- Strange Fruited Plant
 	[6752] = "이상한 잎의 식물",	-- Strange Fronded Plant	--TODO: This was taken from classic Wowhead
 	[7510] = "싹튼 잎",	-- Sprouted Frond	--TODO: This was taken from classic Wowhead
+	[19022] = "낡은 궤짝",	-- Worn Chest
 	[19023] = "|cFFFFFFFFStep 7:|r 2351쪽",	-- |cFFFFFFFFStep 7:|r Page 2351
+	[19024] = "숨겨진 제단",	-- Hidden Shrine
 	[20805] = "아무도 지키지 않는 리즐의 설계도",	-- Rizzle's Unguarded Plans	--TODO: This was taken from classic Wowhead
 	[20985] = "푸석푸석한 흙더미",	-- Loose Dirt
 	[20992] = "검은 방패",	-- Black Shield
@@ -1189,6 +1201,7 @@ for key,value in pairs({
 	[164820] = "암흑의 문지기 명판",	-- Dark Keeper Nameplate
 	[164867] = "현상 수배!",	-- WANTED
 	[164868] = "사살 지령",	-- KILL ON SIGHT
+	[164869] = "유령의 성배",	-- The Spectral Chalice	--TODO: This was taken from classic Wowhead
 	[164887] = "오염된 바람꽃",	-- Corrupted Windblossom	--TODO: This was taken from classic Wowhead
 	[164888] = "오염된 채찍뿌리",	-- Corrupted Whipper Root	--TODO: This was taken from classic Wowhead
 	[164955] = "북쪽 수정탑",	-- Northern Crystal Pylon
@@ -1214,19 +1227,26 @@ for key,value in pairs({
 	[177787] = "랙모어의 기록",	-- Rackmore's Log
 	[177904] = "현상 수배: 베스셀레스",	-- Wanted Poster: Besseleth
 	[177964] = "심연의 돌",	-- Fathom Stone
+	[178144] = "트롤 궤짝",	-- Troll Chest
+	[178227] = "머구트의 토템 광주리",	-- Murgut's Totem Basket
 	[179485] = "부서진 함정",	-- A Broken Trap
 	[179501] = "노트 팀블잭의 은닉품",	-- Knot Thimblejack's Cache	--TODO: This was taken from classic Wowhead
 	[179564] = "고르독 공물",	-- Gordok Tribute Chest
 	[179697] = "투기장 보물상자",	-- Arena Treasure Chest
 	[179827] = "구인광고/분실물센터/지명수배",	-- Wanted/Missing/Lost & Found	--TODO: This was taken from classic Wowhead
 	[179832] = "하녀 필라클렌처의 화려한 베개",	-- Pillaclencher's Ornate Pillow
+	[180229] = "불길한 흑마술 더미",	-- Jinxed Hoodoo Pile	--TODO: This was taken from classic Wowhead
 	--TODO: [180327] = "Brazier of Madness",	-- Brazier of Madness
 	[180366] = "찌그러진 낚시상자",	-- Battered Tackle Box	--TODO: This was taken from classic Wowhead
 	[180368] = "광기의 서판",	-- Tablet of Madness	--TODO: This was taken from classic Wowhead
 	[180448] = "현상 수배: 죽음의 갈고리",	-- Wanted Poster: Deathclasp
+	[180456] = "하급 바람의 돌",	-- Lesser Wind Stone
+	[180461] = "바람의 돌",	-- Wind Stone
+	[180466] = "상급 바람의 돌",	-- Greater Wind Stone
 	[180503] = "모래투성이 요리책",	-- Sandy Cookbook
 	[180633] = "눈물의 결정",	-- Crystalline Tear
 	[180642] = "눈에 띄지 않는 궤짝",	-- Inconspicuous Crate
+	--TODO: [180652] = "Freshly Dug Dirt",	-- Freshly Dug Dirt
 	[180690] = "큰 스카라베 상자",	-- Large Scarab Coffer
 	[180691] = "스카라베 상자",	-- Scarab Coffer
 	[180717] = "스카라베 징",	-- The Scarab Gong	--TODO: This was taken from classic Wowhead
@@ -1238,12 +1258,6 @@ for key,value in pairs({
 	[181147] = "현상 수배 전단",	-- Wanted Poster
 	[181150] = "먼지투성이 일지",	-- Dusty Journal
 	[181153] = "현상 수배 전단: 사악한 켈가쉬",	-- Wanted Poster: Kel'gash the Wicked
-	[181332] = "스톰윈드 불꽃",	-- Flame of Stormwind
-	[181333] = "아이언포지의 불꽃",	-- Flame of Ironforge	--TODO: This was taken from classic Wowhead
-	[181334] = "다르나서스 불꽃",	-- Flame of Darnassus
-	[181335] = "언더시티의 불꽃",	-- Flame of the Undercity	--TODO: This was taken from classic Wowhead
-	[181336] = "오그리마 불꽃",	-- Flame of Orgrimmar
-	[181337] = "썬더 블러프 불꽃",	-- Flame of Thunder Bluff
 	[181638] = "현상 수배 전단",	-- Wanted Poster
 	[181748] = "핏빛 수정",	-- Blood Crystal
 	[181756] = "닳아해진 고대 책",	-- Battered Ancient Book
@@ -1293,8 +1307,11 @@ for key,value in pairs({
 	[187925] = "얼라이언스 화톳불",	-- Alliance Bonfire
 	[187926] = "얼라이언스 화톳불",	-- Alliance Bonfire
 	[187927] = "얼라이언스 화톳불",	-- Alliance Bonfire
+	[187928] = "얼라이언스 화톳불",	-- Alliance Bonfire
 	[187929] = "얼라이언스 화톳불",	-- Alliance Bonfire
 	[187930] = "얼라이언스 화톳불",	-- Alliance Bonfire
+	[187931] = "얼라이언스 화톳불",	-- Alliance Bonfire
+	[187932] = "얼라이언스 화톳불",	-- Alliance Bonfire
 	[187933] = "얼라이언스 화톳불",	-- Alliance Bonfire
 	[187934] = "얼라이언스 화톳불",	-- Alliance Bonfire
 	[187935] = "얼라이언스 화톳불",	-- Alliance Bonfire
@@ -1316,6 +1333,7 @@ for key,value in pairs({
 	[187951] = "호드 화톳불",	-- Horde Bonfire
 	[187952] = "호드 화톳불",	-- Horde Bonfire
 	[187953] = "호드 화톳불",	-- Horde Bonfire
+	[187954] = "호드 화톳불",	-- Horde Bonfire
 	[187955] = "호드 화톳불",	-- Horde Bonfire
 	[187956] = "호드 화톳불",	-- Horde Bonfire
 	[187957] = "호드 화톳불",	-- Horde Bonfire
@@ -1334,10 +1352,10 @@ for key,value in pairs({
 	[187970] = "호드 화톳불",	-- Horde Bonfire
 	[187971] = "호드 화톳불",	-- Horde Bonfire
 	[187972] = "호드 화톳불",	-- Horde Bonfire
+	[187973] = "호드 화톳불",	-- Horde Bonfire
+	[187974] = "호드 화톳불",	-- Horde Bonfire
 	[187975] = "호드 화톳불",	-- Horde Bonfire
 	[188085] = "역병에 오염된 곡식",	-- Plagued Grain
-	--TODO: [188128] = "Flame of the Exodar",	-- Flame of the Exodar
-	--TODO: [188129] = "Flame of Silvermoon",	-- Flame of Silvermoon
 	[188261] = "닳아해진 일지",	-- Battered Journal
 	[188364] = "부서진 게 덫",	-- Wrecked Crab Trap
 	[188365] = "선조의 심장",	-- Heart of the Ancients
@@ -1457,6 +1475,8 @@ for key,value in pairs({
 	[205540] = "오래된 해골",	-- Decrepit Skeleton
 	[205874] = "모래투성이 성각문양",	-- Sand-Covered Hieroglyphs
 	[205875] = "성전사의 신호탄",	-- Crusader's Flare
+	[206109] = "대족장의 명령 게시판",	-- Warchief's Command Board
+	[206111] = "영웅의 부름 게시판",	-- Hero's Call Board
 	[206293] = "인공지능 단말기",	-- A.I.D.A. Terminal
 	[206335] = "석판",	-- Stone Slab
 	[206336] = "대리석 석판",	-- Marble Slab
@@ -1521,7 +1541,7 @@ for key,value in pairs({
 	[213748] = "판다렌 의식용 돌",	-- Pandaren Ritual Stone
 	[213749] = "은둔 고수의 봉",	-- Staff of the Hidden Master
 	[213750] = "사우록 돌 서판",	-- Saurok Stone Tablet
-	--TODO: [213751] = "Sprite's Cloth Chest",	-- Sprite's Cloth Chest
+	[213751] = "요마의 헝겊 궤짝",	-- Sprite's Cloth Chest
 	[213765] = "런 윈의 서판",	-- Tablet of Ren Yun
 	[213767] = "숨겨진 보물",	-- Hidden Treasure
 	--TODO: [213768] = "Hozen Warrior Spear",	-- Hozen Warrior Spear
@@ -1541,7 +1561,7 @@ for key,value in pairs({
 	[213962] = "속전속결의 칼날바람 단검",	-- Wind-Reaver's Dagger of Quick Strikes
 	[213964] = "말릭의 튼튼한 창",	-- Malik's Stalwart Spear
 	[213966] = "호박석 속의 목걸이",	-- Amber Encased Necklace
-	--TODO: [213967] = "Blade of the Prime",	-- Blade of the Prime
+	[213967] = "시초자의 검",	-- Blade of the Prime
 	[213968] = "카로즈의 들끓는 칼",	-- Swarming Cleaver of Ka'roz
 	[213969] = "변환의 해부자 지팡이",	-- Dissector's Staff of Mutation
 	[213970] = "피에 젖은 껍질 조각",	-- Bloodsoaked Chitin Fragment
@@ -1728,7 +1748,7 @@ for key,value in pairs({
 	[231103] = "약탈당한 전리품",	-- Raided Loot
 	[231644] = "뿔 달린 해골",	-- Horned Skull
 	[231903] = "곱슬수염의 보고서",	-- Razzlebeard's Report
-	--TODO: [231918] = "Laanda's Scroll",	-- Laanda's Scroll
+	[231918] = "랜다의 두루마리",	-- Laanda's Scroll
 	[232066] = "가라앉은 보물",	-- Sunken Treasure
 	[232067] = "도둑맞은 보물",	-- Stolen Treasure
 	[232090] = "스파크의 도난당한 보급품",	-- Spark's Stolen Supplies
@@ -1808,7 +1828,7 @@ for key,value in pairs({
 	[233526] = "고대 티탄 궤짝",	-- Ancient Titan Chest
 	[233532] = "뼈를 깎아 만든 단검",	-- Bone-Carved Dagger
 	[233539] = "제네다르 파편",	-- Genedar Debris
-	--TODO: [233549] = "Genedar Debris",	-- Genedar Debris
+	[233549] = "제네다르 파편",	-- Genedar Debris
 	[233550] = "알려지지 않은 석화된 알",	-- Unknown Petrified Egg
 	[233551] = "제네다르 파편",	-- Genedar Debris
 	[233552] = "오래된 돌 단지",	-- Aged Stone Container
@@ -1826,12 +1846,13 @@ for key,value in pairs({
 	--TODO: [233623] = "Adventurer's Pouch",	-- Adventurer's Pouch
 	[233626] = "회색구렁일족 뼈무덤",	-- Grizzlemaw's Bonepile
 	[233633] = "사용하지 않은 목재 더미",	-- Unused Wood Pile
-	--TODO: [233645] = "Warsong Helm",	-- Warsong Helm
+	[233645] = "전쟁노래 투구",	-- Warsong Helm
 	[233650] = "모험가 철퇴",	-- Adventurer's Mace
 	[233651] = "잃어버린 펜던트",	-- Lost Pendant
 	--TODO: [233658] = "Adventurer's Pouch",	-- Adventurer's Pouch
 	[233696] = "탐사용 주요 보급품",	-- Important Exploration Supplies
 	[233697] = "서슬니 보관함",	-- Saberon Stash
+	--TODO: [233715] = "Goldtoe's Plunder",	-- Goldtoe's Plunder
 	--TODO: [233773] = "Bag of Herbs",	-- Bag of Herbs
 	[233792] = "돌 무더기",	-- Pile of Rubble
 	[233917] = "비현실성의 다리뼈",	-- Femur of Improbability
@@ -1907,7 +1928,7 @@ for key,value in pairs({
 	[236279] = "오래된 돌 단지",	-- Aged Stone Container
 	[236280] = "고대 티탄 궤짝",	-- Ancient Titan Chest
 	[236282] = "흑요석 수정 결정체",	-- Obsidian Crystal Formation
-	--TODO: [236284] = "Ancient Ogre Cache",	-- Ancient Ogre Cache
+	[236284] = "고대 오우거 보관함",	-- Ancient Ogre Cache
 	[236285] = "오래된 돌 단지",	-- Aged Stone Container
 	[236288] = "고대 티탄 궤짝",	-- Ancient Titan Chest
 	[236289] = "오래된 돌 단지",	-- Aged Stone Container
@@ -1922,6 +1943,7 @@ for key,value in pairs({
 	[236406] = "고대 오우거 보관함",	-- Ancient Ogre Cache
 	[236407] = "고대 오우거 보관함",	-- Ancient Ogre Cache
 	--TODO: [236483] = "Gift of the Ancients",	-- Gift of the Ancients
+	--TODO: [236610] = "Spirit's Gift",	-- Spirit's Gift
 	[236693] = "강철 호드 탄약",	-- Iron Horde Munitions
 	[236715] = "이상한 해골",	-- Odd Skull
 	[236755] = "먼지투성이 금고",	-- Dusty Lockbox
@@ -1935,6 +1957,7 @@ for key,value in pairs({
 	[239194] = "노라나의 보관함",	-- Norana's Cache
 	[239198] = "이사리의 보관함",	-- Isaari's Cache
 	[239328] = "선장의 사물함",	-- Captain's Foot Locker
+	[239791] = "유물 사냥 기록",	-- Relic Hunting Notes
 	[239803] = "보물 상자",	-- Treasure Chest
 	[239828] = "현실의 경계선",	-- Edge of Reality
 	[239901] = "공허발톱 알",	-- Voidtalon Egg
@@ -2000,7 +2023,7 @@ for key,value in pairs({
 	[241267] = "작은 보물 상자",	-- Small Treasure Chest
 	[241272] = "보물 상자",	-- Treasure Chest
 	[241280] = "보물 상자",	-- Treasure Chest
-	--TODO: [241434] = "Lodged Hunting Spear",	-- Lodged Hunting Spear
+	[241434] = "꽂힌 사냥용 창",	-- Lodged Hunting Spear
 	--TODO: [241450] = "Crystallized Fel Spike",	-- Crystallized Fel Spike
 	[241518] = "작은 보물 상자",	-- Small Treasure Chest
 	--TODO: [241521] = "Snake Charmer's Flute",	-- Snake Charmer's Flute
@@ -2037,8 +2060,8 @@ for key,value in pairs({
 	[241767] = "보물 상자",	-- Treasure Chest
 	[241772] = "보물 상자",	-- Treasure Chest
 	[241773] = "작은 보물 상자",	-- Small Treasure Chest
-	--TODO: [241835] = "Bleeding Hollow Mushroom Stash",	-- Bleeding Hollow Mushroom Stash
-	--TODO: [241841] = "Looted Mystical Staff",	-- Looted Mystical Staff
+	[241835] = "피눈물 버섯 통",	-- Bleeding Hollow Mushroom Stash
+	[241841] = "약탈한 수수께끼의 지팡이",	-- Looted Mystical Staff
 	[241847] = "사령관의 방패",	-- The Commander's Shield
 	[241848] = "번쩍이는 막대",	-- Dazzling Rod
 	[242242] = "작은 보물 상자",	-- Small Treasure Chest
@@ -2070,14 +2093,14 @@ for key,value in pairs({
 	[242959] = "보물 상자",	-- Treasure Chest
 	[243334] = "시든 약초",	-- Withered Herb
 	--TODO: [243392] = "Alchemy Book",	-- Alchemy Book
-	--TODO: [243688] = "Treasure Chest",	-- Treasure Chest
+	[243688] = "보물 상자",	-- Treasure Chest
 	[243698] = "반짝이는 보물 상자",	-- Glimmering Treasure Chest
 	[243773] = "보물 상자",	-- Treasure Chest
 	[243798] = "야한 보석 상자",	-- A Steamy Jewelry Box
 	--TODO: [243899] = "Broken Ley Flame Burner",	-- Broken Ley Flame Burner
 	[243911] = "눈더미",	-- Snow Mound
 	[244453] = "쿨렌의 정찰 보고서",	-- Cullen's Scouting Report
-	--TODO: [244473] = "Thunder Totem Stolen Goods",	-- Thunder Totem Stolen Goods
+	[244473] = "천둥 토템 도난당한 물품",	-- Thunder Totem Stolen Goods
 	[244494] = "보물 상자",	-- Treasure Chest
 	[244519] = "보물 상자",	-- Treasure Chest
 	--TODO: [244628] = "Taurson's Prize",	-- Taurson's Prize
@@ -2108,7 +2131,7 @@ for key,value in pairs({
 	[245216] = "|cFFFFFFFFStep 3:|r 161쪽",	-- |cFFFFFFFFStep 3:|r Page 161
 	[245286] = "수정 호랑이 조각상",	-- Crystalline Cat Figurine
 	[245316] = "작은 보물 상자",	-- Small Treasure Chest
-	--TODO: [245328] = "Enchanted Scroll",	-- Enchanted Scroll
+	[245328] = "마력 깃든 두루마리",	-- Enchanted Scroll
 	[245345] = "작은 보물 상자",	-- Small Treasure Chest
 	--TODO: [245479] = "Battered Chest",	-- Battered Chest
 	[245524] = "보물 상자",	-- Treasure Chest
@@ -2116,27 +2139,27 @@ for key,value in pairs({
 	[245528] = "보물 상자",	-- Treasure Chest
 	[245529] = "작은 보물 상자",	-- Small Treasure Chest
 	[245530] = "반짝이는 보물 상자",	-- Glimmering Treasure Chest
-	--TODO: [245531] = "Treasure Chest",	-- Treasure Chest
+	[245531] = "보물 상자",	-- Treasure Chest
 	[245532] = "보물 상자",	-- Treasure Chest
-	--TODO: [245533] = "Treasure Chest",	-- Treasure Chest
-	--TODO: [245534] = "Small Treasure Chest",	-- Small Treasure Chest
-	--TODO: [245535] = "Small Treasure Chest",	-- Small Treasure Chest
-	--TODO: [245536] = "Glimmering Treasure Chest",	-- Glimmering Treasure Chest
+	[245533] = "보물 상자",	-- Treasure Chest
+	[245534] = "작은 보물 상자",	-- Small Treasure Chest
+	[245535] = "작은 보물 상자",	-- Small Treasure Chest
+	[245536] = "반짝이는 보물 상자",	-- Glimmering Treasure Chest
 	[245537] = "반짝이는 보물 상자",	-- Glimmering Treasure Chest
 	[245541] = "작은 보물 상자",	-- Small Treasure Chest
 	[245542] = "보물 상자",	-- Treasure Chest
 	[245543] = "보물 상자",	-- Treasure Chest
 	[245545] = "작은 보물 상자",	-- Small Treasure Chest
-	--TODO: [245547] = "Small Treasure Chest",	-- Small Treasure Chest
+	[245547] = "작은 보물 상자",	-- Small Treasure Chest
 	[245548] = "보물 상자",	-- Treasure Chest
 	[245550] = "보물 상자",	-- Treasure Chest
 	[245551] = "작은 보물 상자",	-- Small Treasure Chest
 	[245553] = "보물 상자",	-- Treasure Chest
-	--TODO: [245554] = "Small Treasure Chest",	-- Small Treasure Chest
+	[245554] = "작은 보물 상자",	-- Small Treasure Chest
 	[245555] = "작은 보물 상자",	-- Small Treasure Chest
-	--TODO: [245579] = "Treasure Chest",	-- Treasure Chest
-	--TODO: [245580] = "Small Treasure Chest",	-- Small Treasure Chest
-	--TODO: [245581] = "Small Treasure Chest",	-- Small Treasure Chest
+	[245579] = "보물 상자",	-- Treasure Chest
+	[245580] = "작은 보물 상자",	-- Small Treasure Chest
+	[245581] = "작은 보물 상자",	-- Small Treasure Chest
 	[245601] = "작은 보물 상자",	-- Small Treasure Chest
 	[245602] = "보물 상자",	-- Treasure Chest
 	[245603] = "작은 보물 상자",	-- Small Treasure Chest
@@ -2169,7 +2192,7 @@ for key,value in pairs({
 	[248534] = "엘룬의 눈물",	-- Tears of Elune
 	[248854] = "데스몬드의 금고",	-- Desmond's Lockbox
 	[249211] = "찢어진 샬도레이 비단",	-- Torn Shaldorei Silk
-	--TODO: [249997] = "Small Treasure Chest",	-- Small Treasure Chest
+	[249997] = "작은 보물 상자",	-- Small Treasure Chest
 	[250080] = "작은 보물 상자",	-- Small Treasure Chest
 	[250081] = "작은 보물 상자",	-- Small Treasure Chest
 	[250083] = "작은 보물 상자",	-- Small Treasure Chest
@@ -2184,7 +2207,7 @@ for key,value in pairs({
 	[250098] = "작은 보물 상자",	-- Small Treasure Chest
 	[250103] = "작은 보물 상자",	-- Small Treasure Chest
 	[250104] = "작은 보물 상자",	-- Small Treasure Chest
-	--TODO: [250106] = "Small Treasure Chest",	-- Small Treasure Chest
+	[250106] = "작은 보물 상자",	-- Small Treasure Chest
 	[250107] = "반짝이는 보물 상자",	-- Glimmering Treasure Chest
 	[250108] = "작은 보물 상자",	-- Small Treasure Chest
 	[250109] = "보물 상자",	-- Treasure Chest
@@ -2206,7 +2229,7 @@ for key,value in pairs({
 	[251719] = "작은 보물 상자",	-- Small Treasure Chest
 	[251720] = "작은 보물 상자",	-- Small Treasure Chest
 	[251723] = "작은 보물 상자",	-- Small Treasure Chest
-	--TODO: [251737] = "Treasure Chest",	-- Treasure Chest
+	[251737] = "보물 상자",	-- Treasure Chest
 	[251738] = "보물 상자",	-- Treasure Chest
 	[251761] = "작은 보물 상자",	-- Small Treasure Chest
 	[251762] = "작은 보물 상자",	-- Small Treasure Chest
@@ -2289,7 +2312,7 @@ for key,value in pairs({
 	[252839] = "작은 보물 상자",	-- Small Treasure Chest
 	[252840] = "작은 보물 상자",	-- Small Treasure Chest
 	[252841] = "작은 보물 상자",	-- Small Treasure Chest
-	[252842] = "보물 상자",	-- Small Treasure Chest
+	[252842] = "보물 상자",	-- Treasure Chest
 	[252844] = "보물 상자",	-- Treasure Chest
 	[252850] = "작은 보물 상자",	-- Small Treasure Chest
 	[252860] = "작은 보물 상자",	-- Small Treasure Chest
@@ -2306,21 +2329,21 @@ for key,value in pairs({
 	--TODO: [254010] = "Earthen Ring Supplies",	-- Earthen Ring Supplies
 	[254025] = "작은 보물 상자",	-- Small Treasure Chest
 	[254027] = "작은 보물 상자",	-- Small Treasure Chest
-	--TODO: [254028] = "Small Treasure Chest",	-- Small Treasure Chest
+	[254028] = "작은 보물 상자",	-- Small Treasure Chest
 	[254126] = "작은 보물 상자",	-- Small Treasure Chest
 	[254127] = "작은 보물 상자",	-- Small Treasure Chest
 	[254128] = "보물 상자",	-- Treasure Chest
 	[254141] = "작은 보물 상자",	-- Small Treasure Chest
 	[255344] = "지옥판암 융기",	-- Felslate Seam
-	--TODO: [255828] = "Small Treasure Chest",	-- Small Treasure Chest
-	--TODO: [255829] = "Small Treasure Chest",	-- Small Treasure Chest
+	[255828] = "작은 보물 상자",	-- Small Treasure Chest
+	[255829] = "작은 보물 상자",	-- Small Treasure Chest
 	[257393] = "보물 상자",	-- Treasure Chest
 	[257545] = "보물 상자",	-- Treasure Chest
 	[257546] = "보물 상자",	-- Treasure Chest
 	[257999] = "각인 기법: 고요한 정신의 고서",	-- Technique: Tome of the Tranquil Mind
 	[258690] = "작은 보물 상자",	-- Small Treasure Chest
 	[258978] = "물에 젖은 고서",	-- Waterlogged Tome
-	--TODO: [258979] = "Fel-Ravaged Tome",	-- Fel-Ravaged Tome
+	[258979] = "지옥 마력에 훼손된 고서",	-- Fel-Ravaged Tome
 	[258980] = "저주받은 고서",	-- Cursed Tome
 	[259806] = "사랑의 묘약 조제법",	-- Love Potion Recipe
 	[259870] = "호드 화톳불",	-- Horde Bonfire
@@ -2330,26 +2353,26 @@ for key,value in pairs({
 	[265532] = "이동술 신호 장치",	-- Telemancy Beacon
 	--TODO: [266289] = "Time Lost Chest",	-- Time Lost Chest
 	[266851] = "모조 생명체의 마법봉",	-- Wand of Simulated Life
-	--TODO: [268478] = "Battered Trinket",	-- Battered Trinket
+	[268478] = "문드러진 장신구",	-- Battered Trinket
 	[268551] = "수상한 고룡혓바닥 보관함",	-- Curious Wyrmtongue Cache
-	--TODO: [268753] = "Small Treasure Chest",	-- Small Treasure Chest
-	--TODO: [269064] = "Small Treasure Chest",	-- Small Treasure Chest
+	[268753] = "작은 보물 상자",	-- Small Treasure Chest
+	[269064] = "작은 보물 상자",	-- Small Treasure Chest
 	--TODO: [269830] = "|cFFFFFFFFStep 9:|r Gift of the Mind-Seekers",	-- |cFFFFFFFFStep 9:|r Gift of the Mind-Seekers
 	[270855] = "|cFFFFFFFFStep 1:|r 눈에 띄지 않는 쪽지",	-- |cFFFFFFFFStep 1:|r Inconspicuous Note
 	[270917] = "글렌브룩 명부",	-- Glenbrook Register
-	--TODO: [271103] = "Prayer Effigy",	-- Prayer Effigy
+	[271103] = "기도 조각상",	-- Prayer Effigy
 	[271706] = "사냥꾼의 판",	-- Hunters' Board
 	[271849] = "에레다르 전쟁 물자",	-- Eredar War Supplies
 	--TODO: [271850] = "Eredar War Supplies",	-- Eredar War Supplies
-	--TODO: [272039] = "|cFFFFFFFFStep 2:|r Inconspicuous Note",	-- |cFFFFFFFFStep 2:|r Inconspicuous Note
+	[272039] = "|cFFFFFFFFStep 2:|r 눈에 띄지 않는 쪽지",	-- |cFFFFFFFFStep 2:|r Inconspicuous Note
 	--TODO: [272046] = "|cFFFFFFFFStep 3:|r Mind Larva",	-- |cFFFFFFFFStep 3:|r Mind Larva
-	--TODO: [272061] = "|cFFFFFFFFStep 4:|r Inconspicuous Note",	-- |cFFFFFFFFStep 4:|r Inconspicuous Note
+	[272061] = "|cFFFFFFFFStep 4:|r 눈에 띄지 않는 쪽지",	-- |cFFFFFFFFStep 4:|r Inconspicuous Note
 	--TODO: [272163] = "|cFFFFFFFFStep 5:|r Strange Skull",	-- |cFFFFFFFFStep 5:|r Strange Skull
-	--TODO: [272165] = "|cFFFFFFFFStep 6:|r Inconspicuous Note",	-- |cFFFFFFFFStep 6:|r Inconspicuous Note
-	--TODO: [272172] = "|cFFFFFFFFStep 7:|r Inconspicuous Note",	-- |cFFFFFFFFStep 7:|r Inconspicuous Note
+	[272165] = "|cFFFFFFFFStep 6:|r 눈에 띄지 않는 쪽지",	-- |cFFFFFFFFStep 6:|r Inconspicuous Note
+	[272172] = "|cFFFFFFFFStep 7:|r 눈에 띄지 않는 쪽지",	-- |cFFFFFFFFStep 7:|r Inconspicuous Note
 	[272179] = "시장의 게시판",	-- Mayor's Bulletin
-	--TODO: [272181] = "|cFFFFFFFFStep 8:|r Inconspicuous Note",	-- |cFFFFFFFFStep 8:|r Inconspicuous Note
-	--TODO: [272220] = "|cFFFFFFFFStep 9:|r Inconspicuous Note",	-- |cFFFFFFFFStep 9:|r Inconspicuous Note
+	[272181] = "|cFFFFFFFFStep 8:|r 눈에 띄지 않는 쪽지",	-- |cFFFFFFFFStep 8:|r Inconspicuous Note
+	[272220] = "|cFFFFFFFFStep 9:|r 눈에 띄지 않는 쪽지",	-- |cFFFFFFFFStep 9:|r Inconspicuous Note
 	--TODO: [272270] = "|cFFFFFFFFStep 10:|r Puzzler's Desire",	-- |cFFFFFFFFStep 10:|r Puzzler's Desire
 	[272422] = "젠틀의 마법책",	-- Gentle's Spellbook
 	--TODO: [272455] = "Eredar War Supplies",	-- Eredar War Supplies
@@ -2372,7 +2395,7 @@ for key,value in pairs({
 	[273524] = "군단 전쟁 물자",	-- Legion War Supplies
 	[273527] = "군단 전쟁 물자",	-- Legion War Supplies
 	[273528] = "군단 전쟁 물자",	-- Legion War Supplies
-	--TODO: [273533] = "Legion War Supplies",	-- Legion War Supplies
+	[273533] = "군단 전쟁 물자",	-- Legion War Supplies
 	[273535] = "군단 전쟁 물자",	-- Legion War Supplies
 	[273538] = "군단 전쟁 물자",	-- Legion War Supplies
 	[273814] = "칼날 달린 부적",	-- Bladed Charm
@@ -2398,13 +2421,13 @@ for key,value in pairs({
 	[277199] = "풍파에 시달린 일자리 목록",	-- Weathered Job List
 	[277204] = "잊혀진 군단 보급품",	-- Forgotten Legion Supplies
 	[277205] = "고대 군단 전쟁 보관함",	-- Ancient Legion War Cache
-	--TODO: [277206] = "Fel-Bound Chest",	-- Fel-Bound Chest
+	[277206] = "지옥결속 상자",	-- Fel-Bound Chest
 	--TODO: [277207] = "Legion Treasure Hoard",	-- Legion Treasure Hoard
 	--TODO: [277208] = "Timeworn Fel Chest",	-- Timeworn Fel Chest
 	--TODO: [277327] = "Augari-Runed Chest",	-- Augari-Runed Chest
 	[277333] = "고대 석관",	-- Ancient Sarcophagus
 	[277340] = "비밀의 아우가리 상자",	-- Secret Augari Chest
-	--TODO: [277342] = "Augari Goods",	-- Augari Goods
+	[277342] = "아우가리 용품",	-- Augari Goods
 	--TODO: [277343] = "Long-Lost Augari Treasure",	-- Long-Lost Augari Treasure
 	[277344] = "귀중한 아우가리 유품",	-- Precious Augari Keepsakes
 	[277346] = "사라진 아우가리 상자",	-- Missing Augari Chest
@@ -2528,7 +2551,7 @@ for key,value in pairs({
 	[293845] = "|cFFFFFFFFStep 10:|r 평범한 조약돌 IX",	-- |cFFFFFFFFStep 10:|r Ordinary Pebble IX
 	[293846] = "|cFFFFFFFFStep 11:|r 평범한 조약돌 X",	-- |cFFFFFFFFStep 11:|r Ordinary Pebble X
 	[293849] = "|cFFFFFFFFStep 1:|r 눈에 띄는 쪽지",	-- |cFFFFFFFFStep 1:|r Conspicious Note
-	--TODO: [293852] = "Buried Treasure Chest",	-- Buried Treasure Chest
+	[293852] = "묻힌 보물 상자",	-- Buried Treasure Chest
 	[293880] = "묻힌 보물 상자",	-- Buried Treasure Chest
 	--TODO: [293881] = "Buried Treasure Chest",	-- Buried Treasure Chest
 	[293884] = "묻힌 보물 상자",	-- Buried Treasure Chest
@@ -2587,7 +2610,7 @@ for key,value in pairs({
 	[297881] = "마법에 걸린 상자",	-- Enchanted Chest
 	[297891] = "룬결속 보관함",	-- Runebound Cache
 	[297892] = "룬결속 상자",	-- Runebound Chest
-	--TODO: [297893] = "Runebound Coffer",	-- Runebound Coffer
+	[297893] = "룬결속 함",	-- Runebound Coffer
 	[297905] = "제이의 노래집",	-- Jay's Songbook
 	[297906] = "러샐의 노래집",	-- Russel's Songbook
 	[297933] = "먼지투성이 노래집",	-- Dusty Songbook
@@ -2615,7 +2638,7 @@ for key,value in pairs({
 	--TODO: [309498] = "Armor Stand",	-- Armor Stand
 	[310709] = "흠뻑 젖은 상자",	-- Waterlogged Chest
 	--TODO: [311155] = "Ancient Tablet",	-- Ancient Tablet
-	--TODO: [311218] = "Xal'atath, Blade of the Black Empire",	-- Xal'atath, Blade of the Black Empire
+	[311218] = "잘아타스 - 검은 제국의 비수",	-- Xal'atath, Blade of the Black Empire
 	--TODO: [311902] = "Loose Parts",	-- Loose Parts
 	[311903] = "떨어져 나온 부품",	-- Loose Parts
 	--TODO: [316443] = "Xal'atath, Blade of the Black Empire",	-- Xal'atath, Blade of the Black Empire
@@ -2650,8 +2673,8 @@ for key,value in pairs({
 	[326396] = "빛나는 비전 상자",	-- Glowing Arcane Trunk
 	[326397] = "빛나는 비전 상자",	-- Glowing Arcane Trunk
 	[326398] = "빛나는 비전 상자",	-- Glowing Arcane Trunk
-	--TODO: [326399] = "Glowing Arcane Trunk",	-- Glowing Arcane Trunk
-	--TODO: [326400] = "Glowing Arcane Trunk",	-- Glowing Arcane Trunk
+	[326399] = "빛나는 비전 상자",	-- Glowing Arcane Trunk
+	[326400] = "빛나는 비전 상자",	-- Glowing Arcane Trunk
 	[326401] = "비전 상자",	-- Arcane Chest
 	[326402] = "비전 상자",	-- Arcane Chest
 	[326403] = "비전 상자",	-- Arcane Chest
@@ -2671,7 +2694,7 @@ for key,value in pairs({
 	[326417] = "비전 상자",	-- Arcane Chest
 	[326418] = "비전 상자",	-- Arcane Chest
 	[326419] = "비전 상자",	-- Arcane Chest
-	--TODO: [326588] = "Azerite Weapons Cache",	-- Azerite Weapons Cache
+	[326588] = "아제라이트 무기 보관함",	-- Azerite Weapons Cache
 	[327170] = "무기 선반",	-- Weapon Rack
 	[327230] = "젤리 광맥",	-- Jelly Deposit
 	[327407] = "귀한 오우거 보관함",	-- Precious Ogre Stash
@@ -2683,12 +2706,12 @@ for key,value in pairs({
 	--TODO: [327669] = "Contained Alemental",	-- Contained Alemental
 	--TODO: [328413] = "Hozen Totem",	-- Hozen Totem
 	[329641] = "현상 수배: 정크브랫과 로트로그",	-- Wanted: Junkbrat and Roadtrogg
-	--TODO: [329783] = "Glowing Arcane Trunk",	-- Glowing Arcane Trunk
+	[329783] = "빛나는 비전 상자",	-- Glowing Arcane Trunk
 	[329805] = "이상한 수정",	-- Strange Crystal
-	[329918] = "가시멧돼지 보물",	-- Quilboar Treasure
+	[329918] = "가시멧돼지 보물",	-- Quilboar Treasures
 	[329919] = "도둑맞은 보급품",	-- Stolen Supplies
 	[330627] = "위험 표지판",	-- Danger Sign
-	--TODO: [332220] = "Glowing Arcane Trunk",	-- Glowing Arcane Trunk
+	[332220] = "빛나는 비전 상자",	-- Glowing Arcane Trunk
 	[332568] = "수정 호랑이 조각상",	-- Crystalline Cat Figurine
 	[332569] = "수정 호랑이 조각상",	-- Crystalline Cat Figurine
 	[332570] = "수정 호랑이 조각상",	-- Crystalline Cat Figurine
@@ -2758,7 +2781,7 @@ for key,value in pairs({
 	[352596] = "싹트는 증식물",	-- Sprouting Growth
 	[352703] = "수확물",	-- The Harvest
 	[352754] = "은 금고",	-- Silver Strongbox
-	--TODO: [353019] = "Silver Strongbox",	-- Silver Strongbox
+	[353019] = "은 금고",	-- Silver Strongbox
 	[353205] = "은 금고",	-- Silver Strongbox
 	[353231] = "뼈결속 상자",	-- Bonebound Chest
 	[353232] = "귀신나무 상자",	-- Bleakwood Chest
@@ -2768,10 +2791,10 @@ for key,value in pairs({
 	[353306] = "부패한 껍데기",	-- Decayed Husk
 	[353314] = "은 금고",	-- Silver Strongbox
 	[353323] = "부패한 껍데기",	-- Decayed Husk
-	--TODO: [353324] = "Decayed Husk",	-- Decayed Husk
+	[353324] = "부패한 껍데기",	-- Decayed Husk
 	[353325] = "은 금고",	-- Silver Strongbox
 	[353326] = "부패한 껍데기",	-- Decayed Husk
-	--TODO: [353327] = "Decayed Husk",	-- Decayed Husk
+	[353327] = "부패한 껍데기",	-- Decayed Husk
 	[353329] = "페어리 보관함",	-- Faerie Stash
 	[353330] = "페어리 보관함",	-- Faerie Stash
 	[353331] = "페어리 보관함",	-- Faerie Stash
@@ -2779,19 +2802,20 @@ for key,value in pairs({
 	[353333] = "페어리 보관함",	-- Faerie Stash
 	[353380] = "할리스의 도시락",	-- Halis's Lunch Pail
 	[353472] = "찬란한 검",	-- Radiant Sword
-	--TODO: [353500] = "Silver Strongbox",	-- Silver Strongbox
-	--TODO: [353503] = "Silver Strongbox",	-- Silver Strongbox
+	[353500] = "은 금고",	-- Silver Strongbox
+	[353503] = "은 금고",	-- Silver Strongbox
 	[353516] = "은 금고",	-- Silver Strongbox
 	[353626] = "잠긴 공구상자",	-- Locked Toolbox
 	[353627] = "최전선 전투식량",	-- Battlefront Rations
-	--TODO: [353643] = "Silver Strongbox",	-- Silver Strongbox
+	[353643] = "은 금고",	-- Silver Strongbox
 	[353645] = "메릴레트의 일지",	-- Marileth's Journal
 	[353650] = "청지기의 황금 궤짝",	-- Steward's Golden Chest
 	[353681] = "달빛 깍지",	-- Lunarlight Pod
 	[353683] = "달빛 깍지",	-- Lunarlight Pod
 	[353684] = "달빛 깍지",	-- Lunarlight Pod
 	[353685] = "달빛 깍지",	-- Lunarlight Pod
-	--TODO: [353687] = "Broken Bell",	-- Broken Bell
+	[353686] = "달빛 깍지",	-- Lunarlight Pod
+	[353687] = "망가진 종",	-- Broken Bell
 	[353688] = "망가진 종",	-- Broken Bell
 	[353691] = "하늘맞이 종",	-- Skyward Bell
 	[353792] = "촌락 금고",	-- Village Strongbox
@@ -2805,7 +2829,7 @@ for key,value in pairs({
 	--TODO: [353871] = "Hidden Hoard",	-- Hidden Hoard
 	[353872] = "숨겨진 비축물",	-- Hidden Hoard
 	[353873] = "숨겨진 비축물",	-- Hidden Hoard
-	--TODO: [353876] = "Virtue of Penitence",	-- Virtue of Penitence
+	[353876] = "참회의 미덕",	-- Virtue of Penitence
 	[353940] = "베시포네의 선물",	-- Gift of Vesiphone
 	[353941] = "카이러스의 선물",	-- Gift of Chyrus
 	[353942] = "아그티아의 선물",	-- Gift of Agthia
@@ -2815,11 +2839,11 @@ for key,value in pairs({
 	[353949] = "탐욕의 메달",	-- Medallion of Avarice
 	[354108] = "돌숨결 주머니",	-- Stoneborn Satchel
 	[354109] = "돌숨결 주머니",	-- Stoneborn Satchel
-	--TODO: [354110] = "Stoneborn Satchel",	-- Stoneborn Satchel
+	[354110] = "돌숨결 주머니",	-- Stoneborn Satchel
 	[354111] = "돌숨결 주머니",	-- Stoneborn Satchel
 	[354112] = "돌숨결 주머니",	-- Stoneborn Satchel
 	[354113] = "돌숨결 주머니",	-- Stoneborn Satchel
-	--TODO: [354114] = "Stoneborn Satchel",	-- Stoneborn Satchel
+	[354114] = "돌숨결 주머니",	-- Stoneborn Satchel
 	--TODO: [354115] = "Pugilist's Prize",	-- Pugilist's Prize
 	[354116] = "싸움꾼의 전리품",	-- Pugilist's Prize
 	[354121] = "싸움꾼의 전리품",	-- Pugilist's Prize
@@ -2829,9 +2853,9 @@ for key,value in pairs({
 	[354186] = "돌숨결 주머니",	-- Stoneborn Satchel
 	[354187] = "돌숨결 주머니",	-- Stoneborn Satchel
 	[354188] = "돌숨결 주머니",	-- Stoneborn Satchel
-	--TODO: [354189] = "Stoneborn Satchel",	-- Stoneborn Satchel
+	[354189] = "돌숨결 주머니",	-- Stoneborn Satchel
 	[354190] = "돌숨결 주머니",	-- Stoneborn Satchel
-	--TODO: [354191] = "Stoneborn Satchel",	-- Stoneborn Satchel
+	[354191] = "돌숨결 주머니",	-- Stoneborn Satchel
 	[354192] = "돌숨결 주머니",	-- Stoneborn Satchel
 	[354193] = "돌숨결 주머니",	-- Stoneborn Satchel
 	[354202] = "버려진 비품",	-- Abandoned Stockpile
@@ -2848,9 +2872,10 @@ for key,value in pairs({
 	[354650] = "꿈결노래 심장",	-- Dreamsong Heart
 	[354651] = "마력 깃든 꿈잡이",	-- Enchanted Dreamcatcher
 	[354652] = "페어리의 보물",	-- Faerie Trove
+	[354662] = "교묘한 페어리 보관함",	-- Elusive Faerie Cache
 	[354852] = "싹트는 증식물",	-- Sprouting Growth
 	[354853] = "싹트는 증식물",	-- Sprouting Growth
-	--TODO: [354856] = "Slime-Coated Crate",	-- Slime-Coated Crate
+	[354856] = "점액으로 뒤덮인 상자",	-- Slime-Coated Crate
 	[354911] = "부풀어 오른 령 씨앗",	-- Swollen Anima Seed
 	[355000] = "밤의 보관함",	-- Cache of the Night
 	[355035] = "선택받은 룬궤짝",	-- Treasure: House of the Chosen
@@ -2915,9 +2940,10 @@ for key,value in pairs({
 	--TODO: [358318] = "R. Suavel Dredger Portrait",	-- R. Suavel Dredger Portrait
 	[358319] = "마술사의 기록",	-- Sorceror's Note
 	[358382] = "현상 수배: 칼리세라",	-- Wanted: Chelicera
+	[358531] = "영웅급 보물이 든 거대한 보관함",	-- Giant Cache of Epic Treasure
 	[358533] = "잊혀진 보급품",	-- Forgotten Supplies
 	[358855] = "손상된 안전 낙하 가방",	-- Damaged Safe Fall Pack
-	--TODO: [360054] = "Slime Cat",	-- Slime Cat
+	--TODO: [360054] = "Sticky Cat",	-- Sticky Cat
 	[362489] = "엘리시안 칙령",	-- Elysian Decree
 	[364483] = "텅 빈 취침주 통",	-- Empty Nightcap Cask
 	[364899] = "결정화 저승석",	-- Crystallized Stygia
@@ -2925,6 +2951,81 @@ for key,value in pairs({
 	[364932] = "이글거리는 주괴",	-- Blazing Ingot
 	[364937] = "위상 착취기",	-- Phasic Siphoner
 	[364987] = "중개자 일지",	-- Broker Journal
+	[368205] = "나락살이 보관함",	-- Mawsworn Cache
+	[368206] = "나락살이 보관함",	-- Mawsworn Cache
+	[368207] = "나락살이 보관함",	-- Mawsworn Cache
+	[368208] = "나락살이 보관함",	-- Mawsworn Cache
+	[368213] = "나락살이 보관함",	-- Mawsworn Cache
+	[368214] = "나락살이 보관함",	-- Mawsworn Cache
+	[368347] = "균열에 숨겨진 보관함",	-- Rift Hidden Cache
+	[368645] = "균열에 숨겨진 보관함",	-- Rift Hidden Cache
+	[368646] = "균열에 숨겨진 보관함",	-- Rift Hidden Cache
+	[368648] = "균열에 숨겨진 보관함",	-- Rift Hidden Cache
+	[368649] = "균열에 숨겨진 보관함",	-- Rift Hidden Cache
+	[368650] = "균열에 숨겨진 보관함",	-- Rift Hidden Cache
+	[368653] = "에테르고룡 우리",	-- Etherwyrm Cage
+	[368663] = "꼬마 누더기의 오른손",	-- Lil'Abom's Right Hand
+	[368665] = "꼬마 누더기의 예비 팔",	-- Lil'Abom's Spare Arm
+	[368666] = "꼬마 누더기의 머리",	-- Lil'Abom's Head
+	[368667] = "꼬마 누더기의 상체",	-- Lil'Abom's Torso
+	[368668] = "꼬마 누더기의 하체",	-- Lil'Abom's Trunk
+	[368772] = "인장이 들어간 두루마리",	-- Sigilscored Scroll
+	[368876] = "나락살이 보관함",	-- Mawsworn Cache
+	[368935] = "죄악의 몰락지 비명박쥐 우리",	-- Sinfall Screecher Cage
+	[368946] = "도둑맞은 령 용기",	-- Stolen Anima Vessel
+	[368948] = "도둑맞은 령 용기",	-- Stolen Anima Vessel
+	[368949] = "도둑맞은 령 용기",	-- Stolen Anima Vessel
+	[368950] = "도둑맞은 령 용기",	-- Stolen Anima Vessel
+	[368951] = "도둑맞은 령 용기",	-- Stolen Anima Vessel
+	[368952] = "도둑맞은 령 용기",	-- Stolen Anima Vessel
+	[368953] = "도둑맞은 령 용기",	-- Stolen Anima Vessel
+	[369129] = "닐간니흐마트의 황금 고리",	-- Nilganihmaht's Gold Band
+	[369132] = "지배의 봉인 궤짝",	-- Domination Sealed Chest
+	[369133] = "지배의 봉인 #1",	-- Domination Seal #1
+	[369134] = "지배의 봉인 우리",	-- Domination Sealed Cage
+	[369135] = "지배의 봉인 #2",	-- Domination Seal #2
+	[369138] = "지배의 상자 봉인",	-- Domination Chest Seal
+	[369141] = "나락살이 보관함",	-- Mawsworn Cache
+	[369143] = "사등분된 고대의 반지",	-- Quartered Ancient Ring
+	[369144] = "박해자의 열쇠고리",	-- The Harrower's Key Ring
+	[369145] = "헬가드 보급품 상자",	-- Helgarde Supply Cache
+	[369148] = "반짝이는 둥지 재료",	-- Glittering Nest Material
+	[369149] = "잊힌 깃털",	-- Forgotten Feather
+	[369172] = "잃어버린 기념품",	-- Lost Memento
+	[369183] = "제거된 둥지",	-- Dislodged Nest
+	[369185] = "코르시아 유물 상자",	-- Korthian Relic Box
+	[369194] = "령으로 충만한 알",	-- Anima Laden Egg
+	[369204] = "잘못 놓인 유물",	-- Displaced Relic
+	[369216] = "저승살이 궤짝",	-- Helsworn Chest
+	[369224] = "에제키엘의 보석 박힌 심장",	-- Jeweled Heart of Ezekiel
+	[369225] = "감염된 잔재",	-- Infested Vestige
+	[369227] = "도둑맞은 령 용기",	-- Stolen Anima Vessel
+	[369232] = "공물 상자",	-- Offering Box
+	[369235] = "도둑맞은 령 용기",	-- Stolen Anima Vessel
+	[369236] = "도둑맞은 령 용기",	-- Stolen Anima Vessel
+	[369245] = "코르시아 유물 상자",	-- Korthian Relic Box
+	[369292] = "유물 보관함",	-- Relic Cache
+	[369296] = "파편가죽 은닉처",	-- Shardhide Stash
+	[369297] = "뼈 무더기",	-- Pile of Bones
+	[369304] = "코르시아 유물 상자",	-- Korthian Relic Box
+	[369327] = "침습성 나락버섯",	-- Invasive Mawshroom
+	[369329] = "침습성 나락버섯",	-- Invasive Mawshroom
+	[369330] = "침습성 나락버섯",	-- Invasive Mawshroom
+	[369331] = "침습성 나락버섯",	-- Invasive Mawshroom
+	[369332] = "침습성 나락버섯",	-- Invasive Mawshroom
+	[369333] = "특이한 재료로 만들어진 둥지",	-- Nest of Unusual Materials
+	[369334] = "특이한 재료로 만들어진 둥지",	-- Nest of Unusual Materials
+	[369335] = "특이한 재료로 만들어진 둥지",	-- Nest of Unusual Materials
+	[369336] = "특이한 재료로 만들어진 둥지",	-- Nest of Unusual Materials
+	[369337] = "특이한 재료로 만들어진 둥지",	-- Nest of Unusual Materials
+	[369339] = "나락살이 보관함",	-- Mawsworn Cache
+	[369340] = "코르시아 유물 상자",	-- Korthian Relic Box
+	[369341] = "나락살이 보관함",	-- Mawsworn Cache
+	--TODO: [369432] = "Misplaced Venthyr Tome",	-- Misplaced Venthyr Tome
+	[369437] = "균열결속 보관함",	-- Riftbound Cache
+	[369438] = "균열결속 보관함",	-- Riftbound Cache
+	[369439] = "균열결속 보관함",	-- Riftbound Cache
+	[369440] = "균열결속 보관함",	-- Riftbound Cache
 	--TODO: [9999890] = "Corrupted Loot",	-- Corrupted Loot
 	--TODO: [9999891] = "Main Objective Only",	-- Main Objective Only
 	--TODO: [9999892] = "Main Objective + 2 Bonus Areas",	-- Main Objective + 2 Bonus Areas
@@ -2950,8 +3051,6 @@ for key,value in pairs({
 	--TODO: [9999921] = "Placement",	-- Placement
 	--TODO: [9999938] = "Uuna's World Tour",	-- Uuna's World Tour
 	--TODO: [9999946] = "Summon Baa'l",	-- Summon Baa'l
-	--TODO: [1278968750] = "Hanging Chain",	-- Hanging Chain
-	--TODO: [1278968751] = "Lunarlight Pod",	-- Lunarlight Pod
 	--TODO: [1278968766] = "Rune",	-- Rune
 	--TODO: [1278968767] = "Rune",	-- Rune
 	--TODO: [1278968768] = "Rune",	-- Rune
@@ -2990,57 +3089,13 @@ for key,value in pairs({
 })
 do a[key] = value; end
 
--- TODO:
+--[[
 local a = L.UNOBTAINABLE_ITEM_REASONS;
 for key,value in pairs({
-		-- {header, description, name}, header: header id, 1-3 as above, 4 is legacy.
-		{1, "|CFFFF0000This was never available to players.|r", "Never Available (1)"}, -- No Hope -- 1
-		{1, "|CFFFF0000This has been removed from the game.|r", "Removed From Game (2)"}, -- No Hope -- 2
-		{0, "", ""}, -- 3
-		{0, "", ""}, -- 4
-		{0, "", ""}, -- 5
-		{0, "", ""}, -- 6
-		{0, "", ""}, -- 7
-		{0, "", ""}, -- 8
-		{3, "|CFFFF0000The source of this item has been removed and is only available with the Black Market Auction House.|r", "Black Market AH [BMAH] (9)"}, -- There is Hope -- 9
-		{3, "|CFFFF0000Item from TCG card is no longer in print, but still purchaseable online, sometimes BMAH, and possibly AH.|r", "Trading Card  Game [TCG] (10)"}, -- There is Hope -- 10
-		{3, "|CFFFF0000This item is Bind on Pickup but can be obtained if you have access to the items to summon the boss.|r", "Requires Summoning Items (11)"}, -- There is Hope -- 11
-		{0, "|CFF00FFDEThis item or achievement requires Player vs Player activities or a currency related to those activities. |r", "Requires PvP (12)"}, -- There is Hope --, ""}, -- 12
-		{1, "|CFFFF0000Your followers are too high and the mission for the cache will no longer spawn.|r", "Legacy Cache (13)"}, -- 13
-		{3, "|CFFFF0000These items can't be purchased unless you have the required PvP Rating or were in the Top % of that season.|r", "PvP Elite/Gladiator (14)"}, -- 14
-		{1, "|CFFFF0000This item has a Source ID (Tempest Keep Legendaries), but can't be learned (training recipes). |r", "Training Recipes / Unlearnable (15)"}, -- 15
-		{0, "", ""},--16
-		{6, "|CFF00FFDEMay require Lunar Festival to be active to obtain this item.|r", "Lunar Festival (17)"},--17
-		{7, "|CFF00FFDEMay require Love is In the Air to be active to obtain this item.|r", "Love is In the Air (18)"},--18
-		{8, "|CFF00FFDEMay require Noblegarden to be active to obtain this item.|r", "Noblegarden (19)"},--19
-		{9, "|CFF00FFDEMay require Children's Week to be active to obtain this item.|r", "Children's Week (20)"},--20
-		{10, "|CFF00FFDEMay require Midsummer Fire Festival to be active to obtain this item.|r", "Midsummer Fire Festival (21)"},--21
-		{11, "", "Micro-Holiday (22)"},--22 Description written on item
-		{12, "|CFF00FFDEMay require Pirates' Day to be active to obtain this item.|r", "Pirates' Day (23)"},--23
-		{13, "|CFF00FFDEMay require Brewfest to be active to obtain this item.|r", "Brewfest (24)"},--24
-		{14, "|CFF00FFDEMay require Harvest Festival to be active to obtain this item.|r", "Harvest Festival (25)"},--25
-		{15, "|CFF00FFDEMay require Hallow's End to be active to obtain this item.|r", "Hallow's End (26)"},--26
-		{16, "|CFF00FFDEMay require Day of the Dead to be active to obtain this item.|r", "Day of the Dead (27)"},--27
-		{17, "|CFF00FFDEMay require Pilgrim's Bounty to be active to obtain this item.|r", "Pilgrim's Bounty (28)"},--28
-		{18, "|CFF00FFDEMay require Feast of Winter Veil to be active to obtain this item.|r", "Feast of Winter Veil (29)"},--29
-		{19, "|CFF00FFDEMay require Stranglethorn Fishing Extravaganza to be active.|r", "Stranglethorn Fishing Extravaganza (30) "},--30
-		{20, "|CFF00FFDEThis was only obtainable during the WoW Anniversary it was active.\nIt's a possibility future anniversaries may include this item.|r\n", "WoW Anniversary (31)"},--31
-		{0, "", ""}, --32
-		{0, "", ""}, -- 33
-		{0, "", ""}, --34
-		{3, "|CFFFF0000This may be locked behind a paywall, probably the in-game shop, another Blizzard game, or Recruit A Friend.|r", "Blizzard Balance (35)"}, --35
-		{1, "|CFFFF0000This was obtainable only during the WoW Anniversary when it was active and is no longer available.|r\n", "WoW Anniversary [Removed] (36)"}, -- 36
-		{0, "", ""}, --37
-		{1, "|CFFFF0000These items are only available for players that completed the Legendary Cloak quest chain during Mists of Pandaria or via the BMAH|r", "Ordos - Legendary Cloak (38)"}, --38
-		{0, "", ""}, --39
-		{0, "", ""}, -- 40
-		{1, "|CFFFF0000These appearances are only available for players that completed the respective Mage Tower Artifact Challenges and earned the base appearance.|r", "Mage Tower Appearances (41)"}, -- 41
-		{21, "|CFFFF0000These appearances are only available during the weekly Timewalking Event.\nOnly dungeons released during the featured expansion will be available.|r", "Timewalking (42)"}, -- 42
-		{0, "", ""}, -- 43
-		{0, "", ""}, -- 44
-		{1, "|CFFFF0000Blizzard's Loot changes broke several Items and made them Unobtainable.\nHouse of Nobles Cape/Gurubashi Empire Greatcloak (both BFA Emissary Rewards) & Ogom the Mangler \nare currently broken and need to be fixed.|r", "Broken Loot (45)"}, -- 45
+
 })
 do a[key] = value; end
+]]
 
 -- TODO:
 local a = L.CUSTOM_COLLECTS_REASONS;

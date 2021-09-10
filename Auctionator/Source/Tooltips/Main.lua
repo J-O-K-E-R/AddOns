@@ -5,7 +5,7 @@ local waitingForPricing = false
 -- Auctionator.Config.Options.SHIFT_STACK_TOOLTIPS: true to show stack price when [shift] is down
 -- Auctionator.Config.Options.AUCTION_TOOLTIPS: true if should show auction tips
 function Auctionator.Tooltip.ShowTipWithPricing(tooltipFrame, itemLink, itemCount)
-  if waitingOnLink == itemLink and waitingForTooltip == tooltipFrame then
+  if waitingForPricing then
     return
   end
   -- Keep this commented out unless testing please.
@@ -47,9 +47,10 @@ function Auctionator.Tooltip.ShowTipWithPricingDBKey(tooltipFrame, dbKeys, itemL
     local bindType = itemInfo[Auctionator.Constants.ITEM_INFO.BIND_TYPE]
     cannotAuction = bindType == LE_ITEM_BIND_ON_ACQUIRE or bindType == LE_ITEM_BIND_QUEST;
     local sellPrice = itemInfo[Auctionator.Constants.ITEM_INFO.SELL_PRICE]
+    local isReagent = itemInfo[Auctionator.Constants.ITEM_INFO.REAGENT]
     local isArtifact = itemInfo[Auctionator.Constants.ITEM_INFO.RARITY] == Enum.ItemQuality.Artifact
     local isLegendary = itemInfo[Auctionator.Constants.ITEM_INFO.RARITY] == Enum.ItemQuality.Legendary
-    if sellPrice ~= nil and not isArtifact and not isLegendary then
+    if sellPrice ~= nil and not isArtifact and (isReagent or not isLegendary) then
       vendorPrice = sellPrice * (showStackPrices and itemCount or 1);
     end
 

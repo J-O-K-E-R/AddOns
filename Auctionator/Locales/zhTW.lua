@@ -1,8 +1,7 @@
 AUCTIONATOR_LOCALES.zhTW = function()
   local L = {}
 
-L = L or {}
-L["ADD_FAVOURITE"] = "新增最愛"
+  L["ADD_FAVOURITE"] = "加入最愛"
 L["ADD_ITEM"] = "加入物品"
 L["ADD_TERM_TO_LIST_DIALOG"] = "輸入搜尋關鍵字來加入:"
 L["ALT_LEFT_CLICK"] = "Alt + 左鍵點擊"
@@ -63,6 +62,9 @@ L["CONFIG_CANCELLING_TEXT"] = "更改取消標籤頁面行為的選項。"
 L["CONFIG_CHAT_LOG"] = "在聊天視窗顯示拍賣訊息"
 L["CONFIG_CHAT_LOG_TOOLTIP_HEADER"] = "拍賣聊天記錄"
 L["CONFIG_CHAT_LOG_TOOLTIP_TEXT"] = "停用此選項時，將不會掃描你的拍賣看是否有新的變化。"
+L["CONFIG_CRAFTING_COST_SHOW_PROFIT"] = "顯示利潤而非製造成本"
+L["CONFIG_CRAFTING_COST_SHOW_PROFIT_TOOLTIP_HEADER"] = "製造成本顯示利潤"
+L["CONFIG_CRAFTING_COST_SHOW_PROFIT_TOOLTIP_TEXT"] = "打開拍賣場時，製作物品的畫面會顯示所需成本。啟用此選項改為顯示利潤。"
 L["CONFIG_DEBUG"] = "輸出除錯訊息"
 L["CONFIG_DEBUG_TOOLTIP_HEADER"] = "拍賣小幫手除錯"
 L["CONFIG_DEBUG_TOOLTIP_TEXT"] = "僅供維護人員使用，將除錯訊息輸出到聊天視窗。"
@@ -104,9 +106,9 @@ L["CONFIG_SELLING_ICON_SIZE_TOOLTIP_HEADER"] = "圖示大小"
 L["CONFIG_SELLING_ICON_SIZE_TOOLTIP_TEXT"] = "讓銷售標籤頁面中的背包物品圖示大一點 (最大 50) 或小一點 (最小 10)。預設大小是 42。"
 L["CONFIG_SELLING_LIFO_HEADER"] = "銷售: 物品"
 L["CONFIG_SELLING_LIFO_TEXT"] = "設定大部分物品的壓低價格百分比或數值，以及拍賣有效時限的選項。不壓低價格時，這些類別中價格相同的物品會組合在一起，最後加入的物品會第一個賣出，所以不一定要壓低價格。"
-L["CONFIG_SELLING_MISSING_FAVOURITES"] = "始終顯示最愛的物品，包括不在背包的時候。"
-L["CONFIG_SELLING_MISSING_FAVOURITES_TOOLTIP_HEADER"] = "缺少可見的最愛"
-L["CONFIG_SELLING_MISSING_FAVOURITES_TOOLTIP_TEXT"] = "即使不在背包中，也在背包瀏覽中顯示最愛物品。"
+L["CONFIG_SELLING_MISSING_FAVOURITES"] = "總是顯示最愛的物品，即時背包裡面沒有這個物品。"
+L["CONFIG_SELLING_MISSING_FAVOURITES_TOOLTIP_HEADER"] = "顯示沒有的最愛物品"
+L["CONFIG_SELLING_MISSING_FAVOURITES_TOOLTIP_TEXT"] = "在背包檢視中顯示最愛的物品，即時背包裡面沒有這個物品。"
 L["CONFIG_SELLING_NOT_LIFO_HEADER"] = "銷售: 裝備/寵物"
 L["CONFIG_SELLING_NOT_LIFO_TEXT"] = "設定裝備或寵物籠的壓低價格百分比或數值，以及拍賣有效時限的選項。這些類別中的物品會一個個的列出，買家可以選擇要買哪一個。壓低價格便很有幫助。"
 L["CONFIG_SELLING_POST_SHORTCUT"] = "張貼當前物品的鍵盤/滑鼠快速鍵是"
@@ -347,6 +349,11 @@ L["SPLASH_907_FEATURES_4"] = "取消標籤頁面有新的搜尋欄位。"
 L["SPLASH_907_FEATURES_HEADER"] = "新功能"
 L["SPLASH_907_UNANNOUNCED_1"] = "銷售標籤頁面新增 \"賣家\" 欄位 (可以看到誰賣的)。要使用這個功能請在當前拍賣列表中用右鍵點一下欄位標題 (例如 \"我賣的?\")。"
 L["SPLASH_907_UNANNOUNCED_HEADER"] = "9.0.6 版未提到的新功能"
+L["SPLASH_9105_DESCRIPTION"] = "新增購物清單搜索方式，可在14秒內掃描並過濾數千種商品的價格（在全負載伺服器大約42秒）- 以前這可能需要 20 多分鐘！當與金幣價格過濾器結合使用時，這對於狙擊完美交易非常有用。"
+L["SPLASH_9105_FEATURES_1"] = "搜索超過 50 件商品時，購物清單搜索速度非常快。"
+L["SPLASH_9105_FEATURES_2"] = "添加了一個按鈕，可將“購買”標籤頁中的價格歷史對話框移動到結果列表的右側（右鍵單擊任何結果以查看價格歷史）。"
+L["SPLASH_9105_FEATURES_3"] = "當拍賣行開啟時，可以選擇在製作視窗中顯示利潤而不是製作成本。"
+L["SPLASH_9105_FEATURES_HEADER"] = "最近的功能"
 L["SPLASH_HIDE_MESSAGE"] = "下次更新前不要再顯示"
 L["SPLASH_SCREEN_HEADER"] = "歡迎使用拍賣小幫手 Auctionator"
 L["STACK_AUCTION_INFO"] = "%s 總共 %s (每個 %s)"
@@ -395,6 +402,7 @@ L["VENDOR_TOOLTIP_TOOLTIP_TEXT"] = "滑鼠指向時，在滑鼠提示中顯示�
 L["VERSION_HEADER"] = "版本"
 L["VERSION_MESSAGE"] = "版本 %s"
 L["YOUR_HISTORY"] = "你的歷史記錄"
+
 
   return L
 end

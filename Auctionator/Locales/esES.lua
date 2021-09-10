@@ -1,8 +1,7 @@
 AUCTIONATOR_LOCALES.esES = function()
   local L = {}
 
-L = L or {}
-L["ADD_FAVOURITE"] = "Añadir favorito"
+  L["ADD_FAVOURITE"] = "Añadir favorito"
 L["ADD_ITEM"] = "Añadir objeto"
 L["ADD_TERM_TO_LIST_DIALOG"] = "Ingrese el término de búsqueda para añadir"
 L["ALT_LEFT_CLICK"] = "Alt Clic Izquierdo"
@@ -65,6 +64,9 @@ L["CONFIG_CANCELLING_TEXT"] = "Opciones para cambiar el comportamiento de la pes
 L["CONFIG_CHAT_LOG"] = "Muestra tus nuevas subastas en el chat"
 L["CONFIG_CHAT_LOG_TOOLTIP_HEADER"] = "Registro de chat de subasta"
 L["CONFIG_CHAT_LOG_TOOLTIP_TEXT"] = "Si esta opción está desactivada, sus subastas no se escanearán para encontrar sus nuevas subastas"
+L["CONFIG_CRAFTING_COST_SHOW_PROFIT"] = "Muestra ganancias en lugar de costos de fabricación"
+L["CONFIG_CRAFTING_COST_SHOW_PROFIT_TOOLTIP_HEADER"] = "Costos de fabricación Mostrar ganancias"
+L["CONFIG_CRAFTING_COST_SHOW_PROFIT_TOOLTIP_TEXT"] = "Cuando la Casa de Subastas está abierta, la pantalla de fabricación mostrará el costo de fabricar un objeto. Habilita esta opción para mostrar la ganancia en su lugar."
 L["CONFIG_DEBUG"] = "Alternar salida de depuración."
 L["CONFIG_DEBUG_TOOLTIP_HEADER"] = "Depurar Actionator"
 L["CONFIG_DEBUG_TOOLTIP_TEXT"] = "Esto es usado por los mantenedores para enviar mensajes de depuración al marco del chat."
@@ -363,6 +365,11 @@ L["SPLASH_907_FEATURES_4"] = "La pestaña Cancelación tiene un nuevo cuadro de 
 L["SPLASH_907_FEATURES_HEADER"] = "Características"
 L["SPLASH_907_UNANNOUNCED_1"] = "Se ha añadido una columna opcional \"Vendedor(es)\" (para ver quién vende las subastas) en la pestaña Vender. Para activarlo, haga clic con el botón derecho en el encabezado de una columna (por ejemplo, \"¿Es propietario?\") En los listados de subastas actuales."
 L["SPLASH_907_UNANNOUNCED_HEADER"] = "Funciones no anunciadas de 9.0.6"
+L["SPLASH_9105_DESCRIPTION"] = "Se agregó un nuevo método de búsqueda para las listas de compras que puede escanear y filtrar los precios de miles de objetos en 14 segundos (alrededor de 42 segundos en un reino de población completo); anteriormente, ¡esto podría demorar más de 20 minutos! Esto es invaluable para conseguir el trato perfecto cuando se combina con los filtros de precios del oro."
+L["SPLASH_9105_FEATURES_1"] = "Búsqueda de lista de compras muy rápida cuando se buscan más de 50 objetos."
+L["SPLASH_9105_FEATURES_2"] = "Se agregó un botón para mover el cuadro de diálogo del historial de precios en la pestaña \"Compras\" a la derecha de la lista de resultados (haga clic con el botón derecho en cualquier resultado para ver un historial de precios)."
+L["SPLASH_9105_FEATURES_3"] = "Opción para mostrar las ganancias en lugar del costo de fabricación en la ventana de fabricación cuando la Casa de Subastas está abierta."
+L["SPLASH_9105_FEATURES_HEADER"] = "Funciones recientes"
 L["SPLASH_HIDE_MESSAGE"] = "No mostrar hasta la próxima actualización"
 L["SPLASH_SCREEN_HEADER"] = "Bienvenido a Auctionator"
 L["STACK_AUCTION_INFO"] = "%s para %s (en %s cada una)"
@@ -414,6 +421,7 @@ L["VENDOR_TOOLTIP_TOOLTIP_TEXT"] = [=[Mostrar información del proveedor al pasa
 L["VERSION_HEADER"] = "Versión"
 L["VERSION_MESSAGE"] = "Versión %s"
 L["YOUR_HISTORY"] = "Tu historial"
+
 
   return L
 end

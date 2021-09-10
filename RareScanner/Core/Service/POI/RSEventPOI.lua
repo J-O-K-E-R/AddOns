@@ -32,7 +32,7 @@ local notDiscoveredEventIDs = {}
 function RSEventPOI.InitializeNotDiscoveredEvents()
 	for eventID, _ in pairs (RSEventDB.GetAllInternalEventInfo()) do
 		if (not RSGeneralDB.GetAlreadyFoundEntity(eventID)) then
-			tinsert(notDiscoveredEventIDs, eventID)
+			notDiscoveredEventIDs[eventID] = true
 		end
 	end
 end
@@ -98,12 +98,10 @@ local function IsEventPOIFiltered(eventID, mapID, zoneQuestID, vignetteGUIDs, on
 	-- Skip if the entity appears only while a quest event is going on and it isnt active
 	if (zoneQuestID) then
 		local active = false
-		if (RSUtils.Contains(C_QuestLog.GetActiveThreatMaps(), mapID)) then
-			for _, questID in ipairs(zoneQuestID) do
-				if (C_TaskQuest.IsActive(questID) or C_QuestLog.IsQuestFlaggedCompleted(questID)) then
-					active = true
-					break
-				end
+		for _, questID in ipairs(zoneQuestID) do
+			if (C_TaskQuest.IsActive(questID) or C_QuestLog.IsQuestFlaggedCompleted(questID)) then
+				active = true
+				break
 			end
 		end
 
@@ -148,7 +146,7 @@ function RSEventPOI.GetMapNotDiscoveredEventPOIs(mapID, vignetteGUIDs, onWorldMa
 	end
 
 	local POIs = {}
-	for _, eventID in ipairs(notDiscoveredEventIDs) do
+	for eventID, _ in pairs(notDiscoveredEventIDs) do
 		local filtered = false
 		local eventInfo = RSEventDB.GetInternalEventInfo(eventID)
 

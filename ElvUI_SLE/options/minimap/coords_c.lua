@@ -1,5 +1,5 @@
 local SLE, T, E, L, V, P, G = unpack(select(2, ...))
-local MM = SLE:GetModule("Minimap")
+local MM = SLE.Minimap
 
 local function configTable()
 	if not SLE.initialized then return end
@@ -68,7 +68,7 @@ local function configTable()
 						name = L["Update Throttle"],
 						min = 0.1, max = 2, step = 0.1,
 						disabled = function() return not E.db.sle.minimap.coords.enable or not E.private.general.minimap.enable end,
-						set = function(info, value) E.db.sle.minimap.coords[ info[#info] ] = value; end,
+						set = function(info, value) E.db.sle.minimap.coords[ info[#info] ] = value end,
 					},
 				},
 			},

@@ -1,6 +1,6 @@
 local SLE, T, E, L = unpack(select(2, ...))
-local DB = SLE:GetModule('DataBars')
-local EDB = E:GetModule('DataBars')
+local DB = SLE.DataBars
+local EDB = E.DataBars
 
 --GLOBALS: hooksecurefunc
 local format = format
@@ -42,7 +42,7 @@ DB.Honor ={
 		STYLE6 = '|TInterface\\Icons\\ACHIEVEMENT_GUILDPERK_MRPOPULARITY_RANK2:14:14|t: '..E['media'].hexvaluecolor..'%s|r|T%s:%s|t',
 	},
 	Strings = {},
-	Icon = [[Interface\AddOns\ElvUI_SLE\media\textures\]]..E.myfaction,
+	Icon = [[Interface\AddOns\ElvUI_SLE\media\textures\afk\factionlogo\blizzard\]]..E.myfaction,
 }
 
 local function HonorBar_Update(self, event, unit)
@@ -53,8 +53,8 @@ local function HonorBar_Update(self, event, unit)
 	local showHonor = UnitLevel('player') >= MAX_PLAYER_LEVEL
 
 	if showHonor then
-		local current = UnitHonor('player');
-		local max = UnitHonorMax('player');
+		local current = UnitHonor('player')
+		local max = UnitHonorMax('player')
 
 		--Guard against division by zero, which appears to be an issue when zoning in/out of dungeons
 		if max == 0 then max = 1 end

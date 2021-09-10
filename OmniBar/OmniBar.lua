@@ -36,6 +36,9 @@ local MAX_CLASSES = MAX_CLASSES
 local NotifyInspect = NotifyInspect
 local SlashCmdList = SlashCmdList
 local UIParent = UIParent
+local UNITNAME_SUMMON_TITLE1 = UNITNAME_SUMMON_TITLE1
+local UNITNAME_SUMMON_TITLE2 = UNITNAME_SUMMON_TITLE2
+local UNITNAME_SUMMON_TITLE3 = UNITNAME_SUMMON_TITLE3
 local UnitClass = UnitClass
 local UnitGUID = UnitGUID
 local UnitInParty = UnitInParty
@@ -131,6 +134,21 @@ function OmniBar:OnInitialize()
 	self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 	self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
 	self:RegisterEvent("GROUP_ROSTER_UPDATE", "GetSpecs")
+
+	-- Remove invalid custom cooldowns
+	for k,v in pairs(self.db.global.cooldowns) do
+		if (not GetSpellInfo(k)) then
+			self.db.global.cooldowns[k] = nil
+		end
+	end
+
+	-- Populate cooldowns with spell names and icons
+	for spellId,_ in pairs(self.cooldowns) do
+		local name, _, icon = GetSpellInfo(spellId)
+		self.cooldowns[spellId].icon = self.cooldowns[spellId].icon or icon
+		self.cooldowns[spellId].name = name
+	end
+
 	self:SetupOptions()
 end
 
@@ -236,21 +254,20 @@ function OmniBar:AddCustomSpells()
 
 	-- Add custom spells
 	for k,v in pairs(self.db.global.cooldowns) do
-		-- Backup if we are going to override
-		if addon.Cooldowns[k] and (not addon.Cooldowns[k].custom) and (not self.BackupCooldowns[k]) then
-			self.BackupCooldowns[k] = self:CopyCooldown(addon.Cooldowns[k])
+		local name, _, icon = GetSpellInfo(k)
+		if name then
+			-- Backup if we are going to override
+			if addon.Cooldowns[k] and (not addon.Cooldowns[k].custom) and (not self.BackupCooldowns[k]) then
+				self.BackupCooldowns[k] = self:CopyCooldown(addon.Cooldowns[k])
+			end
+			addon.Cooldowns[k] = v
+			addon.Cooldowns[k].icon = addon.Cooldowns[k].icon or icon
+			addon.Cooldowns[k].name = name
+			if SPELL_ID_BY_NAME then SPELL_ID_BY_NAME[name] = k end
+		else
+			self.db.global.cooldowns[k] = nil
 		end
-		addon.Cooldowns[k] = v
-		if SPELL_ID_BY_NAME then SPELL_ID_BY_NAME[GetSpellInfo(k)] = k end
 	end
-
-	-- Populate cooldowns with spell names and icons
-	for spellId,_ in pairs(addon.Cooldowns) do
-		local name, _, icon = GetSpellInfo(spellId)
-		addon.Cooldowns[spellId].icon = addon.Cooldowns[spellId].icon or icon
-		addon.Cooldowns[spellId].name = name
-	end
-
 end
 
 local function OmniBar_IsAdaptive(self)
@@ -584,24 +601,27 @@ function OmniBar_SetZone(self, refresh)
 
 end
 
+local UNITNAME_SUMMON_TITLES = {
+    UNITNAME_SUMMON_TITLE1,
+    UNITNAME_SUMMON_TITLE2,
+    UNITNAME_SUMMON_TITLE3,
+}
 local tooltip = CreateFrame("GameTooltip", "OmniBarPetTooltip", nil, "GameTooltipTemplate")
 local tooltipText = OmniBarPetTooltipTextLeft2
-local tooltipTextPatterns = {}
-for i = 1, 3 do
-    local constant = _G["UNITNAME_SUMMON_TITLE" .. i]
-    if (not constant) then break end
-    tinsert(tooltipTextPatterns, tostring(constant:gsub("%%s", "(.+)")))
-end
 local function UnitOwnerName(guid)
     if (not guid) then return end
+    for i = 1, 3 do
+        _G["UNITNAME_SUMMON_TITLE" .. i] = "OmniBar %s"
+    end
     tooltip:SetOwner(UIParent, "ANCHOR_NONE")
     tooltip:SetHyperlink("unit:" .. guid)
     local name = tooltipText:GetText()
-    if (not name) then return end
     for i = 1, 3 do
-        local owner = name:match(tooltipTextPatterns[i])
-        if owner then return owner end
+        _G["UNITNAME_SUMMON_TITLE" .. i] = UNITNAME_SUMMON_TITLES[i]
     end
+    if (not name) then return end
+    local owner = name:match("OmniBar (.+)")
+    if owner then return owner end
 end
 
 local function IsSourceHostile(sourceFlags)

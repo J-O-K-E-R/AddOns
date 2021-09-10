@@ -1,8 +1,7 @@
 AUCTIONATOR_LOCALES.frFR = function()
   local L = {}
 
-L = L or {}
-L["ADD_FAVOURITE"] = "Ajouter aux favoris"
+  L["ADD_FAVOURITE"] = "Ajouter aux favoris"
 L["ADD_ITEM"] = "Ajouter un article"
 L["ADD_TERM_TO_LIST_DIALOG"] = "Entrez le terme de recherche à ajouter:"
 L["ALT_LEFT_CLICK"] = "Alt Clic gauche"
@@ -63,6 +62,9 @@ L["CONFIG_CANCELLING_TEXT"] = "Options permettant de modifier le comportement de
 L["CONFIG_CHAT_LOG"] = "Affiche vos nouvelles enchères dans le chat"
 L["CONFIG_CHAT_LOG_TOOLTIP_HEADER"] = "Journal des enchères dans le chat"
 L["CONFIG_CHAT_LOG_TOOLTIP_TEXT"] = "Si cette option est désactivée, vos enchères ne seront pas scannées pour trouver des nouvelles enchères."
+L["CONFIG_CRAFTING_COST_SHOW_PROFIT"] = "Affiche le profit au lieu du coût de fabrication"
+L["CONFIG_CRAFTING_COST_SHOW_PROFIT_TOOLTIP_HEADER"] = "Coût de fabrication Afficher le profit"
+L["CONFIG_CRAFTING_COST_SHOW_PROFIT_TOOLTIP_TEXT"] = "Quand l'Hôtel de Ventes est ouvert, l'écran de fabrication montrera le coup de fabrication d'un objet. Activer cette option pour afficher le profit faisable à la place."
 L["CONFIG_DEBUG"] = "Affiche la sortie du débogage."
 L["CONFIG_DEBUG_TOOLTIP_HEADER"] = "Auctionator Debug"
 L["CONFIG_DEBUG_TOOLTIP_TEXT"] = "Il est utilisé par les responsables de la maintenance pour envoyer des messages de débogage dans la trame de discussion."
@@ -350,6 +352,16 @@ L["SPLASH_907_FEATURES_4"] = "L'onglet Annulation dispose d'un nouveau champ de 
 L["SPLASH_907_FEATURES_HEADER"] = "Caractéristiques"
 L["SPLASH_907_UNANNOUNCED_1"] = "Une colonne facultative \"Vendeur(s)\" (pour voir qui vend les enchères) a été ajoutée à l'onglet Vente. Pour l'activer, cliquez avec le bouton droit de la souris sur l'en-tête d'une colonne (par exemple \"Propriétaire ?\") dans la liste des enchères en cours."
 L["SPLASH_907_UNANNOUNCED_HEADER"] = "Fonctionnalités non annoncées de la 9.0.6"
+--[[Translation missing --]]
+L["SPLASH_9105_DESCRIPTION"] = "Added a new search method for shopping lists that can scan and filter prices for thousands of items in 14s (around 42s on a full population realm) - previously this could take 20+ minutes! This is invaluable for sniping the perfect deal when combined with the gold price filters."
+--[[Translation missing --]]
+L["SPLASH_9105_FEATURES_1"] = "Very fast shopping list search when searching for more than 50 items."
+--[[Translation missing --]]
+L["SPLASH_9105_FEATURES_2"] = "Added a button to move the price history dialog in the \"Shopping\" tab to the right of the results listing (right click any result to see a price history)."
+--[[Translation missing --]]
+L["SPLASH_9105_FEATURES_3"] = "Option to show profit instead of crafting cost in the crafting window when the Auction House is open."
+--[[Translation missing --]]
+L["SPLASH_9105_FEATURES_HEADER"] = "Recent Features"
 L["SPLASH_HIDE_MESSAGE"] = "Ne pas afficher avant la prochaine mise à jour"
 L["SPLASH_SCREEN_HEADER"] = "Bienvenue sur Auctionator"
 L["STACK_AUCTION_INFO"] = "%s pour %s (à %s chacun)"
@@ -398,6 +410,7 @@ L["VENDOR_TOOLTIP_TOOLTIP_TEXT"] = "Affiche les informations sur le vendeur dans
 L["VERSION_HEADER"] = "Version"
 L["VERSION_MESSAGE"] = "Version %s"
 L["YOUR_HISTORY"] = "Votre historique"
+
 
   return L
 end
