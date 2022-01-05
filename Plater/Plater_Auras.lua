@@ -5,6 +5,7 @@ local DF = _G.DetailsFramework
 
 local IS_WOW_PROJECT_MAINLINE = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
 local IS_WOW_PROJECT_NOT_MAINLINE = WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE
+local IS_WOW_PROJECT_CLASSIC_ERA = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
 
 --stop yellow lines on my editor
 local tinsert = _G.tinsert
@@ -27,7 +28,6 @@ local UnitAuraSlots = _G.UnitAuraSlots
 local UnitAuraBySlot = _G.UnitAuraBySlot
 local UnitAura = _G.UnitAura
 local BackdropTemplateMixin = _G.BackdropTemplateMixin
-local NamePlateTooltip = _G.NamePlateTooltip
 local BUFF_MAX_DISPLAY = _G.BUFF_MAX_DISPLAY
 local _
 
@@ -48,6 +48,7 @@ local DB_AURA_SHOW_ENRAGE
 local DB_AURA_SHOW_MAGIC
 local DB_AURA_SHOW_BYUNIT
 local DB_AURA_ALPHA
+local DB_AURA_ENABLED
 
 local DebuffTypeColor = _G.DebuffTypeColor
 
@@ -95,20 +96,80 @@ local MANUAL_TRACKING_DEBUFFS = {}
 local AUTO_TRACKING_EXTRA_BUFFS = {}
 local AUTO_TRACKING_EXTRA_DEBUFFS = {}
 
+-- support for LibClassicDurations from https://github.com/rgd87/LibClassicDurations by d87
+local UnitAura = _G.UnitAura
+local LCD = LibStub:GetLibrary("LibClassicDurations", true)
+if IS_WOW_PROJECT_CLASSIC_ERA and LCD then
+	LCD:Register(Plater)
+	LCD.RegisterCallback(Plater, "UNIT_BUFF", function(event, unit)end)
+	UnitAura = LCD.UnitAuraWithBuffs
+end
 
+local function CreatePlaterNamePlateAuraTooltip()
+	local tooltip = CreateFrame("GameTooltip", "PlaterNamePlateAuraTooltip", parent or UIParent, "GameTooltipTemplate")
+	
+	tooltip.ApplyOwnBackdrop = function(self)
+		self:SetBackdrop ({edgeFile = [[Interface\Buttons\WHITE8X8]], edgeSize = 1, bgFile = [[Interface\Buttons\WHITE8X8]], tileSize = 0, tile = false, tileEdge = true})
+		self:SetBackdropColor (0.05, 0.05, 0.05, 0.8)
+		self:SetBackdropBorderColor (0, 0, 0, 1)
+	end
+	
+	if tooltip.SetBackdrop then
+		return tooltip
+	end
+	
+	-- workarounds for 9.1.5
+	local nineSlice = tooltip.NineSlice or tooltip
+    Mixin(nineSlice, BackdropTemplateMixin)
+    nineSlice:SetScript("OnSizeChanged", nineSlice.OnSizeChanged)
+
+    nineSlice.backdropInfo = tooltip.backdropInfo
+    nineSlice.backdropColor = tooltip.backdropColor
+    nineSlice.backdropColorAlpha = tooltip.backdropColorAlpha
+    nineSlice.backdropBorderColor = tooltip.backdropBorderColor
+    nineSlice.backdropBorderColorAlpha = tooltip.backdropBorderColorAlpha
+    nineSlice.backdropBorderBlendMode = tooltip.backdropBorderBlendMode
+
+    nineSlice:OnBackdropLoaded()
+	
+	tooltip.SetBackdrop = function(self,...)
+		local nineSlice = self.NineSlice or self
+		nineSlice:SetBackdrop(...)
+	end
+	tooltip.SetBackdropColor = function(self,...)
+		local nineSlice = self.NineSlice or self
+		nineSlice:SetBackdropColor(...)
+	end
+	tooltip.SetBackdropBorderColor = function(self,...)
+		local nineSlice = self.NineSlice or self
+		nineSlice:SetBackdropBorderColor(...)
+	end
+	tooltip.ApplyBackdrop = function(self,...)
+		local nineSlice = self.NineSlice or self
+		nineSlice:ApplyBackdrop(...)
+	end
+	
+	return tooltip
+end
+
+local NamePlateTooltip = _G.NamePlateTooltip -- can be removed later
+local PlaterNamePlateAuraTooltip = CreatePlaterNamePlateAuraTooltip()
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --> aura buffs and debuffs ~aura ~buffs ~debuffs ~auras
 
 	--> show the tooltip in the aura icon
 	function Plater.OnEnterAura (iconFrame) --private
-		NamePlateTooltip:SetOwner (iconFrame, "ANCHOR_LEFT")
-		NamePlateTooltip:SetUnitAura (iconFrame:GetParent().unit, iconFrame:GetID(), iconFrame.filter)
+		PlaterNamePlateAuraTooltip:SetOwner (iconFrame, "ANCHOR_LEFT")
+		PlaterNamePlateAuraTooltip:SetUnitAura (iconFrame:GetParent().unit, iconFrame:GetID(), iconFrame.filter)
+		PlaterNamePlateAuraTooltip:ApplyOwnBackdrop()
 		iconFrame.UpdateTooltip = Plater.OnEnterAura
 	end
 
 	function Plater.OnLeaveAura (iconFrame) --private
-		NamePlateTooltip:Hide()
+		PlaterNamePlateAuraTooltip:Hide()
+		if NamePlateTooltip:IsForbidden() then return end
+		NamePlateTooltip:Hide() -- backwards compatibility for mods (should be removed later)
 	end
 	
 	--called from the options panel, request a refresh on all auras shown
@@ -1793,9 +1854,6 @@ local AUTO_TRACKING_EXTRA_DEBUFFS = {}
 			
 			wipe (AUTO_TRACKING_EXTRA_BUFFS)
 			wipe (AUTO_TRACKING_EXTRA_DEBUFFS)
-			
-			CAN_TRACK_EXTRA_BUFFS = false
-			CAN_TRACK_EXTRA_DEBUFFS = false
 
 			for spellId, flag in pairs (extraBuffsToTrack) do
 				local spellName = GetSpellInfo (tonumber(spellId) or spellId)
@@ -1805,7 +1863,6 @@ local AUTO_TRACKING_EXTRA_DEBUFFS = {}
 					else
 						AUTO_TRACKING_EXTRA_BUFFS [spellId] = true
 					end
-					CAN_TRACK_EXTRA_BUFFS = true
 				end
 			end
 			
@@ -1817,7 +1874,6 @@ local AUTO_TRACKING_EXTRA_DEBUFFS = {}
 					else
 						AUTO_TRACKING_EXTRA_DEBUFFS [spellId] = true
 					end
-					CAN_TRACK_EXTRA_DEBUFFS = true
 				end
 			end
 			
@@ -1828,7 +1884,6 @@ local AUTO_TRACKING_EXTRA_DEBUFFS = {}
 						--AUTO_TRACKING_EXTRA_DEBUFFS [spellName] = true
 						AUTO_TRACKING_EXTRA_DEBUFFS [spellId] = true
 						CROWDCONTROL_AURA_IDS [spellId] = true
-						CAN_TRACK_EXTRA_BUFFS = true
 					end
 				end
 			end
@@ -1840,7 +1895,6 @@ local AUTO_TRACKING_EXTRA_DEBUFFS = {}
 						--AUTO_TRACKING_EXTRA_BUFFS [spellName] = true
 						AUTO_TRACKING_EXTRA_BUFFS [spellId] = true
 						OFFENSIVE_AURA_IDS [spellId] = true
-						CAN_TRACK_EXTRA_BUFFS = true
 					end
 				end
 			end
@@ -1852,7 +1906,6 @@ local AUTO_TRACKING_EXTRA_DEBUFFS = {}
 						--AUTO_TRACKING_EXTRA_BUFFS [spellName] = true
 						AUTO_TRACKING_EXTRA_BUFFS [spellId] = true
 						DEFENSIVE_AURA_IDS [spellId] = true
-						CAN_TRACK_EXTRA_BUFFS = true
 					end
 				end
 			end

@@ -1,6 +1,6 @@
 
 
-local dversion = 268
+local dversion = 282
 local major, minor = "DetailsFramework-1.0", dversion
 local DF, oldminor = LibStub:NewLibrary (major, minor)
 
@@ -431,6 +431,28 @@ function DF.table.dump (t, s, deep)
 	return s
 end
 
+--grab a text and split it into lines adding each line to a indexed table
+function DF:SplitTextInLines(text)
+	local lines = {}
+	local position = 1
+	local startScope, endScope = text:find("\n", position, true)
+
+	while (startScope) do
+		if (startScope ~= 1) then
+			tinsert(lines, text:sub(position, startScope-1))
+		end
+		position = endScope + 1
+		startScope, endScope = text:find("\n", position, true)
+	end
+
+	if (position <= #text) then
+		tinsert(lines, text:sub(position))
+	end
+
+	return lines
+end
+
+
 DF.www_icons = {
 	texture = "feedback_sites",
 	wowi = {0, 0.7890625, 0, 37/128},
@@ -588,6 +610,12 @@ function DF:AddClassColorToText (text, class)
 	end
 	
 	return text
+end
+
+function DF:GetClassTCoordsAndTexture(class)
+	local l, r, t, b = unpack(CLASS_ICON_TCOORDS[class])
+	return l, r, t, b, [[Interface\WORLDSTATEFRAME\Icons-Classes]]
+	--return l, r, t, b, "Interface\\TargetingFrame\\UI-Classes-Circles"
 end
 
 function DF:AddClassIconToText(text, playerName, class, useSpec, iconSize)
@@ -3820,6 +3848,26 @@ local roleTexcoord = {
 	NONE = "139:196:69:127",
 }
 
+local roleTextures = {
+	DAMAGER = "Interface\\LFGFRAME\\UI-LFG-ICON-ROLES",
+	TANK = "Interface\\LFGFRAME\\UI-LFG-ICON-ROLES",
+	HEALER = "Interface\\LFGFRAME\\UI-LFG-ICON-ROLES",
+	NONE = "Interface\\LFGFRAME\\UI-LFG-ICON-ROLES",
+}
+
+local roleTexcoord2 = {
+	DAMAGER = {72/256, 130/256, 69/256, 127/256},
+	HEALER = {72/256, 130/256, 2/256, 60/256},
+	TANK = {5/256, 63/256, 69/256, 127/256},
+	NONE = {139/256, 196/256, 69/256, 127/256},
+}
+
+function DF:GetRoleIconAndCoords(role)
+	local texture = roleTextures[role]
+	local coords = roleTexcoord2[role]
+	return texture, unpack(coords)
+end
+
 function DF:AddRoleIconToText(text, role, size)
 	if (role and type(role) == "string") then
 		local coords = GetTexCoordsForRole(role)
@@ -4232,27 +4280,32 @@ end
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
 --> pool
 
-do    
+do
     local get = function(self)
         local object = tremove(self.notUse, #self.notUse)
         if (object) then
             tinsert(self.inUse, object)
+			if (self.onAcquire) then
+				local result, errortext = pcall(self.onAcquire, object)
+			end
 			return object, false
-			
         else
             --need to create the new object
             local newObject = self.newObjectFunc(self, unpack(self.payload))
             if (newObject) then
 				tinsert(self.inUse, newObject)
+				if (self.onAcquire) then
+					local result, errortext = pcall(self.onAcquire, object)
+				end
 				return newObject, true
             end
         end
 	end
-	
+
 	local get_all_inuse = function(self)
 		return self.inUse;
 	end
-    
+
     local release = function(self, object)
         for i = #self.inUse, 1, -1 do
             if (self.inUse[i] == object) then
@@ -4260,35 +4313,39 @@ do
                 tinsert(self.notUse, object)
                 break
             end
-        end        
+        end
     end
-    
+
     local reset = function(self)
         for i = #self.inUse, 1, -1 do
             local object = tremove(self.inUse, i)
             tinsert(self.notUse, object)
-        end        
+
+			if (self.onReset) then
+				local result, errortext = pcall(self.onReset, object)
+			end
+        end
 	end
-	
+
 	--only hide objects in use, do not disable them
 		local hide = function(self)
 			for i = #self.inUse, 1, -1 do
 				self.inUse[i]:Hide()
-			end 
+			end
 		end
 
 	--only show objects in use, do not enable them
 		local show = function(self)
 			for i = #self.inUse, 1, -1 do
 				self.inUse[i]:Show()
-			end 
-		end	
+			end
+		end
 
 	--return the amount of objects 
 		local getamount = function(self)
 			return #self.notUse + #self.inUse, #self.notUse, #self.inUse
 		end
-    
+
     local poolMixin = {
 		Get = get,
 		GetAllInUse = get_all_inuse,
@@ -4299,25 +4356,30 @@ do
 		Hide = hide,
 		Show = show,
 		GetAmount = getamount,
+		SetOnReset = function(self, func)
+			self.onReset = func
+		end,
+		SetOnAcquire = function(self, func)
+			self.onAcquire = func
+		end,
     }
-    
+
     function DF:CreatePool(func, ...)
         local t = {}
         DetailsFramework:Mixin(t, poolMixin)
-        
+
         t.inUse = {}
         t.notUse = {}
         t.newObjectFunc = func
         t.payload = {...}
-        
+
         return t
 	end
-	
+
 	--alias
 	function DF:CreateObjectPool(func, ...)
 		return DF:CreatePool(func, ...)
 	end
-    
 end
 
 
@@ -4439,3 +4501,4 @@ end
 
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
+

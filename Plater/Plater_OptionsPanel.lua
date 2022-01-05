@@ -8,6 +8,8 @@ local _
 
 local IS_WOW_PROJECT_MAINLINE = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
 local IS_WOW_PROJECT_NOT_MAINLINE = WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE
+local IS_WOW_PROJECT_CLASSIC_ERA = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
+local IS_WOW_PROJECT_CLASSIC_TBC = WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC
 
 local PixelUtil = PixelUtil or DFPixelUtil
 
@@ -30,6 +32,9 @@ local options_button_template = DF:GetTemplate ("button", "OPTIONS_BUTTON_TEMPLA
 local startX, startY, heightSize = 10, -130, 710
 local optionsWidth, optionsHeight = 1100, 650
 local mainHeightSize = 800
+
+local IMPORT_EXPORT_EDIT_MAX_BYTES = 0 --1024000*4 -- 0 appears to be "no limit"
+local IMPORT_EXPORT_EDIT_MAX_LETTERS = 0 --128000*4 -- 0 appears to be "no limit"
 
  --cvars
 local CVAR_ENABLED = "1"
@@ -109,6 +114,7 @@ local update_wago_update_icons = function()
 	local modButton = mainFrame.AllButtons [7]
 	local profileButton = mainFrame.AllButtons [21]
 	local importButton = mainFrame.AllButtons [24]
+	--local importButton = mainFrame.AllButtons [25] -- with resource fame
 	
 	if countMods > 0 then
 		modButton.updateIcon:Show()
@@ -148,7 +154,7 @@ function Plater.CheckOptionsTab()
 end
 
 local TAB_INDEX_UIPARENTING = 4
-local TAB_INDEX_PROFILES = 20
+local TAB_INDEX_PROFILES = 21
 
 -- ~options �ptions
 function Plater.OpenOptionsPanel()
@@ -220,6 +226,7 @@ function Plater.OpenOptionsPanel()
 		{name = "Automation", title = L["OPTIONS_TABNAME_AUTO"]},
 		{name = "ProfileManagement", title = L["OPTIONS_TABNAME_PROFILES"]},
 		{name = "AdvancedConfig", title = L["OPTIONS_TABNAME_ADVANCED"]},
+		--{name = "resourceFrame", title = "Combo Points"}, --localize-me
 		{name = "SearchFrame", title = "Search"}, --localize-me
 		--{name = "WagoIo", title = "Wago Imports"}, --wago_imports --localize-me
 		
@@ -260,16 +267,19 @@ function Plater.OpenOptionsPanel()
 	local autoFrame = mainFrame.AllFrames [20]
 	local profilesFrame = mainFrame.AllFrames [21]
 	local advancedFrame = mainFrame.AllFrames [22]
+	--local resourceFrame = mainFrame.AllFrames [23]
+	--local searchFrame = mainFrame.AllFrames [24]
 	local searchFrame = mainFrame.AllFrames [23]
-	--local wagoIoFrame = mainFrame.AllFrames [24] --wago_imports
+	--local wagoIoFrame = mainFrame.AllFrames [26] --wago_imports
 	
 	--
 	local colorNpcsButton = mainFrame.AllButtons [17]
 	local scriptButton = mainFrame.AllButtons [6]
 	local modButton = mainFrame.AllButtons [7]
 	local profileButton = mainFrame.AllButtons [21]
-	local importButton = mainFrame.AllButtons [24]
+	local importButton = mainFrame.AllButtons [25]
 
+	--Plater.Resources.BuildResourceOptionsTab(resourceFrame)
 	Plater.CreateCastColorOptionsFrame(castColorsFrame)
 	
 	local generalOptionsAnchor = CreateFrame ("frame", "$parentOptionsAnchor", frontPageFrame, BackdropTemplateMixin and "BackdropTemplate")
@@ -391,6 +401,11 @@ function Plater.OpenOptionsPanel()
 			function profilesFrame.ExportCurrentProfile()
 				profilesFrame.IsExporting = true
 				profilesFrame.IsImporting = nil
+				profilesFrame.ImportStringField.importDataText = nil
+				
+				local editbox = profilesFrame.ImportStringField.editbox
+				editbox:SetMaxBytes (IMPORT_EXPORT_EDIT_MAX_BYTES)
+				editbox:SetScript("OnChar", nil);
 				
 				if (not profilesFrame.ImportingProfileAlert) then
 					profilesFrame.ImportingProfileAlert = CreateFrame ("frame", "PlaterExportingProfileAlert", UIParent, BackdropTemplateMixin and "BackdropTemplate")
@@ -421,13 +436,18 @@ function Plater.OpenOptionsPanel()
 					--do not export cache data, these data can be rebuild at run time
 					local captured_spells = Plater.db.profile.captured_spells
 					local aura_cache_by_name = Plater.db.profile.aura_cache_by_name
-					local captured_casts = Plater.db.profile.captured_casts
+					local captured_casts = Plater.db.profile.captured_casts -- ? local DB ?
 					local npc_cache = Plater.db.profile.npc_cache
 
 					Plater.db.profile.captured_spells = {}
 					Plater.db.profile.aura_cache_by_name = {}
 					Plater.db.profile.captured_casts = {}
 					Plater.db.profile.npc_cache = {}
+					
+					--retain npc_cache for set npc_colors
+					for npcID, _ in pairs (Plater.db.profile.npc_colors) do
+						Plater.db.profile.npc_cache [npcID] = npc_cache [npcID]
+					end
 					
 					--save mod/script editing
 					local hookFrame = mainFrame.AllFrames [7]
@@ -463,9 +483,90 @@ function Plater.OpenOptionsPanel()
 			function profilesFrame.ImportProfile()
 				profilesFrame.IsExporting = nil
 				profilesFrame.IsImporting = true
+				
+				profilesFrame.ImportStringField.importDataText = nil
+				local editbox = profilesFrame.ImportStringField.editbox
+				local pasteBuffer, pasteCharCount, isPasting = {}, 0, false
+				--editbox:SetMaxBytes (1) -- for performance
+				
+				local function clearBuffer(self)
+					self:SetScript('OnUpdate', nil)
+					editbox:SetMaxBytes (IMPORT_EXPORT_EDIT_MAX_BYTES)
+					isPasting = false
+					if pasteCharCount > 10 then
+						local paste = strtrim(table.concat(pasteBuffer))
+						
+						local wagoProfile = Plater.DecompressData (paste, "print")
+						if (wagoProfile and type (wagoProfile == "table")) then
+							if  (wagoProfile.plate_config) then
+								local existingProfileName = nil
+								local wagoInfoText = "Import data verified.\n\n"
+								if wagoProfile.url then
+									local impProfUrl = wagoProfile.url or ""
+									local impProfID = impProfUrl:match("wago.io/([^/]+)/([0-9]+)") or impProfUrl:match("wago.io/([^/]+)$")
+									local profiles = Plater.db.profiles
+									if impProfID then
+										for pName, pData in pairs(profiles) do
+											local pUrl = pData.url or ""
+											local id = pUrl:match("wago.io/([^/]+)/([0-9]+)") or pUrl:match("wago.io/([^/]+)$")
+											if id and impProfID == id then
+												existingProfileName = pName
+												break
+											end									
+										end
+									end
+								
+									wagoInfoText = wagoInfoText .. "Extracted the following wago information from the profile data:\n"
+									wagoInfoText = wagoInfoText .. "  Local Profile Name: " .. (wagoProfile.profile_name or "N/A") .. "\n"
+									wagoInfoText = wagoInfoText .. "  Wago-Revision: " .. (wagoProfile.version or "-") .. "\n"
+									wagoInfoText = wagoInfoText .. "  Wago-Version: " .. (wagoProfile.semver or "-") .. "\n"
+									wagoInfoText = wagoInfoText .. "  Wago-URL: " .. (wagoProfile.url and (wagoProfile.url .. "\n") or "")
+									wagoInfoText = wagoInfoText .. (existingProfileName and ("\nThis profile already exists as: '" .. existingProfileName .. "' in your profiles.\n") or "")
+								else
+									wagoInfoText = "This profile does not contain any wago.io information.\n"
+								end
+								
+								wagoInfoText = wagoInfoText .. "\nYou may change the name below and click on '".. L["OPTIONS_OKAY"] .. "' to import the profile."
+								
+								editbox:SetText (wagoInfoText)
+								profilesFrame.ImportStringField.importDataText = paste
+								local curNewProfName = profilesFrame.NewProfileTextEntry:GetText()
+								if existingProfileName and curNewProfName and curNewProfName == "MyNewProfile" then
+									profilesFrame.NewProfileTextEntry:SetText(existingProfileName)
+								elseif wagoProfile.profile_name and wagoProfile.profile_name ~= "Default" and curNewProfName and curNewProfName == "MyNewProfile" then
+									profilesFrame.NewProfileTextEntry:SetText(wagoProfile.profile_name)
+								end
+							else
+								local scriptType = Plater.GetDecodedScriptType (wagoProfile)
+								if (scriptType == "hook" or scriptType == "script") then
+									editbox:SetText (L["OPTIONS_PROFILE_ERROR_WRONGTAB"])
+								else
+									editbox:SetText (L["OPTIONS_PROFILE_ERROR_STRINGINVALID"])
+								end
+							end
+						else
+							editbox:SetText("Could not decompress the data. The text pasted does not appear to be a serialized Plater profile.\nTry copying the import string again.")
+						end
+						
+						editbox:ClearFocus()
+					end
+				end
+				editbox:SetScript('OnChar', function(self, c)
+					if not isPasting then
+						if editbox:GetMaxBytes() ~= 1 then -- ensure this for performance!
+							editbox:SetMaxBytes (1)
+						end
+						pasteBuffer, pasteCharCount, isPasting = {}, 0, true
+						self:SetScript('OnUpdate', clearBuffer)
+					end
+					pasteCharCount = pasteCharCount + 1
+					pasteBuffer[pasteCharCount] = c
+				end)
+				
 				profilesFrame.ImportStringField:Show()
+				
 				C_Timer.After (.2, function()
-					profilesFrame.ImportStringField:SetText ("")
+					profilesFrame.ImportStringField:SetText ("<Paste import string here>")
 					profilesFrame.ImportStringField:SetFocus (true)
 				end)
 				
@@ -476,9 +577,15 @@ function Plater.OpenOptionsPanel()
 			function profilesFrame.HideStringField()
 				profilesFrame.IsExporting = nil
 				profilesFrame.IsImporting = nil
+				profilesFrame.ImportStringField.importDataText = nil
+				
+				local editbox = profilesFrame.ImportStringField.editbox
+				editbox:SetMaxBytes (IMPORT_EXPORT_EDIT_MAX_BYTES)
+				editbox:SetScript("OnChar", nil);
 				
 				profilesFrame.ImportStringField:Hide()
 				profilesFrame.ImportStringField:SetText ("")
+				
 				profilesFrame.NewProfileLabel:Hide()
 				profilesFrame.NewProfileTextEntry:Hide()
 			end
@@ -491,7 +598,7 @@ function Plater.OpenOptionsPanel()
 					return
 				end
 
-				local text = profilesFrame.ImportStringField:GetText()
+				local text = profilesFrame.ImportStringField.importDataText
 				local profile = Plater.DecompressData (text, "print")
 				
 				if (profile and type (profile == "table")) then
@@ -543,6 +650,8 @@ function Plater.OpenOptionsPanel()
 			
 			function profilesFrame.DoProfileImport(profileName, profile, isUpdate, keepModsNotInUpdate)
 				profilesFrame.HideStringField()
+				
+				profile.profile_name = nil --no need to import
 				
 				local wasUsingUIParent = Plater.db.profile.use_ui_parent
 				
@@ -656,7 +765,7 @@ function Plater.OpenOptionsPanel()
 					profilesFrame.IsImporting = true
 					
 					profilesFrame.NewProfileTextEntry:SetText(Plater.db:GetCurrentProfile())
-					profilesFrame.ImportStringField:SetText(update.encoded)
+					profilesFrame.ImportStringField.importDataText = update.encoded
 					
 					profilesFrame.ConfirmImportProfile(true)
 				end
@@ -860,10 +969,18 @@ function Plater.OpenOptionsPanel()
 			local block_mouse_frame = CreateFrame ("frame", nil, importStringField, BackdropTemplateMixin and "BackdropTemplate")
 			--block_mouse_frame:SetFrameLevel (block_mouse_frame:GetFrameLevel()-5)
 			block_mouse_frame:SetAllPoints()
-			block_mouse_frame:SetScript ("OnMouseDown", function()
+			
+			local function importStringFieldTextHighlight()
 				importStringField:SetFocus (true)
-				importStringField.editbox:HighlightText()
-			end)
+				if profilesFrame.IsImporting then
+					--importStringField.editbox:SetText("")
+					importStringField.editbox:HighlightText()
+				else
+					importStringField.editbox:HighlightText()
+				end
+			end
+			block_mouse_frame:SetScript ("OnMouseDown", importStringFieldTextHighlight)
+			importStringField.editbox:SetScript ("OnCursorChanged", importStringFieldTextHighlight)
 			
 			--import button
 			local okayButton = DF:CreateButton (importStringField, function() profilesFrame.ConfirmImportProfile(false) end, buttons_size[1], buttons_size[2], L["OPTIONS_OKAY"], -1, nil, nil, nil, nil, nil, DF:GetTemplate ("button", "OPTIONS_BUTTON_TEMPLATE"), DF:GetTemplate ("font", "PLATER_BUTTON"))
@@ -890,11 +1007,9 @@ function Plater.OpenOptionsPanel()
 			profilesFrame.NewProfileLabel:Hide()
 			profilesFrame.NewProfileTextEntry:Hide()
 			
-			profilesFrame.ImportStringField.editbox:SetMaxBytes (1024000*4)
-			profilesFrame.ImportStringField.editbox:SetMaxLetters (128000*4)
-			
-			--print (profilesFrame.ImportStringField.editbox:GetMaxBytes())
-			--print (profilesFrame.ImportStringField.editbox:GetMaxLetters())
+			-- don't do this anymore, this causes huge lag when pasting large strings... buffer instead on importing. Setting values for good measure, though
+			profilesFrame.ImportStringField.editbox:SetMaxBytes (IMPORT_EXPORT_EDIT_MAX_BYTES)
+			profilesFrame.ImportStringField.editbox:SetMaxLetters (IMPORT_EXPORT_EDIT_MAX_LETTERS)
 			
 	end
 -------------------------
@@ -6380,11 +6495,11 @@ local relevance_options = {
 					Plater:Msg (L["OPTIONS_ERROR_CVARMODIFY"])
 				end
 			end,
-			min = 1,
-			max = 100,
+			min = IS_WOW_PROJECT_MAINLINE and 60 or 20, --20y for tbc and classic
+			max = (IS_WOW_PROJECT_MAINLINE and 60) or (IS_WOW_PROJECT_CLASSIC_TBC and 41) or 20, --41y for tbc, 20y for classic era
 			step = 1,
 			name = "View Distance" .. CVarIcon,
-			desc = "How far you can see nameplates (in yards).\n\n|cFFFFFFFFDefault: 40|r" .. CVarDesc,
+			desc = "How far you can see nameplates (in yards).\n\n|cFFFFFFFFCurrent limitations: Retail = 60y, TBC = 20-41y, Classic = 20y|r" .. CVarDesc,
 			nocombat = true,
 		},
 	
