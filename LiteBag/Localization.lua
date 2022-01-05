@@ -11,9 +11,11 @@
 -- Vim reformatter from curseforge "Global Strings" export.
 -- %s/^\(L\..*\) = \(.*\)/\=printf('%-24s= %s', submatch(1), submatch(2))/
 
-LiteBag_Localize = setmetatable({ }, {__index=function (t,k) return k end})
+local addonName, LB = ...
 
-local L = LiteBag_Localize
+LB.Localize = setmetatable({ }, {__index=function (t,k) return k end})
+
+local L = LB.Localize
 
 local locale = GetLocale()
 
@@ -102,8 +104,8 @@ if locale == "itIT" then
     L["Inventory gaps set to: %s %s"] = "Spaziature nell'inventario impostate su: %s %s"
     L["Inventory scale set to: %0.2f"] = "Scala dell'inventario impostata su: %0.2f"
     L["Inventory snap to default position:"] = "Posizione inventario predefinita:"
-    L["No column gaps"]   = "Nessuna spaziatura tra colonne"
-    L["No row gaps"]      = "Nessuna spaziatura tra righe"
+    L["No column gaps"]   = "No spaziatura tra colonne"
+    L["No row gaps"]      = "No spaziatura tra righe"
     L["Pet"]              = "Pet"
     L["Reverse"]          = "Inversione"
     L["Scale must be between 0 and 2."] = "La scala deve essere compresa tra 0 e 2."

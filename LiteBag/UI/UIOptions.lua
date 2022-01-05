@@ -6,7 +6,9 @@
 
 ----------------------------------------------------------------------------]]--
 
-local L = LiteBag_Localize
+local addonName, LB = ...
+
+local L = LB.Localize
 
 local MenuTextMapping  = {
     ['bag'] = L['Bags'],
@@ -19,14 +21,14 @@ function LiteBagOptionsConfirmSort_OnLoad(self)
     self.SetOption =
         function (self, setting)
             if not setting or setting == '0' then
-                LiteBag_SetGlobalOption('NoConfirmSort', true)
+                LB.Options:SetGlobalOption('NoConfirmSort', true)
             else
-                LiteBag_SetGlobalOption('NoConfirmSort', nil)
+                LB.Options:SetGlobalOption('NoConfirmSort', nil)
             end
         end
     self.GetOption =
         function (self)
-            return not LiteBag_GetGlobalOption('NoConfirmSort')
+            return not LB.Options:GetGlobalOption('NoConfirmSort')
         end
     self.GetOptionDefault =
         function (self) return true end
@@ -38,16 +40,14 @@ function LiteBagOptionsEquipsetDisplay_OnLoad(self)
     self.SetOption =
         function (self, setting)
             if not setting or setting == '0' then
-                LiteBag_SetGlobalOption('HideEquipsetIcon', true)
+                LB.Options:SetGlobalOption('HideEquipsetIcon', true)
             else
-                LiteBag_SetGlobalOption('HideEquipsetIcon', nil)
+                LB.Options:SetGlobalOption('HideEquipsetIcon', nil)
             end
-            LiteBagPanel_UpdateAllBags(LiteBagInventoryPanel)
-            LiteBagPanel_UpdateAllBags(LiteBagBankPanel)
         end
     self.GetOption =
         function (self)
-            return not LiteBag_GetGlobalOption('HideEquipsetIcon')
+            return not LB.Options:GetGlobalOption('HideEquipsetIcon')
         end
     self.GetOptionDefault =
         function (self) return true end
@@ -59,16 +59,14 @@ function LiteBagOptionsBindsOnDisplay_OnLoad(self)
     self.SetOption =
         function (self, setting)
             if not setting or setting == '0' then
-                LiteBag_SetGlobalOption('ShowBindsOnText', nil)
+                LB.Options:SetGlobalOption('ShowBindsOnText', nil)
             else
-                LiteBag_SetGlobalOption('ShowBindsOnText', true)
+                LB.Options:SetGlobalOption('ShowBindsOnText', true)
             end
-            LiteBagPanel_UpdateAllBags(LiteBagInventoryPanel)
-            LiteBagPanel_UpdateAllBags(LiteBagBankPanel)
         end
     self.GetOption =
         function (self)
-            return LiteBag_GetGlobalOption('ShowBindsOnText')
+            return LB.Options:GetGlobalOption('ShowBindsOnText')
         end
     self.GetOptionDefault =
         function (self) return false end
@@ -80,14 +78,14 @@ function LiteBagOptionsSnapToPosition_OnLoad(self)
     self.SetOption =
         function (self, setting)
             if not setting or setting == '0' then
-                LiteBag_SetGlobalOption('NoSnapToPosition', true)
+                LB.Options:SetGlobalOption('NoSnapToPosition', true)
             else
-                LiteBag_SetGlobalOption('NoSnapToPosition', false)
+                LB.Options:SetGlobalOption('NoSnapToPosition', false)
             end
         end
     self.GetOption =
         function (self)
-            return not LiteBag_GetGlobalOption('NoSnapToPosition')
+            return not LB.Options:GetGlobalOption('NoSnapToPosition')
         end
     self.GetOptionDefault =
         function (self) return false end
@@ -106,15 +104,12 @@ end
 local function IconBorder_Initialize(self, level)
     if level == 1 then
         local info = UIDropDownMenu_CreateInfo()
-        local current = LiteBag_GetGlobalOption('ThickerIconBorder')
+        local current = LB.Options:GetGlobalOption('ThickerIconBorder')
 
         info.func =
              function (button, arg1, arg2, checked)
                 self.value = arg1
-                self:SetOption(arg1)
-                UIDropDownMenu_SetText(self, GetQualityText(arg1))
-                LiteBagPanel_UpdateAllBags(LiteBagInventoryPanel)
-                LiteBagPanel_UpdateAllBags(LiteBagBankPanel)
+                LiteBagOptionsControl_OnChanged(self)
              end
 
         info.text = GetQualityText(nil)
@@ -136,11 +131,11 @@ end
 function LiteBagOptionsIconBorder_OnLoad(self)
     self.SetOption =
         function (self, setting)
-            LiteBag_SetGlobalOption('ThickerIconBorder', setting)
+            LB.Options:SetGlobalOption('ThickerIconBorder', setting)
         end
     self.GetOption =
         function (self)
-            return LiteBag_GetGlobalOption('ThickerIconBorder')
+            return LB.Options:GetGlobalOption('ThickerIconBorder')
         end
     self.GetOptionDefault =
         function (self)
@@ -167,14 +162,13 @@ end
 local function PanelOrder_Initialize(self, level)
     if level == 1 then
         local info = UIDropDownMenu_CreateInfo()
-        local current = LiteBag_GetFrameOption(self.panel, 'order')
+        local current = LB.Options:GetFrameOption(self.panel, 'order')
 
         info.func =
-             function (button, arg1, arg2, checked)
-                 self.value = arg1
-                 self:SetOption(arg1)
-                 UIDropDownMenu_SetText(self, arg2 or DEFAULT)
-             end
+            function (button, arg1, arg2, checked)
+                self.value = arg1
+                LiteBagOptionsControl_OnChanged(self)
+            end
 
         info.text = DEFAULT
         info.checked = ( current == nil )
@@ -199,11 +193,11 @@ end
 local function PanelOrder_OnLoad(self, panel)
     self.SetOption =
         function (self, setting)
-            LiteBag_SetFrameOption(panel, 'order', setting)
+            LB.Options:SetFrameOption(panel, 'order', setting)
         end
     self.GetOption =
         function (self)
-            return LiteBag_GetFrameOption(panel, 'order')
+            return LB.Options:GetFrameOption(panel, 'order')
         end
     self.GetOptionDefault =
         function (self)
@@ -235,13 +229,12 @@ end
 local function PanelLayout_Initialize(self, level)
     if level == 1 then
         local info = UIDropDownMenu_CreateInfo()
-        local current = LiteBag_GetFrameOption(self.panel, 'layout')
+        local current = LB.Options:GetFrameOption(self.panel, 'layout')
 
         info.func =
             function (button, arg1, arg2, checked)
                 self.value = arg1
-                self:SetOption(arg1)
-                UIDropDownMenu_SetText(self, arg2 or DEFAULT)
+                LiteBagOptionsControl_OnChanged(self)
             end
 
         info.text = DEFAULT
@@ -267,11 +260,11 @@ end
 local function PanelLayout_OnLoad(self, panel)
     self.SetOption =
         function (self, setting)
-            LiteBag_SetFrameOption(panel, 'layout', setting)
+            LB.Options:SetFrameOption(panel, 'layout', setting)
         end
     self.GetOption =
         function (self)
-            return LiteBag_GetFrameOption(panel, 'layout')
+            return LB.Options:GetFrameOption(panel, 'layout')
         end
     self.GetOptionDefault =
         function (self)
@@ -307,11 +300,11 @@ local function SetupColumnsControl(self, panel, default)
     _G[n..'High']:SetText('24')
     self.SetOption =
             function (self, v)
-            LiteBag_SetFrameOption(panel, 'columns', v)
+            LB.Options:SetFrameOption(panel, 'columns', v)
         end
     self.GetOption =
         function (self)
-            return LiteBag_GetFrameOption(panel, 'columns') or default
+            return LB.Options:GetFrameOption(panel, 'columns') or default
         end
     self.GetOptionDefault =
             function (self) return default end
@@ -323,11 +316,11 @@ local function SetupScaleControl(self, frame)
     _G[n..'High']:SetText(1.25)
     self.SetOption =
             function (self, v)
-            LiteBag_SetFrameOption(frame, 'scale', v)
+            LB.Options:SetFrameOption(frame, 'scale', v)
         end
     self.GetOption =
             function (self)
-            return LiteBag_GetFrameOption(frame, 'scale') or 1.0
+            return LB.Options:GetFrameOption(frame, 'scale') or 1.0
         end
     self.GetOptionDefault =
             function (self) return 1.0 end
@@ -340,14 +333,14 @@ local function SetupBreakControl(self, frame, varname)
     self.SetOption =
             function (self, v)
             if v == 0 then
-                LiteBag_SetFrameOption(frame, varname, nil)
+                LB.Options:SetFrameOption(frame, varname, nil)
             else
-                LiteBag_SetFrameOption(frame, varname, v)
+                LB.Options:SetFrameOption(frame, varname, v)
             end
         end
     self.GetOption =
             function (self)
-            return LiteBag_GetFrameOption(frame, varname) or 0
+            return LB.Options:GetFrameOption(frame, varname) or 0
         end
     self.GetOptionDefault =
             function (self) return 0 end

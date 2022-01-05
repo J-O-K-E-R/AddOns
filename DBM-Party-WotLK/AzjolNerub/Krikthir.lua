@@ -1,7 +1,9 @@
 local mod	= DBM:NewMod(585, "DBM-Party-WotLK", 2, 272)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20210614202848")
+mod.statTypes = "normal,heroic,timewalker"
+
+mod:SetRevision("20211021191526")
 mod:SetCreatureID(28684)
 mod:SetEncounterID(1971)
 
@@ -12,6 +14,7 @@ mod:RegisterEventsInCombat(
 )
 
 local warningCurse	= mod:NewSpellAnnounce(52592, 2)
+
 local timerCurseCD	= mod:NewCDTimer(20, 52592, nil, nil, nil, 2)
 
 function mod:SPELL_AURA_APPLIED(args)

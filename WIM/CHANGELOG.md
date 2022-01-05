@@ -1,10 +1,7 @@
 # WIM
 
-## [3.9.1](https://github.com/sylvanaar/wow-instant-messenger/tree/3.9.1) (2021-05-15)
-[Full Changelog](https://github.com/sylvanaar/wow-instant-messenger/compare/3.9.0...3.9.1) [Previous Releases](https://github.com/sylvanaar/wow-instant-messenger/releases)
+## [3.9.4](https://github.com/Legacy-of-Sylvanaar/wow-instant-messenger/tree/3.9.4) (2021-12-03)
+[Full Changelog](https://github.com/Legacy-of-Sylvanaar/wow-instant-messenger/compare/3.9.3...3.9.4) [Previous Releases](https://github.com/Legacy-of-Sylvanaar/wow-instant-messenger/releases)
 
-- Update .travis.yml  
-    Update building  
-- update toc for packager changes  
-- Bump Classic TOC  
-- Fix new TBC lua error  
+- Fix hyperlinks within WIM windows.  
+- Have default UI handle OnHyperlinkClick events.  

@@ -88,6 +88,7 @@ DBT.DefaultOptions = {
 	FillUpBars = true,
 	TimerPoint = "TOPRIGHT",
 	Sort = "Sort",
+	DesaturateValue = 1,
 	-- Huge bar
 	EnlargeBarTime = 11,
 	HugeBarXOffset = 0,
@@ -160,7 +161,7 @@ end
 do
 	local CreateFrame, GetTime, IsShiftKeyDown = CreateFrame, GetTime, IsShiftKeyDown
 
-	local function onUpdate(self, elapsed)
+	local function onUpdate(self)
 		if self.obj then
 			self.obj.curTime = GetTime()
 			self.obj.delta = self.obj.curTime - self.obj.lastUpdate
@@ -334,6 +335,16 @@ do
 end
 
 do
+	local gsub = string.gsub
+
+	local function fixElv(optionName)
+		if DBT.Options[optionName]:lower():find("interface\\addons\\elvui\\media\\") then
+			DBT.Options[optionName] = gsub(DBT.Options[optionName], gsub("Interface\\AddOns\\ElvUI\\Media\\", "(%a)", function(v)
+				return "[" .. v:upper() .. v:lower() .. "]"
+			end), "Interface\\AddOns\\ElvUI\\Core\\Media\\")
+		end
+	end
+
 	function DBT:LoadOptions(id)
 		if not DBT_AllPersistentOptions then
 			DBT_AllPersistentOptions = {}
@@ -358,6 +369,9 @@ do
 		if self.Options.Sort == true then
 			self.Options.Sort = "Sort"
 		end
+		-- Migrate ElvUI changes
+		fixElv("Texture")
+		fixElv("Font")
 	end
 
 	function DBT:CreateProfile(id)
@@ -777,6 +791,10 @@ function barPrototype:Update(elapsed)
 				b = barOptions.StartColorB + (barOptions.EndColorB - barOptions.StartColorB) * (1 - timerValue/totaltimeValue)
 			end
 		end
+		if not DBT.Options.HugeBarsEnabled and timerValue > enlargeTime then
+			local x = (barOptions.DesaturateValue * r) + (barOptions.DesaturateValue * g) + (barOptions.DesaturateValue * b)
+			r, g, b = x, x, x
+		end
 		bar:SetStatusBarColor(r, g, b)
 		if sparkEnabled then
 			spark:SetVertexColor(r, g, b)
@@ -1117,8 +1135,7 @@ do
 	end
 
 	function DBT:SetSkin(id)
-		local skin = skins[id]
-		if not skin then
+		if not skins[id] then
 			error("Skin '" .. id .. "' doesn't exist", 2)
 		end
 		local DBM_UsedProfile = DBM_UsedProfile or "Default"
@@ -1130,12 +1147,12 @@ do
 		end
 		if not DBT_AllPersistentOptions[DBM_UsedProfile][id] then
 			DBT_AllPersistentOptions[DBM_UsedProfile][id] = DBT_AllPersistentOptions[DBM_UsedProfile].DBM or {}
-			for option, value in pairs(skin.Defaults) do
+			for option, value in pairs(skins[id].Defaults) do
 				DBT_AllPersistentOptions[DBM_UsedProfile][id][option] = value
 			end
 		end
 		self:ApplyProfile(id, true)
-		for option, value in pairs(skin.Options) do
+		for option, value in pairs(skins[id].Options) do
 			self:SetOption(option, value, true)
 		end
 		self:SetOption("Skin", id) -- Forces an UpdateBars and ApplyStyle

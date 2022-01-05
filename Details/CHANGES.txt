@@ -1,42 +1,28 @@
-tag 7f880533a9b4ab5697743cc2076994988ac6ab8a DetailsRetail.9.1.0.8782.145
+tag 8b2c90acef5313f7d767ed1d90049a687cbdda09 DetailsRetail.9.1.5.9213.145
 Author:	Tercio Jose <terciob19@hotmail.com>
-Date:	Wed Aug 11 19:55:11 2021 -0300
+Date:	Fri Dec 10 16:58:11 2021 -0300
 
-commit 70483cd1945ae726c1d1cc28e463d7e29bfcb7d0
+commit 8be58e717b9ad373c819e1e21bec13074038641b
 Author: Tercio Jose <terciob19@hotmail.com>
-Date:   Wed Aug 11 19:54:12 2021 -0300
+Date:   Fri Dec 10 16:57:26 2021 -0300
 
-    Tiny Threat (plugin): added options to Hide the Pull Bar and Use Focus Target.
-
-commit b4b6b645049fda4aebe8ede76ced05995fb71b4d
-Author: Tercio Jose <terciob19@hotmail.com>
-Date:   Tue Aug 3 10:44:42 2021 -0300
-
-    Fixed lib Translit on healing done
-
-commit 4fe002cf18309212b1322b052f7d4618a5e6c8c6
-Author: Tercio Jose <terciob19@hotmail.com>
-Date:   Fri Jul 30 20:22:07 2021 -0300
-
-    Added Transliterate to healing tooltips, fixed some close buttons with green boxes
-
-commit b32a48dc635c999e008aafc0be3503924fca48f8
-Author: Tercio Jose <terciob19@hotmail.com>
-Date:   Fri Jul 30 17:56:11 2021 -0300
-
-    Added Details.all_switch_config.font_size and Details.all_switch_config.scale
+    v9213
     
-    These entries configure the panel shown when right click the title bar of the window.
+    Fixed an issue where after reloading, overall data won't show the players nickname.
+    Fixed overkill damage on death log tooltip.
+    Fixed the percent bars for the healing done target on the player breakdown window.
+    Fixed an issue with resource tooltips.
+    And more...
 
-commit e3c539dc30d29c4f00d7ac0e755f3c76186657ab
+commit 7adae64a152661fb31851ffdfbf479990c7d9480
 Author: Tercio Jose <terciob19@hotmail.com>
-Date:   Fri Jul 30 13:06:41 2021 -0300
+Date:   Wed Nov 10 11:47:02 2021 -0300
 
-    Fixed Raid Check plugin position and shadow priest void eruption got merged with other spells of the same name
+    Added support for Tab replacement on the breakdown window
 
-commit 9a69703ea7a7019d01dac3075d76ef291add3aa4
+commit 8539e3b3abf2797d6927559f78af834d922e67a8
 Author: Tercio Jose <terciob19@hotmail.com>
-Date:   Thu Jul 15 14:25:52 2021 -0300
+Date:   Wed Nov 3 13:05:55 2021 -0300
 
-    Clicking on the minimap while the options panel is open will close it
+    Merging fixes from tbc
 

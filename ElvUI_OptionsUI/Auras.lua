@@ -3,6 +3,8 @@ local C, L = unpack(E.OptionsUI)
 local A = E:GetModule('Auras')
 local ACH = E.Libs.ACH
 
+local CopyTable = CopyTable
+
 local Auras = ACH:Group(L["BUFFOPTIONS_LABEL"], nil, 2, 'tab', function(info) return E.private.auras[info[#info]] end, function(info, value) E.private.auras[info[#info]] = value; E:StaticPopup_Show('PRIVATE_RL') end)
 E.Options.args.auras = Auras
 
@@ -18,7 +20,7 @@ Auras.args.debuffsHeader.customWidth = 80
 Auras.args.disableBlizzard.customWidth = 140
 
 Auras.args.masqueGroup = ACH:Group(L["Masque"], nil, 7, nil, nil, nil, function() return not E.Masque or not E.private.auras.enable end)
-Auras.args.masqueGroup.args.masque = ACH:MultiSelect(L["Masque Support"], nil, 10, { buffs = L["Buffs"], debuffs = L["Debuffs"] }, nil, nil, function(_, key) return E.private.auras.masque[key] end, function(_, key, value) E.private.auras.masque[key] = value; E:StaticPopup_Show('PRIVATE_RL') end)
+Auras.args.masqueGroup.args.masque = ACH:MultiSelect(L["Masque Support"], L["Allow Masque to handle the skinning of this element."], 10, { buffs = L["Buffs"], debuffs = L["Debuffs"] }, nil, nil, function(_, key) return E.private.auras.masque[key] end, function(_, key, value) E.private.auras.masque[key] = value; E:StaticPopup_Show('PRIVATE_RL') end)
 
 local SharedOptions = {
 	growthDirection = ACH:Select(L["Growth Direction"], L["The direction the auras will grow and then the direction they will grow after they reach the wrap after limit."], 1, C.Values.GrowthDirection),

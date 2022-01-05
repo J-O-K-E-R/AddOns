@@ -1,6 +1,9 @@
 # Auctionator
 
-## [9.1.5.1](https://github.com/Auctionator/Auctionator/tree/9.1.5.1) (2021-08-31)
-[Full Changelog](https://github.com/Auctionator/Auctionator/compare/9.1.5...9.1.5.1) [Previous Releases](https://github.com/Auctionator/Auctionator/releases)
+## [9.1.12](https://github.com/Auctionator/Auctionator/tree/9.1.12) (2021-11-11)
+[Full Changelog](https://github.com/Auctionator/Auctionator/compare/9.1.11...9.1.12) [Previous Releases](https://github.com/Auctionator/Auctionator/releases)
 
-- Remove unneeded Utilities.StringContains function  
+- Vanilla: Update toc for 1.14.1  
+- Shopping: Highlight which search was last clicked  
+- [Fixes #1094] TBC: Force valid quantity and stack sizes to avoid bad prices  
+- Shopping: Clear typing focus after a search using the search box  

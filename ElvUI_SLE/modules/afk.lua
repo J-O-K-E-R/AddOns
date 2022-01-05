@@ -3,8 +3,8 @@ local AFK = E.AFK
 local S = SLE.Screensaver
 
 --GLOBALS: unpack, select, format, random, date, tinsert, type, tonumber, hooksecurefunc, UnitPVPName, UnitLevel, UnitClass, UnitRace, RANK, LEVEL, CreateFrame, CreateAnimationGroup, C_Timer, SendChatMessage, RAID_CLASS_COLORS, GetScreenWidth, GetScreenHeight, IsInGuild, GetGuildInfo, FlipCameraYaw
-local testTimer  --was AnimTime before
 
+local testTimer  --was AnimTime before
 local format, random, date, tinsert, tonumber = format, random, date, tinsert, tonumber
 local UnitPVPName, UnitLevel, UnitClass = UnitPVPName, UnitLevel, UnitClass
 local RANK, LEVEL = RANK, LEVEL

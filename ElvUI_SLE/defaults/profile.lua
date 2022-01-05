@@ -1,14 +1,20 @@
 local SLE, T, E, L, V, P, G = unpack(select(2, ...))
 
 local UF_Auras = {
-	buffs = {
-		enable = false,
-		threshold = 4,
-	},
-	debuffs = {
-		enable = false,
-		threshold = 4,
-	},
+	enable = false,
+	threshold = 4,
+}
+
+local sharedIndicatorOptions = {
+	enable = false,
+	keepSizeRatio = true,
+	size = 36,
+	height = 36,
+	anchorPoint = 'CENTER',
+	xOffset = 0,
+	yOffset = 0,
+	texture = 'SKULL',
+	custom = '',
 }
 
 P["sle"] = {
@@ -646,10 +652,6 @@ P["sle"] = {
 	},
 	--Misc
 	["misc"] = {
-		["threat"] = {
-			["enable"] = false,
-			["position"] = "RightChatDataPanel",
-		},
 		["viewport"] = {
 			["left"] = 0,
 			["right"] = 0,
@@ -1327,127 +1329,188 @@ P["sle"] = {
 			["called"] = "Hundred",
 		},
 	},
+	--! Unitframe (slowly transition to match elvui db)
+	unitframe = {
+		roleIcons = {
+			enable = false,
+			icons = 'ElvUI',
+		},
+		statusbarTextures = {
+			aurabar = {
+				enable = false,
+				texture = 'ElvUI Norm',
+			},
+			castbar = {
+				enable = false,
+				texture = 'ElvUI Norm',
+			},
+			classbar = {
+				enable = false,
+				texture = 'ElvUI Norm',
+			},
+			powerbar = {
+				enable = false,
+				texture = 'ElvUI Norm',
+			},
+		},
+		units = {
+			--* Individual Units
+			player = {
+				buffs = CopyTable(UF_Auras),
+				deathIndicator = CopyTable(sharedIndicatorOptions),
+				debuffs = CopyTable(UF_Auras),
+				pvpicontext = {
+					level = {
+						enable = false,
+						anchorPoint = 'TOP',
+						xOffset = 1,
+						yOffset = 5,
+						font = 'PT Sans Narrow',
+						fontSize = 12,
+						fontOutline = 'THICKOUTLINE',
+					},
+					timer = {
+						enable = false,
+						anchorPoint = 'BOTTOM',
+						xOffset = 1,
+						yOffset = -6,
+						font = 'PT Sans Narrow',
+						fontSize = 13,
+						fontOutline = 'THICKOUTLINE',
+					},
+				},
+			},
+			target = {
+				buffs = CopyTable(UF_Auras),
+				deathIndicator = CopyTable(sharedIndicatorOptions),
+				debuffs = CopyTable(UF_Auras),
+				offlineIndicator = CopyTable(sharedIndicatorOptions),
+				pvpicontext = {
+					level = {
+						enable = false,
+						anchorPoint = 'TOP',
+						xOffset = 1,
+						yOffset = 5,
+						font = 'PT Sans Narrow',
+						fontSize = 12,
+						fontOutline = 'THICKOUTLINE',
+					},
+					timer = {
+						enable = false,
+						anchorPoint = 'BOTTOM',
+						xOffset = 1,
+						yOffset = -6,
+						font = 'PT Sans Narrow',
+						fontSize = 13,
+						fontOutline = 'THICKOUTLINE',
+					},
+				},
+			},
+			targettarget = {
+				buffs = CopyTable(UF_Auras),
+				deathIndicator = CopyTable(sharedIndicatorOptions),
+				debuffs = CopyTable(UF_Auras),
+				offlineIndicator = CopyTable(sharedIndicatorOptions),
+			},
+			targettargettarget = {
+				buffs = CopyTable(UF_Auras),
+				deathIndicator = CopyTable(sharedIndicatorOptions),
+				debuffs = CopyTable(UF_Auras),
+				offlineIndicator = CopyTable(sharedIndicatorOptions),
+			},
+			focus = {
+				buffs = CopyTable(UF_Auras),
+				deathIndicator = CopyTable(sharedIndicatorOptions),
+				debuffs = CopyTable(UF_Auras),
+				offlineIndicator = CopyTable(sharedIndicatorOptions),
+			},
+			focustarget = {
+				buffs = CopyTable(UF_Auras),
+				deathIndicator = CopyTable(sharedIndicatorOptions),
+				debuffs = CopyTable(UF_Auras),
+				offlineIndicator = CopyTable(sharedIndicatorOptions),
+			},
+			pet = {
+				buffs = CopyTable(UF_Auras),
+				deathIndicator = CopyTable(sharedIndicatorOptions),
+				debuffs = CopyTable(UF_Auras),
+			},
+			pettarget = {
+				buffs = CopyTable(UF_Auras),
+				debuffs = CopyTable(UF_Auras),
+			},
+			--* Group Units
+			party = {
+				buffs = CopyTable(UF_Auras),
+				deathIndicator = CopyTable(sharedIndicatorOptions),
+				debuffs = CopyTable(UF_Auras),
+				offlineIndicator = CopyTable(sharedIndicatorOptions),
+			},
+			raid = {
+				buffs = CopyTable(UF_Auras),
+				deathIndicator = CopyTable(sharedIndicatorOptions),
+				debuffs = CopyTable(UF_Auras),
+				offlineIndicator = CopyTable(sharedIndicatorOptions),
+			},
+			raid40 = {
+				buffs = CopyTable(UF_Auras),
+				deathIndicator = CopyTable(sharedIndicatorOptions),
+				debuffs = CopyTable(UF_Auras),
+				offlineIndicator = CopyTable(sharedIndicatorOptions),
+			},
+			raidpet = {
+				buffs = CopyTable(UF_Auras),
+				debuffs = CopyTable(UF_Auras),
+			},
+			tank = {
+				buffs = CopyTable(UF_Auras),
+				deathIndicator = CopyTable(sharedIndicatorOptions),
+				debuffs = CopyTable(UF_Auras),
+				offlineIndicator = CopyTable(sharedIndicatorOptions),
+			},
+			assist = {
+				buffs = CopyTable(UF_Auras),
+				deathIndicator = CopyTable(sharedIndicatorOptions),
+				debuffs = CopyTable(UF_Auras),
+				offlineIndicator = CopyTable(sharedIndicatorOptions),
+			},
+			arena = {
+				buffs = CopyTable(UF_Auras),
+				deathIndicator = CopyTable(sharedIndicatorOptions),
+				debuffs = CopyTable(UF_Auras),
+				offlineIndicator = CopyTable(sharedIndicatorOptions),
+			},
+			boss = {
+				buffs = CopyTable(UF_Auras),
+				debuffs = CopyTable(UF_Auras),
+			},
+		}
+	},
 	--Unitfrmes
 	["unitframes"] = {
 		["unit"] = {
-			["player"] = {
-				["pvpIconText"] = {
-					["enable"] = false,
-					["xoffset"] = 0,
-					["yoffset"] = 0,
-					["level"] = true,
-				},
-				auras = CopyTable(UF_Auras),
-			},
-			["pet"] = {
-				auras = CopyTable(UF_Auras),
-			},
-			["pettarget"] = {
-				auras = CopyTable(UF_Auras),
-			},
-			["target"] = {
-				["pvpIconText"] = {
-					["level"] = true,
-				},
-				auras = CopyTable(UF_Auras),
-			},
-			["targettarget"] = {
-				auras = CopyTable(UF_Auras),
-			},
-			["targettargettarget"] = {
-				auras = CopyTable(UF_Auras),
-			},
-			["focus"] = {
-				auras = CopyTable(UF_Auras),
-			},
-			["focustarget"] = {
-				auras = CopyTable(UF_Auras),
-			},
 			["party"] = {
-				["offline"] = {
-					["enable"] = false,
-					["size"] = 36,
-					["xOffset"] = 0,
-					["yOffset"] = 0,
-					["texture"] = "ALERT",
-					["CustomTexture"] = "",
-				},
-				["dead"] = {
-					["enable"] = false,
-					["size"] = 36,
-					["xOffset"] = 0,
-					["yOffset"] = 0,
-					["texture"] = "SKULL",
-					["CustomTexture"] = "",
-				},
 				["role"] = {
 					["xoffset"] = 0,
 					["yoffset"] = 0,
 				},
-				auras = CopyTable(UF_Auras),
 			},
 			["raid"] = {
-				["offline"] = {
-					["enable"] = false,
-					["size"] = 36,
-					["xOffset"] = 0,
-					["yOffset"] = 0,
-					["texture"] = "ALERT",
-					["CustomTexture"] = "",
-				},
-				["dead"] = {
-					["enable"] = false,
-					["size"] = 36,
-					["xOffset"] = 0,
-					["yOffset"] = 0,
-					["texture"] = "SKULL",
-					["CustomTexture"] = "",
-				},
 				["role"] = {
 					["xoffset"] = 0,
 					["yoffset"] = 0,
 				},
-				auras = CopyTable(UF_Auras),
 			},
 			["raid40"] = {
-				["offline"] = {
-					["enable"] = false,
-					["size"] = 20,
-					["xOffset"] = 0,
-					["yOffset"] = 0,
-					["texture"] = "ALERT",
-					["CustomTexture"] = "",
-				},
-				["dead"] = {
-					["enable"] = false,
-					["size"] = 36,
-					["xOffset"] = 0,
-					["yOffset"] = 0,
-					["texture"] = "SKULL",
-					["CustomTexture"] = "",
-				},
-				auras = CopyTable(UF_Auras),
 				["role"] = {
 					["xoffset"] = 0,
 					["yoffset"] = 0,
 				},
-			},
-			["boss"] = {
-				auras = CopyTable(UF_Auras),
-			},
-			["arena"] = {
-				auras = CopyTable(UF_Auras),
 			},
 		},
 		roleIcons = {
 			enable = false,
 			icons = 'ElvUI',
-		},
-		["statusTextures"] = {
-			["powerTexture"] = "ElvUI Norm",
-			["castTexture"] = "ElvUI Norm",
-			["auraTexture"] = "ElvUI Norm",
-			["classTexture"] = "ElvUI Norm",
 		},
 	},
 }

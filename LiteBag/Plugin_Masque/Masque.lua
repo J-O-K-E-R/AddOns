@@ -9,6 +9,8 @@
 
 ----------------------------------------------------------------------------]]--
 
+local addonName, LB = ...
+
 if LibStub then
     local Masque = LibStub('Masque', true)
 
@@ -16,7 +18,7 @@ if LibStub then
 
         local group = Masque:Group('LiteBag')
 
-        LiteBag_RegisterHook(
+        LB.RegisterHook(
                 'LiteBagItemButton_Create',
                 function (b)
                     group:AddButton(b)

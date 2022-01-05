@@ -1,10 +1,18 @@
-lightweight tag 31c0ad77cd18244ee5d583a34cf2e6f3ffc59714 9.0.3
+tag 39ff34196360f6a56f349f880b0a1e2f47937c50 9.1.6
 Author:	lure <alex.shubert@gmail.com>
-Date:	Sun Aug 22 14:23:42 2021 -0400
+Date:	Sat Nov 13 18:10:37 2021 -0500
 
-commit 31c0ad77cd18244ee5d583a34cf2e6f3ffc59714
+9.1.6
+
+commit b9f0da71417ed39a724da5869db3e29902c76cd0
 Author: lure <alex.shubert@gmail.com>
-Date:   Sun Aug 22 14:23:42 2021 -0400
+Date:   Sat Nov 13 18:10:09 2021 -0500
 
-    bump toc
+    add dump helpers
+
+commit d4f031f56b5e1acf38cfbc0451dc7d2fbe581d39
+Author: lure <alex.shubert@gmail.com>
+Date:   Wed Nov 10 18:11:33 2021 -0500
+
+    handling repeatable quests
 

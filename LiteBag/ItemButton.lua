@@ -9,12 +9,16 @@
 
 ----------------------------------------------------------------------------]]--
 
-function LiteBagItemButton_OnLoad(self)
+local addonName, LB = ...
+
+LiteBagItemButtonMixin = {}
+
+function LiteBagItemButtonMixin:OnLoad()
     self.GetInventorySlot = ButtonInventorySlot
-    self.UpdateTooltip = LiteBagItemButton_OnEnter
+    self.UpdateTooltip = self.OnEnter
 end
 
-function LiteBagItemButton_OnEnter(self)
+function LiteBagItemButtonMixin:OnEnter()
     local bag = self:GetParent():GetID()
     if bag == BANK_CONTAINER then
         BankFrameItemButton_OnEnter(self)

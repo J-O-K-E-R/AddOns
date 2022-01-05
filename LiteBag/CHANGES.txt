@@ -1,14 +1,14 @@
-tag 712a4836e1c125c4ff64cec95826eac4819f66f2 9.1.1
-Author:	Mike Battersby <mib@post.com>
-Date:	Thu Jul 1 09:52:39 2021 +1000
+tag dd47f67a1157e186a74140874460269866b55414 9.1.4
+Author:	Mike "Xodiv" Battersby <mib@post.com>
+Date:	Sun Nov 7 22:46:56 2021 +1100
 
-LiteBag 9.1.1
+LiteBag 9.1.4
 
- - Updated tutorial help checks to try to match Blizzard
+Restore LiteBag_RegisterHook global
 
-commit 9dadb12b902830a93ad6a2d527a38e451d109776
-Author: Mike Battersby <mib@post.com>
-Date:   Thu Jul 1 09:52:11 2021 +1000
+commit ca3907fff6ae1816a4abdae3cc36cbe850b97f50
+Author: Mike "Xodiv" Battersby <mib@post.com>
+Date:   Sun Nov 7 22:46:14 2021 +1100
 
-    Try to update tutorial checks for blizzard changes
+    Restore LiteBag_RegisterHook global
 

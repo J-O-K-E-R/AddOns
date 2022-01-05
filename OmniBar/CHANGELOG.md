@@ -1,1 +1,3 @@
-- Update for Burning Crusade Classic 2.5.2
+- Fix spell resets
+- Fix Intercept cooldown
+- Add Bonedust Brew

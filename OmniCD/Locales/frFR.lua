@@ -8,6 +8,8 @@ L[ [=[%d: spellID.
 --[[Translation missing --]]
 L["|cff9d9d9d * Scenarios and Outdoor Zones will use Arena settings."] = "|cff9d9d9d * Scenarios and Outdoor Zones will use Arena settings."
 --[[Translation missing --]]
+L["|cffff2020Friendly CD module must be enabled for the corresponding instance zone."] = "|cffff2020Friendly CD module must be enabled for the corresponding instance zone."
+--[[Translation missing --]]
 L["|cffff2020Glow and Highlights are never applied on cropped icons. \"Border\" must be enabled."] = "|cffff2020Glow and Highlights are never applied on cropped icons. \"Border\" must be enabled."
 --[[Translation missing --]]
 L["|cffff2020Important!|r Covenant and Soulbind Conduit data can only be acquired from group members with OmniCD installed."] = "|cffff2020Important!|r Covenant and Soulbind Conduit data can only be acquired from group members with OmniCD installed."
@@ -26,6 +28,8 @@ L["Alerts"] = "Alertes"
 L["All user set values will be lost. Do you want to proceed?"] = "Toutes les valeurs définies par l'utilisateur seront perdues. Souhaitez-vous continuer ?"
 L["Always attach to Blizzard frames. By default, bars attach to whichever frame is visible, and if both are visible UF addon take precedence over Blizzard"] = "Toujours attacher aux cadres Blizzard. Par défaut, les barres s'attachent à n'importe quel cadre visible, et si les deux sont visibles, l'addon UF a priorité sur Blizzard"
 L["Always Bottom"] = "Toujours en bas"
+--[[Translation missing --]]
+L["Always Show Cooldown Numbers"] = "Always Show Cooldown Numbers"
 L["Always Top"] = "Toujours en haut"
 L["Anchor"] = "Ancrage"
 L["Anchor Point"] = "Point d'ancrage"
@@ -43,6 +47,8 @@ L["Author"] = "Auteur"
 L["Auto"] = "Auto"
 L["Bar"] = "Barre"
 L["Bar width"] = "Largeur de barre"
+--[[Translation missing --]]
+L["Battle Res"] = "Battle Res"
 --[[Translation missing --]]
 L["BG"] = "BG"
 L["Blizzard Raid Frames has been disabled by your AddOn(s). Enable and reload UI?"] = "Les barres de raid Blizzard ont été désactivées par un de vos addons. Activer et recharger l'interface utilisateur ?"
@@ -129,6 +135,8 @@ L["Decompress failed!"] = "Decompress failed!"
 L["Default spells are reverted back to original values and removed from the list only"] = "Default spells are reverted back to original values and removed from the list only"
 --[[Translation missing --]]
 L["Defensive"] = "Defensive"
+--[[Translation missing --]]
+L["Desaturate color at 0 charge"] = "Desaturate color at 0 charge"
 L["Desaturate Colors"] = "Désaturer les couleurs"
 L["Desaturate colors on active icons"] = "Désaturer les couleurs sur les icônes actives"
 L["Descending"] = "Vers le bas"
@@ -162,6 +170,8 @@ L["Enable in automated instance groups"] = "Enable in automated instance groups"
 L["Enable initial spark and marching-ants animation"] = "Enable initial spark and marching-ants animation"
 L["Enable spell for this specialization"] = "Activer le sort pour cette spécialisation"
 L["Enable to customize the 2nd row icons when using 'Double Row' layout."] = "Activer pour personnaliser les icônes de la 2ème ligne lors de l'utilisation de «l'affichage sur deux lignes»."
+--[[Translation missing --]]
+L["Enable to show cooldown numbers above 0 charges."] = "Enable to show cooldown numbers above 0 charges."
 --[[Translation missing --]]
 L["Enter buff ID if it differs from spell ID for Highlights to work"] = "Enter buff ID if it differs from spell ID for Highlights to work"
 --[[Translation missing --]]
@@ -229,6 +239,8 @@ L["Icon Position"] = "Emplacement de l'icône"
 L["Icon Scale Changed."] = "L'échelle des icônes a été modifiée."
 L["Icon Size"] = "Taille de l'icône"
 L["Icon size auto adjusts as a percentage of the anchored frame height"] = "La taille de l'icône s'ajuste automatiquement et proportionnellement (en %) à la hauteur du cadre ancré"
+--[[Translation missing --]]
+L["Icon Texture"] = "Icon Texture"
 L["Icons"] = "Icônes"
 L["Immunity"] = "Immunité"
 L["Import"] = "Importer"
@@ -243,6 +255,10 @@ L["Inactive"] = "Inactive"
 L["Inactive Icon Opacity"] = "Inactive Icon Opacity"
 L["INNER"] = "INTÉRIEUR"
 L["Interrupt Bar"] = "Barre d'interruption"
+--[[Translation missing --]]
+L["Interrupted Spell Icon"] = "Interrupted Spell Icon"
+--[[Translation missing --]]
+L["Interrupted Target Marker"] = "Interrupted Target Marker"
 L["Interrupts"] = "Interruptions"
 L["Invalid ID"] = "ID invalide"
 L["Invalid Profile"] = "Profil invalide"
@@ -268,6 +284,8 @@ L["MM Color"] = "MM Color"
 L["MM:SS Color"] = "MM:SS Color"
 --[[Translation missing --]]
 L["MM:SS Threshold"] = "MM:SS Threshold"
+--[[Translation missing --]]
+L["Mouseovering the icon will show the interrupted spell information regardless of \'Show Tooltip\' option."] = "Mouseovering the icon will show the interrupted spell information regardless of \'Show Tooltip\' option."
 L["Move your group's Interrupt spells to the Interrupt Bar."] = "Déplacer les sorts d'interruption de son groupe vers la barre d'interruption."
 --[[Translation missing --]]
 L["Move your group's Raid Cooldowns to the Raid Bar."] = "Move your group's Raid Cooldowns to the Raid Bar."
@@ -317,6 +335,8 @@ L["Profile Sharing"] = "Partage de profil"
 L["Profile Type"] = "Type de profil"
 L["Profile Type: %s%s|r"] = "Type de profil : %s%s|r"
 L["Profile unchanged from default!"] = "Profil inchangé par rapport à celui par défaut !"
+--[[Translation missing --]]
+L["PvP Trinket"] = "PvP Trinket"
 L["Quick Select"] = "Sélection rapide"
 --[[Translation missing --]]
 L["Racial Traits"] = "Racial Traits"
@@ -427,6 +447,10 @@ L["Show player's spell bar"] = "Afficher la barre de sorts du joueur"
 L["Show pvp trinket only while in Battlegrounds"] = "Show pvp trinket only while in Battlegrounds"
 L["Show Spell ID in Tooltips"] = "Afficher l'ID des sorts dans les info-bulles"
 L["Show spell information when you mouseover an icon"] = "Afficher les informations sur le sort lorsque vous passez la souris sur une icône"
+--[[Translation missing --]]
+L["Show the interrupted spell icon."] = "Show the interrupted spell icon."
+--[[Translation missing --]]
+L["Show the interrupted unit's target marker if it exists."] = "Show the interrupted unit's target marker if it exists."
 --[[Translation missing --]]
 L["Show timer on spells while under the effect of Forbearance or Hypothermia. Spells castable to others will darken instead"] = "Show timer on spells while under the effect of Forbearance or Hypothermia. Spells castable to others will darken instead"
 L["Show Tooltip"] = "Afficher l'info-bulle"

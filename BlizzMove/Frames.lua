@@ -113,6 +113,14 @@ BlizzMoveAPI:RegisterFrames(
 	["DressUpFrame"] =
 	{
 		MinVersion = 0,
+		SubFrames =
+		{
+			["DressUpFrame.OutfitDetailsPanel"] =
+			{
+				MinVersion = 90105,
+				Detachable = true,
+			}
+		},
 	},
 	["FriendsFrame"] =
 	{
@@ -127,6 +135,13 @@ BlizzMoveAPI:RegisterFrames(
 			{
 				MinVersion = 0,
 				Detachable = true,
+				SubFrames =
+				{
+					["RaidInfoScrollFrame"] =
+					{
+						MinVersion = 0,
+					}
+				}
 			},
 			["RecruitAFriendFrame.RecruitList.ScrollFrame"] =
 			{
@@ -248,6 +263,7 @@ BlizzMoveAPI:RegisterFrames(
 			["LFGListSearchPanelScrollFrame"] =
 			{
 				MinVersion = 40000,
+				IgnoreMouseWheel = true,
 			},
 			["ScenarioQueueFrameSpecific"] =
 			{
@@ -347,6 +363,10 @@ BlizzMoveAPI:RegisterAddOnFrames(
 				},
 			},
 		},
+		["AchievementFrame.searchResults"] =
+		{
+			MinVersion = 30000, -- Added when?
+		},
 	},
 	["Blizzard_AlliedRacesUI"] =
 	{
@@ -378,6 +398,10 @@ BlizzMoveAPI:RegisterAddOnFrames(
 		["ArchaeologyFrame"] =
 		{
 			MinVersion = 40000,
+		},
+		["ArcheologyDigsiteProgressBar"] =
+		{
+			MinVersion = 40000, -- Added when?
 		},
 	},
 	["Blizzard_ArtifactUI"] =
@@ -508,6 +532,20 @@ BlizzMoveAPI:RegisterAddOnFrames(
 			MinVersion = 0,
 		},
 	},
+	["Blizzard_ClickBindingUI"] =
+	{
+		["ClickBindingFrame"] =
+		{
+			MinVersion = 90200,
+			SubFrames =
+			{
+				["ClickBindingFrame.ScrollBox"] =
+				{
+					MinVersion = 90200,
+				}
+			},
+		},
+	},
 	["Blizzard_Collections"] =
 	{
 		["CollectionsJournal"] =
@@ -607,27 +645,27 @@ BlizzMoveAPI:RegisterAddOnFrames(
 			MinVersion = 40000, -- Added when?
 			SubFrames =
 			{
-				["EncounterJournalInstanceSelectScrollFrameScrollChild"] =
+				["EncounterJournal.instanceSelect.scroll"] =
 				{
 					MinVersion = 40000,
 				},
-				["EncounterJournalEncounterFrameInstanceFrameLoreScrollFrameScrollChild"] =
+				["EncounterJournal.encounter.instance.loreScroll"] =
 				{
 					MinVersion = 40000,
 				},
-				["EncounterJournalEncounterFrameInfoOverviewScrollFrameScrollChild"] =
+				["EncounterJournal.encounter.info.overviewScroll"] =
 				{
 					MinVersion = 40000,
 				},
-				["EncounterJournalEncounterFrameInfoLootScrollFrameScrollChild"] =
+				["EncounterJournal.encounter.info.lootScroll"] =
 				{
 					MinVersion = 40000,
 				},
-				["EncounterJournalEncounterFrameInfoDetailsScrollFrameScrollChild"] =
+				["EncounterJournal.encounter.info.detailsScroll"] =
 				{
 					MinVersion = 40000,
 				},
-				["EncounterJournalEncounterFrameInfoModelFrame"] =
+				["EncounterJournal.encounter.info.model"] =
 				{
 					MinVersion = 40000,
 					NonDraggable = true,
@@ -716,15 +754,15 @@ BlizzMoveAPI:RegisterAddOnFrames(
 				{
 					MinVersion = 90000,
 				},
-				["CovenantMissionFrameMissions.MaterialFrame"] =
+				["CovenantMissionFrame.MissionTab.MissionList.MaterialFrame"] =
 				{
 					MinVersion = 90000,
 				},
-				["CovenantMissionFrameFollowersListScrollFrameScrollChild"] =
+				["CovenantMissionFrame.FollowerList.listScroll"] =
 				{
 					MinVersion = 90000,
 				},
-				["CovenantMissionFrameFollowers.MaterialFrame"] =
+				["CovenantMissionFrame.FollowerList.MaterialFrame"] =
 				{
 					MinVersion = 90000,
 				},
@@ -900,6 +938,7 @@ BlizzMoveAPI:RegisterAddOnFrames(
 				["SoulbindViewer.ConduitList.Charges"] =
 				{
 					MinVersion = 90000,
+					MaxVersion = 90105,
 				},
 			},
 		},
@@ -909,11 +948,11 @@ BlizzMoveAPI:RegisterAddOnFrames(
 		["TalentFrame"] =
 		{
 			MinVersion = 0,
-			MaxVersion = 20000,
+			MaxVersion = 11401,
 		},
 		["PlayerTalentFrame"] =
 		{
-			MinVersion = 20000,
+			MinVersion = 11401,
 		},
 	},
 	["Blizzard_TalkingHeadUI"] =

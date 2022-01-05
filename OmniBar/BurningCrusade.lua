@@ -10,20 +10,20 @@ addon.Resets = {
         - Frost Ward
         - Frost Nova
         - Ice Block
+        - Icy Veins
+        - Summon Water Elemental
       ]]
-    [11958] = { 11426, 6143, 122, 45438 },
+    [11958] = { 11426, 6143, 122, 45438, 12472, 31687 },
 
     --[[ Preparation
-        - Blade Flurry
-        - Kidney Shot
-        - Blind
-        - Sprint
         - Evasion
-        - Gouge
-        - Ghostly Strike
+        - Sprint
+        - Vanish
+        - Cold Blood
+        - Shadowstep
         - Premeditation
       ]]
-    [14185] = { 13877, 408, 2094, 2983, 5277, 1776, 14278, 14183 },
+    [14185] = { 5277, 2983, 1856, 14177, 36554, 14183 },
 
     --[[ Summon Felhunter
         - Spell Lock
@@ -1775,7 +1775,7 @@ addon.Cooldowns = {
 
     --]]
 
-    [20252] = { duration = 30, class = "WARRIOR" }, -- Intercept (Rank 1)
+    [20252] = { duration = 30, class = "WARRIOR", decrease = 15 }, -- Intercept (Rank 1)
         [20616] = { parent = 20252 }, -- Intercept (Rank 2)
         [20617] = { parent = 20252 }, -- Intercept (Rank 3)
         [25272] = { parent = 20252 }, -- Intercept (Rank 4)

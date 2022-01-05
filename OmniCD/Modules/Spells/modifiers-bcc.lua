@@ -1,5 +1,3 @@
--- $ comments stripped
-
 local E, L, C = select(2, ...):unpack()
 
 if not E.isBCC then return end
@@ -152,7 +150,7 @@ E.spell_cdmod_talents = {
 	},
 	[20608] = {
 		{ 16184,    600 },
-		{ 16209,    600 },
+		{ 16209,    1200},
 	},
 
 	[1161]  = {
@@ -584,7 +582,7 @@ for i = 1, #talentRanks do
 			E.talentNameToRankID[name] = t
 		end
 	else
-		--E.Write("Invalid TalentID: |cffffd200" .. talentID)
+
 	end
 end
 
@@ -612,13 +610,20 @@ end
 E.spell_preactive = {
 	[17116]  = true,
 	[5215]   = true,
+	[6783]   = true,
+	[9913]   = true,
 	[5384]   = true,
 	[34477]  = true,
 	[12043]  = true,
 	[14177]  = true,
+	[1784]   = true,
+	[1785]   = true,
+	[1786]   = true,
+	[1787]   = true,
 	[20216]  = true,
 	[16188]  = true,
 	[18288]  = true,
+	[20580]  = true,
 }
 
 E.spell_sharedCDwTrinkets = BLANK
@@ -672,18 +677,23 @@ E.aura_free_spender = BLANK
 E.cd_start_aura_removed = {
 	[17116]  = 17116,
 	[5215]   = 5215,
-	[6783]   = 6783,
-	[9913]   = 9913,
+	[6783]   = 5215,
+	[9913]   = 5215,
 	[34477]  = 34477,
 	[12043]  = 12043,
 	[14177]  = 14177,
+	[1784]   = 1784,
+	[1785]   = 1784,
+	[1786]   = 1784,
+	[1787]   = 1784,
 	[20216]  = 20216,
 	[16188]  = 16188,
 	[18288]  = 18288,
 
+	[20580]  = 20580,
 }
 
-E.cd_start_aura_applied = BLANK
+E.processSpell_aura_applied = BLANK
 E.cd_start_dispels = BLANK
 
 E.cd_disable_aura_applied = {

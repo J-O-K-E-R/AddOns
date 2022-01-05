@@ -10,11 +10,14 @@ _G["AllTheThings"] = app;
 app.asset = function(path)
 	return "Interface\\Addons\\AllTheThings\\assets\\" .. path;
 end
+-- app.DEBUG_PRINT = true;
 
 -- Create an Event Processor.
 local events = {};
 local _ = CreateFrame("FRAME", nil, UIParent, BackdropTemplateMixin and "BackdropTemplate");
-_:SetScript("OnEvent", function(self, e, ...) (rawget(events, e) or print)(...); end);
+_:SetScript("OnEvent", function(self, e, ...)
+-- if app.DEBUG_PRINT then print(GetTimePreciseSec(),e, ...) end
+(rawget(events, e) or print)(...); end);
 _:SetPoint("BOTTOMLEFT", UIParent, "TOPLEFT", 0, 0);
 _:SetSize(1, 1);
 _:Show();
@@ -37,16 +40,34 @@ app.SetScript = function(self, ...)
 		_:SetScript(scriptName, nil);
 	end
 end
+-- Triggers a timer callback method to run on the next game frame with the provided params; the method can only be set to run once per frame
+local function Callback(method, ...)
+	if not app.__callbacks then
+		app.__callbacks = {};
+	end
+	if not app.__callbacks[method] then
+		app.__callbacks[method] = ... and {...} or true;
+		-- print("Callback:",method, ...)
+		local newCallback = function()
+			local args = app.__callbacks[method];
+			app.__callbacks[method] = nil;
+			-- callback with args/void
+			if args ~= true then
+				-- print("Callback/args Running",method, unpack(args))
+				method(unpack(args));
+			else
+				-- print("Callback/void Running",method)
+				method();
+			end
+			-- print("Callback Done",method)
+		end;
+		C_Timer.After(0, newCallback);
+	end
+end
+app.Callback = Callback;
 
 (function()
-local button = CreateFrame("BUTTON", nil, _);
-local checkbutton = CreateFrame("CHECKBUTTON", nil, _);
-local texture = _:CreateTexture(nil, "ARTWORK");
-local frameClass = getmetatable(_).__index;
-local buttonClass = getmetatable(button).__index;
-local checkbuttonClass = getmetatable(checkbutton).__index;
-local textureClass = getmetatable(texture).__index;
-buttonClass.SetATTTooltip = function(self, text)
+local SetATTTooltip = function(self, text)
 	self:SetScript("OnEnter", function(self)
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		GameTooltip:SetText(text, nil, nil, nil, nil, true);
@@ -58,8 +79,23 @@ buttonClass.SetATTTooltip = function(self, text)
 		end
 	end);
 end
-checkbuttonClass.SetATTTooltip = buttonClass.SetATTTooltip;
-frameClass.SetATTTooltip = buttonClass.SetATTTooltip;
+local button = CreateFrame("BUTTON", nil, _);
+button:Hide();
+local editbox = CreateFrame("EDITBOX", nil, _);
+editbox:Hide();
+local checkbutton = CreateFrame("CHECKBUTTON", nil, _);
+checkbutton:Hide();
+local texture = _:CreateTexture(nil, "ARTWORK");
+texture:Hide();
+local frameClass = getmetatable(_).__index;
+local buttonClass = getmetatable(button).__index;
+local editboxClass = getmetatable(editbox).__index;
+local checkbuttonClass = getmetatable(checkbutton).__index;
+local textureClass = getmetatable(texture).__index;
+buttonClass.SetATTTooltip = SetATTTooltip;
+checkbuttonClass.SetATTTooltip = SetATTTooltip;
+frameClass.SetATTTooltip = SetATTTooltip;
+editboxClass.SetATTTooltip = SetATTTooltip;
 textureClass.SetATTSprite = function(self, name, x, y, w, h, sourceW, sourceH)
 	self:SetTexture(app.asset("content"));
 	self:SetTexCoord(x / sourceW, (x + w) / sourceW, y / sourceH, (y + h) / sourceH);
@@ -70,8 +106,6 @@ buttonClass.SetATTHighlightSprite = function(self, name, x, y, w, h, sourceW, so
 	hl:SetATTSprite(name, x, y, w, h, sourceW, sourceH);
 	return hl;
 end
-texture:Hide();
-button:Hide();
 end)();
 
 -- ReloadUI slash command (for ease of use)
@@ -125,7 +159,7 @@ function app:ShowPopupDialogWithEditBox(msg, text, callback, timeout)
 		self.editBox:SetWidth(240);
 		self.editBox:HighlightText();
 	end;
-	popup.text = msg or "Ctrl+C to Copy to your Clipboard.";
+	popup.text = (msg or "")..app.L["REPORT_TIP"];
 	popup.callback = callback;
 	StaticPopup_Hide ("ALL_THE_THINGS_EDITBOX");
 	StaticPopup_Show ("ALL_THE_THINGS_EDITBOX");

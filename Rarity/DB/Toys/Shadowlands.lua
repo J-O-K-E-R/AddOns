@@ -412,6 +412,73 @@ local shadowlandsToys = {
 			{m = CONSTANTS.UIMAPIDS.THE_MAW}
 		}
 	},
+	["Adamant Vaults Cell"] = {
+		cat = CONSTANTS.ITEM_CATEGORIES.SHADOWLANDS,
+		type = CONSTANTS.ITEM_TYPES.ITEM,
+		method = CONSTANTS.DETECTION_METHODS.NPC,
+		name = L["Adamant Vaults Cell"],
+		isToy = true,
+		itemId = 187417,
+		npcs = {176578, 179526, 179433},
+		chance = 11, -- Blind guess
+		unique = true,
+		sourceText = L["This item can only drop in the Adamant Vaults section of Torghast."],
+		coords = {
+			{m = CONSTANTS.UIMAPIDS.TORGHAST}
+		}
+	},
+	["Steward's First Feather"] = {
+		cat = CONSTANTS.ITEM_CATEGORIES.SHADOWLANDS,
+		type = CONSTANTS.ITEM_TYPES.ITEM,
+		isToy = true,
+		method = CONSTANTS.DETECTION_METHODS.USE,
+		name = L["Steward's First Feather"],
+		itemId = 187419,
+		items = {181741, 181372},
+		chance = 100, -- Blind guess
+		coords = {
+			{m = CONSTANTS.UIMAPIDS.BASTION}
+		}
+	},
+	["Apprentice Slimemancer's Boots"] = {
+		cat = CONSTANTS.ITEM_CATEGORIES.SHADOWLANDS,
+		type = CONSTANTS.ITEM_TYPES.ITEM,
+		isToy = true,
+		method = CONSTANTS.DETECTION_METHODS.USE,
+		name = L["Apprentice Slimemancer's Boots"],
+		itemId = 187913,
+		items = {181732, 181733},
+		chance = 100, -- Blind guess
+		coords = {
+			{m = CONSTANTS.UIMAPIDS.MALDRAXXUS}
+		}
+	},
+	["Sparkle Wings"] = {
+		cat = CONSTANTS.ITEM_CATEGORIES.SHADOWLANDS,
+		type = CONSTANTS.ITEM_TYPES.ITEM,
+		isToy = true,
+		method = CONSTANTS.DETECTION_METHODS.USE,
+		name = L["Sparkle Wings"],
+		itemId = 187840,
+		items = {181475, 181476},
+		chance = 100, -- Blind guess
+		coords = {
+			{m = CONSTANTS.UIMAPIDS.ARDENWEALD}
+		}
+	},
+	["Tome of Small Sins"] = {
+		cat = CONSTANTS.ITEM_CATEGORIES.SHADOWLANDS,
+		type = CONSTANTS.ITEM_TYPES.ITEM,
+		isToy = true,
+		method = CONSTANTS.DETECTION_METHODS.USE,
+		name = L["Tome of Small Sins"],
+		itemId = 187512,
+		items = {181556, 181557},
+		chance = 100, -- Blind guess
+		coords = {
+			{m = CONSTANTS.UIMAPIDS.REVENDRETH}
+		}
+	},
 }
 
 Rarity.ItemDB.MergeItems(Rarity.ItemDB.toys, shadowlandsToys)

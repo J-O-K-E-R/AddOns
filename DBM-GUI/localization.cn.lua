@@ -1,7 +1,7 @@
 -- Diablohu(diablohudream@gmail.com)
 -- yleaf(yaroot@gmail.com)
 -- sunlcy@NGA
--- Mini Dragon <流浪者酒馆-Brilla@金色平原> 20210202
+-- Mini Dragon <流浪者酒馆-Brilla@金色平原> 20211214
 
 if GetLocale() ~= "zhCN" then return end
 if not DBM_GUI_L then DBM_GUI_L = {} end
@@ -18,7 +18,7 @@ L.WebsiteButton				= "网页"
 L.OTabBosses	            = "模块"--Deprecated and will be deleted once tabs no longer use this
 L.OTabRaids		            = "副本 & PVP"--Raids & PVP
 L.OTabDungeons	            = "地下城"--Might still need editing since it doesn't mention scenarios
-L.OTabPlugins	            = "插件"
+L.OTabPlugins	            = "核心插件"
 L.OTabOptions	            = "选项"
 L.OTabAbout		            = "关于"
 
@@ -96,6 +96,7 @@ L.LFDEnhance				= "当发起角色检查或随机团队/战场就绪时，在主
 L.WorldBossNearAlert		= "当世界附近的Boss进入战斗时播放准备音效(覆盖单独BOSS设置)并闪烁图标"
 L.RLReadyCheckSound			= "在主声道/对话声道播放检查准备音效并闪烁图标。"
 L.AFKHealthWarning			= "当你在挂机/暂离受到伤害时播放音效并闪烁图标(你会死)"
+L.AutoReplySound			= "当你收到DBM自动回复密语时播放警告声和闪烁图标"
 --
 L.TimerGeneral 				= "计时器选项"
 L.SKT_Enabled				= "总是显示最速胜利计时条(覆盖单独BOSS设置)"
@@ -144,6 +145,9 @@ L.ImportExportInfo			= "导入会覆盖你当前的配置，请小心使用"
 L.ButtonImportProfile		= "导入配置"
 L.ButtonExportProfile		= "导出配置"
 
+L.ImportErrorOn				= "自定义语音缺失: %s"
+L.ImportVoiceMissing		= "找不要语音包: %s"
+
 -- Tab: Alerts
 L.TabCategory_Alerts	 	= "警报"
 L.Area_SpecAnnounceConfig	= "特殊警报提示和声音指南"
@@ -184,6 +188,7 @@ L.SpecialWarningIcon		= "特殊警报使用技能图标"
 L.ShortTextSpellname		= "使用较短的技能名称 (当可行时)"
 L.SpecWarn_FlashFrameRepeat	= "重复 %d 次 (如果开启的话)"
 L.SpecWarn_Flash			= "屏幕闪烁"
+L.SpecWarn_Vibrate			= "闪烁控制器"
 L.SpecWarn_FlashRepeat		= "重复闪烁"
 L.SpecWarn_FlashColor		= "闪烁颜色 %d"
 L.SpecWarn_FlashDur			= "闪烁持续时间: %0.1f"
@@ -215,6 +220,7 @@ L.Area_ChatAlerts			= "其他警报选项"
 L.RoleSpecAlert				= "当进入团队时，如果拾取专精与当前角色专精不同，则显示警告。"
 L.CheckGear					= "当你身上的装备装等低于背包装等40点时显示警告。(可能没有装备某物品或装备了低等级的任务道具或没有装备主武器)"
 L.WorldBossAlert			= "当世界Boss进入战斗后发送警告，这个信息可能是你的朋友或者同公会成员发送的。 (由于跨服，卡位面等因素，可能不准确)"
+L.WorldBuffAlert			= "在您的位面启动世界增益释放时显示警报信息和计时器。"
 
 L.Area_BugAlerts			= "错误报告选项"
 L.BadTimerAlert				= "在聊天窗口中显示DBM检测到计时器错误且至少有1秒不正确的信息"
@@ -345,7 +351,9 @@ L.SpamBlockNoShowAnnounce	= "不显示警报或播放警报音效"
 L.SpamBlockNoShowTgtAnnounce= "不显示针对目标类型的警报或播放警报音效(上面那个优先级比这个高)"
 L.SpamBlockNoSpecWarnText	= "不显示特殊警报，但允许语音包(上面那个优先级比这个高)"
 L.SpamBlockNoSpecWarnFlash	= "不显示特殊警报屏幕闪烁"
+L.SpamBlockNoSpecWarnVibrate	= "不显示特殊团队警报闪烁控制器"
 L.SpamBlockNoSpecWarnSound	= "不播放特殊团队警报的声音（如果在“语音警报”面板中启用了语音包，则仍然允许语音包）"
+L.SpamBlockNoTrivialSpecWarnSound	= "如果相对你等级是不重要的内容则不播放特別警报音效 (播放使用选择的标准警报音效替代)"
 
 L.Area_SpamFilter_Timers	= "计时器过滤选项"
 L.SpamBlockNoShowTimers		= "不显示 DBM 原装计时条"
@@ -398,7 +406,7 @@ L.HideGarrisonUpdates		= "Boss 战斗中隐藏要塞队列完成提示"
 L.HideGuildChallengeUpdates	= "Boss 战斗中隐藏公会挑战成功信息"
 L.HideQuestTooltips			= "Boss 战斗中隐藏鼠标提示窗体中的任务进度"
 L.HideTooltips				= "Boss 战斗中完全隐藏鼠标提示窗体"
-L.DisableSFX				= "Boss 战斗中关闭音效(注意：如果你开启了这个选项，即使你在战斗开始时已关闭音效，战斗接叔后音效也会被开启)"
+L.DisableSFX				= "Boss 战斗中关闭音效(注意：如果你开启了这个选项，即使你在战斗开始时已关闭音效，战斗结束后音效也会被开启)"
 L.DisableCinematics			= "自动跳过游戏内过场动画"
 L.OnlyFight					= "只有在战斗中，每部动画播放了一次之后跳过"
 L.AfterFirst				= "仅第一次播放"

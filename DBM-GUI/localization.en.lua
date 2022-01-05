@@ -141,6 +141,7 @@ L.ButtonImportProfile		= "Import profile"
 L.ButtonExportProfile		= "Export profile"
 
 L.ImportErrorOn				= "Custom sounds missing for setting: %s"
+L.ImportVoiceMissing		= "Missing voice pack: %s"
 
 -- Tab: Alerts
 L.TabCategory_Alerts	 	= "Alerts"
@@ -182,6 +183,7 @@ L.SpecialWarningIcon		= "Show icons on special announcements"
 L.ShortTextSpellname		= "Use shorter spellname text (when available)"
 L.SpecWarn_FlashFrameRepeat	= "Flash %d times(s)"
 L.SpecWarn_Flash			= "Flash screen"
+L.SpecWarn_Vibrate			= "Vibrate controller"
 L.SpecWarn_FlashRepeat		= "Repeat Flash"
 L.SpecWarn_FlashColor		= "Flash color %d"
 L.SpecWarn_FlashDur			= "Flash duration: %0.1f"
@@ -212,6 +214,7 @@ L.Area_ChatAlerts			= "Additional Alert Options"
 L.RoleSpecAlert				= "Show alert message on raid join when your loot spec does not match current spec"
 L.CheckGear					= "Show gear alert message during pull (when your equipped ilvl is much lower than bag ilvl (40+) or main weapon is not equipped)"
 L.WorldBossAlert			= "Show alert message when world bosses might have been engaged on your realm by guildies or friends (inaccurate if sender is CRZed)"
+L.WorldBuffAlert			= "Show alert message and timer when world buff RP has been started on your realm"
 
 L.Area_BugAlerts			= "Bug Reporting Alert Options"
 L.BadTimerAlert				= "Show chat message when DBM detects a bad timer with at least 1 second of incorrectness"
@@ -270,6 +273,8 @@ L.Slider_BarOffSetX 		= "Offset X: %d"
 L.Slider_BarOffSetY 		= "Offset Y: %d"
 L.Slider_BarWidth 			= "Bar width: %d"
 L.Slider_BarScale 			= "Bar scale: %0.2f"
+L.BarSaturation				= "Bar saturation for small timers (When huge bars are disabled): %0.2f"
+
 --Types
 L.BarStartColorAdd			= "Start color (Add)"
 L.BarEndColorAdd			= "End color (Add)"
@@ -342,6 +347,7 @@ L.SpamBlockNoShowAnnounce			= "Do not show text or play sound for ANY general an
 L.SpamBlockNoShowTgtAnnounce		= "Do not show text or play sound for TARGET general announcements that do not affect other players (above filter overrides this one)"
 L.SpamBlockNoSpecWarnText			= "Do not show special announce text"
 L.SpamBlockNoSpecWarnFlash			= "Do not show special announce screen flash"
+L.SpamBlockNoSpecWarnVibrate		= "Do not vibrate controller on special announce"
 L.SpamBlockNoSpecWarnSound			= "Do not play special announce sounds (still permits voice packs, if one is enabled in Spoken Alerts panel)"
 L.SpamBlockNoTrivialSpecWarnSound	= "Do not play special announce sounds or show screen flash for content that is trivial for your level (plays user selected regular announce sound instead)"
 

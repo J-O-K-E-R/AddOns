@@ -420,7 +420,7 @@ local function ObjectiveReskin()
 		hooksecurefunc("Scenario_ProvingGrounds_ShowBlock", SkinProvingGroundButtons)
 
 		--Doing Underlines
-		local flat = [[Interface\AddOns\ElvUI\media\textures\Minimalist]]
+		local flat = [[Interface\AddOns\ElvUI\Core\Media\Textures\Minimalist]]
 		local height = E.private.sle.skins.objectiveTracker.underlineHeight
 		_G["ObjectiveTrackerBlocksFrame"].CampaignQuestHeader.SLE_Underline = Sk:CreateUnderline(_G["ObjectiveTrackerBlocksFrame"].CampaignQuestHeader, flat, true, height)
 		_G["ObjectiveTrackerBlocksFrame"].QuestHeader.SLE_Underline = Sk:CreateUnderline(_G["ObjectiveTrackerBlocksFrame"].QuestHeader, flat, true, height)
@@ -490,6 +490,7 @@ local function ObjectiveReskin()
 			MawBuffsBelowMinimapFrame.Container.List:StripTextures()
 			MawBuffsBelowMinimapFrame.Container.List:SetTemplate('Transparent')
 			ENH:ProcessShadow(MawBuffsBelowMinimapFrame.Container.List, nil, MawBuffsBelowMinimapFrame.Container.List:GetFrameLevel(), E.db.sle.shadows.torghastPowers)
+			ENH:HandleObjectiveFrame()
 		end
 	end
 end

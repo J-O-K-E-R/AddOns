@@ -1,7 +1,8 @@
 # <DBM> Dungeons (BC)
 
-## [r26](https://github.com/DeadlyBossMods/DBM-Dungeons/tree/r26) (2021-07-21)
-[Full Changelog](https://github.com/DeadlyBossMods/DBM-Dungeons/compare/r25...r26) [Previous Releases](https://github.com/DeadlyBossMods/DBM-Dungeons/releases)
+## [r29](https://github.com/DeadlyBossMods/DBM-Dungeons/tree/r29) (2021-11-02)
+[Full Changelog](https://github.com/DeadlyBossMods/DBM-Dungeons/compare/r28...r29) [Previous Releases](https://github.com/DeadlyBossMods/DBM-Dungeons/releases)
 
-- Update world boss sync code  
-- Fix missing target arg on zuramat  
+- tweak option default for mighty blow  
+- bump tocs  
+- Updated Scholomance with voice pack and better color bar by type support for timewalking in 9.1.5  

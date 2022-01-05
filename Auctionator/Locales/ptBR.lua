@@ -4,6 +4,8 @@ AUCTIONATOR_LOCALES.ptBR = function()
   L["ADD_FAVOURITE"] = "Adicionar Favorito"
 L["ADD_ITEM"] = "Adicionar Item"
 L["ADD_TERM_TO_LIST_DIALOG"] = "Escreva o termo de busca a ser adicionado:"
+--[[Translation missing --]]
+L["ALREADY_PURCHASED_X"] = "Already purchased %s"
 L["ALT_LEFT_CLICK"] = "Alt Clique Esquerdo"
 L["ALT_RIGHT_CLICK"] = "Alt Clique Direito"
 L["ANY_LOWER"] = "qualquer"
@@ -21,6 +23,14 @@ L["BIDDING_AUCTION_INFO"] = "%s com um lance inicial de %s"
 L["BUG_REPORT"] = "Comunicar um erro"
 L["BUG_TOOLTIP_HEADER"] = "Comunicar um bug no Github"
 L["BUG_TOOLTIP_TEXT"] = "Se você encontrar um error enquanto usa o Auctionator, por favor comunique no Github. Por favor tente fornecer uma quantidade de detalhes suficiente para que possamos reproduzir o bug! Usar os addons !BugGrabber e BugSak ajudarão também."
+--[[Translation missing --]]
+L["BUY"] = "Buy"
+--[[Translation missing --]]
+L["BUY_STACK"] = "Buy Stack"
+--[[Translation missing --]]
+L["BUYING"] = "Buying"
+--[[Translation missing --]]
+L["BUYING_X_FOR_X"] = "Buying %s for %s"
 L["BUYOUT_AUCTION_INFO"] = "%s preço fixo de %s"
 L["BUYOUT_PRICE"] = "Preço de Compra"
 L["CANCEL"] = "Cancelar"
@@ -72,6 +82,8 @@ L["CONFIG_DEBUG"] = "Ativar/desativar mostrar mensagens de debug."
 L["CONFIG_DEBUG_TOOLTIP_HEADER"] = "Debug do Auctionator"
 L["CONFIG_DEBUG_TOOLTIP_TEXT"] = "Isto é utilizado pelos mantenedores para mostrar mensagens de debug no chat."
 L["CONFIG_DEVELOPER"] = "Configurações de Desenvolvedor (a)"
+--[[Translation missing --]]
+L["CONFIG_ENCHANT_GENERIC_TOOLTIP"] = "Show enchant tooltips"
 L["CONFIG_ENCHANT_TOOLTIP"] = "Mostrar caixa de texto para encantamentos (WoD, Legion, BfA & Shadowlands apenas)"
 L["CONFIG_FULL_SCAN_STEP_SIZE"] = "Tamanho do \"passo\" da varredura total"
 L["CONFIG_LIFO_CATEGORY"] = "Vendendo"
@@ -90,6 +102,8 @@ L["CONFIG_QUANTITIES_CATEGORY"] = "Selling: Quantities"
 L["CONFIG_QUANTITIES_TEXT"] = "Choose the default quantity used for the different item categories."
 L["CONFIG_SCAN_SETTINGS"] = "Configurações de Varredura"
 L["CONFIG_SCANNING"] = "Opções de Varredura Completa"
+--[[Translation missing --]]
+L["CONFIG_SELLING_ALL_ITEMS_CATEGORY"] = "Selling: All Items"
 L["CONFIG_SELLING_AUTO_SELECT_NEXT"] = "Selecione automaticamente o próximo item da sua bolsa"
 L["CONFIG_SELLING_AUTO_SELECT_NEXT_TOOLTIP_HEADER"] = "Seleção automática de itens"
 L["CONFIG_SELLING_AUTO_SELECT_NEXT_TOOLTIP_TEXT"] = "Ao postar, selecione automaticamente o próximo item da bolsa."
@@ -124,9 +138,23 @@ L["CONFIG_SELLING_SHOW_BID_PRICE"] = "Mostrar a opção de oferta quando estiver
 L["CONFIG_SELLING_SHOW_BID_PRICE_TOOLTIP_HEADER"] = "Opções de Oferta"
 L["CONFIG_SELLING_SHOW_BID_PRICE_TOOLTIP_TEXT"] = "Controla se opção de oferta aparece quando estiver postando um item."
 L["CONFIG_SELLING_SKIP_SHORTCUT"] = "Atalho para pular o item selecionado é"
+--[[Translation missing --]]
+L["CONFIG_SELLING_TBC_ALL_ITEMS"] = "Options to set the default posting settings for all items."
+--[[Translation missing --]]
+L["CONFIG_SELLING_TBC_SHOW_ALL_RESULTS"] = "Include auctions not needed to get the minimum price in results"
+--[[Translation missing --]]
+L["CONFIG_SELLING_TBC_SHOW_ALL_RESULTS_TOOLTIP_HEADER"] = "Show All Results"
+--[[Translation missing --]]
+L["CONFIG_SELLING_TBC_SHOW_ALL_RESULTS_TOOLTIP_TEXT"] = "Enabling this setting causes all pages of results to be searched and all the auctions found to be listed, even though only the first page is needed to determine the minimum price."
 L["CONFIG_SELLING_TEXT"] = "Opções para alterar o comportamento da guia Venda"
 L["CONFIG_SHOPPING_CATEGORY"] = "Compras"
 L["CONFIG_SHOPPING_LIST"] = "Configurações de Lista de Compras"
+--[[Translation missing --]]
+L["CONFIG_SHOPPING_LIST_MISSING_TERMS"] = "Show terms from a shopping list that have no results in the results."
+--[[Translation missing --]]
+L["CONFIG_SHOPPING_LIST_MISSING_TERMS_TOOLTIP_HEADER"] = "Searches with no results"
+--[[Translation missing --]]
+L["CONFIG_SHOPPING_LIST_MISSING_TERMS_TOOLTIP_TEXT"] = "When a search term has no results an entry with zero available will be added to the results to show this."
 L["CONFIG_SHOPPING_TEXT"] = "Opções para configurar o funcionamento da aba de Compras"
 L["CONFIG_SMALL_TABS"] = "Usar abas pequenas para Casa de Leilões (reabra a Casa de Leilões para ver essa mudança)"
 L["CONFIG_SMALL_TABS_TOOLTIP_HEADER"] = "Abas Pequenas"
@@ -144,6 +172,8 @@ L["COPY_TEXT_HEADER"] = "Copia o Texto"
 L["CRAFTED_LEVEL"] = "Nível para Criação"
 L["CREATE"] = "Criar"
 L["CREATE_LIST_DIALOG"] = "Insira o nome para a nova lista de compras:"
+--[[Translation missing --]]
+L["CURRENT"] = "Current"
 L["CUSTOM_KEYBOARD_SHORTCUTS"] = "Atalhos de teclado"
 L["DATE"] = "Data"
 L["DAY_1"] = "Domingo"
@@ -156,6 +186,8 @@ L["DAY_7"] = "Sábado"
 L["DEFAULT_AUCTION_DURATION"] = "Duração Padrão de Leilão"
 L["DEFAULT_LIST_HEADER"] = "Lista de Compras Padrão"
 L["DEFAULT_QUANTITY"] = "Quantidade Padrão"
+--[[Translation missing --]]
+L["DEFAULT_STACK_SIZES"] = "Default Stack Sizes"
 L["DEFAULT_TAB"] = "Aba Padrão"
 L["DEFAULT_TAB_TEXT"] = "mosta a aba padrão"
 L["DELETE"] = "Deletar"
@@ -172,6 +204,8 @@ L["EDIT_ITEM"] = "Editar Item"
 L["ENCHANT_TOOLTIP_TOOLTIP_HEADER"] = "Caixa de Texto para Informações de Encatamento"
 L["ENCHANT_TOOLTIP_TOOLTIP_TEXT"] = "Mostrar informação de encantamento na caixa de texto."
 L["ENGAGE_HEADER"] = "Engajar Com o Auctionator"
+--[[Translation missing --]]
+L["ERROR_REOPEN_AUCTION_HOUSE"] = "Unable to complete action, please close and reopen the Auction House."
 L["EXACT_SEARCH"] = "Procura Exata"
 L["EXPORT"] = "Exportar"
 L["EXPORT_AS"] = "Exportar como"
@@ -187,6 +221,8 @@ L["FULL_SCAN_FAILED"] = "Não foi possível completar a varredura completa."
 L["FULL_SCAN_IN_PROGRESS"] = "Varredura completa em progresso."
 L["GEAR_VENDOR_PRICE_MULTIPLIER"] = "Multiplicador de preço de venda de equipamentos"
 L["HIDE"] = "Esconder"
+--[[Translation missing --]]
+L["HISTORY"] = "History"
 L["IMPORT"] = "Importar"
 L["INFO_TAB_HEADER"] = "Auctionator - Informações"
 L["IS_TOP_COLUMN"] = "Topo?"
@@ -203,12 +239,16 @@ L["LIST_ADD_ITEM_HEADER"] = "Adicionar Item à Lista de Compras"
 L["LIST_DELETE_ERROR"] = "Ocorreu um erro ao tentar deletar a lista."
 L["LIST_EDIT_ITEM_HEADER"] = "Editar Item da Lista de Compras"
 L["LIST_EXPORT_HEADER"] = "Exportar Listas de Compras"
+--[[Translation missing --]]
+L["LIST_EXTENDED_SEARCH_HEADER"] = "Extended Search Options"
 L["LIST_IMPORT_HEADER"] = "Importar Listas de Compras"
 L["LIST_SEARCH_START"] = "Procurando por itens em %s..."
 L["LIST_SEARCH_STATUS"] = "Procurar por iten %s/%s em %s"
 L["MAIL_TOOLTIP_TOOLTIP_HEADER"] = "Caixa de Texto da Caixa de Correio"
 L["MAIL_TOOLTIP_TOOLTIP_TEXT"] = "Mostra informações do Auctionator para itens na sua caixa de correio quando o mouse passa por cime."
 L["MAX"] = "Máximo"
+--[[Translation missing --]]
+L["MAX_COLON_X"] = "Max: %s"
 L["MIN"] = "Mínimo"
 L["MONTH_1"] = "Janeiro"
 L["MONTH_10"] = "Outubro"
@@ -223,9 +263,17 @@ L["MONTH_7"] = "Julho"
 L["MONTH_8"] = "Agosto"
 L["MONTH_9"] = "Setembro"
 L["NAME"] = "Nome"
+--[[Translation missing --]]
+L["NEW_SHOPPING_LIST"] = "+ New shopping list"
 L["NEXT_SCAN_MESSAGE"] = "Próxima varredura completa pode ser começada em %s minutos e %s segundos."
+--[[Translation missing --]]
+L["NO_ITEM_INFO_SPECIFIED"] = "No item info was specified."
+--[[Translation missing --]]
+L["NO_LIST"] = "no list"
 L["NO_RESULTS"] = "Nenhum resultado encontrado."
 L["NONE"] = "Nenhum"
+--[[Translation missing --]]
+L["NONE_LEFT"] = "None Left"
 L["NUMBER_SEPARATOR"] = "."
 L["OPEN_ADDON_OPTIONS"] = "Abrir Opções do Addon"
 L["OWNED_COLUMN"] = "Próprio?"
@@ -239,37 +287,65 @@ L["POST"] = "Postar"
 L["PRICE"] = "Preço"
 L["PROFILE_TOGGLE_TOOLTIP_HEADER"] = "Ativar definições específicas para cada personagem"
 L["PROFILE_TOGGLE_TOOLTIP_TEXT"] = "Faz mudanças para as configurações do Auctionator afetar apenas este personagem."
+--[[Translation missing --]]
+L["PROFIT_COLON"] = "Profit:"
+--[[Translation missing --]]
+L["PURCHASED_X_XX"] = "Purchased %s x%s"
 L["QUANTITY"] = "Quantidade"
 L["REAGENT_SEARCH"] = "Pesquisa de Reagente"
 L["REALM_HISTORY"] = "Histórico do Servidor"
+--[[Translation missing --]]
+L["RECENT_SEARCHES"] = "Recent Searches"
+--[[Translation missing --]]
+L["REFRESH"] = "Refresh"
 L["REMOVE_FAVOURITE"] = "Remover Favorito"
 L["RENAME"] = "Renomear"
+--[[Translation missing --]]
+L["RENAME_LIST_CONFIRM"] = "Enter the new name for '%s':"
 L["RENAME_LIST_DIALOG"] = "Escreve o novo nome para a lista de compras:"
 L["RESET_ALL"] = "Resetar Tudo"
 L["RESTORE_ALL"] = "Restaurar Tudo"
 L["RESULTS_AVAILABLE_COLUMN"] = "Disponível"
 L["RESULTS_NAME_COLUMN"] = "Nome"
 L["RESULTS_PRICE_COLUMN"] = "Preço"
+--[[Translation missing --]]
+L["RESULTS_STACK_PRICE_COLUMN"] = "Stack Price"
+--[[Translation missing --]]
+L["RESULTS_STACK_SIZE_COLUMN"] = "Stack Size"
 L["RIGHT_CLICK"] = "Clique Direito"
 L["ROADMAP"] = "Roteiro Técnico"
 L["ROADMAP_TOOLTIP_TEXT"] = "O roteiro técnico define as melhorias que planejamos para futuras atualizações do Auctionator. Por favor olhe aqui para se informar sobre o progresso feito na sua função favorita!"
 L["SALES_PREFERENCE"] = "Preferências de Venda"
 L["SAVE_AS"] = "Salvar Como"
+--[[Translation missing --]]
+L["SAVE_THIS_LIST_AS"] = "Save this list as..."
+--[[Translation missing --]]
+L["SCANNING_PAGE_X"] = "Scanning page %s..."
 L["SEARCH"] = "Procurar"
+--[[Translation missing --]]
+L["SEARCH_ALL"] = "Search All"
 L["SEARCH_TERM"] = "Procurar Termo"
 L["SELECT_ALL"] = "Selecionar Todos"
+--[[Translation missing --]]
+L["SELECT_SHOPPING_LIST"] = "Select Shopping List..."
 L["SELLERS_COLUMN"] = "Vendedor(es)"
 --[[Translation missing --]]
 L["SELLERS_OVERFLOW_TEXT"] = "%s, and %s more"
 L["SELLING_TAB"] = "Vendas"
 L["SELLING_TAB_HEADER"] = "Auctionator - Vendas"
+--[[Translation missing --]]
+L["SERVER_TOOK_TOO_LONG"] = "The server took too long to respond. Your action may not have had an effect."
 L["SET_VALUE"] = "Estabelecer Valor"
 L["SET_VALUE_SUFFIX"] = "Desconto"
 L["SHIFT_LEFT_CLICK"] = "Shift Clique Esquerdo"
 L["SHIFT_RIGHT_CLICK"] = "Shift Clique Direito"
+--[[Translation missing --]]
+L["SHOPPING_LIST"] = "Shopping List"
 L["SHOPPING_TAB"] = "Comprar"
 L["SHOPPING_TAB_HEADER"] = "Auctionator - Listas de Compras"
 L["SKIP"] = "Pular"
+--[[Translation missing --]]
+L["SORT"] = "Sort"
 L["SPLASH_830_BUGS_1"] = "Por favor junte-se a nós no Discord do Auctionator %s"
 L["SPLASH_830_BUGS_2"] = "Por favor comunique bugs no Github %s"
 L["SPLASH_830_BUGS_3"] = "Nós somos mais ativos no Discord, não reporte bugs na curseforge ou nos forums do Auctionator"
@@ -369,13 +445,63 @@ L["SPLASH_9105_FEATURES_2"] = "Added a button to move the price history dialog i
 L["SPLASH_9105_FEATURES_3"] = "Option to show profit instead of crafting cost in the crafting window when the Auction House is open."
 --[[Translation missing --]]
 L["SPLASH_9105_FEATURES_HEADER"] = "Recent Features"
+--[[Translation missing --]]
+L["SPLASH_9106_DESCRIPTION"] = "A new quick search box and search history in the reworked Shopping tab."
+--[[Translation missing --]]
+L["SPLASH_9106_FEATURES_1"] = "Search box and recent searches panel in the Shopping tab."
+--[[Translation missing --]]
+L["SPLASH_9106_FEATURES_2"] = "Button to sort a shopping list's terms alphabetically."
+--[[Translation missing --]]
+L["SPLASH_9106_FEATURES_3"] = "Option to show not found search terms in a shopping list's results."
+--[[Translation missing --]]
+L["SPLASH_9106_FEATURES_HEADER"] = "New Features"
+--[[Translation missing --]]
+L["SPLASH_9108_DESCRIPTION"] = "The main feature of this release is the newer Retail appearance now working on WoW classic (Burning Crusade and Vanilla). Almost all retail features work on classic. There are the usual bugfixes on all versions of Auctionator."
+--[[Translation missing --]]
+L["SPLASH_9108_FEATURES_1"] = "Searching shopping lists and doing quick searches."
+--[[Translation missing --]]
+L["SPLASH_9108_FEATURES_10"] = "Auctions with a bid on them require confirming to cancel."
+--[[Translation missing --]]
+L["SPLASH_9108_FEATURES_11"] = "Dialog to confirm purchases, and avoid costly mistakes."
+--[[Translation missing --]]
+L["SPLASH_9108_FEATURES_2"] = "Can buy items and see all auctions on sale, grouped by price and stack"
+--[[Translation missing --]]
+L["SPLASH_9108_FEATURES_3"] = "Can see item price histories."
+--[[Translation missing --]]
+L["SPLASH_9108_FEATURES_4"] = "Full scan to get price data for tooltips."
+--[[Translation missing --]]
+L["SPLASH_9108_FEATURES_5"] = "Can post items in the Selling tab (with automatic undercuts and configurable stack sizes)."
+--[[Translation missing --]]
+L["SPLASH_9108_FEATURES_6"] = "Can use the mouse wheel to quickly change stack size inputs."
+--[[Translation missing --]]
+L["SPLASH_9108_FEATURES_7"] = "Max number messages for stacks on Selling tab are clickable to set max values."
+--[[Translation missing --]]
+L["SPLASH_9108_FEATURES_8"] = "A reagents search button on the crafting window when the Auction House is open with total crafting costs displayed."
+--[[Translation missing --]]
+L["SPLASH_9108_FEATURES_9"] = "Can cancel own auctions, both inside the buying screens and on the dedicated tab with an undercut scan."
+--[[Translation missing --]]
+L["SPLASH_9108_FEATURES_HEADER"] = "Features of the classic release"
 L["SPLASH_HIDE_MESSAGE"] = "Não mostrar até a próxima atualização"
 L["SPLASH_SCREEN_HEADER"] = "Bem-vindo ao Auctionator"
 L["STACK_AUCTION_INFO"] = "%s por %s (%s cada)"
+--[[Translation missing --]]
+L["STACK_BID_PRICE"] = "Stack Bid Price"
+--[[Translation missing --]]
+L["STACK_OF"] = "stack of"
+--[[Translation missing --]]
+L["STACK_PRICE"] = "Stack Price"
 L["STACK_TOOLTIP_TOOLTIP_HEADER"] = "Preços das Pilhas"
 L["STACK_TOOLTIP_TOOLTIP_TEXT"] = "Quando selecionado, a tecla SHIFT tem que ser pressionada para ver o preço da pilha. Quando não selecionada, o preço da pilha inteira é mostrado sempre."
 L["STARTING_FULL_SCAN"] = "Começando varredura completa."
 L["STARTING_FULL_SCAN_ALTERNATE"] = "Começando uma varredura completa (modo alternativo)."
+--[[Translation missing --]]
+L["STARTING_PRICE_PERCENTAGE"] = "Starting Price"
+--[[Translation missing --]]
+L["STARTING_PRICE_PERCENTAGE_SUFFIX"] = "% of the stack price"
+--[[Translation missing --]]
+L["STARTING_PRICE_PERCENTAGE_TOOLTIP_HEADER"] = "Starting bidding price"
+--[[Translation missing --]]
+L["STARTING_PRICE_PERCENTAGE_TOOLTIP_TEXT"] = "The starting price percentage will be used to set the default bid amount used for any auctions posted. For example setting this to 95 will, for a 10s stack price, set the bid price to 9s50c."
 L["TEMPORARY_LOWER_CASE"] = "temporário"
 L["TIME_LEFT"] = "Tempo Restante"
 L["TIME_LEFT_H"] = "Tempo restante (h)"
@@ -399,6 +525,8 @@ L["TRANSLATORS_SIMPLIFIED_CHINESE"] = "Chinês Simplificado"
 L["TRANSLATORS_SPANISH"] = "Espanhol"
 L["TRANSLATORS_TRADITIONAL_CHINESE"] = "Chinês Tradicional"
 L["UNDERCUT_NO"] = "Não"
+--[[Translation missing --]]
+L["UNDERCUT_PREFERENCE"] = "Undercut Preference"
 L["UNDERCUT_SCAN"] = "Varredura de Subcotação"
 L["UNDERCUT_TOOLTIP_HEADER"] = "Valor de Subcotação"
 L["UNDERCUT_TOOLTIP_TEXT"] = "O valor do desconto será utilizado para calcular o preço de venda."
@@ -416,6 +544,16 @@ L["VENDOR_TOOLTIP_TOOLTIP_HEADER"] = "Informação de Vendendor na Caixa de Text
 L["VENDOR_TOOLTIP_TOOLTIP_TEXT"] = "Mostrar informação de venda para NPC na caixa de texto quando o mouse passa por cima."
 L["VERSION_HEADER"] = "Versão"
 L["VERSION_MESSAGE"] = "Versão %s"
+--[[Translation missing --]]
+L["WAITING_AT_MOST_X_LONGER"] = "Waiting at most %ss longer..."
+--[[Translation missing --]]
+L["X_PRICE_HISTORY"] = "%s Price History"
+--[[Translation missing --]]
+L["X_STACK_OF_X"] = "%s stack of %s"
+--[[Translation missing --]]
+L["X_STACKS_OF_X"] = "%s stacks of %s"
+--[[Translation missing --]]
+L["YOU_COLUMN"] = "You?"
 L["YOUR_HISTORY"] = "Seu Histórico"
 
 

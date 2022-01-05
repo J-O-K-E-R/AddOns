@@ -1577,35 +1577,40 @@ function lib:ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset
 			end
 		else
 			-- Determine whether the menu is off the screen or not
-			local offscreenY, offscreenX;
-			if ( (y - listFrame:GetHeight()/2) < 0 ) then
-				offscreenY = 1;
-			end
-			if ( listFrame:GetRight() > GetScreenWidth() ) then
-				offscreenX = 1;
-			end
-			if ( offscreenY and offscreenX ) then
-				point = gsub(point, "TOP(.*)", "BOTTOM%1");
-				point = gsub(point, "(.*)LEFT", "%1RIGHT");
-				relativePoint = gsub(relativePoint, "TOP(.*)", "BOTTOM%1");
-				relativePoint = gsub(relativePoint, "(.*)RIGHT", "%1LEFT");
-				xOffset = -11;
-				yOffset = -14;
-			elseif ( offscreenY ) then
-				point = gsub(point, "TOP(.*)", "BOTTOM%1");
-				relativePoint = gsub(relativePoint, "TOP(.*)", "BOTTOM%1");
-				xOffset = 0;
-				yOffset = -14;
-			elseif ( offscreenX ) then
-				point = gsub(point, "(.*)LEFT", "%1RIGHT");
-				relativePoint = gsub(relativePoint, "(.*)RIGHT", "%1LEFT");
-				xOffset = -11;
-				yOffset = 14;
-			else
-				xOffset = 0;
-				yOffset = 14;
-			end
-
+			-- TBC Launch frame lib updates	
+			-- local offscreenY, offscreenX;
+			-- if ( (y - listFrame:GetHeight()/2) < 0 ) then
+			-- 	offscreenY = 1;
+			-- end
+			-- if ( listFrame:GetRight() > GetScreenWidth() ) then
+			-- 	offscreenX = 1;
+			-- end
+			-- if ( offscreenY and offscreenX ) then
+			-- 	point = gsub(point, "TOP(.*)", "BOTTOM%1");
+			-- 	point = gsub(point, "(.*)LEFT", "%1RIGHT");
+			-- 	relativePoint = gsub(relativePoint, "TOP(.*)", "BOTTOM%1");
+			-- 	relativePoint = gsub(relativePoint, "(.*)RIGHT", "%1LEFT");
+			-- 	xOffset = -11;
+			-- 	yOffset = -14;
+			-- elseif ( offscreenY ) then
+			-- 	point = gsub(point, "TOP(.*)", "BOTTOM%1");
+			-- 	relativePoint = gsub(relativePoint, "TOP(.*)", "BOTTOM%1");
+			-- 	xOffset = 0;
+			-- 	yOffset = -14;
+			-- elseif ( offscreenX ) then
+			-- 	point = gsub(point, "(.*)LEFT", "%1RIGHT");
+			-- 	relativePoint = gsub(relativePoint, "(.*)RIGHT", "%1LEFT");
+			-- 	xOffset = -11;
+			-- 	yOffset = 14;
+			-- else
+			-- 	xOffset = 0;
+			-- 	yOffset = 14;
+			-- end
+			xOffset = -11;		
+			yOffset = -14;		
+			point = gsub(point, "(.*)LEFT", "%1RIGHT");		
+			relativePoint = gsub(relativePoint, "(.*)RIGHT", "%1LEFT");		
+			listFrame:SetClampedToScreen(true)		
 			listFrame:ClearAllPoints();
 			listFrame.parentLevel = tonumber(strmatch(anchorFrame:GetName(), "L_DropDownList(%d+)"));
 			listFrame.parentID = anchorFrame:GetID();

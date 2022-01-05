@@ -1,6 +1,7 @@
 # BlockChinese
 
-## [v2.0.2](https://github.com/ketho-wow/BlockChinese/tree/v2.0.2) (2021-05-10)
-[Full Changelog](https://github.com/ketho-wow/BlockChinese/compare/v2.0.1...v2.0.2) [Previous Releases](https://github.com/ketho-wow/BlockChinese/releases)
+## [v2.0.4](https://github.com/ketho-wow/BlockChinese/tree/v2.0.4) (2021-12-13)
+[Full Changelog](https://github.com/ketho-wow/BlockChinese/compare/v2.0.3...v2.0.4) [Previous Releases](https://github.com/ketho-wow/BlockChinese/releases)
 
-- Update for 1.13.7, 2.5.1  
+- Fixed blocking custom emote text  
+    Update for 9.1.5, 2.5.2, 1.14.1  

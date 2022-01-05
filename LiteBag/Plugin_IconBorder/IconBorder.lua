@@ -9,12 +9,16 @@
 
 ----------------------------------------------------------------------------]]--
 
+local addonName, LB = ...
+
 local function Update(self)
-    if self.IconBorder:GetTexture() ~= [[Interface\Common\WhiteIconFrame]] then
+    -- Where did 651080 suddenly come from?
+    if self.IconBorder:GetTexture() ~= [[Interface\Common\WhiteIconFrame]] and
+       self.IconBorder:GetTexture() ~= 651080 then
         return
     end
 
-    local minQuality = tonumber(LiteBag_GetGlobalOption("ThickerIconBorder"))
+    local minQuality = tonumber(LB.Options:GetGlobalOption("ThickerIconBorder"))
     if not minQuality then
         return
     end
@@ -34,4 +38,4 @@ local function Update(self)
 
 end
 
-LiteBag_RegisterHook('LiteBagItemButton_Update', Update)
+LB.RegisterHook('LiteBagItemButton_Update', Update)

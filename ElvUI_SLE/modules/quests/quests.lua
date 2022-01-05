@@ -1,7 +1,5 @@
 local SLE, T, E, L, V, P, G = unpack(select(2, ...))
 local Q = SLE.Quests
-local B = LibStub('LibBabble-SubZone-3.0')
-local BL = B:GetLookupTable()
 local ObjectiveTracker_Expand, ObjectiveTracker_Collapse = ObjectiveTracker_Expand, ObjectiveTracker_Collapse
 local IsResting = IsResting
 local _G = _G
@@ -11,12 +9,12 @@ local minimizeButton = _G['ObjectiveTrackerFrame'].HeaderMenu.MinimizeButton
 local statedriver = {
 	['FULL'] = function(frame)
 		ObjectiveTracker_Expand()
-		if E.private.skins.blizzard.enable == true and E.private.skins.blizzard.objectiveTracker == true then minimizeButton.tex:SetTexture('Interface\\AddOns\\ElvUI\\media\\textures\\MinusButton') end
+		if E.private.skins.blizzard.enable == true and E.private.skins.blizzard.objectiveTracker == true then minimizeButton.tex:SetTexture('Interface\\AddOns\\ElvUI\\Core\\Media\\Textures\\MinusButton') end
 		frame:Show()
 	end,
 	['COLLAPSED'] = function(frame)
 		ObjectiveTracker_Collapse()
-		if E.private.skins.blizzard.enable == true and E.private.skins.blizzard.objectiveTracker == true then minimizeButton.tex:SetTexture('Interface\\AddOns\\ElvUI\\media\\textures\\PlusButton') end
+		if E.private.skins.blizzard.enable == true and E.private.skins.blizzard.objectiveTracker == true then minimizeButton.tex:SetTexture('Interface\\AddOns\\ElvUI\\Core\\Media\\Textures\\PlusButton') end
 		frame:Show()
 	end,
 	['HIDE'] = function(frame)

@@ -2501,14 +2501,162 @@ Removed:
 
 YEE
 DrDisRespectLIVE emotes (banned for a year now)
+
+----
+Twitch Emotes V2.44
+----
+Added emote suggestion list & made mouse-over emotes default. Also reworked structure of AddOn (thanks mphjens!)
+Added several small emotes
+Pruned some dead emote paths and inactive streamers
+
+----
+Twitch Emotes V2.45 - Halloween update!
+----
+Added:
+peepoIsForMe
+peepoPlease
+Riotge
+Wokege
+PepeStepBro
+Deadge
+
+forsenDespair
+forsenLookingAtYou
+Updated FeelsPumpkinMan
+
+Halloween emotes:
+4HEad
+4Weird
+5Head
+AYAYA
+EZ
+FeelsBadMan
+FeelsGoodMan
+FeelsOkayMan
+FeelsStrongMan
+FeelsWeirdMan
+HYPERS
+KEKW
+KEKWait
+KKonaW
+LULW
+Madge
+Madgee
+MaN
+monkaH
+monkaHmm
+monkaSusp
+monkaT
+monkaW
+NOP
+OMEGALUL
+PagMan
+PauseChamp
+PAUSERS
+peepoFat
+peepoGiggle
+peepoHappy
+peepoLove
+peepoSad
+peepoWeid
+peepoWTF
+Pepega
+PepeHands
+PepeLaugh
+PepePains
+Pog
+POGGERS
+PogO
+PogU
+Sadge
+SillyChamp
+WeirdChamp
+WICKED
+YEP
+
+----
+Twitch Emotes V2.46 - Halloween over
+----
+Reverted Halloween emotes
+
+----
+Twitch Emotes V2.47 - Christmas
+----
+peepoSadLogize
+PepeLa
+:handshake:
+
+Restored Christmas Emotes
+
+
+----
+Twitch Emotes V2.48 - Christmas 2.0
+----
+
+Added:
+MadgeNow
+peepoJail
+renamed PepeLaughPoint to PepePoint
+renamed PepeOld to FeelsOldMan
+peepoNotes
+Awakge
+monkaSteer
+Nerdge
+:shy:
+peepoSmash
+peepoBye
+peepoHey
+Chatting
+Weirdge
+
+New xmas version:
+Awakge
+Bedge
+BOGGED
+Chatting
+COPIUM
+DankHug
+FeelsLoveMan
+FeelsOldMan
+FeelsRainMan
+Hmmge
+Madge
+modCheck1
+modCheck2
+monakS
+monkaSteer
+monkaStop
+Nerdge
+Okayge
+OMEGALUL
+PAUSERS
+peepoBye
+peepoCheer
+peepoClap
+peepoGiggle
+peepoHey
+peepoJail
+peepoLove
+peepoNotes
+peepoS
+peepoShrug
+peepoThink
+pepeD
+Pepeg
+PepegaHands
+PepePoint
+pepoThink
+PepeMeltdown
+starechamp
+Susge
+Weirdge
+WICKED
+Wokege
+
+
 ----
 To do
 ----
-
-
-
-
-
 
 
 

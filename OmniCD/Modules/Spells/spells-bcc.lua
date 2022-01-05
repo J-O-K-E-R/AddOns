@@ -1,5 +1,3 @@
--- $ comments stripped
-
 local E, L, C = select(2, ...):unpack()
 
 if not E.isBCC then return end
@@ -58,6 +56,8 @@ E.spell_db = {
 		{ spellID = 13809,  duration = 30,  type = "other"      },
 		{ spellID = 34477,  duration = 120, type = "other"      },
 		{ spellID = 3034,   duration = 15,  type = "other"      },
+
+
 
 
 
@@ -315,7 +315,7 @@ for k, v in pairs(E.spell_db) do
 
 		if not C_Spell.DoesSpellExist(id) then
 			tremove(v, i)
-			--E.Write("Removing Invalid ID: |cffffd200" .. id)
+
 		else
 			if k == "TRINKET" or k == "PVPTRINKET" then
 				t.icon = GetItemIcon(itemID)

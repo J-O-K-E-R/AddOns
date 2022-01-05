@@ -1,10 +1,14 @@
-## Interface: 90100
-## Title: TwitchEmotes
+## Interface: 90105
+## Title: |TInterface\Addons\TwitchEmotes\Emotes\Pepes\EZ:0|tTwitch Emotes|TInterface\Addons\TwitchEmotes\Emotes\Pepes\EZ:0|t
 ## Author: Ren
 ## Version: v2
-## SavedVariables: Emoticons_Settings
+## SavedVariables: Emoticons_Settings, TwitchEmoteStatistics
 ## OptionalDeps: LibStub, LibUIDropDownMenu
 
-libs\load_libs.xml
+Libs\load_libs.xml
+Emotes.lua
+DropdownItems.lua
 TwitchEmotes.lua
-TwitchEmotes.xml
+TwitchEmoteStatistics.lua
+UI\TwitchEmotes.xml
+UI\TwitchEmoteStats.xml
