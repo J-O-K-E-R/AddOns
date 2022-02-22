@@ -1,5 +1,6 @@
 local E, L, V, P, G = unpack(ElvUI)
 local S = E:GetModule('Skins')
+local TT = E:GetModule('Tooltip')
 
 local _G = _G
 local hooksecurefunc = hooksecurefunc
@@ -42,7 +43,7 @@ function S:WorldMapFrame()
 	WorldMapFrame.ScrollContainer:SetTemplate()
 	WorldMapFrame:CreateBackdrop('Transparent')
 	WorldMapFrame.backdrop:Point('TOPLEFT', WorldMapFrame, 'TOPLEFT', -8, 0)
-	WorldMapFrame.backdrop:Point('BOTTOMRIGHT', WorldMapFrame, 'BOTTOMRIGHT', 0, -9)
+	WorldMapFrame.backdrop:Point('BOTTOMRIGHT', WorldMapFrame, 'BOTTOMRIGHT', 6, -8)
 
 	S:HandleButton(WorldMapFrame.NavBar.homeButton)
 	WorldMapFrame.NavBar.homeButton.xoffset = 1
@@ -105,8 +106,7 @@ function S:WorldMapFrame()
 	S:HandleScrollBar(_G.QuestMapFrameScrollBar)
 
 	if E.private.skins.blizzard.tooltip then
-		QuestMapFrame.QuestsFrame.StoryTooltip:SetTemplate('Transparent')
-		--QuestScrollFrame.WarCampaignTooltip:SetTemplate('Transparent')
+		TT:SetStyle(QuestMapFrame.QuestsFrame.StoryTooltip)
 	end
 
 	S:HandleScrollBar(_G.QuestMapDetailsScrollFrame.ScrollBar)

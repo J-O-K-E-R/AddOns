@@ -1,56 +1,28 @@
-# [3.7.3](https://github.com/WeakAuras/WeakAuras2/tree/3.7.3) (2021-11-02)
+# [3.7.11](https://github.com/WeakAuras/WeakAuras2/tree/3.7.11) (2022-02-22)
 
-[Full Changelog](https://github.com/WeakAuras/WeakAuras2/compare/3.7.2...3.7.3)
+[Full Changelog](https://github.com/WeakAuras/WeakAuras2/compare/3.7.10...3.7.11)
 
 ## Highlights
 
- TOC Update for Retail and a few new features/additions
-
-Remove ExternalAddons API as it was broken and unused
-
-More preparation for Nested Groups 
+ - Bug fixes
+- Enable Autocast Glow for Classic/BCC 
 
 ## Commits
 
-Casey Raethke (1):
+InfusOnWoW (3):
 
-- Add UNIT_RESISTANCES to Character Stats trigger
-
-InfusOnWoW (22):
-
-- Remove accidental debug print
-- Ensure that on drag start we select the dragged aura
-- Document that DuplicateAura does not copy children
-- Remove unused parameter from internal function
-- Simplify filterAnimPresets
-- Simplify code around deletion of dynamic groups
-- Remove reference to dead regionType "timer"
-- PickDisplay: Adjust for nested groups
-- Recursively add parents, grandparents, etc
-- Prepare group for nested
-- Skip sub groups in shift multi selection
-- Add Spirit to Character Stats
-- Use .data.id instead of GetTitle()
-- ExternalAddons: Remove it
-- BCC: Fix combo points not updating on target change
-- AuraBar: Fix SetInverse not inversing overlays
-- Fix reseting of x/y offset on auras being moved into a dynamic group
-- Swing Timer: Note that the trigger is not correct in BCC
-- Fix conditions not being unapplied correctly in collapse
-- Add support for Charged Combo Points with Kyrian Legendary
-- Text Replacements: Add Custom Variables with descriptions
-- Try to preserve names on importing
-
-Lynn (1):
-
-- TTS: Save value.message_voice as number instead of string
+- BCC: Correctly disabled Glaives and enable Thrown Weapons
+- BCC: Correctly disable Goblins
+- Fix Order of Subelements in Dynamic Groups
 
 Stanzilla (1):
 
-- Update TOC for Retail Patch 9.1.5
+- Update TOC for 9.2.0 and 1.14.2
 
-mrbuds (2):
+mrbuds (4):
 
-- enable TTS on classic_era and fix error for tbc
-- swing timer: fix spell that reset swing not starting swing timer by waiting a frame after the spell so "isAttacking" has correct state
+- enable autocast glow for bcc & som
+- clear scripts on import/export frame fixes #3496
+- restore hastepercent to previous state on retail
+- Faction Reputation trigger: support friendship standing
 

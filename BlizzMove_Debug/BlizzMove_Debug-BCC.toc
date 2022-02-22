@@ -1,8 +1,8 @@
-## Interface: 20502
+## Interface: 20503
 ## Title: BlizzMove - Debugging plugin
 ## Notes: This Load-On-Demand plugin allows for retrieving debugging information.
 ## Author: Numy - github.com/Kiatra/BlizzMove/
-## Version: v3.2.9
+## Version: v3.2.10
 ## X-License: GNU General Public License version 3 (GPLv3)
 ## RequiredDeps: BlizzMove
 ## LoadOnDemand: 1

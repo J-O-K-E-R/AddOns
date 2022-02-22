@@ -16,7 +16,7 @@ L["|cffff2020Important!|r Covenant and Soulbind Conduit data can only be acquire
 L["> 1 minute"] = "> 1 minute"
 L["2nd Row Icons (Double Row Layout)"] = "Icônes de la 2ème ligne (affichage sur deux lignes)"
 L["2px Border"] = "Bordure 2px"
-L["A new update is available. (|cff99cdff%s)"] = "Une nouvelle mise à jour est disponible. (|cff99cdff%s)"
+L["A new update is available. |cff99cdff(%s)"] = "Une nouvelle mise à jour est disponible. |cff99cdff(%s)"
 --[[Translation missing --]]
 L["Active"] = "Active"
 L["Active Icon Opacity"] = "Opacité de l'icône active"
@@ -285,7 +285,7 @@ L["MM:SS Color"] = "MM:SS Color"
 --[[Translation missing --]]
 L["MM:SS Threshold"] = "MM:SS Threshold"
 --[[Translation missing --]]
-L["Mouseovering the icon will show the interrupted spell information regardless of \'Show Tooltip\' option."] = "Mouseovering the icon will show the interrupted spell information regardless of \'Show Tooltip\' option."
+L["Mouseovering the icon will show the interrupted spell information regardless of 'Show Tooltip' option."] = "Mouseovering the icon will show the interrupted spell information regardless of 'Show Tooltip' option."
 L["Move your group's Interrupt spells to the Interrupt Bar."] = "Déplacer les sorts d'interruption de son groupe vers la barre d'interruption."
 --[[Translation missing --]]
 L["Move your group's Raid Cooldowns to the Raid Bar."] = "Move your group's Raid Cooldowns to the Raid Bar."

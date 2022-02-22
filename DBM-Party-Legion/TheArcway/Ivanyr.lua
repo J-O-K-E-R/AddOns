@@ -3,7 +3,7 @@ local L		= mod:GetLocalizedStrings()
 
 mod.statTypes = "heroic,mythic,challenge"
 
-mod:SetRevision("20200912135206")
+mod:SetRevision("20220217011830")
 mod:SetCreatureID(98203)
 mod:SetEncounterID(1827)
 
@@ -29,8 +29,8 @@ local specWarnNetherLinkGTFO		= mod:NewSpecialWarningMove(196805, nil, nil, nil,
 local specWarnOverchargeMana		= mod:NewSpecialWarningInterrupt(196392, "HasInterrupt", nil, nil, 1, 2)
 
 local timerVolatileMagicCD			= mod:NewCDTimer(32, 196562, nil, nil, nil, 3)--Review, Might be health based? or just really variable
-local timerNetherLinkCD				= mod:NewCDTimer(30, 196804, nil, nil, nil, 3)
-local timerOverchargeManaCD			= mod:NewCDTimer(40, 196392, nil, nil, nil, 4, nil, DBM_CORE_L.INTERRUPT_ICON)
+local timerNetherLinkCD				= mod:NewCDTimer(30, 196805, nil, nil, nil, 3)
+local timerOverchargeManaCD			= mod:NewCDTimer(40, 196392, nil, nil, nil, 4, nil, DBM_COMMON_L.INTERRUPT_ICON)
 
 mod:AddRangeFrameOption(8, 196562)
 

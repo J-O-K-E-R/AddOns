@@ -5,6 +5,9 @@ local L = DBM_CORE_L
 
 L.HOW_TO_USE_MOD					= "Добро пожаловать в " .. L.DBM .. ". Наберите /dbm help, чтобы получить список поддерживаемых команд. Для доступа к настройкам наберите /dbm в чате. Загрузите конкретные зоны вручную, чтобы настроить определённых боссов по Вашему вкусу. " .. L.DBM .. " установит настройки по умолчанию для Вашей специализации, но Вы, возможно, захотите настроить их более тонко."
 L.SILENT_REMINDER					= "Напоминание: " .. L.DBM .. " всё ещё в тихом режиме."
+L.NEWS_UPDATE						= "|h|c11ff1111Новости|r|h: Это обновление представляет собой повторный выпуск версии 9.1.9 для устранения ложного обнаружения вредоносного ПО в хэше предыдущего выпуска файла. Подробнее об этом |Hgarrmission:DBM:news|h|cff3588ff[здесь]|r|h"
+
+L.COPY_URL_DIALOG_NEWS				= "Чтобы прочитать последние новости, перейдите по ссылке ниже"
 
 L.LOAD_MOD_ERROR					= "Ошибка при загрузке босс модуля для %s: %s"
 L.LOAD_MOD_SUCCESS					= "Загружен модуль для '%s'. Для дополнительных настроек введите /dbm или /dbm help в чате."
@@ -135,6 +138,7 @@ L.OPTION_CATEGORY_WARNINGS			= "Общие предупреждения"
 L.OPTION_CATEGORY_WARNINGS_YOU		= "Персональные предупреждения"
 L.OPTION_CATEGORY_WARNINGS_OTHER	= "Предупреждения для цели"
 L.OPTION_CATEGORY_WARNINGS_ROLE		= "Предупреждения для роли"
+L.OPTION_CATEGORY_SPECWARNINGS		= "Специальные предупреждения"
 
 L.OPTION_CATEGORY_SOUNDS			= "Звуки"
 --Misc object broken down into sub cats
@@ -166,7 +170,7 @@ L.VERSIONCHECK_FOOTER				= "Найдено %d |4игрок:игрока:игро
 L.VERSIONCHECK_OUTDATED				= "Следующие %d игрок(и) имеют устаревшую версию: %s"
 L.YOUR_VERSION_OUTDATED      		= "Ваша версия " .. L.DEADLY_BOSS_MODS .. " устарела! Пожалуйста, загрузите последнюю версию с Curse, WoWI или страницы релизов на GitHub."
 L.VOICE_PACK_OUTDATED				= "В вашем голосовом пакете " .. L.DBM .. " отсутствуют звуки, поддерживаемые этой версией " .. L.DBM .. ". Фильтр звуков спецпредупреждений был отключён. Пожалуйста, скачайте обновлённую версию голосового пакета или свяжитесь с автором для обновления, которое содержит отсутствующие звуковые файлы."
-L.VOICE_MISSING						= "Выбранный вами голосовой пакет " .. L.DBM .. " не найден. Если это ошибка, убедитесь, что Ваш голосовой пакет правильно установлен и включён в модификациях."
+L.VOICE_MISSING						= "Выбранный вами голосовой пакет " .. L.DBM .. " не найден. Если это ошибка, убедитесь, что Ваш голосовой пакет правильно установлен и включен в модификациях."
 L.VOICE_DISABLED					= "У Вас установлен по крайней мере один голосовой пакет " .. L.DBM .. ", но ни один не включён. Если вы собираетесь использовать голосовой пакет, убедитесь, что он выбран в 'Spoken Alerts', иначе удалите неиспользуемые голосовые пакеты, чтобы скрыть это сообщение"
 L.VOICE_COUNT_MISSING				= "Голос отсчёта %d использует голосовой пакет, который не был найден. Он был сброшен на настройки по умолчанию: %s."
 L.BIG_WIGS							= "BigWigs"
@@ -266,45 +270,7 @@ L.TIMER_USAGE = {
 }
 
 L.ERROR_NO_PERMISSION				= "У Вас недостаточно прав для выполнения этой операции."
-
---Common Locals
-L.NONE        					    = "Нет"
-L.RANDOM          					= "Случайно"
-L.NEXT								= "След. %s"
-L.COOLDOWN							= "Восст. %s"
-L.UNKNOWN							= "неизвестно"
-L.LEFT								= "Налево"
-L.RIGHT								= "Направо"
-L.BOTH								= "Оба"
-L.BEHIND         					= "Сзади"
-L.BACK								= "Назад"
-L.SIDE								= "Сторона"
-L.TOP								= "Верх"
-L.BOTTOM							= "Низ"
-L.MIDDLE							= "Середина"
-L.FRONT								= "Вперёд"
-L.EAST								= "Восток"
-L.WEST								= "Запад"
-L.NORTH								= "Север"
-L.SOUTH								= "Юг"
-L.INTERMISSION						= "Переходная фаза"--No blizz global for this, and will probably be used in most end tier fights with intermission stages
-L.ORB								= "Сфера"
-L.CHEST								= "сундука"--As in Treasure 'Chest'. Not Chest as in body part.
-L.NO_DEBUFF							= "Нет %s"--For use in places like info frame where you put "Not Spellname"
-L.ALLY								= "Союзник"--Such as "Move to Ally"
-L.ADD								= "Адд"--A fight Add as in "boss spawned extra adds"
-L.ADDS								= "Адды"
-L.BIG_ADD							= "Большой адд"
-L.BOSS								= "Босс"
-L.ROOM_EDGE							= "Край комнаты"
-L.FAR_AWAY							= "Далеко"
-L.BREAK_LOS							= "Break LOS"
-L.SAFE								= "Безопасно"
-L.SHIELD							= "Щит"
-L.INCOMING							= "Прибытие %s"
-L.BOSSTOGETHER						= "Боссы вместе"
-L.BOSSAPART							= "Боссы отдельно"
---Common Locals end
+L.TIME_TOO_SHORT					= "Таймер атаки должен быть больше 3 секунд."
 
 L.BREAK_USAGE						= "Перерыв не может быть дольше 60 минут. Убедитесь, что Вы вводите время в минутах, а не секундах."
 L.BREAK_START						= "Перерыв начинается -- у Вас есть %s! (отправил %s)"
@@ -333,7 +299,7 @@ L.AUTO_ANNOUNCE_TEXTS.spell 		= "%s"
 L.AUTO_ANNOUNCE_TEXTS.ends			= "%s заканчивается"
 L.AUTO_ANNOUNCE_TEXTS.endtarget		= "%s заканчивается: >%%s<"
 L.AUTO_ANNOUNCE_TEXTS.fades			= "%s спадает"
-L.AUTO_ANNOUNCE_TEXTS.adds			= "Осталось %s: %%d"
+L.AUTO_ANNOUNCE_TEXTS.addsleft		= "Осталось %s: %%d"
 L.AUTO_ANNOUNCE_TEXTS.cast 			= "Применение заклинания %s: %.1f сек"
 L.AUTO_ANNOUNCE_TEXTS.soon 			= "Скоро %s"
 L.AUTO_ANNOUNCE_TEXTS.sooncount		= "Скоро %s (%%s)"
@@ -354,7 +320,7 @@ L.AUTO_ANNOUNCE_OPTIONS.spell 			= "Предупреждение для $spell:%
 L.AUTO_ANNOUNCE_OPTIONS.ends			= "Предупреждать об окончании $spell:%s"
 L.AUTO_ANNOUNCE_OPTIONS.endtarget		= "Предупреждать об окончании $spell:%s (цель)"
 L.AUTO_ANNOUNCE_OPTIONS.fades			= "Предупреждать о спадении $spell:%s"
-L.AUTO_ANNOUNCE_OPTIONS.adds			= "Объявлять сколько осталось $spell:%s"
+L.AUTO_ANNOUNCE_OPTIONS.addsleft		= "Объявлять сколько осталось $spell:%s"
 L.AUTO_ANNOUNCE_OPTIONS.cast 			= "Предупреждать о применении заклинания $spell:%s"
 L.AUTO_ANNOUNCE_OPTIONS.soon 			= prewarnOption
 L.AUTO_ANNOUNCE_OPTIONS.sooncount		= prewarnOption
@@ -457,37 +423,23 @@ L.AUTO_SPEC_WARN_OPTIONS.targetchange	= "Спецпредупреждение д
 -- Auto-generated Timer Localizations
 L.AUTO_TIMER_TEXTS.target 			= "%s: >%%s<"
 L.AUTO_TIMER_TEXTS.cast 			= "%s"
-L.AUTO_TIMER_TEXTS.castshort		= "%s "--if short timers enabled, cast and next are same timer text, this is a conflict. the space resolves it
 L.AUTO_TIMER_TEXTS.castcount		= "%s (%%s)"
-L.AUTO_TIMER_TEXTS.castcountshort	= "%s (%%s) "--Resolve short timer conflict with next timers
 L.AUTO_TIMER_TEXTS.castsource		= "%s: %%s"
-L.AUTO_TIMER_TEXTS.castsourceshort	= "%s: %%s "--Resolve short timer conflict with next timers
 L.AUTO_TIMER_TEXTS.active			= "%s заканчивается" --Buff/Debuff/event on boss
 L.AUTO_TIMER_TEXTS.fades			= "%s спадает" --Buff/Debuff on players
 L.AUTO_TIMER_TEXTS.ai				= "%s ИИ"
-L.AUTO_TIMER_TEXTS.cd 				= "Восст. %s"
-L.AUTO_TIMER_TEXTS.cdshort			= "~%s"
-L.AUTO_TIMER_TEXTS.cdcount			= "Восст. %s (%%s)"
-L.AUTO_TIMER_TEXTS.cdcountshort		= "~%s (%%s)"
-L.AUTO_TIMER_TEXTS.cdsource			= "Восст. %s: >%%s<"
-L.AUTO_TIMER_TEXTS.cdsourceshort	= "~%s: >%%s<"
-L.AUTO_TIMER_TEXTS.cdspecial		= "Восст. спецспособности"
-L.AUTO_TIMER_TEXTS.cdspecialshort	= "~Восст. спецспособности"
-L.AUTO_TIMER_TEXTS.next 			= "След. %s"
-L.AUTO_TIMER_TEXTS.nextshort		= "%s"
-L.AUTO_TIMER_TEXTS.nextcount		= "След. %s (%%s)"
-L.AUTO_TIMER_TEXTS.nextcountshort	= "%s (%%s)"
-L.AUTO_TIMER_TEXTS.nextsource		= "След. %s: >%%s<"
-L.AUTO_TIMER_TEXTS.nextsourceshort	= "%s: %%s"
-L.AUTO_TIMER_TEXTS.nextspecial		= "След. спецспособность"
-L.AUTO_TIMER_TEXTS.nextspecialshort	= "Спецспособность"
+L.AUTO_TIMER_TEXTS.cd 				= "~%s"
+L.AUTO_TIMER_TEXTS.cdcount			= "~%s (%%s)"
+L.AUTO_TIMER_TEXTS.cdsource			= "~%s: >%%s<"
+L.AUTO_TIMER_TEXTS.cdspecial		= "~Восст. спецспособности"
+L.AUTO_TIMER_TEXTS.next 			= "%s"
+L.AUTO_TIMER_TEXTS.nextcount		= "%s (%%s)"
+L.AUTO_TIMER_TEXTS.nextsource		= "%s: %%s"
+L.AUTO_TIMER_TEXTS.nextspecial		= "Спецспособность"
 L.AUTO_TIMER_TEXTS.achievement		= "%s"
-L.AUTO_TIMER_TEXTS.stage			= "След. фаза"
-L.AUTO_TIMER_TEXTS.stageshort		= "Фаза"
-L.AUTO_TIMER_TEXTS.adds				= "Прибытие аддов"
-L.AUTO_TIMER_TEXTS.addsshort		= "Адды"
-L.AUTO_TIMER_TEXTS.addscustom		= "Прибытие аддов (%%s)"
-L.AUTO_TIMER_TEXTS.addscustomshort	= "Адды (%%s)"
+L.AUTO_TIMER_TEXTS.stage			= "Фаза"
+L.AUTO_TIMER_TEXTS.adds				= "Адды"
+L.AUTO_TIMER_TEXTS.addscustom		= "Адды (%%s)"
 L.AUTO_TIMER_TEXTS.roleplay			= GUILD_INTEREST_RP
 
 L.AUTO_TIMER_OPTIONS.target 		= "Отсчёт времени действия дебаффа $spell:%s"
@@ -600,6 +552,7 @@ L.LAG_FOOTER						= "Нет ответа: %s"
 
 --LDB
 L.LDB_TOOLTIP_HELP1					= "Левый клик, чтобы открыть " .. L.DBM
+L.LDB_TOOLTIP_HELP2					= "Alt+ПКМ для переключения в беззвучный режим"
 L.SILENTMODE_IS						= "Тихий режим "
 
 L.WORLD_BUFFS.hordeOny			= "Народы Орды, жители Оргриммара! Приходите, собирайтесь и поздравляйте героя Орды"

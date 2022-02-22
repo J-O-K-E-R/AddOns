@@ -22,7 +22,7 @@ local L = app.L;
 	--TODO: L.KNOWN_BY = "Known by ";
 	--TODO: L.REQUIRES = "Requires";
 	--TODO: L.RACE_LOCKED = "Race Locked";
-	--TODO: L.PLEASE_REPORT_MESSAGE = ": Please report this to the ATT Discord in #errors! Thanks!";
+	--TODO: L.PLEASE_REPORT_MESSAGE = ": Please report this to the ATT Discord in #retail-errors! Thanks!";
 	--TODO: L.REPORT_TIP = "\n(Ctrl+C to copy multiline report to your clipboard)";
 	--TODO: L.NOT_AVAILABLE_IN_PL = "Not available in Personal Loot.";
 	--TODO: L.MARKS_OF_HONOR_DESC = "Marks of Honor must be viewed in a Popout window to see all of the normal 'Contains' content.\n(Type '/att ' in chat then Shift-Click to link the item)\n\n|cFFfe040fAfter purchasing and using an ensemble, relogging & a forced ATT refresh (in this order)\nmay be required to register all the items correctly.|r";
@@ -216,6 +216,7 @@ local L = app.L;
 	--TODO: L.NESTED_QUEST_REQUIREMENTS = "Nested Quest Requirements";
 	--TODO: L.MAIN_LIST_REQUIRES_REFRESH = "[Open Main list to update progress]";
 	--TODO: L.DOES_NOT_CONTRIBUTE_TO_PROGRESS = "|cffe08207This group and its content do not contribute to the progress of this window!|r";
+	--TODO: L.CURRENCY_NEEDED_TO_BUY = "Items needed to buy not collected Things";
 
 	-- Item Filter Window
 		--TODO: L.ITEM_FILTER_TEXT = "Item Filters";
@@ -244,7 +245,7 @@ local L = app.L;
 	--TODO: L.AFTER_REFRESH = "After Refresh";
 
 	-- General tab
-		-- Mod Title
+		-- Mode Title
 			--TODO: L.MODE = "Mode";
 			--TODO: L.TITLE_COMPLETIONIST = "Completionist ";
 			--TODO: L.TITLE_UNIQUE_APPEARANCE = "Unique ";
@@ -256,6 +257,7 @@ local L = app.L;
 			--TODO: L.TITLE_INSANE = "|cffADD8E6Insane|R ";
 			--TODO: L.TITLE_SOME_THINGS = "Some of the Things ";
 			--TODO: L.TITLE_LEVEL = "Level ";
+			--TODO: L.TITLE_SOLO = "Solo ";
 			--TODO: L._BETA_LABEL = " |cff4AA7FF[Beta]|R";
 
 		--TODO: L.GENERAL_LABEL = "General";
@@ -360,7 +362,6 @@ local L = app.L;
 		--TODO: L.ACCOUNT_WIDE_QUESTS_TOOLTIP = "|cff00AB00Track Account-wide|R\n\nQuest completion is typically per Character, but this will consider a Quest as completed if ANY Character has completed that specific Quest.";
 		--TODO: L.ACCOUNT_WIDE_RECIPES_TOOLTIP = "|cff00AB00Track Account-wide|R\n\nRecipes are not normally tracked account wide in Blizzard's database, but we can do that.\n\nIt is impossible to collect them all on one character, so with this, you can give your alts and their professions meaning.";
 		--TODO: L.ACCOUNT_WIDE_REPUTATIONS_TOOLTIP = "|cff00AB00Track Account-wide|R\n\nReputations are now tracked account wide in Blizzard's database for achievements, so turning this on may be a good idea.";
-		--TODO: L.ACCOUNT_WIDE_RUNEFORGELEGENDARIES_TOOLTIP = "|cff00AB00Track Account-wide|R\n\nNot sure this will help at all for collection... enjoy moving at least one character of every class through every Covenant and Renown progression...";
 		--TODO: L.ACCOUNT_WIDE_SOULBINDCONDUITS_TOOLTIP = "|cff00AB00Track Account-wide|R\n\nEnable this to consider a Soulbind Conduit as collected for all characters if at least one character has learned it.";
 		--TODO: L.ACCOUNT_WIDE_TITLES_TOOLTIP = "|cff00AB00Track Account-wide|R\n\nMost titles are tracked account wide, but some prestigious titles in WoW are locked to the character that earned them.\n\nToggle this if you don't care about that and want to see those titles marked Collected for your alts.";
 
@@ -409,6 +410,8 @@ local L = app.L;
 		--TODO: L.KNOWN_BY_CHECKBOX_TOOLTIP = "Enable this option if you want to see the full list of characters on all servers that know this recipe in the tooltip.";
 		--TODO: L.SHOW_MODELS_CHECKBOX = "Model Preview";
 		--TODO: L.SHOW_MODELS_CHECKBOX_TOOLTIP = "Enable this option to show models within a preview instead of the icon on the tooltip.\n\nThis option may assist you in identifying what a Rare Spawn or Vendor looks like. It might be a good idea to keep this turned on for that reason.";
+		--TODO: L.SHOW_CURRENCY_CALCULATIONS_CHECKBOX = "Currency calculation";
+		--TODO: L.SHOW_CURRENCY_CALCULATIONS_CHECKBOX_TOOLTIP = "Enable this option to show the approximate amount of items/currency required to buy Uncollected Things.\n\nOnly those collectible Things that can be directly purchased for an item/currency are counted. Containers that do not give items with a 100% chance are not counted.";
 		--TODO: L.SHARED_APPEARANCES_CHECKBOX = "Shared Appearances";
 		--TODO: L.SHARED_APPEARANCES_CHECKBOX_TOOLTIP = "Enable this option to see items that share a similar appearance in the tooltip.\n\nNOTE: Items that do not match the armor type are displayed in the list. This is to help you diagnose the Collection progress.\n\nIf you are ever confused by this, as of ATT v1.5.0, you can Right Click the item to open the item and its Shared Appearances into their own standalone Mini List.";
 		--TODO: L.INCLUDE_ORIGINAL_CHECKBOX = "Original Source";
@@ -548,7 +551,7 @@ local L = app.L;
 		--TODO: L.REQUIRES_LEVEL = "Requires Level";
 		--TODO: L.SECRETS_HEADER = "Secrets";
 		--TODO: L.LIMITED_QUANTITY = "This has a limited quantity and may not always be present on the vendor.";
-		--TODO: L.SOURCE_ID_MISSING = "Please report this Item and where it was acquired to the ATT Discord in #errors!";
+		--TODO: L.SOURCE_ID_MISSING = "Please report this Item and where it was acquired to the ATT Discord in #retail-errors!";
 
 	-- Artifact Relic Completion
 		--TODO: L.ARTIFACT_RELIC_CACHE = "Open your Artifact UI for all of your Artifact Weapons to cache whether this is an upgrade or not. This is useful for determining if you can trade this item to a Twink or not.";
@@ -677,6 +680,7 @@ for key,value in pairs({
 	-- Class Hall /Artifact
 		--TODO: [-159] = "Event Roll",								-- Daily Dreamway Event Roll
 	-- Other
+		--TODO: [-210] = ALLIED.." "..NEW.." "..CHARACTER,			-- Allied New Character
 		--TODO: [-211] = NEW.." "..CHARACTER,						-- New Character
 		--TODO: [-212] = GetSpellInfo(225652).." "..GetSpellInfo(168498),-- Treasure Chest
 	-- Fishing
@@ -953,6 +957,7 @@ for key,value in pairs({
 	[148504] = "Une tombe ostentatoire",	-- A Conspicuous Gravestone
 	[149036] = "Coffre de Marvon",	-- Marvon's Chest
 	[149502] = "Trésor du Vol noir",	-- Hoard of the Black Dragonflight
+	[151286] = "Tome d'invocation kaldorei",	-- Kaldorei Tome of Summoning
 	[160836] = "Coffret à relique",	-- Relic Coffer
 	[161495] = "Coffre secret",	-- Secret Safe
 	[161504] = "Un petit paquet",	-- A Small Pack
@@ -1030,6 +1035,7 @@ for key,value in pairs({
 	[180794] = "Journal de Jandice Barov",	-- Journal of Jandice Barov
 	[180918] = "Avis de recherche : Thaelis l'Affameur",	-- Wanted: Thaelis the Hungerer
 	[181011] = "Journal du magistère Ternesoir",	-- Magister Duskwither's Journal
+	[181073] = "Chaudron parfumé",	-- Fragrant Cauldron
 	[181074] = "Butin de l'arène",	-- Arena Spoils
 	[181083] = "Possessions de Sothos et Jarien",	-- Sothos and Jarien's Heirlooms	--TODO: This was taken from classic Wowhead
 	[181147] = "Avis de recherche",	-- Wanted Poster
@@ -1059,6 +1065,7 @@ for key,value in pairs({
 	[184300] = "Focalisation nécromantique",	-- Necromantic Focus
 	[184465] = "Cache de la Légion",	-- Cache of the Legion
 	[184660] = "Avis de recherche",	-- Wanted Poster
+	[184684] = "Œuf d'écorcheur vorace",	-- Ravenous Flayer Egg
 	[184825] = "Tome lashh'an",	-- Lashh'an Tome
 	[184945] = "Avis de recherche",	-- Wanted Poster
 	[184946] = "Avis de recherche",	-- Wanted Poster
@@ -1306,6 +1313,7 @@ for key,value in pairs({
 	[209620] = "Coffre au trésor de Sombrelune",	-- Darkmoon Treasure Chest
 	[209673] = "Pilier du tigre de jade",	-- Jade Tiger Pillar
 	[209845] = "Bière alléchante",	-- Mouthwatering Brew
+	[210565] = "Terre sombre",	-- Dark Soil
 	[211424] = "Parchemin d’alchimie",	-- Alchemy Scroll
 	[211754] = "Texte curieux",	-- Curious Text
 	--TODO: [211807] = "Mogu Chest",	-- Mogu Chest
@@ -1322,7 +1330,6 @@ for key,value in pairs({
 	[213653] = "Lance de pêche pandarène",	-- Pandaren Fishing Spear
 	[213741] = "Bâton ancien de jinyu",	-- Ancient Jinyu Staff
 	[213742] = "Marteau des Cent tonnerres",	-- Hammer of Ten Thunders
-	--TODO: [213743] = "Jade Infused Blade",	-- Jade Infused Blade
 	[213748] = "Pierre rituelle pandarène",	-- Pandaren Ritual Stone
 	[213749] = "Bâton du maître caché",	-- Staff of the Hidden Master
 	[213750] = "Tablette saurok en pierre",	-- Saurok Stone Tablet
@@ -2681,6 +2688,7 @@ for key,value in pairs({
 	[353331] = "Planque féerique",	-- Faerie Stash
 	[353332] = "Planque féerique",	-- Faerie Stash
 	[353333] = "Planque féerique",	-- Faerie Stash
+	[353336] = "Trésor secret",	-- Secret Treasure
 	[353380] = "Casse-croûte d’Halis",	-- Halis's Lunch Pail
 	[353472] = "Épée radieuse",	-- Radiant Sword
 	[353500] = "Coffre renforcé en argent",	-- Silver Strongbox
@@ -2763,7 +2771,13 @@ for key,value in pairs({
 	[355035] = "Malle runique des Élus",	-- Treasure: House of the Chosen
 	[355037] = "Malle runeliée",	-- Runebound Coffer
 	[355038] = "Malle runeliée",	-- Runebound Coffer
+	[355040] = "Rune des Rituels",	-- Rune of Rituals
 	[355041] = "Cache de la Lune",	-- Cache of the Moon
+	[355048] = "Rune des Rituels",	-- Rune of Rituals
+	[355049] = "Rune des Rituels",	-- Rune of Rituals
+	[355194] = "Rune des Assemblages",	-- Rune of Constructs
+	[355195] = "Rune des Assemblages",	-- Rune of Constructs
+	[355196] = "Rune des Assemblages",	-- Rune of Constructs
 	[355286] = "Offrandes du souvenir",	-- Memorial Offerings
 	[355296] = "Prime : régulation de la faune",	-- Bounty: Beast Control
 	[355355] = "Coffre harmonique",	-- Harmonic Chest
@@ -2822,6 +2836,7 @@ for key,value in pairs({
 	[358318] = "Portrait purotin de R. Suavel",	-- R. Suavel Dredger Portrait
 	[358319] = "Message de l’ensorceleur",	-- Sorceror's Note
 	[358382] = "Avis de recherche : Chélicère",	-- Wanted: Chelicera
+	[358399] = "Sac de six lieues",	-- Six-League Pack
 	[358531] = "Cache géante de trésors épiques",	-- Giant Cache of Epic Treasure
 	[358533] = "Fournitures oubliées",	-- Forgotten Supplies
 	[358855] = "Sac à dos de chute amortie endommagé",	-- Damaged Safe Fall Pack
@@ -2908,6 +2923,7 @@ for key,value in pairs({
 	[369438] = "Cache liée à la faille",	-- Riftbound Cache
 	[369439] = "Cache liée à la faille",	-- Riftbound Cache
 	[369440] = "Cache liée à la faille",	-- Riftbound Cache
+	[370469] = "Céréales spectrales",	-- Spectral Feed
 	[9962198] = "Tourbière de fortune de paria",	-- Outcast's Makeshift Muckpool
 	--TODO: [9999890] = "Corrupted Loot",	-- Corrupted Loot
 	--TODO: [9999891] = "Main Objective Only",	-- Main Objective Only

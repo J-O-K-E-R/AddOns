@@ -1,9 +1,12 @@
 # Auctionator
 
-## [9.1.12](https://github.com/Auctionator/Auctionator/tree/9.1.12) (2021-11-11)
-[Full Changelog](https://github.com/Auctionator/Auctionator/compare/9.1.11...9.1.12) [Previous Releases](https://github.com/Auctionator/Auctionator/releases)
+## [9.2.0](https://github.com/Auctionator/Auctionator/tree/9.2.0) (2022-02-22)
+[Full Changelog](https://github.com/Auctionator/Auctionator/compare/9.1.16...9.2.0) [Previous Releases](https://github.com/Auctionator/Auctionator/releases)
 
-- Vanilla: Update toc for 1.14.1  
-- Shopping: Highlight which search was last clicked  
-- [Fixes #1094] TBC: Force valid quantity and stack sizes to avoid bad prices  
-- Shopping: Clear typing focus after a search using the search box  
+- Update LICENSE copyright  
+- Update toc for 9.2 and 1.14.2  
+- Trigger build  
+- Update for v2 packager (still separate builds for now)  
+- Update README.md  
+- [Fixes #1121] TBC: Available count gets set wrong in some cases  
+- TBC: ReagentSearch: Move profit/crafting cost text down  

@@ -22,7 +22,7 @@ local L = app.L;
 	--TODO: L.KNOWN_BY = "Known by ";
 	--TODO: L.REQUIRES = "Requires";
 	--TODO: L.RACE_LOCKED = "Race Locked";
-	--TODO: L.PLEASE_REPORT_MESSAGE = ": Please report this to the ATT Discord in #errors! Thanks!";
+	--TODO: L.PLEASE_REPORT_MESSAGE = ": Please report this to the ATT Discord in #retail-errors! Thanks!";
 	--TODO: L.REPORT_TIP = "\n(Ctrl+C to copy multiline report to your clipboard)";
 	--TODO: L.NOT_AVAILABLE_IN_PL = "Not available in Personal Loot.";
 	--TODO: L.MARKS_OF_HONOR_DESC = "Marks of Honor must be viewed in a Popout window to see all of the normal 'Contains' content.\n(Type '/att ' in chat then Shift-Click to link the item)\n\n|cFFfe040fAfter purchasing and using an ensemble, relogging & a forced ATT refresh (in this order)\nmay be required to register all the items correctly.|r";
@@ -217,6 +217,7 @@ local L = app.L;
 	--TODO: L.NESTED_QUEST_REQUIREMENTS = "Nested Quest Requirements";
 	--TODO: L.MAIN_LIST_REQUIRES_REFRESH = "[Open Main list to update progress]";
 	--TODO: L.DOES_NOT_CONTRIBUTE_TO_PROGRESS = "|cffe08207This group and its content do not contribute to the progress of this window!|r";
+	--TODO: L.CURRENCY_NEEDED_TO_BUY = "Items needed to buy not collected Things";
 
 	-- Item Filter Window
 		--TODO: L.ITEM_FILTER_TEXT = "Item Filters";
@@ -245,7 +246,7 @@ local L = app.L;
 	--TODO: L.AFTER_REFRESH = "After Refresh";
 
 	-- General tab
-		-- Mod Title
+		-- Mode Title
 			--TODO: L.MODE = "Mode";
 			--TODO: L.TITLE_COMPLETIONIST = "Completionist ";
 			--TODO: L.TITLE_UNIQUE_APPEARANCE = "Unique ";
@@ -257,6 +258,7 @@ local L = app.L;
 			--TODO: L.TITLE_INSANE = "|cffADD8E6Insane|R ";
 			--TODO: L.TITLE_SOME_THINGS = "Some of the Things ";
 			--TODO: L.TITLE_LEVEL = "Level ";
+			--TODO: L.TITLE_SOLO = "Solo ";
 			--TODO: L._BETA_LABEL = " |cff4AA7FF[Beta]|R";
 
 		--TODO: L.GENERAL_LABEL = "General";
@@ -361,7 +363,6 @@ local L = app.L;
 		--TODO: L.ACCOUNT_WIDE_QUESTS_TOOLTIP = "|cff00AB00Track Account-wide|R\n\nQuest completion is typically per Character, but this will consider a Quest as completed if ANY Character has completed that specific Quest.";
 		--TODO: L.ACCOUNT_WIDE_RECIPES_TOOLTIP = "|cff00AB00Track Account-wide|R\n\nRecipes are not normally tracked account wide in Blizzard's database, but we can do that.\n\nIt is impossible to collect them all on one character, so with this, you can give your alts and their professions meaning.";
 		--TODO: L.ACCOUNT_WIDE_REPUTATIONS_TOOLTIP = "|cff00AB00Track Account-wide|R\n\nReputations are now tracked account wide in Blizzard's database for achievements, so turning this on may be a good idea.";
-		--TODO: L.ACCOUNT_WIDE_RUNEFORGELEGENDARIES_TOOLTIP = "|cff00AB00Track Account-wide|R\n\nNot sure this will help at all for collection... enjoy moving at least one character of every class through every Covenant and Renown progression...";
 		--TODO: L.ACCOUNT_WIDE_SOULBINDCONDUITS_TOOLTIP = "|cff00AB00Track Account-wide|R\n\nEnable this to consider a Soulbind Conduit as collected for all characters if at least one character has learned it.";
 		--TODO: L.ACCOUNT_WIDE_TITLES_TOOLTIP = "|cff00AB00Track Account-wide|R\n\nMost titles are tracked account wide, but some prestigious titles in WoW are locked to the character that earned them.\n\nToggle this if you don't care about that and want to see those titles marked Collected for your alts.";
 
@@ -410,6 +411,8 @@ local L = app.L;
 		--TODO: L.KNOWN_BY_CHECKBOX_TOOLTIP = "Enable this option if you want to see the full list of characters on all servers that know this recipe in the tooltip.";
 		--TODO: L.SHOW_MODELS_CHECKBOX = "Model Preview";
 		--TODO: L.SHOW_MODELS_CHECKBOX_TOOLTIP = "Enable this option to show models within a preview instead of the icon on the tooltip.\n\nThis option may assist you in identifying what a Rare Spawn or Vendor looks like. It might be a good idea to keep this turned on for that reason.";
+		--TODO: L.SHOW_CURRENCY_CALCULATIONS_CHECKBOX = "Currency calculation";
+		--TODO: L.SHOW_CURRENCY_CALCULATIONS_CHECKBOX_TOOLTIP = "Enable this option to show the approximate amount of items/currency required to buy Uncollected Things.\n\nOnly those collectible Things that can be directly purchased for an item/currency are counted. Containers that do not give items with a 100% chance are not counted.";
 		--TODO: L.SHARED_APPEARANCES_CHECKBOX = "Shared Appearances";
 		--TODO: L.SHARED_APPEARANCES_CHECKBOX_TOOLTIP = "Enable this option to see items that share a similar appearance in the tooltip.\n\nNOTE: Items that do not match the armor type are displayed in the list. This is to help you diagnose the Collection progress.\n\nIf you are ever confused by this, as of ATT v1.5.0, you can Right Click the item to open the item and its Shared Appearances into their own standalone Mini List.";
 		--TODO: L.INCLUDE_ORIGINAL_CHECKBOX = "Original Source";
@@ -549,7 +552,7 @@ local L = app.L;
 		--TODO: L.REQUIRES_LEVEL = "Requires Level";
 		--TODO: L.SECRETS_HEADER = "Secrets";
 		--TODO: L.LIMITED_QUANTITY = "This has a limited quantity and may not always be present on the vendor.";
-		--TODO: L.SOURCE_ID_MISSING = "Please report this Item and where it was acquired to the ATT Discord in #errors!";
+		--TODO: L.SOURCE_ID_MISSING = "Please report this Item and where it was acquired to the ATT Discord in #retail-errors!";
 
 	-- Artifact Relic Completion
 		--TODO: L.ARTIFACT_RELIC_CACHE = "Open your Artifact UI for all of your Artifact Weapons to cache whether this is an upgrade or not. This is useful for determining if you can trade this item to a Twink or not.";
@@ -678,6 +681,7 @@ for key,value in pairs({
 	-- Class Hall /Artifact
 		--TODO: [-159] = "Event Roll",								-- Daily Dreamway Event Roll
 	-- Other
+		--TODO: [-210] = ALLIED.." "..NEW.." "..CHARACTER,			-- Allied New Character
 		--TODO: [-211] = NEW.." "..CHARACTER,						-- New Character
 		--TODO: [-212] = GetSpellInfo(225652).." "..GetSpellInfo(168498),-- Treasure Chest
 	-- Fishing
@@ -954,6 +958,7 @@ for key,value in pairs({
 	[148504] = "눈에 띄는 묘비",	-- A Conspicuous Gravestone
 	[149036] = "마본의 궤짝",	-- Marvon's Chest
 	[149502] = "검은용군단의 보물",	-- Hoard of the Black Dragonflight	--TODO: This was taken from classic Wowhead
+	[151286] = "나이트 엘프 소환의 고서",	-- Kaldorei Tome of Summoning	--TODO: This was taken from classic Wowhead
 	[160836] = "유물 금고",	-- Relic Coffer
 	[161495] = "비밀 금고",	-- Secret Safe
 	[161504] = "작은 배낭",	-- A Small Pack	--TODO: This was taken from classic Wowhead
@@ -1031,6 +1036,7 @@ for key,value in pairs({
 	[180794] = "잔다이스 바로브의 일지",	-- Journal of Jandice Barov
 	[180918] = "현상 수배: 욕망의 탤리스",	-- Wanted: Thaelis the Hungerer
 	[181011] = "마법학자 더스크위더의 일지",	-- Magister Duskwither's Journal
+	[181073] = "맛있는 향기의 가마솥",	-- Fragrant Cauldron
 	[181074] = "투기장 전리품",	-- Arena Spoils	--TODO: This was taken from classic Wowhead
 	--TODO: [181083] = "Sothos and Jarien's Heirlooms",	-- Sothos and Jarien's Heirlooms
 	[181147] = "현상 수배 전단",	-- Wanted Poster
@@ -1060,6 +1066,7 @@ for key,value in pairs({
 	[184300] = "강령술 집중 장치",	-- Necromantic Focus
 	[184465] = "군단 저장고",	-- Cache of the Legion
 	[184660] = "현상 수배 전단",	-- Wanted Poster
+	[184684] = "걸신들린 바위갈퀴 알",	-- Ravenous Flayer Egg
 	[184825] = "라쉬안 마법책",	-- Lashh'an Tome
 	[184945] = "현상 수배 전단",	-- Wanted Poster
 	[184946] = "현상 수배 전단",	-- Wanted Poster
@@ -1307,6 +1314,7 @@ for key,value in pairs({
 	[209620] = "다크문 보물 상자",	-- Darkmoon Treasure Chest
 	[209673] = "비취 호랑이 기둥",	-- Jade Tiger Pillar
 	[209845] = "군침도는 맥주",	-- Mouthwatering Brew
+	[210565] = "검은 토양",	-- Dark Soil
 	--TODO: [211424] = "Alchemy Scroll",	-- Alchemy Scroll
 	[211754] = "수수께끼의 문서",	-- Curious Text
 	--TODO: [211807] = "Mogu Chest",	-- Mogu Chest
@@ -1323,7 +1331,6 @@ for key,value in pairs({
 	[213653] = "판다렌 고기잡이용 작살",	-- Pandaren Fishing Spear
 	[213741] = "고대 진위 지팡이",	-- Ancient Jinyu Staff
 	[213742] = "열 천둥의 망치",	-- Hammer of Ten Thunders
-	--TODO: [213743] = "Jade Infused Blade",	-- Jade Infused Blade
 	[213748] = "판다렌 의식용 돌",	-- Pandaren Ritual Stone
 	[213749] = "은둔 고수의 봉",	-- Staff of the Hidden Master
 	[213750] = "사우록 돌 서판",	-- Saurok Stone Tablet
@@ -2682,6 +2689,7 @@ for key,value in pairs({
 	[353331] = "페어리 보관함",	-- Faerie Stash
 	[353332] = "페어리 보관함",	-- Faerie Stash
 	[353333] = "페어리 보관함",	-- Faerie Stash
+	[353336] = "비밀 보물",	-- Secret Treasure
 	[353380] = "할리스의 도시락",	-- Halis's Lunch Pail
 	[353472] = "찬란한 검",	-- Radiant Sword
 	[353500] = "은 금고",	-- Silver Strongbox
@@ -2764,7 +2772,13 @@ for key,value in pairs({
 	[355035] = "선택받은 룬궤짝",	-- Treasure: House of the Chosen
 	[355037] = "룬결속 함",	-- Runebound Coffer
 	[355038] = "룬결속 함",	-- Runebound Coffer
+	[355040] = "의식의 룬",	-- Rune of Rituals
 	[355041] = "달의 보관함",	-- Cache of the Moon
+	[355048] = "의식의 룬",	-- Rune of Rituals
+	[355049] = "의식의 룬",	-- Rune of Rituals
+	[355194] = "피조물의 룬",	-- Rune of Constructs
+	[355195] = "피조물의 룬",	-- Rune of Constructs
+	[355196] = "피조물의 룬",	-- Rune of Constructs
 	[355286] = "추모 제물",	-- Memorial Offerings
 	[355296] = "현상 수배: 야수 조절",	-- Bounty: Beast Control
 	[355355] = "조화의 상자",	-- Harmonic Chest
@@ -2823,6 +2837,7 @@ for key,value in pairs({
 	--TODO: [358318] = "R. Suavel Dredger Portrait",	-- R. Suavel Dredger Portrait
 	[358319] = "마술사의 기록",	-- Sorceror's Note
 	[358382] = "현상 수배: 칼리세라",	-- Wanted: Chelicera
+	[358399] = "커다란 배낭",	-- Six-League Pack
 	[358531] = "영웅급 보물이 든 거대한 보관함",	-- Giant Cache of Epic Treasure
 	[358533] = "잊혀진 보급품",	-- Forgotten Supplies
 	[358855] = "손상된 안전 낙하 가방",	-- Damaged Safe Fall Pack
@@ -2909,6 +2924,7 @@ for key,value in pairs({
 	[369438] = "균열결속 보관함",	-- Riftbound Cache
 	[369439] = "균열결속 보관함",	-- Riftbound Cache
 	[369440] = "균열결속 보관함",	-- Riftbound Cache
+	--TODO: [370469] = "Spectral Feed",	-- Spectral Feed
 	[9962198] = "추방자의 급조한 진흙 웅덩이",	-- Outcast's Makeshift Muckpool
 	--TODO: [9999890] = "Corrupted Loot",	-- Corrupted Loot
 	--TODO: [9999891] = "Main Objective Only",	-- Main Objective Only

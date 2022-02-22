@@ -108,6 +108,7 @@ Revert PowaBarSliderTemplate to inherit from OptionsSliderTemplate if it's fixed
       <OnShow>
         Emoticons_OptionsWindow_OnShow(self);
       </OnShow>
+      
 
 
     </Scripts>
@@ -123,6 +124,7 @@ Revert PowaBarSliderTemplate to inherit from OptionsSliderTemplate if it's fixed
         <Scripts>
           <OnLoad>
             getglobal(self:GetName().."Text"):SetText("Say");
+            self:SetChecked(Emoticons_Settings["CHAT_MSG_SAY"])
           </OnLoad>
           <OnClick>
             Emoticons_SetType("CHAT_MSG_SAY",self:GetChecked());
@@ -140,6 +142,7 @@ Revert PowaBarSliderTemplate to inherit from OptionsSliderTemplate if it's fixed
         <Scripts>
           <OnLoad>
             getglobal(self:GetName().."Text"):SetText("Yell");
+            self:SetChecked(Emoticons_Settings["CHAT_MSG_YELL"])
           </OnLoad>
           <OnClick>
             Emoticons_SetType("CHAT_MSG_YELL",self:GetChecked());
@@ -157,6 +160,7 @@ Revert PowaBarSliderTemplate to inherit from OptionsSliderTemplate if it's fixed
         <Scripts>
           <OnLoad>
             getglobal(self:GetName().."Text"):SetText("Guild");
+            self:SetChecked(Emoticons_Settings["CHAT_MSG_GUILD"])
           </OnLoad>
           <OnClick>
             Emoticons_SetType("CHAT_MSG_GUILD",self:GetChecked());
@@ -191,6 +195,7 @@ Revert PowaBarSliderTemplate to inherit from OptionsSliderTemplate if it's fixed
         <Scripts>
           <OnLoad>
             getglobal(self:GetName().."Text"):SetText("Whisper");
+            self:SetChecked(Emoticons_Settings["CHAT_MSG_WHISPER"])
           </OnLoad>
           <OnClick>
             Emoticons_SetType("CHAT_MSG_WHISPER",self:GetChecked());
@@ -208,6 +213,7 @@ Revert PowaBarSliderTemplate to inherit from OptionsSliderTemplate if it's fixed
         <Scripts>
           <OnLoad>
             getglobal(self:GetName().."Text"):SetText("Party");
+            self:SetChecked(Emoticons_Settings["CHAT_MSG_PARTY"])
           </OnLoad>
           <OnClick>
             Emoticons_SetType("CHAT_MSG_PARTY",self:GetChecked());
@@ -225,6 +231,7 @@ Revert PowaBarSliderTemplate to inherit from OptionsSliderTemplate if it's fixed
         <Scripts>
           <OnLoad>
             getglobal(self:GetName().."Text"):SetText("Raid");
+            self:SetChecked(Emoticons_Settings["CHAT_MSG_RAID"])
           </OnLoad>
           <OnClick>
             Emoticons_SetType("CHAT_MSG_RAID",self:GetChecked());
@@ -242,6 +249,7 @@ Revert PowaBarSliderTemplate to inherit from OptionsSliderTemplate if it's fixed
         <Scripts>
           <OnLoad>
             getglobal(self:GetName().."Text"):SetText("Channel");
+            self:SetChecked(Emoticons_Settings["CHAT_MSG_CHANNEL"])
           </OnLoad>
           <OnClick>
             Emoticons_SetType("CHAT_MSG_CHANNEL",self:GetChecked());
@@ -259,6 +267,7 @@ Revert PowaBarSliderTemplate to inherit from OptionsSliderTemplate if it's fixed
         <Scripts>
           <OnLoad>
             getglobal(self:GetName().."Text"):SetText("Battle.net Whisper");
+            self:SetChecked(Emoticons_Settings["CHAT_MSG_BN_WHISPER"])
           </OnLoad>
           <OnClick>
             Emoticons_SetType("CHAT_MSG_BN_WHISPER",self:GetChecked());
@@ -276,6 +285,7 @@ Revert PowaBarSliderTemplate to inherit from OptionsSliderTemplate if it's fixed
         <Scripts>
           <OnLoad>
             getglobal(self:GetName().."Text"):SetText("Battle.net Conversation");
+            self:SetChecked(Emoticons_Settings["CHAT_MSG_BN_CONVERSATION"])
           </OnLoad>
           <OnClick>
             Emoticons_SetType("CHAT_MSG_BN_CONVERSATION",self:GetChecked());
@@ -293,6 +303,7 @@ Revert PowaBarSliderTemplate to inherit from OptionsSliderTemplate if it's fixed
         <Scripts>
           <OnLoad>
             getglobal(self:GetName().."Text"):SetText("Mail");
+            self:SetChecked(Emoticons_Settings["MAIL"])
           </OnLoad>
           <OnClick>
             Emoticons_SetType("MAIL",self:GetChecked());
@@ -601,8 +612,8 @@ Revert PowaBarSliderTemplate to inherit from OptionsSliderTemplate if it's fixed
   <Frame name="EmoticonMiniMapDropDown" inherits="UIDropDownMenuTemplate" id="1">
     <Scripts>
       <OnLoad>
-        local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
-	      LibDD:UIDropDownMenu_Initialize(self, Emoticons_LoadMiniMapDropdown, "MENU", 1);
+        <!-- local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0") -->
+	      UIDropDownMenu_Initialize(self, Emoticons_LoadMiniMapDropdown, "MENU", 1);
       </OnLoad>
     </Scripts>
   </Frame>

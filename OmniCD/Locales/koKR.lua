@@ -11,7 +11,7 @@ L["|cffff2020Important!|r Covenant and Soulbind Conduit data can only be acquire
 L["> 1 minute"] = "> 1분"
 L["2nd Row Icons (Double Row Layout)"] = "두째줄 아이콘 (두줄 수평배열)"
 L["2px Border"] = "2픽셀 테두리"
-L["A new update is available. (|cff99cdff%s)"] = "업데이트 가능. (|cff99cdff%s)"
+L["A new update is available. |cff99cdff(%s)"] = "업데이트 가능. |cff99cdff(%s)"
 L["Active"] = "활성"
 L["Active Icon Opacity"] = "활성 아이콘 불투명도"
 L["Active Icon Settings"] = "활성화된 아이콘 설정"

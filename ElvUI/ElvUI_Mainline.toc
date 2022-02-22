@@ -1,24 +1,20 @@
-## Interface: 90105
-## Author: Elv, Simpy
-## Version: 12.58
 ## Title: |cff1784d1ElvUI|r
 ## Notes: User Interface replacement AddOn for World of Warcraft.
+## Author: Elv, Simpy
+## Version: 12.64
 ## SavedVariables: ElvDB, ElvPrivateDB
 ## SavedVariablesPerCharacter: ElvCharacterDB
 ## OptionalDeps: Blizzard_PetJournal, SharedMedia, Tukui, Masque
-## X-oUF: ElvUF
+## Interface: 90200
+## X-Interface: 90200
 ## X-Tukui-ProjectID: -2
 ## X-Tukui-ProjectFolders: ElvUI_OptionsUI, ElvUI
+## X-oUF: ElvUF
 
-TaintLess.xml
-
-Core\Developer\Load_Developer.xml
-
-Core\Libraries\Load_Libraries.xml
-Core\Libraries\oUF\oUF.xml
-Core\Libraries\oUF_Plugins\oUF_Plugins.xml
+Mainline\Libs.xml
 
 Core\init.lua
+Core\Developer\Load_Developer.xml
 Core\Locales\Load_Locales.xml
 Core\Media\Load_Media.xml
 Core\Settings\Load_Settings.xml

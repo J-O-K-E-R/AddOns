@@ -144,6 +144,8 @@ E.L_PRIORITY = {
 	["other"] = OTHER,
 }
 
+-- old glow
+--[[
 E.L_GLOW_ATLAS ={
 	["bags-glow-white"] = ICON_TAG_RAID_TARGET_SKULL3,
 	["bags-glow-green"] = ICON_TAG_RAID_TARGET_TRIANGLE3,
@@ -152,6 +154,7 @@ E.L_GLOW_ATLAS ={
 	["bags-glow-orange"] = ICON_TAG_RAID_TARGET_CIRCLE3,
 	["bags-glow-artifact"] = ICON_TAG_RAID_TARGET_STAR3,
 }
+]]
 
 E.L_HIGHLIGHTS = {
 	["racial"] = RACIAL_TRAITS,
@@ -172,6 +175,7 @@ E.OTHER_SORT_ORDER = {
 	"RACIAL",
 	"TRINKET",
 	"COVENANT",
+--- "CONSUMABLE",
 }
 
 E.L_CATAGORY_OTHER = {
@@ -179,6 +183,7 @@ E.L_CATAGORY_OTHER = {
 	["RACIAL"] = RACIAL_TRAITS,
 	["TRINKET"] = INVTYPE_TRINKET,
 	["COVENANT"] = COVENANT_PREVIEW_RACIAL_ABILITY and format("%s (%s)", COVENANT_PREVIEW_RACIAL_ABILITY, L["Covenant"]) or "Covenant Signature Ability",
+--- ["CONSUMABLE"] = BAG_FILTER_CONSUMABLES
 }
 
 E.ICO = {
@@ -188,10 +193,12 @@ E.ICO = {
 	["RACIAL"] = "Interface\\Icons\\Achievement_character_human_female",
 	["TRINKET"] = "Interface\\Icons\\inv_60pvp_trinket2d",
 	["COVENANT"] = 3257750,
+--- ["CONSUMABLE"] = 3566860,
 }
 
 if E.isPreBCC then
 	E.OTHER_SORT_ORDER[4] = nil
+--- E.OTHER_SORT_ORDER[5] = nil
 	E.ICO.PVPTRINKET = "Interface\\Icons\\inv_jewelry_trinketpvp_01" -- inv_jewelry_trinketpvp_02 (horde)
 	E.ICO.RACIAL = "Interface\\Icons\\achievement_character_troll_male"
 	E.ICO.TRINKET = "Interface\\Icons\\inv_misc_armorkit_10"
@@ -242,6 +249,7 @@ E.CLASSID = { -- not CLASS_SORT_ORDER
 -- 1 for Combo, Chi, etc., 3 for Rage, etc (ignoring 1 Chi spenders used ooc that starts combat)
 E.POWER_TYPE_SPEC_OCC_THRESHOLD = {
 	[250] = 3,  -- DK (Blood)
+	[103] = 1,	-- Druid (Feral)
 	[253] = 3,  -- Hunter(BM)
 	[254] = 3,  -- Hunter (MM)
 	[255] = 3,  -- Hunter (SV)
@@ -283,6 +291,7 @@ E.HEX_C = {
 	PERFORMANCE_BLUE = "|cff99cdff",    -- 0.596, 0.808, 1.0
 	OMNICD_RED = "|cffc10003",      -- 0.757, 0.0, 0.012
 	OMNICD_MAROON = "|cff69000b",   -- 0.412, 0.0, 0.043
+	OVERWOLF_RED = "|cffd34037",    -- 0.827, 0.247, 0.215
 }
 
 E.PROJECT_HEX_C = {
@@ -291,16 +300,14 @@ E.PROJECT_HEX_C = {
 	[5] = "|cff7bbb4e", -- WOW_PROJECT_BURNING_CRUSADE_CLASSIC
 }
 
---[[
-	tree/tab maroon  0.412, 0.0, 0.043
-	checkbox maroon  0.536, 0.0, 0.056
-	checkbox red     0.725, 0.008, 0.008
-	checkbox green   0.008, 0.725, 0.008
-	checkbox yellow  0.8, 0.624, 0
-	flash btn green  0, 0.6, 0.4
-	flash btn red    0.725, 0.008, 0.008
-	slider knob yellow   1, 0.824, 0
-]]
+--  tree/tab maroon  0.412, 0.0, 0.043
+--  checkbox maroon  0.536, 0.0, 0.056
+--  checkbox red     0.725, 0.008, 0.008
+--  checkbox green   0.008, 0.725, 0.008
+--  checkbox yellow  0.8, 0.624, 0
+--  flash btn green  0, 0.6, 0.4
+--  flash btn red    0.725, 0.008, 0.008
+--  slider knob yellow   1, 0.824, 0
 
 E.RAID_TARGET_MARKERS = {
 	[0x00000001] = "|TInterface\\TargetingFrame\\UI-RaidTargetingIcon_1:0|t",   -- Star

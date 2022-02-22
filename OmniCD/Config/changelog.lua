@@ -1,10 +1,22 @@
 local E, L, C = select(2, ...):unpack()
 
 if E.isClassic then E.changelog = [=[
+v2.6.35
+	CTRL-clicking the spell in the 'Spells/RaidCD' tab will add it to the 'Spell Editor'.
+	Warlock Soulstone CD added.
+	Tooltip borders fixed.
+
 v2.6.30
 	Initial release for WoW: Classic Era.
 ]=]
 elseif E.isBCC then E.changelog = [=[
+v2.6.36
+	nil error fix
+
+v2.6.35
+	CTRL-clicking the spell in the 'Spells/RaidCD' tab will add it to the 'Spell Editor'.
+	Warlock Soulstone CD added.
+
 v2.6.30
 	Feature Updates
 		All supported UIs can now display individual unit CD bars in a raid.
@@ -24,6 +36,49 @@ v2.6.30
 Pre v2.6.30 changes can be found in the CHANGELOG file
 ]=]
 else E.changelog = [=[
+v2.6.38
+	Bug Fixes
+		Fixed an issue that caused Icy Propulsion's cooldown reduction to end prematurely.
+		Casting Condemn will correctly apply Anger Management's CDR for non-synced units.
+	Spells updated for 9.2
+	Removed options from the Interface menu d/t taint. Type /oc to open the option panel.
+
+v2.6.37
+	Bug Fixes
+		Sinful Delight (Runeforge) will correctly reduce Mirrors of Torment by 45seconds when it's dispelled.
+		Tiger Palm will no longer reduce Bonedust Brew's (Covenant) cooldown for MW and WW specs. <iss#332>
+		Walk with the Ox (Conduit) CDR will correctly be limited to once per 100ms (Shuffle).
+		Sinister Teachings (Runeforge) CDR will correctly be limited to once per 750ms.
+		CDR by haste is now applied after additive modifiers.
+	CD Modifiers
+		Shifting Powers CDR now applies to Alter Time for Arcane spec(was Frost & Fire only).
+		Kiss of Death (Runeforge) will reduce SW: Death cooldown by 12 seconds(was 8s).
+		Sinful Delight CDR on consuming Clearcast, Brain Freeze, and a Fireblast charge is now 4s(was 3s).
+		Tiger Palm and Keg Smash reduces Bonedust Brew's cooldown by an additional 1second while it's active for BM spec.
+
+v2.6.36
+	Bug Fixes
+		Icy Veins' highlighting will correctly be removed when the effect ends.
+		Guardian of the Ancient Kings w/ Glyph of the Queen will correctly start it's CD.
+	Non-synced units are now inspected every 5 seconds(was 15s) in arenas until the match begins.
+
+v2.6.35
+	Feature Updates
+		CTRL-clicking the spell in the 'Spells/RaidCD' tab will add it to the 'Spell Editor'.
+	Spells
+		Sinful Brand, Nether Portal, Impending Victory CD updated for 9.1.5
+	CD Modifiers
+		NF Priest, Benevolent Faerie Fermata (Conduit) added.
+		NF Priest, Bwonsamdi's Pact (Runeforge) added.
+	Bug Fixes
+		Kindred Spirits used on group members will correctly start it's CD and apply any existing CDR.
+		Fortifying Brew's CD when affected by both Benevolent Fae and Symbol of Hope will reduce the correct amount.
+		Switching Covenants will correctly remove previous Covenant spells for non-synced units.
+		Offline non-synced members will be re-inspected when they come back online to fix issues when the player has also been disconnected.
+		Fixed stack overflow error which can happen when using Icy Veins with Icy Propulsion and Thermal Void.
+	AshtToAsh UI support.
+	Grid2 by role support.
+
 v2.6.34
 	Fixed cooldown reduction with synced units.
 

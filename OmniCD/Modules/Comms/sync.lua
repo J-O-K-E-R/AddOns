@@ -87,8 +87,8 @@ function Comms:CHAT_MSG_ADDON(prefix, message, dist, sender) -- Ace strips realm
 
 	local header, guid, body = strmatch(message, "(.-),(.-),(.+)")
 	local info = P.groupInfo[guid]
-	if not info then -- class nil in updateRoster
-		return -- can't distinguish 'server delay' from 'no longer in group' so return instead of building info
+	if not info then -- class nil in updateRoster, user zone disabled (msg is never disabled), sender no longer in group (msg latency)
+		return
 	end
 
 	local isSyncedUnit = self.syncGUIDS[guid]
@@ -158,14 +158,14 @@ function Comms:CHAT_MSG_ADDON(prefix, message, dist, sender) -- Ace strips realm
 					info.talentData[spellID] = rankValue
 				elseif conduitID then
 					info.shadowlandsData[conduitID] = 0
-					info.talentData[conduitID] = 0
+					info.talentData[conduitID] = 0 -- incl main hand
 				end
 			elseif v ~= "0" then
 				v = tonumber(v)
 				if i == 16 then
 					if info.shadowlandsData.covenantID then
 						info.shadowlandsData.soulbindID = v
-					else -- backwards compatible. add snowflake if no active soulbind
+					else -- backwards compatible. add main hand if no active soulbind
 						info.talentData[v] = true
 					end
 				elseif i == 15 then
@@ -186,6 +186,15 @@ function Comms:CHAT_MSG_ADDON(prefix, message, dist, sender) -- Ace strips realm
 				end
 			end
 		end
+	end
+
+	local unit = info.unit
+	if info.level == 200 then
+		local lvl = UnitLevel(unit)
+		info.level = lvl > 0 and lvl or 200
+	end
+	if info.name == "Unknown" then
+		info.name = GetUnitName(unit, true)
 	end
 
 	self.syncGUIDS[guid] = true
@@ -275,3 +284,6 @@ do
 	Comms.SOULBIND_PATH_CHANGED = SendUpdatedSyncData
 	Comms.COVENANT_SANCTUM_RENOWN_LEVEL_CHANGED = SendUpdatedSyncData
 end
+
+-- Desync if user disables module,zone, or addon(/Reload). On zone change where PLW is followed by PEW, CHAT_MSG_ADDON only sends REQ and never DESYNC.
+Comms.PLAYER_LEAVING_WORLD = Comms.Desync

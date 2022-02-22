@@ -111,6 +111,11 @@ L["Any Triggers"] = "Any Triggers"
 L["AOE"] = "AOE"
 L["Arcane Resistance"] = "Arcane Resistance"
 L["Archimonde"] = "Archimonde"
+L[ [=[Are you sure you want to run the |cffff0000EXPERIMENTAL|r repair tool?
+This will overwrite any changes you have made since the last database upgrade.
+Last upgrade: %s]=] ] = [=[Are you sure you want to run the |cffff0000EXPERIMENTAL|r repair tool?
+This will overwrite any changes you have made since the last database upgrade.
+Last upgrade: %s]=]
 L["Arena"] = "Arena"
 L["Armor (%)"] = "Armor (%)"
 L["Armor against Target (%)"] = "Armor against Target (%)"
@@ -151,7 +156,6 @@ L["Auto"] = "Auto"
 L["Autocast Shine"] = "Autocast Shine"
 L["Automatic"] = "Automatic"
 L["Automatic Length"] = "Automatic Length"
-L["Automatic Repair Confirmation Dialog"] = "Automatic Repair Confirmation Dialog"
 L["Automatic Rotation"] = "Automatic Rotation"
 L["Avoidance (%)"] = "Avoidance (%)"
 L["Avoidance Rating"] = "Avoidance Rating"
@@ -197,6 +201,7 @@ L["Bounce with Decay"] = "Bounce with Decay"
 L["Broodlord Lashlayer"] = "Broodlord Lashlayer"
 L["Brutallus"] = "Brutallus"
 L["Buff"] = "Buff"
+L["Buff/Debuff"] = "Buff/Debuff"
 L["Buffed/Debuffed"] = "Buffed/Debuffed"
 L["Buru the Gorger"] = "Buru the Gorger"
 L["Can be used for e.g. checking if \"boss1target\" is the same as \"player\"."] = "Can be used for e.g. checking if \"boss1target\" is the same as \"player\"."
@@ -367,6 +372,7 @@ L["Equipped"] = "Equipped"
 L["Eredar Twins"] = "Eredar Twins"
 L["Error"] = "Error"
 L["Error Frame"] = "Error Frame"
+L["ERROR in '%s' unknown or incompatible sub element type '%s'"] = "ERROR in '%s' unknown or incompatible sub element type '%s'"
 L["Error in aura '%s' in %s. trigger. All States table contains a non table at key: '%s'."] = "Error in aura '%s' in %s. trigger. All States table contains a non table at key: '%s'."
 L["Error not receiving display information from %s"] = "Error not receiving display information from %s"
 L[ [=['ERROR: Anchoring %s': 
@@ -424,6 +430,8 @@ L["Frame Selector"] = "Frame Selector"
 L["Frequency"] = "Frequency"
 L["Friendly"] = "Friendly"
 L["Friendly Fire"] = "Friendly Fire"
+L["Friendship Max Rank"] = "Friendship Max Rank"
+L["Friendship Rank"] = "Friendship Rank"
 L["From"] = "From"
 L["Frost Resistance"] = "Frost Resistance"
 L["Full"] = "Full"
@@ -511,6 +519,7 @@ L["Importing is disabled while in combat"] = "Importing is disabled while in com
 L["In Combat"] = "In Combat"
 L["In Encounter"] = "In Encounter"
 L["In Group"] = "In Group"
+L["In Party"] = "In Party"
 L["In Pet Battle"] = "In Pet Battle"
 L["In Raid"] = "In Raid"
 L["In Vehicle"] = "In Vehicle"
@@ -519,6 +528,7 @@ L["Include Charges"] = "Include Charges"
 L["Include Pets"] = "Include Pets"
 L["Incoming Heal"] = "Incoming Heal"
 L["Increase Precision Below"] = "Increase Precision Below"
+L["Increases by one per stage or intermission."] = "Increases by one per stage or intermission."
 L["Information"] = "Information"
 L["Inherited"] = "Inherited"
 L["Instakill"] = "Instakill"
@@ -563,6 +573,7 @@ L["Item Type"] = "Item Type"
 L["Item Type Equipped"] = "Item Type Equipped"
 L["Jan'alai"] = "Jan'alai"
 L["Jin'do the Hexxer"] = "Jin'do the Hexxer"
+L["Journal Stage"] = "Journal Stage"
 L["Kael'thas Sunstrider"] = "Kael'thas Sunstrider"
 L["Kalecgos"] = "Kalecgos"
 L["Karazhan"] = "Karazhan"
@@ -612,7 +623,6 @@ L["Main Stat"] = "Main Stat"
 L["Majordomo Executus"] = "Majordomo Executus"
 L["Make sure you can trust the person who sent it!"] = "Make sure you can trust the person who sent it!"
 L["Malformed WeakAuras link"] = "Malformed WeakAuras link"
-L["Manual Repair Confirmation Dialog"] = "Manual Repair Confirmation Dialog"
 L["Manual Rotation"] = "Manual Rotation"
 L["Marked First"] = "Marked First"
 L["Marked Last"] = "Marked Last"
@@ -622,6 +632,11 @@ L["Mastery Rating"] = "Mastery Rating"
 L["Match Count"] = "Match Count"
 L["Match Count per Unit"] = "Match Count per Unit"
 L["Matches (Pattern)"] = "Matches (Pattern)"
+L[ [=[Matches stage number of encounter journal.
+Intermissions are .5
+E.g. 1;2;1;2;2.5;3]=] ] = [=[Matches stage number of encounter journal.
+Intermissions are .5
+E.g. 1;2;1;2;2.5;3]=]
 L["Max Char "] = "Max Char "
 L["Max Charges"] = "Max Charges"
 L["Maximum"] = "Maximum"
@@ -689,6 +704,7 @@ L["None"] = "None"
 L["Non-player Character"] = "Non-player Character"
 L["Normal"] = "Normal"
 L["Not in Group"] = "Not in Group"
+L["Not in Smart Group"] = "Not in Smart Group"
 L["Not on Cooldown"] = "Not on Cooldown"
 L["Not On Threat Table"] = "Not On Threat Table"
 L["Note, that cross realm transmission is possible if you are on the same group"] = "Note, that cross realm transmission is possible if you are on the same group"
@@ -806,6 +822,7 @@ L["Raid (Mythic)"] = "Raid (Mythic)"
 L["Raid (Normal)"] = "Raid (Normal)"
 L["Raid (Timewalking)"] = "Raid (Timewalking)"
 L["Raid Mark"] = "Raid Mark"
+L["Raid Mark Icon"] = "Raid Mark Icon"
 L["Raid Role"] = "Raid Role"
 L["Raid Warning"] = "Raid Warning"
 L["Raids"] = "Raids"
@@ -942,6 +959,7 @@ L["Specific Unit"] = "Specific Unit"
 L["Spell"] = "Spell"
 L["Spell (Building)"] = "Spell (Building)"
 L["Spell Activation Overlay Glow"] = "Spell Activation Overlay Glow"
+L["Spell Cast Succeeded"] = "Spell Cast Succeeded"
 L["Spell Cost"] = "Spell Cost"
 L["Spell Count"] = "Spell Count"
 L["Spell ID"] = "Spell ID"
@@ -959,6 +977,7 @@ L["Spirit"] = "Spirit"
 L["Stack Count"] = "Stack Count"
 L["Stacks"] = "Stacks"
 L["Stage"] = "Stage"
+L["Stage Counter"] = "Stage Counter"
 L["Stagger Scale"] = "Stagger Scale"
 L["Stamina"] = "Stamina"
 L["Stance/Form/Aura"] = "Stance/Form/Aura"
@@ -980,6 +999,7 @@ L["Supports multiple entries, separated by commas"] = "Supports multiple entries
 L[ [=[Supports multiple entries, separated by commas
 ]=] ] = [=[Supports multiple entries, separated by commas
 ]=]
+L["Supports multiple entries, separated by commas. Escape ',' with \\"] = "Supports multiple entries, separated by commas. Escape ',' with \\"
 L["Supports multiple entries, separated by commas. Group Zone IDs must be prefixed with 'g', e.g. g277."] = "Supports multiple entries, separated by commas. Group Zone IDs must be prefixed with 'g', e.g. g277."
 L["Supremus"] = "Supremus"
 L["Swing"] = "Swing"
@@ -1021,6 +1041,7 @@ L["Third"] = "Third"
 L["Third Value of Tooltip Text"] = "Third Value of Tooltip Text"
 L["This aura contains custom Lua code."] = "This aura contains custom Lua code."
 L["This aura has legacy aura trigger(s), which are no longer supported."] = "This aura has legacy aura trigger(s), which are no longer supported."
+L["This aura tried to show a tooltip on a anchoring restricted region"] = "This aura tried to show a tooltip on a anchoring restricted region"
 L["This aura was created with a newer version of WeakAuras."] = "This aura was created with a newer version of WeakAuras."
 L["This aura was created with the Classic version of World of Warcraft."] = "This aura was created with the Classic version of World of Warcraft."
 L["This aura was created with the retail version of World of Warcraft."] = "This aura was created with the retail version of World of Warcraft."
@@ -1075,6 +1096,7 @@ L["Trigger Update"] = "Trigger Update"
 L["Trigger:"] = "Trigger:"
 L["Trivial (Low Level)"] = "Trivial (Low Level)"
 L["True"] = "True"
+L["Trying to repair broken conditions in %s likely caused by a WeakAuras bug."] = "Trying to repair broken conditions in %s likely caused by a WeakAuras bug."
 L["Twin Emperors"] = "Twin Emperors"
 L["Type"] = "Type"
 L["Unaffected"] = "Unaffected"
@@ -1098,6 +1120,7 @@ L["Update Auras"] = "Update Auras"
 L["Usage:"] = "Usage:"
 L["Use /wa minimap to show the minimap icon again."] = "Use /wa minimap to show the minimap icon again."
 L["Use Custom Color"] = "Use Custom Color"
+L["Use Watched Faction"] = "Use Watched Faction"
 L["Vaelastrasz the Corrupt"] = "Vaelastrasz the Corrupt"
 L["Value"] = "Value"
 L["Values/Remaining Time above this value are displayed as full progress."] = "Values/Remaining Time above this value are displayed as full progress."
@@ -1118,6 +1141,13 @@ L["Warning: Full Scan auras checking for both name and spell id can't be convert
 L["Warning: Name info is now available via %affected, %unaffected. Number of affected group members via %unitCount. Some options behave differently now. This is not automatically adjusted."] = "Warning: Name info is now available via %affected, %unaffected. Number of affected group members via %unitCount. Some options behave differently now. This is not automatically adjusted."
 L["Warning: Tooltip values are now available via %tooltip1, %tooltip2, %tooltip3 instead of %s. This is not automatically adjusted."] = "Warning: Tooltip values are now available via %tooltip1, %tooltip2, %tooltip3 instead of %s. This is not automatically adjusted."
 L["WeakAuras Built-In (63:42 | 3:07 | 10 | 2.4)"] = "WeakAuras Built-In (63:42 | 3:07 | 10 | 2.4)"
+L[ [=[WeakAuras has detected that it has been downgraded.
+Your saved auras may no longer work properly.
+Would you like to run the |cffff0000EXPERIMENTAL|r repair tool? This will overwrite any changes you have made since the last database upgrade.
+Last upgrade: %s]=] ] = [=[WeakAuras has detected that it has been downgraded.
+Your saved auras may no longer work properly.
+Would you like to run the |cffff0000EXPERIMENTAL|r repair tool? This will overwrite any changes you have made since the last database upgrade.
+Last upgrade: %s]=]
 L["WeakAuras has encountered an error during the login process. Please report this issue at https://github.com/WeakAuras/Weakauras2/issues/new."] = "WeakAuras has encountered an error during the login process. Please report this issue at https://github.com/WeakAuras/Weakauras2/issues/new."
 L["WeakAuras Profiling"] = "WeakAuras Profiling"
 L["WeakAuras Profiling Report"] = "WeakAuras Profiling Report"
@@ -1155,14 +1185,3 @@ setmetatable(WeakAuras.L, {__index = function(self, key)
   return key
 end})
 
-L["Automatic Repair Confirmation Dialog"] = [[
-WeakAuras has detected that it has been downgraded.
-Your saved auras may no longer work properly.
-
-Would you like to run the |cffff0000EXPERIMENTAL|r repair tool? This will overwrite any changes you have made since the last database upgrade.
-Last upgrade: %s]]
-
-L["Manual Repair Confirmation Dialog"] = [[
-Are you sure you want to run the |cffff0000EXPERIMENTAL|r repair tool?
-This will overwrite any changes you have made since the last database upgrade.
-Last upgrade: %s]]

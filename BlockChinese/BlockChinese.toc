@@ -1,5 +1,5 @@
-## Interface: 90105
-## Version: v2.0.4
+## Interface: 90200
+## Version: v2.0.6
 ## Title: BlockChinese
 ## Notes: Blocks Chinese Chat
 ## Author: Ketho @ EU-Boulderfist

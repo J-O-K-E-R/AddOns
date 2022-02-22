@@ -1,3 +1,4 @@
-v4.33 11/2/21
+v4.35 2/13/22
 
-- Upgrade and Fixed LibQTip-1.0
+- fix error for lootgroup being changed up
+- fix exp databar issues

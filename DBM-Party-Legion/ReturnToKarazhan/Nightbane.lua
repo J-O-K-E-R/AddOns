@@ -3,7 +3,7 @@ local L		= mod:GetLocalizedStrings()
 
 mod.statTypes = "mythic,challenge"
 
-mod:SetRevision("20210905144759")
+mod:SetRevision("20220217011830")
 mod:SetCreatureID(114895)
 mod:SetEncounterID(2031)
 mod:SetUsedIcons(1)
@@ -32,16 +32,16 @@ local warnPhase2					= mod:NewPhaseAnnounce(2, 2)
 local warnPhase3					= mod:NewPhaseAnnounce(3, 2)
 
 local specWarnReverbShadows			= mod:NewSpecialWarningInterruptCount(229307, "HasInterrupt", nil, nil, 1, 3)
-local specWarnCharredEarth			= mod:NewSpecialWarningMove(228808, nil, nil, nil, 1, 2)
+local specWarnCharredEarth			= mod:NewSpecialWarningGTFO(228808, nil, nil, nil, 1, 8)
 local specWarnIgniteSoul			= mod:NewSpecialWarningMoveTo(228796, nil, nil, nil, 3, 2)
 local yellIgniteSoul				= mod:NewShortFadesYell(228796)
 local specWarnFear					= mod:NewSpecialWarningSpell(228837, nil, nil, nil, 2, 2)
 
-local timerReverbShadowsCD			= mod:NewCDTimer(12, 229307, nil, nil, nil, 4, nil, DBM_CORE_L.INTERRUPT_ICON)--12-16
+local timerReverbShadowsCD			= mod:NewCDTimer(12, 229307, nil, nil, nil, 4, nil, DBM_COMMON_L.INTERRUPT_ICON)--12-16
 local timerBreathCD					= mod:NewCDTimer(23, 228785, nil, "Tank", nil, 5)--23-35
 local timerCharredEarthCD			= mod:NewCDTimer(20, 228806, nil, nil, nil, 3)--20-25
 local timerBurningBonesCD			= mod:NewCDTimer(18.3, 228829, nil, nil, nil, 3)--20-25
-local timerIgniteSoulCD				= mod:NewCDTimer(25, 228796, nil, nil, nil, 3, nil, DBM_CORE_L.DEADLY_ICON)
+local timerIgniteSoulCD				= mod:NewCDTimer(25, 228796, nil, nil, nil, 3, nil, DBM_COMMON_L.DEADLY_ICON)
 
 local timerFearCD					= mod:NewCDTimer(43, 228837, nil, nil, nil, 2)--43-46
 
@@ -145,7 +145,7 @@ end
 function mod:SPELL_PERIODIC_DAMAGE(_, _, _, _, destGUID, _, _, _, spellId)
 	if spellId == 228808 and destGUID == UnitGUID("player") and not DBM:UnitDebuff("player", filteredDebuff) and self:AntiSpam(2, 1) then
 		specWarnCharredEarth:Show()
-		specWarnCharredEarth:Play("runaway")
+		specWarnCharredEarth:Play("watchfeet")
 	end
 end
 mod.SPELL_PERIODIC_MISSED = mod.SPELL_PERIODIC_DAMAGE

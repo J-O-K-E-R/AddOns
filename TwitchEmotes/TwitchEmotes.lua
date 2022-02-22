@@ -1,6 +1,5 @@
 local LDB = LibStub("LibDataBroker-1.1")
 local LDBIcon = LibStub("LibDBIcon-1.0")
-local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
 
 Emoticons_Settings = {
     --["CHAT_MSG_OFFICER"] = true, -- 1
@@ -28,7 +27,6 @@ Emoticons_Settings = {
 	["ENABLE_CLICKABLEEMOTES"] = true,
     ["ENABLE_AUTOCOMPLETE"] = true,
     ["AUTOCOMPLETE_CONFIRM_WITH_TAB"] = false,
-    ["CHECKALLFAVOURITES"] = true,
     ["FAVEMOTES"] = {
         true, true, true, true, true, true, true, true, true, true, true, true,
         true, true, true, true, true, true, true, true, true, true, true, true,
@@ -60,7 +58,6 @@ local origsettings = {
     ["LARGEEMOTES"] = false,
 	["ENABLE_CLICKABLEEMOTES"] = true,
     ["ENABLE_AUTOCOMPLETE"] = true,
-    ["CHECKALLFAVOURITES"] = true,
     ["FAVEMOTES"] = {
         true, true, true, true, true, true, true, true, true, true, true, true,
         true, true, true, true, true, true, true, true, true, true, true, true,
@@ -73,8 +70,7 @@ function TwitchEmotes_MinimapButton_OnClick(btn)
     if IsShiftKeyDown() then
         TwitchStatsScreen_OnLoad();
     else
-        LibDD:ToggleDropDownMenu(1, nil, EmoticonMiniMapDropDown,
-                           "cursor", 0, 0);
+        ToggleDropDownMenu(1, nil, EmoticonMiniMapDropDown,"cursor", 285, 0);
     end
 end
 
@@ -83,7 +79,6 @@ function ItemTextPageText.SetText(self, msg, ...)
     if (Emoticons_Settings["MAIL"] and msg ~= nil) then
         local msgID = select(10, ...);
         local senderGUID = select(11, ...)
-        --print("test", msgID, senderGUID);
         msg = Emoticons_RunReplacement(msg, senderGUID, msgID, false);
     end
     ItemTextFrameSetText(self, msg, ...);
@@ -94,14 +89,13 @@ function OpenMailBodyText.SetText(self, msg, ...)
     if (Emoticons_Settings["MAIL"] and msg ~= nil) then
         local msgID = select(10, ...);
         local senderGUID = select(11, ...)
-        --print("test", msgID, senderGUID);
         msg = Emoticons_RunReplacement(msg, senderGUID, msgID, false);
     end
     OpenMailBodyTextSetText(self, msg, ...);
 end
 
 function Emoticons_LoadMiniMapDropdown(self, level, menuList)
-    local info = LibDD:UIDropDownMenu_CreateInfo();
+    local info = UIDropDownMenu_CreateInfo();
     info.isNotRadio = true;
     info.notCheckable = true;
     info.notClickable = false;
@@ -112,7 +106,7 @@ function Emoticons_LoadMiniMapDropdown(self, level, menuList)
                 info.text = v[1];
                 info.value = false;
                 info.menuList = k;
-                LibDD:UIDropDownMenu_AddButton(info);
+                UIDropDownMenu_AddButton(info);
             end
         end
     else
@@ -128,7 +122,7 @@ function Emoticons_LoadMiniMapDropdown(self, level, menuList)
                 info.text = "|T" .. TwitchEmotes_defaultpack[va] .. "|t " .. va;
                 info.value = va;
                 info.func = Emoticons_Dropdown_OnClick;
-                LibDD:UIDropDownMenu_AddButton(info, level);
+                UIDropDownMenu_AddButton(info, level);
             end
         end
     end
@@ -219,7 +213,6 @@ function Emoticons_MessageFilter(self, event, message, ...)
     local senderGUID = select(11, ...)
     
     message = Emoticons_RunReplacement(message, senderGUID, msgID);
-	
 
     return false, message, ...
 end
@@ -359,12 +352,14 @@ function Emoticons_RenderSuggestionFN(text)
     return "|T".. path_and_size .."|t " .. text;
 end
 
-function Emoticons_OptionsWindow_OnShow(self)
-    for k, v in pairs(Emoticons_Settings) do
-        local cb = getglobal("EmoticonsOptionsControlsPanel" .. k);
-
-        if (cb ~= nil) then cb:SetChecked(Emoticons_Settings[k]); end
+function setAllFav(value)
+    for n, m in ipairs(Emoticons_Settings["FAVEMOTES"]) do
+        Emoticons_Settings["FAVEMOTES"][n] = value;
+        getglobal("favCheckButton_" .. TwitchEmotes_dropdown_options[n][1]):SetChecked(value);
     end
+end
+
+function Emoticons_OptionsWindow_OnShow(self)
 
     if Emoticons_Settings["MINIMAPBUTTON"] then
         getglobal("$showMinimapButtonButton"):SetChecked(true);
@@ -392,66 +387,29 @@ function Emoticons_OptionsWindow_OnShow(self)
     getglobal("$autocompleteUseTabToComplete").tooltipText = "This will disable cycling the selected suggestion with tab, the arrow keys will still work.";
 
     favall = CreateFrame("CheckButton", "favall_GlobalName",
-                         EmoticonsOptionsControlsPanel, "UIRadioButtonTemplate");
-    if Emoticons_Settings["CHECKALLFAVOURITES"] then
-        getglobal("favall_GlobalName"):SetChecked(true);
-        for n, m in ipairs(Emoticons_Settings["FAVEMOTES"]) do
-            Emoticons_Settings["FAVEMOTES"][n] = true;
-        end
-    else
-        getglobal("favall_GlobalName"):SetChecked(false);
-    end
+                         EmoticonsOptionsControlsPanel, "UIPanelButtonTemplate");
+    favall:SetWidth(85);
+    favall:SetScript("OnClick", function(self, arg1)
+        setAllFav(true);
+    end)
+
     favall:SetPoint("TOPLEFT", 17, -350);
-    getglobal(favall:GetName() .. "Text"):SetText("Check all");
+    favall:SetText("Check all");
     favall.tooltip = "Check all boxes below.";
-    getglobal("favall_GlobalName"):SetScript("OnClick", function(self)
-        if (self:GetChecked()) then
-            if getglobal("favnone_GlobalName"):GetChecked() then
-                getglobal("favnone_GlobalName"):SetChecked(false);
-            end
-            self:SetChecked(true);
-            for n, m in ipairs(Emoticons_Settings["FAVEMOTES"]) do
-                Emoticons_Settings["FAVEMOTES"][n] = true;
-                if not getglobal("favCheckButton_" .. TwitchEmotes_dropdown_options[n][1]):GetChecked() then
-                    getglobal("favCheckButton_" .. TwitchEmotes_dropdown_options[n][1]):SetChecked(true);
-                end
-            end
-            Emoticons_Settings["CHECKALLFAVOURITES"] = true;
-        else
-            -- Emoticons_Settings["FAVEMOTES"][a] = false;
-        end
-    end);
+
+    favnone = CreateFrame("CheckButton", "favall_GlobalName",
+                         EmoticonsOptionsControlsPanel, "UIPanelButtonTemplate");
+    favnone:SetWidth(85);
+    favnone:SetScript("OnClick", function(self, arg1)
+        setAllFav(false);
+    end)
+
+    favnone:SetPoint("TOPLEFT", 130, -350);
+    favnone:SetText("Check none");
+    favnone.tooltip = "Uncheck all boxes below.";
 
     favnone = CreateFrame("CheckButton", "favnone_GlobalName",
                           favall_GlobalName, "UIRadioButtonTemplate");
-    if not Emoticons_Settings["CHECKALLFAVOURITES"] then
-        getglobal("favnone_GlobalName"):SetChecked(true);
-        for n, m in ipairs(Emoticons_Settings["FAVEMOTES"]) do
-            Emoticons_Settings["FAVEMOTES"][n] = false;
-        end
-    else
-        getglobal("favnone_GlobalName"):SetChecked(false);
-    end
-    favnone:SetPoint("TOPLEFT", 110, 0);
-    getglobal(favnone:GetName() .. "Text"):SetText("Uncheck all");
-    favnone.tooltip = "Uncheck all boxes below.";
-    getglobal("favnone_GlobalName"):SetScript("OnClick", function(self)
-        if (self:GetChecked()) then
-            if (getglobal("favall_GlobalName"):GetChecked() == true) then
-                getglobal("favall_GlobalName"):SetChecked(false);
-            end
-            self:SetChecked(true);
-            for n, m in ipairs(Emoticons_Settings["FAVEMOTES"]) do
-                Emoticons_Settings["FAVEMOTES"][n] = false;
-                if getglobal("favCheckButton_" .. TwitchEmotes_dropdown_options[n][1]):GetChecked() then
-                    getglobal("favCheckButton_" .. TwitchEmotes_dropdown_options[n][1]):SetChecked(false);
-                end
-            end
-            Emoticons_Settings["CHECKALLFAVOURITES"] = false;
-        else
-            -- Emoticons_Settings["FAVEMOTES"][a] = false;
-        end
-    end);
 
     favframe = CreateFrame("Frame", "favframe_GlobalName", favall_GlobalName);
     favframe:SetPoint("TOPLEFT", 0, -24);
@@ -460,7 +418,6 @@ function Emoticons_OptionsWindow_OnShow(self)
     first = true;
     itemcnt = 0
     for a, c in ipairs(TwitchEmotes_dropdown_options) do
-
         if first then
             favCheckButton = CreateFrame("CheckButton",
                                          "favCheckButton_" .. c[1],
@@ -485,8 +442,6 @@ function Emoticons_OptionsWindow_OnShow(self)
         itemcnt = itemcnt + 1;
         anchor = c[1];
 
-        -- code=[[print("favCheckButton_"..b[1]..":SetText(b[1])")]];
-
         getglobal(favCheckButton:GetName() .. "Text"):SetText(c[1]);
         if (getglobal("favCheckButton_" .. c[1]):GetChecked() ~=
             Emoticons_Settings["FAVEMOTES"][a]) then
@@ -507,7 +462,6 @@ end
 
 function Emoticons_RunReplacement(msg, senderGUID, msgID)
     -- remember to watch out for |H|h|h's
-    
 
     local outstr = "";
     local origlen = #msg;
@@ -639,7 +593,6 @@ end
 
 --pass false or nil to leave a value as is, otherwise it gets incremented by one {nrTimesAutoCompleted, nrTimesSent, nrTimesSeen}
 function UpdateEmoteStats(emote, nrTimesAutoCompleted, nrTimesSent, nrTimesSeen)
-    
     
     if TwitchEmoteStatistics[emote] == nil then
         TwitchEmoteStatistics[emote] = {0, 0, 0};

@@ -1,5 +1,6 @@
 local E, L, V, P, G = unpack(ElvUI)
 local S = E:GetModule('Skins')
+local TT = E:GetModule('Tooltip')
 
 local _G = _G
 local ipairs, pairs, unpack, next = ipairs, pairs, unpack, next
@@ -74,7 +75,7 @@ function S:Blizzard_PVPUI()
 	BonusFrame.ShadowOverlay:Hide()
 	BonusFrame.WorldBattlesTexture:Hide()
 
-	for _, bonusButton in pairs({'RandomBGButton', 'Arena1Button', 'RandomEpicBGButton', 'BrawlButton', 'SpecialEventButton'}) do
+	for _, bonusButton in pairs({'RandomBGButton', 'Arena1Button', 'RandomEpicBGButton', 'BrawlButton', 'BrawlButton2'}) do
 		local bu = BonusFrame[bonusButton]
 		local reward = bu.Reward
 		S:HandleButton(bu)
@@ -178,7 +179,7 @@ function S:Blizzard_PVPUI()
 	end)
 
 	if E.private.skins.blizzard.tooltip then
-		_G.ConquestTooltip:SetTemplate('Transparent')
+		TT:SetStyle(_G.ConquestTooltip)
 	end
 
 	-- PvP StatusBars

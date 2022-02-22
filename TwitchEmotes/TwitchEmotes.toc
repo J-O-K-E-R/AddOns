@@ -6,6 +6,7 @@
 ## OptionalDeps: LibStub, LibUIDropDownMenu
 
 Libs\load_libs.xml
+Libs\TaintLess.xml
 Emotes.lua
 DropdownItems.lua
 TwitchEmotes.lua

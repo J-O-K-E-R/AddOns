@@ -153,11 +153,12 @@ function E:SetupCVars(noDisplayMsg)
 	SetCVar('alwaysShowActionBars', 1)
 	SetCVar('lockActionBars', 1)
 	SetCVar('spamFilter', 0)
-	SetCVar('cameraDistanceMaxZoomFactor', E.Retail and 2.6 or 3.4)
 	SetCVar('showQuestTrackingTooltips', 1)
-	SetCVar('fstack_preferParentKeys', 0) --Add back the frame names via fstack!
+	SetCVar('fstack_preferParentKeys', 0) -- Add back the frame names via fstack!
 
-	if not E.Retail then
+	if E.Retail then
+		SetCVar('cameraDistanceMaxZoomFactor', 2.6) -- This has a setting on classic/tbc
+	else
 		SetCVar('chatClassColorOverride', 0)
 	end
 
@@ -748,7 +749,7 @@ function E:SetPage(PageNum)
 		InstallOption2Button:SetText(L["Icons Only"])
 	elseif PageNum == 9 then
 		f.SubTitle:SetText(L["Installation Complete"])
-		f.Desc1:SetText(L["You are now finished with the installation process. If you are in need of technical support please visit us at http://www.tukui.org."])
+		f.Desc1:SetText(L["You are now finished with the installation process. If you are in need of technical support please join our Discord."])
 		f.Desc2:SetText(L["Please click the button below so you can setup variables and ReloadUI."])
 		InstallOption1Button:Show()
 		InstallOption1Button:SetScript('OnClick', function() E:StaticPopup_Show('ELVUI_EDITBOX', nil, nil, 'https://discord.gg/xFWcfgE') end)

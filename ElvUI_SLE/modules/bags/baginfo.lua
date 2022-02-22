@@ -43,10 +43,6 @@ function B:HideSet(slot, keep)
 end
 
 function B:UpdateSet()
-	if not self:IsVisible() then
-		B:HideSet(self)
-		return
-	end
 	local isInSet, setName = GetContainerItemEquipmentSetInfo(self.bagID, self.slotID)
 
 	if isInSet then
@@ -90,9 +86,12 @@ function BI:UpdateItemDisplay()
 	end
 end
 
-function BI:ConstructContainerButton(f, slotID, bagID, test)
+function BI:ConstructContainerButton(f, bagID, slotID, test)
 	if not f then return end
-	local slot = _G[f.Bags[bagID]:GetName()..'Slot'..slotID]
+	local bag = f.Bags[bagID]
+	local isReagent = bagID == REAGENTBANK_CONTAINER
+	local slotName = isReagent and ('ElvUIReagentBankFrameItem'..slotID) or (bag.name..'Slot'..slotID)
+	local slot = _G[slotName]
 	BI.db = E.db.sle.bags.equipmentmanager
 
 	if not slot.equipIcon then
@@ -107,6 +106,7 @@ function BI:UpdateSlot(frame, bagID, slotID)
 	local bag = frame.Bags[bagID]
 	local slot = bag and bag[slotID]
 	if not slot or not slot.equipIcon then return end
+
 	updateSettings(slot)
 
 	if slot.isEquipment then
@@ -118,7 +118,6 @@ function BI:UpdateSlot(frame, bagID, slotID)
 	else
 		B:HideSet(slot)
 	end
-
 end
 hooksecurefunc(B, 'UpdateSlot', BI.UpdateSlot)
 
@@ -127,7 +126,7 @@ function BI:Initialize()
 
 	function BI:ForUpdateAll()
 		BI.db = E.db.sle.bags.equipmentmanager
-		B:UpdateAllBagSlots()
+		B:UpdateAllBagSlots(true)
 	end
 end
 

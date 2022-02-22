@@ -111,6 +111,8 @@ function P:ResetCooldown(icon)
 	end
 end
 
+-- TODO: check base CD instead of modified icon.duration
+-- TODO: don't reset if (re)entering a M+ in progress (requires delay timer)
 local minDuration = E.TocVersion > 90100 and 120 or 180
 function P:ResetAllIcons(reason)
 	for _, info in pairs(self.groupInfo) do
@@ -141,10 +143,6 @@ function P:ResetAllIcons(reason)
 				end
 
 				if info.preActiveIcons[spellID] then
-					if spellID == 323436 and info.bar.timer_inCombatTicker then
-						info.bar.timer_inCombatTicker:Cancel()
-					end
-
 					info.preActiveIcons[spellID] = nil
 					if statusBar then
 						self:SetExStatusBarColor(icon, statusBar.key)
@@ -161,6 +159,16 @@ function P:ResetAllIcons(reason)
 					icon.Count:SetText("")
 				end
 			end
+		end
+
+		local f = info.bar
+		if f.timer_inCombatTicker then
+			f.timer_inCombatTicker:Cancel()
+			f.timer_inCombatTicker = nil
+		end
+		if f.timer_ashenHallowTicker then
+			f.timer_ashenHallowTicker:Cancel()
+			f.timer_ashenHallowTicker = nil
 		end
 
 		if not self.displayInactive then

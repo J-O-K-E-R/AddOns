@@ -22,7 +22,7 @@ local L = app.L;
 	L.KNOWN_BY = "Изучено ";
 	L.REQUIRES = "Требуется";
 	--TODO: L.RACE_LOCKED = "Race Locked";
-	L.PLEASE_REPORT_MESSAGE = ": Пожалуйста, сообщите об этом на Discord-сервере ATT в канале #errors! Спасибо!";
+	L.PLEASE_REPORT_MESSAGE = ": Пожалуйста, сообщите об этом на Discord-сервере ATT в канале #retail-errors! Спасибо!";
 	L.REPORT_TIP = "\n(Ctrl+C, чтобы скопировать многострочный отчёт в буфер обмена)";
 	L.NOT_AVAILABLE_IN_PL = "Недоступно в Персональной добыче.";
 	L.MARKS_OF_HONOR_DESC = "Почётные знаки должны быть рассмотрены во всплывающем окне, чтобы видеть всё их 'Содержимое'.\n(Введите '/att' в чат и затем Shift+Клик для ссылки на предмет)\n\n|cFFfe040fПосле покупки и использования Набора может потребоваться полностью выйти из игры и вручную обновить коллекцию (в таком порядке),\nчтобы корректно зарегистрировать все предметы.|r";
@@ -217,6 +217,7 @@ local L = app.L;
 	L.NESTED_QUEST_REQUIREMENTS = "Вложенные Требования Заданий";
 	L.MAIN_LIST_REQUIRES_REFRESH = "[Откройте Основной список, чтобы обновить прогресс]";
 	L.DOES_NOT_CONTRIBUTE_TO_PROGRESS = "|cffe08207Эта группа и её содержимое не влияют на прогресс данного окна!|r";
+	L.CURRENCY_NEEDED_TO_BUY = "Необходимо для покупки Не Собранных Штучек";
 
 	-- Item Filter Window
 		L.ITEM_FILTER_TEXT = "Фильтровать предметы";
@@ -245,7 +246,7 @@ local L = app.L;
 	L.AFTER_REFRESH = "После Обновления";
 
 	-- General tab
-		-- Mod Title
+		-- Mode Title
 			L.MODE = "Режим";
 			L.TITLE_COMPLETIONIST = "Коллекционера ";
 			L.TITLE_UNIQUE_APPEARANCE = "Уникальный ";
@@ -257,6 +258,7 @@ local L = app.L;
 			L.TITLE_INSANE = "|cffADD8E6Безумный|R ";
 			L.TITLE_SOME_THINGS = "Некоторых Штучек ";
 			L.TITLE_LEVEL = "Уровня ";
+			L.TITLE_SOLO = "Соло ";
 			L._BETA_LABEL = " |cff4AA7FF[Бета]|R";
 
 		L.GENERAL_LABEL = "Общие";
@@ -361,7 +363,6 @@ local L = app.L;
 		L.ACCOUNT_WIDE_QUESTS_TOOLTIP = "|cff00AB00Отслеживать на весь аккаунт|R\n\nВыполнение заданий чаще всего считается отдельно для каждого персонажа, но с этой настройкой будет засчитываться, если хоть один персонаж выполнил задание.";
 		L.ACCOUNT_WIDE_RECIPES_TOOLTIP = "|cff00AB00Отслеживать на весь аккаунт|R\n\nРецепты не отслеживаются на всю учётную запись в базе данных Blizzard, но мы можем делать это сами.\n\nНевозможно собрать их все на одном персонаже, поэтому Вы можете придать значение профессиям своих альтов.";
 		L.ACCOUNT_WIDE_REPUTATIONS_TOOLTIP = "|cff00AB00Отслеживать на весь аккаунт|R\n\nРепутации теперь отслеживаются на всю учётную запись для достижений в базе данных Blizzard, так что включение этой опции может быть хорошей идеей.";
-		L.ACCOUNT_WIDE_RUNEFORGELEGENDARIES_TOOLTIP = "|cff00AB00Отслеживать на весь аккаунт|R\n\nУдачи прокачивать каждый класс через каждого ковенанта...";
 		L.ACCOUNT_WIDE_SOULBINDCONDUITS_TOOLTIP = "|cff00AB00Отслеживать на весь аккаунт|R\n\nВключите, чтобы считать Проводники Медиумов собранными, если хотя бы один персонаж имеет к ним доступ.";
 		L.ACCOUNT_WIDE_TITLES_TOOLTIP = "|cff00AB00Отслеживать на весь аккаунт|R\n\nБольшинство званий отслеживается на всю учётную запись, но некоторые престижные звания в WoW закреплены за персонажем, получившим их.\n\nПереключите эту опцию, если они Вам не важны, и Вы хотите видеть эти звания Собранными на Ваших альтах.";
 
@@ -410,6 +411,8 @@ local L = app.L;
 		L.KNOWN_BY_CHECKBOX_TOOLTIP = "Включите данную опцию, если Вы хотите видеть в подсказке полный список персонажей на всех серверах, которые изучили данный рецепт.";
 		L.SHOW_MODELS_CHECKBOX = "Предпоказ";
 		L.SHOW_MODELS_CHECKBOX_TOOLTIP = "Включите данную опцию, если Вы хотите видеть в подсказке модель вместо иконки.\n\nДанная настройка может помочь идентифицировать Редкого монстра или Торговца по внешнему виду. Возможно, Вы захотите оставить опцию включенной по этой причине.";
+		L.SHOW_CURRENCY_CALCULATIONS_CHECKBOX = "Рассчет покупок";
+		L.SHOW_CURRENCY_CALCULATIONS_CHECKBOX_TOOLTIP = "Включите данную опцию, если Вы хотите видеть в подсказке приблизительное количество предметов/валюты, необходимое для покупки Не Собранных Штучек.\n\nПодсчет ведется только для тех Штучек, которые можно напрямую купить за предмет/валюту. Контейнеры, дающие предмет(-ы) не с 100%-ым шансом, не учитываются.";
 		L.SHARED_APPEARANCES_CHECKBOX = "Общие Облики";
 		L.SHARED_APPEARANCES_CHECKBOX_TOOLTIP = "Включите данную опцию, если Вы хотите видеть в подсказке предметы, которые имеют общий облик.\n\nПримечание: Предметы, которые не совпадают по типу брони отображаются в списке для того, чтобы определить прогресс Коллекции.\n\nЕсли Вы путаетесь в них, начиная с ATT v1.5.0, Вы можете Правым Кликом по предмету \"открыть\" предмет и его собственный Мини Список со всеми Общими Обликами.";
 		L.INCLUDE_ORIGINAL_CHECKBOX = "Оригинал";
@@ -549,7 +552,7 @@ local L = app.L;
 		L.REQUIRES_LEVEL = "Требуется Уровень";
 		L.SECRETS_HEADER = "Секреты";
 		L.LIMITED_QUANTITY = "Предмет имеется в ограниченном количестве и может не всегда быть доступен у торговца.";
-		L.SOURCE_ID_MISSING = "Пожалуйста, сообщите в канале #errors на нашем сервере Discord, где Вы нашли эту вещь!";
+		L.SOURCE_ID_MISSING = "Пожалуйста, сообщите в канале #retail-errors на нашем сервере Discord, где Вы нашли эту вещь!";
 
 	-- Icons and Collection Text
 		L.COLLECTED = "|T" .. app.asset("known") .. ":0|t |cff15abffСобрано|r";	-- Acquired the colors and icon from CanIMogIt.
@@ -662,6 +665,7 @@ for key,value in pairs({
 	-- Class Hall /Artifact
 		[-159] = "Ролл События",									-- Daily Dreamway Event Roll
 	-- Other
+		[-210] = "Новый персонаж Союзной расы",						-- Allied New Character
 		[-211] = "Новый персонаж",									-- New Character
 		[-212] = "Сундук с сокровищами",							-- Treasure Chest
 	-- Fishing
@@ -940,6 +944,7 @@ for key,value in pairs({
 	[148504] = "Подозрительное надгробие",	-- A Conspicuous Gravestone
 	[149036] = "Сундук Марвона",	-- Marvon's Chest
 	[149502] = "Сокровищница черных драконов",	-- Hoard of the Black Dragonflight
+	[151286] = "Калдорайский фолиант Призыва",	-- Kaldorei Tome of Summoning
 	[160836] = "Реликварий",	-- Relic Coffer
 	[161495] = "Потайной сейф",	-- Secret Safe
 	[161504] = "Небольшая сумка",	-- A Small Pack
@@ -1017,6 +1022,7 @@ for key,value in pairs({
 	[180794] = "Дневник Джандис Баровой",	-- Journal of Jandice Barov
 	[180918] = "Разыскивается: Таэлис Ненасытный",	-- Wanted: Thaelis the Hungerer
 	[181011] = "Журнал магистра Блеклые Сумерки",	-- Magister Duskwither's Journal
+	[181073] = "Котел Ароматов",	-- Fragrant Cauldron
 	[181074] = "Трофеи арены",	-- Arena Spoils
 	[181083] = "Наследие Сотоса и Джариена",	-- Sothos and Jarien's Heirlooms
 	[181147] = "Плакат \"Разыскивается\"",	-- Wanted Poster
@@ -1046,6 +1052,7 @@ for key,value in pairs({
 	[184300] = "Средоточие некромантии",	-- Necromantic Focus
 	[184465] = "Тайник Легиона",	-- Cache of the Legion
 	[184660] = "Плакат \"Разыскивается\"",	-- Wanted Poster
+	[184684] = "Яйцо прожорливого камнедера",	-- Ravenous Flayer Egg
 	[184825] = "Фолиант Лашш",	-- Lashh'an Tome
 	[184945] = "Плакат \"Разыскивается\"",	-- Wanted Poster
 	[184946] = "Плакат \"Разыскивается\"",	-- Wanted Poster
@@ -1293,6 +1300,7 @@ for key,value in pairs({
 	[209620] = "Сундук с сокровищами Новолуния",	-- Darkmoon Treasure Chest
 	[209673] = "Пьедестал нефритового тигра",	-- Jade Tiger Pillar
 	[209845] = "Соблазнительный напиток",	-- Mouthwatering Brew
+	[210565] = "Темная земля",	-- Dark Soil
 	[211424] = "Алхимический свиток",	-- Alchemy Scroll
 	[211754] = "Любопытный текст",	-- Curious Text
 	[211807] = "Добыча могу",	-- Mogu Chest	--TODO: This was manually translated
@@ -1309,7 +1317,6 @@ for key,value in pairs({
 	[213653] = "Пандаренская острога",	-- Pandaren Fishing Spear
 	[213741] = "Древний посох цзинь-юй",	-- Ancient Jinyu Staff
 	[213742] = "Молот Десяти Громов",	-- Hammer of Ten Thunders
-	[213743] = "Заряженный нефритом клинок",	-- Jade Infused Blade	--TODO: This was manually translated
 	[213748] = "Пандаренский ритуальный камень",	-- Pandaren Ritual Stone
 	[213749] = "Посох тайного мастера",	-- Staff of the Hidden Master
 	[213750] = "Каменная скрижаль сауроков",	-- Saurok Stone Tablet
@@ -2668,6 +2675,7 @@ for key,value in pairs({
 	[353331] = "Тайник пикси",	-- Faerie Stash
 	[353332] = "Тайник пикси",	-- Faerie Stash
 	[353333] = "Тайник пикси",	-- Faerie Stash
+	[353336] = "Спрятанное сокровище",	-- Secret Treasure
 	[353380] = "Бадья с завтраком Халиса",	-- Halis's Lunch Pail
 	[353472] = "Сияющий меч",	-- Radiant Sword
 	[353500] = "Серебряный сундучок",	-- Silver Strongbox
@@ -2750,7 +2758,13 @@ for key,value in pairs({
 	[355035] = "Рунический сундук дома Избранных",	-- Treasure: House of the Chosen
 	[355037] = "Зачарованный рунами ящик",	-- Runebound Coffer
 	[355038] = "Зачарованный рунами ящик",	-- Runebound Coffer
+	[355040] = "Руна дома Ритуалов",	-- Rune of Rituals
 	[355041] = "Тайник луны",	-- Cache of the Moon
+	[355048] = "Руна дома Ритуалов",	-- Rune of Rituals
+	[355049] = "Руна дома Ритуалов",	-- Rune of Rituals
+	[355194] = "Руна дома Кадавров",	-- Rune of Constructs
+	[355195] = "Руна дома Кадавров",	-- Rune of Constructs
+	[355196] = "Руна дома Кадавров",	-- Rune of Constructs
 	[355286] = "Подношения у мемориала",	-- Memorial Offerings
 	[355296] = "Награда: борьба с чудовищами",	-- Bounty: Beast Control
 	[355355] = "Сундук гармонии",	-- Harmonic Chest
@@ -2809,6 +2823,7 @@ for key,value in pairs({
 	[358318] = "\"Портрет землероя\" Р. Лоска",	-- R. Suavel Dredger Portrait
 	[358319] = "Записка чародея",	-- Sorceror's Note
 	[358382] = "Разыскивается: Хелицера",	-- Wanted: Chelicera
+	[358399] = "Шестимильный вьюк",	-- Six-League Pack
 	[358531] = "Огромный тайник с эпическим сокровищем",	-- Giant Cache of Epic Treasure
 	[358533] = "Забытые припасы",	-- Forgotten Supplies
 	[358855] = "Поврежденный набор для безопасного падения",	-- Damaged Safe Fall Pack
@@ -2895,6 +2910,7 @@ for key,value in pairs({
 	[369438] = "Тайник Разлома",	-- Riftbound Cache
 	[369439] = "Тайник Разлома",	-- Riftbound Cache
 	[369440] = "Тайник Разлома",	-- Riftbound Cache
+	[370469] = "Призрачный корм",	-- Spectral Feed
 	[9962198] = "Самодельная лужа жижи изгоя",	-- Outcast's Makeshift Muckpool
 	[9999890] = "Оскверненная добыча",	-- Corrupted Loot
 	[9999891] = "Только Основная Задача",	-- Main Objective Only

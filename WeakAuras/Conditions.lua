@@ -32,7 +32,7 @@ local function OnDelete(event, uid)
   end
 end
 
-Private:RegisterCallback("Delete", OnDelete)
+Private.callbacks:RegisterCallback("Delete", OnDelete)
 
 local function formatValueForAssignment(vType, value, pathToCustomFunction, pathToFormatters)
   if (value == nil) then
@@ -411,17 +411,7 @@ local function CreateActivateCondition(ret, id, condition, conditionNumber, prop
   return ret;
 end
 
-function Private.GetProperties(data)
-  local properties;
-  local propertiesFunction = WeakAuras.regionTypes[data.regionType] and WeakAuras.regionTypes[data.regionType].properties;
-  if (type(propertiesFunction) == "function") then
-    properties = propertiesFunction(data);
-  elseif propertiesFunction then
-    properties = CopyTable(propertiesFunction);
-  else
-    properties = {}
-  end
-
+function Private.GetSubRegionProperties(data, properties)
   if data.subRegions then
     local subIndex = {}
     for index, subRegion in ipairs(data.subRegions) do
@@ -443,7 +433,20 @@ function Private.GetProperties(data)
       end
     end
   end
+end
 
+function Private.GetProperties(data)
+  local properties;
+  local propertiesFunction = WeakAuras.regionTypes[data.regionType] and WeakAuras.regionTypes[data.regionType].properties;
+  if (type(propertiesFunction) == "function") then
+    properties = propertiesFunction(data);
+  elseif propertiesFunction then
+    properties = CopyTable(propertiesFunction);
+  else
+    properties = {}
+  end
+
+  Private.GetSubRegionProperties(data, properties)
   return properties;
 end
 
@@ -477,7 +480,7 @@ function Private.LoadConditionPropertyFunctions(data)
               end
               return change.value[fullKey]
             end
-            local formatters = change.value and Private.CreateFormatters(change.value.message, getter)
+            local formatters = change.value and Private.CreateFormatters(change.value.message, getter, true)
             WeakAuras.conditionTextFormatters[id] = WeakAuras.conditionTextFormatters[id] or {}
             WeakAuras.conditionTextFormatters[id][conditionNumber] = WeakAuras.conditionTextFormatters[id][conditionNumber] or {};
             WeakAuras.conditionTextFormatters[id][conditionNumber].changes = WeakAuras.conditionTextFormatters[id][conditionNumber].changes or {};
@@ -695,6 +698,22 @@ local function handleDynamicConditions(self, event)
   Private.StopProfileSystem("dynamic conditions")
 end
 
+local function handleDynamicConditionsPerUnit(self, event, unit)
+  Private.StartProfileSystem("dynamic conditions")
+  if unit then
+    local unitEvent = event..":"..unit
+    if globalDynamicConditionFuncs[unitEvent] then
+      for i, func in ipairs(globalDynamicConditionFuncs[unitEvent]) do
+        func(globalConditionState);
+      end
+    end
+    if (dynamicConditions[unitEvent]) then
+      runDynamicConditionFunctions(dynamicConditions[unitEvent]);
+    end
+  end
+  Private.StopProfileSystem("dynamic conditions")
+end
+
 local lastDynamicConditionsUpdateCheck;
 local function handleDynamicConditionsOnUpdate(self)
   handleDynamicConditions(self, "FRAME_UPDATE");
@@ -718,7 +737,7 @@ local function EvaluateCheckForRegisterForGlobalConditions(uid, check, allCondit
     end
   elseif trigger == -1 and variable == "customcheck" then
     if check.op then
-      for event in string.gmatch(check.op, "[%w_]+") do
+      for event in string.gmatch(check.op, "[%w_:]+") do
         if (not dynamicConditions[event]) then
           register[event] = true;
           dynamicConditions[event] = {};
@@ -768,6 +787,7 @@ function Private.RegisterForGlobalConditions(uid)
   if (next(register) and not dynamicConditionsFrame) then
     dynamicConditionsFrame = CreateFrame("FRAME");
     dynamicConditionsFrame:SetScript("OnEvent", handleDynamicConditions);
+    dynamicConditionsFrame.units = {}
     WeakAuras.frames["Rerun Conditions Frame"] = dynamicConditionsFrame
   end
 
@@ -778,7 +798,17 @@ function Private.RegisterForGlobalConditions(uid)
         dynamicConditionsFrame.onUpdate = true;
       end
     else
-      pcall(dynamicConditionsFrame.RegisterEvent, dynamicConditionsFrame, event);
+      local unitEvent, unit = event:match("([^:]+):([^:]+)")
+      if unitEvent and unit then
+        unit = unit:lower()
+        if not dynamicConditionsFrame.units[unit] then
+          dynamicConditionsFrame.units[unit] = CreateFrame("FRAME");
+          dynamicConditionsFrame.units[unit]:SetScript("OnEvent", handleDynamicConditionsPerUnit);
+        end
+        pcall(dynamicConditionsFrame.units[unit].RegisterUnitEvent, dynamicConditionsFrame.units[unit], unitEvent, unit);
+      else
+        pcall(dynamicConditionsFrame.RegisterEvent, dynamicConditionsFrame, event);
+      end
     end
   end
 end
@@ -786,9 +816,24 @@ end
 function Private.UnregisterForGlobalConditions(uid)
   for event, condFuncs in pairs(dynamicConditions) do
     condFuncs[uid] = nil;
+    if next(condFuncs) == nil then
+      local unitEvent, unit = event:match("([^:]+):([^:]+)")
+      if unitEvent and unit then
+        pcall(dynamicConditionsFrame.units[unit].UnregisterEvent, dynamicConditionsFrame.units[unit], unitEvent);
+      elseif (event == "FRAME_UPDATE" or event == "WA_SPELL_RANGECHECK") then
+        if (event == "FRAME_UPDATE" and dynamicConditions["WA_SPELL_RANGECHECK"] == nil)
+        or (event == "WA_SPELL_RANGECHECK" and dynamicConditions["FRAME_UPDATE"] == nil)
+        then
+          dynamicConditionsFrame:SetScript("OnUpdate", nil)
+          dynamicConditionsFrame.onUpdate = false
+        end
+      else
+        pcall(dynamicConditionsFrame.UnregisterEvent, dynamicConditionsFrame, event);
+      end
+      dynamicConditions[event] = nil
+    end
   end
 end
-
 
 function Private.UnloadAllConditions()
   for uid in pairs(conditionChecksTimers.recheckTime) do
@@ -802,6 +847,14 @@ function Private.UnloadAllConditions()
   wipe(conditionChecksTimers.recheckHandle)
 
   dynamicConditions = {}
+  if dynamicConditionsFrame then
+    dynamicConditionsFrame:UnregisterAllEvents()
+    for unit, frame in pairs(dynamicConditionsFrame.units) do
+      frame:UnregisterAllEvents()
+    end
+    dynamicConditionsFrame:SetScript("OnUpdate", nil)
+    dynamicConditionsFrame.onUpdate = false
+  end
 end
 
 function Private.UnloadConditions(uid)

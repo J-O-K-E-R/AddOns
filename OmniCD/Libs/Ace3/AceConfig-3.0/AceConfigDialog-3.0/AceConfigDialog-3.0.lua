@@ -59,7 +59,8 @@ local function GameTooltip_OnHide(self)
 end
 -- Precreate so we can update font obj
 AceConfigDialog.tooltip = AceConfigDialog.tooltip or CreateFrame("GameTooltip", "AceConfigDialogTooltip-OmniCD", UIParent, BackdropTemplateMixin and "GameTooltipTemplate, BackdropTemplate" or "GameTooltipTemplate")
-if select(4, GetBuildInfo()) > 90100 then -- 9.1.5 fix
+--if select(4, GetBuildInfo()) > 90100 then -- 9.1.5 fix > Blizzard added this for classic era
+if WOW_PROJECT_ID ~= WOW_PROJECT_BURNING_CRUSADE_CLASSIC then
 	SharedTooltip_SetBackdropStyle(AceConfigDialog.tooltip, nil, true);
 end
 AceConfigDialog.tooltip:SetScript("OnHide", GameTooltip_OnHide)
@@ -578,9 +579,9 @@ local function OptionOnMouseOver(widget, event)
 		local linktype = desc:match(".*|H(%a+):.+|h.+|h.*")
 		if linktype then
 			tooltip:SetHyperlink(desc)
-			local spellID = strmatch(desc, "spell:(%d+):")
-			--local spellID = opt.arg -- == GetOptionsMemberValue("arg", opt, options, path, appName)
-			if spellID then
+			--local spellID = strmatch(desc, "spell:(%d+):")
+			local spellID = opt.arg -- == GetOptionsMemberValue("arg", opt, options, path, appName)
+			if type(spellID) == "number" then
 				tooltip:AddLine("\nID: " .. spellID, 1, 1, 1, true)
 			end
 		else
@@ -1298,12 +1299,12 @@ local function FeedOptions(appName, options,container,rootframe,path,group,inlin
 					end
 
 					-- s b (dnd)
-					--[[ not using now. find a better way to get function for alt things.
+					---[[ not using now. find a better way to get function for alt things.
 					local arg = GetOptionsMemberValue("arg", v, options, path, appName)
 					if type(arg) == "number" or type(arg) == "function" then
 						control:SetArg(arg)
 					end
-					]]
+					--]]
 					-- e
 				elseif v.type == "range" then
 					control = CreateControl(v.dialogControl or v.control, "Slider-OmniCD")
@@ -1380,7 +1381,7 @@ local function FeedOptions(appName, options,container,rootframe,path,group,inlin
 						control:SetValue(value)
 						control:SetCallback("OnValueChanged", ActivateControl)
 
-						-- s b ('Select' dropdown with disable supportm disabledItem member type must be a function)
+						-- s b ('Select' dropdown with disable support, disabledItem member type must be a function)
 						local item = GetOptionsMemberValue("disabledItem", v, options, path, appName)
 						if item then
 							control:SetItemDisabled(item, true)

@@ -231,7 +231,7 @@ TwitchEmotes_dropdown_options = {
         "FeelsBoredMan", "PepeCry", "PepeJAM", "WeirdJAM", "FeelsFatMan",
         "FUARK", "PepeHeart", "PepeCoolStory", "FeelsCringeMan", "PepePants",
         "PepeM", "PepeSlice", "PepeAyy", "PepeRun", "PepeLegs", "PepeReach",
-        "PepeOld", "LULERS", "PepeDisgust", "PepeSmug", "FatDank", "PepePains",
+        "FeelsOldMan", "LULERS", "PepeDisgust", "PepeSmug", "FatDank", "PepePains",
         "FrogO", "PepeLoser"
     },
     [26] = { -- 36

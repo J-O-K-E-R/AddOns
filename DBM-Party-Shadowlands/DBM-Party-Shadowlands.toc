@@ -1,4 +1,4 @@
-## Interface: 90105
+## Interface: 90200
 ## Title:|cffffe00a<|r|cffff7d0aDBM|r|cffffe00a>|r |cff69ccf0Dungeons (Shadowlands)|r
 ## Title-esES:|cffffe00a<|r|cffff7d0aDBM|r|cffffe00a>|r |cff69ccf0Mazmorras (Shadowlands)|r
 ## Title-esMX:|cffffe00a<|r|cffff7d0aDBM|r|cffffe00a>|r |cff69ccf0Mazmorras (Shadowlands)|r
@@ -31,6 +31,7 @@ localization.kr.lua
 localization.tw.lua
 localization.cn.lua
 localization.es.lua
+localization.ru.lua
 TheNecroticWake\Blightbone.lua
 TheNecroticWake\Amarth.lua
 TheNecroticWake\SurgeonStitchflesh.lua

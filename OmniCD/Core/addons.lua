@@ -20,10 +20,16 @@ local unitFrameData = {
 		[4] = 1,
 		[5] = 40,
 	},
-	{   [1] = "Grid2", -- 3
+	{   [1] = "Grid2",
 		[2] = "Grid2LayoutHeader%dUnitButton",
 		[3] = "unit",
 		[4] = 1,
+	},
+	{   [1] = "Grid2-Role",
+		[2] = "Grid2LayoutHeader1UnitButton",
+		[3] = "unit",
+		[4] = 1,
+		[5] = 40,
 	},
 	{   [1] = "Aptechka",
 		[2] = "NugRaid%dUnitButton",
@@ -44,7 +50,7 @@ local unitFrameData = {
 		[5] = 5,
 		[6] = 0,
 	},
-	{   [1] = "Plexus", -- 7
+	{   [1] = "Plexus",
 		[2] = "PlexusLayoutHeader%dUnitButton",
 		[3] = "unit",
 		[4] = 1,
@@ -217,6 +223,13 @@ local unitFrameData = {
 		[4] = 1,
 		[5] = 40
 	},
+	{
+		[1] = "AshToAsh",
+		[2] = "AshToAshUnit%dUnit",
+		[3] = "unit",
+		[4] = 1,
+		[5] = 40
+	}
 }
 
 function E:SetActiveUnitFrameData()

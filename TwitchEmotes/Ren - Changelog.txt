@@ -2653,11 +2653,18 @@ Weirdge
 WICKED
 Wokege
 
+----
+Twitch Emotes V2.49
+----
+
+Removed Christmas emotes
+Removed PepeAP, peepoCola and monkaIris
+Transitioned from dropdown lib - using default API & Taintless
+
+
 
 ----
 To do
 ----
-
-
 
 ====
