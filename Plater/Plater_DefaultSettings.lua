@@ -30,7 +30,7 @@ LibSharedMedia:Register ("statusbar", "KuiBarShaded", [[Interface\AddOns\Plater\
 LibSharedMedia:Register ("statusbar", "KuiBarSolid", [[Interface\AddOns\Plater\images\solid]])
 
 LibSharedMedia:Register ("font", "Oswald", [[Interface\Addons\Plater\fonts\Oswald-Regular.ttf]])
-LibSharedMedia:Register ("font", "Nueva Std Cond", [[Interface\Addons\Plater\fonts\NuevaStd-Cond.ttf]])
+LibSharedMedia:Register ("font", "Nueva Std Cond", [[Interface\Addons\Plater\fonts\Nueva Std Cond.ttf]])
 LibSharedMedia:Register ("font", "Accidental Presidency", [[Interface\Addons\Plater\fonts\Accidental Presidency.ttf]])
 LibSharedMedia:Register ("font", "TrashHand", [[Interface\Addons\Plater\fonts\TrashHand.TTF]])
 LibSharedMedia:Register ("font", "Harry P", [[Interface\Addons\Plater\fonts\HARRYP__.TTF]])
