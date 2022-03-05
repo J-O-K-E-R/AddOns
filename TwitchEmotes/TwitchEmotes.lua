@@ -1,5 +1,6 @@
 local LDB = LibStub("LibDataBroker-1.1")
 local LDBIcon = LibStub("LibDBIcon-1.0")
+local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
 
 Emoticons_Settings = {
     --["CHAT_MSG_OFFICER"] = true, -- 1
@@ -26,6 +27,7 @@ Emoticons_Settings = {
     ["LARGEEMOTES"] = false,
 	["ENABLE_CLICKABLEEMOTES"] = true,
     ["ENABLE_AUTOCOMPLETE"] = true,
+    ["ENABLE_ANIMATEDEMOTES"] = true,
     ["AUTOCOMPLETE_CONFIRM_WITH_TAB"] = false,
     ["FAVEMOTES"] = {
         true, true, true, true, true, true, true, true, true, true, true, true,
@@ -58,6 +60,7 @@ local origsettings = {
     ["LARGEEMOTES"] = false,
 	["ENABLE_CLICKABLEEMOTES"] = true,
     ["ENABLE_AUTOCOMPLETE"] = true,
+    ["ENABLE_ANIMATEDEMOTES"] = true,
     ["FAVEMOTES"] = {
         true, true, true, true, true, true, true, true, true, true, true, true,
         true, true, true, true, true, true, true, true, true, true, true, true,
@@ -70,7 +73,8 @@ function TwitchEmotes_MinimapButton_OnClick(btn)
     if IsShiftKeyDown() then
         TwitchStatsScreen_OnLoad();
     else
-        ToggleDropDownMenu(1, nil, EmoticonMiniMapDropDown,"cursor", 285, 0);
+        LibDD:ToggleDropDownMenu(1, nil, EmoticonMiniMapDropDown,"cursor", 0, 0);
+        -- ToggleDropDownMenu(1, nil, EmoticonMiniMapDropDown,"cursor", 285, 0);
     end
 end
 
@@ -95,7 +99,8 @@ function OpenMailBodyText.SetText(self, msg, ...)
 end
 
 function Emoticons_LoadMiniMapDropdown(self, level, menuList)
-    local info = UIDropDownMenu_CreateInfo();
+    local info = LibDD:UIDropDownMenu_CreateInfo();
+    -- local info = UIDropDownMenu_CreateInfo();
     info.isNotRadio = true;
     info.notCheckable = true;
     info.notClickable = false;
@@ -106,7 +111,8 @@ function Emoticons_LoadMiniMapDropdown(self, level, menuList)
                 info.text = v[1];
                 info.value = false;
                 info.menuList = k;
-                UIDropDownMenu_AddButton(info);
+                LibDD:UIDropDownMenu_AddButton(info);
+                -- UIDropDownMenu_AddButton(info);
             end
         end
     else
@@ -122,7 +128,8 @@ function Emoticons_LoadMiniMapDropdown(self, level, menuList)
                 info.text = "|T" .. TwitchEmotes_defaultpack[va] .. "|t " .. va;
                 info.value = va;
                 info.func = Emoticons_Dropdown_OnClick;
-                UIDropDownMenu_AddButton(info, level);
+                LibDD:UIDropDownMenu_AddButton(info, level);
+                -- UIDropDownMenu_AddButton(info, level);
             end
         end
     end
@@ -196,6 +203,7 @@ function TwitchEmotes_Message_StripEscapes(msg)
 end
 
 function Emoticons_UpdateChatFilters()
+    -- todo: this should only check the keys that start with CHAT_MSG_
     for k, v in pairs(Emoticons_Settings) do
         if k ~= "MAIL" then
             if (v) then
@@ -231,50 +239,7 @@ function Emoticons_OnEvent(self, event, ...)
             end
         end
 
-        -- layout is TwitchEmoteStatistics[emote] = {nrTimesAutoCompleted, nrTimesSent, nrTimesSeen}
-        TwitchEmoteStatistics = TwitchEmoteStatistics or {}; -- saved in savedvariables. (might slow ui loading if the dict gets big?)
-        
-        Emoticons_UpdateChatFilters();
-        Emoticons_SetLargeEmotes(Emoticons_Settings["LARGEEMOTES"]);
-        Emoticons_SetClickableEmotes(Emoticons_Settings["ENABLE_CLICKABLEEMOTES"]);
-		
-		-- TODO: Waiting 1 second is kinda arbitrary, find a nicer solution.
-		-- We don't accept Emote stat updates before ElvUI has posted it's chat history
-		-- else they will be counted twice
-		C_Timer.After(1, function()
-			accept_stat_updates = true;
-			-- print("Will now accept emote stat updates");
-		end)
-        
-        Broker_TwitchEmotes = LDB:NewDataObject("TwitchEmotes", {
-            type = "launcher",
-            text = "TwitchEmotes",
-            icon = "Interface\\AddOns\\TwitchEmotes\\Emotes\\1337.tga",
-            OnClick = TwitchEmotes_MinimapButton_OnClick
-        })
-        
-        if(Emoticons_Settings["MINIMAPBUTTON"]) then
-            LDBIcon:Register("TwitchEmotes", Broker_TwitchEmotes, Emoticons_Settings["MINIMAPDATA"])
-            iconregistered = true
-        end
-
-        Emoticons_SetMinimapButton(Emoticons_Settings["MINIMAPBUTTON"])
-        
-        AllTwitchEmoteNames = {};
-        Emoticons_SetAutoComplete(Emoticons_Settings["ENABLE_AUTOCOMPLETE"])
-        
-        for i=1, NUM_CHAT_WINDOWS do
-            local frame = _G["ChatFrame"..i]
-
-            origEnter[frame] = frame:GetScript("OnHyperlinkEnter")
-            frame:SetScript("OnHyperlinkEnter", Emoticons_OnHyperlinkEnter)
-
-            origLeave[frame] = frame:GetScript("OnHyperlinkLeave")
-            frame:SetScript("OnHyperlinkLeave", Emoticons_OnHyperlinkLeave)
-        end
-
         -- Tauren Dairy Co
-        -- /run print("You are currently on realm: " .. GetRealmName())
         if GetRealmName() == "Mirage Raceway" then
             -- Emote directory
             TwitchEmotes_defaultpack["arthaslul"] = "Interface\\AddOns\\TwitchEmotes\\Emotes\\TaurenDairyCo\\arthaslul.tga:28:28"
@@ -303,6 +268,8 @@ function Emoticons_OnEvent(self, event, ...)
             TwitchEmotes_defaultpack["YKD"] = "Interface\\AddOns\\TwitchEmotes\\Emotes\\TaurenDairyCo\\YKD.tga:28:28"
             TwitchEmotes_defaultpack["Grimaldus"] = "Interface\\AddOns\\TwitchEmotes\\Emotes\\TaurenDairyCo\\Grimaldus.tga:28:28"
             TwitchEmotes_defaultpack["SadBuns"] = "Interface\\AddOns\\TwitchEmotes\\Emotes\\TaurenDairyCo\\SadBuns.tga:28:28"
+            TwitchEmotes_defaultpack["peepoMphjens"] = "Interface\\AddOns\\TwitchEmotes\\Emotes\\TaurenDairyCo\\peepoMphjens.tga"
+            TwitchEmotes_animation_metadata["Interface\\AddOns\\TwitchEmotes\\Emotes\\TaurenDairyCo\\peepoMphjens.tga"] = {["nFrames"] = 4, ["frameWidth"] = 32, ["frameHeight"] = 32, ["imageWidth"]=32, ["imageHeight"]=128, ["framerate"] = 10}
             -- Emote name references
             TwitchEmotes_emoticons["arthaslul"] = "arthaslul"
             TwitchEmotes_emoticons["banspray"] = "banspray"
@@ -331,25 +298,80 @@ function Emoticons_OnEvent(self, event, ...)
             TwitchEmotes_emoticons["YKD"] = "YKD"
             TwitchEmotes_emoticons["Grimaldus"] = "Grimaldus"
             TwitchEmotes_emoticons["SadBuns"] = "SadBuns"
+            TwitchEmotes_emoticons["peepoMphjens"] = "peepoMphjens"
             -- Dropdown menu
-            TwitchEmotes_dropdown_options[28] = { -- 25
+            TwitchEmotes_dropdown_options[#TwitchEmotes_dropdown_options + 1] = { -- 25
                 "Tauren Dairy Co", "arthaslul", "banspray", ":bruh:", "dots","FeralPog", 
                 "Gachicrul", "Grimaldus", "hugevenomsac", "hugevipus","Jooper","khadscusemewhat", 
                 "khadthink", "konks","largecock", "monkaScandy", "moppcum", "Moppers", 
-                "pepeshoots", "purge","Stahp", "suckssac",":sac:","SadBuns","Vipus","YKD", ":jons:"
+                "pepeshoots", "purge","Stahp", "suckssac",":sac:","SadBuns","Vipus","YKD",":jons:", "peepoMphjens"
             }
         end
 
+        TwitchEmotesAnimatorUpdateFrame = CreateFrame("Frame", "TwitchEmotesAnimator_EventFrame", UIParent)
+        Emoticons_EnableAnimatedEmotes(Emoticons_Settings["ENABLE_ANIMATEDEMOTES"])
+
+        -- layout is TwitchEmoteStatistics[emote] = {nrTimesAutoCompleted, nrTimesSent, nrTimesSeen}
+        TwitchEmoteStatistics = TwitchEmoteStatistics or {}; -- saved in savedvariables. (might slow ui loading if the dict gets big?)
+        
+        Emoticons_UpdateChatFilters();
+        Emoticons_SetLargeEmotes(Emoticons_Settings["LARGEEMOTES"]);
+        Emoticons_SetClickableEmotes(Emoticons_Settings["ENABLE_CLICKABLEEMOTES"]);
+		
+		-- TODO: Waiting 1 second is kinda arbitrary, find a nicer solution.
+		-- We don't accept Emote stat updates before ElvUI has posted it's chat history
+		-- else they will be counted twice
+		C_Timer.After(1, function()
+			accept_stat_updates = true;
+		end)
+        
+        Broker_TwitchEmotes = LDB:NewDataObject("TwitchEmotes", {
+            type = "launcher",
+            text = "TwitchEmotes",
+            icon = "Interface\\AddOns\\TwitchEmotes\\Emotes\\1337.tga",
+            OnClick = TwitchEmotes_MinimapButton_OnClick
+        })
+        
+        if(Emoticons_Settings["MINIMAPBUTTON"]) then
+            LDBIcon:Register("TwitchEmotes", Broker_TwitchEmotes, Emoticons_Settings["MINIMAPDATA"])
+            iconregistered = true
+        end
+
+        Emoticons_SetMinimapButton(Emoticons_Settings["MINIMAPBUTTON"])
+        
+        AllTwitchEmoteNames = {};
+        Emoticons_SetAutoComplete(Emoticons_Settings["ENABLE_AUTOCOMPLETE"])
+
+        for i=1, NUM_CHAT_WINDOWS do
+            local frame = _G["ChatFrame"..i]
+
+            origEnter[frame] = frame:GetScript("OnHyperlinkEnter")
+            frame:SetScript("OnHyperlinkEnter", Emoticons_OnHyperlinkEnter)
+
+            origLeave[frame] = frame:GetScript("OnHyperlinkLeave")
+            frame:SetScript("OnHyperlinkLeave", Emoticons_OnHyperlinkLeave)
+        end
     end
 end
 
 --this function transforms the text in the autocomplete suggestions (we add the emote image here)
 function Emoticons_RenderSuggestionFN(text)
     local fullEmotePath = TwitchEmotes_defaultpack[text]
-    local size = string.match(fullEmotePath, ":(.*)")
-    local path_and_size = string.gsub(fullEmotePath, size, "16:16")
-
-    return "|T".. path_and_size .."|t " .. text;
+    if(fullEmotePath ~= nil) then
+        local animdata = TwitchEmotes_animation_metadata[fullEmotePath]
+        if animdata ~= nil then
+            return TwitchEmotes_BuildEmoteFrameStringWithDimensions(fullEmotePath, animdata, 0, 16, 16) .. text;
+        else
+            local size = string.match(fullEmotePath, ":(.*)")
+            local path_and_size = "";
+            if(size ~= nil) then
+                path_and_size = string.gsub(fullEmotePath, size, "16:16")
+            else
+                path_and_size = fullEmotePath .. "16:16";
+            end
+            return "|T".. path_and_size .."|t " .. text;
+        end
+    end
 end
 
 function setAllFav(value)
@@ -469,7 +491,7 @@ function Emoticons_RunReplacement(msg, senderGUID, msgID)
     local endpos;
 
     -- We need to ignore links, as to not break them.
-    local linkStart, linkEnd = string.find(msg, "[[]+.*[]]+", startpos) 
+    local linkStart, linkEnd = string.find(msg, "%[.+%]", startpos) 
     while(linkStart) do
         local link = string.sub(msg, linkStart, linkEnd)
 
@@ -479,7 +501,7 @@ function Emoticons_RunReplacement(msg, senderGUID, msgID)
         outstr = outstr .. link -- don't run replacement on the link, just add it to the return string
         startpos = linkEnd + 1
     
-        linkStart, linkEnd = string.find(msg, "[[]+.* +-+ +.*[]]+", startpos) -- find next link
+        linkStart, linkEnd = string.find(msg, "%[.+-.+%]+", startpos) -- find next link
     end
 
     outstr = outstr .. Emoticons_InsertEmoticons(string.sub(msg, startpos, #msg), senderGUID, msgID); -- the bit after the last link (or the whole message when no links found)
@@ -520,6 +542,15 @@ end
 
 function Emoticons_SetClickableEmotes(state)
     Emoticons_Settings["ENABLE_CLICKABLEEMOTES"] = state;
+end
+
+function Emoticons_EnableAnimatedEmotes(state)
+    Emoticons_Settings["ENABLE_ANIMATEDEMOTES"] = state;
+    if(state) then
+        TwitchEmotesAnimatorUpdateFrame:SetScript('OnUpdate', TwitchEmotesAnimator_OnUpdate);
+    else
+        TwitchEmotesAnimatorUpdateFrame:SetScript('OnUpdate', nil);
+    end
 end
 
 function Emoticons_SetAutoComplete(state)
@@ -612,8 +643,7 @@ function Emoticons_InsertEmoticons(msg, senderGUID, msgID)
     local large = '64:64'
     local xlarge = '128:128'
     local xxlarge = '256:256'
-    local delimiters = "%s,%s'%s<%s>%s?%s-%.!"
-
+    local delimiters = "%s,'<>?-%.!"
 
     for word in string.gmatch(msg, "[^" .. delimiters .. "]+") do
         local emote = TwitchEmotes_emoticons[word]
@@ -633,27 +663,33 @@ function Emoticons_InsertEmoticons(msg, senderGUID, msgID)
             
             -- print("Detected " .. emote)
             -- Get the size of the emote, if not a standard size
-            size = string.match(TwitchEmotes_defaultpack[emote], ":(.*)")
-
+            local path_and_size = TwitchEmotes_defaultpack[emote]
+            local path = string.match(path_and_size, "(.*%.tga)")
+            local size = string.match(path_and_size, ":(.*)")
             -- Make a copy of the file path so we don't modify the original value
-            path_and_size = TwitchEmotes_defaultpack[emote]
-
-            -- Check if the user has large emotes enabled. 
-            -- If not, replace the size with the standard size of 28:28,
-            -- else set it to the standard large size of 64:64
-            if not Emoticons_Settings["LARGEEMOTES"] then
-                if ( size == 'LARGE' or size == 'XLARGE' or size == 'XXLARGE' ) then
-                    path_and_size = string.gsub(TwitchEmotes_defaultpack[emote], size, normal)
+            local animdata = TwitchEmotes_GetAnimData(path);
+            
+            if(animdata == nil) then
+                -- Check if the user has large emotes enabled. 
+                -- If not, replace the size with the standard size of 28:28,
+                -- else set it to the standard large size of 64:64
+                if not Emoticons_Settings["LARGEEMOTES"] then
+                    if ( size == 'LARGE' or size == 'XLARGE' or size == 'XXLARGE' ) then
+                        path_and_size = string.gsub(TwitchEmotes_defaultpack[emote], size, normal)
+                    end
+                else
+                    if ( size == 'LARGE' ) then
+                        path_and_size = string.gsub(TwitchEmotes_defaultpack[emote], size, large)
+                    elseif ( size == 'XLARGE' ) then
+                        path_and_size = string.gsub(TwitchEmotes_defaultpack[emote], size, xlarge)
+                    elseif ( size == 'XXLARGE') then
+                        path_and_size = string.gsub(TwitchEmotes_defaultpack[emote], size, xxlarge)
+                    end
                 end
-            else
-                if ( size == 'LARGE' ) then
-                    path_and_size = string.gsub(TwitchEmotes_defaultpack[emote], size, large)
-                elseif ( size == 'XLARGE' ) then
-                    path_and_size = string.gsub(TwitchEmotes_defaultpack[emote], size, xlarge)
-                elseif ( size == 'XXLARGE') then
-                    path_and_size = string.gsub(TwitchEmotes_defaultpack[emote], size, xxlarge)
-                end
+            else 
+                path_and_size = TwitchEmotes_BuildEmoteFrameString(path, animdata, 0):gsub("|T", ""):gsub("|t", "");
             end
+            
 
             local wrapPattern = "([" .. delimiters .. "]+)"
 
@@ -765,24 +801,25 @@ function TwitchEmotes:AddEmote(id, name, path)
     TwitchEmotes_emoticons[name] = id;
 end
 
-
-local GameTooltip = GameTooltip;
-
-function Emoticons_OnHyperlinkEnter(frame, link, ...)
+TwitchEmotes_HoverMessageInfo = nil;
+function Emoticons_OnHyperlinkEnter(frame, link, message, fontstring, ...)
 	local linkType, linkContent = link:match("^([^:]+):(.+)")
 	if (linkType) then
 		if (linkType == "tel") then
+            TwitchEmotes_HoverMessageInfo = fontstring.messageInfo;
+
 			GameTooltip:SetOwner(frame, "ANCHOR_CURSOR");
 			GameTooltip:SetText(linkContent, 255, 210, 0);
 			GameTooltip:Show();
 		end
 	end
 
-	if origEnter[frame] then return origEnter[frame](frame, link, ...) end
+	if origEnter[frame] then return origEnter[frame](frame, link, message, fontstring, ...) end
 end
 
 function Emoticons_OnHyperlinkLeave(frame, ...)
 	GameTooltip:Hide()
-	
+    TwitchEmotes_HoverMessageInfo = nil
+
 	if origLeave[frame] then return origLeave[frame](frame, ...) end
 end

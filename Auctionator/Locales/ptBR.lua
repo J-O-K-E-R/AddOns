@@ -309,6 +309,8 @@ L["PET_TOOLTIP_TOOLTIP_HEADER"] = "Caixa de Texto de Bichos de Estimação"
 L["PET_TOOLTIP_TOOLTIP_TEXT"] = "Mostrar informações do Auctionator para bichos de estimação em gaiolas."
 L["POST"] = "Postar"
 L["PRICE"] = "Preço"
+--[[Translation missing --]]
+L["PRICE_INCREASE_WARNING"] = "Price increased by %s, waiting %ss"
 L["PROFILE_TOGGLE_TOOLTIP_HEADER"] = "Ativar definições específicas para cada personagem"
 L["PROFILE_TOGGLE_TOOLTIP_TEXT"] = "Faz mudanças para as configurações do Auctionator afetar apenas este personagem."
 --[[Translation missing --]]
@@ -530,6 +532,8 @@ L["TEMPORARY_LOWER_CASE"] = "temporário"
 L["TIME_LEFT"] = "Tempo Restante"
 L["TIME_LEFT_H"] = "Tempo restante (h)"
 L["TO_CRAFT_COLON"] = "Para Criar:"
+--[[Translation missing --]]
+L["TODAY"] = "Today"
 L["TOO_BIG_PERCENTAGE"] = "%% tem que ser <= 100 (considerando %s)"
 L["TOO_MANY_SEARCH_RESULTS"] = "Esta pesquisa teve resultados demais. Limitando o número de resultados mostrados."
 L["TOO_SMALL_PERCENTAGE"] = "%% tem que ser >= 0 (considerando %s)"

@@ -2662,6 +2662,94 @@ Removed PepeAP, peepoCola and monkaIris
 Transitioned from dropdown lib - using default API & Taintless
 
 
+----
+Twitch Emotes V2.50 - Animation
+----
+
+Returned to dropdown lib (thankfully updated), still using Taintless.
+Reformatted all emotes with a better compression method.
+Added:
+    pepeW
+    FatCat
+    PraygeHabibi
+
+Added Animated Emotes:
+    modCheck
+    goinginsane
+    catJAM
+    ratJAM
+    haHAA
+    PepeMeltdown
+    pepeD
+    worryWave
+    worryPopcorn
+    worryExcite
+    AbdulPls
+    lovehug
+    monkaX
+    BOOBA
+    MadgeRightNow
+    :shy:
+    monkaShoot
+    monkaShake
+    COCKA
+    FUTA
+    NODDERS
+    NOPERS
+    DonoWall
+    WICKEDSTEER
+    ClownHypers
+    CatPop
+    CatDance
+    FeelsLoveMan
+    rooMadSlam
+    worryStick
+    PepeJAM
+    peepoSmash
+    Chatting
+    peepoGiggles
+    FeelsRainMan
+    peepoPat
+    monkaInsane
+
+removed:
+    Koil emotes
+    A_Seagull
+    radiant
+    Nymn:
+        nymn3
+        nymnAww
+        nymnBee
+        nymnBenis
+        nymnCD
+        nymnCozy
+        nymnDeer
+        nymnEU
+        nymnEZ
+        nymnGASP
+        nymnGolden
+        nymnH
+        nymnHmm
+        nymnHonk
+        nymnHYDRA
+        nymnJoy
+        nymnKek
+        nymnL
+        nymnM
+        nymnNA
+        nymnNo
+        nymnNormie
+        nymnPains
+        nymnSad
+        nymnScuffed
+        nymnSpurdo
+        nymnThink
+        nymnV
+        nymnZ
+
+Updated:
+    Cdew emotes
+
 
 ----
 To do

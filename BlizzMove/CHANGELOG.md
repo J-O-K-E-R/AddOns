@@ -1,8 +1,8 @@
-# [v3.2.10](https://github.com/Kiatra/BlizzMove/tree/v3.2.10) (2022-02-01)
+# [v3.2.13](https://github.com/Kiatra/BlizzMove/tree/v3.2.13) (2022-02-25)
 
-[Full Changelog](https://github.com/Kiatra/BlizzMove/compare/v3.2.9...v3.2.10)
+[Full Changelog](https://github.com/Kiatra/BlizzMove/compare/v3.2.12...v3.2.13)
 
 Mark W (1):
 
-- BCC TOC bump
+- Classic TOC bump
 

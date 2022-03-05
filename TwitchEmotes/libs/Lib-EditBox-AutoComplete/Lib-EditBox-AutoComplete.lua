@@ -151,6 +151,7 @@ function SetupAutoComplete(editbox, valueList, maxButtonCount, settings)
 
 end
 
+--todo: rename
 function TwitchEmotesPauseElvUIHistory(editbox)
     if editbox.historyLines then
         -- If we captured the arrowkeys and ElvUI added historyLines to this editbox
@@ -165,6 +166,7 @@ function TwitchEmotesPauseElvUIHistory(editbox)
     end
 end
 
+--todo: rename
 function TwitchEmotesResumeElvUIHistory(editbox)
 
     if editbox ~= nil and editbox.PreservedHistoryLines ~= nil then
@@ -173,12 +175,12 @@ function TwitchEmotesResumeElvUIHistory(editbox)
     end
 end
 
-local function GetAutoCompleteButton(index)
+function EditBoxAutoComplete_GetAutoCompleteButton(index)
     local buttonName = "EditBoxAutoCompleteButton" .. index;
     if not _G[buttonName] then
         local btn = CreateFrame("Button", buttonName, EditBoxAutoCompleteBox,
                                 "EditBoxAutoCompleteButtonTemplate")
-        btn:SetPoint("TOPLEFT", GetAutoCompleteButton(index - 1), "BOTTOMLEFT",
+        btn:SetPoint("TOPLEFT", EditBoxAutoComplete_GetAutoCompleteButton(index - 1), "BOTTOMLEFT",
                      0, 0)
         btn:SetScript("OnEnter", function(self)
             EditBoxAutoCompleteBox.mouseInside = true;
@@ -219,8 +221,6 @@ local function GetEditBoxAutoCompleteResults(text, valueList, fuzzyMatch)
 end
 
 function EditBoxAutoComplete_OnLoad(self)
-    -- self:SetBackdropBorderColor(0, 0, 0);
-    -- self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);	
     self:SetBackdrop({
         bgFile = 'Interface\\DialogFrame\\UI-DialogBox-Background-Dark',
         edgeFile = 'Interface\\DialogFrame\\UI-DialogBox-Background-Dark',
@@ -286,7 +286,7 @@ function EditBoxAutoComplete_Update(parent, text, cursorPosition)
             self.parentArrows = parent:GetAltArrowKeyMode();
         end
         parent:SetAltArrowKeyMode(false);
-        local height = GetAutoCompleteButton(1):GetHeight() * maximumButtonCount
+        local height = EditBoxAutoComplete_GetAutoCompleteButton(1):GetHeight() * maximumButtonCount
         if (parent:GetBottom() - height <= (AUTOCOMPLETE_DEFAULT_Y_OFFSET + 10)) then -- 10 is a magic number from the offset of AutoCompleteButton1.
             attachPoint = "ABOVE";
         else
@@ -383,9 +383,9 @@ end
 function EditBoxAutoComplete_SetSelectedIndex(self, index)
     self.selectedIndex = index;
     for i = 1, maximumButtonCount do
-        GetAutoCompleteButton(i):UnlockHighlight();
+        EditBoxAutoComplete_GetAutoCompleteButton(i):UnlockHighlight();
     end
-    if (index ~= 0) then GetAutoCompleteButton(index):LockHighlight(); end
+    if (index ~= 0) then EditBoxAutoComplete_GetAutoCompleteButton(index):LockHighlight(); end
 end
 
 function EditBoxAutoComplete_GetSelectedIndex(self) return self.selectedIndex; end
@@ -399,7 +399,7 @@ function EditBoxAutoComplete_UpdateResults(self, results, indexOffset)
     local maxWidth = 150;
 
     for i = 1, numReturns do
-        local button = GetAutoCompleteButton(i)
+        local button = EditBoxAutoComplete_GetAutoCompleteButton(i)
         button.name = Ambiguate(results[i + indexOffset], "none");
 
         if (self.parent.settings.renderSuggestionFN ~= nil) then
@@ -416,7 +416,7 @@ function EditBoxAutoComplete_UpdateResults(self, results, indexOffset)
     end
 
     for i = numReturns + 1, EditBoxAutoCompleteBox.existingButtonCount do
-        GetAutoCompleteButton(i):Hide();
+        EditBoxAutoComplete_GetAutoCompleteButton(i):Hide();
     end
 
     if (numReturns > 0) then
@@ -430,7 +430,7 @@ function EditBoxAutoComplete_UpdateResults(self, results, indexOffset)
     end
 
     if (totalReturns > maximumButtonCount) then
-        local button = GetAutoCompleteButton(maximumButtonCount);
+        local button = EditBoxAutoComplete_GetAutoCompleteButton(maximumButtonCount);
         button:SetText(CONTINUED);
         button:Disable();
         self.numResults = numReturns - 1;
@@ -512,7 +512,7 @@ function EditBoxAutoComplete_OnEnterPressed(self)
         (EditBoxAutoComplete_GetSelectedIndex(autoComplete) ~= 0)) then
 
         EditBoxAutoCompleteButton_OnClick(
-            GetAutoCompleteButton(EditBoxAutoComplete_GetSelectedIndex(
+            EditBoxAutoComplete_GetAutoCompleteButton(EditBoxAutoComplete_GetSelectedIndex(
                                       autoComplete)));
         return true;
     end

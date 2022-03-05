@@ -397,6 +397,8 @@ AUCTIONATOR_LOCALES.enUS = function()
   L["DAY_6"] = "Friday"
   L["DAY_7"] = "Saturday"
 
+  L["TODAY"] = "Today"
+
   L["TEMPORARY_LOWER_CASE"] = "temporary"
 
   L["CONFIG_PROFILE_CATEGORY"] = "Profile"
@@ -526,6 +528,7 @@ AUCTIONATOR_LOCALES.enUS = function()
   L["BUYING_X_FOR_X"] = "Buying %s for %s"
   L["BRACKETS_X_EACH"] = "(%s each)"
   L["ALREADY_PURCHASED_X"] = "Already purchased %s"
+  L["PRICE_INCREASE_WARNING"] = "Price increased by %s, waiting %ss"
   L["PURCHASED_X_XX"] = "Purchased %s x%s"
   L["DEFAULT_STACK_SIZES"] = "Default Stack Sizes"
   L["CONFIG_SELLING_TBC_ALL_ITEMS"] = "Options to set the default posting settings for all items."

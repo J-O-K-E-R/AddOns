@@ -64,12 +64,22 @@ function TwitchStatsScreen_OnLoad()
     topEmoteBorder:Show();
 
     local topSentImagePath = TwitchEmotes_defaultpack[TwitchEmoteSentStatKeys[1]] or "Interface\\AddOns\\TwitchEmotes\\Emotes\\1337.tga";
-    local size = string.match(topSentImagePath, ":(.*)")
-    if size then
-        topSentImagePath = string.gsub(topSentImagePath, size, "")
+    local animdata = TwitchEmotes_animation_metadata[topSentImagePath]
+    TwitchStatsScreen.topSentEmoteTexture = TwitchStatsScreen.topSentEmoteTexture or TwitchStatsScreen:CreateTexture(nil, "BACKGROUND", nil, 2);
+    local topEmoteTexture = TwitchStatsScreen.topSentEmoteTexture
+
+    if animdata ~= nil then
+        topEmoteTexture:SetTexture(topSentImagePath);
+        topEmoteTexture:SetTexCoord(TwitchEmotes_GetTexCoordsForFrame(animdata, 0)) 
+    else
+        local size = string.match(topSentImagePath, ":(.*)")
+        if size then
+            topSentImagePath = string.gsub(topSentImagePath, size, "")
+        end
+
+        topEmoteTexture:SetTexture(topSentImagePath);
     end
-    local topEmoteTexture = TwitchStatsScreen:CreateTexture(nil, "BACKGROUND", nil, 2);
-    topEmoteTexture:SetTexture(topSentImagePath);
+    
     topEmoteTexture:SetWidth(70);
     topEmoteTexture:SetHeight(70);
     topEmoteTexture:SetPoint('CENTER', TwitchStatsScreen, "TOPLEFT", 128, -108)
@@ -96,13 +106,23 @@ function TwitchStatsScreen_OnLoad()
     topEmoteBorder:Show();
 
     local topSeenImagePath = TwitchEmotes_defaultpack[TwitchEmoteRecievedStatKeys[1]] or "Interface\\AddOns\\TwitchEmotes\\Emotes\\1337.tga";
-    size = string.match(topSeenImagePath, ":(.*)")
-    if size then
-        topSeenImagePath = string.gsub(topSeenImagePath, size, "")
+    local animdata = TwitchEmotes_animation_metadata[topSeenImagePath]
+
+    TwitchStatsScreen.topSeenEmoteTexture = TwitchStatsScreen.topSeenEmoteTexture or TwitchStatsScreen:CreateTexture(nil, "BACKGROUND", nil, 2);
+    topEmoteTexture = TwitchStatsScreen.topSeenEmoteTexture;
+
+    if animdata ~= nil then
+        topEmoteTexture:SetTexture(topSeenImagePath);
+        topEmoteTexture:SetTexCoord(TwitchEmotes_GetTexCoordsForFrame(animdata, 0)) 
+    else
+        local size = string.match(topSeenImagePath, ":(.*)")
+        if size then
+            topSeenImagePath = string.gsub(topSeenImagePath, size, "")
+        end
+
+        topEmoteTexture:SetTexture(topSeenImagePath);
     end
 
-    topEmoteTexture = TwitchStatsScreen:CreateTexture(nil, "BACKGROUND", nil, 2);
-    topEmoteTexture:SetTexture(topSeenImagePath);
     topEmoteTexture:SetWidth(70);
     topEmoteTexture:SetHeight(70);
     topEmoteTexture:SetPoint('CENTER', TwitchStatsScreen, "TOPLEFT", 384, -108)
@@ -125,7 +145,6 @@ end
 
 function TwitchStatsSentScrollBar_Update()
     local nrOfItemsVisible = 17
-    local line;
     local lineplusoffset; -- an index into our data calculated from the scroll offset
     
     FauxScrollFrame_Update(TwitchStatsSentScrollBar,#TwitchEmoteSentStatKeys,nrOfItemsVisible,16);
@@ -133,11 +152,17 @@ function TwitchStatsSentScrollBar_Update()
       lineplusoffset = line + FauxScrollFrame_GetOffset(TwitchStatsSentScrollBar);
       if lineplusoffset <= #TwitchEmoteSentStatKeys then
         local cEmote = TwitchEmoteSentStatKeys[lineplusoffset];
-        local fullEmotePath = TwitchEmotes_defaultpack[cEmote]
-        local size = string.match(fullEmotePath, ":(.*)")
-        local path_and_size = string.gsub(fullEmotePath, size, "16:16")
-        
-        getglobal("TwitchStatsSentEntry"..line):SetText("|cFFfce703" .. lineplusoffset ..".|r |T".. path_and_size .."|t " .. " |cFF00FF00"..cEmote.."|r sent: " .. TwitchEmoteStatistics[cEmote][2] .. "x");
+        local fullEmotePath = TwitchEmotes_defaultpack[cEmote];
+        local animdata = TwitchEmotes_animation_metadata[fullEmotePath]
+        local texturestr = nil
+        if animdata ~= nil then
+            texturestr = TwitchEmotes_BuildEmoteFrameStringWithDimensions(fullEmotePath, animdata, 0, 16, 16)
+        else
+            local size = string.match(fullEmotePath, ":(.*)")
+            texturestr = "|T"..string.gsub(fullEmotePath, size, "16:16").."|t"
+        end
+
+        getglobal("TwitchStatsSentEntry"..line):SetText("|cFFfce703" .. lineplusoffset ..".|r ".. texturestr .." " .. " |cFF00FF00"..cEmote.."|r sent: " .. TwitchEmoteStatistics[cEmote][2] .. "x");
         getglobal("TwitchStatsSentEntry"..line):Show();
         
       else
@@ -148,19 +173,25 @@ end
 
 function TwitchStatsRecievedScrollBar_Update()
     local nrOfItemsVisible = 17
-    local line;
     local lineplusoffset; -- an index into our data calculated from the scroll offset
-    
+
     FauxScrollFrame_Update(TwitchStatsRecievedScrollBar,#TwitchEmoteRecievedStatKeys,nrOfItemsVisible,16);
     for line=1, nrOfItemsVisible do
       lineplusoffset = line + FauxScrollFrame_GetOffset(TwitchStatsRecievedScrollBar);
       if lineplusoffset <= #TwitchEmoteRecievedStatKeys then
         local cEmote = TwitchEmoteRecievedStatKeys[lineplusoffset];
         local fullEmotePath = TwitchEmotes_defaultpack[cEmote]
-        local size = string.match(fullEmotePath, ":(.*)")
-        local path_and_size = string.gsub(fullEmotePath, size, "16:16")
+
+        local animdata = TwitchEmotes_animation_metadata[fullEmotePath]
+        local texturestr = nil
+        if animdata ~= nil then
+            texturestr = TwitchEmotes_BuildEmoteFrameStringWithDimensions(fullEmotePath, animdata, 0, 16, 16)
+        else
+            local size = string.match(fullEmotePath, ":(.*)")
+            texturestr = "|T"..string.gsub(fullEmotePath, size, "16:16").."|t"
+        end
         
-        getglobal("TwitchStatsRecievedEntry"..line):SetText("|cFFfce703" .. lineplusoffset ..".|r |T".. path_and_size .."|t " .. " |cFF00FF00"..cEmote.."|r seen: " .. TwitchEmoteStatistics[cEmote][3] .. "x");
+        getglobal("TwitchStatsRecievedEntry"..line):SetText("|cFFfce703" .. lineplusoffset ..".|r ".. texturestr .." " .. " |cFF00FF00"..cEmote.."|r seen: " .. TwitchEmoteStatistics[cEmote][3] .. "x");
         getglobal("TwitchStatsRecievedEntry"..line):Show();
         
       else

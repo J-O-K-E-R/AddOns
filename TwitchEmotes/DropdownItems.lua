@@ -14,7 +14,7 @@ TwitchEmotes_dropdown_options = {
     [02] = { -- 40
         "xQc", "xqcA", "xqcArm1", "xqcArm2", "xqcCarried", "xqcDab", "xqcEZ",
         "xqcF", "xqcFast", "xqcGun", "xqcH", "xqcHands", "xqcHug", "xqcHugged",
-        "xqcJuice", "xqcKek", "xqcL", "xqcLeather", "xqcLie", "xqcLook", "xqcM",
+        "xqcJuice", "xqcKek", "xqcL", "xqcLeather", "xqcLie", "xqcLook", "xqcPlot",
         "xqcMood", "xqcOld", "xqcPoppin", "xqcQ", "xqcRage", "xqcS", "xqcSad",
         "xqcSleeper", "xqcSmile", "xqcSmile2", "xqcSmug", "xqcSword", "xqcT",
         "xqcThonk", "xqcTOS", "xqcTree", "xqcWar", "xqcWut", "xqcY"
@@ -42,20 +42,20 @@ TwitchEmotes_dropdown_options = {
     [05] = { -- 37
         "Custom 1", "NeckBeard", "Krug", "Depresstiny", "DestiSenpaii",
         "Disgustiny", "GODSTINY", "HmmStiny", "Klappa", "LeRuse", "jerryWhat",
-        ":blinking:", "NOBULLY", "NoTears", "OverRustle", "PEPE", "REEE",
+        "YeahBoi", "NOBULLY", "NoTears", "OverRustle", "PEPE", "REEE",
         "SURPRISE", "SWEATSTINY", ":tf:", "VoHiYo", "AYAYA", "bjornoVV",
-        "bjornoVVona", "catJAM", "ThrallS", "KomodoHype", "StareBruh", "Clap",
-        "cptfriHE", "Del", "ednasly", "endANELE", "endBomb", "ThisIsFine",
-        "pokiW", "AMAZIN", "AMAZINGA", "YeahBoi"
+        "bjornoVVona", "ThrallS", "KomodoHype", "StareBruh", "Clap",
+        "cptfriHE", "Del", "ednasly", "endBomb", "ThisIsFine",
+        "pokiW", "AMAZIN", "AMAZINGA"
     },
-    [06] = { -- 34
+    [06] = { -- 33
         "Custom 2", "ANEBruh", "endDawg", "endFrench", "endHarambe", "endKyori",
         "endNotLikeThis", "HappyMerchant", "HyperAngryMerchant", "endRP",
         "endTrump", "FlipThis", "fruitBug", "HYPEROMEGALUL", ":praise:",
         "marcithMath", "monkeyS", "oldmorDim", "PogCena", "OkayChomp",
         "HmmChamp", "5Champ", "SuicideThinking", "BOGGED", "Stonks", ":KEK:",
         "sosig", "sosigW", "LOLW", "OMEGALOL", "ZOINKS", "FLOOSHED",
-        "worryWave", "worryCool", "cmon"
+        "worryCool", "cmon"
     },
     [07] = { -- 33
         "Custom 3", "FLOPPERS", "cmoN", "OhISee", "Poghurt", "KEKW", "KEKWeird",
@@ -100,24 +100,21 @@ TwitchEmotes_dropdown_options = {
         "greekSquad", "greekT", "greekTilt", "greekWC", "greekWhy", "greekWtf",
         "greekYikes"
     },
-    [12] = { -- 45
-        "nymn 1", "nymn0", "nymn1", "nymn2", "nymn3", "nymn158", "nymnA",
-        "nymnAww", "nymnB", "nymnBee", "nymnBenis", "nymnC", "nymnCaptain",
-        "nymnCD", "nymnCozy", "nymnCREB", "nymnCringe", "nymnDab", "nymnDeer",
-        "nymnE", "nymnEU", "nymnEZ", "nymnFlag", "nymnFlick", "nymnG",
-        "nymnGasm", "nymnGasp", "nymnGnome", "nymnGold", "nymnGolden",
-        "nymnGun", "nymnH", "nymnHammer", "nymnHmm", "nymnHonk", "nymnHydra",
-        "nymnJoy", "nymnPog", "nymnK", "nymnKek", "nymnKomrade", "nymnL",
-        "nymnM", "nymnNA", "nymnNo", "nymnNormie"
+    [12] = { -- 27
+        "nymn", "nymn0", "nymn1", "nymn2", "nymn2x", "nymn158",
+        "nymnA", "nymnB", "nymnBiggus", "nymnBridge", "nymnC",
+        "nymnCaptain", "nymnCC", "nymnCREB", "nymnCringe", "nymnCry",
+        "nymnDab", "nymnE", "nymnElf", "nymnFEEDME", "nymnFlag",
+        "nymnFlick", "nymnFood", "nymnG", "nymnGasm", "nymnGnome",
+        "nymnGold", "nymnGun",
     },
     [13] = { -- 36
-        "nymn 2", "nymnRaffle", "nymnSad", "nymnScuffed", "nymnSmart",
-        "nymnSmol", "nymnZ", "nymnSon", "nymnSoy", "nymnSpurdo", "nymnThink",
-        "nymnU", "nymnV", "nymnW", "nymnWhy", "nymnXD", "nymnY", "nymnFEEDME",
-        "nymn2x", "nymnBiggus", "nymnBridge", "nymnCC", "nymnCry", "nymnElf",
-        "nymnFood", "nymnKing", "nymnOkay", "nymnP", "nymnPuke", "nymnRupert",
-        "nymnS", "nymnSleeper", "nymnSmug", "nymnStrong", "nymnTransparent",
-        "nymnPains", "nymnR"
+        "nymn 2", "nymnHammer", "nymnK", "nymnKing", "nymnKomrade", "nymnOkay",
+        "nymnP", "nymnPog", "nymnPuke", "nymnR", "nymnRaffle",
+        "nymnRupert", "nymnS", "nymnSleeper", "nymnSmart", "nymnSmol",
+        "nymnSmug", "nymnSon", "nymnSoy", "nymnStrong", "nymnTransparent",
+        "nymnU", "nymnW", "nymnWhy", "nymnX", "nymnXD",
+        "nymnY"
     },
     [14] = { -- 30
         "Drainerx", "drxBrain", "drxCS", "drxD", "drxWeird", "drxSSJ", "drxPog",
@@ -173,31 +170,7 @@ TwitchEmotes_dropdown_options = {
         "rooVV", "rooWhine", "rooWut", "rooUwU", "rooGun", "rooScream",
         "rooDuck", "rooCookie", "rooC", "rooComfy"
     },
-    [20] = { -- 41
-        "VR 1", "astrovrCry", "astrovrRee", "astrovrHi", "CuteMelon",
-        "DrunkMelon", "GaspMelon", "HyperHappyMelon", "HyperMelon", "MelonGun",
-        "OwOMelon", "RageMelon", "ReeMelon", "SadMelon", "SweatMelon",
-        "tyrissBlush", "tyrissBoop", "tyrissComfy", "tyrissDisappointed",
-        "tyrissGasp", "tyrissGimme", "tyrissGlare", "tyrissHeadpat",
-        "tyrissHeart", "tyrissHeartz", "tyrissHi", "tyrissHug", "tyrissHyper",
-        "tyrissLul", "tyrissLurk", "tyrissPout", "tyrissRee", "tyrissRip",
-        "tyrissS", "tyrissSad", "tyrissSmug", "tyrissSmugOwO", "tyrissThink",
-        "tyrissVictory", "ZevvyBlush", "02Stare", ":HEH:"
-    },
-    [21] = { -- 41
-        "VR 2", "radiantAYAYA", "radiantBlush", "radiantBomb", "radiantBoop",
-        "radiantComfy", "radiantCry", "radiantCult", "radiantCute",
-        "radiantEEEEE", "radiantEvil", "radiantGimme", "radiantGun",
-        "radiantHmm", "radiantISee", "radiantJam", "radiantKek", "radiantLag",
-        "radiantLick", "radiantLurk", "radiantNom", "radiantOmega",
-        "radiantOmegaOWO", "radiantOwO", "radiantPat", "radiantPepega",
-        "radiantPog", "radiantPout", "radiantREE", "radiantSalute",
-        "radiantScared", "radiantShrug", "radiantSip", "radiantSmile",
-        "radiantSmug", "radiantSnoze", "radiantStare", "radiantTOS",
-        "radiantWave", "radiantWeird", "02Yum", "02Dab"
-
-    },
-    [22] = { -- 35
+    [20] = { -- 35
         "Pepe 1", "EZ", "FeelsAmazingMan", "FeelsIncredibleMan", "PepeBlyat",
         "FeelsBetaMan", "MALDD", "FeelsBlushMan", "FeelsTastyMan",
         "FeelsCoolMan", "FeelsCopterMan", "FeelsCuteMan", "FeelsPinkMan",
@@ -207,7 +180,7 @@ TwitchEmotes_dropdown_options = {
         "PepoHide", "SMILERS", "NOPERS", "SMUGGERS", "EVILSMILERS", "pepoEZ",
         "PepePhone", "PepePhoned"
     },
-    [23] = { -- 35
+    [21] = { -- 35
         "Pepe 2", "FeelsTiredAF", "PepeHug", "HYPERS", "JanCarlo",
         "maximumautism", "meAutism", "monkaGIGA", "monkaThink", "monkaYou",
         "pepoS", "pepoGun", "monkaOMEGA", "monkaS", "monakGun", "monkaT",
@@ -216,7 +189,7 @@ TwitchEmotes_dropdown_options = {
         "monkaStab", "PepoScience", "RandomPepe", "PepeKMS", "HappyJammies",
         "FeelsDeadMan", "SucksMan", "WOAW"
     },
-    [24] = { -- 36
+    [22] = { -- 36
         "Pepe 3", "PepePopcorn", "WeirdW", "monkaU", "monkaW", "BadW", "GoodW",
         "OkayW", "OkayLaugh", "CringeW", "TiredW", "monkaPickle", "PepeCozy",
         "POOGERS", "POGGIES", "KEKGA", "PepegaHands", "PepeFU", "Okayge",
@@ -225,7 +198,7 @@ TwitchEmotes_dropdown_options = {
         "FeelsRottenMan", "peepoAlliance", ":need:", ":memes:", ":drama:",
         ":copium:", "Copege", "COPIUM"
     },
-    [25] = { -- 35
+    [23] = { -- 35
         "Pepe 4", "PepePoo", "SadPepe", "PepeXD", "oldpepe", "monakHmm",
         "FeelsOakyMan", "FeelsWiredMan", "monakS", ":think:", ":hmm:", "FatBod",
         "FeelsBoredMan", "PepeCry", "PepeJAM", "WeirdJAM", "FeelsFatMan",
@@ -234,7 +207,7 @@ TwitchEmotes_dropdown_options = {
         "FeelsOldMan", "LULERS", "PepeDisgust", "PepeSmug", "FatDank", "PepePains",
         "FrogO", "PepeLoser"
     },
-    [26] = { -- 36
+    [24] = { -- 36
         "peepo 1", "peepoSalute", "peepoCute", "peepoLove", "peepoPride",
         "peepoWoW", "peepoBlanket", "peepoSenor", "peepoStudy", "peepoHmm",
         "peepoSmile", "peepoPoo", "peepoTired", "peepoSad", "peepoS",
@@ -244,7 +217,7 @@ TwitchEmotes_dropdown_options = {
         "peepoWTF", "peepoHide", "peepoYes", "peepoNo", "peepoHehe",
         "peepoStonks", "peepoLoser", "peepoFoil"
     },
-    [27] = { -- 33
+    [25] = { -- 33
         "peepo 2", "peepoRain", "peepoKnight", "peepoPeek", "peepoShrug",
         "peepoWave", "peepoKiss", "peepaKiss", "peepoHands", "peepoSip",
         "peepoPants", "peepoNolegs", "peepoShy", "peepoFA", "peepoFH",

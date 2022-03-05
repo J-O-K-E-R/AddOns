@@ -419,6 +419,25 @@ Revert PowaBarSliderTemplate to inherit from OptionsSliderTemplate if it's fixed
         </Scripts>
       </CheckButton>
 
+      <CheckButton name="$EnableAnimatedEmotesButton" inherits="InterfaceOptionsCheckButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$showMinimapButtonButton" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            getglobal(self:GetName() .. "Text"):SetText("Enable Animated Emotes");
+            self:SetChecked(Emoticons_Settings["ENABLE_ANIMATEDEMOTES"])
+          </OnLoad>
+          <OnClick>
+            Emoticons_EnableAnimatedEmotes(self:GetChecked());
+          </OnClick>
+        </Scripts>
+      </CheckButton>
+
 
       <Frame name="$AutoCompleteSettingsPanel">
         <Anchors>
@@ -612,8 +631,8 @@ Revert PowaBarSliderTemplate to inherit from OptionsSliderTemplate if it's fixed
   <Frame name="EmoticonMiniMapDropDown" inherits="UIDropDownMenuTemplate" id="1">
     <Scripts>
       <OnLoad>
-        <!-- local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0") -->
-	      UIDropDownMenu_Initialize(self, Emoticons_LoadMiniMapDropdown, "MENU", 1);
+        local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
+	      LibDD:UIDropDownMenu_Initialize(self, Emoticons_LoadMiniMapDropdown, "MENU", 1);
       </OnLoad>
     </Scripts>
   </Frame>
