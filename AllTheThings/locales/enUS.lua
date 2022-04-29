@@ -112,6 +112,8 @@ app.L = {
 	["BREADCRUMB_PARTYSYNC"] = "This may be unable to be completed without Party Sync if completing any of these quests first:";
 	["BREADCRUMB_PARTYSYNC_2"] = "This may be obtained via Party Sync with another character that has not completed any of these quests:";
 	["BREADCRUMB_PARTYSYNC_3"] = "This may be obtained via Party Sync with a character that is able to accept this quest.";
+	["DISABLE_PARTYSYNC"] = "This is likely not able to be completed by this character even using Party Sync. If you manage otherwise, please let us know on Discord!";
+	["UNAVAILABLE_WARNING_FORMAT"] = "|c%sBecomes unavailable if %d of the following are met:|r";
 	["NO_ENTRIES"] = "No entries matching your filters were found.";
 	["NO_ENTRIES_DESC"] = "If you believe this was in error, try activating 'Debug Mode'. One of your filters may be restricting the visibility of the group.";
 	["DEBUG_LOGIN"] = "Awarded for logging in.\n\nGood job! YOU DID IT!\n\nOnly visible while in Debug Mode.";
@@ -228,8 +230,13 @@ app.L = {
 	["REPORT_INACCURATE_QUEST"] = "Wrong Quest Info! (Click to Report)";
 	["NESTED_QUEST_REQUIREMENTS"] = "Nested Quest Requirements";
 	["MAIN_LIST_REQUIRES_REFRESH"] = "[Open Main list to update progress]";
-	["DOES_NOT_CONTRIBUTE_TO_PROGRESS"] = "|cffe08207This group and its content do not contribute to the progress of this window!|r";
+	["DOES_NOT_CONTRIBUTE_TO_PROGRESS"] = "|cffe08207This group and its content do not contribute to the progress of this window since it is Sourced in another Location!|r";
 	["CURRENCY_NEEDED_TO_BUY"] = "Items needed to buy not collected Things";
+	["LOCK_CRITERIA_LEVEL_LABEL"] = "Player Level";
+	["LOCK_CRITERIA_QUEST_LABEL"] = "Completed Quest";
+	["LOCK_CRITERIA_SPELL_LABEL"] = "Learned Spell/Mount/Recipe";
+	["LOCK_CRITERIA_FACTION_LABEL"] = "Faction Reputation";
+	["LOCK_CRITERIA_FACTION_FORMAT"] = "%s with %s (Current: %s)";
 
 	-- Item Filter Window
 	["ITEM_FILTER_TEXT"] = "Item Filters";
@@ -330,8 +337,8 @@ app.L = {
 	["MUSIC_ROLLS_SELFIE_FILTERS_CHECKBOX_TOOLTIP"] = "Enable this option to track music rolls and selfie filters.\n\nYou can use your Jukebox Toy to play in-game music and your Selfie Camera toy to collect filters for your selfies from certain locations.";
 	["QUESTS_CHECKBOX"] = "|cffADD8E6"..QUESTS_LABEL;
 	["QUESTS_CHECKBOX_TOOLTIP"] = "Enable this option to track normal Quests.\n\nYou can right click any Quest in the lists to pop out their full quest chain to show your progress and any prerequisite Quests.\n\nNOTE: Quests are not permanently tracked due to the nature of how Daily, Weekly, Yearly, and World Quests are tracked in the Blizzard Database.";
-	["QUESTS_BREADCRUMBS_CHECKBOX"] = "|cffADD8E6+Breadcrumbs";
-	["QUESTS_BREADCRUMBS_CHECKBOX_TOOLTIP"] = "Enable this option to specifically include tracking of Breadcrumb Quest completion.\n\nBreadcrumb Quests are technically 'optional' in that they only serve to lead the player to a different Quest, and become unavailable if they are not completed prior to completing their following Quest(s).\nThis can make obtaining Breadcrumbs very reliant on the Party Sync feature or Account-Wide Quests";
+	["QUESTS_LOCKED_CHECKBOX"] = "|cffADD8E6Locked Quests";
+	["QUESTS_LOCKED_CHECKBOX_TOOLTIP"] = "Enable this option to specifically include tracking of Locked Quest completion.\n\nLocked Quests are those which the player is no longer able to complete (according to known ATT data) through normal gameplay.\n\nObtaining these Quests is very reliant on the Party Sync feature or using Account-Wide Quests to incorporate progress from other characters.";
 	["RECIPES_CHECKBOX"] = "|cffADD8E6"..AUCTION_CATEGORY_RECIPES;
 	["RECIPES_CHECKBOX_TOOLTIP"] = "Enable this option to track recipes for your professions.\n\nNOTE: You must open your professions list in order to cache these.";
 	["REPUTATIONS_CHECKBOX"] = "|cffADD8E6Reputations";
@@ -551,7 +558,7 @@ app.L = {
 	-- About tab
 	["ABOUT"] = "About";
 	["ABOUT_1"] = " |CFFFFFFFFis a collection tracking addon that shows you where and how to get everything in the game! We have a large community of users on our Discord (link at the bottom) where you can ask questions, submit suggestions as well as report bugs or missing items. If you find something collectible or a quest that isn't documented, you can tell us on the Discord, or for the more technical savvy, we have a Git that you may contribute directly to.\n\nWhile we do strive for completion, there's a lot of stuff getting added into the game each patch, so if we're missing something, please understand that we're a small team trying to keep up with changes as well as collect things ourselves. :D\n\nFeel free to ask me questions when I'm streaming and I'll try my best to answer it, even if it's not directly related to ATT (general WoW addon programming as well).\n\n- |r|Cffff8000Crieve|CFFFFFFFF\n\nPS: Check out All The Things Classic and TBC Classic!\n\nYes, I intend to play Classic WoW, but between working full time and developing the two versions of the addon, there won't be a lot of time for raiding.\n\nNo, ATT is not the addon that places icons on your bag icons. That's CanIMogIt and Caerdon Wardrobe!\n\nFor online collection comparing check out DataForAzeroth.com from shoogen!|r";
-	["ABOUT_2"] = "Additional Contributors: |CFFFFFFFF(in no particular order)\nDaktar, Lucetia, Slumber, Gold, Avella, Aiue, Dead Serious, Oiche, Oxlotus, Eiltherune, Blueyleader, Iyanden, Pr3vention, BigBlaris, Talonzor, Mogwai, Heallie, Eckhardt, Boohyaka, Sadidorf, Sanctuari, Molkree, Runawaynow, Braghe, Myrhial, Darkal and the rest of the ALL THE THINGS Discord!\n\nSpecial Shoutout to AmiYuy (CanIMogIt) and Caerdon (Caerdon Wardrobe).|r  ";
+	["ABOUT_2"] = "Additional Contributors: |CFFFFFFFF(in no particular order)\nDaktar, Lucetia, Slumber, Gold, Avella, Aiue, Dead Serious, Oiche, Oxlotus, Eiltherune, Blueyleader, Iyanden, Pr3vention, BigBlaris, Talonzor, Mogwai, Heallie, Eckhardt, Boohyaka, Sadidorf, Sanctuari, Molkree, Runawaynow, Braghe, Myrhial, Darkal, Tag, and the rest of the ALL THE THINGS Discord!\n\nSpecial Shoutout to AmiYuy (CanIMogIt) and Caerdon (Caerdon Wardrobe).|r  ";
 	["ABOUT_3"] = "\n|CFFFFFFFFYou should absolutely download their addons to get the collection icons on items in your bags!|r";
 
 	-- Binding Localizations
@@ -820,6 +827,8 @@ app.L = {
 		[101] = "Interface\\Icons\\Tracking_WildPet",							-- Battle Pets
 		[102] = app.asset("Category_ToyBox"),									-- Toy Box
 		[103] = "Interface\\Icons\\inv_inscription_weaponscroll03",				-- Illusions
+		[104] = app.asset("Interface_Quest_header"),							-- Quest Items
+ 		[110] = app.asset("Category_Titles"),									-- Titles
 		[111] = "Interface\\Icons\\Inv_glyph_minorwarrior",						-- Glyph
 		[113] = "Interface\\Icons\\INV_Misc_Bag_08",							-- Bag
 		[114] = "Interface\\Icons\\inv_blacksmith_leystonehoofplates_orange",	-- Mount Equipment
@@ -897,6 +906,8 @@ app.L = {
 		[-22] = app.asset("Category_Secrets"),												-- Secrets
 		[-23] = "Interface\\Icons\\item_maldraxxus_paragonchest_01",						-- WoD Common Dungeon Drop
 		[-26] = app.asset("Category_WorldDrops"),											-- Drop
+		[-27] = "Interface\\Icons\\Achievement_Boss_Overlord_Wyrmthalak",					-- Lower (Blackrock Spire)
+		[-28] = "Interface\\Icons\\INV_Misc_Head_Dragon_01",								-- Upper (Blackrock Spire)
 		[-31] = app.asset("Category_Promo"),												-- Promotions
 		[-34] = app.asset("Interface_WorldQuest"),							            	-- World Quests
 		[-36] = app.asset("Category_InGameShop"),											-- In-Game Shop
@@ -905,6 +916,7 @@ app.L = {
 		[-40] = "Interface\\Icons\\Inv_misc_book_17",										-- Legacy
 		[-41] = "Interface\\Icons\\TRADE_ARCHAEOLOGY",										-- Cache of Madness
 		[-42] = app.asset("Category_Crafting"),												-- Crafted Item
+		[-43] = 618859,																		-- Proving Grounds [achievement_challengemode_platinum]
 	-- World Events (These are used by ATT CLassic)
 		[-47] = "Interface\\Icons\\achievement_worldevent_lunar",							-- Lunar Festival
 		[-52] = "Interface\\Icons\\inv_misc_toy_04",										-- Children's Week
@@ -1003,6 +1015,7 @@ app.L = {
 		[-217] = "Interface\\Icons\\INV_Fishing_Lure_Worm",									-- Lures (for Fishing)
 		[-218] = "Interface\\Icons\\Achievement_Profession_Fishing_NorthrendAngler",		-- Coastal (for Fishing)
 	-- Class
+		[-219] = "Interface\\Icons\\inv_misc_questionmark",									-- Sourceless
 		[-220] = "Interface\\MINIMAP\\TRACKING\\Class",										-- Class
 	-- Bonus Objectives
 		[-221] = 237387,																	-- Bonus Objectives
@@ -1284,6 +1297,13 @@ app.L = {
 		--
 	-- Sets
 		[-1000] = "Interface\\Icons\\achievement_transmog_collections",						-- Sets
+	-- Temp Sets for Creation Catalyst
+		[-1001] = app.asset("Difficulty_LFR"),
+		[-1002] = app.asset("Difficulty_Normal"),
+		[-1003] = app.asset("Difficulty_Heroic"),
+		[-1004] = app.asset("Difficulty_Mythic"),
+		[-1005] = "Interface\\Worldmap\\GlowSkull_64Purple",
+		[-1006] = "Interface\\Worldmap\\GlowSkull_64Red",
 	-- Warrior order hall lore items
 		[-2200] = "Interface\\Icons\\inv_scroll_11",										-- Warrior order hall lore item
 		[-2201] = "Interface\\Icons\\inv_scroll_11",										-- Warrior order hall lore item
@@ -1329,26 +1349,6 @@ app.L = {
 		[-9912] = "Interface\\FriendsFrame\\PlusManz-PlusManz",						-- Neutral
 		[-9913] = "Interface\\FriendsFrame\\PlusManz-Horde",						-- Horde
 		[-9914] = "Interface\\FriendsFrame\\PlusManz-Alliance",						-- Alliance
-	-- Specs
-		[-9915] = "Interface\\Icons\\spell_holy_wordfortitude",						-- Discipline Priest Spec
-		[-9917] = "Interface\\Icons\\spell_shadow_shadowwordpain",					-- Shadow Priest Spec
-		[-9924] = "Interface\\Icons\\TalentSpec_Druid_Feral_Bear",					-- Guardian Druid Spec
-		[-9925] = "Interface\\Icons\\TalentSpec_Druid_Feral_Cat",					-- Feral Druid Spec
-		[-9926] = "Interface\\Icons\\TalentSpec_Druid_Balance",						-- Balance Druid Spec
-		[-9927] = "Interface\\Icons\\TalentSpec_Druid_Restoration",					-- Restoration Druid Spec
-		[-9931] = "Interface\\Icons\\Spell_Monk_Brewmaster_Spec",					-- Brewmaster Monk Spec
-		[-9932] = "Interface\\Icons\\Spell_Monk_WindWalker_Spec",					-- Windwalker Monk Spec
-		[-9933] = "Interface\\Icons\\Spell_Monk_MistWeaver_Spec",					-- Mistweaver Monk Spec
-		[-9939] = "Interface\\Icons\\spell_nature_lightning",						-- Elemental Shaman Spec
-		[-9940] = "Interface\\Icons\\spell_nature_lightningshield",					-- Enhancement Shaman Spec
-		[-9941] = "Interface\\Icons\\spell_nature_magicimmunity",					-- Restoration Shaman Spec
-		[-9942] = "Interface\\Icons\\Spell_Holy_HolyBolt",							-- Holy Paladin Spec
-		[-9943] = "Interface\\Icons\\Ability_Paladin_ShieldoftheTemplar",			-- Protection Paladin Spec
-		[-9944] = "Interface\\Icons\\spell_holy_auraoflight",						-- Retribution Paladin Spec
-		[-9945] = "Interface\\Icons\\ability_rogue_eviscerate",						-- Arms Warrior Spec
-		[-9947] = "Interface\\Icons\\INV_Shield_06",								-- Protection Warrior Spec
-		[-9948] = "Interface\\Icons\\Spell_Deathknight_BloodPresence",				-- Blood Death Knight Spec
-		[-9949] = "Interface\\Icons\\Spell_Deathknight_FrostPresence",				-- Frost Death Knight Spec
 	------ ACHIEVEMENT HEADERS SECTION ------
 	-- Is Used Somewhere
 		[-9965] = "Interface\\Icons\\achievement_level_110",						-- Class Hall
@@ -1426,6 +1426,8 @@ app.L = {
 		[-22] = "Secrets",														-- Secrets
 		[-23] = "Common Dungeon Drop",											-- WoD Common Dungeon Drop
 		[-26] = "Drops",														-- Drops
+		[-27] = "Lower",														-- Lower (Blackrock Spire)
+		[-28] = "Upper",														-- Upper (Blackrock Spire)
 		[-31] = select(1,GetCategoryInfo(15268)),								-- Promotions
 		[-34] = TRACKER_HEADER_WORLD_QUESTS,									-- World Quests
 		[-36] = BATTLE_PET_SOURCE_10,											-- In-Game Shop
@@ -1434,6 +1436,7 @@ app.L = {
 		[-40] = LFG_LIST_LEGACY,												-- Legacy
 		[-41] = "Cache of Madness",												-- Cache of Madness
 		[-42] = LOOT_JOURNAL_LEGENDARIES_SOURCE_CRAFTED_ITEM,					-- Crafted Item
+		[-43] = TRACKER_HEADER_PROVINGGROUNDS,									-- Proving Grounds
 	-- World Events (These are used by ATT CLassic)
 		[-47] = select(1,GetCategoryInfo(160)),									-- Lunar Festival
 		[-52] = select(1,GetCategoryInfo(163)),									-- Children's Week
@@ -1528,6 +1531,7 @@ app.L = {
 	-- Fishing
 		[-217] = "Lures",														-- Lures (for Fishing)
 		[-218] = "Coastal",														-- Coastal (for Fishing)
+		[-219] = "Sourceless",													-- Sourceless
 	-- Class
 		[-220] = CLASS,															-- Class
 	-- Bonus Objectives
@@ -1836,6 +1840,13 @@ app.L = {
 		[-988] = select(2, GetAchievementInfo(15402)),							-- Cypher of the First Ones
 	-- Sets
 		[-1000] = WARDROBE_SETS, 												-- Sets
+	-- Temp Sets for Creation Catalyst
+		[-1001] = "Looking For Raid Alternative",
+		[-1002] = "Normal Alternative",
+		[-1003] = "Heroic Alternative",
+		[-1004] = "Mythic Alternative",
+		[-1005] = "Gladiator Alternative",
+		[-1006] = "Elite Alternative",
 	-- Warrior order hall lore items
 		[-2200] = "Great Odyn and the Firelord",
 		[-2201] = "The Wanderer and the Serpent",
@@ -1890,26 +1901,6 @@ app.L = {
 		[-9912] = COMBATLOG_FILTER_STRING_NEUTRAL_UNITS,						-- Neutral
 		[-9913] = FACTION_HORDE, 												-- Horde
 		[-9914] = FACTION_ALLIANCE, 											-- Alliance
-	-- Specs
-		[-9915] = GetSpellInfo(137032),											-- Discipline Priest Spec
-		[-9917] = GetSpellInfo(137033),											-- Shadow Priest Spec
-		[-9924] = GetSpellInfo(137010),											-- Guardian Druid Spec
-		[-9925] = GetSpellInfo(137011),											-- Feral Druid Spec
-		[-9926] = GetSpellInfo(137013),											-- Balance Druid Spec
-		[-9927] = GetSpellInfo(137012),											-- Restoration Druid Spec
-		[-9931] = GetSpellInfo(137023),											-- Brewmaster Monk Spec
-		[-9932] = GetSpellInfo(137025),											-- Windwalker Monk Spec
-		[-9933] = GetSpellInfo(137024),											-- Mistweaver Monk Spec
-		[-9939] = GetSpellInfo(137040),											-- Elemental Shaman Spec
-		[-9940] = GetSpellInfo(137041),											-- Enhancement Shaman Spec
-		[-9941] = GetSpellInfo(137039),											-- Restoration Shaman Spec
-		[-9942] = GetSpellInfo(137029),											-- Holy Paladin Spec
-		[-9943] = GetSpellInfo(137028),											-- Protection Paladin Spec
-		[-9944] = GetSpellInfo(137027),											-- Retribution Paladin Spec
-		[-9945] = GetSpellInfo(137049),											-- Arms Warrior Spec
-		[-9947] = GetSpellInfo(137048),											-- Protection Warrior Spec
-		[-9948] = GetSpellInfo(137008),											-- Blood Death Knight Spec
-		[-9949] = GetSpellInfo(137006),											-- Frost Death Knight Spec
 	------ ACHIEVEMENT HEADERS SECTION ------
 		[-9965] = select(1,GetCategoryInfo(15304)),								-- Class Hall
 		[-9966] = select(1,GetCategoryInfo(15303)),								-- Draenor Garrison

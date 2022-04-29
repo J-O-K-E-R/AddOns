@@ -202,7 +202,7 @@ local function SetActiveIcon(icon, startTime, duration, charges, modRate)
 	icon.cooldown:SetCooldown(startTime, duration, modRate)
 end
 
-function P:UpdateCooldown(icon, reducedTime, updateUnitBarCharges, mult)
+function P:UpdateCooldown(icon, reducedTime, updateUnitBarCharges, auraMult)
 	local info = self.groupInfo[icon.guid]
 	if not info then
 		return
@@ -216,19 +216,26 @@ function P:UpdateCooldown(icon, reducedTime, updateUnitBarCharges, mult)
 
 	local startTime = active.startTime
 	local duration = active.duration
+
+
 	local modRate = info.modRate or 1
 	if BOOKTYPE_CATEGORY[icon.category] then
-		local majorCD = spell_symbolOfHopeMajorCD[spellID]
-		if majorCD and (majorCD == true or majorCD == info.spec) and info.auras.symbol then
-			modRate = modRate * info.auras.symbol
+		if spellID == 329042 then
+			if info.auras[spellID] then
+				modRate = modRate * 5
+			end
+		else
+			local majorCD = spell_symbolOfHopeMajorCD[spellID]
+			if majorCD and (majorCD == true or majorCD == info.spec) and info.auras.symbol then
+				modRate = modRate * info.auras.symbol
+			end
+			majorCD = spell_benevolentFaeMajorCD[spellID]
+			if majorCD and (majorCD == true or majorCD == info.spec) and info.auras.benevolent then
+				modRate = modRate * info.auras.benevolent
+			end
 		end
-		majorCD = spell_benevolentFaeMajorCD[spellID]
-		if majorCD and (majorCD == true or majorCD == info.spec) and info.auras.benevolent then
-			modRate = modRate * info.auras.benevolent
-		end
-		if spellID == 300728 and info.auras.intimidation then
-			modRate = modRate * info.auras.intimidation
-		end
+	elseif spellID == 300728 and info.auras.intimidation then
+		modRate = 1/3
 	end
 
 	local statusBar = icon.statusBar
@@ -247,17 +254,18 @@ function P:UpdateCooldown(icon, reducedTime, updateUnitBarCharges, mult)
 		return
 	end
 
-	if modRate then
 
 
-		reducedTime = reducedTime * modRate
-	end
 
-	if mult then
+	reducedTime = reducedTime * modRate
+
+
+
+	if auraMult then
 		local now = GetTime()
-		startTime = now - (now - startTime) * mult
-		duration = duration * mult
-		reducedTime = reducedTime * mult
+		startTime = now - (now - startTime) * auraMult
+		duration = duration * auraMult
+		reducedTime = reducedTime * auraMult
 	end
 
 	startTime = startTime - reducedTime
@@ -272,6 +280,7 @@ function P:UpdateCooldown(icon, reducedTime, updateUnitBarCharges, mult)
 	icon.cooldown:SetCooldown(startTime, duration, modRate)
 	active.startTime = startTime
 	active.duration = duration
+	active.totRate = modRate ~= 1 and modRate
 
 	if statusBar then
 		self.OmniCDCastingBarFrame_OnEvent(statusBar.CastingBar, E.db.extraBars[statusBar.key].reverseFill and "UNIT_SPELLCAST_CHANNEL_UPDATE" or "UNIT_SPELLCAST_CAST_UPDATE")
@@ -292,22 +301,30 @@ function P:StartCooldown(icon, cd, recharge, noGlow)
 	local charges = active.charges or icon.maxcharges
 	local now = GetTime()
 
+
 	local modRate = info.modRate or 1
-	if BOOKTYPE_CATEGORY[icon.category] or icon.category == "COVENANT" then
-		local majorCD = spell_symbolOfHopeMajorCD[spellID]
-		if majorCD and (majorCD == true or majorCD == info.spec) and info.auras.symbol then
-			modRate = modRate * info.auras.symbol
-		end
-		majorCD = spell_benevolentFaeMajorCD[spellID]
-		if majorCD and (majorCD == true or majorCD == info.spec) and info.auras.benevolent then
-			modRate = modRate * info.auras.benevolent
-		end
-		if spellID == 300728 and info.auras.intimidation then
-			modRate = modRate * info.auras.intimidation
+	if BOOKTYPE_CATEGORY[icon.category] then
+
+		if spellID == 329042 then
+			if info.auras[spellID] then
+				modRate = modRate * 5
+			end
+		else
+			local majorCD = spell_symbolOfHopeMajorCD[spellID]
+			if majorCD and (majorCD == true or majorCD == info.spec) and info.auras.symbol then
+				modRate = modRate * info.auras.symbol
+			end
+			majorCD = spell_benevolentFaeMajorCD[spellID]
+			if majorCD and (majorCD == true or majorCD == info.spec) and info.auras.benevolent then
+				modRate = modRate * info.auras.benevolent
+			end
 		end
 
-		cd = cd * modRate
+	elseif spellID == 300728 and info.auras.intimidation then
+		modRate = 1/3
 	end
+	cd = cd * modRate
+
 
 	local auraMult = spell_cdmod_aura_temp[spellID]
 	if auraMult and info.auras[auraMult[3]] then
@@ -345,6 +362,8 @@ function P:StartCooldown(icon, cd, recharge, noGlow)
 
 	active.startTime = now
 	active.duration = cd
+	active.totRate = modRate ~= 1 and modRate
+
 	if selfLimitedMinMaxReducer[spellID] then
 		active.numHits = 0
 	end

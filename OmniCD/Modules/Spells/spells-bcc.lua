@@ -71,8 +71,6 @@ E.spell_db = {
 
 
 
-
-
 	},
 	["MAGE"] = {
 		{ spellID = 2139,   duration = 24,  type = "interrupt"  },

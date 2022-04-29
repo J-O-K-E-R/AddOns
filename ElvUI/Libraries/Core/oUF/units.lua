@@ -2,7 +2,7 @@ local _, ns = ...
 local oUF = ns.oUF
 local Private = oUF.Private
 
-local enableTargetUpdate = Private.enableTargetUpdate
+local unitExists = Private.unitExists
 
 local function updateArenaPreparationElements(self, event, elementName, specID)
 	local element = self[elementName]
@@ -121,6 +121,12 @@ local function updateArenaPreparation(self, event)
 			updateArenaPreparation(self, 'ARENA_PREP_OPPONENT_SPECIALIZATIONS')
 		end
 	elseif(event == 'ARENA_PREP_OPPONENT_SPECIALIZATIONS') then
+		if(InCombatLockdown()) then
+			-- prevent calling protected functions if entering arena while in combat
+			self:RegisterEvent('PLAYER_REGEN_ENABLED', updateArenaPreparation, true)
+			return
+		end
+
 		if(self.PreUpdate) then
 			self:PreUpdate(event)
 		end
@@ -162,6 +168,9 @@ local function updateArenaPreparation(self, event)
 		if(self.PostUpdate) then
 			self:PostUpdate(event)
 		end
+	elseif(event == 'PLAYER_REGEN_ENABLED') then
+		self:UnregisterEvent(event, updateArenaPreparation)
+		updateArenaPreparation(self, 'ARENA_PREP_OPPONENT_SPECIALIZATIONS')
 	end
 end
 
@@ -185,7 +194,53 @@ function oUF:HandleUnit(object, unit)
 		object:SetAttribute('oUF-enableArenaPrep', true)
 		-- the event handler only fires for visible frames, so we have to hook it for arena prep
 		object:HookScript('OnEvent', updateArenaPreparation)
-	elseif(unit:match('%w+target')) then
-		enableTargetUpdate(object)
 	end
+end
+
+local eventlessObjects = {}
+local onUpdates = {}
+
+local function createOnUpdate(timer)
+	if(not onUpdates[timer]) then
+		local frame = CreateFrame('Frame')
+		local objects = eventlessObjects[timer]
+
+		frame:SetScript('OnUpdate', function(self, elapsed)
+			self.elapsed = (self.elapsed or 0) + elapsed
+			if(self.elapsed > timer) then
+				for _, object in next, objects do
+					if(object.unit and unitExists(object.unit)) then
+						object:UpdateAllElements('OnUpdate')
+					end
+				end
+
+				self.elapsed = 0
+			end
+		end)
+
+		onUpdates[timer] = frame
+	end
+end
+
+function oUF:HandleEventlessUnit(object)
+	object.__eventless = true
+
+	local timer = object.onUpdateFrequency or 0.5
+
+	-- Remove it, in case it's registered with another timer previously
+	for t, objects in next, eventlessObjects do
+		if(t ~= timer) then
+			for i, obj in next, objects do
+				if(obj == object) then
+					table.remove(objects, i)
+					break
+				end
+			end
+		end
+	end
+
+	if(not eventlessObjects[timer]) then eventlessObjects[timer] = {} end
+	table.insert(eventlessObjects[timer], object)
+
+	createOnUpdate(timer)
 end

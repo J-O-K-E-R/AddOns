@@ -188,7 +188,9 @@ function E:CheckRole()
 	E.myspec = GetSpecialization()
 	E.myrole = E:GetPlayerRole()
 
-	E:UpdateDispelClasses()
+	if E.Retail then
+		E:UpdateDispelClasses()
+	end
 end
 
 do -- keep this synced with oUF_AuraHighlight and oUF_RaidDebuffs
@@ -688,7 +690,7 @@ function E:LoadAPI()
 	end)
 	GameMenuFrame[E.name] = GameMenuButton
 
-	if not IsAddOnLoaded('ConsolePortUI_Menu') then -- #390
+	if not E:IsAddOnEnabled('ConsolePortUI_Menu') then
 		GameMenuButton:Size(GameMenuButtonLogout:GetWidth(), GameMenuButtonLogout:GetHeight())
 		GameMenuButton:Point('TOPLEFT', GameMenuButtonAddons, 'BOTTOMLEFT', 0, -1)
 		hooksecurefunc('GameMenuFrame_UpdateVisibleButtons', E.PositionGameMenuButton)

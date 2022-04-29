@@ -4,8 +4,6 @@ local S = E:GetModule('Skins')
 local _G = _G
 local unpack = unpack
 local format = format
-local HideUIPanel = HideUIPanel
-local ShowUIPanel = ShowUIPanel
 
 function S:Blizzard_MacroUI()
 	if not (E.private.skins.blizzard.enable and E.private.skins.blizzard.macro) then return end
@@ -45,7 +43,8 @@ function S:Blizzard_MacroUI()
 		local tab = _G[format('MacroFrameTab%s', i)]
 		tab:Height(22)
 	end
-	_G.MacroFrameTab1:Point('TOPLEFT', MacroFrame, 'TOPLEFT', 40, -40)
+
+	_G.MacroFrameTab1:Point('TOPLEFT', MacroFrame, 'TOPLEFT', 12, -39)
 	_G.MacroFrameTab2:Point('LEFT', _G.MacroFrameTab1, 'RIGHT', 4, 0)
 
 	--Reposition edit button
@@ -59,7 +58,7 @@ function S:Blizzard_MacroUI()
 	_G.MacroFrameSelectedMacroButton:StripTextures()
 	_G.MacroFrameSelectedMacroButton:StyleButton(true)
 	_G.MacroFrameSelectedMacroButton:GetNormalTexture():SetTexture()
-	_G.MacroFrameSelectedMacroButton:CreateBackdrop()
+	_G.MacroFrameSelectedMacroButton:SetTemplate()
 	_G.MacroFrameSelectedMacroButtonIcon:SetTexCoord(unpack(E.TexCoords))
 	_G.MacroFrameSelectedMacroButtonIcon:Point('TOPLEFT', 1, -1)
 	_G.MacroFrameSelectedMacroButtonIcon:Point('BOTTOMRIGHT', -1, 1)
@@ -72,7 +71,7 @@ function S:Blizzard_MacroUI()
 		if b then
 			b:StripTextures()
 			b:StyleButton(true)
-			b:CreateBackdrop('Transparent')
+			b:SetTemplate('Transparent')
 		end
 
 		if t then
@@ -82,14 +81,7 @@ function S:Blizzard_MacroUI()
 		end
 	end
 
-	--Icon selection frame
-	ShowUIPanel(MacroFrame) --Toggle frame to create necessary variables needed for popup frame
-	HideUIPanel(MacroFrame)
 	local MacroPopupFrame = _G.MacroPopupFrame
-	MacroPopupFrame:Show() --Toggle the frame in order to create the necessary button elements
-	MacroPopupFrame:Hide()
-
-	-- Popout Frame
 	S:HandleButton(MacroPopupFrame.BorderBox.OkayButton)
 	local cancel_btn = MacroPopupFrame.BorderBox.CancelButton
 	S:HandleButton(cancel_btn)
@@ -101,11 +93,13 @@ function S:Blizzard_MacroUI()
 	_G.MacroPopupNameMiddle:SetTexture()
 	_G.MacroPopupNameRight:SetTexture()
 
-	S:HandleIconSelectionFrame(MacroPopupFrame, _G.NUM_MACRO_ICONS_SHOWN, 'MacroPopupButton', 'MacroPopup')
+	MacroPopupFrame:HookScript('OnShow', function(frame)
+		frame:ClearAllPoints()
+		frame:Point('TOPLEFT', MacroFrame, 'TOPRIGHT', 2, 0)
 
-	MacroPopupFrame:HookScript('OnShow', function(s)
-		s:ClearAllPoints()
-		s:Point('TOPLEFT', MacroFrame, 'TOPRIGHT', 2, 0)
+		if not frame.isSkinned then
+			S:HandleIconSelectionFrame(frame, _G.NUM_MACRO_ICONS_SHOWN, 'MacroPopupButton', 'MacroPopup')
+		end
 	end)
 end
 

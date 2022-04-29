@@ -318,11 +318,16 @@ do --this can save some main file locals
 		-- Simpy
 		z['Cutepally-Myzrael']		= itsSimpy -- Paladin
 		-- Luckyone
-		z['Luckyone-Shazzrah']		= ElvGreen -- Hunter
+		z['Luckyone-Shazzrah']		= ElvGreen -- Hunter 1
 		z['Luckyfear-Shazzrah']		= ElvGreen -- Warlock
 		z['Luckydruid-Shazzrah']	= ElvGreen -- Druid
 		z['Luckypriest-Shazzrah']	= ElvGreen -- Priest
 		z['Luckyshaman-Shazzrah']	= ElvGreen -- Shaman
+		z['Luckyone-Gehennas']		= ElvGreen -- Hunter 2
+		z['Luckydruid-Gehennas']	= ElvGreen -- Druid
+		z['Luckypriest-Gehennas']	= ElvGreen -- Priest
+		z['Luckyshaman-Gehennas']	= ElvGreen -- Shaman
+		z['Luckyhunter-Gehennas']	= ElvGreen -- Hunter 3
 	elseif E.Retail then
 		-- Elv
 		z['Elv-Spirestone']			= itsElv
@@ -2007,7 +2012,10 @@ function CH:ChatFrame_MessageEventHandler(frame, event, arg1, arg2, arg3, arg4, 
 			if strsub(chatType, 1, 7) == 'MONSTER' or strsub(chatType, 1, 9) == 'RAID_BOSS' then
 				showLink = nil
 
-				arg1 = gsub(arg1, '%%%d','%%s') -- errors on russian client because of arg1 containing %1 instead of %s, so we convert it (blizzard bug)
+				-- fix blizzard formatting errors from localization strings
+				arg1 = gsub(arg1, '%%%d', '%%s') -- replace %1 to %s (russian client specific?) [broken since BFA?]
+				arg1 = gsub(arg1, '(%d%%)([^%%%a])', '%1%%%2') -- escape percentages that need it [broken since SL?]
+				arg1 = gsub(arg1, '(%d%%)$', '%1%%') -- escape percentages on the end
 			else
 				arg1 = gsub(arg1, '%%', '%%%%') -- escape any % characters, as it may otherwise cause an 'invalid option in format' error
 			end
@@ -2273,7 +2281,7 @@ do
 end
 
 local ignoreChats = {[2]='Log'}
-if E.Retail then
+if not E.Classic then
 	tinsert(ignoreChats, 3, 'Voice')
 end
 

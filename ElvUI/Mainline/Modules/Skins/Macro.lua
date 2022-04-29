@@ -46,7 +46,8 @@ function S:Blizzard_MacroUI()
 		local tab = _G[format('MacroFrameTab%s', i)]
 		tab:Height(22)
 	end
-	_G.MacroFrameTab1:Point('TOPLEFT', MacroFrame, 'TOPLEFT', 85, -39)
+
+	_G.MacroFrameTab1:Point('TOPLEFT', MacroFrame, 'TOPLEFT', 12, -39)
 	_G.MacroFrameTab2:Point('LEFT', _G.MacroFrameTab1, 'RIGHT', 4, 0)
 
 	--Reposition edit button
@@ -82,7 +83,7 @@ function S:Blizzard_MacroUI()
 
 	_G.MacroPopupFrame:HookScript('OnShow', function(frame)
 		if frame.isSkinned then return end
-		S:HandleIconSelectionFrame(_G.MacroPopupFrame, NUM_MACRO_ICONS_SHOWN, 'MacroPopupButton', 'MacroPopup')
+		S:HandleIconSelectionFrame(frame, NUM_MACRO_ICONS_SHOWN, 'MacroPopupButton', 'MacroPopup')
 	end)
 end
 

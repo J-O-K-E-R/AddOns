@@ -764,6 +764,7 @@ TwitchEmotes_defaultpack = {
     ["AbdulPls"] = "Interface\\AddOns\\TwitchEmotes\\Emotes\\Custom\\AbdulPls.tga",
     ["PunkChamp"] = "Interface\\AddOns\\TwitchEmotes\\Emotes\\Custom\\PunkChamp.tga:28:28",
     ["apprillove"] = "Interface\\AddOns\\TwitchEmotes\\Emotes\\Custom\\apprillove.tga:28:28",
+    ["TLcrabRave"] = "Interface\\AddOns\\TwitchEmotes\\Emotes\\Custom\\TLcrabRave.tga:28:28",
     -- DansGaming -- Outdated
     ["dan7"] = "Interface\\AddOns\\TwitchEmotes\\Emotes\\DansGaming\\dan7.tga:28:28",
     ["dan10"] = "Interface\\AddOns\\TwitchEmotes\\Emotes\\DansGaming\\dan10.tga:28:28",
@@ -2225,6 +2226,8 @@ TwitchEmotes_defaultpack = {
     ["WICKEDSTEER"] = "Interface\\AddOns\\TwitchEmotes\\Emotes\\Pepes\\WICKEDSTEER.tga:28:28",
     ["pepeW"] = "Interface\\AddOns\\TwitchEmotes\\Emotes\\Pepes\\pepeW.tga:28:28",
     ["HabibiPrayge"] = "Interface\\AddOns\\TwitchEmotes\\Emotes\\Pepes\\HabibiPrayge.tga:28:28",
+    ["FeelsLateMan"] = "Interface\\AddOns\\TwitchEmotes\\Emotes\\Pepes\\FeelsLateMan.tga:28:28",
+    ["CROGGERS"] = "Interface\\AddOns\\TwitchEmotes\\Emotes\\Pepes\\CROGGERS.tga:28:28",
     -- PsheroTV
     ["heroBT"] = "Interface\\AddOns\\TwitchEmotes\\Emotes\\PsheroTV\\heroBT.tga:28:28",
     ["heroFEELS"] = "Interface\\AddOns\\TwitchEmotes\\Emotes\\PsheroTV\\heroFEELS.tga:28:28",
@@ -3469,6 +3472,7 @@ TwitchEmotes_animation_metadata = {
     ["Interface\\AddOns\\TwitchEmotes\\Emotes\\Pepes\\NOPERS.tga"] = {["nFrames"] = 8, ["frameWidth"] = 32, ["frameHeight"] = 32, ["imageWidth"]=32, ["imageHeight"]=256, ["framerate"] = 14},
     ["Interface\\AddOns\\TwitchEmotes\\Emotes\\Custom\\DonoWall.tga"] = {["nFrames"] = 24, ["frameWidth"] = 32, ["frameHeight"] = 32, ["imageWidth"]=32, ["imageHeight"]=1024, ["framerate"] = 8},
     ["Interface\\AddOns\\TwitchEmotes\\Emotes\\Pepes\\WICKEDSTEER.tga"] = {["nFrames"] = 15, ["frameWidth"] = 32, ["frameHeight"] = 32, ["imageWidth"]=32, ["imageHeight"]=512, ["framerate"] = 16},
+    ["Interface\\AddOns\\TwitchEmotes\\Emotes\\Pepes\\WICKED.tga"] = {["nFrames"] = 4, ["frameWidth"] = 32, ["frameHeight"] = 32, ["imageWidth"]=32, ["imageHeight"]=128, ["framerate"] = 16},
     ["Interface\\AddOns\\TwitchEmotes\\Emotes\\Pepes\\ClownHypers.tga"] = {["nFrames"] = 6, ["frameWidth"] = 32, ["frameHeight"] = 32, ["imageWidth"]=32, ["imageHeight"]=256, ["framerate"] = 6},
     ["Interface\\AddOns\\TwitchEmotes\\Emotes\\Custom\\CatPop.tga"] = {["nFrames"] = 2, ["frameWidth"] = 32, ["frameHeight"] = 32, ["imageWidth"]=32, ["imageHeight"]=64, ["framerate"] = 10},
     ["Interface\\AddOns\\TwitchEmotes\\Emotes\\Custom\\CatDance.tga"] = {["nFrames"] = 8, ["frameWidth"] = 32, ["frameHeight"] = 32, ["imageWidth"]=32, ["imageHeight"]=256, ["framerate"] = 12},
@@ -3483,6 +3487,8 @@ TwitchEmotes_animation_metadata = {
     ["Interface\\AddOns\\TwitchEmotes\\Emotes\\Pepes\\peepoPat.tga"] = {["nFrames"] = 22, ["frameWidth"] = 32, ["frameHeight"] = 32, ["imageWidth"]=32, ["imageHeight"]=1024, ["framerate"] = 10},
     ["Interface\\AddOns\\TwitchEmotes\\Emotes\\Pepes\\peepoEhm.tga"] = {["nFrames"] = 6, ["frameWidth"] = 32, ["frameHeight"] = 32, ["imageWidth"]=32, ["imageHeight"]=256, ["framerate"] = 1},
     ["Interface\\AddOns\\TwitchEmotes\\Emotes\\Pepes\\monkaInsane.tga"] = {["nFrames"] = 10, ["frameWidth"] = 32, ["frameHeight"] = 32, ["imageWidth"]=32, ["imageHeight"]=512, ["framerate"] = 60},
+    ["Interface\\AddOns\\TwitchEmotes\\Emotes\\Pepes\\FeelsLateMan.tga"] = {["nFrames"] = 16, ["frameWidth"] = 32, ["frameHeight"] = 32, ["imageWidth"]=32, ["imageHeight"]=512, ["framerate"] = 8},
+    ["Interface\\AddOns\\TwitchEmotes\\Emotes\\Custom\\TLcrabRave.tga"] = {["nFrames"] = 30, ["frameWidth"] = 32, ["frameHeight"] = 32, ["imageWidth"]=32, ["imageHeight"]=1024, ["framerate"] = 15},
 }
 
 TwitchEmotes_emoticons = {
@@ -4278,6 +4284,9 @@ TwitchEmotes_emoticons = {
     ["AbdulPls"] = "AbdulPls",
     ["PunkChamp"] = "PunkChamp",
     ["apprillove"] = "apprillove",
+    ["TLcrabRave"] = "TLcrabRave",
+    ["Halondrus"] = "TLcrabRave",
+    ["halondrus"] = "TLcrabRave",
     -- DansGaming
     ["dan7"] = "dan7",
     ["dan10"] = "dan10",
@@ -5857,6 +5866,8 @@ TwitchEmotes_emoticons = {
     ["monkaShoot"] = "monkaShoot",
     ["pepeW"] = "pepeW",
     ["HabibiPrayge"] = "HabibiPrayge",
+    ["FeelsLateMan"] = "FeelsLateMan",
+    ["CROGGERS"] = "CROGGERS",
     -- PsheroTV
     ["heroBT"] = "heroBT",
     ["heroFEELS"] = "heroFEELS",

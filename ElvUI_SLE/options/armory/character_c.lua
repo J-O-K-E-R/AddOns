@@ -203,7 +203,43 @@ local function configTable()
 						name = COLORBLIND_ITEM_QUALITY,
 						order = 3,
 						disabled = function() return E.db.sle.armory.character.enable == false or E.db.sle.armory.character.gradient.enable == false end,
-					}
+					},
+					setArmor = {
+						type = 'toggle',
+						name = L["Armor Set"],
+						order = 5,
+						disabled = function() return E.db.sle.armory.character.enable == false or E.db.sle.armory.character.gradient.enable == false end,
+					},
+					setArmorColor = {
+						type = 'color',
+						name = L["Armor Set Gradient Texture Color"],
+						order = 6,
+						get = function(info)
+							return unpack(E.db.sle.armory.character[(info[#info - 1])][(info[#info])])
+						end,
+						set = function(info, r, g, b, a) E.db.sle.armory.character[(info[#info - 1])][(info[#info])] = { r, g, b, a }; M:UpdateCharacterInfo() end,
+						disabled = function() return not E.db.sle.armory.character.enable or not E.db.sle.armory.character.gradient.enable or not E.db.sle.armory.character.gradient.setArmor end,
+					},
+					warningColor = {
+						type = 'color',
+						name = L["Warning Gradient Texture Color"],
+						order = 7,
+						get = function(info)
+							return unpack(E.db.sle.armory.character[(info[#info - 1])][(info[#info])])
+						end,
+						set = function(info, r, g, b, a) E.db.sle.armory.character[(info[#info - 1])][(info[#info])] = { r, g, b, a }; M:UpdateCharacterInfo() end,
+						disabled = function() return not E.db.sle.armory.character.enable or not E.db.sle.armory.character.gradient.enable end,
+					},
+					warningBarColor = {
+						type = 'color',
+						name = L["Warning Bar Color"],
+						order = 8,
+						get = function(info)
+							return unpack(E.db.sle.armory.character[(info[#info - 1])][(info[#info])])
+						end,
+						set = function(info, r, g, b, a) E.db.sle.armory.character[(info[#info - 1])][(info[#info])] = { r, g, b, a }; M:UpdateCharacterInfo() end,
+						disabled = function() return not E.db.sle.armory.character.enable or not E.db.sle.armory.character.gradient.enable end,
+					},
 				}
 			},
 			durability = {

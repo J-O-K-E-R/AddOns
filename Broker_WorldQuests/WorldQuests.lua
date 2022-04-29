@@ -48,6 +48,8 @@ local MAP_ZONES = {
 		[1533] = { id = 1533, name = GetMapInfo(1533).name, quests = {}, buttons = {}, }, -- Bastion 9.0
 		[1536] = { id = 1536, name = GetMapInfo(1536).name, quests = {}, buttons = {}, }, -- Maldraxxus 9.0
 		[1565] = { id = 1565, name = GetMapInfo(1565).name, quests = {}, buttons = {}, }, -- Ardenwald 9.0
+		[1961] = { id = 1961, name = GetMapInfo(1961).name, quests = {}, buttons = {}, }, -- Korthia 9.1
+		[1970] = { id = 1970, name = GetMapInfo(1970).name, quests = {}, buttons = {}, }, -- Zereth Mortis 9.2
 	},
 	[CONSTANTS.EXPANSIONS.BFA] = {
 		[863] = { id = 863, name = GetMapInfo(863).name, faction = CONSTANTS.FACTIONS.HORDE, quests = {}, buttons = {}, },  -- Nazmir
@@ -80,7 +82,7 @@ local MAP_ZONES = {
 }
 local MAP_ZONES_SORT = {
 	[CONSTANTS.EXPANSIONS.SHADOWLANDS] = {
-		1525, 1533, 1536, 1565
+		1525, 1533, 1536, 1565, 1961, 1970
 	},
 	[CONSTANTS.EXPANSIONS.BFA] = {
 		1530, 1527, 1355, 1462, 62, 14, 863, 864, 862, 895, 942, 896, 1161

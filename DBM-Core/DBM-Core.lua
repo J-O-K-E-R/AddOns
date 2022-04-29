@@ -28,6 +28,7 @@ local _, private = ...
 local isRetail = WOW_PROJECT_ID == (WOW_PROJECT_MAINLINE or 1)
 local isClassic = WOW_PROJECT_ID == (WOW_PROJECT_CLASSIC or 2)
 local isBCC = WOW_PROJECT_ID == (WOW_PROJECT_BURNING_CRUSADE_CLASSIC or 5)
+--local isWrath = WOW_PROJECT_ID == (WOW_PROJECT_WRATH_CLASSIC or 9000)
 
 local DBMPrefix = isRetail and "D4" or isClassic and "D4C" or isBCC and "D4BC"
 private.DBMPrefix = DBMPrefix
@@ -66,18 +67,24 @@ local function showRealDate(curseDate)
 end
 
 DBM = {
-	Revision = parseCurseDate("20220304063808"),
+	Revision = parseCurseDate("20220423222246"),
 }
+
+local fakeBWVersion, fakeBWHash
+local bwVersionResponseString = "V^%d^%s"
 -- The string that is shown as version
 if isRetail then
-	DBM.DisplayVersion = "9.2.4"
-	DBM.ReleaseRevision = releaseDate(2022, 3, 3) -- the date of the latest stable version that is available, optionally pass hours, minutes, and seconds for multiple releases in one day
+	DBM.DisplayVersion = "9.2.16"
+	DBM.ReleaseRevision = releaseDate(2022, 4, 23, 16) -- the date of the latest stable version that is available, optionally pass hours, minutes, and seconds for multiple releases in one day
+	fakeBWVersion, fakeBWHash = 240, "b563b0b"
 elseif isClassic then
-	DBM.DisplayVersion = "1.14.17 alpha"
-	DBM.ReleaseRevision = releaseDate(2022, 2, 22) -- the date of the latest stable version that is available, optionally pass hours, minutes, and seconds for multiple releases in one day
+	DBM.DisplayVersion = "1.14.21 alpha"
+	DBM.ReleaseRevision = releaseDate(2022, 4, 19) -- the date of the latest stable version that is available, optionally pass hours, minutes, and seconds for multiple releases in one day
+	fakeBWVersion, fakeBWHash = 36, "cf2511c"
 elseif isBCC then
-	DBM.DisplayVersion = "2.5.30 alpha"
-	DBM.ReleaseRevision = releaseDate(2022, 2, 22) -- the date of the latest stable version that is available, optionally pass hours, minutes, and seconds for multiple releases in one day
+	DBM.DisplayVersion = "2.5.35 alpha"
+	DBM.ReleaseRevision = releaseDate(2022, 4, 12) -- the date of the latest stable version that is available, optionally pass hours, minutes, and seconds for multiple releases in one day
+	fakeBWVersion, fakeBWHash = 36, "cf2511c"
 end
 DBM.HighestRelease = DBM.ReleaseRevision --Updated if newer version is detected, used by update nags to reflect critical fixes user is missing on boss pulls
 
@@ -141,6 +148,7 @@ DBM.DefaultOptions = {
 	CountdownVoice = "Corsica",
 	CountdownVoice2 = "Kolt",
 	CountdownVoice3 = "Smooth",
+	PullVoice = "Corsica",
 	ChosenVoicePack2 = (GetLocale() == "enUS" or GetLocale() == "enGB") and "VEM" or "None",
 	VPReplacesAnnounce = true,
 	VPReplacesSA1 = true,
@@ -354,6 +362,7 @@ DBM.DefaultOptions = {
 
 DBM.Mods = {}
 DBM.ModLists = {}
+local checkDuplicateObjects = {}
 
 ------------------------
 -- Global Identifiers --
@@ -390,14 +399,6 @@ local dbmToc, eeSyncReceived, cSyncReceived, showConstantReminder, updateNotific
 local LastInstanceMapID = -1
 local SWFilterDisabled = 12
 
-local fakeBWVersion, fakeBWHash
-if isRetail then
-	fakeBWVersion, fakeBWHash = 235, "0ee9581"
-else
-	fakeBWVersion, fakeBWHash = 34, "c88d415"
-end
-local bwVersionResponseString = "V^%d^%s"
-
 local bannedMods = { -- a list of "banned" (meaning they are replaced by another mod or discontinued). These mods will not be loaded by DBM (and they wont show up in the GUI)
 	"DBM-Battlegrounds", --replaced by DBM-PvP
 	"DBM-SiegeOfOrgrimmar",--Block legacy version. New version is "DBM-SiegeOfOrgrimmarV2"
@@ -427,7 +428,7 @@ local instanceDifficultyBylevel
 if isRetail then
 	instanceDifficultyBylevel = {
 		--World
-		[0]={50,1},[1]={50, 1},--Eastern Kingdoms and Azeroth world events. These would be warfront and aniversery world bosses, so they'd be set to 50 for now. Likely 60 next year
+		[0]={50,1},[1]={50, 1},--Eastern Kingdoms and Kalimdor world events/bosses. These would be warfront and aniversery world bosses, so they'd be set to 50 for now. Likely 60 next year
 		[530]={30, 1},--Outlands World Bosses
 		[870]={30, 1},[1064]={30, 1},--MoP World Bosses
 		[1116]={40, 1},[1159]={40, 1},[1331]={40, 1},[1158]={40, 1},[1153]={40, 1},[1152]={40, 1},[1330]={40, 1},[1160]={40, 1},[1154]={40, 1},[1464]={40, 1},--Wod World and Garrison Bosses
@@ -455,10 +456,24 @@ if isRetail then
 		[1763]={50, 2},[1754]={50, 2},[1762]={50, 2},[1864]={50, 2},[1822]={50, 2},[1877]={50, 2},[1594]={50, 2},[1841]={50, 2},[1771]={50, 2},[1862]={50, 2},[2097]={50, 2},--Bfa Dungeons
 		[2286]={60, 2},[2289]={60, 2},[2290]={60, 2},[2287]={60, 2},[2285]={60, 2},[2293]={60, 2},[2291]={60, 2},[2284]={60, 2},[2441]={60, 2},--Shadowlands Dungeons
 	}
-else
+--elseif isWrath then--Since naxx is moved to northrend, wrath can't use tbc/classics table
+--	instanceDifficultyBylevel = {
+--		--World
+--		[0]={60,1},[1]={60, 1},--Eastern Kingdoms and Kalimdor world bosses.
+--		[530]={70, 1},--Outlands World Bosses
+--		--Raids
+--		[509]={60, 3},[531]={60, 3},[469]={60, 3},[409]={60, 3},[309]={60, 3},[249]={60, 3},--Classic Raids (309 is legacy ZG)
+--		[564]={70, 3},[534]={70, 3},[532]={70, 3},[565]={70, 3},[544]={70, 3},[548]={70, 3},[580]={70, 3},[550]={70, 3},[568]={70, 3},--BC Raids (568 is legacy ZA)
+--		[615]={30, 3},[724]={30, 3},[649]={30, 3},[616]={30, 3},[631]={30, 3},[533]={30, 3},[249]={30, 3},[603]={30, 3},[624]={30, 3},--Wrath Raids
+--		--Dungeons
+--		[429]={45, 2},[389]={18, 2},[349]={52, 2},[329]={60, 2},[289]={60, 2},[230]={60, 2},[229]={60, 2},[209]={54, 2},[189]={45, 2},[129]={47, 2},[109]={60, 2},[90]={34, 2},[70]={52, 2},[48]={32, 2},[47]={42, 2},[43]={27, 2},[36]={25, 2},[34]={32, 2},[33]={30, 2},--Classic Dungeons
+--		[540]={70, 2},[558]={70, 2},[556]={70, 2},[555]={70, 2},[542]={70, 2},[546]={70, 2},[545]={70, 2},[547]={70, 2},[553]={70, 2},[554]={70, 2},[552]={70, 2},[557]={70, 2},[269]={70, 2},[560]={70, 2},[543]={70, 2},[585]={70, 2},--BC Dungeons
+--		[619]={30, 2},[601]={30, 2},[595]={30, 2},[600]={30, 2},[604]={30, 2},[602]={30, 2},[599]={30, 2},[576]={30, 2},[578]={30, 2},[574]={30, 2},[575]={30, 2},[608]={30, 2},[658]={30, 2},[632]={30, 2},[668]={30, 2},[650]={30, 2},--Wrath Dungeons
+--	}
+else--TBC and Vanilla
 	instanceDifficultyBylevel = {
 		--World
-		[0]={60,1},[1]={60, 1},--Eastern Kingdoms and Azeroth world bosses. These would be warfront and aniversery world bosses, so they'd be set to 50 for now. Likely 60 next year
+		[0]={60,1},[1]={60, 1},--Eastern Kingdoms and Kalimdor world bosses.
 		[530]={70, 1},--Outlands World Bosses
 		--Raids
 		[509]={60, 3},[531]={60, 3},[469]={60, 3},[409]={60, 3},[533]={60, 3},[309]={60, 3},[249]={60, 3},--Classic Raids (309 is legacy ZG)
@@ -1151,6 +1166,7 @@ do
 	end
 
 	function DBM:RegisterShortTermEvents(...)
+		DBM:Debug("RegisterShortTermEvents fired", 2)
 		local _shortTermRegisterEvents = {...}
 		for k, v in pairs(_shortTermRegisterEvents) do
 			if v:sub(0, 5) == "UNIT_" and v:sub(-11) ~= "_UNFILTERED" and not v:find(" ") and v ~= "UNIT_DIED" and v ~= "UNIT_DESTROYED" then
@@ -1158,7 +1174,6 @@ do
 				_shortTermRegisterEvents[k] = v .. " boss1 boss2 boss3 boss4 boss5 target focus"
 			end
 		end
-		self.shortTermEventsRegistered = 1
 		self:RegisterEvents(unpack(_shortTermRegisterEvents))
 		-- Fix so we can register multiple short term events. Use at your own risk, as unsucribing will cause
 		-- all short term events to unregister.
@@ -1172,7 +1187,9 @@ do
 	end
 
 	function DBM:UnregisterShortTermEvents()
+		DBM:Debug("UnregisterShortTermEvents fired", 2)
 		if self.shortTermRegisterEvents then
+			DBM:Debug("UnregisterShortTermEvents found registered shortTermRegisterEvents", 2)
 			for event, mods in pairs(registeredEvents) do
 				if event:sub(0, 6) == "SPELL_" or event:sub(0, 6) == "RANGE_" then
 					local i = 1
@@ -1196,13 +1213,14 @@ do
 					end
 					if #mods == 0 or (match and event:sub(0, 5) == "UNIT_" and event:sub(-11) ~= "_UNFILTERED" and event ~= "UNIT_DIED" and event ~= "UNIT_DESTROYED") then
 						unregisterUEvent(self, event)
+						DBM:Debug("unregisterUEvent for unit event "..event.." unregistered", 3)
 					end
 					if #mods == 0 then
 						registeredEvents[event] = nil
+						DBM:Debug("registeredEvents for event "..event.." nilled", 3)
 					end
 				end
 			end
-			self.shortTermEventsRegistered = nil
 			self.shortTermRegisterEvents = nil
 		end
 	end
@@ -1314,7 +1332,7 @@ do
 			end
 		end
 		--Check if any of countdown sounds are using missing voice pack
-		local found1, found2, found3 = false, false, false
+		local found1, found2, found3, found4 = false, false, false, false
 		for _, count in pairs(DBM:GetCountSounds()) do
 			local voice = count.value
 			if voice == self.Options.CountdownVoice then
@@ -1325,6 +1343,9 @@ do
 			end
 			if voice == self.Options.CountdownVoice3 then
 				found3 = true
+			end
+			if voice == self.Options.PullVoice then
+				found4 = true
 			end
 		end
 		if not found1 then
@@ -1338,6 +1359,10 @@ do
 		if not found3 then
 			AddMsg(self, L.VOICE_COUNT_MISSING:format(3, self.DefaultOptions.CountdownVoice3))
 			self.Options.CountdownVoice3 = self.DefaultOptions.CountdownVoice3
+		end
+		if not found4 then
+			AddMsg(self, L.VOICE_COUNT_MISSING:format(4, self.DefaultOptions.PullVoice))
+			self.Options.PullVoice = self.DefaultOptions.PullVoice
 		end
 		self:BuildVoiceCountdownCache()
 		--Break timer recovery
@@ -1699,14 +1724,14 @@ do
 		if not event or not callbacks[event] then return end
 		if f then
 			if type(f) ~= "function" then
-				error("Usage: UnregisterCallback(event, callbackFunc)", 2)
+				error("Usage: DBM:UnregisterCallback(event, callbackFunc)", 2)
 			end
 			--> checking from the end to start and not stoping after found one result in case of a func being twice registered.
 			for i = #callbacks[event], 1, -1 do
 				if callbacks[event][i] == f then tremove (callbacks[event], i) end
 			end
 		else
-			callbacks[event] = nil
+			error("Usage: DBM:UnregisterCallback(event, callbackFunc)", 2)
 		end
 	end
 end
@@ -2307,7 +2332,7 @@ do
 	end
 
 	function DBM:GetRaidUnitId(name)
-		for i = 1, 5 do
+		for i = 1, 10 do
 			local unitId = "boss"..i
 			local bossName = UnitName(unitId)
 			if bossName and bossName == name then
@@ -2318,7 +2343,7 @@ do
 	end
 
 	function DBM:GetEnemyUnitIdByGUID(guid)
-		for i = 1, 5 do
+		for i = 1, 10 do
 			local unitId = "boss"..i
 			local guid2 = UnitGUID(unitId)
 			if guid == guid2 then
@@ -2479,7 +2504,7 @@ end
 
 function DBM:GetBossUnitId(name, bossOnly)--Deprecated, only old mods use this
 	local returnUnitID
-	for i = 1, 5 do
+	for i = 1, 10 do
 		if UnitName("boss" .. i) == name then
 			returnUnitID = "boss"..i
 		end
@@ -2496,7 +2521,7 @@ end
 
 function DBM:GetUnitIdFromGUID(cidOrGuid, bossOnly)
 	local returnUnitID
-	for i = 1, 5 do
+	for i = 1, 10 do
 		local unitId = "boss"..i
 		local bossGUID = UnitGUID(unitId)
 		if type(cidOrGuid) == "number" then--CID passed
@@ -2631,7 +2656,7 @@ function DBM:LoadModOptions(modId, inCombat, first)
 					if type(option) == "number" then
 						self:Debug("|cffff0000Option type invalid: |r"..option)
 					end
-					if (mod.DefaultOptions[option] == nil) and not (option:find("talent") or option:find("FastestClear") or option:find("CVAR") or option:find("RestoreSetting")) then
+					if (mod.DefaultOptions[option] == nil) and (type(option) == "number" or not (option:find("talent") or option:find("FastestClear") or option:find("CVAR") or option:find("RestoreSetting"))) then
 						savedOptions[id][profileNum][option] = nil
 					elseif mod.DefaultOptions[option] and (type(mod.DefaultOptions[option]) == "table") then--recover broken dropdown option
 						if savedOptions[id][profileNum][option] and (type(savedOptions[id][profileNum][option]) == "boolean") then
@@ -2709,6 +2734,7 @@ function DBM:LoadModOptions(modId, inCombat, first)
 	if not first and DBM_GUI and DBM_GUI.currentViewing and optionsFrame:IsShown() then
 		optionsFrame:DisplayFrame(DBM_GUI.currentViewing)
 	end
+	table.wipe(checkDuplicateObjects)
 end
 
 function DBM:SpecChanged(force)
@@ -3312,6 +3338,7 @@ do
 		end--ID hasn't changed, don't waste cpu doing anything else (example situation, porting into garrosh stage 4 is a loading screen)
 		LastInstanceMapID = mapID
 		DBMScheduler:UpdateZone()--Also update zone in scheduler
+		fireEvent("DBM_UpdateZone", mapID)
 		if instanceType == "none" or (C_Garrison and C_Garrison:IsOnGarrisonMap()) then
 			LastInstanceType = "none"
 			if not targetEventsRegistered then
@@ -3697,7 +3724,7 @@ do
 			DBM:GetModLocalization("PullTimerCountdownDummy"):SetGeneralLocalization{ name = L.MINIMAP_TOOLTIP_HEADER }
 			dummyMod.text = dummyMod:NewAnnounce("%s", 1, "132349")
 			dummyMod.geartext = dummyMod:NewSpecialWarning("  %s  ", nil, nil, nil, 3)
-			dummyMod.timer = dummyMod:NewTimer(20, "%s", "132349", nil, nil, 0, nil, nil, DBM.Options.DontPlayPTCountdown and 0 or 1, threshold)
+			dummyMod.timer = dummyMod:NewTimer(20, "%s", "132349", nil, nil, 0, nil, nil, DBM.Options.DontPlayPTCountdown and 0 or 4, threshold)
 		end
 		--Cancel any existing pull timers before creating new ones, we don't want double countdowns or mismatching blizz countdown text (cause you can't call another one if one is in progress)
 		if not DBM.Options.DontShowPT2 then--and DBT:GetBar(L.TIMER_PULL)
@@ -3986,7 +4013,7 @@ do
 
 	guildSyncHandlers["GCB"] = function(_, modId, ver, difficulty, difficultyModifier, name)
 		if not DBM.Options.ShowGuildMessages or not difficulty then return end
-		if not ver or not (ver == "3") then return end--Ignore old versions
+		if not ver or ver ~= "3" then return end--Ignore old versions
 		if DBM:AntiSpam(10, "GCB") then
 			if IsInInstance() then return end--Simple filter, if you are inside an instance, just filter it, if not in instance, good to go.
 			difficulty = tonumber(difficulty)
@@ -4017,7 +4044,7 @@ do
 
 	guildSyncHandlers["GCE"] = function(_, modId, ver, wipe, time, difficulty, difficultyModifier, name, wipeHP)
 		if not DBM.Options.ShowGuildMessages or not difficulty then return end
-		if not ver or not (ver == "6") then return end--Ignore old versions
+		if not ver or ver ~= "6" then return end--Ignore old versions
 		if DBM:AntiSpam(5, "GCE") then
 			if IsInInstance() then return end--Simple filter, if you are inside an instance, just filter it, if not in instance, good to go.
 			difficulty = tonumber(difficulty)
@@ -4055,7 +4082,7 @@ do
 	end
 
 	guildSyncHandlers["WBE"] = function(sender, modId, realm, health, ver, name)
-		if not ver or not (ver == "8") then return end--Ignore old versions
+		if not ver or ver ~= "8" then return end--Ignore old versions
 		if lastBossEngage[modId..realm] and (GetTime() - lastBossEngage[modId..realm] < 30) then return end--We recently got a sync about this boss on this realm, so do nothing.
 		lastBossEngage[modId..realm] = GetTime()
 		if realm == playerRealm and DBM.Options.WorldBossAlert and not IsEncounterInProgress() then
@@ -4066,7 +4093,7 @@ do
 	end
 
 	guildSyncHandlers["WBD"] = function(sender, modId, realm, ver, name)
-		if not ver or not (ver == "8") then return end--Ignore old versions
+		if not ver or ver ~= "8" then return end--Ignore old versions
 		if lastBossDefeat[modId..realm] and (GetTime() - lastBossDefeat[modId..realm] < 30) then return end
 		lastBossDefeat[modId..realm] = GetTime()
 		if realm == playerRealm and DBM.Options.WorldBossAlert and not IsEncounterInProgress() then
@@ -4078,7 +4105,7 @@ do
 
 	guildSyncHandlers["WBA"] = function(sender, bossName, faction, spellId, time, ver) -- Classic only
 		DBM:Debug("WBA sync recieved")
-		if not ver or not (ver == "4") or isRetail then return end--Ignore old versions
+		if not ver or ver ~= "4" or isRetail then return end--Ignore old versions
 		if lastBossEngage[bossName..faction] and (GetTime() - lastBossEngage[bossName..faction] < 30) then return end--We recently got a sync about this buff on this realm, so do nothing.
 		lastBossEngage[bossName..faction] = GetTime()
 		if DBM.Options.WorldBuffAlert and #inCombat == 0 then
@@ -4095,7 +4122,7 @@ do
 	end
 
 	whisperSyncHandlers["WBE"] = function(sender, modId, realm, health, ver, name)
-		if not ver or not (ver == "8") then return end--Ignore old versions
+		if not ver or ver ~= "8" then return end--Ignore old versions
 		if lastBossEngage[modId..realm] and (GetTime() - lastBossEngage[modId..realm] < 30) then return end
 		lastBossEngage[modId..realm] = GetTime()
 		if realm == playerRealm and DBM.Options.WorldBossAlert and (isRetail and not IsEncounterInProgress() or #inCombat == 0) then
@@ -4114,7 +4141,7 @@ do
 	end
 
 	whisperSyncHandlers["WBD"] = function(sender, modId, realm, ver, name)
-		if not ver or not (ver == "8") then return end--Ignore old versions
+		if not ver or ver ~= "8" then return end--Ignore old versions
 		if lastBossDefeat[modId..realm] and (GetTime() - lastBossDefeat[modId..realm] < 30) then return end
 		lastBossDefeat[modId..realm] = GetTime()
 		if realm == playerRealm and DBM.Options.WorldBossAlert and not IsEncounterInProgress() then
@@ -4134,7 +4161,7 @@ do
 
 	whisperSyncHandlers["WBA"] = function(sender, bossName, faction, spellId, time, ver) -- Classic only
 		DBM:Debug("WBA sync recieved")
-		if not ver or not (ver == "4") or isRetail then return end--Ignore old versions
+		if not ver or ver ~= "4" or isRetail then return end--Ignore old versions
 		if lastBossEngage[bossName..faction] and (GetTime() - lastBossEngage[bossName..faction] < 30) then return end--We recently got a sync about this buff on this realm, so do nothing.
 		lastBossEngage[bossName..faction] = GetTime()
 		if DBM.Options.WorldBuffAlert and #inCombat == 0 then
@@ -4434,10 +4461,10 @@ do
 			local v = inCombat[i]
 			if not v.combatInfo then return end
 			if v.noEEDetection then return end
-			if v.respawnTime and success == 0 and self.Options.ShowRespawn and not self.Options.DontShowBossTimers then--No special hacks needed for bad wrath ENCOUNTER_END. Only mods that define respawnTime have a timer, since variable per boss.
+			if (isRetail or v.respawnTime) and success == 0 and self.Options.ShowRespawn and not self.Options.DontShowBossTimers then--No special hacks needed for bad wrath ENCOUNTER_END. Only mods that define respawnTime have a timer, since variable per boss.
 				name = string.split(",", name)
 				DBT:CreateBar(v.respawnTime, L.TIMER_RESPAWN:format(name), isRetail and 237538 or 136106)--Interface\\Icons\\Spell_Holy_BorrowedTime, Spell_nature_timestop
-				fireEvent("DBM_TimerStart", "DBMRespawnTimer", L.TIMER_RESPAWN:format(name), v.respawnTime, isRetail and "237538" or "136106", "extratimer", nil, 0, v.id)
+				fireEvent("DBM_TimerStart", "DBMRespawnTimer", L.TIMER_RESPAWN:format(name), v.respawnTime or 29, isRetail and "237538" or "136106", "extratimer", nil, 0, v.id)
 			end
 			if v.multiEncounterPullDetection then
 				for _, eId in ipairs(v.multiEncounterPullDetection) do
@@ -4604,7 +4631,7 @@ function checkWipe(self, confirm)
 		end
 		--hack for no iEEU information is provided.
 		if not bossuIdFound then
-			for i = 1, 5 do
+			for i = 1, 10 do
 				if UnitExists("boss"..i) then
 					bossuIdFound = true
 					break
@@ -5787,7 +5814,7 @@ do
 		for _, v in ipairs(sortMe) do
 			-- If selectedClient player's realm is not same with your's, timer recovery by selectedClient not works at all.
 			-- SendAddonMessage target channel is "WHISPER" and target player is other realm, no msg sends at all. At same realm, message sending works fine. (Maybe bliz bug or SendAddonMessage function restriction?)
-			if v.name ~= playerName and UnitIsConnected(v.id) and (not UnitIsGhost(v.id)) and UnitRealmRelationship(v.id) ~= 2 and (GetTime() - (clientUsed[v.name] or 0)) > 10 then
+			if v.name ~= playerName and UnitIsConnected(v.id) and UnitIsPlayer(v.id) and (not UnitIsGhost(v.id)) and UnitRealmRelationship(v.id) ~= 2 and (GetTime() - (clientUsed[v.name] or 0)) > 10 then
 				listNum = listNum + 1
 				if listNum == requestNum then
 					selectedClient = v
@@ -6559,6 +6586,7 @@ end
 
 function bossModPrototype:SetStage(stage)
 	if stage == 0 then--Increment request instead of hard value
+		if not self.vb.phase then return end--Person DCed mid fight and somehow managed to perfectly time running SetStage with a value of 0 before getting variable recovery
 		self.vb.phase = self.vb.phase + 1
 	else
 		self.vb.phase = stage
@@ -6750,7 +6778,8 @@ do
 		local check = isRetail and
 			((GetSpellCooldown(88423)) ~= 0 or (GetSpellCooldown(2782)) ~= 0 or (GetSpellCooldown(115450)) ~= 0 or (GetSpellCooldown(218164)) ~= 0 or (GetSpellCooldown(527)) ~= 0 or (GetSpellCooldown(213634)) ~= 0 or (GetSpellCooldown(4987)) ~= 0 or (GetSpellCooldown(51886)) ~= 0 or (GetSpellCooldown(77130)) ~= 0 or (GetSpellCooldown(475)) ~= 0 or (GetSpellCooldown(89808)) ~= 0) or
 			(GetSpellCooldown(2782)) ~= 0 or (GetSpellCooldown(527)) ~= 0 or (GetSpellCooldown(4987)) ~= 0 or (GetSpellCooldown(475)) ~= 0
-		if check then
+		-- No dispell is available, OR they're a warlock with Singe Magic available, and either they have no pet, or the pet isn't an Imp
+		if check or ((GetSpellCooldown(89808)) == 0 and (not UnitExists("pet") or self:GetCIDFromGUID(UnitGUID("pet")) ~= 416)) then
 			lastCheck = GetTime()
 			lastReturn = false
 			return false
@@ -7140,7 +7169,7 @@ function bossModPrototype:IsHealer(uId)
 	return role == "HEALER"
 end
 
-function bossModPrototype:IsTanking(unit, boss, isName, onlyRequested, bossGUID, includeTarget)
+function bossModPrototype:IsTanking(unit, boss, isName, onlyRequested, bossGUID, includeTarget, onlyS3)
 	if isName then--Passed combat log name, so pull unit ID
 		unit = DBM:GetRaidUnitId(unit)
 	end
@@ -7152,7 +7181,7 @@ function bossModPrototype:IsTanking(unit, boss, isName, onlyRequested, bossGUID,
 	if boss then--Only checking one bossID as requested
 		--Check threat first
 		local tanking, status = UnitDetailedThreatSituation(unit, boss)
-		if tanking or (status == 3) then
+		if (not onlyS3 and tanking) or (status == 3) then
 			return true
 		end
 		--Non threat fallback
@@ -7164,14 +7193,14 @@ function bossModPrototype:IsTanking(unit, boss, isName, onlyRequested, bossGUID,
 			end
 		end
 	else--Check all of them if one isn't defined
-		for i = 1, 5 do
+		for i = 1, 10 do
 			local unitID = "boss"..i
 			local guid = UnitGUID(unitID)
 			--No GUID, any unit having threat returns true, GUID, only specific unit matching guid
 			if not bossGUID or (guid and guid == bossGUID) then
 				--Check threat first
 				local tanking, status = UnitDetailedThreatSituation(unit, unitID)
-				if tanking or (status == 3) then
+				if (not onlyS3 and tanking) or (status == 3) then
 					return true
 				end
 				--Non threat fallback
@@ -7193,7 +7222,7 @@ function bossModPrototype:IsTanking(unit, boss, isName, onlyRequested, bossGUID,
 				if guid and guid == bossGUID then
 					--Check threat first
 					local tanking, status = UnitDetailedThreatSituation(unit, unitID)
-					if tanking or (status == 3) then
+					if (not onlyS3 and tanking) or (status == 3) then
 						return true
 					end
 					--Non threat fallback
@@ -7256,7 +7285,7 @@ function DBM:GetBossHP(cIdOrGUID, onlyHighest)
 	else
 		--Boss UnitIds
 		if isRetail then
-			for i = 1, 5 do
+			for i = 1, 10 do
 				local unitID = "boss"..i
 				local bossguid = UnitGUID(unitID)
 				if (self:GetCIDFromGUID(bossguid) == cIdOrGUID or bossguid == cIdOrGUID) and UnitHealthMax(unitID) ~= 0 then
@@ -7342,6 +7371,41 @@ function bossModPrototype:GetLowestBossHealth()
 end
 
 bossModPrototype.GetBossHP = DBM.GetBossHP
+
+-------------------------
+--  Timers Table Util  --
+-------------------------
+function bossModPrototype:GetFromTimersTable(table, difficultyName, phase, spellId, count)
+    local prev = table
+
+    if difficultyName ~= false then
+        if not difficultyName or not prev[difficultyName] then
+            DBM:Debug("difficultyName is missing from table")
+            return
+        end
+        prev = prev[difficultyName]
+    end
+
+    if phase ~= false then
+        if not phase or not prev[phase] then
+            DBM:Debug("phase is missing from table")
+            return
+        end
+        prev = prev[phase]
+    end
+
+    if not prev[spellId] then
+        DBM:Debug("spellId is missing from table")
+        return
+    end
+    prev = prev[spellId]
+
+    if count then
+        prev = prev[count]
+    end
+
+    return prev
+end
 
 -----------------------
 --  Announce Object  --
@@ -7597,13 +7661,17 @@ do
 	-- TODO: is there a good reason that this is a weak table?
 	local cachedColorFunctions = setmetatable({}, {__mode = "kv"})
 
-	local function setText(announceType, spellId, castTime, preWarnTime)
+	local function setText(announceType, spellId, castTime, preWarnTime, customName)
 		local spellName
-		if type(spellId) == "string" and spellId:match("ej%d+") then
-			spellId = string.sub(spellId, 3)
-			spellName = DBM:EJ_GetSectionInfo(spellId) or CL.UNKNOWN
+		if customName then
+			spellName = customName
 		else
-			spellName = (spellId or 0) >= 6 and DBM:GetSpellInfo(spellId) or CL.UNKNOWN
+			if type(spellId) == "string" and spellId:match("ej%d+") then
+				spellId = string.sub(spellId, 3)
+				spellName = DBM:EJ_GetSectionInfo(spellId) or CL.UNKNOWN
+			else
+				spellName = (spellId or 0) >= 6 and DBM:GetSpellInfo(spellId) or CL.UNKNOWN
+			end
 		end
 		local text
 		if announceType == "cast" then
@@ -7624,6 +7692,12 @@ do
 			text = L.AUTO_ANNOUNCE_TEXTS[announceType]:format(spellName)
 		end
 		return text, spellName
+	end
+
+	function announcePrototype:SetText(customName)
+		local text, spellName = setText(self.announceType, self.spellId, self.castTime, self.preWarnTime, customName)
+		self.text = text
+		self.spellName = spellName
 	end
 
 	-- TODO: this function is an abomination, it needs to be rewritten. Also: check if these work-arounds are still necessary
@@ -7693,12 +7767,6 @@ do
 				end
 				self.mod:AddMsg(text, nil)
 			end
-			if self.sound > 0 then
-				if self.sound > 1 and DBM.Options.ChosenVoicePack2 ~= "None" and DBM.Options.VPReplacesAnnounce and not voiceSessionDisabled and not DBM.Options.VPDontMuteSounds and self.sound <= SWFilterDisabled then return end
-				if not self.option or self.mod.Options[self.option.."SWSound"] ~= "None" then
-					DBM:PlaySoundFile(DBM.Options.RaidWarningSound, nil, true)--Validate true
-				end
-			end
 			--Message: Full message text
 			--Icon: Texture path/id for icon
 			--Type: Announce type
@@ -7711,6 +7779,12 @@ do
 			--Mod ID: Encounter ID as string, or a generic string for mods that don't have encounter ID (such as trash, dummy/test mods)
 			--boolean: Whether or not this warning is a special warning (higher priority).
 			fireEvent("DBM_Announce", message, self.icon, self.type, self.spellId, self.mod.id, false)
+			if self.sound > 0 then--0 means muted, 1 means no voice pack support, 2 means voice pack version/support
+				if self.sound > 1 and DBM.Options.ChosenVoicePack2 ~= "None" and DBM.Options.VPReplacesAnnounce and not voiceSessionDisabled and not DBM.Options.VPDontMuteSounds and self.sound <= SWFilterDisabled then return end
+				if not self.option or self.mod.Options[self.option.."SWSound"] ~= "None" then
+					DBM:PlaySoundFile(DBM.Options.RaidWarningSound, nil, true)--Validate true
+				end
+			end
 		else
 			self.combinedcount = 0
 			self.combinedtext = {}
@@ -7811,7 +7885,7 @@ do
 		if optionName then
 			obj.option = optionName
 			self:AddBoolOption(obj.option, optionDefault, "announce", nil, nil, nil, spellID)
-		elseif not (optionName == false) then
+		elseif optionName ~= false then
 			obj.option = text
 			self:AddBoolOption(obj.option, optionDefault, "announce", nil, nil, nil, spellID)
 		end
@@ -7827,7 +7901,7 @@ do
 		end
 		local optionVersion, alternateSpellId
 		if type(optionName) == "number" then
-			if optionName > 1000 then--Being used as spell name shortening
+			if optionName > 10 then--Being used as spell name shortening
 				if DBM.Options.WarningShortText then
 					alternateSpellId = optionName
 				end
@@ -7838,10 +7912,6 @@ do
 		end
 		if soundOption and type(soundOption) == "boolean" then
 			soundOption = 0--No Sound
-		end
-		if type(spellId) == "string" and spellId:match("OptionVersion") then
-			print("newAnnounce for "..color.." is using OptionVersion hack. this is depricated")
-			return
 		end
 		local text, spellName = setText(announceType, alternateSpellId or spellId, castTime, preWarnTime)
 		icon = icon or spellId
@@ -7874,7 +7944,7 @@ do
 		if optionName then
 			obj.option = optionName
 			self:AddBoolOption(obj.option, optionDefault, catType, nil, nil, nil, spellId, announceType)
-		elseif not (optionName == false) then
+		elseif optionName ~= false then
 			obj.option = catType..spellId..announceType..(optionVersion or "")
 			self:AddBoolOption(obj.option, optionDefault, catType, nil, nil, nil, spellId, announceType)
 			if noFilter and announceType == "target" then
@@ -7989,10 +8059,6 @@ do
 			error("NewYell: you must provide either spellId or yellText", 2)
 			return
 		end
-		if type(spellId) == "string" and spellId:match("OptionVersion") then
-			print("newYell for: "..yellText.." is using OptionVersion hack. This is depricated")
-			return
-		end
 		local optionVersion
 		if type(optionName) == "number" then
 			optionVersion = optionName
@@ -8024,7 +8090,7 @@ do
 		if optionName then
 			obj.option = optionName
 			self:AddBoolOption(obj.option, optionDefault, "yell", nil, nil, nil, spellId, yellType)
-		elseif not (optionName == false) then
+		elseif optionName ~= false then
 			obj.option = "Yell"..(spellId or yellText)..(yellType ~= "yell" and yellType or "")..(optionVersion or "")
 			self:AddBoolOption(obj.option, optionDefault, "yell", nil, nil, nil, spellId, yellType)
 			self.localization.options[obj.option] = L.AUTO_YELL_OPTION_TEXT[yellType]:format(spellId)
@@ -8329,12 +8395,16 @@ do
 
 	local textureCode = " |T%s:12:12|t "
 
-	local function setText(announceType, spellId, stacks)
+	local function setText(announceType, spellId, stacks, customName)
 		local text, spellName
-		if type(spellId) == "string" and spellId:match("ej%d+") then
-			spellName = DBM:EJ_GetSectionInfo(string.sub(spellId, 3)) or CL.UNKNOWN
+		if customName then
+			spellName = customName
 		else
-			spellName = (spellId or 0) >= 6 and DBM:GetSpellInfo(spellId) or CL.UNKNOWN
+			if type(spellId) == "string" and spellId:match("ej%d+") then
+				spellName = DBM:EJ_GetSectionInfo(string.sub(spellId, 3)) or CL.UNKNOWN
+			else
+				spellName = (spellId or 0) >= 6 and DBM:GetSpellInfo(spellId) or CL.UNKNOWN
+			end
 		end
 		if announceType == "prewarn" then
 			if type(stacks) == "string" then
@@ -8346,6 +8416,12 @@ do
 			text = L.AUTO_SPEC_WARN_TEXTS[announceType]:format(spellName)
 		end
 		return text, spellName
+	end
+
+	function specialWarningPrototype:SetText(customName)
+		local text, spellName = setText(self.announceType, self.spellId, self.stacks, customName)
+		self.text = text
+		self.spellName = spellName
 	end
 
 	local function canVoiceReplace(self, soundId)
@@ -8684,7 +8760,7 @@ do
 		)
 		if optionName then
 			obj.option = optionName
-		elseif not (optionName == false) then
+		elseif optionName ~= false then
 			local difficultyIcon = ""
 			if difficulty then
 				--1 LFR, 2 Normal, 3 Heroic, 4 Mythic
@@ -8728,176 +8804,180 @@ do
 		return obj
 	end
 
-	function bossModPrototype:NewSpecialWarningSpell(text, optionDefault, ...)
-		return newSpecialWarning(self, "spell", text, nil, optionDefault, ...)
+	function bossModPrototype:NewSpecialWarningSpell(spellId, optionDefault, ...)
+		return newSpecialWarning(self, "spell", spellId, nil, optionDefault, ...)
 	end
 
-	function bossModPrototype:NewSpecialWarningEnd(text, optionDefault, ...)
-		return newSpecialWarning(self, "ends", text, nil, optionDefault, ...)
+	function bossModPrototype:NewSpecialWarningEnd(spellId, optionDefault, ...)
+		return newSpecialWarning(self, "ends", spellId, nil, optionDefault, ...)
 	end
 
-	function bossModPrototype:NewSpecialWarningFades(text, optionDefault, ...)
-		return newSpecialWarning(self, "fades", text, nil, optionDefault, ...)
+	function bossModPrototype:NewSpecialWarningFades(spellId, optionDefault, ...)
+		return newSpecialWarning(self, "fades", spellId, nil, optionDefault, ...)
 	end
 
-	function bossModPrototype:NewSpecialWarningSoon(text, optionDefault, ...)
-		return newSpecialWarning(self, "soon", text, nil, optionDefault, ...)
+	function bossModPrototype:NewSpecialWarningSoon(spellId, optionDefault, ...)
+		return newSpecialWarning(self, "soon", spellId, nil, optionDefault, ...)
 	end
 
-	function bossModPrototype:NewSpecialWarningBait(text, optionDefault, ...)
-		return newSpecialWarning(self, "bait", text, nil, optionDefault, ...)
+	function bossModPrototype:NewSpecialWarningBait(spellId, optionDefault, ...)
+		return newSpecialWarning(self, "bait", spellId, nil, optionDefault, ...)
 	end
 
-	function bossModPrototype:NewSpecialWarningDispel(text, optionDefault, ...)
-		return newSpecialWarning(self, "dispel", text, nil, optionDefault, ...)
+	function bossModPrototype:NewSpecialWarningDispel(spellId, optionDefault, ...)
+		return newSpecialWarning(self, "dispel", spellId, nil, optionDefault, ...)
 	end
 
-	function bossModPrototype:NewSpecialWarningInterrupt(text, optionDefault, ...)
-		return newSpecialWarning(self, "interrupt", text, nil, optionDefault, ...)
+	function bossModPrototype:NewSpecialWarningInterrupt(spellId, optionDefault, ...)
+		return newSpecialWarning(self, "interrupt", spellId, nil, optionDefault, ...)
 	end
 
-	function bossModPrototype:NewSpecialWarningInterruptCount(text, optionDefault, ...)
-		return newSpecialWarning(self, "interruptcount", text, nil, optionDefault, ...)
+	function bossModPrototype:NewSpecialWarningInterruptCount(spellId, optionDefault, ...)
+		return newSpecialWarning(self, "interruptcount", spellId, nil, optionDefault, ...)
 	end
 
-	function bossModPrototype:NewSpecialWarningYou(text, optionDefault, ...)
-		return newSpecialWarning(self, "you", text, nil, optionDefault, ...)
+	function bossModPrototype:NewSpecialWarningYou(spellId, optionDefault, ...)
+		return newSpecialWarning(self, "you", spellId, nil, optionDefault, ...)
 	end
 
-	function bossModPrototype:NewSpecialWarningYouCount(text, optionDefault, ...)
-		return newSpecialWarning(self, "youcount", text, nil, optionDefault, ...)
+	function bossModPrototype:NewSpecialWarningYouCount(spellId, optionDefault, ...)
+		return newSpecialWarning(self, "youcount", spellId, nil, optionDefault, ...)
 	end
 
-	function bossModPrototype:NewSpecialWarningYouPos(text, optionDefault, ...)
-		return newSpecialWarning(self, "youpos", text, nil, optionDefault, ...)
+	function bossModPrototype:NewSpecialWarningYouPos(spellId, optionDefault, ...)
+		return newSpecialWarning(self, "youpos", spellId, nil, optionDefault, ...)
 	end
 
-	function bossModPrototype:NewSpecialWarningSoakPos(text, optionDefault, ...)
-		return newSpecialWarning(self, "soakpos", text, nil, optionDefault, ...)
+	function bossModPrototype:NewSpecialWarningYouPosCount(spellId, optionDefault, ...)
+		return newSpecialWarning(self, "youposcount", spellId, nil, optionDefault, ...)
 	end
 
-	function bossModPrototype:NewSpecialWarningTarget(text, optionDefault, ...)
-		return newSpecialWarning(self, "target", text, nil, optionDefault, ...)
+	function bossModPrototype:NewSpecialWarningSoakPos(spellId, optionDefault, ...)
+		return newSpecialWarning(self, "soakpos", spellId, nil, optionDefault, ...)
 	end
 
-	function bossModPrototype:NewSpecialWarningTargetCount(text, optionDefault, ...)
-		return newSpecialWarning(self, "targetcount", text, nil, optionDefault, ...)
+	function bossModPrototype:NewSpecialWarningTarget(spellId, optionDefault, ...)
+		return newSpecialWarning(self, "target", spellId, nil, optionDefault, ...)
 	end
 
-	function bossModPrototype:NewSpecialWarningDefensive(text, optionDefault, ...)
-		return newSpecialWarning(self, "defensive", text, nil, optionDefault, ...)
+	function bossModPrototype:NewSpecialWarningTargetCount(spellId, optionDefault, ...)
+		return newSpecialWarning(self, "targetcount", spellId, nil, optionDefault, ...)
 	end
 
-	function bossModPrototype:NewSpecialWarningTaunt(text, optionDefault, ...)
-		return newSpecialWarning(self, "taunt", text, nil, optionDefault, ...)
+	function bossModPrototype:NewSpecialWarningDefensive(spellId, optionDefault, ...)
+		return newSpecialWarning(self, "defensive", spellId, nil, optionDefault, ...)
 	end
 
-	function bossModPrototype:NewSpecialWarningClose(text, optionDefault, ...)
-		return newSpecialWarning(self, "close", text, nil, optionDefault, ...)
+	function bossModPrototype:NewSpecialWarningTaunt(spellId, optionDefault, ...)
+		return newSpecialWarning(self, "taunt", spellId, nil, optionDefault, ...)
 	end
 
-	function bossModPrototype:NewSpecialWarningMove(text, optionDefault, ...)
-		return newSpecialWarning(self, "move", text, nil, optionDefault, ...)
+	function bossModPrototype:NewSpecialWarningClose(spellId, optionDefault, ...)
+		return newSpecialWarning(self, "close", spellId, nil, optionDefault, ...)
 	end
 
-	function bossModPrototype:NewSpecialWarningKeepMove(text, optionDefault, ...)
-		return newSpecialWarning(self, "keepmove", text, nil, optionDefault, ...)
+	function bossModPrototype:NewSpecialWarningMove(spellId, optionDefault, ...)
+		return newSpecialWarning(self, "move", spellId, nil, optionDefault, ...)
 	end
 
-	function bossModPrototype:NewSpecialWarningStopMove(text, optionDefault, ...)
-		return newSpecialWarning(self, "stopmove", text, nil, optionDefault, ...)
+	function bossModPrototype:NewSpecialWarningKeepMove(spellId, optionDefault, ...)
+		return newSpecialWarning(self, "keepmove", spellId, nil, optionDefault, ...)
 	end
 
-	function bossModPrototype:NewSpecialWarningGTFO(text, optionDefault, ...)
-		return newSpecialWarning(self, "gtfo", text, nil, optionDefault, ...)
+	function bossModPrototype:NewSpecialWarningStopMove(spellId, optionDefault, ...)
+		return newSpecialWarning(self, "stopmove", spellId, nil, optionDefault, ...)
 	end
 
-	function bossModPrototype:NewSpecialWarningDodge(text, optionDefault, ...)
-		return newSpecialWarning(self, "dodge", text, nil, optionDefault, ...)
+	function bossModPrototype:NewSpecialWarningGTFO(spellId, optionDefault, ...)
+		return newSpecialWarning(self, "gtfo", spellId, nil, optionDefault, ...)
 	end
 
-	function bossModPrototype:NewSpecialWarningDodgeCount(text, optionDefault, ...)
-		return newSpecialWarning(self, "dodgecount", text, nil, optionDefault, ...)
+	function bossModPrototype:NewSpecialWarningDodge(spellId, optionDefault, ...)
+		return newSpecialWarning(self, "dodge", spellId, nil, optionDefault, ...)
 	end
 
-	function bossModPrototype:NewSpecialWarningDodgeLoc(text, optionDefault, ...)
-		return newSpecialWarning(self, "dodgeloc", text, nil, optionDefault, ...)
+	function bossModPrototype:NewSpecialWarningDodgeCount(spellId, optionDefault, ...)
+		return newSpecialWarning(self, "dodgecount", spellId, nil, optionDefault, ...)
 	end
 
-	function bossModPrototype:NewSpecialWarningMoveAway(text, optionDefault, ...)
-		return newSpecialWarning(self, "moveaway", text, nil, optionDefault, ...)
+	function bossModPrototype:NewSpecialWarningDodgeLoc(spellId, optionDefault, ...)
+		return newSpecialWarning(self, "dodgeloc", spellId, nil, optionDefault, ...)
 	end
 
-	function bossModPrototype:NewSpecialWarningMoveAwayCount(text, optionDefault, ...)
-		return newSpecialWarning(self, "moveawaycount", text, nil, optionDefault, ...)
+	function bossModPrototype:NewSpecialWarningMoveAway(spellId, optionDefault, ...)
+		return newSpecialWarning(self, "moveaway", spellId, nil, optionDefault, ...)
 	end
 
-	function bossModPrototype:NewSpecialWarningMoveTo(text, optionDefault, ...)
-		return newSpecialWarning(self, "moveto", text, nil, optionDefault, ...)
+	function bossModPrototype:NewSpecialWarningMoveAwayCount(spellId, optionDefault, ...)
+		return newSpecialWarning(self, "moveawaycount", spellId, nil, optionDefault, ...)
 	end
 
-	function bossModPrototype:NewSpecialWarningSoak(text, optionDefault, ...)
-		return newSpecialWarning(self, "soak", text, nil, optionDefault, ...)
+	function bossModPrototype:NewSpecialWarningMoveTo(spellId, optionDefault, ...)
+		return newSpecialWarning(self, "moveto", spellId, nil, optionDefault, ...)
 	end
 
-	function bossModPrototype:NewSpecialWarningSoakCount(text, optionDefault, ...)
-		return newSpecialWarning(self, "soakcount", text, nil, optionDefault, ...)
+	function bossModPrototype:NewSpecialWarningSoak(spellId, optionDefault, ...)
+		return newSpecialWarning(self, "soak", spellId, nil, optionDefault, ...)
 	end
 
-	function bossModPrototype:NewSpecialWarningJump(text, optionDefault, ...)
-		return newSpecialWarning(self, "jump", text, nil, optionDefault, ...)
+	function bossModPrototype:NewSpecialWarningSoakCount(spellId, optionDefault, ...)
+		return newSpecialWarning(self, "soakcount", spellId, nil, optionDefault, ...)
 	end
 
-	function bossModPrototype:NewSpecialWarningRun(text, optionDefault, optionName, optionVersion, runSound, ...)
-		return newSpecialWarning(self, "run", text, nil, optionDefault, optionName, optionVersion, runSound or 4, ...)
+	function bossModPrototype:NewSpecialWarningJump(spellId, optionDefault, ...)
+		return newSpecialWarning(self, "jump", spellId, nil, optionDefault, ...)
 	end
 
-	function bossModPrototype:NewSpecialWarningCast(text, optionDefault, ...)
-		return newSpecialWarning(self, "cast", text, nil, optionDefault, ...)
+	function bossModPrototype:NewSpecialWarningRun(spellId, optionDefault, optionName, optionVersion, runSound, ...)
+		return newSpecialWarning(self, "run", spellId, nil, optionDefault, optionName, optionVersion, runSound or 4, ...)
 	end
 
-	function bossModPrototype:NewSpecialWarningLookAway(text, optionDefault, ...)
-		return newSpecialWarning(self, "lookaway", text, nil, optionDefault, ...)
+	function bossModPrototype:NewSpecialWarningCast(spellId, optionDefault, ...)
+		return newSpecialWarning(self, "cast", spellId, nil, optionDefault, ...)
 	end
 
-	function bossModPrototype:NewSpecialWarningReflect(text, optionDefault, ...)
-		return newSpecialWarning(self, "reflect", text, nil, optionDefault, ...)
+	function bossModPrototype:NewSpecialWarningLookAway(spellId, optionDefault, ...)
+		return newSpecialWarning(self, "lookaway", spellId, nil, optionDefault, ...)
 	end
 
-	function bossModPrototype:NewSpecialWarningCount(text, optionDefault, ...)
-		return newSpecialWarning(self, "count", text, nil, optionDefault, ...)
+	function bossModPrototype:NewSpecialWarningReflect(spellId, optionDefault, ...)
+		return newSpecialWarning(self, "reflect", spellId, nil, optionDefault, ...)
 	end
 
-	function bossModPrototype:NewSpecialWarningSoonCount(text, optionDefault, ...)
-		return newSpecialWarning(self, "sooncount", text, nil, optionDefault, ...)
+	function bossModPrototype:NewSpecialWarningCount(spellId, optionDefault, ...)
+		return newSpecialWarning(self, "count", spellId, nil, optionDefault, ...)
 	end
 
-	function bossModPrototype:NewSpecialWarningStack(text, optionDefault, stacks, ...)
-		return newSpecialWarning(self, "stack", text, stacks, optionDefault, ...)
+	function bossModPrototype:NewSpecialWarningSoonCount(spellId, optionDefault, ...)
+		return newSpecialWarning(self, "sooncount", spellId, nil, optionDefault, ...)
 	end
 
-	function bossModPrototype:NewSpecialWarningSwitch(text, optionDefault, ...)
-		return newSpecialWarning(self, "switch", text, nil, optionDefault, ...)
+	function bossModPrototype:NewSpecialWarningStack(spellId, optionDefault, stacks, ...)
+		return newSpecialWarning(self, "stack", spellId, stacks, optionDefault, ...)
 	end
 
-	function bossModPrototype:NewSpecialWarningSwitchCount(text, optionDefault, ...)
-		return newSpecialWarning(self, "switchcount", text, nil, optionDefault, ...)
+	function bossModPrototype:NewSpecialWarningSwitch(spellId, optionDefault, ...)
+		return newSpecialWarning(self, "switch", spellId, nil, optionDefault, ...)
 	end
 
-	function bossModPrototype:NewSpecialWarningAdds(text, optionDefault, ...)
-		return newSpecialWarning(self, "adds", text, nil, optionDefault, ...)
+	function bossModPrototype:NewSpecialWarningSwitchCount(spellId, optionDefault, ...)
+		return newSpecialWarning(self, "switchcount", spellId, nil, optionDefault, ...)
 	end
 
-	function bossModPrototype:NewSpecialWarningAddsCustom(text, optionDefault, ...)
-		return newSpecialWarning(self, "addscustom", text, nil, optionDefault, ...)
+	function bossModPrototype:NewSpecialWarningAdds(spellId, optionDefault, ...)
+		return newSpecialWarning(self, "adds", spellId, nil, optionDefault, ...)
 	end
 
-	function bossModPrototype:NewSpecialWarningTargetChange(text, optionDefault, ...)
-		return newSpecialWarning(self, "targetchange", text, nil, optionDefault, ...)
+	function bossModPrototype:NewSpecialWarningAddsCustom(spellId, optionDefault, ...)
+		return newSpecialWarning(self, "addscustom", spellId, nil, optionDefault, ...)
 	end
 
-	function bossModPrototype:NewSpecialWarningPreWarn(text, optionDefault, time, ...)
-		return newSpecialWarning(self, "prewarn", text, time, optionDefault, ...)
+	function bossModPrototype:NewSpecialWarningTargetChange(spellId, optionDefault, ...)
+		return newSpecialWarning(self, "targetchange", spellId, nil, optionDefault, ...)
+	end
+
+	function bossModPrototype:NewSpecialWarningPreWarn(spellId, optionDefault, time, ...)
+		return newSpecialWarning(self, "prewarn", spellId, time, optionDefault, ...)
 	end
 
 	function DBM:PlayCountSound(number, forceVoice, forcePath)
@@ -8989,15 +9069,16 @@ end
 do
 	local timerPrototype = {}
 	local mt = {__index = timerPrototype}
-	local countvoice1, countvoice2, countvoice3
-	local countvoice1max, countvoice2max, countvoice3max = 5, 5, 5
-	local countpath1, countpath2, countpath3
+	local countvoice1, countvoice2, countvoice3, countvoice4
+	local countvoice1max, countvoice2max, countvoice3max, countvoice4max = 5, 5, 5, 5
+	local countpath1, countpath2, countpath3, countpath4
 
 	--Merged countdown object for timers with build-in countdown
 	function DBM:BuildVoiceCountdownCache()
 		countvoice1 = self.Options.CountdownVoice
 		countvoice2 = self.Options.CountdownVoice2
 		countvoice3 = self.Options.CountdownVoice3
+		countvoice4 = self.Options.PullVoice
 		for _, count in pairs(DBM:GetCountSounds()) do
 			if count.value == countvoice1 then
 				countpath1 = count.path
@@ -9010,6 +9091,10 @@ do
 			if count.value == countvoice3 then
 				countpath3 = count.path
 				countvoice3max = count.max
+			end
+			if count.value == countvoice4 then
+				countpath4 = count.path
+				countvoice4max = count.max
 			end
 		end
 	end
@@ -9038,6 +9123,9 @@ do
 		elseif voice == 3 then
 			maxCount = countvoice3max or 5
 			path = countpath3 or "Interface\\AddOns\\DBM-Core\\Sounds\\Smooth\\"
+		elseif voice == 4 then
+			maxCount = countvoice4max or 10
+			path = countpath4 or "Interface\\AddOns\\DBM-Core\\Sounds\\Corsica\\"
 		else
 			maxCount = countvoice1max or 10
 			path = countpath1 or "Interface\\AddOns\\DBM-Core\\Sounds\\Corsica\\"
@@ -9545,7 +9633,7 @@ do
 	end
 
 	--If a new countdown default is added to a NewTimer object, change optionName of timer to reset a new default
-	function bossModPrototype:NewTimer(timer, name, texture, optionDefault, optionName, colorType, inlineIcon, keep, countdown, countdownMax, r, g, b)
+	function bossModPrototype:NewTimer(timer, name, texture, optionDefault, optionName, colorType, inlineIcon, keep, countdown, countdownMax, r, g, b, spellId)
 		if r and type(r) == "string" then
 			DBM:Debug("|cffff0000r probably has inline icon in it and needs to be fixed for |r"..name..r)
 			r = nil--Fix it for users
@@ -9574,7 +9662,7 @@ do
 			},
 			mt
 		)
-		obj:AddOption(optionDefault, optionName, colorType, countdown)
+		obj:AddOption(optionDefault, optionName, colorType, countdown, spellId)
 		tinsert(self.timers, obj)
 		return obj
 	end
@@ -9886,6 +9974,11 @@ end
 --  Options  --
 ---------------
 function bossModPrototype:AddBoolOption(name, default, cat, func, extraOption, extraOptionTwo, spellId, optionType)
+	if checkDuplicateObjects[name] and name ~= "timer_berserk" then
+		DBM:Debug("|cffff0000Option already exists for: |r"..name)
+	else
+		checkDuplicateObjects[name] = true
+	end
 	cat = cat or "misc"
 	self.DefaultOptions[name] = (default == nil) or default
 	if cat == "timer" then
@@ -9914,6 +10007,12 @@ function bossModPrototype:AddBoolOption(name, default, cat, func, extraOption, e
 end
 
 function bossModPrototype:AddSpecialWarningOption(name, default, defaultSound, cat, spellId, optionType)
+	if checkDuplicateObjects[name] and name ~= "timer_berserk" then
+		DBM:Debug("|cffff0000Option already exists for: |r"..name)
+		return
+	else
+		checkDuplicateObjects[name] = true
+	end
 	cat = cat or "misc"
 	self.DefaultOptions[name] = (default == nil) or default
 	self.DefaultOptions[name.."SWSound"] = defaultSound or 1

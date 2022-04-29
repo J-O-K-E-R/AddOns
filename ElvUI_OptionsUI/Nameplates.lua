@@ -25,8 +25,8 @@ local ORDER = 100
 local filters = {}
 
 local minHeight, minWidth = 2, 40
-local function MaxHeight(unit) local heightType = unit == 'PLAYER' and 'personalHeight' or strfind('FRIENDLY', unit) and 'friendlyHeight' or strfind('ENEMY', unit) and 'enemyHeight' return max(NP.db.plateSize[heightType] or 0, 20) end
-local function MaxWidth(unit) local widthType = unit == 'PLAYER' and 'personalWidth' or strfind('FRIENDLY', unit) and 'friendlyWidth' or strfind('ENEMY', unit) and 'enemyWidth' return max(NP.db.plateSize[widthType] or 0, 250) end
+local function MaxHeight(unit) local heightType = unit == 'PLAYER' and 'personalHeight' or strfind(unit, 'FRIENDLY') and 'friendlyHeight' or strfind(unit, 'ENEMY') and 'enemyHeight' return max(NP.db.plateSize[heightType] or 0, 20) end
+local function MaxWidth(unit) local widthType = unit == 'PLAYER' and 'personalWidth' or strfind(unit, 'FRIENDLY') and 'friendlyWidth' or strfind(unit, 'ENEMY') and 'enemyWidth' return max(NP.db.plateSize[widthType] or 0, 250) end
 
 local function GetUnitSettings(unit, name)
 	local copyValues = {}
@@ -314,6 +314,8 @@ local function GetUnitSettings(unit, name)
 		group.args.classBarGroup.args.yOffset = ACH:Range(L["Y-Offset"], nil, 6, { min = -100, max = 100, step = 1 })
 		group.args.classBarGroup.args.sortDirection = ACH:Select(L["Sort Direction"], L["Defines the sort order of the selected sort method."], 7, { asc = L["Ascending"], desc = L["Descending"], NONE = L["None"] }, nil, nil, nil, nil, nil, function() return (E.myclass ~= 'DEATHKNIGHT') end)
 
+		group.args.castGroup.args.displayTarget = ACH:Toggle(L["Display Target"], L["Display the target of current cast."], 15)
+
 		group.args.general.args.useStaticPosition = ACH:Toggle(L["Use Static Position"], L["When enabled the nameplate will stay visible in a locked position."], 105, nil, nil, nil, nil, nil, function() return not E.db.nameplates.units[unit].enable end)
 	elseif unit == 'FRIENDLY_PLAYER' or unit == 'ENEMY_PLAYER' then
 		group.args.general.args.markHealers = ACH:Toggle(L["Healer Icon"], L["Display a healer icon over known healers inside battlegrounds or arenas."], 105)
@@ -325,6 +327,8 @@ local function GetUnitSettings(unit, name)
 		group.args.eliteIcon.args.position = ACH:Select(L["Position"], nil, 4, { LEFT = 'LEFT', RIGHT = 'RIGHT', TOP = 'TOP', BOTTOM = 'BOTTOM', CENTER = 'CENTER' })
 		group.args.eliteIcon.args.xOffset = ACH:Range(L["X-Offset"], nil, 5, { min = -100, max = 100, step = 1 })
 		group.args.eliteIcon.args.yOffset = ACH:Range(L["Y-Offset"], nil, 6, { min = -100, max = 100, step = 1 })
+
+		group.args.castGroup.args.displayTarget = ACH:Toggle(L["Display Target"], L["Display the target of current cast."], 15)
 
 		group.args.questIcon = ACH:Group(L["Quest Icon"], nil, 14, nil, function(info) return E.db.nameplates.units[unit].questIcon[info[#info]] end, function(info, value) E.db.nameplates.units[unit].questIcon[info[#info]] = value NP:ConfigureAll() end)
 		group.args.questIcon.args.enable = ACH:Toggle(L["Enable"], nil, 1)

@@ -1,4 +1,4 @@
--- Generated from CurseForge on Fri Sep 17 07:13:30 UTC 2021
+-- Generated from CurseForge on Mon Apr 25 06:51:31 UTC 2022
 local ns = select(2, ...) ---@type ns @The addon namespace.
 
 if ns:IsSameLocale("zhCN") then
@@ -26,16 +26,44 @@ L["CANCEL"] = "取消"
 L["CHANGES_REQUIRES_UI_RELOAD"] = [=[您的改动已保存，但您必须重新加载（/reload）界面才能生效。
 
 你现在就重新加载吗？]=]
+--[[Translation missing --]]
+--[[ L["CHARACTER_LF_GUILD_MPLUS"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["CHARACTER_LF_GUILD_MPLUS_WITH_SCORE"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["CHARACTER_LF_GUILD_PVP"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["CHARACTER_LF_GUILD_RAID_DEFAULT"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["CHARACTER_LF_GUILD_RAID_HEROIC"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["CHARACTER_LF_GUILD_RAID_MYTHIC"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["CHARACTER_LF_GUILD_RAID_NORMAL"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["CHARACTER_LF_GUILD_SOCIAL"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["CHARACTER_LF_TEAM_MPLUS_DEFAULT"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["CHARACTER_LF_TEAM_MPLUS_WITH_SCORE"] = ""--]] 
 L["CHECKBOX_DISPLAY_WEEKLY"] = "显示每周最高记录"
 L["CHOOSE_HEADLINE_HEADER"] = "大秘境鼠标提示标题"
 L["CONFIG_SHOW_TOOLTIPS_HEADER"] = "大秘境和团本鼠标提示信息"
 L["CONFIG_WHERE_TO_SHOW_TOOLTIPS"] = "在哪里显示大秘境和团队副本进度"
 L["CONFIRM"] = "确认"
 L["COPY_RAIDERIO_PROFILE_URL"] = "复制 Raider.IO 人物主页链接"
+--[[Translation missing --]]
+--[[ L["COPY_RAIDERIO_RECRUITMENT_URL"] = ""--]] 
 L["COPY_RAIDERIO_URL"] = "复制 Raider.IO 链接 "
 L["CURRENT_MAINS_SCORE"] = "大号本季大秘分数"
 L["CURRENT_SCORE"] = "本季大秘分数"
 L["DISABLE_DEBUG_MODE_RELOAD"] = "你正在关闭Debug模式。点击确认会重新加载你的界面。"
+--[[Translation missing --]]
+--[[ L["DISABLE_RWF_MODE_BUTTON"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["DISABLE_RWF_MODE_BUTTON_TOOLTIP"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["DISABLE_RWF_MODE_RELOAD"] = ""--]] 
 L["DPS"] = "伤害输出"
 L["DPS_SCORE"] = "伤害输出分数"
 L["DUNGEON_SHORT_NAME_AD"] = "阿塔达萨"
@@ -47,11 +75,12 @@ L["DUNGEON_SHORT_NAME_DHT"] = "黑心林地 "
 L["DUNGEON_SHORT_NAME_DOS"] = "彼界"
 L["DUNGEON_SHORT_NAME_EOA"] = "艾萨拉之眼 "
 L["DUNGEON_SHORT_NAME_FH"] = "自由镇"
+L["DUNGEON_SHORT_NAME_GMBT"] = "集市（后三）"
 L["DUNGEON_SHORT_NAME_HOA"] = "赎罪大厅"
 L["DUNGEON_SHORT_NAME_HOV"] = "英灵殿"
 L["DUNGEON_SHORT_NAME_KR"] = "诸王之眠"
 L["DUNGEON_SHORT_NAME_LOWR"] = "卡拉赞下层 "
-L["DUNGEON_SHORT_NAME_MISTS"] = "仙林"
+L["DUNGEON_SHORT_NAME_MISTS"] = "仙林迷雾"
 L["DUNGEON_SHORT_NAME_ML"] = "暴富"
 L["DUNGEON_SHORT_NAME_MOS"] = "噬魂之喉 "
 L["DUNGEON_SHORT_NAME_NL"] = "奈萨里奥的巢穴 "
@@ -62,6 +91,7 @@ L["DUNGEON_SHORT_NAME_SEAT"] = "执政团之座 "
 L["DUNGEON_SHORT_NAME_SIEGE"] = "围攻伯拉勒斯"
 L["DUNGEON_SHORT_NAME_SOA"] = "晋升高塔"
 L["DUNGEON_SHORT_NAME_SOTS"] = "风暴神殿"
+L["DUNGEON_SHORT_NAME_STRT"] = "集市（前五）"
 L["DUNGEON_SHORT_NAME_TD"] = "托尔达戈"
 L["DUNGEON_SHORT_NAME_TM"] = "暴富矿区！ "
 L["DUNGEON_SHORT_NAME_TOP"] = "伤逝剧场"
@@ -81,6 +111,12 @@ L["ENABLE_NO_SCORE_COLORS"] = "关闭所有大秘境分数颜色"
 L["ENABLE_NO_SCORE_COLORS_DESC"] = "关闭分数颜色，所有分数会显示为白色。"
 L["ENABLE_RAIDERIO_CLIENT_ENHANCEMENTS"] = "允许启用Raider.IO客户端增强功能"
 L["ENABLE_RAIDERIO_CLIENT_ENHANCEMENTS_DESC"] = "开启这个将会从Raider.IO客户端下载你的角色具体的Raider.IO大秘境个人信息。"
+--[[Translation missing --]]
+--[[ L["ENABLE_RWF_MODE_BUTTON"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["ENABLE_RWF_MODE_BUTTON_TOOLTIP"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["ENABLE_RWF_MODE_RELOAD"] = ""--]] 
 L["ENABLE_SIMPLE_SCORE_COLORS"] = "使用简单大秘境分数颜色"
 L["ENABLE_SIMPLE_SCORE_COLORS_DESC"] = "分数使用基础装备等级颜色显示，这会让有色觉缺陷的用户更简单的区分分数等级。"
 L["EXPORTJSON_COPY_TEXT"] = "复制下方的链接然后在 |cff00C8FFhttps://raider.io|r 的任何地方粘贴来查看所有的玩家。"
@@ -88,6 +124,22 @@ L["GENERAL_TOOLTIP_OPTIONS"] = "常规鼠标提示选项"
 L["GUILD_BEST_SEASON"] = "公会：赛季最佳"
 L["GUILD_BEST_TITLE"] = "Raider.IO 记录"
 L["GUILD_BEST_WEEKLY"] = "公会：每周最佳"
+--[[Translation missing --]]
+--[[ L["GUILD_LF_MPLUS_DEFAULT"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["GUILD_LF_MPLUS_WITH_SCORE"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["GUILD_LF_PVP"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["GUILD_LF_RAID_DEFAULT"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["GUILD_LF_RAID_HEROIC"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["GUILD_LF_RAID_MYTHIC"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["GUILD_LF_RAID_NORMAL"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["GUILD_LF_SOCIAL"] = ""--]] 
 L["HEALER"] = "治疗"
 L["HEALER_SCORE"] = "治疗分数"
 L["HIDE_OWN_PROFILE"] = "隐藏个人Raider.IO信息鼠标提示"
@@ -180,6 +232,17 @@ L["RAID_BOSS_NYA_6"] = "无厌者夏德哈"
 L["RAID_BOSS_NYA_7"] = "德雷阿佳丝"
 L["RAID_BOSS_NYA_8"] = "伊格诺斯"
 L["RAID_BOSS_NYA_9"] = "维克修娜"
+L["RAID_BOSS_SFO_1"] = "警戒卫士"
+L["RAID_BOSS_SFO_10"] = "莱葛隆"
+L["RAID_BOSS_SFO_11"] = "典狱长"
+L["RAID_BOSS_SFO_2"] = "司垢莱克斯，无穷噬灭者"
+L["RAID_BOSS_SFO_3"] = "圣物匠塞·墨克斯"
+L["RAID_BOSS_SFO_4"] = "道茜歌妮，堕落先知"
+L["RAID_BOSS_SFO_5"] = "死亡万神殿原型体"
+L["RAID_BOSS_SFO_6"] = "首席造物师利许威姆"
+L["RAID_BOSS_SFO_7"] = "回收者黑伦度斯"
+L["RAID_BOSS_SFO_8"] = "安度因·乌瑞恩"
+L["RAID_BOSS_SFO_9"] = "恐惧双王"
 L["RAID_BOSS_SOD_1"] = "塔拉格鲁"
 L["RAID_BOSS_SOD_10"] = "希尔瓦娜斯·风行者"
 L["RAID_BOSS_SOD_2"] = "典狱长之眼"
@@ -217,8 +280,28 @@ L["RAIDERIO_MP_SCORE_COLON"] = "Raider.IO 大秘境分数："
 L["RAIDERIO_MYTHIC_OPTIONS"] = "Raider.IO 插件选项"
 L["RAIDING_DATA_HEADER"] = "Raider.IO 团队副本进度"
 L["RAIDING_DB_MODULES"] = "团队副本数据库模组"
+--[[Translation missing --]]
+--[[ L["RECRUITMENT_DB_MODULES"] = ""--]] 
 L["RELOAD_LATER"] = "我一会儿再重载界面（Reload）"
 L["RELOAD_NOW"] = "现在重载界面（Reload）"
+--[[Translation missing --]]
+--[[ L["RELOAD_RWF_MODE_BUTTON"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RELOAD_RWF_MODE_BUTTON_TOOLTIP"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RWF_MINIBUTTON_TOOLTIP"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RWF_SUBTITLE_LOGGING_FILTERED_LOOT"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RWF_SUBTITLE_LOGGING_LOOT"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RWF_TITLE"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["SEARCH_NAME_LABEL"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["SEARCH_REALM_LABEL"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["SEARCH_REGION_LABEL"] = ""--]] 
 L["SEASON_LABEL_1"] = "第一赛季"
 L["SEASON_LABEL_2"] = "第二赛季"
 L["SEASON_LABEL_3"] = "第三赛季"
@@ -231,6 +314,10 @@ L["SHOW_BEST_RUN"] = "标题显示最佳大秘记录"
 L["SHOW_BEST_RUN_DESC"] = "把玩家当前赛季的最佳大秘境记录显示在鼠标提示信息的顶部"
 L["SHOW_BEST_SEASON"] = "标题显示最佳赛季大秘境分数"
 L["SHOW_BEST_SEASON_DESC"] = "把玩家最佳赛季的大秘分数显示在鼠标提示信息的顶部。如果分数是之前赛季的，会备注是哪个赛季。"
+--[[Translation missing --]]
+--[[ L["SHOW_CHESTS_AS_MEDALS"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["SHOW_CHESTS_AS_MEDALS_DESC"] = ""--]] 
 L["SHOW_CLIENT_GUILD_BEST"] = "在地下城查找器中显示最佳纪录"
 L["SHOW_CLIENT_GUILD_BEST_DESC"] = "启用此项会在地下城查找器史诗钥匙界面中显示你公会的前5最佳纪录（赛季或每周）"
 L["SHOW_CURRENT_SEASON"] = "标题显示当前赛季大秘境分数"
@@ -267,6 +354,10 @@ L["SHOW_SCORE_WITH_MODIFIER"] = "用快捷键显示Raider.IO鼠标提示信息"
 L["SHOW_SCORE_WITH_MODIFIER_DESC"] = "除非按下快捷键，不然鼠标滑过玩家时不会显示数据"
 L["TANK"] = "坦克"
 L["TANK_SCORE"] = "坦克分数"
+--[[Translation missing --]]
+--[[ L["TEAM_LF_MPLUS_DEFAULT"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["TEAM_LF_MPLUS_WITH_SCORE"] = ""--]] 
 L["TIMED_10_RUNS"] = "10-14层限时通关次数"
 L["TIMED_15_RUNS"] = "15层以上限时通关次数"
 L["TIMED_20_RUNS"] = "20层以上限时通关次数"
@@ -284,6 +375,12 @@ L["USE_RAIDERIO_CLIENT_LIVE_TRACKING_SETTINGS"] = "允许Raider.IO客户端控�
 L["USE_RAIDERIO_CLIENT_LIVE_TRACKING_SETTINGS_DESC"] = "允许Raider.IO客户端（运行时）自动控制你的战斗日志设置。"
 L["WARNING_DEBUG_MODE_ENABLE"] = "|cffFFFFFF%s|r Debug模式已经开启. 输入 |cffFFFFFF/raiderio debug|r 关闭debug模式"
 L["WARNING_LOCK_POSITION_FRAME_AUTO"] = "Raider.IO：你必须先关闭Raider.IO个人页面的自动定位"
+--[[Translation missing --]]
+--[[ L["WARNING_RWF_MODE_ENABLE"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["WIPE_RWF_MODE_BUTTON"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["WIPE_RWF_MODE_BUTTON_TOOLTIP"] = ""--]] 
 
 	ns.L = L
 end

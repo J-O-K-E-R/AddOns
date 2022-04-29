@@ -119,16 +119,20 @@ function UF:GetAuraRow(element, row, col, growthY, width, height, anchor, invers
 		else
 			holder:SetPoint(anchor, element)
 		end
+	elseif element.resetRowHeight then
+		element:Height(height)
+
+		element.resetRowHeight = nil
 	end
 
 	return holder
 end
 
-function UF:GetAuraPosition(element)
+function UF:GetAuraPosition(element, onlyHeight)
 	local spacing = element.spacing or 0
 	local width = (element.size or 16) + spacing
 	local height = (not element.height and width) or element.height + spacing
-	local cols = floor(element:GetWidth() / width + 0.5)
+	if onlyHeight then return height end
 
 	local growthX = element.growthX == 'LEFT' and -1 or 1
 	local growthY = element.growthY == 'DOWN' and -1 or 1
@@ -141,6 +145,8 @@ function UF:GetAuraPosition(element)
 	local center = anchor == 'TOP' or anchor == 'BOTTOM'
 	local side = anchor == 'LEFT' or anchor == 'RIGHT'
 	local point = (center or side) and (y..x) or anchor
+
+	local cols = floor(element:GetWidth() / width + 0.5)
 
 	return anchor, inversed, growthX, growthY, width, height, cols, point, side and y
 end
@@ -156,25 +162,13 @@ end
 
 function UF:SetPosition(from, to)
 	if to < from then
-		if self.lastActive ~= to then
-			self.lastActive = to
-
-			if self.smartFluid then
-				self:SetScale(0.0001)
-				self.resetScale = true
-			else
-				local height = self.height or self.size
-				if height then self:Height(height) end
-			end
+		if self.smartFluid then
+			self:SetHeight(0.00001) -- dont scale this
+			self.resetRowHeight = true
+		else
+			self:Height(UF:GetAuraPosition(self, true))
 		end
-	elseif self.lastActive ~= to then
-		self.lastActive = to
-
-		if self.resetScale then
-			self:SetScale(1)
-			self.resetScale = nil
-		end
-
+	else
 		local anchor, inversed, growthX, growthY, width, height, cols, point, middle = UF:GetAuraPosition(self)
 		for index = from, to do
 			local button = self.active[index]
@@ -328,10 +322,7 @@ function UF:Configure_Auras(frame, which)
 	local auraType = which:lower()
 	local settings = db[auraType]
 	auras.db = settings
-
-	-- not onUpdateFrequency ignores targettarget
-	auras.auraSort = UF.SortAuraFuncs[not frame.onUpdateFrequency and settings.sortMethod]
-
+	auras.auraSort = UF.SortAuraFuncs[settings.sortMethod]
 	auras.smartPosition, auras.smartFluid = UF:SetSmartPosition(frame, db)
 	auras.attachTo = UF:GetAuraAnchorFrame(frame, settings.attachTo) -- keep below SetSmartPosition
 
@@ -365,7 +356,6 @@ function UF:Configure_Auras(frame, which)
 	auras.filterList = UF:ConvertFilters(auras, settings.priority)
 	auras.numAuras = settings.perrow
 	auras.numRows = settings.numrows
-	auras.lastActive = -1 -- for SetPosition
 
 	local x, y
 	if settings.attachTo == 'HEALTH' or settings.attachTo == 'POWER' then
@@ -381,7 +371,6 @@ function UF:Configure_Auras(frame, which)
 
 	auras:ClearAllPoints()
 	auras:Point(auras.initialAnchor, auras.attachTo, auras.anchorPoint, auras.xOffset, auras.yOffset)
-	auras:SetScale(1)
 
 	local index = 1
 	while auras[index] do
@@ -477,8 +466,7 @@ function UF:UpdateAuraSmartPoisition()
 			element:ClearAllPoints()
 			element:Point(other.initialAnchor, other.attachTo, other.anchorPoint, other.xOffset, other.yOffset)
 		else
-			local height = other.height or other.size
-			if height then other:Height(height) end
+			other:Height(UF:GetAuraPosition(other, true))
 		end
 	else
 		element:ClearAllPoints()

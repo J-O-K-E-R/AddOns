@@ -2,7 +2,7 @@
 -- www.vgermods.com
 -- © 2006-2022 Travis Spomer.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
 -- See Readme.htm for more information.
--- 
+--
 -- Gem information (Burning Crusade Classic)
 ------------------------------------------------------------
 
@@ -207,7 +207,7 @@ local PawnGemDataRare =
 { ID = 24057, R = true, B = true, Stats = { Healing = 9, SpellDamage = 3, Mp5 = 2 } }, -- Royal Nightseye
 { ID = 31863, R = true, B = true, Stats = { Ap = 8, Stamina = 6 } }, -- Balanced Nightseye
 { ID = 31865, R = true, B = true, Stats = { Ap = 8, Mp5 = 2 } }, -- Infused Nightseye
--- { ID = 35707, R = true, B = true, Stats = { DodgeRating = 4, Stamina = 6 } }, -- Regal Nightseye (PHASE 3)
+-- { ID = 35707, R = true, B = true, Stats = { DodgeRating = 4, Stamina = 6 } }, -- Regal Nightseye (PHASE 5)
 
 
 }
@@ -227,8 +227,8 @@ local PawnGemDataEpic =
 { ID = 32193, R = true, Stats = { Strength = 10 } }, -- Bold Crimson Spinel
 { ID = 32194, R = true, Stats = { Agility = 10 } }, -- Delicate Crimson Spinel
 { ID = 32195, R = true, Stats = { Healing = 22, SpellDamage = 8 } }, -- Teardrop Crimson Spinel
--- { ID = 32196, R = true, Stats = { SpellDamage = 12 } }, -- Runed Crimson Spinel (PHASE 5)
--- { ID = 32197, R = true, Stats = { Ap = 20 } }, -- Bright Crimson Spinel (PHASE 5)
+{ ID = 32196, R = true, Stats = { SpellDamage = 12 } }, -- Runed Crimson Spinel (PHASE 3)
+{ ID = 32197, R = true, Stats = { Ap = 20 } }, -- Bright Crimson Spinel (PHASE 3)
 { ID = 32198, R = true, Stats = { DodgeRating = 10 } }, -- Subtle Crimson Spinel
 { ID = 32199, R = true, Stats = { ParryRating = 10 } }, -- Flashing Crimson Spinel
 

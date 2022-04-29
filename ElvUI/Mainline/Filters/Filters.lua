@@ -302,6 +302,9 @@ G.unitframe.aurafilters.TurtleBuffs = {
 		[251231]	= Defaults(), -- Steelskin Potion
 	-- Covenant
 		[324867]	= Defaults(), -- Fleshcraft (Necrolord)
+	-- PvP
+		[363522]	= Defaults(), -- Gladiator's Eternal Aegis
+		[362699]	= Defaults(), -- Gladiator's Resolve
 	},
 }
 
@@ -371,7 +374,6 @@ G.unitframe.aurafilters.PlayerBuffs = {
 		[77764]		= Defaults(), -- Stampeding Roar (Cat)
 		[77761]		= Defaults(), -- Stampeding Roar (Bear)
 		[305497]	= Defaults(), -- Thorns
-		[233756]	= Defaults(), -- Moon and Stars (not used?)
 		[234084]	= Defaults(), -- Moon and Stars (PvP)
 		[22842]		= Defaults(), -- Frenzied Regeneration
 	-- Hunter
@@ -409,6 +411,7 @@ G.unitframe.aurafilters.PlayerBuffs = {
 		[205025]	= Defaults(), -- Presence of Mind
 		[198158]	= Defaults(), -- Mass Invisibility
 		[221404]	= Defaults(), -- Burning Determination
+		[324220]	= Defaults(), -- Deathborne (Covenant/Necrolord)
 	-- Monk
 		[122783]	= Defaults(), -- Diffuse Magic
 		[122278]	= Defaults(), -- Dampen Harm
@@ -451,6 +454,7 @@ G.unitframe.aurafilters.PlayerBuffs = {
 		[200652]	= Defaults(), -- Tyr's Deliverance
 		[216331]	= Defaults(), -- Avenging Crusader
 		[1044]		= Defaults(), -- Blessing of Freedom
+		[305395] 	= Defaults(), -- Blessing of Freedom (Unbound Freedom - Ret/Prot PvP)
 		[210256]	= Defaults(), -- Blessing of Sanctuary
 		[199545]	= Defaults(), -- Steed of Glory
 		[210294]	= Defaults(), -- Divine Favor
@@ -532,6 +536,7 @@ G.unitframe.aurafilters.PlayerBuffs = {
 	-- Warlock
 		[108416]	= Defaults(), -- Dark Pact
 		[113860]	= Defaults(), -- Dark Soul: Misery
+		[113858]	= Defaults(), -- Dark Soul: Instability
 		[104773]	= Defaults(), -- Unending Resolve
 		[221715]	= Defaults(), -- Essence Drain
 		[212295]	= Defaults(), -- Nether Ward
@@ -719,6 +724,34 @@ G.unitframe.aurafilters.RaidDebuffs = {
 		[366297]	= Defaults(6), -- Deconstruct (Tank Debuff)
 		[366288]	= Defaults(6), -- Force Slam (Stun)
 	----------------------------------------------------------
+	---------------- Old Dungeons (for 9.2.5) ----------------
+	----------------------------------------------------------
+	-- Operation Mechagon
+		[291928]	= Defaults(), -- Giga-Zap
+		[292267]	= Defaults(), -- Giga-Zap
+		[302274]	= Defaults(), -- Fulminating Zap
+		[298669]	= Defaults(), -- Taze
+		[295445]	= Defaults(), -- Wreck
+		[294929]	= Defaults(), -- Blazing Chomp
+		[297257]	= Defaults(), -- Electrical Charge
+		[294855]	= Defaults(), -- Blossom Blast
+		[291972]	= Defaults(), -- Explosive Leap
+		[285443]	= Defaults(), -- 'Hidden' Flame Cannon
+		[291974]	= Defaults(), -- Obnoxious Monologue
+		[296150]	= Defaults(), -- Vent Blast
+		[298602]	= Defaults(), -- Smoke Cloud
+		[296560]	= Defaults(), -- Clinging Static
+		[297283]	= Defaults(), -- Cave In
+		[291914]	= Defaults(), -- Cutting Beam
+		[302384]	= Defaults(), -- Static Discharge
+		[294195]	= Defaults(), -- Arcing Zap
+		[299572]	= Defaults(), -- Shrink
+		[300659]	= Defaults(), -- Consuming Slime
+		[300650]	= Defaults(), -- Suffocating Smog
+		[301712]	= Defaults(), -- Pounce
+		[299475]	= Defaults(), -- B.O.R.K
+		[293670]	= Defaults(), -- Chain Blade
+	----------------------------------------------------------
 	------------------ Shadowlands Dungeons ------------------
 	----------------------------------------------------------
 	-- Tazavesh, the Veiled Market
@@ -865,6 +898,94 @@ G.unitframe.aurafilters.RaidDebuffs = {
 		[323877]	= Defaults(), -- Echo Finger Laser X-treme
 		[334535]	= Defaults(), -- Beak Slice
 	--------------------------------------------------------
+	-------------------- Castle Nathria --------------------
+	--------------------------------------------------------
+	-- Shriekwing
+		[328897] = Defaults(), -- Exsanguinated
+		[330713] = Defaults(), -- Reverberating Pain
+		[329370] = Defaults(), -- Deadly Descent
+		[336494] = Defaults(), -- Echo Screech
+		[346301] = Defaults(), -- Bloodlight
+		[342077] = Defaults(), -- Echolocation
+	-- Huntsman Altimor
+		[335304] = Defaults(), -- Sinseeker
+		[334971] = Defaults(), -- Jagged Claws
+		[335111] = Defaults(), -- Huntsman's Mark 3
+		[335112] = Defaults(), -- Huntsman's Mark 2
+		[335113] = Defaults(), -- Huntsman's Mark 1
+		[334945] = Defaults(), -- Vicious Lunge
+		[334852] = Defaults(), -- Petrifying Howl
+		[334695] = Defaults(), -- Destabilize
+	-- Hungering Destroyer
+		[334228] = Defaults(), -- Volatile Ejection
+		[329298] = Defaults(), -- Gluttonous Miasma
+	-- Lady Inerva Darkvein
+		[325936] = Defaults(), -- Shared Cognition
+		[335396] = Defaults(), -- Hidden Desire
+		[324983] = Defaults(), -- Shared Suffering
+		[324982] = Defaults(), -- Shared Suffering (Partner)
+		[332664] = Defaults(), -- Concentrate Anima
+		[325382] = Defaults(), -- Warped Desires
+	-- Sun King's Salvation
+		[333002] = Defaults(), -- Vulgar Brand
+		[326078] = Defaults(), -- Infuser's Boon
+		[325251] = Defaults(), -- Sin of Pride
+		[341475] = Defaults(), -- Crimson Flurry
+		[341473] = Defaults(), -- Crimson Flurry Teleport
+		[328479] = Defaults(), -- Eyes on Target
+		[328889] = Defaults(), -- Greater Castigation
+	-- Artificer Xy'mox
+		[327902] = Defaults(), -- Fixate
+		[326302] = Defaults(), -- Stasis Trap
+		[325236] = Defaults(), -- Glyph of Destruction
+		[327414] = Defaults(), -- Possession
+		[328468] = Defaults(), -- Dimensional Tear 1
+		[328448] = Defaults(), -- Dimensional Tear 2
+		[340860] = Defaults(), -- Withering Touch
+	-- The Council of Blood
+		[327052] = Defaults(), -- Drain Essence 1
+		[327773] = Defaults(), -- Drain Essence 2
+		[346651] = Defaults(), -- Drain Essence Mythic
+		[328334] = Defaults(), -- Tactical Advance
+		[330848] = Defaults(), -- Wrong Moves
+		[331706] = Defaults(), -- Scarlet Letter
+		[331636] = Defaults(), -- Dark Recital 1
+		[331637] = Defaults(), -- Dark Recital 2
+	-- Sludgefist
+		[335470] = Defaults(), -- Chain Slam
+		[339181] = Defaults(), -- Chain Slam (Root)
+		[331209] = Defaults(), -- Hateful Gaze
+		[335293] = Defaults(), -- Chain Link
+		[335270] = Defaults(), -- Chain This One!
+		[342419] = Defaults(), -- Chain Them! 1
+		[342420] = Defaults(), -- Chain Them! 2
+		[335295] = Defaults(), -- Shattering Chain
+		[332572] = Defaults(), -- Falling Rubble
+	-- Stone Legion Generals
+		[334498] = Defaults(), -- Seismic Upheaval
+		[337643] = Defaults(), -- Unstable Footing
+		[334765] = Defaults(), -- Heart Rend
+		[334771] = Defaults(), -- Heart Hemorrhage
+		[333377] = Defaults(), -- Wicked Mark
+		[334616] = Defaults(), -- Petrified
+		[334541] = Defaults(), -- Curse of Petrification
+		[339690] = Defaults(), -- Crystalize
+		[342655] = Defaults(), -- Volatile Anima Infusion
+		[342698] = Defaults(), -- Volatile Anima Infection
+		[343881] = Defaults(), -- Serrated Tear
+	-- Sire Denathrius
+		[326851] = Defaults(), -- Blood Price
+		[327796] = Defaults(), -- Night Hunter
+		[327992] = Defaults(), -- Desolation
+		[328276] = Defaults(), -- March of the Penitent
+		[326699] = Defaults(), -- Burden of Sin
+		[329181] = Defaults(), -- Wracking Pain
+		[335873] = Defaults(), -- Rancor
+		[329951] = Defaults(), -- Impale
+		[327039] = Defaults(), -- Feeding Time
+		[332794] = Defaults(), -- Fatal Finesse
+		[334016] = Defaults(), -- Unworthy
+	--------------------------------------------------------
 	---------------- Sanctum of Domination -----------------
 	--------------------------------------------------------
 	-- The Tarragrue
@@ -963,7 +1084,6 @@ G.unitframe.aurafilters.RaidDebuffs = {
 	-------------- Sepulcher of the First Ones ---------------
 	----------------------------------------------------------
 	-- Vigilant Guardian
-		[360403] = Defaults(2), -- Force Field
 		[364447] = Defaults(3), -- Dissonance
 		[364904] = Defaults(6), -- Anti-Matter
 		[364881] = Defaults(5), -- Matter Disolution
@@ -977,7 +1097,6 @@ G.unitframe.aurafilters.RaidDebuffs = {
 		[360098] = Defaults(3), -- Warp Sickness
 		[366070] = Defaults(3), -- Volatile Residue
 	-- Artificer Xy'mox
-		[362850] = Defaults(2), -- Hyperlight Sparknova
 		[364030] = Defaults(3), -- Debilitating Ray
 		[365681] = Defaults(2), -- System Shock
 		[363413] = Defaults(4), -- Forerunner Rings A
@@ -994,10 +1113,12 @@ G.unitframe.aurafilters.RaidDebuffs = {
 		[361966] = Defaults(2), -- Infused Strikes
 	-- Prototype Pantheon
 		[365306] = Defaults(2), -- Invigorating Bloom
-		[361608] = Defaults(3), -- Burden of Sin
 		[361689] = Defaults(3), -- Wracking Pain
 		[366232] = Defaults(4), -- Animastorm
-		[364839] = Defaults(4), -- Sinful Projection
+		[364839] = Defaults(2), -- Sinful Projection
+		[360259] = Defaults(5), -- Gloom Bolt
+		[362383] = Defaults(5), -- Anima Bolt
+		[362352] = Defaults(6), -- Pinned
 	-- Lihuvim, Principle Architect
 		[360159] = Defaults(5), -- Unstable Protoform Energy
 		[363681] = Defaults(3), -- Deconstructing Blast
@@ -1010,14 +1131,29 @@ G.unitframe.aurafilters.RaidDebuffs = {
 		[360114] = Defaults(4), -- Ephemeral Fissure II
 	-- Anduin Wrynn
 		[365293] = Defaults(2), -- Befouled Barrier
-		[361817] = Defaults(3), -- Hopebreaker
 		[363020] = Defaults(3), -- Necrotic Claws
-		[365021] = Defaults(4), -- Wicked Star
+		[365021] = Defaults(5), -- Wicked Star (marked)
+		[365024] = Defaults(6), -- Wicked Star (hit)
 		[365445] = Defaults(3), -- Scarred Soul
 		[365008] = Defaults(4), -- Psychic Terror
+		[366849] = Defaults(6), -- Domination Word: Pain
 	-- Lords of Dread
+		[360148] = Defaults(5), -- Bursting Dread
+		[360012] = Defaults(4), -- Cloud of Carrion
+		[360146] = Defaults(4), -- Fearful Trepidation
+		[360241] = Defaults(6), -- Unsettling Dreams
 	-- Rygelon
+		[362206] = Defaults(6), -- Event Horizon
+		[362137] = Defaults(4), -- Corrupted Wound
+		[361548] = Defaults(5), -- Dark Eclipse
 	-- The Jailer
+		[362075] = Defaults(6), -- Domination
+		[365150] = Defaults(6), -- Rune of Domination
+		[363893] = Defaults(5), -- Martyrdom
+		[363886] = Defaults(5), -- Imprisonment
+		[365219] = Defaults(5), -- Chains of Anguish
+		[366285] = Defaults(6), -- Rune of Compulsion
+		[363332] = Defaults(5), -- Unbreaking Grasp
 	},
 }
 
@@ -1082,6 +1218,15 @@ G.unitframe.aurafilters.RaidBuffsElvUI = {
 		[344739]	= Defaults(), -- Spectral
 		[333227]	= Defaults(), -- Undying Rage
 		[322773]	= Defaults(), -- Blood Barrier
+	----------------------------------------------------------
+	--------------------- Castle Nathria ---------------------
+	----------------------------------------------------------
+	-- Sun King's Salvation
+		[343026] = Defaults(), -- Cloak of Flames
+	-- Stone Legion Generals
+		[329808] = Defaults(), -- Hardened Stone Form Grashaal
+		[329636] = Defaults(), -- Hardened Stone Form Kaal
+		[340037] = Defaults(), -- Volatile Stone Shell
 	----------------------------------------------------------
 	----------------- Sanctum of Domination ------------------
 	----------------------------------------------------------
@@ -1178,7 +1323,6 @@ G.unitframe.aurafilters.RaidBuffsElvUI = {
 		[359236] = Defaults(), -- Relocation Form
 	-- Anduin Wrynn
 		[364248] = Defaults(), -- Dark Zeal
-		[364247] = Defaults(), -- Dark Zeal II
 		[365030] = Defaults(), -- Wicked Star
 		[362862] = Defaults(), -- Army of the Dead
 	-- Lords of Dread
@@ -1194,6 +1338,7 @@ G.unitframe.aurafilters.RaidBuffsElvUI = {
 		[360945]	= Defaults(), -- Creation Catalyst Overcharge (Nascent Servitor)
 		[366309]	= Defaults(), -- Meltdown (Destabilized Core)
 		[365596]	= Defaults(), -- Overload (Destabilized Core)
+		[360750]	= Defaults(), -- Aurelid Lure
 	},
 }
 

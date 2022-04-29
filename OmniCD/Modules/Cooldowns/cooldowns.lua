@@ -23,6 +23,7 @@ local spell_updateOnCast = E.spell_updateOnCast
 local spell_sharedCDwTrinkets = E.spell_sharedCDwTrinkets
 local spell_benevolentFaeMajorCD = E.spell_benevolentFaeMajorCD
 local spell_symbolOfHopeMajorCD = E.spell_symbolOfHopeMajorCD
+local spell_cdmod_aura_temp = E.spell_cdmod_aura_temp
 local spell_majorCD = E.spell_majorCD
 local aura_free_spender = E.aura_free_spender
 local cd_start_aura_removed = E.cd_start_aura_removed
@@ -39,11 +40,9 @@ local cd_reduce_interrupts = E.cd_reduce_interrupts
 local cd_disable_aura_applied = E.cd_disable_aura_applied
 local covenant_abilities = E.covenant_abilities
 local covenant_IDToSpellID = E.covenant_IDToSpellID
-local merged_buff_fix = E.merged_buff_fix
 local RemoveHighlight = P.RemoveHighlight
 local userGUID = E.userGUID
 local BOOKTYPE_CATEGORY = E.BOOKTYPE_CATEGORY
-
 local FORBEARANCE_DURATION = E.isPreBCC and 60 or 30
 local SOULBIND_PODTENDER = 319217
 
@@ -92,15 +91,15 @@ local function GetHolyWordRT(info, guid, reducedTime)
 
 
 	if info.auras.isDivineConversation then
-		reducedTime = reducedTime + 15
+		reducedTime = reducedTime + (P.isPvP and 10 or 15)
 	end
 
 	return reducedTime
 end
 
 local function UpdateCdByReducer(info, guid, t, isHolyPriest)
-	local talent, duration, target, base, aura = t[1], t[2], t[3], t[4], t[5]
-	if aura and not info.auras[aura] then
+	local talent, duration, target, base, aura, notalent = t[1], t[2], t[3], t[4], t[5], t[6]
+	if (aura and not info.auras[aura]) or (notalent and info.talentData[notalent]) then
 		return
 	end
 
@@ -137,8 +136,8 @@ local function UpdateCdByReducer(info, guid, t, isHolyPriest)
 end
 
 local function UpdateCdBySpender(info, guid, t, isTrueBearing)
-	local talent, duration, target, base, aura = t[1], t[2], t[3], t[4], t[5]
-	if aura and not info.auras[aura] then
+	local talent, duration, target, base, aura, noaura = t[1], t[2], t[3], t[4], t[5], t[6]
+	if (aura and not info.auras[aura]) or (noaura and info.auras[noaura]) then
 		return
 	end
 
@@ -170,7 +169,7 @@ local function ProcessSpell(spellID, guid)
 		return
 	end
 
-	if not E.Comms.syncGUIDS[guid] then
+	if guid ~= userGUID and not E.Comms.syncGUIDS[guid] then
 		local covenantID = covenant_abilities[spellID]
 		if covenantID then
 			P.loginsessionData[guid] = P.loginsessionData[guid] or {}
@@ -217,8 +216,8 @@ local function ProcessSpell(spellID, guid)
 			local icon = info.spellIcons[k]
 			if icon then
 
-				if E.db.highlight.glowBuffs and mergedID and k == mergedID then
-					icon.buff = merged_buff_fix[spellID] or spellID
+				if isHighlightEnabled and mergedID and k == mergedID then
+					icon.buff = spellID
 				end
 
 				if E.isPreBCC then
@@ -236,8 +235,8 @@ local function ProcessSpell(spellID, guid)
 	local icon = info.spellIcons[spellID] or mergedIcon
 	if icon then
 
-		if E.db.highlight.glowBuffs and mergedIcon then
-			icon.buff = merged_buff_fix[spellID] or spellID
+		if isHighlightEnabled and mergedIcon then
+			icon.buff = spellID
 		end
 
 		if spell_preactive[spellID] then
@@ -362,44 +361,17 @@ local function ProcessSpell(spellID, guid)
 		end
 	end
 
+
 	local spender = cd_reduce_powerSpenders[spellID]
 	if spender then
 		local isTrueBearing = info.auras.isTrueBearing
-		local isUser = guid == userGUID
-		local isIgnoredWithoutSync
-		local isForcedWithSync
-
-		local procID = info.auras[spellID] or info.auras.all
-		if procID then
-			local t = aura_free_spender[procID]
-			if t[3] then
-				isForcedWithSync = t[1] == "all" or t[1] == spellID
-			else
-				isIgnoredWithoutSync = t[1] == spellID
+		if type(spender[1]) == "table" then
+			for i = 1, #spender do
+				local v = spender[i]
+				UpdateCdBySpender(info, guid, v, isTrueBearing)
 			end
-		end
-
-		local isPowerSync = not E.noPowerSync and (isUser or E.Comms.syncGUIDS[guid])
-		if (not isPowerSync and not isIgnoredWithoutSync) or (isPowerSync and isForcedWithSync) then
-			if type(spender[1]) == "table" then
-				for i = 1, #spender do
-					local t = spender[i]
-					UpdateCdBySpender(info, guid, t, isTrueBearing)
-				end
-			else
-				UpdateCdBySpender(info, guid, spender, isTrueBearing)
-			end
-		end
-
-
-		if isPowerSync and isUser and icon and icon.active then
-			local reducedTime
-			if spellID == 315341 then
-				reducedTime = E.Comms.spentPower
-			end
-			if reducedTime then
-				P:UpdateCooldown(icon, isTrueBearing and reducedTime * 2 or reducedTime)
-			end
+		else
+			UpdateCdBySpender(info, guid, spender, isTrueBearing)
 		end
 	end
 end
@@ -425,28 +397,14 @@ function CD:RegisterRemoveHighlightByCLEU(spellID)
 end
 
 
-local removeSpenderProc = function(srcGUID, spellID)
-	local info = groupInfo[srcGUID]
-	if info then
-		local k = info.auras[spellID]
-		if k then
-			local duration = P:GetBuffDuration(info.unit, k)
-			if not duration then
-				info.auras[spellID] = nil
-			end
-		end
-	end
-end
-
 for k, v in pairs(aura_free_spender) do
-	local spellID = v[1]
 	registeredEvents.SPELL_AURA_REMOVED[k] = function(info, srcGUID, spellID, destGUID)
-		info.auras[spellID] = nil
+		info.auras[v] = nil
 		RemoveHighlightByCLEU(info, srcGUID, spellID, destGUID)
 	end
 	registeredEvents.SPELL_AURA_APPLIED[k] = function(info, srcGUID)
-		info.auras[spellID] = k
-		E.TimerAfter(v[2], removeSpenderProc, srcGUID, spellID)
+		info.auras[v] = k
+
 	end
 end
 
@@ -528,9 +486,16 @@ do
 	for k in pairs(cd_reduce_damage) do
 		registeredEvents.SPELL_DAMAGE[k] = ReduceCdByDamage
 	end
-	registeredEvents.SPELL_HEAL[320751] = function(info, srcGUID, spellID, destGUID, _,_,_,_,_, criticalHeal)
-		ReduceCdByDamage(info, srcGUID, spellID, nil, criticalHeal)
+
+
+	registeredEvents.SPELL_DAMAGE[320752] = function(info, srcGUID, spellID, destGUID, critical)
+		E.TimerAfter(0.05, ReduceCdByDamage, info, srcGUID, spellID, destGUID, critical)
 	end
+
+	registeredEvents.SPELL_HEAL[320751] = function(info, srcGUID, spellID, destGUID, _,_,_,_,_, criticalHeal)
+		E.TimerAfter(0.05, ReduceCdByDamage, info, srcGUID, spellID, destGUID, criticalHeal)
+	end
+
 
 
 	registeredEvents.SPELL_CAST_SUCCESS[6343] = function(info)
@@ -626,7 +591,7 @@ do
 		if info.talentData[334525] then
 			local icon = info.spellIcons[DANCING_RUNE_WEAPON]
 			if icon and icon.active then
-				P:UpdateCooldown(icon, 3 * consumed)
+				P:UpdateCooldown(icon, 5 * consumed)
 			end
 		end
 	end
@@ -744,11 +709,13 @@ do
 
 	local removeBerserk = function(info, srcGUID, spellID, destGUID)
 		info = info or groupInfo[srcGUID]
-		if info and info.auras.isBerserk then
-			info.auras.isBerserk = nil
-			local icon = info.spellIcons[FRENZIED_REGEN]
-			if icon and icon.active then
-				P:UpdateCooldown(icon, 0, nil, 4)
+		if info then
+			if info.auras.isBerserk then
+				info.auras.isBerserk = nil
+				local icon = info.spellIcons[FRENZIED_REGEN]
+				if icon and icon.active then
+					P:UpdateCooldown(icon, 0, nil, 4)
+				end
 			end
 			RemoveHighlightByCLEU(info, srcGUID, spellID, destGUID)
 		end
@@ -762,9 +729,11 @@ do
 			if icon.active then
 				P:UpdateCooldown(icon, 0, nil, 0.25)
 			end
-			E.TimerAfter(15.1, removeBerserk, nil, srcGUID, spellID, destGUID)
+			E.TimerAfter(spellID == 50334 and 15.1 or 30.1, removeBerserk, nil, srcGUID, spellID, destGUID)
 		end
 	end
+	registeredEvents.SPELL_AURA_REMOVED[102558] = registeredEvents.SPELL_AURA_REMOVED[50334]
+	registeredEvents.SPELL_AURA_APPLIED[102558] = registeredEvents.SPELL_AURA_APPLIED[50334]
 
 end
 
@@ -777,11 +746,13 @@ do
 
 	local removeTrueShot = function(info, srcGUID, spellID, destGUID)
 		info = info or groupInfo[srcGUID]
-		if info and info.auras.isTrueShot then
-			info.auras.isTrueShot = nil
-			local icon = info.spellIcons[RAPID_FIRE]
-			if icon and icon.active then
-				P:UpdateCooldown(icon, 0, nil, 2.5)
+		if info then
+			if info.auras.isTrueShot then
+				info.auras.isTrueShot = nil
+				local icon = info.spellIcons[RAPID_FIRE]
+				if icon and icon.active then
+					P:UpdateCooldown(icon, 0, nil, 2.5)
+				end
 			end
 			RemoveHighlightByCLEU(info, srcGUID, spellID, destGUID)
 		end
@@ -857,8 +828,6 @@ do
 			info.auras.isArcaneProdigy = nil
 		end
 	end
-
-
 
 
 
@@ -1141,11 +1110,39 @@ do
 	end
 
 	registeredEvents.SPELL_CAST_SUCCESS[TRANSCENDENCE_TRANSFER] = function(info, srcGUID, spellID, destGUID)
-		if P.isPvP and info.talentData[353584] then
-			local icon = info.spellIcons[TRANSCENDENCE_TRANSFER]
-			if icon and (not info.auras.isStunned or info.auras.isStunned < 1) then
-				P:UpdateCooldown(icon, 15)
+		local icon = info.spellIcons[TRANSCENDENCE_TRANSFER]
+		if icon then
+			if not info.auras.isEscapeFromReality then
+				P:StartCooldown(icon, P.isPvP and info.talentData[353584] and (not info.auras.isStunned or info.auras.isStunned < 1) and icon.duration - 15 or icon.duration )
 			end
+		end
+	end
+
+
+
+
+	local removeEscapeFromReality = function(info, srcGUID, spellID, destGUID)
+		info = info or groupInfo[srcGUID]
+		if info and info.auras.isEscapeFromReality then
+			local icon = info.spellIcons[TRANSCENDENCE_TRANSFER]
+			if icon and not icon.active then
+
+
+
+				P:StartCooldown(icon, 35)
+			end
+			info.auras.isEscapeFromReality = nil
+		end
+	end
+
+
+	registeredEvents.SPELL_AURA_REMOVED[343249] = removeEscapeFromReality
+	registeredEvents.SPELL_AURA_APPLIED[343249] = function(info, srcGUID, spellID, destGUID)
+		if info.spellIcons[TRANSCENDENCE_TRANSFER] then
+
+			info.auras.isEscapeFromReality = true
+
+			E.TimerAfter(10, removeEscapeFromReality, nil, srcGUID, spellID, destGUID)
 		end
 	end
 end
@@ -1173,10 +1170,8 @@ do
 
 
 
-
-
-	local removeFallenOrder = function(_, srcGUID, spellID, destGUID)
-		local info = groupInfo[srcGUID]
+	local removeFallenOrder = function(info, srcGUID, spellID, destGUID)
+		info = info or groupInfo[srcGUID]
 		if info then
 			info.auras.isFallenOrder = nil
 			RemoveHighlightByCLEU(info, srcGUID, spellID, destGUID)
@@ -1186,8 +1181,7 @@ do
 	registeredEvents.SPELL_AURA_REMOVED[326860] = removeFallenOrder
 	registeredEvents.SPELL_AURA_APPLIED[326860] = function(info, srcGUID, spellID, destGUID)
 		if info.talentData[356818] and info.spellIcons[326860] then
-
-			info.auras.isFallenOrder = GetTime() + 21
+			info.auras.isFallenOrder = true
 			E.TimerAfter(24.1, removeFallenOrder, nil, srcGUID, spellID, destGUID)
 		end
 	end
@@ -1235,6 +1229,7 @@ end
 
 
 do
+
 	local removeMomentOfGlory = function(srcGUID, spellID, destGUID)
 		local info = groupInfo[srcGUID]
 		if info and info.auras.isMomentOfGlory then
@@ -1304,17 +1299,56 @@ do
 	end
 
 	registeredEvents.SPELL_CAST_SUCCESS[ASHEN_HALLOW] = function(info, srcGUID)
-		if not info.spellIcons[ASHEN_HALLOW] or not info.talentData[355447] then
-			return
-		end
+		if ( srcGUID ~= userGUID and not E.Comms.syncGUIDS[srcGUID] ) then
+			if not info.spellIcons[ASHEN_HALLOW] or not info.talentData[355447] then
+				return
+			end
 
-		local now = GetTime()
-		if info.bar.timer_ashenHallowTicker then
-			info.bar.timer_ashenHallowTicker:Cancel()
+			local now = GetTime()
+			if info.bar.timer_ashenHallowTicker then
+				info.bar.timer_ashenHallowTicker:Cancel()
+			end
+			info.auras.ashenHollowST = now
+			info.auras.ashenHollowLT = now
+			info.bar.timer_ashenHallowTicker = C_Timer.NewTicker(2, function() updateAshenHollow(srcGUID) end, 23)
 		end
-		info.auras.ashenHollowST = now
-		info.auras.ashenHollowLT = now
-		info.bar.timer_ashenHallowTicker = C_Timer.NewTicker(2, function() updateAshenHollow(srcGUID) end, 23)
+	end
+end
+
+
+registeredEvents.SPELL_AURA_APPLIED[337228] = function(info, srcGUID, spellID, destGUID)
+	local icon = info.spellIcons[24275]
+	if icon and icon.active then
+		P:ResetCooldown(icon)
+	end
+end
+
+
+do
+	local ARDENT_DEFENDER = 31850
+
+	local onADRemoval = function(srcGUID, spellID, destGUID)
+		local info = groupInfo[srcGUID]
+		local icon = info.spellIcons[ARDENT_DEFENDER]
+		if icon then
+			if info.auras.isSavedByAD then
+				info.auras.isSavedByAD = nil
+			elseif info.talentData[337838] then
+				P:UpdateCooldown(icon, 44.8)
+			end
+			RemoveHighlightByCLEU(info, srcGUID, spellID, destGUID)
+		end
+	end
+
+	registeredEvents.SPELL_AURA_REMOVED[ARDENT_DEFENDER] = function(info, srcGUID, spellID, destGUID)
+		E.TimerAfter(0.1, onADRemoval, srcGUID, spellID, destGUID)
+	end
+
+
+	registeredEvents.SPELL_HEAL[66235] = function(info)
+		if info.spellIcons[ARDENT_DEFENDER] and info.talentData[337838] then
+			info.auras.isSavedByAD = true
+		end
 	end
 end
 
@@ -1551,9 +1585,12 @@ end
 do
 	local TRICKS_OT_TRADE = 57934
 
-	registeredEvents.SPELL_AURA_REMOVED[TRICKS_OT_TRADE] = function(info, srcGUID, spellID, destGUID)
-		local icon = info.spellIcons[TRICKS_OT_TRADE]
 
+
+
+
+	registeredEvents.SPELL_AURA_REMOVED[TRICKS_OT_TRADE] = function(info, srcGUID, spellID, destGUID)
+		local icon = info.spellIcons[TRICKS_OT_TRADE] or info.spellIcons[221622]
 		if icon then
 			local statusBar = icon.statusBar
 			if statusBar then
@@ -1566,8 +1603,7 @@ do
 	end
 
 	local function StartTricksCD(info, srcGUID, spellID, destGUID)
-		local icon = info.spellIcons[TRICKS_OT_TRADE]
-
+		local icon = info.spellIcons[TRICKS_OT_TRADE] or info.spellIcons[221622]
 		if icon and srcGUID == destGUID then
 			local statusBar = icon.statusBar
 			if statusBar then
@@ -1674,62 +1710,84 @@ registeredEvents.SPELL_AURA_APPLIED[285514] = function(info)
 end
 
 
-local function ReduceFeralSpiritCD(info)
-	if info.talentData[335897] then
-		local icon = info.spellIcons[51533]
-		if icon and icon.active then
-			P:UpdateCooldown(icon, 2)
+do
+	local function ReduceFeralSpiritCD(info)
+		if info.talentData[335897] then
+			local icon = info.spellIcons[51533]
+			if icon and icon.active then
+				P:UpdateCooldown(icon, 2)
+			end
+		end
+	end
+	registeredEvents.SPELL_AURA_APPLIED[344179] = function(info)
+		info.auras.numMaelstrom = 1;
+		ReduceFeralSpiritCD(info);
+	end
+	registeredEvents.SPELL_AURA_APPLIED_DOSE[344179] = function(info, _,_,_,_,_,_, amount)
+		if ( info.auras.numMaelstrom ) then
+			info.auras.numMaelstrom = amount;
+			ReduceFeralSpiritCD(info);
+		end
+	end
+	registeredEvents.SPELL_AURA_REMOVED_DOSE[344179] = function(info, _,_,_,_,_,_, amount)
+		if ( info.auras.numMaelstrom ) then
+			info.auras.numMaelstrom = amount;
+		end
+	end
+	registeredEvents.SPELL_AURA_REMOVED[344179] = function(info)
+		info.auras.numMaelstrom = nil;
+	end
+
+	registeredEvents.SPELL_AURA_REFRESH[344179] = function(info)
+		if ( info.auras.numMaelstrom ) then
+			if ( info.auras.numMaelstrom == 10 ) then
+				info.auras.numMaelstrom = 11;
+			elseif ( info.auras.numMaelstrom == 11 ) then
+				ReduceFeralSpiritCD(info);
+			end
 		end
 	end
 end
-registeredEvents.SPELL_AURA_APPLIED[344179] = ReduceFeralSpiritCD
-registeredEvents.SPELL_AURA_APPLIED_DOSE[344179] = ReduceFeralSpiritCD
 
 
 registeredEvents.SPELL_PERIODIC_DAMAGE[188389] = function(info, srcGUID, spellID, destGUID, critical)
-	if not critical then
-		return
-	end
+	if ( critical ) then
+		if ( info.talentData[336734] ) then
+			local icon = info.spellIcons[198067] or info.spellIcons[192249];
+			if ( icon and icon.active ) then
+				P:UpdateCooldown(icon, 1);
+			end
+		end
 
-	if info.talentData[336734] then
-		local icon = info.spellIcons[198067] or info.spellIcons[192249]
-		if icon and icon.active then
-			P:UpdateCooldown(icon, 1)
+		if ( info.talentData[356250] ) then
+			local icon = info.spellIcons[320674];
+			if ( icon and icon.active ) then
+				P:UpdateCooldown(icon, 1);
+			end
 		end
 	end
 end
 
 
-registeredEvents.SPELL_DAMAGE[328928] = function(info, _,_, destGUID)
-	if info.talentData[356218] then
-		local now = GetTime()
-		if now > (info.auras.faeTransfusionLT or 0) then
-
-			local icon = info.spellIcons[198067] or info.spellIcons[192249]
-			if icon then
-				if icon.active then
-					P:UpdateCooldown(icon, 6)
-				end
-				return
-			end
-			icon = info.spellIcons[51533]
-			if icon then
-				if icon.active then
-					P:UpdateCooldown(icon, 7)
-				end
-				return
-			end
-			icon = info.spellIcons[108280]
-			if icon then
-				if icon.active then
-					P:UpdateCooldown(icon, 5)
-				end
-			end
-
-			info.auras.faeTransfusionLT = now + 0.1
+registeredEvents.SPELL_AURA_APPLIED[358945] = function(info)
+	if ( info.spec == 262 ) then
+		local icon = info.spellIcons[198067] or info.spellIcons[192249];
+		if ( icon and icon.active ) then
+			P:UpdateCooldown(icon, 6);
+		end
+	elseif ( info.spec == 263 ) then
+		local icon = info.spellIcons[51533];
+		if ( icon and icon.active ) then
+			P:UpdateCooldown(icon, 9);
+		end
+	elseif ( info.spec == 264 ) then
+		local icon = info.spellIcons[108280];
+		if ( icon and icon.active ) then
+			P:UpdateCooldown(icon, 5);
 		end
 	end
 end
+registeredEvents.SPELL_AURA_APPLIED_DOSE[358945] = registeredEvents.SPELL_AURA_APPLIED[358945]
 
 
 
@@ -1820,12 +1878,13 @@ do
 		info.bar.timer_inCombatTicker = nil
 	end
 
-	local function StartConsumablesCD(info, _, spellID)
+	local function StartConsumablesCD(info, srcGUID, spellID)
 		local icon = info.spellIcons[spellID]
 		if icon then
 			if spellID == 323436 then
 				local stacks = icon.Count:GetText()
-				stacks = (tonumber(stacks) or 3) - 1
+				stacks = tonumber(stacks)
+				stacks = (stacks and stacks > 0 and stacks or 3) - 1
 				icon.Count:SetText(stacks)
 				info.auras.purifySoulStacks = stacks
 			end
@@ -1849,7 +1908,9 @@ do
 				info.preActiveIcons[spellID] = icon
 				icon.icon:SetVertexColor(0.4, 0.4, 0.4)
 
-				info.bar.timer_inCombatTicker = C_Timer.NewTicker(5, function() startCdOutOfCombat(icon.guid) end, 200)
+
+					info.bar.timer_inCombatTicker = C_Timer.NewTicker(5, function() startCdOutOfCombat(icon.guid) end, 200)
+
 			else
 				info.preActiveIcons[spellID] = nil
 				icon.icon:SetVertexColor(1, 1, 1)
@@ -1861,7 +1922,9 @@ do
 
 	for i = 1, #consumables do
 		local spellID = consumables[i]
-		registeredEvents.SPELL_CAST_SUCCESS[spellID] = StartConsumablesCD
+
+		local event = spellID == 323436 and "SPELL_HEAL" or "SPELL_CAST_SUCCESS"
+		registeredEvents[event][spellID] = StartConsumablesCD
 	end
 
 
@@ -2018,16 +2081,16 @@ end
 do
 	local THUNDERCHARGE = 204366
 
-
-
-
 	local BLESSING_OF_AUTUMN = 328622
 	local BENEVOLENT_FAERIE = 327710
 	local BENEVOLENT_FAERIE_FERMATA = 345453
 	local HAUNTED_MASK = 356968
 	local SYMBOL_OF_HOPE = 265144
 	local EMERALD_SLUMBER = 329042
+
 	local INTIMIDATION_TACTICS = 353210
+	local DECRYPTED_URH_CYPHER = 368239
+	local ARCHITECTS_INGENUITY = 368937
 
 	local function UpdateCDRR(info, modRate, excludeID)
 		local newRate = (info.modRate or 1) * modRate
@@ -2051,16 +2114,14 @@ do
 						if majorCD and (majorCD == true or majorCD == info.spec) and info.auras.benevolent then
 							totRate = totRate * info.auras.benevolent
 						end
-						if spellID == 300728 and info.auras.intimidation then
-							totRate = totRate * info.auras.intimidation
-						end
 
 						icon.cooldown:SetCooldown(newTime, cd, totRate)
 						active.startTime = newTime
 						active.duration = cd
+						active.totRate = abs(1 - totRate) >= 0.05 and totRate
 
 						local statusBar = icon.statusBar
-						if statusBar and abs(1 - totRate) < 0.05 then
+						if statusBar then
 							P.OmniCDCastingBarFrame_OnEvent(statusBar.CastingBar, E.db.extraBars[statusBar.key].reverseFill and "UNIT_SPELLCAST_CHANNEL_UPDATE" or "UNIT_SPELLCAST_CAST_UPDATE")
 						end
 					end
@@ -2072,10 +2133,8 @@ do
 	end
 
 
-
 	local function UpdateIconRR(info, modType, modRate)
 		local newRate = (info.auras[modType] or 1) * modRate
-		local isRemoved = abs(1 - newRate) < 0.05
 		local tbl = spell_majorCD[modType]
 		local now = GetTime()
 
@@ -2088,16 +2147,23 @@ do
 					local newTime = now - elapsed
 					local cd = (active.duration * modRate)
 
+					local totRate
 					if spellID == 115203 then
-						icon.cooldown:SetCooldown(newTime, cd, (newRate * (info.auras[modType == "symbol" and "benevolent" or "symbol"] or 1)) * (info.modRate or 1))
+						totRate = (newRate * (info.auras[modType == "symbol" and "benevolent" or "symbol"] or 1)) * (info.modRate or 1)
+						icon.cooldown:SetCooldown(newTime, cd, totRate)
+					elseif spellID == 300728 then
+						totRate = newRate
+						icon.cooldown:SetCooldown(newTime, cd, totRate)
 					else
-						icon.cooldown:SetCooldown(newTime, cd, newRate * (info.modRate or 1))
+						totRate = newRate * (info.modRate or 1)
+						icon.cooldown:SetCooldown(newTime, cd, totRate)
 					end
 					active.startTime = newTime
 					active.duration = cd
+					active.totRate = abs(1 - totRate) >= 0.05 and totRate
 
 					local statusBar = icon.statusBar
-					if statusBar and isRemoved then
+					if statusBar then
 						P.OmniCDCastingBarFrame_OnEvent(statusBar.CastingBar, E.db.extraBars[statusBar.key].reverseFill and "UNIT_SPELLCAST_CHANNEL_UPDATE" or "UNIT_SPELLCAST_CAST_UPDATE")
 					end
 
@@ -2106,7 +2172,7 @@ do
 			end
 		end
 
-		info.auras[modType] = not isRemoved and newRate
+		info.auras[modType] = abs(1 - newRate) >= 0.05 and newRate
 	end
 
 	local function RemoveModRate(info, srcGUID, spellID, destGUID)
@@ -2120,16 +2186,27 @@ do
 				UpdateIconRR(destInfo, "intimidation", 3)
 			end
 		elseif spellID == BENEVOLENT_FAERIE then
-			if destInfo.auras["benevolent"] then
-				UpdateIconRR(destInfo, "benevolent", 2)
+			if destInfo.auras.isBenevolent then
+				if destInfo.auras.isHauntedCDR then
+					UpdateIconRR(destInfo, "benevolent", 3)
+					destInfo.auras.isHauntedCDR = nil
+				else
+					UpdateIconRR(destInfo, "benevolent", 2)
+				end
+				destInfo.auras.isBenevolent = nil
 			end
 		elseif spellID == BENEVOLENT_FAERIE_FERMATA then
-			if destInfo.auras["benevolent"] then
+			if destInfo.auras.isFermata then
 				UpdateIconRR(destInfo, "benevolent", 1.8)
+				destInfo.auras.isFermata = nil
 			end
 		elseif spellID == HAUNTED_MASK then
-			if destInfo.auras["benevolent"] and destInfo.auras.haunted then
-				UpdateIconRR(destInfo, "benevolent", 1.5)
+			if destInfo.auras.isHauntedMask == srcGUID then
+				if destInfo.auras.isHauntedCDR then
+					UpdateIconRR(destInfo, "benevolent", 1.5)
+					destInfo.auras.isHauntedCDR = nil
+				end
+				destInfo.auras.isHauntedMask = nil
 			end
 		elseif spellID == SYMBOL_OF_HOPE then
 			if destInfo.auras["symbol"] then
@@ -2144,14 +2221,18 @@ do
 			RemoveHighlightByCLEU(destInfo, srcGUID, spellID, destGUID)
 		elseif spellID == EMERALD_SLUMBER then
 			if destInfo.auras[spellID] then
-				UpdateCDRR(destInfo, 5, EMERALD_SLUMBER)
+				UpdateCDRR(destInfo, 5, spellID)
 				destInfo.auras[spellID] = nil
 			end
 			RemoveHighlightByCLEU(destInfo, srcGUID, spellID, destGUID)
-		else
+		elseif spellID == BLESSING_OF_AUTUMN then
 			if destInfo.auras[spellID] then
-
 				UpdateCDRR(destInfo, 1.3)
+				destInfo.auras[spellID] = nil
+			end
+		elseif spellID == ARCHITECTS_INGENUITY then
+			if destInfo.auras[spellID] then
+				UpdateCDRR(destInfo, 1.05)
 				destInfo.auras[spellID] = nil
 			end
 		end
@@ -2166,16 +2247,22 @@ do
 		if spellID == INTIMIDATION_TACTICS then
 			UpdateIconRR(destInfo, "intimidation", 1/3)
 		elseif spellID == BENEVOLENT_FAERIE then
-			UpdateIconRR(destInfo, "benevolent", 0.5)
+			if destInfo.auras.isHauntedMask and not destInfo.auras.isHauntedCDR then
+				destInfo.auras.isHauntedCDR = true
+				UpdateIconRR(destInfo, "benevolent", 1/3)
+			else
+				UpdateIconRR(destInfo, "benevolent", 0.5)
+			end
+			destInfo.auras.isBenevolent = true
 		elseif spellID == BENEVOLENT_FAERIE_FERMATA then
 			UpdateIconRR(destInfo, "benevolent", 1/1.8)
-
-
+			destInfo.auras.isFermata = true
 		elseif spellID == HAUNTED_MASK then
-			if destInfo.auras.benevolent then
-				destInfo.auras.haunted = true
+			if destInfo.auras.isBenevolent and not destInfo.auras.isHauntedMask and not destInfo.auras.isHauntedCDR then
+				destInfo.auras.isHauntedCDR = true
 				UpdateIconRR(destInfo, "benevolent", 1/1.5)
 			end
+			destInfo.auras.isHauntedMask = srcGUID
 		elseif spellID == SYMBOL_OF_HOPE then
 			local _,_,_, startTimeMS, endTimeMS = UnitChannelInfo(info and info.unit or "player")
 			if startTimeMS and endTimeMS then
@@ -2183,12 +2270,16 @@ do
 				UpdateIconRR(destInfo, "symbol", 1 / ((60 + channelTime) / channelTime))
 			end
 		elseif spellID == EMERALD_SLUMBER then
+			if srcGUID == destGUID then
+				destInfo.auras[spellID] = true
+				UpdateCDRR(destInfo, 0.2, EMERALD_SLUMBER)
+			end
+		elseif spellID == BLESSING_OF_AUTUMN then
 			destInfo.auras[spellID] = true
-			UpdateCDRR(destInfo, 0.2, EMERALD_SLUMBER)
-		elseif spellID ~= THUNDERCHARGE or srcGUID ~= destGUID then
-			destInfo.auras[spellID] = true
-
 			UpdateCDRR(destInfo, 1/1.3)
+		elseif spellID == ARCHITECTS_INGENUITY then
+			destInfo.auras[spellID] = true
+			UpdateCDRR(destInfo, 1/1.05)
 		end
 	end
 
@@ -2213,6 +2304,12 @@ do
 	end
 	registeredEvents.SPELL_AURA_APPLIED[BLESSING_OF_AUTUMN] = UpdateModRate
 	registeredEvents.SPELL_AURA_REMOVED[BLESSING_OF_AUTUMN] = RemoveModRate
+	registeredEvents.SPELL_CAST_SUCCESS[BENEVOLENT_FAERIE] = function(info, srcGUID, spellID, destGUID)
+		local destInfo = groupInfo[destGUID]
+		if destInfo then
+			destInfo.auras.benevolentSRC = destGUID
+		end
+	end
 	registeredEvents.SPELL_AURA_APPLIED[BENEVOLENT_FAERIE] = UpdateModRate
 	registeredEvents.SPELL_AURA_REMOVED[BENEVOLENT_FAERIE] = RemoveModRate
 	registeredEvents.SPELL_AURA_APPLIED[BENEVOLENT_FAERIE_FERMATA] = UpdateModRate
@@ -2225,6 +2322,8 @@ do
 	registeredEvents.SPELL_AURA_REMOVED[EMERALD_SLUMBER] = RemoveModRate
 	registeredEvents.SPELL_AURA_APPLIED[INTIMIDATION_TACTICS] = UpdateModRate
 	registeredEvents.SPELL_AURA_REMOVED[INTIMIDATION_TACTICS] = RemoveModRate
+	registeredEvents.SPELL_AURA_APPLIED[ARCHITECTS_INGENUITY] = UpdateModRate
+	registeredEvents.SPELL_AURA_REMOVED[ARCHITECTS_INGENUITY] = RemoveModRate
 
 	registeredUserEvents.SPELL_AURA_REMOVED[THUNDERCHARGE] = RemoveModRate
 	registeredUserEvents.SPELL_CAST_SUCCESS[THUNDERCHARGE] = registeredEvents.SPELL_CAST_SUCCESS[THUNDERCHARGE]
@@ -2240,14 +2339,41 @@ do
 	registeredUserEvents.SPELL_AURA_REMOVED[SYMBOL_OF_HOPE] = RemoveModRate
 
 
+	registeredEvents.SPELL_CAST_SUCCESS[17] = function(_,_,_, destGUID)
+		local destInfo = groupInfo[destGUID];
+		if ( destInfo ) then
+			if ( destInfo.auras.isHauntedMask and destInfo.auras.isHauntedCDR ) then
+				UpdateIconRR(destInfo, "benevolent", 1.5);
+				destInfo.auras.isHauntedCDR = nil;
+			end
+		end
+	end
+	registeredEvents.SPELL_CAST_SUCCESS[186263] = function(_,_,_, destGUID)
+		local destInfo = groupInfo[destGUID];
+		if ( destInfo and destInfo.auras.isBenevolent ) then
+			if ( destInfo.auras.isHauntedMask and not destInfo.auras.isHauntedCDR ) then
+				UpdateIconRR(destInfo, "benevolent", 1/1.5);
+				destInfo.auras.isHauntedCDR = true;
+			end
+		end
+	end
+	registeredEvents.SPELL_CAST_SUCCESS[2061] = registeredEvents.SPELL_CAST_SUCCESS[186263]
+
+	registeredUserEvents.SPELL_CAST_SUCCESS[17] = registeredEvents.SPELL_CAST_SUCCESS[17]
+	registeredUserEvents.SPELL_CAST_SUCCESS[186263] = registeredEvents.SPELL_CAST_SUCCESS[186263]
+	registeredUserEvents.SPELL_CAST_SUCCESS[2061] = registeredEvents.SPELL_CAST_SUCCESS[186263]
 
 
-
-
-
-
-
-
+	registeredHostileEvents.SPELL_AURA_REMOVED[DECRYPTED_URH_CYPHER] = function(destInfo)
+		if ( destInfo.auras[DECRYPTED_URH_CYPHER] ) then
+			UpdateCDRR(destInfo, 3);
+			destInfo.auras[DECRYPTED_URH_CYPHER] = nil;
+		end
+	end
+	registeredHostileEvents.SPELL_AURA_APPLIED[DECRYPTED_URH_CYPHER] = function(destInfo)
+		destInfo.auras[DECRYPTED_URH_CYPHER] = true;
+		UpdateCDRR(destInfo, 1/3);
+	end
 end
 
 
@@ -2354,6 +2480,45 @@ registeredHostileEvents.RANGE_DAMAGE.PALADIN = ReduceDivineShieldCD
 registeredHostileEvents.SPELL_DAMAGE.PALADIN = ReduceDivineShieldCD
 registeredHostileEvents.SPELL_ABSORBED.PALADIN = ReduceDivineShieldCD
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+if ( not E.isPreBCC ) then
+	for k in pairs(E.sync_periodic) do
+		if ( registeredEvents.SPELL_CAST_SUCCESS[k] ) then
+			local func = registeredEvents.SPELL_CAST_SUCCESS[k]
+			registeredEvents.SPELL_CAST_SUCCESS[k] = function(info, srcGUID, spellID, destGUID)
+				func(info, srcGUID, spellID, destGUID)
+				E.Comms.ForceSync()
+			end
+		else
+			registeredEvents.SPELL_CAST_SUCCESS[k] = E.Comms.ForceSync
+		end
+	end
+end
+
 setmetatable(registeredEvents, nil)
 setmetatable(registeredUserEvents, nil)
 setmetatable(registeredHostileEvents, nil)
@@ -2383,6 +2548,9 @@ function P:SetDisabledColorScheme(destInfo)
 end
 
 local function UpdateDeadStatus(destInfo)
+	if ( E.isPreBCC and UnitHealth(destInfo.unit) > 1 ) then
+		return;
+	end
 	P:SetDisabledColorScheme(destInfo)
 	destInfo.isDead = true
 	destInfo.bar:RegisterUnitEvent("UNIT_HEALTH", destInfo.unit)
@@ -2470,7 +2638,7 @@ else
 
 				local mark = E.db.extraBars.interruptBar.showRaidTargetMark and RAID_TARGET_MARKERS[destRaidFlags]
 				if mark then
-					statusBar.CastingBar.Text:SetText(statusBar.name .. mark)
+					statusBar.CastingBar.Text:SetText(format("%s %s", statusBar.name, mark))
 				end
 			end
 		end
@@ -2545,6 +2713,9 @@ else
 			end
 
 
+
+
+
 			local func = registeredEvents[event] and registeredEvents[event][spellID]
 			if func then
 				func(info, srcGUID, spellID, destGUID, critical, destFlags, amount, overkill, destName, resisted)
@@ -2579,7 +2750,6 @@ else
 						if icon and icon.active then
 							local now = GetTime()
 							if now > (info.auras.time_sinisterTeachings or 0) then
-
 								P:UpdateCooldown(icon, info.spec == 270 and 2.5 or 5)
 								info.auras.time_sinisterTeachings = now + 0.75
 							end
@@ -2588,14 +2758,11 @@ else
 				end
 			elseif (event == "SPELL_HEAL" or event == "SPELL_PERIODIC_HEAL" ) and resisted then
 				if info.class == "MONK" then
-					local fallenOrderET = spellID ~= 191894 and info.auras.isFallenOrder
-					if fallenOrderET then
+					if spellID ~= 191894 and (spellID ~= 191840 or event == "SPELL_PERIODIC_HEAL") and info.auras.isFallenOrder then
 						local icon = info.spellIcons[326860]
 						if icon and icon.active then
 							local now = GetTime()
-
-							if now > (info.auras.time_sinisterTeachings or fallenOrderET - 18 ) and now < fallenOrderET then
-
+							if now > (info.auras.time_sinisterTeachings or 0) then
 								P:UpdateCooldown(icon, info.spec == 270 and 2.5 or 5)
 								info.auras.time_sinisterTeachings = now + 0.75
 							end

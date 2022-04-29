@@ -23,10 +23,10 @@ do
     ---@field public MAX_LEVEL number @The currently accessible expansion max level to the playerbase
     ---@field public REGION_TO_LTD string[] @Region ID to LTD conversion table
     ---@field public FACTION_TO_ID number[] @Faction group string to ID conversion table
-    ---@field public PLAYER_REGION string @"us","kr","eu","tw","cn"
-    ---@field public PLAYER_REGION_ID number @1 (us), 2 (kr), 3 (eu), 4 (tw), 5 (cn)
-    ---@field public PLAYER_FACTION number @1 (alliance), 2 (horde), 3 (neutral)
-    ---@field public PLAYER_FACTION_TEXT string @"Alliance", "Horde", "Neutral"
+    ---@field public PLAYER_REGION string @`us`, `kr`, `eu`, `tw`, `cn`
+    ---@field public PLAYER_REGION_ID number @`1` (us), `2` (kr), `3` (eu), `4` (tw), `5` (cn)
+    ---@field public PLAYER_FACTION number @`1` (alliance), `2` (horde), `3` (neutral)
+    ---@field public PLAYER_FACTION_TEXT string @`Alliance`, `Horde`, `Neutral`
     ---@field public PLAYER_NAME string @The name of the player character
     ---@field public PLAYER_REALM string @The realm of the player character
     ---@field public PLAYER_REALM_SLUG string @The realm slug of the player character
@@ -42,6 +42,16 @@ do
     ---@field public RAID_DIFFICULTY table<number, RaidDifficulty> @Table of 1=normal, 2=heroic, 3=mythic difficulties and their names and colors
     ---@field public PREVIOUS_SEASON_SCORE_RELEVANCE_THRESHOLD number @Threshold that current season must surpass from previous season to be considered better and shown as primary in addon
     ---@field public PREVIOUS_SEASON_MAIN_SCORE_RELEVANCE_THRESHOLD number @Threshold that current season current character must surpass from previous season main to be considered better and shown as primary in addon
+    ---@field public CUSTOM_ICONS table<string, table<string, CustomIcon>> @Map over custom icons separated by file. Each icon supports a custom metatable for request handling
+    ---@field public REGIONS_RESET_TIME table<string, number> @Maps each region string to their weekly reset timer
+    ---@field public KEYSTONE_AFFIX_SCHEDULE number[] @Maps each weekly rotation, primarily for Tyrannical (`9`) and Fortified (`10`) tracking
+    ---@field public KEYSTONE_AFFIX_INTERNAL table<number, string> @Maps each affix ID to a internal string version like `tyrannical` (`9`) and `fortified` (`10`)
+    ---@field public KEYSTONE_AFFIX_TEXTURE table<number, string> @Maps each affix to a texture string Tyrannical (`9`/`-9`) and Fortified (`10`/`-10`)
+    ---@field public RECRUITMENT_ENTITY_TYPES table<string, number> @Table over recruitment entity types.
+    ---@field public RECRUITMENT_ENTITY_TYPE_URL_SUFFIX table<number, string> @Table over recruitment entity type profile url suffixes.
+    ---@field public RECRUITMENT_ACTIVITY_TYPES table<string, number> @Table over recruitment activity types.
+    ---@field public RECRUITMENT_ACTIVITY_TYPE_ICONS table<number, string|number> @Table over recruitment activity type icons.
+    ---@field public RECRUITMENT_ROLE_ICONS table<string, string> @Table over recruitment role icons.
 
     ns.Print = function(text, r, g, b, ...)
         r, g, b = r or 1, g or 1, b or 0
@@ -58,7 +68,7 @@ do
     ns.PLAYER_FACTION_TEXT = nil
     ns.OUTDATED_CUTOFF = 86400 * 3 -- number of seconds before we start warning about stale data (warning the user should update their addon)
     ns.OUTDATED_BLOCK_CUTOFF = 86400 * 7 -- number of seconds before we hide the data (block showing score as its most likely inaccurate)
-    ns.PROVIDER_DATA_TYPE = {MythicKeystone = 1, Raid = 2, PvP = 3}
+    ns.PROVIDER_DATA_TYPE = {MythicKeystone = 1, Raid = 2, Recruitment = 3, PvP = 4}
     ns.LOOKUP_MAX_SIZE = floor(2^18-1)
     ns.CURRENT_SEASON = 1
     ns.RAIDERIO_ADDON_DOWNLOAD_URL = "https://rio.gg/addon"
@@ -71,8 +81,149 @@ do
 
     -- threshold for comparing current character's previous season score to current score
     -- meaning: once current score exceeds this fraction of previous season, then show current season
-    ns.PREVIOUS_SEASON_SCORE_RELEVANCE_THRESHOLD = 0.75
-    ns.PREVIOUS_SEASON_MAIN_SCORE_RELEVANCE_THRESHOLD = 0.75
+    ns.PREVIOUS_SEASON_SCORE_RELEVANCE_THRESHOLD = 0.9
+    ns.PREVIOUS_SEASON_MAIN_SCORE_RELEVANCE_THRESHOLD = 0.9
+
+    ---Use `ns.CUSTOM_ICONS.FILENAME.KEY` to get the raw icon table.
+    ---
+    ---Use `ns.CUSTOM_ICONS.FILENAME.KEY("Texture")` to retrieve the `CustomIconTexture` for the icon.
+    ---
+    ---Use `ns.CUSTOM_ICONS.FILENAME.KEY("TextureMarkup")` to retrieve the texture markup `string` for the icon.
+    ns.CUSTOM_ICONS = {
+        affixes = {
+            TYRANNICAL_OFF = { 32, 32, 0, 0, 16/32, 32/32, 16/32, 32/32, 0, 0 },
+            FORTIFIED_OFF = { 32, 32, 0, 0, 16/32, 32/32, 0/32, 16/32, 0, 0 },
+            TYRANNICAL_ON = { 32, 32, 0, 0, 0/32, 16/32, 16/32, 32/32, 0, 0 },
+            FORTIFIED_ON = { 32, 32, 0, 0, 0/32, 16/32, 0/32, 16/32, 0, 0 },
+        },
+        icons = {
+            RAIDERIO_COLOR_CIRCLE = { 256, 256, 0, 0, 0/256, 64/256, 0/256, 64/256, 0, 0 },
+            RAIDERIO_WHITE_CIRCLE = { 256, 256, 0, 0, 64/256, 128/256, 0/256, 64/256, 0, 0 },
+            RAIDERIO_BLACK_CIRCLE = { 256, 256, 0, 0, 128/256, 192/256, 0/256, 64/256, 0, 0 },
+            RAIDERIO_COLOR = { 256, 256, 0, 0, 0/256, 64/256, 64/256, 128/256, 0, 0 },
+            RAIDERIO_WHITE = { 256, 256, 0, 0, 64/256, 128/256, 64/256, 128/256, 0, 0 },
+            RAIDERIO_BLACK = { 256, 256, 0, 0, 128/256, 192/256, 64/256, 128/256, 0, 0 },
+        },
+    }
+
+    -- Finalize the `ns.CUSTOM_ICONS` table
+    do
+
+        ---@class CustomIcon
+        ---@field public filePath string
+
+        ---@class CustomIconTexture
+        ---@field public width number @The requested width that we should use for the texture.
+        ---@field public height number @The requested height that we should use for the texture.
+        ---@field public texture string @The texture filepath for use with `:SetTexture(...)`
+        ---@field public texCoord table @The texture coordinates for use with `:SetTexCoord(unpack(...))`
+        ---@field public textureWidth number @The real texture width.
+        ---@field public textureHeight number @The real texture height.
+
+        local Handlers = {
+            ---@param self CustomIcon
+            ---@param left number
+            ---@param right number
+            ---@param top number
+            ---@param bottom number
+            ---@return CustomIconTexture
+            Texture = function(self, _, _, width, height, left, right, top, bottom)
+                return {
+                    width = width,
+                    height = height,
+                    texture = self.filePath,
+                    texCoord = { left, right, top, bottom },
+                    textureWidth = self[3],
+                    textureHeight = self[4],
+                }
+            end,
+            ---@param self CustomIcon
+            TextureMarkup = function(self, ...)
+                return CreateTextureMarkup(self.filePath, ...)
+            end,
+        }
+
+        local Utils = {
+            GetSize = function(size, fallback)
+                if type(fallback) ~= "number" then
+                    fallback = 0
+                end
+                if type(size) ~= "number" or size <= 0 then
+                    return fallback
+                end
+                return size
+            end,
+            GetKey = function(key, size)
+                if size > 0 then
+                    return format("%s_%d", key, size)
+                end
+                return key
+            end,
+            GetKeySize = function(self, key, size)
+                size = self.GetSize(size, 0)
+                return self.GetKey(key, size), size
+            end,
+        }
+
+        local Metatable = {
+            __metatable = false,
+            __call = function(self, key, ...)
+                local handler = Handlers[key]
+                if not handler then
+                    return
+                end
+                local rawKey, size = Utils:GetKeySize(key, ...)
+                local rawVal = rawget(self, rawKey)
+                if rawVal ~= nil then
+                    return rawVal
+                end
+                local fileWidth, fileHeight, width, height, left, right, top, bottom, xOffset, yOffset = unpack(self)
+                local realWidth = (right * fileWidth) - (left * fileWidth)
+                local realHeight = (bottom * fileHeight) - (top * fileHeight)
+                if realWidth >= size or realHeight >= size then
+                    width, height = size, size
+                else
+                    rawKey = key
+                end
+                rawVal = handler(self, fileWidth, fileHeight, width, height, left, right, top, bottom, xOffset, yOffset)
+                rawset(self, rawKey, rawVal)
+                return rawVal
+            end,
+        }
+
+        for fileName, fileIcons in pairs(ns.CUSTOM_ICONS) do
+            for _, iconInfo in pairs(fileIcons) do
+                iconInfo.filePath = "Interface\\AddOns\\RaiderIO\\icons\\" .. fileName
+                setmetatable(iconInfo, Metatable)
+            end
+        end
+
+    end
+
+    ns.REGIONS_RESET_TIME = {
+        us = 1135695600,
+        eu = 1135753200,
+        tw = 1135810800,
+        kr = 1135810800,
+        cn = 1135810800,
+    }
+
+    ns.KEYSTONE_AFFIX_SCHEDULE = {
+        9,  -- Tyrannical
+        10, -- Fortified
+    }
+
+    ns.KEYSTONE_AFFIX_INTERNAL = {
+        [9] = "tyrannical",
+        [10] = "fortified",
+    }
+
+    ns.KEYSTONE_AFFIX_TEXTURE = {
+        [-9] = ns.CUSTOM_ICONS.affixes.TYRANNICAL_OFF("TextureMarkup"),
+        [-10] = ns.CUSTOM_ICONS.affixes.FORTIFIED_OFF("TextureMarkup"),
+        [9] = ns.CUSTOM_ICONS.affixes.TYRANNICAL_ON("TextureMarkup"),
+        [10] = ns.CUSTOM_ICONS.affixes.FORTIFIED_ON("TextureMarkup"),
+    }
 
     ---@class RoleIcon
     ---@field full string @The full icon in "|T|t" syntax
@@ -164,6 +315,40 @@ do
             name = L.RAID_DIFFICULTY_NAME_MYTHIC,
             color = { 0.64, 0.21, 0.93, hex = "a335ee" }
         }
+    }
+
+    ns.RECRUITMENT_ENTITY_TYPES = {
+        character = 0,
+        guild = 1,
+        team = 2
+    }
+
+    ns.RECRUITMENT_ENTITY_TYPE_URL_SUFFIX = {
+        [ns.RECRUITMENT_ENTITY_TYPES.guild] = "guild-recruitment",
+        [ns.RECRUITMENT_ENTITY_TYPES.character] = "recruitment",
+        [ns.RECRUITMENT_ENTITY_TYPES.team] = "team-recruitment"
+    }
+
+    ns.RECRUITMENT_ACTIVITY_TYPES = {
+        guildraids = 0,
+        guildpvp = 1,
+        guildsocial = 2,
+        guildkeystone = 3,
+        teamkeystone = 4
+    }
+
+    ns.RECRUITMENT_ACTIVITY_TYPE_ICONS = {
+        [ns.RECRUITMENT_ACTIVITY_TYPES.guildraids] = 4062765, -- achievement_raid_torghastraid
+        [ns.RECRUITMENT_ACTIVITY_TYPES.guildpvp] = 236329, -- achievement_arena_2v2_7
+        [ns.RECRUITMENT_ACTIVITY_TYPES.guildsocial] = 1495827, -- inv_7xp_inscription_talenttome01
+        [ns.RECRUITMENT_ACTIVITY_TYPES.guildkeystone] = 255346, -- achievement_dungeon_gloryoftheraider
+        [ns.RECRUITMENT_ACTIVITY_TYPES.teamkeystone] = 255345 -- achievement_dungeon_gloryofthehero
+    }
+
+    ns.RECRUITMENT_ROLE_ICONS = {
+        dps = "|T2202478:14:16:0:0:128:32:0:32:2:30|t",
+        healer = "|T2202478:14:16:0:0:128:32:33:65:2:30|t",
+        tank = "|T2202478:14:16:0:0:128:32:67:99:2:30|t"
     }
 
 end
@@ -351,6 +536,17 @@ do
     ---@return ScoreTiersSimpleCollection<number, ScoreTierSimple>
     function ns:GetScoreTiersSimplePrevData()
         return ns.SCORE_TIERS_SIMPLE_PREV or ns.previousScoreTiersSimple -- DEPRECATED: ns.previousScoreTiersSimple
+    end
+
+    ---@class RecruitmentTitle
+    ---@field public [1] string
+    ---@field public [2] number?
+
+    ---@class RecruitmentTitlesCollection
+
+    ---@return RecruitmentTitlesCollection<number, RecruitmentTitle>
+    function ns:GetRecruitmentTitles()
+        return ns.CUSTOM_TITLES
     end
 
 end
@@ -706,7 +902,11 @@ do
         showRoleIcons = true,
         profilePoint = { point = nil, x = 0, y = 0 },
         debugMode = false,
-        rwfMode = false -- NEW in 9.1
+        rwfMode = false, -- NEW in 9.1
+        rwfBackgroundMode = true, -- NEW in 9.2
+        rwfBackgroundRemindAt = 10, -- NEW in 9.2
+        rwfMiniPoint = { point = nil, x = 0, y = 0 }, -- NEW in 9.2
+        showMedalsInsteadOfText = false,-- NEW in 9.1.5
     }
 
     -- fallback metatable looks up missing keys into the fallback config table
@@ -1076,7 +1276,7 @@ do
         if unitExists then
             unit = arg1
             if unitIsPlayer then
-                name, realm = UnitName(arg1)
+                name, realm = UnitNameUnmodified(arg1)
                 realm = realm and realm ~= "" and realm or GetNormalizedRealmName()
             end
             return name, realm, unit
@@ -1137,12 +1337,12 @@ do
         local collectionIndex = 0
         for i = 1, C_BattleNet.GetFriendNumGameAccounts(index), 1 do
             local accountInfo = C_BattleNet.GetFriendGameAccountInfo(index, i)
-            if accountInfo and accountInfo.clientProgram == BNET_CLIENT_WOW and (not accountInfo.wowProjectID or accountInfo.wowProjectID ~= WOW_PROJECT_CLASSIC) then
+            if accountInfo and accountInfo.clientProgram == BNET_CLIENT_WOW and (not accountInfo.wowProjectID or accountInfo.wowProjectID == WOW_PROJECT_MAINLINE) then
                 if accountInfo.realmName then
                     accountInfo.characterName = accountInfo.characterName .. "-" .. accountInfo.realmName:gsub("%s+", "")
                 end
                 collectionIndex = collectionIndex + 1
-                collection[collectionIndex] = {accountInfo.characterName, ns.FACTION_TO_ID[accountInfo.factionName], tonumber(accountInfo.characterLevel)}
+                collection[collectionIndex] = { accountInfo.characterName, ns.FACTION_TO_ID[accountInfo.factionName], tonumber(accountInfo.characterLevel) }
             end
         end
         if not getAllChars then
@@ -1317,22 +1517,61 @@ do
         return 0.62, 0.62, 0.62
     end
 
+    ---@type table<string, string>
+    local MEDAL_TEXTURE = {
+        none = 982414,
+        none2 = 982414,
+        bronze = 627120,
+        bronze2 = 627121,
+        silver = 627125,
+        silver2 = 607862,
+        gold = 627122,
+        gold2 = 607858,
+        plat = 627123,
+        plat2 = 627124,
+    }
+
+    for k, v in pairs(MEDAL_TEXTURE) do
+        MEDAL_TEXTURE[k] = CreateTextureMarkup(v, 64, 64, 10, 10, 20/64, (20+22)/64, 20/64, (20+22)/64, -2, 0) -- 20 left/top and 22 width/height looks pretty good
+    end
+
     ---@param chests number @the amount of chests/upgrades at the end of the keystone run. returns a string containing stars representing each chest/upgrade.
-    function util:GetNumChests(chests)
-        local stars = ""
-        if chests < 1 then
-            return stars
+    function util:GetNumChests(chests, isInactive)
+        if config:Get("showMedalsInsteadOfText") then -- TODO: isInactive
+            if not chests or chests < 1 then
+                return MEDAL_TEXTURE.none
+            elseif chests > 3 then
+                return MEDAL_TEXTURE.plat
+            elseif chests > 2 then
+                return MEDAL_TEXTURE.gold
+            elseif chests > 1 then
+                return MEDAL_TEXTURE.silver
+            end
+            return MEDAL_TEXTURE.bronze
         end
+        if not chests or chests < 1 then
+            return ""
+        end
+        local stars = {
+            isInactive and "|cffb28d2e" or "|cffffcf40",
+        }
         for i = 1, chests do
-            stars = stars .. "+"
+            stars[i + 1] = "+"
         end
-        return "|cffffcf40" .. stars .. "|r"
+        stars[chests + 2] = "|r"
+        return table.concat(stars, "")
     end
 
     ---@param chests number @the amount of chests/upgrades at the end of the keystone run. returns the color representing the depletion or timed result.
-    function util:GetKeystoneChestColor(chests)
+    function util:GetKeystoneChestColor(chests, asHex)
         if not chests or chests < 1 then
-            return 0.62, 0.62, 0.62
+            if asHex then
+                return "808080"
+            end
+            return 0.5, 0.5, 0.5
+        end
+        if asHex then
+            return "FFFFFF"
         end
         return 1, 1, 1
     end
@@ -1340,6 +1579,144 @@ do
     ---@param level number @The keystone level.
     function util:GetKeystoneAverageScoreForLevel(level)
         return SCORE_STATS[level]
+    end
+
+    ---@param weekOffset number @optional weekly offset. set this to 1 for next week affixes.
+    ---@return number, string @`affixID`, `affixInternal`
+    function util:GetWeeklyAffix(weekOffset)
+        local timestamp = (time() - util:GetTimeZoneOffset()) + 604800 * (weekOffset or 0)
+        local timestampWeeklyReset = ns.REGIONS_RESET_TIME[ns.PLAYER_REGION]
+        local diff = difftime(timestamp, timestampWeeklyReset)
+        local index = floor(diff / 604800) % #ns.KEYSTONE_AFFIX_SCHEDULE + 1
+        local affixID = ns.KEYSTONE_AFFIX_SCHEDULE[index]
+        return affixID, affixID and ns.KEYSTONE_AFFIX_INTERNAL[affixID]
+    end
+
+    ---@type FontString
+    local TOOLTIP_TEXT_FONTSTRING do
+        TOOLTIP_TEXT_FONTSTRING = UIParent:CreateFontString(nil, nil, "GameTooltipText")
+        local fontWidget = _G.GameTooltipTextRight2 ---@type FontString
+        local fontObject = fontWidget:GetFontObject()
+        if fontObject then
+            TOOLTIP_TEXT_FONTSTRING:SetFontObject(fontObject)
+        else
+            TOOLTIP_TEXT_FONTSTRING:SetFont(fontWidget:GetFont())
+        end
+    end
+
+    ---@param text string @The text to measure the width in pixels. Assumes standard tooltip font when calculating.
+    ---@return number @Text width of the text in pixels.
+    function util:GetTooltipTextWidth(text)
+        TOOLTIP_TEXT_FONTSTRING:SetText(text)
+        TOOLTIP_TEXT_FONTSTRING:Show()
+        local width = TOOLTIP_TEXT_FONTSTRING:GetUnboundedStringWidth()
+        TOOLTIP_TEXT_FONTSTRING:Hide()
+        return width
+    end
+
+    ---@param width number @The width of the transparent texture.
+    ---@param height number @Optional height, defaults to 1px if ommited, not required, but available if needed.
+    ---@return string @String containing texture escape sequence. If width provided is 0 or less, the return is an empty string.
+    function util:GetTextPaddingTexture(width, height)
+        if not width or width <= 0 then
+            return ""
+        end
+        return format("|T982414:%d:%d:0:0:64:64:0:1:0:1|t", height or 1, width)
+    end
+
+    function util:GetRaiderIOProfileUrl(...)
+        local name, realm = util:GetNameRealm(...)
+        local realmSlug = util:GetRealmSlug(realm, true)
+        return format("https://raider.io/characters/%s/%s/%s?utm_source=addon", ns.PLAYER_REGION, realmSlug, name), name, realm, realmSlug
+    end
+
+    function util:GetRaiderIORecruitmentProfileUrl(urlSuffix, ...)
+        local name, realm = util:GetNameRealm(...)
+        local realmSlug = util:GetRealmSlug(realm, true)
+        return format("https://raider.io/characters/%s/%s/%s/%s?utm_source=addon", ns.PLAYER_REGION, realmSlug, name, urlSuffix), name, realm, realmSlug
+    end
+
+    local COPY_PROFILE_URL_POPUP = {
+        id = "RAIDERIO_COPY_URL",
+        text = "%s",
+        button2 = CLOSE,
+        hasEditBox = true,
+        hasWideEditBox = true,
+        editBoxWidth = 350,
+        preferredIndex = 3,
+        timeout = 0,
+        whileDead = true,
+        hideOnEscape = true,
+        OnShow = function(self)
+            self:SetWidth(420)
+            local editBox = _G[self:GetName() .. "WideEditBox"] or _G[self:GetName() .. "EditBox"]
+            editBox:SetText(self.text.text_arg2)
+            editBox:SetFocus()
+            editBox:HighlightText(false)
+            local button = _G[self:GetName() .. "Button2"]
+            button:ClearAllPoints()
+            button:SetWidth(200)
+            button:SetPoint("CENTER", editBox, "CENTER", 0, -30)
+        end,
+        EditBoxOnEscapePressed = function(self)
+            self:GetParent():Hide()
+        end,
+        OnHide = nil,
+        OnAccept = nil,
+        OnCancel = nil
+    }
+
+    StaticPopupDialogs[COPY_PROFILE_URL_POPUP.id] = COPY_PROFILE_URL_POPUP
+
+    function util:ShowCopyRaiderIOProfilePopup(...)
+        local url, name, realm = util:GetRaiderIOProfileUrl(...)
+        if IsModifiedClick("CHATLINK") then
+            local editBox = ChatFrame_OpenChat(url, DEFAULT_CHAT_FRAME)
+            editBox:HighlightText()
+        else
+            StaticPopup_Show(COPY_PROFILE_URL_POPUP.id, format("%s (%s)", name, realm), url)
+        end
+    end
+
+    function util:ShowCopyRaiderIORecruitmentProfilePopup(recruitmentEntityType, ...)
+        local recruitmentSuffix = ns.RECRUITMENT_ENTITY_TYPE_URL_SUFFIX[recruitmentEntityType]
+        local url, name, realm = util:GetRaiderIORecruitmentProfileUrl(recruitmentSuffix, ...)
+        if IsModifiedClick("CHATLINK") then
+            local editBox = ChatFrame_OpenChat(url, DEFAULT_CHAT_FRAME)
+            editBox:HighlightText()
+        else
+            StaticPopup_Show(COPY_PROFILE_URL_POPUP.id, format("%s (%s)", name, realm), url)
+        end
+    end
+
+    ---@param frame Frame
+    ---@param icon CustomIcon
+    function util:CreateTextureFromIcon(frame, icon)
+        local info = icon("Texture") ---@type CustomIconTexture
+        local texture = frame:CreateTexture()
+        texture:SetTexture(info.texture)
+        texture:SetTexCoord(info.texCoord[1], info.texCoord[2], info.texCoord[3], info.texCoord[4])
+        return texture, info
+    end
+
+    ---@param button Button
+    ---@param icon CustomIcon
+    function util:SetButtonTextureFromIcon(button, icon)
+        local info = icon("Texture") ---@type CustomIconTexture
+        if not button.normalTexture then
+            button.normalTexture = util:CreateTextureFromIcon(button, icon)
+        end
+        if not button.pushedTexture then
+            button.pushedTexture = util:CreateTextureFromIcon(button, icon)
+        end
+        if not button.disabledTexture then
+            button.disabledTexture = util:CreateTextureFromIcon(button, icon)
+            button.disabledTexture:SetDesaturation(true)
+        end
+        button:SetNormalTexture(button.normalTexture)
+        button:SetPushedTexture(button.pushedTexture)
+        button:SetDisabledTexture(button.disabledTexture)
+        return info
     end
 
 end
@@ -1584,7 +1961,7 @@ do
 
     local function CreateExportButton()
         local button = CreateFrame("Button", addonName .. "_ExportButton", _G.LFGListFrame)
-        button:SetPoint("BOTTOMRIGHT", button:GetParent(), "BOTTOM", 4, 6)
+        button:SetPoint("BOTTOMRIGHT", button:GetParent(), "BOTTOM", -12, 7)
         button:SetSize(16, 16)
         -- script handlers
         button:SetScript("OnEnter", function() button.Border:SetVertexColor(1, 1, 1) end)
@@ -1667,199 +2044,6 @@ do
 
 end
 
--- dropdown.lua
--- dependencies: module, config, util + LibDropDownExtension
-do
-
-    ---@class DropDownModule : Module
-    local dropdown = ns:NewModule("DropDown") ---@type DropDownModule
-    local config = ns:GetModule("Config") ---@type ConfigModule
-    local util = ns:GetModule("Util") ---@type UtilModule
-
-    local copyUrlPopup = {
-        id = "RAIDERIO_COPY_URL",
-        text = "%s",
-        button2 = CLOSE,
-        hasEditBox = true,
-        hasWideEditBox = true,
-        editBoxWidth = 350,
-        preferredIndex = 3,
-        timeout = 0,
-        whileDead = true,
-        hideOnEscape = true,
-        OnShow = function(self)
-            self:SetWidth(420)
-            local editBox = _G[self:GetName() .. "WideEditBox"] or _G[self:GetName() .. "EditBox"]
-            editBox:SetText(self.text.text_arg2)
-            editBox:SetFocus()
-            editBox:HighlightText(false)
-            local button = _G[self:GetName() .. "Button2"]
-            button:ClearAllPoints()
-            button:SetWidth(200)
-            button:SetPoint("CENTER", editBox, "CENTER", 0, -30)
-        end,
-        EditBoxOnEscapePressed = function(self)
-            self:GetParent():Hide()
-        end,
-        OnHide = nil,
-        OnAccept = nil,
-        OnCancel = nil
-    }
-
-    local validTypes = {
-        ARENAENEMY = true,
-        BN_FRIEND = true,
-        CHAT_ROSTER = true,
-        COMMUNITIES_GUILD_MEMBER = true,
-        COMMUNITIES_WOW_MEMBER = true,
-        FOCUS = true,
-        FRIEND = true,
-        GUILD = true,
-        GUILD_OFFLINE = true,
-        PARTY = true,
-        PLAYER = true,
-        RAID = true,
-        RAID_PLAYER = true,
-        SELF = true,
-        TARGET = true,
-        WORLD_STATE_SCORE = true
-    }
-
-    -- if the dropdown is a valid type of dropdown then we mark it as acceptable to check for a unit on it
-    local function IsValidDropDown(bdropdown)
-        return (bdropdown == LFGListFrameDropDown and config:Get("enableLFGDropdown")) or (type(bdropdown.which) == "string" and validTypes[bdropdown.which])
-    end
-
-    -- get name and realm from dropdown or nil if it's not applicable
-    local function GetNameRealmForDropDown(bdropdown)
-        local unit = bdropdown.unit
-        local bnetIDAccount = bdropdown.bnetIDAccount
-        local menuList = bdropdown.menuList
-        local quickJoinMember = bdropdown.quickJoinMember
-        local quickJoinButton = bdropdown.quickJoinButton
-        local clubMemberInfo = bdropdown.clubMemberInfo
-        local tempName, tempRealm = bdropdown.name, bdropdown.server
-        local name, realm, level
-        -- unit
-        if not name and UnitExists(unit) then
-            if UnitIsPlayer(unit) then
-                name, realm = util:GetNameRealm(unit)
-                level = UnitLevel(unit)
-            end
-            -- if it's not a player it's pointless to check further
-            return name, realm, level
-        end
-        -- bnet friend
-        if not name and bnetIDAccount then
-            local fullName, _, charLevel = util:GetNameRealmForBNetFriend(bnetIDAccount)
-            if fullName then
-                name, realm = util:GetNameRealm(fullName)
-                level = charLevel
-            end
-            -- if it's a bnet friend we assume if eligible the name and realm is set, otherwise we assume it's not eligible for a url
-            return name, realm, level
-        end
-        -- lfd
-        if not name and menuList then
-            for i = 1, #menuList do
-                local whisperButton = menuList[i]
-                if whisperButton and (whisperButton.text == _G.WHISPER_LEADER or whisperButton.text == _G.WHISPER) then
-                    name, realm = util:GetNameRealm(whisperButton.arg1)
-                    break
-                end
-            end
-        end
-        -- quick join
-        if not name and (quickJoinMember or quickJoinButton) then
-            local memberInfo = quickJoinMember or quickJoinButton.Members[1]
-            if memberInfo.playerLink then
-                name, realm, level = util:GetNameRealmFromPlayerLink(memberInfo.playerLink)
-            end
-        end
-        -- dropdown by name and realm
-        if not name and tempName then
-            name, realm = util:GetNameRealm(tempName, tempRealm)
-            if clubMemberInfo and clubMemberInfo.level and (clubMemberInfo.clubType == Enum.ClubType.Guild or clubMemberInfo.clubType == Enum.ClubType.Character) then
-                level = clubMemberInfo.level
-            end
-        end
-        -- if we don't got both we return nothing
-        if not name or not realm then
-            return
-        end
-        return name, realm, level
-    end
-
-    -- converts the name and realm into a copyable link
-    local function ShowCopyDialog(name, realm)
-        local realmSlug = util:GetRealmSlug(realm, true)
-        local url = format("https://raider.io/characters/%s/%s/%s?utm_source=addon", ns.PLAYER_REGION, realmSlug, name)
-        if IsModifiedClick("CHATLINK") then
-            local editBox = ChatFrame_OpenChat(url, DEFAULT_CHAT_FRAME)
-            editBox:HighlightText()
-        else
-            StaticPopup_Show(copyUrlPopup.id, format("%s (%s)", name, realm), url)
-        end
-    end
-
-    -- tracks the currently active dropdown name and realm for lookup
-    local selectedName, selectedRealm, selectedLevel
-
-    ---@type CustomDropDownOption[]
-    local unitOptions
-
-    ---@param options CustomDropDownOption[]
-    local function OnToggle(bdropdown, event, options, level, data)
-        if event == "OnShow" then
-            if not config:Get("showDropDownCopyURL") then
-                return
-            end
-            if not IsValidDropDown(bdropdown) then
-                return
-            end
-            selectedName, selectedRealm, selectedLevel = GetNameRealmForDropDown(bdropdown)
-            if not selectedName or not util:IsMaxLevel(selectedLevel, true) then
-                return
-            end
-            if not options[1] then
-                for i = 1, #unitOptions do
-                    options[i] = unitOptions[i]
-                end
-                return true
-            end
-        elseif event == "OnHide" then
-            if options[1] then
-                for i = #options, 1, -1 do
-                    options[i] = nil
-                end
-                return true
-            end
-        end
-    end
-
-    ---@type LibDropDownExtension
-    local LibDropDownExtension = LibStub and LibStub:GetLibrary("LibDropDownExtension-1.0", true)
-
-    function dropdown:CanLoad()
-        return LibDropDownExtension
-    end
-
-    function dropdown:OnLoad()
-        self:Enable()
-        unitOptions = {
-            {
-                text = L.COPY_RAIDERIO_PROFILE_URL,
-                func = function()
-                    ShowCopyDialog(selectedName, selectedRealm)
-                end
-            }
-        }
-        LibDropDownExtension:RegisterEvent("OnShow OnHide", OnToggle, 1, dropdown)
-        StaticPopupDialogs[copyUrlPopup.id] = copyUrlPopup
-    end
-
-end
-
 -- provider.lua
 -- dependencies: module, callback, config, util
 do
@@ -1888,7 +2072,7 @@ do
 
     ---@class DataProvider : DataProviderRaid
     ---@field public name string
-    ---@field public data number @1 (mythic_keystone), 2 (raid), 3 (pvp)
+    ---@field public data number @1 (mythic_keystone), 2 (raid), 3 (recruitment), 4 (pvp)
     ---@field public region string @"eu", "kr", "tw", "us"
     ---@field public faction number @1 (alliance), 2 (horde)
     ---@field public date string @"2017-06-03T00:41:07Z"
@@ -1923,12 +2107,14 @@ do
         -- first available providers matching our faction and region
         local firstKeystoneProvider = provider:GetProviderByType(ns.PROVIDER_DATA_TYPE.MythicKeystone, ns.PLAYER_FACTION, ns.PLAYER_REGION)
         local firstRaidProvider = provider:GetProviderByType(ns.PROVIDER_DATA_TYPE.Raid, ns.PLAYER_FACTION, ns.PLAYER_REGION)
+        local firstRecruitmentProvider = provider:GetProviderByType(ns.PROVIDER_DATA_TYPE.Recruitment, ns.PLAYER_FACTION, ns.PLAYER_REGION)
         local firstPvpProvider = provider:GetProviderByType(ns.PROVIDER_DATA_TYPE.PvP, ns.PLAYER_FACTION, ns.PLAYER_REGION)
         -- create and append proxy providers (fallback to false to avoid nil gaps in the table for the ipairs)
         local aliasRealm
         for _, aliasProvider in ipairs({
             firstKeystoneProvider or false,
             firstRaidProvider or false,
+            firstRecruitmentProvider or false,
             firstPvpProvider or false,
         }) do
             if aliasProvider then
@@ -2031,7 +2217,7 @@ do
     end
 
     function provider:GetProvidersDates()
-        local keystoneDate, raidDate, pvpDate
+        local keystoneDate, raidDate, recruitmentDate, pvpDate
         for i = 1, #providers do
             local provider = providers[i]
             if provider.data == ns.PROVIDER_DATA_TYPE.MythicKeystone then
@@ -2042,13 +2228,17 @@ do
                 if not raidDate or raidDate < provider.date then
                     raidDate = provider.date
                 end
+            elseif provider.data == ns.PROVIDER_DATA_TYPE.Recruitment then
+                if not recruitmentDate or recruitmentDate < provider.date then
+                    recruitmentDate = provider.date
+                end
             elseif provider.data == ns.PROVIDER_DATA_TYPE.PvP then
                 if not pvpDate or pvpDate < provider.date then
                     pvpDate = provider.date
                 end
             end
         end
-        return keystoneDate, raidDate, pvpDate
+        return keystoneDate, raidDate, recruitmentDate, pvpDate
     end
 
     ---@param dateString string @The date string from the provider
@@ -2137,6 +2327,19 @@ do
         DUNGEON_BEST_INDEX  = 11  -- best dungeon index
     }
 
+    -- TODO: can this be part of the provider? we can see if we can make a more dynamic system
+    local ENCODER_RECRUITMENT_FIELDS = {
+        TITLE                 = 0, -- custom recruitment title index
+        ENTITY_TYPE           = 1, -- character, guild, team
+        -- ACTIVITY_TYPE         = 2, -- guildraids, guildpvp, guildsocial, guildkeystones, teamkeystones
+        ROLES                 = 3, -- dps = 1, healer = 2, tank = 4 (see `ENCODER_RECRUITMENT_ROLES`)
+    }
+    local ENCODER_RECRUITMENT_ROLES = {
+        dps = 1,
+        healer = 2,
+        tank = 4,
+    }
+
     ---@param provider DataProvider
     ---@return table, number, string
     local function SearchForBucketByName(provider, lookup, data, name, realm)
@@ -2171,6 +2374,11 @@ do
             local bucketID = 1 + floor(bucketOffset / lookupMaxSize)
             bucket = lookup[bucketID]
             baseOffset = 1 + bucketOffset - (bucketID - 1) * lookupMaxSize
+            guid = provider.data .. ":" .. provider.region .. ":" .. provider.faction .. ":" .. bucketID .. ":" .. baseOffset
+        elseif provider.data == ns.PROVIDER_DATA_TYPE.Recruitment then
+            local bucketID = 1
+            bucket = lookup[bucketID]
+            baseOffset = 1 + realmData[1] + (nameIndex - 2) * provider.recordSizeInBytes
             guid = provider.data .. ":" .. provider.region .. ":" .. provider.faction .. ":" .. bucketID .. ":" .. baseOffset
         elseif provider.data == ns.PROVIDER_DATA_TYPE.PvP then
             -- TODO
@@ -2372,12 +2580,25 @@ do
     ---@field public keystoneTenPlus number
     ---@field public keystoneFifteenPlus number
     ---@field public keystoneTwentyPlus number
-    ---@field public dungeons number[]
-    ---@field public dungeonUpgrades number[]
-    ---@field public dungeonTimes number[]
-    ---@field public maxDungeonIndex number
-    ---@field public maxDungeonLevel number
-    ---@field public maxDungeon Dungeon
+    ---@field public fortifiedDungeons number[]
+    ---@field public fortifiedDungeonUpgrades number[]
+    ---@field public fortifiedDungeonTimes number[]
+    ---@field public tyrannicalDungeons number[]
+    ---@field public tyrannicalDungeonUpgrades number[]
+    ---@field public tyrannicalDungeonTimes number[]
+    ---@field public dungeons number[] @Proxy table that looks up the correct weekly affix table if used. Use `fortifiedDungeons` and `tyrannicalDungeons` when possible.
+    ---@field public dungeonUpgrades number[] @Proxy table that looks up the correct weekly affix table if used. Use `fortifiedDungeonUpgrades` and `tyrannicalDungeonUpgrades` when possible.
+    ---@field public dungeonTimes number[] @Proxy table that looks up the correct weekly affix table if used. Use `fortifiedDungeonTimes` and `tyrannicalDungeonTimes` when possible.
+    ---@field public fortifiedMaxDungeonIndex number
+    ---@field public fortifiedMaxDungeonLevel number
+    ---@field public fortifiedMaxDungeon Dungeon
+    ---@field public tyrannicalMaxDungeonIndex number
+    ---@field public tyrannicalMaxDungeonLevel number
+    ---@field public tyrannicalMaxDungeon Dungeon
+    ---@field public maxDungeonIndex number @Proxy table that looks up the correct weekly affix table if used. Use `fortifiedMaxDungeonIndex` and `tyrannicalMaxDungeonIndex` when possible.
+    ---@field public maxDungeonLevel number @Proxy table that looks up the correct weekly affix table if used. Use `fortifiedMaxDungeonLevel` and `tyrannicalMaxDungeonLevel` when possible.
+    ---@field public maxDungeon Dungeon @Proxy table that looks up the correct weekly affix table if used. Use `fortifiedMaxDungeon` and `tyrannicalMaxDungeon` when possible.
+    ---@field public maxDungeonUpgrades number @Proxy table that looks up the correct weekly affix table if used. Part of the override score functionality, possibly client data as well.
     ---@field public sortedDungeons SortedDungeon[]
     ---@field public sortedMilestones SortedMilestone[]
     ---@field public mplusCurrent DataProviderMythicKeystoneScore
@@ -2387,9 +2608,18 @@ do
 
     ---@class SortedDungeon
     ---@field public dungeon Dungeon
-    ---@field public level number
-    ---@field public chests number
-    ---@field public fractionalTime number If we have client data `isEnhanced` is set and the values are then `0.0` to `1.0` is within the timer, anything above is depleted over the timer. If `isEnhanced` is false then this value is 0 to 3 where 3 is depleted, and the rest is in time.
+    ---@field public level number @Proxy table that looks up the correct weekly affix table if used. Use `fortifiedLevel` and `tyrannicalLevel` when possible.
+    ---@field public chests number @Proxy table that looks up the correct weekly affix table if used. Use `fortifiedChests` and `tyrannicalChests` when possible.
+    ---@field public fractionalTime number @Proxy table that looks up the correct weekly affix table if used. Use `fortifiedFractionalTime` and `tyrannicalFractionalTime` when possible. If we have client data `isEnhanced` is set and the values are then `0.0` to `1.0` is within the timer, anything above is depleted over the timer. If `isEnhanced` is false then this value is 0 to 3 where 3 is depleted, and the rest is in time.
+    ---@field public sortOrder string @Proxy table that looks up the correct weekly affix table if used. Use `fortifiedSortOrder` and `tyrannicalSortOrder` when possible.
+    ---@field public fortifiedLevel number @Keystone level
+    ---@field public fortifiedChests number @Number of medals where 1=Bronze, 2=Silver, 3=Gold
+    ---@field public fortifiedFractionalTime number @If we have client data `isEnhanced` is set and the values are then `0.0` to `1.0` is within the timer, anything above is depleted over the timer. If `isEnhanced` is false then this value is 0 to 3 where 3 is depleted, and the rest is in time.
+    ---@field public fortifiedSortOrder string @The sorting weight assigned this entry. Combination of level, chests and name of the dungeon.
+    ---@field public tyrannicalLevel number @Keystone level
+    ---@field public tyrannicalChests number @Number of medals where 1=Bronze, 2=Silver, 3=Gold
+    ---@field public tyrannicalFractionalTime number @If we have client data `isEnhanced` is set and the values are then `0.0` to `1.0` is within the timer, anything above is depleted over the timer. If `isEnhanced` is false then this value is 0 to 3 where 3 is depleted, and the rest is in time.
+    ---@field public tyrannicalSortOrder string @The sorting weight assigned this entry. Combination of level, chests and name of the dungeon.
 
     ---@class SortedMilestone
     ---@field public level number
@@ -2398,6 +2628,216 @@ do
 
     local CLIENT_CHARACTERS = ns:GetClientData()
     local DUNGEONS = ns:GetDungeonData()
+
+    ---@param a SortedDungeon
+    ---@param b SortedDungeon
+    local function SortDungeons(a, b)
+        return strcmputf8i(a.sortOrder, b.sortOrder) < 0
+    end
+
+    ---@param results DataProviderMythicKeystoneProfile
+    local function ApplyWeeklyAffixForDungeons(results, bucket, bitOffset, weeklyAffixInternal)
+        local dungeons = {}
+        local dungeonUpgrades = {}
+        local dungeonTimes = {}
+        for i = 1, #DUNGEONS do
+            dungeons[i], bitOffset = ReadBitsFromString(bucket, bitOffset, 5)
+            dungeonUpgrades[i], bitOffset = ReadBitsFromString(bucket, bitOffset, 2)
+            dungeonTimes[i] = 3 - dungeonUpgrades[i]
+            results.hasRenderableData = results.hasRenderableData or dungeons[i] > 0
+        end
+        results[weeklyAffixInternal .. "Dungeons"] = dungeons
+        results[weeklyAffixInternal .. "DungeonUpgrades"] = dungeonUpgrades
+        results[weeklyAffixInternal .. "DungeonTimes"] = dungeonTimes
+        return bitOffset
+    end
+
+    ---@param results DataProviderMythicKeystoneProfile
+    local function ApplyWeeklyAffixForDungeonBest(results, bucket, bitOffset, weeklyAffixInternal)
+        local value, bitOffset = ReadBitsFromString(bucket, bitOffset, 4)
+        local maxDungeonIndex = 1 + value
+        if maxDungeonIndex > #DUNGEONS then
+            maxDungeonIndex = 1
+        end
+        results[weeklyAffixInternal .. "MaxDungeonIndex"] = maxDungeonIndex
+        results[weeklyAffixInternal .. "MaxDungeonLevel"] = results[weeklyAffixInternal .. "Dungeons"][maxDungeonIndex]
+        results[weeklyAffixInternal .. "MaxDungeon"] = DUNGEONS[maxDungeonIndex]
+        return bitOffset
+    end
+
+    ---@param results DataProviderMythicKeystoneProfile
+    local function ApplyWeeklyAffixWrapper(results)
+        local dynamicKeys = {
+            dungeons = true,
+            dungeonUpgrades = true,
+            dungeonTimes = true,
+            maxDungeonIndex = true,
+            maxDungeonLevel = true,
+            maxDungeon = true,
+        }
+        setmetatable(results, {
+            __metatable = false,
+            __index = function(self, key)
+                if not dynamicKeys[key] then
+                    return
+                end
+                local _, weeklyAffixInternal = util:GetWeeklyAffix()
+                local destKey = key:sub(1, 1):upper() .. key:sub(2)
+                return self[weeklyAffixInternal .. destKey]
+            end,
+        })
+    end
+
+    ---@param results DataProviderMythicKeystoneProfile
+    local function ApplySortedDungeonsForAffix(results, weeklyAffixInternal)
+        ---@param sortedDungeon SortedDungeon
+        local function getSortOrderForAffix(sortedDungeon, weeklyAffixInternal)
+            local index = sortedDungeon.dungeon.index
+            local level = results[weeklyAffixInternal .. "Dungeons"][index]
+            local chests = results[weeklyAffixInternal .. "DungeonUpgrades"][index]
+            -- local fractionalTime = results[weeklyAffixInternal .. "DungeonTimes"][index]
+            return format("%02d-%02d", 99 - level, 99 - chests)
+        end
+        ---@param sortedDungeon SortedDungeon
+        ---@param focusAffix number @`nil` = consider both affixes when making the weights, `1` = focus on primary affix, `2` = focus on secondary affix
+        local function getSortOrder(sortedDungeon, primaryAffixInternal, secondaryAffixInternal, focusAffix)
+            local primaryOrder
+            if focusAffix == nil or focusAffix == 1 then
+                primaryOrder = getSortOrderForAffix(sortedDungeon, primaryAffixInternal)
+                if focusAffix == 1 then
+                    return format("%s-%s", primaryOrder, sortedDungeon.dungeon.shortNameLocale)
+                end
+            end
+            local secondaryOrder
+            if focusAffix == nil or focusAffix == 2 then
+                secondaryOrder = getSortOrderForAffix(sortedDungeon, secondaryAffixInternal)
+                if focusAffix == 2 then
+                    return format("%s-%s", secondaryOrder, sortedDungeon.dungeon.shortNameLocale)
+                end
+            end
+            return format("%s-%s-%s", primaryOrder, secondaryOrder, sortedDungeon.dungeon.shortNameLocale)
+        end
+        local sortedDungeonMetatable = {
+            __metatable = false,
+            __index = function(self, key)
+                local index = self.dungeon.index
+                local _, weeklyAffixInternal = util:GetWeeklyAffix()
+                if key == "level" then
+                    return results[weeklyAffixInternal .. "Dungeons"][index]
+                elseif key == "chests" then
+                    return results[weeklyAffixInternal .. "DungeonUpgrades"][index]
+                elseif key == "fractionalTime" then
+                    return results[weeklyAffixInternal .. "DungeonTimes"][index]
+                elseif key == "fortifiedLevel" then
+                    return results.fortifiedDungeons[index]
+                elseif key == "fortifiedChests" then
+                    return results.fortifiedDungeonUpgrades[index]
+                elseif key == "fortifiedFractionalTime" then
+                    return results.fortifiedDungeonTimes[index]
+                elseif key == "tyrannicalLevel" then
+                    return results.tyrannicalDungeons[index]
+                elseif key == "tyrannicalChests" then
+                    return results.tyrannicalDungeonUpgrades[index]
+                elseif key == "tyrannicalFractionalTime" then
+                    return results.tyrannicalDungeonTimes[index]
+                elseif key == "sortOrder" then
+                    return getSortOrder(self, weeklyAffixInternal, weeklyAffixInternal == "fortified" and "tyrannical" or "fortified")
+                -- elseif key == "sortOrder1" then
+                --     return getSortOrder(self, weeklyAffixInternal, weeklyAffixInternal == "fortified" and "tyrannical" or "fortified", 1)
+                -- elseif key == "sortOrder2" then
+                --     return getSortOrder(self, weeklyAffixInternal == "fortified" and "tyrannical" or "fortified", weeklyAffixInternal, 2)
+                elseif key == "fortifiedSortOrder" then
+                    return getSortOrder(self, "fortified", "tyrannical")
+                -- elseif key == "fortifiedSortOrder1" then
+                --     return getSortOrder(self, "fortified", "tyrannical", 1)
+                -- elseif key == "fortifiedSortOrder2" then
+                --     return getSortOrder(self, "fortified", "tyrannical", 2)
+                elseif key == "tyrannicalSortOrder" then
+                    return getSortOrder(self, "tyrannical", "fortified")
+                -- elseif key == "tyrannicalSortOrder1" then
+                --     return getSortOrder(self, "tyrannical", "fortified", 1)
+                -- elseif key == "tyrannicalSortOrder2" then
+                --     return getSortOrder(self, "tyrannical", "fortified", 2)
+                end
+            end,
+        }
+        results.sortedDungeons = {}
+        local dungeonKey = "dungeons"
+        local dungeonUpgradeKey = "dungeonUpgrades"
+        local dungeonTimeKey = "dungeonTimes"
+        if weeklyAffixInternal then
+            dungeonKey = weeklyAffixInternal .. "Dungeons"
+            dungeonUpgradeKey = weeklyAffixInternal .. "DungeonUpgrades"
+            dungeonTimeKey = weeklyAffixInternal .. "DungeonTimes"
+        end
+        for i = 1, #DUNGEONS do
+            local dungeon = DUNGEONS[i]
+            if weeklyAffixInternal then
+                results.sortedDungeons[i] = setmetatable({
+                    dungeon = dungeon,
+                    level = results[dungeonKey][i],
+                    chests = results[dungeonUpgradeKey][dungeon.index],
+                    fractionalTime = results[dungeonTimeKey][dungeon.index],
+                }, sortedDungeonMetatable)
+            else
+                results.sortedDungeons[i] = setmetatable({
+                    dungeon = dungeon,
+                }, sortedDungeonMetatable)
+            end
+        end
+        table.sort(results.sortedDungeons, SortDungeons)
+    end
+
+    ---@param results DataProviderMythicKeystoneProfile
+    local function ApplySortedMilestonesForAffix(results, weeklyAffixInternal)
+        results.sortedMilestones = {}
+        if results.keystoneTwentyPlus > 0 then
+            results.sortedMilestones[#results.sortedMilestones + 1] = {
+                level = 20,
+                label = L.TIMED_20_RUNS,
+                text = results.keystoneTwentyPlus .. (results.keystoneTwentyPlus > 10 and "+" or "")
+            }
+        end
+        if results.keystoneFifteenPlus > 0 then
+            results.sortedMilestones[#results.sortedMilestones + 1] = {
+                level = 15,
+                label = L.TIMED_15_RUNS,
+                text = results.keystoneFifteenPlus .. (results.keystoneFifteenPlus > 10 and "+" or "")
+            }
+        end
+        if results.keystoneTenPlus > 0 then
+            results.sortedMilestones[#results.sortedMilestones + 1] = {
+                level = 10,
+                label = L.TIMED_10_RUNS,
+                text = results.keystoneTenPlus .. (results.keystoneTenPlus > 10 and "+" or "")
+            }
+        end
+        if results.keystoneFivePlus > 0 then
+            results.sortedMilestones[#results.sortedMilestones + 1] = {
+                level = 5,
+                label = L.TIMED_5_RUNS,
+                text = results.keystoneFivePlus .. (results.keystoneFivePlus > 10 and "+" or "")
+            }
+        end
+        results.mplusCurrent = {
+            score = results.currentScore,
+            roles = ORDERED_ROLES[results.currentRoleOrdinalIndex] or ORDERED_ROLES[1]
+        }
+        results.mplusPrevious = {
+            season = results.previousScoreSeason,
+            score = results.previousScore,
+            roles = ORDERED_ROLES[results.previousRoleOrdinalIndex] or ORDERED_ROLES[1]
+        }
+        results.mplusMainCurrent = {
+            score = results.mainCurrentScore,
+            roles = ORDERED_ROLES[results.mainCurrentRoleOrdinalIndex] or ORDERED_ROLES[1]
+        }
+        results.mplusMainPrevious = {
+            season = results.mainPreviousScoreSeason,
+            score = results.mainPreviousScore,
+            roles = ORDERED_ROLES[results.mainPreviousRoleOrdinalIndex] or ORDERED_ROLES[1]
+        }
+    end
 
     ---@param results DataProviderMythicKeystoneProfile
     local function ApplyClientDataToMythicKeystoneData(results, name, realm)
@@ -2435,20 +2875,6 @@ do
             results.maxDungeonLevel = maxDungeonLevel
             results.maxDungeonUpgrades = maxDungeonUpgrades
         end
-    end
-
-    ---@param a SortedDungeon
-    ---@param b SortedDungeon
-    local function SortDungeons(a, b)
-        local al, bl = a.level, b.level
-        if al == bl then
-            local at, bt = a.fractionalTime, b.fractionalTime
-            if at == bt then
-                return a.dungeon.shortNameLocale < b.dungeon.shortNameLocale
-            end
-            return at < bt
-        end
-        return al > bl
     end
 
     local function UnpackMythicKeystoneData(bucket, baseOffset, encodingOrder, providerOutdated, providerBlocked, name, realm, region)
@@ -2504,84 +2930,17 @@ do
                 results.keystoneTwentyPlus = DecodeBits8(value)
                 results.hasRenderableData = results.hasRenderableData or results.keystoneFivePlus > 0 or results.keystoneTenPlus > 0 or results.keystoneFifteenPlus > 0 or results.keystoneTwentyPlus > 0
             elseif field == ENCODER_MYTHICPLUS_FIELDS.DUNGEON_LEVELS then
-                results.dungeons = {}
-                results.dungeonUpgrades = {}
-                results.dungeonTimes = {}
-                for i = 1, #DUNGEONS do
-                    results.dungeons[i], bitOffset = ReadBitsFromString(bucket, bitOffset, 5)
-                    results.dungeonUpgrades[i], bitOffset = ReadBitsFromString(bucket, bitOffset, 2)
-                    results.dungeonTimes[i] = 3 - results.dungeonUpgrades[i]
-                    results.hasRenderableData = results.hasRenderableData or results.dungeons[i] > 0
-                end
+                bitOffset = ApplyWeeklyAffixForDungeons(results, bucket, bitOffset, "fortified")
+                bitOffset = ApplyWeeklyAffixForDungeons(results, bucket, bitOffset, "tyrannical")
             elseif field == ENCODER_MYTHICPLUS_FIELDS.DUNGEON_BEST_INDEX then
-                value, bitOffset = ReadBitsFromString(bucket, bitOffset, 4)
-                results.maxDungeonIndex = 1 + value
+                bitOffset = ApplyWeeklyAffixForDungeonBest(results, bucket, bitOffset, "fortified")
+                bitOffset = ApplyWeeklyAffixForDungeonBest(results, bucket, bitOffset, "tyrannical")
             end
         end
-        if results.maxDungeonIndex > #results.dungeons then
-            results.maxDungeonIndex = 1
-        end
-        results.maxDungeonLevel = results.dungeons[results.maxDungeonIndex]
-        results.maxDungeon = DUNGEONS[results.maxDungeonIndex]
-        ApplyClientDataToMythicKeystoneData(results, name, realm)
-        results.sortedMilestones = {}
-        if results.keystoneTwentyPlus > 0 then
-            results.sortedMilestones[#results.sortedMilestones + 1] = {
-                level = 20,
-                label = L.TIMED_20_RUNS,
-                text = results.keystoneTwentyPlus .. (results.keystoneTwentyPlus > 10 and "+" or "")
-            }
-        end
-        if results.keystoneFifteenPlus > 0 then
-            results.sortedMilestones[#results.sortedMilestones + 1] = {
-                level = 15,
-                label = L.TIMED_15_RUNS,
-                text = results.keystoneFifteenPlus .. (results.keystoneFifteenPlus > 10 and "+" or "")
-            }
-        end
-        if results.keystoneTenPlus > 0 then
-            results.sortedMilestones[#results.sortedMilestones + 1] = {
-                level = 10,
-                label = L.TIMED_10_RUNS,
-                text = results.keystoneTenPlus .. (results.keystoneTenPlus > 10 and "+" or "")
-            }
-        end
-        if results.keystoneFivePlus > 0 then
-            results.sortedMilestones[#results.sortedMilestones + 1] = {
-                level = 5,
-                label = L.TIMED_5_RUNS,
-                text = results.keystoneFivePlus .. (results.keystoneFivePlus > 10 and "+" or "")
-            }
-        end
-        results.mplusCurrent = {
-            score = results.currentScore,
-            roles = ORDERED_ROLES[results.currentRoleOrdinalIndex] or ORDERED_ROLES[1]
-        }
-        results.mplusPrevious = {
-            season = results.previousScoreSeason,
-            score = results.previousScore,
-            roles = ORDERED_ROLES[results.previousRoleOrdinalIndex] or ORDERED_ROLES[1]
-        }
-        results.mplusMainCurrent = {
-            score = results.mainCurrentScore,
-            roles = ORDERED_ROLES[results.mainCurrentRoleOrdinalIndex] or ORDERED_ROLES[1]
-        }
-        results.mplusMainPrevious = {
-            season = results.mainPreviousScoreSeason,
-            score = results.mainPreviousScore,
-            roles = ORDERED_ROLES[results.mainPreviousRoleOrdinalIndex] or ORDERED_ROLES[1]
-        }
-        results.sortedDungeons = {}
-        for i = 1, #DUNGEONS do
-            local dungeon = DUNGEONS[i]
-            results.sortedDungeons[i] = {
-                dungeon = dungeon,
-                level = results.dungeons[i],
-                chests = results.dungeonUpgrades[dungeon.index],
-                fractionalTime = results.dungeonTimes[dungeon.index]
-            }
-        end
-        table.sort(results.sortedDungeons, SortDungeons)
+        ApplyWeeklyAffixWrapper(results)
+        ApplySortedDungeonsForAffix(results)
+        ApplySortedMilestonesForAffix(results)
+        -- ApplyClientDataToMythicKeystoneData(results, name, realm) -- TODO: weekly affix handling so we disable this until we know what kind of data we expect here
         return results
     end
 
@@ -2760,6 +3119,45 @@ do
         return results
     end
 
+    ---@class DataProviderRecruitmentProfile
+    ---@field public outdated number|nil @number or nil
+    ---@field public hasRenderableData boolean @True if we have any actual data to render in the tooltip without the profile appearing incomplete or empty.
+    ---@field public titleIndex number
+    ---@field public title RecruitmentTitle
+    ---@field public entityType number @`0` (character), `1` (guild), `2` (team) - use `ns.RECRUITMENT_ENTITY_TYPES` for lookups
+    ---@field public tank? boolean
+    ---@field public healer? boolean
+    ---@field public dps? boolean
+
+    local RECRUITMENT_TITLES = ns:GetRecruitmentTitles()
+
+    ---@param provider DataProvider
+    local function UnpackRecruitmentData(bucket, baseOffset, provider)
+        ---@type DataProviderRecruitmentProfile
+        local results = { outdated = provider.outdated, hasRenderableData = false }
+        local encodingOrder = provider.encodingOrder
+        local bitOffset = (baseOffset - 1) * 8
+        local value
+        for encoderIndex = 1, #encodingOrder do
+            local field = encodingOrder[encoderIndex]
+            if field == ENCODER_RECRUITMENT_FIELDS.TITLE then
+                value, bitOffset = ReadBitsFromString(bucket, bitOffset, 8)
+                results.titleIndex = value
+                results.title = value and RECRUITMENT_TITLES[value]
+            elseif field == ENCODER_RECRUITMENT_FIELDS.ENTITY_TYPE then
+                value, bitOffset = ReadBitsFromString(bucket, bitOffset, 2)
+                results.entityType = value
+            elseif field == ENCODER_RECRUITMENT_FIELDS.ROLES then
+                value, bitOffset = ReadBitsFromString(bucket, bitOffset, 3)
+                results.dps = band(value, ENCODER_RECRUITMENT_ROLES.dps) == ENCODER_RECRUITMENT_ROLES.dps
+                results.healer = band(value, ENCODER_RECRUITMENT_ROLES.healer) == ENCODER_RECRUITMENT_ROLES.healer
+                results.tank = band(value, ENCODER_RECRUITMENT_ROLES.tank) == ENCODER_RECRUITMENT_ROLES.tank
+            end
+        end
+        results.hasRenderableData = results.title and results.entityType and true or false
+        return results
+    end
+
     ---@class DataProviderPvpProfile
     ---@field public outdated number|nil @number or nil
     ---@field public hasRenderableData boolean @True if we have any actual data to render in the tooltip without the profile appearing incomplete or empty.
@@ -2781,6 +3179,7 @@ do
     ---@field public region string
     ---@field public mythicKeystoneProfile DataProviderMythicKeystoneProfile
     ---@field public raidProfile DataProviderRaidProfile
+    ---@field public recruitmentProfile DataProviderRecruitmentProfile
     ---@field public pvpProfile DataProviderPvpProfile
 
     -- cache mythic keystone profiles for re-use after first query
@@ -2790,6 +3189,10 @@ do
     -- cache raid profiles for re-use after first query
     ---@type DataProviderRaidProfile[]
     local raidProfileCache = {}
+
+    -- cache recruitment profiles for re-use after first query
+    ---@type DataProviderRecruitmentProfile[]
+    local recruitmentProfileCache = {}
 
     -- cache pvp profiles for re-use after first query
     ---@type DataProviderPvpProfile[]
@@ -2841,6 +3244,22 @@ do
         return profile
     end
 
+    ---@param provider DataProvider
+    local function GetRecruitmentProfile(provider, ...)
+        local bucket, baseOffset, guid = SearchForBucketByName(provider, ...)
+        if not bucket then
+            return
+        end
+        local cache = recruitmentProfileCache[guid]
+        if cache then
+            return cache
+        end
+        local profile = UnpackRecruitmentData(bucket, baseOffset, provider)
+        recruitmentProfileCache[guid] = profile
+        return profile
+    end
+
+    ---@param provider DataProvider
     local function GetPvpProfile(provider, ...)
         local bucket, baseOffset, guid = SearchForBucketByName(provider, ...)
         if not bucket then
@@ -2875,29 +3294,41 @@ do
                 score = 0,
                 roles = {}
             },
-            dungeons = {},
-            dungeonUpgrades = {},
-            dungeonTimes = {},
-            maxDungeon = 0,
-            maxDungeonLevel = 0,
-            maxDungeonUpgrades = 0,
-            sortedDungeons = {},
+            fortifiedDungeons = {},
+            fortifiedDungeonUpgrades = {},
+            fortifiedDungeonTimes = {},
+            fortifiedMaxDungeonIndex = 1,
+            fortifiedMaxDungeonLevel = 0,
+            fortifiedMaxDungeon = 0,
+            fortifiedMaxDungeonUpgrades = 0,
+            tyrannicalDungeons = {},
+            tyrannicalDungeonUpgrades = {},
+            tyrannicalDungeonTimes = {},
+            tyrannicalMaxDungeonIndex = 1,
+            tyrannicalMaxDungeonLevel = 0,
+            tyrannicalMaxDungeon = 0,
+            tyrannicalMaxDungeonUpgrades = 0,
             sortedMilestones = {}
         }
+        ApplyWeeklyAffixWrapper(results)
         for i = 1, #DUNGEONS do
-            results.dungeons[i] = 0
-            results.dungeonUpgrades[i] = 0
-            results.dungeonTimes[i] = 0
-            results.sortedDungeons[i] = {
-                dungeon = DUNGEONS[i],
-                level = 0,
-                chests = 0,
-                fractionalTime = 999
-            }
+            results.fortifiedDungeons[i] = 0
+            results.fortifiedDungeonUpgrades[i] = 0
+            results.fortifiedDungeonTimes[i] = 999
+            results.tyrannicalDungeons[i] = 0
+            results.tyrannicalDungeonUpgrades[i] = 0
+            results.tyrannicalDungeonTimes[i] = 999
         end
-        table.sort(results.sortedDungeons, SortDungeons)
+        ApplySortedDungeonsForAffix(results)
         return results
     end
+
+    ---@class BlizzardKeystoneAffixInfo
+    ---@field public name string @Affix name.
+    ---@field public level number @Run keystone level.
+    ---@field public score number @Score earned from keystone.
+    ---@field public overTime boolean @Is the run depleted?
+    ---@field public durationSec number @Run duration in seconds.
 
     ---@class BlizzardKeystoneRun
     ---@field public bestRunDurationMS number @Timer in milliseconds
@@ -2905,6 +3336,8 @@ do
     ---@field public challengeModeID number @Keystone instance ID
     ---@field public finishedSuccess boolean @If the run was timed or not
     ---@field public mapScore number @The score worth for the run
+    ---@field public fortified BlizzardKeystoneAffixInfo @Fortified affix data. Only accessible for the players own profile override.
+    ---@field public tyrannical BlizzardKeystoneAffixInfo @Tyrannical affix data. Only accessible for the players own profile override.
 
     -- override or inject cache entry for tooltip rendering for this character with their BIO score and keystune run data
     ---@param name string @Character name
@@ -2936,84 +3369,90 @@ do
             mythicKeystoneProfile.mplusCurrent.score = overallScore
         end
         if type(keystoneRuns) == "table" and keystoneRuns[1] then
-            local maxDungeonIndex = 0
-            -- local maxDungeonTime = 999
-            -- local maxDungeonScore = 0
-            local maxDungeonLevel = 0
-            local maxDungeonUpgrades = 0
-            local maxDungeonRunTimer = 2
-            local needsMaxDungeonUpgrade
-            local needsDungeonSort
-            for i = 1, #keystoneRuns do
-                local run = keystoneRuns[i]
-                local dungeonIndex
-                local dungeon
-                for j = 1, #DUNGEONS do
-                    dungeon = DUNGEONS[j]
-                    if dungeon.keystone_instance == run.challengeModeID then
-                        dungeonIndex = j
-                        break
-                    end
-                    dungeon = nil
-                end
-                local runLevel = run.bestRunLevel
-                if dungeonIndex and mythicKeystoneProfile.dungeons[dungeonIndex] <= runLevel then
-                    mythicKeystoneProfile.hasOverrideDungeonRuns = true
-                    local _, _, dungeonTimeLimit = C_ChallengeMode.GetMapUIInfo(run.challengeModeID)
-                    local goldTimeLimit, silverTimeLimit, bronzeTimeLimit = -1, -1, dungeonTimeLimit
-                    if dungeon.timers then
-                        goldTimeLimit, silverTimeLimit, bronzeTimeLimit = dungeon.timers[1], dungeon.timers[2], dungeonTimeLimit or dungeon.timers[3] -- TODO: always prefer the game data time limit for bronze or the addons time limit?
-                    end
-                    local runSeconds = run.bestRunDurationMS / 1000
-                    local runNumUpgrades = 0
-                    if run.finishedSuccess then
-                        runNumUpgrades = 1
-                        if runSeconds <= goldTimeLimit then
-                            runNumUpgrades = 3
-                        elseif runSeconds <= silverTimeLimit then
-                            runNumUpgrades = 2
-                        end
-                    end
-                    local runTimerAsFraction = runSeconds / (dungeonTimeLimit and dungeonTimeLimit > 0 and dungeonTimeLimit or 1) -- convert game timer to a fraction (1 or below is timed, above is depleted)
-                    local fractionalTime = run.finishedSuccess and (mythicKeystoneProfile.isEnhanced and runTimerAsFraction or (3 - runNumUpgrades)) or 3 -- the data here depends if we are using client enhanced data or not
-                    -- local runScore = run.mapScore
-                    needsMaxDungeonUpgrade = true
-                    mythicKeystoneProfile.dungeons[dungeonIndex] = runLevel
-                    mythicKeystoneProfile.dungeonUpgrades[dungeonIndex] = runNumUpgrades
-                    mythicKeystoneProfile.dungeonTimes[dungeonIndex] = fractionalTime
-                    -- if runNumUpgrades > 0 and (runScore > maxDungeonScore or (runScore == maxDungeonScore and fractionalTime < maxDungeonTime)) then
-                    if runNumUpgrades > 0 and (runLevel > maxDungeonLevel or (runLevel == maxDungeonLevel and runTimerAsFraction < maxDungeonRunTimer)) then
-                        maxDungeonIndex = dungeonIndex
-                        -- maxDungeonTime = fractionalTime
-                        -- maxDungeonScore = runScore
-                        maxDungeonLevel = runLevel
-                        maxDungeonUpgrades = runNumUpgrades
-                        maxDungeonRunTimer = runTimerAsFraction
-                    end
-                    local sortedDungeon
-                    for j = 1, #mythicKeystoneProfile.sortedDungeons do
-                        sortedDungeon = mythicKeystoneProfile.sortedDungeons[j]
-                        if sortedDungeon.dungeon == dungeon then
+            local isPlayer = util:IsUnitPlayer(name, realm)
+            local _, realWeeklyAffixInternal = util:GetWeeklyAffix()
+            local weeklyAffixInternals = { realWeeklyAffixInternal }
+            if isPlayer then
+                weeklyAffixInternals[1] = "fortified"
+                weeklyAffixInternals[2] = "tyrannical"
+            end
+            for _, weeklyAffixInternal in pairs(weeklyAffixInternals) do
+                local weekDungeons = mythicKeystoneProfile[weeklyAffixInternal .. "Dungeons"]
+                local weekDungeonUpgrades = mythicKeystoneProfile[weeklyAffixInternal .. "DungeonUpgrades"]
+                local weekDungeonTimes = mythicKeystoneProfile[weeklyAffixInternal .. "DungeonTimes"]
+                local maxDungeonIndex = 0
+                -- local maxDungeonTime = 999
+                -- local maxDungeonScore = 0
+                local maxDungeonLevel = 0
+                local maxDungeonUpgrades = 0
+                local maxDungeonRunTimer = 2
+                local needsMaxDungeonUpgrade
+                for i = 1, #keystoneRuns do
+                    local run = keystoneRuns[i]
+                    local runAffixData = run[weeklyAffixInternal] ---@type BlizzardKeystoneAffixInfo
+                    local dungeonIndex
+                    local dungeon
+                    for j = 1, #DUNGEONS do
+                        dungeon = DUNGEONS[j]
+                        if dungeon.keystone_instance == run.challengeModeID then
+                            dungeonIndex = j
                             break
                         end
-                        sortedDungeon = nil
+                        dungeon = nil
                     end
-                    if sortedDungeon and sortedDungeon.level <= runLevel then
-                        needsDungeonSort = true
-                        sortedDungeon.level = runLevel
-                        sortedDungeon.chests = runNumUpgrades
-                        sortedDungeon.fractionalTime = fractionalTime
+                    if dungeonIndex and (not isPlayer or runAffixData) then
+                        local runBestRunLevel = run.bestRunLevel
+                        local runBestRunDurationMS = run.bestRunDurationMS
+                        local runFinishedSuccess = run.finishedSuccess
+                        -- local runMapScore = run.mapScore
+                        if runAffixData then
+                            runBestRunLevel = runAffixData.level
+                            runBestRunDurationMS = runAffixData.durationSec * 1000
+                            runFinishedSuccess = not runAffixData.overTime
+                        end
+                        if dungeonIndex and weekDungeons[dungeonIndex] <= runBestRunLevel then
+                            mythicKeystoneProfile.hasOverrideDungeonRuns = true
+                            local _, _, dungeonTimeLimit = C_ChallengeMode.GetMapUIInfo(run.challengeModeID)
+                            local goldTimeLimit, silverTimeLimit, bronzeTimeLimit = -1, -1, dungeonTimeLimit
+                            if dungeon.timers then
+                                goldTimeLimit, silverTimeLimit, bronzeTimeLimit = dungeon.timers[1], dungeon.timers[2], dungeonTimeLimit or dungeon.timers[3] -- TODO: always prefer the game data time limit for bronze or the addons time limit?
+                            end
+                            local runSeconds = runBestRunDurationMS / 1000
+                            local runNumUpgrades = 0
+                            if runFinishedSuccess then
+                                runNumUpgrades = 1
+                                if runSeconds <= goldTimeLimit then
+                                    runNumUpgrades = 3
+                                elseif runSeconds <= silverTimeLimit then
+                                    runNumUpgrades = 2
+                                end
+                            end
+                            local runTimerAsFraction = runSeconds / (dungeonTimeLimit and dungeonTimeLimit > 0 and dungeonTimeLimit or 1) -- convert game timer to a fraction (1 or below is timed, above is depleted)
+                            local fractionalTime = runFinishedSuccess and (mythicKeystoneProfile.isEnhanced and runTimerAsFraction or (3 - runNumUpgrades)) or 3 -- the data here depends if we are using client enhanced data or not
+                            needsMaxDungeonUpgrade = true
+                            weekDungeons[dungeonIndex] = runBestRunLevel
+                            weekDungeonUpgrades[dungeonIndex] = runNumUpgrades
+                            weekDungeonTimes[dungeonIndex] = fractionalTime
+                            -- if runNumUpgrades > 0 and (runMapScore > maxDungeonScore or (runMapScore == maxDungeonScore and fractionalTime < maxDungeonTime)) then
+                            if runNumUpgrades > 0 and (runBestRunLevel > maxDungeonLevel or (runBestRunLevel == maxDungeonLevel and runTimerAsFraction < maxDungeonRunTimer)) then
+                                maxDungeonIndex = dungeonIndex
+                                -- maxDungeonTime = fractionalTime
+                                -- maxDungeonScore = runMapScore
+                                maxDungeonLevel = runBestRunLevel
+                                maxDungeonUpgrades = runNumUpgrades
+                                maxDungeonRunTimer = runTimerAsFraction
+                            end
+                        end
                     end
                 end
+                if needsMaxDungeonUpgrade then
+                    mythicKeystoneProfile[weeklyAffixInternal .. "MaxDungeon"] = DUNGEONS[maxDungeonIndex]
+                    mythicKeystoneProfile[weeklyAffixInternal .. "MaxDungeonLevel"] = maxDungeonLevel
+                    mythicKeystoneProfile[weeklyAffixInternal .. "MaxDungeonIndex"] = maxDungeonIndex
+                    mythicKeystoneProfile[weeklyAffixInternal .. "MaxDungeonUpgrades"] = maxDungeonUpgrades
+                end
             end
-            if needsMaxDungeonUpgrade then
-                mythicKeystoneProfile.maxDungeon = DUNGEONS[maxDungeonIndex]
-                mythicKeystoneProfile.maxDungeonLevel = maxDungeonLevel
-                mythicKeystoneProfile.maxDungeonUpgrades = maxDungeonUpgrades
-            end
-            if needsDungeonSort then
-                table.sort(mythicKeystoneProfile.sortedDungeons, SortDungeons)
-            end
+            table.sort(mythicKeystoneProfile.sortedDungeons, SortDungeons)
         end
         if mythicKeystoneProfile.hasOverrideScore or mythicKeystoneProfile.hasOverrideDungeonRuns then
             mythicKeystoneProfile.blocked = nil
@@ -3057,6 +3496,7 @@ do
         end
         local mythicKeystoneProfile ---@type DataProviderMythicKeystoneProfile
         local raidProfile ---@type DataProviderRaidProfile
+        local recruitmentProfile ---@type DataProviderRecruitmentProfile
         local pvpProfile ---@type DataProviderPvpProfile
         for i = 1, #providers do
             local provider = providers[i]
@@ -3077,6 +3517,10 @@ do
                         if not raidProfile then
                             raidProfile = GetRaidProfile(provider, lookup, data, name, realm)
                         end
+                    elseif provider.data == ns.PROVIDER_DATA_TYPE.Recruitment then
+                        if not recruitmentProfile then
+                            recruitmentProfile = GetRecruitmentProfile(provider, lookup, data, name, realm)
+                        end
                     elseif provider.data == ns.PROVIDER_DATA_TYPE.PvP then
                         if not pvpProfile then
                             pvpProfile = GetPvpProfile(provider, lookup, data, name, realm)
@@ -3088,11 +3532,11 @@ do
                 end
             end
         end
-        if mythicKeystoneProfile and (not mythicKeystoneProfile.hasRenderableData and mythicKeystoneProfile.blocked) and not raidProfile and not pvpProfile then -- TODO: if we don't use blockedPurged functionality we have to then purge when the data is blocked and no rendering is available instead of checking the blockedPurged property
+        if mythicKeystoneProfile and (not mythicKeystoneProfile.hasRenderableData and mythicKeystoneProfile.blocked) and not raidProfile and not recruitmentProfile and not pvpProfile then -- TODO: if we don't use blockedPurged functionality we have to then purge when the data is blocked and no rendering is available instead of checking the blockedPurged property
             mythicKeystoneProfile = nil
         end
         cache = {
-            success = (mythicKeystoneProfile or raidProfile or pvpProfile) and true or false,
+            success = (mythicKeystoneProfile or raidProfile or recruitmentProfile or pvpProfile) and true or false,
             guid = guid,
             name = name,
             realm = realm,
@@ -3100,6 +3544,7 @@ do
             region = region,
             mythicKeystoneProfile = mythicKeystoneProfile,
             raidProfile = raidProfile,
+            recruitmentProfile = recruitmentProfile,
             pvpProfile = pvpProfile
         }
         profileCache[guid] = cache
@@ -3110,9 +3555,39 @@ do
         return cache
     end
 
+    ---@class BlizzardKeystoneSummary
+    ---@field public currentSeasonScore number @The current season keystone score.
+    ---@field public runs BlizzardKeystoneRun[] @Table over each keystone dungeon.
+
+    ---@param bioSummary BlizzardKeystoneSummary
+    local function ExpandSummaryWithChallengeModeMapData(bioSummary)
+        local mapIDs = C_ChallengeMode.GetMapTable()
+        for _, mapID in ipairs(mapIDs) do
+            local affixScores, bestOverAllScore
+            local mapRun
+            for _, run in ipairs(bioSummary.runs) do
+                if mapID == run.challengeModeID then
+                    affixScores, bestOverAllScore = C_MythicPlus.GetSeasonBestAffixScoreInfoForMap(mapID)
+                    mapRun = run
+                    break
+                end
+            end
+            if affixScores and mapRun then
+                for _, data in pairs(affixScores) do
+                    if data.name == "Fortified" then
+                        mapRun.fortified = data
+                    elseif data.name == "Tyrannical" then
+                        mapRun.tyrannical = data
+                    end
+                end
+            end
+        end
+    end
+
     local function OverridePlayerData()
-        local bioSummary = C_PlayerInfo.GetPlayerMythicPlusRatingSummary("player")
+        local bioSummary = C_PlayerInfo.GetPlayerMythicPlusRatingSummary("player") ---@type BlizzardKeystoneSummary
         if bioSummary and bioSummary.currentSeasonScore then
+            ExpandSummaryWithChallengeModeMapData(bioSummary)
             provider:OverrideProfile(ns.PLAYER_NAME, ns.PLAYER_REALM, ns.PLAYER_FACTION, bioSummary.currentSeasonScore, bioSummary.runs)
         end
     end
@@ -3463,31 +3938,63 @@ do
         return table.concat(icons, "") .. " " .. score
     end
 
-    ---@class BestRun
-    ---@field public dungeon Dungeon|nil
-    ---@field public level number
-    ---@field public text string|nil
+    ---Takes tripples of `Dungeon, Level, Chests` args, returns the best run back.
+    ---@return Dungeon, number, number @`arg1`= the Dungeon, `arg2` = keystone level, `arg3` = chests
+    local function GetBestRunOfDungeons(...)
+        local bestDungeon ---@type Dungeon|nil
+        local bestLevel = 0 ---@type number
+        local bestChests = 0 ---@type number
+        local args = {...}
+        for i = 1, #args, 3 do
+            local dungeon = args[i]
+            local level = args[i + 1]
+            local chests = args[i + 2]
+            if dungeon and (level > bestLevel or (level >= bestLevel and chests > bestChests)) then
+                bestDungeon, bestLevel, bestChests = dungeon, level, chests
+            end
+        end
+        return bestDungeon, bestLevel, bestChests
+    end
 
+    ---@class BestRun
+    ---@field public dungeon Dungeon|nil @The dungeon.
+    ---@field public level number @The keystone level.
+    ---@field public chests number @The amount of chests/medals earned.
+
+    ---@param tooltip GameTooltip
     ---@param keystoneProfile DataProviderMythicKeystoneProfile
     ---@param state TooltipState
+    ---@param isHeader boolean
     ---@return boolean|nil @Returns true if this is a header and it has added data to the tooltip, otherwise false, or nil if it's not a header request.
     local function AppendBestRunToTooltip(tooltip, keystoneProfile, state, isHeader)
         local options = state.options
         local showLFD = Has(options, render.Flags.SHOW_LFD)
-        local best = { dungeon = nil, level = 0, text = nil } ---@type BestRun @best dungeon
-        local overallBest = { dungeon = keystoneProfile.maxDungeon, level = keystoneProfile.maxDungeonLevel, text = nil } ---@type BestRun @overall best
+        local best = { dungeon = nil, level = 0, chests = 0 } ---@type BestRun
+        local overallBest = { dungeon = nil, level = 0, chests = 0 } ---@type BestRun
+        overallBest.dungeon,
+        overallBest.level,
+        overallBest.chests = GetBestRunOfDungeons(
+            keystoneProfile.fortifiedMaxDungeon,
+            keystoneProfile.fortifiedMaxDungeonLevel,
+            keystoneProfile.fortifiedDungeonUpgrades[keystoneProfile.fortifiedMaxDungeonIndex],
+            keystoneProfile.tyrannicalMaxDungeon,
+            keystoneProfile.tyrannicalMaxDungeonLevel,
+            keystoneProfile.tyrannicalDungeonUpgrades[keystoneProfile.tyrannicalMaxDungeonIndex]
+        )
         if showLFD then
             local focusDungeon = util:GetLFDStatusForCurrentActivity(state.args and state.args.activityID)
             if focusDungeon then
-                best.dungeon = focusDungeon
-                best.level = keystoneProfile.dungeons[focusDungeon.index]
+                best.dungeon,
+                best.level,
+                best.chests = GetBestRunOfDungeons(
+                    focusDungeon,
+                    keystoneProfile.fortifiedDungeons[focusDungeon.index],
+                    keystoneProfile.fortifiedDungeonUpgrades[focusDungeon.index],
+                    focusDungeon,
+                    keystoneProfile.tyrannicalDungeons[focusDungeon.index],
+                    keystoneProfile.tyrannicalDungeonUpgrades[focusDungeon.index]
+                )
             end
-        end
-        if best.dungeon and (not best.level or best.level < 1) then
-            best.level = keystoneProfile.dungeons[best.dungeon.index] or 0
-        end
-        if not best.dungeon or (best.level and best.level < 1) then
-            best.dungeon, best.level = nil, 0
         end
         local hasHeaderData = false
         if overallBest.level > 0 and (not best.dungeon or best.dungeon ~= overallBest.dungeon) then
@@ -3498,7 +4005,7 @@ do
             else
                 label, r, g, b = L.BEST_RUN, 1, 1, 1
             end
-            tooltip:AddDoubleLine(label, util:GetNumChests(keystoneProfile.dungeonUpgrades[overallBest.dungeon.index]) .. "|cffffffff" .. overallBest.level .. "|r " .. overallBest.dungeon.shortNameLocale, r, g, b, util:GetScoreColor(keystoneProfile.mplusCurrent.score))
+            tooltip:AddDoubleLine(label, util:GetNumChests(overallBest.chests) .. "|cffffffff" .. overallBest.level .. "|r " .. overallBest.dungeon.shortNameLocale, r, g, b, util:GetScoreColor(keystoneProfile.mplusCurrent.score))
         end
         if best.dungeon and best.level > 0 then
             local label, r, g, b = L.BEST_FOR_DUNGEON, 1, 1, 1
@@ -3510,7 +4017,7 @@ do
                     label, r, g, b = L.BEST_FOR_DUNGEON, 0, 1, 0
                 end
             end
-            tooltip:AddDoubleLine(label, util:GetNumChests(keystoneProfile.dungeonUpgrades[best.dungeon.index]) .. "|cffffffff" .. best.level .. "|r " .. best.dungeon.shortNameLocale, r, g, b, util:GetScoreColor(keystoneProfile.mplusCurrent.score))
+            tooltip:AddDoubleLine(label, util:GetNumChests(best.chests) .. "|cffffffff" .. best.level .. "|r " .. best.dungeon.shortNameLocale, r, g, b, util:GetScoreColor(keystoneProfile.mplusCurrent.score))
         end
         if isHeader then
             return hasHeaderData
@@ -3550,7 +4057,7 @@ do
                 local level = profile.mythicKeystoneProfile.dungeons[dungeon.index]
                 if level > 0 then
                     index = index + 1
-                    members[index] = { unit = unit, level = level, name = UnitName(unit), chests = profile.mythicKeystoneProfile.dungeonUpgrades[dungeon.index] }
+                    members[index] = { unit = unit, level = level, name = UnitNameUnmodified(unit), chests = profile.mythicKeystoneProfile.dungeonUpgrades[dungeon.index] }
                 end
             end
         end
@@ -3559,8 +4066,37 @@ do
         end
         for i = 1, index do
             local member = members[i]
-            tooltip:AddDoubleLine(UnitName(member.unit), util:GetNumChests(member.chests) .. member.level .. " " .. dungeon.shortNameLocale, 1, 1, 1, util:GetKeystoneChestColor(member.chests))
+            tooltip:AddDoubleLine(UnitNameUnmodified(member.unit), util:GetNumChests(member.chests) .. member.level .. " " .. dungeon.shortNameLocale, 1, 1, 1, util:GetKeystoneChestColor(member.chests))
         end
+    end
+
+    ---@param sortedDungeons SortedDungeon[]
+    local function GetSortedDungeonsTooltipText(sortedDungeons, weeklyAffixInternal, currentWeeklyAffixInternal)
+        local isActive = not currentWeeklyAffixInternal or weeklyAffixInternal == currentWeeklyAffixInternal
+        local lines = {}
+        local lineWidth = {}
+        local maxWidth = 0
+        for i = 1, #sortedDungeons do
+            local sortedDungeon = sortedDungeons[i]
+            local chests = sortedDungeon[weeklyAffixInternal .. "Chests"]
+            local level = sortedDungeon[weeklyAffixInternal .. "Level"]
+            -- local fractionalTime = sortedDungeon[weeklyAffixInternal .. "FractionalTime"]
+            local text = {
+                util:GetNumChests(chests, not isActive),
+                "|cff",
+                isActive and util:GetKeystoneChestColor(chests, true) or "bfbfbf",
+                level > 0 and level or "-",
+                "|r",
+            }
+            text = table.concat(text)
+            lines[i] = text
+            local width = util:GetTooltipTextWidth(text)
+            lineWidth[i] = width
+            if width > maxWidth then
+                maxWidth = width
+            end
+        end
+        return lines, lineWidth, maxWidth
     end
 
     ---@param state TooltipState
@@ -3575,6 +4111,7 @@ do
             if profile then
                 local keystoneProfile = profile.mythicKeystoneProfile
                 local raidProfile = profile.raidProfile
+                local recruitmentProfile = profile.recruitmentProfile
                 local pvpProfile = profile.pvpProfile
                 local isExtendedProfile = Has(state.options, render.Flags.PROFILE_TOOLTIP)
                 local isKeystoneBlockShown = keystoneProfile and ((isExtendedProfile or keystoneProfile.hasRenderableData) and not keystoneProfile.blocked)
@@ -3582,8 +4119,9 @@ do
                 local isOutdated = keystoneProfile and keystoneProfile.outdated
                 local showRaidEncounters = config:Get("showRaidEncountersInProfile")
                 local isRaidBlockShown = raidProfile and ((isExtendedProfile and showRaidEncounters) or raidProfile.hasRenderableData) and (not isExtendedProfile or showRaidEncounters)
+                local isRecruitmentBlockShown = recruitmentProfile and recruitmentProfile.hasRenderableData
                 local isPvpBlockShown = pvpProfile and pvpProfile.hasRenderableData
-                local isAnyBlockShown = isKeystoneBlockShown or isRaidBlockShown or isPvpBlockShown
+                local isAnyBlockShown = isKeystoneBlockShown or isRaidBlockShown or isRecruitmentBlockShown or isPvpBlockShown
                 local isUnitTooltip = Has(state.options, render.Flags.UNIT_TOOLTIP)
                 local hasMod = Has(state.options, render.Flags.MOD)
                 local hasModSticky = Has(state.options, render.Flags.MOD_STICKY)
@@ -3674,23 +4212,39 @@ do
                             end
                         end
                         if hasBestDungeons or true then -- HOTFIX: we prefer to always display this in the expanded profile so even empty profiles can display what dungeons there are for the player to complete
+                            local focusDungeon = showLFD and util:GetLFDStatusForCurrentActivity(state.args and state.args.activityID)
+                            local fortifiedLines, fortifiedLinesWidth, fortifiedMaxWidth = GetSortedDungeonsTooltipText(keystoneProfile.sortedDungeons, "fortified")
+                            local tyrannicalLines, tyrannicalLinesWidth, tyrannicalMaxWidth = GetSortedDungeonsTooltipText(keystoneProfile.sortedDungeons, "tyrannical")
+                            local paddingBetweenColumns = 15 -- additional column padding in order to avoid the columns appearing glued together
+                            tyrannicalMaxWidth = tyrannicalMaxWidth + paddingBetweenColumns
                             if showHeader then
                                 if showPadding then
                                     tooltip:AddLine(" ")
                                 end
-                                tooltip:AddLine(L.PROFILE_BEST_RUNS, 1, 0.85, 0)
+                                local weeklyAffixID = util:GetWeeklyAffix()
+                                local leftHeaderText = ns.KEYSTONE_AFFIX_TEXTURE[weeklyAffixID == 10 and 10 or -10]
+                                local rightHeaderText = ns.KEYSTONE_AFFIX_TEXTURE[weeklyAffixID == 9 and 9 or -9]
+                                local rightHeaderTextWidth = util:GetTooltipTextWidth(rightHeaderText)
+                                if rightHeaderTextWidth > tyrannicalMaxWidth then
+                                    tyrannicalMaxWidth = rightHeaderTextWidth + paddingBetweenColumns
+                                end
+                                local paddingTexture = util:GetTextPaddingTexture(tyrannicalMaxWidth - rightHeaderTextWidth)
+                                local text = { leftHeaderText, paddingTexture, rightHeaderText }
+                                tooltip:AddDoubleLine(L.PROFILE_BEST_RUNS, table.concat(text, ""), 1, 0.85, 0, 1, 0.85, 0)
                             end
-                            local focusDungeon = showLFD and util:GetLFDStatusForCurrentActivity(state.args and state.args.activityID)
                             for i = 1, #keystoneProfile.sortedDungeons do
                                 local sortedDungeon = keystoneProfile.sortedDungeons[i]
                                 local r, g, b = 1, 1, 1
                                 if sortedDungeon.dungeon == focusDungeon then
                                     r, g, b = 0, 1, 0
                                 end
-                                if sortedDungeon.level > 0 then
-                                    tooltip:AddDoubleLine(sortedDungeon.dungeon.shortNameLocale, util:GetNumChests(sortedDungeon.chests) .. sortedDungeon.level, r, g, b, util:GetKeystoneChestColor(sortedDungeon.chests))
+                                local paddingTexture = util:GetTextPaddingTexture(tyrannicalMaxWidth - tyrannicalLinesWidth[i])
+                                if sortedDungeon.fortifiedLevel > 0 or sortedDungeon.tyrannicalLevel > 0 then
+                                    local text = { fortifiedLines[i], paddingTexture, tyrannicalLines[i] }
+                                    tooltip:AddDoubleLine(sortedDungeon.dungeon.shortNameLocale, table.concat(text, ""), r, g, b, 0.5, 0.5, 0.5)
                                 else
-                                    tooltip:AddDoubleLine(sortedDungeon.dungeon.shortNameLocale, "-", r, g, b, 0.5, 0.5, 0.5)
+                                    local text = { "-", paddingTexture, "-" }
+                                    tooltip:AddDoubleLine(sortedDungeon.dungeon.shortNameLocale, table.concat(text, ""), r, g, b, 0.5, 0.5, 0.5)
                                 end
                             end
                         end
@@ -3746,8 +4300,17 @@ do
                         end
                     end
                 end
-                if isPvpBlockShown then
+                if isRecruitmentBlockShown then
                     if showPadding and (isKeystoneBlockShown or isRaidBlockShown) then
+                        tooltip:AddLine(" ")
+                    end
+                    local titleLocale, titleOptionalArg = recruitmentProfile.title[1], recruitmentProfile.title[2]
+                    local titleText = format(L[titleLocale], titleOptionalArg)
+                    local icons = { recruitmentProfile.tank and ns.RECRUITMENT_ROLE_ICONS.tank or "", recruitmentProfile.healer and ns.RECRUITMENT_ROLE_ICONS.healer or "", recruitmentProfile.dps and ns.RECRUITMENT_ROLE_ICONS.dps or "" }
+                    tooltip:AddDoubleLine(titleText, table.concat(icons, ""), 0.9, 0.8, 0.5, 1, 1, 1)
+                end
+                if isPvpBlockShown then
+                    if showPadding and (isKeystoneBlockShown or isRaidBlockShown or isRecruitmentBlockShown) then
                         tooltip:AddLine(" ")
                     end
                     if showHeader then
@@ -3827,6 +4390,21 @@ do
         return false
     end
 
+    ---@param frame Frame @The frame to inspect. Its safe if there are no protected APIs called when the handler is executed.
+    ---@param onEnter function @Optional function, the OnEnter handler that we can also compare against for matches.
+    local function IsSafeFrame(frame, onEnter)
+        local parent = frame:GetParent()
+        -- LFGListSearchEntry_OnEnter > LFGListUtil_SetSearchEntryTooltip > C_LFGList.GetPlaystyleString
+        if onEnter == _G.LFGListSearchEntry_OnEnter or (frame.resultID and parent == _G.LFGListSearchPanelScrollFrameScrollChild) then
+            return false
+        end
+        -- QuickJoinButtonMixin.OnEnter > .entry.ApplyToTooltip(GameTooltip) > LFGListUtil_SetSearchEntryTooltip > C_LFGList.GetPlaystyleString
+        if onEnter == _G.QuickJoinButtonMixin.OnEnter or (frame.entry and parent == _G.QuickJoinScrollFrameScrollChild) then
+            return false
+        end
+        return true
+    end
+
     ---@param state TooltipState
     local function UpdateTooltip(tooltip, state)
         -- if unit simply refresh the unit and the original hook will force update the tooltip with the desired behavior
@@ -3850,9 +4428,12 @@ do
         if o1 then
             local oe = o1:GetScript("OnEnter")
             if oe then
-                tooltip:Hide()
-                pcall(oe, o1)
-                return
+                if IsSafeFrame(o1, oe) then
+                    tooltip:Hide()
+                    pcall(oe, o1)
+                    return
+                end
+                return false
             end
         end
         -- if the owner is the UIParent we must beware as it might be the fading out unit tooltips that linger, we do not wish to update these as we do not have a valid unit anymore for reference so we just don't do anything instead
@@ -3931,11 +4512,18 @@ do
         return true
     end
 
+    local function IsReady()
+        return ns.PLAYER_REGION ~= nil -- GetProfile will fail if called too early before the player info is properly loaded so we avoid doing that by safely checking if we're loaded ready
+    end
+
     local pristine = {
         AddProvider = function(...)
             return provider:AddProvider(...)
         end,
         GetProfile = function(arg1, arg2, arg3, ...)
+            if not IsReady() then
+                return
+            end
             local name, realm, faction = arg1, arg2, arg3
             local _, _, unitIsPlayer = util:IsUnit(arg1, arg2)
             if unitIsPlayer then
@@ -3953,6 +4541,9 @@ do
             return provider:GetProfile(name, realm, faction, ...)
         end,
         ShowProfile = function(tooltip, ...)
+            if not IsReady() then
+                return
+            end
             if type(tooltip) ~= "table" or type(tooltip.GetObjectType) ~= "function" or tooltip:GetObjectType() ~= "GameTooltip" then
                 return
             end
@@ -4359,8 +4950,14 @@ do
     ---@return SortedDungeon, DungeonDifference
     local function CompareDungeonUpgrades(run1, diff1, run2, diff2)
         if not run2 then
+            if not run1 or not run1.level then
+                return
+            end
             return run1, diff1
         elseif not run1 then
+            if not run2 or not run2.level then
+                return
+            end
             return run2, diff2
         end
         local side = CompareLevelAndFractionalTime(run1.level, run2.level, run1.fractionalTime, run2.fractionalTime)
@@ -4382,6 +4979,16 @@ do
                 return
             end
         end
+    end
+
+    ---@param run SortedDungeon
+    local function CopyRun(run)
+        local r = {}
+        r.dungeon = run.dungeon
+        r.chests = run.chests
+        r.level = run.level
+        r.fractionalTime = run.fractionalTime
+        return r
     end
 
     ---@param member DataProviderCharacterProfile
@@ -4410,12 +5017,12 @@ do
         local cacheUpgrade = GetDungeonUpgrade(cacheRun, currentRun)
         local bestRun, bestUpgrade = CompareDungeonUpgrades(dbRun, dbRunUpgrade, cacheRun, cacheUpgrade)
         local bestIsCurrentRun
-        if not bestRun then
+        if not bestRun or not bestRun.level then
             bestIsCurrentRun = true
-            bestRun = CopyTable(currentRun)
+            bestRun = CopyRun(currentRun)
             bestUpgrade = {}
         elseif bestRun == dbRun then
-            bestRun = CopyTable(dbRun)
+            bestRun = CopyRun(dbRun)
         end
         memberCachedRuns[currentRun.dungeon.index] = bestRun
         local side = CompareLevelAndFractionalTime(bestRun.level, currentRun.level, bestRun.fractionalTime, currentRun.fractionalTime)
@@ -4644,8 +5251,15 @@ do
     ---@field public mapID number @Keystone instance ID
     ---@field public level number @Keystone level
     ---@field public time number @Run duration in seconds
-    ---@field public onTime boolean @true if on time, otherwise false if depleted
+    ---@field public onTime number @true if on time, otherwise false if depleted
     ---@field public keystoneUpgradeLevels number @The amount of chests/level upgrades
+    ---@field public oldDungeonScore number
+    ---@field public newDungeonScore number
+    ---@field public isAffixRecord boolean
+    ---@field public isMapRecord boolean
+    ---@field public primaryAffix number
+    ---@field public isEligibleForScore boolean
+    ---@field public upgradeMembers ChallengeModeCompletionMemberInfo[]
 
     ---@param bannerData ChallengeModeCompleteBannerData
     local function OnChallengeModeCompleteBannerPlay(frame, bannerData)
@@ -4665,7 +5279,7 @@ do
         end
         local fractionalTime = bannerData.time/timeLimit
         local members = GetGroupMembers()
-        local currentRun = GetCurrentRun(dungeon, bannerData.level, fractionalTime, bannerData.keystoneUpgradeLevels or 0)
+        local currentRun = GetCurrentRun(dungeon, bannerData.level, fractionalTime, bannerData.keystoneUpgradeLevels)
         local upgrades, hasAnyUpgrades = GetDungeonUpgrades(members, currentRun)
         if not frameHooks[frame] then
             frameHooks[frame] = true
@@ -4688,9 +5302,9 @@ do
         end
         hooked = true
         hooksecurefunc(frame, "PlayBanner", OnChallengeModeCompleteBannerPlay)
-        local mapID, level, time, onTime, keystoneUpgradeLevels, practiceRun = C_ChallengeMode.GetCompletionInfo()
+        local mapID, level, time, onTime, keystoneUpgradeLevels, practiceRun, oldDungeonScore, newDungeonScore, isAffixRecord, isMapRecord, primaryAffix, isEligibleForScore, upgradeMembers = C_ChallengeMode.GetCompletionInfo()
         if not practiceRun then
-            local bannerData = { mapID = mapID, level = level, time = time, onTime = onTime, keystoneUpgradeLevels = keystoneUpgradeLevels } ---@type ChallengeModeCompleteBannerData
+            local bannerData = { mapID = mapID, level = level, time = time, onTime = onTime, keystoneUpgradeLevels = keystoneUpgradeLevels or 0, oldDungeonScore = oldDungeonScore, newDungeonScore = newDungeonScore, isAffixRecord = isAffixRecord, isMapRecord = isMapRecord, primaryAffix = primaryAffix, isEligibleForScore = isEligibleForScore, upgradeMembers = upgradeMembers } ---@type ChallengeModeCompleteBannerData
             OnChallengeModeCompleteBannerPlay(frame, bannerData)
         end
     end
@@ -4744,41 +5358,124 @@ do
     local profile = ns:NewModule("Profile") ---@type ProfileModule
     local callback = ns:GetModule("Callback") ---@type CallbackModule
     local config = ns:GetModule("Config") ---@type ConfigModule
-    local util = ns:GetModule("Util") ---@type UtilModule
     local render = ns:GetModule("Render") ---@type RenderModule
 
     local function IsFrame(widget)
-        return type(widget) == "table" and type(widget.GetObjectType) == "function"
+        return type(widget) == "table" and type(widget.GetObjectType) == "function" and widget
     end
 
-    local FALLBACK_ANCHOR = _G.PVEFrame
-    local FALLBACK_ANCHOR_STRATA = "LOW"
-    local FALLBACK_FRAME = _G.UIParent
-    local FALLBACK_FRAME_STRATA = "LOW"
+    local STRATA_MAP = {
+        "TOOLTIP",
+        "FULLSCREEN_DIALOG",
+        "FULLSCREEN",
+        "DIALOG",
+        "HIGH",
+        "MEDIUM",
+        "LOW",
+        "BACKGROUND",
+    }
 
+    for k, v in ipairs(STRATA_MAP) do
+        STRATA_MAP[v] = k
+    end
+
+    local function GetHighestStrata(...)
+        local s, o
+        for _, v in ipairs({...}) do
+            if type(v) == "string" then
+                local c = STRATA_MAP[v]
+                if not o or o > c then
+                    s, o = v, c
+                end
+            end
+        end
+        return s
+    end
+
+    local fallbackFrame = _G.UIParent
+    local fallbackStrata = "LOW"
+
+    local tooltipAnchor
     local tooltip
 
-    ---@param isDraggable boolean
-    ---@return boolean @true if frame is draggable, otherwise false.
-    local function SetDraggable(isDraggable)
-        tooltip:EnableMouse(isDraggable)
-        tooltip:SetMovable(isDraggable)
-        return isDraggable
+    local tooltipAnchorPriority = {
+        -- this entry is updated with the latest anchor from previous `profile:ShowProfile(anchor, ...)` call so that we can prioritize this anchor above all others
+        {
+            name = nil,
+            strata = "TOOLTIP",
+        },
+        -- overrides the default PVEFrame anchor behavior when Premade Groups Filter is loaded
+        {
+            name = "PremadeGroupsFilterDialog",
+            hook = function(anchor, frame, updatePosition)
+                if not anchor.toggleHooked and IsFrame(frame.MoveableToggle) then
+                    anchor.toggleHooked = true
+                    frame.MoveableToggle:HookScript("OnClick", updatePosition)
+                end
+            end,
+            usable = function(anchor, frame)
+                return frame:IsShown() and (not frame.MoveableToggle or not frame.MoveableToggle:GetChecked())
+            end,
+        },
+        -- the default PVEFrame player profile and anchor behavior
+        {
+            name = "PVEFrame",
+            show = function(anchor, frame)
+                if not frame:IsShown() or not config:Get("showRaiderIOProfile") then
+                    return
+                end
+                profile:ShowProfile(false, "player", ns.PLAYER_FACTION)
+            end,
+            hide = function()
+                profile:HideProfile()
+            end,
+        },
+    }
+
+    local hookedFrames = {}
+
+    local function Eval(o, f, ...)
+        if type(o) == "function" then
+            return o(...)
+        end
+        return o or f
     end
 
-    ---@param anchorFrame table @The widget to anchor
-    ---@param frameStrata string @The frame strata "LOW", "HIGH", "DIALOG", etc.
+    local function GetAnchorPoint(anchor, frame)
+        return
+            Eval(anchor.point, "TOPLEFT", anchor, frame),
+            Eval(anchor.rpoint, "TOPRIGHT", anchor, frame),
+            Eval(anchor.x, -16, anchor, frame),
+            Eval(anchor.y, 0, anchor, frame),
+            Eval(anchor.strata, fallbackStrata, anchor, frame)
+    end
+
     ---@return table, string @Returns the used frame and strata after logical checks have been performed on the provided frame and strata values.
-    local function SetAnchor(anchorFrame, frameStrata)
-        anchorFrame = IsFrame(anchorFrame) and anchorFrame or FALLBACK_ANCHOR
-        local frame = anchorFrame or FALLBACK_ANCHOR
-        local strata = frameStrata or FALLBACK_ANCHOR_STRATA
-        tooltip:SetParent(frame)
-        tooltip:SetOwner(anchorFrame, "ANCHOR_NONE")
-        tooltip:ClearAllPoints()
-        tooltip:SetPoint("TOPLEFT", frame, "TOPRIGHT", 0, 0)
-        tooltip:SetFrameStrata(strata)
-        return frame, strata
+    local function SetAnchor()
+        for _, anchor in ipairs(tooltipAnchorPriority) do
+            local frame = anchor.name
+            if frame then
+                frame = IsFrame(frame) or IsFrame(_G[frame])
+                if frame then
+                    local usable = anchor.usable
+                    if usable == nil then
+                        usable = true
+                    elseif type(usable) == "function" then
+                        usable = anchor.usable(anchor, frame)
+                    end
+                    if usable then
+                        local p, rp, x, y, strata = GetAnchorPoint(anchor, frame)
+                        strata = GetHighestStrata(strata, frame:GetFrameStrata())
+                        tooltipAnchor:SetParent(frame)
+                        tooltipAnchor:ClearAllPoints()
+                        tooltipAnchor:SetPoint(p, frame, rp, x, y)
+                        tooltipAnchor:SetFrameStrata(strata)
+                        tooltip:SetFrameStrata(strata)
+                        return frame, strata
+                    end
+                end
+            end
+        end
     end
 
     ---@class ConfigProfilePoint
@@ -4789,64 +5486,105 @@ do
     ---@return table, string @Returns the used frame and strata after logical checks have been performed on the provided frame and strata values.
     local function SetUserAnchor()
         local profilePoint = config:Get("profilePoint") ---@type ConfigProfilePoint
-        tooltip:SetParent(FALLBACK_FRAME)
-        tooltip:SetOwner(FALLBACK_FRAME, "ANCHOR_NONE")
-        tooltip:ClearAllPoints()
         local p = profilePoint.point or "CENTER"
         local x = profilePoint.x or 0
         local y = profilePoint.y or 0
-        tooltip:SetPoint(p, FALLBACK_FRAME, p, x, y)
-        tooltip:SetFrameStrata(FALLBACK_FRAME_STRATA)
-        return FALLBACK_FRAME, FALLBACK_FRAME_STRATA
+        tooltipAnchor:SetParent(fallbackFrame)
+        tooltipAnchor:ClearAllPoints()
+        tooltipAnchor:SetPoint(p, fallbackFrame, p, x, y)
+        tooltipAnchor:SetFrameStrata(fallbackStrata)
+        tooltip:SetFrameStrata(fallbackStrata)
+        return fallbackFrame, fallbackStrata
+    end
+
+    ---@param isDraggable boolean
+    ---@return boolean @true if frame is draggable, otherwise false.
+    local function SetDraggable(self, isDraggable)
+        self:EnableMouse(isDraggable)
+        self:SetMovable(isDraggable)
+        self.Indicator:SetShown(isDraggable)
+        self.Icon:SetShown(isDraggable)
+        return isDraggable
     end
 
     ---@return boolean, table, string @arg1 returns true if position is automatic, otherwise false. `arg2+` are the same as returned from `SetAnchor` or `SetUserAnchor`.
-    local function UpdatePosition()
-        SetDraggable(not config:Get("positionProfileAuto") and not config:Get("lockProfile"))
+    local function UpdatePosition(anchor, frame)
+        if anchor and frame then
+            if frame:IsShown() and anchor.show and type(anchor.show) == "function" then
+                anchor.show(anchor, frame)
+            elseif not frame:IsShown() and anchor.hide and type(anchor.hide) == "function" then
+                anchor.hide(anchor, frame)
+            end
+        end
+        SetDraggable(tooltipAnchor, not config:Get("positionProfileAuto") and not config:Get("lockProfile"))
         if config:Get("positionProfileAuto") then
-            return true, SetAnchor(FALLBACK_ANCHOR, FALLBACK_ANCHOR_STRATA)
+            return true, SetAnchor()
         else
             return false, SetUserAnchor()
         end
     end
 
-    local function Tooltip_OnShow()
-        if GameTooltip_SetBackdropStyle then
-            GameTooltip_SetBackdropStyle(tooltip, GAME_TOOLTIP_BACKDROP_STYLE_DEFAULT)
+    local function UpdateAnchorHooks()
+        for _, anchor in ipairs(tooltipAnchorPriority) do
+            local frame = anchor.name
+            if frame then
+                frame = IsFrame(frame) or IsFrame(_G[frame])
+                if frame then
+                    local function updatePosition()
+                        return UpdatePosition(anchor, frame)
+                    end
+                    if not hookedFrames[frame] then
+                        hookedFrames[frame] = true
+                        frame:HookScript("OnShow", updatePosition)
+                        frame:HookScript("OnHide", updatePosition)
+                    end
+                    if anchor.hook and type(anchor.hook) == "function" then
+                        anchor.hook(anchor, frame, updatePosition)
+                    end
+                end
+            end
         end
     end
 
-    local function Tooltip_OnDragStart()
-        tooltip:StartMoving()
+    local function OnDragStart(self)
+        self:StartMoving()
     end
 
-    local function Tooltip_OnDragStop()
-        tooltip:StopMovingOrSizing()
-        local point, _, _, x, y = tooltip:GetPoint() -- TODO: improve this to store a corner so that when the tip is resized the corner is the anchor point and not the center as that makes it very wobbly and unpleasant to look at
+    local function OnDragStop(self)
+        self:StopMovingOrSizing()
+        local point, _, _, x, y = self:GetPoint() -- TODO: improve this to store a corner so that when the tip is resized the corner is the anchor point and not the center as that makes it very wobbly and unpleasant to look at
         local profilePoint = config:Get("profilePoint") ---@type ConfigProfilePoint
         config:Set("profilePoint", profilePoint)
         profilePoint.point, profilePoint.x, profilePoint.y = point, x, y
     end
 
+    local function CreateTooltipAnchor()
+        local frame = CreateFrame("Frame", nil, fallbackFrame)
+        frame:SetFrameStrata(fallbackStrata)
+        frame:SetFrameLevel(100)
+        frame:SetClampedToScreen(true)
+        frame:RegisterForDrag("LeftButton")
+        frame:SetScript("OnDragStart", OnDragStart)
+        frame:SetScript("OnDragStop", OnDragStop)
+        frame:SetSize(16, 16)
+        frame.Indicator = frame:CreateTexture(nil, "BACKGROUND")
+        frame.Indicator:SetAllPoints()
+        frame.Indicator:SetColorTexture(0.3, 0.3, 0.3)
+        frame.Icon = frame:CreateTexture(nil, "ARTWORK")
+        frame.Icon:SetAllPoints()
+        frame.Icon:SetTexture(386863)
+        return frame
+    end
+
     local function CreateTooltip()
-        local tooltip = CreateFrame("GameTooltip", addonName .. "ProfileTooltip", UIParent, "GameTooltipTemplate")
+        local tooltip = CreateFrame("GameTooltip", addonName .. "_ProfileTooltip", tooltipAnchor, "GameTooltipTemplate")
         tooltip:SetClampedToScreen(true)
-        tooltip:RegisterForDrag("LeftButton")
-        tooltip:SetScript("OnShow", Tooltip_OnShow)
-        tooltip:SetScript("OnDragStart", Tooltip_OnDragStart)
-        tooltip:SetScript("OnDragStop", Tooltip_OnDragStop)
+        tooltip:SetOwner(tooltipAnchor, "ANCHOR_NONE")
+        tooltip:ClearAllPoints()
+        tooltip:SetPoint("TOPLEFT", tooltipAnchor, "TOPRIGHT", 0, 0)
+        tooltip:SetFrameStrata(fallbackStrata)
+        tooltip:SetFrameLevel(100)
         return tooltip
-    end
-
-    local function PVEFrame_OnShow()
-        if not PVEFrame:IsShown() or not config:Get("showRaiderIOProfile") then
-            return
-        end
-        profile:ShowProfile(false, "player", ns.PLAYER_FACTION)
-    end
-
-    local function PVEFrame_OnHide()
-        profile:HideProfile()
     end
 
     local function OnSettingsSaved()
@@ -4854,7 +5592,15 @@ do
             return
         end
         UpdatePosition()
-        profile:HideProfile()
+    end
+
+    local showProfileArgs
+
+    local function OnModifierStateChanged()
+        if not showProfileArgs or not showProfileArgs[1] or not showProfileArgs[2] then
+            return
+        end
+        return profile:ShowProfile(unpack(showProfileArgs))
     end
 
     function profile:CanLoad()
@@ -4863,11 +5609,13 @@ do
 
     function profile:OnLoad()
         self:Enable()
+        tooltipAnchor = CreateTooltipAnchor()
         tooltip = CreateTooltip()
-        PVEFrame:HookScript("OnShow", PVEFrame_OnShow)
-        PVEFrame:HookScript("OnHide", PVEFrame_OnHide)
+        UpdateAnchorHooks()
         UpdatePosition()
         callback:RegisterEvent(OnSettingsSaved, "RAIDERIO_SETTINGS_SAVED")
+        callback:RegisterEvent(UpdateAnchorHooks, "ADDON_LOADED")
+        callback:RegisterEvent(OnModifierStateChanged, "MODIFIER_STATE_CHANGED")
     end
 
     ---@return boolean, boolean @arg1 is true if the toggle was successfull, otherwise false if we can't toggle right now. arg2 is set to true if the frame is now draggable, otherwise false for locked.
@@ -4886,7 +5634,7 @@ do
         else
             ns.Print(L.UNLOCKING_PROFILE_FRAME)
         end
-        return true, SetDraggable(not isLocking)
+        return true, SetDraggable(tooltipAnchor, not isLocking)
     end
 
     local function IsPlayer(unit, name, realm, region)
@@ -4901,18 +5649,20 @@ do
         if not profile:IsEnabled() or not config:Get("showRaiderIOProfile") then
             return
         end
+        showProfileArgs = { anchor, ... }
+        tooltipAnchorPriority[1].name = anchor
+        UpdateAnchorHooks()
+        UpdatePosition()
         local unit, name, realm, faction, options, args, region = render.GetQuery(...)
         options = options or render.Preset.Profile()
-        local positionProfileAuto = UpdatePosition()
-        if positionProfileAuto and IsFrame(anchor) then
-            SetAnchor(anchor, anchor:GetFrameStrata())
-        end
         local isPlayer = IsPlayer(unit, name, realm, region)
         if not isPlayer and config:Get("enableProfileModifier") and band(options, render.Flags.IGNORE_MOD) ~= render.Flags.IGNORE_MOD then
             if config:Get("inverseProfileModifier") == (config:Get("alwaysExtendTooltip") or band(options, render.Flags.MOD) == render.Flags.MOD) then
                 unit, name, realm, faction = "player", nil, nil, ns.PLAYER_FACTION
             end
         end
+        tooltip:SetOwner(tooltipAnchor, "ANCHOR_NONE")
+        tooltip:SetPoint("TOPLEFT", tooltipAnchor, "TOPRIGHT", 0, 0)
         local success
         if not isPlayer or not config:Get("hidePersonalRaiderIOProfile") then
             if unit and UnitExists(unit) then
@@ -4930,6 +5680,9 @@ do
     function profile:HideProfile()
         if not profile:IsEnabled() then
             return
+        end
+        if showProfileArgs then
+            table.wipe(showProfileArgs)
         end
         render:HideTooltip(tooltip)
     end
@@ -4959,6 +5712,7 @@ do
     local hooked = {}
     local OnEnter
     local OnLeave
+    local cleanupPending
 
     local function SetSearchEntry(tooltip, resultID, autoAcceptOption)
         if not config:Get("enableLFGTooltips") then
@@ -4969,16 +5723,29 @@ do
             table.wipe(currentResult)
             return
         end
-        local _, _, _, _, _, _, _, _, _, _, _, _, isMythicPlusActivity = C_LFGList.GetActivityInfo(entry.activityID, nil, entry.isWarMode)
-        if isMythicPlusActivity and entry.leaderOverallDungeonScore then
+        local activityInfo = C_LFGList.GetActivityInfoTable(entry.activityID, nil, entry.isWarMode)
+        if activityInfo and activityInfo.isMythicPlusActivity and entry.leaderOverallDungeonScore then
             local leaderName, leaderRealm = util:GetNameRealm(entry.leaderName)
             provider:OverrideProfile(leaderName, leaderRealm, ns.PLAYER_FACTION, entry.leaderOverallDungeonScore)
         end
         currentResult.activityID = entry.activityID
         currentResult.leaderName = entry.leaderName
         currentResult.keystoneLevel = util:GetKeystoneLevelFromText(entry.title) or util:GetKeystoneLevelFromText(entry.description) or 0
-        render:ShowProfile(tooltip, currentResult.leaderName, ns.PLAYER_FACTION, render.Preset.Unit(render.Flags.MOD_STICKY), currentResult)
-        profile:ShowProfile(tooltip, currentResult.leaderName, ns.PLAYER_FACTION, currentResult)
+        local success1 = render:ShowProfile(tooltip, currentResult.leaderName, ns.PLAYER_FACTION, render.Preset.Unit(render.Flags.MOD_STICKY), currentResult)
+        local success2 = profile:ShowProfile(tooltip, currentResult.leaderName, ns.PLAYER_FACTION, currentResult)
+        if success1 or success2 then
+            if not hooked[tooltip] then
+                hooked[tooltip] = true
+                tooltip:HookScript("OnHide", function()
+                    if not cleanupPending then
+                        return
+                    end
+                    cleanupPending = nil
+                    OnLeave()
+                end)
+            end
+            cleanupPending = true
+        end
     end
 
     local function HookApplicantButtons(buttons)
@@ -5022,16 +5789,21 @@ do
             HookApplicantButtons(self.Members)
         elseif self.memberIdx then
             local shown, fullName = ShowApplicantProfile(self, self:GetParent().applicantID, self.memberIdx)
+            local success
             if shown then
-                profile:ShowProfile(GameTooltip, fullName, ns.PLAYER_FACTION, currentResult)
+                success = profile:ShowProfile(GameTooltip, fullName, ns.PLAYER_FACTION, currentResult)
             else
-                profile:ShowProfile(false, "player", ns.PLAYER_FACTION, currentResult)
+                success = profile:ShowProfile(false, "player", ns.PLAYER_FACTION, currentResult)
+            end
+            if not success then
+                profile:HideProfile()
             end
         end
     end
 
     function OnLeave(self)
         GameTooltip:Hide()
+        profile:HideProfile()
         profile:ShowProfile(false, "player", ns.PLAYER_FACTION)
     end
 
@@ -5253,35 +6025,33 @@ do
 end
 
 -- keystonetooltip.lua
--- dependencies: module, config, util, render
+-- dependencies: module, config, render
 do
 
     ---@class KeystoneTooltipModule : Module
     local tooltip = ns:NewModule("KeystoneTooltip") ---@type KeystoneTooltipModule
     local config = ns:GetModule("Config") ---@type ConfigModule
-    local util = ns:GetModule("Util") ---@type UtilModule
     local render = ns:GetModule("Render") ---@type RenderModule
 
-    -- TODO: the item pattern might not detect all the stuff, need to revise the pattern for it as it might have changed in 8.3.0. also any new API maybe to get info from a keystone link?
-    local KEYSTONE_PATTERNS = {
-        "keystone:(%d+):(.-):(.-):(.-):(.-):(.-)",
-        "item:(158923):.-:.-:.-:.-:.-:.-:.-:.-:.-:.-:.-:.-:(.-):(.-):(.-):(.-):(.-):(.-)"
-    }
+    local KEYSTONE_PATTERN = "keystone:(%d+):(.-):(.-):(.-):(.-):(.-):(.-)"
+    local KEYSTONE_ITEM_PATTERN_1 = "item:(187786):.-:.-:.-:.-:.-:.-:.-:.-:.-:.-:.-:.-:(%d+):(%d+):(%d+):(%d+):(%d+):(.-):(.-):(.-):(.-):(.-):(.-):(.-):(.-)"
+    local KEYSTONE_ITEM_PATTERN_2 = "item:(180653):.-:.-:.-:.-:.-:.-:.-:.-:.-:.-:.-:.-:(%d+):(%d+):(%d+):(%d+):(%d+):(.-):(.-):(.-):(.-):(.-):(.-):(.-):(.-)"
 
     ---@type table<table, KeystoneInfo>
     local currentKeystone = {}
 
     local function GetKeystoneInfo(link)
-        for i = 1, #KEYSTONE_PATTERNS do
-            local pattern = KEYSTONE_PATTERNS[i]
-            local item, instance, level, affix1, affix2, affix3, affix4 = link:match(pattern)
-            if item and instance and level then
-                item, instance, level, affix1, affix2, affix3, affix4 = tonumber(item), tonumber(instance), tonumber(level), tonumber(affix1), tonumber(affix2), tonumber(affix3), tonumber(affix4)
-                if item and instance and level then
-                    return item, instance, level, affix1, affix2, affix3, affix4
-                end
-            end
+        local item, instance, level, affix1, affix2, affix3, affix4, _ = link:match(KEYSTONE_PATTERN)
+        if not item then
+            item, _, _, instance, _, level, _, affix1, _, affix2, _, affix3, _, affix4 = link:match(KEYSTONE_ITEM_PATTERN_1)
         end
+        if not item then
+            item, _, _, instance, _, level, _, affix1, _, affix2, _, affix3, _, affix4 = link:match(KEYSTONE_ITEM_PATTERN_2)
+        end
+        if item then
+            item, instance, level, affix1, affix2, affix3, affix4 = tonumber(item), tonumber(instance), tonumber(level), tonumber(affix1), tonumber(affix2), tonumber(affix3), tonumber(affix4)
+        end
+        return item, instance, level, affix1, affix2, affix3, affix4
     end
 
     ---@param keystone KeystoneInfo
@@ -5331,7 +6101,7 @@ do
 end
 
 -- guildweekly.lua
--- dependencies: module, callback, config, util, render
+-- dependencies: module, callback, config, util
 do
 
     ---@class GuildWeeklyModule : Module
@@ -5339,7 +6109,6 @@ do
     local callback = ns:GetModule("Callback") ---@type CallbackModule
     local config = ns:GetModule("Config") ---@type ConfigModule
     local util = ns:GetModule("Util") ---@type UtilModule
-    local render = ns:GetModule("Render") ---@type RenderModule
 
     local CLASS_FILENAME_TO_ID = {
         WARRIOR = 1,
@@ -5693,7 +6462,7 @@ do
             frame:SetFrameStrata("MEDIUM")
             frame:SetSize(115, 115)
             if frame.SetBackdrop then
-                frame:SetBackdrop(BACKDROP_TOOLTIP_16_16_5555 or GAME_TOOLTIP_BACKDROP_STYLE_DEFAULT)
+                frame:SetBackdrop(BACKDROP_TUTORIAL_16_16 or BACKDROP_TOOLTIP_16_16_5555 or GAME_TOOLTIP_BACKDROP_STYLE_DEFAULT)
                 frame:SetBackdropBorderColor(1, 1, 1, 1)
                 frame:SetBackdropColor(0, 0, 0, 0.6)
             end
@@ -5738,12 +6507,13 @@ do
 end
 
 -- search.lua
--- dependencies: module, config, provider, render, profile
+-- dependencies: module, config, util, provider, render, profile
 do
 
     ---@class SearchModule : Module
     local search = ns:NewModule("Search") ---@type SearchModule
     local config = ns:GetModule("Config") ---@type ConfigModule
+    local util = ns:GetModule("Util") ---@type UtilModule
     local provider = ns:GetModule("Provider") ---@type ProviderModule
     local render = ns:GetModule("Render") ---@type RenderModule
     local profile = ns:GetModule("Profile") ---@type ProfileModule
@@ -5959,6 +6729,15 @@ do
         f.texFocusMid:SetSize(0, 32)
         f.texFocusMid:SetPoint("TOPLEFT", f.texFocusLeft, "TOPRIGHT", 0, 0)
         f.texFocusMid:SetPoint("TOPRIGHT", f.texFocusRight, "TOPLEFT", 0, 0)
+        -- placeholder label
+        f.placeholder = f:CreateFontString(nil, "ARTWORK", "GameTooltipText")
+        f.placeholder:SetPoint("LEFT", f.texLeft, "LEFT", 16, 0)
+        f.placeholder:SetTextColor(0.5, 0.5, 0.5)
+        -- make placeholder invisible once field is populated (and highlight the label when in focus for clarity)
+        local function updateAlpha(self) self.placeholder:SetAlpha(self:GetText():len() > 0 and 0 or 1) end
+        f:HookScript("OnTextChanged", updateAlpha)
+        f:HookScript("OnEditFocusLost", function(self) self.placeholder:SetTextColor(0.5, 0.5, 0.5) updateAlpha(self) end)
+        f:HookScript("OnEditFocusGained", function(self) self.placeholder:SetTextColor(0.8, 0.8, 0.8) updateAlpha(self) end)
         return f
     end
 
@@ -5974,6 +6753,10 @@ do
         local nameBox = CreateEditBox()
         local t = CreateTooltip()
 
+        regionBox.placeholder:SetText(L.SEARCH_REGION_LABEL)
+        realmBox.placeholder:SetText(L.SEARCH_REALM_LABEL)
+        nameBox.placeholder:SetText(L.SEARCH_NAME_LABEL)
+
         regionBox.autoCompleteFunction = GetRegions
         regionBox:SetText(ns.PLAYER_REGION)
         realmBox.autoCompleteFunction = GetRealms
@@ -5988,7 +6771,7 @@ do
             Frame:SetSize(310, config:Get("debugMode") and 115 or 100)
             Frame:SetPoint("CENTER")
             if Frame.SetBackdrop then
-                Frame:SetBackdrop(BACKDROP_TOOLTIP_16_16_5555 or GAME_TOOLTIP_BACKDROP_STYLE_DEFAULT)
+                Frame:SetBackdrop(BACKDROP_TUTORIAL_16_16 or BACKDROP_TOOLTIP_16_16_5555 or GAME_TOOLTIP_BACKDROP_STYLE_DEFAULT)
                 Frame:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR:GetRGB())
                 Frame:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR:GetRGB())
                 Frame:SetBackdropColor(0, 0, 0, 1) -- TODO: ?
@@ -6003,6 +6786,18 @@ do
             Frame:SetScript("OnDragStop", function() Frame:StopMovingOrSizing() end)
             Frame:SetScript("OnShow", function() search:ShowProfile(regionBox:GetText(), nil, realmBox:GetText(), nameBox:GetText()) end)
             Frame:SetScript("OnHide", function() search:ShowProfile() end)
+            Frame.close = CreateFrame("Button", nil, Frame, "UIPanelCloseButtonNoScripts")
+            Frame.close:SetPoint("TOPRIGHT", -5, -3)
+            Frame.close:SetScript("OnClick", function() search:Hide() end)
+            Frame.copyUrl = CreateFrame("Button", nil, Frame, "UIPanelCloseButtonNoScripts")
+            Frame.copyUrl:SetScale(0.67)
+            util:SetButtonTextureFromIcon(Frame.copyUrl, ns.CUSTOM_ICONS.icons.RAIDERIO_COLOR_CIRCLE)
+            Frame.copyUrl:SetPoint("RIGHT", Frame.close, "LEFT", -5, 0)
+            Frame.copyUrl:SetScript("OnClick", function() util:ShowCopyRaiderIOProfilePopup(nameBox:GetText(), realmBox:GetText()) end)
+            Frame.copyUrl:SetScript("OnEnter", function(self) GameTooltip:SetOwner(self, "ANCHOR_RIGHT") GameTooltip:AddLine(L.COPY_RAIDERIO_PROFILE_URL) GameTooltip:Show() end)
+            Frame.copyUrl:SetScript("OnLeave", GameTooltip_Hide)
+            Frame.copyUrl:HookScript("OnEnable", function(self) self:GetDisabledTexture():SetDesaturated(false) end)
+            Frame.copyUrl:HookScript("OnDisable", function(self) self:GetDisabledTexture():SetDesaturated(true) end)
         end
 
         local activeBoxes = {}
@@ -6030,12 +6825,13 @@ do
                 return
             end
             self:ClearFocus()
+            local backwards = IsShiftKeyDown()
             for i = 1, #activeBoxes do
                 local box = activeBoxes[i]
                 if box == self then
-                    local nextBox = activeBoxes[i + 1]
+                    local nextBox = activeBoxes[i + (backwards and -1 or 1)]
                     if not nextBox then
-                        nextBox = activeBoxes[1]
+                        nextBox = activeBoxes[backwards and #activeBoxes or 1]
                     end
                     nextBox:SetFocus()
                     nextBox:HighlightText()
@@ -6071,7 +6867,18 @@ do
             self:ClearFocus()
         end
 
+        local function AreActiveBoxesPopulated()
+            for i = 1, #activeBoxes do
+                local box = activeBoxes[i]
+                if box:GetText():len() < 1 then
+                    return false
+                end
+            end
+            return true
+        end
+
         local function OnTextChanged(self, userInput)
+            Frame.copyUrl:SetEnabled(AreActiveBoxesPopulated())
             if not userInput then return end
             local text = self:GetText()
             if text:len() > 0 then
@@ -6141,6 +6948,7 @@ do
         else
             profile:HideProfile()
         end
+        return shown
     end
 
     function search:Search(query)
@@ -6195,26 +7003,238 @@ do
         searchFrame:Hide()
     end
 
+    function search:IsShown()
+        return searchFrame:IsShown()
+    end
+
+end
+
+-- dropdown.lua
+-- dependencies: module, config, util + LibDropDownExtension, provider, search
+do
+
+    ---@class DropDownModule : Module
+    local dropdown = ns:NewModule("DropDown") ---@type DropDownModule
+    local config = ns:GetModule("Config") ---@type ConfigModule
+    local util = ns:GetModule("Util") ---@type UtilModule
+    local provider = ns:GetModule("Provider") ---@type ProviderModule
+    local search = ns:GetModule("Search") ---@type SearchModule
+
+    local validTypes = {
+        ARENAENEMY = true,
+        BN_FRIEND = true,
+        CHAT_ROSTER = true,
+        COMMUNITIES_GUILD_MEMBER = true,
+        COMMUNITIES_WOW_MEMBER = true,
+        FOCUS = true,
+        FRIEND = true,
+        GUILD = true,
+        GUILD_OFFLINE = true,
+        PARTY = true,
+        PLAYER = true,
+        RAID = true,
+        RAID_PLAYER = true,
+        SELF = true,
+        TARGET = true,
+        WORLD_STATE_SCORE = true
+    }
+
+    -- if the dropdown is a valid type of dropdown then we mark it as acceptable to check for a unit on it
+    local function IsValidDropDown(bdropdown)
+        return (bdropdown == LFGListFrameDropDown and config:Get("enableLFGDropdown")) or (type(bdropdown.which) == "string" and validTypes[bdropdown.which])
+    end
+
+    -- get name and realm from dropdown or nil if it's not applicable
+    local function GetNameRealmForDropDown(bdropdown)
+        local unit = bdropdown.unit
+        local bnetIDAccount = bdropdown.bnetIDAccount
+        local menuList = bdropdown.menuList
+        local quickJoinMember = bdropdown.quickJoinMember
+        local quickJoinButton = bdropdown.quickJoinButton
+        local clubMemberInfo = bdropdown.clubMemberInfo
+        local tempName, tempRealm = bdropdown.name, bdropdown.server
+        local name, realm, level, faction
+        -- unit
+        if not name and UnitExists(unit) then
+            if UnitIsPlayer(unit) then
+                name, realm = util:GetNameRealm(unit)
+                level = UnitLevel(unit)
+                faction = util:GetFaction(unit)
+            end
+            -- if it's not a player it's pointless to check further
+            return name, realm, level, unit, faction
+        end
+        -- bnet friend
+        if not name and bnetIDAccount then
+            local fullName, charFaction, charLevel = util:GetNameRealmForBNetFriend(bnetIDAccount)
+            if fullName then
+                name, realm = util:GetNameRealm(fullName)
+                level = charLevel
+                faction = charFaction
+            end
+            -- if it's a bnet friend we assume if eligible the name and realm is set, otherwise we assume it's not eligible for a url
+            return name, realm, level, nil, faction
+        end
+        -- lfd
+        if not name and menuList then
+            for i = 1, #menuList do
+                local whisperButton = menuList[i]
+                if whisperButton and (whisperButton.text == _G.WHISPER_LEADER or whisperButton.text == _G.WHISPER) then
+                    name, realm = util:GetNameRealm(whisperButton.arg1)
+                    faction = ns.PLAYER_FACTION
+                    break
+                end
+            end
+        end
+        -- quick join
+        if not name and (quickJoinMember or quickJoinButton) then
+            local memberInfo = quickJoinMember or quickJoinButton.Members[1]
+            if memberInfo.playerLink then
+                name, realm, level = util:GetNameRealmFromPlayerLink(memberInfo.playerLink)
+                faction = ns.PLAYER_FACTION
+            end
+        end
+        -- dropdown by name and realm
+        if not name and tempName then
+            name, realm = util:GetNameRealm(tempName, tempRealm)
+            if clubMemberInfo and clubMemberInfo.level and (clubMemberInfo.clubType == Enum.ClubType.Guild or clubMemberInfo.clubType == Enum.ClubType.Character) then
+                level = clubMemberInfo.level
+                faction = ns.PLAYER_FACTION
+            end
+        end
+        -- if we don't got both we return nothing
+        if not name or not realm then
+            return
+        end
+        -- fallback to our own faction if we're unsure at this point
+        if not faction then
+            faction = ns.PLAYER_FACTION
+        end
+        -- return whatever information we have available
+        return name, realm, level, nil, faction
+    end
+
+    -- tracks the currently active dropdown name and realm for lookup
+    local selectedName, selectedRealm, selectedLevel, selectedUnit, selectedFaction
+
+    ---@type CustomDropDownOption[]
+    local unitOptions
+
+    ---@param options CustomDropDownOption[]
+    local function OnToggle(bdropdown, event, options, level, data)
+        if event == "OnShow" then
+            if not config:Get("showDropDownCopyURL") then
+                return
+            end
+            if not IsValidDropDown(bdropdown) then
+                return
+            end
+            selectedName, selectedRealm, selectedLevel, selectedUnit, selectedFaction = GetNameRealmForDropDown(bdropdown)
+            if not selectedName or not util:IsMaxLevel(selectedLevel, true) then
+                return
+            end
+            if not options[1] then
+                local index = 0
+                for i = 1, #unitOptions do
+                    local option = unitOptions[i]
+                    if not option.show or option.show() then
+                        index = index + 1
+                        options[index] = option
+                    end
+                end
+                return true
+            end
+        elseif event == "OnHide" then
+            if options[1] then
+                for i = #options, 1, -1 do
+                    options[i] = nil
+                end
+                return true
+            end
+        end
+    end
+
+    local function DropDownOptionModifiedClickHandler()
+        if not IsControlKeyDown() and not IsAltKeyDown() then
+            return
+        end
+        local shown = search:IsShown()
+        if not shown then
+            search:Show()
+        end
+        if search:Search(format("%s %s", selectedName, selectedRealm)) then
+            return true -- indicates we are showing the search dialog and we don't want to show the static popup
+        elseif not shown then
+            search:Hide()
+        end
+    end
+
+    local function GetRecruitmentProfileForDropDown()
+        local profile = provider:GetProfile(selectedName, selectedRealm, selectedFaction)
+        if not profile or not profile.recruitmentProfile or not profile.recruitmentProfile.hasRenderableData then
+            return
+        end
+        return profile
+    end
+
+    ---@type LibDropDownExtension
+    local LibDropDownExtension = LibStub and LibStub:GetLibrary("LibDropDownExtension-1.0", true)
+
+    function dropdown:CanLoad()
+        return LibDropDownExtension
+    end
+
+    function dropdown:OnLoad()
+        self:Enable()
+        unitOptions = {
+            {
+                text = L.COPY_RAIDERIO_PROFILE_URL,
+                func = function()
+                    if DropDownOptionModifiedClickHandler() then
+                        return
+                    end
+                    util:ShowCopyRaiderIOProfilePopup(selectedName, selectedRealm)
+                end
+            },
+            {
+                text = L.COPY_RAIDERIO_RECRUITMENT_URL,
+                func = function()
+                    if DropDownOptionModifiedClickHandler() then
+                        return
+                    end
+                    local profile = GetRecruitmentProfileForDropDown()
+                    util:ShowCopyRaiderIORecruitmentProfilePopup(profile.recruitmentProfile.entityType, selectedName, selectedRealm)
+                end,
+                show = function()
+                    return GetRecruitmentProfileForDropDown()
+                end
+            }
+        }
+        LibDropDownExtension:RegisterEvent("OnShow OnHide", OnToggle, 1, dropdown)
+    end
+
 end
 
 -- rwf.lua (requires rwf mode)
--- dependencies: module, callback, config
+-- dependencies: module, callback, config, util
 do
 
     ---@class RaceWorldFirstModule : Module
     local rwf = ns:NewModule("RaceWorldFirst") ---@type RaceWorldFirstModule
     local callback = ns:GetModule("Callback") ---@type CallbackModule
     local config = ns:GetModule("Config") ---@type ConfigModule
+    local util = ns:GetModule("Util") ---@type UtilModule
 
     local LOCATION = {}
     local LOOT_FRAME
 
     local TRACKING_EVENTS = {
-        "LOOT_READY",
-        "LOOT_HISTORY_FULL_UPDATE",
-        "LOOT_HISTORY_ROLL_COMPLETE",
-        "CHAT_MSG_LOOT",
-        "CHAT_MSG_CURRENCY",
+        -- TODO: disable these loot related events since we currently only support the guild news related loot events
+        -- "LOOT_READY",
+        -- "LOOT_HISTORY_FULL_UPDATE",
+        -- "LOOT_HISTORY_ROLL_COMPLETE",
+        -- "CHAT_MSG_LOOT",
+        -- "CHAT_MSG_CURRENCY",
     }
 
     local HEX_COLOR_QUALITY = {
@@ -6247,9 +7267,9 @@ do
         return linkType, linkArg1, link, linkCount, HEX_COLOR_QUALITY[linkHexColor]
     end
 
-    -- Sanctum of Domination (Mythic)
+    -- Sepulcher of the First Ones
     local LOG_FILTER = {
-        GUILD_NEWS = "item:.-:1:28:2106:",
+        GUILD_NEWS = "item:.-:1:28:216[5678]:",
         ITEM_LEVEL = 252,
     }
 
@@ -6303,8 +7323,32 @@ do
     end
 
     ---@class RWFLootEntry
+    ---@field public guildName string
+    ---@field public guildRealm string
+    ---@field public guildRegion string
+    ---@field public type number
+    ---@field public isNew boolean
+    ---@field public timestamp number
+    ---@field public isUpdated boolean
+    ---@field public itemLevel number
+    ---@field public id number
+    ---@field public itemType string
+    ---@field public itemSubType string
+    ---@field public itemEquipLoc string
+    ---@field public itemIcon number
+    ---@field public itemClassID number
+    ---@field public itemSubClassID number
+    ---@field public link string
+    ---@field public index number
+    ---@field public guid string
+    ---@field public count number
+    ---@field public who string
+    ---@field public sources table<number, number>
+    ---@field public hasNewSources boolean
+    ---@field public addLoot boolean
 
-    local function LogItemLink(logType, linkType, id, link, count, sources, useTimestamp)
+    ---@return RWFLootEntry
+    local function LogItemLink(logType, linkType, id, link, count, sources, useTimestamp, additionalInfo)
         local isLogging, instanceName, instanceDifficulty, instanceID = rwf:GetLocation()
         if logType == LOG_TYPE.News then
             instanceName = _G.GUILD_NEWS or _G.GUILD_NEWS_TITLE
@@ -6318,13 +7362,18 @@ do
         if not success then
             return false
         end
+        local guildName, _, _, guildRealmName = GetGuildInfo("player")
         tables[1].name = instanceName
         local lootEntry = tables[4] ---@type RWFLootEntry
         local timestamp = useTimestamp or GetServerTime()
+        lootEntry.guildName = guildName
+        lootEntry.guildRealm = guildRealmName or ns.PLAYER_REALM
+        lootEntry.guildRegion = ns.PLAYER_REGION
         lootEntry.type = logType
         lootEntry.isNew = not lootEntry.timestamp
         lootEntry.timestamp = lootEntry.timestamp or timestamp
         lootEntry.isUpdated = timestamp - lootEntry.timestamp > 60
+        lootEntry.itemLevel = GetDetailedItemLevelInfo(link)
         lootEntry.id, lootEntry.itemType, lootEntry.itemSubType, lootEntry.itemEquipLoc, lootEntry.itemIcon, lootEntry.itemClassID, lootEntry.itemSubClassID = GetItemInfoInstant(link)
         lootEntry.link = link
         lootEntry.index = lootEntry.index or CountItems(tables[3]) -- keep same index or count (our item is already included in the count)
@@ -6347,7 +7396,44 @@ do
             end
         end
         lootEntry.addLoot = lootEntry.isNew or lootEntry.hasNewSources -- lootEntry.isUpdated
+        -- Additional info for dedup in backend
+        if additionalInfo then
+            for key, value in pairs(additionalInfo) do
+                lootEntry[key] = value
+            end
+        end
         return lootEntry
+    end
+
+    local LOG_ITEM_TRIM_IF_OLDER = 259200 -- 3 days
+    local LOG_ITEM_LOG_IF_NEWER = 172800 -- 2 days
+
+    local function TrimHistoryFromSV()
+        local now = time()
+        local remove
+        for instanceID, instanceData in pairs(_G.RaiderIO_RWF) do
+            for instanceDifficulty, instanceDifficultyData in pairs(instanceData) do
+                if type(instanceDifficultyData) == "table" then
+                    for logType, logTypeData in pairs(instanceDifficultyData) do
+                        ---@type RWFLootEntry
+                        for key, lootEntry in pairs(logTypeData) do
+                            if now - lootEntry.timestamp >= LOG_ITEM_TRIM_IF_OLDER then
+                                if not remove then
+                                    remove = {}
+                                end
+                                remove[key] = true
+                            end
+                        end
+                        if remove then
+                            for key, _ in pairs(remove) do
+                                logTypeData[key] = nil
+                            end
+                            remove = nil
+                        end
+                    end
+                end
+            end
+        end
     end
 
     local LOG_GUILD_NEWS_TYPES = {
@@ -6365,20 +7451,22 @@ do
         if itemLinkFilter and itemLink:find(itemLinkFilter) then
             return true
         end
-        local _, _, _, itemEquipLoc = GetItemInfoInstant(itemLink) 
-        if itemEquipLoc and itemEquipLoc == "" then
-            return true
-        end
-        local effectiveILvl = GetDetailedItemLevelInfo(itemLink)
-        if effectiveILvl and effectiveILvl >= LOG_FILTER.ITEM_LEVEL then
-            return true
-        end
+        -- local _, _, _, itemEquipLoc = GetItemInfoInstant(itemLink)
+        -- if itemEquipLoc and itemEquipLoc == "" then
+        --     return true
+        -- end
+        -- local effectiveILvl = GetDetailedItemLevelInfo(itemLink)
+        -- if effectiveILvl and effectiveILvl >= LOG_FILTER.ITEM_LEVEL then
+        --     return true
+        -- end
     end
 
+    ---@param lootEntry RWFLootEntry
     local function PrepareLootEntryForSV(lootEntry)
         -- lootEntry.isNew, lootEntry.isUpdated, lootEntry.hasNewSources, lootEntry.addLoot = nil -- TODO: if we uncomment we'll keep adding old processed loot to the frame and we don't want that so let this be in the SV file we can afford that
     end
 
+    ---@param lootEntry RWFLootEntry
     local function HandleLootEntry(lootEntry)
         if not lootEntry then
             return
@@ -6388,6 +7476,97 @@ do
         else
             PrepareLootEntryForSV(lootEntry)
         end
+    end
+
+    local function GetGuildNewsItems()
+        local t = {} ---@type GuildNewsInfo[]
+        local i = 0
+        local n = 0
+        local newsInfo ---@type GuildNewsInfo
+        repeat
+            i = i + 1
+            newsInfo = C_GuildInfo.GetGuildNewsInfo(i)
+            if not newsInfo then
+                break
+            elseif LOG_GUILD_NEWS_TYPES[newsInfo.newsType] then
+                n = n + 1
+                t[n] = newsInfo
+            end
+        until false
+        return t, n
+    end
+
+    ---@class GuildNewsTicker : Ticker
+
+    local guildNewsTicker ---@type GuildNewsTicker
+    local guildNewsCount ---@type number
+
+    local function GetGuildNews()
+        local items, count = GetGuildNewsItems()
+        local diff = guildNewsCount and abs(count - guildNewsCount) or 0
+        return items, count, diff
+    end
+
+    ---@param newsInfo GuildNewsInfo
+    local function HandleGuildNewsInfo(newsInfo, now)
+        local itemType, itemID, itemLink, itemCount, itemQuality = GetItemFromText(newsInfo.whatText)
+        if itemType and CanLogItem(itemLink, itemType, itemQuality, LOG_FILTER.GUILD_NEWS) then
+            newsInfo.year = newsInfo.year + 2000
+            newsInfo.month = newsInfo.month + 1
+            newsInfo.day = newsInfo.day + 1
+            local timestamp = time(newsInfo)
+            if now - timestamp <= LOG_ITEM_LOG_IF_NEWER then
+                HandleLootEntry(LogItemLink(LOG_TYPE.News, itemType, itemID, itemLink, itemCount or 1, nil, timestamp, { who = newsInfo.whoText }))
+                return true
+            end
+            return false
+        end
+    end
+
+    local SCAN_NUM_ITEMS_PER_FRAME = 100
+    local SCAN_INTERVAL_BETWEEN_CYCLES = 0.05
+
+    local function ScanGuildNews()
+        if guildNewsTicker then
+            guildNewsTicker.CalledDuringScan = true
+            return
+        end
+        local co = coroutine.create(function()
+            local items, count, diff = GetGuildNews()
+            if guildNewsCount == count then
+                return
+            end
+            guildNewsCount = count
+            local now = time()
+            for i, newsInfo in ipairs(items) do
+                if HandleGuildNewsInfo(newsInfo, now) and i % SCAN_NUM_ITEMS_PER_FRAME == 0 then
+                    coroutine.yield()
+                end
+            end
+            if not guildNewsTicker.CalledDuringScan then
+                return
+            end
+            items, count, diff = GetGuildNews()
+            if guildNewsCount == count then
+                return
+            end
+            guildNewsCount = count
+            for i, newsInfo in ipairs(items) do
+                if i > diff then
+                    break
+                end
+                HandleGuildNewsInfo(newsInfo, now)
+            end
+        end)
+        LOOT_FRAME.MiniFrame:StartScanning()
+        guildNewsTicker = C_Timer.NewTicker(SCAN_INTERVAL_BETWEEN_CYCLES, function()
+            if not coroutine.resume(co) then
+                guildNewsTicker:Cancel()
+                guildNewsTicker = nil
+                LOOT_FRAME.MiniFrame:StopScanning()
+                return
+            end
+        end)
     end
 
     local function OnEvent(event, ...)
@@ -6424,17 +7603,7 @@ do
                 HandleLootEntry(LogItemLink(LOG_TYPE.Chat, itemType, itemID, itemLink, itemCount or 1))
             end
         elseif event == "GUILD_NEWS_UPDATE" then
-            for i = 1, GetNumGuildNews() do
-                local newsInfo = C_GuildInfo.GetGuildNewsInfo(i)
-                if newsInfo and newsInfo.newsType and LOG_GUILD_NEWS_TYPES[newsInfo.newsType] then
-                    local itemType, itemID, itemLink, itemCount, itemQuality = GetItemFromText(newsInfo.whatText)
-                    if itemType and CanLogItem(itemLink, itemType, itemQuality, LOG_FILTER.GUILD_NEWS) then
-                        newsInfo.year = newsInfo.year + 2000
-                        local timestamp = time(newsInfo)
-                        HandleLootEntry(LogItemLink(LOG_TYPE.News, itemType, itemID, itemLink, itemCount or 1, nil, timestamp))
-                    end
-                end
-            end
+            ScanGuildNews()
         end
         if LOOT_FRAME:IsShown() then
             LOOT_FRAME:OnShow()
@@ -6455,7 +7624,7 @@ do
             end
         end
 
-        local frame = CreateFrame("Frame", nil, UIParent, "ButtonFrameTemplate")
+        local frame = CreateFrame("Frame", addonName .. "_RWFFrame", UIParent, "ButtonFrameTemplate")
         frame:SetSize(400, 250)
         frame:SetPoint("CENTER")
         frame:SetFrameStrata("HIGH")
@@ -6524,7 +7693,7 @@ do
         frame.DisableModule = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
         frame.DisableModule:SetSize(80, 22)
         frame.DisableModule:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -5, 3)
-        frame.DisableModule:SetScript("OnClick", function() config:Set("rwfMode", false) ReloadUI() end)
+        frame.DisableModule:SetScript("OnClick", function() config:Set("rwfMode", false) _G.RaiderIO_RWF = {} ReloadUI() end)
         frame.DisableModule:SetText(L.DISABLE_RWF_MODE_BUTTON)
         frame.DisableModule.tooltip = L.DISABLE_RWF_MODE_BUTTON_TOOLTIP
         frame.DisableModule.GetAppropriateTooltip = UIButtonMixin.GetAppropriateTooltip
@@ -6551,6 +7720,202 @@ do
         frame.WipeLog:SetScript("OnEnter", UIButtonMixin.OnEnter)
         frame.WipeLog:SetScript("OnLeave", UIButtonMixin.OnLeave)
 
+        frame.MiniFrame = CreateFrame("Button", addonName .. "_RWFMiniFrame", UIParent, "UIPanelButtonTemplate")
+        frame.MiniFrame:SetFrameLevel(100)
+        frame.MiniFrame:SetClampedToScreen(true)
+        frame.MiniFrame:SetSize(32, 32)
+        frame.MiniFrame:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+        local miniPoint = config:Get("rwfMiniPoint") ---@type ConfigProfilePoint
+        frame.MiniFrame:SetPoint(miniPoint.point or "CENTER", miniPoint.point and _G.UIParent or frame, miniPoint.point or "CENTER", miniPoint.point and miniPoint.x or -10, miniPoint.point and miniPoint.y or 0)
+        frame.MiniFrame:EnableMouse(true)
+        frame.MiniFrame:SetMovable(true)
+        frame.MiniFrame:RegisterForDrag("LeftButton")
+        frame.MiniFrame:SetScript("OnDragStart", frame.MiniFrame.StartMoving)
+        frame.MiniFrame:SetScript("OnDragStop", function(self)
+            self:StopMovingOrSizing()
+            local point, _, _, x, y = self:GetPoint() -- TODO: improve this to store a corner so that when the tip is resized the corner is the anchor point and not the center as that makes it very wobbly and unpleasant to look at
+            local miniPoint = config:Get("rwfMiniPoint") ---@type ConfigProfilePoint
+            config:Set("rwfMiniPoint", miniPoint)
+            miniPoint.point, miniPoint.x, miniPoint.y = point, x, y
+            if self.arrow1 then
+                self:UpdateArrow()
+            end
+        end)
+        frame.MiniFrame.Text:SetPoint("TOP", frame.MiniFrame, "BOTTOM", 0, -5)
+        frame.MiniFrame:SetDisabledFontObject(_G.GameFontHighlightHuge)
+        frame.MiniFrame:SetHighlightFontObject(_G.GameFontHighlightHuge)
+        frame.MiniFrame:SetNormalFontObject(_G.GameFontHighlightHuge)
+        frame.MiniFrame.tooltip = L.RWF_MINIBUTTON_TOOLTIP
+        frame.MiniFrame.GetAppropriateTooltip = UIButtonMixin.GetAppropriateTooltip
+        frame.MiniFrame:SetScript("OnEnter", UIButtonMixin.OnEnter)
+        frame.MiniFrame:SetScript("OnLeave", UIButtonMixin.OnLeave)
+        frame.MiniFrame:SetMotionScriptsWhileDisabled(true)
+        frame.MiniFrame.Left:Hide()
+        frame.MiniFrame.Right:Hide()
+        frame.MiniFrame.Middle:Hide()
+        util:SetButtonTextureFromIcon(frame.MiniFrame, ns.CUSTOM_ICONS.icons.RAIDERIO_COLOR_CIRCLE)
+        frame.MiniFrame:Hide()
+
+        frame.MiniFrame.Spinner = CreateFrame("Button", nil, frame.MiniFrame)
+        frame.MiniFrame.Spinner:SetAllPoints()
+        util:SetButtonTextureFromIcon(frame.MiniFrame.Spinner, ns.CUSTOM_ICONS.icons.RAIDERIO_COLOR_CIRCLE)
+        frame.MiniFrame.Spinner:Hide()
+        frame.MiniFrame.Spinner.Anim = frame.MiniFrame.Spinner:CreateAnimationGroup()
+        frame.MiniFrame.Spinner.Anim.Rotation = frame.MiniFrame.Spinner.Anim:CreateAnimation("Rotation")
+        frame.MiniFrame.Spinner.Anim.Rotation:SetDuration(1)
+        frame.MiniFrame.Spinner.Anim.Rotation:SetOrder(1)
+        frame.MiniFrame.Spinner.Anim.Rotation:SetOrigin("CENTER", 0, 0)
+        frame.MiniFrame.Spinner.Anim.Rotation:SetRadians(math.pi * 2)
+        frame.MiniFrame.Spinner.Anim:SetScript("OnFinished", frame.MiniFrame.Spinner.Anim.Play)
+        frame.MiniFrame.Spinner:SetScript("OnShow", function(self) self.Anim:Play() end)
+        frame.MiniFrame.Spinner:SetScript("OnHide", function(self) self.Anim:Stop() end)
+
+        frame.MiniFrame:HookScript("OnShow", function(self)
+            self:UpdateState()
+        end)
+
+        frame.MiniFrame:SetScript("OnClick", function(self, button)
+            if button == "LeftButton" then
+                local numItems = frame:GetNumLootItems(LOG_TYPE.News)
+                if numItems > 0 then
+                    if not InCombatLockdown() then
+                        ReloadUI()
+                    end
+                else
+                    -- frame:Show()
+                end
+            else
+                frame:Show()
+            end
+        end)
+
+        if config:Get("rwfBackgroundMode") then
+            frame.MiniFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
+            frame.MiniFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
+            frame.MiniFrame:SetScript("OnEvent", function(self, event)
+                self:UpdateState((event == "PLAYER_REGEN_DISABLED" and true) or (event == "PLAYER_REGEN_ENABLED" and false))
+            end)
+        end
+
+        local ARROW_CONFIG = {
+            LEFT = {
+                atlas = "NPE_ArrowLeft",
+                atlasGlow = "NPE_ArrowLeftGlow",
+                pointDir = "RIGHT",
+                pointX = 23,
+                pointY = 0,
+                transX = -50,
+                transY = 0,
+                size = 64,
+                offsetX = 64,
+                offsetY = 0,
+            },
+            RIGHT = {
+                atlas = "NPE_ArrowRight",
+                atlasGlow = "NPE_ArrowRightGlow",
+                pointDir = "LEFT",
+                pointX = -23,
+                pointY = 0,
+                transX = 50,
+                transY = 0,
+                size = 64,
+                offsetX = -64,
+                offsetY = 0,
+            },
+        }
+
+        local function SetArrowDir(self, arrow)
+            self:SetSize(arrow.size, arrow.size)
+            self:ClearAllPoints()
+            self:SetPoint(arrow.pointDir, arrow.pointX + arrow.offsetX, arrow.pointY + arrow.offsetY)
+            self.arrow:SetAtlas(arrow.atlas)
+            self.arrowGlow:SetAtlas(arrow.atlasGlow)
+            self.Anim.Translation:SetOffset(arrow.transX, arrow.transY)
+        end
+
+        local function CreateArrow(parent)
+            local arrow = CreateFrame("Frame", nil, parent)
+            arrow.SetArrowDir = SetArrowDir
+            arrow:Hide()
+            arrow:SetAlpha(0)
+            arrow.arrow = arrow:CreateTexture(nil, "BACKGROUND")
+            arrow.arrow:SetAllPoints()
+            arrow.arrowGlow = arrow:CreateTexture(nil, "OVERLAY")
+            arrow.arrowGlow:SetAllPoints()
+            arrow.arrowGlow:SetAlpha(0.75)
+            arrow.arrowGlow:SetBlendMode("ADD")
+            arrow.Anim = arrow:CreateAnimationGroup()
+            arrow.Anim.Translation = arrow.Anim:CreateAnimation("Translation")
+            arrow.Anim.Translation:SetDuration(1)
+            arrow.Anim.Translation:SetOrder(1)
+            arrow.Anim.Translation:SetSmoothing("OUT")
+            arrow.Anim.Alpha1 = arrow.Anim:CreateAnimation("Alpha")
+            arrow.Anim.Alpha1:SetFromAlpha(0)
+            arrow.Anim.Alpha1:SetToAlpha(1)
+            arrow.Anim.Alpha1:SetDuration(0.1)
+            arrow.Anim.Alpha1:SetOrder(1)
+            arrow.Anim.Alpha2 = arrow.Anim:CreateAnimation("Alpha")
+            arrow.Anim.Alpha2:SetFromAlpha(1)
+            arrow.Anim.Alpha2:SetToAlpha(0)
+            arrow.Anim.Alpha2:SetDuration(0.9)
+            arrow.Anim.Alpha2:SetStartDelay(0.1)
+            arrow.Anim.Alpha2:SetOrder(1)
+            arrow.Anim.Alpha2:SetSmoothing("IN")
+            arrow.Anim:SetScript("OnFinished", arrow.Anim.Play)
+            return arrow
+        end
+
+        function frame.MiniFrame:UpdateArrow()
+            local px = _G.UIParent:GetCenter()
+            local cx = self:GetCenter()
+            local arrow = cx >= px and ARROW_CONFIG.RIGHT or ARROW_CONFIG.LEFT
+            self.arrow1:SetArrowDir(arrow)
+            self.arrow2:SetArrowDir(arrow)
+        end
+
+        function frame.MiniFrame:UpdateState(isInCombat)
+            if type(isInCombat) ~= "boolean" then
+                isInCombat = not not InCombatLockdown()
+            end
+            if isInCombat == true then
+                self:Hide()
+            elseif isInCombat == false then
+                self:SetShown(not frame:IsShown())
+            end
+            local numItems = frame:GetNumLootItems(LOG_TYPE.News)
+            self:SetText(numItems > 0 and numItems)
+            -- self:SetEnabled(numItems > 0)
+            if not self.isGlowing and numItems >= config:Get("rwfBackgroundRemindAt") then
+                self.isGlowing = true
+                _G.ActionButton_ShowOverlayGlow(self)
+                if not self.arrow1 then
+                    self.arrow1 = CreateArrow(self)
+                    self.arrow2 = CreateArrow(self)
+                end
+                self:UpdateArrow()
+                self.arrow1:Show()
+                self.arrow1.Anim:Play()
+                C_Timer.NewTimer(0.5, function() self.arrow2:Show() self.arrow2.Anim:Play() end)
+            end
+        end
+
+        local scanningTicker
+
+        function frame.MiniFrame:StartScanning()
+            if scanningTicker then
+                return
+            end
+            scanningTicker = C_Timer.NewTicker(3, function() self.Spinner:Show() end, 1)
+        end
+
+        function frame.MiniFrame:StopScanning()
+            if scanningTicker then
+                scanningTicker:Cancel()
+                scanningTicker = nil
+            end
+            self.Spinner:Hide()
+        end
+
         function frame:OnShow()
             local isEnabled = config:Get("rwfMode")
             local isLogging, instanceName = rwf:GetLocation()
@@ -6567,13 +7932,20 @@ do
         end
 
         local NEWS_TICKER = {
-            Timer = 60,
+            Timer = 30,
             Tick = function()
+                if InCombatLockdown() then
+                    return
+                end
+                QueryGuildNews()
                 GuildNewsSort(0)
             end,
             Start = function(self)
-                self:Stop()
                 self:Tick()
+                if self.handle then
+                    return
+                end
+                self:Stop()
                 self.handle = C_Timer.NewTicker(self.Timer, self.Tick)
             end,
             Stop = function(self)
@@ -6587,11 +7959,19 @@ do
 
         frame:HookScript("OnShow", function()
             frame:OnShow()
-            NEWS_TICKER:Start()
+            if config:Get("rwfBackgroundMode") then
+                frame.MiniFrame:Hide()
+            else
+                NEWS_TICKER:Start()
+            end
         end)
 
         frame:HookScript("OnHide", function()
-            NEWS_TICKER:Stop()
+            if config:Get("rwfBackgroundMode") then
+                frame.MiniFrame:Show()
+            else
+                NEWS_TICKER:Stop()
+            end
         end)
 
         local function OnSettingsChanged()
@@ -6599,6 +7979,17 @@ do
                 return
             end
             frame:OnShow()
+            if config:Get("rwfBackgroundMode") then
+                frame.MiniFrame:SetShown(not frame:IsShown())
+                NEWS_TICKER:Start()
+            else
+                frame.MiniFrame:Hide()
+                if frame:IsShown() then
+                    NEWS_TICKER:Start()
+                else
+                    NEWS_TICKER:Stop()
+                end
+            end
         end
         callback:RegisterEvent(OnSettingsChanged, "RAIDERIO_CONFIG_READY")
         callback:RegisterEvent(OnSettingsChanged, "RAIDERIO_SETTINGS_SAVED")
@@ -6651,7 +8042,7 @@ do
             local typeText = lootEntry.type and LOG_TYPE_LABEL[lootEntry.type] or "Unknown"
             local linkText = lootEntry.count and lootEntry.count > 1 and format("%sx%d", lootEntry.link, lootEntry.count) or lootEntry.link
             local sourcesText = lootEntry.sources and CountSources(lootEntry.sources) or ""
-            return format("%s | %s | %s%s", timeText, typeText, linkText, sourcesText)
+            return format("%s | %s | %s%s%s", timeText, typeText, linkText, sourcesText, lootEntry.who and format(" (%s)", lootEntry.who) or "")
         end
 
         local function GetHyperlink(elementData)
@@ -6727,10 +8118,21 @@ do
             UpdateButtonText(button)
         end
 
-        function frame:GetNumLootItems()
-            return self.logDataProvider:GetSize()
+        function frame:GetNumLootItems(lootEntryType)
+            if not lootEntryType then
+                return self.logDataProvider:GetSize()
+            end
+            local count = 0
+            self.logDataProvider:ForEach(function(elementData)
+                local lootEntry = elementData.lootEntry ---@type RWFLootEntry
+                if lootEntry.type == lootEntryType then
+                    count = count + 1
+                end
+            end)
+            return count
         end
 
+        ---@param lootEntry RWFLootEntry
         function frame:AddLoot(lootEntry, showFrame)
             if showFrame then
                 self:Show()
@@ -6750,6 +8152,7 @@ do
             if preInsertAtScrollEnd or (not preInsertScrollable and self.Log.Events.ScrollBox:HasScrollableExtent()) then
                 self.Log.Events.ScrollBox:ScrollToEnd(ScrollBoxConstants.NoScrollInterpolation)
             end
+            frame.MiniFrame:UpdateState()
         end
 
         local function SetScrollBoxButtonAlternateState(scrollBox)
@@ -6772,6 +8175,7 @@ do
         frame.Log.Events.ScrollBox:SetDataProvider(frame.logDataProvider)
 
         frame:Hide()
+        OnSettingsChanged() -- jumpstart
         return frame
     end
 
@@ -6799,10 +8203,12 @@ do
     end
 
     function rwf:OnLoad()
+        -- if config:Get("debugMode") then LOG_FILTER.GUILD_NEWS, LOG_FILTER.ITEM_LEVEL = "item:", 0 end -- DEBUG: any kind of loot and ilvl
+        TrimHistoryFromSV()
         LOOT_FRAME = CreateLootFrame()
         self:CheckLocation()
-        callback:RegisterEvent(OnZoneEvent, "PLAYER_ENTERING_WORLD", "ZONE_CHANGED", "ZONE_CHANGED_NEW_AREA")
         callback:RegisterEvent(OnEvent, "GUILD_NEWS_UPDATE")
+        callback:RegisterEvent(OnZoneEvent, "PLAYER_ENTERING_WORLD", "ZONE_CHANGED", "ZONE_CHANGED_NEW_AREA")
     end
 
     function rwf:OnEnable()
@@ -6979,9 +8385,7 @@ do
             for i = 1, #configOptions.modules do
                 local f = configOptions.modules[i]
                 local checked1 = f.checkButton:GetChecked()
-                local checked2 = f.checkButton2:GetChecked()
                 local loaded1 = IsAddOnLoaded(f.addon1)
-                local loaded2 = IsAddOnLoaded(f.addon2)
                 if checked1 then
                     if not loaded1 then
                         reload = 1
@@ -6991,14 +8395,18 @@ do
                     reload = 1
                     DisableAddOn(f.addon1)
                 end
-                if checked2 then
-                    if not loaded2 then
+                if f.addon2 then
+                    local checked2 = f.checkButton2:GetChecked()
+                    local loaded2 = IsAddOnLoaded(f.addon2)
+                    if checked2 then
+                        if not loaded2 then
+                            reload = 1
+                            EnableAddOn(f.addon2)
+                        end
+                    elseif loaded2 then
                         reload = 1
-                        EnableAddOn(f.addon2)
+                        DisableAddOn(f.addon2)
                     end
-                elseif loaded2 then
-                    reload = 1
-                    DisableAddOn(f.addon2)
                 end
             end
             for i = 1, #configOptions.options do
@@ -7084,7 +8492,9 @@ do
             for i = 1, #self.modules do
                 local f = self.modules[i]
                 f.checkButton:SetChecked(IsAddOnLoaded(f.addon1))
-                f.checkButton2:SetChecked(IsAddOnLoaded(f.addon2))
+                if f.addon2 then
+                    f.checkButton2:SetChecked(IsAddOnLoaded(f.addon2))
+                end
             end
             for i = 1, #self.options do
                 local f = self.options[i]
@@ -7189,7 +8599,7 @@ do
             frame.addon2 = addon1
             frame.addon1 = addon2
             frame.checkButton:Show()
-            frame.checkButton2:Show()
+            frame.checkButton2:SetShown(frame.addon2)
             self.modules[#self.modules + 1] = frame
             return frame
         end
@@ -7319,6 +8729,7 @@ do
             configOptions:CreateOptionToggle(L.SHOW_ROLE_ICONS, L.SHOW_ROLE_ICONS_DESC, "showRoleIcons")
             configOptions:CreateOptionToggle(L.ENABLE_SIMPLE_SCORE_COLORS, L.ENABLE_SIMPLE_SCORE_COLORS_DESC, "showSimpleScoreColors")
             configOptions:CreateOptionToggle(L.ENABLE_NO_SCORE_COLORS, L.ENABLE_NO_SCORE_COLORS_DESC, "disableScoreColors")
+            -- configOptions:CreateOptionToggle(L.SHOW_CHESTS_AS_MEDALS, L.SHOW_CHESTS_AS_MEDALS_DESC, "showMedalsInsteadOfText")
             configOptions:CreateOptionToggle(L.SHOW_KEYSTONE_INFO, L.SHOW_KEYSTONE_INFO_DESC, "enableKeystoneTooltips")
             configOptions:CreateOptionToggle(L.SHOW_AVERAGE_PLAYER_SCORE_INFO, L.SHOW_AVERAGE_PLAYER_SCORE_INFO_DESC, "showAverageScore")
             configOptions:CreateOptionToggle(L.SHOW_SCORE_IN_COMBAT, L.SHOW_SCORE_IN_COMBAT_DESC, "showScoreInCombat")
@@ -7382,6 +8793,13 @@ do
             configOptions:CreateModuleToggle(L.MODULE_KOREA, "RaiderIO_DB_KR_A_R", "RaiderIO_DB_KR_H_R")
             configOptions:CreateModuleToggle(L.MODULE_TAIWAN, "RaiderIO_DB_TW_A_R", "RaiderIO_DB_TW_H_R")
 
+            configOptions:CreatePadding()
+            configOptions:CreateHeadline(L.RECRUITMENT_DB_MODULES)
+            factionHeaderModules[#factionHeaderModules + 1] = configOptions:CreateModuleToggle(L.MODULE_AMERICAS, nil, "RaiderIO_DB_US_F")
+            configOptions:CreateModuleToggle(L.MODULE_EUROPE, nil, "RaiderIO_DB_EU_F")
+            configOptions:CreateModuleToggle(L.MODULE_KOREA, nil, "RaiderIO_DB_KR_F")
+            configOptions:CreateModuleToggle(L.MODULE_TAIWAN, nil, "RaiderIO_DB_TW_F")
+
             -- add save button and cancel buttons
             local buttons = configOptions:CreateWidget("Frame", 4, configButtonFrame)
             buttons:ClearAllPoints()
@@ -7424,15 +8842,15 @@ do
             configFrame:SetWidth(160 + maxWidth)
             configParentFrame:SetWidth(160 + maxWidth)
 
-            -- add faction headers over the first module
+            -- add faction headers over the database modules
             for i = 1, #factionHeaderModules do
                 local module = factionHeaderModules[i]
-                local af = configOptions:CreateHeadline("|TInterface\\Icons\\inv_bannerpvp_02:0:0:0:0:16:16:4:12:4:12|t")
+                local af = configOptions:CreateHeadline("|T132486:0:0:0:0:16:16:4:12:4:12|t") -- 132486 = inv_bannerpvp_02 (alliance)
                 af:ClearAllPoints()
                 af:SetPoint("BOTTOM", module.checkButton2, "TOP", 2, -5)
                 af:SetSize(32, 32)
-
-                local hf = configOptions:CreateHeadline("|TInterface\\Icons\\inv_bannerpvp_01:0:0:0:0:16:16:4:12:4:12|t")
+                af:SetShown(module.addon2)
+                local hf = configOptions:CreateHeadline(i == 3 and "|T236396:0:0:0:0:16:16:4:12:4:12|t" or "|T132485:0:0:0:0:16:16:4:12:4:12|t") -- 236396 = achievement_bg_winwsg (neutral) | 132485 = inv_bannerpvp_01 (horde)
                 hf:ClearAllPoints()
                 hf:SetPoint("BOTTOM", module.checkButton, "TOP", 2, -5)
                 hf:SetSize(32, 32)
@@ -7487,17 +8905,17 @@ do
 
             if type(text) == "string" then
 
-                if text:find("[Ll][Oo][Cc][Kk]") then
+                if text:find("^%s*[Ll][Oo][Cc][Kk]") then
                     profile:ToggleDrag()
                     return
                 end
 
-                if text:find("[Dd][Ee][Bb][Uu][Gg]") then
+                if text:find("^%s*[Dd][Ee][Bb][Uu][Gg]") then
                     StaticPopup_Show(debugPopup.id)
                     return
                 end
 
-                if text:find("[Rr][Ww][Ff]") then
+                if text:find("^%s*[Rr][Ww][Ff]") then
                     if rwf:IsLoaded() and config:Get("rwfMode") then
                         rwf:ToggleFrame()
                     else
@@ -7506,12 +8924,12 @@ do
                     return
                 end
 
-                if text:find("[Gg][Rr][Oo][Uu][Pp]") then
+                if text:find("^%s*[Gg][Rr][Oo][Uu][Pp]") then
                     json:OpenCopyDialog()
                     return
                 end
 
-                local searchQuery = text:match("[Ss][Ee][Aa][Rr][Cc][Hh]%s*(.-)$")
+                local searchQuery = text:match("^%s*[Ss][Ee][Aa][Rr][Cc][Hh]%s*(.-)$")
                 if searchQuery then
                     if strlenutf8(searchQuery) > 0 then
                         search:Show()
@@ -7635,12 +9053,15 @@ do
         end
     end
 
-    local autoLogDifficultyIDs = {
+    local alwaysLogDifficultyIDs = {
         -- scenario
         [167] = true, -- Torghast
         -- party
         [23] = true, -- Mythic
         [8] = true, -- Mythic Keystone
+    }
+
+    local canLogDifficultyIDs = {
         -- raid
         [14] = true, -- Normal
         [15] = true, -- Heroic
@@ -7654,7 +9075,7 @@ do
         if not difficultyID or not instanceMapID then
             return
         end
-        local isActive = not not (instanceMapID >= autoLogFromMapID and autoLogDifficultyIDs[difficultyID])
+        local isActive = not not (alwaysLogDifficultyIDs[difficultyID] or (instanceMapID >= autoLogFromMapID and canLogDifficultyIDs[difficultyID]))
         if isActive == lastActive then
             return
         end
@@ -7879,9 +9300,9 @@ do
         { region = "eu", faction = 2, realm = "TarrenMill", name = "Vladinator", success = true },
         { region = "eu", faction = 2, realm = "tArReNmIlL", name = "vLaDiNaToR", success = true },
         CheckBothTestsAboveForSameProfiles,
-        { region = "us", faction = 2, realm = "Skullcrusher", name = "Aspyrox", exists = false },
-        { region = "us", faction = 2, realm = "sKuLLcRuSHeR", name = "aSpYrOx", exists = false },
-        CheckBothTestsAboveForSameProfiles,
+        -- { region = "us", faction = 2, realm = "Skullcrusher", name = "Aspyrox", exists = false },
+        -- { region = "us", faction = 2, realm = "sKuLLcRuSHeR", name = "aSpYrOx", exists = false },
+        -- CheckBothTestsAboveForSameProfiles,
         { region = "eu", faction = 1, realm = "Ysondre", name = "Isak", success = true },
         { region = "eu", faction = 1, realm = "ySoNdRe", name = "iSaK", success = true },
         CheckBothTestsAboveForSameProfiles,
@@ -7891,15 +9312,15 @@ do
         { region = "eu", faction = 2, realm = "СвежевательДуш", name = "Хитей", success = true },
         { region = "eu", faction = 2, realm = "СВЕЖЕВАТЕЛЬДУШ", name = "ХИТЕЙ", success = true },
         CheckBothTestsAboveForSameProfiles,
-        { region = "eu", faction = 2, realm = "Ravencrest", name = "Mßx", success = true },
-        { region = "eu", faction = 2, realm = "RAVENCREST", name = "MßX", success = true },
-        CheckBothTestsAboveForSameProfiles,
+        -- { region = "eu", faction = 2, realm = "Ravencrest", name = "Mßx", success = true },
+        -- { region = "eu", faction = 2, realm = "RAVENCREST", name = "MßX", success = true },
+        -- CheckBothTestsAboveForSameProfiles,
         { region = "eu", faction = 2, realm = "Kazzak", name = "Donskís", success = true },
         { region = "eu", faction = 2, realm = "KAZZAK", name = "DONSKÍS", success = true },
         CheckBothTestsAboveForSameProfiles,
-        { region = "tw", faction = 2, realm = "憤怒使者", name = "凸姿姿凸", success = true },
-        { region = "tw", faction = 2, realm = "憤怒使者", name = "凸姿姿凸", success = true },
-        CheckBothTestsAboveForSameProfiles,
+        -- { region = "tw", faction = 2, realm = "憤怒使者", name = "凸姿姿凸", success = true },
+        -- { region = "tw", faction = 2, realm = "憤怒使者", name = "凸姿姿凸", success = true },
+        -- CheckBothTestsAboveForSameProfiles,
         { region = "kr", faction = 1, realm = "윈드러너", name = "갊깖읾옮짊맒", success = true },
         { region = "kr", faction = 1, realm = "윈드러너", name = "갊깖읾옮짊맒", success = true },
         CheckBothTestsAboveForSameProfiles,
@@ -7912,2063 +9333,15 @@ do
 
     local function AppendTestsFromProviders(callback, progress)
 
-        -- "UTF8" by phanxaddons and pastamancer_wow (https://www.wowace.com/projects/utf8)
-        local utf8lower
-        local utf8upper do
+        local utf8 = ns.utf8
 
-            -- $Id: utf8.lua 179 2009-04-03 18:10:03Z pasta $
-            --
-            -- Provides UTF-8 aware string functions implemented in pure lua:
-            -- * string.utf8len(s)
-            -- * string.utf8sub(s, i, j)
-            -- * string.utf8reverse(s)
-            --
-            -- If utf8data.lua (containing the lower<->upper case mappings) is loaded, these
-            -- additional functions are available:
-            -- * string.utf8upper(s)
-            -- * string.utf8lower(s)
-            --
-            -- All functions behave as their non UTF-8 aware counterparts with the exception
-            -- that UTF-8 characters are used instead of bytes for all units.
-
-            --[[
-            Copyright (c) 2006-2007, Kyle Smith
-            All rights reserved.
-
-            Redistribution and use in source and binary forms, with or without
-            modification, are permitted provided that the following conditions are met:
-
-                * Redistributions of source code must retain the above copyright notice,
-                this list of conditions and the following disclaimer.
-                * Redistributions in binary form must reproduce the above copyright
-                notice, this list of conditions and the following disclaimer in the
-                documentation and/or other materials provided with the distribution.
-                * Neither the name of the author nor the names of its contributors may be
-                used to endorse or promote products derived from this software without
-                specific prior written permission.
-
-            THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-            AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-            IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-            DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
-            FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-            DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-            SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-            CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-            OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-            OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-            --]]
-
-            -- ABNF from RFC 3629
-            --
-            -- UTF8-octets = *( UTF8-char )
-            -- UTF8-char   = UTF8-1 / UTF8-2 / UTF8-3 / UTF8-4
-            -- UTF8-1      = %x00-7F
-            -- UTF8-2      = %xC2-DF UTF8-tail
-            -- UTF8-3      = %xE0 %xA0-BF UTF8-tail / %xE1-EC 2( UTF8-tail ) /
-            --               %xED %x80-9F UTF8-tail / %xEE-EF 2( UTF8-tail )
-            -- UTF8-4      = %xF0 %x90-BF 2( UTF8-tail ) / %xF1-F3 3( UTF8-tail ) /
-            --               %xF4 %x80-8F 2( UTF8-tail )
-            -- UTF8-tail   = %x80-BF
-            --
-
-            local strbyte, strlen, strsub, type = string.byte, string.len, string.sub, type
-
-            local utf8_lc_uc = {
-                ["a"] = "A",
-                ["b"] = "B",
-                ["c"] = "C",
-                ["d"] = "D",
-                ["e"] = "E",
-                ["f"] = "F",
-                ["g"] = "G",
-                ["h"] = "H",
-                ["i"] = "I",
-                ["j"] = "J",
-                ["k"] = "K",
-                ["l"] = "L",
-                ["m"] = "M",
-                ["n"] = "N",
-                ["o"] = "O",
-                ["p"] = "P",
-                ["q"] = "Q",
-                ["r"] = "R",
-                ["s"] = "S",
-                ["t"] = "T",
-                ["u"] = "U",
-                ["v"] = "V",
-                ["w"] = "W",
-                ["x"] = "X",
-                ["y"] = "Y",
-                ["z"] = "Z",
-                ["µ"] = "Μ",
-                ["à"] = "À",
-                ["á"] = "Á",
-                ["â"] = "Â",
-                ["ã"] = "Ã",
-                ["ä"] = "Ä",
-                ["å"] = "Å",
-                ["æ"] = "Æ",
-                ["ç"] = "Ç",
-                ["è"] = "È",
-                ["é"] = "É",
-                ["ê"] = "Ê",
-                ["ë"] = "Ë",
-                ["ì"] = "Ì",
-                ["í"] = "Í",
-                ["î"] = "Î",
-                ["ï"] = "Ï",
-                ["ð"] = "Ð",
-                ["ñ"] = "Ñ",
-                ["ò"] = "Ò",
-                ["ó"] = "Ó",
-                ["ô"] = "Ô",
-                ["õ"] = "Õ",
-                ["ö"] = "Ö",
-                ["ø"] = "Ø",
-                ["ù"] = "Ù",
-                ["ú"] = "Ú",
-                ["û"] = "Û",
-                ["ü"] = "Ü",
-                ["ý"] = "Ý",
-                ["þ"] = "Þ",
-                ["ÿ"] = "Ÿ",
-                ["ā"] = "Ā",
-                ["ă"] = "Ă",
-                ["ą"] = "Ą",
-                ["ć"] = "Ć",
-                ["ĉ"] = "Ĉ",
-                ["ċ"] = "Ċ",
-                ["č"] = "Č",
-                ["ď"] = "Ď",
-                ["đ"] = "Đ",
-                ["ē"] = "Ē",
-                ["ĕ"] = "Ĕ",
-                ["ė"] = "Ė",
-                ["ę"] = "Ę",
-                ["ě"] = "Ě",
-                ["ĝ"] = "Ĝ",
-                ["ğ"] = "Ğ",
-                ["ġ"] = "Ġ",
-                ["ģ"] = "Ģ",
-                ["ĥ"] = "Ĥ",
-                ["ħ"] = "Ħ",
-                ["ĩ"] = "Ĩ",
-                ["ī"] = "Ī",
-                ["ĭ"] = "Ĭ",
-                ["į"] = "Į",
-                ["ı"] = "I",
-                ["ĳ"] = "Ĳ",
-                ["ĵ"] = "Ĵ",
-                ["ķ"] = "Ķ",
-                ["ĺ"] = "Ĺ",
-                ["ļ"] = "Ļ",
-                ["ľ"] = "Ľ",
-                ["ŀ"] = "Ŀ",
-                ["ł"] = "Ł",
-                ["ń"] = "Ń",
-                ["ņ"] = "Ņ",
-                ["ň"] = "Ň",
-                ["ŋ"] = "Ŋ",
-                ["ō"] = "Ō",
-                ["ŏ"] = "Ŏ",
-                ["ő"] = "Ő",
-                ["œ"] = "Œ",
-                ["ŕ"] = "Ŕ",
-                ["ŗ"] = "Ŗ",
-                ["ř"] = "Ř",
-                ["ś"] = "Ś",
-                ["ŝ"] = "Ŝ",
-                ["ş"] = "Ş",
-                ["š"] = "Š",
-                ["ţ"] = "Ţ",
-                ["ť"] = "Ť",
-                ["ŧ"] = "Ŧ",
-                ["ũ"] = "Ũ",
-                ["ū"] = "Ū",
-                ["ŭ"] = "Ŭ",
-                ["ů"] = "Ů",
-                ["ű"] = "Ű",
-                ["ų"] = "Ų",
-                ["ŵ"] = "Ŵ",
-                ["ŷ"] = "Ŷ",
-                ["ź"] = "Ź",
-                ["ż"] = "Ż",
-                ["ž"] = "Ž",
-                ["ſ"] = "S",
-                ["ƀ"] = "Ƀ",
-                ["ƃ"] = "Ƃ",
-                ["ƅ"] = "Ƅ",
-                ["ƈ"] = "Ƈ",
-                ["ƌ"] = "Ƌ",
-                ["ƒ"] = "Ƒ",
-                ["ƕ"] = "Ƕ",
-                ["ƙ"] = "Ƙ",
-                ["ƚ"] = "Ƚ",
-                ["ƞ"] = "Ƞ",
-                ["ơ"] = "Ơ",
-                ["ƣ"] = "Ƣ",
-                ["ƥ"] = "Ƥ",
-                ["ƨ"] = "Ƨ",
-                ["ƭ"] = "Ƭ",
-                ["ư"] = "Ư",
-                ["ƴ"] = "Ƴ",
-                ["ƶ"] = "Ƶ",
-                ["ƹ"] = "Ƹ",
-                ["ƽ"] = "Ƽ",
-                ["ƿ"] = "Ƿ",
-                ["ǅ"] = "Ǆ",
-                ["ǆ"] = "Ǆ",
-                ["ǈ"] = "Ǉ",
-                ["ǉ"] = "Ǉ",
-                ["ǋ"] = "Ǌ",
-                ["ǌ"] = "Ǌ",
-                ["ǎ"] = "Ǎ",
-                ["ǐ"] = "Ǐ",
-                ["ǒ"] = "Ǒ",
-                ["ǔ"] = "Ǔ",
-                ["ǖ"] = "Ǖ",
-                ["ǘ"] = "Ǘ",
-                ["ǚ"] = "Ǚ",
-                ["ǜ"] = "Ǜ",
-                ["ǝ"] = "Ǝ",
-                ["ǟ"] = "Ǟ",
-                ["ǡ"] = "Ǡ",
-                ["ǣ"] = "Ǣ",
-                ["ǥ"] = "Ǥ",
-                ["ǧ"] = "Ǧ",
-                ["ǩ"] = "Ǩ",
-                ["ǫ"] = "Ǫ",
-                ["ǭ"] = "Ǭ",
-                ["ǯ"] = "Ǯ",
-                ["ǲ"] = "Ǳ",
-                ["ǳ"] = "Ǳ",
-                ["ǵ"] = "Ǵ",
-                ["ǹ"] = "Ǹ",
-                ["ǻ"] = "Ǻ",
-                ["ǽ"] = "Ǽ",
-                ["ǿ"] = "Ǿ",
-                ["ȁ"] = "Ȁ",
-                ["ȃ"] = "Ȃ",
-                ["ȅ"] = "Ȅ",
-                ["ȇ"] = "Ȇ",
-                ["ȉ"] = "Ȉ",
-                ["ȋ"] = "Ȋ",
-                ["ȍ"] = "Ȍ",
-                ["ȏ"] = "Ȏ",
-                ["ȑ"] = "Ȑ",
-                ["ȓ"] = "Ȓ",
-                ["ȕ"] = "Ȕ",
-                ["ȗ"] = "Ȗ",
-                ["ș"] = "Ș",
-                ["ț"] = "Ț",
-                ["ȝ"] = "Ȝ",
-                ["ȟ"] = "Ȟ",
-                ["ȣ"] = "Ȣ",
-                ["ȥ"] = "Ȥ",
-                ["ȧ"] = "Ȧ",
-                ["ȩ"] = "Ȩ",
-                ["ȫ"] = "Ȫ",
-                ["ȭ"] = "Ȭ",
-                ["ȯ"] = "Ȯ",
-                ["ȱ"] = "Ȱ",
-                ["ȳ"] = "Ȳ",
-                ["ȼ"] = "Ȼ",
-                ["ɂ"] = "Ɂ",
-                ["ɇ"] = "Ɇ",
-                ["ɉ"] = "Ɉ",
-                ["ɋ"] = "Ɋ",
-                ["ɍ"] = "Ɍ",
-                ["ɏ"] = "Ɏ",
-                ["ɓ"] = "Ɓ",
-                ["ɔ"] = "Ɔ",
-                ["ɖ"] = "Ɖ",
-                ["ɗ"] = "Ɗ",
-                ["ə"] = "Ə",
-                ["ɛ"] = "Ɛ",
-                ["ɠ"] = "Ɠ",
-                ["ɣ"] = "Ɣ",
-                ["ɨ"] = "Ɨ",
-                ["ɩ"] = "Ɩ",
-                ["ɫ"] = "Ɫ",
-                ["ɯ"] = "Ɯ",
-                ["ɲ"] = "Ɲ",
-                ["ɵ"] = "Ɵ",
-                ["ɽ"] = "Ɽ",
-                ["ʀ"] = "Ʀ",
-                ["ʃ"] = "Ʃ",
-                ["ʈ"] = "Ʈ",
-                ["ʉ"] = "Ʉ",
-                ["ʊ"] = "Ʊ",
-                ["ʋ"] = "Ʋ",
-                ["ʌ"] = "Ʌ",
-                ["ʒ"] = "Ʒ",
-                ["ͅ"] = "Ι",
-                ["ͻ"] = "Ͻ",
-                ["ͼ"] = "Ͼ",
-                ["ͽ"] = "Ͽ",
-                ["ά"] = "Ά",
-                ["έ"] = "Έ",
-                ["ή"] = "Ή",
-                ["ί"] = "Ί",
-                ["α"] = "Α",
-                ["β"] = "Β",
-                ["γ"] = "Γ",
-                ["δ"] = "Δ",
-                ["ε"] = "Ε",
-                ["ζ"] = "Ζ",
-                ["η"] = "Η",
-                ["θ"] = "Θ",
-                ["ι"] = "Ι",
-                ["κ"] = "Κ",
-                ["λ"] = "Λ",
-                ["μ"] = "Μ",
-                ["ν"] = "Ν",
-                ["ξ"] = "Ξ",
-                ["ο"] = "Ο",
-                ["π"] = "Π",
-                ["ρ"] = "Ρ",
-                ["ς"] = "Σ",
-                ["σ"] = "Σ",
-                ["τ"] = "Τ",
-                ["υ"] = "Υ",
-                ["φ"] = "Φ",
-                ["χ"] = "Χ",
-                ["ψ"] = "Ψ",
-                ["ω"] = "Ω",
-                ["ϊ"] = "Ϊ",
-                ["ϋ"] = "Ϋ",
-                ["ό"] = "Ό",
-                ["ύ"] = "Ύ",
-                ["ώ"] = "Ώ",
-                ["ϐ"] = "Β",
-                ["ϑ"] = "Θ",
-                ["ϕ"] = "Φ",
-                ["ϖ"] = "Π",
-                ["ϙ"] = "Ϙ",
-                ["ϛ"] = "Ϛ",
-                ["ϝ"] = "Ϝ",
-                ["ϟ"] = "Ϟ",
-                ["ϡ"] = "Ϡ",
-                ["ϣ"] = "Ϣ",
-                ["ϥ"] = "Ϥ",
-                ["ϧ"] = "Ϧ",
-                ["ϩ"] = "Ϩ",
-                ["ϫ"] = "Ϫ",
-                ["ϭ"] = "Ϭ",
-                ["ϯ"] = "Ϯ",
-                ["ϰ"] = "Κ",
-                ["ϱ"] = "Ρ",
-                ["ϲ"] = "Ϲ",
-                ["ϵ"] = "Ε",
-                ["ϸ"] = "Ϸ",
-                ["ϻ"] = "Ϻ",
-                ["а"] = "А",
-                ["б"] = "Б",
-                ["в"] = "В",
-                ["г"] = "Г",
-                ["д"] = "Д",
-                ["е"] = "Е",
-                ["ж"] = "Ж",
-                ["з"] = "З",
-                ["и"] = "И",
-                ["й"] = "Й",
-                ["к"] = "К",
-                ["л"] = "Л",
-                ["м"] = "М",
-                ["н"] = "Н",
-                ["о"] = "О",
-                ["п"] = "П",
-                ["р"] = "Р",
-                ["с"] = "С",
-                ["т"] = "Т",
-                ["у"] = "У",
-                ["ф"] = "Ф",
-                ["х"] = "Х",
-                ["ц"] = "Ц",
-                ["ч"] = "Ч",
-                ["ш"] = "Ш",
-                ["щ"] = "Щ",
-                ["ъ"] = "Ъ",
-                ["ы"] = "Ы",
-                ["ь"] = "Ь",
-                ["э"] = "Э",
-                ["ю"] = "Ю",
-                ["я"] = "Я",
-                ["ѐ"] = "Ѐ",
-                ["ё"] = "Ё",
-                ["ђ"] = "Ђ",
-                ["ѓ"] = "Ѓ",
-                ["є"] = "Є",
-                ["ѕ"] = "Ѕ",
-                ["і"] = "І",
-                ["ї"] = "Ї",
-                ["ј"] = "Ј",
-                ["љ"] = "Љ",
-                ["њ"] = "Њ",
-                ["ћ"] = "Ћ",
-                ["ќ"] = "Ќ",
-                ["ѝ"] = "Ѝ",
-                ["ў"] = "Ў",
-                ["џ"] = "Џ",
-                ["ѡ"] = "Ѡ",
-                ["ѣ"] = "Ѣ",
-                ["ѥ"] = "Ѥ",
-                ["ѧ"] = "Ѧ",
-                ["ѩ"] = "Ѩ",
-                ["ѫ"] = "Ѫ",
-                ["ѭ"] = "Ѭ",
-                ["ѯ"] = "Ѯ",
-                ["ѱ"] = "Ѱ",
-                ["ѳ"] = "Ѳ",
-                ["ѵ"] = "Ѵ",
-                ["ѷ"] = "Ѷ",
-                ["ѹ"] = "Ѹ",
-                ["ѻ"] = "Ѻ",
-                ["ѽ"] = "Ѽ",
-                ["ѿ"] = "Ѿ",
-                ["ҁ"] = "Ҁ",
-                ["ҋ"] = "Ҋ",
-                ["ҍ"] = "Ҍ",
-                ["ҏ"] = "Ҏ",
-                ["ґ"] = "Ґ",
-                ["ғ"] = "Ғ",
-                ["ҕ"] = "Ҕ",
-                ["җ"] = "Җ",
-                ["ҙ"] = "Ҙ",
-                ["қ"] = "Қ",
-                ["ҝ"] = "Ҝ",
-                ["ҟ"] = "Ҟ",
-                ["ҡ"] = "Ҡ",
-                ["ң"] = "Ң",
-                ["ҥ"] = "Ҥ",
-                ["ҧ"] = "Ҧ",
-                ["ҩ"] = "Ҩ",
-                ["ҫ"] = "Ҫ",
-                ["ҭ"] = "Ҭ",
-                ["ү"] = "Ү",
-                ["ұ"] = "Ұ",
-                ["ҳ"] = "Ҳ",
-                ["ҵ"] = "Ҵ",
-                ["ҷ"] = "Ҷ",
-                ["ҹ"] = "Ҹ",
-                ["һ"] = "Һ",
-                ["ҽ"] = "Ҽ",
-                ["ҿ"] = "Ҿ",
-                ["ӂ"] = "Ӂ",
-                ["ӄ"] = "Ӄ",
-                ["ӆ"] = "Ӆ",
-                ["ӈ"] = "Ӈ",
-                ["ӊ"] = "Ӊ",
-                ["ӌ"] = "Ӌ",
-                ["ӎ"] = "Ӎ",
-                ["ӏ"] = "Ӏ",
-                ["ӑ"] = "Ӑ",
-                ["ӓ"] = "Ӓ",
-                ["ӕ"] = "Ӕ",
-                ["ӗ"] = "Ӗ",
-                ["ә"] = "Ә",
-                ["ӛ"] = "Ӛ",
-                ["ӝ"] = "Ӝ",
-                ["ӟ"] = "Ӟ",
-                ["ӡ"] = "Ӡ",
-                ["ӣ"] = "Ӣ",
-                ["ӥ"] = "Ӥ",
-                ["ӧ"] = "Ӧ",
-                ["ө"] = "Ө",
-                ["ӫ"] = "Ӫ",
-                ["ӭ"] = "Ӭ",
-                ["ӯ"] = "Ӯ",
-                ["ӱ"] = "Ӱ",
-                ["ӳ"] = "Ӳ",
-                ["ӵ"] = "Ӵ",
-                ["ӷ"] = "Ӷ",
-                ["ӹ"] = "Ӹ",
-                ["ӻ"] = "Ӻ",
-                ["ӽ"] = "Ӽ",
-                ["ӿ"] = "Ӿ",
-                ["ԁ"] = "Ԁ",
-                ["ԃ"] = "Ԃ",
-                ["ԅ"] = "Ԅ",
-                ["ԇ"] = "Ԇ",
-                ["ԉ"] = "Ԉ",
-                ["ԋ"] = "Ԋ",
-                ["ԍ"] = "Ԍ",
-                ["ԏ"] = "Ԏ",
-                ["ԑ"] = "Ԑ",
-                ["ԓ"] = "Ԓ",
-                ["ա"] = "Ա",
-                ["բ"] = "Բ",
-                ["գ"] = "Գ",
-                ["դ"] = "Դ",
-                ["ե"] = "Ե",
-                ["զ"] = "Զ",
-                ["է"] = "Է",
-                ["ը"] = "Ը",
-                ["թ"] = "Թ",
-                ["ժ"] = "Ժ",
-                ["ի"] = "Ի",
-                ["լ"] = "Լ",
-                ["խ"] = "Խ",
-                ["ծ"] = "Ծ",
-                ["կ"] = "Կ",
-                ["հ"] = "Հ",
-                ["ձ"] = "Ձ",
-                ["ղ"] = "Ղ",
-                ["ճ"] = "Ճ",
-                ["մ"] = "Մ",
-                ["յ"] = "Յ",
-                ["ն"] = "Ն",
-                ["շ"] = "Շ",
-                ["ո"] = "Ո",
-                ["չ"] = "Չ",
-                ["պ"] = "Պ",
-                ["ջ"] = "Ջ",
-                ["ռ"] = "Ռ",
-                ["ս"] = "Ս",
-                ["վ"] = "Վ",
-                ["տ"] = "Տ",
-                ["ր"] = "Ր",
-                ["ց"] = "Ց",
-                ["ւ"] = "Ւ",
-                ["փ"] = "Փ",
-                ["ք"] = "Ք",
-                ["օ"] = "Օ",
-                ["ֆ"] = "Ֆ",
-                ["ᵽ"] = "Ᵽ",
-                ["ḁ"] = "Ḁ",
-                ["ḃ"] = "Ḃ",
-                ["ḅ"] = "Ḅ",
-                ["ḇ"] = "Ḇ",
-                ["ḉ"] = "Ḉ",
-                ["ḋ"] = "Ḋ",
-                ["ḍ"] = "Ḍ",
-                ["ḏ"] = "Ḏ",
-                ["ḑ"] = "Ḑ",
-                ["ḓ"] = "Ḓ",
-                ["ḕ"] = "Ḕ",
-                ["ḗ"] = "Ḗ",
-                ["ḙ"] = "Ḙ",
-                ["ḛ"] = "Ḛ",
-                ["ḝ"] = "Ḝ",
-                ["ḟ"] = "Ḟ",
-                ["ḡ"] = "Ḡ",
-                ["ḣ"] = "Ḣ",
-                ["ḥ"] = "Ḥ",
-                ["ḧ"] = "Ḧ",
-                ["ḩ"] = "Ḩ",
-                ["ḫ"] = "Ḫ",
-                ["ḭ"] = "Ḭ",
-                ["ḯ"] = "Ḯ",
-                ["ḱ"] = "Ḱ",
-                ["ḳ"] = "Ḳ",
-                ["ḵ"] = "Ḵ",
-                ["ḷ"] = "Ḷ",
-                ["ḹ"] = "Ḹ",
-                ["ḻ"] = "Ḻ",
-                ["ḽ"] = "Ḽ",
-                ["ḿ"] = "Ḿ",
-                ["ṁ"] = "Ṁ",
-                ["ṃ"] = "Ṃ",
-                ["ṅ"] = "Ṅ",
-                ["ṇ"] = "Ṇ",
-                ["ṉ"] = "Ṉ",
-                ["ṋ"] = "Ṋ",
-                ["ṍ"] = "Ṍ",
-                ["ṏ"] = "Ṏ",
-                ["ṑ"] = "Ṑ",
-                ["ṓ"] = "Ṓ",
-                ["ṕ"] = "Ṕ",
-                ["ṗ"] = "Ṗ",
-                ["ṙ"] = "Ṙ",
-                ["ṛ"] = "Ṛ",
-                ["ṝ"] = "Ṝ",
-                ["ṟ"] = "Ṟ",
-                ["ṡ"] = "Ṡ",
-                ["ṣ"] = "Ṣ",
-                ["ṥ"] = "Ṥ",
-                ["ṧ"] = "Ṧ",
-                ["ṩ"] = "Ṩ",
-                ["ṫ"] = "Ṫ",
-                ["ṭ"] = "Ṭ",
-                ["ṯ"] = "Ṯ",
-                ["ṱ"] = "Ṱ",
-                ["ṳ"] = "Ṳ",
-                ["ṵ"] = "Ṵ",
-                ["ṷ"] = "Ṷ",
-                ["ṹ"] = "Ṹ",
-                ["ṻ"] = "Ṻ",
-                ["ṽ"] = "Ṽ",
-                ["ṿ"] = "Ṿ",
-                ["ẁ"] = "Ẁ",
-                ["ẃ"] = "Ẃ",
-                ["ẅ"] = "Ẅ",
-                ["ẇ"] = "Ẇ",
-                ["ẉ"] = "Ẉ",
-                ["ẋ"] = "Ẋ",
-                ["ẍ"] = "Ẍ",
-                ["ẏ"] = "Ẏ",
-                ["ẑ"] = "Ẑ",
-                ["ẓ"] = "Ẓ",
-                ["ẕ"] = "Ẕ",
-                ["ẛ"] = "Ṡ",
-                ["ạ"] = "Ạ",
-                ["ả"] = "Ả",
-                ["ấ"] = "Ấ",
-                ["ầ"] = "Ầ",
-                ["ẩ"] = "Ẩ",
-                ["ẫ"] = "Ẫ",
-                ["ậ"] = "Ậ",
-                ["ắ"] = "Ắ",
-                ["ằ"] = "Ằ",
-                ["ẳ"] = "Ẳ",
-                ["ẵ"] = "Ẵ",
-                ["ặ"] = "Ặ",
-                ["ẹ"] = "Ẹ",
-                ["ẻ"] = "Ẻ",
-                ["ẽ"] = "Ẽ",
-                ["ế"] = "Ế",
-                ["ề"] = "Ề",
-                ["ể"] = "Ể",
-                ["ễ"] = "Ễ",
-                ["ệ"] = "Ệ",
-                ["ỉ"] = "Ỉ",
-                ["ị"] = "Ị",
-                ["ọ"] = "Ọ",
-                ["ỏ"] = "Ỏ",
-                ["ố"] = "Ố",
-                ["ồ"] = "Ồ",
-                ["ổ"] = "Ổ",
-                ["ỗ"] = "Ỗ",
-                ["ộ"] = "Ộ",
-                ["ớ"] = "Ớ",
-                ["ờ"] = "Ờ",
-                ["ở"] = "Ở",
-                ["ỡ"] = "Ỡ",
-                ["ợ"] = "Ợ",
-                ["ụ"] = "Ụ",
-                ["ủ"] = "Ủ",
-                ["ứ"] = "Ứ",
-                ["ừ"] = "Ừ",
-                ["ử"] = "Ử",
-                ["ữ"] = "Ữ",
-                ["ự"] = "Ự",
-                ["ỳ"] = "Ỳ",
-                ["ỵ"] = "Ỵ",
-                ["ỷ"] = "Ỷ",
-                ["ỹ"] = "Ỹ",
-                ["ἀ"] = "Ἀ",
-                ["ἁ"] = "Ἁ",
-                ["ἂ"] = "Ἂ",
-                ["ἃ"] = "Ἃ",
-                ["ἄ"] = "Ἄ",
-                ["ἅ"] = "Ἅ",
-                ["ἆ"] = "Ἆ",
-                ["ἇ"] = "Ἇ",
-                ["ἐ"] = "Ἐ",
-                ["ἑ"] = "Ἑ",
-                ["ἒ"] = "Ἒ",
-                ["ἓ"] = "Ἓ",
-                ["ἔ"] = "Ἔ",
-                ["ἕ"] = "Ἕ",
-                ["ἠ"] = "Ἠ",
-                ["ἡ"] = "Ἡ",
-                ["ἢ"] = "Ἢ",
-                ["ἣ"] = "Ἣ",
-                ["ἤ"] = "Ἤ",
-                ["ἥ"] = "Ἥ",
-                ["ἦ"] = "Ἦ",
-                ["ἧ"] = "Ἧ",
-                ["ἰ"] = "Ἰ",
-                ["ἱ"] = "Ἱ",
-                ["ἲ"] = "Ἲ",
-                ["ἳ"] = "Ἳ",
-                ["ἴ"] = "Ἴ",
-                ["ἵ"] = "Ἵ",
-                ["ἶ"] = "Ἶ",
-                ["ἷ"] = "Ἷ",
-                ["ὀ"] = "Ὀ",
-                ["ὁ"] = "Ὁ",
-                ["ὂ"] = "Ὂ",
-                ["ὃ"] = "Ὃ",
-                ["ὄ"] = "Ὄ",
-                ["ὅ"] = "Ὅ",
-                ["ὑ"] = "Ὑ",
-                ["ὓ"] = "Ὓ",
-                ["ὕ"] = "Ὕ",
-                ["ὗ"] = "Ὗ",
-                ["ὠ"] = "Ὠ",
-                ["ὡ"] = "Ὡ",
-                ["ὢ"] = "Ὢ",
-                ["ὣ"] = "Ὣ",
-                ["ὤ"] = "Ὤ",
-                ["ὥ"] = "Ὥ",
-                ["ὦ"] = "Ὦ",
-                ["ὧ"] = "Ὧ",
-                ["ὰ"] = "Ὰ",
-                ["ά"] = "Ά",
-                ["ὲ"] = "Ὲ",
-                ["έ"] = "Έ",
-                ["ὴ"] = "Ὴ",
-                ["ή"] = "Ή",
-                ["ὶ"] = "Ὶ",
-                ["ί"] = "Ί",
-                ["ὸ"] = "Ὸ",
-                ["ό"] = "Ό",
-                ["ὺ"] = "Ὺ",
-                ["ύ"] = "Ύ",
-                ["ὼ"] = "Ὼ",
-                ["ώ"] = "Ώ",
-                ["ᾀ"] = "ᾈ",
-                ["ᾁ"] = "ᾉ",
-                ["ᾂ"] = "ᾊ",
-                ["ᾃ"] = "ᾋ",
-                ["ᾄ"] = "ᾌ",
-                ["ᾅ"] = "ᾍ",
-                ["ᾆ"] = "ᾎ",
-                ["ᾇ"] = "ᾏ",
-                ["ᾐ"] = "ᾘ",
-                ["ᾑ"] = "ᾙ",
-                ["ᾒ"] = "ᾚ",
-                ["ᾓ"] = "ᾛ",
-                ["ᾔ"] = "ᾜ",
-                ["ᾕ"] = "ᾝ",
-                ["ᾖ"] = "ᾞ",
-                ["ᾗ"] = "ᾟ",
-                ["ᾠ"] = "ᾨ",
-                ["ᾡ"] = "ᾩ",
-                ["ᾢ"] = "ᾪ",
-                ["ᾣ"] = "ᾫ",
-                ["ᾤ"] = "ᾬ",
-                ["ᾥ"] = "ᾭ",
-                ["ᾦ"] = "ᾮ",
-                ["ᾧ"] = "ᾯ",
-                ["ᾰ"] = "Ᾰ",
-                ["ᾱ"] = "Ᾱ",
-                ["ᾳ"] = "ᾼ",
-                ["ι"] = "Ι",
-                ["ῃ"] = "ῌ",
-                ["ῐ"] = "Ῐ",
-                ["ῑ"] = "Ῑ",
-                ["ῠ"] = "Ῠ",
-                ["ῡ"] = "Ῡ",
-                ["ῥ"] = "Ῥ",
-                ["ῳ"] = "ῼ",
-                ["ⅎ"] = "Ⅎ",
-                ["ⅰ"] = "Ⅰ",
-                ["ⅱ"] = "Ⅱ",
-                ["ⅲ"] = "Ⅲ",
-                ["ⅳ"] = "Ⅳ",
-                ["ⅴ"] = "Ⅴ",
-                ["ⅵ"] = "Ⅵ",
-                ["ⅶ"] = "Ⅶ",
-                ["ⅷ"] = "Ⅷ",
-                ["ⅸ"] = "Ⅸ",
-                ["ⅹ"] = "Ⅹ",
-                ["ⅺ"] = "Ⅺ",
-                ["ⅻ"] = "Ⅻ",
-                ["ⅼ"] = "Ⅼ",
-                ["ⅽ"] = "Ⅽ",
-                ["ⅾ"] = "Ⅾ",
-                ["ⅿ"] = "Ⅿ",
-                ["ↄ"] = "Ↄ",
-                ["ⓐ"] = "Ⓐ",
-                ["ⓑ"] = "Ⓑ",
-                ["ⓒ"] = "Ⓒ",
-                ["ⓓ"] = "Ⓓ",
-                ["ⓔ"] = "Ⓔ",
-                ["ⓕ"] = "Ⓕ",
-                ["ⓖ"] = "Ⓖ",
-                ["ⓗ"] = "Ⓗ",
-                ["ⓘ"] = "Ⓘ",
-                ["ⓙ"] = "Ⓙ",
-                ["ⓚ"] = "Ⓚ",
-                ["ⓛ"] = "Ⓛ",
-                ["ⓜ"] = "Ⓜ",
-                ["ⓝ"] = "Ⓝ",
-                ["ⓞ"] = "Ⓞ",
-                ["ⓟ"] = "Ⓟ",
-                ["ⓠ"] = "Ⓠ",
-                ["ⓡ"] = "Ⓡ",
-                ["ⓢ"] = "Ⓢ",
-                ["ⓣ"] = "Ⓣ",
-                ["ⓤ"] = "Ⓤ",
-                ["ⓥ"] = "Ⓥ",
-                ["ⓦ"] = "Ⓦ",
-                ["ⓧ"] = "Ⓧ",
-                ["ⓨ"] = "Ⓨ",
-                ["ⓩ"] = "Ⓩ",
-                ["ⰰ"] = "Ⰰ",
-                ["ⰱ"] = "Ⰱ",
-                ["ⰲ"] = "Ⰲ",
-                ["ⰳ"] = "Ⰳ",
-                ["ⰴ"] = "Ⰴ",
-                ["ⰵ"] = "Ⰵ",
-                ["ⰶ"] = "Ⰶ",
-                ["ⰷ"] = "Ⰷ",
-                ["ⰸ"] = "Ⰸ",
-                ["ⰹ"] = "Ⰹ",
-                ["ⰺ"] = "Ⰺ",
-                ["ⰻ"] = "Ⰻ",
-                ["ⰼ"] = "Ⰼ",
-                ["ⰽ"] = "Ⰽ",
-                ["ⰾ"] = "Ⰾ",
-                ["ⰿ"] = "Ⰿ",
-                ["ⱀ"] = "Ⱀ",
-                ["ⱁ"] = "Ⱁ",
-                ["ⱂ"] = "Ⱂ",
-                ["ⱃ"] = "Ⱃ",
-                ["ⱄ"] = "Ⱄ",
-                ["ⱅ"] = "Ⱅ",
-                ["ⱆ"] = "Ⱆ",
-                ["ⱇ"] = "Ⱇ",
-                ["ⱈ"] = "Ⱈ",
-                ["ⱉ"] = "Ⱉ",
-                ["ⱊ"] = "Ⱊ",
-                ["ⱋ"] = "Ⱋ",
-                ["ⱌ"] = "Ⱌ",
-                ["ⱍ"] = "Ⱍ",
-                ["ⱎ"] = "Ⱎ",
-                ["ⱏ"] = "Ⱏ",
-                ["ⱐ"] = "Ⱐ",
-                ["ⱑ"] = "Ⱑ",
-                ["ⱒ"] = "Ⱒ",
-                ["ⱓ"] = "Ⱓ",
-                ["ⱔ"] = "Ⱔ",
-                ["ⱕ"] = "Ⱕ",
-                ["ⱖ"] = "Ⱖ",
-                ["ⱗ"] = "Ⱗ",
-                ["ⱘ"] = "Ⱘ",
-                ["ⱙ"] = "Ⱙ",
-                ["ⱚ"] = "Ⱚ",
-                ["ⱛ"] = "Ⱛ",
-                ["ⱜ"] = "Ⱜ",
-                ["ⱝ"] = "Ⱝ",
-                ["ⱞ"] = "Ⱞ",
-                ["ⱡ"] = "Ⱡ",
-                ["ⱥ"] = "Ⱥ",
-                ["ⱦ"] = "Ⱦ",
-                ["ⱨ"] = "Ⱨ",
-                ["ⱪ"] = "Ⱪ",
-                ["ⱬ"] = "Ⱬ",
-                ["ⱶ"] = "Ⱶ",
-                ["ⲁ"] = "Ⲁ",
-                ["ⲃ"] = "Ⲃ",
-                ["ⲅ"] = "Ⲅ",
-                ["ⲇ"] = "Ⲇ",
-                ["ⲉ"] = "Ⲉ",
-                ["ⲋ"] = "Ⲋ",
-                ["ⲍ"] = "Ⲍ",
-                ["ⲏ"] = "Ⲏ",
-                ["ⲑ"] = "Ⲑ",
-                ["ⲓ"] = "Ⲓ",
-                ["ⲕ"] = "Ⲕ",
-                ["ⲗ"] = "Ⲗ",
-                ["ⲙ"] = "Ⲙ",
-                ["ⲛ"] = "Ⲛ",
-                ["ⲝ"] = "Ⲝ",
-                ["ⲟ"] = "Ⲟ",
-                ["ⲡ"] = "Ⲡ",
-                ["ⲣ"] = "Ⲣ",
-                ["ⲥ"] = "Ⲥ",
-                ["ⲧ"] = "Ⲧ",
-                ["ⲩ"] = "Ⲩ",
-                ["ⲫ"] = "Ⲫ",
-                ["ⲭ"] = "Ⲭ",
-                ["ⲯ"] = "Ⲯ",
-                ["ⲱ"] = "Ⲱ",
-                ["ⲳ"] = "Ⲳ",
-                ["ⲵ"] = "Ⲵ",
-                ["ⲷ"] = "Ⲷ",
-                ["ⲹ"] = "Ⲹ",
-                ["ⲻ"] = "Ⲻ",
-                ["ⲽ"] = "Ⲽ",
-                ["ⲿ"] = "Ⲿ",
-                ["ⳁ"] = "Ⳁ",
-                ["ⳃ"] = "Ⳃ",
-                ["ⳅ"] = "Ⳅ",
-                ["ⳇ"] = "Ⳇ",
-                ["ⳉ"] = "Ⳉ",
-                ["ⳋ"] = "Ⳋ",
-                ["ⳍ"] = "Ⳍ",
-                ["ⳏ"] = "Ⳏ",
-                ["ⳑ"] = "Ⳑ",
-                ["ⳓ"] = "Ⳓ",
-                ["ⳕ"] = "Ⳕ",
-                ["ⳗ"] = "Ⳗ",
-                ["ⳙ"] = "Ⳙ",
-                ["ⳛ"] = "Ⳛ",
-                ["ⳝ"] = "Ⳝ",
-                ["ⳟ"] = "Ⳟ",
-                ["ⳡ"] = "Ⳡ",
-                ["ⳣ"] = "Ⳣ",
-                ["ⴀ"] = "Ⴀ",
-                ["ⴁ"] = "Ⴁ",
-                ["ⴂ"] = "Ⴂ",
-                ["ⴃ"] = "Ⴃ",
-                ["ⴄ"] = "Ⴄ",
-                ["ⴅ"] = "Ⴅ",
-                ["ⴆ"] = "Ⴆ",
-                ["ⴇ"] = "Ⴇ",
-                ["ⴈ"] = "Ⴈ",
-                ["ⴉ"] = "Ⴉ",
-                ["ⴊ"] = "Ⴊ",
-                ["ⴋ"] = "Ⴋ",
-                ["ⴌ"] = "Ⴌ",
-                ["ⴍ"] = "Ⴍ",
-                ["ⴎ"] = "Ⴎ",
-                ["ⴏ"] = "Ⴏ",
-                ["ⴐ"] = "Ⴐ",
-                ["ⴑ"] = "Ⴑ",
-                ["ⴒ"] = "Ⴒ",
-                ["ⴓ"] = "Ⴓ",
-                ["ⴔ"] = "Ⴔ",
-                ["ⴕ"] = "Ⴕ",
-                ["ⴖ"] = "Ⴖ",
-                ["ⴗ"] = "Ⴗ",
-                ["ⴘ"] = "Ⴘ",
-                ["ⴙ"] = "Ⴙ",
-                ["ⴚ"] = "Ⴚ",
-                ["ⴛ"] = "Ⴛ",
-                ["ⴜ"] = "Ⴜ",
-                ["ⴝ"] = "Ⴝ",
-                ["ⴞ"] = "Ⴞ",
-                ["ⴟ"] = "Ⴟ",
-                ["ⴠ"] = "Ⴠ",
-                ["ⴡ"] = "Ⴡ",
-                ["ⴢ"] = "Ⴢ",
-                ["ⴣ"] = "Ⴣ",
-                ["ⴤ"] = "Ⴤ",
-                ["ⴥ"] = "Ⴥ",
-                ["ａ"] = "Ａ",
-                ["ｂ"] = "Ｂ",
-                ["ｃ"] = "Ｃ",
-                ["ｄ"] = "Ｄ",
-                ["ｅ"] = "Ｅ",
-                ["ｆ"] = "Ｆ",
-                ["ｇ"] = "Ｇ",
-                ["ｈ"] = "Ｈ",
-                ["ｉ"] = "Ｉ",
-                ["ｊ"] = "Ｊ",
-                ["ｋ"] = "Ｋ",
-                ["ｌ"] = "Ｌ",
-                ["ｍ"] = "Ｍ",
-                ["ｎ"] = "Ｎ",
-                ["ｏ"] = "Ｏ",
-                ["ｐ"] = "Ｐ",
-                ["ｑ"] = "Ｑ",
-                ["ｒ"] = "Ｒ",
-                ["ｓ"] = "Ｓ",
-                ["ｔ"] = "Ｔ",
-                ["ｕ"] = "Ｕ",
-                ["ｖ"] = "Ｖ",
-                ["ｗ"] = "Ｗ",
-                ["ｘ"] = "Ｘ",
-                ["ｙ"] = "Ｙ",
-                ["ｚ"] = "Ｚ",
-                ["𐐨"] = "𐐀",
-                ["𐐩"] = "𐐁",
-                ["𐐪"] = "𐐂",
-                ["𐐫"] = "𐐃",
-                ["𐐬"] = "𐐄",
-                ["𐐭"] = "𐐅",
-                ["𐐮"] = "𐐆",
-                ["𐐯"] = "𐐇",
-                ["𐐰"] = "𐐈",
-                ["𐐱"] = "𐐉",
-                ["𐐲"] = "𐐊",
-                ["𐐳"] = "𐐋",
-                ["𐐴"] = "𐐌",
-                ["𐐵"] = "𐐍",
-                ["𐐶"] = "𐐎",
-                ["𐐷"] = "𐐏",
-                ["𐐸"] = "𐐐",
-                ["𐐹"] = "𐐑",
-                ["𐐺"] = "𐐒",
-                ["𐐻"] = "𐐓",
-                ["𐐼"] = "𐐔",
-                ["𐐽"] = "𐐕",
-                ["𐐾"] = "𐐖",
-                ["𐐿"] = "𐐗",
-                ["𐑀"] = "𐐘",
-                ["𐑁"] = "𐐙",
-                ["𐑂"] = "𐐚",
-                ["𐑃"] = "𐐛",
-                ["𐑄"] = "𐐜",
-                ["𐑅"] = "𐐝",
-                ["𐑆"] = "𐐞",
-                ["𐑇"] = "𐐟",
-                ["𐑈"] = "𐐠",
-                ["𐑉"] = "𐐡",
-                ["𐑊"] = "𐐢",
-                ["𐑋"] = "𐐣",
-                ["𐑌"] = "𐐤",
-                ["𐑍"] = "𐐥",
-                ["𐑎"] = "𐐦",
-                ["𐑏"] = "𐐧",
-            }
-
-            local utf8_uc_lc = {
-                ["A"] = "a",
-                ["B"] = "b",
-                ["C"] = "c",
-                ["D"] = "d",
-                ["E"] = "e",
-                ["F"] = "f",
-                ["G"] = "g",
-                ["H"] = "h",
-                ["I"] = "i",
-                ["J"] = "j",
-                ["K"] = "k",
-                ["L"] = "l",
-                ["M"] = "m",
-                ["N"] = "n",
-                ["O"] = "o",
-                ["P"] = "p",
-                ["Q"] = "q",
-                ["R"] = "r",
-                ["S"] = "s",
-                ["T"] = "t",
-                ["U"] = "u",
-                ["V"] = "v",
-                ["W"] = "w",
-                ["X"] = "x",
-                ["Y"] = "y",
-                ["Z"] = "z",
-                ["À"] = "à",
-                ["Á"] = "á",
-                ["Â"] = "â",
-                ["Ã"] = "ã",
-                ["Ä"] = "ä",
-                ["Å"] = "å",
-                ["Æ"] = "æ",
-                ["Ç"] = "ç",
-                ["È"] = "è",
-                ["É"] = "é",
-                ["Ê"] = "ê",
-                ["Ë"] = "ë",
-                ["Ì"] = "ì",
-                ["Í"] = "í",
-                ["Î"] = "î",
-                ["Ï"] = "ï",
-                ["Ð"] = "ð",
-                ["Ñ"] = "ñ",
-                ["Ò"] = "ò",
-                ["Ó"] = "ó",
-                ["Ô"] = "ô",
-                ["Õ"] = "õ",
-                ["Ö"] = "ö",
-                ["Ø"] = "ø",
-                ["Ù"] = "ù",
-                ["Ú"] = "ú",
-                ["Û"] = "û",
-                ["Ü"] = "ü",
-                ["Ý"] = "ý",
-                ["Þ"] = "þ",
-                ["Ā"] = "ā",
-                ["Ă"] = "ă",
-                ["Ą"] = "ą",
-                ["Ć"] = "ć",
-                ["Ĉ"] = "ĉ",
-                ["Ċ"] = "ċ",
-                ["Č"] = "č",
-                ["Ď"] = "ď",
-                ["Đ"] = "đ",
-                ["Ē"] = "ē",
-                ["Ĕ"] = "ĕ",
-                ["Ė"] = "ė",
-                ["Ę"] = "ę",
-                ["Ě"] = "ě",
-                ["Ĝ"] = "ĝ",
-                ["Ğ"] = "ğ",
-                ["Ġ"] = "ġ",
-                ["Ģ"] = "ģ",
-                ["Ĥ"] = "ĥ",
-                ["Ħ"] = "ħ",
-                ["Ĩ"] = "ĩ",
-                ["Ī"] = "ī",
-                ["Ĭ"] = "ĭ",
-                ["Į"] = "į",
-                ["İ"] = "i",
-                ["Ĳ"] = "ĳ",
-                ["Ĵ"] = "ĵ",
-                ["Ķ"] = "ķ",
-                ["Ĺ"] = "ĺ",
-                ["Ļ"] = "ļ",
-                ["Ľ"] = "ľ",
-                ["Ŀ"] = "ŀ",
-                ["Ł"] = "ł",
-                ["Ń"] = "ń",
-                ["Ņ"] = "ņ",
-                ["Ň"] = "ň",
-                ["Ŋ"] = "ŋ",
-                ["Ō"] = "ō",
-                ["Ŏ"] = "ŏ",
-                ["Ő"] = "ő",
-                ["Œ"] = "œ",
-                ["Ŕ"] = "ŕ",
-                ["Ŗ"] = "ŗ",
-                ["Ř"] = "ř",
-                ["Ś"] = "ś",
-                ["Ŝ"] = "ŝ",
-                ["Ş"] = "ş",
-                ["Š"] = "š",
-                ["Ţ"] = "ţ",
-                ["Ť"] = "ť",
-                ["Ŧ"] = "ŧ",
-                ["Ũ"] = "ũ",
-                ["Ū"] = "ū",
-                ["Ŭ"] = "ŭ",
-                ["Ů"] = "ů",
-                ["Ű"] = "ű",
-                ["Ų"] = "ų",
-                ["Ŵ"] = "ŵ",
-                ["Ŷ"] = "ŷ",
-                ["Ÿ"] = "ÿ",
-                ["Ź"] = "ź",
-                ["Ż"] = "ż",
-                ["Ž"] = "ž",
-                ["Ɓ"] = "ɓ",
-                ["Ƃ"] = "ƃ",
-                ["Ƅ"] = "ƅ",
-                ["Ɔ"] = "ɔ",
-                ["Ƈ"] = "ƈ",
-                ["Ɖ"] = "ɖ",
-                ["Ɗ"] = "ɗ",
-                ["Ƌ"] = "ƌ",
-                ["Ǝ"] = "ǝ",
-                ["Ə"] = "ə",
-                ["Ɛ"] = "ɛ",
-                ["Ƒ"] = "ƒ",
-                ["Ɠ"] = "ɠ",
-                ["Ɣ"] = "ɣ",
-                ["Ɩ"] = "ɩ",
-                ["Ɨ"] = "ɨ",
-                ["Ƙ"] = "ƙ",
-                ["Ɯ"] = "ɯ",
-                ["Ɲ"] = "ɲ",
-                ["Ɵ"] = "ɵ",
-                ["Ơ"] = "ơ",
-                ["Ƣ"] = "ƣ",
-                ["Ƥ"] = "ƥ",
-                ["Ʀ"] = "ʀ",
-                ["Ƨ"] = "ƨ",
-                ["Ʃ"] = "ʃ",
-                ["Ƭ"] = "ƭ",
-                ["Ʈ"] = "ʈ",
-                ["Ư"] = "ư",
-                ["Ʊ"] = "ʊ",
-                ["Ʋ"] = "ʋ",
-                ["Ƴ"] = "ƴ",
-                ["Ƶ"] = "ƶ",
-                ["Ʒ"] = "ʒ",
-                ["Ƹ"] = "ƹ",
-                ["Ƽ"] = "ƽ",
-                ["Ǆ"] = "ǆ",
-                ["ǅ"] = "ǆ",
-                ["Ǉ"] = "ǉ",
-                ["ǈ"] = "ǉ",
-                ["Ǌ"] = "ǌ",
-                ["ǋ"] = "ǌ",
-                ["Ǎ"] = "ǎ",
-                ["Ǐ"] = "ǐ",
-                ["Ǒ"] = "ǒ",
-                ["Ǔ"] = "ǔ",
-                ["Ǖ"] = "ǖ",
-                ["Ǘ"] = "ǘ",
-                ["Ǚ"] = "ǚ",
-                ["Ǜ"] = "ǜ",
-                ["Ǟ"] = "ǟ",
-                ["Ǡ"] = "ǡ",
-                ["Ǣ"] = "ǣ",
-                ["Ǥ"] = "ǥ",
-                ["Ǧ"] = "ǧ",
-                ["Ǩ"] = "ǩ",
-                ["Ǫ"] = "ǫ",
-                ["Ǭ"] = "ǭ",
-                ["Ǯ"] = "ǯ",
-                ["Ǳ"] = "ǳ",
-                ["ǲ"] = "ǳ",
-                ["Ǵ"] = "ǵ",
-                ["Ƕ"] = "ƕ",
-                ["Ƿ"] = "ƿ",
-                ["Ǹ"] = "ǹ",
-                ["Ǻ"] = "ǻ",
-                ["Ǽ"] = "ǽ",
-                ["Ǿ"] = "ǿ",
-                ["Ȁ"] = "ȁ",
-                ["Ȃ"] = "ȃ",
-                ["Ȅ"] = "ȅ",
-                ["Ȇ"] = "ȇ",
-                ["Ȉ"] = "ȉ",
-                ["Ȋ"] = "ȋ",
-                ["Ȍ"] = "ȍ",
-                ["Ȏ"] = "ȏ",
-                ["Ȑ"] = "ȑ",
-                ["Ȓ"] = "ȓ",
-                ["Ȕ"] = "ȕ",
-                ["Ȗ"] = "ȗ",
-                ["Ș"] = "ș",
-                ["Ț"] = "ț",
-                ["Ȝ"] = "ȝ",
-                ["Ȟ"] = "ȟ",
-                ["Ƞ"] = "ƞ",
-                ["Ȣ"] = "ȣ",
-                ["Ȥ"] = "ȥ",
-                ["Ȧ"] = "ȧ",
-                ["Ȩ"] = "ȩ",
-                ["Ȫ"] = "ȫ",
-                ["Ȭ"] = "ȭ",
-                ["Ȯ"] = "ȯ",
-                ["Ȱ"] = "ȱ",
-                ["Ȳ"] = "ȳ",
-                ["Ⱥ"] = "ⱥ",
-                ["Ȼ"] = "ȼ",
-                ["Ƚ"] = "ƚ",
-                ["Ⱦ"] = "ⱦ",
-                ["Ɂ"] = "ɂ",
-                ["Ƀ"] = "ƀ",
-                ["Ʉ"] = "ʉ",
-                ["Ʌ"] = "ʌ",
-                ["Ɇ"] = "ɇ",
-                ["Ɉ"] = "ɉ",
-                ["Ɋ"] = "ɋ",
-                ["Ɍ"] = "ɍ",
-                ["Ɏ"] = "ɏ",
-                ["Ά"] = "ά",
-                ["Έ"] = "έ",
-                ["Ή"] = "ή",
-                ["Ί"] = "ί",
-                ["Ό"] = "ό",
-                ["Ύ"] = "ύ",
-                ["Ώ"] = "ώ",
-                ["Α"] = "α",
-                ["Β"] = "β",
-                ["Γ"] = "γ",
-                ["Δ"] = "δ",
-                ["Ε"] = "ε",
-                ["Ζ"] = "ζ",
-                ["Η"] = "η",
-                ["Θ"] = "θ",
-                ["Ι"] = "ι",
-                ["Κ"] = "κ",
-                ["Λ"] = "λ",
-                ["Μ"] = "μ",
-                ["Ν"] = "ν",
-                ["Ξ"] = "ξ",
-                ["Ο"] = "ο",
-                ["Π"] = "π",
-                ["Ρ"] = "ρ",
-                ["Σ"] = "σ",
-                ["Τ"] = "τ",
-                ["Υ"] = "υ",
-                ["Φ"] = "φ",
-                ["Χ"] = "χ",
-                ["Ψ"] = "ψ",
-                ["Ω"] = "ω",
-                ["Ϊ"] = "ϊ",
-                ["Ϋ"] = "ϋ",
-                ["Ϙ"] = "ϙ",
-                ["Ϛ"] = "ϛ",
-                ["Ϝ"] = "ϝ",
-                ["Ϟ"] = "ϟ",
-                ["Ϡ"] = "ϡ",
-                ["Ϣ"] = "ϣ",
-                ["Ϥ"] = "ϥ",
-                ["Ϧ"] = "ϧ",
-                ["Ϩ"] = "ϩ",
-                ["Ϫ"] = "ϫ",
-                ["Ϭ"] = "ϭ",
-                ["Ϯ"] = "ϯ",
-                ["ϴ"] = "θ",
-                ["Ϸ"] = "ϸ",
-                ["Ϲ"] = "ϲ",
-                ["Ϻ"] = "ϻ",
-                ["Ͻ"] = "ͻ",
-                ["Ͼ"] = "ͼ",
-                ["Ͽ"] = "ͽ",
-                ["Ѐ"] = "ѐ",
-                ["Ё"] = "ё",
-                ["Ђ"] = "ђ",
-                ["Ѓ"] = "ѓ",
-                ["Є"] = "є",
-                ["Ѕ"] = "ѕ",
-                ["І"] = "і",
-                ["Ї"] = "ї",
-                ["Ј"] = "ј",
-                ["Љ"] = "љ",
-                ["Њ"] = "њ",
-                ["Ћ"] = "ћ",
-                ["Ќ"] = "ќ",
-                ["Ѝ"] = "ѝ",
-                ["Ў"] = "ў",
-                ["Џ"] = "џ",
-                ["А"] = "а",
-                ["Б"] = "б",
-                ["В"] = "в",
-                ["Г"] = "г",
-                ["Д"] = "д",
-                ["Е"] = "е",
-                ["Ж"] = "ж",
-                ["З"] = "з",
-                ["И"] = "и",
-                ["Й"] = "й",
-                ["К"] = "к",
-                ["Л"] = "л",
-                ["М"] = "м",
-                ["Н"] = "н",
-                ["О"] = "о",
-                ["П"] = "п",
-                ["Р"] = "р",
-                ["С"] = "с",
-                ["Т"] = "т",
-                ["У"] = "у",
-                ["Ф"] = "ф",
-                ["Х"] = "х",
-                ["Ц"] = "ц",
-                ["Ч"] = "ч",
-                ["Ш"] = "ш",
-                ["Щ"] = "щ",
-                ["Ъ"] = "ъ",
-                ["Ы"] = "ы",
-                ["Ь"] = "ь",
-                ["Э"] = "э",
-                ["Ю"] = "ю",
-                ["Я"] = "я",
-                ["Ѡ"] = "ѡ",
-                ["Ѣ"] = "ѣ",
-                ["Ѥ"] = "ѥ",
-                ["Ѧ"] = "ѧ",
-                ["Ѩ"] = "ѩ",
-                ["Ѫ"] = "ѫ",
-                ["Ѭ"] = "ѭ",
-                ["Ѯ"] = "ѯ",
-                ["Ѱ"] = "ѱ",
-                ["Ѳ"] = "ѳ",
-                ["Ѵ"] = "ѵ",
-                ["Ѷ"] = "ѷ",
-                ["Ѹ"] = "ѹ",
-                ["Ѻ"] = "ѻ",
-                ["Ѽ"] = "ѽ",
-                ["Ѿ"] = "ѿ",
-                ["Ҁ"] = "ҁ",
-                ["Ҋ"] = "ҋ",
-                ["Ҍ"] = "ҍ",
-                ["Ҏ"] = "ҏ",
-                ["Ґ"] = "ґ",
-                ["Ғ"] = "ғ",
-                ["Ҕ"] = "ҕ",
-                ["Җ"] = "җ",
-                ["Ҙ"] = "ҙ",
-                ["Қ"] = "қ",
-                ["Ҝ"] = "ҝ",
-                ["Ҟ"] = "ҟ",
-                ["Ҡ"] = "ҡ",
-                ["Ң"] = "ң",
-                ["Ҥ"] = "ҥ",
-                ["Ҧ"] = "ҧ",
-                ["Ҩ"] = "ҩ",
-                ["Ҫ"] = "ҫ",
-                ["Ҭ"] = "ҭ",
-                ["Ү"] = "ү",
-                ["Ұ"] = "ұ",
-                ["Ҳ"] = "ҳ",
-                ["Ҵ"] = "ҵ",
-                ["Ҷ"] = "ҷ",
-                ["Ҹ"] = "ҹ",
-                ["Һ"] = "һ",
-                ["Ҽ"] = "ҽ",
-                ["Ҿ"] = "ҿ",
-                ["Ӏ"] = "ӏ",
-                ["Ӂ"] = "ӂ",
-                ["Ӄ"] = "ӄ",
-                ["Ӆ"] = "ӆ",
-                ["Ӈ"] = "ӈ",
-                ["Ӊ"] = "ӊ",
-                ["Ӌ"] = "ӌ",
-                ["Ӎ"] = "ӎ",
-                ["Ӑ"] = "ӑ",
-                ["Ӓ"] = "ӓ",
-                ["Ӕ"] = "ӕ",
-                ["Ӗ"] = "ӗ",
-                ["Ә"] = "ә",
-                ["Ӛ"] = "ӛ",
-                ["Ӝ"] = "ӝ",
-                ["Ӟ"] = "ӟ",
-                ["Ӡ"] = "ӡ",
-                ["Ӣ"] = "ӣ",
-                ["Ӥ"] = "ӥ",
-                ["Ӧ"] = "ӧ",
-                ["Ө"] = "ө",
-                ["Ӫ"] = "ӫ",
-                ["Ӭ"] = "ӭ",
-                ["Ӯ"] = "ӯ",
-                ["Ӱ"] = "ӱ",
-                ["Ӳ"] = "ӳ",
-                ["Ӵ"] = "ӵ",
-                ["Ӷ"] = "ӷ",
-                ["Ӹ"] = "ӹ",
-                ["Ӻ"] = "ӻ",
-                ["Ӽ"] = "ӽ",
-                ["Ӿ"] = "ӿ",
-                ["Ԁ"] = "ԁ",
-                ["Ԃ"] = "ԃ",
-                ["Ԅ"] = "ԅ",
-                ["Ԇ"] = "ԇ",
-                ["Ԉ"] = "ԉ",
-                ["Ԋ"] = "ԋ",
-                ["Ԍ"] = "ԍ",
-                ["Ԏ"] = "ԏ",
-                ["Ԑ"] = "ԑ",
-                ["Ԓ"] = "ԓ",
-                ["Ա"] = "ա",
-                ["Բ"] = "բ",
-                ["Գ"] = "գ",
-                ["Դ"] = "դ",
-                ["Ե"] = "ե",
-                ["Զ"] = "զ",
-                ["Է"] = "է",
-                ["Ը"] = "ը",
-                ["Թ"] = "թ",
-                ["Ժ"] = "ժ",
-                ["Ի"] = "ի",
-                ["Լ"] = "լ",
-                ["Խ"] = "խ",
-                ["Ծ"] = "ծ",
-                ["Կ"] = "կ",
-                ["Հ"] = "հ",
-                ["Ձ"] = "ձ",
-                ["Ղ"] = "ղ",
-                ["Ճ"] = "ճ",
-                ["Մ"] = "մ",
-                ["Յ"] = "յ",
-                ["Ն"] = "ն",
-                ["Շ"] = "շ",
-                ["Ո"] = "ո",
-                ["Չ"] = "չ",
-                ["Պ"] = "պ",
-                ["Ջ"] = "ջ",
-                ["Ռ"] = "ռ",
-                ["Ս"] = "ս",
-                ["Վ"] = "վ",
-                ["Տ"] = "տ",
-                ["Ր"] = "ր",
-                ["Ց"] = "ց",
-                ["Ւ"] = "ւ",
-                ["Փ"] = "փ",
-                ["Ք"] = "ք",
-                ["Օ"] = "օ",
-                ["Ֆ"] = "ֆ",
-                ["Ⴀ"] = "ⴀ",
-                ["Ⴁ"] = "ⴁ",
-                ["Ⴂ"] = "ⴂ",
-                ["Ⴃ"] = "ⴃ",
-                ["Ⴄ"] = "ⴄ",
-                ["Ⴅ"] = "ⴅ",
-                ["Ⴆ"] = "ⴆ",
-                ["Ⴇ"] = "ⴇ",
-                ["Ⴈ"] = "ⴈ",
-                ["Ⴉ"] = "ⴉ",
-                ["Ⴊ"] = "ⴊ",
-                ["Ⴋ"] = "ⴋ",
-                ["Ⴌ"] = "ⴌ",
-                ["Ⴍ"] = "ⴍ",
-                ["Ⴎ"] = "ⴎ",
-                ["Ⴏ"] = "ⴏ",
-                ["Ⴐ"] = "ⴐ",
-                ["Ⴑ"] = "ⴑ",
-                ["Ⴒ"] = "ⴒ",
-                ["Ⴓ"] = "ⴓ",
-                ["Ⴔ"] = "ⴔ",
-                ["Ⴕ"] = "ⴕ",
-                ["Ⴖ"] = "ⴖ",
-                ["Ⴗ"] = "ⴗ",
-                ["Ⴘ"] = "ⴘ",
-                ["Ⴙ"] = "ⴙ",
-                ["Ⴚ"] = "ⴚ",
-                ["Ⴛ"] = "ⴛ",
-                ["Ⴜ"] = "ⴜ",
-                ["Ⴝ"] = "ⴝ",
-                ["Ⴞ"] = "ⴞ",
-                ["Ⴟ"] = "ⴟ",
-                ["Ⴠ"] = "ⴠ",
-                ["Ⴡ"] = "ⴡ",
-                ["Ⴢ"] = "ⴢ",
-                ["Ⴣ"] = "ⴣ",
-                ["Ⴤ"] = "ⴤ",
-                ["Ⴥ"] = "ⴥ",
-                ["Ḁ"] = "ḁ",
-                ["Ḃ"] = "ḃ",
-                ["Ḅ"] = "ḅ",
-                ["Ḇ"] = "ḇ",
-                ["Ḉ"] = "ḉ",
-                ["Ḋ"] = "ḋ",
-                ["Ḍ"] = "ḍ",
-                ["Ḏ"] = "ḏ",
-                ["Ḑ"] = "ḑ",
-                ["Ḓ"] = "ḓ",
-                ["Ḕ"] = "ḕ",
-                ["Ḗ"] = "ḗ",
-                ["Ḙ"] = "ḙ",
-                ["Ḛ"] = "ḛ",
-                ["Ḝ"] = "ḝ",
-                ["Ḟ"] = "ḟ",
-                ["Ḡ"] = "ḡ",
-                ["Ḣ"] = "ḣ",
-                ["Ḥ"] = "ḥ",
-                ["Ḧ"] = "ḧ",
-                ["Ḩ"] = "ḩ",
-                ["Ḫ"] = "ḫ",
-                ["Ḭ"] = "ḭ",
-                ["Ḯ"] = "ḯ",
-                ["Ḱ"] = "ḱ",
-                ["Ḳ"] = "ḳ",
-                ["Ḵ"] = "ḵ",
-                ["Ḷ"] = "ḷ",
-                ["Ḹ"] = "ḹ",
-                ["Ḻ"] = "ḻ",
-                ["Ḽ"] = "ḽ",
-                ["Ḿ"] = "ḿ",
-                ["Ṁ"] = "ṁ",
-                ["Ṃ"] = "ṃ",
-                ["Ṅ"] = "ṅ",
-                ["Ṇ"] = "ṇ",
-                ["Ṉ"] = "ṉ",
-                ["Ṋ"] = "ṋ",
-                ["Ṍ"] = "ṍ",
-                ["Ṏ"] = "ṏ",
-                ["Ṑ"] = "ṑ",
-                ["Ṓ"] = "ṓ",
-                ["Ṕ"] = "ṕ",
-                ["Ṗ"] = "ṗ",
-                ["Ṙ"] = "ṙ",
-                ["Ṛ"] = "ṛ",
-                ["Ṝ"] = "ṝ",
-                ["Ṟ"] = "ṟ",
-                ["Ṡ"] = "ṡ",
-                ["Ṣ"] = "ṣ",
-                ["Ṥ"] = "ṥ",
-                ["Ṧ"] = "ṧ",
-                ["Ṩ"] = "ṩ",
-                ["Ṫ"] = "ṫ",
-                ["Ṭ"] = "ṭ",
-                ["Ṯ"] = "ṯ",
-                ["Ṱ"] = "ṱ",
-                ["Ṳ"] = "ṳ",
-                ["Ṵ"] = "ṵ",
-                ["Ṷ"] = "ṷ",
-                ["Ṹ"] = "ṹ",
-                ["Ṻ"] = "ṻ",
-                ["Ṽ"] = "ṽ",
-                ["Ṿ"] = "ṿ",
-                ["Ẁ"] = "ẁ",
-                ["Ẃ"] = "ẃ",
-                ["Ẅ"] = "ẅ",
-                ["Ẇ"] = "ẇ",
-                ["Ẉ"] = "ẉ",
-                ["Ẋ"] = "ẋ",
-                ["Ẍ"] = "ẍ",
-                ["Ẏ"] = "ẏ",
-                ["Ẑ"] = "ẑ",
-                ["Ẓ"] = "ẓ",
-                ["Ẕ"] = "ẕ",
-                ["Ạ"] = "ạ",
-                ["Ả"] = "ả",
-                ["Ấ"] = "ấ",
-                ["Ầ"] = "ầ",
-                ["Ẩ"] = "ẩ",
-                ["Ẫ"] = "ẫ",
-                ["Ậ"] = "ậ",
-                ["Ắ"] = "ắ",
-                ["Ằ"] = "ằ",
-                ["Ẳ"] = "ẳ",
-                ["Ẵ"] = "ẵ",
-                ["Ặ"] = "ặ",
-                ["Ẹ"] = "ẹ",
-                ["Ẻ"] = "ẻ",
-                ["Ẽ"] = "ẽ",
-                ["Ế"] = "ế",
-                ["Ề"] = "ề",
-                ["Ể"] = "ể",
-                ["Ễ"] = "ễ",
-                ["Ệ"] = "ệ",
-                ["Ỉ"] = "ỉ",
-                ["Ị"] = "ị",
-                ["Ọ"] = "ọ",
-                ["Ỏ"] = "ỏ",
-                ["Ố"] = "ố",
-                ["Ồ"] = "ồ",
-                ["Ổ"] = "ổ",
-                ["Ỗ"] = "ỗ",
-                ["Ộ"] = "ộ",
-                ["Ớ"] = "ớ",
-                ["Ờ"] = "ờ",
-                ["Ở"] = "ở",
-                ["Ỡ"] = "ỡ",
-                ["Ợ"] = "ợ",
-                ["Ụ"] = "ụ",
-                ["Ủ"] = "ủ",
-                ["Ứ"] = "ứ",
-                ["Ừ"] = "ừ",
-                ["Ử"] = "ử",
-                ["Ữ"] = "ữ",
-                ["Ự"] = "ự",
-                ["Ỳ"] = "ỳ",
-                ["Ỵ"] = "ỵ",
-                ["Ỷ"] = "ỷ",
-                ["Ỹ"] = "ỹ",
-                ["Ἀ"] = "ἀ",
-                ["Ἁ"] = "ἁ",
-                ["Ἂ"] = "ἂ",
-                ["Ἃ"] = "ἃ",
-                ["Ἄ"] = "ἄ",
-                ["Ἅ"] = "ἅ",
-                ["Ἆ"] = "ἆ",
-                ["Ἇ"] = "ἇ",
-                ["Ἐ"] = "ἐ",
-                ["Ἑ"] = "ἑ",
-                ["Ἒ"] = "ἒ",
-                ["Ἓ"] = "ἓ",
-                ["Ἔ"] = "ἔ",
-                ["Ἕ"] = "ἕ",
-                ["Ἠ"] = "ἠ",
-                ["Ἡ"] = "ἡ",
-                ["Ἢ"] = "ἢ",
-                ["Ἣ"] = "ἣ",
-                ["Ἤ"] = "ἤ",
-                ["Ἥ"] = "ἥ",
-                ["Ἦ"] = "ἦ",
-                ["Ἧ"] = "ἧ",
-                ["Ἰ"] = "ἰ",
-                ["Ἱ"] = "ἱ",
-                ["Ἲ"] = "ἲ",
-                ["Ἳ"] = "ἳ",
-                ["Ἴ"] = "ἴ",
-                ["Ἵ"] = "ἵ",
-                ["Ἶ"] = "ἶ",
-                ["Ἷ"] = "ἷ",
-                ["Ὀ"] = "ὀ",
-                ["Ὁ"] = "ὁ",
-                ["Ὂ"] = "ὂ",
-                ["Ὃ"] = "ὃ",
-                ["Ὄ"] = "ὄ",
-                ["Ὅ"] = "ὅ",
-                ["Ὑ"] = "ὑ",
-                ["Ὓ"] = "ὓ",
-                ["Ὕ"] = "ὕ",
-                ["Ὗ"] = "ὗ",
-                ["Ὠ"] = "ὠ",
-                ["Ὡ"] = "ὡ",
-                ["Ὢ"] = "ὢ",
-                ["Ὣ"] = "ὣ",
-                ["Ὤ"] = "ὤ",
-                ["Ὥ"] = "ὥ",
-                ["Ὦ"] = "ὦ",
-                ["Ὧ"] = "ὧ",
-                ["ᾈ"] = "ᾀ",
-                ["ᾉ"] = "ᾁ",
-                ["ᾊ"] = "ᾂ",
-                ["ᾋ"] = "ᾃ",
-                ["ᾌ"] = "ᾄ",
-                ["ᾍ"] = "ᾅ",
-                ["ᾎ"] = "ᾆ",
-                ["ᾏ"] = "ᾇ",
-                ["ᾘ"] = "ᾐ",
-                ["ᾙ"] = "ᾑ",
-                ["ᾚ"] = "ᾒ",
-                ["ᾛ"] = "ᾓ",
-                ["ᾜ"] = "ᾔ",
-                ["ᾝ"] = "ᾕ",
-                ["ᾞ"] = "ᾖ",
-                ["ᾟ"] = "ᾗ",
-                ["ᾨ"] = "ᾠ",
-                ["ᾩ"] = "ᾡ",
-                ["ᾪ"] = "ᾢ",
-                ["ᾫ"] = "ᾣ",
-                ["ᾬ"] = "ᾤ",
-                ["ᾭ"] = "ᾥ",
-                ["ᾮ"] = "ᾦ",
-                ["ᾯ"] = "ᾧ",
-                ["Ᾰ"] = "ᾰ",
-                ["Ᾱ"] = "ᾱ",
-                ["Ὰ"] = "ὰ",
-                ["Ά"] = "ά",
-                ["ᾼ"] = "ᾳ",
-                ["Ὲ"] = "ὲ",
-                ["Έ"] = "έ",
-                ["Ὴ"] = "ὴ",
-                ["Ή"] = "ή",
-                ["ῌ"] = "ῃ",
-                ["Ῐ"] = "ῐ",
-                ["Ῑ"] = "ῑ",
-                ["Ὶ"] = "ὶ",
-                ["Ί"] = "ί",
-                ["Ῠ"] = "ῠ",
-                ["Ῡ"] = "ῡ",
-                ["Ὺ"] = "ὺ",
-                ["Ύ"] = "ύ",
-                ["Ῥ"] = "ῥ",
-                ["Ὸ"] = "ὸ",
-                ["Ό"] = "ό",
-                ["Ὼ"] = "ὼ",
-                ["Ώ"] = "ώ",
-                ["ῼ"] = "ῳ",
-                ["Ω"] = "ω",
-                ["K"] = "k",
-                ["Å"] = "å",
-                ["Ⅎ"] = "ⅎ",
-                ["Ⅰ"] = "ⅰ",
-                ["Ⅱ"] = "ⅱ",
-                ["Ⅲ"] = "ⅲ",
-                ["Ⅳ"] = "ⅳ",
-                ["Ⅴ"] = "ⅴ",
-                ["Ⅵ"] = "ⅵ",
-                ["Ⅶ"] = "ⅶ",
-                ["Ⅷ"] = "ⅷ",
-                ["Ⅸ"] = "ⅸ",
-                ["Ⅹ"] = "ⅹ",
-                ["Ⅺ"] = "ⅺ",
-                ["Ⅻ"] = "ⅻ",
-                ["Ⅼ"] = "ⅼ",
-                ["Ⅽ"] = "ⅽ",
-                ["Ⅾ"] = "ⅾ",
-                ["Ⅿ"] = "ⅿ",
-                ["Ↄ"] = "ↄ",
-                ["Ⓐ"] = "ⓐ",
-                ["Ⓑ"] = "ⓑ",
-                ["Ⓒ"] = "ⓒ",
-                ["Ⓓ"] = "ⓓ",
-                ["Ⓔ"] = "ⓔ",
-                ["Ⓕ"] = "ⓕ",
-                ["Ⓖ"] = "ⓖ",
-                ["Ⓗ"] = "ⓗ",
-                ["Ⓘ"] = "ⓘ",
-                ["Ⓙ"] = "ⓙ",
-                ["Ⓚ"] = "ⓚ",
-                ["Ⓛ"] = "ⓛ",
-                ["Ⓜ"] = "ⓜ",
-                ["Ⓝ"] = "ⓝ",
-                ["Ⓞ"] = "ⓞ",
-                ["Ⓟ"] = "ⓟ",
-                ["Ⓠ"] = "ⓠ",
-                ["Ⓡ"] = "ⓡ",
-                ["Ⓢ"] = "ⓢ",
-                ["Ⓣ"] = "ⓣ",
-                ["Ⓤ"] = "ⓤ",
-                ["Ⓥ"] = "ⓥ",
-                ["Ⓦ"] = "ⓦ",
-                ["Ⓧ"] = "ⓧ",
-                ["Ⓨ"] = "ⓨ",
-                ["Ⓩ"] = "ⓩ",
-                ["Ⰰ"] = "ⰰ",
-                ["Ⰱ"] = "ⰱ",
-                ["Ⰲ"] = "ⰲ",
-                ["Ⰳ"] = "ⰳ",
-                ["Ⰴ"] = "ⰴ",
-                ["Ⰵ"] = "ⰵ",
-                ["Ⰶ"] = "ⰶ",
-                ["Ⰷ"] = "ⰷ",
-                ["Ⰸ"] = "ⰸ",
-                ["Ⰹ"] = "ⰹ",
-                ["Ⰺ"] = "ⰺ",
-                ["Ⰻ"] = "ⰻ",
-                ["Ⰼ"] = "ⰼ",
-                ["Ⰽ"] = "ⰽ",
-                ["Ⰾ"] = "ⰾ",
-                ["Ⰿ"] = "ⰿ",
-                ["Ⱀ"] = "ⱀ",
-                ["Ⱁ"] = "ⱁ",
-                ["Ⱂ"] = "ⱂ",
-                ["Ⱃ"] = "ⱃ",
-                ["Ⱄ"] = "ⱄ",
-                ["Ⱅ"] = "ⱅ",
-                ["Ⱆ"] = "ⱆ",
-                ["Ⱇ"] = "ⱇ",
-                ["Ⱈ"] = "ⱈ",
-                ["Ⱉ"] = "ⱉ",
-                ["Ⱊ"] = "ⱊ",
-                ["Ⱋ"] = "ⱋ",
-                ["Ⱌ"] = "ⱌ",
-                ["Ⱍ"] = "ⱍ",
-                ["Ⱎ"] = "ⱎ",
-                ["Ⱏ"] = "ⱏ",
-                ["Ⱐ"] = "ⱐ",
-                ["Ⱑ"] = "ⱑ",
-                ["Ⱒ"] = "ⱒ",
-                ["Ⱓ"] = "ⱓ",
-                ["Ⱔ"] = "ⱔ",
-                ["Ⱕ"] = "ⱕ",
-                ["Ⱖ"] = "ⱖ",
-                ["Ⱗ"] = "ⱗ",
-                ["Ⱘ"] = "ⱘ",
-                ["Ⱙ"] = "ⱙ",
-                ["Ⱚ"] = "ⱚ",
-                ["Ⱛ"] = "ⱛ",
-                ["Ⱜ"] = "ⱜ",
-                ["Ⱝ"] = "ⱝ",
-                ["Ⱞ"] = "ⱞ",
-                ["Ⱡ"] = "ⱡ",
-                ["Ɫ"] = "ɫ",
-                ["Ᵽ"] = "ᵽ",
-                ["Ɽ"] = "ɽ",
-                ["Ⱨ"] = "ⱨ",
-                ["Ⱪ"] = "ⱪ",
-                ["Ⱬ"] = "ⱬ",
-                ["Ⱶ"] = "ⱶ",
-                ["Ⲁ"] = "ⲁ",
-                ["Ⲃ"] = "ⲃ",
-                ["Ⲅ"] = "ⲅ",
-                ["Ⲇ"] = "ⲇ",
-                ["Ⲉ"] = "ⲉ",
-                ["Ⲋ"] = "ⲋ",
-                ["Ⲍ"] = "ⲍ",
-                ["Ⲏ"] = "ⲏ",
-                ["Ⲑ"] = "ⲑ",
-                ["Ⲓ"] = "ⲓ",
-                ["Ⲕ"] = "ⲕ",
-                ["Ⲗ"] = "ⲗ",
-                ["Ⲙ"] = "ⲙ",
-                ["Ⲛ"] = "ⲛ",
-                ["Ⲝ"] = "ⲝ",
-                ["Ⲟ"] = "ⲟ",
-                ["Ⲡ"] = "ⲡ",
-                ["Ⲣ"] = "ⲣ",
-                ["Ⲥ"] = "ⲥ",
-                ["Ⲧ"] = "ⲧ",
-                ["Ⲩ"] = "ⲩ",
-                ["Ⲫ"] = "ⲫ",
-                ["Ⲭ"] = "ⲭ",
-                ["Ⲯ"] = "ⲯ",
-                ["Ⲱ"] = "ⲱ",
-                ["Ⲳ"] = "ⲳ",
-                ["Ⲵ"] = "ⲵ",
-                ["Ⲷ"] = "ⲷ",
-                ["Ⲹ"] = "ⲹ",
-                ["Ⲻ"] = "ⲻ",
-                ["Ⲽ"] = "ⲽ",
-                ["Ⲿ"] = "ⲿ",
-                ["Ⳁ"] = "ⳁ",
-                ["Ⳃ"] = "ⳃ",
-                ["Ⳅ"] = "ⳅ",
-                ["Ⳇ"] = "ⳇ",
-                ["Ⳉ"] = "ⳉ",
-                ["Ⳋ"] = "ⳋ",
-                ["Ⳍ"] = "ⳍ",
-                ["Ⳏ"] = "ⳏ",
-                ["Ⳑ"] = "ⳑ",
-                ["Ⳓ"] = "ⳓ",
-                ["Ⳕ"] = "ⳕ",
-                ["Ⳗ"] = "ⳗ",
-                ["Ⳙ"] = "ⳙ",
-                ["Ⳛ"] = "ⳛ",
-                ["Ⳝ"] = "ⳝ",
-                ["Ⳟ"] = "ⳟ",
-                ["Ⳡ"] = "ⳡ",
-                ["Ⳣ"] = "ⳣ",
-                ["Ａ"] = "ａ",
-                ["Ｂ"] = "ｂ",
-                ["Ｃ"] = "ｃ",
-                ["Ｄ"] = "ｄ",
-                ["Ｅ"] = "ｅ",
-                ["Ｆ"] = "ｆ",
-                ["Ｇ"] = "ｇ",
-                ["Ｈ"] = "ｈ",
-                ["Ｉ"] = "ｉ",
-                ["Ｊ"] = "ｊ",
-                ["Ｋ"] = "ｋ",
-                ["Ｌ"] = "ｌ",
-                ["Ｍ"] = "ｍ",
-                ["Ｎ"] = "ｎ",
-                ["Ｏ"] = "ｏ",
-                ["Ｐ"] = "ｐ",
-                ["Ｑ"] = "ｑ",
-                ["Ｒ"] = "ｒ",
-                ["Ｓ"] = "ｓ",
-                ["Ｔ"] = "ｔ",
-                ["Ｕ"] = "ｕ",
-                ["Ｖ"] = "ｖ",
-                ["Ｗ"] = "ｗ",
-                ["Ｘ"] = "ｘ",
-                ["Ｙ"] = "ｙ",
-                ["Ｚ"] = "ｚ",
-                ["𐐀"] = "𐐨",
-                ["𐐁"] = "𐐩",
-                ["𐐂"] = "𐐪",
-                ["𐐃"] = "𐐫",
-                ["𐐄"] = "𐐬",
-                ["𐐅"] = "𐐭",
-                ["𐐆"] = "𐐮",
-                ["𐐇"] = "𐐯",
-                ["𐐈"] = "𐐰",
-                ["𐐉"] = "𐐱",
-                ["𐐊"] = "𐐲",
-                ["𐐋"] = "𐐳",
-                ["𐐌"] = "𐐴",
-                ["𐐍"] = "𐐵",
-                ["𐐎"] = "𐐶",
-                ["𐐏"] = "𐐷",
-                ["𐐐"] = "𐐸",
-                ["𐐑"] = "𐐹",
-                ["𐐒"] = "𐐺",
-                ["𐐓"] = "𐐻",
-                ["𐐔"] = "𐐼",
-                ["𐐕"] = "𐐽",
-                ["𐐖"] = "𐐾",
-                ["𐐗"] = "𐐿",
-                ["𐐘"] = "𐑀",
-                ["𐐙"] = "𐑁",
-                ["𐐚"] = "𐑂",
-                ["𐐛"] = "𐑃",
-                ["𐐜"] = "𐑄",
-                ["𐐝"] = "𐑅",
-                ["𐐞"] = "𐑆",
-                ["𐐟"] = "𐑇",
-                ["𐐠"] = "𐑈",
-                ["𐐡"] = "𐑉",
-                ["𐐢"] = "𐑊",
-                ["𐐣"] = "𐑋",
-                ["𐐤"] = "𐑌",
-                ["𐐥"] = "𐑍",
-                ["𐐦"] = "𐑎",
-                ["𐐧"] = "𐑏",
-            }
-
-            -- returns the number of bytes used by the UTF-8 character at byte i in s
-            -- also doubles as a UTF-8 character validator
-            local function utf8charbytes(s, i)
-                -- argument defaults
-                i = i or 1
-
-                -- argument checking
-                if type(s) ~= "string" then
-                    error("bad argument #1 to 'utf8charbytes' (string expected, got ".. type(s).. ")")
-                end
-                if type(i) ~= "number" then
-                    error("bad argument #2 to 'utf8charbytes' (number expected, got ".. type(i).. ")")
-                end
-
-                local c = strbyte(s, i)
-
-                -- determine bytes needed for character, based on RFC 3629
-                -- validate byte 1
-                if c > 0 and c <= 127 then
-                    -- UTF8-1
-                    return 1
-
-                elseif c >= 194 and c <= 223 then
-                    -- UTF8-2
-                    local c2 = strbyte(s, i + 1)
-
-                    if not c2 then
-                        error("UTF-8 string terminated early")
-                    end
-
-                    -- validate byte 2
-                    if c2 < 128 or c2 > 191 then
-                        error("Invalid UTF-8 character")
-                    end
-
-                    return 2
-
-                elseif c >= 224 and c <= 239 then
-                    -- UTF8-3
-                    local c2 = strbyte(s, i + 1)
-                    local c3 = strbyte(s, i + 2)
-
-                    if not c2 or not c3 then
-                        error("UTF-8 string terminated early")
-                    end
-
-                    -- validate byte 2
-                    if c == 224 and (c2 < 160 or c2 > 191) then
-                        error("Invalid UTF-8 character")
-                    elseif c == 237 and (c2 < 128 or c2 > 159) then
-                        error("Invalid UTF-8 character")
-                    elseif c2 < 128 or c2 > 191 then
-                        error("Invalid UTF-8 character")
-                    end
-
-                    -- validate byte 3
-                    if c3 < 128 or c3 > 191 then
-                        error("Invalid UTF-8 character")
-                    end
-
-                    return 3
-
-                elseif c >= 240 and c <= 244 then
-                    -- UTF8-4
-                    local c2 = strbyte(s, i + 1)
-                    local c3 = strbyte(s, i + 2)
-                    local c4 = strbyte(s, i + 3)
-
-                    if not c2 or not c3 or not c4 then
-                        error("UTF-8 string terminated early")
-                    end
-
-                    -- validate byte 2
-                    if c == 240 and (c2 < 144 or c2 > 191) then
-                        error("Invalid UTF-8 character")
-                    elseif c == 244 and (c2 < 128 or c2 > 143) then
-                        error("Invalid UTF-8 character")
-                    elseif c2 < 128 or c2 > 191 then
-                        error("Invalid UTF-8 character")
-                    end
-
-                    -- validate byte 3
-                    if c3 < 128 or c3 > 191 then
-                        error("Invalid UTF-8 character")
-                    end
-
-                    -- validate byte 4
-                    if c4 < 128 or c4 > 191 then
-                        error("Invalid UTF-8 character")
-                    end
-
-                    return 4
-
-                else
-                    error("Invalid UTF-8 character")
-                end
-            end
-
-            -- replace UTF-8 characters based on a mapping table
-            local function utf8replace(s, mapping)
-                -- argument checking
-                if type(s) ~= "string" then
-                    error("bad argument #1 to 'utf8replace' (string expected, got ".. type(s).. ")")
-                end
-                if type(mapping) ~= "table" then
-                    error("bad argument #2 to 'utf8replace' (table expected, got ".. type(mapping).. ")")
-                end
-
-                local pos = 1
-                local bytes = strlen(s)
-                local charbytes
-                local newstr = ""
-
-                while pos <= bytes do
-                    charbytes = utf8charbytes(s, pos)
-                    local c = strsub(s, pos, pos + charbytes - 1)
-
-                    newstr = newstr .. (mapping[c] or c)
-
-                    pos = pos + charbytes
-                end
-
-                return newstr
-            end
-
-            -- identical to string.upper except it knows about unicode simple case conversions
-            function utf8upper(s)
-                return utf8replace(s, utf8_lc_uc)
-            end
-
-            -- identical to string.lower except it knows about unicode simple case conversions
-            function utf8lower(s)
-                return utf8replace(s, utf8_uc_lc)
-            end
-
+        if not utf8 then
+            ns.Print("|cffFFFFFFRaiderIO|r Unable to append excessive tests because utf8 is not available.")
+            return false
         end
+
+        local utf8lower = utf8.utf8upper
+        local utf8upper = utf8.utf8lower
 
         local index = #collection
 
@@ -10086,6 +9459,8 @@ do
         cc = OnCreateSuccess
         cp = progress
         coroutine.resume(co, cq)
+
+        return true
 
     end
 

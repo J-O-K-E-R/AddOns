@@ -202,7 +202,43 @@ local function configTable()
 						name = COLORBLIND_ITEM_QUALITY,
 						order = 3,
 						disabled = function() return not E.db.sle.armory.inspect.gradient.enable end,
-					}
+					},
+					setArmor = {
+						type = 'toggle',
+						name = L["Armor Set"],
+						order = 5,
+						disabled = function() return E.db.sle.armory.inspect.enable == false or E.db.sle.armory.inspect.gradient.enable == false end,
+					},
+					setArmorColor = {
+						type = 'color',
+						name = L["Armor Set Gradient Texture Color"],
+						order = 6,
+						get = function(info)
+							return unpack(E.db.sle.armory.inspect[(info[#info - 1])][(info[#info])])
+						end,
+						set = function(info, r, g, b, a) E.db.sle.armory.inspect[(info[#info - 1])][(info[#info])] = { r, g, b, a }; M:UpdateInspectInfo() end,
+						disabled = function() return not E.db.sle.armory.inspect.enable or not E.db.sle.armory.inspect.gradient.enable or not E.db.sle.armory.inspect.gradient.setArmor end,
+					},
+					warningColor = {
+						type = 'color',
+						name = L["Warning Gradient Texture Color"],
+						order = 7,
+						get = function(info)
+							return unpack(E.db.sle.armory.inspect[(info[#info - 1])][(info[#info])])
+						end,
+						set = function(info, r, g, b, a) E.db.sle.armory.inspect[(info[#info - 1])][(info[#info])] = { r, g, b, a }; M:UpdateInspectInfo() end,
+						disabled = function() return not E.db.sle.armory.inspect.enable or not E.db.sle.armory.inspect.gradient.enable end,
+					},
+					warningBarColor = {
+						type = 'color',
+						name = L["Warning Bar Color"],
+						order = 8,
+						get = function(info)
+							return unpack(E.db.sle.armory.inspect[(info[#info - 1])][(info[#info])])
+						end,
+						set = function(info, r, g, b, a) E.db.sle.armory.inspect[(info[#info - 1])][(info[#info])] = { r, g, b, a }; M:UpdateInspectInfo() end,
+						disabled = function() return not E.db.sle.armory.inspect.enable or not E.db.sle.armory.inspect.gradient.enable end,
+					},
 				}
 			},
 			background = {

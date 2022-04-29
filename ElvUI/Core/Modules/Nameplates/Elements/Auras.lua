@@ -87,7 +87,10 @@ function NP:Construct_AuraIcon(button)
 	E:RegisterCooldown(button.cd)
 
 	local auras = button:GetParent()
-	button.db = auras and NP.db.units and NP.db.units[auras.__owner.frameType] and NP.db.units[auras.__owner.frameType][auras.type]
+	if auras and auras.type then
+		local db = NP:PlateDB(auras.__owner)
+		button.db = db[auras.type]
+	end
 
 	NP:UpdateAuraSettings(button)
 end
@@ -110,7 +113,6 @@ function NP:Configure_Auras(nameplate, auras, db)
 	auras.smartPosition, auras.smartFluid = UF:SetSmartPosition(nameplate)
 	auras.attachTo = UF:GetAuraAnchorFrame(nameplate, db.attachTo) -- keep below SetSmartPosition
 	auras.num = db.numAuras * db.numRows
-	auras.lastActive = -1 -- for SetPosition
 	auras.db = db -- for auraSort
 
 	local index = 1

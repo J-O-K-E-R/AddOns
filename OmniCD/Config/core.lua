@@ -76,11 +76,9 @@ local function GetOptions()
 			type = "group",
 			args = {
 				Home = {
-					-- Use escape sequence if using backdrop on tree group images
-					--[[
-					icon = "Interface\\AddOns\\OmniCD\\Media\\omnicd-logo64",
-					iconCoords = {0, 1, 0, 1},
-					]]
+
+
+
 					name = format("|T%s:18|t %s", "Interface\\AddOns\\OmniCD\\Media\\omnicd-logo64", E.AddOn),
 					order = 0,
 					type = "group",
@@ -123,23 +121,22 @@ local function GetOptions()
 						},
 						notice1 = {
 							hidden = E.isPreBCC,
-							name = "|cffff2020 " .. L["|cffff2020Important!|r Covenant and Soulbind Conduit data can only be acquired from group members with OmniCD installed."],
+
+							name = "|cffff2020 Coodown reduction by Soulbind Conduits and RNG modifiers (% chance to X, etc) require Sync Mode.",
 							order = 16,
 							type = "description",
 						},
-						--[[
-						notice2 = {
-							name = "|cffff2020 " .. L["Unit CD bars are limited to 5 man groups unless Blizzard Raid Frames are used."],
-							order = 17,
-							type = "description",
-						},
-						notice3 = {
-							hidden = E.isPreBCC,
-							name = "|cffff2020 " .. L["None of the CD counter skins support modrate. Timers will fluctuate erratically whenever CD recovery rate is modulated."],
-							order = 18,
-							type = "description",
-						},
-						]]
+
+
+
+
+
+
+
+
+
+
+
 						pd4 = {
 							name = "\n\n\n", order = 19, type = "description",
 						},
@@ -181,7 +178,7 @@ local function GetOptions()
 									order = 1,
 									type = "input",
 									dialogControl = "Link-OmniCD",
-									get = function(info) return "https://www.curseforge.com/wow/addons/omnicd/issues" end,
+									get = function() return "https://www.curseforge.com/wow/addons/omnicd/issues" end,
 								},
 								translate = {
 									name = L["Help Translate"],
@@ -191,6 +188,37 @@ local function GetOptions()
 									dialogControl = "Link-OmniCD",
 									get = function() return "https://www.curseforge.com/wow/addons/omnicd/localization" end,
 								},
+							}
+						},
+						plugins = {
+							name = "Plugins",
+							order = 50,
+							type = "group",
+							args = {
+								battleres = {
+									name = L["Battle Res"],
+									desc = COPY_URL,
+									order = 1,
+									type = "input",
+									dialogControl = "Link-OmniCD",
+									get = function() return "https://www.curseforge.com/wow/addons/omnicd-battleres" end,
+								},
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 							}
 						},
 					}
@@ -243,7 +271,7 @@ local function GetOptions()
 				disabled = false,
 				name = ENABLE,
 				desc = L["Toggle module on and off"],
---              descStyle = "inline",
+
 				order = 2,
 				type = "toggle",
 				get = function() return E.GetModuleEnabled(k) end,
@@ -255,6 +283,7 @@ local function GetOptions()
 		end
 
 		E:AddGeneral()
+
 		E:AddSpellEditor()
 		E:AddProfileSharing()
 	end
@@ -263,8 +292,8 @@ local function GetOptions()
 end
 
 function E:SetupOptions()
-	self.Libs.ACR:RegisterOptionsTable(self.AddOn, GetOptions, true) -- pass option tbl as func arg to create on panel open for plugins, skip validation
---  self.optionsFrames.OmniCD = self.Libs.ACD:AddToBlizOptions(self.AddOn) -- no longer adding to blizzard's option panel
+	self.Libs.ACR:RegisterOptionsTable(self.AddOn, GetOptions, true)
+
 
 	self.optionsFrames.profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.DB)
 	self.optionsFrames.profiles.order = 1000
@@ -310,11 +339,11 @@ interfaceOptionPanel:SetScript("OnShow", function(self)
 	open.tooltipText = ""
 	open:SetScript("OnClick", function()
 		InterfaceOptionsFrame:Hide();
---      if not InCombatLockdown() then HideUIPanel(GameMenuFrame); end
+
 		E.OpenOptionPanel()
 	end)
 
 	self:SetScript("OnShow", nil)
 end)
 
---InterfaceOptions_AddCategory(interfaceOptionPanel) -- taint
+
