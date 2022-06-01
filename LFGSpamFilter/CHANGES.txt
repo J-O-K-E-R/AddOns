@@ -1,0 +1,10 @@
+lightweight tag c7bff1552ec9144be467ed3849b28e8e79f2ffe5 v1.0.0
+Author:	romdeau23 <romdeau23@gmail.com>
+Date:	Tue May 24 11:20:55 2022 +0200
+
+commit c7bff1552ec9144be467ed3849b28e8e79f2ffe5
+Author: romdeau23 <romdeau23@gmail.com>
+Date:   Tue May 24 11:20:55 2022 +0200
+
+    Move addon files to root, add pkgmeta.yaml, fix line-endings
+

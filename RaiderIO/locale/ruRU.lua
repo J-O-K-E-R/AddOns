@@ -1,4 +1,3 @@
--- Generated from CurseForge on Mon Apr 25 06:51:30 UTC 2022
 local ns = select(2, ...) ---@type ns @The addon namespace.
 
 if ns:IsSameLocale("ruRU") then
@@ -6,7 +5,7 @@ if ns:IsSameLocale("ruRU") then
 
 	L.LOCALE_NAME = "ruRU"
 
-L["ALLOW_IN_LFD"] = "Разрешить в окне поиска группы"
+	L["ALLOW_IN_LFD"] = "Разрешить в окне поиска группы"
 L["ALLOW_IN_LFD_DESC"] = "Нажмите правой кнопкой мыши на группу или кандидатов в заранее собранных группах для копирования ссылки на профиль Raider.IO."
 L["ALLOW_ON_PLAYER_UNITS"] = "Разрешить в рамках персонажей"
 L["ALLOW_ON_PLAYER_UNITS_DESC"] = "Нажмите правой кнопкой мыши на рамку игрока для копирования ссылки на профиль Raider.IO."
@@ -386,6 +385,7 @@ L["WARNING_LOCK_POSITION_FRAME_AUTO"] = "Raider.IO: Для начала вы д�
 --[[ L["WIPE_RWF_MODE_BUTTON"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["WIPE_RWF_MODE_BUTTON_TOOLTIP"] = ""--]] 
+
 
 	ns.L = L
 end

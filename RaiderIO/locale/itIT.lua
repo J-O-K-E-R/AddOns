@@ -1,4 +1,3 @@
--- Generated from CurseForge on Mon Apr 25 06:51:26 UTC 2022
 local ns = select(2, ...) ---@type ns @The addon namespace.
 
 if ns:IsSameLocale("itIT") then
@@ -6,7 +5,7 @@ if ns:IsSameLocale("itIT") then
 
 	L.LOCALE_NAME = "itIT"
 
-L["ALLOW_IN_LFD"] = "Abilita in Ricerca delle Incursioni"
+	L["ALLOW_IN_LFD"] = "Abilita in Ricerca delle Incursioni"
 L["ALLOW_IN_LFD_DESC"] = "Fai clic con il pulsante destro del mouse su gruppi o candidati in Ricerca delle Incusioni per copiare l'URL del Profilo Raider.IO"
 L["ALLOW_ON_PLAYER_UNITS"] = "Consenti su Frame Unità Giocatore"
 L["ALLOW_ON_PLAYER_UNITS_DESC"] = "Fare clic con il tasto destro del mouse sulla finestra di un Giocatore per Copiare l'URL del Profilo Raider.IO."
@@ -407,6 +406,7 @@ L["WARNING_LOCK_POSITION_FRAME_AUTO"] = "RaiderIO: Devi prima Disabilitare \"Pos
 --[[ L["WIPE_RWF_MODE_BUTTON"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["WIPE_RWF_MODE_BUTTON_TOOLTIP"] = ""--]] 
+
 
 	ns.L = L
 end

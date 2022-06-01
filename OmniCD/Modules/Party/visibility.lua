@@ -1,6 +1,7 @@
 local E, L, C = select(2, ...):unpack()
 
 local GetNumGroupMembers = GetNumGroupMembers
+local GetRaidRosterInfo = GetRaidRosterInfo
 local GetUnitName = GetUnitName
 local UnitClass = UnitClass
 local UnitExists = UnitExists
@@ -58,7 +59,7 @@ do
 	local syncTimer
 
 	local function AnchorFix()
-		P.UpdatePosition()
+		P:UpdatePosition()
 		anchorTimer = nil
 	end
 
@@ -121,6 +122,7 @@ do
 		local isInRaid = IsInRaid()
 
 		for i = 1, size do
+
 			local index = not isInRaid and i == size and 5 or i
 			local unit = isInRaid and E.RAID_UNIT[index] or E.PARTY_UNIT[index]
 			local guid = UnitGUID(unit)
@@ -129,6 +131,11 @@ do
 			local isDead = UnitIsDeadOrGhost(unit)
 			local isDeadOrOffline = isDead or not UnitIsConnected(unit)
 			local isUser = guid == E.userGUID
+			local isObserver;
+			if ( P.isInDungeon ) then
+				local _,_, subgroup = GetRaidRosterInfo(i);
+				isObserver = (subgroup or 1) > 1;
+			end
 
 
 
@@ -169,7 +176,8 @@ do
 					bar:RegisterUnitEvent("UNIT_CONNECTION", unit)
 				end
 
-				if force or (not info.isDead and info.isDeadOrOffline and not isDeadOrOffline) then
+				if force or (not info.isDead and info.isDeadOrOffline and not isDeadOrOffline) or (not info.isObserver == isObserver) then
+					info.isObserver = isObserver
 					P.pendingQueue[#P.pendingQueue + 1] = guid
 					P:UpdateUnitBar(guid, true)
 				end
@@ -181,6 +189,7 @@ do
 					P.groupInfo[guid].petGUID = pet
 					P.groupInfo[guid].isDead = isDead
 					P.groupInfo[guid].isDeadOrOffline = isDeadOrOffline
+					P.groupInfo[guid].isObserver = isObserver
 					info = P.groupInfo[guid]
 
 					P:UpdateUnitBar(guid, true)
@@ -210,6 +219,7 @@ do
 					shadowlandsData = {},
 					isDead = isDead,
 					isDeadOrOffline = isDeadOrOffline,
+					isObserver = isObserver,
 				}
 				P.groupInfo[guid] = info
 
@@ -263,7 +273,7 @@ do
 			updateRosterInfo(true)
 		elseif ( isPEW ) then
 			 E.TimerAfter(E.customUF.delay or 0.5, updateRosterInfo, true)
-		elseif ( not rosterTimer) then
+		elseif ( not rosterTimer ) then
 			rosterTimer = E.TimerAfter(E.customUF.delay or 0.5, updateRosterInfo)
 		end
 	end
@@ -312,6 +322,8 @@ function P:PLAYER_ENTERING_WORLD(isInitialLogin, isReloadingUi, isRefresh)
 	self.isUserHidden = not self.test and not E.db.general.showPlayer
 
 	self.isUserDisabled = self.isUserHidden and (not E.db.extraBars.interruptBar.enabled and not E.db.extraBars.raidCDBar.enabled)
+
+	self.effectivePixelMult = nil
 
 	E.Cooldowns:UpdateCombatLogVar()
 	E:SetActiveUnitFrameData()

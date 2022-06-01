@@ -1,11 +1,41 @@
-local L = BigWigs:NewBossLocale("Myza's Oasis", "zhCN")
+local L = BigWigs:NewBossLocale("Zo'phex the Sentinel", "zhCN")
 if not L then return end
 if L then
-	-- L.add_wave_killed = "Add wave killed (%d/%d)"
+	L.zophex_warmup_trigger = "上交……所有……违禁品……"
+end
+
+L = BigWigs:NewBossLocale("The Grand Menagerie", "zhCN")
+if L then
+	L.achillite_warmup_trigger = "狂暴的野兽给您添乱了？解决方法很简单！"
+	L.venza_goldfuse_warmup_trigger = "机会来了！斧子归我了！"
+end
+
+L = BigWigs:NewBossLocale("Myza's Oasis", "zhCN")
+if L then
+	L.add_wave_killed = "击退保安 (%d/%d)"
 end
 
 L = BigWigs:NewBossLocale("Tazavesh Trash", "zhCN")
 if L then
+	L.menagerie_warmup_trigger = "现在是大家期待已久的拍品！传说中被恶魔诅咒的湮灭之刃！"
+	L.soazmi_warmup_trigger = "不好意思打扰了，索·莉亚。希望我们没耽误你什么大事。"
+	L.trading_game = "交易游戏"
+	L.trading_game_desc = "在交易游戏期间使用正确的密码发出警报。"
+	L.custom_on_autotalk = "自动对话"
+	L.custom_on_autotalk_desc = "交易游戏结束后，立即选择正确的密码。"
+	L.password_triggers = {
+		["乳白贝壳？"] = true,
+		["蓝宝石绿洲？"] = true,
+		["翠玉棕榈"] = true,
+		["金色砂砾"] = true,
+		["琥珀日落"] = true,
+		["翡翠海洋"] = true,
+		["红玉宝石"] = true,
+		["青灰岩石"] = true,
+		["苍白花朵"] = true,
+		["猩红匕首"] = true
+	}
+
 	L.interrogation_specialist = "审讯专员"
 	L.portalmancer_zohonn = "传送门操控师佐·霍恩"
 	L.armored_overseer_tracker_zokorss = "装甲监工 / 追踪者佐·刻斯"
@@ -22,6 +52,7 @@ if L then
 	L.commerce_enforcer_commander_zofar = "贸易执行者 / 指挥官佐·法"
 	L.commander_zofar = "指挥官佐·法"
 
+	L.tazavesh_soleahs_gambit = "塔扎维什：索·莉亚的宏图"
 	L.murkbrine_scalebinder = "浊盐缚鳞者"
 	L.murkbrine_shellcrusher = "浊盐碎壳者"
 	L.coastwalker_goliath = "踏滨巨人"

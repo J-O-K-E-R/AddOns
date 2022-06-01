@@ -1,4 +1,3 @@
--- Generated from CurseForge on Mon Apr 25 06:51:29 UTC 2022
 local ns = select(2, ...) ---@type ns @The addon namespace.
 
 if ns:IsSameLocale("ptBR") then
@@ -6,7 +5,7 @@ if ns:IsSameLocale("ptBR") then
 
 	L.LOCALE_NAME = "ptBR"
 
-L["ALLOW_IN_LFD"] = "Permitir no localizador de masmorras."
+	L["ALLOW_IN_LFD"] = "Permitir no localizador de masmorras."
 L["ALLOW_IN_LFD_DESC"] = "Clique-direito em grupos ou candidatos no localizador de masmorras para copiar o URL do perfil Raider.IO."
 L["ALLOW_ON_PLAYER_UNITS"] = "Permitir em retratos de jogador"
 L["ALLOW_ON_PLAYER_UNITS_DESC"] = "Clique-direito no retrato do jogador para copiar a URL do perfil Raider.IO."
@@ -339,6 +338,7 @@ L["WARNING_LOCK_POSITION_FRAME_AUTO"] = "Raider.IO: Você deve primeiro desabili
 L["WARNING_RWF_MODE_ENABLE"] = "|cffFFFFFF%s|r O modo Race World First está ativado. Você pode desativá-lo digitando |cffFFFFFF/raiderio rwf|r."
 L["WIPE_RWF_MODE_BUTTON"] = "Limpar"
 L["WIPE_RWF_MODE_BUTTON_TOOLTIP"] = "Clique para limpar o log do arquivo de armazenamento. Isso fará com que sua interface seja recarregada."
+
 
 	ns.L = L
 end

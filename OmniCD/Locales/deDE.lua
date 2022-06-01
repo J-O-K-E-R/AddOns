@@ -30,6 +30,8 @@ L["Add Spells"] = [=[Zaubersprüche hinzufügen
 ]=]
 L["Add to Alerts"] = [=[Zu Alerts hinzufügen
 ]=]
+--[[Translation missing --]]
+L["Addons with raid frame scaling will also cause the icons to scale."] = "Addons with raid frame scaling will also cause the icons to scale."
 L["Alerts"] = "Alerts"
 L["All user set values will be lost. Do you want to proceed?"] = [=[Alle vom Benutzer eingestellten Werte gehen verloren. Möchtest Du fortfahren?
 ]=]
@@ -236,6 +238,8 @@ L["Extra Bars"] = "Extra Bars"
 --[[Translation missing --]]
 L["Fade In Time"] = "Fade In Time"
 --[[Translation missing --]]
+L["Fade out icons when the raid frame fades out for out of range units."] = "Fade out icons when the raid frame fades out for out of range units."
+--[[Translation missing --]]
 L["Fade Out Time"] = "Fade Out Time"
 --[[Translation missing --]]
 L["Feedback"] = "Feedback"
@@ -382,6 +386,8 @@ L["None of the CD counter skins support modrate. Timers will fluctuate erratical
 --[[Translation missing --]]
 L["Not an OmniCD profile!"] = "Not an OmniCD profile!"
 --[[Translation missing --]]
+L["Not Supported:"] = "Not Supported:"
+--[[Translation missing --]]
 L["Notes"] = "Notes"
 --[[Translation missing --]]
 L["Notify Updates"] = "Notify Updates"
@@ -403,6 +409,8 @@ L["Pixel Perfect"] = "Pixel Perfect"
 L["Pixel Perfect ON."] = "Pixel Perfect ON."
 --[[Translation missing --]]
 L["Player Frame in Party"] = "Player Frame in Party"
+--[[Translation missing --]]
+L["Plugins"] = "Plugins"
 --[[Translation missing --]]
 L["Position"] = "Position"
 --[[Translation missing --]]
@@ -567,6 +575,8 @@ L["Show player spells in the Extra Bars regardless of 'Show Player' setting."] =
 L["Show player's spell bar"] = "Show player's spell bar"
 --[[Translation missing --]]
 L["Show pvp trinket only while in Battlegrounds"] = "Show pvp trinket only while in Battlegrounds"
+--[[Translation missing --]]
+L["Show Range"] = "Show Range"
 --[[Translation missing --]]
 L["Show Spell ID in Tooltips"] = "Show Spell ID in Tooltips"
 --[[Translation missing --]]

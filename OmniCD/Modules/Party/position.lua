@@ -64,6 +64,7 @@ local function FindAnchorFrame(guid)
 		end
 	end
 end
+P.FindAnchorFrame = FindAnchorFrame
 
 function P:SetAnchorPosition(f)
 	f.anchor:ClearAllPoints()
@@ -84,20 +85,24 @@ function P:UpdatePosition()
 	if isColdStartDC then
 		isColdStartDC = nil
 		if IsAddOnLoaded("Blizzard_CompactRaidFrames") and IsAddOnLoaded("Blizzard_CUFProfiles") then
-			self:UpdateCRFCVars()
+			P:UpdateCRFCVars()
 		end
 	end
 
 	P:HideBars()
 
+	local showRange = E.db.general.showRange
+	local effectivePixelMult
 	for guid, info in pairs(P.groupInfo) do
 		local f = info.bar
 		if E.db.position.detached then
+			f:SetParent(UIParent);
 			E.LoadPosition(f)
 			f:Show()
 		else
 			local frame = FindAnchorFrame(guid)
 			if frame then
+				f:SetParent(showRange and frame or UIParent);
 				f:ClearAllPoints()
 				f:SetPoint(P.point, frame, P.relativePoint)
 				f:Show()

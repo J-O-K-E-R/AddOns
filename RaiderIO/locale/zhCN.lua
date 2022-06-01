@@ -1,4 +1,3 @@
--- Generated from CurseForge on Mon Apr 25 06:51:31 UTC 2022
 local ns = select(2, ...) ---@type ns @The addon namespace.
 
 if ns:IsSameLocale("zhCN") then
@@ -6,7 +5,7 @@ if ns:IsSameLocale("zhCN") then
 
 	L.LOCALE_NAME = "zhCN"
 
-L["ALLOW_IN_LFD"] = "允许在地下城查找器里显示"
+	L["ALLOW_IN_LFD"] = "允许在地下城查找器里显示"
 L["ALLOW_IN_LFD_DESC"] = "右键点击地下城查找器上的队伍或申请者来复制Raider.IO人物主页的网址链接。"
 L["ALLOW_ON_PLAYER_UNITS"] = "允许在玩家框体上显示"
 L["ALLOW_ON_PLAYER_UNITS_DESC"] = "右键点击玩家框体来复制Raider.IO人物主页网址"
@@ -381,6 +380,7 @@ L["WARNING_LOCK_POSITION_FRAME_AUTO"] = "Raider.IO：你必须先关闭Raider.IO
 --[[ L["WIPE_RWF_MODE_BUTTON"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["WIPE_RWF_MODE_BUTTON_TOOLTIP"] = ""--]] 
+
 
 	ns.L = L
 end

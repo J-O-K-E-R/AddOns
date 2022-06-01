@@ -91,7 +91,7 @@ BigWigs:AddColors("Tazavesh Trash", {
 	[356404] = "red",
 	[356407] = {"orange","yellow"},
 	[356929] = "orange",
-	[356942] = "purple",
+	[356942] = {"blue","purple","yellow"},
 	[356967] = "purple",
 	[357029] = "blue",
 	[357226] = "red",
@@ -99,4 +99,5 @@ BigWigs:AddColors("Tazavesh Trash", {
 	[357260] = "yellow",
 	[357284] = "red",
 	[357512] = {"blue","red"},
+	["trading_game"] = "green",
 })

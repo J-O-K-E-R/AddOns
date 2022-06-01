@@ -136,9 +136,6 @@ function NP:CVarReset()
 end
 
 function NP:SetCVars()
-	if NP.db.units.ENEMY_NPC.questIcon.enable or NP.db.units.FRIENDLY_NPC.questIcon.enable then
-		NP:SetCVar('showQuestTrackingTooltips', 1)
-	end
 
 	if NP.db.clampToScreen then
 		NP:SetCVar('nameplateOtherTopInset', 0.08)
@@ -175,8 +172,8 @@ function NP:SetCVars()
 	NP:SetCVar('nameplateShowFriendlyTotems', NP.db.visibility.friendly.totems and 1 or 0)
 
 	-- Blizzard bug resets them after reload
-	NP:SetCVar('nameplateOverlapH', E.db.nameplates.overlapH)
-	NP:SetCVar('nameplateOverlapV', E.db.nameplates.overlapV)
+	NP:SetCVar('nameplateOverlapH', NP.db.overlapH)
+	NP:SetCVar('nameplateOverlapV', NP.db.overlapV)
 end
 
 function NP:PLAYER_REGEN_DISABLED()

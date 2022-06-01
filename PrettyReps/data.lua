@@ -2,6 +2,145 @@ _G.PrettyReps = {
 	Structure = 
 	{
 		{
+			factionID = 2414,
+			name = "Shadowlands",
+			children =
+			{		
+				{
+					factionID = 2480,
+					name = "Automa"
+				},
+				{
+					factionID = 2413,
+					name = "Court of Harvesters"
+				},
+				{
+					factionID = 2464,
+					name = "Court of Night"
+				},
+				{
+					factionID = 2470,
+					name = "Death's Advance"
+				},
+				{
+					factionID = 2463,
+					name = "Marasmius"
+				},
+				{
+					factionID = 2472,
+					name = "The Archivists' Codex"
+				},
+				{
+					factionID = 2407,
+					name = "The Ascended"
+				},
+				{
+					factionID = 2439,
+					name = "The Avowed"
+				},
+				{
+					factionID = 2445,
+					name = "The Ember Court",
+					children =
+					{
+						{
+							factionID = 2450,
+							name = "Alexandros Mograine"
+						},
+						{
+							factionID = 2446,
+							name = "Baroness Vashj"
+						},
+						{
+							factionID = 2454,
+							name = "Choofa",
+						},
+						{
+							factionID = 2455,
+							name = "Cryptkeeper Kassir"
+						},
+						{
+							factionID = 2456,
+							name = "Droman Aliothe"
+						},
+						{
+							factionID = 2457,
+							name = "Grandmaster Vole"
+						},
+						{
+							factionID = 2451,
+							name = "Hunt-Captain Korayn"
+						},
+						{
+							factionID = 2458,
+							name = "Kleia and Pelagos"
+						},
+						{
+							factionID = 2447,
+							name = "Lady Moonberry"
+						},
+						{
+							factionID = 2448,
+							name = "Mikanikos"
+						},
+						{
+							factionID = 2461,
+							name = "Plague Deviser Marileth"
+						},
+						{
+							factionID = 2452,
+							name = "Polemarch Adrestes"
+						},
+						{
+							factionID = 2453,
+							name = "Rendle and Cudgelface"
+						},
+						{
+							factionID = 2459,
+							name = "Sika"
+						},
+						{
+							factionID = 2460,
+							name = "Stonehead"
+						},
+						{
+							factionID = 2449,
+							name = "The Countess"
+						},
+					}
+				},
+				{
+					factionID = 2463,
+					name = "Marasmius"
+				},
+				{
+					factionID = 2422,
+					name = "Night Fae"
+				},
+				{
+					factionID = 2462,
+					name = "Stitchmasters"
+				},
+				{
+					factionID = 2478,
+					name = "The Enlightened"
+				},
+				{
+					factionID = 2410,
+					name = "The Undying Army"
+				},
+				{
+					factionID = 2465,
+					name = "The Wild Hunt"
+				},
+				{
+					factionID = 2432,
+					name = "Ve'nari"
+				}
+
+			}
+		},
+		{	
 			factionID = 2104,
 			name = "Battle for Azeroth",
 			children =
@@ -27,11 +166,11 @@ _G.PrettyReps = {
 				},
 				{
 					factionID = 2415,
-					name = "Rajani",
+					name = "Rajani"
 				},
 				{
 					factionID = 2391,
-					name = "Rustbolt Resistance",
+					name = "Rustbolt Resistance"
 				},
 				{
 					factionID = 2162,
@@ -770,6 +909,10 @@ _G.PrettyReps = {
 							name = "Darkspear Trolls"
 						},
 						{
+							factionID = 1352,
+							name = "Huojin Pandaren"
+						},
+						{
 							factionID = 76,
 							name = "Orgrimmar"
 						},
@@ -784,10 +927,6 @@ _G.PrettyReps = {
 						{
 							factionID = 68,
 							name = "Undercity"
-						},
-						{
-							factionID = 1352,
-							name = "Huojin Pandaren"
 						},
 					}
 				},

@@ -376,15 +376,11 @@ function P:UpdateUnitBar(guid, isGRU)
 	f.unit = unit
 	f.anchor.text:SetText(index)
 
-
-
-
-
-
-
-
-
 	f:UnregisterAllEvents()
+
+
+
+
 	if not E.isPreBCC and isntUser then
 		f:RegisterUnitEvent("PLAYER_SPECIALIZATION_CHANGED", unit)
 	end
@@ -393,6 +389,12 @@ function P:UpdateUnitBar(guid, isGRU)
 	end
 	f:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", unit, unitToPetId[unit])
 	f:RegisterUnitEvent("UNIT_CONNECTION", unit)
+
+	if ( info.isObserver ) then
+		f.numIcons = 0;
+		self:RemoveUnusedIcons(f, 1);
+		return;
+	end
 
 	local isInspectedUnit = info.spec
 	local lvl = info.level
@@ -611,6 +613,17 @@ function P:UpdateUnitBar(guid, isGRU)
 	self:RemoveUnusedIcons(f, iconIndex + 1)
 
 	self:UpdateExBar(f, isGRU)
+
+
+	if ( not P.effectivePixelMult ) then
+		local frame = P.FindAnchorFrame(guid);
+		if ( frame ) then
+			P.effectivePixelMult = E.uiUnitFactor / frame:GetEffectiveScale();
+			if ( E.db.general.showRange and not E.db.position.detached ) then
+				P:UpdatePositionValues();
+			end
+		end
+	end
 
 	if isntUser or not self.isUserHidden then
 		self:ApplySettings(f)

@@ -40,6 +40,24 @@ mod:RegisterEnableMob(
 local L = mod:GetLocale()
 if L then
 	------ Streets of Wonder ------
+	L.menagerie_warmup_trigger = "Now for the item you have all been awaiting! The allegedly demon-cursed Edge of Oblivion!"
+	L.soazmi_warmup_trigger = "Excuse our intrusion, So'leah. I hope we caught you at an inconvenient time."
+	L.trading_game = "Trading Game"
+	L.trading_game_desc = "Alerts with the right password during the Trading Game."
+	L.custom_on_autotalk = "Autotalk"
+	L.custom_on_autotalk_desc = "Instantly select the right password after the Trading Game has been completed."
+	L.password_triggers = {
+		["Ivory Shell"] = true,
+		["Sapphire Oasis"] = true,
+		["Jade Palm"] = true,
+		["Golden Sands"] = true,
+		["Amber Sunset"] = true,
+		["Emerald Ocean"] = true,
+		["Ruby Gem"] = true,
+		["Pewter Stone"] = true,
+		["Pale Flower"] = true,
+		["Crimson Knife"] = true
+	}
 	L.interrogation_specialist = "Interrogation Specialist"
 	L.portalmancer_zohonn = "Portalmancer Zo'honn"
 	L.armored_overseer_tracker_zokorss = "Armored Overseer / Tracker Zo'korss"
@@ -57,6 +75,7 @@ if L then
 	L.commander_zofar = "Commander Zo'far"
 
 	------ So'leah's Gambit ------
+	L.tazavesh_soleahs_gambit = "Tazavesh: So'leah's Gambit"
 	L.murkbrine_scalebinder = "Murkbrine Scalebinder"
 	L.murkbrine_shellcrusher = "Murkbrine Shellcrusher"
 	L.coastwalker_goliath = "Coastwalker Goliath"
@@ -68,12 +87,20 @@ if L then
 end
 
 --------------------------------------------------------------------------------
+-- Locals
+--
+
+local password = nil
+
+--------------------------------------------------------------------------------
 -- Initialization
 --
 
 function mod:GetOptions()
 	return {
 		------ Streets of Wonder ------
+		"trading_game",
+		"custom_on_autotalk",
 		-- Interrogation Specialist
 		356031, -- Stasis Beam
 		-- Portalmancer Zo'honn
@@ -82,7 +109,7 @@ function mod:GetOptions()
 		356001, -- Beam Splicer
 		-- Tracker Zo'korss
 		356929, -- Chain of Custody
-		{356942, "TANK"}, -- Lockdown
+		{356942, "DISPEL"}, -- Lockdown
 		-- Ancient Core Hound
 		356404, -- Lava Breath
 		356407, -- Ancient Dread
@@ -109,8 +136,10 @@ function mod:GetOptions()
 		355480, -- Lethal Force
 
 		------ So'leah's Gambit ------
+		-- General
+		358443, -- Blood in the Water
 		-- Murkbrine Scalebinder
-		355132, -- Invigorating Fish Stick
+		{355132, "NAMEPLATEBAR"}, -- Invigorating Fish Stick
 		-- Murkbrine Shellcrusher
 		355057, -- Cry of Mrrggllrrgg
 		-- Coastwalker Goliath
@@ -129,6 +158,7 @@ function mod:GetOptions()
 		357284, -- Reinvigorate
 	}, {
 		------ Streets of Wonder ------
+		["trading_game"] = L.trading_game,
 		[356031] = L.interrogation_specialist,
 		[356324] = L.portalmancer_zohonn,
 		[356001] = L.armored_overseer_tracker_zokorss,
@@ -146,6 +176,7 @@ function mod:GetOptions()
 		[355480] = L.commander_zofar,
 
 		------ So'leah's Gambit ------
+		[358443] = L.tazavesh_soleahs_gambit,
 		[355132] = L.murkbrine_scalebinder,
 		[355057] = L.murkbrine_shellcrusher,
 		[355429] = L.coastwalker_goliath,
@@ -158,7 +189,11 @@ function mod:GetOptions()
 end
 
 function mod:OnBossEnable()
+	password = nil
+
 	------ Streets of Wonder ------
+	self:RegisterEvent("CHAT_MSG_MONSTER_SAY")
+	self:RegisterEvent("GOSSIP_SHOW")
 	self:Log("SPELL_CAST_START", "StasisBeam", 356031)
 	self:Log("SPELL_CAST_START", "EmpoweredGlyphOfRestraint", 356537)
 	self:Log("SPELL_CAST_SUCCESS", "BeamSplicer", 356001)
@@ -166,6 +201,7 @@ function mod:OnBossEnable()
 	self:Log("SPELL_AURA_APPLIED_DOSE", "BeamSplicerApplied", 356011)
 	self:Log("SPELL_CAST_START", "ChainOfCustody", 356929)
 	self:Log("SPELL_CAST_START", "Lockdown", 356942)
+	self:Log("SPELL_AURA_APPLIED", "LockdownApplied", 356943)
 	self:Log("SPELL_CAST_START", "LavaBreath", 356404)
 	self:Log("SPELL_CAST_START", "AncientDread", 356407)
 	self:Log("SPELL_AURA_APPLIED", "AncientDreadApplied", 356407)
@@ -185,6 +221,8 @@ function mod:OnBossEnable()
 	self:Log("SPELL_AURA_REMOVED", "LethalForceRemoved", 355480)
 
 	------ So'leah's Gambit ------
+	self:RegisterEvent("CHAT_MSG_RAID_BOSS_WHISPER")
+	self:RegisterEvent("UNIT_TARGET")
 	self:Log("SPELL_CAST_START", "InvigoratingFishStick", 355132)
 	self:Log("SPELL_CAST_SUCCESS", "InvigoratingFishStickSpawned", 355132)
 	self:Log("SPELL_CAST_START", "CryofMrrggllrrgg", 355057)
@@ -208,6 +246,47 @@ end
 --
 
 ------ Streets of Wonder ------
+
+function mod:CHAT_MSG_MONSTER_SAY(event, msg)
+	if L.password_triggers[msg] then
+		-- Market Trading Game
+		password = msg
+		if self:GetOption("trading_game") then
+			self:Message("trading_game", "green", password, "achievement_dungeon_brokerdungeon")
+			self:PlaySound("trading_game", "info")
+		end
+	elseif msg == L.menagerie_warmup_trigger then
+		-- Menagerie 1st boss Warmup
+		local menagerieModule = BigWigs:GetBossModule("The Grand Menagerie", true)
+		if menagerieModule then
+			menagerieModule:Enable()
+			menagerieModule:Warmup()
+		end
+	elseif msg == L.soazmi_warmup_trigger then
+		-- So'azmi Warmup
+		local soazmiModule = BigWigs:GetBossModule("So'azmi", true)
+		if soazmiModule then
+			soazmiModule:Enable()
+			soazmiModule:Warmup()
+		end
+	end
+end
+
+-- Auto-gossip
+function mod:GOSSIP_SHOW(event)
+	if self:GetOption("custom_on_autotalk") and self:MobId(self:UnitGUID("npc")) == 176564 and password ~= nil then
+		local gossipTbl = self:GetGossipOptions()
+		if gossipTbl then
+			for i = 1, #gossipTbl do
+				if gossipTbl[i] == password then
+					self:UnregisterEvent(event)
+					self:SelectGossipOption(i)
+					break
+				end
+			end
+		end
+	end
+end
 
 -- Interrogation Specialist
 function mod:StasisBeam(args)
@@ -253,6 +332,12 @@ function mod:Lockdown(args)
 	if self:Tank() then
 		self:Message(args.spellId, "purple", CL.casting:format(args.spellName))
 		self:PlaySound(args.spellId, "alert")
+	end
+end
+function mod:LockdownApplied(args)
+	if self:Dispeller("magic", nil, 356942) or self:Dispeller("movement", nil, 356942) then
+		self:TargetMessage(356942, "yellow", args.destName)
+		self:PlaySound(356942, "alert")
 	end
 end
 
@@ -320,8 +405,11 @@ end
 -- Support Officer
 function mod:RefractionShieldApplied(args)
 	if not self:Player(args.destFlags) then
-		self:Message(args.spellId, "yellow", CL.on:format(args.spellName, args.destName))
-		self:PlaySound(args.spellId, "warning")
+		local unit = self:GetUnitIdByGUID(args.sourceGUID)
+		if unit and UnitAffectingCombat(unit) then
+			self:Message(args.spellId, "yellow", CL.on:format(args.spellName, args.destName))
+			self:PlaySound(args.spellId, "warning")
+		end
 	end
 end
 function mod:HardLightBarrier(args)
@@ -411,10 +499,36 @@ end
 
 ------ So'leah's Gambit ------
 
+-- Blood in the Water
+function mod:CHAT_MSG_RAID_BOSS_WHISPER(event, msg)
+	-- the debuff for Blood in the Water (358443) is a hidden aura that does not fire the SPELL_AURA events
+	if msg:find("INV_Pet_BabyShark", nil, true) then
+		self:Bar(358443, 5.25) -- Blood in the Water
+	end
+end
+
 -- Murkbrine Scalebinder
-function mod:InvigoratingFishStick(args)
-	self:Message(args.spellId, "yellow", CL.casting:format(args.spellName))
-	self:PlaySound(args.spellId, "alert")
+do
+	local registeredMobs = {}
+
+	function mod:UNIT_TARGET(event, unit)
+		local sourceGUID = self:UnitGUID(unit)
+		local mobId = self:MobId(sourceGUID)
+		-- we only want to show the initial CD bar if it's the first time the mob has ever targeted anything.
+		-- we're using UNIT_TARGET as a proxy for the Scalebinder entering combat.
+		if mobId == 178141 and not registeredMobs[sourceGUID] then -- Murkbrine Scalebinder
+			registeredMobs[sourceGUID] = true
+			self:NameplateCDBar(355132, 7.2, sourceGUID) -- Invigorating Fish Stick
+		end
+	end
+	function mod:InvigoratingFishStick(args)
+		self:Message(args.spellId, "yellow", CL.casting:format(args.spellName))
+		self:PlaySound(args.spellId, "alert")
+		
+		-- if for some reason this mob isn't registered already, register it so this bar won't be overwritten
+		registeredMobs[args.sourceGUID] = true
+		self:NameplateCDBar(args.spellId, 27.9, args.sourceGUID)
+	end
 end
 function mod:InvigoratingFishStickSpawned(args)
 	self:Message(args.spellId, "red")
@@ -444,6 +558,7 @@ end
 function mod:TidalStomp(args)
 	self:Message(args.spellId, "yellow", CL.casting:format(args.spellName))
 	self:PlaySound(args.spellId, "warning")
+	self:CDBar(args.spellId, 17)
 end
 
 -- Stormforged Guardian

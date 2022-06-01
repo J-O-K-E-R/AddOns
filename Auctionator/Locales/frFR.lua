@@ -8,8 +8,7 @@ L["ALREADY_PURCHASED_X"] = "%s déjà achetés"
 L["ALT_LEFT_CLICK"] = "Alt+Clic gauche"
 L["ALT_RIGHT_CLICK"] = "Alt+Clic droit"
 L["ANY_LOWER"] = "n'importe"
---[[Translation missing --]]
-L["ANY_UPPER"] = "Any"
+L["ANY_UPPER"] = "Tout"
 L["AUCTION"] = "Enchère"
 L["AUCTION_DURATION_12"] = "12 heures"
 L["AUCTION_DURATION_24"] = "24 heures"
@@ -107,6 +106,12 @@ L["CONFIG_SELLING_BAG_SELECT_SHORTCUT"] = "sur un objet de votre inventaire le p
 L["CONFIG_SELLING_BUY_SHORTCUT"] = "sur une vente que vous ne possédez pas pour l'acheter."
 L["CONFIG_SELLING_CANCEL_SHORTCUT"] = "sur l'une de vos ventes pour l'annuler."
 L["CONFIG_SELLING_CATEGORY"] = "Vente"
+--[[Translation missing --]]
+L["CONFIG_SELLING_CONFIRM_LOW_PRICE"] = "Confirm posting items at an unusually low price"
+--[[Translation missing --]]
+L["CONFIG_SELLING_CONFIRM_LOW_PRICE_TOOLTIP_HEADER"] = "Confirm Posting Low Price"
+--[[Translation missing --]]
+L["CONFIG_SELLING_CONFIRM_LOW_PRICE_TOOLTIP_TEXT"] = "Lets you remove the confirmation dialog that appears when posting an item at an unusually low price."
 L["CONFIG_SELLING_DEFAULT_QUANTITY_SUFFIX"] = "Définir sur 0 pour le montant maximal"
 L["CONFIG_SELLING_DEFAULT_QUANTITY_TOOLTIP_HEADER"] = "Quantité à mettre en vente par défaut"
 L["CONFIG_SELLING_DEFAULT_QUANTITY_TOOLTIP_TEXT"] = "Définis le montant par défaut utilisé pour les piles d'un objet. Définir sur 0 pour utiliser le nombre maximal."
@@ -143,12 +148,9 @@ Autrement, seule la première page de résultats est considérée comme pertinen
 L["CONFIG_SELLING_TEXT"] = "Options liées à l'onglet Vente."
 L["CONFIG_SHOPPING_CATEGORY"] = "Achat"
 L["CONFIG_SHOPPING_LIST"] = "Options liées aux listes d'achats."
---[[Translation missing --]]
-L["CONFIG_SHOPPING_LIST_EXCLUDE_RESULTS_FOR_SPEED"] = "Ignore results that aren't on the first page of the current search"
---[[Translation missing --]]
-L["CONFIG_SHOPPING_LIST_EXCLUDE_RESULTS_FOR_SPEED_TOOLTIP_HEADER"] = "Exclude Results for Speed"
---[[Translation missing --]]
-L["CONFIG_SHOPPING_LIST_EXCLUDE_RESULTS_FOR_SPEED_TOOLTIP_TEXT"] = "Ignoring results that are not on the first page may cause some expensive items to not appear. Quantities in the price history and search results will be inaccurate."
+L["CONFIG_SHOPPING_LIST_EXCLUDE_RESULTS_FOR_SPEED"] = "Ignorer les résultats qui ne figurent pas sur la première page de la recherche en cours."
+L["CONFIG_SHOPPING_LIST_EXCLUDE_RESULTS_FOR_SPEED_TOOLTIP_HEADER"] = "Exclure les résultats pour plus de rapidité"
+L["CONFIG_SHOPPING_LIST_EXCLUDE_RESULTS_FOR_SPEED_TOOLTIP_TEXT"] = "Le fait d'ignorer les résultats qui ne figurent pas sur la première page peut faire que certains articles coûteux n'apparaissent pas. Les quantités dans l'historique des prix et les résultats de recherche seront inexactes."
 L["CONFIG_SHOPPING_LIST_FULL_REFRESH"] = "Rafraîchir toutes les pages en cliquant sur le bouton \"Rafraîchir\"."
 L["CONFIG_SHOPPING_LIST_FULL_REFRESH_TOOLTIP_HEADER"] = "Rafraichir toutes les pages"
 L["CONFIG_SHOPPING_LIST_FULL_REFRESH_TOOLTIP_TEXT"] = "Seule la première page est nécessaire pour déterminer le prix le plus bas. Si vous n'êtes intéressé que par le prix le plus bas et n'avez pas besoin de voir le reste des résultats, vous pouvez désactiver cette option pour gagner en rapidité."
@@ -167,6 +169,10 @@ L["CONFIG_UNDERCUT_SCAN_NOT_LIFO_TOOLTIP_HEADER"] = "Vérification des prix de l
 L["CONFIG_UNDERCUT_SCAN_NOT_LIFO_TOOLTIP_TEXT"] = "Laissez cette option activée pour inclure toutes les enchères de mascottes et d'équipement lors de la vérification des prix. Désactivez cette option pour exclure les mascottes et l'équipement."
 L["CONFIG_VENDOR_TOOLTIP"] = "Afficher les prix au marchand"
 L["CONFIRM"] = "Confirmer"
+--[[Translation missing --]]
+L["CONFIRM_POST_BELOW_VENDOR"] = "You can make more gold selling this to a vendor. Are you sure you want to post at that price?"
+--[[Translation missing --]]
+L["CONFIRM_POST_LOW_PRICE"] = "The price of %s looks a bit low. Are you sure you want to post at that price?"
 L["CONTRIBUTORS_HEADER"] = "Contributeurs"
 L["COPY_ITEM_ADDED"] = "%s copié vers %s"
 L["COPY_NO_LIST_SELECTED"] = "Impossible de copier l'objet. Aucune liste d'achats sélectionnée."
@@ -416,40 +422,23 @@ L["SPLASH_9105_FEATURES_2"] = "Ajout d'un bouton permettant de déplacer la boî
 L["SPLASH_9105_FEATURES_3"] = "Option permettant d'afficher le bénéfice au lieu du coût de l'artisanat dans la fenêtre d'artisanat lorsque l'hôtel des ventes est ouvert."
 L["SPLASH_9105_FEATURES_HEADER"] = "Fonctionnalités récentes"
 L["SPLASH_9106_DESCRIPTION"] = "Un nouveau champ de recherche rapide et un historique des recherches dans l'onglet \"Achats\" remanié."
---[[Translation missing --]]
-L["SPLASH_9106_FEATURES_1"] = "Search box and recent searches panel in the Shopping tab."
---[[Translation missing --]]
-L["SPLASH_9106_FEATURES_2"] = "Button to sort a shopping list's terms alphabetically."
---[[Translation missing --]]
-L["SPLASH_9106_FEATURES_3"] = "Option to show not found search terms in a shopping list's results."
---[[Translation missing --]]
-L["SPLASH_9106_FEATURES_HEADER"] = "New Features"
---[[Translation missing --]]
-L["SPLASH_9108_DESCRIPTION"] = "The main feature of this release is the newer Retail appearance now working on WoW classic (Burning Crusade and Vanilla). Almost all retail features work on classic. There are the usual bugfixes on all versions of Auctionator."
---[[Translation missing --]]
-L["SPLASH_9108_FEATURES_1"] = "Searching shopping lists and doing quick searches."
---[[Translation missing --]]
-L["SPLASH_9108_FEATURES_10"] = "Auctions with a bid on them require confirming to cancel."
---[[Translation missing --]]
-L["SPLASH_9108_FEATURES_11"] = "Dialog to confirm purchases, and avoid costly mistakes."
---[[Translation missing --]]
-L["SPLASH_9108_FEATURES_2"] = "Can buy items and see all auctions on sale, grouped by price and stack"
---[[Translation missing --]]
-L["SPLASH_9108_FEATURES_3"] = "Can see item price histories."
---[[Translation missing --]]
-L["SPLASH_9108_FEATURES_4"] = "Full scan to get price data for tooltips."
---[[Translation missing --]]
-L["SPLASH_9108_FEATURES_5"] = "Can post items in the Selling tab (with automatic undercuts and configurable stack sizes)."
---[[Translation missing --]]
-L["SPLASH_9108_FEATURES_6"] = "Can use the mouse wheel to quickly change stack size inputs."
---[[Translation missing --]]
-L["SPLASH_9108_FEATURES_7"] = "Max number messages for stacks on Selling tab are clickable to set max values."
---[[Translation missing --]]
-L["SPLASH_9108_FEATURES_8"] = "A reagents search button on the crafting window when the Auction House is open with total crafting costs displayed."
---[[Translation missing --]]
-L["SPLASH_9108_FEATURES_9"] = "Can cancel own auctions, both inside the buying screens and on the dedicated tab with an undercut scan."
---[[Translation missing --]]
-L["SPLASH_9108_FEATURES_HEADER"] = "Features of the classic release"
+L["SPLASH_9106_FEATURES_1"] = "Boîte de recherche et panneau des recherches récentes dans l'onglet Achats."
+L["SPLASH_9106_FEATURES_2"] = "Bouton permettant de trier les termes d'une liste de courses par ordre alphabétique."
+L["SPLASH_9106_FEATURES_3"] = "Option permettant d'afficher les termes de recherche non trouvés dans les résultats d'une liste d'achats."
+L["SPLASH_9106_FEATURES_HEADER"] = "Nouvelles fonctionnalités"
+L["SPLASH_9108_DESCRIPTION"] = "La principale caractéristique de cette version est la nouvelle apparence de vente au détail qui fonctionne maintenant sur WoW classic (Burning Crusade et Vanilla). Presque toutes les fonctionnalités de détail fonctionnent sur classic. Il y a les corrections de bogues habituelles sur toutes les versions de Auctionator."
+L["SPLASH_9108_FEATURES_1"] = "Consulter des listes de courses et faire des recherches rapides."
+L["SPLASH_9108_FEATURES_10"] = "Les enchères avec une offre doivent être confirmées pour être annulées."
+L["SPLASH_9108_FEATURES_11"] = "Dialogue pour confirmer les achats, et éviter les erreurs coûteuses."
+L["SPLASH_9108_FEATURES_2"] = "Possibilité d'acheter des articles et de voir toutes les enchères en vente, regroupées par prix et par pile"
+L["SPLASH_9108_FEATURES_3"] = "Peut voir l'historique des prix des articles."
+L["SPLASH_9108_FEATURES_4"] = "Scan complet pour obtenir des données de prix dans les infobulles."
+L["SPLASH_9108_FEATURES_5"] = "Possibilité d'afficher des articles dans l'onglet Vente (avec réduire la valeur automatique et taille des piles configurable)"
+L["SPLASH_9108_FEATURES_6"] = "Vous pouvez utiliser la molette de la souris pour modifier rapidement les entrées de la taille de la pile."
+L["SPLASH_9108_FEATURES_7"] = "Les messages relatifs au nombre maximal de piles dans l'onglet Vente sont cliquables pour définir les valeurs maximales."
+L["SPLASH_9108_FEATURES_8"] = "Un bouton de recherche de réactifs sur la fenêtre d'artisanat lorsque l'hôtel des ventes est ouvert avec les coûts de fabrication totaux affichés."
+L["SPLASH_9108_FEATURES_9"] = "Possibilité d'annuler ses propres enchères, à la fois dans les écrans d'achat et dans l'onglet dédié avec un scan de sous-cotation."
+L["SPLASH_9108_FEATURES_HEADER"] = "Caractéristiques de la version classique"
 L["SPLASH_HIDE_MESSAGE"] = "Cacher jusqu'à la prochaine mise à jour"
 L["SPLASH_SCREEN_HEADER"] = "Bienvenue sur Auctionator"
 L["STACK_AUCTION_INFO"] = "%s pour %s (à %s chacun)"
@@ -474,8 +463,7 @@ L["TOO_MANY_SEARCH_RESULTS"] = "Trop de résultats de recherche. Limitation des 
 L["TOO_SMALL_PERCENTAGE"] = "%%  doit être >= 0 (fournis  %s)"
 L["TOTAL_ITEMS_COLORED"] = "|cFFAAAAFF %s objet(s)|r au total"
 L["TOTAL_ON_SALE"] = "Total en vente :  %s"
---[[Translation missing --]]
-L["TOTAL_PENDING"] = "(%s pending)"
+L["TOTAL_PENDING"] = "(%s en attente)"
 L["TOTAL_PRICE"] = "Prix total :"
 L["TRANSLATORS_BRAZIL_PORTUGUEUSE"] = "Portugais du Brésil"
 L["TRANSLATORS_FRENCH"] = "Français"
