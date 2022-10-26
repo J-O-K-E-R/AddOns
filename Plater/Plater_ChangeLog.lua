@@ -7,7 +7,82 @@ local _
 function Plater.GetChangelogTable()
 	if (not Plater.ChangeLogTable) then
 		Plater.ChangeLogTable = {
-		
+			
+			{1666724473,  "Backend Change", "October 25th, 2022", "Updates to hit animations.", "Terciob"},
+			{1666724473,  "Backend Change", "October 24st, 2022", "Several updates for Dragonflight compatibility.", "cont1nuity"},
+			{1666724473,  "Backend Change", "October 22st, 2022", "Adding shadow priest execute for WotLK.", "cont1nuity"},
+			{1666724473,  "Backend Change", "October 21st, 2022", "Retail toc bump for Dragonflight pre-patch.", "cont1nuity"},
+			{1666724473,  "Backend Change", "October 19th, 2022", "Use Plater internal class colors.", "Terciob"},
+			{1666724473,  "Bug Fix", "October 17th, 2022", "Hide target glow on personal bar if the healthbar is disabled.", "cont1nuity"},
+			{1666724473,  "Backend Change", "October 17th, 2022", "Quest info cache now holds 'groupAmount' and uses lowest amount from group for the top level default, while 'amount' in the quest-data contains the players value.", "cont1nuity"},
+			{1666724473,  "Bug Fix", "October 13th, 2022", "Fixing CVar restore not working properly in some cases.", "cont1nuity"},
+			{1666724473,  "Bug Fix", "October 12th, 2022", "Fixing an issue with mod/script options not working properly.", "cont1nuity"},
+			{1666724473,  "Bug Fix", "October 11th, 2022", "Fixing aura types auto tracking for Dragonflight.", "cont1nuity"},
+			
+			{1665384519,  "Bug Fix", "October 10th, 2022", "Fixing Plater not working on Classic Era.", "cont1nuity"},
+			
+			{1665344387,  "Bug Fix", "October 9th, 2022", "Fixing labels on some options not showing up properly.", "Terciob"},
+			{1665344387,  "Bug Fix", "October 9th, 2022", "Hiding test cast bars properly after test mode turned off.", "cont1nuity"},
+			{1665344387,  "Backend Change", "October 6th, 2022", "Limit Ghost Auras to enemy units.", "cont1nuity"},
+			{1665344387,  "Backend Change", "October 2nd, 2022", "Fixing spec recognition on dual spec change in WotLK.", "cont1nuity"},
+			{1665344387,  "Backend Change", "September 28th, 2022", "Adding cache for campaign quests: 'Plater.QuestCacheCampaign'.", "Terciob"},
+			{1665344387,  "Backend Change", "September 21st, 2022", "Added Hunter Kill Shot to execute detection.", "cont1nuity"},
+			
+			{1662995032,  "Bug Fix", "September 21st, 2022", "Ghost Auras should be shown on the debuff frame.", "cont1nuity"},
+			{1662995032,  "Bug Fix", "September 21st, 2022", "WotLK tank recognition in raids is again based on raid roles instead of party role assignments.", "cont1nuity"},
+			{1662995032,  "Bug Fix", "September 20th, 2022", "WotLK DK death runes should now show properly.", "cont1nuity"},
+			{1662995032,  "Backend Change", "September 19th, 2022", "Throttling 'UPDATE_SHAPESHIFT_FORM' event to prevent unnecessary updates.", "cont1nuity"},
+			{1662995032,  "Backend Change", "September 13th, 2022", "Support for Druid combo points in WotLK.", "cont1nuity"},
+			{1662995032,  "Bug Fix", "September 13th, 2022", "Fixing a data leak on mod re-compile when changing mod options.", "cont1nuity"},
+			{1662995032,  "Backend Change", "September 12th, 2022", "Adding support for Dragonflight: Evoker resources, new UNIT_AURA event data, bugfixes.", "cont1nuity"},
+			{1662995032,  "Bug Fix", "September 7th, 2022", "Adding 'Decimation' talent to execute detection for Warlocks in WotLK.", "cont1nuity"},
+			{1662054080,  "New Feature", "September 7th, 2022", "Adding 'Decimation' talent to Warlock execute for WotLK.", "cont1nuity"},
+			{1662995032,  "Bug Fix", "September 4th, 2022", "Fixing tank spec detection for WotLK.", "cont1nuity"},
+			
+			{1662054080,  "New Feature", "September 1st, 2022", "Adding options for swipe texture on Buff Special.", "cont1nuity"},
+			{1662054080,  "Bug Fix", "August 29th, 2022", "Fixing mod Load Conditions.", "cont1nuity"},
+			{1662054080,  "Backend Change", "August 28th, 2022", "Support for aura modRate.", "cont1nuity"},
+			{1662054080,  "Bug Fix", "August 28th, 2022", "Fixing tank/spec detection in WotLK. Using your selected talent role now.", "cont1nuity"},
+			{1662054080,  "Backend Change", "August 25th, 2022", "Update on default 'Performance Units'.", "cont1nuity"},
+			
+			{1661327305,  "Backend Change", "August 24th, 2022", "Fixing load on TBC.", "cont1nuity"},
+			{1661327305,  "Backend Change", "August 18th, 2022", "New profiling in development with extended data. Use '/plater profstartadvance' to use it.", "cont1nuity"},
+			{1661327305,  "Bug Fix", "August 18th, 2022", "Casts which result in a channeled spell should now re-trigger scripts 'On Hide' code for cast and 'On Show' for the channel when the cast is finished and channel starts.", "cont1nuity"},
+			{1661327305,  "Backend Change", "August 17th, 2022", "Adding new option for namepalte 'Larger Scale' CVar.", "cont1nuity"},
+			{1661327305,  "Bug Fix", "August 16th, 2022", "Questie support restored for WotLK beta.", "cont1nuity"},
+			{1661327305,  "Bug Fix", "August 16th, 2022", "Rune 'ready animation' could cause additonal cooldown texts to not scale correctly and become larger over time.", "cont1nuity"},
+			{1661327305,  "Bug Fix", "August 16th, 2022", "Cast Icon customization will now properly show the icon when moving the cast bar above the health bar through offsets.", "cont1nuity"},
+			{1661327305,  "New Feature", "August 14th, 2022", "Added 'Forced Blizzard Nameplate Units' which will always show blizzard nameplates. Use 'Plater.AddForceBlizzardNameplateUnits(npcID)' / 'Plater.RemoveForceBlizzardNameplateUnits(npcID)' in a mod to add/remove them to the list.", "cont1nuity"},
+			{1661327305,  "New Feature", "August 13th, 2022", "Added 'Performance Units' which won't have auras, threat and other high usage things enabled. Use 'Plater.AddPerformanceUnits(npcID)' / 'Plater.RemovePerformanceUnits(npcID)' in a mod to add/remove them to the list.", "Terciob"},
+			{1661327305,  "New Feature", "August 12th, 2022", "Added Spells and New Scripts to support Season 4 for M+ Dungeons.", "Terciob"},
+			{1661327305,  "Bug Fix", "July 31st, 2022", "Fixing profile import from wago stash.", "cont1nuity"},
+			{1661327305,  "Backend Change", "July 28th, 2022", "Cache players threat raw percent and absolute threat values on unitFrame 'namePlateThreatRawPercent' and 'namePlateThreatValue' respectively.", "cont1nuity"},
+			{1661327305,  "Bug Fix", "July 25th, 2022", "Bug fix for broken DBM or BW installations for Boss-Mod support registration.", "cont1nuity"},
+			{1661327305,  "New Feature", "July 25th, 2022", "Support for WotLK DK runes (Combo Point settings).", "cont1nuity"},
+			
+			{1657813887,  "Backend Change", "July 14th, 2022", "On Arena and Battleground, faction and spec icons are now hidden while in combat.", "Terciob"},
+			{1657813887,  "Backend Change", "July 14th, 2022", "Dispellable buffs won't show if its duration is bigger than 2 minutes.", "Terciob"},
+
+			{1654159795,  "Bug Fix", "June 4th, 2022", "Update Ghost Auras when adding or removing.", "cont1nuity"},
+			{1654159795,  "Backend Change", "June 2nd, 2022", "Adding separate color setting for 'channelled cast'.", "cont1nuity"},
+			
+			{1654070113,  "Backend Change", "June 1st, 2022", "Retail toc update.", "cont1nuity"},
+			{1654070113,  "Backend Change", "May 31st, 2022", "Casts which result in a channeled spell should now re-trigger scripts 'On Show' code when the chast is finished and channel starts.", "cont1nuity"},
+			{1654070113,  "Backend Change", "May 21st, 2022", "Library updates.", "Terciob"},
+			{1654070113,  "Backend Change", "May 19th, 2022", "Changing the way CVars are stored / restored to counter some restoring issues and adding '/plater cvars <cvar>' command for debug information.", "cont1nuity"},
+			{1654070113,  "Bug Fix", "May 19th, 2022", "Fixing an issue with plater resources (Combo Points) not showing the correct amount sometimes.", "cont1nuity"},
+			{1654070113,  "New Feature", "May 16th, 2022", "Adding 'Wago Imports' options tab to show companion app updates and imports.", "cont1nuity"},
+			
+			{1652214160,  "Bug Fix", "May 10th, 2022", "Fix CVar store and restore for 'boolean' type CVars.", "cont1nuity"},
+			{1652214160,  "Bug Fix", "May 10th, 2022", "Hide Cast Target on interrupts.", "cont1nuity"},
+			{1652214160,  "Backend Change", "May 4th, 2022", "Adding new option to invert swipe on Buff Special.", "cont1nuity"},
+			{1652214160,  "Backend Change", "May 4th, 2022", "Adding Masque support to cast bar icons (experimental).", "cont1nuity"},
+			{1652214160,  "Bug Fix", "May 2nd, 2022", "Fixing load times of Buff Special tab with larger spell lists.", "cont1nuity"},
+			{1652214160,  "Backend Change", "May 2nd, 2022", "Fixing CVar load behavior to ensure they are restored properly.", "cont1nuity"},
+			{1652214160,  "Backend Change", "May 2nd, 2022", "Adding some SotFO units to 'ForceInCombatUnits'.", "cont1nuity"},
+			{1652214160,  "Bug Fix", "April 29th, 2022", "Fixing an issue with spellID not being set properly on casts.", "cont1nuity"},
+			{1652214160,  "Bug Fix", "April 27th, 2022", "Fixing an issue 'Plater.SetNameplateScale' not working properly when Custom Strata Channels were disabled.", "cont1nuity"},
+			
 			{1650994470,  "Bug Fix", "April 27th, 2022", "Fixing an issue with Auras not updating properly under certain conditions.", "cont1nuity"},
 			{1650994470,  "Bug Fix", "April 27th, 2022", "Fixing an issue with Buff Special usage without proper IDs.", "cont1nuity"},
 			{1650994470,  "New Feature", "April 26th, 2022", "Adding 'Decimal Timer' settings to Auras and Buff Special.", "cont1nuity"},
