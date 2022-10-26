@@ -1,4 +1,4 @@
-local L = BigWigs:NewBossLocale("Halion", "esES") or BigWigs:NewBossLocale("Halion", "esMX")
+local L = BigWigs:NewBossLocale("Halion", "esES")
 if not L then return end
 if L then
 	L.engage_trigger = "Vuestro mundo está al borde de la aniquilación."
@@ -18,7 +18,7 @@ if L then
 	L.meteor_warning_message = "¡Lanzando Golpe de meteorito!"
 end
 
-L = BigWigs:NewBossLocale("Toravon the Ice Watcher", "esES") or BigWigs:NewBossLocale("Toravon the Ice Watcher", "esMX")
+L = BigWigs:NewBossLocale("Toravon the Ice Watcher", "esES")
 if L then
 	L.whiteout_bar = "Tormenta de nieve %d"
 	L.whiteout_message = "¡Tormenta de nieve %d pronto!"
@@ -26,7 +26,7 @@ if L then
 	L.freeze_message = "Congelado"
 end
 
-L = BigWigs:NewBossLocale("Archavon the Stone Watcher", "esES") or BigWigs:NewBossLocale("Archavon the Stone Watcher", "esMX")
+L = BigWigs:NewBossLocale("Archavon the Stone Watcher", "esES")
 if L then
 	--L.stomp_message = "Stomp - Charge Inc!"
 	--L.stomp_warning = "Possible Stomp in ~5sec!"
@@ -35,7 +35,7 @@ if L then
 	--L.charge_desc = "Warn about Charge on players."
 end
 
-L = BigWigs:NewBossLocale("Malygos", "esES") or BigWigs:NewBossLocale("Malygos", "esMX")
+L = BigWigs:NewBossLocale("Malygos", "esES")
 if L then
 	--L.sparks = "Spark Spawns"
 	--L.sparks_desc = "Warns on Power Spark spawns."
@@ -73,37 +73,26 @@ if L then
 	--L.phase3_message = "Phase 3!"
 end
 
-L = BigWigs:NewBossLocale("Sartharion", "esES") or BigWigs:NewBossLocale("Sartharion", "esMX")
+L = BigWigs:NewBossLocale("Sartharion", "esES")
 if L then
-	--L.engage_trigger = "It is my charge to watch over these eggs. I will see you burn before any harm comes to them!"
-
-	--L.tsunami = "Flame Wave"
-	--L.tsunami_desc = "Warn for churning lava and show a bar."
-	--L.tsunami_warning = "Wave in ~5sec!"
-	--L.tsunami_message = "Flame Wave!"
-	--L.tsunami_cooldown = "Wave Cooldown"
-	--L.tsunami_trigger = "The lava surrounding %s churns!"
-
-	--L.breath_cooldown = "Breath Cooldown"
+	L.engage_trigger = "Mi tarea es cuidar de estos huevos. ¡Arderéis antes de hacerles el más mínimo daño!"
+	L.tsunami_trigger = "¡La lava se arremolina alrededor de %s!"
+	L.twilight_trigger_vesperon = "¡Un discípulo de Vesperon aparece en el Crepúsculo!"
+	L.twilight_trigger_shadron = "¡Un discípulo de Shadron aparece en el Crepúsculo!"
 
 	--L.drakes = "Drake Adds"
 	--L.drakes_desc = "Warn when each drake add will join the fight."
-	--L.drakes_incomingsoon = "%s landing in ~5sec!"
 
-	--L.twilight = "Twilight Events"
-	--L.twilight_desc = "Warn what happens in the Twilight."
-	--L.twilight_trigger_tenebron = "Tenebron begins to hatch eggs in the Twilight!"
-	--L.twilight_trigger_vesperon = "A Vesperon Disciple appears in the Twilight!"
-	--L.twilight_trigger_shadron = "A Shadron Acolyte appears in the Twilight!"
-	--L.twilight_message_tenebron = "Eggs hatching"
-	--L.twilight_message = "%s add up!"
-
-	--L.shadron = "Shadron"
-	--L.tenebron = "Tenebron"
-	--L.vesperon = "Vesperon"
+	-- Adds
+	L.shadron = "Shadron"
+	L.tenebron = "Tenebron"
+	L.vesperon = "Vesperon"
+	L.lava_blaze = "Llamarada de lava" -- NPC 30643
+	L.acolyte_shadron = "Acólito de Shadron" -- NPC 31218
+	L.acolyte_vesperon = "Acólito de Vesperon" -- NPC 31219
 end
 
-L = BigWigs:NewBossLocale("Emalon the Storm Watcher", "esES") or BigWigs:NewBossLocale("Emalon the Storm Watcher", "esMX")
+L = BigWigs:NewBossLocale("Emalon the Storm Watcher", "esES")
 if L then
 	--L.overcharge_message = "A minion is overcharged!"
 	--L.overcharge_bar = "Explosion"
@@ -112,13 +101,13 @@ if L then
 	--L.custom_on_overcharge_mark_desc = "Place the {rt8} marker on the overcharged minion, requires promoted or leader."
 end
 
-L = BigWigs:NewBossLocale("Koralon the Flame Watcher", "esES") or BigWigs:NewBossLocale("Koralon the Flame Watcher", "esMX")
+L = BigWigs:NewBossLocale("Koralon the Flame Watcher", "esES")
 if L then
 	--L.breath_bar = "Breath %d"
 	--L.breath_message = "Breath %d soon!"
 end
 
-L = BigWigs:NewBossLocale("Onyxia", "esES") or BigWigs:NewBossLocale("Onyxia", "esMX")
+L = BigWigs:NewBossLocale("Onyxia", "esES")
 if L then
 	--L.phase = "Phases"
 	--L.phase_desc = "Warn for phase changes."

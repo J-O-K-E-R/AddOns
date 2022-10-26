@@ -5,6 +5,8 @@
 local mod, CL = BigWigs:NewBoss("Lady Deathwhisper", 631, 1625)
 if not mod then return end
 mod:RegisterEnableMob(36855, 37949, 38010, 37890, 38009, 38135) --Deathwhisper, Cult Adherent, Reanimated Adherent, Cult Fanatic, Reanimated Fanatic, Deformed Fanatic
+-- mod:SetEncounterID(1100)
+-- mod:SetRespawnTime(30)
 mod.toggleOptions = {"adds", 70842, 71204, 71426, 71289, {71001, "FLASH"}, "berserk"}
 mod.optionHeaders = {
 	adds = CL.phase:format(1),
@@ -115,7 +117,7 @@ end
 
 function mod:Touch(args)
 	if (args.amount or 1) > 1 then
-		self:StackMessage(71204, args.destName, args.amount, "orange")
+		self:StackMessageOld(71204, args.destName, args.amount, "orange")
 	end
 	self:Bar(71204, 7, L["touch_bar"], 71204)
 end

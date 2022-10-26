@@ -12,20 +12,22 @@ app.asset = function(path)
 end
 -- Consolidated debug-only print with preceding precise timestamp
 app.PrintDebug = function(...)
+	app.DEBUG_PRINT_LAST = GetTimePreciseSec();
 	if app.DEBUG_PRINT then print(GetTimePreciseSec(),...) end
 end
--- Consolidated debug-only print with precise duration since last successful print
+-- Consolidated debug-only print with precise frame duration since last successful print
 app.PrintDebugPrior = function(...)
 	if app.DEBUG_PRINT then
 		if app.DEBUG_PRINT_LAST then
-			print(GetTimePreciseSec() - app.DEBUG_PRINT_LAST,...)
+			local frames = math.ceil(1 / (GetTimePreciseSec() - app.DEBUG_PRINT_LAST));
+			print("Stutter @",frames,...)
 		else
 			print(0,...)
 		end
 		app.DEBUG_PRINT_LAST = GetTimePreciseSec();
 	end
 end
---[[] Performance Tracking section
+--[[ Performance Tracking section ]
 (function()
 	app.__perf = {};
 	app.PrintPerf = function()
@@ -64,7 +66,9 @@ local events = {};
 local _ = CreateFrame("FRAME", nil, UIParent, BackdropTemplateMixin and "BackdropTemplate");
 _:SetScript("OnEvent", function(self, e, ...)
 -- app.PrintDebug(e,...);
-(rawget(events, e) or print)(...); end);
+(rawget(events, e) or print)(...);
+-- app.PrintDebugPrior(e);
+end);
 _:SetPoint("BOTTOMLEFT", UIParent, "TOPLEFT", 0, 0);
 _:SetSize(1, 1);
 _:Show();
@@ -87,11 +91,11 @@ app.SetScript = function(self, ...)
 		_:SetScript(scriptName, nil);
 	end
 end
+-- Setup the callback tables since they are heavily used
+app.__callbacks = {};
+app.__combatcallbacks = {};
 -- Triggers a timer callback method to run on the next game frame with the provided params; the method can only be set to run once per frame
 local function Callback(method, ...)
-	if not app.__callbacks then
-		app.__callbacks = {};
-	end
 	if not app.__callbacks[method] then
 		app.__callbacks[method] = ... and {...} or true;
 		-- print("Callback:",method, ...)
@@ -206,7 +210,7 @@ function app:ShowPopupDialogWithEditBox(msg, text, callback, timeout)
 		self.editBox:SetWidth(240);
 		self.editBox:HighlightText();
 	end;
-	popup.text = (msg or "")..app.L["REPORT_TIP"];
+	popup.text = (msg or "");
 	popup.callback = callback;
 	StaticPopup_Hide ("ALL_THE_THINGS_EDITBOX");
 	StaticPopup_Show ("ALL_THE_THINGS_EDITBOX");
@@ -288,5 +292,5 @@ function app:ShowPopupDialogWithMultiLineEditBox(text, onclick)
 	ATTEditBox:Show()
 end
 function app:ShowPopupDialogToReport(reportReason, text)
-	app:ShowPopupDialogWithEditBox((reportReason or "Missing Data") .. app.L["PLEASE_REPORT_MESSAGE"], text);
+	app:ShowPopupDialogWithEditBox((reportReason or "Missing Data").."\n"..app.L["PLEASE_REPORT_MESSAGE"]..app.L["REPORT_TIP"], text);
 end

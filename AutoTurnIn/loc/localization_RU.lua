@@ -15,11 +15,11 @@ privateTable.L = setmetatable({
 	
 	["questTypeLabel"] = "Задания", 
 	["questTypeAll"] = "все",
-    ["questTypeList"] = "ежедневные",
-    ["questTypeExceptDaily"] = "кроме ежедневных",
-    ["TrivialQuests"]="Брать 'серые' квесты",
+        ["questTypeList"] = "ежедневные",
+        ["questTypeExceptDaily"] = "кроме ежедневных",
+        ["TrivialQuests"]="Брать 'серые' квесты",
 	["ShareQuestsLabel"] = "Предлагать задание группе",
-    ["CompleteOnly"] = "Только завершать",
+        ["CompleteOnly"] = "Только завершать",
 
 	["lootTypeLabel"]="задания с наградами",
 	["lootTypeFalse"]="не сдавать",
@@ -41,6 +41,8 @@ privateTable.L = setmetatable({
 	["ReviveBattlePetQ"]="Мне бы хотелось воскресить и исцелить моих боевых питомцев.",
 	["ReviveBattlePetA"]="За это надо бы и заплатить немножко.",
 	
+	["DismissKyrianStewardLabel"]="Dismiss Kyrian Steward.",
+	
 	["The Jade Forest"]="Нефритовый лес",
 	["Scared Pandaren Cub"]="Испуганный юный пандарен",
 	
@@ -61,6 +63,7 @@ privateTable.L = setmetatable({
 	["relictoggle"]="Отключить автолут Релика",
 	["artifactpowertoggle"]="Отключить автолут Силы Артефакта",
 	["ivechosen"]="выбрал первую опцию за тебя",
+	["ivechosenfive"]="выбрал пятый вариант для вас",
 	["norewardsettings"]="Не выбраны желаемые награды. Автоодевание отключено.",
 	["ignorenpc"]="Игнорировать персонажа",
 	["cantstopignore"]="Этого персонажа нельзя перестать игнорировать",

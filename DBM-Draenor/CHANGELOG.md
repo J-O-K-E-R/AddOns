@@ -1,6 +1,6 @@
 # <DBM> World Bosses (WoD)
 
-## [r62](https://github.com/DeadlyBossMods/DBM-WoD/tree/r62) (2022-05-16)
-[Full Changelog](https://github.com/DeadlyBossMods/DBM-WoD/compare/r61...r62) [Previous Releases](https://github.com/DeadlyBossMods/DBM-WoD/releases)
+## [r66](https://github.com/DeadlyBossMods/DBM-WoD/tree/r66) (2022-10-25)
+[Full Changelog](https://github.com/DeadlyBossMods/DBM-WoD/compare/r65...r66) [Previous Releases](https://github.com/DeadlyBossMods/DBM-WoD/releases)
 
-- Update icon methods  
+- Bump TOC files  

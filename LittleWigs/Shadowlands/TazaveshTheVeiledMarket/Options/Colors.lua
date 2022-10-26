@@ -1,6 +1,6 @@
 
 BigWigs:AddColors("Zo'phex the Sentinel", {
-	[345770] = "blue",
+	[345770] = {"blue","green"},
 	[345990] = {"blue","green","red"},
 	[346204] = {"blue","yellow"},
 	[347949] = {"blue","orange"},
@@ -20,17 +20,23 @@ BigWigs:AddColors("The Grand Menagerie", {
 
 BigWigs:AddColors("Mailroom Mayhem", {
 	[346286] = "yellow",
+	[346296] = "green",
 	[346742] = "red",
 	[346947] = "yellow",
 	[346962] = {"blue","orange"},
+	["delivery_portal"] = "cyan",
 })
 
 BigWigs:AddColors("Myza's Oasis", {
 	[350916] = "red",
 	[350919] = "orange",
 	[350922] = "orange",
+	[353706] = "red",
+	[353783] = "yellow",
+	[353835] = "orange",
 	[355438] = "red",
 	[356482] = "yellow",
+	[359028] = "red",
 	["stages"] = "cyan",
 })
 
@@ -44,10 +50,10 @@ BigWigs:AddColors("So'azmi", {
 BigWigs:AddColors("Hylbrande", {
 	[346116] = "purple",
 	[346766] = "cyan",
-	[346957] = {"blue","orange"},
-	[346971] = "yellow",
+	[346959] = {"blue","orange"},
 	[347094] = "red",
 	[353312] = "yellow",
+	["vault_purifier"] = "yellow",
 })
 
 BigWigs:AddColors("Timecap'n Hooktail", {
@@ -61,7 +67,7 @@ BigWigs:AddColors("Timecap'n Hooktail", {
 
 BigWigs:AddColors("So'leah", {
 	[350796] = "orange",
-	[350804] = "blue",
+	[350804] = {"blue","green"},
 	[351086] = "yellow",
 	[351096] = "orange",
 	[351119] = "red",
@@ -90,6 +96,7 @@ BigWigs:AddColors("Tazavesh Trash", {
 	[356324] = "red",
 	[356404] = "red",
 	[356407] = {"orange","yellow"},
+	[356548] = "yellow",
 	[356929] = "orange",
 	[356942] = {"blue","purple","yellow"},
 	[356967] = "purple",

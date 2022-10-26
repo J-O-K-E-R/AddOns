@@ -10,6 +10,14 @@ L['covenant_required'] = '需要 %s 誓盟成員。'
 L['anima_channeled'] = '靈魄連接到 %s'
 
 -------------------------------------------------------------------------------
+--------------------------------- SHADOWLANDS ---------------------------------
+-------------------------------------------------------------------------------
+
+L['squirrels_note'] = nil
+L['options_icons_squirrels'] = '{achievement:14731}'
+L['options_icons_squirrels_desc'] = nil
+
+-------------------------------------------------------------------------------
 --------------------------------- ARDENWEALD ----------------------------------
 -------------------------------------------------------------------------------
 
@@ -92,6 +100,31 @@ L['glitterdust_note'] = '亞登曠野的生物或許看起來很溫馴，不過�
 L['lost_book_note'] = '把這本遺失的書交回給在記憶林地的 {npc:165867}'
 L['options_icons_faerie_tales'] = '{achievement:14788}'
 L['options_icons_faerie_tales_desc'] = '顯示 {achievement:14788} 成就中遺失的書的位置'
+
+L['options_icons_wild_hunting'] = '{achievement:14779}'
+L['options_icons_wild_hunting_desc'] = '顯示 {achievement:14779} 成就所需的野獸位置'
+
+L['options_icons_wildseed_spirits'] = nil
+L['options_icons_wildseed_spirits_desc'] = nil
+
+L['divine_martial_spirit'] = nil
+L['divine_dutiful_spirit'] = nil
+L['divine_prideful_spirit'] = nil
+L['divine_untamed_spirit'] = nil
+
+L['martial_spirit_label'] = '{item:178874}'
+L['dutiful_spirit_label'] = '{item:178881}'
+L['prideful_spirit_label'] = '{item:178882}'
+L['untamed_spirit_label'] = '{item:177698}'
+
+L['0x_wildseed_root_grain'] = '0個 {item:176832}'
+L['1x_wildseed_root_grain'] = '1個 {item:176832}'
+L['2x_wildseed_root_grain'] = '2個或3個 {item:176832}'
+L['4x_wildseed_root_grain'] = '4個 {item:176832}'
+
+L['soulshape_cat_note'] = nil
+L['soulshape_corgi_note'] = nil
+L['soulshape_well_fed_cat_note'] = nil
 
 -------------------------------------------------------------------------------
 ----------------------------------- BASTION -----------------------------------
@@ -232,6 +265,8 @@ L['options_icons_hymns_desc'] = '顯示 {achievement:14768} 成就中頌歌的�
 L['stratios_note'] = '就算是規模再小的戰爭，也要慎重以對。等你準備好了，就展示你的隊伍。'
 L['thenia_note'] = '這裡有如此廣大的開放平原。正好適合拿來戰鬥。你準備好了嗎？'
 L['zolla_note'] = '我們非常嚴肅看待我們的防禦。無論大小，我們都致力於善用每一分資源，保護昇靈堡。'
+
+L['soulshape_otter_soul'] = nil
 
 -------------------------------------------------------------------------------
 ----------------------------------- KORTHIA -----------------------------------
@@ -408,6 +443,32 @@ L['dundley_note'] = '我會一路過關斬將，直到獲得我應得的尊敬�
 L['maximillian_note'] = '我等了這麼多年，就是想要一個好對手。贏家擁有所有戰利品！'
 L['rotgut_note'] = '腐腸、殘渣。多出來的。你要打。'
 
+L['ashen_ink_label'] = '{item:183690}'
+L['ashen_ink_note'] = nil
+
+L['jagged_bonesaw_label'] = '{item:183692}'
+L['jagged_bonesaw_note'] = nil
+
+L['discarded_grimoire_label'] = '{item:183394}'
+L['discarded_grimoire_note'] = nil
+
+L['sorcerers_blade_label'] = '{item:183397}'
+L['sorcerers_blade_note'] = nil
+
+L['mucosal_pigment_label'] = '{item:183691}'
+L['mucosal_pigment_note'] = nil
+
+L['amethystine_dye_label'] = '{item:183401}'
+L['amethystine_dye_note'] = nil
+
+L['ritualists_mantle_label'] = '{item:183399}'
+L['ritualists_mantle_note'] = nil
+
+L['options_icons_crypt_couture'] = '{achievement:14763}'
+L['options_icons_crypt_couture_desc'] = nil
+
+L['soulshape_saurid_note'] = nil
+
 -------------------------------------------------------------------------------
 --------------------------------- REVENDRETH ----------------------------------
 -------------------------------------------------------------------------------
@@ -483,6 +544,15 @@ L['inquisitor_note'] = '把100個 {currency:1816} 交給 {npc:160248} 有機會�
 L['options_icons_inquisitors'] = '{achievement:14276}'
 L['options_icons_inquisitors_desc'] = '顯示 {achievement:14276} 成就中審判官的位置。'
 
+L['bell_of_shame_note'] = nil
+L['atonement_crypt_label'] = nil
+L['atonement_crypt_note'] = nil
+L['atonement_crypts_opened'] = nil
+L['atonement_crypt_key_label'] = '{item:172957}'
+L['atonement_crypt_key_note'] = nil
+L['options_icons_crypt_kicker'] = '{achievement:14273}'
+L['options_icons_crypt_kicker_desc'] = nil
+
 L['broken_mirror'] = '破損的鏡子'
 L['broken_mirror_note'] = '每天會有三個為一組的破損的鏡子被啟動. 使用 {item:181363} 來維修每一個鏡子並且可以打開裡面的 |cFFFFFD00被遺忘的箱子|r'
 L['broken_mirror_crypt'] = '在墓穴內'
@@ -494,6 +564,10 @@ L['broken_mirror_61819'] = '在一個小房間內的一樓'
 L['broken_mirror_61827'] = '在一個小房間內'
 L['options_icons_broken_mirror'] = '破損的鏡子'
 L['options_icons_broken_mirror_desc'] = '顯示破損的鏡子的位置'
+
+L['soulshape_chicken_note'] = nil
+L['spectral_feed_label'] = '{item:187811}'
+L['spectral_feed_note'] = nil
 
 -------------------------------------------------------------------------------
 ----------------------------------- THE MAW -----------------------------------
@@ -672,15 +746,95 @@ L['tormentors_note'] = [[
 {item:185972} 每個禮拜可以被拾取一次, 內含有50個 {currency:1906}.
 ]]
 
+L['options_icons_mawsworn_blackguard'] = '{achievement:14742}'
+L['options_icons_mawsworn_blackguard_desc'] = '{achievement:14742} 成就所需的 淵誓黑衣衛 位置'
+
+L['mawsworn_blackguard'] = '淵誓黑衣衛'
+L['mawsworn_blackguard_note'] = '簡單的選取一個潛行的 {npc:183173}:'
+
+L['options_icons_covenant_assaults'] = 'Covenant Assaults'
+L['options_icons_covenant_assaults_desc'] = 'Rewards for covenant assaults'
+
+L['assault_sublabel_US'] = nil
+L['assault_sublabel_EU'] = nil
+L['assault_sublabel_CN'] = nil
+
+L['necrolord_assault'] = '{quest:63543}'
+L['necrolord_assault_note'] = nil
+L['necrolord_assault_quantity_note'] = nil
+L['venthyr_assault'] = '{quest:63822}'
+L['venthyr_assault_note'] = nil
+L['venthyr_assault_quantity_note'] = nil
+L['night_fae_assault'] = '{quest:63823}'
+L['night_fae_assault_note'] = nil
+L['night_fae_assault_quantity_note'] = nil
+L['kyrian_assault'] = '{quest:63824}'
+L['kyrian_assault_note'] = nil
+L['kyrian_assault_quantity_note1'] = nil
+L['kyrian_assault_quantity_note2'] = nil
+
+-------------------------------------------------------------------------------
+---------------------- TORGHAST, THE TOWER OF THE DAMNED ----------------------
+-------------------------------------------------------------------------------
+
+L['torghast_the_tower_of_the_damned'] = nil
+L['torghast_reward_sublabel'] = nil
+L['torghast_boss_note'] = nil
+L['torghast_vendor_note'] = nil
+L['torghast_reward_note'] = nil
+L['torghast_soulshape_note'] = nil
+L['colossal_umbrahide_mawrat_note'] = nil
+
+L['skoldus_hall'] = nil
+L['fracture_chambers'] = nil
+L['the_soulforges'] = nil
+L['coldheart_interstitia'] = nil
+L['mortregar'] = nil
+L['the_upper_reaches'] = nil
+L['adamant_vaults'] = nil
+L['twisting_corridors'] = nil
+L['the_jailers_gauntlet'] = nil
+
+L['torghast_layer1'] = nil
+L['torghast_layer2'] = nil
+L['torghast_layer3'] = nil
+L['torghast_layer4'] = nil
+L['torghast_layer6'] = nil
+L['torghast_layer8'] = nil
+
+L['phantasma_note'] = nil
+L['bloating_fodder_note'] = nil
+L['flawless_master_note'] = nil
+L['tower_ranger_note'] = nil
+
+L['the_jailers_gauntlet_note'] = nil
+
+L['the_box_of_many_things'] = nil
+L['the_box_of_many_things_note'] = nil
+L['many_many_things_section'] = nil
+
+L['the_runecarver'] = '{npc:164937}'
+L['clearing_the_fog_suffix'] = nil
+
 -------------------------------------------------------------------------------
 -------------------------------- ZERETH MORTIS --------------------------------
 -------------------------------------------------------------------------------
 
-L['camber_alcove_note'] = nil
-L['dormant_alcove_note'] = nil
-L['fulgore_alcove_note'] = nil
-L['rondure_alcove_note'] = nil
-L['repertory_alcove_note'] = nil
+local HIDDEN_ALCOVE = [[
+要到達 |cFFFFFD00%s密室|r:
+
+1. 完成澤瑞斯莫提斯的第6章主線任務.
+2. 找到 |cFFFFFD00%s密室排列|r %s.
+3. 在 |cFFFFFD00鳴響山嶽|r, 殺掉有 {spell:362651} 的怪物或站在白池中來獲得60點 {npc:183569}.
+4. 使用育生棲地內的 {npc:184329} 來到達內部樞位. (需要30點 {npc:183569})
+5. 使用 {npc:184485} 來到達 %s密室. (需要30點 {npc:183569})
+]]
+
+L['camber_alcove_note'] = string.format(HIDDEN_ALCOVE, '弧形', '弧形', '位於 |cFFFFFD00最終樞位|r 的建築物後面', '弧形')
+L['dormant_alcove_note'] = string.format(HIDDEN_ALCOVE, '沉睡', '沉睡', '位於 |cFFFFFD00鳴響山嶽|r', '沉睡')
+L['fulgor_alcove_note'] = string.format(HIDDEN_ALCOVE, '絢爛', '絢爛', '位於 |cFFFFFD00鳴響山嶽|r', '絢爛')
+L['rondure_alcove_note'] = string.format(HIDDEN_ALCOVE, '圓弧', '圓弧', '位於 |cFFFFFD00第三樞位|r 平台上', '圓弧')
+L['repertory_alcove_note'] = string.format(HIDDEN_ALCOVE, '儲備', '儲備', '位於 |cFFFFFD00陸地生物貯藏所|r 山洞內', '儲備')
 
 L['corrupted_architect_note'] = '攻擊 {npc:183958} 和 {npc:183961} 來啟動稀有.'
 L['dune_dominance_note'] = '{achievement:15392} 成就所需的三個稀有菁英都重生在這裡'
@@ -722,7 +876,7 @@ L['forgotten_protovault_note'] = '僅在世界任務 {wq:蛙蛙} 期間內可取
 L['grateful_boon_note'] = '無法飛行時很難到達, 使用 {spell:300728} 或 {spell:111771} 來翻過山, 撫摸此區域的共12個生物 {npc:185293} 會給予寶藏'
 L['library_vault_note'] = '在詞彙石窟點擊石板直到你找到正確的 {spell:362062} 增益來開啟寶庫.'
 L['mistaken_ovoid_note'] = '在次元瀑布洞穴內, 你需要在澤瑞斯莫提斯的綠色區域取得 5個 {item:190239} 然後回來交給 {npc:185280} 他會挪開一點讓你拿到寶藏.'
-L['ripened_protopear_note'] = '開始 {quest:64641} 任務鏈來獲得進入繁盛鑄造場. 在裡面收集5個 {spell:367180} (綠色雲)並且帶給 {npc:185416} 來為她授粉'
+L['ripened_protopear_note'] = '開始 {quest:64641} 任務鏈來獲得進入繁盛鑄造場. 在裡面一個一個收集 {spell:367180} (綠色雲) 5次並且帶給 {npc:185416} 來為她授粉'
 L['sphere_treasure_note'] = '小心的從球體往上跳直到你到達寶藏處.'
 L['submerged_chest_note'] = '吸收南邊的 |cFFFFFD00危險的能量球|r, 然後和寶藏旁邊的 |cFFFFFD00被遺忘的幫浦|r 互動'
 L['symphonic_vault_note'] = '檢查 {npc:183998} 後會聽到4種聲音的序列. 房間內每個 {npc:183950} 會撥放一種聲音. 依照對應的順序和它們互動會解鎖寶藏.'
@@ -746,15 +900,34 @@ L['provis_cache_note'] = [[
 L['prying_eye_discovery'] = '發現窺探之眼'
 L['prying_eye_discovery_note'] = '當飛行解鎖時會比較容易到達'
 L['pulp_covered_relic'] = '被泥巴覆蓋的聖物'
-L['requisites_originator_note'] = nil
-L['rondure_cache'] = nil
-L['rondure_cache_note'] = nil
+L['requisites_originator_note'] = [[
+一臺每周會給你不同獎勵的機器
+
+• {spell:366667} = 附魔材料
+• {spell:366668} = 靈魄
+• {spell:366669} = 暗語
+• {spell:366670} = 創始微粒 + {item:189179} (機率)
+• {spell:366671} = 暗語/微粒/靈魄
+• {spell:366672} = 暗語裝備
+]]
+L['rondure_cache'] = '朗杜爾貯藏'
+L['rondure_cache_note'] = '在 |cFFFFFD00圓弧密室|r 內的跳躍謎題最上方的可互動融爐'
 L['sandworn_chest'] = '砂蝕寶箱'
 L['sandworn_chest_note'] = '從附近的怪物上拾取5個 {item:190198} 來組合成 {item:190197}.'
-L['sand_piles'] = nil
-L['sand_piles_note'] = nil
-L['torn_ethereal_drape'] = nil
-L['torn_ethereal_drape_note'] = nil
+L['sand_piles'] = '沙堆'
+L['sand_piles_note'] = [[
+所有的沙堆都在隱藏的沉睡密室裡可以被找到. 每個沙堆需要一個 {item:189863}, 可以在此區域的其他寶藏中找到:
+
+• 統御儲物箱
+• 殞落寶庫
+• 失竊的聖物
+• 失竊卷軸
+• 隱沒寶箱
+• 交響樂寶庫
+• 波動之葉
+]]
+L['torn_ethereal_drape'] = '破損的乙太披氅'
+L['torn_ethereal_drape_note'] = '在 |cFFFFFD00絢爛密室|r 內可以找到. 啟動 |cFFFFFD00自主機控制臺|r, 然後騎著 {npc:183565} 來到達天花板.'
 
 L['cache_avian_nest'] = '鳥巢'
 L['cache_cypher_bound'] = '暗語束縛箱子'
@@ -791,9 +964,9 @@ L['schematic_ineffable_skitterer_note'] = '自殺! 是真的, 你只有在靈魂
 L['schematic_leaping_leporid_note'] = '在一顆漂浮的樹頂端可以找到'
 L['schematic_mawdapted_raptora_note'] = '低機率從 |cFFFFFD00無盡沙海|r 內的 {npc:181412} 掉落'
 L['schematic_microlicid_note'] = '在漂浮樹最低的枝幹上, 被蓋在一些葉子下方'
-L['schematic_omnipotential_core_note'] = nil
+L['schematic_omnipotential_core_note'] = '可以在 |cFFFFFD00圓弧密室|r 內找到. 設計圖隱藏在房間西南側的拱門的上沿後方.'
 L['schematic_prototickles_note'] = '在稀有 {npc:180978} 上方的藤蔓內，和一個漂浮的鍊子相連著'
-L['schematic_prototype_fleetpod_note'] = nil
+L['schematic_prototype_fleetpod_note'] = '可以在 |cFFFFFD00拱型密室|r 內找到. 和 {npc:184900} 互動來開始一個小遊戲. 指揮蝸牛穿過5個環並且不碰到 {npc:185455} 來贏得設計圖.'
 L['schematic_raptora_swooper_note'] = '在轉化廳內找到'
 L['schematic_resonant_echo_note'] = '有機率在 {item:189172} 內找到'
 L['schematic_russet_bufonid_note'] = '有機率在 {item:187780} 巔峰箱內找到'
@@ -844,6 +1017,15 @@ L['patient_bufonid_note_day7'] = '從帷幕市集地城的 {npc:180114} 購買1�
 L['lost_comb'] = '遺失的蜂巢'
 L['soulshape_penguin_note'] = '在漂浮的熔爐上方, 和 {npc:185279} 互動來取得物品'
 
+L['coreless_automa'] = '無核自主機'
+L['coreless_automa_note'] = '裝備一個有 {spell:364480} 的裝備會讓 |cFFFFFD00波克波可|r 控制自主機時不用花費能量, 這樣可以讓你更快取得此成就.'
+L['coreless_automa_warning'] = '|cFFFF8C00請等待自主機真的跟隨你了再告訴波克波可離開自主機, 如此可以避免發生需要你重登的錯誤.|r'
+
+L['olea_manu'] = '清單中的價格須使用 {currency:1979}'
+
+L['venaris_fate_sublabel'] = nil
+L['venaris_fate_note'] = nil
+
 L['options_icons_code_creature'] = '{achievement:15211}'
 L['options_icons_code_creature_desc'] = '顯示 {achievement:15211} 成就的生物位置'
 L['options_icons_concordances'] = '知識索引'
@@ -862,5 +1044,7 @@ L['options_icons_zereth_caches'] = '暗語箱'
 L['options_icons_zereth_caches_desc'] = '顯示暗語箱可能的位置'
 L['options_icons_shrouded_cyphers'] = '隱蔽的暗語寶箱'
 L['options_icons_shrouded_cyphers_desc'] = '顯示隱蔽的暗語寶箱可能的位置. 必須裝備一件 {spell:364478} 裝備'
-L['options_icons_mawsworn_supply_cache'] = nil
-L['options_icons_mawsworn_supply_cache_desc'] = nil
+L['options_icons_mawsworn_supply_cache'] = '淵誓補給箱'
+L['options_icons_mawsworn_supply_cache_desc'] = '顯示淵誓補給箱可能的位置'
+L['options_icons_coreless_automa'] = '{achievement:15542}'
+L['options_icons_coreless_automa_desc'] = '顯示 {achievement:15542} 成就所需無核自主機的位置.'

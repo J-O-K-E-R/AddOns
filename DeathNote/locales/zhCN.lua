@@ -146,7 +146,7 @@ L["You were killed by"] = "你死于"
 L["Your pet"] = "你的宠物"
 
 --@end-non-debug@
---[===[@debug@
+--[==[@debug@
 L = L or {}
 L["< 1min"] = "小于1分钟"
 L["< 5sec"] = "小于5秒钟"
@@ -286,4 +286,4 @@ L["Value must be a number"] = "值必须是数字"
 L["X offset"] = "横向位移"
 L["Y offset"] = "纵向位移"
 L["Yes"] = "是"
---@end-debug@]===]
+--@end-debug@]==]

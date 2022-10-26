@@ -11,6 +11,14 @@ L['covenant_required'] = 'Requiere ser miembro de la curia %s.'
 L['anima_channeled'] = 'ánima canalizada a %s.'
 
 -------------------------------------------------------------------------------
+--------------------------------- SHADOWLANDS ---------------------------------
+-------------------------------------------------------------------------------
+
+L['squirrels_note'] = 'Has de usar la emoción /amor en alimañas que no sean mascotas de combate'
+L['options_icons_squirrels'] = '{achievement:14731}'
+L['options_icons_squirrels_desc'] = 'Sitios donde aparecen las alimañas para el logro {achievement:14731}.'
+
+-------------------------------------------------------------------------------
 --------------------------------- ARDENWEALD ----------------------------------
 -------------------------------------------------------------------------------
 
@@ -93,6 +101,53 @@ L['glitterdust_note'] = 'Puede que las criaturas de Ardenweald parezcan dóciles
 L['lost_book_note'] = 'Devuelve este libro perdido al {npc:165867} en la Arboleda de la Memoria.'
 L['options_icons_faerie_tales'] = '{achievement:14788}'
 L['options_icons_faerie_tales_desc'] = 'Muestra dónde están los libros perdidos para el logro {achievement:14788}.'
+
+L['options_icons_wild_hunting'] = '{achievement:14779}'
+L['options_icons_wild_hunting_desc'] = 'Sitios de Ardenweald para las bestias del logro {achievement:14779}.'
+
+L['options_icons_wildseed_spirits'] = 'Espíritus de Semillas Silvestres'
+L['options_icons_wildseed_spirits_desc'] = 'Recompensas de los espíritus de semillas silvestres.'
+
+L['divine_martial_spirit'] = 'Espíritu Marcial Divino'
+L['divine_dutiful_spirit'] = 'Espíritu Obediente Divino'
+L['divine_prideful_spirit'] = 'Espíritu Orgulloso Divino'
+L['divine_untamed_spirit'] = 'Espíritu Indómito Divino'
+
+L['martial_spirit_label'] = '{item:178874}'
+L['dutiful_spirit_label'] = '{item:178881}'
+L['prideful_spirit_label'] = '{item:178882}'
+L['untamed_spirit_label'] = '{item:177698}'
+
+L['0x_wildseed_root_grain'] = '0x {item:176832}'
+L['1x_wildseed_root_grain'] = '1x {item:176832}'
+L['2x_wildseed_root_grain'] = '2x o 3x {item:176832}'
+L['4x_wildseed_root_grain'] = '4x {item:176832}'
+
+L['soulshape_cat_note'] = [[
+Selecciona al {npc:181694} y haz /calmar.
+
+Puede aparecer en el centro de las copas de los 6 Grandes Árboles a lo largo de |cFFFFFF00Ardenweald|r:
+
+• |cFFFFFF00Pantano Cantosueño|r
+• |cFFFFFF00Cuenca Brillocascada|r
+• |cFFFFFF00Tirna Vaal|r
+• |cFFFFFF00Cuenca Invernal|r
+• |cFFFFFF00Arboleda del Duramen|r
+• |cFFFFFF00Filo de la Garra|r
+]]
+L['soulshape_corgi_note'] = [[
+Selecciona a {npc:174608} y haz /acariciar.
+
+La opción Corgi estará disponible en cuanto hables con {npc:181582}.
+]]
+L['soulshape_well_fed_cat_note'] = [[
+1. Recoge {item:187811} from |cffffff00Refugioscuro|r.
+2. Selecciona a {npc:182093} y haz /maullar.
+3. |cFFFF8C00Ma'oh te maulla hambriento|r.
+4. Selecciona a {npc:182093} y usa el {item:187811}.
+
+La opción Alma de Gato (Bien Alimentado) estará disponible en cuanto hables con {npc:181582}.
+]]
 
 -------------------------------------------------------------------------------
 ----------------------------------- BASTION -----------------------------------
@@ -233,6 +288,8 @@ L['options_icons_hymns_desc'] = 'Muestra dónde están los himnos para el logro 
 L['stratios_note'] = 'Incluso las pequeñas batallas se deben librar con honor y cuidado. Presenta a tu equipo cuando lo tengas todo listo.'
 L['thenia_note'] = 'Qué llanuras más maravillosas. Un lugar glorioso para combatir. ¿Listo?'
 L['zolla_note'] = 'Nos tomamos muy en serio nuestras defensas. Seamos grandes o pequeños, nuestra máxima es mantener y formar los recursos que fortalecen Bastión.'
+
+L['soulshape_otter_soul'] = 'Selecciona al {npc:181682} y haz /abrazo.'
 
 -------------------------------------------------------------------------------
 ----------------------------------- KORTHIA -----------------------------------
@@ -409,6 +466,32 @@ L['dundley_note'] = '¡Lucharé hasta alcanzar la victoria y por fin recibiré e
 L['maximillian_note'] = 'Llevo mucho tiempo esperando a un rival digno. ¡El botín será para el vencedor!'
 L['rotgut_note'] = 'Pudretripa. Sobras. Más partes. Lucha.'
 
+L['ashen_ink_label'] = '{item:183690}'
+L['ashen_ink_note'] = 'Botín aleatorio de {npc:157125}.'
+
+L['jagged_bonesaw_label'] = '{item:183692}'
+L['jagged_bonesaw_note'] = 'Botín aleatorio de {npc:159105}.'
+
+L['discarded_grimoire_label'] = '{item:183394}'
+L['discarded_grimoire_note'] = 'Completa la misión {quest:62297} que te da {npc:174020}.'
+
+L['sorcerers_blade_label'] = '{item:183397}'
+L['sorcerers_blade_note'] = 'Completa la misión {quest:62317} que te da la |cFFFFFF00Nota de Hechicero|r dentro de la |cFFFFFF00Cámara de Almas|r. Baja las escaleras y a la derecha de la estantería.'
+
+L['mucosal_pigment_label'] = '{item:183691}'
+L['mucosal_pigment_note'] = 'Cae de cualquier baba, gota, moco, raro, o gigante junto a la |cFFFFFF00Casa de las Plagas|r o en la zona alrededor de {npc:162727}.'
+
+L['amethystine_dye_label'] = '{item:183401}'
+L['amethystine_dye_note'] = 'Completa la misión {quest:62320} que te da {npc:174120}.'
+
+L['ritualists_mantle_label'] = '{item:183399}'
+L['ritualists_mantle_note'] = 'Completa la misión {quest:62308} que te da {npc:172813}. Requiere 3 personas para invocar a {npc:174127}.'
+
+L['options_icons_crypt_couture'] = '{achievement:14763}'
+L['options_icons_crypt_couture_desc'] = 'Sitios donde encontrar las personalizaciones del disfraz de Acólito Necrótico para el logro {achievement:14763}.'
+
+L['soulshape_saurid_note'] = 'En una cueva pequeña. Selecciona el {npc:182105} y haz /reverencia.'
+
 -------------------------------------------------------------------------------
 --------------------------------- REVENDRETH ----------------------------------
 -------------------------------------------------------------------------------
@@ -484,6 +567,15 @@ L['inquisitor_note'] = 'Entrega 100 {currency:1816} al {npc:160248} para tener u
 L['options_icons_inquisitors'] = 'Inquisidores'
 L['options_icons_inquisitors_desc'] = 'Muestra dónde están los inquisidores para el logro {achievement:14276}.'
 
+L['bell_of_shame_note'] = 'Cada 30 minutos aparecerá un fantasma aleatorio junto a la {npc:176006}.\n\nRepara la {npc:176056} por 30 {currency:1820} y entonces toca la campana para recibir un buff del fantasma activo.\n\nUno de los fantasmas, {npc:176043}, te da {spell:346708} que incrementa las probabilidades de encontrar {item:172957} en los alrededores de |cFFFFFD00Salas de la Expiación|r.'
+L['atonement_crypt_label'] = 'Cripta de Expiación'
+L['atonement_crypt_note'] = 'Abre una |cFFFFFD00Cripta de Expiación|r usando una {item:172957}.'
+L['atonement_crypts_opened'] = 'Criptas de Expiación abiertas'
+L['atonement_crypt_key_label'] = '{item:172957}'
+L['atonement_crypt_key_note'] = '{item:172957} puede caer como botín de los enemigos en el área de las |cFFFFFD00Criptas de Expiación|r area.\n\n{npc:158902}\n{npc:176109}\n{npc:158894}\n{npc:156911}\n{npc:158910}\n{npc:176121}\n{npc:176114}\n{npc:156909}\n{npc:156256}\n{npc:176124}\n{npc:156260}\n{npc:159027}\n{npc:158897}\n{npc:176116}\n{npc:158908}\n{npc:176122}\n\nLas mayores probabilidades las tiene {npc:158892}.'
+L['options_icons_crypt_kicker'] = '{achievement:14273}'
+L['options_icons_crypt_kicker_desc'] = 'Muestra dónde están las Criptas de Expiación para el logro {achievement:14273}.'
+
 L['broken_mirror'] = 'Espejo Roto'
 L['broken_mirror_note'] = 'Cada día estará activo un grupo de tres espejos rotos. Usa un {item:181363} para reparar cada espejo y abrir el |cFFFFFD00Cofre Olvidado|r de dentro.'
 L['broken_mirror_crypt'] = 'Dentro de una cripta.'
@@ -495,6 +587,21 @@ L['broken_mirror_61819'] = 'En una habitación pequeña en el piso inferior.'
 L['broken_mirror_61827'] = 'En una habitación pequeña.'
 L['options_icons_broken_mirror'] = 'Espejos Rotos'
 L['options_icons_broken_mirror_desc'] = 'Muestra dónde están los espejos rotos.'
+
+L['soulshape_chicken_note'] = [[
+1. Recoge {item:187811} de |cffffff00Refugioscuro|r.
+2. Selecciona al {npc:181660} y haz /gallina.
+3. |cFFFF8C00Alma Perdida te cacarea hambrienta|r.
+4. Selecciona al {npc:181660} y usa el {item:187811}.
+]]
+L['spectral_feed_label'] = '{item:187811}'
+L['spectral_feed_note'] = [[
+{item:187811} se usa para alimentar el {npc:181660} de |cffffff00Revendreth|r para el {item:187813}.
+
+{item:187811} se usa para alimentar a {npc:182093} en |cFFFFFF00Ardenweald|r para el |cFF00FF00[Alma de Gato Bien Alimentada]|r.
+
+|cFFFF8C00{item:187811} tiene 10 minutos de duración y 60 minutos de reaparición|r.
+]]
 
 -------------------------------------------------------------------------------
 ----------------------------------- THE MAW -----------------------------------
@@ -673,22 +780,95 @@ Los eventos de torturadores aparecen cada 2 horas impares en punto. Aparecerán 
 El {item:185972} se puede despojar una vez a la semana y contiene 50 {currency:1906}.
 ]]
 
+L['options_icons_mawsworn_blackguard'] = '{achievement:14742}'
+L['options_icons_mawsworn_blackguard_desc'] = 'Muestra dónde están los Guardanegro Jurafauces para el logro {achievement:14742}.'
+
+L['mawsworn_blackguard'] = 'Guardanegro Jurafauces'
+L['mawsworn_blackguard_note'] = 'Forma fácil de seleccionar a un {npc:183173} en sigilo.'
+
+L['options_icons_covenant_assaults'] = 'Asaltos de las Curias'
+L['options_icons_covenant_assaults_desc'] = 'Recompensas para los asaltos de las curias.'
+
+L['assault_sublabel_US'] = 'Los asaltos cambian los Martes a las 8 AM PDT y los Viernes a las 8 PM PDT'
+L['assault_sublabel_EU'] = 'Los asaltos cambian los Miércoles a las 8 AM CET y los Sábados a las 8 PM CET'
+L['assault_sublabel_CN'] = 'Los asaltos cambian los Martes a las 7 AM CST y los Viernes a las 7 PM CST'
+
+L['necrolord_assault'] = '{quest:63543}'
+L['necrolord_assault_note'] = 'El {item:185992} sólo se puede conseguir una vez por asalto.'
+L['necrolord_assault_quantity_note'] = 'Alijos Jurafauces abiertos.'
+L['venthyr_assault'] = '{quest:63822}'
+L['venthyr_assault_note'] = 'El {item:185990} sólo se puede conseguir una vez por asalto.'
+L['venthyr_assault_quantity_note'] = 'Objetos usados.'
+L['night_fae_assault'] = '{quest:63823}'
+L['night_fae_assault_note'] = 'El {item:185991} sólo se puede conseguir una vez por asalto.'
+L['night_fae_assault_quantity_note'] = 'Alijos Ocultos de Falla abiertos.'
+L['kyrian_assault'] = '{quest:63824}'
+L['kyrian_assault_note'] = 'El {item:185993} sólo se puede conseguir una vez por asalto.'
+L['kyrian_assault_quantity_note1'] = 'Astuto encontrado.'
+L['kyrian_assault_quantity_note2'] = 'Baila cerca de forjas.'
+
+-------------------------------------------------------------------------------
+---------------------- TORGHAST, THE TOWER OF THE DAMNED ----------------------
+-------------------------------------------------------------------------------
+
+L['torghast_the_tower_of_the_damned'] = 'Torghast, la Torre de los Condenados'
+L['torghast_reward_sublabel'] = '|cFFFF8C00Recompensas compartidas entre muchas alas|r'
+L['torghast_boss_note'] = 'Soltado por varios bosses a lo largo de |cffffff00Torghast, la Torre de los Condenados|r '
+L['torghast_vendor_note'] = 'Vendido por {npc:152594} y {npc:170257} por 300 {currency:1728} o 1.000 {currency:1728}'
+L['torghast_reward_note'] = 'Ganado a lo largo de |cffffff00Torghast, la Torre de los Condenados|r '
+L['torghast_soulshape_note'] = 'Capa 12+'
+L['colossal_umbrahide_mawrat_note'] = 'Capa 13+'
+
+L['skoldus_hall'] = 'Sala de Skoldus'
+L['fracture_chambers'] = 'Cámaras de Fracturas'
+L['the_soulforges'] = 'Forjas de Almas'
+L['coldheart_interstitia'] = 'Cruce Corazongélido'
+L['mortregar'] = 'Mort\'regar'
+L['the_upper_reaches'] = 'La Parte Alta'
+L['adamant_vaults'] = 'Cámaras de Adamantita'
+L['twisting_corridors'] = 'Pasillos Sinuosos'
+L['the_jailers_gauntlet'] = 'El Desafío del Carcelero'
+
+L['torghast_layer1'] = 'Completa la Capa 1'
+L['torghast_layer2'] = 'Completa la Capa 2'
+L['torghast_layer3'] = 'Completa la Capa 3'
+L['torghast_layer4'] = 'Completa la Capa 4'
+L['torghast_layer6'] = 'Completa la Capa 6'
+L['torghast_layer8'] = 'Completa la Capa 8'
+
+L['phantasma_note'] = 'Fantasmagoría'
+L['bloating_fodder_note'] = 'Ráfaga de Forraje Hinchador'
+L['flawless_master_note'] = 'Completa el logro |cffffff00[{achievement:15322}]|r'
+L['tower_ranger_note'] = 'Completa el logro |cffffff00[{achievement:15324}]|r'
+
+L['the_jailers_gauntlet_note'] = '|cFFFF8C00Los Bosses no cuentan para el logro|r |cffffff00{achievement:14498}|r'
+
+L['the_box_of_many_things'] = 'La Caja de Muchas Cosas'
+L['the_box_of_many_things_note'] = 'Desbloquea poderes adicionales con {currency:1904}'
+L['many_many_things_section'] = 'Completa el logro |cffffff00[{achievement:15079}]|r'
+
+L['the_runecarver'] = '{npc:164937}'
+L['clearing_the_fog_suffix'] = 'Recuerdos desbloqueados'
+
 -------------------------------------------------------------------------------
 -------------------------------- ZERETH MORTIS --------------------------------
 -------------------------------------------------------------------------------
 
-L['camber_alcove_note'] = nil
-L['dormant_alcove_note'] = [[
-Para acceder a ella tienes que:
+local HIDDEN_ALCOVE = [[
+Para acceder a la |cFFFFFD00Alcoba %s|r tienes que:
 
 1. Completar el capítulo 6 de la campaña de Zereth Mortis.
-2. Encontrar la |cFFFFFD00Alcoba Durmiente|r en las |cFFFFFD00Cumbres Resonantes|r.
-3. Usar el {npc:184329} para acceder al Enclave Interior.
-4. Usar un {npc:184485} diferente para acceder a la Alcoba Durmiente.
+2. Encontrar la |cFFFFFD00Disposición de la Casa %s|r %s.
+3. En las |cFFFFFD00Cumbres Resonantes|r, matar enemigos que estén {spell:362651} o quedarse de pie en el círculo blanco hasta llegar a 60 de {npc:183569}.
+4. Usar el {npc:184329} que hay en el Reposo Grávido para acceder al Enclave Interior. (Requiere 30 de {npc:183569})
+5. Usar un {npc:184485} diferente para acceder a la Alcoba %s. (Requiere 30 de {npc:183569})
 ]]
-L['fulgore_alcove_note'] = nil
-L['rondure_alcove_note'] = nil
-L['repertory_alcove_note'] = nil
+
+L['camber_alcove_note'] = string.format(HIDDEN_ALCOVE, 'Combada', 'Combada', 'detrás del edificio en el |cFFFFFD00Enclave Ultimus|r', 'Combada')
+L['dormant_alcove_note'] = string.format(HIDDEN_ALCOVE, 'Durmiente', 'Durmiente', 'en las |cFFFFFD00Cumbres Resonantes|r', 'Durmiente')
+L['fulgor_alcove_note'] = string.format(HIDDEN_ALCOVE, 'Refulgente', 'Refulgente', 'en las |cFFFFFD00Cumbres Resonantes|r', 'Refulgente')
+L['rondure_alcove_note'] = string.format(HIDDEN_ALCOVE, 'Circular', 'Circular', 'en la plataforma del |cFFFFFD00Enclave Tertius|r', 'Circular')
+L['repertory_alcove_note'] = string.format(HIDDEN_ALCOVE, 'de Repertorio', 'de Repertorio', 'dentro de la cueva |cFFFFFD00Escondite Terrestre|r', 'de Repertorio')
 
 L['corrupted_architect_note'] = 'Ataca a {npc:183958} y a {npc:183961} para activar el raro.'
 L['dune_dominance_note'] = 'Los tres élites raros para el logro {achievement:15392} aparecen en el mismo sitio.'
@@ -754,14 +934,23 @@ Usa el {item:187516} en las forjas de la zona para conseguir {item:187728} x15 y
 L['prying_eye_discovery'] = 'Descubrimiento del Ojo Fisgón'
 L['prying_eye_discovery_note'] = 'Es más fácil de alcanzar cuando el volar esté desbloqueado.'
 L['pulp_covered_relic'] = 'Reliquia Cubierta de Pulpa'
-L['requisites_originator_note'] = nil
-L['rondure_cache'] = nil
-L['rondure_cache_note'] = nil
+L['requisites_originator_note'] = [[
+Es una máquina que te dará recompensas distintas una vez a la semana:
+
+• {spell:366667} = Materiales de Encantamiento + oro
+• {spell:366668} = Ánima
+• {spell:366669} = Claves
+• {spell:366670} = Motas de Génesis + {item:189179} (probabilidad)
+• {spell:366671} = Claves/Motas/Ánima
+• {spell:366672} = Equipo de Claves
+]]
+L['rondure_cache'] = 'Alijo Circular'
+L['rondure_cache_note'] = 'Una forja interactuable en la cima del puzzle de saltos que hay dentro de la |cFFFFFD00Alcoba Circular|r.'
 L['sandworn_chest'] = 'Cofre Erosionado por la Arena'
 L['sandworn_chest_note'] = 'Despoja {item:190198} x5 de los enemigos de la zona para construir la {item:190197}.'
 L['sand_piles'] = 'Montones de Arena'
 L['sand_piles_note'] = [[
-Todos los montones de arena están en una cámara secreta subterránea. Cada montón requiere un {item:189863}, los cuales se pueden encontrar en otros tesoros de la zona:
+Todos los montones de arena están en la cámara escondida Alcoba Durmiente. Cada montón requiere un {item:189863}, los cuales se pueden encontrar en otros tesoros de la zona:
 
 • Alijo de Dominación
 • Caja Fuerte Caída
@@ -771,8 +960,8 @@ Todos los montones de arena están en una cámara secreta subterránea. Cada mon
 • Cámara Sinfónica
 • Follaje Ondulante
 ]]
-L['torn_ethereal_drape'] = nil
-L['torn_ethereal_drape_note'] = nil
+L['torn_ethereal_drape'] = 'Mantón Etéreo Deshilachado'
+L['torn_ethereal_drape_note'] = 'Está dentro de la |cFFFFFD00Alcoba Refulgente|r. Activa las |cFFFFFD00Consolas de Automa|r y monta en los {npc:183565} para alcanzar el techo.'
 
 L['cache_avian_nest'] = 'Nido Aviario'
 L['cache_cypher_bound'] = 'Cofre Reforzado con Clave'
@@ -781,7 +970,11 @@ L['cache_forgotten_vault'] = 'Cámara del Tesoro Olvidada'
 L['cache_mawsworn_supply'] = 'Cofre de Suministros Jurafauces'
 L['cache_tarachnid_eggs'] = 'Huevos de Tarácnido'
 L['cache_shrouded_cypher'] = 'Alijo de Claves Camuflado'
-L['cache_shrouded_cypher_note'] = 'Has de tener equipado un objeto con {spell:364478}.'
+L['cache_shrouded_cypher_note'] = [[
+Estos alijos sólo se pueden ver teniendo el buff {spell:361917} y llevando el objeto apropiado de Equipo de Claves:
+
+|cFF00FF00Mejora la percepción de Pocopoc y le permite descubrir más alijos ocultos.|r
+]]
 
 L['cache_cantaric'] = 'Alijo Cantárico'
 L['cache_fugueal'] = 'Alijo de Fuga'
@@ -809,9 +1002,9 @@ L['schematic_ineffable_skitterer_note'] = '¡Mátate! En serio... sólo puedes v
 L['schematic_leaping_leporid_note'] = 'Encima de un árbol flotante.'
 L['schematic_mawdapted_raptora_note'] = 'Pequeña probabilidad de que lo suelte una {npc:181412} en las |cFFFFFD00Arenas Infinitas|r.'
 L['schematic_microlicid_note'] = 'En la rama más baja del árbol flotante, debajo de algo de follaje.'
-L['schematic_omnipotential_core_note'] = nil
+L['schematic_omnipotential_core_note'] = 'Está en la |cFFFFFD00Alcoba Circular|r. El esquema está escondido detrás del borde superior del arco en el lado sur-oeste de la habitación.'
 L['schematic_prototickles_note'] = 'Unido a una cadena flotante dentro de las vides de encima del raro {npc:180978}.'
-L['schematic_prototype_fleetpod_note'] = nil
+L['schematic_prototype_fleetpod_note'] = 'Está dentro de la Alcoba Combada. Interactúa con el {npc:184900} para comenzar un minijuego. Guía el caracol sin tocar los {npc:185455} del suelo y hazlo pasar a través de 5 anillos para ganar el esquema.'
 L['schematic_raptora_swooper_note'] = 'Dentro de la Cámara de Formación.'
 L['schematic_resonant_echo_note'] = 'Probabilidad de que esté dentro de un |cFFFFFD00Eco Cristalizado de la Primera Canción|r.'
 L['schematic_russet_bufonid_note'] = 'Probabilidad de que esté en el cofre de reputación {item:187780}.'
@@ -862,6 +1055,20 @@ L['patient_bufonid_note_day7'] = 'Compra {item:187171} x1 a {npc:180114} en la m
 L['lost_comb'] = 'Panal Perdido'
 L['soulshape_penguin_note'] = 'Está encima de la forja flotante.'
 
+L['coreless_automa'] = 'Automas Salvajes'
+L['coreless_automa_note'] = 'Equipando un objeto con la {spell:364480} otorgará a |cFFFFFD00Pocopoc|r la habilidad de asumir el control de criaturas sin consumir energía y podrás hacer el logro más rápido.'
+L['coreless_automa_warning'] = '|cFFFF8C00Espera a que el automa te siga de verdad antes de decirle a Pocopoc que se vaya para evitar causar un error que requiere que vuelvas a iniciar sesión.|r'
+
+L['olea_manu'] = 'Vende transfiguraciones y recetas a cambio de {currency:1979}.'
+
+L['venaris_fate_sublabel'] = 'Está en el |cFFFFFF00Catalizador de Creación|r.'
+L['venaris_fate_note'] = [[
+1. Habla con la {npc:162804} incorpórea en el |cFFFFFF00Refugio de Ve'nari|r de |cFFFFFF00Las Fauces|r.
+2. Si no es incorpórea, hay que progresar en la historia adicional del parche 9.2.5.
+3. Interactúa con el cuerpo de {npc:162804} en el |cFFFFFF00Catalizador de Creación|r de |cFFFFFF00Zereth Mortis|r.
+4. 5 días después recibirás una carta en el buzón de {npc:162804} junto con el juguete {item:192485}.
+]]
+
 L['options_icons_code_creature'] = '{achievement:15211}'
 L['options_icons_code_creature_desc'] = 'Muestra dónde están las criaturas para el logro {achievement:15211}.'
 L['options_icons_concordances'] = 'Concordancias de Conocimiento'
@@ -878,7 +1085,9 @@ L['options_icons_puzzle_caches'] = 'Alijos Puzzles'
 L['options_icons_puzzle_caches_desc'] = 'Muestra los sitios posibles para los alijos puzzle.'
 L['options_icons_zereth_caches'] = 'Cofres con Clave'
 L['options_icons_zereth_caches_desc'] = 'Muestra los sitios posibles para los cofres con clave.'
-L['options_icons_shrouded_cyphers'] = 'Alijo de claves camuflado'
-L['options_icons_shrouded_cyphers_desc'] = 'Muestra los sitios posibles para los alijos de claves camuflado. Has de tener equipado un objeto con {spell:364478}.'
-L['options_icons_mawsworn_supply_cache'] = nil
-L['options_icons_mawsworn_supply_cache_desc'] = nil
+L['options_icons_shrouded_cyphers'] = 'Alijos de claves camuflado'
+L['options_icons_shrouded_cyphers_desc'] = 'Muestra los sitios posibles para los alijos de claves camuflado.'
+L['options_icons_mawsworn_supply_cache'] = 'Cofres de Suministros Jurafauces'
+L['options_icons_mawsworn_supply_cache_desc'] = 'Muestra los sitios posibles para los cofres de suministros Jurafauces.'
+L['options_icons_coreless_automa'] = '{achievement:15542}'
+L['options_icons_coreless_automa_desc'] = 'Sitios donde encontrar Automas salvajes que controlar para el logro {achievement:15542}.'

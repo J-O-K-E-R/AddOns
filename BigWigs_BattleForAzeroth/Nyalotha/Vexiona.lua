@@ -161,7 +161,7 @@ do
 			self:Flash(args.spellId)
 			self:PlaySound(args.spellId, "warning")
 		end
-		self:TargetsMessage(args.spellId, "yellow", playerList)
+		self:TargetsMessageOld(args.spellId, "yellow", playerList)
 		if #playerList == 1 then
 			self:CDBar(args.spellId, 15)
 		end
@@ -251,7 +251,7 @@ end
 
 function mod:DesolationApplied(args)
 	self:TargetMessage(args.spellId, "yellow", args.destName)
-	self:PlaySound(args.spellId, "warning", args.destName)
+	self:PlaySound(args.spellId, "warning", nil, args.destName)
 	self:Bar(args.spellId, self:Mythic() and 33 or 32.5)
 	if self:Me(args.destGUID) then
 		self:Yell(args.spellId)

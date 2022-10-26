@@ -3,8 +3,8 @@ local S = E:GetModule('Skins')
 local TT = E:GetModule('Tooltip')
 
 local _G = _G
-local select = select
-local ipairs, pairs, unpack = ipairs, pairs, unpack
+local next, unpack = next, unpack
+local ipairs, pairs = ipairs, pairs
 
 local CreateFrame = CreateFrame
 local GetItemInfo = GetItemInfo
@@ -14,6 +14,8 @@ local BAG_ITEM_QUALITY_COLORS = BAG_ITEM_QUALITY_COLORS
 local GetItemQualityColor = GetItemQualityColor
 local C_Heirloom_PlayerHasHeirloom = C_Heirloom.PlayerHasHeirloom
 local C_TransmogCollection_GetSourceInfo = C_TransmogCollection.GetSourceInfo
+
+local QUALITY_7_R, QUALITY_7_G, QUALITY_7_B = GetItemQualityColor(7)
 
 local function clearBackdrop(self)
 	self:SetBackdropColor(0, 0, 0, 0)
@@ -113,77 +115,76 @@ local function buttonOnLeave(button)
 end
 
 local function JournalScrollButtons(frame)
-	for i, bu in ipairs(frame.buttons) do
-		bu:StripTextures()
-		bu:SetTemplate('Transparent', nil, nil, true)
-		bu:Size(210, 42)
+	if not frame then return end
 
-		local point, relativeTo, relativePoint, xOffset, yOffset = bu:GetPoint()
-		bu:ClearAllPoints()
+	for i, bu in next, { frame.ScrollTarget:GetChildren() } do
+		if not bu.IsSkinned then
+			bu:StripTextures()
+			bu:SetTemplate('Transparent', nil, nil, true)
+			bu:Size(210, 42)
 
-		if i == 1 then
-			bu:Point(point, relativeTo, relativePoint, 44, yOffset)
-		else
-			bu:Point(point, relativeTo, relativePoint, xOffset, -2)
-		end
+			local point, relativeTo, relativePoint, xOffset, yOffset = bu:GetPoint()
+			bu:ClearAllPoints()
 
-		local icon = bu.icon or bu.Icon
-		icon:Size(40)
-		icon:Point('LEFT', -43, 0)
-		icon:SetTexCoord(unpack(E.TexCoords))
-		icon:CreateBackdrop(nil, nil, nil, true)
-
-		bu:HookScript('OnEnter', buttonOnEnter)
-		bu:HookScript('OnLeave', buttonOnLeave)
-
-		local highlight = _G[bu:GetName()..'Highlight']
-		if highlight then
-			highlight:SetColorTexture(1, 1, 1, 0.3)
-			highlight:SetBlendMode('ADD')
-			highlight:SetAllPoints(bu.icon)
-		end
-
-		if bu.ProgressBar then
-			bu.ProgressBar:SetTexture(E.media.normTex)
-			bu.ProgressBar:SetVertexColor(0.251, 0.753, 0.251, 1) -- 0.0118, 0.247, 0.00392
-		end
-
-		if frame:GetParent() == _G.WardrobeCollectionFrame.SetsCollectionFrame then
-			bu.Favorite:SetAtlas('PetJournal-FavoritesIcon', true)
-			bu.Favorite:Point('TOPLEFT', bu.Icon, 'TOPLEFT', -8, 8)
-
-			hooksecurefunc(bu.SelectedTexture, 'SetShown', selectedTextureSetShown)
-		else
-			bu.selectedTexture:SetTexture()
-			hooksecurefunc(bu.selectedTexture, 'Show', selectedTextureShow)
-			hooksecurefunc(bu.selectedTexture, 'Hide', selectedTextureHide)
-
-			if frame:GetParent() == _G.PetJournal then
-				bu.petList = true
-				bu.petTypeIcon:Point('TOPRIGHT', -1, -1)
-				bu.petTypeIcon:Point('BOTTOMRIGHT', -1, 1)
-
-				bu.dragButton.ActiveTexture:SetTexture(E.Media.Textures.White8x8)
-				bu.dragButton.ActiveTexture:SetVertexColor(0.9, 0.8, 0.1, 0.3)
-				bu.dragButton.levelBG:SetTexture()
-
-				S:HandleIconBorder(bu.iconBorder, nil, petNameColor)
-			elseif frame:GetParent() == _G.MountJournal then
-				bu.mountList = true
-				bu.factionIcon:SetDrawLayer('OVERLAY')
-				bu.factionIcon:Point('TOPRIGHT', -1, -1)
-				bu.factionIcon:Point('BOTTOMRIGHT', -1, 1)
-
-				bu.DragButton.ActiveTexture:SetTexture(E.Media.Textures.White8x8)
-				bu.DragButton.ActiveTexture:SetVertexColor(0.9, 0.8, 0.1, 0.3)
-
-				bu.favorite:SetTexture([[Interface\COMMON\FavoritesIcon]])
-				bu.favorite:Point('TOPLEFT', bu.DragButton, 'TOPLEFT' , -8, 8)
-				bu.favorite:Size(32, 32)
-
-				hooksecurefunc(bu.name, 'SetFontObject', mountNameColor)
-				hooksecurefunc(bu.background, 'SetVertexColor', mountNameColor)
+			if i == 1 then
+				bu:Point(point, relativeTo, relativePoint, 44, yOffset)
+			else
+				bu:Point(point, relativeTo, relativePoint, xOffset, -2)
 			end
+
+			local icon = bu.icon or bu.Icon
+			icon:Size(40)
+			icon:Point('LEFT', -43, 0)
+			icon:SetTexCoord(unpack(E.TexCoords))
+			icon:CreateBackdrop(nil, nil, nil, true)
+
+			bu:HookScript('OnEnter', buttonOnEnter)
+			bu:HookScript('OnLeave', buttonOnLeave)
+
+			if bu.ProgressBar then
+				bu.ProgressBar:SetTexture(E.media.normTex)
+				bu.ProgressBar:SetVertexColor(0.251, 0.753, 0.251, 1) -- 0.0118, 0.247, 0.00392
+			end
+
+			if frame:GetParent() == _G.WardrobeCollectionFrame.SetsCollectionFrame then
+				bu.Favorite:SetAtlas('PetJournal-FavoritesIcon', true)
+				bu.Favorite:Point('TOPLEFT', bu.Icon, 'TOPLEFT', -8, 8)
+
+				hooksecurefunc(bu.SelectedTexture, 'SetShown', selectedTextureSetShown)
+			else
+				bu.selectedTexture:SetTexture()
+				hooksecurefunc(bu.selectedTexture, 'Show', selectedTextureShow)
+				hooksecurefunc(bu.selectedTexture, 'Hide', selectedTextureHide)
+
+				if frame:GetParent() == _G.PetJournal then
+					bu.petList = true
+					bu.petTypeIcon:Point('TOPRIGHT', -1, -1)
+					bu.petTypeIcon:Point('BOTTOMRIGHT', -1, 1)
+
+					bu.dragButton.ActiveTexture:SetTexture(E.Media.Textures.White8x8)
+					bu.dragButton.ActiveTexture:SetVertexColor(0.9, 0.8, 0.1, 0.3)
+					bu.dragButton.levelBG:SetTexture()
+
+					S:HandleIconBorder(bu.iconBorder, nil, petNameColor)
+				elseif frame:GetParent() == _G.MountJournal then
+					bu.mountList = true
+					bu.factionIcon:SetDrawLayer('OVERLAY')
+					bu.factionIcon:Point('TOPRIGHT', -1, -1)
+					bu.factionIcon:Point('BOTTOMRIGHT', -1, 1)
+
+					bu.DragButton.ActiveTexture:SetTexture(E.Media.Textures.White8x8)
+					bu.DragButton.ActiveTexture:SetVertexColor(0.9, 0.8, 0.1, 0.3)
+
+					bu.favorite:SetTexture([[Interface\COMMON\FavoritesIcon]])
+					bu.favorite:Point('TOPLEFT', bu.DragButton, 'TOPLEFT' , -8, 8)
+					bu.favorite:Size(32, 32)
+
+					hooksecurefunc(bu.name, 'SetFontObject', mountNameColor)
+					hooksecurefunc(bu.background, 'SetVertexColor', mountNameColor)
+				end
+			end
+
+			bu.IsSkinned = true
 		end
 	end
 end
@@ -197,7 +198,7 @@ local function SkinMountFrame()
 
 	S:HandleCloseButton(_G.MountJournalFilterButton.ResetButton)
 	_G.MountJournalFilterButton.ResetButton:ClearAllPoints()
-	_G.MountJournalFilterButton.ResetButton:Point('TOP', _G.MountJournalFilterButton, 'RIGHT', -8, 32)
+	_G.MountJournalFilterButton.ResetButton:Point('CENTER', _G.MountJournalFilterButton, 'TOPRIGHT', 0, 0)
 
 	local MountJournal = _G.MountJournal
 	MountJournal:StripTextures()
@@ -211,7 +212,7 @@ local function SkinMountFrame()
 
 	S:HandleButton(_G.MountJournalMountButton)
 	S:HandleEditBox(_G.MountJournalSearchBox)
-	S:HandleScrollBar(_G.MountJournalListScrollFrameScrollBar)
+	S:HandleTrimScrollBar(_G.MountJournal.ScrollBar)
 	S:HandleRotateButton(MountJournal.MountDisplay.ModelScene.RotateLeftButton)
 	S:HandleRotateButton(MountJournal.MountDisplay.ModelScene.RotateRightButton)
 
@@ -220,7 +221,7 @@ local function SkinMountFrame()
 	MountJournal.BottomLeftInset.SlotButton:StripTextures()
 	S:HandleIcon(MountJournal.BottomLeftInset.SlotButton.ItemIcon)
 	S:HandleButton(MountJournal.BottomLeftInset.SlotButton)
-	JournalScrollButtons(MountJournal.ListScrollFrame)
+	hooksecurefunc(MountJournal.ScrollBox, 'Update', JournalScrollButtons)
 end
 
 local function SkinPetFrame()
@@ -254,10 +255,9 @@ local function SkinPetFrame()
 	_G.PetJournalFilterButton:Point('TOPRIGHT', _G.PetJournalLeftInset, 'TOPRIGHT', -5, -(E.PixelMode and 8 or 7))
 	S:HandleCloseButton(_G.PetJournalFilterButton.ResetButton)
 	_G.PetJournalFilterButton.ResetButton:ClearAllPoints()
-	_G.PetJournalFilterButton.ResetButton:Point('TOP', _G.PetJournalFilterButton, 'RIGHT', -8, 32)
-	_G.PetJournalListScrollFrame:StripTextures()
-	S:HandleScrollBar(_G.PetJournalListScrollFrameScrollBar)
-	JournalScrollButtons(PetJournal.listScroll)
+	_G.PetJournalFilterButton.ResetButton:Point('CENTER', _G.PetJournalFilterButton, 'TOPRIGHT', 0, 0)
+	S:HandleTrimScrollBar(_G.PetJournal.ScrollBar)
+	hooksecurefunc(PetJournal.ScrollBox, 'Update', JournalScrollButtons)
 
 	_G.PetJournalAchievementStatus:DisableDrawLayer('BACKGROUND')
 
@@ -354,7 +354,8 @@ local function SkinToyFrame()
 	_G.ToyBoxFilterButton:Point('LEFT', ToyBox.searchBox, 'RIGHT', 2, 0)
 	S:HandleCloseButton(_G.ToyBoxFilterButton.ResetButton)
 	_G.ToyBoxFilterButton.ResetButton:ClearAllPoints()
-	_G.ToyBoxFilterButton.ResetButton:Point('TOP', _G.ToyBoxFilterButton, 'RIGHT', -8, 32)
+	_G.ToyBoxFilterButton.ResetButton:Point('CENTER', _G.ToyBoxFilterButton, 'TOPRIGHT', 0, 0)
+
 	ToyBox.iconsFrame:StripTextures()
 	S:HandleNextPrevButton(ToyBox.PagingFrame.NextPageButton, nil, nil, true)
 	S:HandleNextPrevButton(ToyBox.PagingFrame.PrevPageButton, nil, nil, true)
@@ -385,7 +386,8 @@ local function SkinToyFrame()
 		if button.itemID and PlayerHasToy(button.itemID) then
 			local _, _, quality = GetItemInfo(button.itemID)
 			if quality then
-				button.backdrop:SetBackdropBorderColor(GetItemQualityColor(quality))
+				local r, g, b = GetItemQualityColor(quality)
+				button.backdrop:SetBackdropBorderColor(r, g, b)
 			else
 				button.backdrop:SetBackdropBorderColor(0.9, 0.9, 0.9)
 			end
@@ -407,7 +409,7 @@ local function SkinHeirloomFrame()
 	S:HandleButton(_G.HeirloomsJournal.FilterButton)
 	S:HandleCloseButton(_G.HeirloomsJournal.FilterButton.ResetButton)
 	_G.HeirloomsJournal.FilterButton.ResetButton:ClearAllPoints()
-	_G.HeirloomsJournal.FilterButton.ResetButton:Point('TOP', _G.HeirloomsJournal.FilterButton, 'RIGHT', -8, 32)
+	_G.HeirloomsJournal.FilterButton.ResetButton:Point('CENTER', _G.HeirloomsJournal.FilterButton, 'TOPRIGHT', 0, 0)
 
 	HeirloomsJournal.progressBar.border:Hide()
 	HeirloomsJournal.progressBar:DisableDrawLayer('BACKGROUND')
@@ -443,7 +445,7 @@ local function SkinHeirloomFrame()
 			button.name:SetTextColor(0.9, 0.9, 0.9)
 			button.level:SetTextColor(0.9, 0.9, 0.9)
 			button.special:SetTextColor(1, .82, 0)
-			button.backdrop:SetBackdropBorderColor(GetItemQualityColor(7))
+			button.backdrop:SetBackdropBorderColor(QUALITY_7_R, QUALITY_7_G, QUALITY_7_B)
 		else
 			button.name:SetTextColor(0.4, 0.4, 0.4)
 			button.level:SetTextColor(0.4, 0.4, 0.4)
@@ -479,7 +481,7 @@ local function SkinTransmogFrames()
 	WardrobeCollectionFrame.FilterButton:Point('LEFT', WardrobeCollectionFrame.searchBox, 'RIGHT', 2, 0)
 	S:HandleCloseButton(WardrobeCollectionFrame.FilterButton.ResetButton)
 	WardrobeCollectionFrame.FilterButton.ResetButton:ClearAllPoints()
-	WardrobeCollectionFrame.FilterButton.ResetButton:Point('TOP', WardrobeCollectionFrame.FilterButton, 'RIGHT', -8, 32)
+	WardrobeCollectionFrame.FilterButton.ResetButton:Point('CENTER', WardrobeCollectionFrame.FilterButton, 'TOPRIGHT', 0, 0)
 	S:HandleDropDownBox(_G.WardrobeCollectionFrameWeaponDropDown)
 	WardrobeCollectionFrame.ItemsCollectionFrame:StripTextures()
 
@@ -500,8 +502,7 @@ local function SkinTransmogFrames()
 				if Model.NewGlow then Model.NewGlow:SetParent(border) end
 				if Model.NewString then Model.NewString:SetParent(border) end
 
-				for i=1, Model:GetNumRegions() do
-					local region = select(i, Model:GetRegions())
+				for _, region in next, { Model:GetRegions() } do
 					if region:IsObjectType('Texture') then -- check for hover glow
 						local texture = region:GetTexture()
 						if texture == 1116940 or texture == 1569530 then -- transmogrify.blp (items:1116940 or sets:1569530)
@@ -559,10 +560,32 @@ local function SkinTransmogFrames()
 	SetsCollectionFrame:SetTemplate('Transparent')
 	SetsCollectionFrame.RightInset:StripTextures()
 	SetsCollectionFrame.LeftInset:StripTextures()
-	JournalScrollButtons(SetsCollectionFrame.ScrollFrame)
-	S:HandleScrollBar(SetsCollectionFrame.ScrollFrame.scrollBar)
+	S:HandleTrimScrollBar(SetsCollectionFrame.ListContainer.ScrollBar)
+
+	hooksecurefunc(SetsCollectionFrame.ListContainer.ScrollBox, 'Update', function(button)
+		for _, child in next, { button.ScrollTarget:GetChildren() } do
+			if not child.IsSkinned then
+				child.Background:Hide()
+				child.HighlightTexture:SetTexture('')
+				child.Icon:SetSize(42, 42)
+				S:HandleIcon(child.Icon)
+				child.IconCover:SetOutside(child.Icon)
+
+				child.SelectedTexture:SetDrawLayer('BACKGROUND')
+				child.SelectedTexture:SetColorTexture(1, 1, 1, .25)
+				child.SelectedTexture:ClearAllPoints()
+				child.SelectedTexture:SetPoint('TOPLEFT', 4, -2)
+				child.SelectedTexture:SetPoint('BOTTOMRIGHT', -1, 2)
+				child.SelectedTexture:CreateBackdrop('Transparent')
+
+				child.IsSkinned = true
+			end
+		end
+	end)
 
 	local DetailsFrame = SetsCollectionFrame.DetailsFrame
+	DetailsFrame.ModelFadeTexture:Hide()
+	DetailsFrame.IconRowBackground:Hide()
 	DetailsFrame.Name:FontTemplate(nil, 16)
 	DetailsFrame.LongName:FontTemplate(nil, 16)
 	S:HandleButton(DetailsFrame.VariantSetsButton)
@@ -612,7 +635,7 @@ local function SkinTransmogFrames()
 		slotButton.Icon:SetInside(slotButton.backdrop)
 
 		local undo = slotButton.UndoButton
-		if undo then undo:SetHighlightTexture(nil) end
+		if undo then undo:SetHighlightTexture(E.ClearTexture) end
 
 		local pending = slotButton.PendingFrame
 		if pending then
@@ -654,7 +677,7 @@ end
 local function SkinCollectionsFrames()
 	S:HandlePortraitFrame(_G.CollectionsJournal)
 
-	for i=1, 5 do
+	for i = 1, 5 do
 		S:HandleTab(_G['CollectionsJournalTab'..i])
 	end
 

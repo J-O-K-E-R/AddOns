@@ -78,7 +78,7 @@ end
 
 function mod:TideFistApplied(args)
 	self:TargetMessage(args.spellId, "purple", args.destName)
-	self:PlaySound(args.spellId, "alert", args.destName)
+	self:PlaySound(args.spellId, "alert", nil, args.destName)
 end
 
 function mod:UNIT_SPELLCAST_SUCCEEDED(_, _, _, spellId)
@@ -134,7 +134,7 @@ do
 		if self:GetOption(arcaneBombMarker) then
 			self:CustomIcon(false, args.destName, #playerList)
 		end
-		self:TargetsMessage(args.spellId, "yellow", playerList, 4, nil, nil, nil, playerIcons)
+		self:TargetsMessageOld(args.spellId, "yellow", playerList, 4, nil, nil, nil, playerIcons)
 	end
 
 	function mod:ArcaneBombRemoved(args)

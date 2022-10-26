@@ -36,11 +36,11 @@ L.LOOT_SPEC_REMINDER				= "Ваша текущая специализация %s
 
 L.BIGWIGS_ICON_CONFLICT				= L.DBM .. " обнаружил, что у Вас включена установка меток в BigWigs и " .. L.DBM .. " одновременно. Пожалуйста, отключите метки в одном из них, чтобы избежать конфликтов"
 
-L.MOD_AVAILABLE						= "Для этого контента доступен дополнительный модуль %s. Вы можете скачать его с Curse или WoWI"
+L.MOD_AVAILABLE						= "Для этого контента доступен дополнительный модуль %s. Вы можете скачать его с Curse, Wago, WoWI или со страницы релизов на GitHub."
 
 L.COMBAT_STARTED					= "%s вступает в бой. Удачи! :)"
 L.COMBAT_STARTED_IN_PROGRESS		= "%s вступает в бой (в процессе). Удачи! :)"
-L.GUILD_COMBAT_STARTED				= "Гильдия вступает в бой с %s"
+L.GUILD_COMBAT_STARTED				= "%s вступает в бой с группой гильдии %s's"
 L.SCENARIO_STARTED					= "%s начат. Удачи! :)"
 L.SCENARIO_STARTED_IN_PROGRESS		= "Вы зашли в сценарий %s (в процессе). Удачи! :)"
 L.BOSS_DOWN							= "%s погибает спустя %s!"
@@ -50,14 +50,14 @@ L.BOSS_DOWN_NR						= "%s погибает спустя %s! Это новый р
 L.RAID_DOWN							= "%s зачищен за %s!"
 L.RAID_DOWN_L						= "%s зачищен за %s! Текущий рекорд %s."
 L.RAID_DOWN_NR						= "%s зачищен за %s! Это новый рекорд! (Предыдущий рекорд был %s)."
-L.GUILD_BOSS_DOWN					= "Гильдия победила %s спустя %s!"
+L.GUILD_BOSS_DOWN					= "%s потерпел поражение от группы гильдии %s's спустя %s!"
 L.SCENARIO_COMPLETE					= "%s завершён спустя %s!"
 L.SCENARIO_COMPLETE_I				= "%s завершён! Общее количество прохождений у Вас %d."
 L.SCENARIO_COMPLETE_L				= "%s завершён спустя %s! Ваше последнее прохождение заняло %s, а лучшее прохождение заняло %s. Общее количество прохождений у Вас %d."
 L.SCENARIO_COMPLETE_NR				= "%s завершён спустя %s! Это новый рекорд! (Предыдущий рекорд был %s). Общее количество прохождений у Вас %d."
 L.COMBAT_ENDED_AT					= "Бой с %s (%s) закончился спустя %s."
 L.COMBAT_ENDED_AT_LONG				= "Бой с %s (%s) закончился спустя %s. На этом уровне сложности Вы вайпнулись уже %d раз."
-L.GUILD_COMBAT_ENDED_AT				= "Гильдия вайпнулась на %s (%s) спустя %s."
+L.GUILD_COMBAT_ENDED_AT				= "Группа гильдии %s's вайпнулась на %s (%s) спустя %s."
 L.SCENARIO_ENDED_AT					= "%s закончился спустя %s."
 L.SCENARIO_ENDED_AT_LONG			= "%s закончился спустя %s. На этом уровне сложности Вы не завершили сценарий уже %d раз."
 L.COMBAT_STATE_RECOVERED			= "%s был атакован %s назад, восстанавливаю таймеры..."
@@ -168,20 +168,20 @@ L.VERSIONCHECK_ENTRY_TWO			= "%s: %s (%s) & %s (%s)"--Two Boss mods
 L.VERSIONCHECK_ENTRY_NO_DBM			= "%s: Boss Mod не установлен"
 L.VERSIONCHECK_FOOTER				= "Найдено %d |4игрок:игрока:игроков; с " .. L.DBM .. " и %d |4игрок:игрока:игроков; с BigWigs"
 L.VERSIONCHECK_OUTDATED				= "Следующие %d игрок(и) имеют устаревшую версию: %s"
-L.YOUR_VERSION_OUTDATED      		= "Ваша версия " .. L.DEADLY_BOSS_MODS .. " устарела! Пожалуйста, загрузите последнюю версию с Curse, WoWI или страницы релизов на GitHub."
+L.YOUR_VERSION_OUTDATED      		= "Ваша версия " .. L.DEADLY_BOSS_MODS .. " устарела! Пожалуйста, загрузите последнюю версию с Curse, Wago, WoWI или со страницы релизов на GitHub."
 L.VOICE_PACK_OUTDATED				= "В Вашем голосовом пакете " .. L.DBM .. " отсутствуют звуки, поддерживаемые этой версией " .. L.DBM .. ". Фильтр звуков спецпредупреждений был отключён. Пожалуйста, скачайте обновлённую версию голосового пакета или свяжитесь с автором для обновления, которое содержит отсутствующие звуковые файлы."
 L.VOICE_MISSING						= "Выбранный Вами голосовой пакет " .. L.DBM .. " не найден. Если это ошибка, убедитесь, что Ваш голосовой пакет правильно установлен и включен в модификациях."
 L.VOICE_DISABLED					= "У Вас установлен по крайней мере один голосовой пакет " .. L.DBM .. ", но ни один не включён. Если Вы собираетесь использовать голосовой пакет, убедитесь, что он выбран в 'Spoken Alerts', иначе удалите неиспользуемые голосовые пакеты, чтобы скрыть это сообщение."
 L.VOICE_COUNT_MISSING				= "Голос отсчёта %d использует голосовой пакет, который не был найден. Он был сброшен на настройки по умолчанию: %s."
 L.BIG_WIGS							= "BigWigs"
 
-L.UPDATEREMINDER_HEADER				= "Ваша версия " .. L.DEADLY_BOSS_MODS .. " устарела.\n Версия %s (%s) доступна для загрузки через Curse, WoWI или со страницы релизов GitHub"
+L.UPDATEREMINDER_HEADER				= "Ваша версия " .. L.DEADLY_BOSS_MODS .. " устарела.\n Версия %s (%s) доступна для загрузки через Curse, Wago, WoWI или со страницы релизов GitHub"
 L.UPDATEREMINDER_FOOTER				= "Нажмите " .. (IsMacClient() and "Cmd-C" or "Ctrl-C")  ..  ", чтобы скопировать ссылку загрузки в буфер обмена."
 L.UPDATEREMINDER_FOOTER_GENERIC		= "Нажмите " .. (IsMacClient() and "Cmd-C" or "Ctrl-C")  ..  ", чтобы скопировать ссылку в буфер обмена."
 L.UPDATEREMINDER_DISABLE			= "ПРЕДУПРЕЖДЕНИЕ: В связи с тем, что Ваш " .. L.DEADLY_BOSS_MODS .. " сильно устарел, он был отключён до обновления. Это сделано для того, чтобы старый и несовместимый код не вызывал плохой игровой опыт для Вас и других членов группы."
 L.UPDATEREMINDER_HOTFIX				= "Ваша версия " .. L.DBM .. " будет иметь некорректные таймеры или предупреждения во время этого энкаунтера. Это исправлено в новой версии."
 L.UPDATEREMINDER_HOTFIX_ALPHA		= "Ваша версия " .. L.DBM .. " будет иметь некорректные таймеры или предупреждения во время этого энкаунтера. Это исправлено в следующей версии (или альфа-версии)."
-L.UPDATEREMINDER_MAJORPATCH			= "ПРЕДУПРЕЖДЕНИЕ: Из-за того, что Ваш " .. L.DEADLY_BOSS_MODS .. " устарел, он был отключён до обновления, т.к. это большой игровой патч. Это необходимо для того, чтобы старый и несовместимый код не приводил к ухудшению игрового опыта для Вас и членов вашей группы. Убедитесь, что вы скачали новую версию с Curse, WoWI или со страницы релизов GitHub."
+L.UPDATEREMINDER_MAJORPATCH			= "ПРЕДУПРЕЖДЕНИЕ: Из-за того, что Ваш " .. L.DEADLY_BOSS_MODS .. " устарел, он был отключён до обновления, т.к. это большой игровой патч. Это необходимо для того, чтобы старый и несовместимый код не приводил к ухудшению игрового опыта для Вас и членов Вашей группы. Убедитесь, что Вы скачали новую версию с Curse, Wago, WoWI или со страницы релизов GitHub."
 L.VEM								= "ПРЕДУПРЕЖДЕНИЕ: Вы используете " .. L.DEADLY_BOSS_MODS .. " и Voice Encounter Mods одновременно. DBM не был загружен, т.к. эти два аддона не могут работать вместе."
 L.OUTDATEDPROFILES					= "ПРЕДУПРЕЖДЕНИЕ: DBM-Profiles несовместим с этой версией " .. L.DBM .. ". Он должен быть удалён, прежде чем DBM сможет продолжить, чтобы избежать конфликтов."
 L.OUTDATEDSPELLTIMERS				= "ПРЕДУПРЕЖДЕНИЕ: DBM-SpellTimers несовместим с " .. L.DBM .. " и должен быть выключен для корректной работы " .. L.DBM .. "."
@@ -201,7 +201,7 @@ L.PIZZA_CONFIRM_IGNORE				= "Игнорировать таймеры " .. L.DBM 
 L.PIZZA_ERROR_USAGE					= "Использование: /dbm [broadcast] timer <time> <text>. <time> должно быть больше 3."
 
 --L.MINIMAP_TOOLTIP_HEADER (Same as English locales)
-L.MINIMAP_TOOLTIP_FOOTER			= "[Shift+ЛКМ], чтобы переместить"
+L.MINIMAP_TOOLTIP_FOOTER			= "[Shift+ЛКМ] - переместить значок " .. L.DBM
 
 L.RANGECHECK_HEADER					= "Проверка дистанции (%dм)"
 L.RANGECHECK_HEADERT				= "Проверка дистанции (%dм-%dP)"
@@ -261,7 +261,7 @@ L.SLASHCMD_HELP2 = {
 	"/dbm durability: Выполняет проверку прочности у всего рейда."
 }
 L.TIMER_USAGE = {
-	L.DBM .. " timer commands:",
+	L.DBM .. " команды таймера:",
 	"-----------------",
 	"/dbm timer <сек> <текст>: Запускает таймер с указанным текстом.",
 	"/dbm ltimer <сек> <текст>: Запускает таймер, который автоматически повторяется до отмены.",
@@ -378,6 +378,7 @@ L.AUTO_SPEC_WARN_TEXTS.switch 			= "%s - переключитесь"
 L.AUTO_SPEC_WARN_TEXTS.switchcount 		= "%s - переключитесь (%%s)"
 L.AUTO_SPEC_WARN_TEXTS.gtfo				= "Под вами %%s - выбегите"
 L.AUTO_SPEC_WARN_TEXTS.adds				= "Прибыли адды - смените цель"
+L.AUTO_SPEC_WARN_TEXTS.addscount		= "Прибыли адды - смените цель (%%s)"
 L.AUTO_SPEC_WARN_TEXTS.addscustom		= "Прибыли адды - %%s"
 L.AUTO_SPEC_WARN_TEXTS.targetchange		= "Смена цели - переключитесь на %%s"
 
@@ -422,8 +423,9 @@ L.AUTO_SPEC_WARN_OPTIONS.count 			= "Спецпредупреждение (со 
 L.AUTO_SPEC_WARN_OPTIONS.stack 			= "Спецпредупреждение, когда на Вас >=%d стаков $spell:%s"
 L.AUTO_SPEC_WARN_OPTIONS.switch			= "Спецпредупреждение о смене цели для $spell:%s"
 L.AUTO_SPEC_WARN_OPTIONS.switchcount 	= "Спецпредупреждение (со счётчиком) о смене цели для $spell:%s"
-L.AUTO_SPEC_WARN_OPTIONS.gtfo 			= "Спецпредупреждение выбегите из войды на земле"
-L.AUTO_SPEC_WARN_OPTIONS.adds			= "Спецпредупреждение сменить цель для прибывающих аддов"
+L.AUTO_SPEC_WARN_OPTIONS.gtfo 			= "Спецпредупреждение о выбегании из войды на земле"
+L.AUTO_SPEC_WARN_OPTIONS.adds			= "Спецпредупреждение о смене цели для прибывающих аддов"
+L.AUTO_SPEC_WARN_OPTIONS.addscount		= "Спецпредупреждение (со счётчиком) о смене цели для прибывающих аддов"
 L.AUTO_SPEC_WARN_OPTIONS.addscustom		= "Спецпредупреждение для прибывающих аддов"
 L.AUTO_SPEC_WARN_OPTIONS.targetchange	= "Спецпредупреждение для смены приоритетной цели"
 
@@ -472,7 +474,15 @@ L.AUTO_TIMER_OPTIONS.adds			= "Отсчёт времени до прибытия
 L.AUTO_TIMER_OPTIONS.addscustom		= "Отсчёт времени до прибытия аддов"
 L.AUTO_TIMER_OPTIONS.roleplay		= "Отсчёт времени для ролевой игры"
 
-L.AUTO_ICONS_OPTION_TARGETS			= "Устанавливать метки на цели заклинания $spell:%s"
+L.AUTO_ICONS_OPTION_TARGETS			= "Устанавливать метки на цели $spell:%s"
+L.AUTO_ICONS_OPTION_TARGETS_TANK_A		= "Устанавливать метки на цели $spell:%s с приоритетом танка над ближним боем, над дальним и по алфавиту"
+L.AUTO_ICONS_OPTION_TARGETS_TANK_R		= "Устанавливать метки на цели $spell:%s с приоритетом танка над ближним боем, над дальним и рейдового состава"
+L.AUTO_ICONS_OPTION_TARGETS_MELEE_A		= "Устанавливать метки на цели $spell:%s с приоритетом ближнего боя и в алфавитном порядке"
+L.AUTO_ICONS_OPTION_TARGETS_MELEE_R		= "Устанавливать метки на цели $spell:%s с приоритетом ближнего боя и рейдового состава"
+L.AUTO_ICONS_OPTION_TARGETS_RANGED_A	= "Устанавливать метки на цели $spell:%s с приоритетом дальнего боя и в алфавитном порядке"
+L.AUTO_ICONS_OPTION_TARGETS_RANGED_R	= "Устанавливать метки на цели $spell:%s с приоритетом дальнего боя и рейдового состава"
+L.AUTO_ICONS_OPTION_TARGETS_ALPHA		= "Устанавливать метки на цели $spell:%s в алфавитном порядке"
+L.AUTO_ICONS_OPTION_TARGETS_ROSTER		= "Устанавливать метки на цели $spell:%s с приоритетом рейдового состава"
 L.AUTO_ICONS_OPTION_NPCS			= "Устанавливать метки на $spell:%s"
 L.AUTO_ICONS_OPTION_CONFLICT		= " (Может конфликтовать с другими параметрами)"
 L.AUTO_ARROW_OPTION_TEXT			= "Показывать стрелку " .. L.DBM .. " к цели, на которой $spell:%s"
@@ -498,7 +508,9 @@ L.AUTO_YELL_ANNOUNCE_TEXT.fade		= "%s спадает через %%d"
 L.AUTO_YELL_ANNOUNCE_TEXT.shortfade	= "%%d"
 L.AUTO_YELL_ANNOUNCE_TEXT.iconfade	= "{rt%%2$d}%%1$d"
 L.AUTO_YELL_ANNOUNCE_TEXT.position 	= "%s %%s на {rt%%d}"..UnitName("player").."{rt%%d}"
+L.AUTO_YELL_ANNOUNCE_TEXT.shortposition 	= "{rt%%1$d}%s %%2$d"
 L.AUTO_YELL_ANNOUNCE_TEXT.combo		= "%s и %%s"
+L.AUTO_YELL_ANNOUNCE_TEXT.repeaticon	= "{rt%%1$d}"
 
 L.AUTO_YELL_CUSTOM_FADE				= "%s спал"
 L.AUTO_HUD_OPTION_TEXT				= "Показывать HudMap для $spell:%s"
@@ -524,12 +536,12 @@ L.HUD_INVALID_TYPE					= "Задан неверный тип HUD"
 L.HUD_INVALID_TARGET				= "Не задана корректная цель для HUD"
 L.HUD_INVALID_SELF					= "Нельзя использовать себя как цель для HUD"
 L.HUD_INVALID_ICON					= "Тип icon не может быть использован на цели без метки"
-L.HUD_SUCCESS						= "HUD запущен с вашими параметрами. Он будет отключён через %s, или с помощью '/dbm hud hide'."
+L.HUD_SUCCESS						= "HUD запущен с Вашими параметрами. Он будет отключён через %s, или с помощью '/dbm hud hide'."
 L.HUD_USAGE	= {
 	"Использование " .. L.DBM .. "-HudMap:",
 	"-----------------",
 	"/dbm hud <тип> <цель> <длительность>: создаёт HUD, который указывает на игрока в течение желаемой длительности",
-	"Возможные типы: red, blue, green, yellow, icon (требуется цель с рейдовой меткой)",
+	"Возможные типы: arrow, dot, red, blue, green, yellow, icon (требуется цель с рейдовой меткой)",
 	"Возможные цели: target, focus, <имя игрока>",
 	"Длительность: любое число (в секундах). Если не задано, то используется 20 мин.",
 	"/dbm hud hide: отключает и скрывает HUD"
@@ -543,7 +555,7 @@ L.ARROW_ERROR_USAGE	= {
 	"-----------------",
 	"/dbm arrow <x> <y>: создаёт стрелку, указывающую в определенную точку (используя координаты мира)",
 	"/dbm arrow map <x> <y>: создаёт стрелку, указывающую в определенную точку (используя координаты зоны)",
-	"/dbm arrow <player>: создаёт стрелку, указывающую на определенного игрока в вашей группе или рейде (регистрозависимо!)",
+	"/dbm arrow <player>: создаёт стрелку, указывающую на определенного игрока в Вашей группе или рейде (регистрозависимо!)",
 	"/dbm arrow hide: скрывает стрелку",
 	"/dbm arrow move: разрешает перемещение стрелки"
 }
@@ -564,8 +576,8 @@ L.DUR_ENTRY							= "%s: прочность [%d процентов] / экипи
 L.LAG_FOOTER						= "Нет ответа: %s"
 
 --LDB
-L.LDB_TOOLTIP_HELP1					= "[ЛКМ], чтобы открыть " .. L.DBM
-L.LDB_TOOLTIP_HELP2					= "Alt+ПКМ для переключения в беззвучный режим"
+L.LDB_TOOLTIP_HELP1					= "[ЛКМ] - открыть " .. L.DBM
+L.LDB_TOOLTIP_HELP2					= "[Alt+ПКМ] - переключить в беззвучный режим"
 L.SILENTMODE_IS						= "Тихий режим "
 
 L.WORLD_BUFFS.hordeOny			= "Народы Орды, жители Оргриммара! Приходите, собирайтесь и поздравляйте героя Орды"

@@ -11,7 +11,7 @@ local GetItemInfo = GetItemInfo
 
 T.Values = {
 	FontFlags = {
-		NONE = L["NONE"],
+		[''] = L["NONE"],
 		OUTLINE = 'Outline',
 		THICKOUTLINE = 'Thick',
 		MONOCHROME = '|cffaaaaaaMono|r',
@@ -224,7 +224,7 @@ end
 
 --Trying to determine the region player is in, not entirely reliable cause based on atypet not an actual region id
 function SLE:GetRegion()
-	local lib = LibStub('LibRealmInfo')
+	--[[local lib = LibStub('LibRealmInfo')
 	if not GetPlayerInfoByGUID(E.myguid) then
 		return
 	end
@@ -241,6 +241,15 @@ function SLE:GetRegion()
 			SLE:Print(SLE.region, 'error')
 		end
 		SLE.region = 'PTR'
+	end]]
+	local portal = GetCVar("portal")
+
+	if not portal or portal == "" then
+		SLE.region = "PTR"
+	elseif portal == "test" then
+		SLE.region = "PTR"
+	else
+		SLE.region = portal
 	end
 end
 

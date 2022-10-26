@@ -1,4 +1,4 @@
-local L = BigWigs:NewBossLocale("Anub'arak", "esES") or BigWigs:NewBossLocale("Anub'arak", "esMX")
+local L = BigWigs:NewBossLocale("Anub'arak", "esES")
 if not L then return end
 if L then
 	L.engage_message = "¡Anub'arak activo, se entierra en 80sec!"
@@ -18,7 +18,7 @@ if L then
 	L.chase = "Perseguido"
 end
 
-L = BigWigs:NewBossLocale("The Beasts of Northrend", "esES") or BigWigs:NewBossLocale("The Beasts of Northrend", "esMX")
+L = BigWigs:NewBossLocale("The Beasts of Northrend", "esES")
 if L then
 	L.wipe_trigger = "Trágico..."
 
@@ -26,6 +26,10 @@ if L then
 	L.jormungars_trigger = "Preparaos, héroes, para los temibles gemelos: ¡Fauceácida y Aterraescama! ¡A la arena!"
 	L.icehowl_trigger = "El propio aire se congela al presentar a nuestro siguiente combatiente: ¡Aullahielo! ¡Matad o morid, campeones!"
 	L.boss_incoming = "%s entrando"
+
+	L.gormok = "Gormok el Empalador"
+	L.jormungars = "Fauceácida y Aterraescama"
+	L.icehowl = "Aullahielo"
 
 	-- Gormok
 	L.snobold = "Snobold"
@@ -53,7 +57,7 @@ if L then
 	L.bosses_desc = "Avisa cuando los Jefes esten entrando."
 end
 
-L = BigWigs:NewBossLocale("Faction Champions", "esES") or BigWigs:NewBossLocale("Faction Champions", "esMX")
+L = BigWigs:NewBossLocale("Faction Champions", "esES")
 if L then
 	L.defeat_trigger = "Una victoria trágica y fútil."
 
@@ -65,7 +69,7 @@ if L then
 	L["Bloodlust on champions!"] = "¡Ansia de sangre en campeones!"
 end
 
-L = BigWigs:NewBossLocale("Lord Jaraxxus", "esES") or BigWigs:NewBossLocale("Lord Jaraxxus", "esMX")
+L = BigWigs:NewBossLocale("Lord Jaraxxus", "esES")
 if L then
 	L.enable_trigger = "¡Un gnomo insignificante! ¡Tu arrogancia será tu perdición!"
 
@@ -92,7 +96,7 @@ if L then
 	L.kiss_interrupted = "¡Cortado!"
 end
 
-L = BigWigs:NewBossLocale("The Twin Val'kyr", "esES") or BigWigs:NewBossLocale("The Twin Val'kyr", "esMX")
+L = BigWigs:NewBossLocale("The Twin Val'kyr", "esES")
 if L then
 	L.engage_trigger1 = "En el nombre de nuestro oscuro maestro. Por el Rey Exánime. Morirás."
 

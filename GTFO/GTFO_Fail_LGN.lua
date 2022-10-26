@@ -5,7 +5,7 @@
 GTFO Fail List - Legion
 ]]--
 
-if (not (GTFO.ClassicMode or GTFO.BurningCrusadeMode)) then
+if (not (GTFO.ClassicMode or GTFO.BurningCrusadeMode or GTFO.WrathMode)) then
 
 --- ********************
 --- * The Broken Isles *
@@ -1668,10 +1668,14 @@ GTFO.SpellID["228519"] = {
 -- TODO: Wash Away (Mrrgria)
 -- TODO: Bubble Blast (Shoreline Tidespeaker)
 -- TODO: Severe Dusting (Babblet)
--- TODO: Mortal Strike (Attumen) -- Non-tank fail (Avoidable?)
 -- TODO: Will Breaker (Lord Crispin Ference) -- Non-tank fail
 -- TODO: Flame Wreath (Shade of Medivh) -- (If you cause it)
 -- TODO: Shadow Phlegm (Viz'aduum the Watcher) -- Avoidable?
+
+GTFO.SpellID["227568"] = {
+  --desc = "Burning Leg Sweep (Toe Knee)";
+  sound = 3;
+};
 
 GTFO.SpellID["227416"] = {
   --desc = "Wondrous Radiance (Galindre)";
@@ -1699,13 +1703,29 @@ GTFO.SpellID["227977"] = {
   sound = 3;
 };
 
+GTFO.SpellID["227493"] = {
+  --desc = "Mortal Strike (Attumen the Huntsman)";
+  sound = 3;
+  tankSound = 0;
+};
+
 GTFO.SpellID["227339"] = {
-  --desc = "Mezair (Midnight)";
+  --desc = "Mezair - Fire (Midnight)";
+  sound = 3;
+};
+
+GTFO.SpellID["254644"] = {
+  --desc = "Mezair - Physical (Midnight)";
   sound = 3;
 };
 
 GTFO.SpellID["227645"] = {
   --desc = "Spectral Charge (Midnight)";
+  sound = 3;
+};
+
+GTFO.SpellID["228603"] = {
+  --desc = "Charge (Spectral Charger)";
   sound = 3;
 };
 
@@ -1778,6 +1798,27 @@ GTFO.SpellID["229161"] = {
 GTFO.SpellID["229151"] = {
   --desc = "Disintegrate (Viz'aduum the Watcher)";
   sound = 3;
+};
+
+GTFO.SpellID["227434"] = {
+  --desc = "Bubble Blast (Shoreline Tidespeaker)";
+  sound = 3;
+};
+
+GTFO.SpellID["227799"] = {
+  --desc = "Wash Away (Mrrgria)";
+  sound = 3;
+};
+
+GTFO.SpellID["227780"] = {
+  --desc = "Thunder Ritual (Mrrgria)";
+	soundFunction = function() -- Warn only if you get hit more than once
+		if (GTFO_FindEvent("ThunderRitual")) then
+			return 3;
+		end
+		GTFO_AddEvent("ThunderRitual", 2);
+		return 0;
+	end
 };
 
 -- **************************

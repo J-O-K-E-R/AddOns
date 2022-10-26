@@ -10,6 +10,14 @@ L['covenant_required'] = 'Requires a member of the %s covenant.'
 L['anima_channeled'] = 'anima channeled to %s.'
 
 -------------------------------------------------------------------------------
+--------------------------------- SHADOWLANDS ---------------------------------
+-------------------------------------------------------------------------------
+
+L['squirrels_note'] = 'You must use the emote /love on critters not battle pets'
+L['options_icons_squirrels'] = '{achievement:14731}'
+L['options_icons_squirrels_desc'] = 'Critter locations for {achievement:14731}'
+
+-------------------------------------------------------------------------------
 --------------------------------- ARDENWEALD ----------------------------------
 -------------------------------------------------------------------------------
 
@@ -92,6 +100,53 @@ L['glitterdust_note'] = 'The creatures of Ardenweald may look docile, but they w
 L['lost_book_note'] = 'Return this lost book to {npc:165867} in the Grove of Memory.'
 L['options_icons_faerie_tales'] = '{achievement:14788}'
 L['options_icons_faerie_tales_desc'] = 'Display lost book locations for the {achievement:14788} achievement.'
+
+L['options_icons_wild_hunting'] = '{achievement:14779}'
+L['options_icons_wild_hunting_desc'] = 'Ardenweald beast locations for {achievement:14779}'
+
+L['options_icons_wildseed_spirits'] = 'Wildseed Spirits'
+L['options_icons_wildseed_spirits_desc'] = 'Rewards from wildseed spirits'
+
+L['divine_martial_spirit'] = 'Divine Martial Spirit'
+L['divine_dutiful_spirit'] = 'Divine Dutiful Spirit'
+L['divine_prideful_spirit'] = 'Divine Prideful Spirit'
+L['divine_untamed_spirit'] = 'Divine Untamed Spirit'
+
+L['martial_spirit_label'] = '{item:178874}'
+L['dutiful_spirit_label'] = '{item:178881}'
+L['prideful_spirit_label'] = '{item:178882}'
+L['untamed_spirit_label'] = '{item:177698}'
+
+L['0x_wildseed_root_grain'] = '0x {item:176832}'
+L['1x_wildseed_root_grain'] = '1x {item:176832}'
+L['2x_wildseed_root_grain'] = '2x or 3x {item:176832}'
+L['4x_wildseed_root_grain'] = '4x {item:176832}'
+
+L['soulshape_cat_note'] = [[
+Target {npc:181694} and /soothe
+
+Can appear at the center of the top of the 6 Great Trees around |cFFFFFF00Ardenweald|r:
+
+• |cFFFFFF00Dreamsong Fenn|r
+• |cFFFFFF00Glitterfall Basin|r
+• |cFFFFFF00Tirna Vaal|r
+• |cFFFFFF00Hibernal Hollow|r
+• |cFFFFFF00Heartwood Grove|r
+• |cFFFFFF00Claw's Edge|r
+]]
+L['soulshape_corgi_note'] = [[
+Target {npc:174608} and /pet
+
+A Corgi option will immediately become available when talking with {npc:181582}
+]]
+L['soulshape_well_fed_cat_note'] = [[
+1. Collect {item:187811} from |cffffff00Darkhaven|r
+2. Target {npc:182093} and /meow
+3. |cFFFF8C00Ma'oh meows at you hungrily.|r
+4. Target {npc:182093} and use {item:187811}
+
+A Cat Soul (Well Fed) option will immediately become available when talking with {npc:181582}
+]]
 
 -------------------------------------------------------------------------------
 ----------------------------------- BASTION -----------------------------------
@@ -232,6 +287,8 @@ L['options_icons_hymns_desc'] = 'Display hymn locations for the {achievement:147
 L['stratios_note'] = 'Even the smallest battles should be fought with honor and care. Present your team when you are ready.'
 L['thenia_note'] = 'Such magnificent open plains here. A glorious place to battle. Are you prepared?'
 L['zolla_note'] = 'We take our defenses very seriously. Whether small or large, we are fully committed to maintain and train the resources that keep Bastion strong.'
+
+L['soulshape_otter_soul'] = 'Target {npc:181682} and /hug'
 
 -------------------------------------------------------------------------------
 ----------------------------------- KORTHIA -----------------------------------
@@ -408,6 +465,32 @@ L['dundley_note'] = 'I\'ll battle my way to victory and gain the respect I final
 L['maximillian_note'] = 'I have waited dozens of years for a worthy opponent. To the victor go the spoils!'
 L['rotgut_note'] = 'Rotgut. Leftovers. Extra pieces. You fight.'
 
+L['ashen_ink_label'] = '{item:183690}'
+L['ashen_ink_note'] = 'Random drop from {npc:157125}'
+
+L['jagged_bonesaw_label'] = '{item:183692}'
+L['jagged_bonesaw_note'] = 'Random drop from {npc:159105}'
+
+L['discarded_grimoire_label'] = '{item:183394}'
+L['discarded_grimoire_note'] = 'Complete {quest:62297} given by {npc:174020}'
+
+L['sorcerers_blade_label'] = '{item:183397}'
+L['sorcerers_blade_note'] = 'Complete {quest:62317} given by |cFFFFFF00Sorcerer\'s Note|r inside the |cFFFFFF00Vault of Souls|r. Down the stairs and to the left on the bookcase.'
+
+L['mucosal_pigment_label'] = '{item:183691}'
+L['mucosal_pigment_note'] = 'Drops from any slime, droplet, ooze, rare, or giant near the |cFFFFFF00House of Plagues|r or the area around {npc:162727}'
+
+L['amethystine_dye_label'] = '{item:183401}'
+L['amethystine_dye_note'] = 'Complete {quest:62320} given by {npc:174120}'
+
+L['ritualists_mantle_label'] = '{item:183399}'
+L['ritualists_mantle_note'] = 'Complete {quest:62308} given by {npc:172813}. Requires 3 people to summon {npc:174127}.'
+
+L['options_icons_crypt_couture'] = '{achievement:14763}'
+L['options_icons_crypt_couture_desc'] = 'Necrotic Acolyte disguise customization locations for {achievement:14763}'
+
+L['soulshape_saurid_note'] = 'In a small cave. Target the {npc:182105} and /bow'
+
 -------------------------------------------------------------------------------
 --------------------------------- REVENDRETH ----------------------------------
 -------------------------------------------------------------------------------
@@ -483,6 +566,15 @@ L['inquisitor_note'] = 'Turn in 100 {currency:1816} to {npc:160248} for a chance
 L['options_icons_inquisitors'] = 'Inquisitors'
 L['options_icons_inquisitors_desc'] = 'Display inquisitor locations for the {achievement:14276} achievement.'
 
+L['bell_of_shame_note'] = 'Every 30 minutes a random ghost will spawn next to {npc:176006}.\n\nRepair the {npc:176056} for 30 {currency:1820} and then ring the bell to receive a buff from the active ghost.\n\nOne of the ghosts, {npc:176043}, gives {spell:346708} which provides an increased {item:172957} drop rate within the surrounding |cFFFFFD00Halls of Atonement|r area.'
+L['atonement_crypt_label'] = 'Atonement Crypt'
+L['atonement_crypt_note'] = 'Open an |cFFFFFD00Atonement Crypt|r using an {item:172957}.'
+L['atonement_crypts_opened'] = 'Atonement Crypts opened'
+L['atonement_crypt_key_label'] = '{item:172957}'
+L['atonement_crypt_key_note'] = '{item:172957} can drop from most mobs in the |cFFFFFD00Halls of Atonement|r area.\n\n{npc:158902}\n{npc:176109}\n{npc:158894}\n{npc:156911}\n{npc:158910}\n{npc:176121}\n{npc:176114}\n{npc:156909}\n{npc:156256}\n{npc:176124}\n{npc:156260}\n{npc:159027}\n{npc:158897}\n{npc:176116}\n{npc:158908}\n{npc:176122}\n\nThe highest drop rate is from {npc:158892}.'
+L['options_icons_crypt_kicker'] = '{achievement:14273}'
+L['options_icons_crypt_kicker_desc'] = 'Display farming locations for the {achievement:14273} achievement.'
+
 L['broken_mirror'] = 'Broken Mirror'
 L['broken_mirror_note'] = 'A group of three broken mirrors will be active each day. Use a {item:181363} to repair each mirror and open the |cFFFFFD00Forgotten Chest|r inside.'
 L['broken_mirror_crypt'] = 'Inside a crypt.'
@@ -494,6 +586,21 @@ L['broken_mirror_61819'] = 'In a small room on the ground floor.'
 L['broken_mirror_61827'] = 'In a small room.'
 L['options_icons_broken_mirror'] = 'Broken Mirrors'
 L['options_icons_broken_mirror_desc'] = 'Display the locations of broken mirrors.'
+
+L['soulshape_chicken_note'] = [[
+1. Collect {item:187811} from |cffffff00Darkhaven|r
+2. Target {npc:181660} and /chicken
+3. |cFFFF8C00Lost Soul clucks at you hungrily.|r
+4. Target {npc:181660} and use {item:187811}
+]]
+L['spectral_feed_label'] = '{item:187811}'
+L['spectral_feed_note'] = [[
+{item:187811} is used to feed {npc:181660} in |cffffff00Revendreth|r for {item:187813}
+
+{item:187811} is used to feed {npc:182093} in |cFFFFFF00Ardenweald|r for |cFF00FF00[Well Fed Cat Soul]|r
+
+|cFFFF8C00{item:187811} has a 10 minute timer and 60 minute respawn|r
+]]
 
 -------------------------------------------------------------------------------
 ----------------------------------- THE MAW -----------------------------------
@@ -672,6 +779,76 @@ A tormentor event spawns every 2 hours on the hour. The bosses will always spawn
 The {item:185972} can be looted once a week and contains 50 {currency:1906}.
 ]]
 
+L['options_icons_mawsworn_blackguard'] = '{achievement:14742}'
+L['options_icons_mawsworn_blackguard_desc'] = 'Mawsworn Blackguard locations for {achievement:14742}'
+
+L['mawsworn_blackguard'] = 'Mawsworn Blackguard'
+L['mawsworn_blackguard_note'] = 'Easily target a stealthed {npc:183173}:'
+
+L['options_icons_covenant_assaults'] = 'Covenant Assaults'
+L['options_icons_covenant_assaults_desc'] = 'Rewards for covenant assaults'
+
+L['assault_sublabel_US'] = 'Assaults change on Tuesday at 8 AM PDT and Friday at 8 PM PDT'
+L['assault_sublabel_EU'] = 'Assaults change on Wednesday at 8 AM CET and Saturday at 8 PM CET'
+L['assault_sublabel_CN'] = 'Assaults change on Thursday at 7 AM CST and Sunday at 7 PM CST'
+
+L['necrolord_assault'] = '{quest:63543}'
+L['necrolord_assault_note'] = 'The {item:185992} can be looted once per assault'
+L['necrolord_assault_quantity_note'] = 'Mawsworn Caches opened'
+L['venthyr_assault'] = '{quest:63822}'
+L['venthyr_assault_note'] = 'The {item:185990} can be looted once per assault'
+L['venthyr_assault_quantity_note'] = 'Items used'
+L['night_fae_assault'] = '{quest:63823}'
+L['night_fae_assault_note'] = 'The {item:185991} can be looted once per assault'
+L['night_fae_assault_quantity_note'] = 'Rift Hidden Cache opened'
+L['kyrian_assault'] = '{quest:63824}'
+L['kyrian_assault_note'] = 'The {item:185993} can be looted once per assault'
+L['kyrian_assault_quantity_note1'] = 'Sly found'
+L['kyrian_assault_quantity_note2'] = 'Dances near forges'
+
+-------------------------------------------------------------------------------
+---------------------- TORGHAST, THE TOWER OF THE DAMNED ----------------------
+-------------------------------------------------------------------------------
+
+L['torghast_the_tower_of_the_damned'] = 'Torghast, the Tower of the Damned'
+L['torghast_reward_sublabel'] = '|cFFFF8C00Rewards shared between most wings|r'
+L['torghast_boss_note'] = 'Dropped by various bosses throughout |cffffff00Torghast, the Tower of the Damned|r '
+L['torghast_vendor_note'] = 'Sold by vendors {npc:152594} and {npc:170257} for 300 {currency:1728} or 1,000 {currency:1728}'
+L['torghast_reward_note'] = 'Earned throughout |cffffff00Torghast, the Tower of the Damned|r '
+L['torghast_soulshape_note'] = 'Layer 12+'
+L['colossal_umbrahide_mawrat_note'] = 'Layer 13+'
+
+L['skoldus_hall'] = 'Skoldus Hall'
+L['fracture_chambers'] = 'Fracture Chambers'
+L['the_soulforges'] = 'Soulforges'
+L['coldheart_interstitia'] = 'Coldheart Interstitia'
+L['mortregar'] = 'Mort\'regar'
+L['the_upper_reaches'] = 'The Upper Reaches'
+L['adamant_vaults'] = 'Adamant Vaults'
+L['twisting_corridors'] = 'Twisting Corridors'
+L['the_jailers_gauntlet'] = 'The Jailer\'s Gauntlet'
+
+L['torghast_layer1'] = 'Complete Layer 1'
+L['torghast_layer2'] = 'Complete Layer 2'
+L['torghast_layer3'] = 'Complete Layer 3'
+L['torghast_layer4'] = 'Complete Layer 4'
+L['torghast_layer6'] = 'Complete Layer 6'
+L['torghast_layer8'] = 'Complete Layer 8'
+
+L['phantasma_note'] = 'Phantasma'
+L['bloating_fodder_note'] = 'Bloating Fodder burst'
+L['flawless_master_note'] = 'Complete |cffffff00[{achievement:15322}]|r'
+L['tower_ranger_note'] = 'Complete |cffffff00[{achievement:15324}]|r'
+
+L['the_jailers_gauntlet_note'] = '|cFFFF8C00Bosses do not count towards|r |cffffff00{achievement:14498}|r'
+
+L['the_box_of_many_things'] = 'The Box of Many Things'
+L['the_box_of_many_things_note'] = 'Unlock additional powers with {currency:1904}'
+L['many_many_things_section'] = 'Complete |cffffff00[{achievement:15079}]|r'
+
+L['the_runecarver'] = '{npc:164937}'
+L['clearing_the_fog_suffix'] = 'Memories unlocked'
+
 -------------------------------------------------------------------------------
 -------------------------------- ZERETH MORTIS --------------------------------
 -------------------------------------------------------------------------------
@@ -681,15 +858,16 @@ To access the |cFFFFFD00%s Alcove|r:
 
 1. Complete chapter 6 of the Zereth Mortis campaign.
 2. Find the |cFFFFFD00%s Alcove Arrangement|r %s.
-3. Use the {npc:184329} inside the Gravid Repose to access the Inner Chamber.
-4. Use a different {npc:184485} to access the %s Alcove.
+3. In the |cFFFFFD00Resonant Peaks|r, Kill the mobs who have {spell:362651} or stand in white pool to got 60 {npc:183569}.
+4. Use the {npc:184329} inside the Gravid Repose to access the Inner Chamber. (Requires 30 {npc:183569})
+5. Use {npc:184485} to access the %s Alcove. (Requires 30 {npc:183569})
 ]]
 
-L['camber_alcove_note'] = string.format(HIDDEN_ALCOVE, 'Camber', 'Camber', 'behind the building at the Ultimus Locus', 'Camber')
+L['camber_alcove_note'] = string.format(HIDDEN_ALCOVE, 'Camber', 'Camber', 'behind the building at the |cFFFFFD00Ultimus Locus|r', 'Camber')
 L['dormant_alcove_note'] = string.format(HIDDEN_ALCOVE, 'Dormant', 'Dormant', 'in the |cFFFFFD00Resonant Peaks|r', 'Dormant')
-L['fulgore_alcove_note'] = string.format(HIDDEN_ALCOVE, 'Fulgore', 'Fulgore', 'in the |cFFFFFD00Resonant Peaks|r', 'Fulgore')
-L['rondure_alcove_note'] = string.format(HIDDEN_ALCOVE, 'Rondure', 'Rondure', 'on the Tertius Locus platform', 'Rondure')
-L['repertory_alcove_note'] = string.format(HIDDEN_ALCOVE, 'Repertory', 'Repertory', 'inside the Terrestial Cache cave', 'Repertory')
+L['fulgor_alcove_note'] = string.format(HIDDEN_ALCOVE, 'Fulgor', 'Fulgor', 'in the |cFFFFFD00Resonant Peaks|r', 'Fulgor')
+L['rondure_alcove_note'] = string.format(HIDDEN_ALCOVE, 'Rondure', 'Rondure', 'on the |cFFFFFD00Tertius Locus|r platform', 'Rondure')
+L['repertory_alcove_note'] = string.format(HIDDEN_ALCOVE, 'Repertory', 'Repertory', 'inside the |cFFFFFD00Terrestial Cache|r cave', 'Repertory')
 
 L['corrupted_architect_note'] = 'Engage {npc:183958} and {npc:183961} to activate the rare.'
 L['dune_dominance_note'] = 'All three rare elites for the {achievement:15392} achievement spawn at this location.'
@@ -731,7 +909,7 @@ L['forgotten_protovault_note'] = 'Only available during the {wq:Frog\'it} world 
 L['grateful_boon_note'] = 'Difficult to reach without flying; use {spell:300728} or {spell:111771} to ascend the mountain. Soothe all 12 creatures in the area and {npc:185293} will spawn the treasure.'
 L['library_vault_note'] = 'Click tablets in the Lexical Grotto until you find the correct {spell:362062} buff to open the vault.'
 L['mistaken_ovoid_note'] = 'Inside Dimensional Falls cavern. You must collect 5x {item:190239} and bring them to the {npc:185280}.'
-L['ripened_protopear_note'] = 'Begin the {quest:64641} quest chain to gain access to the Blooming Foundry. Collect 5 {spell:367180} (green clouds) inside and bring them to the {npc:185416} to pollinate it.'
+L['ripened_protopear_note'] = 'Begin the {quest:64641} quest chain to gain access to the Blooming Foundry. Collect 5 {spell:367180} (green clouds) inside and bring them one by one to the {npc:185416} to pollinate it. Once it has grown 5 times, it will fall.'
 L['sphere_treasure_note'] = 'Carefully jump up the spheres until you reach the treasure.'
 L['submerged_chest_note'] = 'Absorb the |cFFFFFD00Dangerous Orb of Power|r to the south, then interact with the |cFFFFFD00Forgotten Pump|r near the treasure.'
 L['symphonic_vault_note'] = 'Examine the {npc:183998} to hear a sequence of four sounds. Each {npc:183950} in the room plays a single sound. Interact with them in the matching order to unlock the treasure.'
@@ -756,17 +934,17 @@ L['prying_eye_discovery'] = 'Prying Eye Discovery'
 L['prying_eye_discovery_note'] = 'Easier to reach once flying is unlocked.'
 L['pulp_covered_relic'] = 'Pulp-Covered Relic'
 L['requisites_originator_note'] = [[
-A machine that will give you different rewards once a day:
+A machine that will give you different rewards once a week:
 
-• |cFFFFFD00Access Auric Reserves|r = Enchanting mats + gold
-• |cFFFFFD00Retrieve Portable Anima Reservoir|r = Anima
-• |cFFFFFD00Generate Encoded Specie|r = Cyphers
-• |cFFFFFD00Restore Genesis Potencies|r = Genesis Motes + {item:189179} (chance)
-• |cFFFFFD00Blend Utility Components|r = Cyphers/Motes/Anima
-• |cFFFFFD00Synthesis Ancillary Combat Implement|r = Cypher Equipment
+• {spell:366667} = Enchanting mats + gold
+• {spell:366668} = Anima
+• {spell:366669} = Cyphers
+• {spell:366670} = Genesis Motes + {item:189179} (chance)
+• {spell:366671} = Cyphers/Motes/Anima
+• {spell:366672} = Cypher Equipment
 ]]
 L['rondure_cache'] = 'Rondure Cache'
-L['rondure_cache_note'] = 'An interactable forge at the top of a jumping puzzle inside the Rondure Alcove.'
+L['rondure_cache_note'] = 'An interactable forge at the top of a jumping puzzle inside the |cFFFFFD00Rondure Alcove|r.'
 L['sandworn_chest'] = 'Sandworn Chest'
 L['sandworn_chest_note'] = 'Loot 5x {item:190198} from mobs in the area to construct the {item:190197}.'
 L['sand_piles'] = 'Sand Piles'
@@ -782,7 +960,7 @@ All sand piles are found in the hidden Dormant Alcove chamber. Each pile require
 • Undulating Foliage
 ]]
 L['torn_ethereal_drape'] = 'Torn Ethereal Drape'
-L['torn_ethereal_drape_note'] = 'Found inside the |cFFFFFD00Fulgore Alcove|r. Activate the |cFFFFFD00Automa Consoles|r, then ride the {npc:183565s} to reach the ceiling.'
+L['torn_ethereal_drape_note'] = 'Found inside the |cFFFFFD00Fulgor Alcove|r. Activate the |cFFFFFD00Automa Consoles|r, then ride the {npc:183565s} to reach the ceiling.'
 
 L['cache_avian_nest'] = 'Avian Nest'
 L['cache_cypher_bound'] = 'Cypher Bound Chest'
@@ -792,7 +970,7 @@ L['cache_mawsworn_supply'] = 'Mawsworn Supply Chest'
 L['cache_tarachnid_eggs'] = 'Tarachnid Eggs'
 L['cache_shrouded_cypher'] = 'Shrouded Cypher Cache'
 L['cache_shrouded_cypher_note'] = [[
-These caches can only be seen while wearing an appropriate Cypher Equipment item:
+These caches can only be seen while having {spell:361917} buff and wearing an appropriate Cypher Equipment item:
 
 |cFF00FF00Enhances Pocopoc's perception, allowing it to discover additional hidden caches.|r
 ]]
@@ -825,7 +1003,7 @@ L['schematic_mawdapted_raptora_note'] = 'Small chance to drop from {npc:181412s}
 L['schematic_microlicid_note'] = 'On the lowest branch of the floating tree, underneath some foliage.'
 L['schematic_omnipotential_core_note'] = 'Found in the |cFFFFFD00Rondure Alcove|r. The schematic is hidden behind the upper lip of the archway on the south-west side of the room.'
 L['schematic_prototickles_note'] = 'Attached to a floating chain inside the vines above the {npc:180978} rare.'
-L['schematic_prototype_fleetpod_note'] = 'Found inside the Camber Alcove. Interact with the {npc:184900} to start a minigame. Guide the snail through 5 rings without touching {npc:185455s} to win the schematic.'
+L['schematic_prototype_fleetpod_note'] = 'Found inside the |cFFFFFD00Camber Alcove|r. Interact with the {npc:184900} to start a minigame. Guide the snail through 5 rings without touching {npc:185455s} to win the schematic.'
 L['schematic_raptora_swooper_note'] = 'Found inside the Chamber of Shaping.'
 L['schematic_resonant_echo_note'] = 'Chance to be found inside a |cFFFFFD00Crystallized Echo of the First Song|r.'
 L['schematic_russet_bufonid_note'] = 'Chance to be found in the {item:187780} paragon cache.'
@@ -876,6 +1054,20 @@ L['patient_bufonid_note_day7'] = 'Purchase 1x {item:187171} from the {npc:180114
 L['lost_comb'] = 'Lost Comb'
 L['soulshape_penguin_note'] = 'Located on top of the floating forge.'
 
+L['coreless_automa'] = 'wildlife automas'
+L['coreless_automa_note'] = 'Equipping an item with {spell:364480} will grant |cFFFFFD00Pocopoc|r the ability to take over creatures without consuming energy and will make earning this achievement faster.'
+L['coreless_automa_warning'] = '|cFFFF8C00Wait for the automa to actually start following you before telling Pocopoc to leave to avoid causing a bug that requires you to relog.|r'
+
+L['olea_manu'] = 'Sells collectibles and recipes in exchange for {currency:1979}.'
+
+L['venaris_fate_sublabel'] = 'Located in the |cFFFFFF00Creation Catalyst|r'
+L['venaris_fate_note'] = [[
+1. Speak with incorporeal {npc:162804} at |cFFFFFF00Ve'nari's Refuge|r in |cFFFFFF00The Maw|r.
+2. If she is not incorporeal, additional 9.2 story progress is required.
+3. Interact with the corpse of {npc:162804} in the |cFFFFFF00Creation Catalyst|r in |cFFFFFF00Zereth Mortis|r.
+4. 5 days later you will receive a letter in the mail from {npc:162804} along with the {item:192485}.
+]]
+
 L['options_icons_code_creature'] = '{achievement:15211}'
 L['options_icons_code_creature_desc'] = 'Display creature locations for the {achievement:15211} achievement.'
 L['options_icons_concordances'] = 'Lore Concordances'
@@ -895,4 +1087,6 @@ L['options_icons_zereth_caches_desc'] = 'Display possible locations for cypher c
 L['options_icons_shrouded_cyphers'] = 'Shrouded Cypher Caches'
 L['options_icons_shrouded_cyphers_desc'] = 'Display possible locations for hidden cypher caches.'
 L['options_icons_mawsworn_supply_cache'] = 'Mawsworn Supply Caches'
-L['options_icons_mawsworn_supply_cache_desc'] = 'Display possible locations for mawsworn caches.'
+L['options_icons_mawsworn_supply_cache_desc'] = 'Display possible locations for mawsworn supply caches.'
+L['options_icons_coreless_automa'] = '{achievement:15542}'
+L['options_icons_coreless_automa_desc'] = 'Coreless automa locations for the {achievement:15542} achievement.'

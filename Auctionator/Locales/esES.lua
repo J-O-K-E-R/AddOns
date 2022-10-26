@@ -18,6 +18,10 @@ L["AUCTION_TOOLTIP_TOOLTIP_HEADER"] = "Información sobre herramientas de subast
 L["AUCTION_TOOLTIP_TOOLTIP_TEXT"] = "Mostrar información sobre herramientas de la subasta al pasar el ratón."
 L["AUCTIONATOR"] = "Auctionator"
 L["AUTHOR_HEADER"] = "Autor"
+--[[Translation missing --]]
+L["BID_EXISTING_ON_OWNED_AUCTION"] = "Someone has bid on this auction so cancelling will cost you your deposit and:"
+--[[Translation missing --]]
+L["BID_ONLY_AVAILABLE"] = "bid only available"
 L["BID_PRICE"] = "Precio de pujar"
 L["BIDDER"] = "Licitador"
 L["BIDDING_AUCTION_INFO"] = "%s Pujando en %s"
@@ -32,11 +36,12 @@ L["BUYING_X_FOR_X"] = "Comprando %s por %s"
 L["BUYOUT_AUCTION_INFO"] = "%s Comprar en %s"
 L["BUYOUT_PRICE"] = "Compra"
 L["CANCEL"] = "Cancelar"
+--[[Translation missing --]]
+L["CANCEL_SEARCH"] = "Cancel Search"
 L["CANCEL_UNDERCUT"] = "Cancelar descuento"
 L["CANCELLING_TAB"] = "Cancelado"
 L["CANCELLING_TAB_HEADER"] = "Auctionator - Cancelado"
-L["CANNOT_AUCTION"] = [=[No se puede subastar
-]=]
+L["CANNOT_AUCTION"] = "No subastable"
 L["CHAIN_BUY"] = "Compra en cadena"
 L["CHAIN_BUY_TOOLTIP_HEADER"] = "Cadena de compras múltiples"
 L["CHAIN_BUY_TOOLTIP_TEXT"] = "Cuando termine de comprar con el precio actual y el tamaño de pila, selecciona el siguiente precio y tamaño de pila."
@@ -78,6 +83,12 @@ L["CONFIG_CHAT_LOG_TOOLTIP_TEXT"] = "Si esta opción está desactivada, sus suba
 L["CONFIG_CRAFTING_COST_SHOW_PROFIT"] = "Muestra ganancias en lugar de costos de fabricación"
 L["CONFIG_CRAFTING_COST_SHOW_PROFIT_TOOLTIP_HEADER"] = "Costos de fabricación Mostrar ganancias"
 L["CONFIG_CRAFTING_COST_SHOW_PROFIT_TOOLTIP_TEXT"] = "Cuando la Casa de Subastas está abierta, la pantalla de fabricación mostrará el costo de fabricar un objeto. Habilita esta opción para mostrar la ganancia en su lugar."
+--[[Translation missing --]]
+L["CONFIG_CRAFTING_INFO_SHOW"] = "Show crafting costs in the crafting view"
+--[[Translation missing --]]
+L["CONFIG_CRAFTING_INFO_SHOW_TOOLTIP_HEADER"] = "Crafting screen extra info"
+--[[Translation missing --]]
+L["CONFIG_CRAFTING_INFO_SHOW_TOOLTIP_TEXT"] = "The crafting screen will show the cost of crafting an item. Disable this option to not show the crafting costs."
 L["CONFIG_DEBUG"] = "Alternar salida de depuración."
 L["CONFIG_DEBUG_TOOLTIP_HEADER"] = "Depurar Actionator"
 L["CONFIG_DEBUG_TOOLTIP_TEXT"] = "Esto es usado por los mantenedores para enviar mensajes de depuración al marco del chat."
@@ -87,17 +98,24 @@ L["CONFIG_ENCHANT_TOOLTIP"] = "Mostrar información sobre herramientas de encant
 L["CONFIG_FULL_SCAN_STEP_SIZE"] = "Tamaño de paso de escaneo completo"
 L["CONFIG_LIFO_CATEGORY"] = "Vendiendo"
 L["CONFIG_MAIL_TOOLTIP"] = "Mostrar información sobre herramientas del buzón"
+--[[Translation missing --]]
+L["CONFIG_MILL_TOOLTIP"] = "Show mill value for herbs from inscription in tooltips"
 L["CONFIG_NOT_LIFO_CATEGORY"] = "Equipo/Mascotas"
 L["CONFIG_PET_TOOLTIP"] = "Mostrar información sobre herramientas de mascotas"
-L["CONFIG_PRICE_HISTORY"] = "Mostrar precios históricos en la pestaña de venta (se requiere recarga)"
-L["CONFIG_PRICE_HISTORY_TOOLTIP_HEADER"] = "Historial de precios"
-L["CONFIG_PRICE_HISTORY_TOOLTIP_TEXT"] = "Si esta opción está desactivada, se ocultará el panel de historial de precios en la pestaña de venta."
 L["CONFIG_PROFILE_CATEGORY"] = "Perfil"
 L["CONFIG_PROFILE_TEXT"] = "Configura los ajustes por personaje."
 L["CONFIG_PROFILE_TOGGLE"] = "Solo aplica la configuración a este personaje"
+--[[Translation missing --]]
+L["CONFIG_PROSPECT_TOOLTIP"] = "Show prospect value for ore from jewelcrafting in tooltips"
 L["CONFIG_QUANTITIES_CATEGORY"] = "Venta: Cantidades"
 L["CONFIG_QUANTITIES_TEXT"] = "Elige la cantidad predeterminada utilizada para las diferentes categorías de objetos."
 L["CONFIG_RESET_STACK_SIZE_MEMORY"] = "Restablecer memoria de tamaño de pila"
+--[[Translation missing --]]
+L["CONFIG_SAVE_LAST_DURATION_AS_DEFAULT"] = "Save the last used auction duration as the default"
+--[[Translation missing --]]
+L["CONFIG_SAVE_LAST_DURATION_AS_DEFAULT_TOOLTIP_HEADER"] = "Overwrite default duration with last used"
+--[[Translation missing --]]
+L["CONFIG_SAVE_LAST_DURATION_AS_DEFAULT_TOOLTIP_TEXT"] = "Overwrite default duration with last used"
 L["CONFIG_SCAN_SETTINGS"] = "Configuración de escaneo"
 L["CONFIG_SCANNING"] = "Configuración de escaneo completo"
 L["CONFIG_SELLING_ALL_ITEMS_CATEGORY"] = "Venta: Todos los objetos"
@@ -123,6 +141,12 @@ L["CONFIG_SELLING_GEAR_USE_ILVL_VARIANTS_TOOLTIP_TEXT"] = "Normalmente, el equip
 L["CONFIG_SELLING_GEAR_VENDOR_PRICE_MULTIPLIER_SUFFIX"] = "Establecer en 0 sin precio"
 L["CONFIG_SELLING_GEAR_VENDOR_PRICE_MULTIPLIER_TOOLTIP_HEADER"] = "Precio predeterminado del vendedor de equipo"
 L["CONFIG_SELLING_GEAR_VENDOR_PRICE_MULTIPLIER_TOOLTIP_TEXT"] = "Esto le permite establecer un precio predeterminado para el equipo como un múltiplo del precio del vendedor. Esto se utiliza para cualquier equipo por el que Auctionator no tenga precio. Configure esto en 0 para no establecer un precio."
+--[[Translation missing --]]
+L["CONFIG_SELLING_GREY_POST_BUTTON"] = "Grey (disable) the post button when a post may fail"
+--[[Translation missing --]]
+L["CONFIG_SELLING_GREY_POST_BUTTON_TOOLTIP_HEADER"] = "Grey post button"
+--[[Translation missing --]]
+L["CONFIG_SELLING_GREY_POST_BUTTON_TOOLTIP_TEXT"] = "When a post may fail the post button will be greyed out (disabled). Turn this option off to avoid waiting for the button to enable so you can attempt to post sooner."
 L["CONFIG_SELLING_ICON_SIZE"] = "Tamaño del icono de la bolsa (se requiere recarga)"
 L["CONFIG_SELLING_ICON_SIZE_TOOLTIP_HEADER"] = "Tamaño de iconos"
 L["CONFIG_SELLING_ICON_SIZE_TOOLTIP_TEXT"] = "Esto le permite hacer que los iconos de los objetos de la bolsa en la pestaña de venta sean más grandes (hasta 50) o más pequeños (hasta 10). El tamaño predeterminado es 42."
@@ -143,22 +167,22 @@ L["CONFIG_SELLING_SHOW_BID_PRICE"] = "Mostrar la opción de precio de puja al pu
 L["CONFIG_SELLING_SHOW_BID_PRICE_TOOLTIP_HEADER"] = "Opciones de puja"
 L["CONFIG_SELLING_SHOW_BID_PRICE_TOOLTIP_TEXT"] = "Controla si la opción de precio de puja aparece al publicar un objeto."
 L["CONFIG_SELLING_SKIP_SHORTCUT"] = "Un atajo para omitir la publicación del objeto seleccionado actualmente es"
+--[[Translation missing --]]
+L["CONFIG_SELLING_SPLIT_PANELS"] = "Show split panel view between current prices and historical prices"
+--[[Translation missing --]]
+L["CONFIG_SELLING_SPLIT_PANELS_TOOLTIP_HEADER"] = "Split Panels View"
+--[[Translation missing --]]
+L["CONFIG_SELLING_SPLIT_PANELS_TOOLTIP_TEXT"] = "Normally the historical prices are on a tab inside the Selling tab, instead this makes the current prices always visible, but the historical prices show as a panel below them."
 L["CONFIG_SELLING_TBC_ALL_ITEMS"] = "Opciones para establecer la configuración de publicación predeterminada para todos los objetos."
-L["CONFIG_SELLING_TBC_SHOW_ALL_RESULTS"] = "Incluir subastas no necesarias para obtener el precio mínimo en los resultados"
-L["CONFIG_SELLING_TBC_SHOW_ALL_RESULTS_TOOLTIP_HEADER"] = "Mostrar todos los resultados"
-L["CONFIG_SELLING_TBC_SHOW_ALL_RESULTS_TOOLTIP_TEXT"] = "Habilitar esta configuración hace que se busquen todas las páginas de resultados y que se enumeren todas las subastas encontradas, aunque solo se necesita la primera página para determinar el precio mínimo."
 L["CONFIG_SELLING_TEXT"] = "Opciones para cambiar el comportamiento de la pestaña Venta"
+--[[Translation missing --]]
+L["CONFIG_SHOPPING_ALWAYS_LOAD_MORE"] = "Always load all available results."
+--[[Translation missing --]]
+L["CONFIG_SHOPPING_ALWAYS_LOAD_MORE_TOOLTIP_HEADER"] = "Always load more"
+--[[Translation missing --]]
+L["CONFIG_SHOPPING_ALWAYS_LOAD_MORE_TOOLTIP_TEXT"] = "While still getting an accurate minimum price some pages are skipped to speed up the shopping search. This prevents any pages from being skipped and ensures all possible results display."
 L["CONFIG_SHOPPING_CATEGORY"] = "Compras"
 L["CONFIG_SHOPPING_LIST"] = "Configuración de la lista de compras"
---[[Translation missing --]]
-L["CONFIG_SHOPPING_LIST_EXCLUDE_RESULTS_FOR_SPEED"] = "Ignore results that aren't on the first page of the current search"
---[[Translation missing --]]
-L["CONFIG_SHOPPING_LIST_EXCLUDE_RESULTS_FOR_SPEED_TOOLTIP_HEADER"] = "Exclude Results for Speed"
---[[Translation missing --]]
-L["CONFIG_SHOPPING_LIST_EXCLUDE_RESULTS_FOR_SPEED_TOOLTIP_TEXT"] = "Ignoring results that are not on the first page may cause some expensive items to not appear. Quantities in the price history and search results will be inaccurate."
-L["CONFIG_SHOPPING_LIST_FULL_REFRESH"] = "Actualizar todas las páginas al hacer clic en el botón Actualizar"
-L["CONFIG_SHOPPING_LIST_FULL_REFRESH_TOOLTIP_HEADER"] = "Actualizar todas las páginas"
-L["CONFIG_SHOPPING_LIST_FULL_REFRESH_TOOLTIP_TEXT"] = "Solo se necesita la primera página para determinar el precio más barato, si solo está interesado en el precio más barato y no necesita ver el resto de los resultados, puede desactivar esta opción para aumentar la velocidad."
 L["CONFIG_SHOPPING_LIST_MISSING_TERMS"] = "Mostrar términos de una lista de compras que no tienen resultados en los resultados."
 L["CONFIG_SHOPPING_LIST_MISSING_TERMS_TOOLTIP_HEADER"] = "Búsquedas sin resultados"
 L["CONFIG_SHOPPING_LIST_MISSING_TERMS_TOOLTIP_TEXT"] = "Cuando un término de búsqueda no tiene resultados, se agregará una entrada con cero disponible a los resultados para mostrar esto."
@@ -179,15 +203,21 @@ L["CONFIRM"] = "Confirmar"
 L["CONFIRM_POST_BELOW_VENDOR"] = "You can make more gold selling this to a vendor. Are you sure you want to post at that price?"
 --[[Translation missing --]]
 L["CONFIRM_POST_LOW_PRICE"] = "The price of %s looks a bit low. Are you sure you want to post at that price?"
+--[[Translation missing --]]
+L["CONFIRM_POST_PRICE_DROP"] = "The unit price of %s is a large price drop. Are you sure you want to post at that price?"
 L["CONTRIBUTORS_HEADER"] = "Colaboradores"
 L["COPY_ITEM_ADDED"] = "Copiado %s a %s"
 L["COPY_NO_LIST_SELECTED"] = "No se puede copiar el objeto. No se ha seleccionado ninguna lista de la compra"
 L["COPY_TEXT_HEADER"] = "Copiar texto"
 L["COPY_TO_LIST"] = "Copiar objeto a la lista de compras activa"
 L["CRAFTED_LEVEL"] = "Nivel de crafteo"
+--[[Translation missing --]]
+L["CRAFTING_INFO"] = "Crafting Info"
 L["CREATE"] = "Crear"
 L["CREATE_LIST_DIALOG"] = "Ingrese el nombre de la nueva lista de compras:"
 L["CURRENT"] = "Actual"
+--[[Translation missing --]]
+L["CURRENT_PRICES"] = "Current Prices"
 L["CUSTOM_KEYBOARD_SHORTCUTS"] = "Atajos de teclado personalizados"
 L["DATE"] = "Fecha"
 L["DAY_1"] = "Domingo"
@@ -232,6 +262,10 @@ L["FINISHED_PROCESSING"] = "Finalizado el procesamiento de %s objetos."
 L["FULL_SCAN_ALTERNATE_FAILED"] = "El escaneo completo (modo alternativo) no se pudo completar."
 L["FULL_SCAN_BUTTON"] = "Escaneo completo"
 L["FULL_SCAN_FAILED"] = "El 'escaneo completo' ha fallado"
+--[[Translation missing --]]
+L["FULL_SCAN_FAILED_REPLICATE"] = "Full scan (replicate mode) failed to complete."
+--[[Translation missing --]]
+L["FULL_SCAN_FAILED_SUMMARY"] = "Full scan (summary mode) failed to complete."
 L["FULL_SCAN_IN_PROGRESS"] = "Análisis completo en curso."
 L["GEAR_VENDOR_PRICE_MULTIPLIER"] = "Multiplicador de precio de vendedor de equipo"
 L["HIDE"] = "Ocultar"
@@ -257,11 +291,21 @@ L["LIST_EXTENDED_SEARCH_HEADER"] = "Opciones de búsqueda extendida"
 L["LIST_IMPORT_HEADER"] = "Importar listas de compras"
 L["LIST_SEARCH_START"] = "Buscando elementos en %s ..."
 L["LIST_SEARCH_STATUS"] = "Busque el elemento %s/%s en %s"
+--[[Translation missing --]]
+L["LOAD_HIGHER_PRICES"] = "Load higher prices"
+--[[Translation missing --]]
+L["LOAD_MORE_RESULTS"] = "Load more results"
 L["MAIL_TOOLTIP_TOOLTIP_HEADER"] = "Información sobre herramientas de buzón"
 L["MAIL_TOOLTIP_TOOLTIP_TEXT"] = [=[Muestra información del subastador para los objetos en su buzón al pasar el mouse.
 ]=]
 L["MAX"] = "Máximo"
 L["MAX_COLON_X"] = "Máx: %s"
+--[[Translation missing --]]
+L["MILL"] = "Mill"
+--[[Translation missing --]]
+L["MILL_TOOLTIP_TOOLTIP_HEADER"] = "Mill Tooltip Information"
+--[[Translation missing --]]
+L["MILL_TOOLTIP_TOOLTIP_TEXT"] = "Show inscription milling estimated value in tooltip on mouseover."
 L["MIN"] = "Minimo"
 L["MONTH_1"] = "Enero"
 L["MONTH_10"] = "Octubre"
@@ -287,6 +331,8 @@ L["NONE"] = "Ninguno"
 L["NONE_LEFT"] = "Nadie"
 L["NUMBER_SEPARATOR"] = "."
 L["OPEN_ADDON_OPTIONS"] = "Abrir las opciones del addon"
+--[[Translation missing --]]
+L["OPEN_IN_SHOPPING_TAB"] = "Open in Shopping Tab"
 L["OWNED_COLUMN"] = "¿Propiedad?"
 L["PERCENTAGE"] = "Porcentaje"
 L["PERCENTAGE_SUFFIX"] = "% Socavado"
@@ -297,11 +343,19 @@ L["PERCENTAGE_TOOLTIP_TEXT"] = [=[La hoja de ruta técnica definió el trabajo q
 L["PET_TOOLTIP_TOOLTIP_HEADER"] = "Información sobre herramientas de mascotas"
 L["PET_TOOLTIP_TOOLTIP_TEXT"] = "Muestra información para mascotas enjauladas."
 L["POST"] = "Publicar"
+--[[Translation missing --]]
+L["POST_ATTEMPT_FAILED"] = "Your last post attempt didn't work. Try again."
 L["PRICE"] = "Precio"
 L["PRICE_INCREASE_WARNING"] = "Precio aumentado en %s, esperando %ss"
 L["PROFILE_TOGGLE_TOOLTIP_HEADER"] = "Habilitar la configuración por personaje"
 L["PROFILE_TOGGLE_TOOLTIP_TEXT"] = "Los cambios en la configuración de Auctionator solo afectan a este personaje."
 L["PROFIT_COLON"] = "Ganancia:"
+--[[Translation missing --]]
+L["PROSPECT"] = "Prospect"
+--[[Translation missing --]]
+L["PROSPECT_TOOLTIP_TOOLTIP_HEADER"] = "Prospect Tooltip Information"
+--[[Translation missing --]]
+L["PROSPECT_TOOLTIP_TOOLTIP_TEXT"] = "Show jewelcrafting prospecting estimated value in tooltip on mouseover."
 L["PURCHASED_X_XX"] = "Compró %s x%s"
 L["QUANTITY"] = "Cantidad"
 L["REAGENT_SEARCH"] = "Búsqueda de componentes"
@@ -344,7 +398,8 @@ L["SHIFT_LEFT_CLICK"] = "Shift Clic Izquierdo"
 L["SHIFT_RIGHT_CLICK"] = "Shift Clic Derecho"
 L["SHOPPING_LIST"] = "Lista de compra"
 L["SHOPPING_TAB"] = "Compras"
-L["SHOPPING_TAB_HEADER"] = "Auctionator - Listas de compras"
+--[[Translation missing --]]
+L["SHOPPING_TAB_HEADER_2"] = "Auctionator - Shopping"
 L["SKIP"] = "Omitir"
 L["SORT"] = "Ordenar"
 L["SPLASH_830_BUGS_1"] = "Por favor únete a nosotros en el servidor de discord de Auctionator %s"
@@ -455,6 +510,36 @@ L["SPLASH_9108_FEATURES_7"] = "Se puede hacer clic en los mensajes de número m�
 L["SPLASH_9108_FEATURES_8"] = "Un botón de búsqueda de componentes en la ventana de fabricación cuando la casa de subastas está abierta y se muestran los costes totales de fabricación."
 L["SPLASH_9108_FEATURES_9"] = "Puede cancelar subastas propias, tanto dentro de las pantallas de compra como en la pestaña dedicada con un escaneo de descuento."
 L["SPLASH_9108_FEATURES_HEADER"] = "Características del lanzamiento clásico."
+--[[Translation missing --]]
+L["SPLASH_9225_ALL_VERSIONS_1"] = "Uses seen vendor prices when calculating crafting costs."
+--[[Translation missing --]]
+L["SPLASH_9225_ALL_VERSIONS_2"] = "Right-click any auction in the Cancelling tab to search for competing auctions."
+--[[Translation missing --]]
+L["SPLASH_9225_ALL_VERSIONS_3"] = "Quality filters for Shopping searches."
+--[[Translation missing --]]
+L["SPLASH_9225_ALL_VERSIONS_4"] = "Shift-click any column headers to reset sorting."
+--[[Translation missing --]]
+L["SPLASH_9225_ALL_VERSIONS_5"] = "Selling tab warns when posting an item below vendor price."
+--[[Translation missing --]]
+L["SPLASH_9225_ALL_VERSIONS_HEADER"] = "Recent features for all versions"
+--[[Translation missing --]]
+L["SPLASH_9225_CLASSIC_1"] = "Now loads fewer pages from the AH when selling or shopping, saving time on busy realms."
+--[[Translation missing --]]
+L["SPLASH_9225_CLASSIC_2"] = "Option for right-clicking an item in your bag to be a way to select it for the selling tab."
+--[[Translation missing --]]
+L["SPLASH_9225_CLASSIC_3"] = "Optional \"Seller(s)\" column when posting or buying auctions (right-click column headers to enable)."
+--[[Translation missing --]]
+L["SPLASH_9225_CLASSIC_4"] = "Blizzard Enchant view shows crafting cost when you are at the AH."
+--[[Translation missing --]]
+L["SPLASH_9225_CLASSIC_5"] = "Click on the item's icon in the Shopping buy screen to view it in the vanilla AH."
+--[[Translation missing --]]
+L["SPLASH_9225_CLASSIC_HEADER"] = "Recent features for Classic"
+--[[Translation missing --]]
+L["SPLASH_9225_DESCRIPTION"] = "Numerous improvements, including selling and shopping on busy classic realms becoming much faster."
+--[[Translation missing --]]
+L["SPLASH_9225_RETAIL_1"] = "Selling tab warns when posting a commodity for an abnormally low price compared to the others listed."
+--[[Translation missing --]]
+L["SPLASH_9225_RETAIL_HEADER"] = "Recent features for Retail"
 L["SPLASH_HIDE_MESSAGE"] = "No mostrar hasta la próxima actualización"
 L["SPLASH_SCREEN_HEADER"] = "Bienvenido a Auctionator"
 L["STACK_AUCTION_INFO"] = "%s para %s (en %s cada una)"
@@ -465,6 +550,10 @@ L["STACK_TOOLTIP_TOOLTIP_HEADER"] = "Precios de pila"
 L["STACK_TOOLTIP_TOOLTIP_TEXT"] = "Cuando se selecciona, la tecla ''shift'' debe mantenerse para ver los precios de la pila. Cuando no se selecciona, los precios de la pila se muestran por defecto."
 L["STARTING_FULL_SCAN"] = "Iniciando escaneo completo"
 L["STARTING_FULL_SCAN_ALTERNATE"] = "Inicio de escaneo completo (modo alternativo)."
+--[[Translation missing --]]
+L["STARTING_FULL_SCAN_REPLICATE"] = "Starting a full scan (replicate mode)."
+--[[Translation missing --]]
+L["STARTING_FULL_SCAN_SUMMARY"] = "Starting a full scan (summary mode)."
 L["STARTING_PRICE_PERCENTAGE"] = "Precio inicial"
 L["STARTING_PRICE_PERCENTAGE_SUFFIX"] = "% del precio de la pila"
 L["STARTING_PRICE_PERCENTAGE_TOOLTIP_HEADER"] = "Precio inicial de oferta"
@@ -494,6 +583,10 @@ L["TRANSLATORS_RUSSIAN"] = "Ruso"
 L["TRANSLATORS_SIMPLIFIED_CHINESE"] = "Chino simplificado"
 L["TRANSLATORS_SPANISH"] = "Español"
 L["TRANSLATORS_TRADITIONAL_CHINESE"] = "Chino tradicional"
+--[[Translation missing --]]
+L["TRANSLATORS_TURKISH_INFO"] = "Turkish (available separately)"
+--[[Translation missing --]]
+L["UNDERCUT_BID"] = "Bid"
 L["UNDERCUT_NO"] = "No"
 L["UNDERCUT_PREFERENCE"] = "Preferencia de descuento"
 L["UNDERCUT_SCAN"] = "Escaneo de descuentos"

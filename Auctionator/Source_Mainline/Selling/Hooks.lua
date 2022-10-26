@@ -1,6 +1,4 @@
-local function SelectOwnItem(self)
-  local itemLocation = ItemLocation:CreateFromBagAndSlot(self:GetParent():GetID(), self:GetID());
-
+local function SelectOwnItem(itemLocation)
   if not itemLocation:IsValid() or not C_AuctionHouse.IsSellItemValid(itemLocation) then
     return
   end
@@ -15,9 +13,9 @@ local function SelectOwnItem(self)
   itemInfo.count = C_AuctionHouse.GetAvailablePostCount(itemLocation)
 
   Auctionator.EventBus
-    :RegisterSource(self, "ContainerFrameItemButton_OnModifiedClick hook")
-    :Fire(self, Auctionator.Selling.Events.BagItemClicked, itemInfo)
-    :UnregisterSource(self)
+    :RegisterSource(SelectOwnItem, "ContainerFrameItemButton_OnModifiedClick hook")
+    :Fire(SelectOwnItem, Auctionator.Selling.Events.BagItemClicked, itemInfo)
+    :UnregisterSource(SelectOwnItem)
 end
 
 local function AHShown()
@@ -27,13 +25,14 @@ end
 hooksecurefunc(_G, "ContainerFrameItemButton_OnClick", function(self, button)
   if AHShown() and
       Auctionator.Utilities.IsShortcutActive(Auctionator.Config.Get(Auctionator.Config.Options.SELLING_BAG_SELECT_SHORTCUT), button) then
-    SelectOwnItem(self)
+    local itemLocation = ItemLocation:CreateFromBagAndSlot(self:GetParent():GetID(), self:GetID());
+    SelectOwnItem(itemLocation)
   end
 end)
 
-hooksecurefunc(_G, "ContainerFrameItemButton_OnModifiedClick", function(self, button)
-  if AHShown() and
-      Auctionator.Utilities.IsShortcutActive(Auctionator.Config.Get(Auctionator.Config.Options.SELLING_BAG_SELECT_SHORTCUT), button) then
-    SelectOwnItem(self)
+hooksecurefunc(_G, "HandleModifiedItemClick", function(itemLink, itemLocation)
+  if itemLocation ~= nil and AHShown() and
+      Auctionator.Utilities.IsShortcutActive(Auctionator.Config.Get(Auctionator.Config.Options.SELLING_BAG_SELECT_SHORTCUT), GetMouseButtonClicked()) then
+    SelectOwnItem(itemLocation)
   end
 end)

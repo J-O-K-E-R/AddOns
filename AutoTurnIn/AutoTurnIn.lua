@@ -159,8 +159,24 @@ function AutoTurnIn:RegisterGossipEvents()
 			StaticPopup1Button1:Click() 
 		end 
 	end
-	
+	local gossipFunc5 = function() 
+		if AutoTurnInCharacterDB.dismisskyriansteward then
+			AutoTurnIn:Print(L["ivechosenfive"])
+			C_GossipInfo.SelectOption(5)
+		end
+	end
+	local gossipFunc6 = function()
+		if AutoTurnInCharacterDB.covenantswapgossipcompletion then
+			C_GossipInfo.SelectOption(1)
+			C_GossipInfo.SelectOption(1)
+			StaticPopup1Button1:Click()
+		end
+	end
 	AutoTurnIn.knownGossips = {
+		["171787"]=gossipFunc6, -- Polemarch Adrestes (Kyrian)
+		["171795"]=gossipFunc6, -- Lady Moonberry (Night Fae)
+		["171589"]=gossipFunc6, -- General Draven (Venthyr)
+		["171821"]=gossipFunc6, -- Secutor Mevix (Necrolord)
 		["93188"]=gossipFunc1, -- Mongar
 		["96782"]=gossipFunc1, -- Lucian Trias
 		["97004"]=gossipFunc1, -- "Red" Jack Findle
@@ -170,6 +186,7 @@ function AutoTurnIn:RegisterGossipEvents()
 		["54334"]=gossipFunc3, -- travel to Darkmoon
 		["55382"]=gossipFunc3, -- travel to Darkmoon
 		["57850"]=gossipFunc4, -- DarkmoonFaireTeleportologist
+		["166663"]=gossipFunc5, -- Kyrian Steward
 	}
 end
 
@@ -405,13 +422,13 @@ function AutoTurnIn:GOSSIP_SHOW()
 	self:HandleGossip()
 end
 
+local trivialNoText = {}
 function AutoTurnIn:QUEST_DETAIL()
 	if (QuestIsDaily() or QuestIsWeekly()) then
 		self:CacheAsDaily(GetTitleText())
 	end
 	if QuestGetAutoAccept() then
-		CloseQuest()
-	
+		CloseQuest()	
 	else
 		if self:AllowedToHandle() and self:isAppropriate() and (not AutoTurnInCharacterDB.completeonly) then
 			--ignore trivial quests 
@@ -424,14 +441,22 @@ function AutoTurnIn:QUEST_DETAIL()
 		end
 		--quest level on detail frame
 		if AutoTurnInCharacterDB.questlevel then 
-			local level = C_QuestLog.GetQuestDifficultyLevel(GetQuestID())
+			local qid = GetQuestID()
+			local level = C_QuestLog.GetQuestDifficultyLevel(qid)
 			--sometimes it returns 0, but that's wrong
-			if level and level > 0 then 
-				local levelFormat = "[%d] %s"
+			if level and level > 0 then 			
 				local text = QuestInfoTitleHeader:GetText()
-				--trivial display
-				if C_QuestLog.IsQuestTrivial(GetQuestID()) then text = TRIVIAL_QUEST_DISPLAY:format(text) end
-				QuestInfoTitleHeader:SetText(levelFormat:format(level, text))
+				if text then -- there are reports (unconfirmed) that some trivial quests return nil for text
+					local levelFormat = "[%d] %s"
+					--trivial display
+					if C_QuestLog.IsQuestTrivial(qid) then text = TRIVIAL_QUEST_DISPLAY:format(text) end
+					QuestInfoTitleHeader:SetText(levelFormat:format(level, text))
+				else
+					if (not not trivialNoText[qid]) then
+						trivialNoText[qid] = true
+						self:Print("[AutoTurnIn] Quest has nil title [" .. qid .. "]. Could you please report it to AutoTurnIn author?")						
+					end
+				end
 			end
 		end
 	end

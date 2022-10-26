@@ -5,7 +5,7 @@
 GTFO Spell List - Shadowlands
 ]]--
 
-if (not (GTFO.ClassicMode or GTFO.BurningCrusadeMode)) then
+if (not (GTFO.ClassicMode or GTFO.BurningCrusadeMode or GTFO.WrathMode)) then
 
 --- ***********************
 --- * Shadowlands (World) *
@@ -595,6 +595,11 @@ GTFO.SpellID["352676"] = {
   sound = 1;
 };
 
+GTFO.SpellID["368015"] = {
+  --desc = "Bloated Rot Pool";
+  sound = 1;
+};
+
 --- ******************
 --- * Castle Nathria *
 --- ******************
@@ -1001,7 +1006,6 @@ GTFO.SpellID["365683"] = {
   sound = 1;
 };
 
-
 GTFO.SpellID["360425"] = {
   --desc = "Unholy Ground (The Jailer)";
   sound = 1;
@@ -1012,5 +1016,21 @@ GTFO.SpellID["365174"] = {
   --desc = "Defile (The Jailer)";
   sound = 1;
 };
+
+-- Testing only
+GTFO.SpellID["320067"] = {
+  --desc = "Faerie Dust (Shimmerbough Ritualist)";
+  applicationOnly = true;
+  sound = 1;
+  tankSound = 4;
+};
+
+GTFO.SpellID["320081"] = {
+  --desc = "Whimsy Barb (Shimmerbough Ritualist)";
+  applicationOnly = true;
+  sound = 2;
+  tankSound = 3;
+};
+
 
 end

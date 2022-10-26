@@ -84,6 +84,8 @@ L["CENTER"] = "CENTER"
 --[[Translation missing --]]
 L["Center Horizontally"] = "Center Horizontally"
 --[[Translation missing --]]
+L["CENTER will keep the rows centered and grow icons bidirectionally."] = "CENTER will keep the rows centered and grow icons bidirectionally."
+--[[Translation missing --]]
 L["Changelog"] = "Changelog"
 --[[Translation missing --]]
 L["Changing party display options in your UF addon while OmniCD is active will break the anchors. Type (/oc rl) to fix the anchors"] = "Changing party display options in your UF addon while OmniCD is active will break the anchors. Type (/oc rl) to fix the anchors"

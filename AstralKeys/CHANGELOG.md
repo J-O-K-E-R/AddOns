@@ -1,8 +1,9 @@
 # Astral Keys
 
-## [3.52](https://github.com/astralguild/AstralKeys/tree/3.52) (2022-05-31)
-[Full Changelog](https://github.com/astralguild/AstralKeys/compare/3.51...3.52) [Previous Releases](https://github.com/astralguild/AstralKeys/releases)
+## [3.63](https://github.com/astralguild/AstralKeys/tree/3.63) (2022-10-26)
+[Full Changelog](https://github.com/astralguild/AstralKeys/compare/3.62...3.63) [Previous Releases](https://github.com/astralguild/AstralKeys/releases)
 
-- Update AstralKeys.toc  
-- Update AstralKeys.toc  
-    9.2.5 toc update  
+- Merge pull request #59 from astralguild/dragonflight  
+    Restore API calls not yet switched over to DF  
+- Merge branch 'dragonflight' of https://github.com/astralguild/AstralKeys into dragonflight  
+- Fix changes that were only supposed to go out for 100002  

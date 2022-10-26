@@ -1,10 +1,11 @@
-tag a5d751f4acd26dce2ff02e4bb069bc242e7f47a9 90200.01-Retail
+tag 6b5653915ddfb8704ed8ad4ad2f15d8854e7f406 90207.01-Release
 Author:	fuba <q3fuba@gmail.com>
-Date:	Fri Mar 25 22:53:42 2022 +0100
+Date:	Sun Sep 25 11:00:57 2022 +0200
 
-commit 450dfa23ba0d95455b89d6d4ef006f1b9ff5784a
+commit 900b7dbf0279d597c9f64f299ac0eab820101932
 Author: fuba <q3fuba@gmail.com>
-Date:   Fri Mar 25 22:53:31 2022 +0100
+Date:   Sun Sep 25 10:59:51 2022 +0200
 
-    TOC Fix for Retail, sorry!
+    TOC Update & test with multiple TOC files...
+    Hopefully Works now with Curseforge!
 

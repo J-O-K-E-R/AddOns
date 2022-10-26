@@ -5,6 +5,8 @@
 local mod, CL = BigWigs:NewBoss("Blood Prince Council", 631, 1632)
 if not mod then return end
 mod:RegisterEnableMob(37970, 37972, 37973) -- Prince Valanar, Prince Keleseth, Prince Taldaram
+-- mod:SetEncounterID(1095)
+-- mod:SetRespawnTime(30)
 mod.toggleOptions = {{72040, "ICON", "FLASH"}, 72039, {72037, "SAY", "FLASH"}, 72999, 70981, 72052, {"iconprince", "ICON"}, "berserk", "proximity"}
 mod.optionHeaders = {
 	[72040] = "Taldaram",
@@ -77,12 +79,9 @@ function mod:Switch(args)
 	self:MessageOld(70981, "green", "info", L["switch_message"]:format(args.destName))
 	self:CDBar(70981, 45, L["switch_bar"])
 	self:StopBar(L["empowered_flames"])
-	for i = 1, 3 do
-		local bossId = ("boss%d"):format(i)
-		if self:UnitGUID(bossId) == args.destGUID then
-			self:PrimaryIcon("iconprince", bossId)
-			break
-		end
+	local boss = self:GetUnitIdByGUID(args.destGUID)
+	if boss then
+		self:PrimaryIcon("iconprince", boss)
 	end
 end
 
@@ -94,19 +93,17 @@ function mod:EmpoweredShock(_, spellId)
 end
 
 function mod:RegularShock()
-	for i = 1, 3 do
-		local boss = ("boss%d"):format(i)
-		if self:MobId(self:UnitGUID(boss)) == 37970 then
-			local bossTarget = boss.."target"
-			if UnitExists(bossTarget) then
-				if UnitIsUnit("player", bossTarget) then
-					self:Flash(72037)
-					self:Say(72037)
-				end
-				self:TargetMessageOld(72037, self:UnitName(bossTarget), "orange", nil, L["regular_shock_message"])
-				self:CDBar(72037, 16, L["shock_bar"])
+	local boss = self:GetUnitIdByGUID(37970)
+	if boss then
+		local bossTarget = boss.."target"
+		local target = self:UnitName(bossTarget)
+		if target then
+			if self:Me(self:UnitGUID(bossTarget)) then
+				self:Flash(72037)
+				self:Say(72037)
 			end
-			break
+			self:TargetMessageOld(72037, target, "orange", nil, L["regular_shock_message"])
+			self:CDBar(72037, 16, L["shock_bar"])
 		end
 	end
 end

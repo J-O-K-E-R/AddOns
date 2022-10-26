@@ -10,6 +10,14 @@ L['covenant_required'] = '需要%s盟约成员。'
 L['anima_channeled'] = '心能连接到%s。'
 
 -------------------------------------------------------------------------------
+--------------------------------- SHADOWLANDS ---------------------------------
+-------------------------------------------------------------------------------
+
+L['squirrels_note'] = '必须使用表情 /love 给非战斗宠物的小动物。'
+L['options_icons_squirrels'] = '{achievement:14731}'
+L['options_icons_squirrels_desc'] = '显示 {achievement:14731} 成就中小动物的位置。'
+
+-------------------------------------------------------------------------------
 --------------------------------- ARDENWEALD ----------------------------------
 -------------------------------------------------------------------------------
 
@@ -92,6 +100,53 @@ L['glitterdust_note'] = '炽蓝仙野的生物看起来可能很温顺，但他�
 L['lost_book_note'] = '把失落的书籍交给伤忆林地的 {npc:165867}。'
 L['options_icons_faerie_tales'] = '{achievement:14788}'
 L['options_icons_faerie_tales_desc'] = '显示 {achievement:14788} 成就中失落的书籍的位置。'
+
+L['options_icons_wild_hunting'] = '{achievement:14779}'
+L['options_icons_wild_hunting_desc'] = '显示 {achievement:14779} 成就中炽蓝仙野的野兽的位置。'
+
+L['options_icons_wildseed_spirits'] = '灵种精魂'
+L['options_icons_wildseed_spirits_desc'] = '灵种精魂的奖励。'
+
+L['divine_martial_spirit'] = '神圣尚武精魂'
+L['divine_dutiful_spirit'] = '神圣尽职精魂'
+L['divine_prideful_spirit'] = '神圣骄傲精魂'
+L['divine_untamed_spirit'] = '神圣狂野精魂'
+
+L['martial_spirit_label'] = '{item:178874}'
+L['dutiful_spirit_label'] = '{item:178881}'
+L['prideful_spirit_label'] = '{item:178882}'
+L['untamed_spirit_label'] = '{item:177698}'
+
+L['0x_wildseed_root_grain'] = '0个 {item:176832}'
+L['1x_wildseed_root_grain'] = '1个 {item:176832}'
+L['2x_wildseed_root_grain'] = '2个 或 3个 {item:176832}'
+L['4x_wildseed_root_grain'] = '4个 {item:176832}'
+
+L['soulshape_cat_note'] = [[
+目标为 {npc:181694} 并使用表情 /soothe
+
+可以出现在 |cFFFFFF00炽蓝仙野|r 周围6棵大树顶端的中央：
+
+· |cFFFFFF00梦歌沼泽|r
+· |cFFFFFF00闪瀑盆地|r
+· |cFFFFFF00瓦尔仙林|r
+· |cFFFFFF00冬日林谷|r
+· |cFFFFFF00心木林|r
+· |cFFFFFF00利爪之缘|r
+]]
+L['soulshape_corgi_note'] = [[
+目标为 {npc:174608} 并使用表情 /pet
+
+与 {npc:181582} 交谈时将立即可用柯基选项。
+]]
+L['soulshape_well_fed_cat_note'] = [[
+1. 从 |cffffff00暗湾镇|r 收集 {item:187811}
+2. 目标为 {npc:182093} 并使用表情 /meow
+3. |cFFFF8C00玛欧冲着你喵喵叫，显得很饿。|r
+4. 目标为 {npc:182093} 并使用 {item:187811}
+
+与 {npc:181582} 交谈时将立即可用吃饱的猫之魂选项。
+]]
 
 -------------------------------------------------------------------------------
 ----------------------------------- BASTION -----------------------------------
@@ -232,6 +287,8 @@ L['options_icons_hymns_desc'] = '显示 {achievement:14768} 成就中赞美诗�
 L['stratios_note'] = '即便是最小规模的战斗也应该带着荣誉和谨慎而战。准备好以后就展示出你的队伍。'
 L['thenia_note'] = '如此壮丽而开阔的平原。多么光荣的战场。你准备好了吗？'
 L['zolla_note'] = '我们非常重视自身的防御。无论规模大小，我们都将全力维护和训练让晋升堡垒得以稳固的资源。'
+
+L['soulshape_otter_soul'] = '目标为 {npc:181682} 并使用表情 /hug'
 
 -------------------------------------------------------------------------------
 ----------------------------------- KORTHIA -----------------------------------
@@ -408,6 +465,32 @@ L['dundley_note'] = '我会一直战斗至胜利，并最终获得我应得的�
 L['maximillian_note'] = '为了一名配得上的对手，我已经等了几十年了。战利品全归胜利者所有！'
 L['rotgut_note'] = '腐肠、残躯、更多碎块。来战吧。'
 
+L['ashen_ink_label'] = '{item:183690}'
+L['ashen_ink_note'] = '{npc:157125} 随机掉落。'
+
+L['jagged_bonesaw_label'] = '{item:183692}'
+L['jagged_bonesaw_note'] = '{npc:159105} 随机掉落。'
+
+L['discarded_grimoire_label'] = '{item:183394}'
+L['discarded_grimoire_note'] = '完成 {quest:62297} 后 {npc:174020} 给予。'
+
+L['sorcerers_blade_label'] = '{item:183397}'
+L['sorcerers_blade_note'] = '完成 {quest:62317} 后 |cFFFFFF00千魂窖|r 内的 |cFFFFFF00巫师的笔记|r 给予。下楼梯，在书柜的左边。'
+
+L['mucosal_pigment_label'] = '{item:183691}'
+L['mucosal_pigment_note'] = '任意软泥怪，小水滴，污泥，稀有，|cFFFFFF00凋零密院|r 或 {npc:162727} 附近的巨怪周围掉落。'
+
+L['amethystine_dye_label'] = '{item:183401}'
+L['amethystine_dye_note'] = '完成 {quest:62320} 后 {npc:174120} 给予。'
+
+L['ritualists_mantle_label'] = '{item:183399}'
+L['ritualists_mantle_note'] = '完成 {quest:62308} 后 {npc:172813} 给予。需要3人召唤 {npc:174127}。'
+
+L['options_icons_crypt_couture'] = '{achievement:14763}'
+L['options_icons_crypt_couture_desc'] = '{achievement:14763} 成就中通灵助祭伪装定制的位置。'
+
+L['soulshape_saurid_note'] = '小洞穴内。目标为 {npc:182105} 并使用表情 /bow'
+
 -------------------------------------------------------------------------------
 --------------------------------- REVENDRETH ----------------------------------
 -------------------------------------------------------------------------------
@@ -483,6 +566,15 @@ L['inquisitor_note'] = '把100个 {currency:1816} 交给 {npc:160248} 有机会�
 L['options_icons_inquisitors'] = '审判官'
 L['options_icons_inquisitors_desc'] = '显示 {achievement:14276} 成就中审判官的位置。'
 
+L['bell_of_shame_note'] = '每30分钟，{npc:176006} 旁边会随机生成一个幽灵。\n\n使用30个 {currency:1820} 修复 {npc:176056} 然后敲钟从激活的幽灵那里获得一个增益。\n\n幽灵其中之一，{npc:176043} 给予 {spell:346708} 提供增加 |cFFFFFD00赎罪大厅|r 区域范围内 {item:172957} 掉率。'
+L['atonement_crypt_label'] = '赎罪地穴'
+L['atonement_crypt_note'] = '使用一个 {item:172957} 打开 |cFFFFFD00赎罪地穴|r。'
+L['atonement_crypts_opened'] = '打开赎罪地穴'
+L['atonement_crypt_key_label'] = '{item:172957}'
+L['atonement_crypt_key_note'] = '|cFFFFFD00赎罪大厅|r 区域范围内怪物掉落 {item:172957}。\n\n{npc:158902}\n{npc:176109}\n{npc:158894}\n{npc:156911}\n{npc:158910}\n{npc:176121}\n{npc:176114}\n{npc:156909}\n{npc:156256}\n{npc:176124}\n{npc:156260}\n{npc:159027}\n{npc:158897}\n{npc:176116}\n{npc:158908}\n{npc:176122}\n\n最高掉率的是 {npc:158892}。'
+L['options_icons_crypt_kicker'] = '{achievement:14273}'
+L['options_icons_crypt_kicker_desc'] = '显示 {achievement:14273} 成就中刷怪的位置。'
+
 L['broken_mirror'] = '残破的镜子'
 L['broken_mirror_note'] = '每天将会激活一组3个残破的镜子。使用一个 {item:181363} 修复每个镜子并打开其中的 |cFFFFFD00被遗忘的宝箱|r。'
 L['broken_mirror_crypt'] = '墓穴内。'
@@ -494,6 +586,21 @@ L['broken_mirror_61819'] = '小房间内的一层。'
 L['broken_mirror_61827'] = '小房间内。'
 L['options_icons_broken_mirror'] = '残破的镜子'
 L['options_icons_broken_mirror_desc'] = '显示残破的镜子的位置。'
+
+L['soulshape_chicken_note'] = [[
+1. 从 |cffffff00暗湾镇|r 收集 {item:187811}
+2. 目标为 {npc:181660} 并使用表情 /chicken
+3. |cFFFF8C00失落之魂冲着你咯咯叫，显得很饿。|r
+4. 目标为 {npc:181660} 并使用 {item:187811}
+]]
+L['spectral_feed_label'] = '{item:187811}'
+L['spectral_feed_note'] = [[
+{item:187811} 用于喂食 |cffffff00雷文德斯|r 的 {npc:181660} 获得 {item:187813}
+
+{item:187811} 用于喂食 |cFFFFFF00炽蓝仙野|r 的 {npc:182093} 获得 |cFF00FF00[吃饱的猫之魂]|r
+
+|cFFFF8C00{item:187811} 显示10分钟并需60分钟刷新。|r
+]]
 
 -------------------------------------------------------------------------------
 ----------------------------------- THE MAW -----------------------------------
@@ -672,15 +779,95 @@ L['tormentors_note'] = [[
 {item:185972} 每周只可以拾取一次，其中包含50个 {currency:1906}。
 ]]
 
+L['options_icons_mawsworn_blackguard'] = '{achievement:14742}'
+L['options_icons_mawsworn_blackguard_desc'] = '显示 for {achievement:14742} 成就中渊誓黑衣卫士的位置。'
+
+L['mawsworn_blackguard'] = '渊誓黑衣卫士'
+L['mawsworn_blackguard_note'] = '很容易切换目标为潜行的 {npc:183173}：'
+
+L['options_icons_covenant_assaults'] = '盟约突袭'
+L['options_icons_covenant_assaults_desc'] = '盟约突袭奖励。'
+
+L['assault_sublabel_US'] = '突袭更换于太平洋夏令时间周二上午8点和周五下午20点'
+L['assault_sublabel_EU'] = '突袭更换于欧洲中部时间周二上午8点和周五下午20点'
+L['assault_sublabel_CN'] = '突袭更换于中国标准时间周四上午7点和周日下午19点'
+
+L['necrolord_assault'] = '{quest:63543}'
+L['necrolord_assault_note'] = '{item:185992} 可在突袭期间拾取。'
+L['necrolord_assault_quantity_note'] = '打开渊誓之箱'
+L['venthyr_assault'] = '{quest:63822}'
+L['venthyr_assault_note'] = '{item:185990} 可在突袭期间拾取。'
+L['venthyr_assault_quantity_note'] = '使用物品'
+L['night_fae_assault'] = '{quest:63823}'
+L['night_fae_assault_note'] = '{item:185991} 可在突袭期间拾取。'
+L['night_fae_assault_quantity_note'] = '打开隙隐宝箱'
+L['kyrian_assault'] = '{quest:63824}'
+L['kyrian_assault_note'] = '{item:185993} 可在突袭期间拾取。'
+L['kyrian_assault_quantity_note1'] = '找到阿猾'
+L['kyrian_assault_quantity_note2'] = '熔炉附近跳舞'
+
+-------------------------------------------------------------------------------
+---------------------- TORGHAST, THE TOWER OF THE DAMNED ----------------------
+-------------------------------------------------------------------------------
+
+L['torghast_the_tower_of_the_damned'] = '托加斯特，罪魂之塔'
+L['torghast_reward_sublabel'] = '|cFFFF8C00大多数区域共享奖励|r'
+L['torghast_boss_note'] = '|cffffff00托加斯特，罪魂之塔|r 各种首领掉落。'
+L['torghast_vendor_note'] = '供应商 {npc:152594} 和 {npc:170257} 出售，售价 300 {currency:1728} 或 1,000 {currency:1728}。'
+L['torghast_reward_note'] = '|cffffff00托加斯特，罪魂之塔|r 全程获取'
+L['torghast_soulshape_note'] = '12层以上'
+L['colossal_umbrahide_mawrat_note'] = '13层以上'
+
+L['skoldus_hall'] = '斯科杜斯之厅'
+L['fracture_chambers'] = '断骨密室'
+L['the_soulforges'] = '灵魂熔炉'
+L['coldheart_interstitia'] = '凇心间隙'
+L['mortregar'] = '莫尔特雷加'
+L['the_upper_reaches'] = '上层区域'
+L['adamant_vaults'] = '坚钢宝库'
+L['twisting_corridors'] = '扭曲回廊'
+L['the_jailers_gauntlet'] = '典狱长的挑战'
+
+L['torghast_layer1'] = '完成1层'
+L['torghast_layer2'] = '完成2层'
+L['torghast_layer3'] = '完成3层'
+L['torghast_layer4'] = '完成4层'
+L['torghast_layer6'] = '完成6层'
+L['torghast_layer8'] = '完成8层'
+
+L['phantasma_note'] = '幻灭心能'
+L['bloating_fodder_note'] = '鼓胀饲料爆裂'
+L['flawless_master_note'] = '完成 |cffffff00[{achievement:15322}]|r'
+L['tower_ranger_note'] = '完成 |cffffff00[{achievement:15324}]|r'
+
+L['the_jailers_gauntlet_note'] = '|cFFFF8C00首领不计入|r |cffffff00{achievement:14498}|r'
+
+L['the_box_of_many_things'] = '万物之盒'
+L['the_box_of_many_things_note'] = '{currency:1904} 解锁额外的能力'
+L['many_many_things_section'] = '完成 |cffffff00[{achievement:15079}]|r'
+
+L['the_runecarver'] = '{npc:164937}'
+L['clearing_the_fog_suffix'] = '已解锁记忆'
+
 -------------------------------------------------------------------------------
 -------------------------------- ZERETH MORTIS --------------------------------
 -------------------------------------------------------------------------------
 
-L['camber_alcove_note'] = nil
-L['dormant_alcove_note'] = nil
-L['fulgore_alcove_note'] = nil
-L['rondure_alcove_note'] = nil
-L['repertory_alcove_note'] = nil
+local HIDDEN_ALCOVE = [[
+访问 |cFFFFFD00%s凹室|r：
+
+1. 完成第6章扎雷殁提斯战役。
+2. 找到 |cFFFFFD00%s凹室指向|r %s。
+3. 在 |cFFFFFD00共振群山|r，击杀有 {spell:362651} 的怪物或站在白池中获得60 {npc:183569}。
+4. 使用孕育栖地内的 {npc:184329} 访问内室。（需要30 {npc:183569}）
+5. 使用 {npc:184485} 访问%s凹室。（需要30 {npc:183569}）
+]]
+
+L['camber_alcove_note'] = string.format(HIDDEN_ALCOVE, '拱曲', '拱曲', '在 |cFFFFFD00最终位点|r 建筑物后面', '拱曲')
+L['dormant_alcove_note'] = string.format(HIDDEN_ALCOVE, '休眠', '休眠', '位于 |cFFFFFD00共振群山|r', '休眠')
+L['fulgor_alcove_note'] = string.format(HIDDEN_ALCOVE, '灿烂', '灿烂', '位于 |cFFFFFD00共振群山|r', '灿烂')
+L['rondure_alcove_note'] = string.format(HIDDEN_ALCOVE, '圆弧', '圆弧', '在 |cFFFFFD00第三位点|r 平台上', '圆弧')
+L['repertory_alcove_note'] = string.format(HIDDEN_ALCOVE, '储备', '储备', '在 |cFFFFFD00陆相宝窟|r 洞穴内', '储备')
 
 L['corrupted_architect_note'] = '攻击 {npc:183958} 和 {npc:183961} 激活稀有。'
 L['dune_dominance_note'] = '{achievement:15392} 成就中全部3个稀有精英在此位置刷新。'
@@ -746,15 +933,34 @@ L['provis_cache_note'] = [[
 L['prying_eye_discovery'] = '窥探之眼的发现'
 L['prying_eye_discovery_note'] = '飞行解锁后容易到达。'
 L['pulp_covered_relic'] = '被粘浆覆盖的圣物'
-L['requisites_originator_note'] = nil
-L['rondure_cache'] = nil
-L['rondure_cache_note'] = nil
+L['requisites_originator_note'] = [[
+一台每周会给你不同奖励的机器：
+
+· {spell:366667} = 附魔材料和金币
+· {spell:366668} = 心能
+· {spell:366669} = 密文
+· {spell:366670} = 源生微粒和 {item:189179} （几率）
+· {spell:366671} = 密文/微粒/心能
+· {spell:366672} = 密文装备
+]]
+L['rondure_cache'] = '圆弧宝箱'
+L['rondure_cache_note'] = '位于 |cFFFFFD00圆弧凹室|r 内跳跃迷宫到顶部的可交互锻炉。'
 L['sandworn_chest'] = '沙蚀宝箱'
 L['sandworn_chest_note'] = '从区域内怪物拾取5个 {item:190198} 组合成 {item:190197}。'
-L['sand_piles'] = nil
-L['sand_piles_note'] = nil
-L['torn_ethereal_drape'] = nil
-L['torn_ethereal_drape_note'] = nil
+L['sand_piles'] = '沙堆'
+L['sand_piles_note'] = [[
+全部沙堆在隐藏的休眠凹室内找到。每个沙堆需要一个 {item:189863}，可以在该区域的其它宝藏中找到：
+
+· 统御之箱
+· 陨落宝箱
+· 被窃的神器
+· 被盗的卷轴
+· 水下的宝箱
+· 交响宝箱
+· 波动植物
+]]
+L['torn_ethereal_drape'] = '破旧的虚渺披风'
+L['torn_ethereal_drape_note'] = '在 |cFFFFFD00灿烂凹室|r 内找到。激活 |cFFFFFD00自动体控制台|r，然后骑上 {npc:183565} 到达天花板。'
 
 L['cache_avian_nest'] = '元鸟之巢'
 L['cache_cypher_bound'] = '密文束缚的宝箱'
@@ -763,7 +969,11 @@ L['cache_forgotten_vault'] = '被遗忘的宝库'
 L['cache_mawsworn_supply'] = '渊誓补给宝箱'
 L['cache_tarachnid_eggs'] = '元蛛卵'
 L['cache_shrouded_cypher'] = '氤氲密文宝箱'
-L['cache_shrouded_cypher_note'] = '需要装备 {spell:364478} 物品。'
+L['cache_shrouded_cypher_note'] = [[
+这些宝箱只在有 {spell:361917} 增益和装备一件适当的密文装备物品时能看到：
+
+|cFF00FF00强化波可波克的观察力，使其可以发现额外的隐藏宝箱。|r
+]]
 
 L['cache_cantaric'] = '声乐宝箱'
 L['cache_fugueal'] = '赋格宝箱'
@@ -791,9 +1001,9 @@ L['schematic_ineffable_skitterer_note'] = '自杀！不，确实需要灵魂状�
 L['schematic_leaping_leporid_note'] = '在一棵漂浮的树上发现。'
 L['schematic_mawdapted_raptora_note'] = '位于 |cFFFFFD00无尽流沙|r 的 {npc:181412} 小几率掉落。'
 L['schematic_microlicid_note'] = '在浮空树最低的树枝上，在一些树叶下面。'
-L['schematic_omnipotential_core_note'] = nil
+L['schematic_omnipotential_core_note'] = '|cFFFFFD00圆弧凹室|r 内找到。结构图隐藏在房间西南侧拱门的上沿后面。'
 L['schematic_prototickles_note'] = '附在 {npc:180978} 稀有上方藤蔓内的浮动链上。'
-L['schematic_prototype_fleetpod_note'] = nil
+L['schematic_prototype_fleetpod_note'] = '|cFFFFFD00拱曲凹室|r 内找到。和 {npc:184900} 互动开启小游戏。指引蜗牛穿过5个环而不接触 {npc:185455} 赢得结构图。'
 L['schematic_raptora_swooper_note'] = '塑形之厅内发现。'
 L['schematic_resonant_echo_note'] = '|cFFFFFD00原初之歌的晶化回响|r 内几率发现。'
 L['schematic_russet_bufonid_note'] = '{item:187780} 巅峰宝箱内几率发现。'
@@ -842,7 +1052,21 @@ L['patient_bufonid_note_day6'] = '从朝圣者的恩典附近的 {npc:185748} �
 L['patient_bufonid_note_day7'] = '从塔扎维什地下城的 {npc:180114} 购买1个 {item:187171}。'
 
 L['lost_comb'] = '失落的蜂巢'
-L['soulshape_penguin_note'] = '位于浮空锻炉顶部。与 {npc:185279} 互动获得物品。'
+L['soulshape_penguin_note'] = '位于浮空锻炉顶部。'
+
+L['coreless_automa'] = '无核自动体'
+L['coreless_automa_note'] = '装备一个 {spell:364480} 物品将赋予 |cFFFFFD00波可波克|r 不消耗能量就能控制生物的能力，这将会获得成就更加快速。'
+L['coreless_automa_warning'] = '|cFFFF8C00等待自动机真正开始跟随你然后让波可波克离开，以避免导致需要你重新登录的错误。|r'
+
+L['olea_manu'] = '用 {currency:1979} 换取出售的收藏和食谱。'
+
+L['venaris_fate_sublabel'] = '位于 |cFFFFFF00造物化生台|r'
+L['venaris_fate_note'] = [[
+1. 在 |cFFFFFF00噬渊|r 的 |cFFFFFF00威·娜莉的庇护所|r 的虚体化 {npc:162804} 对话。
+2. 如果她不是虚体，则需要额外的9.2故事进度。
+3. 在 |cFFFFFF00扎雷殁提斯|r 的 |cFFFFFF00造物化生台|r 和 {npc:162804} 的尸体互动。
+4. 5天后，将收到一封来自 {npc:162804} 的邮件以及 {item:192485}。
+]]
 
 L['options_icons_code_creature'] = '{achievement:15211}'
 L['options_icons_code_creature_desc'] = '显示 {achievement:15211} 成就中生物的位置。'
@@ -861,6 +1085,8 @@ L['options_icons_puzzle_caches_desc'] = '显示谜题宝箱可能的位置。'
 L['options_icons_zereth_caches'] = '密文宝箱'
 L['options_icons_zereth_caches_desc'] = '显示密文宝箱可能的位置。'
 L['options_icons_shrouded_cyphers'] = '氤氲密文宝箱'
-L['options_icons_shrouded_cyphers_desc'] = '显示氤氲密文宝箱可能的位置。需要装备 {spell:364478} 物品。'
-L['options_icons_mawsworn_supply_cache'] = nil
-L['options_icons_mawsworn_supply_cache_desc'] = nil
+L['options_icons_shrouded_cyphers_desc'] = '显示隐藏的氤氲密文宝箱可能的位置。'
+L['options_icons_mawsworn_supply_cache'] = '渊誓补给宝箱'
+L['options_icons_mawsworn_supply_cache_desc'] = '显示渊誓补给宝箱可能的位置。'
+L['options_icons_coreless_automa'] = '{achievement:15542}'
+L['options_icons_coreless_automa_desc'] = '显示 {achievement:15542} 成就中无核自动体的位置。'

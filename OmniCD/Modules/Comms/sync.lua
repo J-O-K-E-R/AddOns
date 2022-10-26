@@ -43,13 +43,7 @@ function Comms:SendSync(sender)
 	if E.syncData == "" then
 		self:InspectPlayer()
 	end
-
-	if sender then
-
-		self:SendCommMessage(E.AddonMsgPrefix, strjoin(",", MSG_INFO, E.syncData), "WHISPER", sender)
-	else
-		SendComm(MSG_INFO_UPDATE, E.syncData)
-	end
+	SendComm(sender or MSG_INFO_UPDATE, E.syncData)
 end
 
 function Comms:Desync()
@@ -64,11 +58,11 @@ function Comms:GetNumSyncMembers()
 	for k in pairs(self.syncGUIDS) do
 		c = c + 1;
 	end
-	return c;
+	return c == 0 and 0.5 or c;
 end
 
 function Comms:ToggleLazySync()
-	if ( E.isPreBCC ) then
+	if ( E.isPreWOTLKC ) then
 		return;
 	end
 
@@ -82,7 +76,7 @@ function Comms:ToggleLazySync()
 	end
 end
 
-if ( not E.isPreBCC ) then
+if ( not E.isPreWOTLKC ) then
 
 	function Comms:SyncLazyCDR(guid, cdstr)
 		local info = P.groupInfo[guid];
@@ -260,7 +254,7 @@ function Comms:CHAT_MSG_ADDON(prefix, message, dist, sender)
 		end
 		return;
 	elseif header == MSG_INFO_REQUEST then
-		self:SendSync(sender)
+		self:SendSync(guid)
 	elseif header == MSG_INFO_UPDATE then
 		if not isSyncedUnit then
 			return
@@ -271,13 +265,15 @@ function Comms:CHAT_MSG_ADDON(prefix, message, dist, sender)
 		end
 		self:ToggleLazySync()
 		return
+	elseif header ~= userGUID then
+		return
 	end
 
 	info.talentData = {}
 	info.invSlotData = {}
 	info.shadowlandsData = {}
 
-	if E.isPreBCC then
+	if E.isPreWOTLKC then
 		local s, e, v = 1
 		local i = 0
 		local isInvSlot = false
@@ -392,6 +388,9 @@ do
 		if change == -1 then
 			SendUpdatedSyncData()
 		end
+	end
+	function Comms:PLAYER_TALENT_UPDATE()
+		SendUpdatedSyncData()
 	end
 
 	function Comms:PLAYER_SPECIALIZATION_CHANGED(unit)

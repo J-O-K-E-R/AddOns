@@ -1,4 +1,3 @@
-
 --------------------------------------------------------------------------------
 -- Module Declaration
 --
@@ -7,6 +6,7 @@ local mod, CL = BigWigs:NewBoss("So'leah", 2441, 2455)
 if not mod then return end
 mod:RegisterEnableMob(177269) -- So'leah
 mod:SetEncounterID(2442)
+mod:SetRespawnTime(30)
 mod:SetStage(1)
 
 --------------------------------------------------------------------------------
@@ -90,7 +90,7 @@ do
 
 	function mod:CollapsingEnergyApplied(args)
 		if self:Me(args.destGUID) then
-			self:NewStackMessage(args.spellId, "blue", args.destName, args.amount)
+			self:StackMessage(args.spellId, "blue", args.destName, args.amount, 2)
 
 			local barTimeLeft = self:BarTimeLeft(CL.count:format(CL.explosion, starCount))
 			self:StopBar(CL.count:format(CL.explosion, starCount))
@@ -104,7 +104,7 @@ end
 
 function mod:CollapsingEnergyRemoved(args)
 	if self:Me(args.destGUID) then
-		self:PersonalMessage(args.spellId, "removed")
+		self:Message(args.spellId, "green", CL.removed:format(args.spellName))
 		self:PlaySound(args.spellId, "info")
 	end
 end

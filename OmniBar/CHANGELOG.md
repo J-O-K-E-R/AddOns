@@ -1,1 +1,3 @@
+- Track shared cooldowns
+- Update spells
 - Bug fix

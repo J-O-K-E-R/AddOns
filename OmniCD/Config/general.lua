@@ -4,8 +4,8 @@ local LSM = LibStub("LibSharedMedia-3.0")
 E.Libs.LSM = LSM
 LSM:Register("statusbar", "OmniCD Flat", "Interface\\Addons\\OmniCD\\Media\\omnicd-texture_flat.blp")
 LSM:Register("font", "PT Sans Narrow Bold", "Interface\\Addons\\OmniCD\\Media\\Fonts\\PTSansNarrow-Bold.ttf", bit.bor(LSM.LOCALE_BIT_western, LSM.LOCALE_BIT_ruRU))
-LSM_Font = {}
-LSM_Statusbar = {}
+local LSM_Font = {}
+local LSM_Statusbar = {}
 
 local title = GENERAL
 

@@ -208,7 +208,7 @@ do
 	function mod:MadnessBombApplied(args)
 		if UnitIsPlayer(args.destName) then
 			playerList[#playerList+1] = args.destName
-			self:TargetsMessage(args.spellId, "yellow", playerList)
+			self:TargetsMessageOld(args.spellId, "yellow", playerList)
 		end
 		if self:Me(args.destGUID) then
 			self:PlaySound(args.spellId, "warning")
@@ -269,7 +269,7 @@ end
 
 function mod:BlackScar(args)
 	local amount = args.amount or 1
-	self:StackMessage(args.spellId, args.destName, amount, "purple")
+	self:StackMessageOld(args.spellId, args.destName, amount, "purple")
 	if amount > 1 then
 		self:PlaySound(args.spellId, "warning")
 	end
@@ -306,7 +306,7 @@ function mod:SynthesisRemoved(args)
 		self:PlaySound("stages", "info")
 	elseif amount % 3 == 0 or lastSynthesisMsg-amount > 3 or amount < 4 then
 		lastSynthesisMsg = amount -- Events can be skipped, so this is our fallback
-		self:StackMessage(args.spellId, args.destName, amount, "green")
+		self:StackMessageOld(args.spellId, args.destName, amount, "green")
 	end
 end
 
@@ -353,13 +353,18 @@ function mod:InfiniteDarkness(args)
 	self:Bar(args.spellId, 54, CL.count:format(args.spellName, eternalDarknessCount))
 end
 
-function mod:StartThrashingTentacleTimer(t)
-	self:CDBar(-21069, t, CL.count:format(self:SpellName(-21069), trashingTentacleCount), 315673)
-	self:ScheduleTimer("Message", t, -21069, "red", CL.count:format(CL.incoming:format(self:SpellName(-21069)), trashingTentacleCount), 315673)
-	self:ScheduleTimer("CastBar", t, -21069, 6, CL.count:format(self:SpellName(304077), trashingTentacleCount), 272713) -- Tentacle Slam
-	self:ScheduleTimer("PlaySound", t, -21069, "alert")
-	trashingTentacleCount = trashingTentacleCount + 1
-	self:ScheduleTimer("StartThrashingTentacleTimer", t, 20)
+do
+	local function delayMessage(messageText, barText)
+		mod:Message(-21069, "red", messageText, 315673)
+		mod:CastBar(-21069, 6, barText, 272713) -- Tentacle Slam
+		mod:PlaySound(-21069, "alert")
+	end
+	function mod:StartThrashingTentacleTimer(t)
+		self:CDBar(-21069, t, CL.count:format(self:SpellName(-21069), trashingTentacleCount), 315673)
+		self:ScheduleTimer(delayMessage, t, CL.count:format(CL.incoming:format(self:SpellName(-21069)), trashingTentacleCount), CL.count:format(self:SpellName(304077), trashingTentacleCount))
+		trashingTentacleCount = trashingTentacleCount + 1
+		self:ScheduleTimer("StartThrashingTentacleTimer", t, 20)
+	end
 end
 
 function mod:CystGenesis(args)

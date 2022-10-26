@@ -1,4 +1,3 @@
-
 --------------------------------------------------------------------------------
 -- Module Declaration
 --
@@ -6,8 +5,8 @@
 local mod, CL = BigWigs:NewBoss("The Manastorms", 2291, 2409)
 if not mod then return end
 mod:RegisterEnableMob(164556, 164555) -- Millhouse Manastorm, Millificent Manastorm
-mod.engageId = 2394
---mod.respawnTime = 30
+mod:SetEncounterID(2394)
+mod:SetRespawnTime(30)
 
 --------------------------------------------------------------------------------
 -- Locals
@@ -144,7 +143,7 @@ do
 		if #playerList == 1 then
 			self:Bar(args.spellId, 15)
 		end
-		self:TargetsMessage(args.spellId, "red", playerList, 2, laser)
+		self:TargetsMessageOld(args.spellId, "red", playerList, 2, laser)
 		if self:Me(args.destGUID) then
 			self:PlaySound(args.spellId, "warning")
 			self:Say(args.spellId, laser)

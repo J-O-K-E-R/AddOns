@@ -108,7 +108,7 @@
 			<Color r=".196" g=".388" b=".8" />
 		</HighlightTexture>
 	</Button>
-	
+
 	<Button name="PawnUIFrame_ScaleSelector_ItemTemplate" virtual="true" inherits="PawnUIFrame_Generic_ItemTemplate" useParentLevel="true">
 		<Size><AbsDimension x="150" y="16" /></Size>
 		<DisabledFont style="PawnFontBlueSmall" />
@@ -385,7 +385,6 @@
 		<Size><AbsDimension x="40" y="40" /></Size>
 	</Texture>
 
-	
 	<!-- Pawn quest advisor -->
 	<Texture name="PawnUI_QuestAdvisorTexture" file="Interface\AddOns\Pawn\Textures\UpgradeArrowBig" virtual="true" hidden="true">
 		<Anchors><Anchor point="BOTTOMLEFT"><Offset><AbsDimension x="15" y="-5" /></Offset></Anchor></Anchors>
@@ -395,7 +394,6 @@
 		<Anchors><Anchor point="BOTTOMLEFT"><Offset><AbsDimension x="15" y="-5" /></Offset></Anchor></Anchors>
 		<Size><AbsDimension x="18" y="18" /></Size>
 	</Texture>
-
 
 	<!-- The main Pawn configuration UI -->
 	<Frame name="PawnUIFrame" toplevel="true" parent="UIParent" hidden="true" movable="true" enableMouse="true">
@@ -470,6 +468,23 @@
 								<!-- Content added dynamically, and size updated dynamically -->
 
 								<Frames>
+
+									<Frame name="PawnUIFrame_ScaleSelector_NoneWarning">
+										<Anchors><Anchor point="TOPLEFT" /></Anchors>
+										<Size><AbsDimension x="162" y="80" /></Size>
+										<Layers>
+											<Layer level="ARTWORK">
+												<Texture file="Interface\DialogFrame\UI-Dialog-Icon-AlertNew">
+													<Anchors><Anchor point="TOP" x="0" y="-12" /></Anchors>
+													<Size><AbsDimension x="32" y="32" /></Size>
+												</Texture>
+												<FontString text="PawnUIFrame_ScaleSelector_NoneWarning_Text" inherits="GameFontNormalSmall" justifyH="MIDDLE" justifyV="MIDDLE">
+													<Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="8" y="-40"/></Offset></Anchor></Anchors>
+													<Size><AbsDimension x="146" y="40" /></Size>
+												</FontString>
+											</Layer>
+										</Layers>
+									</Frame>
 
 									<Frame name="PawnUIFrame_ScaleSelector_HighlightFrame" hidden="true">
 										<Anchors><Anchor point="TOPLEFT"></Anchor></Anchors>
@@ -1603,72 +1618,6 @@
 					
 				</Layers>
 			</Frame>
-			
-			<!-- The tab buttons -->
-			<!-- List the right-side tabs first so they overlap the others in case of custom fonts or long strings: the Gems tab is less important than Options. -->
-			<Button name="$parentTab6" inherits="CharacterFrameTabButtonTemplate" id="6" text="PawnUIFrame_AboutTab_Text">
-				<Anchors><Anchor point="RIGHT" relativePoint="BOTTOMRIGHT"><Offset><AbsDimension x="-6" y="-8" /></Offset></Anchor></Anchors>
-				<Scripts>
-					<OnClick>
-						PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB)
-						PawnUISwitchToTab(PawnUIAboutTabPage)
-					</OnClick>
-				</Scripts>
-			</Button>
-			<Button name="$parentTab7" inherits="CharacterFrameTabButtonTemplate" id="7" text="PawnUIFrame_HelpTab_Text">
-				<Anchors><Anchor point="RIGHT" relativeTo="$parentTab6" relativePoint="LEFT"><Offset><AbsDimension x="16" y="0" /></Offset></Anchor></Anchors>
-				<Scripts>
-					<OnClick>
-						PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB)
-						PawnUISwitchToTab(PawnUIHelpTabPage)
-					</OnClick>
-				</Scripts>
-			</Button>
-			<Button name="$parentTab5" inherits="CharacterFrameTabButtonTemplate" id="5" text="PawnUIFrame_OptionsTab_Text">
-				<Anchors><Anchor point="RIGHT" relativeTo="$parentTab7" relativePoint="LEFT"><Offset><AbsDimension x="16" y="0" /></Offset></Anchor></Anchors>
-				<Scripts>
-					<OnClick>
-						PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB)
-						PawnUISwitchToTab(PawnUIOptionsTabPage)
-					</OnClick>
-				</Scripts>
-			</Button>
-			<Button name="$parentTab1" inherits="CharacterFrameTabButtonTemplate" id="1" text="PawnUIFrame_ScalesTab_Text">
-				<Anchors><Anchor point="LEFT" relativePoint="BOTTOMLEFT"><Offset><AbsDimension x="196" y="-8" /></Offset></Anchor></Anchors>
-				<Scripts>
-					<OnClick>
-						PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB)
-						PawnUISwitchToTab(PawnUIScalesTabPage)
-					</OnClick>
-				</Scripts>
-			</Button>
-			<Button name="$parentTab2" inherits="CharacterFrameTabButtonTemplate" id="2" text="PawnUIFrame_ValuesTab_Text">
-				<Anchors><Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT"><Offset><AbsDimension x="-16" y="0" /></Offset></Anchor></Anchors>
-				<Scripts>
-					<OnClick>
-						PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB)
-						PawnUISwitchToTab(PawnUIValuesTabPage)
-					</OnClick>
-				</Scripts>
-			</Button>
-			<Button name="$parentTab3" inherits="CharacterFrameTabButtonTemplate" id="3" text="PawnUIFrame_CompareTab_Text">
-				<Anchors><Anchor point="LEFT" relativeTo="$parentTab2" relativePoint="RIGHT"><Offset><AbsDimension x="-16" y="0" /></Offset></Anchor></Anchors>
-				<Scripts>
-					<OnClick>
-						PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB)
-						PawnUISwitchToTab(PawnUICompareTabPage)
-					</OnClick>
-				</Scripts>
-			</Button>
-			<Button name="$parentTab4" inherits="CharacterFrameTabButtonTemplate" id="4" text="PawnUIFrame_GemsTab_Text">
-				<Anchors><Anchor point="LEFT" relativeTo="$parentTab3" relativePoint="RIGHT"><Offset><AbsDimension x="-16" y="0" /></Offset></Anchor></Anchors>
-				<Scripts>
-					<OnClick>
-						PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB)
-						PawnUISwitchToTab(PawnUIGemsTabPage)
-					</OnClick>
-				</Scripts>
-			</Button>
 
 		</Frames>
 
@@ -1682,13 +1631,17 @@
 				self:RegisterEvent("UNIT_INVENTORY_CHANGED")
 				self:RegisterEvent("ITEM_LOCKED")
 				self:RegisterEvent("GROUP_ROSTER_UPDATE")
-				if VgerCore.IsShadowlands then
-					-- These events don't exist on Classic or Burning Crusade Classic.
+				self:RegisterEvent("MERCHANT_UPDATE")
+				-- These events don't exist on Classic versions.
+				if VgerCore.SpecsExist then
 					self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
+				end
+				if VgerCore.ArtifactsExist then
 					self:RegisterEvent("ARTIFACT_UPDATE")
 				end
-				PawnUITabList = { PawnUIScalesTabPage, PawnUIValuesTabPage, PawnUICompareTabPage, PawnUIGemsTabPage, PawnUIOptionsTabPage, PawnUIAboutTabPage, PawnUIHelpTabPage }
-				PanelTemplates_SetNumTabs(PawnUIFrame, #PawnUITabList)
+
+				PawnUITabList = { PawnUIScalesTabPage, PawnUIValuesTabPage, PawnUICompareTabPage, PawnUIGemsTabPage, PawnUIOptionsTabPage, PawnUIHelpTabPage, PawnUIAboutTabPage }
+				PawnUICreateTabs()
 
 				if BackdropTemplateMixin then Mixin(self, BackdropTemplateMixin) end
 				self:SetBackdrop({

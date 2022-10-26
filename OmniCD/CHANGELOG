@@ -1,6 +1,9 @@
 ------------------------------------------------------------------------------
 - classic era
 -
+v1.14.3.2722
+
+	Classic Era re-release. (Build 44834)
 
 v2.7.00
 	toc update - 11402
@@ -17,6 +20,18 @@ v2.6.30
 ------------------------------------------------------------------------------
 - bcc
 -
+
+v2.5.4.2722
+	NIL.
+
+v2.7.20
+	Merciless, Vengeful, Brutal Gladiator set items added.
+	Localization updated for ruRU, zhTW
+
+v2.7.15
+	Feign Death will no longer grey-out the icons.
+	Fixed an issue where logging back in would incorrectly grey-out the icons.
+	Group inspection is now done periodically until the arena match begins.
 
 v2.7.11
 	Bumped toc for 2.5.4
@@ -61,8 +76,99 @@ v2.6.01-bcc
 
 
 ------------------------------------------------------------------------------
+- WOTLKC
+-
+
+v3.4.0.2722
+
+	Wrath of the Lich King Classic release. (Build 45435)
+	Phase 1 (season 5, tier 7 sets added)
+
+------------------------------------------------------------------------------
 - shadowlands
 -
+
+v9.2.7.2722
+	Fixed an issue where Barbed Shot wasn't reducing Bestial Wrath's remaining CD when Qa'pla, Eredun War Order (Runeforge) is equipped.
+	Anchors will correctly update whenever lead/role changes when you're using VuhDo raid frames.
+	Added oUF_Ruri support.
+	bump toc.
+
+v9.2.5.2721
+	Season 4 PvP trinkets added.
+
+v9.2.5.2720
+	Season 4 PvP changes.
+	Localization update.
+
+v9.2.5.2720
+	Season 4 PvP changes.
+		Greater Fade (PvP Talent) now has a 60 second cooldown (was 45 seconds).
+		Invigorating Shadowdust (Runecarving Power) now reduces the cooldown of your other abilities by 10 seconds in PvP combat (was 20 seconds).
+		Call Felhunter (PvP Talent) cooldown increased to 30 seconds (was 24 seconds).
+	Localization update.
+
+v2.7.19
+	Blizzard Class Tuning Update
+		JUNE 28, 2022
+			Hunter
+				Craven Strategem (Runecarving Power) now reduces the cooldown of Feign Death by 5 seconds in PvP combat (was 15 seconds).
+			Mage
+				Flow of Time (Conduit) effectiveness reduced by 50% in PvP combat.
+			Monk
+				Chrysalis (PvP Talent) now reduces the cooldown of Life Cocoon by 45 seconds (was 30 seconds).
+			Priest
+				Ray of Hope (PvP Talent) cooldown is now 90 seconds (was 60 seconds).
+			Rogue
+				Float like a Butterfly (PvP Talent) now reduces the cooldown of Evasion and Feint by 0.5 seconds per combo point spent (was 1 second).
+			Warlock
+				Gateway Mastery (PvP Talent) now reduces the time between how often players can take your Demonic Gateway by 30 seconds (was 15 seconds).
+
+v2.7.18
+	TOC bump - 90205
+	9.2.5 Blizzard updates
+		Fixed an issue that caused Bone Shields consumed by Tombstone (Talent) to not reduce the cooldown of Blood Tap by the correct amount.
+		Reduced cooldown on Zen Focus Tea (PvP Talent) to 30 seconds (was 45).
+	Center preset added to Position option.
+	Cosmic Gladiator's Fastidious Resolve buff id added.
+	PvP Trinket added to Highlight selection.
+	Fixed icons being drawn under the raidframe on some raidframe addons.
+
+v2.7.17
+	Added new option 'Show Range'.
+	Added backup timers to remove Decrypted Urh Cypher, etc.
+	Added Seasons of Plenty (Runeforge) CDRR.
+	Added PitBull4 raid support,
+	Fixed an issue where Purify Soul would not activate with certain soulbind abilities.
+	Swiftmend will correctly show with Restoration Affinity.
+	Fixed option panel borders for addons w/ ui scaling.
+	Known Blizzard Bug:
+		Equinox under the effect of Blessing of Autumn incorrectly increases the remaining CD of Guardian Spirit w/ Guardian Angel.
+
+v2.7.16
+	Dancing Rune Weapon CDR fixed.
+	Observer cooldowns will no longer be tracked in the MDI setting.
+	Lib updates.
+
+v2.7.15
+	Blizzard Hotfixes
+		APRIL 26, 2022
+			Holy Priest
+				Divine Conversation (2-set bonus) now increases the CDR by 10sec in PvP (was 15sec).
+				Miracle Worker (PvP Talent) now reduces the cooldown of Holy Word: Serenity by 10% (was 20%).
+
+v2.7.14
+	Updated missing changes from patch 9.0.5 :0
+	Crimson Rune Weapon (DK, Runeforge) cooldown reduction increased to 5 seconds (was 3s).
+	Qa’pla, Eredun War Order (Hunter, Runeforge) now resets the cooldown of Kill Command (was reduces the cooldown by 5 seconds).
+	Divine Vision (Paladin, PvP Talent) now reduces the cooldown of Aura Mastery by 1 minute (was grants Shadow Resistance Aura).
+	Duskwalker’s Patch (Rogue, Runeforge) reduces Vendetta’s cooldown for every 30 Energy you expend (was 50 Energy).
+	Amplify Curse (Warlock, PvP Talent) cooldown reduced to 30 seconds (was 45 seconds).
+
+v2.7.13
+	Fixed an issue where sync could incorrectly reset the CD.
+	Bwonsamdi's Pact has been added back in for non-synced units. (doesn't support multiple buffs per target)
+	Crafted Unity Legendaries added.
 
 v2.7.12
 	Fixed Metamorphosis (Havoc) spell ID for sync.

@@ -1,13 +1,12 @@
-
 --------------------------------------------------------------------------------
 -- Module Declaration
 --
 
 local mod, CL = BigWigs:NewBoss("Hakkar the Soulflayer", 2291, 2408)
 if not mod then return end
-mod:RegisterEnableMob(164558)
-mod.engageId = 2395
---mod.respawnTime = 30
+mod:RegisterEnableMob(164558) -- Hakkar the Soulflayer
+mod:SetEncounterID(2395)
+mod:SetRespawnTime(30)
 
 --------------------------------------------------------------------------------
 -- Initialization
@@ -59,7 +58,7 @@ do
 	local playerList = mod:NewTargetList()
 	function mod:CorruptedBloodApplied(args)
 		playerList[#playerList+1] = args.destName
-		self:TargetsMessage(args.spellId, "red", playerList, 2)
+		self:TargetsMessageOld(args.spellId, "red", playerList, 2)
 		if self:Me(args.destGUID) then
 			self:PlaySound(args.spellId, "warning")
 			self:Say(args.spellId)

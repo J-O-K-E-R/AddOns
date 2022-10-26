@@ -88,7 +88,8 @@ if L then
 	--L.prism = "Prism"
 	L.ephemeral_fissure = "Fisura"
 
-	-- L.bomb_dropped = "Bomb dropped"
+	--L.bomb_dropped = "Bomb dropped"
+	--L.volatile_charges_new = "New Bombs!"
 
 	--L.custom_on_stop_timers = "Always show ability bars"
 	--L.custom_on_stop_timers_desc = "Halondrus can delay its abilities. When this option is enabled, the bars for those abilities will stay on your screen."
@@ -130,6 +131,7 @@ if L then
 	--L.shattering_blast = "Tank Blast"
 	--L.rune_of_compulsion = "Charms"
 	--L.desolation = "Azeroth Soak"
+	--L.decimator_line = "Decimator + Line"
 	--L.chains_of_anguish = "Spread Chains"
 	--L.chain = "Chain"
 	--L.chain_target = "Chaining %s!"
@@ -145,9 +147,11 @@ if L then
 	-- L.azeroth_new_health_minus = "Azeroth Health: -%.1f%%  (%d)"
 
 	-- L.mythic_blood_soak_stage_1 = "Stage 1 Blood Soak timings"
-	-- L.mythic_blood_soak_stage_2 = "Stage 2 Blood Soak timings"
-	-- L.mythic_blood_soak_stage_3 = "Stage 3 Blood Soak timings"
 	-- L.mythic_blood_soak_stage_1_desc = "Show a bar for timings when healing azeroth is at a good time, used by Echo on their first kill"
+	-- L.mythic_blood_soak_stage_2 = "Stage 2 Blood Soak timings"
+	-- L.mythic_blood_soak_stage_2_desc = L.mythic_blood_soak_stage_1_desc
+	-- L.mythic_blood_soak_stage_3 = "Stage 3 Blood Soak timings"
+	-- L.mythic_blood_soak_stage_3_desc = L.mythic_blood_soak_stage_1_desc
 	-- L.mythic_blood_soak_bar = "Heal Azeroth"
 
 	-- L.floors_open = "Floors Open"
@@ -156,4 +160,15 @@ if L then
 	-- L.mythic_dispel_stage_4 = "Dispel Timers"
 	-- L.mythic_dispel_stage_4_desc = "Timers for when to do dispels in the last stage, used by Echo on their first kill"
 	-- L.mythic_dispel_bar = "Dispels"
+end
+
+L = BigWigs:NewBossLocale("Sepulcher of the First Ones Affixes", "esES")
+if L then
+	--L.custom_on_bar_icon = "Bar Icon"
+	--L.custom_on_bar_icon_desc = "Show the Fated Raid icon on bars."
+
+	--L.chaotic_essence = "Essence"
+	--L.creation_spark = "Sparks"
+	L.protoform_barrier = "Barrera"
+	--L.reconfiguration_emitter = "Interrupt Add"
 end

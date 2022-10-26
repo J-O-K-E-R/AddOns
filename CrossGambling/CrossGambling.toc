@@ -1,4 +1,4 @@
-## Interface: 90100
+## Interface: 90205
 ## Title:|cffff7d0aCrossGambling
 ## Author: Azro
 ## 1.13 Maintainer: Fire @ Mal'Ganis

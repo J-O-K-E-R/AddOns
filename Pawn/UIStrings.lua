@@ -17,10 +17,6 @@ local L
 -- For conciseness
 L = PawnLocal.Stats
 
-local PawnStatClassic = 1
-local PawnStatBurningCrusade = 2
-local PawnStatModern = 999
-
 local PawnStatNormal = 1
 local PawnStatUnignorable = 2
 local PawnStatItemType = 3
@@ -40,54 +36,55 @@ local PawnStatsUnfiltered =
 	{SPELL_STAT2_NAME, "Agility", L.AgilityInfo, PawnStatUnignorable},
 	{SPELL_STAT4_NAME, "Intellect", L.IntellectInfo, PawnStatUnignorable},
 	{SPELL_STAT3_NAME, "Stamina", L.StaminaInfo, PawnStatUnignorable},
-	{SPELL_STAT5_NAME, "Spirit", L.SpiritInfo, PawnStatUnignorable, nil, { PawnStatClassic = true, PawnStatBurningCrusade = true }},
+	{SPELL_STAT5_NAME, "Spirit", L.SpiritInfo, PawnStatUnignorable, nil, { PawnStatClassic = true, PawnStatBurningCrusade = true, PawnStatWrath = true }},
 	{ARMOR, "Armor", L.ArmorInfo, PawnStatUnignorable},
 
 	{STAT_CATEGORY_ENHANCEMENTS},
-	{ITEM_MOD_HIT_RATING_SHORT, "HitRating", L.HitInfo, PawnStatNormal, nil, { PawnStatClassic = true, PawnStatBurningCrusade = true }},
+	{ITEM_MOD_HIT_RATING_SHORT, "HitRating", L.HitInfo, PawnStatNormal, nil, { PawnStatClassic = true, PawnStatBurningCrusade = true, PawnStatWrath = true }},
 	{ITEM_MOD_HIT_SPELL_RATING_SHORT, "SpellHitRating", L.SpellHitInfo, PawnStatNormal, nil, { PawnStatClassic = true, PawnStatBurningCrusade = true }},
 	{L.Crit, "CritRating", L.CritInfo},
 	{ITEM_MOD_CRIT_SPELL_RATING_SHORT, "SpellCritRating", L.SpellCritInfo, PawnStatNormal, nil, { PawnStatClassic = true, PawnStatBurningCrusade = true }},
-	{STAT_HASTE, "HasteRating", L.HasteInfo, PawnStatNormal, nil, { PawnStatBurningCrusade = true, PawnStatModern = true }},
+	{STAT_HASTE, "HasteRating", L.HasteInfo, PawnStatNormal, nil, { PawnStatBurningCrusade = true, PawnStatWrath = true, PawnStatMainline = true }},
 	{ITEM_MOD_HASTE_SPELL_RATING_SHORT or (STAT_HASTE .. " (" .. PLAYERSTAT_SPELL_COMBAT .. ")"), "SpellHasteRating", L.HasteInfo, PawnStatNormal, nil, { PawnStatBurningCrusade = true }},
-	{ITEM_MOD_ARMOR_PENETRATION_RATING_SHORT, "ArmorPenetration", L.ArmorPenetrationInfo, PawnStatNormal, nil, { PawnStatBurningCrusade = true }},
-	{ITEM_MOD_EXPERTISE_RATING_SHORT, "ExpertiseRating", L.ExpertiseInfo, PawnStatNormal, nil, { PawnStatBurningCrusade = true }},
-	{ITEM_MOD_SPELL_PENETRATION_SHORT, "SpellPenetration", L.SpellPenetrationInfo, PawnStatNormal, nil, { PawnStatClassic = true, PawnStatBurningCrusade = true }},
-	{STAT_MASTERY, "MasteryRating", L.MasteryInfo, PawnStatNormal, nil, { PawnStatModern = true }},
-	{STAT_VERSATILITY, "Versatility", L.VersatilityInfo, PawnStatNormal, nil, { PawnStatModern = true }},
-	{ITEM_MOD_ATTACK_POWER_SHORT, "Ap", L.ApInfo, PawnStatNormal, nil, { PawnStatClassic = true, PawnStatBurningCrusade = true }},
-	{ITEM_MOD_RANGED_ATTACK_POWER_SHORT, "Rap", L.RapInfo, PawnStatNormal, nil, { PawnStatClassic = true, PawnStatBurningCrusade = true }},
-	{ITEM_MOD_FERAL_ATTACK_POWER_SHORT, "FeralAp", L.FeralApInfo, PawnStatNormal, nil, { PawnStatClassic = true, PawnStatBurningCrusade = true }},
+	{ITEM_MOD_ARMOR_PENETRATION_RATING_SHORT, "ArmorPenetration", L.ArmorPenetrationInfo, PawnStatNormal, nil, { PawnStatBurningCrusade = true, PawnStatWrath = true }},
+	{ITEM_MOD_EXPERTISE_RATING_SHORT, "ExpertiseRating", L.ExpertiseInfo, PawnStatNormal, nil, { PawnStatBurningCrusade = true, PawnStatWrath = true }},
+	{ITEM_MOD_SPELL_PENETRATION_SHORT, "SpellPenetration", L.SpellPenetrationInfo, PawnStatNormal, nil, { PawnStatClassic = true, PawnStatBurningCrusade = true, PawnStatWrath = true }},
+	{STAT_MASTERY, "MasteryRating", L.MasteryInfo, PawnStatNormal, nil, { PawnStatMainline = true }},
+	{STAT_VERSATILITY, "Versatility", L.VersatilityInfo, PawnStatNormal, nil, { PawnStatMainline = true }},
+	{ITEM_MOD_ATTACK_POWER_SHORT, "Ap", L.ApInfo, PawnStatNormal, nil, { PawnStatClassic = true, PawnStatBurningCrusade = true, PawnStatWrath = true }},
+	{ITEM_MOD_RANGED_ATTACK_POWER_SHORT, "Rap", L.RapInfo, PawnStatNormal, nil, { PawnStatClassic = true, PawnStatBurningCrusade = true, PawnStatWrath = true }},
+	{ITEM_MOD_FERAL_ATTACK_POWER_SHORT, "FeralAp", L.FeralApInfo, PawnStatNormal, nil, { PawnStatClassic = true, PawnStatBurningCrusade = true, PawnStatWrath = true }},
 	{L.SpellDamage, "SpellDamage", L.SpellDamageInfo, PawnStatNormal, nil, { PawnStatClassic = true, PawnStatBurningCrusade = true }},
 	{L.Healing, "Healing", L.HealingInfo, PawnStatNormal, nil, { PawnStatClassic = true, PawnStatBurningCrusade = true }},
-	{ITEM_MOD_DEFENSE_SKILL_RATING_SHORT, "DefenseRating", L.DefenseInfo, PawnStatNormal, nil, { PawnStatClassic = true, PawnStatBurningCrusade = true }},
-	{ITEM_MOD_DODGE_RATING_SHORT, "DodgeRating", L.DodgeInfo, PawnStatNormal, nil, { PawnStatClassic = true, PawnStatBurningCrusade = true }},
-	{ITEM_MOD_PARRY_RATING_SHORT , "ParryRating", L.ParryInfo, PawnStatNormal, nil, { PawnStatClassic = true, PawnStatBurningCrusade = true }},
-	{ITEM_MOD_BLOCK_RATING_SHORT, "BlockRating", L.BlockRatingInfo, PawnStatNormal, nil, { PawnStatClassic = true, PawnStatBurningCrusade = true }},
-	{ITEM_MOD_BLOCK_VALUE_SHORT, "BlockValue", L.BlockValueInfo, PawnStatNormal, nil, { PawnStatClassic = true, PawnStatBurningCrusade = true }},
-	{ITEM_MOD_RESILIENCE_RATING_SHORT, "ResilienceRating", L.ResilienceInfo, PawnStatNormal, nil, { PawnStatBurningCrusade = true }},
+	{ITEM_MOD_SPELL_POWER_SHORT, "SpellPower", L.SpellPowerInfo, PawnStatNormal, nil, { PawnStatWrath = true }},
+	{ITEM_MOD_DEFENSE_SKILL_RATING_SHORT, "DefenseRating", L.DefenseInfo, PawnStatNormal, nil, { PawnStatClassic = true, PawnStatBurningCrusade = true, PawnStatWrath = true }},
+	{ITEM_MOD_DODGE_RATING_SHORT, "DodgeRating", L.DodgeInfo, PawnStatNormal, nil, { PawnStatClassic = true, PawnStatBurningCrusade = true, PawnStatWrath = true }},
+	{ITEM_MOD_PARRY_RATING_SHORT , "ParryRating", L.ParryInfo, PawnStatNormal, nil, { PawnStatClassic = true, PawnStatBurningCrusade = true, PawnStatWrath = true }},
+	{ITEM_MOD_BLOCK_RATING_SHORT, "BlockRating", L.BlockRatingInfo, PawnStatNormal, nil, { PawnStatClassic = true, PawnStatBurningCrusade = true, PawnStatWrath = true }},
+	{ITEM_MOD_BLOCK_VALUE_SHORT, "BlockValue", L.BlockValueInfo, PawnStatNormal, nil, { PawnStatClassic = true, PawnStatBurningCrusade = true, PawnStatWrath = true }},
+	{ITEM_MOD_RESILIENCE_RATING_SHORT, "ResilienceRating", L.ResilienceInfo, PawnStatNormal, nil, { PawnStatBurningCrusade = true, PawnStatWrath = true }},
 
-	{L.Sockets, nil, nil, nil, nil, { PawnStatBurningCrusade = true }},
-	{EMPTY_SOCKET_META, "MetaSocketEffect", L.MetaSocketEffectInfo, PawnStatNormal, nil, { PawnStatBurningCrusade = true }},
+	{L.Sockets, nil, nil, nil, nil, { PawnStatBurningCrusade = true, PawnStatWrath = true }},
+	{EMPTY_SOCKET_META, "MetaSocketEffect", L.MetaSocketEffectInfo, PawnStatNormal, nil, { PawnStatBurningCrusade = true, PawnStatWrath = true }},
 
 	{L.MinorStats},
-	{STAT_MOVEMENT_SPEED, "MovementSpeed", L.MovementSpeedInfo, PawnStatNormal, nil, { PawnStatModern = true }},
-	{STAT_AVOIDANCE, "Avoidance", L.AvoidanceInfo, PawnStatNormal, nil, { PawnStatModern = true }},
-	{STAT_LIFESTEAL, "Leech", L.LeechInfo, PawnStatNormal, nil, { PawnStatModern = true }},
-	{STAT_STURDINESS, "Indestructible", L.IndestructibleInfo, PawnStatNormal, L.IndestructibleIs, { PawnStatModern = true }},
-	{ITEM_MOD_POWER_REGEN0_SHORT, "Mp5", L.Mp5Info, PawnStatNormal, nil, { PawnStatClassic = true, PawnStatBurningCrusade = true }},
-	{ITEM_MOD_HEALTH_REGEN_SHORT, "Hp5", L.Hp5Info, PawnStatNormal, nil, { PawnStatClassic = true, PawnStatBurningCrusade = true }},
-	{RESISTANCE2_NAME, "FireResist", L.FireResistInfo, PawnStatNormal, nil, { PawnStatClassic = true, PawnStatBurningCrusade = true }},
-	{RESISTANCE3_NAME, "NatureResist", L.NatureResistInfo, PawnStatNormal, nil, { PawnStatClassic = true, PawnStatBurningCrusade = true }},
-	{RESISTANCE4_NAME, "FrostResist", L.FrostResistInfo, PawnStatNormal, nil, { PawnStatClassic = true, PawnStatBurningCrusade = true }},
-	{RESISTANCE5_NAME, "ShadowResist", L.ShadowResistInfo, PawnStatNormal, nil, { PawnStatClassic = true, PawnStatBurningCrusade = true }},
-	{RESISTANCE6_NAME, "ArcaneResist", L.ArcaneResistInfo, PawnStatNormal, nil, { PawnStatClassic = true, PawnStatBurningCrusade = true }},
-	{L.FireSpellDamage, "FireSpellDamage", L.FireSpellDamageInfo, PawnStatNormal, nil, { PawnStatClassic = true, PawnStatBurningCrusade = true }},
-	{L.ShadowSpellDamage, "ShadowSpellDamage", L.ShadowSpellDamageInfo, PawnStatNormal, nil, { PawnStatClassic = true, PawnStatBurningCrusade = true }},
-	{L.NatureSpellDamage, "NatureSpellDamage", L.NatureSpellDamageInfo, PawnStatNormal, nil, { PawnStatClassic = true, PawnStatBurningCrusade = true }},
-	{L.ArcaneSpellDamage, "ArcaneSpellDamage", L.ArcaneSpellDamageInfo, PawnStatNormal, nil, { PawnStatClassic = true, PawnStatBurningCrusade = true }},
-	{L.FrostSpellDamage, "FrostSpellDamage", L.FrostSpellDamageInfo, PawnStatNormal, nil, { PawnStatClassic = true, PawnStatBurningCrusade = true }},
-	{L.HolySpellDamage, "HolySpellDamage", L.HolySpellDamageInfo, PawnStatNormal, nil, { PawnStatClassic = true, PawnStatBurningCrusade = true }},
+	{STAT_MOVEMENT_SPEED, "MovementSpeed", L.MovementSpeedInfo, PawnStatNormal, nil, { PawnStatMainline = true }},
+	{STAT_AVOIDANCE, "Avoidance", L.AvoidanceInfo, PawnStatNormal, nil, { PawnStatMainline = true }},
+	{STAT_LIFESTEAL, "Leech", L.LeechInfo, PawnStatNormal, nil, { PawnStatMainline = true }},
+	{STAT_STURDINESS, "Indestructible", L.IndestructibleInfo, PawnStatNormal, L.IndestructibleIs, { PawnStatMainline = true }},
+	{ITEM_MOD_POWER_REGEN0_SHORT, "Mp5", L.Mp5Info, PawnStatNormal, nil, { PawnStatClassic = true, PawnStatBurningCrusade = true, PawnStatWrath = true }},
+	{ITEM_MOD_HEALTH_REGEN_SHORT, "Hp5", L.Hp5Info, PawnStatNormal, nil, { PawnStatClassic = true, PawnStatBurningCrusade = true, PawnStatWrath = true }},
+	{RESISTANCE2_NAME, "FireResist", L.FireResistInfo, PawnStatNormal, nil, { PawnStatClassic = true, PawnStatBurningCrusade = true, PawnStatWrath = true }},
+	{RESISTANCE3_NAME, "NatureResist", L.NatureResistInfo, PawnStatNormal, nil, { PawnStatClassic = true, PawnStatBurningCrusade = true, PawnStatWrath = true }},
+	{RESISTANCE4_NAME, "FrostResist", L.FrostResistInfo, PawnStatNormal, nil, { PawnStatClassic = true, PawnStatBurningCrusade = true, PawnStatWrath = true }},
+	{RESISTANCE5_NAME, "ShadowResist", L.ShadowResistInfo, PawnStatNormal, nil, { PawnStatClassic = true, PawnStatBurningCrusade = true, PawnStatWrath = true }},
+	{RESISTANCE6_NAME, "ArcaneResist", L.ArcaneResistInfo, PawnStatNormal, nil, { PawnStatClassic = true, PawnStatBurningCrusade = true, PawnStatWrath = true }},
+	{L.FireSpellDamage, "FireSpellDamage", L.FireSpellDamageInfo, PawnStatNormal, nil, { PawnStatClassic = true, PawnStatBurningCrusade = true, PawnStatWrath = true }},
+	{L.ShadowSpellDamage, "ShadowSpellDamage", L.ShadowSpellDamageInfo, PawnStatNormal, nil, { PawnStatClassic = true, PawnStatBurningCrusade = true, PawnStatWrath = true }},
+	{L.NatureSpellDamage, "NatureSpellDamage", L.NatureSpellDamageInfo, PawnStatNormal, nil, { PawnStatClassic = true, PawnStatBurningCrusade = true, PawnStatWrath = true }},
+	{L.ArcaneSpellDamage, "ArcaneSpellDamage", L.ArcaneSpellDamageInfo, PawnStatNormal, nil, { PawnStatClassic = true, PawnStatBurningCrusade = true, PawnStatWrath = true }},
+	{L.FrostSpellDamage, "FrostSpellDamage", L.FrostSpellDamageInfo, PawnStatNormal, nil, { PawnStatClassic = true, PawnStatBurningCrusade = true, PawnStatWrath = true }},
+	{L.HolySpellDamage, "HolySpellDamage", L.HolySpellDamageInfo, PawnStatNormal, nil, { PawnStatClassic = true, PawnStatBurningCrusade = true, PawnStatWrath = true }},
 
 	{L.WeaponStats},
 	{STAT_DPS_SHORT, "Dps", L.DpsInfo, PawnStatUnignorable},
@@ -114,9 +111,9 @@ local PawnStatsUnfiltered =
 	{L.WeaponTypeStaff, "IsStaff", L.WeaponTypeStaffInfo, PawnStatItemType},
 	{L.WeaponType1HSword, "IsSword", L.WeaponType1HSwordInfo, PawnStatItemType},
 	{L.WeaponType2HSword, "Is2HSword", L.WeaponType2HSwordInfo, PawnStatItemType},
-	{L.WeaponTypeThrown, "IsThrown", L.WeaponTypeThrownInfo, PawnStatItemType, nil, { PawnStatClassic = true, PawnStatBurningCrusade = true }},
+	{L.WeaponTypeThrown, "IsThrown", L.WeaponTypeThrownInfo, PawnStatItemType, nil, { PawnStatClassic = true, PawnStatBurningCrusade = true, PawnStatWrath = true }},
 	{L.WeaponTypeWand, "IsWand", L.WeaponTypeWandInfo, PawnStatItemType},
-	{L.WeaponTypeWarglaive, "IsWarglaive", L.WeaponTypeWarglaiveInfo, PawnStatItemType, nil, { PawnStatModern = true }},
+	{L.WeaponTypeWarglaive, "IsWarglaive", L.WeaponTypeWarglaiveInfo, PawnStatItemType, nil, { PawnStatMainline = true }},
 	{L.WeaponTypeOffHand, "IsOffHand", L.WeaponTypeOffHandInfo, PawnStatItemType},
 	{L.WeaponTypeFrill, "IsFrill", L.WeaponTypeFrillInfo, PawnStatItemType},
 
@@ -158,7 +155,8 @@ for i, Stat in pairs(PawnStatsUnfiltered) do
 	if	(Stat[6] == nil) or
 		(Stat[6].PawnStatClassic and VgerCore.IsClassic) or
 		(Stat[6].PawnStatBurningCrusade and VgerCore.IsBurningCrusade) or
-		(Stat[6].PawnStatModern and VgerCore.IsShadowlands) then
+		(Stat[6].PawnStatWrath and VgerCore.IsWrath) or
+		(Stat[6].PawnStatMainline and VgerCore.IsMainline) then
 		Stat[6] = nil
 		tinsert(PawnStats, Stat)
 	end
@@ -179,6 +177,17 @@ L = PawnLocal.UI
 
 
 -- Configuration UI
+PawnUITabLabels =
+{
+	L.ScaleTab,
+	L.ValuesTab,
+	L.CompareTab,
+	L.GemsTab,
+	L.OptionsTab,
+	L.HelpTab,
+	L.AboutTab,
+}
+
 PawnUIHeaders = -- (%s is the name of the current scale)
 {
 	L.ScaleHeader, -- Scale tab
@@ -186,19 +195,18 @@ PawnUIHeaders = -- (%s is the name of the current scale)
 	L.CompareHeader, -- Compare tab
 	L.GemsHeader, -- Gems tab
 	L.OptionsHeader, -- Options tab
-	L.AboutHeader, -- About tab
 	L.HelpHeader, -- Getting Started tab
+	L.AboutHeader, -- About tab
 }
 
 -- Configuration UI, Scale selector
 PawnUIFrame_ScaleSelector_Header_Text = L.ScaleSelectorHeader
+PawnUIFrame_ScaleSelector_NoneWarning_Text = L.ScaleSelectorNoneWarning
 PawnUIFrame_ShowScaleCheck_Label_Text = L.ScaleSelectorShowScale
 PawnUIFrame_ShowScaleCheck_Tooltip = L.ScaleSelectorShowScaleTooltip
 PawnUIFrame_ScaleSelector_ShowingSuggestionsFor_Text = L.ScaleSelectorShowingSuggestionsFor
 
 -- Configuration UI, Scale tab
-PawnUIFrame_ScalesTab_Text = L.ScaleTab
-
 PawnUIFrame_ScalesWelcomeLabel_Text = L.ScaleWelcome
 
 PawnUIFrame_RenameScaleButton_Text = L.ScaleRename
@@ -236,8 +244,6 @@ PawnUIFrame_AutoSelectScalesOffButton_Subtext = L.ScaleAutoOff2
 PawnUIFrame_AutoSelectScalesOffButton_Tooltip = L.ScaleAutoOffTooltip
 
 -- Configuration UI, Values tab
-PawnUIFrame_ValuesTab_Text = L.ValuesTab
-
 PawnUIFrame_ValuesWelcomeLabel_NormalText = L.ValuesWelcome
 PawnUIFrame_ValuesWelcomeLabel_NoScalesText = L.ValuesWelcomeNoScales
 PawnUIFrame_ValuesWelcomeLabel_ReadOnlyScaleText = L.ValuesWelcomeReadOnly
@@ -256,8 +262,6 @@ PawnUIFrame_NormalizeValuesCheck_Text = L.ValuesNormalize
 PawnUIFrame_NormalizeValuesCheck_Tooltip = L.ValuesNormalizeTooltip
 
 -- Configuration UI, Compare tab
-PawnUIFrame_CompareTab_Text = L.CompareTab
-
 PawnUIFrame_VersusHeader_Text = L.CompareVersus -- Short for "versus."  Appears between the names of the two items.
 PawnUIFrame_VersusHeader_NoItem = L.CompareSlotEmpty -- Text displayed next to empty item slots.
 
@@ -272,7 +276,6 @@ PawnUIFrame_CompareSwapButton_Text = L.CompareSwap
 PawnUIFrame_CompareSwapButton_Tooltip = L.CompareSwapTooltip
 
 -- Configuration UI, Gems tab
-PawnUIFrame_GemsTab_Text = L.GemsTab
 PawnUIFrame_GemsHeaderLabel_Text = L.GemsWelcome
 
 PawnUIFrame_BestGemsRadio_Text = L.GemsShowBest
@@ -283,7 +286,6 @@ PawnUIFrame_GemQualityLevelBox_Label = L.GemsQualityLevel
 PawnUIFrame_GemQualityLevelBox_Tooltip = L.GemsQualityLevelTooltip
 
 -- Configuration UI, Options tab
-PawnUIFrame_OptionsTab_Text = L.OptionsTab
 PawnUIFrame_OptionsHeaderLabel_Text = L.OptionsWelcome
 
 PawnUIFrame_TooltipOptionsHeaderLabel_Text = L.OptionsTooltipHeader
@@ -347,8 +349,10 @@ PawnUIFrame_ShowItemIDsCheck_Tooltip = L.OptionsItemIDsTooltip
 PawnUIFrame_ResetUpgradesButton_Text = L.OptionsResetUpgrades
 PawnUIFrame_ResetUpgradesButton_Tooltip = L.OptionsResetUpgradesTooltip
 
+-- Configuration UI, Help tab
+PawnUIFrame_GettingStartedLabel_Text = L.HelpText
+
 -- Configuration UI, About tab
-PawnUIFrame_AboutTab_Text = L.AboutTab
 PawnUIFrame_AboutHeaderLabel_Text = format(PETITION_CREATOR, "Vger-Azjol-Nerub")
 PawnUIFrame_AboutVersionLabel_Text = L.AboutVersion
 PawnUIFrame_AboutTranslationLabel_Text = L.AboutTranslation -- Translators: credit yourself here... "Klingon translation by Stovokor"
@@ -356,10 +360,6 @@ PawnUIFrame_ReadmeLabel_Text = L.AboutReadme
 PawnUIFrame_WebsiteLabel_Text = L.AboutWebsite
 PawnUIFrame_MrRobotLabel_Text = L.AboutMrRobot
 
--- Configuration UI, Help tab
-PawnUIFrame_HelpTab_Text = L.HelpTab
-PawnUIFrame_GettingStartedLabel_Text = L.HelpText
-	
 -- Interface Options page
 PawnInterfaceOptionsFrame_OptionsHeaderLabel_Text = L.InterfaceOptionsWelcome
 PawnInterfaceOptionsFrame_OptionsSubHeaderLabel_Text = L.InterfaceOptionsBody

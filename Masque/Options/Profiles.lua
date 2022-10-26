@@ -1,7 +1,7 @@
 --[[
 
 	This file is part of 'Masque', an add-on for World of Warcraft. For bug reports,
-	suggestions and license information, please visit https://github.com/SFX-WoW/Masque.
+	documentation and license information, please visit https://github.com/SFX-WoW/Masque.
 
 	* File...: Options\Profiles.lua
 	* Author.: StormFX
@@ -15,7 +15,7 @@
 local MASQUE, Core = ...
 
 ----------------------------------------
--- Lua
+-- Lua API
 ---
 
 local pairs = pairs
@@ -56,7 +56,9 @@ function Setup.Profiles(self)
 	end
 
 	self.Options.args.Profiles = Options
-	self.ProfilesPanel = LibStub("AceConfigDialog-3.0"):AddToBlizOptions(MASQUE, L["Profile Settings"], MASQUE, "Profiles")
+
+	local Path = "Profiles"
+	self:AddOptionsPanel(Path, LibStub("AceConfigDialog-3.0"):AddToBlizOptions(MASQUE, L["Profile Settings"], MASQUE, Path))
 
 	-- GC
 	Setup.Profiles = nil

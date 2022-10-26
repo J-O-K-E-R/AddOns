@@ -1,6 +1,6 @@
 local _, addon = ...
 local config, private = addon.module('config')
-local latestVersion = 6
+local latestVersion = 8
 
 function config.init()
     if LFGSpamFilterAddonConfig then
@@ -65,18 +65,19 @@ end
 function private.getDefaultConfig()
     return {
         version = latestVersion,
-        quickReport = true,
+        banButton = true,
         ignoredCategories = {},
         bannedPlayers = {},
         numberOfBannedPlayers = 0,
         filterBanned = true,
         filterApplications = true,
         lastBan = nil,
-        report = true,
-        noVoice = true,
+        noVoice = false,
         maxAge = 4 * 3600,
         lastMaintenance = time(),
         buttonTipShown = false,
+        reportHelper = true,
+        reportHelperTipShown = false,
     }
 end
 
@@ -143,6 +144,18 @@ private.migrations = {
     [6] = function ()
         config.db.stats = nil
         config.db.filterApplications = true
+    end,
+
+    [7] = function ()
+        config.db.banButton = config.db.quickReport
+        config.db.quickReport = nil
+        config.db.report = nil
+        config.db.noVoice = false
+    end,
+
+    [8] = function ()
+        config.db.reportHelper = true
+        config.db.reportHelperTipShown = false
     end,
 }
 

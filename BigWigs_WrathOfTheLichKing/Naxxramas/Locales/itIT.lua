@@ -1,110 +1,66 @@
 local L = BigWigs:NewBossLocale("Anub'Rekhan", "itIT")
 if not L then return end
 if L then
-	--L.starttrigger1 = "Just a little taste..."
-	--L.starttrigger2 = "Yes, run! It makes the blood pump faster!"
-	--L.starttrigger3 = "There is no way out."
-	--L.engagewarn = "Anub'Rekhan engaged! Locust Swarm in ~%d sec"
-
-	--L.gainnextwarn = "Next Locust Swarm in ~85 sec"
-	--L.gainwarn10sec = "~10 sec until Locust Swarm"
+	--L.add = "Crypt Guard"
+	L.locust = "Locusta"
 end
 
 L = BigWigs:NewBossLocale("Grand Widow Faerlina", "itIT")
 if L then
-	--L.starttrigger1 = "Kneel before me, worm!"
-	--L.starttrigger2 = "Slay them in the master's name!"
-	--L.starttrigger3 = "You cannot hide from me!"
-	--L.starttrigger4 = "Run while you still can!"
-
-	--L.startwarn = "Faerlina engaged, 60 sec to frenzy!"
-
-	--L.enragewarn15sec = "15 sec to frenzy!"
-	--L.enragewarn = "Frenzied!"
-	--L.enragewarn2 = "Frenzied Soon!"
-	--L.enrageremovewarn = "Frenzy removed! ~60 sec until next!"
-
 	--L.silencewarn = "Silenced!"
 	--L.silencewarn5sec = "Silence ends in 5 sec"
-	--L.silencebar = "Silence"
-
-	--L.rain_message = "Fire on YOU!"
+	L.silence = "Silenzio"
 end
 
 L = BigWigs:NewBossLocale("Gluth", "itIT")
 if L then
-	--L.startwarn = "Gluth engaged, ~105 sec to decimate!"
-
-	--L.decimatesoonwarn = "Decimate Soon!"
-	--L.decimatebartext = "Decimate Zombies"
+	--L.decimate_bar = "Decimate Zombies"
 end
 
 L = BigWigs:NewBossLocale("Gothik the Harvester", "itIT")
 if L then
-	--L.room = "Room Arrival Warnings"
-	--L.room_desc = "Warn for Gothik's arrival"
+	--L.phase1_trigger1 = "Foolishly you have sought your own demise."
+	--L.phase1_trigger2 = "Teamanare shi rikk mannor rikk lok karkun" -- Curse of Tongues
+	--L.phase2_trigger = "I have waited long enough. Now you face the harvester of souls."
 
 	--L.add = "Add Warnings"
-	--L.add_desc = "Warn for adds"
+	--L.add_desc = "Warnings for add waves."
 
-	--L.adddeath = "Add Death Alert"
-	--L.adddeath_desc = "Alerts when an add dies."
-
-	--L.starttrigger1 = "Foolishly you have sought your own demise."
-	--L.starttrigger2 = "Teamanare shi rikk mannor rikk lok karkun"
-	--L.startwarn = "Gothik the Harvester engaged! 4:30 till he's in the room."
-
-	--L.rider = "Unrelenting Rider"
-	--L.spectral_rider = "Spectral Rider"
-	--L.deathknight = "Unrelenting Deathknight"
-	--L.spectral_deathknight = "Spektral Deathknight"
-	--L.trainee = "Unrelenting Trainee"
-	--L.spectral_trainee = "Spectral Trainee"
+	--L.add_death = "Add Death Alert"
+	--L.add_death_desc = "Alerts when an add dies."
 
 	--L.riderdiewarn = "Rider dead!"
 	--L.dkdiewarn = "Death Knight dead!"
 
-	--L.warn1 = "In room in 3 min"
-	--L.warn2 = "In room in 90 sec"
-	--L.warn3 = "In room in 60 sec"
-	--L.warn4 = "In room in 30 sec"
-	--L.warn5 = "Gothik Incoming in 10 sec"
-
 	--L.wave = "%d/23: %s"
 
 	--L.trawarn = "Trainees in 3 sec"
-	--L.dkwarn = "Deathknights in 3 sec"
+	--L.dkwarn = "Death Knights in 3 sec"
 	--L.riderwarn = "Rider in 3 sec"
 
-	--L.trabar = "Trainee - %d"
-	--L.dkbar = "Deathknight - %d"
-	--L.riderbar = "Rider - %d"
+	--L.trabar = "Trainee (%d)"
+	--L.dkbar = "Death Knight (%d)"
+	--L.riderbar = "Rider (%d)"
 
-	--L.inroomtrigger = "I have waited long enough. Now you face the harvester of souls."
-	--L.inroomwarn = "He's in the room!"
+	--L.gate = "Gate Open!"
+	--L.gatebar = "Gate opens"
 
-	--L.inroombartext = "In Room"
+	--L.phase_soon = "Gothik Incoming in 10 sec"
+
+	--L.engage_message = "Gothik the Harvester engaged!"
 end
 
 L = BigWigs:NewBossLocale("Grobbulus", "itIT")
 if L then
-	--L.bomb_message = "Injection"
-	--L.bomb_message_other = "%s is Injected!"
+	--L.injection = "Injection"
 end
 
 L = BigWigs:NewBossLocale("Heigan the Unclean", "itIT")
 if L then
-	--L.starttrigger = "You are mine now."
-	--L.starttrigger2 = "You... are next."
-	--L.starttrigger3 = "I see you..."
-
-	--L.engage = "Engage"
-	--L.engage_desc = "Warn when Heigan is engaged."
-	--L.engage_message = "Heigan the Unclean engaged! 90 sec to teleport!"
+	--L.teleport_trigger = "The end is upon you."
 
 	--L.teleport = "Teleport"
 	--L.teleport_desc = "Warn for Teleports."
-	--L.teleport_trigger = "The end is upon you."
 	--L.teleport_1min_message = "Teleport in 1 min"
 	--L.teleport_30sec_message = "Teleport in 30 sec"
 	--L.teleport_10sec_message = "Teleport in 10 sec!"
@@ -122,66 +78,41 @@ L = BigWigs:NewBossLocale("The Four Horsemen", "itIT")
 if L then
 	--L.mark = "Mark"
 	--L.mark_desc = "Warn for marks."
-	--L.markbar = "Mark %d"
-	--L.markwarn1 = "Mark %d!"
-	--L.markwarn2 = "Mark %d in 5 sec"
 
-	--L.dies = "#%d Killed"
-
-	--L.startwarn = "The Four Horsemen Engaged! Mark in ~17 sec"
+	--L.engage_message = "The Four Horsemen engaged!"
 end
 
-L = BigWigs:NewBossLocale("Kel'Thuzad", "itIT")
+L = BigWigs:NewBossLocale("Kel'Thuzad Naxxramas", "itIT")
 if L then
 	--L.KELTHUZADCHAMBERLOCALIZEDLOLHAX = "Kel'Thuzad's Chamber"
 
-	--L.start_trigger = "Minions, servants, soldiers of the cold dark! Obey the call of Kel'Thuzad!"
-	--L.start_warning = "Kel'Thuzad encounter started! ~3min 30sec till he is active!"
-	--L.start_bar = "Phase 2"
-
-	--L.phase = "Phase"
-	--L.phase_desc = "Warn for phases."
+	--L.phase1_trigger = "Minions, servants, soldiers of the cold dark! Obey the call of Kel'Thuzad!"
 	--L.phase2_trigger1 = "Pray for mercy!"
 	--L.phase2_trigger2 = "Scream your dying breath!"
 	--L.phase2_trigger3 = "The end is upon you!"
-	--L.phase2_warning = "Phase 2, Kel'Thuzad incoming!"
-	--L.phase2_bar = "Kel'Thuzad Active!"
-	--L.phase3_soon_warning = "Phase 3 soon!"
 	--L.phase3_trigger = "Master, I require aid!"
-	--L.phase3_warning = "Phase 3, Guardians in ~15 sec!"
+	--L.guardians_trigger = "Very well. Warriors of the frozen wastes, rise up! I command you to fight, kill and die for your master! Let none survive!"
 
-	--L.frostblast_bar = "Possible Frost Blast"
-	--L.frostblast_soon_message = "Possible Frost Blast in ~5 sec!"
+	--L.phase2_warning = "Phase 2 - Kel'Thuzad Incoming!"
+	--L.phase2_bar = "Kel'Thuzad active"
 
-	--L.detonate_other = "Detonate - %s"
-	--L.detonate_possible_bar = "Possible Detonate"
-	--L.detonate_warning = "Next Detonate in 5 sec!"
+	--L.phase3_warning = "Stage 3 - Guardians in ~15 sec!"
 
 	--L.guardians = "Guardian Spawns"
 	--L.guardians_desc = "Warn for incoming Icecrown Guardians in phase 3."
-	--L.guardians_trigger = "Very well. Warriors of the frozen wastes, rise up! I command you to fight, kill and die for your master! Let none survive!"
+	--L.guardians_icon = "inv_trinket_naxxramas04"
 	--L.guardians_warning = "Guardians incoming in ~10sec!"
 	--L.guardians_bar = "Guardians incoming!"
+
+	--L.engage_message = "Kel'Thuzad encounter started!"
 end
 
 L = BigWigs:NewBossLocale("Loatheb", "itIT")
 if L then
-	--L.startwarn = "Loatheb engaged, 2 minutes to Inevitable Doom!"
+	--L.doomtime_bar = "Doom every 15sec"
+	--L.doomtime_now = "Doom now happens every 15 sec!"
 
-	--L.aura_message = "Necrotic Aura - Duration 17 sec!"
-	--L.aura_warning = "Aura gone in 3 sec!"
-
-	--L.deathbloom_warning = "Bloom in 5 sec!"
-
-	--L.doombar = "Inevitable Doom %d"
-	--L.doomwarn = "Doom %d! %d sec to next!"
-	--L.doomwarn5sec = "Doom %d in 5 sec!"
-	--L.doomtimerbar = "Doom every 15sec"
-	--L.doomtimerwarn = "Doom timer changes in %s sec!"
-	--L.doomtimerwarnnow = "Doom now happens every 15 sec!"
-
-	--L.sporewarn = "Spore %d!"
-	--L.sporebar = "Summon Spore %d"
+	--L.spore_warn = "Spore (%d)"
 end
 
 L = BigWigs:NewBossLocale("Maexxna", "itIT")
@@ -190,112 +121,103 @@ if L then
 	--L.webspraywarn20sec = "Cocoons! Spiders in 10 sec!"
 	--L.webspraywarn10sec = "Spiders! Spray in 10 sec!"
 	--L.webspraywarn5sec = "WEB SPRAY in 5 seconds!"
-	--L.webspraywarn = "Web Spray! 40 sec until next!"
+
 	--L.enragewarn = "Frenzy - SQUISH SQUISH SQUISH!"
 	--L.enragesoonwarn = "Frenzy Soon - Bugsquatters out!"
 
-	--L.webspraybar = "Web Spray"
-	--L.cocoonbar = "Cocoons"
-	--L.spiderbar = "Spiders"
+	--L.cocoons = "Cocoons"
+	--L.spiders = "Spiders"
 end
 
 L = BigWigs:NewBossLocale("Noth the Plaguebringer", "itIT")
 if L then
-	--L.starttrigger1 = "Die, trespasser!"
-	--L.starttrigger2 = "Glory to the master!"
-	--L.starttrigger3 = "Your life is forfeit!"
-	--L.startwarn = "Noth the Plaguebringer engaged! 90 sec till teleport"
+	--L.add_trigger = "Rise, my soldiers! Rise and fight once more!"
 
-	--L.blink = "Blink"
-	--L.blink_desc = "Warnings when Noth blinks."
-	--L.blinktrigger = "%s blinks away!"
-	--L.blinkwarn = "Blink!"
-	--L.blinkwarn2 = "Blink in ~5 sec!"
-	--L.blinkbar = "Blink"
+	L.teleport = "Teletrasporto"
+	--L.teleport_desc = "Warnings for when Noth teleports."
+	--L.teleport_balcony = "Teleport! He's on the balcony!"
+	--L.teleport_room = "Teleport! He's back in room!"
 
-	--L.teleport = "Teleport"
-	--L.teleport_desc = "Warnings and bars for teleport."
-	--L.teleportbar = "Teleport!"
-	--L.backbar = "Back in room!"
-	--L.teleportwarn = "Teleport! He's on the balcony!"
-	--L.teleportwarn2 = "Teleport in 10 sec!"
-	--L.backwarn = "He's back in the room for %d sec!"
-	--L.backwarn2 = "10 sec until he's back in the room!"
+	--L.curse_explosion = "Curse explosion!"
+	--L.curse_warn = "Curse!"
+	--L.curse_10secwarn = "Curse in ~10 sec"
+	--L.curse_bar = "Next Curse"
 
-	--L.curseexplosion = "Curse explosion!"
-	--L.cursewarn = "Curse! next in ~55 sec"
-	--L.curse10secwarn = "Curse in ~10 sec"
-	--L.cursebar = "Next Curse"
-
-	--L.wave = "Waves"
-	--L.wave_desc = "Alerts for the different waves."
-	--L.addtrigger = "Rise, my soldiers! Rise and fight once more!"
-	--L.wave1bar = "Wave 1"
-	--L.wave2bar = "Wave 2"
-	--L.wave2_message = "Wave 2 in 10 sec"
-end
-
-L = BigWigs:NewBossLocale("Patchwerk", "itIT")
-if L then
-	--L.enragewarn = "5% - Frenzied!"
-	--L.starttrigger1 = "Patchwerk want to play!"
-	--L.starttrigger2 = "Kel'thuzad make Patchwerk his avatar of war!"
+	L.wave = "Evocazione: Scheletri"
+	--L.wave_desc = "Warnings for the skeleton add waves."
+	--L.wave1 = "Wave 1"
+	--L.wave2 = "Wave 2"
 end
 
 L = BigWigs:NewBossLocale("Instructor Razuvious", "itIT")
 if L then
-	--L.shout_warning = "Disrupting Shout in 5sec!"
+	--L.understudy = "Death Knight Understudy"
 
-	--L.taunt_warning = "Taunt ready in 5sec!"
-	--L.shieldwall_warning = "Barrier gone in 5sec!"
+	--L.shout_warning = "Disrupting Shout in 5 sec!"
+	--L.taunt_warning = "Taunt ready in 5 sec!"
+	--L.shieldwall_warning = "Barrier gone in 5 sec!"
 end
 
 L = BigWigs:NewBossLocale("Sapphiron", "itIT")
 if L then
 	--L.airphase_trigger = "Sapphiron lifts off into the air!"
-	--L.deepbreath_incoming_message = "Ice Bomb casting in ~14sec!"
-	--L.deepbreath_incoming_soon_message = "Ice Bomb casting in ~5sec!"
-	--L.deepbreath_incoming_bar = "Ice Bomb Cast"
 	--L.deepbreath_trigger = "%s takes a deep breath."
-	--L.deepbreath_warning = "Ice Bomb Incoming!"
-	--L.deepbreath_bar = "Ice Bomb Lands!"
 
-	--L.lifedrain_message = "Life Drain! Next in ~24sec!"
-	--L.lifedrain_warn1 = "Life Drain in ~5sec!"
-	--L.lifedrain_bar = "Possible Life Drain"
+	--L.air_phase = "Air Phase"
+	--L.ground_phase = "Ground Phase"
+
+	--L.ice_bomb = "Ice Bomb"
+	--L.ice_bomb_warning = "Ice Bomb Incoming!"
+	--L.ice_bomb_bar = "Ice Bomb Lands!"
 
 	--L.icebolt_say = "I'm a Block!"
 end
 
 L = BigWigs:NewBossLocale("Thaddius", "itIT")
 if L then
-	--L.phase = "Phase"
-	--L.phase_desc = "Warn for Phase transitions"
+	--L.phase1_trigger1 = "Stalagg crush you!"
+	--L.phase1_trigger2 = "Feed you to master!"
+	--L.phase2_trigger1 = "Eat... your... bones..."
+	--L.phase2_trigger2 = "Break... you!!"
+	--L.phase2_trigger3 = "Kill..."
 
-	--L.throw = "Throw"
-	--L.throw_desc = "Warn about tank platform swaps."
+	--L.add_death_trigger = "%s dies."
+	--L.overload_trigger = "%s overloads!"
 
-	--L.trigger_phase1_1 = "Stalagg crush you!"
-	--L.trigger_phase1_2 = "Feed you to master!"
-	--L.trigger_phase2_1 = "Eat... your... bones..."
-	--L.trigger_phase2_2 = "Break... you!!"
-	--L.trigger_phase2_3 = "Kill..."
-
-	--L.polarity_trigger = "Now you feel pain..."
-	--L.polarity_message = "Polarity Shift incoming!"
-	--L.polarity_warning = "3 sec to Polarity Shift!"
-	--L.polarity_bar = "Polarity Shift"
 	--L.polarity_changed = "Polarity changed!"
 	--L.polarity_nochange = "Same polarity!"
-
 	--L.polarity_first_positive = "You're POSITIVE!"
 	--L.polarity_first_negative = "You're NEGATIVE!"
 
-	--L.phase1_message = "Phase 1"
-	--L.phase2_message = "Phase 2, Berserk in 6 minutes!"
-
-	--L.surge_message = "Power Surge on Stalagg!"
-
-	--L.throw_bar = "Throw"
+	--L.throw = "Throw"
+	--L.throw_desc = "Warn about tank platform swaps."
 	--L.throw_warning = "Throw in ~5 sec!"
+
+	--L.polarity_extras = "Additional alerts for Polarity Shift positioning"
+
+	--L.custom_off_select_charge_position = "First position"
+	--L.custom_off_select_charge_position_desc = "Where to move to after the first Polarity Shift."
+	--L.custom_off_select_charge_position_value1 = "|cffff2020Negative (-)|r are LEFT, |cff2020ffPositive (+)|r are RIGHT"
+	--L.custom_off_select_charge_position_value2 = "|cff2020ffPositive (+)|r are LEFT, |cffff2020Negative (-)|r are RIGHT"
+
+	--L.custom_off_select_charge_movement = "Movement"
+	--L.custom_off_select_charge_movement_desc = "The movement strategy your group uses."
+	--L.custom_off_select_charge_movement_value1 = "Run |cff20ff20THROUGH|r the boss"
+	--L.custom_off_select_charge_movement_value2 = "Run |cff20ff20CLOCKWISE|r around the boss"
+	--L.custom_off_select_charge_movement_value3 = "Run |cff20ff20COUNTER-CLOCKWISE|r around the boss"
+	--L.custom_off_select_charge_movement_value4 = "Four camps 1: Polarity changed moves |cff20ff20RIGHT|r, same polarity moves |cff20ff20LEFT|r"
+	--L.custom_off_select_charge_movement_value5 = "Four camps 2: Polarity changed moves |cff20ff20LEFT|r, same polarity moves |cff20ff20RIGHT|r"
+
+	--L.custom_off_charge_graphic = "Graphical arrow"
+	--L.custom_off_charge_graphic_desc = "Show an arrow graphic."
+	--L.custom_off_charge_text = "Text arrows"
+	--L.custom_off_charge_text_desc = "Show an additional message."
+	--L.custom_off_charge_voice = "Voice alert"
+	--L.custom_off_charge_voice_desc = "Play a voice alert."
+
+	--Translate these to get locale sound files!
+	--L.left = "<--- GO LEFT <--- GO LEFT <---"
+	--L.right = "---> GO RIGHT ---> GO RIGHT --->"
+	--L.swap = "^^^^ SWITCH SIDES ^^^^ SWITCH SIDES ^^^^"
+	--L.stay = "==== DON'T MOVE ==== DON'T MOVE ===="
 end

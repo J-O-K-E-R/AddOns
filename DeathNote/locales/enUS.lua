@@ -137,7 +137,7 @@ L["You were killed by"] = "You were killed by"
 L["Your pet"] = "Your pet"
 
 --@end-non-debug@
---[===[@debug@
+--[==[@debug@
 L = L or {}
 L["%i deaths"] = "%i deaths"
 L["%i more deaths were not announced"] = "%i more deaths were not announced"
@@ -274,4 +274,4 @@ L["Whisper target"] = "Whisper target"
 L["You were killed by"] = "You were killed by"
 L["Your pet"] = "Your pet"
 
---@end-debug@]===]
+--@end-debug@]==]

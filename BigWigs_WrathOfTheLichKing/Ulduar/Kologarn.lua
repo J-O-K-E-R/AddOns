@@ -5,8 +5,8 @@
 local mod, CL = BigWigs:NewBoss("Kologarn", 603, 1642)
 if not mod then return end
 mod:RegisterEnableMob(32930)
-mod.engageId = 1137
---mod.respawnTime = Respawn is based on running over the line at the room entrance
+mod:SetEncounterID(1137)
+-- mod:SetRespawnTime(0) -- Respawn is based on running over the line at the room entrance
 
 --------------------------------------------------------------------------------
 -- Locals
@@ -53,7 +53,7 @@ function mod:OnBossEnable()
 	self:Death("ArmsDie", 32933, 32934)
 
 	self:RegisterEvent("CHAT_MSG_RAID_BOSS_WHISPER")
-	self:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", nil, "boss1")
+	self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
 	self:RegisterMessage("BigWigs_BossComm")
 end
 
@@ -62,7 +62,7 @@ end
 --
 
 function mod:CrunchArmor(args)
-	self:StackMessage(63355, args.destName, args.amount, "orange", "info")
+	self:StackMessageOld(63355, args.destName, args.amount, "orange", "info")
 end
 
 do
@@ -96,10 +96,14 @@ function mod:ArmsDie(args)
 	end
 end
 
-function mod:UNIT_SPELLCAST_SUCCEEDED(_, _, _, spellId)
-	if spellId == 63983 then -- Arm Sweep
-		self:MessageOld(63983, "yellow")
-		self:Bar(63983, 21)
+do
+	local prev = 0
+	function mod:UNIT_SPELLCAST_SUCCEEDED(_, _, castId, spellId)
+		if spellId == 63983 and castId ~= prev then -- Arm Sweep
+			prev = castId
+			self:MessageOld(63983, "yellow")
+			self:Bar(63983, 21)
+		end
 	end
 end
 

@@ -341,7 +341,7 @@ local extraBarsInfo = {
 		values = function(info) return sortByValues[info[#info-1]] end,
 	},
 	sortDirection = {
-		disabled = isRaidCDBar,
+		disabled = function(info) return not E.DB.profile.Party[info[2]].extraBars[info[4]].enabled or isRaidCDBar(info) end,
 		name = L["Sort Direction"],
 		order = 12,
 		type = "select",
@@ -600,7 +600,7 @@ local extraBarsInfo = {
 				type = "toggle",
 			},
 			showInterruptedSpell = {
-				hidden = isRaidCDBar,
+				hidden = function(info) return E.isPreWOTLKC or isRaidCDBar(info) end,
 				disabled = isDisabledOrNameBar,
 				name = L["Interrupted Spell Icon"],
 				desc = format("%s\n\n|cffff2020%s", L["Show the interrupted spell icon."], L["Mouseovering the icon will show the interrupted spell information regardless of \'Show Tooltip\' option."]),
@@ -608,7 +608,7 @@ local extraBarsInfo = {
 				type = "toggle",
 			},
 			showRaidTargetMark = {
-				hidden = function(info) return E.isPreBCC or isRaidCDBar(info) end,
+				hidden = function(info) return E.isPreWOTLKC or isRaidCDBar(info) end,
 				disabled = isDisabledOrNameBar,
 				name = L["Interrupted Target Marker"] .. E.RAID_TARGET_MARKERS[1],
 				desc = L["Show the interrupted unit's target marker if it exists."],

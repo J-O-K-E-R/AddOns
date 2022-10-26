@@ -153,7 +153,7 @@ P["sle"] = {
 			["itemLevel"] = {
 				["font"] = "PT Sans Narrow",
 				["size"] = 12,
-				["outline"] = "NONE",
+				["outline"] = "",
 			},
 			["IlvlFull"] = true,
 			["IlvlColor"] = false,
@@ -162,12 +162,12 @@ P["sle"] = {
 			["statFonts"] = {
 				["font"] = "PT Sans Narrow",
 				["size"] = 12,
-				["outline"] = "NONE",
+				["outline"] = "",
 			},
 			["catFonts"] = {
 				["font"] = "PT Sans Narrow",
 				["size"] = 12,
-				["outline"] = "NONE",
+				["outline"] = "",
 			},
 			["List"] = {
 				--General
@@ -565,7 +565,7 @@ P["sle"] = {
 			mail = {
 				font = "PT Sans Narrow",
 				size = 12,
-				outline = "NONE",
+				outline = "",
 			},
 			gossip = {
 				font = "PT Sans Narrow",
@@ -574,17 +574,17 @@ P["sle"] = {
 			objective = {
 				font = "PT Sans Narrow",
 				size = 12,
-				outline = "NONE",
+				outline = "",
 			},
 			objectiveHeader = {
 				font = "PT Sans Narrow",
 				size = 12,
-				outline = "NONE",
+				outline = "",
 			},
 			questFontSuperHuge = {
 				font = "PT Sans Narrow",
 				size = 24,
-				outline = "NONE",
+				outline = "",
 			},
 		},
 	},
@@ -651,7 +651,7 @@ P["sle"] = {
 				["cdFormat"] = "DEFAULT",
 				["ignoreMissingInfo"] = false,
 				["showHearthstones"] = true,
-				["hsPrio"] = "54452,64488,93672,142542,162973,163045,165669,165670,165802,166746,166747,168907,172179,182773,183716,180290,184353",
+				["hsPrio"] = "54452,64488,93672,142542,162973,163045,165669,165670,165802,166746,166747,168907,172179,182773,183716,180290,184353,188952,190237",
 				["showToys"] = true,
 				["showSpells"] = true,
 				["showEngineer"] = true,
@@ -1244,12 +1244,17 @@ P["sle"] = {
 				health = false,
 				power = false,
 			},
-			raid = {
+			raid1 = {
 				legacy = false,
 				health = false,
 				power = false,
 			},
-			raid40 = {
+			raid2 = {
+				legacy = false,
+				health = false,
+				power = false,
+			},
+			raid3 = {
 				legacy = false,
 				health = false,
 				power = false,
@@ -1454,13 +1459,19 @@ P["sle"] = {
 				debuffs = CopyTable(UF_Auras),
 				offlineIndicator = CopyTable(sharedIndicatorOptions),
 			},
-			raid = {
+			raid1 = {
 				buffs = CopyTable(UF_Auras),
 				deathIndicator = CopyTable(sharedIndicatorOptions),
 				debuffs = CopyTable(UF_Auras),
 				offlineIndicator = CopyTable(sharedIndicatorOptions),
 			},
-			raid40 = {
+			raid2 = {
+				buffs = CopyTable(UF_Auras),
+				deathIndicator = CopyTable(sharedIndicatorOptions),
+				debuffs = CopyTable(UF_Auras),
+				offlineIndicator = CopyTable(sharedIndicatorOptions),
+			},
+			raid3 = {
 				buffs = CopyTable(UF_Auras),
 				deathIndicator = CopyTable(sharedIndicatorOptions),
 				debuffs = CopyTable(UF_Auras),
@@ -1503,13 +1514,19 @@ P["sle"] = {
 					["yoffset"] = 0,
 				},
 			},
-			["raid"] = {
+			["raid1"] = {
 				["role"] = {
 					["xoffset"] = 0,
 					["yoffset"] = 0,
 				},
 			},
-			["raid40"] = {
+			["raid2"] = {
+				["role"] = {
+					["xoffset"] = 0,
+					["yoffset"] = 0,
+				},
+			},
+			["raid3"] = {
 				["role"] = {
 					["xoffset"] = 0,
 					["yoffset"] = 0,

@@ -80,6 +80,7 @@ LP.Hearthstones = {
 	{182773, nil, true}, --Necrolord HS
 	{180290, nil, true}, --Night Fae HS
 	{184353, nil, true}, --Kyrian HS
+	{188952, nil, true}, --Dominated HS
 	{190237, nil, true}, -- Broker Translocation Matrix
 }
 
@@ -102,6 +103,7 @@ LP.PortItems = {
 	{95568, nil, true}, --Sunreaver beakon
 	{87548}, --Pandaria Arch
 	{180817}, --Cypher of Relocation
+	{151016}, --Fractured Necrolyte Skull
 }
 LP.EngineerItems = {
 	{18984, nil, true}, --Dimensional Ripper - Everlook
@@ -221,32 +223,37 @@ LP.Spells = {
 		},
 	},
 	['challenge'] = {
-		[1] = {text = GetSpellInfo(131204),icon = SLE:GetIconFromID('spell', 131204),secure = {buttonType = 'spell',ID = 131204}, UseTooltip = true},-- Jade serpent
-		[2] = {text = GetSpellInfo(131205),icon = SLE:GetIconFromID('spell', 131205),secure = {buttonType = 'spell',ID = 131205}, UseTooltip = true}, -- Brew
-		[3] = {text = GetSpellInfo(131206),icon = SLE:GetIconFromID('spell', 131206),secure = {buttonType = 'spell',ID = 131206}, UseTooltip = true},-- Shado-pan
-		[4] = {text = GetSpellInfo(131222),icon = SLE:GetIconFromID('spell', 131222),secure = {buttonType = 'spell',ID = 131222}, UseTooltip = true},-- Mogu
-		[5] = {text = GetSpellInfo(131225),icon = SLE:GetIconFromID('spell', 131225),secure = {buttonType = 'spell',ID = 131225}, UseTooltip = true},-- Setting sun
-		[6] = {text = GetSpellInfo(131231),icon = SLE:GetIconFromID('spell', 131231),secure = {buttonType = 'spell',ID = 131231}, UseTooltip = true},-- Scarlet blade
-		[7] = {text = GetSpellInfo(131229),icon = SLE:GetIconFromID('spell', 131229),secure = {buttonType = 'spell',ID = 131229}, UseTooltip = true},-- scarlet mitre
-		[8] = {text = GetSpellInfo(131232),icon = SLE:GetIconFromID('spell', 131232),secure = {buttonType = 'spell',ID = 131232}, UseTooltip = true},-- Scholo
-		[9] = {text = GetSpellInfo(131228),icon = SLE:GetIconFromID('spell', 131228),secure = {buttonType = 'spell',ID = 131228}, UseTooltip = true},-- Black ox
-		[10] = {text = GetSpellInfo(159895),icon = SLE:GetIconFromID('spell', 159895),secure = {buttonType = 'spell',ID = 159895}, UseTooltip = true},-- bloodmaul
-		[11] = {text = GetSpellInfo(159902),icon = SLE:GetIconFromID('spell', 159902),secure = {buttonType = 'spell',ID = 159902}, UseTooltip = true},-- burning mountain
-		[12] = {text = GetSpellInfo(159899),icon = SLE:GetIconFromID('spell', 159899),secure = {buttonType = 'spell',ID = 159899}, UseTooltip = true},-- crescent moon
-		[13] = {text = GetSpellInfo(159900),icon = SLE:GetIconFromID('spell', 159900),secure = {buttonType = 'spell',ID = 159900}, UseTooltip = true},-- dark rail
-		[14] = {text = GetSpellInfo(159896),icon = SLE:GetIconFromID('spell', 159896),secure = {buttonType = 'spell',ID = 159896}, UseTooltip = true},-- iron prow
-		[15] = {text = GetSpellInfo(159898),icon = SLE:GetIconFromID('spell', 159898),secure = {buttonType = 'spell',ID = 159898}, UseTooltip = true},-- Skies
-		[16] = {text = GetSpellInfo(159901),icon = SLE:GetIconFromID('spell', 159901),secure = {buttonType = 'spell',ID = 159901}, UseTooltip = true},-- Verdant
-		[17] = {text = GetSpellInfo(159897),icon = SLE:GetIconFromID('spell', 159897),secure = {buttonType = 'spell',ID = 159897}, UseTooltip = true},-- Vigilant
-		[18] = {text = GetSpellInfo(354468),icon = SLE:GetIconFromID('spell', 354468),secure = {buttonType = 'spell',ID = 354468}, UseTooltip = true},-- De Other Side
-		[19] = {text = GetSpellInfo(354465),icon = SLE:GetIconFromID('spell', 354465),secure = {buttonType = 'spell',ID = 354465}, UseTooltip = true},-- Halls of Atonement
-		[20] = {text = GetSpellInfo(354464),icon = SLE:GetIconFromID('spell', 354464),secure = {buttonType = 'spell',ID = 354464}, UseTooltip = true},-- Mists of Tirna Scithe
-		[21] = {text = GetSpellInfo(354463),icon = SLE:GetIconFromID('spell', 354463),secure = {buttonType = 'spell',ID = 354463}, UseTooltip = true},-- Plaguefall
-		[22] = {text = GetSpellInfo(354469),icon = SLE:GetIconFromID('spell', 354469),secure = {buttonType = 'spell',ID = 354469}, UseTooltip = true},-- Sanguine Depths
-		[23] = {text = GetSpellInfo(354466),icon = SLE:GetIconFromID('spell', 354466),secure = {buttonType = 'spell',ID = 354466}, UseTooltip = true},-- Spires of Ascension
-		[24] = {text = GetSpellInfo(354462),icon = SLE:GetIconFromID('spell', 354462),secure = {buttonType = 'spell',ID = 354462}, UseTooltip = true},-- Necrotic Wake
-		[25] = {text = GetSpellInfo(354467),icon = SLE:GetIconFromID('spell', 354467),secure = {buttonType = 'spell',ID = 354467}, UseTooltip = true},-- Theater of Pain
-		[26] = {text = GetSpellInfo(367416),icon = SLE:GetIconFromID('spell', 367416),secure = {buttonType = 'spell',ID = 367416}, UseTooltip = true},-- Tazavesh
+		[1] = {text = GetSpellInfo(131204),icon = SLE:GetIconFromID('spell', 131204),secure = {buttonType = 'spell',ID = 131204}, UseTooltip = true},	-- Temple of the Jade Serpent (Path of the Jade Serpent)
+		[2] = {text = GetSpellInfo(131205),icon = SLE:GetIconFromID('spell', 131205),secure = {buttonType = 'spell',ID = 131205}, UseTooltip = true},	-- Stormstout Brewery (Path of the Stout Brew)
+		[3] = {text = GetSpellInfo(131206),icon = SLE:GetIconFromID('spell', 131206),secure = {buttonType = 'spell',ID = 131206}, UseTooltip = true},	-- Shado-Pan Monastery (Path of the Shado-Pan)
+		[4] = {text = GetSpellInfo(131222),icon = SLE:GetIconFromID('spell', 131222),secure = {buttonType = 'spell',ID = 131222}, UseTooltip = true},	-- Mogu'shan Palace (Path of the Mogu King)
+		[5] = {text = GetSpellInfo(131225),icon = SLE:GetIconFromID('spell', 131225),secure = {buttonType = 'spell',ID = 131225}, UseTooltip = true},	-- Gate of the Setting Sun (Path of the Setting Sun)
+		[6] = {text = GetSpellInfo(131231),icon = SLE:GetIconFromID('spell', 131231),secure = {buttonType = 'spell',ID = 131231}, UseTooltip = true},	-- Scarlet Halls (Path of the Scarlet Blade)
+		[7] = {text = GetSpellInfo(131229),icon = SLE:GetIconFromID('spell', 131229),secure = {buttonType = 'spell',ID = 131229}, UseTooltip = true},	-- Scarlet Monastery (Path of the Scarlet Mitre)
+		[8] = {text = GetSpellInfo(131232),icon = SLE:GetIconFromID('spell', 131232),secure = {buttonType = 'spell',ID = 131232}, UseTooltip = true},	-- Scholomance (Path of the Necromancer)
+		[9] = {text = GetSpellInfo(131228),icon = SLE:GetIconFromID('spell', 131228),secure = {buttonType = 'spell',ID = 131228}, UseTooltip = true},	-- Siege of Niuzao (Path of the Black Ox)
+		[10] = {text = GetSpellInfo(159895),icon = SLE:GetIconFromID('spell', 159895),secure = {buttonType = 'spell',ID = 159895}, UseTooltip = true},	-- Bloodmaul Slag Mines (Path of the Bloodmaul)
+		[11] = {text = GetSpellInfo(159902),icon = SLE:GetIconFromID('spell', 159902),secure = {buttonType = 'spell',ID = 159902}, UseTooltip = true},	-- Upper Blackrock Spire (Path of the Burning Mountain)
+		[12] = {text = GetSpellInfo(159899),icon = SLE:GetIconFromID('spell', 159899),secure = {buttonType = 'spell',ID = 159899}, UseTooltip = true},	-- Shadowmoon Burial Grounds (Path of the Crescent Moon)
+		[13] = {text = GetSpellInfo(159900),icon = SLE:GetIconFromID('spell', 159900),secure = {buttonType = 'spell',ID = 159900}, UseTooltip = true},	-- Grimrail Depot (Path of the Dark Rail)
+		[14] = {text = GetSpellInfo(159896),icon = SLE:GetIconFromID('spell', 159896),secure = {buttonType = 'spell',ID = 159896}, UseTooltip = true},	-- Iron Docks (Path of the Iron Prow)
+		[15] = {text = GetSpellInfo(159898),icon = SLE:GetIconFromID('spell', 159898),secure = {buttonType = 'spell',ID = 159898}, UseTooltip = true},	-- Skyreach (Path of the Skies)
+		[16] = {text = GetSpellInfo(159901),icon = SLE:GetIconFromID('spell', 159901),secure = {buttonType = 'spell',ID = 159901}, UseTooltip = true},	-- Everbloom (Path of the Verdant)
+		[17] = {text = GetSpellInfo(159897),icon = SLE:GetIconFromID('spell', 159897),secure = {buttonType = 'spell',ID = 159897}, UseTooltip = true},	-- Auchindoun (Path of the Vigilant)
+		[18] = {text = GetSpellInfo(354468),icon = SLE:GetIconFromID('spell', 354468),secure = {buttonType = 'spell',ID = 354468}, UseTooltip = true},	-- De Other Side (Path of the Scheming Loa)
+		[19] = {text = GetSpellInfo(354465),icon = SLE:GetIconFromID('spell', 354465),secure = {buttonType = 'spell',ID = 354465}, UseTooltip = true},	-- Halls of Atonement (Path of the Sinful Soul)
+		[20] = {text = GetSpellInfo(354464),icon = SLE:GetIconFromID('spell', 354464),secure = {buttonType = 'spell',ID = 354464}, UseTooltip = true},	-- Mists of Tirna Scithe (Path of the Misty Forest)
+		[21] = {text = GetSpellInfo(354463),icon = SLE:GetIconFromID('spell', 354463),secure = {buttonType = 'spell',ID = 354463}, UseTooltip = true},	-- Plaguefall (Path of the Plagued)
+		[22] = {text = GetSpellInfo(354469),icon = SLE:GetIconFromID('spell', 354469),secure = {buttonType = 'spell',ID = 354469}, UseTooltip = true},	-- Sanguine Depths (Path of the Stone Warden)
+		[23] = {text = GetSpellInfo(354466),icon = SLE:GetIconFromID('spell', 354466),secure = {buttonType = 'spell',ID = 354466}, UseTooltip = true},	-- Spires of Ascension (Path of the Ascendant)
+		[24] = {text = GetSpellInfo(354462),icon = SLE:GetIconFromID('spell', 354462),secure = {buttonType = 'spell',ID = 354462}, UseTooltip = true},	-- Necrotic Wake (Path of the Courageous)
+		[25] = {text = GetSpellInfo(354467),icon = SLE:GetIconFromID('spell', 354467),secure = {buttonType = 'spell',ID = 354467}, UseTooltip = true},	-- Theater of Pain (Path of the Undefeated)
+		[26] = {text = GetSpellInfo(367416),icon = SLE:GetIconFromID('spell', 367416),secure = {buttonType = 'spell',ID = 367416}, UseTooltip = true},	-- Tazavesh, the Veiled Market (Path of the Streetwise Merchant)
+		[27] = {text = GetSpellInfo(373274),icon = SLE:GetIconFromID('spell', 373274),secure = {buttonType = 'spell',ID = 373274}, UseTooltip = true},	-- Mechagon (Path of the Scrappy Prince)
+		[28] = {text = GetSpellInfo(373262),icon = SLE:GetIconFromID('spell', 373262),secure = {buttonType = 'spell',ID = 373262}, UseTooltip = true},	-- Karazhan (Path of the Fallen Guardian)
+		[29] = {text = GetSpellInfo(373190),icon = SLE:GetIconFromID('spell', 373190),secure = {buttonType = 'spell',ID = 373190}, UseTooltip = true},	-- Castle Nathria (Path of the Sire)
+		[30] = {text = GetSpellInfo(373191),icon = SLE:GetIconFromID('spell', 373191),secure = {buttonType = 'spell',ID = 373191}, UseTooltip = true},	-- Sanctum of Domination (Path of the Tormented Soul)
+		[31] = {text = GetSpellInfo(373192),icon = SLE:GetIconFromID('spell', 373192),secure = {buttonType = 'spell',ID = 373192}, UseTooltip = true},	-- Sepulcher of the First Ones (Path of the First Ones)
 	},
 }
 
@@ -260,7 +267,7 @@ function LP:CreateLocationPanel()
 	loc_panel:SetScript('OnUpdate', LP.UpdateCoords)
 
 	-- Location Text
-	loc_panel.Text = loc_panel:CreateFontString(nil, 'LOW')
+	loc_panel.Text = loc_panel:CreateFontString(nil, 'BORDER')
 	loc_panel.Text:Point('CENTER', 0, 0)
 	loc_panel.Text:SetWordWrap(false)
 	E.FrameLocks[loc_panel] = true
@@ -269,13 +276,13 @@ function LP:CreateLocationPanel()
 	loc_panel.Xcoord = CreateFrame('Frame', 'SLE_LocationPanel_X', loc_panel, 'BackdropTemplate')
 	-- loc_panel.Xcoord:SetPoint('RIGHT', loc_panel, 'LEFT', 1 - 2*E.Spacing, 0)
 	loc_panel.Xcoord:Point('RIGHT', loc_panel, 'LEFT', 1, 0)
-	loc_panel.Xcoord.Text = loc_panel.Xcoord:CreateFontString(nil, 'LOW')
+	loc_panel.Xcoord.Text = loc_panel.Xcoord:CreateFontString(nil, 'BORDER')
 	loc_panel.Xcoord.Text:Point('CENTER', 0, 0)
 
 	loc_panel.Ycoord = CreateFrame('Frame', 'SLE_LocationPanel_Y', loc_panel, 'BackdropTemplate')
 	-- loc_panel.Ycoord:SetPoint('LEFT', loc_panel, 'RIGHT', -1 + 2*E.Spacing, 0)
 	loc_panel.Ycoord:Point('LEFT', loc_panel, 'RIGHT', -1, 0)
-	loc_panel.Ycoord.Text = loc_panel.Ycoord:CreateFontString(nil, 'LOW')
+	loc_panel.Ycoord.Text = loc_panel.Ycoord:CreateFontString(nil, 'BORDER')
 	loc_panel.Ycoord.Text:Point('CENTER', 0, 0)
 
 	LP:Resize()

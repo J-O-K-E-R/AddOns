@@ -67,7 +67,7 @@ local changelog = E.changelog:gsub("^[ \t\n]*", E.PROJECT_HEX_C[WOW_PROJECT_ID])
 		isFound = true
 		return "|cff9d9d9d\n\nv"..ver
 	end
-end):gsub("\t", "        ")
+end):gsub("\t", "\32\32\32\32\32\32")
 
 local function GetOptions()
 	if not E.options then
@@ -120,14 +120,14 @@ local function GetOptions()
 							type = "description",
 						},
 						notice1 = {
-							hidden = E.isPreBCC,
 
-							name = "|cffff2020* Coodown reduction by Soulbind Conduits and RNG modifiers (% chance to X, etc) require Sync Mode.",
-
+							name = (E.isClassic and "|cffff2020* Talent detection require Sync Mode.")
+								or (E.isWOTLKC and "|cffff2020* Coodown reduction by Glyphs require Sync Mode.")
+								or (not E.isBCC and "|cffff2020* Coodown reduction by Soulbind Conduits and RNG modifiers (% chance to X, etc) require Sync Mode.")
+								or "",
 							order = 16,
 							type = "description",
 						},
-
 
 
 
@@ -186,8 +186,7 @@ local function GetOptions()
 								},
 							}
 						},
-						plugins = {
-							hidden = function() return E.isPreBCC end,
+						plugins = not E.isPreWOTLKC and {
 							name = L["Plugins"],
 							order = 50,
 							type = "group",
@@ -217,7 +216,7 @@ local function GetOptions()
 
 
 							}
-						},
+						} or nil,
 					}
 				},
 			},
@@ -301,7 +300,7 @@ function E:SetupOptions()
 		fontSize = "large",
 	}
 
-	if not self.isPreBCC then
+	if not self.isPreWOTLKC then
 		local LDS = LibStub("LibDualSpec-1.0")
 		LDS:EnhanceDatabase(self.DB, "OmniCDDB")
 		LDS:EnhanceOptions(self.optionsFrames.profiles, self.DB)

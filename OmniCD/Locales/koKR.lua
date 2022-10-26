@@ -58,6 +58,8 @@ L["CD-Group %d"] = "CD-그룹 %d"
 L["CD-Group Padding"] = "CD-그룹 간격"
 L["CENTER"] = "중앙"
 L["Center Horizontally"] = "수평 중앙"
+--[[Translation missing --]]
+L["CENTER will keep the rows centered and grow icons bidirectionally."] = "CENTER will keep the rows centered and grow icons bidirectionally."
 L["Changelog"] = "변경 사항"
 L["Changing party display options in your UF addon while OmniCD is active will break the anchors. Type (/oc rl) to fix the anchors"] = "OmniCD가 활성화된 상태에서 유닛프레임 애드온의 파티 설정 변경시 올바른 파티 프레임과의 연결이 깨질 수 있습니다. 이를 수정하기 위해 채팅창에 (/oc rl) 을 입력하십시오"
 L["Charge Color"] = "사용 가능 횟수 색상"

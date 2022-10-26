@@ -92,7 +92,7 @@ BigWigs:AddColors("Halondrus the Reclaimer", {
 	[367079] = "yellow",
 	[368363] = "blue",
 	[368529] = "red",
-	[368969] = {"blue","green"},
+	[368969] = {"blue","green","yellow"},
 	[369207] = "blue",
 	["stages"] = {"cyan","green"},
 })
@@ -176,4 +176,11 @@ BigWigs:AddColors("The Jailer", {
 	["mythic_blood_soak_stage_3"] = "yellow",
 	["mythic_dispel_stage_4"] = "yellow",
 	["stages"] = "cyan",
+})
+
+BigWigs:AddColors("Sepulcher of the First Ones Affixes", {
+	[369505] = {"blue","yellow"},
+	[371254] = "yellow",
+	[371447] = {"green","yellow"},
+	[372634] = "yellow",
 })

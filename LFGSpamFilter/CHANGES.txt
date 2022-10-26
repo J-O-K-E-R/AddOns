@@ -1,10 +1,16 @@
-lightweight tag c7bff1552ec9144be467ed3849b28e8e79f2ffe5 v1.0.0
+lightweight tag 8e9bc69c62ef0aa12dd074b8659d10136d0977a5 v1.2.3
 Author:	romdeau23 <romdeau23@gmail.com>
-Date:	Tue May 24 11:20:55 2022 +0200
+Date:	Sat Aug 20 12:45:16 2022 +0200
 
-commit c7bff1552ec9144be467ed3849b28e8e79f2ffe5
+commit 8e9bc69c62ef0aa12dd074b8659d10136d0977a5
 Author: romdeau23 <romdeau23@gmail.com>
-Date:   Tue May 24 11:20:55 2022 +0200
+Date:   Sat Aug 20 12:45:16 2022 +0200
 
-    Move addon files to root, add pkgmeta.yaml, fix line-endings
+    Update TOC for 9.2.7
+
+commit 9d661f7726bbb059811b23e5ccf9f50b78e7a4b4
+Author: romdeau23 <romdeau23@gmail.com>
+Date:   Wed Aug 17 10:26:12 2022 +0200
+
+    Document broken context menu option (#9)
 

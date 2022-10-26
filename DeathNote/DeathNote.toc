@@ -1,13 +1,15 @@
-## Interface: 90100
+## Interface: 90205
 ## Title: DeathNote
 ## Notes: Death analysis tool
 ## Author: Slaren
-## Version: 90100.0-release
+## Version: 90205.2-release
 ## OptionalDeps: LibStub, CallbackHandler-1.0, Ace3
 ## SavedVariables: DeathNoteDB
 ## SavedVariablesPerCharacter: DeathNoteData
 ## LoadManagers: AddonLoader
 ## X-LoadOn-Always: delayed
+## X-Curse-Project-ID: 28314
+## X-Wago-ID: VBNBxLKx
 
 #@no-lib-strip@
 libs\LibStub\LibStub.lua
@@ -27,6 +29,7 @@ libs\AceEvent-3.0\AceEvent-3.0.xml
 libs\AceHook-3.0\AceHook-3.0.xml
 libs\AceLocale-3.0\AceLocale-3.0.xml
 libs\AceTimer-3.0\AceTimer-3.0.xml
+libs\LibDropDownExtension-1.0\LibDropDownExtension.lua
 #@end-no-lib-strip@
 
 locales\localizations.xml

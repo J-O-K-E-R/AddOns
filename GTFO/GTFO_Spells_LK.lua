@@ -63,7 +63,7 @@ GTFO.SpellID["55847"] = {
 };
 
 GTFO.SpellID["59014"] = {
-	--desc = "Shadow Void (Risen Drakkari Soulmage - Drak'Tharon Keep - Normal)";
+	--desc = "Shadow Void (Risen Drakkari Soulmage - Drak'Tharon Keep - Heroic)";
 	sound = 1;
 };
 
@@ -91,6 +91,17 @@ GTFO.SpellID["56867"] = {
 	--desc = "Poison Cloud (Savage Cave Beast - Old Kingdom)";
 	sound = 1;
 };
+
+GTFO.SpellID["56858"] = {
+	--desc = "Flamestrike (Twilight Worshipper - Old Kingdom)";
+	sound = 1;
+};
+
+GTFO.SpellID["61568"] = {
+	--desc = "Flamestrike (Twilight Worshipper - Old Kingdom - Heroic)";
+	sound = 1;
+};
+
 
 GTFO.SpellID["48381"] = {
 	--desc = "Spirit Fount (King Ymiron)";

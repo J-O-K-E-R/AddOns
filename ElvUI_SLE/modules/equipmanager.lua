@@ -7,6 +7,9 @@ local format = format
 local UnitEffectiveLevel = UnitEffectiveLevel
 local C_EquipmentSet = C_EquipmentSet
 local GetRealZoneText = GetRealZoneText
+local C_Calendar = C_Calendar
+local C_DateAndTime = C_DateAndTime
+local time = time
 
 EM.Conditions = {}
 EM.Processing = false
@@ -187,6 +190,35 @@ EM.TagsTable = {
 	['warmode'] = function()
 		return C_PvP.IsWarModeDesired()
 	end,
+	['event'] = function(ids)
+		if not ids or ids == "" then
+			return false
+		end
+		local currentTime = C_DateAndTime.GetCurrentCalendarTime()
+		local passed = false
+		local function convertDateToTime(inTbl)
+			-- time() complains if day is not set so copy the monthDay field to day
+			inTbl.day = inTbl.monthDay
+			return time(inTbl)
+		end
+		local now = convertDateToTime(currentTime)
+		for id in string.gmatch(ids, "([^/]+)") do
+			local eventInfo = C_Calendar.GetEventIndexInfo(id)
+			if eventInfo and eventInfo.offsetMonths <= 0 then
+				local holidayInfo = C_Calendar.GetHolidayInfo(eventInfo.offsetMonths, eventInfo.monthDay, eventInfo.eventIndex)
+				local startTime = convertDateToTime(holidayInfo.startTime)
+				local endTime = convertDateToTime(holidayInfo.endTime)
+				if not passed then
+					passed = now > startTime and now < endTime
+				end
+				if passed then
+					break
+				end
+			end
+		end
+
+		return passed
+	end,
 }
 
 --Building up set data
@@ -356,7 +388,7 @@ function EM:CreateLock()
 	local button = CreateFrame('Button', 'SLE_Equip_Lock_Button', _G.PaperDollFrame)
 	button:Size(20, 20)
 	button:Point('BOTTOMLEFT', _G.CharacterFrame, 'BOTTOMLEFT', 4, 4)
-	button:SetFrameLevel(_G.CharacterModelFrame:GetFrameLevel() + 2)
+	button:SetFrameLevel(_G.CharacterSceneFrame:GetFrameLevel() + 2)
 	button:SetScript('OnEnter', function(self)
 		_G.GameTooltip:SetOwner(self)
 		_G.GameTooltip:AddLine(L["SLE_EM_LOCK_TOOLTIP"])

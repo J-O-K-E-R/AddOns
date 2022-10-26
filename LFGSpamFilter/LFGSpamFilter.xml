@@ -3,16 +3,26 @@
     xmlns:xsi="http://www.w3.org/1001/XMLSchema-instance"
     xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd"
 >
-    <Button frameStrata="TOOLTIP" name="LFGSpamFilterQuickReportButton" inherits="UIPanelCloseButtonNoScripts" hidden="true">
+    <Button name="LFGSpamFilterBanButton" inherits="UIPanelCloseButtonNoScripts" hidden="true" frameStrata="TOOLTIP">
         <Scripts>
             <OnClick>
-                LFGSpamFilterAddon.ui.quickReport.onClick()
+                LFGSpamFilterAddon.ui.banButton.onClick()
                 self:Hide()
             </OnClick>
             <OnLeave>
                 self:Hide()
             </OnLeave>
         </Scripts>
+    </Button>
+
+    <Button name="LFGSpamFilterReportHelperButton" inherits="UIPanelButtonNoTooltipTemplate,SecureActionButtonTemplate" hidden="true" frameStrata="TOOLTIP">
+        <Size x="35" y="30"/>
+        <Attributes>
+            <Attribute name="type" type="string" value="click"/>
+        </Attributes>
+        <Anchors>
+            <Anchor point="CENTER" />
+        </Anchors>
     </Button>
 
     <Button name="LFGSpamFilterStatusButton" registerForClicks="LeftButtonUp,RightButtonUp" hidden="true">
@@ -69,7 +79,7 @@
         </Scripts>
     </Frame>
 
-    <Frame name="LFGSpamFilterOptions" parent="UIParent" enableMouse="true" hidden="true" frameStrata="DIALOG" inherits="TooltipBackdropTemplate">
+    <Frame name="LFGSpamFilterOptions" parent="UIParent" enableMouse="true" hidden="true" inherits="TooltipBackdropTemplate" frameStrata="DIALOG">
         <Size x="192" y="307"/>
         <Anchors>
             <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="LFGSpamFilterStatusButton" x="0" y="1"/>
@@ -104,7 +114,7 @@
                         <Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="18" y="-40"/>
                     </Anchors>
                 </FontString>
-                <FontString inherits="GameFontHighlightSmall" wordwrap="false" justifyH="RIGHT" text="voice chat (usually spam)">
+                <FontString inherits="GameFontHighlightSmall" wordwrap="false" justifyH="RIGHT" text="groups with voice chat">
                     <Size x="0" y="10"/>
                     <Anchors>
                         <Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="47" y="-60"/>
@@ -124,13 +134,13 @@
                         <Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="18" y="-108"/>
                     </Anchors>
                 </FontString>
-                <FontString inherits="GameFontHighlightSmall" wordwrap="false" justifyH="RIGHT" text="report as spam">
+                <FontString inherits="GameFontHighlightSmall" wordwrap="false" justifyH="RIGHT" text="show ban button">
                     <Size x="0" y="10"/>
                     <Anchors>
                         <Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="47" y="-128"/>
                     </Anchors>
                 </FontString>
-                <FontString inherits="GameFontHighlightSmall" wordwrap="false" justifyH="RIGHT" text="show quick-report button">
+                <FontString inherits="GameFontHighlightSmall" wordwrap="false" justifyH="RIGHT" text="show report helper">
                     <Size x="0" y="10"/>
                     <Anchors>
                         <Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="47" y="-150"/>
@@ -188,12 +198,17 @@
                     <AbsInset left="-1.5" right="-1.5"/>
                 </TextInsets>
             </EditBox>
-            <CheckButton parentKey="Report" inherits="LFGSpamFilterCheckboxTemplate">
+            <CheckButton parentKey="BanButton" inherits="LFGSpamFilterCheckboxTemplate">
                 <Anchors>
                     <Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="22" y="-122"/>
                 </Anchors>
+                <Scripts>
+                    <OnClick>
+                        self:GetParent().ReportHelper:SetEnabled(self:GetChecked())
+                    </OnClick>
+                </Scripts>
             </CheckButton>
-            <CheckButton parentKey="QuickReport" inherits="LFGSpamFilterCheckboxTemplate">
+            <CheckButton parentKey="ReportHelper" inherits="LFGSpamFilterCheckboxTemplate">
                 <Anchors>
                     <Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="22" y="-144"/>
                 </Anchors>

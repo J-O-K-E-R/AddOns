@@ -5,7 +5,6 @@ local _G = _G
 --Frames to move
 B.Frames = {
 	AddonList = true,
-	AudioOptionsFrame = true,
 	BankFrame = true,
 	CharacterFrame = true,
 	ChatConfigFrame = true,
@@ -18,7 +17,6 @@ B.Frames = {
 	GuildInviteFrame = true,
 	GuildRegistrarFrame = true,
 	HelpFrame = true,
-	InterfaceOptionsFrame = true,
 	ItemTextFrame = true,
 	LFDRoleCheckPopup = true,
 	LFGDungeonReadyDialog = true,
@@ -38,6 +36,7 @@ B.Frames = {
 	ReadyCheckFrame = true,
 	ReportCheatingDialog = true,
 	RolePollPopup = true,
+	SettingsPanel = true,
 	SpellBookFrame = true,
 	SplashFrame = true,
 	StackSplitFrame = true,
@@ -46,7 +45,6 @@ B.Frames = {
 	TimeManagerFrame = true,
 	TradeFrame = true,
 	TutorialFrame = true,
-	VideoOptionsFrame = true,
 	WorldMapFrame = true,
 }
 
@@ -186,10 +184,9 @@ B.AddonsList = {
 B.ExlusiveFrames = {
 	QuestFrame = { 'GossipFrame', },
 	GossipFrame = { 'QuestFrame', },
-	GameMenuFrame = { 'VideoOptionsFrame', 'InterfaceOptionsFrame', 'HelpFrame',},
-	VideoOptionsFrame = { 'GameMenuFrame',},
-	InterfaceOptionsFrame = { 'GameMenuFrame',},
+	GameMenuFrame = { 'HelpFrame', 'SettingsPanel',},
 	HelpFrame = { 'GameMenuFrame',},
+	SettingsPanel = { 'GameMenuFrame',},
 }
 
 --Don't even ask
@@ -283,8 +280,6 @@ function B:MakeMovable(Name, AddOn)
 		return
 	end
 
-	if Name == 'AchievementFrame' then AchievementFrameHeader:EnableMouse(false) end --Cause achievement frame is a bitch
-
 	frame:EnableMouse(true)
 	frame:SetMovable(true)
 	frame:SetClampedToScreen(true)
@@ -321,6 +316,7 @@ local function CompatibilityChecks()
 end
 
 function B:SLETalkingHead()
+	if not _G.TalkingHeadFrame.mover then return end
 	if E.db.sle.skins.talkinghead.hide then
 		E:DisableMover(_G.TalkingHeadFrame.mover:GetName())
 	else
@@ -334,31 +330,7 @@ function B:UpdateAll()
 	B:SLETalkingHead()
 end
 
-local f = CreateFrame('Frame')
-f:RegisterEvent('PLAYER_ENTERING_WORLD')
-f:RegisterEvent('ADDON_LOADED')
-f:SetScript('OnEvent', function(self, event, addon)
-	-- SLE:Print('PEW Function Hooked')
-	if event == 'PLAYER_ENTERING_WORLD' and IsAddOnLoaded('Blizzard_TalkingHeadUI') then
-		hooksecurefunc('TalkingHeadFrame_PlayCurrent', function()
-			-- SLE:Print('TalkingHead Frame initilized PlayCurrent function from PEW hook')
-			if E.db.sle.skins.talkinghead.hide then
-				_G.TalkingHeadFrame:Hide()
-			end
-		end)
-		self:UnregisterEvent(event)
-	end
 
-	if event == 'ADDON_LOADED' and addon == 'Blizzard_TalkingHeadUI' then
-		hooksecurefunc('TalkingHeadFrame_PlayCurrent', function()
-			-- SLE:Print('TalkingHead Frame initilized PlayCurrent function from ADDONLOADED hook')
-			if E.db.sle.skins.talkinghead.hide then
-				_G.TalkingHeadFrame:Hide()
-			end
-		end)
-		self:UnregisterEvent(event)
-	end
-end)
 
 function B:Initialize()
 	B.db = E.db.sle.blizzard
@@ -385,7 +357,7 @@ function B:Initialize()
 		end
 
 		--Removing stuff from auto positioning
-		self:Hook('UIParent_ManageFramePosition', function()
+		self:Hook('UIParent_ManageFramePositions', function()
 			for FrameName, state in pairs(B.Frames) do
 				local frame = _G[FrameName]
 				if state and frame and frame:IsShown() then
@@ -400,6 +372,14 @@ function B:Initialize()
 	SLE.UpdateFunctions["Blizzard"] = B.UpdateAll
 
 	B:SLETalkingHead()
+	hooksecurefunc(TalkingHeadFrame, 'PlayCurrent', function(self)
+		if E.db.sle.skins.talkinghead.hide then
+			self:Close()
+			self:Hide()
+		end
+	end)
+		
+		
 end
 
 SLE:RegisterModule(B:GetName())

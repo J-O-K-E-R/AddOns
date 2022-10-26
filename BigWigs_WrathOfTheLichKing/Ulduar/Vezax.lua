@@ -5,8 +5,8 @@
 local mod, CL = BigWigs:NewBoss("General Vezax", 603, 1648)
 if not mod then return end
 mod:RegisterEnableMob(33271)
-mod.engageId = 1134
---mod.respawnTime = Doesn't despawn
+mod:SetEncounterID(1134)
+-- mod:SetRespawnTime(0) -- resets, doesn't respawn
 
 --------------------------------------------------------------------------------
 -- Locals
@@ -63,7 +63,7 @@ function mod:GetOptions()
 		[62660] = 62660,
 		[63276] = 63276,
 		[62661] = "normal",
-		animus = -17610, -- Hard Mode
+		animus = "hard",
 		berserk = "general",
 	}
 end

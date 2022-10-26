@@ -1,4 +1,7 @@
-v4.38 5/1/22
+v4.45 10/26/22
 
-• Removed RaidUtility Mover
-• Above changed ended up fixing a viewport not working in some cases of the raid utility bugging out.
+• fix raid markers not being able to be clicked
+• fix location bar not being able to be clicked
+• fix mailframe icon issues
+• fix talking head frame issue
+• fix armory font issue

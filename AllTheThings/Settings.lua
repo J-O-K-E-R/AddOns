@@ -35,6 +35,7 @@ app.Settings = settings;
 settings.name = app:GetName();
 settings.MostRecentTab = nil;
 settings.Tabs = {};
+settings.TabsByName = {};
 settings:SetBackdrop({
 	bgFile = "Interface/RAIDFRAME/UI-RaidFrame-GroupBg",
 	edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
@@ -42,14 +43,28 @@ settings:SetBackdrop({
 	insets = { left = 4, right = 4, top = 4, bottom = 4 }
 });
 settings:SetBackdropColor(0, 0, 0, 1);
-InterfaceOptions_AddCategory(settings);
-settings.Open = function(self)
-	-- Open the Options menu.
-	if InterfaceOptionsFrame:IsVisible() then
-		InterfaceOptionsFrame_Show();
+do	-- Add the ATT Settings frame into the WoW Settings options
+	local toc = select(4, GetBuildInfo());
+	-- 10.0: new way to configure settings frame
+	if toc >= 100000 then
+		local category = Settings.RegisterCanvasLayoutCategory(settings, settings.name)
+		Settings.RegisterAddOnCategory(category)
+		settings.Open = function(self)
+			-- Open the Options menu.
+			Settings.OpenToCategory(self.name);
+		end
 	else
-		InterfaceOptionsFrame_OpenToCategory(self.name);
-		InterfaceOptionsFrame_OpenToCategory(self.name);
+		InterfaceOptions_AddCategory(settings);
+		settings.Open = function(self)
+			-- Open the Options menu.
+			if InterfaceOptionsFrame:IsVisible() then
+				InterfaceOptionsFrame_Show();
+			else
+				Settings.OpenToCategory(category);
+				InterfaceOptionsFrame_OpenToCategory(self.name);
+				InterfaceOptionsFrame_OpenToCategory(self.name);
+			end
+		end
 	end
 end
 -- Provides a Unique Counter value for the Key referenced on each reference
@@ -80,6 +95,9 @@ settings.AUDIO_RAREFIND_TABLE = {
 };
 settings.AUDIO_REMOVE_TABLE = {
 	app.asset("remove1.ogg"),
+};
+settings.AUDIO_REPORT_TABLE = {
+	app.asset("report1.ogg"),
 };
 
 -- Settings Class
@@ -168,6 +186,7 @@ local TooltipSettingsBase = {
 		["Auto:BountyList"] = false,
 		["Auto:MiniList"] = true,
 		["Auto:ProfessionList"] = true,
+		["Auto:Sync"] = true,
 		["Auto:AH"] = false,
 		["Celebrate"] = true,
 		["Coordinates"] = true,
@@ -216,11 +235,11 @@ local TooltipSettingsBase = {
 	},
 };
 
-local OnClickForTab = function(self)
-	local id = self:GetID();
-	local parent = self:GetParent();
+local OnClickForTab = function(self, button, id)
+	local id = id or self:GetID();
+	local parent = self and self:GetParent() or settings;
 	PanelTemplates_SetTab(parent, id);
-	-- print("CLICKED TAB", id, self:GetText());
+	-- print("CLICKED TAB", id, self and self:GetText());
 	for i,tab in ipairs(parent.Tabs) do
 		if i == id then
 			for j,o in ipairs(tab.objects) do
@@ -238,7 +257,8 @@ end;
 
 local RawSettings;
 settings.Initialize = function(self)
-	PanelTemplates_SetNumTabs(self, #self.Tabs);
+	PanelTemplates_SetNumTabs(self, self.numTabs);
+	OnClickForTab(nil, "AUTO", 1);
 
 	-- Assign the default settings
 	if not settings:ApplyProfile() then
@@ -280,7 +300,6 @@ settings.Initialize = function(self)
 	elseif app.Minimap then
 		app.Minimap:Hide();
 	end
-	OnClickForTab(self.Tabs[1]);
 	self:UpdateMode();
 
 	if self:GetTooltipSetting("Auto:MainList") then
@@ -291,6 +310,12 @@ settings.Initialize = function(self)
 	end
 	if self:GetTooltipSetting("Auto:WorldQuestsList") then
 		app:GetWindow("WorldQuests"):Show();
+	end
+
+	-- Account Synchronization
+	self.TabsByName[L["SYNC"]]:InitializeSyncWindow();
+	if self:GetTooltipSetting("Auto:Sync") then
+		app:Synchronize(true);
 	end
 
 	settings._Initialize = true;
@@ -354,7 +379,7 @@ settings.DeleteProfile = function(self, key)
 		-- deleting a profile used by other characters, they too will reset to default
 		for char,profKey in pairs(AllTheThingsProfiles.Assignments) do
 			if profKey == key then
-				AllTheThingsProfiles.Assignments[char]  = nil;
+				AllTheThingsProfiles.Assignments[char] = nil;
 			end
 		end
 		return true;
@@ -414,22 +439,29 @@ settings.SetWindowFromProfile = function(suffix)
 			end
 		end
 		if points then
-			window:ClearAllPoints();
-			for _,point in ipairs(points) do
-				if point.Point then
-					window:SetPoint(point.Point, UIParent, point.PointRef, point.X, point.Y);
-					-- print("SetPoint",suffix,point.Point, point.PointRef, point.X, point.Y)
+			-- only allow setting positions for Windows which are inherently movable
+			if window:IsMovable() then
+				window:ClearAllPoints();
+				for _,point in ipairs(points) do
+					if point.Point then
+						window:SetPoint(point.Point, UIParent, point.PointRef, point.X, point.Y);
+						-- print("SetPoint",suffix,point.Point, point.PointRef, point.X, point.Y)
+					end
 				end
+				if points.Width then
+					window:SetWidth(points.Width);
+					-- print("SetWidth",suffix,points.Width)
+				end
+				if points.Height then
+					window:SetHeight(points.Height);
+					-- print("SetHeight",suffix,points.Height)
+				end
+				window.isLocked = points.Locked;
+			else
+				-- if positions were stored accidentally for un-movable windows, clear them
+				app.print("Removed Anchors for un-movable ATT window",suffix)
+				RawSettings.Windows[suffix] = nil;
 			end
-			if points.Width then
-				window:SetWidth(points.Width);
-				-- print("SetWidth",suffix,points.Width)
-			end
-			if points.Height then
-				window:SetHeight(points.Height);
-				-- print("SetHeight",suffix,points.Height)
-			end
-			window.isLocked = points.Locked;
 		end
 	end
 end
@@ -605,6 +637,7 @@ settings.GetShortModeString = function(self)
 end
 -- Returns true if something is being hidden/filtered and removing Insane status
 settings.NonInsane = function(self)
+	local ccs = app.CurrentCharacter and app.CurrentCharacter.CustomCollects and app.CurrentCharacter.CustomCollects;
 	return
 	-- Hiding BoE's
 	self:Get("Hide:BoEs")
@@ -616,10 +649,11 @@ settings.NonInsane = function(self)
 	or self:GetValue("Seasonal", "DoFiltering")
 	-- Non-Account Mode with Covenants filtered
 	or (not self:Get("AccountMode")
-		and (not self:Get("CC:SL_COV_KYR")
-			or not self:Get("CC:SL_COV_NEC")
-			or not self:Get("CC:SL_COV_NFA")
-			or not self:Get("CC:SL_COV_VEN")));
+		-- TODO: maybe track custom collect filters through a different Get method for easier logic
+		and (not (ccs["SL_COV_KYR"] or self:Get("CC:SL_COV_KYR"))
+			or not (ccs["SL_COV_NEC"] or self:Get("CC:SL_COV_NEC"))
+			or not (ccs["SL_COV_NEC"] or self:Get("CC:SL_COV_NEC"))
+			or not (ccs["SL_COV_NEC"] or self:Get("CC:SL_COV_NEC"))));
 end
 settings.GetPersonal = function(self, setting)
 	return AllTheThingsSettingsPerCharacter[setting];
@@ -682,7 +716,7 @@ settings.ApplyBackdropColor = function(frame, r, g, b, a)
 end
 -- Creates a font string attached to the top of the provided frame with the given text
 local function AddLabel(frame, text)
-	local label = frame:CreateFontString(frame, "OVERLAY", "GameFontNormalSmall");
+	local label = frame:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall");
 	label:SetPoint("BOTTOMLEFT", frame, "TOPLEFT", 0, -2);
 	label:SetJustifyH("LEFT");
 	label:SetHeight(18);
@@ -712,15 +746,15 @@ settings.CreateCheckBox = function(self, text, OnRefresh, OnClick)
 	return cb;
 end
 settings.CreateTab = function(self, text)
-	local id = #self.Tabs + 1;
-	local tab = CreateFrame("Button", self:GetName() .. "-Tab" .. id, self, "OptionsFrameTabButtonTemplate");
-	if id > 1 then tab:SetPoint("TOPLEFT", self.Tabs[id - 1], "TOPRIGHT", -10, 0); end
-	table.insert(self.Tabs, tab);
+	local id = (self.numTabs or 0) + 1;
+	self.numTabs = id;
+	local tab = CreateFrame("Button", self:GetName() .. "-Tab" .. id, self, "PanelTopTabButtonTemplate");
+	-- using the PanelTopTabButtonTemplate seems to auto-insert the button into the .Tabs element of the parent now
 	self.MostRecentTab = tab;
 	tab.objects = {};
 	tab:SetID(id);
 	tab:SetText(text);
-	PanelTemplates_TabResize(tab, 0);
+	self.TabsByName[text] = tab;
 	tab:SetScript("OnClick", OnClickForTab);
 	return tab;
 end
@@ -884,7 +918,7 @@ settings.CreateButton = function(self, opts, functions)
 	local width = opts.width;
 	local tooltip = opts.tooltip;
 	local refs = opts.refs;
-	local template = opts.template or "OptionsButtonTemplate";
+	local template = opts.template;
 
 	local f = CreateFrame("Button", name, self, template);
 	f:SetText(text);
@@ -915,6 +949,7 @@ settings.CreateButton = function(self, opts, functions)
 	if self.MostRecentTab then table.insert(self.MostRecentTab.objects, f); end
 	return f;
 end
+
 -- Small library for building a scrolling frame with minimal setup
 (function()
 local scrollWidth = 16;
@@ -1092,16 +1127,13 @@ settings.UpdateMode = function(self, doRefresh)
 	if self:Get("Completionist") then
 		app.ItemSourceFilter = app.FilterItemSource;
 		app.ActiveItemCollectionHelper = app.CompletionistItemCollectionHelper;
-		app.ActiveItemRemovalHelper = app.CompletionistItemRemovalHelper;
 	else
 		if self:Get("MainOnly") and not self:Get("AccountMode") and not self:Get("DebugMode") then
 			app.ItemSourceFilter = app.FilterItemSourceUniqueOnlyMain;
 			app.ActiveItemCollectionHelper = app.UniqueModeItemCollectionHelperOnlyMain;
-			app.ActiveItemRemovalHelper = app.UniqueModeItemRemovalHelperOnlyMain;
 		else
 			app.ItemSourceFilter = app.FilterItemSourceUnique;
 			app.ActiveItemCollectionHelper = app.UniqueModeItemCollectionHelper;
-			app.ActiveItemRemovalHelper = app.UniqueModeItemRemovalHelper;
 		end
 	end
 	if self:Get("DebugMode") then
@@ -1181,22 +1213,6 @@ settings.UpdateMode = function(self, doRefresh)
 			app.ShowTrackableThings = app.Filter;
 		end
 
-		app.AccountWideAchievements = self:Get("AccountWide:Achievements");
-		app.AccountWideAzeriteEssences = self:Get("AccountWide:AzeriteEssences");
-		app.AccountWideBattlePets = self:Get("AccountWide:BattlePets");
-		app.AccountWideFlightPaths = self:Get("AccountWide:FlightPaths");
-		app.AccountWideFollowers = self:Get("AccountWide:Followers");
-		app.AccountWideConduits = self:Get("AccountWide:Conduits");
-		app.AccountWideIllusions = self:Get("AccountWide:Illusions");
-		app.AccountWideMounts = self:Get("AccountWide:Mounts");
-		app.AccountWideMusicRollsAndSelfieFilters = self:Get("AccountWide:MusicRollsAndSelfieFilters");
-		app.AccountWideQuests = self:Get("AccountWide:Quests");
-		app.AccountWideRecipes = self:Get("AccountWide:Recipes");
-		app.AccountWideReputations = self:Get("AccountWide:Reputations");
-		app.AccountWideTitles = self:Get("AccountWide:Titles");
-		app.AccountWideToys = self:Get("AccountWide:Toys");
-		app.AccountWideTransmog = self:Get("AccountWide:Transmog");
-
 		app.CollectibleAchievements = self:Get("Thing:Achievements");
 		app.CollectibleAzeriteEssences = self:Get("Thing:AzeriteEssences");
 		app.CollectibleBattlePets = self:Get("Thing:BattlePets");
@@ -1229,6 +1245,23 @@ settings.UpdateMode = function(self, doRefresh)
 			else
 				app.RaceRequirementFilter = app.NoFilter;
 			end
+
+			-- Force Account-Wide with Account Mode otherwise you get really dumb situations
+			app.AccountWideAchievements = true;
+			app.AccountWideAzeriteEssences = true;
+			app.AccountWideBattlePets = true;
+			app.AccountWideFlightPaths = true;
+			app.AccountWideFollowers = true;
+			app.AccountWideConduits = true;
+			app.AccountWideIllusions = true;
+			app.AccountWideMounts = true;
+			app.AccountWideMusicRollsAndSelfieFilters = true;
+			app.AccountWideQuests = true;
+			app.AccountWideRecipes = true;
+			app.AccountWideReputations = true;
+			app.AccountWideTitles = true;
+			app.AccountWideToys = true;
+			app.AccountWideTransmog = true;
 		else
 			app.ItemTypeFilter = app.FilterItemClass_RequireItemFilter;
 			app.ClassRequirementFilter = app.FilterItemClass_RequireClasses;
@@ -1236,6 +1269,22 @@ settings.UpdateMode = function(self, doRefresh)
 			app.RequiredSkillFilter = app.FilterItemClass_RequiredSkill;
 			app.RequireFactionFilter = app.FilterItemClass_RequireFaction;
 			app.RequireCustomCollectFilter = app.FilterItemClass_CustomCollect;
+
+			app.AccountWideAchievements = self:Get("AccountWide:Achievements");
+			app.AccountWideAzeriteEssences = self:Get("AccountWide:AzeriteEssences");
+			app.AccountWideBattlePets = self:Get("AccountWide:BattlePets");
+			app.AccountWideFlightPaths = self:Get("AccountWide:FlightPaths");
+			app.AccountWideFollowers = self:Get("AccountWide:Followers");
+			app.AccountWideConduits = self:Get("AccountWide:Conduits");
+			app.AccountWideIllusions = self:Get("AccountWide:Illusions");
+			app.AccountWideMounts = self:Get("AccountWide:Mounts");
+			app.AccountWideMusicRollsAndSelfieFilters = self:Get("AccountWide:MusicRollsAndSelfieFilters");
+			app.AccountWideQuests = self:Get("AccountWide:Quests");
+			app.AccountWideRecipes = self:Get("AccountWide:Recipes");
+			app.AccountWideReputations = self:Get("AccountWide:Reputations");
+			app.AccountWideTitles = self:Get("AccountWide:Titles");
+			app.AccountWideToys = self:Get("AccountWide:Toys");
+			app.AccountWideTransmog = self:Get("AccountWide:Transmog");
 
 			app.MODE_ACCOUNT = nil;
 		end
@@ -1253,7 +1302,7 @@ settings.UpdateMode = function(self, doRefresh)
 	else
 		app.CollectedItemVisibilityFilter = app.Filter;
 	end
-	if self:Get("AccountWide:Achievements") then
+	if app.AccountWideAchievements then
 		app.AchievementFilter = 4;
 	else
 		app.AchievementFilter = 13;
@@ -1344,7 +1393,7 @@ f:SetText("v" .. GetAddOnMetadata("AllTheThings", "Version"));
 f:Show();
 settings.version = f;
 
-f = CreateFrame("Button", nil, settings, "OptionsButtonTemplate");
+f = CreateFrame("Button", nil, settings);
 f:SetPoint("TOPLEFT", settings, "BOTTOMLEFT", 0, -6);
 f:SetText(L["DISCORD_BUTTON_LABEL"]);
 f:SetWidth(100);
@@ -1354,7 +1403,7 @@ f:SetScript("OnClick", function() app:ShowPopupDialogWithEditBox(nil, "discord.g
 f:SetATTTooltip(L["DISCORD_BUTTON_TOOLTIP"]);
 settings.community = f;
 
-f = CreateFrame("Button", nil, settings, "OptionsButtonTemplate");
+f = CreateFrame("Button", nil, settings);
 f:SetPoint("TOPLEFT", settings.community, "TOPRIGHT", 4, 0);
 f:SetText(L["TWITCH_BUTTON_LABEL"]);
 f:SetWidth(100);
@@ -1364,7 +1413,7 @@ f:SetScript("OnClick", function() app:ShowPopupDialogWithEditBox(nil, "twitch.tv
 f:SetATTTooltip(L["TWITCH_BUTTON_TOOLTIP"]);
 settings.twitch = f;
 
-f = CreateFrame("Button", nil, settings, "OptionsButtonTemplate");
+f = CreateFrame("Button", nil, settings);
 f:SetPoint("TOPLEFT", settings.twitch, "TOPRIGHT", 4, 0);
 f:SetText(L["PATREON_BUTTON_LABEL"]);
 f:SetWidth(100);
@@ -1374,7 +1423,7 @@ f:SetScript("OnClick", function() app:ShowPopupDialogWithEditBox(nil, "patreon.c
 f:SetATTTooltip(L["PATREON_BUTTON_TOOLTIP"]);
 settings.patreon = f;
 
-f = CreateFrame("Button", nil, settings, "OptionsButtonTemplate");
+f = CreateFrame("Button", nil, settings);
 f:SetPoint("TOPLEFT", settings.patreon, "TOPRIGHT", 4, 0);
 f:SetText(L["MERCH_BUTTON_LABEL"]);
 f:SetWidth(100);
@@ -1393,7 +1442,7 @@ tab:SetPoint("TOPLEFT", settings.logo, "BOTTOMRIGHT", -36, 0);
 line = settings:CreateTexture(nil, "ARTWORK");
 line:SetPoint("LEFT", settings, "LEFT", 4, 0);
 line:SetPoint("RIGHT", settings, "RIGHT", -4, 0);
-line:SetPoint("TOP", settings.Tabs[1], "BOTTOM", 0, 0);
+line:SetPoint("TOP", tab, "BOTTOM", 0, 0);
 line:SetColorTexture(1, 1, 1, 0.4);
 line:SetHeight(2);
 
@@ -1719,8 +1768,8 @@ end;
 
 local AchievementsAccountWideCheckBox = child:CreateCheckBox("",
 function(self)
-	self:SetChecked(settings:Get("AccountWide:Achievements"));
-	if settings:Get("DebugMode") or not settings:Get("Thing:Achievements") then
+	self:SetChecked(app.MODE_DEBUG_OR_ACCOUNT or settings:Get("AccountWide:Achievements"));
+	if app.MODE_DEBUG_OR_ACCOUNT or not settings:Get("Thing:Achievements") then
 		self:Disable();
 		self:SetAlpha(0.2);
 	else
@@ -1774,8 +1823,8 @@ FlightPathsCheckBox:SetPoint("TOPLEFT", AchievementsCheckBox, "BOTTOMLEFT", 0, 4
 
 local FlightPathsAccountWideCheckBox = child:CreateCheckBox("",
 function(self)
-	self:SetChecked(settings:Get("AccountWide:FlightPaths"));
-	if settings:Get("DebugMode") or not settings:Get("Thing:FlightPaths") then
+	self:SetChecked(app.MODE_DEBUG_OR_ACCOUNT or settings:Get("AccountWide:FlightPaths"));
+	if app.MODE_DEBUG_OR_ACCOUNT or not settings:Get("Thing:FlightPaths") then
 		self:Disable();
 		self:SetAlpha(0.2);
 	else
@@ -1811,8 +1860,8 @@ FollowersCheckBox:SetPoint("TOPLEFT", FlightPathsCheckBox, "BOTTOMLEFT", 0, 4);
 
 local FollowersAccountWideCheckBox = child:CreateCheckBox("",
 function(self)
-	self:SetChecked(settings:Get("AccountWide:Followers"));
-	if settings:Get("DebugMode") or not settings:Get("Thing:Followers") then
+	self:SetChecked(app.MODE_DEBUG_OR_ACCOUNT or settings:Get("AccountWide:Followers"));
+	if app.MODE_DEBUG_OR_ACCOUNT or not settings:Get("Thing:Followers") then
 		self:Disable();
 		self:SetAlpha(0.2);
 	else
@@ -1867,9 +1916,9 @@ QuestsLockedCheckBox:SetPoint("LEFT", QuestsCheckBox.Text, "RIGHT", 4, 0);
 
 local QuestsAccountWideCheckBox = child:CreateCheckBox("",
 function(self)
-	self:SetChecked(settings:Get("AccountWide:Quests"));
+	self:SetChecked(app.MODE_DEBUG_OR_ACCOUNT or settings:Get("AccountWide:Quests"));
 	-- only requries Quests enabled. seems weird to enable Locked Quests with Account-Wide when you'd prefer to use another character to get those Locked Quests...
-	if settings:Get("DebugMode") or not settings:Get("Thing:Quests") then
+	if app.MODE_DEBUG_OR_ACCOUNT or not settings:Get("Thing:Quests") then
 		self:Disable();
 		self:SetAlpha(0.2);
 	else
@@ -1905,8 +1954,8 @@ RecipesCheckBox:SetPoint("TOPLEFT", QuestsCheckBox, "BOTTOMLEFT", 0, 4);
 
 local RecipesAccountWideCheckBox = child:CreateCheckBox("",
 function(self)
-	self:SetChecked(settings:Get("AccountWide:Recipes"));
-	if settings:Get("DebugMode") or not settings:Get("Thing:Recipes") then
+	self:SetChecked(app.MODE_DEBUG_OR_ACCOUNT or settings:Get("AccountWide:Recipes"));
+	if app.MODE_DEBUG_OR_ACCOUNT or not settings:Get("Thing:Recipes") then
 		self:Disable();
 		self:SetAlpha(0.2);
 	else
@@ -1942,8 +1991,8 @@ ReputationsCheckBox:SetPoint("TOPLEFT", RecipesCheckBox, "BOTTOMLEFT", 0, 4);
 
 local ReputationsAccountWideCheckBox = child:CreateCheckBox("",
 function(self)
-	self:SetChecked(settings:Get("AccountWide:Reputations"));
-	if settings:Get("DebugMode") or not settings:Get("Thing:Reputations") then
+	self:SetChecked(app.MODE_DEBUG_OR_ACCOUNT or settings:Get("AccountWide:Reputations"));
+	if app.MODE_DEBUG_OR_ACCOUNT or not settings:Get("Thing:Reputations") then
 		self:Disable();
 		self:SetAlpha(0.2);
 	else
@@ -1979,8 +2028,8 @@ TitlesCheckBox:SetPoint("TOPLEFT", ReputationsCheckBox, "BOTTOMLEFT", 0, 4);
 
 local TitlesAccountWideCheckBox = child:CreateCheckBox("",
 function(self)
-	self:SetChecked(settings:Get("AccountWide:Titles"));
-	if settings:Get("DebugMode") or not settings:Get("Thing:Titles") then
+	self:SetChecked(app.MODE_DEBUG_OR_ACCOUNT or settings:Get("AccountWide:Titles"));
+	if app.MODE_DEBUG_OR_ACCOUNT or not settings:Get("Thing:Titles") then
 		self:Disable();
 		self:SetAlpha(0.2);
 	else
@@ -2013,8 +2062,8 @@ end;
 
 local MusicRollsAndSelfieFiltersAccountWideCheckBox = child:CreateCheckBox("",
 function(self)
-	self:SetChecked(settings:Get("AccountWide:MusicRollsAndSelfieFilters"));
-	if settings:Get("DebugMode") or not settings:Get("Thing:MusicRollsAndSelfieFilters") then
+	self:SetChecked(app.MODE_DEBUG_OR_ACCOUNT or settings:Get("AccountWide:MusicRollsAndSelfieFilters"));
+	if app.MODE_DEBUG_OR_ACCOUNT or not settings:Get("Thing:MusicRollsAndSelfieFilters") then
 		self:Disable();
 		self:SetAlpha(0.2);
 	else
@@ -2068,8 +2117,8 @@ AzeriteEssencesCheckBox:SetPoint("TOPLEFT", MusicRollsAndSelfieFiltersCheckBox, 
 
 local AzeriteEssencesAccountWideCheckBox = child:CreateCheckBox("",
 function(self)
-	self:SetChecked(settings:Get("AccountWide:AzeriteEssences"));
-	if settings:Get("DebugMode") or not settings:Get("Thing:AzeriteEssences") then
+	self:SetChecked(app.MODE_DEBUG_OR_ACCOUNT or settings:Get("AccountWide:AzeriteEssences"));
+	if app.MODE_DEBUG_OR_ACCOUNT or not settings:Get("Thing:AzeriteEssences") then
 		self:Disable();
 		self:SetAlpha(0.2);
 	else
@@ -2105,8 +2154,8 @@ SoulbindConduitsCheckBox:SetPoint("TOPLEFT", AzeriteEssencesCheckBox, "BOTTOMLEF
 
 local SoulbindConduitsAccountWideCheckBox = child:CreateCheckBox("",
 function(self)
-	self:SetChecked(settings:Get("AccountWide:Conduits"));
-	if settings:Get("DebugMode") or not settings:Get("Thing:Conduits") then
+	self:SetChecked(app.MODE_DEBUG_OR_ACCOUNT or settings:Get("AccountWide:Conduits"));
+	if app.MODE_DEBUG_OR_ACCOUNT or not settings:Get("Thing:Conduits") then
 		self:Disable();
 		self:SetAlpha(0.2);
 	else
@@ -2167,7 +2216,7 @@ ExtraThingsLabel.OnRefresh = function(self)
     local numEvents = C_Calendar.GetNumDayEvents(0, date.monthDay);
     for i=1, numEvents do
         local event = C_Calendar.GetHolidayInfo(0, date.monthDay, i);
-        if event.texture == 235461 then -- Non-localised way to detect specific holiday, I hope?
+        if event.texture == 235461 or event.texture == 235462 then -- Non-localised way to detect specific holiday, I hope?
             self:SetText(L["STRANGER_THINGS_LABEL"]);
         end
     end
@@ -2598,7 +2647,7 @@ ItemFiltersLabel:Show();
 table.insert(settings.MostRecentTab.objects, ItemFiltersLabel);
 ItemFiltersLabel:SetPoint("TOPLEFT", child, "TOPLEFT", 10, -8);
 ItemFiltersLabel.OnRefresh = function(self)
-	if settings:Get("AccountMode") then
+	if app.MODE_DEBUG_OR_ACCOUNT then
 		self:SetAlpha(0.2);
 	else
 		self:SetAlpha(1);
@@ -2613,7 +2662,7 @@ ItemFiltersExplainLabel:SetText(L["ITEM_EXPLAIN_LABEL"]);
 ItemFiltersExplainLabel:Show();
 table.insert(settings.MostRecentTab.objects, ItemFiltersExplainLabel);
 ItemFiltersExplainLabel.OnRefresh = function(self)
-	if settings:Get("AccountMode") then
+	if app.MODE_DEBUG_OR_ACCOUNT then
 		self:SetAlpha(0.2);
 	else
 		self:SetAlpha(1);
@@ -2627,7 +2676,7 @@ local ItemFilterOnClick = function(self)
 	settings:SetFilter(self.filterID, self:GetChecked());
 end;
 local ItemFilterOnRefresh = function(self)
-	if settings:Get("AccountMode") then
+	if app.MODE_DEBUG_OR_ACCOUNT then
 		self:Disable();
 		self:SetAlpha(0.2);
 	else
@@ -2647,6 +2696,7 @@ for i,filterID in ipairs(awColumn1) do
 		filter:SetPoint("TOPLEFT", last, "BOTTOMLEFT", 0, 4);
 	end
 	filter.filterID = filterID;
+	filter:SetATTTooltip(L["FILTER_ID"]..": "..filterID);
 	last = filter;
 end
 
@@ -2662,6 +2712,7 @@ for i,filterID in ipairs(awColumn2) do
 		filter:SetPoint("TOPLEFT", last, "BOTTOMLEFT", 0, 4);
 	end
 	filter.filterID = filterID;
+	filter:SetATTTooltip(L["FILTER_ID"]..": "..filterID);
 	last = filter;
 end
 
@@ -2696,7 +2747,7 @@ local allEquipmentFilters = {	-- Filter IDs
 	28,	-- Staves
 }
 
-f = CreateFrame("Button", nil, child, "OptionsButtonTemplate");
+f = CreateFrame("Button", nil, child);
 f:SetPoint("LEFT", ItemFiltersLabel, "LEFT", 0, -426);
 f:SetText(L["CLASS_DEFAULTS_BUTTON"]);
 f:SetWidth(120);
@@ -2711,7 +2762,7 @@ f:SetScript("OnClick", function(self)
 end);
 f:SetATTTooltip(L["CLASS_DEFAULTS_BUTTON_TOOLTIP"]);
 f.OnRefresh = function(self)
-	if settings:Get("AccountMode") or settings:Get("DebugMode") then
+	if app.MODE_DEBUG_OR_ACCOUNT then
 		self:Disable();
 	else
 		self:Enable();
@@ -2720,7 +2771,7 @@ end;
 table.insert(settings.MostRecentTab.objects, f);
 settings.equipfilterdefault = f;
 
-f = CreateFrame("Button", nil, child, "OptionsButtonTemplate");
+f = CreateFrame("Button", nil, child);
 f:SetPoint("TOPLEFT", settings.equipfilterdefault, "TOPRIGHT", 4, 0);
 f:SetText(L["ALL_BUTTON"]);
 f:SetWidth(70);
@@ -2735,7 +2786,7 @@ f:SetScript("OnClick", function(self)
 end);
 f:SetATTTooltip(L["ALL_BUTTON_TOOLTIP"]);
 f.OnRefresh = function(self)
-	if settings:Get("AccountMode") or settings:Get("DebugMode") then
+	if app.MODE_DEBUG_OR_ACCOUNT then
 		self:Disable();
 	else
 		self:Enable();
@@ -2744,7 +2795,7 @@ end;
 table.insert(settings.MostRecentTab.objects, f);
 settings.equipfilterall = f
 
-f = CreateFrame("Button", nil, child, "OptionsButtonTemplate");
+f = CreateFrame("Button", nil, child);
 f:SetPoint("TOPLEFT", settings.equipfilterall, "TOPRIGHT", 4, 0);
 f:SetText(L["UNCHECK_ALL_BUTTON"]);
 f:SetWidth(70);
@@ -2759,7 +2810,7 @@ f:SetScript("OnClick", function(self)
 end);
 f:SetATTTooltip(L["UNCHECK_ALL_BUTTON_TOOLTIP"]);
 f.OnRefresh = function(self)
-	if settings:Get("AccountMode") then
+	if app.MODE_DEBUG_OR_ACCOUNT then
 		self:Disable();
 	else
 		self:Enable();
@@ -2858,7 +2909,7 @@ CustomCollectFilterLabel:SetText(L["CUSTOM_FILTERS_LABEL"]);
 CustomCollectFilterLabel:Show();
 table.insert(settings.MostRecentTab.objects, CustomCollectFilterLabel);
 CustomCollectFilterLabel.OnRefresh = function(self)
-	if settings:Get("AccountMode") then
+	if app.MODE_DEBUG_OR_ACCOUNT then
 		self:SetAlpha(0.2);
 	else
 		self:SetAlpha(1);
@@ -2873,160 +2924,94 @@ CustomCollectFilterExplainLabel:SetText(L["CUSTOM_FILTERS_EXPLAIN_LABEL"]);
 CustomCollectFilterExplainLabel:Show();
 table.insert(settings.MostRecentTab.objects, CustomCollectFilterExplainLabel);
 CustomCollectFilterExplainLabel.OnRefresh = function(self)
-	if settings:Get("AccountMode") then
+	if app.MODE_DEBUG_OR_ACCOUNT then
 		self:SetAlpha(0.2);
 	else
 		self:SetAlpha(1);
 	end
 end;
 
-local reason = L["CUSTOM_COLLECTS_REASONS"]["NPE"]
-local text = reason["icon"].." "..reason["text"]
-local NPE_CheckBox = child:CreateCheckBox(text,
-function(self)
-	self:SetChecked(settings:Get("CC:NPE"));
-	if settings:Get("AccountMode") then
-		self:Disable();
-		self:SetAlpha(0.2);
-	else
-		self:Enable();
-		self:SetAlpha(1);
-	end
-end,
-function(self)
-	settings:Set("CC:NPE", self:GetChecked());
-	settings:UpdateMode(1);
-end);
-NPE_CheckBox:SetATTTooltip(reason["desc"]);
-NPE_CheckBox:SetPoint("TOPLEFT", CustomCollectFilterExplainLabel, "BOTTOMLEFT", -2, -2);
-
-reason = L["CUSTOM_COLLECTS_REASONS"]["SL_SKIP"]
-text = reason["icon"].." "..reason["text"]
-local SL_SKIP_CheckBox = child:CreateCheckBox(text,
-function(self)
-	self:SetChecked(settings:Get("CC:SL_SKIP"));
-	if settings:Get("AccountMode") then
-		self:Disable();
-		self:SetAlpha(0.2);
-	else
-		self:Enable();
-		self:SetAlpha(1);
-	end
-end,
-function(self)
-	settings:Set("CC:SL_SKIP", self:GetChecked());
-	settings:UpdateMode(1);
-end);
-SL_SKIP_CheckBox:SetATTTooltip(reason["desc"]);
-SL_SKIP_CheckBox:SetPoint("TOPLEFT", NPE_CheckBox, "BOTTOMLEFT", 0, 4);
-
+-- Custom Collect Toggles
 local insane_color = "|cffADD8E6"
-reason = L["CUSTOM_COLLECTS_REASONS"]["SL_COV_KYR"]
-text = reason["icon"].." "..insane_color..reason["text"].."|r"
-local SL_COV_KYR_CheckBox = child:CreateCheckBox(text,
-function(self)
-	self:SetChecked(settings:Get("CC:SL_COV_KYR"));
-	if settings:Get("AccountMode") then
-		self:Disable();
-		self:SetAlpha(0.2);
+local customCollects, ccCheckbox = L["CUSTOM_COLLECTS_REASONS"];
+local previousCheckbox = CustomCollectFilterExplainLabel;
+local xInitalOffset, yInitialOffset, inital = -2, -2, true;
+-- Insane Required first
+for i,cc in ipairs({"SL_COV_KYR","SL_COV_NEC","SL_COV_NFA","SL_COV_VEN"}) do
+	local filterID = "CC:" .. cc;
+	local reason = customCollects[cc];
+	local text = reason["icon"].." "..insane_color..reason["text"].."|r"
+	ccCheckbox = child:CreateCheckBox(text,
+	function(self)
+		local automatic = app and (app.MODE_DEBUG_OR_ACCOUNT
+			or (app.CurrentCharacter and app.CurrentCharacter.CustomCollects and app.CurrentCharacter.CustomCollects[cc]));
+		self:SetChecked(automatic or settings:Get(filterID));
+		if automatic then
+			self:SetAlpha(0.2);
+		else
+			self:Enable();
+			self:SetAlpha(1);
+		end
+	end,
+	function(self)
+		local automatic = app and (app.MODE_DEBUG_OR_ACCOUNT
+			or (app.CurrentCharacter and app.CurrentCharacter.CustomCollects and app.CurrentCharacter.CustomCollects[cc]));
+		-- prevent toggling automatic filter without requiring it to be disabled (TODO add this logic as part of the checkbox itself somehow instead of manually?)
+		if automatic then
+			self:SetChecked(true);
+			return;
+		end
+		settings:Set(filterID, self:GetChecked());
+		settings:UpdateMode(1);
+	end);
+	ccCheckbox:SetATTTooltip(string.format(L["CUSTOM_FILTERS_GENERIC_TOOLTIP_FORMAT"], text));
+	if inital then
+		ccCheckbox:SetPoint("LEFT", previousCheckbox, "LEFT", xInitalOffset, 0);
+		ccCheckbox:SetPoint("TOP", previousCheckbox, "BOTTOM", 0, yInitialOffset);
+		inital = nil;
 	else
-		self:Enable();
-		self:SetAlpha(1);
+		ccCheckbox:SetPoint("TOPLEFT", previousCheckbox, "BOTTOMLEFT", 0, 4);
 	end
-end,
-function(self)
-	settings:Set("CC:SL_COV_KYR", self:GetChecked());
-	settings:UpdateMode(1);
-end);
-SL_COV_KYR_CheckBox:SetATTTooltip(string.format(L["CUSTOM_FILTERS_GENERIC_TOOLTIP_FORMAT"], text));
-SL_COV_KYR_CheckBox:SetPoint("TOPLEFT", SL_SKIP_CheckBox, "BOTTOMLEFT", 0, 4);
-
-reason = L["CUSTOM_COLLECTS_REASONS"]["SL_COV_NEC"]
-text = reason["icon"].." "..insane_color..reason["text"].."|r"
-local SL_COV_NEC_CheckBox = child:CreateCheckBox(text,
-function(self)
-	self:SetChecked(settings:Get("CC:SL_COV_NEC"));
-	if settings:Get("AccountMode") then
-		self:Disable();
-		self:SetAlpha(0.2);
+	previousCheckbox = ccCheckbox;
+end
+-- Non-Insane Required after
+for i,cc in ipairs({"NPE","SL_SKIP"}) do
+	local filterID = "CC:" .. cc;
+	local reason = customCollects[cc];
+	local text = reason["icon"].." "..reason["text"];
+	ccCheckbox = child:CreateCheckBox(text,
+	function(self)
+		local automatic = app and (app.MODE_DEBUG_OR_ACCOUNT
+			or (app.CurrentCharacter and app.CurrentCharacter.CustomCollects and app.CurrentCharacter.CustomCollects[cc]));
+		self:SetChecked(automatic or settings:Get(filterID));
+		if automatic then
+			self:SetAlpha(0.2);
+		else
+			self:Enable();
+			self:SetAlpha(1);
+		end
+	end,
+	function(self)
+		local automatic = app and (app.MODE_DEBUG_OR_ACCOUNT
+			or (app.CurrentCharacter and app.CurrentCharacter.CustomCollects and app.CurrentCharacter.CustomCollects[cc]));
+		-- prevent toggling automatic filter without requiring it to be disabled (TODO add this logic as part of the checkbox itself somehow instead of manually?)
+		if automatic then
+			self:SetChecked(true);
+			return;
+		end
+		settings:Set(filterID, self:GetChecked());
+		settings:UpdateMode(1);
+	end);
+	ccCheckbox:SetATTTooltip(string.format(L["CUSTOM_FILTERS_GENERIC_TOOLTIP_FORMAT"], text));
+	if inital then
+		ccCheckbox:SetPoint("LEFT", previousCheckbox, "LEFT", xInitalOffset, 0);
+		ccCheckbox:SetPoint("TOP", previousCheckbox, "BOTTOM", 0, yInitialOffset);
+		inital = nil;
 	else
-		self:Enable();
-		self:SetAlpha(1);
+		ccCheckbox:SetPoint("TOPLEFT", previousCheckbox, "BOTTOMLEFT", 0, 4);
 	end
-end,
-function(self)
-	settings:Set("CC:SL_COV_NEC", self:GetChecked());
-	settings:UpdateMode(1);
-end);
-SL_COV_NEC_CheckBox:SetATTTooltip(string.format(L["CUSTOM_FILTERS_GENERIC_TOOLTIP_FORMAT"], text));
-SL_COV_NEC_CheckBox:SetPoint("TOPLEFT", SL_COV_KYR_CheckBox, "BOTTOMLEFT", 0, 4);
-
-reason = L["CUSTOM_COLLECTS_REASONS"]["SL_COV_NFA"]
-text = reason["icon"].." "..insane_color..reason["text"].."|r"
-local SL_COV_NFA_CheckBox = child:CreateCheckBox(text,
-function(self)
-	self:SetChecked(settings:Get("CC:SL_COV_NFA"));
-	if settings:Get("AccountMode") then
-		self:Disable();
-		self:SetAlpha(0.2);
-	else
-		self:Enable();
-		self:SetAlpha(1);
-	end
-end,
-function(self)
-	settings:Set("CC:SL_COV_NFA", self:GetChecked());
-	settings:UpdateMode(1);
-end);
-SL_COV_NFA_CheckBox:SetATTTooltip(string.format(L["CUSTOM_FILTERS_GENERIC_TOOLTIP_FORMAT"], text));
-SL_COV_NFA_CheckBox:SetPoint("TOPLEFT", SL_COV_NEC_CheckBox, "BOTTOMLEFT", 0, 4);
-
-reason = L["CUSTOM_COLLECTS_REASONS"]["SL_COV_VEN"]
-text = reason["icon"].." "..insane_color..reason["text"].."|r"
-local SL_COV_VEN_CheckBox = child:CreateCheckBox(text,
-function(self)
-	self:SetChecked(settings:Get("CC:SL_COV_VEN"));
-	if settings:Get("AccountMode") then
-		self:Disable();
-		self:SetAlpha(0.2);
-	else
-		self:Enable();
-		self:SetAlpha(1);
-	end
-end,
-function(self)
-	settings:Set("CC:SL_COV_VEN", self:GetChecked());
-	settings:UpdateMode(1);
-end);
-SL_COV_VEN_CheckBox:SetATTTooltip(string.format(L["CUSTOM_FILTERS_GENERIC_TOOLTIP_FORMAT"], text));
-SL_COV_VEN_CheckBox:SetPoint("TOPLEFT", SL_COV_NFA_CheckBox, "BOTTOMLEFT", 0, 4);
-
--- local customCollects, ccCheckbox = L["CUSTOM_COLLECTS_REASONS"];
--- local customLabels = L["CUSTOM_COLLECTS_REASONS"];
--- local previousCheckbox = CustomCollectFilterExplainLabel;
--- local xInitalOffset, yInitialOffset, inital = -2, -2, true;
--- for i,cc in ipairs({"NPE","SL_SKIP","SL_COV_KYR","SL_COV_NEC","SL_COV_NFA","SL_COV_VEN"}) do
--- 	local filterID = "CC:" .. cc;
--- 	local ccInfo = customCollects[cc];
--- 	local ccLabel = customLabels[cc];
--- 	ccCheckbox = child:CreateCheckBox(ccLabel[1],
--- 	function(self)
--- 		self:SetChecked(settings:GetFilter(filterID));
--- 	end,
--- 	function(self)
--- 		settings:SetFilter(filterID, self:GetChecked());
--- 	end);
--- 	ccCheckbox:SetATTTooltip(string.format(L["CUSTOM_FILTERS_GENERIC_TOOLTIP_FORMAT"], ccInfo[1]));
--- 	if inital then
--- 		ccCheckbox:SetPoint("LEFT", previousCheckbox, "LEFT", xInitalOffset, 0);
--- 		ccCheckbox:SetPoint("TOP", previousCheckbox, "BOTTOM", 0, yInitialOffset);
--- 		inital = nil;
--- 	else
--- 		ccCheckbox:SetPoint("LEFT", previousCheckbox, "LEFT", 0, 0);
--- 		ccCheckbox:SetPoint("TOP", previousCheckbox, "BOTTOM", 0, 4);
--- 	end
--- 	previousCheckbox = ccCheckbox;
--- end
+	previousCheckbox = ccCheckbox;
+end
 
 local SeasonalFiltersLabel = child:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge");
 SeasonalFiltersLabel:SetText(L["SEASONAL_LABEL"]);
@@ -3545,6 +3530,40 @@ end);
 ShowKnownByCheckBox:SetATTTooltip(L["KNOWN_BY_CHECKBOX_TOOLTIP"]);
 ShowKnownByCheckBox:SetPoint("TOPLEFT", ShortenProgressCheckBox, "BOTTOMLEFT", -8, 4);
 
+local ShowProfessionRequirementsCheckBox = settings:CreateCheckBox(L["PROFESSION_CHECKBOX"],
+function(self)
+	self:SetChecked(settings:GetTooltipSetting("ProfessionRequirements"));
+	if not settings:GetTooltipSetting("Enabled") then
+		self:Disable();
+		self:SetAlpha(0.2);
+	else
+		self:Enable();
+		self:SetAlpha(1);
+	end
+end,
+function(self)
+	settings:SetTooltipSetting("ProfessionRequirements", self:GetChecked());
+end);
+ShowProfessionRequirementsCheckBox:SetATTTooltip(L["PROFESSION_CHECKBOX_TOOLTIP"]);
+ShowProfessionRequirementsCheckBox:SetPoint("TOPLEFT", ShowKnownByCheckBox, "BOTTOMLEFT", 0, 4);
+
+local ShowLevelRequirementsCheckBox = settings:CreateCheckBox(L["LEVELREQ_CHECKBOX"],
+function(self)
+	self:SetChecked(settings:GetTooltipSetting("LevelRequirements"));
+	if not settings:GetTooltipSetting("Enabled") then
+		self:Disable();
+		self:SetAlpha(0.2);
+	else
+		self:Enable();
+		self:SetAlpha(1);
+	end
+end,
+function(self)
+	settings:SetTooltipSetting("LevelRequirements", self:GetChecked());
+end);
+ShowLevelRequirementsCheckBox:SetATTTooltip(L["LEVELREQ_CHECKBOX_TOOLTIP"]);
+ShowLevelRequirementsCheckBox:SetPoint("TOPLEFT", ShowProfessionRequirementsCheckBox, "BOTTOMLEFT", 0, 4);
+
 local ShowClassRequirementsCheckBox = settings:CreateCheckBox(L["CLASSES_CHECKBOX"],
 function(self)
 	self:SetChecked(settings:GetTooltipSetting("ClassRequirements"));
@@ -3560,7 +3579,7 @@ function(self)
 	settings:SetTooltipSetting("ClassRequirements", self:GetChecked());
 end);
 ShowClassRequirementsCheckBox:SetATTTooltip(L["CLASSES_CHECKBOX_TOOLTIP"]);
-ShowClassRequirementsCheckBox:SetPoint("TOPLEFT", ShowKnownByCheckBox, "BOTTOMLEFT", 0, 4);
+ShowClassRequirementsCheckBox:SetPoint("TOPLEFT", ShowLevelRequirementsCheckBox, "BOTTOMLEFT", 0, 4);
 
 local ShowRaceRequirementsCheckBox = settings:CreateCheckBox(L["RACES_CHECKBOX"],
 function(self)
@@ -3887,6 +3906,23 @@ function(self)
 end);
 ShowSourceLocationsWithWrappingCheckBox:SetATTTooltip(L["WITH_WRAPPING_CHECKBOX_TOOLTIP"]);
 ShowSourceLocationsWithWrappingCheckBox:SetPoint("TOPLEFT", ShowSourceLocationsForUnsortedCheckBox, "BOTTOMLEFT", 0, 4);
+
+local ShowCompletedByCheckBox = settings:CreateCheckBox(L["COMPLETED_BY_CHECKBOX"],
+function(self)
+	self:SetChecked(settings:GetTooltipSetting("CompletedBy"));
+	if not settings:GetTooltipSetting("Enabled") then
+		self:Disable();
+		self:SetAlpha(0.2);
+	else
+		self:Enable();
+		self:SetAlpha(1);
+	end
+end,
+function(self)
+	settings:SetTooltipSetting("CompletedBy", self:GetChecked());
+end);
+ShowCompletedByCheckBox:SetATTTooltip(L["COMPLETED_BY_CHECKBOX_TOOLTIP"]);
+ShowCompletedByCheckBox:SetPoint("TOPLEFT", ShowSourceLocationsWithWrappingCheckBox, "BOTTOMLEFT", 0, 4);
 
 local AdditionalLabel = settings:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge");
 AdditionalLabel:SetPoint("TOP", TooltipLabel, "TOP", 0, 0);
@@ -4598,6 +4634,63 @@ end
 tab.OnRefresh = refreshProfiles;
 
 end)();
+
+------------------------------------------
+-- The "Sync" Tab.					--
+------------------------------------------
+(function()
+local tab = settings:CreateTab(L["SYNC"]);
+local SyncLabel = settings:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge");
+SyncLabel:SetPoint("TOPLEFT", line, "BOTTOMLEFT", 8, -8);
+SyncLabel:SetJustifyH("LEFT");
+SyncLabel:SetText(L["ACCOUNT_SYNCHRONIZATION"]);
+SyncLabel:Show();
+table.insert(settings.MostRecentTab.objects, SyncLabel);
+
+local AutomaticallySyncAccountDataCheckBox = settings:CreateCheckBox(L["AUTO_SYNC_ACC_DATA_CHECKBOX"],
+function(self)
+	self:SetChecked(settings:GetTooltipSetting("Auto:Sync"));
+end,
+function(self)
+	local checked = self:GetChecked();
+	settings:SetTooltipSetting("Auto:Sync", checked);
+	if checked then app:Synchronize(true); end
+end);
+AutomaticallySyncAccountDataCheckBox:SetATTTooltip(L["AUTO_SYNC_ACC_DATA_TOOLTIP"]);
+AutomaticallySyncAccountDataCheckBox:SetPoint("TOPLEFT", SyncLabel, "BOTTOMLEFT", 4, 0);
+
+function tab:InitializeSyncWindow()
+	local syncWindow = app:GetWindow("Sync");
+	local syncWindow_Show,syncWindow_Refresh,naughty = syncWindow.Show, syncWindow.Refresh;
+	syncWindow.OnRefresh = syncWindow.Update;
+	syncWindow.Show = function(self)
+		if not naughty then
+			naughty = true;
+			syncWindow_Show(self);
+			self:Update();
+		end
+		naughty = nil;
+	end
+	syncWindow.Refresh = function(self)
+		self:ClearAllPoints();
+		self:SetPoint("LEFT", SyncLabel, "LEFT", 0, 0);
+		self:SetPoint("RIGHT", SyncLabel, "LEFT", 300, 0);
+		self:SetPoint("TOP", AutomaticallySyncAccountDataCheckBox, "BOTTOM", 0, 4);
+		self:SetPoint("BOTTOM", settings, "BOTTOM", 0, 4);
+		syncWindow_Refresh(self);
+	end
+	syncWindow.CloseButton:Disable();
+	syncWindow:SetClampedToScreen(false);
+	pcall(syncWindow.SetUserPlaced, syncWindow, false);
+	-- syncWindow:SetUserPlaced(false);
+	syncWindow:SetToplevel(false);
+	syncWindow:SetMovable(false);
+	syncWindow:SetResizable(false);
+	syncWindow:SetParent(settings);
+	table.insert(tab.objects, syncWindow);
+end
+end)();
+
 
 ------------------------------------------
 -- The "About" Tab.				--

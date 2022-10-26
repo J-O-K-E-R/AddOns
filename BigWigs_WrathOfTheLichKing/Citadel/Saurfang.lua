@@ -5,6 +5,8 @@
 local mod = BigWigs:NewBoss("Deathbringer Saurfang", 631, 1628)
 if not mod then return end
 mod:RegisterEnableMob(37813, 37200, 37830, 37187, 37920) -- Deathbringer Saurfang, Muradin, Marine, Overlord Saurfang, Kor'kron Reaver
+-- mod:SetEncounterID(1096)
+-- mod:SetRespawnTime(30)
 mod.toggleOptions = {"warmup", "adds", 72410, 72385, {72293, "ICON", "FLASH"}, 72737, "proximity", "berserk"}
 
 --------------------------------------------------------------------------------
@@ -107,7 +109,7 @@ function mod:RuneofBlood(args)
 end
 
 function mod:Mark(args)
-	self:StackMessage(72293, args.destName, count, "yellow", "alert")
+	self:StackMessageOld(72293, args.destName, count, "yellow", "alert")
 	count = count + 1
 	self:PrimaryIcon(72293, args.destName)
 	if self:Me(args.destGUID) then

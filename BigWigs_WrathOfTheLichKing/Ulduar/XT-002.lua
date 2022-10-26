@@ -5,8 +5,8 @@
 local mod, CL = BigWigs:NewBoss("XT-002 Deconstructor", 603, 1640)
 if not mod then return end
 mod:RegisterEnableMob(33293)
-mod.engageId = 1142
---mod.respawnTime = resets, doesn't respawn
+mod:SetEncounterID(1142)
+-- mod:SetRespawnTime(0) -- resets, doesn't respawn
 
 --------------------------------------------------------------------------------
 -- Locals
@@ -51,7 +51,7 @@ function mod:OnBossEnable()
 	self:Log("SPELL_AURA_REMOVED", "SearingLightRemoved", 65121)
 	self:Log("SPELL_CAST_START", "TympanicTantrum", 62776)
 
-	self:RegisterUnitEvent("UNIT_HEALTH", nil, "boss1")
+	self:RegisterEvent("UNIT_HEALTH")
 end
 
 function mod:OnEngage()
@@ -121,7 +121,8 @@ function mod:SearingLightRemoved(args)
 end
 
 function mod:UNIT_HEALTH(event, unit)
-	local hp = UnitHealth(unit) / UnitHealthMax(unit) * 100
+	if self:MobId(self:UnitGUID(unit)) ~= 33293 then return end
+	local hp = self:GetHealth(unit)
 	if not exposed1 and hp > 86 and hp < 90 then
 		exposed1 = true
 		self:MessageOld(63849, "yellow", nil, CL.soon:format(self:SpellName(63849))) -- Exposed Heart soon
@@ -130,7 +131,7 @@ function mod:UNIT_HEALTH(event, unit)
 		self:MessageOld(63849, "yellow", nil, CL.soon:format(self:SpellName(63849)))
 	elseif not exposed3 and hp > 26 and hp < 28 then
 		exposed3 = true
-		self:UnregisterUnitEvent(event, unit)
+		self:UnregisterEvent(event, unit)
 		self:MessageOld(63849, "yellow", nil, CL.soon:format(self:SpellName(63849)))
 	end
 end

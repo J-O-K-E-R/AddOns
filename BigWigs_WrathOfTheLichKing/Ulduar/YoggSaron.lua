@@ -5,8 +5,8 @@
 local mod, CL = BigWigs:NewBoss("Yogg-Saron", 603, 1649)
 if not mod then return end
 mod:RegisterEnableMob(33288, 33134, 33890) -- Yogg-Saron, Sara, Brain of Yogg-Saron
-mod.engageId = 1143
-mod.respawnTime = 46
+mod:SetEncounterID(1143)
+mod:SetRespawnTime(46)
 
 --------------------------------------------------------------------------------
 -- Locals
@@ -91,7 +91,7 @@ function mod:GetOptions()
 		[62979] = CL.stage:format(1),
 		tentacle = CL.stage:format(2),
 		[64465] = CL.stage:format(3),
-		[64189] = -17610, -- Hard Mode
+		[64189] = "hard",
 		stages = "general",
 	}
 end

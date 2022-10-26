@@ -176,7 +176,7 @@ L["You were killed by"] = "Вы были убиты "
 L["Your pet"] = "Ваш питомец"
 
 --@end-non-debug@
---[===[@debug@
+--[==[@debug@
 L = L or {}
 L["%i deaths"] = "%i смертей"
 --[[Translation missing --]]
@@ -353,4 +353,4 @@ L["You were killed by"] = "Вы были убиты "
 L["Your pet"] = "Ваш питомец"
 
 
---@end-debug@]===]
+--@end-debug@]==]

@@ -87,6 +87,7 @@ E.CFG_ZONE = {
 }
 
 E.L_PRESETS = {
+	["CENTER"] = L["CENTER"],
 	["TOPLEFT"] = L["LEFT"],
 	["TOPRIGHT"] = L["RIGHT"],
 	["manual"] = LFG_LIST_MORE or "More...",
@@ -155,6 +156,7 @@ E.L_PRIORITY = {
 
 
 E.L_HIGHLIGHTS = {
+	["pvptrinket"] = L_PVP_TRINKET,
 	["racial"] = RACIAL_TRAITS,
 	["trinket"] = INVTYPE_TRINKET,
 	["covenant"] = L["Covenant"],
@@ -194,7 +196,7 @@ E.ICO = {
 
 }
 
-if E.isPreBCC then
+if E.isPreWOTLKC then
 	E.OTHER_SORT_ORDER[4] = nil
 
 	E.ICO.PVPTRINKET = "Interface\\Icons\\inv_jewelry_trinketpvp_01"
@@ -262,9 +264,10 @@ E.HEX_C = {
 }
 
 E.PROJECT_HEX_C = {
-	[1] = "|cff99cdff",
+	[1] = "|CFFF5E8CE",
 	[2] = "|cff0291b0",
-	[5] = "|cff7bbb4e",
+	[5] = E.isWOTLKC and "|cff99cdff" or "|cff7bbb4e",
+	[11] = "|cff99cdff",
 }
 
 

@@ -16,6 +16,7 @@ L.cast = "<Wirkt %s>"
 L.casting = "Wirkt %s"
 L.soon = "%s bald"
 L.count = "%s (%d)"
+L.count_amount = "%s (%d/%d)"
 L.count_icon = "%s (%d|T13700%d:0|t)"
 L.count_rticon = "%s (%d{rt%d})"
 L.rticon = "%s ({rt%d})"
@@ -27,8 +28,10 @@ L.stage = "Phase %d"
 L.normal = "Normaler Modus"
 L.heroic = "Heroischer Modus"
 L.mythic = "Mythischer Modus"
+L.hard = "Schwerer Modus"
 L.active = "Aktiv" -- When a boss becomes active, after speech finishes
 L.general = "Allgemein" -- General settings, i.e. things that apply to normal, heroic and mythic mode.
+L.absorb = "Absorbieren" -- Used for shield-like abilities that absorb damage or healing
 
 L.duration = "%s für %s Sek" -- Spell for 10 seconds
 L.over = "%s vorbei" -- Spell Over
@@ -72,6 +75,7 @@ L.custom_sec = "%s in %d Sek"
 
 L.focus_only = "|cffff0000Warnungen nur für Fokusziel.|r "
 L.trash = "Trash"
+L.affixes = "Affixe" -- Seasonal affixes for raids and mythic+ dungeons
 
 -- Common raid marking locale
 L.marker = "%s markieren"

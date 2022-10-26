@@ -84,7 +84,7 @@ BigWigs:AddSounds("Lihuvim, Principal Architect", {
 
 BigWigs:AddSounds("Halondrus the Reclaimer", {
 	[360114] = "underyou",
-	[360115] = {"alarm","info","long"},
+	[360115] = {"info","long"},
 	[360977] = {"alert","warning"},
 	[361676] = "alert",
 	[364979] = "long",
@@ -175,4 +175,11 @@ BigWigs:AddSounds("The Jailer", {
 	["mythic_blood_soak_stage_3"] = "long",
 	["mythic_dispel_stage_4"] = "long",
 	["stages"] = "long",
+})
+
+BigWigs:AddSounds("Sepulcher of the First Ones Affixes", {
+	[369505] = "info",
+	[371254] = "info",
+	[371447] = {"alert","info"},
+	[372634] = "alarm",
 })

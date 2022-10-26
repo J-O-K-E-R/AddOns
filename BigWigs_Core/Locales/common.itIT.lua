@@ -16,6 +16,7 @@ L.cast = "<Lancio di %s>"
 L.casting = "Lancio di %s"
 L.soon = "%s tra poco"
 L.count = "%s (%d)"
+L.count_amount = "%s (%d/%d)"
 L.count_icon = "%s (%d|T13700%d:0|t)"
 L.count_rticon = "%s (%d{rt%d})"
 L.rticon = "%s ({rt%d})"
@@ -27,8 +28,10 @@ L.stage = "Fase %d"
 L.normal = "Modalità Normale"
 L.heroic = "Modalità Eroica"
 L.mythic = "Modalità Mitica"
+L.hard = "Modalità Difficile"
 L.active = "Attivo" -- When a boss becomes active, after speech finishes
 L.general = "Generali" -- General settings, i.e. things that apply to normal, heroic and mythic mode.
+L.absorb = "Assorbimento" -- Used for shield-like abilities that absorb damage or healing
 
 L.duration = "%s per %s sec" -- Spell for 10 seconds
 L.over = "%s Terminato" -- Spell Over
@@ -70,8 +73,9 @@ L.custom_end = "%s diventa %s"
 L.custom_min = "%s in %d min"
 L.custom_sec = "%s in %d sec"
 
-L.focus_only = "|cffff0000Avviso solo per i bersagli focus.|r "
+L.focus_only = "|cffff0000Avviso solo per i bersagli focus.|r "
 L.trash = "Trash"
+--L.affixes = "Affixes" -- Seasonal affixes for raids and mythic+ dungeons
 
 -- Common raid marking locale
 L.marker = "Icona bersaglio %s"

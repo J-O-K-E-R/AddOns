@@ -5,8 +5,8 @@
 local mod, CL = BigWigs:NewBoss("Devos, Paragon of Doubt", 2285, 2412)
 if not mod then return end
 mod:RegisterEnableMob(162061) -- Devos
-mod.engageId = 2359
---mod.respawnTime = 30
+mod:SetEncounterID(2359)
+mod:SetRespawnTime(30)
 mod:SetStage(1)
 
 --------------------------------------------------------------------------------
@@ -97,7 +97,7 @@ do
 			self:SayCountdown(args.spellId, 15)
 			self:PlaySound(args.spellId, "alarm")
 		end
-		self:TargetsMessage(args.spellId, "yellow", playerList)
+		self:TargetsMessageOld(args.spellId, "yellow", playerList)
 	end
 
 	function mod:LostConfidenceRemoved(args)

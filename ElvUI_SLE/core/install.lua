@@ -16,7 +16,7 @@ PI.SLE_Auth = ''
 PI.SLE_Word = ''
 
 local function DarthHeal()
-	E.db['unitframe']['units']['raid']['healPrediction']['enable'] = true
+	E.db['unitframe']['units']['raid1']['healPrediction']['enable'] = true
 
 	E.db['movers']['ElvUF_RaidMover'] = 'TOPLEFT,ElvUIParent,TOPLEFT,362,-272'
 	E.db['movers']['LootFrameMover'] = 'TOPLEFT,ElvUIParent,TOPLEFT,1,-467'
@@ -529,29 +529,30 @@ function PI:DarthSetup()
 
 		E.db['unitframe']['units']['party']['enable'] = false
 
-		E.db['unitframe']['units']['raid']['rdebuffs']['font'] = 'PT Sans Narrow'
-		E.db['unitframe']['units']['raid']['rdebuffs']['yOffset'] = 10
-		E.db['unitframe']['units']['raid']['numGroups'] = 8
-		E.db['unitframe']['units']['raid']['growthDirection'] = 'RIGHT_UP'
-		E.db['unitframe']['units']['raid']['resurrectIcon']['attachTo'] = 'BOTTOMRIGHT'
-		E.db['unitframe']['units']['raid']['roleIcon']['attachTo'] = 'InfoPanel'
-		E.db['unitframe']['units']['raid']['roleIcon']['size'] = 12
-		E.db['unitframe']['units']['raid']['roleIcon']['xOffset'] = 0
-		E.db['unitframe']['units']['raid']['roleIcon']['yOffset'] = -2
-		E.db['unitframe']['units']['raid']['power']['height'] = 5
-		E.db['unitframe']['units']['raid']['power']['enable'] = false
-		E.db['unitframe']['units']['raid']['health']['text_format'] = ''
-		E.db['unitframe']['units']['raid']['width'] = 92
-		E.db['unitframe']['units']['raid']['infoPanel']['enable'] = true
-		E.db['unitframe']['units']['raid']['name']['attachTextTo'] = 'InfoPanel'
-		E.db['unitframe']['units']['raid']['name']['yOffset'] = -4
-		E.db['unitframe']['units']['raid']['name']['xOffset'] = 2
-		E.db['unitframe']['units']['raid']['name']['position'] = 'BOTTOMLEFT'
-		E.db['unitframe']['units']['raid']['height'] = 22
-		E.db['unitframe']['units']['raid']['visibility'] = '[nogroup] hide;show'
-		E.db['unitframe']['units']['raid']['raidicon']['attachTo'] = 'RIGHT'
+		E.db['unitframe']['units']['raid1']['rdebuffs']['font'] = 'PT Sans Narrow'
+		E.db['unitframe']['units']['raid1']['rdebuffs']['yOffset'] = 10
+		E.db['unitframe']['units']['raid1']['numGroups'] = 8
+		E.db['unitframe']['units']['raid1']['growthDirection'] = 'RIGHT_UP'
+		E.db['unitframe']['units']['raid1']['resurrectIcon']['attachTo'] = 'BOTTOMRIGHT'
+		E.db['unitframe']['units']['raid1']['roleIcon']['attachTo'] = 'InfoPanel'
+		E.db['unitframe']['units']['raid1']['roleIcon']['size'] = 12
+		E.db['unitframe']['units']['raid1']['roleIcon']['xOffset'] = 0
+		E.db['unitframe']['units']['raid1']['roleIcon']['yOffset'] = -2
+		E.db['unitframe']['units']['raid1']['power']['height'] = 5
+		E.db['unitframe']['units']['raid1']['power']['enable'] = false
+		E.db['unitframe']['units']['raid1']['health']['text_format'] = ''
+		E.db['unitframe']['units']['raid1']['width'] = 92
+		E.db['unitframe']['units']['raid1']['infoPanel']['enable'] = true
+		E.db['unitframe']['units']['raid1']['name']['attachTextTo'] = 'InfoPanel'
+		E.db['unitframe']['units']['raid1']['name']['yOffset'] = -4
+		E.db['unitframe']['units']['raid1']['name']['xOffset'] = 2
+		E.db['unitframe']['units']['raid1']['name']['position'] = 'BOTTOMLEFT'
+		E.db['unitframe']['units']['raid1']['height'] = 22
+		E.db['unitframe']['units']['raid1']['visibility'] = '[nogroup] hide;show'
+		E.db['unitframe']['units']['raid1']['raidicon']['attachTo'] = 'RIGHT'
 
-		E.db['unitframe']['units']['raid40']['enable'] = false
+		E.db['unitframe']['units']['raid2']['enable'] = false
+		E.db['unitframe']['units']['raid3']['enable'] = false
 
 		E.db['unitframe']['units']['arena']['name']['position'] = 'TOPRIGHT'
 		E.db['unitframe']['units']['arena']['health']['xOffset'] = -2
@@ -611,10 +612,10 @@ function PI:DarthSetup()
 		E.db['sle']['armory']['inspect']['enable'] = true
 		E.db['sle']['armory']['inspect']['gradient']['quality'] = true
 
-		E.db['sle']['unitframe']['units']['raid']['offlineIndicator']['enable'] = true
-		E.db['sle']['unitframe']['units']['raid']['offlineIndicator']['size'] = 22
-		E.db['sle']['unitframe']['units']['raid']['deathIndicator']['enable'] = true
-		E.db['sle']['unitframe']['units']['raid']['deathIndicator']['size'] = 22
+		E.db['sle']['unitframe']['units']['raid1']['offlineIndicator']['enable'] = true
+		E.db['sle']['unitframe']['units']['raid1']['offlineIndicator']['size'] = 22
+		E.db['sle']['unitframe']['units']['raid1']['deathIndicator']['enable'] = true
+		E.db['sle']['unitframe']['units']['raid1']['deathIndicator']['size'] = 22
 		-- E.db['sle']['unitframe']['units']['player']['pvpIconText']['enable'] = true
 		-- E.db['sle']['unitframe']['units']['player']['pvpIconText']['yoffset'] = -6
 
@@ -671,7 +672,7 @@ function PI:DarthSetup()
 		E.db["movers"]["BelowMinimapContainerMover"] = "TOPRIGHT,ElvUIParent,TOPRIGHT,-3,-247"
 		E.db["movers"]["BossButton"] = "BOTTOM,ElvUIParent,BOTTOM,0,433"
 		E.db["movers"]["BossHeaderMover"] = "TOPRIGHT,ElvUIParent,TOPRIGHT,-4,-301"
-		E.db["movers"]["BuffsMover"] = "TOPRIGHT,MMHolder,TOPLEFT,-7,-1"
+		E.db["movers"]["BuffsMover"] = "TOPRIGHT,ElvUI_MinimapHolder,TOPLEFT,-7,-1"
 		E.db["movers"]["ClassBarMover"] = "BOTTOM,ElvUIParent,BOTTOM,0,412"
 		E.db["movers"]["DebuffsMover"] = "TOPRIGHT,ElvUIParent,TOPRIGHT,-231,-116"
 		E.db["movers"]["DurabilityFrameMover"] = "BOTTOM,ElvUIParent,BOTTOM,164,30"
@@ -695,8 +696,9 @@ function PI:DarthSetup()
 		E.db["movers"]["ElvUF_PlayerAuraMover"] = "BOTTOMLEFT,ElvUIParent,BOTTOMLEFT,498,407"
 		E.db["movers"]["ElvUF_PlayerCastbarMover"] = "BOTTOM,ElvUIParent,BOTTOM,0,339"
 		E.db["movers"]["ElvUF_PlayerMover"] = "BOTTOM,ElvUIParent,BOTTOM,-257,377"
-		E.db["movers"]["ElvUF_Raid40Mover"] = "TOPLEFT,ElvUIParent,BOTTOMLEFT,4,482"
-		E.db["movers"]["ElvUF_RaidMover"] = "BOTTOMLEFT,ElvUIParent,BOTTOMLEFT,2,253"
+		E.db["movers"]["ElvUF_Raid1Mover"] = "BOTTOMLEFT,ElvUIParent,BOTTOMLEFT,2,253"
+		E.db["movers"]["ElvUF_Raid2Mover"] = "TOPLEFT,ElvUIParent,BOTTOMLEFT,4,482"
+		E.db["movers"]["ElvUF_Raid3Mover"] = "TOPLEFT,ElvUIParent,BOTTOMLEFT,4,482"
 		E.db["movers"]["ElvUF_RaidpetMover"] = "TOPLEFT,ElvUIParent,BOTTOMLEFT,4,737"
 		E.db["movers"]["ElvUF_TankMover"] = "TOPLEFT,ElvUIParent,TOPLEFT,518,-316"
 		E.db["movers"]["ElvUF_TargetAuraMover"] = "BOTTOMRIGHT,ElvUIParent,BOTTOMRIGHT,-490,406"
@@ -1033,7 +1035,14 @@ SLE.installTable = {
 			_G["PluginInstallFrame"]:Size(550, 500)
 		end,
 		[3] = function()
-			if PI.SLE_Auth == "" then _G["PluginInstallFrame"].SetPage(_G["PluginInstallFrame"].PrevPage == 2 and 4 or 2) return end
+			if PI.SLE_Auth == '' then
+				if _G["PluginInstallFrame"].PrevPage == 2 then
+					E.PluginInstaller.SetPage(2, 4)
+				else
+					E.PluginInstaller.SetPage(4, 2)
+				end
+				return
+			end
 			PI.SLE_Word = E.db.layoutSet == 'tank' and _G.STAT_CATEGORY_MELEE or E.db.layoutSet == 'healer' and _G.CLUB_FINDER_HEALER or E.db.layoutSet == 'dpsCaster' and _G.STAT_CATEGORY_RANGED or NONE
 			_G["PluginInstallFrame"].SubTitle:SetText(L["Layout & Settings Import"])
 			_G["PluginInstallFrame"].Desc1:SetText(format(L["You have selected to use %s and role %s."], PI.SLE_Auth == "DARTH" and L["Darth's Config"] or PI.SLE_Auth == "REPOOC" and L["Repooc's Config"] or PI.SLE_Auth == "AFFINITY" and L["Affinitii's Config"], PI.SLE_Word))

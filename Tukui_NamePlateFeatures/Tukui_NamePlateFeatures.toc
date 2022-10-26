@@ -1,0 +1,12 @@
+## Interface: 80100
+## Title: Tukui NamePlate Extra Features for |cffff8000Tukui|r
+## Notes: Extra NamePlate Features (Alpha settings, Scaling Target, Threat Indicator) for Tukui 18, Battle for Azeroth 8.0.0
+## Version: 1.02
+## Author: Maximvs & Innervasion
+## RequiredDeps: Tukui
+## Thanks to: Tukz, Azilroka, Blazeflack,Innervasion and everyone from the Tukui community.
+## X-Tukui-ProjectID: 130
+## X-Tukui-ProjectFolders: Tukui_NamePlateFeatures
+
+Tukui_NamePlateFeatures.lua
+

@@ -25,7 +25,10 @@ local GetBuildInfo = _G.GetBuildInfo;
 local tinsert = _G.tinsert;
 local unpack = _G.unpack;
 local wipe = _G.wipe;
-local C_Timer = _G.C_Timer;
+local GetScreenWidth = _G.GetScreenWidth;
+local GetScreenHeight = _G.GetScreenHeight;
+local CreateFrame = _G.CreateFrame;
+local abs = _G.abs;
 
 local name = ... or "BlizzMove";
 --- @class BlizzMove
@@ -112,14 +115,16 @@ do
 	function BlizzMove:RegisterFrame(addOnName, frameName, frameData, skipConfigUpdate)
 		if not addOnName then addOnName = self.name; end
 
-		if self:IsFrameDisabled(addOnName, frameName) then return false; end
-
 		local copiedData = self:CopyTable(frameData);
 
 		self.Frames[addOnName]            = self.Frames[addOnName] or {};
 		self.Frames[addOnName][frameName] = copiedData;
 
-		if IsAddOnLoaded(addOnName) and (addOnName ~= self.name and self.enabled or self.initialized) then
+		if (
+			not self:IsFrameDisabled(addOnName, frameName)
+			and IsAddOnLoaded(addOnName)
+			and (addOnName ~= self.name and self.enabled or self.initialized)
+		) then
 			self:ProcessFrame(addOnName, frameName, copiedData);
 		end
 
@@ -376,15 +381,80 @@ do
 	end
 
 	function GetAbsoluteFramePosition(frame)
+		-- inspired by LibWindow-1.1 (https://www.wowace.com/projects/libwindow-1-1)
+
+		local scale = frame:GetScale();
+		if not scale then return end
+		if not frame:GetLeft() then
+			local frameData = BlizzMove.FrameData[frame];
+			local frameName = frameData and frameData.storage and frameData.storage.frameName or 'unknown';
+			local sharedText = string__format('BlizzMove: The frame you just moved (%s) is probably in a broken state, possibly because of other addons. ', frameName);
+
+			local loaded = LoadAddOn('BlizzMove_Debug');
+			--- @type BlizzMove_Debug
+			local DebugModule = loaded and BlizzMove:GetModule('Debug');
+			if (not DebugModule) then
+				error(sharedText .. 'Enable the Blizzmove_Debug plugin, to find more debugging information.');
+				return;
+			end
+			local result = DebugModule:FindBadAnchorConnections(frame);
+			local text = sharedText .. 'Copy the text from this popup window, and report it to the addon author.\n\nBad anchor connections for "' .. frameName .. '":\n';
+			for _, info in pairs(result) do
+				text = text .. string__format(
+					'\n\n"%s" is outside anchor family, but referenced by "%s" (created in "%s")',
+					info.targetName, info.name, info.source
+				);
+			end
+			DebugModule:GetMainFrame(text):Show();
+			error(sharedText .. 'Copy the text from the popup window, and report it to the addon author.');
+			return;
+		end
+		local left, top = frame:GetLeft() * scale, frame:GetTop() * scale
+		local right, bottom = frame:GetRight() * scale, frame:GetBottom() * scale
+		local parentWidth = GetScreenWidth();
+		local parentHeight = GetScreenHeight();
+
+		local horizontalOffsetFromCenter = (left + right) / 2 - parentWidth / 2;
+		local verticalOffsetFromCenter = (top + bottom) / 2 - parentHeight / 2;
+
+		local x, y, point = 0, 0, "";
+		if (left < (parentWidth - right) and left < abs(horizontalOffsetFromCenter))
+		then
+			x = left;
+			point = "LEFT";
+		elseif ((parentWidth - right) < abs(horizontalOffsetFromCenter)) then
+			x = right - parentWidth;
+			point = "RIGHT";
+		else
+			x = horizontalOffsetFromCenter;
+		end
+
+		if bottom < (parentHeight - top) and bottom < abs(verticalOffsetFromCenter) then
+			y = bottom;
+			point = "BOTTOM" .. point;
+		elseif (parentHeight - top) < abs(verticalOffsetFromCenter) then
+			y = top - parentHeight;
+			point = "TOP" .. point;
+		else
+			y = verticalOffsetFromCenter;
+		end
+
+		if point == "" then
+			point = "CENTER"
+		end
+
+		BlizzMove:DebugPrint("GetAbsoluteFramePosition", "x:", math.floor(x), "y:", math.floor(y), "point:", point);
+
+		-- the nested table is for backwards compatibility
 		return {
 			{
-				["anchorPoint"] = "TOPLEFT",
+				["anchorPoint"] = point,
 				["relativeFrame"] = "UIParent",
-				["relativePoint"] = "BOTTOMLEFT",
-				["offX"] = frame:GetLeft(),
-				["offY"] = frame:GetTop(),
+				["relativePoint"] = point,
+				["offX"] = x,
+				["offY"] = y,
 			},
-		}
+		};
 	end
 
 	function SetFramePoints(frame, framePoints)
@@ -515,6 +585,7 @@ local OnMouseDown;
 local OnMouseUp;
 local OnMouseWheel;
 local OnShow;
+local OnSubFrameHide;
 do
 	function OnMouseDown(frame, button)
 		if not BlizzMove.FrameData[frame] or not BlizzMove.FrameData[frame].storage or BlizzMove.FrameData[frame].storage.disabled then return; end
@@ -671,12 +742,33 @@ do
 
 		BlizzMove:DebugPrint("OnShow:", BlizzMove.FrameData[frame].storage.frameName);
 
+		if InCombatLockdown() and frame:IsProtected() then
+			BlizzMove:AddToCombatLockdownQueue(OnShow, frame);
+			BlizzMove:DebugPrint('Adding to combatLockdownQueue: OnShow - ', BlizzMove.FrameData[frame].storage.frameName);
+
+			return;
+		end
+
 		SetFrameParent(frame);
 
 		if(BlizzMove.DB.saveScaleStrategy == 'permanent' and BlizzMove.DB.scales[BlizzMove.FrameData[frame].storage.frameName]) then
 			SetFrameScale(frame, BlizzMove.DB.scales[BlizzMove.FrameData[frame].storage.frameName]);
 		end
 
+	end
+
+	function OnSubFrameHide(frame)
+		if not BlizzMove.FrameData[frame] or not BlizzMove.FrameData[frame].storage or BlizzMove.FrameData[frame].storage.disabled then return; end
+
+		local frameData = BlizzMove.FrameData[frame];
+		local parent = frameData.storage.frameParent or nil;
+
+		BlizzMove:DebugPrint("OnHide:", frameData.storage.frameName, frameData.storage.isMoving);
+		if parent then return OnSubFrameHide(parent); end
+
+		if frameData.storage.isMoving then
+			BlizzMove:WaitForGlobalMouseUp(frame);
+		end
 	end
 end
 
@@ -776,6 +868,9 @@ do
 		end
 
 		BlizzMove:SecureHookScript(frame, "OnShow", OnShow);
+		if frameParent then
+			BlizzMove:SecureHookScript(frame, "OnHide", OnSubFrameHide);
+		end
 
 		BlizzMove:SecureHook(frame, "SetPoint",  OnSetPoint);
 		BlizzMove:SecureHook(frame, "SetWidth",  OnSizeUpdate);
@@ -842,6 +937,8 @@ do
 		end
 
 		if not frame then
+			self.notFoundFrames = self.notFoundFrames or {};
+			tinsert(self.notFoundFrames, frameName);
 			self:Print("Could not find frame ( Build:", self.gameBuild, "| Version:", self.gameVersion, "| BMVersion:", self.Config.version, "):", frameName);
 
 			return false;
@@ -952,10 +1049,33 @@ do
 		end
 		if count == 0 then return; end
 
-		BlizzMove:DebugPrint('Processed setFramePointsQueue, length: ', count);
+		self:DebugPrint('Processed setFramePointsQueue, length: ', count);
 		wipe(setFramePointsQueue)
-	end;
+	end
 
+	local awaitingGlobalMouseUp;
+	function BlizzMove:WaitForGlobalMouseUp(frame)
+		awaitingGlobalMouseUp = frame;
+		self:RegisterEvent('GLOBAL_MOUSE_UP');
+	end
+
+	function BlizzMove:GLOBAL_MOUSE_UP(event, button)
+		self:UnregisterEvent(event);
+		if not awaitingGlobalMouseUp then return; end
+		self:DebugPrint('Processing global MouseUp event after sub-frame got hidden');
+
+		OnMouseUp(awaitingGlobalMouseUp, button);
+		awaitingGlobalMouseUp = nil;
+	end
+
+	local commands = {
+		dumpDebugInfo = 'dumpDebugInfo',
+		dumpChangedCVars = 'dumpChangedCVars',
+		debugAnchor = 'debugAnchor',
+		debugLoadAll = 'debugLoadAll',
+		dumpMissingFrames = 'dumpMissingFrames',
+		dumpTopLevelFrames = 'dumpTopLevelFrames',
+	};
 	function BlizzMove:OnInitialize()
 		self.initialized = true;
 
@@ -967,17 +1087,22 @@ do
 
 		self:RegisterChatCommand('blizzmove', 'OnSlashCommand');
 		self:RegisterChatCommand('bm', 'OnSlashCommand');
-
+		for _, command in pairs(commands) do
+			self:RegisterChatCommand('bm'..command, function(message) self:OnSlashCommand(command..' '..message); end);
+		end
 		self:ProcessFrames(self.name);
 	end
 
 	function BlizzMove:OnSlashCommand(message)
 		local arg1, arg2 = strsplit(' ', message);
 		if (
-			arg1 == 'dumpDebugInfo'
-			or arg1 == 'dumpChangedCVars'
+			arg1 == commands.dumpDebugInfo
+			or arg1 == commands.dumpChangedCVars
+			or arg1 == commands.debugAnchor
+			or arg1 == commands.dumpTopLevelFrames
 		) then
 			local loaded = LoadAddOn('BlizzMove_Debug');
+			--- @type BlizzMove_Debug
 			local DebugModule = loaded and self:GetModule('Debug');
 			if (not DebugModule) then
 				self:Print('Could not load BlizzMove_Debug plugin');
@@ -985,20 +1110,43 @@ do
 				return;
 			end
 
-			if arg1 == 'dumpDebugInfo' then
+			if arg1 == commands.dumpDebugInfo then
 				-- `/bm dumpDebugInfo 1` will extract all CVars rather than just ones that got changed from the default
 				DebugModule:DumpAllData(arg2 ~= '1');
-			elseif arg1 == 'dumpChangedCVars' then
+			elseif arg1 == commands.dumpChangedCVars then
 				DebugModule:DumpCVars({ changedOnly = true, pastableFormat = true });
+			elseif arg1 == commands.debugAnchor then
+				local result = DebugModule:FindBadAnchorConnections(self:GetFrameFromName(name, arg2));
+				if #result > 0 then
+					self:Print('Found bad anchor connections, copy the popup window contents to analyze them.');
+					local text = 'Bad anchor connections for "' .. arg2 .. '":\n';
+					for _, info in pairs(result) do
+						text = text .. string__format(
+							'\n\n"%s" is outside anchor family, but referenced by "%s" (created in "%s")',
+							info.targetName, info.name, info.source
+						);
+					end
+					DebugModule:GetMainFrame(text):Show();
+				else
+					self:Print('No bad anchor connections found');
+				end
+			elseif arg1 == commands.dumpTopLevelFrames then
+				DebugModule:DumpTopLevelFrames();
 			end
 
 			return;
 		end
 
-		if arg1 == "debugLoadAll" then
+		if arg1 == commands.debugLoadAll then
 			for addOnName, _ in pairs(self:GetRegisteredAddOns()) do
 				self:Print((LoadAddOn(addOnName) and "Loaded") or "Missing", addOnName) ;
 			end
+			return;
+		elseif arg1 == commands.dumpMissingFrames then
+			self.Config:ShowURLPopup(
+				'Build:' .. self.gameBuild.. '| Version:' .. self.gameVersion.. '| BMVersion:' .. self.Config.version .. "\n\n"
+						.. table.concat(self.notFoundFrames or {'<none>'}, "\n")
+			);
 			return;
 		end
 
@@ -1039,19 +1187,48 @@ do
 				self.hooks.AdventureJournal_Reward_OnEnter(rewardFrame);
 			end
 			self:RawHook("AdventureJournal_Reward_OnEnter", replacement, true);
-			self:RawHookScript(_G.EncounterJournal.suggestFrame.Suggestion1.reward, "OnEnter", replacement)
-			self:RawHookScript(_G.EncounterJournal.suggestFrame.Suggestion2.reward, "OnEnter", replacement)
-			self:RawHookScript(_G.EncounterJournal.suggestFrame.Suggestion3.reward, "OnEnter", replacement)
+			self:RawHookScript(_G.EncounterJournal.suggestFrame.Suggestion1.reward, "OnEnter", replacement);
+			self:RawHookScript(_G.EncounterJournal.suggestFrame.Suggestion2.reward, "OnEnter", replacement);
+			self:RawHookScript(_G.EncounterJournal.suggestFrame.Suggestion3.reward, "OnEnter", replacement);
+		end
+		-- fix yet another anchor family connection issue, added in 10.0
+		if addOnName == "Blizzard_Communities" and self.gameVersion >= 100000 then
+			local dialog = _G.CommunitiesFrame.NotificationSettingsDialog or nil;
+			if dialog then
+				dialog:ClearAllPoints();
+				dialog:SetAllPoints();
+			end
+		end
+
+		if addOnName == self.name then
+			-- fix BattlefieldFrame having weird positioning
+			if _G.BattlefieldFrame and _G.PVPParentFrame then
+				_G.BattlefieldFrame:SetParent(_G.PVPParentFrame);
+				_G.BattlefieldFrame:ClearAllPoints();
+				_G.BattlefieldFrame:SetAllPoints();
+			end
+
+			if self.gameVersion >= 100000 then
+				-- fix anchor family connection issues with the combined bag
+				self:RawHook("UpdateContainerFrameAnchors", function()
+					for _, frame in ipairs(ContainerFrameSettingsManager:GetBagsShown()) do
+						frame:ClearAllPoints();
+					end
+					self.hooks.UpdateContainerFrameAnchors();
+				end, true);
+			end
 		end
 	end
 
 	function BlizzMove:OnEnable()
 		self.enabled = true;
 		self:SavePositionStrategyChanged(nil, self.DB.savePosStrategy);
+		C_CVar.SetCVar('enableSourceLocationLookup', 1)
 
+		self:ADDON_LOADED(_, self.name);
 		for addOnName, _ in pairs(self.Frames) do
 			if addOnName ~= self.name and IsAddOnLoaded(addOnName) then
-				self:ProcessFrames(addOnName);
+				self:ADDON_LOADED(_, addOnName);
 			end
 		end
 

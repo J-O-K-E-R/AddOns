@@ -1,4 +1,4 @@
-local E, _, V, P, G = unpack(ElvUI) --Import: Engine, Locales, PrivateDB, ProfileDB, GlobalDB
+local E, _, V, P, G = unpack(ElvUI)
 local C, L = unpack(E.OptionsUI)
 local CH = E:GetModule('Chat')
 local LO = E:GetModule('Layout')
@@ -72,13 +72,14 @@ General.args.fontGroup.args.tabFontSize = ACH:Range(L["Tab Font Size"], nil, 3, 
 
 General.args.alerts = ACH:Group(L["Alerts"], nil, 85, nil, nil, nil, function() return not E.Chat.Initialized end)
 General.args.alerts.args.noAlertInCombat = ACH:Toggle(L["No Alert In Combat"], nil, 1)
+General.args.alerts.args.flashClientIcon = ACH:Toggle(E.NewSign..L["Flash Client Icon"], nil, 2)
 
-General.args.alerts.args.keywordAlerts = ACH:Group(L["Keyword Alerts"], nil, 2)
+General.args.alerts.args.keywordAlerts = ACH:Group(L["Keyword Alerts"], nil, 5)
 General.args.alerts.args.keywordAlerts.inline = true
 General.args.alerts.args.keywordAlerts.args.keywordSound = ACH:SharedMediaSound(L["Keyword Alert"], nil, 1, 'double')
 General.args.alerts.args.keywordAlerts.args.keywords = ACH:Input(L["Keywords"], L["List of words to color in chat if found in a message. If you wish to add multiple words you must seperate the word with a comma. To search for your current name you can use %MYNAME%.\n\nExample:\n%MYNAME%, ElvUI, RBGs, Tank"], 2, 4, 'double', nil, function(info, value) E.db.chat[info[#info]] = value CH:UpdateChatKeywords() end)
 
-General.args.alerts.args.channelAlerts = ACH:Group(L["Channel Alerts"], nil, 3, nil, function(info) return E.db.chat.channelAlerts[info[#info]] end, function(info, value) E.db.chat.channelAlerts[info[#info]] = value end)
+General.args.alerts.args.channelAlerts = ACH:Group(L["Channel Alerts"], nil, 10, nil, function(info) return E.db.chat.channelAlerts[info[#info]] end, function(info, value) E.db.chat.channelAlerts[info[#info]] = value end)
 General.args.alerts.args.channelAlerts.inline = true
 General.args.alerts.args.channelAlerts.args.GUILD = ACH:SharedMediaSound(L["Guild"], nil, nil, 'double')
 General.args.alerts.args.channelAlerts.args.OFFICER = ACH:SharedMediaSound(L["Officer"], nil, nil, 'double')
@@ -96,7 +97,7 @@ General.args.voicechatGroup.args.voicePanelAlpha = ACH:Range(L["Alpha"], L["Chan
 
 General.args.timestampGroup = ACH:Group(L["TIMESTAMPS_LABEL"], nil, 95)
 General.args.timestampGroup.args.timeStampLocalTime = ACH:Toggle(L["Local Time"], L["If not set to true then the server time will be displayed instead."], 1)
-General.args.timestampGroup.args.timeStampFormat = ACH:Select(L["TIMESTAMPS_LABEL"], L["OPTION_TOOLTIP_TIMESTAMPS"], 2, { ['NONE'] = L["None"], ['%I:%M '] = '03:27', ['%I:%M:%S '] = '03:27:32', ['%I:%M %p '] = '03:27 PM', ['%I:%M:%S %p '] = '03:27:32 PM', ['%H:%M '] = '15:27', ['%H:%M:%S '] =	'15:27:32' })
+General.args.timestampGroup.args.timeStampFormat = ACH:Select(L["TIMESTAMPS_LABEL"], L["OPTION_TOOLTIP_TIMESTAMPS"], 2, { ['NONE'] = L["None"], ['%I:%M '] = '03:27', ['%I:%M:%S '] = '03:27:32', ['%I:%M %p '] = '03:27 PM', ['%I:%M:%S %p '] = '03:27:32 PM', ['%H:%M '] = '15:27', ['%H:%M:%S '] = '15:27:32' })
 General.args.timestampGroup.args.useCustomTimeColor = ACH:Toggle(L["Custom Timestamp Color"], nil, 3, nil, nil, nil, nil, nil, nil, function() return E.db.chat.timeStampFormat == 'NONE' end)
 General.args.timestampGroup.args.customTimeColor = ACH:Color('', nil, 4, nil, nil, function(info) local t, d = E.db.chat[info[#info]], P.chat[info[#info]] return t.r, t.g, t.b, t.a, d.r, d.g, d.b end, function(info, r, g, b) local t = E.db.chat[info[#info]] t.r, t.g, t.b = r, g, b end, nil, function() return (E.db.chat.timeStampFormat == 'NONE' or not E.db.chat.useCustomTimeColor) end)
 

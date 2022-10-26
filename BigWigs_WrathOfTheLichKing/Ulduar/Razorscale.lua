@@ -4,9 +4,15 @@
 
 local mod, CL = BigWigs:NewBoss("Razorscale", 603, 1639)
 if not mod then return end
-mod:RegisterEnableMob(33816, 33210, 33287, 33259, 33186) -- Expedition Defender, Expidition Commander, Expedition Engineer, Expedition Trapper, Razorscale
---mod.engageId = 1139 -- ENCOUNTER_END wasn't firing (for wipes)
---mod.respawnTime = 30
+mod:RegisterEnableMob(
+	33816, -- Expedition Defender
+	33210, -- Expedition Commander
+	33287, -- Expedition Engineer
+	33259, -- Expedition Trapper
+	33186  -- Razorscale
+)
+mod:SetEncounterID(1139)
+mod:SetRespawnTime(30)
 
 --------------------------------------------------------------------------------
 -- Locals
@@ -50,6 +56,7 @@ function mod:GetOptions()
 end
 
 function mod:OnBossEnable()
+	-- ENCOUNTER_END wasn't firing (for wipes)
 	self:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT", "CheckBossStatus")
 	self:Death("Win", 33186)
 
@@ -59,7 +66,7 @@ function mod:OnBossEnable()
 	self:Log("SPELL_DAMAGE", "DevouringFlameDamage", 64733)
 	self:Log("SPELL_MISSED", "DevouringFlameDamage", 64733)
 
-	self:RegisterUnitEvent("UNIT_HEALTH", nil, "boss1")
+	self:RegisterEvent("UNIT_HEALTH")
 	self:Log("SPELL_CAST_SUCCESS", "WingBuffetCastEnd", 62666)
 	self:Log("SPELL_AURA_APPLIED", "Harpooned", 62794)
 	self:Log("SPELL_AURA_REMOVED", "HarpoonedOver", 62794)
@@ -111,10 +118,11 @@ do
 end
 
 function mod:UNIT_HEALTH(event, unit)
-	local hp = UnitHealth(unit) / UnitHealthMax(unit) * 100
+	if self:MobId(self:UnitGUID(unit)) ~= 33186 then return end -- Razorscale
+	local hp = self:GetHealth(unit)
 	if hp > 51 and hp < 56 then
 		self:MessageOld("stages", "green", nil, CL.soon:format(CL.stage:format(2)), false)
-		self:UnregisterUnitEvent(event, unit)
+		self:UnregisterEvent(event)
 	end
 end
 
@@ -133,8 +141,8 @@ end
 
 function mod:HarpoonedOver(args)
 	self:StopBar(args.spellName)
-	local hp = UnitHealth("boss1") / UnitHealthMax("boss1") * 100
-	if hp < 50 then -- Stage 2 (Permanently grounded) begins
+	local boss = self:GetUnitIdByGUID(args.destGUID)
+	if boss and self:GetHealth(boss) < 50 then -- Stage 2 (Permanently grounded) begins
 		stage = 2
 		self:MessageOld("stages", "yellow", nil, CL.stage:format(2), false)
 	end
@@ -150,6 +158,6 @@ end
 function mod:FuseArmor(args)
 	if self:Me(args.destGUID) or (self:Tank() and self:Tank(args.destName)) then
 		local amount = args.amount or 1
-		self:StackMessage(args.spellId, args.destName, amount, "orange", args.amount > 1 and "info")
+		self:StackMessageOld(args.spellId, args.destName, amount, "orange", args.amount > 1 and "info")
 	end
 end

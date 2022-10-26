@@ -5,8 +5,8 @@
 local mod, CL = BigWigs:NewBoss("Freya", 603, 1646)
 if not mod then return end
 mod:RegisterEnableMob(32906)
-mod.engageId = 1133
-mod.respawnTime = 34
+mod:SetEncounterID(1133)
+mod:SetRespawnTime(34)
 
 --------------------------------------------------------------------------------
 -- Locals
@@ -63,7 +63,7 @@ function mod:GetOptions()
 		"berserk",
 	}, {
 		wave = "normal",
-		[62861] = -17610, -- Hard Mode
+		[62861] = "hard",
 		stages = "general",
 	}
 end

@@ -75,6 +75,8 @@ L["CD-Group %d"] = "CD-Group %d"
 L["CD-Group Padding"] = "CD-Group Padding"
 L["CENTER"] = "CENTRER"
 L["Center Horizontally"] = "Centrer horizontalement"
+--[[Translation missing --]]
+L["CENTER will keep the rows centered and grow icons bidirectionally."] = "CENTER will keep the rows centered and grow icons bidirectionally."
 L["Changelog"] = "Changelog"
 --[[Translation missing --]]
 L["Changing party display options in your UF addon while OmniCD is active will break the anchors. Type (/oc rl) to fix the anchors"] = "Changing party display options in your UF addon while OmniCD is active will break the anchors. Type (/oc rl) to fix the anchors"

@@ -2,8 +2,9 @@ local mod	= DBM:NewMod(1138, "DBM-Party-WoD", 3, 536)
 local L		= mod:GetLocalizedStrings()
 
 mod.statTypes = "normal,heroic,mythic,challenge,timewalker"
+mod.upgradedMPlus = true
 
-mod:SetRevision("20220116042005")
+mod:SetRevision("20221016002954")
 mod:SetCreatureID(77803, 77816)
 mod:SetEncounterID(1715)
 mod:SetBossHPInfoToHighest()
@@ -46,9 +47,9 @@ local function getBorkaID(self)
 end
 
 function mod:OnCombatStart(delay)
+	borkaID = nil
 	self.vb.VXCast = 0
 	self.vb.SlamCast = 0
-	getBorkaID(self)
 	timerSlamCD:Start(9-delay)
 	timerX2101AMissileCD:Start(18.5-delay)
 end
@@ -58,10 +59,10 @@ function mod:SPELL_CAST_START(args)
 	if spellId == 162500 then
 		self.vb.VXCast = self.vb.VXCast + 1
 		warnVX18B:Show(self.vb.VXCast)
-		if self.vb.VXCast == 2 then
+		--Probably won't actually fix bug but I caused be arsed to figure out how shit actually works
+		--when this dungeon stops being relevent in 1 week anyways
+		if self:AntiSpam(20, 1) then
 			timerVX18BCD:Start()
-		else
-			timerVX18BCD:Start(7)
 		end
 	elseif spellId == 162407 then
 		self.vb.VXCast = 0
@@ -70,10 +71,10 @@ function mod:SPELL_CAST_START(args)
 		timerX2101AMissileCD:Start()
 	elseif spellId == 161090 then
 		self.vb.SlamCast = 0
-		if not borkaID then--failsafe 1
+		if not borkaID then
 			getBorkaID(self)
 		end
-		if borkaID and self:IsTanking("player", borkaID) then--failsafe 2
+		if borkaID and self:IsTanking("player", borkaID, nil, true) then--failsafe 2
 			specWarnMadDashInterrupt:Show(rocketsName)
 			specWarnMadDashInterrupt:Play("targetyou")--bleh voice choice
 		else

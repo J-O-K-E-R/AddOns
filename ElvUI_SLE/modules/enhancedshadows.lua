@@ -9,6 +9,21 @@ local CreateFrame = CreateFrame
 local UnitAffectingCombat = UnitAffectingCombat
 local SIDE_BUTTON = E.db.chat.hideChatToggles and 0 or 19
 
+local MICRO_BUTTONS = _G.MICRO_BUTTONS or {
+	'CharacterMicroButton',
+	'SpellbookMicroButton',
+	'TalentMicroButton',
+	'AchievementMicroButton',
+	'QuestLogMicroButton',
+	'GuildMicroButton',
+	'LFDMicroButton',
+	'EJMicroButton',
+	'CollectionsMicroButton',
+	'MainMenuMicroButton',
+	'HelpMicroButton',
+	'StoreMicroButton',
+}
+
 ENH.CreatedShadows = {}
 ENH.DummyPanels = {}
 ENH.frames = {
@@ -64,11 +79,15 @@ ENH.frames = {
 			order = 9,
 			group = 'groupUnits',
 		},
-		raid = {
+		raid1 = {
 			order = 10,
 			group = 'groupUnits',
 		},
-		raid40 = {
+		raid2 = {
+			order = 10,
+			group = 'groupUnits',
+		},
+		raid3 = {
 			order = 11,
 			group = 'groupUnits',
 		},
@@ -411,7 +430,7 @@ function ENH:HandleMinimap()
 	if not E.private.general.minimap.enable then return end
 	do
 		if not ENH.DummyPanels.Minimap then
-			ENH.DummyPanels.Minimap = CreateFrame("Frame", nil, _G.MMHolder)
+			ENH.DummyPanels.Minimap = CreateFrame("Frame", nil, _G.ElvUI_MinimapHolder)
 		end
 
 		if ENH.DummyPanels.Minimap and not ENH.DummyPanels.Minimap.enhshadow then

@@ -1,6 +1,9 @@
 # BigWigs [Battle for Azeroth]
 
-## [v9.2.0](https://github.com/BigWigsMods/BigWigs_BattleForAzeroth/tree/v9.2.0) (2022-02-23)
-[Full Changelog](https://github.com/BigWigsMods/BigWigs_BattleForAzeroth/compare/v9.1.0...v9.2.0) [Previous Releases](https://github.com/BigWigsMods/BigWigs_BattleForAzeroth/releases)
+## [v10.0.0](https://github.com/BigWigsMods/BigWigs_BattleForAzeroth/tree/v10.0.0) (2022-10-26)
+[Full Changelog](https://github.com/BigWigsMods/BigWigs_BattleForAzeroth/compare/v9.2.2...v10.0.0) [Previous Releases](https://github.com/BigWigsMods/BigWigs_BattleForAzeroth/releases)
 
-- Bump toc  
+- Rename toc  
+- bump toc  
+- Add attributes file  
+- Nyalotha/NZoth: Revert unnecessary PlaySound change  

@@ -48,13 +48,13 @@ function M:SetBlizzFonts()
 		_G["SubZoneTextString"]:SetFont(E.LSM:Fetch('font', db.subzone.font), db.subzone.size, db.subzone.outline) -- Subzone name
 
 		_G["SendMailBodyEditBox"]:SetFont(E.LSM:Fetch('font', db.mail.font), db.mail.size, db.mail.outline) --Writing letter text
-		_G["OpenMailBodyText"]:SetFont(E.LSM:Fetch('font', db.mail.font), db.mail.size, db.mail.outline) --Received letter text
-		_G["QuestFont"]:SetFont(E.LSM:Fetch('font', db.gossip.font), db.gossip.size) -- Font in Quest Log/Petitions and shit. It's fucking hedious with any outline so fuck it.
+		--Seems to be bugged atm _G["OpenMailBodyText"]:SetFont(E.LSM:Fetch('font', db.mail.font), db.mail.size, db.mail.outline) --Received letter text
+		_G["QuestFont"]:SetFont(E.LSM:Fetch('font', db.gossip.font), db.gossip.size, '') -- Font in Quest Log/Petitions and shit. It's fucking hedious with any outline so fuck it.
 		-- _G["QuestFont_Large"]:SetFont(E.LSM:Fetch('font', db.questFontLarge.font), db.questFontLarge.size, db.questFontLarge.outline) -- No idea what that is for
 		_G["QuestFont_Super_Huge"]:SetFont(E.LSM:Fetch('font', db.questFontSuperHuge.font), db.questFontSuperHuge.size, db.questFontSuperHuge.outline) -- No idea what that is for
 		_G["QuestFont_Enormous"]:SetFont(E.LSM:Fetch('font', db.questFontSuperHuge.font), db.questFontSuperHuge.size, db.questFontSuperHuge.outline) -- No idea what that is for
 		--Objective Frame
-		if not SLE._Compatibility["ElvUI_MerathilisUI"] or (SLE._Compatibility["ElvUI_MerathilisUI"] and not E.private.muiSkins.blizzard.objectivetracker) then
+		if not SLE._Compatibility["ElvUI_MerathilisUI"] or (SLE._Compatibility["ElvUI_MerathilisUI"] and not E.private.mui.skins.blizzard.objectivetracker) then
 			local COLOR
 			if E.db.sle.skins.objectiveTracker.classHeader then
 				COLOR = ClassColor

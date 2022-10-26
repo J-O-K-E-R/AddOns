@@ -1,11 +1,16 @@
 ------------------------------------------------------------------------
-r524 | Zimzarina | 2022-05-01 18:40:00 +0000 (Sun, 01 May 2022) | 1 line
+r529 | Zimzarina | 2022-09-09 17:24:21 +0000 (Fri, 09 Sep 2022) | 1 line
 Changed paths:
-   D /trunk/Postal-BCC.to
-   D /trunk/Postal-Classic.to
-   A /trunk/Postal_TBC.toc
-   A /trunk/Postal_Vanilla.toc
+   M /trunk/Modules/QuickAttach.lua
+   M /trunk/Postal.lua
 
-Updated TOC files for Vanilla and TBC.
+Updated to support WotLK.
+------------------------------------------------------------------------
+r528 | Zimzarina | 2022-09-09 05:17:22 +0000 (Fri, 09 Sep 2022) | 1 line
+Changed paths:
+   M /trunk/Postal.toc
+   A /trunk/Postal_Wrath.toc
+
+TOC Update for Retail.  Added new TOC file for Wrath Of The Lich King.
 ------------------------------------------------------------------------
 

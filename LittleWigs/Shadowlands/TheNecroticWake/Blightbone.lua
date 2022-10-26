@@ -1,4 +1,3 @@
-
 --------------------------------------------------------------------------------
 -- Module Declaration
 --
@@ -6,8 +5,8 @@
 local mod, CL = BigWigs:NewBoss("Blightbone", 2286, 2395)
 if not mod then return end
 mod:RegisterEnableMob(162691) -- Blightbone
-mod.engageId = 2387
---mod.respawnTime = 30
+mod:SetEncounterID(2387)
+mod:SetRespawnTime(30)
 
 --------------------------------------------------------------------------------
 -- Initialization
@@ -58,7 +57,7 @@ end
 
 function mod:BloodGorgeApplied(args)
 	local amount = args.amount or 0
-	self:StackMessage(args.spellId, args.destName, args.amount, "cyan")
+	self:StackMessageOld(args.spellId, args.destName, args.amount, "cyan")
 	if amount > 2 then
 		self:PlaySound(args.spellId, "warning")
 	end

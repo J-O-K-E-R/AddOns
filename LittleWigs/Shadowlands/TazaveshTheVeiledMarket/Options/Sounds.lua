@@ -20,17 +20,23 @@ BigWigs:AddSounds("The Grand Menagerie", {
 
 BigWigs:AddSounds("Mailroom Mayhem", {
 	[346286] = "alert",
+	[346296] = "info",
 	[346742] = "alarm",
 	[346947] = "long",
 	[346962] = "alert",
+	["delivery_portal"] = "info",
 })
 
 BigWigs:AddSounds("Myza's Oasis", {
 	[350916] = "alarm",
 	[350919] = "alert",
 	[350922] = "warning",
+	[353706] = "alert",
+	[353783] = "alert",
+	[353835] = "alarm",
 	[355438] = "alarm",
 	[356482] = "info",
+	[359028] = "alarm",
 	["stages"] = "long",
 })
 
@@ -44,10 +50,10 @@ BigWigs:AddSounds("So'azmi", {
 BigWigs:AddSounds("Hylbrande", {
 	[346116] = "alarm",
 	[346766] = "long",
-	[346957] = {"alert","underyou","warning"},
-	[346971] = "info",
+	[346959] = {"alert","underyou","warning"},
 	[347094] = "alarm",
 	[353312] = "info",
+	["vault_purifier"] = "info",
 })
 
 BigWigs:AddSounds("Timecap'n Hooktail", {
@@ -90,6 +96,7 @@ BigWigs:AddSounds("Tazavesh Trash", {
 	[356324] = "warning",
 	[356404] = "alarm",
 	[356407] = {"alert","warning"},
+	[356548] = "alert",
 	[356929] = "info",
 	[356942] = "alert",
 	[356967] = "alert",

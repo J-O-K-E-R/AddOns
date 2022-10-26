@@ -5,6 +5,8 @@
 local mod, CL = BigWigs:NewBoss("Festergut", 631, 1629)
 if not mod then return end
 mod:RegisterEnableMob(36626)
+-- mod:SetEncounterID(1097)
+-- mod:SetRespawnTime(30)
 mod.toggleOptions = {{69279, "FLASH"}, 69165, 69195, 72219, 69240, 72295, "proximity", "berserk"}
 mod.optionHeaders = {
 	[69279] = "normal",
@@ -43,7 +45,7 @@ function mod:OnBossEnable()
 	self:Log("SPELL_AURA_APPLIED_DOSE", "Bloat", 72219)
 	self:Death("Win", 36626)
 
-	self:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", nil, "boss1")
+	self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "CheckForWipe")
 	self:BossYell("Engage", L["engage_trigger"])
 
@@ -100,7 +102,7 @@ end
 
 function mod:Bloat(args)
 	if args.amount > 5 then
-		self:StackMessage(72219, args.destName, args.amount, "green")
+		self:StackMessageOld(72219, args.destName, args.amount, "green")
 		self:CDBar(72219, 10)
 	end
 end
@@ -116,8 +118,12 @@ do
 	end
 end
 
-function mod:UNIT_SPELLCAST_SUCCEEDED(_, _, _, spellId)
-	if spellId == 72299 then
-		self:MessageOld(72295, "red", nil, L["ball_message"])
+do
+	local prev = 0
+	function mod:UNIT_SPELLCAST_SUCCEEDED(_, _, castId, spellId)
+		if spellId == 72299 and castId ~= prev then
+			prev = castId
+			self:MessageOld(72295, "red", nil, L["ball_message"])
+		end
 	end
 end
