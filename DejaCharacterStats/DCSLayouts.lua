@@ -65,8 +65,6 @@ local StatScrollFrame = CreateFrame("ScrollFrame", nil, CharacterFrameInsetRight
 	char_ctats_pane.EnhancementsCategory:SetHeight(28)
 	char_ctats_pane.EnhancementsCategory.Background:SetHeight(28)
 
-	char_ctats_pane.ItemLevelFrame.Corruption:SetFrameStrata("TOOLTIP")
-
 local DefaultTankData = DCS_TableData:MergeTable({
 	{ statKey = "ItemLevelFrame" },
 	{ statKey = "GeneralCategory" },
@@ -100,12 +98,19 @@ local DefaultTankData = DCS_TableData:MergeTable({
         { statKey = "MASTERY", hideAt = 0 },
         { statKey = "LIFESTEAL", hideAt = 0 },
         { statKey = "AVOIDANCE", hideAt = 0 },
-	{ statKey = "DefenseCategory" },
+		{ statKey = "DefenseCategory" },
         { statKey = "ARMOR" },
         { statKey = "DODGE", hideAt = 0 },
         { statKey = "PARRY", hideAt = 0 },
 		{ statKey = "BLOCK", hideAt = 0, showFunc = C_PaperDollInfo.OffhandHasShield },
 		{ statKey = "STAGGER", hideAt = 0, roles = {"TANK"} },
+	{ statKey = "Diversity" },
+		{ statKey = "BLACK_GIRLS_CODE" },
+		{ statKey = "FUTURES" },
+		{ statKey = "GIRLS_WHO_CODE" },
+		{ statKey = "RAINN" },
+		{ statKey = "WOMEN_IN__ANIMATION" },
+		{ statKey = "WOMEN_IN_GAMES_INTL" },
 	{ statKey = "RatingCategory" },
 		{ statKey = "CRITCHANCE_RATING", hideAt = 0 },
 		{ statKey = "HASTE_RATING", hideAt = 0 },
@@ -117,17 +122,6 @@ local DefaultTankData = DCS_TableData:MergeTable({
 		{ statKey = "PARRY_RATING", hideAt = 0 },
 		{ statKey = "SPEED_RATING", hideAt = 0, hidden = true },
 		{ statKey = "SPEED", hideAt = 0, hidden = true }, --seems like Blizzard's implemented speed rating
-	{ statKey = "ActiBlizzWalkout" },
-		{ statKey = "BLACK_GIRLS_CODE" },
-		{ statKey = "FUTURES" },
-		{ statKey = "GIRLS_WHO_CODE" },
-		{ statKey = "RAINN" },
-		{ statKey = "WOMEN_IN__ANIMATION" },
-		{ statKey = "WOMEN_IN_GAMES_INTL" },
-	{ statKey = "CorruptionCategory" },
-		{ statKey = "CR_CORRUPTION", hideAt = 0 },
-		{ statKey = "CR_CORRUPTION_RESISTANCE", hideAt = 0 },
-		{ statKey = "CR_TOTAL_CORRUPTION", hideAt = 0 },
 	{ statKey = "HonorCategory" },
 		{ statKey = "HONOR_PROGRESS", hideAt = 0 },
 		{ statKey = "HONOR_LEVEL", hideAt = 0 },
@@ -176,6 +170,13 @@ local DefaultNonTankData = DCS_TableData:MergeTable({
         { statKey = "DODGE", hideAt = 0 },
         { statKey = "PARRY", hideAt = 0 },
 		{ statKey = "BLOCK", hideAt = 0, showFunc = C_PaperDollInfo.OffhandHasShield },
+	{ statKey = "Diversity" },
+		{ statKey = "BLACK_GIRLS_CODE" },
+		{ statKey = "FUTURES" },
+		{ statKey = "GIRLS_WHO_CODE" },
+		{ statKey = "RAINN" },
+		{ statKey = "WOMEN_IN__ANIMATION" },
+		{ statKey = "WOMEN_IN_GAMES_INTL" },
 	{ statKey = "RatingCategory" },
 		{ statKey = "CRITCHANCE_RATING", hideAt = 0 },
 		{ statKey = "HASTE_RATING", hideAt = 0 },
@@ -188,17 +189,6 @@ local DefaultNonTankData = DCS_TableData:MergeTable({
 		{ statKey = "SPEED_RATING", hideAt = 0, hidden = true },
 		{ statKey = "SPEED", hideAt = 0, hidden = true }, --seems like Blizzard's implemented speed rating
 		{ statKey = "STAGGER", hideAt = 0, roles = {"TANK"} },
-	{ statKey = "ActiBlizzWalkout" },
-		{ statKey = "BLACK_GIRLS_CODE" },
-		{ statKey = "FUTURES" },
-		{ statKey = "GIRLS_WHO_CODE" },
-		{ statKey = "RAINN" },
-		{ statKey = "WOMEN_IN__ANIMATION" },
-		{ statKey = "WOMEN_IN_GAMES_INTL" },
-	{ statKey = "CorruptionCategory" },
-		{ statKey = "CR_CORRUPTION", hideAt = 0 },
-		{ statKey = "CR_CORRUPTION_RESISTANCE", hideAt = 0 },
-		{ statKey = "CR_TOTAL_CORRUPTION", hideAt = 0 },
 	{ statKey = "HonorCategory" },
 		{ statKey = "HONOR_PROGRESS", hideAt = 0 },
 		{ statKey = "HONOR_LEVEL", hideAt = 0 },
@@ -217,11 +207,8 @@ for k, v in pairs(DCS_TableData.StatData) do
 			v.frame = CreateFrame("FRAME", nil, StatFrame, "CharacterStatFrameCategoryTemplate")
 			v.frame:SetHeight(28)
 			v.frame.Background:SetHeight(28)
-			if k == "CorruptionCategory" then
-				v.frame.Title:SetText(L["Corruption"])
-			end
-			if k == "ActiBlizzWalkout" then
-				v.frame.Title:SetText(L["#ActiBlizzWalkout |cff00c0ff<3|r"])
+			if k == "Diversity" then
+				v.frame.Title:SetText(L["Diversity"])
 			end
 			if k == "GeneralCategory" then
 				v.frame.Title:SetText(L["General"])
@@ -335,7 +322,7 @@ local configMode = false
 
 local function ShowCharacterStats(unit)
 	--print("ShowCharacterStats")
-	if not PaperDollFrame:IsVisible() and not InterfaceOptionsFrame:IsVisible() then
+	if not PaperDollFrame:IsVisible() and not SettingsPanel:IsVisible() then
 		--print("Supressing ShowCharacterStats")
 		return
 	end
@@ -343,8 +330,8 @@ local function ShowCharacterStats(unit)
 	--print("Unsurpressed ShowCharacterStats")
 	--print("DejaCharacterStatsPanelVisible",DejaCharacterStatsPanel:IsVisible())
 	--print("DejaCharacterStatsPanelShown",DejaCharacterStatsPanel:IsShown())
-	--print("InterfaceOptionsFrameIsShown",InterfaceOptionsFrame:IsShown())
-	--print("InterfaceOptionsFrameIsVisible",InterfaceOptionsFrame:IsVisible())
+	--print("SettingsPanelIsShown",SettingsPanel:IsShown())
+	--print("SettingsPanelIsVisible",SettingsPanel:IsVisible())
 	--print("PaperDollFrame",PaperDollFrame:IsVisible())
     local stat
     local count, backgroundcount, height = 0, false, 4
@@ -366,6 +353,15 @@ local function ShowCharacterStats(unit)
 				stat.frame.checkButton:SetChecked(not v.hidden)
 				if (v.hidden) then
 					stat.frame:SetAlpha(0.32)
+					if (v.statKey == "Diversity") or 
+						(v.statKey == "BLACK_GIRLS_CODE") or 
+						(v.statKey == "FUTURES") or 
+						(v.statKey == "GIRLS_WHO_CODE") or 
+						(v.statKey == "RAINN") or 
+						(v.statKey == "WOMEN_IN__ANIMATION") or 
+						(v.statKey == "WOMEN_IN_GAMES_INTL") then
+							stat.frame:SetAlpha(1)
+					end
 				else
 					stat.frame:SetAlpha(1)
 				end
@@ -452,7 +448,6 @@ local function DCS_Table_Relevant()
 	--print(spec)
 	local role = GetSpecializationRole(spec)
 	--print(role)
-	local basecorruption = GetCorruption()
 	local hashonorlevel = UnitHonorLevel("player")
 	local hasconquestlevel = PVPGetConquestLevelInfo()
 
@@ -519,13 +514,7 @@ local function DCS_Table_Relevant()
 		if v.statKey == "SPEED" then v.hidden = true end
 
 		if v.statKey == "ITEMLEVEL" then v.hidden = true end
-		if basecorruption < 1 then		
-			if v.statKey == "CorruptionCategory" then v.hidden = true end
-			if v.statKey == "CR_CORRUPTION" then v.hidden = true end
-			if v.statKey == "CR_CORRUPTION_RESISTANCE" then v.hidden = true end
-			if v.statKey == "CR_TOTAL_CORRUPTION" then v.hidden = true end
-		end
-		if v.statKey == "ActiBlizzWalkout" then v.hidden = true end
+		if v.statKey == "Diversity" then v.hidden = true end
 		if v.statKey == "BLACK_GIRLS_CODE" then v.hidden = true end
 		if v.statKey == "FUTURES" then v.hidden = true end
 		if v.statKey == "GIRLS_WHO_CODE" then v.hidden = true end
@@ -781,17 +770,18 @@ local function set_config_mode(state)
 	end
 end
 
-local DCS_configButton = CreateFrame("Button", "DCS_configButton", PaperDollSidebarTab1)
+local DCS_configButton = CreateFrame("Button", "DCS_configButton", PaperDollSidebarTabs)
 local DCS_InterfaceOptConfigButton = CreateFrame("Button", "DCS_InterfaceOptConfigButton", DejaCharacterStatsPanel)
 
 	DCS_configButton:SetSize(32, 32)
 	DCS_configButton:RegisterEvent("MERCHANT_SHOW")
 	DCS_configButton:RegisterEvent("MERCHANT_CLOSED")
 	DCS_configButton:RegisterEvent("UPDATE_INVENTORY_DURABILITY")
-	DCS_configButton:SetPoint("BOTTOMLEFT", PaperDollSidebarTab1, "BOTTOMLEFT", 96, 34)
-	DCS_configButton:SetNormalTexture("Interface\\Buttons\\LockButton-Locked-Up")
-	DCS_configButton:SetPushedTexture("Interface\\Buttons\\LockButton-Unlocked-Down")
-	DCS_configButton:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
+	DCS_configButton:SetFrameStrata("TOOLTIP")
+	DCS_configButton:SetPoint("BOTTOMRIGHT", PaperDollSidebarTabs, "TOPRIGHT", -10, -2)
+	DCS_configButton:SetNormalTexture("Interface\\BUTTONS\\LockButton-Locked-Up")
+	DCS_configButton:SetPushedTexture("Interface\\BUTTONS\\LockButton-Unlocked-Down")
+	DCS_configButton:SetHighlightTexture("Interface\\BUTTONS\\UI-Common-MouseHilight", "ADD")
 	
 DCS_configButton:SetScript("OnEvent", function(self, event, ...)
 	PaperDollFrame_UpdateStats()
@@ -819,16 +809,16 @@ local function dcsRStatConfigButtonsHide()
 	DCS_TableResetCheck:SetParent(UIParent)
 	DCS_TableResetCheck:SetPoint("BOTTOMRIGHT", UIParent, "TOPLEFT", -100, 100)
 end
+
 local function configButtonOnClose()
 	StatScrollFrame:SetVerticalScroll(0)
 	set_config_mode(false)
 	dcsRStatConfigButtonsHide()
 
-	DCS_configButton:SetNormalTexture("Interface\\Buttons\\LockButton-Locked-Up")
-	DCS_InterfaceOptConfigButton:SetNormalTexture("Interface\\Buttons\\LockButton-Locked-Up")
+	DCS_configButton:SetNormalTexture("Interface\\BUTTONS\\LockButton-Locked-Up")
+	DCS_InterfaceOptConfigButton:SetNormalTexture("Interface\\BUTTONS\\LockButton-Locked-Up")
 	ShowCharacterStats("player")
 end
-
 
 --------------------------
 -- Toggle Expand Button --
@@ -910,9 +900,7 @@ local function DCS_DefaultStatsAnchors()
 
 	char_ctats_pane.ClassBackground:ClearAllPoints()
 	char_ctats_pane.ClassBackground:SetParent(StatScrollFrame)
-	char_ctats_pane.ClassBackground:SetPoint("TOP", StatScrollFrame, "TOP", -2.50, 3)
-	
-	char_ctats_pane.ItemLevelFrame.Corruption:SetFrameStrata("TOOLTIP")
+	char_ctats_pane.ClassBackground:SetPoint("TOP", StatScrollFrame, "TOP", -2.50, 3)	
 
 	configButtonOnClose()
 	DCS_ClassCrestBGCheck()
@@ -927,8 +915,8 @@ local function DCS_InterfaceOptionsStatsAnchors()
 				
 		StatScrollFrame:ClearAllPoints()
 		StatScrollFrame:SetParent(DejaCharacterStatsPanel)
-		StatScrollFrame:SetPoint("TOPLEFT", DejaCharacterStatsPanel, "TOPLEFT", 380, -80)
-		StatScrollFrame:SetPoint("BOTTOMRIGHT", DejaCharacterStatsPanel, "BOTTOMRIGHT", -50, 126)
+		StatScrollFrame:SetPoint("TOPRIGHT", DejaCharacterStatsPanel, "TOPRIGHT", -64, -80)
+		StatScrollFrame:SetSize(200, 394)
 		StatScrollFrame:Show()
 
 		StatScrollFrame.ScrollBar:ClearAllPoints()
@@ -951,8 +939,6 @@ local function DCS_InterfaceOptionsStatsAnchors()
 		char_ctats_pane.ClassBackground:SetPoint("BOTTOMRIGHT", DejaCharacterStatsPanel, "BOTTOMRIGHT", -48, 126)
 		char_ctats_pane.ClassBackground:Show()
 
-		char_ctats_pane.ItemLevelFrame.Corruption:SetFrameStrata("TOOLTIP")
-
 		DCS_ClassCrestBGCheck()
 		ShowCharacterStats("player")
 	end
@@ -963,7 +949,7 @@ CharacterFrameInsetRight:HookScript("OnShow", function(self)
 end)
 
 CharacterFrameInsetRight:HookScript("OnHide", function(self)
-	if InterfaceOptionsFrame:IsShown() then
+	if SettingsPanel:IsShown() then
 		DCS_InterfaceOptionsStatsAnchors()
 	else
 		CharacterFrameInsetRightScrollBar:SetValue(0)
@@ -994,7 +980,7 @@ end)
 	DCS_configButton:SetScript("OnMouseUp", function(self, button, up)
 		configMode = not configMode
 		if (configMode) then
-			self:SetNormalTexture("Interface\\Buttons\\LockButton-Unlocked-Up")
+			self:SetNormalTexture("Interface\\BUTTONS\\LockButton-Unlocked-Up")
 			
 			DCS_TableRelevantStats:ClearAllPoints()
 			DCS_TableRelevantStats:SetParent(CharacterFrameInsetRight)
@@ -1085,7 +1071,7 @@ local DCS_TableRelevantStats = CreateFrame("Button", "DCS_TableRelevantStats", C
 		--May be an alpha issue. Try other events like "PLAYER_LOGIN" if found to be needed.
 		if event == "PLAYER_SPECIALIZATION_CHANGED" then 
 			-- print("changed")
-			set_config_mode(true) -- This allows the ratings and corruption stats and category headrs to be shown when changin specs. No clue why, but it works.
+			set_config_mode(true) -- This allows the ratings and diversity stats and category headrs to be shown when changin specs. No clue why, but it works.
 			local function DCS_ReShowSelectedStats()
 				set_config_mode(false) -- This hides the above shown config mode 0.01 secs after showing it becasue we dont want it shown, but showing it shows the selected stats, so we need to exit config after entering it.
 			end
@@ -1101,12 +1087,12 @@ local DCS_TableRelevantStats = CreateFrame("Button", "DCS_TableRelevantStats", C
 --creation of DCS_InterfaceOptConfigButton near DCS_configButton
 	DCS_InterfaceOptConfigButton:RegisterEvent("PLAYER_LOGIN")
 	DCS_InterfaceOptConfigButton:ClearAllPoints()
-	DCS_InterfaceOptConfigButton:SetPoint("TOPRIGHT", 0, 29)
+	DCS_InterfaceOptConfigButton:SetPoint("TOPRIGHT", 0, 0)
 	DCS_InterfaceOptConfigButton:SetSize(36, 36)
 	DCS_InterfaceOptConfigButton:SetScale(1.25)
-	DCS_InterfaceOptConfigButton:SetNormalTexture("Interface\\Buttons\\LockButton-Locked-Up")
-	DCS_InterfaceOptConfigButton:SetPushedTexture("Interface\\Buttons\\LockButton-Unlocked-Down")
-	DCS_InterfaceOptConfigButton:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
+	DCS_InterfaceOptConfigButton:SetNormalTexture("Interface\\BUTTONS\\LockButton-Locked-Up")
+	DCS_InterfaceOptConfigButton:SetPushedTexture("Interface\\BUTTONS\\LockButton-Unlocked-Down")
+	DCS_InterfaceOptConfigButton:SetHighlightTexture("Interface\\BUTTONS\\UI-Common-MouseHilight", "ADD")
 	
 local function DCS_InterfaceOptConfigButton_OnEnter(self)
 	GameTooltip:SetOwner(DCS_InterfaceOptConfigButton, "ANCHOR_RIGHT");
@@ -1128,10 +1114,10 @@ local function DCS_InterfaceOptConfigButton_OnLeave(self)
 	DCS_InterfaceOptConfigButton:SetScript("OnMouseUp", function(self, button, up)
 		configMode = not configMode
 		if (configMode) then
-			self:SetNormalTexture("Interface\\Buttons\\LockButton-Unlocked-Up")
+			self:SetNormalTexture("Interface\\BUTTONS\\LockButton-Unlocked-Up")
 			set_config_mode(true) --might get improved into set_config_mode(configMode)
 		else
-			self:SetNormalTexture("Interface\\Buttons\\LockButton-Locked-Up")
+			self:SetNormalTexture("Interface\\BUTTONS\\LockButton-Locked-Up")
 			set_config_mode(false)
 		end
 		ShowCharacterStats("player")
@@ -1251,10 +1237,10 @@ local DCS_ClassBackgroundCheck = CreateFrame("CheckButton", "DCS_ClassBackground
         ShowCharacterStats("player") --does it need to be called?
 	end)
 
-InterfaceOptionsFrame:HookScript("OnShow", function(self)
+SettingsPanel:HookScript("OnShow", function(self)
 	DCS_InterfaceOptionsStatsAnchors()
 end)
 
-InterfaceOptionsFrame:HookScript("OnHide", function(self)
+SettingsPanel:HookScript("OnHide", function(self)
 	DCS_DefaultStatsAnchors()
 end)
