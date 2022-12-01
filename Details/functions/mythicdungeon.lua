@@ -5,6 +5,7 @@ local unpack = _G.unpack
 local GetTime = _G.GetTime
 local tremove = _G.tremove
 local GetInstanceInfo = _G.GetInstanceInfo
+local addonName, Details222 = ...
 
 local Loc = _G.LibStub("AceLocale-3.0"):GetLocale("Details")
 
@@ -19,11 +20,11 @@ DetailsMythicPlusFrame.DevelopmentDebug = false
 
 --disabling the mythic+ feature if the user is playing in wow classic
 if (not DF.IsTimewalkWoW()) then
-    DetailsMythicPlusFrame:RegisterEvent ("CHALLENGE_MODE_START")
-    DetailsMythicPlusFrame:RegisterEvent ("CHALLENGE_MODE_COMPLETED")
-    DetailsMythicPlusFrame:RegisterEvent ("ZONE_CHANGED_NEW_AREA")
-    DetailsMythicPlusFrame:RegisterEvent ("ENCOUNTER_END")
-    DetailsMythicPlusFrame:RegisterEvent ("START_TIMER")
+    DetailsMythicPlusFrame:RegisterEvent("CHALLENGE_MODE_START")
+    DetailsMythicPlusFrame:RegisterEvent("CHALLENGE_MODE_COMPLETED")
+    DetailsMythicPlusFrame:RegisterEvent("ZONE_CHANGED_NEW_AREA")
+    DetailsMythicPlusFrame:RegisterEvent("ENCOUNTER_END")
+    DetailsMythicPlusFrame:RegisterEvent("START_TIMER")
 end
 
 --[[
@@ -713,12 +714,12 @@ end
 
 --make an event listener to sync combat data
 DetailsMythicPlusFrame.EventListener = Details:CreateEventListener()
-DetailsMythicPlusFrame.EventListener:RegisterEvent ("COMBAT_ENCOUNTER_START")
-DetailsMythicPlusFrame.EventListener:RegisterEvent ("COMBAT_ENCOUNTER_END")
-DetailsMythicPlusFrame.EventListener:RegisterEvent ("COMBAT_PLAYER_ENTER")
-DetailsMythicPlusFrame.EventListener:RegisterEvent ("COMBAT_PLAYER_LEAVE")
-DetailsMythicPlusFrame.EventListener:RegisterEvent ("COMBAT_MYTHICDUNGEON_START")
-DetailsMythicPlusFrame.EventListener:RegisterEvent ("COMBAT_MYTHICDUNGEON_END")
+DetailsMythicPlusFrame.EventListener:RegisterEvent("COMBAT_ENCOUNTER_START")
+DetailsMythicPlusFrame.EventListener:RegisterEvent("COMBAT_ENCOUNTER_END")
+DetailsMythicPlusFrame.EventListener:RegisterEvent("COMBAT_PLAYER_ENTER")
+DetailsMythicPlusFrame.EventListener:RegisterEvent("COMBAT_PLAYER_LEAVE")
+DetailsMythicPlusFrame.EventListener:RegisterEvent("COMBAT_MYTHICDUNGEON_START")
+DetailsMythicPlusFrame.EventListener:RegisterEvent("COMBAT_MYTHICDUNGEON_END")
 
 function DetailsMythicPlusFrame.EventListener.OnDetailsEvent(contextObject, event, ...)
     --these events triggers within Details control functions, they run exactly after details! creates or close a segment
@@ -774,7 +775,7 @@ function DetailsMythicPlusFrame.EventListener.OnDetailsEvent(contextObject, even
         --nothing
 
     elseif (event == "COMBAT_MYTHICDUNGEON_START") then
-        print("COMBAT_MYTHICDUNGEON_START", ...)
+        --print("COMBAT_MYTHICDUNGEON_START", ...)
         local lower_instance = _detalhes:GetLowerInstanceNumber()
         if (lower_instance) then
             lower_instance = _detalhes:GetInstance(lower_instance)

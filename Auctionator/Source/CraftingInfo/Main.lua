@@ -20,35 +20,3 @@ function Auctionator.CraftingInfo.CacheVendorPrices()
     end
   end
 end
-
-local function CraftCostString()
-  local price = WHITE_FONT_COLOR:WrapTextInColorCode(GetMoneyString(Auctionator.CraftingInfo.GetSkillReagentsTotal(), true))
-
-  return AUCTIONATOR_L_TO_CRAFT_COLON .. " " .. price
-end
-
-local function ProfitString(profit)
-  local price
-  if profit >= 0 then
-    price = WHITE_FONT_COLOR:WrapTextInColorCode(GetMoneyString(profit, true))
-  else
-    price = RED_FONT_COLOR:WrapTextInColorCode("-" .. GetMoneyString(-profit, true))
-  end
-
-  return AUCTIONATOR_L_PROFIT_COLON .. " " .. price
-
-end
-
-function Auctionator.CraftingInfo.GetInfoText()
-  if Auctionator.Config.Get(Auctionator.Config.Options.CRAFTING_COST_SHOW_PROFIT) then
-    local profit = Auctionator.CraftingInfo.GetAHProfit()
-
-    if profit == nil then
-      return CraftCostString()
-    else
-      return ProfitString(profit)
-    end
-  else
-    return CraftCostString()
-  end
-end

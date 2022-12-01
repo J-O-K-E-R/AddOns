@@ -1,8 +1,6 @@
 # BigWigs [Mists of Pandaria]
 
-## [v10.0.0](https://github.com/BigWigsMods/BigWigs_MistsOfPandaria/tree/v10.0.0) (2022-10-26)
-[Full Changelog](https://github.com/BigWigsMods/BigWigs_MistsOfPandaria/compare/v9.2.2...v10.0.0) [Previous Releases](https://github.com/BigWigsMods/BigWigs_MistsOfPandaria/releases)
+## [v10.0.1](https://github.com/BigWigsMods/BigWigs_MistsOfPandaria/tree/v10.0.1) (2022-11-15)
+[Full Changelog](https://github.com/BigWigsMods/BigWigs_MistsOfPandaria/compare/v10.0.0...v10.0.1) [Previous Releases](https://github.com/BigWigsMods/BigWigs_MistsOfPandaria/releases)
 
-- Rename toc  
 - bump toc  
-- Add attributes file  

@@ -9,6 +9,7 @@ local floor = floor
 local GetNumGroupMembers = GetNumGroupMembers
 
 local CONST_INSPECT_ACHIEVEMENT_DISTANCE = 1 --Compare Achievements, 28 yards
+local CONST_SPELLBOOK_GENERAL_TABID = 1
 local CONST_SPELLBOOK_CLASSSPELLS_TABID = 2
 
 local storageDebug = false --remember to turn this to false!
@@ -60,6 +61,7 @@ end
 	
 		local current_enabled_state = _detalhes.chat_tab_embed.enabled
 		local current_name = _detalhes.chat_tab_embed.tab_name
+		local current_is_single = _detalhes.chat_tab_embed.single_window
 	
 		tab_name = tab_name or _detalhes.chat_tab_embed.tab_name
 		if (is_enabled == nil) then
@@ -92,6 +94,15 @@ end
 						_detalhes.chat_tab_embed.w1_pos = pos
 					end
 				end
+				local window2 = _detalhes:GetInstance(2)
+				if (window2) then
+					window2:SaveMainWindowPosition()
+					if (window2.libwindow) then
+						local pos = window2:CreatePositionTable()
+						_detalhes.chat_tab_embed.w2_pos = pos
+					end
+				end
+			elseif (not is_single and current_is_single) then
 				local window2 = _detalhes:GetInstance(2)
 				if (window2) then
 					window2:SaveMainWindowPosition()
@@ -253,9 +264,12 @@ end
 		local window2 = _detalhes:GetInstance(2)
 		
 		if (second_window) then
+			window2:UngroupInstance()
 			window2.baseframe:ClearAllPoints()
 			window2.baseframe:SetParent(UIParent)
 			window2.rowframe:SetParent(UIParent)
+			window2.rowframe:ClearAllPoints()
+			window2.windowSwitchButton:SetParent(UIParent)
 			window2.baseframe:SetPoint("center", UIParent, "center", 200, 0)
 			window2.rowframe:SetPoint("center", UIParent, "center", 200, 0)
 			window2:LockInstance (false)
@@ -267,10 +281,11 @@ end
 			end
 			return
 		end
-		
+		window1:UngroupInstance();
 		window1.baseframe:ClearAllPoints()
 		window1.baseframe:SetParent(UIParent)
 		window1.rowframe:SetParent(UIParent)
+		window1.windowSwitchButton:SetParent(UIParent)
 		window1.baseframe:SetPoint("center", UIParent, "center")
 		window1.rowframe:SetPoint("center", UIParent, "center")
 		window1:LockInstance (false)
@@ -282,9 +297,12 @@ end
 		end
 		
 		if (not _detalhes.chat_tab_embed.single_window and window2) then
+			
+			window2:UngroupInstance()
 			window2.baseframe:ClearAllPoints()
 			window2.baseframe:SetParent(UIParent)
 			window2.rowframe:SetParent(UIParent)
+			window2.windowSwitchButton:SetParent(UIParent);
 			window2.baseframe:SetPoint("center", UIParent, "center", 200, 0)
 			window2.rowframe:SetPoint("center", UIParent, "center", 200, 0)
 			window2:LockInstance (false)
@@ -300,7 +318,7 @@ end
 	function _detalhes.chat_embed:GetTab (tabname)
 		tabname = tabname or _detalhes.chat_tab_embed.tab_name
 		for i = 1, 20 do
-			local tabtext = _G ["ChatFrame" .. i .. "TabText"]
+			local tabtext = _G ["ChatFrame" .. i .. "Tab"]
 			if (tabtext) then
 				if (tabtext:GetText() == tabname) then
 					return _G ["ChatFrame" .. i], _G ["ChatFrame" .. i .. "Tab"], _G ["ChatFrame" .. i .. "Background"], i
@@ -1811,11 +1829,11 @@ local ilvl_core = _detalhes:CreateEventListener()
 ilvl_core.amt_inspecting = 0
 _detalhes.ilevel.core = ilvl_core
 
-ilvl_core:RegisterEvent ("GROUP_ONENTER", "OnEnter")
-ilvl_core:RegisterEvent ("GROUP_ONLEAVE", "OnLeave")
-ilvl_core:RegisterEvent ("COMBAT_PLAYER_ENTER", "EnterCombat")
-ilvl_core:RegisterEvent ("COMBAT_PLAYER_LEAVE", "LeaveCombat")
-ilvl_core:RegisterEvent ("ZONE_TYPE_CHANGED", "ZoneChanged")
+ilvl_core:RegisterEvent("GROUP_ONENTER", "OnEnter")
+ilvl_core:RegisterEvent("GROUP_ONLEAVE", "OnLeave")
+ilvl_core:RegisterEvent("COMBAT_PLAYER_ENTER", "EnterCombat")
+ilvl_core:RegisterEvent("COMBAT_PLAYER_LEAVE", "LeaveCombat")
+ilvl_core:RegisterEvent("ZONE_TYPE_CHANGED", "ZoneChanged")
 
 local inspecting = {}
 ilvl_core.forced_inspects = {}
@@ -1828,7 +1846,7 @@ function ilvl_core:HasQueuedInspec (unitName)
 end
 
 local inspect_frame = CreateFrame("frame")
-inspect_frame:RegisterEvent ("INSPECT_READY")
+inspect_frame:RegisterEvent("INSPECT_READY")
 
 local two_hand = {
 	["INVTYPE_2HWEAPON"] = true,
@@ -1899,7 +1917,7 @@ function ilvl_core:CalcItemLevel (unitid, guid, shout)
 		unitid = unitid [1]
 	end
 
-	if (unitid and CanInspect(unitid) and UnitPlayerControlled(unitid) and CheckInteractDistance(unitid, CONST_INSPECT_ACHIEVEMENT_DISTANCE)) then
+	if (unitid and UnitPlayerControlled(unitid) and CheckInteractDistance(unitid, CONST_INSPECT_ACHIEVEMENT_DISTANCE) and CanInspect(unitid)) then
 
 		--16 = all itens including main and off hand
 		local item_amount = 16
@@ -2377,6 +2395,71 @@ function Details:DecompressData (data, dataType)
 	end
 end
 
+Details.specToRole = {
+	--DRUID
+	[102] = "DAMAGER", --BALANCE
+	[103] = "DAMAGER", --FERAL DRUID
+	[105] = "HEALER", --RESTORATION
+
+	--HUNTER
+	[253] = "DAMAGER", --BM
+	[254] = "DAMAGER", --MM
+	[255] = "DAMAGER", --SURVIVOR
+
+	--MAGE
+	[62] = "DAMAGER", --ARCANE
+	[64] = "DAMAGER", --FROST
+	[63] = "DAMAGER", ---FIRE
+
+	--PALADIN
+	[70] = "DAMAGER", --RET
+	[65] = "HEALER", --HOLY
+	[66] = "TANK", --PROT
+
+	--PRIEST
+	[257] = "HEALER", --HOLY
+	[256] = "HEALER", --DISC
+	[258] = "DAMAGER", --SHADOW
+
+	--ROGUE
+	[259] = "DAMAGER", --ASSASSINATION
+	[260] = "DAMAGER", --COMBAT
+	[261] = "DAMAGER", --SUB
+
+	--SHAMAN
+	[262] = "DAMAGER", --ELEMENTAL
+	[263] = "DAMAGER", --ENHAN
+	[264] = "HEALER", --RESTO
+
+	--WARLOCK
+	[265] = "DAMAGER", --AFF
+	[266] = "DAMAGER", --DESTRO
+	[267] = "DAMAGER", --DEMO
+
+	--WARRIOR
+	[71] = "DAMAGER", --ARMS
+	[72] = "DAMAGER", --FURY
+	[73] = "TANK", --PROT
+	
+	--DK
+	[250] = "TANK", --Blood
+	[251] = "DAMAGER", --Frost
+	[252] = "DAMAGER", --Unholy
+
+	--MONK
+	[268] = "TANK", -- Brewmaster Monk
+	[269] = "DAMAGER", -- Windwalker Monk
+	[270] = "HEALER", -- Mistweaver Monk
+
+	--DH
+	[577] = "DAMAGER", -- Havoc Demon Hunter
+	[581] = "TANK", -- Vengeance Demon Hunter
+
+	--EVOKER
+	[1467] = "DAMAGER", --Devastation Evoker
+	[1468] = "HEALER", --Preservation Evoker		
+}
+
 --oldschool talent tree
 if (DetailsFramework.IsWotLKWow()) then
 	local talentWatchClassic = CreateFrame("frame")
@@ -2523,59 +2606,6 @@ if (DetailsFramework.IsWotLKWow()) then
 			end
 		end
 	end
-
-	Details.specToRole = {
-		--DRUID
-		[102] = "DAMAGER", --BALANCE
-		[103] = "DAMAGER", --FERAL DRUID
-		[105] = "HEALER", --RESTORATION
-	
-		--HUNTER
-		[253] = "DAMAGER", --BM
-		[254] = "DAMAGER", --MM
-		[255] = "DAMAGER", --SURVIVOR
-	
-		--MAGE
-		[62] = "DAMAGER", --ARCANE
-		[64] = "DAMAGER", --FROST
-		[63] = "DAMAGER", ---FIRE
-	
-		--PALADIN
-		[70] = "DAMAGER", --RET
-		[65] = "HEALER", --HOLY
-		[66] = "TANK", --PROT
-	
-		--PRIEST
-		[257] = "HEALER", --HOLY
-		[256] = "HEALER", --DISC
-		[258] = "DAMAGER", --SHADOW
-	
-		--ROGUE
-		[259] = "DAMAGER", --ASSASSINATION
-		[260] = "DAMAGER", --COMBAT
-		[261] = "DAMAGER", --SUB
-	
-		--SHAMAN
-		[262] = "DAMAGER", --ELEMENTAL
-		[263] = "DAMAGER", --ENHAN
-		[264] = "HEALER", --RESTO
-	
-		--WARLOCK
-		[265] = "DAMAGER", --AFF
-		[266] = "DAMAGER", --DESTRO
-		[267] = "DAMAGER", --DEMO
-	
-		--WARRIOR
-		[71] = "DAMAGER", --ARMS
-		[72] = "DAMAGER", --FURY
-		[73] = "TANK", --PROT
-		
-		--Death Knight
-		[250] = "TANK", --Blood
-		[251] = "DAMAGER", --Frost
-		[252] = "DAMAGER", --Unholy
-		
-	}
 
 	function _detalhes:GetRoleFromSpec (specId, unitGUID)
 		if (specId == 103) then --feral druid
@@ -2939,6 +2969,36 @@ function Details.GenerateSpecSpellList()
 	end)
 end
 
+function Details.GenerateRacialSpellList()
+	local racialsSpells = "|n"
+	local locClassName, unitClass = UnitClass("player")
+	local locPlayerRace, playerRace, playerRaceId = UnitRace("player")
+    --get general spells from the spell book
+    local tabName, tabTexture, offset, numSpells, isGuild, offspecId = GetSpellTabInfo(CONST_SPELLBOOK_GENERAL_TABID)
+    offset = offset + 1
+    local tabEnd = offset + numSpells
+    for entryOffset = offset, tabEnd - 1 do
+        local spellType, spellId = GetSpellBookItemInfo(entryOffset, "player")
+        if (spellId) then
+			local spell = Spell:CreateFromSpellID(spellId)
+			local subSpellName = spell:GetSpellSubtext()
+            if (subSpellName == "Racial") then
+                spellId = C_SpellBook.GetOverrideSpell(spellId)
+                local spellName = GetSpellInfo(spellId)
+                local isPassive = IsPassiveSpell(entryOffset, "player")
+                if (spellName and not isPassive) then
+					local cooldownTime = floor(GetSpellBaseCooldown(spellId) / 1000)
+                    racialsSpells = racialsSpells .. "[" .. spellId .. "] = {cooldown = " .. cooldownTime .. ",	duration = 0,	specs = {},			talent = false,	charges = 1, raceid = " .. playerRaceId .. ", race = \"".. playerRace .."\",	class = \"\",	type = 9}, --" .. spellName .. " (" .. playerRace .. ")|n"
+                end
+            end
+        end
+    end
+
+	racialsSpells = racialsSpells .. "|n"
+	dumpt(racialsSpells)
+end
+
+--fill the passed table with spells from talents and spellbook, affect only the active spec
 function Details.FillTableWithPlayerSpells(completeListOfSpells)
     local specId, specName, _, specIconTexture = GetSpecializationInfo(GetSpecialization())
     local classNameLoc, className, classId = UnitClass("player")
@@ -3014,10 +3074,36 @@ function Details.FillTableWithPlayerSpells(completeListOfSpells)
     end
 end
 
+function Details.SavePlayTimeOnClass()
+	local className = select(2, UnitClass("player"))
+	if (className) then
+		--played time by  expansion
+		local expansionLevel = GetExpansionLevel()
+
+		local expansionTable = Details.class_time_played[expansionLevel]
+		if (not expansionTable) then
+			expansionTable = {}
+			Details.class_time_played[expansionLevel] = expansionTable
+		end
+
+		local playedTime = expansionTable[className] or 0
+		expansionTable[className] = playedTime + GetTime() - Details.GetStartupTime()
+	end
+end
+
 function Details.GetPlayTimeOnClass()
 	local className = select(2, UnitClass("player"))
 	if (className) then
-		local playedTime = Details.class_time_played[className]
+		--played time by  expansion
+		local expansionLevel = GetExpansionLevel()
+
+		local expansionTable = Details.class_time_played[expansionLevel]
+		if (not expansionTable) then
+			expansionTable = {}
+			Details.class_time_played[expansionLevel] = expansionTable
+		end
+
+		local playedTime = expansionTable[className]
 		if (playedTime) then
 			playedTime = playedTime + (GetTime() - Details.GetStartupTime())
 			return playedTime
@@ -3046,8 +3132,14 @@ timePlayerFrame:SetScript("OnEvent", function()
 	--C_Timer.After(0, function() print(Details.GetPlayTimeOnClassString()) end)
 end)
 
+--game freeze prevention, there are people calling UpdateAddOnMemoryUsage() making the game client on the end user to freeze, this is bad, really bad.
+--Details! replace the function call with one that do the same thing, but warns the player if the function freezes the client too many times.
 local stutterCounter = 0
+local bigStutterCounter = 0
 local UpdateAddOnMemoryUsage_Original = _G.UpdateAddOnMemoryUsage
+Details.UpdateAddOnMemoryUsage_Original = _G.UpdateAddOnMemoryUsage
+
+--to ignore this, use /run _G["UpdateAddOnMemoryUsage"] = Details.UpdateAddOnMemoryUsage_Original or add to any script that run on login
 _G["UpdateAddOnMemoryUsage"] = function()
 	local currentTime = debugprofilestop()
 	UpdateAddOnMemoryUsage_Original()
@@ -3058,6 +3150,14 @@ _G["UpdateAddOnMemoryUsage"] = function()
 		--ignore if is coming from the micro menu tooltip
 		if (callStack:find("MainMenuBarPerformanceBarFrame_OnEnter")) then
 			return
+		end
+
+		if (deltaTime >= 500) then
+			bigStutterCounter = bigStutterCounter + 1
+			if (bigStutterCounter >= 6) then
+				Details:Msg("an addon made your game freeze for more than a half second, use '/details perf' to know more.")
+				bigStutterCounter = -10000 --make this msg appear only once
+			end
 		end
 
 		stutterCounter = stutterCounter + 1
@@ -3076,7 +3176,7 @@ _G["UpdateAddOnMemoryUsage"] = function()
 				stutterDegree = 3
 			end
 
-			stutterCounter = 0
+			stutterCounter = -10000  --make this msg appear only once
 		end
 
 		Details.performanceData = {
@@ -3104,5 +3204,55 @@ function Details:HandleRogueCombatSpecIconByGameVersion()
 		rogueCombatCoords[2] = 64 / 512
 		rogueCombatCoords[3] = 384 / 512
 		rogueCombatCoords[4] = 448 / 512
+
+		--new versions of the game has a different icon for assassination
+		local rogueAssassinationCoords = Details.class_specs_coords[259]
+		rogueAssassinationCoords[1] = 64 / 512
+		rogueAssassinationCoords[2] = 128 / 512
+		rogueAssassinationCoords[3] = 384 / 512
+		rogueAssassinationCoords[4] = 448 / 512
 	end
+end
+
+function CopyText(text) --[[GLOBAL]]
+	if (not Details.CopyTextField) then
+		Details.CopyTextField = CreateFrame("Frame", "DetailsCopyText", UIParent, "BackdropTemplate")
+		Details.CopyTextField:SetHeight(14)
+		Details.CopyTextField:SetWidth(120)
+		Details.CopyTextField:SetPoint("center", UIParent, "center")
+		Details.CopyTextField:SetBackdrop(backdrop)
+
+		DetailsFramework:ApplyStandardBackdrop(Details.CopyTextField)
+
+		tinsert(UISpecialFrames, "DetailsCopyText")
+
+		Details.CopyTextField.textField = CreateFrame("editbox", nil, Details.CopyTextField, "BackdropTemplate")
+		Details.CopyTextField.textField:SetPoint("topleft", Details.CopyTextField, "topleft")
+		Details.CopyTextField.textField:SetAutoFocus(false)
+		Details.CopyTextField.textField:SetFontObject("GameFontHighlightSmall")
+		Details.CopyTextField.textField:SetAllPoints()
+		Details.CopyTextField.textField:EnableMouse(true)
+
+		Details.CopyTextField.textField:SetScript("OnEnterPressed", function()
+			Details.CopyTextField.textField:ClearFocus()
+			Details.CopyTextField:Hide()
+		end)
+
+		Details.CopyTextField.textField:SetScript("OnEscapePressed", function()
+			Details.CopyTextField.textField:ClearFocus()
+			Details.CopyTextField:Hide()
+		end)
+
+		Details.CopyTextField.textField:SetScript("OnChar", function()
+			Details.CopyTextField.textField:ClearFocus()
+			Details.CopyTextField:Hide()
+		end)
+	end
+
+	C_Timer.After(0.1, function()
+		Details.CopyTextField:Show()
+		Details.CopyTextField.textField:SetFocus()
+		Details.CopyTextField.textField:SetText(text)
+		Details.CopyTextField.textField:HighlightText()
+	end)
 end

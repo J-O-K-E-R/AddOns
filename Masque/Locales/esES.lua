@@ -9,7 +9,7 @@
 
 	[ Notes ]
 
-	To help with translations, use the localization system on WoWAce (https://www.wowace.com/projects/masque/localization)
+	To help with translations, use the localization system on CurseForge (https://www.curseforge.com/wow/addons/masque/localization)
 	or contribute directly on GitHub (https://github.com/SFX-WoW/Masque).
 
 ]]
@@ -33,20 +33,28 @@ L["Select to view."] = "Selecciona para ver."
 -- L["You must have an add-on that supports Masque installed to use it."] = "You must have an add-on that supports Masque installed to use it."
 
 ----------------------------------------
--- Classic Skin
+-- Blizzard Classic Skin
 ---
 
-L["An improved version of the game's default button style."] = "Una versión mejorada del diseño de los botones por defecto del juego."
+-- L["The default Classic button style."] = "The default Classic button style."
+
+----------------------------------------
+-- Blizzard Modern Skin
+---
+
+-- L["The default Dragonflight button style."] = "The default Dragonflight button style."
+
+----------------------------------------
+-- Classic Redux Skin
+---
+
+L["A modified version of the Classic button style."] = "Una versión mejorada del diseño de los botones por defecto del juego."
 
 ----------------------------------------
 -- Core Settings
 ---
 
 L["About"] = "Acerca de"
-L["Click to load Masque's options."] = "Haz clic para cargar las opciones de Masque."
-L["Load Options"] = "Cargar opciones"
-L["Masque's options are load on demand. Click the button below to load them."] = "Las opciones de Masque se cargan bajo demanda. Haz clic abajo para cargarlas."
--- L["This action will increase memory usage."] = "This action will increase memory usage."
 -- L["This section will allow you to view information about Masque and any skins you have installed."] = "This section will allow you to view information about Masque and any skins you have installed."
 
 ----------------------------------------
@@ -141,6 +149,7 @@ L["Profile Settings"] = "Ajustes de perfil"
 -- Skin Settings
 ---
 
+-- L["Adjust the scale of this group's skin."] = "Adjust the scale of this group's skin."
 L["Backdrop"] = "Opciones de Fondo"
 L["Checked"] = "Activado"
 L["Color"] = "Color"
@@ -148,8 +157,8 @@ L["Colors"] = "Colores"
 L["Cooldown"] = "Enfriamiento"
 L["Disable"] = "Desactivado"
 L["Disable the skinning of this group."] = "Deshabilitar las texturas para este grupo."
-L["Disabled"] = "Desactivado"
 L["Enable"] = "Activado"
+-- L["Enable skin scaling."] = "Enable skin scaling."
 L["Enable the Backdrop texture."] = "Habilitar la textura de fondo."
 L["Enable the Gloss texture."] = "Activar textura brillante."
 L["Enable the Shadow texture."] = "Activar textura de sombra."
@@ -163,10 +172,10 @@ L["Normal"] = "Normal"
 L["Pushed"] = "Pulsado"
 L["Reset all skin options to the defaults."] = "Reestablece todos los colores a los predefinidos."
 L["Reset Skin"] = "Restablecer Colores"
+-- L["Scale"] = "Scale"
 L["Set the color of the Backdrop texture."] = "Establece el color de la textura del fondo."
 L["Set the color of the Checked texture."] = "Establece el color de la textura activada."
 L["Set the color of the Cooldown animation."] = "Establece el color de la animación de enfriamiento."
-L["Set the color of the Disabled texture."] = "Establece el color de la textura desactivada."
 L["Set the color of the Flash texture."] = "Establece el color del textura destelleando."
 L["Set the color of the Gloss texture."] = "Establece el color de la textura brillando."
 L["Set the color of the Highlight texture."] = "Establece el color de la textura resaltada."

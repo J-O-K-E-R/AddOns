@@ -26,14 +26,14 @@ BigWigs:AddSounds("Terros", {
 })
 
 BigWigs:AddSounds("The Primal Council", {
-	[371624] = {"alarm","warning"},
+	[371624] = "warning",
 	[372027] = "warning",
-	[374043] = {"alert","warning"},
+	[373059] = "alarm",
+	[374038] = {"alert","warning"},
 	[386289] = "info",
 	[386370] = "info",
 	[386375] = "info",
 	[386661] = "info",
-	[391599] = "alarm",
 })
 
 BigWigs:AddSounds("Sennarth, The Cold Breath", {
@@ -68,27 +68,37 @@ BigWigs:AddSounds("Dathea, Ascended", {
 })
 
 BigWigs:AddSounds("Kurog Grimtotem", {
+	[371981] = "alarm",
 	[372158] = "warning",
 	[372458] = {"alert","warning"},
-	[373329] = "info",
+	[373329] = "alert",
 	[373487] = "warning",
-	[374023] = "warning",
+	[373678] = "info",
+	[374023] = {"info","warning"},
 	[374321] = "info",
 	[374427] = "warning",
 	[374430] = "alarm",
+	[374623] = {"alarm","alert"},
 	[374624] = "warning",
-	[374779] = "long",
-	[390920] = "warning",
-	[391056] = {"alarm","alert"},
+	[374691] = "warning",
+	[374861] = "long",
+	[382563] = "info",
+	[390920] = {"info","warning"},
+	[391019] = "alert",
+	[391056] = {"alarm","info"},
 	[391696] = "warning",
+	[395893] = "alert",
+	[396241] = "warning",
+	["stages"] = "long",
 })
 
 BigWigs:AddSounds("Broodkeeper Diurna", {
+	[-25129] = "long",
 	[375457] = "alert",
 	[375475] = "alarm",
 	[375485] = "alert",
 	[375575] = {"info","underyou"},
-	[375630] = "warning",
+	[375620] = {"underyou","warning"},
 	[375653] = "alert",
 	[375716] = "alert",
 	[375809] = {"info","long"},
@@ -99,13 +109,12 @@ BigWigs:AddSounds("Broodkeeper Diurna", {
 	[375889] = "warning",
 	[376073] = "alert",
 	[376257] = "alarm",
-	[376266] = {"alarm","warning"},
+	[376266] = "alarm",
 	[378782] = "warning",
 	[380175] = "alert",
 	[380483] = "warning",
 	[388716] = "alert",
 	[388918] = "alert",
-	[389049] = {"alarm","warning"},
 	[392194] = "alert",
 })
 

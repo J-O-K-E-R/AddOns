@@ -9,6 +9,9 @@ local strjoin, strmatch, strsplit, strfind = strjoin, strmatch, strsplit, strfin
 local EnumerateFrames = EnumerateFrames
 local GetItemInfo = GetItemInfo
 
+local C_Container_GetContainerNumSlots = C_Container.GetContainerNumSlots
+local C_Container_GetContainerItemID = C_Container.GetContainerItemID
+
 T.Values = {
 	FontFlags = {
 		[''] = L["NONE"],
@@ -100,8 +103,8 @@ end
 --For searching stuff in bags
 function SLE:BagSearch(itemId)
 	for container = 0, NUM_BAG_SLOTS do
-		for slot = 1, GetContainerNumSlots(container) do
-			if itemId == GetContainerItemID(container, slot) then
+		for slot = 1, C_Container_GetContainerNumSlots(container) do
+			if itemId == C_Container_GetContainerItemID(container, slot) then
 				return container, slot
 			end
 		end

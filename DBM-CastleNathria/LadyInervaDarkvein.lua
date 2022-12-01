@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod(2420, "DBM-CastleNathria", nil, 1190)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20220806032935")
+mod:SetRevision("20221124062011")
 mod:SetCreatureID(165521)
 mod:SetEncounterID(2406)
 mod:SetUsedIcons(1, 2, 3, 4, 5, 6, 7, 8)
@@ -88,7 +88,7 @@ local specWarnConcentrateAnima					= mod:NewSpecialWarningMoveAway(342321, nil, 
 local yellConcentrateAnimaFades					= mod:NewShortFadesYell(342321)--^^
 local specWarnCondemn							= mod:NewSpecialWarningInterruptCount(331550, false, nil, 2, 1, 2)--Don't really want to hard interrupt warning for something with 10 second cast, this is opt in
 
-local timerConcentratedAnimaCD					= mod:NewCDCountTimer(35.4, 342321, nil, nil, 2, 1, nil, nil, true, 1)--Technically targetted(3) bar type as well, but since bar is both, and 2 other bars are already 3s, 1 makes more sense
+local timerConcentratedAnimaCD					= mod:NewCDCountTimer(35.4, 342321, nil, nil, 2, 1)--Technically targetted(3) bar type as well, but since bar is both, and 2 other bars are already 3s, 1 makes more sense
 
 mod:AddSetIconOption("SetIconOnAdds", "ej22618", true, true, {5, 6, 7, 8})
 
@@ -255,16 +255,8 @@ function mod:SPELL_CAST_START(args)
 		local count = castsPerGUID[args.sourceGUID]
 		if self:CheckInterruptFilter(args.sourceGUID, false, true) then
 			specWarnCondemn:Show(args.sourceName, count)
-			if count == 1 then
-				specWarnCondemn:Play("kick1r")
-			elseif count == 2 then
-				specWarnCondemn:Play("kick2r")
-			elseif count == 3 then
-				specWarnCondemn:Play("kick3r")
-			elseif count == 4 then
-				specWarnCondemn:Play("kick4r")
-			elseif count == 5 then
-				specWarnCondemn:Play("kick5r")
+			if count < 6 then
+				specWarnCondemn:Play("kick"..count.."r")
 			else--Shouldn't happen, but fallback rules never hurt
 				specWarnCondemn:Play("kickcast")
 			end

@@ -7,8 +7,12 @@ function banButton.init()
     hooksecurefunc('LFGListSearchPanel_UpdateResults', private.onLfgSearchResultsUpdate)
 end
 
+function banButton.hide()
+    LFGSpamFilter_BanButton:Hide()
+end
+
 function banButton.onClick()
-    local resultId = LFGSpamFilterBanButton.resultId
+    local resultId = LFGSpamFilter_BanButton.resultId
 
     if resultId then
         local info = C_LFGList.GetSearchResultInfo(resultId)
@@ -19,7 +23,6 @@ function banButton.onClick()
                 addon.ui.reportHelper.begin()
             else
                 addon.main.banPlayer(info.leaderName)
-                addon.ui.updateLfgResults()
             end
         end
     end
@@ -28,29 +31,29 @@ function banButton.onClick()
 end
 
 function private.onLfgSearchEntryUpdate(entry)
-    if hookedEntries[entry:GetName()] == nil then
+    if hookedEntries[entry] == nil then
         entry:HookScript('OnEnter', private.onLfgSearchEntryEnter)
         entry:HookScript('OnLeave', private.onLfgSearchEntryLeave)
-        hookedEntries[entry:GetName()] = true
+        hookedEntries[entry] = true
     end
 end
 
 function private.onLfgSearchEntryEnter(entry)
     if addon.config.db.banButton and not addon.ui.reportHelper.isActive() then
-        LFGSpamFilterBanButton.resultId = entry.resultID
-        LFGSpamFilterBanButton:ClearAllPoints()
-        LFGSpamFilterBanButton:SetPoint('LEFT', entry, 'LEFT', -25, 0)
-        LFGSpamFilterBanButton:Show()
+        LFGSpamFilter_BanButton.resultId = entry.resultID
+        LFGSpamFilter_BanButton:ClearAllPoints()
+        LFGSpamFilter_BanButton:SetPoint('LEFT', entry, 'LEFT', -23, 0)
+        LFGSpamFilter_BanButton:Show()
     end
 end
 
 function private.onLfgSearchEntryLeave()
-    if addon.config.db.banButton and not MouseIsOver(LFGSpamFilterBanButton) then
-        LFGSpamFilterBanButton:Hide()
+    if addon.config.db.banButton and not MouseIsOver(LFGSpamFilter_BanButton, 5, -5, 5, 5) then
+        banButton.hide()
     end
 end
 
 function private.onLfgSearchResultsUpdate()
     -- hide the ban button when results are updated (as the groups might change order etc.)
-    LFGSpamFilterBanButton:Hide()
+    banButton.hide()
 end

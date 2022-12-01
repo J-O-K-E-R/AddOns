@@ -20,6 +20,7 @@ function Details:OpenCurrentRealDPSOptions(from_options_panel)
 		f:SetPoint("center", UIParent, "center")
 		f:SetScript("OnMouseDown", nil)
 		f:SetScript("OnMouseUp", nil)
+		DF:ApplyStandardBackdrop(f)
 
 		--scale bar
 		local scaleBar = DF:CreateScaleBar(f, _detalhes.realtime_dps_meter.options_frame)
@@ -102,6 +103,12 @@ function Details:OpenCurrentRealDPSOptions(from_options_panel)
 				set = function(self, fixedparam, value)
 					Details.realtime_dps_meter.enabled = not Details.realtime_dps_meter.enabled
 					Details:LoadFramesForBroadcastTools()
+					C_Timer.After(0, function()
+						if (value) then
+							Details:UpdateTheRealCurrentDPSFrame(testUsing)
+							DetailsCurrentDpsMeter:StartForArenaMatch()
+						end
+					end)
 				end,
 				desc = "Enabled",
 				name = "Enabled",
@@ -543,7 +550,7 @@ function Details:CreateCurrentDpsFrame(parent, name)
 
 			if (not _detalhes.realtime_dps_meter.enabled) then
 				f:Hide()
-				print("D! debug currentdps.lua > !realtime_dps_meter.enabled")
+				--print("D! debug currentdps.lua > !realtime_dps_meter.enabled")
 				return
 			end
 
@@ -750,6 +757,9 @@ function Details:CreateCurrentDpsFrame(parent, name)
 
 						--a percenntagem na barra esta sendo setada corretamente, porem a animação não esta funcrtionando ainda
 						local percentValue = teamGreenDps / totalDamage
+						percentValue = Saturate(percentValue)
+
+						--print(percentValue)
 						DetailsArenaDpsBars.splitBar:SetValueWithAnimation(percentValue)
 						DetailsArenaDpsBars:Show()
 
@@ -901,11 +911,11 @@ function Details:CreateCurrentDpsFrame(parent, name)
 			end
 		end
 
-		eventListener:RegisterEvent ("COMBAT_ARENA_START", "ArenaStarted")
-		eventListener:RegisterEvent ("COMBAT_ARENA_END", "ArenaEnded")
-		eventListener:RegisterEvent ("COMBAT_MYTHICDUNGEON_START", "MythicDungeonStarted")
-		eventListener:RegisterEvent ("COMBAT_MYTHICDUNGEON_END", "MythicDungeonEnded")
-		eventListener:RegisterEvent ("COMBAT_PLAYER_ENTER", "ResetBuffer")
+		eventListener:RegisterEvent("COMBAT_ARENA_START", "ArenaStarted")
+		eventListener:RegisterEvent("COMBAT_ARENA_END", "ArenaEnded")
+		eventListener:RegisterEvent("COMBAT_MYTHICDUNGEON_START", "MythicDungeonStarted")
+		eventListener:RegisterEvent("COMBAT_MYTHICDUNGEON_END", "MythicDungeonEnded")
+		eventListener:RegisterEvent("COMBAT_PLAYER_ENTER", "ResetBuffer")
 
 	_detalhes.Broadcaster_CurrentDpsLoaded = true
 	_detalhes.Broadcaster_CurrentDpsFrame = f

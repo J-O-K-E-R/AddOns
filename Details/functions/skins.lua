@@ -2,6 +2,7 @@
 local _detalhes = _G._detalhes
 local Loc = LibStub("AceLocale-3.0"):GetLocale ( "Details" )
 local _
+local addonName, Details222 = ...
 
 	--install skin function:
 	function _detalhes:InstallSkin (skin_name, skin_table)
@@ -473,7 +474,7 @@ local _
 				["textL_custom_text"] = "{data1}. {data3}{data2}",
 				["font_size"] = 16,
 				["height"] = 21,
-				["texture_file"] = "Interface\\AddOns\\Details\\images\\bar_skyline",
+				["texture_file"] = "Interface\\AddOns\\Details\\images\\bar_hyanda",
 				["icon_file"] = "Interface\\AddOns\\Details\\images\\classes_small",
 				["textR_bracket"] = "(",
 				["textR_enable_custom_text"] = false,
@@ -484,7 +485,7 @@ local _
 				},
 				["textL_show_number"] = true,
 				["textR_custom_text"] = "{data1} ({data2}, {data3}%)",
-				["texture"] = "Skyline",
+				["texture"] = "Details Hyanda",
 				["use_spec_icons"] = true,
 				["textR_class_colors"] = false,
 				["textL_class_colors"] = false,

@@ -1,10 +1,15 @@
-## Interface: 90200
-## Version: v2.0.6
+## Interface: 100002
+## Version: v2.0.7
 ## Title: BlockChinese
 ## Notes: Blocks Chinese Chat
 ## Author: Ketho @ EU-Boulderfist
 ## X-Curse-Project-ID: 33655
 ## X-WoWI-ID: 20488
 ## X-Wago-ID: e56nrd69
+
+#@no-lib-strip@
+Libs\LibStub\LibStub.lua
+Libs\LibChatAnims\LibChatAnims.xml
+#@end-no-lib-strip@
 
 BlockChinese.lua

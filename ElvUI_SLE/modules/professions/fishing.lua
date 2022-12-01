@@ -1,6 +1,6 @@
 ﻿local SLE, T, E, L, V, P, G = unpack(select(2, ...))
 local Pr = SLE.Professions
-local FL = LibStub("LibFishing-1.0-SLE")
+local FL = LibStub("LibFishing-1.0-SLE") or LibStub("LibFishing-1.0")
 
 -- GLOBALS: hooksecurefunc, CreateFrame
 local _G = _G
@@ -12,6 +12,9 @@ local IsMounted = IsMounted
 local IsMouselooking = IsMouselooking
 local MouselookStop = MouselookStop
 local UnitChannelInfo = UnitChannelInfo
+local InCombatLockdown = InCombatLockdown
+
+local C_Container_GetItemCooldown = C_Container.GetItemCooldown
 
 function Pr:HijackFishingCheck()
 	if ( not Pr.AddingLure and not InCombatLockdown() and (not IsMounted() or E.private.sle.professions.fishing.FromMount) and
@@ -55,7 +58,7 @@ function Pr:GetUpdateLure()
 				if ( DoLure and DoLure.id ) then
 					-- if the pole has an enchantment, we can assume it's got a lure on it (so far, anyway)
 					-- remove the main hand enchantment (since it's a fishing pole, we know what it is)
-					local startTime, duration, enable = GetItemCooldown(DoLure.id)
+					local startTime, duration, enable = C_Container_GetItemCooldown(DoLure.id)
 					if (startTime == 0) then
 						Pr.AddingLure = true
 						Pr.LastLure = DoLure
@@ -78,42 +81,76 @@ end
 
 function Pr:FishCasting()
 	-- put on a lure if we need to
-	local key = Pr.FishingKey
-	if (key == "None" and FL:IsFishingReady(false)) or (key ~= "None" and _G["Is"..key.."KeyDown"]()) then
-		local update, id, n = Pr:GetUpdateLure()
-		if (update and id) then
-			FL:InvokeLuring(id)
-		else
-			Pr.LastCastTime = GetTime()
+	local update, id, n = Pr:GetUpdateLure()
+	if (update and id) then
+		FL:InvokeLuring(id)
+	else
+		Pr.LastCastTime = GetTime()
 
-			FL:InvokeFishing()
-		end
-	FL:OverrideClick(HideAwayAll)
+		FL:InvokeFishing()
 	end
+	FL:OverrideClick(HideAwayAll)
 end
 
 -- handle mouse up and mouse down in the WorldFrame so that we can steal the hardware events to implement 'Easy Cast'
 -- Thanks to the Cosmos team for figuring this one out
 local function WF_OnMouseDown(...)
 	-- Only steal 'right clicks' (self is arg #1!)
-	local button = select(2, ...)
-	if FL:CheckForDoubleClick(button) and Pr:HijackFishingCheck() then
-		 -- We're stealing the mouse-up event, make sure we exit MouseLook
-		if ( IsMouselooking() ) then
-			MouselookStop()
+	local key = Pr.FishingKey
+	if not InCombatLockdown() then 
+		if (key == "None" and FL:IsFishingReady(false)) or (key ~= "None" and _G["Is"..key.."KeyDown"]()) then
+			local button = select(2, ...)
+			if FL:CheckForDoubleClick(button) then
+				if Pr:HijackFishingCheck() then
+				 -- We're stealing the mouse-up event, make sure we exit MouseLook
+					if ( IsMouselooking() ) then
+						MouselookStop()
+					end
+					Pr:FishCasting()
+				end
+			end
+		else
+			FL:ResetOverride()
 		end
-		Pr:FishCasting()
 	end
+
 	if ( SavedWFOnMouseDown ) then
 		SavedWFOnMouseDown(...)
+	end
+end
+
+local function WF_OnMouseUp(...)
+	-- Only steal 'right clicks' (self is arg #1!)
+	if not InCombatLockdown() then 
+		local key = Pr.FishingKey
+		if (key == "None" and FL:IsFishingReady(false)) or (key ~= "None" and _G["Is"..key.."KeyDown"]()) then
+			local button = select(2, ...)
+			if FL:CheckForDoubleClick(button) then
+				if Pr:HijackFishingCheck() then
+				 -- We're stealing the mouse-up event, make sure we exit MouseLook
+					if ( IsMouselooking() ) then
+						MouselookStop()
+					end
+					Pr:FishCasting()
+				end
+			end
+		else
+			FL:ResetOverride()
+		end
+	end
+	
+	if ( SavedWFOnMouseUp ) then
+		SavedWFOnMouseUp(...)
 	end
 end
 
 local function TrapWorldMouse()
 	if ( _G["WorldFrame"].OnMouseDown ) then
 		hooksecurefunc(_G["WorldFrame"], "OnMouseDown", WF_OnMouseDown)
+		hooksecurefunc(_G["WorldFrame"], "OnMouseUp", WF_OnMouseUp)
 	else
 		SavedWFOnMouseDown = T.SafeHookScript(_G["WorldFrame"], "OnMouseDown", WF_OnMouseDown)
+		SavedWFOnMouseUp = T.SafeHookScript(_G["WorldFrame"], "OnMouseUp", WF_OnMouseUp)
 	end
 end
 

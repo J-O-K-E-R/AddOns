@@ -1,7 +1,7 @@
 
 
 local Details = _G.Details
-
+local addonName, Details222 = ...
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --extra buttons at the death options (release, death recap)
@@ -10,8 +10,8 @@ local detailsOnDeathMenu = CreateFrame("frame", "DetailsOnDeathMenu", UIParent, 
 detailsOnDeathMenu:SetHeight(30)
 detailsOnDeathMenu.Debug = false
 
-detailsOnDeathMenu:RegisterEvent ("PLAYER_REGEN_ENABLED")
-detailsOnDeathMenu:RegisterEvent ("ENCOUNTER_END")
+detailsOnDeathMenu:RegisterEvent("PLAYER_REGEN_ENABLED")
+detailsOnDeathMenu:RegisterEvent("ENCOUNTER_END")
 DetailsFramework:ApplyStandardBackdrop(detailsOnDeathMenu)
 detailsOnDeathMenu:SetAlpha(0.75)
 

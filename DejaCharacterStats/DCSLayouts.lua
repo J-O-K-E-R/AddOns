@@ -104,14 +104,7 @@ local DefaultTankData = DCS_TableData:MergeTable({
         { statKey = "PARRY", hideAt = 0 },
 		{ statKey = "BLOCK", hideAt = 0, showFunc = C_PaperDollInfo.OffhandHasShield },
 		{ statKey = "STAGGER", hideAt = 0, roles = {"TANK"} },
-	{ statKey = "Diversity" },
-		{ statKey = "BLACK_GIRLS_CODE" },
-		{ statKey = "FUTURES" },
-		{ statKey = "GIRLS_WHO_CODE" },
-		{ statKey = "RAINN" },
-		{ statKey = "WOMEN_IN__ANIMATION" },
-		{ statKey = "WOMEN_IN_GAMES_INTL" },
-	{ statKey = "RatingCategory" },
+		{ statKey = "RatingCategory" },
 		{ statKey = "CRITCHANCE_RATING", hideAt = 0 },
 		{ statKey = "HASTE_RATING", hideAt = 0 },
 		{ statKey = "VERSATILITY_RATING", hideAt = 0 },
@@ -125,11 +118,11 @@ local DefaultTankData = DCS_TableData:MergeTable({
 	{ statKey = "HonorCategory" },
 		{ statKey = "HONOR_PROGRESS", hideAt = 0 },
 		{ statKey = "HONOR_LEVEL", hideAt = 0 },
-	{ statKey = "ConquestCategory" },
-		{ statKey = "RATING_2V2", hideAt = 0 },
-		{ statKey = "RATING_3V3", hideAt = 0 },
-		{ statKey = "RATING_RBG", hideAt = 0 },
-		{ statKey = "CONQUEST_PROGRESS", hideAt = 0 },
+	{ statKey = "UserCat1" },
+	{ statKey = "UserCat2" },
+	{ statKey = "UserCat3" },
+	{ statKey = "UserCat4" },
+	{ statKey = "UserCat5" },
 })
 
 local DefaultNonTankData = DCS_TableData:MergeTable({
@@ -170,14 +163,7 @@ local DefaultNonTankData = DCS_TableData:MergeTable({
         { statKey = "DODGE", hideAt = 0 },
         { statKey = "PARRY", hideAt = 0 },
 		{ statKey = "BLOCK", hideAt = 0, showFunc = C_PaperDollInfo.OffhandHasShield },
-	{ statKey = "Diversity" },
-		{ statKey = "BLACK_GIRLS_CODE" },
-		{ statKey = "FUTURES" },
-		{ statKey = "GIRLS_WHO_CODE" },
-		{ statKey = "RAINN" },
-		{ statKey = "WOMEN_IN__ANIMATION" },
-		{ statKey = "WOMEN_IN_GAMES_INTL" },
-	{ statKey = "RatingCategory" },
+		{ statKey = "RatingCategory" },
 		{ statKey = "CRITCHANCE_RATING", hideAt = 0 },
 		{ statKey = "HASTE_RATING", hideAt = 0 },
 		{ statKey = "VERSATILITY_RATING", hideAt = 0 },
@@ -192,11 +178,11 @@ local DefaultNonTankData = DCS_TableData:MergeTable({
 	{ statKey = "HonorCategory" },
 		{ statKey = "HONOR_PROGRESS", hideAt = 0 },
 		{ statKey = "HONOR_LEVEL", hideAt = 0 },
-	{ statKey = "ConquestCategory" },
-		{ statKey = "RATING_2V2", hideAt = 0 },
-		{ statKey = "RATING_3V3", hideAt = 0 },
-		{ statKey = "RATING_RBG", hideAt = 0 },
-		{ statKey = "CONQUEST_PROGRESS", hideAt = 0 },
+	{ statKey = "UserCat1" },
+	{ statKey = "UserCat2" },
+	{ statKey = "UserCat3" },
+	{ statKey = "UserCat4" },
+	{ statKey = "UserCat5" },
 })
 --local ShownData = DefaultData
 local ShownData = DefaultNonTankData --TODO: find a reason why error during login with "local ShownData". Most probably too early PaperDollFrame_UpdateStats() calls due to DCS_configButton:RegisterEvent("UPDATE_INVENTORY_DURABILITY")
@@ -207,9 +193,6 @@ for k, v in pairs(DCS_TableData.StatData) do
 			v.frame = CreateFrame("FRAME", nil, StatFrame, "CharacterStatFrameCategoryTemplate")
 			v.frame:SetHeight(28)
 			v.frame.Background:SetHeight(28)
-			if k == "Diversity" then
-				v.frame.Title:SetText(L["Diversity"])
-			end
 			if k == "GeneralCategory" then
 				v.frame.Title:SetText(L["General"])
 			end
@@ -225,8 +208,20 @@ for k, v in pairs(DCS_TableData.StatData) do
 			if k == "HonorCategory" then
 				v.frame.Title:SetText(L["Honor"])
 			end
-			if k == "ConquestCategory" then
-				v.frame.Title:SetText(L["Conquest"])
+			if k == "UserCat1" then
+				v.frame.Title:SetText()
+			end
+			if k == "UserCat2" then
+				v.frame.Title:SetText()
+			end
+			if k == "UserCat3" then
+				v.frame.Title:SetText()
+			end
+			if k == "UserCat4" then
+				v.frame.Title:SetText()
+			end
+			if k == "UserCat5" then
+				v.frame.Title:SetText()
 			end
 		else
 			v.frame = CreateFrame("FRAME", nil, StatFrame, "CharacterStatFrameTemplate")
@@ -353,15 +348,6 @@ local function ShowCharacterStats(unit)
 				stat.frame.checkButton:SetChecked(not v.hidden)
 				if (v.hidden) then
 					stat.frame:SetAlpha(0.32)
-					if (v.statKey == "Diversity") or 
-						(v.statKey == "BLACK_GIRLS_CODE") or 
-						(v.statKey == "FUTURES") or 
-						(v.statKey == "GIRLS_WHO_CODE") or 
-						(v.statKey == "RAINN") or 
-						(v.statKey == "WOMEN_IN__ANIMATION") or 
-						(v.statKey == "WOMEN_IN_GAMES_INTL") then
-							stat.frame:SetAlpha(1)
-					end
 				else
 					stat.frame:SetAlpha(1)
 				end
@@ -449,7 +435,6 @@ local function DCS_Table_Relevant()
 	local role = GetSpecializationRole(spec)
 	--print(role)
 	local hashonorlevel = UnitHonorLevel("player")
-	local hasconquestlevel = PVPGetConquestLevelInfo()
 
 	for _, v in ipairs(ShownData) do
 		if v.hidden then v.hidden = false end
@@ -514,13 +499,12 @@ local function DCS_Table_Relevant()
 		if v.statKey == "SPEED" then v.hidden = true end
 
 		if v.statKey == "ITEMLEVEL" then v.hidden = true end
-		if v.statKey == "Diversity" then v.hidden = true end
-		if v.statKey == "BLACK_GIRLS_CODE" then v.hidden = true end
-		if v.statKey == "FUTURES" then v.hidden = true end
-		if v.statKey == "GIRLS_WHO_CODE" then v.hidden = true end
-		if v.statKey == "RAINN" then v.hidden = true end
-		if v.statKey == "WOMEN_IN__ANIMATION" then v.hidden = true end
-		if v.statKey == "WOMEN_IN_GAMES_INTL" then v.hidden = true end
+
+		if v.statKey == "UserCat1" then v.hidden = true end
+		if v.statKey == "UserCat2" then v.hidden = true end
+		if v.statKey == "UserCat3" then v.hidden = true end
+		if v.statKey == "UserCat4" then v.hidden = true end
+		if v.statKey == "UserCat5" then v.hidden = true end
 
 		--if v.statKey == "GeneralCategory" then v.hidden = true end
 		--if v.statKey == "OffenseCategory" then v.hidden = true end
@@ -532,14 +516,6 @@ local function DCS_Table_Relevant()
 			if v.statKey == "HonorCategory" then v.hidden = true end
 			if v.statKey == "HONOR_PROGRESS" then v.hidden = true end
 			if v.statKey == "HONOR_LEVEL" then v.hidden = true end
-		end
-		if (hasconquestlevel < 1 ) then	
-			--print(hasconquestlevel)	
-			if v.statKey == "ConquestCategory" then v.hidden = true end
-			if v.statKey == "RATING_2V2" then v.hidden = true end
-			if v.statKey == "RATING_3V3" then v.hidden = true end
-			if v.statKey == "RATING_RBG" then v.hidden = true end
-			if v.statKey == "CONQUEST_PROGRESS" then v.hidden = true end
 		end
 	end
 	--gdbprivate.gdb.gdbdefaults.DCS_TableRelevantStatsChecked.RelevantStatsSetChecked = false
@@ -1071,7 +1047,7 @@ local DCS_TableRelevantStats = CreateFrame("Button", "DCS_TableRelevantStats", C
 		--May be an alpha issue. Try other events like "PLAYER_LOGIN" if found to be needed.
 		if event == "PLAYER_SPECIALIZATION_CHANGED" then 
 			-- print("changed")
-			set_config_mode(true) -- This allows the ratings and diversity stats and category headrs to be shown when changin specs. No clue why, but it works.
+			set_config_mode(true) -- This allows the ratings stats and category headrs to be shown when changin specs. No clue why, but it works.
 			local function DCS_ReShowSelectedStats()
 				set_config_mode(false) -- This hides the above shown config mode 0.01 secs after showing it becasue we dont want it shown, but showing it shows the selected stats, so we need to exit config after entering it.
 			end

@@ -4,13 +4,9 @@ local _cstr = string.format
 local _math_floor = math.floor
 local _table_sort = table.sort
 local tinsert = table.insert
-local _setmetatable = setmetatable
+local setmetatable = setmetatable
 local ipairs = ipairs
 local pairs = pairs
-local _rawget= rawget
-local _math_min = math.min
-local _math_max = math.max
-local _bit_band = bit.band
 local _unpack = unpack
 local type = type
 --api locals
@@ -25,6 +21,7 @@ local _detalhes = 		_G._detalhes
 local AceLocale = LibStub("AceLocale-3.0")
 local Loc = AceLocale:GetLocale ( "Details" )
 local _
+local addonName, Details222 = ...
 
 local gump = 			_detalhes.gump
 
@@ -87,7 +84,7 @@ function atributo_energy:NovaTabela (serial, nome, link)
 		spells = container_habilidades:NovoContainer (container_energy),
 	}
 	
-	_setmetatable(_new_energyActor, atributo_energy)
+	setmetatable(_new_energyActor, atributo_energy)
 	
 	return _new_energyActor
 end
@@ -1523,7 +1520,7 @@ function atributo_energy:ColetarLixo (lastevent)
 end
 
 function _detalhes.refresh:r_atributo_energy (este_jogador, shadow)
-	_setmetatable(este_jogador, _detalhes.atributo_energy)
+	setmetatable(este_jogador, _detalhes.atributo_energy)
 	este_jogador.__index = _detalhes.atributo_energy
 
 	_detalhes.refresh:r_container_habilidades (este_jogador.spells, shadow and shadow.spells)

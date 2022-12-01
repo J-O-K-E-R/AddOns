@@ -140,7 +140,7 @@ function addon:UI_SCALE_CHANGED()
             self.uiscale = 768 / screen_size[2]
         end
     else
-        -- inherit from uiparent
+        -- inherit from UIParent
         self.uiscale = UIParent:GetScale()
     end
 
@@ -216,12 +216,16 @@ local function OnEvent(self,event,...)
             ClassNameplateBarWindwalkerMonkFrame:UnregisterAllEvents()
             --luacheck:globals ClassNameplateBarPaladinFrame
             ClassNameplateBarPaladinFrame:UnregisterAllEvents()
-            --luacheck:globals ClassNameplateBarRogueDruidFrame
-            ClassNameplateBarRogueDruidFrame:UnregisterAllEvents()
+            --luacheck:globals ClassNameplateBarRogueFrame
+            ClassNameplateBarRogueFrame:UnregisterAllEvents()
+            --luacheck:globals ClassNameplateBarDruidFrame
+            ClassNameplateBarDruidFrame:UnregisterAllEvents()
             --luacheck:globals ClassNameplateBarWarlockFrame
             ClassNameplateBarWarlockFrame:UnregisterAllEvents()
             --luacheck:globals ClassNameplateBrewmasterBarFrame
             ClassNameplateBrewmasterBarFrame:UnregisterAllEvents()
+            --luacheck:globals ClassNameplateBarDracthyrFrame
+            ClassNameplateBarDracthyrFrame:UnregisterAllEvents()
         end
     end
     -- hide default unit frames

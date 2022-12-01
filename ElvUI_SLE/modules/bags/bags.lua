@@ -1,4 +1,4 @@
-local SLE, T, E, L, V, P, G = unpack(select(2, ...))
+local SLE, _, E= unpack(select(2, ...))
 local SB = SLE.Bags
 local B = E.Bags
 
@@ -6,9 +6,11 @@ local B = E.Bags
 local _G = _G
 local Pr
 
+local C_Container_GetContainerNumSlots = C_Container.GetContainerNumSlots
+
 -- Updating slot for deconstruct glow hide when item disappears
 function SB:UpdateSlot(bagID, slotID)
-	if (self.Bags[bagID] and self.Bags[bagID].numSlots ~= GetContainerNumSlots(bagID)) or not self.Bags[bagID] or not self.Bags[bagID][slotID] then
+	if (self.Bags[bagID] and self.Bags[bagID].numSlots ~= C_Container_GetContainerNumSlots(bagID)) or not self.Bags[bagID] or not self.Bags[bagID][slotID] then
 		return
 	end
 
@@ -42,12 +44,12 @@ function SB:Initialize()
 	SB:ForUpdateAll()
 
 	--Applying stuff to already existing bags
-	self:HookBags()
+	SB:HookBags()
 	hooksecurefunc(B, 'Layout', function(_, isBank)
 		SB:HookBags(isBank)
 	end)
 
-	--This table is for initial update of a frame, cause applying transparent trmplate breaks color borders
+	--This table is for initial update of a frame, cause applying transparent template breaks color borders
 	SB.InitialUpdates = {
 		Bank = false,
 		ReagentBank = false,

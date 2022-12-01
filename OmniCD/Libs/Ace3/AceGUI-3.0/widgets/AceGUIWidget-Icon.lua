@@ -7,7 +7,11 @@
 --[[-----------------------------------------------------------------------------
 Icon Widget
 -------------------------------------------------------------------------------]]
+--[[ s r
+local Type, Version = "Icon", 21
+]]
 local Type, Version = "Icon-OmniCD", 21
+-- e
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 if not AceGUI or (AceGUI:GetWidgetVersion(Type) or 0) >= Version then return end
 
@@ -25,7 +29,7 @@ Scripts
 -------------------------------------------------------------------------------]]
 local function Control_OnEnter(frame)
 	frame.obj:Fire("OnEnter")
-	frame.obj.imagebg:SetBackdropBorderColor(0.5, 0.5, 0.5)  -- s a
+	frame.obj.imagebg:SetBackdropBorderColor(0.5, 0.5, 0.5)	 -- s a
 end
 
 local function Control_OnLeave(frame)

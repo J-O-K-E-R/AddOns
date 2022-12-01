@@ -1,4 +1,4 @@
-## Interface: 100000
+## Interface: 100002
 
 ## Title: BigWigs [|cffeda55fBattle for Azeroth|r]
 ## Title-zhCN: BigWigs [|cffeda55f争霸艾泽拉斯|r]
@@ -25,7 +25,7 @@
 
 ## LoadOnDemand: 1
 ## Dependencies: BigWigs
-## Version: v10.0.0
+## Version: v10.0.1
 
 ## X-Category: Raid
 ## X-License: All Rights Reserved: You are free to fork and modify on GitHub, please ask us about anything else.

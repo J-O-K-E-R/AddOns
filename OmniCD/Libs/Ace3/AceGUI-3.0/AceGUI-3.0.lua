@@ -185,8 +185,8 @@ function AceGUI:Release(widget)
 
 	if widget.OnRelease then
 		widget:OnRelease()
---  else
---      error(("Widget type %s doesn't supply an OnRelease Function"):format(widget.type))
+--	else
+--		error(("Widget type %s doesn't supply an OnRelease Function"):format(widget.type))
 	end
 	for k in pairs(widget.userdata) do
 		widget.userdata[k] = nil
@@ -410,10 +410,10 @@ do
 		end
 	end
 
---  local function LayoutOnUpdate(this)
---      this:SetScript("OnUpdate",nil)
---      this.obj:PerformLayout()
---  end
+--	local function LayoutOnUpdate(this)
+--		this:SetScript("OnUpdate",nil)
+--		this.obj:PerformLayout()
+--	end
 
 	local WidgetContainerBase = AceGUI.WidgetContainerBase
 
@@ -435,9 +435,9 @@ do
 	--call this function to layout, makes sure layed out objects get a frame to get sizes etc
 	WidgetContainerBase.DoLayout = function(self)
 		self:PerformLayout()
---      if not self.parent then
---          self.frame:SetScript("OnUpdate", LayoutOnUpdate)
---      end
+--		if not self.parent then
+--			self.frame:SetScript("OnUpdate", LayoutOnUpdate)
+--		end
 	end
 
 	WidgetContainerBase.AddChild = function(self, child, beforeWidget)
@@ -545,7 +545,7 @@ end
 
 
 ------------------
--- Widget API   --
+-- Widget API	--
 ------------------
 
 --- Registers a widget Constructor, this function returns a new instance of the Widget

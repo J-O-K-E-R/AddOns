@@ -3,6 +3,7 @@
 local _detalhes	= 	_G._detalhes
 local Loc = LibStub("AceLocale-3.0"):GetLocale ( "Details" )
 local _
+local addonName, Details222 = ...
 
 local CreateFrame = CreateFrame
 local pairs = pairs 
@@ -11,11 +12,16 @@ local UnitGUID = UnitGUID
 local tonumber= tonumber 
 local LoggingCombat = LoggingCombat
 
+SLASH_PLAYEDCLASS1 = "/playedclass"
+function SlashCmdList.PLAYEDCLASS(msg, editbox)
+	print(Details.GetPlayTimeOnClassString())
+end
+
 SLASH_DUMPTABLE1 = "/dumpt"
 function SlashCmdList.DUMPTABLE(msg, editbox)
 	local result = "return function() return " .. msg .. " end"
 	local extractValue = loadstring(result)
-	return Details:Dump(extractValue()())
+	return dumpt(extractValue()())
 end
 
 SLASH_DETAILS1, SLASH_DETAILS2, SLASH_DETAILS3 = "/details", "/dt", "/de"
@@ -233,7 +239,7 @@ function SlashCmdList.DETAILS (msg, editbox)
 			}
 			
 			for i = 1, window1.baseframe:GetNumPoints() do
-				state ["Point" .. i] = {window1.baseframe:GetPoint (i)}
+				state ["Point" .. i] = {window1.baseframe:GetPoint(i)}
 			end
 			
 			local parent = window1.baseframe:GetParent()
@@ -382,66 +388,6 @@ function SlashCmdList.DETAILS (msg, editbox)
 		
 		instance1.baseframe:SetPoint("bottomleft", RightChatDataPanel, "topleft", 1, 1)
 		instance2.baseframe:SetPoint("bottomright", RightChatToggleButton, "topright", -1, 1)
-		
-	elseif (msg == "addcombat") then
-		
-		local combat = _detalhes.combate:NovaTabela (true, _detalhes.tabela_overall, 1)
-		local self = combat[1]:PegarCombatente (UnitGUID("player"), UnitName ("player"), 1297, true)
-		self.total = 100000
-		self.total_without_pet = 100000
-		
-		if (not _detalhes.um___) then
-			_detalhes.um___ = 0
-			_detalhes.next_um = 3
-		end
-		
-		local cima = true
-		
-		_detalhes.um___ = _detalhes.um___ + 1
-		
-		if (_detalhes.um___ == _detalhes.next_um) then
-			_detalhes.next_um = _detalhes.next_um + 3
-			cima = false
-		end
-		
-		if (cima) then
-			local frostbolt = self.spells:PegaHabilidade (116, true, "SPELL_DAMAGE")
-			local frostfirebolt = self.spells:PegaHabilidade (44614, true, "SPELL_DAMAGE")
-			local icelance = self.spells:PegaHabilidade (30455, true, "SPELL_DAMAGE")
-			
-			self.spells._ActorTable [116].total = 50000
-			self.spells._ActorTable [44614].total = 25000
-			self.spells._ActorTable [30455].total = 25000
-		else
-			local frostbolt = self.spells:PegaHabilidade (84721, true, "SPELL_DAMAGE")
-			local frostfirebolt = self.spells:PegaHabilidade (113092, true, "SPELL_DAMAGE")
-			local icelance = self.spells:PegaHabilidade (122, true, "SPELL_DAMAGE")
-			
-			self.spells._ActorTable [84721].total = 50000
-			self.spells._ActorTable [113092].total = 25000
-			self.spells._ActorTable [122].total = 25000
-		end
-		
-		combat.start_time = GetTime()-30
-		combat.end_time = GetTime()
-		
-		combat.totals_grupo [1] = 100000
-		combat.totals [1] = 100000
-	
-		--combat.instance_type = "raid"
-		--combat.is_trash = true
-	
-		_detalhes.tabela_vigente = combat
-		
-		_detalhes.tabela_historico:adicionar (combat)
-	
-		_detalhes:InstanciaCallFunction(Details.FadeHandler.Fader, "in", nil, "barras")
-		_detalhes:InstanciaCallFunction(_detalhes.AtualizaSegmentos) -- atualiza o instancia.showing para as novas tabelas criadas
-		_detalhes:InstanciaCallFunction(_detalhes.AtualizaSoloMode_AfertReset) -- verifica se precisa zerar as tabela da janela solo mode
-		_detalhes:InstanciaCallFunction(_detalhes.ResetaGump) --_detalhes:ResetaGump ("de todas as instancias")
-		_detalhes:RefreshMainWindow(-1, true) --atualiza todas as instancias
-		
-		
 
 	elseif (msg == "pets") then
 		local f = _detalhes:CreateListPanel()
@@ -733,7 +679,7 @@ function SlashCmdList.DETAILS (msg, editbox)
 		local barra = instancia.barras [whichRowLine]
 		
 		for i = 1, barra:GetNumPoints() do 
-			local point, relativeTo, relativePoint, xOfs, yOfs = barra:GetPoint (i)
+			local point, relativeTo, relativePoint, xOfs, yOfs = barra:GetPoint(i)
 			print(point, relativeTo, relativePoint, xOfs, yOfs)
 		end
 	
@@ -822,66 +768,57 @@ function SlashCmdList.DETAILS (msg, editbox)
 
 
 	elseif (command == "guid") then
-	
-		local pass_guid = rest:match("^(%S*)%s*(.-)$")
-	
-		if (not _detalhes.id_frame) then 
-		
-			local backdrop = {
-			bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
-			edgeFile = "Interface\\ChatFrame\\ChatFrameBackground",
-			tile = true, edgeSize = 1, tileSize = 5,
-			}
-		
-			_detalhes.id_frame = CreateFrame("Frame", "DetailsID", UIParent)
-			_detalhes.id_frame:SetHeight(14)
-			_detalhes.id_frame:SetWidth(120)
-			_detalhes.id_frame:SetPoint("center", UIParent, "center")
-			_detalhes.id_frame:SetBackdrop(backdrop)
-			
-			tinsert(UISpecialFrames, "DetailsID")
-			
-			_detalhes.id_frame.texto = CreateFrame("editbox", nil, _detalhes.id_frame)
-			_detalhes.id_frame.texto:SetPoint("topleft", _detalhes.id_frame, "topleft")
-			_detalhes.id_frame.texto:SetAutoFocus(false)
-			_detalhes.id_frame.texto:SetFontObject(GameFontHighlightSmall)			
-			_detalhes.id_frame.texto:SetHeight(14)
-			_detalhes.id_frame.texto:SetWidth(120)
-			_detalhes.id_frame.texto:SetJustifyH("CENTER")
-			_detalhes.id_frame.texto:EnableMouse(true)
-			_detalhes.id_frame.texto:SetBackdrop(ManualBackdrop)
-			_detalhes.id_frame.texto:SetBackdropColor(0, 0, 0, 0.5)
-			_detalhes.id_frame.texto:SetBackdropBorderColor(0.3, 0.3, 0.30, 0.80)
-			_detalhes.id_frame.texto:SetText("") --localize-me
-			_detalhes.id_frame.texto.perdeu_foco = nil
-			
-			_detalhes.id_frame.texto:SetScript("OnEnterPressed", function() 
-				_detalhes.id_frame.texto:ClearFocus()
-				_detalhes.id_frame:Hide() 
-			end)
-			
-			_detalhes.id_frame.texto:SetScript("OnEscapePressed", function() 
-				_detalhes.id_frame.texto:ClearFocus()
-				_detalhes.id_frame:Hide() 
-			end)
-			
-		end
-		
-		_detalhes.id_frame:Show()
-		_detalhes.id_frame.texto:SetFocus()
-		
-		if (pass_guid == "-") then
-			local guid = UnitGUID("target")
-			if (guid) then 
-				local g = _detalhes:GetNpcIdFromGuid (guid)
-				_detalhes.id_frame.texto:SetText("" .. g)
-				_detalhes.id_frame.texto:HighlightText()
+		if (UnitExists("target")) then
+			local serial = UnitGUID("target")
+			if (serial) then
+				local npcId = serial
+				if (not Details.id_frame) then
+					local backdrop = {
+						bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
+						edgeFile = "Interface\\ChatFrame\\ChatFrameBackground",
+						tile = true, edgeSize = 1, tileSize = 5,
+					}
+				
+					Details.id_frame = CreateFrame("Frame", "DetailsID", UIParent, "BackdropTemplate")
+					Details.id_frame:SetHeight(14)
+					Details.id_frame:SetWidth(120)
+					Details.id_frame:SetPoint("center", UIParent, "center")
+					Details.id_frame:SetBackdrop(backdrop)
+					
+					tinsert(UISpecialFrames, "DetailsID")
+					
+					Details.id_frame.texto = CreateFrame("editbox", nil, Details.id_frame, "BackdropTemplate")
+					Details.id_frame.texto:SetPoint("topleft", Details.id_frame, "topleft")
+					Details.id_frame.texto:SetAutoFocus(false)
+					Details.id_frame.texto:SetFontObject(GameFontHighlightSmall)
+					Details.id_frame.texto:SetHeight(14)
+					Details.id_frame.texto:SetWidth(120)
+					Details.id_frame.texto:SetJustifyH("CENTER")
+					Details.id_frame.texto:EnableMouse(true)
+					Details.id_frame.texto:SetBackdropColor(0, 0, 0, 0.5)
+					Details.id_frame.texto:SetBackdropBorderColor(0.3, 0.3, 0.30, 0.80)
+					Details.id_frame.texto:SetText("")
+					Details.id_frame.texto.perdeu_foco = nil
+					
+					Details.id_frame.texto:SetScript("OnEnterPressed", function()
+						Details.id_frame.texto:ClearFocus()
+						Details.id_frame:Hide()
+					end)
+					
+					Details.id_frame.texto:SetScript("OnEscapePressed", function()
+						Details.id_frame.texto:ClearFocus()
+						Details.id_frame:Hide()
+					end)
+					
+				end
+				
+				C_Timer.After(0.1, function()
+					Details.id_frame:Show()
+					Details.id_frame.texto:SetFocus()
+					Details.id_frame.texto:SetText("" .. npcId)
+					Details.id_frame.texto:HighlightText()
+				end)
 			end
-		
-		else
-			print(pass_guid.. " -> " .. tonumber(pass_guid:sub(6, 10), 16))
-			_detalhes.id_frame.texto:SetText(""..tonumber(pass_guid:sub(6, 10), 16))
-			_detalhes.id_frame.texto:HighlightText()
 		end
 		
 	elseif (command == "profile") then
@@ -1350,7 +1287,8 @@ function SlashCmdList.DETAILS (msg, editbox)
 		Details:ScrollDamage()
 
 	elseif (msg == "me" or msg == "ME" or msg == "Me" or msg == "mE") then
-	local UnitGroupRolesAssigned = DetailsFramework.UnitGroupRolesAssigned
+		Details.slash_me_used = true
+		local UnitGroupRolesAssigned = DetailsFramework.UnitGroupRolesAssigned
 		local role = UnitGroupRolesAssigned("player")
 		if (role == "HEALER") then
 			Details:OpenPlayerDetails(2)
@@ -1527,6 +1465,91 @@ function SlashCmdList.DETAILS (msg, editbox)
 			Details:Dump(exportedValues)
 		end
 
+	elseif (msg == "parselog") then
+
+		local splitLineInArguments = function(lineText)
+			local parsedLine = {}
+			for piece in lineText:gmatch("([^,]+)") do
+				parsedLine[#parsedLine+1] = piece
+			end
+			return unpack(parsedLine)
+		end
+
+		local spellsWithMorePayload = {
+			["SPELL_DAMAGE"] = true,
+			["SPELL_HEAL"] = true,
+			["SWING_DAMAGE"] = true,
+			["SWING_DAMAGE_LANDED"] = true,
+			["RANGE_DAMAGE"] = true,
+			["SPELL_DRAIN"] = true,
+			["SPELL_ENERGIZE"] = true,
+			["DAMAGE_SPLIT"] = true,
+			["SPELL_PERIODIC_ENERGIZE"] = true,
+			["SPELL_PERIODIC_DAMAGE"] = true,
+			["SPELL_PERIODIC_HEAL"] = true,
+		}
+
+		local data = DETAILS_EXTERNAL_LOG
+		local t = DetailsFramework:SplitTextInLines(data)
+		local a = {}
+
+		local parser = _detalhes.LogParserEvent
+
+		for i = 1, #t do
+			print("line:", i)
+			local line = t[i]
+			line = line:gsub("\"", "")
+			local tokenId = line:match("%s%s(.*)"):match("^(.-),")
+
+			if (tokenId == "ENCOUNTER_START") then
+				Details:StartCombat()
+			end
+
+			if (tokenId == "ENCOUNTER_END") then
+				Details:EndCombat()
+			end
+
+			local newPayload = {0, tokenId, false}
+			local payload = {splitLineInArguments(line)}
+
+			if (spellsWithMorePayload[tokenId]) then
+				if (tokenId == "SWING_DAMAGE") then
+					for o = 2, 9 do
+						newPayload[#newPayload+1] = payload[o]
+					end
+
+					for o = 9+17, #payload do
+						newPayload[#newPayload+1] = payload[o]
+					end
+				else
+					for o = 2, 12 do
+						newPayload[#newPayload+1] = payload[o]
+					end
+
+					for o = 12+17, #payload do
+						newPayload[#newPayload+1] = payload[o]
+					end
+				end
+
+				parser(unpack(newPayload))
+			else
+				for o = 2, #payload do
+					newPayload[#newPayload+1] = payload[o]
+					print(o, payload[o])
+				end
+				parser(unpack(newPayload))
+			end
+
+			--local payload = {splitLineInArguments(line)}
+			--if (#payload > 25) then
+			--	a[tokenId] = payload
+			--end
+		end
+
+		--for tokenId, payload in pairs(a) do
+		--	print(tokenId, unpack(payload))
+		--end
+
 	elseif (msg == "coach") then
 		--if (not UnitIsGroupLeader("player")) then
 		--	Details:Msg("you aren't the raid leader.")
@@ -1588,6 +1611,9 @@ function SlashCmdList.DETAILS (msg, editbox)
 
 	elseif (msg == "generatespelllist") then
 		Details.GenerateSpecSpellList()
+
+	elseif (msg == "generateracialslist") then
+		Details.GenerateRacialSpellList()
 
 	elseif (msg == "survey") then
 		Details.Survey.OpenSurveyPanel()
@@ -1755,22 +1781,24 @@ function Details.RefreshUserList (ignoreIfHidden)
 	Details:UpdateUserPanel (newList)
 end
 
-function Details:UpdateUserPanel (usersTable)
-
+function Details:UpdateUserPanel(usersTable)
 	if (not Details.UserPanel) then
+		local frameWidth, frameHeight = 470, 605
 		DetailsUserPanel = DetailsFramework:CreateSimplePanel(UIParent)
-		DetailsUserPanel:SetSize(707, 505)
+		DetailsUserPanel:SetSize(frameWidth, frameHeight)
 		DetailsUserPanel:SetTitle("Details! Version Check")
 		DetailsUserPanel.Data = {}
 		DetailsUserPanel:ClearAllPoints()
-		DetailsUserPanel:SetPoint("left", UIParent, "left", 10, 0)
+		DetailsUserPanel:SetPoint("left", UIParent, "left", 5, 100)
 		DetailsUserPanel:Hide()
 
+		DetailsFramework:ApplyStandardBackdrop(DetailsUserPanel)
+
 		Details.UserPanel = DetailsUserPanel
-		
-		local scroll_width = 675
-		local scroll_height = 450
-		local scroll_lines = 21
+
+		local scroll_width = frameWidth - 30
+		local scroll_height = 605 - 60
+		local scroll_lines = 26
 		local scroll_line_height = 20
 		
 		local backdrop_color = {.2, .2, .2, 0.2}
@@ -1784,9 +1812,9 @@ function Details:UpdateUserPanel (usersTable)
 
 		--header
 		local headerTable = {
-			{text = "User Name", width = 200},
-			{text = "Realm", width = 200},
-			{text = "Version", width = 200},
+			{text = "User Name", width = 160},
+			{text = "Realm", width = 130},
+			{text = "Version", width = 140},
 		}
 
 		local headerOptions = {
@@ -1928,7 +1956,7 @@ function _detalhes:CreateListPanel()
 	
 	container_barras_window:SetWidth(460)
 	container_barras_window:SetHeight(550)
-	container_barras_window:SetScrollChild (container_barras)
+	container_barras_window:SetScrollChild(container_barras)
 	container_barras_window:SetPoint("TOPLEFT", _detalhes.ListPanel.widget, "TOPLEFT", 21, -10)
 
 	_detalhes.gump:NewScrollBar (container_barras_window, container_barras, -10, -17)
@@ -2358,8 +2386,6 @@ if (WOW_PROJECT_ID == WOW_PROJECT_MAINLINE) then
 					scrollFrame:Refresh()
 				end
 
-				--open raid lib callbacks
-				--openRaidLib.RegisterCallback(Details.CooldownTracking, "CooldownListUpdate", "OnReceiveUnitFullCooldownList")
 				function f.OnKeystoneUpdate(unitId, keystoneInfo, allKeystonesInfo)
 					if (f:IsShown()) then
 						f.RefreshData()

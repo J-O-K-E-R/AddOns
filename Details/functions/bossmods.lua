@@ -1,6 +1,6 @@
 
 local Details = _G.Details
-
+local addonName, Details222 = ...
 
 --get the total of damage and healing of a phase of an encounter
 function Details:OnCombatPhaseChanged()
@@ -137,9 +137,9 @@ function Details:CreateCallbackListeners()
             wipe (current_table_bigwigs)
         end
     end)
-    event_frame:RegisterEvent ("ENCOUNTER_START")
-    event_frame:RegisterEvent ("ENCOUNTER_END")
-    event_frame:RegisterEvent ("PLAYER_REGEN_ENABLED")
+    event_frame:RegisterEvent("ENCOUNTER_START")
+    event_frame:RegisterEvent("ENCOUNTER_END")
+    event_frame:RegisterEvent("PLAYER_REGEN_ENABLED")
 
     if (_G.DBM) then
         local dbm_timer_callback = function(bar_type, id, msg, timer, icon, bartype, spellId, colorId, modid)

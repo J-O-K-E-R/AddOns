@@ -2,7 +2,7 @@
 BlizOptionsGroup Container
 Simple container widget for the integration of AceGUI into the Blizzard Interface Options
 -------------------------------------------------------------------------------]]
-local Type, Version = "BlizOptionsGroup", 22
+local Type, Version = "BlizOptionsGroup", 23
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 if not AceGUI or (AceGUI:GetWidgetVersion(Type) or 0) >= Version then return end
 
@@ -108,6 +108,11 @@ local function Constructor()
 	frame.default = default
 	frame.refresh = refresh
 
+	-- 10.0 support function aliases (cancel has been removed)
+	frame.OnCommit = okay
+	frame.OnDefault = default
+	frame.OnRefresh = refresh
+
 	frame:SetScript("OnHide", OnHide)
 	frame:SetScript("OnShow", OnShow)
 
@@ -123,10 +128,10 @@ local function Constructor()
 	content:SetPoint("BOTTOMRIGHT", -10, 10)
 
 	local widget = {
-		label   = label,
-		frame   = frame,
+		label	= label,
+		frame	= frame,
 		content = content,
-		type    = Type
+		type	= Type
 	}
 	for method, func in pairs(methods) do
 		widget[method] = func

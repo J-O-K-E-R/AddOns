@@ -30,7 +30,7 @@ local GetInventoryItemLink = GetInventoryItemLink
 local GetInventoryItemID = GetInventoryItemID
 local GetWeaponEnchantInfo = GetWeaponEnchantInfo
 local UnitBuff = UnitBuff
-local GetItemCooldown = GetItemCooldown
+local C_Container_GetItemCooldown = C_Container.GetItemCooldown
 local GetProfessions, GetProfessionInfo = GetProfessions, GetProfessionInfo
 local GetItemInfo = GetItemInfo
 local GetSpellLink, GetSpellInfo = GetSpellLink, GetSpellInfo
@@ -236,7 +236,7 @@ function FishLib:UpdateLureInventory()
 		local count = GetItemCount(id);
 		-- does this lure have to be "worn"
 		if ( count > 0 ) then
-			local startTime, _, _ = GetItemCooldown(id);
+			local startTime, _, _ = C_Container_GetItemCooldown(id);
 			if (startTime == 0) then
 				-- get the name so we can check enchants
 				lure.n,_,_,_,_,_,_,_,_,_ = GetItemInfo(id);
@@ -271,7 +271,7 @@ end
 
 local function UseThisLure(lure, b, enchant, skill, level)
 	if ( lure ) then
-		local startTime, _, _ = GetItemCooldown(lure.id);
+		local startTime, _, _ = C_Container_GetItemCooldown(lure.id);
 		level = level or 0;
 		local bonus = lure.b or 0;
 		if ( startTime == 0 and (skill and level <= (skill + bonus)) and (bonus > enchant) ) then
@@ -530,18 +530,18 @@ function FishLib:CreateSAButton()
 		btn = CreateFrame("Button", SABUTTONNAME, holder, "SecureActionButtonTemplate");
 		btn.holder = holder;
 		btn:EnableMouse(true);
-		btn:RegisterForClicks(nil);
+		btn:RegisterForClicks("RightButtonUp", "RightButtonDown");
 		btn:Show();
 
 		holder:SetPoint("LEFT", UIParent, "RIGHT", 10000, 0);
 		holder:SetFrameStrata("LOW");
 		holder:Hide();
 	end
-	if (not self.buttonevent) then
-		self.buttonevent = "RightButtonUp";
-	end
+	-- if (not self.buttonevent) then
+		-- self.buttonevent = "RightButtonUp";
+	-- end
 	btn:SetScript("PostClick", ClickHandled);
-	btn:RegisterForClicks(self.buttonevent);
+	btn:RegisterForClicks("RightButtonUp", "RightButtonDown");
 	self.sabutton = btn;
 	btn.fl = self;
 end
@@ -574,18 +574,19 @@ function FishLib:GetSAMouseKey()
 end
 
 function FishLib:SetSAMouseEvent(buttonevent)
-	if (not buttonevent) then
-		buttonevent = "RightButtonUp";
-	end
-	if (self.CastButton[buttonevent]) then
-		self.buttonevent = buttonevent;
+	-- if (not buttonevent) then
+		-- buttonevent = "RightButtonUp";
+	-- end
+	-- if (self.CastButton[buttonevent]) then
+		-- self.buttonevent = buttonevent;
 		local btn = getglobal(SABUTTONNAME);
 		if ( btn ) then
-			btn:RegisterForClicks(nil);
-			btn:RegisterForClicks(self.buttonevent);
+			-- btn:RegisterForClicks(nil);
+			-- btn:RegisterForClicks(self.buttonevent);
+			btn:RegisterForClicks("RightButtonUp", "RightButtonDown");
 		end
 		return true;
-	end
+	-- end
 	-- return nil;
 end
 

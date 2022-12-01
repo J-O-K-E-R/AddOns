@@ -22,7 +22,7 @@ local strfind = string.find
 -- Generate our version variables
 --
 
-local BIGWIGS_VERSION = 251
+local BIGWIGS_VERSION = 254
 local BIGWIGS_RELEASE_STRING, BIGWIGS_VERSION_STRING = "", ""
 local versionQueryString, versionResponseString = "Q^%d^%s^%d^%s", "V^%d^%s^%d^%s"
 local customGuildName = false
@@ -37,7 +37,7 @@ do
 	local RELEASE = "RELEASE"
 
 	local releaseType = RELEASE
-	local myGitHash = "2c6afc5" -- The ZIP packager will replace this with the Git hash.
+	local myGitHash = "42f4d06" -- The ZIP packager will replace this with the Git hash.
 	local releaseString = ""
 	--[=[@alpha@
 	-- The following code will only be present in alpha ZIPs.
@@ -340,7 +340,7 @@ do
 		[2519] = lw_df, -- Neltharus
 		[2520] = lw_df, -- Brackenhide Hollow
 		[2521] = lw_df, -- Ruby Life Pools
-		[2526] = lw_df, -- Taz'algeth Academy
+		[2526] = lw_df, -- Algeth'ar Academy
 		[2527] = lw_df, -- Halls of Infusion
 	}
 
@@ -801,8 +801,6 @@ function mod:ADDON_LOADED(addon)
 				end
 			end
 		end
-		BigWigs3DB.wipe80 = nil -- XXX temp boss DB wipe for 8.0.1 // removed in 9.0.2
-		BigWigs3DB.discord = nil -- XXX 9.0.2
 	end
 	self:BigWigs_CoreOptionToggled(nil, "fakeDBMVersion", self.isFakingDBM)
 
@@ -817,7 +815,6 @@ function mod:ADDON_LOADED(addon)
 
 	--bwFrame:UnregisterEvent("ADDON_LOADED")
 	--self.ADDON_LOADED = nil
-	bwFrame.UnregisterEvent(UIParent, "TALKINGHEAD_REQUESTED") -- Prevent the event order re-shuffling mid-instance
 end
 
 function mod:GLOBAL_MOUSE_DOWN(button)
@@ -930,17 +927,19 @@ do
 		BigWigs_EternalPalace = "BigWigs_BattleForAzeroth",
 		BigWigs_Nyalotha = "BigWigs_BattleForAzeroth",
 		BigWigs_Uldir = "BigWigs_BattleForAzeroth",
+		BigWigs_Shadowlands = "BigWigs_Shadowlands",
+		BigWigs_CastleNathria = "BigWigs_Shadowlands",
+		BigWigs_SanctumOfDomination = "BigWigs_Shadowlands",
+		BigWigs_SepulcherOfTheFirstOnes = "BigWigs_Shadowlands",
 	}
 	local delayedMessages = {}
 
 	local warning = "The addon '|cffffff00%s|r' is forcing %s to load prematurely, notify the BigWigs authors!"
 	local dontForceLoadList = {
+		-- Static content
 		BigWigs_Core = true,
 		BigWigs_Plugins = true,
 		BigWigs_Options = true,
-		BigWigs_Shadowlands = true,
-		BigWigs_CastleNathria = true,
-		BigWigs_SanctumOfDomination = true,
 		BigWigs_Classic = true,
 		BigWigs_BurningCrusade = true,
 		BigWigs_WrathOfTheLichKing = true,
@@ -949,6 +948,7 @@ do
 		BigWigs_WarlordsOfDraenor = true,
 		BigWigs_Legion = true,
 		BigWigs_BattleForAzeroth = true,
+		BigWigs_Shadowlands = true,
 		LittleWigs = true,
 		LittleWigs_Classic = true,
 		LittleWigs_BurningCrusade = true,
@@ -958,6 +958,10 @@ do
 		LittleWigs_WarlordsOfDraenor = true,
 		LittleWigs_Legion = true,
 		LittleWigs_BattleForAzeroth = true,
+		LittleWigs_Shadowlands = true,
+		-- Dynamic content
+		BigWigs_DragonIsles = true,
+		BigWigs_VaultOfTheIncarnates = true,
 	}
 	-- Try to teach people not to force load our modules.
 	for i = 1, GetNumAddOns() do
@@ -980,12 +984,22 @@ do
 		end
 
 		if old[name] then
-			delayedMessages[#delayedMessages+1] = L.removeAddOn:format(name, old[name])
-			Popup(L.removeAddOn:format(name, old[name]))
+			if name == "BigWigs_Shadowlands" then
+				local meta = GetAddOnMetadata(i, "X-BigWigs-LoadOn-InstanceId")
+				if not meta then
+					delayedMessages[#delayedMessages+1] = L.removeAddOn:format(name, old[name])
+					if not BasicMessageDialog:IsShown() then -- Don't overwrite other messages with this as the message is confusing, show it last
+						Popup(L.removeAddOn:format(name, old[name]))
+					end
+				end
+			else
+				delayedMessages[#delayedMessages+1] = L.removeAddOn:format(name, old[name])
+				Popup(L.removeAddOn:format(name, old[name]))
+			end
 		end
 	end
 
-	local L = GetLocale()
+	local myLocale = GetLocale()
 	local locales = {
 		--ruRU = "Russian (ruRU)",
 		--itIT = "Italian (itIT)",
@@ -996,8 +1010,9 @@ do
 		--ptBR = "Portuguese (ptBR)",
 		--frFR = "French (frFR)",
 	}
-	if locales[L] then
-		delayedMessages[#delayedMessages+1] = ("BigWigs is missing translations for %s. Can you help? Visit git.io/vpBye or ask us on Discord for more info."):format(locales[L])
+	local language = locales[myLocale]
+	if language then
+		delayedMessages[#delayedMessages+1] = ("BigWigs is missing translations for %s. Can you help? Visit git.io/vpBye or ask us on Discord for more info."):format(language)
 	end
 
 	if #delayedMessages > 0 then
@@ -1095,9 +1110,9 @@ end
 --
 
 do
-	local DBMdotRevision = "20221025145241" -- The changing version of the local client, changes with every new zip using the project-date-integer packager replacement.
-	local DBMdotDisplayVersion = "10.0.0" -- "N.N.N" for a release and "N.N.N alpha" for the alpha duration.
-	local DBMdotReleaseRevision = "20221025000000" -- Hardcoded time, manually changed every release, they use it to track the highest release version, a new DBM release is the only time it will change.
+	local DBMdotRevision = "20221129005616" -- The changing version of the local client, changes with every new zip using the project-date-integer packager replacement.
+	local DBMdotDisplayVersion = "10.0.4" -- "N.N.N" for a release and "N.N.N alpha" for the alpha duration.
+	local DBMdotReleaseRevision = "20221128000000" -- Hardcoded time, manually changed every release, they use it to track the highest release version, a new DBM release is the only time it will change.
 
 	local timer, prevUpgradedUser = nil, nil
 	local function sendMsg()
@@ -1439,7 +1454,7 @@ do
 		-- Lacking zone modules
 		if (BigWigs and BigWigs.db.profile.showZoneMessages == false) or self.isShowingZoneMessages == false then return end
 		local zoneAddon = public.zoneTbl[id]
-		if zoneAddon and zoneAddon ~= "BigWigs_Shadowlands" and zoneAddon ~= "BigWigs_Dragonflight" then -- XXX remove BigWigs_Shadowlands from this check when the module is split out
+		if zoneAddon and zoneAddon ~= "BigWigs_Dragonflight" then
 			if strfind(zoneAddon, "LittleWigs_", nil, true) then zoneAddon = "LittleWigs" end -- Collapse into one addon
 			if id > 0 and not fakeZones[id] and not warnedThisZone[id] and not IsAddOnEnabled(zoneAddon) then
 				warnedThisZone[id] = true

@@ -1,16 +1,16 @@
-local config, _, T = OneRingLib.ext.config, ...
-local L, KR = T.L, OneRingLib.ext.ActionBook:compatible("Kindred", 1, 0)
+local _, T = ...
+local L, PC, config, KR = T.L, T.OPieCore, T.config, OPie.ActionBook:compatible("Kindred", 1, 0)
 
 local frame = config.createPanel("Bindings", "OPie")
 local OBC_Profile = CreateFrame("Frame", "OBC_Profile", frame, "UIDropDownMenuTemplate")
-	OBC_Profile:SetPoint("TOPLEFT", 0, -75) UIDropDownMenu_SetWidth(OBC_Profile, 200)
+	OBC_Profile:SetPoint("TOPLEFT", 0, -80) UIDropDownMenu_SetWidth(OBC_Profile, 200)
 	OBC_Profile.initialize = OPC_Profile.initialize
 local bindSet = CreateFrame("Frame", "OPC_BindingSet", frame, "UIDropDownMenuTemplate")
 	bindSet:SetPoint("LEFT", OBC_Profile, "RIGHT")	UIDropDownMenu_SetWidth(bindSet, 250)
 
 local lRing = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 local lBinding = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-	lBinding:SetPoint("TOPLEFT", 16, -115)
+	lBinding:SetPoint("TOPLEFT", 32, -120)
 	lRing:SetPoint("LEFT", lBinding, "LEFT", 215, 0)
 	lBinding:SetWidth(180)
 local bindLines, bindZone = {}, CreateFrame("Frame", nil, frame) do
@@ -18,10 +18,15 @@ local bindLines, bindZone = {}, CreateFrame("Frame", nil, frame) do
 	local function onMacroClick(self)
 		bindZone.showMacroPopup(self:GetParent():GetID())
 	end
-	for i=1,19 do
+	for i=1,16 do
 		local bind = config.createBindingButton(bindZone)
 		local label = bind:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-		bind:SetPoint("TOPLEFT", lBinding, "BOTTOMLEFT", 0, 16-20*i)
+		bind:SetPoint("TOPLEFT", lBinding, "BOTTOMLEFT", 0, 20-24*i)
+		label:SetPoint("LEFT", 216, -1)
+		bind.warn = bind:CreateTexture(nil, "ARTWORK")
+		bind.warn:SetTexture("Interface/EncounterJournal/UI-EJ-WarningTextIcon")
+		bind.warn:SetSize(14, 14)
+		bind.warn:SetPoint("RIGHT", bind, "LEFT", -3, 0)
 		bind.macro = CreateFrame("Button", nil, bind, "UIPanelButtonTemplate")
 		bind.macro:SetWidth(24) bind.macro:SetPoint("LEFT", bind, "RIGHT", 1, 0)
 		local ico = bind.macro:CreateTexture(nil, "ARTWORK")
@@ -30,7 +35,6 @@ local bindLines, bindZone = {}, CreateFrame("Frame", nil, frame) do
 		bind:SetScript("OnEnter", config.ui.ShowControlTooltip)
 		bind:SetScript("OnLeave", config.ui.HideTooltip)
 		bind:SetWidth(180) bind:GetFontString():SetWidth(170)
-		label:SetPoint("LEFT", 215, 2)
 		bind:SetNormalFontObject(GameFontNormalSmall)
 		bind:SetHighlightFontObject(GameFontHighlightSmall)
 		bindLines[i], bind.label = bind, label
@@ -55,7 +59,7 @@ local cap = bindZone
 local ringBindings = {map={}, name=L"Ring Bindings", caption=L"Ring"}
 function ringBindings:refresh()
 	local pos, map = 1, self.map
-	for key in OneRingLib:IterateRings(IsAltKeyDown()) do
+	for key in OPie:IterateRings(IsAltKeyDown()) do
 		map[pos], pos = key, pos + 1
 	end
 	for i=#map,pos,-1 do
@@ -64,17 +68,17 @@ function ringBindings:refresh()
 	self.count = #map
 end
 function ringBindings:get(id)
-	local name, key = OneRingLib:GetRingInfo(self.map[id])
-	local bind, cBind, isOverride, isActiveInt, isActiveExt = OneRingLib:GetRingBinding(key)
-	local prefix, tipTitle, tipText
+	local name, key = OPie:GetRingInfo(self.map[id])
+	local bind, cBind, isOverride, isActiveInt, isActiveExt = PC:GetRingBinding(key)
+	local showWarning, prefix, tipTitle, tipText = false
 	local cebind = cBind or (bind and KR:EvaluateCmdOptions(bind))
-	if not isOverride and not OneRingLib:GetOption("UseDefaultBindings", key) then
+	if not isOverride and not PC:GetOption("UseDefaultBindings", key) then
 		if bind then
-			prefix, tipTitle = "|cffa0a0a0", L"Default binding disabled"
-			tipText = (L"Choose a binding for this ring, or enable the %s option in OPie options."):format("|cffffffff" .. L"Use default ring bindings" .. "|r")
+			showWarning, prefix, tipTitle = true, "|cffa0a0a0", HIGHLIGHT_FONT_COLOR_CODE .. L"Default binding disabled"
+			tipText = (L"Choose a binding for this ring, or enable the %s option in OPie options."):format(HIGHLIGHT_FONT_COLOR_CODE .. L"Use default ring bindings" .. "|r")
 		end
 	elseif cBind and isActiveExt ~= true then
-		tipTitle = L"Binding conflict"
+		showWarning, tipTitle = true, HIGHLIGHT_FONT_COLOR_CODE .. L"Binding conflict"
 		if isActiveInt == false then
 			prefix = isOverride and "|cfffa2800" or "|cffa0a0a0"
 			tipText = L"This binding is not currently active because it conflicts with another."
@@ -87,31 +91,27 @@ function ringBindings:get(id)
 			tipText = tipText .. "\n\n" .. (L"Conflicts with: %s"):format("|cffe0e0e0" .. lab .. "|r")
 		end
 	elseif cBind == nil and cebind and not isActiveInt then
-		prefix, tipTitle, tipText = "|cffa0a0a0", L"Binding conflict", L"This binding is not currently active because it conflicts with another."
-	elseif cBind and not isActiveInt then
-		prefix, tipTitle = "|cffa0a0a0", tostring(isActiveInt) .. "/" .. tostring(cBind)
+		showWarning, tipTitle = true, HIGHLIGHT_FONT_COLOR_CODE .. L"Binding conflict"
+		prefix, tipText = "|cffa0a0a0", L"This binding is not currently active because it conflicts with another."
 	elseif isOverride then
 		prefix = "|cffffffff"
 	end
-	return bind, name or key or "?", prefix, cBind, tipTitle, tipText
+	return bind, name or key or "?", prefix, cBind, tipTitle, tipText, showWarning
 end
 function ringBindings:set(id, key)
 	id = self.map[id]
 	config.undo.saveProfile()
-	OneRingLib:SetRingBinding(id, key)
+	PC:SetRingBinding(id, key)
 end
 function ringBindings:arrow(id)
-	local name, key, macro = OneRingLib:GetRingInfo(self.map[id])
-	local inputFrame = config.prompt(frame, name or key, (L"The following macro command opens this ring:"):format("|cffFFD029" .. (name or key) .. "|r"), false, false, nil, 0.90)
-	inputFrame.editBox:SetText(macro)
-	inputFrame.editBox:HighlightText(0, #macro)
-	inputFrame.editBox:SetFocus()
+	local name, key, macro = OPie:GetRingInfo(self.map[id])
+	T.TenSettings:ShowPromptOverlay(frame, name or key, (L"The following macro command opens this ring:"):format("|cffFFD029" .. (name or key) .. "|r"), false, false, nil, 0.90, nil, macro)
 end
 function ringBindings:default()
-	OneRingLib:ResetRingBindings()
+	PC:ResetRingBindings()
 end
 function ringBindings:altClick() -- self is the binding button
-	self:ToggleAlternateEditor(OneRingLib:GetRingBinding(ringBindings.map[self:GetID()]))
+	self:ToggleAlternateEditor(PC:GetRingBinding(ringBindings.map[self:GetID()]))
 end
 
 local subBindings = { name=L"In-Ring Bindings", caption=L"Action",
@@ -123,9 +123,9 @@ function subBindings.allowWheel(btn)
 	return btn:GetID() <= 2 and not subBindings.scope
 end
 function subBindings:refresh(scope)
-	self.scope, self.nameSuffix = scope, scope and (" (|cffacd7e6" ..  (OneRingLib:GetRingInfo(scope or 1) or "") .. "|r)") or (" (" .. L"Defaults" .. ")")
+	self.scope, self.nameSuffix = scope, scope and (" (|cffacd7e6" ..  (OPie:GetRingInfo(scope or 1) or "") .. "|r)") or (" (" .. L"Defaults" .. ")")
 	local t, ni = self.t, 1
-	for s in OneRingLib:GetOption("SliceBindingString", scope):gmatch("%S+") do
+	for s in PC:GetOption("SliceBindingString", scope):gmatch("%S+") do
 		t[ni], ni = s, ni + 1
 	end
 	for i=#t,ni,-1 do t[i] = nil end
@@ -135,7 +135,7 @@ function subBindings:get(id)
 	local firstListSize = self.scope and 1 or 4
 	if id <= firstListSize then
 		id = (self.scope and 3 or 0) + id
-		local value, setting = OneRingLib:GetOption(self.options[id], self.scope)
+		local value, setting = PC:GetOption(self.options[id], self.scope)
 		return value, self.optionNames[id], setting and "|cffffffff" or nil
 	else
 		id = id - firstListSize
@@ -147,13 +147,13 @@ function subBindings:set(id, bind)
 	if id <= firstListSize then
 		id = (self.scope and 3 or 0) + id
 		config.undo.saveProfile()
-		OneRingLib:SetOption(self.options[id], bind == false and "" or bind, self.scope)
+		PC:SetOption(self.options[id], bind == false and "" or bind, self.scope)
 		return
 	else
 		id = id - firstListSize
 	end
 	if bind == nil then
-		local i, s, s2 = 1, select(self.scope == nil and 5 or 4, OneRingLib:GetOption("SliceBindingString", self.scope))
+		local i, s, s2 = 1, select(self.scope == nil and 5 or 4, PC:GetOption("SliceBindingString", self.scope))
 		for f in (s or s2):gmatch("%S+") do
 			if i == id then bind = f break end
 			i = i + 1
@@ -171,12 +171,12 @@ function subBindings:set(id, bind)
 	t[id] = bind
 	for j=#t,1,-1 do if t[j] == "false" then t[j] = nil else break end end
 	self.count = #t+2
-	local _, _, _, global, default = OneRingLib:GetOption("SliceBindingString", self.scope)
+	local _, _, _, global, default = PC:GetOption("SliceBindingString", self.scope)
 	local v = table.concat(t, " ")
 	if self.scope == nil and v == default then v = nil
 	elseif self.scope ~= nil and v == (global or default) then v = nil end
 	config.undo.saveProfile()
-	OneRingLib:SetOption("SliceBindingString", v, self.scope)
+	PC:SetOption("SliceBindingString", v, self.scope)
 end
 local subBindings_List = {}
 local function subBindings_ScopeClick(_, key)
@@ -190,7 +190,7 @@ function subBindings:scopes(level, checked)
 	wipe(list) -- Reusing the table to maintain the scroll position key
 	list[0], list[1], list[false] = checked, false, L"Defaults for all rings"
 	local ct = T.OPC_RingScopePrefixes
-	for key, name, scope in OneRingLib:IterateRings(true) do
+	for key, name, scope in OPie:IterateRings(true) do
 		local color = ct and ct[scope] or "|cffacd7e6"
 		list[#list+1], list[key] = key, (L"Ring: %s"):format(color .. (name or key) .. "|r")
 	end
@@ -199,9 +199,9 @@ end
 function subBindings:default()
 	for i=0,#self.options do
 		local on = i == 0 and "SliceBindingString" or self.options[i]
-		OneRingLib:SetOption(on, nil)
+		PC:SetOption(on, nil)
 		if self.scope then
-			OneRingLib:SetOption(on, nil, self.scope)
+			PC:SetOption(on, nil, self.scope)
 		end
 	end
 end
@@ -214,10 +214,11 @@ local function updatePanelContent()
 		if j > m then
 			e:Hide()
 		else
-			local binding, text, prefix, _, title, tip = currentOwner:get(j)
+			local binding, text, prefix, _, title, tip, showWarningIcon = currentOwner:get(j)
 			e.tooltipTitle, e.tooltipText = title, tip
 			e.label:SetText(text)
 			e.macro:SetShown(currentOwner.arrow)
+			e.warn:SetShown(showWarningIcon)
 			e:SetBindingText(binding, prefix)
 			e:SetID(j) e:Hide() e:Show()
 		end
@@ -273,7 +274,7 @@ function frame.localize()
 		(L"Alt+Left Click on a button to set a conditional binding, indicated by %s."):format("|cff4CFF40[+]|r"))
 	lBinding:SetText(L"Binding")
 	btnUnbind:SetText(L"Unbind")
-	local p = OneRingLib:GetCurrentProfile()
+	local p = OPie:GetCurrentProfile()
 	p = p == "default" and L"default" or p
 	UIDropDownMenu_SetText(OBC_Profile, L"Profile" .. ": " .. p)
 end
@@ -304,10 +305,10 @@ frame:SetScript("OnHide", function()
 	end
 end)
 
-T.AddSlashSuffix(function() config.open(frame) end, "bind", "binding", "bindings")
+T.AddSlashSuffix(function() frame:OpenPanel() end, "bind", "binding", "bindings")
 
 function T.ShowSliceBindingPanel(ringKey)
-	config.open(frame)
+	frame:OpenPanel()
 	bindSet.set(nil, subBindings, ringKey)
 	frame.resetOnHide = true
 	config.pulseDropdown(bindSet)

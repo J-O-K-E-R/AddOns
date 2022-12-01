@@ -12,6 +12,7 @@
 
 local _, Core = ...
 local WOW_RETAIL = Core.WOW_RETAIL
+local WOW_CLASSIC = not WOW_RETAIL
 
 ----------------------------------------
 -- Region Settings
@@ -66,6 +67,10 @@ local Legacy = {
 			NoColor = true,
 			NoTexture = true,
 		},
+	},
+	SlotIcon = {
+		CanHide = true,
+		Ignore = true,
 	},
 	-- [ ARTWORK (-1) ]
 	Shadow = {
@@ -149,6 +154,18 @@ local Legacy = {
 		Type = "Texture",
 		Iterate = true,
 	},
+	SlotHighlight = {
+		Key = "SlotHighlightTexture",
+		Type = "Texture",
+		Iterate = true,
+	},
+	Name = {
+		Key = "Name",
+		Name = "Name",
+		Type = "FontString",
+		Iterate = true,
+		NoColor = true,
+	},
 	Border = {
 		Key = "Border",
 		Name = "Border",
@@ -180,21 +197,10 @@ local Legacy = {
 		Type = "Texture",
 		NoColor = true,
 	},
-	SlotHighlight = {
-		Key = "SlotHighlightTexture",
-		Type = "Texture",
-		Iterate = true,
-	},
+	-- [ OVERLAY (1) ]
 	Gloss = {
 		Ignore = true,
 		CanHide = true,
-	},
-	-- [ OVERLAY (1) ]
-	AutoCastable = { -- Only used by Pet buttons.
-		Key = "AutoCastable",
-		-- Name = "AutoCastable",
-		Type = "Texture",
-		Iterate = true,
 	},
 	NewAction = {
 		Key = "NewActionTexture",
@@ -206,8 +212,9 @@ local Legacy = {
 		Type = "Texture",
 		Iterate = true,
 	},
-	UpgradeIcon = {
-		Key = "UpgradeIcon",
+	AutoCastable = { -- Only used by Pet buttons.
+		Key = "AutoCastable",
+		-- Name = "AutoCastable",
 		Type = "Texture",
 		Iterate = true,
 	},
@@ -218,19 +225,39 @@ local Legacy = {
 		NoColor = true,
 		NoTexture = true,
 	},
-	-- [ OVERLAY (2) ]
-	NewItem = {
-		Key = "NewItemTexture",
+	UpgradeIcon = {
+		Key = "UpgradeIcon",
 		Type = "Texture",
+		Iterate = true,
+	},
+	-- [ OVERLAY (2) ]
+	IconOverlay2 = {
+		Key = "IconOverlay",
+		Type = "Texture",
+		Iterate = true,
 		NoColor = true,
+		NoTexture = true,
 	},
 	QuestBorder = {
 		Name = "IconQuestTexture",
 		Type = "Texture",
 	},
+	NewItem = {
+		Key = "NewItemTexture",
+		Type = "Texture",
+		NoColor = true,
+	},
 	-- LevelLinkLockIcon = {}, -- Unsupported, no reason to.
 	-- [ OVERLAY (4) ]
 	SearchOverlay = {
+		Key = "searchOverlay",
+		Name = "SearchOverlay",
+		Type = "Texture",
+		CanMask = true,
+		Iterate = true,
+		UseColor = true,
+	},
+	ContextOverlay = {
 		Key = "searchOverlay",
 		Name = "SearchOverlay",
 		Type = "Texture",
@@ -243,14 +270,6 @@ local Legacy = {
 		Key = "JunkIcon",
 		Type = "Texture",
 		Iterate = true,
-	},
-	-- [ OVERLAY (*) ]
-	Name = {
-		Key = "Name",
-		Name = "Name",
-		Type = "FontString",
-		Iterate = true,
-		NoColor = true,
 	},
 	-- [ HIGHLIGHT (0) ]
 	Highlight = {
@@ -378,7 +397,7 @@ local Item = {
 	Disabled = Legacy.Disabled,
 	Pushed = Legacy.Pushed,
 	Count = Legacy.Count,
-	Checked = (not WOW_RETAIL and Legacy.Checked) or nil, -- Classic Only
+	Checked = (WOW_CLASSIC and Legacy.Checked) or nil, -- Classic Only
 	Border = Legacy.Border, -- Backwards-Compatibility
 	IconBorder = Legacy.IconBorder,
 	SlotHighlight = (WOW_RETAIL and Legacy.SlotHighlight) or nil, -- Retail Only
@@ -404,13 +423,14 @@ local Types = {
 	Action = Action,
 	Aura = Aura,
 	Backpack = Item,
-	Bag = Item,
+	BagSlot = Item,
 	Buff = Aura,
 	Debuff = Debuff,
 	Enchant = Enchant,
 	Item = Item,
 	Pet = Action,
 	Possess = Action,
+	ReagentBag = Item,
 	Stance = Action,
 }
 
@@ -422,8 +442,9 @@ local BaseTypes = {
 
 local EmptyTypes = {
 	Action = true,
-	Bag = true,
+	BagSlot = true,
 	Pet = true,
+	ReagentBag = true,
 	Item = true,
 }
 
@@ -449,8 +470,9 @@ Core.AuraTypes = {
 }
 Core.ItemTypes = {
 	Backpack = true,
-	Bag = true,
+	BagSlot = true,
 	Item = true,
+	ReagentBag = true,
 }
 
 ----------------------------------------

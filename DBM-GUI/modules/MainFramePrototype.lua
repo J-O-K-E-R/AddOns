@@ -3,6 +3,8 @@ local L = DBM_GUI_L
 local isRetail = WOW_PROJECT_ID == (WOW_PROJECT_MAINLINE or 1)
 local isDragonflight = DBM:GetTOC() >= 100000
 
+local DDM = _G["LibStub"]:GetLibrary("LibDropDownMenu")
+
 local select, ipairs, mfloor, mmax, mmin = select, pairs, math.floor, math.max, math.min
 local CreateFrame, GameFontHighlightSmall, GameFontNormalSmall, GameFontNormal = CreateFrame, GameFontHighlightSmall, GameFontNormalSmall, GameFontNormal
 local DBM, DBM_GUI = DBM, DBM_GUI
@@ -144,7 +146,7 @@ local function resize(frame, first)
 									end
 								end
 								dropdownText:SetText(child2.text)
-								UIDropDownMenu_SetWidth(child2, mmin(width - 55, ddWidth))
+								DDM.UIDropDownMenu_SetWidth(child2, mmin(width - 55, ddWidth))
 							end
 						end
 						neededHeight = neededHeight + (child2.myheight or child2:GetHeight())
@@ -172,7 +174,7 @@ function frame:DisplayFrame(frame)
 	local scrollBar = _G["DBM_GUI_OptionsFramePanelContainerFOVScrollBar"]
 	scrollBar:Show()
 	local changed = DBM_GUI.currentViewing ~= frame
-	if DBM_GUI.currentViewing then
+	if DBM_GUI.currentViewing and changed then
 		DBM_GUI.currentViewing:Hide()
 	end
 	DBM_GUI.currentViewing = frame
@@ -180,7 +182,9 @@ function frame:DisplayFrame(frame)
 	local FOV = _G["DBM_GUI_OptionsFramePanelContainerFOV"]
 	FOV:SetScrollChild(frame)
 	FOV:Show()
-	frame:Show()
+	if changed then
+		frame:Show()
+	end
 	frame:SetSize(FOV:GetSize())
 	local mymax = resize(frame, true) - _G["DBM_GUI_OptionsFramePanelContainer"]:GetHeight()
 	if mymax <= 0 then

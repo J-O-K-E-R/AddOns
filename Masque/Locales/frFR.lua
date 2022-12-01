@@ -9,7 +9,7 @@
 
 	[ Notes ]
 
-	To help with translations, use the localization system on WoWAce (https://www.wowace.com/projects/masque/localization)
+	To help with translations, use the localization system on CurseForge (https://www.curseforge.com/wow/addons/masque/localization)
 	or contribute directly on GitHub (https://github.com/SFX-WoW/Masque).
 
 ]]
@@ -32,20 +32,28 @@ L["API"] = "API"
 -- L["You must have an add-on that supports Masque installed to use it."] = "You must have an add-on that supports Masque installed to use it."
 
 ----------------------------------------
--- Classic Skin
+-- Blizzard Classic Skin
 ---
 
--- L["An improved version of the game's default button style."] = "An improved version of the game's default button style."
+-- L["The default Classic button style."] = "The default Classic button style."
+
+----------------------------------------
+-- Blizzard Modern Skin
+---
+
+-- L["The default Dragonflight button style."] = "The default Dragonflight button style."
+
+----------------------------------------
+-- Classic Redux Skin
+---
+
+-- L["A modified version of the Classic button style."] = "A modified version of the Classic button style."
 
 ----------------------------------------
 -- Core Settings
 ---
 
 L["About"] = "À propos"
--- L["Click to load Masque's options."] = "Click to load Masque's options."
-L["Load Options"] = "Options de chargement"
--- L["Masque's options are load on demand. Click the button below to load them."] = "Masque's options are load on demand. Click the button below to load them."
--- L["This action will increase memory usage."] = "This action will increase memory usage."
 -- L["This section will allow you to view information about Masque and any skins you have installed."] = "This section will allow you to view information about Masque and any skins you have installed."
 
 ----------------------------------------
@@ -140,6 +148,7 @@ L["Profile Settings"] = "Paramètres de Profil"
 -- Skin Settings
 ---
 
+-- L["Adjust the scale of this group's skin."] = "Adjust the scale of this group's skin."
 L["Backdrop"] = "Paramètres de fond"
 L["Checked"] = "Coché"
 L["Color"] = "Couleur"
@@ -147,8 +156,8 @@ L["Colors"] = "Couleurs"
 L["Cooldown"] = "Cooldown"
 L["Disable"] = "Désactiver"
 L["Disable the skinning of this group."] = "Désactiver le skin (style) de ce groupe."
-L["Disabled"] = "Désactivé"
 L["Enable"] = "Activer"
+-- L["Enable skin scaling."] = "Enable skin scaling."
 L["Enable the Backdrop texture."] = "Activer la texture de fond."
 -- L["Enable the Gloss texture."] = "Enable the Gloss texture."
 -- L["Enable the Shadow texture."] = "Enable the Shadow texture."
@@ -162,10 +171,10 @@ L["Normal"] = "Normal"
 L["Pushed"] = "Enfoncé"
 L["Reset all skin options to the defaults."] = "Restaure les couleurs par défauts."
 L["Reset Skin"] = "Réinit. toutes les couleurs"
+-- L["Scale"] = "Scale"
 L["Set the color of the Backdrop texture."] = "Définir la couleur de la texture de fond."
 L["Set the color of the Checked texture."] = "Définir la couleur de la texture cochée."
 L["Set the color of the Cooldown animation."] = "Définir la couleur de l'animation du cooldown"
-L["Set the color of the Disabled texture."] = "Définir la couleur de la texture désactivée."
 L["Set the color of the Flash texture."] = "Définir la couleur de la texture clignotante."
 L["Set the color of the Gloss texture."] = "Définir la couleur de la texture du vernis. "
 L["Set the color of the Highlight texture."] = "Définir la couleur de la surbrillance."

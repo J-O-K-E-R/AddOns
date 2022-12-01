@@ -1,7 +1,7 @@
-
 	local _detalhes = 		_G._detalhes
-	local _
+	local _ = nil
 	_detalhes.custom_function_cache = {}
+	local addonName, Details222 = ...
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --local pointers
@@ -1160,6 +1160,14 @@
 		end
 	end
 
+	function Details222.GetCustomDisplayIDByName(customDisplayName)
+		for customDisplayID, customObject in ipairs(_detalhes.custom) do
+			if (customObject.name == customDisplayName) then
+				return customDisplayID
+			end
+		end
+	end
+
 	function _detalhes:AddDefaultCustomDisplays()
 
 		local PotionUsed = {
@@ -1588,7 +1596,7 @@
 
 				    local class, _, _, _, _, r, g, b = _detalhes:GetClass(target [1])
 				    if (class and class ~= "UNKNOW") then
-					local texture, l, r, t, b = _detalhes:GetClassIcon (class)
+					local texture, l, r, t, b = _detalhes:GetClassIcon(class)
 					GameCooltip:AddIcon ("Interface\\AddOns\\Details\\images\\classes_small_alpha", 1, 1, _detalhes.tooltip.line_height, _detalhes.tooltip.line_height, l, r, t, b)
 				    else
 					GameCooltip:AddIcon ("Interface\\GossipFrame\\IncompleteQuestIcon", 1, 1, _detalhes.tooltip.line_height, _detalhes.tooltip.line_height)
@@ -1722,7 +1730,7 @@
 
 				    local class, _, _, _, _, r, g, b = _detalhes:GetClass(t [1])
 				    if (class and class ~= "UNKNOW") then
-					local texture, l, r, t, b = _detalhes:GetClassIcon (class)
+					local texture, l, r, t, b = _detalhes:GetClassIcon(class)
 					GameCooltip:AddIcon ("Interface\\AddOns\\Details\\images\\classes_small_alpha", 1, 1, _detalhes.tooltip.line_height, _detalhes.tooltip.line_height, l, r, t, b)
 				    else
 					GameCooltip:AddIcon ("Interface\\GossipFrame\\IncompleteQuestIcon", 1, 1, _detalhes.tooltip.line_height, _detalhes.tooltip.line_height)
@@ -2258,6 +2266,7 @@
 
 		local DynamicOverallDamage = {
 			name = Loc ["STRING_CUSTOM_DYNAMICOVERAL"], --"Dynamic Overall Damage",
+			displayName = Loc ["STRING_ATTRIBUTE_DAMAGE_DONE"],
 			icon = [[Interface\Buttons\Spell-Reset]],
 			attribute = false,
 			spellid = false,

@@ -10,7 +10,7 @@
 --				This script is called directly after the Core.lua file. 	  --
 --------------------------------------------------------------------------------
 
--- Globals that Blizzard broke/removed in 10.0
+-- These globals somehow are not available in game despite being in GlobalStrings.lua from wow.tools
 CHARACTER_TYPE_FRAME_TRIAL_BOOST_CHARACTER = "Class Trial";
 CHARACTER_UPGRADE_CHARACTER_LIST_LABEL = "Character Boost";
 
@@ -126,7 +126,7 @@ app.L = {
 	["OPEN_AUTOMATICALLY"] = "Open Automatically";
 	["OPEN_AUTOMATICALLY_DESC"] = "If you aren't a Blizzard Developer, it might be a good idea to uncheck this. This was done to force Blizzard to fix and/or acknowledge these bugs.";
 	["TWO_CLOAKS"] = "|cffFF0000These two cloaks have very limited confirmed drops if any and are presumed broken!|r";
-	["OGOM_THE_MANGLER_DESC"] = "|cffFF0000Ogom the Mangler seems just to spawn when you are doing the Daily 'Assualt on the Iron Siegeworks'. This Quest wasn't active since the start of Legion and the buyable Quest 'Missive: Assault on the Iron Siegeworks' does not work either.|r";
+	["OGOM_THE_MANGLER_DESC"] = "|cffFF0000Ogom the Mangler seems just to spawn when you are doing the Daily 'Assault on the Iron Siegeworks'. This Quest wasn't active since the start of Legion and the buyable Quest 'Missive: Assault on the Iron Siegeworks' does not work either.|r";
 	["HOLYDAY_DESC"] = "A specific holiday may need to be active for you to complete the referenced Things within this section.";
 	["DIFF_COMPLETED_1"] = "You have collected everything from this difficulty. Switch to ";
 	["DIFF_COMPLETED_2"] = " instead.";
@@ -499,6 +499,7 @@ app.L = {
 	["TOOLTIP_MOD_SHIFT"] = SHIFT_KEY_TEXT;
 	["TOOLTIP_MOD_CTRL"] = CTRL_KEY_TEXT;
 	["TOOLTIP_MOD_ALT"] = ALT_KEY_TEXT;
+	["TOOLTIP_MOD_CMD"] = CMD_KEY_TEXT;
 	["TOOLTIP_SHOW_LABEL"] = "Shown Information";
 	["SHOW_COLLECTION_PROGRESS_CHECKBOX"] = "Collection Progress";
 	["SHOW_COLLECTION_PROGRESS_CHECKBOX_TOOLTIP"] = "Enable this option if you want to see your progress towards collecting a Thing or completing a group of Things at the Top Right of its tooltip.\n\nWe recommend that you keep this setting turned on.";
@@ -524,7 +525,7 @@ app.L = {
 	["INCLUDE_ORIGINAL_CHECKBOX_TOOLTIP"] = "Enable this option if you actually liked seeing the original source info within the Shared Appearances list in the tooltip.";
 	["ONLY_RELEVANT_CHECKBOX"] = "Only Relevant";
 	["ONLY_RELEVANT_CHECKBOX_TOOLTIP"] = "Enable this option if you only want to see shared appearances that your character can unlock.\n\nNOTE: We recommend you keep this off as knowing the unlock requirements for an item can be helpful in identifying why an item is Not Collected.";
-	["PROFESSION_CHECKBOX"] = "Professions";
+	["PROFESSION_CHECKBOX"] = TRADE_SKILLS;	-- Professions
 	["PROFESSION_CHECKBOX_TOOLTIP"] = "Enable this option if you want to see the profession requirements in the tooltip.";
 	["LEVELREQ_CHECKBOX"] = "Levels";
 	["LEVELREQ_CHECKBOX_TOOLTIP"] = "Enable this option if you want to see the level requirements in the tooltip.";
@@ -628,7 +629,7 @@ app.L = {
 	["ADD_LINKED_CHARACTER_ACCOUNT"] = "Add Linked Character / Account";
 	["ADD_LINKED_CHARACTER_ACCOUNT_TOOLTIP"] = "Click here to link a character or account to your account.";
 	["ADD_LINKED_POPUP"] = "Please type the name of the character or BNET account to link to.";
-	["CHARACTERS"] = "Characters";
+	["CHARACTERS"] = REALM_CHARACTERS;	-- Characters
 	["SYNC_CHARACTERS_TOOLTIP"] = "This shows all of the characters on your account.";
 	["NO_CHARACTERS_FOUND"] = "No characters found.";
 	["LINKED_ACCOUNTS"] = "Linked Accounts";
@@ -651,7 +652,7 @@ app.L = {
 	["TOGGLE_COMPLETIONIST_MODE"] = "Toggle Completionist Mode";
 	["TOGGLE_DEBUG_MODE"] = "Toggle Debug Mode";
 	["TOGGLE_FACTION_MODE"] = "Toggle Faction Mode";
-	["PREFERENCES"] = "Preferences";
+	["PREFERENCES"] = PREFERENCES;	-- Preferences
 	["TOGGLE_COMPLETEDTHINGS"] = "Toggle Completed Things (Both)";
 	["TOGGLE_COMPLETEDGROUPS"] = "Toggle Completed Groups";
 	["TOGGLE_COLLECTEDTHINGS"] = "Toggle Collected Things";
@@ -685,10 +686,12 @@ app.L = {
 	["SECRETS_HEADER"] = "Secrets";
 	["LIMITED_QUANTITY"] = "This has a limited quantity and may not always be present on the vendor.";
 	["SOURCE_ID_MISSING"] = "Please report this Item and where it was acquired to the ATT Discord in #retail-errors!";
+	["ADDED_WITH_PATCH_FORMAT"] = "This gets added in patch %s";
 	["REMOVED_WITH_PATCH_FORMAT"] = "This gets removed in patch %s";
 
 	-- Filter Text
 	["ACHIEVEMENT_ID"] = "Achievement ID";
+	["ACHIEVEMENT_CATEGORY_ID"] = "Achievement Category ID";
 	["ARTIFACT_ID"] = "Artifact ID";
 	["AZERITE_ESSENCE_ID"] = "Azerite Essence ID";
 	["CREATURE_ID"] = "Creature ID";
@@ -698,6 +701,7 @@ app.L = {
 	["EXPANSION_ID"] = "Expansion ID";
 	["FILTER_ID"] = "Filter ID";
 	["FOLLOWER_ID"] = "Follower ID";
+	["HEADER_ID"] = "Header ID";
 	["ILLUSION_ID"] = "Illusion ID";
 	["INSTANCE_ID"] = "Instance ID";
 	["ITEM_ID"] = "Item ID";
@@ -1017,6 +1021,7 @@ app.L = {
 		[-60] = "Interface\\Icons\\inv_thanksgiving_turkey",								-- Pilgrim's Bounty
 		[-61] = "Interface\\Icons\\achievement_worldevent_merrymaker",						-- The Feast of Winter Veil
 		[-62] = "Interface\\Icons\\inv_misc_fish_06",										-- Stranglethorn Fishing Extravaganza
+		[-63] = "Interface\\Icons\\inv_fishingpole_03",										-- Kalu'ak Fishing Derby
 	-- Maraudon
 		[-69] = "Interface\\Icons\\spell_arcane_portalironforge",							-- Maraudon Purple
 		[-70] = "Interface\\Icons\\INV_Jewelcrafting_ArgusGemUncut_Orange_MiscIcons",		-- Orange
@@ -1082,7 +1087,7 @@ app.L = {
 		[-157] = "Interface\\Icons\\achievement_zone_hinterlands_01",						-- The Hinterlands Activated
 		[-158] = "Interface\\Icons\\achievement_zone_feralas",								-- Feralas Activated
 	-- Class Trial
-		[-160] = 236568,																	-- Level 60 Class Trial
+		[-160] = 236567,																	-- Level 60 Class Trial
 	-- Junkboxes
 		[-165] = "Interface\\Icons\\inv_box_01",											-- Junkboxes
 	-- Emissary
@@ -1206,8 +1211,9 @@ app.L = {
 	-- Blizzard Events and Anniversaries
 		[-519] = app.asset("Category_Event"),												-- World Events
 		[-520] = "Interface\\Icons\\inv_misc_missilesmallcluster_green",					-- Expansion Pre-Launch
-		[-522] = "Interface\\Icons\\expansionicon_wrathofthelichking",						-- Wotlk: Zombie Infestation
-		[-523] = "Interface\\Icons\\expansionicon_cataclysm",								-- Cataclysm: Elemental Unrest
+		[-522] = "Interface\\Icons\\inv_misc_tournaments_banner_troll",						-- Zalazane's Fall
+		[-523] = app.asset("Expansion_CATA"),												-- Elemental Unrest
+		[-524] = "Interface\\Icons\\inv_misc_tournaments_symbol_gnome",						-- Operation: Gnomeregan
 		[-525] = "Interface\\Icons\\Achievement_Boss_Blackhand",							-- WoD: Iron Horde Incursion
 		[-526] = "Interface\\Icons\\inv_legionadventure",									-- Legion: Legion Invasion
 		[-527] = "Interface\\Icons\\Spell_Shaman_StormEarthFire",							-- BFA: War of the Thorns
@@ -1388,6 +1394,7 @@ app.L = {
 		[-987] = 2178509,																	-- The Upper Reaches
 		-- 9.2
 		[-988] = select(10, GetAchievementInfo(15402)),										-- Cypher of the First Ones
+		[-999] = "Interface\\Icons\\inv_misc_questionmark",									-- Sourceless
 		--
 	-- Sets
 		[-1000] = "Interface\\Icons\\achievement_transmog_collections",						-- Sets
@@ -1404,19 +1411,23 @@ app.L = {
 		[-1010] = "Interface\\Worldmap\\GlowSkull_64Purple",
 		[-1011] = "Interface\\Worldmap\\GlowSkull_64Red",
 	-- Temp
-		[-1098] = 236785,																			-- Side Quests
 		[-1099] = "Interface\\Icons\\inv_legioncampaign04",											-- Campaign
 	-- Dragonflight
-		[-1100] = "Interface\\Icons\\ability_dragonriding_glyph01",									-- Dragon Customization
+		[-1100] = "Interface\\Icons\\ability_dragonriding_glyph01",									-- Drakewatcher Manuscripts
 		[-1101] = "Interface\\Icons\\inv_10_dungeonjewelry_primalist_trinket_1ragingelement_air",	-- Primal Storms
+		[-1102] = "Interface\\Icons\\ability_evoker_dragonrage2",									-- Wrathion & Sabellian
 		[-1110] = "Interface\\Icons\\ui_majorfaction_expedition",									-- Dragonscale Expedition
 		[-1111] = "Interface\\Icons\\inv_cape_special_climbingpack_b_01",							-- Climbing
+		[-1112] = "Interface\\Icons\\inv_misc_-selfiecamera_01",									-- Cataloging
 		[-1120] = "Interface\\Icons\\ui_majorfaction_centaur",										-- Maruuk Centaur
 		[-1121] = "Interface\\Icons\\ability_racial_returntocamp",									-- Clan Aylaag
 		[-1122] = "Interface\\Icons\\inv_scroll_11",												-- Grand Hunts
 		[-1130] = "Interface\\Icons\\ui_majorfaction_tuskarr",										-- Iskaara Tuskarr
 		[-1131] = "Interface\\Icons\\inv_polearm_2h_kultirasharpoon_a_01",							-- Iskaara Fishing
+		[-1132] = "Interface\\Icons\\inv_tradeskill_cooking_stonesouppot01",						-- Community Feast
 		[-1140] = "Interface\\Icons\\ui_majorfaction_valdrakken",									-- Valdrakken Accord
+		[-1141] = "Interface\\Icons\\inv_artifact_dragonscales",									-- Siege on Dragonbane Keep
+		[-1142] = "Interface\\Icons\\inv_checkered_flag",											-- Aerial Challenges
 	-- Warrior order hall lore items
 		[-2200] = "Interface\\Icons\\inv_scroll_11",										-- Warrior order hall lore item
 		[-2201] = "Interface\\Icons\\inv_scroll_11",										-- Warrior order hall lore item
@@ -1489,8 +1500,6 @@ app.L = {
 	-- Shadowlands Achievement Headers
 	-- 9.1
 		[-10083] = "236373",														-- Covenant Assaults
-	-- DF Temp
-		[-11000] = "4191335",														-- Dragonflight
 	--	hopefully temp custom NPCs, these objects do not have data on wowhead atm
 		[-1433951] = "3854020",															-- Broken Mirror
 		[-1433952] = "3854020",															-- Broken Mirror
@@ -1564,6 +1573,7 @@ app.L = {
 		[-60] = select(1,GetCategoryInfo(14981)),								-- Pilgrim's Bounty
 		[-61] = GetSpellInfo(21953),											-- The Feast of Winter Veil
 		[-62] = "Stranglethorn Fishing Extravaganza",							-- Stranglethorn Fishing Extravaganza
+		[-63] = "Kalu'ak Fishing Derby",										-- Kalu'ak Fishing Derby
 
 		[-69] = GetSpellInfo(21127),											-- Maraudon Portal
 		[-70] = DUNGEON_FLOOR_DESOLACE22.." - "..GetSpellInfo(251097),			-- Foulspore Cavern [Orange]
@@ -1756,8 +1766,9 @@ app.L = {
 	-- Blizzard Events and Anniversaries
 		[-519] = "World Events",												-- World Events
 		[-520] = "Expansion Pre-Launch",										-- Expansion Pre-Launch
-		[-522] = EXPANSION_NAME2..": Zombie Infestation",						-- Wrath of the Lich King: Zombie Infestation
-		[-523] = EXPANSION_NAME3..": Elemental Unrest",							-- Cataclysm: Elemental Unrest
+		[-522] = "Zalazane's Fall",												-- Zalazane's Fall
+		[-523] = "Elemental Unrest",											-- Elemental Unrest
+		[-524] = select(2, GetAchievementInfo(4786)),							-- Operation: Gnomeregan
 		[-525] = EXPANSION_NAME5..": Iron Horde Incursion",						-- Warlords of Draenor: Iron Horde Incursion
 		[-526] = EXPANSION_NAME6..": Legion Invasion",							-- Legion: Legion Invasion
 		[-527] = EXPANSION_NAME7..": War of the Thorns",						-- Battle for Azeroth: War of the Thorns
@@ -1885,7 +1896,7 @@ app.L = {
 		[-854] = "DPS",															-- DPS
 		[-855] = "Healers",														-- Healers
 		[-856] = "Tanks",														-- Tanks
-		[-857] = "Mythic+",														-- Mythic+
+		[-857] = PLAYER_DIFFICULTY_MYTHIC_PLUS,									-- Mythic+
 		[-858] = string.format(AZERITE_ESSENCE_RANK, 1),						-- Rank 1
 		[-859] = string.format(AZERITE_ESSENCE_RANK, 2),						-- Rank 2
 		[-860] = string.format(AZERITE_ESSENCE_RANK, 3),						-- Rank 3
@@ -1945,7 +1956,7 @@ app.L = {
 		[-955] = "High Inquisitors",											-- High Inquisitors
 		[-956] = "Grand Inquisitors",											-- Grand Inquisitors
 		[-960] = COVENANT_SANCTUM_FEATURE_VENTHYR,								-- The Ember Court
-		[-967] = "Mirror Restoration",											-- "Mirror Restoration",
+		[-967] = "Mirror Restoration",											-- Mirror Restoration
 		[-968] = "Set A",														-- Set A
 		[-969] = "Set B",														-- Set B
 		[-970] = "Set C",														-- Set C
@@ -1959,6 +1970,7 @@ app.L = {
 		[-987] = select(2, GetAchievementInfo(14493)),							-- The Upper Reaches
 		-- 9.2
 		[-988] = select(2, GetAchievementInfo(15402)),							-- Cypher of the First Ones
+	[-999] = MINIMAP_TRACKING_HIDDEN_QUESTS,								-- Hidden Quests, note that it's different from HIDDEN_QUEST_TRIGGERS
 	-- Sets
 		[-1000] = WARDROBE_SETS, 												-- Sets
 		--[-1002] = "Dutiful Spirit",												-- Dutiful Spirit
@@ -1973,19 +1985,23 @@ app.L = {
 		[-1010] = "Gladiator Alternative",											-- Gladiator Alternative
 		[-1011] = "Elite Alternative",												-- Elite Alternative
 	-- Temp
-		[-1098] = "Side Quests",													-- Side Quests
 		[-1099] = TRACKER_HEADER_CAMPAIGN_QUESTS,									-- Campaign
 	-- Dragonflight
-		[-1100] = "Dragon Customization",											-- Dragon Customization
+		[-1100] = "Drakewatcher Manuscripts",										-- Drakewatcher Manuscripts
 		[-1101] = "Primal Storms",													-- Primal Storms
+		[-1102] = "Wrathion & Sabellian",											-- Wrathion & Sabellian
 		[-1110] = "Dragonscale Expedition",											-- Dragonscale Expedition
-		[-1111] = "Climbing",														-- Climbing
+		[-1111] = GetSpellInfo(365311),												-- Rock Climbing
+		[-1112] = GetSpellInfo(381284),												-- Cataloging
  		[-1120] = "Maruuk Centaur",													-- Maruuk Centaur
 		[-1121] = "Clan Aylaag",													-- Clan Aylaag
 		[-1122] = "Grand Hunts",													-- Grand Hunts
 		[-1130] = "Iskaara Tuskarr",												-- Iskaara Tuskarr
 		[-1131] = "Iskaara Fishing",												-- Iskaara Fishing
+		[-1132] = GetSpellInfo(386441),												-- Community Feast
 		[-1140] = "Valdrakken Accord",												-- Valdrakken Accord
+		[-1141] = GetSpellInfo(388945),												-- Siege on Dragonbane Keep
+		[-1142] = "Aerial Challenges",												-- Aerial Challenges
 	-- Warrior order hall lore items
 		[-2200] = "Great Odyn and the Firelord",
 		[-2201] = "The Wanderer and the Serpent",
@@ -2007,12 +2023,12 @@ app.L = {
 		[-4191] = ITEM_TOURNAMENT_GEAR,											-- Tournament Gear
 	-- Tier/Dungeon/Event/Holiday Sets
 		-- Artifact Strings
-		[-5200] = "Base Appearance",
-		[-5201] = "Class Hall Campaign",
-		[-5202] = "Balance of Power",
-		[-5203] = "Prestige Rewards",
-		[-5204] = "Challenge Appearance",
-		[-5205] = "Hidden Appearance",
+		[-5200] = "Base Appearance",											-- Base Appearance
+		[-5201] = "Class Hall Campaign",										-- Class Hall Campaign
+		[-5202] = "Balance of Power",											-- Balance of Power
+		[-5203] = "Prestige Rewards",											-- Prestige Rewards
+		[-5204] = "Challenge Appearance",										-- Challenge Appearance
+		[-5205] = "Hidden Appearance",											-- Hidden Appearance
 		-- Class Sets
 		[-5350] = CHARACTER_TYPE_FRAME_TRIAL_BOOST_CHARACTER.." Item Sets",		-- Class Trial Item Sets
 		-- Note!! We are localizing them here so when we filter the achievement we don't filter the entire section which is bad!
@@ -2068,7 +2084,6 @@ app.L = {
 	-- Shadowlands Achievement Headers
 	-- 9.1
 		[-10083] = "Covenant Assaults",											-- Covenant Assaults
-		[-11000] = "Dragonflight",												-- Dragonflight
 	--	hopefully temp objects, these currently do not have accessible object data on wowhead
 		[-1433951] = "Broken Mirror A-1",										-- Broken Mirror
 		[-1433952] = "Broken Mirror A-2",										-- Broken Mirror
@@ -2190,6 +2205,7 @@ app.L = {
 		[1015] = {4, "|CFF00FFDEThis requires the Stranglethorn Fishing Extravaganza to be active.|r", "Stranglethorn Fishing Extravaganza"},
 		[1016] = {4, "|CFF00FFDEThis requires the Timewalking Event to be active.|r", "Timewalking"},
 		[1017] = {4, "|CFF00FFDEThis requires the WoW's Anniversary Event to be active.|r", "WoW's Anniversary"},
+		[1018] = {4, "|CFF00FFDEThis requires the Kalu'ak Fishing Derby to be active.|r", "Kalu'ak Fishing Derby"},
 	};
 
 	["CUSTOM_COLLECTS_REASONS"] = {

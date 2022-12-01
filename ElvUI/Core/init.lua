@@ -81,7 +81,7 @@ E.twoPixelsPlease = false -- changing this option is not supported! :P
 -- Expansions
 E.Retail = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
 E.Classic = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
-E.TBC = WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC
+E.TBC = WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC -- not used
 E.Wrath = WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC
 
 -- Item Qualitiy stuff, also used by MerathilisUI
@@ -124,12 +124,17 @@ do
 	E:AddLib('SimpleSticky', 'LibSimpleSticky-1.0')
 	E:AddLib('RangeCheck', 'LibRangeCheck-2.0')
 	E:AddLib('CustomGlow', 'LibCustomGlow-1.0')
-	E:AddLib('ItemSearch', 'LibItemSearch-1.2-ElvUI')
-	E:AddLib('Compress', 'LibCompress')
-	E:AddLib('Base64', 'LibBase64-1.0-ElvUI')
+	E:AddLib('Deflate', 'LibDeflate')
 	E:AddLib('Masque', 'Masque', true)
 	E:AddLib('Translit', 'LibTranslit-1.0')
 	E:AddLib('Dispel', 'LibDispel-1.0')
+
+	-- libraries used for options
+	E:AddLib('AceGUI', 'AceGUI-3.0')
+	E:AddLib('AceConfig', 'AceConfig-3.0-ElvUI')
+	E:AddLib('AceConfigDialog', 'AceConfigDialog-3.0-ElvUI')
+	E:AddLib('AceConfigRegistry', 'AceConfigRegistry-3.0-ElvUI')
+	E:AddLib('AceDBOptions', 'AceDBOptions-3.0')
 
 	if E.Retail or E.Wrath then
 		E:AddLib('DualSpec', 'LibDualSpec-1.0')
@@ -148,7 +153,6 @@ do
 		end
 	end
 
-	-- added on ElvUI_OptionsUI load: AceGUI, AceConfig, AceConfigDialog, AceConfigRegistry, AceDBOptions
 	-- backwards compatible for plugins
 	E.LSM = E.Libs.LSM
 	E.UnitFrames.LSM = E.Libs.LSM
@@ -273,7 +277,7 @@ function E:OnInitialize()
 		E.Minimap:SetGetMinimapShape() -- This is just to support for other mods, keep below UIMult
 	end
 
-	if E.Classic or E.TBC then
+	if E.Classic then
 		RegisterCVar('fstack_showhighlight', '1')
 	end
 

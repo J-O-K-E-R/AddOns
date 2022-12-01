@@ -2,11 +2,12 @@
 
 	local _detalhes = 		_G._detalhes
 	local _
+	local addonName, Details222 = ...
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --local pointers
 
-	local _setmetatable = setmetatable --lua local
+	local setmetatable = setmetatable --lua local
 	local ipairs = ipairs --lua local
 	local _UnitAura = UnitAura --api local
 

@@ -432,7 +432,7 @@ local function OnClick(_, btn)
 	end
 
 	if btn == "RightButton" then
-		E:ToggleOptionsUI()
+		E:ToggleOptions()
 		E.Libs["AceConfigDialog"]:SelectGroup("ElvUI", "sle", "modules", "datatext", "sldatatext", "slfriends")
 	end
 end
@@ -575,7 +575,6 @@ function OnEnter(self)
 
 		tooltip:SmartAnchorTo(self)
 		tooltip:SetAutoHideDelay(E.db.sle.dt.friends.tooltipAutohide, self)
-		tooltip:SetScript("OnShow", function(ttskinself) ttskinself:SetTemplate('Transparent') end)
 	end
 
 	line = tooltip:AddLine()

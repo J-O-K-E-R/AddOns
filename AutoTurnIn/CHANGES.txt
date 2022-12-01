@@ -1,10 +1,12 @@
-lightweight tag fa680b1c3e11a9bf68d685577aebb724ab0bab19 9.1.15
-Author:	GitHub <noreply@github.com>
-Date:	Tue Oct 11 15:17:22 2022 -0400
+tag 04988a13a67c3c93cf8ca14d3617492b79291532 10.0.15
+Author:	Lure <alex.shubert@gmail.com>
+Date:	Wed Nov 23 20:58:44 2022 -0500
 
-commit fa680b1c3e11a9bf68d685577aebb724ab0bab19
-Author: Alex Shubert <lure@users.noreply.github.com>
-Date:   Tue Oct 11 15:17:22 2022 -0400
+minor update, just few gossips
 
-    Update AutoTurnIn.toc
+commit 8d06a40351145064d5e3b80d9ef8a84401eeb6ca
+Author: Lure <alex.shubert@gmail.com>
+Date:   Wed Nov 23 20:58:15 2022 -0500
+
+    add some NPC
 

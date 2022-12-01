@@ -18,11 +18,11 @@ local _, Core = ...
 -- Internal
 ---
 
--- @ Skins\Regions
-local Settings = Core.RegTypes.Legacy
-
 -- @ Skins\Default
 local Defaults = Core.DEFAULT_SKIN
+
+-- @ Skins\Regions
+local Settings = Core.RegTypes.Legacy
 
 -- @ Core\Utility
 local GetColor, GetSize, GetTexCoords = Core.GetColor, Core.GetSize, Core.GetTexCoords
@@ -67,20 +67,17 @@ function Core.SkinTexture(Layer, Region, Button, Skin, Color, xScale, yScale)
 	if not Config.NoTexture then
 		local Atlas = Skin.Atlas
 		local Texture = Skin.Texture
+
 		Color = Color or Skin.Color
 
 		if StoreColor[Layer] then
 			local ColorKey = "__MSQ_"..Layer.."Color"
-
-			if Button.__MSQ_ArtHook then
-				Button[ColorKey] = Color
-			else
-				Button[ColorKey] = nil
-			end
+			Button[ColorKey] = Color
 		end
 
 		local SetColor = not Config.NoColor
 		local UseColor = Config.UseColor
+		local Coords
 
 		-- Skin
 		if Skin.UseColor and UseColor then
@@ -88,8 +85,8 @@ function Core.SkinTexture(Layer, Region, Button, Skin, Color, xScale, yScale)
 			Region:SetVertexColor(1, 1, 1, 1)
 			Region:SetColorTexture(GetColor(Color))
 		elseif Texture then
+			Coords = Skin.TexCoords
 			Region:SetTexture(Texture)
-			Region:SetTexCoord(GetTexCoords(Skin.TexCoords))
 
 			if SetColor then
 				Region:SetVertexColor(GetColor(Color))
@@ -118,8 +115,8 @@ function Core.SkinTexture(Layer, Region, Button, Skin, Color, xScale, yScale)
 					Region:SetVertexColor(GetColor(Default.Color))
 				end
 			elseif Texture then
+				Coords = Default.TexCoords
 				Region:SetTexture(Default.Texture)
-				Region:SetTexCoord(GetTexCoords(Default.TexCoords))
 
 				if SetColor then
 					Region:SetVertexColor(GetColor(Default.Color))
@@ -130,6 +127,8 @@ function Core.SkinTexture(Layer, Region, Button, Skin, Color, xScale, yScale)
 				Region:SetColorTexture(GetColor(Default.Color))
 			end
 		end
+
+		Region:SetTexCoord(GetTexCoords(Coords))
 	end
 
 	Region:SetBlendMode(Skin.BlendMode or Default.BlendMode or "BLEND")
@@ -141,7 +140,7 @@ function Core.SkinTexture(Layer, Region, Button, Skin, Color, xScale, yScale)
 	end
 
 	if Resize then
-		Region:SetSize(GetSize(Skin.Width, Skin.Height, xScale, yScale, Button.__MSQ_ReSize))
+		Region:SetSize(GetSize(Skin.Width, Skin.Height, xScale, yScale, Button))
 	end
 
 	local SetAllPoints = Skin.SetAllPoints or (not Skin.Point and Default.SetAllPoints)

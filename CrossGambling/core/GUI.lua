@@ -16,12 +16,18 @@ local BackdropBorder = {
 }
 
 local SetTemplate = function(self)
+	if not self.SetBackdrop then
+		Mixin(self, BackdropTemplateMixin)
+	end
 	self:SetBackdrop(Backdrop)
 	self:SetBackdropBorderColor(0, 0, 0)
 	self:SetBackdropColor(0.27, 0.27, 0.27)
 end
 
 local SetTemplateDark = function(self)
+	if not self.SetBackdrop then
+		Mixin(self, BackdropTemplateMixin)
+	end
 	self:SetBackdrop(Backdrop)
 	self:SetBackdropBorderColor(0, 0, 0)
 	self:SetBackdropColor(0.17, 0.17, 0.17)
@@ -82,7 +88,6 @@ CrossGamblingTheme:SetMovable(true)
 CrossGamblingTheme:EnableMouse(true)
 CrossGamblingTheme:SetUserPlaced(true)
 CrossGamblingTheme:SetResizable(true)
-CrossGamblingTheme:SetMinResize(227, 141)
 CrossGamblingTheme:RegisterForDrag("LeftButton")
 CrossGamblingTheme:SetScript("OnLeave", function()
 	self.db.global.themechoice = 0
@@ -167,7 +172,7 @@ end)
 
 ThemeConfirm.Label = ThemeConfirm:CreateFontString(nil, "OVERLAY")
 ThemeConfirm.Label:SetPoint("CENTER", ThemeConfirm, 0, 0)
-ThemeConfirm.Label:SetFont(Font, 12)
+ThemeConfirm.Label:SetFont("Fonts\\FRIZQT__.TTF", 11, "")
 ThemeConfirm.Label:SetJustifyH("CENTER")
 ThemeConfirm.Label:SetTextColor(unpack(FontColor))
 ThemeConfirm.Label:SetText("Confirm")
@@ -182,7 +187,6 @@ CrossGamblingUI:SetMovable(true)
 CrossGamblingUI:EnableMouse(true)
 CrossGamblingUI:SetUserPlaced(true)
 CrossGamblingUI:SetResizable(true)
-CrossGamblingUI:SetMinResize(227, 141)
 CrossGamblingUI:RegisterForDrag("LeftButton")
 CrossGamblingUI:SetScript("OnDragStart", CrossGamblingUI.StartMoving)
 CrossGamblingUI:SetScript("OnDragStop", CrossGamblingUI.StopMovingOrSizing)
@@ -215,7 +219,6 @@ SetTemplateDark(CGHost2Top)
 
 local ButtonOnEnter = function(self)
 	self:SetBackdropColor(0.27, 0.27, 0.27)
-	SetTemplateDark(GameTooltip)
 	GameTooltip:SetOwner(CGHost2Top, "ANCHOR_BOTTOMRIGHT", -2, 21)
 end
 
@@ -242,7 +245,7 @@ end)
 
 CGCHAT.Label = CGCHAT:CreateFontString(nil, "OVERLAY")
 CGCHAT.Label:SetPoint("CENTER", CGCHAT, 0, 0)
-CGCHAT.Label:SetFont(Font, 12)
+CGCHAT.Label:SetFont("Fonts\\FRIZQT__.TTF", 11, "")
 CGCHAT.Label:SetJustifyH("CENTER")
 CGCHAT.Label:SetTextColor(unpack(FontColor))
 CGCHAT.Label:SetText(self.game.chatMethod)
@@ -267,7 +270,7 @@ end)
 
 GameMode.Label = GameMode:CreateFontString(nil, "OVERLAY")
 GameMode.Label:SetPoint("CENTER", GameMode, 0, 0)
-GameMode.Label:SetFont(Font, 12)
+GameMode.Label:SetFont("Fonts\\FRIZQT__.TTF", 11, "")
 GameMode.Label:SetJustifyH("CENTER")
 GameMode.Label:SetTextColor(unpack(FontColor))
 GameMode.Label:SetText(self.game.mode)
@@ -311,7 +314,7 @@ EditBox:EnableMouse(true)
 local CrossGambling_EditBox = CreateFrame("EditBox", nil, EditBox)
 CrossGambling_EditBox:SetPoint("CENTER", EditBox, 0, 0)
 CrossGambling_EditBox:SetPoint("BOTTOMRIGHT", EditBox, -4, 2)
-CrossGambling_EditBox:SetFont(Font, 16)
+CrossGambling_EditBox:SetFont("Fonts\\FRIZQT__.TTF", 11, "")
 CrossGambling_EditBox:SetShadowColor(0, 0, 0)
 CrossGambling_EditBox:SetShadowOffset(1.25, -1.25)
 CrossGambling_EditBox:SetMaxLetters(6)
@@ -336,7 +339,7 @@ GuildCutBox:EnableMouse(true)
 local GuildCut = CreateFrame("EditBox", nil, GuildCutBox)
 GuildCut:SetPoint("CENTER", GuildCutBox, 0, 0)
 GuildCut:SetPoint("BOTTOMRIGHT", GuildCutBox, -4, 2)
-GuildCut:SetFont(Font, 16)
+GuildCut:SetFont("Fonts\\FRIZQT__.TTF", 11, "")
 GuildCut:SetText(self.db.global.houseCut)
 GuildCut:SetShadowColor(0, 0, 0)
 GuildCut:SetJustifyH("CENTER")
@@ -375,7 +378,7 @@ end)
 
 AcceptRolls.Label = AcceptRolls:CreateFontString(nil, "OVERLAY")
 AcceptRolls.Label:SetPoint("CENTER", AcceptRolls, 0, 0)
-AcceptRolls.Label:SetFont(Font, 12)
+AcceptRolls.Label:SetFont("Fonts\\FRIZQT__.TTF", 11, "")
 AcceptRolls.Label:SetJustifyH("CENTER")
 AcceptRolls.Label:SetText("Host Game")
 AcceptRolls.Label:SetShadowOffset(1.25, -1.25)
@@ -390,7 +393,7 @@ ChatFrame:Hide()
 ChatFrame.Chat = CreateFrame("ScrollingMessageFrame", nil, ChatFrame)
 ChatFrame.Chat:SetPoint("CENTER", ChatFrame, 2, -10)
 ChatFrame.Chat:SetSize(ChatFrame:GetWidth() - 8, ChatFrame:GetHeight() - 30)
-ChatFrame.Chat:SetFont(Font, 12)
+ChatFrame.Chat:SetFont("Fonts\\FRIZQT__.TTF", 11, "")
 ChatFrame.Chat:SetShadowColor(0, 0, 0)
 ChatFrame.Chat:SetShadowOffset(1.25, -1.25)
 ChatFrame.Chat:SetFading(false)
@@ -457,7 +460,7 @@ EditBox:EnableMouse(true)
 EditBox.Box = CreateFrame("EditBox", nil, EditBox)
 EditBox.Box:SetPoint("TOPLEFT", EditBox, 5, -1)
 EditBox.Box:SetPoint("BOTTOMRIGHT", EditBox, -5, 1)
-EditBox.Box:SetFont(Font, 12)
+EditBox.Box:SetFont("Fonts\\FRIZQT__.TTF", 11, "")
 EditBox.Box:SetText("|cffB0B0B0Chat...|r")
 EditBox.Box:SetShadowColor(0, 0, 0)
 EditBox.Box:SetShadowOffset(1.25, -1.25)
@@ -527,7 +530,7 @@ end)
 
 CGEnter.Label = CGEnter:CreateFontString(nil, "OVERLAY")
 CGEnter.Label:SetPoint("CENTER", CGEnter, 0, 0)
-CGEnter.Label:SetFont(Font, 12)
+CGEnter.Label:SetFont("Fonts\\FRIZQT__.TTF", 11, "")
 CGEnter.Label:SetJustifyH("CENTER")
 CGEnter.Label:SetTextColor(unpack(FontColor))
 CGEnter.Label:SetText("Join Game")
@@ -546,7 +549,7 @@ end)
 
 RollMe.Label = RollMe:CreateFontString(nil, "OVERLAY")
 RollMe.Label:SetPoint("CENTER", RollMe, 0, 0)
-RollMe.Label:SetFont(Font, 12)
+RollMe.Label:SetFont("Fonts\\FRIZQT__.TTF", 11, "")
 RollMe.Label:SetJustifyH("CENTER")
 RollMe.Label:SetTextColor(unpack(FontColor))
 RollMe.Label:SetText("Roll Me")
@@ -568,7 +571,7 @@ end)
 
 LastCall.Label = LastCall:CreateFontString(nil, "OVERLAY")
 LastCall.Label:SetPoint("CENTER", LastCall, 0, 0)
-LastCall.Label:SetFont(Font, 12)
+LastCall.Label:SetFont("Fonts\\FRIZQT__.TTF", 11, "")
 LastCall.Label:SetJustifyH("CENTER")
 LastCall.Label:SetTextColor(unpack(FontColor))
 LastCall.Label:SetText("Last Call")
@@ -590,7 +593,7 @@ end)
 
 RollGame.Label = RollGame:CreateFontString(nil, "OVERLAY")
 RollGame.Label:SetPoint("CENTER", RollGame, 0, 0)
-RollGame.Label:SetFont(Font, 12)
+RollGame.Label:SetFont("Fonts\\FRIZQT__.TTF", 11, "")
 RollGame.Label:SetJustifyH("CENTER")
 RollGame.Label:SetTextColor(unpack(FontColor))
 RollGame.Label:SetText("Start Rolling")
@@ -616,7 +619,7 @@ end)
 CGHostToggle.Arrow = CGHostToggle:CreateFontString(nil, "OVERLAY")
 CGHostToggle.Arrow:SetPoint("CENTER", CGHostToggle, "CENTER", 0, 0)
 CGHostToggle.Arrow:SetTextColor(unpack(FontColor))
-CGHostToggle.Arrow:SetFont(Font, 12)
+CGHostToggle.Arrow:SetFont("Fonts\\FRIZQT__.TTF", 11, "")
 CGHostToggle.Arrow:SetText("Options")
 CGHostToggle.Arrow:SetShadowOffset(1.25, -1.25)
 CGHostToggle.Arrow:SetShadowColor(0, 0, 0)
@@ -636,7 +639,7 @@ end)
 CGHostToggle.Arrow = CGHostToggle:CreateFontString(nil, "OVERLAY")
 CGHostToggle.Arrow:SetPoint("CENTER", CGHostToggle, "CENTER", 0, 0)
 CGHostToggle.Arrow:SetTextColor(unpack(FontColor))
-CGHostToggle.Arrow:SetFont(Font, 12)
+CGHostToggle.Arrow:SetFont("Fonts\\FRIZQT__.TTF", 11, "")
 CGHostToggle.Arrow:SetText("Main")
 CGHostToggle.Arrow:SetShadowOffset(1.25, -1.25)
 CGHostToggle.Arrow:SetShadowColor(0, 0, 0)
@@ -654,7 +657,7 @@ end)
 
 Close.Label = Close:CreateFontString(nil, "OVERLAY")
 Close.Label:SetPoint("CENTER", Close, 0, 0)
-Close.Label:SetFont(Font, 12)
+Close.Label:SetFont("Fonts\\FRIZQT__.TTF", 11, "")
 Close.Label:SetJustifyH("CENTER")
 Close.Label:SetTextColor(unpack(FontColor))
 Close.Label:SetText("Close")
@@ -679,7 +682,7 @@ end)
 
 ViewStats.X = ViewStats:CreateFontString(nil, "OVERLAY")
 ViewStats.X:SetPoint("CENTER", ViewStats, "CENTER", 1, -1)
-ViewStats.X:SetFont(Font, 12)
+ViewStats.X:SetFont("Fonts\\FRIZQT__.TTF", 11, "")
 ViewStats.X:SetTextColor(unpack(FontColor))
 ViewStats.X:SetText("Fame/Shame")
 ViewStats.X:SetShadowOffset(1.25, -1.25)
@@ -698,7 +701,7 @@ end)
 
 ViewStats.X = ViewStats:CreateFontString(nil, "OVERLAY")
 ViewStats.X:SetPoint("CENTER", ViewStats, "CENTER", 1, -1)
-ViewStats.X:SetFont(Font, 12)
+ViewStats.X:SetFont("Fonts\\FRIZQT__.TTF", 11, "")
 ViewStats.X:SetTextColor(unpack(FontColor))
 ViewStats.X:SetText("Full Stats")
 ViewStats.X:SetShadowOffset(1.25, -1.25)
@@ -776,11 +779,10 @@ local valuescale = function(val,valStep)
 function CrossScale()
 	self.db.global.scale = slider:GetValue()/100
 	CrossGamblingUI:SetScale(self.db.global.scale)
-	CrossGamblingUI:SetMinResize(227, 141)
 end
 CrossGambling_HouseCut.Label = CrossGambling_HouseCut:CreateFontString(nil, "OVERLAY")
 CrossGambling_HouseCut.Label:SetPoint("CENTER", CrossGambling_HouseCut, 0, 0)
-CrossGambling_HouseCut.Label:SetFont(Font, 12)
+CrossGambling_HouseCut.Label:SetFont("Fonts\\FRIZQT__.TTF", 11, "")
 CrossGambling_HouseCut.Label:SetText("Guild Cut (OFF)")
 CrossGambling_HouseCut.Label:SetJustifyH("CENTER")
 CrossGambling_HouseCut.Label:SetTextColor(unpack(FontColor))
@@ -800,7 +802,7 @@ end)
 
 OldTheme.Label = OldTheme:CreateFontString(nil, "OVERLAY")
 OldTheme.Label:SetPoint("CENTER", OldTheme, 0, 0)
-OldTheme.Label:SetFont(Font, 12)
+OldTheme.Label:SetFont("Fonts\\FRIZQT__.TTF", 11, "")
 OldTheme.Label:SetJustifyH("CENTER")
 OldTheme.Label:SetTextColor(unpack(FontColor))
 OldTheme.Label:SetText("Old Theme")
@@ -833,7 +835,7 @@ end)
 
 CGReset.Label = CGReset:CreateFontString(nil, "OVERLAY")
 CGReset.Label:SetPoint("CENTER", CGReset, 0, 0)
-CGReset.Label:SetFont(Font, 12)
+CGReset.Label:SetFont("Fonts\\FRIZQT__.TTF", 11, "")
 CGReset.Label:SetJustifyH("CENTER")
 CGReset.Label:SetTextColor(unpack(FontColor))
 CGReset.Label:SetText("Reset Stats")
@@ -879,31 +881,6 @@ local function Tab_OnClick(self)
 	self.content:Show();	
 end
 
-local function SetTabs(frame, numTabs, ...)
-	frame.numTabs = numTabs;
-	
-	local contents = {};
-	local frameName = frame:GetName();
-	
-	for i = 1, numTabs do	
-		local tab = CreateFrame("Button", frameName.."Tab"..i, frame, "CharacterFrameTabButtonTemplate");
-		tab:SetID(i);
-		tab:SetText(select(i, ...));
-		tab:SetScript("OnClick", Tab_OnClick);
-		
-		tab.content = CreateFrame("Frame", nil, CGConfigMenu.ScrollFrame);
-		tab.content:SetSize(308, 500);
-		tab.content:Hide();
-		
-		-- just for tutorial only:
-		table.insert(contents, tab.content);
-		
-	end
-	
-	Tab_OnClick(_G[frameName.."Tab1"]);
-	
-	return unpack(contents);
-end
 
 local SlotzContainer = CreateFrame("Frame", nil, CrossGamblingUI, BackdropTemplateMixin and "BackdropTemplate")
 SlotzContainer:SetPoint("TOPRIGHT", CrossGamblingUI, "TOPLEFT", 0, -20)
@@ -935,17 +912,16 @@ CGConfigMenu.ScrollFrame:SetPoint("TOPLEFT", SlotzContainer, "TOPLEFT", 4, -2)
 CGConfigMenu.ScrollFrame:SetPoint("BOTTOMRIGHT", SlotzContainer, "BOTTOMRIGHT", -3, 4)
 CGConfigMenu.ScrollFrame:SetClipsChildren(true)
 CGConfigMenu.ScrollFrame:SetScript("OnMouseWheel", ScrollFrame_OnMouseWheel);	
-local content1 = SetTabs(CGConfigMenu, 1, "Appearance")
-	
-local PlayerSlotz = CreateFrame("Frame", nil, content1, BackdropTemplateMixin and "BackdropTemplate")
-PlayerSlotz:SetPoint("CENTER", content1, "CENTER", 2, 0)
+
+local PlayerSlotz = CreateFrame("Frame", nil, SlotzContainer, BackdropTemplateMixin and "BackdropTemplate")
+PlayerSlotz:SetPoint("CENTER", SlotzContainer, "CENTER", 2, 0)
 PlayerSlotz:SetSize(220, 10)
 PlayerSlotz:Show()
 
 local SortPlayers = function()
 	for i = 1, #Players do
 		if (i == 1) then
-			Players[i]:SetPoint("TOPLEFT", content1, "TOPLEFT", 0, -3)
+			Players[i]:SetPoint("TOPLEFT", SlotzContainer, "TOPLEFT", 0, -3)
 		else
 			Players[i]:SetPoint("TOP", Players[i-1], "BOTTOM", 0, -2)
 		end
@@ -994,7 +970,7 @@ function CrossGambling:AddPlayer(playerName)
 
 	PlayerSlot.Label = PlayerSlot:CreateFontString(nil, "OVERLAY")
 	PlayerSlot.Label:SetPoint("LEFT", PlayerSlot, 4, 0)
-	PlayerSlot.Label:SetFont(Font, 12)
+	PlayerSlot.Label:SetFont("Fonts\\FRIZQT__.TTF", 11, "")
 	PlayerSlot.Label:SetJustifyH("LEFT")
 	PlayerSlot.Label:SetTextColor(unpack(FontColor))
 	PlayerSlot.Label:SetText(playerName)
@@ -1009,7 +985,7 @@ function CrossGambling:AddPlayer(playerName)
 
 	PlayerSlot.Total = PlayerSlot.TotalFrame:CreateFontString(nil, "OVERLAY", BackdropTemplateMixin and "BackdropTemplate")
 	PlayerSlot.Total:SetPoint("CENTER", PlayerSlot.TotalFrame, -7, 0)
-	PlayerSlot.Total:SetFont(Font, 12)
+	PlayerSlot.Total:SetFont("Fonts\\FRIZQT__.TTF", 11, "")
 	PlayerSlot.Total:SetJustifyH("CENTER")
 	PlayerSlot.Total:SetTextColor(unpack(FontColor))
 	PlayerSlot.Total:SetShadowOffset(1.25, -1.25)

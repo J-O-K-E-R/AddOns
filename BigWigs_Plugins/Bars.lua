@@ -1125,7 +1125,7 @@ do
 						name = L.emphasizeAt,
 						order = 6,
 						min = 6,
-						max = 30,
+						max = 60, softMax = 30, -- Don't encourage bars longer than 30s in the GUI
 						step = 1,
 					},
 					fontSizeEmph = {
@@ -1554,11 +1554,7 @@ do
 		display:SetMovable(true)
 		display:SetResizable(true)
 		display:RegisterForDrag("LeftButton")
-		if display.SetResizeBounds then -- XXX Dragonflight compat
-			display:SetResizeBounds(80, 8)
-		else
-			display:SetMinResize(80, 8)
-		end
+		display:SetResizeBounds(80, 8)
 		display:SetFrameStrata("HIGH")
 		display:SetFixedFrameStrata(true)
 		display:SetFrameLevel(title == "BigWigsAnchor" and 10 or 15)

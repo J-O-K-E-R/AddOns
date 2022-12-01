@@ -7,7 +7,7 @@
 -- Main non-UI code
 ------------------------------------------------------------
 
-PawnVersion = 2.0706
+PawnVersion = 2.0713
 
 -- Pawn requires this version of VgerCore:
 local PawnVgerCoreVersionRequired = 1.17
@@ -327,28 +327,43 @@ function PawnInitialize()
 	hooksecurefunc("LootWonAlertFrame_SetUp", PawnUI_LootWonAlertFrame_SetUp)
 
 	-- The "currently equipped" tooltips (two, in case of rings, trinkets, and dual wielding)
-	hooksecurefunc(ShoppingTooltip1, "SetCompareItem",
-		function(self, ...)
-			local _, ItemLink1 = ShoppingTooltip1:GetItem()
-			PawnUpdateTooltip("ShoppingTooltip1", "SetCompareItem", ItemLink1, ...)
-			PawnAttachIconToTooltip(ShoppingTooltip1, true)
-			local _, ItemLink2 = ShoppingTooltip2:GetItem()
-			if ItemLink2 and ShoppingTooltip2:IsShown() then
-				PawnUpdateTooltip("ShoppingTooltip2", "SetHyperlink", ItemLink2, ...)
-				PawnAttachIconToTooltip(ShoppingTooltip2, true)
-			end
+	if ShoppingTooltip1.SetCompareItem then
+		hooksecurefunc(ShoppingTooltip1, "SetCompareItem",
+			function(self, ...)
+				local _, ItemLink1 = ShoppingTooltip1:GetItem()
+				PawnUpdateTooltip("ShoppingTooltip1", "SetCompareItem", ItemLink1, ...)
+				PawnAttachIconToTooltip(ShoppingTooltip1, true)
+				local _, ItemLink2 = ShoppingTooltip2:GetItem()
+				if ItemLink2 and ShoppingTooltip2:IsShown() then
+					PawnUpdateTooltip("ShoppingTooltip2", "SetHyperlink", ItemLink2, ...)
+					PawnAttachIconToTooltip(ShoppingTooltip2, true)
+				end
+			end)
+		hooksecurefunc(ItemRefShoppingTooltip1, "SetCompareItem",
+			function(self, ...)
+				local _, ItemLink1 = ItemRefShoppingTooltip1:GetItem()
+				PawnUpdateTooltip("ItemRefShoppingTooltip1", "SetCompareItem", ItemLink1, ...)
+				PawnAttachIconToTooltip(ItemRefShoppingTooltip1, true)
+				local _, ItemLink2 = ItemRefShoppingTooltip2:GetItem()
+				if ItemLink2 and ItemRefShoppingTooltip2:IsShown() then
+					PawnUpdateTooltip("ItemRefShoppingTooltip2", "SetHyperlink", ItemLink2, ...)
+					PawnAttachIconToTooltip(ItemRefShoppingTooltip2, true)
+				end
+			end)
+	end
+
+	-- Dragonflight replaces SetCompareItem with ProcessInfo. (ProcessInfo is now used internally by lots of
+	-- methods, but only in Dragonflight.)
+	if ShoppingTooltip1.ProcessInfo then
+		hooksecurefunc(ShoppingTooltip1, "ProcessInfo", function(self)
+			local _, ItemLink = TooltipUtil.GetDisplayedItem(ShoppingTooltip1)
+			if ItemLink then PawnUpdateTooltip("ShoppingTooltip1", "SetHyperlink", ItemLink) end
 		end)
-	hooksecurefunc(ItemRefShoppingTooltip1, "SetCompareItem",
-		function(self, ...)
-			local _, ItemLink1 = ItemRefShoppingTooltip1:GetItem()
-			PawnUpdateTooltip("ItemRefShoppingTooltip1", "SetCompareItem", ItemLink1, ...)
-			PawnAttachIconToTooltip(ItemRefShoppingTooltip1, true)
-			local _, ItemLink2 = ItemRefShoppingTooltip2:GetItem()
-			if ItemLink2 and ItemRefShoppingTooltip2:IsShown() then
-				PawnUpdateTooltip("ItemRefShoppingTooltip2", "SetHyperlink", ItemLink2, ...)
-				PawnAttachIconToTooltip(ItemRefShoppingTooltip2, true)
-			end
+		hooksecurefunc(ShoppingTooltip2, "ProcessInfo", function(self)
+			local _, ItemLink = TooltipUtil.GetDisplayedItem(ShoppingTooltip2)
+			if ItemLink then PawnUpdateTooltip("ShoppingTooltip2", "SetHyperlink", ItemLink) end
 		end)
+	end
 
 	-- MultiTips compatibility
 	if MultiTips then
@@ -394,18 +409,28 @@ function PawnInitialize()
 		ArkInventoryRules.Register(arkInventoryModule, "PAWNNOTUPGRADE", ArkInventoryRulePawnNotUpgrade)
 	end
 
+	-- AceConfigDialog compatibility
+	if AceConfigDialogTooltip then
+		VgerCore.HookInsecureFunction(AceConfigDialogTooltip, "SetHyperlink", function(self, ItemLink, ...) PawnUpdateTooltip("AceConfigDialogTooltip", "SetHyperlink", ItemLink, ...) end)
+	end
+
 	-- In-bag upgrade icons
 	if VgerCore.IsMainline then
 		PawnOriginalIsContainerItemAnUpgrade = IsContainerItemAnUpgrade
 		PawnIsContainerItemAnUpgrade = function(bagID, slot, ...)
 			if PawnCommon.ShowBagUpgradeAdvisor then
-				local _, Count, _, _, _, _, ItemLink = GetContainerItemInfo(bagID, slot)
-				if not Count then return false end -- If the stack count is 0, it's clearly not an upgrade
-				if not ItemLink then return nil end -- If we didn't get an item link, but there's an item there, try again later
-				return PawnShouldItemLinkHaveUpgradeArrow(ItemLink, true) -- true means to check player level
+				local ItemInfo = C_Container.GetContainerItemInfo(bagID, slot)
+				if not ItemInfo or not ItemInfo.stackCount then return false end -- If the stack count is 0, it's clearly not an upgrade
+				if not ItemInfo.hyperlink then return nil end -- If we didn't get an item link, but there's an item there, try again later
+				return PawnShouldItemLinkHaveUpgradeArrow(ItemInfo.hyperlink, true) -- true means to check player level
 			else
-				---@diagnostic disable-next-line: redundant-parameter
-				return PawnOriginalIsContainerItemAnUpgrade(bagID, slot, ...)
+				if PawnOriginalIsContainerItemAnUpgrade then
+					---@diagnostic disable-next-line: redundant-parameter
+					return PawnOriginalIsContainerItemAnUpgrade(bagID, slot, ...)
+				else
+					-- If Pawn's bag advisor is off, AND the game's IsContainerItemAnUpgrade is missing, nothing's an upgrade.
+					return false
+				end
 			end
 		end
 		PawnUpdateItemUpgradeIcon = function(self)
@@ -423,7 +448,7 @@ function PawnInitialize()
 	end
 
 	if ContainerFrameItemButtonMixin and ContainerFrameItemButtonMixin.UpdateItemUpgradeIcon then
-		-- Dragonflight onward
+		-- 10.0.0 only - this code was removed from the game in 10.0.2
 
 		-- First, hook ContainerFrameItemButtonMixin to affect all future bag frames.
 		hooksecurefunc(ContainerFrameItemButtonMixin, "UpdateItemUpgradeIcon", PawnUpdateItemUpgradeIcon)
@@ -2427,7 +2452,12 @@ function PawnGetStatsFromTooltip(TooltipName, DebugMessages)
 	end
 
 	-- Done!
-	local _, PrettyLink = Tooltip:GetItem()
+	local _, PrettyLink
+	if Tooltip.GetItem then
+		_, PrettyLink = Tooltip:GetItem()
+	elseif TooltipUtil then
+		_, PrettyLink = TooltipUtil.GetDisplayedItem(Tooltip)
+	end
 	if not HadUnknown then UnknownLines = nil end
 	return Stats, SocketBonusStats, UnknownLines, PrettyLink
 end
@@ -2851,7 +2881,7 @@ function PawnGetGemListString(ScaleName, ListAll, ItemLevel, Color)
 			end
 		elseif Color == "Red" or Color == "Yellow" or Color == "Blue" then
 			-- If there are three or more best gems AND it's a specific color, we can at least return the socket color.
-			return _G[toupper(Color) .. "_GEM"], true
+			return _G[strupper(Color) .. "_GEM"], true
 		end
 	end
 

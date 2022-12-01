@@ -33,9 +33,9 @@ local Loc = _G.LibStub("AceLocale-3.0"):GetLocale("Details")
 local SharedMedia = _G.LibStub:GetLibrary("LibSharedMedia-3.0")
 local LDB = _G.LibStub("LibDataBroker-1.1", true)
 local LDBIcon = LDB and _G.LibStub("LibDBIcon-1.0", true)
-local _
+local addonName, Details222 = ...
+local _ = nil
 local unpack = _G.unpack
-
 local tinsert = _G.tinsert
 
 local startX = 200
@@ -518,6 +518,17 @@ do
                 desc = Loc ["STRING_OPTIONS_OVERALL_LOGOFF_DESC"],
                 boxfirst = true,
             },
+            {--auto switch to dynamic overall data when selecting overall data
+                type = "toggle",
+                get = function() return _detalhes.auto_swap_to_dynamic_overall end,
+                set = function(self, fixedparam, value)
+                    Details.auto_swap_to_dynamic_overall = value
+                    afterUpdate()
+                end,
+                name = "Use Dynamic Overall Damage",
+                desc = "When showing Damage Done Overall, swap to Dynamic Overall Damage on entering combat.",
+                boxfirst = true,
+            },
 
             {type = "blank"},
 
@@ -563,6 +574,9 @@ do
                 name = Loc ["STRING_OPTIONS_WC_CREATE"],
                 desc = Loc ["STRING_OPTIONS_WC_CREATE_DESC"],
             },
+
+            {type = "blank"},
+
             {--class colors
                 type = "execute",
                 func = function(self)
@@ -3560,7 +3574,7 @@ do
             y = y - 20
     
             --plugins installed, adding their abs name
-            DF.table.addunique (installedToolbarPlugins, absName)
+            DF.table.addunique(installedToolbarPlugins, absName)
         
         end
     
@@ -3698,7 +3712,7 @@ do
             end
     
             --plugins installed, adding their abs name
-            DF.table.addunique (installedRaidPlugins, absName)
+            DF.table.addunique(installedRaidPlugins, absName)
             
             i = i + 1
             y = y - 20
@@ -4248,6 +4262,32 @@ do
                 desc = Loc ["STRING_OPTIONS_TOOLTIPS_FONTSHADOW_DESC"],
             },
 
+            {--text size
+                type = "range",
+                get = function() return _detalhes.tooltip.fontsize end,
+                set = function(self, fixedparam, value)
+                    _detalhes.tooltip.fontsize = value
+                    afterUpdate()
+                end,
+                min = 5,
+                max = 32,
+                step = 1,
+                name = Loc ["STRING_OPTIONS_TEXT_SIZE"],
+                desc = Loc ["STRING_OPTIONS_TEXT_SIZE_DESC"],
+            },
+
+            {--text font
+                type = "select",
+                get = function() return _detalhes.tooltip.fontface end,
+                values = function()
+                    return buildTooltipFontOptions()
+                end,
+                name = Loc ["STRING_OPTIONS_TEXT_FONT"],
+                desc = Loc ["STRING_OPTIONS_TEXT_FONT_DESC"],
+            },
+
+            {type = "blank"},
+
             {type = "label", get = function() return Loc["STRING_OPTIONS_TOOLTIPS_FONTCOLOR"] end},
 
 			{--text color left
@@ -4304,32 +4344,26 @@ do
                 desc = Loc ["STRING_OPTIONS_TOOLTIPS_ANCHORCOLOR"],
             },
 
-            {--text size
-                type = "range",
-                get = function() return _detalhes.tooltip.fontsize end,
-                set = function(self, fixedparam, value)
-                    _detalhes.tooltip.fontsize = value
-                    afterUpdate()
-                end,
-                min = 5,
-                max = 32,
-                step = 1,
-                name = Loc ["STRING_OPTIONS_TEXT_SIZE"],
-                desc = Loc ["STRING_OPTIONS_TEXT_SIZE_DESC"],
-            },
-
-            {--text font
-                type = "select",
-                get = function() return _detalhes.tooltip.fontface end,
-                values = function()
-                    return buildTooltipFontOptions()
-                end,
-                name = Loc ["STRING_OPTIONS_TEXT_FONT"],
-                desc = Loc ["STRING_OPTIONS_TEXT_FONT_DESC"],
-            },
-
             {type = "blank"},
             {type = "label", get = function() return Loc ["STRING_OPTIONS_MENU_ATTRIBUTESETTINGS_ANCHOR"] end, text_template = subSectionTitleTextTemplate},
+
+			{--bar color
+                type = "color",
+                get = function()
+                    local r, g, b, a = unpack(_detalhes.tooltip.bar_color)
+                    return {r, g, b, a}
+                end,
+                set = function(self, r, g, b, a)
+                    local color = _detalhes.tooltip.bar_color
+                    color[1] = r
+                    color[2] = g
+                    color[3] = b
+                    color[4] = a
+                    afterUpdate()
+                end,
+                name = "Bar Color",
+                desc = "Bar Color",
+            },
 
 			{--background color
                 type = "color",
@@ -4348,6 +4382,26 @@ do
                 name = Loc ["STRING_OPTIONS_TOOLTIPS_BACKGROUNDCOLOR"],
                 desc = Loc ["STRING_OPTIONS_TOOLTIPS_BACKGROUNDCOLOR"],
             },
+
+			{--divisor color
+                type = "color",
+                get = function()
+                    local r, g, b, a = unpack(_detalhes.tooltip.divisor_color)
+                    return {r, g, b, a}
+                end,
+                set = function(self, r, g, b, a)
+                    local color = _detalhes.tooltip.divisor_color
+                    color[1] = r
+                    color[2] = g
+                    color[3] = b
+                    color[4] = a
+                    afterUpdate()
+                end,
+                name = "Divisor Color",
+                desc = "Divisor Color",
+            },
+
+            {type = "blank"},
 
             {--show amount
                 type = "toggle",
@@ -6418,7 +6472,7 @@ do
         sectionFrame.userTimeCaptureFillPanel:Refresh()
     end
     
-    local big_code_editor = DF:NewSpecialLuaEditorEntry (sectionFrame, 683, 422, "bigCodeEditor", "$parentBigCodeEditor")
+    local big_code_editor = DF:NewSpecialLuaEditorEntry(sectionFrame, 683, 422, "bigCodeEditor", "$parentBigCodeEditor")
     big_code_editor:SetPoint("topleft", sectionFrame, "topleft", startX, startY - 70)
     big_code_editor:SetFrameLevel(sectionFrame:GetFrameLevel()+6)
     big_code_editor:SetBackdrop({bgFile = [[Interface\AddOns\Details\images\background]], edgeFile = [[Interface\Buttons\WHITE8X8]], edgeSize = 1,tile = 1, tileSize = 16})
@@ -6488,7 +6542,7 @@ do
         sectionFrame.userTimeCaptureFillPanel:Refresh()
     end
     
-    local big_code_editor2 = DF:NewSpecialLuaEditorEntry (sectionFrame, 643, 402, "exportEditor", "$parentExportEditor", true)
+    local big_code_editor2 = DF:NewSpecialLuaEditorEntry(sectionFrame, 643, 402, "exportEditor", "$parentExportEditor", true)
     big_code_editor2:SetPoint("topleft", sectionFrame, "topleft", 7, -70)
     big_code_editor2:SetFrameLevel(sectionFrame:GetFrameLevel()+6)
     big_code_editor2:SetBackdrop({bgFile = [[Interface\AddOns\Details\images\background]], edgeFile = [[Interface\Buttons\WHITE8X8]], edgeSize = 1,tile = 1, tileSize = 16})
@@ -6606,7 +6660,7 @@ do
         
         --function
             local capture_func = DF:NewLabel(addframe, nil, "$parentFunctionLabel", "functionLabel", Loc ["STRING_OPTIONS_CHART_ADDCODE"])
-            local capture_func_entry = DF:NewSpecialLuaEditorEntry (addframe.widget, 300, 200, "funcEntry", "$parentFuncEntry")
+            local capture_func_entry = DF:NewSpecialLuaEditorEntry(addframe.widget, 300, 200, "funcEntry", "$parentFuncEntry")
             capture_func_entry:SetPoint("topleft", capture_func.widget, "topright", 2, 0)
             capture_func_entry:SetSize(500, 220)
             capture_func_entry:SetBackdrop({edgeFile = [[Interface\Buttons\WHITE8X8]], edgeSize = 1, bgFile = [[Interface\Tooltips\UI-Tooltip-Background]], tileSize = 64, tile = true})
@@ -6655,9 +6709,9 @@ do
         
     --open import panel button
     
-        local importframe = DF:NewSpecialLuaEditorEntry (sectionFrame, 683, 422, "importEditor", "$parentImportEditor", true)
+        local importframe = DF:NewSpecialLuaEditorEntry(sectionFrame, 683, 422, "importEditor", "$parentImportEditor", true)
         local font, size, flag = importframe.editbox:GetFont()
-        importframe.editbox:SetFont (font, 9, flag)
+        importframe.editbox:SetFont(font, 9, flag)
         importframe:SetPoint("topleft", sectionFrame, "topleft", startX, startY - 70)
         importframe:SetFrameLevel(sectionFrame:GetFrameLevel()+6)
         importframe:SetBackdrop({bgFile = [[Interface\AddOns\Details\images\background]], edgeFile = [[Interface\Buttons\WHITE8X8]], edgeSize = 1,tile = 1, tileSize = 16})

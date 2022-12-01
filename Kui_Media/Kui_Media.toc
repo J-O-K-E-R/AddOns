@@ -1,4 +1,4 @@
-## Interface: 90005
+## Interface: 100000
 
 ## Author: Kesava
 ## Title: Kui |cff9966ffMedia

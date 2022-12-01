@@ -99,12 +99,17 @@ local function AddBackdrop(Region, Button, Skin, Color, xScale, yScale)
 		Region:SetTexture()
 		Region:SetVertexColor(1, 1, 1, 1)
 		Region:SetColorTexture(GetColor(Color or DEF_COLOR))
-	elseif Atlas then
-		Region:SetAtlas(Atlas, UseAtlasSize)
-		Region:SetVertexColor(GetColor(Color or DEF_COLOR))
 	else
-		Region:SetTexture(Skin.Texture or DEF_TEXTURE)
-		Region:SetTexCoord(GetTexCoords(Skin.TexCoords))
+		local Coords
+
+		if Atlas then
+			Region:SetAtlas(Atlas, UseAtlasSize)
+		else
+			Coords = Skin.TexCoords
+			Region:SetTexture(Skin.Texture or DEF_TEXTURE)
+		end
+
+		Region:SetTexCoord(GetTexCoords(Coords))
 		Region:SetVertexColor(GetColor(Color or DEF_COLOR))
 	end
 
@@ -112,7 +117,7 @@ local function AddBackdrop(Region, Button, Skin, Color, xScale, yScale)
 	Region:SetDrawLayer(Skin.DrawLayer or "BACKGROUND", Skin.DrawLevel or -1)
 
 	if not UseAtlasSize then
-		Region:SetSize(GetSize(Skin.Width, Skin.Height, xScale, yScale, Button.__MSQ_ReSize))
+		Region:SetSize(GetSize(Skin.Width, Skin.Height, xScale, yScale, Button))
 	end
 
 	SetPoints(Region, Button, Skin, nil, Skin.SetAllPoints)
@@ -144,7 +149,8 @@ end
 
 -- Add or removes a 'Backdrop' region.
 function Core.SkinBackdrop(Enabled, Region, Button, Skin, Color, xScale, yScale)
-	Skin = GetTypeSkin(Button, Button.__MSQ_bType, Skin)
+	local bType = Button.__MSQ_bType
+	Skin = GetTypeSkin(Button, bType, Skin)
 
 	if Enabled and not Skin.Hide then
 		AddBackdrop(Region, Button, Skin, Color, xScale, yScale)

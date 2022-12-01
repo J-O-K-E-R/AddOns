@@ -1,5 +1,5 @@
-## Interface: 100000
-## X-Min-Interface: 100000
+## Interface: 100002
+## X-Min-Interface: 100002
 ## X-Min-Interface-Classic: 11403
 ## X-Min-Interface-BCC: 20504
 ## X-Min-Interface-Wrath: 30400
@@ -21,7 +21,7 @@
 ## LoadOnDemand: 0
 ## DefaultState: enabled
 ## Author: MysticalOS, QartemisT
-## Version: 494a4d8
+## Version: 472d9e4
 ## X-Website: https://deadlybossmods.com
 
 Libs\LibStub\LibStub.lua
@@ -35,6 +35,7 @@ Libs\LibDBIcon-1.0\lib.xml
 Libs\LibDeflate\LibDeflate.lua
 Libs\LibSerialize\lib.xml
 Libs\LibSpecialization\LibSpecialization.xml
+Libs\LibDropDownMenu\LibDropDownMenu.xml
 
 localization.en.lua
 localization.br.lua

@@ -1,0 +1,28 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+
+<!-- Copyright 2022 Mike Battersby -->
+
+<Script file="ContainerPanel.lua" />
+
+<Frame
+    name="LiteBagContainerPanelTemplate" mixin="LiteBagContainerPanelMixin" hidden="true" virtual="true">
+    <Frames>
+        <DropDownToggleButton name="$parentPortraitButton" parentKey="PortraitButton" inherits="LiteBagPortraitButtonTemplate" />
+        <Frame name="$parentFilterDropDown" parentKey="FilterDropDown" inherits="LiteBagFilterDropDownTemplate" />
+        <!-- the 510 here is from Blizzard's UIPanelCloseButton -->
+        <Button name="$parentInfoButton" parentKey="InfoButton" inherits="UIPanelInfoButton" frameLevel="510" hidden="true">
+            <Anchors>
+                <Anchor point="TOPRIGHT" x="-28" y="-4" />
+            </Anchors>
+        </Button>
+    </Frames>
+    <Scripts>
+        <!-- These are all of the same events from ContainerFrameCombinedBags -->
+        <OnLoad method="OnLoad" />
+        <OnShow method="OnShow" />
+        <OnHide method="OnHide" />
+        <OnEvent method="OnEvent" />
+    </Scripts>
+</Frame>
+
+</Ui>

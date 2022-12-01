@@ -1,4 +1,4 @@
-local Type, Version = "MultiLineEditBox", 29
+local Type, Version = "MultiLineEditBox", 32
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 if not AceGUI or (AceGUI:GetWidgetVersion(Type) or 0) >= Version then return end
 
@@ -55,7 +55,7 @@ end
 --[[-----------------------------------------------------------------------------
 Scripts
 -------------------------------------------------------------------------------]]
-local function OnClick(self)                                                     -- Button
+local function OnClick(self)													 -- Button
 	self = self.obj
 	self.editBox:ClearFocus()
 	if not self:Fire("OnEnterPressed", self.editBox:GetText()) then
@@ -63,7 +63,7 @@ local function OnClick(self)                                                    
 	end
 end
 
-local function OnCursorChanged(self, _, y, _, cursorHeight)                      -- EditBox
+local function OnCursorChanged(self, _, y, _, cursorHeight)						 -- EditBox
 	self, y = self.obj.scrollFrame, -y
 	local offset = self:GetVerticalScroll()
 	if y < offset then
@@ -76,12 +76,12 @@ local function OnCursorChanged(self, _, y, _, cursorHeight)                     
 	end
 end
 
-local function OnEditFocusLost(self)                                             -- EditBox
+local function OnEditFocusLost(self)											 -- EditBox
 	self:HighlightText(0, 0)
 	self.obj:Fire("OnEditFocusLost")
 end
 
-local function OnEnter(self)                                                     -- EditBox / ScrollFrame
+local function OnEnter(self)													 -- EditBox / ScrollFrame
 	self = self.obj
 	if not self.entered then
 		self.entered = true
@@ -89,7 +89,7 @@ local function OnEnter(self)                                                    
 	end
 end
 
-local function OnLeave(self)                                                     -- EditBox / ScrollFrame
+local function OnLeave(self)													 -- EditBox / ScrollFrame
 	self = self.obj
 	if self.entered then
 		self.entered = nil
@@ -97,13 +97,13 @@ local function OnLeave(self)                                                    
 	end
 end
 
-local function OnMouseUp(self)                                                   -- ScrollFrame
+local function OnMouseUp(self)													 -- ScrollFrame
 	self = self.obj.editBox
 	self:SetFocus()
 	self:SetCursorPosition(self:GetNumLetters())
 end
 
-local function OnReceiveDrag(self)                                               -- EditBox / ScrollFrame
+local function OnReceiveDrag(self)												 -- EditBox / ScrollFrame
 	local type, id, info = GetCursorInfo()
 	if type == "spell" then
 		info = GetSpellInfo(id, info)
@@ -121,11 +121,11 @@ local function OnReceiveDrag(self)                                              
 	self.button:Enable()
 end
 
-local function OnSizeChanged(self, width, height)                                -- ScrollFrame
+local function OnSizeChanged(self, width, height)								 -- ScrollFrame
 	self.obj.editBox:SetWidth(width)
 end
 
-local function OnTextChanged(self, userInput)                                    -- EditBox
+local function OnTextChanged(self, userInput)									 -- EditBox
 	if userInput then
 		self = self.obj
 		self:Fire("OnTextChanged", self.editBox:GetText())
@@ -133,16 +133,24 @@ local function OnTextChanged(self, userInput)                                   
 	end
 end
 
-local function OnTextSet(self)                                                   -- EditBox
+local function OnTextSet(self)													 -- EditBox
 	self:HighlightText(0, 0)
 	self:SetCursorPosition(self:GetNumLetters())
 	self:SetCursorPosition(0)
 	self.obj.button:Disable()
 end
 
-local function OnVerticalScroll(self, offset)                                    -- ScrollFrame
+local function OnVerticalScroll(self, offset)									 -- ScrollFrame
 	local editBox = self.obj.editBox
 	editBox:SetHitRectInsets(0, 0, offset, editBox:GetHeight() - offset - self:GetHeight())
+end
+
+local function OnScrollRangeChanged(self, xrange, yrange)
+	if yrange == 0 then
+		self.obj.editBox:SetHitRectInsets(0, 0, 0, 0)
+	else
+		OnVerticalScroll(self, self:GetVerticalScroll())
+	end
 end
 
 local function OnShowFocus(frame)
@@ -257,8 +265,6 @@ local methods = {
 	["SetCursorPosition"] = function(self, ...)
 		return self.editBox:SetCursorPosition(...)
 	end,
-
-
 }
 
 --[[-----------------------------------------------------------------------------
@@ -297,7 +303,7 @@ local function Constructor()
 	text:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -5, 1)
 	text:SetJustifyV("MIDDLE")
 
-	local scrollBG = CreateFrame("Frame", nil, frame, BackdropTemplateMixin and "BackdropTemplate" or nil)
+	local scrollBG = CreateFrame("Frame", nil, frame, "BackdropTemplate")
 	scrollBG:SetBackdrop(backdrop)
 	scrollBG:SetBackdropColor(0, 0, 0)
 	scrollBG:SetBackdropBorderColor(0.4, 0.4, 0.4)
@@ -321,6 +327,7 @@ local function Constructor()
 	scrollFrame:SetScript("OnReceiveDrag", OnReceiveDrag)
 	scrollFrame:SetScript("OnSizeChanged", OnSizeChanged)
 	scrollFrame:HookScript("OnVerticalScroll", OnVerticalScroll)
+	scrollFrame:HookScript("OnScrollRangeChanged", OnScrollRangeChanged)
 
 	local editBox = CreateFrame("EditBox", ("%s%dEdit"):format(Type, widgetNum), scrollFrame)
 	editBox:SetAllPoints()
@@ -344,16 +351,16 @@ local function Constructor()
 	scrollFrame:SetScrollChild(editBox)
 
 	local widget = {
-		button      = button,
-		editBox     = editBox,
-		frame       = frame,
-		label       = label,
+		button		= button,
+		editBox		= editBox,
+		frame		= frame,
+		label		= label,
 		labelHeight = 10,
-		numlines    = 4,
-		scrollBar   = scrollBar,
-		scrollBG    = scrollBG,
+		numlines	= 4,
+		scrollBar	= scrollBar,
+		scrollBG	= scrollBG,
 		scrollFrame = scrollFrame,
-		type        = Type
+		type		= Type
 	}
 	for method, func in pairs(methods) do
 		widget[method] = func

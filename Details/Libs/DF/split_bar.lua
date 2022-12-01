@@ -5,12 +5,14 @@ if (not DF or not DetailsFrameworkCanLoad) then
 end
 
 local _
-local _rawset = rawset --lua local
-local _rawget = rawget --lua local
-local _setmetatable = setmetatable --lua local
+local rawset = rawset --lua local
+local rawget = rawget --lua local
+local setmetatable = setmetatable --lua local
 local _unpack = unpack --lua local
 local type = type --lua local
 local _math_floor = math.floor --lua local
+
+local maxStatusBarValue = 100000000
 
 local cleanfunction = function() end
 local APISplitBarFunctions
@@ -175,7 +177,7 @@ DF:Mixin(SplitBarMetaFunctions, DF.ScriptHookMixin)
 			return func (_table, _member_requested)
 		end
 		
-		local fromMe = _rawget (_table, _member_requested)
+		local fromMe = rawget (_table, _member_requested)
 		if (fromMe) then
 			return fromMe
 		end
@@ -324,7 +326,7 @@ DF:Mixin(SplitBarMetaFunctions, DF.ScriptHookMixin)
 		if (func) then
 			return func (_table, _value)
 		else
-			return _rawset (_table, _key, _value)
+			return rawset (_table, _key, _value)
 		end
 	end
 
@@ -433,13 +435,13 @@ DF:Mixin(SplitBarMetaFunctions, DF.ScriptHookMixin)
 -- tooltip
 	function SplitBarMetaFunctions:SetTooltip (tooltip)
 		if (tooltip) then
-			return _rawset (self, "have_tooltip", tooltip)
+			return rawset (self, "have_tooltip", tooltip)
 		else
-			return _rawset (self, "have_tooltip", nil)
+			return rawset (self, "have_tooltip", nil)
 		end
 	end
 	function SplitBarMetaFunctions:GetTooltip()
-		return _rawget (self, "have_tooltip")
+		return rawget (self, "have_tooltip")
 	end
 	
 -- frame levels
@@ -477,10 +479,12 @@ DF:Mixin(SplitBarMetaFunctions, DF.ScriptHookMixin)
 		self.currentValue = self.currentValue - valueChange
 
 		local barWidth = self:GetWidth()
+		self.currentValue = Clamp(self.currentValue, 0, maxStatusBarValue)
 		self.statusbar:SetValue(self.currentValue)
 		self.rightTexture:SetWidth(barWidth - barWidth*self.currentValue)
 
 		if (self.currentValue - 0.001 <= self.targetValue) then
+			self.targetValue = Clamp(self.targetValue, 0, maxStatusBarValue)
 			self:SetValue(self.targetValue)
 			self.currentValue = self.targetValue
 			if (not self.SparkAlwaysShow) then
@@ -506,11 +510,13 @@ DF:Mixin(SplitBarMetaFunctions, DF.ScriptHookMixin)
 		self.currentValue = self.currentValue + valueChange
 
 		local barWidth = self:GetWidth()
+		self.currentValue = Clamp(self.currentValue, 0, maxStatusBarValue)
 		self.statusbar:SetValue(self.currentValue)
 		local rightTextureSize = barWidth - barWidth*self.currentValue
 		self.rightTexture:SetWidth(rightTextureSize)
 
 		if (self.currentValue + 0.001 >= self.targetValue) then
+			self.targetValue = Clamp(self.targetValue, 0, maxStatusBarValue)
 			self:SetValue(self.targetValue)
 			self.currentValue = self.targetValue
 			if (not self.SparkAlwaysShow) then
@@ -798,7 +804,7 @@ function DF:NewSplitBar (parent, container, name, member, w, h)
 	SplitBarObject.statusbar:SetScript("OnMouseUp", OnMouseUp)
 	SplitBarObject.statusbar:SetScript("OnSizeChanged", OnSizeChanged)
 		
-	_setmetatable(SplitBarObject, SplitBarMetaFunctions)
+	setmetatable(SplitBarObject, SplitBarMetaFunctions)
 	
 	return SplitBarObject
 end

@@ -1,8 +1,8 @@
-## Interface: 90205
+## Interface: 100000
 ## Title:|cffff7d0aCrossGambling
 ## Author: Azro
-## 1.13 Maintainer: Fire @ Mal'Ganis
-## Version: v3.6
+## 1.14 Maintainer: Fire @ Mal'Ganis
+## Version: v3.8
 ## DefaultState: Enabled
 ## LoadOnDemand: 0
 ## Notes: A fun way to lose gold. Or win it.

@@ -9,7 +9,7 @@
 
 	[ Notes ]
 
-	To help with translations, use the localization system on WoWAce (https://www.wowace.com/projects/masque/localization)
+	To help with translations, use the localization system on CurseForge (https://www.curseforge.com/wow/addons/masque/localization)
 	or contribute directly on GitHub (https://github.com/SFX-WoW/Masque).
 
 ]]
@@ -32,20 +32,28 @@ L["Select to view."] = "Выберите, чтобы посмотреть."
 L["You must have an add-on that supports Masque installed to use it."] = "У Вас должны быть установлены аддоны, поддерживающие Masque"
 
 ----------------------------------------
--- Classic Skin
+-- Blizzard Classic Skin
 ---
 
-L["An improved version of the game's default button style."] = "Улучшенная версия стандартных кнопок"
+-- L["The default Classic button style."] = "The default Classic button style."
+
+----------------------------------------
+-- Blizzard Modern Skin
+---
+
+-- L["The default Dragonflight button style."] = "The default Dragonflight button style."
+
+----------------------------------------
+-- Classic Redux Skin
+---
+
+L["A modified version of the Classic button style."] = "Улучшенная версия стандартных кнопок"
 
 ----------------------------------------
 -- Core Settings
 ---
 
 L["About"] = "Об аддоне"
-L["Click to load Masque's options."] = "Нажмите для загрузки настроек Masque."
-L["Load Options"] = "Загрузить настройки"
-L["Masque's options are load on demand. Click the button below to load them."] = "Настройки Masque загружены не полностью. Нажмите на кнопку ниже, чтобы загрузить их до конца."
-L["This action will increase memory usage."] = "Это действие увеличит использование памяти."
 L["This section will allow you to view information about Masque and any skins you have installed."] = "Этот раздел позволяет смотреть информацию о Masque и любом скине, который установлен."
 
 ----------------------------------------
@@ -140,6 +148,7 @@ L["Profile Settings"] = "Настройки профиля"
 -- Skin Settings
 ---
 
+-- L["Adjust the scale of this group's skin."] = "Adjust the scale of this group's skin."
 L["Backdrop"] = "Фон"
 L["Checked"] = "При выделении"
 L["Color"] = "Цвет"
@@ -147,8 +156,8 @@ L["Colors"] = "Цвета"
 L["Cooldown"] = "Анимация перезарядки способности"
 L["Disable"] = "Отключить"
 L["Disable the skinning of this group."] = "Отключить скины для этой группы."
-L["Disabled"] = "Отключенный"
 L["Enable"] = "Включить"
+-- L["Enable skin scaling."] = "Enable skin scaling."
 L["Enable the Backdrop texture."] = "Включить настройки фона текстуры."
 L["Enable the Gloss texture."] = "Включить настройки глянцевой текстуры."
 L["Enable the Shadow texture."] = "Включить настройки текстуры тени."
@@ -162,10 +171,10 @@ L["Normal"] = "Нормальный"
 L["Pushed"] = "При нажатии"
 L["Reset all skin options to the defaults."] = "Установить значения цветов по умолчанию."
 L["Reset Skin"] = "Сбросить цвета"
+-- L["Scale"] = "Scale"
 L["Set the color of the Backdrop texture."] = "Установить цвет фона текстуры."
 L["Set the color of the Checked texture."] = "Установить цвет текстуры при выделении."
 L["Set the color of the Cooldown animation."] = "Установить цвет анимации перезарядки способностей."
-L["Set the color of the Disabled texture."] = "Установить цвет отключенной текстуры."
 L["Set the color of the Flash texture."] = "Установить цвет текстуры с подсветкой."
 L["Set the color of the Gloss texture."] = "Задать цвет для глянца текстур."
 L["Set the color of the Highlight texture."] = "Установить цвет текстуры при наведении."

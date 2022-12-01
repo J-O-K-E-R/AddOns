@@ -2,12 +2,17 @@
 local Details = 		_G.Details
 local Loc = LibStub("AceLocale-3.0"):GetLocale( "Details" )
 local gump = Details.gump
-local _
+local _, Details222 = ...
+_ = nil
 
 function Details:OpenNewsWindow(textToShow, dumpValues, keeptext)
 	Details.latest_news_saw = Details.userversion
 
 	local newsFrame = Details:CreateOrOpenNewsWindow()
+	local animationHub = DetailsFramework:CreateAnimationHub(newsFrame)
+	local fadeInAnim1 = DetailsFramework:CreateAnimation(animationHub, "alpha", 1, 0.2, 0, 0.2)
+	local fadeInAnim2 = DetailsFramework:CreateAnimation(animationHub, "alpha", 2, 1.5, 0.5, 1)
+	fadeInAnim2:SetStartDelay(1.3)
 
 	if (dumpValues == "change_log" or textToShow == "LeftButton") then
 		newsFrame:Text (Loc ["STRING_VERSION_LOG"])
@@ -57,6 +62,7 @@ function Details:OpenNewsWindow(textToShow, dumpValues, keeptext)
 	end
 
 	newsFrame:Show()
+	animationHub:Play()
 end
 
 function Details:CreateOrOpenNewsWindow()
@@ -103,7 +109,7 @@ function Details:CreateOrOpenNewsWindow()
 				tile = true, tileSize = 16,
 				insets = {left = 1, right = 1, top = 0, bottom = 1},})
 		frameUpper:SetBackdropColor(.1, .1, .1, .3)
-		frameUpper:SetScrollChild (frameLower)
+		frameUpper:SetScrollChild(frameLower)
 		
 		local slider = CreateFrame("slider", "DetailsNewsWindowSlider", frame, "BackdropTemplate")
 		slider.bg = slider:CreateTexture(nil, "background")
@@ -115,7 +121,7 @@ function Details:CreateOrOpenNewsWindow()
 		slider.thumb:SetSize(25, 25)
 		
 		slider:SetThumbTexture (slider.thumb)
-		slider:SetOrientation ("vertical");
+		slider:SetOrientation("vertical");
 		slider:SetSize(16, 499)
 		slider:SetPoint("topleft", frameUpper, "topright")
 		slider:SetMinMaxValues(0, 2000)

@@ -1,8 +1,8 @@
-## Interface: 90205
+## Interface: 100000
 ## Title: DeathNote
 ## Notes: Death analysis tool
 ## Author: Slaren
-## Version: 90205.2-release
+## Version: 100000.0-release
 ## OptionalDeps: LibStub, CallbackHandler-1.0, Ace3
 ## SavedVariables: DeathNoteDB
 ## SavedVariablesPerCharacter: DeathNoteData

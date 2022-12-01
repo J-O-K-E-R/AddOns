@@ -2,12 +2,16 @@ local _, addon = ...
 local ui, private = addon.module('ui')
 
 function ui.init()
-    hooksecurefunc('LFGListFrame_SetActivePanel', ui.hidePopups)
-    LFGListFrame:HookScript('OnHide', ui.hidePopups)
+    hooksecurefunc('LFGListFrame_SetActivePanel', private.resetUiState)
+    LFGListFrame:HookScript('OnHide', private.resetUiState)
 end
 
 function ui.message(text, ...)
-    message(string.format('|cffffffff' .. text, ...), true)
+    message(string.format(WHITE_FONT_COLOR_CODE .. text, ...), true)
+end
+
+function ui.errorMessage(text, ...)
+    message(string.format(text, ...), true)
 end
 
 function ui.isLfgSearchOpen()
@@ -35,7 +39,12 @@ function ui.updateLfgResults()
 end
 
 function ui.hidePopups()
-    LFGSpamFilterOptions:Hide()
-    LFGSpamFilterBanButton:Hide()
+    addon.ui.options.toggle(false)
+    addon.ui.banButton.hide()
     addon.ui.reportHelper.stop()
+end
+
+function private.resetUiState()
+    ui.hidePopups()
+    addon.main.setInvertFilter(false)
 end

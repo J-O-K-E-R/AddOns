@@ -1,6 +1,6 @@
 # LiteBag
 
-## [9.2.7](https://github.com/xod-wow/LiteBag/tree/9.2.7) (2022-09-11)
-[Full Changelog](https://github.com/xod-wow/LiteBag/compare/9.2.6...9.2.7) [Previous Releases](https://github.com/xod-wow/LiteBag/releases)
+## [10.0.6](https://github.com/xod-wow/LiteBag/tree/10.0.6) (2022-12-01)
+[Full Changelog](https://github.com/xod-wow/LiteBag/compare/10.0.5...10.0.6) [Previous Releases](https://github.com/xod-wow/LiteBag/releases)
 
-- Attempt to support classic  
+- Continue to support LiteBag\_AddUpdateEvent for back compat  

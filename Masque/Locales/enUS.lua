@@ -37,20 +37,28 @@ Core.Locale = setmetatable(L, {
 -- L["You must have an add-on that supports Masque installed to use it."] = "You must have an add-on that supports Masque installed to use it."
 
 ----------------------------------------
--- Classic Skin
+-- Blizzard Classic Skin
 ---
 
--- L["An improved version of the game's default button style."] = "An improved version of the game's default button style."
+-- L["The default Classic button style."] = "The default Classic button style."
+
+----------------------------------------
+-- Blizzard Modern Skin
+---
+
+-- L["The default Dragonflight button style."] = "The default Dragonflight button style."
+
+----------------------------------------
+-- Classic Redux Skin
+---
+
+-- L["A modified version of the Classic button style."] = "A modified version of the Classic button style."
 
 ----------------------------------------
 -- Core Settings
 ---
 
 -- L["About"] = "About"
--- L["Click to load Masque's options."] = "Click to load Masque's options."
--- L["Load Options"] = "Load Options"
--- L["Masque's options are load on demand. Click the button below to load them."] = "Masque's options are load on demand. Click the button below to load them."
--- L["This action will increase memory usage."] = "This action will increase memory usage."
 -- L["This section will allow you to view information about Masque and any skins you have installed."] = "This section will allow you to view information about Masque and any skins you have installed."
 
 ----------------------------------------
@@ -145,6 +153,7 @@ Core.Locale = setmetatable(L, {
 -- Skin Settings
 ---
 
+-- L["Adjust the scale of this group's skin."] = "Adjust the scale of this group's skin."
 -- L["Backdrop"] = "Backdrop"
 -- L["Checked"] = "Checked"
 -- L["Color"] = "Color"
@@ -152,8 +161,8 @@ Core.Locale = setmetatable(L, {
 -- L["Cooldown"] = "Cooldown"
 -- L["Disable"] = "Disable"
 -- L["Disable the skinning of this group."] = "Disable the skinning of this group."
--- L["Disabled"] = "Disabled"
 -- L["Enable"] = "Enable"
+-- L["Enable skin scaling."] = "Enable skin scaling."
 -- L["Enable the Backdrop texture."] = "Enable the Backdrop texture."
 -- L["Enable the Gloss texture."] = "Enable the Gloss texture."
 -- L["Enable the Shadow texture."] = "Enable the Shadow texture."
@@ -167,10 +176,10 @@ Core.Locale = setmetatable(L, {
 -- L["Pushed"] = "Pushed"
 -- L["Reset all skin options to the defaults."] = "Reset all skin options to the defaults."
 -- L["Reset Skin"] = "Reset Skin"
+-- L["Scale"] = "Scale"
 -- L["Set the color of the Backdrop texture."] = "Set the color of the Backdrop texture."
 -- L["Set the color of the Checked texture."] = "Set the color of the Checked texture."
 -- L["Set the color of the Cooldown animation."] = "Set the color of the Cooldown animation."
--- L["Set the color of the Disabled texture."] = "Set the color of the Disabled texture."
 -- L["Set the color of the Flash texture."] = "Set the color of the Flash texture."
 -- L["Set the color of the Gloss texture."] = "Set the color of the Gloss texture."
 -- L["Set the color of the Highlight texture."] = "Set the color of the Highlight texture."

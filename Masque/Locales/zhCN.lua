@@ -9,7 +9,7 @@
 
 	[ Notes ]
 
-	To help with translations, use the localization system on WoWAce (https://www.wowace.com/projects/masque/localization)
+	To help with translations, use the localization system on CurseForge (https://www.curseforge.com/wow/addons/masque/localization)
 	or contribute directly on GitHub (https://github.com/SFX-WoW/Masque).
 
 ]]
@@ -32,20 +32,28 @@ L["Select to view."] = "选择来查看。"
 L["You must have an add-on that supports Masque installed to use it."] = "必须安装一个支持 Masque 的插件才能使用。"
 
 ----------------------------------------
--- Classic Skin
+-- Blizzard Classic Skin
 ---
 
-L["An improved version of the game's default button style."] = "一款游戏默认按钮样式的改进版本。"
+-- L["The default Classic button style."] = "The default Classic button style."
+
+----------------------------------------
+-- Blizzard Modern Skin
+---
+
+-- L["The default Dragonflight button style."] = "The default Dragonflight button style."
+
+----------------------------------------
+-- Classic Redux Skin
+---
+
+L["A modified version of the Classic button style."] = "一款游戏默认按钮样式的改进版本。"
 
 ----------------------------------------
 -- Core Settings
 ---
 
 L["About"] = "关于"
-L["Click to load Masque's options."] = "点击载入 Masque 选项。"
-L["Load Options"] = "载入选项"
-L["Masque's options are load on demand. Click the button below to load them."] = "Masque 选项是按需载入。点击下面按钮加载它们。"
-L["This action will increase memory usage."] = "此操作将增加内存使用。"
 L["This section will allow you to view information about Masque and any skins you have installed."] = "此部分将允许查看关于 Masque 的信息或任意一款已安装的皮肤。"
 
 ----------------------------------------
@@ -140,6 +148,7 @@ L["Profile Settings"] = "配置文件设置"
 -- Skin Settings
 ---
 
+-- L["Adjust the scale of this group's skin."] = "Adjust the scale of this group's skin."
 L["Backdrop"] = "背景设置"
 L["Checked"] = "已选中"
 L["Color"] = "颜色"
@@ -147,8 +156,8 @@ L["Colors"] = "颜色"
 L["Cooldown"] = "冷却"
 L["Disable"] = "禁用"
 L["Disable the skinning of this group."] = "禁用此群组换肤。"
-L["Disabled"] = "已禁用"
 L["Enable"] = "启用"
+-- L["Enable skin scaling."] = "Enable skin scaling."
 L["Enable the Backdrop texture."] = "启用背景材质。"
 L["Enable the Gloss texture."] = "启用光泽材质。"
 L["Enable the Shadow texture."] = "启用阴影材质。"
@@ -162,10 +171,10 @@ L["Normal"] = "正常"
 L["Pushed"] = "按下"
 L["Reset all skin options to the defaults."] = "重置所有皮肤选项为默认。"
 L["Reset Skin"] = "重置皮肤"
+-- L["Scale"] = "Scale"
 L["Set the color of the Backdrop texture."] = "设置背景材质颜色。"
 L["Set the color of the Checked texture."] = "设置已选中材质颜色。"
 L["Set the color of the Cooldown animation."] = "设置冷却动画颜色。"
-L["Set the color of the Disabled texture."] = "设置已禁用材质颜色。"
 L["Set the color of the Flash texture."] = "设置闪光材质颜色。"
 L["Set the color of the Gloss texture."] = "设置光泽材质颜色。"
 L["Set the color of the Highlight texture."] = "设置高亮材质颜色。"

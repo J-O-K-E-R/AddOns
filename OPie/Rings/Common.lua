@@ -1,6 +1,8 @@
-local AB, _, T = assert(OneRingLib.ext.ActionBook:compatible(2,14), "Requires a compatible version of ActionBook"), ...
+local AB, _, T = assert(OPie.ActionBook:compatible(2,14), "Requires a compatible version of ActionBook"), ...
 local MODERN = select(4,GetBuildInfo()) >= 8e4
 local CF_WRATH = not MODERN and select(4,GetBuildInfo()) >= 3e4
+local MODERN_CONTAINERS = MODERN or C_Container and C_Container.GetContainerNumSlots
+local MODERN_TRACKING = MODERN or C_Minimap and C_Minimap.GetNumTrackingTypes
 local ORI, EV, L, PC = OPie.UI, T.Evie, T.L, T.OPieCore
 
 if MODERN or CF_WRATH then -- OPieTracker
@@ -16,6 +18,16 @@ if MODERN or CF_WRATH then -- OPieTracker
 		elseif h == 4 then return t, p, v
 		elseif h == 5 then return v, p, q
 		end
+	end
+	
+	local function GetTrackingInfo(...)
+		return (MODERN_TRACKING and C_Minimap or _G).GetTrackingInfo(...)
+	end
+	local function SetTracking(...)
+		return (MODERN_TRACKING and C_Minimap or _G).SetTracking(...)
+	end
+	local function GetNumTrackingTypes(...)
+		return (MODERN_TRACKING and C_Minimap or _G).GetNumTrackingTypes(...)
 	end
 	
 	local collectionData = {}
@@ -46,7 +58,7 @@ if MODERN or CF_WRATH then -- OPieTracker
 		end
 	end
 	local col = AB:CreateActionSlot(nil,nil, "collection", collectionData)
-	OneRingLib:SetRing("OPieTracking", col, {name=L"Minimap Tracking", hotkey="ALT-F"})
+	OPie:SetRing("OPieTracking", col, {name=L"Minimap Tracking", hotkey="ALT-F"})
 	AB:AddObserver("internal.collection.preopen", preClick, col)
 	function EV.PLAYER_ENTERING_WORLD()
 		return "remove", preClick(col, nil, col)
@@ -54,6 +66,13 @@ if MODERN or CF_WRATH then -- OPieTracker
 end
 do -- OPieAutoQuest
 	local exclude, questItems, IsQuestItem = PC:RegisterPVar("AutoQuestExclude", {}), {}
+	local function GetContainerItemQuestInfo(bag, slot)
+		if MODERN_CONTAINERS then
+			local iqi = C_Container.GetContainerItemQuestInfo(bag, slot)
+			return iqi.isQuestItem, iqi.questID, iqi.isActive
+		end
+		return _G.GetContainerItemQuestInfo(bag, slot)
+	end
 	if MODERN then
 		questItems[30148] = "72986 72985"
 		local include = {
@@ -165,10 +184,12 @@ do -- OPieAutoQuest
 	local function syncRing(_, _, upId)
 		if upId ~= colId then return end
 		changed, current = false, (ctok + 1) % 2
-
+		
+		local ns = MODERN_CONTAINERS and C_Container.GetContainerNumSlots or GetContainerNumSlots
+		local giid = MODERN_CONTAINERS and C_Container.GetContainerItemID or GetContainerItemID
 		for bag=0,4 do
-			for slot=1,GetContainerNumSlots(bag) do
-				local iid = GetContainerItemID(bag, slot)
+			for slot=1, ns(bag) do
+				local iid = giid(bag, slot)
 				local isQuest, startsQuestMark = IsQuestItem(iid, bag, slot)
 				if isQuest then
 					local tok = "OPieBundleQuest" .. iid
@@ -201,7 +222,7 @@ do -- OPieAutoQuest
 		end
 	end
 	colId = AB:CreateActionSlot(nil,nil, "collection",collection)
-	OneRingLib:SetRing("OPieAutoQuest", colId, {name=L"Quest Items", hotkey="ALT-Q"})
+	OPie:SetRing("OPieAutoQuest", colId, {name=L"Quest Items", hotkey="ALT-Q"})
 	AB:AddObserver("internal.collection.preopen", syncRing)
 	function EV.PLAYER_REGEN_DISABLED()
 		syncRing(nil, nil, colId)

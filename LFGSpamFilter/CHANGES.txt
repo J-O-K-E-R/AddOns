@@ -1,16 +1,10 @@
-lightweight tag 8e9bc69c62ef0aa12dd074b8659d10136d0977a5 v1.2.3
-Author:	romdeau23 <romdeau23@gmail.com>
-Date:	Sat Aug 20 12:45:16 2022 +0200
+lightweight tag c992f33974e2261323a4ac0cdb0d664accdf4c6e v1.4.1
+Author:	romdeau23 <43295566+romdeau23@users.noreply.github.com>
+Date:	Wed Nov 16 11:01:45 2022 +0100
 
-commit 8e9bc69c62ef0aa12dd074b8659d10136d0977a5
-Author: romdeau23 <romdeau23@gmail.com>
-Date:   Sat Aug 20 12:45:16 2022 +0200
+commit c992f33974e2261323a4ac0cdb0d664accdf4c6e
+Author: romdeau23 <43295566+romdeau23@users.noreply.github.com>
+Date:   Wed Nov 16 11:01:45 2022 +0100
 
-    Update TOC for 9.2.7
-
-commit 9d661f7726bbb059811b23e5ccf9f50b78e7a4b4
-Author: romdeau23 <romdeau23@gmail.com>
-Date:   Wed Aug 17 10:26:12 2022 +0200
-
-    Document broken context menu option (#9)
+    Update TOC for 10.0.2
 

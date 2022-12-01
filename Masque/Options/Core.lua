@@ -13,6 +13,12 @@
 local MASQUE, Core = ...
 
 ----------------------------------------
+-- Libraries
+---
+
+local ACD = LibStub("AceConfigDialog-3.0")
+
+----------------------------------------
 -- WoW API
 ---
 
@@ -20,36 +26,28 @@ local InterfaceOptionsFrame_OpenToCategory = InterfaceOptionsFrame_OpenToCategor
 local InterfaceOptionsFrame_Show = InterfaceOptionsFrame_Show
 
 ----------------------------------------
--- Libraries
+-- Internal
 ---
 
-local ACD = LibStub("AceConfigDialog-3.0")
+-- @ Masque
+local WOW_RETAIL = Core.WOW_RETAIL
 
 ----------------------------------------
 -- Locals
 ---
 
--- Necessary for UI consistency across game versions.
+-- Necessary for consistency across clients.
 local CRLF = "\n "
-Core.CRLF = CRLF
 
-local WOW_RETAIL = Core.WOW_RETAIL
+-- Loader Frame
+local OPT_FRAME
 
 ----------------------------------------
 -- Setup
 ---
 
--- Options Loader
+-- Options Setup Table
 local Setup = {}
-
-Core.Setup = setmetatable(Setup, {
-	__call = function(self, Name, ...)
-		local func = Name and self[Name]
-		if func then
-			func(Core, ...)
-		end
-	end,
-})
 
 -- Sets up the root options group/panel.
 function Setup.Core(self)
@@ -80,44 +78,6 @@ function Setup.Core(self)
 						hidden = function() return not Core.OptionsLoaded end,
 						fontSize = "medium",
 					},
-					-- Necessary when manually navigating to the InterfaceOptionsFrame prior to the options being loaded.
-					Load = {
-						type = "group",
-						name = "",
-						inline = true,
-						hidden = function() return Core.OptionsLoaded end,
-						--order = 100,
-						args = {
-							Desc = {
-								type = "description",
-								name = L["Masque's options are load on demand. Click the button below to load them."]..CRLF,
-								order = 0,
-								fontSize = "medium",
-							},
-							Button = {
-								type = "execute",
-								name = L["Load Options"],
-								desc = L["Click to load Masque's options."],
-								func = function()
-									if Setup.LoD then Setup("LoD") end
-
-									-- Force a sub-panel refresh.
-									if SettingsPanel then
-										SettingsPanel:OpenToCategory(self.OptionsPanels.Core)
-									else
-										local Frames = Core.OptionsPanels.Frames
-
-										InterfaceOptionsFrame_OpenToCategory(Frames.Skins)
-										InterfaceOptionsFrame_OpenToCategory(Frames.Core)
-									end
-									Core.Options.args.Core.args.Load = nil -- GC
-								end,
-								order = 1,
-								confirm = true,
-								confirmText = L["This action will increase memory usage."].."\n",
-							},
-						},
-					},
 				},
 			},
 		},
@@ -129,6 +89,9 @@ function Setup.Core(self)
 
 	local Path = "Core"
 	self:AddOptionsPanel(Path, ACD:AddToBlizOptions(MASQUE, MASQUE, nil, Path))
+
+	OPT_FRAME = CreateFrame("Frame", "MSQ_OPT_FRAME", SettingsPanel or InterfaceOptionsFrame)
+	OPT_FRAME:SetScript("OnShow", function() Setup("LoD") end)
 
 	-- GC
 	Setup.Core = nil
@@ -145,12 +108,26 @@ function Setup.LoD(self)
 	Setup("Profiles")
 
 	-- GC
+	if OPT_FRAME then
+		OPT_FRAME:SetScript("OnShow", nil)
+	end
+
 	Setup.LoD = nil
 end
 
 ----------------------------------------
 -- Core
 ---
+
+Core.CRLF = CRLF
+Core.Setup = setmetatable(Setup, {
+	__call = function(self, Name, ...)
+		local func = Name and self[Name]
+		if func then
+			func(Core, ...)
+		end
+	end,
+})
 
 -- Adds options panel info.
 function Core:AddOptionsPanel(Path, Frame, Name)
@@ -182,6 +159,7 @@ function Core:ToggleOptions()
 			ACD:Close(MASQUE)
 		else
 			ACD:Open(MASQUE)
+			ACD:SelectGroup(MASQUE, "Skins", "Global")
 		end
 	-- Toggle the Interface Options frame.
 	else
