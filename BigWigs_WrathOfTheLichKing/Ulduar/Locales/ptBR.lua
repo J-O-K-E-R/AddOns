@@ -19,7 +19,6 @@ end
 
 L = BigWigs:NewBossLocale("XT-002 Deconstructor", "ptBR")
 if L then
-	--L.gravitybomb_other = "Gravity"
 	--L.lightbomb_other = "Light"
 end
 
@@ -150,7 +149,7 @@ if L then
 	--L.vapor = "Saronite Vapors"
 	--L.vapor_desc = "Warn when Saronite Vapors spawn."
 	--L.vapor_message = "Saronite Vapor %d!"
-	--L.vapor_bar = "Vapor %d/6"
+	--L.vapor_bar = "Vapor"
 	--L.vapor_trigger = "A cloud of saronite vapors coalesces nearby!"
 
 	--L.vaporstack = "Vapors Stack"

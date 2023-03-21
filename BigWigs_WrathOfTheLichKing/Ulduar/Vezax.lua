@@ -5,7 +5,7 @@
 local mod, CL = BigWigs:NewBoss("General Vezax", 603, 1648)
 if not mod then return end
 mod:RegisterEnableMob(33271)
-mod:SetEncounterID(1134)
+mod:SetEncounterID(mod:Classic() and 755 or 1134)
 -- mod:SetRespawnTime(0) -- resets, doesn't respawn
 
 --------------------------------------------------------------------------------
@@ -31,7 +31,7 @@ if L then
 	L.vapor = "Saronite Vapors"
 	L.vapor_desc = "Warn when Saronite Vapors spawn."
 	L.vapor_message = "Saronite Vapor %d!"
-	L.vapor_bar = "Vapor %d/6"
+	L.vapor_bar = "Vapor"
 	L.vapor_trigger = "A cloud of saronite vapors coalesces nearby!"
 
 	L.vaporstack = "Vapors Stack"
@@ -95,11 +95,11 @@ function mod:CHAT_MSG_RAID_BOSS_EMOTE(_, msg)
 	if msg == L.vapor_trigger then
 		self:MessageOld("vapor", "green", nil, L.vapor_message:format(vaporCount), 63322)
 		vaporCount = vaporCount + 1
-		if vaporCount < 7 then
-			self:Bar("vapor", 30, L.vapor_bar:format(vaporCount), 63322)
+		if vaporCount < (self:Classic() and 9 or 7) then
+			self:Bar("vapor", 30, CL.count_amount:format(L.vapor_bar, vaporCount, self:Classic() and 8 or 6), 63322)
 		end
 	elseif msg == L.animus_trigger then
-		self:MessageOld("animus", "red", nil, L.animus_message, 87179) -- 87179 / Summon Water Elemental / spell_frost_summonwaterelemental_2 / icon 135862
+		self:MessageOld("animus", "red", nil, L.animus_message, "spell_frost_summonwaterelemental_2") -- spell_frost_summonwaterelemental_2 / icon 135862
 	end
 end
 
@@ -121,7 +121,7 @@ do
 	end
 
 	function mod:ShadowCrash(args)
-		self:GetBossTarget(printTarget, 0.5, args.sourceGUID)
+		self:GetUnitTarget(printTarget, 0.5, args.sourceGUID) -- Classic doesn't have boss frames for GetBossTarget
 	end
 end
 

@@ -15,6 +15,8 @@ do
 	localization = localization:gsub("frFR", FRFR):gsub("koKR", KOKR)
 	localization = localization:gsub("ruRU", RURU):gsub("zhCN", ZHCN)
 	localization = localization:gsub("zhTW", ZHTW)
+
+
 	fieldText.localizations = localization
 
 	local t = {}
@@ -40,6 +42,9 @@ local changelog = E.changelog:gsub("^[ \t\n]*", E.HEX_C[WOW_PROJECT_ID]):gsub("\
 		return "|cff808080\n\nv" .. ver
 	end
 end):gsub("\t", "\32\32\32\32\32\32\32\32")
+
+local getGlobalOption = function(info) return E.global[ info[#info] ] end
+local setGlobalOption = function(info, value) E.global[ info[#info] ] = value end
 
 
 local function GetOptions()
@@ -110,6 +115,8 @@ local function GetOptions()
 							name = L["Login Message"],
 							order = 11,
 							type = "toggle",
+							get = getGlobalOption,
+							set = setGlobalOption,
 						},
 						notifyNew = {
 							disabled = not E.useVersionCheck,
@@ -117,23 +124,65 @@ local function GetOptions()
 							desc = L["Send a chat message when a newer version is found."],
 							order = 12,
 							type = "toggle",
+							get = getGlobalOption,
+							set = setGlobalOption,
+						},
+
+						minusScale = {
+							disabled = function() return E.global.optionPanelScale < 0.84 end,
+							image = [[Interface\AddOns\OmniCD\Media\omnicd-bg-gnav2-minus]], imageWidth = 18, imageHeight = 18,
+							name = "",
+							order = 13,
+							type = "execute",
+							func = function()
+								local currScale = E.global.optionPanelScale
+								if currScale > 0.84 then
+									currScale = currScale - 0.05
+									E.Libs.ACD.OpenFrames.OmniCD.frame:SetScale(currScale)
+									E.global.optionPanelScale = currScale
+								end
+							end,
+							width = 0.15,
+						},
+						currScale = {
+							name = function() return format("%s%%", E.global.optionPanelScale * 100) end,
+							order = 14,
+							type = "description",
+							width = 0.3,
+							justifyH = "CENTER",
+						},
+						plusScale = {
+							disabled = function() return E.global.optionPanelScale == 1.5 end,
+							image = [[Interface\AddOns\OmniCD\Media\omnicd-bg-gnav2-plus]], imageWidth = 18, imageHeight = 18,
+							name = "",
+							order = 15,
+							type = "execute",
+							func = function()
+								local currScale = E.global.optionPanelScale
+								if currScale < 1.46 then
+									currScale = currScale + 0.05
+									E.Libs.ACD.OpenFrames.OmniCD.frame:SetScale(currScale)
+									E.global.optionPanelScale = currScale
+								end
+							end,
+							width = 0.15,
 						},
 						pd3 = {
-							name = "\n", order = 14, type = "description",
+							name = "\n", order = 16, type = "description",
 						},
 						notice = {
 							image = "Interface\\AddOns\\OmniCD\\Media\\omnicd-recent", imageWidth = 32, imageHeight = 16, imageCoords = { 0.13, 1.13, 0.25, 0.75 },
 							name = " ",
-							order = 15,
+							order = 17,
 							type = "description",
 						},
 						notice1 = {
-							name = (E.isClassicEra and "|cffff2020* Talent detection require Sync Mode.")
-							or (E.isWOTLKC and "|cffff2020* Coodown reduction by Glyphs require Sync Mode.")
-							or (E.isSL and "|cffff2020* Coodown reduction by Soulbind Conduits and RNG modifiers (% chance to X, etc) require Sync Mode.")
-							or (E.isDF and "|cffff2020* RNG cooldown modifiers (% chance to X, etc) require Sync Mode." )
-							or "",
-							order = 16,
+							name = format("|cffff2020* %s", (E.isClassic and L["Group member must have OmniCD to detect Talents."])
+							or (E.isWOTLKC and L["Group member must have OmniCD to detect cooldown reduction by Glyphs."])
+							or (E.isSL and L["Group member must have OmniCD to detect cooldown reduction with a chance to proc and Soulbind Conduits."])
+							or (E.isDF and L["Group member must have OmniCD to detect cooldown reduction with a chance to proc."])
+							or ""),
+							order = 18,
 							type = "description",
 						},
 						pd4 = {
@@ -286,13 +335,11 @@ function E:SetupOptions()
 	self.optionsFrames.profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.DB)
 	self.optionsFrames.profiles.order = 1000
 
-
-
-
-
-
-
-
+	if not self.preCata then
+		local LDS = LibStub("LibDualSpec-1.0")
+		LDS:EnhanceDatabase(self.DB, "OmniCDDB")
+		LDS:EnhanceOptions(self.optionsFrames.profiles, self.DB)
+	end
 
 	self.SetupOptions = nil
 end
@@ -310,7 +357,6 @@ end
 
 function E:RefreshProfile(currentProfile)
 	currentProfile = currentProfile or self.DB:GetCurrentProfile()
-
 	self.DB.keys.profile = currentProfile .. ":D"
 	self.DB:SetProfile(currentProfile)
 end

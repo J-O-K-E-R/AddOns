@@ -20,10 +20,17 @@ local PickupGuildBankItem = PickupGuildBankItem
 local QueryGuildBankTab = QueryGuildBankTab
 local SplitGuildBankItem = SplitGuildBankItem
 
+local ITEMQUALITY_POOR = Enum.ItemQuality.Poor
 local NUM_BAG_SLOTS = NUM_BAG_SLOTS + (E.Retail and 1 or 0) -- add the profession bag
-local NUM_BANKBAGSLOTS = NUM_BANKBAGSLOTS
 local BANK_CONTAINER = BANK_CONTAINER
-local REAGENT_CONTAINER = 5
+local REAGENT_CONTAINER = E.Retail and 5 or math.huge -- impossible id to prevent code on classic
+
+local BagSlotFlags = Enum.BagSlotFlags
+local FILTER_FLAG_TRADE_GOODS = LE_BAG_FILTER_FLAG_TRADE_GOODS or BagSlotFlags.PriorityTradeGoods
+local FILTER_FLAG_CONSUMABLES = LE_BAG_FILTER_FLAG_CONSUMABLES or BagSlotFlags.PriorityConsumables
+local FILTER_FLAG_EQUIPMENT = LE_BAG_FILTER_FLAG_EQUIPMENT or BagSlotFlags.PriorityEquipment
+local FILTER_FLAG_JUNK = LE_BAG_FILTER_FLAG_JUNK or BagSlotFlags.PriorityJunk
+local FILTER_FLAG_QUEST = (BagSlotFlags and BagSlotFlags.PriorityQuestItems) or 32 -- didnt exist
 
 local ItemClass_Armor = Enum.ItemClass.Armor
 local ItemClass_Weapon = Enum.ItemClass.Weapon
@@ -41,7 +48,8 @@ local guildBags = {51,52,53,54,55,56,57,58}
 local bankBags = {BANK_CONTAINER}
 local MAX_MOVE_TIME = 1.25
 
-for i = NUM_BAG_SLOTS + 1, NUM_BAG_SLOTS + NUM_BANKBAGSLOTS do
+local bankOffset, maxBankSlots = (E.Classic or E.Wrath) and 4 or 5, E.Classic and 10 or E.Wrath and 11 or 12
+for i = bankOffset + 1, maxBankSlots do
 	tinsert(bankBags, i)
 end
 
@@ -537,10 +545,28 @@ function B:ScanBags()
 	end
 end
 
+do
+	local assigned = {
+		[FILTER_FLAG_EQUIPMENT] = 'Equipment',
+		[FILTER_FLAG_CONSUMABLES] = 'Consumables',
+		[FILTER_FLAG_TRADE_GOODS] = 'TradeGoods',
+		[FILTER_FLAG_JUNK] = 'Junk',
+		[FILTER_FLAG_QUEST] = 'QuestItems'
+	}
+
+	function B:IsAssignedBag(bagID)
+		local isBank = B.BankFrame.Bags[bagID]
+		return assigned[B:GetFilterFlagInfo(bagID, isBank)]
+	end
+end
+
 function B:IsSpecialtyBag(bagID)
 	if bagID == REAGENT_CONTAINER then return 'Reagent' end
 
 	if safe[bagID] or IsGuildBankBag(bagID) then return 'Normal' end
+
+	local assigned = B:IsAssignedBag(bagID)
+	if assigned then return assigned end
 
 	local invSlot = ContainerIDToInventoryID(bagID)
 	if not invSlot then return 'Normal' end
@@ -558,8 +584,25 @@ function B:CanItemGoInBag(bag, slot, targetBag)
 	if IsGuildBankBag(targetBag) then return true end
 
 	local item = bagIDs[B:Encode_BagSlot(bag, slot)]
-	local _, _, _, _, _, _, _, _, equipSlot, _, _, _, _, _, _, _, isReagent = GetItemInfo(item)
-	if targetBag == REAGENT_CONTAINER then return isReagent end
+	local _, _, rarity, _, _, _, _, _, equipSlot, _, sellPrice, classID, _, bindType, _, _, isReagent = GetItemInfo(item)
+	if targetBag == REAGENT_CONTAINER then
+		return isReagent
+	end
+
+	local assigned = B:IsAssignedBag(targetBag)
+	if assigned then
+		if assigned == 'Consumables' then
+			return classID == 0
+		elseif assigned == 'TradeGoods' then
+			return classID == 7
+		elseif assigned == 'QuestItems' then
+			return classID == 12 or bindType == 4
+		elseif assigned == 'Junk' then
+			return (rarity and rarity == ITEMQUALITY_POOR) and sellPrice
+		elseif assigned == 'Equipment' then
+			return B.IsEquipmentSlot[equipSlot]
+		end
+	end
 
 	local itemFamily = (equipSlot == 'INVTYPE_BAG' and 1) or GetItemFamily(item)
 	if itemFamily then
@@ -627,9 +670,12 @@ local blackListedSlots = {}
 local blackListQueries = {}
 function B:BuildBlacklist(...)
 	for entry in pairs(...) do
+		local itemID = tonumber(entry)
 		local itemName = GetItemInfo(entry)
 
-		if itemName then
+		if itemID then
+			blackList[itemID] = true
+		elseif itemName then
 			blackList[itemName] = true
 		elseif entry ~= '' then
 			if strfind(entry, '%[') and strfind(entry, '%]') then
@@ -657,8 +703,9 @@ function B.Sort(bags, sorter, invertDirection)
 	for i, bag, slot in B:IterateBags(bags, nil, 'both') do
 		if not E.Retail or not B:IsSortIgnored(bag) then
 			local link = B:GetItemLink(bag, slot)
+			local itemID = B:GetItemID(bag, slot)
 			local bagSlot = B:Encode_BagSlot(bag, slot)
-			if link and blackList[GetItemInfo(link)] then
+			if (itemID and blackList[itemID]) or (link and blackList[GetItemInfo(link)]) then
 				blackListedSlots[bagSlot] = true
 			end
 
@@ -743,8 +790,9 @@ function B.Fill(sourceBags, targetBags, reverse, canMove)
 		if #emptySlots == 0 then break end
 
 		local link = B:GetItemLink(bag, slot)
+		local itemID = B:GetItemID(bag, slot)
 		local bagSlot = B:Encode_BagSlot(bag, slot)
-		if link and blackList[GetItemInfo(link)] then
+		if (itemID and blackList[itemID]) or (link and blackList[GetItemInfo(link)]) then
 			blackListedSlots[bagSlot] = true
 		end
 

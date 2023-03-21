@@ -122,7 +122,6 @@ local UnitIsUnit = UnitIsUnit
 local UnitIsFriend = UnitIsFriend
 local UnitIsPlayer = UnitIsPlayer
 local GameTooltip_Hide = GameTooltip_Hide
-local GameFontHighlightSmall = _G.GameFontHighlightSmall
 local ACH = E.Libs.ACH
 
 --Function we can call on profile change to update GUI
@@ -191,7 +190,7 @@ local DEVELOPERS = {
 	'|cffff2020Nihilistzsche|r',
 	'|TInterface/AddOns/ElvUI/Core/Media/ChatLogos/Beer:15:15:0:0:64:64:5:59:5:59|t |cfff48cbaRepooc|r',
 	'|TInterface/AddOns/ElvUI/Core/Media/ChatLogos/Clover:15:15:0:0:64:64:5:59:5:59|t |cff4beb2cLuckyone|r',
-	E:TextGradient('Simpy but my name needs to be longer.', 0.99,0.24,0.26, 0.99,0.59,0.28, 1,0.87,0.29, 0.42,0.99,0.39, 0.32,0.76,0.98, 0.63,0.36,0.98, 0.77,0.47,0.98)
+	E:TextGradient('Simpy but my name needs to be longer.', 0.18,1.00,0.49, 0.32,0.85,1.00, 0.55,0.38,0.85, 1.00,0.55,0.71, 1.00,0.68,0.32)
 }
 
 local TESTERS = {
@@ -299,15 +298,13 @@ local function ExportImport_Open(mode)
 	Box.scrollFrame:UpdateScrollChildRect()
 
 	local Label1 = E.Libs.AceGUI:Create('Label')
-	local font = GameFontHighlightSmall:GetFont()
-	Label1:SetFont(font, 14, E.Retail and '' or 'NONE')
+	Label1:SetFontObject('GameFontHighlightMedium')
 	Label1:SetText('.') --Set temporary text so height is set correctly
 	Label1:SetWidth(800)
 	Frame:AddChild(Label1)
 
 	local Label2 = E.Libs.AceGUI:Create('Label')
-	font = GameFontHighlightSmall:GetFont()
-	Label2:SetFont(font, 14, E.Retail and '' or 'NONE')
+	Label2:SetFontObject('GameFontHighlightMedium')
 	Label2:SetText('.|n.')
 	Label2:SetWidth(800)
 	Frame:AddChild(Label2)

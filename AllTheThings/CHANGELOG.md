@@ -1,17 +1,18 @@
 # AllTheThings
 
-## [DF-3.1.0](https://github.com/DFortun81/AllTheThings/tree/DF-3.1.0) (2022-11-28)
-[Full Changelog](https://github.com/DFortun81/AllTheThings/compare/DF-3.0.8...DF-3.1.0) [Previous Releases](https://github.com/DFortun81/AllTheThings/releases)
+## [DF-3.2.8](https://github.com/DFortun81/AllTheThings/tree/DF-3.2.8) (2023-03-19)
+[Full Changelog](https://github.com/DFortun81/AllTheThings/compare/DF-3.2.7...DF-3.2.8) [Previous Releases](https://github.com/DFortun81/AllTheThings/releases)
 
 
-### Dragonflight is here 🎉🔥🐲🐉
+### Twitch Drops
 
-All Dragonflight content is marked collectible in AllTheThings as of this release 🎉
+Earn the D.I.S.C.O. Toy 🕺 from March 21st, 10:00 a.m. PDT until April 2nd, 23:59 p.m. PDT. More details [here](https://worldofwarcraft.blizzard.com/en-us/news/23923488/dragonflight-twitch-drops-earn-the-disco-toy).
 
-All your usual categories like Mounts, Achievements, Quests, etc and even expansion specific additions like Dragonriding customizations and Faction activities.
+### Data additions/fixes
 
-Most of the work this time around was done by @gbrage ♥
-
-Because of the amount of content in new expansion we inevitably missed something so please come to our [Discord](https://discord.gg/allthethings) to report issues you see!
-
-Have a good time in Dragonflight 🔥
+- Moved Item Sets, Allied/Heritage Questlines categories under Character category.
+- Sorted more Common (White) items.
+- Cleaned up duplicated Allied Race stuff from Achievements.
+- Fixed a number of Children's Week achievement criterias.
+- Updated Wrath of the Lich King Jewelcrafting Recipe Items.
+- Other fixes.

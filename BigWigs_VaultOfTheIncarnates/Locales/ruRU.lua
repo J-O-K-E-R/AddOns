@@ -20,6 +20,9 @@ if L then
 	L.shattering_impact = "Войда"
 	L.concussive_slam = "Танк фронтал"
 	L.infused_fallout = "Пыль"
+
+	--L.custom_on_repeating_fallout = "Repeating Infused Fallout"
+	--L.custom_on_repeating_fallout_desc = "Repeating Infused Fallout say messages with icon {rt7} to find a partner."
 end
 
 L = BigWigs:NewBossLocale("The Primal Council", "ruRU")
@@ -33,10 +36,10 @@ if L then
 	L.conductive_marks = "Знаки" -- Conductive Marks
 	L.conductive_mark = "Знак" -- Singular
 
-	L.custom_off_chain_lightning = "Цепная молния выключена по умолчанию. Нажмите, что бы включить её."
-
 	L.custom_on_stop_timers = "Всегда показывать полосы способностей"
 	L.custom_on_stop_timers_desc = "Будут показываться следующие способности:  Знак проводимости"
+
+	L.skipped_cast = "Пропущено %s (%d)"
 end
 
 L = BigWigs:NewBossLocale("Sennarth, The Cold Breath", "ruRU")
@@ -48,13 +51,13 @@ if L then
 	L.webs = "Сети"
 	L.web = "Паутина"
 	L.gossamer_burst = "Притягивание"
+	-- L.gossamer_burst_castbar = "Gossamer Burst Cast Bar / Countdown"
+	-- L.gossamer_burst_castbar_desc = "A Cast Bar for Gossamer Burst with Countdown enabled by default."
 	L.repelling_burst = "Отталкивание"
 end
 
 L = BigWigs:NewBossLocale("Dathea, Ascended", "ruRU")
 if L then
-	L.marks_on_me = "%d знак" -- {Stacks} Conductive Mark on the player
-
 	L.conductive_marks = "Знаки"
 	L.conductive_mark = "Знак"
 	L.raging_burst = "Новые торнадо"
@@ -74,13 +77,21 @@ if L then
 	L.avoid_bartext = "%s [додж]" -- {Spell} [Avoid]
 
 	L.ultimate = "Ультимативные способности"
-	L.ultimate_desc = "Display timers for Ultimate abilities (Огненная бойня, Абсолютный нуль, Сейсмический разлом, Громовой удар) when we don't know what alter the boss is at."
+	L.ultimate_desc = "Показывать таймеры для ультимативных способностей (Огненная бойня, Абсолютный нуль, Сейсмический разлом, Громовой удар) когда неизвестен альтарь босса."
 	L.ultimate_bartext = "%s [ульт.]" -- {Spell} [Ult]
+
+	L.add_bartext = "%s [Адд]" -- "{Spell} [Add]"
+
+	L.Fire = "огонь"
+	L.Frost = "лед"
+	L.Earth = "Земля"
+	L.Storm = "буря"
 
 	-- Fire
 	L.magma_burst = "Лужи"
 	L.molten_rupture = "Волны"
 	L.searing_carnage = "Танец"
+	L.raging_inferno = "Соак лужи"
 
 	-- Frost
 	L.biting_chill = "Фрост ДоТ"
@@ -111,15 +122,55 @@ if L then
 	L.greatstaff_of_the_broodkeeper = "Великий Посох"
 	L.greatstaffs_wrath = "Лазер"
 	L.clutchwatchers_rage = "Ярость"
-	L.rapid_incubation = "Инкуцбация"
-	L.icy_shroud = "Хил Абсорб"
-	L.broodkeepers_fury = "Неистовство"
-	L.frozen_shroud = "Хил Абсорб и рут"
+	L.rapid_incubation = "Инкубация"
+	L.icy_shroud = "Абсорб"
+	L.broodkeepers_fury = "Стаки"
+	L.frozen_shroud = "Абсорб + Рут"
+	L.detonating_stoneslam = "Танк Соак"
 end
 
 L = BigWigs:NewBossLocale("Raszageth the Storm-Eater", "ruRU")
 if L then
+	L.lighting_devastation_trigger = "глубокий вдох" -- Рашагет делает глубокий вдох...
 
+	-- Stage One: The Winds of Change
+	L.hurricane_wing = "Отталкивание"
+	L.volatile_current = "Искры"
+	L.thunderous_blast = "Танкбастер"
+	L.lightning_breath = "Дыхание"
+	L.lightning_strikes = "Войд зоны"
+	L.electric_scales = "Рейд урон"
+	L.electric_lash = "Хлыст"
+	-- Intermission: The Primalist Strike
+	L.lightning_devastation = "Дыхание"
+	L.shattering_shroud = "Хил Абсорб"
+	-- Stage Two: Surging Power
+	L.absorb_text = "%s (%.0f%%)"
+	L.stormsurge = "Щит"
+	L.stormcharged = "Плюс или Минус"
+	L.positive = "Плюс"
+	L.negative = "Минус"
+	L.focused_charge = "Бафф урона"
+	L.tempest_wing = "Отталкивание"
+	L.fulminating_charge = "Вынос"
+	L.fulminating_charge_debuff = "Вынос"
+	-- Intermission: The Vault Falters
+	L.storm_break = "Телепорт"
+	L.ball_lightning = "Шарики"
+	-- Stage Three: Storm Incarnate
+	L.magnetic_charge = "Притягивание"
+
+	L.storm_nova_cast = "Взрыв Бури"
+	L.storm_nova_cast_desc = "Кастбар для отталкивания"
+
+	L.custom_on_repeating_stormcharged = "Повторять плюс или минус"
+	L.custom_on_repeating_stormcharged_desc = "Повторять в чате Плюс или Минус иконками {rt1}, {rt3} что бы найти партнёра."
+
+	L.skipped_cast = "Пропущено %s (%d)"
+
+	L.custom_off_raidleader_devastation = "Полёт: Режим Рейдлидера"
+	L.custom_off_raidleader_devastation_desc = "Показывать полоску для Опустошающей молнии (Дыхание) на противоположной стороне."
+	L.breath_other = "%s [другая сторона]" -- Breath on opposite platform
 end
 
 L = BigWigs:NewBossLocale("Vault of the Incarnates Trash", "ruRU")

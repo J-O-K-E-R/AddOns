@@ -252,8 +252,8 @@ do
 	function plugin:OnPluginEnable()
 		self:RegisterMessage("BigWigs_OnBossEngage", "OnEngage")
 		self:RegisterMessage("BigWigs_OnBossEngageMidEncounter", "OnEngage")
-		self:RegisterMessage("BigWigs_OnBossWin", "OnWinOrWipe")
-		self:RegisterMessage("BigWigs_OnBossWipe", "OnWinOrWipe")
+		self:RegisterMessage("BigWigs_OnBossDisable")
+		self:RegisterMessage("BigWigs_OnBossWipe", "BigWigs_OnBossDisable")
 		self:RegisterMessage("BigWigs_ProfileUpdate", updateProfile)
 		updateProfile()
 
@@ -297,7 +297,7 @@ do
 		self:SiegeOfOrgrimmarCinematics() -- Sexy hack until cinematics have an id system (never)
 		self:ToyCheck() -- Sexy hack until cinematics have an id system (never)
 
-		--CheckElv(self)
+		CheckElv(self)
 	end
 end
 
@@ -378,17 +378,17 @@ do
 			SetCVar("Sound_EnableErrorSpeech", "0")
 		end
 
-		--CheckElv(self)
+		CheckElv(self)
 		-- Never hide when tracking achievements or in Mythic+
-		--local _, _, diff = GetInstanceInfo()
-		--if not restoreObjectiveTracker and self.db.profile.blockObjectiveTracker and not GetTrackedAchievements() and diff ~= 8 and not trackerHider.IsProtected(ObjectiveTrackerFrame) then
-		--	restoreObjectiveTracker = trackerHider.GetParent(ObjectiveTrackerFrame)
-		--	if restoreObjectiveTracker then
-		--		trackerHider.SetFixedFrameStrata(ObjectiveTrackerFrame, true) -- Changing parent would change the strata & level, lock it first
-		--		trackerHider.SetFixedFrameLevel(ObjectiveTrackerFrame, true)
-		--		trackerHider.SetParent(ObjectiveTrackerFrame, trackerHider)
-		--	end
-		--end
+		local _, _, diff = GetInstanceInfo()
+		if not restoreObjectiveTracker and self.db.profile.blockObjectiveTracker and not GetTrackedAchievements() and diff ~= 8 and not trackerHider.IsProtected(ObjectiveTrackerFrame) then
+			restoreObjectiveTracker = trackerHider.GetParent(ObjectiveTrackerFrame)
+			if restoreObjectiveTracker then
+				trackerHider.SetFixedFrameStrata(ObjectiveTrackerFrame, true) -- Changing parent would change the strata & level, lock it first
+				trackerHider.SetFixedFrameLevel(ObjectiveTrackerFrame, true)
+				trackerHider.SetParent(ObjectiveTrackerFrame, trackerHider)
+			end
+		end
 	end
 
 	function RestoreAll(self)
@@ -431,7 +431,7 @@ do
 		end
 	end
 
-	function plugin:OnWinOrWipe(event, module)
+	function plugin:BigWigs_OnBossDisable(event, module)
 		if not module or not module.journalId or module.worldBoss then return end
 		RestoreAll(self)
 	end
@@ -440,6 +440,12 @@ end
 do
 	-- Talking Head blocking
 	local known = {
+		-- Court of Stars
+		[70615]=true,[70199]=true,[70198]=true,[70197]=true,[70193]=true,
+		[70195]=true,[70196]=true,[70192]=true,[70194]=true,
+		-- Halls of Valor
+		[57160]=true,[57159]=true,[57162]=true,[68701]=true,[57161]=true,
+
 		-- De Other Side
 		[163828]=true,[163830]=true,[163831]=true,[163822]=true,[163823]=true,[163824]=true,[163834]=true,
 		[163835]=true,[163836]=true,[163837]=true,[163819]=true,[163820]=true,[163821]=true,
@@ -465,6 +471,18 @@ do
 
 		-- Algeth'ar Academy
 		[208061]=true,[208063]=true,[208065]=true,
+		-- Brackenhide Hollow
+		[203481]=true,[203482]=true,[203483]=true,[203484]=true,[203457]=true,[203453]=true,[203452]=true,
+		-- Ruby Life Pools
+		[204740]=true,[204739]=true,[204738]=true,[204737]=true,[204736]=true,
+		-- The Nokhud Offensive
+		[205509]=true,[205547]=true,[205502]=true,[205503]=true,[205768]=true,[205769]=true,
+		[205770]=true,[205555]=true,[205554]=true,[205838]=true,[205839]=true,[205840]=true,
+		[205831]=true,[205832]=true,[205833]=true,[205841]=true,[205851]=true,[205856]=true,
+		[205504]=true,[205505]=true,[205506]=true,[205507]=true,[205842]=true,[205508]=true,
+		[205814]=true,[205815]=true,[205567]=true,[205852]=true,
+		-- Uldaman: Legacy of Tyr
+		[203125]=true,[203126]=true,[203127]=true,
 	}
 
 	local lookup = {
@@ -515,6 +533,7 @@ do
 		[956] = true, -- Anduin defeat
 		[957] = true, -- Jailer intro
 		[958] = true, -- Jailer defeat
+		[964] = true, -- Raszageth defeat
 	}
 
 	function plugin:PLAY_MOVIE(_, id)

@@ -137,7 +137,7 @@ L["CONFIG_SELLING_CONFIRM_LOW_PRICE"] = "Confirm posting items at an unusually l
 --[[Translation missing --]]
 L["CONFIG_SELLING_CONFIRM_LOW_PRICE_TOOLTIP_HEADER"] = "Confirm Posting Low Price"
 --[[Translation missing --]]
-L["CONFIG_SELLING_CONFIRM_LOW_PRICE_TOOLTIP_TEXT"] = "Lets you remove the confirmation dialog that appears when posting an item at an unusually low price."
+L["CONFIG_SELLING_CONFIRM_LOW_PRICE_TOOLTIP_TEXT_2"] = "Adds a confirmation dialog that appears when posting an item at an unusually low price."
 L["CONFIG_SELLING_DEFAULT_QUANTITY_SUFFIX"] = "Establecer en 0 para la cantidad máxima"
 L["CONFIG_SELLING_DEFAULT_QUANTITY_TOOLTIP_HEADER"] = "Cantidad de contabilización predeterminada"
 L["CONFIG_SELLING_DEFAULT_QUANTITY_TOOLTIP_TEXT"] = "Esto le permite cambiar la cantidad predeterminada utilizada al publicar un objeto. Ajústelo a 0 para usar la cantidad máxima posible."
@@ -209,7 +209,11 @@ L["CONFIRM_POST_BELOW_VENDOR"] = "Puede ganar más oro vendiendo esto a un vende
 L["CONFIRM_POST_LOW_PRICE"] = "El precio de %s parece un poco bajo. ¿Está seguro que quiere publicar a ese precio?"
 L["CONFIRM_POST_PRICE_DROP"] = "El precio unitario de %s es una gran bajada de precio. ¿Está seguro que quiere publicar a ese precio?"
 --[[Translation missing --]]
+L["CONFIRM_UNHIDE_ALL"] = "Are you sure you want to unhide all hidden items?"
+--[[Translation missing --]]
 L["CONFIRM_X_TOTAL_PRICE_X"] = "Confirm %s, total price %s"
+--[[Translation missing --]]
+L["CONTINUE"] = "Continue"
 L["CONTRIBUTORS_HEADER"] = "Colaboradores"
 L["COPY_ITEM_ADDED"] = "Copiado %s a %s"
 L["COPY_NO_LIST_SELECTED"] = "No se puede copiar el objeto. No se ha seleccionado ninguna lista de la compra"
@@ -354,6 +358,8 @@ L["POST_ATTEMPT_FAILED"] = "Your last post attempt didn't work. Try again."
 L["PRICE"] = "Precio"
 L["PRICE_HISTORY"] = "Historial de precios"
 L["PRICE_INCREASE_WARNING"] = "Precio aumentado en %s, esperando %ss"
+--[[Translation missing --]]
+L["PRICE_INCREASE_WARNING_2"] = "Price increased by %s. Do you want to continue?"
 L["PROFILE_TOGGLE_TOOLTIP_HEADER"] = "Habilitar la configuración por personaje"
 L["PROFILE_TOGGLE_TOOLTIP_TEXT"] = "Los cambios en la configuración de Auctionator solo afectan a este personaje."
 L["PROFIT_COLON"] = "Ganancia:"
@@ -603,7 +609,13 @@ L["STARTING_PRICE_PERCENTAGE"] = "Precio inicial"
 L["STARTING_PRICE_PERCENTAGE_SUFFIX"] = "% del precio de la pila"
 L["STARTING_PRICE_PERCENTAGE_TOOLTIP_HEADER"] = "Precio inicial de oferta"
 L["STARTING_PRICE_PERCENTAGE_TOOLTIP_TEXT"] = "El porcentaje del precio inicial se utilizará para establecer el monto de oferta predeterminado utilizado para cualquier subasta publicada. Por ejemplo, establecer esto en 95, para un precio de 10 plata por pila, establecerá el precio de oferta en 9p50c."
+--[[Translation missing --]]
+L["STOP"] = "Stop"
+--[[Translation missing --]]
+L["STOP_LOADING_NOW"] = "Stop loading now"
 L["TEMPORARY_LOWER_CASE"] = "temporal"
+--[[Translation missing --]]
+L["TIER"] = "Tier"
 L["TIME_LEFT"] = "Tiempo restante"
 L["TIME_LEFT_H"] = "Tiempo restante (h)"
 L["TO_CRAFT_COLON"] = "Fabricar:"

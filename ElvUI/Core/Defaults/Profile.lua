@@ -1,6 +1,7 @@
 local E, L, V, P, G = unpack(ElvUI)
 
 local CopyTable = CopyTable -- Our function doesn't exist yet.
+local strfind = strfind
 local next = next
 
 P.gridSize = 64
@@ -66,6 +67,7 @@ P.general = {
 	afk = true,
 	afkChat = true,
 	numberPrefixStyle = 'ENGLISH',
+	tagUpdateRate = 0.25,
 	decimalLength = 1,
 	altPowerBar = {
 		enable = true,
@@ -124,6 +126,12 @@ P.general = {
 				xOffset = 0,
 				yOffset = 0,
 				hide = true,
+			},
+			crafting = {
+				scale = 1,
+				position = 'TOPRIGHT',
+				xOffset = -23,
+				yOffset = -3,
 			},
 			mail = {
 				scale = 1,
@@ -324,31 +332,31 @@ P.bags = {
 	showAssignedIcon = true,
 	colors = {
 		profession = {
-			reagent = { r = 0.53, g = 0.26, b = 1 },
-			ammoPouch = { r = 1, g = 0.69, b = 0.41 },
-			cooking = { r = .87, g = .05, b = .25 },
-			enchanting = { r = .76, g = .02, b = .8 },
-			engineering = { r = .91, g = .46, b = .18 },
-			fishing = { r = .42, g = .59, b = 1 },
-			gems = { r = .03, g = .71, b = .81 },
-			herbs = { r = .07, g = .71, b = .13 },
-			inscription = { r = .29, g = .30, b = .88 },
-			keyring = { r = 1, g = .96, b = .41 },
-			leatherworking = { r = .88, g = .73, b = .29 },
-			mining = { r = .54, g = .40, b = .04 },
-			quiver = { r = 1, g = 0.69, b = 0.41 },
-			soulBag = { r = 1, g = 0.69, b = 0.41 },
+			reagent			= { r = 0.18, g = 0.75, b = 0.50 },
+			ammoPouch		= { r = 1.00, g = 0.69, b = 0.41 },
+			cooking			= { r = 0.74, g = 0.05, b = 0.21 },
+			enchanting		= { r = 0.72, g = 0.22, b = 0.74 },
+			engineering		= { r = 0.91, g = 0.46, b = 0.18 },
+			fishing			= { r = 0.22, g = 0.46, b = 0.90 },
+			gems			= { r = 0.03, g = 0.65, b = 0.75 },
+			herbs			= { r = 0.28, g = 0.74, b = 0.07 },
+			inscription		= { r = 0.32, g = 0.34, b = 0.98 },
+			keyring			= { r = 0.67, g = 0.87, b = 0.37 },
+			leatherworking	= { r = 0.74, g = 0.55, b = 0.20 },
+			mining			= { r = 0.54, g = 0.40, b = 0.04 },
+			quiver			= { r = 1.00, g = 0.69, b = 0.41 },
+			soulBag			= { r = 1.00, g = 0.69, b = 0.41 },
 		},
 		assignment = {
-			equipment = { r = 0, g = .50, b = .47 },
-			consumables = { r = .57, g = .95, b = .66 },
-			tradegoods = { r = 1, g = .32, b = .66 },
-			quest = { r = 0.6, g = 0.2, b = 0.2 },
-			junk = { r = 0.26, g = 0.26, b = 0.26 },
+			equipment		= { r = 0.00, g = 0.50, b = 0.47 },
+			consumables		= { r = 0.45, g = 0.74, b = 0.52 },
+			tradegoods		= { r = 0.74, g = 0.23, b = 0.49 },
+			quest			= { r = 0.60, g = 0.20, b = 0.20 },
+			junk			= { r = 0.26, g = 0.26, b = 0.26 },
 		},
 		items = {
-			questStarter = { r = 1, g = .96, b = .41 },
-			questItem = { r = 0.9, g = 0.3, b = 0.3 },
+			questStarter	= { r = 1.00, g = 0.96, b = 0.41 },
+			questItem		= { r = 0.90, g = 0.30, b = 0.30 },
 		}
 	},
 	vendorGrays = {
@@ -770,6 +778,7 @@ P.nameplates = {
 	},
 	visibility = {
 		showAll = true,
+		showOnlyNames = false,
 		enemy = {
 			guardians = false,
 			minions = false,
@@ -801,10 +810,6 @@ P.nameplates = {
 	},
 	units = {
 		PLAYER = {
-			enable = false,
-			showTitle = true,
-			smartAuraPosition = 'DISABLED',
-			nameOnly = false,
 			useStaticPosition = false,
 			clickthrough = false,
 			classpower = {
@@ -823,21 +828,8 @@ P.nameplates = {
 				showInCombat = true,
 				showWithTarget = false,
 			},
-			buffs = CopyTable(NP_Auras),
-			castbar = CopyTable(NP_Castbar),
-			debuffs = CopyTable(NP_Auras),
-			health = CopyTable(NP_Health),
-			level = CopyTable(NP_Level),
-			name = CopyTable(NP_Name),
-			portrait = CopyTable(NP_Portrait),
-			power = CopyTable(NP_Power),
-			pvpclassificationindicator = CopyTable(NP_PvPClassificationIndicator),
-			pvpindicator = CopyTable(NP_PvPIcon),
-			raidTargetIndicator = CopyTable(NP_RaidTargetIndicator),
-			title = CopyTable(NP_Title),
 		},
 		TARGET = {
-			enable = true,
 			arrow = 'Arrow9',
 			arrowScale = 0.8,
 			arrowSpacing = 3,
@@ -853,85 +845,46 @@ P.nameplates = {
 			},
 		},
 		FRIENDLY_PLAYER = {
-			enable = true,
-			showTitle = true,
-			smartAuraPosition = 'DISABLED',
-			nameOnly = false,
 			markHealers = true,
 			markTanks = true,
-			buffs = CopyTable(NP_Auras),
-			castbar = CopyTable(NP_Castbar),
-			debuffs = CopyTable(NP_Auras),
-			health = CopyTable(NP_Health),
-			level = CopyTable(NP_Level),
-			name = CopyTable(NP_Name),
-			portrait = CopyTable(NP_Portrait),
-			power = CopyTable(NP_Power),
-			pvpclassificationindicator = CopyTable(NP_PvPClassificationIndicator),
-			pvpindicator = CopyTable(NP_PvPIcon),
-			raidTargetIndicator = CopyTable(NP_RaidTargetIndicator),
-			title = CopyTable(NP_Title),
 		},
 		ENEMY_PLAYER = {
-			enable = true,
-			showTitle = true,
-			smartAuraPosition = 'DISABLED',
-			nameOnly = false,
 			markHealers = true,
 			markTanks = true,
-			buffs = CopyTable(NP_Auras),
-			castbar = CopyTable(NP_Castbar),
-			debuffs = CopyTable(NP_Auras),
-			health = CopyTable(NP_Health),
-			level = CopyTable(NP_Level),
-			name = CopyTable(NP_Name),
-			portrait = CopyTable(NP_Portrait),
-			power = CopyTable(NP_Power),
-			pvpclassificationindicator = CopyTable(NP_PvPClassificationIndicator),
-			pvpindicator = CopyTable(NP_PvPIcon),
-			raidTargetIndicator = CopyTable(NP_RaidTargetIndicator),
-			title = CopyTable(NP_Title),
 		},
-		FRIENDLY_NPC = {
-			enable = true,
-			showTitle = true,
-			smartAuraPosition = 'DISABLED',
-			nameOnly = true,
-			buffs = CopyTable(NP_Auras),
-			castbar = CopyTable(NP_Castbar),
-			debuffs = CopyTable(NP_Auras),
-			eliteIcon = CopyTable(NP_EliteIcon),
-			health = CopyTable(NP_Health),
-			level = CopyTable(NP_Level),
-			name = CopyTable(NP_Name),
-			portrait = CopyTable(NP_Portrait),
-			power = CopyTable(NP_Power),
-			pvpindicator = CopyTable(NP_PvPIcon),
-			questIcon = CopyTable(NP_QuestIcon),
-			raidTargetIndicator = CopyTable(NP_RaidTargetIndicator),
-			title = CopyTable(NP_Title),
-		},
-		ENEMY_NPC = {
-			enable = true,
-			showTitle = true,
-			smartAuraPosition = 'DISABLED',
-			nameOnly = false,
-			buffs = CopyTable(NP_Auras),
-			castbar = CopyTable(NP_Castbar),
-			debuffs = CopyTable(NP_Auras),
-			eliteIcon = CopyTable(NP_EliteIcon),
-			health = CopyTable(NP_Health),
-			level = CopyTable(NP_Level),
-			name = CopyTable(NP_Name),
-			portrait = CopyTable(NP_Portrait),
-			power = CopyTable(NP_Power),
-			pvpindicator = CopyTable(NP_PvPIcon),
-			questIcon = CopyTable(NP_QuestIcon),
-			raidTargetIndicator = CopyTable(NP_RaidTargetIndicator),
-			title = CopyTable(NP_Title),
-		},
+		FRIENDLY_NPC = {},
+		ENEMY_NPC = {},
 	},
 }
+
+for unit, data in next, P.nameplates.units do
+	data.enable = unit ~= 'PLAYER'
+
+	if unit ~= 'TARGET' then
+		data.showTitle = true
+		data.smartAuraPosition = 'DISABLED'
+		data.nameOnly = unit == 'FRIENDLY_NPC'
+
+		data.buffs = CopyTable(NP_Auras)
+		data.castbar = CopyTable(NP_Castbar)
+		data.debuffs = CopyTable(NP_Auras)
+		data.health = CopyTable(NP_Health)
+		data.level = CopyTable(NP_Level)
+		data.name = CopyTable(NP_Name)
+		data.portrait = CopyTable(NP_Portrait)
+		data.power = CopyTable(NP_Power)
+		data.pvpindicator = CopyTable(NP_PvPIcon)
+		data.raidTargetIndicator = CopyTable(NP_RaidTargetIndicator)
+		data.title = CopyTable(NP_Title)
+
+		if strfind(unit, '_NPC') then
+			data.eliteIcon = CopyTable(NP_EliteIcon)
+			data.questIcon = CopyTable(NP_QuestIcon)
+		else
+			data.pvpclassificationindicator = CopyTable(NP_PvPClassificationIndicator)
+		end
+	end
+end
 
 P.nameplates.units.PLAYER.buffs.maxDuration = 300
 P.nameplates.units.PLAYER.buffs.priority = 'Blacklist,blockNoDuration,Personal,TurtleBuffs,PlayerBuffs'
@@ -1123,6 +1076,7 @@ P.datatexts = {
 	panels = {
 		LeftChatDataPanel = {
 			enable = true,
+			battleground = true,
 			backdrop = true,
 			border = true,
 			panelTransparency = false,
@@ -1132,6 +1086,7 @@ P.datatexts = {
 		},
 		RightChatDataPanel = {
 			enable = true,
+			battleground = true,
 			backdrop = true,
 			border = true,
 			panelTransparency = false,
@@ -1141,6 +1096,7 @@ P.datatexts = {
 		},
 		MinimapPanel = {
 			enable = true,
+			battleground = false,
 			backdrop = true,
 			border = true,
 			panelTransparency = false,
@@ -1149,7 +1105,19 @@ P.datatexts = {
 			'Friends'
 		}
 	},
-	battleground = true,
+	battlePanel = {
+		LeftChatDataPanel = {
+			'PvP: Kills',
+			'PvP: Honorable Kills',
+			'PvP: Deaths',
+		},
+		RightChatDataPanel = {
+			'PvP: Damage Done',
+			'PvP: Heals',
+			'PvP: Honor Gained',
+		},
+		MinimapPanel = {}
+	},
 	noCombatClick = false,
 	noCombatHover = false,
 }
@@ -1398,6 +1366,15 @@ local UF_Fader = {
 	smooth = 0.33,
 	unittarget = false,
 	vehicle = false,
+	instanceDifficulties = {
+		dungeonNormal = false,
+		dungeonHeroic = false,
+		dungeonMythic = false,
+		dungeonMythicKeystone = false,
+		raidNormal = false,
+		raidHeroic = false,
+		raidMythic = false,
+	}
 }
 
 local UF_Name = {
@@ -1615,6 +1592,15 @@ P.unitframe = {
 	colors = {
 		borderColor = {r = 0, g = 0, b = 0}, -- updated in E.Initialize
 		healthclass = false,
+		healthBreak = {
+			enabled = false,
+			high = 0.75,
+			low = 0.3,
+			onlyLow = false,
+			good = { r = 0, g = 1, b = 0 },
+			neutral = { r = 1, g = 1, b = 0 },
+			bad = { r = 1, g = 0, b = 0 },
+		},
 		--healththreat = false,
 		healthselection = false,
 		forcehealthreaction = false,
@@ -1785,8 +1771,10 @@ P.unitframe = {
 				width = 10,
 			},
 			aurabar = CopyTable(UF_AuraBars),
+			buffIndicator = CopyTable(UF_AuraWatch),
 			buffs = CopyTable(UF_Auras),
 			castbar = CopyTable(UF_Castbar),
+			customTexts = {},
 			cutaway = CopyTable(UF_Cutaway),
 			debuffs = CopyTable(UF_Auras),
 			fader = CopyTable(UF_Fader),
@@ -1817,8 +1805,10 @@ P.unitframe = {
 			disableFocusGlow = true,
 			CombatIcon = CopyTable(UF_CombatIcon),
 			aurabar = CopyTable(UF_AuraBars),
+			buffIndicator = CopyTable(UF_AuraWatch),
 			buffs = CopyTable(UF_Auras),
 			castbar = CopyTable(UF_Castbar),
+			customTexts = {},
 			cutaway = CopyTable(UF_Cutaway),
 			debuffs = CopyTable(UF_Auras),
 			fader = CopyTable(UF_Fader),
@@ -1848,6 +1838,7 @@ P.unitframe = {
 			disableFocusGlow = true,
 			buffs = CopyTable(UF_Auras),
 			cutaway = CopyTable(UF_Cutaway),
+			customTexts = {},
 			debuffs = CopyTable(UF_Auras),
 			fader = CopyTable(UF_Fader),
 			health = CopyTable(UF_Health),
@@ -1874,6 +1865,7 @@ P.unitframe = {
 			buffIndicator = CopyTable(UF_AuraWatch),
 			buffs = CopyTable(UF_Auras),
 			castbar = CopyTable(UF_Castbar),
+			customTexts = {},
 			cutaway = CopyTable(UF_Cutaway),
 			CombatIcon = CopyTable(UF_CombatIcon),
 			debuffs = CopyTable(UF_Auras),
@@ -1902,6 +1894,7 @@ P.unitframe = {
 			buffIndicator = CopyTable(UF_AuraWatch),
 			buffs = CopyTable(UF_Auras),
 			castbar = CopyTable(UF_Castbar),
+			customTexts = {},
 			cutaway = CopyTable(UF_Cutaway),
 			debuffs = CopyTable(UF_Auras),
 			fader = CopyTable(UF_Fader),
@@ -1929,18 +1922,19 @@ P.unitframe = {
 			disableTargetGlow = false,
 			disableFocusGlow = false,
 			buffIndicator = CopyTable(UF_AuraWatch),
+			buffs = CopyTable(UF_Auras),
+			castbar = CopyTable(UF_Castbar),
+			customTexts = {},
+			cutaway = CopyTable(UF_Cutaway),
+			debuffs = CopyTable(UF_Auras),
+			fader = CopyTable(UF_Fader),
 			healPrediction = CopyTable(UF_HealthPrediction),
 			health = CopyTable(UF_Health),
-			fader = CopyTable(UF_Fader),
-			power = CopyTable(UF_Power),
-			portrait = CopyTable(UF_Portrait),
 			infoPanel = CopyTable(UF_InfoPanel),
 			name = CopyTable(UF_Name),
-			buffs = CopyTable(UF_Auras),
-			debuffs = CopyTable(UF_Auras),
-			castbar = CopyTable(UF_Castbar),
+			portrait = CopyTable(UF_Portrait),
+			power = CopyTable(UF_Power),
 			raidicon = CopyTable(UF_RaidIcon),
-			cutaway = CopyTable(UF_Cutaway),
 		},
 		arena = {
 			enable = true,
@@ -1965,6 +1959,7 @@ P.unitframe = {
 			},
 			buffs = CopyTable(UF_Auras),
 			castbar = CopyTable(UF_Castbar),
+			customTexts = {},
 			cutaway = CopyTable(UF_Cutaway),
 			debuffs = CopyTable(UF_Auras),
 			fader = CopyTable(UF_Fader),
@@ -1974,8 +1969,8 @@ P.unitframe = {
 			name = CopyTable(UF_Name),
 			portrait = CopyTable(UF_Portrait),
 			power = CopyTable(UF_Power),
-			raidicon = CopyTable(UF_RaidIcon),
 			pvpclassificationindicator = CopyTable(UF_PvPClassificationIndicator),
+			raidicon = CopyTable(UF_RaidIcon),
 		},
 		party = {
 			enable = true,
@@ -2000,10 +1995,11 @@ P.unitframe = {
 			disableTargetGlow = false,
 			disableFocusGlow = false,
 			buffIndicator = CopyTable(UF_AuraWatch),
-			CombatIcon = CopyTable(UF_CombatIcon),
 			buffs = CopyTable(UF_Auras),
 			castbar = CopyTable(UF_Castbar),
 			classbar = CopyTable(UF_ClassBar),
+			CombatIcon = CopyTable(UF_CombatIcon),
+			customTexts = {},
 			cutaway = CopyTable(UF_Cutaway),
 			debuffs = CopyTable(UF_Auras),
 			fader = CopyTable(UF_Fader),
@@ -2015,6 +2011,7 @@ P.unitframe = {
 			phaseIndicator = CopyTable(UF_PhaseIndicator),
 			portrait = CopyTable(UF_Portrait),
 			power = CopyTable(UF_Power),
+			pvpclassificationindicator = CopyTable(UF_PvPClassificationIndicator),
 			raidicon = CopyTable(UF_RaidIcon),
 			raidRoleIcons = CopyTable(UF_RaidRoles),
 			rdebuffs = CopyTable(UF_RaidDebuffs),
@@ -2023,7 +2020,6 @@ P.unitframe = {
 			roleIcon = CopyTable(UF_RoleIcon),
 			summonIcon = CopyTable(UF_SummonIcon),
 			targetsGroup = CopyTable(UF_SubGroup),
-			pvpclassificationindicator = CopyTable(UF_PvPClassificationIndicator),
 		},
 		tank = {
 			enable = true,
@@ -2037,17 +2033,18 @@ P.unitframe = {
 			disableTargetGlow = false,
 			disableFocusGlow = false,
 			verticalSpacing = 7,
-			targetsGroup = CopyTable(UF_SubGroup),
 			buffIndicator = CopyTable(UF_AuraWatch),
-			healPrediction = CopyTable(UF_HealthPrediction),
 			buffs = CopyTable(UF_Auras),
+			customTexts = {},
 			cutaway = CopyTable(UF_Cutaway),
 			debuffs = CopyTable(UF_Auras),
 			fader = CopyTable(UF_Fader),
+			healPrediction = CopyTable(UF_HealthPrediction),
 			health = CopyTable(UF_Health),
 			name = CopyTable(UF_Name),
 			raidicon = CopyTable(UF_RaidIcon),
 			rdebuffs = CopyTable(UF_RaidDebuffs),
+			targetsGroup = CopyTable(UF_SubGroup),
 		},
 	},
 }
@@ -2420,7 +2417,6 @@ local ACTION_SLOTS = _G.NUM_PET_ACTION_SLOTS or 10
 local STANCE_SLOTS = _G.NUM_STANCE_SLOTS or 10
 
 P.actionbar = {
-	addNewSpells = false,
 	chargeCooldown = false,
 	colorSwipeLOC = { r = 0.25, g = 0, b = 0, a = 0.8 },
 	colorSwipeNormal = { r = 0, g = 0, b = 0, a = 0.8 },
@@ -2507,6 +2503,7 @@ P.actionbar = {
 	microbar = {
 		enabled = false,
 		mouseover = false,
+		useIcons = true,
 		buttonsPerRow = 11,
 		buttonSize = 20,
 		keepSizeRatio = false,
@@ -2554,73 +2551,78 @@ else
 	P.actionbar.stanceBar.visibility = 'show'
 end
 
-for i = 1, 10 do
-	local bar = {
-		enabled = false,
-		mouseover = false,
-		clickThrough = false,
-		keepSizeRatio = true,
-		buttons = 12,
-		buttonsPerRow = 12,
-		point = 'BOTTOMLEFT',
-		backdrop = false,
-		heightMult = 1,
-		widthMult = 1,
-		buttonSize = 32,
-		buttonHeight = 32,
-		buttonSpacing = 2,
-		backdropSpacing = 2,
-		alpha = 1,
-		inheritGlobalFade = false,
-		showGrid = true,
-		flyoutDirection = 'AUTOMATIC',
-		paging = {},
-		countColor = { r = 1, g = 1, b = 1 },
-		countFont = 'Homespun',
-		countFontOutline = 'MONOCHROMEOUTLINE',
-		countFontSize = 10,
-		countFontXOffset = 0,
-		countFontYOffset = 2,
-		counttext = true,
-		countTextPosition = 'BOTTOMRIGHT',
-		hotkeyColor = { r = 1, g = 1, b = 1 },
-		hotkeyFont = 'Homespun',
-		hotkeyFontOutline = 'MONOCHROMEOUTLINE',
-		hotkeyFontSize = 10,
-		hotkeytext = true,
-		hotkeyTextPosition = 'TOPRIGHT',
-		hotkeyTextXOffset = 0,
-		hotkeyTextYOffset = -3,
-		macroColor = { r = 1, g = 1, b = 1 },
-		macrotext = false,
-		macroFont = 'Homespun',
-		macroFontOutline = 'MONOCHROMEOUTLINE',
-		macroFontSize = 10,
-		macroTextPosition = 'TOPRIGHT',
-		macroTextXOffset = 0,
-		macroTextYOffset = -3,
-		useCountColor = false,
-		useHotkeyColor = false,
-		useMacroColor = false,
-		frameStrata = 'LOW',
-		frameLevel = 1,
-	}
+local AB_Bar = {
+	enabled = false,
+	mouseover = false,
+	clickThrough = false,
+	keepSizeRatio = true,
+	buttons = 12,
+	buttonsPerRow = 12,
+	point = 'BOTTOMLEFT',
+	backdrop = false,
+	heightMult = 1,
+	widthMult = 1,
+	buttonSize = 32,
+	buttonHeight = 32,
+	buttonSpacing = 2,
+	backdropSpacing = 2,
+	alpha = 1,
+	inheritGlobalFade = false,
+	showGrid = true,
+	flyoutDirection = 'AUTOMATIC',
+	paging = {},
+	countColor = { r = 1, g = 1, b = 1 },
+	countFont = 'Homespun',
+	countFontOutline = 'MONOCHROMEOUTLINE',
+	countFontSize = 10,
+	countFontXOffset = 0,
+	countFontYOffset = 2,
+	counttext = true,
+	countTextPosition = 'BOTTOMRIGHT',
+	hotkeyColor = { r = 1, g = 1, b = 1 },
+	hotkeyFont = 'Homespun',
+	hotkeyFontOutline = 'MONOCHROMEOUTLINE',
+	hotkeyFontSize = 10,
+	hotkeytext = true,
+	hotkeyTextPosition = 'TOPRIGHT',
+	hotkeyTextXOffset = 0,
+	hotkeyTextYOffset = -3,
+	macroColor = { r = 1, g = 1, b = 1 },
+	macrotext = false,
+	macroFont = 'Homespun',
+	macroFontOutline = 'MONOCHROMEOUTLINE',
+	macroFontSize = 10,
+	macroTextPosition = 'TOPRIGHT',
+	macroTextXOffset = 0,
+	macroTextYOffset = -3,
+	useCountColor = false,
+	useHotkeyColor = false,
+	useMacroColor = false,
+	frameStrata = 'LOW',
+	frameLevel = 1,
+	professionQuality = {
+		enable = true,
+		point = 'TOPLEFT',
+		xOffset = 14,
+		yOffset = -12,
+		scale = 0.5,
+		alpha = 1
+	},
+}
 
-	if E.Retail then
-		bar.visibility = '[vehicleui][petbattle][overridebar] hide; show'
-	elseif E.Wrath then
-		bar.visibility = '[vehicleui][overridebar] hide; show'
-	else
-		bar.visibility = '[overridebar] hide; show'
+for i = 1, (E.Classic and 10 or 15) do
+	if i ~= 11 and i ~= 12 then
+		local barN = 'bar'..i
+		P.actionbar[barN] = CopyTable(AB_Bar)
+
+		if E.Retail then
+			P.actionbar[barN].visibility = '[vehicleui][petbattle][overridebar] hide; show'
+		elseif E.Wrath then
+			P.actionbar[barN].visibility = '[vehicleui][overridebar] hide; show'
+		else
+			P.actionbar[barN].visibility = '[overridebar] hide; show'
+		end
 	end
-
-	P.actionbar['bar'..i] = bar
-end
-
-if E.Retail then
-	P.actionbar.bar13 = CopyTable(P.actionbar.bar1)
-	P.actionbar.bar14 = CopyTable(P.actionbar.bar1)
-	P.actionbar.bar15 = CopyTable(P.actionbar.bar1)
 end
 
 for _, bar in next, {'barPet', 'stanceBar', 'vehicleExitButton', 'extraActionButton', 'zoneActionButton'} do
@@ -2731,16 +2733,16 @@ E.LayoutMoverPositions = {
 		ObjectiveFrameMover = 'TOPRIGHT,ElvUIParent,TOPRIGHT,-163,-325',
 		SocialMenuMover = 'TOPLEFT,ElvUIParent,TOPLEFT,4,-187',
 		VehicleSeatMover = 'TOPLEFT,ElvUIParent,TOPLEFT,4,-4',
-		DurabilityFrameMover = "TOPLEFT,ElvUIParent,TOPLEFT,141,-4",
-		ThreatBarMover = "BOTTOMRIGHT,ElvUIParent,BOTTOMRIGHT,-4,4",
-		PetAB = "RIGHT,ElvUIParent,RIGHT,-4,0",
-		ShiftAB = "BOTTOM,ElvUIParent,BOTTOM,0,58",
-		ElvUF_Raid3Mover = "BOTTOMLEFT,ElvUIParent,BOTTOMLEFT,4,269",
-		ElvUF_Raid2Mover = "BOTTOMLEFT,ElvUIParent,BOTTOMLEFT,4,269",
-		ElvUF_Raid1Mover = "BOTTOMLEFT,ElvUIParent,BOTTOMLEFT,4,269",
-		ElvUF_PartyMover = "BOTTOMLEFT,ElvUIParent,BOTTOMLEFT,4,269",
-		HonorBarMover = "TOPRIGHT,ElvUIParent,TOPRIGHT,-2,-251",
-		ReputationBarMover = "TOPRIGHT,ElvUIParent,TOPRIGHT,-2,-243"
+		DurabilityFrameMover = 'TOPLEFT,ElvUIParent,TOPLEFT,141,-4',
+		ThreatBarMover = 'BOTTOMRIGHT,ElvUIParent,BOTTOMRIGHT,-4,4',
+		PetAB = 'RIGHT,ElvUIParent,RIGHT,-4,0',
+		ShiftAB = 'BOTTOM,ElvUIParent,BOTTOM,0,58',
+		ElvUF_Raid3Mover = 'BOTTOMLEFT,ElvUIParent,BOTTOMLEFT,4,269',
+		ElvUF_Raid2Mover = 'BOTTOMLEFT,ElvUIParent,BOTTOMLEFT,4,269',
+		ElvUF_Raid1Mover = 'BOTTOMLEFT,ElvUIParent,BOTTOMLEFT,4,269',
+		ElvUF_PartyMover = 'BOTTOMLEFT,ElvUIParent,BOTTOMLEFT,4,269',
+		HonorBarMover = 'TOPRIGHT,ElvUIParent,TOPRIGHT,-2,-251',
+		ReputationBarMover = 'TOPRIGHT,ElvUIParent,TOPRIGHT,-2,-243'
 	},
 	dpsCaster = {
 		ElvUF_PlayerCastbarMover = 'BOTTOM,ElvUIParent,BOTTOM,0,243',

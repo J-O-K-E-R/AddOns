@@ -102,6 +102,11 @@ SLE.rolePaths = {
 		HEALER = [[Interface\AddOns\ElvUI_SLE\media\textures\role\releaf-healer]],
 		DAMAGER = [[Interface\AddOns\ElvUI_SLE\media\textures\role\releaf-dps]]
 	},
+	['LynOutline'] = {
+		TANK = [[Interface\AddOns\ElvUI_SLE\media\textures\role\lyn-outline-tank]],
+		HEALER = [[Interface\AddOns\ElvUI_SLE\media\textures\role\lyn-outline-healer]],
+		DAMAGER = [[Interface\AddOns\ElvUI_SLE\media\textures\role\lyn-outline-dps]]
+	},
 }
 
 SLE.ScenarioBlockLogos = {
@@ -175,6 +180,9 @@ SLE.SpecialChatIcons = {
 		['ЧерныйШрам'] = {
 			['Емалия'] = friend,
 		},
+        ['Blackrock'] = {
+			['Roxanne'] = blizzicon:format('ability_mage_glacialspike'), -- Annoying Feature requester
+		},
 	},
 	['US'] = {
 		['Andorhal'] = {
@@ -187,6 +195,7 @@ SLE.SpecialChatIcons = {
 			['Darthpred'] = darth,
 			--Repooc's Toon
 			['Repooc'] = repooc,
+			['Desertdragon'] = gold,
 		},
 		['Spirestone'] = {
 			['Lapooc'] = test,

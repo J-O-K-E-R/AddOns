@@ -4,28 +4,35 @@ local ObjectiveTracker_Expand, ObjectiveTracker_Collapse = ObjectiveTracker_Expa
 local IsResting = IsResting
 local _G = _G
 
-local minimizeButton = _G['ObjectiveTrackerFrame'].HeaderMenu.MinimizeButton
-
+local HeaderMenuMinimizeButton = _G.ObjectiveTrackerFrame.HeaderMenu.MinimizeButton
+local QuestHeaderMinimizeButton = _G.ObjectiveTrackerBlocksFrame.QuestHeader.MinimizeButton
 local statedriver = {
-	['FULL'] = function(frame)
+	FULL = function(frame)
 		ObjectiveTracker_Expand()
-		if E.private.skins.blizzard.enable == true and E.private.skins.blizzard.objectiveTracker == true then minimizeButton.tex:SetTexture('Interface\\AddOns\\ElvUI\\Core\\Media\\Textures\\MinusButton') end
+		if E.private.skins.blizzard.enable and E.private.skins.blizzard.objectiveTracker then HeaderMenuMinimizeButton.tex:SetTexture([[Interface\AddOns\ElvUI\Core\Media\Textures\MinusButton]]) end
+		if ObjectiveTrackerBlocksFrame.QuestHeader.module.collapsed then
+			ObjectiveTracker_MinimizeModuleButton_OnClick(QuestHeaderMinimizeButton)
+		end
 		frame:Show()
 	end,
-	['COLLAPSED'] = function(frame)
+	COLLAPSED = function(frame)
 		ObjectiveTracker_Collapse()
-		if E.private.skins.blizzard.enable == true and E.private.skins.blizzard.objectiveTracker == true then minimizeButton.tex:SetTexture('Interface\\AddOns\\ElvUI\\Core\\Media\\Textures\\PlusButton') end
+		if E.private.skins.blizzard.enable and E.private.skins.blizzard.objectiveTracker then HeaderMenuMinimizeButton.tex:SetTexture([[Interface\AddOns\ElvUI\Core\Media\Textures\PlusButton]]) end
 		frame:Show()
 	end,
-	['HIDE'] = function(frame)
+	COLLAPSED_QUESTS = function(frame)
+		if not ObjectiveTrackerBlocksFrame.QuestHeader.module.collapsed then
+			ObjectiveTracker_MinimizeModuleButton_OnClick(QuestHeaderMinimizeButton)
+		end
+		frame:Show()
+	end,
+	HIDE = function(frame)
 		frame:Hide()
 	end,
 }
 
 function Q:ChangeState(event)
-	if not Q.db then return end
-	if not Q.db.visibility then return end
-	if not Q.db.visibility.enable then return end
+	if not Q.db or not Q.db.visibility or not Q.db.visibility.enable then return end
 	if InCombatLockdown() and event ~= 'PLAYER_REGEN_DISABLED' then return end
 	local inCombat = event == 'PLAYER_REGEN_DISABLED' and true or false
 
@@ -55,7 +62,7 @@ function Q:ChangeState(event)
 			statedriver['FULL'](Q.frame)
 		end
 	end
-	if SLE._Compatibility['WorldQuestTracker'] then -- and WorldQuestTrackerAddon then
+	if WorldQuestTrackerAddon and SLE._Compatibility['WorldQuestTracker'] then -- and WorldQuestTrackerAddon then
 		local y = 0
 		for i = 1, #ObjectiveTrackerFrame.MODULES do
 			local module = ObjectiveTrackerFrame.MODULES[i]
@@ -88,8 +95,8 @@ function Q:SelectQuestReward(index)
 		end
 		QuestInfoItemHighlight:Show()
 
-		-- set choice
-		QuestInfoFrame.itemChoice = button:GetID()
+		-- Set Choice
+		_G.QuestInfoFrame.itemChoice = button:GetID()
 	end
 end
 
@@ -119,13 +126,13 @@ function Q:Initialize()
 	Q.db = E.db.sle.quests
 	Q.frame = ObjectiveTrackerFrame
 
-	self:RegisterEvent('LOADING_SCREEN_DISABLED', 'ChangeState')
-	self:RegisterEvent('PLAYER_UPDATE_RESTING', 'ChangeState')
-	self:RegisterEvent('ZONE_CHANGED_NEW_AREA', 'ChangeState')
-	self:RegisterEvent('PLAYER_REGEN_ENABLED', 'ChangeState')
-	self:RegisterEvent('PLAYER_REGEN_DISABLED', 'ChangeState')
+	Q:RegisterEvent('LOADING_SCREEN_DISABLED', 'ChangeState')
+	Q:RegisterEvent('PLAYER_UPDATE_RESTING', 'ChangeState')
+	Q:RegisterEvent('ZONE_CHANGED_NEW_AREA', 'ChangeState')
+	Q:RegisterEvent('PLAYER_REGEN_ENABLED', 'ChangeState')
+	Q:RegisterEvent('PLAYER_REGEN_DISABLED', 'ChangeState')
 
-	self:RegisterEvent('QUEST_COMPLETE')
+	Q:RegisterEvent('QUEST_COMPLETE')
 
 	function Q:ForUpdateAll()
 		Q.db = E.db.sle.quests

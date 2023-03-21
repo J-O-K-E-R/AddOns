@@ -1,12 +1,12 @@
-tag 04988a13a67c3c93cf8ca14d3617492b79291532 10.0.15
+tag 97e6c760d87ab4618f7bb6510e6e89b272dd8bf9 10.0.17
 Author:	Lure <alex.shubert@gmail.com>
-Date:	Wed Nov 23 20:58:44 2022 -0500
+Date:	Tue Dec 13 21:45:00 2022 -0500
 
-minor update, just few gossips
+fix hotkey application
 
-commit 8d06a40351145064d5e3b80d9ef8a84401eeb6ca
+commit 77924eebd079e21746d16d6536ec06f68053d306
 Author: Lure <alex.shubert@gmail.com>
-Date:   Wed Nov 23 20:58:15 2022 -0500
+Date:   Tue Dec 13 21:44:17 2022 -0500
 
-    add some NPC
+    fix hotkey application
 

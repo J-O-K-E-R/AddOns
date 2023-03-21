@@ -1,3 +1,4 @@
+-- Generated from CurseForge on Thu Mar 16 09:00:34 UTC 2023
 local ns = select(2, ...) ---@type ns @The addon namespace.
 
 if ns:IsSameLocale("zhTW") then
@@ -5,7 +6,7 @@ if ns:IsSameLocale("zhTW") then
 
 	L.LOCALE_NAME = "zhTW"
 
-	L["ALLOW_IN_LFD"] = "允許用在地城搜尋器"
+L["ALLOW_IN_LFD"] = "允許用在地城搜尋器"
 L["ALLOW_IN_LFD_DESC"] = "右鍵點擊地城搜尋器上的隊伍或申請人來複製Raider.IO設定檔網址。"
 L["ALLOW_ON_PLAYER_UNITS"] = "允許用在玩家單位"
 L["ALLOW_ON_PLAYER_UNITS_DESC"] = "右鍵點擊玩家單位來複製Raider.IO資料庫網址。"
@@ -53,20 +54,29 @@ L["DISABLE_RWF_MODE_BUTTON"] = "停用"
 L["DISABLE_RWF_MODE_BUTTON_TOOLTIP"] = "單擊以停用競賽世界第一模式。這將導致您的界面重新載入。"
 L["DISABLE_RWF_MODE_RELOAD"] = "您正在停用競賽世界第一模式。單擊確認將重新載入您的界面。"
 L["DPS"] = "傷害輸出"
+L["DUNGEON_SHORT_NAME_AA"] = "學院"
+L["DUNGEON_SHORT_NAME_AV"] = "蒼藍"
+L["DUNGEON_SHORT_NAME_COS"] = "眾星"
 L["DUNGEON_SHORT_NAME_DOS"] = "彼界"
 L["DUNGEON_SHORT_NAME_GD"] = "車站"
 L["DUNGEON_SHORT_NAME_GMBT"] = "險招"
 L["DUNGEON_SHORT_NAME_HOA"] = "贖罪"
+L["DUNGEON_SHORT_NAME_HOV"] = "英靈"
 L["DUNGEON_SHORT_NAME_ID"] = "碼頭"
 L["DUNGEON_SHORT_NAME_LOWR"] = "卡拉下"
 L["DUNGEON_SHORT_NAME_MISTS"] = "迷霧"
+L["DUNGEON_SHORT_NAME_NO"] = "諾庫德"
 L["DUNGEON_SHORT_NAME_NW"] = "死靈"
 L["DUNGEON_SHORT_NAME_PF"] = "瘟疫"
+L["DUNGEON_SHORT_NAME_RLP"] = "晶紅"
+L["DUNGEON_SHORT_NAME_SBG"] = "影月"
 L["DUNGEON_SHORT_NAME_SD"] = "血紅"
 L["DUNGEON_SHORT_NAME_SOA"] = "晉升"
 L["DUNGEON_SHORT_NAME_STRT"] = "街道"
+L["DUNGEON_SHORT_NAME_TJS"] = "玉蛟"
 L["DUNGEON_SHORT_NAME_TOP"] = "苦痛"
 L["DUNGEON_SHORT_NAME_UPPR"] = "卡拉上"
+L["DUNGEON_SHORT_NAME_VOTW"] = "洪荒"
 L["DUNGEON_SHORT_NAME_WORK"] = "工坊"
 L["DUNGEON_SHORT_NAME_YARD"] = "廢料場"
 L["ENABLE_AUTO_FRAME_POSITION"] = "自動定位我的M+紀錄框架"
@@ -192,6 +202,14 @@ L["RAID_BOSS_SOD_6"] = "痛苦工匠拉茲內爾"
 L["RAID_BOSS_SOD_7"] = "首創者的守護者"
 L["RAID_BOSS_SOD_8"] = "述命者羅卡洛"
 L["RAID_BOSS_SOD_9"] = "科爾蘇加德"
+L["RAID_BOSS_VOTI_1"] = "伊拉諾格"
+L["RAID_BOSS_VOTI_2"] = "忒羅司"
+L["RAID_BOSS_VOTI_3"] = "洪荒議會"
+L["RAID_BOSS_VOTI_4"] = "『冰冷之息』賽娜絲"
+L["RAID_BOSS_VOTI_5"] = "『超凡者』達西亞"
+L["RAID_BOSS_VOTI_6"] = "庫洛格‧恐怖圖騰"
+L["RAID_BOSS_VOTI_7"] = "幼龍守衛者戴恩娜"
+L["RAID_BOSS_VOTI_8"] = "『噬風者』菈薩葛絲"
 L["RAID_DIFFICULTY_NAME_HEROIC"] = "英雄"
 L["RAID_DIFFICULTY_NAME_MYTHIC"] = "傳奇"
 L["RAID_DIFFICULTY_NAME_NORMAL"] = "普通"
@@ -288,7 +306,6 @@ L["WARNING_LOCK_POSITION_FRAME_AUTO"] = "RaiderIO：您必須先取消M+紀錄�
 L["WARNING_RWF_MODE_ENABLE"] = "|cffFFFFFF%s|r 競賽世界第一模式為啟用。你如想停用請輸入|cffFFFFFF/raiderio rwf|r。"
 L["WIPE_RWF_MODE_BUTTON"] = "清除"
 L["WIPE_RWF_MODE_BUTTON_TOOLTIP"] = "單擊以從儲存檔中清除日誌。這將導致您的界面重新載入。"
-
 
 	ns.L = L
 end

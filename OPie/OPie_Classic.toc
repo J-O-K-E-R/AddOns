@@ -1,6 +1,6 @@
 ## Interface: 11403
 ## Title: OPie
-## Version: Yuzu 3
+## Version: Yuzu 7
 ## Author: foxlit
 ## Notes: Group abilities into rings that appear when you hold down a binding.
 ## X-Website: https://www.townlong-yak.com/addons/opie
@@ -35,5 +35,6 @@ Meta\StanceBar.lua
 Meta\SpecSet.lua
 Meta\DataBroker.lua
 Meta\PSConfig.lua
-Rings\Common.lua
-Rings\Default.lua
+Bundle\QuestItems.lua
+Bundle\Tracking.lua
+Bundle\Editable.lua

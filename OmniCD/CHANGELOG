@@ -1,6 +1,106 @@
 ------------------------------------------------------------------------------
 -- Dragonflight
 --
+v3.4.1.2744
+	Fixed Celestial Alignment (Incarnation) with Orbital Strike talented
+	Fixed pixel shifting on icon frames causing malalignment
+	Fixed option panel taint error
+
+v10.0.5.2743
+	CD resets on encounter end will correctly use the unmodified base cooldown as a reference
+	Icons are now click through while Tooltips are enabled
+	Fixed Army of the Damned CDR by Epidemic
+	Fixed Blessing of Santuary CD
+	Fixed Kleptomania icon texture
+	Feb 6, 2023 Hotfixes
+
+v10.0.5.2742
+	Fixed missing talents after Patch 10.0.5
+	Avatar for Protection spec has been added as a separate spell
+
+v10.0.5.2741
+	Patch 10.0.5 updates
+
+	Fixed PvP Talent modifiers incorrectly being applied in non-PvP areas
+	Fixed Fortifying Brew (BW) spellID that caused CDR by Keg Smash, Tiger Palm, Blackout Combo to be ignored
+	Temp fix to match current bugged state:
+		Tiger Palm reduces all Brew (BM) cooldowns by 0.5 sec instead of 1.0 sec
+		Keg Smash reduces Fortifying Brew's CD by 5 sec instead of 3 sec
+	Tiger Palm and Keg Smash on enemies with Bonedust Brew active will correctly reduce all Brew cooldowns by 1 sec (was reducing Bonedust Brew only)
+
+v10.0.2.2740
+	Non-PvP talent changes made by non-synced units are now updated instantly
+	Fixed item inspection
+
+v10.0.2.2737
+	version update
+
+v10.0.2.2736
+	Fixed Time Spiral on non-Evoker classes
+	Fixed Lay on Hands, Sprint CD
+	Fixed interrupted spell & marker display for pet interrupts
+	Added Healing potion (doesn't check availability)
+
+v10.0.2.2735
+	Cooldowns will correctly reset inbetween solo shuffle rounds #3
+	Desperate Prayer w/ Angel's Mercy (Talent) has been added to Sync
+		:This is to fix the seemingly random Class/NPC spell damage not adding to CDR (e.g. Pyre, Dragonrage)
+	Fixed Dracthyr racials for Alliance
+	Major movement abilities will show the correct cooldown for new group members with Blessing of the Bronze (Dracthr, Buff)
+	Returned option to exclude player spells on Extra Bars
+	JANUARY 3, 2023 Hotfix to Gift of the Golden Val'kyr applied
+	JANUARY 9, 2023 Hotfix to Shield of Vengeance and Celestial Brew CD applied
+
+v10.0.2.2734
+	New Features
+		Added option panel scaling. (replaces option panel font settings)
+	Interrupt Bar
+		Interrupt spell types are now automatically added to the Interrupt Bar if enabled in the Spells tab.
+	Spells
+		Added Psyfiend (Priest, PvP Talent).
+	Bug Fixes
+		Fixed text wrapping on progressbar timers.
+		Trucate Name setting will correctly update without reloading UI.
+		Coldthirst (DK, Talent) will correctly reduce the cooldown of Mind Freeze by 3 sec instead of reducing it to 3 sec.
+		Sentinel (Prot Paladin, Talent) will correctly replace Avenging Wrath.
+		Incarnation: Chosen of Elune will correctly replace Celestial Alignment.
+	Blizzard Hotfixes
+		DECEMBER 14, 2022 Hotfix to Totemic Recall.
+		DECEMBER 20, 2022 Hotfix to Call Felhunter.
+
+v10.0.2.2733
+	1st Trinket slot item will correctly show.
+	Talent spells are no longer checked against character level.
+	Tweaked Healing Hands CDR to match the current bugged state.
+	Fixed Shadowfiend incorrectly showing when Mindbender talent is taken.
+	Fixed Shadowfiend icon.
+	Border thickness for icons are now fixed at 1px.
+
+v10.0.2.2732
+	Fixed anchoring in Arena Skirmishes.
+	Fixed Flow State (Evoker) progressively slowing down the CD recovery rate til it reaches 0.
+	Reworked Time Stop (Evoker, PvP Talent) and will now correctly interact with other CDRR modulators (e.g. Symbol of Hope).
+	Time Stop will apply to Wing Buffet and Tail Swipe Racial abilities.
+	Added Time Spiral free charge (Evoker).
+	Fixed Paladin talents that reduce CD by consuming Holy Power. (Matches the actual timers better but Sync is still required).
+	Fixed Psychic Scream CD.
+	Fixed interrupted spell icon and marker not showing.
+	Fixed Ray of Hope Highlight sticking.
+	Fixed nil error when the global CD recovery rate changes.
+	Fixed syntax errors.
+	Fixed font flags.
+	Fixed ElvUI's timer counter not showing.
+	Fixed Challenging Shout incorrectly showing when Disrupting Shout talent is taken.
+	Merged duplicate entries in modifiers.lua.
+	Readded profile by spec.
+	Readded progressbar border option.
+	Added option to move Name Bar to left of icon.
+	Tooltips are no longer saved to db and will return to it's disabled state when you logout or reload UI.
+	Updated spell CDs for DECEMBER 5, 2022 Hotfixes.
+
+v10.0.2.2731
+	Fixed nil error (converting old db)
+
 v10.0.2.2730
 	Dragonflight
 
@@ -16,7 +116,6 @@ v10.0.2.2730
 	Addons Support
 		Addon frames are now cached to alleviate parsing hundreds of frame obj
 		Fixed anchoring for ElvUI raid frames
-
 
 ------------------------------------------------------------------------------
 -- shadowlands
@@ -534,26 +633,42 @@ v2.5.0
 		Shifting Power's CD reduction not applying to Alter time for Arcane Mage. (temp fix applied)
 
 ------------------------------------------------------------------------------
--- classic era
+-- WOTLKC
 --
-v1.14.3.2724
+v3.4.1.2744
+	Fixed option panel taint error
+
+v3.4.1.2743
+	Class abilities with a base cooldown of 2 minutes or more (with some exceptions, such as Reincarnation, Ritual of
+	Doom, Astral Recall, and Lay on Hands) will reset when an encounter ends
+	Added rest of WG pvp trinkets
+	Fixed nil error when Cold Snap is used while Frost Ward isn't being tracked
+	Jan 31, 2023 Hotfixes
+
+v3.4.1.2742
+	Titan-Forged Rune of Determination merged to PvP Trinket
+
+v3.4.1.2740
+	Fixed Set bonus inspection
+	Added Season 6 tier set bonuses
+
+v3.4.1.2737
+	Fixed dual spec inspection
+	Fixed nil error
+
+v3.4.1.2736
+	Compatibility updates for 3.4.1
+
+v3.4.0.2724
 	Fixed sync for cross realm group members
 
-v1.14.3.2722
+v3.4.0.2723
+	The correct talents will show for whichever spec your group member has active on inital inspection.
 
-	Classic Era re-release. (Build 44834)
+v3.4.0.2722
 
-v2.7.00
-	toc update - 11402
-
-v2.6.35
-	CTRL-clicking the spell in the 'Spells/RaidCD' tab will add it to the 'Spell Editor'.
-	Warlock Soulstone CD added.
-	Tooltip borders fixed.
-
-v2.6.30
-	Initial release for WoW: Classic Era.
-
+	Wrath of the Lich King Classic release. (Build 45435)
+	Phase 1 (season 5, tier 7 sets added)
 
 ------------------------------------------------------------------------------
 -- bcc
@@ -614,21 +729,26 @@ v2.6.02-bcc
 v2.6.01-bcc
 	Initial release for WoW: Burning Crusade Classic.
 
-
 ------------------------------------------------------------------------------
--- WOTLKC
+-- classic era
 --
-v3.4.1.2730
-	Compatibility updates for 3.4.1
+v1.14.3.2744
+	version update
 
-v3.4.0.2724
+v1.14.3.2724
 	Fixed sync for cross realm group members
 
-v3.4.0.2723
-	The correct talents will show for whichever spec your group member has active on inital inspection.
+v1.14.3.2722
 
-v3.4.0.2722
+	Classic Era re-release. (Build 44834)
 
-	Wrath of the Lich King Classic release. (Build 45435)
-	Phase 1 (season 5, tier 7 sets added)
+v2.7.00
+	toc update - 11402
 
+v2.6.35
+	CTRL-clicking the spell in the 'Spells/RaidCD' tab will add it to the 'Spell Editor'.
+	Warlock Soulstone CD added.
+	Tooltip borders fixed.
+
+v2.6.30
+	Initial release for WoW: Classic Era.

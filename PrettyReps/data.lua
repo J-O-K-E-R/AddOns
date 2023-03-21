@@ -1,6 +1,51 @@
-_G.PrettyReps = {
+_G.PrettyReps.Data = {
 	Structure = 
 	{
+		{
+			factionID = 2506,
+			name = "Dragonflight",
+			children = {
+				{
+					factionID = 2507,
+					name = "Dragonscale Expedition"
+				},
+				{
+					factionID = 2511,
+					name = "Iskaara Tuskarr"
+				},
+				{
+					factionID = 2503,
+					name = "Maruuk Centaur"
+				},
+				{
+					factionID = 2510,
+					name = "Valdrakken Accord",
+					children = 
+					{
+						{
+							factionID = 2544,
+							name = "Artisan's Consortium - Dragon Isles Branch"
+						},
+						{
+							factionID = 2550,
+							name = "Cobalt Assembly"
+						},
+						{
+							factionID = 2518,
+							name = "Sabellian"
+						},
+						{
+							factionID = 2517,
+							name = "Wrathion"
+						}
+					}
+				},
+				{
+					factionID = 2526,
+					name = "Winterpelt Furbolg"
+				}
+			}
+		},
 		{
 			factionID = 2414,
 			name = "Shadowlands",

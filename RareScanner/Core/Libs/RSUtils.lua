@@ -81,6 +81,19 @@ function RSUtils.CloneTable(src, dest)
 	end
 end
 
+function RSUtils.GetSortedKeysByValue(tbl, sortFunction)
+	local keys = {}
+	for key in pairs(tbl) do
+    	table.insert(keys, key)
+ 	end
+
+  	table.sort(keys, function(a, b)
+    	return sortFunction(tbl[a], tbl[b])
+  	end)
+
+  	return keys
+end
+
 ---============================================================================
 -- Auxiliar utils
 ---============================================================================
@@ -132,6 +145,14 @@ function RSUtils.Lpad(s, l, c)
 	return res, res ~= s
 end
 
+function RSUtils.tostring(s)
+	if (s) then
+		return tostring(s)
+	end
+	
+	return nil
+end
+
 ---============================================================================
 -- Arithmetic utils
 ---============================================================================
@@ -157,6 +178,15 @@ end
 ---
 function RSUtils.TextColor(text, color)
 	return string.format("|cff%s%s|r", color, text)
+end
+
+---
+-- @param #number Number to round
+-- @param #decimals Number of decimals
+-- @return Rounded number
+---
+function RSUtils.Round(number, decimals)
+    return (("%%.%df"):format(decimals)):format(number)
 end
 
 ---============================================================================

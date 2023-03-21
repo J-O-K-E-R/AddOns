@@ -144,7 +144,7 @@ if L then
 	L.vapor = "Саронитовые пары"
 	L.vapor_desc = "Сообщать о появлении саронитовых паров."
 	L.vapor_message = "Саронитовые пары (%d)!"
-	L.vapor_bar = "Пары %d/6"
+	L.vapor_bar = "Пары"
 	L.vapor_trigger = "Поблизости начинают возникать саронитовые испарения!"
 
 	L.vaporstack = "Стаки испарения"
@@ -158,7 +158,6 @@ end
 
 L = BigWigs:NewBossLocale("XT-002 Deconstructor", "ruRU")
 if L then
-	L.gravitybomb_other = "Бомба"
 	L.lightbomb_other = "Взрыв"
 end
 

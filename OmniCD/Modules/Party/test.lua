@@ -19,7 +19,6 @@ addOnTestMode.Grid2 = function(isTestEnabled)
 	else
 		Grid2Options.editedTheme.layout.layouts["solo"] = config.Grid2
 	end
-
 	Grid2Layout:ReloadLayout()
 end
 
@@ -30,7 +29,6 @@ addOnTestMode.VuhDo = function(isTestEnabled)
 	else
 		VUHDO_CONFIG["HIDE_PANELS_SOLO"] = config.VuhDo
 	end
-
 	VUHDO_getAutoProfile()
 end
 
@@ -45,7 +43,6 @@ addOnTestMode.Aptechka = function(isTestEnabled)
 	else
 		Aptechka.db.profile.showSolo = config.Aptechka
 	end
-
 	Aptechka:ReconfigureProtected()
 end
 
@@ -60,7 +57,6 @@ addOnTestMode.Cell = function(isTestEnabled)
 			return
 		end
 	end
-
 	Cell:Fire("UpdateVisibility", "solo")
 end
 
@@ -71,7 +67,7 @@ function TM:Test(key)
 	P.isInTestMode = not P.isInTestMode
 
 	if P.isInTestMode then
-		if groupSize < 2 and activeCustomUF and not addOnTestMode[activeCustomUF] then
+		if not E.db.position.detached and groupSize < 1 and activeCustomUF and not addOnTestMode[activeCustomUF] then
 			E.write(format(E.STR.UNSUPPORTED_ADDON, activeCustomUF))
 		end
 
@@ -80,37 +76,39 @@ function TM:Test(key)
 			return E.write(ERR_NOT_IN_COMBAT)
 		end
 
-		if not activeCustomUF then
-			if E.isDF then
-				if not E.db.position.detached then
-					if (groupSize == 0 or not P:CompactFrameIsActive()) and not EditModeManagerFrame:IsEditModeActive() then
-						GameMenuButtonEditMode:Click()
+		if not E.db.position.detached then
+			if not activeCustomUF then
+				if E.isDF then
+					if (groupSize == 0 or not P:CompactFrameIsActive()) and not P.isInEditMode then
+
+
+						ShowUIPanel(EditModeManagerFrame)
 					end
 
-					if EditModeManagerFrame:IsEditModeActive() and not EditModeManagerFrame:AreRaidFramesForcedShown() and not EditModeManagerFrame:ArePartyFramesForcedShown() then
+					if P.isInEditMode and not EditModeManagerFrame:AreRaidFramesForcedShown() and not EditModeManagerFrame:ArePartyFramesForcedShown() then
 						E.StaticPopup_Show("OMNICD_DF_TEST_MSG", E.STR.ENABLE_HUDEDITMODE_FRAME)
 						P.isInTestMode = false
 						return
 					end
+				else
+					if IsAddOnLoaded("Blizzard_CompactRaidFrames") and IsAddOnLoaded("Blizzard_CUFProfiles") then
+						CompactRaidFrameManager:Show()
+						CompactRaidFrameContainer:Show()
+					else
+						E.StaticPopup_Show("OMNICD_RELOADUI", E.STR.ENABLE_BLIZZARD_CRF)
+						P.isInTestMode = false
+						return
+					end
 				end
-			else
-				if IsAddOnLoaded("Blizzard_CompactRaidFrames") and IsAddOnLoaded("Blizzard_CUFProfiles") then
-					CompactRaidFrameManager:Show()
-					CompactRaidFrameContainer:Show()
-				elseif not E.db.position.detached then
-					E.StaticPopup_Show("OMNICD_RELOADUI", E.STR.ENABLE_BLIZZARD_CRF)
-					P.isInTestMode = false
-					return
-				end
+			elseif addOnTestMode[activeCustomUF] then
+				addOnTestMode[activeCustomUF](P.isInTestMode)
 			end
-		elseif addOnTestMode[activeCustomUF] then
-			addOnTestMode[activeCustomUF](P.isInTestMode)
 		end
 
 		if not self.indicator then
 			self.indicator = CreateFrame("Frame", nil, UIParent, "OmniCDTemplate")
 			self.indicator.anchor.background:SetColorTexture(0, 0, 0, 1)
-			if E.isDF or E.TocVersion == 30401 then
+			if E.isDF or E.isWOTLKC341 then
 				self.indicator.anchor.background:SetGradient("HORIZONTAL", CreateColor(1, 1, 1, 1), CreateColor(1, 1, 1, 0))
 			else
 				self.indicator.anchor.background:SetGradientAlpha("Horizontal", 1, 1, 1, 1, 1, 1, 1, 0)
@@ -142,24 +140,30 @@ function TM:Test(key)
 			local icon = frame.icons[i]
 			if not icon.AnimFrame:IsVisible() then
 				icon.AnimFrame:Show()
-				icon.AnimFrame.Anim:Play()
+				icon.AnimFrame.animIn:Play()
 			end
 		end
 	else
 		if not activeCustomUF then
 			if E.isDF then
-
-
-
+				if P.isInEditMode then
+					if UnitAffectingCombat("player") then
+						self:EndTestOOC()
+					else
+						HideUIPanel(EditModeManagerFrame)
+					end
+				end
 			else
-				if UnitAffectingCombat("player") then
-					self:EndTestOOC()
-				elseif IsAddOnLoaded("Blizzard_CompactRaidFrames") and IsAddOnLoaded("Blizzard_CUFProfiles") and (groupSize == 0 or not P:CompactFrameIsActive()) then
-					CompactRaidFrameManager:Hide()
-					CompactRaidFrameContainer:Hide()
+				if CompactRaidFrameContainer and CompactRaidFrameContainer:IsVisible() and (groupSize == 0 or not P:CompactFrameIsActive()) then
+					if UnitAffectingCombat("player") then
+						self:EndTestOOC()
+					else
+						CompactRaidFrameManager:Hide()
+						CompactRaidFrameContainer:Hide()
+					end
 				end
 			end
-		elseif addOnTestMode[activeCustomUF] then
+		elseif not E.db.position.detached and addOnTestMode[activeCustomUF] then
 			addOnTestMode[activeCustomUF](P.isInTestMode)
 		end
 
@@ -172,20 +176,25 @@ function TM:Test(key)
 end
 
 function TM:EndTestOOC()
-	E.write(L["Test frames will be hidden once player is out of combat"])
+	if not E.isDF then
+		E.write(L["Test frames will be hidden once player is out of combat"])
+	end
 	self:RegisterEvent('PLAYER_REGEN_ENABLED')
 end
 
 function TM:PLAYER_REGEN_ENABLED()
-	if not E.customUF then
-		if IsAddOnLoaded("Blizzard_CompactRaidFrames") and IsAddOnLoaded("Blizzard_CUFProfiles") and (P:GetEffectiveNumGroupMembers() == 0 or not P:CompactFrameIsActive()) then
+	if not E.customUF.active then
+		if E.isDF then
+			if P.isInEditMode then
+				HideUIPanel(EditModeManagerFrame)
+			end
+		elseif IsAddOnLoaded("Blizzard_CompactRaidFrames") and IsAddOnLoaded("Blizzard_CUFProfiles") and (P:GetEffectiveNumGroupMembers() == 0 or not P:CompactFrameIsActive()) then
 			CompactRaidFrameManager:Hide()
 			CompactRaidFrameContainer:Hide()
 		end
 	elseif E.customUF.active == "Cell" then
 		Cell:Fire("UpdateVisibility", "solo")
 	end
-
 	self:UnregisterEvent('PLAYER_REGEN_ENABLED')
 end
 

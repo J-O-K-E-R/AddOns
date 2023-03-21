@@ -5,7 +5,7 @@
 local mod, CL = BigWigs:NewBoss("Algalon the Observer", 603, 1650)
 if not mod then return end
 mod:RegisterEnableMob(32871)
-mod:SetEncounterID(1130)
+mod:SetEncounterID(mod:Classic() and 757 or 1130)
 -- mod:SetRespawnTime(0) -- resets, doesn't respawn
 
 --------------------------------------------------------------------------------
@@ -85,7 +85,7 @@ end
 
 function mod:BlackHoleExplosion()
 	blackholes = blackholes + 1
-	self:MessageOld(64122, "green", nil, CL.count:format(self:SpellName(186546), blackholes)) -- 186546 = "Black Hole"
+	self:MessageOld(64122, "green", nil, CL.count:format(self:SpellName(62168), blackholes)) -- 62168 = "Black Hole"
 end
 
 function mod:BigBang(args)

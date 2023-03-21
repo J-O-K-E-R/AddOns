@@ -2,7 +2,9 @@ local E, _, C, G = select(2, ...):unpack()
 
 G.loginMessage = false
 G.notifyNew = false
+G.optionPanelScale = 1
 
+C.tooltipID = false
 C.Party = {
 	["visibility"] = {
 		["arena"] = true,
@@ -23,6 +25,7 @@ C.Party.arena = {
 	["general"] = {
 		["showAnchor"] = false,
 		["showPlayer"] = false,
+		["showPlayerEx"] = true,
 		["showTooltip"] = false,
 		["showRange"] = false,
 	},
@@ -162,6 +165,7 @@ for i = 0, 8 do
 		},
 		["reverseFill"] = true,
 		["hideSpark"] = false,
+		["hideBorder"] = false,
 		["showInterruptedSpell"] = true,
 		["showRaidTargetMark"] = false,
 		["statusBarWidth"] = 205,

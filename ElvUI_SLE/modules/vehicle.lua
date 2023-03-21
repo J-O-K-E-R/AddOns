@@ -11,7 +11,7 @@ local ipairs, pairs = ipairs, pairs
 local strsplit = strsplit
 local RegisterStateDriver = RegisterStateDriver
 local UnregisterStateDriver = UnregisterStateDriver
-local GetVehicleBarIndex, GetOverrideBarIndex = GetVehicleBarIndex, GetOverrideBarIndex
+local GetVehicleBarIndex, GetOverrideBarIndex, GetTempShapeshiftBarIndex = GetVehicleBarIndex, GetOverrideBarIndex, GetTempShapeshiftBarIndex
 local CreateFrame = CreateFrame
 local hooksecurefunc = hooksecurefunc
 local GetCVarBool = GetCVarBool
@@ -120,7 +120,7 @@ function DVB:PositionAndSizeBar()
 		AB:StyleButton(button, nil, MasqueGroup and E.private.actionbar.masque.actionbars)
 
 		--* S&L Version of AB:FixKeybindText(button)
-		local hotkey = _G[bar.buttons[i]:GetName()..'HotKey']
+		local hotkey = _G[button:GetName()..'HotKey']
 		local hotkeytext
 
 		local hotkeyPosition = db and db.hotkeyTextPosition or 'TOPRIGHT'
@@ -161,7 +161,7 @@ function DVB:PositionAndSizeBar()
 			hotkey:Show()
 		end
 
-		if not bar.buttons[i].useMasque then
+		if not button.useMasque then
 			hotkey:ClearAllPoints()
 			hotkey:Point(hotkeyPosition, hotkeyXOffset, hotkeyYOffset)
 		end
@@ -170,12 +170,14 @@ function DVB:PositionAndSizeBar()
 	AB:HandleBackdropMultiplier(bar, backdropSpacing, buttonSpacing, db.widthMult, db.heightMult, anchorUp, anchorLeft, horizontal, lastShownButton, anchorRowButton)
 	AB:HandleBackdropMover(bar, backdropSpacing)
 
-	local page = format('[overridebar] %d; [vehicleui] %d; [possessbar] %d; [shapeshift] 13;', GetOverrideBarIndex(), GetVehicleBarIndex(), GetVehicleBarIndex())
+	local page = format('[overridebar] %d; [vehicleui][possessbar] %d; [bonusbar:5] 11; [shapeshift] %d;', GetOverrideBarIndex(), GetVehicleBarIndex(), GetTempShapeshiftBarIndex())
 	RegisterStateDriver(bar, 'page', page)
+
+	local visibility = format('[petbattle] hide; [vehicleui][overridebar][shapeshift][possessbar]%s show; hide', db.dragonRiding and '[bonusbar:5]' or '')
 
 	if db.enable then
 		E:EnableMover(bar.mover:GetName())
-		RegisterStateDriver(bar, 'visibility', '[petbattle] hide; [vehicleui][overridebar][shapeshift][possessbar] show; hide')
+		RegisterStateDriver(bar, 'visibility', visibility)
 		bar:Show()
 	else
 		E:DisableMover(bar.mover:GetName())
@@ -187,14 +189,14 @@ function DVB:PositionAndSizeBar()
 	E:SetMoverSnapOffset('SL_DedicatedVehicleBarMover', db.buttonSpacing / 2)
 
 	--! Did not test the masque stuff tbh (Yolo)
-	if MasqueGroup and E.private.actionbar.masque.actionbars then
-		MasqueGroup:ReSkin()
+	-- if MasqueGroup and E.private.actionbar.masque.actionbars then
+	-- 	MasqueGroup:ReSkin()
 
-		-- masque retrims them all so we have to too
-		for btn in pairs(AB.handledbuttons) do
-			AB:TrimIcon(btn, true)
-		end
-	end
+	-- 	-- masque retrims them all so we have to too
+	-- 	for btn in pairs(AB.handledbuttons) do
+	-- 		AB:TrimIcon(btn, true)
+	-- 	end
+	-- end
 end
 
 function DVB:CreateBar()
@@ -218,27 +220,28 @@ function DVB:CreateBar()
 	AB:HookScript(bar, 'OnLeave', 'Bar_OnLeave')
 
 	for i = 1, 7 do
-		bar.buttons[i] = LAB:CreateButton(i, format(bar:GetName()..'Button%d', i), bar, nil)
-		bar.buttons[i]:SetState(0, 'action', i)
+		local button = LAB:CreateButton(i, format(bar:GetName()..'Button%d', i), bar, nil)
+		bar.buttons[i] = button
+		button:SetState(0, 'action', i)
 
 		for k = 1, 18 do
-			bar.buttons[i]:SetState(k, 'action', (k - 1) * 12 + i)
+			button:SetState(k, 'action', (k - 1) * 12 + i)
 		end
 
 		if i == 7 then
-			bar.buttons[i]:SetState(GetVehicleBarIndex(), 'custom', AB.customExitButton)
-			_G[elvButton..i].slvehiclebutton = bar.buttons[i]:GetName()
+			button:SetState(GetVehicleBarIndex(), 'custom', AB.customExitButton)
+			_G[elvButton..i].slvehiclebutton = button:GetName()
 		else
-			_G[elvButton..i].slvehiclebutton = bar.buttons[i]:GetName()
+			_G[elvButton..i].slvehiclebutton = button:GetName()
 		end
 
 		--Masuqe Support
-		if MasqueGroup and E.private.actionbar.masque.actionbars then
-			bar.buttons[i]:AddToMasque(MasqueGroup)
-		end
+		-- if MasqueGroup and E.private.actionbar.masque.actionbars then
+		-- 	button:AddToMasque(MasqueGroup)
+		-- end
 
-		AB:HookScript(bar.buttons[i], 'OnEnter', 'Button_OnEnter')
-		AB:HookScript(bar.buttons[i], 'OnLeave', 'Button_OnLeave')
+		AB:HookScript(button, 'OnEnter', 'Button_OnEnter')
+		AB:HookScript(button, 'OnLeave', 'Button_OnLeave')
 	end
 
 	bar:SetAttribute('_onstate-page', [[
@@ -311,23 +314,32 @@ function DVB:UpdateButtonConfig(barName)
 end
 
 --* Ghetto way to get the pushed texture to work
-function DVB:LAB_MouseUp()
-	if not E.private.actionbar.enable or not E.db.sle.actionbar.vehicle.enable then return end
-	local slbutton = _G[self.slvehiclebutton]
-	if slbutton and slbutton.config.clickOnDown then
-		slbutton:GetPushedTexture():Hide()
+local function LAB_MouseUp(btn)
+	if not E.private.actionbar.enable or not E.db.sle.actionbar.vehicle.enable or not btn.slvehiclebutton then return end
+	local button = _G[btn.slvehiclebutton]
+	if button and button.config.clickOnDown then
+		button:GetPushedTexture():Hide()
 	end
 end
-hooksecurefunc(AB, 'LAB_MouseUp', DVB.LAB_MouseUp)
+hooksecurefunc(AB, 'LAB_MouseUp', LAB_MouseUp)
 
-function DVB:LAB_MouseDown()
-	if not E.private.actionbar.enable or not E.db.sle.actionbar.vehicle.enable then return end
-	local slbutton = _G[self.slvehiclebutton]
-	if slbutton and slbutton.config.clickOnDown then
-		slbutton:GetPushedTexture():Show()
+local function LAB_MouseDown(btn)
+	if not E.private.actionbar.enable or not E.db.sle.actionbar.vehicle.enable or not btn.slvehiclebutton then return end
+	local button = _G[btn.slvehiclebutton]
+	if button and button.config.clickOnDown then
+		button:GetPushedTexture():Show()
 	end
 end
-hooksecurefunc(AB, 'LAB_MouseDown', DVB.LAB_MouseDown)
+hooksecurefunc(AB, 'LAB_MouseDown', LAB_MouseDown)
+
+local function LAB_ButtonUpdate(_, button)
+	if not E.private.actionbar.enable or not E.db.sle.actionbar.vehicle.enable or not button or not strmatch(button:GetName(), 'SL_DedicatedVehicleBarButton') then return end
+	local cooldown = button.cooldown
+	if cooldown then
+		cooldown:SetAllPoints()
+	end
+end
+hooksecurefunc(AB, 'LAB_ButtonUpdate', LAB_ButtonUpdate)
 
 function DVB:Initialize()
 	if not SLE.initialized or not E.private.actionbar.enable then return end

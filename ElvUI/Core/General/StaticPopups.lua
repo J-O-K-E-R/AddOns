@@ -12,7 +12,6 @@ local format, error, ipairs, ceil = format, error, ipairs, ceil
 
 local CreateFrame = CreateFrame
 local IsAddOnLoaded = IsAddOnLoaded
-local PickupContainerItem = PickupContainerItem
 local DeleteCursorItem = DeleteCursorItem
 local MoneyFrame_Update = MoneyFrame_Update
 local UnitIsDeadOrGhost, InCinematic = UnitIsDeadOrGhost, InCinematic
@@ -21,9 +20,12 @@ local SetCVar, EnableAddOn, DisableAddOn = SetCVar, EnableAddOn, DisableAddOn
 local ReloadUI, PlaySound, StopMusic = ReloadUI, PlaySound, StopMusic
 local StaticPopup_Resize = StaticPopup_Resize
 local GetBindingFromClick = GetBindingFromClick
+
 local AutoCompleteEditBox_OnEnterPressed = AutoCompleteEditBox_OnEnterPressed
 local AutoCompleteEditBox_OnTextChanged = AutoCompleteEditBox_OnTextChanged
 local ChatEdit_FocusActiveWindow = ChatEdit_FocusActiveWindow
+local PickupContainerItem = (C_Container and C_Container.PickupContainerItem) or PickupContainerItem
+
 local STATICPOPUP_TEXTURE_ALERT = STATICPOPUP_TEXTURE_ALERT
 local STATICPOPUP_TEXTURE_ALERTGEAR = STATICPOPUP_TEXTURE_ALERTGEAR
 local YES, NO, OKAY, CANCEL, ACCEPT, DECLINE = YES, NO, OKAY, CANCEL, ACCEPT, DECLINE
@@ -585,8 +587,10 @@ function E:StaticPopup_OnUpdate(elapsed)
 
 	if self.acceptDelay then
 		self.acceptDelay = self.acceptDelay - elapsed
-		if self.acceptDelay <= 0 then
-			button1:Enable()
+		local enabled = self.acceptDelay <= 0
+		button1:SetEnabled(enabled)
+
+		if enabled then
 			button1:SetText(info.button1)
 
 			self.acceptDelay = nil
@@ -595,7 +599,6 @@ function E:StaticPopup_OnUpdate(elapsed)
 				info.OnAcceptDelayExpired(self, self.data)
 			end
 		else
-			button1:Disable()
 			button1:SetText(ceil(self.acceptDelay))
 		end
 	end

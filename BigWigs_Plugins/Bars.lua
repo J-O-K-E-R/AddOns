@@ -2430,6 +2430,9 @@ do
 			times[input] = t
 			BigWigs:Print(L.sendCustomBar:format(barText))
 			plugin:Sync("CBar", input)
+			local name = plugin:UnitName("player")
+			local realm = GetRealmName()
+			SendAddonMessage("D5", ("%s-%s\t1\tU\t%d\t%s"):format(name, realm, seconds, barText), IsInGroup(2) and "INSTANCE_CHAT" or "RAID") -- DBM message
 			SendAddonMessage("D4", ("U\t%d\t%s"):format(seconds, barText), IsInGroup(2) and "INSTANCE_CHAT" or "RAID") -- DBM message
 		end
 	end
@@ -2463,6 +2466,9 @@ SlashCmdList.BIGWIGSBREAK = function(input)
 		plugin:Sync("Break", seconds)
 
 		if IsInGroup() then
+			local name = plugin:UnitName("player")
+			local realm = GetRealmName()
+			SendAddonMessage("D5", ("%s-%s\t1\tBT\t%d"):format(name, realm, seconds), IsInGroup(2) and "INSTANCE_CHAT" or "RAID") -- DBM message
 			SendAddonMessage("D4", ("BT\t%d"):format(seconds), IsInGroup(2) and "INSTANCE_CHAT" or "RAID") -- DBM message
 		end
 	else

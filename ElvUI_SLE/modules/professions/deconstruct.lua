@@ -6,7 +6,7 @@ local LCG = E.Libs.CustomGlow
 
 --GLOBALS: unpack, select, CreateFrame, VIDEO_OPTIONS_ENABLED, VIDEO_OPTIONS_DISABLED
 local _G = _G
-local format, strfind, strsplit, gsub = format, strfind, strsplit, gsub
+local format, strfind, strsplit, gsub, type, tostring = format, strfind, strsplit, gsub, type, tostring
 local GetItemInfo, GetTradeTargetItemLink = GetItemInfo, GetTradeTargetItemLink
 local InCombatLockdown = InCombatLockdown
 local LOCKED = LOCKED
@@ -31,6 +31,10 @@ Pr.ItemTable = {
 		['116985'] = true, --Archeology Mail Hat
 		['136629'] = true, --Eng reagent rifle
 		['136630'] = true, --Eng reagent rifle 2
+		['201160'] = true, --Ench crafted toy
+		['201161'] = true, --Ench crafted toy
+		['200472'] = true, --Ench crafted toy
+		['200535'] = true, --Ench crafted toy
 	},
 	--Bnet bound treasures in Pandaria
 	['PandariaBoA'] = {
@@ -115,37 +119,52 @@ function Pr:ApplyDeconstruct(itemLink, itemId, spell, spellType, r, g, b)
 	local slot = GetMouseFocus()
 	if slot == Pr.DeconstructionReal then return end
 	local bag = slot:GetParent():GetID()
-	if not _G["ElvUI_ContainerFrame"].Bags[bag] then return end
+	if not _G.ElvUI_ContainerFrame.Bags[bag] then return end
 	Pr.DeconstructionReal.Bag = bag
 	Pr.DeconstructionReal.Slot = slot:GetID()
 	local color = {r,g,b,1}
-	if (E.global.sle.LOCK.TradeOpen and GetTradeTargetItemLink(7) == itemLink and _G["GameTooltip"]:GetOwner():GetName() == "TradeRecipientItem7ItemButton") then
-			Pr.DeconstructionReal.ID = itemId
-			Pr.DeconstructionReal:SetAttribute('type1', 'macro')
-			Pr.DeconstructionReal:SetAttribute('macrotext', format('/cast %s\n/run ClickTargetTradeButton(7)', spell))
-			Pr.DeconstructionReal:SetAllPoints(_G["TradeRecipientItem7ItemButton"])
-			Pr.DeconstructionReal:Show()
 
-			if E.private.sle.professions.deconButton.style == "BIG" then
-				ActionButton_ShowOverlayGlow(Pr.DeconstructionReal)
-			elseif E.private.sle.professions.deconButton.style == "SMALL" then
-				AutoCastShine_AutoCastStart(Pr.DeconstructionReal, color, 5,nil,2)
-			end
+	if (E.global.sle.LOCK.TradeOpen and GetTradeTargetItemLink(7) == itemLink and _G.GameTooltip:GetOwner():GetName() == 'TradeRecipientItem7ItemButton') then
+		Pr.DeconstructionReal.ID = itemId
+		Pr.DeconstructionReal:SetAttribute('type1', 'macro')
+		Pr.DeconstructionReal:SetAttribute('macrotext', format('/cast %s\n/run ClickTargetTradeButton(7)', spell))
+		Pr.DeconstructionReal:SetAllPoints(_G.TradeRecipientItem7ItemButton)
+		Pr.DeconstructionReal:Show()
+
+		if E.private.sle.professions.deconButton.style == 'BIG' then
+			ActionButton_ShowOverlayGlow(Pr.DeconstructionReal)
+		elseif E.private.sle.professions.deconButton.style == 'SMALL' then
+			AutoCastShine_AutoCastStart(Pr.DeconstructionReal, color, 5,nil,2)
+		end
+	elseif (C_Container_GetContainerItemLink(bag, slot:GetID()) == itemLink) and Pr.PROSPECTname == spell then
+		Pr.DeconstructionReal.ID = itemId
+		Pr.DeconstructionReal:SetAttribute('type1', 'macro')
+		Pr.DeconstructionReal:SetAttribute('macrotext', format('/run C_TradeSkillUI.CraftRecipe(374627, 1, {})\n/click %s', format('ElvUI_ContainerFrameBag%dSlot%d', Pr.DeconstructionReal.Bag, Pr.DeconstructionReal.Slot)))
+		Pr.DeconstructionReal:SetAllPoints(slot)
+		Pr.DeconstructionReal:Show()
+		if E.private.sle.professions.deconButton.style == 'BIG' then
+			ActionButton_ShowOverlayGlow(Pr.DeconstructionReal)
+		elseif E.private.sle.professions.deconButton.style == 'SMALL' then
+			-- AutoCastShine_AutoCastStart(Pr.DeconstructionReal, r, g, b)
+			LCG.AutoCastGlow_Start(Pr.DeconstructionReal, color, 5, nil, 2)
+		elseif E.private.sle.professions.deconButton.style == 'PIXEL' then
+			LCG.PixelGlow_Start(Pr.DeconstructionReal, color, nil, nil, nil, 4)
+		end
 	elseif (C_Container_GetContainerItemLink(bag, slot:GetID()) == itemLink) then
 		Pr.DeconstructionReal.ID = itemId
-		Pr.DeconstructionReal:SetAttribute("type1",spellType)
+		Pr.DeconstructionReal:SetAttribute('type1', spellType)
 		Pr.DeconstructionReal:SetAttribute(spellType, spell)
 		Pr.DeconstructionReal:SetAttribute('target-bag', bag)
 		Pr.DeconstructionReal:SetAttribute('target-slot', slot:GetID())
 		Pr.DeconstructionReal:SetAllPoints(slot)
 		Pr.DeconstructionReal:Show()
 
-		if E.private.sle.professions.deconButton.style == "BIG" then
+		if E.private.sle.professions.deconButton.style == 'BIG' then
 			ActionButton_ShowOverlayGlow(Pr.DeconstructionReal)
-		elseif E.private.sle.professions.deconButton.style == "SMALL" then
+		elseif E.private.sle.professions.deconButton.style == 'SMALL' then
 			-- AutoCastShine_AutoCastStart(Pr.DeconstructionReal, r, g, b)
 			LCG.AutoCastGlow_Start(Pr.DeconstructionReal, color, 5, nil, 2)
-		elseif E.private.sle.professions.deconButton.style == "PIXEL" then
+		elseif E.private.sle.professions.deconButton.style == 'PIXEL' then
 			LCG.PixelGlow_Start(Pr.DeconstructionReal, color, nil, nil, nil, 4)
 		end
 	end
@@ -153,16 +172,9 @@ end
 
 function Pr:IsBreakable(itemId, itemName, itemQuality, equipSlot)
 	if not itemId then return false end
-	if(IsEquippableItem(itemId) and itemQuality and itemQuality > 1 and itemQuality < 5 and equipSlot ~= "INVTYPE_BAG") then
-		if E.global.sle.DE.IgnoreTabards and equipSlot == "INVTYPE_TABARD" then return false end
-		if Pr.ItemTable["DoNotDE"][itemId] then return false end
-		if Pr.ItemTable["PandariaBoA"][itemId] and E.global.sle.DE.IgnorePanda then return false end
-		if Pr.ItemTable["Cooking"][itemId] and E.global.sle.DE.IgnoreCooking then return false end
-		if Pr.ItemTable["Fishing"][itemId] and E.global.sle.DE.IgnoreFishing then return false end
-		if Pr.BlacklistDE[itemName] then return false end
-		return true
-	end
-	return false
+	if type(itemId) == "number" then itemId = tostring(itemId) end
+	if (E.global.sle.DE.IgnoreTabards and equipSlot == 'INVTYPE_TABARD') or (Pr.ItemTable['DoNotDE'][itemId]) or (Pr.ItemTable['PandariaBoA'][itemId] and E.global.sle.DE.IgnorePanda) or (Pr.ItemTable['Cooking'][itemId] and E.global.sle.DE.IgnoreCooking) or (Pr.ItemTable['Fishing'][itemId] and E.global.sle.DE.IgnoreFishing) or Pr.BlacklistDE[itemName] then return false end
+	return true
 end
 
 function Pr:IsUnlockable(itemLink)
@@ -196,7 +208,7 @@ function Pr:DeconstructParser(tt, data)
 
 		local hyperlink
 		if data.guid then
-			hyperlink = C_Item.GetItemLinkByGUID(data.guid);
+			hyperlink = C_Item.GetItemLinkByGUID(data.guid)
 		elseif tooltipData.hyperlink then
 			hyperlink = data.hyperlink;
 		end
@@ -214,7 +226,7 @@ function Pr:DeconstructParser(tt, data)
 				Pr:ApplyDeconstruct(hyperlink, itemId, hasKey, 'item', r, g, b)
 			elseif lib:IsProspectable(itemId) then
 				r, g, b = 1, 0, 0
-				Pr:ApplyDeconstruct(hyperlink, itemId, Pr.PROSPECTname, 'spell', r, g, b)
+				Pr:ApplyDeconstruct(hyperlink, itemId, Pr.PROSPECTname, 'macro', r, g, b)
 			elseif lib:IsMillable(itemId) then
 				r, g, b = 1, 0, 0
 				Pr:ApplyDeconstruct(hyperlink, itemId, Pr.MILLname, 'spell', r, g, b)
@@ -279,7 +291,6 @@ function Pr:ConstructRealDecButton()
 	Pr.DeconstructionReal:SetScript('OnEvent', function(obj, event, ...) obj[event](obj, ...) end)
 	Pr.DeconstructionReal:RegisterForClicks('AnyUp', 'AnyDown')
 	Pr.DeconstructionReal:SetFrameStrata('TOOLTIP')
-	Pr.DeconstructionReal.TipLines = {}
 
 	Pr.DeconstructionReal.OnLeave = function(frame)
 		if InCombatLockdown() then

@@ -235,56 +235,71 @@ end
 
 local splitMessage, splitMessageLinks = {}, {};
 function SendSplitMessage(PRIORITY, HEADER, theMsg, CHANNEL, EXTRA, to)
-        -- parse out links as to not split them incorrectly.
-        theMsg, results = string.gsub(theMsg, "(|H[^|]+|h[^|]+|h)", function(theLink)
-                table.insert(splitMessageLinks, theLink);
-                return "\001\002"..paddString(#splitMessageLinks, "0", string.len(theLink)-4).."\003\004";
-        end);
+    -- determine isBNET
+    local isBN, messageLimit = false, 255;
+    if(Windows[to] and Windows[to].isBN) then
+        isBN = true;
+        messageLimit = 800;
+    end
+	-- seperate escape sequences when chained without spaces
+	theMsg = string.gsub(theMsg, "|r|c", "|r |c");
+	theMsg = string.gsub(theMsg, "|t|T", "|t |T");
+	theMsg = string.gsub(theMsg, "|h|H", "|h |H");
 
-        -- split up each word.
-        SplitToTable(theMsg, "%s", splitMessage);
+	-- parse out links as to not split them incorrectly.
+	theMsg, results = string.gsub(theMsg, "(|H[^|]+|h.-|h|r)", function(theLink)
+		table.insert(splitMessageLinks, theLink);
+		return "\001\002"..paddString(#splitMessageLinks, "0", string.len(theLink)-4).."\003\004";
+	end);
 
-        --reconstruct message into chunks of no more than 255 characters.
-        local chunk = "";
-        for i=1, #splitMessage + 1 do
-                if(splitMessage[i] and string.len(chunk) + string.len(splitMessage[i]) <= 254) then
-                        chunk = chunk..splitMessage[i].." ";
-                else
-                        -- reinsert links of necessary
-                        chunk = string.gsub(chunk, "\001\002%d+\003\004", function(link)
-                                local index = _G.tonumber(string.match(link, "(%d+)"));
-                                return splitMessageLinks[index] or link;
-                        end);
-			if(Windows[to] and Windows[to].isBN) then
+	-- split up each word.
+	SplitToTable(theMsg, "%s", splitMessage);
+
+	--reconstruct message into chunks of no more than 255 characters.
+	local chunk = "";
+	for i=1, #splitMessage + 1 do
+		if(splitMessage[i] and string.len(chunk) + string.len(splitMessage[i]) < messageLimit) then
+			chunk = chunk..splitMessage[i].." ";
+		else
+			-- reinsert links of necessary
+			chunk = string.gsub(chunk, "\001\002%d+\003\004", function(link)
+				local index = _G.tonumber(string.match(link, "(%d+)"));
+				return splitMessageLinks[index] or link;
+			end);
+
+			if(isBN) then
 				_G.BNSendWhisper(Windows[to].bn.id, chunk);
 			else
-					_G.ChatThrottleLib:SendChatMessage(PRIORITY, HEADER, chunk, CHANNEL, EXTRA, to);
-                        end
+                _G.SendChatMessage(chunk, CHANNEL, EXTRA, to)
+				-- _G.ChatThrottleLib:SendChatMessage(PRIORITY, HEADER, chunk, CHANNEL, EXTRA, to);
+			end
 			chunk = (splitMessage[i] or "").." ";
-                end
-        end
+		end
+	end
 
-        -- clean up
-        for k, _ in pairs(splitMessage) do
-                splitMessage[k] = nil;
-        end
-        for k, _ in pairs(splitMessageLinks) do
-                splitMessageLinks[k] = nil;
-        end
+	-- clean up
+	for k, _ in pairs(splitMessage) do
+		splitMessage[k] = nil;
+	end
+	for k, _ in pairs(splitMessageLinks) do
+		splitMessageLinks[k] = nil;
+	end
 end
 
 
 RegisterWidgetTrigger("msg_box", "whisper", "OnEnterPressed", function(self)
         local obj = self:GetParent();
         local msg = PreSendFilterText(self:GetText());
-        local msgCount = math.ceil(string.len(msg)/255);
+		local messageLength = obj.isBN and 800 or 255;
+        local msgCount = math.ceil(string.len(msg)/messageLength);
         if(msgCount == 1) then
             Windows[obj.theUser].msgSent = true;
-	    if(obj.isBN) then
-		_G.BNSendWhisper(obj.bn.id, msg);
-	    else
-	        _G.ChatThrottleLib:SendChatMessage("ALERT", "WIM", msg, "WHISPER", nil, obj.theUser);
-	    end
+			if(obj.isBN) then
+				_G.BNSendWhisper(obj.bn.id, msg);
+			else
+				_G.SendChatMessage(msg, "WHISPER", nil, obj.theUser);
+				-- _G.ChatThrottleLib:SendChatMessage("ALERT", "WIM", msg, "WHISPER", nil, obj.theUser);
+			end
         elseif(msgCount > 1) then
             Windows[obj.theUser].msgSent = true;
             SendSplitMessage("ALERT", "WIM", msg, "WHISPER", nil, obj.theUser);

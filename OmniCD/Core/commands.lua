@@ -6,7 +6,7 @@ local spellTypeStr
 
 E.SlashHandler = function(msg)
 	local P = E.Party
-	local command, value = msg:match("^(%S*)%s*(.-)$");
+	local command, value = msg:match("^(%S*)%s*(.-)$")
 
 	if value then
 		command = strlower(command)
@@ -145,9 +145,9 @@ E.SlashHandler = function(msg)
 end
 
 function E:OpenOptionPanel()
-	self.Libs.ACD:SetDefaultSize(self.AddOn, 965, 650)
+	self.Libs.ACD:SetDefaultSize(self.AddOn, 960, 640)
 	self.Libs.ACD:Open(self.AddOn)
-
+	self.Libs.ACD.OpenFrames.OmniCD.frame:SetScale(self.global.optionPanelScale)
 
 	self.Libs.ACD:SelectGroup(self.AddOn, "Party")
 	self.Libs.ACD:SelectGroup(self.AddOn, "Home")
@@ -184,10 +184,10 @@ if Settings and Settings.RegisterCanvasLayoutCategory then
 	Settings.RegisterAddOnCategory(category)
 
 
+
 else
 	InterfaceOptions_AddCategory(interfaceOptionPanel)
 end
-
 
 SLASH_OmniCD1 = "/oc"
 SLASH_OmniCD2 = "/omnicd"

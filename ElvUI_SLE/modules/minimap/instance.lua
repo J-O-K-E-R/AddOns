@@ -1,12 +1,11 @@
-local SLE, T, E, L, V, P, G = unpack(select(2, ...))
+local SLE, _, E = unpack(select(2, ...))
 local I = SLE.InstDif
 
---GLOBALS: CreateFrame
 local _G = _G
 local format = format
 local sub = string.utf8sub
-local GetDifficultyInfo = GetDifficultyInfo
-
+local GetInstanceInfo, GetDifficultyInfo = GetInstanceInfo, GetDifficultyInfo
+local IsInGuild, IsInInstance = IsInGuild, IsInInstance
 local InstanceDifficulty = _G.MinimapCluster.InstanceDifficulty
 local Instance = InstanceDifficulty.Instance
 local ChallengeMode = InstanceDifficulty.ChallengeMode
@@ -40,7 +39,7 @@ function I:CreateText()
 	I.frame.icon = I.frame:CreateFontString(nil, 'OVERLAY')
 	I.frame.icon:SetPoint('LEFT', I.frame.text, 'RIGHT', 4, 0)
 
-	self:SetFonts()
+	I:SetFonts()
 end
 
 function I:SetFonts()
@@ -77,13 +76,8 @@ function I:UpdateFrame()
 	local db = I.db
 	I.frame:Point('TOPLEFT', _G.Minimap, 'TOPLEFT', db.xoffset, db.yoffset)
 	I:SetFonts()
-	if db.enable then
-		I.frame.text:Show()
-		I.frame.icon:Show()
-	else
-		I.frame.text:Hide()
-		I.frame.icon:Hide()
-	end
+	I.frame.text:SetShown(db.enable)
+	I.frame.icon:SetShown(db.enable)
 end
 
 function I:GetColor(dif)
@@ -96,14 +90,15 @@ function I:GetColor(dif)
 end
 
 function I:GenerateText(_, guild)
+	if not I.db.enable then return end
 	I.frame.icon:SetText('')
 
 	if not I:InstanceCheck() then
 		I.frame.text:SetText('')
 	else
-		local text, isHeroic, isChallengeMode
-		local groupType, difficulty, difficultyName, _, _, _, _, instanceGroupSize = select(2, GetInstanceInfo())
-		isHeroic, isChallengeMode = select(3, GetDifficultyInfo(difficulty))
+		local text, isChallengeMode
+		local _, difficulty, difficultyName, _, _, _, _, instanceGroupSize = select(2, GetInstanceInfo())
+		_, isChallengeMode = select(3, GetDifficultyInfo(difficulty))
 		local r, g, b = I:GetColor(difficulty)
 
 		if (difficulty >= 3 and difficulty <= 7) or difficulty == 9 or E.db.sle.minimap.instance.onlyNumber then
@@ -114,7 +109,7 @@ function I:GenerateText(_, guild)
 		end
 
 		I.frame.text:SetText(text)
-		-- guild = true
+
 		if (guild) and not isChallengeMode then
 			local logo = I:GuildEmblem()
 			I.frame.icon:SetText(logo)
@@ -122,22 +117,6 @@ function I:GenerateText(_, guild)
 		Instance:Hide()
 		ChallengeMode:Hide()
 		Guild:Hide()
-
-		if not I.db.enable then
-			if not Instance:IsShown() and (groupType == 'raid' or isHeroic) and not guild then
-				Instance:Show()
-				ChallengeMode:Hide()
-				Guild:Hide()
-			elseif not ChallengeMode:IsShown() and isChallengeMode and not guild then
-				Instance:Hide()
-				ChallengeMode:Show()
-				Guild:Hide()
-			elseif guild then
-				Instance:Hide()
-				ChallengeMode:Hide()
-				Guild:Show()
-			end
-		end
 	end
 	I:UpdateFrame()
 end

@@ -18,7 +18,7 @@ end
 
 local function IsGear(itemLink)
   local classType = select(6, GetItemInfoInstant(itemLink))
-  return classType == Enum.ItemClass.Weapon or classType == Enum.ItemClass.Armor
+  return classType ~= nil and Auctionator.Utilities.IsEquipment(classType)
 end
 
 function Auctionator.Utilities.DBKeyFromLink(itemLink, callback)
@@ -31,6 +31,11 @@ function Auctionator.Utilities.DBKeyFromLink(itemLink, callback)
 
   if IsGear(itemLink) then
     local item = Item:CreateFromItemLink(itemLink)
+    if item:IsItemEmpty() then
+      callback({})
+      return
+    end
+
     item:ContinueOnItemLoad(function()
       local itemLevel = GetDetailedItemLevelInfo(itemLink) or 0
 

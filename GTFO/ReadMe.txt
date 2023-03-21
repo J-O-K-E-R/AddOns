@@ -1777,3 +1777,88 @@ Change Log:
 
 4.69.3
 * Added Dragonflight spells (world)
+
+4.69.4
+* Added Dragonflight spells (world)
+* Added Dragonflight spells for Ruby Life Pools
+* Added Dragonflight spells for The Nokhud Offensive
+* Added Dragonflight spells for Halls of Infusion
+* Added Dragonflight spells for Brackenhide Hollow
+
+4.70
+* Fixed an issue that could cause tank detection to fail on some classes after reloading UI
+* Added Dragonflight spells (world)
+* Added Dragonflight spells for Ruby Life Pools
+* Added Dragonflight spells for The Nokhud Offensive
+* Added Dragonflight spells for Halls of Infusion
+* Added Dragonflight spells for Algeth'ar Academy
+* Added Dragonflight spells for The Azure Vault
+
+4.70.1
+* Added Dragonflight spells (world)
+* Added Dragonflight spells for Neltharus
+* Added Dragonflight spells for Algeth'ar Academy
+* Added Dragonflight spells for Halls of Infusion
+* Added Dragonflight spells for Uldaman: Legacy of Tyr
+* Added Dragonflight spells for Brackenhide Hollow
+* Added Dragonflight spells for The Azure Vault
+
+4.70.2
+* Fixed Dragonflight spells for Uldaman: Legacy of Tyr
+* Fixed Dragonflight spells for Algeth'ar Academy
+* Added Dragonflight spells (world)
+* Added Dragonflight spells for Vault of the Incarnates
+* Added Dragonflight spells for Uldaman: Legacy of Tyr
+* Added Dragonflight spells for The Azure Vault
+
+4.70.3
+* Fixed Dragonflight spells for Algeth'ar Academy
+* Added Dragonflight spells (world)
+* Added Dragonflight spells for Vault of the Incarnates
+* Added Dragonflight spells for The Nokhud Offensive
+* Added Mists of Pandaria spells for Temple of the Jade Serpent
+
+4.70.4
+* Fixed Dragonflight spells for Vault of the Incarnates
+* Added Dragonflight spells (world)
+* Added Dragonflight spells for Vault of the Incarnates
+* Added Mists of Pandaria spells for Temple of the Jade Serpent
+
+4.70.5
+* Fixed Dragonflight spells for Vault of the Incarnates
+* Added Dragonflight spells (world)
+* Added Dragonflight spells for Vault of the Incarnates
+
+5.0
+* Native support for custom sounds
+* Added Dragonflight spells (world)
+* Added Dragonflight spells for Vault of the Incarnates
+
+5.0.1
+* Added an ignore option for lava pools and campfires
+* Added Dragonflight spells (world)
+* Added Dragonflight spells for Vault of the Incarnates
+* Added Dragonflight spells for The Azure Vault
+
+5.0.2
+* Added Dragonflight spells (world)
+* Fixed Dragonflight spells for Vault of the Incarnates
+
+5.0.3
+* Added an option to ignore Icy Ground from Sennarth in Vault of the Incarnates
+* Added Dragonflight spells (world)
+* Added Dragonflight spells for Vault of the Incarnates
+* Added WoD spells for Grimrail Depot
+* Added WoD spells for the Everbloom
+* Added Legion spells for Court of Stars
+
+5.0.4
+* Updated Wrath Classic TOC to 3.4.1
+* Added Dragonflight spells (world)
+* Added Dragonflight spells for Vault of the Incarnates
+
+5.0.5
+* Updated for patch 10.0.5
+* Added Dragonflight spells (world)
+* Added Wrath spells for Ulduar (thanks Furento)
+* Added Wrath spells (Heroic+) (thanks wazerFPS)

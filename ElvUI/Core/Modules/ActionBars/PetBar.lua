@@ -18,7 +18,6 @@ local AutoCastShine_AutoCastStop = AutoCastShine_AutoCastStop
 local PetActionButton_StartFlash = PetActionButton_StartFlash
 local PetActionButton_StopFlash = PetActionButton_StopFlash
 local PetActionBar_ShowGrid = PetActionBar_ShowGrid
-
 local PetActionBar_UpdateCooldowns = PetActionBar_UpdateCooldowns
 
 local Masque = E.Masque
@@ -34,7 +33,13 @@ function AB:UpdatePet(event, unit)
 	for i, button in ipairs(bar.buttons) do
 		local name, texture, isToken, isActive, autoCastAllowed, autoCastEnabled, spellID = GetPetActionInfo(i)
 		local buttonName = 'PetActionButton'..i
-		local autoCast = button.AutoCastable or _G[buttonName..'AutoCastable']
+		local autoCast = button.AutoCastable
+
+		-- this one is different
+		local castable = _G[buttonName..'AutoCastable']
+		if castable then
+			castable:SetAlpha(0)
+		end
 
 		button:SetAlpha(1)
 		button.isToken = isToken
@@ -127,7 +132,7 @@ function AB:PositionAndSizeBarPet()
 		bar:SetAlpha(db.alpha)
 		E:EnableMover(bar.mover.name)
 	else
-		bar:SetScale(0.0001)
+		bar:SetScale(0.00001)
 		bar:SetAlpha(0)
 		E:DisableMover(bar.mover.name)
 	end
@@ -158,7 +163,7 @@ function AB:PositionAndSizeBarPet()
 		end
 
 		if i > numButtons then
-			button:SetScale(0.0001)
+			button:SetScale(0.00001)
 			button:SetAlpha(0)
 			button.handleBackdrop = nil
 		else
@@ -180,11 +185,7 @@ function AB:PositionAndSizeBarPet()
 	RegisterStateDriver(bar, 'show', visibility)
 
 	if useMasque then
-		MasqueGroup:ReSkin()
-
-		for _, button in ipairs(bar.buttons) do
-			AB:TrimIcon(button, true)
-		end
+		AB:UpdateMasque(bar)
 	end
 end
 
@@ -241,10 +242,12 @@ function AB:CreateBarPet()
 	bar.backdrop = CreateFrame('Frame', nil, bar)
 	bar.backdrop:SetTemplate(AB.db.transparent and 'Transparent')
 	bar.backdrop:SetFrameLevel(0)
+	bar.MasqueGroup = MasqueGroup
 
 	for i = 1, _G.NUM_PET_ACTION_SLOTS do
 		local button = _G['PetActionButton'..i]
 		button:Show() -- for some reason they start hidden on DF ?
+		button.parentName = 'ElvUI_BarPet'
 		bar.buttons[i] = button
 
 		if not E.Retail then

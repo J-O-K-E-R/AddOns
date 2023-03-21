@@ -11,7 +11,7 @@ mod:RegisterEnableMob(
 	33259, -- Expedition Trapper
 	33186  -- Razorscale
 )
-mod:SetEncounterID(1139)
+mod:SetEncounterID(mod:Classic() and 746 or 1139)
 mod:SetRespawnTime(30)
 
 --------------------------------------------------------------------------------
@@ -80,7 +80,7 @@ end
 function mod:OnEngage()
 	count = 0
 	stage = 1
-	self:Berserk(900)
+	self:Berserk(self:Classic() and 360 or 900)
 	self:Bar("harpoon", 50, L.harpoon_nextbar:format(1), "INV_Spear_06")
 end
 
@@ -158,6 +158,6 @@ end
 function mod:FuseArmor(args)
 	if self:Me(args.destGUID) or (self:Tank() and self:Tank(args.destName)) then
 		local amount = args.amount or 1
-		self:StackMessageOld(args.spellId, args.destName, amount, "orange", args.amount > 1 and "info")
+		self:StackMessageOld(args.spellId, args.destName, amount, "orange", amount > 1 and "info")
 	end
 end

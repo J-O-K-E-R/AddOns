@@ -1,6 +1,8 @@
 local E = select(2, ...):unpack()
 local P = E.Party
 
+local tonumber, sort, min, max = tonumber, table.sort, math.min, math.max
+
 local sortPriority = function(a, b)
 	local aprio, bprio = E.db.priority[a.type], E.db.priority[b.type]
 	if aprio == bprio then
@@ -17,11 +19,12 @@ function P:SetIconLayout(frame, sortOrder)
 		sort(icons, sortPriority)
 	end
 
-	local db_prio = E.db.priority;
+	local db_prio = E.db.priority
 	local count, rows, numActive, lastActiveIndex = 0, 1, 1
 	for i = 1, frame.numIcons do
 		local icon = icons[i]
 		icon:Hide()
+
 
 		if displayInactive or icon.active then
 			icon:ClearAllPoints()
@@ -76,7 +79,7 @@ end
 
 function P:SetIconScale(frame)
 	local scale = E.db.icons.scale
-	frame.anchor:SetScale(math.min(math.max(0.7, scale), 1))
+	frame.anchor:SetScale(min(max(0.7, scale), 1))
 	frame.container:SetScale(scale)
 end
 
@@ -88,7 +91,7 @@ function P:SetBorder(icon)
 		icon.borderRight:ClearAllPoints()
 		icon.borderLeft:ClearAllPoints()
 
-		local edgeSize = db.borderPixels * ( E.db.general.showRange and not E.db.position.detached and self.effectivePixelMult or E.PixelMult) / db.scale;
+		local edgeSize = ( E.db.general.showRange and not E.db.position.detached and self.effectivePixelMult or E.PixelMult) / db.scale
 		icon.borderTop:SetPoint("TOPLEFT", icon, "TOPLEFT")
 		icon.borderTop:SetPoint("BOTTOMRIGHT", icon, "TOPRIGHT", 0, -edgeSize)
 		icon.borderBottom:SetPoint("BOTTOMLEFT", icon, "BOTTOMLEFT")
@@ -126,8 +129,6 @@ function P:SetMarker(icon, markEnhanced)
 		local spellID = icon.spellID
 		local mark = E.spell_marked[spellID]
 		if mark and (mark == true or self:IsTalentForPvpStatus(mark, self.groupInfo[icon.guid])) then
-			hotkey:SetText(RANGE_INDICATOR)
-			hotkey:SetTextColor(1, 1, 1)
 			hotkey:Show()
 		else
 			hotkey:Hide()
@@ -158,32 +159,15 @@ function P:SetOpacity(icon)
 			icon.icon:SetVertexColor(1, 1, 1)
 		end
 		local charges = icon.maxcharges and tonumber(icon.count:GetText())
-		icon.icon:SetDesaturated(E.db.icons.desaturateActive and icon.active and not icon.isHighlighted and (not charges or charges == 0));
+		icon.icon:SetDesaturated(E.db.icons.desaturateActive and icon.active and not icon.isHighlighted and (not charges or charges == 0))
 	end
 end
 
-function P:SetSwipe(icon)
-	if icon.statusBar and not E.db.extraBars[icon.statusBar.key].nameBar then
-		icon.cooldown:SetDrawSwipe(false)
-		icon.cooldown:SetDrawEdge(false)
-	else
-		local charges = icon.maxcharges and tonumber(icon.count:GetText())
-		icon.cooldown:SetReverse(E.db.icons.reverse)
-		icon.cooldown:SetDrawSwipe( not icon.isHighlighted and (not charges or charges <= 0) )
-		icon.cooldown:SetDrawEdge(charges and true)
-	end
+function P:SetSwipeCounter(icon)
+	self:SetCooldownElements(icon, icon.maxcharges and tonumber(icon.count:GetText()))
+	icon.cooldown:SetReverse(E.db.icons.reverse)
 	icon.cooldown:SetSwipeColor(0, 0, 0, E.db.icons.swipeAlpha)
-end
-
-function P:SetCounter(icon)
-	if icon.statusBar and not E.db.extraBars[icon.statusBar.key].nameBar then
-		icon.cooldown:SetHideCountdownNumbers(true)
-	else
-		local charges = icon.maxcharges and tonumber(icon.count:GetText())
-		local noCount = icon.isHighlighted or (charges and charges > 0) or not E.db.icons.showCounter
-		icon.cooldown:SetHideCountdownNumbers(noCount)
-		icon.counter:SetScale(E.db.icons.counterScale)
-	end
+	icon.counter:SetScale(E.db.icons.counterScale)
 end
 
 function P:SetChargeScale(icon, chargeScale)
@@ -207,8 +191,7 @@ function P:ApplySettings(frame)
 		self:SetBorder(icon)
 		self:SetMarker(icon, markEnhanced)
 		self:SetOpacity(icon)
-		self:SetSwipe(icon)
-		self:SetCounter(icon)
+		self:SetSwipeCounter(icon)
 		self:SetChargeScale(icon, chargeScale)
 		self:SetTooltip(icon, showTooltip)
 	end

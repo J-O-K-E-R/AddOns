@@ -120,7 +120,7 @@ function RSEntityStateHandler.SetDeadNpc(npcID, loadingAddon)
 	local npcInfo = RSNpcDB.GetInternalNpcInfo(npcID)
 	if (npcInfo) then
 		-- Remove recently seen
-		RSRecentlySeenTracker.RemoveRecentlySeen(npcID)
+		local x, y = RSRecentlySeenTracker.RemoveRecentlySeen(npcID)
 	
 		-- If the npc belongs to several zones we have to use the players zone
 		if (RSNpcDB.IsInternalNpcMultiZone(npcID)) then
@@ -143,7 +143,6 @@ function RSEntityStateHandler.SetDeadNpc(npcID, loadingAddon)
 		end
 
 		-- Extracts quest id if we don't have it
-		-- Avoids shift-left-click events
 		if (not loadingAddon and RSConstants.DEBUG_MODE) then
 			if (not npcInfo.questID and not RSNpcDB.GetNpcQuestIdFound(npcID)) then
 				RSLogger:PrintDebugMessage(string.format("NPC [%s]. Buscando questID...", npcID))
@@ -163,13 +162,13 @@ function RSEntityStateHandler.SetDeadNpc(npcID, loadingAddon)
 	
 		-- Disable overlay icons if enabled
 		if (RSGeneralDB.HasOverlayActive(npcID) and RSNpcDB.IsNpcKilled(npcID)) then
-			RSGeneralDB.RemoveOverlayActive()
+			RSGeneralDB.RemoveOverlayActive(npcID)
 			RSMinimap.RemoveOverlay(npcID)
 		end
 		
 		-- Refresh minimap
 		if (not loadingAddon) then
-			RSMinimap.RefreshEntityState(npcID)
+			RSMinimap.HideIcon(npcID, x, y)
 		end
 		
 	-- If we dont have this entity in our database we can ignore it
@@ -302,7 +301,7 @@ function RSEntityStateHandler.SetContainerOpen(containerID, loadingAddon)
 	local containerInfo = RSContainerDB.GetInternalContainerInfo(containerID)
 	if (containerInfo) then
 		-- Remove recently seen
-		RSRecentlySeenTracker.RemoveRecentlySeen(containerID)
+		local x, y = RSRecentlySeenTracker.RemoveRecentlySeen(containerID)
 	
 		-- If the container belongs to several zones we have to use the players zone
 		if (RSContainerDB.IsInternalContainerMultiZone(containerID)) then
@@ -349,13 +348,13 @@ function RSEntityStateHandler.SetContainerOpen(containerID, loadingAddon)
 	
 		-- Disable overlay icons if enabled
 		if (RSGeneralDB.HasOverlayActive(containerID) and RSContainerDB.IsContainerOpened(containerID)) then
-			RSGeneralDB.RemoveOverlayActive()
+			RSGeneralDB.RemoveOverlayActive(containerID)
 			RSMinimap.RemoveOverlay(containerID)
 		end
 		
 		-- Refresh minimap
 		if (not loadingAddon) then
-			RSMinimap.RefreshEntityState(containerID)
+			RSMinimap.HideIcon(containerID, x, y)
 		end
 		
 	-- If we dont have this entity in our database we can ignore it
@@ -381,7 +380,7 @@ function RSEntityStateHandler.SetEventCompleted(eventID, loadingAddon)
 	end
 
 	-- Remove recently seen
-	RSRecentlySeenTracker.RemoveRecentlySeen(eventID)
+	local x, y = RSRecentlySeenTracker.RemoveRecentlySeen(eventID)
 
 	local eventAlreadyFound = RSGeneralDB.GetAlreadyFoundEntity(eventID)
 	local eventInternalInfo = RSEventDB.GetInternalEventInfo(eventID)
@@ -448,12 +447,12 @@ function RSEntityStateHandler.SetEventCompleted(eventID, loadingAddon)
 
 	-- Disable overlay icons if enabled
 	if (RSGeneralDB.HasOverlayActive(eventID) and RSEventDB.IsEventCompleted(eventID)) then
-		RSGeneralDB.RemoveOverlayActive()
+		RSGeneralDB.RemoveOverlayActive(eventID)
 		RSMinimap.RemoveOverlay(eventID)
 	end
 		
 	-- Refresh minimap
 	if (not loadingAddon) then
-		RSMinimap.RefreshEntityState(eventID)
+		RSMinimap.HideIcon(eventID, x, y)
 	end
 end

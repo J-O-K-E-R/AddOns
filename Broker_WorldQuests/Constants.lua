@@ -6,6 +6,7 @@ CONSTANTS.EXPANSIONS = {
 	LEGION = "LEGION",
 	BFA = "BFA",
 	SHADOWLANDS = "SHADOWLANDS",
+	DRAGONFLIGHT = "DRAGONFLIGHT",
 }
 CONSTANTS.FACTIONS = {
 	NEUTRAL = 0,
@@ -38,6 +39,7 @@ CONSTANTS.WORLD_QUEST_TYPES = {
 	RAID = 8,
 }
 
+-- The name here should match the currency name in game (verified via Wowhead).  Some currencies are singular, some are plural.
 CONSTANTS.REWARD_TYPES = {
 	IRRELEVANT = -1,
 	ARTIFACTPOWER = 0,
@@ -49,11 +51,18 @@ CONSTANTS.REWARD_TYPES = {
 	HONOR = 6, 
 	NETHERSHARD = 7, 
 	ARGUNITE = 8, 
-	WAKENING_ESSENCES = 9,
+	WAKENING_ESSENCE = 9,
 	WAR_RESOURCES = 10,
 	MARK_OF_HONOR = 11,
-	SERVICE_MEDALS = 12,
+	SERVICE_MEDAL = 12,
 	PRISMATIC_MANAPEARL = 13,
+	SOULBIND_CONDUIT = 14,
+	ANIMA_CONTAINER = 15,
+	GRATEFUL_OFFERING = 15,
+	CYPHERS_OF_THE_FIRST_ONES = 16,
+	BLOODY_TOKENS = 17,
+	DRAGON_ISLES_SUPPLIES = 18,
+	POLISHED_PET_CHARM = 19,
 }
 
 CONSTANTS.QUEST_TYPES = {
@@ -91,7 +100,6 @@ CONSTANTS.WORLD_QUEST_ICONS_BY_TAG_ID = {
 	[260] = isHorde and "worldquest-icon-horde" or "worldquest-icon-alliance",
 }
 
-
 CONSTANTS.CURRENCIES_AFFECTED_BY_WARMODE = {
 	[1226] = true, -- nethershard
 	[1508] = true, -- argunite
@@ -99,28 +107,43 @@ CONSTANTS.CURRENCIES_AFFECTED_BY_WARMODE = {
 	[1342] = true, -- legionfall supplies
 	[1220] = true, -- order hall (legion)
 	[1560] = true, -- war resources (bfa)
-	[1553] = true, -- azerite
+	[1553] = true, -- azerite (bfa)
+	[2123] = true, -- Bloody Tokens (dragonflight)
+}
+
+CONSTANTS.DRAGONFLIGHT_REPUTATION_CURRENCY_IDS = {
+	[2108] = true, -- Maruuk Centaur
+	[2109] = true, -- Iskaara Tuskarr
+	[2031] = true, -- Dragonscale Expedition
+	[2106] = true, -- Valdrakken Accord
 }
 
 CONSTANTS.SHADOWLANDS_REPUTATION_CURRENCY_IDS = {
 	[1804] = true, -- The Ascended
 	[1805] = true, -- Undying Army
 	[1806] = true, -- Wild Hunt
-	[1807] = true, -- Court of Harvesters
+	[1807] = true, -- Court of Harvesters	
+	[1884] = true, -- avowed *** (no supplies chest) ***
+	[1887] = true, -- Court of Night *** (no supplies chest) ***
+	[1880] = true, -- Venari
+	[1907] = true, -- Death
+	[1997] = true, -- The Archivists
+	[1982] = true, -- The Enlightened
 	[1877] = true, -- XP
 }
 
 CONSTANTS.BFA_REPUTATION_CURRENCY_IDS = {
-	[1579] = true, -- both
-	[1598] = true,
-	[1600] = true, -- alliance
-	[1595] = true,
-	[1597] = true,
-	[1596] = true,
-	[1599] = true, -- horde
-	[1593] = true,
-	[1594] = true,
-	[1592] = true,
+	[1579] = true, -- Champions of Azeroth
+	[1598] = true, -- Tortollan Seekers
+	[1600] = true, -- Honorbound
+	[1595] = true, -- Talanji's Expedition
+	[1597] = true, -- Zandalari Empire
+	[1596] = true, -- Voldunai
+	[1599] = true, -- 7th Legion
+	[1593] = true, -- Proudmoore Admiralty
+	[1594] = true, -- Storm's Wake
+	[1592] = true, -- Order of Embers
+	[1742] = true, -- Rustbolt Resistance
 }
 
 CONSTANTS.FAMILY_FAMILIAR_QUEST_IDS = { -- WQ pet battle achievement
@@ -143,6 +166,7 @@ CONSTANTS.FAMILY_FAMILIAR_QUEST_IDS = { -- WQ pet battle achievement
 
 CONSTANTS.ACHIEVEMENT_IDS = {
 	PET_BATTLE_WQ = {
+		[CONSTANTS.EXPANSIONS.DRAGONFLIGHT] = 16464,
 		[CONSTANTS.EXPANSIONS.SHADOWLANDS] = 14625,
 		[CONSTANTS.EXPANSIONS.BFA] = 12936,
 		[CONSTANTS.EXPANSIONS.LEGION] = 10876,
@@ -257,6 +281,16 @@ CONSTANTS.ACHIEVEMENT_CRITERIAS = {
 	[61787] = 14,
 	[61784] = 15,
 	[61783] = 16,
+	-- Dragonflight
+	[71206] = 1,
+	[71202] = 2,
+	[66588] = 3,
+	[71145] = 4,
+	[71166] = 5,
+	[66551] = 6,
+	[71140] = 7,
+	[71180] = 8,
+
 }
 
 -- faction ids and icon name for factions with paragon reputation
@@ -296,12 +330,25 @@ CONSTANTS.PARAGON_FACTIONS = {
 		[2391] = "inv_faction_rustbolt", -- rustbolt resistance
 	},
 	shadowlands = {
-		order = { 2407, 2410, 2413, 2465 },
+		order = { 2407, 2410, 2413, 2465, 2432, 2470, 2472, 2478 },
 		[2407] = "ui_sigil_kyrian", -- ascended
 		[2410] = "inv_shoulder_mail_maldraxxus_d_01", -- undying army
 		[2413] = "inv_cape_special_revendreth_d_01", -- court of harvesters
-		-- [2439] = "", -- avowed
+
 		[2465] = "inv_wand_1h_ardenweald_d_01", -- wild hunt
+		[2439] = "6bf_blackrock_nova", -- avowed *** (no supplies chest) ***
+		[2464] = "inv_legion_cache_courtoffarnodis", -- Court of Night *** (no supplies chest) ***
+		[2432] = "item_venari_paragonchest_03", -- Venari
+		[2470] = "item_korthia_paragonchest_02", -- deathsadvance
+		[2472] = "inv_archaeology_80_witch_book", -- The Archivists' Codex
+		[2478] = "inv_misc_enlightenedbrokers_paragoncache01", -- TheEnlightened
+	},
+	dragonflight = {
+		order = {2507, 2503, 2511, 2510 },
+		[2507] = "ui_majorfaction_expedition", -- Dragonscale Expedition
+		[2503] = "ui_majorfaction_centaur", -- Maruuk Centaur
+		[2511] = "ui_majorfaction_tuskarr", -- Iskaara Tuskarr
+		[2510] = "ui_majorfaction_valdrakken", -- Valdrakken Accord
 	},
 }
 

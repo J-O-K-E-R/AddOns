@@ -1,3 +1,4 @@
+-- Generated from CurseForge on Thu Mar 16 09:00:25 UTC 2023
 local ns = select(2, ...) ---@type ns @The addon namespace.
 
 if ns:IsSameLocale("deDE") then
@@ -5,7 +6,7 @@ if ns:IsSameLocale("deDE") then
 
 	L.LOCALE_NAME = "deDE"
 
-	L["ALLOW_IN_LFD"] = "Im Dungeonbrowser erlauben"
+L["ALLOW_IN_LFD"] = "Im Dungeonbrowser erlauben"
 L["ALLOW_IN_LFD_DESC"] = "Rechtsklick auf Gruppen oder Kandidaten im Dungeonbrowser, um den Raider.IO Profil-Link zu kopieren."
 L["ALLOW_ON_PLAYER_UNITS"] = "Am Rahmen bei Spielereinheit erlauben"
 L["ALLOW_ON_PLAYER_UNITS_DESC"] = "Rechtsklick auf Rahmen bei Spielereinheit, um den Raider.IO Profil-Link zu kopieren."
@@ -51,20 +52,29 @@ L["DISABLE_RWF_MODE_BUTTON"] = "Deaktivieren"
 L["DISABLE_RWF_MODE_BUTTON_TOOLTIP"] = "Klicke hier, um den Wettrennen Welt 1.-Modus zu deaktivieren. Dadurch wird deine Benutzeroberfläche neu geladen."
 L["DISABLE_RWF_MODE_RELOAD"] = "Du deaktivierst den Wettrennen Welt 1.-Modus. Durch Klicken auf Bestätigung wird deine Benutzeroberfläche neu geladen."
 L["DPS"] = "DPS"
+L["DUNGEON_SHORT_NAME_AA"] = "Akademie von Algeth'ar"
+L["DUNGEON_SHORT_NAME_AV"] = "Azurblaue Gewölbe"
+L["DUNGEON_SHORT_NAME_COS"] = "Hof der Sterne"
 L["DUNGEON_SHORT_NAME_DOS"] = "Die Andre Seite"
 L["DUNGEON_SHORT_NAME_GD"] = "Das Grimmgleisdepot"
 L["DUNGEON_SHORT_NAME_GMBT"] = "Tazavesh So'leahs Schachzug"
 L["DUNGEON_SHORT_NAME_HOA"] = "Hallen der Sühne"
+L["DUNGEON_SHORT_NAME_HOV"] = "Hallen der Tapferkeit"
 L["DUNGEON_SHORT_NAME_ID"] = "Die Eisendocks"
 L["DUNGEON_SHORT_NAME_LOWR"] = "Untere Rückkehr nach Karazhan"
 L["DUNGEON_SHORT_NAME_MISTS"] = "Nebel von Tirna Scithe"
+L["DUNGEON_SHORT_NAME_NO"] = "Angriff der Nokhud"
 L["DUNGEON_SHORT_NAME_NW"] = "Nekrotische Schneise"
 L["DUNGEON_SHORT_NAME_PF"] = "Seuchensturz"
+L["DUNGEON_SHORT_NAME_RLP"] = "Rubinlebensbecken"
+L["DUNGEON_SHORT_NAME_SBG"] = "Schattenmondgrabstätte"
 L["DUNGEON_SHORT_NAME_SD"] = "Blutigen Tiefen"
 L["DUNGEON_SHORT_NAME_SOA"] = "Spitzen des Aufstiegs"
 L["DUNGEON_SHORT_NAME_STRT"] = "Tazavesh Wundersame Straßen"
+L["DUNGEON_SHORT_NAME_TJS"] = "Tempel der Jadeschlange"
 L["DUNGEON_SHORT_NAME_TOP"] = "Theater der Schmerzen"
 L["DUNGEON_SHORT_NAME_UPPR"] = "Obere Rückkehr nach Karazhan"
+L["DUNGEON_SHORT_NAME_VOTW"] = "Verlies der Wächterinnen"
 L["DUNGEON_SHORT_NAME_WORK"] = "Operation Mechagon - Werkstatt"
 L["DUNGEON_SHORT_NAME_YARD"] = "Operation Mechagon - Schrottplatz"
 L["ENABLE_AUTO_FRAME_POSITION"] = "Positioniert den Raider.IO Profilrahmen automatisch"
@@ -188,6 +198,14 @@ L["RAID_BOSS_SOD_6"] = "Leidensschmied Raznal"
 L["RAID_BOSS_SOD_7"] = "Wächter der Ersten"
 L["RAID_BOSS_SOD_8"] = "Schicksalsschreiber Roh-Kalo"
 L["RAID_BOSS_SOD_9"] = "Kel'Thuzad"
+L["RAID_BOSS_VOTI_1"] = "Eranog"
+L["RAID_BOSS_VOTI_2"] = "Terros"
+L["RAID_BOSS_VOTI_3"] = "Der Primalistenrat"
+L["RAID_BOSS_VOTI_4"] = "Sennarth, der kalte Atem"
+L["RAID_BOSS_VOTI_5"] = "Dathea, die Aufgestiegene"
+L["RAID_BOSS_VOTI_6"] = "Kurog Grimmtotem"
+L["RAID_BOSS_VOTI_7"] = "Bruthüterin Diurna"
+L["RAID_BOSS_VOTI_8"] = "Raszageth die Sturmfresserin"
 L["RAID_DIFFICULTY_NAME_HEROIC"] = "Heroisch"
 L["RAID_DIFFICULTY_NAME_MYTHIC"] = "Mythisch"
 L["RAID_DIFFICULTY_NAME_NORMAL"] = "Normal"
@@ -284,7 +302,6 @@ L["WARNING_LOCK_POSITION_FRAME_AUTO"] = "Raider.IO: Du solltest zuerst die autom
 L["WARNING_RWF_MODE_ENABLE"] = "|cffFFFFFF%s|r Wettrennen Welt 1.-Modus ist aktiviert. Du kannst es deaktivieren, indem du |cffFFFFFF/raiderio rwf|r eingibst."
 L["WIPE_RWF_MODE_BUTTON"] = "Löschen"
 L["WIPE_RWF_MODE_BUTTON_TOOLTIP"] = "Klicke hier, um das Protokoll aus der Speicherdatei zu löschen. Dadurch wird deine Benutzeroberfläche neu geladen."
-
 
 	ns.L = L
 end

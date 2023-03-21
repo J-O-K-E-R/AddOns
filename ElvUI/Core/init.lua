@@ -4,12 +4,10 @@
 		local E, L, V, P, G = unpack(ElvUI) --Import: Engine, Locales, PrivateDB, ProfileDB, GlobalDB
 ]]
 
-local _G, format, next, strfind = _G, format, next, strfind
-local gsub, pairs, tinsert, type = gsub, pairs, tinsert, type
+local _G, next, strfind = _G, next, strfind
+local gsub, tinsert, type = gsub, tinsert, type
 
-local RegisterCVar = C_CVar.RegisterCVar
 local GetAddOnEnableState = GetAddOnEnableState
-local GetAddOnMetadata = GetAddOnMetadata
 local GetBuildInfo = GetBuildInfo
 local GetLocale = GetLocale
 local GetTime = GetTime
@@ -18,16 +16,10 @@ local DisableAddOn = DisableAddOn
 local IsAddOnLoaded = IsAddOnLoaded
 local ReloadUI = ReloadUI
 
+local RegisterCVar = C_CVar.RegisterCVar
 local UIDropDownMenu_SetAnchor = UIDropDownMenu_SetAnchor
 
 -- GLOBALS: ElvCharacterDB, ElvPrivateDB, ElvDB, ElvCharacterData, ElvPrivateData, ElvData
-
-_G.BINDING_HEADER_ELVUI = GetAddOnMetadata(..., 'Title')
-for _, barNumber in pairs({2, 7, 8, 9, 10}) do
-	for slot = 1, 12 do
-		_G[format('BINDING_NAME_ELVUIBAR%dBUTTON%d', barNumber, slot)] = format('ActionBar %d Button %d', barNumber, slot)
-	end
-end
 
 local AceAddon, AceAddonMinor = _G.LibStub('AceAddon-3.0')
 local CallbackHandler = _G.LibStub('CallbackHandler-1.0')
@@ -205,16 +197,21 @@ end
 
 do
 	local alwaysDisable = {
-		'ElvUI_VisualAuraTimers',
-		'ElvUI_ExtraActionBars',
-		'ElvUI_CastBarOverlay',
-		'ElvUI_EverySecondCounts',
 		'ElvUI_AuraBarsMovers',
+		'ElvUI_CastBarOverlay',
+		'ElvUI_ChatTweaks', -- https://github.com/cr4ckp0t/ElvUI_ChatTweaks/issues/58
+		'ElvUI_CustomTags',
 		'ElvUI_CustomTweaks',
 		'ElvUI_DTBars2',
+		'ElvUI_EverySecondCounts',
+		'ElvUI_ExtraActionBars',
+		'ElvUI_ExtraDataTexts',
 		'ElvUI_QuestXP',
-		'ElvUI_CustomTags',
-		'ElvUI_UnitFramePlugin'
+		'ElvUI_UnitFramePlugin',
+		'ElvUI_VisualAuraTimers',
+		'ElvUI_SecondsToBuff',
+		'ElvUI_BuffHighlight',
+		'WunderUI',
 	}
 
 	if not IsAddOnLoaded('ShadowedUnitFrames') then

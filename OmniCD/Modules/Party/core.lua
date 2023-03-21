@@ -11,7 +11,7 @@ function P:Enable()
 		return
 	end
 
-	if not E.isDF then
+	if not E.isDF and not E.isWOTLKC341 then
 		self:RegisterEvent('CVAR_UPDATE')
 	end
 	self:RegisterEvent('UI_SCALE_CHANGED')
@@ -23,7 +23,6 @@ function P:Enable()
 	end)
 
 	self.enabled = true
-
 
 	self.zone = select(2, IsInInstance())
 	CM:InspectUser()
@@ -124,12 +123,10 @@ end
 
 function P:IsEnabledSpell(id, spellType, key)
 	local db = key and E.profile.Party[key] or E.db
-	id = tostring(id)
-
 	if not db.spells[id] then
 		return nil
 	end
-	if db.raidCDS[id] then
+	if db.raidCDS[id] or spellType == "interrupt" then
 		for _, frame in pairs(self.extraBars) do
 			local db = frame.db
 			if db.spellType[spellType] then
@@ -149,7 +146,7 @@ function P:UpdateEnabledSpells()
 			local t = v[i]
 			local id = t.spellID
 			local spellType = t.type
-			self.spell_enabled[id] = self:IsEnabledSpell(id, spellType)
+			self.spell_enabled[id] = self:IsEnabledSpell(tostring(id), spellType)
 		end
 	end
 end
@@ -180,7 +177,7 @@ function P:UpdatePositionValues()
 	local growY = growRowsUpward and 1 or -1
 	if db.layout == "horizontal" or db.layout == "doubleRow" or db.layout == "tripleRow" then
 		self.ofsX = 0
-		self.ofsY = growY * (E.BASE_ICON_SIZE + db.paddingY * pixel)
+		self.ofsY = growY * (E.baseIconHeight + db.paddingY * pixel)
 		if growLeft then
 			self.point2 = "TOPRIGHT"
 			self.relativePoint2 = "TOPLEFT"
@@ -193,7 +190,7 @@ function P:UpdatePositionValues()
 			self.ofsY2 = 0
 		end
 	else
-		self.ofsX = growX * (E.BASE_ICON_SIZE + db.paddingX  * pixel)
+		self.ofsX = growX * (E.baseIconHeight + db.paddingX  * pixel)
 		self.ofsY = 0
 		if growRowsUpward then
 			self.point2 = "BOTTOMRIGHT"
@@ -212,7 +209,7 @@ end
 
 
 
-P.GetBuffDuration = E.isClassicEra and function(P, unit, spellID)
+P.GetBuffDuration = E.isClassic and function(P, unit, spellID)
 	for i = 1, 40 do
 		local _,_,_,_,_,_,_,_,_, id = UnitBuff(unit, i)
 		if not id then return end
@@ -284,6 +281,7 @@ end
 
 
 local specIDs = { [71]=true,[72]=true,[73]=true,[65]=true,[66]=true,[70]=true,[253]=true,[254]=true,[255]=true,[259]=true,[260]=true,[261]=true,[256]=true,[257]=true,[258]=true,[250]=true,[251]=true,[252]=true,[262]=true,[263]=true,[264]=true,[62]=true,[63]=true,[64]=true,[265]=true,[266]=true,[267]=true,[268]=true,[269]=true,[270]=true,[102]=true,[103]=true,[104]=true,[105]=true,[577]=true,[581]=true,[1467]=true,[1468]=true, }
+local covenantIDs = { [321076]=true,[321079]=true,[321077]=true,[321078]=true, }
 
 
 function P:IsSpecAndTalentForPvpStatus(talentID, info)
@@ -302,6 +300,9 @@ function P:IsSpecAndTalentForPvpStatus(talentID, info)
 		if specIDs[talentID] then
 			return info.spec == talentID
 		end
+		if covenantIDs[talentID] and not self.isInShadowlands then
+			return
+		end
 		local talent = info.talentData[talentID]
 		if talent == "PVP" then
 			return self.isPvP and 1
@@ -310,18 +311,21 @@ function P:IsSpecAndTalentForPvpStatus(talentID, info)
 	end
 end
 
-function P:IsSpecOrTalentForPvpStatus(talentID, info)
+function P:IsSpecOrTalentForPvpStatus(talentID, info, isLearnedLevel)
 	if not talentID then
-		return true
+		return isLearnedLevel
 	end
 	if type(talentID) == "table" then
 		for _, id in ipairs(talentID) do
-			local talent = P:IsSpecOrTalentForPvpStatus(id, info)
+			local talent = P:IsSpecOrTalentForPvpStatus(id, info, isLearnedLevel)
 			if talent then return true end
 		end
 	else
 		if specIDs[talentID] then
-			return info.spec == talentID
+			return isLearnedLevel and info.spec == talentID
+		end
+		if covenantIDs[talentID] and not self.isInShadowlands then
+			return
 		end
 		local talent = info.talentData[talentID]
 		if talent == "PVP" then

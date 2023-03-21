@@ -32,7 +32,6 @@ P.setSpell = function(info, state)
 
 	if db == E.db then
 		P:UpdateEnabledSpells()
-
 		P:Refresh()
 	end
 end
@@ -75,6 +74,7 @@ P.setQuickSelect = function(info, value)
 	end
 
 	if P:IsCurrentZone(key) then
+		P:UpdateEnabledSpells()
 		P:Refresh()
 	end
 end
@@ -112,7 +112,8 @@ local spells = {
 	args = {
 		desc = {
 			name = function(info)
-				return isSpellsSubcategory(info) and L["CTRL+click to edit spell."] or L["Assign Raid Cooldowns."]
+				return isSpellsSubcategory(info) and format("|TInterface\\FriendsFrame\\InformationIcon:14:14:0:0|t %s %s\n\n", L["Select the spells you want to track."], L["CTRL+click to edit spell."])
+				or format("|TInterface\\FriendsFrame\\InformationIcon:14:14:0:0|t %s", L["Select the spells you want to show on Raid Bar 1-8 instead of the default Unit Bar"])
 			end,
 			order = 0,
 			type = "description",
@@ -131,22 +132,8 @@ local spells = {
 			func = clearAllDefault,
 			confirm = E.ConfirmAction,
 		},
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 		showForbearanceCounter = {
-			hidden = E.isClassicEra or isRaidCdSubcategory,
+			hidden = E.isClassic or isRaidCdSubcategory,
 			name = L["Show Forbearance CD"],
 			desc = L["Show timer on spells while under the effect of Forbearance or Hypothermia. Spells castable to others will darken instead"],
 			order = 4,
@@ -167,7 +154,7 @@ local spells = {
 		hideDisabledSpells = {
 			hidden = isSpellsSubcategory,
 			name = L["Hide Disabled Spells"],
-			desc = L["Hide spells that are not enabled in the \'Spells\' menu."],
+			desc = format("%s\n\n|cffff2020%s",L["Hide spells that are not enabled in the \'Spells\' menu."], L["Disabled spells will not appear on your bars even if you have them selected here"]),
 			order = 6,
 			type = "toggle",
 			get = function(info) return E[ info[1] ].getHideDisabledSpells(info) end,
@@ -276,8 +263,7 @@ function P:UpdateSpellsOption(id, oldClass, oldType, class, stype, force)
 					t[sId].order = order
 				else
 					local icon, name = v.icon, v.name
-
-					local link = E.isClassicEra and GetSpellDescription(spellID) or GetSpellLink(spellID)
+					local link = E.isClassic and GetSpellDescription(spellID) or GetSpellLink(spellID)
 
 					t[sId] = {
 						hidden = shouldHideDisabledSpell,
@@ -291,10 +277,10 @@ function P:UpdateSpellsOption(id, oldClass, oldType, class, stype, force)
 					}
 				end
 
-				if E.isClassicEra or E.isDF then
+				if E.isDF or E.isClassic then
 					local spell = Spell:CreateFromSpellID(spellID)
 					spell:ContinueOnSpellLoad(function()
-						local desc = E.isClassicEra and spell:GetSpellDescription() or GetSpellLink(spellID)
+						local desc = E.isClassic and spell:GetSpellDescription() or GetSpellLink(spellID)
 						t[sId].desc = desc
 					end)
 				end
@@ -307,7 +293,7 @@ function P:UpdateSpellsOption(id, oldClass, oldType, class, stype, force)
 	for moduleName in pairs(E.moduleOptions) do
 		local module = E[moduleName]
 		if module.AddSpellPicker then
-			module:Refresh()
+			module:Refresh(true)
 		end
 	end
 end
@@ -335,8 +321,7 @@ function P:AddSpellPickerSpells()
 
 					local spellID, icon, name = v.spellID, v.icon, v.name
 					local sId = tostring(spellID)
-
-					local link = E.isClassicEra and GetSpellDescription(spellID) or GetSpellLink(spellID)
+					local link = E.isClassic and GetSpellDescription(spellID) or GetSpellLink(spellID)
 
 					t[vtype].args[sId] = {
 						hidden = shouldHideDisabledSpell,
@@ -362,10 +347,10 @@ function P:AddSpellPickerSpells()
 						end
 					end
 
-					if E.isClassicEra or E.isDF then
+					if E.isDF or E.isClassic then
 						local spell = Spell:CreateFromSpellID(spellID)
 						spell:ContinueOnSpellLoad(function()
-							local desc = E.isClassicEra and spell:GetSpellDescription() or GetSpellLink(spellID)
+							local desc = E.isClassic and spell:GetSpellDescription() or GetSpellLink(spellID)
 							t[vtype].args[sId].desc = desc
 						end)
 					end

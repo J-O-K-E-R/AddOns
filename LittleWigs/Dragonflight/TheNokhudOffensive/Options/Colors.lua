@@ -16,7 +16,7 @@ BigWigs:AddColors("The Raging Tempest", {
 	[394875] = {"blue","red"},
 })
 
-BigWigs:AddColors("Teera And Maruuk", {
+BigWigs:AddColors("Teera and Maruuk", {
 	[382670] = "red",
 	[382836] = "purple",
 	[384808] = "orange",
@@ -25,12 +25,13 @@ BigWigs:AddColors("Teera And Maruuk", {
 	[386063] = "orange",
 	[386547] = "yellow",
 	[392198] = {"green","red"},
+	[395669] = "blue",
 })
 
 BigWigs:AddColors("Balakar Khan", {
 	[375937] = "purple",
 	[375943] = "red",
-	[376660] = {"blue","yellow"},
+	[376634] = {"blue","yellow"},
 	[376683] = "orange",
 	[376827] = {"blue","purple","red"},
 	[376864] = {"blue","yellow"},
@@ -39,9 +40,27 @@ BigWigs:AddColors("Balakar Khan", {
 })
 
 BigWigs:AddColors("The Nokhud Offensive Trash", {
+	[334610] = "blue",
+	[372147] = "yellow",
 	[373395] = "red",
+	[382233] = "orange",
+	[382277] = "red",
+	[383823] = "yellow",
 	[384336] = "orange",
 	[384365] = "red",
+	[384476] = "red",
+	[386015] = "yellow",
+	[386024] = "red",
+	[386028] = "orange",
+	[386223] = "yellow",
+	[386694] = "orange",
+	[387125] = "yellow",
+	[387127] = {"blue","red"},
+	[387411] = "red",
+	[387440] = "red",
+	[387596] = "yellow",
+	[387614] = "orange",
+	[387629] = "orange",
 	[395035] = "blue",
 	[397394] = "purple",
 })

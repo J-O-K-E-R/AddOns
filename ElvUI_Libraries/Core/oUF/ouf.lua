@@ -26,6 +26,7 @@ local unpack, tinsert, tremove = unpack, tinsert, tremove
 local next, time, wipe, type = next, time, wipe, type
 local select, pairs, ipairs = select, pairs, ipairs
 local strupper, strsplit = strupper, strsplit
+local hooksecurefunc = hooksecurefunc
 
 local SecureButton_GetUnit = SecureButton_GetUnit
 local SecureButton_GetModifiedUnit = SecureButton_GetModifiedUnit
@@ -168,6 +169,21 @@ for k, v in next, {
 
 		local active = activeElements[self]
 		return active and active[name]
+	end,
+
+	--[[ frame:SetEnabled(enabled, asState)
+	* self    - unit frame
+	* enabled - on or off
+	* asState - if true, the frame's "state-unitexists" attribute will be set to a boolean value denoting whether the
+	            unit exists; if false, the frame will be shown if its unit exists, and hidden if it does not (boolean)
+	--]]
+	SetEnabled = function(self, enabled, asState)
+		if enabled then
+			RegisterUnitWatch(self, asState)
+		else
+			UnregisterUnitWatch(self)
+			self:Hide()
+		end
 	end,
 
 	--[[ frame:Enable(asState)
@@ -326,8 +342,6 @@ local function initObject(unit, style, styleFunc, header, ...)
 			if(isEventlessUnit(objectUnit)) then
 				oUF:HandleEventlessUnit(object)
 			else
-				-- No need to enable this for eventless units.
-				object:SetAttribute('toggleForVehicle', true)
 				oUF:HandleUnit(object)
 			end
 		else
@@ -785,11 +799,7 @@ function oUF:SpawnNamePlates(namePrefix, nameplateCallback, nameplateCVars)
 	-- and because forbidden nameplates exist, we have to allow default nameplate
 	-- driver to create, update, and remove Blizz nameplates.
 	-- Disable only not forbidden nameplates.
-	_G.NamePlateDriverFrame:HookScript('OnEvent', function(_, event, unit)
-		if(event == 'NAME_PLATE_UNIT_ADDED' and unit) then
-			self:DisableBlizzard(unit)
-		end
-	end)
+	hooksecurefunc(_G.NamePlateDriverFrame, 'AcquireUnitFrame', oUF.DisableNamePlate)
 
 	local eventHandler = CreateFrame('Frame', 'oUF_NamePlateDriver')
 	eventHandler:RegisterEvent('NAME_PLATE_UNIT_ADDED')
@@ -931,7 +941,7 @@ do -- ShouldSkipAuraUpdate by Blizzard (implemented and heavily modified by Simp
 	eventFrame:RegisterEvent('PLAYER_LEAVING_WORLD')
 
 	if oUF.isRetail then
-		eventFrame:RegisterEvent('PLAYER_SPECIALIZATION_CHANGED')
+		eventFrame:RegisterUnitEvent('PLAYER_SPECIALIZATION_CHANGED', 'player')
 	end
 
 	eventFrame:SetScript('OnEvent', function(_, event)

@@ -144,7 +144,7 @@ if L then
 	L.vapor = "Saronitdämpfe"
 	L.vapor_desc = "Warnung und Timer für das Auftauchen von Saronitdämpfen."
 	L.vapor_message = "Saronitdämpfe %d!"
-	L.vapor_bar = "Saronitdämpfe %d/6"
+	L.vapor_bar = "Saronitdämpfe"
 	L.vapor_trigger = "Eine Wolke Saronitdämpfe bildet sich in der Nähe!"
 
 	L.vaporstack = "Saronitdämpfe Stapel"
@@ -158,7 +158,6 @@ end
 
 L = BigWigs:NewBossLocale("XT-002 Deconstructor", "deDE")
 if L then
-	L.gravitybomb_other = "Gravitation"
 	L.lightbomb_other = "Licht"
 end
 

@@ -1,14 +1,14 @@
-# [5.2.2](https://github.com/WeakAuras/WeakAuras2/tree/5.2.2) (2022-11-28)
+# [5.4.2](https://github.com/WeakAuras/WeakAuras2/tree/5.4.2) (2023-03-16)
 
-[Full Changelog](https://github.com/WeakAuras/WeakAuras2/compare/5.2.1...5.2.2)
+[Full Changelog](https://github.com/WeakAuras/WeakAuras2/compare/5.4.1...5.4.2)
 
 ## Highlights
 
- - Fix for textures 
+ - Turn off new aura API usage temporarily 
 
 ## Commits
 
-mrbuds (1):
+Stanzilla (1):
 
-- Texture: disable legacyZoomOut with atlas texture and reorder options
+- Turn off new aura API usage temporarily
 

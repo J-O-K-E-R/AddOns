@@ -20,14 +20,14 @@ do
 	L["Silence"] = LOC_TYPE_SILENCE
 	L["Disrm, Root, Silence"] = format("%s, %s, %s", L["Disarm"], L["Root"], L["Silence"])
 	L["Main Hand"] = INVTYPE_WEAPONMAINHAND
-	L["Trinket, Main Hand"] = format("%s, %s", L["Trinket"], L["Main Hand"])
+	L["Consumables"] = BAG_FILTER_CONSUMABLES
+	L["Trinket, Main Hand"] = format("%s, %s, %s", L["Trinket"], L["Main Hand"], L["Consumables"])
 	L["Signature Ability"] = COVENANT_PREVIEW_RACIAL_ABILITY or "Signature Ability"
 	L["Essence"] = AZERITE_ESSENCE_ITEM_TYPE or "Essence"
 	L["Max"] = MAXIMUM
 	L["Spells"] = type(SPELLS) == "string" and SPELLS or L["Spells"]
 	L["Highlighting"] = HIGHLIGHTING:gsub(":", "")
 	L["Custom"] = CUSTOM
-	L["Consumables"] = BAG_FILTER_CONSUMABLES
 end
 
 E.L_CFG_ZONE = {
@@ -109,7 +109,6 @@ E.TEXTURES = E.preCata and {
 }
 
 E.BORDERLESS_TCOORDS = { 0.07, 0.93, 0.07, 0.93 }
-E.BASE_ICON_SIZE = 36
 
 E.STR = {
 	["RELOAD_UI"] = L["Reload UI?"],
@@ -124,7 +123,7 @@ E.STR = {
 E.HEX_C = {
 
 
-	[1]			= "|cff99ffcd",
+	[1]			= "|cff99cdff",
 	[2]			= "|cff0291b0",
 	[5]			= "|cff7bbb4e",
 	[11]			= "|cff99cdff",
@@ -133,7 +132,6 @@ E.HEX_C = {
 	[321079]		= "|cffe40d0d",
 	[321077]		= "|cff80b5fd",
 	[321078]		= "|cff17c864",
-
 
 	["PERFORMANCE_BLUE"]	= "|cff99cdff",
 	["BR31_MINT"]		= "|cff99ffcd",
@@ -245,7 +243,6 @@ E.LIGHT_THEME = {
 
 }
 
-
 E.BOOKTYPE_CATEGORY = {
 	["WARRIOR"] = true,
 	["PALADIN"] = true,
@@ -272,11 +269,6 @@ E.RAID_TARGET_MARKERS = {
 	[0x00000040] = "|TInterface\\TargetingFrame\\UI-RaidTargetingIcon_7:0|t",
 	[0x00000080] = "|TInterface\\TargetingFrame\\UI-RaidTargetingIcon_8:0|t",
 }
-
-
-
-
-
 
 E.L_GLOW_ATLAS ={
 	["bags-glow-white"] = ICON_TAG_RAID_TARGET_SKULL3,
@@ -309,4 +301,5 @@ E.HEALER_SPEC = {
 	[256] = true,
 	[257] = true,
 	[264] = true,
+	[1468] = true,
 }

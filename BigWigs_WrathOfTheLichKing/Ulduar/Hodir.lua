@@ -5,7 +5,7 @@
 local mod, CL = BigWigs:NewBoss("Hodir", 603, 1644)
 if not mod then return end
 mod:RegisterEnableMob(32845)
-mod:SetEncounterID(1135)
+mod:SetEncounterID(mod:Classic() and 751 or 1135)
 mod:SetRespawnTime(30)
 
 --------------------------------------------------------------------------------
@@ -54,7 +54,7 @@ end
 function mod:OnEngage()
 	lastCold = 0
 	self:Bar(61968, 35) -- Flash Freeze
-	self:Bar("hardmode", 150, CL.hard, 27578) -- ability_warrior_battleshout / Battle Shout / icon 132333
+	self:Bar("hardmode", self:Classic() and 121 or 150, CL.hard, 27578) -- ability_warrior_battleshout / Battle Shout / icon 132333
 	self:Berserk(480)
 end
 

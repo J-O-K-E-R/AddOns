@@ -1,7 +1,11 @@
 # WIM
 
-## [3.9.13](https://github.com/Legacy-of-Sylvanaar/wow-instant-messenger/tree/3.9.13) (2022-11-21)
-[Full Changelog](https://github.com/Legacy-of-Sylvanaar/wow-instant-messenger/compare/3.9.12...3.9.13) [Previous Releases](https://github.com/Legacy-of-Sylvanaar/wow-instant-messenger/releases)
+## [3.10.9](https://github.com/Legacy-of-Sylvanaar/wow-instant-messenger/tree/3.10.9) (2023-02-26)
+[Full Changelog](https://github.com/Legacy-of-Sylvanaar/wow-instant-messenger/compare/3.10.8...3.10.9) [Previous Releases](https://github.com/Legacy-of-Sylvanaar/wow-instant-messenger/releases)
 
-- fix some missing connections to libDropDownMenu  
-- Fix: Whispers were not always being grouped with chat windows correctly.  
+- Fix #15, NewcomerChat was not being handled.  
+- Fix #5, clicking names in chat window throwing errors.  
+- Remove old source file no longer used.  
+- Stop using ChatThrottleLib. Normal chat messages should always be handled normally. Only addon messages should be conscious of throttling. Fixes #33  
+- Merge branch 'master' of https://github.com/Legacy-of-Sylvanaar/wow-instant-messenger  
+- Increased BNet message length to 800 characters. #30  

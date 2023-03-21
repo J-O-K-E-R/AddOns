@@ -114,7 +114,7 @@ end
 
 --english alias
 --window object from Details:GetWindow(n) and playerObject from Details:GetPlayer(playerName, attribute)
-function Details:OpenPlayerBreakdown (windowObject, playerObject)
+function Details:OpenPlayerBreakdown (windowObject, playerObject) --windowObject = instanceObject
 	windowObject:AbreJanelaInfo (playerObject)
 end
 
@@ -159,6 +159,78 @@ function _detalhes:AbreJanelaInfo (jogador, from_att_change, refresh, ShiftKeyDo
 			barra.icone:SetTexture("")
 			barra.icone:SetTexCoord(0, 1, 0, 1)
 		end
+	end
+
+	if (not info.bHasInitialized) then
+		local infoNumPoints = info:GetNumPoints()
+		for i = 1, infoNumPoints do
+			local point1, anchorObject, point2, x, y = info:GetPoint(i)
+			if (not anchorObject) then
+				info:ClearAllPoints()
+			end
+		end
+
+		local okay = pcall(function()
+			info:SetPoint("center", _G.UIParent, "center", 0, 0)
+		end)
+
+		if (not okay) then
+			info:ClearAllPoints()
+			info:SetPoint("center", _G.UIParent, "center", 0, 0)
+		end
+
+		info:SetUserPlaced(false)
+		info:SetDontSavePosition(true)
+		info.bHasInitialized = true
+	end
+
+	if (not info.RightSideBar) then
+		info.RightSideBar = CreateFrame("frame", nil, info, "BackdropTemplate")
+		info.RightSideBar:SetWidth(20)
+		info.RightSideBar:SetPoint("topleft", info, "topright", 1, 0)
+		info.RightSideBar:SetPoint("bottomleft", info, "bottomright", 1, 0)
+		local rightSideBarAlpha = 0.75
+
+		DetailsFramework:ApplyStandardBackdrop(info.RightSideBar)
+
+		local toggleMergePlayerSpells = function()
+			Details.merge_player_abilities = not Details.merge_player_abilities
+			local playerObject = Details:GetPlayerObjectFromBreakdownWindow()
+			local instanceObject = Details:GetActiveWindowFromBreakdownWindow()
+			Details:OpenPlayerBreakdown(instanceObject, playerObject) --toggle
+			Details:OpenPlayerBreakdown(instanceObject, playerObject)
+		end
+		local mergePlayerSpellsCheckbox = DetailsFramework:CreateSwitch(info, toggleMergePlayerSpells, Details.merge_player_abilities, _, _, _, _, _, _, _, _, _, _, DetailsFramework:GetTemplate("switch", "OPTIONS_CHECKBOX_BRIGHT_TEMPLATE"))
+		mergePlayerSpellsCheckbox:SetAsCheckBox()
+		mergePlayerSpellsCheckbox:SetPoint("bottom", info.RightSideBar, "bottom", 0, 2)
+
+		local mergePlayerSpellsLabel = info.RightSideBar:CreateFontString(nil, "overlay", "GameFontNormal")
+		mergePlayerSpellsLabel:SetText("Merge Player Spells")
+		DetailsFramework:SetFontRotation(mergePlayerSpellsLabel, 90)
+		mergePlayerSpellsLabel:SetPoint("center", mergePlayerSpellsCheckbox.widget, "center", -6, mergePlayerSpellsCheckbox:GetHeight()/2 + mergePlayerSpellsLabel:GetStringWidth() / 2)
+
+		--
+
+		local toggleMergePetSpells = function()
+			Details.merge_pet_abilities = not Details.merge_pet_abilities
+			local playerObject = Details:GetPlayerObjectFromBreakdownWindow()
+			local instanceObject = Details:GetActiveWindowFromBreakdownWindow()
+			Details:OpenPlayerBreakdown(instanceObject, playerObject) --toggle
+			Details:OpenPlayerBreakdown(instanceObject, playerObject)
+		end
+		local mergePetSpellsCheckbox = DetailsFramework:CreateSwitch(info, toggleMergePetSpells, Details.merge_pet_abilities, _, _, _, _, _, _, _, _, _, _, DetailsFramework:GetTemplate("switch", "OPTIONS_CHECKBOX_BRIGHT_TEMPLATE"))
+		mergePetSpellsCheckbox:SetAsCheckBox(true)
+		mergePetSpellsCheckbox:SetPoint("bottom", info.RightSideBar, "bottom", 0, 160)
+
+		local mergePetSpellsLabel = info.RightSideBar:CreateFontString(nil, "overlay", "GameFontNormal")
+		mergePetSpellsLabel:SetText("Merge Pet Spells")
+		DetailsFramework:SetFontRotation(mergePetSpellsLabel, 90)
+		mergePetSpellsLabel:SetPoint("center", mergePetSpellsCheckbox.widget, "center", -6, mergePetSpellsCheckbox:GetHeight()/2 + mergePetSpellsLabel:GetStringWidth() / 2)
+
+		mergePlayerSpellsCheckbox:SetAlpha(rightSideBarAlpha)
+		mergePlayerSpellsLabel:SetAlpha(rightSideBarAlpha)
+		mergePetSpellsCheckbox:SetAlpha(rightSideBarAlpha)
+		mergePetSpellsLabel:SetAlpha(rightSideBarAlpha)
 	end
 
 	--passar os par�metros para dentro da tabela da janela.
@@ -1667,9 +1739,6 @@ function gump:CriaJanelaInfo()
 	--fehcar com o esc
 	tinsert(UISpecialFrames, este_gump:GetName())
 
-	--propriedades da janela
-	este_gump:SetPoint("CENTER", UIParent)
-
 	este_gump:SetWidth(PLAYER_DETAILS_WINDOW_WIDTH)
 	este_gump:SetHeight(PLAYER_DETAILS_WINDOW_HEIGHT)
 
@@ -2956,6 +3025,10 @@ function gump:CriaJanelaInfo()
 			if (miscActor and miscActor.buff_uptime_spells) then
 				for spellID, spellObject in pairs(miscActor.buff_uptime_spells._ActorTable) do
 					local spellName, _, spellIcon = GetSpellInfo(spellID)
+					if (not spellObject.uptime) then
+						--print(_GetSpellInfo(spellID))
+						--dumpt(spellObject)
+					end
 					tinsert(newAuraTable, {spellIcon, spellName, spellObject.uptime, spellObject.appliedamt, spellObject.refreshamt, spellObject.uptime/combatTime*100, spellID = spellID})
 				end
 			end
@@ -5519,6 +5592,10 @@ local row_on_enter = function(self)
 			info.jogador.detalhes = self.show --minha tabela = jogador = jogador.detales = spellid ou nome que esta sendo mostrado na direita
 			info.jogador:MontaDetalhes (self.show, self, info.instancia) --passa a spellid ou nome e a barra
 		end
+	elseif (self.isDetalhe and type(self.show) == "number") then
+		GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT")
+		Details:GameTooltipSetSpellByID(self.show)
+		GameTooltip:Show()
 	end
 end
 
@@ -5562,6 +5639,8 @@ local row_on_leave = function(self)
 
 	elseif (self.isAlvo) then
 		self:SetHeight(CONST_TARGET_HEIGHT)
+	elseif (self.isDetalhe) then
+		self:SetHeight(16)
 	end
 end
 
@@ -5981,13 +6060,15 @@ function gump:CriaNovaBarraInfo3 (instancia, index)
 
 	esta_barra:EnableMouse(true)
 
-	CriaTexturaBarra(esta_barra)
+	
 
 	--icone
 	esta_barra.icone = esta_barra:CreateTexture(nil, "OVERLAY")
 	esta_barra.icone:SetWidth(14)
 	esta_barra.icone:SetHeight(14)
-	esta_barra.icone:SetPoint("RIGHT", esta_barra.textura, "LEFT", 18, 0)
+	esta_barra.icone:SetPoint("LEFT", esta_barra, "LEFT", 0, 0)
+
+	CriaTexturaBarra(esta_barra)
 
 	esta_barra:SetAlpha(0.9)
 	esta_barra.icone:SetAlpha(1)

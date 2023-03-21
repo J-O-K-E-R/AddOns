@@ -24,14 +24,14 @@ local L = Core.Locale
 ---
 
 Core.AddSkin("Classic Redux", {
-	Template = "Blizzard Classic",
 	-- API_VERSION = Template.API_VERSION,
 	-- Shape = Template.Shape,
+	Template = "Blizzard Classic",
 
 	-- Info
+	Authors = {"StormFX", "|cff999999Maul|r", "|cff999999Blizzard Entertainment|r"},
 	Description = L["A modified version of the Classic button style."],
 	-- Version = Template.Version,
-	Authors = {"StormFX", "|cff999999Maul|r", "|cff999999Blizzard Entertainment|r"},
 	Websites = Core.Websites,
 
 	-- Skin
@@ -281,6 +281,36 @@ Core.AddSkin("Classic Redux", {
 			-- SetAllPoints = nil,
 		},
 	},
+	DebuffBorder = {
+		Texture = [[Interface\Buttons\UI-Debuff-Overlays]],
+		TexCoords = {0.296875, 0.5703125, 0, 0.515625},
+		-- Color = {1, 1, 1, 1},
+		BlendMode = "BLEND",
+		DrawLayer = "OVERLAY",
+		DrawLevel = 0,
+		Width = 40,
+		Height = 38,
+		Point = "CENTER",
+		RelPoint = "CENTER",
+		OffsetX = 0,
+		OffsetY = 1,
+		-- SetAllPoints = nil,
+	},
+	EnchantBorder = {
+		Texture = [[Interface\Buttons\UI-TempEnchant-Border]],
+		-- TexCoords = {0, 1, 0, 1},
+		-- Color = {1, 1, 1, 1},
+		BlendMode = "BLEND",
+		DrawLayer = "OVERLAY",
+		DrawLevel = 0,
+		Width = 40,
+		Height = 40,
+		Point = "CENTER",
+		RelPoint = "CENTER",
+		OffsetX = 0,
+		OffsetY = 0,
+		-- SetAllPoints = nil,
+	},
 	-- IconBorder = Template.IconBorder,
 	-- Gloss = Template.Gloss,
 	-- NewAction = Template.NewAction,
@@ -402,15 +432,5 @@ Core.AddSkin("Classic Redux", {
 		OffsetY = 0,
 		-- SetAllPoints = nil,
 	},
-	ChargeCooldown = {
-		EdgeTexture = [[Interface\AddOns\Masque\Textures\Cooldown\Edge]],
-		PulseTexture = [[Interface\Cooldown\star4]],
-		Width = 32,
-		Height = 32,
-		Point = "CENTER",
-		RelPoint = "CENTER",
-		OffsetX = 0,
-		OffsetY = 0,
-		-- SetAllPoints = nil,
-	},
-})
+	ChargeCooldown = "Cooldown",
+}, true)

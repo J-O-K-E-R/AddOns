@@ -68,10 +68,11 @@ local function ImportEditBox_OnEnter()
 	ACD_Tooltip:SetText(L["Press Ctrl+V to paste profile"])
 end
 
-function E.CreateFlashButton(parent, text, width, height)
+
+function E.CreateFlashButton(parent, text, width, height, style)
 	local Button = CreateFrame("Button", nil, parent, BackdropTemplateMixin and "BackdropTemplate" or nil)
 	Button:SetSize(width or 80, height or 20)
-	E.BackdropTemplate(Button)
+	E.BackdropTemplate(Button, style)
 	Button:SetBackdropColor(0.725, 0.008, 0.008)
 	Button:SetBackdropBorderColor(0, 0, 0)
 	Button:SetScript("OnEnter", Button_OnEnter)
@@ -81,7 +82,7 @@ function E.CreateFlashButton(parent, text, width, height)
 	Button:SetText(text or "")
 
 	Button.bg = Button:CreateTexture(nil, "BORDER")
-	if E.isClassicEra then
+	if E.isClassic then
 		Button.bg:SetAllPoints()
 	else
 		E.DisablePixelSnap(Button.bg)

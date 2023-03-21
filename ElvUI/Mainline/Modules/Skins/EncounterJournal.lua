@@ -150,6 +150,8 @@ function S:Blizzard_EncounterJournal()
 	EJ.searchBox:ClearAllPoints()
 	EJ.searchBox:Point('TOPLEFT', EJ.navBar, 'TOPRIGHT', 4, 0)
 
+	S:HandleTrimScrollBar(_G.EncounterJournalMonthlyActivitiesFrame.ScrollBar, true)
+
 	local InstanceSelect = EJ.instanceSelect
 	InstanceSelect.bg:Kill()
 
@@ -161,20 +163,23 @@ function S:Blizzard_EncounterJournal()
 		_G.EncounterJournalSuggestTab,
 		_G.EncounterJournalDungeonTab,
 		_G.EncounterJournalRaidTab,
-		_G.EncounterJournalLootJournalTab
+		_G.EncounterJournalLootJournalTab,
+		_G.EncounterJournalMonthlyActivitiesTab
 	} do
 		S:HandleTab(tab)
 	end
 
+	_G.EncounterJournalMonthlyActivitiesTab:ClearAllPoints()
 	_G.EncounterJournalSuggestTab:ClearAllPoints()
 	_G.EncounterJournalDungeonTab:ClearAllPoints()
 	_G.EncounterJournalRaidTab:ClearAllPoints()
 	_G.EncounterJournalLootJournalTab:ClearAllPoints()
 
-	_G.EncounterJournalSuggestTab:Point('TOPLEFT', _G.EncounterJournal, 'BOTTOMLEFT', -3, 0)
-	_G.EncounterJournalDungeonTab:Point('TOPLEFT', _G.EncounterJournalSuggestTab, 'TOPRIGHT', -5, 0)
-	_G.EncounterJournalRaidTab:Point('TOPLEFT', _G.EncounterJournalDungeonTab, 'TOPRIGHT', -5, 0)
-	_G.EncounterJournalLootJournalTab:Point('TOPLEFT', _G.EncounterJournalRaidTab, 'TOPRIGHT', -5, 0)
+	_G.EncounterJournalMonthlyActivitiesTab:Point('TOPLEFT', _G.EncounterJournal, 'BOTTOMLEFT', -3, 0)
+	_G.EncounterJournalSuggestTab:Point('LEFT', _G.EncounterJournalMonthlyActivitiesTab, 'RIGHT', -5, 0)
+	_G.EncounterJournalDungeonTab:Point('LEFT', _G.EncounterJournalSuggestTab, 'RIGHT', -5, 0)
+	_G.EncounterJournalRaidTab:Point('LEFT', _G.EncounterJournalDungeonTab, 'RIGHT', -5, 0)
+	_G.EncounterJournalLootJournalTab:Point('LEFT', _G.EncounterJournalRaidTab, 'RIGHT', -5, 0)
 
 	--Encounter Info Frame
 	local EncounterInfo = EJ.encounter.info
@@ -312,6 +317,9 @@ function S:Blizzard_EncounterJournal()
 	end
 
 	if E.private.skins.parchmentRemoverEnable then
+		_G.EncounterJournalMonthlyActivitiesFrame.Bg:SetAlpha(0)
+		_G.EncounterJournalInstanceSelectBG:SetAlpha(0)
+
 		local suggestFrame = EJ.suggestFrame
 
 		-- Suggestion 1
@@ -375,7 +383,7 @@ function S:Blizzard_EncounterJournal()
 
 				local r, g, b = unpack(E.media.bordercolor)
 				if rewardData.itemID then
-					local quality = select(3, GetItemInfo(rewardData.itemID))
+					local _, _, quality = GetItemInfo(rewardData.itemID)
 					if quality and quality > 1 then
 						r, g, b = GetItemQualityColor(quality)
 					end
@@ -457,9 +465,21 @@ function S:Blizzard_EncounterJournal()
 					if child.bossTexture then child.bossTexture:SetAlpha(0) end
 					if child.bosslessTexture then child.bosslessTexture:SetAlpha(0) end
 
-					if child.name then
+					if child.name and child.icon then
+						child.icon:SetSize(32, 32)
+						child.icon:Point('TOPLEFT', E.PixelMode and 3 or 4, -(E.PixelMode and 7 or 8))
+						S:HandleIcon(child.icon, true)
+						S:HandleIconBorder(child.IconBorder, child.icon.backdrop)
+
 						child.name:ClearAllPoints()
 						child.name:Point('TOPLEFT', child.icon, 'TOPRIGHT', 6, -2)
+
+						-- we only want this when name and icon both exist
+						if not child.backdrop then
+							child:CreateBackdrop('Transparent')
+							child.backdrop:Point('TOPLEFT')
+							child.backdrop:Point('BOTTOMRIGHT', 0, 1)
+						end
 					end
 
 					if child.boss then
@@ -480,19 +500,6 @@ function S:Blizzard_EncounterJournal()
 						child.armorType:SetTextColor(1, 1, 1)
 					end
 
-					if child.icon then
-						child.icon:SetSize(32, 32)
-						child.icon:Point('TOPLEFT', E.PixelMode and 3 or 4, -(E.PixelMode and 7 or 8))
-						S:HandleIcon(child.icon, true)
-						S:HandleIconBorder(child.IconBorder, child.icon.backdrop)
-					end
-
-					if not child.backdrop then
-						child:CreateBackdrop('Transparent')
-						child.backdrop:Point('TOPLEFT')
-						child.backdrop:Point('BOTTOMRIGHT', 0, 1)
-					end
-
 					child.isSkinned = true
 				end
 			end
@@ -508,7 +515,7 @@ function S:Blizzard_EncounterJournal()
 
 		_G.EncounterJournalEncounterFrameInfoDetailsScrollFrameScrollChildDescription:SetTextColor(1, 1, 1)
 		_G.EncounterJournalEncounterFrameInfoOverviewScrollFrameScrollChildHeader:Hide()
-		_G.EncounterJournalEncounterFrameInfoOverviewScrollFrameScrollChildTitle:SetFontObject("GameFontNormalLarge")
+		_G.EncounterJournalEncounterFrameInfoOverviewScrollFrameScrollChildTitle:SetFontObject('GameFontNormalLarge')
 		_G.EncounterJournalEncounterFrameInfoOverviewScrollFrameScrollChildLoreDescription:SetTextColor(1, 1, 1)
 		_G.EncounterJournalEncounterFrameInfoOverviewScrollFrameScrollChildTitle:SetTextColor(1, .8, 0)
 		_G.EncounterJournalEncounterFrameInfoOverviewScrollFrameScrollChildHeader:SetAlpha(0)

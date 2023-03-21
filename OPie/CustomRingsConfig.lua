@@ -76,8 +76,8 @@ local function SetCursor(tex)
 end
 local function SaveRingVersion(name, liveData)
 	local key = "RKRing#" .. name
-	if not config.undo.search(key) then
-		config.undo.push(key, RK.SetRing, RK, name, liveData == true and RK:GetRingDescription(name) or liveData or false)
+	if not config.undo:search(key) then
+		config.undo:push(key, RK.SetRing, RK, name, liveData == true and RK:GetRingDescription(name) or liveData or false)
 	end
 end
 local function CreateToggleButton(parent)
@@ -419,8 +419,9 @@ end
 ringDetail = CreateFrame("Frame", nil, ringContainer) do
 	ringDetail:SetAllPoints()
 	ringDetail:SetScript("OnKeyDown", function(self, key)
-		self:SetPropagateKeyboardInput(key ~= "ESCAPE")
-		if key == "ESCAPE" then
+		local dismiss = key == "ESCAPE" and GetCurrentKeyBoardFocus() == nil
+		self:SetPropagateKeyboardInput(not dismiss)
+		if dismiss then
 			api.deselectRing()
 		end
 	end)
@@ -569,8 +570,9 @@ sliceDetail = CreateFrame("Frame", nil, ringContainer) do
 	sliceDetail.desc = sliceDetail:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
 	sliceDetail.desc:SetPoint("TOPLEFT", 7, -9) sliceDetail.desc:SetPoint("TOPRIGHT", -7, -7) sliceDetail.desc:SetJustifyH("LEFT")
 	sliceDetail:SetScript("OnKeyDown", function(self, key)
-		self:SetPropagateKeyboardInput(key ~= "ESCAPE")
-		if key == "ESCAPE" then
+		local dismiss = key == "ESCAPE" and GetCurrentKeyBoardFocus() == nil
+		self:SetPropagateKeyboardInput(not dismiss)
+		if dismiss then
 			api.selectSlice()
 		end
 	end)
@@ -709,10 +711,11 @@ sliceDetail = CreateFrame("Frame", nil, ringContainer) do
 			ed:SetScript("OnEscapePressed", function(self) self:SetText("") self:ClearFocus() end)
 			frame.textInput, frame.textInputHint = ed, hint
 			frame:SetScript("OnKeyDown", function(self, key)
-				self:SetPropagateKeyboardInput(key ~= "TAB" and key ~= "ESCAPE")
+				local dismiss = key == "ESCAPE" and GetCurrentKeyBoardFocus() == nil
+				self:SetPropagateKeyboardInput(key ~= "TAB" and not dismiss)
 				if key == "TAB" then
 					ed:SetFocus()
-				elseif key == "ESCAPE" then
+				elseif dismiss then
 					frame:Hide()
 				end
 			end)
@@ -1016,8 +1019,9 @@ newSlice = CreateFrame("Frame", nil, ringContainer) do
 		api.closeActionPicker("close-picker-button")
 	end)
 	newSlice.close:SetScript("OnKeyDown", function(self, key)
-		self:SetPropagateKeyboardInput(key ~= "ESCAPE")
-		if key == "ESCAPE" then
+		local dismiss = key == "ESCAPE" and GetCurrentKeyBoardFocus() == nil
+		self:SetPropagateKeyboardInput(not dismiss)
+		if dismiss then
 			api.closeActionPicker()
 		end
 	end)
@@ -1114,7 +1118,7 @@ newSlice = CreateFrame("Frame", nil, ringContainer) do
 		for i=1,#actions do
 			local e, id = actions[i], i + base
 			if id <= #selectedCategory then
-				local stype, sname, sicon, extico, tipfunc, tiparg = AB:GetActionDescription(selectedCategory(id))
+				local stype, sname, sicon, extico, tipfunc, tiparg = AB:GetActionListDescription(selectedCategory(id))
 				pcall(setIcon, e.ico, sicon, extico)
 				e.tipFunc, e.tipFuncArg = tipfunc, tiparg
 				e.name:SetText(sname)
@@ -1545,7 +1549,7 @@ function api.setRingProperty(name, value)
 		ringDetail.bindingQuarantine:Hide()
 		ringDetail.binding:SetBindingText(value)
 		if OPie:GetRingInfo(currentRingName) then
-			config.undo.saveProfile()
+			config.undo:saveActiveProfile()
 			PC:SetRingBinding(currentRingName, value)
 		end
 	elseif name == "internal" then
@@ -1723,7 +1727,7 @@ end
 function api.deleteRing()
 	if currentRing then
 		ringContainer:Hide()
-		config.undo.saveProfile()
+		config.undo:saveActiveProfile()
 		api.saveRing(currentRingName, false)
 		api.deselectRing()
 	end

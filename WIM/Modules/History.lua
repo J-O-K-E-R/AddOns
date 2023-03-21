@@ -9,7 +9,7 @@ local date = date;
 local time = time;
 local select = select;
 
-local DDM = LibStub:GetLibrary("LibDropDownMenu")
+local DDM = WIM.libs.DropDownMenu;
 
 --set namespace
 setfenv(1, WIM);
@@ -301,7 +301,6 @@ local function recordChannelChat(recordAs, ChannelType, ...)
         local history = getPlayerHistoryTable(recordAs);
         history.info.chat = true;
         history.info.channelNumber = channelNumber;
-        _G.test = history;
         table.insert(history, {
             event = ChannelType,
             channelName = recordAs,

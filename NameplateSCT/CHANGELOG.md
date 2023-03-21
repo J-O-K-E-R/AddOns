@@ -1,6 +1,8 @@
 # NameplateSCT
 
-## [1.29](https://github.com/Justw8/NameplateSCT/tree/1.29) (2022-10-28)
-[Full Changelog](https://github.com/Justw8/NameplateSCT/compare/1.28...1.29) [Previous Releases](https://github.com/Justw8/NameplateSCT/releases)
+## [1.30](https://github.com/Justw8/NameplateSCT/tree/1.30) (2023-03-02)
+[Full Changelog](https://github.com/Justw8/NameplateSCT/compare/1.29...1.30) [Previous Releases](https://github.com/Justw8/NameplateSCT/releases)
 
-- Reduce the toc version (#20)  
+- Update tocs  
+- Prevent a rare error with SetAlpha  
+    Update version to 1.29  

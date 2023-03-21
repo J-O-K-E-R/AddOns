@@ -84,6 +84,12 @@ end
 
 function AuctionatorFullScanFrameMixin:ProcessBatch(startIndex, stepSize, limit)
   if startIndex >= limit then
+    C_Timer.After(2, function()
+      if self.waitingForData > 0 then
+        self.waitingForData = 0
+        self:EndProcessing()
+      end
+    end)
     return
   end
 
@@ -102,7 +108,15 @@ function AuctionatorFullScanFrameMixin:ProcessBatch(startIndex, stepSize, limit)
     local timeLeft = C_AuctionHouse.GetReplicateItemTimeLeft(i)
     local index = i
 
-    if not info[18] then
+    -- Glitch in Blizzard APIs sometimes items with no item data are returned
+    -- Workaround is to ignore them and filter out the nils after the scan is
+    -- finished.
+    if not C_Item.DoesItemExistByID(info[17]) then
+      self.waitingForData = self.waitingForData - 1
+      if self.waitingForData == 0 then
+        self:EndProcessing()
+      end
+    elseif not info[18] then
       ItemEventListener:AddCallback(info[17], function()
         local link = C_AuctionHouse.GetReplicateItemLink(index)
 
@@ -201,9 +215,18 @@ local function MergeInfo(scanData, dbKeysMapping)
 end
 
 function AuctionatorFullScanFrameMixin:EndProcessing()
-  local rawFullScan = self.scanData
+  local fixedScanData = {}
+  local fixedDbKeysMapping = {}
 
-  local count = Auctionator.Database:ProcessScan(MergeInfo(self.scanData, self.dbKeysMapping))
+  -- Removes the nil holes for items that have item data missing
+  for i = 1, #self.scanData do
+    if self.scanData[i] ~= nil then
+      table.insert(fixedScanData, self.scanData[i])
+      table.insert(fixedDbKeysMapping, self.dbKeysMapping[i])
+    end
+  end
+
+  local count = Auctionator.Database:ProcessScan(MergeInfo(fixedScanData, fixedDbKeysMapping))
   Auctionator.Utilities.Message(AUCTIONATOR_L_FINISHED_PROCESSING:format(count))
 
   self.inProgress = false
@@ -211,5 +234,5 @@ function AuctionatorFullScanFrameMixin:EndProcessing()
 
   self:UnregisterForEvents()
 
-  Auctionator.EventBus:Fire(self, Auctionator.FullScan.Events.ScanComplete, rawFullScan)
+  Auctionator.EventBus:Fire(self, Auctionator.FullScan.Events.ScanComplete, fixedScanData)
 end

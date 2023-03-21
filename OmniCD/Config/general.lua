@@ -7,13 +7,6 @@ LSM:Register("statusbar", "OmniCD Flat", "Interface\\Addons\\OmniCD\\Media\\omni
 local LSM_Font = {}
 local LSM_Statusbar = {}
 
-
-
-
-
-
-
-
 local defaultFonts = {}
 
 if LOCALE_koKR then
@@ -21,19 +14,19 @@ if LOCALE_koKR then
 	defaultFonts.icon = {"기본 글꼴", 11, "OUTLINE", 0, 0, 0, 1, -1}
 	defaultFonts.anchor = {"기본 글꼴", 12, "NONE", 0, 0, 0, 1, -1}
 	defaultFonts.option = {"기본 글꼴", 12, "NONE", 0, 0, 0, 1, -1}
-	defaultFonts.optionSmall = {"기본 글꼴", 11, "NONE", 0, 0, 0, 1, -1}
+	defaultFonts.optionSmall = {"기본 글꼴", 10, "NONE", 0, 0, 0, 1, -1}
 elseif LOCALE_zhCN then
 	defaultFonts.statusBar = {"默认", 22, "NONE", 0, 0, 0, 1, -1}
 	defaultFonts.icon = {"默认", 15, "OUTLINE", 0, 0, 0, 1, -1}
 	defaultFonts.anchor = {"默认", 15, "NONE", 0, 0, 0, 1, -1}
 	defaultFonts.option = {"默认", 15, "NONE", 0, 0, 0, 1, -1}
-	defaultFonts.optionSmall = {"默认", 15, "NONE", 0, 0, 0, 1, -1}
+	defaultFonts.optionSmall = {"默认", 12, "NONE", 0, 0, 0, 1, -1}
 elseif LOCALE_zhTW then
 	defaultFonts.statusBar = {"預設", 22, "NONE", 0, 0, 0, 1, -1}
 	defaultFonts.icon = {"預設", 15, "OUTLINE", 0, 0, 0, 1, -1}
 	defaultFonts.anchor = {"預設", 15, "NONE", 0, 0, 0, 1, -1}
 	defaultFonts.option = {"預設", 15, "NONE", 0, 0, 0, 1, -1}
-	defaultFonts.optionSmall = {"預設", 15, "NONE", 0, 0, 0, 1, -1}
+	defaultFonts.optionSmall = {"預設", 13, "NONE", 0, 0, 0, 1, -1}
 elseif LOCALE_ruRU then
 	defaultFonts.statusBar = {"PT Sans Narrow Bold", 22, "NONE", 0, 0, 0, 1, -1}
 	defaultFonts.icon = {"PT Sans Narrow Bold", 10, "OUTLINE", 0, 0, 0, 1, -1}
@@ -77,13 +70,11 @@ for k, v in pairs(defaultFonts) do
 	C.General.fonts[k].ofsY = v[8]
 end
 
-local flagFix = {
+local flagFixForDF = {
 	["NONE"] = "",
 
-	["OUTLINE"] = "OUTLINE",
 
-	["THICKOUTLINE"] = "OUTLINE, THICK",
-	["MONOCHROMEOUTLINE"] = "OUTLINE, MONOCHROME",
+
 }
 
 function E:SetFontProperties(fontString, db, size)
@@ -96,7 +87,7 @@ function E:SetFontProperties(fontString, db, size)
 		fontString:SetShadowColor(0, 0, 0, 0)
 	end
 	flag = db.font == "Homespun" and "MONOCHROMEOUTLINE" or flag
-	flag = (E.isDF or E.TocVersion == 30401) and flagFix[flag] or flag
+	flag = (E.isDF or E.isWOTLKC341) and flagFixForDF[flag] or flag
 	fontString:SetFont(LSM:Fetch("font", db.font), size or db.size, flag)
 end
 
@@ -188,7 +179,7 @@ local General = {
 					inline = true,
 					args = fontInfo
 				},
-
+				--[[ scale panel instead
 				option = {
 					name = OPTIONS,
 					order = 4,
@@ -203,6 +194,7 @@ local General = {
 					inline = true,
 					args = fontInfo,
 				},
+				]]
 			}
 		},
 		textures = {
@@ -296,9 +288,9 @@ function E:AddGeneral()
 	self.DummyFrame.text = self.DummyFrame.text or self.DummyFrame:CreateFontString()
 	for fontName, fontPath in pairs(LSM:HashTable("font")) do
 		self.DummyFrame.text:SetFont(fontPath, 22)
-
 		LSM_Font[fontName] = fontName
 	end
+
 	for _, fontName in ipairs(LSM:List("statusbar")) do
 		LSM_Statusbar[fontName] = fontName
 	end

@@ -41,7 +41,7 @@ function P:CreateExtraBarFrames()
 		frame.anchor.text:SetText(name)
 		frame.anchor.text:SetTextColor(1, 0.824, 0)
 		frame.anchor.background:SetColorTexture(0, 0, 0, 1)
-		if E.isDF or E.TocVersion == 30401 then
+		if E.isDF or E.isWOTLKC341 then
 			frame.anchor.background:SetGradient("HORIZONTAL", CreateColor(1, 1, 1, 1), CreateColor(1, 1, 1, .05))
 		else
 			frame.anchor.background:SetGradientAlpha("Horizontal", 1, 1, 1, 1, 1, 1, 1, .05)
@@ -66,7 +66,7 @@ function P:UpdateExBarPositionValues()
 
 		frame.point = "TOPLEFT"
 		frame.anchorPoint = "BOTTOMLEFT"
-		frame.anchorOfsY = growRowsUpward and -(E.BASE_ICON_SIZE * db.scale + 15) or 0
+		frame.anchorOfsY = growRowsUpward and -(E.baseIconHeight * db.scale + 15) or 0
 
 		if db.layout == "horizontal" then
 			if growLeft then
@@ -79,7 +79,7 @@ function P:UpdateExBarPositionValues()
 				frame.ofsX2 = db.paddingX * pixel
 			end
 			frame.ofsX = 0
-			frame.ofsY = growY * (E.BASE_ICON_SIZE + db.paddingY * pixel)
+			frame.ofsY = growY * (E.baseIconHeight + db.paddingY * pixel)
 			frame.ofsY2 = 0
 			frame.shouldShowProgressBar = nil
 		else
@@ -92,14 +92,14 @@ function P:UpdateExBarPositionValues()
 				frame.relativePoint2 = "BOTTOMLEFT"
 				frame.ofsY2 = -(db.paddingY * pixel)
 			end
-			frame.ofsX = growX * (E.BASE_ICON_SIZE + (db.paddingX * pixel) + (isProgressBarEnabled and db.statusBarWidth or 0))
+			frame.ofsX = growX * (E.baseIconHeight + (db.paddingX * pixel) + (isProgressBarEnabled and db.statusBarWidth or 0))
 			frame.ofsY = 0
 			frame.ofsX2 = 0
 			frame.shouldShowProgressBar = isProgressBarEnabled
 		end
 
 		if key == "raidBar0" then
-			self.rearrangeInterrupts = db.sortBy == 2
+			frame.shouldRearrangeInterrupts = db.enabled and db.sortBy == 2
 		end
 	end
 end
@@ -118,22 +118,30 @@ local sorters = {
 	end,
 
 	function(a, b)
-		local aactive = P.groupInfo[a.guid].active[a.spellID]
-		local bactive = P.groupInfo[b.guid].active[b.spellID]
-		if aactive and bactive then
+		local ainfo, binfo = P.groupInfo[a.guid], P.groupInfo[b.guid]
+		local aactive, bactive = ainfo.active[a.spellID], binfo.active[b.spellID]
+		local aisdead, bisdead = ainfo.isDead, binfo.isDead
+		if aisdead and not bisdead then
+			return false
+		elseif bisdead and not aisdead then
+			return true
+		elseif aactive and bactive then
 			return a.duration + aactive.startTime < b.duration + bactive.startTime
 		elseif not aactive and not bactive then
 			local acd, bcd = a.duration, b.duration
 			if acd == bcd then
 				local aclass, bclass = a.class, b.class
 				if aclass == bclass then
-					return P.groupInfo[a.guid].name < P.groupInfo[b.guid].name
+					return ainfo.name < binfo.name
 				end
 				return aclass < bclass
 			end
 			return acd < bcd
-		elseif aactive then return false
-		elseif bactive then return true end
+		elseif aactive then
+			return false
+		elseif bactive then
+			return true
+		end
 	end,
 
 	function(a, b)
@@ -176,7 +184,6 @@ end
 local updateLayout = function(key, noDelay, sortOrder, updateSettings)
 	local frame = P.extraBars[key]
 	local db = frame.db
-
 
 
 	local n = 0
@@ -262,13 +269,15 @@ function P:ApplyExSettings(key)
 	local textOfsY = db_f.textOfsY
 	local textColors = db_f.textColors
 	local barColors = db_f.barColors
+	local hideBorder = db_f.hideBorder
+	local invertNameBar = db_f.invertNameBar
 
 	local db_icons = E.db.icons
 	local r, g, b = db_icons.borderColor.r, db_icons.borderColor.g, db_icons.borderColor.b
 	local displayBorder = db_icons.displayBorder
-	local edgeSize = db_icons.borderPixels * E.PixelMult / scale
+	local edgeSize = E.PixelMult / scale
 	local desaturateActive = db_icons.desaturateActive
-	local reverse = db_icons.reverse
+	local reverseSwipe = db_icons.reverse
 	local swipeAlpha = db_icons.swipeAlpha
 	local showCounter = db_icons.showCounter
 	local counterScale = db_icons.counterScale
@@ -283,9 +292,9 @@ function P:ApplyExSettings(key)
 		anchor:ClearAllPoints()
 		anchor:SetPoint(frame.anchorPoint, frame, frame.point, 0, frame.anchorOfsY)
 		if shouldShowProgressBar then
-			anchor:SetWidth((E.BASE_ICON_SIZE + statusBarWidth) * scale)
+			anchor:SetWidth((E.baseIconHeight + statusBarWidth) * scale)
 		else
-			local width = math.max(anchor.text:GetWidth() + 20, E.BASE_ICON_SIZE * scale)
+			local width = math.max(anchor.text:GetWidth() + 20, E.baseIconHeight * scale)
 			anchor:SetWidth(width)
 		end
 		anchor:Show()
@@ -352,26 +361,34 @@ function P:ApplyExSettings(key)
 			iconicon:SetTexCoord(0, 1, 0, 1)
 		end
 
-		if shouldShowProgressBar and not nameBar then
-			statusBar:EnableDrawLayer("BORDER")
-			local statusBar_borderTop, statusBar_borderBottom, statusBar_borderRight = statusBar.borderTop, statusBar.borderBottom, statusBar.borderRight
-			statusBar_borderTop:ClearAllPoints()
-			statusBar_borderBottom:ClearAllPoints()
-			statusBar_borderRight:ClearAllPoints()
-			statusBar_borderTop:SetPoint("TOPLEFT", statusBar, "TOPLEFT")
-			statusBar_borderTop:SetPoint("BOTTOMRIGHT", statusBar, "TOPRIGHT", 0, -edgeSize)
-			statusBar_borderBottom:SetPoint("BOTTOMLEFT", statusBar, "BOTTOMLEFT")
-			statusBar_borderBottom:SetPoint("TOPRIGHT", statusBar, "BOTTOMRIGHT", 0, edgeSize)
-			statusBar_borderRight:SetPoint("TOPRIGHT", statusBar_borderTop, "BOTTOMRIGHT")
-			statusBar_borderRight:SetPoint("BOTTOMLEFT", statusBar_borderBottom, "TOPRIGHT", -edgeSize, 0)
-			statusBar_borderTop:SetColorTexture(r, g, b)
-			statusBar_borderBottom:SetColorTexture(r, g, b)
-			statusBar_borderRight:SetColorTexture(r, g, b)
-			statusBar_borderTop:Show()
-			statusBar_borderBottom:Show()
-			statusBar_borderRight:Show()
-		elseif shouldShowProgressBar then
-			statusBar:DisableDrawLayer("BORDER")
+		if shouldShowProgressBar then
+			if nameBar then
+				statusBar:DisableDrawLayer("BORDER")
+			else
+				statusBar:EnableDrawLayer("BORDER")
+				local statusBar_borderTop, statusBar_borderBottom, statusBar_borderRight = statusBar.borderTop, statusBar.borderBottom, statusBar.borderRight
+				statusBar_borderTop:ClearAllPoints()
+				statusBar_borderBottom:ClearAllPoints()
+				statusBar_borderRight:ClearAllPoints()
+				statusBar_borderTop:SetPoint("TOPLEFT", statusBar, "TOPLEFT")
+				statusBar_borderTop:SetPoint("BOTTOMRIGHT", statusBar, "TOPRIGHT", 0, -edgeSize)
+				statusBar_borderBottom:SetPoint("BOTTOMLEFT", statusBar, "BOTTOMLEFT")
+				statusBar_borderBottom:SetPoint("TOPRIGHT", statusBar, "BOTTOMRIGHT", 0, edgeSize)
+				statusBar_borderRight:SetPoint("TOPRIGHT", statusBar_borderTop, "BOTTOMRIGHT")
+				statusBar_borderRight:SetPoint("BOTTOMLEFT", statusBar_borderBottom, "TOPRIGHT", -edgeSize, 0)
+				if hideBorder then
+					statusBar_borderTop:Hide()
+					statusBar_borderBottom:Hide()
+					statusBar_borderRight:Hide()
+				else
+					statusBar_borderTop:SetColorTexture(r, g, b)
+					statusBar_borderBottom:SetColorTexture(r, g, b)
+					statusBar_borderRight:SetColorTexture(r, g, b)
+					statusBar_borderTop:Show()
+					statusBar_borderBottom:Show()
+					statusBar_borderRight:Show()
+				end
+			end
 		end
 
 
@@ -389,7 +406,17 @@ function P:ApplyExSettings(key)
 		if statusBar then
 
 			statusBar:SetWidth(statusBarWidth)
-			statusBar.Text:SetPoint("LEFT", statusBar, textOfsX, textOfsY)
+
+			statusBar.Text:ClearAllPoints()
+			if nameBar and invertNameBar then
+				statusBar.Text:SetPoint("TOPLEFT", icon, "TOPLEFT", -statusBarWidth + textOfsX, textOfsY)
+				statusBar.Text:SetPoint("BOTTOMRIGHT", icon, "BOTTOMLEFT", -textOfsX, textOfsY)
+				statusBar.Text:SetJustifyH("RIGHT")
+			else
+				statusBar.Text:SetPoint("LEFT", statusBar, textOfsX, textOfsY)
+				statusBar.Text:SetPoint("RIGHT", statusBar, -3, textOfsY)
+				statusBar.Text:SetJustifyH("LEFT")
+			end
 			statusBar.CastingBar.Text:SetPoint("LEFT", statusBar.CastingBar, textOfsX, textOfsY)
 			statusBar.CastingBar.Timer:SetPoint("RIGHT", statusBar.CastingBar, -3, textOfsY)
 
@@ -443,29 +470,20 @@ function P:ApplyExSettings(key)
 			else
 				iconicon:SetVertexColor(1, 1, 1)
 			end
-			iconicon:SetDesaturated(desaturateActive and isActiveIcon and not isHighlighted and (not charges or charges == 0));
+			iconicon:SetDesaturated(desaturateActive and isActiveIcon and not isHighlighted and (not charges or charges == 0))
 		end
 
 
-		if statusBar and not nameBar then
-			cooldown:SetDrawSwipe(false)
-
-			cooldown:SetHideCountdownNumbers(true)
-		else
-			cooldown:SetReverse(reverse)
-			cooldown:SetDrawSwipe( not isHighlighted and (not charges or charges < 1) )
-
-			local noCount = charges and charges > 0 or (isHighlighted and true) or not showCounter
-			cooldown:SetHideCountdownNumbers(noCount)
-			counter:SetScale(counterScale)
-		end
+		self:SetCooldownElements(icon, icon.maxcharges and tonumber(icon.count:GetText()))
+		cooldown:SetReverse(reverseSwipe)
 		cooldown:SetSwipeColor(0, 0, 0, swipeAlpha)
+		counter:SetScale(counterScale)
 
 
 		count:SetScale(chargeScale)
 
 
-		icon:EnableMouse(showTooltip)
+		self:SetTooltip(icon, showTooltip)
 	end
 end
 

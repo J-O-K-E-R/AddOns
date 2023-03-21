@@ -1,9 +1,10 @@
-local E, L = select(2, ...):unpack()
+local E, L, C = select(2, ...):unpack()
 
 local ACD_Tooltip = E.Libs.ACD.tooltip
 local DB_VERSION = 3
 
 function E:CreateFontObjects()
+
 	self.GameFontNormal = CreateFont("GameFontNormal-OmniCD")
 	self.GameFontNormal:CopyFontObject("GameFontNormal")
 	self.GameFontHighlight = CreateFont("GameFontHighlight-OmniCD")
@@ -14,6 +15,7 @@ function E:CreateFontObjects()
 	self.GameFontNormalSmall:CopyFontObject("GameFontNormalSmall")
 	self.GameFontHighlightSmall = CreateFont("GameFontHighlightSmall-OmniCD")
 	self.GameFontHighlightSmall:CopyFontObject("GameFontHighlightSmall")
+
 	self.IconFont = CreateFont("IconFont-OmniCD")
 	self.IconFont:CopyFontObject("GameFontHighlightSmallOutline")
 	self.AnchorFont = CreateFont("AnchorFont-OmniCD")
@@ -23,8 +25,8 @@ function E:CreateFontObjects()
 end
 
 function E:UpdateFontObjects()
-	local optionFont = self.profile.General.fonts.option
-	local optionFontSmall = self.profile.General.fonts.optionSmall
+	local optionFont = C.General.fonts.option
+	local optionFontSmall = C.General.fonts.optionSmall
 
 	for i = 1, select("#", ACD_Tooltip:GetRegions()) do
 		local region = select(i, ACD_Tooltip:GetRegions())
@@ -42,67 +44,29 @@ function E:UpdateFontObjects()
 	self:SetFontProperties(self.StatusBarFont, self.profile.General.fonts.statusBar)
 end
 
+local BASE_ICON_HEIGHT = 36
+
+function E:SetPixelMult()
+	local _, screenheight = GetPhysicalScreenSize()
+	local uiUnitFactor = 768 / screenheight
+	local uiScale = UIParent:GetScale()
+	self.PixelMult = uiUnitFactor / uiScale
+	self.uiUnitFactor = uiUnitFactor
+	self.baseIconHeight = BASE_ICON_HEIGHT - ( BASE_ICON_HEIGHT % self.PixelMult )
+end
+
 function E:OnInitialize()
-
-
 	if not OmniCDDB or not OmniCDDB.version or  OmniCDDB.version < 2.51 then
 		OmniCDDB = { version = DB_VERSION }
 	elseif OmniCDDB.version < DB_VERSION then
-		if OmniCDDB.profiles then for profileKey, v in pairs(OmniCDDB.profiles) do if v.Party then for zone in pairs(self.L_CFG_ZONE) do local z = v.Party[zone]; if z then
-			if z.position and z.position.preset == "CENTER" then
-				z.position.preset = "TOPRIGHT"
-				z.position.anchor = "TOPLEFT"
-				z.position.attach = "TOPRIGHT"
-			end
-			if z.extraBars and z.extraBars.raidCDBar then
-				z.extraBars.raidCDBar.layout = nil
-				z.extraBars.raidCDBar.groupGrowLeft = nil
-				z.extraBars.raidCDBar.groupGrowUpward = nil
-				z.extraBars.raidCDBar.groupDetached = nil
-				z.extraBars.raidCDBar.groupPadding = nil
-				z.extraBars.raidCDBar.hideBar = nil
-				z.extraBars.raidCDBar.hideBorder = nil
-				z.extraBars.raidCDBar.useIconAlpha = nil
-				z.extraBars.raidCDBar.hideDisabledSpells = nil
-				for i = 1, 8 do
-					local group = "group" .. i
-					z.extraBars.raidCDBar[group] = nil
-				end
-				z.extraBars.raidBar1 = E:DeepCopy(z.extraBars.raidCDBar) or {}
-				z.extraBars.raidCDBar = nil
-
-			end
-			if z.extraBars and z.extraBars.interruptBar then
-				z.extraBars.raidBar0 = E:DeepCopy(z.extraBars.interruptBar) or {}
-				z.extraBars.interruptBar = nil
-			end
-			if z.manualPos and z.manualPos.interruptBar and z.extraBars then
-				z.extraBars.raidBar0 = z.extraBars.raidBar0 or {}
-				z.extraBars.raidBar0.manualPos = {}
-				z.extraBars.raidBar0.manualPos.raidBar0 = E:DeepCopy(z.manualPos.interruptBar)
-				z.manualPos.interruptBar = nil
-			end
-			if z.manualPos and z.manualPos.raidCDBar and z.extraBars then
-				z.extraBars.raidBar1 = z.extraBars.raidBar1 or {}
-				z.extraBars.raidBar1.manualPos = {}
-				z.extraBars.raidBar1.manualPos.raidBar1 = E:DeepCopy(z.manualPos.raidCDBar)
-				z.manualPos.raidCDBar = nil
-			end
-			if E.isDF then
-				z.spells = {}
-				z.raidCDS = {}
-			end
-		end end end end end
 		OmniCDDB.version = DB_VERSION
 	end
-
 	OmniCDDB.cooldowns = OmniCDDB.cooldowns or {}
 
 	self.DB = LibStub("AceDB-3.0"):New("OmniCDDB", self.defaults, true)
 	self.DB.RegisterCallback(self, "OnProfileChanged", "Refresh")
 	self.DB.RegisterCallback(self, "OnProfileCopied", "Refresh")
 	self.DB.RegisterCallback(self, "OnProfileReset", "Refresh")
-
 	self.global = self.DB.global
 	self.profile = self.DB.profile
 	self.db = self.profile.Party.arena
@@ -122,6 +86,7 @@ end
 
 function E:OnEnable()
 
+
 	for i = 1, 13 do
 		if i > 3 then
 			ACD_Tooltip:AddLine(" ")
@@ -133,6 +98,7 @@ function E:OnEnable()
 	self:LoadAddOns()
 
 
+	self:SetPixelMult()
 	self.BackdropTemplate(ACD_Tooltip)
 	ACD_Tooltip:SetBackdropColor(0, 0, 0)
 	ACD_Tooltip:SetBackdropBorderColor(0.3, 0.3, 0.3)
@@ -206,6 +172,7 @@ function E.DummyFrame:PET_BATTLE_CLOSE()
 end
 
 function E.DummyFrame:PET_BATTLE_OPENING_START()
+
 	for moduleName in pairs(E.moduleOptions) do
 		local module = E[moduleName]
 		local func = module.Test
@@ -246,7 +213,6 @@ do
 			if prefix ~= "OMNICD_VERSION" or sender == E.userNameWithRealm then
 				return
 			end
-
 			version = tonumber(version)
 			if version and version > currentVersion then
 				local diff = version - currentVersion

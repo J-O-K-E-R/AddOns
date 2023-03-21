@@ -1,5 +1,9 @@
 local E = select(2, ...):unpack()
 
+local unpack = unpack
+local tinsert = table.insert
+local tremove = table.remove
+
 function E:DeepCopy(source, blackList)
 	local copy = {}
 	if type(source) == "table" then
@@ -77,7 +81,7 @@ end
 
 E.SortHashToArray = function(src, db)
 	local t = {}
-	for k, v in pairs(src) do
+	for k in pairs(src) do
 		t[#t + 1] = {db[k], k}
 	end
 	sort(t, function(a, b)
@@ -139,9 +143,10 @@ E.LoadPosition = function(f, key)
 end
 
 E.OmniCDAnchor_OnMouseDown = function(self, button)
-	for i = 1, 5 do
-		local parent = self:GetParent()
-		if parent == UIParent then
+	local parent
+	while true do
+		parent = self:GetParent()
+		if not parent or parent == UIParent then
 			break
 		end
 		self = parent
@@ -153,9 +158,10 @@ E.OmniCDAnchor_OnMouseDown = function(self, button)
 end
 
 E.OmniCDAnchor_OnMouseUp = function(self, button)
-	for i = 1, 5 do
-		local parent = self:GetParent()
-		if parent == UIParent then
+	local parent
+	while true do
+		parent = self:GetParent()
+		if not parent or parent == UIParent then
 			break
 		end
 		self = parent
@@ -229,20 +235,20 @@ do
 		obj:SetSnapToPixelGrid(false)
 	end
 
-	E.BackdropTemplate = function(frame, style, bgFile, edgeFile, edgeSize)
+	E.BackdropTemplate = function(frame, style, bgFile, edgeFile, edgeSize, force)
 		style = style or "default"
 		local backdrop = backdropStyle[style]
-		if not backdrop then
+		if not backdrop or force then
 			backdrop = {
 				bgFile = bgFile or E.TEXTURES.White8x8,
 				edgeFile = edgeFile or E.TEXTURES.White8x8,
-				edgeSize = (edgeSize or 1) * E.PixelMult,
+				edgeSize = (edgeSize or 1) * E.PixelMult / (style == "ACD" and E.global.optionPanelScale or 1),
 			}
 			backdropStyle[style] = backdrop
 		end
 		frame:SetBackdrop(backdrop)
 		for _, pieceName in ipairs(textureUVs) do
-			local region = frame[pieceName];
+			local region = frame[pieceName]
 			if region then
 				E.DisablePixelSnap(region)
 			end
@@ -268,3 +274,5 @@ end
 E.write = function(...)
 	print(E.userClassHexColor .. "OmniCD|r: ", ...)
 end
+
+E.BLANK = {}

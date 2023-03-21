@@ -2,9 +2,8 @@ local E, L, V, P, G = unpack(ElvUI)
 local S = E:GetModule('Skins')
 
 local _G = _G
-local next = next
 local unpack, gsub = unpack, gsub
-local select, pairs = select, pairs
+local pairs, next = pairs, next
 local strmatch = strmatch
 
 local GetItemInfo = GetItemInfo
@@ -80,10 +79,9 @@ local function questQualityColors(frame, text, link)
 		handleItemButton(frame)
 	end
 
-	local quality = link and select(3, GetItemInfo(link))
+	local _, _, quality = GetItemInfo(link or 0)
 	if quality and quality > 1 then
 		local r, g, b = GetItemQualityColor(quality)
-
 		text:SetTextColor(r, g, b)
 		frame:SetBackdropBorderColor(r, g, b)
 	else
@@ -420,21 +418,23 @@ function S:BlizzardQuestFrames()
 	local questLogIndex = 1
 	local questLogTitle = _G['QuestLogTitle'..questLogIndex]
 	while questLogTitle do
-		questLogTitle:SetNormalTexture(E.Media.Textures.PlusButton)
-		questLogTitle.SetNormalTexture = E.noop
+		if questLogTitle.isHeader then
+			questLogTitle:SetNormalTexture(E.Media.Textures.PlusButton)
+			questLogTitle.SetNormalTexture = E.noop
 
-		questLogTitle:SetHighlightTexture(E.ClearTexture)
-		questLogTitle.SetHighlightTexture = E.noop
+			questLogTitle:SetHighlightTexture(E.ClearTexture)
+			questLogTitle.SetHighlightTexture = E.noop
 
-		local normalTex = questLogTitle:GetNormalTexture()
-		normalTex:Size(16)
-		normalTex:Point('LEFT', 5, 0)
+			local normalTex = questLogTitle:GetNormalTexture()
+			normalTex:Size(16)
+			normalTex:Point('LEFT', 5, 0)
 
-		questLogTitle:Width(300)
+			questLogTitle:Width(300)
 
-		_G['QuestLogTitle'..questLogIndex..'Highlight']:SetAlpha(0)
+			_G['QuestLogTitle'..questLogIndex..'Highlight']:SetAlpha(0)
 
-		S:HandleCollapseTexture(questLogTitle)
+			S:HandleCollapseTexture(questLogTitle)
+		end
 
 		questLogIndex = questLogIndex + 1
 		questLogTitle = _G['QuestLogTitle'..questLogIndex]

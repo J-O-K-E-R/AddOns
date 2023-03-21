@@ -14,7 +14,7 @@
 -- Add disabledItem to AceConfigregistery-3.0 typedkeys to validate
 ---------------------------------------------------------------------------------
 
---[[ $Id: AceGUIWidget-DropDown.lua 1262 2022-04-07 23:00:32Z funkehdude $ ]]--
+--[[ $Id: AceGUIWidget-DropDown.lua 1284 2022-09-25 09:15:30Z nevcairiel $ ]]--
 local AceGUI = LibStub("AceGUI-3.0")
 
 -- Lua APIs
@@ -26,10 +26,6 @@ local tsort = table.sort
 local PlaySound = PlaySound
 local UIParent, CreateFrame = UIParent, CreateFrame
 local _G = _G
-
--- Global vars/functions that we don't upvalue since they might get hooked, or upgraded
--- List them here for Mikk's FindGlobals script
--- GLOBALS: CLOSE
 
 local function fixlevels(parent,...)
 	local i = 1
@@ -320,7 +316,7 @@ do
 		frame:SetBackdrop(backdrop)
 		frame:SetBackdropColor(0, 0, 0)
 		]]
-		OmniCD[1].BackdropTemplate(frame)
+		OmniCD[1].BackdropTemplate(frame, "ACD")
 		frame:SetBackdropColor(0.12, 0.12, 0.17)
 		frame:SetBackdropBorderColor(0, 0, 0)
 		-- e
@@ -356,7 +352,7 @@ do
 		slider:SetWidth(8)
 		slider:SetThumbTexture("Interface\\Buttons\\UI-SliderBar-Button-Vertical")
 		]]
-		OmniCD[1].BackdropTemplate(slider)
+		OmniCD[1].BackdropTemplate(slider, "ACD")
 		slider:SetBackdropColor(0, 0, 0, 0.4)
 		slider:SetBackdropBorderColor(0, 0, 0)
 		slider:SetWidth(12)
@@ -819,7 +815,7 @@ do
 		dropdown.Left:Hide()
 		dropdown.Right:Hide()
 		dropdown.Middle:Hide()
-		OmniCD[1].BackdropTemplate(dropdown)
+		OmniCD[1].BackdropTemplate(dropdown, "ACD")
 		dropdown:SetBackdropColor(0.15, 0.15, 0.2)
 		dropdown:SetBackdropBorderColor(0, 0, 0)
 		-- e

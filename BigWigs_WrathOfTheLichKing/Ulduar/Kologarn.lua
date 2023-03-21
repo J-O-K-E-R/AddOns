@@ -5,7 +5,7 @@
 local mod, CL = BigWigs:NewBoss("Kologarn", 603, 1642)
 if not mod then return end
 mod:RegisterEnableMob(32930)
-mod:SetEncounterID(1137)
+mod:SetEncounterID(mod:Classic() and 749 or 1137)
 -- mod:SetRespawnTime(0) -- Respawn is based on running over the line at the room entrance
 
 --------------------------------------------------------------------------------
@@ -21,7 +21,7 @@ local L = mod:NewLocale("enUS", true)
 if L then
 	L.arm = "Arm dies"
 	L.arm_desc = "Warn for Left & Right Arm dies."
-	L.arm_icon = 73903 -- spell_nature_earthelemental_totem / Earth Elemental Totem / icon 136024
+	L.arm_icon = "spell_nature_earthelemental_totem" -- Earth Elemental Totem / icon 136024
 	L.left_dies = "Left Arm dies"
 	L.right_dies = "Right Arm dies"
 	L.left_wipe_bar = "Respawn Left Arm"
@@ -47,10 +47,10 @@ function mod:GetOptions()
 end
 
 function mod:OnBossEnable()
-	self:Log("SPELL_AURA_APPLIED", "StoneGrip", 64290, 64292)
-	self:Log("SPELL_AURA_APPLIED_DOSE", "CrunchArmor", 63355, 64002)
+	self:Log("SPELL_AURA_APPLIED", "StoneGrip", 64290, 64292) -- 10, 25
+	self:Log("SPELL_AURA_APPLIED_DOSE", "CrunchArmor", 63355, 64002) -- 10, 25
 
-	self:Death("ArmsDie", 32933, 32934)
+	self:Death("ArmsDie", 32933, 32934) -- Left, Right
 
 	self:RegisterEvent("CHAT_MSG_RAID_BOSS_WHISPER")
 	self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
@@ -62,7 +62,7 @@ end
 --
 
 function mod:CrunchArmor(args)
-	self:StackMessageOld(63355, args.destName, args.amount, "orange", "info")
+	self:StackMessageOld(63355, args.destName, args.amount, "purple", "info")
 end
 
 do
@@ -101,7 +101,7 @@ do
 	function mod:UNIT_SPELLCAST_SUCCEEDED(_, _, castId, spellId)
 		if spellId == 63983 and castId ~= prev then -- Arm Sweep
 			prev = castId
-			self:MessageOld(63983, "yellow")
+			self:MessageOld(63983, "orange")
 			self:Bar(63983, 21)
 		end
 	end
@@ -109,7 +109,7 @@ end
 
 function mod:BigWigs_BossComm(_, msg, _, sender)
 	if msg == "EyeBeamWarn" then
-		self:TargetMessageOld("eyebeam", sender, "green", "info", eyeBeam, 63976)
+		self:TargetMessageOld("eyebeam", sender, "red", "info", eyeBeam, 63976)
 		self:TargetBar("eyebeam", 11, sender, eyeBeam, 63976)
 		self:CDBar("eyebeam", 20, eyeBeam, 63976)
 		self:PrimaryIcon("eyebeam", sender)

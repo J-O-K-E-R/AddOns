@@ -96,8 +96,6 @@ function UF:Configure_Power(frame)
 
 		if E.Retail and UF.db.colors.powerselection then
 			power.colorSelection = true
-		--[[elseif UF.db.colors.powerthreat then
-			power.colorThreat = true]]
 		elseif UF.db.colors.powerclass then
 			power.colorClass = true
 			power.colorReaction = true
@@ -245,7 +243,8 @@ do
 	function UF:PostUpdatePowerColor()
 		local parent = self.origParent or self:GetParent()
 		if parent.isForced and not self.colorClass then
-			self:SetStatusBarColor(GetRandomPowerColor())
+			local r, g, b = GetRandomPowerColor()
+			self:SetStatusBarColor(r, g, b)
 		end
 	end
 end

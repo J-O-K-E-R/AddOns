@@ -96,8 +96,6 @@ function E:AddTag(tagName, eventsOrSeconds, func, block)
 
 	if type(eventsOrSeconds) == 'number' then
 		Tags.OnUpdateThrottle[tagName] = eventsOrSeconds
-	else
-		Tags.Events[tagName] = (E.Retail and gsub(eventsOrSeconds, 'UNIT_HEALTH_FREQUENT', 'UNIT_HEALTH')) or gsub(eventsOrSeconds, 'UNIT_HEALTH([^%s_]?)', 'UNIT_HEALTH_FREQUENT%1')
 	end
 
 	Tags.Methods[tagName] = func
@@ -113,6 +111,10 @@ function E:CallTag(tag, ...)
 	if func then
 		return func(...)
 	end
+end
+
+function E:TagUpdateRate(second)
+	Tags:SetEventUpdateTimer(second)
 end
 
 --Expose local functions for plugins onto this table
@@ -1232,6 +1234,7 @@ do
 		DEATHKNIGHT = '64:128:128:192',
 		MONK		= '128:192:128:192',
 		DEMONHUNTER = '192:256:128:192',
+		EVOKER		= '0:64:192:256',
 	}
 
 	E:AddTag('class:icon', 'PLAYER_TARGET_CHANGED', function(unit)

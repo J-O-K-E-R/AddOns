@@ -1,7 +1,7 @@
 function CrossGambling:GameStart()
 	if(self.game.chatframeOption == false) then
 		local RollNotification = "has started a roll!"
-		self:SendEvent(format("CHAT_MSG:%s:%s:%s", self.game.PlayerName, self.game.PlayerClass, RollNotification))
+		self:SendMsg(format("CHAT_MSG:%s:%s:%s", self.game.PlayerName, self.game.PlayerClass, RollNotification))
     else
 		SendChatMessage("CrossGambling: A new game has been started! Type 1 to join! (-1 to withdraw)" , self.game.chatMethod)	
     end
@@ -9,10 +9,24 @@ end
 
 function CrossGambling:RegisterGame(text, playerName)
     if (text == "1") then
-		self:SendEvent("ADD_PLAYER", playerName)
+		if (self.game.realmFilter == true and self:CheckRealm(playerName) == 0) then
+			SendChatMessage("CrossGambling: You are not on (" .. GetRealmName() .. "). You are not eligible to join this game. The host can turn off the Realm Filter in the options." , self.game.chatMethod)
+		else
+			self:SendMsg("ADD_PLAYER", playerName)		
+		end
     elseif (text == "-1") then
-		self:SendEvent("Remove_Player", playerName)   
+		self:SendMsg("Remove_Player", playerName)   
     end
+end
+
+function CrossGambling:CheckRealm(playerName)
+	local realmRelationship = UnitRealmRelationship(playerName)
+ 
+	if (realmRelationship == 2) then
+		return 0
+	else
+		return 1
+	end
 end
 
 function CrossGambling:CResult()
@@ -100,14 +114,14 @@ function CrossGambling:TieBreaker()
     if (#self.game.result.winners > 1) then
 		if(self.game.chatframeOption == false and self.game.host == true) then
 			local RollNotification = "High end tie breaker! " .. self:String(self.game.players) .. " /roll " .. self.db.global.wager .. " now!"
-			self:SendEvent(format("CHAT_MSG:%s:%s:%s", self.game.PlayerName, self.game.PlayerClass, RollNotification))
+			self:SendMsg(format("CHAT_MSG:%s:%s:%s", self.game.PlayerName, self.game.PlayerClass, RollNotification))
 		else
 			SendChatMessage("High end tie breaker! " .. self:String(self.game.players) .. " /roll " .. self.db.global.wager .. " now!", self.game.chatMethod)
 		end
     elseif (#self.game.result.losers > 1) then
 	    if(self.game.chatframeOption == false and self.game.host == true) then
 			local RollNotification = "Low end tie breaker! " .. self:String(self.game.players) .. " /roll " .. self.db.global.wager .. " now!"
-			self:SendEvent(format("CHAT_MSG:%s:%s:%s", self.game.PlayerName, self.game.PlayerClass, RollNotification))
+			self:SendMsg(format("CHAT_MSG:%s:%s:%s", self.game.PlayerName, self.game.PlayerClass, RollNotification))
 		else
 			SendChatMessage("Low end tie breaker! " .. self:String(self.game.players) .. " /roll " .. self.db.global.wager .. " now!", self.game.chatMethod)
 		end

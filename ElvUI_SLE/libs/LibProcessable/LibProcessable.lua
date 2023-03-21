@@ -1,4 +1,4 @@
-local MAJOR, MINOR = 'LibProcessable', 57
+local MAJOR, MINOR = 'LibProcessable', 61
 assert(LibStub, MAJOR .. ' requires LibStub')
 
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
@@ -10,7 +10,6 @@ local data = {} -- private table for storing data without exposing it
 local professions = {} -- private table for storing cached profession info
 
 local CLASSIC = select(4, GetBuildInfo()) < 90000
-local DRAGONFLIGHT = select(4, GetBuildInfo()) >= 100000
 
 -- upvalue constants with fallbacks
 local LE_ITEM_QUALITY_UNCOMMON = LE_ITEM_QUALITY_UNCOMMON or Enum.ItemQuality.Uncommon or 2
@@ -18,6 +17,7 @@ local LE_ITEM_QUALITY_EPIC = LE_ITEM_QUALITY_EPIC or Enum.ItemQuality.Epic or 4
 local LE_ITEM_CLASS_ARMOR = Enum.ItemClass.Armor or 4
 local LE_ITEM_CLASS_WEAPON = Enum.ItemClass.Weapon or 2
 local LE_ITEM_CLASS_GEM = Enum.ItemClass.Gem or 3
+local LE_ITEM_CLASS_PROFESSION = Enum.ItemClass.Profession or 19
 local LE_ITEM_ARMOR_COSMETIC = Enum.ItemClass.Cosmetic or 5
 local LE_ITEM_SUBCLASS_ARTIFACT = 11 -- no existing constant for this one
 local LE_ITEM_EQUIPLOC_SHIRT = Enum.InventoryType.IndexBodyType or 4
@@ -84,7 +84,7 @@ function lib:IsMillable(itemID, ignoreMortar)
 		end
 	elseif not ignoreMortar and GetItemCount(114942) > 0 then
 		-- Draenic Mortar can mill Draenor herbs without a profession
-		return itemID >= 109124 and itemID <= 109130, true
+		return itemID >= 109124 and itemID <= 109130, nil, true
 	end
 end
 
@@ -158,7 +158,8 @@ function lib:IsDisenchantable(item)
 				and C_Item.GetItemInventoryTypeByID(itemID) ~= LE_ITEM_EQUIPLOC_SHIRT
 				and (class == LE_ITEM_CLASS_WEAPON
 					or (class == LE_ITEM_CLASS_ARMOR and subClass ~= LE_ITEM_ARMOR_COSMETIC)
-					or (class == LE_ITEM_CLASS_GEM and subClass == LE_ITEM_SUBCLASS_ARTIFACT)))
+					or (class == LE_ITEM_CLASS_GEM and subClass == LE_ITEM_SUBCLASS_ARTIFACT)
+					or class == LE_ITEM_CLASS_PROFESSION))
 		end
 	end
 end
@@ -342,7 +343,7 @@ end
 --[[ LibProcessable:HasProfession(_professionID_)
 Returns whether the player has the given profession.
 
-Here's a table with the profession ID for each profession.  
+Here's a table with the profession ID for each profession.
 Source: <https://wowpedia.fandom.com/wiki/TradeSkillLineID>
 
 | Profession Name | Profession ID |
@@ -505,10 +506,14 @@ data.ores = {
 	[187700] = {LE_EXPANSION_SHADOWLANDS, 1}, -- Progenium Ore
 
 	-- UNTESTED DRAGONFLIGHT ORES:
-	[188658] = {LE_EXPANSION_DRAGONFLIGHT, 1}, -- Draconium Ore
-	[194545] = {LE_EXPANSION_DRAGONFLIGHT, 1}, -- Prismatic Ore
-	[190313] = {LE_EXPANSION_DRAGONFLIGHT, 1}, -- Titaniclum Ore
-	[190394] = {LE_EXPANSION_DRAGONFLIGHT, 1}, -- Tyrivite Ore
+	[189143] = {LE_EXPANSION_DRAGONFLIGHT, 1}, -- Draconium Ore (Quality 1)
+	[188658] = {LE_EXPANSION_DRAGONFLIGHT, 1}, -- Draconium Ore (Quality 2)
+	[190311] = {LE_EXPANSION_DRAGONFLIGHT, 1}, -- Draconium Ore (Quality 3)
+	[194545] = {LE_EXPANSION_DRAGONFLIGHT, 1}, -- Prismatic Ore --! Don't think this is prospectable
+	[190313] = {LE_EXPANSION_DRAGONFLIGHT, 1}, -- Khaz'gorite Ore --! Don't think this is prospectable
+	[190395] = {LE_EXPANSION_DRAGONFLIGHT, 1}, -- Serevite Ore (Quality 1)
+	[190396] = {LE_EXPANSION_DRAGONFLIGHT, 1}, -- Serevite Ore (Quality 2)
+	[190394] = {LE_EXPANSION_DRAGONFLIGHT, 1}, -- Serevite Ore (Quality 3)
 }
 
 data.herbs = {
@@ -691,6 +696,29 @@ data.enchantingItems = {
 	[182043] = true, -- Antique Necromancer's Staff
 	[182067] = true, -- Antique Duelist's Rapier
 	[181991] = true, -- Antique Stalker's Bow
+
+	-- Dragonflight profession items
+	-- https://www.wowhead.com/items?filter=104;0;amount+of+magical+power+can+be+sensed+from+within
+	[200939] = true, -- Chromatic Pocketwatch
+	[200940] = true, -- Everflowing Inkwell
+	[200941] = true, -- Seal of Order
+	[200942] = true, -- Vibrant Emulsion
+	[200943] = true, -- Whispering Band
+	[200945] = true, -- Valiant Hammer
+	[200946] = true, -- Thunderous Blade
+	[200947] = true, -- Carving of Awakening
+	-- https://www.wowhead.com/items?filter=104;0;Disenchant+to+gain+Enchanting+knowledge
+	[198694] = true, -- Enriched Earthen Shard
+	[198798] = true, -- Flashfrozen Scroll
+	[198800] = true, -- Fractured Titanic Sphere
+	[198689] = true, -- Stormbound Horn
+	[198799] = true, -- Forgotten Arcane Tome
+	[198675] = true, -- Lava-Infused Seed
+	[201360] = true, -- Glimmer of Order
+	[201358] = true, -- Glimmer of Air
+	[201357] = true, -- Glimmer of Frost
+	[201359] = true, -- Glimmer of Earth
+	[201356] = true, -- Glimmer of Fire
 }
 
 -- /run ChatFrame1:Clear(); for _,i in next,{C_TradeSkillUI.GetCategories()} do print(i, C_TradeSkillUI.GetCategoryInfo(i).name) end

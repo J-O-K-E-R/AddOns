@@ -3,7 +3,7 @@ local S = E:GetModule('Skins')
 
 local _G = _G
 local next = next
-local unpack, strfind = unpack, strfind
+local unpack = unpack
 local ipairs, pairs = ipairs, pairs
 
 local HasPetUI = HasPetUI
@@ -167,8 +167,6 @@ function S:CharacterFrame()
 	local CharacterFrame = _G.CharacterFrame
 	S:HandleFrame(CharacterFrame, true, nil, 11, -12, -32, 76)
 
-	S:HandleCloseButton(_G.CharacterFrameCloseButton)
-
 	S:HandleDropDownBox(_G.PlayerStatFrameRightDropDown, 145)
 	S:HandleDropDownBox(_G.PlayerStatFrameLeftDropDown, 147)
 	S:HandleDropDownBox(_G.PlayerTitleDropDown, 200)
@@ -245,6 +243,8 @@ function S:CharacterFrame()
 			slot:SetTemplate(nil, true, true)
 			slot:StyleButton()
 
+			slot.characterSlot = true -- for color function
+
 			S:HandleIcon(icon)
 			icon:SetInside()
 
@@ -255,10 +255,11 @@ function S:CharacterFrame()
 	end
 
 	hooksecurefunc('PaperDollItemSlotButton_Update', function(frame)
-		if frame.SetBackdropBorderColor then
+		if frame.characterSlot then
 			local rarity = GetInventoryItemQuality('player', frame:GetID())
 			if rarity and rarity > 1 then
-				frame:SetBackdropBorderColor(GetItemQualityColor(rarity))
+				local r, g, b = GetItemQualityColor(rarity)
+				frame:SetBackdropBorderColor(r, g, b)
 			else
 				frame:SetBackdropBorderColor(unpack(E.media.bordercolor))
 			end
@@ -552,8 +553,9 @@ function S:CharacterFrame()
 	_G.TokenFrameCancelButton:Kill()
 	_G.TokenFrameMoneyFrame:Kill()
 
+	-- try to find the close button
 	for _, child in next, { _G.TokenFrame:GetChildren() } do
-		if not child:GetName() and strfind(child:GetNormalTexture():GetTexture(), 'MinimizeButton') then
+		if child.Hide and child:IsShown() and not child:GetName() then
 			child:Hide()
 			break
 		end

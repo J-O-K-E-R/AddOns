@@ -1,6 +1,9 @@
 local E = select(2, ...):unpack()
 local P, CM, CD = E.Party, E.Comm, E.Cooldowns
 
+local pairs, type = pairs, type
+local UnitExists, UnitGUID, UnitClass, UnitIsDeadOrGhost, UnitIsConnected, GetRaidRosterInfo, UnitRace, GetUnitName, UnitLevel = UnitExists, UnitGUID, UnitClass, UnitIsDeadOrGhost, UnitIsConnected, GetRaidRosterInfo, UnitRace, GetUnitName, UnitLevel
+local C_PvP_IsRatedSoloShuffle = E.isDF and C_PvP and C_PvP.IsRatedSoloShuffle or E.Noop
 local UPDATE_ROSTER_DELAY = 2
 local MSG_INFO_REQUEST_DELAY = UPDATE_ROSTER_DELAY + 1
 
@@ -15,17 +18,16 @@ P.userInfo.class = E.userClass
 P.userInfo.raceID = E.userRaceID
 P.userInfo.name = E.userName
 P.userInfo.level = E.userLevel
-P.userInfo.spellIcons = {}
 P.userInfo.preactiveIcons = {}
+P.userInfo.spellIcons = {}
 P.userInfo.glowIcons = {}
 P.userInfo.active = {}
 P.userInfo.auras = {}
-P.userInfo.talentData = {}
 P.userInfo.itemData = {}
+P.userInfo.talentData = {}
 P.userInfo.shadowlandsData = {}
 P.userInfo.callbackTimers = {}
 P.userInfo.spellModRates = {}
-P.userInfo.queuedCdrOnStart = {}
 
 local RAID_UNIT = {
 	"raid1", "raid2", "raid3", "raid4", "raid5", "raid6", "raid7", "raid8", "raid9", "raid10",
@@ -41,33 +43,36 @@ local PARTY_UNIT = {
 local INSTANCETYPE_EVENTS = E.preCata and {
 	arena = {
 		'PLAYER_REGEN_DISABLED',
-		'UPDATE_UI_WIDGET'
+		'UPDATE_UI_WIDGET',
 	},
 	pvp = {
 		'CHAT_MSG_BG_SYSTEM_NEUTRAL',
 		'PLAYER_REGEN_DISABLED',
-		'UPDATE_UI_WIDGET'
+		'UPDATE_UI_WIDGET',
 	}
 } or {
 	party = {
-		'CHALLENGE_MODE_START'
+		'CHALLENGE_MODE_START',
 	},
 	raid  = {
-		'ENCOUNTER_END'
+		'ENCOUNTER_END',
 	},
 	none = {
-		'PLAYER_FLAGS_CHANGED'
+		'PLAYER_FLAGS_CHANGED',
 	},
 	arena = {
 		'PLAYER_REGEN_DISABLED',
-		'UPDATE_UI_WIDGET'
+		'UPDATE_UI_WIDGET',
 	},
 	pvp = {
 		'CHAT_MSG_BG_SYSTEM_NEUTRAL',
 		'UPDATE_UI_WIDGET',
-		'PLAYER_REGEN_DISABLED'
+		'PLAYER_REGEN_DISABLED',
 	}
 }
+if E.isWOTLKC then
+	INSTANCETYPE_EVENTS.raid = { 'ENCOUNTER_END' }
+end
 
 function P:UnregisterZoneEvents()
 	local registeredZoneEvents = self.currentZoneEvents
@@ -90,6 +95,18 @@ function P:RegisterZoneEvents(currentZoneEvents)
 	self.currentZoneEvents = currentZoneEvents
 end
 
+local function IsInShadowlands()
+	local mapID = C_Map and C_Map.GetBestMapForUnit("player")
+	if mapID then
+		local mapInfo = C_Map.GetMapInfo(mapID)
+		while mapInfo.mapType > 2 do
+			mapID = mapInfo.parentMapID
+			mapInfo =  C_Map.GetMapInfo(mapID)
+		end
+		return mapID == 1550
+	end
+end
+
 local function AnchorFix()
 	P:UpdatePosition()
 	P.callbackTimers.anchorDelay = nil
@@ -106,10 +123,6 @@ local function SendRequestSync()
 	end
 end
 
-
-
-
-
 local function UpdateRosterInfo(force)
 	if not force then
 		P.callbackTimers.rosterDelay = nil
@@ -118,7 +131,7 @@ local function UpdateRosterInfo(force)
 	local size = P:GetEffectiveNumGroupMembers()
 	local oldDisabled = P.disabled
 	P.disabled = not P.isInTestMode and (P.disabledZone or size == 0
-		or (size == 1 and P.isUserHidden)
+		or (size == 1 and P.isUserDisabled)
 		or (GetNumGroupMembers(LE_PARTY_CATEGORY_HOME) == 0 and not E.profile.Party.visibility.finder)
 		or (size > E.profile.Party.visibility.size))
 
@@ -136,13 +149,17 @@ local function UpdateRosterInfo(force)
 		force = true
 	end
 
+	if force then
+		P.isInShadowlands = E.isSL or (E.postBFA and not P.isInPvPInstance and IsInShadowlands())
+	end
+
 	E.Libs.CBH:Fire("OnStartup")
 
 
 	for guid, info in pairs(P.groupInfo) do
 		if not UnitExists(info.name) or (guid == E.userGUID and P.isUserDisabled) then
 			for _, timer in pairs(info.callbackTimers) do
-				if type(timer) == "function" then
+				if type(timer) == "table" then
 					timer:Cancel()
 				end
 			end
@@ -165,7 +182,6 @@ local function UpdateRosterInfo(force)
 	end
 
 	local isInRaid = IsInRaid()
-	local hasWarlockInGroup
 	for i = 1, size do
 		local index = not isInRaid and i == size and 5 or i
 		local unit = isInRaid and RAID_UNIT[index] or PARTY_UNIT[index]
@@ -192,7 +208,6 @@ local function UpdateRosterInfo(force)
 				CD.petGUIDS[petGUID] = guid
 			end
 		end
-		hasWarlockInGroup = isWarlock
 
 		if info then
 			local frame = info.bar
@@ -203,13 +218,16 @@ local function UpdateRosterInfo(force)
 				frame.anchor.text:SetText(index)
 			end
 
-			if force or (not info.isDead and info.isDeadOrOffline and not isDeadOrOffline) or (not info.isAdminObsForMDI == isAdminObsForMDI) then
+
+
+
+			if force or (not info.isDead and info.isDeadOrOffline and not isDeadOrOffline) or (info.isAdminObsForMDI ~= isAdminObsForMDI) then
 				info.isAdminObsForMDI = isAdminObsForMDI
 				if not isUser then
 					P.pendingQueue[#P.pendingQueue + 1] = guid
 				end
 				P:UpdateUnitBar(guid, true)
-			elseif unitIdChanged then
+			elseif unitIdChanged and not isAdminObsForMDI then
 				frame:UnregisterAllEvents()
 				if not E.preCata and not isUser then
 					frame:RegisterUnitEvent('PLAYER_SPECIALIZATION_CHANGED', unit)
@@ -226,7 +244,7 @@ local function UpdateRosterInfo(force)
 				if isDead then
 					frame:RegisterUnitEvent('UNIT_HEALTH', unit)
 				end
-				if not E.isClassicEra then
+				if not E.isClassic then
 					frame:RegisterUnitEvent('UNIT_SPELLCAST_SUCCEEDED', unit, E.UNIT_TO_PET[unit])
 				end
 				frame:RegisterUnitEvent('UNIT_CONNECTION', unit)
@@ -250,28 +268,19 @@ local function UpdateRosterInfo(force)
 			local level = UnitLevel(unit)
 			level = level > 0 and level or 200
 			info = {
-				guid = guid,
-				class = class,
-				raceID = race,
-				name = name,
-				level = level,
-				index = index,
-				unit = unit,
-				petGUID = pet,
-				spellIcons = {},
+				guid = guid, class = class, raceID = race, name = name, level = level,
+				index = index, unit = unit, petGUID = pet,
+				isDead = isDead, isDeadOrOffline = isDeadOrOffline, isAdminObsForMDI = isAdminObsForMDI,
 				preactiveIcons = {},
+				spellIcons = {},
 				glowIcons = {},
 				active = {},
 				auras = {},
-				talentData = {},
 				itemData = {},
+				talentData = {},
 				shadowlandsData = {},
 				callbackTimers = {},
 				spellModRates = {},
-				queuedCdrOnStart = {},
-				isDead = isDead,
-				isDeadOrOffline = isDeadOrOffline,
-				isAdminObsForMDI = isAdminObsForMDI,
 			}
 			P.groupInfo[guid] = info
 
@@ -294,13 +303,6 @@ local function UpdateRosterInfo(force)
 	P:UpdateExBars()
 	CM:EnqueueInspect()
 
-
-
-
-
-
-
-
 	if P.joinedNewGroup or force then
 		if P.callbackTimers.syncTimer then
 			P.callbackTimers.syncTimer:Cancel()
@@ -318,7 +320,6 @@ end
 
 
 
-
 function P:GROUP_ROSTER_UPDATE(isPEW, isRefresh)
 	if isRefresh or GetNumGroupMembers() == 0 then
 		UpdateRosterInfo(true)
@@ -332,18 +333,26 @@ function P:GROUP_ROSTER_UPDATE(isPEW, isRefresh)
 	end
 end
 
+local inspectAllGroupMembers = function()
+	CM:EnqueueInspect(true)
+end
 
 
 
-function P:GROUP_JOINED()
+
+function P:GROUP_JOINED(arg1,arg2)
 	if self.isInTestMode then
 		self:Test()
 	end
 	self.joinedNewGroup = true
-end
 
-local inspectAllGroupMembers = function()
-	CM:EnqueueInspect(true)
+	if self.isInArena and C_PvP_IsRatedSoloShuffle() then
+		self:ResetAllIcons("joinedPvP")
+		if not self.callbackTimers.arenaTicker then
+			self:RegisterEvent('PLAYER_REGEN_DISABLED')
+			self.callbackTimers.arenaTicker = C_Timer.NewTicker(6, inspectAllGroupMembers, 5)
+		end
+	end
 end
 
 local function IsAnyExBarEnabled()
@@ -372,7 +381,6 @@ function P:PLAYER_ENTERING_WORLD(isInitialLogin, isReloadingUi, isRefresh)
 		return
 	end
 
-
 	local key = self.isInTestMode and self.testZone or instanceType
 	key = key == "none" and E.profile.Party.noneZoneSetting or (key == "scenario" and E.profile.Party.scenarioZoneSetting) or key
 	E.db = E.profile.Party[key]
@@ -383,7 +391,8 @@ function P:PLAYER_ENTERING_WORLD(isInitialLogin, isReloadingUi, isRefresh)
 	end
 
 	self.isUserHidden = not self.isInTestMode and not E.db.general.showPlayer
-	self.isUserDisabled = self.isUserHidden and not IsAnyExBarEnabled()
+
+	self.isUserDisabled = self.isUserHidden and (not E.db.general.showPlayerEx or not IsAnyExBarEnabled())
 	self.isPvP = E.preCata or (self.isInPvPInstance or (instanceType == "none" and C_PvP.IsWarModeDesired()))
 	self.effectivePixelMult = nil
 
@@ -426,9 +435,9 @@ function P:UPDATE_UI_WIDGET(widgetInfo)
 	if self.disabled then return end
 	if widgetInfo.widgetSetID == 1 and widgetInfo.widgetType == 0 then
 		local info = C_UIWidgetManager.GetIconAndTextWidgetVisualizationInfo(widgetInfo.widgetID)
-		if info and info.state == 1 then
+		if info and info.state == 1 and info.hasTimer then
 			self:UnregisterZoneEvents()
-			C_Timer.After(1, inspectAllGroupMembers)
+			C_Timer.After(.5, inspectAllGroupMembers)
 		end
 	end
 end
@@ -438,12 +447,11 @@ function P:PLAYER_REGEN_DISABLED()
 		self.callbackTimers.arenaTicker:Cancel()
 		self.callbackTimers.arenaTicker = nil
 	end
-	self:UnregisterEvent("PLAYER_REGEN_DISABLED")
+	self:UnregisterEvent('PLAYER_REGEN_DISABLED')
 end
 
 function P:PLAYER_FLAGS_CHANGED(unitTarget)
 	if unitTarget ~= "player" or InCombatLockdown() then return end
-
 	local oldpvp = self.isPvP
 	self.isPvP = C_PvP.IsWarModeDesired()
 	if oldpvp ~= self.isPvP then

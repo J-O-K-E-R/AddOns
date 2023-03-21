@@ -28,6 +28,7 @@ function UF:Construct_TankFrames()
 		self.AuraWatch = UF:Construct_AuraWatch(self)
 		self.RaidDebuffs = UF:Construct_RaidDebuffs(self)
 		self.AuraHighlight = UF:Construct_AuraHighlight(self)
+		self.customTexts = {}
 
 		self.unitframeType = 'tank'
 	else
@@ -99,12 +100,12 @@ function UF:Update_TankFrames(frame, db)
 		frame:Size(childDB.width, childDB.height)
 
 		if not InCombatLockdown() then
-			if childDB.enable then
-				frame:Enable()
+			local enabled = childDB.enable
+			frame:SetEnabled(enabled)
+
+			if enabled then
 				frame:ClearAllPoints()
 				frame:Point(E.InversePoints[childDB.anchorPoint], frame.originalParent, childDB.anchorPoint, childDB.xOffset, childDB.yOffset)
-			else
-				frame:Disable()
 			end
 		end
 	else
@@ -125,6 +126,7 @@ function UF:Update_TankFrames(frame, db)
 		UF:Configure_RaidDebuffs(frame)
 		UF:Configure_AuraHighlight(frame)
 		UF:Configure_AuraWatch(frame)
+		UF:Configure_CustomTexts(frame)
 	end
 
 	UF:HandleRegisterClicks(frame)

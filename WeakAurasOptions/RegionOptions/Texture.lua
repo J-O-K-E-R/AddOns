@@ -27,10 +27,9 @@ local function createOptions(id, data)
         OptionsPrivate.OpenTexturePicker(data, {}, {
           texture = "texture",
           color = "color",
-          auraRotation = "rotation",
           mirror = "mirror",
           blendMode = "blendMode"
-        }, OptionsPrivate.Private.texture_types);
+        }, OptionsPrivate.Private.texture_types, nil, true)
       end,
       imageWidth = 24,
       imageHeight = 24,
@@ -68,6 +67,27 @@ local function createOptions(id, data)
       order = 5,
       values = OptionsPrivate.Private.blend_types
     },
+    mirror = {
+      type = "toggle",
+      width = WeakAuras.normalWidth,
+      name = L["Mirror"],
+      order = 6
+    },
+    textureWrapMode = {
+      type = "select",
+      width = WeakAuras.normalWidth,
+      name = L["Texture Wrap"],
+      order = 7,
+      values = OptionsPrivate.Private.texture_wrap_types,
+      hidden = IsAtlas(data.texture)
+    },
+    rotate = {
+      type = "toggle",
+      width = WeakAuras.normalWidth,
+      name = L["Allow Full Rotation"],
+      order = 8,
+      hidden = IsAtlas(data.texture)
+    },
     rotation = {
       type = "range",
       control = "WeakAurasSpinBox",
@@ -77,29 +97,7 @@ local function createOptions(id, data)
       max = 360,
       step = 1,
       bigStep = 3,
-      order = 6,
-    },
-    mirror = {
-      type = "toggle",
-      width = WeakAuras.normalWidth,
-      name = L["Mirror"],
-      order = 7,
-    },
-    legacyZoomOut = {
-      type = "toggle",
-      width = WeakAuras.normalWidth,
-      name = L["Legacy Zoom Out"],
-      desc = L["Rotating a texture around arbitary angles used to require a zoom out. This is no longer required, this option only exist for compatibility with previous behaviour."],
-      order = 8,
-      hidden = IsAtlas(data.texture)
-    },
-    textureWrapMode = {
-      type = "select",
-      width = WeakAuras.normalWidth,
-      name = L["Texture Wrap"],
       order = 9,
-      values = OptionsPrivate.Private.texture_wrap_types,
-      hidden = IsAtlas(data.texture)
     },
     endHeader = {
       type = "header",
@@ -131,28 +129,38 @@ local function createThumbnail()
   return borderframe;
 end
 
+local SQRT2 = sqrt(2)
+local function GetRotatedPoints(degrees, scaleForFullRotate)
+  local angle = rad(135 - degrees);
+  local factor = scaleForFullRotate and 1 or SQRT2
+  local vx = math.cos(angle) / factor
+  local vy = math.sin(angle) / factor
+
+  return 0.5+vx,0.5-vy , 0.5-vy,0.5-vx , 0.5+vy,0.5+vx , 0.5-vx,0.5+vy
+end
+
 local function modifyThumbnail(parent, region, data, fullModify, size)
   size = size or 30;
+  local scale;
   if(data.height > data.width) then
-    local scale = data.width / data.height;
-    region.texture:SetWidth(scale * size)
+    scale = size/data.height;
+    region.texture:SetWidth(scale * data.width);
     region.texture:SetHeight(size);
   else
-    local scale = data.height / data.width;
-    region.texture:SetWidth(size)
-    region.texture:SetHeight(scale * size)
+    scale = size/data.width;
+    region.texture:SetWidth(size);
+    region.texture:SetHeight(scale * data.height);
   end
 
   WeakAuras.SetTextureOrAtlas(region.texture, data.texture, data.textureWrapMode, data.textureWrapMode);
   region.texture:SetVertexColor(data.color[1], data.color[2], data.color[3], data.color[4]);
-  region.texture:SetBlendMode(data.blendMode)
-  region.texture:SetRotation((data.rotation / 180) * math.pi)
+  region.texture:SetBlendMode(data.blendMode);
 
-  local ulx,uly, llx,lly, urx,ury, lrx,lry = 0,0, 0,1, 1,0, 1,1
+  local ulx,uly , llx,lly , urx,ury , lrx,lry = GetRotatedPoints(data.rotation, data.rotate)
   if(data.mirror) then
-    region.texture:SetTexCoord(urx,ury, lrx,lry, ulx,uly, llx,lly)
+    region.texture:SetTexCoord(urx,ury , lrx,lry , ulx,uly , llx,lly);
   else
-    region.texture:SetTexCoord(ulx,uly, llx,lly, urx,ury, lrx,lry)
+    region.texture:SetTexCoord(ulx,uly , llx,lly , urx,ury , lrx,lry);
   end
 end
 
@@ -168,7 +176,7 @@ local function createIcon()
   };
 
   local thumbnail = createThumbnail();
-  modifyThumbnail(UIParent, thumbnail, data, nil, 36)
+  modifyThumbnail(UIParent, thumbnail, data, nil, 50);
 
   return thumbnail;
 end
@@ -221,7 +229,7 @@ local templates = {
   },
 }
 
-if WeakAuras.IsClassic() then
+if WeakAuras.IsClassicEra() then
   table.remove(templates, 2)
 end
 

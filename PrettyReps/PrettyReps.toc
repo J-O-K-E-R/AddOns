@@ -1,5 +1,5 @@
-## Interface: 90200
-## Title: Pretty Reps
+## Interface: 100002
+## Title: PrettyReps
 ## Author: Sida2
 ## Version: 1.08
 ## Notes: Display account-wide reputations on any character.
@@ -7,5 +7,9 @@
 ## LoadOnDemand: 0
 ## SavedVariables: PrettyRepsDB
 
+PrettyReps.lua
 data.lua
-core.lua
+callbacks.lua
+dataUtils.lua
+ui.lua
+repPanel.lua

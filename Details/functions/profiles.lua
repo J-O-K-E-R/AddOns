@@ -5,6 +5,7 @@
 	local Loc = LibStub("AceLocale-3.0"):GetLocale ( "Details" )
 	local _
 	local addonName, Details222 = ...
+	local detailsFramework = DetailsFramework
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --Profiles:
@@ -410,6 +411,10 @@ function _detalhes:ApplyProfile (profile_name, nosave, is_copy)
 					instance:RestoreMainWindowPosition()
 					instance:ReajustaGump()
 					--instance:SaveMainWindowPosition()
+					--Load StatusBarSaved values and options.
+					instance.StatusBarSaved = skin.StatusBarSaved or {options = {}}
+					instance.StatusBar.options = instance.StatusBarSaved.options
+					_detalhes.StatusBar:UpdateChilds (instance)
 					instance:ChangeSkin()
 
 				else
@@ -865,6 +870,7 @@ local default_profile = {
 		friendlyfire = "darkorange",
 		cooldown = "yellow",
 		debuff = "purple",
+		buff = "silver",
 	},
 
 	fade_speed = 0.15,
@@ -1040,7 +1046,7 @@ local default_profile = {
 				locked = false,
 				width = 250,
 				height = 300,
-				backdrop_color = {.16, .16, .16, .47},
+				backdrop_color = {0.1921, 0.1921, 0.1921, 0.3869},
 				show_title = true,
 				strata = "LOW",
 			},
@@ -1053,6 +1059,8 @@ local default_profile = {
 			line_height = 16,
 			line_texture = "Details Serenity",
 			line_color = {.1, .1, .1, 0.3},
+			show_crowdcontrol_pvp = true,
+			show_crowdcontrol_pvm = false,
 		},
 
 	--current damage
@@ -1208,6 +1216,9 @@ local default_player_data = {
 				["defensive-personal"] = false,
 				["ofensive"] = true,
 				["utility"] = false,
+				["itemheal"] = false,
+				["itempower"] = false,
+				["itemutil"] = false,
 			}, --when creating a filter, add it here and also add to 'own_frame'
 
 			own_frame = {
@@ -1218,10 +1229,16 @@ local default_player_data = {
 				["utility"] = false,
 			},
 
+			show_title = true,
+			group_frames = true,
+
 			width = 120,
 			height = 18,
 			lines_per_column = 12,
 		},
+
+	--mythic plus log
+		mythic_plus_log = {},
 
 	--force all fonts to have this outline
 		force_font_outline = "",
@@ -1364,6 +1381,12 @@ local default_global_data = {
 		slash_me_used = false,
 		trinket_data = {},
 
+		merge_pet_abilities = false,
+		merge_player_abilities = false,
+
+		played_class_time = true,
+		check_stuttering = true,
+
 	--spell category feedback
 		spell_category_savedtable = {},
 		spell_category_latest_query = 0,
@@ -1437,7 +1460,7 @@ local default_global_data = {
 		},
 
 	--auras (wa auras created from the aura panel)
-		details_auras = {},
+		details_auras = {}, --deprecated due to major security wa code revamp
 
 	--ilvl
 		item_level_pool = {},
@@ -1452,20 +1475,42 @@ local default_global_data = {
 			show_life_percent = false,
 			show_segments = false,
 		},
+
+	--spell caches
 		boss_mods_timers = {
 			encounter_timers_dbm = {},
 			encounter_timers_bw = {},
+			latest_boss_mods_access = time(),
 		},
+
 		spell_pool = {},
-		encounter_spell_pool = {},
+		latest_spell_pool_access = time(),
+
 		npcid_pool = {},
+		latest_npcid_pool_access = time(),
+
+		encounter_spell_pool = {},
+		latest_encounter_spell_pool_access = time(),
+
+		--store spells that passed by the healing absorb event on the parser, this list will help counting the overhealing of shields
+		shield_spellid_cache = {},
+		latest_shield_spellid_cache_access = time(),
+
+	--parser options
+		parser_options = {
+			--compute the overheal of shields
+			shield_overheal = false,
+			--compute the energy wasted by players when they current energy is equal to the maximum energy
+			energy_overflow = false,
+		},
 
 	--aura creation frame libwindow
-		createauraframe = {},
+		createauraframe = {}, --deprecated
 
 	--min health done on the death report
 		deathlog_healingdone_min = 1,
 		deathlog_healingdone_min_arena = 400,
+		deathlog_line_height = 16,
 
 	--mythic plus config
 		mythic_plus = {
@@ -1725,6 +1770,10 @@ local exportProfileBlacklist = {
 	mythic_plus = true,
 	plugin_window_pos = true,
 	switchSaved = true,
+	installed_skins_cache = true,
+	trinket_data = true,
+	keystone_cache = true,
+	performance_profiles = true,
 }
 
 --transform the current profile into a string which can be shared in the internet
@@ -1777,11 +1826,16 @@ function Details:ExportCurrentProfile()
 	return compressedData
 end
 
-function Details:ImportProfile (profileString, newProfileName)
-
+---bIsFromImportPrompt is true when the import call is from the import window
+---@param profileString string
+---@param newProfileName string
+---@param bImportAutoRunCode boolean
+---@param bIsFromImportPrompt boolean
+---@return boolean
+function Details:ImportProfile (profileString, newProfileName, bImportAutoRunCode, bIsFromImportPrompt)
 	if (not newProfileName or type(newProfileName) ~= "string" or string.len(newProfileName) < 2) then
 		Details:Msg("invalid profile name or profile name is too short.") --localize-me
-		return
+		return false
 	end
 
 	profileString = DetailsFramework:Trim (profileString)
@@ -1791,6 +1845,12 @@ function Details:ImportProfile (profileString, newProfileName)
 	if (dataTable) then
 
 		local profileObject = Details:GetProfile (newProfileName, false)
+		local nameWasDuplicate = false
+		while(profileObject) do
+			newProfileName = newProfileName .. '2';
+			profileObject = Details:GetProfile(newProfileName, false)
+			nameWasDuplicate = true
+		end
 		if (not profileObject) then
 			--profile doesn't exists, create new
 			profileObject = Details:CreateProfile (newProfileName)
@@ -1812,6 +1872,10 @@ function Details:ImportProfile (profileString, newProfileName)
 		local defaultGlobalData = Details.default_global_data
 		--profile defaults
 		local defaultProfileData = Details.default_profile
+
+		if (not bImportAutoRunCode or not bIsFromImportPrompt) then
+			globalData.run_code = nil
+		end
 
 		--transfer player and global data tables from the profile to details object
 		for key, _ in pairs(defaultPlayerData) do
@@ -1877,15 +1941,103 @@ function Details:ImportProfile (profileString, newProfileName)
 			DetailsFramework.table.copy(instance.hide_on_context, Details.instance_defaults.hide_on_context)
 		end
 
-
-		Details:Msg("profile successfully imported.")--localize-me
+		if(nameWasDuplicate) then
+			Details:Msg("profile name already exists and was imported as:", newProfileName)--localize-me
+		else
+			Details:Msg("profile successfully imported.")--localize-me
+		end
 		return true
 	else
 		Details:Msg("failed to decompress profile data.")--localize-me
+		return false
 	end
 end
 
+--create a import profile confirmation dialog with a text box to enter the profile name and a checkbox to select if should import auto run scripts
+function Details.ShowImportProfileConfirmation(message, callback)
+	if (not Details.profileConfirmationDialog) then
+		local promptFrame = CreateFrame("frame", "DetailsImportProfileDialog", UIParent, "BackdropTemplate")
+		promptFrame:SetSize(400, 170)
+		promptFrame:SetFrameStrata("FULLSCREEN")
+		promptFrame:SetPoint("center", UIParent, "center", 0, 100)
+		promptFrame:EnableMouse(true)
+		promptFrame:SetMovable(true)
+		promptFrame:RegisterForDrag ("LeftButton")
+		promptFrame:SetScript("OnDragStart", function() promptFrame:StartMoving() end)
+		promptFrame:SetScript("OnDragStop", function() promptFrame:StopMovingOrSizing() end)
+		promptFrame:SetScript("OnMouseDown", function(self, button) if (button == "RightButton") then promptFrame.EntryBox:ClearFocus() promptFrame:Hide() end end)
+		tinsert(UISpecialFrames, "DetailsImportProfileDialog")
 
+		detailsFramework:CreateTitleBar(promptFrame, "Import Profile Confirmation")
+		detailsFramework:ApplyStandardBackdrop(promptFrame)
+
+		local prompt = promptFrame:CreateFontString(nil, "overlay", "GameFontNormal")
+		prompt:SetPoint("top", promptFrame, "top", 0, -25)
+		prompt:SetJustifyH("center")
+		prompt:SetSize(360, 36)
+		promptFrame.prompt = prompt
+
+		local button_text_template = detailsFramework:GetTemplate("font", "OPTIONS_FONT_TEMPLATE")
+		local options_dropdown_template = detailsFramework:GetTemplate("dropdown", "OPTIONS_DROPDOWN_TEMPLATE")
+
+		local textbox = detailsFramework:CreateTextEntry(promptFrame, function()end, 380, 20, "textbox", nil, nil, options_dropdown_template)
+		textbox:SetPoint("topleft", promptFrame, "topleft", 10, -60)
+		promptFrame.EntryBox = textbox
+
+		--create a detailsframework checkbox to select if want to import the auto run scripts
+		local checkbox = detailsFramework:CreateSwitch(promptFrame, function()end, false, _, _, _, _, _, _, _, _, _, _, DetailsFramework:GetTemplate("switch", "OPTIONS_CHECKBOX_BRIGHT_TEMPLATE"))
+		checkbox:SetPoint("topleft", promptFrame, "topleft", 10, -90)
+		checkbox:SetAsCheckBox()
+		promptFrame.checkbox = checkbox
+
+		--create the checkbox label with the text: "Import Auto Run Scripts"
+		local checkboxLabel = promptFrame:CreateFontString(nil, "overlay", "GameFontNormal")
+		checkboxLabel:SetPoint("left", checkbox.widget, "right", 2, 0)
+		checkboxLabel:SetText("Import Auto Run Scripts")
+		checkboxLabel:SetJustifyH("left")
+		promptFrame.checkboxLabel = checkboxLabel
+
+		local buttonTrue = detailsFramework:CreateButton(promptFrame, nil, 60, 20, "Okey", nil, nil, nil, nil, nil, nil, options_dropdown_template)
+		buttonTrue:SetPoint("bottomright", promptFrame, "bottomright", -10, 5)
+		promptFrame.button_true = buttonTrue
+
+		local buttonFalse = detailsFramework:CreateButton(promptFrame, function() promptFrame.textbox:ClearFocus() promptFrame:Hide() end, 60, 20, "Cancel", nil, nil, nil, nil, nil, nil, options_dropdown_template)
+		buttonFalse:SetPoint("bottomleft", promptFrame, "bottomleft", 10, 5)
+		promptFrame.button_false = buttonFalse
+
+		local executeCallback = function()
+			local bCanImportAutoRunCode = promptFrame.checkbox:GetValue()
+			local myFunc = buttonTrue.true_function
+			if (myFunc) then
+				local okey, errormessage = pcall(myFunc, textbox:GetText(), bCanImportAutoRunCode)
+				textbox:ClearFocus()
+				if (not okey) then
+					print("error:", errormessage)
+				end
+				promptFrame:Hide()
+			end
+		end
+
+		buttonTrue:SetClickFunction(function()
+			executeCallback()
+		end)
+
+		textbox:SetHook("OnEnterPressed", function()
+			executeCallback()
+		end)
+
+		promptFrame:Hide()
+		Details.profileConfirmationDialog = promptFrame
+	end
+
+	Details.profileConfirmationDialog:Show()
+	Details.profileConfirmationDialog.EntryBox:SetText("")
+	Details.profileConfirmationDialog.EntryBox:SetFocus(false)
+
+	Details.profileConfirmationDialog.prompt:SetText(message)
+	Details.profileConfirmationDialog.button_true.true_function = callback
+	Details.profileConfirmationDialog.textbox:SetFocus(true)
+end
 
 
 

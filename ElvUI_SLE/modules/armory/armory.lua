@@ -46,10 +46,15 @@ Armory.Constants.CanTransmogrify = {
 }
 
 Armory.Constants.EnchantableSlots = {
-	['Finger0Slot'] = true, ['Finger1Slot'] = true, ['MainHandSlot'] = true, ['SecondaryHandSlot'] = true,
-	--Uncomment this when shadowlands actually launches
-	['ChestSlot'] = true, ['BackSlot'] = true,
-	['FeetSlot'] = true, ['WristSlot'] = true,
+	['BackSlot'] = true,
+	['ChestSlot'] = true,
+	['WristSlot'] = true,
+	['LegsSlot'] = true,
+	['Finger0Slot'] = true,
+	['Finger1Slot'] = true,
+	['MainHandSlot'] = true,
+	['SecondaryHandSlot'] = true,
+	['FeetSlot'] = true,
 }
 Armory.Constants.SpecPrimaryStats = {
 	[250] = 1, --DK Blood
@@ -88,6 +93,8 @@ Armory.Constants.SpecPrimaryStats = {
 	[71] = 1, --Warrior Arms
 	[72] = 1, --Warrior Fury
 	[73] = 1, --Warrior Protection
+	[1467] = 4, --Evoker DPS
+	[1468] = 4, --Evoker Heals
 }
 
 Armory.Constants.AzeriteTraitAvailableColor = {0.95, 0.95, 0.32, 1}
@@ -229,7 +236,7 @@ function Armory:UpdatePageStrings(i, iLevelDB, Slot, slotInfo, which)
 		local window = strlower(which) --to know which settings table to use
 		if E.db.sle.armory[window] and E.db.sle.armory[window].enable then --If settings table actually exists and armory for it is enabled
 			local iR, iG, iB = unpack(slotInfo.itemLevelColors)
-			if Slot.enchantText and not (slotInfo.enchantTextShort == nil or slotInfo.enchantText == nil) then Armory:ProcessEnchant(window, Slot, slotInfo.enchantTextShort, slotInfo.enchantText) end
+			if Slot.enchantText and not (slotInfo.enchantTextShort == nil or slotInfo.enchantText == nil) then Armory:ProcessEnchant(window, Slot, slotInfo.enchantTextShort, slotInfo.enchantText, slotInfo.enchantTextReal) end
 			if E.db.sle.armory[window].ilvl.colorType == 'QUALITY' then
 				if iR ~= nil then
 					Slot.iLvlText:SetTextColor(iR, iG, iB) --Business as usual
@@ -306,6 +313,9 @@ function Armory:UpdateGemInfo(Slot, which)
 						GemLink = C_AzeriteEssence.GetEssenceHyperlink(GemID, rank)
 					end
 				end
+				if not GemLink then
+					GemLink = select(2, GetItemGem(Slot.itemLink, i))
+				end
 			else
 				GemLink = select(2, GetItemGem(Slot.itemLink, i))
 			end
@@ -339,20 +349,25 @@ function Armory:UpdateSharedStringsFonts(which)
 end
 
 --Deals with dem enchants
-function Armory:ProcessEnchant(which, Slot, enchantTextShort, enchantText)
+function Armory:ProcessEnchant(which, Slot, enchantTextShort, enchantText, enchantTextReal)
 	if not E.db.sle.armory.enchantString.enable then return end
+	local window = strlower(which)
 	local strict = E.db.sle.armory.enchantString.strict
 
+	local showReal = E.db.sle.armory[window].enchant.showReal
+	local text = showReal and enchantTextReal or enchantText
+
 	if E.db.sle.armory.enchantString.replacement then
+		local profQuality = strmatch(enchantTextReal, '|A.-|a')
 		for _, enchData in pairs(SLE_ArmoryDB.EnchantString) do
 			if strict and enchantText == enchData.original then
-				enchantText = enchData.new
+				text = enchData.new..' '..(showReal and profQuality or '')
 			elseif not strict and enchData.original and enchData.new then
-				enchantText = gsub(enchantText, E:EscapeString(enchData.original), enchData.new)
+				text = gsub(text, E:EscapeString(enchData.original), enchData.new)
 			end
 		end
 	end
-	Slot.enchantText:SetText(enchantText)
+	Slot.enchantText:SetText(text)
 end
 
 ---<<<Global Hide tooltip func for armory>>>---
@@ -481,12 +496,16 @@ end
 function Armory:ToggleItemLevelInfo()
 	if E.db.general.itemLevel.displayCharacterInfo then
 		-- Armory:UnregisterEvent('AZERITE_ESSENCE_UPDATE')
+		Armory:UnregisterEvent('SOCKET_INFO_UPDATE')
+		Armory:UnregisterEvent('WEAPON_ENCHANT_CHANGED')
 		Armory:UnregisterEvent('CRITERIA_UPDATE')
 		Armory:UnregisterEvent('PLAYER_EQUIPMENT_CHANGED')
 		Armory:UnregisterEvent('UPDATE_INVENTORY_DURABILITY')
 		-- Armory:UnregisterEvent('PLAYER_AVG_ITEM_LEVEL_UPDATE')
 	else
 		-- Armory:RegisterEvent('AZERITE_ESSENCE_UPDATE', 'UpdateCharacterInfo')
+		Armory:RegisterEvent('SOCKET_INFO_UPDATE', 'UpdateCharacterInfo')
+		Armory:RegisterEvent('WEAPON_ENCHANT_CHANGED', 'UpdateCharacterInfo')
 		Armory:RegisterEvent('CRITERIA_UPDATE', 'UpdateCharacterInfo')
 		Armory:RegisterEvent('PLAYER_EQUIPMENT_CHANGED', 'UpdateCharacterInfo')
 		Armory:RegisterEvent('UPDATE_INVENTORY_DURABILITY', 'UpdateCharacterInfo')

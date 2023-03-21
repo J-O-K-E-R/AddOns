@@ -6,14 +6,13 @@ local _G = _G
 local select, unpack = select, unpack
 local hooksecurefunc = hooksecurefunc
 
-local ContainerIDToInventoryID = ContainerIDToInventoryID
-local GetContainerItemLink = GetContainerItemLink
-local GetContainerNumFreeSlots = GetContainerNumFreeSlots
-local GetInventoryItemLink = GetInventoryItemLink
+local ContainerIDToInventoryID = ContainerIDToInventoryID or (C_Container and C_Container.ContainerIDToInventoryID)
+local GetContainerNumFreeSlots = GetContainerNumFreeSlots or (C_Container and C_Container.GetContainerNumFreeSlots)
+local GetContainerItemLink = GetContainerItemLink or (C_Container and C_Container.GetContainerItemLink)
+local GetInventoryItemLink = GetInventoryItemLink or (C_Container and C_Container.GetInventoryItemLink)
 local GetItemQualityColor = GetItemQualityColor
 local GetInventoryItemID = GetInventoryItemID
 local GetItemInfo = GetItemInfo
-local CreateFrame = CreateFrame
 
 local BANK_CONTAINER = BANK_CONTAINER
 local LE_ITEM_CLASS_QUESTITEM = LE_ITEM_CLASS_QUESTITEM
@@ -120,7 +119,8 @@ function S:ContainerFrame()
 						questIcon:Show()
 					end
 				elseif quality and quality > 1 then
-					item:SetBackdropBorderColor(GetItemQualityColor(quality))
+					local r, g, b = GetItemQualityColor(quality)
+					item:SetBackdropBorderColor(r, g, b)
 					item.ignoreBorderColors = true
 				else
 					item:SetBackdropBorderColor(unpack(E.media.bordercolor))
@@ -166,14 +166,6 @@ function S:ContainerFrame()
 		E:RegisterCooldown(cooldown, 'bags')
 	end
 
-	BankFrame.itemBackdrop = CreateFrame('Frame', 'BankFrameItemBackdrop', BankFrame)
-	BankFrame.itemBackdrop:SetTemplate()
-	BankFrame.itemBackdrop:SetFrameLevel(BankFrame:GetFrameLevel())
-
-	BankFrame.bagBackdrop = CreateFrame('Frame', 'BankFrameBagBackdrop', BankFrame)
-	BankFrame.bagBackdrop:SetTemplate()
-	BankFrame.bagBackdrop:SetFrameLevel(BankFrame:GetFrameLevel())
-
 	S:HandleButton(_G.BankFramePurchaseButton)
 
 	hooksecurefunc('BankFrameItemButton_Update', function(button)
@@ -194,7 +186,8 @@ function S:ContainerFrame()
 			if link then
 				local _, _, quality = GetItemInfo(link)
 				if quality and quality > 1 then
-					button:SetBackdropBorderColor(GetItemQualityColor(quality))
+					local r, g, b = GetItemQualityColor(quality)
+					button:SetBackdropBorderColor(r, g, b)
 					button.ignoreBorderColors = true
 				else
 					button:SetBackdropBorderColor(unpack(E.media.bordercolor))
@@ -222,7 +215,8 @@ function S:ContainerFrame()
 						questIcon:Show()
 					end
 				elseif quality and quality > 1 then
-					button:SetBackdropBorderColor(GetItemQualityColor(quality))
+					local r, g, b = GetItemQualityColor(quality)
+					button:SetBackdropBorderColor(r, g, b)
 					button.ignoreBorderColors = true
 				else
 					button:SetBackdropBorderColor(unpack(E.media.bordercolor))

@@ -20,6 +20,9 @@ if L then
 	-- L.shattering_impact = "Slam"
 	-- L.concussive_slam = "Tank Line"
 	-- L.infused_fallout = "Dust"
+
+	--L.custom_on_repeating_fallout = "Repeating Infused Fallout"
+	--L.custom_on_repeating_fallout_desc = "Repeating Infused Fallout say messages with icon {rt7} to find a partner."
 end
 
 L = BigWigs:NewBossLocale("The Primal Council", "esMX")
@@ -33,10 +36,10 @@ if L then
 	-- L.conductive_marks = "Marks" -- Conductive Marks
 	-- L.conductive_mark = "Mark" -- Singular
 
-	-- L.custom_off_chain_lightning = "Chain Lightning is off by default, enable this to enable chain lightning."
-
 	-- L.custom_on_stop_timers = "Always show ability bars"
 	-- L.custom_on_stop_timers_desc = "Abilities that will always be shown: Conductive Mark"
+
+	-- L.skipped_cast = "Skipped %s (%d)"
 end
 
 L = BigWigs:NewBossLocale("Sennarth, The Cold Breath", "esMX")
@@ -48,13 +51,13 @@ if L then
 	-- L.webs = "Webs"
 	-- L.web = "Web"
 	-- L.gossamer_burst = "Grip"
+	-- L.gossamer_burst_castbar = "Gossamer Burst Cast Bar / Countdown"
+	-- L.gossamer_burst_castbar_desc = "A Cast Bar for Gossamer Burst with Countdown enabled by default."
 	-- L.repelling_burst = "Pushback"
 end
 
 L = BigWigs:NewBossLocale("Dathea, Ascended", "esMX")
 if L then
-	-- L.marks_on_me = "%d Mark" -- {Stacks} Conductive Mark on the player
-
 	-- L.conductive_marks = "Marks"
 	-- L.conductive_mark = "Mark"
 	-- L.raging_burst = "New Tornadoes"
@@ -77,30 +80,38 @@ if L then
 	-- L.ultimate_desc = "Display timers for Ultimate abilities (Searing Carnage, Absolute Zero, Seismic Rupture, Thundering Strike) when we don't know what alter the boss is at."
 	-- L.ultimate_bartext = "%s [Ult]" -- {Spell} [Ult]
 
-	-- -- Fire
+	L.add_bartext = "%s [Add]" -- "{Spell} [Add]"
+
+	L.Fire = "Fuego"
+	L.Frost = "Escarcha"
+	L.Earth = "Tierra"
+	L.Storm = "Tormenta"
+
+	-- Fire
 	-- L.magma_burst = "Pools"
 	-- L.molten_rupture = "Waves"
 	-- L.searing_carnage = "Dance"
+	-- L.raging_inferno = "Soak Pools"
 
-	-- -- Frost
+	-- Frost
 	-- L.biting_chill = "Chill DoT"
 	-- L.frigid_torrent = "Orbs"
 	-- L.absolute_zero = "Soaks"
 	-- L.absolute_zero_melee = "Melee Soak"
 	-- L.absolute_zero_ranged = "Ranged Soak"
 
-	-- -- Earth
+	-- Earth
 	-- L.enveloping_earth = "Heal Absorb"
 	-- L.erupting_bedrock = "Quakes"
 
-	-- -- Storm
+	-- Storm
 	-- L.lightning_crash = "Zaps"
 	-- L.thundering_strike = "Soaks"
 
-	-- -- General
+	-- General
 	-- L.primal_attunement = "Soft Enrage"
 
-	-- -- Stage 2
+	-- Stage 2
 	-- L.violent_upheaval = "Pillars"
 end
 
@@ -115,11 +126,51 @@ if L then
 	-- L.icy_shroud = "Heal Absorb"
 	-- L.broodkeepers_fury = "Fury"
 	-- L.frozen_shroud = "Root Absorb"
+	-- L.detonating_stoneslam = "Tank Soak"
 end
 
 L = BigWigs:NewBossLocale("Raszageth the Storm-Eater", "esMX")
 if L then
+	-- L.lighting_devastation_trigger = "deep breath" -- Raszageth takes a deep breath...
 
+	-- Stage One: The Winds of Change
+	-- L.hurricane_wing = "Pushback"
+	-- L.volatile_current = "Sparks"
+	-- L.thunderous_blast = "Blast"
+	-- L.lightning_breath = "Breath"
+	-- L.lightning_strikes = "Strikes"
+	-- L.electric_scales = "Raid Damage"
+	-- L.electric_lash = "Lash"
+	-- Intermission: The Primalist Strike
+	-- L.lightning_devastation = "Breath"
+	-- L.shattering_shroud = "Heal Absorb"
+	-- Stage Two: Surging Power
+	-- L.absorb_text = "%s (%.0f%%)"
+	-- L.stormsurge = "Absorb Shield"
+	-- L.stormcharged = "Positive or Negative"
+	-- L.positive = "Positive"
+	-- L.negative = "Negative"
+	-- L.focused_charge = "Damage Buff"
+	-- L.tempest_wing = "Storm Wave"
+	-- L.fulminating_charge = "Charges"
+	-- L.fulminating_charge_debuff = "Charge"
+	-- Intermission: The Vault Falters
+	-- L.storm_break = "Teleport"
+	-- L.ball_lightning = "Balls"
+	-- Stage Three: Storm Incarnate
+	-- L.magnetic_charge = "Pull Charge"
+
+	-- L.storm_nova_cast = "Storm Nova CastBar"
+	-- L.storm_nova_cast_desc = "Cast Bar for Storm Nova"
+
+	-- L.custom_on_repeating_stormcharged = "Repeating Positive or Negative"
+	-- L.custom_on_repeating_stormcharged_desc = "Repeating Positive or Negative say messages with icons {rt1}, {rt3} to find matches to remove your debuffs."
+
+	-- L.skipped_cast = "Skipped %s (%d)"
+
+	-- L.custom_off_raidleader_devastation = "Lighting Devastation: Leader Mode"
+	-- L.custom_off_raidleader_devastation_desc = "Show a bar for the Lighting Devastation (Breath) on the other side as well."
+	-- L.breath_other = "%s [Opposite]" -- Breath on opposite platform
 end
 
 L = BigWigs:NewBossLocale("Vault of the Incarnates Trash", "esMX")

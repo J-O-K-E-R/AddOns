@@ -1,7 +1,7 @@
 -- License: LICENSE.txt
 
 local MAJOR_VERSION = "LibActionButton-1.0-ElvUI"
-local MINOR_VERSION = 37 -- the real minor version is 102
+local MINOR_VERSION = 42 -- the real minor version is 106
 
 local LibStub = LibStub
 if not LibStub then error(MAJOR_VERSION .. " requires LibStub.") end
@@ -326,6 +326,25 @@ function SetupSecureSnippets(button)
 			self:SetAttribute("action_field", action_field)
 		end
 
+		if IsPressHoldReleaseSpell then
+			local spellID
+			if type == 'action' then
+				local actionType, id = GetActionInfo(action)
+				if actionType == 'spell' then
+					spellID = id
+				end
+			elseif type == 'spell' then
+				spellID = action
+			end
+
+			if spellID and IsPressHoldReleaseSpell(spellID) then
+				self:SetAttribute('pressAndHoldAction', true)
+				self:SetAttribute('typerelease', 'actionrelease')
+			elseif self:GetAttribute('typerelease') then
+				self:SetAttribute('typerelease', nil)
+			end
+		end
+
 		local onStateChanged = self:GetAttribute("OnStateChanged")
 		if onStateChanged then
 			self:Run(onStateChanged, state, type, action)
@@ -471,7 +490,26 @@ function WrapOnClick(button)
 				return false
 			end
 
+			-- hide the flyout
+			local flyoutHandler = owner:GetFrameRef("flyoutHandler")
+			if flyoutHandler then
+				flyoutHandler:Hide()
+			end
+
+			-- if this is a pickup click, disable on-down casting
+			-- it should get re-enabled in the post handler, or the OnDragStart handler, whichever occurs
+			if button ~= "Keybind" and ((self:GetAttribute("unlockedpreventdrag") and not self:GetAttribute("buttonlock")) or IsModifiedClick("PICKUPACTION")) and not self:GetAttribute("LABdisableDragNDrop") then
+				self:CallMethod("ToggleOnDownForPickup", true)
+				self:SetAttribute("LABToggledOnDown", true)
+			end
+
 			return (button == "Keybind") and "LeftButton" or nil, format("%s|%s", tostring(type), tostring(action))
+		end
+
+		-- hide the flyout, the extra down/ownership check is needed to not hide the button we're currently pressing too early
+		local flyoutHandler = owner:GetFrameRef("flyoutHandler")
+		if flyoutHandler and (not down or self:GetParent() ~= flyoutHandler) then
+			flyoutHandler:Hide()
 		end
 
 		if button == "Keybind" then
@@ -482,22 +520,40 @@ function WrapOnClick(button)
 		if message ~= format("%s|%s", tostring(type), tostring(action)) then
 			self:RunAttribute("UpdateState", self:GetAttribute("state"))
 		end
+
+		-- re-enable ondown casting if needed
+		if self:GetAttribute("LABToggledOnDown") then
+			self:SetAttribute("LABToggledOnDown", nil)
+			self:CallMethod("ToggleOnDownForPickup", false)
+		end
 	]])
 end
 
--- Dynamically handle release casting ~Simpy
-local function UpdateReleaseCasting(self, down)
-	if self.isFlyout then -- the flyout spell
-		self:RegisterForClicks('AnyDown', 'AnyUp')
-	elseif self.isFlyoutButton -- the bar button
-	or down then -- being locked, prevents mod key clicks on up because of SecureActionButton_OnClick in retail
+do
+	local reset
+	function Generic:ToggleOnDownForPickup(pre)
+		if not WoWRetail then return end
+
+		-- this is bugged: some talent spells will always cast on down
+		-- even when this code does not execute and keydown is disabled.
+		if pre and GetCVarBool("ActionButtonUseKeyDown") then
+			SetCVar("ActionButtonUseKeyDown", false)
+			reset = true
+		elseif reset then
+			SetCVar("ActionButtonUseKeyDown", true)
+			reset = nil
+		end
+	end
+end
+
+-- update click handling ~Simpy
+local function UpdateRegisterClicks(self, down)
+	if self.isFlyoutButton then -- the bar button
 		self:RegisterForClicks('AnyUp')
-	elseif not self.pressReleaseAction then
-		self:RegisterForClicks(self.config.clickOnDown and 'AnyDown' or 'AnyUp')
-	elseif GetCVar('empowerTapControls') == '0' then
+	elseif self.isFlyout or WoWRetail then -- the flyout spell
 		self:RegisterForClicks('AnyDown', 'AnyUp')
 	else
-		self:RegisterForClicks('AnyDown')
+		self:RegisterForClicks(self.config.clickOnDown and not down and 'AnyDown' or 'AnyUp')
 	end
 end
 
@@ -507,20 +563,16 @@ function Generic:OnButtonEvent(event, key, down)
 		self:UnregisterEvent(event)
 
 		UpdateFlyout(self)
-	elseif GetCVarBool('lockActionBars') then
-		local clickDown = self.config.clickOnDown or self.pressReleaseAction
-		if not clickDown then return end -- not key downing
-
+	elseif self.config.clickOnDown and GetCVarBool('lockActionBars') then -- non-retail only, retail uses ToggleOnDownForPickup method
 		if event == 'MODIFIER_STATE_CHANGED' then
 			if GetModifiedClick('PICKUPACTION') == strsub(key, 2) then
-				UpdateReleaseCasting(self, down == 1)
+				UpdateRegisterClicks(self, down == 1)
 			end
 		elseif event == 'OnEnter' then
 			local action = GetModifiedClick('PICKUPACTION')
-			local dragDown = action == 'SHIFT' and IsShiftKeyDown() or action == 'ALT' and IsAltKeyDown() or action == 'CTRL' and IsControlKeyDown()
-			UpdateReleaseCasting(self, dragDown)
+			UpdateRegisterClicks(self, action == 'SHIFT' and IsShiftKeyDown() or action == 'ALT' and IsAltKeyDown() or action == 'CTRL' and IsControlKeyDown())
 		elseif event == 'OnLeave' then
-			UpdateReleaseCasting(self, not clickDown)
+			UpdateRegisterClicks(self)
 		end
 	end
 end
@@ -940,9 +992,6 @@ if UseCustomFlyout then
 
 				button.isFlyout = true
 
-				-- wrap the onclick to hide the flyout after casting the spell
-				lib.flyoutHandler:WrapScript(button, "OnClick", [[ return nil, true ]], [[ if not down then owner:Hide() end ]])
-
 				-- disable drag and drop
 				button:SetAttribute("LABdisableDragNDrop", true)
 
@@ -950,7 +999,7 @@ if UseCustomFlyout then
 				lib.flyoutHandler:SetFrameRef("flyoutButton" .. i, button)
 				table.insert(lib.FlyoutButtons, button)
 
-				lib.callbacks:Fire("OnFlyoutCreated", button)
+				lib.callbacks:Fire("OnFlyoutButtonCreated", button)
 			end
 
 			lib.flyoutHandler:SetAttribute("numFlyoutButtons", #lib.FlyoutButtons)
@@ -1057,8 +1106,10 @@ function Generic:OnEnter()
 		UpdateNewAction(self)
 	end
 
-	Generic.OnButtonEvent(self, 'OnEnter')
-	self:RegisterEvent('MODIFIER_STATE_CHANGED')
+	if not WoWRetail then
+		Generic.OnButtonEvent(self, 'OnEnter')
+		self:RegisterEvent('MODIFIER_STATE_CHANGED')
+	end
 end
 
 function Generic:OnLeave()
@@ -1068,8 +1119,10 @@ function Generic:OnLeave()
 		GameTooltip:Hide()
 	end
 
-	Generic.OnButtonEvent(self, 'OnLeave')
-	self:UnregisterEvent('MODIFIER_STATE_CHANGED')
+	if not WoWRetail then
+		Generic.OnButtonEvent(self, 'OnLeave')
+		self:UnregisterEvent('MODIFIER_STATE_CHANGED')
+	end
 end
 
 -- Insecure drag handler to allow clicking on the button with an action on the cursor
@@ -1125,7 +1178,7 @@ function Generic:PostClick(button, down)
 		ClearNewActionHighlight(self._state_action, false, false)
 	end
 
-	if down and button ~= "Keybind" then
+	if down and IsMouseButtonDown() then
 		self:RegisterEvent("GLOBAL_MOUSE_UP")
 	end
 end
@@ -1261,6 +1314,11 @@ function InitializeEventHandler()
 		lib.eventFrame:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR")
 	end
 
+	if not WoWRetail then
+		 -- Needed for classics show grid.. ACTIONBAR_SHOWGRID fires with PET_BAR_SHOWGRID but ACTIONBAR_HIDEGRID doesn't fire with PET_BAR_HIDEGRID
+		lib.eventFrame:RegisterEvent("PET_BAR_HIDEGRID")
+	end
+
 	-- With those two, do we still need the ACTIONBAR equivalents of them?
 	lib.eventFrame:RegisterEvent("SPELL_UPDATE_COOLDOWN")
 	lib.eventFrame:RegisterEvent("SPELL_UPDATE_USABLE")
@@ -1330,7 +1388,7 @@ function OnEvent(frame, event, arg1, ...)
 		end
 	elseif event == "ACTIONBAR_SHOWGRID" then
 		ShowGrid()
-	elseif event == "ACTIONBAR_HIDEGRID" then
+	elseif event == "ACTIONBAR_HIDEGRID" or event == "PET_BAR_HIDEGRID" then
 		HideGrid()
 	elseif event == "UPDATE_BINDINGS" then
 		ForAllButtons(UpdateHotkeys)
@@ -1747,22 +1805,13 @@ function Update(self, fromUpdateConfig)
 		end
 	end
 
-	local notInCombat = not InCombatLockdown()
 	local isTypeAction = self._state_type == 'action'
-	local updatePressRelease = IsPressHoldReleaseSpell and notInCombat
 	if isTypeAction then
 		local actionType, actionID = GetActionInfo(self._state_action)
 		local actionSpell, actionMacro, actionFlyout = actionType == 'spell', actionType == 'macro', actionType == 'flyout'
 		local macroSpell = actionMacro and GetMacroSpell(actionID) or nil
 		local spellID = (actionSpell and actionID) or macroSpell
 		local spellName = spellID and GetSpellInfo(spellID) or nil
-
-		if updatePressRelease then
-			local pressRelease = IsPressHoldReleaseSpell(spellID)
-			self.pressReleaseAction = pressRelease
-			self:SetAttribute('pressAndHoldAction', pressRelease)
-			self:SetAttribute('typerelease', 'actionrelease')
-		end
 
 		self.isFlyoutButton = actionFlyout
 		self.abilityName = spellName
@@ -1778,11 +1827,6 @@ function Update(self, fromUpdateConfig)
 	else
 		self.isFlyoutButton = nil
 		self.abilityName = nil
-
-		if updatePressRelease then
-			self.pressReleaseAction = nil
-			self:SetAttribute('typerelease', nil)
-		end
 	end
 
 	-- Update icon and hotkey
@@ -1857,14 +1901,14 @@ function Update(self, fromUpdateConfig)
 
 	UpdateSpellHighlight(self)
 
-	UpdateReleaseCasting(self)
+	UpdateRegisterClicks(self)
 
 	if GameTooltip_GetOwnerForbidden() == self then
 		UpdateTooltip(self)
 	end
 
 	-- this could've been a spec change, need to call OnStateChanged for action buttons, if present
-	if notInCombat and isTypeAction then
+	if isTypeAction and not InCombatLockdown() then
 		local onStateChanged = self:GetAttribute("OnStateChanged")
 		if onStateChanged then
 			self.header:SetFrameRef("updateButton", self)
@@ -2194,28 +2238,24 @@ end
 hooksecurefunc("UpdateOnBarHighlightMarksBySpell", function(spellID)
 	lib.ON_BAR_HIGHLIGHT_MARK_TYPE = "spell"
 	lib.ON_BAR_HIGHLIGHT_MARK_ID = tonumber(spellID)
-
-	for button in next, ButtonRegistry do
-		UpdateSpellHighlight(button)
-	end
 end)
 
 hooksecurefunc("UpdateOnBarHighlightMarksByFlyout", function(flyoutID)
 	lib.ON_BAR_HIGHLIGHT_MARK_TYPE = "flyout"
 	lib.ON_BAR_HIGHLIGHT_MARK_ID = tonumber(flyoutID)
-
-	for button in next, ButtonRegistry do
-		UpdateSpellHighlight(button)
-	end
 end)
 
 hooksecurefunc("ClearOnBarHighlightMarks", function()
 	lib.ON_BAR_HIGHLIGHT_MARK_TYPE = nil
-
-	for button in next, ButtonRegistry do
-		UpdateSpellHighlight(button)
-	end
 end)
+
+if ActionBarController_UpdateAllSpellHighlights then
+	hooksecurefunc("ActionBarController_UpdateAllSpellHighlights", function()
+		for button in next, ButtonRegistry do
+			UpdateSpellHighlight(button)
+		end
+	end)
+end
 
 function UpdateSpellHighlight(self)
 	local shown = false
@@ -2452,13 +2492,13 @@ Spell.GetTexture              = function(self) return GetSpellTexture(self._stat
 Spell.GetCharges              = function(self) return GetSpellCharges(self._state_action) end
 Spell.GetCount                = function(self) return GetSpellCount(self._state_action) end
 Spell.GetCooldown             = function(self) return GetSpellCooldown(self._state_action) end
-Spell.IsAttack                = function(self) return IsAttackSpell(FindSpellBookSlotBySpellID(self._state_action), "spell") end -- needs spell book id as of 4.0.1.13066
+Spell.IsAttack                = function(self) local id = FindSpellBookSlotBySpellID(self._state_action); return id and IsAttackSpell(id, "spell") end -- needs spell book id as of 4.0.1.13066
 Spell.IsEquipped              = function(self) return nil end
 Spell.IsCurrentlyActive       = function(self) return IsCurrentSpell(self._state_action) end
-Spell.IsAutoRepeat            = function(self) return IsAutoRepeatSpell(FindSpellBookSlotBySpellID(self._state_action), "spell") end -- needs spell book id as of 4.0.1.13066
+Spell.IsAutoRepeat            = function(self) local id = FindSpellBookSlotBySpellID(self._state_action); return id and IsAutoRepeatSpell(id, "spell") end -- needs spell book id as of 4.0.1.13066
 Spell.IsUsable                = function(self) return IsUsableSpell(self._state_action) end
 Spell.IsConsumableOrStackable = function(self) return IsConsumableSpell(self._state_action) end
-Spell.IsUnitInRange           = function(self, unit) return IsSpellInRange(FindSpellBookSlotBySpellID(self._state_action), "spell", unit) end -- needs spell book id as of 4.0.1.13066
+Spell.IsUnitInRange           = function(self, unit) local id = FindSpellBookSlotBySpellID(self._state_action); return id and IsSpellInRange(id, "spell", unit) end -- needs spell book id as of 4.0.1.13066
 Spell.SetTooltip              = function(self) return GameTooltip:SetSpellByID(self._state_action) end
 Spell.GetSpellId              = function(self) return self._state_action end
 Spell.GetLossOfControlCooldown = function(self) return GetSpellLossOfControlCooldown(self._state_action) end

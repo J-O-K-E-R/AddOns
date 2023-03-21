@@ -28,23 +28,28 @@ local options = {
     handler = CrossGambling,
     type = 'group',
     args = {
-        show = {
-            name = "Show",
-            desc = "Show Game",
-            type = "execute",
-            func = "ShowGUI"
-        },
-        hide = {
-            name = "Hide",
-            desc = "Hide Game",
-            type = "execute",
-            func = "HideGUI"
+		show = {
+			name = "Show",
+			desc = "Show Game",
+			type = "execute",
+			func = function()
+				CrossGambling:ToggleGUI(info, true)
+			end
+		},
+
+		hide = {
+			name = "Hide",
+			desc = "Hide Game",
+			type = "execute",
+			func = function()
+				CrossGambling:ToggleGUI(info, false)
+			end
 		},
         minimap = {
             name = "Minimap",
             desc = "Show/Hide Minimap Icon",
             type = "execute",
-            func = "minimap"
+            func = "ToggleMinimap"
 		}, 
         allstats = {
             name = "All Stats",
@@ -116,31 +121,45 @@ local options = {
 }
 
 -- Initialization --
+
 function CrossGambling:OnInitialize()
-    -- Defaults for the DB
-	local defaults = {
-		global = {
-			minimap = {
-            hide = false,
-        },
-		    wager = 1000,
-			houseCut = 10,
-			themechoice = 1,
-			theme = uiThemes[2],
-			stats = {},
-			housestats = 0,
-			joinstats = {},
-			scale = 1,
-			scalevalue = 1,
-			bans = {},
-		},
-	}
-	
-	self.game = {
+	self:InitDB()
+	self:InitMinimap()
+	self:DrawSecondEvents()
+		
+	if (self.db.global.theme == uiThemes[2]) then
+		self:DrawMainEvents()
+	elseif (self.db.global.theme == uiThemes[1]) then
+		self:DrawMainEvents2()
+	end
+end
+
+function CrossGambling:InitDB()
+    local defaults = {
+        global = {
+            minimap = {
+                hide = false,
+            },
+            wager = 1000,
+            houseCut = 10,
+			colors = { frameColor = {r = 0.27, g = 0.27, b = 0.27}, buttonColor = {r = 0.30, g = 0.30, b = 0.30}, sideColor = {r = 0.20, g = 0.20, b = 0.20} },
+            themechoice = 1,
+            theme = uiThemes[2],
+            stats = {},
+            housestats = 0,
+            joinstats = {},
+            scale = 1,
+            scalevalue = 1,
+            bans = {},
+},
+}
+
+		self.game = {
 				chatMethod = chatMethods[1],
 				mode = gameModes[1],
 				state = gameStates[1],
 				chatframeOption = true,
+				realmFilter = true,
 				house = false,
 				host = false, 
 				players = {},
@@ -148,75 +167,67 @@ function CrossGambling:OnInitialize()
 				PlayerClass = select(2, UnitClass("player")),
 				result = nil,
 			}
-			CGEvents = {}
-    self.db = LibStub("AceDB-3.0"):New("CrossGambling", defaults, true)
+
+    CGCall = {}
+	self.db = LibStub("AceDB-3.0"):New("CrossGambling", defaults, true)
+	LibStub("AceConfig-3.0"):RegisterOptionsTable("CrossGambling", options, {"CrossGambling", "cg"})
 	if(CrossGambling["stats"]) then CrossGambling["stats"] = self.db.global.stats end
-    LibStub("AceConfig-3.0"):RegisterOptionsTable("CrossGambling", options, {"CrossGambling", "cg"})
-    self.game.chatframeOption = true
-    -- Sets up the minimap icon
-    local minimapIcon = LibStub("LibDBIcon-1.0")
-    local minimapLDB = LibStub("LibDataBroker-1.1"):NewDataObject("CrossGamblingIcon", {
-        type = "data source",
-        text = "CrossGambling",
-        icon = "Interface\\AddOns\\CrossGambling\\media\\icon",
-        OnClick = function() 
-		if (self.db.global.theme == uiThemes[1]) then
-			self:toggleUi2()
-        elseif (self.db.global.theme == uiThemes[2]) then
-			self:toggleUi() end end,
-        OnTooltipShow = function(tooltip)
-		    tooltip:AddLine("CrossGambling", 1, 1, 1)
-            tooltip:AddLine(" ", 1, 1, 1)
-            tooltip:AddLine("Toggle CrossGambling.", 1, 229 / 255, 153 / 255)
-		    tooltip:Show()
-
-		end,
-    })
-	DEFAULT_CHAT_FRAME:AddMessage("|cffffff00<Cross Gambling> loaded /cg to use");
-    minimapIcon:Register("CrossGamblingIcon", minimapLDB, self.db.global.minimap)
-	if (self.db.global.theme == uiThemes[2]) then
-		self:ConstructUI()
-	elseif (self.db.global.theme == uiThemes[1]) then
-		self:ConstructUI2()
-	end
-	function CrossGambling:minimap(info)
-		if self.db.global.minimap.hide == false then 
-			minimapIcon:Hide("CrossGamblingIcon")
-			self.db.global.minimap.hide = true
-		elseif self.db.global.minimap.hide == true then
-			minimapIcon:Show("CrossGamblingIcon")
-			self.db.global.minimap.hide = false
-		end
-	end
-    
-	self:drawEvents()
+	 self.game.chatframeOption = true
 end
 
-
-function CrossGambling:ShowGUI(info)
+function CrossGambling:InitMinimap()
+	local minimapIcon = LibStub("LibDBIcon-1.0")
+	local minimapLDB = LibStub("LibDataBroker-1.1"):NewDataObject("CrossGamblingIcon", {
+	type = "data source",
+	text = "CrossGambling",
+	icon = "Interface\\AddOns\\CrossGambling\\media\\icon",
+	OnClick = function()
 	if (self.db.global.theme == uiThemes[1]) then
-		CrossGambling:ShowClassic(info)
-    elseif (self.db.global.theme == uiThemes[2]) then
-		CrossGambling:ShowSlick(info)
+		self:toggleUi2()
+	elseif (self.db.global.theme == uiThemes[2]) then
+		self:toggleUi()
+	end
+end,
+	OnTooltipShow = function(tooltip)
+	tooltip:AddLine("CrossGambling", 1, 1, 1)
+	tooltip:AddLine(" ", 1, 1, 1)
+	tooltip:AddLine("Toggle CrossGambling.", 1, 229 / 255, 153/ 255)
+	tooltip:Show()
+end,
+})
+minimapIcon:Register("CrossGamblingIcon", minimapLDB, self.db.global.minimap)
+
+function CrossGambling:ToggleMinimap()
+	if (self.db.global.minimap.hide == false) then
+		minimapIcon:Hide("CrossGamblingIcon")
+		self.db.global.minimap.hide = true
+	else
+		minimapIcon:Show("CrossGamblingIcon")
+		self.db.global.minimap.hide = false
+	end
+end
+end
+
+
+
+
+function CrossGambling:ToggleGUI(info, isShowing)
+	local method = isShowing and "Show" or "Hide"
+	local theme = self.db.global.theme
+
+	if theme == uiThemes[1] then
+		CrossGambling[method .. "Classic"](info)
+	elseif theme == uiThemes[2] then
+		CrossGambling[method .. "Slick"](info)
 	end
 end
 
-function CrossGambling:HideGUI(info)
-	if (self.db.global.theme == uiThemes[1]) then
-		CrossGambling:HideClassic(info)
-    elseif (self.db.global.theme == uiThemes[2]) then
-		CrossGambling:HideSlick(info)
-	end
-end
-
-function CrossGambling:SendEvent(event, arg1)
-	-- Sends the game to proper chat channels for clients. 
-	if self.game.chatMethod then
-		local Event = event .. ":" .. tostring(arg1)
-
-		C_ChatInfo.SendAddonMessage("CrossGambling", Event, self.game.chatMethod)
-    --print("DEBUG | Event: ", event, " // Channel: ", Channel)
-	end
+function CrossGambling:SendMsg(event, arg1)
+  local msg = event
+  if arg1 then msg = msg .. ":" .. tostring(arg1) end
+  if self.game.chatMethod then
+    ChatThrottleLib:SendAddonMessage("BULK", "CrossGambling", msg, self.game.chatMethod)
+  end
 end
 
 function CrossGambling:RegisterChatEvents()
@@ -252,6 +263,11 @@ function CrossGambling:chatMethod()
 	
 end
 
+function add_commas(value) 
+return #tostring(value) > 3 and tostring(value):gsub("^(-?%d+)(%d%d%d)", "%1,%2"):gsub("(%d)(%d%d%d)", ",%1,%2") or tostring(value) 
+end
+
+
 function CrossGambling:handleChatMsg(_, text, playerName)
     -- Record Player Registration
     if (self.game.state == gameStates[2]) then
@@ -263,59 +279,109 @@ end
 function CrossGambling:handleSystemMessage(_, text)
     local playerName, actualRoll, minRoll, maxRoll = strmatch(text, "^([^ ]+) .+ (%d+) %((%d+)-(%d+)%)%.?$")
 
-    -- records player rolls
-	if (tonumber(minRoll) == 1 and tonumber(maxRoll) == self.db.global.wager) then
-        for i = 1, #self.game.players do
-            if (self.game.players[i].name == playerName and self.game.players[i].roll == nil) then
-                self.game.players[i].roll = tonumber(actualRoll)
-				self:SendEvent("PLAYER_ROLL", playerName..":"..tostring(actualRoll))
-            end
-        end
+    if not playerName or not actualRoll or not minRoll or not maxRoll then
+        -- handle error: message doesn't match expected format
+        return
     end
 
-    if (#self:CheckRolls() == 0) then
+    minRoll, maxRoll = tonumber(minRoll), tonumber(maxRoll)
+    if minRoll ~= 1 or maxRoll ~= self.db.global.wager then
+        -- handle error: roll doesn't match expected range
+        return
+    end
+
+    actualRoll = tonumber(actualRoll)
+    local player = self:getPlayerByName(playerName)
+    if not player then
+        -- handle error: player not found
+        return
+    end
+
+    if player.roll then
+        -- handle error: player has already rolled
+        return
+    end
+
+    player.roll = actualRoll
+    self:SendMsg("PLAYER_ROLL", playerName..":"..tostring(actualRoll))
+
+    if not self:hasPendingRolls() then
         self:CGResults()
     end
 end
 
-function CrossGambling:banPlayer(info, playerName)
-	-- Adds players to ban list
-	if (playerName ~= nil or playerName ~= "") then
-		for i=1, #self.db.global.bans do
-			if (playerName == self.db.global.bans[i]) then
-				self:Print(playerName .. " Unable to add to ban list - user already banned.")
-				return
-			end
-		end
-			tinsert(self.db.global.bans, playerName)
-			self:Print(playerName .. " has been added to the ban list.")
-	else
-		self:Print(playerName .. "|cffffff00Error: No name provided.")
-	end
+function CrossGambling:getPlayerByName(name)
+    for i = 1, #self.game.players do
+        if self.game.players[i].name == name then
+            return self.game.players[i]
+        end
+    end
+    return nil
 end
+
+function CrossGambling:hasPendingRolls()
+    for i = 1, #self.game.players do
+        if not self.game.players[i].roll then
+            return true
+        end
+    end
+    return false
+end
+
+
+function CrossGambling:banPlayer(info, playerName)
+    if not playerName or playerName == "" then
+        self:Print("Error: No name provided.")
+        return
+    end
+
+    for i, bannedPlayer in ipairs(self.db.global.bans) do
+        if bannedPlayer == playerName then
+            self:Print(playerName .. " Unable to add to ban list - user already banned.")
+            return
+        end
+    end
+
+    table.insert(self.db.global.bans, playerName)
+    self:Print(playerName .. " has been added to the ban list.")
+end
+
 
 function CrossGambling:unbanPlayer(info, playerName)
-    -- Removes from ban list
-	if (playerName ~= nil or playerName ~= "") then
-		for i = 1, #self.db.global.bans do
-			if (playerName == self.db.global.bans[i]) then
-				tremove(self.db.global.bans, i)
-				self:Print(playerName .. " has been removed from the ban list.")
-				return
-			end
-		end
-		self:Print(playerName .. " is not currently banned!")
-	else
-		self:Print(playerName .. "|cffffff00Error: No name provided.")
-	end
+    if not playerName or playerName == "" then
+        self:Print("Error: No name provided.")
+        return
+    end
+
+    local playerIndex = nil
+    for i = 1, #self.db.global.bans do
+        if (self.db.global.bans[i] == playerName) then
+            playerIndex = i
+            break
+        end
+    end
+
+    if playerIndex then
+        table.remove(self.db.global.bans, playerIndex)
+        self:Print(playerName .. " has been removed from the ban list.")
+    else
+        self:Print(playerName .. " is not currently banned!")
+    end
 end
 
+
 function CrossGambling:listBans(info)
-	for i=1, table.getn(self.db.global.bans) do
-		DEFAULT_CHAT_FRAME:AddMessage(strjoin("|cffffff00", "...", tostring(self.db.global.bans[i])))
-	end
-		self:Print("|cffffff00The Current Bans, to unban use /cg unban [PlayerName]@")
+    local bans = self.db.global.bans
+    if #bans == 0 then
+        self:Print("There are no bans currently.")
+    else
+        for i, ban in ipairs(bans) do
+            DEFAULT_CHAT_FRAME:AddMessage(string.format("%s %s", "...", tostring(ban)))
+        end
+        self:Print("The Current Bans, to unban use /cg unban [PlayerName]")
+    end
 end
+
 
 function CrossGambling:changeGameMode()
 	local gameNum
@@ -340,37 +406,32 @@ function CrossGambling:CGRolls()
     if (self.game.state == gameStates[2]) then
         -- Need at least two or more players to play. 
         if (#self.game.players > 1) then
-            -- Stop listening to chat messages
             self:UnRegisterChatEvents()
-            -- Listens to System Msgs
             self:RegisterEvent("CHAT_MSG_SYSTEM", "handleSystemMessage")
             self.game.state = gameStates[3]
-
-            -- Starts the rolling Phase
-            self:SendEvent("START_ROLLS")
+            self:SendMsg("START_ROLLS")
         else
-			if(self.game.chatframeOption == false and self.game.host == true) then
-				local RollNotification = "Not enough Players!"
-				self:SendEvent(format("CHAT_MSG:%s:%s:%s", self.game.PlayerName, self.game.PlayerClass, RollNotification))
-			else
-				SendChatMessage("Not enough Players!" , self.game.chatMethod)
-			end
+			SendChatMessage("Not enough Players!", self.game.chatMethod)
         end
-		-- Sets the game into Roll State 
     elseif (self.game.state == gameStates[3]) then
-        -- Shows who hasn't rolled yet. 
-        local playersRoll = self:CheckRolls(self.game.players)
-
-        for i = 1, #playersRoll do
-			if(self.game.chatframeOption == false) then
-				local RollNotification = playersRoll[i] .. " still needs to roll!"
-				self:SendEvent(format("CHAT_MSG:%s:%s:%s", self.game.PlayerName, self.game.PlayerClass, RollNotification))
-			else
-				 SendChatMessage(playersRoll[i] .. " still needs to roll!" , self.game.chatMethod)
-			end
+        local playersRoll = self:CheckRolls()
+        if #playersRoll > 0 then
+            local message = table.concat(playersRoll, ", ") .. " still needs to roll!"
+			SendChatMessage(message, self.game.chatMethod)
         end
     end
 end
+
+function CrossGambling:CheckRolls(playerName)
+    local playersRoll = {}
+    for i = 1, #self.game.players do
+        if (self.game.players[i].roll == nil) then
+            table.insert(playersRoll, self.game.players[i].name)
+        end
+    end
+    return playersRoll
+end
+
 
 function CrossGambling:CGResults()
     -- Results for winners/losers.
@@ -399,6 +460,7 @@ function CrossGambling:CGResults()
     self:detectTie()
 end
 
+
 function CrossGambling:CloseGame()
     if (self.game.result ~= nil) then
         if (#self.game.result.losers > 0 and #self.game.result.winners > 0) then
@@ -412,19 +474,19 @@ function CrossGambling:CloseGame()
             -- Update players house/stats
             for i = 1, #self.game.result.losers do
 			 if (self.game.house == false) then
-			    local RollNotification = (self.game.result.losers[i].name .. " owes " .. self.game.result.winners[i].name .. " " .. self:Comma(self.game.result.amountOwed) .. " gold!")
+			    local RollNotification = (self.game.result.losers[i].name .. " owes " .. self.game.result.winners[i].name .. " " .. add_commas(self.game.result.amountOwed) .. " gold!")
 				if(self.game.chatframeOption == false and self.game.host == true) then	
-					self:SendEvent(format("CHAT_MSG:%s:%s:%s", self.game.PlayerName, self.game.PlayerClass, RollNotification))
+					self:SendMsg(format("CHAT_MSG:%s:%s:%s", self.game.PlayerName, self.game.PlayerClass, RollNotification))
 				else
-					SendChatMessage(self.game.result.losers[i].name .. " owes " .. self.game.result.winners[i].name .. " " .. self:Comma(self.game.result.amountOwed) .. " gold!" , self.game.chatMethod)
+					SendChatMessage(self.game.result.losers[i].name .. " owes " .. self.game.result.winners[i].name .. " " .. add_commas(self.game.result.amountOwed) .. " gold!" , self.game.chatMethod)
                 end               
 			   self:updatePlayerStat(self.game.result.losers[i].name, self.game.result.amountOwed * -1)
 			elseif(self.game.house == true) then
                 if(self.game.chatframeOption == false and self.game.host == true) then
-					local RollNotification = self.game.result.losers[i].name .. " owes " .. self.game.result.winners[i].name .. " " .. self:Comma(self.game.result.amountOwed) .. " gold!" .. " plus " .. self:Comma(houseAmount) .. " to the guild"
-					self:SendEvent(format("CHAT_MSG:%s:%s:%s", self.game.PlayerName, self.game.PlayerClass, RollNotification))
+					local RollNotification = self.game.result.losers[i].name .. " owes " .. self.game.result.winners[i].name .. " " .. add_commas(self.game.result.amountOwed) .. " gold!" .. " plus " .. add_commas(houseAmount) .. " to the guild"
+					self:SendMsg(format("CHAT_MSG:%s:%s:%s", self.game.PlayerName, self.game.PlayerClass, RollNotification))
 				else
-					SendChatMessage(self.game.result.losers[i].name .. " owes " .. self.game.result.winners[i].name .. " " .. self:Comma(self.game.result.amountOwed) .. " gold!" .. " plus " .. self:Comma(houseAmount) .. " to the guild" , self.game.chatMethod)
+					SendChatMessage(self.game.result.losers[i].name .. " owes " .. self.game.result.winners[i].name .. " " .. add_commas(self.game.result.amountOwed) .. " gold!" .. " plus " .. add_commas(houseAmount) .. " to the guild" , self.game.chatMethod)
 				end
 					self:updatePlayerStat(self.game.result.losers[i].name, self.game.result.amountOwed * -1)
 					self.db.global.housestats = self.db.global.housestats + houseAmount
@@ -437,7 +499,7 @@ function CrossGambling:CloseGame()
         else
 			if(self.game.chatframeOption == false and self.game.host == true) then
 				local RollNotification = "No winners this round!"
-				self:SendEvent(format("CHAT_MSG:%s:%s:%s", self.game.PlayerName, self.game.PlayerClass, RollNotification))
+				self:SendMsg(format("CHAT_MSG:%s:%s:%s", self.game.PlayerName, self.game.PlayerClass, RollNotification))
 			else
 				SendChatMessage("No winners this round!" , self.game.chatMethod)
 			end
@@ -463,7 +525,7 @@ function CrossGambling:registerPlayer(playerName, playerRoll)
         if (self.db.global.bans[i] == playerName) then
 		    if(self.game.chatframeOption == false and self.game.host == true) then
 				local RollNotification = "Sorry " .. playerName .. ", you're banned."
-				self:SendEvent(format("CHAT_MSG:%s:%s:%s", self.game.PlayerName, self.game.PlayerClass, RollNotification))
+				self:SendMsg(format("CHAT_MSG:%s:%s:%s", self.game.PlayerName, self.game.PlayerClass, RollNotification))
 			else
 				SendChatMessage("Sorry " .. playerName .. ", you're banned." , self.game.chatMethod)
 			end
@@ -490,18 +552,7 @@ function CrossGambling:unregisterPlayer(playerName)
     end
 end
 
-function CrossGambling:CheckRolls(playerName)
-    -- Shows who hasn't rolled.
-	    local playersRoll = {}
 
-    for i = 1, #self.game.players do
-        if (self.game.players[i].roll == nil) then
-            tinsert(playersRoll, self.game.players[i].name)
-        end
-    end
-
-    return playersRoll
-end
 
 function CrossGambling:UnRegisterChatEvents()
         self:UnregisterEvent("CHAT_MSG_PARTY")

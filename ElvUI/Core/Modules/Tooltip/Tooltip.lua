@@ -75,6 +75,7 @@ local UnitHealthMax = UnitHealthMax
 
 local TooltipDataType = Enum.TooltipDataType
 local AddTooltipPostCall = TooltipDataProcessor and TooltipDataProcessor.AddTooltipPostCall
+local GetDisplayedItem = TooltipUtil and TooltipUtil.GetDisplayedItem
 
 local GameTooltip, GameTooltipStatusBar = GameTooltip, GameTooltipStatusBar
 local C_QuestLog_GetQuestIDForLogIndex = C_QuestLog.GetQuestIDForLogIndex
@@ -103,20 +104,22 @@ function TT:IsModKeyDown(db)
 	return k == 'SHOW' or ((k == 'SHIFT' and IsShiftKeyDown()) or (k == 'CTRL' and IsControlKeyDown()) or (k == 'ALT' and IsAltKeyDown()))
 end
 
+function TT:SetCompareItems(tt, value)
+	if E.Retail and tt == GameTooltip then
+		tt.supportsItemComparison = value
+	end
+end
+
 function TT:GameTooltip_SetDefaultAnchor(tt, parent)
 	if not E.private.tooltip.enable or not TT.db.visibility or tt:IsForbidden() or tt:GetAnchorType() ~= 'ANCHOR_NONE' then
 		return
-	elseif InCombatLockdown() and not TT:IsModKeyDown(TT.db.visibility.combatOverride) then
+	elseif (InCombatLockdown() and not TT:IsModKeyDown(TT.db.visibility.combatOverride)) or (not AB.KeyBinder.active and not TT:IsModKeyDown(TT.db.visibility.actionbars) and AB.handledbuttons[tt:GetOwner()]) then
+		TT:SetCompareItems(tt, false)
 		tt:Hide()
 		return
-	elseif not AB.KeyBinder.active and not TT:IsModKeyDown(TT.db.visibility.actionbars) then
-		local owner = tt:GetOwner()
-		local ownerName = owner and owner.GetName and owner:GetName()
-		if ownerName and (strfind(ownerName, 'ElvUI_Bar') or strfind(ownerName, 'ElvUI_StanceBar') or strfind(ownerName, 'PetAction')) then
-			tt:Hide()
-			return
-		end
 	end
+
+	TT:SetCompareItems(tt, true)
 
 	local statusBar = tt.StatusBar
 	if statusBar then
@@ -260,7 +263,7 @@ function TT:SetUnitText(tt, unit, isPlayerUnit)
 			local diffColor = GetCreatureDifficultyColor(level)
 			local race, englishRace = UnitRace(unit)
 			local _, localizedFaction = E:GetUnitBattlefieldFaction(unit)
-			if localizedFaction and englishRace == 'Pandaren' then race = localizedFaction..' '..race end
+			if localizedFaction and (englishRace == 'Pandaren' or englishRace == 'Dracthyr') then race = localizedFaction..' '..race end
 			local hexColor = E:RGBToHex(diffColor.r, diffColor.g, diffColor.b)
 			local unitGender = TT.db.gender and genderTable[gender]
 			if level < realLevel then
@@ -678,7 +681,7 @@ function TT:EmbeddedItemTooltip_QuestReward(tt)
 end
 
 function TT:GameTooltip_OnTooltipSetItem(data)
-	if self ~= GameTooltip or self:IsForbidden() or not TT.db.visibility then return end
+	if (self ~= GameTooltip and self ~= _G.ShoppingTooltip1 and self ~= _G.ShoppingTooltip2) or self:IsForbidden() or not TT.db.visibility then return end
 
 	local owner = self:GetOwner()
 	local ownerName = owner and owner.GetName and owner:GetName()
@@ -690,8 +693,9 @@ function TT:GameTooltip_OnTooltipSetItem(data)
 	local itemID, bagCount, bankCount
 	local modKey = TT:IsModKeyDown()
 
-	if self.GetItem then -- Some tooltips don't have this func. Example - compare tooltip
-		local name, link = self:GetItem()
+	local GetItem = GetDisplayedItem or self.GetItem
+	if GetItem then
+		local name, link = GetItem(self)
 
 		if not E.Retail and name == '' and _G.CraftFrame and _G.CraftFrame:IsShown() then
 			local reagentIndex = ownerName and tonumber(strmatch(ownerName, 'Reagent(%d+)'))
@@ -722,11 +726,11 @@ function TT:GameTooltip_OnTooltipSetItem(data)
 			local count = GetItemCount(link)
 			local total = GetItemCount(link, true)
 			if TT.db.itemCount == 'BAGS_ONLY' then
-				bagCount = format(IDLine, L["Count"], count)
+				bagCount = format(IDLine, L["Bags"], count)
 			elseif TT.db.itemCount == 'BANK_ONLY' then
 				bankCount = format(IDLine, L["Bank"], total - count)
 			elseif TT.db.itemCount == 'BOTH' then
-				bagCount = format(IDLine, L["Count"], count)
+				bagCount = format(IDLine, L["Bags"], count)
 				bankCount = format(IDLine, L["Bank"], total - count)
 			end
 		end
@@ -871,6 +875,7 @@ end
 function TT:SetToyByItemID(tt, id)
 	if tt:IsForbidden() then return end
 	if id and TT:IsModKeyDown() then
+		tt:AddLine(' ')
 		tt:AddLine(format(IDLine, _G.ID, id))
 		tt:Show()
 	end
@@ -882,6 +887,7 @@ function TT:SetCurrencyToken(tt, index)
 	local id = TT:IsModKeyDown() and tonumber(strmatch(C_CurrencyInfo_GetCurrencyListLink(index),'currency:(%d+)'))
 	if not id then return end
 
+	tt:AddLine(' ')
 	tt:AddLine(format(IDLine, _G.ID, id))
 	tt:Show()
 end
@@ -889,6 +895,7 @@ end
 function TT:SetCurrencyTokenByID(tt, id)
 	if tt:IsForbidden() then return end
 	if id and TT:IsModKeyDown() then
+		tt:AddLine(' ')
 		tt:AddLine(format(IDLine, _G.ID, id))
 		tt:Show()
 	end
@@ -1059,6 +1066,8 @@ function TT:Initialize()
 		TT:SecureHook('BattlePetToolTip_Show', 'AddBattlePetID')
 		TT:SecureHook('QuestMapLogTitleButton_OnEnter', 'AddQuestID')
 		TT:SecureHook('TaskPOI_OnEnter', 'AddQuestID')
+
+		_G.GameTooltipDefaultContainer:KillEditMode()
 	end
 end
 

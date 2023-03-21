@@ -2,6 +2,9 @@
 
 -- Customized for OmniCD by permission of the copyright owner.
 
+-- Parameters to Edit on CTRL + mouse click
+-- arg = spellID (number), func DND
+
 ---------------------------------------------------------------------------------
 
 --[[-----------------------------------------------------------------------------
@@ -21,10 +24,6 @@ local select, pairs = select, pairs
 -- WoW APIs
 local PlaySound = PlaySound
 local CreateFrame, UIParent = CreateFrame, UIParent
-
--- Global vars/functions that we don't upvalue since they might get hooked, or upgraded
--- List them here for Mikk's FindGlobals script
--- GLOBALS: SetDesaturation, GameFontHighlight
 
 -- s b
 local USE_ICON_CROP = false
@@ -341,17 +340,17 @@ local methods = {
 		if desc then
 			if not self.desc then
 				--[[ s r
-				local desc = self.frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+				local f = self.frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
 				]]
-				local desc = self.frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall-OmniCD")
+				local f = self.frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall-OmniCD")
 				-- e
-				desc:ClearAllPoints()
-				desc:SetPoint("TOPLEFT", self.checkbg, "TOPRIGHT", 5, -21)
-				desc:SetWidth(self.frame.width - 30)
-				desc:SetPoint("RIGHT", self.frame, "RIGHT", -30, 0)
-				desc:SetJustifyH("LEFT")
-				desc:SetJustifyV("TOP")
-				self.desc = desc
+				f:ClearAllPoints()
+				f:SetPoint("TOPLEFT", self.checkbg, "TOPRIGHT", 5, -21)
+				f:SetWidth(self.frame.width - 30)
+				f:SetPoint("RIGHT", self.frame, "RIGHT", -30, 0)
+				f:SetJustifyH("LEFT")
+				f:SetJustifyV("TOP")
+				self.desc = f
 			end
 			self.desc:Show()
 			--self.text:SetFontObject(GameFontNormal)
@@ -383,7 +382,7 @@ local methods = {
 						image:SetTexCoord(0.05, 0.95, 0.1, CROP_BOTTOM_TEXCOORD)
 					else
 						self.imagebg:SetHeight(DEFAULT_ICON_SIZE)
-						image:SetTexCoord(0.07, 0.93, 0.07, 0.93)
+						image:SetTexCoord(...)
 					end
 				else
 					if USE_ICON_CROP then
@@ -439,10 +438,12 @@ local function Constructor()
 	checkbg:SetWidth(14)
 	checkbg:SetHeight(14)
 	checkbg:SetPoint("LEFT")
-	-- v27 added texture borders instead of backdrop
-	-- OmniCD[1].BackdropTemplate(checkbg)
-	-- checkbg:SetBackdropColor(0, 0, 0)
-	-- checkbg:SetBackdropBorderColor(0.2, 0.2, 0.25)
+
+	--[[ v27 added texture borders instead of backdrop
+	OmniCD[1].BackdropTemplate(checkbg, "ACD")
+	checkbg:SetBackdropColor(0, 0, 0)
+	checkbg:SetBackdropBorderColor(0.2, 0.2, 0.25)
+	]]
 	checkbg.border = checkbg:CreateTexture(nil, "BACKGROUND")
 	OmniCD[1].DisablePixelSnap(checkbg.border)
 	checkbg.border:SetAllPoints()
@@ -451,7 +452,7 @@ local function Constructor()
 	checkbg.bg = checkbg:CreateTexture(nil, "BORDER")
 	OmniCD[1].DisablePixelSnap(checkbg.bg)
 	checkbg.bg:SetColorTexture(0, 0, 0)
-	local edgeSize = OmniCD[1].PixelMult
+	local edgeSize = OmniCD[1].PixelMult / (OmniCD[1].global.optionPanelScale or 1)
 	checkbg.bg:SetPoint("TOPLEFT", checkbg, "TOPLEFT", edgeSize, -edgeSize)
 	checkbg.bg:SetPoint("BOTTOMRIGHT", checkbg, "BOTTOMRIGHT", -edgeSize, edgeSize)
 
@@ -490,9 +491,11 @@ local function Constructor()
 		imagebg:SetHeight(DEFAULT_ICON_SIZE) -- 24 is frames full height
 		imagebg:SetWidth(DEFAULT_ICON_SIZE)
 		imagebg:SetPoint("LEFT", checkbg, "RIGHT", 2, 0)
-		-- v27
---		OmniCD[1].BackdropTemplate(imagebg)
---		imagebg:SetBackdropBorderColor(0.2, 0.2, 0.05)
+
+		--[[ v27
+		OmniCD[1].BackdropTemplate(imagebg, "ACD")
+		imagebg:SetBackdropBorderColor(0.2, 0.2, 0.05)
+		]]
 		imagebg.border = imagebg:CreateTexture(nil, "BORDER")
 		OmniCD[1].DisablePixelSnap(imagebg.border)
 		imagebg.border:SetAllPoints()
@@ -500,9 +503,10 @@ local function Constructor()
 
 		image = imagebg:CreateTexture(nil, "OVERLAY")
 		OmniCD[1].DisablePixelSnap(image)
-		-- v27
---		image:SetPoint("TOPLEFT", imagebg.TopEdge, "BOTTOMLEFT")
---		image:SetPoint("BOTTOMRIGHT", imagebg.BottomEdge, "TOPRIGHT")
+		--[[ v27
+		image:SetPoint("TOPLEFT", imagebg.TopEdge, "BOTTOMLEFT")
+		image:SetPoint("BOTTOMRIGHT", imagebg.BottomEdge, "TOPRIGHT")
+		]]
 		image:SetPoint("TOPLEFT", imagebg, "TOPLEFT", edgeSize, -edgeSize)
 		image:SetPoint("BOTTOMRIGHT", imagebg, "BOTTOMRIGHT", -edgeSize, edgeSize)
 	else

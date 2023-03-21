@@ -670,8 +670,9 @@ function E:Config_CreateSeparatorLine(frame, lastButton)
 end
 
 function E:Config_SetButtonColor(btn, disabled)
+	btn:SetEnabled(not disabled)
+
 	if disabled then
-		btn:Disable()
 		btn.Text:SetTextColor(1, 1, 1)
 		E:Config_SetButtonText(btn, true)
 
@@ -680,7 +681,6 @@ function E:Config_SetButtonColor(btn, disabled)
 			btn:SetBackdropBorderColor(1, .82, 0, 1)
 		end
 	else
-		btn:Enable()
 		btn.Text:SetTextColor(1, .82, 0)
 		E:Config_SetButtonText(btn)
 
@@ -879,7 +879,7 @@ function E:Config_GetWindow()
 end
 
 local ConfigLogoTop
-E.valueColorUpdateFuncs[function(_, r, g, b)
+E.valueColorUpdateFuncs.ConfigLogo = function(_, _, r, g, b)
 	if ConfigLogoTop then
 		ConfigLogoTop:SetVertexColor(r, g, b)
 	end
@@ -887,7 +887,7 @@ E.valueColorUpdateFuncs[function(_, r, g, b)
 	if ElvUIMoverNudgeWindow and ElvUIMoverNudgeWindow.shadow then
 		ElvUIMoverNudgeWindow.shadow:SetBackdropBorderColor(r, g, b, 0.9)
 	end
-end] = true
+end
 
 function E:Config_WindowClosed()
 	if not self.bottomHolder then return end

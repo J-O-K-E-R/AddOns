@@ -13,6 +13,7 @@ local hooksecurefunc = hooksecurefunc
 local CreateFrame = CreateFrame
 local GameTooltip = GameTooltip
 local GetCVarBool = GetCVarBool
+local InCombatLockdown = InCombatLockdown
 local RegisterStateDriver = RegisterStateDriver
 local CalculateTotalNumberOfFreeBagSlots = CalculateTotalNumberOfFreeBagSlots
 
@@ -57,6 +58,11 @@ function B:KeyRing_OnEnter()
 	B:BagBar_OnEnter()
 end
 
+function B:BagBar_OnEvent(event)
+	B:BagBar_UpdateVisibility()
+	B.BagBar:UnregisterEvent(event)
+end
+
 function B:KeyRing_OnLeave()
 	if not GameTooltip:IsForbidden() then
 		GameTooltip:Hide()
@@ -87,6 +93,11 @@ function B:SkinBag(bag)
 	icon:SetTexCoord(unpack(E.TexCoords))
 end
 
+function B:BagBar_UpdateVisibility()
+	local visibility = gsub(E.db.bags.bagBar.visibility, '[\n\r]', '')
+	RegisterStateDriver(B.BagBar, 'visibility', visibility)
+end
+
 function B:SizeAndPositionBagBar()
 	if not B.BagBar then return end
 
@@ -99,8 +110,11 @@ function B:SizeAndPositionBagBar()
 	local justBackpack = db.justBackpack
 	local backdropSpacing = not showBackdrop and 0 or db.backdropSpacing
 
-	local visibility = gsub(db.visibility, '[\n\r]', '')
-	RegisterStateDriver(B.BagBar, 'visibility', visibility)
+	if InCombatLockdown() then
+		B.BagBar:RegisterEvent('PLAYER_REGEN_ENABLED')
+	else
+		B:BagBar_UpdateVisibility()
+	end
 
 	B.BagBar:SetAlpha(db.mouseover and 0 or 1)
 
@@ -114,7 +128,7 @@ function B:SizeAndPositionBagBar()
 
 		button:Size(bagBarSize)
 		button:ClearAllPoints()
-		button:SetShown(i == 1 and justBackpack or not justBackpack)
+		button:SetShown(not justBackpack or i == 1)
 
 		if sortDirection == 'ASCENDING'then
 			if i == 1 then firstButton = button else lastButton = button end
@@ -196,6 +210,11 @@ function B:BagButton_UpdateTextures()
 end
 
 function B:LoadBagBar()
+	if E.Retail then
+		_G.BagsBar:SetParent(E.HiddenFrame)
+		_G.BagsBar:UnregisterAllEvents()
+	end
+
 	if not E.private.bags.bagBar then return end
 
 	B.BagBar = CreateFrame('Frame', 'ElvUIBagBar', E.UIParent)
@@ -203,19 +222,28 @@ function B:LoadBagBar()
 	B.BagBar:CreateBackdrop(E.db.bags.transparent and 'Transparent', nil, nil, nil, nil, nil, nil, true)
 	B.BagBar:SetScript('OnEnter', B.BagBar_OnEnter)
 	B.BagBar:SetScript('OnLeave', B.BagBar_OnLeave)
+	B.BagBar:SetScript('OnEvent', B.BagBar_OnEvent)
 	B.BagBar:EnableMouse(true)
 	B.BagBar.buttons = {}
 
 	_G.MainMenuBarBackpackButton:SetParent(B.BagBar)
 	_G.MainMenuBarBackpackButton:ClearAllPoints()
-	_G.MainMenuBarBackpackButtonCount:FontTemplate(LSM:Fetch('font', E.db.bags.bagBar.font), E.db.bags.bagBar.fontSize, E.db.bags.bagBar.fontOutline)
-	_G.MainMenuBarBackpackButtonCount:ClearAllPoints()
-	_G.MainMenuBarBackpackButtonCount:Point('BOTTOMRIGHT', _G.MainMenuBarBackpackButton, 'BOTTOMRIGHT', -1, 4)
 	_G.MainMenuBarBackpackButton:HookScript('OnEnter', B.BagButton_OnEnter)
 	_G.MainMenuBarBackpackButton:HookScript('OnLeave', B.BagButton_OnLeave)
 
-	if not E.Retail then
+	_G.MainMenuBarBackpackButtonCount:ClearAllPoints()
+	_G.MainMenuBarBackpackButtonCount:Point('BOTTOMRIGHT', _G.MainMenuBarBackpackButton, 'BOTTOMRIGHT', -1, 4)
+	_G.MainMenuBarBackpackButtonCount:FontTemplate(LSM:Fetch('font', E.db.bags.bagBar.font), E.db.bags.bagBar.fontSize, E.db.bags.bagBar.fontOutline)
+
+	if E.Retail then
+		hooksecurefunc(_G.BagsBar, 'Layout', B.SizeAndPositionBagBar)
+		hooksecurefunc(_G.MainMenuBarBagManager, 'OnExpandBarChanged', B.SizeAndPositionBagBar)
+	else
 		_G.MainMenuBarBackpackButton.commandName = commandNames[-1]
+	end
+
+	if _G.BagBarExpandToggle then
+		_G.BagBarExpandToggle:Kill()
 	end
 
 	tinsert(B.BagBar.buttons, _G.MainMenuBarBackpackButton)

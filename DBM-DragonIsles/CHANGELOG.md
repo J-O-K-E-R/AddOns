@@ -1,10 +1,12 @@
 # <DBM> World Bosses (Dragonflight)
 
-## [10.0.4](https://github.com/DeadlyBossMods/DBM-Retail/tree/10.0.4) (2022-11-29)
-[Full Changelog](https://github.com/DeadlyBossMods/DBM-Retail/compare/10.0.3...10.0.4) [Previous Releases](https://github.com/DeadlyBossMods/DBM-Retail/releases)
+## [10.0.22](https://github.com/DeadlyBossMods/DBM-Retail/tree/10.0.22) (2023-01-24)
+[Full Changelog](https://github.com/DeadlyBossMods/DBM-Retail/compare/10.0.21...10.0.22) [Previous Releases](https://github.com/DeadlyBossMods/DBM-Retail/releases)
 
-- prep second retail tag to address some legacy code in infoframe and rangeframe that may have been causing problems that was overlooked  
-- change one option default  
-- Use LibDropDownMenu for InfoFrame and RangeFrame  
-- Add LibDropDownMenu  
-- Bump alphas  
+- Prep new tags for wrath and retail  
+- bump tocs  
+- bump alpha  
+- prep new wrath tag  
+- Support auto skipping confirm in gossip api  
+- also bump alpha before I forget  
+- update target scanner to allow mods that need to remark same mobs over and over again, to do so via a new \"wipeguid\" arg  

@@ -1,19 +1,17 @@
 # <DBM> Dungeons (Dragonflight)
 
-## [r46](https://github.com/DeadlyBossMods/DBM-Dungeons/tree/r46) (2022-11-28)
-[Full Changelog](https://github.com/DeadlyBossMods/DBM-Dungeons/compare/r45...r46) [Previous Releases](https://github.com/DeadlyBossMods/DBM-Dungeons/releases)
+## [r60](https://github.com/DeadlyBossMods/DBM-Dungeons/tree/r60) (2023-01-22)
+[Full Changelog](https://github.com/DeadlyBossMods/DBM-Dungeons/compare/r59...r60) [Previous Releases](https://github.com/DeadlyBossMods/DBM-Dungeons/releases)
 
-- Full azurevault pass with latest data from M+ testing  
-- Full pass on Nokhud Offensive from latest M+ data  
-- apparently forgot to hit save on this one  
-- Algethar academy M+ updated pass  
-- court of stars M+ pass  
-- Update localization.cn.lua (#72)  
-- Halls of Valor pass from M+ testing  
-- Fix more stupid  
-- Small jade temple pass from M+ logs  
-- SMBG update from M+ testing  
-- Fix stupid  
-- Ruby life pools updates from last test weekend  
-- Fix sound settings.  
-- remove abilities deleted from game on Wratheye  
+- Adjust GTFO on bonewaw from every 2 seconds to every 3. no reason to be that aggressive for pitch  
+- Throttle shoulder slam in the dodge antispam, to reduce feeling of spam in frog hallways.  
+    Added optional off by special warning for dodge alert to match frog stomps as well  
+- Improve halls of valor trash mod with more awareness of heals on mystics and charged pulse dodge  
+- Announce finding spy to chat in court of stars like LW does  
+    In addition, brand the chat messages so it's clearer to users that DBM is sending them  
+- Fix yaungol rp timer in jade temple for M+  
+    Also added RP timer for sun event too which is only seen in non mythic+  
+- Add DBM Actions  
+- add basic inferno core on self alert for more awareness but without it being overly spammy feeling (not emphasized)  
+- Add hunt prey alert by user request  
+- timer tweak  

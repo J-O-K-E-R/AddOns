@@ -650,12 +650,12 @@ do
 
 	FriendsTooltip:HookScript('OnHide', OnHide)
 	FriendsTooltip:HookScript('OnEnter', OnEnter)
-	--hooksecurefunc('FriendsFrameTooltip_Show', OnEnter)
 end
 
 local function TooltipHook(self)
-    if not AstralKeysSettings.general.show_tooltip_key.isEnabled then return end
+	if not AstralKeysSettings.general.show_tooltip_key.isEnabled then return end
 
+	if self.GetUnit~=nil then 
     local _, uid = self:GetUnit()
     if not UnitIsPlayer(uid) then return end
 
@@ -670,9 +670,10 @@ local function TooltipHook(self)
         GameTooltip:AddDoubleLine(addon.GetMapName(addon.UnitMapID(id)), addon.UnitKeyLevel(id), 1, 1, 1, 1, 1, 1)
         return
     end
+	end
 end
 
---TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Unit, TooltipHook)
+TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Unit, TooltipHook)
 
 local function FriendUnitFunction(self, unit, class, mapID, keyLevel, weekly_best, faction, btag)
 	self.unitID = addon.UnitID(unit)

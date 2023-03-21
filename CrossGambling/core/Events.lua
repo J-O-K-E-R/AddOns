@@ -1,5 +1,10 @@
-function CrossGambling:drawEvents()
-CGEvents["START_GAME"] = function()
+function CrossGambling:DrawSecondEvents()
+
+function add_commas(value) 
+return #tostring(value) > 3 and tostring(value):gsub("^(-?%d+)(%d%d%d)", "%1,%2"):gsub("(%d)(%d%d%d)", ",%1,%2") or tostring(value) 
+end
+
+CGCall["New_Game"] = function()
        -- Starts a new game
     if (self.game.state == "START" and self.game.host == true) then
         -- Start listening to chat messages
@@ -9,56 +14,53 @@ CGEvents["START_GAME"] = function()
         self:GameStart()
         -- Inform players of the selected Game Mode and Wager
         if (self.game.house == false) then
-			local RollNotification = "Wager - " .. self:Comma(self.db.global.wager) .. "g"
+			local RollNotification = "Wager - " .. add_commas(self.db.global.wager) .. "g"
 				if(self.game.chatframeOption == false and self.game.host == true) then	
-					self:SendEvent(format("CHAT_MSG:%s:%s:%s", self.game.PlayerName, self.game.PlayerClass, RollNotification))
+					self:SendMsg(format("CHAT_MSG:%s:%s:%s", self.game.PlayerName, self.game.PlayerClass, RollNotification))
 				else
-					SendChatMessage("Game Mode - " .. self.game.mode .. " - Wager - " .. self:Comma(self.db.global.wager) .. "g", self.game.chatMethod)
+					SendChatMessage("Game Mode - " .. self.game.mode .. " - Wager - " .. add_commas(self.db.global.wager) .. "g", self.game.chatMethod)
                 end  	
         else
-            local RollNotification = "Wager - " .. self:Comma(self.db.global.wager) .. "g - House Cut - " .. self.db.global.houseCut .. "%"
+            local RollNotification = "Wager - " .. add_commas(self.db.global.wager) .. "g - House Cut - " .. self.db.global.houseCut .. "%"
 				if(self.game.chatframeOption == false and self.game.host == true) then	
-					self:SendEvent(format("CHAT_MSG:%s:%s:%s", self.game.PlayerName, self.game.PlayerClass, RollNotification))
+					self:SendMsg(format("CHAT_MSG:%s:%s:%s", self.game.PlayerName, self.game.PlayerClass, RollNotification))
 				else
-					SendChatMessage("Game Mode - " .. self.game.mode .. " - Wager - " .. self:Comma(self.db.global.wager) .. "g - House Cut - " .. self.db.global.houseCut .. "%", self.game.chatMethod)
+					SendChatMessage("Game Mode - " .. self.game.mode .. " - Wager - " .. add_commas(self.db.global.wager) .. "g - House Cut - " .. self.db.global.houseCut .. "%", self.game.chatMethod)
                 end  
 		 end
 		-- Disable Button for clients.
-		self:SendEvent("DisableClient")
+		self:SendMsg("DisableClient")
     end
-end
--- Triggers the roll me function, which sends to all clients.
-CGEvents["ROLL_ME"] = function(maxAmount, minAmount)
-   CrossGambling:rollMe()
 end
 
 -- Triggers Add Function for all clients.
-CGEvents["ADD_PLAYER"] = function(playerName)
-	  CrossGambling:AddPlayer(playerName)
-	  self:registerPlayer(playerName)
+CGCall["ADD_PLAYER"] = function(playerName)
+	CrossGambling:AddPlayer(playerName)
+	self:registerPlayer(playerName)
 end
 -- Triggers Remove Function for all clients.
-CGEvents["Remove_Player"] = function(playerName)
-	  CrossGambling:RemovePlayer(playerName)
-	  self:unregisterPlayer(playerName)
+CGCall["Remove_Player"] = function(playerName)
+	CrossGambling:RemovePlayer(playerName)
+	self:unregisterPlayer(playerName)
 end
 -- Sets the roll for all clients.
-CGEvents["SET_ROLL"] = function(value)
+CGCall["SET_WAGER"] = function(value)
 	self.db.global.wager = tonumber(value)
 end 
 -- Sets the game mode for all clients.
-CGEvents["GAME_MODE"] = function(value)
- self.game.mode = tostring(value)
+CGCall["GAME_MODE"] = function(value)
+	self.game.mode = tostring(value)
 end
-CGEvents["SET_HOUSE"] = function(value)
-        self.db.global.houseCut = tostring(value)
+CGCall["SET_HOUSE"] = function(value)
+	self.db.global.houseCut = tostring(value)
 end
 -- Sets everyone to proper chatMethod for all clients.
-CGEvents["Chat_Method"] = function(value)
- self.game.chatMethod = tostring(value)
+CGCall["Chat_Method"] = function(value)
+	self.game.chatMethod = tostring(value)
 end
 -- Lets the players know what the roll amount is.
-CGEvents["START_ROLLS"] = function(maxAmount)
+CGCall["START_ROLLS"] = function(maxAmount)
+	self:SendMsg("Disable_Join")
 	if (self.game.mode == "BigTwo") then
 		self.db.global.wager = 2
 	elseif (self.game.mode == "501") then
@@ -75,7 +77,7 @@ CGEvents["START_ROLLS"] = function(maxAmount)
 	if(self.game.host == true) then
 		local RollNotification = "Press Roll Me!"
 	if(self.game.chatframeOption == false and self.game.host == true) then	
-		self:SendEvent(format("CHAT_MSG:%s:%s:%s", self.game.PlayerName, self.game.PlayerClass, RollNotification))
+		self:SendMsg(format("CHAT_MSG:%s:%s:%s", self.game.PlayerName, self.game.PlayerClass, RollNotification))
 	else
 		SendChatMessage("Entries have closed. Roll now!", self.game.chatMethod)
 		SendChatMessage(format("Type /roll %s", self.db.global.wager), self.game.chatMethod)
@@ -83,14 +85,16 @@ CGEvents["START_ROLLS"] = function(maxAmount)
   end
 end
 
-CGEvents["LastCall"] = function()
+CGCall["LastCall"] = function()
 	if(self.game.chatframeOption == false and self.game.host == true) then
 		local RollNotification = "Last Call!"
-		self:SendEvent(format("CHAT_MSG:%s:%s:%s", self.game.PlayerName, self.game.PlayerClass, RollNotification))
+		self:SendMsg(format("CHAT_MSG:%s:%s:%s", self.game.PlayerName, self.game.PlayerClass, RollNotification))
     elseif(self.game.host == true) then 
 		SendChatMessage("Last Call to Enter", self.game.chatMethod)
 	end
 end
+
+
 
 end
 

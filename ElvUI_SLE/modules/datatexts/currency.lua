@@ -35,6 +35,14 @@ local totalGold, totalHorde, totalAlliance = 0, 0, 0
 local iconString = '|T%s:16:16:0:0:64:64:4:60:4:60|t'
 DT.CurrencyList = { GOLD = BONUS_ROLL_REWARD_MONEY, BACKPACK = 'Backpack' }
 
+local function deleteCharacter(_, realm, name)
+	ElvDB.gold[realm][name] = nil
+	ElvDB.class[realm][name] = nil
+	ElvDB.faction[realm][name] = nil
+
+	DT:ForceUpdate_DataText('S&L Currencies')
+end
+
 local function OnClick(self, btn)
 	if btn == 'RightButton' then
 		if IsShiftKeyDown() then
@@ -89,14 +97,6 @@ end
 
 local function sortFunction(a, b)
 	return a.amount > b.amount
-end
-
-local function deleteCharacter(_, realm, name)
-	ElvDB.gold[realm][name] = nil
-	ElvDB.class[realm][name] = nil
-	ElvDB.faction[realm][name] = nil
-
-	DT:ForceUpdate_DataText('S&L Currencies')
 end
 
 local function updateTotal(faction, change)
@@ -178,25 +178,6 @@ local function OnEvent(self, event)
 	if E.Retail and not Ticker then
 		C_WowTokenPublic_UpdateMarketPrice()
 		Ticker = C_Timer_NewTicker(60, UpdateMarketPrice)
-	end
-
-	if event == 'ELVUI_FORCE_UPDATE' then
-		ElvDB = ElvDB or {}
-
-		ElvDB.gold = ElvDB.gold or {}
-		ElvDB.gold[E.myrealm] = ElvDB.gold[E.myrealm] or {}
-
-		ElvDB.class = ElvDB.class or {}
-		ElvDB.class[E.myrealm] = ElvDB.class[E.myrealm] or {}
-		ElvDB.class[E.myrealm][E.myname] = E.myclass
-
-		ElvDB.faction = ElvDB.faction or {}
-		ElvDB.faction[E.myrealm] = ElvDB.faction[E.myrealm] or {}
-		ElvDB.faction[E.myrealm][E.myname] = E.myfaction
-
-		ElvDB.serverID = ElvDB.serverID or {}
-		ElvDB.serverID[E.serverID] = ElvDB.serverID[E.serverID] or {}
-		ElvDB.serverID[E.serverID][E.myrealm] = true
 	end
 
 	--prevent an error possibly from really old profiles

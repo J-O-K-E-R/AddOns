@@ -4,7 +4,7 @@ local LSM = E.Libs.LSM
 local ElvUF = E.oUF
 
 local _G = _G
-local ipairs, next, pairs, select = ipairs, next, pairs, select
+local ipairs, next, pairs = ipairs, next, pairs
 local setmetatable, tostring, tonumber, type, unpack = setmetatable, tostring, tonumber, type, unpack
 local strmatch, tinsert, tremove, sort, wipe = strmatch, tinsert, tremove, sort, wipe
 
@@ -15,10 +15,11 @@ local GetSpecializationInfo = GetSpecializationInfo
 local GetSpellCharges = GetSpellCharges
 local GetSpellCooldown = GetSpellCooldown
 local GetSpellInfo = GetSpellInfo
-local GetTalentInfo = GetTalentInfo
 local GetTime = GetTime
 local IsEquippedItem = IsEquippedItem
+local IsPlayerSpell = IsPlayerSpell
 local IsResting = IsResting
+local IsSpellKnownOrOverridesKnown = IsSpellKnownOrOverridesKnown
 local UnitAffectingCombat = UnitAffectingCombat
 local UnitAura = UnitAura
 local UnitCanAttack = UnitCanAttack
@@ -51,7 +52,6 @@ local UnitThreatSituation = UnitThreatSituation
 
 local C_Timer_NewTimer = C_Timer.NewTimer
 local C_PetBattles_IsInBattle = C_PetBattles and C_PetBattles.IsInBattle
-local C_SpecializationInfo_GetPvpTalentSlotInfo = C_SpecializationInfo and C_SpecializationInfo.GetPvpTalentSlotInfo
 
 local FallbackColor = {r=1, b=1, g=1}
 
@@ -634,7 +634,7 @@ function mod:StyleFilterSetChanges(frame, actions, HealthColor, PowerColor, Bord
 		local tx = LSM:Fetch('statusbar', actions.texture.texture)
 		c.HealthTexture = true
 
-		frame.Health:SetStatusBarTexture(tx)
+		frame.Health.barTexture:SetTexture(tx)
 
 		if HealthFlash then
 			frame.HealthFlashTexture:SetTexture(tx)
@@ -707,7 +707,7 @@ function mod:StyleFilterClearChanges(frame, HealthColor, PowerColor, Borders, He
 	end
 	if HealthTexture then
 		local tx = LSM:Fetch('statusbar', mod.db.statusbar)
-		frame.Health:SetStatusBarTexture(tx)
+		frame.Health.barTexture:SetTexture(tx)
 	end
 end
 
@@ -1086,34 +1086,20 @@ function mod:StyleFilterConditionCheck(frame, filter, trigger)
 		end
 	end
 
-	-- Talents
-	if E.Retail and trigger.talent.enabled then
-		local pvpTalent = trigger.talent.type == 'pvp'
-		local selected, complete
-
-		for i = 1, (pvpTalent and 4) or 7 do
-			local Tier = 'tier'..i
-			local Talent = trigger.talent[Tier]
-			if trigger.talent[Tier..'enabled'] and Talent.column > 0 then
-				if pvpTalent then
-					-- column is actually the talentID for pvpTalents
-					local slotInfo = C_SpecializationInfo_GetPvpTalentSlotInfo(i)
-					selected = (slotInfo and slotInfo.selectedTalentID) == Talent.column
+	-- Known Spells (new talents)
+	if trigger.known and trigger.known.spells and next(trigger.known.spells) then
+		for spell, value in pairs(trigger.known.spells) do
+			if value then -- only run if at least one is selected
+				local known
+				if trigger.known.playerSpell then
+					known = IsPlayerSpell(spell)
 				else
-					selected = select(4, GetTalentInfo(i, Talent.column, 1))
+					known = IsSpellKnownOrOverridesKnown(spell)
 				end
 
-				if (selected and not Talent.missing) or (Talent.missing and not selected) then
-					complete = true
-					if not trigger.talent.requireAll then
-						break -- break when not using requireAll because we matched one
-					end
-				elseif trigger.talent.requireAll then
-					complete = false -- fail because requireAll
-					break
-		end end end
-
-		if complete then passed = true else return end
+				if (not trigger.known.notKnown and known) or (trigger.known.notKnown and not known) then passed = true else return end
+			end
+		end
 	end
 
 	-- Casting
@@ -1328,6 +1314,7 @@ mod.StyleFilterDefaultEvents = { -- list of events style filter uses to populate
 	UNIT_MAXHEALTH = false,
 	UNIT_NAME_UPDATE = false,
 	UNIT_PET = false,
+	UNIT_HEALTH = false,
 	UNIT_POWER_UPDATE = false,
 	-- mod events:
 	GROUP_ROSTER_UPDATE = true,
@@ -1351,12 +1338,6 @@ mod.StyleFilterDefaultEvents = { -- list of events style filter uses to populate
 	UNIT_THREAT_SITUATION_UPDATE = false,
 	VEHICLE_UPDATE = true
 }
-
-if E.Retail then
-	mod.StyleFilterDefaultEvents.UNIT_HEALTH = false
-else
-	mod.StyleFilterDefaultEvents.UNIT_HEALTH_FREQUENT = false
-end
 
 mod.StyleFilterCastEvents = {
 	UNIT_SPELLCAST_START = 1,			-- start
@@ -1436,12 +1417,7 @@ function mod:StyleFilterConfigure()
 
 				if t.healthThreshold then
 					events.UNIT_MAXHEALTH = 1
-
-					if E.Retail then
-						events.UNIT_HEALTH = 1
-					else
-						events.UNIT_HEALTH_FREQUENT = 1
-					end
+					events.UNIT_HEALTH = 1
 				end
 
 				if t.powerThreshold then

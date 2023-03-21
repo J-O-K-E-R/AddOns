@@ -144,7 +144,7 @@ if L then
 	L.vapor = "萨隆邪铁蒸汽"
 	L.vapor_desc = "当萨隆邪铁蒸汽出现时发出警报。"
 	L.vapor_message = "萨隆邪铁蒸汽：>%d<！"
-	L.vapor_bar = "<萨隆邪铁蒸汽：%d/6>"
+	L.vapor_bar = "萨隆邪铁蒸汽"
 	L.vapor_trigger = "一团萨隆邪铁蒸汽在附近聚集起来！"
 
 	L.vaporstack = "萨隆邪铁蒸汽堆叠"
@@ -158,7 +158,6 @@ end
 
 L = BigWigs:NewBossLocale("XT-002 Deconstructor", "zhCN")
 if L then
-	L.gravitybomb_other = "重力炸弹"
 	L.lightbomb_other = "灼热之光"
 end
 

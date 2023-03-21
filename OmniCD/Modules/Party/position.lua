@@ -1,7 +1,8 @@
 local E = select(2, ...):unpack()
 local P = E.Party
 
-local UnitGUID = UnitGUID
+local _G = _G
+local IsInRaid, IsInGroup, UnitGUID = IsInRaid, IsInGroup, UnitGUID
 local isColdStartDC = true
 
 local COMPACT_RAID = {
@@ -81,7 +82,7 @@ function P:FindRelativeFrame(guid)
 	if E.isDF then
 
 		local compactFrame = nil
-		if isInRaid then
+		if isInRaid and not self.isInArena then
 			compactFrame = self.isCompactFrameSetShown and (self.keepGroupsTogether and COMPACT_RAID_KGT or COMPACT_RAID)
 		elseif IsInGroup() then
 			compactFrame = self.useRaidStylePartyFrames and COMPACT_PARTY or false
@@ -161,10 +162,11 @@ function P:UpdatePosition()
 	self:HideBars()
 
 	local showRange = E.db.general.showRange
+	local point, relPoint = self.point, self.relativePoint
 	for guid, info in pairs(self.groupInfo) do
 		local frame = info.bar
 		if E.db.position.detached then
-			frame:SetParent(UIParent);
+			frame:SetParent(UIParent)
 			E.LoadPosition(frame)
 			frame:Show()
 		else
@@ -177,7 +179,7 @@ function P:UpdatePosition()
 					frame:SetParent(UIParent)
 				end
 				frame:ClearAllPoints()
-				frame:SetPoint(self.point, relFrame, self.relativePoint)
+				frame:SetPoint(point, relFrame, relPoint)
 				frame:Show()
 			end
 		end
@@ -189,8 +191,8 @@ end
 
 function P:UpdateCompactFrameSystemSettings()
 	if E.isDF then
-		self.useRaidStylePartyFrames = EditModeManagerFrame:UseRaidStylePartyFrames();
-		self.keepGroupsTogether = EditModeManagerFrame:ShouldRaidFrameShowSeparateGroups();
+		self.useRaidStylePartyFrames = EditModeManagerFrame:UseRaidStylePartyFrames()
+		self.keepGroupsTogether = EditModeManagerFrame:ShouldRaidFrameShowSeparateGroups()
 	else
 		self.useRaidStylePartyFrames = C_CVar and C_CVar.GetCVarBool("useCompactPartyFrames") or GetCVarBool("useCompactPartyFrames")
 		self.keepGroupsTogether = CompactRaidFrameManager_GetSetting("KeepGroupsTogether")
@@ -206,17 +208,15 @@ do
 		hookTimer = nil
 	end
 
-
 	function P:HookFunc()
 		if self.enabled and not E.db.position.detached and not hookTimer then
 			hookTimer = C_Timer.NewTimer(0.5, UpdatePosition_OnTimerEnd)
 		end
-		if E.isDF and not E.customUF.active and self.isInTestMode and not EditModeManagerFrame:IsEditModeActive() then
+		if E.isDF and not E.db.position.detached and not E.customUF.active and self.isInTestMode and not P.isInEditMode then
 			self:Test()
+			E:ACR_NotifyChange()
 		end
 	end
-
-
 
 	function P:CVAR_UPDATE(cvar, value)
 		if cvar == "USE_RAID_STYLE_PARTY_FRAMES" then
@@ -240,14 +240,18 @@ do
 		if E.isDF then
 
 			hooksecurefunc(EditModeManagerFrame, "UpdateRaidContainerFlow", function()
-				P.keepGroupsTogether = EditModeManagerFrame:ShouldRaidFrameShowSeparateGroups()
-				P:HookFunc()
+				if P.isInEditMode then
+					P.keepGroupsTogether = EditModeManagerFrame:ShouldRaidFrameShowSeparateGroups()
+					P:HookFunc()
+				end
 			end)
 
 
 			hooksecurefunc("UpdateRaidAndPartyFrames", function()
-				P.useRaidStylePartyFrames = EditModeManagerFrame:UseRaidStylePartyFrames()
-				P:HookFunc()
+				if P.isInEditMode then
+					P.useRaidStylePartyFrames = EditModeManagerFrame:UseRaidStylePartyFrames()
+					P:HookFunc()
+				end
 			end)
 
 
@@ -258,6 +262,19 @@ do
 						P.isCompactFrameSetShown = isShown
 						P:HookFunc()
 					end
+				end
+			end)
+
+			EventRegistry:RegisterCallback("EditMode.Enter", function()
+				P.isInEditMode = true
+			end)
+
+			EventRegistry:RegisterCallback("EditMode.Exit", function()
+				P.isInEditMode = nil
+
+				if P.isInTestMode then
+					P:Test()
+					E:ACR_NotifyChange()
 				end
 			end)
 		else
@@ -278,6 +295,13 @@ do
 					P.keepGroupsTogether = CompactRaidFrameManager_GetSetting("KeepGroupsTogether")
 				end
 			end)
+
+			if E.isWOTLKC341 then
+				hooksecurefunc("RaidOptionsFrame_UpdatePartyFrames", function()
+					P.useRaidStylePartyFrames = GetDisplayedAllyFrames() == "raid"
+					P:HookFunc()
+				end)
+			end
 		end
 
 		self.hooked = true

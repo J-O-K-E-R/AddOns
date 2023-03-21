@@ -24,10 +24,6 @@ local GetCursorInfo, ClearCursor, GetSpellInfo = GetCursorInfo, ClearCursor, Get
 local CreateFrame, UIParent = CreateFrame, UIParent
 local _G = _G
 
--- Global vars/functions that we don't upvalue since they might get hooked, or upgraded
--- List them here for Mikk's FindGlobals script
--- GLOBALS: AceGUIEditBoxInsertLink, ChatFontNormal, OKAY
-
 --[[-----------------------------------------------------------------------------
 Support functions
 -------------------------------------------------------------------------------]]
@@ -307,7 +303,7 @@ local function Constructor()
 	editbox.Left:SetTexture(nil)
 	editbox.Right:SetTexture(nil)
 	editbox.Middle:SetTexture(nil)
-	OmniCD[1].BackdropTemplate(editbox)
+	OmniCD[1].BackdropTemplate(editbox, "ACD")
 	editbox:SetBackdropColor(0, 0, 0, 0.5)
 	editbox:SetBackdropBorderColor(0.2, 0.2, 0.25)
 	-- e
@@ -348,7 +344,7 @@ local function Constructor()
 	button.Right:Hide()
 	button.Middle:Hide()
 	button:SetHighlightTexture(0) -- DF: nil throws error (Classic too), "" doesn't work (shows highlight texture)
-	OmniCD[1].BackdropTemplate(button)
+	OmniCD[1].BackdropTemplate(button, "ACD")
 	button:SetBackdropColor(0.725, 0.008, 0.008)
 	button:SetBackdropBorderColor(0.2, 0.2, 0.25)
 	button:SetNormalFontObject("GameFontHighlight-OmniCD")
@@ -359,11 +355,11 @@ local function Constructor()
 
 	local widget = {
 		alignoffset = 30,
-		editbox		= editbox,
-		label		= label,
-		button		= button,
-		frame		= frame,
-		type		= Type
+		editbox	    = editbox,
+		label	    = label,
+		button	    = button,
+		frame	    = frame,
+		type	    = Type
 	}
 	for method, func in pairs(methods) do
 		widget[method] = func

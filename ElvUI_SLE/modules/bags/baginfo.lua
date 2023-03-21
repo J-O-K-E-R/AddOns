@@ -10,7 +10,7 @@ local CUSTOM = CUSTOM
 -- EQUIPMENT_SETS = E:StripString(EQUIPMENT_SETS)
 -- EQUIPMENT_SETS = EQUIPMENT_SETS:gsub('%%s', '')
 -- EQUIPMENT_SETS = E:EscapeString(EQUIPMENT_SETS)
-local MATCH_EQUIPMENT_SETS = EQUIPMENT_SETS:gsub('%%s', '(.+)') --* Part of the workaround
+local MATCH_EQUIPMENT_SETS = EQUIPMENT_SETS:gsub('%-','%%-'):gsub('%%s', '(.-)') --* Part of the workaround
 
 --* Used this to help translate known texcoords to a |T |t string
 -- CreateTextureMarkup('Interface\\PaperDollInfoFrame\\PaperDollSidebarTabs', 64, 256, 0, 0, 0.01562500, 0.53125000, 0.46875000, 0.60546875, 0, 0)
@@ -43,19 +43,18 @@ function B:HideSet(slot, keep)
 end
 
 function B:UpdateSet(slot)
+	slot = slot == 'EQUIPMENT_SETS_CHANGED' and self or slot
 	if not slot or not slot.itemID then return end
 	-- local isInSet, setName = C_Container.GetContainerItemEquipmentSetInfo(bagID, slotID)(slot.bagID, slot.slotID) --* API is currently broken
 
 	--* Start - Part of the workaround
 	local isInSet = false
 	local tooltipData  = C_TooltipInfo.GetInventoryItemByID(slot.itemID)
-	if tooltipData then
+	if slot.isEquipment and tooltipData then
 		TooltipUtil.SurfaceArgs(tooltipData)
 		for _, line in ipairs(tooltipData.lines) do
 			TooltipUtil.SurfaceArgs(line)
-		end
-		for _, line in pairs(tooltipData.lines) do
-			if line and strmatch(line.leftText, MATCH_EQUIPMENT_SETS) then
+			if (line and line.leftText) and strmatch(line.leftText, MATCH_EQUIPMENT_SETS) then
 				isInSet = true
 				break
 			end

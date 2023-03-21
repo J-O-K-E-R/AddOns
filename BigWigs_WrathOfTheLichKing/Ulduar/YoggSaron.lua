@@ -5,7 +5,7 @@
 local mod, CL = BigWigs:NewBoss("Yogg-Saron", 603, 1649)
 if not mod then return end
 mod:RegisterEnableMob(33288, 33134, 33890) -- Yogg-Saron, Sara, Brain of Yogg-Saron
-mod:SetEncounterID(1143)
+mod:SetEncounterID(mod:Classic() and 756 or 1143)
 mod:SetRespawnTime(46)
 
 --------------------------------------------------------------------------------
@@ -17,7 +17,7 @@ local crusherCount = 1
 local smallTentacleCount = 1
 local portalCount = 1
 local warnedForSanity = false
-local shadowBeacon1GUID, shadowBeacon2GUID = nil, nil
+local shadowBeaconTbl = {}
 
 --------------------------------------------------------------------------------
 -- Localization
@@ -66,19 +66,19 @@ L = mod:GetLocale()
 -- Initialization
 --
 
-local shadowBeaconMarker = mod:AddMarkerOption(true, "npc", 8, 64465, 8, 7) -- Shadow Beacon
+local shadowBeaconMarker = mod:AddMarkerOption(true, "npc", 8, 64465, 8, 7, 6, 5, 4) -- Shadow Beacon
 function mod:GetOptions()
 	return {
 		62979, -- Summon Guardian
 		{63138, "FLASH"}, -- Sara's Fervor
 		"tentacle",
 		"small_tentacles",
-		{63830, "ICON", "ME_ONLY"}, -- Malady of the Mind
-		{63802, "FLASH"}, -- Brain Link
+		{63830, "ICON", "ME_ONLY", "SAY"}, -- Malady of the Mind
+		{63802, "ME_ONLY_EMPHASIZE"}, -- Brain Link
 		64126, -- Squeeze
 		"portal",
 		"weakened",
-		{64059, "COUNTDOWN"}, -- Induce Madness
+		{64059, "COUNTDOWN", "EMPHASIZE"}, -- Induce Madness
 		64465, -- Shadow Beacon
 		shadowBeaconMarker,
 		64163, -- Lunatic Gaze
@@ -87,12 +87,14 @@ function mod:GetOptions()
 		{63050, "FLASH"}, -- Sanity
 		63120, -- Insane
 		"berserk",
-	}, {
+	},{
 		[62979] = CL.stage:format(1),
 		tentacle = CL.stage:format(2),
 		[64465] = CL.stage:format(3),
 		[64189] = "hard",
 		stages = "general",
+	},{
+		[63802] = CL.link, -- Brain Link (Link)
 	}
 end
 
@@ -129,7 +131,7 @@ function mod:OnEngage()
 	smallTentacleCount = 1
 	portalCount = 1
 	warnedForSanity = false
-	shadowBeacon1GUID, shadowBeacon2GUID = nil, nil
+	shadowBeaconTbl = {}
 	self:Berserk(900)
 end
 
@@ -204,6 +206,9 @@ end
 
 function mod:MaladyOfTheMind(args)
 	self:TargetMessageOld(args.spellId, args.destName, "yellow", "alert", L.malady_message)
+	if self:Me(args.destGUID) then
+		self:Say(args.spellId, L.malady_message)
+	end
 	self:PrimaryIcon(args.spellId, args.destName)
 end
 
@@ -217,8 +222,8 @@ end
 
 function mod:BrainLink(args)
 	if self:Me(args.destGUID) then
-		self:MessageOld(args.spellId, "blue", "alarm", L.link_warning)
-		self:Flash(args.spellId)
+		self:PersonalMessage(args.spellId, false, L.link_warning)
+		self:PlaySound(args.spellId, "warning")
 	end
 end
 
@@ -232,18 +237,18 @@ function mod:LunaticGaze(args)
 end
 
 do
-	local madnessTime = 0
-	function mod:InduceMadness()
-		madnessTime = GetTime()
+	local madnessCastStartTime = 0
+	function mod:InduceMadness(args)
+		madnessCastStartTime = args.time
 	end
 
 	function mod:IllusionRoom(args)
 		-- Induce Madness
 		if self:Me(args.destGUID) then
-			local passed = GetTime() - madnessTime
-			local remaining = 55 - passed
-			self:Bar(64059, remaining)
-			self:DelayedMessage(64059, remaining - 10, "orange", L.madness_warning, false, "warning")
+			local timeSinceCastStart = args.time - madnessCastStartTime
+			local remainingTime = (self:Classic() and 60 or 55) - timeSinceCastStart
+			self:Bar(64059, remainingTime)
+			self:DelayedMessage(64059, remainingTime - 10, "orange", L.madness_warning, false, "warning")
 		end
 	end
 
@@ -257,75 +262,50 @@ do
 end
 
 function mod:ShadowBeacon(args)
+	shadowBeaconTbl = {}
 	self:CDBar(args.spellId, 46)
+	self:Message(args.spellId, "red")
+end
+
+function mod:MarkShadowBeacon(event, unit, guid)
+	if shadowBeaconTbl[guid] then
+		self:CustomIcon(false, unit, shadowBeaconTbl[guid])
+	end
+end
+
+function mod:ShadowBeaconApplied(args)
+	if self:GetOption(shadowBeaconMarker) then
+		if not shadowBeaconTbl.count then
+			shadowBeaconTbl.count = 8
+		else
+			shadowBeaconTbl.count = shadowBeaconTbl.count - 1
+		end
+		shadowBeaconTbl[args.destGUID] = shadowBeaconTbl.count
+
+		local unitId = self:GetUnitIdByGUID(args.destGUID)
+		if unitId then
+			self:CustomIcon(false, unitId, shadowBeaconTbl.count)
+		end
+		self:RegisterTargetEvents("MarkShadowBeacon")
+	end
 end
 
 do
-	local function Cleanup(self)
-		shadowBeacon1GUID, shadowBeacon2GUID = nil, nil
-		self:UnregisterTargetEvents()
-	end
-
-	function mod:UnmarkShadowBeacon(event, unit, guid)
-		if guid == shadowBeacon1GUID or guid == shadowBeacon2GUID then
-			self:CustomIcon(false, unit, 0)
-		end
-	end
-
 	local prev = 0
 	function mod:ShadowBeaconRemoved(args)
-		local t = GetTime()
+		local t = args.time
 		if t-prev > 5 then
 			prev = t
-			self:MessageOld(args.spellId, "green", nil, CL.removed:format(args.spellName))
-			if self:GetOption(shadowBeaconMarker) then
-				self:ScheduleTimer(Cleanup, 5, self)
-			end
+			self:Message(args.spellId, "green", CL.removed:format(args.spellName))
 		end
 
 		if self:GetOption(shadowBeaconMarker) then
-			local destGUID = args.destGUID
-			if destGUID == shadowBeacon1GUID or destGUID == shadowBeacon2GUID then
-				local unitId = mod:GetUnitIdByGUID(destGUID)
+			if shadowBeaconTbl[args.destGUID] then
+				shadowBeaconTbl[args.destGUID] = 0
+				local unitId = self:GetUnitIdByGUID(args.destGUID)
 				if unitId then
 					self:CustomIcon(false, unitId, 0)
-				else
-					self:RegisterTargetEvents("UnmarkShadowBeacon")
 				end
-			end
-		end
-	end
-end
-
-do
-	function mod:MarkShadowBeacon(event, unit, guid)
-		if guid == shadowBeacon1GUID then
-			self:CustomIcon(false, unit, 8)
-		elseif guid == shadowBeacon2GUID then
-			self:CustomIcon(false, unit, 7)
-		end
-	end
-
-	local prev = 0
-	function mod:ShadowBeaconApplied(args)
-		local t = GetTime()
-		if t-prev > 5 then
-			prev = t
-			self:TargetMessageOld(args.spellId, args.destName, "red")
-		end
-
-		if self:GetOption(shadowBeaconMarker) then
-			if not shadowBeacon1GUID then
-				shadowBeacon1GUID = args.destGUID
-			else
-				shadowBeacon2GUID = args.destGUID
-			end
-
-			local unitId = mod:GetUnitIdByGUID(shadowBeacon2GUID or shadowBeacon1GUID)
-			if unitId then
-				self:CustomIcon(false, unitId, shadowBeacon2GUID and 7 or 8)
-			else
-				self:RegisterTargetEvents("MarkShadowBeacon")
 			end
 		end
 	end
@@ -334,12 +314,12 @@ end
 do
 	local prev = 0
 	function mod:PortalsOpen(args) -- Laughing Skulls above portals all gain Lunatic Gaze
-		local t = GetTime()
+		local t = args.time
 		if t-prev > 10 then
 			prev = t
 			self:MessageOld("portal", "green", nil, CL.count:format(L.portal_message, portalCount), 35717)
 			portalCount = portalCount + 1
-			self:Bar("portal", 61, CL.count:format(L.portal_bar, portalCount), 35717)
+			self:Bar("portal", self:Classic() and 90 or 61, CL.count:format(L.portal_bar, portalCount), 35717)
 		end
 	end
 end
@@ -352,7 +332,7 @@ function mod:CHAT_MSG_MONSTER_YELL(_, msg)
 	if msg:find(L.phase2_trigger) then
 		crusherCount = 1
 		self:MessageOld("stages", "yellow", nil, CL.stage:format(2), false)
-		self:Bar("portal", 25, CL.count:format(L.portal_bar, portalCount), 35717)
+		self:Bar("portal", self:Classic() and 75 or 25, CL.count:format(L.portal_bar, portalCount), 35717)
 	elseif msg:find(L.phase3_trigger) then
 		self:CancelDelayedMessage(L.madness_warning)
 
@@ -361,7 +341,7 @@ function mod:CHAT_MSG_MONSTER_YELL(_, msg)
 		self:StopBar(CL.count:format(L.portal_bar, portalCount))
 
 		self:MessageOld("stages", "red", "alarm", CL.stage:format(3), false)
-		self:Bar(64465, 46)
+		self:Bar(64465, 46) -- Shadow Beacon
 	elseif msg:find(L.engage_trigger) and not self.isEngaged then
 		self:Engage() -- Remove if Sara is added to boss frames on engage
 	end

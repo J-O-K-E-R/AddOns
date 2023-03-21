@@ -4,8 +4,9 @@ local LSM = E.Libs.LSM
 local ElvUF = E.oUF
 
 local abs, next = abs, next
-local unpack, tonumber = unpack, tonumber
+local unpack = unpack
 
+local GetTime = GetTime
 local CreateFrame = CreateFrame
 local GetTalentInfo = GetTalentInfo
 local UnitCanAttack = UnitCanAttack
@@ -19,10 +20,11 @@ local ticks = {}
 
 do
 	local pipMapColor = {4, 1, 2, 3}
-	function UF:CastBar_UpdatePip(pip, stage, texture)
-		local color = UF.db.colors.empoweredCast[pipMapColor[stage]]
-		pip.texture:SetVertexColor(color.r, color.g, color.b, pip.pipAlpha)
-		pip.texture:SetTexture(texture)
+	function UF:CastBar_UpdatePip(castbar, pip, stage)
+		if castbar.pipColor then
+			local color = castbar.pipColor[pipMapColor[stage]]
+			pip.texture:SetVertexColor(color.r, color.g, color.b, pip.pipAlpha)
+		end
 	end
 
 	local pipMapAlpha = {2, 3, 4, 1}
@@ -70,21 +72,34 @@ end
 function UF:CreatePip(stage)
 	local pip = CreateFrame('Frame', nil, self, 'CastingBarFrameStagePipTemplate')
 
+	-- clear the original art (the line)
 	pip.BasePip:SetAlpha(0)
 
+	-- create the texture
 	pip.texture = pip:CreateTexture(nil, 'ARTWORK', nil, 2)
 	pip.texture:Point('BOTTOM')
 	pip.texture:Point('TOP')
 
+	-- values for the animation
 	pip.pipStart = 1.0 -- alpha on hit
 	pip.pipAlpha = 0.3 -- alpha on init
 	pip.pipFaded = 0.6 -- alpha when passed
 	pip.pipTimer = 0.4 -- fading time to passed
 
-	UF.statusbars[pip.texture] = true
+	-- self is the castbar
+	if self.ModuleStatusBars then
+		self.ModuleStatusBars[pip.texture] = true
+	end
 
-	UF:CastBar_UpdatePip(pip, stage, LSM:Fetch('statusbar', UF.db.statusbar))
+	-- update colors
+	UF:CastBar_UpdatePip(self, pip, stage)
 
+	return pip
+end
+
+function UF:BuildPip(stage)
+	local pip = UF.CreatePip(self, stage)
+	UF:Update_StatusBar(pip.texture)
 	return pip
 end
 
@@ -93,6 +108,8 @@ function UF:Construct_Castbar(frame, moverName)
 	castbar:SetFrameLevel(frame.RaisedElementParent.CastBarLevel)
 
 	UF.statusbars[castbar] = true
+	castbar.ModuleStatusBars = UF.statusbars -- not oUF
+
 	castbar.CustomDelayText = UF.CustomCastDelayText
 	castbar.CustomTimeText = UF.CustomTimeText
 	castbar.PostCastStart = UF.PostCastStart
@@ -101,7 +118,7 @@ function UF:Construct_Castbar(frame, moverName)
 	castbar.PostCastFail = UF.PostCastFail
 	castbar.UpdatePipStep = UF.UpdatePipStep
 	castbar.PostUpdatePip = UF.PostUpdatePip
-	castbar.CreatePip = UF.CreatePip
+	castbar.CreatePip = UF.BuildPip
 
 	castbar:SetClampedToScreen(true)
 	castbar:CreateBackdrop(nil, nil, nil, nil, true)
@@ -186,9 +203,9 @@ function UF:Configure_Castbar(frame)
 	end
 
 	--Empowered
-	local pipTexture = LSM:Fetch('statusbar', UF.db.statusbar)
+	castbar.pipColor = UF.db.colors.empoweredCast
 	for stage, pip in next, castbar.Pips do
-		UF:CastBar_UpdatePip(pip, stage, pipTexture)
+		UF:CastBar_UpdatePip(castbar, pip, stage)
 	end
 
 	--Latency
@@ -215,7 +232,7 @@ function UF:Configure_Castbar(frame)
 		UF:Update_FontString(castbar.Time)
 	end
 
-	local textColor = db.textColor
+	local textColor = E:UpdateClassColor(db.textColor)
 	castbar.Text:SetTextColor(textColor.r, textColor.g, textColor.b)
 	castbar.Time:SetTextColor(textColor.r, textColor.g, textColor.b)
 
@@ -316,9 +333,9 @@ function UF:Configure_Castbar(frame)
 		castbar.tickWidth = db.tickWidth
 		castbar.tickColor = db.tickColor
 
-		for i = 1, #ticks do
-			ticks[i]:SetVertexColor(castbar.tickColor.r, castbar.tickColor.g, castbar.tickColor.b, castbar.tickColor.a)
-			ticks[i]:Width(castbar.tickWidth)
+		for _, tick in next, ticks do
+			tick:SetVertexColor(castbar.tickColor.r, castbar.tickColor.g, castbar.tickColor.b, castbar.tickColor.a)
+			tick:Width(castbar.tickWidth)
 		end
 	end
 
@@ -411,32 +428,32 @@ function UF:CustomTimeText(duration)
 end
 
 function UF:HideTicks()
-	for i=1, #ticks do
-		ticks[i]:Hide()
+	for _, tick in next, ticks do
+		tick:Hide()
 	end
 end
 
-function UF:SetCastTicks(frame, numTicks, extraTickRatio)
-	extraTickRatio = extraTickRatio or 0
+function UF:SetCastTicks(frame, numTicks)
 	UF:HideTicks()
 
 	if numTicks and numTicks <= 0 then return end
 
-	local w = frame:GetWidth()
-	local d = w / (numTicks + extraTickRatio)
+	local offset = frame:GetWidth() / numTicks
 
 	for i = 1, numTicks - 1 do
-		if not ticks[i] then
-			ticks[i] = frame:CreateTexture(nil, 'OVERLAY')
-			ticks[i]:SetTexture(E.media.normTex)
-			ticks[i]:SetVertexColor(frame.tickColor.r, frame.tickColor.g, frame.tickColor.b, frame.tickColor.a)
-			ticks[i]:Width(frame.tickWidth)
+		local tick = ticks[i]
+		if not tick then
+			tick = frame:CreateTexture(nil, 'OVERLAY')
+			tick:SetTexture(E.media.blankTex)
+			tick:Width(frame.tickWidth)
+			ticks[i] = tick
 		end
 
-		ticks[i]:ClearAllPoints()
-		ticks[i]:Point('RIGHT', frame, 'LEFT', d * i, 0)
-		ticks[i]:Height(frame.tickHeight)
-		ticks[i]:Show()
+		tick:SetVertexColor(frame.tickColor.r, frame.tickColor.g, frame.tickColor.b, frame.tickColor.a)
+		tick:ClearAllPoints()
+		tick:Point('RIGHT', frame, 'LEFT', offset * i, 0)
+		tick:Height(frame.tickHeight)
+		tick:Show()
 	end
 end
 
@@ -494,52 +511,66 @@ function UF:PostCastStart(unit)
 	end
 
 	if self.channeling and db.castbar.ticks and unit == 'player' then
-		local unitframe = E.global.unitframe
-		local baseTicks = unitframe.ChannelTicks[self.spellID]
-		local ticksSize = baseTicks and unitframe.ChannelTicksSize[self.spellID]
-		local hasteTicks = ticksSize and unitframe.HastedChannelTicks[self.spellID]
-		local talentTicks = baseTicks and unitframe.TalentChannelTicks[self.spellID]
+		local spellID, global = self.spellID, E.global.unitframe
+		local baseTicks = global.ChannelTicks[spellID]
 
 		-- Separate group, so they can be effected by haste or size if needed
-		if talentTicks then
-			local selectedTicks = UF:GetTalentTicks(talentTicks)
-			if selectedTicks then
-				baseTicks = selectedTicks
+		local talentTicks = baseTicks and global.TalentChannelTicks[spellID]
+		local selectedTicks = talentTicks and UF:GetTalentTicks(talentTicks)
+		if selectedTicks then
+			baseTicks = selectedTicks
+		end
+
+		-- Base ticks upgraded by another aura
+		local auraTicks = baseTicks and global.AuraChannelTicks[spellID]
+		if auraTicks then
+			for auraID, tickCount in next, auraTicks.spells do
+				if E:GetAuraByID(unit, auraID, auraTicks.filter) then
+					baseTicks = tickCount
+					break -- found one so stop
+				end
 			end
 		end
 
-		-- hasteTicks require a tickSize
-		if hasteTicks then
-			local tickIncRate = 1 / baseTicks
-			local curHaste = UnitSpellHaste('player') * 0.01
-			local firstTickInc = tickIncRate * 0.5
-			local bonusTicks = 0
-			if curHaste >= firstTickInc then
-				bonusTicks = bonusTicks + 1
+		-- Wait for chain to happen
+		local chainTicks = baseTicks and global.ChainChannelTicks[spellID]
+		if chainTicks then -- requires a window: ChainChannelTime
+			local now = GetTime() -- this will clear old ones too
+			local seconds = global.ChainChannelTime[spellID]
+			local match = seconds and self.chainTime and self.chainTick == spellID
+
+			if match and (now - seconds) < self.chainTime then
+				baseTicks = chainTicks
 			end
 
-			local x = tonumber(E:Round(firstTickInc + tickIncRate, 2))
-			while curHaste >= x do
-				x = tonumber(E:Round(firstTickInc + (tickIncRate * bonusTicks), 2))
-				if curHaste >= x then
-					bonusTicks = bonusTicks + 1
+			self.chainTime = now
+			self.chainTick = spellID
+		else
+			self.chainTick = nil -- not a chain spell
+			self.chainTime = nil -- clear the time too
+		end
+
+		local hasteTicks = baseTicks and global.HastedChannelTicks[spellID]
+		if hasteTicks then -- requires tickSize
+			local haste = UnitSpellHaste('player') * 0.01
+			local rate = 1 / baseTicks
+			local first = rate * 0.5
+
+			local bonus = 0
+			if haste >= first then
+				bonus = bonus + 1
+			end
+
+			local x = E:Round(first + rate, 2)
+			while haste >= x do
+				x = E:Round(first + (rate * bonus), 2)
+
+				if haste >= x then
+					bonus = bonus + 1
 				end
 			end
 
-			local baseTickSize = ticksSize
-			local hastedTickSize = baseTickSize / (1 + curHaste)
-			local extraTick = self.max - hastedTickSize * (baseTicks + bonusTicks)
-			local extraTickRatio = extraTick / hastedTickSize
-			UF:SetCastTicks(self, baseTicks + bonusTicks, extraTickRatio)
-			self.hadTicks = true
-		elseif ticksSize then
-			local curHaste = UnitSpellHaste('player') * 0.01
-			local baseTickSize = ticksSize
-			local hastedTickSize = baseTickSize / (1 + curHaste)
-			local extraTick = self.max - hastedTickSize * (baseTicks)
-			local extraTickRatio = extraTick / hastedTickSize
-
-			UF:SetCastTicks(self, baseTicks, extraTickRatio)
+			UF:SetCastTicks(self, baseTicks + bonus)
 			self.hadTicks = true
 		elseif baseTicks then
 			UF:SetCastTicks(self, baseTicks)
@@ -560,6 +591,8 @@ function UF:PostCastStop(unit)
 	if self.hadTicks and unit == 'player' then
 		UF:HideTicks()
 		self.hadTicks = false
+		self.chainTick = nil -- reset the chain
+		self.chainTime = nil -- spell cast vars
 	end
 end
 
