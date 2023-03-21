@@ -291,6 +291,19 @@ Plater.TriggerDefaultMembers = {
 	},
 }
 
+function platerInternal.Scripts.GetDefaultScriptForSpellId(spellId)
+	--platerInternal.Scripts.DefaultCastScripts
+	local allScripts = Plater.db.profile.script_data
+	for i = 1, #allScripts do
+		local scriptObject = allScripts[i]
+		local triggers = scriptObject.SpellIds
+		local index = DF.table.find(triggers, spellId)
+		if (index) then
+			return scriptObject
+		end
+	end
+end
+
 local openURL = function(url)
 
 	if (not PlaterURLFrameHelper) then
@@ -723,7 +736,7 @@ end
 		for slug, entry in pairs(slugs) do
 			local isUpdate, isScipt, isMod, isProfile = is_wago_update(slug)
 			
-			local newScriptObject = { -- Dummy data --~prototype
+			local newScriptObject = { -- Dummy data --~prototype ~new ~create ñew
 				Enabled = true,
 				Name = "New Mod",
 				Icon = "",
@@ -774,7 +787,7 @@ end
 			local isAlreadyImported = is_wago_stash_slug_already_imported(slug)
 			
 			if not isAlreadyImported then
-				local newScriptObject = { -- Dummy data --~prototype
+				local newScriptObject = { -- Dummy data --~prototype ~new ~create ñew
 					Enabled = true,
 					Name = "New Mod",
 					Icon = "",
@@ -1266,6 +1279,7 @@ end
 		local dataInOrder = {}
 		
 		if (mainFrame.SearchString ~= "") then
+			local scriptsFound = {}
 			for i = 1, #data do
 				if not data[i].hidden then
 					local bFoundMatch = false
@@ -1275,9 +1289,10 @@ end
 							local spellName = GetSpellInfo(spellId)
 							if (spellName) then
 								spellName = spellName:lower()
-								if (spellName:find(mainFrame.SearchString)) then
+								if (spellName:find(mainFrame.SearchString) and not scriptsFound[data[i].Name]) then
 									dataInOrder[#dataInOrder+1] = {i, data [i], data[i].Name, data[i].Enabled and 1 or 0, data[i].hasWagoUpdateFromImport and 1 or 0}
 									bFoundMatch = true
+									scriptsFound[data[i].Name] = true
 								end
 							end
 						end
@@ -1812,6 +1827,7 @@ function Plater.CreateWagoPanel()
 	wagoSlugFrame:SetPoint("topleft", wagoFrame, "topleft")
 	wagoSlugFrame:SetPoint("bottomright", wagoFrame, "bottomright")
 	wagoFrame.wagoSlugFrame = wagoSlugFrame
+	mainFrame.wagoSlugFrame = wagoSlugFrame
 	wagoSlugFrame:Show()
 	--wagoSlugFrame:SetScript("OnShow", function()  end)
 	
@@ -2142,6 +2158,9 @@ function Plater.CreateHookingPanel()
 		--do a hot reload on the script
 		if (haveChanges) then
 			hookFrame.ApplyScript()
+		else
+			-- do this at least to ensure options changes are up to date
+			Plater.RecompileScript(scriptObject)
 		end
 		
 		--refresh all nameplates shown in the screen
@@ -2421,7 +2440,7 @@ function Plater.CreateHookingPanel()
 	function hookFrame.CreateNewScript()
 
 		--build the table of the new script
-		local newScriptObject = { --~prototype
+		local newScriptObject = { --~prototype ~new ~create ñew
 			Enabled = true,
 			Name = "New Mod",
 			Icon = "",
@@ -3169,7 +3188,7 @@ function Plater.CreateScriptingPanel()
 	function scriptingFrame.CreateNewScript()
 
 		--build the table of the new script
-		local newScriptObject = { --~prototype
+		local newScriptObject = { --~prototype ~new ~create ñew
 			Enabled = true,
 			ScriptType = 0x1,
 			Name = "New Script",
@@ -3375,7 +3394,7 @@ function Plater.CreateScriptingPanel()
 		for _, plateFrame in ipairs (Plater.GetAllShownPlates()) do
 			local unitFrame = plateFrame.unitFrame
 
-			if (scriptObject.ScriptType == 1) then
+			if (scriptObject.ScriptType == 1) then --scriptType 1 means the scriptObject has triggers that check for Buffs and Debuffs, ScriptType can also be called TriggerType
 				--buff and debuffs
 				--iterate among all icons shown in the nameplate and attempt to kill the script by its trigger
 				for _, iconAuraFrame in ipairs (unitFrame.BuffFrame.PlaterBuffList) do
@@ -3389,13 +3408,13 @@ function Plater.CreateScriptingPanel()
 					end
 				end
 				
-			elseif (scriptObject.ScriptType == 2) then
+			elseif (scriptObject.ScriptType == 2) then --scriptType 2 means the scriptObject has triggers that check if a spell cast has a certain spellName or spellId
 				--cast bar
 				for _, spellID in ipairs (scriptObject.SpellIds) do
 					unitFrame.castBar:KillScript (spellID)
 				end
 
-			elseif (scriptObject.ScriptType == 3) then
+			elseif (scriptObject.ScriptType == 3) then --scriptType 3 means the scriptObject will check if nameplate is showing a certain npc (by matching npc name or npc id)
 				--nameplate
 				for _, triggerID in ipairs (scriptObject.NpcNames) do
 					unitFrame:KillScript (triggerID)

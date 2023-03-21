@@ -267,13 +267,27 @@ if IS_WOW_PROJECT_CLASSIC_ERA and LCD then
 end
 
 local function CreatePlaterNamePlateAuraTooltip()
-	local tooltip = CreateFrame("GameTooltip", "PlaterNamePlateAuraTooltip", parent or UIParent, "GameTooltipTemplate")
+	local tooltip = CreateFrame("GameTooltip", "PlaterNamePlateAuraTooltip", UIParent, "GameTooltipTemplate")
 	
 	tooltip.ApplyOwnBackdrop = function(self)
 		self:SetBackdrop ({edgeFile = [[Interface\Buttons\WHITE8X8]], edgeSize = 1, bgFile = [[Interface\Buttons\WHITE8X8]], tileSize = 0, tile = false, tileEdge = true})
 		self:SetBackdropColor (0.05, 0.05, 0.05, 0.8)
 		self:SetBackdropBorderColor (0, 0, 0, 1)
 	end
+	
+	local function OnUpdate(self, elapsed)
+		self.updateTooltipTimer = (self.updateTooltipTimer or TOOLTIP_UPDATE_TIME or 0.2) - elapsed;
+		if self.updateTooltipTimer > 0 then
+			return;
+		end
+		self.updateTooltipTimer = TOOLTIP_UPDATE_TIME or 0.2
+		local owner = self:GetOwner();
+		if owner and owner.UpdateTooltip then
+			owner:UpdateTooltip();
+		end
+	end
+	
+	tooltip:SetScript("OnUpdate", OnUpdate)
 	
 	if tooltip.SetBackdrop then
 		return tooltip
@@ -362,7 +376,7 @@ local ValidateAuraForUpdate = function (unit, aura)
 			end
 		end
 		
-		if SPECIAL_AURAS_AUTO_ADDED [name] or SPECIAL_AURAS_AUTO_ADDED [spellId] or  SPECIAL_AURAS_USER_LIST[name] or SPECIAL_AURAS_USER_LIST[spellId] or (auraData.sourceUnit == "player" and (SPECIAL_AURAS_USER_LIST_MINE[name] or SPECIAL_AURAS_USER_LIST_MINE[spellId])) then
+		if SPECIAL_AURAS_AUTO_ADDED [name] or SPECIAL_AURAS_AUTO_ADDED [spellId] or  SPECIAL_AURAS_USER_LIST[name] or SPECIAL_AURAS_USER_LIST[spellId] or (aura.sourceUnit == "player" and (SPECIAL_AURAS_USER_LIST_MINE[name] or SPECIAL_AURAS_USER_LIST_MINE[spellId])) then
 			--or DB_SHOW_PURGE_IN_EXTRA_ICONS or DB_SHOW_ENRAGE_IN_EXTRA_ICONS or DB_SHOW_MAGIC_IN_EXTRA_ICONS
 			--include buff special at all times
 			needsUpdate = true
@@ -522,15 +536,12 @@ UpdateUnitAuraCacheData = function (unit, updatedAuras)
 	end
 	
 	for _, auraInstanceID in ipairs(updatedAuras.updatedAuraInstanceIDs or {}) do
-		local needsUpdate = ValidateAuraForUpdate(unit, aura)
-		if needsUpdate then
-			if unitCacheData.debuffs[auraInstanceID] ~= nil then
-				unitCacheData.debuffs[auraInstanceID].requriresUpdate = true
-				unitCacheData.debuffsChanged = true
-			elseif unitCacheData.buffs[auraInstanceID] ~= nil then
-				unitCacheData.buffs[auraInstanceID].requriresUpdate = true
-				unitCacheData.buffsChanged = true
-			end
+		if unitCacheData.debuffs[auraInstanceID] ~= nil then
+			unitCacheData.debuffs[auraInstanceID].requriresUpdate = true
+			unitCacheData.debuffsChanged = true
+		elseif unitCacheData.buffs[auraInstanceID] ~= nil then
+			unitCacheData.buffs[auraInstanceID].requriresUpdate = true
+			unitCacheData.buffsChanged = true
 		end
 	end
 	
@@ -573,9 +584,9 @@ local function getUnitAuras(unit, filter)
 			local tmpBuffs = {}
 			for auraInstanceID, aura in pairs (unitCacheData.buffs) do
 				if aura.requriresUpdate then
-					tmpDebuffs[auraInstanceID] = C_UnitAuras.GetAuraDataByAuraInstanceID(unit, auraInstanceID)
+					tmpBuffs[auraInstanceID] = C_UnitAuras.GetAuraDataByAuraInstanceID(unit, auraInstanceID)
 				else
-					tmpDebuffs[auraInstanceID] = aura
+					tmpBuffs[auraInstanceID] = aura
 				end
 			end
 			unitCacheData.buffs = tmpBuffs
@@ -1115,11 +1126,23 @@ end
 		newIcon.Border = newIcon:CreateTexture (nil, "background")
 		newIcon.Border:SetAllPoints()
 		newIcon.Border:SetColorTexture (0, 0, 0)
-		
+
+		newIcon.BorderMask = newIcon:CreateMaskTexture(nil, "artwork")
+		newIcon.BorderMask:SetAllPoints()
+		newIcon.BorderMask:SetTexture([[Interface/addons/plater/masks/rounded_square_32x32]])
+		newIcon.Border:AddMaskTexture(newIcon.BorderMask)
+		newIcon.BorderMask:Hide()
+
 		newIcon.Icon = newIcon:CreateTexture (nil, "BORDER")
 		newIcon.Icon:SetSize (18, 12)
 		newIcon.Icon:SetPoint ("center")
 		newIcon.Icon:SetTexCoord (.05, .95, .1, .6)
+
+		newIcon.IconMask = newIcon:CreateMaskTexture(nil, "artwork")
+		newIcon.IconMask:SetAllPoints()
+		newIcon.IconMask:SetTexture([[Interface/addons/plater/masks/rounded_square_32x32]])
+		newIcon.Icon:AddMaskTexture(newIcon.IconMask)
+		newIcon.IconMask:Hide()
 		
 		newIcon.Cooldown = CreateFrame ("cooldown", "$parentCooldown", newIcon, "CooldownFrameTemplate, BackdropTemplate")
 		newIcon.Cooldown:SetPoint ("center", 0, -1)
@@ -1127,16 +1150,28 @@ end
 		newIcon.Cooldown:EnableMouse (false)
 		newIcon.Cooldown:SetHideCountdownNumbers (true)
 		newIcon.Cooldown:Hide()
-		
+
+		--tested to change the texture used in the semi-transparent black overlay which get "cutted" by the edge texture
+		--newIcon.Cooldown.SwipeTexture = newIcon.Cooldown:CreateTexture(nil, "artwork")
+		--newIcon.Cooldown.SwipeTexture:SetAllPoints()
+		--newIcon.Cooldown.SwipeTexture:SetColorTexture(0, 0, 0, 0.3)
+		--newIcon.Cooldown:SetSwipeTexture([[Interface/addons/plater/masks/rounded_square_32x32]], 0, 0, 1, 1)
+		--newIcon.Cooldown:SetEdgeTexture([[Interface/addons/plater/masks/rounded_square_32x32]], 0, 0, 1, 1)
+		--newIcon.CooldownMask = newIcon.Cooldown:CreateMaskTexture(nil, "artwork")
+		--newIcon.CooldownMask:SetAllPoints()
+		--newIcon.CooldownMask:SetTexture([[Interface/addons/plater/masks/rounded_square_32x32]])
+		--newIcon.Cooldown.SwipeTexture:AddMaskTexture(newIcon.CooldownMask)
+		--newIcon.CooldownMask:Hide()
+
 		newIcon.Cooldown.noCooldownCount = Plater.db.profile.disable_omnicc_on_auras
-		
+
 		--newIcon.Cooldown:SetSwipeColor (0, 0, 0) --not working
 		--newIcon.Cooldown:SetDrawSwipe (false)
 		--newIcon.Cooldown:SetSwipeTexture ("Interface\\Garrison\\Garr_TimerFill")
 		--newIcon.Cooldown:SetEdgeTexture ("Interface\\Cooldown\\edge-LoC");
 		--newIcon.Cooldown:SetReverse (true)
 		--newIcon.Cooldown:SetCooldownUNIX (startTime, buildDuration);
-		
+
 		newIcon.CountFrame = CreateFrame ("frame", "$parentCountFrame", newIcon, BackdropTemplateMixin and "BackdropTemplate")
 		newIcon.CountFrame:SetAllPoints()
 		newIcon.CountFrame:EnableMouse (false)
@@ -1280,7 +1315,7 @@ end
 						Shine = nil, --false,
 					}
 					newFrameIcon.Border:Hide() --let Masque handle the border...
-					Plater.Masque.AuraFrame1:AddButton (newFrameIcon, t, nil, true)
+					Plater.Masque.AuraFrame1:AddButton (newFrameIcon, t, "AuraButtonTemplate", true)
 					Plater.Masque.AuraFrame1:ReSkin(newFrameIcon)
 					
 				elseif (self.Name == "Secondary") then
@@ -1303,7 +1338,7 @@ end
 						Shine = nil, --false,
 					}
 					newFrameIcon.Border:Hide() --let Masque handle the border...
-					Plater.Masque.AuraFrame2:AddButton (newFrameIcon, t, nil, true)
+					Plater.Masque.AuraFrame2:AddButton (newFrameIcon, t, "AuraButtonTemplate", true)
 					Plater.Masque.AuraFrame2:ReSkin(newFrameIcon)
 					
 				end
@@ -1706,6 +1741,7 @@ end
 		--spellId, borderColor, startTime, duration, forceTexture, descText
 		--calling SetIcon make the ExtraIconFrame call show() on it self
 		local iconFrame = self.ExtraIconFrame:SetIcon (spellId, borderColor, expirationTime - duration, duration, false, sourceUnitName and {text = sourceUnitName, text_color = sourceUnitClass} or false, applications, debuffType, sourceUnit, isStealable, spellName, isBuff, modRate)
+		iconFrame.Texture:SetDesaturated(false) -- ensure this
 
 		-- tooltip info
 		if id and id > 0 then
@@ -1741,7 +1777,7 @@ end
 				Shine = nil, --false,
 			}
 			iconFrame.Border:Hide() --let Masque handle the border...
-			Plater.Masque.BuffSpecial:AddButton (iconFrame, t, nil, true)
+			Plater.Masque.BuffSpecial:AddButton (iconFrame, t, "AuraButtonTemplate", true)
 			Plater.Masque.BuffSpecial:ReSkin(iconFrame)
 			iconFrame.Masqued = true
 		end
@@ -2576,7 +2612,8 @@ end
 			wipe(AUTO_TRACKING_EXTRA_DEBUFFS)
 
 			for spellId, flag in pairs (extraBuffsToTrack) do
-				local spellName = GetSpellInfo (tonumber(spellId) or spellId)
+				spellId = tonumber(spellId) or spellId --ensure either actual number or name of the spell
+				local spellName = GetSpellInfo (spellId)
 				if (spellName) then
 					if flag then
 						AUTO_TRACKING_EXTRA_BUFFS [spellName] = true
@@ -2587,7 +2624,8 @@ end
 			end
 
 			for spellId, flag in pairs (extraDebuffsToTrack) do
-				local spellName = GetSpellInfo (tonumber(spellId) or spellId)
+				spellId = tonumber(spellId) or spellId --ensure either actual number or name of the spell
+				local spellName = GetSpellInfo (spellId)
 				if (spellName) then
 					if flag then
 						AUTO_TRACKING_EXTRA_DEBUFFS [spellName] = true
@@ -2640,7 +2678,8 @@ end
 			end
 
 			for spellId, state in pairs (profile.aura_tracker.buff_banned) do
-				local spellName = GetSpellInfo (tonumber(spellId) or spellId)
+				spellId = tonumber(spellId) or spellId --ensure either actual number or name of the spell
+				local spellName = GetSpellInfo (spellId)
 				if (spellName) then
 					if state then
 						DB_BUFF_BANNED [spellName] = true
@@ -2651,7 +2690,8 @@ end
 			end
 
 			for spellId, state in pairs (profile.aura_tracker.debuff_banned) do
-				local spellName = GetSpellInfo (tonumber(spellId) or spellId)
+				spellId = tonumber(spellId) or spellId --ensure either actual number or name of the spell
+				local spellName = GetSpellInfo (spellId)
 				if (spellName) then
 					if state then
 						DB_DEBUFF_BANNED [spellName] = true
