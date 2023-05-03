@@ -1,11 +1,13 @@
 local E, L = select(2, ...):unpack()
 
 local unitFrameData = {
-	--	[1] = AddOn name
-	--	[2] = Frame name
-	--	[3] = UnitId key
-	--	[4] = Delay
-	--	[5] = Number of frames
+	--[[
+		[1] = AddOn name
+		[2] = Frame name
+		[3] = UnitId key
+		[4] = Delay
+		[5] = Number of frames
+	]]
 	{
 		[1] = "VuhDo",
 		[2] = "Vd%dH", -- panel#
@@ -272,14 +274,17 @@ local customUF = { optionTable = { auto = L["Auto"], blizz = "Blizzard" }, enabl
 
 function E:SetActiveUnitFrameData()
 	if customUF.enabledList then
+		-- auto no longer looks for prio, instead it iterates all frames til it finds a visible match. prio is only used to set active now
 		local addon = self.db.position.uf == "auto" and customUF.prio or self.db.position.uf
 		local data = customUF.enabledList[addon]
 		if data then
 			customUF.unit = data.unit
 			customUF.delay = data.delay
 			customUF.frames = data.frames
+			customUF.active = data.addonName
+		else -- blizz
+			customUF.active = nil
 		end
-		customUF.active = data and data.addonName -- Niled for Blizzard
 	end
 end
 
@@ -345,19 +350,20 @@ function E:UnitFrames()
 
 		--[[ informative, but still a nag
 		if not self.global.disableElvMsg then
-			self.StaticPopup_Show("OMNICD_CUSTOM_UF_MSG")
+			self.Libs.OmniCDC.StaticPopup_Show("OMNICD_CUSTOM_UF_MSG")
 		end
 		]]
 	end
 end
 
 function E:Counters()
-	if IsAddOnLoaded("OmniCC") or IsAddOnLoaded("tullaCC") then
-		self.OmniCC = true
-	else
-		self.RegisterCooldown = ElvUI and ElvUI[1]
-			and type(ElvUI[1].CooldownEnabled) == "function" and ElvUI[1]:CooldownEnabled()
-			and type(ElvUI[1].RegisterCooldown) == "function" and ElvUI[1].RegisterCooldown
+	if IsAddOnLoaded("OmniCC") then
+		self.OmniCC = OmniCC
+	-- WA no longer shows double text with Blizzard and Elv
+--	elseif not GetCVarBool("countdownForCooldowns") then
+--		local ElvUI1 = ElvUI and ElvUI[1]
+--		self.ElvUI1 = ElvUI1 and type(ElvUI1.CooldownEnabled) == "function" and ElvUI1:CooldownEnabled()
+--		and type(ElvUI1.RegisterCooldown) == "function" and type(ElvUI1.ToggleCooldown) == "function" and ElvUI1
 	end
 end
 

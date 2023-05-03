@@ -14,22 +14,31 @@ local function GetContainerItemQuestInfo(bag, slot)
 end
 if MODERN then
 	questItems[30148] = {72986, 72985}
+	local function isInPrimalistFutureScenario()
+		return C_TaskQuest.IsActive(74378) and C_Scenario.IsInScenario() and select(8, GetInstanceInfo()) == 2512
+	end
+	local function isOnKeysOfLoyalty()
+		local q = C_QuestLog.IsOnQuest
+		return q(66805) or q(66133)
+	end
 	local include = {
 		[33634]=true, [35797]=true, [37888]=true, [37860]=true, [37859]=true, [37815]=true, [46847]=true, [47030]=true, [39213]=true, [42986]=true, [49278]=true,
 		[86425]={31332, 31333, 31334, 31335, 31336, 31337}, [90006]=true, [86536]=true, [86534]=true,
 		[180008]=-60609, [180009]=-60609, [180170]=-60649,
 		[174464]=true, [168035]=true,
-		[191251]=-66805,
+		[191251]=isOnKeysOfLoyalty, [202096]=isInPrimalistFutureScenario, [203478]=isInPrimalistFutureScenario,
 	}
 	function IsQuestItem(iid, bag, slot)
 		if exclude[iid] then return false end
 		local inc, isQuest, startQuestId, isQuestActive = include[iid], GetContainerItemQuestInfo(bag, slot)
 		isQuest = iid and ((isQuest and GetItemSpell(iid)) or (inc == true) or (startQuestId and not isQuestActive and not C_QuestLog.IsQuestFlaggedCompleted(startQuestId)))
-		if not isQuest and inc then
+		local tinc = inc and not isQuest and type(inc)
+		if tinc == "function" then
+			isQuest, startQuestId, isQuestActive = inc(iid)
+		elseif tinc then
 			isQuest = true
-			local bare = type(inc) == "number"
-			for i=bare and 1 or #inc, 1, -1 do
-				local qid, wq = bare and inc or inc[i]
+			for i=tinc == "number" and 1 or #inc, 1, -1 do
+				local qid, wq = tinc == "number" and inc or inc[i]
 				wq, qid = qid < 0, qid < 0 and -qid or qid
 				if C_QuestLog.IsQuestFlaggedCompleted(qid) or
 				   wq and not C_QuestLog.IsOnQuest(qid) then

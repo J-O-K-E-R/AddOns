@@ -829,6 +829,10 @@ E.spell_db = {
 
 
 
+
+
+
+
 	},
 	["DEATHKNIGHT"] = {
 		{ ["class"]="DEATHKNIGHT",["type"]="cc",["buff"]=47481,["spec"]=252,["duration"]=90,["name"]="Gnaw",["icon"]=237524,["spellID"]=47481, },
@@ -843,6 +847,9 @@ E.spell_db = {
 		{ ["class"]="DEATHKNIGHT",["type"]="disarm",["buff"]=47476,["spec"]=true,["duration"]=60,["name"]="Strangulate",["icon"]=136214,["spellID"]=47476, },
 		{ ["class"]="DEATHKNIGHT",["type"]="other",["buff"]=77606,["spec"]=true,["duration"]=20,["name"]="Dark Simulacrum",["icon"]=135888,["spellID"]=77606, },
 		{ ["class"]="DEATHKNIGHT",["type"]="offensive",["buff"]=288853,["spec"]=true,["duration"]=90,["name"]="Raise Abomination",["icon"]=298667,["spellID"]=288853, },
+		{ ["class"]="DEATHKNIGHT",["type"]="offensive",["buff"]=196770,["spec"]=251,["name"]="Remorseless Winter",["ID"]=80,["duration"]=20,["icon"]=538770,["spellID"]=196770,["talent"]=287250, },
+
+
 
 
 
@@ -903,8 +910,6 @@ E.spell_db = {
 
 
 
-
-
 		{ ["class"]="DEATHKNIGHT",["type"]="offensive",["buff"]=152279,["spec"]=true,["maxRanks"]=1,["name"]="Breath of Sindragosa",["ID"]=61,["duration"]=120,["icon"]=1029007,["spellID"]=152279, },
 
 		{ ["class"]="DEATHKNIGHT",["type"]="offensive",["buff"]=279302,["spec"]=true,["maxRanks"]=1,["name"]="Frostwyrm's Fury",["ID"]=63,["duration"]=180,["icon"]=341980,["spellID"]=279302, },
@@ -925,7 +930,6 @@ E.spell_db = {
 
 		{ ["class"]="DEATHKNIGHT",["type"]="other",["buff"]=57330,["spec"]=true,["maxRanks"]=1,["name"]="Horn of Winter",["ID"]=78,["duration"]=45,["icon"]=134228,["spellID"]=57330, },
 
-		{ ["class"]="DEATHKNIGHT",["type"]="offensive",["buff"]=196770,["spec"]=true,["maxRanks"]=1,["name"]="Remorseless Winter",["ID"]=80,["duration"]=20,["icon"]=538770,["spellID"]=196770,["talent"]=287250, },
 
 
 
@@ -1017,6 +1021,8 @@ E.spell_db = {
 
 
 		{ ["class"]="DEATHKNIGHT",["type"]="offensive",["buff"]=42650,["spec"]=true,["maxRanks"]=1,["name"]="Army of the Dead",["ID"]=164,["duration"]=480,["icon"]=237511,["spellID"]=42650,["talent"]=288853, },
+
+
 
 	},
 	["HUNTER"] = {
@@ -1222,7 +1228,7 @@ E.spell_db = {
 		{ ["class"]="EVOKER",["type"]="counterCC",["buff"]=378464,["spec"]=true,["name"]="Nullifying Shroud",["duration"]=90,["icon"]=135752,["spellID"]=378464, },
 		{ ["class"]="EVOKER",["type"]="disarm",["buff"]=370388,["spec"]=true,["name"]="Swoop Up",["duration"]=90,["icon"]=4622446,["spellID"]=370388, },
 		{ ["class"]="EVOKER",["type"]="immunity",["buff"]=378441,["spec"]=true,["name"]="Time Stop",["duration"]=120,["icon"]=4631367,["spellID"]=378441, },
-		{ ["class"]="EVOKER",["type"]="disarm",["buff"]=383005,["spec"]=true,["name"]="Chrono Loop",["duration"]=90,["icon"]=4630470,["spellID"]=383005, },
+		{ ["class"]="EVOKER",["type"]="disarm",["buff"]=383005,["spec"]=true,["name"]="Chrono Loop",["duration"]=60,["icon"]=4630470,["spellID"]=383005, },
 		{ ["class"]="EVOKER",["type"]="offensive",["buff"]=357210,["name"]="Deep Breath",["duration"]=120,["icon"]=4622450,["spellID"]=357210, },
 		{ ["class"]="EVOKER",["type"]="offensive",["buff"]=382266,["name"]="Fire Breath",["duration"]=30,["icon"]=4622458,["spellID"]=382266, },
 		{ ["class"]="EVOKER",["type"]="other",["buff"]=358267,["name"]="Hover",["duration"]=35,["icon"]=4622463,["spellID"]=358267, },
@@ -1577,7 +1583,10 @@ E.spell_db = {
 
 
 
-		{ ["class"]="DRUID",["type"]="offensive",["buff"]=394013,["spec"]=394013,["maxRanks"]=1,["name"]="Incarnation: Chosen of Elune",["ID"]=178,["duration"]=180,["icon"]=571586,["spellID"]=102560, },
+
+
+
+		{ ["class"]="DRUID",["type"]="offensive",["buff"]=102560,["spec"]=true,["maxRanks"]=1,["name"]="Incarnation: Chosen of Elune",["ID"]=178,["duration"]=180,["icon"]=571586,["spellID"]=102560, },
 
 
 
@@ -1586,7 +1595,7 @@ E.spell_db = {
 
 
 
-		{ ["class"]="DRUID",["type"]="offensive",["buff"]=194223,["spec"]=true,["maxRanks"]=1,["name"]="Celestial Alignment",["ID"]=187,["duration"]=180,["icon"]=136060,["spellID"]=194223,["talent"]=394013, },
+		{ ["class"]="DRUID",["type"]="offensive",["buff"]=194223,["spec"]=true,["maxRanks"]=1,["name"]="Celestial Alignment",["ID"]=187,["duration"]=180,["icon"]=136060,["spellID"]=194223,["talent"]=102560, },
 
 
 
@@ -1629,6 +1638,10 @@ E.spell_db = {
 
 
 		{ ["class"]="DRUID",["type"]="other",["buff"]=204066,["spec"]=true,["maxRanks"]=1,["name"]="Lunar Beam",["ID"]=227,["duration"]=60,["icon"]=136057,["spellID"]=204066, },
+
+
+
+
 
 
 	},
@@ -1829,6 +1842,12 @@ E.spell_db = {
 
 
 
+
+
+
+
+
+
 	},
 	["PRIEST"] = {
 		{ ["class"]="PRIEST",["type"]="offensive",["buff"]=211522,["spec"]=true,["name"]="Psyfiend",["duration"]=45,["icon"]=537021,["spellID"]=211522 },
@@ -1905,7 +1924,7 @@ E.spell_db = {
 
 
 
-		{ ["class"]="PRIEST",["type"]="raidDefensive",["buff"]=372835,["spec"]=true,["maxRanks"]=1,["name"]="Lightwell",["ID"]=51,["duration"]=180,["icon"]=135980,["spellID"]=372835, },
+		{ ["class"]="PRIEST",["type"]="raidDefensive",["buff"]=372835,["spec"]=true,["maxRanks"]=1,["name"]="Lightwell",["ID"]=51,["duration"]=120,["icon"]=135980,["spellID"]=372835, },
 
 
 		{ ["class"]="PRIEST",["type"]="defensive",["buff"]=391124,["spec"]=true,["maxRanks"]=1,["name"]="Restitution",["ID"]=53,["duration"]=600,["icon"]=1295528,["spellID"]=391124, },
@@ -2067,6 +2086,7 @@ E.spell_db = {
 
 		{ ["class"]="PALADIN",["type"]="other",["buff"]=62124,["duration"]=8,["name"]="Hand of Reckoning",["icon"]=135984,["spellID"]=62124,["talent"]=207028, },
 		{ ["class"]="PALADIN",["type"]="immunity",["buff"]=642,["duration"]=300,["name"]="Divine Shield",["icon"]=524354,["spellID"]=642, },
+		{ ["class"]="PALADIN",["type"]="defensive",["buff"]=403876,["spec"]={70},["name"]="Divine Protection",["duration"]=90,["icon"]=524353,["spellID"]=403876, },
 
 
 
@@ -2129,9 +2149,9 @@ E.spell_db = {
 
 
 
-		{ ["class"]="PALADIN",["type"]="offensive",["buff"]=383469,["spec"]=384052,["maxRanks"]=1,["name"]="Radiant Decree",["ID"]=54,["duration"]=15,["icon"]=1109507,["spellID"]=383469, },
 
-		{ ["class"]="PALADIN",["type"]="offensive",["buff"]=255937,["spec"]=true,["maxRanks"]=1,["name"]="Wake of Ashes",["ID"]=55,["duration"]=45,["icon"]=1112939,["spellID"]=255937,["talent"]=384052, },
+
+		{ ["class"]="PALADIN",["type"]="offensive",["buff"]=255937,["spec"]=true,["maxRanks"]=1,["name"]="Wake of Ashes",["ID"]=55,["duration"]=30,["icon"]=1112939,["spellID"]=255937,["talent"]=384052, },
 
 		{ ["class"]="PALADIN",["type"]="offensive",["buff"]=231895,["spec"]=true,["maxRanks"]=1,["name"]="Crusade",["ID"]=56,["duration"]=120,["icon"]=236262,["spellID"]=231895, },
 
@@ -2151,13 +2171,13 @@ E.spell_db = {
 
 
 
-		{ ["class"]="PALADIN",["type"]="offensive",["buff"]=183218,["spec"]=true,["maxRanks"]=1,["name"]="Hand of Hindrance",["ID"]=72,["duration"]=30,["icon"]=1360760,["spellID"]=183218, },
-		{ ["class"]="PALADIN",["type"]="cc",["buff"]=383185,["spec"]=true,["maxRanks"]=1,["name"]="Exorcism",["ID"]=73,["duration"]=20,["icon"]=135903,["spellID"]=383185, },
+
+
 
 
 
 		{ ["class"]="PALADIN",["type"]="defensive",["buff"]=184662,["spec"]=true,["maxRanks"]=1,["name"]="Shield of Vengeance",["ID"]=76,["duration"]=90,["icon"]=236264,["spellID"]=184662, },
-		{ ["class"]="PALADIN",["type"]="defensive",["buff"]=498,["spec"]=true,["maxRanks"]=1,["name"]="Divine Protection",["ID"]=76,["duration"]={[70]=120,["default"]=60},["icon"]=524353,["spellID"]=498, },
+		{ ["class"]="PALADIN",["type"]="defensive",["buff"]=498,["spec"]=true,["maxRanks"]=1,["name"]="Divine Protection",["ID"]=76,["duration"]=60,["icon"]=524353,["spellID"]=498, },
 
 
 		{ ["class"]="PALADIN",["type"]="offensive",["buff"]=343721,["spec"]=true,["maxRanks"]=1,["name"]="Final Reckoning",["ID"]=79,["duration"]=60,["icon"]=135878,["spellID"]=343721, },
@@ -2229,7 +2249,7 @@ E.spell_db = {
 
 		{ ["class"]="PALADIN",["type"]="interrupt",["buff"]=96231,["spec"]=true,["maxRanks"]=1,["name"]="Rebuke",["ID"]=135,["duration"]=15,["icon"]=523893,["spellID"]=96231, },
 
-		{ ["class"]="PALADIN",["type"]="offensive",["buff"]=31884,["spec"]=true,["maxRanks"]=1,["name"]="Avenging Wrath",["ID"]=137,["duration"]=120,["icon"]=135875,["spellID"]=31884,["talent"]={216331,231895,389539}, },
+		{ ["class"]="PALADIN",["type"]="offensive",["buff"]=31884,["spec"]=true,["maxRanks"]=1,["name"]="Avenging Wrath",["ID"]=137,["duration"]={[70]=60,["default"]=120},["icon"]=135875,["spellID"]=31884,["talent"]={216331,231895,389539}, },
 
 
 
@@ -2262,6 +2282,19 @@ E.spell_db = {
 
 		{ ["class"]="PALADIN",["type"]="other",["buff"]=221886,["spec"]=true,["maxRanks"]=1,["name"]="Divine Steed",["charges"]=1,["ID"]=163,["duration"]=45,["icon"]=1360759,["spellID"]=190784, },
 		{ ["class"]="PALADIN",["type"]="externalDefensive",["buff"]=204018,["spec"]=true,["maxRanks"]=1,["name"]="Blessing of Spellwarding",["charges"]=1,["ID"]=164,["duration"]=300,["icon"]=135880,["spellID"]=204018, },
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 	},
@@ -2418,7 +2451,7 @@ E.spell_db = {
 		{ ["class"]="SHAMAN",["type"]="offensive",["buff"]=197995,["spec"]=true,["maxRanks"]=1,["name"]="Wellspring",["ID"]=114,["duration"]=20,["icon"]=893778,["spellID"]=197995, },
 
 
-		{ ["class"]="SHAMAN",["type"]="offensive",["buff"]=382029,["spec"]=true,["maxRanks"]=1,["name"]="Ever-Rising Tide",["ID"]=116,["duration"]=30,["icon"]=132852,["spellID"]=382029, },
+
 
 		{ ["class"]="SHAMAN",["type"]="offensive",["buff"]=114052,["spec"]=true,["maxRanks"]=1,["name"]="Ascendance",["ID"]=118,["duration"]=180,["icon"]=135791,["spellID"]=114052, },
 
@@ -2476,7 +2509,7 @@ E.spell_db = {
 		{ ["class"]="SHAMAN",["type"]="disarm",["buff"]=51490,["spec"]=true,["maxRanks"]=1,["name"]="Thunderstorm",["ID"]=160,["duration"]=30,["icon"]=237589,["spellID"]=51490, },
 
 		{ ["class"]="SHAMAN",["type"]="other",["buff"]=378081,["spec"]=true,["maxRanks"]=1,["name"]="Nature's Swiftness",["ID"]=162,["duration"]=60,["icon"]=136076,["spellID"]=378081, },
-		{ ["class"]="SHAMAN",["type"]="offensive",["buff"]=5394,["spec"]=true,["maxRanks"]=1,["name"]="Healing Stream Totem",["ID"]=163,["duration"]=30,["icon"]=135127,["spellID"]=5394, },
+		{ ["class"]="SHAMAN",["type"]="offensive",["buff"]=5394,["spec"]=true,["maxRanks"]=1,["name"]="Healing Stream Totem",["ID"]=163,["duration"]=30,["icon"]=135127,["spellID"]=5394,["talent"]=157153, },
 
 		{ ["class"]="SHAMAN",["type"]="defensive",["buff"]=108281,["spec"]=true,["maxRanks"]=1,["name"]="Ancestral Guidance",["ID"]=165,["duration"]=120,["icon"]=538564,["spellID"]=108281, },
 
@@ -2485,6 +2518,12 @@ E.spell_db = {
 
 
 		{ ["class"]="SHAMAN",["type"]="offensive",["buff"]=114051,["spec"]=true,["maxRanks"]=1,["name"]="Ascendance",["ID"]=170,["duration"]=180,["icon"]=135791,["spellID"]=114051, },
+
+
+
+
+
+
 	},
 	["MAGE"] = {
 		{ ["class"]="MAGE",["type"]="offensive",["buff"]=353128,["spec"]=true,["duration"]=45,["name"]="Arcanosphere",["icon"]=4226155,["spellID"]=353128, },

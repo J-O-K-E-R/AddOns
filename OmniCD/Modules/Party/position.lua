@@ -46,7 +46,7 @@ function P:ShouldShowCompactFrame()
 end
 
 function P:CompactFrameIsShown()
-	return self.isCompactFrameSetShown() and self:ShouldShowCompactFrame()
+	return self.isCompactFrameSetShown and self:ShouldShowCompactFrame()
 end
 
 function P:FindRelativeFrame(guid)

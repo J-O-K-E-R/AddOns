@@ -26,7 +26,7 @@ BigWigs:AddSounds("Bonemaw", {
 BigWigs:AddSounds("Ner'zhul", {
 	[154350] = "alert",
 	[154442] = "alarm",
-	[154469] = "warning",
+	[154469] = {"alert","underyou","warning"},
 })
 
 BigWigs:AddSounds("Shadowmoon Burial Grounds Trash", {
@@ -40,5 +40,6 @@ BigWigs:AddSounds("Shadowmoon Burial Grounds Trash", {
 	[394512] = "long",
 	[398150] = {"alarm","warning"},
 	[398151] = "alert",
+	[398154] = "alarm",
 	[398206] = "warning",
 })

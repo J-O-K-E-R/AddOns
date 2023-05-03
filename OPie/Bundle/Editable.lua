@@ -25,7 +25,7 @@ R:AddDefaultRing("CommonTrades", {
 	{id="/cast [mod] {{spell:818}}; {{spell:2550/51296}}; {{spell:818}}", _u="c"}, -- cooking/campfire
 	{id="/cast {{spell:4036/51306}}", _u="g"}, -- engineering
 	{id=2656, _u="m"}, -- smelting/mining journal
-	(MODERN or CF_WRATH) and {id="/cast [mod] {{spell:31252}}; {{spell:25229/51311}};", _u="j"} -- jewelcrafting/prospecting
+	(MODERN or CF_WRATH) and {id="/cast [mod] {{spell:31252}}; {{spell:25229/51311}}", _u="j"} -- jewelcrafting/prospecting
 	        or {id="/cast {{spell:3273}}", _u="f"}, -- first aid
 	(MODERN or CF_WRATH) and {id="/cast [mod] {{spell:51005}}; {{spell:45357/45363}}", _u="i"}, -- inscription/milling
 	(MODERN or CF_WRATH) and {id=53428, _u="u"}, -- runeforging
@@ -45,7 +45,7 @@ R:AddDefaultRing("TrinketSlots", {
 if not MODERN then return end
 
 R:AddDefaultRing("DruidShift", {
-	{id="/cancelform [noflyable,noform:moonkin]\n/cast [flyable,outdoors,nocombat,noswimming,nomod][flying,flyable] {{spell:783}}; [outpost:corral,nomod,nospec:103/104] {{spell:161691}}; [swimming,nomod][flyable,nomod] {{spell:783}}; [nocombat,outdoors,nomod:alt,in:dragon isles] {{mount:dragon}}; [nocombat,outdoors,nomod:alt] {{mount:ground}}; [outdoors] {{spell:783}}\n/stopmacro [swimming,nomod][flyable,nomod][flying][mounted]\n/changeactionbar [noflyable,nocombat,outdoors,nomod:alt,in:dragon isles] 1", show="[known:783]", _u="f"}, -- Travel
+	{id="/cancelform [noflyable,noform:moonkin]\n/cast [flyable,outdoors,nocombat,noswimming,nomod][flying,flyable] {{spell:783}}; [outpost:corral,nomod,nospec:103/104] {{spell:161691}}; [swimming,nomod][flyable,nomod] {{spell:783}}; [nocombat,outdoors,nomod:alt,advflyable] {{mount:dragon}}; [nocombat,outdoors,nomod:alt] {{mount:ground}}; [outdoors] {{spell:783}}\n/stopmacro [swimming,nomod][flyable,nomod][flying][mounted]\n/changeactionbar [noflyable,nocombat,outdoors,nomod:alt,advflyable] 1", show="[known:783]", _u="f"}, -- Travel
 	{c="c74cff", id=24858, _u="k"}, -- Moonkin
 	{c="fff04d", id=768, _u="c"}, -- Cat
 	{c="ff0000", id=5487, _u="b"}, -- Bear
@@ -76,7 +76,7 @@ R:AddDefaultRing("DruidFeral", {
 })
 
 do -- Hunter Pets
-	local m = "#showtooltip [@pet,exists,nodead,nopet:%d] {{spell:%d}};\n/cast [@pet,exists,nopet:%1$d,nodead] {{spell:2641}}\n/cast [@pet,noexists,nomod] {{spell:%2$d}}; [@pet,dead][@pet,noexists] {{spell:982}}; [@pet,help,nomod] {{spell:136}}; [@pet] {{spell:2641}}"
+	local m = "#showtooltip [@pet,exists,nodead,nopet:%d] {{spell:%d}}\n/cast [@pet,exists,nopet:%1$d,nodead] {{spell:2641}}\n/cast [@pet,noexists,nomod] {{spell:%2$d}}; [@pet,dead][@pet,noexists] {{spell:982}}; [@pet,help,nomod] {{spell:136}}; [@pet] {{spell:2641}}"
 	R:AddDefaultRing("HunterPets", {
 		{id=m:format(1,883), show="[known:883,havepet:1]", _u="1"},
 		{id=m:format(2,83242), show="[known:83242,havepet:2]", _u="2"},
@@ -265,6 +265,8 @@ R:AddDefaultRing("CommonHearth", {
 	{"toy", 183716, _u="ve"},
 	{"toy", 188952, _u="do"},
 	{"toy", 190237, _u="bt"},
+	{"toy", 193588, _u="tw"},
+	{"toy", 200630, _u="ws"},
 	name=L"Hearthstones", internal=true, _u="OPCHS"
 })
 R:AddDefaultRing("SpecMenu", {

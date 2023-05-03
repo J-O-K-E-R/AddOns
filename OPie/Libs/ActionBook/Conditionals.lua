@@ -386,11 +386,12 @@ do -- combo:count
 end
 do -- race:token
 	local map, _, raceToken = {
-		Scourge="Scourage/Undead/Forsaken",
+		Scourge="Scourge/Undead/Forsaken",
 		LightforgedDraenei="LightforgedDraenei/Lightforged",
 		HighmountainTauren="HighmountainTauren/Highmountain",
 		MagharOrc="MagharOrc/Maghar",
 		ZandalariTroll="ZandalariTroll/Zandalari",
+		DarkIronDwarf="DarkIronDwarf/DarkIron",
 	}, UnitRace("player")
 	KR:SetStateConditionalValue("race", map[raceToken] or raceToken)
 end

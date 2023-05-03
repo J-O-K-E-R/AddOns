@@ -5,6 +5,11 @@ V["skins"]["addons"] = {
 }
 
 V["sle"] = {
+	armory = {
+		stats = {
+			enable = true,
+		},
+	},
 	["equip"] = {
 		["enable"] = false,
 		["spam"] = false,
@@ -120,6 +125,7 @@ G["sle"] = {
 		["gameMenu"] = {
 			["enable"] = true,
 			["reload"] = false,
+			["reloadLabel"] = "",
 		},
 		["confirmed"] = false,
 		["cyrillics"] = {

@@ -21,6 +21,7 @@ if TEN then
 		TenSettingsFrame:SetPoint("CENTER", 0, 50)
 		TenSettingsFrame.NineSlice.Text:SetText(OPTIONS)
 		TenSettingsFrame:SetFrameStrata("HIGH")
+		TenSettingsFrame:SetToplevel(true)
 		TenSettingsFrame:Hide()
 		TenSettingsFrame:SetMouseClickEnabled(true)
 		TenSettingsFrame:SetMouseMotionEnabled(true)

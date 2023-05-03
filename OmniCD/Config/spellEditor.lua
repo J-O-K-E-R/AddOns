@@ -556,27 +556,6 @@ local SpellEditor = {
 				},
 			}
 		},
-		utils = {
-			name = L["Utils"],
-			order = 20,
-			type = "group",
-			args = {
-				tooltipID = {
-					order = 1,
-					name = L["Show Spell ID in Tooltips"],
-
-
-					descStyle = "inline",
-					width = "full",
-					type = "toggle",
-					get = function() return E.profile.tooltipID end,
-					set = function(_, state)
-						E.profile.tooltipID = state
-						E.TooltipID:SetHooks()
-					end,
-				},
-			}
-		},
 	}
 }
 

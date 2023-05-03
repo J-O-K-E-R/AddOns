@@ -1,6 +1,7 @@
-## Interface: 100000
+## Interface: 100100
 
 ## Author: Kesava
 ## Title: Kui |cff9966ffMedia
 ## Notes: This doesn't need to be enabled.
+## IconTexture: 132177
 

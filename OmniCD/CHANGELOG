@@ -1,7 +1,49 @@
 ------------------------------------------------------------------------------
 -- Dragonflight
 --
-v3.4.1.2744
+v10.0.7.2747
+	Added option to limit the number of visible icons per unit
+	Added option to move icon names vertically
+	Added option to scale status bar names
+	Added option to rename Extra Bars
+	Fixed Divine Protection for Rets
+	Fixed Fire Breath CD reduction for Preservation
+	Visibility by Group Size can be configured for each zone separately
+	Empowered spell will reset if the cast fails (simplified)
+	Lib updates - cell padding, flash button fix, dropdown fix
+
+	Hotfixes
+	MARCH 28, 2023
+	Holy Priest
+	Fixed a bug causing Symbol of Hope to reduce the cooldown of both Divine Protection and Shield of Vengeance for Retribution
+	Paladins. It will now only reduce the cooldown of Divine Protection.
+
+	10.1 PTR fixes
+
+v10.0.7.2746
+	Cloudburst Totem will correctly replace Healing Stream Totem
+	Casting Echo will correctly interact with Just in Time (Talent)
+	Tooltip frames now uses a generic frames other addons can modify
+	Removed Util\TooltipID (moved to dev ver)
+	Cleaned up OmniCC support
+	Removed ElvUI CD text support
+	CD timers will explicitly use Blizzard's CD text
+	ElvUI user can safely? enable Blizzard's CD text as WAs no longer show duplicate text
+	Fixed lib load order
+
+v10.0.7.2745
+	Patch 10.0.7 spell & modifier updates
+	Fixed Forbearance gray out effect incorrectly showing on Lay on Hands when it's used
+	Added additional sorting for the Raid Bar
+	Added UseIconAlpha for the Raid Bar
+	Interrupt spell types are no longer visible in the Raid CD tab
+	Addon will no longer sync with older versions (inspection will continue to work)
+
+	Lib updates
+	Battle Res Plugin:
+		Fixed Arclight Vital Connector (DF engineering) not consuming a brez charge instantly
+
+v10.0.5.2744
 	Fixed Celestial Alignment (Incarnation) with Orbital Strike talented
 	Fixed pixel shifting on icon frames causing malalignment
 	Fixed option panel taint error

@@ -1,6 +1,3 @@
-v4.60 1/24/22
+v4.66 3/30/23
 
-• toc bump
-• fix replace enchant string
-• fixed an issue that new option isn't visible with advanced settings enabled for the character frame to add addition space on the right
-• fixed mouse over gem slot on inspect and character frame
+• hotfix for 4.65 borked release

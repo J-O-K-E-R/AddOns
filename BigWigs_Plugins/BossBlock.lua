@@ -445,6 +445,15 @@ do
 		[70195]=true,[70196]=true,[70192]=true,[70194]=true,
 		-- Halls of Valor
 		[57160]=true,[57159]=true,[57162]=true,[68701]=true,[57161]=true,
+		-- Neltharion's Lair
+		[54610]=true,[54608]=true,[54697]=true,[54708]=true,[54709]=true,
+		[54718]=true,[54719]=true,[54720]=true,
+
+		-- Freehold
+		[104684]=true,[104682]=true,[104685]=true,
+		-- The Underrot
+		[112206]=true,[106857]=true,[106858]=true,[106852]=true,[106876]=true,
+		[106877]=true,[106853]=true,[106855]=true,[106856]=true,
 
 		-- De Other Side
 		[163828]=true,[163830]=true,[163831]=true,[163822]=true,[163823]=true,[163824]=true,[163834]=true,
@@ -666,4 +675,3 @@ do
 		end
 	end
 end
-

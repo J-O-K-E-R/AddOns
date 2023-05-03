@@ -15,8 +15,6 @@ mod:SetRespawnTime(15)
 local L = mod:GetLocale()
 if L then
 	L.warmup_text = "Rokmora Active"
-	L.warmup_trigger = "Navarrogg?! Betrayer! You would lead these intruders against us?!"
-	L.warmup_trigger_2 = "Either way, I will enjoy every moment of it. Rokmora, crush them!"
 end
 
 --------------------------------------------------------------------------------
@@ -33,7 +31,6 @@ function mod:GetOptions()
 end
 
 function mod:OnBossEnable()
-	self:RegisterEvent("CHAT_MSG_MONSTER_YELL", "Warmup")
 	self:Log("SPELL_CAST_START", "RazorShards", 188169)
 	self:Log("SPELL_CAST_START", "Shatter", 188114)
 
@@ -43,29 +40,28 @@ function mod:OnBossEnable()
 end
 
 function mod:OnEngage()
-	self:Bar(188114, 20.7) -- Shatter
-	self:Bar(188169, 25.6) -- Razor Shards
+	self:Bar(188114, 20.4) -- Shatter
+	self:Bar(188169, 25.3) -- Razor Shards
 end
 
 --------------------------------------------------------------------------------
 -- Event Handlers
 --
 
--- TODO trigger this from trash for higher reliability
-function mod:Warmup(event, msg)
-	if msg == L.warmup_trigger then
-		self:UnregisterEvent(event)
-		self:Bar("warmup", 18.9, L.warmup_text, "achievement_dungeon_neltharionslair")
-	elseif msg == L.warmup_trigger_2 then
-		self:UnregisterEvent(event)
-		self:Bar("warmup", 4.95, L.warmup_text, "achievement_dungeon_neltharionslair")
-	end
+-- called from trash module
+function mod:WarmupLong()
+	self:Bar("warmup", 18.9, L.warmup_text, "achievement_dungeon_neltharionslair")
+end
+
+-- called from trash module
+function mod:WarmupShort()
+	self:Bar("warmup", 4.95, L.warmup_text, "achievement_dungeon_neltharionslair")
 end
 
 function mod:RazorShards(args)
 	self:Message(args.spellId, "orange")
 	self:PlaySound(args.spellId, "alarm")
-	self:CDBar(args.spellId, 29.2) -- pull:25.6, 29.2, 29.2, 29.2, 34.1
+	self:CDBar(args.spellId, 29.1) -- pull:25.6, 29.2, 29.2, 29.2, 34.1
 	-- correct timers
 	if self:BarTimeLeft(188114) < 4.87 then -- Shatter
 		self:Bar(188114, {4.87, 24.3})
@@ -78,7 +74,7 @@ function mod:Shatter(args)
 	self:Bar(args.spellId, 24.3) -- pull:20.7, 24.4, 24.3, 24.4, 24.3
 	-- correct timers
 	if self:BarTimeLeft(188169) < 4.87 then -- Razor Shards
-		self:Bar(188169, {4.87, 29.2})
+		self:Bar(188169, {4.87, 29.1})
 	end
 end
 

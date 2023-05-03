@@ -54,6 +54,9 @@ local WeeklyRewards         = _G.C_WeeklyRewards
 local ClassTalents          = _G.C_ClassTalents
 local Traits                = _G.C_Traits
 
+-- GetAddOnMetadata was global until 10.1. It's now in C_AddOns. This line will use C_AddOns if available and work in either WoW build
+local GetAddOnMetadata = C_AddOns and C_AddOns.GetAddOnMetadata or GetAddOnMetadata
+
 -- Talent string export
 local bitWidthHeaderVersion         = 8
 local bitWidthSpecID                = 16
@@ -292,7 +295,7 @@ end
 
 local function GetActiveEntryIndex(treeNode)
   for i, entryID in ipairs(treeNode.entryIDs) do
-    if(entryID == treeNode.activeEntry.entryID) then
+    if(treeNode.activeEntry and entryID == treeNode.activeEntry.entryID) then
       return i;
     end
   end
@@ -320,10 +323,11 @@ local function WriteLoadoutContent(exportStream, configID, treeID)
       if(isChoiceNode) then
         local entryIndex = GetActiveEntryIndex(treeNode);
         if(entryIndex <= 0 or entryIndex > 4) then
-          error(
-            "Error exporting tree node " .. treeNode.ID
-            .. ". The active choice node entry index (" .. entryIndex .. ") is out of bounds. "
-          );
+          local configInfo = Traits.GetConfigInfo(configID)
+          local errorMsg = "Talent loadout '" .. configInfo.name .. "' is corrupt/incomplete. It needs to be"
+            .. " recreated or deleted for /simc to function properly"
+          print(errorMsg);
+          error(errorMsg);
         end
 
         -- store entry index as zero-index
@@ -500,6 +504,11 @@ local function GetItemStringFromItemLink(slotNum, itemLink, debugOutput)
     simcItemOptions[#simcItemOptions + 1] = 'crafted_stats=' .. table.concat(craftedStats, '/')
   end
 
+  local craftingQuality = C_TradeSkillUI.GetItemCraftedQualityByItemInfo(itemLink);
+  if craftingQuality then
+    simcItemOptions[#simcItemOptions + 1] = 'crafting_quality=' .. craftingQuality
+  end
+
   local itemStr = ''
   itemStr = itemStr .. (simcSlotNames[slotNum] or 'unknown') .. "=" .. table.concat(simcItemOptions, ',')
   if debugOutput then
@@ -624,6 +633,41 @@ function Simulationcraft:GetZandalariLoa()
     end
   end
   return zandalariLoa
+end
+
+function Simulationcraft:GetSlotHighWatermarks()
+  if C_ItemUpgrade and C_ItemUpgrade.GetHighWatermarkForSlot then
+    local slots = {}
+    -- These are not normal equipment slots, they are Enum.ItemRedundancySlot
+    for slot = 0, 16 do
+      local characterHighWatermark, accountHighWatermark = C_ItemUpgrade.GetHighWatermarkForSlot(slot)
+      if characterHighWatermark or accountHighWatermark then
+        slots[#slots + 1] = table.concat({  slot, characterHighWatermark, accountHighWatermark }, ':')
+      end
+    end
+    return table.concat(slots, '/')
+  end
+end
+
+function Simulationcraft:GetUpgradeCurrencies()
+  local upgradeCurrencies = {}
+  -- Collect actual currencies
+  for currencyId, currencyName in pairs(Simulationcraft.upgradeCurrencies) do
+    local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(currencyId)
+    if currencyInfo and currencyInfo.quantity > 0 then
+      upgradeCurrencies[#upgradeCurrencies + 1] = table.concat({ "c", currencyId, currencyInfo.quantity }, ':')
+    end
+  end
+
+  -- Collect items that get used as currencies
+  for itemId, itemName in pairs(Simulationcraft.upgradeItems) do
+    local count = GetItemCount(itemId, true, true, true)
+    if count > 0 then
+      upgradeCurrencies[#upgradeCurrencies + 1] = table.concat({ "i", itemId, count }, ':')
+    end
+  end
+
+  return table.concat(upgradeCurrencies, '/')
 end
 
 function Simulationcraft:GetMainFrame(text)
@@ -989,6 +1033,19 @@ function Simulationcraft:PrintSimcProfile(debugOutput, noBags, showMerchant, lin
         break
       end
     end
+  end
+
+  simulationcraftProfile = simulationcraftProfile .. '\n'
+  simulationcraftProfile = simulationcraftProfile .. '### Additional Character Info\n'
+
+  local upgradeCurrenciesStr = Simulationcraft:GetUpgradeCurrencies()
+  simulationcraftProfile = simulationcraftProfile .. '#\n'
+  simulationcraftProfile = simulationcraftProfile .. '# upgrade_currencies=' .. upgradeCurrenciesStr .. '\n'
+
+  local highWatermarksStr = Simulationcraft:GetSlotHighWatermarks()
+  if highWatermarksStr then
+    simulationcraftProfile = simulationcraftProfile .. '#\n'
+    simulationcraftProfile = simulationcraftProfile .. '# slot_high_watermarks=' .. highWatermarksStr .. '\n'
   end
 
   -- sanity checks - if there's anything that makes the output completely invalid, punt!

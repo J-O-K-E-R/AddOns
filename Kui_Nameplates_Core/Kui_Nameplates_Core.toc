@@ -1,8 +1,9 @@
-## Interface: 100000
+## Interface: 100100
 
 ## Author: Kesava
 ## Title: Kui |cff9966ffNameplates:|r |cffffffffCore|r
 ## Notes: The official layout for Kui Nameplates.
+## IconTexture: 132177
 ## Dependencies: Kui_Nameplates
 ## SavedVariables: KuiNameplatesCoreSaved
 ## SavedVariablesPerCharacter: KuiNameplatesCoreCharacterSaved

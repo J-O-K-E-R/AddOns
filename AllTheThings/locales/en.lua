@@ -402,6 +402,8 @@ app.L = {
 	["REPUTATIONS_CHECKBOX_TOOLTIP"] = "Enable this option to track reputations.\n\nOnce you reach Exalted or Best Friend with a reputation, it will be marked Collected.\n\nYou may have to do a manual refresh for this to update correctly.";
 	["RUNEFORGELEGENDARIES_CHECKBOX"] = "|T"..app.asset("Expansion_SL")..":0|t |cffADD8E6Runecarving Powers";
 	["RUNEFORGELEGENDARIES_CHECKBOX_TOOLTIP"] = "Enable this option to track Shadowlands Runecarving Powers.";
+	["DRAKEWATCHERMANUSCRIPTS_CHECKBOX"] = "|T"..app.asset("Expansion_DF")..":0|t |cffADD8E6Drakewatcher Manuscripts";
+	["DRAKEWATCHERMANUSCRIPTS_CHECKBOX_TOOLTIP"] = "Enable this option to track Dragonflight Drakewatcher Manuscripts.";
 	["SOULBINDCONDUITS_CHECKBOX"] = "|T"..app.asset("Expansion_SL")..":0|t |cffADD8E6"..GetSpellInfo(348869);
 	["SOULBINDCONDUITS_CHECKBOX_TOOLTIP"] = "Enable this option to track Shadowlands Soulbind Conduits.";
 	["TITLES_CHECKBOX"] = "|cffADD8E6"..PAPERDOLL_SIDEBAR_TITLES;
@@ -804,6 +806,8 @@ app.L = {
 		["Season "] = "S",
 		["Sanctum Upgrades %> "] = "",
 		[CLASS.." %> "] = "",
+		["The Primalist Future"] = "Primalist Future",
+		["The Storm's Fury"] = "Storm's Fury",
 	};
 
 	["CUSTOM_DIFFICULTIES"] = {
@@ -992,7 +996,7 @@ app.L = {
 		[-2] = app.asset("Interface_Vendor"),												-- Vendors
 		[-3] = app.asset("Category_Holidays"),												-- Holidays
 		[-4] = app.asset("Category_Achievements"),											-- Achievement
-		[-7] = app.asset("Interface_World_boss"),				                            -- World Bosses
+		[-7] = app.asset("Interface_World_boss"),											-- World Bosses
 		[-9] = app.asset("Category_PvP"),													-- Player vs. Player
 		[-10] = "Interface\\Icons\\achievement_reputation_05",								-- Party Sync
 		[-11] = "Interface\\Icons\\inv_misc_crate04horde",									-- Common Box Drops
@@ -1014,7 +1018,7 @@ app.L = {
 		[-28] = "Interface\\Icons\\INV_Misc_Head_Dragon_01",								-- Upper (Blackrock Spire)
 		[-31] = app.asset("Category_Promo"),												-- Promotions
 		[-32] = "Interface\\Icons\\inv_sword_48",											-- Honor Titles
-		[-34] = app.asset("Interface_WorldQuest"),							            	-- World Quests
+		[-34] = app.asset("Interface_WorldQuest"),											-- World Quests
 		[-36] = app.asset("Category_InGameShop"),											-- In-Game Shop
 		[-37] = "Interface\\Icons\\Garrison_Building_MageTower",							-- Discovery
 		[-38] = app.asset("Category_Professions"),											-- Professions
@@ -1022,7 +1026,7 @@ app.L = {
 		[-41] = "Interface\\Icons\\TRADE_ARCHAEOLOGY",										-- Cache of Madness
 		[-42] = app.asset("Category_Crafting"),												-- Crafted Item
 		[-43] = 618859,																		-- Proving Grounds [achievement_challengemode_platinum]
-	-- World Events (These are used by ATT CLassic)
+	-- World Events (These are used by ATT Classic)
 		[-47] = "Interface\\Icons\\achievement_worldevent_lunar",							-- Lunar Festival
 		[-52] = "Interface\\Icons\\inv_misc_toy_04",										-- Children's Week
 		[-53] = "Interface\\Icons\\inv_summerfest_symbol_high",								-- Midsummer Fire Festival
@@ -1105,13 +1109,13 @@ app.L = {
 	-- Junkboxes
 		[-165] = "Interface\\Icons\\inv_box_01",											-- Junkboxes
 	-- Emissary
-		[-169] = app.asset("Interface_Emissary_Callings"),								    -- Emissary Quests
+		[-169] = app.asset("Interface_Emissary_Callings"),									-- Emissary Quests
 	-- Events
 		[-176] = 3753381,																	-- Weekly Holidays
 	-- New Characters
 		[-211] = 1530081,																	-- New Character
 	-- Treasure Chest
-		[-212] = app.asset("Interface_Tchest"),									            -- Treasure Chest
+		[-212] = app.asset("Interface_Tchest"),												-- Treasure Chest
 	-- Dalaran Sub-Zone
 		[-213] = "Interface\\LFGFRAME\\LFGICON-DALARANSEWERS",								-- The Underbelly
 	-- PvP
@@ -1232,7 +1236,7 @@ app.L = {
 		[-531] = "Interface\\Icons\\inv_jewelry_amulet_03",									-- Spirit of Competition
 		[-532] = "Interface\\Icons\\ability_shaman_stormstrike",							-- Heroes of the Storm
 		[-533] = "Interface\\Icons\\Inv_misc_rune_01",										-- Hearthstone
-		[-534] = app.asset("Promotion_Collector"),  										-- Collector's Edition
+		[-534] = app.asset("Promotion_Collector"),											-- Collector's Edition
 		[-535] = "Interface\\Icons\\ACHIEVEMENT_GUILDPERK_LADYLUCK",						-- Trading Card Game
 		[-536] = "Interface\\Icons\\Inv_misc_rune_01",										-- Hearthstone Mercenaries
 		[-537] = "Interface\\Icons\\diabloanniversary_achievement",							-- Diablo 20th Anniversary
@@ -1241,8 +1245,8 @@ app.L = {
 		[-540] = "Interface\\Icons\\inv_stone_02",											-- The Scourge Invasion
 		[-541] = "Interface\\Icons\\spell_holiday_tow_spicecloud",							-- The Silithyst Must Flow
 		[-542] = "Interface\\Icons\\achievement_dungeon_outland_dungeonmaster",				-- The Opening of the Dark Portal
-		[-543] = app.asset("Interface_Linvas"),						                    	-- Legion Invasions
-		[-545] = app.asset("Promotion_Blizzcon"),               							-- Blizzcon
+		[-543] = app.asset("Interface_Linvas"),												-- Legion Invasions
+		[-545] = app.asset("Promotion_Blizzcon"),											-- Blizzcon
 		[-546] = "Interface\\Icons\\achievement_reputation_08",								-- Recruit A Friend
 		[-552] = "Interface\\Icons\\INV_Mace_1H_Doomhammer",								-- Warcraft 3 Spoils of War Edition
 		[-553] = "Interface\\Icons\\INV_Drink_33_BloodRedAle",								-- iCoke
@@ -1250,7 +1254,7 @@ app.L = {
 		[-565] = "Interface\\Icons\\Ability_pet_baneling",									-- Starcraft II: Heart of the Swarm
 		[-566] = "Interface\\Icons\\DiabloAnniversary_HoradricCube",						-- Diablo III
 		[-568] = "Interface\\Icons\\inv_pet_babywinston",									-- Overwatch: Origins
-		[-573] = app.asset("Promotion_Scroll_of_Rez"),      								-- Scroll of Resurrection
+		[-573] = app.asset("Promotion_Scroll_of_Rez"),										-- Scroll of Resurrection
 		[-575] = "Interface\\Icons\\DiabloAnniversary_HoradricCube",						-- Diablo III: Reaper of Souls
 		[-576] = "Interface\\Icons\\inv_archonpet",											-- StarCraft II: Legacy of the Void
 		[-577] = "Interface\\Icons\\INV_MISC_FILM_01",										-- Warcraft Movie
@@ -1262,6 +1266,7 @@ app.L = {
 		[-583] = app.asset("Expansion_WOTLK"),												-- Northrend Epic Upgrade
 		[-584] = app.asset("Expansion_DF"),													-- Dragonflight Seasonal Promotions
 		[-585] = "Interface\\Icons\\DiabloAnniversary_HoradricCube",						-- Diablo IV
+		[-586] = 136101,																	-- Amazon Prime Gaming
 	-- PvP Headers
 		[-650] = 1455894,																	-- Rated Battlegrounds
 		--[-651] = "Interface\\Worldmap\\GlowSkull_64Grey",									-- Not used yet. Future PvP Icons if needed
@@ -1313,7 +1318,6 @@ app.L = {
 		[-690] = "Interface\\Icons\\inv_protodrakegladiatormount_blue",						-- Sinister Gladiator: Battle for Azeroth Season 2
 		[-691] = "Interface\\Icons\\inv_protodrakegladiatormount_purple",					-- Notorious Gladiator: Battle for Azeroth Season 3
 		[-692] = "Interface\\Icons\\inv_protodrakegladiatormount_black",					-- Corrupted Gladiator: Battle for Azeroth Season 4
-	-- More PvP Seasons are likely to come dont use IDs here
 	-- Pets
 		[-795] = app.asset("Pet_Dungeon"),													-- Pet Battle Dungeons
 		[-796] = app.asset("Category_PetBattles"),											-- Battle
@@ -1327,12 +1331,8 @@ app.L = {
 		[-801] = "Interface\\Icons\\inv_serpentmount_darkblue",								-- Riddler's Mind-Worm
 		[-802] = "Interface\\Icons\\inv_faeriedragon2_orange",								-- Sun Darter Hatchling
 		[-804] = "Interface\\Icons\\inv_misc_toy_02",										-- Uuna
-		[-805] = "Interface\\Icons\\inv_demongoat",											-- Baa'l
 		[-806] = "Interface\\Icons\\inv_belt_armor_waistoftime_d_01",						-- Waist of Time
 		[-807] = "Interface\\Icons\\inv_hivemind",											-- Hivemind
-		[-808] = 2998185,																	-- Bound Shadehound
-		[-809] = 3954409,																	-- Stored Wisdom Device
-	-- More Secrets are likely to come dont use IDs here
 	-- Chests
 		[-851] = "Interface\\Icons\\INV_Eng_Crate2",										-- Black Empire Cache (Is a placeholder since no ObjectID are assigned to chests!)
 	-- Heart of Azeroth
@@ -1403,6 +1403,7 @@ app.L = {
 		[-1111] = "Interface\\Icons\\inv_cape_special_climbingpack_b_01",							-- Climbing
 		[-1112] = 1109168,																			-- Cataloging
 		[-1113] = "Interface\\Icons\\inv_misc_ancient_mana",										-- Ancient Waygates
+		[-1114] = "Interface\\Icons\\ability_racial_mountaineer",									-- Cartographer's Flag
 		[-1120] = "Interface\\Icons\\ui_majorfaction_centaur",										-- Maruuk Centaur
 		[-1121] = "Interface\\Icons\\ability_racial_returntocamp",									-- Clan Aylaag
 		[-1122] = "Interface\\Icons\\inv_scroll_11",												-- Grand Hunts
@@ -1418,7 +1419,13 @@ app.L = {
 		[-1142] = "Interface\\Icons\\inv_checkered_flag",											-- Dragonriding Racing
 		[-1143] = 237274,																			-- Every 30 min Rare
 		[-1144] = "Interface\\Icons\\inv_scroll_11",												-- Weekly Profession Header
+		[-1150] = "Interface\\Icons\\ui_majorfaction_niffen",										-- Loamm Niffen
+		[-1151] = "Interface\\Icons\\achievement_guildperk_bartering",								-- Bartering
+		[-1152] = 4622272,																			-- First Crafts (inv-10-blacksmithing-consumable-repairhammer-color1)
 		[-1200] = "Interface\\Icons\\inv_10_dungeonjewelry_primalist_ring_4_omni",					-- Zskera Vaults
+		[-1201] = "Interface\\Icons\\inv_shadowflame_missile",										-- Researchers Under Fire Scenario
+		[-1202] = "Interface\\Icons\\inv_fyrakk_dragonbreath",										-- Fyrakk Assaults
+		[-1203] = "Interface\\Icons\\inv_pet_mole",													-- Sniffenseeking
 	-- Warrior order hall lore items
 		[-2200] = "Interface\\Icons\\inv_scroll_11",										-- Warrior order hall lore item
 		[-2201] = "Interface\\Icons\\inv_scroll_11",										-- Warrior order hall lore item
@@ -1557,7 +1564,7 @@ app.L = {
 		[-41] = "Cache of Madness",												-- Cache of Madness
 		[-42] = LOOT_JOURNAL_LEGENDARIES_SOURCE_CRAFTED_ITEM,					-- Crafted Item
 		[-43] = TRACKER_HEADER_PROVINGGROUNDS,									-- Proving Grounds
-	-- World Events (These are used by ATT CLassic)
+	-- World Events (These are used by ATT Classic)
 		[-47] = select(1,GetCategoryInfo(160)),									-- Lunar Festival
 		[-52] = select(1,GetCategoryInfo(163)),									-- Children's Week
 		[-53] = "Midsummer Fire Festival",										-- Midsummer Fire Festival
@@ -1671,7 +1678,7 @@ app.L = {
 	-- War Campaign
 		[-253] = C_Map.GetAreaInfo(9664),										-- War Campaign - Horde
 	-- Allied Races
-		[-254] = CHARACTER_CREATE_MORE_RACES,									-- Allied Races
+		[-254] = "Allied Races",												-- Allied Races, do not replace with CHARACTER_CREATE_MORE_RACES, it's nil
 		[-255] = "Heritage",													-- Heritage
 	-- Mailbox
 		[-297] = MINIMAP_TRACKING_MAILBOX,										-- Mailbox
@@ -1798,6 +1805,7 @@ app.L = {
 		[-583] = "WotLK Classic Northrend Epic Upgrade",						-- WotLK Classic Northrend Epic Upgrade
 		[-584] = "Dragonflight Seasonal Promotions",							-- Dragonflight Seasonal Promotions
 		[-585] = "Diablo IV",													-- Diablo IV
+		[-586] = "Amazon Prime Gaming",											-- Amazon Prime Gaming
 	-- PvP Header
 		-- Special Season Tags
 		--[-650] = "Rated Battleground",										-- Listed under Cata PvP Seasons
@@ -1855,7 +1863,6 @@ app.L = {
 		[-690] = select(2, GetAchievementInfo(13200)),							-- Sinister Gladiator: Battle for Azeroth Season 2
 		[-691] = select(2, GetAchievementInfo(13630)),							-- Notorious Gladiator: Battle for Azeroth Season 3
 		[-692] = select(2, GetAchievementInfo(13957)),							-- Corrupted Gladiator: Battle for Azeroth Season 4
-	-- More PvP Seasons are likely to come dont use IDs here
 	-- Pets
 		[-795] = "Pet Battle Dungeons",											-- Pet Battle Dungeons
 		[-796] = BATTLE_PET_SOURCE_5,											-- Pet Battle
@@ -1869,12 +1876,8 @@ app.L = {
 		[-801] = GetSpellInfo(243025),											-- Riddler's Mind-Worm
 		[-802] = GetSpellInfo(231215),											-- Sun Darter Hatchling
 		[-804] = GetSpellInfo(254763),											-- Uuna
-		[-805] = GetSpellInfo(277461),											-- Baa'l
 		[-806] = "Waist of Time",												-- Waist of Time
 		[-807] = GetSpellInfo(261395),											-- The Hivemind
-		[-808] = GetSpellInfo(344577),											-- Bound Shadehound
-		[-809] = GetSpellInfo(373230),											-- Stored Wisdom Device
-	-- More Secrets are likely to come dont use IDs here
 	-- Chests
 		[-851] = "Black Empire Cache",											-- Black Empire Cache (Is a placeholder since no ObjectID are assigned to chests!)
 	-- Heart of Azeroth
@@ -1952,6 +1955,7 @@ app.L = {
 		[-1111] = GetSpellInfo(365311),												-- Rock Climbing
 		[-1112] = GetSpellInfo(381284),												-- Cataloging
 		[-1113] = GetSpellInfo(386485),												-- Ancient Waygates
+		[-1114] = GetSpellInfo(382288),												-- Cartographer's Flag
  		[-1120] = "Maruuk Centaur",													-- Maruuk Centaur
 		[-1121] = "Clan Aylaag",													-- Clan Aylaag
 		[-1122] = "Grand Hunts",													-- Grand Hunts
@@ -1967,8 +1971,16 @@ app.L = {
 		[-1142] = GetSpellInfo(400433),												-- Dragonriding Racing
 		[-1143] = "DF Rare Rotation",												-- DF Rare Rotation (Every 30 min Rare)
 		[-1144] = "Weekly Profession Knowledge",									-- Weekly Profession Header
+		[-1150] = "Loamm Niffen",													-- Loamm Niffen
+		[-1151] = "Bartering",														-- Bartering
+		[-1152] = "First Crafts",													-- First Crafts
 		[-1200] = "Zskera Vaults",													-- Zskera Vaults
-	-- Warrior order hall lore items
+		[-1201] = "Researchers Under Fire Scenario",								-- Researchers Under Fire Scenario
+		[-1202] = "Fyrakk Assaults",												-- Fyrakk Assaults
+		[-1203] = "Sniffenseeking",													-- Sniffenseeking
+		[-1204] = AVAILABLE,														-- Available
+		[-1205] = UNAVAILABLE,														-- Unavailable
+ 	-- Warrior order hall lore items
 		[-2200] = "Great Odyn and the Firelord",
 		[-2201] = "The Wanderer and the Serpent",
 		[-2202] = "Halls of Gold and Glory",
@@ -2171,10 +2183,10 @@ app.L = {
 		[1010] = {4, "|CFF00FFDEThis requires the Noblegarden Holiday to be Active.|r", "Noblegarden"},
 		[1013] = {4, "|CFF00FFDEThis requires the Pilgrim's Bounty Holiday to be Active.|r", "Pilgrim's Bounty"},
 		[1011] = {4, "|CFF00FFDEThis requires the Pirates' Day Holiday to be Active.|r", "Pirates' Day"},
-		[1015] = {4, "|CFF00FFDEThis requires the Stranglethorn Fishing Extravaganza to be active.|r", "Stranglethorn Fishing Extravaganza"},
-		[1016] = {4, "|CFF00FFDEThis requires the Timewalking Event to be active.|r", "Timewalking"},
-		[1017] = {4, "|CFF00FFDEThis requires the WoW's Anniversary Event to be active.|r", "WoW's Anniversary"},
-		[1018] = {4, "|CFF00FFDEThis requires the Kalu'ak Fishing Derby to be active.|r", "Kalu'ak Fishing Derby"},
+		[1015] = {4, "|CFF00FFDEThis requires the Stranglethorn Fishing Extravaganza to be Active.|r", "Stranglethorn Fishing Extravaganza"},
+		[1016] = {4, "|CFF00FFDEThis requires the Timewalking Event to be Active.|r", "Timewalking"},
+		[1017] = {4, "|CFF00FFDEThis requires the WoW's Anniversary Event to be Active.|r", "WoW's Anniversary"},
+		[1018] = {4, "|CFF00FFDEThis requires the Kalu'ak Fishing Derby to be Active.|r", "Kalu'ak Fishing Derby"},
 	};
 
 	["CUSTOM_COLLECTS_REASONS"] = {

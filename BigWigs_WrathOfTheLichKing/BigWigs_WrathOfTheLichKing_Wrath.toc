@@ -25,7 +25,8 @@
 
 ## LoadOnDemand: 1
 ## Dependencies: BigWigs
-## Version: v10.0.15
+## Version: v10.1.0
+## IconTexture: Interface\AddOns\BigWigs\Media\Icons\core-enabled
 
 ## X-Category: Raid
 ## X-License: All Rights Reserved: You are free to fork and modify on GitHub, please ask us about anything else.

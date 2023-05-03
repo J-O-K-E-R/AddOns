@@ -245,7 +245,7 @@ elseif CF_WRATH then
 	end)
 end
 AB:AugmentCategory(L"Macros", function(_, add)
-	add("macrotext", "")
+	add("imptext", "")
 	local n, ni = {}, 1
 	for name in RW:GetNamedMacros() do
 		n[ni], ni = name, ni + 1
@@ -316,7 +316,7 @@ do -- misc
 	if MODERN then
 		AB:AddActionToCategory(L"Miscellaneous", "extrabutton", 1)
 	end
-	AB:AddActionToCategory(L"Miscellaneous", "macrotext", "")
+	AB:AddActionToCategory(L"Miscellaneous", "imptext", "")
 end
 do -- aliases
 	AB:AddCategoryAlias("Miscellaneous", L"Miscellaneous")

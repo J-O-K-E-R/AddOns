@@ -1,14 +1,11 @@
-local SLE, T, E, L, V, P, G = unpack(select(2, ...))
+local SLE, _, E, L = unpack(select(2, ...))
 local Armory = SLE.Armory_Core
 local M = E.Misc
 local LCG = E.Libs.CustomGlow
 
 local GetAverageItemLevel = GetAverageItemLevel
-local TRANSMOGRIFIED_HEADER = TRANSMOGRIFIED_HEADER
-local C_Transmog_GetSlotInfo = C_Transmog.GetSlotInfo
 local C_TransmogCollection_GetAppearanceSourceInfo = C_TransmogCollection.GetAppearanceSourceInfo
 local C_Transmog_GetSlotVisualInfo = C_Transmog.GetSlotVisualInfo
-local C_TransmogCollection_GetIllusionSourceInfo = C_TransmogCollection.GetIllusionSourceInfo
 local HandleModifiedItemClick = HandleModifiedItemClick
 local C_TransmogCollection_GetInspectItemTransmogInfoList = C_TransmogCollection.GetInspectItemTransmogInfoList
 local GetSpecialization, GetSpecializationInfo, GetInspectSpecialization = GetSpecialization, GetSpecializationInfo, GetInspectSpecialization
@@ -122,8 +119,8 @@ function Armory:BuildFrameDefaultsCache(which)
 		if Slot.iLvlText then
 			Armory.Constants[which..'_Defaults'][SlotName]['iLvlText'] = { Slot.iLvlText:GetPoint() }
 			Armory.Constants[which..'_Defaults'][SlotName]['textureSlot1'] = { Slot.textureSlot1:GetPoint() }
-			for i = 2, 10 do
-				if Slot['textureSlot'..i] then Slot['textureSlot'..i]:ClearAllPoints(); Slot['textureSlot'..i]:Point(Slot.Direction, Slot['textureSlot'..(i-1)], Slot.Direction == 'LEFT' and 'RIGHT' or 'LEFT', E.twoPixelsPlease and 3 or 1, 0) end
+			for v = 2, 10 do
+				if Slot['textureSlot'..v] then Slot['textureSlot'..v]:ClearAllPoints(); Slot['textureSlot'..v]:Point(Slot.Direction, Slot['textureSlot'..(v-1)], Slot.Direction == 'LEFT' and 'RIGHT' or 'LEFT', E.twoPixelsPlease and 3 or 1, 0) end
 			end
 			Armory.Constants[which..'_Defaults'][SlotName]['enchantText'] = { Slot.enchantText:GetPoint() }
 		end
@@ -148,52 +145,42 @@ end
 function Armory:GetTransmogInfo(Slot, which, unit)
 	if not which or not unit then return nil end
 
-	local transmogLink, TooltipText
-	Armory:ClearTooltip(Armory.ScanTT)
-	Armory.ScanTT:SetInventoryItem(unit, Slot.ID)
-
-	for i = 1, Armory.ScanTT:NumLines() do
-		TooltipText = _G['SLE_Armory_ScanTTTextLeft'..i]:GetText()
-
-		if TooltipText and TooltipText:match(TRANSMOGRIFIED_HEADER) then
-			transmogLink = _G['SLE_Armory_ScanTTTextLeft'..(i + 1)]:GetText()
-			Armory:ClearTooltip(Armory.ScanTT)
-		end
-	end
-
-	if not transmogLink then return nil end
-
 	local appearenceIDs = {}
 	local mogLink
 	local data = C_TransmogCollection_GetInspectItemTransmogInfoList()
 
-	for slotID, v in ipairs(data) do
-		if v.appearanceID and v.appearanceID > 0 then
-			appearenceIDs[slotID] = v.appearanceID
+	if data then
+		for slotID, v in ipairs(data) do
+			if v.appearanceID and v.appearanceID > 0 then
+				appearenceIDs[slotID] = v.appearanceID
+			end
 		end
 	end
 
 	if appearenceIDs then
 		if appearenceIDs[Slot.ID] then
-			mogLink = select(6, C_TransmogCollection.GetAppearanceSourceInfo(appearenceIDs[Slot.ID]))
+			mogLink = select(6, C_TransmogCollection_GetAppearanceSourceInfo(appearenceIDs[Slot.ID]))
 			return mogLink
 		end
 	end
 end
 
 --Updates the frame
-function Armory:UpdatePageInfo(frame, which, guid, event)
+function Armory:UpdatePageInfo(frame, which)
 	if not (frame and which) then return end
 	if not Armory:CheckOptions(which) then return end
+
 	local window = strlower(which)
 	local unit = (which == 'Character' and 'player') or frame.unit
+
 	if which == 'Character' then
 		CA:Update_Durability()
 		Armory.CharacterPrimaryStat = select(6, GetSpecializationInfo(GetSpecialization(), nil, nil, nil, UnitSex('player')))
 	else
 		Armory.InspectPrimaryStat = Armory.Constants.SpecPrimaryStats[GetInspectSpecialization(unit)]
 	end
-	for i, SlotName in pairs(Armory.Constants.GearList) do
+
+	for _, SlotName in pairs(Armory.Constants.GearList) do
 		local Slot = _G[which..SlotName]
 		if Slot then
 			if Slot.TransmogInfo then
@@ -213,7 +200,7 @@ function Armory:UpdatePageInfo(frame, which, guid, event)
 				if E.db.sle.armory[window].enable and Slot.TransmogInfo.Link then
 					if E.db.sle.armory[window].transmog.enableArrow then Slot.TransmogInfo:Show() else Slot.TransmogInfo:Hide() end
 					if E.db.sle.armory[window].transmog.enableGlow then
-						LCG.AutoCastGlow_Start(Slot, {1, .5, 1, 1}, E.db.sle.armory[window].transmog.glowNumber, 0.25, 1, E.db.sle.armory[window].transmog.glowOffset, E.db.sle.armory[window].transmog.glowOffset, '_TransmogGlow')
+						LCG.AutoCastGlow_Start(Slot, {1, 0.5, 1, 1}, E.db.sle.armory[window].transmog.glowNumber, 0.25, 1, E.db.sle.armory[window].transmog.glowOffset, E.db.sle.armory[window].transmog.glowOffset, '_TransmogGlow')
 					else
 						LCG.AutoCastGlow_Stop(Slot, '_TransmogGlow')
 					end
@@ -229,20 +216,20 @@ function Armory:UpdatePageInfo(frame, which, guid, event)
 end
 
 --Updates ilvl and everything tied to the item somehow
-function Armory:UpdatePageStrings(i, iLevelDB, Slot, slotInfo, which)
+function Armory:UpdatePageStrings(_, iLevelDB, Slot, slotInfo, which)
 	if not Armory:CheckOptions(which) then return end
-	Slot.itemLink = GetInventoryItemLink((which == 'Character' and 'player') or _G['InspectFrame'].unit, Slot.ID)
+	Slot.itemLink = GetInventoryItemLink((which == 'Character' and 'player') or _G.InspectFrame.unit, Slot.ID)
 	if slotInfo.itemLevelColors then
 		local window = strlower(which) --to know which settings table to use
 		if E.db.sle.armory[window] and E.db.sle.armory[window].enable then --If settings table actually exists and armory for it is enabled
 			local iR, iG, iB = unpack(slotInfo.itemLevelColors)
-			if Slot.enchantText and not (slotInfo.enchantTextShort == nil or slotInfo.enchantText == nil) then Armory:ProcessEnchant(window, Slot, slotInfo.enchantTextShort, slotInfo.enchantText, slotInfo.enchantTextReal) end
+			if Slot.enchantText and not (slotInfo.enchantTextShort == nil or slotInfo.enchantText == nil) then Armory:ProcessEnchant(window, Slot, slotInfo.enchantText, slotInfo.enchantTextReal) end
 			if E.db.sle.armory[window].ilvl.colorType == 'QUALITY' then
 				if iR ~= nil then
 					Slot.iLvlText:SetTextColor(iR, iG, iB) --Business as usual
 				end
 			elseif E.db.sle.armory[window].ilvl.colorType == 'GRADIENT' then
-				local equippedIlvl = window == 'character' and select(2, GetAverageItemLevel()) or E:CalculateAverageItemLevel(iLevelDB, _G['InspectFrame'].unit)
+				local equippedIlvl = window == 'character' and select(2, GetAverageItemLevel()) or E:CalculateAverageItemLevel(iLevelDB, _G.InspectFrame.unit)
 				local diff
 				if slotInfo.iLvl and (equippedIlvl and type(equippedIlvl) ~= 'boolean') then
 					diff = slotInfo.iLvl - equippedIlvl
@@ -284,13 +271,13 @@ function Armory:UpdatePageStrings(i, iLevelDB, Slot, slotInfo, which)
 	end
 	--If put inside "if slotInfo.itemLevelColors" condition will not actually hide gem links/warnings on empty slots
 	Armory:UpdateGemInfo(Slot, which)
-	Armory:CheckForMissing(which, Slot, slotInfo.iLvl, slotInfo.gems, slotInfo.essences, slotInfo.enchantTextShort, Armory[which.."PrimaryStat"])
+	Armory:CheckForMissing(which, Slot, slotInfo.iLvl, slotInfo.gems, slotInfo.enchantTextShort, Armory[which..'PrimaryStat'])
 	if CA.DurabilityFontSet then CA:Calculate_Durability(which, Slot) end
 end
 
 ---Store gem info in our hidden frame
 function Armory:UpdateGemInfo(Slot, which)
-	local unit = which == 'Character' and 'player' or (_G['InspectFrame'] and _G['InspectFrame'].unit)
+	local unit = which == 'Character' and 'player' or (_G.InspectFrame and _G.InspectFrame.unit)
 	if not unit then return end
 	for i = 1, Armory.Constants.MaxGemSlots do
 		local GemLink
@@ -330,7 +317,7 @@ end
 
 function Armory:UpdateSharedStringsFonts(which)
 	local window = strlower(which)
-	for i, SlotName in pairs(Armory.Constants.GearList) do
+	for _, SlotName in pairs(Armory.Constants.GearList) do
 		local Slot = _G[which..SlotName]
 		if not Slot then return end
 		if Slot.iLvlText then
@@ -349,7 +336,7 @@ function Armory:UpdateSharedStringsFonts(which)
 end
 
 --Deals with dem enchants
-function Armory:ProcessEnchant(which, Slot, enchantTextShort, enchantText, enchantTextReal)
+function Armory:ProcessEnchant(which, Slot, enchantText, enchantTextReal)
 	if not E.db.sle.armory.enchantString.enable then return end
 	local window = strlower(which)
 	local strict = E.db.sle.armory.enchantString.strict
@@ -372,24 +359,24 @@ end
 
 ---<<<Global Hide tooltip func for armory>>>---
 function Armory:Tooltip_OnLeave()
-	_G['GameTooltip']:Hide()
+	_G.GameTooltip:Hide()
 end
 
 ---<<<Show Gem on mouse over>>>---
 function Armory:Gem_OnEnter()
 	if E.db.sle.armory[self.frame].enable and self.Link then --Only do stuff if armory is enabled or the gem is present
-		_G['GameTooltip']:SetOwner(self, 'ANCHOR_RIGHT')
-		_G['GameTooltip']:SetHyperlink(self.Link)
-		_G['GameTooltip']:Show()
+		_G.GameTooltip:SetOwner(self, 'ANCHOR_RIGHT')
+		_G.GameTooltip:SetHyperlink(self.Link)
+		_G.GameTooltip:Show()
 	end
 end
 
 ---<<<Show what the fuck is wrong with this item>>>---
 function Armory:Warning_OnEnter()
 	if E.db.sle.armory[self.frame].enable and self.Reason then --Only do stuff if armory is enabled and something is actually missing
-		_G['GameTooltip']:SetOwner(self, 'ANCHOR_RIGHT')
-		_G['GameTooltip']:AddLine(self.Reason, 1, 1, 1)
-		_G['GameTooltip']:Show()
+		_G.GameTooltip:SetOwner(self, 'ANCHOR_RIGHT')
+		_G.GameTooltip:AddLine(self.Reason, 1, 1, 1)
+		_G.GameTooltip:Show()
 	end
 end
 
@@ -397,21 +384,21 @@ end
 function Armory:Transmog_OnEnter()
 	if not self.Link then return end
 
-	self.Texture:SetVertexColor(1, .8, 1)
-	_G['GameTooltip']:SetOwner(self, 'ANCHOR_RIGHT')
+	self.Texture:SetVertexColor(1, 0.8, 1)
+	_G.GameTooltip:SetOwner(self, 'ANCHOR_RIGHT')
 
 	if self.isInspect then
 		local inspectLink = select(2, GetItemInfo(self.Link)) --In case the client actually decides to give us the info
 		if inspectLink then
-			_G['GameTooltip']:SetHyperlink(inspectLink)
+			_G.GameTooltip:SetHyperlink(inspectLink)
 		else
-			_G['GameTooltip']:SetText(self.Link)
+			_G.GameTooltip:SetText(self.Link)
 		end
 	else
-		_G['GameTooltip']:SetHyperlink(self.Link)
+		_G.GameTooltip:SetHyperlink(self.Link)
 	end
 
-	_G['GameTooltip']:Show()
+	_G.GameTooltip:Show()
 end
 
 function Armory:Transmog_OnLeave()
@@ -420,7 +407,7 @@ function Armory:Transmog_OnLeave()
 end
 
 function Armory:Transmog_OnClick()
-	local ItemName, ItemLink = GetItemInfo(self.Link)
+	local _, ItemLink = GetItemInfo(self.Link)
 
 	if not IsShiftKeyDown() then
 		SetItemRef(ItemLink, ItemLink, 'LeftButton')
@@ -437,11 +424,11 @@ function Armory:Transmog_OnClick()
 	end
 end
 
-function Armory:CheckForMissing(which, Slot, iLvl, gems, essences, enchant, primaryStat)
-	if not Slot['SLE_Warning'] then return end --Shit happens
-	Slot['SLE_Warning'].Reason = nil --Clear message, cause disabling armory doesn't affect those otherwise
+function Armory:CheckForMissing(which, Slot, iLvl, gems, enchant, primaryStat)
+	if not Slot.SLE_Warning then return end --Shit happens
+	Slot.SLE_Warning.Reason = nil --Clear message, cause disabling armory doesn't affect those otherwise
 	local window = strlower(which)
-	if not (E.db.sle.armory[window] and E.db.sle.armory[window].enable and E.db.sle.armory[window].showWarning) then Slot['SLE_Warning']:Hide(); return end --if something is disdbled
+	if not (E.db.sle.armory[window] and E.db.sle.armory[window].enable and E.db.sle.armory[window].showWarning) then Slot.SLE_Warning:Hide(); return end --if something is disdbled
 	local SlotName = gsub(Slot:GetName(), which, '')
 	if not SlotName then return end --No slot?
 	local noChant, noGem = false, false
@@ -463,33 +450,33 @@ function Armory:CheckForMissing(which, Slot, iLvl, gems, essences, enchant, prim
 		local message = ''
 		if noGem then message = message..'|cffff0000'..L["Empty Socket"]..'|r\n' end
 		if noChant then message = message..'|cffff0000'..L["Not Enchanted"]..'|r\n' end
-		Slot['SLE_Warning'].Reason = message or nil
-		Slot['SLE_Warning']:Show()
-		Slot["SLE_Warning"].texture:SetVertexColor(unpack(E.db.sle.armory.character.gradient.warningBarColor))
+		Slot.SLE_Warning.Reason = message or nil
+		Slot.SLE_Warning:Show()
+		Slot.SLE_Warning.texture:SetVertexColor(unpack(E.db.sle.armory.character.gradient.warningBarColor))
 		if Slot.SLE_Gradient then Slot.SLE_Gradient:SetVertexColor(unpack(E.db.sle.armory[window].gradient.warningColor)) end
 	else
-		Slot['SLE_Warning']:Hide()
+		Slot.SLE_Warning:Hide()
 	end
 end
 
 function Armory:UpdateInspectInfo()
-	if not _G['InspectFrame'] then return end --In case update for frame is called before it is actually created
+	if not _G.InspectFrame then return end --In case update for frame is called before it is actually created
 	if not Armory.Constants.Inspect_Defaults_Cached then
 		Armory:BuildFrameDefaultsCache('Inspect')
 		IA:LoadAndSetup()
 	end
-	if E.db.sle.armory.inspect.enable then M:UpdatePageInfo(_G['InspectFrame'], 'Inspect') end
-	if not E.db.general.itemLevel.displayInspectInfo then M:ClearPageInfo(_G['InspectFrame'], 'Inspect') end
+	if E.db.sle.armory.inspect.enable then M:UpdatePageInfo(_G.InspectFrame, 'Inspect') end
+	if not E.db.general.itemLevel.displayInspectInfo then M:ClearPageInfo(_G.InspectFrame, 'Inspect') end
 end
 
 function Armory:UpdateCharacterInfo(event)
 	if event == 'CRITERIA_UPDATE' and (InCombatLockdown() or not _G.CharacterFrame:IsShown()) then return end
 
 	if E.db.sle.armory.character.enable then
-		M:UpdatePageInfo(_G['CharacterFrame'], 'Character')
+		M:UpdatePageInfo(_G.CharacterFrame, 'Character')
 	end
 	if not E.db.general.itemLevel.displayCharacterInfo then
-		M:ClearPageInfo(_G['CharacterFrame'], 'Character')
+		M:ClearPageInfo(_G.CharacterFrame, 'Character')
 	end
 end
 
@@ -512,10 +499,10 @@ function Armory:ToggleItemLevelInfo()
 		-- Armory:RegisterEvent('PLAYER_AVG_ITEM_LEVEL_UPDATE', 'UpdateCharacterItemLevel')
 	end
 
-	if _G['InspectFrame'] and _G['InspectFrame']:IsShown() and Armory:CheckOptions('Inspect') and E.db.general.itemLevel.displayInspectInfo then
+	if _G.InspectFrame and _G.InspectFrame:IsShown() and Armory:CheckOptions('Inspect') and E.db.general.itemLevel.displayInspectInfo then
 		M:UpdateInspectInfo()
 	else
-		M:ClearPageInfo(_G['InspectFrame'], 'Inspect')
+		M:ClearPageInfo(_G.InspectFrame, 'Inspect')
 	end
 end
 
@@ -562,7 +549,7 @@ function Armory:Initialize()
 
 		SLE.Armory_Inspect:ToggleArmory()
 		M:UpdatePageInfo(_G.InspectFrame, "Inspect") --Putting this under the elv's option check just breaks the shit out of the frame
-		if not E.db.general.itemLevel.displayInspectInfo then M:ClearPageInfo(_G.InspectFrame, "Inspect") end --Clear the infos if those are actually not supposed to be shown.
+		if not E.db.general.itemLevel.displayInspectInfo then M:ClearPageInfo(_G.InspectFrame, 'Inspect') end --Clear the infos if those are actually not supposed to be shown.
 	end
 
 	_G.CharacterFrame:HookScript('OnShow', function()
@@ -573,15 +560,15 @@ function Armory:Initialize()
 	end)
 
 	--Move Pawn buttons. Cause Pawn buttons happen to be overlapped by some shit
-	if SLE._Compatibility["Pawn"] then
+	if SLE._Compatibility['Pawn'] then
 		PawnUI_InventoryPawnButton:SetFrameLevel(PawnUI_InventoryPawnButton:GetFrameLevel() + 5)
-		hooksecurefunc("PawnUI_InventoryPawnButton_Move", function()
+		hooksecurefunc('PawnUI_InventoryPawnButton_Move', function()
 			if PawnCommon.ButtonPosition == PawnButtonPositionRight then
 				PawnUI_InventoryPawnButton:ClearAllPoints()
 				if PaperDollFrame.ExpandButton then --Try not to break Pawn's DCS innate compatibility
-					PawnUI_InventoryPawnButton:SetPoint("TOPRIGHT", "CharacterTrinket1Slot", "BOTTOMRIGHT", -31, -8)
+					PawnUI_InventoryPawnButton:SetPoint('TOPRIGHT', 'CharacterTrinket1Slot', 'BOTTOMRIGHT', -31, -8)
 				else
-					PawnUI_InventoryPawnButton:SetPoint("TOPRIGHT", "CharacterTrinket1Slot", "BOTTOMRIGHT", -1, -8)
+					PawnUI_InventoryPawnButton:SetPoint('TOPRIGHT', 'CharacterTrinket1Slot', 'BOTTOMRIGHT', -1, -8)
 				end
 			end
 		end)

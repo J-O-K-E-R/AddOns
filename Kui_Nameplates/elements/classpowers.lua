@@ -82,6 +82,7 @@ local powers,power_tags,bar_powers
 local colours = {
     DEATHKNIGHT = { 1, .2, .3 },
     DRUID       = { 1, 1, .1 },
+    EVOKER      = { .4, 1, 7 },
     PALADIN     = { 1, 1, .1 },
     ROGUE       = { 1, 1, .1 },
     MAGE        = { .5, .5, 1 },
@@ -247,6 +248,11 @@ local function UpdateIcons()
         power_max = UnitPowerMax('player',power_type)
     end
 
+    -- hack: for some reason UnitPowerMax returns 0 for DK runes in Wrath classic
+    if kui.WRATH and power_type == 5 then
+        power_max = 6
+    end
+
     if bar_powers and bar_powers[power_type] then
         -- create/update power bar
         if cpf.icons then
@@ -309,7 +315,19 @@ local function UpdateIcons()
 end
 local function PowerUpdate()
     -- toggle icons based on current power
-    local cur = UnitPower('player',power_type,true)
+    local form = GetShapeshiftForm()
+    local cur
+
+    if kui.WRATH and power_type == 14 then
+        cur = GetComboPoints('player','target')
+    else
+        cur = UnitPower('player',power_type,true)
+    end
+
+    if kui.WRATH and class == 'DRUID' and form ~= 3 then
+        cpf:Hide()
+        return
+    end
 
     if power_mod and power_mod > 1 then
         cur = cur / power_mod
@@ -518,6 +536,9 @@ end
 -- messages ####################################################################
 function ele:TargetUpdate()
     PositionFrame()
+    if kui.WRATH and class ~= 'DEATHKNIGHT' then
+        PowerUpdate()
+    end
 end
 -- events ######################################################################
 function ele:PLAYER_ENTERING_WORLD()
@@ -559,6 +580,15 @@ function ele:PowerInit()
             if form and form == 2 then
                 power_type = Enum.PowerType.ComboPoints
             end
+        end
+    elseif kui.WRATH and class == 'DRUID' then
+        -- watch for shapeshifts into cat form
+        self:RegisterEvent('UPDATE_SHAPESHIFT_FORM')
+        local form = GetShapeshiftForm()
+        if form and form == 3 then
+            power_type = Enum.PowerType.ComboPoints
+        else
+            power_type = powers[class]
         end
     else
         power_type = powers[class]
@@ -689,6 +719,9 @@ function ele:PowerEvent(event,_,power_type_rcv)
 end
 function ele:UPDATE_SHAPESHIFT_FORM()
     self:PowerInit()
+    if kui.WRATH then
+        PowerUpdate()
+    end
 end
 function ele:Paladin_WatchFiresOfJustice(_,unit)
     -- TODO it would definitely be more efficient to watch the combat log for this
@@ -784,7 +817,7 @@ function ele:Initialise()
     self:RegisterCallback('PostPositionFrame')
 
     -- initialise powers
-    if kui.CLASSIC then
+    if kui.CLASSIC and not kui.WRATH then
         -- power types by class/spec
         powers = {
             DRUID = Enum.PowerType.ComboPoints,
@@ -794,10 +827,21 @@ function ele:Initialise()
         power_tags = {
             [Enum.PowerType.ComboPoints] = 'COMBO_POINTS',
         }
+    elseif kui.WRATH then
+        powers = {
+            DEATHKNIGHT = Enum.PowerType.Runes,
+            DRUID       = Enum.PowerType.ComboPoints,
+            ROGUE       = Enum.PowerType.ComboPoints,
+        }
+        power_tags = {
+            [Enum.PowerType.Runes]         = 'RUNES',
+            [Enum.PowerType.ComboPoints]   = 'COMBO_POINTS',
+        }
     else
         powers = {
             DEATHKNIGHT = Enum.PowerType.Runes,
             DRUID       = { [2] = Enum.PowerType.ComboPoints },
+            EVOKER      = Enum.PowerType.Essence,
             PALADIN     = Enum.PowerType.HolyPower,
             ROGUE       = Enum.PowerType.ComboPoints,
             MAGE        = { [1] = Enum.PowerType.ArcaneCharges },
@@ -806,6 +850,7 @@ function ele:Initialise()
         }
         power_tags = {
             [Enum.PowerType.Runes]         = 'RUNES',
+            [Enum.PowerType.Essence]       = 'ESSENCE',
             [Enum.PowerType.ComboPoints]   = 'COMBO_POINTS',
             [Enum.PowerType.HolyPower]     = 'HOLY_POWER',
             [Enum.PowerType.ArcaneCharges] = 'ARCANE_CHARGES',

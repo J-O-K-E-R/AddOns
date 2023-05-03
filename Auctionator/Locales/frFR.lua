@@ -112,6 +112,12 @@ L["CONFIG_SELLING_ALL_ITEMS_CATEGORY"] = "Vente : Objets"
 L["CONFIG_SELLING_AUTO_SELECT_NEXT"] = "Sélection automatique de l'objet suivant"
 L["CONFIG_SELLING_AUTO_SELECT_NEXT_TOOLTIP_HEADER"] = "Sélectionne automatiquement l'objet suivant"
 L["CONFIG_SELLING_AUTO_SELECT_NEXT_TOOLTIP_TEXT"] = "Après une mise en vente, l'objet suivant sera automatiquement sélectionné."
+--[[Translation missing --]]
+L["CONFIG_SELLING_AUTO_SELECT_STACK_REMAINDER"] = "Select any partial stacks that exist after posting all complete stacks."
+--[[Translation missing --]]
+L["CONFIG_SELLING_AUTO_SELECT_STACK_REMAINDER_TOOLTIP_HEADER"] = "Automatic partial stack selection"
+--[[Translation missing --]]
+L["CONFIG_SELLING_AUTO_SELECT_STACK_REMAINDER_TOOLTIP_TEXT"] = "When posting add the partial stack as the next item to post if it exists. This won't cause any further searches."
 L["CONFIG_SELLING_BAG_SELECT_SHORTCUT"] = "sur un objet de votre inventaire le placera dans l'onglet Vente."
 L["CONFIG_SELLING_BUY_SHORTCUT"] = "sur une vente que vous ne possédez pas pour l'acheter."
 L["CONFIG_SELLING_CANCEL_SHORTCUT"] = "sur l'une de vos ventes pour l'annuler."
@@ -170,6 +176,12 @@ L["CONFIG_SMALL_TABS_TOOLTIP_TEXT"] = "Lorsque trop d'addons ajoutent des onglet
 L["CONFIG_STACK_TOOLTIP"] = "Maintenir la touche Maj affichera le prix par pile"
 L["CONFIG_TOOLTIPS_CATEGORY"] = "Infobulles"
 L["CONFIG_TOOLTIPS_TEXT"] = "Options liées à l'affichage des informations disponibles sur les prix dans les infobulles du jeu."
+--[[Translation missing --]]
+L["CONFIG_UNDERCUT_SCAN_MATCH_ILVL_VARIANTS"] = "For gear use item level and title when doing undercut checks"
+--[[Translation missing --]]
+L["CONFIG_UNDERCUT_SCAN_MATCH_ILVL_VARIANTS_TOOLTIP_HEADER"] = "Gear Use Item Level and Title"
+--[[Translation missing --]]
+L["CONFIG_UNDERCUT_SCAN_MATCH_ILVL_VARIANTS_TOOLTIP_TEXT"] = "Leave this on to match potential gear undercuts by item level and title, rather than by only item base type."
 L["CONFIG_UNDERCUT_SCAN_NOT_LIFO"] = "Inclure l'équipement et les mascottes lors de la vérification des prix"
 L["CONFIG_UNDERCUT_SCAN_NOT_LIFO_TOOLTIP_HEADER"] = "Vérification du prix de l'équipement et des mascottes"
 L["CONFIG_UNDERCUT_SCAN_NOT_LIFO_TOOLTIP_TEXT"] = "Laissez cette option activée pour inclure toutes les enchères de mascottes et d'équipement lors de la vérification des prix. Désactivez cette option pour exclure les mascottes et l'équipement."
@@ -223,6 +235,7 @@ L["ENCHANT_TOOLTIP_TOOLTIP_TEXT"] = "Au passage de la souris, afficher les infor
 L["ENGAGE_HEADER"] = "Communauté d'Auctionator"
 L["ERROR_REOPEN_AUCTION_HOUSE"] = "Impossible de compléter l'action, veuillez fermez et rouvrir l'hôtel des ventes."
 L["EXACT_SEARCH"] = "Recherche exacte"
+L["EXPANSION"] = "Extension"
 L["EXPORT"] = "Exporter"
 L["EXPORT_AS"] = "Exporter en tant que :"
 L["EXPORT_RESULTS"] = "Exporter les résultats"
@@ -242,6 +255,8 @@ L["GEAR_VENDOR_PRICE_MULTIPLIER"] = "Multiplicateur du prix au marchand"
 L["HIDE"] = "Cacher"
 L["HISTORY"] = "Historique"
 L["IMPORT"] = "Importer"
+--[[Translation missing --]]
+L["IMPORTED"] = "Imported"
 L["INFO_TAB_HEADER"] = "Auctionator - Info"
 L["IS_TOP_COLUMN"] = "Haut?"
 L["IS_UNDERCUT"] = "Dépassé ?"

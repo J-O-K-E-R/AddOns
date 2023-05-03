@@ -1,11 +1,44 @@
 
 BigWigs:AddSounds("Grand Vizier Ertan", {
+	[-2422] = "info",
+	[86292] = {"alert","info","long","underyou"},
+	[413562] = "alarm",
 })
 
 BigWigs:AddSounds("Altairus", {
+	[-2425] = "alert",
 	[88282] = "info",
-	[88286] = "info",
+	[88286] = "underyou",
+	[88308] = "alarm",
+	[413275] = "underyou",
+	[413295] = "long",
 })
 
 BigWigs:AddSounds("Asaad", {
+	[-2434] = "alert",
+	[86911] = "info",
+	[86930] = "alarm",
+	[87618] = {"alert","warning"},
+	[87622] = "alarm",
+})
+
+BigWigs:AddSounds("The Vortex Pinnacle Trash", {
+	[87759] = "alarm",
+	[87762] = {"alert","warning"},
+	[87772] = "alert",
+	[87779] = "warning",
+	[88170] = "alert",
+	[88171] = "underyou",
+	[88182] = "alert",
+	[88186] = "alert",
+	[88194] = "long",
+	[410870] = "alert",
+	[410999] = "alarm",
+	[411001] = "alarm",
+	[411002] = "long",
+	[411005] = "alarm",
+	[411012] = "alarm",
+	[411910] = "info",
+	[413385] = {"alarm","underyou"},
+	[413387] = "alarm",
 })

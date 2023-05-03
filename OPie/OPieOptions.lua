@@ -37,17 +37,17 @@ do -- config.ui
 	config.ui = {}
 	do -- multilineInput
 		local function onNavigate(self, _x,y, _w,h)
-			local scroller = self.scroll
+			local scroller, insT, insB = self.scroll, 2, 2
 			local occH, occP, y = scroller:GetHeight(), scroller:GetVerticalScroll(), -y
-			if occP > y then
-				occP = y -- too far
-			elseif (occP + occH) < (y+h) then
-				occP = y+h-occH -- not far enough
+			if occP > y-insT then
+				occP = y > insT and y-insT or 0 -- too far
+			elseif occP < y+h-occH+insB+insT then
+				occP = y+h-occH+insB+insT -- not far enough
 			else
 				return
 			end
-			scroller:SetVerticalScroll(occP)
 			local _, mx = scroller.ScrollBar:GetMinMaxValues()
+			occP = (mx-occP)^2 < 1 and mx or math.floor(occP)
 			scroller.ScrollBar:SetMinMaxValues(0, occP < mx and mx or occP)
 			scroller.ScrollBar:SetValue(occP)
 		end

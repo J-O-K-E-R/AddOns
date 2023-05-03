@@ -145,9 +145,8 @@ E.SlashHandler = function(msg)
 end
 
 function E:OpenOptionPanel()
-	self.Libs.ACD:SetDefaultSize(self.AddOn, 960, 640)
+	self.Libs.ACD:SetDefaultSize(self.AddOn, 940, 627, self.global.optionPanelScale)
 	self.Libs.ACD:Open(self.AddOn)
-	self.Libs.ACD.OpenFrames.OmniCD.frame:SetScale(self.global.optionPanelScale)
 
 	self.Libs.ACD:SelectGroup(self.AddOn, "Party")
 	self.Libs.ACD:SelectGroup(self.AddOn, "Home")

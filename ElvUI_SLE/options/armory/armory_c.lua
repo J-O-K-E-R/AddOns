@@ -1,4 +1,5 @@
 ﻿local SLE, T, E, L, V, P, G = unpack(select(2, ...))
+local SA = SLE.Armory_Stats
 local M = E.Misc
 
 local _G = _G
@@ -28,8 +29,6 @@ local function configTable()
 					SLE.Armory_Character:ToggleArmory()
 					M:UpdatePageInfo(_G.CharacterFrame, 'Character')
 					if not E.db.general.itemLevel.displayCharacterInfo then M:ClearPageInfo(_G.CharacterFrame, 'Character') end
-					SLE.Armory_Stats:AddWidthApply()
-					PaperDollFrame_UpdateStats()
 				end,
 			},
 			IA_enable = {
@@ -53,8 +52,8 @@ local function configTable()
 				desc = '',
 				hidden = function() return not E.private.skins.blizzard.enable or not E.private.skins.blizzard.character end,
 				disabled = function() return (SLE._Compatibility['DejaCharacterStats'] or not E.private.skins.blizzard.enable) end,
-				get = function() return E.db.sle.armory.stats.enable end,
-				set = function(_, value) E.db.sle.armory.stats.enable = value; SLE.Armory_Stats:ToggleArmory() end
+				get = function() return E.private.sle.armory.stats.enable end,
+				set = function(_, value) E.private.sle.armory.stats.enable = value E:StaticPopup_Show('PRIVATE_RL') end
 			},
 			GoToElv = {
 				order = 100,

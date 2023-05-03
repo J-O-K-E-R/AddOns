@@ -143,7 +143,7 @@ function DVB:PositionAndSizeBar()
 
 		if hotkeytext then
 			if hotkeytext == _G.RANGE_INDICATOR then
-				hotkey:SetFont(defaultFont, defaultFontSize, defaultFontOutline)
+				hotkey:FontTemplate(defaultFont, defaultFontSize, defaultFontOutline)
 				hotkey.SetVertexColor = nil
 			else
 				hotkey:FontTemplate(E.Libs.LSM:Fetch('font', db and db.hotkeyFont or AB.db.font), db and db.hotkeyFontSize or AB.db.fontSize, db and db.hotkeyFontOutline or AB.db.fontOutline)
@@ -220,19 +220,21 @@ function DVB:CreateBar()
 	AB:HookScript(bar, 'OnLeave', 'Bar_OnLeave')
 
 	for i = 1, 7 do
-		local button = LAB:CreateButton(i, format(bar:GetName()..'Button%d', i), bar, nil)
+		local index = (i == 7) and 12 or i
+		local button = LAB:CreateButton(index, format(bar:GetName()..'Button%d', index), bar, nil)
 		bar.buttons[i] = button
-		button:SetState(0, 'action', i)
+		button:SetState(0, 'action', index)
 
 		for k = 1, 18 do
-			button:SetState(k, 'action', (k - 1) * 12 + i)
+			button:SetState(k, 'action', (k - 1) * 12 + index)
 		end
 
-		if i == 7 then
+		if index == 12 then
 			button:SetState(GetVehicleBarIndex(), 'custom', AB.customExitButton)
-			_G[elvButton..i].slvehiclebutton = button:GetName()
+
+			_G[elvButton..index].slvehiclebutton = button:GetName()
 		else
-			_G[elvButton..i].slvehiclebutton = button:GetName()
+			_G[elvButton..index].slvehiclebutton = button:GetName()
 		end
 
 		--Masuqe Support

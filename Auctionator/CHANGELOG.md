@@ -1,6 +1,6 @@
 # Auctionator
 
-## [10.0.42](https://github.com/Auctionator/Auctionator/tree/10.0.42) (2023-03-17)
-[Full Changelog](https://github.com/Auctionator/Auctionator/compare/10.0.41...10.0.42) 
+## [10.1.1](https://github.com/Auctionator/Auctionator/tree/10.1.1) (2023-05-03)
+[Full Changelog](https://github.com/Auctionator/Auctionator/compare/10.1.0...10.1.1) 
 
-- Revert "[Fixes #1364] Mainline: Cancelling: Option to ignore item level and"  
+- [Fixes #1382] Mainline: Fix tooltips not showing  

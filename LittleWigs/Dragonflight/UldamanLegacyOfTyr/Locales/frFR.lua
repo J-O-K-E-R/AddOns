@@ -8,4 +8,11 @@ if L then
 	L.cavern_seeker = "Scrute-grottes"
 	L.runic_protector = "Protecteur runique"
 	L.ebonstone_golem = "Golem d'ébène"
+	L.earthen_guardian = "Garde-terre"
+	L.infinite_agent = "Agent infini"
+end
+
+L = BigWigs:NewBossLocale("Sentinel Talondras", "frFR")
+if L then
+	L.boss = "BOSS"
 end

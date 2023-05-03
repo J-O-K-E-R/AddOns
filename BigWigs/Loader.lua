@@ -22,7 +22,7 @@ local strfind = string.find
 -- Generate our version variables
 --
 
-local BIGWIGS_VERSION = 268
+local BIGWIGS_VERSION = 271
 local BIGWIGS_RELEASE_STRING, BIGWIGS_VERSION_STRING = "", ""
 local versionQueryString, versionResponseString = "Q^%d^%s^%d^%s", "V^%d^%s^%d^%s"
 local customGuildName = false
@@ -37,7 +37,7 @@ do
 	local RELEASE = "RELEASE"
 
 	local releaseType = RELEASE
-	local myGitHash = "3b61e59" -- The ZIP packager will replace this with the Git hash.
+	local myGitHash = "1640756" -- The ZIP packager will replace this with the Git hash.
 	local releaseString = ""
 	--[=[@alpha@
 	-- The following code will only be present in alpha ZIPs.
@@ -77,6 +77,10 @@ do
 	end
 
 	BIGWIGS_RELEASE_STRING = releaseString
+	local dateTable = date("*t")
+	if dateTable.day and dateTable.month and dateTable.day == 1 and dateTable.month == 4 then
+		BIGWIGS_RELEASE_STRING = BIGWIGS_RELEASE_STRING:gsub("BigWigs", "DBM")
+	end
 	-- END: MAGIC PACKAGER VOODOO VERSION STUFF
 end
 
@@ -85,13 +89,15 @@ end
 --
 
 local tooltipFunctions = {}
-local next, tonumber, type, strsplit = next, tonumber, type, strsplit
+local next, tonumber, type, strsplit, strsub = next, tonumber, type, strsplit, string.sub
 local SendAddonMessage, Ambiguate, CTimerAfter, CTimerNewTicker = C_ChatInfo.SendAddonMessage, Ambiguate, C_Timer.After, C_Timer.NewTicker
 local GetInstanceInfo, GetBestMapForUnit, GetMapInfo = GetInstanceInfo, C_Map.GetBestMapForUnit, C_Map.GetMapInfo
 local UnitName, UnitGUID = UnitName, UnitGUID
 local debugstack, print = debugstack, print
+local myLocale = GetLocale()
 
 -- Try to grab unhooked copies of critical funcs (hooked by some crappy addons)
+public.Ambiguate = Ambiguate
 public.GetBestMapForUnit = GetBestMapForUnit
 public.GetMapInfo = GetMapInfo
 public.GetInstanceInfo = GetInstanceInfo
@@ -361,7 +367,7 @@ end
 --
 
 local EnableAddOn, GetAddOnEnableState, GetAddOnInfo, IsAddOnLoaded, LoadAddOn = EnableAddOn, GetAddOnEnableState, GetAddOnInfo, IsAddOnLoaded, LoadAddOn
-local GetAddOnMetadata, IsInGroup, IsInRaid, UnitAffectingCombat, UnitGroupRolesAssigned = GetAddOnMetadata, IsInGroup, IsInRaid, UnitAffectingCombat, UnitGroupRolesAssigned
+local GetAddOnMetadata, IsInGroup, IsInRaid, UnitAffectingCombat, UnitGroupRolesAssigned = C_AddOns.GetAddOnMetadata, IsInGroup, IsInRaid, UnitAffectingCombat, UnitGroupRolesAssigned
 local GetSpecialization, GetSpecializationRole, IsPartyLFG, UnitIsDeadOrGhost, UnitSetRole = GetSpecialization, GetSpecializationRole, IsPartyLFG, UnitIsDeadOrGhost, UnitSetRole
 
 local reqFuncAddons = {
@@ -472,7 +478,12 @@ function dataBroker.OnClick(self, button)
 end
 
 function dataBroker.OnTooltipShow(tt)
-	tt:AddLine("BigWigs")
+	local dateTable = date("*t")
+	if dateTable.day and dateTable.month and dateTable.day == 1 and dateTable.month == 4 then
+		tt:AddLine("DBM")
+	else
+		tt:AddLine("BigWigs")
+	end
 	if BigWigs and BigWigs:IsEnabled() then
 		local added = false
 		for name, module in BigWigs:IterateBossModules() do
@@ -1001,7 +1012,6 @@ do
 		end
 	end
 
-	local myLocale = GetLocale()
 	local locales = {
 		--ruRU = "Russian (ruRU)",
 		--itIT = "Italian (itIT)",
@@ -1106,17 +1116,21 @@ end
 --
 
 do
-	local DBMdotRevision = "20230309070430" -- The changing version of the local client, changes with every new zip using the project-date-integer packager replacement.
-	local DBMdotDisplayVersion = "10.0.32" -- "N.N.N" for a release and "N.N.N alpha" for the alpha duration.
-	local DBMdotReleaseRevision = "20230309000000" -- Hardcoded time, manually changed every release, they use it to track the highest release version, a new DBM release is the only time it will change.
+	local DBMdotRevision = "20230502091838" -- The changing version of the local client, changes with every new zip using the project-date-integer packager replacement.
+	local DBMdotDisplayVersion = "10.1.0" -- "N.N.N" for a release and "N.N.N alpha" for the alpha duration.
+	local DBMdotReleaseRevision = "20230502000000" -- Hardcoded time, manually changed every release, they use it to track the highest release version, a new DBM release is the only time it will change.
+	local protocol = 2
+	local prefix = "V"
+	local PForceDisable = 3
 
 	local timer, prevUpgradedUser = nil, nil
 	local function sendMsg()
 		if IsInGroup() then
 			local name = UnitName("player")
 			local realm = GetRealmName()
-			SendAddonMessage("D5", name.. "-" ..realm.."\t1\tV\t"..DBMdotRevision.."\t"..DBMdotReleaseRevision.."\t"..DBMdotDisplayVersion.."\t"..GetLocale().."\t".."true", IsInGroup(2) and "INSTANCE_CHAT" or "RAID") -- LE_PARTY_CATEGORY_INSTANCE = 2
-			SendAddonMessage("D4", "V\t"..DBMdotRevision.."\t"..DBMdotReleaseRevision.."\t"..DBMdotDisplayVersion.."\t"..GetLocale().."\t".."true", IsInGroup(2) and "INSTANCE_CHAT" or "RAID") -- LE_PARTY_CATEGORY_INSTANCE = 2
+			local normalizedPlayerRealm = realm:gsub("[%s-]+", "") -- Has to mimic DBM code
+			local msg = name.. "-" ..normalizedPlayerRealm.."\t"..protocol.."\t".. prefix .."\t".. DBMdotRevision.."\t"..DBMdotReleaseRevision.."\t"..DBMdotDisplayVersion.."\t"..myLocale.."\ttrue\t"..PForceDisable
+			SendAddonMessage("D5", msg, IsInGroup(2) and "INSTANCE_CHAT" or "RAID") -- LE_PARTY_CATEGORY_INSTANCE = 2
 		end
 		timer, prevUpgradedUser = nil, nil
 	end
@@ -1144,13 +1158,14 @@ do
 			--end
 		end
 	end
-	function mod:BigWigs_CoreOptionToggled(_, key, value)
-		if key == "fakeDBMVersion" and value and IsInGroup() then
-			self:DBM_VersionCheck("H") -- Send addon message if feature is being turned on inside a raid/group.
-		end
-	end
-	public.RegisterMessage(mod, "BigWigs_CoreOptionToggled")
 end
+
+function mod:BigWigs_CoreOptionToggled(_, key, value)
+	if key == "fakeDBMVersion" and value and IsInGroup() then
+		self:DBM_VersionCheck("H") -- Send addon message if feature is being turned on inside a raid/group.
+	end
+end
+public.RegisterMessage(mod, "BigWigs_CoreOptionToggled")
 
 -----------------------------------------------------------------------
 -- Events
@@ -1519,10 +1534,11 @@ do
 		if (not grouped and groupType) or (grouped and groupType and grouped ~= groupType) then
 			grouped = groupType
 			SendAddonMessage("BigWigs", versionQueryString, groupType == 3 and "INSTANCE_CHAT" or "RAID")
-			local name = UnitName("player")
-			local realm = GetRealmName()
-			SendAddonMessage("D5", name.. "-" ..realm.."\t1\tH\t", groupType == 3 and "INSTANCE_CHAT" or "RAID") -- Also request DBM versions
-			SendAddonMessage("D4", "H\t", groupType == 3 and "INSTANCE_CHAT" or "RAID") -- Also request DBM versions
+			--local name = UnitName("player")
+			--local realm = GetRealmName()
+			--local normalizedPlayerRealm = realm:gsub("[%s-]+", "") -- Has to mimic DBM code
+			--SendAddonMessage("D5", name.. "-" ..normalizedPlayerRealm.."\t1\tH\t", groupType == 3 and "INSTANCE_CHAT" or "RAID") -- Also request DBM versions
+			SendAddonMessage("D4", "H", groupType == 3 and "INSTANCE_CHAT" or "RAID") -- Also request DBM versions
 			self:ACTIVE_TALENT_GROUP_CHANGED() -- Force role check
 		elseif grouped and not groupType then
 			grouped = nil
@@ -1555,10 +1571,11 @@ function mod:BigWigs_CoreEnabled()
 	-- which kills your ability to receive addon comms during the loading process.
 	if IsInGroup() then
 		SendAddonMessage("BigWigs", versionQueryString, IsInGroup(2) and "INSTANCE_CHAT" or "RAID")
-		local name = UnitName("player")
-		local realm = GetRealmName()
-		SendAddonMessage("D5", name.. "-" ..realm.."\t1\tH\t", IsInGroup(2) and "INSTANCE_CHAT" or "RAID") -- Also request DBM versions
-		SendAddonMessage("D4", "H\t", IsInGroup(2) and "INSTANCE_CHAT" or "RAID") -- Also request DBM versions
+		--local name = UnitName("player")
+		--local realm = GetRealmName()
+		--local normalizedPlayerRealm = realm:gsub("[%s-]+", "") -- Has to mimic DBM code
+		--SendAddonMessage("D5", name.. "-" ..normalizedPlayerRealm.."\t1\tH\t", IsInGroup(2) and "INSTANCE_CHAT" or "RAID") -- Also request DBM versions
+		SendAddonMessage("D4", "H", IsInGroup(2) and "INSTANCE_CHAT" or "RAID") -- Also request DBM versions
 	end
 
 	-- Core is loaded, nil these to force checking BigWigs.db.profile.option

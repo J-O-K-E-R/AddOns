@@ -6,7 +6,7 @@ local function cc(m, f, ...)
 	return f
 end
 local function assert(condition, text, level)
-	return (not condition) and error(text, level or 2) or condition
+	return condition or error(text, level or 2)
 end
 
 local gfxBase = ([[Interface\AddOns\%s\gfx\]]):format((...))

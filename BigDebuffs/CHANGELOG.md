@@ -1,1 +1,1 @@
-- Fix polymorph sizing issue
+- Spell updates (citna)

@@ -196,7 +196,7 @@ local function CastingBarFrame_FinishSpell(self)
 	end
 	self.flash = true;
 	]]
-	if self.statusBar.key ~= "raidBar0" or not P.extraBars.raidBar0.shouldRearrangeInterrupts then
+	if not P.extraBars[self.statusBar.key].shouldRearrangeInterrupts then
 		self.fadeOut = true;
 	end
 	self.casting = nil;

@@ -86,7 +86,7 @@ function TM:Test(key)
 					end
 
 					if P.isInEditMode and not EditModeManagerFrame:AreRaidFramesForcedShown() and not EditModeManagerFrame:ArePartyFramesForcedShown() then
-						E.StaticPopup_Show("OMNICD_DF_TEST_MSG", E.STR.ENABLE_HUDEDITMODE_FRAME)
+						E.Libs.OmniCDC.StaticPopup_Show("OMNICD_DF_TEST_MSG", E.STR.ENABLE_HUDEDITMODE_FRAME)
 						P.isInTestMode = false
 						return
 					end
@@ -95,7 +95,7 @@ function TM:Test(key)
 						CompactRaidFrameManager:Show()
 						CompactRaidFrameContainer:Show()
 					else
-						E.StaticPopup_Show("OMNICD_RELOADUI", E.STR.ENABLE_BLIZZARD_CRF)
+						E.Libs.OmniCDC.StaticPopup_Show("OMNICD_RELOADUI", E.STR.ENABLE_BLIZZARD_CRF)
 						P.isInTestMode = false
 						return
 					end
