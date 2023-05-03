@@ -1,6 +1,9 @@
-local L = LibStub("AceLocale-3.0"):NewLocale("PlaterNameplates", "zhTW") 
-if not L then return end 
+do
+    local addonId = ...
+    local languageTable = DetailsFramework.Language.RegisterLanguage(addonId, "zhTW")
+    local L = languageTable
 
+------------------------------------------------------------
 --[[Translation missing --]]
 L["HIGHLIGHT_HOVEROVER"] = "Hover Over Highlight"
 --[[Translation missing --]]
@@ -528,3 +531,4 @@ L["TARGET_OVERLAY_TEXTURE"] = "Target Overlay Texture"
 --[[Translation missing --]]
 L["TARGET_OVERLAY_TEXTURE_DESC"] = "Used above the health bar when it is the current target."
 
+end

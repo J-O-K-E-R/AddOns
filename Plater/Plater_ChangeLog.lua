@@ -8,6 +8,13 @@ function Plater.GetChangelogTable()
 	if (not Plater.ChangeLogTable) then
 		Plater.ChangeLogTable = {
 		
+			{1678652930,  "Bug Fix", "April 19th, 2023", "Fixing an error with tooltip scanning rework.", "cont1nuity"},
+			{1678652930,  "Bug Fix", "April 17th, 2023", "Fixing Aura Icon sizes not updating properly with Ghost Auras set to a different size.", "cont1nuity"},
+			{1678652930,  "Bug Fix", "April 15th, 2023", "Fixing the search tab being broken.", "cont1nuity"},
+			{1678652930,  "Bug Fix", "April 15th, 2023", "Some locale fixes.", "cont1nuity"},
+			{1678652930,  "Backend Change", "March 28th, 2023", "Implementing on the fly locale change for Plater options.", "Terciob"},
+			{1678652930,  "Bug Fix", "March 20th, 2023", "Fixing y-offset for target arrow indicators.", "cont1nuity"},
+			
 			{1678652930,  "Bug Fix", "March 19th, 2023", "Fixing and error on quest recognition rework.", "cont1nuity"},
 			{1678652930,  "Bug Fix", "March 18th, 2023", "Fixing and error for hiding blizzard healthbars.", "cont1nuity"},
 			{1678652930,  "Bug Fix", "March 14th, 2023", "Fixing some errors about unit flag changes when units are entering/leaving combat or change being attackable or not.", "cont1nuity"},
