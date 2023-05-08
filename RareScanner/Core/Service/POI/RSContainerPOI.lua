@@ -67,7 +67,7 @@ function RSContainerPOI.GetContainerPOI(containerID, mapID, containerInfo, alrea
 	POI.foundTime = alreadyFoundInfo and alreadyFoundInfo.foundTime
 	POI.isOpened = RSContainerDB.IsContainerOpened(containerID)
 	POI.isDiscovered = POI.isOpened or alreadyFoundInfo ~= nil
-	POI.achievementIDs = RSAchievementDB.GetNotCompletedAchievementIDsByMap(containerID, mapID)
+	POI.achievementIDs = RSAchievementDB.GetNotCompletedAchievementIDsByMap(containerID, mapID, true)
 	
 	if (containerInfo) then
 		POI.worldmap = containerInfo.worldmap
@@ -120,7 +120,7 @@ local function IsContainerPOIFiltered(containerID, mapID, zoneQuestID, prof, vig
 	end
 	
 	-- Skip if achievement and is filtered
-	local isAchievement = RSUtils.GetTableLength(RSAchievementDB.GetNotCompletedAchievementIDsByMap(containerID, mapID)) > 0;
+	local isAchievement = RSUtils.GetTableLength(RSAchievementDB.GetNotCompletedAchievementIDsByMap(containerID, mapID, true)) > 0;
 	if (not RSConfigDB.IsShowingAchievementContainers() and isAchievement) then
 		RSLogger:PrintDebugMessageEntityID(containerID, string.format("Saltado Contenedor [%s]: Filtrado contenedor con logro.", containerID))
 		return true

@@ -2,7 +2,7 @@ local E = select(2, ...):unpack()
 local P = E.Party
 
 local _G = _G
-local IsInRaid, IsInGroup, UnitGUID = IsInRaid, IsInGroup, UnitGUID
+local GetNumGroupMembers, IsInRaid, UnitGUID = GetNumGroupMembers, IsInRaid, UnitGUID
 local isColdStartDC = true
 
 local COMPACT_RAID = {
@@ -42,7 +42,7 @@ function P:CompactFrameIsActive(isInRaid)
 end
 
 function P:ShouldShowCompactFrame()
-	return IsInGroup() and self:CompactFrameIsActive()
+	return GetNumGroupMembers() > 0 and self:CompactFrameIsActive()
 end
 
 function P:CompactFrameIsShown()
@@ -84,7 +84,7 @@ function P:FindRelativeFrame(guid)
 		local compactFrame = nil
 		if isInRaid and not self.isInArena then
 			compactFrame = self.isCompactFrameSetShown and (self.keepGroupsTogether and COMPACT_RAID_KGT or COMPACT_RAID)
-		elseif IsInGroup() then
+		elseif GetNumGroupMembers() > 0 then
 			compactFrame = self.useRaidStylePartyFrames and COMPACT_PARTY or false
 		elseif EditModeManagerFrame:AreRaidFramesForcedShown() then
 			compactFrame = self.isCompactFrameSetShown and (self.keepGroupsTogether and COMPACT_RAID_KGT or COMPACT_RAID)

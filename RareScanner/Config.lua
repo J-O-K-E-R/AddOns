@@ -788,13 +788,25 @@ local function GetDisplayOptions()
 					end,
 					width = "full",
 				},
-				separatorNavigation = {
+				displayChatTimestampMessage = {
 					order = 11,
+					type = "toggle",
+					name = AL["SHOW_CHAT_TIMESTAMP_ALERT"],
+					desc = AL["SHOW_CHAT_TIMESTAMP_ALERT_DESC"],
+					get = function() return RSConfigDB.IsDisplayingTimestampChatMessages() end,
+					set = function(_, value)
+						RSConfigDB.SetDisplayingTimestampChatMessages(value)
+					end,
+					width = "full",
+					disabled = function() return not RSConfigDB.IsDisplayingChatMessages() end,
+				},
+				separatorNavigation = {
+					order = 12,
 					type = "header",
 					name = AL["NAVIGATION_OPTIONS"],
 				},
 				enableNavigation = {
-					order = 12,
+					order = 13,
 					type = "toggle",
 					name = AL["NAVIGATION_ENABLE"],
 					desc = AL["NAVIGATION_ENABLE_DESC"],
@@ -805,7 +817,7 @@ local function GetDisplayOptions()
 					width = "full",
 				},
 				navigationLockEntity = {
-					order = 13,
+					order = 14,
 					type = "toggle",
 					name = AL["NAVIGATION_LOCK_ENTITY"],
 					desc = AL["NAVIGATION_LOCK_ENTITY_DESC"],
@@ -817,12 +829,12 @@ local function GetDisplayOptions()
 					disabled = function() return not RSConfigDB.IsDisplayingNavigationArrows() end,
 				},
 				separatorMap = {
-					order = 14,
+					order = 15,
 					type = "header",
 					name = AL["MAP_OPTIONS"],
 				},
 				minimapButton = {
-					order = 15,
+					order = 16,
 					type = "toggle",
 					name = AL["DISPLAY_MINIMAP_BUTTON"],
 					desc = AL["DISPLAY_MINIMAP_BUTTON_DESC"],
@@ -834,7 +846,7 @@ local function GetDisplayOptions()
 					width = "full",
 				},
 				worldmapButton = {
-					order = 16,
+					order = 17,
 					type = "toggle",
 					name = AL["DISPLAY_WORLDMAP_BUTTON"],
 					desc = AL["DISPLAY_WORLDMAP_BUTTON_DESC"],

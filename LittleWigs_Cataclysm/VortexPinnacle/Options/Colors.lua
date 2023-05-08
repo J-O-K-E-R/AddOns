@@ -1,7 +1,7 @@
 
 BigWigs:AddColors("Grand Vizier Ertan", {
-	[-2422] = "yellow",
 	[86292] = {"blue","green","orange","yellow"},
+	[413151] = "yellow",
 	[413562] = "red",
 })
 
@@ -23,7 +23,7 @@ BigWigs:AddColors("Asaad", {
 })
 
 BigWigs:AddColors("The Vortex Pinnacle Trash", {
-	[87759] = "orange",
+	[87761] = "red",
 	[87762] = {"blue","red"},
 	[87772] = "orange",
 	[87779] = "yellow",

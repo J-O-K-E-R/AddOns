@@ -1,3 +1,10 @@
+- v4.0.3.3
+  - Uldaman G33 fix
+  - add AddOn Compartment support
+- v4.0.3.2
+  - Freehold count updates
+- v4.0.3.1
+  - fix compatibility with MDTGuide
 - v4.0.3.0
   - Added all Dragonflight Season 2 dungeons
 - v4.0.2.12

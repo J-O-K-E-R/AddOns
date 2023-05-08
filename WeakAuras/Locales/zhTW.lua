@@ -809,7 +809,8 @@ L["Npc ID"] = "NPC ID"
 L["Number"] = "數字"
 L["Number Affected"] = "被影響的數量"
 L["Object"] = "物件"
-L[ [=[Occurence of the event, reset when aura is unloaded
+--[[Translation missing --]]
+L[ [=[Occurrence of the event, reset when aura is unloaded
 Can be a range of values
 Can have multiple values separated by a comma or a space
 
@@ -820,8 +821,7 @@ every 2 events: /2
 every 3 events starting from 2nd: 2/3
 every 3 events starting from 2nd and ending at 11th: 2-11/3
 
-Only if BigWigs shows it on it's bar]=] ] = "事件的發生，當光環未載入時重置可以是一系列值可以有多個值，用逗號或空格分隔示例：第2第5以及第6事件：2, 5, 6 第2到第6: 2-6 每2個事件: /2 every 3 events starting from 2nd: 2/3 every 3 events starting from 2nd and ending at 11th: 2-11/3 Only if BigWigs shows it on it's bar"
-L[ [=[Occurence of the event, reset when aura is unloaded
+Only if BigWigs shows it on it's bar]=] ] = [=[Occurrence of the event, reset when aura is unloaded
 Can be a range of values
 Can have multiple values separated by a comma or a space
 
@@ -832,7 +832,31 @@ every 2 events: /2
 every 3 events starting from 2nd: 2/3
 every 3 events starting from 2nd and ending at 11th: 2-11/3
 
-Only if DBM shows it on it's bar]=] ] = "事件的發生，當光環未載入時重置可以是一系列值可以有多個值，用逗號或空格分隔示例：2nd 5th and 6th events: 2, 5, 6 2nd to 6th: 2-6 every 2 events: /2 every 3 events starting from 2nd: 2/3 every 3 events starting from 2nd and ending at 11th: 2-11/3 Only if DBM shows it on it's bar"
+Only if BigWigs shows it on it's bar]=]
+--[[Translation missing --]]
+L[ [=[Occurrence of the event, reset when aura is unloaded
+Can be a range of values
+Can have multiple values separated by a comma or a space
+
+Examples:
+2nd 5th and 6th events: 2, 5, 6
+2nd to 6th: 2-6
+every 2 events: /2
+every 3 events starting from 2nd: 2/3
+every 3 events starting from 2nd and ending at 11th: 2-11/3
+
+Only if DBM shows it on it's bar]=] ] = [=[Occurrence of the event, reset when aura is unloaded
+Can be a range of values
+Can have multiple values separated by a comma or a space
+
+Examples:
+2nd 5th and 6th events: 2, 5, 6
+2nd to 6th: 2-6
+every 2 events: /2
+every 3 events starting from 2nd: 2/3
+every 3 events starting from 2nd and ending at 11th: 2-11/3
+
+Only if DBM shows it on it's bar]=]
 L["Officer"] = "幹部"
 L["Offset from progress"] = "進度偏移"
 L["Offset Timer"] = "移動時間數字"

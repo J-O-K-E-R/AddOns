@@ -22,5 +22,6 @@
 	<Include file="LibDialog-1.0-9.0.1.1\lib.xml"/>
 	<Include file="Krowi_WorldMapButtons-1.4\Krowi_WorldMapButtons-1.4.lua"/>
 	<Include file="LibDBIcon-1.0\lib.xml"/>
+	<Include file="LibTime-1.0\LibTime-1.0.xml"/>
 	
 </Ui>

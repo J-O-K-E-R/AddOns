@@ -620,7 +620,7 @@ local OPC_OptionSets = {
 		{"bool", "ShowKeys", caption=L"Per-slice bindings", depOn="SliceBinding", depValue=true, otherwise=false},
 		{"bool", "ShowCooldowns", caption=L"Show cooldown numbers", depIndicatorFeature="CooldownNumbers"},
 		{"bool", "ShowRecharge", caption=L"Show recharge numbers", depIndicatorFeature="CooldownNumbers"},
-		{"bool", "ShowShortLabels", caption=L"Show slice labels"},
+		{"bool", "ShowShortLabels", caption=L"Show slice labels", depIndicatorFeature="ShortLabels"},
 		{"bool", "UseGameTooltip", caption=L"Show tooltips"},
 		{"bool", "HideStanceBar", caption=L"Hide stance bar", global=true},
 	}, { L"Animation",

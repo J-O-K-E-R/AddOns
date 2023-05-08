@@ -1,13 +1,24 @@
 ------------------------------------------------------------------------------
 -- Dragonflight
 --
+v10.1.0.2750
+	Patch 10.1 updates
+	Blessing of the Bronze CDR added to non-Evoker classes
+
+v10.0.7.2748
+	Fixed CDR to Incarn: Guardian of Ursoc
+	nil error fix (nil mapInfo, nil info on sorting extraBars)
+	Added ElvUI Raid Wide Sorting
+
 v10.0.7.2747
 	Added option to limit the number of visible icons per unit
 	Added option to move icon names vertically
 	Added option to scale status bar names
 	Added option to rename Extra Bars
 	Fixed Divine Protection for Rets
+	Fixed Divine Purpose procs for Rets (HoJ CDR)
 	Fixed Fire Breath CD reduction for Preservation
+	Fixed anchor visibility not updating on zone change
 	Visibility by Group Size can be configured for each zone separately
 	Empowered spell will reset if the cast fails (simplified)
 	Lib updates - cell padding, flash button fix, dropdown fix
@@ -677,6 +688,9 @@ v2.5.0
 ------------------------------------------------------------------------------
 -- WOTLKC
 --
+v3.4.1.2750
+	minor bug fixes
+
 v3.4.1.2744
 	Fixed option panel taint error
 
@@ -774,8 +788,8 @@ v2.6.01-bcc
 ------------------------------------------------------------------------------
 -- classic era
 --
-v1.14.3.2744
-	version update
+v1.14.3.2750
+	minor bug fixes
 
 v1.14.3.2724
 	Fixed sync for cross realm group members

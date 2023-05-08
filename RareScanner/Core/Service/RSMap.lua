@@ -263,8 +263,8 @@ function RSMap.GetWorldMapPOI(objectGUID, vignetteInfo, mapID)
 		local _, _, _, _, _, vignetteObjectID = strsplit("-", objectGUID)
 		local npcID = tonumber(vignetteObjectID)
 		
-		-- If Ancestral Spirit in Forbidden Reach, locate real NPC
-		if (npcID == RSConstants.FORBIDDEN_REACH_ANCESTRAL_SPIRIT and RSNpcDB.GetNpcId(vignetteInfo.name, mapID)) then
+		-- If Ancestral Spirit in Forbidden Reach or Loam Scoat in Zaralek Cavern, locate real NPC
+		if ((npcID == RSConstants.FORBIDDEN_REACH_ANCESTRAL_SPIRIT or npcID == RSConstants.ZARALEK_CAVERN_LOAM_SCOUT) and RSNpcDB.GetNpcId(vignetteInfo.name, mapID)) then
 			npcID = RSNpcDB.GetNpcId(vignetteInfo.name, mapID)
 		end
 		
@@ -273,6 +273,16 @@ function RSMap.GetWorldMapPOI(objectGUID, vignetteInfo, mapID)
 		
 		if (npcInfo or alreadyFoundInfo) then
 			return RSNpcPOI.GetNpcPOI(npcID, mapID, npcInfo, alreadyFoundInfo)
+		end
+	elseif (RSConstants.IsEventAtlas(vignetteInfo.atlasName)) then
+		local _, _, _, _, _, vignetteObjectID = strsplit("-", objectGUID)
+		local eventID = tonumber(vignetteObjectID)
+		
+		local eventInfo = RSEventDB.GetInternalEventInfo(eventID)
+		local alreadyFoundInfo = RSGeneralDB.GetAlreadyFoundEntity(eventID)
+	
+		if (eventInfo or alreadyFoundInfo) then
+			return RSEventPOI.GetEventPOI(eventID, mapID, eventInfo, alreadyFoundInfo)
 		end
 	end
 	

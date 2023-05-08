@@ -15,8 +15,8 @@ do
 	localization = localization:gsub("frFR", FRFR):gsub("koKR", KOKR)
 	localization = localization:gsub("ruRU", RURU):gsub("zhCN", ZHCN)
 	localization = localization:gsub("zhTW", ZHTW)
-
-
+--	localization = localization:gsub("itIT", LFG_LIST_LANGUAGE_ITIT)
+--	localization = localization:gsub("ptBR", LFG_LIST_LANGUAGE_PTBR)
 	fieldText.localizations = localization
 
 	local t = {}
@@ -27,7 +27,7 @@ do
 		end
 	end
 	fieldText.supportedUis = table.concat(t, ", ")
-	fieldText.translations = format("%s (%s), %s (%s)", RURU, "Void_OW - \"The OG\"", ZHTW, "RainbowUI")
+	fieldText.translations = format("%s (%s), %s (%s) %s (%s)", RURU, "Void_OW-\"The OG\"", ZHTW, "RainbowUI", DEDE, "drumz84")
 end
 
 local getFieldText = function(info)
@@ -46,7 +46,7 @@ end):gsub("\t", "\32\32\32\32\32\32\32\32")
 local getGlobalOption = function(info) return E.global[ info[#info] ] end
 local setGlobalOption = function(info, value) E.global[ info[#info] ] = value end
 
-
+-- Generate option table on demand for late loading plugins
 local function GetOptions()
 	if not E.options then
 		E.options = {
@@ -54,7 +54,9 @@ local function GetOptions()
 			type = "group",
 			args = {
 				Home = {
-
+					-- Use escape sequence here. tree icons have backdrop borders
+--					icon = E.Libs.OmniCDC.texture.logo,
+--					iconCoords = {0, 1, 0, 1},
 					name = format("|T%s:18|t %s", E.Libs.OmniCDC.texture.logo, E.AddOn),
 					order = 0,
 					type = "group",
@@ -127,9 +129,9 @@ local function GetOptions()
 							get = getGlobalOption,
 							set = setGlobalOption,
 						},
-
+						-- requires /rl for ace to redraw pixels
 						minusScale = {
-							disabled = function() return E.global.optionPanelScale < 0.84 end,
+							disabled = function() return E.global.optionPanelScale < 0.84 end, -- == 0.8 doesn't work??
 							image = E.Libs.OmniCDC.texture.minus, imageWidth = 18, imageHeight = 18,
 							name = "",
 							order = 13,
@@ -339,8 +341,8 @@ function E:SetupOptions()
 		arrowb	= [[Interface\AddOns\OmniCD\Config\Libs\Media\omnicd-bg-gnav2-dn-b]],
 	}
 	self.Libs.OmniCDC.SetOptionFontDefaults(nil, nil)
-	self.Libs.ACR:RegisterOptionsTable(self.AddOn, GetOptions, true)
-
+	self.Libs.ACR:RegisterOptionsTable(self.AddOn, GetOptions, true) -- skip validation
+--	self.optionsFrames.OmniCD = self.Libs.ACD:AddToBlizOptions(self.AddOn)
 
 	self.optionsFrames.profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.DB)
 	self.optionsFrames.profiles.order = 1000
@@ -367,6 +369,6 @@ end
 
 function E:RefreshProfile(currentProfile)
 	currentProfile = currentProfile or self.DB:GetCurrentProfile()
-	self.DB.keys.profile = currentProfile .. ":D"
+	self.DB.keys.profile = currentProfile .. ":D" -- Bypass same profile check. credits to ElvUI
 	self.DB:SetProfile(currentProfile)
 end

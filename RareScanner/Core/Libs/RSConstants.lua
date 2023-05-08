@@ -24,8 +24,8 @@ RSConstants.LOOT_ITEM_ID = nil
 -- Current versions
 ---============================================================================
 
-RSConstants.CURRENT_DB_VERSION = 95
-RSConstants.CURRENT_LOOT_DB_VERSION = 106
+RSConstants.CURRENT_DB_VERSION = 99
+RSConstants.CURRENT_LOOT_DB_VERSION = 110
 
 ---============================================================================
 -- Current maps (newer)
@@ -62,8 +62,8 @@ RSConstants.RECENTLY_SEEN_RESET_TIMER = 120 --2 minutes
 RSConstants.RECENTLY_SEEN_PING_ANIMATION_TIMER = 5 --5 seconds
 RSConstants.CACHE_ALL_COMPLETED_QUEST_IDS_TIMER = 60 --1 minute
 RSConstants.FIND_HIDDEN_QUESTS_TIMER = 5 --5 seconds after killing a NPC or opening a container
-RSConstants.CHECK_RESPAWN_BY_QUEST_TIMER = 150 --2.5 minutes
-RSConstants.CHECK_RESPAWNING_BY_LASTSEEN_TIMER = 60 --1 minute
+RSConstants.CHECK_RESPAWN_THRESHOLD = 150 --2.5 minutes
+RSConstants.CHECK_RESPAWN_TIMER = 60 --1 minute
 RSConstants.CHECK_RESET_NOTIFICATIONS_TIMER = 10 --10 seconds
 
 ---============================================================================
@@ -146,6 +146,7 @@ RSConstants.PROFILE_DEFAULTS = {
 			autoHideButton = 0,
 			displayRaidWarning = true,
 			displayChatMessage = true,
+			displayTimestampChatMessage = true,
 			enableNavigation = true,
 			navigationLockEntity = false,
 			lockPosition = false,
@@ -327,6 +328,7 @@ RSConstants.CONTAINER_ELITE_LOCKED_VIGNETTE = "vignettelootelite-locked"
 RSConstants.EVENT_VIGNETTE = "VignetteEvent"
 RSConstants.EVENT_ELITE_VIGNETTE = "VignetteEventElite"
 RSConstants.EVENT_TORMENTORS_VIGNETTE = "Tormentors-Event"
+RSConstants.EVENT_ZARALEK_CAVERN = "minimap-genericevent-hornicon-small"
 
 ---============================================================================
 -- SpellIDs
@@ -351,6 +353,7 @@ RSConstants.DRAGON_ISLES = 1978
 RSConstants.THE_AZURE_SPAN = 2024
 RSConstants.VALDRAKKEN = 2025
 RSConstants.THE_PRIMALIST_FUTURE = 2085
+RSConstants.ZARALEK_CAVERN = 2133
 
 ---============================================================================
 -- NpcIDS
@@ -406,6 +409,7 @@ RSConstants.MAGIC_BOUND_CHEST = { 376426, 385075, 385074 }
 RSConstants.CONTAINER_WITH_NPC_VIGNETTE = { 192243 }
 RSConstants.CONTAINERS_FORBIDDEN_REACH = { 386214, 386165, 386166, 386167, 386168, 386172, 386174, 386179, 386208, 386212, 386213 }
 RSConstants.FORBIDDEN_REACH_ANCESTRAL_SPIRIT = 203388
+RSConstants.ZARALEK_CAVERN_LOAM_SCOUT = 204657
 
 -- NPCs that spawn after completing an event
 RSConstants.NPCS_WITH_PRE_EVENT = {
@@ -732,7 +736,7 @@ function RSConstants.IsScanneableAtlas(atlasName)
 end
 
 function RSConstants.IsEventAtlas(atlasName)
-	return atlasName == RSConstants.EVENT_VIGNETTE or atlasName == RSConstants.EVENT_ELITE_VIGNETTE or atlasName == RSConstants.EVENT_TORMENTORS_VIGNETTE
+	return atlasName == RSConstants.EVENT_VIGNETTE or atlasName == RSConstants.EVENT_ELITE_VIGNETTE or atlasName == RSConstants.EVENT_TORMENTORS_VIGNETTE or atlasName == RSConstants.EVENT_ZARALEK_CAVERN
 end
 
 function RSConstants.IsNpcAtlas(atlasName)

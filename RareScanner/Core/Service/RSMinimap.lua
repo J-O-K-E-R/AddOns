@@ -308,7 +308,7 @@ function RSMinimap.AddOverlay(entityID)
 			
 			pin.Texture:SetTexture(RSConstants.OVERLAY_SPOT_TEXTURE)
 			pin.Texture:SetVertexColor(r, g, b, 0.7)
-			pin.IconTexture:SetAtlas(POI.iconAtlas)
+			pin.IconTexture:SetAtlas(pin.POI.iconAtlas)
 			pin:SetFrameLevel(OVERLAY_FRAME_LEVEL)
 			HBD_Pins:AddMinimapIconMap(RSMinimap, pin, mapID, RSUtils.FixCoord(x), RSUtils.FixCoord(y), false, false)
 		end

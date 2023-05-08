@@ -367,7 +367,9 @@ local function GetIcon(barFrame, iconIndex)
 		icon.cooldown:SetScript("OnHide", OmniCDCooldown_OnHide)
 		icon:SetScript("OnEnter", OmniCDIcon_OnEnter)
 		icon:SetScript("OnLeave", OmniCDIcon_OnLeave)
-		icon:SetPassThroughButtons("LeftButton", "RightButton")
+		if not E.isClassic then
+			icon:SetPassThroughButtons("LeftButton", "RightButton")
+		end
 	end
 
 	icon:SetParent(barFrame.container)
@@ -632,8 +634,9 @@ function P:UpdateUnitBar(guid, isUpdateBarsOrGRU)
 								end
 
 
-								if E.majorMovementAbilitiesByIDs[spellID] then
-									if self:GetBuffDuration(unit, 381748) then
+								local blessingOfTheBronze = E.majorMovementAbilitiesByIDs[spellID]
+								if blessingOfTheBronze then
+									if self:GetBuffDuration(unit, blessingOfTheBronze) then
 										info.auras["isBlessingOfTheBronze"] = true
 									end
 								end

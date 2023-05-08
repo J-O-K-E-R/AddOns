@@ -222,6 +222,14 @@ function RSConfigDB.SetDisplayingChatMessages(value)
 	private.db.display.displayChatMessage = value
 end
 
+function RSConfigDB.IsDisplayingTimestampChatMessages()
+	return private.db.display.displayTimestampChatMessage
+end
+
+function RSConfigDB.SetDisplayingTimestampChatMessages(value)
+	private.db.display.displayTimestampChatMessage = value
+end
+
 function RSConfigDB.IsDisplayingLootBar()
 	return private.db.loot.displayLoot
 end

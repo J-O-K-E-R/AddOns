@@ -41,10 +41,10 @@
 	<!-- Services -->
 	<Include file="Service\RSMap.lua"/>
 	<Include file="Service\RSQuestTracker.lua"/>
-	<Include file="Service\RSRespawnTracker.lua"/>
 	<Include file="Service\RSNotificationTracker.lua"/>
 	<Include file="Service\RSMinimap.lua"/>
 	<Include file="Service\RSEntityStateHandler.lua"/>
+	<Include file="Service\RSRespawnTracker.lua"/>
 	<Include file="Service\RSLoot.lua"/>
 	<Include file="Service\RSLootTooltip.lua"/>
 	<Include file="Service\RSWaypoints.lua"/>

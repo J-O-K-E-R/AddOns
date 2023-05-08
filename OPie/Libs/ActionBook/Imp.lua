@@ -1,7 +1,7 @@
 local _, T = ...
 if T.SkipLocalActionBook then return end
 
-local IM, MAJ, REV, COMPAT = {}, 1, 1, select(4,GetBuildInfo())
+local IM, MAJ, REV, COMPAT = {}, 1, 2, select(4,GetBuildInfo())
 local MODERN, CF_WRATH, CI_ERA = COMPAT >= 10e4, COMPAT < 10e4 and COMPAT >= 3e4, COMPAT < 2e4
 local EV, AB, RW = T.Evie,T.ActionBook:compatible(2, 34), T.ActionBook:compatible("Rewire", 1,10)
 assert(EV and AB and RW, "Incompatible library bundle")
@@ -11,7 +11,7 @@ local function assert(condition, text, level, ...)
 	return condition or error(tostring(text):format(...), 1 + (level or 1))
 end
 
-local commandType, addCommandType = {["#show"]=0, ["#showtooltip"]=0} do
+local commandType, addCommandType = {["#show"]=0, ["#showtooltip"]=0, ["#imp"]=-1} do
 	function addCommandType(slashToken, ct)
 		local idx, s = 1
 		while 1 do
@@ -27,7 +27,7 @@ end
 
 local toMacroText, quantizeMacro, formatMacro, formatToken, setMountPreference do
 	local genParser do
-		local doRewrite, replaceFunc
+		local doRewrite, replaceFunc, critFail, critLine
 		local function replaceAlternatives(ctype, args)
 			local ret, alt2, rfCtx
 			for alt, cpos in (args .. ","):gmatch("(.-),()") do
@@ -46,11 +46,25 @@ local toMacroText, quantizeMacro, formatMacro, formatToken, setMountPreference d
 		local function hasTautCondition(cond)
 			return (cond:match("%[%s*%]") or cond:match("%[%s*@[^,]*%]")) and true
 		end
+		local function procImpOptions(args)
+			if not doRewrite then
+				return
+			end
+			if args:match("^%s*critical%s*$") then
+				critLine = true
+			end
+			return ""
+		end
 		local function procLine(commandPrefix, nlc, command, args)
-			if nlc ~= "" and nlc ~= "\n" then return end
+			if critFail or (nlc ~= "" and nlc ~= "\n") then return end
 			local ctype = commandType[command:lower()]
-			if not ctype then return end
-			local pos, len1, ret = 1, #args+1
+			if ctype == -1 then
+				return procImpOptions(args)
+			elseif not ctype then
+				return
+			end
+			local isCritical, pos, len1, ret = critLine and ctype > 0, 1, #args+1
+			critLine = critLine and not isCritical
 			repeat
 				local cstart, cend, vend = pos
 				repeat
@@ -89,12 +103,14 @@ local toMacroText, quantizeMacro, formatMacro, formatToken, setMountPreference d
 					end
 				end
 			until pos > len1
+			critFail = critFail or isCritical and (ret or "") == ""
 			return ret or ""
 		end
 		function genParser(pReplaceFunc)
 			return function(aDoRewrite, text)
-				doRewrite, replaceFunc = aDoRewrite, pReplaceFunc
-				return (text:gsub("((.?)([#/]%S+) ?)([^\n]*)", procLine))
+				doRewrite, replaceFunc, critFail, critLine = aDoRewrite, pReplaceFunc
+				text = text:gsub("((.?)([#/]%S+) ?)([^\n]*)", procLine)
+				return critFail and "" or text
 			end
 		end
 	end
@@ -738,7 +754,7 @@ function IM:AddTokenizableCommand(slashKey, behavesLikeCommand)
 	assert(type(slashKey) == 'string' and type(behavesLikeCommand) == 'string',
 	       'Syntax: IM:AddTokenizableCommand("slashKey"[, "behavesLikeCommand"])', 2)
 	assert(type(_G['SLASH_' .. slashKey .. '1']) == 'string', 'Invalid slash command key %q', 2, slashKey)
-	assert(commandType[behavesLikeCommand], 'Unrecognized behaves-like command %q', 2, behavesLikeCommand)
+	assert((commandType[behavesLikeCommand] or -1) >= 0, 'Unrecognized behaves-like command %q', 2, behavesLikeCommand)
 	addCommandType(slashKey, commandType[behavesLikeCommand])
 	AB:NotifyObservers("imptext")
 end
@@ -751,7 +767,7 @@ function IM:SetMountPreference(groundSpellID, flyingSpellID, dragonSpellID)
 	return setMountPreference(groundSpellID, flyingSpellID, dragonSpellID)
 end
 
-AB:_RegisterModule("Imp", {
+AB:RegisterModule("Imp", {
 	compatible=function(_, maj, rev)
 		if maj == MAJ and (rev == nil or rev <= REV) then
 			return IM

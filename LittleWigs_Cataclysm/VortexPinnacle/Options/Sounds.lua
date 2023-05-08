@@ -1,7 +1,7 @@
 
 BigWigs:AddSounds("Grand Vizier Ertan", {
-	[-2422] = "info",
 	[86292] = {"alert","info","long","underyou"},
+	[413151] = "info",
 	[413562] = "alarm",
 })
 
@@ -23,7 +23,7 @@ BigWigs:AddSounds("Asaad", {
 })
 
 BigWigs:AddSounds("The Vortex Pinnacle Trash", {
-	[87759] = "alarm",
+	[87761] = "alert",
 	[87762] = {"alert","warning"},
 	[87772] = "alert",
 	[87779] = "warning",

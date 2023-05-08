@@ -401,7 +401,6 @@ L["You must manually enable either the 'Party Frames' or 'Raid Frames' in Blizza
 
 L["Max Number of Visible Icons"] = "Max Number of Visible Icons"
 L["Set the max number of icons that can be displayed per unit"] = "Set the max number of icons that can be displayed per unit"
-L["Anchored To"] = "Anchored To"
 L["Size"] = "Size"
 L["0: Disable option"] = "0: Disable option"
 L["For double/triple layout, it will limit the number of icons per line"] = "For double/triple layout, it will limit the number of icons per line"

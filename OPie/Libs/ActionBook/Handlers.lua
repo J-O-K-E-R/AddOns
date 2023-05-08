@@ -18,6 +18,13 @@ local lowered = setmetatable({}, {__index=function(t,k)
 	end
 end})
 
+local function NewWidgetName(prefix)
+	local bni, bn = 0 repeat
+		bn, bni = prefix .. bni, bni + 1
+	until GetClickFrame(bn) == nil
+	return bn
+end
+
 if MODERN then -- mount: mount ID
 	local function summonAction(mountID)
 		return "func", C_MountJournal.SummonByID, mountID
@@ -25,9 +32,7 @@ if MODERN then -- mount: mount ID
 	if CLASS == "DRUID" then
 		local clickPrefix do
 			local MOONKIN_FORM = GetSpellInfo(24858)
-			local bni, bn = 0 repeat
-				bn, bni = "AB:M!" .. bni, bni + 1
-			until GetClickFrame(bn) == nil
+			local bn = NewWidgetName("AB:M!")
 			local b = CreateFrame("Button", bn, nil, "SecureActionButtonTemplate")
 			b:SetAttribute("macrotext", "/cancelform [nocombat]")
 			b:SetScript("PreClick", function()
@@ -120,13 +125,16 @@ do -- spell: spell ID + mount spell ID
 		local _, _, _, sid = GetShapeshiftFormInfo(id)
 		return q == sid or q == GetSpellInfo(sid or 0) or (sid and q and ("" .. sid) == q)
 	end
-	local SetSpellBookItem, SetSpellByID do
+	local SetSpellBookItem, SetSpellByID, SetSpellByExactID do
 		if MODERN then
 			function SetSpellBookItem(self, id)
 				return self:SetSpellBookItem(id, BOOKTYPE_SPELL)
 			end
 			function SetSpellByID(self, ...)
 				return self:SetSpellByID(...)
+			end
+			function SetSpellByExactID(self, id)
+				return self:SetSpellByID(id, false, true, true)
 			end
 		else
 			local tr1 = {}
@@ -156,6 +164,7 @@ do -- spell: spell ID + mount spell ID
 			function SetSpellByID(self, ...)
 				return SetRankText(self, (...), self:SetSpellByID(...))
 			end
+			SetSpellByExactID = SetSpellByID
 		end
 	end
 	local getSpellIDFromName = CI_ERA and function(n)
@@ -206,12 +215,14 @@ do -- spell: spell ID + mount spell ID
 		elseif rwCastType == "rewire-alias" or rwCastType == "rewire-escape" then
 			return AB:GetActionSlot("macrotext", SLASH_CAST1 .. " " .. GetSpellInfo(id))
 		else
-			local s0, r0 = GetSpellInfo(id), GetSpellSubtext(id), nil
+			local s0, r0 = GetSpellInfo(id), GetSpellSubtext(id)
 			local o, s = pcall(GetSpellInfo, s0, r0)
 			if laxRank and not (o and s) then
 				o, s = pcall(GetSpellInfo, s0)
 			end
-			if not (o and s and s0) then return end
+			if not (o and s and s0) then
+				return
+			end
 			local r1 = laxRank and r0 or GetSpellSubtext(s0)
 			action = (r0 and r1 ~= r0 and (CF_CLASSIC or FindSpellBookSlotBySpellID(id))) and (s0 .. "(" .. r0 .. ")") or s0
 			id = CF_CLASSIC and select(7, GetSpellInfo(action)) or id
@@ -228,16 +239,19 @@ do -- spell: spell ID + mount spell ID
 		return actionMap[action]
 	end
 	local function describeSpell(q, id, optToken)
-		local name2, _, icon2, rank, name, _, icon = nil, nil, nil, GetSpellSubtext(id), GetSpellInfo(id)
+		local name2, sid2, icon2, rank, name, _, icon, _, _, _, _, icon1 = nil, nil, nil, GetSpellSubtext(id), GetSpellInfo(id)
 		local _, castType = RW:IsSpellCastable(id)
 		local laxRank = CF_CLASSIC and optToken ~= "lock-rank" and "lax-rank"
 		if name and castType ~= "forced-id-cast" then
 			local qRank = (MODERN or q == "list-query" or not laxRank) and rank or nil
-			rank, name2, _, icon2 = GetSpellSubtext(name, rank), GetSpellInfo(name, qRank)
+			rank, name2, _, icon2, _, _, _, sid2 = GetSpellSubtext(name, rank), GetSpellInfo(name, qRank)
+			if MODERN and sid2 and IsPassiveSpell(sid2) then
+				icon, name2, icon2 = icon1 or icon, nil, nil
+			end
 		end
 		local srank = rank and rank ~= "" and (rank ~= GetSpellSubtext(name) or (CF_CLASSIC and rank ~= GetSpellSubtext(name, (rank:gsub("%d+", "1"))))) and " (" .. rank .. ")" or ""
 		local ts, ns = q == "list-query" and srank or "", (laxRank or q == "list-query") and "" or srank
-		return mountMap[id] and L"Mount" or (L"Spell" .. ts), (name2 or name or "?") .. ns, icon2 or icon, nil, SetSpellByID, id
+		return mountMap[id] and L"Mount" or (L"Spell" .. ts), (name2 or name or "?") .. ns, icon2 or icon, nil, SetSpellByExactID, id
 	end
 	AB:RegisterActionType("spell", createSpell, describeSpell, nil, true)
 	if MODERN then -- specials
@@ -328,7 +342,9 @@ do -- item: items ID/inventory slot
 		end
 		local nCharge = GetItemCount(ident, false, true) or 0
 		local usable = nCharge > 0 and (GetItemSpell(ident) == nil or IsUsableItem(ident))
-		local state = (IsCurrentItem(ident) and 1 or 0) + (inRange and 0 or 16) + (slot and IsEquippableItem(ident) and (bag and (purpose == "equip" and 128 or 0) or (slot and 256 or 0)) or 0) + (hasRange and 512 or 0) + (usable and 0 or 1024) + (enabled == 0 and 2048 or 0)
+		local qual = MODERN and ident and (C_TradeSkillUI.GetItemReagentQualityByItemInfo(ident) or C_TradeSkillUI.GetItemCraftedQualityByItemInfo(ident))
+		qual = qual and qual > 0 and qual < 8 and (qual * 16384) or 0
+		local state = (IsCurrentItem(ident) and 1 or 0) + (inRange and 0 or 16) + (slot and IsEquippableItem(ident) and (bag and (purpose == "equip" and 128 or 0) or (slot and 256 or 0)) or 0) + (hasRange and 512 or 0) + (usable and 0 or 1024) + (enabled == 0 and 2048 or 0) + qual
 		return not not (usable and inRange and (cdLen or 0) == 0), state, icon or GetItemIcon(ident), name or ident, nCharge,
 			cdLeft or 0, cdLen or 0, tip, tipArg
 	end
@@ -343,7 +359,9 @@ do -- item: items ID/inventory slot
 		return actionMap[name]
 	end
 	local function describeItem(id)
-		return L"Item", GetItemInfo(id), GetItemIcon(id), nil, GameTooltip.SetItemByID, tonumber(id)
+		local cat, cq = L"Item", MODERN and id and (C_TradeSkillUI.GetItemReagentQualityByItemInfo(id) or C_TradeSkillUI.GetItemCraftedQualityByItemInfo(id))
+		cat = cq and cat .. "|A:Professions-Icon-Quality-Tier" .. cq .. "-Small:0:0:2:0|a" or cat
+		return cat, GetItemInfo(id), GetItemIcon(id), nil, GameTooltip.SetItemByID, tonumber(id)
 	end
 	AB:RegisterActionType("item", createItem, describeItem, {"byName", "forceShow", "onlyEquipped"})
 	function EV.BAG_UPDATE()
@@ -960,6 +978,65 @@ if MODERN then -- toy: item ID, forceShow
 			end
 		end
 	end)
+end
+do -- disenchant: iid
+	local map, DISENCHANT_SID = {}, 13262
+	local DISENCHANT_SN = GetSpellInfo(DISENCHANT_SID)
+	local ICON_PREFIX = "|TInterface/Buttons/UI-GroupLoot-DE-Up:0:0|t "
+	local SLASH_SPELL_TARGET_ITEM1 = '/spelltargetitem' do
+		local wn = NewWidgetName("AB:I!")
+		local w = T.TenSABT(CreateFrame("Button", wn, nil, "SecureActionButtonTemplate"))
+		w:Hide()
+		SecureHandlerWrapScript(w, "OnClick", w, [[return nil, 'post']], [[self:SetAttribute("target-item", nil)]])
+		local er = {u="\\117", ["{"]="\\123", ["}"]="\\125"}
+		local function escape(s)
+			return ("%q"):format(s):gsub('[{u}]', er):sub(2,-2)
+		end
+		w:SetAttribute("RunSlashCmd", ([[-- AB_SPELLTARGET_ITEM_RUN 
+			local cmd, v = ...
+			if cmd == "%s" and v then
+				self:SetAttribute("target-item", v)
+				return "%s"
+			end
+		]]):format(escape(SLASH_SPELL_TARGET_ITEM1), escape(SLASH_CLICK1 .. " " .. wn)))
+		RW:RegisterCommand(SLASH_SPELL_TARGET_ITEM1, true, false, w)
+	end
+	local function disenchantTip(self, iid)
+		self:SetItemByID(iid)
+		self:AddLine(ICON_PREFIX .. DISENCHANT_SN, 0, 1, 0)
+		self:Show()
+	end
+	local function disenchantHint(ident)
+		local count = GetItemCount(ident, false, false, false)
+		local usable = IsPlayerSpell(DISENCHANT_SID) and count > 0
+		local name = GetItemInfo(ident)
+		local qual = MODERN and ident and (C_TradeSkillUI.GetItemReagentQualityByItemInfo(ident) or C_TradeSkillUI.GetItemCraftedQualityByItemInfo(ident))
+		qual = qual and qual > 0 and qual < 8 and (qual * 16384) or 0
+		local time, cdStart, cdLength = GetTime(), GetSpellCooldown(DISENCHANT_SID)
+		local cdLeft = (cdStart or 0) > 0 and (cdStart + cdLength - time) or 0
+		local state = (IsCurrentItem(ident) and 1 or 0) + (usable and 0 or 1024) + qual + 131072
+		local disName = ICON_PREFIX .. (name or ("item:" .. ident))
+		return not not (usable and (cdLength or 0) == 0), state, GetItemIcon(ident), disName, count,
+			cdLeft or 0, cdLength or 0, disenchantTip, ident
+	end
+	local function createDisenchant(iid)
+		if not (IsPlayerSpell(13262) and type(iid) == "number" and GetItemCount(iid) > 0) then
+			return
+		end
+		local mid = map[iid]
+		if not mid then
+			local macrotext = ("%s\n%s [@none] spell:%d\n%s item:%d\n%1$s"):format(SLASH_STOPSPELLTARGET1, SLASH_CAST1, DISENCHANT_SID, SLASH_SPELL_TARGET_ITEM1, iid)
+			mid = AB:CreateActionSlot(disenchantHint, iid, "recall", RW:seclib(), "RunMacro", macrotext)
+			map[iid] = mid
+		end
+		return mid
+	end
+	local function describeDisenchant(iid)
+		if type(iid) ~= "number" then return end
+		local icon, name = GetItemIcon(iid), GetItemInfo(iid)
+		return DISENCHANT_SN, name or ("item:" .. iid), icon, nil, disenchantTip, iid
+	end
+	AB:RegisterActionType("disenchant", createDisenchant, describeDisenchant)
 end
 
 if MODERN then -- Profession /cast alias: work around incorrectly inferred ranks

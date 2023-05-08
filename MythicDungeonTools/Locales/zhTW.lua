@@ -226,8 +226,7 @@ after this pull]=] ] = [=[這波拉怪後
 L["Bracken Warscourge"] = "Bracken Warscourge"
 --[[Translation missing --]]
 L["Brackenhide Shaper"] = "Brackenhide Shaper"
---[[Translation missing --]]
-L["BrackenhideHollow"] = "Brackenhide Hollow"
+L["BrackenhideHollow"] = "蕨皮谷"
 --[[Translation missing --]]
 L["Brain of Yogg-Saron"] = "Brain of Yogg-Saron"
 L["Brawling Patron"] = "打架的顾客"
@@ -261,8 +260,7 @@ L["Cathedral of Eternal Night"] = "永夜聖殿"
 --[[Translation missing --]]
 L["Chamber Overseer"] = "Chamber Overseer"
 L["Chamber Sentinel"] = "大厅哨兵"
---[[Translation missing --]]
-L["ChamberOfFlames"] = "Chamber of Flames"
+L["ChamberOfFlames"] = "烈焰之室"
 L["Champion Druna"] = "勇士德鲁娜"
 --[[Translation missing --]]
 L["Champion of Hodir"] = "Champion of Hodir"
@@ -759,16 +757,14 @@ L["Hadal Darkfathom"] = "哈达尔·黑渊"
 L["Hakkar the Soulflayer"] = "夺灵者哈卡"
 L["Halkias"] = "哈尔吉亚斯"
 L["Hall of the Moon"] = "月之殿堂"
---[[Translation missing --]]
-L["HallOfTheKeepers"] = "Hall of the Keepers"
+L["HallOfTheKeepers"] = "守衛者大廳"
 L["Halls of Atonement"] = "贖罪之殿"
 L["Halls of Valor"] = "英靈殿"
 L["Halls of Valor Sublevel"] = "英靈殿"
 L["HallsOfAtonementFloor1"] = "贖罪之殿"
 L["HallsOfAtonementFloor2"] = "痛苦中殿"
 L["HallsOfAtonementFloor3"] = "靈魂聖所"
---[[Translation missing --]]
-L["HallsOfInfusion"] = "Halls of Infusion"
+L["HallsOfInfusion"] = "灌注迴廊"
 L["Harbaron"] = "哈布隆"
 --[[Translation missing --]]
 L["Hardened Iron Golem"] = "Hardened Iron Golem"
@@ -859,10 +855,9 @@ L["Infused Pyromancer"] = "灌魔炎术士"
 L["Infused Quill-feather"] = "注能的羽翎"
 --[[Translation missing --]]
 L["Infused Whelp"] = "Infused Whelp"
---[[Translation missing --]]
-L["InfusersRotunda"] = "Infuser's Rotunda"
+L["InfusersRotunda"] = "灌注者圓形大廳"
 L["Infusion Chambers"] = "注入之廳"
-L["InfusionChamber"] = "注入之廳"
+L["InfusionChamber"] = "灌注室"
 L["Ingra Maloch"] = "英格拉·马洛克"
 L["Inquisitor Sigar"] = "审判官西加尔"
 L["Inquisitor Tormentorum"] = "审判官托蒙托鲁姆"
@@ -1126,8 +1121,7 @@ L["Nefarious Darkspeaker"] = "卑劣的暗语者"
 L["Nekthara the Mangler"] = "裂伤者耐克萨拉"
 L["Neltharion's Lair"] = "奈薩里奧巢穴"
 L["Neltharion's Lair Sublevel"] = "奈薩里奧巢穴"
---[[Translation missing --]]
-L["Neltharus"] = "Neltharus"
+L["Neltharus"] = "奈薩魯斯堡"
 --[[Translation missing --]]
 L["Ner'zhul"] = "Ner'zhul"
 L["Netherspace"] = "虛空空間"
@@ -1813,8 +1807,7 @@ L["TheaterOfPainFloor3"] = "痛苦祭壇"
 L["TheaterOfPainFloor4"] = "血肉戮穴上層"
 L["TheaterOfPainFloor5"] = "血肉戮穴下層"
 L["TheAzureVault"] = "蒼藍密庫"
---[[Translation missing --]]
-L["TheBurningCauldron"] = "The Burning Cauldron"
+L["TheBurningCauldron"] = "燃燒大鍋"
 --[[Translation missing --]]
 L["TheHeadteachersEnclave"] = "The Headteacher's Enclave"
 L["TheNecroticWakeFloor1"] = "死靈戰地"
@@ -1823,8 +1816,7 @@ L["TheNecroticWakeFloor3"] = "佐拉慕斯"
 L["TheNokhudOffensive"] = "諾庫德進攻據點"
 L["ThePitch"] = "運動場"
 L["TheScrollkeepersSanctum"] = "藏卷閣"
---[[Translation missing --]]
-L["TheVaultOfTyr"] = "The Vault of Tyr"
+L["TheVaultOfTyr"] = "提爾寶庫"
 L["Thistle Acolyte"] = "棘刺助祭"
 --[[Translation missing --]]
 L["Thorim"] = "Thorim"
@@ -1891,8 +1883,7 @@ L["Ukhel Deathspeaker"] = "Ukhel Deathspeaker"
 --[[Translation missing --]]
 L["Ukhel Willcrusher"] = "Ukhel Willcrusher"
 L["Ularogg Cragshaper"] = "乌拉罗格·塑山"
---[[Translation missing --]]
-L["UldamanLegacyOfTyr"] = "Uldaman: Legacy of Tyr"
+L["UldamanLegacyOfTyr"] = "奧達曼：提爾的遺產"
 --[[Translation missing --]]
 L["Ulduar"] = "Ulduar"
 L["Umbral War-Adept"] = "暗影战争精锐"
@@ -2001,8 +1992,7 @@ L["Volatile Sapling"] = "Volatile Sapling"
 L["Volcanic"] = "火山"
 L["Vol'kaal"] = "沃卡尔"
 L["Vol'zith the Whisperer"] = "低语者沃尔兹斯"
---[[Translation missing --]]
-L["VortexPinnacle"] = "Vortex Pinnacle"
+L["VortexPinnacle"] = "漩渦尖塔"
 L["Vy Relic"] = "维型圣物"
 L["Wandering Shellback"] = "游荡的硬壳龟"
 L["Wanton Sapper"] = "暴虐的工兵"

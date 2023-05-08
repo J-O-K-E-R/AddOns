@@ -1934,6 +1934,101 @@ GTFO.SpellID["406233"] = {
   sound = 3;
 };
 
+GTFO.SpellID["401510"] = {
+  --desc = "Shadowflame Fissure (Rashok)";
+  sound = 3;
+};
+
+GTFO.SpellID["403543"] = {
+  --desc = "Lava Wave (Rashok)";
+  sound = 3;
+};
+
+GTFO.SpellID["406333"] = {
+  --desc = "Shadowlava Blast (Rashok)";
+  sound = 3;
+};
+
+GTFO.SpellID["409233"] = {
+  --desc = "Ground Rupture (Colossal Draconic Golem)";
+  sound = 3;
+};
+
+GTFO.SpellID["405439"] = {
+  --desc = "Tactical Destruction (Zskarn) - Near";
+  sound = 3;
+};
+
+GTFO.SpellID["406206"] = {
+  --desc = "Tactical Destruction (Zskarn) - Far";
+  sound = 3;
+};
+
+GTFO.SpellID["406207"] = {
+  --desc = "Tactical Destruction (Zskarn) - Wherever you are";
+  sound = 3;
+};
+
+GTFO.SpellID["411223"] = {
+  --desc = "Molten Cinders (Djaradin Lavamancer)";
+  sound = 3;
+  applicationOnly = true;
+};
+
+GTFO.SpellID["406936"] = {
+  --desc = "Lava Burst (Djaradin Skullcrusher)";
+  sound = 3;
+};
+
+GTFO.SpellID["409931"] = {
+  --desc = "Finishing Strike (Djaradin Commander)";
+  sound = 3;
+  tankSound = 0;
+};
+
+GTFO.SpellID["406976"] = {
+  --desc = "Arbalest Fire (Warlord Kagni)";
+  sound = 3;
+};
+
+GTFO.SpellID["400450"] = {
+  --desc = "Cave Rubble (Warlord Kagni)";
+  sound = 3;
+};
+
+GTFO.SpellID["398938"] = {
+  --desc = "Devastating Leap (Warlord Kagni)";
+  sound = 3;
+};
+
+GTFO.SpellID["408873"] = {
+  --desc = "Heavy Cudgel (Warlord Kagni)";
+  sound = 3;
+  tankSound = 0;
+};
+
+GTFO.SpellID["401452"] = {
+  --desc = "Blazing Spear (Warlord Kagni) - Targetted";
+  soundFunction = function() -- Warn only if you get hit more than once
+	GTFO_AddEvent("SpearTarget", 10);
+	return 0;
+  end;
+  applicationOnly = true;
+};
+
+GTFO.SpellID["401407"] = {
+  --desc = "Blazing Spear (Warlord Kagni) - First Hit";
+  ignoreEvent = "SpearTarget";
+  sound = 3;
+  applicationOnly = true;
+};
+
+GTFO.SpellID["401119"] = {
+  --desc = "Blazing Spear (Warlord Kagni) - Final Hit";
+  sound = 3;
+};
+
+
 
 end
 

@@ -1876,3 +1876,8 @@ Change Log:
 5.1.1
 * Added Dragonflight spells for Vault of the Incarnates
 * Added Dragonflight spells for Aberrus, the Shadowed Crucible
+
+5.1.2
+* Updated for patch 10.1.0
+* Added WoD spells for Grimrail Depot
+* Added Dragonflight spells for Aberrus, the Shadowed Crucible

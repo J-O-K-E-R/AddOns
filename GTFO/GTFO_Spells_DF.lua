@@ -998,6 +998,16 @@ GTFO.SpellID["405457"] = {
   sound = 4;
 };
 
+GTFO.SpellID["406321"] = {
+  --desc = "Lava Vortex (Rashok)";
+  sound = 1;
+};
+
+GTFO.SpellID["405462"] = {
+  --desc = "Dragonfire Traps (Zskarn)";
+  applicationOnly = true;
+  sound = 1;
+};
 
 end
 

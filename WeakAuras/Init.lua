@@ -297,8 +297,8 @@ WeakAuras.normalWidth = 1.3
 WeakAuras.halfWidth = WeakAuras.normalWidth / 2
 WeakAuras.doubleWidth = WeakAuras.normalWidth * 2
 local versionStringFromToc = GetAddOnMetadata("WeakAuras", "Version")
-local versionString = "5.5.1"
-local buildTime = "20230502154827"
+local versionString = "5.5.2"
+local buildTime = "20230504020050"
 
 local flavorFromToc = GetAddOnMetadata("WeakAuras", "X-Flavor")
 local flavorFromTocToNumber = {
@@ -310,7 +310,7 @@ local flavorFromTocToNumber = {
 local flavor = flavorFromTocToNumber[flavorFromToc]
 
 --[==[@debug@
-if versionStringFromToc == "5.5.1" then
+if versionStringFromToc == "5.5.2" then
   versionStringFromToc = "Dev"
   buildTime = "Dev"
 end
@@ -388,6 +388,7 @@ do
       text = AddonName,
       icon = "Interface\\AddOns\\WeakAuras\\Media\\Textures\\icon.blp",
       registerForAnyClick = true,
+      notCheckable = true,
       func = function(btn, arg1, arg2, checked, mouseButton)
         if mouseButton == "LeftButton" then
           if IsShiftKeyDown() then

@@ -4,7 +4,7 @@ local COMPAT = select(4,GetBuildInfo())
 local MODERN, CF_WRATH = COMPAT >= 10e4, COMPAT < 10e4 and COMPAT >= 3e4
 local MODERN_CONTAINERS = MODERN or C_Container and C_Container.GetContainerNumSlots
 
-local exclude, questItems, IsQuestItem = PC:RegisterPVar("AutoQuestExclude", {}), {}
+local exclude, questItems, IsQuestItem, disItems = PC:RegisterPVar("AutoQuestExclude", {}), {}
 local function GetContainerItemQuestInfo(bag, slot)
 	if MODERN_CONTAINERS then
 		local iqi = C_Container.GetContainerItemQuestInfo(bag, slot)
@@ -21,15 +21,32 @@ if MODERN then
 		local q = C_QuestLog.IsOnQuest
 		return q(66805) or q(66133)
 	end
+	local function have15(iid)
+		return GetItemCount(iid) >= 15
+	end
 	local include = {
 		[33634]=true, [35797]=true, [37888]=true, [37860]=true, [37859]=true, [37815]=true, [46847]=true, [47030]=true, [39213]=true, [42986]=true, [49278]=true,
 		[86425]={31332, 31333, 31334, 31335, 31336, 31337}, [90006]=true, [86536]=true, [86534]=true,
 		[180008]=-60609, [180009]=-60609, [180170]=-60649,
 		[174464]=true, [168035]=true,
 		[191251]=isOnKeysOfLoyalty, [202096]=isInPrimalistFutureScenario, [203478]=isInPrimalistFutureScenario,
+		[202670]=true, [202171]=true, [204075]=have15, [204076]=have15, [204078]=have15, [204077]=have15, [205254]=true,
+	}
+	local includeSpell = {
+		[GetSpellInfo(375806) or 0]=true,
+		[GetSpellInfo(411602) or 0]=true,
+		[GetSpellInfo(409074) or 0]=true,
+		[GetSpellInfo(409490) or 0]=true,
+		[GetSpellInfo(409643) or 0]=true,
+	}
+	includeSpell[0] = nil
+	disItems = {
+		[198798]=1, [198800]=1, [201359]=1, [198675]=1, [198694]=1, [198689]=1, [198799]=1, [201358]=1,
+		[201356]=1, [201357]=1, [201360]=1, [204990]=1, [205001]=1, [204999]=1,
 	}
 	function IsQuestItem(iid, bag, slot)
 		if exclude[iid] then return false end
+		if disItems[iid] then return true, false end
 		local inc, isQuest, startQuestId, isQuestActive = include[iid], GetContainerItemQuestInfo(bag, slot)
 		isQuest = iid and ((isQuest and GetItemSpell(iid)) or (inc == true) or (startQuestId and not isQuestActive and not C_QuestLog.IsQuestFlaggedCompleted(startQuestId)))
 		local tinc = inc and not isQuest and type(inc)
@@ -45,6 +62,10 @@ if MODERN then
 					return false
 				end
 			end
+		end
+		if inc == nil and not isQuest then
+			local isn, isid = GetItemSpell(iid)
+			isQuest, startQuestId = isid and includeSpell[isn] and IsUsableSpell(isid), false
 		end
 		return isQuest, startQuestId and not isQuestActive
 	end
@@ -137,16 +158,29 @@ local function syncRing(_, _, upId)
 	if upId ~= colId then return end
 	changed, current = false, (ctok + 1) % 2
 	
+	local za = C_ZoneAbility and C_ZoneAbility.GetActiveAbilities()
+	for i=1, za and #za or 0 do
+		local ai = za[i]
+		local asid = ai and ai.spellID
+		if asid and not IsPassiveSpell(asid) then
+			local tok = "OPieBundleQuestZA" .. ai.spellID
+			if not inring[tok] then
+				collection[#collection+1], collection[tok], changed = tok, AB:GetActionSlot("spell", asid), true
+			end
+			inring[tok] = current
+		end
+	end
+
 	local ns = MODERN_CONTAINERS and C_Container.GetContainerNumSlots or GetContainerNumSlots
 	local giid = MODERN_CONTAINERS and C_Container.GetContainerItemID or GetContainerItemID
 	for bag=0,4 do
 		for slot=1, ns(bag) do
 			local iid = giid(bag, slot)
-			local isQuest, startsQuestMark = IsQuestItem(iid, bag, slot)
-			if isQuest then
+			local include, startsQuestMark = IsQuestItem(iid, bag, slot)
+			if include then
 				local tok = "OPieBundleQuest" .. iid
 				if not inring[tok] then
-					collection[#collection+1], collection[tok], changed = tok, AB:GetActionSlot("item", iid), true
+					collection[#collection+1], collection[tok], changed = tok, AB:GetActionSlot(disItems and disItems[iid] and "disenchant" or "item", iid), true
 				end
 				ORI:SetQuestHint(tok, startsQuestMark)
 				inring[tok] = current

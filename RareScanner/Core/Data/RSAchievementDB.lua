@@ -16,8 +16,8 @@ local RSUtils = private.ImportLib("RareScannerUtils")
 
 local cachedAchievements = {}
 
-local function IsAchievementCompleted(achievementID, entityID)
-	if (cachedAchievements[achievementID] and cachedAchievements[achievementID][entityID]) then
+local function IsAchievementCompleted(achievementID, entityID, isContainer)
+	if (cachedAchievements[achievementID] and (cachedAchievements[achievementID][entityID] or isContainer)) then
 		return false
 	end
 
@@ -26,15 +26,17 @@ local function IsAchievementCompleted(achievementID, entityID)
 		cachedAchievements[achievementID] = {}
 		cachedAchievements[achievementID].icon = icon
 		cachedAchievements[achievementID].link = GetAchievementLink(achievementID)
-		for i = GetAchievementNumCriteria(achievementID), 1, -1 do
-			local _, _, completed, _, _, _, _, assetID, _, _, _, _, _ = GetAchievementCriteriaInfo(achievementID, i)
-			if (not completed) then
-				cachedAchievements[achievementID][assetID] = true
+		if (not isContainer) then
+			for i = GetAchievementNumCriteria(achievementID), 1, -1 do
+				local _, _, completed, _, _, _, _, assetID, _, _, _, _, _ = GetAchievementCriteriaInfo(achievementID, i)
+				if (not completed) then
+					cachedAchievements[achievementID][assetID] = true
+				end
 			end
 		end
 	end
 	
-	if (cachedAchievements[achievementID] and cachedAchievements[achievementID][entityID]) then
+	if (cachedAchievements[achievementID] and (cachedAchievements[achievementID][entityID] or isContainer)) then
 		return false;
 	end
  	
@@ -49,12 +51,12 @@ function RSAchievementDB.GetCachedAchievementInfo(achievementID)
 	return nil
 end
 
-function RSAchievementDB.GetNotCompletedAchievementIDsByMap(entityID, mapID)
+function RSAchievementDB.GetNotCompletedAchievementIDsByMap(entityID, mapID, isContainer)
 	if (mapID and entityID and private.ACHIEVEMENT_ZONE_IDS[mapID]) then
 		local achievementIDs = { }
 		for _, achievementID in ipairs(private.ACHIEVEMENT_ZONE_IDS[mapID]) do
 			if (RSUtils.Contains(private.ACHIEVEMENT_TARGET_IDS[achievementID], entityID)) then
-				if (not IsAchievementCompleted(achievementID, entityID)) then
+				if (not IsAchievementCompleted(achievementID, entityID, isContainer)) then
 					tinsert(achievementIDs, achievementID);
 				end
 			end

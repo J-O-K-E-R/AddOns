@@ -99,11 +99,12 @@ local function IsInShadowlands()
 	local mapID = C_Map and C_Map.GetBestMapForUnit("player")
 	if mapID then
 		local mapInfo = C_Map.GetMapInfo(mapID)
-		while mapInfo.mapType > 2 do
-			mapID = mapInfo.parentMapID
-			mapInfo =  C_Map.GetMapInfo(mapID)
+		while mapInfo do
+			if mapInfo.mapType == 2 then
+				return mapInfo.mapID == 1550
+			end
+			mapInfo = C_Map.GetMapInfo(mapInfo.parentMapID)
 		end
-		return mapID == 1550
 	end
 end
 

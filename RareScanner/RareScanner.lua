@@ -399,7 +399,7 @@ function scanner_button:DetectedNewVignette(self, vignetteInfo, isNavigating)
 		vignetteInfo.atlasName = RSConstants.NPC_VIGNETTE
 		entityID = rareNpcID
 		vignetteInfo.preEvent = true
-	elseif (entityID == RSConstants.FORBIDDEN_REACH_ANCESTRAL_SPIRIT and RSNpcDB.GetNpcId(vignetteInfo.name, mapID)) then
+	elseif ((entityID == RSConstants.FORBIDDEN_REACH_ANCESTRAL_SPIRIT or entityID == RSConstants.ZARALEK_CAVERN_LOAM_SCOUT) and RSNpcDB.GetNpcId(vignetteInfo.name, mapID)) then
 		local rareNpcID = RSNpcDB.GetNpcId(vignetteInfo.name, mapID)
 		RSGeneralDB.RemoveAlreadyFoundEntity(entityID)
 		vignetteInfo.name = RSNpcDB.GetNpcName(rareNpcID)
@@ -633,6 +633,12 @@ function scanner_button:DetectedNewVignette(self, vignetteInfo, isNavigating)
 		end
 	-- extra checkings for events
 	elseif (RSConstants.IsEventAtlas(vignetteInfo.atlasName)) then
+		-- ignore events with Zaralek cavern horn if not in Zaralek
+		if (vignetteInfo.atlasName == RSConstants.EVENT_ZARALEK_CAVERN and mapID and mapID ~= RSConstants.ZARALEK_CAVERN) then
+			RSLogger:PrintDebugMessage(string.format("El evento [%s] se ignora porque tiene el atlas [%s] y no esta en Zaralek Cavern", entityID, vignetteInfo.atlasName))
+			return
+		end
+		
 		-- check just in case its an NPC
 		if (not RSNpcDB.GetNpcName(entityID)) then
 			RSEventDB.SetEventName(entityID, vignetteInfo.name)
@@ -873,10 +879,10 @@ function scanner_button:ShowButton()
 			macrotext = string.format("%s\n/tm %s", macrotext, RSConfigDB.GetMarkerOnTarget())
 		end
 
-		macrotext = string.format("%s\n/rarescanner %s;%s;%s;%s;%s",macrotext, RSConstants.CMD_TOMTOM_WAYPOINT, mapID, self.x, self.y, self.name)
+		macrotext = string.format("%s\n/rarescanner %s;%s;%s;%s;%s", macrotext, RSConstants.CMD_TOMTOM_WAYPOINT, mapID, self.x, self.y, self.name)
 		
 		if (RSConfigDB.IsShowingAnimationForNpcs() and RSConfigDB.GetAnimationForNpcs() ~= RSConstants.MAP_ANIMATIONS_ON_FOUND) then
-			macrotext = string.format("%s\n/rarescanner %s;%s",macrotext, RSConstants.CMD_RECENTLY_SEEN, self.npcID, mapID, self.x, self.y)
+			macrotext = string.format("%s\n/rarescanner %s;%s", macrotext, RSConstants.CMD_RECENTLY_SEEN, self.npcID, mapID, self.x, self.y)
 		end
 		self:SetAttribute("macrotext", macrotext)
 
@@ -892,9 +898,12 @@ function scanner_button:ShowButton()
 		
 		local macrotext = string.format("\n/rarescanner %s;%s;%s;%s;%s", RSConstants.CMD_TOMTOM_WAYPOINT, mapID, self.x, self.y, self.name)
 		
-		if ((RSConstants.IsContainerAtlas(self.atlasName) and RSConfigDB.IsShowingAnimationForContainers() and RSConfigDB.GetAnimationForContainers() ~= RSConstants.MAP_ANIMATIONS_ON_FOUND) or
-				(RSConstants.IsEventAtlas(self.atlasName) and RSConfigDB.IsShowingAnimationForEvents() and RSConfigDB.GetAnimationForEvents() ~= RSConstants.MAP_ANIMATIONS_ON_FOUND)) then
-			macrotext = string.format("%s\n/rarescanner %s;%s;%s;%s;%s",macrotext, RSConstants.CMD_RECENTLY_SEEN, self.npcID, mapID, self.x, self.y)
+		-- Set animation on containers
+		if (RSConstants.IsContainerAtlas(self.atlasName) and RSConfigDB.IsShowingAnimationForContainers() and RSConfigDB.GetAnimationForContainers() ~= RSConstants.MAP_ANIMATIONS_ON_FOUND) then
+			macrotext = string.format("%s\n/rarescanner %s;%s;%s;%s;%s", macrotext, RSConstants.CMD_RECENTLY_SEEN, self.npcID, mapID, self.x, self.y)
+		-- Set animation on events
+		elseif (RSConstants.IsEventAtlas(self.atlasName) and RSConfigDB.IsShowingAnimationForEvents() and RSConfigDB.GetAnimationForEvents() ~= RSConstants.MAP_ANIMATIONS_ON_FOUND) then
+			macrotext = string.format("%s\n/rarescanner %s;%s", macrotext, RSConstants.CMD_RECENTLY_SEEN, self.npcID)
 		end
 		
 		self:SetAttribute("macrotext", macrotext)
