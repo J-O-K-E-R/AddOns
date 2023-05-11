@@ -13,7 +13,7 @@ BigWigs:AddSounds("Bromach", {
 	[369605] = "long",
 	[369660] = "info",
 	[369675] = "alert",
-	[369700] = "alert",
+	[369700] = "info",
 	[369703] = "alarm",
 	[369754] = "alert",
 })
@@ -42,6 +42,8 @@ BigWigs:AddSounds("Chrono-Lord Deios", {
 })
 
 BigWigs:AddSounds("Uldaman: Legacy of Tyr Trash", {
+	[369328] = "long",
+	[369335] = "alarm",
 	[369337] = "underyou",
 	[369365] = {"alert","warning"},
 	[369366] = "alarm",
@@ -51,7 +53,7 @@ BigWigs:AddSounds("Uldaman: Legacy of Tyr Trash", {
 	[369811] = "alarm",
 	[369823] = {"alert","warning"},
 	[377500] = "alert",
-	[381593] = "alert",
+	[381593] = "alarm",
 	[382578] = "alarm",
 	[386104] = "info",
 })

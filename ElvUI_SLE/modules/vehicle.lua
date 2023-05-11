@@ -1,4 +1,4 @@
-local SLE, _, E, L = unpack(select(2, ...))
+local SLE, T, E, L, V, P, G = unpack(ElvUI_SLE)
 local DVB = SLE.DedicatedVehicleBar
 local AB = E.ActionBars
 local LAB = E.Libs.LAB
@@ -22,7 +22,7 @@ DVB.barDefaults = {
 	vehicle = {
 		page = 1,
 		bindButtons = 'ACTIONBUTTON',
-		conditions = format('[overridebar] %d; [vehicleui] %d; [possessbar] %d; [shapeshift] 13;', GetOverrideBarIndex(), GetVehicleBarIndex(), GetVehicleBarIndex()),
+		conditions = format('[vehicleui][possessbar] %d; [overridebar] %d; [shapeshift] %d;', GetVehicleBarIndex(), GetOverrideBarIndex(), GetTempShapeshiftBarIndex()),
 		position = 'BOTTOM,ElvUIParent,BOTTOM,0,34',
 	}
 }
@@ -170,7 +170,7 @@ function DVB:PositionAndSizeBar()
 	AB:HandleBackdropMultiplier(bar, backdropSpacing, buttonSpacing, db.widthMult, db.heightMult, anchorUp, anchorLeft, horizontal, lastShownButton, anchorRowButton)
 	AB:HandleBackdropMover(bar, backdropSpacing)
 
-	local page = format('[overridebar] %d; [vehicleui][possessbar] %d; [bonusbar:5] 11; [shapeshift] %d;', GetOverrideBarIndex(), GetVehicleBarIndex(), GetTempShapeshiftBarIndex())
+	local page = format('[vehicleui][possessbar] %d; [overridebar] %d; [bonusbar:5] 11; [shapeshift] %d;', GetVehicleBarIndex(), GetOverrideBarIndex(), GetTempShapeshiftBarIndex())
 	RegisterStateDriver(bar, 'page', page)
 
 	local visibility = format('[petbattle] hide; [vehicleui][overridebar][shapeshift][possessbar]%s show; hide', db.dragonRiding and '[bonusbar:5]' or '')
@@ -221,7 +221,7 @@ function DVB:CreateBar()
 
 	for i = 1, 7 do
 		local index = (i == 7) and 12 or i
-		local button = LAB:CreateButton(index, format(bar:GetName()..'Button%d', index), bar, nil)
+		local button = LAB:CreateButton(index, format(bar:GetName()..'Button%d', index), bar)
 		bar.buttons[i] = button
 		button:SetState(0, 'action', index)
 
@@ -289,13 +289,41 @@ function DVB:UpdateButtonSettings()
 	-- end
 end
 
+local buttonDefaults = {
+	hideElements = {},
+	colors = {},
+	text = {
+		hotkey = { font = {}, color = {}, position = {} },
+		count = { font = {}, color = {}, position = {} },
+		macro = { font = {}, color = {}, position = {} },
+	},
+}
+
 function DVB:UpdateButtonConfig(barName)
 	local barDB = DVB.db[barName]
 	local bar = DVB.handledBars[barName]
 
-	if not bar.buttonConfig then bar.buttonConfig = { hideElements = {}, colors = {} } end
+	if not bar.buttonConfig then bar.buttonConfig = E:CopyTable({}, buttonDefaults) end
+	local text = bar.buttonConfig.text
 
+	do -- macro text
+		text.macro.font.font = E.Libs.LSM:Fetch('font', barDB and barDB.macroFont or AB.db.font)
+		text.macro.font.size = barDB and barDB.macroFontSize or AB.db.fontSize
+		text.macro.font.flags = barDB and barDB.macroFontOutline or AB.db.font
+		text.macro.position.anchor = barDB and barDB.macroTextPosition or 'BOTTOM'
+		text.macro.position.relAnchor = false
+		text.macro.position.offsetX = barDB and barDB.macroTextXOffset or 0
+		text.macro.position.offsetY = barDB and barDB.macroTextYOffset or 1
+		text.macro.justifyH = AB:GetTextJustify(text.macro.position.anchor)
+
+		local c = db and db.useMacroColor and db.macroColor or AB.db.fontColor
+		text.macro.color = { c.r, c.g, c.b }
+	end
+
+	-- bar.buttonConfig.hideElements.count = not barDB.counttext
+	bar.buttonConfig.hideElements.macro = not barDB.macrotext
 	bar.buttonConfig.hideElements.hotkey = not barDB.hotkeytext
+
 	bar.buttonConfig.showGrid = barDB.showGrid
 	bar.buttonConfig.clickOnDown = GetCVarBool('ActionButtonUseKeyDown')
 	bar.buttonConfig.outOfRangeColoring = (AB.db.useRangeColorText and 'hotkey') or 'button'

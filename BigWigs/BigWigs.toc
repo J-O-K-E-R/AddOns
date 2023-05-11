@@ -14,7 +14,7 @@
 ## Notes-ptBR: Abordagem modular, leve e não intrusiva para avisos em encontros com chefes.
 ## IconTexture: Interface\AddOns\BigWigs\Media\Icons\core-enabled
 ## Author: Funkydude, Nebula, Elvador, Justwait
-## Version: v271.1
+## Version: v275
 
 ## X-Category: Raid
 ## X-License: All Rights Reserved: You are free to fork and modify on GitHub, please ask us about anything else.

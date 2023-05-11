@@ -1268,6 +1268,10 @@ L["Show Loss of Control"] = "제어 상실 표시"
 --[[Translation missing --]]
 L["Show On"] = "Show On"
 --[[Translation missing --]]
+L["Show Override"] = "Show Override"
+--[[Translation missing --]]
+L["Show Override Spell"] = "Show Override Spell"
+--[[Translation missing --]]
 L["Show Rested Overlay"] = "Show Rested Overlay"
 L["Shrink"] = "축소"
 L["Silithid Royalty"] = "실리시드 왕실"

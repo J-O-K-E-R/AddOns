@@ -84,7 +84,7 @@ private.NPC_INFO = {
 	[203870] = { zoneID = 0, displayID = 26054 }; --Banechitter <NO TRANSFORM>
 	[203871] = { zoneID = 0, displayID = 108679 }; --Happy Child <STUFFED ANIMAL>
 	[204096] = { zoneID = 0, displayID = 112110 }; --Shadowforge Mole Machine
-	[204831] = { zoneID = 0, displayID = 109364 }; --Elusive Magma Cobra
+	[204831] = { zoneID = 2133, artID = { 1775 }, x = 4392, y = 4816, overlay = { "4392-4816" }, displayID = 109364 }; --Elusive Magma Cobra
 	[205490] = { zoneID = 0, displayID = 61712 }; --Treasure Goblin
 	[205630] = { zoneID = 0, displayID = 103584 }; --Lost Lunker
 	[205791] = { zoneID = 0 }; --Rupturing Earth

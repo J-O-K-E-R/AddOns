@@ -39,6 +39,7 @@ local Supporters = {
 	COLOR_2.."Qissi|r",
 	-- [3]
 	COLOR_3.."Amenitra|r",
+	COLOR_3.."Mayron|r",
 	COLOR_3.."S9th|r",
 	COLOR_3.."Stormseer|r",
 }
@@ -147,7 +148,7 @@ function Setup.About(self)
 	-- Populate the Discord field.
 	args.Discord = {
 		type = "input",
-		name = "Discord",
+		name = L["Discord"],
 		arg  = self.Discord,
 		order = Order,
 		dialogControl = "SFX-Info-URL",

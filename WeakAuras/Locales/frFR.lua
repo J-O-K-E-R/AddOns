@@ -1446,6 +1446,10 @@ L["Show Incoming Heal"] = "Afficher les Soins en Cours"
 --[[Translation missing --]]
 L["Show Loss of Control"] = "Show Loss of Control"
 L["Show On"] = "Afficher Sur"
+--[[Translation missing --]]
+L["Show Override"] = "Show Override"
+--[[Translation missing --]]
+L["Show Override Spell"] = "Show Override Spell"
 L["Show Rested Overlay"] = "Superposer l'XP en reposé"
 L["Shrink"] = "Rétrécir"
 --[[Translation missing --]]

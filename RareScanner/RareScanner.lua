@@ -460,6 +460,11 @@ function scanner_button:DetectedNewVignette(self, vignetteInfo, isNavigating)
 	if (RSUtils.Contains(RSConstants.NPCS_WITH_CONTAINER_VIGNETTE, entityID)) then
 		vignetteInfo.atlasName = RSConstants.NPC_VIGNETTE
 	end
+	
+	-- These events are tagged with npcs
+	if (RSUtils.Contains(RSConstants.EVENTS_WITH_NPC_VIGNETTE, entityID)) then
+		vignetteInfo.atlasName = RSConstants.EVENT_VIGNETTE
+	end
 
 	-- These containers are tagged with rare NPCs
 	if (entityID == RSConstants.CATACOMBS_CACHE or RSUtils.Contains(RSConstants.CONTAINERS_WITH_NPC_VIGNETTE, entityID)) then
@@ -1364,6 +1369,15 @@ local function UpdateRareNamesDB(currentDbVersion)
 				if (npcInfo and npcInfo.atlasName ~= RSConstants.NPC_VIGNETTE) then
 					npcInfo.atlasName =	RSConstants.NPC_VIGNETTE
 					RSLogger:PrintDebugMessage(string.format("NPC [%s]. Estaba marcado como un evento, Corregido!.", npcID))
+				end
+			end
+			
+			-- Sets already found Events as Events if they were found as NPCs
+			for _, eventID in ipairs (RSConstants.EVENTS_WITH_NPC_VIGNETTE) do
+				local eventInfo = RSGeneralDB.GetAlreadyFoundEntity(eventID)
+				if (eventInfo and eventInfo.atlasName ~= RSConstants.EVENT_VIGNETTE) then
+					eventInfo.atlasName = RSConstants.EVENT_VIGNETTE
+					RSLogger:PrintDebugMessage(string.format("Evento [%s]. Estaba marcado como un rare, Corregido!.", eventID))
 				end
 			end
 			

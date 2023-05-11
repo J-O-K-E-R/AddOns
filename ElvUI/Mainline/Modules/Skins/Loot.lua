@@ -7,7 +7,28 @@ local next, unpack = next, unpack
 local hooksecurefunc = hooksecurefunc
 local CreateFrame = CreateFrame
 
+local C_LootHistory_GetNumItems = C_LootHistory.GetNumItems
 local ITEM_QUALITY_COLORS = ITEM_QUALITY_COLORS
+
+local function UpdateLoots()
+	local numItems = C_LootHistory_GetNumItems()
+	for i=1, numItems do
+		local frame = _G.GroupLootHistoryFrame.itemFrames[i]
+		if frame and not frame.isSkinned then
+			local Icon = frame.Icon:GetTexture()
+			frame:StripTextures()
+			frame.Icon:SetTexture(Icon)
+			frame.Icon:SetTexCoord(unpack(E.TexCoords))
+
+			-- create a backdrop around the icon
+			frame:CreateBackdrop()
+			frame.backdrop:SetOutside(frame.Icon)
+			frame.Icon:SetParent(frame.backdrop)
+
+			frame.isSkinned = true
+		end
+	end
+end
 
 function S:LootFrame()
 	if not (E.private.skins.blizzard.enable and E.private.skins.blizzard.loot) then return end
@@ -15,25 +36,68 @@ function S:LootFrame()
 	local LootFrame = _G.LootFrame
 	LootFrame:StripTextures()
 	LootFrame:SetTemplate('Transparent')
+
+	if LootFrame.Bg then
+		LootFrame.Bg:SetAlpha(0)
+	end
+
 	S:HandleCloseButton(LootFrame.ClosePanelButton)
 
 	hooksecurefunc(LootFrame.ScrollBox, 'Update', function(frame)
 		for _, button in next, { frame.ScrollTarget:GetChildren() } do
 			local item = button.Item
-			if item and not item.backdrop then
-				--item:StripTextures() -- this will also kill the icon
-				S:HandleIcon(item.icon, true)
-				S:HandleIconBorder(item.IconBorder, item.icon.backdrop)
+			if item then
+				if not item.backdrop then
+					item:StyleButton()
+					item.icon:SetInside(item)
+
+					S:HandleIcon(item.icon, true)
+				end
+
+				if item.NormalTexture then item.NormalTexture:SetAlpha(0) end
+				if item.IconBorder then item.IconBorder:SetAlpha(0) end
+
+				if button.Text then -- icon border isn't updated for white/grey so pull color from the name
+					local r, g, b = button.Text:GetVertexColor()
+					item.icon.backdrop:SetBackdropBorderColor(r, g, b)
+				end
 			end
 
-			if button.IconQuestTexture then
-				button.IconQuestTexture:SetAlpha(0)
-				button.BorderFrame:SetAlpha(0)
-				button.HighlightNameFrame:SetAlpha(0)
-				button.PushedNameFrame:SetAlpha(0)
+			if button.NameFrame and not button.NameFrame.backdrop then
+				button.NameFrame:StripTextures()
+				button.NameFrame:CreateBackdrop('Transparent')
+				button.NameFrame.backdrop:SetAllPoints()
+				button.NameFrame.backdrop:SetFrameLevel(2)
 			end
+
+			if button.IconQuestTexture then button.IconQuestTexture:SetAlpha(0) end
+			if button.BorderFrame then button.BorderFrame:SetAlpha(0) end
+			if button.HighlightNameFrame then button.HighlightNameFrame:SetAlpha(0) end
+			if button.PushedNameFrame then button.PushedNameFrame:SetAlpha(0) end
 		end
 	end)
+
+	-- Loot history frame
+	local LootHistoryFrame = _G.GroupLootHistoryFrame
+	LootHistoryFrame:StripTextures()
+	S:HandleCloseButton(LootHistoryFrame.ClosePanelButton)
+	LootHistoryFrame:StripTextures()
+	LootHistoryFrame:SetTemplate('Transparent')
+	LootHistoryFrame.ResizeButton:StripTextures()
+	LootHistoryFrame.ResizeButton.text = LootHistoryFrame.ResizeButton:CreateFontString(nil, 'OVERLAY')
+	LootHistoryFrame.ResizeButton.text:FontTemplate(nil, 16, 'OUTLINE')
+	LootHistoryFrame.ResizeButton.text:SetJustifyH('CENTER')
+	LootHistoryFrame.ResizeButton.text:Point('CENTER', LootHistoryFrame.ResizeButton)
+	LootHistoryFrame.ResizeButton.text:SetText('v v v v')
+	LootHistoryFrame.ResizeButton:SetTemplate()
+	LootHistoryFrame.ResizeButton:Width(LootHistoryFrame:GetWidth())
+	LootHistoryFrame.ResizeButton:Height(19)
+	LootHistoryFrame.ResizeButton:ClearAllPoints()
+	LootHistoryFrame.ResizeButton:Point('TOP', LootHistoryFrame, 'BOTTOM', 0, -2)
+	S:HandleTrimScrollBar(LootHistoryFrame.ScrollBar)
+	S:HandleDropDownBox(LootHistoryFrame.EncounterDropDown)
+
+	hooksecurefunc(_G.LootHistoryFrameMixin, 'DoFullRefresh', UpdateLoots) -- Monitor this, the hook is still to LootHistoryFrame, probably renaming soonish
 
 	-- Master Loot
 	local MasterLooterFrame = _G.MasterLooterFrame

@@ -809,7 +809,6 @@ L["Npc ID"] = "NPC ID"
 L["Number"] = "數字"
 L["Number Affected"] = "被影響的數量"
 L["Object"] = "物件"
---[[Translation missing --]]
 L[ [=[Occurrence of the event, reset when aura is unloaded
 Can be a range of values
 Can have multiple values separated by a comma or a space
@@ -821,19 +820,18 @@ every 2 events: /2
 every 3 events starting from 2nd: 2/3
 every 3 events starting from 2nd and ending at 11th: 2-11/3
 
-Only if BigWigs shows it on it's bar]=] ] = [=[Occurrence of the event, reset when aura is unloaded
-Can be a range of values
-Can have multiple values separated by a comma or a space
+Only if BigWigs shows it on it's bar]=] ] = [=[發生的事件，提醒效果卸載時會重置
+可以是一個範圍的值
+可以有多個值，用逗號或空白分隔
 
-Examples:
-2nd 5th and 6th events: 2, 5, 6
-2nd to 6th: 2-6
-every 2 events: /2
-every 3 events starting from 2nd: 2/3
-every 3 events starting from 2nd and ending at 11th: 2-11/3
+範例:
+第2、第5和第6個事件: 2, 5, 6
+第2到第6個事件: 2-6
+每2個事件: /2
+從第2個開始，每3個事件: 2/3
+從第2個開始到第11個結束，每3個事件: 2-11/3
 
-Only if BigWigs shows it on it's bar]=]
---[[Translation missing --]]
+只有 BigWigs 在它的計時條上面顯示時]=]
 L[ [=[Occurrence of the event, reset when aura is unloaded
 Can be a range of values
 Can have multiple values separated by a comma or a space
@@ -845,18 +843,18 @@ every 2 events: /2
 every 3 events starting from 2nd: 2/3
 every 3 events starting from 2nd and ending at 11th: 2-11/3
 
-Only if DBM shows it on it's bar]=] ] = [=[Occurrence of the event, reset when aura is unloaded
-Can be a range of values
-Can have multiple values separated by a comma or a space
+Only if DBM shows it on it's bar]=] ] = [=[發生的事件，提醒效果卸載時會重置
+可以是一個範圍的值
+可以有多個值，用逗號或空白分隔
 
-Examples:
-2nd 5th and 6th events: 2, 5, 6
-2nd to 6th: 2-6
-every 2 events: /2
-every 3 events starting from 2nd: 2/3
-every 3 events starting from 2nd and ending at 11th: 2-11/3
+範例:
+第2、第5和第6個事件: 2, 5, 6
+第2到第6個事件: 2-6
+每2個事件: /2
+從第2個開始，每3個事件: 2/3
+從第2個開始到第11個結束，每3個事件: 2-11/3
 
-Only if DBM shows it on it's bar]=]
+只有 DBM 在它的計時條上面顯示時]=]
 L["Officer"] = "幹部"
 L["Offset from progress"] = "進度偏移"
 L["Offset Timer"] = "移動時間數字"
@@ -1070,6 +1068,10 @@ L["Show Heal Absorb"] = "顯示治療吸收"
 L["Show Incoming Heal"] = "顯示即將獲得的治療"
 L["Show Loss of Control"] = "顯示被控制"
 L["Show On"] = "顯示於"
+--[[Translation missing --]]
+L["Show Override"] = "Show Override"
+--[[Translation missing --]]
+L["Show Override Spell"] = "Show Override Spell"
 L["Show Rested Overlay"] = "顯示休息加成的疊加圖層"
 L["Shrink"] = "收縮"
 L["Silithid Royalty"] = "異種蠍皇族"

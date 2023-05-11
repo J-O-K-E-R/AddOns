@@ -74,15 +74,25 @@ L["DISABLE_DEBUG_MODE_RELOAD"] = [=[귀하는 디버그 모드를 비활성화�
 L["DPS"] = "|cffFF3636공격전담|r"
 L["DUNGEON_SHORT_NAME_AA"] = "대학"
 L["DUNGEON_SHORT_NAME_AV"] = "하늘빛"
+--[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_BH"] = ""--]] 
 L["DUNGEON_SHORT_NAME_COS"] = "별궁"
 L["DUNGEON_SHORT_NAME_DOS"] = "저편"
+--[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_FH"] = ""--]] 
 L["DUNGEON_SHORT_NAME_GD"] = "정비소"
 L["DUNGEON_SHORT_NAME_GMBT"] = "승부수"
 L["DUNGEON_SHORT_NAME_HOA"] = "속죄"
+--[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_HOI"] = ""--]] 
 L["DUNGEON_SHORT_NAME_HOV"] = "용전"
 L["DUNGEON_SHORT_NAME_ID"] = "선착장"
 L["DUNGEON_SHORT_NAME_LOWR"] = "하층"
 L["DUNGEON_SHORT_NAME_MISTS"] = "티르"
+--[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_NELT"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_NL"] = ""--]] 
 L["DUNGEON_SHORT_NAME_NO"] = "노쿠드"
 L["DUNGEON_SHORT_NAME_NW"] = "죽상"
 L["DUNGEON_SHORT_NAME_PF"] = "역병"
@@ -93,8 +103,14 @@ L["DUNGEON_SHORT_NAME_SOA"] = "승천"
 L["DUNGEON_SHORT_NAME_STRT"] = "거리"
 L["DUNGEON_SHORT_NAME_TJS"] = "옥룡사"
 L["DUNGEON_SHORT_NAME_TOP"] = "투기장"
+--[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_ULD"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_UNDR"] = ""--]] 
 L["DUNGEON_SHORT_NAME_UPPR"] = "상층"
 L["DUNGEON_SHORT_NAME_VOTW"] = "금고"
+--[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_VP"] = ""--]] 
 L["DUNGEON_SHORT_NAME_WORK"] = "작업장"
 L["DUNGEON_SHORT_NAME_YARD"] = "고철장"
 L["ENABLE_AUTO_FRAME_POSITION"] = "내 프로필 프레임 위치 자동화"
@@ -171,6 +187,24 @@ L["PROFILE_BEST_RUNS"] = "던전별 최고 기록"
 --[[Translation missing --]]
 --[[ L["PROFILE_TOOLTIP_ANCHOR_TOOLTIP"] = ""--]] 
 L["PROVIDER_NOT_LOADED"] = "|cffFF0000경고:|r |cffFFFFFF%s|r은(는) 현재 진영에 대한 데이터를 찾을 수 없습니다. |cffFFFFFF/raiderio|r 설정을 확인하고 |cffFFFFFF%s|r에 대한 툴팁 데이터를 활성화하십시오."
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_ATSC_1"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_ATSC_2"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_ATSC_3"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_ATSC_4"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_ATSC_5"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_ATSC_6"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_ATSC_7"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_ATSC_8"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_ATSC_9"] = ""--]] 
 L["RAID_BOSS_CN_1"] = "절규날개"
 L["RAID_BOSS_CN_10"] = "대영주 데나트리우스"
 L["RAID_BOSS_CN_2"] = "사냥꾼 알티모르"

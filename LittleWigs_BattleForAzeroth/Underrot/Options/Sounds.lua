@@ -6,10 +6,10 @@ BigWigs:AddSounds("Elder Leaxa", {
 	[264757] = "alarm",
 })
 
-BigWigs:AddSounds("Infested Crawg", {
+BigWigs:AddSounds("Cragmaw the Infested", {
 	[260292] = "alert",
 	[260333] = "long",
-	[260793] = "warning",
+	[260793] = "alarm",
 })
 
 BigWigs:AddSounds("Sporecaller Zancha", {
@@ -33,16 +33,17 @@ BigWigs:AddSounds("Underrot Trash", {
 	[265089] = "warning",
 	[265091] = {"alarm","alert"},
 	[265433] = "alert",
-	[265487] = "warning",
-	[265523] = "alarm",
+	[265487] = "alert",
+	[265523] = "info",
 	[265540] = "alarm",
 	[265568] = {"alarm","alert"},
 	[265668] = "underyou",
 	[266106] = "warning",
 	[266107] = "alarm",
-	[266209] = {"alarm","alert","info"},
+	[266209] = {"alarm","alert"},
 	[272183] = "alert",
 	[272592] = "long",
 	[272609] = "alarm",
-	[278961] = {"alert","info"},
+	[278961] = {"alert","warning"},
+	[413044] = "alarm",
 })

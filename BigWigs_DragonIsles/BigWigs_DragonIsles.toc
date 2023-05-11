@@ -23,7 +23,7 @@
 ## Notes-zhCN: BigWigs 巨龙群岛模块
 ## Notes-zhTW: BigWigs Dragon Isles Modules
 ## IconTexture: Interface\AddOns\BigWigs\Media\Icons\core-enabled
-## Version: v271.1
+## Version: v275
 
 ## LoadOnDemand: 1
 ## Dependencies: BigWigs

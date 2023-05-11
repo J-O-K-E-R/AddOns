@@ -308,7 +308,7 @@ local function IsNpcPOIFiltered(npcID, mapID, artID, zoneQuestID, questTitles, v
 				return true
 			end
 			-- If Ancestral Spirit in Forbidden Reach or Loam Scout in Zaralek Cavern, locate real NPC
-			if ((tonumber(vignetteNPCID) == RSConstants.FORBIDDEN_REACH_ANCESTRAL_SPIRIT or tonumber(vignetteNPCID) == RSConstants.ZARALEK_CAVERN_LOAM_SCOUT) and RSNpcDB.GetNpcId(vignetteInfo.name, mapID)) then
+			if ((tonumber(vignetteNPCID) == RSConstants.FORBIDDEN_REACH_ANCESTRAL_SPIRIT or tonumber(vignetteNPCID) == RSConstants.ZARALEK_CAVERN_LOAM_SCOUT) and npcID == RSNpcDB.GetNpcId(vignetteInfo.name, mapID)) then
 				RSLogger:PrintDebugMessageEntityID(npcID, string.format("Saltado NPC [%s]: Hay un vignette del juego mostrándolo (Espiritú ancestral/Loam scout).", npcID))
 				return true
 			end

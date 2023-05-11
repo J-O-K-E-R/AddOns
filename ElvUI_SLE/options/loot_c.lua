@@ -1,4 +1,4 @@
-﻿local SLE, _, E, L = unpack(select(2, ...))
+﻿local SLE, T, E, L, V, P, G = unpack(ElvUI_SLE)
 local LT = SLE.Loot
 
 --GLOBALS: unpack, select, _G, gsub, tinsert, ITEM_QUALITY2_DESC, ITEM_QUALITY3_DESC, ITEM_QUALITY4_DESC, GetMaxPlayerLevel, CHAT_MSG_BN_WHISPER, CHAT_MSG_WHISPER_INFORM
@@ -141,6 +141,16 @@ local function configTable()
 						disabled = function() return not E.db.sle.loot.enable end,
 						get = function() return E.db.sle.loot.history.alpha end,
 						set = function(_, value) E.db.sle.loot.history.alpha = value; LT:LootAlpha() end,
+					},
+					scale = {
+						order = 5,
+						type = "range",
+						name = L["Scale"],
+						-- desc = L["Sets the alpha of Loot Roll History frame."],
+						min = 0.2, max = 2, step = 0.1,
+						disabled = function() return not E.db.sle.loot.enable end,
+						get = function() return E.db.sle.loot.history.scale end,
+						set = function(_, value) E.db.sle.loot.history.scale = value; LT:LootScale() end,
 					},
 				},
 			},

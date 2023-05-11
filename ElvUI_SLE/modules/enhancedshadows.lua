@@ -1,4 +1,4 @@
-local SLE, T, E, L, V, P, G = unpack(select(2, ...))
+local SLE, T, E, L, V, P, G = unpack(ElvUI_SLE)
 local ENH = SLE.EnhancedShadows
 local DT = E.DataTexts
 local LO = E.Layout
@@ -502,18 +502,6 @@ function ENH:HandleObjectiveFrame()
 	end
 	do
 		local frame = _G.ScenarioBlocksFrame.MawBuffsBlock.Container.List
-		if frame and frame.enhshadow then
-			frame.enhshadow:SetShown(isShadowsEnabled and E.db.sle.shadows.torghastPowers.backdrop)
-		end
-	end
-	do
-		local frame = _G.MawBuffsBelowMinimapFrame.SLE_Block
-		if frame and frame.enhshadow then
-			frame.enhshadow:SetShown(isShadowsEnabled and E.db.sle.shadows.torghastPowers.backdrop)
-		end
-	end
-	do
-		local frame = _G.MawBuffsBelowMinimapFrame.Container.List
 		if frame and frame.enhshadow then
 			frame.enhshadow:SetShown(isShadowsEnabled and E.db.sle.shadows.torghastPowers.backdrop)
 		end

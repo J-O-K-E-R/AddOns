@@ -1,7 +1,7 @@
 local L = BigWigs:NewBossLocale("Kazzara, the Hellforged", "zhTW")
 if not L then return end
 if L then
-    L.dread_rift = "裂隙" -- Singular Dread Rift
+	L.dread_rift = "裂隙" -- Singular Dread Rift
 end
 
 L = BigWigs:NewBossLocale("The Amalgamation Chamber", "zhTW")
@@ -31,20 +31,26 @@ if L then
 	L.volatile_spew = "躲球"
 	L.volatile_eruption = "爆發"
 	L.temporal_anomaly = "治療珠"
-	L.temporal_anomaly_knocked = "治療珠被踢走了！"
+	L.temporal_anomaly_knocked = "治療珠被踢走了"
 end
 
 L = BigWigs:NewBossLocale("Assault of the Zaqali", "zhTW")
 if L then
-	L.big_adds_timer = "顯示熔縛獵人和黑曜守衛的計時器"
-	L.final_assault_soon = "即將最後階段"
+	-- These are in-game emotes and need to match the text shown in-game
+	-- You should also replace the comment (--) with the full emote as it shows in-game
+	--L.zaqali_aide_north_emote_trigger = "northern battlement" -- |TInterface\\ICONS\\Ability_Hunter_KillCommand.blp:20|t Commanders ascend the northern battlement!
+	--L.zaqali_aide_south_emote_trigger = "southern battlement" -- |TInterface\\ICONS\\Ability_Hunter_KillCommand.blp:20|t Commanders ascend the southern battlement!
 
-	L.south_adds_message = "一大波小怪開始攀爬南方城垛！"
-	L.south_adds = "指揮官登上南邊城牆！" -- |TInterface\\ICONS\\Ability_Hunter_KillCommand.blp:20|t Commanders ascend the southern battlement!
-	L.north_adds_message = "一大波小怪開始攀爬北方城垛！"
-	L.north_adds = "指揮官登上北邊城牆！" -- |TInterface\\ICONS\\Ability_Hunter_KillCommand.blp:20|t Commanders ascend the northern battlement!
+	--L.north = "North"
+	--L.south = "South"
+	--L.both = "Both"
 
-	L.wallclimbers_bartext = "攀牆手"
+	--L.zaqali_aide_message = "%s Climbing %s" -- Big Adds Climbing North
+	L.add_bartext = "%s：%s（%d）"
+	--L.boss_returns = "Boss Lands: North"
+
+	L.molten_barrier = "屏障"
+	--L.catastrophic_slam = "Door Slam"
 end
 
 L = BigWigs:NewBossLocale("Rashok, the Elder", "zhTW")
@@ -68,7 +74,7 @@ end
 
 L = BigWigs:NewBossLocale("Magmorax", "zhTW")
 if L then
-	L.energy_gained = "獲得能量，狂暴時限縮短 17 秒！" -- When you fail, you lose 17s on until the boss reaches full energy
+	L.energy_gained = "獲得能量，狂暴時限縮短 17 秒" -- When you fail, you lose 17 seconds, the boss reaches full energy faster
 
 	-- Mythic
 	L.explosive_magma = "大圈分攤"
@@ -76,19 +82,23 @@ end
 
 L = BigWigs:NewBossLocale("Echo of Neltharion", "zhTW")
 if L then
-	-- L.custom_on_repeating_sunder_reality = "Repeating Sunder Reality Warning"
-	-- L.custom_on_repeating_shattered_reality_desc = "Repeat a message during the Ebon Destruction cast until you get inside a portal."
+	--L.custom_on_repeating_sunder_reality = "Repeating Sunder Reality Warning"
+	--L.custom_on_repeating_shattered_reality_desc = "Repeat a message during the Ebon Destruction cast until you get inside a portal."
 
-	-- L.twisted_earth = "Walls"
-	-- L.echoing_fissure = "Fissure"
-	-- L.rushing_darkness = "直線擊退"
+	--L.twisted_earth = "Walls"
+	--L.echoing_fissure = "Fissure"
+	--L.rushing_darkness = "直線擊退"
 
-	-- L.umbral_annihilation = "Annihilation"
-	-- L.sunder_reality = "Portals"
-	-- L.ebon_destruction = "Big Bang"
+	--L.umbral_annihilation = "Annihilation"
+	--L.sunder_reality = "Portals"
+	--L.ebon_destruction = "Big Bang"
 end
 
 L = BigWigs:NewBossLocale("Scalecommander Sarkareth", "zhTW")
 if L then
 	--L.claws = "Tank Debuff" -- (Stage 1) Burning Claws / (Stage 2) Void Claws / (Stage 3) Void Slash
+	--L.claws_debuff = "Tank Explodes"
+	--L.emptiness_between_stars = "Emptiness"
+	--L.embrace_of_nothingness = "Black Hole"
+	--L.void_slash = "Tank Frontal"
 end

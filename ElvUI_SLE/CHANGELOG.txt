@@ -1,3 +1,6 @@
-v4.66 3/30/23
+v4.68 5/7/23
 
-• hotfix for 4.65 borked release
+• update darth's layout
+• added loot history scale
+• fix install error as we left the blizzmove module setup in the installer by mistake after it was removed
+• adjust armory character model to not be so zoomed in

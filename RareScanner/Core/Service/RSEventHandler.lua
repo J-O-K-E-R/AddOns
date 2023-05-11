@@ -41,7 +41,7 @@ local function HandleEntityWithoutVignette(rareScannerButton, unitID)
 	end
 	
 	local unitType, _, _, _, _, entityID = strsplit("-", unitGuid)
-	if (unitType == "Creature") then
+	if (unitType == "Creature" or unitType == "Vehicle") then
 		local npcID = entityID and tonumber(entityID) or nil
 	
 		-- If player in a zone with vignettes ignore it

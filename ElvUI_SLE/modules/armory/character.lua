@@ -1,4 +1,4 @@
-local SLE, T, E, L, V, P, G = unpack(select(2, ...))
+local SLE, T, E, L, V, P, G = unpack(ElvUI_SLE)
 local Armory = SLE.Armory_Core
 local CA = SLE.Armory_Character
 local LCG = E.Libs.CustomGlow
@@ -22,8 +22,9 @@ function CA:BuildLayout()
 	--<< Background >>--
 	if not _G.PaperDollFrame.SLE_Armory_BG then
 		_G.PaperDollFrame.SLE_Armory_BG = _G.PaperDollFrame:CreateTexture(nil, 'OVERLAY')
-		_G.PaperDollFrame.SLE_Armory_BG:Point('TOPLEFT', _G.CharacterModelScene, -4, 0)
-		_G.PaperDollFrame.SLE_Armory_BG:Point('BOTTOMRIGHT', _G.CharacterModelScene, 4, 0)
+		_G.PaperDollFrame.SLE_Armory_BG:Point('TOPLEFT', _G.CharacterHeadSlot, 0, 5)
+		_G.PaperDollFrame.SLE_Armory_BG:Point('RIGHT', _G.CharacterHandsSlot)
+		_G.PaperDollFrame.SLE_Armory_BG:Point('BOTTOM', _G.CharacterMainHandSlot)
 	end
 	_G.PaperDollFrame.SLE_Armory_BG:Hide()
 
@@ -286,9 +287,8 @@ function CA:Enable()
 
 	--Making model frame big enough
 	_G.CharacterModelScene:ClearAllPoints()
-	_G.CharacterModelScene:SetPoint('TOPLEFT', _G.CharacterHeadSlot, 0, 5)
-	_G.CharacterModelScene:SetPoint('RIGHT', _G.CharacterHandsSlot)
-	_G.CharacterModelScene:SetPoint('BOTTOM', _G.CharacterMainHandSlot)
+	_G.CharacterModelScene:SetPoint('TOP', _G.PaperDollFrame.SLE_Armory_BG, 0, 0)
+	_G.CharacterModelScene:SetPoint('BOTTOM', _G.PaperDollFrame.SLE_Armory_BG, 0, 0)
 
 	if _G.PaperDollFrame:IsShown() then --Setting up width for the main frame
 		_G.CharacterFrame:SetWidth(_G.CharacterFrame.Expanded and 650 or 444)
@@ -307,8 +307,8 @@ function CA:Enable()
 	end
 
 	--Overlay resize to match new width
-	_G.CharacterModelFrameBackgroundOverlay:SetPoint('TOPLEFT', _G.CharacterModelScene, -4, 0)
-	_G.CharacterModelFrameBackgroundOverlay:SetPoint('BOTTOMRIGHT', _G.CharacterModelScene, 4, 0)
+	_G.CharacterModelFrameBackgroundOverlay:SetPoint('TOPLEFT', _G.PaperDollFrame.SLE_Armory_BG, -4, 0)
+	_G.CharacterModelFrameBackgroundOverlay:SetPoint('BOTTOMRIGHT', _G.PaperDollFrame.SLE_Armory_BG, 4, 0)
 
 	--Activating background
 	if _G.PaperDollFrame.SLE_Armory_BG then _G.PaperDollFrame.SLE_Armory_BG:Show() end
@@ -334,14 +334,13 @@ function CA:Disable()
 	_G.CharacterMainHandSlot:SetPoint('BOTTOMLEFT', _G.PaperDollItemsFrame, 'BOTTOMLEFT', 130, 16)
 
 	-- Model Frame
-	_G.CharacterModelScene:ClearAllPoints()
-	_G.CharacterModelScene:Size(231, 320)
-	_G.CharacterModelScene:SetPoint('TOPLEFT', _G.PaperDollFrame, 'TOPLEFT', 52, -66)
 	_G.CharacterModelScene.BackgroundTopLeft:Show()
 	_G.CharacterModelScene.BackgroundTopRight:Show()
 	_G.CharacterModelScene.BackgroundBotLeft:Show()
 	_G.CharacterModelScene.BackgroundBotRight:Show()
-	_G.CharacterModelScene.backdrop:Show()
+	if _G.CharacterModelScene.backdrop then
+		_G.CharacterModelScene.backdrop:Show()
+	end
 
 	CA:Update_Durability() --Required for elements update
 	for _, SlotName in pairs(Armory.Constants.GearList) do
@@ -358,6 +357,9 @@ function CA:Disable()
 		if Slot.SLE_Warning then Slot.SLE_Warning:Hide() end
 		if Slot.SLE_Durability then Slot.SLE_Durability:SetText('') end
 	end
+
+	_G.CharacterModelFrameBackgroundOverlay:SetPoint('TOPLEFT', _G.CharacterModelScene, 0, 0)
+	_G.CharacterModelFrameBackgroundOverlay:SetPoint('BOTTOMRIGHT', _G.CharacterModelScene, 0, 0)
 
 	if _G.PaperDollFrame.SLE_Armory_BG then _G.PaperDollFrame.SLE_Armory_BG:Hide() end
 end
