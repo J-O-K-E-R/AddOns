@@ -641,13 +641,17 @@ PLATER_DEFAULT_SETTINGS = {
 		
 		show_healthbars_on_not_attackable = false,
 		show_healthbars_on_softinteract = true,
-		ignore_softinteract_objects = true,
+		ignore_softinteract_objects = false,
+		hide_name_on_game_objects = true,
+		show_softinteract_icons = true,
 		
 		enable_masque_support = false,
 		
 		use_name_translit = false,
 		
 		use_player_combat_state = false,
+		
+		opt_out_auto_accept_npc_colors = true,
 		
 		shadowMode = 1,
 		

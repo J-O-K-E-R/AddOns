@@ -441,12 +441,17 @@ function Plater.OpenOptionsPanel()
 	tinsert (f.AllMenuFrames, generalOptionsAnchor)
 
 	--~languages
+		---executed when the user selects a language in the dropdown
+		---@param languageId string
 		local onLanguageChangedCallback = function(languageId)
 			PlaterLanguage.language = languageId
 		end
 
+		---@type string
+		local currentLanguage = PlaterLanguage.language
+
 		--addonId, parent, callback, defaultLanguage
-		local languageSelectorDropdown = DF.Language.CreateLanguageSelector(addonId, frontPageFrame, onLanguageChangedCallback, PlaterLanguage.language)
+		local languageSelectorDropdown = DF.Language.CreateLanguageSelector(addonId, frontPageFrame, onLanguageChangedCallback, currentLanguage)
 		languageSelectorDropdown:SetPoint("topright", -21, -108)
 	--end of languages
 
@@ -6366,8 +6371,8 @@ do
 				Plater.db.profile.resources.scale = value
 				Plater.UpdateAllPlates()
 			end,
-			min = 0.65,
-			max = 3,
+			min = 0.25,
+			max = 2,
 			step = 0.01,
 			usedecimals = true,
 			nocombat = true,
@@ -13620,6 +13625,26 @@ end
 			name = "Use blizzard soft-interact for objects",
 			desc = "Only show Plater soft-interact nameplates on NPCs.",
 		},
+		{
+			type = "toggle",
+			get = function() return Plater.db.profile.hide_name_on_game_objects end,
+			set = function (self, fixedparam, value) 
+				Plater.db.profile.hide_name_on_game_objects = value
+				Plater.UpdateAllPlates()
+			end,
+			name = "Hide Plater names game objects",
+			desc = "Hide Plater names game objects, such as soft-interact targets.",
+		},
+		{
+			type = "toggle",
+			get = function() return Plater.db.profile.show_softinteract_icons end,
+			set = function (self, fixedparam, value) 
+				Plater.db.profile.show_softinteract_icons = value
+				Plater.UpdateAllPlates()
+			end,
+			name = "Show soft-interact Icon",
+			desc = "Show an icon on soft-interact targets.",
+		},
 		
 		{type = "blank"},
 		
@@ -14272,6 +14297,16 @@ end
 			end,
 			name = "In/Out of Combat Settings - Use Player Combat State",
 			desc = "Use the players combat state instead of the units when applying settings for In/Out of Combat.",
+		},
+		
+		{
+			type = "toggle",
+			get = function() return Plater.db.profile.opt_out_auto_accept_npc_colors end,
+			set = function (self, fixedparam, value) 
+				Plater.db.profile.opt_out_auto_accept_npc_colors = value
+			end,
+			name = "Opt-Out of automatically accepting NPC Colors",
+			desc = "Will not automatically accepd npc colors sent by raid-leaders but prompt instead.",
 		},
 	
 		{type = "blank"},
