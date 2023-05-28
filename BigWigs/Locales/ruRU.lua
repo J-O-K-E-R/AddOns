@@ -40,10 +40,8 @@ L.dbmUsers = "Пользователи DBM:"
 L.noBossMod = "Нет аддона:"
 L.offline = "Не в сети"
 
-L.missingPlugin = "Обратите внимание, что эта зона требует дополнение |cFF436EEE%s|r для показа таймеров."
 L.missingAddOn = "Отсутствует модификация |cFF436EEE%s|r."
 L.disabledAddOn = "У вас выключена модификация |cFF436EEE%s|r, таймеры не будут показываться."
-
 L.removeAddOn = "Пожалуйста, удалите '|cFF436EEE%s|r', ему на смену пришло '|cFF436EEE%s|r'."
 L.alternativeName = "%s (|cFF436EEE%s|r)"
 
@@ -128,6 +126,8 @@ L.VOICE = "Голосовое оповещение"
 L.VOICE_desc = "Если установлен плагин голосового оповещения, эта опция позволит проиграть звуковой файл с голосовым предупреждением для вас."
 L.COUNTDOWN = "Обратный отсчет"
 L.COUNTDOWN_desc = "Если включено, будет звуковое и визуальное оповещение обратного отсчета 5 последних секунд. Представьте, кто-то отсчитывает \"5... 4... 3... 2... 1...\" большими цифрами посередине экрана."
+--L.CASTBAR_COUNTDOWN = "Countdown (cast bars only)"
+--L.CASTBAR_COUNTDOWN_desc = "If enabled, a vocal and visual countdown will be added for the last 5 seconds of the cast bars."
 L.INFOBOX = L.infobox
 L.INFOBOX_desc = L.infobox_desc
 L.SOUND = "Звук"

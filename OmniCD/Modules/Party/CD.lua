@@ -815,6 +815,19 @@ registeredEvents['SPELL_DAMAGE'][222024] = ReduceRedThirstCD
 registeredEvents['SPELL_DAMAGE'][207230] = ReduceRedThirstCD
 
 
+registeredEvents['SPELL_CAST_SUCCESS'][49184] = function(info)
+	if info.auras.isRime then
+		local icon = info.spellIcons[279302]
+		if icon and icon.active then
+			P:UpdateCooldown(icon, 2)
+		end
+	end
+end
+
+registeredEvents['SPELL_AURA_APPLIED'][59052] = function(info) info.auras.isRime = true end
+registeredEvents['SPELL_AURA_REMOVED'][59052] = function(info) info.auras.isRime = nil end
+
+
 
 
 
@@ -1457,6 +1470,26 @@ registeredEvents['SPELL_AURA_APPLIED'][360952] = function(info)
 end
 
 
+registeredEvents['SPELL_AURA_APPLIED'][194594] = function(info)
+	info.auras.isLockAndLoad = true
+end
+local RemoveLockAndLoad_OnDelayEnd = function(srcGUID)
+	local info = groupInfo[srcGUID]
+	if info then
+		info.auras.isLockAndLoad = nil
+	end
+end
+registeredEvents['SPELL_AURA_REMOVED'][194594] = function(info, srcGUID)
+	E.TimerAfter(0.05, RemoveLockAndLoad_OnDelayEnd, srcGUID)
+end
+registeredEvents['SPELL_AURA_APPLIED'][288613] = function(info)
+	info.auras.isTrueshot = true
+end
+registeredEvents['SPELL_AURA_REMOVED'][288613] = function(info, srcGUID, spellID, destGUID)
+	info.auras.isTrueshot = nil
+	RemoveHighlightByCLEU(info, srcGUID, spellID, destGUID)
+end
+
 local focusSpenders = {
 	[34026] = 30,
 	[320976] = 10,
@@ -1473,6 +1506,7 @@ local focusSpenders = {
 	[259387] = 30,
 	[187708] = 35,
 	[212436] = 30,
+	[185358] = 40,
 	[342049] = 40,
 	[186387] = 10,
 	[392060] = 15,
@@ -1481,16 +1515,15 @@ local focusSpenders = {
 	[208652] = 30,
 	[205691] = 60,
 	[982] = { [255]=10,["d"]=35 },
-	[185358] = { [254]=20,["d"]=40 },
 	[120360] = { [254]=30,["d"]=60 },
 }
 
 local function ReduceNaturalMendingCD(info, _, spellID)
-	local naturalMendingIcon = info.spellIcons[109304]
+	local exhilarationIcon = info.spellIcons[109304]
+	local naturalMendingRank = exhilarationIcon and exhilarationIcon.active and info.talentData[270581]
 	local trueShotIcon = info.spellIcons[288613]
-	local naturalMendingRank = naturalMendingIcon and naturalMendingIcon.active and info.talentData[270581]
-	local isTrueShotActive	= info.talentData[260404] and trueShotIcon and trueShotIcon.active
-	if naturalMendingRank or isTrueShotActive then
+	local isTrueshotOnCD = info.talentData[260404] and trueShotIcon and trueShotIcon.active
+	if naturalMendingRank or isTrueshotOnCD then
 		local rCD = focusSpenders[spellID]
 		if type(rCD) == "table" then
 			rCD = rCD[info.spec] or rCD.d
@@ -1509,27 +1542,31 @@ local function ReduceNaturalMendingCD(info, _, spellID)
 				end
 			end
 		elseif info.spec == 254 then
-			local isArcaneChimaera = spellID == 185358 or spellID == 342049
-			if isArcaneChimaera or spellID == 257620 or spellID == 19434 then
-				if isArcaneChimaera then
-					if info.talentData[321293] then
-						rCD = rCD - 20
-					end
+
+			if info.auras.isLockAndLoad and spellID == 19434 then
+				return
+			end
+
+			if spellID == 185358 or spellID == 342049 then
+				if info.talentData[321293] then
+					rCD = rCD - 20
 				end
-				local mult = info.talentData[389449]
-				mult = mult and (mult == 2 and .75 or .88)
+			end
+
+			if spellID == 185358 or spellID == 342049 or spellID == 257620 or spellID == 19434 then
+				local mult = info.auras.isTrueshot and info.talentData[389449]
 				if mult then
+					mult = mult == 2 and .75 or .88
 					rCD = rCD * mult
 				end
 			end
-			if  isTrueShotActive then
-				rCD = rCD * 0.05
-				P:UpdateCooldown(trueShotIcon, rCD)
+			if isTrueshotOnCD then
+				P:UpdateCooldown(trueShotIcon, rCD * 0.05)
 			end
 		end
 		if naturalMendingRank then
 			rCD = naturalMendingRank == 2 and rCD/12 or rCD/25
-			P:UpdateCooldown(naturalMendingIcon, rCD)
+			P:UpdateCooldown(exhilarationIcon, rCD)
 		end
 	end
 end
@@ -3010,6 +3047,33 @@ registeredHostileEvents['SPELL_DAMAGE']['PALADIN'] = ReduceDivineShieldCD
 registeredHostileEvents['SPELL_ABSORBED']['PALADIN'] = ReduceDivineShieldCD
 
 
+registeredEvents['SPELL_HEAL'][25914] = function(info, srcGUID, _,_,_,_,_,_,_, criticalHeal)
+	if not criticalHeal then return end
+	local icon = info.spellIcons[114165]
+	if icon and icon.active then
+		P:UpdateCooldown(icon, 1)
+	end
+	local icon = info.spellIcons[114158]
+	if icon and icon.active then
+		P:UpdateCooldown(icon, 2)
+	end
+end
+
+--[[
+registeredEvents['SPELL_DAMAGE'][25912] = function(info, _,_,_, critical)
+	if not critical then return end
+	local icon = info.spellIcons[114165]
+	if icon and icon.active then
+		P:UpdateCooldown(icon, 1)
+	end
+	local icon = info.spellIcons[114158]
+	if icon and icon.active then
+		P:UpdateCooldown(icon, 2)
+	end
+end
+]]
+
+
 
 
 
@@ -4121,6 +4185,19 @@ registeredEvents['SPELL_AURA_REMOVED'][312321] = function(info, srcGUID, spellID
 		E.TimerAfter(0.5, ResetScouringTitheCD_OnDelayEnd, srcGUID, spellID)
 	end
 end
+
+
+registeredEvents['SPELL_CAST_SUCCESS'][264178] = function(info)
+	if info.auras.isDemonicCore then
+		local icon = info.spellIcons[111898]
+		if icon and icon.active then
+			P:UpdateCooldown(icon, 1)
+		end
+	end
+end
+
+registeredEvents['SPELL_AURA_REMOVED'][264173] = function(info) info.auras.isDemonicCore = true end
+registeredEvents['SPELL_AURA_APPLIED'][264173] = function(info) info.auras.isDemonicCore = nil end
 
 
 

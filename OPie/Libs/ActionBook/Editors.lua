@@ -1,6 +1,7 @@
 local _, T = ...
 
-local AB = assert(T.ActionBook:compatible(2, 36), "A compatible version of ActionBook is required.")
+local AB = T.ActionBook:compatible(2, 36)
+assert(AB and 1, "Incompatible library bundle")
 local L = AB:locale()
 local MODERN = select(4,GetBuildInfo()) >= 8e4
 

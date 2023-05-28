@@ -105,6 +105,7 @@ ACC_WIDE_DEFAULT = "Отслеживается на Весь Аккаунт по
 	L.BEST_PERSONAL_LOOT_CHANCE = "Наилучший шанс Персональной добычи";
 	L.BONUS_ROLL = "Бонусный бросок";
 	L.PREREQUISITE_QUESTS = "Есть предшествующие задания, которые должны быть выполнены перед получением:";
+	L.BREADCRUMBS = "Задания-\"хлебные крохи\"";
 	L.BREADCRUMBS_WARNING = "Есть задания-\"хлебные крохи\", которые могут быть недоступны после выполнения:";
 	L.THIS_IS_BREADCRUMB = "Это задание-\"хлебная кроха\".";
 	L.BREADCRUMB_PARTYSYNC = "Может быть недоступно для выполнения без Синхронизации группы, если выполнить любое из этих заданий:";
@@ -879,7 +880,7 @@ for key,value in pairs({
 		[-7776] = "Гуляка Зимнего Покрова",							-- Winter Revelers (for Winter Veil)
 	-- Classes
 		[-9951] = GetSpellInfo(148462).." и "..GetSpellInfo(137031),	-- Discipline / Holy Priest Spec
-		[-9952] = GetSpellInfo(234890).." и "..GetSpellInfo(137011), 	-- Guardian / Feral Druid Spec
+		[-9952] = GetSpellInfo(234890).." и "..GetSpellInfo(137011),	-- Guardian / Feral Druid Spec
 	------ ACHIEVEMENT HEADERS SECTION ------
 		[-10071] = "Видения Н'Зота",								-- Visions of N'Zoth
 		[-10072] = "Нападение Н'Зота",								-- N'Zoth Assault
@@ -1137,6 +1138,7 @@ for key,value in pairs({
 	[152095] = "Лунная лилия",	-- Moonpetal Lily
 	[152622] = "Отложение азшарита",	-- Azsharite Formation
 	[153123] = "Оборудование Ким'джаеля",	-- Kim'jael's Equipment
+	[153239] = "Перо дикого совуха",	-- Wildkin Feather
 	[157936] = "Куча земли Ун'Горо",	-- Un'Goro Dirt Pile
 	[160836] = "Реликварий",	-- Relic Coffer
 	[161495] = "Потайной сейф",	-- Secret Safe
@@ -1259,6 +1261,7 @@ for key,value in pairs({
 	[175855] = "Падение Империи",	-- Empires' Fall
 	[175856] = "Гнев Свежевателя Душ",	-- Wrath of Soulflayer
 	[175888] = "Фрагмент реликвии высокорожденных",	-- Highborne Relic Fragment
+	[175889] = "Древнее яйцо",	-- Ancient Egg
 	[175891] = "Фрагмент реликвии высокорожденных",	-- Highborne Relic Fragment
 	[175892] = "Фрагмент реликвии высокорожденных",	-- Highborne Relic Fragment
 	[175893] = "Фрагмент реликвии высокорожденных",	-- Highborne Relic Fragment
@@ -1331,8 +1334,10 @@ for key,value in pairs({
 	[180366] = "Побитый ящик для рыболовных снастей",	-- Battered Tackle Box
 	[180368] = "Табличка Безумия",	-- Tablet of Madness
 	[180369] = "Грязный водоворот",	-- Muddy Churning Waters
+	[180435] = "Сумка Ноггла",	-- Noggle's Satchel
 	[180436] = "Фрагмент сумеречной таблички",	-- Twilight Tablet Fragment
 	[180448] = "Плакат: \"Разыскивается\": Смертехват",	-- Wanted Poster: Deathclasp
+	[180453] = "Покрытый письменами кристалл Улья Регал",	-- Hive'Regal Glyphed Crystal
 	[180456] = "Меньший камень Ветров",	-- Lesser Wind Stone
 	[180461] = "Камень Ветров",	-- Wind Stone
 	[180466] = "Больший Ветровой Камень",	-- Greater Wind Stone
@@ -1344,6 +1349,7 @@ for key,value in pairs({
 	[180642] = "Не вызывающий подозрений сундук",	-- Inconspicuous Crate
 	[180652] = "Только что выброшенная земля",	-- Freshly Dug Dirt
 	[180662] = "Разбитая шхуна",	-- Schooner Wreckage
+	[180669] = "Кружащий Водоворот",	-- Swirling Maelstrom	--TODO: this was manually translated
 	[180685] = "Плавающие обломки",	-- Waterlogged Wreckage
 	[180690] = "Большой сундук Скарабея",	-- Large Scarab Coffer
 	[180691] = "Сундук Скарабея",	-- Scarab Coffer
@@ -1369,6 +1375,7 @@ for key,value in pairs({
 	[181153] = "Плакат: \"Разыскивается\": Кел'гаш Коварный",	-- Wanted Poster: Kel'gash the Wicked
 	[181638] = "Плакат \"Разыскивается\"",	-- Wanted Poster
 	[181643] = "Останки Пероборода",	-- Featherbeard's Remains
+	[181645] = "Яйцо грифона",	-- Gryphon Egg
 	[181649] = "Дневник Пероборода",	-- Featherbeard's Journal
 	[181665] = "Погребальный сундук",	-- Burial Chest
 	[181672] = "Фигурка Плетеного человека",	-- Wickerman Effigy
@@ -1429,6 +1436,7 @@ for key,value in pairs({
 	[186887] = "Большой светильник из тыквы",	-- Large Jack-o'-Lantern
 	[187072] = "Корень острого шипа",	-- Razorthorn Root
 	[187236] = "Подарок к Зимнему Покрову",	-- Winter Veil Gift
+	[187264] = "Сундук с рудой Черноспинов",	-- Darkspine Ore Chest
 	[187273] = "Подозрительный след копыта",	-- Suspicious Hoofprint
 	[187333] = "Куст Кровяники",	-- Bloodberry Bush
 	[187559] = "Большой костер Орды",	-- Horde Bonfire
@@ -2109,7 +2117,7 @@ for key,value in pairs({
 	[234734] = "Эликсир сумеречного зрения",	-- Elixir of Shadow Sight
 	[234735] = "Эликсир сумеречного зрения",	-- Elixir of Shadow Sight
 	[234736] = "Эликсир сумеречного зрения",	-- Elixir of Shadow Sight
-	[234740] = "Сигнальный горн орков",	-- Orchish Signaling Horn
+	[234740] = "Сигнальный горн орков",	-- Orcish Signaling Horn
 	[234744] = "Подношение Прародительнице воронов",	-- Offering to the Raven Mother
 	[234746] = "Подношение Прародительнице воронов",	-- Offering to the Raven Mother
 	[234748] = "Подношение Прародительнице воронов",	-- Offering to the Raven Mother
@@ -3802,8 +3810,8 @@ for key,value in pairs({
 	[386461] = "Тайник изначальных чар",	-- Primordial Arcane Cache
 	[386462] = "Тайник изначальной крови",	-- Primordial Blood Cache
 	[386463] = "Тайник изначального золота",	-- Primordial Gold Cache
-	[386470] = "Груда золота",	-- Gold Pile	--TODO: this was manually translated
-	[386472] = "Груда золота",	-- Gold Pile	--TODO: this was manually translated
+	[386470] = "Груда золота",	-- Gold Pile
+	[386472] = "Груда золота",	-- Gold Pile
 	[386484] = "Груда золота",	-- Gold Pile
 	[386531] = "Груда золота",	-- Gold Pile
 	[386532] = "Тайник изначального золота",	-- Primordial Gold Cache
@@ -3853,7 +3861,7 @@ for key,value in pairs({
 	--TODO: [388471] = "Pillaged Primordial Cache",	-- Pillaged Primordial Cache
 	[388712] = "Оперный сундук",	-- Opera Chest
 	[388866] = "Котелок с реагентами",	-- Reagent Pot
-	[388873] = "Мешок с сокровищами братства Стальных Волн",	-- Irontide Coin Bag	--TODO: this was manually translated
+	[388873] = "Мешок с сокровищами братства Стальных Волн",	-- Irontide Coin Bag
 	[388876] = "Котелок с реагентами",	-- Reagent Pot
 	[388895] = "Небрежные записки",	-- Random Scribblings
 	[388896] = "Сундук в кристалле",	-- Crystal-encased Chest
@@ -3933,7 +3941,7 @@ for key,value in pairs({
 	[398796] = "Резонирующий магический кристалл",	-- Resonating Arcane Crystal
 	[398810] = "Награда за верность",	-- Fealty's Reward
 	[398814] = "Раскаленные сокровища",	-- Molten Hoard
-	--TODO: [398815] = "Secured Shipment",	-- Secured Shipment
+	[398815] = "Защищенные ресурсы",	-- Secured Shipment
 	[401236] = "Истощенный образец",	-- Malnourished Specimen
 	[401238] = "Костная слизь",	-- Marrow-Ripened Slime
 	[401240] = "Подозрительный грибок",	-- Suspicious Mold

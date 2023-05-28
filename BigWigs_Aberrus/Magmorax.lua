@@ -39,7 +39,7 @@ local moltenSpittleMarker = mod:AddMarkerOption(true, "player", 1, 402994, 1, 2,
 function mod:GetOptions()
 	return {
 		408358, -- Catastrophic Eruption
-		{402994, "SAY", "SAY_COUNTDOWN"}, -- Molten Spittle
+		{402994, "SAY", "SAY_COUNTDOWN", "ME_ONLY_EMPHASIZE"}, -- Molten Spittle
 		moltenSpittleMarker,
 		408839, -- Searing Heat
 		407879, -- Blazing Tantrum
@@ -50,7 +50,7 @@ function mod:GetOptions()
 		406712, -- Lava
 		411633, -- Burning Chains
 		-- Mythic
-		{411182, "SAY", "SAY_COUNTDOWN"}, -- Explosive Magma
+		{411182, "SAY", "SAY_COUNTDOWN", "ME_ONLY_EMPHASIZE"}, -- Explosive Magma
 	},{
 		[411182] = "mythic",
 	},{
@@ -61,6 +61,10 @@ function mod:GetOptions()
 		[409093] = CL.breath, -- Blazing Breath (Breath)
 		[411182] = L.explosive_magma, -- Explosive Magma (Soak Pool)
 	}
+end
+
+function mod:VerifyEnable(unit)
+	return UnitCanAttack("player", unit)
 end
 
 function mod:OnBossEnable()
@@ -92,13 +96,13 @@ function mod:OnEngage()
 	blazingBreathCount = 1
 	incineratingMawsCount = 1
 
-	self:Bar(403740, self:Mythic() and 5 or self:Easy() and 8.9 or 6.2, CL.count:format(CL.roar, ignitingRoarCount)) -- Igniting Roar
-	self:Bar(402994, self:Mythic() and 14.5 or self:Easy() and 18.1 or 17.7, CL.count:format(CL.pools, moltenSpittleCount)) -- Molten Spittle
-	self:Bar(404846, self:Mythic() and 20 or self:Easy() and 22.2 or 25, CL.count:format(self:SpellName(401348), incineratingMawsCount)) -- Incinerating Maws
-	self:Bar(409093, self:Mythic() and 25 or self:Easy() and 33.4 or 31.2, CL.count:format(CL.breath, blazingBreathCount)) -- Blazing Breath
-	self:Bar(403671, self:Mythic() and 69 or self:Easy() and 76.6 or 89.9, CL.count:format(CL.knockback, overpoweringStompCount)) -- Overpowering Stomp
+	self:Bar(403740, self:Mythic() and 5.6 or self:Easy() and 8.9 or 6.2, CL.count:format(CL.roar, ignitingRoarCount)) -- Igniting Roar
+	self:Bar(402994, self:Mythic() and 15.9 or self:Easy() and 18.1 or 17.7, CL.count:format(CL.pools, moltenSpittleCount)) -- Molten Spittle
+	self:Bar(404846, self:Mythic() and 22.2 or self:Easy() and 22.2 or 25) -- Incinerating Maws
+	self:Bar(409093, self:Mythic() and 28.9 or self:Easy() and 33.4 or 31.2, CL.count:format(CL.breath, blazingBreathCount)) -- Blazing Breath
+	self:Bar(403671, self:Mythic() and 43.3 or self:Easy() and 76.6 or 89.9, CL.count:format(CL.knockback, overpoweringStompCount)) -- Overpowering Stomp
 
-	self:Bar(408358, 340, CL.full_energy) -- Catastrophic Eruption
+	self:Bar(408358, 336, CL.full_energy) -- Catastrophic Eruption
 
 	self:RegisterUnitEvent("UNIT_POWER_UPDATE", nil, "boss1")
 end
@@ -106,11 +110,6 @@ end
 --------------------------------------------------------------------------------
 -- Event Handlers
 --
-
--- function mod:BlazingTantrum(args)
--- 	self:TargetMessage(args.spellId, "red", args.sourceName)
--- 	self:PlaySound(args.spellId, "warning")
--- end
 
 do
 	local lastEnergy = 0
@@ -121,9 +120,9 @@ do
 			local catastrophicEruptionTimeLeft = self:BarTimeLeft(CL.full_energy) -- Catastrophic Eruption
 			if catastrophicEruptionTimeLeft > 18 then -- Update timer
 				self:StopBar(CL.full_energy) -- Catastrophic Eruption
-				self:Message(407879, "red", L.energy_gained)
+				self:Message(407879, "cyan", L.energy_gained)
 				local newTimeLeft = catastrophicEruptionTimeLeft - 17 -- 17 s reduction from 5% energy
-				self:Bar(408358, {newTimeLeft, 340}, CL.full_energy) -- Catastrophic Eruption
+				self:Bar(408358, {newTimeLeft, 336}, CL.full_energy) -- Catastrophic Eruption
 			else -- No bar left
 				self:StopBar(CL.full_energy) -- Catastrophic Eruption
 			end
@@ -134,6 +133,12 @@ end
 
 function mod:CatastrophicEruption(args)
 	self:StopBar(CL.full_energy) -- Catastrophic Eruption
+	self:StopBar(CL.count:format(CL.roar, ignitingRoarCount)) -- Igniting Roar
+	self:StopBar(CL.count:format(CL.pools, moltenSpittleCount)) -- Molten Spittle
+	self:StopBar(404846) -- Incinerating Maws
+	self:StopBar(CL.count:format(CL.breath, blazingBreathCount)) -- Blazing Breath
+	self:StopBar(CL.count:format(CL.knockback, overpoweringStompCount)) -- Overpowering Stomp
+
 	self:Message(args.spellId, "red", CL.full_energy)
 	self:PlaySound(args.spellId, "warning")
 end
@@ -148,8 +153,7 @@ do
 			local timer = { 41.1, 32.2, 40.0 } -- 32.2, 40.0, 41.1 repeating
 			cd = timer[(moltenSpittleCount % 3) + 1]
 		elseif self:Mythic() then
-			local timer = { 25, 27, 24, 26 } -- 27, 24, 26, 25 repeating
-			cd = timer[(moltenSpittleCount % 4) + 1]
+			cd = moltenSpittleCount % 2 == 0 and 40 or 26.7
 		else                              -- Heroic
 			local timer = { 32.5, 37.5, 30.0 } -- 37.5, 30.0, 32.5 repeating
 			cd = timer[(moltenSpittleCount % 3) + 1]
@@ -190,8 +194,9 @@ function mod:SearingHeatApplied(args)
 end
 
 function mod:IgnitingRoar(args)
-	self:StopBar(CL.count:format(CL.roar, ignitingRoarCount))
-	self:Message(args.spellId, "yellow", CL.count:format(CL.roar, ignitingRoarCount))
+	local msg = CL.count:format(CL.roar, ignitingRoarCount)
+	self:StopBar(msg)
+	self:Message(args.spellId, "yellow", msg)
 	self:PlaySound(args.spellId, "alert")
 	ignitingRoarCount = ignitingRoarCount + 1
 	local cd = 50 -- Heroic
@@ -199,23 +204,24 @@ function mod:IgnitingRoar(args)
 		local timer = { 44.5, 28.9, 40.0 } -- 28.9, 40.0, 44.5 repeating
 		cd = timer[(ignitingRoarCount % 3) + 1]
 	elseif self:Mythic() then
-		local timer = { 39, 23, 40 } -- 23, 40, 39 repeating
-		cd = timer[(ignitingRoarCount % 3) + 1]
+		cd = ignitingRoarCount % 2 == 0 and 41.8 or 24.9
 	end
 	self:Bar(args.spellId, cd, CL.count:format(CL.roar, ignitingRoarCount))
 end
 
 function mod:OverpoweringStomp(args)
-	self:StopBar(CL.count:format(CL.knockback, overpoweringStompCount))
-	self:Message(args.spellId, "orange", CL.count:format(CL.knockback, overpoweringStompCount))
+	local msg = CL.count:format(CL.knockback, overpoweringStompCount)
+	self:StopBar(msg)
+	self:Message(args.spellId, "orange", msg)
 	self:PlaySound(args.spellId, "long")
 	overpoweringStompCount = overpoweringStompCount + 1
-	self:Bar(args.spellId, self:Mythic() and 102 or self:Easy() and 113.4 or 100.0, CL.count:format(CL.knockback, overpoweringStompCount))
+	self:Bar(args.spellId, self:Mythic() and 66.7 or self:Easy() and 113.4 or 100.0, CL.count:format(CL.knockback, overpoweringStompCount))
 end
 
 function mod:BlazingBreath(args)
-	self:StopBar(CL.count:format(CL.breath, blazingBreathCount))
-	self:Message(args.spellId, "red", CL.count:format(CL.breath, blazingBreathCount))
+	local msg = CL.count:format(CL.breath, blazingBreathCount)
+	self:StopBar(msg)
+	self:Message(args.spellId, "red", msg)
 	self:PlaySound(args.spellId, "alert")
 	blazingBreathCount = blazingBreathCount + 1
 	local cd
@@ -223,8 +229,7 @@ function mod:BlazingBreath(args)
 		local timer = { 42.2, 43.3, 27.7 } -- 43.3, 27.8, 42.2 repeating
 		cd = timer[(blazingBreathCount % 3) + 1]
 	elseif self:Mythic() then
-		local timer = { 41, 33, 28 } -- 33, 28, 41 repeating
-		cd = timer[(blazingBreathCount % 3) + 1]
+		cd = blazingBreathCount % 2 == 0 and 35.6 or 31.1
 	else -- Heroic
 		cd = blazingBreathCount % 2 == 0 and 35 or 65
 	end
@@ -232,11 +237,16 @@ function mod:BlazingBreath(args)
 end
 
 function mod:IncineratingMaws(args)
-	self:StopBar(CL.count:format(args.spellName, incineratingMawsCount))
 	self:Message(args.spellId, "purple", CL.casting:format(args.spellName))
 	incineratingMawsCount = incineratingMawsCount + 1
-	local cd = self:Mythic() and 20 or self:Easy() and 22.3 or 25
-	self:Bar(args.spellId, cd, CL.count:format(args.spellName, incineratingMawsCount))
+	local cd
+	if self:Mythic() then
+		local timer = { 24.4, 27.8, 14.5 } -- 27.8, 14.5, 24.4 repeating
+		cd = timer[(incineratingMawsCount % 3) + 1]
+	else
+		cd = self:Easy() and 22.3 or 25
+	end
+	self:Bar(args.spellId, cd)
 end
 
 function mod:IncineratingMawsApplied(args)

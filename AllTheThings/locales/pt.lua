@@ -103,7 +103,8 @@ ACC_WIDE_DEFAULT = "Tracked "..ITEM_UPGRADE_DISCOUNT_TOOLTIP_ACCOUNT_WIDE.." by 
 	--TODO: L.BEST_PERSONAL_LOOT_CHANCE = "Best Personal Loot Chance";
 	--TODO: L.BONUS_ROLL = "Bonus Roll";
 	--TODO: L.PREREQUISITE_QUESTS = "There are prerequisite quests that must be completed before this may be obtained:";
-	--TODO: L.BREADCRUMBS_WARNING = "There are breadcrumb quests that may be not be obtainable after completing this:";
+	--TODO: L.BREADCRUMBS = "Breadcrumbs";
+	--TODO: L.BREADCRUMBS_WARNING = "There are breadcrumb quests that may not be obtainable after completing this:";
 	--TODO: L.THIS_IS_BREADCRUMB = "This is a breadcrumb quest.";
 	--TODO: L.BREADCRUMB_PARTYSYNC = "This may be unable to be completed without Party Sync if completing any of these quests first:";
 	--TODO: L.BREADCRUMB_PARTYSYNC_2 = "This may be obtained via Party Sync with another character that has not completed any of these quests:";
@@ -1146,6 +1147,7 @@ for key,value in pairs({
 	[152095] = "Lírio Lunapétala",	-- Moonpetal Lily	--TODO: This was taken from wotlk Wowhead
 	[152622] = "Formação de Azsharita",	-- Azsharite Formation
 	[153123] = "Equipamento de Kam'arawn",	-- Kim'jael's Equipment	--TODO: This was taken from wotlk Wowhead
+	[153239] = "Pena de Coruscante",	-- Wildkin Feather
 	[157936] = "Monte de Terra de Un'Goro",	-- Un'Goro Dirt Pile	--TODO: This was taken from wotlk Wowhead
 	[160836] = "Arca de Relíquia",	-- Relic Coffer
 	[161495] = "Cofre Secreto",	-- Secret Safe
@@ -1268,6 +1270,7 @@ for key,value in pairs({
 	[175855] = "A Queda do Império",	-- Empires' Fall
 	[175856] = "A Ira do Esfolador de Almas",	-- Wrath of Soulflayer
 	[175888] = "Fragmento da Relíquia dos Altaneiros",	-- Highborne Relic Fragment	--TODO: This was taken from wotlk Wowhead
+	[175889] = "Ovo Velho",	-- Ancient Egg
 	[175891] = "Fragmento da Relíquia dos Altaneiros",	-- Highborne Relic Fragment	--TODO: This was taken from wotlk Wowhead
 	[175892] = "Fragmento da Relíquia dos Altaneiros",	-- Highborne Relic Fragment	--TODO: This was taken from wotlk Wowhead
 	[175893] = "Fragmento da Relíquia dos Altaneiros",	-- Highborne Relic Fragment	--TODO: This was taken from wotlk Wowhead
@@ -1340,8 +1343,10 @@ for key,value in pairs({
 	[180366] = "Caixa de Ferramentas Desgastada",	-- Battered Tackle Box	--TODO: This was taken from wotlk Wowhead
 	[180368] = "Tabuleta da Loucura",	-- Tablet of Madness	--TODO: This was taken from wotlk Wowhead
 	[180369] = "Águas Revoltas Barrentas",	-- Muddy Churning Waters	--TODO: This was taken from wotlk Wowhead
+	[180435] = "Algibeira do Noggel",	-- Noggle's Satchel
 	[180436] = "Fragmento de Tabuleta do Crepúsculo",	-- Twilight Tablet Fragment
 	[180448] = "Cartaz de Procura-se: Agarramata",	-- Wanted Poster: Deathclasp
+	[180453] = "Cristal Entalhado de Glifos de Colme'Régia",	-- Hive'Regal Glyphed Crystal
 	[180456] = "Pedra Eólica Menor",	-- Lesser Wind Stone
 	[180461] = "Pedra Eólica",	-- Wind Stone
 	[180466] = "Pedra Eólica Maior",	-- Greater Wind Stone
@@ -1353,6 +1358,7 @@ for key,value in pairs({
 	[180642] = "Caixote Inconspícuo",	-- Inconspicuous Crate
 	--TODO: [180652] = "Freshly Dug Dirt",	-- Freshly Dug Dirt
 	[180662] = "Destroços da Escuna",	-- Schooner Wreckage
+	[180669] = "Voragem Serpenteante",	-- Swirling Maelstrom	--TODO: this was manually translated
 	[180685] = "Destroços Encharcados",	-- Waterlogged Wreckage
 	[180690] = "Grande Arca do Escaravelho",	-- Large Scarab Coffer
 	[180691] = "Arca do Escaravelho",	-- Scarab Coffer
@@ -1378,6 +1384,7 @@ for key,value in pairs({
 	[181153] = "Cartaz de Procura-se: Kel'gash, o Perverso",	-- Wanted Poster: Kel'gash the Wicked
 	[181638] = "Cartaz de Procura-se",	-- Wanted Poster
 	[181643] = "Restos Mortais de Barbapena",	-- Featherbeard's Remains	--TODO: This was taken from wotlk Wowhead
+	[181645] = "Ovo de Grifo",	-- Gryphon Egg
 	[181649] = "Diário de Barbapena",	-- Featherbeard's Journal
 	[181665] = "Baú de Enterro",	-- Burial Chest
 	[181672] = "Efígie do Homem de Palha",	-- Wickerman Effigy
@@ -1438,6 +1445,7 @@ for key,value in pairs({
 	[186887] = "Lanterna de Abóbora Grande",	-- Large Jack-o'-Lantern
 	[187072] = "Raiz Espinhosa",	-- Razorthorn Root
 	[187236] = "Presente de Véu de Inverno",	-- Winter Veil Gift
+	[187264] = "Baú de Minério dos Espinha Negra",	-- Darkspine Ore Chest
 	[187273] = "Pegada Suspeita",	-- Suspicious Hoofprint
 	[187333] = "Arbusto de Fruta-sangue",	-- Bloodberry Bush
 	[187559] = "Fogueira da Horda",	-- Horde Bonfire
@@ -2118,7 +2126,7 @@ for key,value in pairs({
 	[234734] = "Elixir do Vislumbre das Sombras",	-- Elixir of Shadow Sight
 	[234735] = "Elixir do Vislumbre das Sombras",	-- Elixir of Shadow Sight
 	[234736] = "Elixir do Vislumbre das Sombras",	-- Elixir of Shadow Sight
-	[234740] = "Trompa Sinalizadora Órquica",	-- Orchish Signaling Horn
+	[234740] = "Trompa Sinalizadora Órquica",	-- Orcish Signaling Horn
 	[234744] = "Oferenda para a Mãe Corvo",	-- Offering to the Raven Mother
 	[234746] = "Oferenda para a Mãe Corvo",	-- Offering to the Raven Mother
 	[234748] = "Oferenda para a Mãe Corvo",	-- Offering to the Raven Mother
@@ -3766,7 +3774,7 @@ for key,value in pairs({
 	[385952] = "Anel Incomum",	-- Unusual Ring
 	[386079] = "Baú Bem Mastigado",	-- Well-Chewed Chest
 	[386080] = "Chave Tórrida",	-- Scorching Key
-	--TODO: [386086] = "Seething Cache",	-- Seething Cache
+	[386086] = "Baú Fervilhante",	-- Seething Cache
 	[386088] = "Oferendas Ritualísticas",	-- Ritual Offerings
 	[386089] = "Oferendas Ritualísticas",	-- Ritual Offerings
 	[386090] = "Oferendas Ritualísticas",	-- Ritual Offerings
@@ -3910,7 +3918,7 @@ for key,value in pairs({
 	[392582] = "Pacote de Sobrevivência com Defeito",	-- Defective Survival Pack
 	[392583] = "Caixa-forte Atada ao Caos",	-- Void-Bound Strongbox
 	[392587] = "Gerador de Buraco de Serpe Quebrado",	-- Busted Wyrmhole Generator
-	--TODO: [392591] = "Chest of the Flights",	-- Chest of the Flights
+	[392591] = "Baú das Revoadas",	-- Chest of the Flights
 	[392593] = "Minerador de Dados Inconspícuo",	-- Inconspicuous Data Miner
 	[393218] = "Baú Arcano Primordial",	-- Primordial Arcane Cache
 	[393220] = "Baú de Tinta Primordial",	-- Primordial Paint Cache
@@ -3942,7 +3950,7 @@ for key,value in pairs({
 	[398796] = "Cristal Arcano Ressoante",	-- Resonating Arcane Crystal
 	[398810] = "Recompensa da Fidelidade",	-- Fealty's Reward
 	[398814] = "Acúmulo Derretido",	-- Molten Hoard
-	--TODO: [398815] = "Secured Shipment",	-- Secured Shipment
+	[398815] = "Carregamento Protegido",	-- Secured Shipment
 	[401236] = "Espécime Malnutrido",	-- Malnourished Specimen
 	[401238] = "Visgo de Tutano Maduro",	-- Marrow-Ripened Slime
 	[401240] = "Mofo Suspeito",	-- Suspicious Mold

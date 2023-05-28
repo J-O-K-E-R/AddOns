@@ -11,6 +11,24 @@ if (not (GTFO.ClassicMode or GTFO.BurningCrusadeMode or GTFO.WrathMode)) then
 --- * Dragon Isles (World) *
 --- ************************
 
+GTFO.SpellID["408556"] = {
+  --desc = "Entangled (Season 2 Affix - Applied)";
+  applicationOnly = true;
+  soundFunction = function() 
+	GTFO_AddEvent("Entangled", 2, function() 
+		local timeLeft = GTFO_DebuffTime("player", 408556);
+		if (timeLeft >= 5) then
+			GTFO_PlaySound(2);
+		elseif (timeLeft >= 1) then
+			GTFO_PlaySound(1);
+		else
+			GTFO_RemoveEvent("Entangled");
+		end;
+		end, 2);
+	return 2;
+  end;
+};
+
 GTFO.SpellID["362970"] = {
 	--desc = "Electified Water";
 	sound = 2;
@@ -285,6 +303,94 @@ GTFO.SpellID["401087"] = {
   sound = 1;
   negatingBuffSpellID = 401091; -- Reflective Arcane Ward
 };
+
+GTFO.SpellID["404848"] = {
+  --desc = "Lava Pool (Conflagration Pylon)";
+  ignoreApplication = true;
+  sound = 1;
+};
+
+GTFO.SpellID["409005"] = {
+  --desc = "Cave In (Summitshaper Lorac)";
+  ignoreApplication = true;
+  sound = 1;
+};
+
+GTFO.SpellID["410814"] = {
+  --desc = "Choking";
+  applicationOnly = true;
+  sound = 2;
+};
+
+GTFO.SpellID["411374"] = {
+  --desc = "Blessed Ground (Empowered Protector Lynaera)";
+  sound = 1;
+};
+
+GTFO.SpellID["410639"] = {
+  --desc = "Wave of Flame (Scalecommander Sarkareth)";
+  applicationOnly = true;
+  sound = 1;
+};
+
+GTFO.SpellID["410639"] = {
+	--desc = "Wave of Flame (Scalecommander Sarkareth)";
+	soundFunction = function() 
+		-- Alert if hit more than 5 times
+		if (not GTFO.VariableStore.WaveOfFlame) then
+			GTFO.VariableStore.WaveOfFlame = 0;
+		end
+		if (GTFO.VariableStore.WaveOfFlame == 0) then
+			GTFO_AddEvent("ResetWaveOfFlameCounter", 5, function() GTFO.VariableStore.WaveOfFlame = 0; end);
+		end
+		GTFO.VariableStore.WaveOfFlame = GTFO.VariableStore.WaveOfFlame + 1;
+		if (GTFO.VariableStore.WaveOfFlame > 5) then
+			return 1;
+		end
+	end;
+};
+
+GTFO.SpellID["408173"] = {
+  --desc = "Dragonslayer's Sight";
+  applicationOnly = true;
+  soundFunction = function() 
+	local stacks = GTFO_DebuffStackCount("player", 408173);
+	if (stacks > 6) then
+		return 1;
+	else
+		return 2;
+	end
+  end;
+};
+
+GTFO.SpellID["392365"] = {
+  --desc = "Fissuring Slam (Dreadful Defender)";
+  sound = 1;
+};
+
+GTFO.SpellID["403384"] = {
+  --desc = "Molten Pool";
+  sound = 1;
+};
+
+GTFO.SpellID["403948"] = {
+  --desc = "Blistering Cyclone (Blistering Cyclone)";
+  sound = 1;
+};
+
+
+GTFO.SpellID["405125"] = {
+  --desc = "Jet Stream (Shukoro Rapidstamer)";
+  sound = 1;
+};
+
+GTFO.SpellID["404824"] = {
+  --desc = "Flow Like Water (Shukoro Rapidstamer)";
+  applicationOnly = true;
+  minimumStacks = 2;
+  sound = 1;
+};
+
 
 --- *******************
 --- * Ruby Life Pools *
@@ -680,6 +786,26 @@ GTFO.SpellID["376325"] = {
   sound = 1;
 };
 
+--- *******************
+--- * Vortex Pinnacle *
+--- *******************
+
+GTFO.SpellID["413319"] = {
+  --desc = "Downwind of Altairus (Altairus)";
+  sound = 2;
+};
+
+GTFO.SpellID["413275"] = {
+  --desc = "Cold Front (Altairus)";
+  sound = 1;
+};
+
+GTFO.SpellID["88963"] = {
+  --desc = "Lightning Lash (Minister of Air)";
+  sound = 1;
+  test = true;
+};
+
 --- ***************************
 --- * Vault of the Incarnates *
 --- ***************************
@@ -896,7 +1022,6 @@ GTFO.SpellID["392196"] = {
 
 GTFO.SpellID["388659"] = {
 	--desc = "Tempest Wing (Raszageth)";
-	test = true;
 	soundFunction = function() 
 		-- Alert if hit more than 5 times
 		if (not GTFO.VariableStore.TempestWing) then
@@ -996,6 +1121,8 @@ GTFO.SpellID["406233"] = {
 GTFO.SpellID["405457"] = {
   --desc = "Disintegrate (Rionthus)";
   sound = 4;
+  negatingDebuffSpellID = 405392; -- Disintegrate
+  test = true;
 };
 
 GTFO.SpellID["406321"] = {
@@ -1007,6 +1134,55 @@ GTFO.SpellID["405462"] = {
   --desc = "Dragonfire Traps (Zskarn)";
   applicationOnly = true;
   sound = 1;
+};
+
+GTFO.SpellID["406712"] = {
+  --desc = "Lava (Magmorax)";
+  sound = 1;
+};
+
+GTFO.SpellID["409058"] = {
+  --desc = "Seeping Lava (Neltharion)";
+  sound = 1;
+};
+
+GTFO.SpellID["409183"] = {
+  --desc = "Wild Pestilence (Neltharion)";
+  sound = 1;
+};
+
+GTFO.SpellID["404277"] = {
+  --desc = "Zealous Execution (Neltharion)";
+  sound = 1;
+};
+
+GTFO.SpellID["411633"] = {
+  --desc = "Burning Chains (Magmorax)";
+  sound = 1;
+};
+
+GTFO.SpellID["410271"] = {
+  --desc = "Clinging Void";
+  applicationOnly = true;
+  minimumStacks = 4;
+  sound = 1;
+};
+
+GTFO.SpellID["401621"] = {
+  --desc = "Scorching Bomb (Scalecommander Sarkareth)";
+  sound = 1;
+};
+
+GTFO.SpellID["404062"] = {
+  --desc = "Void Bomb (Scalecommander Sarkareth)";
+  sound = 1;
+};
+
+GTFO.SpellID["402051"] = {
+  --desc = "Searing Breath (Sarkareth)";
+  applicationOnly = true;
+  sound = 1;
+  negatingDebuffSpellID = 401383; -- Oppressing Howl
 };
 
 end

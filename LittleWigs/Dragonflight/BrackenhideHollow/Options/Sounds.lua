@@ -12,7 +12,7 @@ BigWigs:AddSounds("Hackclaw's War-Band", {
 
 BigWigs:AddSounds("Treemouth", {
 	[376811] = "alert",
-	[376934] = "alert",
+	[376934] = "info",
 	[377559] = "alarm",
 	[377859] = "alarm",
 	[378022] = {"info","long"},
@@ -30,13 +30,13 @@ BigWigs:AddSounds("Gutshot", {
 
 BigWigs:AddSounds("Decatriarch Wratheye", {
 	[373917] = "alert",
-	[373944] = "alert",
-	[373960] = {"info","long"},
+	[373944] = "warning",
+	[373960] = "long",
 	[376170] = "alarm",
 })
 
 BigWigs:AddSounds("Brackenhide Hollow Trash", {
-	[367484] = "long",
+	[367484] = {"alert","warning"},
 	[367500] = "warning",
 	[367503] = "alarm",
 	[368081] = "alert",
@@ -45,14 +45,16 @@ BigWigs:AddSounds("Brackenhide Hollow Trash", {
 	[373897] = "alert",
 	[373929] = "alarm",
 	[373943] = "alarm",
-	[374057] = "alert",
+	[374057] = "warning",
 	[374544] = "alarm",
 	[374569] = "alarm",
 	[382435] = "alert",
 	[382555] = {"alarm","underyou"},
 	[382712] = "alarm",
 	[383087] = {"alarm","alert"},
-	[383399] = {"alert","underyou"},
+	[383399] = {"long","underyou"},
+	[384847] = "info",
+	[384854] = "alarm",
 	[384974] = {"alert","warning"},
 	[385029] = "alert",
 	[385058] = "alert",

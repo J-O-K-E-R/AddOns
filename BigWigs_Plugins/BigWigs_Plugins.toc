@@ -23,7 +23,7 @@
 ## Notes-esES: Plugins del núcleo de BigWigs.
 ## Notes-esMX: Plugins del núcleo de BigWigs.
 ## IconTexture: Interface\AddOns\BigWigs\Media\Icons\core-enabled
-## Version: v275
+## Version: v281
 
 ## LoadOnDemand: 1
 ## Dependencies: BigWigs, BigWigs_Core

@@ -56,6 +56,7 @@ AL["COLLECTION_FILTERS_PROFILE_BACKUP_CREATED"] = "Neues Profil auf Basis des be
 AL["CONTAINER"] = "Truhe"
 AL["CONTAINER_385565"] = "Lodernde Schattenflammentruhe"
 AL["CONTAINER_386079"] = "Ordentlich zerkaute Truhe"
+AL["CONTAINER_386086"] = "Brodelnde Truhe"
 AL["CONTAINER_386088"] = "Ritualopfergaben"
 AL["CONTAINER_386089"] = "Ritualopfergaben"
 AL["CONTAINER_386090"] = "Ritualopfergaben"

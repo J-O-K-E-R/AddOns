@@ -24,8 +24,8 @@ RSConstants.LOOT_ITEM_ID = nil
 -- Current versions
 ---============================================================================
 
-RSConstants.CURRENT_DB_VERSION = 101
-RSConstants.CURRENT_LOOT_DB_VERSION = 110
+RSConstants.CURRENT_DB_VERSION = 104
+RSConstants.CURRENT_LOOT_DB_VERSION = 113
 
 ---============================================================================
 -- Current maps (newer)
@@ -65,6 +65,7 @@ RSConstants.FIND_HIDDEN_QUESTS_TIMER = 5 --5 seconds after killing a NPC or open
 RSConstants.CHECK_RESPAWN_THRESHOLD = 150 --2.5 minutes
 RSConstants.CHECK_RESPAWN_TIMER = 60 --1 minute
 RSConstants.CHECK_RESET_NOTIFICATIONS_TIMER = 10 --10 seconds
+RSConstants.BUTTON_TIMER = 1 --1 seconds
 
 ---============================================================================
 -- Collections enumerators
@@ -187,6 +188,7 @@ RSConstants.PROFILE_DEFAULTS = {
 			displayNotDiscoveredNpcIcons = true,
 			displayAlreadyKilledNpcIcons = false,
 			displayAlreadyKilledNpcIconsReseteable = false,
+			displayProfessionRaresNpcIcons = true,
 			displayAchievementRaresNpcIcons = true,
 			displayHuntingPartyRaresNpcIcons = false,
 			displayPrimalStormRaresNpcIcons = true,
@@ -390,6 +392,7 @@ RSConstants.FIRE_STORM_EVENTS_NPCS = { 193650, 193648, 193675, 193686, 193687 }
 RSConstants.WATER_STORM_EVENTS_NPCS = { 193645, 193655, 193682, 193677, 193678, 193679 }
 RSConstants.AIR_STORM_EVENTS_NPCS = { 193653, 193647, 193684, 193674, 193685 }
 RSConstants.EARTH_STORM_EVENTS_NPCS = { 193644, 193654, 193652, 193680 }
+RSConstants.FYRAKK_ASSAULTS_NPCS = { 201054, 203698, 203699, 203700, 203703, 203705, 203707, 201673 }
 RSConstants.BOUNDING_SHRROM_CONTAINERS = { 349793, 349797, 353330 }
 RSConstants.RIPE_PURIAN_CONTAINERS = { 353643, 353503, 353205, 353500, 352754, 353516, 353325, 353019, 353252, 353314, 352998 }
 RSConstants.RIFT_HIDDEN_ENTITIES = { 179883, 368645, 368646, 368647, 368648, 368649, 368650 }
@@ -410,6 +413,7 @@ RSConstants.CONTAINER_WITH_NPC_VIGNETTE = { 192243 }
 RSConstants.CONTAINERS_FORBIDDEN_REACH = { 386214, 386165, 386166, 386167, 386168, 386172, 386174, 386179, 386208, 386212, 386213 }
 RSConstants.FORBIDDEN_REACH_ANCESTRAL_SPIRIT = 203388
 RSConstants.ZARALEK_CAVERN_LOAM_SCOUT = 204657
+RSConstants.ELUSIVE_NPCS = { 204821, 204831, 202436, 202441, 194489, 194491, 195465, 195472, 195492, 195509, 195518, 195541 }
 
 -- NPCs that spawn after completing an event
 RSConstants.NPCS_WITH_PRE_EVENT = {

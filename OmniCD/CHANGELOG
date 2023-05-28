@@ -1,6 +1,13 @@
 ------------------------------------------------------------------------------
 -- Dragonflight
 --
+v10.1.0.2751
+	Added Season 2 Obsidian PvP Trinkets
+	Added Embers of Neltharion Tier Set bonuses
+	Added option to use ElvUI's timer (in General menu)
+	Fixed spell tooltips showing a blank text if the spell hasn't been cached yet
+	Fixed option panel dropdown menu tooltip not showing
+
 v10.1.0.2750
 	Patch 10.1 updates
 	Blessing of the Bronze CDR added to non-Evoker classes
@@ -688,6 +695,12 @@ v2.5.0
 ------------------------------------------------------------------------------
 -- WOTLKC
 --
+v3.4.1.2751
+	3.4.2 font flag fix
+	Added option to use ElvUI's timer (in General menu)
+	Fixed spell tooltips showing a blank text if the spell hasn't been cached yet
+	Fixed option panel dropdown menu tooltip not showing
+
 v3.4.1.2750
 	minor bug fixes
 
@@ -788,6 +801,11 @@ v2.6.01-bcc
 ------------------------------------------------------------------------------
 -- classic era
 --
+v1.14.3.2751
+	Added option to use ElvUI's timer (in General menu)
+	Fixed spell tooltips showing a blank text if the spell hasn't been cached yet
+	Fixed option panel dropdown menu tooltip not showing
+
 v1.14.3.2750
 	minor bug fixes
 

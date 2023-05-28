@@ -13,6 +13,8 @@ mod:SetStage(1)
 -- Locals
 --
 
+local pullTime = 0
+local lastCast = {}
 local thadrionEngaged = false
 local rionthusEngaged = false
 
@@ -29,18 +31,33 @@ local deepBreathCount = 1
 local temporalAnomalyCount = 1
 local disintergrateCount = 1
 
+-- mythic timers are static for all three bosses, these cover 10min
+local timersMythic = {
+	-- Thadrion
+	[405492] = { 14, 34, 69, 89, 124, 144, 179, 199, 234, 254, 289, 309, 344, 364, 399, 419, 454, 474, 509, 529, 564, 584 }, -- Volatile Spew
+	[407327] = { 3, 24, 58, 79, 113, 134, 168, 189, 223, 244, 278, 299, 333, 354, 388, 409, 443, 464, 498, 519, 553, 574 }, -- Unstable Essence
+	[405375] = { 45, 100, 155, 210, 265, 320, 375, 430, 485, 540, 595 }, -- Volatile Eruption
+	-- Rionthus
+	[405392] = { 5, 60, 115, 170, 225, 280, 335, 390, 445, 500, 555 }, -- Disintegrate
+	[407552] = { 50, 105, 160, 215, 270, 325, 380, 435, 490, 545, 600 }, -- Temporal Anomaly
+	[406227] = { 31, 86, 141, 196, 251, 306, 361, 416, 471, 526, 581 }, -- Deep Breath
+}
+
 --------------------------------------------------------------------------------
 -- Localization
 --
 
 local L = mod:GetLocale()
 if L then
-	L.rending_charge_single = "First Charge"
-	L.massive_slam = "Frontal Cone"
-	L.unstable_essence_new = "New Bomb"
 	L.custom_on_unstable_essence_high = "High Stacks Unstable Essence Say Messages"
 	L.custom_on_unstable_essence_high_icon = 407327
 	L.custom_on_unstable_essence_high_desc = "Say messages with the amount of stacks for your Unstable Essence debuff when they are high enough."
+
+	L.killed = "%s killed"
+
+	L.rending_charge_single = "First Charge"
+	L.massive_slam = "Frontal Cone"
+	L.unstable_essence_new = "New Bomb"
 	L.volatile_spew = "Dodges"
 	L.volatile_eruption = "Eruption"
 	L.temporal_anomaly = "Heal Orb"
@@ -59,11 +76,11 @@ function mod:GetOptions()
 		{406311, "TANK"}, -- Infused Strikes
 		407302, -- Infused Explosion
 		-- Neldris
-		{406358, "ICON", "SAY", "SAY_COUNTDOWN", "PRIVATE"}, -- Rending Charge
+		{406358, "ICON", "SAY", "SAY_COUNTDOWN", "PRIVATE", "ME_ONLY_EMPHASIZE"}, -- Rending Charge
 		404472, -- Massive Slam
 		404713, -- Bellowing Roar
 		-- Thadrion
-		{407327, "SAY"}, -- Unstable Essence
+		{407327, "ME_ONLY_EMPHASIZE"}, -- Unstable Essence
 		"custom_on_unstable_essence_high",
 		unstableEssenceMarker,
 		405492, -- Volatile Spew
@@ -71,7 +88,7 @@ function mod:GetOptions()
 		-- Rionthus
 		406227, -- Deep Breath
 		407552, -- Temporal Anomaly
-		{405392, "SAY"}, -- Disintegrate
+		{405392, "SAY", "ME_ONLY_EMPHASIZE"}, -- Disintegrate
 	}, {
 		[406358] = -26316, -- Neldris
 		[407327] = -26322, -- Thadrion
@@ -119,6 +136,8 @@ end
 
 function mod:OnEngage()
 	self:SetStage(1)
+	pullTime = GetTime()
+	lastCast = {}
 	thadrionEngaged = false
 	rionthusEngaged = false
 	self:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT")
@@ -147,17 +166,39 @@ end
 -- Event Handlers
 --
 
+local function getCastCD(key)
+	local t = GetTime()
+	local duration = t - pullTime
+
+	-- find the next cast based on the combat time
+	local index = 1
+	while timersMythic[key][index] < duration do
+		index = index + 1
+		if not timersMythic[key][index] then
+			return 0 -- you went over 10min? o.O
+		end
+	end
+	-- set the last cast using the previous index for pairs of cds
+	if index > 1 then
+		local prev = duration - timersMythic[key][index - 1]
+		if prev > 0 then
+			lastCast[key] = t - prev
+		end
+	end
+	-- return the time remaining for the next cast
+	return timersMythic[key][index] - duration
+end
+
 function mod:INSTANCE_ENCOUNTER_ENGAGE_UNIT()
-	-- XXX better event? initial timers have quite a bit of variance
 	if not thadrionEngaged then
 		if self:GetBossId(200913) then -- Thadrion
 			thadrionEngaged = true
 			self:Message("stages", "cyan", -26322, false)
 			self:PlaySound("stages", "long")
 
-			self:CDBar(405492, self:Mythic() and 9.5 or 6, CL.count:format(L.volatile_spew, volatileSpewCount)) -- Volatile Spew
-			self:CDBar(407327, self:Mythic() and 21 or 17.3, CL.count:format(L.unstable_essence_new, unstableEssenceCount)) -- Unstable Essence
-			self:CDBar(405375, 40, CL.count:format(L.volatile_eruption, violentEruptionCount)) -- Violent Eruption
+			self:CDBar(405492, self:Mythic() and getCastCD(405492) or 6, CL.count:format(L.volatile_spew, volatileSpewCount)) -- Volatile Spew
+			self:CDBar(407327, self:Mythic() and getCastCD(407327) or 17.3, CL.count:format(L.unstable_essence_new, unstableEssenceCount)) -- Unstable Essence
+			self:CDBar(405375, self:Mythic() and getCastCD(405375) or 40, CL.count:format(L.volatile_eruption, violentEruptionCount)) -- Violent Eruption
 		end
 	elseif not rionthusEngaged then
 		if self:GetBossId(200918) then -- Rionthus
@@ -165,16 +206,17 @@ function mod:INSTANCE_ENCOUNTER_ENGAGE_UNIT()
 			self:Message("stages", "cyan", -26329, false)
 			self:PlaySound("stages", "long")
 
-			self:CDBar(405392, self:Mythic() and 1 or 6.4, CL.count:format(self:SpellName(405392), disintergrateCount)) -- Disintegrate
-			self:CDBar(407552, self:Mythic() and 12.4 or 17.5, CL.count:format(L.temporal_anomaly, temporalAnomalyCount)) -- Temporal Anomaly
-			if not self:Easy() then -- bugged or intended?
-				self:CDBar(406227, self:Mythic() and 26.4 or 33.1, CL.count:format(self:SpellName(406227), deepBreathCount)) -- Deep Breath
-			end
+			self:CDBar(405392, self:Mythic() and getCastCD(405392) or 6.4, CL.count:format(self:SpellName(405392), disintergrateCount)) -- Disintegrate
+			self:CDBar(407552, self:Mythic() and getCastCD(407552) or 17.5, CL.count:format(L.temporal_anomaly, temporalAnomalyCount)) -- Temporal Anomaly
+			self:CDBar(406227, self:Mythic() and getCastCD(406227) or 33.1, CL.count:format(self:SpellName(406227), deepBreathCount)) -- Deep Breath
 		end
 	end
 end
 
 function mod:Deaths(args)
+	if self:Mythic() then
+		self:Message("stages", "green", L.killed:format(args.destName), false)
+	end
 	if args.mobId == 200912 then -- Neldris
 		self:StopBar(CL.count:format(self:SpellName(406358), rendingChargeCount)) -- Rending Charge
 		self:StopBar(CL.count:format(L.massive_slam, massiveSlamCount)) -- Massive Slam
@@ -221,7 +263,8 @@ end
 do
 	local function printTarget(self, player, guid)
 		if self:Me(guid) then
-			self:PlaySound(406358, "warning")
+			self:PersonalMessage(406358, nil, L.rending_charge_single)
+			--self:PlaySound(406358, "warning") -- The private aura sound should play
 			self:Say(406358, L.rending_charge_single)
 			self:SayCountdown(406358, 5)
 		end
@@ -229,8 +272,9 @@ do
 	end
 
 	function mod:RendingCharge(args)
-		self:StopBar(CL.count:format(args.spellName, rendingChargeCount))
-		self:Message(406358, "red", CL.count:format(args.spellName, rendingChargeCount))
+		local msg = CL.count:format(args.spellName, rendingChargeCount)
+		self:StopBar(msg)
+		self:Message(406358, "red", msg)
 		self:PlaySound(406358, "alert")
 		rendingChargeCount = rendingChargeCount + 1
 		local cd = self:Mythic() and (rendingChargeCount % 2 == 1 and 18 or 37) or (rendingChargeCount % 2 == 1 and 38 or 35)
@@ -244,8 +288,9 @@ function mod:RendingChargeSuccess(args)
 end
 
 function mod:MassiveSlam(args)
-	self:StopBar(CL.count:format(L.massive_slam, massiveSlamCount))
-	self:Message(404472, "yellow", CL.count:format(L.massive_slam, massiveSlamCount))
+	local msg = CL.count:format(L.massive_slam, massiveSlamCount)
+	self:StopBar(msg)
+	self:Message(404472, "yellow", msg)
 	self:PlaySound(404472, "alert")
 	massiveSlamCount = massiveSlamCount + 1
 	-- finding a 4th non-mythic cast is hard
@@ -254,8 +299,9 @@ function mod:MassiveSlam(args)
 end
 
 function mod:BellowingRoar(args)
-	self:StopBar(CL.count:format(CL.roar, bellowingRoarCount))
-	self:Message(args.spellId, "orange", CL.count:format(CL.roar, bellowingRoarCount))
+	local msg = CL.count:format(CL.roar, bellowingRoarCount)
+	self:StopBar(msg)
+	self:Message(args.spellId, "orange", msg)
 	self:PlaySound(args.spellId, "alarm")
 	bellowingRoarCount = bellowingRoarCount + 1
 	local cd = self:Mythic() and (bellowingRoarCount % 2 == 0 and 30 or 25) or 57 -- 10.7, 57.0 wtb 3rd cast
@@ -263,23 +309,23 @@ function mod:BellowingRoar(args)
 end
 
 -- Thadrion
-do
-	local prev = 0
-	function mod:UnstableEssence(args)
-		self:StopBar(CL.count:format(L.unstable_essence_new, unstableEssenceCount))
-		self:Message(407327, "cyan", CL.casting:format(L.unstable_essence_new))
-		unstableEssenceCount = unstableEssenceCount + 1
-		local timeSinceLast = args.time - prev
-		prev = args.time
-		self:Bar(407327, self:Mythic() and (timeSinceLast > 25 and 21 or 34) or (timeSinceLast > 32 and 28 or 39), CL.count:format(L.unstable_essence_new, unstableEssenceCount))
-	end
+function mod:UnstableEssence(args)
+	local msg = CL.count:format(L.unstable_essence_new, unstableEssenceCount)
+	self:StopBar(msg)
+	self:Message(407327, "cyan", CL.casting:format(msg))
+	unstableEssenceCount = unstableEssenceCount + 1
+
+	local t = GetTime()
+	local timeSinceLast = t - (lastCast[407327] or 0)
+	lastCast[407327] = t
+
+	self:Bar(407327, self:Mythic() and (timeSinceLast > 25 and 21 or 34) or (timeSinceLast > 32 and 28 or 39), CL.count:format(L.unstable_essence_new, unstableEssenceCount))
 end
 
 function mod:UnstableEssenceApplied(args)
 	if self:Me(args.destGUID) then
 		self:PersonalMessage(args.spellId, nil, CL.bomb)
 		self:PlaySound(args.spellId, "alarm")
-		self:Say(args.spellId, CL.bomb)
 	end
 	for i = 1, 8, 1 do -- Good luck to anyone with 8 bombs
 		if not essenceMarksUsed[i] then
@@ -292,16 +338,20 @@ end
 
 function mod:UnstableEssenceAppliedStacks(args)
 	if self:Me(args.destGUID) and self:GetOption("custom_on_unstable_essence_high") and args.amount > 10 then -- Say messages above 10
-		local icon = GetRaidTargetIndex("player")
+		local icon = self:GetIcon(args.destRaidFlags)
 		local sayText = args.amount
 		if icon then
 			sayText = "{rt"..icon.."} "..args.amount.." {rt"..icon.."}"
 		end
-		self:Say(args.spellId, sayText, true)
+		self:Say(false, sayText, true)
 	end
 end
 
 function mod:UnstableEssenceRemoved(args)
+	if self:Me(args.destGUID) then
+		self:PersonalMessage(args.spellId, false, CL.removed:format(CL.bomb))
+		self:PlaySound(args.spellId, "alarm")
+	end
 	self:CustomIcon(unstableEssenceMarker, args.destName)
 	for i = 1, 3, 1 do -- 1, 2, 3
 		if essenceMarksUsed[i] == args.destGUID then
@@ -311,24 +361,26 @@ function mod:UnstableEssenceRemoved(args)
 	end
 end
 
-do
-	local prev = 0
-	function mod:VolatileSpew(args)
-		self:StopBar(CL.count:format(L.volatile_spew, volatileSpewCount))
-		self:Message(args.spellId, "orange", CL.count:format(L.volatile_spew, volatileSpewCount))
-		self:PlaySound(args.spellId, "alarm")
-		volatileSpewCount = volatileSpewCount + 1
-		local timeSinceLast = args.time - prev
-		prev = args.time
-		-- heroic: 15.2, 21.8, 37.6, 30.4
-		local cd = self:Mythic() and (timeSinceLast > 22 and 20 or 35) or (volatileSpewCount == 2 and 22 or volatileSpewCount % 2 == 0 and 30 or 37)
-		self:CDBar(args.spellId, cd, CL.count:format(L.volatile_spew, volatileSpewCount))
-	end
+function mod:VolatileSpew(args)
+	local msg = CL.count:format(L.volatile_spew, volatileSpewCount)
+	self:StopBar(msg)
+	self:Message(args.spellId, "orange", msg)
+	self:PlaySound(args.spellId, "alarm")
+	volatileSpewCount = volatileSpewCount + 1
+
+	local t = GetTime()
+	local timeSinceLast = t - (lastCast[405492] or 0)
+	lastCast[405492] = t
+
+	-- heroic: 15.2, 21.8, 37.6, 30.4
+	local cd = self:Mythic() and (timeSinceLast > 22 and 20 or 35) or (volatileSpewCount == 2 and 22 or volatileSpewCount % 2 == 0 and 30 or 37)
+	self:CDBar(args.spellId, cd, CL.count:format(L.volatile_spew, volatileSpewCount))
 end
 
 function mod:ViolentEruption(args)
-	self:StopBar(CL.count:format(L.volatile_eruption, violentEruptionCount))
-	self:Message(405375, "yellow", CL.count:format(L.volatile_eruption, violentEruptionCount))
+	local msg = CL.count:format(L.volatile_eruption, violentEruptionCount)
+	self:StopBar(msg)
+	self:Message(405375, "yellow", msg)
 	self:PlaySound(405375, "long")
 	violentEruptionCount = violentEruptionCount + 1
 	self:Bar(405375, self:Mythic() and 55 or 69.3, CL.count:format(L.volatile_eruption, violentEruptionCount))
@@ -336,25 +388,21 @@ end
 
 -- Rionthus
 function mod:DeepBreath(args)
-	self:StopBar(CL.count:format(args.spellName, deepBreathCount))
-	self:Message(args.spellId, "red", CL.count:format(args.spellName, deepBreathCount))
+	local msg = CL.count:format(args.spellName, deepBreathCount)
+	self:StopBar(msg)
+	self:Message(args.spellId, "red", msg)
 	self:PlaySound(args.spellId, "alert")
 	deepBreathCount = deepBreathCount + 1
 	self:Bar(args.spellId, self:Mythic() and 55 or 43, CL.count:format(args.spellName, deepBreathCount))
 end
 
-do
-	local prev = 0
-	function mod:TemporalAnomaly(args)
-		self:StopBar(CL.count:format(L.temporal_anomaly, temporalAnomalyCount))
-		self:Message(args.spellId, "yellow", CL.count:format(L.temporal_anomaly, temporalAnomalyCount))
-		self:PlaySound(args.spellId, "info")
-		temporalAnomalyCount = temporalAnomalyCount + 1
-		local timeSinceLast = args.time - prev
-		prev = args.time
-		local cd = self:Mythic() and (timeSinceLast > 25 and 22 or 33) or (temporalAnomalyCount == 2 and 46.3 or 43.8)
-		self:Bar(args.spellId, cd, CL.count:format(L.temporal_anomaly, temporalAnomalyCount))
-	end
+function mod:TemporalAnomaly(args)
+	local msg = CL.count:format(L.temporal_anomaly, temporalAnomalyCount)
+	self:StopBar(msg)
+	self:Message(args.spellId, "yellow", msg)
+	self:PlaySound(args.spellId, "info")
+	temporalAnomalyCount = temporalAnomalyCount + 1
+	self:Bar(args.spellId, self:Mythic() and 55 or (temporalAnomalyCount == 2 and 46.3 or 43.8), CL.count:format(L.temporal_anomaly, temporalAnomalyCount))
 end
 
 function mod:TemporalAnomalyKnocked(args)
@@ -365,8 +413,9 @@ function mod:TemporalAnomalyKnocked(args)
 end
 
 function mod:Disintegrate(args)
-	self:StopBar(CL.count:format(args.spellName, disintergrateCount))
-	self:Message(405392, "orange", CL.count:format(args.spellName, disintergrateCount))
+	local msg = CL.count:format(args.spellName, disintergrateCount)
+	self:StopBar(msg)
+	self:Message(405392, "orange", msg)
 	disintergrateCount = disintergrateCount + 1
 	self:Bar(405392, self:Mythic() and 55 or 44, CL.count:format(args.spellName, disintergrateCount))
 end

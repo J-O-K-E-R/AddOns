@@ -602,7 +602,8 @@ local treeNodeEntryIDs = {
 }
 
 local talentIDFix = { [103211]=377779,[103216]=343240,[103224]=377623, }
-local talentChargeFix = { [36554]=true,[191634]=true,[47568]=true, }
+
+local talentChargeFix = { [36554]=true,[191634]=true,[47568]=true, [5394]=true }
 
 local MAX_NUM_TALENTS = MAX_NUM_TALENTS or (E.isWOTLKC and 31 or 25)
 

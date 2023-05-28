@@ -16,7 +16,7 @@ function mod:GetOptions()
 	return {
 		376934, -- Grasping Vines
 		378022, -- Consuming
-		376811, -- Decay Spray
+		{376811, "SAY"}, -- Decay Spray
 		377859, -- Infectious Spit
 		377559, -- Vine Whip
 		-- Mythic
@@ -33,6 +33,7 @@ function mod:OnBossEnable()
 	self:Log("SPELL_AURA_APPLIED", "ConsumingStart", 378022)
 	self:Log("SPELL_AURA_REMOVED", "ConsumingRemoved", 378022)
 	self:Log("SPELL_CAST_START", "DecaySpray", 376811)
+	-- Infectious Spit is only cast in non-Mythic difficulties as of 2023-05-13
 	self:Log("SPELL_CAST_SUCCESS", "InfectiousSpit", 377859)
 	self:Log("SPELL_CAST_START", "VineWhip", 377559)
 
@@ -43,10 +44,13 @@ function mod:OnBossEnable()
 end
 
 function mod:OnEngage()
-	self:CDBar(377559, 5.7) -- Vine Whip
+	self:CDBar(377559, 5.0) -- Vine Whip
 	self:CDBar(376811, 12.1) -- Decay Spray
-	self:CDBar(376934, 15.7) -- Grasping Vines
-	self:CDBar(377859, 26.2) -- Infectious Spit
+	if not self:Mythic() then
+		self:CDBar(377859, 20.9) -- Infectious Spit
+	end
+	-- 23s energy gain + .2s delay
+	self:CDBar(376934, 23.2) -- Grasping Vines
 end
 
 --------------------------------------------------------------------------------
@@ -55,10 +59,18 @@ end
 
 function mod:GraspingVines(args)
 	self:Message(args.spellId, "red")
-	self:PlaySound(args.spellId, "alert")
-	if not self:Mythic() then
-		-- there are more reliable ways to trigger this in Mythic
-		self:CDBar(args.spellId, 41.3)
+	self:PlaySound(args.spellId, "info")
+	-- 5s cast + 4s channel before Consume + 45s energy gain + .5s delay
+	self:CDBar(args.spellId, 54.5)
+	-- takes 10s to fully cast + .2 delay
+	if self:BarTimeLeft(376811) < 10.2 then -- Decay Spray
+		self:CDBar(376811, {10.2, 42.5})
+	end
+	if not self:Mythic() and self:BarTimeLeft(377859) < 10.2 then -- Infectious Spit
+		self:CDBar(377859, {10.2, 20.6})
+	end
+	if self:BarTimeLeft(377559) < 10.2 then -- Vine Whip
+		self:CDBar(377559, {10.2, 15.8})
 	end
 end
 
@@ -78,8 +90,6 @@ do
 		local consumingDuration = args.time - consumingStart
 		self:Message(args.spellId, "green", CL.removed_after:format(args.spellName, consumingDuration))
 		self:PlaySound(args.spellId, "info")
-		-- 28s energy gain + ~1.2s delay
-		self:CDBar(376934, 29.2) -- Grasping Vines
 	end
 end
 
@@ -87,6 +97,9 @@ do
 	local function printTarget(self, name, guid)
 		self:TargetMessage(376811, "yellow", name)
 		self:PlaySound(376811, "alert", nil, name)
+		if self:Me(guid) then
+			self:Say(376811)
+		end
 	end
 
 	local prev = 0
@@ -97,7 +110,14 @@ do
 			prev = t
 			self:GetBossTarget(printTarget, 0.4, args.sourceGUID)
 		end
-		self:CDBar(args.spellId, 20.6)
+		self:CDBar(args.spellId, 42.5)
+		-- Treemouth won't cast other abilities for 8.3 seconds after Decay Spray
+		if not self:Mythic() and self:BarTimeLeft(377859) < 8.3 then -- Infectious Spit
+			self:CDBar(377859, {8.3, 20.6})
+		end
+		if self:BarTimeLeft(377559) < 8.3 then -- Vine Whip
+			self:CDBar(377559, {8.3, 15.8})
+		end
 	end
 end
 
@@ -105,6 +125,13 @@ function mod:InfectiousSpit(args)
 	self:Message(args.spellId, "orange")
 	self:PlaySound(args.spellId, "alarm")
 	self:CDBar(args.spellId, 20.6)
+	-- Treemouth won't cast other abilities for 3.63 seconds after Infectious Spit
+	if self:BarTimeLeft(376811) < 3.63 then -- Decay Spray
+		self:CDBar(376811, {3.63, 42.5})
+	end
+	if self:BarTimeLeft(377559) < 3.63 then -- Vine Whip
+		self:CDBar(377559, {3.63, 15.8})
+	end
 end
 
 do
@@ -117,7 +144,14 @@ do
 			self:Message(args.spellId, "purple")
 			self:PlaySound(args.spellId, "alarm")
 		end
-		self:CDBar(args.spellId, 13.3)
+		self:CDBar(args.spellId, 15.8)
+		-- Treemouth won't cast other abilities for 4.85 seconds after Vine Whip
+		if self:BarTimeLeft(376811) < 4.85 then -- Decay Spray
+			self:CDBar(376811, {4.85, 42.5})
+		end
+		if not self:Mythic() and self:BarTimeLeft(377859) < 4.85 then -- Infectious Spit
+			self:CDBar(377859, {4.85, 20.6})
+		end
 	end
 end
 
@@ -134,6 +168,4 @@ end
 function mod:StarvingFrenzy(args)
 	self:Message(args.spellId, "red")
 	self:PlaySound(args.spellId, "warning")
-	-- 28s energy gain + ~3.1s delay
-	self:CDBar(376934, 31.1) -- Grasping Vines
 end

@@ -25,7 +25,7 @@ function P:SetIconLayout(frame, sortOrder)
 		local icon = icons[i]
 		icon:Hide()
 
-		if (displayInactive or icon.active) and (self.multiline or i <= self.maxNumIcons) then
+		if (displayInactive or icon.active) and (self.multiline or numActive <= self.maxNumIcons) then
 			icon:ClearAllPoints()
 			if numActive > 1 then
 				count = count + 1

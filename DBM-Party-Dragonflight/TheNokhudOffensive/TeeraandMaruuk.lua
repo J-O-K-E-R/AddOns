@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod(2478, "DBM-Party-Dragonflight", 3, 1198)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20221128090806")
+mod:SetRevision("20230509011041")
 mod:SetCreatureID(186339, 186338)
 mod:SetEncounterID(2581)
 --mod:SetUsedIcons(1, 2, 3)
@@ -30,6 +30,8 @@ mod:RegisterEventsInCombat(
  or type = "dungeonencounterstart" or type = "dungeonencounterend"
  or type = "interrupt"
 --]]
+--General
+local timerRP									= mod:NewRPTimer(34.4)
 --Teera
 mod:AddTimerLine(DBM:EJ_GetSectionInfo(25552))
 local warnRepel									= mod:NewCastAnnounce(386547, 3, nil, nil, nil, nil, nil, 2)
@@ -90,6 +92,25 @@ function mod:ArrowTarget(targetname)
 end
 --]]
 
+local function scanBosses(self, delay)
+	for i = 1, 2 do
+		local unitID = "boss"..i
+		if UnitExists(unitID) then
+			local cid = self:GetUnitCreatureId(unitID)
+			local bossGUID = UnitGUID(unitID)
+			if cid == 193435 then--Terra
+				timerSpiritLeapCD:Start(6-delay, 1, bossGUID)
+				timerGaleArrowCD:Start(21.5-delay, 1, bossGUID)
+				timerRepelCD:Start(50-delay, 1, bossGUID)
+			else--Maruuk
+				timerFrightfulRoarCD:Start(5.5-delay, 1, bossGUID)
+				timerBrutalizeCD:Start(13.5-delay, 1, bossGUID)
+				timerEarthSplitterCD:Start(51-delay, 1, bossGUID)
+			end
+		end
+	end
+end
+
 function mod:OnCombatStart(delay)
 	--Static Counts
 	self.vb.galeCount = 0
@@ -99,14 +120,7 @@ function mod:OnCombatStart(delay)
 	self.vb.leapCount = 0
 	self.vb.roarCount = 0
 	self.vb.brutalizeCount = 0
-	--Terra
-	timerSpiritLeapCD:Start(6-delay, 1)
-	timerGaleArrowCD:Start(21.5-delay, 1)
-	timerRepelCD:Start(50-delay, 1)
-	--Maruuk
-	timerFrightfulRoarCD:Start(5.5-delay, 1)
-	timerBrutalizeCD:Start(13.5-delay, 1)
-	timerEarthSplitterCD:Start(51-delay, 1)
+	self:Schedule(1, scanBosses, self, delay)--1 second delay to give IEEU time to populate boss guids
 	if self.Options.NPAuraOnAncestralBond then
 		DBM:FireEvent("BossMod_EnableHostileNameplates")
 	end
@@ -130,7 +144,7 @@ function mod:SPELL_CAST_START(args)
 		self.vb.galeCount = self.vb.galeCount + 1
 		specWarnGaleArrow:Show(self.vb.galeCount)
 		specWarnGaleArrow:Play("watchstep")
-		timerGaleArrowCD:Start(nil, self.vb.galeCount+1)
+		timerGaleArrowCD:Start(nil, self.vb.galeCount+1, args.sourceGUID)
 	elseif spellId == 386063 then
 		self.vb.roarCount = self.vb.roarCount + 1
 		if self.Options.SpecWarn386063run then
@@ -148,17 +162,17 @@ function mod:SPELL_CAST_START(args)
 		else
 			timer = 38.4
 		end
-		timerFrightfulRoarCD:Start(timer, self.vb.roarCount+1)
+		timerFrightfulRoarCD:Start(timer, self.vb.roarCount+1, args.sourceGUID)
 	elseif spellId == 385339 then
 		self.vb.splitterCount = self.vb.splitterCount + 1
 		specWarnEarthsplitter:Show(self.vb.splitterCount)
 		specWarnEarthsplitter:Play("watchstep")
-		timerEarthSplitterCD:Start(nil, self.vb.splitterCount+1)
+		timerEarthSplitterCD:Start(nil, self.vb.splitterCount+1, args.sourceGUID)
 	elseif spellId == 386547 then
 		self.vb.repelCount = self.vb.repelCount + 1
 		warnRepel:Show(self.vb.repelCount)
 		warnRepel:Play("carefly")
-		timerRepelCD:Start(nil, self.vb.repelCount+1)
+		timerRepelCD:Start(nil, self.vb.repelCount+1, args.sourceGUID)
 	elseif spellId == 385434 then
 		self.vb.leapCount = self.vb.leapCount + 1
 --		self:ScheduleMethod(0.2, "BossTargetScanner", args.sourceGUID, "ArrowTarget", 0.1, 8, true)
@@ -172,7 +186,7 @@ function mod:SPELL_CAST_START(args)
 		else--2, 5, 8, etc
 			timer = 13.4
 		end
-		timerSpiritLeapCD:Start(timer, self.vb.leapCount+1)
+		timerSpiritLeapCD:Start(timer, self.vb.leapCount+1, args.sourceGUID)
 	elseif spellId == 382836 then
 		self.vb.brutalizeCount = self.vb.brutalizeCount + 1
 		if self:IsTanking("player", nil, nil, true, args.sourceGUID) then
@@ -188,7 +202,7 @@ function mod:SPELL_CAST_START(args)
 		else--2, 5, 8, etc
 			timer = 15.9
 		end
-		timerBrutalizeCD:Start(timer, self.vb.brutalizeCount+1)
+		timerBrutalizeCD:Start(timer, self.vb.brutalizeCount+1, args.sourceGUID)
 	end
 end
 
@@ -232,6 +246,18 @@ function mod:UNIT_DIED(args)
 		timerEarthSplitterCD:Stop()
 		timerFrightfulRoarCD:Stop()
 		timerBrutalizeCD:Stop()
+	end
+end
+
+--"<67.75 20:59:56> [CLEU] SPELL_AURA_APPLIED#Creature-0-3019-2516-29682-186338-00007D601C#Maruuk#Creature-0-3019-2516-29682-186339-00007D601C#Teera#345561#Life Link#DEBUFF#nil", -- [445]
+--"<67.75 20:59:56> [CLEU] SPELL_AURA_APPLIED#Creature-0-3019-2516-29682-186339-00007D601C#Teera#Creature-0-3019-2516-29682-186338-00007D601C#Maruuk#345561#Life Link#DEBUFF#nil", -- [446]
+--"<67.90 20:59:56> [CHAT_MSG_MONSTER_YELL] Why has our rest been disturbed?#Teera###Omegal##0#0##0#1387#nil#0#false#false#false#false", -- [447]
+--"<88.73 21:00:17> [CHAT_MSG_MONSTER_YELL] Necromancers? On our sacred grounds?#Teera###Gravelord Monkh##0#0##0#1388#nil#0#false#false#false#false", -- [468]
+--"<94.47 21:00:23> [CHAT_MSG_MONSTER_YELL] This is what has become of our legacy?#Maruuk###Gravelord Monkh##0#0##0#1389#nil#0#false#false#false#false", -- [473]
+--"<95.30 21:00:24> [DBM_Debug] ENCOUNTER_START event fired: 2581 Teera and Maruuk 1 5#nil", -- [474]
+function mod:OnSync(msg)
+	if msg == "TeeraRP" and self:AntiSpam(10, 9) then--Sync sent from trash mod since trash mod is already monitoring out of combat CLEU events
+		timerRP:Start(26.7)
 	end
 end
 

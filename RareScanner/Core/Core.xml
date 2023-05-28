@@ -51,6 +51,7 @@
 	<Include file="Service\RSCommandLine.lua"/>
 	<Include file="Service\RSAudioAlerts.lua"/>
 	<Include file="Service\RSEventHandler.lua"/>
+	<Include file="Service\RSButtonHandler.lua"/>
 	
 	<!-- Tooltips -->
 	<Include file="Plugins\MapPlugin\Tooltips\RSNotes.lua"/>

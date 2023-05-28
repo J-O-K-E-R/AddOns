@@ -14,6 +14,7 @@ mod:SetStage(1)
 --
 
 -- Stage 1
+local twistedEarthCount = 1
 local echoingFissureCount = 1
 local rushingDarknessCount = 1
 local volcanicHeartCount = 1
@@ -22,6 +23,7 @@ local volcanicHeartCount = 1
 local umbralAnnihilationCount = 1
 local sweepingShadowsCount = 1
 local corruptionCount = 1
+local addDeaths = 0
 
 -- Stage 3
 local sunderRealityCount = 1
@@ -36,8 +38,8 @@ local castingEbonDestruction = false
 
 local L = mod:GetLocale()
 if L then
-	L.custom_on_repeating_sunder_reality = "Repeating Sunder Reality Warning"
-	L.custom_on_repeating_shattered_reality_desc = "Repeat a message during the Ebon Destruction cast until you get inside a portal."
+	L.custom_on_repeating_sunder_reality = "Repeating Sundered Reality Warning"
+	L.custom_on_repeating_sunder_reality_desc = "Repeat a message during the Ebon Destruction cast until you get inside a portal."
 	-- L.repeating_shattered_reality_icon = 407919
 
 	L.twisted_earth = "Walls"
@@ -64,15 +66,15 @@ function mod:GetOptions()
 		402115, -- Echoing Fissure
 		-- Stage 2
 		403057, -- Surrender to Corruption
-		{401010, "SAY"}, -- Corruption
+		{401010, "SAY", "ME_ONLY_EMPHASIZE"}, -- Corruption
 		405433, -- Umbral Annihilation
 		{407790, "TANK_HEALER"}, -- Sunder Shadow
 		403049, -- Shadow Barrier
 		-- Stage 3
 		407936, -- Sunder Reality
-		407919, -- Shattered Reality
+		407919, -- Sundered Reality
 		"custom_on_repeating_sunder_reality",
-		407917, -- Ebon Destruction
+		{407917, "CASTBAR"}, -- Ebon Destruction
 	},{
 		[402902] = -26192, -- Stage 1
 		[403057] = -26421, -- Stage 2
@@ -81,9 +83,9 @@ function mod:GetOptions()
 		[407221] = L.rushing_darkness, -- Rushing Darkness (Knock Lines)
 		[402902] = L.twisted_earth, -- Twisted Earth (Walls)
 		[402115] = L.echoing_fissure, -- Echoing Fissure (Fissure)
-		[402902] = L.umbral_annihilation, -- Umbral Annihilation (Annihilation)
-		[402902] = L.sunder_reality, -- Sunder Reality (Portals)
-		[402902] = L.ebon_destruction, -- Ebon Destruction (Big Bang)
+		[405433] = L.umbral_annihilation, -- Umbral Annihilation (Annihilation)
+		[407936] = L.sunder_reality, -- Sunder Reality (Portals)
+		[407917] = L.ebon_destruction, -- Ebon Destruction (Big Bang)
 	}
 end
 
@@ -93,7 +95,7 @@ function mod:OnBossEnable()
 	self:Log("SPELL_CAST_START", "EchoingFissure", 403272)
 	self:Log("SPELL_CAST_START", "RushingDarkness", 407207)
 	self:Log("SPELL_CAST_SUCCESS", "TwistedEarth", 409241)
-	self:Log("SPELL_CAST_START", "CalamitousStrike", 406222)
+	self:Log("SPELL_CAST_START", "CalamitousStrike", 401022)
 	self:Log("SPELL_AURA_APPLIED", "CalamitousStrikeApplied", 401998)
 
 	-- Intermission
@@ -105,33 +107,31 @@ function mod:OnBossEnable()
 	self:Log("SPELL_CAST_START", "UmbralAnnihilation", 405433)
 	self:Log("SPELL_CAST_START", "SunderShadow", 407790)
 	self:Log("SPELL_AURA_APPLIED", "SunderedShadowApplied", 407728)
-	self:Log("SPELL_AURA_REMOVED_DOSE", "AddKilled", 407088)
+	self:Death("AddKilled", 203812) -- Voice From Beyond
 	self:Log("SPELL_AURA_APPLIED", "ShadowBarrier", 403049)
-	self:Log("SPELL_AURA_REMOVED", "Stage2Over", 407088)
 
 	-- Stage 3
 	self:Log("SPELL_CAST_START", "SunderReality", 407936)
-	self:Log("SPELL_AURA_APPLIED", "ShatteredRealityApplied", 407919)
-	self:Log("SPELL_PERIODIC_DAMAGE", "ShatteredRealityDamage", 407919)
-	self:Log("SPELL_PERIODIC_MISSED", "ShatteredRealityDamage", 407919)
-	self:Log("SPELL_AURA_REMOVED", "ShatteredRealityRemoved", 407919)
+	self:Log("SPELL_AURA_APPLIED", "SunderedRealityApplied", 407919)
+	self:Log("SPELL_PERIODIC_DAMAGE", "SunderedRealityDamage", 407919)
+	self:Log("SPELL_PERIODIC_MISSED", "SunderedRealityDamage", 407919)
+	self:Log("SPELL_AURA_REMOVED", "SunderedRealityRemoved", 407919)
 	self:Log("SPELL_CAST_START", "EbonDestruction", 407917)
 	self:Log("SPELL_CAST_SUCCESS", "EbonDestructionSuccess", 407917)
 end
 
 function mod:OnEngage()
 	self:SetStage(1)
+	twistedEarthCount = 1
 	echoingFissureCount = 1
 	rushingDarknessCount = 1
 	volcanicHeartCount = 1
 
 	self:CDBar(407221, 11, CL.count:format(L.rushing_darkness, rushingDarknessCount)) -- Rushing Darkness
 	self:CDBar(410953, 15.8, CL.count:format(CL.bombs, volcanicHeartCount)) -- Volcanic Heart
-	self:CDBar(401998, 24) -- Calamitous Strike
-	self:CDBar(402115, self:Mythic() and 30 or 33.5, CL.count:format(L.echoing_fissure, echoingFissureCount)) -- Echoing Fissure
-	if self:Mythic() then
-		self:CDBar(402902, 22, L.twisted_earth) -- Twisted Earth
-	end
+	self:CDBar(401998, 24.5) -- Calamitous Strike
+	self:CDBar(402115, 33.5, CL.count:format(L.echoing_fissure, echoingFissureCount)) -- Echoing Fissure
+	self:Bar(402902, self:Mythic() and 23 or 42.5, L.twisted_earth) -- Twisted Earth
 
 
 	self:RegisterUnitEvent("UNIT_HEALTH", nil, "boss1")
@@ -146,64 +146,100 @@ end
 -- General
 function mod:UNIT_HEALTH(event, unit)
 	if self:GetHealth(unit) < 63 then -- P2 at 60%
+		self:UnregisterUnitEvent(event, unit)
 		self:Message("stages", "cyan", CL.soon:format(CL.stage:format(2)), false)
 		self:PlaySound("stages", "info")
-		self:UnregisterUnitEvent(event, unit)
 	end
 end
 
 -- Stage 1
 function mod:VolcanicHeart(args)
-	self:StopBar(CL.count:format(CL.bombs, volcanicHeartCount))
-	self:Message(410953, "orange", CL.count:format(CL.bombs, volcanicHeartCount))
+	local msg = CL.count:format(CL.bombs, volcanicHeartCount)
+	self:StopBar(msg)
+	self:Message(410953, "orange", msg)
 	volcanicHeartCount = volcanicHeartCount + 1
-	if self:GetStage() < 2 or volcanicHeartCount < 9 then -- Only 8 waves in P2
-		local cd = self:GetStage() == 1 and (self:Easy() and 37 or 34) or (self:Easy() and 16 or 17)
-		self:CDBar(410953, cd, CL.count:format(CL.bombs, volcanicHeartCount))
+
+	local cd = 0
+	if self:GetStage() == 1 then
+		cd = self:Mythic() and 37 or 36.5
+	elseif self:GetStage() == 2 then
+		if volcanicHeartCount == 6 then
+			-- skips the 6th SPELL_CAST_SUCCESS ???
+			self:Bar(410953, 16.6, CL.count:format(CL.bombs, volcanicHeartCount))
+			volcanicHeartCount = volcanicHeartCount + 1
+			self:ScheduleTimer("Bar", 17, 410953, 19, CL.count:format(CL.bombs, volcanicHeartCount))
+			return
+		else
+			-- local timer = { 27.8, 16.3, 17.0, 17.0, 17.3, 36.0, 14.7, 0 }
+			local timer = { 27.8, 16.3, 17.0, 17.0, 17.3, 16.6, 19.4, 14.7, 0 }
+			cd = timer[volcanicHeartCount]
+		end
 	end
+	self:CDBar(410953, cd, CL.count:format(CL.bombs, volcanicHeartCount))
 end
 
 function mod:TwistedEarth(args)
 	if self:Mythic() then
-		-- kind of noisy and irrelevant to show a message in mythic
-		self:Bar(402902, self:GetStage() == 1 and 17 or 29.2, L.twisted_earth)
+		-- self:Message(402902, "yellow", L.twisted_earth) -- kind of noisy and irrelevant to show a message in mythic
+		twistedEarthCount = twistedEarthCount + 1
+		if self:GetStage() == 1 then
+			self:Bar(402902, 18.5, L.twisted_earth)
+		else
+			local timer = { 49, 17, 13, 29, 14, 14 }
+			self:Bar(402902, timer[twistedEarthCount], L.twisted_earth)
+		end
 	else
 		self:Message(402902, "yellow", L.twisted_earth)
-		-- after every rushing darkness in p1, every other in p2
-		-- self:Bar(402902, self:GetStage() == 1 and 36.5 or 57.2, L.twisted_earth)
+		twistedEarthCount = twistedEarthCount + 1
+		self:Bar(402902, self:GetStage() == 1 and 36.6 or 57.1, L.twisted_earth)
 	end
 end
 
 function mod:EchoingFissure(args)
-	self:StopBar(CL.count:format(L.echoing_fissure, echoingFissureCount))
-	self:Message(402115, "orange", CL.count:format(L.echoing_fissure, echoingFissureCount))
+	local msg = CL.count:format(L.echoing_fissure, echoingFissureCount)
+	self:StopBar(msg)
+	self:Message(402115, "orange", msg)
 	self:PlaySound(402115, "alarm")
 	echoingFissureCount = echoingFissureCount + 1
-	self:CDBar(402115, self:GetStage() == 1 and 34 or 30, CL.count:format(L.echoing_fissure, echoingFissureCount))
+	self:CDBar(402115, 37, CL.count:format(L.echoing_fissure, echoingFissureCount))
 end
 
-function mod:RushingDarkness(args)
-	self:StopBar(CL.count:format(L.rushing_darkness, rushingDarknessCount))
-	self:Message(407221, "yellow", CL.count:format(L.rushing_darkness, rushingDarknessCount))
-
-	if not self:Mythic() then
-		if self:GetStage() == 1 then
-			self:Bar(402902, 31.6, L.twisted_earth) -- Twisted Earth
-		elseif self:GetStage() == 2 and rushingDarknessCount % 2 == 1 then
-			self:Bar(402902, 40.1, L.twisted_earth) -- Twisted Earth
-		end
+do
+	local function printTarget(self, player, guid)
+		self:TargetMessage(407221, "yellow", player, CL.count:format(self:SpellName(407221), rushingDarknessCount - 1))
+		-- if self:Me(guid) then
+		-- 	self:Say(407221)
+		-- 	self:SayCountdown(407221, 5, nil, 4)
+		-- end
 	end
 
-	rushingDarknessCount = rushingDarknessCount + 1
-	if self:GetStage() ~= 2 or rushingDarknessCount < 5 then -- Only 4 waves in P2
-		self:CDBar(407221, self:GetStage() == 1 and (self:Easy() and 36.5 or 34) or 29, CL.count:format(L.rushing_darkness, rushingDarknessCount))
+	function mod:RushingDarkness(args)
+		local msg = CL.count:format(L.rushing_darkness, rushingDarknessCount)
+		self:StopBar(msg)
+		if self:Mythic() and self:GetStage() == 1 then
+			self:GetBossTarget(printTarget, 1, args.sourceGUID) -- boss targets a player during the cast
+		else
+			self:Message(407221, "yellow", msg)
+		end
+		rushingDarknessCount = rushingDarknessCount + 1
+
+		local cd
+		if self:GetStage() == 1 then
+			cd = 36.6
+		elseif self:GetStage() == 2 then
+			local timer = { 38, 29, 28, 30, 0 }
+			cd = timer[rushingDarknessCount]
+		else -- stage 3
+			cd = 30
+		end
+		self:CDBar(407221, cd, CL.count:format(L.rushing_darkness, rushingDarknessCount))
 	end
 end
 
 function mod:CalamitousStrike(args)
 	self:Message(401998, "purple", CL.casting:format(args.spellName))
 	self:PlaySound(401998, "info")
-	self:CDBar(401998, self:GetStage() == 1 and 34.0 or 29.2)
+	self:CDBar(401998, self:GetStage() == 1 and (self:Easy() and 34 or 37) or 30)
 end
 
 function mod:CalamitousStrikeApplied(args)
@@ -227,7 +263,7 @@ function mod:RazeTheEarth()
 	self:Message("stages", "cyan", CL.intermission, false)
 	self:PlaySound("stages", "long")
 
-	self:CDBar("stages", 7, CL.stage:format(2), 403057) -- Stage 2, Surrender To Corruption Icon
+	self:Bar("stages", 7, CL.stage:format(2), 403057) -- Stage 2, Surrender To Corruption Icon
 end
 
 -- Stage 2
@@ -237,10 +273,12 @@ function mod:SurrenderToCorruption()
 	self:Message("stages", "cyan", CL.stage:format(2), false)
 	self:PlaySound("stages", "long")
 
+	twistedEarthCount = 1
 	volcanicHeartCount = 1
 	umbralAnnihilationCount = 1
 	rushingDarknessCount = 1
 	corruptionCount = 1
+	addDeaths = 0
 
 	self:CDBar(407790, 14.9) -- Sunder Shadow
 	self:CDBar(410953, 20.7, CL.count:format(CL.bombs, volcanicHeartCount)) -- Volcanic Heart
@@ -255,7 +293,9 @@ do
 	local playerList = {}
 	local prev = 0
 	function mod:CorruptionPreDebuff(args)
+		local msg = CL.count:format(self:SpellName(401010), corruptionCount)
 		if args.time - prev > 2 then -- reset
+			self:StopBar(msg)
 			corruptionCount = corruptionCount + 1
 			if corruptionCount < 4 then -- 3 sets
 				self:CDBar(401010, 43, CL.count:format(self:SpellName(401010), corruptionCount))
@@ -268,13 +308,14 @@ do
 			self:PlaySound(401010, "warning")
 			self:Say(401010)
 		end
-		self:TargetsMessage(401010, "yellow", playerList, nil, CL.count:format(self:SpellName(401010), corruptionCount-1))
+		self:TargetsMessage(401010, "yellow", playerList, nil, msg)
 	end
 end
 
 function mod:UmbralAnnihilation(args)
-	self:StopBar(CL.count:format(L.umbral_annihilation, umbralAnnihilationCount))
-	self:Message(args.spellId, "orange", CL.count:format(L.umbral_annihilation, umbralAnnihilationCount))
+	local msg = CL.count:format(L.umbral_annihilation, umbralAnnihilationCount)
+	self:StopBar(msg)
+	self:Message(args.spellId, "orange", msg)
 	self:PlaySound(args.spellId, "alarm")
 	umbralAnnihilationCount = umbralAnnihilationCount + 1
 	-- 6+ are spam casted
@@ -298,8 +339,12 @@ function mod:SunderedShadowApplied(args)
 end
 
 function mod:AddKilled(args)
-	local killed = 3-args.amount
-	self:Message("stages", "green", CL.add_killed:format(killed, 3), false)
+	addDeaths = addDeaths + 1
+	if addDeaths == 3 then
+		self:Stage2Over()
+	else
+		self:Message("stages", "green", CL.add_killed:format(3 - addDeaths, 3), false)
+	end
 end
 
 function mod:ShadowBarrier(args)
@@ -307,7 +352,7 @@ function mod:ShadowBarrier(args)
 	self:PlaySound(args.spellId, "info")
 end
 
-function mod:Stage2Over(args)
+function mod:Stage2Over()
 	self:StopBar(407790) -- Sunder Shadow
 	self:StopBar(CL.count:format(self:SpellName(401010), corruptionCount)) -- Corruption
 	self:StopBar(CL.count:format(L.umbral_annihilation, umbralAnnihilationCount)) -- Umbral Annihilation
@@ -324,16 +369,18 @@ function mod:Stage2Over(args)
 	shatteredRealityOnMe = false
 	castingEbonDestruction =  false
 
-	self:CDBar(407936, self:Easy() and 21.2 or 20, CL.count:format(L.sunder_reality, sunderRealityCount)) -- Sunder Reality
+	self:CDBar(407936, 21.2, CL.count:format(L.sunder_reality, sunderRealityCount)) -- Sunder Reality
 	self:CDBar(407221, 27.6, CL.count:format(L.rushing_darkness, rushingDarknessCount)) -- Rushing Darkness
 	self:CDBar(401998, 35.4) -- Calamitous Strike
 	self:CDBar(407917, 41.5, CL.count:format(L.ebon_destruction, ebonDestructionCount)) -- Ebon Destruction
+	self:Bar(402902, self:Mythic() and 49.2 or 79.1, L.twisted_earth) -- Twisted Earth
 end
 
 -- Stage 3
 function mod:SunderReality(args)
-	self:StopBar(CL.count:format(L.sunder_reality, sunderRealityCount))
-	self:Message(args.spellId, "yellow", CL.count:format(L.sunder_reality, sunderRealityCount))
+	local msg = CL.count:format(L.sunder_reality, sunderRealityCount)
+	self:StopBar(msg)
+	self:Message(args.spellId, "yellow", msg)
 	self:PlaySound(args.spellId, "alert")
 	sunderRealityCount = sunderRealityCount + 1
 	if self:Easy() or sunderRealityCount < 5 then -- only 4 sets unless Normal
@@ -344,54 +391,49 @@ end
 do
 	local sunderRealityCheck = nil
 	local function checkForSunderedReality()
+		sunderRealityCheck = nil
 		if mod:GetOption("custom_on_repeating_sunder_reality") then
 			if not shatteredRealityOnMe and UnitAffectingCombat("player") then
 				mod:Message(407919, "blue", CL.no:format(mod:SpellName(403908)), 403908)
 				mod:PlaySound(407919, "warning")
 			end
 			sunderRealityCheck = mod:ScheduleTimer(checkForSunderedReality, 2)
-		else
-			sunderRealityCheck = nil
 		end
 	end
 
 	local prev = 0
-	function mod:ShatteredRealityApplied(args)
+	function mod:SunderedRealityApplied(args)
 		if self:Me(args.destGUID) then
+			shatteredRealityOnMe = true
+			prev = args.time
 			if castingEbonDestruction then
-				self:Message(407919, "green", CL.you:format(args.spellName))
-				self:PlaySound(407919, "info")
+				self:Message(args.spellId, "green", CL.you:format(args.spellName))
+				self:PlaySound(args.spellId, "info")
 			else -- Ground Effect
-				local t = args.time
-				if t-prev > 2 then
-					prev = t
-					self:PersonalMessage(407919, "underyou")
-					self:PlaySound(407919, "underyou")
-				end
+				self:PersonalMessage(args.spellId, "underyou")
+				self:PlaySound(args.spellId, "underyou")
 			end
 		end
 	end
 
-	function mod:ShatteredRealityDamage(args)
-		if self:Me(args.destGUID) and not castingEbonDestruction then
-			local t = args.time
-			if t-prev > 2 then
-				prev = t
-				self:PersonalMessage(407919, "underyou")
-				self:PlaySound(407919, "underyou")
-			end
+	function mod:SunderedRealityDamage(args)
+		if self:Me(args.destGUID) and not castingEbonDestruction and args.time-prev > 2 then
+			prev = args.time
+			self:PersonalMessage(args.spellId, "underyou")
+			self:PlaySound(args.spellId, "underyou")
 		end
 	end
 
-	function mod:ShatteredRealityRemoved(args)
+	function mod:SunderedRealityRemoved(args)
 		if self:Me(args.destGUID) then
 			shatteredRealityOnMe = false
 		end
 	end
 
 	function mod:EbonDestruction(args)
-		self:StopBar(CL.count:format(L.ebon_destruction, ebonDestructionCount))
-		self:Message(args.spellId, "red", CL.casting:format(CL.count:format(L.ebon_destruction, ebonDestructionCount)))
+		local msg = CL.count:format(L.ebon_destruction, ebonDestructionCount)
+		self:StopBar(msg)
+		self:Message(args.spellId, "red", CL.casting:format(msg))
 		self:PlaySound(args.spellId, "warning")
 		self:CastBar(args.spellId, 6, L.ebon_destruction)
 		ebonDestructionCount = ebonDestructionCount + 1

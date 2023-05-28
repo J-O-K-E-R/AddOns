@@ -3,6 +3,7 @@ local PC, RK, ORI, config = T.OPieCore, T.RingKeeper, OPie.UI, T.config
 local L, MODERN = T.L, select(4,GetBuildInfo()) >= 8e4
 local AB = assert(T.ActionBook:compatible(2,23), "A compatible version of ActionBook is required")
 local EV, CreateEdge = T.Evie, T.CreateEdge
+local GameTooltip = T.NotGameTooltip or GameTooltip
 
 local FULLNAME, SHORTNAME do
 	function EV.PLAYER_LOGIN()
@@ -775,7 +776,7 @@ sliceDetail = CreateFrame("Frame", nil, ringContainer) do
 			end
 		end
 		frame:SetScript("OnShow", function(self)
-			self:SetFrameLevel(sliceDetail.icon:GetFrameLevel()+200)
+			self:SetFrameLevel(math.min(9990, sliceDetail.icon:GetFrameLevel()+200))
 			icontex = GetMacroIcons()
 			FixLooseIcons(GetLooseMacroIcons, icontex)
 			GetMacroItemIcons(icontex)

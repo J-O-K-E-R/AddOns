@@ -1,5 +1,6 @@
 local configCache, _, T = {}, ...
 local PC, api, iapi, MODERN = T.OPieCore, {}, {}, select(4, GetBuildInfo()) >= 10e4
+local GameTooltip = T.NotGameTooltip or GameTooltip
 local max, min, abs, floor, sin, cos = math.max, math.min, math.abs, math.floor, sin, cos
 local function cc(m, f, ...)
 	f[m](f, ...)

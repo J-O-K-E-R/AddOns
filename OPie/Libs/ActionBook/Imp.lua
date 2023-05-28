@@ -3,8 +3,8 @@ if T.SkipLocalActionBook then return end
 
 local IM, MAJ, REV, COMPAT = {}, 1, 2, select(4,GetBuildInfo())
 local MODERN, CF_WRATH, CI_ERA = COMPAT >= 10e4, COMPAT < 10e4 and COMPAT >= 3e4, COMPAT < 2e4
-local EV, AB, RW = T.Evie,T.ActionBook:compatible(2, 34), T.ActionBook:compatible("Rewire", 1,10)
-assert(EV and AB and RW, "Incompatible library bundle")
+local EV, AB, RW = T.Evie, T.ActionBook:compatible(2, 34), T.ActionBook:compatible("Rewire", 1,10)
+assert(EV and AB and RW and 1, "Incompatible library bundle")
 local L, CreateEdge = AB:locale(), T.CreateEdge
 
 local function assert(condition, text, level, ...)

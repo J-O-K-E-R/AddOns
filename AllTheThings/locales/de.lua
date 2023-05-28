@@ -103,6 +103,7 @@ ACC_WIDE_DEFAULT = "Tracked "..ITEM_UPGRADE_DISCOUNT_TOOLTIP_ACCOUNT_WIDE.." by 
 	L.BEST_PERSONAL_LOOT_CHANCE = "Beste Personliche Beute Chance";
 	L.BONUS_ROLL = "Zusätzliche Beute";
 	L.PREREQUISITE_QUESTS = "Es gibt Quests, deren Abschluss Voraussetzung ist um dies zu erhalten:";
+	L.BREADCRUMBS = "Brotkrumenquests";	--TODO: article?
 	L.BREADCRUMBS_WARNING = "Es gibt Brotkrumenquests, die nicht mehr abschließbar sind, nachdem dies abgeschlossen wurde:";
 	L.THIS_IS_BREADCRUMB = "Dies ist eine Brotkrumenquest.";
 	L.BREADCRUMB_PARTYSYNC = "Dies ist nicht abschließbar ohne Partysyncronisation, wenn etwas aus folgendem abgeschlossen ist:";
@@ -698,7 +699,7 @@ for key,value in pairs({
 		--TODO: [-81] = "Third Chest",
 		--TODO: [-82] = "Final Chest",
 	-- SM
-		[-85] = "Friedhof", 										-- Graveyard
+		[-85] = "Friedhof",											-- Graveyard
 		[-86] = "Bibliothek",										-- Library
 		[-87] = "Waffenkammer",										-- Armory
 		[-88] = "Kathedrale",										-- Cathedral
@@ -1147,6 +1148,7 @@ for key,value in pairs({
 	[152095] = "Mondblütenlilie",	-- Moonpetal Lily
 	[152622] = "Azsharitformation",	-- Azsharite Formation
 	[153123] = "Kim'jaels Ausrüstung",	-- Kim'jael's Equipment
+	[153239] = "Wildekinfeder",	-- Wildkin Feather
 	[157936] = "Erdhaufen von Un'Goro",	-- Un'Goro Dirt Pile
 	[160836] = "Reliktkasten",	-- Relic Coffer
 	[161495] = "Geheimsafe",	-- Secret Safe
@@ -1269,6 +1271,7 @@ for key,value in pairs({
 	[175855] = "Der Fall des Imperiums",	-- Empires' Fall
 	[175856] = "Der Zorn des Seelenschinders",	-- Wrath of Soulflayer
 	[175888] = "Fragment eines Hochgeborenenrelikts",	-- Highborne Relic Fragment
+	[175889] = "Uraltes Ei",	-- Ancient Egg
 	[175891] = "Fragment eines Hochgeborenenrelikts",	-- Highborne Relic Fragment
 	[175892] = "Fragment eines Hochgeborenenrelikts",	-- Highborne Relic Fragment
 	[175893] = "Fragment eines Hochgeborenenrelikts",	-- Highborne Relic Fragment
@@ -1341,8 +1344,10 @@ for key,value in pairs({
 	[180366] = "Ramponierter Ausrüstungskasten",	-- Battered Tackle Box
 	[180368] = "Schrifttafel des Wahnsinns",	-- Tablet of Madness
 	[180369] = "Schlammiges aufgewühltes Gewässer",	-- Muddy Churning Waters
+	[180435] = "Noggles Ranzen",	-- Noggle's Satchel
 	[180436] = "Zwielichtschrifttafelfragment",	-- Twilight Tablet Fragment
 	[180448] = "Steckbrief: Totenstachel",	-- Wanted Poster: Deathclasp
+	[180453] = "Glyphenverzierter Kristall des Regalschwarms",	-- Hive'Regal Glyphed Crystal
 	[180456] = "Geringer Windstein",	-- Lesser Wind Stone
 	[180461] = "Windstein",	-- Wind Stone
 	[180466] = "Großer Windstein",	-- Greater Wind Stone
@@ -1354,6 +1359,7 @@ for key,value in pairs({
 	[180642] = "Unscheinbare Kiste",	-- Inconspicuous Crate
 	[180652] = "Frisch aufgewühlter Dreck",	-- Freshly Dug Dirt
 	[180662] = "Schiffswrackteile",	-- Schooner Wreckage
+	[180669] = "Wirbelnder Mahlstrom",	-- Swirling Maelstrom	--TODO: this was manually translated
 	[180685] = "Schwimmende Wrackteile",	-- Waterlogged Wreckage
 	[180690] = "Großer Skarabäuskasten",	-- Large Scarab Coffer
 	[180691] = "Skarabäuskasten",	-- Scarab Coffer
@@ -1379,6 +1385,7 @@ for key,value in pairs({
 	[181153] = "Gesucht: Kel'gash der Boshafte",	-- Wanted Poster: Kel'gash the Wicked
 	[181638] = "Steckbrief",	-- Wanted Poster
 	[181643] = "Federbarts Überreste",	-- Featherbeard's Remains
+	[181645] = "Greifenei",	-- Gryphon Egg
 	[181649] = "Federbarts Tagebuch",	-- Featherbeard's Journal
 	[181665] = "Grabtruhe",	-- Burial Chest
 	[181672] = "Weidenmann",	-- Wickerman Effigy
@@ -1439,6 +1446,7 @@ for key,value in pairs({
 	[186887] = "Große Kürbislaterne",	-- Large Jack-o'-Lantern
 	[187072] = "Messerdornwurzel",	-- Razorthorn Root
 	[187236] = "Winterhauchgeschenk",	-- Winter Veil Gift
+	[187264] = "Erzkiste der Dunkelflossen",	-- Darkspine Ore Chest
 	[187273] = "Verdächtiger Hufabdruck",	-- Suspicious Hoofprint
 	[187333] = "Blutbeerenbusch",	-- Bloodberry Bush
 	[187559] = "Freudenfeuer der Horde",	-- Horde Bonfire
@@ -2119,7 +2127,7 @@ for key,value in pairs({
 	[234734] = "Elixier der Schattensicht",	-- Elixir of Shadow Sight
 	[234735] = "Elixier der Schattensicht",	-- Elixir of Shadow Sight
 	[234736] = "Elixier der Schattensicht",	-- Elixir of Shadow Sight
-	[234740] = "Orcsignalhorn",	-- Orchish Signaling Horn
+	[234740] = "Orcsignalhorn",	-- Orcish Signaling Horn
 	[234744] = "Opfergabe an die Rabenmutter",	-- Offering to the Raven Mother
 	[234746] = "Opfergabe an die Rabenmutter",	-- Offering to the Raven Mother
 	[234748] = "Opfergabe an die Rabenmutter",	-- Offering to the Raven Mother
@@ -3549,7 +3557,7 @@ for key,value in pairs({
 	[376657] = "Uraltes Monument",	-- Ancient Monument
 	[376757] = "GESUCHT: Frigellus",	-- WANTED: Frigellus
 	[377114] = "Rolle mit schwerem Seil",	-- Coil of Heavy Rope
-	--TODO: [377233] = "Hessethiash's Poorly Hidden Treasure",	-- Hessethiash's Poorly Hidden Treasure
+	[377233] = "Hessethiashs erbärmlich versteckter Schatz",	-- Hessethiash's Poorly Hidden Treasure
 	--TODO: [377317] = "Treasure Hoard",	-- Treasure Hoard
 	--TODO: [377458] = "Abandoned Weapon Rack",	-- Abandoned Weapon Rack
 	--TODO: [377466] = "Lost Draconic Hourglass",	-- Lost Draconic Hourglass
@@ -3652,9 +3660,9 @@ for key,value in pairs({
 	[381107] = "Sandhaufen",	-- Sand Pile
 	[381108] = "Yennus Karte",	-- Yennu's Map
 	--TODO: [381110] = "Forgotten Jewel Box",	-- Forgotten Jewel Box
-	--TODO: [381153] = "Ruby Gem Cluster",	-- Ruby Gem Cluster
+	[381153] = "Rubinedelsteinklumpen",	-- Ruby Gem Cluster
 	[381157] = "Saphiredelsteinklumpen",	-- Sapphire Gem Cluster
-	--TODO: [381158] = "Gnoll Fiend Flail",	-- Gnoll Fiend Flail
+	[381158] = "Dreschflegel des Gnollunholds",	-- Gnoll Fiend Flail
 	[381160] = "Verlorener Kompass",	-- Lost Compass
 	[381216] = "Landvermesserlupe",	-- Surveyor's Magnifying Glass
 	[381223] = "Gesprungenes Stundenglas",	-- Cracked Hourglass
@@ -3767,7 +3775,7 @@ for key,value in pairs({
 	[385952] = "Ungewöhnlicher Ring",	-- Unusual Ring
 	[386079] = "Ordentlich zerkaute Truhe",	-- Well-Chewed Chest
 	[386080] = "Sengender Schlüssel",	-- Scorching Key
-	--TODO: [386086] = "Seething Cache",	-- Seething Cache
+	[386086] = "Brodelnde Truhe",	-- Seething Cache
 	[386088] = "Ritualopfergaben",	-- Ritual Offerings
 	[386089] = "Ritualopfergaben",	-- Ritual Offerings
 	[386090] = "Ritualopfergaben",	-- Ritual Offerings
@@ -3943,7 +3951,7 @@ for key,value in pairs({
 	[398796] = "Resonierender Arkankristall",	-- Resonating Arcane Crystal
 	[398810] = "Belohnung der Treue",	-- Fealty's Reward
 	[398814] = "Geschmolzener Schatz",	-- Molten Hoard
-	--TODO: [398815] = "Secured Shipment",	-- Secured Shipment
+	[398815] = "Gesicherte Lieferung",	-- Secured Shipment
 	[401236] = "Unterernährte Exemplare",	-- Malnourished Specimen
 	[401238] = "Markgereifter Schleim",	-- Marrow-Ripened Slime
 	[401240] = "Verdächtiger Schimmel",	-- Suspicious Mold
@@ -4060,7 +4068,7 @@ for key,value in pairs({
 	["Eiskronenzitadelle"] = "Die Eiskronenzitadelle";	-- Icecrown Citadel
 	["Rubinsanktum"] = "Das Rubinsanktum";	-- The Ruby Sanctum
 	["Terrasse des Endlosen Frühlings"] = "Terrasse d. Endlosen Frühlings";	-- Terrace of Endless Spring
-	["Herz der Angst"] = "Das Herz der Angst";	-- 	Heart of Fear
+	["Herz der Angst"] = "Das Herz der Angst";	-- Heart of Fear
 })
 do a[key] = value; end
 

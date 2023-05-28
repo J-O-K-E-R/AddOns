@@ -8,25 +8,29 @@ local _, app = ...;
 -- Capability to add to and run a sequence of Functions with a specific allotment being processed individually each frame
 
 -- Global locals
-local wipe, math_max, tonumber, unpack, coroutine, type, select, tremove, tinsert, C_Timer_After =
-	  wipe, math.max, tonumber, unpack, coroutine, type, select, tremove, tinsert, C_Timer.After;
+local wipe, math_max, tonumber, unpack, coroutine, type, select, tremove, tinsert, pcall, C_Timer_After =
+	  wipe, math.max, tonumber, unpack, coroutine, type, select, tremove, tinsert, pcall,  C_Timer.After;
 
 local Stack = {};
 local StackParams = {};
 -- Tracks whether the Stack has already been requested to begin running
 local RunningStack;
--- Function that begins a once-per-frame pass of the StackCo to run all Functions in the Stack
-local RunStack;
+-- Function that queues RunStack only once regardless of call-count within one frame
+local QueueStack;
 -- A static coroutine which can be invoked to reverse-sequentially process all Functions within the Stack,
 -- passing the corresponding Stack param to each called Function.
 -- Any Functions which do not return a status will be removed
 local StackCo = coroutine.create(function()
 	while true do
-		RunningStack = nil;
 		-- app.PrintDebug("StackCo:Call",#Stack)
+		local f, p, s, c;
 		for i=#Stack,1,-1 do
-			-- app.PrintDebug("StackCo:Run",i,Stack[i],StackParams[i])
-			if not Stack[i](StackParams[i]) then
+			f, p = Stack[i], StackParams[i];
+			-- app.PrintDebug("StackCo:Run",i,f,p)
+			s, c = pcall(f, p);
+			-- Function call has an error or it is not continuing, remove it from the Stack
+			if not s or not c then
+				if not s then app.PrintDebug("StackError:",c) end
 				-- app.PrintDebug("StackCo:Remove",i)
 				tremove(Stack, i);
 				tremove(StackParams, i);
@@ -35,26 +39,32 @@ local StackCo = coroutine.create(function()
 		-- app.PrintDebug("StackCo:Done")
 		-- Re-call StackCo if anything remains in the Stack
 		if #Stack > 0 then
-			-- app.PrintDebug("StackCo:RunStack",#Stack)
-			C_Timer_After(0, RunStack);
+			-- app.PrintDebug("StackCo:QueueStack",#Stack)
+			QueueStack();
 		end
 		-- after processing the Stack, yield this coroutine
 		-- app.PrintDebug("StackCo:Yield")
 		coroutine.yield();
 	end
 end);
-RunStack = function()
-	-- app.PrintDebug("RunStack",RunningStack and "REPEAT" or "FIRST")
+-- Function that begins a once-per-frame pass of the StackCo to run all Functions in the Stack
+local function RunStack()
+	-- app.PrintDebug("RunStackStatus:",coroutine.status(StackCo))
+	RunningStack = nil;
+	coroutine.resume(StackCo);
+end
+QueueStack = function()
+	-- app.PrintDebug("QueueStackStatus:",RunningStack and "REPEAT" or "FIRST",coroutine.status(StackCo))
 	if RunningStack then return; end
 	RunningStack = true;
-	coroutine.resume(StackCo);
+	C_Timer_After(0, RunStack);
 end
 -- Accepts a param and Function which will execute on the following frame using the provided param
 local function Push(param, name, func)
 	-- app.PrintDebug("Push",name,func,param)
 	tinsert(Stack, func);
-	tinsert(StackParams, param);
-	C_Timer_After(0, RunStack);
+	tinsert(StackParams, param or 1);
+	QueueStack();
 end
 app.Push = Push;
 
@@ -115,6 +125,10 @@ local function GetPusher()
 					app.PrintDebug("PUSH.Run.Error",co)
 					-- Throw the error. Returning nothing is the same as canceling the work.
 					-- local instanceTrace = debugstack(instance);
+					if app.DEBUG_PRINT then
+						local instanceTrace = debugstack(co);
+						print(instanceTrace)
+					end
 					error(err,2);
 					-- print(debugstack(instance));
 					-- print(err);
@@ -181,10 +195,10 @@ local function CreateRunner(name)
 				params = ParameterBucketQueue[i];
 				if params then
 					-- app.PrintDebug("FRC.Run.N."..name,i,unpack(params))
-					func(unpack(params));
+					pcall(func, unpack(params));
 				else
 					-- app.PrintDebug("FRC.Run.1."..name,i,ParameterSingleQueue[i])
-					func(ParameterSingleQueue[i]);
+					pcall(func, ParameterSingleQueue[i]);
 				end
 				-- app.PrintDebug("FRC.Done."..name,i)
 				if perFrame <= 0 then
@@ -223,7 +237,10 @@ local function CreateRunner(name)
 		else
 			app.PrintDebug("Stack.Run.Error",Name)
 			-- Throw the error. Returning nothing is the same as canceling the work.
-			-- local instanceTrace = debugstack(instance);
+			if app.DEBUG_PRINT then
+				local instanceTrace = debugstack(RunnerCoroutine);
+				print(instanceTrace)
+			end
 			error(err,2);
 			-- print(debugstack(instance));
 			-- print(err);

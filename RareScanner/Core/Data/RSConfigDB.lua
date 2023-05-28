@@ -597,6 +597,14 @@ function RSConfigDB.SetShowingAchievementRareNPCs(value)
 	private.db.map.displayAchievementRaresNpcIcons = value
 end
 
+function RSConfigDB.IsShowingProfessionRareNPCs()
+	return private.db.map.displayProfessionRaresNpcIcons
+end
+
+function RSConfigDB.SetShowingProfessionRareNPCs(value)
+	private.db.map.displayProfessionRaresNpcIcons = value
+end
+
 function RSConfigDB.IsShowingHuntingPartyRareNPCs()
 	return private.db.map.displayHuntingPartyRaresNpcIcons
 end

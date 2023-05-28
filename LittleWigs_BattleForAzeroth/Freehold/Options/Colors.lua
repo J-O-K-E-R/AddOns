@@ -4,7 +4,7 @@ BigWigs:AddColors("Skycap'n Kragg", {
 	[256005] = "yellow",
 	[256016] = "blue",
 	[256060] = "red",
-	[256106] = "purple",
+	[256106] = "orange",
 	[272046] = "orange",
 	["stages"] = "cyan",
 })
@@ -27,22 +27,24 @@ BigWigs:AddColors("Ring of Booty", {
 	[256363] = {"blue","orange"},
 	[256405] = "red",
 	[256489] = "cyan",
+	[256552] = "blue",
 	[257829] = {"blue","cyan","green"},
 	[257904] = "yellow",
 })
 
 BigWigs:AddColors("Harlan Sweete", {
-	[257278] = "yellow",
+	[257278] = {"purple","yellow"},
 	[257305] = {"blue","orange"},
 	[257314] = {"blue","yellow"},
 	[257316] = "red",
+	[413136] = {"blue","yellow"},
 	["stages"] = "cyan",
 })
 
 BigWigs:AddColors("Freehold Trash", {
 	[257272] = {"blue","yellow"},
 	[257397] = {"red","yellow"},
-	[257426] = "purple",
+	[257426] = "orange",
 	[257436] = "blue",
 	[257732] = "red",
 	[257736] = "orange",

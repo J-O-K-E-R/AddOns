@@ -8,6 +8,8 @@
 --[[global]] DETAILS_SEGMENTID_OVERALL = -1
 --[[global]] DETAILS_SEGMENTID_CURRENT = 0
 
+--[[global]] DETAILS_COMBAT_AMOUNT_CONTAINERS = 4
+
 --enum segments type
 --[[global]] DETAILS_SEGMENTTYPE_GENERIC = 0
 
@@ -558,7 +560,7 @@
 	---@param combatId number
 	---@param ... unknown
 	---@return combat
-	function classCombat:NovaTabela(bTimeStarted, overallCombatObject, combatId, ...)
+	function classCombat:NovaTabela(bTimeStarted, overallCombatObject, combatId, ...) --~init
 		---@type combat
 		local combatObject = {}
 
@@ -651,6 +653,7 @@
 		combatObject[4].need_refresh = true
 		combatObject[5].need_refresh = true
 
+		--isn't shadow deprecated?
 		if (overallCombatObject) then --link � a tabela de combate do overall
 			combatObject[1].shadow = overallCombatObject[1]
 			combatObject[2].shadow = overallCombatObject[2]

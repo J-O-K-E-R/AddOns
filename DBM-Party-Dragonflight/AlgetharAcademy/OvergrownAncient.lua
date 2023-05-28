@@ -1,13 +1,14 @@
 local mod	= DBM:NewMod(2512, "DBM-Party-Dragonflight", 5, 1201)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20230104053027")
+mod:SetRevision("20230504231118")
 mod:SetCreatureID(186951)
 mod:SetEncounterID(2563)
 --mod:SetUsedIcons(1, 2, 3)
 mod:SetHotfixNoticeRev(20230103000000)
 --mod:SetMinSyncRevision(20211203000000)
 --mod.respawnTime = 29
+mod.sendMainBossGUID = true
 
 mod:RegisterCombat("combat")
 
@@ -34,6 +35,7 @@ mod:RegisterEvents(
  or type = "dungeonencounterstart" or type = "dungeonencounterend"
 --]]
 local warnHealingTouch							= mod:NewCastAnnounce(396640, 3)
+local warnLasherToxin							= mod:NewStackAnnounce(389033, 2, nil, "Tank|Healer|RemoveDisease")
 
 local specWarnGerminate							= mod:NewSpecialWarningDodge(388796, nil, nil, nil, 2, 2)
 local specWarnLasherToxin						= mod:NewSpecialWarningStack(389033, nil, 12, nil, nil, 1, 6)
@@ -53,7 +55,7 @@ local timerBarkbreakerCD						= mod:NewCDCountTimer(27.9, 388544, nil, "Tank|Hea
 --local berserkTimer							= mod:NewBerserkTimer(600)
 
 --mod:AddRangeFrameOption("8")
-mod:AddInfoFrameOption(389033, "RemovePoison")
+mod:AddInfoFrameOption(389033, "Tank|Healer|RemovePoison")
 --mod:AddSetIconOption("SetIconOnStaggeringBarrage", 361018, true, false, {1, 2, 3})
 
 local toxinStacks = {}
@@ -64,7 +66,7 @@ function mod:OnCombatStart(delay)
 	table.wipe(toxinStacks)
 	self.vb.germinateCount = 0
 	self.vb.barkCount = 0
-	timerBarkbreakerCD:Start(9.7-delay)
+	timerBarkbreakerCD:Start(9.3-delay, 1)
 	timerGerminateCD:Start(18.2-delay, 1)
 	timerBranchOutCD:Start(30-delay)
 	timerBurstForthCD:Start(56-delay)
@@ -99,9 +101,9 @@ function mod:SPELL_CAST_START(args)
 		specWarnBranchOut:Play("watchstep")
 		specWarnBranchOut:ScheduleVoice(2.5, "bigmob")
 		timerBranchOutCD:Start()
-		timerHealingTouchCD:Start(5)
+		timerHealingTouchCD:Start(5)--Add guid not known yet here, so it'll assign first timer to boss1 :\
 	elseif spellId == 396640 then
-		timerHealingTouchCD:Start()
+		timerHealingTouchCD:Start(nil, args.sourceGUID)
 		if self.Options.SpecWarn396640interrupt and self:CheckInterruptFilter(args.sourceGUID, false, true) then
 			specWarnHealingTouch:Show(args.sourceName)
 			specWarnHealingTouch:Play("kickcast")
@@ -144,9 +146,11 @@ function mod:SPELL_AURA_APPLIED(args)
 		if self.Options.InfoFrame then
 			DBM.InfoFrame:UpdateTable(toxinStacks, 0.2)
 		end
-		if args:IsPlayer() and amount >= 12 and self:AntiSpam(3.5, 1) then
+		if args:IsPlayer() and amount >= (self:IsTank() and 20 or 12) and self:AntiSpam(3.5, 1) then
 			specWarnLasherToxin:Show(amount)
 			specWarnLasherToxin:Play("stackhigh")
+		elseif amount % 8 == 0 then
+			warnLasherToxin:Show(args.destName, amount)
 		end
 	end
 end
@@ -175,7 +179,7 @@ end
 function mod:UNIT_DIED(args)
 	local cid = self:GetCIDFromGUID(args.destGUID)
 	if cid == 196548 then--Ancient Branch
-		timerHealingTouchCD:Stop()
+		timerHealingTouchCD:Stop(args.destGUID)
 	end
 end
 

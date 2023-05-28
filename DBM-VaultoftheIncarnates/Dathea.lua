@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod(2502, "DBM-VaultoftheIncarnates", nil, 1200)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20230117031931")
+mod:SetRevision("20230314030911")
 mod:SetCreatureID(189813)
 mod:SetEncounterID(2635)
 mod:SetUsedIcons(8, 7, 6, 5, 4)
@@ -30,6 +30,7 @@ mod:RegisterEventsInCombat(
 --]]
 --Dathea, Ascended
 mod:AddTimerLine(DBM_COMMON_L.BOSS)
+local warnMarkCast								= mod:NewCountAnnounce(391686, 3)
 local warnRagingBurst							= mod:NewCountAnnounce(388302, 3, nil, nil, 86189)
 local warnZephyrSlam							= mod:NewStackAnnounce(375580, 2, nil, "Tank|Healer")
 
@@ -47,7 +48,7 @@ local timerRagingBurstCD						= mod:NewCDCountTimer(79.1, 388302, 86189, nil, ni
 local timerConductiveMarkCD						= mod:NewCDCountTimer(25, 391686, nil, nil, nil, 3)
 local timerCycloneCD							= mod:NewCDCountTimer(79.1, 376943, nil, nil, nil, 2)
 local timerCrosswindsCD							= mod:NewCDCountTimer(33, 388410, nil, nil, nil, 3)--232722 "Slicing Tornado" better?
-local timerZephyrSlamCD							= mod:NewCDCountTimer(16.9, 375580, nil, "Tank|Healer", nil, 5, nil, DBM_COMMON_L.TANK_ICON)
+local timerZephyrSlamCD							= mod:NewCDCountTimer(15.7, 375580, nil, "Tank|Healer", nil, 5, nil, DBM_COMMON_L.TANK_ICON)
 --local berserkTimer							= mod:NewBerserkTimer(600)
 
 mod:AddRangeFrameOption(5, 391686)
@@ -299,6 +300,7 @@ mod.SPELL_PERIODIC_MISSED = mod.SPELL_PERIODIC_DAMAGE
 function mod:UNIT_SPELLCAST_SUCCEEDED(uId, _, spellId)
 	if (spellId == 391600 or spellId == 391595) and self:AntiSpam(3, 2) then--391595 confirmed, 391600 i'm keeping for now in case it's used on mythics
 		self.vb.markCount = self.vb.markCount + 1
+		warnMarkCast:Show(self.vb.markCount)
 		timerConductiveMarkCD:Start(self:IsHard() and 25 or 31.5, self.vb.markCount+1)
 	end
 end

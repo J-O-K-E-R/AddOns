@@ -3,8 +3,9 @@ if T.SkipLocalActionBook then return end
 local MODERN = select(4,GetBuildInfo()) >= 8e4
 local MODERN_CONTAINERS = MODERN or C_Container and C_Container.GetContainerNumSlots
 local CF_WRATH = not MODERN and select(4,GetBuildInfo()) >= 3e4
-local AB = assert(T.ActionBook:compatible(2, 21), "A compatible version of ActionBook is required")
-local RW = assert(T.ActionBook:compatible("Rewire", 1, 10), "A compatible version of Rewire is required")
+local AB = T.ActionBook:compatible(2, 21)
+local RW = T.ActionBook:compatible("Rewire", 1, 10)
+assert(AB and RW and 1, "Incompatible library bundle")
 local L = AB:locale()
 local mark = {}
 

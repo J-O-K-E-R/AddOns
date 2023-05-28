@@ -258,7 +258,7 @@ local function OnLootOpened()
 			-- If the loot comes from a container that we support
 			if (unitType == "GameObject") then
 				local containerID = id and tonumber(id) or nil
-				RSLogger:PrintDebugMessage(string.format("Abierto [%s].", containerID or ""))
+				--RSLogger:PrintDebugMessage(string.format("Abierto [%s].", containerID or ""))
 
 				-- We support all the containers with vignette plus those ones that are part of achievements (without vignette)
 				if (RSGeneralDB.GetAlreadyFoundEntity(containerID) or RSContainerDB.GetInternalContainerInfo(containerID)) then
@@ -636,22 +636,4 @@ function RSEventHandler.RegisterEvents(rareScannerButton, addon)
 	rareScannerButton:SetScript("OnEvent", function(self, event, ...)
 		HandleEvent(self, event, ...) 
 	end)
-	
-	-- In DL VIGNETTES_UPDATED seems buggy, so keep checking every 10 seconds
-	-- In DL VIGNETTE_MINIMAP_UPDATED doesn't fire if the container appears where the player stands
---	local ticker = C_Timer.NewTicker(10, function() 
---		local vignetteGUIDs = C_VignetteInfo.GetVignettes();
---		for _, vignetteGUID in ipairs(vignetteGUIDs) do
---			local vignetteInfo = C_VignetteInfo.GetVignetteInfo(vignetteGUID);
---			if (vignetteInfo) then
---				if (vignetteInfo.onWorldMap and RSConfigDB.IsScanningWorldMapVignettes()) then
---					vignetteInfo.id = vignetteGUID
---					rareScannerButton:DetectedNewVignette(rareScannerButton, vignetteInfo)	
---				elseif (vignetteInfo.onMinimap) then
---					vignetteInfo.id = vignetteGUID
---					rareScannerButton:DetectedNewVignette(rareScannerButton, vignetteInfo)
---				end
---			end
---		end
---	end);
 end

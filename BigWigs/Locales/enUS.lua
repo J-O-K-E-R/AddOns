@@ -39,10 +39,8 @@ L.dbmUsers = "DBM users:"
 L.noBossMod = "No boss mod:"
 L.offline = "Offline"
 
-L.missingPlugin = "Please note that this zone requires the |cFF436EEE%s|r plugin for timers to be displayed."
 L.missingAddOn = "The |cFF436EEE%s|r addon is missing!"
 L.disabledAddOn = "You have the |cFF436EEE%s|r addon disabled, timers will not be shown."
-
 L.removeAddOn = "Please remove '|cFF436EEE%s|r' as it's been replaced by '|cFF436EEE%s|r'."
 L.alternativeName = "%s (|cFF436EEE%s|r)"
 
@@ -127,6 +125,8 @@ L.VOICE = "Voice"
 L.VOICE_desc = "If you have a voice plugin installed, this option will enable it to play a sound file that speaks this warning out loud for you."
 L.COUNTDOWN = "Countdown"
 L.COUNTDOWN_desc = "If enabled, a vocal and visual countdown will be added for the last 5 seconds. Imagine someone counting down \"5... 4... 3... 2... 1...\" with a big number in the middle of your screen."
+L.CASTBAR_COUNTDOWN = "Countdown (cast bars only)"
+L.CASTBAR_COUNTDOWN_desc = "If enabled, a vocal and visual countdown will be added for the last 5 seconds of the cast bars."
 L.INFOBOX = L.infobox
 L.INFOBOX_desc = L.infobox_desc
 L.SOUND = "Sound"

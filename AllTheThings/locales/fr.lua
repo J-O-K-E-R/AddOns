@@ -102,7 +102,8 @@ ACC_WIDE_DEFAULT = "Par défaut, suivi sur l’ensemble du compte.";
 	--TODO: L.BEST_PERSONAL_LOOT_CHANCE = "Best Personal Loot Chance";
 	--TODO: L.BONUS_ROLL = "Bonus Roll";
 	--TODO: L.PREREQUISITE_QUESTS = "There are prerequisite quests that must be completed before this may be obtained:";
-	--TODO: L.BREADCRUMBS_WARNING = "There are breadcrumb quests that may be not be obtainable after completing this:";
+	--TODO: L.BREADCRUMBS = "Breadcrumbs";
+	--TODO: L.BREADCRUMBS_WARNING = "There are breadcrumb quests that may not be obtainable after completing this:";
 	--TODO: L.THIS_IS_BREADCRUMB = "This is a breadcrumb quest.";
 	--TODO: L.BREADCRUMB_PARTYSYNC = "This may be unable to be completed without Party Sync if completing any of these quests first:";
 	--TODO: L.BREADCRUMB_PARTYSYNC_2 = "This may be obtained via Party Sync with another character that has not completed any of these quests:";
@@ -1145,6 +1146,7 @@ for key,value in pairs({
 	[152095] = "Lys pétale de lune",	-- Moonpetal Lily
 	[152622] = "Formation d'azsharite",	-- Azsharite Formation
 	[153123] = "Equipement de Kim'jael",	-- Kim'jael's Equipment
+	[153239] = "Plume d'Indomptable",	-- Wildkin Feather
 	[157936] = "Tas de poussière d'Un'Goro",	-- Un'Goro Dirt Pile
 	[160836] = "Coffret à relique",	-- Relic Coffer
 	[161495] = "Coffre secret",	-- Secret Safe
@@ -1267,6 +1269,7 @@ for key,value in pairs({
 	[175855] = "La chute de l'empire",	-- Empires' Fall
 	[175856] = "La colère du fléau des âmes",	-- Wrath of Soulflayer
 	[175888] = "Fragment de relique de Bien-né",	-- Highborne Relic Fragment
+	[175889] = "Œuf antique",	-- Ancient Egg
 	[175891] = "Fragment de relique de Bien-né",	-- Highborne Relic Fragment
 	[175892] = "Fragment de relique de Bien-né",	-- Highborne Relic Fragment
 	[175893] = "Fragment de relique de Bien-né",	-- Highborne Relic Fragment
@@ -1339,8 +1342,10 @@ for key,value in pairs({
 	[180366] = "Boîte d'appâts abîmée",	-- Battered Tackle Box
 	[180368] = "Tablette de la folie",	-- Tablet of Madness
 	[180369] = "Eaux troubles et agitées",	-- Muddy Churning Waters
+	[180435] = "Sacoche de Noggle",	-- Noggle's Satchel
 	[180436] = "Fragment de la tablette du Crépuscule",	-- Twilight Tablet Fragment
 	[180448] = "Avis de recherche : Poigne-de-mort",	-- Wanted Poster: Deathclasp
+	[180453] = "Cristal orné de glyphes de la Ruche'Regal",	-- Hive'Regal Glyphed Crystal
 	[180456] = "Pierre des vents inférieure",	-- Lesser Wind Stone
 	[180461] = "Pierre du vent",	-- Wind Stone
 	[180466] = "Pierre des vents supérieure",	-- Greater Wind Stone
@@ -1352,6 +1357,7 @@ for key,value in pairs({
 	[180642] = "Caisse anodine",	-- Inconspicuous Crate
 	[180652] = "Terre fraîchement remuée",	-- Freshly Dug Dirt
 	[180662] = "Débris de goélette",	-- Schooner Wreckage
+	[180669] = "Maelström tourbillonnant",	-- Swirling Maelstrom	--TODO: this was manually translated
 	[180685] = "Débris trempés",	-- Waterlogged Wreckage
 	[180690] = "Grand coffre de scarabées",	-- Large Scarab Coffer
 	[180691] = "Coffre de scarabées",	-- Scarab Coffer
@@ -1377,6 +1383,7 @@ for key,value in pairs({
 	[181153] = "Avis de recherche : Kel'gash le Malfaisant",	-- Wanted Poster: Kel'gash the Wicked
 	[181638] = "Avis de recherche",	-- Wanted Poster
 	[181643] = "Cadavre de Barbe-de-plumes",	-- Featherbeard's Remains
+	[181645] = "Œuf de griffon",	-- Gryphon Egg
 	[181649] = "Journal de Barbe-de-plumes",	-- Featherbeard's Journal
 	[181665] = "Coffre funéraire",	-- Burial Chest
 	[181672] = "Effigie de l'homme d'osier",	-- Wickerman Effigy
@@ -1437,6 +1444,7 @@ for key,value in pairs({
 	[186887] = "Grosse citrouille de la Sanssaint",	-- Large Jack-o'-Lantern
 	[187072] = "Racine de tranchépine",	-- Razorthorn Root
 	[187236] = "Cadeau du Voile d'hiver",	-- Winter Veil Gift
+	[187264] = "Coffre de minerai sombréchine",	-- Darkspine Ore Chest
 	[187273] = "Empreinte de sabot suspecte",	-- Suspicious Hoofprint
 	[187333] = "Buisson de sangrelle",	-- Bloodberry Bush
 	[187559] = "Feu de joie de la Horde",	-- Horde Bonfire
@@ -2117,7 +2125,7 @@ for key,value in pairs({
 	[234734] = "Élixir de vue de l’Ombre",	-- Elixir of Shadow Sight
 	[234735] = "Élixir de vue de l’Ombre",	-- Elixir of Shadow Sight
 	[234736] = "Élixir de vue de l’Ombre",	-- Elixir of Shadow Sight
-	[234740] = "Cor d’alarme orc",	-- Orchish Signaling Horn
+	[234740] = "Cor d’alarme orc",	-- Orcish Signaling Horn
 	[234744] = "Offrande à la Mère corbeau",	-- Offering to the Raven Mother
 	[234746] = "Offrande à la Mère corbeau",	-- Offering to the Raven Mother
 	[234748] = "Offrande à la Mère corbeau",	-- Offering to the Raven Mother
@@ -3941,7 +3949,7 @@ for key,value in pairs({
 	[398796] = "Cristal arcanique résonnant",	-- Resonating Arcane Crystal
 	[398810] = "Récompense de loyauté",	-- Fealty's Reward
 	[398814] = "Butin en fusion",	-- Molten Hoard
-	--TODO: [398815] = "Secured Shipment",	-- Secured Shipment
+	[398815] = "Cargaison sécurisée",	-- Secured Shipment
 	[401236] = "Spécimen mal nourri",	-- Malnourished Specimen
 	[401238] = "Gelée médulienne",	-- Marrow-Ripened Slime
 	[401240] = "Moisissure suspecte",	-- Suspicious Mold

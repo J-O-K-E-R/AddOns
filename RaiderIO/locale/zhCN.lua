@@ -1,3 +1,4 @@
+-- Generated from CurseForge on Wed May 24 07:56:08 UTC 2023
 local ns = select(2, ...) ---@type ns @The addon namespace.
 
 if ns:IsSameLocale("zhCN") then
@@ -5,7 +6,7 @@ if ns:IsSameLocale("zhCN") then
 
 	L.LOCALE_NAME = "zhCN"
 
-	L["ALLOW_IN_LFD"] = "允许在地下城查找器里显示"
+L["ALLOW_IN_LFD"] = "允许在地下城查找器里显示"
 L["ALLOW_IN_LFD_DESC"] = "右键点击地下城查找器上的队伍或申请者来复制Raider.IO人物主页的网址链接。"
 L["ALLOW_ON_PLAYER_UNITS"] = "允许在玩家框体上显示"
 L["ALLOW_ON_PLAYER_UNITS_DESC"] = "右键点击玩家框体来复制Raider.IO人物主页网址"
@@ -143,6 +144,8 @@ L["PREVIOUS_SCORE"] = "之前的大秘境分数 (%s)"
 L["PROFILE_BEST_RUNS"] = "按地下城显示最佳记录"
 L["PROFILE_TOOLTIP_ANCHOR_TOOLTIP"] = "锁定Raider.IO主页框架，或开启自动定位来隐藏这个锚点。"
 L["PROVIDER_NOT_LOADED"] = "|cffFF0000警告:|r |cffFFFFFF%s|r无法找到你目前阵营的数据。请检查你|cffFFFFFF/raiderio|r 的设置 并且开启鼠标提示数据 |cffFFFFFF%s|r."
+--[[Translation missing --]]
+--[[ L["PVP_DATA_HEADER"] = ""--]] 
 L["RAID_BOSS_ATSC_1"] = "狱铸者卡扎拉"
 L["RAID_BOSS_ATSC_2"] = "融合体密室"
 L["RAID_BOSS_ATSC_3"] = "被遗忘的实验体"
@@ -244,6 +247,14 @@ L["RELOAD_LATER"] = "我一会儿再重载界面（Reload）"
 L["RELOAD_NOW"] = "现在重载界面（Reload）"
 L["RELOAD_RWF_MODE_BUTTON"] = "保存"
 L["RELOAD_RWF_MODE_BUTTON_TOOLTIP"] = "点击保存到储存文件，这将需要重新加载您的界面。"
+--[[Translation missing --]]
+--[[ L["REPLAY_SETTINGS_TOOLTIP"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["REPLAY_STYLE_TITLE_MDI"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["REPLAY_STYLE_TITLE_MODERN"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["REPLAY_STYLE_TITLE_MODERN_COMPACT"] = ""--]] 
 L["RWF_MINIBUTTON_TOOLTIP"] = "每当有待处理的战利品时左键单击。 这将会重新加载你的界面。 右键单击以打开冲击世界首杀框架。"
 L["RWF_SUBTITLE_LOGGING_FILTERED_LOOT"] = "（记录相关项目）"
 L["RWF_SUBTITLE_LOGGING_LOOT"] = "（记录战利品）"
@@ -318,7 +329,6 @@ L["WARNING_LOCK_POSITION_FRAME_AUTO"] = "Raider.IO：你必须先关闭Raider.IO
 L["WARNING_RWF_MODE_ENABLE"] = "|cffFFFFFF%s|r 首杀争夺赛模式已开启。你可以通过使用 |cffFFFFFF/raiderio rwf |r来关闭它。"
 L["WIPE_RWF_MODE_BUTTON"] = "清除"
 L["WIPE_RWF_MODE_BUTTON_TOOLTIP"] = "点击以从存储文件中清除日志。 这将需要重新加载您的界面。"
-
 
 	ns.L = L
 end

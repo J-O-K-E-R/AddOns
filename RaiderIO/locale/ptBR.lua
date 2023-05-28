@@ -1,3 +1,4 @@
+-- Generated from CurseForge on Wed May 24 07:56:06 UTC 2023
 local ns = select(2, ...) ---@type ns @The addon namespace.
 
 if ns:IsSameLocale("ptBR") then
@@ -5,7 +6,7 @@ if ns:IsSameLocale("ptBR") then
 
 	L.LOCALE_NAME = "ptBR"
 
-	L["ALLOW_IN_LFD"] = "Permitir no localizador de masmorras."
+L["ALLOW_IN_LFD"] = "Permitir no localizador de masmorras."
 L["ALLOW_IN_LFD_DESC"] = "Clique-direito em grupos ou candidatos no localizador de masmorras para copiar o URL do perfil Raider.IO."
 L["ALLOW_ON_PLAYER_UNITS"] = "Permitir em retratos de jogador"
 L["ALLOW_ON_PLAYER_UNITS_DESC"] = "Clique-direito no retrato do jogador para copiar a URL do perfil Raider.IO."
@@ -142,6 +143,8 @@ L["PREVIOUS_SCORE"] = "Pontuação anterior de M+ (%s)"
 L["PROFILE_BEST_RUNS"] = "Melhores Runs por Masmorra"
 L["PROFILE_TOOLTIP_ANCHOR_TOOLTIP"] = "Tranque o Quadro de Perfil do Raider.IO ou ative o Posicionamento Automático para ocultar esta âncora."
 L["PROVIDER_NOT_LOADED"] = "|cffFF0000Warning:|r |cffFFFFFF%s|r não pode encontrar dados para sua facção atual. Verifique suas configurações |cffFFFFFF/raiderio|r e ative os dados da ferramenta para |cffFFFFFF%s|r."
+--[[Translation missing --]]
+--[[ L["PVP_DATA_HEADER"] = ""--]] 
 L["RAID_BOSS_ATSC_1"] = "Kazzara, a Forjada no Inferno"
 L["RAID_BOSS_ATSC_2"] = "A Câmara da Amalgamação"
 L["RAID_BOSS_ATSC_3"] = "Os Experimentos Esquecidos"
@@ -243,6 +246,14 @@ L["RELOAD_LATER"] = "Recarregarei depois."
 L["RELOAD_NOW"] = "Recarregar agora."
 L["RELOAD_RWF_MODE_BUTTON"] = "Salvar"
 L["RELOAD_RWF_MODE_BUTTON_TOOLTIP"] = "Clique para salvar o log no arquivo de armazenamento. Isso fará com que sua interface seja recarregada."
+--[[Translation missing --]]
+--[[ L["REPLAY_SETTINGS_TOOLTIP"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["REPLAY_STYLE_TITLE_MDI"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["REPLAY_STYLE_TITLE_MODERN"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["REPLAY_STYLE_TITLE_MODERN_COMPACT"] = ""--]] 
 L["RWF_MINIBUTTON_TOOLTIP"] = "Clique com o botão esquerdo sempre que houver saque pendente. Isso fará com que sua interface seja recarregada. Clique com o botão direito para abrir o quadro do Race World First."
 L["RWF_SUBTITLE_LOGGING_FILTERED_LOOT"] = "(registrando itens relevantes)"
 L["RWF_SUBTITLE_LOGGING_LOOT"] = "(registrando saque)"
@@ -318,7 +329,6 @@ L["WARNING_LOCK_POSITION_FRAME_AUTO"] = "Raider.IO: Você deve primeiro desabili
 L["WARNING_RWF_MODE_ENABLE"] = "|cffFFFFFF%s|r O modo Race World First está ativado. Você pode desativá-lo digitando |cffFFFFFF/raiderio rwf|r."
 L["WIPE_RWF_MODE_BUTTON"] = "Limpar"
 L["WIPE_RWF_MODE_BUTTON_TOOLTIP"] = "Clique para limpar o log do arquivo de armazenamento. Isso fará com que sua interface seja recarregada."
-
 
 	ns.L = L
 end

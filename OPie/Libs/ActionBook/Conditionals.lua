@@ -4,9 +4,10 @@ if T.SkipLocalActionBook then return end
 local MODERN, CF_WRATH = COMPAT >= 10e4, COMPAT < 10e4 and COMPAT >= 3e4
 local MODERN_CONTAINERS = MODERN or C_Container and C_Container.GetContainerNumSlots
 local EV = T.Evie
-local AB = assert(T.ActionBook:compatible(2, 31), "Incompatible ActionBook")
-local KR = assert(T.ActionBook:compatible("Kindred", 1,17), "Incompatible ActionBook/Kindred")
-local RW = assert(T.ActionBook:compatible("Rewire", 1,24), "Incompatible ActionBook/Rewire")
+local AB = T.ActionBook:compatible(2, 31)
+local KR = T.ActionBook:compatible("Kindred", 1,17)
+local RW = T.ActionBook:compatible("Rewire", 1,24)
+assert(EV and AB and KR and RW and 1, "Incompatible library bundle")
 local playerClassLocal, playerClass = UnitClass("player")
 
 local safequote do
@@ -388,7 +389,7 @@ do -- near:oid/cid
 	local argCache, nearValue, nearGroup = {}
 	local typePrefix, groups = {GameObject="o", Creature="c"}, {}
 	for k, v in pairs({
-		["herb-overload"] = "o375245/o381199/o381213/o356536/o381202/o381210/o381196/o381205/o375242/o375244/o381214/o381201/o381200/o381212/o375246/o381198/o381203/o381197/o381211/o375243/o381204/o390141/o390140/o390142/o390139",
+		["herb-overload"] = "o375245/o381199/o381213/o356536/o381202/o381210/o381196/o381205/o375242/o375244/o381214/o381201/o381200/o381212/o375246/o381198/o381203/o381197/o381211/o375243/o381204/o390141/o390140/o390142/o390139/o398761/o398760/o398759/o398762/o398767/o398764/o398765/o398766",
 		["mine-overload"] = "o381516/o375235/o375234/o381515/o381517/o375238/o375239/o381518/o381519/o375240/o390137/o390138",
 	}) do
 		for e in v:gmatch("[^/]+") do

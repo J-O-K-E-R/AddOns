@@ -107,8 +107,9 @@ function P:SetCooldownElements(icon, charges)
 	icon.cooldown:SetHideCountdownNumbers(noCount)
 	if E.OmniCC then
 		E.OmniCC.Cooldown.SetNoCooldownCount(icon.cooldown, noCount)
-
-
+	elseif icon.cooldown.timer then
+		icon.cooldown.timer:SetShown(not noCount)
+		icon.cooldown.timer.forceDisabled = noCount
 	end
 end
 

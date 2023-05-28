@@ -1,3 +1,4 @@
+-- Generated from CurseForge on Wed May 24 07:56:00 UTC 2023
 local ns = select(2, ...) ---@type ns @The addon namespace.
 
 if ns:IsSameLocale("deDE") then
@@ -5,7 +6,7 @@ if ns:IsSameLocale("deDE") then
 
 	L.LOCALE_NAME = "deDE"
 
-	L["ALLOW_IN_LFD"] = "Im Dungeonbrowser erlauben"
+L["ALLOW_IN_LFD"] = "Im Dungeonbrowser erlauben"
 L["ALLOW_IN_LFD_DESC"] = "Rechtsklick auf Gruppen oder Kandidaten im Dungeonbrowser, um den Raider.IO Profil-Link zu kopieren."
 L["ALLOW_ON_PLAYER_UNITS"] = "Am Rahmen bei Spielereinheit erlauben"
 L["ALLOW_ON_PLAYER_UNITS_DESC"] = "Rechtsklick auf Rahmen bei Spielereinheit, um den Raider.IO Profil-Link zu kopieren."
@@ -152,6 +153,8 @@ L["PROFILE_BEST_RUNS"] = "Beste Durchläufe aller Dungeons"
 L["PROFILE_TOOLTIP_ANCHOR_TOOLTIP"] = "Sperrt den Raider.IO-Profilrahmen oder aktiviert die automatische Positionierung, um diesen Anker auszublenden."
 L["PROVIDER_NOT_LOADED"] = "|cffFF0000Warnung:|r |cffFFFFFF%s|r konnte keine Daten für die aktuelle Fraktion finden. Bitte überprüfe die |cffFFFFFF/raiderio|r Einstellungen und aktiviere die Tooltip-Daten für |cffFFFFFF%s|r."
 --[[Translation missing --]]
+--[[ L["PVP_DATA_HEADER"] = ""--]] 
+--[[Translation missing --]]
 --[[ L["RAID_BOSS_ATSC_1"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["RAID_BOSS_ATSC_2"] = ""--]] 
@@ -261,6 +264,14 @@ L["RELOAD_LATER"] = "Ich werde später neu laden"
 L["RELOAD_NOW"] = "Jetzt neu laden"
 L["RELOAD_RWF_MODE_BUTTON"] = "Speichern"
 L["RELOAD_RWF_MODE_BUTTON_TOOLTIP"] = "Klicke hier, um das Protokoll in die Speicherdatei zu speichern. Dadurch wird deine Benutzeroberfläche neu geladen."
+--[[Translation missing --]]
+--[[ L["REPLAY_SETTINGS_TOOLTIP"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["REPLAY_STYLE_TITLE_MDI"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["REPLAY_STYLE_TITLE_MODERN"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["REPLAY_STYLE_TITLE_MODERN_COMPACT"] = ""--]] 
 L["RWF_MINIBUTTON_TOOLTIP"] = "Klicke mit der linken Maustaste, wann immer es anstehende Beute gibt. Dadurch wird deine Benutzeroberfläche neu geladen. Klicke mit der rechten Maustaste, um das Wettrennen Welt 1.-Fenster zu öffnen."
 L["RWF_SUBTITLE_LOGGING_FILTERED_LOOT"] = "(Protokollierung relevanter Gegenstände)"
 L["RWF_SUBTITLE_LOGGING_LOOT"] = "(Protokollierung Beute)"
@@ -335,7 +346,6 @@ L["WARNING_LOCK_POSITION_FRAME_AUTO"] = "Raider.IO: Du solltest zuerst die autom
 L["WARNING_RWF_MODE_ENABLE"] = "|cffFFFFFF%s|r Wettrennen Welt 1.-Modus ist aktiviert. Du kannst es deaktivieren, indem du |cffFFFFFF/raiderio rwf|r eingibst."
 L["WIPE_RWF_MODE_BUTTON"] = "Löschen"
 L["WIPE_RWF_MODE_BUTTON_TOOLTIP"] = "Klicke hier, um das Protokoll aus der Speicherdatei zu löschen. Dadurch wird deine Benutzeroberfläche neu geladen."
-
 
 	ns.L = L
 end

@@ -61,10 +61,10 @@ function mod:GetOptions()
 		409275, -- Magma Flow
 		397386, -- Lava Bolt
 		-- Flamebound Huntsman
-		{401401, "SAY"}, -- Blazing Spear
+		{401401, "SAY", "ME_ONLY_EMPHASIZE"}, -- Blazing Spear
 		-- Obsidian Guard
 		408620, -- Scorching Roar
-		{401867, "SAY", "SAY_COUNTDOWN"}, -- Volcanic Shield
+		{401867, "SAY", "SAY_COUNTDOWN", "ME_ONLY_EMPHASIZE"}, -- Volcanic Shield
 		-- Ignara (Mythic)
 		401108, -- Phoenix Rush
 		401381, -- Blazing Focus
@@ -102,6 +102,7 @@ function mod:OnBossEnable()
 	self:Log("SPELL_AURA_APPLIED", "BlazingFocusApplied", 401381)
 	self:Log("SPELL_CAST_START", "VigorousGale", 407009)
 	-- Warlord Kagni
+	self:Log("SPELL_AURA_APPLIED", "IgnaraFlameApplied", 411230)
 	self:Log("SPELL_AURA_REMOVED", "IgnaraFlameRemoved", 411230)
 	self:Log("SPELL_CAST_START", "DevastatingLeap", 408959)
 	self:Log("SPELL_CAST_START", "HeavyCudgel", 401258)
@@ -151,9 +152,9 @@ end
 
 function mod:UNIT_HEALTH(event, unit)
 	if self:GetHealth(unit) < 28 then -- Stage 2 at 25% hp
+		self:UnregisterUnitEvent(event, unit)
 		self:Message("stages", "cyan", CL.soon:format(CL.stage:format(2)), false)
 		self:PlaySound("stages", "info")
-		self:UnregisterUnitEvent(event, unit)
 	end
 end
 
@@ -161,13 +162,6 @@ function mod:UNIT_SPELLCAST_SUCCEEDED(_, unit, _, spellId)
 	if spellId == 406591 then -- Call Ignara (2s earlier than Ignara's Flame _APPLIED)
 		self:Message("stages", "green", self:SpellName(spellId), "artifactability_firemage_phoenixbolt")
 		-- self:PlaySound("stages", "alert")
-		self:Bar("stages", 25, L.boss_returns, "artifactability_firemage_phoenixbolt") -- 2s rp + 23s buff
-		-- XXX move this stuff to Ignara's Flame _REMOVED?
-		if self:Mythic() then
-			self:CDBar(407017, 45, L.add_bartext:format(CL.pushback, L.south, vigorousGaleCount)) -- Pushback: South (1)
-			self:CDBar(401108, 64.5, L.add_bartext:format(self:SpellName(401108), L.south, phoenixRushCount)) -- Phoenix Rush: South (1)
-		end
-		self:Bar(408959, 70, L.add_bartext:format(CL.leap, L.south, devastatingLeapCount)) -- Leap: South (1)
 	end
 end
 
@@ -207,12 +201,13 @@ end
 -- Ignara: casts Gale (S), Rush (S), Rush (N), Gale (N), repeat
 function mod:PhoenixRush(args)
 	local side = phoenixRushCount % 2 == 0 and "north" or "south"
-	self:StopBar(L.add_bartext:format(args.spellName, L[side], phoenixRushCount))
-	self:Message(args.spellId, "yellow", L.add_bartext:format(args.spellName, L[side], phoenixRushCount))
+	local msg = L.add_bartext:format(args.spellName, L[side], phoenixRushCount)
+	self:StopBar(msg)
+	self:Message(args.spellId, "yellow", msg)
 	self:PlaySound(args.spellId, "long")
 	phoenixRushCount = phoenixRushCount + 1
 
-	local cd = phoenixRushCount % 2 == 0 and 22 or 74 -- 22~26 / 74~??
+	local cd = phoenixRushCount % 2 == 0 and 25 or 72 -- 25~27 / 72~74
 	side = phoenixRushCount % 2 == 0 and "north" or "south"
 	self:CDBar(args.spellId, cd, L.add_bartext:format(args.spellName, L[side], phoenixRushCount))
 end
@@ -226,34 +221,44 @@ end
 
 function mod:VigorousGale(args)
 	local side = vigorousGaleCount % 2 == 0 and "north" or "south"
-	self:StopBar(L.add_bartext:format(CL.pushback, L[side], vigorousGaleCount))
-	self:Message(407017, "red", L.add_bartext:format(CL.pushback, L[side], vigorousGaleCount))
+	local msg = L.add_bartext:format(CL.pushback, L[side], vigorousGaleCount)
+	self:StopBar(msg)
+	self:Message(407017, "red", msg)
 	self:PlaySound(407017, "warning")
 	vigorousGaleCount = vigorousGaleCount + 1
 
-	local cd = vigorousGaleCount % 2 == 0 and 77 or 21 -- 77~79, 21~26
+	local cd = vigorousGaleCount % 2 == 0 and 66 or 32 -- 66~68, 32~??
 	side = vigorousGaleCount % 2 == 0 and "north" or "south"
 	self:CDBar(407017, cd, L.add_bartext:format(CL.pushback, L[side], vigorousGaleCount))
 end
 
 -- Warlord Kagni
+function mod:IgnaraFlameApplied(args)
+	self:Bar("stages", 23, L.boss_returns, "artifactability_firemage_phoenixbolt")
+end
+
 function mod:IgnaraFlameRemoved(arg)
 	self:StopBar(L.boss_returns)
 	self:Message("stages", "green", L.boss_returns, "artifactability_firemage_phoenixbolt")
 	self:PlaySound("stages", "info")
 
-	self:Bar(401258, 12) -- Heavy Cudgel
+	self:Bar(401258, self:Mythic() and 18 or 12) -- Heavy Cudgel
+	self:Bar(408959, 44, L.add_bartext:format(CL.leap, L.south, devastatingLeapCount)) -- Leap: South (1)
+	if self:Mythic() then
+		self:CDBar(407017, 19, L.add_bartext:format(CL.pushback, L.south, vigorousGaleCount)) -- Pushback: South (1)
+		self:CDBar(401108, 40, L.add_bartext:format(self:SpellName(401108), L.south, phoenixRushCount)) -- Phoenix Rush: South (1)
+	end
 end
 
 function mod:DevastatingLeap(args)
 	local side = devastatingLeapCount % 2 == 0 and "north" or "south"
-	self:StopBar(L.add_bartext:format(CL.leap, L[side], devastatingLeapCount))
-	self:Message(408959, "orange", L.add_bartext:format(CL.leap, L[side], devastatingLeapCount))
+	local msg = L.add_bartext:format(CL.leap, L[side], devastatingLeapCount)
+	self:StopBar(msg)
+	self:Message(408959, "orange", msg)
 	self:PlaySound(408959, "alarm")
 	devastatingLeapCount = devastatingLeapCount + 1
 
-	-- local timer = { 98.4, 47.5, 56.1, 43.9, 53.7 }
-	local cd = devastatingLeapCount % 2 == 0 and 47 or 53
+	local cd = devastatingLeapCount % 2 == 0 and 47.5 or 53
 	side = devastatingLeapCount % 2 == 0 and "north" or "south"
 	self:Bar(408959, cd, L.add_bartext:format(CL.leap, L[side], devastatingLeapCount))
 end
@@ -265,11 +270,9 @@ function mod:HeavyCudgel(args)
 		self:PlaySound(args.spellId, "alert") -- frontal
 	end
 	cudgelCount = cudgelCount + 1
-
 	if cudgelCount > 2 then -- 2nd cast fired when he lands
 		local timer = { 26.0, 22.0, 31.0, 21.0 } -- 22.0, 31.0, 21.0, 26.0 repeating
-		local cd = cudgelCount == 2 and 58 or timer[(cudgelCount % 4) + 1]
-		self:Bar(args.spellId, cd)
+		self:Bar(args.spellId, timer[(cudgelCount % 4) + 1])
 	end
 end
 
@@ -294,8 +297,9 @@ do
 			prev = args.time
 			if magmaMysticCount > 1 then
 				local side = magmaMysticCount % 2 == 0 and "south" or "north"
-				self:StopBar(L.add_bartext:format(L.molten_barrier, L[side], magmaMysticCount))
-				self:Message(args.spellId, "cyan", L.add_bartext:format(L.molten_barrier, L[side], magmaMysticCount))
+				local msg = L.add_bartext:format(L.molten_barrier, L[side], magmaMysticCount)
+				self:StopBar(msg)
+				self:Message(args.spellId, "cyan", msg)
 			else -- first is on both sides
 				self:StopBar(L.add_bartext:format(L.molten_barrier, L.both, magmaMysticCount))
 				self:Message(args.spellId, "cyan", CL.count:format(args.spellName, magmaMysticCount))
@@ -421,16 +425,18 @@ function mod:IgnarasFury(args)
 end
 
 function mod:CatastrophicSlam(args)
-	self:StopBar(CL.count:format(L.catastrophic_slam, devastatingLeapCount))
-	self:Message(args.spellId, "orange", CL.count:format(L.catastrophic_slam, devastatingLeapCount))
+	local msg = CL.count:format(L.catastrophic_slam, devastatingLeapCount)
+	self:StopBar(msg)
+	self:Message(args.spellId, "orange", msg)
 	self:PlaySound(args.spellId, "alert") -- stack
 	devastatingLeapCount = devastatingLeapCount + 1
 	self:CDBar(args.spellId, 26.7, CL.count:format(L.catastrophic_slam, devastatingLeapCount))
 end
 
 function mod:FlamingCudgel(args)
-	self:StopBar(CL.count:format(args.spellName, cudgelCount))
-	self:Message(args.spellId, "purple", CL.count:format(args.spellName, cudgelCount))
+	local msg = CL.count:format(args.spellName, cudgelCount)
+	self:StopBar(msg)
+	self:Message(args.spellId, "purple", msg)
 	self:PlaySound(args.spellId, "alert")
 	cudgelCount = cudgelCount + 1
 

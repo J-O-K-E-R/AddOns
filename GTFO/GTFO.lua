@@ -25,9 +25,9 @@ GTFO = {
 		TrivialDamagePercent = 2; -- Minimum % of HP lost required for an alert to be trivial
 		SoundOverrides = { "", "", "", "" }; -- Override table for GTFO sounds
 	};
-	Version = "5.1.2"; -- Version number (text format)
+	Version = "5.2"; -- Version number (text format)
 	VersionNumber = 0; -- Numeric version number for checking out-of-date clients (placeholder until client is detected)
-	RetailVersionNumber = 50102; -- Numeric version number for checking out-of-date clients (retail)
+	RetailVersionNumber = 50200; -- Numeric version number for checking out-of-date clients (retail)
 	ClassicVersionNumber = 50005; -- Numeric version number for checking out-of-date clients (Vanilla classic)
 	BurningCrusadeVersionNumber = 50000; -- Numeric version number for checking out-of-date clients (TBC classic)
 	WrathVersionNumber = 50005; -- Numeric version number for checking out-of-date clients (Wrath classic)
@@ -2223,6 +2223,24 @@ function GTFO_GetDebuffSpellIndex(target, iSpellID)
 	return nil;
 end
 
+function GTFO_BuffTime(target, iSpellID)
+	local index = GTFO_GetBuffSpellIndex(target, iSpellID);
+	if (index) then
+		return tonumber(select(6, UnitBuff(target, index)) - GetTime()) or 0;
+	else
+		return 0;
+	end
+end
+
+function GTFO_DebuffTime(target, iSpellID)
+	local index = GTFO_GetDebuffSpellIndex(target, iSpellID);
+	if (index) then
+		return tonumber(select(6, UnitDebuff(target, index)) - GetTime()) or 0;
+	else
+		return 0;
+	end
+end
+
 function GTFO_GetAlertID(alert)
 	if (alert.soundFunction) then
 		return alert:soundFunction();
@@ -2357,6 +2375,18 @@ function GTFO_AddEvent(eventName, eventTime, eventCode, eventRepeat)
 			GTFOFrame:SetScript("OnUpdate", GTFO_OnUpdate);
 			--GTFO_DebugPrint("Event update checking enabled.");
 		end
+end
+
+function GTFO_RemoveEvent(eventName)
+	if (#GTFO.Events > 0) then
+		for index, event in pairs(GTFO.Events) do
+			if (event.Name == eventName) then
+				--GTFO_DebugPrint("Removed event: "..tostring(eventName));
+				tremove(GTFO.Events, index);
+				return;
+			end
+		end
+	end
 end
 
 function GTFO_FindEvent(eventName)

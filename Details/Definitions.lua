@@ -29,6 +29,9 @@
 
 ---@class tablesize : {H: number, W: number}
 ---@class tablecoords : {L: number, R: number, T: number, B: number}
+---@class texturecoords: {left: number, right: number, top: number, bottom: number}
+---@class objectsize : {height: number, width: number}
+---@class texturetable : {texture: string, coords: texturecoords, size: objectsize}
 
 ---@class spellid : number
 ---@class actorname : string
@@ -137,6 +140,7 @@
 ---@field SetPropagateKeyboardInput fun(self: frame, propagate: boolean)
 ---@field SetPropagateGamepadInput fun(self: frame, propagate: boolean)
 ---@field StartMoving fun(self: frame)
+---@field IsMovable fun(self: frame) : boolean
 ---@field StartSizing fun(self: frame, point: "top"|"topright"|"right"|"bottomright"|"bottom"|"bottomleft"|"left"|"topleft")
 ---@field StopMovingOrSizing fun(self: frame)
 ---@field GetAttribute fun(self: frame, name: string) : any
@@ -157,6 +161,7 @@
 ---@field SetResizeBounds fun(self: frame, minWidth: number, minHeight: number, maxWidth: number, maxHeight: number)
 
 ---@class button : frame
+---@field Click fun(self: button)
 ---@field SetNormalTexture fun(self: button, texture: texture)
 ---@field SetPushedTexture fun(self: button, texture: texture)
 ---@field SetHighlightTexture fun(self: button, texture: texture)
@@ -354,9 +359,15 @@
 ---@field ListActors fun(container: actorcontainer) usage: for index, actorObject in container:ListActors() do
 
 ---@class spellcontainer : table
+---@field _ActorTable table store [spellId] = spelltable
 ---@field GetSpell fun(container: spellcontainer, spellId: number) get a spell by its id
----@field ListActors fun(container: spellcontainer) : pairs usage: for spellId, spelltable in container:ListActors() do
----@field _ActorTable table
+---@field ListActors fun(container: spellcontainer) : any, any usage: for spellId, spelltable in container:ListActors() do
+---@field ListSpells fun(container: spellcontainer) : any, any usage: for spellId, spelltable in container:ListActors() do
+---@field HasTwoOrMoreSpells fun(container: spellcontainer) : boolean return true if the container has two or more spells
+
+---@class friendlyfiretable : table
+---@field total number total amount of friendly fire caused by the actor
+---@field spells table<number, number> spellId = total
 
 ---@class spelltable : table
 ---@field uptime number
@@ -399,11 +410,6 @@
 ---@class targettable : {[string]: number}
 
 ---@class actor : table
----@field GetSpellContainer fun(actor: actor, containerType: "debuff"|"buff"|"spell"|"cooldowns") : spellcontainer
----@field Name fun(actor: actor) : string get the name of the actor
----@field Tempo fun(actor: actor) : number get the activity or effective time of the actor
----@field GetPets fun(actor: actor) : table<number, string> get a table with all pet names that belong to the player
----@field GetSpellList fun(actor: actor) : table<number, spelltable>
 ---@field BuildSpellTargetFromBreakdownSpellData fun(actor: actor, bkSpellData: spelltableadv) : table
 ---@field BuildSpellTargetFromSpellTable fun(actor: actor, spellTable: spelltable) : table
 ---@field debuff_uptime_spells table
@@ -418,12 +424,27 @@
 ---@field grupo boolean
 ---@field fight_component boolean
 ---@field boss_fight_component boolean
+---@field pvp_component boolean
 ---@field boss boolean
 ---@field last_event unixtime
 ---@field total_without_pet number
 ---@field total number
 ---@field pets table<number, string>
 ---@field targets targettable
+---@field GetSpellContainer fun(actor: actor, containerType: "debuff"|"buff"|"spell"|"cooldowns") : spellcontainer
+---@field Class fun(actor: actor) : string get the ingame class of the actor
+---@field Spec fun(actor: actor) : string get the ingame spec of the actor
+---@field Name fun(actor: actor) : string get the name of the actor
+---@field Tempo fun(actor: actor) : number get the activity or effective time of the actor
+---@field GetPets fun(actor: actor) : table<number, string> get a table with all pet names that belong to the player
+---@field GetSpellList fun(actor: actor) : table<number, spelltable>
+---@field GetSpellContainerNames fun(container: actorcontainer) : string[] get the table which contains the names of the spell containers
+
+---@class actordamage : actor
+---@field friendlyfire_total number
+---@field friendlyfire friendlyfiretable
+---@field damage_taken number amount of damage the actor took durent the segment
+---@field damage_from table<string, boolean> store the name of the actors which damaged the actor, format: [actorName] = true
 
 ---@class segmentid : number
 ---@class instanceid : number
@@ -441,6 +462,7 @@
 ---@field ativa boolean
 ---@field freezed boolean
 ---@field sub_atributo_last table
+---@field row_info table
 ---@field GetInstanceGroup fun() : table
 ---@field GetCombat fun(instance: instance)
 ---@field ChangeIcon fun(instance: instance)
@@ -480,6 +502,8 @@
 ---@field combatTime number
 ---@field [spelltableadv] spelltableadv indexed part of the table
 
+---@class headercolumndatasaved : {enabled: boolean, width: number, align: string}
+
 ---@class breakdownexpandbutton : button
 ---@field texture texture
 
@@ -493,12 +517,28 @@
 ---@field Header df_headerframe
 ---@field RefreshMe fun(scrollFrame: breakdowntargetscrollframe, data: table|nil)
 
+---@class breakdowngenericscrollframe : df_scrollboxmixin, scrollframe
+---@field Header df_headerframe
+---@field RefreshMe fun(scrollFrame: breakdowngenericscrollframe, data: table|nil)
+
 ---@class breakdownphasescrollframe : df_scrollboxmixin, scrollframe
 ---@field Header df_headerframe
 ---@field RefreshMe fun(scrollFrame: breakdownphasescrollframe, data: table|nil)
 
 ---@class breakdownphasebar : button, df_headerfunctions
 ---@field index number
+---@field Icon texture
+---@field InLineTexts fontstring[]
+---@field statusBar breakdownspellbarstatusbar
+
+---@class breakdowngenericbar : button, df_headerfunctions
+---@field index number
+---@field rank number
+---@field name string
+---@field percent number
+---@field amount number
+---@field total number
+---@field actorName string
 ---@field Icon texture
 ---@field InLineTexts fontstring[]
 ---@field statusBar breakdownspellbarstatusbar
@@ -557,8 +597,11 @@
 ---@field expandedIndex number
 ---@field bIsExpanded boolean
 ---@field statusBarValue number
+---@field actorName string --when showing an actor header, this is the actor name
+---@field bIsActorHeader boolean is this is true, the spellbar is an actor header, which is a bar with the actor name with the actor spells nested
+---@field actorIcon texture
 
----@class bknesteddata : {spellId: number, spellTable: spelltable, petName: string, value: number}
+---@class bknesteddata : {spellId: number, spellTable: spelltable, actorName: string, value: number, bIsActorHeader: boolean} fills .nestedData table in spelltableadv, used to store the nested spells data, 'value' is set when the breakdown sort the values by the selected header
 
 ---@class breakdowntargetframe : frame
 ---@field spellId number
@@ -588,10 +631,14 @@
 ---@field SpellBlockFrame breakdownspellblockframe
 
 ---@class breakdownspellblockframe : frame container for the spellblocks in the breakdown window
----@field SpellBlocks breakdownspellblock[]
----@field UpdateBlocks fun(self: breakdownspellblockframe)
----@field ClearBlocks fun(self: breakdownspellblockframe)
----@field GetBlock fun(self: breakdownspellblockframe, index: number) : breakdownspellblock
+---@field SpellBlocks breakdownspellblock[] array of spellblocks
+---@field blocksInUse number number of blocks currently in use
+---@field UpdateBlocks fun(self: breakdownspellblockframe) update the blocks
+---@field ClearBlocks fun(self: breakdownspellblockframe) clear all blocks
+---@field GetBlock fun(self: breakdownspellblockframe, index: number) : breakdownspellblock return the block at the index
+---@field GetBlocksInUse fun(self: breakdownspellblockframe) : number return the number of blocks currently in use
+---@field GetBlocksAmount fun(self: breakdownspellblockframe) : number return the total blocks created
+---@field ShowEmptyBlock fun(self: breakdownspellblockframe, index: number) show the empty block
 
 ---@class breakdownspellblock : statusbar breakdownspellblock object which is created inside the breakdownspellblockframe
 ---@field Lines breakdownspellblockline[]

@@ -40,10 +40,8 @@ L.dbmUsers = "DBM 사용자:"
 L.noBossMod = "우두머리 모듈 없음:"
 L.offline = "접속 종료"
 
-L.missingPlugin = "이 지역에서 타이머를 표시하려면 |cFF436EEE%s|r 플러그인이 필요합니다."
 --L.missingAddOn = "The |cFF436EEE%s|r addon is missing!"
 L.disabledAddOn = "|cFF436EEE%s|r 애드온이 비활성화 중이므로 타이머를 표시할 수 없습니다."
-
 L.removeAddOn = "'|cFF436EEE%s|r'|1이;가; '|cFF436EEE%s|r'|1으로;로; 대체되었으므로 제거해주세요."
 L.alternativeName = "%s (|cFF436EEE%s|r)"
 
@@ -128,6 +126,8 @@ L.VOICE = "음성"
 L.VOICE_desc = "음성 플러그인을 설치하고, 이 옵션을 활성화하면 이 경고를 소리내어 말해주는 소리 파일을 재생합니다."
 L.COUNTDOWN = "초읽기"
 L.COUNTDOWN_desc = "활성화하면, 마지막 5초에 음성과 시각적 초읽기가 추가됩니다. 화면 가운데에 \"5... 4... 3... 2... 1...\"의 큰 숫자와 함께 초읽기를 해줍니다."
+--L.CASTBAR_COUNTDOWN = "Countdown (cast bars only)"
+--L.CASTBAR_COUNTDOWN_desc = "If enabled, a vocal and visual countdown will be added for the last 5 seconds of the cast bars."
 L.INFOBOX = L.infobox
 L.INFOBOX_desc = L.infobox_desc
 L.SOUND = "소리"

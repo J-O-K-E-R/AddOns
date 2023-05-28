@@ -2,7 +2,7 @@
 BigWigs:AddSounds("Watcher Irideus", {
 	[383840] = {"info","long"},
 	[384014] = "alert",
-	[384351] = "alert",
+	[384351] = "long",
 	[384524] = "alarm",
 	[389179] = "alert",
 	[389446] = "alarm",
@@ -59,5 +59,6 @@ BigWigs:AddSounds("Halls of Infusion Trash", {
 	[391610] = {"alert","warning"},
 	[391613] = "alert",
 	[391634] = "long",
+	[393432] = "alarm",
 	[395694] = {"alarm","alert"},
 })

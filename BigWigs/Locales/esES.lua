@@ -40,10 +40,8 @@ L.dbmUsers = "Jugadores con DBM:"
 L.noBossMod = "Sin boss mod:"
 L.offline = "Desconectado"
 
-L.missingPlugin = "Tenga en cuenta que esta zona requiere el plugin |cFF436EEE%s|r para que los contadores sean mostrados."
 --L.missingAddOn = "The |cFF436EEE%s|r addon is missing!"
 L.disabledAddOn = "Tienes el addon |cFF436EEE%s|r deshabilitado, los contadores no se mostraran."
-
 L.removeAddOn = "Por favor elimina '|cFF436EEE%s|r' ya que está siendo reemplazado por '|cFF436EEE%s|r'."
 L.alternativeName = "%s (|cFF436EEE%s|r)"
 
@@ -128,6 +126,8 @@ L.VOICE = "Voz"
 L.VOICE_desc = "Si tienes un plugin de voz instalado, esta opción le permitirá reproducir un archivo de sonido que hable en este aviso para ti."
 L.COUNTDOWN = "Cuenta atrás"
 L.COUNTDOWN_desc = "Si está activo, una cuenta atrás vocal y visual será agregada para los últimos 5 segundos. Imagina a alguien contando hacia atrás \"5... 4... 3... 2... 1...\" con un número grande en el medio de la pantalla."
+--L.CASTBAR_COUNTDOWN = "Countdown (cast bars only)"
+--L.CASTBAR_COUNTDOWN_desc = "If enabled, a vocal and visual countdown will be added for the last 5 seconds of the cast bars."
 L.INFOBOX = L.infobox
 L.INFOBOX_desc = L.infobox_desc
 L.SOUND = "Sonido"

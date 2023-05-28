@@ -8,10 +8,11 @@
 ## SavedVariables: ATTCharacterData, ATTAccountWideData, AllTheThingsSettings, AllTheThingsAD, AllTheThingsProfiles, AllTheThingsAuctionData, AllTheThingsDebugData, AllTheThingsArtifactsItems, AllTheThingsHarvestItems
 ## SavedVariablesPerCharacter: AllTheThingsSettingsPerCharacter
 ## Notes: Addon for Tracking Collections & Account Completion
-## Version: DF-3.4.2
+## Version: DF-3.4.4
 src\base.lua
 lib\Callback.lua
 lib\Runner.lua
+lib\Audio.lua
 lib\LibStub\LibStub.lua
 lib\CallbackHandler-1.0\CallbackHandler-1.0.lua
 lib\LibDataBroker-1.1\LibDataBroker-1.1.lua

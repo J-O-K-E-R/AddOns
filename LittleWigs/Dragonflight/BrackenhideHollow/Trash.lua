@@ -12,6 +12,7 @@ mod:RegisterEnableMob(
 	185534, -- Bonebolt Hunter
 	185529, -- Bracken Warscourge
 	186220, -- Brackenhide Shaper
+	191926, -- Fishface
 	189531, -- Decayed Elder
 	186229, -- Wilted Oak
 	186226, -- Fetid Rotsinger
@@ -44,9 +45,11 @@ if L then
 	L.bonebolt_hunter = "Bonebolt Hunter"
 	L.bracken_warscourge = "Bracken Warscourge"
 	L.brackenhide_shaper = "Brackenhide Shaper"
+	L.fishface = "Fishface"
 	L.decayed_elder = "Decayed Elder"
 	L.wilted_oak = "Wilted Oak"
 	L.fetid_rotsinger = "Fetid Rotsinger"
+	L.decay_totem = "Decay Totem"
 	L.monstrous_decay = "Monstrous Decay"
 	L.infected_bear = "Infected Bear"
 	L.stinkbreath = "Stinkbreath"
@@ -79,6 +82,9 @@ function mod:GetOptions()
 		382555, -- Ragestorm
 		-- Brackenhide Shaper
 		372711, -- Infuse Corruption
+		-- Fishface
+		384854, -- Fish Slap!
+		384847, -- Fresh Catch
 		-- Decayed Elder
 		373897, -- Decaying Roots
 		-- Wilted Oak
@@ -92,7 +98,7 @@ function mod:GetOptions()
 		-- Infected Bear
 		{373929, "TANK"}, -- Bash
 		-- Stinkbreath
-		388060, -- Stink Breath
+		{388060, "SAY"}, -- Stink Breath
 		388046, -- Violent Whirlwind
 		-- Rageclaw
 		{385832, "SAY"}, -- Bloodthirsty Charge
@@ -114,6 +120,7 @@ function mod:GetOptions()
 		[368287] = L.bonebolt_hunter,
 		[367500] = L.bracken_warscourge,
 		[372711] = L.brackenhide_shaper,
+		[384854] = L.fishface,
 		[373897] = L.decayed_elder,
 		[373943] = L.wilted_oak,
 		[374057] = L.fetid_rotsinger,
@@ -145,6 +152,7 @@ function mod:OnBossEnable()
 	self:Log("SPELL_AURA_APPLIED", "WitheringApplied", 368081)
 
 	-- Claw Fighter
+	self:Log("SPELL_CAST_START", "ViciousClawmangle", 367484)
 	self:Log("SPELL_AURA_APPLIED", "ViciousClawmangleApplied", 367484)
 
 	-- Bonebolt Hunter
@@ -159,6 +167,10 @@ function mod:OnBossEnable()
 	-- Brackenhide Shaper
 	self:Log("SPELL_CAST_SUCCESS", "InfuseCorruption", 372711)
 
+	-- Fishface
+	self:Log("SPELL_CAST_START", "FishSlap", 384854)
+	self:Log("SPELL_CAST_START", "FreshCatch", 384847)
+
 	-- Decayed Elder
 	self:Log("SPELL_CAST_START", "DecayingRoots", 373897)
 
@@ -167,7 +179,7 @@ function mod:OnBossEnable()
 	self:Log("SPELL_CAST_START", "NecroticBreath", 382712)
 
 	-- Fetid Rotsinger
-	self:Log("SPELL_SUMMON", "DecayTotemSummoned", 374057)
+	self:Log("SPELL_CAST_SUCCESS", "SummonDecayTotem", 375065) -- Summon Totem
 	self:Log("SPELL_CAST_START", "BurstOfDecay", 374544)
 
 	-- Monstrous Decay
@@ -179,6 +191,7 @@ function mod:OnBossEnable()
 	-- Stinkbreath
 	self:Log("SPELL_CAST_START", "StinkBreath", 388060)
 	self:Log("SPELL_CAST_START", "ViolentWhirlwind", 388046)
+	self:Death("StinkbreathDeath", 187033)
 
 	-- Rageclaw
 	self:Log("SPELL_CAST_START", "BloodthirstyCharge", 385832)
@@ -260,10 +273,22 @@ end
 
 -- Claw Fighter
 
+do
+	local prev = 0
+	function mod:ViciousClawmangle(args)
+		local t = args.time
+		if t - prev > 1.5 then
+			prev = t
+			self:Message(args.spellId, "red")
+			self:PlaySound(args.spellId, "alert")
+		end
+	end
+end
+
 function mod:ViciousClawmangleApplied(args)
 	if self:Me(args.destGUID) and not self:Tank() then
 		self:PersonalMessage(args.spellId, nil, CL.fixate)
-		self:PlaySound(args.spellId, "long")
+		self:PlaySound(args.spellId, "warning")
 	end
 end
 
@@ -307,6 +332,20 @@ function mod:InfuseCorruption(args)
 	self:PlaySound(args.spellId, "alert")
 end
 
+-- Fishface
+
+function mod:FishSlap(args)
+	self:Message(args.spellId, "orange")
+	self:PlaySound(args.spellId, "alarm")
+	--self:NameplateCDBar(args.spellId, 20.6, args.sourceGUID)
+end
+
+function mod:FreshCatch(args)
+	self:Message(args.spellId, "yellow")
+	self:PlaySound(args.spellId, "info")
+	--self:NameplateCDBar(args.spellId, 15.8, args.sourceGUID)
+end
+
 -- Decayed Elder
 
 function mod:DecayingRoots(args)
@@ -328,9 +367,9 @@ end
 
 -- Fetid Rotsinger
 
-function mod:DecayTotemSummoned(args)
-	self:Message(args.spellId, "yellow", CL.spawned:format(args.destName))
-	self:PlaySound(args.spellId, "alert")
+function mod:SummonDecayTotem(args)
+	self:Message(374057, "yellow", CL.incoming:format(L.decay_totem))
+	self:PlaySound(374057, "warning")
 end
 
 do
@@ -363,14 +402,30 @@ end
 
 -- Stinkbreath
 
-function mod:StinkBreath(args)
-	self:Message(args.spellId, "red")
-	self:PlaySound(args.spellId, "alarm")
+do
+	local function printTarget(self, name, guid)
+		self:TargetMessage(388060, "red", name)
+		self:PlaySound(388060, "alarm", nil, name)
+		if self:Me(guid) then
+			self:Say(388060)
+		end
+	end
+
+	function mod:StinkBreath(args)
+		self:GetUnitTarget(printTarget, 0.2, args.sourceGUID)
+		self:CDBar(args.spellId, 17.0)
+	end
 end
 
 function mod:ViolentWhirlwind(args)
 	self:Message(args.spellId, "orange")
 	self:PlaySound(args.spellId, "alarm")
+	self:CDBar(args.spellId, 23.1)
+end
+
+function mod:StinkbreathDeath(args)
+	self:StopBar(388060) -- Stink Breath
+	self:StopBar(388046) -- Violent Whirlwind
 end
 
 -- Rageclaw
@@ -411,8 +466,8 @@ end
 -- Skulking Gutstabber
 
 function mod:WitheringPoisonApplied(args)
-	-- TODO on live not dispelled by movement (bug), check PTR
-	if self:Dispeller("poison", nil, args.spellId) or self:Dispeller("movement", nil, args.spellId) or self:Me(args.destGUID) then
+	-- not dispelled by movement (presumably bugged)
+	if self:Dispeller("poison", nil, args.spellId) or self:Me(args.destGUID) then
 		self:TargetMessage(args.spellId, "yellow", args.destName)
 		self:PlaySound(args.spellId, "alert", nil, args.destName)
 	end
@@ -431,7 +486,7 @@ function mod:RottingSurge(args)
 	-- this is triggered on cast success (there's a channel after) because
 	-- interrupting this during the pre-cast doesn't put it on CD
 	self:Message(383399, "yellow")
-	self:PlaySound(383399, "alert")
+	self:PlaySound(383399, "long")
 end
 
 do

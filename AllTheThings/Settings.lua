@@ -64,28 +64,6 @@ settings.UniqueCounter = setmetatable({}, {
 	end
 });
 
--- Music / Sound Management (You can add your own sounds for this if you want.)
-settings.AUDIO_COMPLETE_TABLE = {
-	app.asset("complete1.ogg"),
-};
-settings.AUDIO_FANFARE_TABLE = {
-	app.asset("fanfare1.ogg"),
-	app.asset("fanfare2.ogg"),
-	app.asset("fanfare3.ogg"),
-	app.asset("fanfare4.ogg"),
-	app.asset("fanfare5.ogg"),
-	app.asset("fanfare6.ogg"),
-};
-settings.AUDIO_RAREFIND_TABLE = {
-	app.asset("rarefind1.ogg"),
-};
-settings.AUDIO_REMOVE_TABLE = {
-	app.asset("remove1.ogg"),
-};
-settings.AUDIO_REPORT_TABLE = {
-	app.asset("report1.ogg"),
-};
-
 -- Settings Class
 local Things = {
 	"Achievements",
@@ -808,16 +786,16 @@ settings.CreateDropdown = function(self, opts, OnRefresh)
 	dropdown:SetHeight(19);
 	-- dropdown:SetBackdrop({
 	-- 	bgFile = "Interface\\COMMON\\Common-Input-Border",
-	-- 	-- edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border.PNG",
-	-- 	-- tile = true,
-	-- 	-- tileEdge = true,
-	-- 	-- tileSize = 8,
-	-- 	-- edgeSize = 3,
+	--	-- edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border.PNG",
+	--	-- tile = true,
+	--	-- tileEdge = true,
+	--	-- tileSize = 8,
+	--	-- edgeSize = 3,
 	-- 	insets = { left = 1, right = 1, top = 1, bottom = 1 },
 	-- });
     local dd_title = AddLabel(dropdown, title_text);
 
- 	-- Sets the dropdown width to the largest item string width.
+	-- Sets the dropdown width to the largest item string width.
 	 if width == 0 then
 		for _,item in ipairs(menu_items) do
 			dd_title:SetText(item);

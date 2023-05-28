@@ -562,7 +562,7 @@ E.spell_db = {
 
 	},
 	["SHAMAN"] = {
-		{ ["class"]="SHAMAN",["type"]="other",["buff"]=409293,["spec"]=true,["name"]="Burrow",["duration"]=120,["icon"]=136025,["spellID"]=409293, },
+		{ ["class"]="SHAMAN",["type"]="immunity",["buff"]=409293,["spec"]=true,["name"]="Burrow",["duration"]=120,["icon"]=136025,["spellID"]=409293, },
 		{ ["class"]="SHAMAN",["type"]="other",["buff"]=2484,["name"]="Earthbind Totem",["duration"]=30,["icon"]=136102,["spellID"]=2484, },
 
 

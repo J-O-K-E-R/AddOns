@@ -1,3 +1,4 @@
+-- Generated from CurseForge on Wed May 24 07:56:04 UTC 2023
 local ns = select(2, ...) ---@type ns @The addon namespace.
 
 if ns:IsSameLocale("itIT") then
@@ -5,7 +6,7 @@ if ns:IsSameLocale("itIT") then
 
 	L.LOCALE_NAME = "itIT"
 
-	L["ALLOW_IN_LFD"] = "Abilita in Ricerca delle Incursioni"
+L["ALLOW_IN_LFD"] = "Abilita in Ricerca delle Incursioni"
 L["ALLOW_IN_LFD_DESC"] = "Fai clic con il pulsante destro del mouse su gruppi o candidati in Ricerca delle Incusioni per copiare l'URL del Profilo Raider.IO"
 L["ALLOW_ON_PLAYER_UNITS"] = "Consenti su Frame Unità Giocatore"
 L["ALLOW_ON_PLAYER_UNITS_DESC"] = "Fare clic con il tasto destro del mouse sulla finestra di un Giocatore per Copiare l'URL del Profilo Raider.IO."
@@ -202,6 +203,8 @@ L["PROFILE_BEST_RUNS"] = "Miglior Corsa per Spedizione"
 --[[ L["PROFILE_TOOLTIP_ANCHOR_TOOLTIP"] = ""--]] 
 L["PROVIDER_NOT_LOADED"] = "| cffFF0000Warning: | r | cffFFFFFF% s | r non riesce a trovare i dati per la fazione corrente. Controllare le impostazioni | cffFFFFFF / raiderio | r e abilitare i dati del tooltip per | cffFFFFFF% s | r."
 --[[Translation missing --]]
+--[[ L["PVP_DATA_HEADER"] = ""--]] 
+--[[Translation missing --]]
 --[[ L["RAID_BOSS_ATSC_1"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["RAID_BOSS_ATSC_2"] = ""--]] 
@@ -376,6 +379,14 @@ L["RELOAD_NOW"] = "Ricarica Ora"
 --[[Translation missing --]]
 --[[ L["RELOAD_RWF_MODE_BUTTON_TOOLTIP"] = ""--]] 
 --[[Translation missing --]]
+--[[ L["REPLAY_SETTINGS_TOOLTIP"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["REPLAY_STYLE_TITLE_MDI"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["REPLAY_STYLE_TITLE_MODERN"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["REPLAY_STYLE_TITLE_MODERN_COMPACT"] = ""--]] 
+--[[Translation missing --]]
 --[[ L["RWF_MINIBUTTON_TOOLTIP"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["RWF_SUBTITLE_LOGGING_FILTERED_LOOT"] = ""--]] 
@@ -464,7 +475,6 @@ L["WARNING_LOCK_POSITION_FRAME_AUTO"] = "RaiderIO: Devi prima Disabilitare \"Pos
 --[[ L["WIPE_RWF_MODE_BUTTON"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["WIPE_RWF_MODE_BUTTON_TOOLTIP"] = ""--]] 
-
 
 	ns.L = L
 end

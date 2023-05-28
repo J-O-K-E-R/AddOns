@@ -27,6 +27,7 @@ BigWigs:AddSounds("Ring of Booty", {
 	[256363] = "alert",
 	[256405] = "warning",
 	[256489] = "info",
+	[256552] = "underyou",
 	[257829] = "info",
 	[257904] = "alert",
 })
@@ -36,6 +37,7 @@ BigWigs:AddSounds("Harlan Sweete", {
 	[257305] = "alarm",
 	[257314] = {"alert","warning"},
 	[257316] = "info",
+	[413136] = "alert",
 	["stages"] = "long",
 })
 

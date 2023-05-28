@@ -1,13 +1,14 @@
 local mod	= DBM:NewMod(2488, "DBM-Party-Dragonflight", 7, 1202)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20230108011611")
+mod:SetRevision("20230504231118")
 mod:SetCreatureID(188252)
 mod:SetEncounterID(2609)
 --mod:SetUsedIcons(1, 2, 3)
 mod:SetHotfixNoticeRev(20221126000000)
 --mod:SetMinSyncRevision(20211203000000)
 --mod.respawnTime = 29
+mod.sendMainBossGUID = true
 
 mod:RegisterCombat("combat")
 
@@ -37,7 +38,7 @@ local specWarnHailbombs							= mod:NewSpecialWarningDodge(396044, nil, nil, nil
 local specWarnChillStorm						= mod:NewSpecialWarningMoveAway(372851, nil, nil, nil, 1, 2)
 local yellChillstorm							= mod:NewYell(372851)
 local yellChillstormFades						= mod:NewShortFadesYell(372851)
-local specWarnFrostOverload						= mod:NewSpecialWarningInterrupt(373680, "HasInterrupt", nil, nil, 1, 2, 4)
+local specWarnFrostOverload						= mod:NewSpecialWarningInterrupt(373680, "HasInterrupt", nil, 2, 1, 2, 4)
 local specWarnAwakenWhelps						= mod:NewSpecialWarningSwitch(373046, "-Healer", nil, nil, 1, 2)
 local specWarnGTFO								= mod:NewSpecialWarningGTFO(372851, nil, nil, nil, 1, 8)
 

@@ -1,6 +1,7 @@
 local config, COMPAT, _, T = {}, select(4,GetBuildInfo()), ...
 local MODERN, CF_WRATH = COMPAT >= 10e4, COMPAT < 10e4 and COMPAT >= 3e4
 local L, EV, frame = T.L, T.Evie, nil
+local GameTooltip = T.NotGameTooltip or GameTooltip
 T.config = config
 
 do -- /opie

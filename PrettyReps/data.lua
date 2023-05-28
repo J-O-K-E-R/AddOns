@@ -10,8 +10,16 @@ _G.PrettyReps.Data = {
 					name = "Dragonscale Expedition"
 				},
 				{
+					factionID = 2568,
+					name = "Glimmerogg Racer"
+				},
+				{
 					factionID = 2511,
 					name = "Iskaara Tuskarr"
+				},
+				{
+					factionID = 2564,
+					name = "Loamm Niffen"
 				},
 				{
 					factionID = 2503,
@@ -937,6 +945,10 @@ _G.PrettyReps.Data = {
 							factionID = 1353,
 							name = "Tushui Pandaren"
 						},
+						{
+							factionID = 2524,
+							name = "Obsidian Warders"
+						},
 					}
 				},
 				{
@@ -972,6 +984,10 @@ _G.PrettyReps.Data = {
 						{
 							factionID = 68,
 							name = "Undercity"
+						},
+						{
+							factionID = 2523,
+							name = "Dark Talons"
 						},
 					}
 				},

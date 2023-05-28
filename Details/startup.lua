@@ -27,6 +27,11 @@ function Details:StartMeUp()
 		return Details.AddOnStartTime or GetTime()
 	end
 
+	C_Timer.After(3, function()
+		--load custom spells on login
+		Details:FillUserCustomSpells()
+	end)
+
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --row single click, this determines what happen when the user click on a bar
 
@@ -78,8 +83,6 @@ function Details:StartMeUp()
 	Details:InitializeRunCodeWindow()
 	Details:InitializePlaterIntegrationWindow()
 	Details:InitializeMacrosWindow()
-
-	Details.InitializeSpellBreakdownTab()
 
 	if (Details.ocd_tracker.show_options) then
 		Details:InitializeCDTrackerWindow()
@@ -345,6 +348,25 @@ function Details:StartMeUp()
 
 	--check is this is the first run of this version
 	if (Details.is_version_first_run) then
+		local breakdownData = Details.breakdown_spell_tab
+		if (breakdownData) then
+			local spellContainerHeaders = breakdownData.spellcontainer_headers
+			if (spellContainerHeaders) then
+				if (spellContainerHeaders.overheal) then
+					spellContainerHeaders.overheal.enabled = true
+					spellContainerHeaders.overheal.width = 70
+				end
+			end
+
+			local targetContainerHeaders = breakdownData.targetcontainer_headers
+			if (targetContainerHeaders) then
+				if (targetContainerHeaders.overheal) then
+					targetContainerHeaders.overheal.enabled = true
+					targetContainerHeaders.overheal.width = 70
+				end
+			end
+		end
+
 		local lowerInstanceId = Details:GetLowerInstanceNumber()
 		if (lowerInstanceId) then
 			lowerInstanceId = Details:GetInstance(lowerInstanceId)
@@ -373,11 +395,6 @@ function Details:StartMeUp()
 		Details:FillUserCustomSpells()
 		Details:AddDefaultCustomDisplays()
 	end
-
-	C_Timer.After(1, function()
-		--load custom spells on every login
-		Details:FillUserCustomSpells()
-	end)
 
 	local lowerInstanceId = Details:GetLowerInstanceNumber()
 	if (lowerInstanceId) then
@@ -421,7 +438,6 @@ function Details:StartMeUp()
 		--Details:OpenCustomDisplayWindow()
 		--Details:OpenWelcomeWindow()
 	end
-
 	Details.Schedules.NewTimer(2, Details.OpenOptionsWindowAtStart, Details)
 	--Details:OpenCustomDisplayWindow()
 
@@ -596,6 +612,8 @@ function Details:StartMeUp()
 	if (Details.check_stuttering) then
 		_G["UpdateAddOnMemoryUsage"] = Details.UpdateAddOnMemoryUsage_Custom
 	end
+
+	Details.InitializeSpellBreakdownTab()
 
 	pcall(Details222.EJCache.MakeCache)
 

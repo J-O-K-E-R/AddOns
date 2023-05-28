@@ -188,7 +188,7 @@ function RSNpcPOI.GetNpcPOI(npcID, mapID, npcInfo, alreadyFoundInfo)
 	return POI
 end
 
-local function IsNpcPOIFiltered(npcID, mapID, artID, zoneQuestID, questTitles, vignetteGUIDs, onWorldMap, onMinimap)
+local function IsNpcPOIFiltered(npcID, mapID, artID, zoneQuestID, prof, questTitles, vignetteGUIDs, onWorldMap, onMinimap)
 	local name = RSNpcDB.GetNpcName(npcID)
 	
 	-- Skip if part of a disabled event
@@ -230,8 +230,14 @@ local function IsNpcPOIFiltered(npcID, mapID, artID, zoneQuestID, questTitles, v
 		return true
 	end
 	
+	-- Skip if profession and filtered
+	if (not RSConfigDB.IsShowingProfessionRareNPCs() and prof) then
+		RSLogger:PrintDebugMessageEntityID(npcID, string.format("Saltado NPC [%s]: Filtrado NPC de profesion.", npcID))
+		return true
+	end
+	
 	-- Skip if other filtered
-	if (not RSConfigDB.IsShowingOtherRareNPCs() and not isHuntingParty and not isPrimalStorm and not isAchievement) then
+	if (not RSConfigDB.IsShowingOtherRareNPCs() and not isHuntingParty and not isPrimalStorm and not isAchievement and not prof) then
 		RSLogger:PrintDebugMessageEntityID(npcID, string.format("Saltado NPC [%s]: Filtrado otro NPC.", npcID))
 		return true
 	end
@@ -290,6 +296,25 @@ local function IsNpcPOIFiltered(npcID, mapID, artID, zoneQuestID, questTitles, v
 		--  and not showing dead entities
 		elseif (not RSConfigDB.IsShowingAlreadyKilledNpcsInReseteableZones() and not RSConfigDB.IsShowingAlreadyKilledNpcs()) then
 			RSLogger:PrintDebugMessageEntityID(npcID, string.format("Saltado NPC [%s]: Esta muerto.", npcID))
+			return true
+		end
+	end
+	
+	-- Skip if wrong profession
+	if (prof) then
+		local pindex1, pindex2, _, _, _, _ = GetProfessions();
+		local matches
+		if (pindex1) then
+			local _, _, _, _, _, _, skillLine, _, _, _ = GetProfessionInfo(pindex1)
+			matches = skillLine and skillLine == prof
+		end
+		if (not matches and pindex2) then
+			local _, _, _, _, _, _, skillLine, _, _, _ = GetProfessionInfo(pindex2)
+			matches = skillLine and skillLine == prof
+		end
+		
+		if (not matches) then
+			RSLogger:PrintDebugMessageEntityID(npcID, string.format("Saltado NPC [%s]: Profesión incorrecta.", npcID))
 			return true
 		end
 	end
@@ -369,7 +394,7 @@ function RSNpcPOI.GetMapNotDiscoveredNpcPOIs(mapID, questTitles, vignetteGUIDs, 
 		end
 
 		-- Skip if common filters
-		if (not filtered and not IsNpcPOIFiltered(npcID, mapID, RSNpcDB.GetInternalNpcArtID(npcID, mapID), npcInfo.zoneQuestId, questTitles, vignetteGUIDs, onWorldMap, onMinimap)) then
+		if (not filtered and not IsNpcPOIFiltered(npcID, mapID, RSNpcDB.GetInternalNpcArtID(npcID, mapID), npcInfo.zoneQuestId, npcInfo.prof, questTitles, vignetteGUIDs, onWorldMap, onMinimap)) then
 			tinsert(POIs, RSNpcPOI.GetNpcPOI(npcID, mapID, npcInfo))
 		end
 	end
@@ -420,11 +445,13 @@ function RSNpcPOI.GetMapAlreadyFoundNpcPOI(npcID, alreadyFoundInfo, mapID, quest
 
 	-- Skip if common filters
 	local zoneQuestID
+	local prof
 	if (npcInfo) then
 		zoneQuestID = npcInfo.zoneQuestId
+		prof = npcInfo.prof
 	end
 
-	if (not IsNpcPOIFiltered(npcID, mapID, alreadyFoundInfo.artID, zoneQuestID, questTitles, vignetteGUIDs, onWorldMap, onMinimap)) then
+	if (not IsNpcPOIFiltered(npcID, mapID, alreadyFoundInfo.artID, zoneQuestID, prof, questTitles, vignetteGUIDs, onWorldMap, onMinimap)) then
 		return RSNpcPOI.GetNpcPOI(npcID, mapID, npcInfo, alreadyFoundInfo)
 	end
 end

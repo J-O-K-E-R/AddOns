@@ -103,7 +103,8 @@ ACC_WIDE_DEFAULT = "Tracked "..ITEM_UPGRADE_DISCOUNT_TOOLTIP_ACCOUNT_WIDE.." by 
 	--TODO: L.BEST_PERSONAL_LOOT_CHANCE = "Best Personal Loot Chance";
 	--TODO: L.BONUS_ROLL = "Bonus Roll";
 	--TODO: L.PREREQUISITE_QUESTS = "There are prerequisite quests that must be completed before this may be obtained:";
-	--TODO: L.BREADCRUMBS_WARNING = "There are breadcrumb quests that may be not be obtainable after completing this:";
+	--TODO: L.BREADCRUMBS = "Breadcrumbs";
+	--TODO: L.BREADCRUMBS_WARNING = "There are breadcrumb quests that may not be obtainable after completing this:";
 	--TODO: L.THIS_IS_BREADCRUMB = "This is a breadcrumb quest.";
 	--TODO: L.BREADCRUMB_PARTYSYNC = "This may be unable to be completed without Party Sync if completing any of these quests first:";
 	--TODO: L.BREADCRUMB_PARTYSYNC_2 = "This may be obtained via Party Sync with another character that has not completed any of these quests:";
@@ -1138,6 +1139,7 @@ for key,value in pairs({
 	[152095] = "Moonpetal Lily",	-- Moonpetal Lily	--TODO: This was taken from wotlk Wowhead
 	[152622] = "Formazione di Azsharite",	-- Azsharite Formation
 	[153123] = "Kim'jael's Equipment",	-- Kim'jael's Equipment	--TODO: This was taken from wotlk Wowhead
+	[153239] = "Penna di Silvagufo",	-- Wildkin Feather
 	[157936] = "Un'Goro Dirt Pile",	-- Un'Goro Dirt Pile	--TODO: This was taken from wotlk Wowhead
 	[160836] = "Reliquiario",	-- Relic Coffer
 	[161495] = "Cassaforte Segreta",	-- Secret Safe
@@ -1260,6 +1262,7 @@ for key,value in pairs({
 	[175855] = "La Caduta degli Imperi",	-- Empires' Fall
 	[175856] = "La Furia dello Scortica Anime",	-- Wrath of Soulflayer
 	[175888] = "Highborne Relic Fragment",	-- Highborne Relic Fragment	--TODO: This was taken from wotlk Wowhead
+	[175889] = "Uovo Antico",	-- Ancient Egg
 	[175891] = "Highborne Relic Fragment",	-- Highborne Relic Fragment	--TODO: This was taken from wotlk Wowhead
 	[175892] = "Highborne Relic Fragment",	-- Highborne Relic Fragment	--TODO: This was taken from wotlk Wowhead
 	[175893] = "Highborne Relic Fragment",	-- Highborne Relic Fragment	--TODO: This was taken from wotlk Wowhead
@@ -1332,8 +1335,10 @@ for key,value in pairs({
 	[180366] = "Battered Tackle Box",	-- Battered Tackle Box	--TODO: This was taken from wotlk Wowhead
 	[180368] = "Tablet of Madness",	-- Tablet of Madness	--TODO: This was taken from wotlk Wowhead
 	[180369] = "Muddy Churning Waters",	-- Muddy Churning Waters	--TODO: This was taken from wotlk Wowhead
+	[180435] = "Sacca di Noggle",	-- Noggle's Satchel
 	[180436] = "Frammento di Tavoletta del Crepuscolo",	-- Twilight Tablet Fragment
 	[180448] = "Manifesto dei Ricercati: Chelafunesta",	-- Wanted Poster: Deathclasp
+	[180453] = "Cristallo con Glifi dell'Alveare Regal",	-- Hive'Regal Glyphed Crystal
 	[180456] = "Pietra del Vento Minore",	-- Lesser Wind Stone
 	[180461] = "Pietra del Vento",	-- Wind Stone
 	[180466] = "Pietra del Vento Maggiore",	-- Greater Wind Stone
@@ -1345,6 +1350,7 @@ for key,value in pairs({
 	[180642] = "Cassa Incospicua",	-- Inconspicuous Crate
 	[180652] = "Freshly Dug Dirt",	-- Freshly Dug Dirt	--TODO: This was taken from wotlk Wowhead
 	[180662] = "Rottami di Goletta",	-- Schooner Wreckage
+	[180669] = "Maelstrom Turbinoso",	-- Swirling Maelstrom	--TODO: this was manually translated
 	[180685] = "Rottami Fradici",	-- Waterlogged Wreckage
 	[180690] = "Grande Forziere dello Scarabeo",	-- Large Scarab Coffer
 	[180691] = "Forziere dello Scarabeo",	-- Scarab Coffer
@@ -1370,6 +1376,7 @@ for key,value in pairs({
 	[181153] = "Manifesto dei Ricercati: Kel'gash il Perfido",	-- Wanted Poster: Kel'gash the Wicked
 	[181638] = "Manifesto dei Ricercati",	-- Wanted Poster
 	[181643] = "Featherbeard's Remains",	-- Featherbeard's Remains	--TODO: This was taken from wotlk Wowhead
+	[181645] = "Uovo di Grifone",	-- Gryphon Egg
 	[181649] = "Diario di Barbapiuma",	-- Featherbeard's Journal
 	[181665] = "Cassa Funebre",	-- Burial Chest
 	[181672] = "Effige dell'Uomo di Paglia",	-- Wickerman Effigy
@@ -1430,6 +1437,7 @@ for key,value in pairs({
 	[186887] = "Grande Jack Lanterna",	-- Large Jack-o'-Lantern
 	[187072] = "Razorthorn Root",	-- Razorthorn Root	--TODO: This was taken from wotlk Wowhead
 	[187236] = "Regalo di Grande Inverno",	-- Winter Veil Gift
+	[187264] = "Cassa di Minerali dei Liscanera",	-- Darkspine Ore Chest
 	[187273] = "Impronta di Zoccolo Sospetta",	-- Suspicious Hoofprint
 	[187333] = "Cespuglio di Baccasangue",	-- Bloodberry Bush
 	[187559] = "Falò dell'Orda",	-- Horde Bonfire
@@ -2110,7 +2118,7 @@ for key,value in pairs({
 	[234734] = "Elisir della Visione d'Ombra",	-- Elixir of Shadow Sight
 	[234735] = "Elisir della Visione d'Ombra",	-- Elixir of Shadow Sight
 	[234736] = "Elisir della Visione d'Ombra",	-- Elixir of Shadow Sight
-	[234740] = "Corno da Segnalazione degli Orchi",	-- Orchish Signaling Horn
+	[234740] = "Corno da Segnalazione degli Orchi",	-- Orcish Signaling Horn
 	[234744] = "Offerte alla Madre dei Corvi",	-- Offering to the Raven Mother
 	[234746] = "Offerte alla Madre dei Corvi",	-- Offering to the Raven Mother
 	[234748] = "Offerte alla Madre dei Corvi",	-- Offering to the Raven Mother
@@ -3548,7 +3556,7 @@ for key,value in pairs({
 	[377499] = "Sulle Origini delle Specie Draconiche",	-- On the Origin of Draconic Species
 	[377534] = "Scrigno Consegnato",	-- Delivered Vault
 	[377899] = "Ostaggio dei Drospi Cornuti Nascosto",	-- Hidden Hornswog Hostage
-	--TODO: [377900] = "Nokhud Warspear",	-- Nokhud Warspear
+	[377900] = "Lancia da Guerra Nokhud",	-- Nokhud Warspear
 	[377938] = "Banco di Saltatori Prismatici",	-- Prismatic Leaper School
 	[378010] = "Tesoro dei Draghi Dimenticato",	-- Forgotten Dragon Treasure
 	--TODO: [378047] = "Emerald Chest",	-- Emerald Chest
@@ -3642,8 +3650,8 @@ for key,value in pairs({
 	[381094] = "Spazzola Elegante",	-- Elegant Canvas Brush
 	--TODO: [381107] = "Sand Pile",	-- Sand Pile
 	[381108] = "Mappa di Yennu",	-- Yennu's Map
-	--TODO: [381110] = "Forgotten Jewel Box",	-- Forgotten Jewel Box
-	--TODO: [381153] = "Ruby Gem Cluster",	-- Ruby Gem Cluster
+	[381110] = "Scrigno di Gioielli Dimenticati",	-- Forgotten Jewel Box
+	[381153] = "Formazione di Gemme di Rubino",	-- Ruby Gem Cluster
 	--TODO: [381157] = "Sapphire Gem Cluster",	-- Sapphire Gem Cluster
 	--TODO: [381158] = "Gnoll Fiend Flail",	-- Gnoll Fiend Flail
 	[381160] = "Bussola Perduta",	-- Lost Compass
@@ -3934,7 +3942,7 @@ for key,value in pairs({
 	[398796] = "Cristallo Arcano Risonante",	-- Resonating Arcane Crystal
 	[398810] = "Ricompensa della Fedeltà",	-- Fealty's Reward
 	[398814] = "Scorta Fusa",	-- Molten Hoard
-	--TODO: [398815] = "Secured Shipment",	-- Secured Shipment
+	[398815] = "Spedizione in Sicurezza",	-- Secured Shipment
 	[401236] = "Esemplare Malnutrito",	-- Malnourished Specimen
 	[401238] = "Poltiglia di Midollo Maturo",	-- Marrow-Ripened Slime
 	[401240] = "Muffa Sospetta",	-- Suspicious Mold

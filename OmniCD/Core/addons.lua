@@ -17,7 +17,7 @@ local unitFrameData = {
 	},
 	{
 		[1] = "Grid2",
-		[2] = "Grid2LayoutHeader%dUnitButton",
+		[2] = "Grid2LayoutHeader%dUnitButton", -- not group#
 		[3] = "unit",
 		[4] = 1,
 		[5] = 5,
@@ -359,11 +359,10 @@ end
 function E:Counters()
 	if IsAddOnLoaded("OmniCC") then
 		self.OmniCC = OmniCC
-	-- WA no longer shows double text with Blizzard and Elv
---	elseif not GetCVarBool("countdownForCooldowns") then
---		local ElvUI1 = ElvUI and ElvUI[1]
---		self.ElvUI1 = ElvUI1 and type(ElvUI1.CooldownEnabled) == "function" and ElvUI1:CooldownEnabled()
---		and type(ElvUI1.RegisterCooldown) == "function" and type(ElvUI1.ToggleCooldown) == "function" and ElvUI1
+	elseif not GetCVarBool("countdownForCooldowns") and E.profile.General.cooldownText.useElvUICooldownTimer then -- WA no longer shows double text...
+		local ElvUI1 = ElvUI and ElvUI[1]
+		self.ElvUI1 = ElvUI1 and type(ElvUI1.CooldownEnabled) == "function" and ElvUI1:CooldownEnabled()
+			and type(ElvUI1.RegisterCooldown) == "function" and ElvUI1
 	end
 end
 

@@ -48,7 +48,7 @@ R:AddDefaultRing("TrinketSlots", {
 if not MODERN then return end
 
 R:AddDefaultRing("DruidShift", {
-	{id="/cancelform [noflyable,noform:moonkin]\n#imp critical\n/cast [flyable,outdoors,nocombat,noswimming,nomod][flying,flyable] {{spell:783}}; [outpost:corral,nomod,nospec:103/104] {{spell:161691}}; [swimming,nomod][flyable,nomod] {{spell:783}}; [nocombat,outdoors,nomod:alt,advflyable] {{mount:dragon}}; [nocombat,outdoors,nomod:alt] {{mount:ground}}; [outdoors] {{spell:783}}\n/stopmacro [swimming,nomod][flyable,nomod][flying][mounted]\n/changeactionbar [advflyable,nocombat,outdoors,nomod:alt] 1", _u="f"}, -- Travel
+	{id="/cancelform [noflyable,noform:moonkin]\n#imp critical\n/cast [flyable,outdoors,nocombat,noswimming,nomod][flying,flyable] {{spell:783}}; [outpost:corral,nomod,nospec:103/104] {{spell:161691}}; [swimming,nomod][flyable,nomod] {{spell:783}}; [nocombat,outdoors,nomod:alt,advflyable] {{mount:dragon}}; [nocombat,outdoors,nomod:alt] {{mount:ground}}; [outdoors] {{spell:783}}\n/stopmacro [swimming,nomod][flyable,nomod][flying][mounted]\n/changeactionbar [advflyable,nocombat,outdoors,nomod:alt] 1", fastClick=true, _u="f"}, -- Travel
 	{c="c74cff", id=24858, _u="k"}, -- Moonkin
 	{c="fff04d", id=768, _u="c"}, -- Cat
 	{c="ff0000", id=5487, _u="b"}, -- Bear
@@ -111,7 +111,7 @@ R:AddDefaultRing("MageCombat", {
 	name=L"Combat", limit="MAGE", hotkey="BUTTON5", _u="OPCMC"
 })
 R:AddDefaultRing("MageTools", {
-	{id="#imp critical\n/cast [advflyable] {{mount:dragon}}; [flyable] {{mount:air}}; {{mount:ground}}\n/changeactionbar [advflyable,nocombat,outdoors] 1", _u="m"},
+	{id="#imp critical\n/cast [advflyable] {{mount:dragon}}; [flyable] {{mount:air}}; {{mount:ground}}\n/changeactionbar [advflyable,nocombat,outdoors] 1", fastClick=true, _u="m"},
 	{id=42955, _u="f"}, -- food
 	{id="/cast [nomod] {{spell:110959}}; {{spell:66}}; {{spell:110959}}", _u="i"}, -- (greater) invisibility
 	{"ring", "MagePolymorph", _u="t"},
@@ -165,7 +165,7 @@ do -- MageTravel
 end
 
 R:AddDefaultRing("PaladinTools", {
-	{id="#imp critical\n/cast [mod] {{spell:190784}}; [advflyable,nocombat] {{mount:dragon}}; [flyable,nocombat] {{mount:air}}; [outdoors,nocombat] {{mount:ground}}; {{spell:190784}}\n/changeactionbar [advflyable,nocombat,outdoors,nomod] 1", _u="s"}, --steed
+	{id="#imp critical\n/cast [mod] {{spell:190784}}; [advflyable,nocombat] {{mount:dragon}}; [flyable,nocombat] {{mount:air}}; [outdoors,nocombat] {{mount:ground}}; {{spell:190784}}\n/changeactionbar [advflyable,nocombat,outdoors,nomod] 1", fastClick=true, _u="s"}, --steed
 	{id=465, _u="d"}, --devotion
 	{id=317920, _u="c"}, --concentration
 	{id=322223, _u="u"}, --crusader
@@ -175,12 +175,12 @@ R:AddDefaultRing("PaladinTools", {
 	name=L"Utility", limit="PALADIN", hotkey="BUTTON4", _u="OPCPT"
 })
 R:AddDefaultRing("WarlockLTS", {
+	{id="/cast [advflyable,nocombat,nomod] {{mount:dragon}}; [flyable,nocombat,nomod] {{mount:air}}; [outdoors,nocombat,nomod:alt] {{mount:ground}}; {{spell:126}}", fastClick=true, _u="e"}, -- mount/eye
 	{"ring", "WarlockDemons", _u="d"},
 	{id="/cast [mod] {{spell:755}}; {{spell:119898}}; {{spell:755}}", _u="a"}, -- funnel/command
 	{id="/cast [mod:alt] {{spell:20707}}; [group,nomod][nogroup,mod] {{spell:29893}}; {{spell:6201}}", _u="h"}, -- soul/health/well
 	{id=111771, _u="w"}, -- gateway
 	{id=1122, _u="i"}, -- infernal
-	{id="/cast [advflyable,nocombat,nomod] {{mount:dragon}}; [flyable,nocombat,nomod] {{mount:air}}; [outdoors,nocombat,nomod:alt] {{mount:ground}}; {{spell:126}}", _u="e"}, -- mount/eye
 	name=L"Warlock General", hotkey="BUTTON4", limit="WARLOCK", _u="OPCLS"
 })
 R:AddDefaultRing("WarlockCombat", {

@@ -147,7 +147,7 @@ function P:SetOffset(frame)
 	frame.container:SetPoint("TOPLEFT", frame, self.containerOfsX, self.containerOfsY)
 end
 
-function P:UpdatePosition()
+function P:UpdatePosition(isRefreshMembers)
 	if self.disabled then
 		return
 	end
@@ -184,8 +184,10 @@ function P:UpdatePosition()
 			end
 		end
 
-		self:SetAnchorPosition(frame)
-		self:SetOffset(frame)
+		if not isRefreshMembers then
+			self:SetAnchorPosition(frame)
+			self:SetOffset(frame)
+		end
 	end
 end
 
@@ -225,6 +227,17 @@ do
 		end
 	end
 
+	local pauseTimer
+
+	local function ResetPause()
+		pauseTimer = nil
+	end
+
+	local function UpdatePosition_OnRefreshMembers()
+		P:UpdatePosition(true)
+		pauseTimer = C_Timer.NewTimer(6, ResetPause)
+	end
+
 	function P:SetHooks()
 		if self.hooked then
 			return
@@ -238,6 +251,17 @@ do
 		self:UpdateCompactFrameSystemSettings()
 
 		if E.isDF then
+
+			hooksecurefunc("CompactRaidFrameManager_SetSetting", function(arg)
+				if arg == "IsShown" then
+					local isShown = CompactRaidFrameManager_GetSetting("IsShown")
+					if P.isCompactFrameSetShown ~= isShown then
+						P.isCompactFrameSetShown = isShown
+						P:HookFunc()
+					end
+				end
+			end)
+
 
 			hooksecurefunc(EditModeManagerFrame, "UpdateRaidContainerFlow", function()
 				if P.isInEditMode then
@@ -255,15 +279,33 @@ do
 			end)
 
 
-			hooksecurefunc("CompactRaidFrameManager_SetSetting", function(arg)
-				if arg == "IsShown" then
-					local isShown = CompactRaidFrameManager_GetSetting("IsShown")
-					if P.isCompactFrameSetShown ~= isShown then
-						P.isCompactFrameSetShown = isShown
-						P:HookFunc()
+
+
+
+
+
+
+
+
+
+
+
+
+			if CompactPartyFrame_RefreshMembers then
+				hooksecurefunc("CompactPartyFrame_RefreshMembers", function()
+					if not pauseTimer and not P.disabled and P.isInArena and not E.db.position.detached
+						and EditModeManagerFrame:GetSettingValue(Enum.EditModeSystem.UnitFrame, Enum.EditModeUnitFrameSystemIndices.Party, Enum.EditModeUnitFrameSetting.SortPlayersBy) ~= 1 then
+						UpdatePosition_OnRefreshMembers()
 					end
-				end
-			end)
+				end)
+			else
+				hooksecurefunc(CompactPartyFrame, "RefreshMembers", function()
+					if not pauseTimer and not P.disabled and P.isInArena and not E.db.position.detached
+						and EditModeManagerFrame:GetSettingValue(Enum.EditModeSystem.UnitFrame, Enum.EditModeUnitFrameSystemIndices.Party, Enum.EditModeUnitFrameSetting.SortPlayersBy) ~= 1 then
+						UpdatePosition_OnRefreshMembers()
+					end
+				end)
+			end
 
 			EventRegistry:RegisterCallback("EditMode.Enter", function()
 				P.isInEditMode = true

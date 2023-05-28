@@ -24,7 +24,7 @@ local CHECK_RESPAWN_TIMER
 -- Tracks respawning
 ---============================================================================
 
-local function CheckRespawnTimers()
+local function CheckRespawnTimers(firstScan)
 	-- Look for NPCs that have already respawn
 	for npcID, respawnTime in pairs (RSNpcDB.GetAllNpcsKilledRespawnTimes()) do
 		if (respawnTime > 0 and respawnTime < time()) then
@@ -32,19 +32,21 @@ local function CheckRespawnTimers()
 			-- It's possible that the quest takes a little bit longer to reset, so check for this NPC later
 			local npcInfo = RSNpcDB.GetInternalNpcInfo(npcID)
 			local hasRespawn = true
-			if (npcInfo and npcInfo.questID and not npcInfo.reset and not npcInfo.questReset and not npcInfo.weeklyReset and not npcInfo.resetTimer) then
-				for _, questID in ipairs (npcInfo.questID) do
-					if (C_QuestLog.IsQuestFlaggedCompleted(questID)) then
-						-- Check this same NPC every 5 minutes during the next 15
-						RSLogger:PrintDebugMessageEntityID(npcID, string.format("CheckRespawnTimers [NPC: %s], sigue muerto acorde a su quest [%s]", npcID, questID))
-												
-						--Check again until the threshold
-						if (respawnTime + RSConstants.CHECK_RESPAWN_THRESHOLD < time()) then
-							RSEntityStateHandler.SetDeadNpc(npcID)
+			if (npcInfo and npcInfo.questID) then
+				if (firstScan or (not npcInfo.reset and not npcInfo.questReset and not npcInfo.weeklyReset and not npcInfo.resetTimer)) then
+					for _, questID in ipairs (npcInfo.questID) do
+						if (C_QuestLog.IsQuestFlaggedCompleted(questID)) then
+							-- Check this same NPC every 5 minutes during the next 15
+							RSLogger:PrintDebugMessageEntityID(npcID, string.format("CheckRespawnTimers [NPC: %s], sigue muerto acorde a su quest [%s]", npcID, questID))
+													
+							--Check again until the threshold
+							if (respawnTime + RSConstants.CHECK_RESPAWN_THRESHOLD < time()) then
+								RSEntityStateHandler.SetDeadNpc(npcID)
+							end
+							
+							hasRespawn = false
+							break
 						end
-						
-						hasRespawn = false
-						break
 					end
 				end
 			end
@@ -63,18 +65,20 @@ local function CheckRespawnTimers()
 			-- It's possible that the quest takes a little bit longer to reset, so check for this container later
 			local containerInfo = RSContainerDB.GetInternalContainerInfo(containerID)
 			local hasRespawn = true
-			if (containerInfo and containerInfo.questID and not containerInfo.reset and not containerInfo.questReset and not containerInfo.weeklyReset and not containerInfo.resetTimer) then
-				for _, questID in ipairs (containerInfo.questID) do
-					if (C_QuestLog.IsQuestFlaggedCompleted(questID)) then
-						RSLogger:PrintDebugMessage(string.format("CheckRespawnTimers [Contenedor: %s], sigue cerrado acorde a su quest [%s]", containerID, questID))
-						
-						--Check again until the threshold
-						if (respawnTime + RSConstants.CHECK_RESPAWN_THRESHOLD < time()) then
-							RSEntityStateHandler.SetContainerOpen(containerID)
+			if (containerInfo and containerInfo.questID) then
+				if (firstScan or (not containerInfo.reset and not containerInfo.questReset and not containerInfo.weeklyReset and not containerInfo.resetTimer)) then
+					for _, questID in ipairs (containerInfo.questID) do
+						if (C_QuestLog.IsQuestFlaggedCompleted(questID)) then
+							RSLogger:PrintDebugMessage(string.format("CheckRespawnTimers [Contenedor: %s], sigue cerrado acorde a su quest [%s]", containerID, questID))
+							
+							--Check again until the threshold
+							if (respawnTime + RSConstants.CHECK_RESPAWN_THRESHOLD < time()) then
+								RSEntityStateHandler.SetContainerOpen(containerID)
+							end
+							
+							hasRespawn = false
+							break
 						end
-						
-						hasRespawn = false
-						break
 					end
 				end
 			end
@@ -93,18 +97,20 @@ local function CheckRespawnTimers()
 			-- It's possible that the quest takes a little bit longer to reset, so check for this event later
 			local eventInfo = RSEventDB.GetInternalEventInfo(eventID)
 			local hasRespawn = true
-			if (eventInfo and eventInfo.questID and not eventInfo.reset and not eventInfo.questReset and not eventInfo.weeklyReset and not eventInfo.resetTimer) then
-				for _, questID in ipairs (eventInfo.questID) do
-					if (C_QuestLog.IsQuestFlaggedCompleted(questID)) then
-						RSLogger:PrintDebugMessage(string.format("CheckRespawnTimers [Evento: %s], sigue completo acorde a su quest [%s]", eventID, questID))
-																		
-						--Check again until the threshold
-						if (respawnTime + RSConstants.CHECK_RESPAWN_THRESHOLD < time()) then
-							RSEntityStateHandler.SetEventCompleted(eventID)
+			if (eventInfo and eventInfo.questID) then
+				if (firstScan or (not eventInfo.reset and not eventInfo.questReset and not eventInfo.weeklyReset and not eventInfo.resetTimer)) then
+					for _, questID in ipairs (eventInfo.questID) do
+						if (C_QuestLog.IsQuestFlaggedCompleted(questID)) then
+							RSLogger:PrintDebugMessage(string.format("CheckRespawnTimers [Evento: %s], sigue completo acorde a su quest [%s]", eventID, questID))
+																			
+							--Check again until the threshold
+							if (respawnTime + RSConstants.CHECK_RESPAWN_THRESHOLD < time()) then
+								RSEntityStateHandler.SetEventCompleted(eventID)
+							end
+							
+							hasRespawn = false
+							break
 						end
-						
-						hasRespawn = false
-						break
 					end
 				end
 			end
@@ -119,7 +125,7 @@ end
 
 function RSRespawnTracker.Init()
 	if (not CHECK_RESPAWN_TIMER) then
-		CheckRespawnTimers()
+		CheckRespawnTimers(true)
 
 		CHECK_RESPAWN_TIMER = C_Timer.NewTicker(RSConstants.CHECK_RESPAWN_TIMER, function()
 			CheckRespawnTimers()

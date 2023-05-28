@@ -25,7 +25,7 @@ function MDT:HideMinimapButton()
   db.minimap.hide = true
   minimapIcon:Hide("MythicDungeonTools")
   -- update the checkbox in settings
-  MDT.main_frame.minimapCheckbox:SetValue(false)
+  if MDT.main_frame and MDT.main_frame.minimapCheckbox then MDT.main_frame.minimapCheckbox:SetValue(false) end
   print(L["MDT: Use /mdt minimap to show the minimap icon again"])
 end
 
@@ -33,7 +33,7 @@ function MDT:ShowMinimapButton()
   db.minimap.hide = false
   minimapIcon:Show("MythicDungeonTools")
   -- update the checkbox in settings
-  MDT.main_frame.minimapCheckbox:SetValue(true)
+  if MDT.main_frame and MDT.main_frame.minimapCheckbox then MDT.main_frame.minimapCheckbox:SetValue(true) end
 end
 
 local LDB = LibStub("LibDataBroker-1.1"):NewDataObject("MythicDungeonTools", {
@@ -266,8 +266,8 @@ end
 --lvl 4 affix, lvl 7 affix, tyrannical/fortified, seasonal affix
 local affixWeeks = {
   [1] = { 6, 124, 9},
-  [2] = { 0, 0, 10},
-  [3] = { 0, 0, 9},
+  [2] = { 134, 7, 10},
+  [3] = { 136, 123, 9},
   [4] = { 0, 0, 10},
   [5] = { 0, 0, 9},
   [6] = { 0, 0, 10},
@@ -2307,10 +2307,15 @@ function MDT:EnsureDBTables()
     db.presets[db.currentDungeonIdx][db.currentPreset[db.currentDungeonIdx]].value.pulls[1] = {}
   end
 
+  --ensure the pulls table is not fully corrupted
+  if not preset.value.pulls or (type(preset.value.pulls) ~= "table") then
+    preset.value.pulls = {}
+  else
   --detect gaps in pull list and delete invalid pulls
-  for k, v in pairs(preset.value.pulls) do
-    if k == 0 or k > #preset.value.pulls then
-      preset.value.pulls[k] = nil
+    for k, v in pairs(preset.value.pulls) do
+      if k == 0 or k > #preset.value.pulls then
+        preset.value.pulls[k] = nil
+      end
     end
   end
 
@@ -2485,6 +2490,7 @@ function MDT:UpdateToDungeon(dungeonIdx, ignoreUpdateMap, init)
   MDT:ZoomMapToDefault()
   --Colors the first pull in "Default" presets
   if db.currentPreset[db.currentDungeonIdx] == 1 then MDT:ColorPull() end
+  MDT:UpdateProgressbar()
 end
 
 function MDT:DeletePreset(index)
@@ -2561,6 +2567,16 @@ MDT.zoneIdToDungeonIdx = {
   [608] = 40,  --grimrail depot
   [609] = 40,  --grimrail depot
   [595] = 41,  --iron docks
+  [2082] = 49,  --halls of infusion
+  [2083] = 49,  --halls of infusion
+  [2096] = 48,  --brackenhide hollow
+  [2106] = 48,  --brackenhide hollow
+  [2071] = 51,  --uldaman
+  [2072] = 51,  --uldaman
+  [2080] = 50,  --neltharus
+  [2081] = 50,  --neltharus
+  [731] = 8,  --neltharion's lair
+  [325] = 77,  --vortex pinnacle
   --https://wowpedia.fandom.com/wiki/UiMapID
 }
 local lastUpdatedDungeonIdx
