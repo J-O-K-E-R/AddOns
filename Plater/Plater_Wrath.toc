@@ -5,7 +5,7 @@
 ## SavedVariablesPerCharacter: PlaterDBChr
 ## IconTexture-blank: 982414
 ## IconTexture: Interface\AddOns\Plater\images\cast_bar
-## Version: Plater-v558-Wrath
+## Version: Plater-v559.2-Wrath
 ## X-Curse-Project-ID: 100547
 ## X-Wago-ID: kRNLep6o
 
@@ -27,6 +27,8 @@ locales\zhTW.lua
 locales\arAR.lua
 
 Plater.xml
+
+Definitions.lua
 
 Plater_DefaultSettings.lua
 
