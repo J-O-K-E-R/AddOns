@@ -133,6 +133,7 @@ PLATER_DEFAULT_SETTINGS = {
 		--store audio cues for spells
 		--format: [SpellID] = filePath
 		cast_audiocues = {},
+		cast_audiocues_channel = "Master",
 
 		--store the cast colors customized by the user
 		cast_colors = {}, --[spellId] = {[1] = color, [2] = enabled, [3] = custom spell name}
@@ -1029,6 +1030,8 @@ PLATER_DEFAULT_SETTINGS = {
 			enemy_ic = false,
 			friendly_ooc = false,
 			enemy_ooc = false,
+			blizz_healthbar_ic = false,
+			blizz_healthbar_ooc = false,
 		},
 
 		spell_animations = true,
