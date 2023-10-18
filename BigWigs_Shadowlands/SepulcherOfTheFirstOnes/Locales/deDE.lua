@@ -6,9 +6,6 @@ end
 
 L = BigWigs:NewBossLocale("Skolex, the Insatiable Ravener", "deDE")
 if L then
-	L.custom_on_stop_timers = "Fähigkeiten Leisten immer anzeigen"
-	L.custom_on_stop_timers_desc = "Skolex kann Fähigkeiten verzögern. Wenn diese Option aktiviert ist, bleiben die Leisten für diese Fähigkeiten bestehen."
-
 	L.tank_combo_desc = "Timer für die Fähigkeiten Rissschlund/Verwunden bei 100 Energie."
 end
 
@@ -72,9 +69,6 @@ if L then
 
 	L.bomb_dropped = "Bombe fallen gelassen"
 	L.volatile_charges_new = "Neue Bomben!"
-
-	L.custom_on_stop_timers = "Fähigkeiten Leisten immer anzeigen"
-	L.custom_on_stop_timers_desc = "Halondrus kann Fähigkeiten verzögern. Wenn diese Option aktiviert ist, bleiben die Leisten für diese Fähigkeiten bestehen."
 end
 
 L = BigWigs:NewBossLocale("Anduin Wrynn", "deDE")

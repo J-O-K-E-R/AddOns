@@ -22,17 +22,17 @@ local pairs, tostring = pairs, tostring
 -- Libraries
 ---
 
-local LIB_ACR = LibStub("AceConfigRegistry-3.0")
+local LIB_ACR = Core.LIB_ACR
 
 ----------------------------------------
 -- Internal
 ---
 
--- @ Locales\enUS
-local L = Core.Locale
-
 -- @ Masque
 local OLD_VERSION = Core.OLD_VERSION
+
+-- @ Locales\enUS
+local L = Core.Locale
 
 -- @ Options\Core
 local CRLF = Core.CRLF
@@ -239,7 +239,7 @@ function Setup.Info(self)
 
 	local cArgs = self.Options.args.Core.args
 
-	if not self.db.profile.SkinInfo then
+	if not self.db.profile.Interface.SkinInfo then
 		cArgs.SkinInfo = nil
 	elseif not cArgs.SkinInfo then
 		local Tooltip = "|cffffffff"..L["Select to view."].."|r"
@@ -288,6 +288,7 @@ function Setup.Info(self)
 						childGroups = "select",
 					}
 				end
+
 				args[Group].args[SkinID] = GetInfoGroup(Skin, Title, Group)
 			else
 				args[SkinID] = GetInfoGroup(Skin, SkinID)

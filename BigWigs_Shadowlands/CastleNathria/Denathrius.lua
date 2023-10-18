@@ -159,11 +159,11 @@ function mod:GetOptions()
 		326707, -- Cleansing Pain
 		326851, -- Blood Price
 		{327039, "SAY", "SAY_COUNTDOWN", "ME_ONLY_EMPHASIZE"}, -- Feeding Time (Normal mode version of Night Hunter)
-		{327796, "SAY", "ME_ONLY_EMPHASIZE"}, -- Night Hunter
+		{327796, "SAY", "ME_ONLY_EMPHASIZE", "CASTBAR"}, -- Night Hunter
 		"custom_on_repeating_nighthunter",
 		nightHunterMarker,
 		{327227, "EMPHASIZE"}, -- Command: Ravage
-		327122, -- Ravage
+		{327122, "CASTBAR"}, -- Ravage
 		327992, -- Desolation
 		-- Intermission: March of the Penitent
 		328276, -- March of the Penitent
@@ -176,22 +176,22 @@ function mod:GetOptions()
 		{336162, "FLASH"}, -- Crescendo
 		335873, -- Rancor
 		329181, -- Wracking Pain
-		333932, -- Hand of Destruction
+		{333932, "CASTBAR"}, -- Hand of Destruction
 		330042, -- Command: Massacre
 		-- Stage Three: Indignation
 		{332585, "TANK"}, -- Scorn
 		{332619, "EMPHASIZE"}, -- Shattering Pain
 		{332794, "SAY", "SAY_COUNTDOWN"}, -- Fatal Finesse
 		fatalFinesseMarker,
-		336008, -- Smoldering Ire
-		332849, -- Reflection: Ravage
-		"ravage_target",
+		{336008, "CASTBAR"}, -- Smoldering Ire
+		{332849, "CASTBAR"}, -- Reflection: Ravage
+		{"ravage_target", "CASTBAR"},
 		333980, -- Reflection: Massacre
 		"hymn_stacks",
 		344776, -- Vengeful Wail
 		balefulShadowsMarker,
 		{338738, "INFOBOX"}, -- Through the Mirror
-		333979, -- Sinister Reflection
+		{333979, "CASTBAR"}, -- Sinister Reflection
 	},{
 		["stages"] = "general",
 		[328936] = -22016, -- Stage One: Sinners Be Cleansed

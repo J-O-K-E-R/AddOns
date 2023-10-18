@@ -49,8 +49,6 @@ end
 L = BigWigs:NewBossLocale("Remnant of Ner'zhul", "esES")
 if L then
 	L.cones = "Conos" -- Grasp of Malice
-	L.orbs = "Orbes" -- Orb of Torment
-	L.orb = "Orbe" -- Orb of Torment
 end
 
 L = BigWigs:NewBossLocale("Soulrender Dormazain", "esES")
@@ -89,9 +87,6 @@ end
 
 L = BigWigs:NewBossLocale("Guardian of the First Ones", "esES")
 if L then
-	L.custom_on_stop_timers = "Mostrar siempre barra de habilidades"
-	L.custom_on_stop_timers_desc = "The Guardian puede retrasar sus habilidades. Cuendo esta opcion esta activada, las barras de esas habilidades se mantendran en tu pantalla."
-
 	L.bomb_missed = "%dx Bombas Falladas"
 end
 

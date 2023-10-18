@@ -13,8 +13,8 @@ local Treasure = ns.node.Treasure
 
 local AncientStone = ns.node.AncientStone
 local Dragonglyph = ns.node.Dragonglyph
-local Dragonrace = ns.node.Dragonrace
 local PT = ns.node.ProfessionTreasures
+local ElusiveCreature = ns.node.ElusiveCreature
 
 local Achievement = ns.reward.Achievement
 local Currency = ns.reward.Currency
@@ -47,26 +47,30 @@ local deepflayerNest = Map({id = 2184, settings = false}) -- Deepflayer Nest
 -- Interval ID 3 -> Loamm Zone
 -- Interval ID 4 -> Aberrus Zone
 
-local ZaralekRotation = Class('ZaralekRotation', ns.Interval, {
-    initial = {eu = 1683259200, us = 1683298800, tw = 1683414000},
-    offset = 86400,
-    interval = 86400
-})
+-- local ZaralekRotation = Class('ZaralekRotation', ns.Interval, {
+--     initial = {eu = 1683259200, us = 1683298800, tw = 1683414000},
+--     offset = 86400,
+--     interval = 86400
+-- })
 
-function ZaralekRotation:GetText()
-    local isInactive = math.floor(self:Next() / self.interval) % 4 + 1
-    local text = L['zaralek_rotation_active']
-    if self.id == isInactive then text = L['zaralek_rotation_inactive'] end
-    ns.PrepareLinks(text)
-    return text
-end
+-- function ZaralekRotation:GetText()
+--     local isInactive = math.floor(self:Next() / self.interval) % 4 + 1
+--     local text = self.event and L['zaralek_event_active'] or
+--                      L['zaralek_rare_active']
+--     if self.id == isInactive then
+--         text = self.event and L['zaralek_event_inactive'] or
+--                    L['zaralek_rare_inactive']
+--     end
+--     ns.PrepareLinks(text)
+--     return text
+-- end
 
 map.nodes[56247389] = Rare({
     id = 203515,
     vignette = 5643,
     quest = 75284,
     location = L['in_small_cave'],
-    interval = ZaralekRotation({id = 2}),
+    -- interval = ZaralekRotation({id = 2}),
     rewards = {
         Achievement({id = 17783, criteria = 59188}), -- Adventurer of Zaralek Cavern
         Achievement({id = 18100, criteria = 59491}), -- Cavern Clawbbering
@@ -82,7 +86,7 @@ map.nodes[48367509] = Rare({
     id = 203468,
     vignette = 5640,
     quest = 75270,
-    interval = ZaralekRotation({id = 1}),
+    -- interval = ZaralekRotation({id = 1}),
     rewards = {
         Achievement({id = 17783, criteria = 59185}), -- Adventurer of Zaralek Cavern
         Achievement({id = 18100, criteria = 59492}), -- Cavern Clawbbering
@@ -98,7 +102,7 @@ map.nodes[41518613] = Rare({
     vignette = 5652,
     quest = 75325,
     note = L['brulsef_the_stronk_note'],
-    interval = ZaralekRotation({id = 1}),
+    -- interval = ZaralekRotation({id = 1}),
     rewards = {
         Achievement({id = 17783, criteria = 59202}), -- Adventurer of Zaralek Cavern
         Achievement({id = 18100, criteria = 59493}), -- Cavern Clawbbering
@@ -112,7 +116,7 @@ map.nodes[48372384] = Rare({
     id = 204093,
     vignette = 5674,
     quest = 75475,
-    interval = ZaralekRotation({id = 4}),
+    -- interval = ZaralekRotation({id = 4}),
     rewards = {
         Achievement({id = 17783, criteria = 59212}), -- Adventurer of Zaralek Cavern
         Achievement({id = 18100, criteria = 59494}), -- Cavern Clawbbering
@@ -127,7 +131,7 @@ map.nodes[31805061] = Rare({
     id = 203664,
     vignette = 5663,
     quest = 75361,
-    interval = ZaralekRotation({id = 0}),
+    -- interval = ZaralekRotation({id = 0}),
     rewards = {
         Achievement({id = 17783, criteria = 59209}), -- Adventurer of Zaralek Cavern
         Achievement({id = 18100, criteria = 59495}), -- Cavern Clawbbering
@@ -141,7 +145,7 @@ map.nodes[36324481] = Rare({
     vignette = 5661,
     quest = 75357,
     location = L['in_small_cave'],
-    interval = ZaralekRotation({id = 0}),
+    -- interval = ZaralekRotation({id = 0}),
     rewards = {
         Achievement({id = 17783, criteria = 59207}), -- Adventurer of Zaralek Cavern
         Achievement({id = 18100, criteria = 59496}), -- Cavern Clawbbering
@@ -155,7 +159,7 @@ map.nodes[41921857] = Rare({
     id = 203592,
     vignette = 5645,
     quest = 75295,
-    interval = ZaralekRotation({id = 4}),
+    -- interval = ZaralekRotation({id = 4}),
     rewards = {
         Achievement({id = 17783, criteria = 59190}), -- Adventurer of Zaralek Cavern
         Achievement({id = 18100, criteria = 59497}), -- Cavern Clawbbering
@@ -172,7 +176,7 @@ map.nodes[68734593] = Rare({
     id = 203477,
     vignette = 5641,
     quest = 75273,
-    interval = ZaralekRotation({id = 3}),
+    -- interval = ZaralekRotation({id = 3}),
     rewards = {
         Achievement({id = 17783, criteria = 59186}), -- Adventurer of Zaralek Cavern
         Achievement({id = 18100, criteria = 59498}), -- Cavern Clawbbering
@@ -186,20 +190,21 @@ map.nodes[45673327] = Rare({
     id = 203627,
     vignette = 5654,
     quest = 75335,
-    interval = ZaralekRotation({id = 4}),
+    -- interval = ZaralekRotation({id = 4}),
     rewards = {
         Achievement({id = 17783, criteria = 59200}), -- Adventurer of Zaralek Cavern
         Achievement({id = 18100, criteria = 59499}), -- Cavern Clawbbering
         Transmog({item = 205297, slot = L['cloth']}), -- Flamewielder's Trousers
+        Toy({item = 205796}), -- Molten Lava Pack
         DC.WindingSlitherdrake.WhiteHorns
     }
-}) -- Invohq
+}) -- Invoq
 
 map.nodes[28515115] = Rare({
     id = 203646,
     vignette = 5660,
     quest = 75352,
-    interval = ZaralekRotation({id = 0}),
+    -- interval = ZaralekRotation({id = 0}),
     rewards = {
         Achievement({id = 17783, criteria = 59206}), -- Adventurer of Zaralek Cavern
         Achievement({id = 18100, criteria = 59500}), -- Cavern Clawbbering
@@ -215,7 +220,7 @@ map.nodes[42226524] = Rare({
     id = 203625,
     vignette = 5653,
     quest = 75333,
-    interval = ZaralekRotation({id = 1}),
+    -- interval = ZaralekRotation({id = 1}),
     rewards = {
         Achievement({id = 17783, criteria = 59199}), -- Adventurer of Zaralek Cavern
         Achievement({id = 18100, criteria = 59501}), -- Cavern Clawbbering
@@ -233,7 +238,7 @@ map.nodes[59593949] = Rare({
     id = 203466,
     vignette = 5639,
     quest = 75268,
-    interval = ZaralekRotation({id = 3}),
+    -- interval = ZaralekRotation({id = 3}),
     rewards = {
         Achievement({id = 17783, criteria = 59184}), -- Adventurer of Zaralek Cavern
         Achievement({id = 18100, criteria = 59502}), -- Cavern Clawbbering
@@ -248,7 +253,7 @@ map.nodes[54074162] = Rare({
     id = 203618,
     vignette = 5651,
     quest = 75321,
-    interval = ZaralekRotation({id = 3}),
+    -- interval = ZaralekRotation({id = 3}),
     rewards = {
         Achievement({id = 17783, criteria = 59198}), -- Adventurer of Zaralek Cavern
         Achievement({id = 18100, criteria = 59503}), -- Cavern Clawbbering
@@ -262,7 +267,7 @@ map.nodes[65435587] = Rare({
     vignette = 5638,
     quest = 75266,
     location = L['in_small_cave'],
-    interval = ZaralekRotation({id = 3}),
+    -- interval = ZaralekRotation({id = 3}),
     rewards = {
         Achievement({id = 17783, criteria = 59183}), -- Adventurer of Zaralek Cavern
         Achievement({id = 18100, criteria = 59504}), -- Cavern Clawbbering
@@ -279,7 +284,7 @@ map.nodes[40753817] = Rare({
     id = 200111,
     vignette = 5656,
     quest = 75339,
-    interval = ZaralekRotation({id = 4}),
+    -- interval = ZaralekRotation({id = 4}),
     rewards = {
         Achievement({id = 17783, criteria = 59203}), -- Adventurer of Zaralek Cavern
         Achievement({id = 18100, criteria = 59505}), -- Cavern Clawbbering
@@ -297,7 +302,7 @@ map.nodes[55841899] = Rare({
     vignette = 5644,
     quest = 75291,
     location = L['in_cave'],
-    interval = ZaralekRotation({id = 4}),
+    -- interval = ZaralekRotation({id = 4}),
     rewards = {
         Achievement({id = 17783, criteria = 59189}), -- Adventurer of Zaralek Cavern
         Achievement({id = 18100, criteria = 59506}), -- Cavern Clawbbering
@@ -312,7 +317,7 @@ map.nodes[36205300] = Rare({
     id = 203643,
     vignette = 5659,
     quest = 75348,
-    interval = ZaralekRotation({id = 0}),
+    -- interval = ZaralekRotation({id = 0}),
     rewards = {
         Achievement({id = 17783, criteria = 59205}), -- Adventurer of Zaralek Cavern
         Achievement({id = 18100, criteria = 59507}), -- Cavern Clawbbering
@@ -329,7 +334,7 @@ map.nodes[53106421] = Rare({
     vignette = 5642,
     quest = 75275,
     location = L['in_small_cave'],
-    interval = ZaralekRotation({id = 2}),
+    -- interval = ZaralekRotation({id = 2}),
     rewards = {
         Achievement({id = 17783, criteria = 59187}), -- Adventurer of Zaralek Cavern
         Achievement({id = 18100, criteria = 59508}), -- Cavern Clawbbering
@@ -346,7 +351,7 @@ map.nodes[38424650] = Rare({
     id = 203662,
     vignette = 5662,
     quest = 75359,
-    interval = ZaralekRotation({id = 0}),
+    -- interval = ZaralekRotation({id = 0}),
     rewards = {
         Achievement({id = 17783, criteria = 59208}), -- Adventurer of Zaralek Cavern
         Achievement({id = 18100, criteria = 59509}), -- Cavern Clawbbering
@@ -362,7 +367,7 @@ map.nodes[57766910] = Rare({
     id = 203593,
     vignette = 5646,
     quest = 75297,
-    interval = ZaralekRotation({id = 3}),
+    -- interval = ZaralekRotation({id = 3}),
     rewards = {
         Achievement({id = 17783, criteria = 59191}), -- Adventurer of Zaralek Cavern
         Achievement({id = 18100, criteria = 59510}), -- Cavern Clawbbering
@@ -377,7 +382,7 @@ map.nodes[38867151] = Rare({
     id = 201029,
     vignette = 5664,
     quest = 75365,
-    interval = ZaralekRotation({id = 1}),
+    -- interval = ZaralekRotation({id = 1}),
     rewards = {
         Achievement({id = 17783, criteria = 59210}), -- Adventurer of Zaralek Cavern
         Achievement({id = 18100, criteria = 59511}), -- Cavern Clawbbering
@@ -413,14 +418,13 @@ map.nodes[28544791] = Treasure({
 map.nodes[42976040] = Treasure({
     quest = 75231, -- 75232
     requires = {
-        ns.requirement.Quest(75145) -- In the Wake of the Ashes
+        ns.requirement.Quest(73047) -- Terrestrial Tunneling
     },
     rewards = {
         Achievement({id = 17786, criteria = 59225}) -- Treasures of Zaralek Cavern
-    }
+    },
+    pois = {POI({40136835})}
 }) -- Bloody Body
--- coords and required quest from wowhead comments.
--- i completed the questline until "In the Wake of the Ashes" but the body is not there
 
 map.nodes[30044193] = Treasure({
     quest = 73706,
@@ -663,6 +667,7 @@ map.nodes[37056988] = SmellyTrashPile()
 map.nodes[37403969] = SmellyTrashPile()
 map.nodes[37458125] = SmellyTrashPile()
 map.nodes[39377663] = SmellyTrashPile()
+map.nodes[39438318] = SmellyTrashPile()
 map.nodes[40155751] = SmellyTrashPile()
 map.nodes[40415197] = SmellyTrashPile()
 map.nodes[40613568] = SmellyTrashPile()
@@ -670,7 +675,6 @@ map.nodes[42014541] = SmellyTrashPile()
 map.nodes[43163817] = SmellyTrashPile()
 map.nodes[43552886] = SmellyTrashPile()
 map.nodes[43618578] = SmellyTrashPile()
-map.nodes[39438318] = SmellyTrashPile()
 map.nodes[44686196] = SmellyTrashPile()
 map.nodes[45177786] = SmellyTrashPile()
 map.nodes[45384348] = SmellyTrashPile()
@@ -690,7 +694,65 @@ map.nodes[57047087] = SmellyTrashPile()
 map.nodes[57476456] = SmellyTrashPile()
 map.nodes[59225178] = SmellyTrashPile()
 map.nodes[60195755] = SmellyTrashPile()
+map.nodes[61146860] = SmellyTrashPile()
 map.nodes[62325600] = SmellyTrashPile()
+
+local SmellyTreasureChest = Class('SmellyTreasureChest', ns.node.Node, {
+    label = L['smelly_treasure_chest_label'],
+    icon = 'chest_rd',
+    group = ns.groups.SMELLY_TREASURE_CHEST,
+    requires = {
+        ns.requirement.Reputation(2564, 11, true), -- Loamm Niffen
+        ns.requirement.Item(191294) -- Small Expedition Shovel
+    },
+    rewards = {
+        DC.RenewedProtoDrake.PlatedJaw, -- Renewed Proto-Drake: Plated Jaw
+        Item({item = 199906}), -- Titan Relic
+        Item({item = 204985}), -- Barter Brick
+        Item({item = 205188}) -- Barter Boulder
+    }
+}) -- Smell Treasure Chest
+
+map.nodes[25704360] = SmellyTreasureChest()
+map.nodes[28205370] = SmellyTreasureChest()
+map.nodes[30204010] = SmellyTreasureChest()
+map.nodes[32505300] = SmellyTreasureChest()
+map.nodes[35904520] = SmellyTreasureChest()
+map.nodes[38808490] = SmellyTreasureChest()
+map.nodes[39106200] = SmellyTreasureChest()
+map.nodes[41103500] = SmellyTreasureChest()
+map.nodes[41305590] = SmellyTreasureChest()
+map.nodes[42807810] = SmellyTreasureChest()
+map.nodes[44104150] = SmellyTreasureChest()
+map.nodes[44403510] = SmellyTreasureChest()
+map.nodes[45001570] = SmellyTreasureChest()
+map.nodes[45307020] = SmellyTreasureChest()
+map.nodes[45705260] = SmellyTreasureChest()
+map.nodes[45902240] = SmellyTreasureChest()
+map.nodes[45902250] = SmellyTreasureChest()
+map.nodes[45908730] = SmellyTreasureChest()
+map.nodes[46608050] = SmellyTreasureChest()
+map.nodes[47002670] = SmellyTreasureChest()
+map.nodes[47306200] = SmellyTreasureChest()
+map.nodes[47904880] = SmellyTreasureChest()
+map.nodes[49104090] = SmellyTreasureChest()
+map.nodes[51302430] = SmellyTreasureChest()
+map.nodes[52706540] = SmellyTreasureChest()
+map.nodes[52803230] = SmellyTreasureChest()
+map.nodes[52902340] = SmellyTreasureChest()
+map.nodes[52902350] = SmellyTreasureChest()
+map.nodes[53104760] = SmellyTreasureChest()
+map.nodes[54107760] = SmellyTreasureChest()
+map.nodes[54402290] = SmellyTreasureChest()
+map.nodes[54502290] = SmellyTreasureChest()
+map.nodes[56903100] = SmellyTreasureChest()
+map.nodes[57507040] = SmellyTreasureChest()
+map.nodes[57507050] = SmellyTreasureChest()
+map.nodes[58704370] = SmellyTreasureChest()
+map.nodes[60006300] = SmellyTreasureChest()
+map.nodes[62504200] = SmellyTreasureChest()
+map.nodes[62906990] = SmellyTreasureChest()
+map.nodes[65205530] = SmellyTreasureChest()
 
 -------------------------------------------------------------------------------
 --------------------------------- BATTLE PETS ---------------------------------
@@ -839,149 +901,137 @@ map.nodes[62717036] = Dragonglyph({rewards = {Achievement({id = 17511})}}) -- Dr
 map.nodes[72114844] = Dragonglyph({rewards = {Achievement({id = 17515})}}) -- Dragon Glyphs: The Throughway
 
 -------------------------------------------------------------------------------
---------------------------------- DRAGONRACES ---------------------------------
+------------------------------ ELUSIVE CREATURES ------------------------------
 -------------------------------------------------------------------------------
 
-map.nodes[38756061] = Dragonrace({
-    label = '{quest:74839}',
-    normal = {2246, 68, 63},
-    advanced = {2252, 60, 55},
-    reverse = {2258, 57, 52},
+local ElusiveCrystalscaleStonecleaver = ElusiveCreature({
+    label = '{npc:204821}',
     rewards = {
-        Achievement({id = 17483, criteria = 1, oneline = true}), -- normal bronze
-        Achievement({id = 17484, criteria = 1, oneline = true}), -- normal silver
-        Achievement({id = 17485, criteria = 1, oneline = true}), -- normal gold
-        Achievement({id = 17486, criteria = 1, oneline = true}), -- advanced bronze
-        Achievement({id = 17487, criteria = 1, oneline = true}), -- advanced silver
-        Achievement({id = 17488, criteria = 1, oneline = true}), -- advanced gold
-        Achievement({id = 17489, criteria = 1, oneline = true}), -- reverse bronze
-        Achievement({id = 17490, criteria = 1, oneline = true}), -- reverse silver
-        Achievement({id = 17491, criteria = 1, oneline = true}) -- reverse gold
+        Item({item = 193215}), -- Adamant Scales
+        Item({item = 193224}), -- Lustrous Scaled Hide
+        Item({item = 205451}), -- Flawless Crystal Scale
+        Achievement({id = 18832, criteria = 61478}) -- Elusive Legend of the Dragon Isles
     }
-}) -- Crystal Circuit
+}) -- Elusive Crystalscale Stonecleaver
 
-map.nodes[39054999] = Dragonrace({
-    label = '{quest:74889}',
-    normal = {2247, 80, 75},
-    advanced = {2253, 73, 68},
-    reverse = {2259, 73, 68},
-    rewards = {
-        Achievement({id = 17483, criteria = 2, oneline = true}), -- normal bronze
-        Achievement({id = 17484, criteria = 2, oneline = true}), -- normal silver
-        Achievement({id = 17485, criteria = 2, oneline = true}), -- normal gold
-        Achievement({id = 17486, criteria = 2, oneline = true}), -- advanced bronze
-        Achievement({id = 17487, criteria = 2, oneline = true}), -- advanced silver
-        Achievement({id = 17488, criteria = 2, oneline = true}), -- advanced gold
-        Achievement({id = 17489, criteria = 2, oneline = true}), -- reverse bronze
-        Achievement({id = 17490, criteria = 2, oneline = true}), -- reverse silver
-        Achievement({id = 17491, criteria = 2, oneline = true}) -- reverse gold
-    }
-}) -- Caldera Cruise
-
-map.nodes[54502371] = Dragonrace({
-    label = '{quest:74939}',
-    normal = {2248, 72, 69},
-    advanced = {2254, 69, 64},
-    reverse = {2260, 69, 64},
-    rewards = {
-        Achievement({id = 17483, criteria = 3, oneline = true}), -- normal bronze
-        Achievement({id = 17484, criteria = 3, oneline = true}), -- normal silver
-        Achievement({id = 17485, criteria = 3, oneline = true}), -- normal gold
-        Achievement({id = 17486, criteria = 3, oneline = true}), -- advanced bronze
-        Achievement({id = 17487, criteria = 3, oneline = true}), -- advanced silver
-        Achievement({id = 17488, criteria = 3, oneline = true}), -- advanced gold
-        Achievement({id = 17489, criteria = 3, oneline = true}), -- reverse bronze
-        Achievement({id = 17490, criteria = 3, oneline = true}), -- reverse silver
-        Achievement({id = 17491, criteria = 3, oneline = true}) -- reverse gold
-    }
-}) -- Brimstone Scramble
-
-map.nodes[58724503] = Dragonrace({
-    label = '{quest:74951}',
-    normal = {2249, 80, 75},
-    advanced = {2255, 75, 70},
-    reverse = {2261, 77, 42},
-    rewards = {
-        Achievement({id = 17483, criteria = 4, oneline = true}), -- normal bronze
-        Achievement({id = 17484, criteria = 4, oneline = true}), -- normal silver
-        Achievement({id = 17485, criteria = 4, oneline = true}), -- normal gold
-        Achievement({id = 17486, criteria = 4, oneline = true}), -- advanced bronze
-        Achievement({id = 17487, criteria = 4, oneline = true}), -- advanced silver
-        Achievement({id = 17488, criteria = 4, oneline = true}), -- advanced gold
-        Achievement({id = 17489, criteria = 4, oneline = true}), -- reverse bronze
-        Achievement({id = 17490, criteria = 4, oneline = true}), -- reverse silver
-        Achievement({id = 17491, criteria = 4, oneline = true}) -- reverse gold
-    }
-}) -- Shimmering Slalom
-
-map.nodes[58155759] = Dragonrace({
-    label = '{quest:74972}',
-    normal = {2250, 60, 55},
-    advanced = {2256, 55, 50},
-    reverse = {2262, 53, 48},
-    rewards = {
-        Achievement({id = 17483, criteria = 5, oneline = true}), -- normal bronze
-        Achievement({id = 17484, criteria = 5, oneline = true}), -- normal silver
-        Achievement({id = 17485, criteria = 5, oneline = true}), -- normal gold
-        Achievement({id = 17486, criteria = 5, oneline = true}), -- advanced bronze
-        Achievement({id = 17487, criteria = 5, oneline = true}), -- advanced silver
-        Achievement({id = 17488, criteria = 5, oneline = true}), -- advanced gold
-        Achievement({id = 17489, criteria = 5, oneline = true}), -- reverse bronze
-        Achievement({id = 17490, criteria = 5, oneline = true}), -- reverse silver
-        Achievement({id = 17491, criteria = 5, oneline = true}) -- reverse gold
-    }
-}) -- Zaralek Zigzag
-
-map.nodes[51264667] = Dragonrace({
-    label = '{quest:75035}',
-    normal = {2251, 67, 64},
-    advanced = {2257, 62, 57},
-    reverse = {2263, 62, 57},
-    rewards = {
-        Achievement({id = 17483, criteria = 6, oneline = true}), -- normal bronze
-        Achievement({id = 17484, criteria = 6, oneline = true}), -- normal silver
-        Achievement({id = 17485, criteria = 6, oneline = true}), -- normal gold
-        Achievement({id = 17486, criteria = 6, oneline = true}), -- advanced bronze
-        Achievement({id = 17487, criteria = 6, oneline = true}), -- advanced silver
-        Achievement({id = 17488, criteria = 6, oneline = true}), -- advanced gold
-        Achievement({id = 17489, criteria = 6, oneline = true}), -- reverse bronze
-        Achievement({id = 17490, criteria = 6, oneline = true}), -- reverse silver
-        Achievement({id = 17491, criteria = 6, oneline = true}) -- reverse gold
-    }
-}) -- Sulfur Sprint
+map.nodes[57663814] = ElusiveCrystalscaleStonecleaver
+map.nodes[60233957] = ElusiveCrystalscaleStonecleaver
 
 -------------------------------------------------------------------------------
 --------------------------------- ZONE EVENTS ---------------------------------
 -------------------------------------------------------------------------------
 
+-- local EventRotation = Class('EventRotation', ZaralekRotation, {event = true})
+
 local ZoneEvent = Class('ZoneEvent', ns.node.Node, {
     group = ns.groups.ZONE_EVENT,
     icon = 'peg_rd',
-    scale = 1.3
+    scale = 1.3,
+    rewards = {
+        Item({item = 205248}), -- Clanging Dirt-Covered Pouch
+        Item({item = 205247}) -- Clinking Dirt-Covered Pouch
+    }
 })
 
 function ZoneEvent.getters:label()
     return C_QuestLog.GetTitleForQuestID(self.quest[1]) or UNKNOWN
 end
 
-map.nodes[44507490] = ZoneEvent({quest = 75612}) -- Cascades Calling
-map.nodes[63004720] = ZoneEvent({quest = 75471}) -- Crystalline Survey
-map.nodes[32104360] = ZoneEvent({quest = 75455}) -- Conspiracy of Flame
-map.nodes[56606540] = ZoneEvent({quest = 75664}) -- Discordant Crystals
-map.nodes[45008450] = ZoneEvent({quest = 75611}) -- Glimmerfish Before It's Gone
-map.nodes[48102020] = ZoneEvent({quest = 75478}) -- Hungry Hungry Hydra
-map.nodes[35405230] = ZoneEvent({quest = 75451}) -- Imperfect Balance
-map.nodes[46602570] = ZoneEvent({quest = 75461}) -- Magmaclaw Matriarch
-map.nodes[61707210] = ZoneEvent({quest = 75705}) -- Monument Maintenance
-map.nodes[40204350] = ZoneEvent({quest = 75454}) -- Mortar Warfare
-map.nodes[34304770] = ZoneEvent({quest = 75450}) -- Seismic Ceremony
-map.nodes[57504890] = ZoneEvent({quest = 75222}) -- Shellfire
-map.nodes[60605310] = ZoneEvent({quest = 75370}) -- Smellincense
-map.nodes[44902080] = ZoneEvent({quest = 75494}) -- Strike the Colors
-map.nodes[57705690] = ZoneEvent({quest = 75441}) -- Smelly Scramble
-map.nodes[63905070] = ZoneEvent({quest = 75156}) -- Stress Express
-map.nodes[45308320] = ZoneEvent({quest = 75624}) -- The Champion's Challenge
-map.nodes[58206740] = ZoneEvent({quest = 74352}) -- Whirling Zephyr
+function ZoneEvent.getters:rlabel()
+    local completed = C_QuestLog.IsQuestFlaggedCompleted(self.quest[1])
+    local color = completed and ns.status.Green or ns.status.Gray
+    return color(L['weekly'])
+end
+
+map.nodes[44507490] = ZoneEvent({
+    quest = 75612
+    -- interval = EventRotation({id = 1})
+}) -- Cascades Calling
+
+map.nodes[63004720] = ZoneEvent({
+    quest = 75471
+    -- interval = EventRotation({id = 3})
+}) -- Crystalline Survey
+
+map.nodes[32104360] = ZoneEvent({
+    quest = 75455
+    -- interval = EventRotation({id = 0})
+}) -- Conspiracy of Flame
+
+map.nodes[56606540] = ZoneEvent({
+    quest = 75664
+    -- interval = EventRotation({id = 2})
+}) -- Discordant Crystals
+
+map.nodes[45008450] = ZoneEvent({
+    quest = 75611
+    -- interval = EventRotation({id = 1})
+}) -- Glimmerfish Before It's Gone
+
+map.nodes[48102020] = ZoneEvent({
+    quest = 75478
+    -- interval = EventRotation({id = 4})
+}) -- Hungry Hungry Hydra
+
+map.nodes[35405230] = ZoneEvent({
+    quest = 75451
+    -- interval = EventRotation({id = 0})
+}) -- Imperfect Balance
+
+map.nodes[46602570] = ZoneEvent({
+    quest = 75461
+    -- interval = EventRotation({id = 4})
+}) -- Magmaclaw Matriarch
+
+map.nodes[61707210] = ZoneEvent({
+    quest = 75705
+    -- interval = EventRotation({id = 2})
+}) -- Monument Maintenance
+
+map.nodes[40204350] = ZoneEvent({
+    quest = 75454
+    -- interval = EventRotation({id = 0})
+}) -- Mortar Warfare
+
+map.nodes[34304770] = ZoneEvent({
+    quest = 75450
+    -- interval = EventRotation({id = 0})
+}) -- Seismic Ceremony
+
+map.nodes[57504890] = ZoneEvent({
+    quest = 75222
+    -- interval = EventRotation({id = 3})
+}) -- Shellfire
+
+map.nodes[60605310] = ZoneEvent({
+    quest = 75370
+    -- interval = EventRotation({id = 3})
+}) -- Smellincense
+
+map.nodes[44902080] = ZoneEvent({
+    quest = 75494
+    -- interval = EventRotation({id = 4})
+}) -- Strike the Colors
+
+map.nodes[57705690] = ZoneEvent({
+    quest = 75441
+    -- interval = EventRotation({id = 3})
+}) -- Smelly Scramble
+
+map.nodes[63905070] = ZoneEvent({
+    quest = 75156
+    -- interval = EventRotation({id = 3})
+}) -- Stress Express
+
+map.nodes[45308320] = ZoneEvent({
+    quest = 75624
+    -- interval = EventRotation({id = 1})
+}) -- The Champion's Challenge
+
+map.nodes[58206740] = ZoneEvent({
+    quest = 74352
+    -- interval = EventRotation({id = 2})
+}) -- Whirling Zephyr
 
 -------------------------------------------------------------------------------
 ---------------------- ANCIENT STONES OF ZARALEK CAVERN -----------------------
@@ -1007,20 +1057,34 @@ map.nodes[55625745] = Collectible({
     id = 203773,
     icon = 5140835,
     requires = {
-        ns.requirement.Quest(74876), -- The Buddy System
-        -- TODO: These quests are stored just in case and we probably won't
-        -- use then. I pulled them from the the PTR Wowhead page while I could.
-        ns.requirement.Quest(75765), ns.requirement.Quest(75766),
-        ns.requirement.Quest(75767), ns.requirement.Quest(75768),
-        ns.requirement.Quest(75769), ns.requirement.Quest(75770),
-        ns.requirement.Quest(75771), ns.requirement.Quest(75772),
-        ns.requirement.Quest(75774)
+        ns.requirement.Quest(74876) -- The Buddy System
+        -- Are part of the Sniffen Sage Achievement:
+        -- ns.requirement.Quest(75765), -- Liquid Art
+        -- ns.requirement.Quest(75766), -- Ruby in the Rough
+        -- ns.requirement.Quest(75767), -- Good Time Boy
+        -- ns.requirement.Quest(75768), -- Lucky Ducky
+        -- ns.requirement.Quest(75769), -- Drawing a Blank
+        -- ns.requirement.Quest(75770), -- A Glass of Bubbly
+        -- ns.requirement.Quest(75771), -- Incense Replay
+        -- ns.requirement.Quest(75772), -- Flask Manager
+        -- ns.requirement.Quest(75774) --- doesnt exist or is a hidden tracking quest
     },
     rewards = {
         Achievement({
+            id = 18257,
+            criteria = {id = 1, qty = true, suffix = L['sniffen_digs_suffix']}
+        }), -- Can You Dig It?
+        Achievement({
             id = 17833,
             criteria = {id = 1, qty = true, suffix = L['sniffen_sage_suffix']}
-        }) -- Sniffen Sage
+        }), -- Sniffen Sage
+        Achievement({
+            id = 18255,
+            criteria = {
+                59744, 59745, 59746, 59747, 59749, 59750, 59751, 59752, 59753,
+                59754, 59755, 59756, 59757, 59758, 59759, 59760
+            }
+        }) -- Proof of Myrrit
     }
 }) -- Myrrit <Sniffenseeker>
 
@@ -1095,21 +1159,6 @@ end
 
 map.nodes[44257993] = Briggul()
 
--- local darkshore = Map({id = 62, settings = false})
-
--- darkshore.nodes[47161853] = Collectible({
---     id = 48182,
---     icon = 442735,
---     note = L['big_slick_note'],
---     rewards = {
---         Pet({id = 493}) -- Shimmershell Snail
---     },
---     pois = {
---         POI({57941511, 57561701, 54761786, 53492013}), -- Shimmershell Snail
---         Path({Circle({origin = 48652445, radius = 1.5})}) -- Zidormi
---     }
--- }) -- Shimmershell Snail
-
 ----------------------------- PET: LORD STANTLEY ------------------------------
 
 local CuriousTopHat = Class('CuriousTopHat', Collectible, {
@@ -1125,6 +1174,47 @@ local CuriousTopHat = Class('CuriousTopHat', Collectible, {
 map.nodes[38866432] = CuriousTopHat()
 map.nodes[43967748] = CuriousTopHat()
 map.nodes[51586689] = CuriousTopHat()
+
+-------------------------------------------------------------------------------
+----------------------- ACHIEVEMENT: THE GIFT OF CHEESE -----------------------
+-------------------------------------------------------------------------------
+
+local TheGiftOfCheese = Class('TheGiftOfCheese', Collectible, {
+    label = '{achievement:17736}',
+    icon = 515993,
+    rewards = {
+        Achievement({id = 17736, criteria = {qty = true, id = 1}}), -- The Gift of Cheese
+        Recipe({item = 204849, profession = 185}), -- Ratcipe: Charitable Cheddar
+        Pet({item = 204894, id = 3493}) -- Roland
+    }
+}) -- The Gift of Cheese
+
+function TheGiftOfCheese.getters:note()
+    local function status(id, itemsNeed, itemsNeedString)
+        local itemsHave = GetItemCount(id, true);
+        if ns.PlayerHasItem(id, itemsNeed) then
+            return ns.status.Green(itemsHave .. '/' .. itemsNeedString)
+        else
+            return ns.status.Red(itemsHave .. '/' .. itemsNeedString)
+        end
+    end
+
+    local function getString(id)
+        local s = '??????'
+        return s:sub(1, #tostring(GetItemCount(id))) -- 1/? or 26/?? or 159/???
+    end
+
+    local note = L['the_gift_of_cheese_note_1'] .. '\n\n'
+    note = note .. status(204871, 1, '1') .. ' ' ..
+               L['the_gift_of_cheese_note_2'] .. '\n\n'
+    note = note .. status(204872, 30, '30') .. ' ' ..
+               L['the_gift_of_cheese_note_3'] .. '\n\n'
+    note = note .. status(3927, 1, getString(3927)) .. ' ' ..
+               L['the_gift_of_cheese_note_4'] .. '\n\n'
+    return note .. L['the_gift_of_cheese_note_5']
+end
+
+map.nodes[52442683] = TheGiftOfCheese()
 
 -------------------------------------------------------------------------------
 

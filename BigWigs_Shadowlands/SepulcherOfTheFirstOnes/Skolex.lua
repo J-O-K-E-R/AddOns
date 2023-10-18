@@ -27,9 +27,6 @@ local ephemeraDustList = {}
 
 local L = mod:GetLocale()
 if L then
-	L.custom_on_stop_timers = "Always show ability bars"
-	L.custom_on_stop_timers_desc = "Skolex can delay its abilities. When this option is enabled, the bars for those abilities will stay on your screen."
-
 	L.tank_combo = CL.tank_combo
 	L.tank_combo_desc = "Timer for Riftmaw/Rend casts at 100 energy."
 	L.tank_combo_icon = 359979
@@ -41,8 +38,6 @@ end
 
 function mod:GetOptions()
 	return {
-		"custom_on_stop_timers",
-		"berserk",
 		359770, -- Ravening Burrow
 		359829, -- Dust Flail
 		360451, -- Retch
@@ -52,9 +47,10 @@ function mod:GetOptions()
 		364522, -- Devouring Blood
 		364778, -- Destroy
 		{359778, "INFOBOX"}, -- Ephemera Dust
+		"berserk",
 		366070, -- Volatile Residue
 	},{
-		["custom_on_stop_timers"] = "general",
+		[359770] = "general",
 		[366070] = "mythic",
 	}
 end
@@ -75,8 +71,6 @@ function mod:OnBossEnable()
 	self:Log("SPELL_AURA_APPLIED", "EphemeraDustApplied", 359778)
 	self:Log("SPELL_AURA_APPLIED_DOSE", "EphemeraDustApplied", 359778)
 	self:Log("SPELL_AURA_REMOVED", "EphemeraDustRemoved", 359778)
-
-	self:RegisterMessage("BigWigs_BarCreated", "BarCreated")
 end
 
 function mod:OnEngage()
@@ -87,9 +81,9 @@ function mod:OnEngage()
 	ephemeraDustList = {}
 	isInfoOpen = false
 
-	self:Bar(359829, 2, CL.count:format(self:SpellName(359829), flailCount)) -- Dust Flail
-	self:Bar("tank_combo", 9, CL.count:format(CL.tank_combo, tankComboCounter), L.tank_combo_icon) -- Tank Combo
-	self:Bar(360451, 24, CL.count:format(self:SpellName(360451), retchCount)) -- Retch
+	self:CDBar(359829, 2, CL.count:format(self:SpellName(359829), flailCount)) -- Dust Flail
+	self:CDBar("tank_combo", 9, CL.count:format(CL.tank_combo, tankComboCounter), L.tank_combo_icon) -- Tank Combo
+	self:CDBar(360451, 24, CL.count:format(self:SpellName(360451), retchCount)) -- Retch
 	devouringBloodTimer = self:ScheduleTimer("DevouringBlood", 9)
 	self:Bar(364522, 9) -- Devouring Blood
 	self:Berserk(360)
@@ -98,31 +92,6 @@ end
 --------------------------------------------------------------------------------
 -- Event Handlers
 --
-
-do
-	local abilitysToPause = {
-		["tank_combo"] = true, -- Tank Combo
-		[359829] = true, -- Dust Flail
-		[360451] = true, -- Retch
-	}
-
-	local castPattern = CL.cast:gsub("%%s", ".+")
-
-	local function stopAtZeroSec(bar)
-		if bar.remaining < 0.15 then -- Pause at 0.0
-			bar:SetDuration(0.01) -- Make the bar look full
-			bar:Start()
-			bar:Pause()
-			bar:SetTimeVisibility(false)
-		end
-	end
-
-	function mod:BarCreated(_, _, bar, _, key, text)
-		if self:GetOption("custom_on_stop_timers") and abilitysToPause[key] and not text:match(castPattern) then
-			bar:AddUpdateFunction(stopAtZeroSec)
-		end
-	end
-end
 
 function mod:UNIT_SPELLCAST_SUCCEEDED(_, _, _, spellId)
 	if spellId == 360079 then -- Tank Combo
@@ -162,12 +131,12 @@ function mod:RaveningBurrow(args)
 		local cd = self:Easy() and 37.5 or 34
 		nextRetch = nextRetch + cd
 		retchCount = retchCount + 1
-		self:Bar(360451, nextRetch, CL.count:format(self:SpellName(360451), retchCount)) -- Retch
+		self:CDBar(360451, nextRetch, CL.count:format(self:SpellName(360451), retchCount)) -- Retch
 	end
 
 	self:StopBar(CL.count:format(self:SpellName(359829), flailCount)) -- Dust Flail
 	flailCount = 1
-	self:Bar(359829, 11, CL.count:format(self:SpellName(359829), flailCount)) -- Dust Flail
+	self:CDBar(359829, 11, CL.count:format(self:SpellName(359829), flailCount)) -- Dust Flail
 end
 
 function mod:DustFlail(args)

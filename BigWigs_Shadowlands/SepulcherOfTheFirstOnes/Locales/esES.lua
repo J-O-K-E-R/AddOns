@@ -6,9 +6,6 @@ end
 
 L = BigWigs:NewBossLocale("Skolex, the Insatiable Ravener", "esES")
 if L then
-	--L.custom_on_stop_timers = "Always show ability bars"
-	--L.custom_on_stop_timers_desc = "Skolex can delay its abilities. When this option is enabled, the bars for those abilities will stay on your screen."
-
 	--L.tank_combo_desc = "Timer for Riftmaw/Rend casts at 100 energy."
 end
 
@@ -90,9 +87,6 @@ if L then
 
 	--L.bomb_dropped = "Bomb dropped"
 	--L.volatile_charges_new = "New Bombs!"
-
-	--L.custom_on_stop_timers = "Always show ability bars"
-	--L.custom_on_stop_timers_desc = "Halondrus can delay its abilities. When this option is enabled, the bars for those abilities will stay on your screen."
 end
 
 L = BigWigs:NewBossLocale("Lords of Dread", "esES")

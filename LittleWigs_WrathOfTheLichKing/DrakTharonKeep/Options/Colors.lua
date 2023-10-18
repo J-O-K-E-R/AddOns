@@ -1,6 +1,8 @@
 
 BigWigs:AddColors("Trollgore", {
 	[49637] = {"blue","orange"},
+	[49639] = "red",
+	[59803] = "yellow",
 })
 
 BigWigs:AddColors("Novos the Summoner", {
@@ -12,8 +14,8 @@ BigWigs:AddColors("Novos the Summoner", {
 })
 
 BigWigs:AddColors("King Dred", {
-	[48878] = {"blue","orange"},
-	[59416] = "yellow",
+	[48878] = {"blue","purple"},
+	[59416] = "cyan",
 })
 
 BigWigs:AddColors("The Prophet Tharon'ja", {

@@ -49,9 +49,6 @@ if L then
 	L.skirmishers = "Skirmishers" -- Short for Stone Legion Skirmishers
 	L.eruption = "Eruption" -- Short for Reverberating Eruption
 
-	L.custom_on_stop_timers = "Always show ability bars"
-	L.custom_on_stop_timers_desc = "Just for testing right now"
-
 	L.goliath = -23101
 	L.goliath_short = "Goliath"
 	L.goliath_desc = "Show warnings and timers for when the Stone Legion Goliath is going to spawn."
@@ -74,10 +71,10 @@ local commandoMarker = mod:AddMarkerOption(false, "npc", 8, -22772, 8, 7, 6, 5) 
 function mod:GetOptions()
 	return {
 		"berserk",
-		"custom_on_stop_timers",
 		"goliath",
 		"commando",
-			--[[ Stage One: Kaal's Assault ]]--
+
+		--[[ Stage One: Kaal's Assault ]]--
 		329636, -- Hardened Stone Form
 		{333387, "SAY"}, -- Wicked Blade
 		{333913, "INFOBOX"}, -- Wicked Laceration
@@ -96,7 +93,7 @@ function mod:GetOptions()
 		332406, -- Anima Infusion
 		339885, -- Anima Infection
 		342722, -- Stonewrath Exhaust
-		332683, -- Shattering Blast
+		{332683, "CASTBAR"}, -- Shattering Blast
 
 		--[[ Stage Two: Grashaal's Blitz ]]--
 		329808, -- Hardened Stone Form
@@ -126,8 +123,6 @@ function mod:GetOptions()
 end
 
 function mod:OnBossEnable()
-	self:RegisterMessage("BigWigs_BarCreated", "BarCreated")
-
 	self:Log("SPELL_CAST_SUCCESS", "SummonReinforcements", 342255)
 
 	--[[ Stage One: Kaal's Assault ]]--
@@ -196,9 +191,9 @@ function mod:OnEngage()
 	self:SetStage(1)
 
 	self:Bar(334929, 8.2, CL.count:format(self:SpellName(334929), serratedSwipeCount)) -- Serrated Swipe
-	self:Bar(333387, self:Mythic() and 18 or 19, CL.count:format(self:SpellName(333387), wickedBladeCount)) -- Wicked Blade
-	self:Bar(334765, self:Mythic() and 32.5 or 30, CL.count:format(self:SpellName(334765), heartRendCount)) -- Heart Rend // It's either Heart Rend or Crystalize in Mythic
-	self:Bar(339690, self:Mythic() and 32.5 or 25, CL.count:format(self:SpellName(339690), crystalizeCount)) -- Crystalize
+	self:CDBar(333387, self:Mythic() and 18 or 19, CL.count:format(self:SpellName(333387), wickedBladeCount)) -- Wicked Blade
+	self:CDBar(334765, self:Mythic() and 32.5 or 30, CL.count:format(self:SpellName(334765), heartRendCount)) -- Heart Rend // It's either Heart Rend or Crystalize in Mythic
+	self:CDBar(339690, self:Mythic() and 32.5 or 25, CL.count:format(self:SpellName(339690), crystalizeCount)) -- Crystalize
 
 	if self:Mythic() then
 		self:Bar(342256, 10.7, CL.count:format(L.skirmishers, shadowForcesCount)) -- Call Shadow Forces
@@ -242,34 +237,6 @@ function mod:SummonReinforcements()
 		firstGoliath = false
 	end
 	self:CDBar("goliath", 10, L.goliath_short, L.goliath_icon)
-end
-
-do
-	local abilitysToPause = {
-		[333387] = true, -- Wicked Blade
-		[334765] = true, -- Heart Rend
-		[339690] = true, -- Crystallize
-		[344496] = true, -- Reverberating Eruption
-		[334498] = true, -- Seismic Upheaval
-
-	}
-
-	local castPattern = CL.cast:gsub("%%s", ".+")
-
-	local function stopAtZeroSec(bar)
-		if bar.remaining < 0.15 then -- Pause at 0.0
-			bar:SetDuration(0.01) -- Make the bar look full
-			bar:Start()
-			bar:Pause()
-			bar:SetTimeVisibility(false)
-		end
-	end
-
-	function mod:BarCreated(_, _, bar, _, key, text)
-		if self:GetOption("custom_on_stop_timers") and abilitysToPause[key] and not text:match(castPattern) then
-			bar:AddUpdateFunction(stopAtZeroSec)
-		end
-	end
 end
 
 do
@@ -357,10 +324,10 @@ function mod:HardenedStoneFormRemoved(args)
 	wickedBladeCount = 1
 
 	self:Bar(342425, 23) -- Stone Fist
-	self:Bar(339690, 14.5, CL.count:format(self:SpellName(339690), crystalizeCount)) -- Crystalize
-	self:Bar(344496, 33, CL.count:format(L.eruption, reverberatingLeapCount)) -- Reverberating Eruption
-	self:Bar(334498, 45, CL.count:format(self:SpellName(334498), seismicUphealvalCount)) -- Seismic Upheaval
-	self:Bar(333387, 25.5, CL.count:format(self:SpellName(333387), wickedBladeCount)) -- Wicked Blade
+	self:CDBar(339690, 14.5, CL.count:format(self:SpellName(339690), crystalizeCount)) -- Crystalize
+	self:CDBar(344496, 33, CL.count:format(L.eruption, reverberatingLeapCount)) -- Reverberating Eruption
+	self:CDBar(334498, 45, CL.count:format(self:SpellName(334498), seismicUphealvalCount)) -- Seismic Upheaval
+	self:CDBar(333387, 25.5, CL.count:format(self:SpellName(333387), wickedBladeCount)) -- Wicked Blade
 end
 
 do
@@ -394,7 +361,7 @@ do
 		self:StopBar(CL.count:format(args.spellName, wickedBladeCount))
 		self:GetNextBossTarget(printTarget, args.sourceGUID, 1)
 		wickedBladeCount = wickedBladeCount + 1
-		self:Bar(333387, 30.5, CL.count:format(args.spellName, wickedBladeCount))
+		self:CDBar(333387, 30.5, CL.count:format(args.spellName, wickedBladeCount))
 	end
 
 	function mod:WickedBladeApplied(args)
@@ -464,7 +431,7 @@ do
 		if self:GetStage() == prevStage then -- Only if we didn't transition during cast
 			self:StopBar(CL.count:format(args.spellName, heartRendCount))
 			heartRendCount = heartRendCount + 1
-			self:Bar(args.spellId, 42.5, CL.count:format(args.spellName, heartRendCount))
+			self:CDBar(args.spellId, 42.5, CL.count:format(args.spellName, heartRendCount))
 		end
 		if self:Dispeller("magic") then
 			self:PlaySound(args.spellId, "alarm")
@@ -604,11 +571,11 @@ function mod:GraniteFormRemoved(args)
 
 	self:Bar(334929, 9, CL.count:format(self:SpellName(334929), serratedSwipeCount)) -- Serrated Swipe
 	self:Bar(342425, 16) -- Stone Fist
-	self:Bar(339690, 7.5, CL.count:format(self:SpellName(339690), crystalizeCount)) -- Crystalize
-	self:Bar(333387, 20, CL.count:format(self:SpellName(333387), wickedBladeCount)) -- Wicked Blade
-	self:Bar(344496, 26, CL.count:format(L.eruption, reverberatingLeapCount)) -- Reverberating Eruption
-	self:Bar(334765, 33, CL.count:format(self:SpellName(334765), heartRendCount)) -- Heart Rend
-	self:Bar(334498, 39, CL.count:format(self:SpellName(334498), seismicUphealvalCount)) -- Seismic Upheaval
+	self:CDBar(339690, 7.5, CL.count:format(self:SpellName(339690), crystalizeCount)) -- Crystalize
+	self:CDBar(333387, 20, CL.count:format(self:SpellName(333387), wickedBladeCount)) -- Wicked Blade
+	self:CDBar(344496, 26, CL.count:format(L.eruption, reverberatingLeapCount)) -- Reverberating Eruption
+	self:CDBar(334765, 33, CL.count:format(self:SpellName(334765), heartRendCount)) -- Heart Rend
+	self:CDBar(334498, 39, CL.count:format(self:SpellName(334498), seismicUphealvalCount)) -- Seismic Upheaval
 end
 
 function mod:StoneFist(args)

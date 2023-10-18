@@ -152,7 +152,7 @@ do -- MageTravel
 		{"ring", "ExtraPortals", _u="e"}, -- Extra Portals
 		{id=m:format(32267, 32272), _u="l"}, -- Silvermoon
 		{id=m:format(32266, 32271), _u="x"}, -- Exodar
-		name=L"Portals and Teleports", hotkey="ALT-G", limit="MAGE", _u="OPCMP"
+		name=L"Portals and Teleports", hotkey="ALT-G", limit="MAGE", _u="OPCMV"
 	})
 	R:AddDefaultRing("ExtraPortals", {
 		{id=m:format(120146, 120145), _u="a"}, -- Ancient Dalaran
@@ -171,7 +171,7 @@ R:AddDefaultRing("PaladinTools", {
 	{id=322223, _u="u"}, --crusader
 	{id=183435, _u="r"}, --retribution
 	{id=31821, _u="m"}, --mastery
-	{id="/cast [help,dead,nocombat][nocombat,mod] {{spell:7328}}; {{spell:213644}}; {{spell:7328}}", _c="l"}, -- cleanse/res
+	{id="/cast [help,dead,nocombat][nocombat,mod] {{spell:7328}}; {{spell:213644}}; {{spell:7328}}", _u="l"}, -- cleanse/res
 	name=L"Utility", limit="PALADIN", hotkey="BUTTON4", _u="OPCPT"
 })
 R:AddDefaultRing("WarlockLTS", {
@@ -256,8 +256,8 @@ R:AddDefaultRing("SpecMenu", {
 	{"specset", 3, _u="3"},
 	{"specset", 4, _u="4"},
 	{id="/cast {{spell:50977}}; {{spell:193753}}; {{spell:126892}}; {{spell:193759}}; {{spell:556}}", _u="c"},
-	{"item", 110560, _u="g"},
-	{"item", 140192, _u="d"},
+	{"toy", 110560, _u="g"},
+	{"toy", 140192, _u="d"},
 	{"ring", "CommonHearth", rotationMode="shuffle", _u="t"},
 	{"item", 141605, _u="w", show="[in:broken isles/bfa]"}, -- flight master's whistle
 	name=L"Specializations and Travel", hotkey="ALT-H", _u="OPCTA"

@@ -39,7 +39,7 @@ function mod:GetOptions()
 		"stages",
 		"berserk",
 		-- Stage One - Thirst for Blood
-		330711, -- Earsplitting Shriek
+		{330711, "CASTBAR"}, -- Earsplitting Shriek
 		340324, -- Sanguine Ichor
 		{342074, "SAY", "SAY_COUNTDOWN", "ME_ONLY_EMPHASIZE"}, -- Echolocation
 		342863, -- Echoing Screech
@@ -48,7 +48,7 @@ function mod:GetOptions()
 		{328857, "TANK"}, -- Exsanguinating Bite
 		{328897, "TANK"}, -- Exsanguinated
 		-- Stage Two - Terror of Castle Nathria
-		345936, -- Earsplitting Shriek (Intermission)
+		{345936, "CASTBAR"}, -- Earsplitting Shriek (Intermission)
 		328921, -- Blood Shroud
 		329362, -- Echoing Sonar
 		-- Mythic

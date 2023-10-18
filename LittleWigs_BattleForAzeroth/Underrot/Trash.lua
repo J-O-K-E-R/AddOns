@@ -33,6 +33,7 @@ if L then
 	L.priest = "Devout Blood Priest"
 	L.maggot = "Fetid Maggot"
 	L.matron = "Chosen Blood Matron"
+	L.fanatical_headhunter = "Fanatical Headhunter"
 	L.lasher = "Diseased Lasher"
 	L.bloodswarmer = "Feral Bloodswarmer"
 	L.rot = "Living Rot"
@@ -50,14 +51,18 @@ function mod:GetOptions()
 	return {
 		-- Befouled Spirit
 		{265568, "SAY"}, -- Dark Omen
+		278755, -- Harrowing Despair
 		-- Devout Blood Priest
 		265089, -- Dark Reconstitution
 		265091, -- Gift of G'huun
 		-- Fetid Maggot
 		265540, -- Rotten Bile
 		-- Chosen Blood Matron
+		{265016, "ME_ONLY", "SAY"}, -- Blood Harvest
 		265019, -- Savage Cleave
 		265081, -- Warcry
+		-- Fanatical Headhunter
+		{265377, "DISPEL"}, -- Hooked Snare
 		-- Diseased Lasher
 		278961, -- Decaying Mind
 		-- Feral Bloodswarmer
@@ -69,6 +74,7 @@ function mod:GetOptions()
 		-- Fallen Deathspeaker
 		272183, -- Raise Dead
 		266209, -- Wicked Frenzy
+		266265, -- Wicked Embrace
 		-- Grotesque Horror
 		413044, -- Dark Echoes
 		-- Bloodsworn Defiler
@@ -82,7 +88,8 @@ function mod:GetOptions()
 		[265568] = L.spirit,
 		[265089] = L.priest,
 		[265540] = L.maggot,
-		[265019] = L.matron,
+		[265016] = L.matron,
+		[265377] = L.fanatical_headhunter,
 		[278961] = L.lasher,
 		[266107] = L.bloodswarmer,
 		[265668] = L.rot,
@@ -99,6 +106,7 @@ function mod:OnBossEnable()
 	-- Befouled Spirit
 	self:Log("SPELL_CAST_START", "DarkOmen", 265568)
 	self:Log("SPELL_AURA_APPLIED", "DarkOmenApplied", 265568)
+	self:Log("SPELL_CAST_START", "HarrowingDespair", 278755)
 
 	-- Devout Blood Priest
 	self:Log("SPELL_CAST_START", "DarkReconstitution", 265089)
@@ -109,8 +117,12 @@ function mod:OnBossEnable()
 	self:Log("SPELL_CAST_START", "RottenBile", 265540)
 
 	-- Chosen Blood Matron
+	self:Log("SPELL_CAST_SUCCESS", "BloodHarvest", 265016)
 	self:Log("SPELL_CAST_START", "SavageCleave", 265019)
 	self:Log("SPELL_CAST_START", "Warcry", 265081)
+
+	-- Fanatical Headhunter
+	self:Log("SPELL_AURA_APPLIED", "HookedSnareApplied", 265377)
 
 	-- Diseased Lasher
 	self:Log("SPELL_CAST_START", "DecayingMind", 278961)
@@ -131,6 +143,8 @@ function mod:OnBossEnable()
 	self:Log("SPELL_CAST_START", "RaiseDead", 272183)
 	self:Log("SPELL_CAST_START", "WickedFrenzy", 266209)
 	self:Log("SPELL_AURA_APPLIED", "WickedFrenzyApplied", 266209)
+	self:Log("SPELL_AURA_APPLIED", "WickedEmbraceApplied", 266265)
+	self:Log("SPELL_AURA_REMOVED", "WickedEmbraceRemoved", 266265)
 
 	-- Grotesque Horror
 	self:Log("SPELL_CAST_START", "DarkEchoes", 413044)
@@ -175,9 +189,20 @@ function mod:DarkOmenApplied(args)
 	end
 end
 
+function mod:HarrowingDespair(args)
+	self:Message(args.spellId, "red", CL.casting:format(args.spellName))
+	if self:Interrupter() then
+		self:PlaySound(args.spellId, "warning")
+	end
+	--self:NameplateCDBar(args.spellId, 32.8, args.sourceGUID)
+end
+
 -- Devout Blood Priest
 
 function mod:DarkReconstitution(args)
+	if self:Friendly(args.sourceFlags) then -- these NPCs can be mind-controlled by Priests
+		return
+	end
 	self:Message(args.spellId, "orange", CL.casting:format(args.spellName))
 	self:PlaySound(args.spellId, "warning")
 end
@@ -205,6 +230,17 @@ end
 
 -- Chosen Blood Matron
 
+function mod:BloodHarvest(args)
+	self:TargetMessage(args.spellId, "orange", args.destName)
+	self:PlaySound(args.spellId, "info", nil, args.destName)
+	if self:Me(args.destGUID) then
+		-- :Say here, because if Blood Harvest hits its target a
+		-- Savage Cleave will be immediately cast in their direction.
+		self:Say(args.spellId)
+	end
+	--self:NameplateCDBar(args.spellId, 12.1, args.sourceGUID)
+end
+
 function mod:SavageCleave(args)
 	self:Message(args.spellId, "red")
 	self:PlaySound(args.spellId, "alarm")
@@ -216,6 +252,15 @@ function mod:Warcry(args)
 		self:Message(args.spellId, "red")
 		self:PlaySound(args.spellId, "long")
 		--self:NameplateCDBar(args.spellId, 25.5, args.sourceGUID)
+	end
+end
+
+-- Fanatical Headhunter
+
+function mod:HookedSnareApplied(args)
+	if self:Me(args.destGUID) or self:Dispeller("movement", nil, args.spellId) then
+		self:TargetMessage(args.spellId, "yellow", args.destName)
+		self:PlaySound(args.spellId, "alert", nil, args.destName)
 	end
 end
 
@@ -267,6 +312,9 @@ function mod:ThirstForBloodRemoved(args)
 end
 
 function mod:SonicScreech(args)
+	if self:Friendly(args.sourceFlags) then -- these NPCs can be mind-controlled by Priests
+		return
+	end
 	self:Message(args.spellId, "red", CL.casting:format(args.spellName))
 	self:PlaySound(args.spellId, "warning")
 	--self:NameplateCDBar(args.spellId, 25.5, args.sourceGUID)
@@ -297,6 +345,9 @@ function mod:RaiseDead(args)
 end
 
 function mod:WickedFrenzy(args)
+	if self:Friendly(args.sourceFlags) then -- these NPCs can be mind-controlled by DKs
+		return
+	end
 	self:Message(args.spellId, "orange", CL.casting:format(args.spellName))
 	self:PlaySound(args.spellId, "alert")
 	--self:NameplateCDBar(args.spellId, 25.5, args.sourceGUID)
@@ -305,7 +356,7 @@ end
 do
 	local prev = 0
 	function mod:WickedFrenzyApplied(args)
-		if self:Tank() or self:Dispeller("enrage", true) then
+		if not self:Friendly(args.destFlags) and (self:Tank() or self:Dispeller("enrage", true)) then
 			local t = args.time
 			-- throttle, as this applies on all nearby enemies
 			if t - prev > 1 then
@@ -317,11 +368,27 @@ do
 	end
 end
 
+
+function mod:WickedEmbraceApplied(args)
+	if self:Me(args.destGUID) or self:Healer() or self:Dispeller("magic") then
+		self:TargetMessage(args.spellId, "yellow", args.destName)
+		self:PlaySound(args.spellId, "info", nil, args.destName)
+		self:TargetBar(args.spellId, 12, args.destName)
+	end
+end
+
+function mod:WickedEmbraceRemoved(args)
+	self:StopBar(args.spellName, args.destName)
+end
+
 -- Grotesque Horror
 
 function mod:DarkEchoes(args)
-	self:Message(args.spellId, "orange", CL.casting:format(args.spellName))
-	self:PlaySound(args.spellId, "alarm")
+	if self:Friendly(args.sourceFlags) then -- these NPCs can be mind-controlled by Priests
+		return
+	end
+	self:Message(args.spellId, "red", CL.casting:format(args.spellName))
+	self:PlaySound(args.spellId, "warning")
 	--self:NameplateCDBar(args.spellId, 20.6, args.sourceGUID)
 end
 
@@ -364,7 +431,7 @@ do
 	local prev = 0
 	function mod:MaddeningGaze(args)
 		local t = args.time
-		if t - prev > 1.5 then
+		if t - prev > 1 then
 			prev = t
 			self:Message(args.spellId, "orange")
 			self:PlaySound(args.spellId, "alarm")

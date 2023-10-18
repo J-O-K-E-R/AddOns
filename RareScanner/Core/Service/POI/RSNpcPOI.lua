@@ -50,11 +50,77 @@ local function RemoveNotDiscoveredNpc(npcID)
 end
 
 ---============================================================================
--- Storm invasion NOCs POIs
+-- Dreamsurge NPCs POIs
+---- NPCs that are part of a dreamsurge event (Dragonflight)
+---============================================================================
+
+local function findClosestSpot(npcID, mapID, poiX, poiY)
+	local mapNpcInfo = RSNpcDB.GetInternalNpcInfoByMapID(npcID, mapID)
+  	if (not mapNpcInfo or not mapNpcInfo.overlay) then
+    	return poiX, poiY
+  	else
+    	local xyDistances = {}
+    	for _, coordinatePair in ipairs (mapNpcInfo.overlay) do
+      		local coordx, coordy =  strsplit("-", coordinatePair)
+          		local distance = RSUtils.DistanceBetweenCoords(coordx, poiX, coordy, poiY)
+      			if (distance > 0.01) then
+            		xyDistances[coordinatePair] = distance
+      			end
+        	end
+  
+    		if (RSUtils.GetTableLength(xyDistances) == 0) then
+    			return poiX, poiY
+        	end
+  
+        	local distances = {}
+        	for xy, distance in pairs (xyDistances) do
+          		table.insert(distances, distance)
+        	end
+        
+        	local min = math.min(unpack(distances))
+        	for xy, distance in pairs (xyDistances) do
+          		if (distance == min) then
+            		local xo, yo = strsplit("-", xy)
+        		return xo, yo
+      		end
+    	end
+	end
+end
+
+local function GetDreamsurgeAtlasName(npcID)
+	if (RSUtils.Contains(RSConstants.DREAMSURGE_NPCS, npcID)) then
+    	return RSConstants.DREAMSURGE_ICON_ATLAS
+  	end
+  
+  	return nil
+end
+
+local function GetDreamsurgeXY(npcID, mapID)
+	local npcDreamsurgeAtlasName = GetDreamsurgeAtlasName(npcID) 
+  	if (not npcDreamsurgeAtlasName) then
+    	return nil
+  	end
+   
+  	local areaPOIs = GetAreaPOIsForPlayerByMapIDCached(mapID);
+  	for _, areaPoiID in ipairs(areaPOIs) do
+    	local poiInfo = C_AreaPoiInfo.GetAreaPOIInfo(mapID, areaPoiID);
+    	if (poiInfo) then
+	    	local isPrimaryMapForPOI = poiInfo.isPrimaryMapForPOI
+    		local x, y = poiInfo.position:GetXY()
+	    	
+	  		if (isPrimaryMapForPOI and poiInfo.atlasName == npcDreamsurgeAtlasName) then
+		      	return findClosestSpot(npcID, mapID, x, y)
+	    	end
+	    end
+	end
+end
+
+---============================================================================
+-- Storm invasion NPCs POIs
 ---- NPCs that are part of a storm invasion event (Dragonflight)
 ---============================================================================
 
-local function GetStormInvasionAtlasName(npcID, mapID)
+local function GetStormInvasionAtlasName(npcID)
 	if (RSUtils.Contains(RSConstants.FIRE_STORM_EVENTS_NPCS, npcID)) then
     	return RSConstants.FIRE_STORM_ATLAS 
   	elseif (RSUtils.Contains(RSConstants.WATER_STORM_EVENTS_NPCS, npcID)) then
@@ -69,7 +135,7 @@ local function GetStormInvasionAtlasName(npcID, mapID)
 end
 
 local function GetStormInvasionXY(npcID, mapID)
-	local npcStormAtlasName = GetStormInvasionAtlasName(npcID, mapID) 
+	local npcStormAtlasName = GetStormInvasionAtlasName(npcID) 
   	if (not npcStormAtlasName) then
     	return nil
   	end
@@ -94,36 +160,7 @@ local function GetStormInvasionXY(npcID, mapID)
 			end
 	    	
 	  		if (isPrimaryMapForPOI and poiInfo.atlasName == npcStormAtlasName) then
-		      	local mapNpcInfo = RSNpcDB.GetInternalNpcInfoByMapID(npcID, mapID)
-		      	if (not mapNpcInfo or not mapNpcInfo.overlay) then
-		        	return x, y
-		      	else
-		        	local xyDistances = {}
-		        	for _, coordinatePair in ipairs (mapNpcInfo.overlay) do
-		          		local coordx, coordy =  strsplit("-", coordinatePair)
-		          		local distance = RSUtils.DistanceBetweenCoords(coordx, x, coordy, y)
-	          			if (distance > 0.01) then
-		            		xyDistances[coordinatePair] = distance
-	          			end
-		        	end
-		  
-	        		if (RSUtils.GetTableLength(xyDistances) == 0) then
-	        			return x, y
-		        	end
-		  
-		        	local distances = {}
-		        	for xy, distance in pairs (xyDistances) do
-		          		table.insert(distances, distance)
-		        	end
-		        
-		        	local min = math.min(unpack(distances))
-		        	for xy, distance in pairs (xyDistances) do
-		          		if (distance == min) then
-		            		local xo, yo = strsplit("-", xy)
-		            		return xo, yo
-		          		end
-		        	end
-		    	end
+		      	return findClosestSpot(npcID, mapID, x, y)
 	    	end
 	    end
 	end
@@ -141,8 +178,11 @@ function RSNpcPOI.GetNpcPOI(npcID, mapID, npcInfo, alreadyFoundInfo)
 	POI.grouping = true
 	POI.name = RSNpcDB.GetNpcName(npcID)
 	POI.mapID = mapID
-	if (GetStormInvasionAtlasName(npcID, mapID)) then
+	GetDreamsurgeXY(npcID, mapID)
+	if (GetStormInvasionAtlasName(npcID)) then
     	POI.x, POI.y = GetStormInvasionXY(npcID, mapID)
+  	elseif (GetDreamsurgeAtlasName(npcID)) then
+    	POI.x, POI.y = GetDreamsurgeXY(npcID, mapID)
   	elseif (alreadyFoundInfo and alreadyFoundInfo.mapID == mapID) then
 		POI.x = alreadyFoundInfo.coordX
 		POI.y = alreadyFoundInfo.coordY
@@ -181,8 +221,10 @@ function RSNpcPOI.GetNpcPOI(npcID, mapID, npcInfo, alreadyFoundInfo)
 		POI.iconAtlas = RSConstants.ACHIEVEMENT_ICON_ATLAS
 	elseif (RSUtils.Contains(RSConstants.HUNTING_PARTY_NPCS, npcID)) then
 		POI.iconAtlas = RSConstants.HUNTING_PARTY_ICON_ATLAS
-	elseif (GetStormInvasionAtlasName(npcID, mapID)) then
-		POI.iconAtlas = GetStormInvasionAtlasName(npcID, mapID)
+	elseif (GetStormInvasionAtlasName(npcID)) then
+		POI.iconAtlas = GetStormInvasionAtlasName(npcID)
+	elseif (GetDreamsurgeAtlasName(npcID)) then
+		POI.iconAtlas = GetDreamsurgeAtlasName(npcID)
 	end
 	
 	return POI
@@ -217,9 +259,16 @@ local function IsNpcPOIFiltered(npcID, mapID, artID, zoneQuestID, prof, questTit
 	end
 	
 	-- Skip if primal storm rare and is filtered
-	local isPrimalStorm = GetStormInvasionAtlasName(npcID, mapID) ~= nil
+	local isPrimalStorm = GetStormInvasionAtlasName(npcID) ~= nil
 	if (not RSConfigDB.IsShowingPrimalStormRareNPCs() and isPrimalStorm) then
 		RSLogger:PrintDebugMessageEntityID(npcID, string.format("Saltado NPC [%s]: Filtrado NPC de tormenta prismatica.", npcID))
+		return true
+	end
+	
+	-- Skip if dreamsurge rare and is filtered
+	local isDreamsurge = GetDreamsurgeAtlasName(npcID) ~= nil
+	if (not RSConfigDB.IsShowingDreamsurgeRareNPCs() and isDreamsurge) then
+		RSLogger:PrintDebugMessageEntityID(npcID, string.format("Saltado NPC [%s]: Filtrado NPC de investigacion pico onirico.", npcID))
 		return true
 	end
 	
@@ -237,7 +286,7 @@ local function IsNpcPOIFiltered(npcID, mapID, artID, zoneQuestID, prof, questTit
 	end
 	
 	-- Skip if other filtered
-	if (not RSConfigDB.IsShowingOtherRareNPCs() and not isHuntingParty and not isPrimalStorm and not isAchievement and not prof) then
+	if (not RSConfigDB.IsShowingOtherRareNPCs() and not isHuntingParty and not isPrimalStorm and not isDreamsurge and not isAchievement and not prof) then
 		RSLogger:PrintDebugMessageEntityID(npcID, string.format("Saltado NPC [%s]: Filtrado otro NPC.", npcID))
 		return true
 	end
@@ -279,8 +328,14 @@ local function IsNpcPOIFiltered(npcID, mapID, artID, zoneQuestID, prof, questTit
 	end
 	
 	-- Skip if storm NPC and the event isn't up
-	if (GetStormInvasionAtlasName(npcID, mapID) and not GetStormInvasionXY(npcID, mapID)) then
-	    RSLogger:PrintDebugMessageEntityID(npcID, string.format("Saltado NPC [%s]: Invasión de tormentas [%s] que no esta activa.", npcID, GetStormInvasionAtlasName(npcID, mapID)))
+	if (GetStormInvasionAtlasName(npcID) and not GetStormInvasionXY(npcID, mapID)) then
+	    RSLogger:PrintDebugMessageEntityID(npcID, string.format("Saltado NPC [%s]: Invasión de tormentas [%s] que no esta activa.", npcID, GetStormInvasionAtlasName(npcID)))
+	    return true
+	end
+	
+	-- Skip if dreamsurge NPC and the event isn't up
+	if (GetDreamsurgeAtlasName(npcID) and not GetDreamsurgeXY(npcID, mapID)) then
+	    RSLogger:PrintDebugMessageEntityID(npcID, string.format("Saltado NPC [%s]: Investigacion pico onirico [%s] que no esta activa.", npcID, GetDreamsurgeAtlasName(npcID)))
 	    return true
 	end
 

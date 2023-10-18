@@ -58,7 +58,7 @@ function mod:GetOptions()
 		347274, -- Annihilating Smash
 		{347283, "SAY", "ME_ONLY", "ME_ONLY_EMPHASIZE"}, -- Predator's Howl
 		347286, -- Unshakeable Dread
-		347679, -- Hungering Mist
+		{347679, "CASTBAR"}, -- Hungering Mist
 		352368, -- Remnant of Forgotten Torments
 		352382, -- Remnant: Upper Reaches' Might
 		352389, -- Remnant: Mort'regar's Echoes

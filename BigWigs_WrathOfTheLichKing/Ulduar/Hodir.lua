@@ -19,12 +19,11 @@ local lastCold = 0
 -- Localization
 --
 
-local L = mod:NewLocale("enUS", true)
+local L = mod:GetLocale()
 if L then
 	L.hardmode = "Hard mode"
 	L.hardmode_desc = "Show timer for hard mode."
 end
-L = mod:GetLocale()
 
 --------------------------------------------------------------------------------
 -- Initialization
@@ -34,7 +33,7 @@ function mod:GetOptions()
 	return {
 		62039, -- Biting Cold
 		{65133, "ICON"}, -- Storm Cloud
-		61968, -- Flash Freeze
+		{61968, "CASTBAR"}, -- Flash Freeze
 		63512, -- Frozen Blows
 		"hardmode",
 		"berserk",

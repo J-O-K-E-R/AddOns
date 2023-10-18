@@ -19,8 +19,6 @@ L.already_registered = "|cffff0000경고:|r |cff00ff00%s|r (|cffffff00%s|r)|1은
 L.testNameplate = "대상이 감지되면, 대상의 이름표 위에 임의로 이름표를 하나 만듭니다. |cFF33FF99이 기능은 거의 쓰이지 않고, 바 하나일 때가 많고, 주로 같은 스킬을 시전하는 여러마리의 넴드나 쫄들과 상대할때 그 쿨다운을 체크하기 위해 씁니다.|r"
 
 -- Loader / Options.lua
-L.classicWarning1 = "|cFF33FF99BigWigs|r: 클래식 서버에서 잘못된 버젼의 BigWigs를 쓰고 있습니다."
-L.classicWarning2 = "|cFF33FF99BigWigs|r: BigWigs 클래식 버젼을 설치하십시오."
 L.officialRelease = "당신은 BigWigs %s (%s)의 공식 배포 버전을 실행 중입니다"
 L.alphaRelease = "당신은 BigWigs %s (%s)의 알파 버전을 실행 중입니다"
 L.sourceCheckout = "당신은 저장소로부터 직접 가져온 BigWigs %s의 소스를 실행 중입니다."
@@ -40,10 +38,23 @@ L.dbmUsers = "DBM 사용자:"
 L.noBossMod = "우두머리 모듈 없음:"
 L.offline = "접속 종료"
 
---L.missingAddOn = "The |cFF436EEE%s|r addon is missing!"
+L.missingAddOn = "|cFF436EEE%s|r 애드온이 없습니다!"
 L.disabledAddOn = "|cFF436EEE%s|r 애드온이 비활성화 중이므로 타이머를 표시할 수 없습니다."
 L.removeAddOn = "'|cFF436EEE%s|r'|1이;가; '|cFF436EEE%s|r'|1으로;로; 대체되었으므로 제거해주세요."
 L.alternativeName = "%s (|cFF436EEE%s|r)"
+
+L.expansionNames = {
+	"오리지널", -- Classic
+	"불타는 성전", -- The Burning Crusade
+	"리치 왕의 분노", -- Wrath of the Lich King
+	"대격변", -- Cataclysm
+	"판다리아의 안개", -- Mists of Pandaria
+	"드레노어의 전쟁군주", -- Warlords of Draenor
+	"군단", -- Legion
+	"격전의 아제로스", -- Battle for Azeroth
+	"어둠땅", -- Shadowlands
+	"용군단", -- Dragonflight
+}
 
 -- Media.lua (These are the names of the sounds in the dropdown list in the "sounds" section)
 L.Beware = "조심해라 (알갈론)"
@@ -55,6 +66,7 @@ L.spell_under_you = "BigWigs: 발밑에 바닥"
 
 -- Options.lua
 L.options = "옵션"
+--L.optionsKey = "Key: %s" -- The key that messages/bars/options use
 L.raidBosses = "공격대 우두머리"
 L.dungeonBosses = "던전 우두머리"
 L.introduction = "우두머리 전투가 배회하는 BigWigs에 오신 걸 환영합니다. 안전 벨트를 착용하고, 땅콩을 먹으며 탑승을 즐기세요. 당신의 아이들을 먹진 않지만, 당신의 공격대를 위한 7-코스 저녁 식사로 새로운 우두머리 전투를 준비하는 데 도움을 줄겁니다."
@@ -69,8 +81,8 @@ L.flashScreen = "화면 깜빡임"
 L.flashScreenDesc = "특정 능력은 당신의 모든 주의를 기울일 정도로 중요합니다. 이 능력들이 당신에게 영향을 줄 때 BigWigs가 화면을 깜빡일 수 있습니다."
 L.minimapIcon = "미니맵 아이콘"
 L.minimapToggle = "미니맵 아이콘의 표시/숨기기를 전환합니다."
---L.compartmentMenu = "No compartment icon"
---L.compartmentMenu_desc = "Turning this option off will make BigWigs show up in the addon compartment menu. We recommend leaving this option enabled."
+L.compartmentMenu = "미니맵 옆에 아이콘 표시"
+L.compartmentMenu_desc = "이 옵션을 끄면 미니맵에 빅윅 아이콘이 애드온 묶음에 표시됩니다. 이 옵션을 켜두는 것을 권장합니다."
 L.configure = "구성"
 L.test = "테스트"
 L.resetPositions = "위치 초기화"
@@ -126,8 +138,8 @@ L.VOICE = "음성"
 L.VOICE_desc = "음성 플러그인을 설치하고, 이 옵션을 활성화하면 이 경고를 소리내어 말해주는 소리 파일을 재생합니다."
 L.COUNTDOWN = "초읽기"
 L.COUNTDOWN_desc = "활성화하면, 마지막 5초에 음성과 시각적 초읽기가 추가됩니다. 화면 가운데에 \"5... 4... 3... 2... 1...\"의 큰 숫자와 함께 초읽기를 해줍니다."
---L.CASTBAR_COUNTDOWN = "Countdown (cast bars only)"
---L.CASTBAR_COUNTDOWN_desc = "If enabled, a vocal and visual countdown will be added for the last 5 seconds of the cast bars."
+L.CASTBAR_COUNTDOWN = "초읽기(시전바만)"
+L.CASTBAR_COUNTDOWN_desc = "활성화하면 시전바의 마지막 5초동안 음성 및 시각적 효과가 추가됩니다."
 L.INFOBOX = L.infobox
 L.INFOBOX_desc = L.infobox_desc
 L.SOUND = "소리"
@@ -140,8 +152,8 @@ L.ME_ONLY_EMPHASIZE = "강조(나에게 걸렸을 때만)"
 L.ME_ONLY_EMPHASIZE_desc = "이 옵션을 활성화하면 이 능력이 자신에게 영향을 끼칠때 메세지를 더 크고 는에 띄게 표시합니다."
 L.NAMEPLATEBAR = "이름표 바"
 L.NAMEPLATEBAR_desc = "몹 한마리 이상이 같은 주문을 시전할때 이름표랑 시전바가 붙어있는 경우가 많습니다. 이 능력이 이름표 때문에 보이지 않는다면, 이 옵션을 비활성화 하십시오."
---L.PRIVATE = "Private Aura"
---L.PRIVATE_desc = "Private auras can't be tracked normally, but the \"on you\" sound (Warning) can be set in the Sound tab."
+L.PRIVATE = "개인 오라"
+L.PRIVATE_desc = "일반적으로 개인 오라는 추적되지 않지만, \"나에게\"소리(경고)는 소리 탭에서 설정할수 있습니다."
 
 L.advanced = "고급 옵션"
 L.back = "<< 뒤로"
@@ -153,7 +165,7 @@ L.dispeller = "|cFFFF0000무효화 시전자만 경보합니다.|r "
 
 -- Statistics
 L.statistics = "통계"
-L.lfr = "공찾"
+L.LFR = "공찾"
 L.normal = "일반"
 L.heroic = "영웅"
 L.mythic = "신화"

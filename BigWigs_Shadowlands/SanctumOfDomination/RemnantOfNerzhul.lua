@@ -27,13 +27,8 @@ local graspOfMaliceCount = 1
 
 local L = mod:GetLocale()
 if L then
-	L.custom_on_stop_timers = "Always show ability bars"
-	L.custom_on_stop_timers_desc = "Remnant of Ner'zhul can delay its abilities. When this option is enabled, the bars for those abilities will stay on your screen."
-
 	L.slow = mod:SpellName(31589) -- Slow
 	L.cones = "Cones" -- Grasp of Malice
-	L.orbs = "Orbs" -- Orb of Torment
-	L.orb = "Orb" -- Orb of Torment
 end
 
 --------------------------------------------------------------------------------
@@ -42,24 +37,22 @@ end
 
 local malevolenceMarker = mod:AddMarkerOption(false, "player", 1, 350469, 1, 2, 3) -- Malevolence
 local malevolenceCageMarker = mod:AddMarkerOption(false, "npc", 8, -23767, 8) -- Rattlecage of Agony
-local orbMarker = mod:AddMarkerOption(false, "npc", 7, 350676, 7, 6, 5, 4) -- Rattlecage of Agony
+local orbMarker = mod:AddMarkerOption(false, "npc", 7, 350676, 7, 6, 5, 4) -- Orb of Torment
 function mod:GetOptions()
 	return {
-		"custom_on_stop_timers",
 		350676, -- Orb of Torment
 		orbMarker,
 		350073, -- Torment
 		350388, -- Sorrowful Procession
-		{350469, "SAY", "SAY_COUNTDOWN", "ME_ONLY_EMPHASIZE"}, -- Malevolence
+		{350469, "SAY", "SAY_COUNTDOWN", "ME_ONLY_EMPHASIZE", "CASTBAR"}, -- Malevolence
 		malevolenceMarker,
 		malevolenceCageMarker,
 		350489, -- Lingering Malevolence
 		{349890, "SAY", "SAY_COUNTDOWN"}, -- Suffering
 		355123, -- Grasp of Malice
 		351066, -- Shatter
-	},{
-	},{
-		[350676] = L.orbs, -- Orb of Torment (Orbs)
+	},nil,{
+		[350676] = CL.orbs, -- Orb of Torment (Orbs)
 		[350388] = L.slow, -- Thermal Lament (Slow)
 		[350469] = CL.bombs, -- Malevolence (Bombs)
 		[349890] = CL.beam, -- Suffering (Beam)
@@ -86,8 +79,6 @@ function mod:OnBossEnable()
 	self:Log("SPELL_AURA_APPLIED", "GroundDamage", 350489) -- Lingering Malevolence
 	self:Log("SPELL_PERIODIC_DAMAGE", "GroundDamage", 350489)
 	self:Log("SPELL_PERIODIC_MISSED", "GroundDamage", 350489)
-
-	self:RegisterMessage("BigWigs_BarCreated", "BarCreated")
 end
 
 function mod:OnEngage()
@@ -99,7 +90,7 @@ function mod:OnEngage()
 	orbOfTormentCount = 1
 	graspOfMaliceCount = 1
 
-	self:CDBar(350676, 13, CL.count:format(L.orbs, orbOfTormentCount)) -- Orb of Torment
+	self:CDBar(350676, 13, CL.count:format(CL.orbs, orbOfTormentCount)) -- Orb of Torment
 	self:CDBar(349890, 20.3, CL.beam) -- Suffering
 	self:CDBar(350469, 26, CL.count:format(CL.bombs, malevolenceCount)) -- Malevolence
 	self:CDBar(355123, 39, CL.count:format(L.cones, graspOfMaliceCount)) -- Grasp of Malice
@@ -125,32 +116,6 @@ function mod:UNIT_HEALTH(event, unit)
 	end
 end
 
-do
-	local abilitysToPause = {
-		[350676] = true, -- Orb of Torment (Orbs)
-		[350469] = true, -- Malevolence (Bombs)
-		[355123] = true, -- Grasp of Malice (Cones)
-		[349890] = true, -- Suffering (Beam)
-	}
-
-	local castPattern = CL.cast:gsub("%%s", ".+")
-
-	local function stopAtZeroSec(bar)
-		if bar.remaining < 0.15 then -- Pause at 0.0
-			bar:SetDuration(0.01) -- Make the bar look full
-			bar:Start()
-			bar:Pause()
-			bar:SetTimeVisibility(false)
-		end
-	end
-
-	function mod:BarCreated(_, _, bar, _, key, text)
-		if self:GetOption("custom_on_stop_timers") and abilitysToPause[key] and not text:match(castPattern) then
-			bar:AddUpdateFunction(stopAtZeroSec)
-		end
-	end
-end
-
 function mod:OrbMarking(_, unit, guid)
 	if not mobCollector[guid] and self:MobId(guid) == 177117 then -- Orb of Torment
 		mobCollector[guid] = true
@@ -163,11 +128,11 @@ function mod:UNIT_SPELLCAST_SUCCEEDED(_, _, _, spellId)
 	if spellId == 350676 then -- Orb of Torment
 		orbMarkerIcon = 7
 		self:RegisterTargetEvents("OrbMarking")
-		self:StopBar(CL.count:format(L.orbs, orbOfTormentCount))
-		self:Message(spellId, "yellow", CL.count:format(L.orbs, orbOfTormentCount))
+		self:StopBar(CL.count:format(CL.orbs, orbOfTormentCount))
+		self:Message(spellId, "yellow", CL.count:format(CL.orbs, orbOfTormentCount))
 		orbOfTormentCount = orbOfTormentCount + 1
 		self:PlaySound(spellId, "alert")
-		self:CDBar(spellId, self:Mythic() and 32 or 42.5, CL.count:format(L.orbs, orbOfTormentCount))
+		self:CDBar(spellId, self:Mythic() and 32 or 42.5, CL.count:format(CL.orbs, orbOfTormentCount))
 	end
 end
 
@@ -180,7 +145,7 @@ end
 
 function mod:SorrowfulProcessionApplied(args)
 	if self:Me(args.destGUID) then
-		self:PersonalMessage(args.spellId, nil, L.orb)
+		self:PersonalMessage(args.spellId, nil, CL.orb)
 		self:PlaySound(args.spellId, "info")
 	end
 end
@@ -302,7 +267,7 @@ function mod:Shatter(args)
 	shatterCount = shatterCount + 1
 	self:Message(351066, "cyan", CL.count:format(args.spellName, shatterCount))
 	self:PlaySound(351066, "long")
-	self:CDBar(350676, 32, CL.count:format(L.orbs, orbOfTormentCount)) -- Orb of Torment
+	self:CDBar(350676, 32, CL.count:format(CL.orbs, orbOfTormentCount)) -- Orb of Torment
 	if shatterCount == 3 then
 		self:CDBar(350469, 29, CL.count:format(CL.bombs, malevolenceCount)) -- Malevolence
 		self:CDBar(355123, 45, CL.count:format(L.cones, graspOfMaliceCount)) -- Grasp of Malice

@@ -18,6 +18,9 @@ mod:RegisterEnableMob(
 	186226, -- Fetid Rotsinger
 	190426, -- Decay Totem
 	186227, -- Monstrous Decay
+	189299, -- Decaying Slime (regular mob)
+	199916, -- Decaying Slime (infinitely spawning mob)
+	194330, -- Decaying Slime (summoned by Monstrous Decay)
 	189318, -- Infected Bear
 	187033, -- Stinkbreath
 	187192, -- Rageclaw
@@ -46,11 +49,13 @@ if L then
 	L.bracken_warscourge = "Bracken Warscourge"
 	L.brackenhide_shaper = "Brackenhide Shaper"
 	L.fishface = "Fishface"
+	L.rotting_creek = "Rotting Creek"
 	L.decayed_elder = "Decayed Elder"
 	L.wilted_oak = "Wilted Oak"
 	L.fetid_rotsinger = "Fetid Rotsinger"
 	L.decay_totem = "Decay Totem"
 	L.monstrous_decay = "Monstrous Decay"
+	L.decaying_slime = "Decaying Slime"
 	L.infected_bear = "Infected Bear"
 	L.stinkbreath = "Stinkbreath"
 	L.rageclaw = "Rageclaw"
@@ -65,16 +70,19 @@ end
 -- Initialization
 --
 
+local rotchantingTotemMarker = mod:AddMarkerOption(true, "npc", 7, 382435, 7) -- Rotchanting Totem
+local decayTotemMarker = mod:AddMarkerOption(true, "npc", 7, 381821, 7) -- Decay Totem
 function mod:GetOptions()
 	return {
 		-- Decaying Cauldron
 		"custom_on_cauldron_autotalk",
 		-- Decay Speaker
 		382435, -- Rotchanting Totem
+		rotchantingTotemMarker,
 		{367503, "SAY"}, -- Withering Burst
 		{368081, "DISPEL"}, -- Withering
 		-- Claw Fighter
-		367484, -- Vicious Clawmangle
+		{367484, "ME_ONLY"}, -- Vicious Clawmangle
 		-- Bonebolt Hunter
 		368287, -- Toxic Trap
 		-- Bracken Warscourge
@@ -85,6 +93,8 @@ function mod:GetOptions()
 		-- Fishface
 		384854, -- Fish Slap!
 		384847, -- Fresh Catch
+		-- Rotting Creek
+		374245, -- Rotting Creek
 		-- Decayed Elder
 		373897, -- Decaying Roots
 		-- Wilted Oak
@@ -92,9 +102,12 @@ function mod:GetOptions()
 		382712, -- Necrotic Breath
 		-- Fetid Rotsinger
 		374057, -- Summon Totem
+		decayTotemMarker,
 		{374544, "SAY"}, -- Burst of Decay
 		-- Monstrous Decay
 		374569, -- Burst
+		-- Decaying Slime
+		372141, -- Withering Away!
 		-- Infected Bear
 		{373929, "TANK"}, -- Bash
 		-- Stinkbreath
@@ -121,10 +134,12 @@ function mod:GetOptions()
 		[367500] = L.bracken_warscourge,
 		[372711] = L.brackenhide_shaper,
 		[384854] = L.fishface,
+		[374245] = L.rotting_creek,
 		[373897] = L.decayed_elder,
 		[373943] = L.wilted_oak,
 		[374057] = L.fetid_rotsinger,
 		[374569] = L.monstrous_decay,
+		[372141] = L.decaying_slime,
 		[373929] = L.infected_bear,
 		[388060] = L.stinkbreath,
 		[385832] = L.rageclaw,
@@ -147,7 +162,7 @@ function mod:OnBossEnable()
 	-- [UPDATE_UI_WIDGET] widgetID:4267, widgetType:8, widgetSetID:1, scriptedAnimationEffectID:0, modelSceneLayer:0, widgetScale:0, tooltipLoc:0, fontType:1, shownState:1, widgetSizeSetting:0, bottomPadding:0, enabledState:1, textSizeType:4, text:Tuskarr Freed: 4/5, orderIndex:0, layoutDirection:0, inAnimType:0, widgetTag:, hasTimer:false, outAnimType:0, tooltip:Free Tuskarr to goad Hackclaw's War-Band out into the open., hAlign:1
 
 	-- Decay Speaker
-	self:Log("SPELL_SUMMON", "RotchantingTotemSummoned", 382435)
+	self:Log("SPELL_SUMMON", "RotchantingTotemSummon", 382435)
 	self:Log("SPELL_CAST_START", "WitheringBurst", 367503)
 	self:Log("SPELL_AURA_APPLIED", "WitheringApplied", 368081)
 
@@ -157,6 +172,9 @@ function mod:OnBossEnable()
 
 	-- Bonebolt Hunter
 	self:Log("SPELL_CAST_SUCCESS", "ToxicTrap", 368287)
+	self:Log("SPELL_DAMAGE", "ToxicTrapDamage", 368297) -- triggering the trap
+	self:Log("SPELL_AURA_APPLIED", "ToxicTrapDamage", 368299) -- standing in the trap
+	self:Log("SPELL_PERIODIC_DAMAGE", "ToxicTrapDamage", 368299) -- standing in the trap for >1s
 
 	-- Bracken Warscourge
 	self:Log("SPELL_CAST_START", "HideousCackle", 367500)
@@ -171,6 +189,9 @@ function mod:OnBossEnable()
 	self:Log("SPELL_CAST_START", "FishSlap", 384854)
 	self:Log("SPELL_CAST_START", "FreshCatch", 384847)
 
+	-- Rotting Creek
+	self:Log("SPELL_PERIODIC_DAMAGE", "RottingCreekDamage", 374245) -- don't trigger on application, it's unavoidable and doesn't do damage
+
 	-- Decayed Elder
 	self:Log("SPELL_CAST_START", "DecayingRoots", 373897)
 
@@ -180,10 +201,15 @@ function mod:OnBossEnable()
 
 	-- Fetid Rotsinger
 	self:Log("SPELL_CAST_SUCCESS", "SummonDecayTotem", 375065) -- Summon Totem
+	self:Log("SPELL_SUMMON", "DecayTotemSummon", 374057)
 	self:Log("SPELL_CAST_START", "BurstOfDecay", 374544)
 
 	-- Monstrous Decay
 	self:Log("SPELL_CAST_START", "Burst", 374569)
+
+	-- Decaying Slime
+	self:Log("SPELL_AURA_APPLIED", "WitheringAwayDamage", 372141)
+	self:Log("SPELL_PERIODIC_DAMAGE", "WitheringAwayDamage", 372141)
 
 	-- Infected Bear
 	self:Log("SPELL_CAST_START", "Bash", 373929)
@@ -207,7 +233,7 @@ function mod:OnBossEnable()
 	self:Log("SPELL_CAST_START", "Screech", 385029)
 
 	-- Filth Caller
-	self:Log("SPELL_CAST_SUCCESS", "RottingSurge", 383385)
+	self:Log("SPELL_CAST_START", "RottingSurge", 383385)
 	self:Log("SPELL_AURA_APPLIED", "RottingSurgeDamage", 383399)
 	self:Log("SPELL_PERIODIC_DAMAGE", "RottingSurgeDamage", 383399)
 	self:Log("SPELL_PERIODIC_MISSED", "RottingSurgeDamage", 383399)
@@ -234,9 +260,26 @@ end
 
 -- Decay Speaker
 
-function mod:RotchantingTotemSummoned(args)
-	self:Message(args.spellId, "yellow", CL.spawned:format(args.destName))
-	self:PlaySound(args.spellId, "alert")
+do
+	local totemGUID = nil
+
+	function mod:RotchantingTotemSummon(args)
+		self:Message(args.spellId, "yellow", CL.spawned:format(args.destName))
+		self:PlaySound(args.spellId, "alert")
+		-- register events to auto-mark totem
+		if self:GetOption(rotchantingTotemMarker) then
+			totemGUID = args.destGUID
+			self:RegisterTargetEvents("MarkRotchantingTotem")
+		end
+	end
+
+	function mod:MarkRotchantingTotem(_, unit, guid)
+		if totemGUID == guid then
+			totemGUID = nil
+			self:CustomIcon(rotchantingTotemMarker, unit, 7)
+			self:UnregisterTargetEvents()
+		end
+	end
 end
 
 do
@@ -276,6 +319,9 @@ end
 do
 	local prev = 0
 	function mod:ViciousClawmangle(args)
+		if self:Friendly(args.sourceFlags) then -- these NPCs can be mind-controlled by Priests
+			return
+		end
 		local t = args.time
 		if t - prev > 1.5 then
 			prev = t
@@ -286,9 +332,18 @@ do
 end
 
 function mod:ViciousClawmangleApplied(args)
-	if self:Me(args.destGUID) and not self:Tank() then
-		self:PersonalMessage(args.spellId, nil, CL.fixate)
-		self:PlaySound(args.spellId, "warning")
+	if self:Friendly(args.destFlags) then
+		local onMe = self:Me(args.destGUID)
+		if onMe and self:Tank() then
+			-- tanks don't care about being fixated
+			return
+		end
+		self:TargetMessage(args.spellId, "yellow", args.destName, CL.fixate)
+		if onMe then
+			self:PlaySound(args.spellId, "warning", nil, args.destName)
+		else
+			self:PlaySound(args.spellId, "info", nil, args.destName)
+		end
 	end
 end
 
@@ -297,6 +352,20 @@ end
 function mod:ToxicTrap(args)
 	self:Message(args.spellId, "orange")
 	self:PlaySound(args.spellId, "alarm")
+end
+
+do
+	local prev = 0
+	function mod:ToxicTrapDamage(args)
+		if self:Me(args.destGUID) then
+			local t = args.time
+			if t - prev > 2 then
+				prev = t
+				self:PersonalMessage(368287, "underyou")
+				self:PlaySound(368287, "underyou")
+			end
+		end
+	end
 end
 
 -- Bracken Warscourge
@@ -346,6 +415,22 @@ function mod:FreshCatch(args)
 	--self:NameplateCDBar(args.spellId, 15.8, args.sourceGUID)
 end
 
+-- Rotting Creek
+
+do
+	local prev = 0
+	function mod:RottingCreekDamage(args)
+		if self:Me(args.destGUID) then
+			local t = args.time
+			if t - prev > 2 then
+				prev = t
+				self:PersonalMessage(args.spellId, "underyou")
+				self:PlaySound(args.spellId, "underyou")
+			end
+		end
+	end
+end
+
 -- Decayed Elder
 
 function mod:DecayingRoots(args)
@@ -373,6 +458,26 @@ function mod:SummonDecayTotem(args)
 end
 
 do
+	local totemGUID = nil
+
+	function mod:DecayTotemSummon(args)
+		-- register events to auto-mark totem
+		if self:GetOption(decayTotemMarker) then
+			totemGUID = args.destGUID
+			self:RegisterTargetEvents("MarkDecayTotem")
+		end
+	end
+
+	function mod:MarkDecayTotem(_, unit, guid)
+		if totemGUID == guid then
+			totemGUID = nil
+			self:CustomIcon(decayTotemMarker, unit, 7)
+			self:UnregisterTargetEvents()
+		end
+	end
+end
+
+do
 	local function printTarget(self, name, guid)
 		self:TargetMessage(374544, "red", name)
 		self:PlaySound(374544, "alarm", nil, name)
@@ -393,6 +498,22 @@ function mod:Burst(args)
 	self:PlaySound(args.spellId, "alarm")
 end
 
+-- Decaying Slime
+
+do
+	local prev = 0
+	function mod:WitheringAwayDamage(args)
+		if self:Me(args.destGUID) then
+			local t = args.time
+			if t - prev > 2 then
+				prev = t
+				self:PersonalMessage(372141, "underyou")
+				self:PlaySound(372141, "underyou")
+			end
+		end
+	end
+end
+
 -- Infected Bear
 
 function mod:Bash(args)
@@ -403,6 +524,10 @@ end
 -- Stinkbreath
 
 do
+	-- use this timer to schedule StopBars on both abilities, this way if you pull
+	-- and reset the mob (or wipe) the bars won't be stuck for the rest of the dungeon.
+	local timer
+
 	local function printTarget(self, name, guid)
 		self:TargetMessage(388060, "red", name)
 		self:PlaySound(388060, "alarm", nil, name)
@@ -412,20 +537,32 @@ do
 	end
 
 	function mod:StinkBreath(args)
+		if timer then
+			self:CancelTimer(timer)
+		end
 		self:GetUnitTarget(printTarget, 0.2, args.sourceGUID)
 		self:CDBar(args.spellId, 17.0)
+		timer = self:ScheduleTimer("StinkbreathDeath", 30)
 	end
-end
 
-function mod:ViolentWhirlwind(args)
-	self:Message(args.spellId, "orange")
-	self:PlaySound(args.spellId, "alarm")
-	self:CDBar(args.spellId, 23.1)
-end
+	function mod:ViolentWhirlwind(args)
+		if timer then
+			self:CancelTimer(timer)
+		end
+		self:Message(args.spellId, "orange")
+		self:PlaySound(args.spellId, "alarm")
+		self:CDBar(args.spellId, 23.1)
+		timer = self:ScheduleTimer("StinkbreathDeath", 30)
+	end
 
-function mod:StinkbreathDeath(args)
-	self:StopBar(388060) -- Stink Breath
-	self:StopBar(388046) -- Violent Whirlwind
+	function mod:StinkbreathDeath()
+		if timer then
+			self:CancelTimer(timer)
+			timer = nil
+		end
+		self:StopBar(388060) -- Stink Breath
+		self:StopBar(388046) -- Violent Whirlwind
+	end
 end
 
 -- Rageclaw
@@ -483,8 +620,9 @@ end
 -- Filth Caller
 
 function mod:RottingSurge(args)
-	-- this is triggered on cast success (there's a channel after) because
-	-- interrupting this during the pre-cast doesn't put it on CD
+	if self:Friendly(args.sourceFlags) then -- these NPCs can be mind-controlled by Priests
+		return
+	end
 	self:Message(383399, "yellow")
 	self:PlaySound(383399, "long")
 end

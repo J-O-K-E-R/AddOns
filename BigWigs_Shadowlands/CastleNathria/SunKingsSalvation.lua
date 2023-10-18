@@ -94,7 +94,7 @@ function mod:GetOptions()
 		"berserk",
 		{326455, "TANK"}, -- Fiery Strike
 		326456, -- Burning Remnants
-		{325877, "SAY", "SAY_COUNTDOWN", "FLASH"}, -- Ember Blast
+		{325877, "SAY", "SAY_COUNTDOWN", "FLASH", "CASTBAR"}, -- Ember Blast
 		329518, -- Blazing Surge
 		328579, -- Smoldering Remnants
 		{328479, "ME_ONLY_EMPHASIZE"}, -- Eyes on Target
@@ -118,8 +118,8 @@ function mod:GetOptions()
 		-- High Torturer Darithos
 		{328889, "SAY", "PROXIMITY"}, -- Greater Castigation
 		-- Mythic
-		337859, -- Cloak of Flames // Healing absorb
-		343026, -- Cloak of Flames // Damage absorb
+		{337859, "CASTBAR"}, -- Cloak of Flames // Healing absorb
+		{343026, "CASTBAR"}, -- Cloak of Flames // Damage absorb
 	},{
 		["stages"] = "general",
 		[326455] = -21966, -- Shade of Kael'thas

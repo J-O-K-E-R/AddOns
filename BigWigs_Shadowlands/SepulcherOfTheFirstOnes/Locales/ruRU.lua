@@ -6,9 +6,6 @@ end
 
 L = BigWigs:NewBossLocale("Skolex, the Insatiable Ravener", "ruRU")
 if L then
-	L.custom_on_stop_timers = "Всегда показывать таймеры"
-	L.custom_on_stop_timers_desc = "Сколекс может задерживать использование своих способностей. Выбрав эту настройку, полосы с этими заклинаниями останутся на вашем экране."
-
 	L.tank_combo_desc = "При применении Сколексом комбо из трёх ударов на 100 энергии танки должны сблизиться, чтобы по очереди принимать на себя урон от атак."
 end
 
@@ -89,9 +86,6 @@ if L then
 
 	L.bomb_dropped = "Бомба брошена"
 	--L.volatile_charges_new = "New Bombs!"
-
-	L.custom_on_stop_timers = "Всегда показывать полосы заклинаний"
-	L.custom_on_stop_timers_desc = "Галондрий может откладывать свои способности. Когда эта опция включена, полосы этих способностей будут оставаться на экране."
 end
 
 L = BigWigs:NewBossLocale("Lords of Dread", "ruRU")

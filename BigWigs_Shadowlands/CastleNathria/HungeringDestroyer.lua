@@ -54,8 +54,8 @@ function mod:GetOptions()
 		{329298, "SAY"}, -- Gluttonous Miasma
 		"custom_on_repeating_yell_miasma",
 		gluttonousMiasmaMarker,
-		{334522, "EMPHASIZE"}, -- Consume
-		329725, -- Expunge
+		{334522, "EMPHASIZE", "CASTBAR"}, -- Consume
+		{329725, "CASTBAR"}, -- Expunge
 		{334266, "SAY", "FLASH", "ME_ONLY_EMPHASIZE"}, -- Volatile Ejection
 		"custom_on_repeating_say_laser",
 		volatileEjectionMarker,

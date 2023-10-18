@@ -14,8 +14,6 @@ if L then
 	L.nerubian_burrower = "更多增援！"
 
 	L.shadow_soon = "約5秒後，暗影打擊！"
-
-	L.chase = "追擊"
 end
 
 L = BigWigs:NewBossLocale("The Beasts of Northrend", "zhTW")
@@ -34,7 +32,6 @@ if L then
 	-- Gormok
 	L.snobold = "極地狗頭人奴僕"
 	L.snobold_desc = "當出現極地狗頭人奴僕時發出警報。"
-	L.snobold_message = "極地狗頭人奴僕！"
 
 	-- Jormungars
 	L.submerge = "隱沒"

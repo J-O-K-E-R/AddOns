@@ -21,7 +21,8 @@ local tacticalDestructionCount = 1
 local shrapnelBombCount = 1
 local unstableEmbersCount = 1
 local blastWaveCount = 1
-local totalBombs = mod:Easy() and 2 or mod:Heroic() and 3 or 4
+local mySearingClawsStacks = 0
+local totalBombs = mod:Easy() and 2 or 3
 
 --------------------------------------------------------------------------------
 -- Localization
@@ -52,18 +53,20 @@ function mod:GetOptions()
 		{404010, "SAY", "SAY_COUNTDOWN", "ME_ONLY_EMPHASIZE"}, -- Unstable Embers
 		403978, -- Blast Wave
 		{404942, "TANK"}, -- Searing Claws
+		"berserk",
 		-- Mythic
 		409942, -- Elimination Protocol
 	}, {
 		[405736] = "general",
 		[409942] = "mythic",
 	},{
-		[409942] = CL.beams, -- Elimination Protocol (Beams)
 		[405736] = CL.traps, -- Dragonfire Traps (Traps)
 		[405812] = CL.adds, -- Animate Golems (Adds)
 		[406678] = L.tactical_destruction, -- Tactical Destruction (Destruction)
+		[406725] = CL.bombs, -- Shrapnel Bomb (Bombs)
 		[404010] = L.unstable_embers, -- Unstable Embers (Embers)
 		[403978] = CL.knockback, -- Blast Wave (Knockback)
+		[409942] = CL.beams, -- Elimination Protocol (Beams)
 	}
 end
 
@@ -82,6 +85,7 @@ function mod:OnBossEnable()
 	self:Log("SPELL_CAST_START", "BlastWave", 403978)
 	self:Log("SPELL_AURA_APPLIED", "SearingClawsApplied", 404942)
 	self:Log("SPELL_AURA_APPLIED_DOSE", "SearingClawsApplied", 404942)
+	self:Log("SPELL_AURA_REMOVED", "SearingClawsRemoved", 404942)
 end
 
 function mod:OnEngage()
@@ -92,16 +96,21 @@ function mod:OnEngage()
 	shrapnelBombCount = 1
 	unstableEmbersCount = 1
 	blastWaveCount = 1
-	totalBombs = self:Easy() and 2 or self:Heroic() and 3 or 4
+	mySearingClawsStacks = 0
+	totalBombs = self:Easy() and 2 or 3
 
 	if not self:Easy() then
 		self:CDBar(404010, self:Mythic() and 9.2 or 7.4, CL.count:format(L.unstable_embers, unstableEmbersCount)) -- Unstable Embers
 	end
 	self:CDBar(403978, self:Mythic() and 13 or self:Easy() and 20.4 or 11.0, CL.count:format(CL.knockback, blastWaveCount)) -- Blast Wave
-	self:CDBar(406725, self:Mythic() and 36 or self:Easy() and 45.1 or 35.0, CL.count:format(CL.bombs, shrapnelBombCount)) -- Shrapnel Bomb
+	if not self:LFR() then
+		self:CDBar(406725, self:Mythic() and 36 or self:Normal() and 45.1 or 35.0, CL.count:format(CL.bombs, shrapnelBombCount)) -- Shrapnel Bomb
+	end
 	self:CDBar(405736, self:Mythic() and 19.5 or self:Easy() and 15.5 or 20, CL.count:format(CL.traps, dragonfireTrapsCount)) -- Dragonfire Traps
 	self:CDBar(405812, self:Mythic() and 26 or self:Easy() and 35.5 or 54.4, CL.count:format(CL.adds, animateGolemsCount)) -- Animate Golems
 	self:CDBar(406678, self:Mythic() and 31 or self:Easy() and 70.7 or 60.5, CL.count:format(L.tactical_destruction, tacticalDestructionCount)) -- Tactical Destruction
+
+	self:Berserk(510, true)
 
 	if self:GetOption(animateGolemsMarker) then
 		self:RegisterTargetEvents("AddMarking")
@@ -118,19 +127,18 @@ function mod:DragonfireTraps(args)
 	self:Message(args.spellId, "yellow", msg)
 	self:PlaySound(args.spellId, "alert")
 	dragonfireTrapsCount = dragonfireTrapsCount + 1
-	self:CDBar(args.spellId, self:Easy() and 35.2 or 30.5, CL.count:format(CL.traps, dragonfireTrapsCount))
+	self:CDBar(args.spellId, self:Mythic() and 34 or self:Easy() and 35.2 or 30.5, CL.count:format(CL.traps, dragonfireTrapsCount))
 end
 
 function mod:AnimateGolems(args)
+	golemMarks, golemCollector = {}, {}
+
 	local msg = CL.count:format(CL.adds, animateGolemsCount)
 	self:StopBar(msg)
 	self:Message(args.spellId, "cyan", msg)
 	self:PlaySound(args.spellId, "info")
 	animateGolemsCount = animateGolemsCount + 1
 	self:CDBar(args.spellId, 73, CL.count:format(CL.adds, animateGolemsCount))
-
-	golemMarks = {}
-	golemCollector = {}
 end
 
 function mod:GolemSpawn(args)
@@ -177,19 +185,20 @@ do
 		bombsSoaked = 0
 		mod:Bar(406725, 30, CL.count_amount:format(L.bombs_soaked, bombsSoaked, totalBombs), "inv_misc_bomb_01")
 	end
+
 	function mod:ShrapnelBomb(args)
 		local msg = CL.count:format(CL.bombs, shrapnelBombCount)
 		self:StopBar(msg)
 		self:Message(args.spellId, "yellow", msg)
 		self:PlaySound(args.spellId, "alert")
 		shrapnelBombCount = shrapnelBombCount + 1
-		self:CDBar(args.spellId, 30.3, CL.count:format(CL.bombs, shrapnelBombCount))
+		self:CDBar(args.spellId, self:Mythic() and 45 or 30.3, CL.count:format(CL.bombs, shrapnelBombCount))
 
 		 -- Starting/Stopping Bomb timers after 2s due to flight time
 		 self:ScheduleTimer(startBombTimers, 2)
 	end
 
-	function mod:ShrapnelBombSoaked(args)
+	function mod:ShrapnelBombSoaked()
 		self:StopBar(CL.count_amount:format(L.bombs_soaked, bombsSoaked, totalBombs))
 		bombsSoaked = bombsSoaked + 1
 		if self:Tank() then -- Tanks only
@@ -204,7 +213,7 @@ do
 	end
 end
 
-function mod:UnstableEmbers(args)
+function mod:UnstableEmbers()
 	local msg = CL.count:format(L.unstable_embers, unstableEmbersCount)
 	self:StopBar(msg)
 	self:Message(404010, "red", msg)
@@ -243,10 +252,19 @@ end
 
 function mod:SearingClawsApplied(args)
 	local amount = args.amount or 1
-	if amount % 2 == 0 or amount > 10 then
-		self:StackMessage(args.spellId, "purple", args.destName, args.amount, 10)
+	if self:Me(args.destGUID) then
+		mySearingClawsStacks = amount
 	end
-	if amount > 10 and self:Tank() and not self:Tanking("boss1") then
-		self:PlaySound(args.spellId, "warning")
+	if amount % 2 == 0 or (amount > 8 and mySearingClawsStacks == 0) then -- 2,4,6 then 8+ (only warn for every application if you have no stacks)
+		self:StackMessage(args.spellId, "purple", args.destName, amount, 8)
+		if mySearingClawsStacks == 0 and amount >= 8 and self:Tank() then -- No stacks on me, 8+ stacks on other tank
+			self:PlaySound(args.spellId, "warning") -- Maybe swap?
+		end
+	end
+end
+
+function mod:SearingClawsRemoved(args)
+	if self:Me(args.destGUID) then
+		mySearingClawsStacks = 0
 	end
 end

@@ -4,6 +4,7 @@ if L then
 	L.custom_on_autotalk = "自动对话"
 	L.custom_on_autotalk_desc = "立即选择对话选项来获取专业增益。"
 
+	L.burning_chain = "燃烧锁链"
 	L.qalashi_warden = "卡拉希守卫者"
 	L.qalashi_hunter = "卡拉希猎人"
 	L.overseer_lahar = "监视者拉哈尔"
@@ -23,8 +24,7 @@ end
 
 L = BigWigs:NewBossLocale("Chargath, Bane of Scales", "zhCN")
 if L then
-	L.slow = "减速"
-	L.boss = "首领"
+	L.slow = "锁链"
 end
 
 L = BigWigs:NewBossLocale("Warlord Sargha", "zhCN")

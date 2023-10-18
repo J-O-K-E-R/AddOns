@@ -10,6 +10,7 @@ local gx do
 		CooldownStar = [[Interface\cooldown\star4]],
 		CooldownSpark = b .. "spark",
 		Tri = b .. "tri",
+		IconMask = b .. "iconmask",
 	}
 end
 
@@ -67,6 +68,13 @@ local function cooldownFormat(cd)
 	elseif cd >= 9.95 then n = ceil(n) end
 	return f, n, unit
 end
+local function adjustIconAspect(self, aspect)
+	if self.iconAspect ~= aspect then
+		self.iconAspect = aspect
+		local w, h = self.iconbg:GetSize()
+		self.icon:SetSize(aspect < 1 and h*aspect or w, aspect > 1 and w/aspect or h)
+	end
+end
 
 local indicatorAPI = {}
 do -- inherit SetPoint, SetScale, GetScale, SetShown, SetParent
@@ -78,10 +86,15 @@ do -- inherit SetPoint, SetScale, GetScale, SetShown, SetParent
 		end
 	end
 end
-function indicatorAPI:SetIcon(texture)
+function indicatorAPI:SetIcon(texture, aspect)
 	self.icon:SetTexture(texture)
 	local ofs = 2.5/64
 	self.icon:SetTexCoord(ofs, 1-ofs, ofs, 1-ofs)
+	return adjustIconAspect(self, aspect)
+end
+function indicatorAPI:SetIconAtlas(atlas, aspect)
+	self.icon:SetAtlas(atlas)
+	return adjustIconAspect(self, aspect)
 end
 function indicatorAPI:SetIconTexCoord(a,b,c,d, e,f,g,h)
 	if a and b and c and d then
@@ -127,18 +140,18 @@ function indicatorAPI:SetDominantColor(r,g,b)
 	end
 	cd[9]:SetVertexColor(r3, g3, b3)
 end
-function indicatorAPI:SetOverlayIcon(texture, w, h, ...)
-	if not texture then
-		self.overIcon:Hide()
+function indicatorAPI:SetOverlayIcon(tex, w, h, ...)
+	local oi = self.overIcon
+	if not tex then
+		return oi:Hide()
+	end
+	oi:Show()
+	oi:SetTexture(tex)
+	oi:SetSize(w, h)
+	if ... then
+		oi:SetTexCoord(...)
 	else
-		self.overIcon:Show()
-		self.overIcon:SetTexture(texture)
-		self.overIcon:SetSize(w, h)
-		if ... then
-			self.overIcon:SetTexCoord(...)
-		else
-			self.overIcon:SetTexCoord(0,1, 0,1)
-		end
+		oi:SetTexCoord(0,1, 0,1)
 	end
 end
 function indicatorAPI:SetOverlayIconVertexColor(...)
@@ -363,12 +376,6 @@ end
 
 local CreateIndicator do
 	local apimeta = {__index=indicatorAPI}
-	local function Indicator_ApplyParentAlpha(self)
-		local p = self:GetParent()
-		if p then
-			self:SetAlpha(p:GetEffectiveAlpha())
-		end
-	end
 	function CreateIndicator(name, parent, size, nested)
 		local cf = CreateFrame("Frame", name, parent)
 			cf:SetSize(size, size)
@@ -376,14 +383,12 @@ local CreateIndicator do
 			bf:SetAllPoints()
 			bf:SetFlattensRenderLayers(true)
 			bf[bf.SetIsFrameBuffer and "SetIsFrameBuffer" or "SetFrameBuffer"](bf, true)
-			bf:SetScript("OnUpdate", Indicator_ApplyParentAlpha)
-			bf:SetScript("OnShow", Indicator_ApplyParentAlpha)
 		local ef = CreateFrame("Frame", nil, bf)
 			ef:SetAllPoints()
 		local uf = CreateFrame("Frame", nil, cf)
 			uf:SetAllPoints()
 			uf:SetFrameLevel(bf:GetFrameLevel()+5)
-		local r, w = setmetatable({[0]=cf, cd=CreateCooldown(ef, size, uf)}, apimeta)
+		local r, w = setmetatable({[0]=cf, cd=CreateCooldown(ef, size, uf), bf=bf}, apimeta)
 		w = ef:CreateTexture(nil, "OVERLAY")
 			w:SetAllPoints()
 			w:SetTexture(gx.BorderLow)
@@ -399,7 +404,11 @@ local CreateIndicator do
 		w, r.iglow = ef:CreateTexture(nil, "ARTWORK"), w
 			w:SetPoint("CENTER")
 			w:SetSize(60*size/64, 60*size/64)
-		w, r.icon = ef:CreateTexture(nil, "ARTWORK", nil, 2), w
+		w, r.icon = ef:CreateTexture(nil, "ARTWORK", nil, -2), w
+			w:SetPoint("CENTER")
+			w:SetSize(60*size/64, 60*size/64)
+			w:SetColorTexture(0.15, 0.15, 0.15, 0.85)
+		w, r.iconbg = ef:CreateTexture(nil, "ARTWORK", nil, 2), w
 			w:SetSize(60*size/64, 60*size/64)
 			w:SetPoint("CENTER")
 			w:SetColorTexture(0,0,0)
@@ -414,7 +423,7 @@ local CreateIndicator do
 			w:SetPoint("BOTTOMRIGHT", -2, 4)
 		w, r.count = ef:CreateFontString(nil, "OVERLAY", "NumberFontNormalSmallGray"), w
 			w:SetJustifyH("RIGHT")
-			w:SetPoint("TOPRIGHT", -1, -4)
+			w:SetPoint("TOPRIGHT", -2, -3)
 		w, r.key = ef:CreateTexture(nil, "ARTWORK", nil, 2), w
 			w:SetSize(size/5, size/4)
 			w:SetTexture("Interface\\GuildFrame\\GuildDifficulty")
@@ -431,17 +440,22 @@ local CreateIndicator do
 			w:SetPoint("TOPLEFT", 4, -4)
 			w:SetSize(14,14)
 			w:Hide()
-		w, r.qualityMark = nil, w
+		w, r.qualityMark = ef:CreateMaskTexture(), w
+			w:SetTexture(gx.IconMask)
+			w:SetAllPoints()
+			r.icon:AddMaskTexture(w)
 		r.cdText = r.cd.cdText
+		r.iconAspect = 1
 		return r
 	end
 end
 
 T.Mirage = {
 	name="OPie",
-	apiLevel=2,
+	apiLevel=3,
 	CreateIndicator=CreateIndicator,
 
 	supportsCooldownNumbers=true,
 	supportsShortLabels=true,
+	onParentAlphaChanged=function(self, pea) self.bf:SetAlpha(pea) end,
 }

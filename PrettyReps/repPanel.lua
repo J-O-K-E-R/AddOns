@@ -230,7 +230,7 @@ function RepPanel:ReputationFrame_SetRowType(factionRow, isChild, isHeader, hasR
 	if ( isHeader ) then
 		local isMajorFactionHeader = factionID and C_Reputation.IsMajorFaction(factionID);
 
-		local xOffset = isMajorFactionHeader and 25 or isChild and 21 or 2;
+		local xOffset = isMajorFactionHeader and 25 or isChild and 15 or 2;
 		local yOffset = 0;
 		factionContainer:SetPoint("LEFT", xOffset, yOffset);
 

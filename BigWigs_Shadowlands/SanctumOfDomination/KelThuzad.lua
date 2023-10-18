@@ -59,7 +59,7 @@ function mod:GetOptions()
 	return {
 		"stages",
 		-- Stage One: Chains and Ice
-		354198, -- Howling Blizzard
+		{354198, "CASTBAR"}, -- Howling Blizzard
 		352530, -- Dark Evocation
 		355389, -- Relentless Haunt
 		"custom_on_nameplate_fixate",
@@ -75,12 +75,12 @@ function mod:GetOptions()
 		-- Stage Two: The Phylactery Opens
 		354289, -- Sinister Miasma
 		352051, -- Necrotic Surge
-		352293, -- Vengeful Destruction
+		{352293, "CASTBAR"}, -- Vengeful Destruction
 		355137, -- Shadow Pool
 		352379, -- Freezing Blast
 		355055, -- Glacial Winds
 		355127, -- Foul Winds (Mythic)
-		352355, -- Undying Wrath
+		{352355, "CASTBAR"}, -- Undying Wrath
 		352141, -- Banshee's Cry (Soul Reaver)
 		soulReaverMarker,
 		-- Stage Three: The Final Stand

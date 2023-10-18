@@ -76,7 +76,7 @@ function E:SetFontProperties(fontString, db)
 	fontString:SetShadowOffset(ofsX, -ofsX)
 	fontString:SetShadowColor(db.r, db.g, db.b, ofsX == 0 and 0 or 1)
 
-	flag = (E.isDF or E.isWOTLKC341) and flagFixForDF[flag] or flag
+	flag = (E.isDF or E.isWOTLKC341 or E.isClassic1144) and flagFixForDF[flag] or flag
 	fontString:SetFont(LSM:Fetch("font", db.font), db.size, flag)
 end
 
@@ -143,7 +143,7 @@ local fontInfo = {
 }
 
 local General = {
-	name = E.STR.WHATS_NEW_ESCSEQ .. GENERAL,
+	name = GENERAL,
 	order = 10,
 	type = "group",
 	childGroups = "tab",
@@ -212,14 +212,14 @@ local General = {
 			}
 		},
 		cooldownText = {
-			name = E.STR.WHATS_NEW_ESCSEQ .. L["Timers"],
+			name = L["Timers"],
 			order = 30,
 			type = "group",
 			get = function(info) return E.profile.General.cooldownText[ info[3] ][ info[#info] ] end,
 			set = function(info, value) E.profile.General.cooldownText[ info[3] ][ info[#info] ] = value E:Refresh() end,
 			args = {
 				coooldownTimer = {
-					name = E.STR.WHATS_NEW_ESCSEQ .. L["Cooldown Timer"],
+					name = L["Cooldown Timer"],
 					order = 100,
 					type = "group",
 					inline = true,

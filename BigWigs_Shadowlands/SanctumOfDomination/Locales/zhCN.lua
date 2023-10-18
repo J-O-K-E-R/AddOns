@@ -48,12 +48,7 @@ end
 
 L = BigWigs:NewBossLocale("Remnant of Ner'zhul", "zhCN")
 if L then
-	L.custom_on_stop_timers = "总是显示计时条"
-	L.custom_on_stop_timers_desc = "耐奥祖残骸的技能可能延迟施放。启用此选项后，这些技能的计时条会保持显示。"
-	
 	L.cones = "障碍" -- Grasp of Malice
-	L.orbs = "宝珠" -- Orb of Torment
-	L.orb = "宝珠" -- Orb of Torment
 end
 
 L = BigWigs:NewBossLocale("Soulrender Dormazain", "zhCN")
@@ -92,9 +87,6 @@ end
 
 L = BigWigs:NewBossLocale("Guardian of the First Ones", "zhCN")
 if L then
-	L.custom_on_stop_timers = "总是显示技能条"
-	L.custom_on_stop_timers_desc = "初诞者的卫士的技能可能延迟施放。启用此选项后，这些技能的计时条会保持显示。"
-
 	L.bomb_missed = "%dx 炸弹未击中"
 end
 

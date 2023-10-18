@@ -17,6 +17,16 @@ local chillingBreathCount = 1
 local downburstCount = 1
 
 --------------------------------------------------------------------------------
+-- Localization
+--
+
+local L = mod:GetLocale()
+if L then
+	L.upwind = "Upwind on you (safe)"
+	L.downwind = "Downwind on you (unsafe)"
+end
+
+--------------------------------------------------------------------------------
 -- Initialization
 --
 
@@ -49,7 +59,7 @@ function mod:OnEngage()
 	self:Bar(-2425, 5.9, nil, 88276) -- Call the Wind
 	self:Bar(88308, 12.0) -- Chilling Breath
 	if self:Mythic() then
-		self:Bar(413295, 20.4) -- Downburst
+		self:Bar(413295, 20.4, CL.count:format(self:SpellName(413295), downburstCount)) -- Downburst
 	end
 end
 
@@ -62,44 +72,43 @@ function mod:EncounterEvent(args) -- Call the Wind
 	self:PlaySound(-2425, "alert")
 	callTheWindCount = callTheWindCount + 1
 	-- actual CD is 15.8 but gets delayed by Chilling Breath (and/or Downburst)
-	-- TODO revisit this timer on non-Mythic if Chiling Breath is ever fixed there
-	if callTheWindCount % 4 == 3 then
-		self:Bar(-2425, 19.4, nil, 88276)
+	if self:Mythic() then
+		if callTheWindCount % 4 == 3 then
+			self:Bar(-2425, 19.4, nil, 88276)
+		else
+			self:Bar(-2425, 15.8, nil, 88276)
+		end
 	else
+		-- revisit this timer on non-Mythic if Chiling Breath is ever fixed there
 		self:Bar(-2425, 15.8, nil, 88276)
 	end
 end
 
 function mod:UpwindOfAltairus(args)
 	if self:Me(args.destGUID) then
-		self:Message(args.spellId, "green", CL.you:format(args.spellName))
+		self:Message(args.spellId, "green", L.upwind)
 		self:PlaySound(args.spellId, "info")
 	end
 end
 
 function mod:DownwindOfAltairus(args)
 	if self:Me(args.destGUID) then
-		self:Message(args.spellId, "red", CL.you:format(args.spellName))
-		self:PlaySound(args.spellId, "underyou")
+		self:Message(args.spellId, "red", L.downwind)
+		self:PlaySound(args.spellId, "alarm")
 	end
 end
 
 function mod:ChillingBreath(args)
-	-- TODO any way to get target?
-	-- boss seems to detarget before casting this, previously this used self:UnitName("boss1target")
 	self:Message(args.spellId, "orange")
 	self:PlaySound(args.spellId, "alarm")
 	chillingBreathCount = chillingBreathCount + 1
+	-- as of May 3 2023 this is broken and casts once then never again in Normal/Heroic
 	if self:Mythic() then
 		if chillingBreathCount % 3 == 0 then
 			self:Bar(args.spellId, 23.0)
 		else
 			self:Bar(args.spellId, 21.8)
 		end
-	else
-		-- TODO needs confirmation:
-		-- as of May 3 2023 this is broken and casts once then never again in Heroic
-		self:Bar(args.spellId, 12)
 	end
 end
 
@@ -111,12 +120,13 @@ function mod:ColdFrontDamage(args)
 end
 
 function mod:Downburst(args)
-	self:Message(args.spellId, "yellow")
-	self:PlaySound(args.spellId, "long")
+	self:StopBar(CL.count:format(args.spellName, downburstCount))
+	self:Message(args.spellId, "yellow", CL.count:format(args.spellName, downburstCount))
+	self:PlaySound(args.spellId, "warning")
 	downburstCount = downburstCount + 1
 	if downburstCount % 3 == 0 then
-		self:CDBar(args.spellId, 43.7)
+		self:CDBar(args.spellId, 43.7, CL.count:format(args.spellName, downburstCount))
 	else
-		self:CDBar(args.spellId, 44.8)
+		self:CDBar(args.spellId, 44.8, CL.count:format(args.spellName, downburstCount))
 	end
 end

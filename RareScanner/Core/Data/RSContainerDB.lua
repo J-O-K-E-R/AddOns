@@ -166,6 +166,15 @@ function RSContainerDB.IsWorldMap(containerID)
 	end
 end
 
+function RSContainerDB.IsDisabledEvent(containerID)
+	if (containerID) then
+		local containerInfo = RSContainerDB.GetInternalContainerInfo(containerID)
+		return containerInfo and containerInfo.event and not RSConstants.EVENTS[containerInfo.event]
+	end
+	
+	return false
+end
+
 ---============================================================================
 -- Container Loot internal database
 ----- Stores Container loot included with the addon
@@ -330,6 +339,12 @@ function RSContainerDB.GetContainerName(containerID)
 		elseif (RSUtils.Contains(RSConstants.FIRIM_EXILE_OBJECTS, containerID)) then
 			private.dbglobal.object_names[GetLocale()][containerID] = AL["NOTE_FIRIM_EXILE"]
 			return AL["NOTE_FIRIM_EXILE"]
+		elseif (RSUtils.Contains(RSConstants.RUMBLE_COIN_BAG, containerID)) then
+			private.dbglobal.object_names[GetLocale()][containerID] = AL["RUMBLE_COIN_BAG"]
+			return AL["RUMBLE_COIN_BAG"]
+		elseif (RSUtils.Contains(RSConstants.RUMBLE_FOIL_BAG, containerID)) then
+			private.dbglobal.object_names[GetLocale()][containerID] = AL["RUMBLE_FOIL_BAG"]
+			return AL["RUMBLE_FOIL_BAG"]
 		elseif (private.dbglobal.object_names[GetLocale()][containerID]) then
 			return private.dbglobal.object_names[GetLocale()][containerID]
 		elseif (AL[string.format("CONTAINER_%s", containerID)] ~= string.format("CONTAINER_%s", containerID)) then

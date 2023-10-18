@@ -1,4 +1,4 @@
-## Interface: 100100
+## Interface: 100107
 
 ## Title: BigWigs [|cffeda55fCataclysm|r]
 ## Title-zhCN: BigWigs [|cffeda55f大地的裂变|r]
@@ -25,7 +25,7 @@
 
 ## LoadOnDemand: 1
 ## Dependencies: BigWigs
-## Version: v10.1.0
+## Version: v10.1.2
 ## IconTexture: Interface\AddOns\BigWigs\Media\Icons\core-enabled
 
 ## X-Category: Raid

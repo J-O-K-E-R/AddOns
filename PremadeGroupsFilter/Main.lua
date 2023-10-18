@@ -22,6 +22,7 @@ local PGF = select(2, ...)
 local L = PGF.L
 local C = PGF.C
 
+PGF.currentSearchResults = {}
 PGF.lastSearchEntryReset = time()
 PGF.previousSearchExpression = ""
 PGF.currentSearchExpression = ""
@@ -44,88 +45,14 @@ function PGF.ResetSearchEntries()
     end
 end
 
-function PGF.GetExpressionFromMinMaxModel(model, key)
-    local exp = ""
-    if model[key].act then
-        if PGF.NotEmpty(model[key].min) then exp = exp .. " and " .. key .. ">=" .. model[key].min end
-        if PGF.NotEmpty(model[key].max) then exp = exp .. " and " .. key .. "<=" .. model[key].max end
-    end
-    return exp
-end
-
-function PGF.GetExpressionFromDifficultyModel(model)
-    if model.difficulty.act then
-        return " and " .. C.DIFFICULTY_STRING[model.difficulty.val]
-    end
-    return ""
-end
-
-function PGF.GetExpressionFromAdvancedExpression(model)
-    if model.expression then
-        local exp = PGF.String_TrimWhitespace(PGF.RemoveCommentLines(model.expression))
-        if exp ~= "" then
-            return " and ( " .. PGF.RemoveCommentLines(model.expression) .. " ) "
-        end
-    end
-    return ""
-end
-
-function PGF.RemoveCommentLines(exp)
-    local result = ""
-    for line in exp:gmatch("([^\n]+)") do -- split by newline and skip empty lines
-        if not line:match("^%s*%-%-") then -- if not comment line
-            result = result .. " " .. line
-        end
-    end
-    return result
-end
-
-function PGF.GetModel()
-    local tab = PVEFrame.activeTabIndex
-    local category = LFGListFrame.SearchPanel.categoryID or LFGListFrame.CategorySelection.selectedCategory
-    local filters = LFGListFrame.SearchPanel.filters or LFGListFrame.CategorySelection.selectedFilters or 0
-    if not tab then return nil end
-    if not category then return nil end
-    if filters < 0 then filters = "n" .. filters end
-    local modelKey = "t" .. tab .. "c" .. category .. "f" .. filters
-    if PremadeGroupsFilterState[modelKey] == nil then
-        local defaultState = {}
-        -- if we have an old v1.10 state, take it instead of the default one
-        local oldGlobalState = PremadeGroupsFilterState["v110"]
-        if oldGlobalState ~= nil then
-            defaultState = PGF.Table_Copy_Rec(oldGlobalState)
-        end
-        PGF.Table_UpdateWithDefaults(defaultState, C.MODEL_DEFAULT)
-        PremadeGroupsFilterState[modelKey] = defaultState
-    end
-    return PremadeGroupsFilterState[modelKey]
-end
-
-function PGF.GetExpressionFromModel()
-    local model = PGF.GetModel()
-    if not model then return "true" end
-    local exp = "true" -- start with neutral element
-    exp = exp .. PGF.GetExpressionFromDifficultyModel(model)
-    exp = exp .. PGF.GetExpressionFromMinMaxModel(model, "mprating")
-    exp = exp .. PGF.GetExpressionFromMinMaxModel(model, "pvprating")
-    exp = exp .. PGF.GetExpressionFromMinMaxModel(model, "members")
-    exp = exp .. PGF.GetExpressionFromMinMaxModel(model, "tanks")
-    exp = exp .. PGF.GetExpressionFromMinMaxModel(model, "heals")
-    exp = exp .. PGF.GetExpressionFromMinMaxModel(model, "dps")
-    exp = exp .. PGF.GetExpressionFromMinMaxModel(model, "defeated")
-    exp = exp .. PGF.GetExpressionFromAdvancedExpression(model)
-    exp = exp:gsub("^true and ", "")
-    return exp
-end
-
-function PGF.GetSortTableFromModel()
-    local model = PGF.GetModel()
-    if not model or not model.sorting then return 0, {} end
+function PGF.GetUserSortingTable()
+    local sorting = PGF.Dialog:GetSortingExpression()
+    if PGF.Empty(sorting) then return 0, {} end
     -- example string:  "friends asc, age desc , foo asc, bar   desc , x"
     -- resulting table: { ["friends"] = "asc", ["age"] = "desc", ["foo"] = "asc", ["bar"] = "desc" }
     local c = 0
     local t = {}
-    for k, v in string.gmatch(model.sorting, "(%w+)%s+(%w+),?") do
+    for k, v in string.gmatch(sorting, "(%w+)%s+(%w+),?") do
         c = c + 1
         t[k] = v
     end
@@ -133,7 +60,7 @@ function PGF.GetSortTableFromModel()
 end
 
 function PGF.SortByExpression(searchResultID1, searchResultID2)
-    local sortTableSize, sortTable = PGF.GetSortTableFromModel()
+    local sortTableSize, sortTable = PGF.GetUserSortingTable()
     local info1 = PGF.searchResultIDInfo[searchResultID1]
     local info2 = PGF.searchResultIDInfo[searchResultID2]
     if sortTableSize == 0 or not info1 or not info2 then
@@ -298,13 +225,11 @@ function PGF.DoFilterSearchResults(results)
     --print(debugstack())
     --print("filtering, size is "..#results)
 
-    PGF.ResetSearchEntries()
-    local model = PGF.GetModel()
-    if not model or not model.enabled then return false end
-    if not results or #results == 0 then return false end
+    if not PGF.Dialog:GetEnabled() then return results end
+    if not results or #results == 0 then return results end
 
-    local sortTableSize, _ = PGF.GetSortTableFromModel()
-    local exp = PGF.GetExpressionFromModel()
+    local exp = PGF.Dialog:GetFilterExpression()
+    PGF.Logger:Debug("Main: exp = "..exp)
     PGF.currentSearchExpression = exp
 
     local playerInfo = PGF.GetPlayerInfo()
@@ -466,7 +391,8 @@ function PGF.DoFilterSearchResults(results)
         --             normal         heroic         mythic
         env.voti     = aID == 1189 or aID == 1190 or aID == 1191 -- Vault of the Incarnates
         env.asc      = aID == 1235 or aID == 1236 or aID == 1237 -- Aberrus, the Shadowed Crucible
-        local dfraid = env.voti or env.asc -- all Dragonflight raids
+        env.atdh     = aID == 1251 or aID == 1252 or aID == 1253 -- Amirdrassil, the Dream's Hope
+        local dfraid = env.voti or env.asc or env.atdh -- all Dragonflight raids
 
         -- Legion dungeons
         --                    normal        heroic        mythic        mythic+
@@ -530,18 +456,27 @@ function PGF.DoFilterSearchResults(results)
         env.av          = aID == 1177 or aID == 1178 or aID == 1179 or aID == 1180 -- The Azure Vault
         env.no          = aID == 1181 or aID == 1182 or aID == 1183 or aID == 1184 -- The Nokhud Offensive
         env.lot         = aID == 1185 or aID == 1186 or aID == 1187 or aID == 1188 or aID == 1194 -- Uldaman: Legacy of Tyr
-        local dfdungeon = env.aa or env.bh or env.hoi or env.nt or env.rlp or env.av or env.no or env.lot -- all Dragonflight dungeons
+        env.doti        = aID == 1244 or aID == 1245 or aID == 1246 or aID == 1247 or aID == 1248 -- Dawn of the Infinite
+        env.fall        =                aID == 1245                or aID == 1247  -- Dawn of the Infinite: Galakrond's Fall
+        env.rise        =                aID == 1246                or aID == 1248  -- Dawn of the Infinite: Murozond's Rise
+        local dfdungeon = env.aa or env.bh or env.hoi or env.nt or env.rlp or env.av or env.no or env.lot or env.doti -- all Dragonflight dungeons
 
         -- Dragonflight Season 1 dungeons
-        env.sbg = aID == 1193 -- Shadowmoon Burial Grounds (Warlords)
-        env.tjs = aID == 1192 -- Temple of the Jade Serpent (Warlords)
-        env.hov = aID == 461 -- Halls of Valor (Legion)
-        env.cos = aID == 466 -- Court of Stars (Legion)
-        env.vp = aID == 1195 -- Vortex Pinnacle (Cataclysm)
+        env.tjs  = aID == 1192 -- Temple of the Jade Serpent (Mists of Pandaria)
+        env.sbg  = aID == 1193 -- Shadowmoon Burial Grounds (Warlords of Draenor)
+        env.hov  = aID == 461  -- Halls of Valor (Legion)
+        env.cos  = aID == 466  -- Court of Stars (Legion)
         env.dfs1 = env.rlp or env.no or env.av or env.aa or env.hov or env.cos or env.sbg or env.tjs
+        -- Dragonflight Season 2 dungeons
+        env.vp   = aID == 1195 -- Vortex Pinnacle (Cataclysm)
         env.dfs2 = env.bh or env.hoi or env.lot or env.nt or env.fh or env.tur or env.nl or env.vp
+        -- Dragonflight Season 3 dungeons
+        env.tott = aID == 1274 -- Throne of the Tides (Cataclysm)
+        env.teb  = aID == 184  -- The Everbloom (Warlords of Draenor)
+        env.dfs2 = env.fall or env.rise or env.wm or env.ad or env.dht or env.brh or env.tott or env.teb
 
         -- find more IDs: /run for i=1146,2000 do local info = C_LFGList.GetActivityInfoTable(i); if info then print(i, info.fullName) end end
+        -- or simply here: https://wago.tools/db2/GroupFinderActivity?sort[ID]=desc
 
         -- Addon filters
         --
@@ -553,7 +488,7 @@ function PGF.DoFilterSearchResults(results)
 
         PGF.PutRaiderIOAliases(env)
         if PGF.PutRaiderIOMetrics then
-            PGF.PutRaiderIOMetrics(env, searchResultInfo.leaderName)
+            PGF.PutRaiderIOMetrics(env, searchResultInfo.leaderName, searchResultInfo.activityID)
         end
         if PGF.PutPremadeRegionInfo then
             PGF.PutPremadeRegionInfo(env, searchResultInfo.leaderName)
@@ -575,8 +510,7 @@ function PGF.DoFilterSearchResults(results)
     PGF.numResultsAfterFilter = #results
 
     table.sort(results, PGF.SortByExpression)
-    LFGListFrame.SearchPanel.totalResults = #results
-    return true
+    return results
 end
 
 function PGF. PutRaiderIOAliases(env)
@@ -646,5 +580,22 @@ function PGF.OnLFGListSearchEntryUpdate(self)
     PGF.AddRatingInfo(self, searchResultInfo)
 end
 
+function PGF.OnLFGListSearchPanelUpdateResultList(self)
+    PGF.Logger:Debug("PGF.OnLFGListSearchPanelUpdateResultList")
+    PGF.currentSearchResults = self.results
+    PGF.ResetSearchEntries()
+    PGF.FilterSearchResults()
+end
+
+function PGF.FilterSearchResults()
+    PGF.Logger:Debug("PGF.FilterSearchResults")
+    local copy = PGF.Table_Copy_Shallow(PGF.currentSearchResults)
+    local results = PGF.DoFilterSearchResults(copy)
+    -- publish
+    LFGListFrame.SearchPanel.results = results
+    LFGListFrame.SearchPanel.totalResults = #results
+    LFGListSearchPanel_UpdateResults(LFGListFrame.SearchPanel)
+end
+
 hooksecurefunc("LFGListSearchEntry_Update", PGF.OnLFGListSearchEntryUpdate)
-hooksecurefunc("LFGListUtil_SortSearchResults", PGF.DoFilterSearchResults)
+hooksecurefunc("LFGListSearchPanel_UpdateResultList", PGF.OnLFGListSearchPanelUpdateResultList)

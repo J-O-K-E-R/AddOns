@@ -13,6 +13,7 @@ local C = LibStub('C_Everywhere').Container
 
 function Item:Construct()
   local b = self:Super(Item):Construct()
+  b.Cooldown:SetScript('OnCooldownDone', function() SetItemButtonTextureVertexColor(b, 1,1,1) end)
   b:SetScript('PreClick', b.OnPreClick)
   return b
 end
@@ -74,7 +75,7 @@ function Item:Update()
 	if self.hasItem then
 		self:GetNormalTexture():SetVertexColor(1,1,1)
 	else
-		local family = self:GetBagFamily()
+		local family = self.frame:GetBagFamily(self:GetBag())
 		local color = Addon.sets.colorSlots and Addon.sets[(self.BagFamilies[family] or 'normal') .. 'Color'] or {}
 		local r,g,b = color[1] or 1, color[2] or 1, color[3] or 1
 
@@ -85,10 +86,8 @@ end
 
 function Item:UpdateCooldown()
 	if self.hasItem and not self:IsCached() then
-		local start, duration, enable = C.GetContainerItemCooldown(self:GetBag(), self:GetID())
-		local fade = duration > 0 and 0.4 or 1
-
-		CooldownFrame_Set(self.Cooldown, start, duration, enable)
+		CooldownFrame_Set(self.Cooldown, C.GetContainerItemCooldown(self:GetBag(), self:GetID()))
+		local fade = self.Cooldown:IsShown() and 0.4 or 1
 		SetItemButtonTextureVertexColor(self, fade,fade,fade)
 	else
 		CooldownFrame_Set(self.Cooldown, 0,0,0)
@@ -119,25 +118,6 @@ function Item:GetQuestInfo()
 	end
 end
 
-function Item:GetBagFamily()
-	local bag = self:GetBag()
-	if bag > NUM_BAG_SLOTS and bag <= Addon.NumBags or bag == REAGENTBANK_CONTAINER then
-		return REAGENTBANK_CONTAINER
-	elseif bag == KEYRING_CONTAINER then
-		return 9
-	elseif bag > BACKPACK_CONTAINER then
-		if self:IsCached() then
-			local data = self:GetOwner()[bag]
-			if data and data.link then
-				return GetItemFamily('item:' .. data.link)
-			end
-		else
-			return select(2, C.GetContainerNumFreeSlots(bag))
-		end
-	end
-	return 0
-end
-
 function Item:GetQuery()
-	return {bagID = self:GetBag(), slotIndex = self:GetID()}
+	return self:IsCached() and self.info.hyperlink or {bagID = self:GetBag(), slotIndex = self:GetID()}
 end

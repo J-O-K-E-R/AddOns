@@ -6,9 +6,6 @@ end
 
 L = BigWigs:NewBossLocale("Skolex, the Insatiable Ravener", "frFR")
 if L then
-	L.custom_on_stop_timers = "Toujours afficher les compétences du boss"
-	L.custom_on_stop_timers_desc = "Il se peut que les timers soient décalés selon le déroulement du combnat. Quand cette option est activée, les compétences utilisées par le boss resteront affichées."
-
 	L.tank_combo_desc = "Timer pour les cast de Mâche-faille/Pourfendre à 100 d'energie."
 end
 
@@ -90,9 +87,6 @@ if L then
 
 	L.bomb_dropped = "Bombe posée"
 	--L.volatile_charges_new = "New Bombs!"
-
-	L.custom_on_stop_timers = "Toujours afficher les compétences du boss"
-	L.custom_on_stop_timers_desc = "Il se peut que les timers soient décalés selon le déroulement du combnat. Quand cette option est activée, les compétences utilisées par le boss resteront affichées."
 end
 
 L = BigWigs:NewBossLocale("Lords of Dread", "frFR")

@@ -49,9 +49,6 @@ if L then
 	L.anima_tracking = "Anima Verfolgung |cffff0000(Experimentell)|r"
 	L.anima_tracking_desc = "Nachrichten und Leisten zur Verfolgung der Anima-Level in den Behältern.|n|cffaaff00Tip: Informationsboxen oder Balken nach Belieben deaktivieren."
 
-	L.custom_on_stop_timers = "Fähigkeitenleisten immer anzeigen"
-	L.custom_on_stop_timers_desc = "Derzeit nur zum Testen"
-
 	L.desires = "Begierden"
 	L.bottles = "Flaschen"
 	L.sins = "Sünden"
@@ -101,9 +98,6 @@ if L then
 
 	L.skirmishers = "Scharmützlerinnen" -- Short for Stone Legion Skirmishers
 	L.eruption = "Eruption" -- Short for Reverberating Eruption
-
-	L.custom_on_stop_timers = "Fähigkeitenleisten immer anzeigen"
-	L.custom_on_stop_timers_desc = "Derzeit nur zum Testen"
 
 	L.goliath_short = "Goliath"
 	L.goliath_desc = "Zeigt Warnungen und Timer für das Erscheinen eines Goliaths der Steinlegion."

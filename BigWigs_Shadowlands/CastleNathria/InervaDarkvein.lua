@@ -40,9 +40,6 @@ if L then
 	L.anima_tracking_desc = "Messages and Bars to track anima levels in the containers.|n|cffaaff00Tip: You might want to disable the information box or bars, depending your preference."
 	L.anima_tracking_icon = "achievement_boss_darkanimus"
 
-	L.custom_on_stop_timers = "Always show ability bars"
-	L.custom_on_stop_timers_desc = "Just for testing right now"
-
 	L.desires = "Desires"
 	L.bottles = "Bottles"
 	L.sins = "Sins"
@@ -59,7 +56,6 @@ function mod:GetOptions()
 	return {
 		"custom_off_experimental",
 		{"anima_tracking", "INFOBOX"},
-		"custom_on_stop_timers",
 		331870, -- Focus Anima
 		-- Container of Desire
 		{341621, "TANK_HEALER"}, -- Expose Desires
@@ -99,7 +95,6 @@ function mod:OnBossEnable()
 	self:RegisterWidgetEvent(2399, "AnimaWidget") -- Bottled Anima
 	self:RegisterWidgetEvent(2400, "AnimaWidget") -- Sins and Suffering
 	self:RegisterWidgetEvent(2401, "AnimaWidget") -- Concentrated Anima
-	self:RegisterMessage("BigWigs_BarCreated", "BarCreated")
 
 	-- General
 	self:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", nil, "boss1")
@@ -142,9 +137,9 @@ function mod:OnEngage()
 	anima = {}
 
 	self:Bar(341621, 12, L.desires) -- Expose Desires
-	self:Bar(324983, 23, L.sins) -- Shared Suffering
-	self:Bar(325769, 33, L.bottles) -- Bottled Anima
-	self:Bar(332664, self:Mythic() and 44 or 54, CL.count:format(CL.adds, concentratedAnimaCount)) -- Concentrated Anima
+	self:CDBar(324983, 23, L.sins) -- Shared Suffering
+	self:CDBar(325769, 33, L.bottles) -- Bottled Anima
+	self:CDBar(332664, self:Mythic() and 44 or 54, CL.count:format(CL.adds, concentratedAnimaCount)) -- Concentrated Anima
 
 	if self:GetOption("custom_off_experimental") then
 		self:OpenInfo("anima_tracking", L.anima_tracking)
@@ -158,32 +153,6 @@ end
 --------------------------------------------------------------------------------
 -- Event Handlers
 --
-
-do
-	local abilitysToPause = {
-		[325064] = true, -- Sins and Suffering
-		[324983] = true, -- Shared Suffering
-		[325769] = true, -- Bottled Anima
-		[332664] = true, -- Concentrated Anima
-	}
-
-	local castPattern = CL.cast:gsub("%%s", ".+")
-
-	local function stopAtZeroSec(bar)
-		if bar.remaining < 0.15 then -- Pause at 0.0
-			bar:SetDuration(0.01) -- Make the bar look full
-			bar:Start()
-			bar:Pause()
-			bar:SetTimeVisibility(false)
-		end
-	end
-
-	function mod:BarCreated(_, _, bar, _, key, text)
-		if self:GetOption("custom_on_stop_timers") and abilitysToPause[key] and not text:match(castPattern) then
-			bar:AddUpdateFunction(stopAtZeroSec)
-		end
-	end
-end
 
 function mod:ConjuredManifestationMarker(_, unit, guid)
 	if self:MobId(guid) == 170197 and conjuredManifestationList[guid] then -- Conjured Manifestation
@@ -355,7 +324,7 @@ end
 function mod:BottledAnima()
 	self:Message(325769, "orange", L.bottles)
 	self:PlaySound(325769, "info")
-	self:Bar(325769, enabledContainer == 2 and (self:Mythic() and 15 or 30) or (self:Mythic() and 30 or 45), L.bottles)
+	self:CDBar(325769, enabledContainer == 2 and (self:Mythic() and 15 or 30) or (self:Mythic() and 30 or 45), L.bottles)
 end
 
 do
@@ -378,7 +347,7 @@ do
 		self:TargetsMessage(324983, "yellow", playerList, 3, L.sins)
 		self:CustomIcon(sharedSufferingMarker, args.destName, count)
 		if count == 1 then
-			self:Bar(324983, enabledContainer == 3 and (self:Mythic() and 30 or 35) or 51, L.sins)
+			self:CDBar(324983, enabledContainer == 3 and (self:Mythic() and 30 or 35) or 51, L.sins)
 		end
 	end
 

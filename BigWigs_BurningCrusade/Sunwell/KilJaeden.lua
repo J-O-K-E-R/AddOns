@@ -64,7 +64,7 @@ function mod:GetOptions()
 		"orb",
 		{45641, "SAY"}, -- Fire Bloom
 		fireBloomMarker,
-		45885, -- Shadow Spike
+		{45885, "CASTBAR"}, -- Shadow Spike
 		45737, -- Flame Dart
 		"blueorb",
 		46605, -- Darkness of a Thousand Souls
@@ -76,6 +76,7 @@ end
 function mod:OnBossEnable()
 	handDeathCount = 0 -- Engage is a little slow
 	self:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckForEngage")
+	self:RegisterEvent("PLAYER_REGEN_ENABLED", "CheckForWipe")
 	self:Log("SPELL_CAST_SUCCESS", "FelfirePortal", 46875) -- Hack to engage the module because ENCOUNTER_START doesn't fire until stage 2
 
 	self:Log("SPELL_CAST_SUCCESS", "SinisterReflection", 45892)
@@ -90,6 +91,7 @@ function mod:OnBossEnable()
 	self:RegisterEvent("CHAT_MSG_MONSTER_YELL")
 
 	self:Death("HandOfTheDeceiverDeaths", 25588) -- Hand of the Deceiver
+	self:Death("Win", 25315)
 end
 
 function mod:OnEngage()

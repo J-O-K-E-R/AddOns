@@ -49,9 +49,6 @@ if L then
 	L.anima_tracking = "Suivi de l'anima |cffff0000(expérimental)|r"
 	L.anima_tracking_desc = "Messages et barres pour suivre le niveau d'anima dans les conteneurs.|n|cffaaff00Astuce : vous pouvez désactiver les barres et boites d'infos si besoin."
 
-	L.custom_on_stop_timers = "Toujours montrer les barres de techniques"
-	L.custom_on_stop_timers_desc = "En cours de test"
-
 	L.desires = "Désirs"
 	L.bottles = "Bouteilles"
 	L.sins = "Vices"
@@ -101,9 +98,6 @@ if L then
 
 	L.skirmishers = "Tirailleuses" -- Short for Stone Legion Skirmishers (Tirailleuse de la Légion de pierre)
 	L.eruption = "Éruption" -- Short for Reverberating Eruption
-
-	L.custom_on_stop_timers = "Toujours montrer les barres de techniques"
-	L.custom_on_stop_timers_desc = "En cours de test"
 
 	L.goliath_short = "Goliath"
 	L.goliath_desc = "Affiche des alertes et des délais indiquant quand le Goliath vive-pierre est sur le point d'apparaître."

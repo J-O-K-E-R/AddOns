@@ -1,12 +1,23 @@
 # LittleWigs
 
-## [v10.1.11](https://github.com/BigWigsMods/LittleWigs/tree/v10.1.11) (2023-05-22)
-[Full Changelog](https://github.com/BigWigsMods/LittleWigs/compare/v10.1.10...v10.1.11) [Previous Releases](https://github.com/BigWigsMods/LittleWigs/releases)
+## [v10.1.43](https://github.com/BigWigsMods/LittleWigs/tree/v10.1.43) (2023-10-15)
+[Full Changelog](https://github.com/BigWigsMods/LittleWigs/compare/v10.1.42...v10.1.43) [Previous Releases](https://github.com/BigWigsMods/LittleWigs/releases)
 
-- Update deDE (#903)  
-- Cleanups  
-- Update options for modules with cast bars  
-- Dragonflight/BrackenhideHollow/Treemouth: Update comment  
-- Dragonflight/BrackenhideHollow/Trash: Vicious Clawmangle cast, Stink Breath target  
-- Dragonflight/UldamanLegacyOfTyr/Trash: Chain Lightning, Jagged Bite, Ancient Power, Systemic Vulnerability, Cleave  
-- Dragonflight/Neltharus/Trash: Reverberating Slam, Magma Conflagration, Molten Barrier  
+- WotLK/Gundrak/Galdarah: Fix Rhino Form and Troll Form bars  
+- WotLK/Gundrak/Moorabi: Use a cast bar for Transformation  
+- WotLK/Gundrak/DrakkariColossus: Staging  
+- WotLK/Gundrak/Sladran: Use a cast bar for Poison Nova  
+- Dragonflight/DawnOfTheInfinite/ChronoLordDeios: Infinity Nova, timer improvements  
+- Dragonflight/DawnOfTheInfinite/Trash: Bombing Run, Electro-Juiced Gigablast, Binding Grasp target, sound updates  
+- Dragonflight/DawnOfTheInfinite/Morchie: Fixate, 10.2 timer updates  
+- Dragonflight/DawnOfTheInfinite/TimeLostBattlefield: Remove Battle Cry / War Cry, sound updates, timer improvements  
+- WotLK/TheNexus: Fix encounter IDs for classic  
+- WotLK/TheForgeOfSouls: Fix encounter IDs for classic  
+- WotLK/TheCullingOfStratholme: Fix encounter IDs for classic  
+- WotLK/PitOfSaron: Add encounter IDs  
+- WotLK/HallsOfStone/SjonnirTheIronshaper: Color update  
+- WotLK/HallsOfStone: Fix encounter IDs for classic  
+- WotLK/HallsOfReflection: Fix encounter IDs for classic  
+- WotLK/Gundrak: Fix encounter IDs for classic  
+- WotLK/AzjolNerub: Fix encounter IDs for classic  
+- WotLK/Ahnkahet: Add encounter IDs  

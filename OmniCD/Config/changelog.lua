@@ -1,38 +1,45 @@
 local E, L, C = select(2, ...):unpack()
 
 if E.isClassic then E.changelog = [=[
-v1.14.3.2752
-	Max Number of Visible Icons will correctly work with Display Inactive Icons disabled
+v1.14.4.2768
+	bump toc
 
-v1.14.3.2751
-	Added option to use ElvUI's timer (in General menu)
+v1.14.3.2762
+	1.14.4 PTR compatibility updates
+
+v1.14.3.2755
+	Readiness will reset Deterrence, Feign Death and Trap abilities, instead of all Hunter abilities
 ]=]
 elseif E.isBCC then E.changelog = [=[
 v2.5.4.2722
 	Fixed sync for cross realm group members
 ]=]
 elseif E.isWOTLKC then E.changelog = [=[
-v3.4.1.2752
-	Max Number of Visible Icons will correctly work with Display Inactive Icons disabled
+v3.4.2.2768
+	Cooldowns will correctly update when non-synced units change specialization
 
-v3.4.1.2751
-	3.4.2 font flag fix
-	Added option to use ElvUI's timer (in General menu)
+v3.4.2.2762
+	bump toc
+
+v3.4.1.2755
+	Fixed an issue that prevented CD bars from attaching to the party frames
+	Readiness will no longer reset Roar of Sacrifice
+	Added arena season 7, 8 equip bonus items
 ]=]
 else E.changelog = [=[
-v10.1.0.2753
-	Bar position will correctly update in combat when using non-Group sorting in Arena
-	Fixed Exhilaration and Trueshot CDR
+v10.1.7.2770
+	Shield Charge will correctly go on CD when used out of melee range.
+	Heavy Wingbests/Cloberring Sweep will correctly reduce the CD of Wing Buffet/Tail Swipe.
+	Accretion will correctly reduce Upheaval's remaining CD whenever you cast Eruption.
 
-v10.1.0.2752
-	Max Number of Visible Icons will correctly work with Display Inactive Icons disabled
-	Healing Stream Totem will correctly add a charge if you have both talents as Restoration spec
-	Fixed Fortitude of the Bear CD
+v10.1.7.2769
+	Ultimate Sacrifice will correctly go on cooldown when used.
+	Ultimate Sacrifice CD fixed to 2min and benefits from Sacrifice of the Just.
 
-v10.1.0.2751
-	Added Season 2 Obsidian PvP Trinkets
-	Added Embers of Neltharion Tier Set bonuses
-	Added option to use ElvUI's timer (in General menu)
+v10.1.7.2768
+	Patch 10.1.7 spell updates
+	PRIEST Angel's Mercy has been redesigned – Now reduces the cooldown of Desperate Prayer by 20 seconds.
+	AUGUST 21, 2023 Hotfixes - Dead of Winter now increases the cooldown of Remorseless Winter by 10 seconds (was 25 seconds).
 ]=]
 end
 

@@ -15,7 +15,7 @@ mod:SetStage(1)
 
 local purgingFlamesDisabled = false
 local purgingFlamesActive = false
-local unstableEmbersRemaining = 4
+local unstableEmbersRemaining = 3
 local searingClapRemaining = 2
 local nextUnstableEmbers = 0
 local nextSearingClap = 0
@@ -28,15 +28,19 @@ function mod:GetOptions()
 	return {
 		368990, -- Purging Flames
 		369043, -- Infusion
+		369038, -- Titanic Ward
 		369110, -- Unstable Embers
 		369061, -- Searing Clap
+	}, nil, {
+		[369043] = CL.adds,
 	}
 end
 
 function mod:OnBossEnable()
 	self:RegisterUnitEvent("UNIT_HEALTH", nil, "boss1")
-	self:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", nil, "boss1")
+	self:Log("SPELL_CAST_SUCCESS", "PurgingFlamesPrecast", 369022)
 	self:Log("SPELL_CAST_START", "PurgingFlames", 368990)
+	self:Log("SPELL_CAST_SUCCESS", "HeatEngine", 369026)
 	self:Log("SPELL_AURA_REMOVED", "PurgingFlamesRemoved", 368990)
 	self:Log("SPELL_AURA_APPLIED", "InfusionApplied", 369043)
 	self:Log("SPELL_AURA_REMOVED", "InfusionRemoved", 369043)
@@ -47,7 +51,7 @@ end
 function mod:OnEngage()
 	purgingFlamesDisabled = false
 	purgingFlamesActive = false
-	unstableEmbersRemaining = 2
+	unstableEmbersRemaining = 3
 	searingClapRemaining = 2
 	nextUnstableEmbers = 0
 	nextSearingClap = 0
@@ -82,15 +86,13 @@ function mod:UNIT_HEALTH(event, unit)
 	end
 end
 
-function mod:UNIT_SPELLCAST_SUCCEEDED(_, _, _, spellId)
-	if spellId == 369022 then -- Purging Flames
-		-- this is cast when the boss runs to the center, we can clean up extra
-		-- timers for skipped abilities a little early
-		nextUnstableEmbers = 0
-		nextSearingClap = 0
-		self:StopBar(369110) -- Unstable Embers
-		self:StopBar(369061) -- Searing Clap
-	end
+function mod:PurgingFlamesPrecast(args)
+	-- this is cast when the boss runs to the center, we can clean up extra
+	-- timers for skipped abilities a little early
+	nextUnstableEmbers = 0
+	nextSearingClap = 0
+	self:StopBar(369110) -- Unstable Embers
+	self:StopBar(369061) -- Searing Clap
 end
 
 function mod:PurgingFlames(args)
@@ -99,6 +101,11 @@ function mod:PurgingFlames(args)
 	self:StopBar(args.spellId)
 	self:Message(args.spellId, "cyan")
 	self:PlaySound(args.spellId, "long")
+end
+
+function mod:HeatEngine(args)
+	self:Message(369038, "green", CL.removed:format(self:SpellName(369038))) -- Titanic Ward
+	self:PlaySound(369038, "info")
 end
 
 function mod:PurgingFlamesRemoved()
@@ -120,13 +127,20 @@ do
 		local addsNeeded = self:Normal() and 3 or 4
 		addsKilled = addsKilled + 1
 		if addsKilled == addsNeeded then
-			unstableEmbersRemaining = 4
-			searingClapRemaining = 2
+			if self:Mythic() then
+				unstableEmbersRemaining = 3 -- usually 2, rarely 3
+				searingClapRemaining = 2
+				self:CDBar(369061, 5.9) -- Searing Clap
+				self:CDBar(369110, 13.3) -- Unstable Embers
+			else
+				unstableEmbersRemaining = 4 -- usually 3, rarely 4
+				searingClapRemaining = 2
+				self:CDBar(369110, 1.8) -- Unstable Embers
+				self:CDBar(369061, 5.4) -- Searing Clap
+			end
 			self:SetStage(1)
 			self:Message(368990, "cyan", CL.over:format(self:SpellName(368990))) -- Purging Flames Over
 			self:PlaySound(368990, "long")
-			self:CDBar(369110, 1.8) -- Unstable Embers
-			self:CDBar(369061, 5.4) -- Searing Clap
 			if not purgingFlamesDisabled then
 				-- 35s energy gain + ~2.7s delay
 				self:CDBar(368990, 37.7) -- Purging Flames

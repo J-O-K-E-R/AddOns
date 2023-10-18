@@ -6,18 +6,6 @@ local L
 ---------------------------
 --L= DBM:GetModLocalization(2522)
 
---L:SetWarningLocalization({
---})
---
---L:SetTimerLocalization{
---}
---
---L:SetOptionLocalization({
---})
---
---L:SetMiscLocalization({
---})
-
 ---------------------------
 --  The Amalgamation Chamber --
 ---------------------------
@@ -30,7 +18,11 @@ L:SetOptionLocalization({
 ---------------------------
 --  The Forgotten Experiments --
 ---------------------------
---L= DBM:GetModLocalization(2530)
+L= DBM:GetModLocalization(2530)
+
+L:SetMiscLocalization({
+	SafeClear		= "해제 안전"
+})
 
 ---------------------------
 --  Assault of the Zaqali --
@@ -85,7 +77,11 @@ L:SetMiscLocalization({
 ---------------------------
 --  Echo of Neltharion --
 ---------------------------
---L= DBM:GetModLocalization(2523)
+L= DBM:GetModLocalization(2523)
+
+L:SetMiscLocalization({
+	WallBreaker	= "벽 파괴 담당"
+})
 
 ---------------------------
 --  Scalecommander Sarkareth --

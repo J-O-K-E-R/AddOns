@@ -229,6 +229,33 @@ function RSNpcDB.GetAllInternalNpcInfo()
 	return private.NPC_INFO
 end
 
+function RSNpcDB.GetNpcIDsByMapID(mapID, onlyCustom)
+	local npcIDs = {}
+	for npcID, npcInfo in pairs((onlyCustom and RSNpcDB.GetAllCustomNpcInfo() or RSNpcDB.GetAllInternalNpcInfo())) do
+		if (RSNpcDB.IsInternalNpcMultiZone(npcID)) then
+			-- First check if there is a matching mapID in the database
+			for internalMapID, _ in pairs (npcInfo.zoneID) do
+				if (internalMapID == mapID) then
+					tinsert(npcIDs,npcID)
+				end
+			end
+			
+			-- Then check if there is a matching subMapID in the database
+			for internalMapID, _ in pairs (npcInfo.zoneID) do
+				if (RSMapDB.IsMapInParentMap(mapID, internalMapID)) then
+					tinsert(npcIDs,npcID)
+				end
+			end
+		elseif (RSNpcDB.IsInternalNpcMonoZone(npcID)) then
+			if (npcInfo.zoneID == mapID or (npcInfo.nameplate and npcInfo.zoneID == 0)) then
+				tinsert(npcIDs,npcID)
+			end
+		end
+	end
+	
+	return npcIDs
+end
+
 function RSNpcDB.GetInternalNpcInfo(npcID)
 	if (npcID) then
 		return private.NPC_INFO[npcID]
@@ -269,7 +296,9 @@ function RSNpcDB.GetInternalNpcInfoByMapID(npcID, mapID)
 			end
 		elseif (RSNpcDB.IsInternalNpcMonoZone(npcID)) then
 			local npcInfo = RSNpcDB.GetInternalNpcInfo(npcID)
-			return npcInfo
+			if (npcInfo and npcInfo.zoneID == mapID) then
+				return npcInfo
+			end
 		end
 	end
 
@@ -299,40 +328,56 @@ function RSNpcDB.GetInternalNpcCoordinates(npcID, mapID)
 end
 
 function RSNpcDB.GetBestInternalNpcCoordinates(npcID, mapID)
-	-- It finds the closest known coordinate to the current player position
+	-- Locates players coordinates based in the mapID where it was found
 	local playerMapPosition = C_Map.GetPlayerMapPosition(mapID, "player")
-	local x, y
+	local playerx, playery
 	if (playerMapPosition) then
-		x, y = playerMapPosition:GetXY()
-	end
-	
-	if (not x or not y) then
-		return RSNpcDB.GetInternalNpcCoordinates(npcID, mapID)
-	end
-	
-	local overlay = RSNpcDB.GetInternalNpcOverlay(npcID, mapID)
-	if (overlay) then
-		local distances = {}
-		local coords = {}
-		for _, coordinates in ipairs (overlay) do
-			local xo, yo = strsplit("-", coordinates)
-			local distance = RSUtils.DistanceBetweenCoords(x, xo, y, yo);
-			if (distance >= 0 and distance <= 0.02) then
-				tinsert(distances, distance)
-				coords[distance] = {}
-				coords[distance].x = xo
-				coords[distance].y = yo
+		playerx, playery = playerMapPosition:GetXY()
+		
+		-- Locates players coordinates based in the best map
+		if (not playerx or not playery) then
+			local playerMapID = C_Map.GetBestMapForUnit("player")
+			playerMapPosition = C_Map.GetPlayerMapPosition(playerMapID, "player")
+			if (playerMapPosition) then
+				playerx, playery = playerMapPosition:GetXY()
+				mapID = playerMapID
 			end
 		end
-		
-		-- Get the smallest
-		if (RSUtils.GetTableLength(distances) > 0) then
-			local minDistance = min(unpack(distances))
-			x, y = coords[minDistance].x, coords[minDistance].y
+	end
+	
+	-- Locates closest NPC coordinates to the players
+	if (playerx and playery) then
+		local overlay = RSNpcDB.GetInternalNpcOverlay(npcID, mapID)
+		if (overlay) then
+			local distances = {}
+			local coords = {}
+			for _, coordinates in ipairs (overlay) do
+				local xo, yo = strsplit("-", coordinates)
+				local distance = RSUtils.DistanceBetweenCoords(playerx, xo, playery, yo);
+				if (distance >= 0 and distance <= 0.02) then
+					tinsert(distances, distance)
+					coords[distance] = {}
+					coords[distance].x = xo
+					coords[distance].y = yo
+				end
+			end
+			
+			-- Get the smallest
+			if (RSUtils.GetTableLength(distances) > 0) then
+				local minDistance = min(unpack(distances))
+				return coords[minDistance].x, coords[minDistance].y
+			end
 		end
 	end
 	
-	return x, y
+	-- Locates internal coordinates
+	local x, y = RSNpcDB.GetInternalNpcCoordinates(npcID, mapID)
+	if (x and y) then
+		return x, y
+	-- Otherwise returns players coordinates
+	else
+		return playerx, playery
+	end
 end
 
 function RSNpcDB.GetInternalNpcOverlay(npcID, mapID)

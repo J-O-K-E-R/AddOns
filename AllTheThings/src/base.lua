@@ -1,14 +1,16 @@
 --------------------------------------------------------------------------------
 --                        A L L   T H E   T H I N G S                         --
 --------------------------------------------------------------------------------
---            Copyright 2017-2021 Dylan Fortune (Crieve-Sargeras)             --
+--            Copyright 2017-2023 Dylan Fortune (Crieve-Sargeras)             --
 --------------------------------------------------------------------------------
 -- This is a hidden frame that intercepts all of the event notifications that we have registered for.
 local name, app = ...;
+local assetRootPath = "Interface\\Addons\\" .. name .. "\\assets\\";
+-- app.DEBUG_PRINT = true;
 function app:GetName() return name; end
 _G["AllTheThings"] = app;
 app.asset = function(path)
-	return "Interface\\Addons\\AllTheThings\\assets\\" .. path;
+	return assetRootPath .. path;
 end
 -- Consolidated debug-only print with preceding precise timestamp
 app.PrintDebug = function(...)
@@ -19,10 +21,11 @@ end
 app.PrintDebugPrior = function(...)
 	if app.DEBUG_PRINT then
 		if app.DEBUG_PRINT_LAST then
-			local frames = math.ceil(1 / (GetTimePreciseSec() - app.DEBUG_PRINT_LAST));
-			print("Stutter @",frames,...)
+			local diff = GetTimePreciseSec() - app.DEBUG_PRINT_LAST
+			local frames = math.ceil(1 / diff);
+			print(GetTimePreciseSec(),"<>",diff,"Stutter @",frames,...)
 		else
-			print(0,...)
+			print(GetTimePreciseSec(),0,...)
 		end
 		app.DEBUG_PRINT_LAST = GetTimePreciseSec();
 	end
@@ -61,7 +64,6 @@ app.ClearPerf = function()
 	app.print("Cleared Performance Stats");
 end
 end	-- Performance Tracking --]]
-app.DEBUG_PRINT = true;
 
 -- Create an Event Processor.
 local events = {};
@@ -277,3 +279,10 @@ end
 function app:ShowPopupDialogToReport(reportReason, text)
 	app:ShowPopupDialogWithMultiLineEditBox(text, nil, (reportReason or "Missing Data").."\n"..app.L["PLEASE_REPORT_MESSAGE"]..app.L["REPORT_TIP"]);
 end
+
+
+-- Define Modules
+app.Modules = {};
+
+-- Global Variables
+AllTheThingsSavedVariables = {};

@@ -1,6 +1,99 @@
 ------------------------------------------------------------------------------
 -- Dragonflight
 --
+v10.1.7.2770
+	Shield Charge will correctly go on CD when used out of melee range.
+	Heavy Wingbests/Cloberring Sweep will correctly reduce the CD of Wing Buffet/Tail Swipe.
+	Accretion will correctly reduce Upheaval's remaining CD whenever you cast Eruption.
+
+v10.1.7.2769
+	Ultimate Sacrifice will correctly go on cooldown when used.
+	Ultimate Sacrifice CD fixed to 2min and benefits from Sacrifice of the Just.
+
+v10.1.7.2768
+	Patch 10.1.7 spell updates
+	PRIEST Angel's Mercy has been redesigned – Now reduces the cooldown of Desperate Prayer by 20 seconds.
+	AUGUST 21, 2023 Hotfixes - Dead of Winter now increases the cooldown of Remorseless Winter by 10 seconds (was 25 seconds).
+
+v10.1.5.2767
+	AUGUST 7, 2023 Hotfixes - San’layn now reduces the cooldown of Vampiric Embrace by 30 seconds (was 45 seconds)
+	AUGUST 3, 2023 Hotfixes - Fixed an issue where Flow State would not increase the cooldown recovery rate of Emerald Communion.
+	Undulating Sporecloak will correctly show for the player and non-synced units
+	Casting Fire Blast will correctly reduce the cooldown of cc abilities with Time Manipulation
+
+v10.1.5.2765
+	Undulating Sporecloak will correctly show for the player and non-synced units
+
+v10.1.5.2764
+	JULY 24, 2023 Hotfixes
+	- Angel's Mercy's cooldown reduction is now 25% effective in PvP Combat.
+	- Impish Instincts now reduces the cooldown of Demonic Circle by 3 seconds when triggered (was 2 seconds).
+	Fixed an issue where Bestow Weyrnstone would persist when casted on another player
+	Added Undulating Sporecloak, Well-Honed Insticts (passive procs)
+
+v10.1.5.2763
+	Symbol of Hope will correctly increase Obsidian Scales' cd recovery rate for Augmentation spec.
+
+v10.1.5.2762
+	Oppressing Roar w/ Overawe will correctly go on cooldown when used
+	Overawe will correctly reduce Oppressing Roar's cooldown for each enrage effect dispelled
+	Upheaval w/ Font of Magic will correctly go on cooldown when used
+
+v10.1.5.2761
+	Healbot fix
+
+v10.1.5.2760
+	Patch 10.1.5 updates
+
+v10.1.0.2759
+	nil err fix
+
+v10.1.0.2758
+	Fixed Rage of the Sleeper CD 90>60s
+	Fixed Improved Mass Dispel CDR 25>20s
+	Fixed Shadow Blades CD 180>120s
+
+v10.1.0.2757
+	Fixed Quick Witted CDR when interrupting Penance
+	Fixed Invigorating Shadowdust CDR
+	Fixed nil error on Flow State removal
+	Fixed Ironbark CD 60>45s (Guardian, APRIL 5, 2023 hotfixes)
+
+v10.1.0.2756
+	JUNE 5, 2023 hotfixes
+		Amplify Curse CD 30>60s
+		Teachings of the Satyr CDR 10>15s
+		Thunderlord CDR 1>1.5s
+	MAY 15, 2023 hotfixes
+		BM HUnter, Aberrus (4) Set bonus CDR 1>2s
+		Sharpen Blade CD 25>30s
+
+v10.1.0.2755
+	CDR fix/updates
+		Forbearance will no longer be affected by other CDR (e.g. Resolute Defender on Divine Shield)
+		Fixed Uther's Councel CDR for 10.1 (rank1 20% to rank2 15%/30%)
+		Fixed Inmost Light CDR for 10.1 (15% to 25%)
+		Fixed Chi Surge CDR (was incorrectly capped at 16 sec instead of 20 sec)
+		Updated Keg Smash CDR (was reducing Fortifying Brew by 5 sec instead of 3 sec. Bug fixed in 10.1)
+		Updated Tiger Palm CDR (was reducing to all Brew CD by 0.5 sec instead of 1 sec. Bug fixed in 10.1)
+	CD sync revamped
+		Fixed an issue that caused certain cooldowns to sync improperly. Recipients now check remaining time over starting time
+		Periodic sync has been removed and will now sync the followings directly like others
+			% chance to incur no cooldown
+			% chance to have its cooldown instantly reset when used
+		Messages are now compressed and will no longer communicates with older versions
+	10.1.5 compatibility updates
+		Frames created while in combat will have tooltips disabled until you leave combat
+
+v10.1.0.2753
+	Bar position will correctly update in combat when using non-Group sorting in Arena
+	Fixed Exhilaration and Trueshot CDR
+
+v10.1.0.2752
+	Max Number of Visible Icons will correctly work with Display Inactive Icons disabled
+	Healing Stream Totem will correctly add a charge if you have both talents as Restoration spec
+	Fixed Fortitude of the Bear CD
+
 v10.1.0.2751
 	Added Season 2 Obsidian PvP Trinkets
 	Added Embers of Neltharion Tier Set bonuses
@@ -695,6 +788,25 @@ v2.5.0
 ------------------------------------------------------------------------------
 -- WOTLKC
 --
+v3.4.2.2768
+	Cooldowns will correctly update when non-synced units change specialization
+
+v3.4.2.2762
+	bump toc
+
+v3.4.1.2755
+	Fixed an issue that prevented CD bars from attaching to the party frames
+	Readiness will no longer reset Roar of Sacrifice
+	Added arena season 7, 8 equip bonus items
+
+v3.4.1.2754
+	Fixed a critical error that caused all CD modifiers to be ignored. Incompatible table format after merging with retail wow
+	Fixed spells affected by Forbearance
+	Added arena season 7 set items
+
+v3.4.1.2752
+	Max Number of Visible Icons will correctly work with Display Inactive Icons disabled
+
 v3.4.1.2751
 	3.4.2 font flag fix
 	Added option to use ElvUI's timer (in General menu)
@@ -801,6 +913,15 @@ v2.6.01-bcc
 ------------------------------------------------------------------------------
 -- classic era
 --
+v1.14.4.2768
+	bump toc
+
+v1.14.3.2754
+	Fixed a critical error that caused all CD modifiers to be ignored. Incompatible table format after merging with retail wow
+
+v1.14.3.2752
+	Max Number of Visible Icons will correctly work with Display Inactive Icons disabled
+
 v1.14.3.2751
 	Added option to use ElvUI's timer (in General menu)
 	Fixed spell tooltips showing a blank text if the spell hasn't been cached yet

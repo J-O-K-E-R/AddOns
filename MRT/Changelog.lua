@@ -1,6 +1,24 @@
 local GlobalAddonName, ExRT = ...
 
 ExRT.Options.Changelog = [=[
+v.4770
+* Fixed /rt pull timer for DBM
+* Raid cooldowns: added autoswap profiles for specs
+
+v.4770-LK
+* Minor fixes
+
+v.4770-Classic
+* Fixes
+
+v.4760
+* 10.1.5 Update
+* Minor updates
+* Marks: added support for multiple names
+
+v.4760-LK
+* toc update
+
 v.4740
 * 10.1 Update
 

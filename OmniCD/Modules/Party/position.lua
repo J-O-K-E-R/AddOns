@@ -211,17 +211,20 @@ do
 	end
 
 	function P:HookFunc()
-		if self.enabled and not E.db.position.detached and not hookTimer then
-			hookTimer = C_Timer.NewTimer(0.5, UpdatePosition_OnTimerEnd)
-		end
-		if E.isDF and not E.db.position.detached and not E.customUF.active and self.isInTestMode and not P.isInEditMode then
-			self:Test()
-			E:ACR_NotifyChange()
+		if self.enabled and E.db.position and not E.db.position.detached then
+			if not hookTimer then
+				hookTimer = C_Timer.NewTimer(0.5, UpdatePosition_OnTimerEnd)
+			end
+			if E.isDF and self.isInTestMode and not E.customUF.active and not P.isInEditMode then
+				self:Test()
+				E:ACR_NotifyChange()
+			end
 		end
 	end
 
 	function P:CVAR_UPDATE(cvar, value)
-		if cvar == "USE_RAID_STYLE_PARTY_FRAMES" then
+		if cvar == "USE_RAID_STYLE_PARTY_FRAMES"
+			or cvar == "useCompactPartyFrames" then
 			self.useRaidStylePartyFrames = value == "1"
 			self:HookFunc()
 		end
@@ -338,12 +341,13 @@ do
 				end
 			end)
 
-			if E.isWOTLKC341 then
-				hooksecurefunc("RaidOptionsFrame_UpdatePartyFrames", function()
-					P.useRaidStylePartyFrames = GetDisplayedAllyFrames() == "raid"
-					P:HookFunc()
-				end)
-			end
+
+
+
+
+
+
+
 		end
 
 		self.hooked = true

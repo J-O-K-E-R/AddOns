@@ -1,12 +1,12 @@
 local mod	= DBM:NewMod(2530, "DBM-Aberrus", nil, 1208)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20230516042654")
+mod:SetRevision("20230815013239")
 mod:SetCreatureID(200912, 200913, 200918)
 mod:SetEncounterID(2693)
 mod:SetUsedIcons(1, 2, 3)
 mod:SetBossHPInfoToHighest()
-mod:SetHotfixNoticeRev(20230512000000)
+mod:SetHotfixNoticeRev(20230619000000)
 mod:SetMinSyncRevision(20230512000000)
 --mod.respawnTime = 29
 
@@ -15,12 +15,9 @@ mod:SetWipeTime(25)
 
 mod:RegisterEventsInCombat(
 	"SPELL_CAST_START 406358 404472 407733 404713 405042 405492 405375 406227 407552 405391 407775 412117",
---	"SPELL_CAST_SUCCESS",
-	"SPELL_AURA_APPLIED 406311 407302 407327 407617 405392",
-	"SPELL_AURA_APPLIED_DOSE 406311 407302 407327",
-	"SPELL_AURA_REMOVED 407327",
---	"SPELL_PERIODIC_DAMAGE",
---	"SPELL_PERIODIC_MISSED",
+	"SPELL_AURA_APPLIED 406313 407302 407327 407617 405392",
+	"SPELL_AURA_APPLIED_DOSE 406313 407302 407327",
+	"SPELL_AURA_REMOVED 407327 406313",
 	"UNIT_DIED",
 	"INSTANCE_ENCOUNTER_ENGAGE_UNIT",
 	"UNIT_SPELLCAST_SUCCEEDED boss1 boss2 boss3"
@@ -33,13 +30,21 @@ mod:RegisterEventsInCombat(
 --TODO, what do you actually do with Temporal Anomaly, soak it?
 --NOTE, Rending Charge is a private aura
 --General
+local warnInfusedStrikes							= mod:NewStackAnnounce(406311, 2, nil, "Tank|Healer")
+local warnInfusedExplosion							= mod:NewCountAnnounce(407302, 4, nil, "Tank|Healer")
+
+local specWarnInfusedStrikesSelf					= mod:NewSpecialWarningStack(406311, nil, 6, nil, nil, 1, 6)
+local specWarnInfusedStrikesTaunt					= mod:NewSpecialWarningTaunt(406311, nil, nil, nil, 1, 2)
+local specWarnInfusedStrikesHug						= mod:NewSpecialWarningMoveTo(406311, nil, nil, nil, 1, 2)
 --local specWarnGTFO								= mod:NewSpecialWarningGTFO(370648, nil, nil, nil, 1, 8)
 
-local timerInfusedStrikes							= mod:NewBuffFadesTimer(20, 407302, nil, nil, nil, 5, nil, DBM_COMMON_L.TANK_ICON..DBM_COMMON_L.HEALER_ICON)--Track the aura that needs to fall off before tanks "clear" again
+local timerInfusedExplosion							= mod:NewBuffFadesTimer(20, 407302, nil, nil, nil, 5, nil, DBM_COMMON_L.TANK_ICON..DBM_COMMON_L.HEALER_ICON)--Track the aura that needs to fall off before tanks "clear" again
 --local berserkTimer								= mod:NewBerserkTimer(600)
+
+mod:AddInfoFrameOption(406311, "Tank")
 --Neldris
 mod:AddTimerLine(DBM:EJ_GetSectionInfo(26001))
-local warnInfusedStrikes							= mod:NewStackAnnounce(406311, 2, nil, "Tank|Healer")
+
 local warnRendingCharge								= mod:NewIncomingCountAnnounce(406358, 3)
 
 local specWarnMassiveSlam							= mod:NewSpecialWarningDodgeCount(404472, nil, nil, nil, 2, 2)
@@ -49,38 +54,35 @@ local timerRendingChargeCD							= mod:NewCDCountTimer(34.2, 406358, nil, nil, n
 local timerMassiveSlamCD							= mod:NewCDCountTimer(39, 404472, nil, nil, nil, 3)
 local timerBellowingRoarCD							= mod:NewCDCountTimer(23.1, 404713, nil, nil, nil, 2)
 
-mod:AddPrivateAuraSoundOption(406317, true, 406358)
---mod:AddInfoFrameOption(361651, true)
---mod:AddRangeFrameOption(5, 390715)
---mod:AddNamePlateOption("NPAuraOnAscension", 385541)
+mod:AddPrivateAuraSoundOption(406317, true, 406358, 1)
 --Thadrion
 mod:AddTimerLine(DBM:EJ_GetSectionInfo(26322))
-local warnUnstableEssence							= mod:NewCastAnnounce(405042, 3)
-local warnUnstableEssenceTargets					= mod:NewTargetAnnounce(405042, 2)
+local warnUnstableEssence							= mod:NewCastAnnounce(407327, 3)
+local warnUnstableEssenceTargets					= mod:NewTargetAnnounce(407327, 2)
 
-local specWarnUnstableEssence						= mod:NewSpecialWarningYou(405042, nil, nil, nil, 1, 2)
-local yellUnstableEssence							= mod:NewShortYell(405042, DBM_CORE_L.AUTO_YELL_ANNOUNCE_TEXT.shortyell)
+local specWarnUnstableEssence						= mod:NewSpecialWarningYou(407327, nil, nil, nil, 1, 2)
+local yellUnstableEssence							= mod:NewShortYell(407327, DBM_CORE_L.AUTO_YELL_ANNOUNCE_TEXT.shortyell)
 local specWarnVolatileSpew							= mod:NewSpecialWarningDodgeCount(405492, nil, nil, nil, 2, 2)
 local specWarnViolentEruption						= mod:NewSpecialWarningCount(405375, nil, nil, nil, 2, 2)
 
-local timerUnstableEssenceCD						= mod:NewCDCountTimer(29.2, 405042, nil, nil, nil, 3, nil, DBM_COMMON_L.MAGIC_ICON)
+local timerUnstableEssenceCD						= mod:NewCDCountTimer(29.2, 407327, nil, nil, nil, 3, nil, DBM_COMMON_L.MAGIC_ICON)
 local timerVolatileSpewCD							= mod:NewCDCountTimer(26, 405492, nil, nil, nil, 3)
 local timerViolentEruptionCD						= mod:NewCDCountTimer(68.3, 405375, nil, nil, nil, 2, nil, DBM_COMMON_L.HEALER_ICON)
 
-mod:AddSetIconOption("SetIconOnEssence", 405042, false, 0, {1, 2, 3, 4, 5, 6, 7, 8})
+mod:AddSetIconOption("SetIconOnEssence", 407327, false, 0, {1, 2, 3, 4, 5, 6, 7, 8})
 --Rionthus
 mod:AddTimerLine(DBM:EJ_GetSectionInfo(26329))
 local warnTemporalAnomaly							= mod:NewCastAnnounce(407552, 3)
 local warnTemporalAnomalyAbsorbed					= mod:NewTargetNoFilterAnnounce(407552, 2)
-local warnDisintegrate								= mod:NewTargetAnnounce(405391, 2)
+local warnDisintegrate								= mod:NewTargetAnnounce(405392, 2)
 
 local specWarnDeepBreath							= mod:NewSpecialWarningDodgeCount(406227, nil, 18357, nil, 2, 2)
-local specWarnDisintegrate							= mod:NewSpecialWarningMoveAway(405391, nil, nil, nil, 1, 2)
-local yellDisintegrate								= mod:NewShortYell(405391)
+local specWarnDisintegrate							= mod:NewSpecialWarningMoveAway(405392, nil, nil, nil, 1, 2)
+local yellDisintegrate								= mod:NewShortYell(405392)
 
 local timerDeepBreathCD								= mod:NewCDCountTimer(42.7, 406227, 18357, nil, nil, 3, nil, DBM_COMMON_L.DEADLY_ICON)--"Breath"
 local timerTemporalAnomalyCD						= mod:NewCDCountTimer(43.7, 407552, nil, nil, nil, 5)
-local timerDisintegrateCD							= mod:NewCDCountTimer(43.7, 405391, nil, nil, nil, 3)
+local timerDisintegrateCD							= mod:NewCDCountTimer(43.7, 405392, nil, nil, nil, 3)
 
 mod.vb.rendingCount = 0
 mod.vb.massiveSlamCount = 0
@@ -91,65 +93,62 @@ mod.vb.eruptionCount = 0
 mod.vb.breathCount = 0
 mod.vb.disintegrateCount = 0
 mod.vb.anomalyCount = 0
+mod.vb.tankSafeClear = true
+local tankStacks = {}
 local essenceMarks = {}
 local bossActive = {}
-local difficultyName = "other"
 local allTimers = {
-	["mythic"] = {
-		--Rending Charge
-	--	[406358] = {14.0, 37.0, 18.0, 37.0, 18.0, 37.0},
-		--Bellowing Roar
-	--	[404713] = {36.0, 55.0, 55.0},
-		--Massive Slam
-	--	[404472] = {5.9, 18.0, 18.0, 19.0, 18.0, 18.0, 19.0, 18.0, 18.0},
-		--Volatile Spew (Working)
-	--	[405492] = {0, 20.0, 35.0, 20.0, 35.1, 20.0, 35.0},
-		--Unstable Essence (Working)
-	--	[405042] = {6.3, 33.9, 20.9, 34, 21},
-		--Violent Eruption
-	--	[405375] = {0, 55.0, 55.0, 55.0},
-		--Deep Breath
-	--	[406227] = {0, 55.0, 55.0, 55.0, 55.0},
-		--Temporal Anomaly
-	--	[407552] = {0, 22.0, 33.0, 22.0, 33.0, 22.0, 33.0},
-		--Disintegrate
-	--	[405391] = {0, 55.0, 55.0, 55.0},
-	},
-	["other"] = {
-		--Rending Charge
-	--	[406358] = {19.4, 35.2, 38.2},
-		--Bellowing Roar
-	--	[404713] = {10.9, 57.1, 38.9},
-		--Massive Slam
-	--	[404472] = {35.9, 9.7, 38.8, 38.9},
-		--Volatile Spew
-		[405492] = {5.6, 21.8, 36.4, 30.3, 30, 30.4, 33.2, 31.1, 35.2, 30.4},--Confirmed up to 5th cast
-		--Unstable Essence
-		[405042] = {16.5, 38.9, 27.5, 35.2, 27.9, 38, 27.5, 38.9, 28},
-		--Violent Eruption
-	--	[405375] = {38.4, 67.2, 66.5, 66},
-		--Deep Breath
-	--	[406227] = {31.9, 42.4, 43.1, 43.1, 43.7, 43.2, 43.2, 43.2, 43.1, 43.3, 43.2, 43.2, 43.2, 43.2, 43.2, 43.2},
-		--Temporal Anomaly
-	--	[407552] = {16.8, 46.6, 43.8, 43.8, 43.7, 43.8, 43.8, 43.7, 43.8, 43.8, 43.8, 43.7, 43.8, 43.8, 43.7, 43.8, 43.8},
-		--Disintegrate
-	--	[405391] = {6.2, 43.6, 43.6, 43.3, 43.7, 43.7, 43.7, 43.8, 43.8, 43.9, 43.7, 43.8, 43.7, 43.8, 43.8, 43.8, 43.8},
-	},
+	--Volatile Spew
+	[405492] = {5.6, 21.8, 36.4, 30.3, 30, 30.4, 33.2, 31.1, 35.2, 30.4},--Confirmed up to 5th cast
+	--Unstable Essence
+	[405042] = {16.5, 37.6, 27.5, 35.2, 27.9, 38, 27.5, 38.9, 28},
 }
 
+local updateInfoFrame
+do
+	local twipe, tsort = table.wipe, table.sort
+	local lines = {}
+	local sortedLines = {}
+	local function addLine(key, value)
+		-- sort by insertion order
+		lines[key] = value
+		sortedLines[#sortedLines + 1] = key
+	end
+	updateInfoFrame = function()
+		twipe(lines)
+		twipe(sortedLines)
+		--Show tank names and their current stacks
+		for name, count in pairs(tankStacks) do
+			addLine(name, count)
+		end
+		--Show a clear yes or no (also green or red) on whether it's safe to clear said stacks
+		if mod.vb.tankSafeClear then
+			addLine(L.SafeClear, "|cFF088A08"..YES.."|r")
+		else
+			addLine(L.SafeClear, "|cffff0000"..NO.."|r")
+		end
+		return lines, sortedLines
+	end
+end
+
+local function resetRaidDebuff(self)
+	self.vb.tankSafeClear = true
+end
+
 function mod:OnCombatStart(delay)
+	self:SetStage(1)
 	table.wipe(bossActive)
+	tankStacks = {}
 	--Neldris
 	self.vb.rendingCount = 0
 	self.vb.massiveSlamCount = 0
 	self.vb.roarCount = 0
+	self.vb.tankSafeClear = true
 	if self:IsMythic() then
-		difficultyName = "mythic"
 		timerBellowingRoarCD:Start(6-delay, 1)
 		timerRendingChargeCD:Start(14-delay, 1)
 		timerMassiveSlamCD:Start(24-delay, 1)
 	else
-		difficultyName = "other"
 		timerBellowingRoarCD:Start(10.9-delay, 1)
 		timerRendingChargeCD:Start(19.4-delay, 1)
 		timerMassiveSlamCD:Start(35.2-delay, 1)
@@ -164,28 +163,15 @@ function mod:OnCombatStart(delay)
 	self.vb.disintegrateCount = 0
 	self.vb.anomalyCount = 0
 	self:EnablePrivateAuraSound(406317, "targetyou", 2)--Rending Charge
---	if self.Options.NPAuraOnAscension then
---		DBM:FireEvent("BossMod_EnableHostileNameplates")
---	end
+	if self.Options.InfoFrame then
+		DBM.InfoFrame:SetHeader(DBM:GetSpellInfo(406313))
+		DBM.InfoFrame:Show(5, "function", updateInfoFrame, false, true)
+	end
 end
 
---function mod:OnCombatEnd()
---	if self.Options.RangeFrame then
---		DBM.RangeCheck:Hide()
---	end
---	if self.Options.InfoFrame then
---		DBM.InfoFrame:Hide()
---	end
---	if self.Options.NPAuraOnAscension then
---		DBM.Nameplate:Hide(true, nil, nil, nil, true, true)
---	end
---end
-
-function mod:OnTimerRecovery()
-	if self:IsMythic() then
-		difficultyName = "mythic"
-	else
-		difficultyName = "other"
+function mod:OnCombatEnd()
+	if self.Options.InfoFrame then
+		DBM.InfoFrame:Hide()
 	end
 end
 
@@ -254,12 +240,13 @@ function mod:SPELL_CAST_START(args)
 				timer = 33.9
 			end
 		else
-			timer = self:GetFromTimersTable(allTimers, difficultyName, false, spellId, self.vb.essenceCount+1) or 27.5
+			timer = self:GetFromTimersTable(allTimers, false, false, spellId, self.vb.essenceCount+1) or 27.5
 		end
 		timerUnstableEssenceCD:Start(timer, self.vb.essenceCount+1)
 	elseif spellId == 405492 then
 		self.vb.volatileSpewCount = self.vb.volatileSpewCount + 1
 		specWarnVolatileSpew:Show(self.vb.volatileSpewCount)
+		specWarnVolatileSpew:Play("watchstep")
 		local timer
 		if self:IsMythic() then
 			local unit = self:GetUnitIdFromGUID(args.sourceGUID)
@@ -269,7 +256,7 @@ function mod:SPELL_CAST_START(args)
 				timer = 34.9
 			end
 		else
-			timer = self:GetFromTimersTable(allTimers, difficultyName, false, spellId, self.vb.volatileSpewCount+1) or 30.3
+			timer = self:GetFromTimersTable(allTimers, false, false, spellId, self.vb.volatileSpewCount+1) or 30.3
 		end
 		timerVolatileSpewCD:Start(timer, self.vb.volatileSpewCount+1)
 	elseif spellId == 405375 or spellId == 407775 then
@@ -292,28 +279,46 @@ function mod:SPELL_CAST_START(args)
 	end
 end
 
---[[
-function mod:SPELL_CAST_SUCCESS(args)
-	local spellId = args.spellId
-	if spellId == 394917 then
-
-	end
-end
---]]
-
 function mod:SPELL_AURA_APPLIED(args)
 	local spellId = args.spellId
-	if spellId == 406311 and not args:IsPlayer() then
+	if spellId == 406313 then
 		local amount = args.amount or 1
-		if amount % 3 == 0 then--Guessed, Filler
-			warnInfusedStrikes:Show(args.destName, amount)
+		tankStacks[args.destName] = amount
+		if not args:IsPlayer() then
+			if amount % 3 == 0 then
+				if amount >= 6 then
+					--If you have no debuff, and other tank is high, you need to get a stack so you can clear that tank
+					if not DBM:UnitDebuff("player", spellId) then
+						specWarnInfusedStrikesTaunt:Show(args.destName)
+						specWarnInfusedStrikesTaunt:Play("tauntboss")
+					elseif self.vb.tankSafeClear then--You do have stacks, and it's safe to clear them with other tank
+						specWarnInfusedStrikesHug:Show(args.destName)
+						specWarnInfusedStrikesHug:Play("gathershare")
+					end
+				else
+					warnInfusedStrikes:Show(args.destName, amount)
+				end
+			end
+		else
+			--If it's safe for you to clear, and you're at 6 stacks, the warning should also be emphasized on self so you start looking for your co tank (and maybe glance at infoframe)
+			if self.vb.tankSafeClear and amount >= 6 then
+				specWarnInfusedStrikesSelf:Show(amount)
+				specWarnInfusedStrikesSelf:Play("stackhigh")
+			else
+				warnInfusedStrikes:Show(args.destName, amount)
+			end
 		end
 	elseif spellId == 407302 and self:AntiSpam(3, 1) then
-		timerInfusedStrikes:Restart()
+		self.vb.tankSafeClear = false
+		local amount = args.amount or 1
+		warnInfusedExplosion:Show(args.amount or 1)
+		timerInfusedExplosion:Restart()
+		self:Unschedule(resetRaidDebuff)
+		self:Schedule(21, resetRaidDebuff, self)--1 extra second for good measure
 	elseif spellId == 407327 then
 		local amount = args.amount or 1
 		if amount == 1 then
-			warnUnstableEssenceTargets:CombinedShow(0.3, args.destName)
+			warnUnstableEssenceTargets:CombinedShow(1, args.destName)
 			if args:IsPlayer() then
 				specWarnUnstableEssence:Show()
 				specWarnUnstableEssence:Play("targetyou")
@@ -362,18 +367,10 @@ function mod:SPELL_AURA_REMOVED(args)
 				end
 			end
 		end
+	elseif spellId == 406313 then
+		tankStacks[args.destName] = nil
 	end
 end
-
---[[
-function mod:SPELL_PERIODIC_DAMAGE(_, _, _, _, destGUID, _, _, _, spellId, spellName)
-	if spellId == 370648 and destGUID == UnitGUID("player") and self:AntiSpam(2, 2) then
-		specWarnGTFO:Show(spellName)
-		specWarnGTFO:Play("watchfeet")
-	end
-end
-mod.SPELL_PERIODIC_MISSED = mod.SPELL_PERIODIC_DAMAGE
---]]
 
 function mod:UNIT_DIED(args)
 	local cid = self:GetCIDFromGUID(args.destGUID)
@@ -392,11 +389,6 @@ function mod:UNIT_DIED(args)
 	end
 end
 
---TODO
---All boss abilities are cast based on energy. on mythic they gain 2 energy per second, and then cast ultimate then 5 seconds before gaining again
---They gain energy before active on mythic, so on activation energy needs to be checked for more precise initial timers
---as for CD handlers on spell casts, again those should check energy to know which of the alternating cycle is next instead of assuming it based on count
---This work is put off until mythic transcriptor logs because they just provide more meaningful side by side energy to spellcast
 function mod:INSTANCE_ENCOUNTER_ENGAGE_UNIT()
 	for i = 1, 3 do
 		local unitID = "boss"..i
@@ -405,6 +397,7 @@ function mod:INSTANCE_ENCOUNTER_ENGAGE_UNIT()
 			bossActive[GUID] = true
 			local cid = self:GetCIDFromGUID(GUID)
 			if cid == 200918 then--Rionthus
+				self:SetStage(3)--Rare exception of stage not matching journal but it should have
 				if self:IsMythic() then
 					--Boss gains 2 energy per second, but +5 seconds after hitting 100 before restarting
 					--Temporal Anomaly is cast at 17 mythic
@@ -450,6 +443,7 @@ function mod:INSTANCE_ENCOUNTER_ENGAGE_UNIT()
 					timerDeepBreathCD:Start(30.4, 1)
 				end
 			elseif cid == 200913 then--Thadrion
+				self:SetStage(2)--Rare exception of stage not matching journal but it should have
 				if self:IsMythic() then
 					--Boss gains 2 energy per second, but +5 seconds after hitting 100 before restarting
 					--Volatile Spew is cast at 30 and 75 Energy on mythic

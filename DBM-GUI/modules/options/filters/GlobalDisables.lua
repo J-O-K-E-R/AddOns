@@ -10,19 +10,17 @@ spamSpecAnnounceFeat:CreateCheckButton(L.SpamBlockNoSpecWarnVibrate, true, nil, 
 spamSpecAnnounceFeat:CreateCheckButton(L.SpamBlockNoSpecWarnSound, true, nil, "DontPlaySpecialWarningSound")
 
 local spamTimers = spamPanel:CreateArea(L.Area_SpamFilter_Timers)
-spamTimers:CreateCheckButton(L.SpamBlockNoShowTimers, true, nil, "DontShowBossTimers")
+spamTimers:CreateCheckButton(L.SpamBlockNoShowBossTimers, true, nil, "DontShowBossTimers")
+spamTimers:CreateCheckButton(L.SpamBlockNoShowTrashTimers, true, nil, "DontShowTrashTimers")
+spamTimers:CreateCheckButton(L.SpamBlockNoShowEventTimers, true, nil, "DontShowEventTimers")
 spamTimers:CreateCheckButton(L.SpamBlockNoShowUTimers, true, nil, "DontShowUserTimers")
 spamTimers:CreateCheckButton(L.SpamBlockNoCountdowns, true, nil, "DontPlayCountdowns")
 
 local spamNameplates = spamPanel:CreateArea(L.Area_SpamFilter_Nameplates)
 spamNameplates:CreateCheckButton(L.SpamBlockNoNameplate, true, nil, "DontShowNameplateIcons")
-if _G["Plater"] then
-	spamNameplates:CreateCheckButton(L.SpamBlockNoBossGUIDs, true, nil, "DontSendBossGUIDs")
-	spamNameplates:CreateCheckButton(L.SpamBlockTimersWithNameplates, true, nil, "DontShowTimersWithNameplates")
-else
-	local infotext = spamNameplates:CreateText(L.NameplateFooter, nil, false, GameFontNormalSmall, "LEFT", 25)
-	infotext:SetPoint("BOTTOMLEFT", spamNameplates.frame, "BOTTOMLEFT", 10, 10)
-end
+spamNameplates:CreateCheckButton(L.SpamBlockNoNameplateCD, true, nil, "DontShowNameplateIconsCD")
+spamNameplates:CreateCheckButton(L.SpamBlockNoBossGUIDs, true, nil, "DontSendBossGUIDs")
+spamNameplates:CreateCheckButton(L.SpamBlockTimersWithNameplates, true, nil, "DontShowTimersWithNameplates")
 
 local spamMisc = spamPanel:CreateArea(L.Area_SpamFilter_Misc)
 spamMisc:CreateCheckButton(L.SpamBlockNoSetIcon, true, nil, "DontSetIcons")

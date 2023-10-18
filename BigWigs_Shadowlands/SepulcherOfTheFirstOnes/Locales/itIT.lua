@@ -6,9 +6,6 @@ end
 
 L = BigWigs:NewBossLocale("Skolex, the Insatiable Ravener", "itIT")
 if L then
-	L.custom_on_stop_timers = "Mostra sempre le barre delle abilità"
-	L.custom_on_stop_timers_desc = "Skolex può ritardare le sue abilità. Quando questa opzione è attiva, le barre di quelle abilità rimarranno a schermo."
-
 	L.tank_combo_desc = "Conto alla Rovescia per il lancio di Fendifauce/Squartamento al raggiungimento di 100 energia."
 end
 
@@ -90,9 +87,6 @@ if L then
 
 	L.bomb_dropped = "Bomba rilasciata"
 	L.volatile_charges_new = "Nuove Bombe!"
-
-	L.custom_on_stop_timers = "Mostra sempre le barre delle abilità"
-	L.custom_on_stop_timers_desc = "Halondrus può ritardare le sue abilità. Quando questa opzione è attiva, le barre per le sue abilità rimarranno a schermo."
 end
 
 L = BigWigs:NewBossLocale("Lords of Dread", "itIT")

@@ -61,7 +61,7 @@ function mod:GetOptions()
 		shadowsteelChainsMarker,
 		355534, -- Shadowsteel Embers
 		355536, -- Summon Shadowsteel Horror
-		357735, -- Final Scream
+		{357735, "CASTBAR"}, -- Final Scream
 	},{
 		["stages"] = "general",
 	},{

@@ -43,8 +43,9 @@ if L then
 	L.infernal = "Infernaux"
 	L.infernal_desc = "Affiche le temps de recharge des invocations d'infernaux."
 	L.infernal_bar = "Arrivée d'un infernal"
-	L.infernal_warning = "Arrivée d'un infernal dans 17 sec. !"
 	L.infernal_message = "Infernal ! Flammes infernales dans 5 sec. !"
+	L.infernal_trigger1 = "Vous n'affrontez pas seulement"
+	L.infernal_trigger2 = "toutes les dimensions me sont"
 end
 
 L = BigWigs:NewBossLocale("Moroes Raid", "frFR")
@@ -90,9 +91,9 @@ if L then
 	L.phase = "Phases"
 	L.phase_desc = "Prévient quand la rencontre entre dans une nouvelle phase."
 	L.phase1_trigger = "Quel démon es-tu pour me tourmenter ainsi ?"
- 	L.phase1_message = "Acte I - Julianne"
+	L.phase1_message = "Acte I - Julianne"
 	L.phase2_trigger = "Tu veux donc me provoquer ? Eh bien, à toi, enfant."
- 	L.phase2_message = "Acte II - Romulo"
+	L.phase2_message = "Acte II - Romulo"
 	L.phase3_trigger = "Viens, gentille nuit ; rends-moi mon Romulo !"
 	L.phase3_message = "Acte III - Les deux"
 
@@ -169,3 +170,7 @@ if L then
 	L.tito = "Tito"
 end
 
+L = BigWigs:NewBossLocale("Hyakiss the Lurker", "frFR")
+if L then
+	L.name = "Hyakiss la Rôdeuse"
+end

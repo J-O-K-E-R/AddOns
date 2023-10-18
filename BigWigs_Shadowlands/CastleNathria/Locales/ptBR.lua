@@ -49,9 +49,6 @@ if L then
 	L.anima_tracking = "Rastreamento de Ânima |cffff0000(Experimental)|r"
 	L.anima_tracking_desc = "Mensagens e barras para rastrear os níveis de ânima nos contêiners.|n|cffaaff00Dica: Você pode desativar a caixa de informação ou as barras, dependendo da sua preferência."
 
-	L.custom_on_stop_timers = "Sempre mostrar as barras de habilidade"
-	L.custom_on_stop_timers_desc = "Somente para testes por enquanto"
-
 	L.desires = "Desejos"
 	L.bottles = "Garrafas"
 	L.sins = "Pecados"
@@ -101,9 +98,6 @@ if L then
 
 	L.skirmishers = "Escaramuçadores" -- Short for Stone Legion Skirmishers
 	L.eruption = "Erupção" -- Short for Reverberating Eruption
-
-	L.custom_on_stop_timers = "Sempre mostrar barras de habilidades"
-	L.custom_on_stop_timers_desc = "Somente para testes por enquanto"
 
 	L.goliath_short = "Golias"
 	L.goliath_desc = "Mostra avisos e temporizadores para quando forem surgir os Golias da Legião de Pedra."

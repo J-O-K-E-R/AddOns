@@ -363,7 +363,7 @@ function SA:ToggleArmory()
 	_G.CharacterFrame.ItemLevelText:SetText('')
 
 	PaperDollFrame_UpdateStats()
-	M:UpdateCharacterItemLevel()
+	M:UpdateCharacterInfo()
 	if not E.db.general.itemLevel.displayCharacterInfo then
 		_G.CharacterFrame.ItemLevelText:SetText('')
 	end
@@ -914,7 +914,7 @@ local blizzFuncs = {
 	--* Update Stats
 	PaperDollFrame_UpdateStats = SA.PaperDollFrame_UpdateStats,
 	--* Avg Item Level
-	M = { UpdateCharacterItemLevel = SA.UpdateCharacterItemLevel, ToggleItemLevelInfo = SA.UpdateCharacterItemLevel, UpdateAverageString = SA.UpdateCharacterItemLevel},
+	M = { UpdateCharacterInfo = SA.UpdateCharacterItemLevel, ToggleItemLevelInfo = SA.UpdateCharacterItemLevel, UpdateAverageString = SA.UpdateCharacterItemLevel},
 }
 
 function SA:ToggleFunctionHooks()

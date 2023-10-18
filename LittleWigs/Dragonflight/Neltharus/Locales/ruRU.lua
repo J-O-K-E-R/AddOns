@@ -4,6 +4,7 @@ if L then
 	L.custom_on_autotalk = "Авторазговор"
 	--L.custom_on_autotalk_desc = "Instantly selects the gossip options to get profession buffs."
 
+	L.burning_chain = "Горящая цепь"
 	L.qalashi_warden = "Куалаши-страж"
 	L.qalashi_hunter = "Куалаши-охотник"
 	L.overseer_lahar = "Надзиратель Лахар"
@@ -24,7 +25,6 @@ end
 L = BigWigs:NewBossLocale("Chargath, Bane of Scales", "ruRU")
 if L then
 	L.slow = "Замедление"
-	L.boss = "БОССЕ"
 end
 
 L = BigWigs:NewBossLocale("Warlord Sargha", "ruRU")

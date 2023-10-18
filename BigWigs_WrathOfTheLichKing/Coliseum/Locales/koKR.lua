@@ -14,8 +14,6 @@ if L then
 	L.nerubian_burrower = "땅무지 추가"
 
 	L.shadow_soon = "약 5초 후 어둠의 일격!"
-
-	L.chase = "추격"
 end
 
 L = BigWigs:NewBossLocale("The Beasts of Northrend", "koKR")
@@ -34,7 +32,6 @@ if L then
 	-- Gormok
 	L.snobold = "스노볼트"
 	L.snobold_desc = "스노볼트가 누구의 머리위에 있는지를 알립니다."
-	L.snobold_message = "스노볼트 추가"
 
 	-- Jormungars
 	L.submerge = "잠수"

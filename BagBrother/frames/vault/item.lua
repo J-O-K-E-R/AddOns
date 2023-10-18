@@ -23,7 +23,7 @@ end
 --[[ Interaction ]]--
 
 function Item:OnClick(button)
-	if not (HandleModifiedItemClick(self.info.link) or IsModifiedClick() or self:IsCached()) then
+	if not (HandleModifiedItemClick(self.info.hyperlink) or IsModifiedClick() or self:IsCached()) and self.bag == 1 then
 		local isRight = button == 'RightButton'
 		local type, _, link = GetCursorInfo()
 
@@ -35,9 +35,9 @@ function Item:OnClick(button)
 					end
 				end
 			end
-		elseif isRight and self.info.locked then
+		elseif isRight and self.info.isLocked then
 			for i = 1,9 do
-				if GetVoidTransferWithdrawalInfo(i) == self.info.id then
+				if GetVoidTransferWithdrawalInfo(i) == self.info.itemID then
 					ClickVoidTransferWithdrawalSlot(i, true)
 				end
 			end
@@ -55,11 +55,11 @@ function Item:ShowTooltip()
 	if not self:IsCached() then
 		GameTooltip:SetOwner(self:GetTipAnchor())
 
-		if self.bag == 0 then
+		if self.bag == 1 then
 			GameTooltip:SetVoidItem(1, self:GetID())
-		elseif self.bag == 1 then
-			GameTooltip:SetVoidDepositItem(self:GetID())
 		elseif self.bag == 2 then
+			GameTooltip:SetVoidDepositItem(self:GetID())
+		elseif self.bag == 3 then
 			GameTooltip:SetVoidWithdrawalItem(self:GetID())
 		end
 

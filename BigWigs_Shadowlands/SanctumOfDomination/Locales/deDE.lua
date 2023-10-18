@@ -49,8 +49,6 @@ end
 L = BigWigs:NewBossLocale("Remnant of Ner'zhul", "deDE")
 if L then
 	L.cones = "Kegel" -- Grasp of Malice
-	L.orbs = "Kugeln" -- Orb of Torment
-	L.orb = "Kugel" -- Orb of Torment
 end
 
 L = BigWigs:NewBossLocale("Soulrender Dormazain", "deDE")
@@ -89,9 +87,6 @@ end
 
 L = BigWigs:NewBossLocale("Guardian of the First Ones", "deDE")
 if L then
-	L.custom_on_stop_timers = "Fähigkeitenleisten immer anzeigen"
-	L.custom_on_stop_timers_desc = "Die Fähigkeiten des Wächters können sich verzögern. Wenn diese Option ausgewählt ist, werden die Leisten für diese Fähigkeiten bestehen bleiben."
-
 	 L.bomb_missed = "%dx Bomben verfehlt"
 end
 

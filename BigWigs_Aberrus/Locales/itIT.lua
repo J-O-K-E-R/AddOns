@@ -1,21 +1,12 @@
-local L = BigWigs:NewBossLocale("Kazzara, the Hellforged", "itIT")
+local L = BigWigs:NewBossLocale("The Amalgamation Chamber", "itIT")
 if not L then return end
-if L then
-	L.dread_rift = "Fenditura" -- Singular Dread Rift
-end
-
-L = BigWigs:NewBossLocale("The Amalgamation Chamber", "itIT")
 if L then
 	L.custom_on_fade_out_bars = "Dissolvenza Barre Fase 1"
 	L.custom_on_fade_out_bars_desc = "Dissolvi le barre del boss che fuori raggio d'azione in Fase 1."
 
 	L.coalescing_void = "Scappa"
-	L.shadow_convergence = "Globi"
 	L.molten_eruption = "Assorbi"
 	L.swirling_flame = "Tornado"
-	L.gloom_conflagration = "Meteora + Scappare"
-	L.blistering_twilight = "Bombe + Tornado"
-	L.convergent_eruption = "Assorbi + Globi"
 	L.shadowflame_burst = "Cono Frontale"
 
 	L.shadow_and_flame = "Penalità Mitico"
@@ -30,7 +21,6 @@ if L then
 	L.custom_on_unstable_essence_high_desc = "Messaggio di chat con il numero di accumuli per il tuo maleficio di Essenza Instabile quando sono troppi."
 	L.volatile_spew = "Evita"
 	L.volatile_eruption = "Erupzione"
-	L.temporal_anomaly = "Globo Curativo"
 	L.temporal_anomaly_knocked = "Globo Curativo Intercettato"
 end
 
@@ -41,10 +31,7 @@ if L then
 	--L.zaqali_aide_north_emote_trigger = "northern battlement" -- Commanders ascend the northern battlement!
 	--L.zaqali_aide_south_emote_trigger = "southern battlement" -- Commanders ascend the southern battlement!
 
-	L.north = "Nord"
-	L.south = "Sud"
 	--L.both = "Both"
-
 	--L.zaqali_aide_message = "%s Climbing %s" -- Big Adds Climbing North
 	L.add_bartext = "%s: %s (%d)"
 	--L.boss_returns = "Boss Lands: North"
@@ -61,7 +48,7 @@ if L then
 	L.energy_gained = "Energia Guadagnata: %d"
 
 	-- Mythic
-	L.unleash_shadowflame = "Globi Mitico"
+	--L.shadowflame_energy = "Heal Absorb"
 end
 
 L = BigWigs:NewBossLocale("The Vigilant Steward, Zskarn", "itIT")
@@ -82,16 +69,16 @@ end
 
 L = BigWigs:NewBossLocale("Echo of Neltharion", "itIT")
 if L then
-	L.custom_on_repeating_sunder_reality = "Ripeti Avviso per Frammentazione della Realtà"
-	L.custom_on_repeating_sunder_reality_desc = "Ripeti un messaggio durante il lancio di Distruzione d'Ebano fino a che non entri dentro un portale."
-
 	L.twisted_earth = "Muri"
 	L.echoing_fissure = "Fessura"
 	L.rushing_darkness = "Distruggi Linee"
 
 	L.umbral_annihilation = "Annientamento"
-	L.sunder_reality = "Portali"
 	L.ebon_destruction = "Big Bang"
+
+	--L.wall_breaker = "Wall Breaker (Mythic)"
+	--L.wall_breaker_desc = "A player targeted by Rushing Darkness will be chosen as the wall breaker. They will be marked ({rt6}) and send a message in say chat. This is restricted to Mythic difficulty on stage 1."
+	--L.wall_breaker_message = "Wall Breaker"
 end
 
 L = BigWigs:NewBossLocale("Scalecommander Sarkareth", "itIT")
@@ -103,4 +90,18 @@ if L then
 
 	--L.boss_immune = "Boss Immune"
 	--L.ebon_might = "Adds Immune"
+end
+
+L = BigWigs:NewBossLocale("Aberrus, the Shadowed Crucible Trash", "itIT")
+if L then
+	L.edgelord = "Campionessa della Soglia Frammentata" -- NPC 198873
+	L.naturalist = "Naturalista Frammentato" -- NPC 201746
+	L.siegemaster = "Maestro d'Assedio Frammentato" -- NPC 198874
+	L.banner = "Stendardo" -- Short for "Sundered Flame Banner" NPC 205638
+	L.arcanist = "Arcanista Frammentata" -- NPC 201736
+	L.chemist = "Alchimista Frammentata" -- NPC 205656
+	L.fluid = "Fluido d'Animazione" -- NPC 203939
+	L.slime = "Poltiglia Ribollente" -- NPC 205651
+	L.goo = "Viscidume Strisciante" -- NPC 205820
+	L.whisper = "Sussurro nell'Oscurità" -- NPC 203806
 end

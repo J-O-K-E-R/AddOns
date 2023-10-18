@@ -30,6 +30,7 @@ L.LOAD_MOD_DISABLED						= "%s is installed but currently disabled. This mod wil
 L.LOAD_MOD_DISABLED_PLURAL				= "%s are installed but currently disabled. These mods will not be loaded unless you enable them."
 
 L.COPY_URL_DIALOG						= "Copy URL"
+L.COPY_WA_DIALOG						= "Copy WA Key"
 
 --Post Patch 7.1
 L.NO_RANGE								= "Range Radar can not be used in instances. Legacy text range frame used instead"
@@ -73,6 +74,7 @@ L.TRANSCRIPTOR_LOG_START				= "Transcriptor logging started."
 L.TRANSCRIPTOR_LOG_END					= "Transcriptor logging ended."
 
 L.MOVIE_SKIPPED							= L.DBM .. " has attempted to skip a cut scene automatically."
+L.MOVIE_NOTSKIPPED							= L.DBM .. " has detected a skipable cut scene but has NOT skipped it due to a blizzard bug. When this bug is fixed, skipping will be re-enabled"
 L.BONUS_SKIPPED							= L.DBM .. " has automatically closed bonus loot frame. If you need to get this frame back, type /dbmbonusroll within 3 minutes"
 
 L.AFK_WARNING							= "You are AFK and in combat (%d percent health remaining), firing sound alert. If you are not AFK, clear your AFK flag or disable this option in 'extra features'."
@@ -182,10 +184,11 @@ L.VOICE_MISSING							= "You have a " .. L.DBM .. " voice pack selected that cou
 L.VOICE_DISABLED						= "You currently have at least one " .. L.DBM .. " voice pack installed but none enabled. If you intend to use a voice pack, make sure it's chosen in 'Spoken Alerts', else uninstall unused voice packs to hide this message"
 L.VOICE_COUNT_MISSING					= "Countdown voice %d is set to a voice/count pack that could not be found. It has been reset to default setting: %s."
 L.BIG_WIGS								= "BigWigs"
+L.WEAKAURA_KEY							= " (|cff308530WA Key:|r %s)"
 
 L.UPDATEREMINDER_HEADER					= "Your version of " .. L.DEADLY_BOSS_MODS.. " is out-of-date.\n Version %s (%s) is available for download through Curse, Wago, WoWI, or from GitHub Releases page"
 L.UPDATEREMINDER_FOOTER					= "Press " .. (IsMacClient() and "Cmd-C" or "Ctrl-C")  ..  " to copy the download link to your clipboard."
-L.UPDATEREMINDER_FOOTER_GENERIC			= "Press " .. (IsMacClient() and "Cmd-C" or "Ctrl-C")  ..  " to copy the link to your clipboard."
+L.UPDATEREMINDER_FOOTER_GENERIC			= "Press " .. (IsMacClient() and "Cmd-C" or "Ctrl-C")  ..  " to copy to your clipboard."
 L.UPDATEREMINDER_DISABLE				= "WARNING: Due to your " .. L.DEADLY_BOSS_MODS.. " being out of date and incompatible with newer versions of DBM, it has been force disabled and cannot be used until updated. This is to ensure incompatible mods do not cause poor play experience for yourself or fellow group members."
 L.UPDATEREMINDER_DISABLETEST			= "WARNING: Due to your " .. L.DEADLY_BOSS_MODS.. " being out of date and this being a test/beta realm, it has been force disabled and cannot be used until updated. This is to ensure out of date mods aren't being used to generate test feedback"
 L.UPDATEREMINDER_HOTFIX					= L.DBM .. " version you are on has known issues during this boss encounter that are corrected if you update to latest release"
@@ -201,6 +204,7 @@ L.DBMLDB								= "WARNING: DBM-LDB is now built into DBM-Core. While it won't d
 L.DBMLOOTREMINDER						= "WARNING: 3rd party mod DBM-LootReminder is installed. This addon is no longer compatible with Retail WoW client and will cause " .. L.DBM .. " to break and not be able to send pull timers. Uninstall of this addon recommended"
 L.UPDATE_REQUIRES_RELAUNCH				= "WARNING: This " .. L.DBM .. " update will not work correctly if you don't fully restart your game client. This update contains new files or .toc file changes that cannot be loaded via ReloadUI. You may encounter broken functionality or errors if you continue without a client restart."
 L.OUT_OF_DATE_NAG						= "Your version of " .. L.DBM.. " is out-of-date and this specific fight mod has newer features or bug fixes. It is recommended you update for this fight to improve your experience."
+L.PLATER_NP_AURAS_MSG					= "DBM includes an advanced feature to show enemy cooldown timers using icons on nameplates. This is on by default for most users, but for Plater users it is off by default in Plater options unless you enable it. To get the most out of DBM (and Plater) it's recommended you enable this feature in Plater under 'Buff Special' section. If you don't want to see this message again, you can also just entirely disable 'Cooldown icons on nameplates' option in DBM global disable or nameplate options panels"
 
 L.MOVABLE_BAR							= "Drag me!"
 
@@ -462,20 +466,33 @@ L.AUTO_TIMER_TEXTS = {
 	active								= "%s ends",--Buff/Debuff/event on boss
 	fades								= "%s fades",--Buff/Debuff on players
 	ai									= "%s AI",
-	cd									= "~%s",
-	cdcount								= "~%s (%%s)",
-	cdsource							= "~%s: >%%s<",
-	cdspecial							= "~Special",
+
+	cd									= "%s",--Now same as next, as the ~ was moved to timer number
+	cdcount								= "%s (%%s)",--Now same as next, as the ~ was moved to timer number
+	cdsource							= "%s: >%%s<",--Now same as next, as the ~ was moved to timer number
+	cdspecial							= "Special",--Now same as next, as the ~ was moved to timer number
+
 	next								= "%s",
 	nextcount							= "%s (%%s)",
-	nextsource							= "%s: %%s",
+	nextsource							= "%s: >%%s<",
 	nextspecial							= "Special",
+
 	achievement							= "%s",
 	stage								= "Stage",
+	stagecount							= "Stage %%s",
+	stagecountcycle						= "Stage %%s (%%s)",--Example: Stage 2 (3) for a fight that alternates stage 1 and stage 2, but also tracks total cycles
+	Intermission						= "Intermission",
+	Intermissioncount					= "Intermission %%s",
 	adds								= "Adds",
 	addscustom							= "Adds (%%s)",
 	roleplay							= GUILD_INTEREST_RP or "Roleplay"
 }
+--This basically clones np only bar option and display text from regular counterparts
+L.AUTO_TIMER_TEXTS.cdnp = L.AUTO_TIMER_TEXTS.cd
+L.AUTO_TIMER_TEXTS.nextnp = L.AUTO_TIMER_TEXTS.next
+L.AUTO_TIMER_TEXTS.cdcountnp = L.AUTO_TIMER_TEXTS.cdcount
+L.AUTO_TIMER_TEXTS.nextcountnp = L.AUTO_TIMER_TEXTS.nextcount
+
 
 L.AUTO_TIMER_OPTIONS = {
 	target								= "Show timer for $spell:%s debuff",
@@ -488,14 +505,22 @@ L.AUTO_TIMER_OPTIONS = {
 	ai									= "Show AI timer for $spell:%s cooldown",
 	cd									= "Show timer for $spell:%s cooldown",
 	cdcount								= "Show timer for $spell:%s cooldown",
+	cdnp								= "Show nameplate only timer for $spell:%s cooldown",
+	cdnpcount							= "Show nameplate only timer (with count) for $spell:%s cooldown",
 	cdsource							= "Show timer (with source) for $spell:%s cooldown",--Maybe better wording?
 	cdspecial							= "Show timer for special ability cooldown",
 	next								= "Show timer for next $spell:%s",
 	nextcount							= "Show timer for next $spell:%s",
+	nextnp								= "Show nameplate only timer for next $spell:%s",
+	nextnpcount							= "Show nameplate only timer (with count) for next $spell:%s",
 	nextsource							= "Show timer (with source) for next $spell:%s",--Maybe better wording?
 	nextspecial							= "Show timer for next special ability",
 	achievement							= "Show timer for %s",
 	stage								= "Show timer for next stage",
+	stagecount							= "Show timer (with count) for next stage",
+	stagecountcycle						= "Show timer (with stage count and cycle count) for next stage",
+	intermission						= "Show timer for next intermission",
+	intermissioncount					= "Show timer (with count) for next intermission",
 	adds								= "Show timer for incoming adds",
 	addscustom							= "Show timer for incoming adds",
 	roleplay							= "Show timer for roleplay duration"--This does need localizing though.
@@ -557,7 +582,7 @@ L.AUTO_INFO_FRAME_OPTION_TEXT2			= "Show info frame for encounter overview"
 L.AUTO_INFO_FRAME_OPTION_TEXT3			= "Show info frame for $spell:%s (when threshold of %%s is met)"
 L.AUTO_READY_CHECK_OPTION_TEXT			= "Play ready check sound when boss is pulled (even if it's not targeted)"
 L.AUTO_SPEEDCLEAR_OPTION_TEXT			= "Show timer for fastest clear of %s"
-L.AUTO_PRIVATEAURA_OPTION_TEXT			= "Play DBM sound alerts for $spell:%s private auras on this fight. Sound Priority: Voice pack if available, Air Horn fallback"
+L.AUTO_PRIVATEAURA_OPTION_TEXT			= "Play DBM sound alerts for $spell:%s private auras on this fight."
 
 -- New special warnings
 L.MOVE_WARNING_BAR						= "Announce movable"

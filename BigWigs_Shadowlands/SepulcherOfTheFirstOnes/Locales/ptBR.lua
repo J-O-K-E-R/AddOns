@@ -6,9 +6,6 @@ end
 
 L = BigWigs:NewBossLocale("Skolex, the Insatiable Ravener", "ptBR")
 if L then
-	L.custom_on_stop_timers = "Sempre mostrar barras de habilidade"
-	L.custom_on_stop_timers_desc = "Skolex pode atrasar suas habilidades. Se esta opção for ativada, as barras para essas habilidades permanecem."
-
 	L.tank_combo_desc = "Temporizador de habilidade para Gorja da Fenda/Dilacerar com 100 de energia."
 end
 
@@ -90,9 +87,6 @@ if L then
 
 	L.bomb_dropped = "Bomba Derrubada"
 	--L.volatile_charges_new = "New Bombs!"
-
-	L.custom_on_stop_timers = "Sempre mostrar barras de habilidade"
-	L.custom_on_stop_timers_desc = "Skolex pode atrasar suas habilidades. Se esta opção for ativada, as barras para essas habilidades permanecem."
 end
 
 L = BigWigs:NewBossLocale("Lords of Dread", "ptBR")

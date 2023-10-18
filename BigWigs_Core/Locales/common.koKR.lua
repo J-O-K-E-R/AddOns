@@ -22,6 +22,7 @@ L.count_rticon = "%s (%d{rt%d})"
 L.rticon = "%s ({rt%d})"
 L.near = "당신 근처에 %s"
 L.on_group = "파티에 %s" -- spell on group
+--L.boss = "BOSS"
 
 L.phase = "%d단계"
 L.stage = "%d단계"
@@ -75,7 +76,7 @@ L.custom_sec = "%2$d초 후 %1$s"
 
 L.focus_only = "|cffff0000주시 대상만 경고합니다.|r "
 L.trash = "일반몹"
---L.affixes = "Affixes" -- Seasonal affixes for raids and mythic+ dungeons
+L.affixes = "어픽스" -- Seasonal affixes for raids and mythic+ dungeons
 
 -- Common raid marking locale
 L.marker = "%s 징표 표시"
@@ -96,10 +97,27 @@ L.amount_two = "%.1f만" -- Millions 1,000,000
 L.amount_three = "%d천" -- Thousands 1,000
 L.seconds = "%.1f초" -- 1.1 seconds
 
+-- Directions
+--L.top = "Top"
+--L.up = "Up"
+--L.middle = "Middle"
+--L.down = "Down"
+--L.bottom = "Bottom"
+--L.left = "Left"
+--L.right = "Right"
+L.north = "북쪽"
+--L.north_east = "North-East"
+--L.east = "East"
+--L.south_east = "South-East"
+L.south = "남쪽"
+--L.south_west = "South-West"
+--L.west = "West"
+--L.north_west = "North-West"
+
 -- Common ability name replacements
 L.tank_combo = "탱크 콤보" -- Used for tank swap mechanics where the boss casts a sequence of tank buster attacks
 L.laser = "레이저" -- Used for abilities that act like a laser. Usually from the boss to a player, or, from the boss to a specific area
---L.lasers = "Lasers" -- Plural of L.lasers
+L.lasers = "레이저" -- Plural of L.lasers
 L.beam = "광선" -- Similar to "Laser" (a beam from boss to player/boss to area) but can be used to better describe certain abilities that don't look like a Laser
 L.beams = "광선" -- Plural of L.beam
 L.bomb = "폭탄" -- Used for debuffs that make players explode
@@ -107,15 +125,23 @@ L.bombs = "폭탄" -- Plural of L.bomb
 L.explosion = "폭발" -- When the explosion from a bomb-like ability will occur
 L.fixate = "시선 고정" -- Used when a boss or add is chasing/fixated on a player
 L.knockback = "넉백" -- Used when an ability knocks players away from a certain point, like a "smash" type ability that knocks you back 10 meters
---L.pushback = "Pushback" -- Used when an ability slowly and continually pushes a player away, like winds gradually pushing you away over time
+L.pushback = "밀림" -- Used when an ability slowly and continually pushes a player away, like winds gradually pushing you away over time
 L.traps = "덫" -- Used for abilities that act like traps on the floor e.g. move into it and something bad happens like you die, or are rooted, etc.
 L.meteor = "유성" -- This one will probably only ever be used for actual meteors
 L.shield = "보호막" -- Abilities that absorb damage/healing creating a "shield" around the boss/player e.g. "Shield on boss" or "Shield remaining"
 L.teleport = "순간이동" -- A boss/add/etc teleported somewhere
 L.fear = "공포" -- For abilities that cause you to flee in fear
---L.breath = "Breath" -- When a boss breathes fire/frost/etc on to a player or the raid e.g. a Dragon breathing fire on everyone
---L.roar = "Roar" -- When a boss opens their mouth to let out a loud roar, sometimes used to inflict damage on the raid
---L.leap = "Leap" -- When a boss leaps through the air from one location to another location, or from a location to a player, etc
---L.full_energy = "Full Energy" -- When a boss reaches full/maximum energy, usually the boss will cast something big and powerful when this happens
---L.pool = "Pool" -- A pool or puddle on the ground, usually something bad that you should avoid standing in
---L.pools = "Pools" -- Plural of L.pool
+L.breath = "브레스" -- When a boss breathes fire/frost/etc on to a player or the raid e.g. a Dragon breathing fire on everyone
+L.roar = "포효" -- When a boss opens their mouth to let out a loud roar, sometimes used to inflict damage on the raid
+L.leap = "도약" -- When a boss leaps through the air from one location to another location, or from a location to a player, etc
+L.full_energy = "기력 최대" -- When a boss reaches full/maximum energy, usually the boss will cast something big and powerful when this happens
+L.pool = "바닥" -- A pool or puddle on the ground, usually something bad that you should avoid standing in
+L.pools = "바닥" -- Plural of L.pool
+L.totem = "토템" -- A totem, usually summoned by a boss, the same thing that shamans summon
+L.totems = "토템" -- Plural of L.totem
+L.portal = "차원문" -- A portal somewhere, usually leading to a different location
+L.portals = "차원문" -- Plural of L.portal
+L.rift = "균열" -- Can be used in a similar way as a portal e.g. "Time Rift" but can also be used as a debuff/pool underneath you that you need to run through to remove/despawn it e.g. "Dread Rift"
+L.rifts = "균열" -- Plural of L.rift
+L.orb = "보주" -- A ball/sphere object usually moving and you need to avoid it
+L.orbs = "보주" -- Plural for L.orb

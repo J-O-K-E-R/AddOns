@@ -7,4 +7,7 @@
   <Script file="zones\thaldraszus.lua"/>
   <Script file="zones\waking_shores.lua"/>
   <Script file="zones\zaralek_cavern.lua"/>
+  <!--  -->
+  <Script file="zones\dragonraces.lua"/>
+  <Script file="zones\secrets_of_azeroth.lua"/>
 </Ui>

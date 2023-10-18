@@ -34,11 +34,12 @@ local GetTitleName = GetTitleName
 local GetUnitSpeed = GetUnitSpeed
 local HasPetUI = HasPetUI
 local IsInGroup = IsInGroup
-local IsInRaid = IsInRaid
 local IsInInstance = IsInInstance
+local IsInRaid = IsInRaid
 local QuestDifficultyColors = QuestDifficultyColors
-local UnitBattlePetLevel = UnitBattlePetLevel
+local UIParent = UIParent
 local UnitAffectingCombat = UnitAffectingCombat
+local UnitBattlePetLevel = UnitBattlePetLevel
 local UnitClass = UnitClass
 local UnitClassification = UnitClassification
 local UnitDetailedThreatSituation = UnitDetailedThreatSituation
@@ -175,8 +176,8 @@ end
 E.TagFunctions.Abbrev = Abbrev
 
 -- percentages at which the bar should change color
-local STAGGER_YELLOW_TRANSITION = STAGGER_YELLOW_TRANSITION
-local STAGGER_RED_TRANSITION = STAGGER_RED_TRANSITION
+local STAGGER_YELLOW_TRANSITION = STAGGER_YELLOW_TRANSITION or 0.3
+local STAGGER_RED_TRANSITION = STAGGER_RED_TRANSITION or 0.6
 -- table indices of bar colors
 local STAGGER_GREEN_INDEX = STAGGER_GREEN_INDEX or 1
 local STAGGER_YELLOW_INDEX = STAGGER_YELLOW_INDEX or 2
@@ -239,8 +240,8 @@ local function GetClassPower(Class)
 	end
 
 	-- try additional mana
-	local barIndex = not r and E.Retail and _G.ADDITIONAL_POWER_BAR_INDEX == 0 and _G.ALT_MANA_BAR_PAIR_DISPLAY_INFO[Class]
-	if barIndex and barIndex[UnitPowerType('player')] then
+	local altIndex = not r and E.Retail and _G.ALT_POWER_BAR_PAIR_DISPLAY_INFO[Class]
+	if altIndex and altIndex[UnitPowerType('player')] then
 		min = UnitPower('player', POWERTYPE_MANA)
 		max = UnitPowerMax('player', POWERTYPE_MANA)
 
@@ -300,12 +301,10 @@ for textFormat in pairs(E.GetFormattedTextStyles) do
 	end)
 
 	E:AddTag(format('additionalmana:%s', tagFormat), 'UNIT_POWER_FREQUENT UNIT_MAXPOWER UNIT_DISPLAYPOWER', function(unit)
-		local barIndex = _G.ADDITIONAL_POWER_BAR_INDEX == 0 and _G.ALT_MANA_BAR_PAIR_DISPLAY_INFO[E.myclass]
-		if barIndex and barIndex[UnitPowerType(unit)] then
-			local min = UnitPower(unit, POWERTYPE_MANA)
-			if min ~= 0 then
-				return E:GetFormattedText(textFormat, min, UnitPowerMax(unit, POWERTYPE_MANA))
-			end
+		local altIndex = _G.ALT_POWER_BAR_PAIR_DISPLAY_INFO[E.myclass]
+		local min = altIndex and altIndex[UnitPowerType(unit)] and UnitPower(unit, POWERTYPE_MANA)
+		if min and min ~= 0 then
+			return E:GetFormattedText(textFormat, min, UnitPowerMax(unit, POWERTYPE_MANA))
 		end
 	end, not E.Retail)
 
@@ -360,12 +359,10 @@ for textFormat in pairs(E.GetFormattedTextStyles) do
 		end)
 
 		E:AddTag(format('additionalmana:%s:shortvalue', tagFormat), 'UNIT_POWER_FREQUENT UNIT_MAXPOWER UNIT_DISPLAYPOWER', function(unit)
-			local barIndex = _G.ADDITIONAL_POWER_BAR_INDEX == 0 and _G.ALT_MANA_BAR_PAIR_DISPLAY_INFO[E.myclass]
-			if barIndex and barIndex[UnitPowerType(unit)] then
-				local min = UnitPower(unit, POWERTYPE_MANA)
-				if min ~= 0 and tagFormat ~= 'deficit' then
-					return E:GetFormattedText(textFormat, min, UnitPowerMax(unit, POWERTYPE_MANA), nil, true)
-				end
+			local altIndex = _G.ALT_POWER_BAR_PAIR_DISPLAY_INFO[E.myclass]
+			local min = altIndex and altIndex[UnitPowerType(unit)] and UnitPower(unit, POWERTYPE_MANA)
+			if min and min ~= 0 and tagFormat ~= 'deficit' then
+				return E:GetFormattedText(textFormat, min, UnitPowerMax(unit, POWERTYPE_MANA), nil, true)
 			end
 		end, not E.Retail)
 
@@ -1101,7 +1098,7 @@ do
 	local function GetTitleNPC(unit, custom)
 		if UnitIsPlayer(unit) or (E.Wrath and UnitAffectingCombat('player') and IsInInstance()) then return end
 
-		E.ScanTooltip:SetOwner(_G.UIParent, 'ANCHOR_NONE')
+		E.ScanTooltip:SetOwner(UIParent, 'ANCHOR_NONE')
 		E.ScanTooltip:SetUnit(unit)
 		E.ScanTooltip:Show()
 
@@ -1128,7 +1125,7 @@ do
 	local function GetQuestData(unit, which, Hex)
 		if UnitIsPlayer(unit) or (E.Wrath and UnitAffectingCombat('player') and IsInInstance()) then return end
 
-		E.ScanTooltip:SetOwner(_G.UIParent, 'ANCHOR_NONE')
+		E.ScanTooltip:SetOwner(UIParent, 'ANCHOR_NONE')
 		E.ScanTooltip:SetUnit(unit)
 		E.ScanTooltip:Show()
 

@@ -1,12 +1,24 @@
-tag 97e6c760d87ab4618f7bb6510e6e89b272dd8bf9 10.0.17
+tag ff6d464a7b773eb2576f7015712f35095c6dfa33 10.1.0
 Author:	Lure <alex.shubert@gmail.com>
-Date:	Tue Dec 13 21:45:00 2022 -0500
+Date:	Sun Jul 16 12:15:48 2023 -0400
 
-fix hotkey application
+fix merchant frame
 
-commit 77924eebd079e21746d16d6536ec06f68053d306
+commit 605d42d06ac4f29089a9890036b12eeac39d6279
 Author: Lure <alex.shubert@gmail.com>
-Date:   Tue Dec 13 21:44:17 2022 -0500
+Date:   Sun Jul 16 12:14:49 2023 -0400
 
-    fix hotkey application
+    cosmetic: add icon
+
+commit 02c0803e0553ac5c6cd8ce3bc07e77a90c295f4f
+Author: Lure <alex.shubert@gmail.com>
+Date:   Sun Jul 16 11:54:29 2023 -0400
+
+    keep proposed changes for future investigation
+
+commit 70702285e13521279bcde110c8d9900d957cb052
+Author: Lure <alex.shubert@gmail.com>
+Date:   Sun Jul 16 11:47:01 2023 -0400
+
+    Fix Merchants.lua:21: attempt to index global MerchantRepairText
 

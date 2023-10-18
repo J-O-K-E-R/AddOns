@@ -64,7 +64,7 @@ function mod:GetOptions()
 		340788, -- Seeds of Extinction
 		329107, -- Extinction
 		340860, -- Withering Touch
-		328789, -- Annihilate
+		{328789, "CASTBAR"}, -- Annihilate
 	},{
 		[328437] = "general",
 		[340758] = -22119, -- The Relics of Castle Nathria

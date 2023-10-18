@@ -7,6 +7,7 @@ if not mod then return end
 mod.displayName = CL.trash
 mod:RegisterEnableMob(
 	45915, -- Armored Mistral
+	45477, -- Gust Soldier
 	45912, -- Wild Vortex
 	45704, -- Lurking Tempest
 	45917, -- Cloud Prince
@@ -26,6 +27,7 @@ mod:RegisterEnableMob(
 local L = mod:GetLocale()
 if L then
 	L.armored_mistral = "Armored Mistral"
+	L.gust_soldier = "Gust Soldier"
 	L.wild_vortex = "Wild Vortex"
 	L.lurking_tempest = "Lurking Tempest"
 	L.cloud_prince = "Cloud Prince"
@@ -46,6 +48,8 @@ function mod:GetOptions()
 	return {
 		-- Armored Mistral
 		410999, -- Pressurized Blast
+		-- Gust Soldier
+		{410873, "DISPEL"}, -- Rushing Wind
 		-- Wild Vortex
 		410870, -- Cyclone
 		-- Lurking Tempest
@@ -71,10 +75,11 @@ function mod:GetOptions()
 		-- Servant of Asaad
 		{87772, "DISPEL"}, -- Hand of Protection
 		-- Minister of Air
-		87762, -- Lightning Lash
+		{87762, "ME_ONLY_EMPHASIZE"}, -- Lightning Lash
 		413385, -- Overload Grounding Field
 	}, {
 		[410999] = L.armored_mistral,
+		[410873] = L.gust_soldier,
 		[410870] = L.wild_vortex,
 		[411001] = L.lurking_tempest,
 		[411002] = L.cloud_prince,
@@ -91,6 +96,9 @@ end
 function mod:OnBossEnable()
 	-- Armored Mistral
 	self:Log("SPELL_CAST_START", "PressurizedBlast", 410999)
+
+	-- Gust Soldier
+	self:Log("SPELL_CAST_SUCCESS", "RushingWind", 410873)
 
 	-- Wild Vortex
 	self:Log("SPELL_CAST_START", "Cyclone", 410870)
@@ -145,11 +153,27 @@ function mod:PressurizedBlast(args)
 	self:PlaySound(args.spellId, "alarm")
 end
 
+-- Gust Soldier
+
+function mod:RushingWind(args)
+	if self:Me(args.destGUID) or self:Dispeller("magic", nil, args.spellId) then
+		self:TargetMessage(args.spellId, "red", args.destName)
+		self:PlaySound(args.spellId, "alert", nil, args.destName)
+	end
+end
+
 -- Wild Vortex
 
-function mod:Cyclone(args)
-	self:Message(args.spellId, "yellow", CL.casting:format(args.spellName))
-	self:PlaySound(args.spellId, "alert")
+do
+	local prev = 0
+	function mod:Cyclone(args)
+		local t = args.time
+		if t - prev > 1 then
+			prev = t
+			self:Message(args.spellId, "yellow", CL.casting:format(args.spellName))
+			self:PlaySound(args.spellId, "alert")
+		end
+	end
 end
 
 -- Lurking Tempest
@@ -178,6 +202,7 @@ end
 function mod:BombCyclone(args)
 	self:Message(411005, "orange")
 	self:PlaySound(411005, "alarm")
+	--self:NameplateCDBar(411005, 15.8, self:UnitGUID(unit))
 end
 
 -- Turbulent Squall
@@ -298,6 +323,7 @@ do
 			self:Message(args.spellId, "yellow", CL.casting:format(args.spellName))
 			self:PlaySound(args.spellId, "warning")
 		end
+		--self:NameplateCDBar(args.spellId, 14.2, args.sourceGUID)
 	end
 end
 

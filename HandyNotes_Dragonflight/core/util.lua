@@ -1,8 +1,5 @@
 local ADDON_NAME, ns = ...
 
-local L = ns.locale
-local Class = ns.Class
-
 -------------------------------------------------------------------------------
 ------------------------------ DATAMINE TOOLTIP -------------------------------
 -------------------------------------------------------------------------------
@@ -71,12 +68,11 @@ local function PrepareLinks(str)
 end
 
 local function RenderLinks(str, nameOnly)
-    -- render numberic ids
+    -- render numeric ids
     local links, _ = str:gsub('{(%l+):(%d+)(%l*)}', function(type, id, suffix)
         id = tonumber(id)
         if type == 'npc' then
-            local name = NameResolver:Resolve(
-                ('unit:Creature-0-0-0-0-%d'):format(id))
+            local name = NameResolver:Resolve('unit:Creature-0-0-0-0-' .. id)
             name = name .. (suffix or '')
             if nameOnly then return name end
             return ns.color.NPC(name)
@@ -96,7 +92,7 @@ local function RenderLinks(str, nameOnly)
                 if nameOnly then return info.name end
                 local link = C_CurrencyInfo.GetCurrencyLink(id, 0)
                 if link then
-                    return '|T' .. info.iconFileID .. ':0:0:1:-1|t ' .. link
+                    return '|T' .. info.iconFileID .. ':0|t ' .. link
                 end
             end
         elseif type == 'faction' then
@@ -106,8 +102,8 @@ local function RenderLinks(str, nameOnly)
         elseif type == 'item' then
             local name, link, _, _, _, _, _, _, _, icon = GetItemInfo(id)
             if link and icon then
-                if nameOnly then return name .. (suffix or '') end
-                return '|T' .. icon .. ':0:0:1:-1|t ' .. link
+                return nameOnly and (name .. (suffix or '')) or
+                           ('|T' .. icon .. ':0|t ' .. link)
             end
         elseif type == 'daily' or type == 'quest' then
             local name = C_QuestLog.GetTitleForQuestID(id)
@@ -121,9 +117,7 @@ local function RenderLinks(str, nameOnly)
             local name, _, icon = GetSpellInfo(id)
             if name and icon then
                 if nameOnly then return name end
-                local spell = ns.color.Spell(
-                    '|Hspell:' .. id .. '|h[' .. name .. ']|h')
-                return '|T' .. icon .. ':0:0:1:-1|t ' .. spell
+                return ns.color.Spell('|T' .. icon .. ':0|t [' .. name .. ']')
             end
         end
         return type .. '+' .. id
@@ -145,10 +139,9 @@ local function RenderLinks(str, nameOnly)
                 return icon .. ns.color.Yellow('[' .. text .. ']')
             end
             if type == 'dot' then
-                local r, g, b = ns.HEXtoRGBA(text)
-                return
-                    '|T' .. ns.icons.peg_bl[2] .. ':0::::16:16::16::16:' .. r *
-                        255 .. ':' .. g * 255 .. ':' .. b * 255 .. '|t'
+                local r, g, b = ns.getARGB(text, 255)
+                local texStr = '|T%s:0::::16:16::16::16:%d:%d:%d|t'
+                return texStr:format(ns.GetGlowPath('peg_bl'), r, g, b)
             end
             return type .. '+' .. text
         end)
@@ -163,7 +156,20 @@ local function RenderLinks(str, nameOnly)
 end
 
 -------------------------------------------------------------------------------
--------------------------------- PLAYER FUNCTIONS --------------------------------
+--------------------------------- NOTE STATUS ---------------------------------
+-------------------------------------------------------------------------------
+
+local function NoteStatus(itemID, numNeed, note)
+    local numHave = GetItemCount(itemID, true)
+    local status = format('%d/%d', numHave, numNeed)
+    if numHave >= numNeed then
+        return '\n\n' .. ns.status.Green(status) .. ' ' .. note
+    end
+    return '\n\n' .. ns.status.Red(status) .. ' ' .. note
+end
+
+-------------------------------------------------------------------------------
+-------------------------------- PLAYER FUNCTIONS -----------------------------
 -------------------------------------------------------------------------------
 
 local function PlayerHasItem(item, count)
@@ -247,96 +253,14 @@ local function AsIDTable(value)
 end
 
 -------------------------------------------------------------------------------
------------------------------- HEX-String to RGBA -----------------------------
--------------------------------------------------------------------------------
-
-local function HEXtoRGBA(color)
-    local c = false
-
-    if ns.COLORS[color] then
-        c = ns.COLORS[color]
-    elseif string.match(color, '%x%x%x%x%x%x%x%x') then
-        c = color
-    elseif string.match(color, '%x%x%x%x%x%x') then
-        c = 'FF' .. color
-    else
-        return c
-    end
-
-    local a, r, g, b = string.sub(c, 1, 2), string.sub(c, 3, 4),
-        string.sub(c, 5, 6), string.sub(c, 7, 8)
-    return tonumber(r, 16) / 255, tonumber(g, 16) / 255, tonumber(b, 16) / 255,
-        tonumber(a, 16) / 255
-end
-
--------------------------------------------------------------------------------
-------------------------------- Interval Class --------------------------------
--------------------------------------------------------------------------------
-
-local Interval = Class('Interval')
-
-function Interval:Initialize(attrs)
-    if attrs then for k, v in pairs(attrs) do self[k] = v end end
-
-    local region_initial = {
-        [1] = self.initial.us,
-        [2] = self.initial.kr or self.initial.tw,
-        [3] = self.initial.eu,
-        [5] = self.initial.cn
-    } -- https://wowpedia.fandom.com/wiki/API_GetCurrentRegion
-
-    if self.id then
-        self.SpawnTime = self.id * self.offset +
-                             region_initial[GetCurrentRegion()] or
-                             self.initial.us
-    end
-end
-
-function Interval:Next()
-    if not (self.id and self.initial and self.interval) then return false end
-    local CurrentTime = GetServerTime()
-    local SpawnTime = self.SpawnTime
-
-    local NextSpawn = SpawnTime +
-                          math.ceil((CurrentTime - SpawnTime) / self.interval) *
-                          self.interval
-    local TimeLeft = NextSpawn - CurrentTime
-
-    return NextSpawn, TimeLeft
-end
-
-function Interval:GetText()
-    local TimeFormat = ns:GetOpt('use_standard_time') and self.format_12hrs or
-                           self.format_24hrs
-
-    local NextSpawn, TimeLeft = self:Next()
-
-    local SpawnsIn = TimeLeft <= 60 and L['now'] or
-                         SecondsToTime(TimeLeft, true, true)
-
-    if self.yellow and self.green then
-        local color = ns.color.Orange
-        if TimeLeft < self.yellow then color = ns.color.Yellow end
-        if TimeLeft < self.green then color = ns.color.Green end
-        SpawnsIn = color(SpawnsIn)
-    end
-
-    local text = format('%s (%s)', SpawnsIn, date(TimeFormat, NextSpawn))
-    if self.text then text = format(self.text, text) end
-    ns.PrepareLinks(text)
-    return text
-end
-
--------------------------------------------------------------------------------
 
 ns.AsIDTable = AsIDTable
 ns.AsTable = AsTable
 ns.GetDatabaseTable = GetDatabaseTable
-ns.HEXtoRGBA = HEXtoRGBA
 ns.NameResolver = NameResolver
 ns.NewLocale = NewLocale
+ns.NoteStatus = NoteStatus
 ns.PlayerHasItem = PlayerHasItem
 ns.PlayerHasProfession = PlayerHasProfession
 ns.PrepareLinks = PrepareLinks
 ns.RenderLinks = RenderLinks
-ns.Interval = Interval

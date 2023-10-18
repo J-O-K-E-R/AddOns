@@ -66,7 +66,7 @@ function mod:GetOptions()
 		364839, -- Sinful Projection
 		{361689, "TANK"}, -- Wracking Pain
 		361608, -- Burden of Sin
-		{361745, "SAY", "SAY_COUNTDOWN"}, -- Night Hunter
+		{361745, "SAY", "SAY_COUNTDOWN", "CASTBAR"}, -- Night Hunter
 		nightHunterMarker,
 	},{
 		[360295] = -24125, -- Prototype of War

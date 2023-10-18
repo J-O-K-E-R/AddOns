@@ -164,7 +164,7 @@ local function UpdateRareFound(entityID, vignetteInfo, coordinates)
 		else
 			mapID = C_Map.GetBestMapForUnit("player")
 		end
-		-- If its a container
+	-- If its a container
 	elseif (RSConstants.IsContainerAtlas(vignetteInfo.atlasName)) then
 		atlasName = RSConstants.CONTAINER_VIGNETTE
 
@@ -176,7 +176,7 @@ local function UpdateRareFound(entityID, vignetteInfo, coordinates)
 		else
 			mapID = C_Map.GetBestMapForUnit("player")
 		end
-		-- If its an event
+	-- If its an event
 	elseif (RSConstants.IsEventAtlas(vignetteInfo.atlasName)) then
 		atlasName = RSConstants.EVENT_VIGNETTE
 
@@ -201,7 +201,7 @@ local function UpdateRareFound(entityID, vignetteInfo, coordinates)
 	local vignettePosition = nil
 	if (coordinates and coordinates.x and coordinates.y) then
 		vignettePosition = coordinates
-	else
+	elseif (not vignetteInfo.simulated) then
 		vignettePosition = C_VignetteInfo.GetVignettePosition(vignetteInfo.vignetteGUID, mapID)
 	end
 
@@ -260,8 +260,16 @@ local function ShowAlert(button, vignetteInfo, isNavigating)
 			UpdateRareFound(entityID, vignetteInfo, vignettePosition)
 		else
 			vignettePosition = UpdateRareFound(entityID, vignetteInfo)
+			
+			-- If the entity doesn't have coordinates (for example a custom NPC) set a random coordinate set so at least it shows the notification
 			if (not vignettePosition) then
-				return
+				if (RSConstants.IsNpcAtlas(vignetteInfo.atlasName)) then
+					vignettePosition = {}
+					vignettePosition.x = -1
+					vignettePosition.y = -1
+				else
+					return
+				end
 			end
 		end
 
@@ -310,8 +318,8 @@ local function ShowAlert(button, vignetteInfo, isNavigating)
 		RSRecentlySeenTracker.AddRecentlySeen(entityID, vignetteInfo.atlasName, false)
 		return true
 	-- disable alerts for filtered zones
-	elseif (not RSConfigDB.IsZoneFilteredOnlyOnWorldMap() and (RSConfigDB.IsZoneFiltered(mapID) or RSConfigDB.IsEntityZoneFiltered(entityID, vignetteInfo.atlasName))) then
-		RSLogger:PrintDebugMessage(string.format("La entidad [%s] se ignora por pertenecer a una zona filtrada", entityID))
+	elseif (RSConfigDB.IsZoneFiltered(mapID) or RSConfigDB.IsZoneFilteredOnlyAlerts(mapID) or RSConfigDB.IsEntityZoneFilteredOnlyAlerts(entityID, vignetteInfo.atlasName)) then
+		RSLogger:PrintDebugMessage(string.format("La entidad [%s] se ignora por pertenecer a una zona [%s] filtrada", entityID, mapID))
 		return
 	-- extra checkings for containers
 	elseif (RSConstants.IsContainerAtlas(vignetteInfo.atlasName)) then		
@@ -461,20 +469,20 @@ local function ShowAlerts(button)
 	for k, vignetteInfo in pairs (foundAlerts) do
 		refreshMinimap = ShowAlert(button, vignetteInfo, false)
 	    foundAlerts[k] = nil
-		RSLogger:PrintDebugMessage(string.format("Eliminado %s", k))
+		--RSLogger:PrintDebugMessage(string.format("Eliminado %s", k))
 	end
 	
 	if (refreshMinimap) then
-		RSLogger:PrintDebugMessage(string.format("Refrescado minimapa tras mostrar todas las alertas"))
+		--RSLogger:PrintDebugMessage(string.format("Refrescado minimapa tras mostrar todas las alertas"))
 		RSMinimap.RefreshAllData(true)
 	end
 	
 	if (RSUtils.GetTableLength(foundAlerts) > 0) then
-		RSLogger:PrintDebugMessage(string.format("Quedan alertas que mostrar"))
+		--RSLogger:PrintDebugMessage(string.format("Quedan alertas que mostrar"))
 		ShowAlerts(button)
 	else
 		-- Cancel
-		RSLogger:PrintDebugMessage(string.format("BUTTON_TIMER:Cancel"))
+		--RSLogger:PrintDebugMessage(string.format("BUTTON_TIMER:Cancel"))
 		BUTTON_TIMER:Cancel()
 	end
 end
@@ -514,7 +522,7 @@ function RSButtonHandler.AddAlert(button, vignetteInfo, isNavigating)
 	elseif (RSEventHandler.IsCinematicPlaying()) then
 		return
 	-- disable ALL alerts in instances
-	elseif (isInstance == true and not RSConfigDB.IsScanningInInstances()) then
+	elseif (isInstance == true and not isNavigating and not RSConfigDB.IsScanningInInstances()) then
 		RSLogger:PrintDebugMessage(string.format("La entidad [%s] se ignora por estar en una instancia", entityID))
 		return
 	-- disable alerts while flying

@@ -1,21 +1,12 @@
-local L = BigWigs:NewBossLocale("Kazzara, the Hellforged", "deDE")
+local L = BigWigs:NewBossLocale("The Amalgamation Chamber", "deDE")
 if not L then return end
-if L then
-	L.dread_rift = "Riss" -- Singular Dread Rift
-end
-
-L = BigWigs:NewBossLocale("The Amalgamation Chamber", "deDE")
 if L then
 	L.custom_on_fade_out_bars = "Phase 1 Leisten abblenden"
 	L.custom_on_fade_out_bars_desc = "Leisten, welche zum außer Reichweite befindlichen Boss in Phase 1 gehören abblenden."
 
 	L.coalescing_void = "Weglaufen"
-	L.shadow_convergence = "Kugeln"
 	L.molten_eruption = "Soaks"
 	L.swirling_flame = "Tornados"
-	L.gloom_conflagration = "Meteor + Weglaufen"
-	L.blistering_twilight = "Bombs + Tornados"
-	L.convergent_eruption = "Soaks + Kugeln"
 	L.shadowflame_burst = "Frontaler Kegel"
 
 	L.shadow_and_flame = "Mythische Debuffs"
@@ -30,7 +21,6 @@ if L then
 	L.custom_on_unstable_essence_high_desc = "Chatnachrichten mit der Anzahl von Stapeln Deiner Instabilen Essenz wenn diese hoch genug ist."
 	L.volatile_spew = "Ausweichen"
 	L.volatile_eruption = "Eruption"
-	L.temporal_anomaly = "Heilkugel"
 	L.temporal_anomaly_knocked = "Heilkugel weggestoßen"
 end
 
@@ -41,10 +31,7 @@ if L then
 	L.zaqali_aide_north_emote_trigger = "nördliche Festungsmauer" -- Kommandanten erklimmen die nördliche Festungsmauer!
 	L.zaqali_aide_south_emote_trigger = "südliche Festungsmauer" -- Kommandanten erklimmen die südliche Festungsmauer!
 
-	L.north = "Norden"
-	L.south = "Süden"
 	L.both = "Beide"
-
 	L.zaqali_aide_message = "%s klettern %s" -- Big Adds Climbing North
 	L.add_bartext = "%s: %s (%d)"
 	L.boss_returns = "Boss landet: Norden"
@@ -61,7 +48,7 @@ if L then
 	L.energy_gained = "Energie erreicht: %d"
 
 	-- Mythic
-	L.unleash_shadowflame = "Mythische Kugeln"
+	L.shadowflame_energy = "Heilung Absorption"
 end
 
 L = BigWigs:NewBossLocale("The Vigilant Steward, Zskarn", "deDE")
@@ -82,16 +69,16 @@ end
 
 L = BigWigs:NewBossLocale("Echo of Neltharion", "deDE")
 if L then
-	L.custom_on_repeating_sunder_reality = "Realität zerreißen Warnung wiederholen"
-	L.custom_on_repeating_sunder_reality_desc = "Wiederholt eine Nachricht während dem Schwarzen Zerstörung Zauber bis Du in einem Portal bist."
-
 	L.twisted_earth = "Wände"
 	L.echoing_fissure = "Spalt"
 	L.rushing_darkness = "Rückstoß Linien"
 
 	L.umbral_annihilation = "Auslöschung"
-	L.sunder_reality = "Portale"
 	L.ebon_destruction = "Großer Knall"
+
+	L.wall_breaker = "Wandbrecher (Mythisch)"
+	L.wall_breaker_desc = "Ein von Rauschender Finsternis anvisierter Spieler wird als Wandbrecher ausgewählt. Diese werden mit ({rt6}) markiert und senden Textnachrichten im Chat. Dies ist auf den mythischen Schwierigkeitsgrad in Phase 1 beschränkt."
+	L.wall_breaker_message = "Wandbrecher"
 end
 
 L = BigWigs:NewBossLocale("Scalecommander Sarkareth", "deDE")
@@ -103,4 +90,18 @@ if L then
 
 	L.boss_immune = "Boss immun"
 	L.ebon_might = "Adds immun"
+end
+
+L = BigWigs:NewBossLocale("Aberrus, the Shadowed Crucible Trash", "deDE")
+if L then
+	L.edgelord = "Klippenherrin der Splitterflammen" -- NPC 198873
+	L.naturalist = "Naturalist der Splitterflammen" -- NPC 201746
+	L.siegemaster = "Belagerungsmeister der Splitterflammen" -- NPC 198874
+	L.banner = "Banner" -- Short for "Sundered Flame Banner" NPC 205638
+	L.arcanist = "Arkanistin der Splitterflammen" -- NPC 201736
+	L.chemist = "Chemikerin der Splitterflammen" -- NPC 205656
+	L.fluid = "Animationsflüssigkeit" -- NPC 203939
+	L.slime = "Blubbernder Schleim" -- NPC 205651
+	L.goo = "Kriechender Glibber" -- NPC 205820
+	L.whisper = "Flüstern in der Dunkelheit" -- NPC 203806
 end

@@ -41,11 +41,15 @@ local function CheckRespawnTimers(firstScan)
 													
 							--Check again until the threshold
 							if (respawnTime + RSConstants.CHECK_RESPAWN_THRESHOLD < time()) then
+								RSNpcDB.DeleteNpcKilled(npcID)
 								RSEntityStateHandler.SetDeadNpc(npcID)
 							end
 							
 							hasRespawn = false
 							break
+						-- If quest flagged as completed in the first scan, try again, the first time it could return wrong values
+						elseif (firstScan) then
+							hasRespawn = false
 						end
 					end
 				end
@@ -73,11 +77,15 @@ local function CheckRespawnTimers(firstScan)
 							
 							--Check again until the threshold
 							if (respawnTime + RSConstants.CHECK_RESPAWN_THRESHOLD < time()) then
+								RSContainerDB.DeleteContainerOpened(containerID)
 								RSEntityStateHandler.SetContainerOpen(containerID)
 							end
 							
 							hasRespawn = false
 							break
+						-- If quest flagged as completed in the first scan, try again, the first time it could return wrong values
+						elseif (firstScan) then
+							hasRespawn = false
 						end
 					end
 				end
@@ -105,11 +113,15 @@ local function CheckRespawnTimers(firstScan)
 																			
 							--Check again until the threshold
 							if (respawnTime + RSConstants.CHECK_RESPAWN_THRESHOLD < time()) then
+								RSEventDB.DeleteEventCompleted(eventID)
 								RSEntityStateHandler.SetEventCompleted(eventID)
 							end
 							
 							hasRespawn = false
 							break
+						-- If quest flagged as completed in the first scan, try again later, the first time it could return wrong values
+						elseif (firstScan) then
+							hasRespawn = false
 						end
 					end
 				end
@@ -124,9 +136,9 @@ local function CheckRespawnTimers(firstScan)
 end
 
 function RSRespawnTracker.Init()
-	if (not CHECK_RESPAWN_TIMER) then
-		CheckRespawnTimers(true)
+	CheckRespawnTimers(true)
 
+	if (not CHECK_RESPAWN_TIMER) then
 		CHECK_RESPAWN_TIMER = C_Timer.NewTicker(RSConstants.CHECK_RESPAWN_TIMER, function()
 			CheckRespawnTimers()
 		end)

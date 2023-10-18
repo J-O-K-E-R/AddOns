@@ -49,8 +49,6 @@ end
 L = BigWigs:NewBossLocale("Remnant of Ner'zhul", "zhTW")
 if L then
 	L.cones = "射線" -- Grasp of Malic
-	L.orbs = "寶珠" -- Orb of Torment
-	L.orb = "寶珠" -- Orb of Torment
 end
 
 L = BigWigs:NewBossLocale("Soulrender Dormazain", "zhTW")
@@ -89,9 +87,6 @@ end
 
 L = BigWigs:NewBossLocale("Guardian of the First Ones", "zhTW")
 if L then
-	L.custom_on_stop_timers = "總是顯示計時器"
-	L.custom_on_stop_timers_desc = "守護者的技能可能延遲施放。啟用此選項後，這些技能的計時條會保持顯示。"
-
 	L.bomb_missed = "%dx炸彈未擊中" -- 圈沒有去石柱給能量的提示，格式好像不對，可能要修
 end
 

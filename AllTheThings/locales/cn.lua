@@ -3,13 +3,13 @@ if GetLocale() ~= "zhCN" and GetLocale() ~= "zhTW" then return; end
 local app = select(2, ...);
 local L = app.L;
 
+CHARACTER_TYPE_FRAME_TRIAL_BOOST_CHARACTER = "职业试玩";
+CHARACTER_UPGRADE_CHARACTER_LIST_LABEL = "角色直升";
 DRAKE_MANUSCRIPTS = "观龙者手稿";
-TRACK_ACC_WIDE = "|cff00AB00追踪帐号通用|R";
-ACC_WIDE_DEFAULT = "默认情况下追踪账号通用。";
+TRACK_ACC_WIDE = app.ccColors.Account .. "追踪 "..ITEM_UPGRADE_DISCOUNT_TOOLTIP_ACCOUNT_WIDE.."|R";
+ACC_WIDE_DEFAULT = "已追踪 ".. app.ccColors.Account .. ITEM_UPGRADE_DISCOUNT_TOOLTIP_ACCOUNT_WIDE.."|R 默认。";
 
 -- General Text
-	L.TITLE = "|cffb4b4ffALL THE THINGS|r";
-	L.AUCTION_TAB = "|cffb4b4ffATT|r";
 	L.DESCRIPTION = "“你愚蠢地寻求自己的终结，厚颜无耻地无视了你无法理解的力量。你入侵了收藏者的领域并为此努力。现在只有一条路可走了——这条孤独的路……该死的路。”";
 	L.THINGS_UNTIL = " 事物到 ";
 	L.THING_UNTIL = " 事物到 ";
@@ -41,7 +41,6 @@ ACC_WIDE_DEFAULT = "默认情况下追踪账号通用。";
 	L.SOURCES_DESC = "显示这个东西的来源。\n\n特别是特定商人/NPC，任务，战斗，等等。";
 	L.WRONG_FACTION = "可能需要在另一个阵营中查看此内容。";
 	L.ARTIFACT_INTRO_REWARD = "完成该神器的介绍任务后获得。";
-	L.WE_JUST_HATE_TIMEWALKING = "时光难度为物品创建新的源 ID，尽管它们的名称、外观和在收藏选项卡中的显示完全相同。\n\n向暴雪开发部提出请求：请清理源码数据库让时光/泰坦造物物品使用相同的源码作为基础，前提是外观和名称完全相同。这不仅会让数据库变得更加干净，而且会让完成者们对更多的时光内容的感到兴奋而不是恐惧。\n\n - Crieve，非常苦逼的战网完成度，本来有99%的奥杜尔完成度，现在只有64%，因为暴雪团队复制了源码，而不是重复使用现有的源码。";
 	L.FACTION_SPECIFIC_REP = "并非所有声望都可以在单个角色上查看。例：联盟玩家无法看到战歌骑手，部落玩家无法查看银翼哨兵。";
 	L.VISIT_FLIGHT_MASTER = "访问飞行管理员缓存。";
 	L.FLIGHT_PATHS_DESC = "当你与每个大陆上的飞行管理员交谈时会缓存飞行路径。\n  - Crieve";
@@ -130,7 +129,6 @@ ACC_WIDE_DEFAULT = "默认情况下追踪账号通用。";
 	L.OPEN_AUTOMATICALLY_DESC = "如果你不是暴雪开发者，最好是取消勾选此项。这样做是为了迫使暴雪修复和/或承认这些错误。";
 	L.TWO_CLOAKS = "|cffFF0000如果有的话，这两件披风的确认掉落非常有限，并且假定已损坏！ |r";
 	L.OGOM_THE_MANGLER_DESC = "|cffFF0000绞肉机奥戈姆似乎只是在你做每日突袭钢铁军工厂的时候刷新的。这个任务从军团开始后就没有激活过，可购买的任务密报：突袭钢铁军工厂也不能用了。|r";
-	L.HOLYDAY_DESC = "你可能需要在特定的节日活动中才能完成本节中的事物。";
 	L.DIFF_COMPLETED_1 = "你已经收藏了这个难度的所有物品。切换到 ";
 	L.DIFF_COMPLETED_2 = " 来代替。";
 	L.MINI_LIST = "小列表";
@@ -263,31 +261,31 @@ ACC_WIDE_DEFAULT = "默认情况下追踪账号通用。";
 			L.MODE = "模式";
 			L.TITLE_COMPLETIONIST = "完美主义 ";
 			L.TITLE_UNIQUE_APPEARANCE = "独特外观 ";
-			L.TITLE_DEBUG = "调试 ";
-			L.TITLE_ACCOUNT = "|cff00AB00帐号|R ";
+			L.TITLE_DEBUG = app.ccColors.Red .. "调试|R ";
+			L.TITLE_ACCOUNT = app.ccColors.Account.."帐号|R ";
 			L.TITLE_MAIN_ONLY = " （仅主要）";
 			L.TITLE_NONE_THINGS = "一无所有 ";
 			L.TITLE_ONLY = " 仅 ";
-			L.TITLE_INSANE = "|cffADD8E6疯狂|R ";
+			L.TITLE_INSANE = app.ccColors.Insane.."疯狂|R ";
 			L.TITLE_SOME_THINGS = "随随便便 ";
 			L.TITLE_LEVEL = "等级 ";
 			L.TITLE_SOLO = "个人 ";
 			L._BETA_LABEL = " |cff4AA7FF[测试]|R";
 
-		L.GENERAL_LABEL = "通用";
+		L.GENERAL_CONTENT = "通用内容";
 		L.MERCH_BUTTON_LABEL = "商店";
 		L.TWITCH_BUTTON_TOOLTIP = "点击按钮复制 URL 到我的 Twitch 频道。\n\n可以在我直播的时候问问题，我会尽力回答！";
 		L.DISCORD_BUTTON_TOOLTIP = "点击按钮复制 URL 到All The Things Discord 服务器。\n\n可以与其他收藏家分享进步/挫折！";
 		L.PATREON_BUTTON_TOOLTIP = "点击按钮复制 URL 以进入 All The Things Patreon 页面。\n\n在这里您可以看到如何在经济上支持插件！";
 		L.MERCH_BUTTON_TOOLTIP = "点击按钮复制 URL 以进入 All The Things 商店。\n\n在这里您可以在经济上支持插件并获得一些很酷的商品作为回报！ ";
-		L.MODE_EXPLAIN_LABEL = "|cffFFFFFF您收藏的内容汇总在这里。启用所有 |cffADD8E6彩色选项|cffFFFFFF 解锁 |cffADD8E6疯狂模式|cffFFFFFF。";
-		L.DEBUG_MODE = "|Cffff0000调试模式|r（显示所有）";
+		L.MODE_EXPLAIN_LABEL = "|cffFFFFFF您收藏的内容汇总在这里。启用所有 "..app.ccColors.Insane.."彩色选项|cffFFFFFF 解锁 "..app.ccColors.Insane.."疯狂模式|cffFFFFFF。";	-- "|cffFFFFFFWhat you collect is summarized as a specific Mode. Enable all " .. app.ccColors.Insane .. "colored options|cffFFFFFF to unlock ".. app.ccColors.Insane .. "Insane Mode|cffFFFFFF.";
+		L.DEBUG_MODE = app.ccColors.Red.."调试模式|r（显示所有）";
 		L.DEBUG_MODE_TOOLTIP = "就字面意思…游戏中的所有事情。时间。点滴。是的，所有的一切。即使是不可收藏的事物，如袋子、消耗品、试剂等也会出现在列表中。（甚至你自己！不，是真的。看。）\n\n这仅用于调试目的。不用于完成追踪。\n\n此模式绕过所有过滤，包括不可获得的。";
 		L.COMPLETIONIST_MODE = "+来源";
 		L.COMPLETIONIST_MODE_TOOLTIP = "启用该模式，只有当特定物品已被解锁为给定外观时才将物品视为已收藏。\n\n这意味着你需要收藏物品的每一个共享外观。\n\n注意：默认情况下一旦你收藏了共享来源，游戏就会停止告诉你未收藏的物品，这将确保未收藏的物品会被追踪。";
 		L.I_ONLY_CARE_ABOUT_MY_MAIN = "仅主要";
 		L.MAIN_ONLY_MODE_TOOLTIP = "如果你还想让 ATT *假装*你赢得了所有未被其他种族或职业锁定的共享外观，请启用此设置。\n\n例如，如果你从冰冠堡垒收藏了一个仅限猎人使用的物品，并且在没有职业/种族限制的情况下，有一个来自副本的共享外观，那么 ATT 将*假装*你也获得了该外观来源。\n\n注意：以这种方式解锁时，切换到其他种族/职业将错误地报告你已经获得了尚未为新角色收藏的外观来源。";
-		L.ACCOUNT_MODE = "|Cff00AB00帐号模式";
+		L.ACCOUNT_MODE = app.ccColors.Account.."帐号模式";
 		L.ACCOUNT_MODE_TOOLTIP = "如果要追踪所有角色的所有内容，而不考虑职业和种族筛选，请启用此设置。\n\n不可获得过滤仍然适用。";
 		L.FACTION_MODE = "仅当前阵营";
 		L.FACTION_MODE_TOOLTIP = "如果你想只看到你当前阵营的种族和职业的战网模式数据，请开启此设置。";
@@ -298,33 +296,32 @@ ACC_WIDE_DEFAULT = "默认情况下追踪账号通用。";
 		L.ACCOUNT_THINGS_LABEL = "帐号通用事物";
 		L.GENERAL_THINGS_LABEL = "通用事物";
 		L.EXPANSION_THINGS_LABEL = "资料片事物";
-		L.EXTRA_THINGS_LABEL = "额外事物";
+		L.EXTRA_THINGS_LABEL = "其他资源";
 		L.STRANGER_THINGS_LABEL = "陌生事物";
 		L.ACHIEVEMENTS_CHECKBOX_TOOLTIP = "启用此选项可追踪成就。";
 		L.TMOG_CHECKBOX_TOOLTIP = "启用此选项可追踪外观获取。\n\n注意: 禁用此选项也会禁用所有采集逻辑，你可以使用此切换来防止在执行重要组内容时出现延迟，请牢记，重新启用后将需要进行计算。\n\n"..ACC_WIDE_DEFAULT;
 		L.AZERITE_ESSENCES_CHECKBOX_TOOLTIP = "启用此选项以追踪艾泽里特精华。\n\n默认情况下每个角色都会被追踪。";
 		L.BATTLE_PETS_CHECKBOX_TOOLTIP = "启用此选项可追踪战斗宠物和同伴。这些可以在开放的世界中找到，也可以通过各种地下城和团队中的boss掉落，以及从供应商和声望获取。\n\nACC_WIDE_DEFAULT";
-		L.FLIGHT_PATHS_CHECKBOX = "|cffADD8E6飞行路径 / 飞艇";
+		L.FLIGHT_PATHS_CHECKBOX = app.ccColors.Insane .. "飞行路径 & 飞艇";
 		L.FLIGHT_PATHS_CHECKBOX_TOOLTIP = "启用此选项以追踪飞行路径和飞艇。\n\n要收藏这些信息，请与每个大陆的飞行点/飞艇船长对话。\n\n注意：由于分阶段技术，你可能必须分阶段到区域的其他敌方，以获得这些兴趣点的开启。";
 		L.FOLLOWERS_CHECKBOX_TOOLTIP = "启用此选项可追踪随从。\n\n即：要塞随从，军团职业大厅随从，争霸艾泽拉斯随从，暗影国度随从。";
-		L.HEIRLOOMS_CHECKBOX_TOOLTIP = "启用此选项可追踪你是否已解锁传家宝及其各自的升级级别。\n\n具有相关外观的传家宝将通过外观过滤进行过滤。（关闭外观仍将显示传家宝本身）\n\n一些出现史诗品质的商品也有助于提升声望，可以通过声望过滤进行过滤。";
-		L.HEIRLOOMS_UPGRADES_CHECKBOX = "|cffADD8E6+升级";
+		L.HEIRLOOMS_CHECKBOX_TOOLTIP = "启用此选项可追踪你是否已解锁传家宝及其各自的升级级别。\n\n具有相关外观的传家宝将通过外观过滤进行过滤。（关闭外观仍将显示传家宝本身）\n\n一些出现史诗品质的商品也有助于提升声望，可以通过声望过滤进行过滤。\n\n"..ACC_WIDE_DEFAULT;
+		L.HEIRLOOMS_UPGRADES_CHECKBOX = app.ccColors.Insane .. "+升级";
 		L.HEIRLOOMS_UPGRADES_CHECKBOX_TOOLTIP = "启用此选项可专门追踪单个传家宝升级的收藏情况。\n\n我们都知道暴雪就是喜欢消耗你的金币和灵魂，所以用这个切换来追踪你的金币。";
-		L.ILLUSIONS_CHECKBOX = "|cffADD8E6幻化";
+		L.ILLUSIONS_CHECKBOX = app.ccColors.Insane.."幻化";
 		L.ILLUSIONS_CHECKBOX_TOOLTIP = "启用此选项以追踪幻化。\n\n这些看起来很酷的幻化效果，你可以应用到你的武器上！\n\n注意：你不是一个幻象，尽管所有的夜之子都这么认为。\n\n"..ACC_WIDE_DEFAULT;
 		L.MOUNTS_CHECKBOX_TOOLTIP = "启用此选项以追踪坐骑。\n\n你可以骑着它们去比跑步更快的地方。谁知道！\n\n"..ACC_WIDE_DEFAULT;
-		L.MUSIC_ROLLS_SELFIE_FILTERS_CHECKBOX = "|T"..app.asset("Expansion_WOD")..":0|t |cffADD8E6乐谱/自拍滤镜";
+		L.MUSIC_ROLLS_SELFIE_FILTERS_CHECKBOX = "|T"..app.asset("Expansion_WOD")..":0|t " .. app.ccColors.Insane .. "乐谱&自拍滤镜";
 		L.MUSIC_ROLLS_SELFIE_FILTERS_CHECKBOX_TOOLTIP = "启用此选项以追踪乐谱和自拍滤镜。\n\n你可以用你的点唱机播放游戏中的音乐并且你的自拍相机玩具为你的自拍收藏特定地点的滤镜。";
 		L.QUESTS_CHECKBOX_TOOLTIP = "启用此选项以追踪任务。\n\n你可以右键单击列表中的任何任务，弹出它们的完整任务链，以显示你的进度和任何先决条件或后续任务。\n\n注意：由于暴雪数据库中每日、每周、每年和世界任务的追踪方式的性质，任务不会被永久追踪。";
-		L.QUESTS_LOCKED_CHECKBOX = "|cffADD8E6已锁定任务";
+		L.QUESTS_LOCKED_CHECKBOX = app.ccColors.Insane .. "+已锁定";
 		L.QUESTS_LOCKED_CHECKBOX_TOOLTIP = "启用此选项可专门包括跟踪锁定任务的完成情况。\n\n锁定任务是指玩家无法再通过正常游戏完成的任务（根据已知的 ATT 数据）。\n\n获得这些任务非常依赖于小队同步功能或使用帐号通用内的任务来整合其他角色的进度。";
 		L.RECIPES_CHECKBOX_TOOLTIP = "启用此选项可追踪你的专业图纸。\n\n注意：你必须打开专业列表才能缓存这些。";
-		L.REPUTATIONS_CHECKBOX = "|cffADD8E6声望";
+		L.REPUTATIONS_CHECKBOX = app.ccColors.Insane .. "声望";
 		L.REPUTATIONS_CHECKBOX_TOOLTIP = "启用此选项可追踪声望。\n\n一旦你达到了有声望的尊敬或最好的朋友，它将被标记为收藏。\n\n你可能需要手动刷新才能正确更新。";
-		L.RUNEFORGELEGENDARIES_CHECKBOX = "|T"..app.asset("Expansion_SL")..":0|t |cffADD8E6符文铭刻之力";
+		L.RUNEFORGELEGENDARIES_CHECKBOX = "|T"..app.asset("Expansion_SL")..":0|t "..app.ccColors.Insane.."符文铭刻之力";
 		L.RUNEFORGELEGENDARIES_CHECKBOX_TOOLTIP = "启用此选项以追踪暗影国度的符文铭刻之力。";
-		L.DRAKEWATCHERMANUSCRIPTS_CHECKBOX = "|T"..app.asset("Expansion_DF")..":0|t |cffADD8E6"..DRAKE_MANUSCRIPTS;
-		L.DRAKEWATCHERMANUSCRIPTS_CHECKBOX_TOOLTIP = "Enable this option to track "..EXPANSION_NAME9.." "..DRAKE_MANUSCRIPTS;	--TODO
+		L.DRAKEWATCHERMANUSCRIPTS_CHECKBOX_TOOLTIP = "启用此选项跟踪 "..EXPANSION_NAME9.." "..DRAKE_MANUSCRIPTS;
 		L.SOULBINDCONDUITS_CHECKBOX_TOOLTIP = "启用此选项来追踪暗影国度灵魂羁绊的导灵器。";
 		L.TITLES_CHECKBOX_TOOLTIP = "启用此选项可追踪头衔。\n\n这些可以让你的角色脱颖而出，看起来你已经玩了一段时间。通常只有新玩家没有称号。";
 		L.TOYS_CHECKBOX_TOOLTIP = "启用此选项可追踪玩具。\n\n这些玩具中的大多数玩具都有趣。其他的，如炉石玩具，可以用来代替你的初始炉石，并可以为你节省一个背包！他们也有有趣的效果…很好！\n\n"..ACC_WIDE_DEFAULT;
@@ -342,11 +339,13 @@ ACC_WIDE_DEFAULT = "默认情况下追踪账号通用。";
 		L.SHOW_REPEATABLE_THINGS_CHECKBOX_TOOLTIP = "如果要将可重复的每日，每周和每年任务视为可收藏，请启用此选项。它们将像常规的收藏任务一样出现在列表中。\n\n注意：这不是用来一直使用的，但如果你在一个你已经完成的区域内做了一组日常且需要提醒你那里有什么，你可以用这个来查看它们。";
 		L.FIRST_TIME_CHECKBOX = "仅第一次";
 		L.FIRST_TIME_CHECKBOX_TOOLTIP = "如果你希望将每天，每周，每年和世界范围内重复执行的任务视为已完成（至少完成一次），而忽略先前已重置的任务，则启用此选项。\n\n注意：先前完成的可重复任务仅在你通过插件激活完成任务的情况下存储，并且如果从 WTF 文件夹中删除了插件数据，则数据将丢失。";
-		L.FILTER_THINGS_BY_LEVEL_CHECKBOX = "|cffADD8E6无等级限制";
+		L.FILTER_THINGS_BY_LEVEL_CHECKBOX = app.ccColors.Insane.."无等级限制";
 		L.FILTER_THINGS_BY_LEVEL_CHECKBOX_TOOLTIP = "如果只想查看当前级别角色可用的事物，请启用此设置。\n\n注意：这对新战网特别有用。";
-		L.SHOW_BOE_CHECKBOX = "|cffADD8E6装备绑定/拾取绑定物品";
+		L.SHOW_BOE_CHECKBOX = app.ccColors.Insane.."装备绑定/拾取绑定物品";
 		L.SHOW_BOE_CHECKBOX_TOOLTIP = "如果要隐藏装备绑定/拾取绑定物品，请启用此设置。\n\n当你尝试为角色完成经典旧世并且不想专门用于可以在小号或拍卖行上放置的物品时，此设置非常有用。\n\n即：不要因为毁灭之锤而扰乱你的思绪。";
 		L.SHOW_PVP_CHECKBOX_TOOLTIP = "如果你想隐藏任何'可能'需要在游戏中进行 PvP 互动的内容，请启用此设置。";
+		L.SHOW_ALL_SEASONAL = app.ccColors.Insane .. "所有季节性事件";
+		L.SHOW_ALL_SEASONAL_TOOLTIP = "启用此设置可显示所有季节性事件，而不是仅显示当前活动的季节性事件。";
 		L.SHOW_PET_BATTLES_CHECKBOX_TOOLTIP = "如果您想在游戏中显示需要宠物对战的内容，请启用此设置。";
 		L.IGNORE_FILTERS_FOR_BOES_CHECKBOX = "忽略装备绑定/拾取绑定的筛选";
 		L.IGNORE_FILTERS_FOR_BOES_CHECKBOX_TOOLTIP = "如果要忽略装备绑定/拾取绑定物品的装备、武器、种族、等级或职业要求，请启用此设置。\n\n如果你正试图通过拍卖行扫描收藏你的物品，此模式可能对你有用。";
@@ -369,6 +368,7 @@ ACC_WIDE_DEFAULT = "默认情况下追踪账号通用。";
 		L.DYNAMIC_CATEGORY_NESTED_TOOLTIP = "根据它们的确切来源生成动态类别。这将导致在多个地方也有来源的事物重复。";
 		L.DYNAMIC_CATEGORY_TOOLTIP_NOTE = "\n\n|cffff0000需要重新加载|r";
 		L.CLICK_TO_CREATE_FORMAT = "点击创建 %s";
+		--TODO: L.KEYBINDINGS_TEXT = "You can set keybindings for ATT in the game's options.";
 
 	-- Account-Wide Checkboxes
 		L.ACCOUNT_WIDE_ACHIEVEMENTS_TOOLTIP = TRACK_ACC_WIDE.."\n\n成就追踪通常是在整个账号通用内进行的，但有一些特定职业和种族的专属成就，你无法在你的主账号上获得。";
@@ -383,20 +383,20 @@ ACC_WIDE_DEFAULT = "默认情况下追踪账号通用。";
 		L.ACCOUNT_WIDE_TITLES_TOOLTIP = TRACK_ACC_WIDE.."\n\n大多数头衔都是在账号通用内进行追踪，但是魔兽世界中一些著名的头衔被锁定在赢得他们的角色上。\n\n如果你不关心这个并希望看到那些标记为收藏的头衔是你的小号，请切换此选项。";
 
 	-- Filters tab
-		L.ITEM_EXPLAIN_LABEL = "|cffFFFFFF始终显示此内容如果位于 |Cff00AB00帐号模式|cffFFFFFF。|r";
+		L.ITEM_EXPLAIN_LABEL = "|cffFFFFFF始终显示此内容如果位于 "..app.ccColors.Account.."帐号模式|cffFFFFFF。|r";
 		L.CLASS_DEFAULTS_BUTTON = "职业默认";
 		L.CLASS_DEFAULTS_BUTTON_TOOLTIP = "点击此按钮可将所有过滤重置为职业默认。\n\n注意：只能打开可为职业收藏的过滤。";
 		L.ALL_BUTTON_TOOLTIP = "点击此按钮一次启用所有设备过滤。";
 		L.UNCHECK_ALL_BUTTON_TOOLTIP = "点击此按钮一次禁用所有设备过滤。";
-		L.CUSTOM_FILTERS_LABEL = "自动过滤";
-		L.CUSTOM_FILTERS_EXPLAIN_LABEL = "|cffFFFFFF如果当前角色可以使用此内容，或者位于 |Cff00AB00账号模式|cffFFFFFF。|r";
+		L.CUSTOM_FILTERS_LABEL = "自动化内容";
+		L.CUSTOM_FILTERS_EXPLAIN_LABEL = "|cffFFFFFF如果当前角色可以使用此内容，或者位于 "..app.ccColors.Account.."账号模式|cffFFFFFF。|r";
 		L.CUSTOM_FILTERS_GENERIC_TOOLTIP_FORMAT = "启用此设置可强行显示%s内容，即使该内容对当前角色不可用。";
 
 	-- Unobtainables tab
 		L.UNOBTAINABLES_TAB = "不可获得";
 		L.SEASONAL_LABEL = "节日";
 		L.SEASONAL_ALL = "|cffECBC21切换所有节日";
-		L.UNOBTAINABLE_LABEL = "无法获得";
+		L.UNOBTAINABLE_LABEL = "无法获取的内容";
 		L.UNOBTAINABLE_ALL = "|cffECBC21切换所有不可获得";
 		L.NO_CHANCE_ALL = "|cffECBC21切换所有 \"没有机会\"";
 		L.HIGH_CHANCE_ALL = "|cffECBC21切换所有 \"很大机会\"";
@@ -472,6 +472,12 @@ ACC_WIDE_DEFAULT = "默认情况下追踪账号通用。";
 		L.MINI_LIST_SLIDER_LABEL = "小列表缩放";
 		L.MINI_LIST_SCALE_TOOLTIP = '使用此功能可以自定义所有小和小列表的缩放。\n\n默认：1';
 		L.ADDITIONAL_LABEL = "附加信息";
+		L.WINDOW_COLORS = "窗口颜色";
+		L.BACKGROUND_TOOLTIP = "设置所有 ATT 窗口的背景颜色和透明度。";
+		L.BORDER_TOOLTIP = "设置所有 ATT 窗口的边框颜色和透明度。";
+		L.RESET_TOOLTIP = "重置所有 ATT 窗口的背景和边框。";
+		L.CLASS_BORDER = "边框使用职业颜色";
+		L.CLASS_BORDER_TOOLTIP = "使用职业颜色作为边框。当登录到另一个职业时，此信息会更新。";
 
 	-- Features tab
 		L.MINIMAP_LABEL = "小地图按钮";
@@ -502,8 +508,7 @@ ACC_WIDE_DEFAULT = "默认情况下追踪账号通用。";
 		L.QUEST_CHAIN_NESTED_CHECKBOX = "显示嵌套任务链";
 		L.QUEST_CHAIN_NESTED_CHECKBOX_TOOLTIP = "如果你想让任务链要求（右键单击任务）窗口将所需任务显示为其后续任务的子组，即它们必须从内到外完成，请启用此选项。\n\n这一点很有用，不会错过个别任务，应该主要用于完成任务的考虑。\n\n否则任务链要求将以自上而下的方式显示，最早的任务在最上面。";
 		L.CELEBRATIONS_LABEL = "庆祝和音效";
-		L.MASTER_AUDIO_CHECKBOX = "使用主音频通道";
-		L.MASTER_AUDIO_CHECKBOX_TOOLTIP = "如果你希望在主音频通道上播放庆祝和其他 ATT 音效请启用此选项。\n\n默认：是\n\n很多人在玩的时候都会关闭声音效果，所以这个选项可以让 ATT 的声音绕过它，如果需要的话。";
+		L.AUDIO_CHANNEL = "声音通道";
 		L.CELEBRATE_COLLECTED_CHECKBOX = "收藏事物触发庆祝音效";
 		L.CELEBRATE_COLLECTED_CHECKBOX_TOOLTIP = "如果你想在获得新的事物时听到庆祝'fanfare'效果请启用这个选项。\n\n这个功能可以极大地帮助你保持动力。";
 		L.WARN_REMOVED_CHECKBOX = "移除事物触发警告";
@@ -514,7 +519,7 @@ ACC_WIDE_DEFAULT = "默认情况下追踪账号通用。";
 		L.CHAT_COMMANDS_TEXT = "/att |cffFFFFFF或|R /things |cffFFFFFF或|R /allthethings\n|cffFFFFFF打开主列表。\n\n|R/att mini |cffFFFFFF或|R /attmini\n|cffFFFFFF打开小列表。\n\n|R/att bounty\n|cffFFFFFF打开被出错或未确认的物品列表。\n\n|R/att ra |cffFFFFFF或|R /attra\n|cffFFFFFF打开团队助手。\n\n|R/att wq |cffFFFFFF或|R /attwq\n|cffFFFFFF打开世界任务列表。\n\n|R/att item:1234 |cffFFFFFF或|R /att [物品链接]\n|cffFFFFFF打开一个共享外观的窗口。也适用于其他事物，例如|R quest:1234|cffFFFFFF，|Rnpcid:1234|cffFFFFFF，|Rmapid:1234|cffFFFFFF 或 |Rrecipeid:1234|cffFFFFFF。\n\n|R/att rwp\n|cffFFFFFF显示所有未来用补丁删除的东西。\n\n|R/att random |cffFFFFFF或|R /attrandom |cffFFFFFF或|R /attran\n|cffFFFFFF打开随机列表。\n\n|R/att unsorted\n|cffFFFFFF打开未知源物品列表。最好在调试模式下打开。\n\n|R/rl\n|cffFFFFFF重载魔兽界面。|R";
 
 	-- Profiles tab
-		L.PROFILES_TAB = "配置文件";
+		L.PROFILES_PAGE = "配置文件";
 		L.PROFILE = "配置文件";
 		L.PROFILE_INITIALIZE = "初始化配置文件";
 		L.PROFILE_INITIALIZE_TOOLTIP = "这将使您的 ATT 保存变量能够支持和包含配置文件数据。您当前的设置和窗口信息将被复制到 '"..DEFAULT.."' 配置文件中，该配置文件无法删除，但可以修改并使用作为所有角色的初始配置文件。\n\n请务必将配置文件的任何异常行为或错误报告给 ATT Discord！";
@@ -526,7 +531,7 @@ ACC_WIDE_DEFAULT = "默认情况下追踪账号通用。";
 		L.SHOW_PROFILE_LOADED = "显示在登录期间或在配置文件之间切换时加载的配置文件";
 
 	-- Sync tab
-		L.SYNC = "同步";
+		L.SYNC_PAGE = "同步";
 		L.ACCOUNT_SYNCHRONIZATION = "帐号同步";
 		L.AUTO_SYNC_ACC_DATA_CHECKBOX = "自动同步帐号数据";
 		L.AUTO_SYNC_ACC_DATA_TOOLTIP = "如果您希望 ATT 在登录或重新加载用户界面时尝试在帐号之间自动同步帐号数据，请启用此选项。";
@@ -547,7 +552,7 @@ ACC_WIDE_DEFAULT = "默认情况下追踪账号通用。";
 		L.CONFIRM_DELETE = "\n \n确定删除此项？";
 
 	-- About tab
-		L.ABOUT = "关于";
+		L.ABOUT_PAGE = "关于";
 		L.ABOUT_1 = " |CFFFFFFFF是一个收藏跟踪插件，可以向您展示在游戏中获取所有内容的位置和方式！我们的 Discord 上有大量用户社区（底部链接），您可以在其中提问、提交建议以及报告错误或丢失的物品。如果发现一些收藏品或未记录的任务，可以在 Discord 上告诉我们，或者对于更精通技术的人，我们有一个您可以直接贡献的 Git。\n\n虽然我们努力争取完成，但每个补丁都会添加很多东西，所以如果我们遗漏了什么，请理解我们是一个小团队，试图跟上变化并自己收藏东西。:D\n\n在我直播时随时问我问题，我会尽力回答，即使它与 ATT（一般魔兽插件编程也是如此）没有直接关系。\n\n- |r|Cffff8000Crieve|CFFFFFFFF\n\n另外：查看 All The Things 经典旧世和燃烧的远征经典旧世！\n\n是的，我打算玩经典旧世魔兽哦，但是在全职工作和开发插件的两个版本之间，不会有很多时间用于团队。\n\n不，ATT 不是将图标放在包图标上的插件。那是 CanIMogIt 和 Caerdon Wardrobe！\n\n对于在线收藏比较，请查看 shoogen 的 DataForAzeroth.com！|r";
 		L.ABOUT_2 = "其他贡献者：|CFFFFFFFF（加入团队顺序）\nDaktar，Lucetia，Slumber，Gold，Avella，Aiue，Dead Serious，Oiche，Oxlotus，Eiltherune，Blueyleader，Iyanden，Pr3vention，BigBlaris，Talonzor，Mogwai，Heallie，Eckhardt，Boohyaka，Sadidorf，Sanctuari，Molkree，Runawaynow，Braghe，Myrhial，Darkal，Tag 和其他 ATT Discord 的人们！\n\n特别鸣谢 AmiYuy（CanIMogIt）和Caerdon（Caerdon Wardrobe）。|r  ";
 		L.ABOUT_3 = "\n|CFFFFFFFF你绝对应该下载他们的插件，以便在你的背包里的物品上获得收藏图标！|r";
@@ -682,42 +687,7 @@ do a[key] = value; end
 
 local a = L.HEADER_NAMES;
 for key,value in pairs({
-	-- Commonly used
-		[-2] = "商人",												-- Vendor	-- String in GlobalStrings.lua means slightly different thing in zhCN so translating it manually
-		[-11] = "一般宝箱掉落",											-- Common Box Drops
-		[-12] = DUNGEON_FLOOR_DIREMAUL5.." [东 - 恶魔]",				-- Warpwood Quarter [East - Demon]
-		[-13] = DUNGEON_FLOOR_DIREMAUL1.." [北 - 食人魔]",				-- Gordok Commons [North - Ogres]
-		[-14] = DUNGEON_FLOOR_DIREMAUL2.." [西 - 精灵]",				-- Capital Gardens [West - Elves]
-		[-15] = "勘探",												-- Exploration
-		[-19] = "梦魇之龙",												-- Dragons of Nightmare
-		[-20] = "常规商人物品",										-- Common Vendor Items
-		[-21] = "船长",												-- Captains
-		[-22] = "秘密",												-- Secrets
-		[-23] = "一般地下城掉落",											-- WoD Common Dungeon Drop
-		[-26] = "掉落",												-- Drops
-		[-27] = "下层",												-- Lower (Blackrock Spire)
-		[-28] = "上层",												-- Upper (Blackrock Spire)
-		[-41] = "疯狂宝箱",												-- Cache of Madness
-	-- World Events
-		[-53] = "仲夏火焰节",											-- Midsummer Fire Festival
-		[-55] = "海盗日",												-- Pirates' Day
-		[-59] = "悼念日",												-- Day of the Dead
-		[-62] = "荆棘谷钓鱼大赛",											-- Stranglethorn Fishing Extravaganza
-		[-63] = "卡鲁亚克钓鱼大赛",											-- Kalu'ak Fishing Derby
-	-- Zul'Aman
-		[-78] = "限时事件",												-- Timed Event
-		[-79] = "一箱",												-- First Chest
-		[-80] = "二箱",												-- Second Chest
-		[-81] = "三箱",												-- Third Chest
-		[-82] = "最终宝箱",												-- Final Chest
-	-- SM
-		[-85] = "墓地",												-- Graveyard
-		[-86] = "图书馆",												-- Library
-		[-87] = "武器库",												-- Armory
-		[-88] = "修道院",												-- Cathedral
 	-- Garrisons
-		[-99] = "建筑",												-- Buildings
-	-- Garrison
 		[-152] = "要塞战役",											-- Garrison Campaign
 	-- Class Trial
 		[-155] = string.format(SPELLBOOK_AVAILABLE_AT, 50).." ".."（直升）",	-- Level 50 (Boost)
@@ -725,7 +695,6 @@ for key,value in pairs({
 		[-159] = "事件投骰",										-- Daily Dreamway Event Roll
 	-- Fishing
 		[-217] = "鱼竿",												-- Lures (for Fishing)
-		[-218] = "鱼饵",												-- Coastal (for Fishing)
 	[-219] = "无来源",													-- Sourceless
 	-- PvP
 		[-242] = "无评级",												-- Unrated
@@ -737,108 +706,36 @@ for key,value in pairs({
 		[-356] = "进攻黑暗之门",										-- Assault on the Dark Portal
 	-- Outposts in Draenor
 		[-361] = GetSpellInfo(182108).." 塔",						-- Artillery Tower
-	-- Operation: Mechagon
-		[-379] = "垃圾场",												-- Junkyard
-	-- Icecrown Citadel
-		[-393] = "进攻堡垒",											-- Storming the Citadel
-		[-394] = "天灾工厂",											-- The Plagueworks
 	-- BFA Outposts
 		[-397] = "哨站",												-- Outposts
 	-- 5.3
 		[-398] = "战场：贫瘠之地",											-- Battlefield: Barrens
-	-- T0.5 & Classic
-		[-420] = "等级 0.5 套装",										-- Tier 0.5 Sets
-		[-422] = "阿塔莱防御者",											-- Atal'ai Defenders
-		[-423] = "四骑士",												-- The Four Horsemen
 	-- BFA War Chest
 		[-488] = "战争宝箱",											-- Daily War Chest
-	-- Tarot Cards
-		[-491] = "塔罗牌",												-- Tarot Cards
 	-- Misc
 		[-493] = "破碎前置任务拾取",										-- Broken Mission Loot
 	-- Blizzard Events and Anniversaries
-		[-519] = "世界事件",											-- World Events
 		[-520] = "资料片前夕",											-- Expansion Pre-Launch
-		[-522] = "扎拉赞恩的灭亡",										-- Zalazane's Fall
-		[-523] = "元素动荡",												-- Elemental Unrest
-		[-525] = EXPANSION_NAME5.."：钢铁部落入侵",						-- Warlords of Draenor: Iron Horde Incursion
-		[-526] = EXPANSION_NAME6.."：军团入侵",							-- Legion: Legion Invasion
-		[-527] = EXPANSION_NAME7.."：荆棘战争",							-- Battle for Azeroth: War of the Thorns
-		[-532] = "风暴英雄",											-- Heroes of the Storm
-		[-533] = "炉石传说",											-- Hearthstone
-		[-534] = "典藏版",												-- Collector's Edition
-		[-536] = "炉石传说佣兵战纪",										-- Hearthstone Mercenaries
-		[-537] = "暗黑破坏神20周年庆",										-- Diablo 20th Anniversary
-		[-538] = "安其拉之战捐献",											-- The Ahn'Qiraj War Effort
-		[-539] = "流沙节杖",											-- The Scepter of the Shifting Sands
-		[-540] = "天灾入侵",											-- The Scourge Invasion
-		[-541] = "希利苏斯流沙",											-- The Silithyst Must Flow
-		[-542] = "开启黑暗之门",											-- The Opening of the Dark Portal
 		[-543] = "军团入侵",											-- Legion Invasions
-		[-545] = "暴雪嘉年华",											-- Blizzcon
-		[-552] = "魔兽争霸III战争嘉奖版",									-- Warcraft 3 Spoils of War Edition
-		[-553] = "可口可乐活动",											-- iCoke
-		[-564] = "星际争霸II：自由之翼",										-- Starcraft II: Wings of Liberty
-		[-565] = "星际争霸II：虫群之心",										-- Starcraft II: Heart of the Swarm
-		[-566] = "暗黑破坏神III",										-- Diablo III
-		[-568] = "守望先锋：起源",											-- Overwatch: Origins
-		[-575] = "暗黑破坏神III：夺魂之镰",									-- Diablo III: Reaper of Souls
-		[-576] = "星际争霸II：虚空之遗",										-- StarCraft II: Legacy of the Void
-		[-577] = "魔兽电影",											-- Warcraft Movie
-		[-579] = "穿过黑暗之门",											-- Dark Portal Pass
-		[-580] = "暗影国度季节性促销",										-- Shadowlands Seasonal Promotions
-		[-581] = "燃烧的远征经典怀旧服典藏包",				-- TBC Classic Deluxe Edition
-		[-582] = "巫妖王之怒经典怀旧服诺森德英雄礼包",			-- WotLK Classic Northrend Heroic Upgrade ("Cheap")
-		[-583] = "巫妖王之怒经典怀旧服诺森德史诗礼包",			-- WotLK Classic Northrend Epic Upgrade
-		[-584] = "巨龙时代季节性促销",			-- Dragonflight Seasonal Promotions
-		[-585] = "暗黑破坏神IV",													-- Diablo IV
-	-- PvP Header
-		-- PvP Set Names
-			[-659] = "候选者套装",									-- Aspirant PvP Gear (WoD, BfA)
-			[-660] = "争斗者套装",									-- Combatant PvP Gear (WoD, Legion)
-			[-661] = "角斗士套装",									-- Gladiator PvP Gear
-			[-662] = "精锐套装",										-- Elite PvP Gear
-		-- The Burning Crusade PvP Seasons
-			[-664] = select(2, GetAchievementInfo(2091)).."：第1赛季",	-- Gladiator: Season 1
-			[-665] = select(2, GetAchievementInfo(418)).."：第2赛季",	-- Merciless Gladiator: Season 2
-			[-666] = select(2, GetAchievementInfo(419)).."：第3赛季",	-- Vengeful Gladiator: Season 3
-			[-667] = select(2, GetAchievementInfo(420)).."：第4赛季",	-- Brutal Gladiator: Season 4
-		-- Wrath of the Lich-King PvP Seasons
-			[-668] = select(2, GetAchievementInfo(3336)).."第5赛季",	-- Deadly Gladiator: Season 5
-			[-657] = "憎恨角斗士",										-- Hateful Gladiator: Season 5 ("medium pvp gear")
-			[-669] = select(2, GetAchievementInfo(3436)).."第6赛季",	-- Furious Gladiator: Season 6
-			[-670] = select(2, GetAchievementInfo(3758)).."第7赛季",	-- Relentless Gladiator: Season 7
-			[-671] = select(2, GetAchievementInfo(4599)).."第8赛季",	-- Wrathful Gladiator: Season 8
-		-- Cataclysm PvP Seasons
-			[-672] = select(2, GetAchievementInfo(6002)).."第9赛季",	-- Vicious Gladiator: Season 9
-			[-656] = "荣誉装备冷酷赛季",									-- Honor Gear Ruthless (S10)
-			[-673] = select(2, GetAchievementInfo(6124)).."第10赛季",	-- Ruthless Gladiator: Season 10
-			[-654] = "荣誉装备灾变赛季",									-- Honor Gear Cataclysmic (S11)
-			[-674] = select(2, GetAchievementInfo(6938)).."第11赛季",	-- Cataclysmic Gladiator: Season 11
-		-- Mists of Pandaria PvP Seasons
-			[-675] = select(2, GetAchievementInfo(8214)).."第12赛季",	-- Malevolent Gladiator: Season 12
-			[-653] = "荣誉装备暴虐赛季",									-- Honor Gear Tyrannical (S13)
-			[-676] = select(2, GetAchievementInfo(8791)).."第13赛季",	-- Tyrannical Gladiator: Season 13
-			[-652] = "荣誉装备恶孽赛季",									-- Honor Gear Grievous (S14)
-			[-651] = "荣誉装备骄矜赛季",									-- Honor Gear Prideful (S15)
+	-- Cataclysm PvP Seasons
+		[-672] = select(2, GetAchievementInfo(6002)).."第9赛季",	-- Vicious Gladiator: Season 9
+		[-656] = "荣誉装备冷酷赛季",									-- Honor Gear Ruthless (S10)
+		[-673] = select(2, GetAchievementInfo(6124)).."第10赛季",	-- Ruthless Gladiator: Season 10
+		[-654] = "荣誉装备灾变赛季",									-- Honor Gear Cataclysmic (S11)
+		[-674] = select(2, GetAchievementInfo(6938)).."第11赛季",	-- Cataclysmic Gladiator: Season 11
+	-- Mists of Pandaria PvP Seasons
+		[-675] = select(2, GetAchievementInfo(8214)).."第12赛季",	-- Malevolent Gladiator: Season 12
+		[-653] = "荣誉装备暴虐赛季",									-- Honor Gear Tyrannical (S13)
+		[-676] = select(2, GetAchievementInfo(8791)).."第13赛季",	-- Tyrannical Gladiator: Season 13
+		[-652] = "荣誉装备恶孽赛季",									-- Honor Gear Grievous (S14)
+		[-651] = "荣誉装备骄矜赛季",									-- Honor Gear Prideful (S15)
 	-- Pets
 		[-795] = "宠物对战地下城",										-- Pet Battle Dungeons
-	-- Secret Header
-		[-806] = "钟示贤德腰带",												-- Waist of Time
 	-- Chests
 		[-851] = "黑暗帝国宝箱",											-- Black Empire Cache (Is a placeholder since no ObjectID are assigned to chests!)
-	-- Heart of Azeroth
-		[-853] = "全部角色",											-- All Roles
-		[-854] = "输出",												-- DPS
-		[-855] = "治疗",												-- Healers
-		[-856] = "坦克",												-- Tanks
 	-- Shadowlands Header
-		[-903] = "区域奖励",											-- Zone Rewards
 		[-979] = "掮灵威·肯 & 掮灵威·诺特",									-- Broker Ve'ken & Broker Ve'nott
-		[-921] = "圣所升级",											-- Sanctum Upgrades
 		[-924] = "传送网络",											-- Transport Network
-		-- SL Ardenweald/Night Fae
-			[-936] = "灵魂变形形态",										-- Soulshape Forms (Night Fae)
 		-- SL Bastion/Kyrian
 			[-973] = "忠诚",											-- Loyalty
 			[-975] = "谦逊",											-- Humility
@@ -855,17 +752,8 @@ for key,value in pairs({
 		[-1100] = DRAKE_MANUSCRIPTS,								-- Drakewatcher Manuscripts
 		[-1101] = "原始风暴",											-- Primal Storms
 		[-1102] = "拉希奥和萨贝里安",										-- Wrathion & Sabellian
-		[-1110] = "龙鳞探险队",											-- Dragonscale Expedition
 		[-1120] = "马鲁克半人马",											-- Maruuk Centaur
-		[-1121] = "艾拉格氏族",											-- Clan Aylaag
-		[-1122] = "洪荒狩猎",											-- Grand Hunts
-		[-1123] = "北部",												-- North
-		[-1124] = "东部",												-- East
-		[-1125] = "南部",												-- South
-		[-1126] = "西部",												-- West
 		[-1130] = "伊斯卡拉海象人",										-- Iskaara Tuskarr
-		[-1131] = "伊斯卡拉渔具",										-- Iskaara Fishing
-		[-1140] = "瓦德拉肯联军",										-- Valdrakken Accord
 		[-1143] = "每30分钟稀有",										-- DF Rare Rotation (Every 30 min Rare)
 		[-1144] = "每周专业知识",										-- Weekly Profession Header
 		[-1150] = "峈姆鼹鼠人",											-- Loamm Niffen
@@ -874,19 +762,6 @@ for key,value in pairs({
 		[-1200] = "兹斯克拉宝库",										-- Zskera Vaults
 		[-1202] = "菲莱克突袭",											-- Fyrakk Assaults
 		[-1203] = "嗅味探寻",							                -- Sniffenseeking
-	-- Warrior order hall lore items
-		[-2200] = "伟大的奥丁与炎魔之王",
-		[-2201] = "流浪者与蛇",
-		[-2202] = "黄金与荣耀的殿堂",
-		[-2203] = "守护者之眼",
-		[-2204] = "首位瓦格里",
-		[-2205] = "封印英灵殿",
-		[-2206] = "他名叫龙血",
-		[-2207] = "亡灵杀手艾斯格里姆的遗言",
-		[-2208] = "女武神的信条",
-		[-2209] = "神谕者莱萨斯的预言",
-		[-2210] = "黑拳的教诲",
-		[-2211] = "沃伦德的愚行",
 	-- Tier/Dungeon/Event/Holiday Sets
 		-- Artifact Strings
 			[-5200] = "基础外观",										-- Base Appearance
@@ -896,53 +771,18 @@ for key,value in pairs({
 			[-5204] = "挑战外观",										-- Challenge Appearance
 			[-5205] = "隐藏外观",										-- Hidden Appearance
 
-		[-7776] = "冬季狂欢者",											-- Winter Revelers (for Winter Veil)
 	------ ACHIEVEMENT HEADERS SECTION ------
 		[-10071] = "恩佐斯的幻象",										-- Visions of N'Zoth
 		[-10072] = "恩佐斯突袭",											-- N'Zoth Assault
-		[-10075] = "突袭：阿玛赛特进军",										-- Assault: Amathet Advance
-		[-10076] = "突袭：黑暗帝国",										-- Assault: The Black Empire
-		[-10077] = "突袭：战争氏族",										-- Assault: The Warring Clans
-		[-10078] = "突袭：无尽虫群",										-- Assault: The Endless Swarm
-		[-10079] = "突袭：亚基重现",										-- Assault: Aqir Unearthed
 		[-10081] = "腐化区域",											-- Corrupted Area
 		[-10082] = "失落区域",											-- Lost Area
-		-- Shadowlands Achievement Headers
-			-- 9.1
-				[-10083] = "盟约突袭",									-- Covenant Assaults
-			--	hopefully temp objects, these currently do not have accessible object data on wowhead
-				[-1433951] = "残破的镜子 A-1",							-- Broken Mirror
-				[-1433952] = "残破的镜子 A-2",							-- Broken Mirror
-				[-1433953] = "残破的镜子 A-3",							-- Broken Mirror
-				[-1433954] = "残破的镜子 B-1",							-- Broken Mirror
-				[-1433955] = "残破的镜子 B-2",							-- Broken Mirror
-				[-1433956] = "残破的镜子 B-3",							-- Broken Mirror
-				[-1433957] = "残破的镜子 C-1",							-- Broken Mirror
-				[-1433958] = "残破的镜子 C-2",							-- Broken Mirror
-				[-1433959] = "残破的镜子 C-3",							-- Broken Mirror
-				[-1433960] = "残破的镜子 D-1",							-- Broken Mirror
-				[-1433961] = "残破的镜子 D-2",							-- Broken Mirror
-				[-1433962] = "残破的镜子 D-3",							-- Broken Mirror
 })
 do a[key] = value; end
 if GetLocale() == "zhTW" then
 	a[-1101] = "洪荒風暴";												-- Primal Storms
-	a[-1110] = "龍鱗遠征隊";												-- Dragonscale Expedition
 	a[-1120] = "莫魯克半人馬";											-- Maruuk Centaur
-	a[-1130] = "伊斯凱拉巨牙海民";										-- Iskaara Tuskarr
-	a[-1140] = "沃卓肯協調者";											-- Valdrakken Accord
+	a[-1130] = "伊斯凱拉巨牙海民";										-- Iskaara Tuskarrccord
 end
-
-local a = L.HEADER_DESCRIPTIONS;
-for key,value in pairs({
-	[-18] = "包含有奖励或可从包含部分中的其他内容获得的事物。\n在此处合并以减少来自许多可能重复来源。",
-	[-22] = "淘气的秘密…",
-	[-34] = "世界任务是有时间限制的任务，可在特定地点进行，奖励不一。\n\n一定要经常查看 ATT 世界任务窗口(/attwq)，看看有什么限时的东西你应该去收藏！",
-	[-169] = "这些物品可以通过做使者任务或获得巅峰宝箱来获得。",
-	[-799] = "以下物品可以通过在永恒护甲代币上使用不朽之责获得双倍无意随机生成来创建。",
-	[-903] = "这些物品可以从可重复的宝箱、祈愿蟋蟀、世界任务或桌面任务中掉落。",
-})
-do a[key] = value; end
 
 -- Fall-back 'name' values for Quests based on QuestID
 local a = L.QUEST_NAMES;
@@ -1164,6 +1004,7 @@ for key, value in pairs({
 	[153239] = "枭兽羽毛",	-- Wildkin Feather
 	[157936] = "安戈洛土堆",	-- Un'Goro Dirt Pile	--TODO: This was taken from wotlk Wowhead
 	[160836] = "古物宝库",	-- Relic Coffer
+	[160845] = "黑暗宝箱",	-- Dark Coffer
 	[161495] = "秘密保险箱",	-- Secret Safe
 	[161504] = "小背包",	-- A Small Pack	--TODO: This was taken from wotlk Wowhead
 	[161505] = "破碎的木筏",	-- A Wrecked Raft
@@ -1191,6 +1032,7 @@ for key, value in pairs({
 	[164956] = "西部水晶塔",	-- Western Crystal Pylon
 	[164957] = "东部水晶塔",	-- Eastern Crystal Pylon
 	[164958] = "血瓣花苗",	-- Bloodpetal Sprout
+	[165554] = "山脉之心",	-- Heart of the Mountain
 	[166863] = "新鲜的蛇颈龙肉",	-- Fresh Threshadon Carcass
 	[169243] = "七贤之箱",	-- Chest of The Seven
 	[171938] = "仙人掌果",	-- Cactus Apple
@@ -1239,6 +1081,7 @@ for key, value in pairs({
 	[175385] = "黑暗石板",	-- Darkstone Tablet
 	[175407] = "月光羽毛",	-- Moontouched Feather	--TODO: This was taken from wotlk Wowhead
 	[175524] = "神秘的红色水晶",	-- Mysterious Red Crystal	--TODO: This was taken from wotlk Wowhead
+	--TODO: [175564] = "Brazier of the Herald",	-- Brazier of the Herald
 	[175565] = "异型蛋",	-- Alien Egg	--TODO: This was taken from wotlk Wowhead
 	[175586] = "加隆的马车",	-- Jaron's Wagon
 	[175587] = "破损的箱子",	-- Damaged Crate
@@ -1280,6 +1123,7 @@ for key, value in pairs({
 	[175761] = "瘟疫之地的内战",	-- Civil War in the Plaguelands
 	[175762] = "巫妖王的胜利",	-- The Lich King Triumphant
 	[175763] = "古老的仇恨 - 卡利姆多的开拓",	-- Old Hatreds - The Colonization of Kalimdor
+	[175802] = "小箱子",	-- Small Lockbox	--TODO: This was taken from wotlk Wowhead
 	[175854] = "两个帝国",	-- The Twin Empires
 	[175855] = "帝国的陷落",	-- Empires' Fall
 	[175856] = "夺灵者的愤怒",	-- Wrath of Soulflayer
@@ -1336,6 +1180,7 @@ for key, value in pairs({
 	[178144] = "巨魔的箱子",	-- Troll Chest
 	[178195] = "战歌之油",	-- Warsong Oil
 	[178204] = "一箱战歌之斧",	-- Warsong Axe Shipment
+	--TODO: [178224] = "Dire Pool",	-- Dire Pool
 	[178227] = "穆戈特的图腾篮",	-- Murgut's Totem Basket
 	[178553] = "亚什虫茧",	-- Hive'Ashi Pod
 	[178609] = "节日大雪",	-- Holiday Snow
@@ -1343,6 +1188,7 @@ for key, value in pairs({
 	[179499] = "食人魔鞣酸篮",	-- Ogre Tannin Basket
 	[179501] = "诺特·希姆加克的储物箱",	-- Knot Thimblejack's Cache	--TODO: This was taken from wotlk Wowhead
 	[179552] = "结构图：修理机器人74A型",	-- Schematic: Field Repair Bot 74A
+	[179553] = "熔核碎片",	-- Core Fragment
 	[179562] = "上古淬火之剑",	-- Ancient Heated Blade	--TODO: This was taken from wotlk Wowhead
 	[179564] = "戈多克贡品",	-- Gordok Tribute Chest
 	[179565] = "覆满灰尘的箱子",	-- Dusty Reliquary
@@ -1372,6 +1218,9 @@ for key, value in pairs({
 	[180642] = "不起眼的箱子",	-- Inconspicuous Crate	--TODO: This was taken from wotlk Wowhead
 	--TODO: [180652] = "Freshly Dug Dirt",	-- Freshly Dug Dirt
 	[180662] = "帆船残骸",	-- Schooner Wreckage
+	[180665] = "龙语傻瓜教程",	-- Draconic for Dummies
+	[180666] = "龙语傻瓜教程",	-- Draconic for Dummies
+	[180667] = "龙语傻瓜教程",	-- Draconic for Dummies
 	[180669] = "湍急的漩涡",	-- Swirling Maelstrom	--TODO: this was manually translated
 	[180685] = "浸水的残骸",	-- Waterlogged Wreckage
 	[180690] = "大型圣甲虫箱",	-- Large Scarab Coffer
@@ -2386,6 +2235,8 @@ for key, value in pairs({
 	[242678] = "宝箱",	-- Treasure Chest
 	[242683] = "宝箱",	-- Treasure Chest
 	[242959] = "宝箱",	-- Treasure Chest
+	[243321] = "野性之石",	-- Feral Stone
+	[243323] = "平衡之石",	-- Balance Stone
 	[243334] = "干枯的草药",	-- Withered Herb
 	--TODO: [243392] = "Alchemy Book",	-- Alchemy Book
 	[243688] = "宝箱",	-- Treasure Chest
@@ -3664,6 +3515,7 @@ for key, value in pairs({
 	[380867] = "琥珀宝石簇",	-- Amber Gem Cluster
 	[380902] = "野性战场",	-- Fields of Ferocity
 	[380918] = "破损的精美雕像",	-- Broken Ornamented Statue
+	--TODO: [380963] = "Small Pile of Ash",	-- Small Pile of Ash
 	[380991] = "土堆",	-- Dirt Mound
 	[381035] = "宏伟宝库",	-- The Great Vault
 	[381045] = "金色巨龙高脚杯",	-- Golden Dragon Goblet
@@ -3744,6 +3596,7 @@ for key, value in pairs({
 	[382325] = "玛瑙宝石簇",	-- Onyx Gem Cluster
 	--TODO: [382621] = "Revival Catalyst Console",	-- Revival Catalyst Console
 	[383625] = "一箱新鲜的冰湖鱼",	-- Case of Fresh Gleamfish
+	[383660] = "盐晶",	-- Salt Crystal
 	[383732] = "海象人工具盒",	-- Tuskarr Tacklebox
 	[383733] = "翻动过的泥土",	-- Disturbed Dirt
 	[383734] = "翻动过的泥土",	-- Disturbed Dirt
@@ -3771,6 +3624,7 @@ for key, value in pairs({
 	[385520] = "骨堆",	-- Bone Pile
 	[385533] = "发信石：抗议",	-- Sending Stone: Protest
 	[385565] = "炽燃的暗影烈焰宝箱",	-- Blazing Shadowflame Chest
+	--TODO: [385581] = "Henry's Handbag",	-- Henry's Handbag
 	--TODO: [385799] = "Hardened Strongbox",	-- Hardened Strongbox
 	[385800] = "金子堆",	-- Gold Pile
 	[385801] = "金子堆",	-- Gold Pile
@@ -3838,6 +3692,7 @@ for key, value in pairs({
 	[386484] = "金子堆",	-- Gold Pile
 	[386531] = "金子堆",	-- Gold Pile
 	--TODO: [386532] = "Primordial Gold Cache",	-- Primordial Gold Cache
+	--TODO: [386547] = "Suffusion Mold",	-- Suffusion Mold
 	[386556] = "满是尘土的花瓶",	-- Dusty Vase
 	[386559] = "夺得的货物",	-- Secured Shipment
 	--TODO: [386573] = "Ornate Key Box",	-- Ornate Key Box
@@ -3949,6 +3804,8 @@ for key, value in pairs({
 	[398135] = "被抛弃的龙晶电钻",	-- Discarded Dracothyst Drill
 	[398138] = "熔火斥候机器人",	-- Molten Scoutbot
 	--TODO: [398200] = "Forgotten Lockbox",	-- Forgotten Lockbox
+	--TODO: [398674] = "Vibrant Flyer",	-- Vibrant Flyer
+	--TODO: [398698] = "Squeaking Swiss",	-- Squeaking Swiss
 	[398770] = "一箱岩石",	-- Box of Rocks
 	[398778] = "恶心的大缸",	-- Disgusting Vat
 	[398783] = "烈焰注能鳞油",	-- Flame-Infused Scale Oil
@@ -3974,6 +3831,7 @@ for key, value in pairs({
 	[401828] = "纳·克斯寇圣物匣",	-- Nal ks'kol Reliquary
 	[401839] = "沉睡者的奖赏",	-- Dreamer's Bounty
 	[401844] = "臭垃圾堆",	-- Smelly Trash Pile
+	--TODO: [402609] = "Demonic Gateway",	-- Demonic Gateway
 	[402627] = "古旧的窑炉",	-- Well-Worn Kiln
 	[402632] = "硫磺救生环",	-- Brimstone Rescue Ring
 	[402634] = "扎卡利长老之矛",	-- Zaqali Elder Spear
@@ -3983,6 +3841,39 @@ for key, value in pairs({
 	[402888] = "精细的扎卡利符文",	-- Intricate Zaqali Runes
 	[402890] = "嘶鸣符文草稿",	-- Hissing Rune Draft
 	[402892] = "远古研究",	-- Ancient Research
+	--TODO: [403498] = "Eva's Journal",	-- Eva's Journal
+	--TODO: [403532] = "Bucket of Fountain Water",	-- Bucket of Fountain Water
+	--TODO: [403533] = "Undelivered Shipment of Smokes",	-- Undelivered Shipment of Smokes
+	--TODO: [403534] = "Trampled Doll",	-- Trampled Doll
+	--TODO: [403535] = "The Deed to Andorhal",	-- The Deed to Andorhal
+	--TODO: [403536] = "The Road Ahead",	-- The Road Ahead
+	--TODO: [403552] = "Eva's Femur",	-- Eva's Femur
+	--TODO: [403567] = "Cracked Argent Dawn Commission",	-- Cracked Argent Dawn Commission
+	--TODO: [403702] = "Lost Page",	-- Lost Page
+	--TODO: [403703] = "Lost Page",	-- Lost Page
+	--TODO: [403704] = "Lost Page",	-- Lost Page
+	--TODO: [403705] = "Lost Page",	-- Lost Page
+	--TODO: [403706] = "Lost Page",	-- Lost Page
+	--TODO: [403707] = "Lost Page",	-- Lost Page
+	--TODO: [403708] = "Lost Page",	-- Lost Page
+	--TODO: [403709] = "Lost Page",	-- Lost Page
+	--TODO: [403710] = "Lost Page",	-- Lost Page
+	--TODO: [403711] = "Lost Page",	-- Lost Page
+	--TODO: [403712] = "Lost Page",	-- Lost Page
+	--TODO: [403713] = "Lost Page",	-- Lost Page
+	--TODO: [403714] = "Lost Page",	-- Lost Page
+	--TODO: [403715] = "Lost Page",	-- Lost Page
+	--TODO: [403716] = "Lost Page",	-- Lost Page
+	--TODO: [403717] = "Lost Page",	-- Lost Page
+	--TODO: [403722] = "Conveniently Misplaced Hook",	-- Conveniently Misplaced Hook
+	--TODO: [403731] = "Frozen Rune",	-- Frozen Rune
+	--TODO: [403786] = "Antlered Skull",	-- Antlered Skull
+	--TODO: [403919] = "Mechanized Cog",	-- Mechanized Cog
+	--TODO: [403962] = "Omarion's Second Handbook",	-- Omarion's Second Handbook
+	--TODO: [404242] = "Oil Soaked Book",	-- Oil Soaked Book
+	--TODO: [404314] = "Chipped Stone Tabled",	-- Chipped Stone Tabled
+	--TODO: [404432] = "Bload Soaked Book",	-- Bload Soaked Book
+	--TODO: [405388] = "Familiar Journal",	-- Familiar Journal
 	[9000000] = "微风雕塑之石",	-- Wind Sculpted Stone
 	[9999890] = "已腐化拾取",	-- Corrupted Loot
 	[9999891] = "仅主要目标",	-- Main Objective Only
@@ -4053,47 +3944,19 @@ for key, value in pairs({
 })
 do a[key] = value; end
 
--- Saved Instance Name => Dungeon Journal Instance Name Converter
--- If your saves aren't lining up, it's probably because Blizzard
--- didn't use the same localization for the instance. Sorry.
-local a = L.SAVED_TO_DJ_INSTANCES;
-for key,value in pairs({
-})
-do a[key] = value; end
-
 local a = L.UNOBTAINABLE_ITEM_REASONS;
 for key,value in pairs({
 	-- Arbitrary Filters
-		[1] = {1, "|CFFFF0000此项玩家永远无法获得。|r", "从未实施"}, -- No Hope
-		[2] = {1, "|CFFFF0000此项已从游戏中删除。|r", "从游戏中移除"}, -- No Hope
-		[4] = {3, "|CFFFF0000除非您拥有所需的 PvP 头衔、所需的 PvP 等级或处于该赛季的前 %，否则无法再购买或解锁幻化。|r", "PvP 精良/角斗士"},
-		[9] = {3, "|CFFFF0000获得它的原始来源已被删除，现在只能通过黑市拍卖行获得。|r", "黑市拍卖行 [BMAH]"},
-		[10] = {3, "|CFFFF0000最初通过不再印刷的 TCG 卡获得，但仍可通过黑市、游戏内或现实中的拍卖行获得。|r", "集换式卡牌游戏 [TCG]"},
-		[11] = {3, "|CFFFF0000除非您认识可以使用用于召唤首领的物品的人，否则这将不再可用。|r", "需要召唤物品"},
-		[15] = {1, "|CFFFF0000这不能永久学习或用于幻化。|r", "不可学"},
-		[35] = {3, "|CFFFF0000这被锁定在付费墙后面，例如游戏内商店、另一个暴雪产品或战友招募服务。|r", "暴雪礼品卡"},
-		[38] = {1, "|CFFFF0000这仅适用于在《熊猫人之谜》或通过黑市拍卖行完成传奇披风任务链的玩家。|r", "斡耳朵斯 - 传奇披风"},
-		[45] = {1, "|CFFFF0000暴雪的拾取更改损坏了几件物品，使其无法获得。\n贵族披风/古拉巴什帝国大氅（同为《争霸艾泽拉斯》使者奖励），“绞肉机”奥戈姆，《德拉诺之王》任务拾取和奥杜尔英雄模式物品目前已损坏，需要修复。|r", "拾取损坏"},
-
-	-- Seasonal Filters
-		[1000] = {4, "|CFF00FFDE这要求美酒节处于激活状态。|r", "美酒节"},
-		[1001] = {4, "|CFF00FFDE这要求儿童周处于激活状态。|r", "儿童周"},
-		[1012] = {4, "|CFF00FFDE这要求暗月马戏团处于激活状态。|r", "暗月马戏团" },
-		[1002] = {4, "|CFF00FFDE这要求悼念日处于激活状态。|r", "悼念日"},
-		[1003] = {4, "|CFF00FFDE这要求冬幕节处于激活状态。|r", "冬幕节"},
-		[1009] = {4, "|CFF00FFDE这要求烟花庆典处于激活状态。|r", "烟花庆典" },
-		[1004] = {4, "|CFF00FFDE这要求万圣节处于激活状态。|r", "万圣节"},
-		[1005] = {4, "|CFF00FFDE这要求收获节处于激活状态。|r", "收获节"},
-		[1006] = {4, "|CFF00FFDE这要求情人节处于激活状态。|r", "情人节"},
-		[1007] = {4, "|CFF00FFDE这要求春节处于激活状态。|r", "春节"},
-		[1014] = {4, "|CFF00FFDE这要求特殊小节日处于激活状态。|r", "小节日"},
-		[1008] = {4, "|CFF00FFDE这要求仲夏火焰节处于激活状态。|r", "仲夏火焰节"},
-		[1010] = {4, "|CFF00FFDE这要求复活节处于激活状态。|r", "复活节"},
-		[1013] = {4, "|CFF00FFDE这要求感恩节处于激活状态。|r", "感恩节"},
-		[1011] = {4, "|CFF00FFDE这要求海盗日处于激活状态。|r", "海盗日"},
-		[1015] = {4, "|CFF00FFDE这要求荆棘谷钓鱼大赛处于激活状态。|r", "荆棘谷钓鱼大赛"},
-		[1016] = {4, "|CFF00FFDE这要求时光漫游处于激活状态。|r", "时光漫游"},
-		[1017] = {4, "|CFF00FFDE这要求魔兽世界周年庆典处于激活状态。|r", "魔兽世界周年庆典"},
+	[1] = {1, "|CFFFF0000此项玩家永远无法获得。|r", "从未实施"}, -- No Hope
+	[2] = {1, "|CFFFF0000此项已从游戏中删除。|r", "从游戏中移除"}, -- No Hope
+	[4] = {3, "|CFFFF0000除非您拥有所需的 PvP 头衔、所需的 PvP 等级或处于该赛季的前 %，否则无法再购买或解锁幻化。|r", "PvP 精良/角斗士"},
+	[9] = {3, "|CFFFF0000获得它的原始来源已被删除，现在只能通过黑市拍卖行获得。|r", "黑市拍卖行 [BMAH]"},
+	[10] = {3, "|CFFFF0000最初通过不再印刷的 TCG 卡获得，但仍可通过黑市、游戏内或现实中的拍卖行获得。|r", "集换式卡牌游戏 [TCG]"},
+	[11] = {3, "|CFFFF0000除非您认识可以使用用于召唤首领的物品的人，否则这将不再可用。|r", "需要召唤物品"},
+	[15] = {1, "|CFFFF0000这不能永久学习或用于幻化。|r", "不可学"},
+	[35] = {3, "|CFFFF0000这被锁定在付费墙后面，例如游戏内商店、另一个暴雪产品或战友招募服务。|r", "暴雪礼品卡"},
+	[38] = {1, "|CFFFF0000这仅适用于在《熊猫人之谜》或通过黑市拍卖行完成传奇披风任务链的玩家。|r", "斡耳朵斯 - 传奇披风"},
+	[45] = {1, "|CFFFF0000暴雪的拾取更改损坏了几件物品，使其无法获得。\n贵族披风/古拉巴什帝国大氅（同为《争霸艾泽拉斯》使者奖励），“绞肉机”奥戈姆，《德拉诺之王》任务拾取和奥杜尔英雄模式物品目前已损坏，需要修复。|r", "拾取损坏"},
 })
 do a[key] = value; end
 
@@ -4102,6 +3965,6 @@ for key,value in pairs({
 	["NPE"] = { icon = "|T"..("Interface\\Icons\\achievement_newplayerexperience")..":0|t", color = "ff5bc41d", text = "新玩家体验", desc = "只有新角色可以收藏这个。" },
 	["SL_SKIP"] = { icon = "|T"..app.asset("Expansion_SL")..":0|t", color = "ff76879c", text = "命运丝线", desc = "只有选择跳过暗影国度故事线的角色才能收藏这个。" },
 	["HOA"] = { icon = "|T"..("Interface\\Icons\\inv_heartofazeroth")..":0|t", color = "ffe6cc80", text = GetSpellInfo(275825), desc = "只有角色获得 |cffe6cc80"..GetSpellInfo(275825).."|r 可以收集。" },
-	["~HOA"] = { icon = "|T"..("Interface\\Icons\\mystery_azerite_chest_normal")..":0|t", color = "ffe6cc80", text = "|cffff0000"..NO.."|r "..GetSpellInfo(275825), desc = "只有角色 |cffff0000没有|r 获得 |cffe6cc80"..GetSpellInfo(275825).."|r 可以收集。" },
+	["!HOA"] = { icon = "|T"..("Interface\\Icons\\mystery_azerite_chest_normal")..":0|t", color = "ffe6cc80", text = "|cffff0000"..NO.."|r "..GetSpellInfo(275825), desc = "只有角色 |cffff0000没有|r 获得 |cffe6cc80"..GetSpellInfo(275825).."|r 可以收集。" },
 })
 do a[key] = value; end

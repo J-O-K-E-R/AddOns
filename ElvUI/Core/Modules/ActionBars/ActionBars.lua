@@ -20,7 +20,6 @@ local hooksecurefunc = hooksecurefunc
 local InClickBindingMode = InClickBindingMode
 local InCombatLockdown = InCombatLockdown
 local IsItemAction = IsItemAction
-local IsMounted = IsMounted
 local IsPossessBarVisible = IsPossessBarVisible
 local PetDismiss = PetDismiss
 local RegisterStateDriver = RegisterStateDriver
@@ -29,6 +28,7 @@ local SetClampedTextureRotation = SetClampedTextureRotation
 local SetCVar = SetCVar
 local SetModifiedClick = SetModifiedClick
 local SetOverrideBindingClick = SetOverrideBindingClick
+local UIParent = UIParent
 local UnitAffectingCombat = UnitAffectingCombat
 local UnitCastingInfo = UnitCastingInfo
 local UnitChannelInfo = UnitChannelInfo
@@ -50,6 +50,7 @@ local CLICK_BINDING_NOT_AVAILABLE = CLICK_BINDING_NOT_AVAILABLE
 
 local C_ActionBar_GetProfessionQuality = C_ActionBar and C_ActionBar.GetProfessionQuality
 local C_PetBattles_IsInBattle = C_PetBattles and C_PetBattles.IsInBattle
+local C_PlayerInfo_GetGlidingInfo = C_PlayerInfo and C_PlayerInfo.GetGlidingInfo
 local ClearPetActionHighlightMarks = ClearPetActionHighlightMarks or PetActionBar.ClearPetActionHighlightMarks
 local ActionBarController_UpdateAllSpellHighlights = ActionBarController_UpdateAllSpellHighlights
 
@@ -69,7 +70,6 @@ local buttonDefaults = {
 	},
 }
 
-AB.WasDragonflying = 0
 AB.RegisterCooldown = E.RegisterCooldown
 AB.handledBars = {} --List of all bars
 AB.handledbuttons = {} --List of all buttons that have been modified.
@@ -354,6 +354,8 @@ function AB:CreateBar(id)
 	AB:HookScript(bar, 'OnEnter', 'Bar_OnEnter')
 	AB:HookScript(bar, 'OnLeave', 'Bar_OnLeave')
 
+	local vehicleIndex = (E.Retail or E.Wrath) and GetVehicleBarIndex()
+
 	for i = 1, 12 do
 		local button = LAB:CreateButton(i, format('%sButton%d', barName, i), bar)
 		button:SetState(0, 'action', i)
@@ -365,8 +367,8 @@ function AB:CreateBar(id)
 			button:SetState(k, 'action', (k - 1) * 12 + i)
 		end
 
-		if (E.Retail or E.Wrath) and i == 12 then
-			button:SetState(GetVehicleBarIndex(), 'custom', AB.customExitButton)
+		if vehicleIndex and i == 12 then
+			button:SetState(vehicleIndex, 'custom', AB.customExitButton)
 		end
 
 		if E.Retail then
@@ -460,7 +462,7 @@ function AB:CreateVehicleLeave()
 	E:CreateMover(holder, 'VehicleLeaveButton', L["VehicleLeaveButton"], nil, nil, nil, 'ALL,ACTIONBARS', nil, 'actionbar,extraButtons,vehicleExitButton')
 
 	button:ClearAllPoints()
-	button:SetParent(_G.UIParent)
+	button:SetParent(UIParent)
 	button:Point('CENTER', holder)
 
 	-- taints because of EditModeManager, in UpdateBottomActionBarPositions
@@ -487,7 +489,7 @@ function AB:CreateVehicleLeave()
 	hooksecurefunc(button, 'SetPoint', function(_, _, parent)
 		if parent ~= holder then
 			button:ClearAllPoints()
-			button:SetParent(_G.UIParent)
+			button:SetParent(UIParent)
 			button:Point('CENTER', holder)
 		end
 	end)
@@ -563,10 +565,8 @@ do
 			E.db.actionbar['bar'..i][option] = value
 		end
 
-		if not E.Classic then
-			for i = 13, 15 do
-				E.db.actionbar['bar'..i][option] = value
-			end
+		for i = 13, 15 do
+			E.db.actionbar['bar'..i][option] = value
 		end
 
 		for _, bar in pairs(bars) do
@@ -862,15 +862,18 @@ function AB:BlizzardOptionsPanel_OnEvent()
 	_G.InterfaceOptionsActionBarsPanelRight:SetScript('OnEnter', nil)
 end
 
-function AB:FadeParent_OnEvent(event, _, _, arg3)
-	if event == 'UNIT_SPELLCAST_SUCCEEDED' then
-		if not AB.WasDragonflying then -- this gets spammed on init login
-			AB.WasDragonflying = E.MountDragons[arg3] and arg3
-		end
-	else
-		if UnitCastingInfo('player') or UnitChannelInfo('player') or UnitExists('target') or UnitExists('focus')
-		or UnitExists('vehicle') or UnitAffectingCombat('player') or (UnitHealth('player') ~= UnitHealthMax('player'))
-		or E.Retail and (IsPossessBarVisible() or HasOverrideActionBar() or (IsMounted() and (event == 'UPDATE_OVERRIDE_ACTIONBAR' and AB.WasDragonflying == 0 and E:IsDragonRiding() or event == 'PLAYER_MOUNT_DISPLAY_CHANGED' and AB.WasDragonflying))) then
+do
+	local function CanGlide()
+		if not C_PlayerInfo_GetGlidingInfo then return end
+
+		local _, canGlide = C_PlayerInfo_GetGlidingInfo()
+		return canGlide
+	end
+
+	function AB:FadeParent_OnEvent()
+		if (E.Retail and (CanGlide() or IsPossessBarVisible() or HasOverrideActionBar()))
+		or UnitCastingInfo('player') or UnitChannelInfo('player') or UnitExists('target') or UnitExists('focus')
+		or UnitExists('vehicle') or UnitAffectingCombat('player') or (UnitHealth('player') ~= UnitHealthMax('player')) then
 			self.mouseLock = true
 			E:UIFrameFadeIn(self, 0.2, self:GetAlpha(), 1)
 			AB:FadeBlings(1)
@@ -880,20 +883,17 @@ function AB:FadeParent_OnEvent(event, _, _, arg3)
 			E:UIFrameFadeOut(self, 0.2, self:GetAlpha(), a)
 			AB:FadeBlings(a)
 		end
-
-		if event ~= 'UNIT_HEALTH' and (event ~= 'UNIT_SPELLCAST_STOP' or arg3 ~= AB.WasDragonflying) then
-			AB.WasDragonflying = nil
-		end
 	end
 end
 
--- these calls are tainted when accessed by ValidateActionBarTransition
-local noops = { 'ClearAllPoints', 'SetPoint', 'SetScale', 'SetShown' }
-function AB:SetNoopsi(frame)
-	if not frame then return end
-	for _, func in pairs(noops) do
-		if frame[func] ~= E.noop then
-			frame[func] = E.noop
+do -- these calls are tainted when accessed by ValidateActionBarTransition
+	local noops = { 'ClearAllPoints', 'SetPoint', 'SetScale', 'SetShown' }
+	function AB:SetNoopsi(frame)
+		if not frame then return end
+		for _, func in pairs(noops) do
+			if frame[func] ~= E.noop then
+				frame[func] = E.noop
+			end
 		end
 	end
 end
@@ -1092,10 +1092,6 @@ do
 
 		AB:FixSpellBookTaint()
 
-		-- Spellbook open in combat taint, only happens sometimes
-		_G.MultiActionBar_HideAllGrids = E.noop
-		_G.MultiActionBar_ShowAllGrids = E.noop
-
 		-- shut down some events for things we dont use
 		_G.ActionBarController:UnregisterAllEvents()
 		_G.ActionBarActionEventsFrame:UnregisterAllEvents()
@@ -1155,7 +1151,7 @@ do
 			_G.MainMenuBarArtFrame:UnregisterAllEvents()
 
 			-- this would taint along with the same path as the SetNoopers: ValidateActionBarTransition
-			_G.VerticalMultiBarsContainer:Size(10, 10) -- dummy values so GetTop etc doesnt fail without replacing
+			_G.VerticalMultiBarsContainer:Size(10) -- dummy values so GetTop etc doesnt fail without replacing
 			AB:SetNoopsi(_G.VerticalMultiBarsContainer)
 
 			-- hide some interface options we dont use
@@ -1386,6 +1382,7 @@ function AB:FixKeybindText(button)
 		text = gsub(text, 'SHIFT%-', L["KEY_SHIFT"])
 		text = gsub(text, 'ALT%-', L["KEY_ALT"])
 		text = gsub(text, 'CTRL%-', L["KEY_CTRL"])
+		text = gsub(text, 'META%-', L["KEY_META"])
 		text = gsub(text, 'BUTTON', L["KEY_MOUSEBUTTON"])
 		text = gsub(text, 'MOUSEWHEELUP', L["KEY_MOUSEWHEELUP"])
 		text = gsub(text, 'MOUSEWHEELDOWN', L["KEY_MOUSEWHEELDOWN"])
@@ -1695,7 +1692,7 @@ function AB:Initialize()
 	LAB.RegisterCallback(AB, 'OnCooldownUpdate', AB.LAB_CooldownUpdate)
 	LAB.RegisterCallback(AB, 'OnCooldownDone', AB.LAB_CooldownDone)
 
-	AB.fadeParent = CreateFrame('Frame', 'Elv_ABFade', _G.UIParent)
+	AB.fadeParent = CreateFrame('Frame', 'Elv_ABFade', UIParent)
 	AB.fadeParent:SetAlpha(1 - (AB.db.globalFadeAlpha or 0))
 	AB.fadeParent:RegisterEvent('PLAYER_REGEN_DISABLED')
 	AB.fadeParent:RegisterEvent('PLAYER_REGEN_ENABLED')
@@ -1717,6 +1714,7 @@ function AB:Initialize()
 		AB.fadeParent:RegisterEvent('PLAYER_MOUNT_DISPLAY_CHANGED')
 		AB.fadeParent:RegisterEvent('UPDATE_OVERRIDE_ACTIONBAR')
 		AB.fadeParent:RegisterEvent('UPDATE_POSSESS_BAR')
+		AB.fadeParent:RegisterEvent('PLAYER_CAN_GLIDE_CHANGED')
 	end
 
 	if E.Retail or E.Wrath then
@@ -1734,10 +1732,8 @@ function AB:Initialize()
 		AB:CreateBar(i)
 	end
 
-	if not E.Classic then
-		for i = 13, 15 do
-			AB:CreateBar(i)
-		end
+	for i = 13, 15 do
+		AB:CreateBar(i)
 	end
 
 	AB:CreateBarPet()

@@ -11,25 +11,25 @@ local assert, type, pcall, xpcall, next, print = assert, type, pcall, xpcall, ne
 local rawget, rawset, setmetatable = rawget, rawset, setmetatable
 
 local CreateFrame = CreateFrame
-local GetSpellInfo = GetSpellInfo
+local DisableAddOn = DisableAddOn
+local GetAddOnEnableState = GetAddOnEnableState
+local GetBindingKey = GetBindingKey
+local GetCurrentBindingSet = GetCurrentBindingSet
 local GetCVarBool = GetCVarBool
 local GetNumGroupMembers = GetNumGroupMembers
+local GetSpellInfo = GetSpellInfo
 local InCombatLockdown = InCombatLockdown
-local GetAddOnEnableState = GetAddOnEnableState
-local UnitFactionGroup = UnitFactionGroup
-local DisableAddOn = DisableAddOn
 local IsInGroup = IsInGroup
 local IsInGuild = IsInGuild
 local IsInRaid = IsInRaid
 local ReloadUI = ReloadUI
-local UnitGUID = UnitGUID
-local GetBindingKey = GetBindingKey
-local SetBinding = SetBinding
 local SaveBindings = SaveBindings
-local GetCurrentBindingSet = GetCurrentBindingSet
+local SetBinding = SetBinding
+local UIParent = UIParent
+local UnitFactionGroup = UnitFactionGroup
+local UnitGUID = UnitGUID
 local GetSpecialization = (E.Classic or E.Wrath) and LCS.GetSpecialization or GetSpecialization
 
-local ERR_NOT_IN_COMBAT = ERR_NOT_IN_COMBAT
 local LE_PARTY_CATEGORY_HOME = LE_PARTY_CATEGORY_HOME
 local LE_PARTY_CATEGORY_INSTANCE = LE_PARTY_CATEGORY_INSTANCE
 local C_ChatInfo_SendAddonMessage = C_ChatInfo.SendAddonMessage
@@ -74,7 +74,7 @@ E.perfect = 768 / E.physicalHeight
 E.NewSign = [[|TInterface\OptionsFrame\UI-OptionsFrame-NewFeatureIcon:14:14|t]]
 E.NewSignNoWhatsNew = [[|TInterface\OptionsFrame\UI-OptionsFrame-NewFeatureIcon:14:14:0:0|t]]
 E.TexturePath = [[Interface\AddOns\ElvUI\Media\Textures\]] -- for plugins?
-E.ClearTexture = not E.Classic and 0 or '' -- used to clear: Set (Normal, Disabled, Checked, Pushed, Highlight) Texture
+E.ClearTexture = 0 -- used to clear: Set (Normal, Disabled, Checked, Pushed, Highlight) Texture
 E.UserList = {}
 
 -- oUF Defines
@@ -120,14 +120,7 @@ E.InverseAnchors = {
 	TOPRIGHT = 'BOTTOMLEFT'
 }
 
-E.DispelFilter = E.Libs.Dispel:GetMyDispelTypes()
-
-E.BadDispels = {
-	[34914]		= 'Vampiric Touch',		-- horrifies
-	[233490]	= 'Unstable Affliction'	-- silences
-}
-
---Workaround for people wanting to use white and it reverting to their class color.
+-- Workaround for people wanting to use white and it reverting to their class color.
 E.PriestColors = { r = 0.99, g = 0.99, b = 0.99, colorStr = 'fffcfcfc' }
 
 -- Socket Type info from 10.0.7
@@ -149,8 +142,8 @@ E.GemTypeInfo = {
 }
 
 --This frame everything in ElvUI should be anchored to for Eyefinity support.
-E.UIParent = CreateFrame('Frame', 'ElvUIParent', _G.UIParent)
-E.UIParent:SetFrameLevel(_G.UIParent:GetFrameLevel())
+E.UIParent = CreateFrame('Frame', 'ElvUIParent', UIParent)
+E.UIParent:SetFrameLevel(UIParent:GetFrameLevel())
 E.UIParent:SetSize(E.screenWidth, E.screenHeight)
 E.UIParent:SetPoint('BOTTOM')
 E.UIParent.origHeight = E.UIParent:GetHeight()
@@ -160,7 +153,7 @@ E.UFParent = _G.ElvUFParent -- created in oUF
 E.UFParent:SetParent(E.UIParent)
 E.UFParent:SetFrameStrata('LOW')
 
-E.HiddenFrame = CreateFrame('Frame', nil, _G.UIParent)
+E.HiddenFrame = CreateFrame('Frame', nil, UIParent)
 E.HiddenFrame:SetPoint('BOTTOM')
 E.HiddenFrame:SetSize(1,1)
 E.HiddenFrame:Hide()
@@ -197,7 +190,7 @@ function E:GrabColorPickerValues(r, g, b)
 	local oldR, oldG, oldB = _G.ColorPickerFrame:GetColorRGB()
 
 	-- set and define the new values
-	_G.ColorPickerFrame:SetColorRGB(r, g, b)
+	_G.ColorPickerFrame:SetColorRGB(r or 1, g or 1, b or 1)
 	r, g, b = _G.ColorPickerFrame:GetColorRGB()
 
 	-- swap back to the old values
@@ -911,10 +904,10 @@ do
 				E.UserList[E:StripMyRealm(sender)] = msg
 
 				if msg and (msg > ver) and not E.recievedOutOfDateMessage then -- you're outdated D:
-					E:Print(L["ElvUI is out of date. You can download the newest version from www.tukui.org. Get premium membership and have ElvUI automatically updated with the Tukui Client!"])
+					E:Print(L["ElvUI is out of date. You can download the newest version from tukui.org."])
 
 					if msg and ((msg - ver) >= 0.05) and not inCombat then
-						E.PopupDialogs.ELVUI_UPDATE_AVAILABLE.text = L["ElvUI is five or more revisions out of date. You can download the newest version from www.tukui.org. Get premium membership and have ElvUI automatically updated with the Tukui Client!"]..format('|n|nSender %s : Version %s', sender, msg)
+						E.PopupDialogs.ELVUI_UPDATE_AVAILABLE.text = L["ElvUI is five or more revisions out of date. You can download the newest version from tukui.org."]..format('\n\nSender %s : Version %s', sender, msg)
 
 						E:StaticPopup_Show('ELVUI_UPDATE_AVAILABLE')
 					end
@@ -1441,6 +1434,7 @@ end
 
 function E:UpdateMediaItems(skipCallback)
 	E:UpdateMedia()
+	E:UpdateDispelColors()
 	E:UpdateFrameTemplates()
 	E:UpdateStatusBars()
 
@@ -1800,7 +1794,7 @@ function E:ResetAllUI()
 end
 
 function E:ResetUI(...)
-	if InCombatLockdown() then E:Print(ERR_NOT_IN_COMBAT) return end
+	if E:AlertCombat() then return end
 
 	if ... == '' or ... == ' ' or ... == nil then
 		E:StaticPopup_Show('RESETUI_CHECK')
@@ -1971,6 +1965,7 @@ function E:Initialize()
 	E:RefreshModulesDB()
 	E:LoadMovers()
 	E:UpdateMedia()
+	E:UpdateDispelColors()
 	E:UpdateCooldownSettings('all')
 	E:Contruct_StaticPopups()
 

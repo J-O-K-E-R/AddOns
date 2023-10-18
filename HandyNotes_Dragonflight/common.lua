@@ -9,6 +9,7 @@ local Group = ns.Group
 
 local Collectible = ns.node.Collectible
 local Node = ns.node.Node
+local NPC = ns.node.NPC
 local Rare = ns.node.Rare
 
 local Achievement = ns.reward.Achievement
@@ -19,6 +20,7 @@ local Pet = ns.reward.Pet
 local Recipe = ns.reward.Recipe
 local Section = ns.reward.Section
 local Spacer = ns.reward.Spacer
+local Toy = ns.reward.Toy
 local Transmog = ns.reward.Transmog
 
 -------------------------------------------------------------------------------
@@ -149,6 +151,11 @@ ns.groups.SCOUT_PACK = Group('scout_pack', 4562583, {
     type = ns.group_types.EXPANSION
 })
 
+ns.groups.SECRETS_OF_AZEROTH = Group('secrets_of_azeroth', 'peg_gn', {
+    defaults = ns.GROUP_HIDDEN,
+    type = ns.group_types.EXPANSION
+})
+
 ns.groups.SIGNAL_TRANSMITTER = Group('signal_transmitter', 4548860, {
     defaults = ns.GROUP_HIDDEN,
     type = ns.group_types.EXPANSION,
@@ -172,6 +179,11 @@ ns.groups.SMALL_TREASURES = Group('small_treasures', 'chest_rd', {
 })
 
 ns.groups.SMELLY_TRASH_PILE = Group('smelly_trash_pile', 'chest_gn', {
+    defaults = ns.GROUP_HIDDEN,
+    type = ns.group_types.EXPANSION
+})
+
+ns.groups.SMELLY_TREASURE_CHEST = Group('smelly_treasure_chest', 'chest_rd', {
     defaults = ns.GROUP_HIDDEN,
     type = ns.group_types.EXPANSION
 })
@@ -285,6 +297,12 @@ ns.groups.LIBRARY = Group('librarian_of_the_reach', 4549135, {
     defaults = ns.GROUP_HIDDEN,
     type = ns.group_types.ACHIEVEMENT,
     achievement = 17530
+})
+
+ns.groups.MANY_BOXES = Group('many_boxes', 132762, {
+    defaults = ns.GROUP_HIDDEN,
+    type = ns.group_types.ACHIEVEMENT,
+    achievement = 18559
 })
 
 ns.groups.NEW_PERSPECTIVE = Group('new_perspective', 1109100, {
@@ -592,6 +610,7 @@ ns.DRAGON_CUSTOMIZATIONS = {
         ManedHead = Item({item = 197111, quest = 69312}),
         MultiHornedHead = Item({item = 197114, quest = 69315}),
         OrnateHelm = Item({item = 197120, quest = 69321}),
+        PiratesDayArmor = Item({item = 208858, quest = 77875}),
         PlatedHead = Item({item = 197110, quest = 69311}),
         RedScales = Item({item = 197144, quest = 69345}),
         ScaledPattern = Item({item = 197141, quest = 69342}),
@@ -853,7 +872,6 @@ local Disturbeddirt = Class('Disturbed_dirt', Node, {
     },
     rewards = {
         Item({item = 190453}), -- Spark of Ingenuity
-        Item({item = 190454}), -- Primal Chaos
         Transmog({item = 201386, slot = L['cosmetic']}), -- Drakonid Defender's Pike
         Transmog({item = 201388, slot = L['cosmetic']}), -- Dragonspawn Wingtipped Staff
         Transmog({item = 201390, slot = L['cosmetic']}), -- Devastating Drakonid Waraxe
@@ -884,7 +902,6 @@ local Scoutpack = Class('Scoutpack', Node, {
     requires = ns.requirement.Quest(70822), -- Lost Expedition Scouts
     rewards = {
         Item({item = 191784}), -- Dragon Shard of Knowledge
-        Item({item = 190454}), -- Primal Chaos
         Mount({item = 192764, id = 1617}), -- Verdant Skitterfly
         Transmog({item = 201387, slot = L['cosmetic']}), -- Dragon Knight's Halberd
         Transmog({item = 201388, slot = L['cosmetic']}), -- Dragonspawn Wingtipped Staff
@@ -920,7 +937,6 @@ local MagicBoundChest = Class('MagicBoundChest', Node, {
     requires = ns.requirement.Reputation(2507, 16, true), -- Dragonscale Expedition
     rewards = {
         Item({item = 191784}), -- Dragon Shard of Knowledge
-        Item({item = 190454}), -- Primal Chaos
         Item({item = 199062, quest = 70528}), -- Ruby Gem Cluster Map
         Item({item = 198843, quest = 70392}), -- Emerald Gardens Explorer's Notes
         Item({item = 194540, quest = 67046}), -- Nokhud Armorer's Notes
@@ -971,7 +987,6 @@ ns.node.ReedChest = Class('ReedChest', Node, {
     group = ns.groups.REED_CHEST,
     rewards = {
         Item({item = 191784}), -- Dragon Shard of Knowledge
-        Item({item = 190454}), -- Primal Chaos
         Item({item = 199061, quest = 70527}), -- A Guide to Rare Fish
         Item({item = 199068, quest = 70537}), -- Time-Lost Memo
         Item({item = 194540, quest = 67046}), -- Nokhud Armorer's Notes
@@ -991,7 +1006,6 @@ ns.node.DracthyrSupplyChest = Class('DracthyrSupplyChest', Node, {
     group = ns.groups.DRACTHYR_SUPPLY_CHEST,
     rewards = {
         Item({item = 191784}), -- Dragon Shard of Knowledge
-        Item({item = 190454}), -- Primal Chaos
         Item({item = 199061, quest = 70527}), -- A Guide to Rare Fish
         Item({item = 199066, quest = 70535}), -- Letter of Caution
         Item({item = 194540, quest = 67046}), -- Nokhud Armorer's Notes
@@ -1012,7 +1026,6 @@ ns.node.SimmeringChest = Class('SimmeringChest', Node, {
     group = ns.groups.SIMMERING_CHEST,
     rewards = {
         Item({item = 191784}), -- Dragon Shard of Knowledge
-        Item({item = 190454}), -- Primal Chaos
         Transmog({item = 201446, slot = L['cosmetic']}), -- Primal Revenant's Firewall
         Transmog({item = 201445, slot = L['cosmetic']}), -- Primal Revenant's Emberblade
         Item({item = 199061, quest = 70527}), -- A Guide to Rare Fish
@@ -1035,7 +1048,6 @@ ns.node.FrostboundChest = Class('FrostboundChest', Node, {
     group = ns.groups.FROSTBOUND_CHEST,
     rewards = {
         Item({item = 191784}), -- Dragon Shard of Knowledge
-        Item({item = 190454}), -- Primal Chaos
         Transmog({item = 201443, slot = L['cosmetic']}), -- Primal Revenant's Icewall
         Transmog({item = 201442, slot = L['cosmetic']}), -- Primal Revenant's Frostblade
         Item({item = 199065, quest = 70534}), -- Sorrowful Letter
@@ -1046,88 +1058,6 @@ ns.node.FrostboundChest = Class('FrostboundChest', Node, {
         Currency({id = 2003}) -- Dragon Isles Supplies
     }
 })
-
--------------------------------------------------------------------------------
---------------------------------- DRAGONRACES ---------------------------------
--------------------------------------------------------------------------------
-
-local Dragonrace = Class('DragonRace', Collectible,
-    {icon = 1100022, group = ns.groups.DRAGONRACE})
-
-function Dragonrace.getters:sublabel()
-    if self.normal then
-        local ntime = C_CurrencyInfo.GetCurrencyInfo(self.normal[1]).quantity
-        if self.advanced and self.reverse then
-            local atime = C_CurrencyInfo.GetCurrencyInfo(self.advanced[1])
-                              .quantity
-            local rtime = C_CurrencyInfo.GetCurrencyInfo(self.reverse[1])
-                              .quantity
-            return L['dr_best']:format(ntime / 1000, atime / 1000, rtime / 1000)
-        end
-        return L['dr_best_dash']:format(ntime / 1000)
-    end
-end
-
-function Dragonrace.getters:note()
-    if self.normal then
-        local silver = ns.color.Silver
-        local gold = ns.color.Gold
-
-        -- LuaFormatter off
-        if self.advanced and self.reverse then
-            return L['dr_note']:format(
-                silver(self.normal[2]),
-                gold(self.normal[3]),
-                silver(self.advanced[2]),
-                gold(self.advanced[3]),
-                silver(self.reverse[2]),
-                gold(self.reverse[3])
-            ) .. L['dr_bronze']
-        end
-
-        return L['dr_note_dash']:format(
-            silver(self.normal[2]),
-            gold(self.normal[3])
-        ) .. L['dr_bronze']
-        -- LuaFormatter on
-    end
-end
-
-ns.node.Dragonrace = Dragonrace
-
-hooksecurefunc(VignettePinMixin, 'DisplayNormalTooltip', function(self)
-    if self and self.vignetteID then
-        local mapID = self:GetMap().mapID
-        local group = ns.groups.DRAGONRACE
-        if ns.maps[mapID] then
-            if self.vignetteID == 5104 and group:GetDisplay(mapID) then -- Bronze Timekeeper Vignette 5104
-                local guid = self.vignetteGUID
-                local x = C_VignetteInfo.GetVignettePosition(guid, mapID).x
-                local y = C_VignetteInfo.GetVignettePosition(guid, mapID).y
-                local node = ns.maps[mapID].nodes[HandyNotes:getCoord(x, y)]
-                if node then
-                    GameTooltip:SetText(ns.RenderLinks(node.label, true))
-                    GameTooltip:AddLine(ns.RenderLinks(node.sublabel, true), 1,
-                        1, 1)
-                    if ns:GetOpt('show_notes') then
-                        GameTooltip_AddBlankLineToTooltip(GameTooltip)
-                        GameTooltip:AddLine(ns.RenderLinks(node.note), 1, 1, 1,
-                            true)
-                    end
-                    if ns:GetOpt('show_loot') then
-                        GameTooltip:AddLine(' ')
-                        for i, reward in ipairs(node.rewards) do
-                            if reward:IsEnabled() then
-                                reward:Render(GameTooltip)
-                            end
-                        end
-                    end
-                    GameTooltip:Show()
-                end
-            end
-        end
-    end
-end)
 
 -------------------------------------------------------------------------------
 --------------------- TO ALL THE SQUIRRELS HIDDEN TIL NOW ---------------------
@@ -1569,6 +1499,68 @@ local ElusiveCreature = ns.Class('ElusiveCreature', ns.node.Node, {
 
 ns.node.ElusiveCreature = ElusiveCreature
 
+-- Achievement({id = 18831, criteria = 61435}) -- Elusive Beasts of the Dragon Isles - Elusive Salamanther
+-- Achievement({id = 18831, criteria = 61438}) -- Elusive Beasts of the Dragon Isles - Elusive Proto Dragon
+-- Achievement({id = 18831, criteria = 61440}) -- Elusive Beasts of the Dragon Isles - Elusive Lava Phoenix
+-- Achievement({id = 18831, criteria = 61442}) -- Elusive Beasts of the Dragon Isles - Elusive Fiery Dreadsquall
+-- Achievement({id = 18831, criteria = 61444}) -- Elusive Beasts of the Dragon Isles - Elusive Rockfang
+-- Achievement({id = 18831, criteria = 61447}) -- Elusive Beasts of the Dragon Isles - Elusive Hornstrider
+-- Achievement({id = 18831, criteria = 61449}) -- Elusive Beasts of the Dragon Isles - Elusive Bull
+-- Achievement({id = 18831, criteria = 61451}) -- Elusive Beasts of the Dragon Isles - Elusive Ottuk
+-- Achievement({id = 18831, criteria = 61453}) -- Elusive Beasts of the Dragon Isles - Elusive Magmammoth Bull
+-- Achievement({id = 18831, criteria = 61455}) -- Elusive Beasts of the Dragon Isles - Elusive Prime Proto Dragon
+-- Achievement({id = 18831, criteria = 61457}) -- Elusive Beasts of the Dragon Isles - Elusive Elder Rockfang
+-- Achievement({id = 18831, criteria = 61459}) -- Elusive Beasts of the Dragon Isles - Elusive Rimeclaw Bear
+-- Achievement({id = 18831, criteria = 61461}) -- Elusive Beasts of the Dragon Isles - Elusive Argali
+-- Achievement({id = 18831, criteria = 61463}) -- Elusive Beasts of the Dragon Isles - Elusive Deepflayer
+-- Achievement({id = 18831, criteria = 61465}) -- Elusive Beasts of the Dragon Isles - Elusive Viper (Lava)
+-- Achievement({id = 18831, criteria = 61467}) -- Elusive Beasts of the Dragon Isles - Elusive Deepstrider
+-- Achievement({id = 18831, criteria = 61469}) -- Elusive Beasts of the Dragon Isles - Elusive Viper (Rock)
+-- Achievement({id = 18831, criteria = 61471}) -- Elusive Beasts of the Dragon Isles - Elusive Sulfurstrider
+-- Achievement({id = 18831, criteria = 61437}) -- Elusive Beasts of the Dragon Isles - Elusive Vorquin
+-- Achievement({id = 18831, criteria = 61439}) -- Elusive Beasts of the Dragon Isles - Elusive Thunder Lizard
+-- Achievement({id = 18831, criteria = 61441}) -- Elusive Beasts of the Dragon Isles - Elusive Magmammoth
+-- Achievement({id = 18831, criteria = 61443}) -- Elusive Beasts of the Dragon Isles - Elusive Snapdragon
+-- Achievement({id = 18831, criteria = 61445}) -- Elusive Beasts of the Dragon Isles - Elusive Feral Bakar
+-- Achievement({id = 18831, criteria = 61448}) -- Elusive Beasts of the Dragon Isles - Elusive Crystalspine
+-- Achievement({id = 18831, criteria = 61450}) -- Elusive Beasts of the Dragon Isles - Elusive Stonegazer
+-- Achievement({id = 18831, criteria = 61452}) -- Elusive Beasts of the Dragon Isles - Elusive Slyvern
+-- Achievement({id = 18831, criteria = 61454}) -- Elusive Beasts of the Dragon Isles - Elusive Prime Salamanther
+-- Achievement({id = 18831, criteria = 61456}) -- Elusive Beasts of the Dragon Isles - Elusive Storm Lizard
+-- Achievement({id = 18831, criteria = 61458}) -- Elusive Beasts of the Dragon Isles - Elusive Elder Slyvern
+-- Achievement({id = 18831, criteria = 61460}) -- Elusive Beasts of the Dragon Isles - Elusive Elder Armoredon
+-- Achievement({id = 18831, criteria = 61462}) -- Elusive Beasts of the Dragon Isles - Elusive Elder Argali
+-- Achievement({id = 18831, criteria = 61464}) -- Elusive Beasts of the Dragon Isles - Elusive Stoneclaw
+-- Achievement({id = 18831, criteria = 61466}) -- Elusive Beasts of the Dragon Isles - Elusive Lavafang
+-- Achievement({id = 18831, criteria = 61468}) -- Elusive Beasts of the Dragon Isles - Elusive Colossal Deepstrider
+-- Achievement({id = 18831, criteria = 61470}) -- Elusive Beasts of the Dragon Isles - Elusive Shalefang
+-- Achievement({id = 18831, criteria = 61472}) -- Elusive Beasts of the Dragon Isles - Elusive Colossal Sulfurstrider
+
+-- Achievement({id = 18832, criteria = 61473}) -- Elusive Legend of the Dragon Isles - Elusive Elder Drake
+-- X Achievement({id = 18832, criteria = 61474}) -- Elusive Legend of the Dragon Isles - Elusive Tempest Lizard
+-- X Achievement({id = 18832, criteria = 61475}) -- Elusive Legend of the Dragon Isles - Elusive Deepwater Salamanther
+-- X Achievement({id = 18832, criteria = 61476}) -- Elusive Legend of the Dragon Isles - Elusive Cliffdweller Vorquin
+-- Achievement({id = 18832, criteria = 61477}) -- Elusive Legend of the Dragon Isles - Elusive Frenzied Amberfur
+-- X Achievement({id = 18832, criteria = 61478}) -- Elusive Legend of the Dragon Isles - Elusive Crystalscale Stonecleaver
+-- X Achievement({id = 18832, criteria = 61479}) -- Elusive Legend of the Dragon Isles - Elusive Elder Frigidpelt
+-- X Achievement({id = 18832, criteria = 61480}) -- Elusive Legend of the Dragon Isles - Elusive Ferocious Titanfang
+-- Achievement({id = 18832, criteria = 61481}) -- Elusive Legend of the Dragon Isles - Elusive Proto Skyterror
+-- X Achievement({id = 18832, criteria = 61482}) -- Elusive Legend of the Dragon Isles - Elusive Flourishing Quillbloom
+-- Achievement({id = 18832, criteria = 61483}) -- Elusive Legend of the Dragon Isles - Elusive Auric Argali
+-- Achievement({id = 18832, criteria = 61484}) -- Elusive Legend of the Dragon Isles - Elusive Magma Cobra
+
+-- The ones marked with a X have been added to existing Elusive Creature nodes.
+
+-------------------------------------------------------------------------------
+---------------------------- PET: MOTE OF NASZ'URO ----------------------------
+-------------------------------------------------------------------------------
+
+ns.node.MoteOfNaszuro = Class('MoteOfNaszuro', Collectible, {
+    icon = 5098442,
+    label = '{npc:205649}',
+    rewards = {Pet({item = 206040, id = 3581})}
+})
+
 -------------------------------------------------------------------------------
 --------------------------------- GRAND HUNTS ---------------------------------
 -------------------------------------------------------------------------------
@@ -1668,6 +1660,18 @@ hooksecurefunc(AreaPOIPinMixin, 'TryShowTooltip', function(self)
 end)
 
 hooksecurefunc(VignettePinMixin, 'OnMouseEnter', function(self)
+    if select(2, IsAddOnLoaded('RareScanner')) then
+        local status, result = pcall(function()
+            return _G['RareScannerDB'].profiles.Default.map
+                       .tooltipsOnIngameIcons
+        end)
+        if status == true then -- Config found - we should respect it
+            if result == true then return end
+        else -- Config not found - we should assume its "true"
+            return
+        end
+    end
+
     local map = ns.maps[WorldMapFrame:GetMapID()] or nil
 
     if not map then return end
@@ -1680,3 +1684,48 @@ hooksecurefunc(VignettePinMixin, 'OnMouseEnter', function(self)
     end
     GameTooltip:Show()
 end)
+
+------------------------------------------------------------------------------
+--------------------------------- DREAMSURGE ---------------------------------
+------------------------------------------------------------------------------
+
+local Celestine = Class('Celestine', NPC, {
+    id = 210608,
+    icon = 'peg_bl',
+    scale = 2.0,
+    sublabel = L['dreamsurge_sublabel'],
+    note = L['celestine_vendor_note'],
+    rewards = {
+        Mount({item = 198824, id = 1671, note = '1000'}), -- Duskwing Ohuna
+        Toy({item = 209858, note = '500'}), -- Dreamsurge Remnant
+        Toy({item = 209944, note = '500'}), -- Friendsurge Defenders
+        Pet({item = 205024, id = 3523, note = '250'}), -- Cheddar
+        Pet({item = 205010, id = 3516, note = '250'}) -- Crimson Swoglet
+    }
+}) -- Celestine of the Harvest
+
+ns.node.Celestine = Celestine
+
+local RenewedMagmammoth = Class('RenewedMagmammoth', Collectible, {
+    label = '{item:192807}',
+    icon = 4034837,
+    sublabel = L['dreamsurge_sublabel'],
+    rewards = {
+        Mount({item = 192807, id = 1645}) -- Renewed Magmammoth
+    }
+})
+
+function RenewedMagmammoth.getters:note()
+    local function status(id, itemsNeed)
+        local itemsHave = GetItemCount(id, true);
+        if ns.PlayerHasItem(id, itemsNeed) then
+            return ns.status.Green(itemsHave .. '/' .. itemsNeed)
+        else
+            return ns.status.Red(itemsHave .. '/' .. itemsNeed)
+        end
+    end
+
+    return status(209419, 20) .. ' ' .. L['renewed_magmammoth_note']
+end
+
+ns.node.RenewedMagmammoth = RenewedMagmammoth

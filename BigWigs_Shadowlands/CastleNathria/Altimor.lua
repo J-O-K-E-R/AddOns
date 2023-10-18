@@ -53,7 +53,7 @@ function mod:GetOptions()
 		{334945, "SAY", "SAY_COUNTDOWN", "ICON"}, -- Vicious Lunge
 
 		--[[ Bargast ]]--
-		{334797, "TANK_HEALER"}, -- Rip Soul
+		{334797, "TANK_HEALER", "CASTBAR"}, -- Rip Soul
 		334884, -- Devour Soul
 		334757, -- Shades of Bargast
 		shadesofBargastMarker,

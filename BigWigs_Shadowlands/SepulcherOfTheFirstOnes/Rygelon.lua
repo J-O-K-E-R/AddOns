@@ -47,7 +47,7 @@ function mod:GetOptions()
 		362390, -- Manifest Cosmos
 		{362184, "TANK"}, -- Corrupted Strikes
 		{362172, "TANK"}, -- Corrupted Wound
-		363533, -- Massive Bang
+		{363533, "CASTBAR"}, -- Massive Bang
 		364386, -- Gravitational Collapse
 		366606, -- Radiant Plasma
 		362207, -- The Singularity

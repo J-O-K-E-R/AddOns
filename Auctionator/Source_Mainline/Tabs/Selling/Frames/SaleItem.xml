@@ -35,7 +35,7 @@
         </Layers>
       </Frame>
 
-      <Button parentKey="Icon" inherits="AuctionatorBagItem" mixin="AuctionatorBagItemSelectedMixin">
+      <Button parentKey="Icon" inherits="AuctionatorGroupsViewItemTemplate" mixin="AuctionatorBagItemSelectedMixin">
         <Size x="60" y="60" />
         <Anchors>
           <Anchor point="TOPLEFT" relativeKey="$parent.TitleArea" relativePoint="BOTTOMLEFT" y="-12" />
@@ -108,6 +108,15 @@
         </Anchors>
         <Scripts>
           <OnClick>self:GetParent():SkipItem()</OnClick>
+        </Scripts>
+      </Button>
+      <Button parentKey="PrevButton" name="AuctionatorPrevPostingButton" inherits="UIPanelButtonTemplate" text="AUCTIONATOR_L_PREVIOUS" hidden="true">
+        <Size x="80" y="22"/>
+        <Anchors>
+          <Anchor point="TOPRIGHT" relativeKey="$parent.PostButton" relativePoint="TOPLEFT"/>
+        </Anchors>
+        <Scripts>
+          <OnClick>self:GetParent():PrevItem()</OnClick>
         </Scripts>
       </Button>
     </Frames>

@@ -84,16 +84,16 @@ function mod:GetOptions()
 		353398, -- Anomalous Blast
 		{353603, "TANK"}, -- Diviner's Probe
 		353931, -- Twist Fate
-		350421, -- Fated Conjunction (Beams)
-		{350568, "SAY", "SAY_COUNTDOWN", "ME_ONLY_EMPHASIZE"}, -- Call of Eternity (Bombs)
+		{350421, "CASTBAR"}, -- Fated Conjunction (Beams)
+		{350568, "SAY", "SAY_COUNTDOWN", "ME_ONLY_EMPHASIZE", "CASTBAR"}, -- Call of Eternity (Bombs)
 		callOfEternityMarker,
 		-- Stage Two: Defying Destiny
 		357739, -- Realign Fate
 		357144, -- Despair
-		353122, -- Darkest Destiny
+		{353122, "CASTBAR"}, -- Darkest Destiny
 		-- Stage Three: Fated Terminus
-		353195, -- Extemporaneous Fate
-		354367, -- Grim Portent
+		{353195, "CASTBAR"}, -- Extemporaneous Fate
+		{354367, "CASTBAR"}, -- Grim Portent
 		{"grimportent_countdown", "COUNTDOWN"},
 		354964, -- Runic Affinity
 	},{

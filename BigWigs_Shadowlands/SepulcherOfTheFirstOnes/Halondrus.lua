@@ -68,9 +68,6 @@ if L then
 	L.volatile_charges_new = "New Bombs!"
 
 	L.absorb_text = "%s (%.0f%%)"
-
-	L.custom_on_stop_timers = "Always show ability bars"
-	L.custom_on_stop_timers_desc = "Halondrus can delay its abilities. When this option is enabled, the bars for those abilities will stay on your screen."
 end
 
 --------------------------------------------------------------------------------
@@ -80,9 +77,8 @@ end
 local crushingPrismMarker = mod:AddMarkerOption(false, "player", 1, 365297, 1, 2, 3, 4) -- Crushing Prism
 function mod:GetOptions()
 	return {
-		"stages",
-		"custom_on_stop_timers",
-		{360115, "INFOBOX"}, -- Reclaim
+		{"stages", "CASTBAR"},
+		{360115, "INFOBOX", "CASTBAR"}, -- Reclaim
 		367079, -- Seismic Tremors
 		360114, -- Ephemeral Fissure
 		361676, -- Earthbreaker Missiles
@@ -91,7 +87,7 @@ function mod:GetOptions()
 		{365297, "SAY"}, -- Crushing Prism
 		crushingPrismMarker,
 		368363, -- Shattered Prism
-		364979, -- Shatter
+		{364979, "CASTBAR"}, -- Shatter
 		368529, -- Eternity Overdrive
 		{368969, "SAY_COUNTDOWN"}, -- Volatile Charge
 	},{
@@ -138,8 +134,6 @@ function mod:OnBossEnable()
 
 	self:Log("SPELL_AURA_APPLIED", "VolatileChargeApplied", 368969)
 	self:Log("SPELL_AURA_REMOVED", "VolatileChargeRemoved", 368969)
-
-	self:RegisterMessage("BigWigs_BarCreated", "BarCreated")
 end
 
 function mod:OnEngage()
@@ -157,12 +151,12 @@ function mod:OnEngage()
 	local reclaimCD = self:Mythic() and 63.1 or 61.2
 	nextReclaim = GetTime() + reclaimCD
 	if not self:Easy() then
-		self:Bar(360977, 8, CL.count:format(CL.beam, beamCount))
+		self:CDBar(360977, 8, CL.count:format(CL.beam, beamCount))
 	end
-	self:Bar(367079, self:Mythic() and 4 or 8, CL.count:format(L.seismic_tremors, seismicTremorsCount))
-	self:Bar(365297, self:Mythic() and 17.1 or 21.1, CL.count:format(L.crushing_prism, prismCount))
-	self:Bar(361676, self:Mythic() and 11.2 or 43.1, CL.count:format(L.earthbreaker_missiles, misslesCount))
-	self:Bar(360115, reclaimCD, CL.count:format(self:SpellName(360115), reclaimCount))
+	self:CDBar(367079, self:Mythic() and 4 or 8, CL.count:format(L.seismic_tremors, seismicTremorsCount))
+	self:CDBar(365297, self:Mythic() and 17.1 or 21.1, CL.count:format(L.crushing_prism, prismCount))
+	self:CDBar(361676, self:Mythic() and 11.2 or 43.1, CL.count:format(L.earthbreaker_missiles, misslesCount))
+	self:CDBar(360115, reclaimCD, CL.count:format(self:SpellName(360115), reclaimCount))
 
 	if self:Mythic() then
 		self:Bar(368969, 5.5, L.volatile_charges_new) -- Volatile Charges
@@ -183,33 +177,6 @@ function mod:UNIT_HEALTH(event, unit)
 		nextStageWarning = nextStageWarning - 32.5
 		if nextStageWarning < 40 then
 			self:UnregisterUnitEvent(event, unit)
-		end
-	end
-end
-
-do
-	local abilitysToPause = {
-		[361676] = true, -- Earthbreaker Missiles
-		[365297] = true, -- Crushing Prism
-		[367079] = true, -- Seismic Tremors
-		[360115] = true, -- Reclaim
-		[360977] = true, -- Lightshatter Beam
-	}
-
-	local castPattern = CL.cast:gsub("%%s", ".+")
-
-	local function stopAtZeroSec(bar)
-		if bar.remaining < 0.15 then -- Pause at 0.0
-			bar:SetDuration(0.01) -- Make the bar look full
-			bar:Start()
-			bar:Pause()
-			bar:SetTimeVisibility(false)
-		end
-	end
-
-	function mod:BarCreated(_, _, bar, _, key, text)
-		if self:GetOption("custom_on_stop_timers") and abilitysToPause[key] and not text:match(castPattern) then
-			bar:AddUpdateFunction(stopAtZeroSec)
 		end
 	end
 end
@@ -236,11 +203,11 @@ do
 		reclaimCount = reclaimCount + 1
 		self:CastBar(args.spellId, 4, CL.count:format(args.spellName, reclaimCount))
 
-		self:Bar(367079, 4.5, CL.count:format(L.seismic_tremors, seismicTremorsCount))
-		self:Bar(360977, 8, CL.count:format(CL.beam, beamCount))
-		self:Bar(365297, self:Mythic() and 17 or 8, CL.count:format(L.crushing_prism, prismCount))
-		self:Bar(361676, 11, CL.count:format(L.earthbreaker_missiles, misslesCount))
-		self:Bar(360115, 61.2, CL.count:format(self:SpellName(360115), reclaimCount))
+		self:CDBar(367079, 4.5, CL.count:format(L.seismic_tremors, seismicTremorsCount))
+		self:CDBar(360977, 8, CL.count:format(CL.beam, beamCount))
+		self:CDBar(365297, self:Mythic() and 17 or 8, CL.count:format(L.crushing_prism, prismCount))
+		self:CDBar(361676, 11, CL.count:format(L.earthbreaker_missiles, misslesCount))
+		self:CDBar(360115, 61.2, CL.count:format(self:SpellName(360115), reclaimCount))
 
 		self:PauseBar(367079, CL.count:format(L.seismic_tremors, seismicTremorsCount))
 		self:PauseBar(365297, CL.count:format(CL.beam, beamCount))
@@ -288,11 +255,11 @@ function mod:SeismicTremors(args)
 	seismicTremorsCount = seismicTremorsCount + 1
 	if self:Mythic() then
 		if seismicTremorsCount % 2 == 0 then
-			self:Bar(args.spellId, 25.8, CL.count:format(L.seismic_tremors, seismicTremorsCount))
+			self:CDBar(args.spellId, 25.8, CL.count:format(L.seismic_tremors, seismicTremorsCount))
 		end
 	else
 		if GetTime() + 26 < nextReclaim then
-			self:Bar(args.spellId, 26, CL.count:format(L.seismic_tremors, seismicTremorsCount))
+			self:CDBar(args.spellId, 26, CL.count:format(L.seismic_tremors, seismicTremorsCount))
 		end
 	end
 end
@@ -348,7 +315,7 @@ do
 			else
 				if self:Mythic() then
 					if prismCount % 2 == 0 then
-						self:Bar(args.spellId, 27, CL.count:format(L.crushing_prism, prismCount))
+						self:CDBar(args.spellId, 27, CL.count:format(L.crushing_prism, prismCount))
 					end
 				else
 					if GetTime() + 26 < nextReclaim then
@@ -402,23 +369,23 @@ function mod:ReclamationForm(args)
 	reclaimCount = 1
 
 	if not self:Easy() then
-		self:Bar(360977, 14.1, CL.count:format(CL.beam, beamCount))
+		self:CDBar(360977, 14.1, CL.count:format(CL.beam, beamCount))
 	end
 	if stage == 2 then
-		self:Bar(367079, 10, CL.count:format(L.seismic_tremors, seismicTremorsCount)) -- Seismic Tremors
-		self:Bar(361676, 18, CL.count:format(L.earthbreaker_missiles, misslesCount)) -- Earthbreaker Missiles
-		self:Bar(365297, 23, CL.count:format(L.crushing_prism, prismCount)) -- Crushing Prism
+		self:CDBar(367079, 10, CL.count:format(L.seismic_tremors, seismicTremorsCount)) -- Seismic Tremors
+		self:CDBar(361676, 18, CL.count:format(L.earthbreaker_missiles, misslesCount)) -- Earthbreaker Missiles
+		self:CDBar(365297, 23, CL.count:format(L.crushing_prism, prismCount)) -- Crushing Prism
 
 		local reclaimCD = 69.4
 		nextReclaim = GetTime() + reclaimCD
-		self:Bar(360115, reclaimCD, CL.count:format(self:SpellName(360115), reclaimCount)) -- Reclaim
+		self:CDBar(360115, reclaimCD, CL.count:format(self:SpellName(360115), reclaimCount)) -- Reclaim
 		if self:Mythic() then
 			self:Bar(368969, 10.5, L.volatile_charges_new) -- Volatile Charges
 			self:ScheduleTimer("Message", 5.5, 368969, "yellow", L.volatile_charges_new)
 		end
 	elseif stage == 3 then
 		self:Bar(368529, 7.5) -- Eternity Overdrive
-		self:Bar(361676, missleTimersP3[misslesCount], CL.count:format(L.earthbreaker_missiles, misslesCount)) -- Earthbreaker Missiles
+		self:CDBar(361676, missleTimersP3[misslesCount], CL.count:format(L.earthbreaker_missiles, misslesCount)) -- Earthbreaker Missiles
 	end
 end
 

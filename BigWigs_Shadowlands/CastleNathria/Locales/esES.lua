@@ -49,9 +49,6 @@ if L then
 	--L.anima_tracking = "Anima Tracking |cffff0000(Experimental)|r"
 	--L.anima_tracking_desc = "Messages and Bars to track anima levels in the containers.|n|cffaaff00Tip: You might want to disable the information box or bars, depending your preference."
 
-	--L.custom_on_stop_timers = "Always show ability bars"
-	--L.custom_on_stop_timers_desc = "Just for testing right now"
-
 	--L.desires = "Desires"
 	--L.bottles = "Bottles"
 	--L.sins = "Sins"
@@ -101,9 +98,6 @@ if L then
 
 	--L.skirmishers = "Skirmishers" -- Short for Stone Legion Skirmishers
 	L.eruption = "Erupción" -- Short for Reverberating Eruption
-
-	--L.custom_on_stop_timers = "Always show ability bars"
-	--L.custom_on_stop_timers_desc = "Just for testing right now"
 
 	--L.goliath_short = "Goliath"
 	--L.goliath_desc = "Show warnings and timers for when the Stone Legion Goliath is going to spawn."

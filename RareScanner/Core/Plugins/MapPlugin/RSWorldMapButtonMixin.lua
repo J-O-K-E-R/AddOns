@@ -30,6 +30,7 @@ local SHOW_ACHIEVEMENT_NPC_ICONS = "rsHideAchievementRareNpcs"
 local SHOW_PROFESSION_NPC_ICONS = "rsHideProfessionRareNPCs"
 local SHOW_HUNTING_PARTY_NPC_ICONS = "rsHideHuntingPartyRareNpcs"
 local SHOW_PRIMAL_STORM_NPC_ICONS = "rsHidePrimalStormRareNpcs"
+local SHOW_DREAMSURGE_NPC_ICONS = "rsHideDreamsurgeRareNpcs"
 local SHOW_OTHER_NPC_ICONS = "rsHideOtherRareNpcs"
 local DISABLE_LAST_SEEN_FILTER = "rsDisableLastSeenFilter"
 
@@ -126,6 +127,13 @@ local function WorldMapButtonDropDownMenu_Initialize(dropDown)
 				RSConfigDB.SetShowingPrimalStormNPCs(false)
 			else
 				RSConfigDB.SetShowingPrimalStormNPCs(true)
+			end
+			RSMinimap.RefreshAllData(true)
+		elseif (value == SHOW_DREAMSURGE_NPC_ICONS) then
+			if (RSConfigDB.IsShowingDreamsurgeRareNPCs()) then
+				RSConfigDB.SetShowingDreamsurgeNPCs(false)
+			else
+				RSConfigDB.SetShowingDreamsurgeNPCs(true)
 			end
 			RSMinimap.RefreshAllData(true)
 		elseif (value == SHOW_OTHER_NPC_ICONS) then
@@ -345,6 +353,12 @@ local function WorldMapButtonDropDownMenu_Initialize(dropDown)
 				info.text = "|A:"..RSConstants.PRIMAL_STORM_ICON_ATLAS..":18:18::::|a "..AL["MAP_MENU_SHOW_PRIMAL_STORM_RARE_NPCS"];
 				info.arg1 = SHOW_PRIMAL_STORM_NPC_ICONS;
 				info.checked = RSConfigDB.IsShowingPrimalStormRareNPCs()
+				info.disabled = not RSConfigDB.IsShowingNpcs()
+				LibDD:UIDropDownMenu_AddButton(info, level);
+			
+				info.text = "|A:"..RSConstants.DREAMSURGE_ICON_ATLAS..":18:18::::|a "..AL["MAP_MENU_SHOW_DREAMSURGE_RARE_NPCS"];
+				info.arg1 = SHOW_DREAMSURGE_NPC_ICONS;
+				info.checked = RSConfigDB.IsShowingDreamsurgeRareNPCs()
 				info.disabled = not RSConfigDB.IsShowingNpcs()
 				LibDD:UIDropDownMenu_AddButton(info, level);
 			

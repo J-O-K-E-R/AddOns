@@ -4,6 +4,7 @@ if L then
 	L.custom_on_autotalk = "Automatisch ansprechen"
 	L.custom_on_autotalk_desc = "Wählt direkt die Dialogoptionen um Berufs-Stärkungszauber zu erhalten."
 
+	L.burning_chain = "Brennende Kette"
 	L.qalashi_warden = "Wächter der Qalashi"
 	L.qalashi_hunter = "Jäger der Qalashi"
 	L.overseer_lahar = "Aufseher Lahar"
@@ -24,7 +25,6 @@ end
 L = BigWigs:NewBossLocale("Chargath, Bane of Scales", "deDE")
 if L then
 	L.slow = "Verlangsamen"
-	L.boss = "BOSS"
 end
 
 L = BigWigs:NewBossLocale("Warlord Sargha", "deDE")

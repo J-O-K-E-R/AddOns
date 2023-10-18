@@ -152,7 +152,7 @@ function DataUtils:ReloadCharacterData()
 			else
 				rep = self:ExtractRepData(characterRepStructure, factionID)
 			end
-			
+
 			if rep then
 				rep.internalIndex = i
 				rep.isActive = true
@@ -172,7 +172,11 @@ function DataUtils:ReloadCharacterData()
 				rep.factionID = factionID
 				rep.canSetInactive = canSetInactive
 				rep.hasBonusRepGain = hasBonusRepGain
-				rep.isMaxed = standingID == EXALTED_STANDING_ID
+				rep.isMaxed = false
+
+				if standingID == MAX_REPUTATION_REACTION then
+					rep.isMaxed = true
+				end
 
 				-- Friendship
 				local repInfo = factionID and C_GossipInfo.GetFriendshipReputation(factionID);
@@ -180,6 +184,10 @@ function DataUtils:ReloadCharacterData()
 					rep.isFriendship = true
 					rep.friendshipData = repInfo
 					rep.friendshipRanks = C_GossipInfo.GetFriendshipReputationRanks(repInfo.friendshipFactionID)
+
+					if not repInfo.nextThreshold then
+						rep.isMaxed = true
+					end
 				end
 
 				-- Renown
@@ -188,6 +196,9 @@ function DataUtils:ReloadCharacterData()
 					rep.isMajorFaction = isMajorFaction
 					rep.majorFactionData = C_MajorFactions.GetMajorFactionData(factionID)
 					rep.hasMaximumRenown = C_MajorFactions.HasMaximumRenown(factionID)
+					if rep.hasMaximumRenown then
+						rep.isMaxed = true
+					end
 				end
 			end
 
@@ -220,6 +231,10 @@ function DataUtils:MergeRepData(source, dest)
 							and dbFaction.majorFactionData.renownReputationEarned > characterFaction.majorFactionData.renownReputationEarned) then
 								overwriteRep = true
 					end
+				end
+
+				if dbFaction.isFriendship and dbFaction.friendshipData then
+					overwriteRep = not characterFaction.friendshipData or dbFaction.friendshipData.standing > characterFaction.friendshipData.standing
 				end
 
 				if overwriteRep then

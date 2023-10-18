@@ -1,14 +1,24 @@
-local L = BigWigs:NewBossLocale("Ancient Protectors", "itIT")
+local L = BigWigs:NewBossLocale("Witherbark", "itIT")
 if not L then return end
 if L then
-	--L[83892] = "|cFF00CCFFGola|r"
-	--L[83893] = "|cFF00CC00Telu|r"
-
-	--L.custom_on_automark = "Auto-Mark Bosses"
-	--L.custom_on_automark_desc = "Automatically mark Gola with a {rt8} and Telu with a {rt7}, requires promoted or leader."
+	--L.energyStatus = "A Globule reached Witherbark: %d%% energy"
 end
 
-L = BigWigs:NewBossLocale("Witherbark", "itIT")
+L = BigWigs:NewBossLocale("Yalnu", "itIT")
 if L then
-	--L.energyStatus = "A Globule reached Witherbark: %d%% energy"
+	--L.warmup_trigger = "The portal is lost! We must stop this beast before it can escape!"
+end
+
+L = BigWigs:NewBossLocale("The Everbloom Trash", "itIT")
+if L then
+	L.dreadpetal = "Petalotruce"
+	L.everbloom_naturalist = "Naturalista di Verdeterno"
+	--L.everbloom_cultivator = "Everbloom Cultivator"
+	L.rockspine_stinger = "Pungitore Spinacoriacea"
+	L.everbloom_mender = "Guaritore di Verdeterno"
+	L.gnarlroot = "Torciradice"
+	L.melded_berserker = "Berserker Ibrido"
+	L.infested_icecaller = "Invocatore del Ghiaccio Infestato"
+	L.putrid_pyromancer = "Piromante Putrido"
+	L.addled_arcanomancer = "Arcanomante Confuso"
 end

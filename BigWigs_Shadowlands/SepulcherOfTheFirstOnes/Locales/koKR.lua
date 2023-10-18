@@ -6,9 +6,6 @@ end
 
 L = BigWigs:NewBossLocale("Skolex, the Insatiable Ravener", "koKR")
 if L then
-	--L.custom_on_stop_timers = "Always show ability bars"
-	--L.custom_on_stop_timers_desc = "Skolex can delay its abilities. When this option is enabled, the bars for those abilities will stay on your screen."
-
 	L.tank_combo_desc = "기력 100일때 균열 아귀/난도질 타이머."
 end
 
@@ -90,9 +87,6 @@ if L then
 
 	L.bomb_dropped = "폭탄 떨어트림"
 	--L.volatile_charges_new = "New Bombs!"
-
-	L.custom_on_stop_timers = "항상 능력 바 표시"
-	L.custom_on_stop_timers_desc = "할론드루스의 기술들은 미뤄질수 있습니다. 이 옵션을 활성화하면, 미뤄진 능력들의 바가 화면에 남아있습니다."
 end
 
 L = BigWigs:NewBossLocale("Lords of Dread", "koKR")

@@ -9,6 +9,12 @@ mod:SetEncounterID(1792)
 mod:SetRespawnTime(15)
 
 --------------------------------------------------------------------------------
+-- Locals
+--
+
+local toxicRetchCount = 1
+
+--------------------------------------------------------------------------------
 -- Initialization
 --
 
@@ -18,8 +24,9 @@ function mod:GetOptions()
 		210150, -- Toxic Retch
 		{199178, "ICON"}, -- Spiked Tongue
 		199775, -- Frenzy
-		-12527, -- Wormspeaker Devout
+		199817, -- Call Minions
 		199246, -- Ravenous
+		198963, -- Putrid Skies
 	}
 end
 
@@ -30,16 +37,18 @@ function mod:OnBossEnable()
 	self:Log("SPELL_AURA_APPLIED", "SpikedTongueApplied", 199178)
 	self:Log("SPELL_AURA_REMOVED", "SpikedTongueRemoved", 199178)
 	self:Log("SPELL_CAST_SUCCESS", "Frenzy", 199775)
-	self:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", nil, "boss1")
+	self:Log("SPELL_CAST_SUCCESS", "CallMinions", 199817)
 	self:Log("SPELL_AURA_APPLIED", "RavenousApplied", 199246)
 	self:Log("SPELL_AURA_APPLIED_DOSE", "RavenousApplied", 199246)
+	self:Log("SPELL_CAST_START", "PutridSkies", 198963)
 end
 
 function mod:OnEngage()
+	toxicRetchCount = 1
+	self:CDBar(199817, 5.1) -- Call Minions
 	self:CDBar(205549, 7.0) -- Rancid Maw
-	self:CDBar(-12527, 9.8, -12527, 209906) -- Wormspeaker Devout: spell_shadow_ritualofsacrifice / Fanatic's Sacrifice / icon 136189
-	self:CDBar(210150, 12.1) -- Toxic Retch
-	self:Bar(199178, 50.7) -- Spiked Tongue
+	self:CDBar(210150, 12.1, CL.count:format(self:SpellName(210150), toxicRetchCount)) -- Toxic Retch
+	self:CDBar(199178, 50.7) -- Spiked Tongue
 end
 
 --------------------------------------------------------------------------------
@@ -53,22 +62,24 @@ function mod:RancidMaw(args)
 end
 
 function mod:ToxicRetch(args)
-	self:Message(args.spellId, "orange")
+	self:StopBar(CL.count:format(args.spellName, toxicRetchCount))
+	self:Message(args.spellId, "orange", CL.count:format(args.spellName, toxicRetchCount))
 	self:PlaySound(args.spellId, "alert")
-	self:CDBar(args.spellId, 14.6) -- pull:12.1, 17.0, 14.6, 24.3, 14.5, 14.6
+	toxicRetchCount = toxicRetchCount + 1
+	self:CDBar(args.spellId, 14.6, CL.count:format(args.spellName, toxicRetchCount)) -- pull:12.1, 17.0, 14.6, 24.3, 14.5, 14.6
 end
 
 function mod:SpikedTongue(args)
-	self:Message(199178, "orange", CL.casting:format(args.spellName))
+	self:Message(199178, "purple", CL.casting:format(args.spellName))
 	if self:Tank() then
 		self:PlaySound(199178, "warning")
 	else
 		self:PlaySound(199178, "alert")
 	end
 	self:Bar(199178, 6, CL.cast:format(args.spellName))
-	self:Bar(199178, 56.0)
+	self:CDBar(199178, 56.0)
 	for unit in self:IterateGroup() do
-		if self:Tank(unit) then -- TODO better way to detect target?
+		if self:Tank(unit) then
 			self:PrimaryIcon(199178, unit)
 			break
 		end
@@ -98,14 +109,19 @@ function mod:Frenzy(args)
 	self:PlaySound(args.spellId, "long")
 end
 
-function mod:UNIT_SPELLCAST_SUCCEEDED(_, _, _, spellId)
-	if spellId == 199817 then -- Call Minions
-		self:ScheduleTimer("MessageOld", 4, -12527, "yellow", "info", CL.incoming:format(self:SpellName(-12527)), 209906)
-		self:ScheduleTimer("Bar", 4, -12527, 65, -12527, 209906) -- spell_shadow_ritualofsacrifice / Fanatic's Sacrifice / icon 136189
-	end
+function mod:CallMinions(args)
+	self:Message(args.spellId, "cyan")
+	self:PlaySound(args.spellId, "info")
+	self:CDBar(args.spellId, 65.3)
 end
 
 function mod:RavenousApplied(args)
 	self:StackMessage(args.spellId, "red", args.destName, args.amount, 1)
 	self:PlaySound(args.spellId, "long")
+end
+
+function mod:PutridSkies(args)
+	-- only cast when no one is in melee range
+	self:Message(args.spellId, "purple")
+	self:PlaySound(args.spellId, "warning")
 end

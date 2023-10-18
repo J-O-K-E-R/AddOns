@@ -84,7 +84,7 @@ function mod:GetOptions()
 		351779, -- Agonizing Spike
 		350650, -- Defiance
 		"custom_off_nameplate_defiance",
-		350411, -- Hellscream
+		{350411, "CASTBAR"}, -- Hellscream
 		354231, -- Soul Manacles
 		351229, -- Rendered Soul
 		"berserk",

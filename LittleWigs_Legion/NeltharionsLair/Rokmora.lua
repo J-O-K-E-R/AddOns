@@ -9,13 +9,10 @@ mod:SetEncounterID(1790)
 mod:SetRespawnTime(15)
 
 --------------------------------------------------------------------------------
--- Localization
+-- Locals
 --
 
-local L = mod:GetLocale()
-if L then
-	L.warmup_text = "Rokmora Active"
-end
+local shatterCount = 1
 
 --------------------------------------------------------------------------------
 -- Initialization
@@ -27,7 +24,7 @@ function mod:GetOptions()
 		188114, -- Shatter
 		192800, -- Choking Dust
 		188169, -- Razor Shards
-		198024, -- Cystalline Ground
+		198024, -- Crystalline Ground
 	}
 end
 
@@ -37,15 +34,16 @@ function mod:OnBossEnable()
 	self:Log("SPELL_PERIODIC_DAMAGE", "ChokingDustDamage", 192800)
 	self:Log("SPELL_PERIODIC_MISSED", "ChokingDustDamage", 192800)
 	self:Log("SPELL_CAST_START", "RazorShards", 188169)
-	self:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", nil, "boss1") -- Cystalline Ground
+	self:Log("SPELL_CAST_START", "CrystallineGround", 198024)
 end
 
 function mod:OnEngage()
+	shatterCount = 1
 	if not self:Normal() then
-		self:CDBar(198024, 4.4) -- Crystalline Ground
+		self:CDBar(198024, 3.4) -- Crystalline Ground
 	end
 	-- cast at 100 energy, 20s energy gain + ~.4s delay
-	self:CDBar(188114, 20.4) -- Shatter
+	self:CDBar(188114, 20.4, CL.count:format(self:SpellName(188114), shatterCount)) -- Shatter
 	self:CDBar(188169, 25.3) -- Razor Shards
 end
 
@@ -55,19 +53,21 @@ end
 
 -- called from trash module
 function mod:WarmupLong()
-	self:Bar("warmup", 18.9, L.warmup_text, "achievement_dungeon_neltharionslair")
+	self:Bar("warmup", 18.9, CL.active, "achievement_dungeon_neltharionslair")
 end
 
 -- called from trash module
 function mod:WarmupShort()
-	self:Bar("warmup", 4.95, L.warmup_text, "achievement_dungeon_neltharionslair")
+	self:Bar("warmup", 4.95, CL.active, "achievement_dungeon_neltharionslair")
 end
 
 function mod:Shatter(args)
-	self:Message(args.spellId, "yellow")
+	self:StopBar(CL.count:format(args.spellName, shatterCount))
+	self:Message(args.spellId, "yellow", CL.count:format(args.spellName, shatterCount))
 	self:PlaySound(args.spellId, "alert")
+	shatterCount = shatterCount + 1
 	-- cast at 100 energy, 20s energy gain + 4.3s cast
-	self:CDBar(args.spellId, 24.3) -- pull:20.7, 24.4, 24.3, 24.4, 24.3
+	self:CDBar(args.spellId, 24.3, CL.count:format(args.spellName, shatterCount)) -- pull:20.7, 24.4, 24.3, 24.4, 24.3
 	-- correct timers
 	if self:BarTimeLeft(188169) < 4.87 then -- Razor Shards
 		self:CDBar(188169, {4.87, 29.1})
@@ -93,16 +93,14 @@ function mod:RazorShards(args)
 	self:PlaySound(args.spellId, "alarm")
 	self:CDBar(args.spellId, 29.1) -- pull:25.6, 29.2, 29.2, 29.2, 34.1
 	-- correct timers
-	if self:BarTimeLeft(188114) < 4.87 then -- Shatter
-		self:CDBar(188114, {4.87, 24.3})
+	if self:BarTimeLeft(CL.count:format(self:SpellName(188114), shatterCount)) < 4.87 then -- Shatter
+		self:CDBar(188114, {4.87, 24.3}, CL.count:format(self:SpellName(188114), shatterCount))
 	end
 end
 
-function mod:UNIT_SPELLCAST_SUCCEEDED(event, unit, _, spellId)
-	if spellId == 198024 then -- Crystalline Ground
-		self:StopBar(198024)
-		self:Message(198024, "orange")
-		self:PlaySound(198024, "alert")
-		self:UnregisterUnitEvent(event, unit)
-	end
+function mod:CrystallineGround(args)
+	-- just cast once per pull
+	self:StopBar(args.spellId)
+	self:Message(args.spellId, "orange")
+	self:PlaySound(args.spellId, "alert")
 end

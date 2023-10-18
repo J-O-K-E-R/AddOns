@@ -78,18 +78,18 @@ function mod:GetOptions()
 		350342, -- Formless Mass
 		formlessMassMarker,
 		350339, -- Siphon Vitality
-		350365, -- Wings of Rage
+		{350365, "CASTBAR"}, -- Wings of Rage
 		-- Signe, The Voice
 		{350286, "TANK"}, -- Song of Dissolution
-		350385, -- Reverberating Refrain
+		{350385, "CASTBAR"}, -- Reverberating Refrain
 		-- Call of the Val'kyr
 		350467, -- Call of the Val'kyr
 		350031, -- Agatha's Eternal Blade
-		{350184, "SAY", "SAY_COUNTDOWN", "ME_ONLY_EMPHASIZE"}, -- Daschla's Mighty Impact
-		350158, -- Annhylde's Bright Aegis
-		350098, -- Aradne's Falling Strike
+		{350184, "SAY", "SAY_COUNTDOWN", "ME_ONLY_EMPHASIZE", "CASTBAR"}, -- Daschla's Mighty Impact
+		{350158, "CASTBAR"}, -- Annhylde's Bright Aegis
+		{350098, "CASTBAR"}, -- Aradne's Falling Strike
 		{350109, "SAY", "SAY_COUNTDOWN", "ME_ONLY_EMPHASIZE"}, -- Brynja's Mournful Dirge
-		{350039, "SAY", "SAY_COUNTDOWN"}, -- Arthura's Crushing Gaze
+		{350039, "SAY", "SAY_COUNTDOWN", "CASTBAR"}, -- Arthura's Crushing Gaze
 		-- Stage Two: The First of the Mawsworn
 		{350475, "TANK"}, -- Pierce Soul
 		355294, -- Resentment

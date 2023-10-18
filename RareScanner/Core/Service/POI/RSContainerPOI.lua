@@ -99,6 +99,13 @@ end
 
 local function IsContainerPOIFiltered(containerID, mapID, zoneQuestID, prof, vignetteGUIDs, onWorldMap, onMinimap)
 	local name = RSContainerDB.GetContainerName(containerID) or AL["CONTAINER"]
+	
+	-- Skip if part of a disabled event
+	if (RSContainerDB.IsDisabledEvent(containerID)) then
+		RSLogger:PrintDebugMessageEntityID(containerID, string.format("Saltado Contenedor [%s]: Parte de un evento desactivado.", containerID))
+		return true
+	end
+	
 	-- Skip if filtering by name in the world map search box
 	if (name and RSGeneralDB.GetWorldMapTextFilter() and not RSUtils.Contains(name, RSGeneralDB.GetWorldMapTextFilter())) then
 		RSLogger:PrintDebugMessageEntityID(containerID, string.format("Saltado Contenedor [%s]: Filtrado por nombre [%s][%s].", containerID, name, RSGeneralDB.GetWorldMapTextFilter()))

@@ -11,7 +11,7 @@ local acr = LibStub("AceConfigRegistry-3.0")
 local acd = LibStub("AceConfigDialog-3.0")
 local AceGUI = LibStub("AceGUI-3.0")
 local adbo = LibStub("AceDBOptions-3.0")
-local lds = LibStub("LibDualSpec-1.0")
+local lds = LibStub("LibDualSpec-1.0", true)
 
 local loader = BigWigsLoader
 local API = BigWigsAPI
@@ -26,6 +26,20 @@ local configFrame, isPluginOpen
 
 local showToggleOptions, getAdvancedToggleOption = nil, nil
 local toggleOptionsStatusTable = {}
+
+local C_EncounterJournal_GetSectionInfo = C_EncounterJournal and C_EncounterJournal.GetSectionInfo or function(key)
+	local info = BigWigsAPI:GetLocale("BigWigs: Encounter Info")[key]
+	if info then
+		-- Options uses a few more fields, so copy the entry and include them
+		local tbl = {}
+		for k,v in next, info do
+			tbl[k] = v
+		end
+		tbl.spellID = 0
+		tbl.link = ("|cff66bbff|Hjournal:2:%d:1|h[%s]|h|r"):format(key, tbl.title)
+		return tbl
+	end
+end
 
 local getOptions
 local acOptions = {
@@ -119,6 +133,7 @@ local acOptions = {
 							ldbi:AddButtonToCompartment("BigWigs", "Interface\\AddOns\\BigWigs\\Media\\Icons\\core-enabled")
 						end
 					end,
+					hidden = loader.isClassic,
 				},
 				separator2 = {
 					type = "description",
@@ -261,7 +276,9 @@ do
 		acOptions.args.general.args.profileOptions = adbo:GetOptionsTable(BigWigs.db)
 		acOptions.args.general.args.profileOptions.order = 100
 		acOptions.args.general.args.profileOptions.name = "|TInterface\\AddOns\\BigWigs\\Media\\Icons\\Menus\\Profile:20|t " .. acOptions.args.general.args.profileOptions.name
-		lds:EnhanceOptions(acOptions.args.general.args.profileOptions, BigWigs.db)
+		if lds then
+			lds:EnhanceOptions(acOptions.args.general.args.profileOptions, BigWigs.db)
+		end
 
 		acr:RegisterOptionsTable("BigWigs", getOptions, true)
 		acd:SetDefaultSize("BigWigs", 858, 660)
@@ -466,7 +483,7 @@ local icons = {
 	EMPHASIZE = "Interface\\AddOns\\BigWigs\\Media\\Icons\\Menus\\EmphasizeMessage",
 	ME_ONLY_EMPHASIZE = "Interface\\AddOns\\BigWigs\\Media\\Icons\\Menus\\EmphasizeMessageMeOnly",
 	DISPEL = "Interface\\AddOns\\BigWigs\\Media\\Icons\\Menus\\Dispel",
-	-- PRIVATE = "Interface\\AddOns\\BigWigs\\Media\\Icons\\Menus\\Private",
+	PRIVATE = "Interface\\AddOns\\BigWigs\\Media\\Icons\\Menus\\Private",
 }
 
 local function hasOptionFlag(dbKey, module, key)
@@ -643,13 +660,32 @@ function getAdvancedToggleOption(scrollFrame, dropdown, module, bossOption)
 		end
 	end
 
+	-- Add a small text label to the top right displaying what key is tied to this ability
+	local optionKeyLabel = AceGUI:Create("Label")
+	if type(dbKey) == "number" then
+		optionKeyLabel.label:SetFormattedText(L.optionsKey, dbKey)
+	else
+		optionKeyLabel.label:SetFormattedText(L.optionsKey, "\""..dbKey.."\"")
+	end
+	optionKeyLabel:SetColor(0.65, 0.65, 0.65)
+	optionKeyLabel:SetWidth(optionKeyLabel.label:GetStringWidth())
+	optionKeyLabel:SetHeight(30)
+	optionKeyLabel.frame:SetParent(check.frame)
+	optionKeyLabel.frame:Show()
+	optionKeyLabel:SetPoint("RIGHT", check.frame, "TOPRIGHT", -5, -13)
+	-- Manually release in a callback, since optionKeyLabel isn't added to the widgets table as a child
+	check:SetUserData("optionKeyLabel", optionKeyLabel)
+	check:SetCallback("OnRelease", function(widget)
+		widget:GetUserData("optionKeyLabel"):Release()
+	end)
+
 	if hasOptionFlag(dbKey, module, "PRIVATE") then
 		local privateAuraText = AceGUI:Create("Label")
 		privateAuraText:SetText(L.PRIVATE_desc)
-		-- privateAuraText:SetColor(1, 0.82, 0)
-		-- privateAuraText:SetImage(icons.PRIVATE)
+		privateAuraText:SetColor(1, 0.75, 0.79)
+		privateAuraText:SetImage(icons.PRIVATE)
 		privateAuraText:SetFullWidth(true)
-		-- privateAuraText:SetHeight(30)
+		privateAuraText:SetHeight(30)
 		widgets[#widgets + 1] = privateAuraText
 	end
 
@@ -778,6 +814,8 @@ local function getDefaultToggleOption(scrollFrame, dropdown, module, bossOption)
 	check:SetUserData("scrollFrame", scrollFrame)
 	check:SetDescription(desc)
 	check:SetCallback("OnValueChanged", masterOptionToggled)
+	check.frame:SetHitRectInsets(0, 250, 0, 0) -- Reduce checkbox "hit" area
+	check:SetCallback("OnRelease", function(widget) widget.frame:SetHitRectInsets(0, 0, 0, 0) end) -- Reset hit area to default
 	check:SetValue(getMasterOption(check))
 	check.text:SetTextColor(1, 0.82, 0) -- After :SetValue so it's not overwritten
 	if icon then check:SetImage(icon, 0.07, 0.93, 0.07, 0.93) end
@@ -787,7 +825,7 @@ local function getDefaultToggleOption(scrollFrame, dropdown, module, bossOption)
 		if dbKey < 0 then
 			-- the "why did you use an ej id instead of the spell directly" check
 			-- headers and other non-spell entries don't load async
-			local info = C_EncounterJournal.GetSectionInfo(-dbKey)
+			local info = C_EncounterJournal_GetSectionInfo(-dbKey)
 			if info.spellID > 0 then
 				spellId = info.spellID
 			end
@@ -816,7 +854,7 @@ local function getDefaultToggleOption(scrollFrame, dropdown, module, bossOption)
 	local showFlags = {
 		"TANK_HEALER", "TANK", "HEALER", "DISPEL",
 		"EMPHASIZE", "ME_ONLY", "ME_ONLY_EMPHASIZE", "COUNTDOWN", "CASTBAR_COUNTDOWN", "FLASH", "ICON", "SAY", "SAY_COUNTDOWN",
-		"PROXIMITY", "INFOBOX", "ALTPOWER", "NAMEPLATEBAR", --"PRIVATE",
+		"PROXIMITY", "INFOBOX", "ALTPOWER", "NAMEPLATEBAR", "PRIVATE",
 	}
 	for i = 1, #showFlags do
 		local key = showFlags[i]
@@ -871,6 +909,7 @@ local function getDefaultToggleOption(scrollFrame, dropdown, module, bossOption)
 			for _, icon in next, widget:GetUserData("icons") do
 				icon:Release()
 			end
+			widget.frame:SetHitRectInsets(0, 0, 0, 0) -- Reset hit area to default, set this again as it will overwrite the OnRelease above
 		end)
 	end
 
@@ -936,7 +975,7 @@ do
 						link = spellLink
 					end
 				else
-					local tbl = C_EncounterJournal.GetSectionInfo(-o)
+					local tbl = C_EncounterJournal_GetSectionInfo(-o)
 					if not tbl or not tbl.link then
 						BigWigs:Error(("Failed to fetch the link for journal id (-)%d, tell the authors."):format(-o))
 					else
@@ -985,8 +1024,9 @@ local function populateToggleOptions(widget, module)
 	local id = module.instanceId
 
 	local sDB = BigWigsStatsDB
-	if module.journalId and id and id > 0 and BigWigs:GetPlugin("Statistics").db.profile.enabled and sDB and sDB[id] and sDB[id][module.journalId] then
-		sDB = sDB[id][module.journalId]
+	local journalId = module:GetJournalID()
+	if journalId and id and id > 0 and BigWigs:GetPlugin("Statistics").db.profile.enabled and sDB and sDB[id] and sDB[id][journalId] then
+		sDB = sDB[id][journalId]
 
 		if next(sDB) then -- Create statistics table
 			local statGroup = AceGUI:Create("InlineGroup")
@@ -1000,115 +1040,74 @@ local function populateToggleOptions(widget, module)
 			statistics:SetText("")
 			statGroup:AddChild(statistics)
 
-			statistics = AceGUI:Create("Label")
-			statistics:SetWidth(100)
-			statistics:SetText(L.lfr)
-			statGroup:AddChild(statistics)
+			local difficulties = {}
 
-			statistics = AceGUI:Create("Label")
-			statistics:SetWidth(100)
-			statistics:SetText(L.normal)
-			statGroup:AddChild(statistics)
-
-			statistics = AceGUI:Create("Label")
-			statistics:SetWidth(100)
-			statistics:SetText(L.heroic)
-			statGroup:AddChild(statistics)
-
-			statistics = AceGUI:Create("Label")
-			statistics:SetWidth(100)
-			statistics:SetText(L.mythic)
-			statGroup:AddChild(statistics)
+			-- Headers
+			local displayOrder = { "LFR", "normal", "heroic", "mythic", "10N", "25N", "10H", "25H" }
+			for _, diff in ipairs(displayOrder) do
+				if sDB[diff] then
+					difficulties[#difficulties+1] = diff
+					statistics = AceGUI:Create("Label")
+					statistics:SetWidth(100)
+					statistics:SetText(L[diff])
+					statGroup:AddChild(statistics)
+				end
+			end
 
 			statistics = AceGUI:Create("Label")
 			statistics:SetFullWidth(true)
 			statistics:SetText("")
 			statGroup:AddChild(statistics)
 
+			-- Wipes
 			statistics = AceGUI:Create("Label")
 			statistics:SetWidth(100)
 			statistics:SetText(L.wipes)
 			statGroup:AddChild(statistics)
 
-			statistics = AceGUI:Create("Label")
-			statistics:SetWidth(100)
-			statistics:SetText(sDB.LFR and sDB.LFR.wipes or "-")
-			statGroup:AddChild(statistics)
-
-			statistics = AceGUI:Create("Label")
-			statistics:SetWidth(100)
-			statistics:SetText(sDB.normal and sDB.normal.wipes or "-")
-			statGroup:AddChild(statistics)
-
-			statistics = AceGUI:Create("Label")
-			statistics:SetWidth(100)
-			statistics:SetText(sDB.heroic and sDB.heroic.wipes or "-")
-			statGroup:AddChild(statistics)
-
-			statistics = AceGUI:Create("Label")
-			statistics:SetWidth(100)
-			statistics:SetText(sDB.mythic and sDB.mythic.wipes or "-")
-			statGroup:AddChild(statistics)
+			for _, diff in ipairs(difficulties) do
+				statistics = AceGUI:Create("Label")
+				statistics:SetWidth(100)
+				statistics:SetText(sDB[diff] and sDB[diff].wipes or "-")
+				statGroup:AddChild(statistics)
+			end
 
 			statistics = AceGUI:Create("Label")
 			statistics:SetFullWidth(true)
 			statistics:SetText("")
 			statGroup:AddChild(statistics)
 
+			-- Kills
 			statistics = AceGUI:Create("Label")
 			statistics:SetWidth(100)
 			statistics:SetText(L.kills)
 			statGroup:AddChild(statistics)
 
-			statistics = AceGUI:Create("Label")
-			statistics:SetWidth(100)
-			statistics:SetText(sDB.LFR and sDB.LFR.kills or "-")
-			statGroup:AddChild(statistics)
-
-			statistics = AceGUI:Create("Label")
-			statistics:SetWidth(100)
-			statistics:SetText(sDB.normal and sDB.normal.kills or "-")
-			statGroup:AddChild(statistics)
-
-			statistics = AceGUI:Create("Label")
-			statistics:SetWidth(100)
-			statistics:SetText(sDB.heroic and sDB.heroic.kills or "-")
-			statGroup:AddChild(statistics)
-
-			statistics = AceGUI:Create("Label")
-			statistics:SetWidth(100)
-			statistics:SetText(sDB.mythic and sDB.mythic.kills or "-")
-			statGroup:AddChild(statistics)
+			for _, diff in ipairs(difficulties) do
+				statistics = AceGUI:Create("Label")
+				statistics:SetWidth(100)
+				statistics:SetText(sDB[diff] and sDB[diff].kills or "-")
+				statGroup:AddChild(statistics)
+			end
 
 			statistics = AceGUI:Create("Label")
 			statistics:SetFullWidth(true)
 			statistics:SetText("")
 			statGroup:AddChild(statistics)
 
+			-- Best Time
 			statistics = AceGUI:Create("Label")
 			statistics:SetWidth(100)
 			statistics:SetText(L.best)
 			statGroup:AddChild(statistics)
 
-			statistics = AceGUI:Create("Label")
-			statistics:SetWidth(100)
-			statistics:SetText(sDB.LFR and sDB.LFR.best and SecondsToTime(sDB.LFR.best) or "-")
-			statGroup:AddChild(statistics)
-
-			statistics = AceGUI:Create("Label")
-			statistics:SetWidth(100)
-			statistics:SetText(sDB.normal and sDB.normal.best and SecondsToTime(sDB.normal.best) or "-")
-			statGroup:AddChild(statistics)
-
-			statistics = AceGUI:Create("Label")
-			statistics:SetWidth(100)
-			statistics:SetText(sDB.heroic and sDB.heroic.best and SecondsToTime(sDB.heroic.best) or "-")
-			statGroup:AddChild(statistics)
-
-			statistics = AceGUI:Create("Label")
-			statistics:SetWidth(100)
-			statistics:SetText(sDB.mythic and sDB.mythic.best and SecondsToTime(sDB.mythic.best) or "-")
-			statGroup:AddChild(statistics)
+			for _, diff in ipairs(difficulties) do
+				statistics = AceGUI:Create("Label")
+				statistics:SetWidth(100)
+				local value = sDB[diff] and sDB[diff].best and SecondsToTime(sDB[diff].best)
+				statistics:SetText(value or "-")
+				statGroup:AddChild(statistics)
+			end
 		end -- End statistics table
 	end
 
@@ -1197,7 +1196,7 @@ local function onZoneShow(treeWidget, id)
 	for i = 1, #zoneSort do
 		local name = zoneSort[i]
 		local m = BigWigs:GetBossModule(name)
-		if m:IsEnabled() and m.journalId then
+		if m:IsEnabled() and m:GetJournalID() then
 			index = i
 			break
 		end
@@ -1207,18 +1206,36 @@ local function onZoneShow(treeWidget, id)
 end
 
 do
-	local expansionHeader = {
-		"Classic",
-		"BurningCrusade",
-		"WrathOfTheLichKing",
-		"Cataclysm",
-		"MistsOfPandaria",
-		"WarlordsOfDraenor",
-		"Legion",
-		"BattleForAzeroth",
-		"Shadowlands",
-		"Dragonflight",
-	}
+	local expansionHeader
+	if loader.isVanilla then
+		expansionHeader = {
+			"Classic",
+		}
+	elseif loader.isTBC then
+		expansionHeader = {
+			"Classic",
+			"BurningCrusade",
+		}
+	elseif loader.isWrath then
+		expansionHeader = {
+			"Classic",
+			"BurningCrusade",
+			"WrathOfTheLichKing",
+		}
+	else
+		expansionHeader = {
+			"Classic",
+			"BurningCrusade",
+			"WrathOfTheLichKing",
+			"Cataclysm",
+			"MistsOfPandaria",
+			"WarlordsOfDraenor",
+			"Legion",
+			"BattleForAzeroth",
+			"Shadowlands",
+			"Dragonflight",
+		}
+	end
 
 	local statusTable = {}
 	local playerName = nil
@@ -1257,7 +1274,7 @@ do
 		local bigwigsContent = value:match("(BigWigs_%a+)$")
 		if zoneId then
 			onZoneShow(widget, tonumber(zoneId))
-		elseif bigwigsContent and value ~= loader.currentExpansion.name then -- Any BigWigs content, but skip when clicking the current expansion header
+		elseif bigwigsContent and (loader.isClassic or value ~= loader.currentExpansion.name) then -- Any BigWigs content, but skip when clicking the current expansion header
 			local addonState = loader:GetAddOnState(bigwigsContent)
 			local string = addonState == "MISSING" and L.missingAddOn or addonState == "DISABLED" and L.disabledAddOn
 			if string then
@@ -1284,7 +1301,7 @@ do
 				end
 			end
 		elseif value:match("^LittleWigs_") then -- All LittleWigs content addons, all come from 1 zip
-			if value == loader.currentExpansion.littlewigsName then value = "LittleWigs" end
+			if value == loader.currentExpansion.littlewigsName and loader.isRetail then value = "LittleWigs" end
 			local addonState = loader:GetAddOnState(value)
 			local string = addonState == "MISSING" and L.missingAddOn or addonState == "DISABLED" and L.disabledAddOn
 			if not loader.usingLittleWigsRepo and string then
@@ -1341,7 +1358,7 @@ do
 				for i = 1, #expansionHeader do
 					local value = "BigWigs_" .. expansionHeader[i]
 					treeTbl[i] = {
-						text = EJ_GetTierInfo(i),
+						text = L.expansionNames[i],
 						value = value,
 						enabled = true,
 					}
@@ -1352,7 +1369,7 @@ do
 				for i = 1, #expansionHeader do
 					local value = "LittleWigs_" .. expansionHeader[i]
 					treeTbl[i] = {
-						text = EJ_GetTierInfo(i),
+						text = L.expansionNames[i],
 						value = value,
 						enabled = true,
 					}
@@ -1374,8 +1391,7 @@ do
 					else
 						zoneName = GetRealZoneText(k)
 						if zoneName == "" then
-							-- if GetRealZoneText returns an empty string it's probably due to installing the wrong version of BigWigs or otherwise
-							-- having a module enabled for a zone that doesn't exist.
+							-- if GetRealZoneText returns an empty string it's probably due to having a module enabled for a zone that doesn't exist.
 							-- use the zone key as the menu name in that case instead of the empty string.
 							zoneName = tostring(k)
 						end
@@ -1468,6 +1484,7 @@ do
 			statusTable = {}
 			isPluginOpen = nil
 			configFrame = nil
+			options:SendMessage("BigWigs_CloseGUI")
 		end)
 
 		--local anchors = AceGUI:Create("Button")
@@ -1507,6 +1524,7 @@ do
 		bw:AddChild(tabs)
 
 		bw:Show()
+		self:SendMessage("BigWigs_OpenGUI")
 	end
 end
 

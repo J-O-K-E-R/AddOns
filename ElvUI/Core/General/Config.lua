@@ -2,26 +2,27 @@ local E, L, V, P, G = unpack(ElvUI)
 local S = E:GetModule('Skins')
 
 local _G = _G
+local hooksecurefunc = hooksecurefunc
 local next, strsplit = next, strsplit
 local unpack, sort, gsub, wipe = unpack, sort, gsub, wipe
 local strupper, ipairs, tonumber = strupper, ipairs, tonumber
 local floor, select, type, min = floor, select, type, min
 local pairs, tinsert, tContains = pairs, tinsert, tContains
 
-local hooksecurefunc = hooksecurefunc
-local EnableAddOn = EnableAddOn
-local LoadAddOn = LoadAddOn
-local GetAddOnInfo = GetAddOnInfo
 local CreateFrame = CreateFrame
-local IsAddOnLoaded = IsAddOnLoaded
+local EnableAddOn = EnableAddOn
+local GetAddOnInfo = GetAddOnInfo
 local InCombatLockdown = InCombatLockdown
-local IsControlKeyDown = IsControlKeyDown
+local IsAddOnLoaded = IsAddOnLoaded
 local IsAltKeyDown = IsAltKeyDown
+local IsControlKeyDown = IsControlKeyDown
+local LoadAddOn = LoadAddOn
+local UIParent = UIParent
+
 local EditBox_HighlightText = EditBox_HighlightText
 local EditBox_ClearFocus = EditBox_ClearFocus
-local ERR_NOT_IN_COMBAT = ERR_NOT_IN_COMBAT
 local RESET = RESET
--- GLOBALS: ElvUIMoverPopupWindow, ElvUIMoverNudgeWindow, ElvUIMoverPopupWindowDropDown
+-- GLOBALS: ElvUIMoverNudgeWindow, ElvUIMoverPopupWindow, ElvUIMoverPopupWindowDropDown
 
 local ConfigTooltip = CreateFrame('GameTooltip', 'ElvUIConfigTooltip', E.UIParent, 'GameTooltipTemplate')
 
@@ -67,8 +68,8 @@ end
 
 function E:ToggleMoveMode(which)
 	if InCombatLockdown() then return end
-	local mode = not E.ConfigurationMode
 
+	local mode = not E.ConfigurationMode
 	if not which or which == '' then
 		E.ConfigurationMode = mode
 		which = 'all'
@@ -247,7 +248,7 @@ end
 function E:CreateMoverPopup()
 	local r, g, b = unpack(E.media.rgbvaluecolor)
 
-	local f = CreateFrame('Frame', 'ElvUIMoverPopupWindow', _G.UIParent)
+	local f = CreateFrame('Frame', 'ElvUIMoverPopupWindow', UIParent)
 	f:SetFrameStrata('FULLSCREEN_DIALOG')
 	f:SetToplevel(true)
 	f:EnableMouse(true)
@@ -256,7 +257,7 @@ function E:CreateMoverPopup()
 	f:SetClampedToScreen(true)
 	f:Size(370, 190)
 	f:SetTemplate('Transparent')
-	f:Point('BOTTOM', _G.UIParent, 'CENTER', 0, 100)
+	f:Point('BOTTOM', UIParent, 'CENTER', 0, 100)
 	f:Hide()
 
 	local header = CreateFrame('Button', nil, f)
@@ -558,7 +559,7 @@ function E:Config_UpdateSize(reset)
 		frame:SetMaxResize(maxWidth-50, maxHeight-50)
 	end
 
-	self.Libs.AceConfigDialog:SetDefaultSize(E.name, E:Config_GetDefaultSize())
+	self.Libs.AceConfigDialog:SetDefaultSize('ElvUI', E:Config_GetDefaultSize())
 
 	local status = frame.obj and frame.obj.status
 	if status then
@@ -873,7 +874,7 @@ end
 
 function E:Config_GetWindow()
 	local ACD = E.Libs.AceConfigDialog
-	local ConfigOpen = ACD and ACD.OpenFrames and ACD.OpenFrames[E.name]
+	local ConfigOpen = ACD and ACD.OpenFrames and ACD.OpenFrames.ElvUI
 	return ConfigOpen and ConfigOpen.frame
 end
 
@@ -1074,8 +1075,7 @@ function E:Config_GetToggleMode(frame, msg)
 end
 
 function E:ToggleOptions(msg)
-	if InCombatLockdown() then
-		E:Print(ERR_NOT_IN_COMBAT)
+	if E:AlertCombat() then
 		self.ShowOptions = true
 		return
 	end
@@ -1110,7 +1110,7 @@ function E:ToggleOptions(msg)
 			ACD.OpenHookedElvUI = true
 		end
 
-		ACD[mode](ACD, E.name)
+		ACD[mode](ACD, 'ElvUI')
 	end
 
 	if not frame then
@@ -1158,7 +1158,7 @@ function E:ToggleOptions(msg)
 			close:SetScript('OnClick', E.Config_CloseClicked)
 			close:SetFrameLevel(1000)
 			close:Point('TOPRIGHT', unskinned and -8 or 1, unskinned and -8 or 2)
-			close:Size(32, 32)
+			close:Size(32)
 			close.originalClose = frame.originalClose
 			frame.closeButton = close
 
@@ -1234,7 +1234,7 @@ function E:ToggleOptions(msg)
 		end
 
 		if ACD and pages then
-			ACD:SelectGroup(E.name, unpack(pages))
+			ACD:SelectGroup('ElvUI', unpack(pages))
 		end
 	end
 end

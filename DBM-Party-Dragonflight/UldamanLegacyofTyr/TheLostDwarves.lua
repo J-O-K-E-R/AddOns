@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod(2475, "DBM-Party-Dragonflight", 2, 1197)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20230511021050")
+mod:SetRevision("20230814062205")
 mod:SetCreatureID(184580, 184581, 184582)
 mod:SetEncounterID(2555)
 --mod:SetUsedIcons(1, 2, 3)
@@ -45,7 +45,7 @@ local timerWildCleaveCD							= mod:NewCDTimer(17, 369563, nil, nil, nil, 5, nil
 mod:AddTimerLine(DBM:EJ_GetSectionInfo(24781))
 local specWarnSkullcracker						= mod:NewSpecialWarningDodge(369791, nil, nil, nil, 2, 2)
 
-local timerSkullcrackerCD						= mod:NewCDTimer(26.6, 369791, nil, nil, nil, 3)
+local timerSkullcrackerCD						= mod:NewCDTimer(25.5, 369791, nil, nil, nil, 3)
 --Olaf
 mod:AddTimerLine(DBM:EJ_GetSectionInfo(24782))
 local warnRicochetingShield						= mod:NewTargetNoFilterAnnounce(369677, 3)
@@ -55,7 +55,7 @@ local yellRicochetingShield						= mod:NewYell(369677)
 local specWarnDefensiveBulwark					= mod:NewSpecialWarningInterrupt(369602, "HasInterrupt", nil, nil, 1, 2)
 
 local timerRicochetingShieldCD					= mod:NewCDTimer(16.9, 369677, nil, nil, nil, 3)
-local timerDefensiveBulwarkCD					= mod:NewCDTimer(35, 369602, nil, nil, nil, 4, nil, DBM_COMMON_L.INTERRUPT_ICON)
+local timerDefensiveBulwarkCD					= mod:NewCDTimer(33.8, 369602, nil, nil, nil, 4, nil, DBM_COMMON_L.INTERRUPT_ICON)
 --Longboat Raid!
 mod:AddTimerLine(DBM:EJ_GetSectionInfo(24783))
 local timerLongboatRaidCD						= mod:NewCDTimer(27.4, 375924, nil, nil, nil, 6)
@@ -134,22 +134,22 @@ function mod:SPELL_CAST_START(args)
 		local bossUid = DBM:GetUnitIdFromGUID(args.sourceGUID)
 		local bossPower = UnitPower(bossUid)--If boss power is ever less than 100 when this is cast, they're defeated
 		if bossPower == 100 and self:AntiSpam(8, 1) then--at least one caster is alive, start next timer
-			timerLongboatRaidCD:Start(79)
+			timerLongboatRaidCD:Start(77.7)
 		end
 		local cid = self:GetCIDFromGUID(args.sourceGUID)
 		if cid == 184581 then--Baelog
 			timerHeavyArrowCD:Stop(args.sourceGUID)
 			timerWildCleaveCD:Stop(args.sourceGUID)
 			if bossPower == 100 then--Alive, restart timers
-				timerWildCleaveCD:Start(24.9, args.sourceGUID)
+				timerWildCleaveCD:Start(23.8, args.sourceGUID)
 				timerHeavyArrowCD:Start(35, args.sourceGUID)
 			end
 		elseif cid == 184580 then--Olaf
 			timerRicochetingShieldCD:Stop(args.sourceGUID)
 			timerDefensiveBulwarkCD:Stop(args.sourceGUID)
 			if bossPower == 100 then--Alive, restart timers
-				timerRicochetingShieldCD:Start(30, args.sourceGUID)
-				timerDefensiveBulwarkCD:Start(35, args.sourceGUID)
+				timerRicochetingShieldCD:Start(29.8)
+				timerDefensiveBulwarkCD:Start(34.1, args.sourceGUID)
 			end
 		elseif cid == 184582 then--Eric "The Swift"
 			timerSkullcrackerCD:Stop(args.sourceGUID)

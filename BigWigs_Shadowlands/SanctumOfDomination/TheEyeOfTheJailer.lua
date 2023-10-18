@@ -42,14 +42,14 @@ function mod:GetOptions()
 		349979, -- Dragging Chains
 		348074, -- Assailing Lance
 		-- Stage Two: Double Vision
-		349028, -- Titanic Death Gaze
+		{349028, "CASTBAR"}, -- Titanic Death Gaze
 		{350847, "SAY", "SAY_COUNTDOWN", "ME_ONLY_EMPHASIZE"}, -- Desolation Beam
 		{350022, "ME_ONLY_EMPHASIZE"}, -- Fracture Soul
 		{351825, "TANK"}, -- Shared Suffering
 		350713, -- Slothful Corruption
 		{351827, "SAY", "SAY_COUNTDOWN", "ME_ONLY_EMPHASIZE"}, -- Spreading Misery
 		-- Stage Three: Immediate Extermination
-		351413, -- Annihilating Glare
+		{351413, "CASTBAR"}, -- Annihilating Glare
 		{350604, "SAY", "ME_ONLY_EMPHASIZE"}, -- Hopeless Lethargy
 		355232, -- Scorn and Ire
 	},{

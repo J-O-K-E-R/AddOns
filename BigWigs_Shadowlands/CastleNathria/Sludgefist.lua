@@ -54,7 +54,7 @@ function mod:GetOptions()
 		331314, -- Destructive Impact
 		"fun_info",
 		{335293, "ME_ONLY_EMPHASIZE"}, -- Chain Link
-		332318, -- Destructive Stomp
+		{332318, "CASTBAR"}, -- Destructive Stomp
 		341193, -- Falling Rubble
 		335361, -- Stonequake
 		332687, -- Colossal Roar

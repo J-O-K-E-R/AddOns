@@ -1,6 +1,7 @@
 --[[
 	settings.lua
 		Initializes the settings, checks for version updates and provides the necessary API for profile management
+		All Rights Reserved
 --]]
 
 local ADDON, Addon = ...
@@ -79,7 +80,7 @@ local ProfileDefaults = {
 	vault = SetDefaults({
 		borderColor = {1, 0, 0.98, 1},
 		point = 'LEFT',
-		columns = 10,
+		columns = 16,
 		x = 95
 	}, FrameDefaults),
 
@@ -100,11 +101,14 @@ function Settings:OnEnable()
         version = Addon.Version,
 		profiles = {},
 
-		display = {banker = true, guildBanker = true, voidStorageBanker = true, crafting = true, tradePartner = true, socketing = true, auctioneer = true, merchant = true, mailInfo = true, scrappingMachine = true},
-		resetPlayer = true, flashFind = true, tipCount = true, serverSort = true,
+		resetPlayer = true, flashFind = true, serverSort = true,
+		countItems = true, countGuild = true, countCurrency = true, 
+		display = {
+			banker = true, guildBanker = true, voidStorageBanker = true, crafting = true, tradePartner = true, socketing = true,
+			auctioneer = true, merchant = true, mailInfo = true, scrappingMachine = true},
 
 		glowAlpha = 0.5,
-		glowQuality = true, glowNew = true, glowQuest = true, glowSets = true, glowUnusable = true,
+		glowQuality = true, glowNew = true, glowQuest = true, glowSets = true, glowUnusable = true, glowPoor = true,
 
 		slotBackground = 2, colorSlots = true,
 		normalColor = {1, 1, 1},

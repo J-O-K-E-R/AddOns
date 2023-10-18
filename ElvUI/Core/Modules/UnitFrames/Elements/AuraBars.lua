@@ -2,7 +2,6 @@ local E, L, V, P, G = unpack(ElvUI)
 local UF = E:GetModule('UnitFrames')
 local LSM = E.Libs.LSM
 
-local _G = _G
 local wipe = wipe
 local ipairs = ipairs
 local unpack = unpack
@@ -10,6 +9,8 @@ local strfind = strfind
 
 local CreateFrame = CreateFrame
 local GetSpellInfo = GetSpellInfo
+
+local DebuffColors = E.Libs.Dispel:GetDebuffTypeColor()
 
 function UF:Construct_AuraBars(bar)
 	bar:CreateBackdrop(nil, nil, nil, nil, true)
@@ -204,7 +205,7 @@ function UF:PostUpdateBar_AuraBars(_, bar, _, _, _, _, debuffType) -- unit, bar,
 			if not debuffType or (debuffType == '' or debuffType == 'none') then
 				colors = UF.db.colors.auraBarDebuff
 			else
-				colors = _G.DebuffTypeColor[debuffType]
+				colors = DebuffColors[debuffType]
 			end
 		elseif bar.filter == 'HARMFUL' then
 			colors = UF.db.colors.auraBarDebuff

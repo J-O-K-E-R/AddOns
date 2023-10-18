@@ -13,9 +13,9 @@ local Rare = ns.node.Rare
 local Treasure = ns.node.Treasure
 
 local AncientStone = ns.node.AncientStone
+local Celestine = ns.node.Celestine
 local Disturbeddirt = ns.node.Disturbeddirt
 local Dragonglyph = ns.node.Dragonglyph
-local Dragonrace = ns.node.Dragonrace
 local ElementalStorm = ns.node.ElementalStorm
 local ElusiveCreature = ns.node.ElusiveCreature
 local Flag = ns.node.Flag
@@ -30,6 +30,7 @@ local Scoutpack = ns.node.Scoutpack
 local SignalTransmitter = ns.node.SignalTransmitter
 local Squirrel = ns.node.Squirrel
 local TuskarrTacklebox = ns.node.TuskarrTacklebox
+local RenewedMagmammoth = ns.node.RenewedMagmammoth
 
 local Achievement = ns.reward.Achievement
 local Currency = ns.reward.Currency
@@ -821,7 +822,6 @@ map.nodes[56007878] = ns.node.ElementalChest({
     rewards = {
         Item({item = 192055}), -- Dragon Isles Artifact
         Item({item = 200093}), -- Centaur Hunting Trophy
-        Item({item = 190454}), -- Primal Chaos
         Transmog({item = 201443, slot = L['shield']}), -- Primal Revenant's Icewall
         Transmog({item = 201442, slot = L['1h_sword']}) -- Primal Revenant's Frostblade
     }
@@ -873,7 +873,6 @@ local ClanChest = Class('ClanChest', ns.node.Node, {
     group = ns.groups.CLAN_CHEST,
     rewards = {
         Item({item = 191784}), -- Dragon Shard of Knowledge
-        Item({item = 190454}), -- Primal Chaos
         Transmog({item = 201024, slot = L['cosmetic']}), -- Nokhudon Mantle
         Transmog({item = 201025, slot = L['cosmetic']}), -- Nokhudon Harness
         Transmog({item = 201027, slot = L['cosmetic']}), -- Nokhudon Breeches
@@ -936,7 +935,6 @@ local LightningBoundChest = Class('LightningBoundChest', ns.node.Node, {
     group = ns.groups.LIGHTNING_BOUND_CHEST,
     rewards = {
         Item({item = 191784}), -- Dragon Shard of Knowledge
-        Item({item = 190454}), -- Primal Chaos
         Transmog({item = 201447, slot = L['cosmetic']}), -- Primal Revenant's Breezeblade
         Transmog({item = 201448, slot = L['cosmetic']}), -- Primal Revenant's Windwall
         Item({item = 199065, quest = 70534}), -- Sorrowful Letter
@@ -993,6 +991,20 @@ map.nodes[61964159] = PetBattle({
         Achievement({id = 16511, criteria = 2, oneline = true}) -- Undead
     }
 }) -- Bakhushek
+
+map.nodes[73386799] = PetBattle({
+    id = 201858,
+    rewards = {
+        Achievement({id = 17406, criteria = 58213}) -- Battle on the Dragon Isles II
+    }
+}) -- Lyver
+
+map.nodes[36165256] = PetBattle({
+    id = 201878,
+    rewards = {
+        Achievement({id = 17406, criteria = 58217}) -- Battle on the Dragon Isles II
+    }
+}) -- Paws of Thunder
 
 -------------------------------------------------------------------------------
 ----------------------------- PROFESSION TREASURES ----------------------------
@@ -1558,120 +1570,6 @@ map.nodes[33555322] = Dreamguard({
 }) -- Dreamguard Felyasra
 
 -------------------------------------------------------------------------------
---------------------------------- DRAGONRACES ---------------------------------
--------------------------------------------------------------------------------
-
-map.nodes[63743051] = Dragonrace({
-    label = '{quest:66835}',
-    normal = {2060, 52, 44},
-    advanced = {2061, 46, 41},
-    reverse = {2183, 50, 45},
-    rewards = {
-        Achievement({id = 15918, criteria = 1, oneline = true}), -- normal bronze
-        Achievement({id = 15919, criteria = 1, oneline = true}), -- normal silver
-        Achievement({id = 15920, criteria = 1, oneline = true}), -- normal gold
-        Achievement({id = 15930, criteria = 1, oneline = true}), -- advanced bronze
-        Achievement({id = 15931, criteria = 1, oneline = true}), -- advanced silver
-        Achievement({id = 15932, criteria = 1, oneline = true}), -- advanced gold
-        Achievement({id = 17198, criteria = 1, oneline = true}), -- reverse bronze
-        Achievement({id = 17199, criteria = 1, oneline = true}), -- reverse silver
-        Achievement({id = 17200, criteria = 1, oneline = true}) -- reverse gold
-    }
-}) -- Sundapple Copse Circuit
-
-map.nodes[86263583] = Dragonrace({
-    label = '{quest:66877}',
-    normal = {2062, 51, 44},
-    advanced = {2063, 46, 41},
-    reverse = {2184, 52, 47},
-    rewards = {
-        Achievement({id = 15918, criteria = 2, oneline = true}), -- normal bronze
-        Achievement({id = 15919, criteria = 2, oneline = true}), -- normal silver
-        Achievement({id = 15920, criteria = 2, oneline = true}), -- normal gold
-        Achievement({id = 15930, criteria = 2, oneline = true}), -- advanced bronze
-        Achievement({id = 15931, criteria = 2, oneline = true}), -- advanced silver
-        Achievement({id = 15932, criteria = 2, oneline = true}), -- advanced gold
-        Achievement({id = 17198, criteria = 2, oneline = true}), -- reverse bronze
-        Achievement({id = 17199, criteria = 2, oneline = true}), -- reverse silver
-        Achievement({id = 17200, criteria = 2, oneline = true}) -- reverse gold
-    }
-}) -- Fen Flythrough
-
-map.nodes[80897220] = Dragonrace({
-    label = '{quest:66880}',
-    normal = {2064, 52, 50},
-    advanced = {2065, 52, 47},
-    reverse = {2185, 51, 46},
-    rewards = {
-        Achievement({id = 15918, criteria = 3, oneline = true}), -- normal bronze
-        Achievement({id = 15919, criteria = 3, oneline = true}), -- normal silver
-        Achievement({id = 15920, criteria = 3, oneline = true}), -- normal gold
-        Achievement({id = 15930, criteria = 3, oneline = true}), -- advanced bronze
-        Achievement({id = 15931, criteria = 3, oneline = true}), -- advanced silver
-        Achievement({id = 15932, criteria = 3, oneline = true}), -- advanced gold
-        Achievement({id = 17198, criteria = 3, oneline = true}), -- reverse bronze
-        Achievement({id = 17199, criteria = 3, oneline = true}), -- reverse silver
-        Achievement({id = 17200, criteria = 3, oneline = true}) -- reverse gold
-    }
-}) -- Ravine River Run
-
-map.nodes[25715508] = Dragonrace({
-    label = '{quest:66885}',
-    normal = {2066, 66, 59},
-    advanced = {2067, 60, 55},
-    reverse = {2186, 62, 57},
-    rewards = {
-        Achievement({id = 15918, criteria = 4, oneline = true}), -- normal bronze
-        Achievement({id = 15919, criteria = 4, oneline = true}), -- normal silver
-        Achievement({id = 15920, criteria = 4, oneline = true}), -- normal gold
-        Achievement({id = 15930, criteria = 4, oneline = true}), -- advanced bronze
-        Achievement({id = 15931, criteria = 4, oneline = true}), -- advanced silver
-        Achievement({id = 15932, criteria = 4, oneline = true}), -- advanced gold
-        Achievement({id = 17198, criteria = 4, oneline = true}), -- reverse bronze
-        Achievement({id = 17199, criteria = 4, oneline = true}), -- reverse silver
-        Achievement({id = 17200, criteria = 4, oneline = true}) -- reverse gold
-    }
-}) -- Emerald Garden Ascent
-
-map.nodes[59933555] = Dragonrace({
-    label = '{quest:66921}',
-    normal = {2069, 28, 25},
-    rewards = {
-        Achievement({id = 15918, criteria = 5, oneline = true}), -- normal bronze
-        Achievement({id = 15919, criteria = 5, oneline = true}), -- normal silver
-        Achievement({id = 15920, criteria = 5, oneline = true}) -- normal gold
-    }
-}) -- Maruukai Dash
-
-map.nodes[47487064] = Dragonrace({
-    label = '{quest:66933}',
-    normal = {2070, 29, 26},
-    rewards = {
-        Achievement({id = 15918, criteria = 6, oneline = true}), -- normal bronze
-        Achievement({id = 15919, criteria = 6, oneline = true}), -- normal silver
-        Achievement({id = 15920, criteria = 6, oneline = true}) -- normal gold
-    }
-}) -- Mirror of Sky Dash
-
-map.nodes[43746678] = Dragonrace({
-    label = '{quest:70710}',
-    normal = {2119, 51, 46},
-    advanced = {2120, 48, 43},
-    reverse = {2187, 49, 44},
-    rewards = {
-        Achievement({id = 15918, criteria = 7, oneline = true}), -- normal bronze
-        Achievement({id = 15919, criteria = 7, oneline = true}), -- normal silver
-        Achievement({id = 15920, criteria = 7, oneline = true}), -- normal gold
-        Achievement({id = 15930, criteria = 5, oneline = true}), -- advanced bronze
-        Achievement({id = 15931, criteria = 5, oneline = true}), -- advanced silver
-        Achievement({id = 15932, criteria = 5, oneline = true}), -- advanced gold
-        Achievement({id = 17198, criteria = 5, oneline = true}), -- reverse bronze
-        Achievement({id = 17199, criteria = 5, oneline = true}), -- reverse silver
-        Achievement({id = 17200, criteria = 5, oneline = true}) -- reverse gold
-    }
-}) -- River Rapids Route
-
--------------------------------------------------------------------------------
 --------------------- TO ALL THE SQUIRRELS HIDDEN TIL NOW ---------------------
 -------------------------------------------------------------------------------
 
@@ -1966,7 +1864,8 @@ map.nodes[55005500] = ElusiveCreature({
     rewards = {
         Item({item = 193224}), -- Lustrous Scaled Hide
         Item({item = 193215}), -- Adamant Scales
-        Item({item = 193253}) -- Cacophonous Thunderscale
+        Item({item = 193253}), -- Cacophonous Thunderscale
+        Achievement({id = 18832, criteria = 61474}) -- Elusive Legend of the Dragon Isles
     }
 }) -- Elusive Tempest Lizard
 
@@ -1975,7 +1874,8 @@ map.nodes[24005600] = ElusiveCreature({
     rewards = {
         Item({item = 193218}), -- Dense Hide
         Item({item = 193211}), -- Resilient Leather
-        Item({item = 193251}) -- Crystalspine Fur
+        Item({item = 193251}), -- Crystalspine Fur
+        Achievement({id = 18832, criteria = 61482}) -- Elusive Legend of the Dragon Isles
     }
 }) -- Elusive Flourishing Quillbloom
 
@@ -2168,6 +2068,17 @@ map.nodes[55375224] = Collectible({
     pois = {POI({71473180})}
 }) -- Eaglewatch Outpost to Aylaag Outpost
 
+---------------------------- PET: MOTE OF NASZ'URO ----------------------------
+
+map.nodes[61236436] = ns.node.MoteOfNaszuro({
+    quest = 76182,
+    note = L['naszuro_windsong_rise']
+}) -- Windsong Rise
+map.nodes[34335874] = ns.node.MoteOfNaszuro({
+    quest = 76183,
+    note = L['naszuro_emerald_gardens']
+}) -- Emerald Gardens
+
 ----------------------------- MISCELLANEOUS NPCs ------------------------------
 
 map.nodes[82327320] = NPC({
@@ -2205,5 +2116,30 @@ map.nodes[47037119] = Collectible({
         POI({47037037}) -- Entrance
     }
 }) -- Initiate Kittileg
+
+-------------------------------------------------------------------------------
+------------------------------- FYRAKK ASSAULT --------------------------------
+-------------------------------------------------------------------------------
+
+map.nodes[76156952] = Collectible({
+    label = L['fyrakk_assault_label'],
+    icon = 4914672,
+    rewards = {
+        Achievement({id = 17506}), -- Still Standing in the Fire
+        Achievement({id = 17735, criteria = {id = 1, qty = true}}), -- We Didn't Start the Fire
+        Pet({item = 205002, id = 3511}), -- Blaise
+        Pet({item = 205003, id = 3512}), -- Ambre
+        Toy({item = 206043}) -- Fyrakk's Frenzy
+    }
+}) -- Fyrakk Assault
+
+------------------------------------------------------------------------------
+--------------------------------- DREAMSURGE ---------------------------------
+------------------------------------------------------------------------------
+
+map.nodes[64164161] = Celestine()
+map.nodes[24496126] = RenewedMagmammoth()
+
+-------------------------------------------------------------------------------
 
 -- STOP: DO NOT ADD NEW NODES HERE UNLESS THEY BELONG IN MISCELLANEOUS

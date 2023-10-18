@@ -3,16 +3,16 @@ BigWigs:AddColors("Skycap'n Kragg", {
 	[255952] = "yellow",
 	[256005] = "yellow",
 	[256016] = "blue",
+	[256056] = "cyan",
 	[256060] = "red",
 	[256106] = "orange",
 	[272046] = "orange",
-	["stages"] = "cyan",
 })
 
 BigWigs:AddColors("Council o' Captains", {
 	[256589] = "orange",
 	[256979] = {"blue","red"},
-	[258338] = {"blue","yellow"},
+	[258338] = {"blue","cyan","yellow"},
 	[258381] = "red",
 	[264608] = {"blue","green","purple"},
 	[265088] = {"blue","green","purple"},
@@ -61,7 +61,7 @@ BigWigs:AddColors("Freehold Trash", {
 	[258672] = "orange",
 	[258777] = "orange",
 	[272402] = {"blue","orange"},
-	[274383] = "yellow",
+	[274383] = {"blue","yellow"},
 	[274400] = "red",
 	[274507] = {"blue","yellow"},
 	[274555] = "blue",

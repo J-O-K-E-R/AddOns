@@ -1,10 +1,10 @@
-## Interface: 100100
-## IconTexture: Interface\Addons\BagBrother\Art\Bagnon-Small.tga
+## Interface: 100107
+## IconTexture: Interface\Addons\BagBrother\Art\Bagnon-Plugin.tga
 
 ## Plain Title: Bagnon ItemLevel
-## Title: Bagnon |cffffffffItemLevel|r
+## Title: Bagnon |cff20ff20ItemLevel|r
 ## Notes: |cff666666By Lars Norberg|r |n|n|cffffffffA simple Bagnon plugin that displays |nthe itemlevel of your equipable gear |nand Artifact Relics.|r|n|n|cff4488ffPayPal|r|cffffffff:|r |n|cffffffffwww.paypal.me/GoldpawsStuff|r|n|n|cff4488ffPatreon|r|cffffffff:|r |n|cffffffffwww.patreon.com/GoldpawsStuff|r
-## Version: 2.0.72-Release
+## Version: 2.0.81-Release
 ## Author: Lars Norberg
 
 ## X-Category: Inventory
@@ -12,9 +12,11 @@
 ## X-Wago-ID: J96Eg8Gg
 ## X-License: Custom
 
+## OptionalDeps: TaintLess
 ## RequiredDeps: Bagnon
 ## SavedVariables: BagnonItemLevel_DB
 
+embeds.xml
 dispatcher.lua
 defaults.lua
 main.lua

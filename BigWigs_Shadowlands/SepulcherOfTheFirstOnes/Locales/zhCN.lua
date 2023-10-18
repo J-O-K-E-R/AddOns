@@ -6,9 +6,6 @@ end
 
 L = BigWigs:NewBossLocale("Skolex, the Insatiable Ravener", "zhCN")
 if L then
-	L.custom_on_stop_timers = "总是显示计时条"
-	L.custom_on_stop_timers_desc = "司垢莱克斯可能延迟施放。启用此选项后，这些技能的计时条会保持显示。"
-
 	L.tank_combo_desc = "为满100能量释放的裂隙之吼与撕裂显示计时器"
 end
 
@@ -72,9 +69,6 @@ if L then
 
 	L.bomb_dropped = "炸弹掉落"
 	L.volatile_charges_new = "新炸弹!"
-
-	L.custom_on_stop_timers = "总是显示计时条"
-	L.custom_on_stop_timers_desc = "黑伦度斯可能延迟施放。启用此选项后，这些技能的计时条会保持显示。"
 end
 
 L = BigWigs:NewBossLocale("Anduin Wrynn", "zhCN")

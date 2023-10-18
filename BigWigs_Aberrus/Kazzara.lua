@@ -22,19 +22,10 @@ local wingsOfExtinctionCount = 1
 local terrorClawsCount = 1
 
 --------------------------------------------------------------------------------
--- Localization
---
-
-local L = mod:GetLocale()
-if L then
-	L.dread_rift = "Rift" -- Singular Dread Rift
-end
-
---------------------------------------------------------------------------------
 -- Initialization
 --
 
-local dreadRiftMarker = mod:AddMarkerOption(false, "player", 1, 407196, 1, 2, 3, 4, 5, 6, 7, 8) -- Dread Rifts
+local dreadRiftMarker = mod:AddMarkerOption(false, "player", 1, 407196, 1, 2, 3, 4, 5, 6) -- Dread Rifts
 function mod:GetOptions()
 	return {
 		401319, -- Hellsteel Carnage
@@ -47,7 +38,7 @@ function mod:GetOptions()
 		403326, -- Wings of Extinction
 		{404743, "TANK"}, -- Terror Claws
 	},nil,{
-		[407196] = L.dread_rift, -- Dread Rifts (Rift)
+		[407196] = CL.rift, -- Dread Rifts (Rift)
 		[407069] = CL.lasers, -- Rays of Anguish (Lasers)
 		[400430] = CL.breath, -- Hellbeam (Breath)
 		[403326] = CL.pushback, -- Wings of Extinction (Pushback)
@@ -122,20 +113,20 @@ end
 do
 	local count = 1
 	function mod:DreadRifts(args)
+		count = 1
 		local msg = CL.count:format(args.spellName, dreadRiftsCount)
 		self:StopBar(msg)
 		self:Message(407196, "yellow", msg)
 		self:PlaySound(407196, "alarm") -- spread
 		dreadRiftsCount = dreadRiftsCount + 1
 		self:Bar(407196, 35, CL.count:format(args.spellName, dreadRiftsCount))
-		count = 1
 	end
 
 	function mod:DreadRiftApplied(args)
 		if self:Me(args.destGUID) then
-			self:PersonalMessage(407196, nil, L.dread_rift)
+			self:PersonalMessage(407196, nil, CL.rift)
 			self:PlaySound(407196, "warning")
-			self:Say(407196, CL.count_rticon:format(L.dread_rift, count, count))
+			self:Say(407196, CL.count_rticon:format(CL.rift, count, count))
 			self:SayCountdown(407196, 5, count)
 		end
 		self:CustomIcon(dreadRiftMarker, args.destName, count)

@@ -44,7 +44,7 @@ function mod:GetOptions()
 		267242, -- Contagion
 		{265212, "SAY", "ICON"}, -- Gestate
 		265206, -- Immunosuppression
-		265217, -- Liquefy
+		{265217, "CASTBAR"}, -- Liquefy
 		266459, -- Plague Bomb
 		-- Mythic
 		{274990, "FLASH", "PROXIMITY"}, -- Bursting Lesions
@@ -250,10 +250,8 @@ function mod:OmegaVectorApplied(args)
 						omegaMythicIconTracker[4] = icon
 					end
 				end
-			else -- Application 9 or above, we can now set icon by group
-				if not index then
-					-- Fall back to normal icon setting
-				elseif index < 6 then -- Group 1
+			elseif index then -- Application 9 or above, we can now set icon by group
+				if index < 6 then -- Group 1
 					icon = omegaMythicIconTracker[1]
 				elseif index < 11 then -- Group 2
 					icon = omegaMythicIconTracker[2]

@@ -1,10 +1,10 @@
-lightweight tag f90204941f92eee3bc7ba2be2ebd85a2ef2e4ba1 v1.5.2
+lightweight tag 5eb415678370a60c3d3bba9b409b1b1205f3ea37 v1.5.3
 Author:	romdeau23 <43295566+romdeau23@users.noreply.github.com>
-Date:	Tue May 2 11:41:41 2023 +0200
+Date:	Sun Jul 16 15:52:13 2023 +0200
 
-commit f90204941f92eee3bc7ba2be2ebd85a2ef2e4ba1
+commit 5eb415678370a60c3d3bba9b409b1b1205f3ea37
 Author: romdeau23 <43295566+romdeau23@users.noreply.github.com>
-Date:   Tue May 2 11:41:41 2023 +0200
+Date:   Sun Jul 16 15:52:13 2023 +0200
 
-    Update TOC for 10.1
+    Update TOC, add icon
 

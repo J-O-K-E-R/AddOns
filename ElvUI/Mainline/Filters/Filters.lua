@@ -173,6 +173,7 @@ G.unitframe.aurafilters.TurtleBuffs = {
 		[378464]	= List(), -- Nullifying Shroud (PvP)
 		[363916]	= List(), -- Obsidian Scales
 		[374348]	= List(), -- Renewing Blaze
+		[357170]	= List(), -- Time Dilation
 	-- Death Knight
 		[48707]		= List(), -- Anti-Magic Shell
 		[81256]		= List(), -- Dancing Rune Weapon
@@ -315,6 +316,8 @@ G.unitframe.aurafilters.PlayerBuffs = {
 		[358267]	= List(), -- Hover
 		[357210]	= List(), -- Deep Breath
 		[371807]	= List(), -- Recall
+		[395296]	= List(), -- Ebon Might < self
+		[395152]	= List(), -- Ebon Might < others
 	-- Death Knight
 		[48707]		= List(), -- Anti-Magic Shell
 		[81256]		= List(), -- Dancing Rune Weapon
@@ -366,6 +369,7 @@ G.unitframe.aurafilters.PlayerBuffs = {
 		[208253]	= List(), -- Essence of G'Hanir
 		[194223]	= List(), -- Celestial Alignment
 		[102560]	= List(), -- Incarnation: Chosen of Elune
+		[390414]	= List(), -- Orbital Strike (Incarnation: Chosen of Elune)
 		[102543]	= List(), -- Incarnation: King of the Jungle
 		[102558]	= List(), -- Incarnation: Guardian of Ursoc
 		[117679]	= List(), -- Incarnation
@@ -684,9 +688,30 @@ G.unitframe.aurafilters.RaidDebuffs = {
 		[226512] = List(), -- Sanguine
 		[240559] = List(), -- Grievous
 		[240443] = List(), -- Bursting
+		[409492] = List(), -- Afflicted Cry
 	----------------------------------------------------------
 	----------------- Dragonflight Dungeons ------------------
 	----------------------------------------------------------
+	-- Dawn of the Infinite
+		[413041] = List(), -- Sheared Lifespan 1
+		[416716] = List(), -- Sheared Lifespan 2
+		[413013] = List(), -- Chronoshear
+		[413208] = List(), -- Sand Buffeted
+		[408084] = List(), -- Necrofrost
+		[413142] = List(), -- Eon Shatter
+		[409266] = List(), -- Extinction Blast 1
+		[414300] = List(), -- Extinction Blast 2
+		[401667] = List(), -- Time Stasis
+		[412027] = List(), -- Chronal Burn
+		[400681] = List(), -- Spark of Tyr
+		[404141] = List(), -- Chrono-faded
+		[407147] = List(), -- Blight Seep
+		[410497] = List(), -- Mortal Wounds
+		[418009] = List(), -- Serrated Arrows
+		[407406] = List(), -- Corrosion
+		[401420] = List(), -- Sand Stomp
+		[403912] = List(), -- Accelerating Time
+		[403910] = List(), -- Decaying Time
 	-- Brackenhide Hollow
 		[385361] = List(), -- Rotting Sickness
 		[378020] = List(), -- Gash Frenzy
@@ -771,6 +796,7 @@ G.unitframe.aurafilters.RaidDebuffs = {
 		[372570] = List(), -- Bold Ambush
 		[372459] = List(), -- Burning
 		[372208] = List(), -- Djaradin Lava
+		[414585] = List(), -- Fiery Demise
 	-- Uldaman: Legacy of Tyr
 		[368996] = List(), -- Purging Flames
 		[369792] = List(), -- Skullcracker
@@ -887,6 +913,9 @@ G.unitframe.aurafilters.RaidDebuffs = {
 		[274555] = List(), -- Scabrous Bites
 		[258875] = List(), -- Blackout Barrel
 		[256363] = List(), -- Ripper Punch
+		[258352] = List(), -- Grapeshot
+		[413136] = List(), -- Whirling Dagger 1
+		[413131] = List(), -- Whirling Dagger 2
 	-- Neltharion's Lair
 		[199705] = List(), -- Devouring
 		[199178] = List(), -- Spiked Tongue
@@ -945,6 +974,8 @@ G.unitframe.aurafilters.RaidDebuffs = {
 		[402617] = List(), -- Blazing Heat
 		[401809] = List(), -- Corrupting Shadow
 		[405394] = List(), -- Shadowflame
+		[405914] = List(), -- Withering Vulnerability 1
+		[413597] = List(), -- Withering Vulnerability 2
 	-- Experimentation of Dracthyr
 		[406317] = List(), -- Mutilation 1
 		[406365] = List(), -- Mutilation 2
@@ -978,7 +1009,6 @@ G.unitframe.aurafilters.RaidDebuffs = {
 		[404846] = List(), -- Incinerating Maws 1
 		[408955] = List(), -- Incinerating Maws 2
 		[402994] = List(), -- Molten Spittle
-		[403747] = List(), -- Igniting Roar
 	-- Echo of Neltharion
 		[409373] = List(), -- Disrupt Earth
 		[407220] = List(), -- Rushing Shadows 1
@@ -996,6 +1026,10 @@ G.unitframe.aurafilters.RaidDebuffs = {
 		[401135] = List(), -- Wild Breath (Evoker)
 		[408071] = List(), -- Shapeshifter's Fervor
 	-- Scalecommander Sarkareth
+		[403520] = List(), -- Embrace of Nothingness
+		[401383] = List(), -- Oppressing Howl
+		[401951] = List(), -- Oblivion
+		[407496] = List(), -- Infinite Duress
 	---------------------------------------------------------
 	---------------- Vault of the Incarnates ----------------
 	---------------------------------------------------------
@@ -1063,6 +1097,19 @@ G.unitframe.aurafilters.RaidBuffsElvUI = {
 	----------------------------------------------------------
 	----------------- Dragonflight Dungeons ------------------
 	----------------------------------------------------------
+	-- Dawn of the Infinite
+		[415114] = List(), -- Malignant Transferal 1
+		[415097] = List(), -- Malignant Transferal 2
+		[415122] = List(), -- Malignant Transferal 3
+		[410249] = List(), -- Radiant Barrier
+		[409456] = List(), -- Earthsurge
+		[407978] = List(), -- Necrotic Winds
+		[400642] = List(), -- Siphon Oathstone
+		[414177] = List(), -- Cataclysmic Obliteration
+		[419611] = List(), -- Battle Senses
+		[419596] = List(), -- Temporal Shift
+		[407057] = List(), -- Blight Seep
+		[412768] = List(), -- Anachronistic Decay
 	-- Brackenhide Hollow
 		[384764] = List(), -- Feeding Frenzy
 		[376933] = List(), -- Grasping Vines
@@ -1123,6 +1170,7 @@ G.unitframe.aurafilters.RaidBuffsElvUI = {
 		[372202] = List(), -- Scorching Breath
 		[378149] = List(), -- Granite Shell
 		[372311] = List(), -- Magma Fist
+		[376780] = List(), -- Magma Shield
 	-- Uldaman: Legacy of Tyr
 		[369791] = List(), -- Skullcracker
 		[369602] = List(), -- Defensive Bulwark 1
@@ -1292,6 +1340,13 @@ G.unitframe.aurafilters.RaidBuffsElvUI = {
 		[407088] = List(), -- Empowered Shadows
 		[407039] = List(), -- Empower Shadows
 	-- Scalecommander Sarkareth
+		[404705] = List(), -- Rescind
+		[404269] = List(), -- Ebon Might
+		[401810] = List(), -- Glittering Surge
+		[410631] = List(), -- Void Empowerment 1
+		[403284] = List(), -- Void Empowerment 2
+		[410654] = List(), -- Void Empowerment 3
+		[410625] = List(), -- End Existence
 	---------------------------------------------------------
 	---------------- Vault of the Incarnates ----------------
 	---------------------------------------------------------
@@ -1356,6 +1411,7 @@ G.unitframe.aurafilters.RaidBuffsElvUI = {
 G.unitframe.aurawatch = {
 	GLOBAL = {},
 	EVOKER = {
+		-- Preservation
 		[355941]	= Aura(355941, nil, 'TOPRIGHT', {0.33, 0.33, 0.77}), -- Dream Breath
 		[376788]	= Aura(376788, nil, 'TOPRIGHT', {0.25, 0.25, 0.58}, nil, nil, nil, nil, -20), -- Dream Breath (echo)
 		[363502]	= Aura(363502, nil, 'BOTTOMLEFT', {0.33, 0.33, 0.70}), -- Dream Flight
@@ -1364,6 +1420,11 @@ G.unitframe.aurawatch = {
 		[373267]	= Aura(373267, nil, 'RIGHT', {0.82, 0.29, 0.24}), -- Life Bind (Verdant Embrace)
 		[364343]	= Aura(364343, nil, 'TOP', {0.13, 0.87, 0.50}), -- Echo
 		[357170]	= Aura(357170, nil, 'BOTTOM', {0.11, 0.57, 0.71}), -- Time Dilation
+		-- Augmentation
+		[360827]	= Aura(360827, nil, 'TOPRIGHT', {0.33, 0.33, 0.77}), -- Blistering Scales
+		[410089]	= Aura(410089, nil, 'TOP', {0.13, 0.87, 0.50}), -- Prescience
+		[395152]	= Aura(395152, nil, 'BOTTOMRIGHT', {0.98, 0.44, 0.00}), -- Ebon Might < others
+		[406732]	= Aura(406732, nil, 'RIGHT', {0.82, 0.29, 0.24}), -- Spatial Paradox
 	},
 	ROGUE = {
 		[57934]		= Aura(57934, nil, 'TOPRIGHT', {0.89, 0.09, 0.05}), -- Tricks of the Trade
@@ -1508,7 +1569,9 @@ G.unitframe.AuraBarColors = {
 	[32182]		= { enable = true, color = {r = 0.98, g = 0.57, b = 0.10 }}, -- [Shaman] Heroism
 	[80353]		= { enable = true, color = {r = 0.98, g = 0.57, b = 0.10 }}, -- [Mage] Time Warp
 	[90355]		= { enable = true, color = {r = 0.98, g = 0.57, b = 0.10 }}, -- [Hunter] Ancient Hysteria
-	[390386]	= { enable = true, color = {r = 0.98, g = 0.57, b = 0.10 }}, -- [Evoker] Fury of the Aspects
+	[390386]	= { enable = true, color = {r = 0.99, g = 0.82, b = 0.24 }}, -- [Evoker] Fury of the Aspects
+	[395296]	= { enable = true, color = {r = 0.98, g = 0.44, b = 0.00 }}, -- [Evoker] Ebon Might < self
+	[395152]	= { enable = true, color = {r = 0.98, g = 0.44, b = 0.00 }}, -- [Evoker] Ebon Might < others
 }
 
 G.unitframe.AuraHighlightColors = {}

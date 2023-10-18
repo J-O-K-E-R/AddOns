@@ -14,8 +14,6 @@ if L then
 	L.nerubian_burrower = "Plus de fouisseurs"
 
 	L.shadow_soon = "Attaque d'ombre dans ~5 sec. !"
-
-	L.chase = "Poursuivi"
 end
 
 L = BigWigs:NewBossLocale("The Beasts of Northrend", "frFR")
@@ -34,7 +32,6 @@ if L then
 	-- Gormok
 	L.snobold = "Frigbold"
 	L.snobold_desc = "Prévient quand un joueur a un frigbold sur sa tête."
-	L.snobold_message = "Frigbold"
 
 	-- Jormungars
 	L.submerge = "Dans le sol"

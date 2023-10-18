@@ -109,7 +109,10 @@ function RSNotes.GetNote(entityID, mapID)
 	-- Elusive NPCs in Dragon Isles
 	elseif (RSUtils.Contains(RSConstants.ELUSIVE_NPCS, entityID)) then
 		return AL["NOTE_ELUSIVE_NPCS"]
-	end
+	-- Requires dreamsurge investigation in Dragon Isles
+  	elseif (RSUtils.Contains(RSConstants.DREAMSURGE_NPCS, entityID)) then
+    	return AL["NOTE_DREAMSURGE_EVENTS"]
+  	end
 	
 	-- Rune of constructs Containers
 	if (RSUtils.Contains(RSConstants.RUNE_CONSTRUCTS_CONTAINERS, entityID)) then

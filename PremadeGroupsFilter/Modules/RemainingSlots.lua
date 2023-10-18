@@ -30,10 +30,12 @@ local roleRemainingKeyLookup = {
 
 function PGF.HasRemainingSlotsForLocalPlayerRole(memberCounts)
     local playerRole = GetSpecializationRole(GetSpecialization())
-    return memberCounts[roleRemainingKeyLookup[playerRole]] > 0
+    if not playerRole then return false end
+    return (memberCounts[roleRemainingKeyLookup[playerRole]] or 0) > 0
 end
 
 function PGF.HasRemainingSlotsForLocalPlayerPartyRoles(memberCounts)
+    if not memberCounts then return false end
     local numGroupMembers = GetNumGroupMembers()
     local groupType = IsInRaid() and "raid" or "party"
 
@@ -101,7 +103,7 @@ end
 
 function PGF.UnitHasProperty(unit, prop)
     local class = select(2, UnitClass(unit)) -- MAGE, WARRIOR, ...
-    return C.DPS_CLASS_TYPE[class][prop]
+    return class and C.DPS_CLASS_TYPE[class] and C.DPS_CLASS_TYPE[class][prop]
 end
 
 function PGF.PlayerOrGroupHasProperty(prop)

@@ -83,6 +83,26 @@ do
 			) then
 				if (type(value) ~= "number" or value < 0) then validationError = true; end
 			elseif (
+				key == "BuildRanges"
+				or key == "VersionRanges"
+			) then
+				if (type(value) ~= "table") then
+					validationError = true;
+				else
+					for _, range in pairs(value) do
+						if (
+							type(range) ~= "table"
+							or (range.Min and (type(range.Min) ~= "number" or range.Min < 0))
+							or (range.Max and (type(range.Max) ~= "number" or range.Max < 0))
+							or (range.Max and range.Min and range.Max < range.Min)
+							or (not range.Max and not range.Min)
+						) then
+							validationError = true;
+							break;
+						end
+					end
+				end
+			elseif (
 				key == "Detachable"
 				or key == "ManuallyScaleWithParent"
 			) then
@@ -318,6 +338,20 @@ do
 	BlizzMove.gameBuild   = tonumber(buildNumber);
 	BlizzMove.gameVersion = tonumber(gameVersion);
 
+	local function checkRanges(ranges, needle)
+		for _, range in ipairs(ranges) do
+			if range.Min <= needle and not range.Max then
+				return true;
+			end
+			if not range.Min and range.Max > needle then
+				return true;
+			end
+			if range.Min <= needle and range.Max > needle then
+				return true;
+			end
+		end
+		return false;
+	end
 	function BlizzMove:MatchesCurrentBuild(frameData)
 		-- Compare versus current build version.
 		if frameData.MinBuild and frameData.MinBuild > self.gameBuild then return false; end
@@ -326,6 +360,16 @@ do
 		-- Compare versus current interface version.
 		if frameData.MinVersion and frameData.MinVersion > self.gameVersion then return false; end
 		if frameData.MaxVersion and frameData.MaxVersion <= self.gameVersion then return false; end
+
+		-- Compare ranges versus current build version.
+		if frameData.BuildRanges then
+			if not checkRanges(frameData.BuildRanges, self.gameBuild) then return false; end
+		end
+
+		-- Compare ranges versus current interface version.
+		if frameData.VersionRanges then
+			if not checkRanges(frameData.VersionRanges, self.gameVersion) then return false; end
+		end
 
 		return true;
 	end
@@ -1212,10 +1256,12 @@ do
 
 		-- fix a stupid anchor family connection issue blizzard added in 9.1.5
 		if addOnName == "Blizzard_Collections" then
-			local checkbox = _G.WardrobeTransmogFrame.ToggleSecondaryAppearanceCheckbox;
-			checkbox.Label:ClearAllPoints();
-			checkbox.Label:SetPoint("LEFT", checkbox, "RIGHT", 2, 1);
-			checkbox.Label:SetPoint("RIGHT", checkbox, "RIGHT", 160, 1);
+			local checkbox = _G.WardrobeTransmogFrame and _G.WardrobeTransmogFrame.ToggleSecondaryAppearanceCheckbox;
+			if checkbox then
+				checkbox.Label:ClearAllPoints();
+				checkbox.Label:SetPoint("LEFT", checkbox, "RIGHT", 2, 1);
+				checkbox.Label:SetPoint("RIGHT", checkbox, "RIGHT", 160, 1);
+			end
 		end
 		-- fix another anchor family connection issue caused by blizzard being blizzard
 		if addOnName == "Blizzard_EncounterJournal" then

@@ -19,8 +19,6 @@ L.already_registered = "|cffff0000WARNUNG:|r |cff00ff00%s|r (|cffffff00%s|r) exi
 L.testNameplate = "Ziel erkannt, erstelle Test Leiste über Namensplakette des Ziels. |cFF33FF99Diese Funktion wird selten genutzt, besteht aus 1 Leiste und wird verwendet, wenn mehrere Bosse/Adds die gleichen Zauber wirken.|r"
 
 -- Loader / Options.lua
-L.classicWarning1 = "|cFF33FF99BigWigs|r: Du nutzt die falsche Version von BigWigs auf einem Classic Server."
-L.classicWarning2 = "|cFF33FF99BigWigs|r: Bitte Classic Version von BigWigs installieren."
 L.officialRelease = "Bei dir läuft ein offizieller Release von BigWigs %s (%s)."
 L.alphaRelease = "Bei dir läuft ein ALPHA RELEASE von BigWigs %s (%s)."
 L.sourceCheckout = "Bei dir läuft ein Source Code Checkout von BigWigs %s direkt aus dem Repository."
@@ -45,6 +43,19 @@ L.disabledAddOn = "Du hast das Addon |cFF436EEE%s|r deaktiviert, Timer werden ni
 L.removeAddOn = "Bitte entferne '|cFF436EEE%s|r', da es durch '|cFF436EEE%s|r' ersetzt wurde."
 L.alternativeName = "%s (|cFF436EEE%s|r)"
 
+--L.expansionNames = {
+--	"Classic", -- Classic
+--	"The Burning Crusade", -- The Burning Crusade
+--	"Wrath of the Lich King", -- Wrath of the Lich King
+--	"Cataclysm", -- Cataclysm
+--	"Mists of Pandaria", -- Mists of Pandaria
+--	"Warlords of Draenor", -- Warlords of Draenor
+--	"Legion", -- Legion
+--	"Battle for Azeroth", -- Battle for Azeroth
+--	"Schattenlande", -- Shadowlands
+--	"Dragonflight", -- Dragonflight
+--}
+
 -- Media.lua (These are the names of the sounds in the dropdown list in the "sounds" section)
 L.Beware = "Hütet Euch (Algalon)"
 L.FlagTaken = "Flagge aufgenommen (PvP)"
@@ -55,6 +66,7 @@ L.spell_under_you = "BigWigs: Zauber unter Dir"
 
 -- Options.lua
 L.options = "Optionen"
+L.optionsKey = "Schlüssel: %s" -- The key that messages/bars/options use
 L.raidBosses = "Schlachtzugsbosse"
 L.dungeonBosses = "Dungeonbosse"
 L.introduction = "Willkommen bei BigWigs, dort, wo die Bossbegegnungen rumschwirren. Bitte legen Sie Ihren Sicherheitsgurt an, stellen Sie die Rückenlehne gerade und genießen Sie den Flug. Wir werden Ihnen und Ihrer Raidgruppe bei der Begegnung mit Bossen zur Hand gehen und sie Ihnen als 7-Gänge-Menü zubereiten."
@@ -153,7 +165,7 @@ L.dispeller = "|cFFFF0000Warnungen nur für Banner.|r "
 
 -- Statistics
 L.statistics = "Statistiken"
-L.lfr = "LFR"
+L.LFR = "LFR"
 L.normal = "Normal"
 L.heroic = "Heroisch"
 L.mythic = "Mythisch"

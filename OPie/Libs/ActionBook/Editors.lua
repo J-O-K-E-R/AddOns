@@ -2,7 +2,7 @@ local _, T = ...
 
 local AB = T.ActionBook:compatible(2, 36)
 assert(AB and 1, "Incompatible library bundle")
-local L = AB:locale()
+local L = T.ActionBook.L
 local MODERN = select(4,GetBuildInfo()) >= 8e4
 
 local RegisterSimpleOptionsPanel do

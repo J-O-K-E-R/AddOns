@@ -17,6 +17,7 @@ local GetPartyAssignment = GetPartyAssignment
 local InCombatLockdown = InCombatLockdown
 local IsInGroup, IsInRaid = IsInGroup, IsInRaid
 local SetCVar = SetCVar
+local UIParent = UIParent
 local UnitClass = UnitClass
 local UnitClassification = UnitClassification
 local UnitCreatureType = UnitCreatureType
@@ -24,17 +25,18 @@ local UnitExists = UnitExists
 local UnitFactionGroup = UnitFactionGroup
 local UnitGroupRolesAssigned = UnitGroupRolesAssigned
 local UnitGUID = UnitGUID
+local UnitIsBattlePet = UnitIsBattlePet
 local UnitIsEnemy = UnitIsEnemy
 local UnitIsFriend = UnitIsFriend
 local UnitIsPlayer = UnitIsPlayer
 local UnitIsPVPSanctuary = UnitIsPVPSanctuary
-local UnitIsBattlePet = UnitIsBattlePet
 local UnitIsUnit = UnitIsUnit
 local UnitName = UnitName
 local UnitReaction = UnitReaction
-local UnitWidgetSet = UnitWidgetSet
 local UnitSelectionType = UnitSelectionType
 local UnitThreatSituation = UnitThreatSituation
+local UnitWidgetSet = UnitWidgetSet
+
 local UnitNameplateShowsWidgetsOnly = UnitNameplateShowsWidgetsOnly
 local ShowBossFrameWhenUninteractable = ShowBossFrameWhenUninteractable
 local C_NamePlate_SetNamePlateEnemyClickThrough = C_NamePlate.SetNamePlateEnemyClickThrough
@@ -705,6 +707,13 @@ function NP:UpdatePlateBase(nameplate)
 end
 
 function NP:NamePlateCallBack(nameplate, event, unit)
+	if event == 'PLAYER_TARGET_CHANGED' then -- we need to check if nameplate exists in here
+		NP:SetupTarget(nameplate) -- pass it, even as nil here
+		return -- don't proceed
+	elseif not nameplate or not nameplate.UpdateAllElements then
+		return -- prevent error when loading in with our plates and Plater
+	end
+
 	if event == 'UNIT_FACTION' then
 		if nameplate.widgetsOnly then return end
 
@@ -722,8 +731,6 @@ function NP:NamePlateCallBack(nameplate, event, unit)
 
 		NP:StyleFilterUpdate(nameplate, event) -- keep this after UpdatePlateBase
 		nameplate.StyleFilterBaseAlreadyUpdated = nil -- keep after StyleFilterUpdate
-	elseif event == 'PLAYER_TARGET_CHANGED' then -- we need to check if nameplate exists in here
-		NP:SetupTarget(nameplate) -- pass it, even as nil here
 	elseif event == 'NAME_PLATE_UNIT_ADDED' then
 		if not unit then unit = nameplate.unit end
 
@@ -761,18 +768,21 @@ function NP:NamePlateCallBack(nameplate, event, unit)
 			nameplate.softTargetFrame:SetIgnoreParentAlpha(true)
 		end
 
+		nameplate.widgetContainer = nameplate.blizzPlate and nameplate.blizzPlate.WidgetContainer
+		if nameplate.widgetContainer then
+			nameplate.widgetContainer:SetParent(nameplate)
+			nameplate.widgetContainer:ClearAllPoints()
+
+			local db = NP.db.widgets
+			local point = db.below and 'BOTTOM' or 'TOP'
+			nameplate.widgetContainer:SetPoint(E.InversePoints[point], nameplate, point, db.xOffset, db.yOffset)
+		end
+
 		if nameplate.widgetsOnly then
 			NP:DisablePlate(nameplate)
 
 			if nameplate.RaisedElement:IsShown() then
 				nameplate.RaisedElement:Hide()
-			end
-
-			nameplate.widgetContainer = nameplate.blizzPlate and nameplate.blizzPlate.WidgetContainer
-			if nameplate.widgetContainer then
-				nameplate.widgetContainer:SetParent(nameplate)
-				nameplate.widgetContainer:ClearAllPoints()
-				nameplate.widgetContainer:SetPoint('BOTTOM', nameplate, 'TOP')
 			end
 
 			nameplate.previousType = nil -- dont get the plate stuck for next unit
@@ -807,17 +817,19 @@ function NP:NamePlateCallBack(nameplate, event, unit)
 			NP:UpdatePlateGUID(nameplate)
 		end
 
-		if nameplate.softTargetFrame then
-			nameplate.softTargetFrame:SetParent(nameplate.blizzPlate)
-			nameplate.softTargetFrame:SetIgnoreParentAlpha(false)
-		end
-
 		if not nameplate.widgetsOnly then
 			NP:BossMods_UpdateIcon(nameplate, true)
 
 			NP:StyleFilterEventWatch(nameplate, true) -- shut down the watcher
 			NP:StyleFilterClearVariables(nameplate)
-		elseif nameplate.widgetContainer then -- Place Widget Back on Blizzard Plate
+		end
+
+		if nameplate.softTargetFrame then
+			nameplate.softTargetFrame:SetParent(nameplate.blizzPlate)
+			nameplate.softTargetFrame:SetIgnoreParentAlpha(false)
+		end
+
+		if nameplate.widgetContainer then -- Place Widget Back on Blizzard Plate
 			nameplate.widgetContainer:SetParent(nameplate.blizzPlate)
 			nameplate.widgetContainer:ClearAllPoints()
 			nameplate.widgetContainer:SetPoint('TOP', nameplate.blizzPlate.castBar, 'BOTTOM')
@@ -917,13 +929,13 @@ function NP:Initialize()
 
 	_G.ElvNP_Player:SetScale(1)
 	_G.ElvNP_Player:ClearAllPoints()
-	_G.ElvNP_Player:Point('TOP', _G.UIParent, 'CENTER', 0, -150)
+	_G.ElvNP_Player:Point('TOP', UIParent, 'CENTER', 0, -150)
 	_G.ElvNP_Player:Size(NP.db.plateSize.personalWidth, NP.db.plateSize.personalHeight)
 	_G.ElvNP_Player.frameType = 'PLAYER'
 
 	E:CreateMover(_G.ElvNP_Player, 'ElvNP_PlayerMover', L["Player NamePlate"], nil, nil, nil, 'ALL,SOLO', nil, 'nameplate,playerGroup')
 
-	local StaticSecure = CreateFrame('Button', 'ElvNP_StaticSecure', _G.UIParent, 'SecureUnitButtonTemplate')
+	local StaticSecure = CreateFrame('Button', 'ElvNP_StaticSecure', UIParent, 'SecureUnitButtonTemplate')
 	StaticSecure:SetAttribute('unit', 'player')
 	StaticSecure:SetAttribute('*type1', 'target')
 	StaticSecure:SetAttribute('*type2', 'togglemenu')
@@ -941,7 +953,7 @@ function NP:Initialize()
 
 	_G.ElvNP_Test:SetScale(1)
 	_G.ElvNP_Test:ClearAllPoints()
-	_G.ElvNP_Test:Point('BOTTOM', _G.UIParent, 'BOTTOM', 0, 250)
+	_G.ElvNP_Test:Point('BOTTOM', UIParent, 'BOTTOM', 0, 250)
 	_G.ElvNP_Test:Size(NP.db.plateSize.personalWidth, NP.db.plateSize.personalHeight)
 	_G.ElvNP_Test:SetMovable(true)
 	_G.ElvNP_Test:RegisterForDrag('LeftButton', 'RightButton')

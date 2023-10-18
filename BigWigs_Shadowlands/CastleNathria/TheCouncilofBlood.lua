@@ -97,7 +97,7 @@ function mod:GetOptions()
 		waltzingVenthyrMarker,
 
 		--[[ Intermission: The Danse Macabre ]]--
-		330959, -- Danse Macabre
+		{330959, "CASTBAR"}, -- Danse Macabre
 		"dance_assist",
 		{330848, "ME_ONLY"}, -- Wrong Moves
 

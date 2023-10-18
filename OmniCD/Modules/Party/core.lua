@@ -11,13 +11,15 @@ function P:Enable()
 		return
 	end
 
-	if not E.isDF and not E.isWOTLKC341 then
+	if not E.isDF then
 		self:RegisterEvent('CVAR_UPDATE')
 	end
 	self:RegisterEvent('UI_SCALE_CHANGED')
 	self:RegisterEvent('PLAYER_ENTERING_WORLD')
 	self:RegisterEvent('GROUP_ROSTER_UPDATE')
 	self:RegisterEvent('GROUP_JOINED')
+	self:RegisterEvent('PLAYER_REGEN_ENABLED')
+	self:RegisterEvent('PLAYER_REGEN_DISABLED')
 	self:SetScript("OnEvent", function(self, event, ...)
 		self[event](self, ...)
 	end)
@@ -25,6 +27,9 @@ function P:Enable()
 	self.enabled = true
 
 	self.zone = select(2, IsInInstance())
+	if InCombatLockdown() then
+		self:PLAYER_REGEN_DISABLED()
+	end
 	CM:InspectUser()
 
 	self:SetHooks()
@@ -210,7 +215,7 @@ end
 
 
 P.GetBuffDuration = E.isClassic and function(P, unit, spellID)
-	for i = 1, 40 do
+	for i = 1, 50 do
 		local _,_,_,_,_,_,_,_,_, id = UnitBuff(unit, i)
 		if not id then return end
 		id = E.spell_merged[id] or id
@@ -220,17 +225,17 @@ P.GetBuffDuration = E.isClassic and function(P, unit, spellID)
 	end
 
 end or function(P, unit, spellID)
-	for i = 1, 40 do
-		local _,_,_,_, duration, expTime,_,_,_, id = UnitBuff(unit, i)
+	for i = 1, 50 do
+		local _,_,_,_, duration, expTime, source, _,_, id = UnitBuff(unit, i)
 		if not id then return end
 		if id == spellID then
-			return duration > 0 and expTime - GetTime()
+			return duration > 0 and expTime - GetTime(), source
 		end
 	end
 end
 
 function P:IsDebuffActive(unit, spellID)
-	for i = 1, 40 do
+	for i = 1, 50 do
 		local _,_,_,_,_,_,_,_,_, id = UnitDebuff(unit, i)
 		if not id then return end
 		if id == spellID then
@@ -240,7 +245,7 @@ function P:IsDebuffActive(unit, spellID)
 end
 
 function P:GetDebuffDuration(unit, spellID)
-	for i = 1, 40 do
+	for i = 1, 50 do
 		local _,_,_,_, duration, expTime,_,_,_, id = UnitDebuff(unit, i)
 		if not id then return end
 		if id == spellID then
@@ -335,15 +340,11 @@ function P:IsSpecOrTalentForPvpStatus(talentID, info, isLearnedLevel)
 	end
 end
 
-function P:IsEquipped(item, guid, item2)
+function P:IsEquipped(info, item, item2)
 	if not item then
 		return true
 	end
-	local itemData = self.groupInfo[guid].itemData
-	if itemData[item] then
-		return true
-	end
-	return itemData[item2]
+	return info.itemData[item] or info.itemData[item2]
 end
 
 function P:UI_SCALE_CHANGED()

@@ -49,8 +49,6 @@ end
 L = BigWigs:NewBossLocale("Remnant of Ner'zhul", "ruRU")
 if L then
 	L.cones = "Конусы" -- Grasp of Malice
-	L.orbs = "Сферы" -- Orb of Torment
-	L.orb = "Сфера" -- Orb of Torment
 end
 
 L = BigWigs:NewBossLocale("Soulrender Dormazain", "ruRU")
@@ -89,9 +87,6 @@ end
 
 L = BigWigs:NewBossLocale("Guardian of the First Ones", "ruRU")
 if L then
-	L.custom_on_stop_timers = "Всегда показывать полосы заклинаний"
-	L.custom_on_stop_timers_desc = "Стражница может откладывать свои способности. Когда эта опция включена, полосы этих способностей будут оставаться на экране."
-
 	L.bomb_missed = "%dx бомб мимо"
 end
 

@@ -63,12 +63,12 @@ function mod:GetOptions()
 end
 
 function mod:OnBossEnable()
-	if not self.assistWarned then
-		if not IsAddOnLoaded("BigWigs_Ra-denAssist") then
-			BigWigs:Print(L.assistPrint)
-		end
-		self.assistWarned = true
-	end
+	--if not self.assistWarned then
+	--	if not IsAddOnLoaded("BigWigs_Ra-denAssist") then
+	--		BigWigs:Print(L.assistPrint)
+	--	end
+	--	self.assistWarned = true
+	--end
 
 	-- Anima abilities
 	self:Log("SPELL_CAST_START", "Worm", 138338)
@@ -258,10 +258,10 @@ do
 
 		last = nil
 		player = args.destName
-		if not timer and self.db.profile.unstablevitajumptarget > 0 then -- pretty wasteful to do the scanning if the option isn't on
+		--if not timer and self.db.profile.unstablevitajumptarget > 0 then -- pretty wasteful to do the scanning if the option isn't on
 			-- XXX no range checking now
 			--timer = self:ScheduleRepeatingTimer(warnJumpTarget, 0.5)
-		end
+		--end
 	end
 	function mod:UnstableVitaRemoved(args)
 		self:StopBar(138297)

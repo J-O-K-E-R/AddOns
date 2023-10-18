@@ -82,7 +82,7 @@ if not MODERN then -- known:spell id
 	local function queuePoke()
 		if resolved then
 			resolved = false
-			C_Timer.After(0, doPoke)
+			EV.After(0, doPoke)
 		end
 	end
 	EV.LEARNED_SPELL_IN_TAB = queuePoke
@@ -567,7 +567,7 @@ if playerClass == "HUNTER" then -- pet:stable id; havepet:stable id
 		noPendingSync = true
 		if hpo == nil and (e == "PLAYER_LOGIN" or e == nil) then
 			-- TODO (8.1.5) the missing PET_STABLE_UPDATE might reappear in the future.
-			C_Timer.After(0, syncPet)
+			EV.After(0, syncPet)
 		end
 		return e == "PLAYER_REGEN_ENABLED" and "remove" or nil
 	end
@@ -708,7 +708,7 @@ if MODERN then -- [coven]
 			end
 		elseif noPendingTimer then
 			noPendingTimer = false
-			C_Timer.After(0.25, syncCovenTimer)
+			EV.After(0.25, syncCovenTimer)
 		end
 		return e == "PLAYER_REGEN_ENABLED" and "remove"
 	end

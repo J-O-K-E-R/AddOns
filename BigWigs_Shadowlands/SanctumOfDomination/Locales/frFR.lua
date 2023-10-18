@@ -49,8 +49,6 @@ end
 L = BigWigs:NewBossLocale("Remnant of Ner'zhul", "frFR")
 if L then
 	L.cones = "Cônes" -- Grasp of Malice
-	L.orbs = "Orbes" -- Orb of Torment
-	L.orb = "Orbe" -- Orb of Torment
 end
 
 L = BigWigs:NewBossLocale("Soulrender Dormazain", "frFR")
@@ -89,9 +87,6 @@ end
 
 L = BigWigs:NewBossLocale("Guardian of the First Ones", "frFR")
 if L then
-	L.custom_on_stop_timers = "Toujours afficher les barres de compétence"
-	L.custom_on_stop_timers_desc = "Il se peut que les timers soient décalés selon le déroulement du combnat. Quand cette option est activée, les compétences utilisées par le boss resteront affichées."
-
 	L.bomb_missed = "%dx Bombes Râtées"
 end
 

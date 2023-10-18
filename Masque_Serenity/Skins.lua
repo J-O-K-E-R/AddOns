@@ -29,7 +29,7 @@ local API_VERSION = 100100
 
 -- Skin Info
 local Authors = {"StormFX", "|cff999999Sairen|r"}
-local Version = "10.1.0"
+local Version = "10.1.7"
 local Websites = {
 	"https://github.com/SFX-WoW/Masque_Serenity",
 	"https://www.curseforge.com/wow/addons/masque-serenity",
@@ -513,6 +513,10 @@ MSQ:AddSkin("Serenity", {
 		OffsetX = 0,
 		OffsetY = 0,
 		-- SetAllPoints = true,
+	},
+	SpellAlert = {
+		Width = 30,
+		Height = 30,
 	},
 })
 
@@ -1093,6 +1097,10 @@ MSQ:AddSkin("Serenity - Square", {
 		OffsetX = 0,
 		OffsetY = 0,
 		-- SetAllPoints = true,
+	},
+	SpellAlert = {
+		Width = 30,
+		Height = 30,
 	},
 })
 

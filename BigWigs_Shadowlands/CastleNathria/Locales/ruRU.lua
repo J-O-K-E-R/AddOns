@@ -49,9 +49,6 @@ if L then
 	L.anima_tracking = "Отслеживание анимы |cffff0000(Экспериментально)|r"
 	L.anima_tracking_desc = "Сообщения и полосы для слежения за уровнями анимы в контейнерах.|n|cffaaff00Подсказка: Вы, возможно, захотите отключить информацию в инфобоксах или полосах, в зависимости от ваших предпочтений."
 
-	L.custom_on_stop_timers = "Всегда показывать полосы способностей"
-	L.custom_on_stop_timers_desc = "Пока доступно только для тестирования"
-
 	L.desires = "Желания"
 	L.bottles = "Колбы"
 	L.sins = "Грехи"
@@ -101,9 +98,6 @@ if L then
 
 	L.skirmishers = "Войска" -- Short for Stone Legion Skirmishers
 	L.eruption = "Взрыв" -- Short for Reverberating Eruption
-
-	L.custom_on_stop_timers = "Всегда показывать полосы способностей"
-	L.custom_on_stop_timers_desc = "Пока доступно только для тестирования"
 
 	L.goliath_short = "Голиаф"
 	L.goliath_desc = "Показывать предупреждения и таймеры для появления голиафа из Каменного Легиона"

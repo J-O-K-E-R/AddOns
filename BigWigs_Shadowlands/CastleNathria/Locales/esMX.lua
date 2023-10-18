@@ -49,9 +49,6 @@ if L then
 	L.anima_tracking = "Rastreo de Anima |cffff0000(Experimental)|r"
 	L.anima_tracking_desc = "Mensajes y barras para rastrear los niveles de anima en los contenedores.|n|cffaaff00Consejo: Puede que quieras deshabilitar el cuadro o las barras de información, dependiendo de tu preferencia."
 
-	L.custom_on_stop_timers = "Siempre mostrar las barras de habilidad"
-	L.custom_on_stop_timers_desc = "Sólo para pruebas por el momento"
-
 	L.desires = "Deseos"
 	L.bottles = "Botellas"
 	L.sins = "Pecados"
@@ -102,9 +99,6 @@ if L then
 
 	L.skirmishers = "Comandos" -- Short for Stone Legion Skirmishers
 	L.eruption = "Erupción" -- Short for Reverberating Eruption
-
-	L.custom_on_stop_timers = "Siempre mostrar las barras de habilidad"
-	L.custom_on_stop_timers_desc = "Sólo para pruebas por el momento"
 
 	L.goliath_short = "Goliat"
 	L.goliath_desc = "Muestra avisos y temporizadores para cuando el Goliat de la Legión Pétrea está apunto de aparecer."

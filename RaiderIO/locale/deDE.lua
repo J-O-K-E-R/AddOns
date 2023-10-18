@@ -1,12 +1,13 @@
--- Generated from CurseForge on Wed May 24 07:56:00 UTC 2023
-local ns = select(2, ...) ---@type ns @The addon namespace.
+local ns = select(2, ...) ---@class ns @The addon namespace.
 
 if ns:IsSameLocale("deDE") then
+
 	local L = ns.L or ns:NewLocale()
+	ns.L = L
 
 	L.LOCALE_NAME = "deDE"
 
-L["ALLOW_IN_LFD"] = "Im Dungeonbrowser erlauben"
+	L["ALLOW_IN_LFD"] = "Im Dungeonbrowser erlauben"
 L["ALLOW_IN_LFD_DESC"] = "Rechtsklick auf Gruppen oder Kandidaten im Dungeonbrowser, um den Raider.IO Profil-Link zu kopieren."
 L["ALLOW_ON_PLAYER_UNITS"] = "Am Rahmen bei Spielereinheit erlauben"
 L["ALLOW_ON_PLAYER_UNITS_DESC"] = "Rechtsklick auf Rahmen bei Spielereinheit, um den Raider.IO Profil-Link zu kopieren."
@@ -54,25 +55,20 @@ L["DISABLE_RWF_MODE_RELOAD"] = "Du deaktivierst den Wettrennen Welt 1.-Modus. Du
 L["DPS"] = "DPS"
 L["DUNGEON_SHORT_NAME_AA"] = "Akademie von Algeth'ar"
 L["DUNGEON_SHORT_NAME_AV"] = "Azurblaue Gewölbe"
---[[Translation missing --]]
---[[ L["DUNGEON_SHORT_NAME_BH"] = ""--]] 
+L["DUNGEON_SHORT_NAME_BH"] = "Brackenfellhöhle"
 L["DUNGEON_SHORT_NAME_COS"] = "Hof der Sterne"
 L["DUNGEON_SHORT_NAME_DOS"] = "Die Andre Seite"
---[[Translation missing --]]
---[[ L["DUNGEON_SHORT_NAME_FH"] = ""--]] 
+L["DUNGEON_SHORT_NAME_FH"] = "Freihafen"
 L["DUNGEON_SHORT_NAME_GD"] = "Das Grimmgleisdepot"
 L["DUNGEON_SHORT_NAME_GMBT"] = "Tazavesh So'leahs Schachzug"
 L["DUNGEON_SHORT_NAME_HOA"] = "Hallen der Sühne"
---[[Translation missing --]]
---[[ L["DUNGEON_SHORT_NAME_HOI"] = ""--]] 
+L["DUNGEON_SHORT_NAME_HOI"] = "Hallen der Infusion"
 L["DUNGEON_SHORT_NAME_HOV"] = "Hallen der Tapferkeit"
 L["DUNGEON_SHORT_NAME_ID"] = "Die Eisendocks"
 L["DUNGEON_SHORT_NAME_LOWR"] = "Untere Rückkehr nach Karazhan"
 L["DUNGEON_SHORT_NAME_MISTS"] = "Nebel von Tirna Scithe"
---[[Translation missing --]]
---[[ L["DUNGEON_SHORT_NAME_NELT"] = ""--]] 
---[[Translation missing --]]
---[[ L["DUNGEON_SHORT_NAME_NL"] = ""--]] 
+L["DUNGEON_SHORT_NAME_NELT"] = "Neltharus"
+L["DUNGEON_SHORT_NAME_NL"] = "Neltharions Hort"
 L["DUNGEON_SHORT_NAME_NO"] = "Angriff der Nokhud"
 L["DUNGEON_SHORT_NAME_NW"] = "Nekrotische Schneise"
 L["DUNGEON_SHORT_NAME_PF"] = "Seuchensturz"
@@ -83,14 +79,11 @@ L["DUNGEON_SHORT_NAME_SOA"] = "Spitzen des Aufstiegs"
 L["DUNGEON_SHORT_NAME_STRT"] = "Tazavesh Wundersame Straßen"
 L["DUNGEON_SHORT_NAME_TJS"] = "Tempel der Jadeschlange"
 L["DUNGEON_SHORT_NAME_TOP"] = "Theater der Schmerzen"
---[[Translation missing --]]
---[[ L["DUNGEON_SHORT_NAME_ULD"] = ""--]] 
---[[Translation missing --]]
---[[ L["DUNGEON_SHORT_NAME_UNDR"] = ""--]] 
+L["DUNGEON_SHORT_NAME_ULD"] = "Uldaman"
+L["DUNGEON_SHORT_NAME_UNDR"] = "Der Tiefenpfuhl"
 L["DUNGEON_SHORT_NAME_UPPR"] = "Obere Rückkehr nach Karazhan"
 L["DUNGEON_SHORT_NAME_VOTW"] = "Verlies der Wächterinnen"
---[[Translation missing --]]
---[[ L["DUNGEON_SHORT_NAME_VP"] = ""--]] 
+L["DUNGEON_SHORT_NAME_VP"] = "Der Vortexgipfel"
 L["DUNGEON_SHORT_NAME_WORK"] = "Operation Mechagon - Werkstatt"
 L["DUNGEON_SHORT_NAME_YARD"] = "Operation Mechagon - Schrottplatz"
 L["ENABLE_AUTO_FRAME_POSITION"] = "Positioniert den Raider.IO Profilrahmen automatisch"
@@ -102,6 +95,8 @@ L["ENABLE_NO_SCORE_COLORS"] = "Deaktiviert alle Mythisch+ Wertungsfarben"
 L["ENABLE_NO_SCORE_COLORS_DESC"] = "Deaktiviert die Färbung von Wertungen. Alle Wertungen werden weiß angezeigt."
 L["ENABLE_RAIDERIO_CLIENT_ENHANCEMENTS"] = "Erlaube Raider.IO Client Verbesserungen"
 L["ENABLE_RAIDERIO_CLIENT_ENHANCEMENTS_DESC"] = "Wenn du dies aktivierst, werden detaillierte Raider.IO-Profildaten angezeigt, die vom Raider.IO-Client für deine beanspruchten Charaktere heruntergeladen wurden."
+L["ENABLE_REPLAY"] = "Zeigt Mythic+ Wiederholungssystem an"
+L["ENABLE_REPLAY_DESC"] = "Wenn du dies aktivierst, kannst du Wettrennen starten gegen aufgezeichnete Mythic+ Läufe."
 L["ENABLE_RWF_MODE_BUTTON"] = "Aktivieren"
 L["ENABLE_RWF_MODE_BUTTON_TOOLTIP"] = "Klicke hier, um den Wettrennen Welt 1.-Modus zu aktivieren. Dadurch wird deine Benutzeroberfläche neu geladen."
 L["ENABLE_RWF_MODE_RELOAD"] = "Du aktivierst den Wettrennen Welt 1.-Modus. Dies ist für den Einsatz mit dem Mythisch Wettrennen Welt 1. bestimmt und sollte nur für diesen Zweck nur zusammen mit dem RAIDER.IO-Client für das Hochladen von Daten verwendet werden. Durch Klicken auf Bestätigung wird deine Benutzeroberfläche neu geladen."
@@ -152,26 +147,16 @@ L["PREVIOUS_SCORE"] = "Vorige M+ Wertung (%s)"
 L["PROFILE_BEST_RUNS"] = "Beste Durchläufe aller Dungeons"
 L["PROFILE_TOOLTIP_ANCHOR_TOOLTIP"] = "Sperrt den Raider.IO-Profilrahmen oder aktiviert die automatische Positionierung, um diesen Anker auszublenden."
 L["PROVIDER_NOT_LOADED"] = "|cffFF0000Warnung:|r |cffFFFFFF%s|r konnte keine Daten für die aktuelle Fraktion finden. Bitte überprüfe die |cffFFFFFF/raiderio|r Einstellungen und aktiviere die Tooltip-Daten für |cffFFFFFF%s|r."
---[[Translation missing --]]
---[[ L["PVP_DATA_HEADER"] = ""--]] 
---[[Translation missing --]]
---[[ L["RAID_BOSS_ATSC_1"] = ""--]] 
---[[Translation missing --]]
---[[ L["RAID_BOSS_ATSC_2"] = ""--]] 
---[[Translation missing --]]
---[[ L["RAID_BOSS_ATSC_3"] = ""--]] 
---[[Translation missing --]]
---[[ L["RAID_BOSS_ATSC_4"] = ""--]] 
---[[Translation missing --]]
---[[ L["RAID_BOSS_ATSC_5"] = ""--]] 
---[[Translation missing --]]
---[[ L["RAID_BOSS_ATSC_6"] = ""--]] 
---[[Translation missing --]]
---[[ L["RAID_BOSS_ATSC_7"] = ""--]] 
---[[Translation missing --]]
---[[ L["RAID_BOSS_ATSC_8"] = ""--]] 
---[[Translation missing --]]
---[[ L["RAID_BOSS_ATSC_9"] = ""--]] 
+L["PVP_DATA_HEADER"] = "Raider.IO PvP Profil"
+L["RAID_BOSS_ATSC_1"] = "Kazzara, die Höllengeschmiedete"
+L["RAID_BOSS_ATSC_2"] = "Die Verschmelzungskammer"
+L["RAID_BOSS_ATSC_3"] = "Die vergessenen Experimente"
+L["RAID_BOSS_ATSC_4"] = "Angriff der Zaqali"
+L["RAID_BOSS_ATSC_5"] = "Ältester Rashok"
+L["RAID_BOSS_ATSC_6"] = "Der aufmerksame Verwalter, Zskarn"
+L["RAID_BOSS_ATSC_7"] = "Magmorax"
+L["RAID_BOSS_ATSC_8"] = "Echo von Neltharion"
+L["RAID_BOSS_ATSC_9"] = "Schuppenkommandant Sarkareth"
 L["RAID_BOSS_CN_1"] = "Schrillschwinge"
 L["RAID_BOSS_CN_10"] = "Graf Denathrius"
 L["RAID_BOSS_CN_2"] = "Jäger Altimor"
@@ -264,14 +249,30 @@ L["RELOAD_LATER"] = "Ich werde später neu laden"
 L["RELOAD_NOW"] = "Jetzt neu laden"
 L["RELOAD_RWF_MODE_BUTTON"] = "Speichern"
 L["RELOAD_RWF_MODE_BUTTON_TOOLTIP"] = "Klicke hier, um das Protokoll in die Speicherdatei zu speichern. Dadurch wird deine Benutzeroberfläche neu geladen."
---[[Translation missing --]]
---[[ L["REPLAY_SETTINGS_TOOLTIP"] = ""--]] 
---[[Translation missing --]]
---[[ L["REPLAY_STYLE_TITLE_MDI"] = ""--]] 
---[[Translation missing --]]
---[[ L["REPLAY_STYLE_TITLE_MODERN"] = ""--]] 
---[[Translation missing --]]
---[[ L["REPLAY_STYLE_TITLE_MODERN_COMPACT"] = ""--]] 
+L["REPLAY_AUTO_SELECTION"] = "Bevorzugte Wiederholungsart"
+L["REPLAY_AUTO_SELECTION_DESC"] = "Wähle die Art der Wiederholung, die du automatisch ausgewählt haben möchtest."
+L["REPLAY_AUTO_SELECTION_GUILD_BEST"] = "Bestes Gilde"
+L["REPLAY_AUTO_SELECTION_MOST_RECENT"] = "Neuste"
+L["REPLAY_AUTO_SELECTION_PERSONAL_BEST"] = "Bestes Persönlich"
+L["REPLAY_AUTO_SELECTION_STARRED"] = "Mit Sternzeichen"
+L["REPLAY_AUTO_SELECTION_TEAM_BEST"] = "Bestes Team"
+L["REPLAY_MENU_COPY_URL"] = "Wiederholungs-URL kopieren"
+L["REPLAY_MENU_DOCK"] = "Andocken"
+L["REPLAY_MENU_LOCK"] = "Sperren"
+L["REPLAY_MENU_POSITION"] = "Position"
+L["REPLAY_MENU_REPLAY"] = "Wiederholung"
+L["REPLAY_MENU_STYLE"] = "Stil"
+L["REPLAY_MENU_TIMING"] = "Zeitpunkt"
+L["REPLAY_MENU_UNDOCK"] = "Abdocken"
+L["REPLAY_MENU_UNLOCK"] = "Entsperren"
+L["REPLAY_REPLAY_CHANGING"] = "Durch das Ändern deiner Wiederholung werden die Live-Daten zurückgesetzt."
+L["REPLAY_SETTINGS_TOOLTIP"] = "Einstellungen"
+L["REPLAY_STYLE_TITLE_MDI"] = "MDI"
+L["REPLAY_STYLE_TITLE_MODERN"] = "Modern"
+L["REPLAY_STYLE_TITLE_MODERN_COMPACT"] = "Modern (Kompakt)"
+L["REPLAY_SUMMARY_LOGGED"] = "|cffFFFFFF%s|r protokollierte deine Fertigstellung davon |cffFFFFFF+%s|r in |cffFFFFFF%s|r."
+L["REPLAY_TIMING_TITLE_BOSS"] = "Bosszeit"
+L["REPLAY_TIMING_TITLE_DUNGEON"] = "Durchlaufszeit"
 L["RWF_MINIBUTTON_TOOLTIP"] = "Klicke mit der linken Maustaste, wann immer es anstehende Beute gibt. Dadurch wird deine Benutzeroberfläche neu geladen. Klicke mit der rechten Maustaste, um das Wettrennen Welt 1.-Fenster zu öffnen."
 L["RWF_SUBTITLE_LOGGING_FILTERED_LOOT"] = "(Protokollierung relevanter Gegenstände)"
 L["RWF_SUBTITLE_LOGGING_LOOT"] = "(Protokollierung Beute)"
@@ -347,5 +348,5 @@ L["WARNING_RWF_MODE_ENABLE"] = "|cffFFFFFF%s|r Wettrennen Welt 1.-Modus ist akti
 L["WIPE_RWF_MODE_BUTTON"] = "Löschen"
 L["WIPE_RWF_MODE_BUTTON_TOOLTIP"] = "Klicke hier, um das Protokoll aus der Speicherdatei zu löschen. Dadurch wird deine Benutzeroberfläche neu geladen."
 
-	ns.L = L
+
 end

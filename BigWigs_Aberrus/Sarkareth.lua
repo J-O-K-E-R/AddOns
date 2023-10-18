@@ -42,6 +42,26 @@ local embraceOfNothingnessCount = 1
 -- Timers
 --
 
+local timersLFR = {
+	[1] = {
+		[401810] = {3.5, 103.3}, -- Glittering Surge
+		[401500] = {1.1, 62.3}, -- Scorching Bomb
+		[401680] = {24.7, 24.7, 47.0}, -- Mass Disintegrate
+		[402050] = {28.2, 37.6}, -- Searing Breath
+	},
+	[2] = {
+		[404027] = {17.3, 68}, -- Void Bomb
+		[404456] = {4, 49.3}, -- Abyssal Breath
+		[404403] = {12.0, 49.3, 42.7}, -- Desolate Blossom
+		[411241] = {21.3, 20.0, 24.0, 24.0, 24.0}, -- Void Claws
+	},
+	[3] = {
+		[403741] = {9.3, 61.2, 98.8, 58.8, 98.8, 58.8, 98.8}, -- Cosmic Ascension
+		[403625] = {46.1, 77.8, 81.4, 75.7, 82.2, 75.8}, -- Scouring Eternity
+		[408429] = {21.0, 36.2, 37.5, 85.0, 11.3, 61.2, 85.0, 11.3, 61.3, 85.0, 11.3}, -- Void Slash
+	},
+}
+
 local timersNormal = {
 	[1] = {
 		[401810] = {3.3, 94.8}, -- Glittering Surge
@@ -57,7 +77,7 @@ local timersNormal = {
 	},
 	[3] = {
 		[404027] = {30.4, 65.3, 65.3, 102.7, 65.3}, -- Void Bomb
-		[403771] = {7.7, 65.3, 105.3, 62.7, 105.3}, -- Cosmic Ascension
+		[403741] = {7.7, 65.3, 105.3, 62.7, 105.3}, -- Cosmic Ascension
 		[405486] = {21.0, 46.7, 102.7, 65.3, 102.7}, -- Hurtling Barrage
 		[403625] = {49.8, 81.5, 87.4, 81.4}, -- Scouring Eternity
 		[403520] = {26.4, 118.7, 53.3, 114.7}, -- Embrace of Nothingness
@@ -80,13 +100,13 @@ local timersHeroic = {
 		[411241] = {18.8, 17.6, 21.1, 42.3}, -- Void Claws
 	},
 	[3] = {
-		[404027] = {28.5, 61.2, 61.2, 96.3}, -- Void Bomb
-		[404288] = {5.8, 56.3, 83.8, 37.5, 36.3}, -- Infinite Duress
-		[403771] = {7.3, 61.2, 98.8, 58.8}, -- Cosmic Ascension
-		[405486] = {19.8, 85.0, 55.0, 35.1, 67.5}, -- Hurtling Barrage
-		[403625] = {46.3, 77.8, 81.5}, -- Scouring Eternity
-		[403520] = {24.8, 111.2, 50.0}, -- Embrace of Nothingness
-		[408429] = {21.0, 36.3, 37.5, 85.0, 11.2, 61.3}, -- Void Slash
+		[404027] = {28.5, 61.2, 61.2, 96.3, 60.8, 96.2, 61.2, 96.3}, -- Void Bomb
+		[404288] = {5.8, 56.3, 83.8, 37.5, 36.3, 83.7, 37.5, 36.3, 83.8, 37.5, 36.3}, -- Infinite Duress
+		[403741] = {7.3, 61.2, 98.8, 58.8, 98.7, 67.7, 89.8, 58.8}, -- Cosmic Ascension
+		[405486] = {19.8, 85.0, 55.0, 35.1, 67.5, 55.0, 35.0, 67.5, 55.0, 35.0, 67.5}, -- Hurtling Barrage
+		[403625] = {46.3, 77.8, 81.5, 76.5, 80.7, 76.4, 81.3, 76.4}, -- Scouring Eternity
+		[403520] = {24.8, 111.2, 50.0, 107.5, 50.0, 107.5, 50.0}, -- Embrace of Nothingness
+		[408429] = {21.0, 36.3, 37.5, 85.0, 11.2, 61.3, 37.5, 47.0, 11.3, 61.3, 85.0, 11.3, 61.3}, -- Void Slash
 	},
 }
 
@@ -106,17 +126,17 @@ local timersMythic = {
 		[411241] = {17.8, 16.7, 20.0, 20.0, 20.0, 0}, -- Void Claws
 	},
 	[3] = { -- Non decimal timers are taken from a stream (not precise)
-		[404027] = {24.6, 60.0, 57.6}, -- Void Bomb
+		[404027] = {24.6, 60.0, 57.6, 90.6}, -- Void Bomb
 		[404288] = {4.6, 53.0, 78.8, 35.3, 34.1}, -- Infinite Duress
-		[403771] = {6.9, 57.6, 93.0, 60}, -- Cosmic Ascension
+		[403741] = {6.9, 57.6, 93.0, 60}, -- Cosmic Ascension
 		[405486] = {18.6, 80.0, 84.0}, -- Hurtling Barrage
 		[403625] = {44.6, 73.0, 76.5}, -- Scouring Eternity
-		[403520] = {23.4, 38.2, 26.5, 40.0, 47.0, 34.7}, -- Embrace of Nothingness
-		[408429] = {19.8, 17.7, 36.4, 15.3, 55.2, 35.3}, -- Void Slash
+		[403520] = {23.4, 38.2, 26.5, 40.0, 47.0, 34.7, 26.5}, -- Embrace of Nothingness
+		[408429] = {19.8, 17.7, 36.4, 15.3, 55.2, 35.3, 42.3, 15.3}, -- Void Slash
 	},
 }
 
-local timers = mod:Mythic() and timersMythic or mod:Easy() and timersNormal or timersHeroic
+local timers = mod:Mythic() and timersMythic or mod:Normal() and timersNormal or mod:LFR() and timersLFR or timersHeroic
 
 --------------------------------------------------------------------------------
 -- Localization
@@ -141,7 +161,6 @@ if L then
 	-- Stage Three: The Seas of Infinity
 	L.boss_immune = "Boss Immune"
 	L.cosmic_ascension = mod:SpellName(161862) -- Cosmic Ascension (Ascension)
-	L.hurtling_barrage = mod:SpellName(405022) -- Hurtling Barrage
 	L.scouring_eternity = mod:SpellName(123244) -- Scouring Eternity (Hide)
 	L.embrace_of_nothingness = mod:SpellName(371920) -- Embrace of Nothingness (Black Hole)
 	L.void_slash = "Tank Frontal"
@@ -155,9 +174,9 @@ end
 --
 
 local massDisintergrateMarker = mod:AddMarkerOption(true, "player", 1, 401680, 1, 2, 3, 4) -- Mass Disintegrate
-local nullGlimmerMarker = mod:AddMarkerOption(true, "npc", 8, -26675, 8, 7, 6) -- Null Glimmer
+local nullGlimmerMarker = mod:AddMarkerOption(true, "npc", 7, -26675, 7, 6, 5) -- Null Glimmer
 local infiniteDuressMarker = mod:AddMarkerOption(true, "player", 1, 404288, 1, 2) -- Infinite Duress
-local hurlingBarrageMarker = mod:AddMarkerOption(false, "player", 3, 405486, 3, 4, 5) -- Hurtling Barrage
+local hurlingBarrageMarker = mod:AddMarkerOption(false, "player", 3, 405486, 3, 4) -- Hurtling Barrage
 local emptyRecollectionMarker = mod:AddMarkerOption(true, "npc", 8, -26672, 8) -- Empty Recollection
 function mod:GetOptions()
 	return {
@@ -195,7 +214,7 @@ function mod:GetOptions()
 
 		-- Stage Three: The Seas of Infinity
 		406428, -- Motes of Oblivion
-		403771, -- Cosmic Ascension
+		403741, -- Cosmic Ascension
 		{405486, "SAY", "SAY_COUNTDOWN", "ME_ONLY_EMPHASIZE"}, -- Hurtling Barrage
 		hurlingBarrageMarker,
 		{403625, "CASTBAR", "CASTBAR_COUNTDOWN"}, -- Scouring Eternity
@@ -211,7 +230,7 @@ function mod:GetOptions()
 		["stages"] = "general",
 		[401383] = -26140, -- Stage One: The Legacy of the Dracthyr
 		[404027] = -26142, -- Stage Two: A Touch of the Forbidden
-		[403771] = -26145, -- Stage Three: The Seas of Infinity
+		[403741] = -26145, -- Stage Three: The Seas of Infinity
 		[404269] = "mythic", -- Stage Three: The Seas of Infinity
 	},{
 		[401500] = CL.bombs, -- Scorching Bomb
@@ -224,8 +243,7 @@ function mod:GetOptions()
 		[404403] = CL.pools, -- Desolate Blossom (Pools)
 		[411241] = L.claws, -- Void Claws (Tank Debuff)
 		[411238] = L.claws_debuff, -- Void Blast (Tank Explodes)
-		[403771] = L.cosmic_ascension, -- Cosmic Ascension (Ascension)
-		[405486] = L.hurtling_barrage, -- Hurtling Barrage (Lines)
+		[403741] = L.cosmic_ascension, -- Cosmic Ascension (Ascension)
 		[403625] = L.scouring_eternity, -- Scouring Eternity (Hide)
 		[403520] = L.embrace_of_nothingness, -- Embrace of Nothingness (Black Hole)
 		[408429] = L.void_slash, -- Void Slash (Tank Frontal)
@@ -271,7 +289,7 @@ function mod:OnBossEnable()
 	self:Log("SPELL_CAST_START", "SearingBreath", 402050)
 	self:Log("SPELL_CAST_START", "BurningClaws", 401325)
 	self:Log("SPELL_AURA_APPLIED", "BurningClawsApplied", 401330)
-	self:Log("SPELL_AURA_APPLIED_DOSE", "BurningClawsApplied", 401330)
+	self:Log("SPELL_AURA_APPLIED_DOSE", "BurningClawsAppliedDose", 401330)
 	self:Log("SPELL_AURA_REMOVED", "BurningClawsRemoved", 401330)
 
 	-- Stage Two: A Touch of the Forbidden
@@ -281,13 +299,13 @@ function mod:OnBossEnable()
 	self:Log("SPELL_CAST_START", "AbyssalBreath", 404456)
 	self:Log("SPELL_SUMMON", "NullGlimmerSummon", 404507)
 	self:Log("SPELL_CAST_START", "BlastingScream", 404754)
-	self:Log("SPELL_CAST_START", "DesolateBlossom", 404403, 411030) -- Heroic/Normal, Unknown
-	self:Log("SPELL_CAST_SUCCESS", "InfiniteDuress", 407496, 404288) -- Heroic+, Unknown
+	self:Log("SPELL_CAST_START", "DesolateBlossom", 404403, 411030) -- Mythic/Heroic/Normal, Unknown (LFR?)
+	self:Log("SPELL_CAST_SUCCESS", "InfiniteDuress", 407496, 404288) -- Used when applied to 1 person, Used when applied to 2 people
 	self:Log("SPELL_AURA_APPLIED", "InfiniteDuressApplied", 407496, 404288)
 	self:Log("SPELL_AURA_REMOVED", "InfiniteDuressRemoved", 407496, 404288)
 	self:Log("SPELL_CAST_START", "VoidClaws", 411236)
 	self:Log("SPELL_AURA_APPLIED", "VoidClawsApplied", 411241)
-	self:Log("SPELL_AURA_APPLIED_DOSE", "VoidClawsApplied", 411241)
+	self:Log("SPELL_AURA_APPLIED_DOSE", "VoidClawsAppliedDose", 411241)
 	self:Log("SPELL_AURA_REMOVED", "VoidClawsRemoved", 411241)
 
 	-- Stage Three: The Seas of Infinity
@@ -301,7 +319,7 @@ function mod:OnBossEnable()
 	self:Log("SPELL_AURA_REMOVED", "EmbraceOfNothingnessRemoved", 403520)
 	self:Log("SPELL_CAST_START", "VoidSlash", 408422)
 	self:Log("SPELL_AURA_APPLIED", "VoidSlashApplied", 408429)
-	self:Log("SPELL_AURA_APPLIED_DOSE", "VoidSlashApplied", 408429)
+	self:Log("SPELL_AURA_APPLIED_DOSE", "VoidSlashAppliedDose", 408429)
 	self:Log("SPELL_AURA_REMOVED", "VoidSlashRemoved", 408429)
 
 	-- Mythic
@@ -313,7 +331,7 @@ function mod:OnBossEnable()
 end
 
 function mod:OnEngage()
-	timers = self:Mythic() and timersMythic or self:Easy() and timersNormal or timersHeroic
+	timers = self:Mythic() and timersMythic or self:Normal() and timersNormal or self:LFR() and timersLFR or timersHeroic
 	self:SetStage(1)
 	voidEmpowermentCount = 1
 	nextStageHealth = 63
@@ -482,11 +500,11 @@ end
 
 do
 	local playerList = {}
-	function mod:MassDisintegrate(args)
+	function mod:MassDisintegrate()
+		playerList = {}
 		self:StopBar(CL.count:format(L.mass_disintergrate, massDisintergrateCount))
 		massDisintergrateCount = massDisintergrateCount + 1
 		self:Bar(401680, timers[1][401680][massDisintergrateCount], CL.count:format(L.mass_disintergrate, massDisintergrateCount))
-		playerList = {}
 	end
 
 	function mod:MassDisintegrateApplied(args)
@@ -521,7 +539,7 @@ end
 
 do
 	local tankTimers = {}
-	function mod:BurningClaws(args)
+	function mod:BurningClaws()
 		self:StopBar(CL.count:format(L.claws, clawsCount))
 		clawsCount = clawsCount + 1
 		if clawsCount < 5 then -- only 4
@@ -529,14 +547,20 @@ do
 		end
 	end
 
-	function mod:BurningClawsApplied(args)
+	-- We cannot expect a nil args.amount as the APPLIED event has a fake absorb value (1234) so we intentionally separate APPLIED/_DOSE to know when the debuff actually stacked
+	-- "This was part of the hotfix that allowed player absorbs to reduce the amount of damage contribution the tank swaps were giving to the explosion"
+	function mod:BurningClawsApplied(args, isDose)
 		if tankTimers[args.destName] then
 			self:CancelTimer(tankTimers[args.destName])
 			tankTimers[args.destName] = nil
 		end
 		self:StopBar(L.claws_debuff, args.destName)
 		if self:Tank() then
-			self:StackMessage(args.spellId, "purple", args.destName, args.amount, 1, L.claws)
+			if isDose then
+				self:StackMessage(args.spellId, "purple", args.destName, args.amount, 1, L.claws)
+			else
+				self:TargetMessage(args.spellId, "purple", args.destName, L.claws)
+			end
 			local bossUnit = self:UnitTokenFromGUID(args.sourceGUID)
 			if bossUnit and self:Tank() and not self:Me(args.destGUID) and not self:Tanking(bossUnit) then
 				self:PlaySound(args.spellId, "warning") -- Taunt
@@ -546,6 +570,9 @@ do
 		end
 		-- Don't show the timer for the full 27s, only sub 10s
 		tankTimers[args.destName] = self:ScheduleTimer("TargetBar", 17, 401340, 10, args.destName, L.claws_debuff) -- Blazing Blast
+	end
+	function mod:BurningClawsAppliedDose(args)
+		self:BurningClawsApplied(args, true)
 	end
 
 	function mod:BurningClawsRemoved(args)
@@ -568,7 +595,7 @@ function mod:Stage2Start()
 	infiniteDuressCount = 1
 	recollectionKilled = 1
 
-	self:Bar("stages", self:Mythic() and 103.4 or 110.1, CL.stage:format(3), 403284)
+	self:Bar("stages", self:Mythic() and 103.4 or self:Normal() and 116.1 or self:LFR() and 123.9 or 110.1, CL.stage:format(3), 403284)
 
 	-- these start on End Existence _REMOVED
 	self:Bar(404456, timers[2][404456][breathCount], CL.count:format(CL.breath, breathCount)) -- Abyssal Breath
@@ -632,30 +659,31 @@ function mod:VoidFractureRemoved(args)
 	end
 end
 
-function mod:AbyssalBreath(args)
-	local msg = CL.count:format(CL.breath, breathCount)
-	self:StopBar(msg)
-	self:Message(args.spellId, "red", msg)
-	self:PlaySound(args.spellId, "alert")
-	breathCount = breathCount + 1
-	self:Bar(args.spellId, timers[2][args.spellId][breathCount], CL.count:format(CL.breath, breathCount))
+do
+	local immuneTimers = {32.3, 30, 27.4, 0}
+	function mod:AbyssalBreath(args)
+		nullGlimmerMarks, nullGlimmerCollector = {}, {}
 
-	nullGlimmerMarks = {}
-	nullGlimmerCollector = {}
+		local msg = CL.count:format(CL.breath, breathCount)
+		self:StopBar(msg)
+		self:Message(args.spellId, "red", msg)
+		self:PlaySound(args.spellId, "alert")
+		breathCount = breathCount + 1
+		self:Bar(args.spellId, timers[2][args.spellId][breathCount], CL.count:format(CL.breath, breathCount))
 
-	if self:GetOption(emptyRecollectionMarker) then -- self:GetOption(nullGlimmerMarker) not in p2
-		self:RegisterTargetEvents("AddMarking")
-	end
+		if self:GetOption(emptyRecollectionMarker) then -- self:GetOption(nullGlimmerMarker) not in p2
+			self:RegisterTargetEvents("AddMarking")
+		end
 
-	if self:Mythic()then
-		local immuneTimers = {32.3, 30, 27.4, 0}
-		self:Bar(404269, immuneTimers[breathCount-1], CL.count:format(L.ebon_might, breathCount-1))
+		if self:Mythic()then
+			self:Bar(404269, immuneTimers[breathCount-1], CL.count:format(L.ebon_might, breathCount-1))
+		end
 	end
 end
 
 function mod:NullGlimmerSummon(args)
 	if self:GetOption(nullGlimmerMarker) and self:GetStage() == 3 then
-		for i = 8, 6, -1 do -- 8, 7, 6
+		for i = 7, 5, -1 do -- 7, 6, 5
 			if not nullGlimmerCollector[args.destGUID] and not nullGlimmerMarks[i] then
 				nullGlimmerMarks[i] = args.destGUID
 				nullGlimmerCollector[args.destGUID] = i
@@ -702,13 +730,13 @@ do
 		end
 	end
 
-	function mod:InfiniteDuress(args)
+	function mod:InfiniteDuress()
+		playerList, onMe = {}, false
+
 		self:StopBar(CL.count:format(L.infinite_duress, infiniteDuressCount))
 		infiniteDuressCount = infiniteDuressCount + 1
 		self:Bar(404288, timers[self:GetStage()][404288][infiniteDuressCount], CL.count:format(L.infinite_duress, infiniteDuressCount))
 
-		playerList = {}
-		onMe = false
 		self:SimpleTimer(onMeSound, 0.3)
 	end
 
@@ -738,20 +766,26 @@ end
 
 do
 	local tankTimers = {}
-	function mod:VoidClaws(args)
+	function mod:VoidClaws()
 		self:StopBar(CL.count:format(L.claws, clawsCount))
 		clawsCount = clawsCount + 1
 		self:Bar(411241, timers[2][411241][clawsCount], CL.count:format(L.claws, clawsCount))
 	end
 
-	function mod:VoidClawsApplied(args)
+	-- We cannot expect a nil args.amount as the APPLIED event has a fake absorb value (1234) so we intentionally separate APPLIED/_DOSE to know when the debuff actually stacked
+	-- "This was part of the hotfix that allowed player absorbs to reduce the amount of damage contribution the tank swaps were giving to the explosion"
+	function mod:VoidClawsApplied(args, isDose)
 		if tankTimers[args.destName] then
 			self:CancelTimer(tankTimers[args.destName])
 			tankTimers[args.destName] = nil
 		end
 		self:StopBar(L.claws_debuff, args.destName)
 		if self:Tank() then
-			self:StackMessage(args.spellId, "purple", args.destName, args.amount, 1, L.claws)
+			if isDose then
+				self:StackMessage(args.spellId, "purple", args.destName, args.amount, 1, L.claws)
+			else
+				self:TargetMessage(args.spellId, "purple", args.destName, L.claws)
+			end
 			local bossUnit = self:UnitTokenFromGUID(args.sourceGUID)
 			if bossUnit and self:Tank() and not self:Me(args.destGUID) and not self:Tanking(bossUnit) then
 				self:PlaySound(args.spellId, "warning") -- Taunt
@@ -761,6 +795,9 @@ do
 		end
 		-- Don't show the timer for the full 18s, only sub 10s
 		tankTimers[args.destName] = self:ScheduleTimer("TargetBar", 8, 411238, 10, args.destName, L.claws_debuff) -- Void Blast
+	end
+	function mod:VoidClawsAppliedDose(args)
+		self:VoidClawsApplied(args, true)
 	end
 
 	function mod:VoidClawsRemoved(args)
@@ -784,27 +821,29 @@ function mod:Stage3Start()
 	scouringEternityCount = 1
 	embraceOfNothingnessCount = 1
 
-	self:Bar(403771, timers[3][403771][cosmicAscensionCount], CL.count:format(L.cosmic_ascension, cosmicAscensionCount)) -- Cosmic Ascension
-	self:Bar(405486, timers[3][405486][hurtlingBarrageCount], CL.count:format(L.hurtling_barrage, hurtlingBarrageCount)) -- Hurtling Barrage
+	self:Bar(403741, timers[3][403741][cosmicAscensionCount], CL.count:format(L.cosmic_ascension, cosmicAscensionCount)) -- Cosmic Ascension
 	self:Bar(408429, timers[3][408429][clawsCount], CL.count:format(L.claws, clawsCount)) -- Void Slash
-	self:Bar(403520, timers[3][403520][embraceOfNothingnessCount], CL.count:format(L.embrace_of_nothingness, embraceOfNothingnessCount)) -- Embrace of Nothingness
-	self:Bar(404027, timers[3][404027][bombCount], CL.count:format(CL.bombs, bombCount)) -- Void Bomb
 	self:Bar(403625, timers[3][403625][scouringEternityCount], CL.count:format(L.scouring_eternity, scouringEternityCount)) -- Scouring Eternity
 	if not self:Easy() then
 		self:Bar(404288, 4.8, CL.count:format(L.infinite_duress, infiniteDuressCount)) -- Infinite Duress
 	end
+	if not self:LFR() then
+		self:Bar(403520, timers[3][403520][embraceOfNothingnessCount], CL.count:format(L.embrace_of_nothingness, embraceOfNothingnessCount)) -- Embrace of Nothingness
+		-- Hurtling Barrage & Void Bomb are not cast in LFR but are shown in journal?
+		self:Bar(404027, timers[3][404027][bombCount], CL.count:format(CL.bombs, bombCount)) -- Void Bomb
+		self:Bar(405486, timers[3][405486][hurtlingBarrageCount], CL.count:format(self:SpellName(405486), hurtlingBarrageCount)) -- Hurtling Barrage
+	end
 end
 
 function mod:CosmicAscension(args)
+	nullGlimmerMarks, nullGlimmerCollector = {}, {}
+
 	local msg = CL.count:format(L.cosmic_ascension, cosmicAscensionCount)
 	self:StopBar(msg)
-	self:Message(403771, "red", msg)
-	self:PlaySound(403771, "alarm")
+	self:Message(args.spellId, "red", msg)
+	self:PlaySound(args.spellId, "alarm")
 	cosmicAscensionCount = cosmicAscensionCount + 1
-	self:Bar(403771, timers[3][403771][cosmicAscensionCount], CL.count:format(L.cosmic_ascension, cosmicAscensionCount))
-
-	nullGlimmerMarks = {}
-	nullGlimmerCollector = {}
+	self:Bar(args.spellId, timers[3][args.spellId][cosmicAscensionCount], CL.count:format(L.cosmic_ascension, cosmicAscensionCount))
 
 	if self:GetOption(nullGlimmerMarker) then
 		self:RegisterTargetEvents("AddMarking")
@@ -814,14 +853,13 @@ end
 do
 	local playerList = {}
 	function mod:HurtlingBarrage(args)
-		local msg = CL.count:format(L.hurtling_barrage, hurtlingBarrageCount)
+		playerList = {}
+		local msg = CL.count:format(args.spellName, hurtlingBarrageCount)
 		self:StopBar(msg)
 		self:Message(405486, "yellow", msg)
 		self:PlaySound(405486, "alert")
 		hurtlingBarrageCount = hurtlingBarrageCount + 1
-		self:Bar(405486, timers[3][405486][hurtlingBarrageCount], CL.count:format(L.hurtling_barrage, hurtlingBarrageCount))
-
-		playerList = {}
+		self:Bar(405486, timers[3][405486][hurtlingBarrageCount], CL.count:format(args.spellName, hurtlingBarrageCount))
 	end
 
 	function mod:HurtlingBarrageApplied(args)
@@ -829,9 +867,9 @@ do
 		local icon = count + 2
 		playerList[count] = args.destName
 		if self:Me(args.destGUID) then
-			self:PersonalMessage(args.spellId, nil, L.hurtling_barrage)
+			self:PersonalMessage(args.spellId)
 			self:PlaySound(args.spellId, "warning")
-			self:Say(args.spellId, CL.rticon:format(L.hurtling_barrage, icon))
+			self:Say(args.spellId, CL.rticon:format(args.spellName, icon))
 			self:SayCountdown(args.spellId, 7, icon)
 		end
 		self:CustomIcon(hurlingBarrageMarker, args.destName, icon)
@@ -855,7 +893,7 @@ function mod:ScouringEternity(args)
 	self:CastBar(args.spellId, 5.5, L.scouring_eternity)
 end
 
-function mod:EmbraceOfNothingness(args)
+function mod:EmbraceOfNothingness()
 	self:StopBar(CL.count:format(L.embrace_of_nothingness, embraceOfNothingnessCount))
 	embraceOfNothingnessCount = embraceOfNothingnessCount + 1
 	self:Bar(403520, timers[3][403520][embraceOfNothingnessCount], CL.count:format(L.embrace_of_nothingness, embraceOfNothingnessCount))
@@ -878,20 +916,26 @@ end
 
 do
 	local tankTimers = {}
-	function mod:VoidSlash(args)
+	function mod:VoidSlash()
 		self:StopBar(CL.count:format(L.void_slash, clawsCount))
 		clawsCount = clawsCount + 1
 		self:Bar(408429, timers[3][408429][clawsCount], CL.count:format(L.void_slash, clawsCount))
 	end
 
-	function mod:VoidSlashApplied(args)
+	-- We cannot expect a nil args.amount as the APPLIED event has a fake absorb value (1234) so we intentionally separate APPLIED/_DOSE to know when the debuff actually stacked
+	-- "This was part of the hotfix that allowed player absorbs to reduce the amount of damage contribution the tank swaps were giving to the explosion"
+	function mod:VoidSlashApplied(args, isDose)
 		if tankTimers[args.destName] then
 			self:CancelTimer(tankTimers[args.destName])
 			tankTimers[args.destName] = nil
 		end
 		self:StopBar(L.claws_debuff, args.destName)
 		if self:Tank() then
-			self:StackMessage(args.spellId, "purple", args.destName, args.amount, 1, L.void_slash)
+			if isDose then
+				self:StackMessage(args.spellId, "purple", args.destName, args.amount, 1, L.void_slash)
+			else
+				self:TargetMessage(args.spellId, "purple", args.destName, L.void_slash)
+			end
 			local bossUnit = self:UnitTokenFromGUID(args.sourceGUID)
 			if bossUnit and self:Tank() and not self:Me(args.destGUID) and not self:Tanking(bossUnit) then
 				self:PlaySound(args.spellId, "warning") -- Taunt
@@ -901,6 +945,9 @@ do
 		end
 		-- Don't show the timer for the full 21s, only sub 10s
 		tankTimers[args.destName] = self:ScheduleTimer("TargetBar", 11, 408457, 10, args.destName, L.claws_debuff) -- Void Blast
+	end
+	function mod:VoidSlashAppliedDose(args)
+		self:VoidSlashApplied(args, true)
 	end
 
 	function mod:VoidSlashRemoved(args)
@@ -932,7 +979,7 @@ function mod:EmptyStrikeApplied(args)
 	end
 end
 
-function mod:EmptyRecollectionDeath(args)
+function mod:EmptyRecollectionDeath()
 	self:StopBar(404769) -- Empty Strike
 	self:StopBar(CL.count:format(L.ebon_might, recollectionKilled))
 	recollectionKilled = recollectionKilled + 1

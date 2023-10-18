@@ -235,7 +235,7 @@ function mod:GetOptions()
 		362028, -- Relentless Domination
 		362075, -- Domination
 		366132, -- Tyranny
-		359809, -- Chains of Oppression
+		{359809, "CASTBAR"}, -- Chains of Oppression
 		{363893, "SAY", "SAY_COUNTDOWN"}, -- Martyrdom
 		{366545, "TANK"}, -- Persecution
 		365436, -- Torment

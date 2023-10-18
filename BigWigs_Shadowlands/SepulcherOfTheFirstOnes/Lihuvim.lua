@@ -53,7 +53,7 @@ function mod:GetOptions()
 		{362622, "SAY", "SAY_COUNTDOWN"}, -- Unstable Mote
 		360159, -- Unstable Mote (Ground Effect)
 		{363795, "SAY", "SAY_COUNTDOWN"}, -- Deconstructing Energy
-		363130, -- Synthesize
+		{363130, "CASTBAR"}, -- Synthesize
 		360869, -- Requisitioned
 		"custom_on_nameplate_fixate",
 		{366012, "SAY", "SAY_COUNTDOWN"}, -- Terminal Mote

@@ -2,7 +2,6 @@
 -- Collection of functions that can be used in multiple places
 ------------------------------------------------------------------------
 local E, L, V, P, G = unpack(ElvUI)
-local AB = E:GetModule('ActionBars')
 local LCS = E.Libs.LCS
 
 local _G = _G
@@ -28,6 +27,7 @@ local IsWargame = IsWargame
 local IsXPUserDisabled = IsXPUserDisabled
 local RequestBattlefieldScoreData = RequestBattlefieldScoreData
 local SetCVar = SetCVar
+local UIParent = UIParent
 local UIParentLoadAddOn = UIParentLoadAddOn
 local UnitAura = UnitAura
 local UnitFactionGroup = UnitFactionGroup
@@ -55,7 +55,10 @@ local PLAYER_FACTION_GROUP = PLAYER_FACTION_GROUP
 local GameMenuButtonAddons = GameMenuButtonAddons
 local GameMenuButtonLogout = GameMenuButtonLogout
 local GameMenuFrame = GameMenuFrame
+local UIErrorsFrame = UIErrorsFrame
 -- GLOBALS: ElvDB, ElvUF
+
+local DebuffColors = E.Libs.Dispel:GetDebuffTypeColor()
 
 E.MountIDs = {}
 E.MountText = {}
@@ -202,6 +205,29 @@ function E:IsDispellableByMe(debuffType)
 	return E.Libs.Dispel:IsDispellableByMe(debuffType)
 end
 
+function E:UpdateDispelColors()
+	local colors = E.db.general.debuffColors
+	for debuffType, db in next, colors do
+		local color = DebuffColors[debuffType]
+		if color then
+			E:UpdateClassColor(db)
+			color.r, color.g, color.b = db.r, db.g, db.b
+		end
+	end
+end
+
+function E:UpdateDispelColor(debuffType, r, g, b)
+	local color = DebuffColors[debuffType]
+	if color then
+		color.r, color.g, color.b = r, g, b
+	end
+
+	local db = E.db.general.debuffColors[debuffType]
+	if db then
+		db.r, db.g, db.b = r, g, b
+	end
+end
+
 do
 	local function SetOriginalHeight(f)
 		if InCombatLockdown() then
@@ -235,7 +261,7 @@ do
 			_G.OrderHallCommandBar:UnregisterAllEvents()
 			_G.OrderHallCommandBar:SetScript('OnShow', _G.OrderHallCommandBar.Hide)
 			_G.OrderHallCommandBar:Hide()
-			_G.UIParent:UnregisterEvent('UNIT_AURA') --Only used for OrderHall Bar
+			UIParent:UnregisterEvent('UNIT_AURA') --Only used for OrderHall Bar
 		elseif E.global.general.commandBarSetting == 'ENABLED_RESIZEPARENT' then
 			_G.OrderHallCommandBar:HookScript('OnShow', SetModifiedHeight)
 			_G.OrderHallCommandBar:HookScript('OnHide', SetOriginalHeight)
@@ -309,7 +335,7 @@ function E:AddNonPetBattleFrames()
 		if type(data) == 'table' then
 			parent, strata = data.parent, data.strata
 		elseif data == true then
-			parent = _G.UIParent
+			parent = UIParent
 		end
 
 		local obj = _G[object] or object
@@ -482,29 +508,41 @@ function E:PLAYER_REGEN_ENABLED()
 	end
 end
 
-function E:PLAYER_REGEN_DISABLED()
-	local err
-
-	if IsAddOnLoaded('ElvUI_Options') then
-		local ACD = E.Libs.AceConfigDialog
-		if ACD and ACD.OpenFrames and ACD.OpenFrames.ElvUI then
-			ACD:Close('ElvUI')
-			err = true
-		end
+do
+	local function NoCombat()
+		UIErrorsFrame:AddMessage(ERR_NOT_IN_COMBAT, 1.0, 0.2, 0.2, 1.0)
 	end
 
-	if E.CreatedMovers then
-		for name in pairs(E.CreatedMovers) do
-			local mover = _G[name]
-			if mover and mover:IsShown() then
-				mover:Hide()
-				err = true
+	function E:PLAYER_REGEN_DISABLED()
+		local wasShown
+
+		if IsAddOnLoaded('ElvUI_Options') then
+			local ACD = E.Libs.AceConfigDialog
+			if ACD and ACD.OpenFrames and ACD.OpenFrames.ElvUI then
+				ACD:Close('ElvUI')
+				wasShown = true
 			end
 		end
+
+		if E.CreatedMovers then
+			for name in pairs(E.CreatedMovers) do
+				local mover = _G[name]
+				if mover and mover:IsShown() then
+					mover:Hide()
+					wasShown = true
+				end
+			end
+		end
+
+		if wasShown then
+			NoCombat()
+		end
 	end
 
-	if err then
-		E:Print(ERR_NOT_IN_COMBAT)
+	function E:AlertCombat()
+		local combat = InCombatLockdown()
+		if combat then NoCombat() end
+		return combat
 	end
 end
 
@@ -565,8 +603,8 @@ function E:PositionGameMenuButton()
 	end
 	GameMenuFrame:Height(GameMenuFrame:GetHeight() + GameMenuButtonLogout:GetHeight() - 4)
 
-	local button = GameMenuFrame[E.name]
-	button:SetFormattedText('%s%s|r', E.media.hexvaluecolor, E.name)
+	local button = GameMenuFrame.ElvUI
+	button:SetFormattedText('%sElvUI|r', E.media.hexvaluecolor)
 
 	local _, relTo, _, _, offY = GameMenuButtonLogout:GetPoint()
 	if relTo ~= button then
@@ -596,7 +634,7 @@ end
 function E:SetupGameMenu()
 	local button = CreateFrame('Button', nil, GameMenuFrame, 'GameMenuButtonTemplate')
 	button:SetScript('OnClick', E.ClickGameMenu)
-	GameMenuFrame[E.name] = button
+	GameMenuFrame.ElvUI = button
 
 	if not E:IsAddOnEnabled('ConsolePortUI_Menu') then
 		button:Size(GameMenuButtonLogout:GetWidth(), GameMenuButtonLogout:GetHeight())
@@ -605,7 +643,7 @@ function E:SetupGameMenu()
 	end
 end
 
-function E:IsDragonRiding()
+function E:IsDragonRiding() -- currently unused, was used to help actionbars fade
 	for spellID in next, E.MountDragons do
 		if E:GetAuraByID('player', spellID, 'HELPFUL') then
 			return true

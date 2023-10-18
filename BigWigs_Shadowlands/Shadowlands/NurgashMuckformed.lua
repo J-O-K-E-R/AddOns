@@ -14,8 +14,8 @@ mod.worldBoss = 167526
 
 function mod:GetOptions()
 	return {
-		338867, -- Hail of Stones
-		338868, -- Deep Slumber
+		{338867, "CASTBAR"}, -- Hail of Stones
+		{338868, "CASTBAR"}, -- Deep Slumber
 		338864, -- Earthen Blast
 		{338863, "HEALER"}, -- Stone Stomp
 		{338858, "TANK"}, -- Stone Fist

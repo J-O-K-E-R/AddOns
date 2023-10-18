@@ -2,7 +2,6 @@ local E, L, V, P, G = unpack(ElvUI)
 local S = E:GetModule('Skins')
 
 local _G = _G
-local gsub = gsub
 local unpack = unpack
 local GetAddOnInfo = GetAddOnInfo
 local GetAddOnEnableState = GetAddOnEnableState
@@ -44,7 +43,7 @@ local function HandleButton(entry, addonIndex)
 
 	local name, title, _, loadable, reason = GetAddOnInfo(addonIndex)
 	if disabled or reason == 'DEP_DISABLED' then
-		entry.Title:SetText(gsub(title or name, '|c%x%x%x%x%x%x%x%x(.-)|?r?','%1'))
+		entry.Title:SetText(E:StripString(title or name, true))
 	end
 
 	if enabledForSome then
@@ -94,7 +93,7 @@ function S:AddonList()
 	S:HandleDropDownBox(_G.AddonCharacterDropDown, 165)
 	S:HandleTrimScrollBar(_G.AddonList.ScrollBar)
 	S:HandleCheckBox(_G.AddonListForceLoad)
-	_G.AddonListForceLoad:Size(26, 26)
+	_G.AddonListForceLoad:Size(26)
 
 	hooksecurefunc('AddonList_InitButton', HandleButton)
 end

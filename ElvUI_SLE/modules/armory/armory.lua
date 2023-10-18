@@ -54,44 +54,45 @@ Armory.Constants.EnchantableSlots = {
 	['FeetSlot'] = true,
 }
 Armory.Constants.SpecPrimaryStats = {
-	[250] = 1, --DK Blood
-	[251] = 1, --DK Frost
-	[252] = 1, --DK Unholy
-	[577] = 2, --DH Havoc
-	[581] = 2, --DH Vengeance
-	[102] = 4, --Druid Balance
-	[103] = 2, --Druid Feral
-	[104] = 2, --Druid Guardian
-	[105] = 4, --Druid Restoration
-	[253] = 2, --Hunter Beast Mastery
-	[254] = 2, --Hunter Marksmanship
-	[255] = 2, --Hunter Survival
-	[62] = 4, --Mage Arcane
-	[63] = 4, --Mage Fire
-	[64] = 4, --Mage Frost
-	[268] = 2, --Monk Brewmaster
-	[270] = 4, --Monk Mistweaver
-	[269] = 2, --Monk Windwalker
-	[65] = 4, --Paladin Holy
-	[66] = 1, --Paladin Protection
-	[70] = 1, --Paladin Retribution
-	[256] = 4, --Priest Discipline
-	[257] = 4, --Priest Holy
-	[258] = 4, --Priest Shadow
-	[259] = 2, --Rogue Assassination
-	[260] = 2, --Rogue Outlaw
-	[261] = 2, --Rogue Subtlety
-	[262] = 4, --Shaman Elemental
-	[263] = 2, --Shaman Enhancement
-	[264] = 4, --Shaman Restoration
-	[265] = 4, --Warlock Affliction
-	[266] = 4, --Warlock Demonology
-	[267] = 4, --Warlock Destruction
-	[71] = 1, --Warrior Arms
-	[72] = 1, --Warrior Fury
-	[73] = 1, --Warrior Protection
-	[1467] = 4, --Evoker DPS
-	[1468] = 4, --Evoker Heals
+	[62] = 4,	-- Mage: Arcane
+	[63] = 4,	-- Mage: Fire
+	[64] = 4,	-- Mage: Frost
+	[65] = 4,	-- Paladin: Holy
+	[66] = 1,	-- Paladin: Protection
+	[70] = 1,	-- Paladin: Retribution
+	[71] = 1,	-- Warrior: Arms
+	[72] = 1,	-- Warrior: Fury
+	[73] = 1,	-- Warrior: Protection
+	[102] = 4,	-- Druid: Balance
+	[103] = 2,	-- Druid: Feral
+	[104] = 2,	-- Druid: Guardian
+	[105] = 4,	-- Druid: Restoration
+	[250] = 1,	-- Death Knight: Blood
+	[251] = 1,	-- Death Knight: Frost
+	[252] = 1,	-- Death Knight: Unholy
+	[253] = 2,	-- Hunter: Beast Mastery
+	[254] = 2,	-- Hunter: Marksmanship
+	[255] = 2,	-- Hunter: Survival
+	[256] = 4,	-- Priest: Discipline
+	[257] = 4,	-- Priest: Holy
+	[258] = 4,	-- Priest: Shadow
+	[259] = 2,	-- Rogue: Assassination
+	[260] = 2,	-- Rogue: Outlaw
+	[261] = 2,	-- Rogue: Subtlety
+	[262] = 4,	-- Shaman: Elemental
+	[263] = 2,	-- Shaman: Enhancement
+	[264] = 4,	-- Shaman: Restoration
+	[265] = 4,	-- Warlock: Affliction
+	[266] = 4,	-- Warlock: Demonology
+	[267] = 4,	-- Warlock: Destruction
+	[268] = 2,	-- Monk: Brewmaster
+	[269] = 2,	-- Monk: Windwalker
+	[270] = 4,	-- Monk: Mistweaver
+	[577] = 2,	-- DH: Havoc
+	[581] = 2,	-- DH: Vengeance
+	[1467] = 4,	-- Evoker: Devastation
+	[1468] = 4,	-- Evoker: Preservation
+	[1473] = 4,	-- Evoker: Augmentation
 }
 
 Armory.Constants.AzeriteTraitAvailableColor = {0.95, 0.95, 0.32, 1}
@@ -178,6 +179,9 @@ function Armory:UpdatePageInfo(frame, which)
 		Armory.CharacterPrimaryStat = select(6, GetSpecializationInfo(GetSpecialization(), nil, nil, nil, UnitSex('player')))
 	else
 		Armory.InspectPrimaryStat = Armory.Constants.SpecPrimaryStats[GetInspectSpecialization(unit)]
+		if _G.InspectPaperDollFrame.SLE_Armory_BG then
+			IA:Update_BG()
+		end
 	end
 
 	for _, SlotName in pairs(Armory.Constants.GearList) do
@@ -279,10 +283,13 @@ end
 function Armory:UpdateGemInfo(Slot, which)
 	local unit = which == 'Character' and 'player' or (_G.InspectFrame and _G.InspectFrame.unit)
 	if not unit then return end
+	local itemLink = Slot.itemLink
+
 	for i = 1, Armory.Constants.MaxGemSlots do
-		local GemLink
 		if not Slot['SLE_Gem'..i] then return end
-		if Slot.itemLink then
+
+		local gemLink, gemTexture
+		if itemLink then
 			if Slot.ID == 2 then
 				if not CA.HearthMilestonesCached then CA:FixFuckingBlizzardLogic() end
 				local window = strlower(which)
@@ -297,17 +304,24 @@ function Armory:UpdateGemInfo(Slot, which)
 					local GemID = C_AzeriteEssence.GetMilestoneEssence(Armory.Constants.EssenceMilestones[i]) --Blizz messed up milestones IDs so using a god damned cache table
 					if GemID then
 						local rank = C_AzeriteEssence.GetEssenceInfo(GemID).rank
-						GemLink = C_AzeriteEssence.GetEssenceHyperlink(GemID, rank)
+						gemLink = C_AzeriteEssence.GetEssenceHyperlink(GemID, rank)
 					end
 				end
-				if not GemLink then
-					GemLink = select(2, GetItemGem(Slot.itemLink, i))
+				if not gemLink then
+					gemLink = select(2, GetItemGem(itemLink, i))
 				end
 			else
-				GemLink = select(2, GetItemGem(Slot.itemLink, i))
+				local textureSlot = Slot['textureSlot'..i]
+				local textureID = textureSlot:GetTexture()
+
+				gemLink = select(2, GetItemGem(itemLink, i))
+				if gemLink then
+					gemTexture = select(10, GetItemInfo(gemLink))
+					gemLink = select(2, GetItemGem(itemLink, textureID == gemTexture and i or i + 1))
+				end
 			end
 		end
-		Slot['SLE_Gem'..i].Link = GemLink
+		Slot['SLE_Gem'..i].Link = gemLink
 	end
 end
 
@@ -514,6 +528,7 @@ end
 
 function Armory:Initialize()
 	if not Armory:CheckOptions() then return end
+	if not E.db.sle.armory.character.enable and not E.db.sle.armory.inspect.enable then return end
 
 	--May be usefull later
 	Armory.ScanTT = CreateFrame('GameTooltip', 'SLE_Armory_ScanTT', nil, 'GameTooltipTemplate')

@@ -22,7 +22,7 @@ local rapidGrowthMarker = mod:AddMarkerOption(true, "player", 1, 338853, 1, 2, 3
 function mod:GetOptions()
 	return {
 		338855, -- Seeds of Sorrow
-		338856, -- Dirge of the Fallen Sanctum
+		{338856, "CASTBAR"}, -- Dirge of the Fallen Sanctum
 		{338853, "DISPEL"}, -- Rapid Growth
 		rapidGrowthMarker,
 		{338852, "TANK"}, -- Implant

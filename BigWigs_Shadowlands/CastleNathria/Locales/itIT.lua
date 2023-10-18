@@ -49,9 +49,6 @@ if L then
 	L.anima_tracking = "Tracciamento Animum |cffff0000(Experimental)|r"
 	L.anima_tracking_desc = "Barre e messaggi per i tracciamento dei livelli di animum nei contenitori.|n|cffaaff00Suggerimento: Potresti preferire tenere disabilitati le barre e il box informazioni, dipende dalle tue preferenze personali."
 
-	L.custom_on_stop_timers = "Mostra sempre le barre abilità"
-	L.custom_on_stop_timers_desc = "Solo per il test di adesso"
-
 	L.desires = "Desideri"
 	L.bottles = "Bottiglie"
 	L.sins = "Peccati"
@@ -101,9 +98,6 @@ if L then
 
 	L.skirmishers = "Schermagliatrici" -- Short for Stone Legion Skirmishers
 	L.eruption = "Eruzione" -- Short for Reverberating Eruption
-
-	L.custom_on_stop_timers = "Mostra sempre le barre abilità"
-	L.custom_on_stop_timers_desc = "Solo per il test di adesso"
 
 	L.goliath_short = "Mastodonte"
 	L.goliath_desc = "Mostra avvisi e timer per la comparsa del Mastodonte della Legione di Pietra."

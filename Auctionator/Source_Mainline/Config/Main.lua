@@ -12,6 +12,9 @@ Auctionator.Config.Options.AUTOSCAN_INTERVAL = "autoscan_interval"
 Auctionator.Config.Options.SELLING_CANCEL_SHORTCUT = "selling_cancel_shortcut"
 Auctionator.Config.Options.SELLING_BUY_SHORTCUT = "selling_buy_shortcut"
 Auctionator.Config.Options.SELLING_SPLIT_PANELS = "selling_split_panels"
+Auctionator.Config.Options.COLUMNS_SHOPPING_BUY_ITEM = "columns_shopping_buy_item"
+Auctionator.Config.Options.COLUMNS_SHOPPING_BUY_COMMODITY = "columns_shopping_buy_commodity"
+Auctionator.Config.Options.SHOPPING_ALWAYS_CONFIRM_COMMODITY_QUANTITY = "shopping_always_confirm_commodity_quantity"
 
 Auctionator.Config.Options.CRAFTING_INFO_SHOW_CHEAPEST_QUALITIES_COST = "crafting_info_show_cheapest_qualities_cost"
 
@@ -23,18 +26,19 @@ Auctionator.Config.Options.SELLING_ITEM_MATCHING = "selling_item_matching"
 
 Auctionator.Config.Options.DEFAULT_QUANTITIES = "default_quantities"
 Auctionator.Config.Options.UNDERCUT_SCAN_NOT_LIFO = "undercut_scan_not_lifo"
-Auctionator.Config.Options.UNDERCUT_SCAN_GEAR_MATCH_ILVL_VARIANTS = "undercut_scan_gear_use_ilvl_variants"
 
 Auctionator.Config.Defaults[Auctionator.Config.Options.SMALL_TABS] = false
 Auctionator.Config.Defaults[Auctionator.Config.Options.PET_TOOLTIPS] = true
 Auctionator.Config.Defaults[Auctionator.Config.Options.AUTOSCAN] = false
 Auctionator.Config.Defaults[Auctionator.Config.Options.AUTOSCAN_INTERVAL] = 15
 Auctionator.Config.Defaults[Auctionator.Config.Options.UNDERCUT_SCAN_NOT_LIFO] = true
-Auctionator.Config.Defaults[Auctionator.Config.Options.UNDERCUT_SCAN_GEAR_MATCH_ILVL_VARIANTS] = true
 Auctionator.Config.Defaults[Auctionator.Config.Options.SELLING_CANCEL_SHORTCUT] = Auctionator.Config.Shortcuts.RIGHT_CLICK
 Auctionator.Config.Defaults[Auctionator.Config.Options.SELLING_BUY_SHORTCUT] = Auctionator.Config.Shortcuts.ALT_RIGHT_CLICK
 Auctionator.Config.Defaults[Auctionator.Config.Options.SELLING_SPLIT_PANELS] = false
 Auctionator.Config.Defaults[Auctionator.Config.Options.CRAFTING_INFO_SHOW_CHEAPEST_QUALITIES_COST] = false
+Auctionator.Config.Defaults[Auctionator.Config.Options.COLUMNS_SHOPPING_BUY_ITEM] = {}
+Auctionator.Config.Defaults[Auctionator.Config.Options.COLUMNS_SHOPPING_BUY_COMMODITY] = {}
+Auctionator.Config.Defaults[Auctionator.Config.Options.SHOPPING_ALWAYS_CONFIRM_COMMODITY_QUANTITY] = false
 
 Auctionator.Config.Defaults[Auctionator.Config.Options.AUCTION_DURATION] = 24
 Auctionator.Config.Defaults[Auctionator.Config.Options.AUCTION_SALES_PREFERENCE] = Auctionator.Config.SalesTypes.PERCENTAGE

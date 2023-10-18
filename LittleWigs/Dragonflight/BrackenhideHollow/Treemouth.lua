@@ -9,6 +9,12 @@ mod:SetEncounterID(2568)
 mod:SetRespawnTime(30)
 
 --------------------------------------------------------------------------------
+-- Locals
+--
+
+local graspingVinesCount = 1
+
+--------------------------------------------------------------------------------
 -- Initialization
 --
 
@@ -19,23 +25,30 @@ function mod:GetOptions()
 		{376811, "SAY"}, -- Decay Spray
 		377859, -- Infectious Spit
 		377559, -- Vine Whip
+		-- Decaying Slime
+		378054, -- Withering Away!
 		-- Mythic
 		383875, -- Partially Digested
 		390968, -- Starving Frenzy
 	}, {
+		[378054] = -25302, -- Decaying Slime
 		[383875] = CL.mythic,
 	}
 end
 
 function mod:OnBossEnable()
 	self:Log("SPELL_CAST_START", "GraspingVines", 376934)
-	self:Log("SPELL_AURA_APPLIED", "ConsumingApplied", 377187)
 	self:Log("SPELL_AURA_APPLIED", "ConsumingStart", 378022)
+	self:Log("SPELL_AURA_APPLIED", "ConsumingApplied", 377222)
 	self:Log("SPELL_AURA_REMOVED", "ConsumingRemoved", 378022)
 	self:Log("SPELL_CAST_START", "DecaySpray", 376811)
 	-- Infectious Spit is only cast in non-Mythic difficulties as of 2023-05-13
 	self:Log("SPELL_CAST_SUCCESS", "InfectiousSpit", 377859)
 	self:Log("SPELL_CAST_START", "VineWhip", 377559)
+
+	-- Decaying Slime
+	self:Log("SPELL_AURA_APPLIED", "WitheringAwayDamage", 378054)
+	self:Log("SPELL_PERIODIC_DAMAGE", "WitheringAwayDamage", 378054)
 
 	-- Mythic
 	self:Log("SPELL_AURA_APPLIED", "PartiallyDigestedApplied", 383875)
@@ -44,13 +57,14 @@ function mod:OnBossEnable()
 end
 
 function mod:OnEngage()
+	graspingVinesCount = 1
 	self:CDBar(377559, 5.0) -- Vine Whip
 	self:CDBar(376811, 12.1) -- Decay Spray
 	if not self:Mythic() then
 		self:CDBar(377859, 20.9) -- Infectious Spit
 	end
 	-- 23s energy gain + .2s delay
-	self:CDBar(376934, 23.2) -- Grasping Vines
+	self:CDBar(376934, 23.2, CL.count:format(self:SpellName(376934), graspingVinesCount)) -- Grasping Vines
 end
 
 --------------------------------------------------------------------------------
@@ -58,10 +72,12 @@ end
 --
 
 function mod:GraspingVines(args)
-	self:Message(args.spellId, "red")
+	self:StopBar(CL.count:format(args.spellName, graspingVinesCount))
+	self:Message(args.spellId, "red", CL.count:format(args.spellName, graspingVinesCount))
 	self:PlaySound(args.spellId, "info")
+	graspingVinesCount = graspingVinesCount + 1
 	-- 5s cast + 4s channel before Consume + 45s energy gain + .5s delay
-	self:CDBar(args.spellId, 54.5)
+	self:CDBar(args.spellId, 54.5, CL.count:format(args.spellName, graspingVinesCount))
 	-- takes 10s to fully cast + .2 delay
 	if self:BarTimeLeft(376811) < 10.2 then -- Decay Spray
 		self:CDBar(376811, {10.2, 42.5})
@@ -74,16 +90,19 @@ function mod:GraspingVines(args)
 	end
 end
 
-function mod:ConsumingApplied(args)
-	self:TargetMessage(378022, "red", args.sourceName)
-	self:PlaySound(378022, "long", nil, args.sourceName)
-end
-
 do
 	local consumingStart = 0
+	local playerList = {}
 
 	function mod:ConsumingStart(args)
 		consumingStart = args.time
+		playerList = {}
+	end
+
+	function mod:ConsumingApplied(args)
+		playerList[#playerList + 1] = args.destName
+		self:TargetsMessage(378022, "red", playerList, 5, nil, nil, .1)
+		self:PlaySound(378022, "long", nil, playerList)
 	end
 
 	function mod:ConsumingRemoved(args)
@@ -151,6 +170,22 @@ do
 		end
 		if not self:Mythic() and self:BarTimeLeft(377859) < 4.85 then -- Infectious Spit
 			self:CDBar(377859, {4.85, 20.6})
+		end
+	end
+end
+
+-- Decaying Slime
+
+do
+	local prev = 0
+	function mod:WitheringAwayDamage(args)
+		if self:Me(args.destGUID) then
+			local t = args.time
+			if t - prev > 2 then
+				prev = t
+				self:PersonalMessage(args.spellId, "underyou")
+				self:PlaySound(args.spellId, "underyou")
+			end
 		end
 	end
 end

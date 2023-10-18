@@ -57,14 +57,6 @@ L['tuskarr_tacklebox'] = nil
 L['options_icons_tuskarr_tacklebox'] = nil
 L['options_icons_tuskarr_tacklebox_desc'] = nil
 
-L['dr_best'] = '개인 최고 기록:\n - 일반: %.3f초\n - 고급: %.3f초'
-L['dr_best_dash'] = '개인 최고 기록:\n - %.3f초'
-L['dr_note'] = '목표 시간:\n - 일반: %s초 / %s초\n - 고급: %s초 / %s초'
-L['dr_note_dash'] = '목표 시간:\n - %s초 / %s초'
-L['dr_bronze'] = '\n\n경주를 완주하고 ' .. ns.color.Bronze('동메달') .. '을 획득하세요.'
-L['options_icons_dragonrace'] = '용 조련술 경주'
-L['options_icons_dragonrace_desc'] = '용 조련술 경주 위치를 표시합니다.'
-
 L['squirrels_note'] = '전투 애완동물이 아닌 동물에게 {emote:/사랑} 을 해야 합니다'
 L['options_icons_squirrels'] = '{achievement:16729}'
 L['options_icons_squirrels_desc'] = '{achievement:16729} 업적을 위한 동물 위치를 표시합니다.'
@@ -153,6 +145,12 @@ L['frostbound_chest'] = '서리결속 보관함'
 L['options_icons_frostbound_chest'] = '서리결속 보관함'
 L['options_icons_frostbound_chest_desc'] = nil
 
+L['fyrakk_assault_label'] = nil
+
+L['dreamsurge_sublabel'] = nil
+L['celestine_vendor_note'] = nil
+L['renewed_magmammoth_note'] = nil
+
 -------------------------------------------------------------------------------
 ------------------------------- THE AZURE SPAN --------------------------------
 -------------------------------------------------------------------------------
@@ -228,6 +226,7 @@ L['options_icons_tuskarr_chest'] = nil
 L['options_icons_tuskarr_chest_desc'] = nil
 
 L['community_feast_label'] = nil
+L['tasks_completed_suffix'] = nil
 L['options_icons_community_feast'] = nil
 L['options_icons_community_feast_desc'] = nil
 
@@ -242,6 +241,13 @@ L['options_icons_icemaw_storage_cache_desc'] = nil
 L['kazzi_note_start'] = nil
 L['kazzi_note_item'] = nil
 L['kazzi_achievement_suffix'] = nil
+
+L['naszuro_vakthros'] = nil
+L['naszuro_imbu'] = nil
+L['naszuro_azure_archives'] = nil
+L['naszuro_hudsons_rock'] = nil
+
+L['ferry_to_iskaara'] = nil
 
 -------------------------------------------------------------------------------
 ------------------ FORBIDDEN REACH (DRACTHYR STARTING ZONE) -------------------
@@ -365,6 +371,8 @@ L['renown_envoy_label'] = nil
 L['renown_envoy_note'] = nil
 L['trader_hagarth_note'] = nil
 
+L['naszuro_caldera_of_the_menders'] = nil
+
 -------------------------------------------------------------------------------
 ------------------------------ OHN'AHRAN PLAINS -------------------------------
 -------------------------------------------------------------------------------
@@ -468,6 +476,9 @@ L['options_icons_lightning_bound_chest_desc'] = nil
 
 L['bloodgullet_note'] = nil
 
+L['naszuro_windsong_rise'] = nil
+L['naszuro_emerald_gardens'] = nil
+
 -------------------------------------------------------------------------------
 --------------------------------- THALDRASZUS ---------------------------------
 -------------------------------------------------------------------------------
@@ -535,6 +546,16 @@ L['options_icons_titan_chest'] = '티탄 궤짝'
 L['options_icons_titan_chest_desc'] = nil
 
 L['living_mud_mask_note'] = nil
+
+L['little_scales_daycare_note'] = nil
+L['naszuro_veiled_ossuary'] = nil
+L['naszuro_algethar_academy'] = nil
+L['naszuro_vault_of_the_incarnates'] = nil
+L['naszuro_thaldraszus_peak'] = nil
+L['naszuro_temporal_conflux'] = nil
+
+L['revival_catalyst_label'] = nil
+L['revival_catalyst_note'] = nil
 
 -------------------------------------------------------------------------------
 ------------------------------ THE WAKING SHORE -------------------------------
@@ -674,6 +695,16 @@ L['phoenix_wishwing_info'] = nil
 
 L['bugbiter_tortoise_note'] = nil
 
+L['naszuro_apex_canopy'] = nil
+L['naszuro_obsidian_throne'] = nil
+L['naszuro_ruby_lifeshrine'] = nil
+L['naszuro_dragonheart_outpost'] = nil
+
+L['box_of_rocks_label'] = nil
+L['box_of_rocks_note'] = nil
+L['options_icons_many_boxes'] = '{achievement:18559}'
+L['options_icons_many_boxes_desc'] = nil
+
 -------------------------------------------------------------------------------
 ------------------------------- Zaralek Cavern --------------------------------
 -------------------------------------------------------------------------------
@@ -708,6 +739,7 @@ L['molten_scoutbot_note'] = nil
 L['bolts_and_brass_note'] = nil
 
 L['sniffen_sage_suffix'] = nil
+L['sniffen_digs_suffix'] = nil
 
 L['big_slick_note'] = nil
 L['grogul_note'] = nil
@@ -719,12 +751,204 @@ L['smelly_trash_pile_label'] = nil
 L['options_icons_smelly_trash_pile'] = nil
 L['options_icons_smelly_trash_pile_desc'] = nil
 
+L['smelly_treasure_chest_label'] = nil
+L['options_icons_smelly_treasure_chest'] = nil
+L['options_icons_smelly_treasure_chest_desc'] = nil
+
 L['seething_cache_treasure_note'] = nil
 L['chest_of_the_flights_treasure_note'] = nil
 L['curious_top_hat_note'] = nil
 
-L['zaralek_rotation_active'] = nil
-L['zaralek_rotation_inactive'] = nil
+L['the_gift_of_cheese_note_1'] = nil
+L['the_gift_of_cheese_note_2'] = nil
+L['the_gift_of_cheese_note_3'] = nil
+L['the_gift_of_cheese_note_4'] = nil
+L['the_gift_of_cheese_note_5'] = nil
+
+L['zaralek_rare_active'] = nil
+L['zaralek_rare_inactive'] = nil
+L['zaralek_event_active'] = nil
+L['zaralek_event_inactive'] = nil
 
 L['options_icons_zone_event'] = nil
 L['options_icons_zone_event_desc'] = nil
+
+-------------------------------------------------------------------------------
+----------------------------- SECRETS OF AZEROTH ------------------------------
+-------------------------------------------------------------------------------
+
+-- Secrets of Azeroth: Clue 1
+L['soa_01_rlabel'] = nil
+L['soa_01_golden_chalice_note'] = nil
+
+-- Secrets of Azeroth: Clue 2
+L['soa_02_rlabel'] = nil
+L['soa_02_kathos_note'] = nil
+L['soa_02_shomko_note_a'] = nil
+L['soa_02_shomko_note_b'] = nil
+L['soa_02_shomko_note_c'] = nil
+
+-- Secrets of Azeroth: Clue 3
+L['soa_03_rlabel'] = nil
+L['soa_03_fangli_hoot_note_a'] = nil
+L['soa_03_fangli_hoot_note_b'] = nil
+L['soa_03_fangli_hoot_note_c'] = nil
+L['soa_03_fangli_hoot_note_d'] = nil
+L['soa_03_fangli_hoot_note_e'] = nil
+L['soa_03_fangli_clue_label'] = nil
+L['soa_03_fangli_clue'] = nil
+L['soa_03_erugosa_note_a'] = nil
+L['soa_03_erugosa_note_b'] = nil
+L['soa_03_erugosa_note_c'] = nil
+L['soa_03_erugosa_note_d'] = nil
+L['soa_03_clinkyclick_note_a'] = nil
+L['soa_03_clinkyclick_note_b'] = nil
+L['soa_03_gryffin_note_a'] = nil
+L['soa_03_gryffin_note_b'] = nil
+L['soa_03_shakey_note_a'] = nil
+L['soa_03_shakey_note_b'] = nil
+L['soa_03_shakey_note_c'] = nil
+
+-- Secrets of Azeroth: Clue 4
+L['soa_04_rlabel'] = nil
+L['soa_04_locker_label'] = nil
+L['soa_04_sazsel_note_a'] = nil
+L['soa_04_sazsel_note_b'] = nil
+
+-- Secrets of Azeroth: Clue 5
+L['soa_05_rlabel'] = nil
+L['soa_05_torch_of_pyrreth_note_a'] = nil
+L['soa_05_torch_of_pyrreth_note_b'] = nil
+L['soa_05_torch_of_pyrreth_note_c'] = nil
+L['soa_05_ancient_lever_label'] = nil
+L['soa_05_ancient_lever_note_a'] = nil
+L['soa_05_ancient_lever_note_b'] = nil
+L['soa_05_ancient_lever_note_c'] = nil
+L['soa_05_enchanted_box_label'] = nil
+
+-- Secrets of Azeroth: Clue 6
+L['soa_06_rlabel'] = nil
+L['soa_06_unvieled_tablet_label'] = nil
+L['soa_06_unvieled_tablet_note_a'] = nil
+L['soa_06_unvieled_tablet_note_b'] = nil
+L['soa_06_unvieled_tablet_note_c'] = nil
+
+-- Secrets of Azeroth: Clue 7
+L['soa_07_rlabel'] = nil
+L['soa_07_brazier_label'] = nil
+L['soa_07_brazier_note_a'] = nil
+L['soa_07_brazier_note_b'] = nil
+L['soa_07_idol_note'] = nil
+
+-- Secrets of Azeroth: Clue 8
+L['soa_08_rlabel'] = nil
+L['soa_08_kathos_note'] = nil
+L['soa_08_time_lost_fragment_note'] = nil
+L['soa_08_tl_fragment_location_a'] = nil
+L['soa_08_tl_fragment_location_b'] = nil
+L['soa_08_tl_fragment_location_c'] = nil
+
+-- Secrets of Azeroth: Clue 9
+L['soa_09_rlabel'] = nil
+L['soa_09_bobby_note'] = nil
+L['soa_09_hastily_scrawled_stone_label'] = nil
+L['soa_09_hastily_scrawled_stone_note'] = nil
+L['soa_09_ancient_key_mold_label'] = nil
+L['soa_09_ancient_key_mold_note'] = nil
+
+-- Secrets of Azeroth: Clue 10
+L['soa_10_rlabel'] = nil
+L['soa_10_tyrs_titan_key_note'] = nil
+L['soa_10_rose_gold_dust_note'] = nil
+L['soa_10_igneous_flux_note'] = nil
+L['soa_10_weaponsmith_koref_note'] = nil
+
+-- Secrets of Azeroth: Clue 11
+L['soa_11_rlabel'] = nil
+L['soa_11_rlabel_optional'] = nil
+L['soa_11_kathos_note'] = nil
+L['soa_11_sansok_khan_note'] = nil
+L['soa_11_jhara_note'] = nil
+L['soa_11_marker_1_label'] = nil
+L['soa_11_marker_2_label'] = nil
+L['soa_11_marker_3_label'] = nil
+L['soa_11_marker_4_label'] = nil
+L['soa_11_marker_4_note'] = nil
+L['soa_11_marker_5_label'] = nil
+L['soa_11_marker_5_note'] = nil
+L['soa_11_burial_banner_note'] = nil
+
+-- Secrets of Azeroth: Clue 12
+L['soa_12_rlabel'] = nil
+L['soa_12_bobby_note'] = nil
+L['soa_12_ancient_tome_note'] = nil
+
+-- Secrets of Azeroth: Clue 13
+L['soa_13_rlabel'] = nil
+L['soa_13_bobby_note'] = nil
+L['soa_13_great_place_a_label'] = nil
+L['soa_13_great_place_a_note'] = nil
+L['soa_13_great_place_b_label'] = nil
+L['soa_13_great_place_b_note'] = nil
+L['soa_13_great_place_c_label'] = nil
+L['soa_13_great_place_c_note'] = nil
+L['soa_13_great_place_d_label'] = nil
+L['soa_13_great_place_d_note'] = nil
+L['soa_13_great_place_e_label'] = nil
+L['soa_13_great_place_e_note'] = nil
+L['soa_13_great_place_f_label'] = nil
+L['soa_13_great_place_f_note'] = nil
+
+-- Secrets of Azeroth: Clue 14
+L['soa_14_rlabel'] = nil
+L['soa_14_tithris_note'] = nil
+L['soa_14_buried_object_label'] = nil
+L['soa_14_tablet_label'] = nil
+L['soa_14_tablet_note'] = nil
+
+-- Secrets of Azeroth: Clue 15
+L['soa_15_rlabel'] = nil
+L['soa_15_kathos_note'] = nil
+L['soa_15_tyrhold_statue_label'] = nil
+L['soa_15_tyrhold_statue_note'] = nil
+L['soa_15_tyrhold_forge_label'] = nil
+L['soa_15_tyrhold_forge_note'] = nil
+L['soa_15_broken_urn_note'] = nil
+L['soa_15_broken_urn_location'] = nil
+L['soa_15_titan_power_relay_label'] = nil
+L['soa_15_tpr_note'] = nil
+L['soa_15_orb_label'] = nil
+L['soa_15_orb_location'] = nil
+L['soa_15_orb_note'] = nil
+
+-- Community Rumor Mill
+L['buried_satchel_note'] = nil
+L['buried_satchel_sublabel'] = nil
+
+L['bs_epl_location'] = nil
+L['bs_fel_location'] = nil
+L['bs_tho_location'] = nil
+L['bs_smv_location'] = nil
+L['bs_net_location'] = nil
+L['bs_vfw_location'] = nil
+L['bs_tas_location'] = nil
+L['bs_dbt_location'] = nil
+L['bs_bar_location'] = nil
+L['bs_nag_location'] = nil
+L['bs_gri_location'] = nil
+L['bs_hmt_location'] = nil
+L['bs_wpl_location'] = nil
+L['bs_tli_location'] = nil
+L['bs_tir_location'] = nil
+
+L['bs_emerald_dragonshrine'] = nil
+L['bs_bronze_dragonshrine'] = nil
+
+L['options_icons_secrets_of_azeroth'] = nil
+L['options_icons_secrets_of_azeroth_desc'] = nil
+
+-- Mimiron's Jumpjets Mount
+L['soa_mjj_list_note'] = nil
+L['soa_mjj_part1_note'] = nil
+L['soa_mjj_part2_note'] = nil
+L['soa_mjj_part3_note'] = nil

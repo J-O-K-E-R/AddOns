@@ -26,6 +26,10 @@ _G.PrettyReps.Data = {
 					name = "Maruuk Centaur"
 				},
 				{
+					factionID = 2526,
+					name = "Winterpelt Furbolg"
+				},
+				{
 					factionID = 2510,
 					name = "Valdrakken Accord",
 					children = 
@@ -43,14 +47,14 @@ _G.PrettyReps.Data = {
 							name = "Sabellian"
 						},
 						{
+							factionID = 2553,
+							name = "Soridormi"
+						},
+						{
 							factionID = 2517,
 							name = "Wrathion"
 						}
 					}
-				},
-				{
-					factionID = 2526,
-					name = "Winterpelt Furbolg"
 				}
 			}
 		},
@@ -74,10 +78,6 @@ _G.PrettyReps.Data = {
 				{
 					factionID = 2470,
 					name = "Death's Advance"
-				},
-				{
-					factionID = 2463,
-					name = "Marasmius"
 				},
 				{
 					factionID = 2472,
@@ -190,7 +190,6 @@ _G.PrettyReps.Data = {
 					factionID = 2432,
 					name = "Ve'nari"
 				}
-
 			}
 		},
 		{	
@@ -206,6 +205,10 @@ _G.PrettyReps.Data = {
 				{
 					factionID = 2164,
 					name = "Champions of Azeroth"
+				},
+				{
+					factionID = 2395,
+					name = "Honeyback Hive"
 				},
 				{
 					factionID = 2161,
@@ -938,16 +941,16 @@ _G.PrettyReps.Data = {
 							name = "Ironforge"
 						},
 						{
+							factionID = 2524,
+							name = "Obsidian Warders"
+						},
+						{
 							factionID = 72,
 							name = "Stormwind"
 						},
 						{
 							factionID = 1353,
 							name = "Tushui Pandaren"
-						},
-						{
-							factionID = 2524,
-							name = "Obsidian Warders"
 						},
 					}
 				},
@@ -964,6 +967,10 @@ _G.PrettyReps.Data = {
 						{
 							factionID =	530,
 							name = "Darkspear Trolls"
+						},
+						{
+							factionID = 2523,
+							name = "Dark Talons"
 						},
 						{
 							factionID = 1352,
@@ -985,10 +992,6 @@ _G.PrettyReps.Data = {
 							factionID = 68,
 							name = "Undercity"
 						},
-						{
-							factionID = 2523,
-							name = "Dark Talons"
-						},
 					}
 				},
 				{
@@ -998,16 +1001,19 @@ _G.PrettyReps.Data = {
 					children = 
 					{
 						{
-							factionID = 2011,
-							name = "Bizmo's Brawlpub"
-						},
-						{
 							factionID = 1419,
-							name = "Bizmo's Brawlpub (Season 1)"
+							name = "Bizmo's Brawlpub (Season 1)",
+							isUnobtainable = true
 						},
 						{
 							factionID = 1691,
-							name = "Bizmo's Brawlpub (Season 2)"
+							name = "Bizmo's Brawlpub (Season 2)",
+							isUnobtainable = true
+						},
+						{
+							factionID = 2011,
+							name = "Bizmo's Brawlpub (Season 3)",
+							isUnobtainable = true
 						},
 						{
 							factionID = 890,
@@ -1030,16 +1036,19 @@ _G.PrettyReps.Data = {
 					children =
 					{
 						{
-							factionID = 2010,
-							name = "Brawl'gar Arena"
-						},
-						{
 							factionID = 1374,
-							name = "Brawl'gar Arena (Season 1)"
+							name = "Brawl'gar Arena (Season 1)",
+							isUnobtainable = true
 						},
 						{
 							factionID = 1690,
-							name = "Brawl'gar Arena (Season 2)"
+							name = "Brawl'gar Arena (Season 2)",
+							isUnobtainable = true
+						},
+						{
+							factionID = 2010,
+							name = "Brawl'gar Arena (Season 3)",
+							isUnobtainable = true
 						},
 						{
 							factionID = 729,

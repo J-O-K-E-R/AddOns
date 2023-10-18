@@ -164,7 +164,7 @@ function mod:GetOptions()
 		347670, -- Shadow Dagger
 		{349458, "ME_ONLY_EMPHASIZE"}, -- Domination Chains
 		"chains_active",
-		347704, -- Veil of Darkness
+		{347704, "CASTBAR"}, -- Veil of Darkness
 		{347609, "SAY", "SAY_COUNTDOWN", "ME_ONLY_EMPHASIZE"}, -- Wailing Arrow
 		wailingArrowMarker,
 		{352650, "TANK"}, -- Ranger's Heartseeker
@@ -185,8 +185,8 @@ function mod:GetOptions()
 		353929, -- Banshee's Bane
 		354011, -- Bane Arrows
 		{353965, "TANK"}, -- Banshee's Heartseeker
-		354068, -- Banshee's Fury
-		353952, -- Banshee Scream
+		{354068, "CASTBAR"}, -- Banshee's Fury
+		{353952, "CASTBAR"}, -- Banshee Scream
 		354147, -- Raze
 		-- Mythic
 		{358704, "SAY", "SAY_COUNTDOWN", "ME_ONLY_EMPHASIZE"}, -- Black Arrow

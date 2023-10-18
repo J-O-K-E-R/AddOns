@@ -171,7 +171,7 @@ function P:SetChargeScale(icon, chargeScale)
 end
 
 function P:SetTooltip(icon, showTooltip)
-	icon:EnableMouse(showTooltip)
+	icon:EnableMouse((not icon.SetPassThroughButtons or icon.isPassThrough) and (showTooltip or icon.tooltipID))
 end
 
 function P:ApplySettings(frame)

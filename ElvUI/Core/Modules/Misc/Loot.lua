@@ -39,16 +39,15 @@ local GetLootSlotLink = GetLootSlotLink
 local GetNumLootItems = GetNumLootItems
 local IsFishingLoot = IsFishingLoot
 local IsModifiedClick = IsModifiedClick
+local LootSlot = LootSlot
 local LootSlotHasItem = LootSlotHasItem
 local ResetCursor = ResetCursor
+local UIParent = UIParent
 local UnitIsDead = UnitIsDead
 local UnitIsFriend = UnitIsFriend
 local UnitName = UnitName
-local LootSlot = LootSlot
 
 local StaticPopup_Hide = StaticPopup_Hide
-local MasterLooterFrame_Show = MasterLooterFrame_Show
-local MasterLooterFrame_UpdatePlayers = MasterLooterFrame_UpdatePlayers
 
 local hooksecurefunc = hooksecurefunc
 local ITEM_QUALITY_COLORS = ITEM_QUALITY_COLORS
@@ -240,7 +239,7 @@ function M:LOOT_OPENED(_, autoloot)
 		local scale = lootFrame:GetEffectiveScale()
 		local x, y = GetCursorPosition()
 
-		lootFrame:Point('TOPLEFT', _G.UIParent, 'BOTTOMLEFT', (x / scale) - 40, (y / scale) + 20)
+		lootFrame:Point('TOPLEFT', UIParent, 'BOTTOMLEFT', (x / scale) - 40, (y / scale) + 20)
 		lootFrame:GetCenter()
 		lootFrame:Raise()
 		E:DisableMover('LootFrameMover')
@@ -302,7 +301,7 @@ function M:LOOT_OPENED(_, autoloot)
 
 		slot.name:SetText(L["No Loot"])
 		slot.name:SetTextColor(color.r, color.g, color.b)
-		slot.icon:SetTexture()
+		slot.icon:SetTexture(136511) -- Interface/PaperDoll/UI-PaperDoll-Slot-Bag
 
 		max_width = max(max_width, slot.name:GetStringWidth())
 
@@ -320,11 +319,13 @@ function M:LOOT_OPENED(_, autoloot)
 end
 
 function M:OPEN_MASTER_LOOT_LIST()
-	MasterLooterFrame_Show(_G.LootFrame.selectedLootButton)
+	_G.MasterLooterFrame_Show(_G.LootFrame.selectedLootButton)
 end
 
 function M:UPDATE_MASTER_LOOT_LIST()
-	if _G.LootFrame.selectedLootButton then MasterLooterFrame_UpdatePlayers() end
+	if _G.LootFrame.selectedLootButton then
+		_G.MasterLooterFrame_UpdatePlayers()
+	end
 end
 
 function M:LoadLoot()

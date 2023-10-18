@@ -152,9 +152,6 @@ if L then
 	L.lifeforce_casts = "%s (%d/%d)"
 
 	L.lane_text = "%s: %s" -- example: Top: Purifier
-	L.top_lane = "Top"
-	L.mid_lane = "Mid"
-	L.bot_lane = "Bot"
 
 	L.purifier = "Purifier" -- Fel-Powered Purifier
 	L.destructor = "Destructor" -- Fel-Infused Destructor
@@ -174,8 +171,8 @@ function mod:GetOptions()
 		250048, -- Life Force
 		248861, -- Spear of Doom
 		{248332, "SAY", "SAY_COUNTDOWN", "FLASH"}, -- Rain of Fel
-		249121, -- Final Doom
-		249934, -- Purge
+		{249121, "CASTBAR"}, -- Final Doom
+		{249934, "CASTBAR"}, -- Purge
 		{250693, "SAY", "SAY_COUNTDOWN", "FLASH"}, -- Arcane Buildup
 		{250691, "SAY", "SAY_COUNTDOWN", "FLASH"}, -- Burning Embers
 		250140, -- Foul Steps
@@ -260,13 +257,13 @@ function mod:StartWaveTimer(lane, count)
 
 	local laneText, icon = nil, nil
 	if lane == "top" then
-		laneText = L.top_lane
+		laneText = CL.top
 		icon = "misc_arrowlup"
 	elseif lane == "mid" then
-		laneText = L.mid_lane
+		laneText = CL.middle
 		icon = "misc_arrowright"
 	elseif lane == "bot" then
-		laneText = L.bot_lane
+		laneText = CL.bottom
 		icon = "misc_arrowdown"
 	elseif lane == "air" then
 		laneText = L.bats
@@ -364,7 +361,7 @@ function mod:ArcaneBuildup(args)
 		self:Say(args.spellId)
 		self:Flash(args.spellId)
 		self:SayCountdown(args.spellId, 5)
-		self:CastBar(args.spellId, 5, CL.you:format(args.spellName))
+		self:TargetBar(args.spellId, 5, args.destName)
 		self:ScheduleTimer("Bar", 5, args.spellId, 20, CL.you:format(args.spellName))
 	end
 end
@@ -382,7 +379,7 @@ function mod:BurningEmbers(args)
 		self:Say(args.spellId)
 		self:Flash(args.spellId)
 		self:SayCountdown(args.spellId, 5)
-		self:CastBar(args.spellId, 5, CL.you:format(args.spellName))
+		self:TargetBar(args.spellId, 5, args.destName)
 		self:ScheduleTimer("Bar", 5, args.spellId, 25, CL.you:format(args.spellName))
 	end
 end

@@ -1,7 +1,7 @@
-# <DBM> Challenges
+# <DBM Mod> Challenges
 
-## [r156](https://github.com/DeadlyBossMods/DBM-Challenges/tree/r156) (2023-05-02)
-[Full Changelog](https://github.com/DeadlyBossMods/DBM-Challenges/compare/r155...r156) [Previous Releases](https://github.com/DeadlyBossMods/DBM-Challenges/releases)
+## [r159](https://github.com/DeadlyBossMods/DBM-Challenges/tree/r159) (2023-09-05)
+[Full Changelog](https://github.com/DeadlyBossMods/DBM-Challenges/compare/r158...r159) [Previous Releases](https://github.com/DeadlyBossMods/DBM-Challenges/releases)
 
-- bump toc  
-- Add IconTexture  
+- Toc Bumps for retail  
+- Update DBM-Challenges.toc (#33)  

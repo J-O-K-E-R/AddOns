@@ -22,7 +22,7 @@ plugin.defaultDB = {
 	blockGarrison = true,
 	blockGuildChallenge = true,
 	blockSpellErrors = true,
-	blockTooltipQuests = true,
+	blockTooltipQuestText = true,
 	blockObjectiveTracker = true,
 	disableSfx = false,
 	disableMusic = false,
@@ -38,13 +38,16 @@ local L = BigWigsAPI:GetLocale("BigWigs: Plugins")
 plugin.displayName = L.bossBlock
 local GetBestMapForUnit = BigWigsLoader.GetBestMapForUnit
 local GetInstanceInfo = BigWigsLoader.GetInstanceInfo
+local onTestBuild = BigWigsLoader.onTestBuild
+local isClassic = BigWigsLoader.isClassic
 local GetSubZoneText = GetSubZoneText
-local TalkingHeadLineInfo = C_TalkingHead.GetCurrentLineInfo
+local TalkingHeadLineInfo = C_TalkingHead and C_TalkingHead.GetCurrentLineInfo
 local IsEncounterInProgress = IsEncounterInProgress
 local SetCVar = C_CVar.SetCVar
 local GetCVar = C_CVar.GetCVar
 local CheckElv = nil
 local RestoreAll
+local hideQuestTrackingTooltips = false
 
 -------------------------------------------------------------------------------
 -- Options
@@ -90,6 +93,7 @@ plugin.pluginOptions = {
 					desc = L.blockMoviesDesc,
 					width = "full",
 					order = 2,
+					hidden = isClassic,
 				},
 				blockGarrison = {
 					type = "toggle",
@@ -97,6 +101,7 @@ plugin.pluginOptions = {
 					desc = L.blockFollowerMissionDesc,
 					width = "full",
 					order = 3,
+					hidden = isClassic,
 				},
 				blockGuildChallenge = {
 					type = "toggle",
@@ -104,6 +109,7 @@ plugin.pluginOptions = {
 					desc = L.blockGuildChallengeDesc,
 					width = "full",
 					order = 4,
+					hidden = isClassic,
 				},
 				blockSpellErrors = {
 					type = "toggle",
@@ -112,13 +118,13 @@ plugin.pluginOptions = {
 					width = "full",
 					order = 5,
 				},
-				blockTooltipQuests = {
+				blockTooltipQuestText = {
 					type = "toggle",
 					name = L.blockTooltipQuests,
 					desc = L.blockTooltipQuestsDesc,
 					width = "full",
 					order = 6,
-					hidden = function() return true end, -- XXX Do we want to hack the tooltip?
+					hidden = isClassic, -- TooltipDataProcessor doesn't exist on classic
 				},
 				blockObjectiveTracker = {
 					type = "toggle",
@@ -126,6 +132,7 @@ plugin.pluginOptions = {
 					desc = L.blockObjectiveTrackerDesc,
 					width = "full",
 					order = 7,
+					hidden = isClassic, -- XXX make compatible with classic
 				},
 				blockTalkingHeads = {
 					type = "multiselect",
@@ -147,6 +154,7 @@ plugin.pluginOptions = {
 					end,
 					width = 2,
 					order = 8,
+					hidden = isClassic,
 				},
 			},
 		},
@@ -228,6 +236,21 @@ plugin.pluginOptions = {
 --
 
 do
+	local function ShouldFilterQuestProgress(tooltip)
+		if tooltip == GameTooltip and tooltip:IsTooltipType(2) then -- Enum.TooltipDataType.Unit
+			return hideQuestTrackingTooltips
+		end
+	end
+	function plugin:OnRegister()
+		if TooltipDataProcessor then
+			TooltipDataProcessor.AddLinePreCall(8, ShouldFilterQuestProgress) -- Enum.TooltipDataLineType.QuestObjective
+			TooltipDataProcessor.AddLinePreCall(17, ShouldFilterQuestProgress) -- Enum.TooltipDataLineType.QuestTitle
+			TooltipDataProcessor.AddLinePreCall(18, ShouldFilterQuestProgress) -- Enum.TooltipDataLineType.QuestPlayer
+		end
+	end
+end
+
+do
 	local function updateProfile()
 		local db = plugin.db.profile
 
@@ -266,9 +289,6 @@ do
 			end
 			SetCVar("Sound_EnableSFX", "1")
 		end
-		--if self.db.profile.blockTooltipQuests then
-		--	SetCVar("showQuestTrackingTooltips", "1")
-		--end
 		if self.db.profile.disableMusic then
 			local music = GetCVar("Sound_EnableMusic")
 			if music == "0" then
@@ -291,13 +311,15 @@ do
 			SetCVar("Sound_EnableErrorSpeech", "1")
 		end
 
-		self:RegisterEvent("TALKINGHEAD_REQUESTED")
-		self:RegisterEvent("CINEMATIC_START")
-		self:RegisterEvent("PLAY_MOVIE")
-		self:SiegeOfOrgrimmarCinematics() -- Sexy hack until cinematics have an id system (never)
-		self:ToyCheck() -- Sexy hack until cinematics have an id system (never)
+		if not isClassic then
+			self:RegisterEvent("TALKINGHEAD_REQUESTED")
+			self:RegisterEvent("CINEMATIC_START")
+			self:RegisterEvent("PLAY_MOVIE")
+			self:SiegeOfOrgrimmarCinematics() -- Sexy hack until cinematics have an id system (never)
+			self:ToyCheck() -- Sexy hack until cinematics have an id system (never)
 
-		CheckElv(self)
+			CheckElv(self)
+		end
 	end
 end
 
@@ -343,31 +365,31 @@ do
 	end
 
 	local restoreObjectiveTracker = nil
-	function plugin:OnEngage(event, module)
-		if not module or not module.journalId or module.worldBoss then return end
+	function plugin:OnEngage(_, module)
+		if not module or not module:GetJournalID() or module.worldBoss then return end
 
-		if self.db.profile.blockEmotes and not IsTestBuild() then -- Don't block emotes on WoW beta.
+		if self.db.profile.blockEmotes and not onTestBuild then -- Don't block emotes on WoW beta.
 			KillEvent(RaidBossEmoteFrame, "RAID_BOSS_EMOTE")
 			KillEvent(RaidBossEmoteFrame, "RAID_BOSS_WHISPER")
 		end
-		if self.db.profile.blockGarrison then
+		if self.db.profile.blockGarrison and not isClassic then
 			KillEvent(AlertFrame, "GARRISON_MISSION_FINISHED")
 			KillEvent(AlertFrame, "GARRISON_BUILDING_ACTIVATABLE")
 			KillEvent(AlertFrame, "GARRISON_FOLLOWER_ADDED")
 			KillEvent(AlertFrame, "GARRISON_RANDOM_MISSION_ADDED")
 		end
-		if self.db.profile.blockGuildChallenge then
+		if self.db.profile.blockGuildChallenge and not isClassic then
 			KillEvent(AlertFrame, "GUILD_CHALLENGE_COMPLETED")
 		end
 		if self.db.profile.blockSpellErrors then
 			KillEvent(UIErrorsFrame, "UI_ERROR_MESSAGE")
 		end
+		if self.db.profile.blockTooltipQuestText then
+			hideQuestTrackingTooltips = true
+		end
 		if self.db.profile.disableSfx then
 			SetCVar("Sound_EnableSFX", "0")
 		end
-		--if self.db.profile.blockTooltipQuests then
-		--	SetCVar("showQuestTrackingTooltips", "0")
-		--end
 		if self.db.profile.disableMusic then
 			SetCVar("Sound_EnableMusic", "0")
 		end
@@ -378,15 +400,18 @@ do
 			SetCVar("Sound_EnableErrorSpeech", "0")
 		end
 
-		CheckElv(self)
-		-- Never hide when tracking achievements or in Mythic+
-		local _, _, diff = GetInstanceInfo()
-		if not restoreObjectiveTracker and self.db.profile.blockObjectiveTracker and not GetTrackedAchievements() and diff ~= 8 and not trackerHider.IsProtected(ObjectiveTrackerFrame) then
-			restoreObjectiveTracker = trackerHider.GetParent(ObjectiveTrackerFrame)
-			if restoreObjectiveTracker then
-				trackerHider.SetFixedFrameStrata(ObjectiveTrackerFrame, true) -- Changing parent would change the strata & level, lock it first
-				trackerHider.SetFixedFrameLevel(ObjectiveTrackerFrame, true)
-				trackerHider.SetParent(ObjectiveTrackerFrame, trackerHider)
+		if not isClassic then
+			CheckElv(self)
+			-- Never hide when tracking achievements or in Mythic+
+			local _, _, diff = GetInstanceInfo()
+			local trackedAchievements = C_ContentTracking.GetTrackedIDs(2) -- Enum.ContentTrackingType.Achievement = 2
+			if not restoreObjectiveTracker and self.db.profile.blockObjectiveTracker and not next(trackedAchievements) and diff ~= 8 and not trackerHider.IsProtected(ObjectiveTrackerFrame) then
+				restoreObjectiveTracker = trackerHider.GetParent(ObjectiveTrackerFrame)
+				if restoreObjectiveTracker then
+					trackerHider.SetFixedFrameStrata(ObjectiveTrackerFrame, true) -- Changing parent would change the strata & level, lock it first
+					trackerHider.SetFixedFrameLevel(ObjectiveTrackerFrame, true)
+					trackerHider.SetParent(ObjectiveTrackerFrame, trackerHider)
+				end
 			end
 		end
 	end
@@ -408,12 +433,12 @@ do
 		if self.db.profile.blockSpellErrors then
 			RestoreEvent(UIErrorsFrame, "UI_ERROR_MESSAGE")
 		end
+		if self.db.profile.blockTooltipQuestText then
+			hideQuestTrackingTooltips = false
+		end
 		if self.db.profile.disableSfx then
 			SetCVar("Sound_EnableSFX", "1")
 		end
-		--if self.db.profile.blockTooltipQuests then
-		--	SetCVar("showQuestTrackingTooltips", "1")
-		--end
 		if self.db.profile.disableMusic then
 			SetCVar("Sound_EnableMusic", "1")
 		end
@@ -431,8 +456,8 @@ do
 		end
 	end
 
-	function plugin:BigWigs_OnBossDisable(event, module)
-		if not module or not module.journalId or module.worldBoss then return end
+	function plugin:BigWigs_OnBossDisable(_, module)
+		if not module or not module:GetJournalID() or module.worldBoss then return end
 		RestoreAll(self)
 	end
 end
@@ -440,20 +465,31 @@ end
 do
 	-- Talking Head blocking
 	local known = {
+		-- Black Rook Hold
+		[54567]=true,[54552]=true,[54566]=true,[54511]=true,[57890]=true,
+		[54540]=true,[54527]=true,[70621]=true,
 		-- Court of Stars
 		[70615]=true,[70199]=true,[70198]=true,[70197]=true,[70193]=true,
 		[70195]=true,[70196]=true,[70192]=true,[70194]=true,
+		-- Darkheart Thicket
+		[54459]=true,[54460]=true,[54461]=true,[54462]=true,[54463]=true,
+		[54464]=true,[70601]=true,
 		-- Halls of Valor
 		[57160]=true,[57159]=true,[57162]=true,[68701]=true,[57161]=true,
 		-- Neltharion's Lair
 		[54610]=true,[54608]=true,[54697]=true,[54708]=true,[54709]=true,
-		[54718]=true,[54719]=true,[54720]=true,[58102]=true,
+		[54718]=true,[54719]=true,[54720]=true,[58102]=true,[58104]=true,
 
+		-- Atal'Dazar
+		[97376]=true,[97377]=true,[97373]=true,[97374]=true,[97375]=true,[97372]=true,
 		-- Freehold
 		[104684]=true,[104682]=true,[104685]=true,
 		-- The Underrot
-		[112206]=true,[106857]=true,[106858]=true,[106852]=true,[106876]=true,
-		[106877]=true,[106853]=true,[106855]=true,[106856]=true,[106434]=true,
+		[112206]=true,[106857]=true,[106858]=true,[106852]=true,[106876]=true,[110728]=true,
+		[106877]=true,[106853]=true,[106855]=true,[106856]=true,[106434]=true,[110781]=true,
+		-- Waycrest Manor
+		[105953]=true,[105954]=true,[105955]=true,[105956]=true,[105962]=true,[105963]=true,[105964]=true,
+		[106722]=true,
 
 		-- De Other Side
 		[163828]=true,[163830]=true,[163831]=true,[163822]=true,[163823]=true,[163824]=true,[163834]=true,
@@ -543,6 +579,8 @@ do
 		[957] = true, -- Jailer intro
 		[958] = true, -- Jailer defeat
 		[964] = true, -- Raszageth defeat
+		[991] = true, -- Iridikron (DotI) defeat
+		[992] = true, -- Chrono-Lord Deios (DotI) defeat
 	}
 
 	function plugin:PLAY_MOVIE(_, id)

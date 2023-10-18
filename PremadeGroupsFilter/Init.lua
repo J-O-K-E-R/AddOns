@@ -19,7 +19,6 @@
 -------------------------------------------------------------------------------
 
 PremadeGroupsFilter = {}
-PremadeGroupsFilterState = PremadeGroupsFilterState or {}
 PremadeGroupsFilterSettings = PremadeGroupsFilterSettings or {}
 
 local PGFAddonName = select(1, ...)
@@ -55,13 +54,13 @@ C.CATEGORY_ID = {
     THORGAST           = 113,
 }
 
-C.DIFFICULTY_STRING = {
-    [1] = "normal",
-    [2] = "heroic",
-    [3] = "mythic",
-    [4] = "mythicplus",
-    [5] = "arena2v2",
-    [6] = "arena3v3",
+C.DIFFICULTY_KEYWORD = {
+    [C.NORMAL] = "normal",
+    [C.HEROIC] = "heroic",
+    [C.MYTHIC] = "mythic",
+    [C.MYTHICPLUS] = "mythicplus",
+    [C.ARENA2V2] = "arena2v2",
+    [C.ARENA3V3] = "arena3v3",
 }
 
 -- Translates tier enum values into normalized values - check via /dump PVPUtil.GetTierName(1)
@@ -132,80 +131,6 @@ C.SETTINGS_DEFAULT = {
     skipSignUpDialog = false,
 }
 
-C.STATE_DEFAULT = {
-    version = 4,
-}
-
-C.MODEL_DEFAULT = {
-    enabled = true,
-    expert = false,
-    expression = "",
-    sorting = "",
-    difficulty = {
-        act = false,
-        val = 3,
-    },
-    mprating = {
-        act = false,
-        min = "",
-        max = "",
-    },
-    pvprating = {
-        act = false,
-        min = "",
-        max = "",
-    },
-    members = {
-        act = false,
-        min = "",
-        max = "",
-    },
-    tanks = {
-        act = false,
-        min = "",
-        max = "",
-    },
-    heals = {
-        act = false,
-        min = "",
-        max = "",
-    },
-    dps = {
-        act = false,
-        min = "",
-        max = "",
-    },
-    defeated = {
-        act = false,
-        min = "",
-        max = "",
-    },
-}
-
-function PGF.MigrateStateV2()
-    -- check if migration from 1.10 to 1.11 is necessary
-    if PremadeGroupsFilterState.enabled ~= nil then
-        local stateV110 = PremadeGroupsFilterState
-        PremadeGroupsFilterState = {}
-        PremadeGroupsFilterState.v110 = stateV110
-        print(string.format(L["message.settingsupgraded"], "2"))
-    end
-end
-
-function PGF.MigrateStateV3()
-    if PremadeGroupsFilterState.version == nil then
-        PremadeGroupsFilterState.moveable = nil
-        for k, v in pairs(PremadeGroupsFilterState) do
-            if type(v) == "table" then
-                v.ilvl = nil
-                v.noilvl = nil
-            end
-        end
-        PremadeGroupsFilterState.version = 3
-        print(string.format(L["message.settingsupgraded"], "3"))
-    end
-end
-
 function PGF.MigrateStateV4()
     if PremadeGroupsFilterState.version < 4 then
         for k, v in pairs(PremadeGroupsFilterState) do
@@ -219,28 +144,56 @@ function PGF.MigrateStateV4()
     end
 end
 
-function PGF.UpdateStateWithDefaults()
-    PGF.Table_UpdateWithDefaults(PremadeGroupsFilterState, PGF.C.STATE_DEFAULT)
-    -- update all state tables with the current set of defaults
-    for k, v in pairs(PremadeGroupsFilterState) do
-        if type(v) == "table" then
-            PGF.Table_UpdateWithDefaults(v, PGF.C.MODEL_DEFAULT)
+function PGF.MigrateStateV5()
+    if PremadeGroupsFilterState.version < 5 then
+        local mapping = {
+            ["t1c1f0"] = { key = "c1f4", enabled = false, panel = "expression" }, -- quests
+            ["t1c2f0"] = { key = "c2f4", enabled = true,  panel = "dungeon"    }, -- dungeons
+            ["t1c3f1"] = { key = "c3f5", enabled = true,  panel = "raid"       }, -- raids new
+            ["t1c3f2"] = { key = "c3f6", enabled = true,  panel = "raid"       }, -- raids old
+            ["t1c6f0"] = { key = "c6f4", enabled = false, panel = "expression" }, -- custom pve
+            ["t2c4f0"] = { key = "c4f8", enabled = true,  panel = "arena"      }, -- arena
+            ["t2c6f0"] = { key = "c6f8", enabled = false, panel = "expression" }, -- custom pvp
+            ["t2c7f0"] = { key = "c7f8", enabled = false, panel = "expression" }, -- skirmish
+            ["t2c8f0"] = { key = "c8f8", enabled = false, panel = "expression" }, -- bg
+            ["t2c9f0"] = { key = "c9f8", enabled = true,  panel = "rbg"        }, -- rbg
+        }
+        local state5 = {
+            version = 5
+        }
+        for k, v in pairs(PremadeGroupsFilterState) do
+            if type(v) == "table" and mapping[k] then
+                state5[mapping[k].key] = {
+                    enabled = mapping[k].enabled and v.enabled,
+                    minimized = v.expert,
+                    expression = {
+                        expression = v.expression,
+                        sorting = v.sorting,
+                    },
+                    [mapping[k].panel] = {
+                        expression = v.expression,
+                        sorting = v.sorting,
+                    },
+                }
+            end
         end
+        PremadeGroupsFilterState = state5
+        print(string.format(L["message.settingsupgraded"], "5"))
     end
-end
-
-function PGF.UpdateSettingsWithDefaults()
-    PGF.Table_UpdateWithDefaults(PremadeGroupsFilterSettings, PGF.C.SETTINGS_DEFAULT)
 end
 
 function PGF.OnAddonLoaded(name)
     if name == PGFAddonName then
-        PGF.UpdateSettingsWithDefaults()
+        -- update new settings with defaults
+        PGF.Table_UpdateWithDefaults(PremadeGroupsFilterSettings, PGF.C.SETTINGS_DEFAULT)
 
-        PGF.MigrateStateV2()
-        PGF.MigrateStateV3()
+        -- initialize dialog state and migrate to latest version
+        if PremadeGroupsFilterState == nil or PremadeGroupsFilterState.version == nil then
+            PremadeGroupsFilterState = {}
+            PremadeGroupsFilterState.version = 5
+        end
         PGF.MigrateStateV4()
-        PGF.UpdateStateWithDefaults()
+        PGF.MigrateStateV5()
 
         -- request various player information from the server
         RequestRaidInfo()

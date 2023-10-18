@@ -1792,8 +1792,6 @@ function PI:DarthSetupSL()
 
 	E.private['sle']['uibuttons']['style'] = 'dropdown'
 
-	E.private['sle']['professions']['enchant']['enchScroll'] = true
-
 	E.private['sle']['skins']['merchant']['enable'] = true
 	E.private['sle']['skins']['merchant']['style'] = 'List'
 
@@ -1991,7 +1989,8 @@ end
 local function SetupAddons(Author)
 	if AddOnSkins and (not EmbedSystem_LeftWindow or not EmbedSystem_LeftWindow) then
 		local AS = unpack(AddOnSkins)
-		AS:Embed_Check(true)
+		local ES = AS.EmbedSystem
+		ES:Check(true)
 	end
 	if Author == "DARTH" then
 		local list = "xCT+"

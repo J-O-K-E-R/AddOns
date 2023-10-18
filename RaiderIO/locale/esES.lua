@@ -1,12 +1,13 @@
--- Generated from CurseForge on Wed May 24 07:56:02 UTC 2023
-local ns = select(2, ...) ---@type ns @The addon namespace.
+local ns = select(2, ...) ---@class ns @The addon namespace.
 
 if ns:IsSameLocale("esES") then
+
 	local L = ns.L or ns:NewLocale()
+	ns.L = L
 
 	L.LOCALE_NAME = "esES"
 
-L["ALLOW_IN_LFD"] = "Permitir en buscador de mazmorras"
+	L["ALLOW_IN_LFD"] = "Permitir en buscador de mazmorras"
 L["ALLOW_IN_LFD_DESC"] = "Click derecho en los grupos o aplicantes en el buscador de mazmorras para copiar la URL de su perfil de Raider.IO"
 L["ALLOW_ON_PLAYER_UNITS"] = "Permitir en marcos de jugador"
 L["ALLOW_ON_PLAYER_UNITS_DESC"] = [=[Click derecho en el marco de un jugador para copiar la URL de su perfil de Raider.IO
@@ -120,6 +121,10 @@ L["ENABLE_NO_SCORE_COLORS"] = "Desactivar colores de puntuación"
 L["ENABLE_NO_SCORE_COLORS_DESC"] = "Desactiva los colores de las puntuaciones. Todas las puntuaciones se mostrarán de color blanco."
 L["ENABLE_RAIDERIO_CLIENT_ENHANCEMENTS"] = "Habilitar mejoras del cliente de RaiderIO"
 L["ENABLE_RAIDERIO_CLIENT_ENHANCEMENTS_DESC"] = "Permite ver información detallada del cliente de RaiderIO de tus personajes confirmados."
+--[[Translation missing --]]
+--[[ L["ENABLE_REPLAY"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["ENABLE_REPLAY_DESC"] = ""--]] 
 L["ENABLE_RWF_MODE_BUTTON"] = "Habilitar"
 L["ENABLE_RWF_MODE_BUTTON_TOOLTIP"] = "Haz clic para habilitar el modo Race World First. Esto hará que su interfaz se vuelva a cargar."
 --[[Translation missing --]]
@@ -296,6 +301,40 @@ L["RELOAD_NOW"] = "Reiniciarla ahora"
 --[[Translation missing --]]
 --[[ L["RELOAD_RWF_MODE_BUTTON_TOOLTIP"] = ""--]] 
 --[[Translation missing --]]
+--[[ L["REPLAY_AUTO_SELECTION"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["REPLAY_AUTO_SELECTION_DESC"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["REPLAY_AUTO_SELECTION_GUILD_BEST"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["REPLAY_AUTO_SELECTION_MOST_RECENT"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["REPLAY_AUTO_SELECTION_PERSONAL_BEST"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["REPLAY_AUTO_SELECTION_STARRED"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["REPLAY_AUTO_SELECTION_TEAM_BEST"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["REPLAY_MENU_COPY_URL"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["REPLAY_MENU_DOCK"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["REPLAY_MENU_LOCK"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["REPLAY_MENU_POSITION"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["REPLAY_MENU_REPLAY"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["REPLAY_MENU_STYLE"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["REPLAY_MENU_TIMING"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["REPLAY_MENU_UNDOCK"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["REPLAY_MENU_UNLOCK"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["REPLAY_REPLAY_CHANGING"] = ""--]] 
+--[[Translation missing --]]
 --[[ L["REPLAY_SETTINGS_TOOLTIP"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["REPLAY_STYLE_TITLE_MDI"] = ""--]] 
@@ -303,6 +342,12 @@ L["RELOAD_NOW"] = "Reiniciarla ahora"
 --[[ L["REPLAY_STYLE_TITLE_MODERN"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["REPLAY_STYLE_TITLE_MODERN_COMPACT"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["REPLAY_SUMMARY_LOGGED"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["REPLAY_TIMING_TITLE_BOSS"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["REPLAY_TIMING_TITLE_DUNGEON"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["RWF_MINIBUTTON_TOOLTIP"] = ""--]] 
 --[[Translation missing --]]
@@ -388,5 +433,5 @@ L["WIPE_RWF_MODE_BUTTON"] = "Wipe"
 --[[Translation missing --]]
 --[[ L["WIPE_RWF_MODE_BUTTON_TOOLTIP"] = ""--]] 
 
-	ns.L = L
+
 end

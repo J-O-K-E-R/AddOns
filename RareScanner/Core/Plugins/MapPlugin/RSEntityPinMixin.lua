@@ -29,6 +29,8 @@ local RSConstants = private.ImportLib("RareScannerConstants")
 
 RSEntityPinMixin = CreateFromMixins(MapCanvasPinMixin);
 
+RSEntityPinMixin.SetPassThroughButtons = function() end
+
 function RSEntityPinMixin:OnLoad()
 	self:SetScalingLimits(1, 0.75, 1.0);
 end
@@ -41,7 +43,9 @@ function RSEntityPinMixin:OnAcquired(POI, dataProvider)
 	self.Texture:SetScale(RSConfigDB.GetIconsWorldMapScale())
 	self.IconTexture:SetAtlas(POI.iconAtlas)
 	self:SetPosition(RSUtils.FixCoord(POI.x), RSUtils.FixCoord(POI.y));
-	self:SetPassThroughButtons("MiddleButton");
+	if (self.SetPassThroughButtons) then
+		self:SetPassThroughButtons("MiddleButton");
+	end
 	MapPinHighlight_CheckHighlightPin(self:GetHighlightType(), self, self.Texture, AREAPOI_HIGHLIGHT_PARAMS);
 end
 

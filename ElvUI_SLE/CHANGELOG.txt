@@ -1,6 +1,3 @@
-v4.68 5/7/23
+v4.71 10/16/23
 
-• update darth's layout
-• added loot history scale
-• fix install error as we left the blizzmove module setup in the installer by mistake after it was removed
-• adjust armory character model to not be so zoomed in
+• fixed config from erroring when trying to change some settings

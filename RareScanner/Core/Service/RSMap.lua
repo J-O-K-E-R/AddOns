@@ -150,7 +150,7 @@ function RSMap.GetMapPOIs(mapID, onWorldMap, onMiniMap)
 	MapPOIs = {}
 
 	-- Skip if zone filtered
-	if (RSConfigDB.IsZoneFiltered(mapID)) then
+	if (RSConfigDB.IsZoneFiltered(mapID) or RSConfigDB.IsZoneFilteredOnlyWorldmap(mapID)) then
 		return
 	end
 

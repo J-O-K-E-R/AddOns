@@ -1,13 +1,24 @@
-# <DBM> Dungeons (Dragonflight)
+# <DBM Mod> Dungeons (DF)
 
-## [r82](https://github.com/DeadlyBossMods/DBM-Dungeons/tree/r82) (2023-05-20)
-[Full Changelog](https://github.com/DeadlyBossMods/DBM-Dungeons/compare/r81...r82) [Previous Releases](https://github.com/DeadlyBossMods/DBM-Dungeons/releases)
+## [r102](https://github.com/DeadlyBossMods/DBM-Dungeons/tree/r102) (2023-10-14)
+[Full Changelog](https://github.com/DeadlyBossMods/DBM-Dungeons/compare/r101...r102) [Previous Releases](https://github.com/DeadlyBossMods/DBM-Dungeons/releases)
 
-- Don't start oily blade CD unless cast finishes.  
-    ALso fixed a bug where blade barrage alert would show for mobs you are not engaged with  
-- clarify gutshut tank alert to be knockback alert  
-- Switch downburst audio and text to be more clear about mechanic.  
-    Fixed count on downburst timer as well  
-- Fixed a bug where the timer for Blazing Aegis wasn't efficiently started and resulte in bad debug events  
-- Add frost blast off internet alert and CD timer to freehold trash  
-- since rearm really isn't dodgable, downgrade alert to be less annoying.  
+- now that packaging works, retire BCC packaging for now, it's not needed, it just needed testing  
+- how did those get renamed. i literally copied and pasted them, I swear  
+- maybe fix ignore  
+- Trying to read this source code, gonna have to take pot shots until i figure out how to get it to just ignore the irrelevant toc files for each flavor  
+- packager documentation is such horseshit, it doesn't say . is required but maybe it is  
+- Maybe this?  
+- lets see what this does  
+- lets try this  
+- This will either work or explode i guess :D  
+- fix typo  
+- Updated tocs for wrath tbc and classic dungeon multi packaging  
+- Revert "template tocs as expected for wow flavors"  
+- template tocs as expected for wow flavors  
+- fix errors  
+- Unify TBC dungeon mods between classic and retail  
+- Retail vanilla dungeon mods and classic vanilla dungeon mods completely unified into a single hybrid module  
+- bump wrath toc  
+- notes  
+- Update koKR (#142)  

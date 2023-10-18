@@ -49,9 +49,6 @@ if L then
 	L.anima_tracking = "靈魄能量監控|cffff0000（實驗性）|r"
 	L.anima_tracking_desc = "監控靈魄容器等級的訊息與計時條。|n|cffaaff00提示：你可以依據偏好單獨關閉此提示的訊息盒或計時條。"
 
-	L.custom_on_stop_timers = "總是顯示計時器"
-	--L.custom_on_stop_timers_desc = "Just for testing right now"
-
 	L.desires = "欲望"
 	L.bottles = "瓶子"
 	L.sins = "苦難"
@@ -101,9 +98,6 @@ if L then
 
 	L.skirmishers = "鬥爭者" -- Short for Stone Legion Skirmishers
 	L.eruption = "爆發" -- Short for Reverberating Eruption
-
-	L.custom_on_stop_timers = "總是顯示計時器"
-	--L.custom_on_stop_timers_desc = "Just for testing right now"
 
 	L.goliath_short = "巨人"
 	L.goliath_desc = "對即將到來的石源魔軍團巨人顯示警告和計時器。"

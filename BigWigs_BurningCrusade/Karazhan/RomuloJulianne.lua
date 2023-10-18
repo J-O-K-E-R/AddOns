@@ -2,9 +2,12 @@
 -- Module Declaration
 --
 
-local mod = BigWigs:NewBoss("Romulo & Julianne", 532)
+local mod = BigWigs:NewBoss("Romulo & Julianne", 532, -655)
 if not mod then return end
 mod:RegisterEnableMob(17533, 17534) --Romulo, Julianne
+if mod:Classic() then
+	mod:SetEncounterID(655)
+end
 
 --------------------------------------------------------------------------------
 -- Localization

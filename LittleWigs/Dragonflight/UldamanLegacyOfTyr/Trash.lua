@@ -100,6 +100,7 @@ end
 
 function mod:OnBossEnable()
 	-- General
+	self:RegisterMessage("BigWigs_OnBossWin")
 	self:Log("SPELL_AURA_APPLIED", "LostTomeOfTyr", 386104)
 	self:Log("SPELL_AURA_APPLIED", "TimeLock", 375500)
 	self:Log("SPELL_CAST_SUCCESS", "TemporalTheft", 382264)
@@ -121,9 +122,11 @@ function mod:OnBossEnable()
 
 	-- Earthen Custodian
 	self:Log("SPELL_CAST_START", "Cleave", 369409)
+	self:Log("SPELL_DAMAGE", "CleaveDamage", 369409)
+	self:Log("SPELL_MISSED", "CleaveDamage", 369409)
 
 	-- Earthen Weaver
-	self:Log("SPELL_CAST_SUCCESS", "HailOfStone", 369465) -- doesn't go on CD until the channel starts
+	self:Log("SPELL_CAST_START", "HailOfStone", 369465)
 
 	-- Earthen Warder
 	self:Log("SPELL_CAST_START", "EarthenWard", 369400)
@@ -157,6 +160,14 @@ end
 
 -- General
 
+function mod:BigWigs_OnBossWin(event, module)
+	if module:GetJournalID() == 2479 then -- Chrono-Lord Deios
+		-- disable the trash module when defeating the last boss, this avoids some
+		-- spam from LostTomeofTyr when someone leaves the group.
+		self:Disable()
+	end
+end
+
 do
 	local prev = 0
 
@@ -173,7 +184,10 @@ do
 		-- very long throttle
 		if t - prev > 25 then
 			prev = t
-			self:Bar(args.spellId, 22.1)
+			if not self:MythicPlus() then
+				-- the RP starts automatically in Mythic+ and Time Lock ends when the RP ends
+				self:Bar(args.spellId, 22.1)
+			end
 		end
 	end
 end
@@ -225,7 +239,7 @@ do
 	local prev = 0
 	function mod:SpikedCarapace(args)
 		local t = args.time
-		if t - prev > 1 then
+		if t - prev > 1.5 then
 			prev = t
 			self:Message(args.spellId, "yellow", CL.casting:format(args.spellName))
 			self:PlaySound(args.spellId, "alert")
@@ -239,7 +253,7 @@ do
 	function mod:SpikedCarapaceApplied(args)
 		if self:Dispeller("magic", true, args.spellId) and not self:Player(args.destFlags) then
 			local t = args.time
-			if t - prev > 1 then
+			if t - prev > 2 then
 				prev = t
 				self:Message(args.spellId, "red", CL.buff_other:format(args.destName, args.spellName))
 				self:PlaySound(args.spellId, "warning")
@@ -299,9 +313,23 @@ do
 			if t - prev > 1 then
 				prev = t
 				self:Message(args.spellId, "purple")
-				self:PlaySound(args.spellId, "alarm")
 			end
 			--self:NameplateCDBar(args.spellId, 15.0, args.sourceGUID)
+		end
+	end
+end
+
+do
+	local prev = 0
+	function mod:CleaveDamage(args)
+		-- trivial damage for tanks, deadly for others
+		if not self:Tank() and self:Me(args.destGUID) then
+			local t = args.time
+			if t - prev > 2 then
+				prev = t
+				self:PersonalMessage(args.spellId, "near")
+				self:PlaySound(args.spellId, "alarm")
+			end
 		end
 	end
 end
@@ -315,7 +343,7 @@ do
 		if t - prev > 1 then
 			prev = t
 			self:Message(args.spellId, "orange")
-			self:PlaySound(args.spellId, "alarm")
+			self:PlaySound(args.spellId, "info")
 		end
 		--self:NameplateCDBar(args.spellId, 21.7, args.sourceGUID)
 	end
@@ -323,16 +351,28 @@ end
 
 -- Earthen Warder
 
-function mod:EarthenWard(args)
-	self:Message(args.spellId, "yellow", CL.casting:format(args.spellName))
-	self:PlaySound(args.spellId, "alert")
-	--self:NameplateCDBar(args.spellId, 32.6, args.sourceGUID)
+do
+	local prev = 0
+	function mod:EarthenWard(args)
+		local t = args.time
+		if t - prev > 1 then
+			prev = t
+			self:Message(args.spellId, "yellow", CL.casting:format(args.spellName))
+			self:PlaySound(args.spellId, "alert")
+		end
+		--self:NameplateCDBar(args.spellId, 32.6, args.sourceGUID)
+	end
 end
 
-function mod:EarthenWardApplied(args)
-	if self:Dispeller("magic", true, args.spellId) and not self:Player(args.destFlags) then
-		self:Message(args.spellId, "red", CL.buff_other:format(args.destName, args.spellName))
-		self:PlaySound(args.spellId, "alert")
+do
+	local prev = 0
+	function mod:EarthenWardApplied(args)
+		local t = args.time
+		if self:Dispeller("magic", true, args.spellId) and not self:Player(args.destFlags) and t - prev > 1 then
+			prev = t
+			self:Message(args.spellId, "red", CL.buff_other:format(args.destName, args.spellName))
+			self:PlaySound(args.spellId, "alert")
+		end
 	end
 end
 
@@ -372,10 +412,17 @@ function mod:FissuringSlam(args)
 	--self:NameplateCDBar(args.spellId, 9.7, args.sourceGUID)
 end
 
-function mod:DifficultTerrainApplied(args)
-	if self:Me(args.destGUID) then
-		self:PersonalMessage(args.spellId, "underyou")
-		self:PlaySound(args.spellId, "underyou")
+do
+	local prev = 0
+	function mod:DifficultTerrainApplied(args)
+		if self:Me(args.destGUID) then
+			local t = args.time
+			if t - prev > 2 then
+				prev = t
+				self:PersonalMessage(args.spellId, "underyou")
+				self:PlaySound(args.spellId, "underyou")
+			end
+		end
 	end
 end
 

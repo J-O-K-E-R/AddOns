@@ -3,16 +3,25 @@ local AB = E:GetModule('ActionBars')
 local LSM = E.Libs.LSM
 
 local next, ipairs, pairs = next, ipairs, pairs
-local floor, tinsert = floor, tinsert
+local time, floor, tinsert = time, floor, tinsert
 
 local GetTime = GetTime
 local CreateFrame = CreateFrame
+local IsAddOnLoaded = IsAddOnLoaded
 local hooksecurefunc = hooksecurefunc
 
 local ICON_SIZE = 36 --the normal size for an icon (don't change this)
 local FONT_SIZE = 20 --the base font size to use at a scale of 1
 local MIN_SCALE = 0.5 --the minimum scale we want to show cooldown counts at, anything below this will be hidden
 local MIN_DURATION = 1.5 --the minimum duration to show cooldown text for
+
+function E:Cooldown_UnbuggedTime(timer)
+	if timer.buggedTime then
+		return time() - GetTime()
+	else
+		return GetTime()
+	end
+end
 
 function E:Cooldown_TextThreshold(cd, timeLeft)
 	if cd.parent and cd.parent.textThreshold and cd.endTime then
@@ -44,8 +53,7 @@ function E:Cooldown_OnUpdate(elapsed)
 		E:Cooldown_TimerStop(self)
 		return 2
 	else
-		local now = GetTime()
-
+		local now = E:Cooldown_UnbuggedTime(self)
 		if self.endCooldown and now >= self.endCooldown then
 			E:Cooldown_TimerStop(self)
 		elseif E:Cooldown_BelowScale(self) then
@@ -146,6 +154,7 @@ function E:Cooldown_Options(timer, db, parent)
 	timer.targetAura = E.db.cooldown.targetAura and parent.targetAura
 	timer.hideBlizzard = db.hideBlizzard or E.db.cooldown.hideBlizzard
 	timer.roundTime = E.db.cooldown.roundTime
+	timer.showModRate = db.showModRate
 
 	if db.reverse ~= nil then
 		local enabled = E:CooldownEnabled()
@@ -221,10 +230,23 @@ function E:OnSetCooldown(start, duration, modRate)
 
 	if not self.forceDisabled and (start and duration) and (duration > MIN_DURATION) then
 		local timer = self.timer or E:CreateCooldownTimer(self)
+
 		timer.start = start
-		timer.duration = duration
-		timer.modRate = modRate
-		timer.endTime = start + duration
+		timer.modRate = timer.showModRate and modRate or 1
+		timer.duration = duration * (not timer.showModRate and modRate or 1)
+
+		local now = GetTime()
+		if start <= (now + 1) then -- this second is for Target Aura
+			timer.endTime = start + duration
+			timer.buggedTime = nil
+		else -- https://github.com/Stanzilla/WoWUIBugs/issues/47
+			local startup = time() - now
+			local cdtime = (2 ^ 32) / 1000 - start
+			local startTime = startup - cdtime
+			timer.endTime = startTime + duration
+			timer.buggedTime = true
+		end
+
 		timer.endCooldown = timer.endTime - 0.05
 		timer.paused = nil -- a new cooldown was called
 
@@ -237,14 +259,15 @@ end
 function E:OnPauseCooldown()
 	local timer = self.timer
 	if timer then
-		timer.paused = GetTime()
+		timer.paused = E:Cooldown_UnbuggedTime(timer)
 	end
 end
 
 function E:OnResumeCooldown()
 	local timer = self.timer
 	if timer and timer.paused then
-		timer.endTime = timer.start + timer.duration + (GetTime() - timer.paused) -- calcuate time since paused
+		local now = E:Cooldown_UnbuggedTime(timer)
+		timer.endTime = timer.start + timer.duration + (now - timer.paused) -- calcuate time since paused
 		timer.endCooldown = timer.endTime - 0.05
 
 		timer.paused = nil
@@ -363,8 +386,8 @@ function E:UpdateCooldownOverride(module)
 end
 
 do
-	local function RGB(db) return E:CopyTable({r = 1, g = 1, b = 1}, db) end
-	local function HEX(db) return E:RGBToHex(db.r, db.g, db.b) end
+	local function RGB(db) E:UpdateClassColor(db) return E:CopyTable({r = 1, g = 1, b = 1}, db) end
+	local function HEX(db) E:UpdateClassColor(db) return E:RGBToHex(db.r, db.g, db.b) end
 	local dummy9th = '|cFFffffff'
 
 	function E:GetCooldownColors(db)
@@ -462,5 +485,9 @@ function E:UpdateCooldownSettings(module)
 		E:UpdateCooldownSettings('actionbar')
 		E:UpdateCooldownSettings('unitframe')
 		E:UpdateCooldownSettings('auras')
+
+		if IsAddOnLoaded('WeakAuras') then
+			E:UpdateCooldownSettings('WeakAuras')
+		end
 	end
 end

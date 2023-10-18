@@ -49,9 +49,6 @@ if L then
 	L.anima_tracking = "心能追踪|cffff0000（实验性）|r"
 	L.anima_tracking_desc = "追踪容器的心能等级的信息和计时条。|n|cffaaff00提示：可能要禁用信息盒或计时条，根据配置。"
 
-	L.custom_on_stop_timers = "总是显示技能条"
-	L.custom_on_stop_timers_desc = "只是为了马上测试"
-
 	L.desires = "欲望"
 	L.bottles = "瓶子"
 	L.sins = "罪孽"
@@ -101,9 +98,6 @@ if L then
 
 	L.skirmishers = "散兵" -- Short for Stone Legion Skirmishers
 	L.eruption = "震荡爆发" -- Short for Reverberating Eruption
-
-	L.custom_on_stop_timers = "总是显示技能条"
-	L.custom_on_stop_timers_desc = "为了马上测试"
 
 	L.goliath_short = "巨怪"
 	L.goliath_desc = "显示警告和计时器，提示何时会刷新顽石军团巨怪。"

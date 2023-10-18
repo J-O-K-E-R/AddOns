@@ -410,7 +410,7 @@ private.NPC_GUIDE = {
 		[RSConstants.ENTRANCE] = { x = 0.792, y = 0.3655 };
 	}; --Irontree
 	["1932252024"] = { 
-		[RSConstants.ENTRANCE] = { x = 0.3403, y = 0.3077 };
+		[RSConstants.ENTRANCE] = { x = 0.2065, y = 0.4972 };
 	}; --Notfar the Unbearable
 	["1931422023"] = { 
 		[RSConstants.ENTRANCE] = { x = 0.5636, y = 0.8168 };
@@ -664,6 +664,13 @@ private.NPC_GUIDE = {
 	["2035212133"] = { 
 		[RSConstants.ENTRANCE] = { x = 0.5287, y = 0.1887 };
 	}; --Professor Gastrinax <Ex-Emeritus of Algeth'ar Academy>
+	["2058652025"] = { 
+		[RSConstants.ENTRANCE] = { x = 0.5936, y = 0.6967 };
+	}; --Zal'kir the Chosen <The Maw of K'Tanth>
+	["2016642025"] = { 
+		[RSConstants.STEP1] = { x = 0.5214, y = 0.8140, comment = AL["NOTE_201664_1"] };
+		[RSConstants.STEP2] = { x = 0.5220, y = 0.8160, comment = AL["NOTE_201664_2"] };
+	}; --Temporal Investi-gator
 }
 
 ---============================================================================

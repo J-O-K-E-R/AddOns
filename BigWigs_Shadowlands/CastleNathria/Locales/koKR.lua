@@ -49,9 +49,6 @@ if L then
 	L.anima_tracking = "령 추적 |cffff0000(실험 중)|r"
 	L.anima_tracking_desc = "메세지와 바로 령 용기에 있는 령 수치를 추적.|n|cffaaff00팁: 정보 박스나 바를 기호에 따라 비활성화해야 할 수도 있음."
 
-	L.custom_on_stop_timers = "항상 능력 바 표시"
-	L.custom_on_stop_timers_desc = "아직은 실험 단계"
-
 	L.desires = "욕망"
 	L.bottles = "병에 담긴 령"
 	L.sins = "죄악"
@@ -101,9 +98,6 @@ if L then
 
 	L.skirmishers = "척후병" -- Short for Stone Legion Skirmishers
 	L.eruption = "분출" -- Short for Reverberating Eruption
-
-	L.custom_on_stop_timers = "항상 능력 바 표시"
-	L.custom_on_stop_timers_desc = "아직은 실험 단계"
 
 	L.goliath_short = "거수"
 	L.goliath_desc = "돌 군단 거수가 언제 나오는지 경고와 타이머 표시."

@@ -44,9 +44,6 @@ local timers = mod:Mythic() and mythicTimers or mod:Heroic() and heroicTimers or
 
 local L = mod:GetLocale()
 if L then
-	L.custom_on_stop_timers = "Always show ability bars"
-	L.custom_on_stop_timers_desc = "The Guardian can delay its abilities. When this option is enabled, the bars for those abilities will stay on your screen."
-
 	L.sentry = mod:SpellName(298200) -- Form Sentry (Sentry)
 
 	L.bomb_missed = "%dx Bombs Missed"
@@ -59,15 +56,14 @@ end
 local threatNeutralizationMarker = mod:AddMarkerOption(false, "player", 1, 350496, 1, 2, 3) -- Threat Neutralization
 function mod:GetOptions()
 	return {
-		"custom_on_stop_timers",
 		-- Energy Cores
 		352385, -- Energizing Link
 		356093, -- Energy Absorption
 		350455, -- Unstable Energy
 		352394, -- Radiant Energy
-		{352589, "EMPHASIZE"}, -- Meltdown
+		{352589, "EMPHASIZE", "CASTBAR"}, -- Meltdown
 		-- The Guardian
-		352538, -- Purging Protocol
+		{352538, "CASTBAR"}, -- Purging Protocol
 		350735, -- Elimination Pattern
 		355352, -- Obliterate
 		350732, -- Sunder
@@ -144,38 +140,12 @@ function mod:OnEngage()
 	self:CDBar(352833, 15.8, CL.count:format(CL.laser, disintergrationCount)) -- Disintegration
 	self:CDBar(350735, 26) -- Elimination Pattern
 	local purgeTimer = UnitPower("boss1") or 0
-	self:Bar(352538, purgeTimer, CL.count:format(self:SpellName(352538), purgeCount)) -- Purging Protocol
+	self:CDBar(352538, purgeTimer, CL.count:format(self:SpellName(352538), purgeCount)) -- Purging Protocol
 end
 
 --------------------------------------------------------------------------------
 -- Event Handlers
 --
-
-do
-	local abilitysToPause = {
-		[350496] = true, -- Threat Neutralization
-		[352538] = true, -- Purging Protocol
-		[352660] = true, -- Form Sentry
-		[352833] = true, -- Disintegration
-	}
-
-	local castPattern = CL.cast:gsub("%%s", ".+")
-
-	local function stopAtZeroSec(bar)
-		if bar.remaining < 0.15 then -- Pause at 0.0
-			bar:SetDuration(0.01) -- Make the bar look full
-			bar:Start()
-			bar:Pause()
-			bar:SetTimeVisibility(false)
-		end
-	end
-
-	function mod:BarCreated(_, _, bar, _, key, text)
-		if self:GetOption("custom_on_stop_timers") and abilitysToPause[key] and not text:match(castPattern) then
-			bar:AddUpdateFunction(stopAtZeroSec)
-		end
-	end
-end
 
 -- Energy Cores
 do
