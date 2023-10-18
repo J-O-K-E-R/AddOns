@@ -1061,6 +1061,41 @@ do
 			end
 		end
 	})
+	
+	--#29 ensure auto-function for "hide blizzard healthbars" is setup properly
+	tinsert (PlaterPatchLibrary, {
+		NotEssential = false,
+
+		Notes = {
+			"- Setup auto-toggle for 'Hide Blizzard Healthbars'."
+		},
+		Func = function()
+			if GetCVarBool ("nameplateShowOnlyNames") or Plater.db.profile.saved_cvars.nameplateShowOnlyNames == "1" then
+				Plater.db.profile.auto_toggle_combat.blizz_healthbar_ic = true
+				Plater.db.profile.auto_toggle_combat.blizz_healthbar_ooc = true
+			end
+		end,
+	})
+	
+	--#30 cleanup of renamed npcs string-indexed values
+	tinsert (PlaterPatchLibrary, {
+		NotEssential = false,
+		
+		Notes = {
+			"- Cleanup wrong indexes in npcs_renamed."
+		},
+		Func = function()
+			local renamedNPCs = Plater.db.profile.npcs_renamed
+			local renamedNPCsTemp = DetailsFramework.table.copy({}, renamedNPCs)
+			
+			for npcId, renamedName in pairs(renamedNPCsTemp) do
+				if tonumber(npcId) then 
+					renamedNPCs[tonumber(npcId)] = renamedNPCs[npcId] or renamedName -- ensure not to overwrite already existing (changed) after import
+					renamedNPCs[npcId] = nil
+				end
+			end
+		end
+	})
 
 	--to tag an update as non-essential, add "NotEssential = true," to the table
 	--/run Plater.db.profile.patch_version = 27
