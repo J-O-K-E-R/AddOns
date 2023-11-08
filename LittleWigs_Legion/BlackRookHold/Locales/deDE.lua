@@ -16,4 +16,7 @@ if L then
 	L.felspite_dominator = "Teufelsgrollunterwerfer"
 	L.risen_swordsman = "Auferstandener Schwertkämpfer"
 	L.risen_lancer = "Auferstandener Lanzer"
+
+	L.door_opens = "Tür öffnet"
+	L.door_opens_desc = "Zeigt eine Leiste wann die Tür zum versteckten Durchgang geöffnet ist."
 end

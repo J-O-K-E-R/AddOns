@@ -45,6 +45,10 @@ if L then
 	L.felspite_dominator = "Felspite Dominator"
 	L.risen_swordsman = "Risen Swordsman"
 	L.risen_lancer = "Risen Lancer"
+
+	L.door_opens = "Door Opens"
+	L.door_opens_desc = "Show a bar indicating when the door is opened to the Hidden Passageway."
+	L.door_opens_icon = "achievement_dungeon_blackrookhold"
 end
 
 --------------------------------------------------------------------------------
@@ -53,6 +57,8 @@ end
 
 function mod:GetOptions()
 	return {
+		-- RP Timers
+		"door_opens",
 		-- Ghostly Retainer
 		{200084, "DISPEL"}, -- Soul Blade
 		-- Ghostly Protector
@@ -160,6 +166,13 @@ end
 -- Event Handlers
 --
 
+-- RP Timers
+
+-- triggered from Amalgam of Souls OnWin
+function mod:AmalgamOfSoulsDefeated()
+	self:Bar("door_opens", 35, L.door_opens, L.door_opens_icon)
+end
+
 -- Ghostly Retainer
 
 function mod:SoulBladeApplied(args)
@@ -227,9 +240,16 @@ end
 
 -- Soul-Torn Champion
 
-function mod:BonebreakingStrike(args)
-	self:Message(args.spellId, "orange")
-	self:PlaySound(args.spellId, "alarm")
+do
+	local prev = 0
+	function mod:BonebreakingStrike(args)
+		local t = args.time
+		if t - prev > 1.5 then
+			prev = t
+			self:Message(args.spellId, "orange")
+			self:PlaySound(args.spellId, "alarm")
+		end
+	end
 end
 
 -- Risen Scout

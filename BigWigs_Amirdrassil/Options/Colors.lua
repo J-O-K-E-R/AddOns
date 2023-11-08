@@ -96,10 +96,11 @@ BigWigs:AddColors("Nymue, Weaver of the Cycle", {
 	[420846] = "cyan",
 	[420907] = "yellow",
 	[423195] = "green",
-	[424477] = "yellow",
-	[425745] = {"blue","yellow"},
-	[426147] = "purple",
-	[426520] = {"blue","purple"},
+	[425370] = "cyan",
+	[426519] = "yellow",
+	[426855] = "green",
+	[429108] = "orange",
+	[429615] = "cyan",
 })
 
 BigWigs:AddColors("Smolderon", {
@@ -140,4 +141,26 @@ BigWigs:AddColors("Tindral Sageswift, Seer of the Flame", {
 })
 
 BigWigs:AddColors("Fyrakk the Blazing", {
+	[410223] = {"blue","orange"},
+	[412761] = "red",
+	[414186] = "yellow",
+	[417431] = "purple",
+	[417443] = {"blue","purple"},
+	[417455] = "red",
+	[417807] = {"blue","green"},
+	[419123] = "red",
+	[419144] = "yellow",
+	[419504] = "blue",
+	[419506] = "orange",
+	[420422] = "yellow",
+	[421937] = "cyan",
+	[422518] = "orange",
+	[422524] = "yellow",
+	[422837] = "yellow",
+	[422935] = "orange",
+	[423717] = "green",
+	[425483] = "blue",
+	[425492] = {"blue","purple"},
+	[429866] = "blue",
+	["stages"] = "cyan",
 })

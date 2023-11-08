@@ -11,6 +11,15 @@ local ROOT = "roots"
 local IMMUNITY = "immunities"
 local IMMUNITY_SPELL = "immunities_spells"
 
+addon.HiddenDebuffs = {
+    80354, -- Temporal Displacement
+    371070, -- Rotting From Within
+    390435, -- Exhaustion
+    57723, -- Exhaustion
+    206151, -- Challenger's Burden
+    264689, -- Fatigued
+}
+
 addon.Units = {
     "player",
     "pet",
@@ -204,14 +213,13 @@ addon.Spells = {
     [374348] = { type = BUFF_DEFENSIVE }, -- Renewing Blaze
     [357170] = { type = BUFF_DEFENSIVE }, -- Time Dilation
     [406732] = { type = BUFF_DEFENSIVE }, -- Spatial Paradox
-    [360827] = { type = BUFF_DEFENSIVE }, -- Blistering Scales
     [404977] = { type = BUFF_DEFENSIVE }, -- Time Skip
     [375087] = { type = BUFF_OFFENSIVE }, -- Dragonrage
     [383005] = { type = DEBUFF_OFFENSIVE }, -- Chrono Loop
     [372048] = { type = DEBUFF_OFFENSIVE }, -- Oppressing Roar
     [360806] = { type = CROWD_CONTROL }, -- Sleep Walk
     [372245] = { type = CROWD_CONTROL }, -- Terror of the Skies
-    [409438] = { type = CROWD_CONTROL }, -- Seismic Slam
+    [408544] = { type = CROWD_CONTROL }, -- Seismic Slam
     [355689] = { type = ROOT }, -- Landslide
     [378464] = { type = IMMUNITY }, -- Nullifying Shroud
     [378441] = { type = IMMUNITY }, -- Time Stop
@@ -569,6 +577,7 @@ addon.Spells = {
     [111400] = { type = BUFF_SPEED_BOOST }, -- Burning Rush
     [265273] = { type = BUFF_OFFENSIVE }, -- Demonic Power (Demonic Tyrant)
     [118699] = { type = CROWD_CONTROL }, -- Fear
+    [130616] = { type = CROWD_CONTROL }, -- Fear (Horrify)
     [196364] = { type = CROWD_CONTROL }, -- Unstable Affliction (Silence)
     [212295] = { type = IMMUNITY_SPELL }, -- Nether Ward (PvP Talent)
     [1098] = { type = CROWD_CONTROL }, -- Subjugate Demon
@@ -625,6 +634,8 @@ addon.Spells = {
     [202164] = { type = BUFF_SPEED_BOOST }, -- Bounding Stride
     [376080] = { type = CROWD_CONTROL, nounitFrames = true, nonameplates = true }, -- Spear of Bastion
     [354788] = { type = DEBUFF_OFFENSIVE, nounitFrames = true, nonameplates = true }, -- Slaughterhouse
+    [397364] = { type = DEBUFF_OFFENSIVE, nounitFrames = true, nonameplates = true }, -- Thunderous Roar
+    [199261] = { type = BUFF_OFFENSIVE }, -- Death Wish
 
     -- Other
 
@@ -680,5 +691,9 @@ addon.Spells = {
 
     -- Special
     --[6788] = { type = "special", nounitFrames = true, noraidFrames = true }, -- Weakened Soul
+
+    -- Dragonflight Dungeons - Season 2
+    [266107] = { type = DEBUFF_OFFENSIVE }, -- Thirst for Blood
+    [368091] = { type = DEBUFF_OFFENSIVE }, -- Infected Bite
 
 }

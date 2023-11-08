@@ -446,6 +446,11 @@ GTFO.SpellID["422604"] = {
   sound = 1;
 };
 
+GTFO.SpellID["395016"] = {
+  --desc = "Lava Dispersion (Massive Magmashell)";
+  sound = 1;
+};
+
 --- *******************
 --- * Ruby Life Pools *
 --- *******************

@@ -10,7 +10,7 @@
 ## Notes-ruRU: Скин Simplicity для Masque.
 ## Notes-zhTW: Masque的Simplicity皮膚。
 
-## Version: 3.6.1
+## Version: 3.6
 ## Author: Epix
 ## Dependencies: Masque
 

@@ -8,9 +8,40 @@ local L = app.L
 local Colorize = app.Modules.Color.Colorize
 
 -- The Settings Frame
-local settings = CreateFrame("FRAME", app:GetName() .. "-Settings", InterfaceOptionsFramePanelContainer or UIParent, BackdropTemplateMixin and "BackdropTemplate")
+local settings = CreateFrame("FRAME", appName .. "-Settings", InterfaceOptionsFramePanelContainer or UIParent, BackdropTemplateMixin and "BackdropTemplate")
 app.Settings = settings
-settings.name = app:GetName()
+settings.AccountWide = {
+	Achievements = true,
+	BattlePets = true,
+	Deaths = true,
+	Exploration = true,
+	FlightPaths = true,
+	Illusions = true,
+	Mounts = true,
+	PVPRanks = true,
+	Quests = true,
+	Recipes = true,
+	Reputations = true,
+	RWP = true,
+	Titles = true,
+	Toys = true,
+};
+settings.Collectibles = {
+	Achievements = true,
+	BattlePets = true,
+	Exploration = true,
+	FlightPaths = true,
+	Illusions = true,
+	Loot = true,
+	Mounts = true,
+	Quests = true,
+	Recipes = true,
+	Reputations = true,
+	RWP = true,
+	Titles = true,
+	Toys = true,
+};
+settings.name = appName;
 settings.Objects = {}
 settings.Callback = app.CallbackHandlers.Callback
 do	-- Add the ATT Settings frame into the WoW Settings options
@@ -22,22 +53,13 @@ do	-- Add the ATT Settings frame into the WoW Settings options
 		Settings.OpenToCategory(self.name)
 	end
 end
--- Provides a Unique Counter value for the Key referenced on each reference
-settings.UniqueCounter = setmetatable({}, {
-	__index = function(t, key)
-		local trackKey = "_"..key
-		local next = (rawget(t, trackKey) or 0) + 1
-		-- print("UniqueCounter",key,next)
-		t[trackKey] = next
-		return next
-	end
-})
 
 -- Settings Class
 local Things = {
 	"Achievements",
 	"AzeriteEssences",
 	"BattlePets",
+	"CharacterUnlocks",
 	"Conduits",
 	"DrakewatcherManuscripts",
 	"FlightPaths",
@@ -86,6 +108,7 @@ local GeneralSettingsBase = {
 		["Thing:Achievements"] = true,
 		["Thing:AzeriteEssences"] = true,
 		["Thing:BattlePets"] = true,
+		["Thing:CharacterUnlocks"] = true,
 		["Thing:Conduits"] = true,
 		["Thing:DrakewatcherManuscripts"] = true,
 		["Thing:FlightPaths"] = true,
@@ -175,12 +198,14 @@ local TooltipSettingsBase = {
 		["Warn:Difficulty"] = true,
 		["Warn:Removed"] = true,
 		["Currencies"] = true,
+		["NPCData:Nested"] = false,
 		["QuestChain:Nested"] = true,
 		["WorldQuestsList:Currencies"] = true,
 		["ProfessionRequirements"] = true,
 		["LevelRequirements"] = true,
 		["CompletedBy"] = true,
 		["Updates:AdHoc"] = true,
+		["creatures"] = true,
 	},
 }
 
@@ -242,6 +267,9 @@ settings.Initialize = function(self)
 	if self:GetTooltipSetting("Auto:Sync") then
 		app:Synchronize(true)
 	end
+
+	settings.__RefreshActiveAdditionalIDs()
+	settings.__RefreshActiveAdditionalIDs = nil
 
 	app._SettingsRefresh = GetTimePreciseSec()
 	settings._Initialize = true
@@ -348,12 +376,54 @@ settings.ApplyProfile = function()
 		return true
 	end
 end
+settings.GetWindowColors = function()
+	local rBg, gBg, bBg, aBg, rBd, gBd, bBd, aBd
+
+	-- User-saved colors
+	local colorg = settings:Get("Window:BackgroundColor")
+	rBg = tonumber(colorg.r) or 0
+	gBg = tonumber(colorg.g) or 0
+	bBg = tonumber(colorg.b) or 0
+	aBg = tonumber(colorg.a) or 0
+
+	-- Border colors
+	if settings:GetTooltipSetting("Window:UseClassForBorder") then
+		-- Set all the borders to the current class color
+		local _, class = UnitClass("player")
+		rBd, gBd, bBd = GetClassColor(class)
+		aBd = 1
+	else
+		-- User-saved colors
+		local colord = settings:Get("Window:BorderColor")
+		rBd = tonumber(colord.r) or 0
+		gBd = tonumber(colord.g) or 0
+		bBd = tonumber(colord.b) or 0
+		aBd = tonumber(colord.a) or 0
+	end
+	return rBg, gBg, bBg, aBg, rBd, gBd, bBd, aBd
+end
+settings.ApplyWindowColors = function(window)
+	-- Apply the user-set colours
+	local rBg, gBg, bBg, aBg, rBd, gBd, bBd, aBd = settings.GetWindowColors()
+
+	window:SetBackdropColor(rBg, gBg, bBg, aBg)
+	window:SetBackdropBorderColor(rBd, gBd, bBd, aBd)
+end
+settings.ApplyAllWindowColors = function()
+	-- Apply the user-set colours
+	local rBg, gBg, bBg, aBg, rBd, gBd, bBd, aBd = settings.GetWindowColors()
+
+	for suffix, window in pairs(app.Windows) do
+		window:SetBackdropColor(rBg, gBg, bBg, aBg)
+		window:SetBackdropBorderColor(rBd, gBd, bBd, aBd)
+	end
+end
 -- Allows moving an ATT window based on the position stored in the current Profile
 -- This would be used when creating a Window initially during a game session
 settings.SetWindowFromProfile = function(suffix)
 	local points = RawSettings and RawSettings.Windows and RawSettings.Windows[suffix]
 	local window = app.Windows[suffix]
-	-- print("SetWindowFromProfile",suffix,points,window)
+	-- app.PrintDebug("SetWindowFromProfile",suffix,points,window)
 	if window then
 		if RawSettings then
 			if suffix == "Prime" then
@@ -387,33 +457,7 @@ settings.SetWindowFromProfile = function(suffix)
 				RawSettings.Windows[suffix] = nil
 			end
 		end
-		-- Apply the user-set colours
-		local rBg, gBg, bBg, aBg, rBd, gBd, bBd, aBd
-
-		-- User-saved colors
-		rBg = tonumber(settings:Get("Window:BackgroundColor").r) or 0
-		gBg = tonumber(settings:Get("Window:BackgroundColor").g) or 0
-		bBg = tonumber(settings:Get("Window:BackgroundColor").b) or 0
-		aBg = tonumber(settings:Get("Window:BackgroundColor").a) or 0
-
-		-- Border colors
-		if settings:GetTooltipSetting("Window:UseClassForBorder") then
-			-- Set all the borders to the current class color
-			local _, class = UnitClass("player")
-			rBd, gBd, bBd = GetClassColor(class)
-			aBd = 1
-		else
-			-- User-saved colors
-			rBd = tonumber(settings:Get("Window:BorderColor").r) or 0
-			gBd = tonumber(settings:Get("Window:BorderColor").g) or 0
-			bBd = tonumber(settings:Get("Window:BorderColor").b) or 0
-			aBd = tonumber(settings:Get("Window:BorderColor").a) or 0
-		end
-
-		for suffix, window in pairs(AllTheThings.Windows) do
-			window:SetBackdropColor(rBg, gBg, bBg, aBg)
-			window:SetBackdropBorderColor(rBd, gBd, bBd, aBd)
-		end
+		settings.ApplyWindowColors(window)
 	end
 end
 settings.CheckSeasonalDate = function(self, eventID, startMonth, startDay, endMonth, endDay)
@@ -446,6 +490,12 @@ settings.GetUnobtainable = function(self, u)
 end
 settings.GetFilter = function(self, filterID)
 	return AllTheThingsSettingsPerCharacter.Filters[filterID]
+end
+settings.GetRawFilters = function(self)
+	return AllTheThingsSettingsPerCharacter.Filters;
+end
+settings.GetRawSettings = function(self, name)
+	return RawSettings[name];
 end
 settings.GetModeString = function(self)
 	local mode = L["MODE"]
@@ -606,8 +656,8 @@ settings.NonInsane = function(self)
 		-- TODO: maybe track custom collect filters through a different Get method for easier logic
 		and (not (ccs["SL_COV_KYR"] or self:Get("CC:SL_COV_KYR"))
 			or not (ccs["SL_COV_NEC"] or self:Get("CC:SL_COV_NEC"))
-			or not (ccs["SL_COV_NEC"] or self:Get("CC:SL_COV_NEC"))
-			or not (ccs["SL_COV_NEC"] or self:Get("CC:SL_COV_NEC"))))
+			or not (ccs["SL_COV_NFA"] or self:Get("CC:SL_COV_NFA"))
+			or not (ccs["SL_COV_VEN"] or self:Get("CC:SL_COV_VEN"))))
 end
 settings.GetPersonal = function(self, setting)
 	return AllTheThingsSettingsPerCharacter[setting]
@@ -707,6 +757,7 @@ ATTSettingsObjectMixin = {
 		else
 			self:SetPoint("TOPLEFT", other, "BOTTOMLEFT", 0, 4)
 		end
+		return self
 	end,
 	-- Performs SetPoint anchoring against the 'other' frame to align this Checkbox after it (right)
 	AlignAfter = function(self, other, add)
@@ -718,6 +769,7 @@ ATTSettingsObjectMixin = {
 		else
 			self:SetPoint("LEFT", other, "RIGHT", -4 + add, 0)
 		end
+		return self
 	end,
 	-- Disables, checks, fades the checkbox
 	OnRefreshCheckedDisabled = function(self)
@@ -811,12 +863,12 @@ ATTSettingsPanelMixin = {
 	-- Reference: https://medium.com/@JordanBenge/creating-a-wow-dropdown-menu-in-pure-lua-db7b2f9c0364
 	CreateDropdown = function(self, opts, OnRefresh)
 		error("DO NOT USE THIS METHOD")
-		local dropdown_name = self:GetName().."DD"..(opts.name or settings.UniqueCounter.CreateDropdown)
+		local dropdown_name = self:GetName().."DD"..(opts.name or app.UniqueCounter.CreateDropdown)
 		local menu_items = opts.items or {}
 		local title_text = opts.title or ""
 		local width = opts.width or 0
 		local default_val = opts.defaultVal or ""
-		local change_func = opts.changeFunc or function() end
+		local change_func = opts.changeFunc or app.EmptyFunction
 		local template = opts.template or "UIDropDownMenuTemplate"
 
 		local dropdown = CreateFrame("Frame", dropdown_name, self, template)
@@ -896,7 +948,7 @@ ATTSettingsPanelMixin = {
 	end,
 	CreateTextbox = function(self, opts, functions)
 
-		local name = self:GetName().."TB"..(opts.name or settings.UniqueCounter.CreateTextbox)
+		local name = self:GetName().."TB"..(opts.name or app.UniqueCounter.CreateTextbox)
 		local title = opts.title
 		local text = opts.text
 		local width = opts.width or 150
@@ -950,7 +1002,7 @@ ATTSettingsPanelMixin = {
 	end,
 	CreateButton = function(self, opts, functions)
 
-		local name = self:GetName().."B"..(opts.name or settings.UniqueCounter.CreateButton)
+		local name = self:GetName().."B"..(opts.name or app.UniqueCounter.CreateButton)
 		local text = opts.text
 		local width = opts.width
 		local tooltip = opts.tooltip
@@ -996,8 +1048,8 @@ ATTSettingsPanelMixin = {
 	-- :CreateCheckBox(text, OnRefresh, OnClick) - create a checkbox attached to the scrollable area
 	CreateScrollFrame = function(self)
 		-- Create the ScrollFrame
-		local scrollFrame = CreateFrame("ScrollFrame", settings:GetName().."SF"..settings.UniqueCounter.AddScrollframe, self, "ScrollFrameTemplate")
-		local child = CreateFrame("Frame", settings:GetName().."SCF"..settings.UniqueCounter.AddScrollableframe)
+		local scrollFrame = CreateFrame("ScrollFrame", settings:GetName().."SF"..app.UniqueCounter.AddScrollframe, self, "ScrollFrameTemplate")
+		local child = CreateFrame("Frame", settings:GetName().."SCF"..app.UniqueCounter.AddScrollableframe)
 		Mixin(child, ATTSettingsPanelMixin);
 		self:RegisterObject(child);
 		scrollFrame:SetScrollChild(child)
@@ -1007,11 +1059,11 @@ ATTSettingsPanelMixin = {
 		-- Move the Scrollbar inside of the frame which it scrolls
 		scrollFrame.ScrollBar:SetPoint("RIGHT", -36, 0)
 
-		-- local scrollFrame = CreateFrame("Frame", settings:GetName().."SF"..settings.UniqueCounter.AddScrollframe, self, "ScrollFrameTemplate")
+		-- local scrollFrame = CreateFrame("Frame", settings:GetName().."SF"..app.UniqueCounter.AddScrollframe, self, "ScrollFrameTemplate")
 		-- scrollFrame:SetClipsChildren(true)
 		-- scrollFrame:EnableMouseWheel(true)
 
-		-- local child = CreateFrame("Frame", settings:GetName().."SCF"..settings.UniqueCounter.AddScrollableframe, scrollFrame)
+		-- local child = CreateFrame("Frame", settings:GetName().."SCF"..app.UniqueCounter.AddScrollableframe, scrollFrame)
 		-- Mixin(child, ATTSettingsPanelMixin)
 		-- self:RegisterObject(child)
 		-- child:SetPoint("TOP")
@@ -1020,7 +1072,7 @@ ATTSettingsPanelMixin = {
 
 		-- local scrollbar
 		-- if SCROLL_FRAME_SCROLL_BAR_TEMPLATE then
-		-- 	scrollbar = CreateFrame("EventFrame", settings:GetName().."SB"..settings.UniqueCounter.AddScrollbar, scrollFrame, SCROLL_FRAME_SCROLL_BAR_TEMPLATE)
+		-- 	scrollbar = CreateFrame("EventFrame", settings:GetName().."SB"..app.UniqueCounter.AddScrollbar, scrollFrame, SCROLL_FRAME_SCROLL_BAR_TEMPLATE)
 		-- 	scrollbar:SetPoint("TOPRIGHT", scrollFrame, -8, 0)
 		-- 	scrollbar:SetPoint("BOTTOMRIGHT", scrollFrame, -8, 0)
 		-- 	scrollbar:SetHideIfUnscrollable(false)
@@ -1045,7 +1097,7 @@ ATTSettingsPanelMixin = {
 		-- 	end
 		-- else
 		-- 	local CurrentValue = 0
-		-- 	scrollbar = CreateFrame("Slider", settings:GetName().."SB"..settings.UniqueCounter.AddScrollbar, scrollFrame, "UIPanelScrollBarTemplate")
+		-- 	scrollbar = CreateFrame("Slider", settings:GetName().."SB"..app.UniqueCounter.AddScrollbar, scrollFrame, "UIPanelScrollBarTemplate")
 		-- 	scrollbar:SetPoint("TOPRIGHT", scrollFrame, 0, -scrollWidth)
 		-- 	scrollbar:SetPoint("BOTTOMRIGHT", scrollFrame, 0, scrollWidth)
 		-- 	scrollbar:SetScript("OnValueChanged", function(self, delta)
@@ -1095,8 +1147,8 @@ Mixin(settings, ATTSettingsPanelMixin);
 -- Create a scrollframe and nested subcategory
 settings.CreateOptionsPage = function(self, name, nested)
 	-- Create the ScrollFrame
-	local scrollFrame = CreateFrame("ScrollFrame", settings:GetName().."SF"..settings.UniqueCounter.AddScrollframe, self, "ScrollFrameTemplate")
-	local scrollChild = CreateFrame("Frame", settings:GetName().."SCF"..settings.UniqueCounter.AddScrollableframe)
+	local scrollFrame = CreateFrame("ScrollFrame", settings:GetName().."SF"..app.UniqueCounter.AddScrollframe, self, "ScrollFrameTemplate")
+	local scrollChild = CreateFrame("Frame", settings:GetName().."SCF"..app.UniqueCounter.AddScrollableframe)
 	Mixin(scrollChild, ATTSettingsPanelMixin);
 	self:RegisterObject(scrollChild);
 	scrollFrame:SetScrollChild(scrollChild)
@@ -1229,147 +1281,148 @@ end
 settings.SetThingTracking = function(self, force)
 	if force == "Debug" then
 		for _,thing in ipairs(Things) do
-			app["AccountWide"..thing] = true
-			app["Collectible"..thing] = true
+			self.AccountWide[thing] = true
+			self.Collectibles[thing] = true
 		end
 	elseif force == "Account" then
 		for _,thing in ipairs(Things) do
-			app["AccountWide"..thing] = true
-			app["Collectible"..thing] = self:Get("Thing:"..thing)
+			self.AccountWide[thing] = true
+			self.Collectibles[thing] = self:Get("Thing:"..thing)
 		end
 	else
 		for _,thing in ipairs(Things) do
-			app["AccountWide"..thing] = self:Get("AccountWide:"..thing)
-			app["Collectible"..thing] = self:Get("Thing:"..thing)
+			self.AccountWide[thing] = self:Get("AccountWide:"..thing)
+			self.Collectibles[thing] = self:Get("Thing:"..thing)
 		end
 	end
 end
 -- Updates various application settings and values based on toggled Settings, as well as the Mode name and Refreshes the Settings
 settings.UpdateMode = function(self, doRefresh)
+	local filterSet = app.Modules.Filter.Set
 	if self:Get("Completionist") then
-		app.ItemSourceFilter = app.FilterItemSource
+		filterSet.ItemSource()
 		app.ActiveItemCollectionHelper = app.CompletionistItemCollectionHelper
 	else
 		if self:Get("MainOnly") and not self:Get("AccountMode") and not self:Get("DebugMode") then
-			app.ItemSourceFilter = app.FilterItemSourceUniqueOnlyMain
+			filterSet.ItemSource(true, true)
 			app.ActiveItemCollectionHelper = app.UniqueModeItemCollectionHelperOnlyMain
 		else
-			app.ItemSourceFilter = app.FilterItemSourceUnique
+			filterSet.ItemSource(true)
 			app.ActiveItemCollectionHelper = app.UniqueModeItemCollectionHelper
 		end
 	end
 	if self:Get("DebugMode") then
-		app.GroupFilter = app.NoFilter
-		app.UnobtainableFilter = app.NoFilter
-		app.VisibilityFilter = app.ObjectVisibilityFilter
-		app.ItemTypeFilter = app.NoFilter
-		app.ClassRequirementFilter = app.NoFilter
-		app.RaceRequirementFilter = app.NoFilter
-		app.RequiredSkillFilter = app.NoFilter
-		app.RequireEventFilter = app.NoFilter
-		app.RequireFactionFilter = app.NoFilter
-		app.RequireCustomCollectFilter = app.NoFilter
+		filterSet.Group()
+		filterSet.Unobtainable()
+		filterSet.Visible()
+		filterSet.FilterID()
+		filterSet.Class()
+		filterSet.Race()
+		filterSet.RequireSkill()
+		filterSet.Event()
+		filterSet.MinReputation()
+		filterSet.CustomCollect()
 		-- Default filter fallback in Debug mode is based on Show Completed toggles so that uncollectible/completed content can still be hidden in Debug if desired
-		app.DefaultGroupFilter = self:Get("Show:CompletedGroups") and app.NoFilter or app.Filter
-		app.DefaultThingFilter = self:Get("Show:CollectedThings") and app.NoFilter or app.Filter
+		filterSet.DefaultGroup(not self:Get("Show:CompletedGroups"))
+		filterSet.DefaultThing(not self:Get("Show:CollectedThings"))
 
 		settings:SetThingTracking("Debug")
 		app.MODE_ACCOUNT = nil
 		app.MODE_DEBUG = true
 	else
-		app.VisibilityFilter = app.ObjectVisibilityFilter
-		app.GroupFilter = app.FilterItemClass
-		app.DefaultGroupFilter = app.Filter
-		app.DefaultThingFilter = app.Filter
+		filterSet.Visible(true)
+		filterSet.Group(true)
+		filterSet.DefaultGroup(true)
+		filterSet.DefaultThing(true)
 		-- specifically hiding something
 		if settings:GetValue("Unobtainable", "DoFiltering") then
-			app.UnobtainableFilter = app.FilterItemClass_UnobtainableItem
+			filterSet.Unobtainable(true)
 		else
-			app.UnobtainableFilter = app.NoFilter
+			filterSet.Unobtainable()
 		end
 		if self:Get("Show:TrackableThings") then
-			app.ShowTrackableThings = app.FilterItemTrackable
+			filterSet.Trackable(true)
 		else
-			app.ShowTrackableThings = app.Filter
+			filterSet.Trackable()
 		end
 
 		if self:Get("AccountMode") then
-			app.ItemTypeFilter = app.NoFilter
-			app.ClassRequirementFilter = app.NoFilter
-			app.RequiredSkillFilter = app.NoFilter
-			app.RequireFactionFilter = app.NoFilter
-			app.RequireCustomCollectFilter = app.NoFilter
+			filterSet.FilterID()
+			filterSet.Class()
+			filterSet.RequireSkill()
+			filterSet.MinReputation()
+			filterSet.CustomCollect()
 			app.MODE_ACCOUNT = true
 			if self:Get("FactionMode") then
-				app.RaceRequirementFilter = app.FilterItemClass_RequireRacesCurrentFaction
+				filterSet.Race(true, true)
 			else
-				app.RaceRequirementFilter = app.NoFilter
+				filterSet.Race()
 			end
 
 			-- Force Account-Wide with Account Mode otherwise you get really dumb situations
 			settings:SetThingTracking("Account")
 		else
-			app.ItemTypeFilter = app.FilterItemClass_RequireItemFilter
-			app.ClassRequirementFilter = app.FilterItemClass_RequireClasses
-			app.RaceRequirementFilter = app.FilterItemClass_RequireRaces
-			app.RequiredSkillFilter = app.FilterItemClass_RequiredSkill
-			app.RequireFactionFilter = app.FilterItemClass_RequireFaction
-			app.RequireCustomCollectFilter = app.FilterItemClass_CustomCollect
+			filterSet.FilterID(true)
+			filterSet.Class(true)
+			filterSet.Race(true)
+			filterSet.RequireSkill(true)
+			filterSet.MinReputation(true)
+			filterSet.CustomCollect(true)
 
 			settings:SetThingTracking()
 			app.MODE_ACCOUNT = nil
 		end
 
 		if self:Get("Show:OnlyActiveEvents") then
-			app.RequireEventFilter = app.Modules.Events.FilterIsEventActive
+			filterSet.Event(true)
 		else
-			app.RequireEventFilter = app.NoFilter
+			filterSet.Event()
 		end
 
 		app.MODE_DEBUG = nil
 	end
 	app.MODE_DEBUG_OR_ACCOUNT = app.MODE_DEBUG or app.MODE_ACCOUNT
 	if self:Get("Show:CompletedGroups") then
-		app.GroupVisibilityFilter = app.NoFilter
+		filterSet.CompletedGroups()
 	else
-		app.GroupVisibilityFilter = app.FilterGroupsByCompletion
+		filterSet.CompletedGroups(true)
 	end
 	if self:Get("Show:CollectedThings") then
-		app.CollectedItemVisibilityFilter = app.NoFilter
+		filterSet.CompletedThings()
 	else
-		app.CollectedItemVisibilityFilter = app.Filter
+		filterSet.CompletedThings(true)
 	end
-	if app.AccountWideAchievements then
+	if self.AccountWide.Achievements then
 		app.AchievementFilter = 4
 	else
 		app.AchievementFilter = 13
 	end
 	if self:Get("Filter:BoEs") and not self:Get("Hide:BoEs") then
-		app.ItemBindFilter = app.FilterItemBind
+		filterSet.ItemUnbound(true)
 	else
-		app.ItemBindFilter = app.Filter
+		filterSet.ItemUnbound()
 	end
 	if self:Get("Hide:BoEs") then
-		app.RequireBindingFilter = app.FilterItemClass_RequireBinding
+		filterSet.Bound(true)
 	else
-		app.RequireBindingFilter = app.NoFilter
+		filterSet.Bound()
 	end
 	if self:Get("Hide:PvP") then
-		app.PvPFilter = app.FilterItemClass_PvP
+		filterSet.PvP(true)
 	else
-		app.PvPFilter = app.NoFilter
+		filterSet.PvP()
 	end
 	if self:Get("Show:PetBattles") then
-		app.PetBattleFilter = app.NoFilter
+		filterSet.PetBattles()
 	else
-		app.PetBattleFilter = app.FilterItemClass_PetBattles
+		filterSet.PetBattles(true)
 	end
 	app:UnregisterEvent("PLAYER_LEVEL_UP")
 	if self:Get("Filter:ByLevel") and not self:Get("DebugMode") then
 		app:RegisterEvent("PLAYER_LEVEL_UP")
-		app.GroupRequirementsFilter = app.FilterGroupsByLevel
+		filterSet.Level(true)
 	else
-		app.GroupRequirementsFilter = app.NoFilter
+		filterSet.Level()
 	end
 	app:UnregisterEvent("TAXIMAP_OPENED")
 	if self:Get("Thing:FlightPaths") or self:Get("DebugMode") then
@@ -1490,8 +1543,8 @@ end
 
 -- Top 1
 local logo = child:CreateTexture(nil, "ARTWORK")
-logo:SetATTSprite("base_36x36", 429, 217, 36, 36, 512, 256)
 logo:SetPoint("TOPLEFT", child, 0, 0)
+logo:SetTexture(app.asset("Discord_2_64"));
 logo:SetSize(36, 36)
 logo:Show()
 
@@ -1703,38 +1756,38 @@ end)
 checkboxMainOnlyMode:SetATTTooltip(L["MAIN_ONLY_MODE_TOOLTIP"])
 checkboxMainOnlyMode:AlignBelow(checkboxTransmog, 1)
 
-local accwideCheckboxHeirlooms = child:CreateForcedAccountWideCheckbox()
-accwideCheckboxHeirlooms:AlignBelow(checkboxMainOnlyMode, accwideCheckboxTransmog)
+local accwideCheckboxHeirlooms =
+child:CreateForcedAccountWideCheckbox()
+	:AlignBelow(checkboxMainOnlyMode, accwideCheckboxTransmog)
+local checkboxHeirlooms =
+child:CreateTrackingCheckbox("HEIRLOOMS", "Heirlooms")
+	:AlignAfter(accwideCheckboxHeirlooms)
+child:CreateTrackingCheckbox("HEIRLOOMS_UPGRADES", "HeirloomUpgrades", "Heirlooms")
+	:AlignAfter(checkboxHeirlooms)
 
-local checkboxHeirlooms = child:CreateTrackingCheckbox("HEIRLOOMS", "Heirlooms")
-checkboxHeirlooms:AlignAfter(accwideCheckboxHeirlooms)
+local accwideCheckboxIllusions =
+child:CreateForcedAccountWideCheckbox()
+	:AlignBelow(accwideCheckboxHeirlooms)
+child:CreateTrackingCheckbox("ILLUSIONS", "Illusions")
+	:AlignAfter(accwideCheckboxIllusions)
 
-local checkboxHeirloomUpgrades = child:CreateTrackingCheckbox("HEIRLOOMS_UPGRADES", "HeirloomUpgrades", "Heirlooms")
-checkboxHeirloomUpgrades:AlignAfter(checkboxHeirlooms)
+local accwideCheckboxMounts =
+child:CreateForcedAccountWideCheckbox()
+	:AlignBelow(accwideCheckboxIllusions)
+child:CreateTrackingCheckbox("MOUNTS", "Mounts")
+	:AlignAfter(accwideCheckboxMounts)
 
-local accwideCheckboxIllusions = child:CreateForcedAccountWideCheckbox()
-accwideCheckboxIllusions:AlignBelow(accwideCheckboxHeirlooms)
+local accwideCheckboxBattlePets =
+child:CreateForcedAccountWideCheckbox()
+	:AlignBelow(accwideCheckboxMounts)
+child:CreateTrackingCheckbox("BATTLE_PETS", "BattlePets")
+	:AlignAfter(accwideCheckboxBattlePets)
 
-local checkboxIllusions = child:CreateTrackingCheckbox("ILLUSIONS", "Illusions")
-checkboxIllusions:AlignAfter(accwideCheckboxIllusions)
-
-local accwideCheckboxMounts = child:CreateForcedAccountWideCheckbox()
-accwideCheckboxMounts:AlignBelow(accwideCheckboxIllusions)
-
-local checkboxMounts = child:CreateTrackingCheckbox("MOUNTS", "Mounts")
-checkboxMounts:AlignAfter(accwideCheckboxMounts)
-
-local accwideCheckboxBattlePets = child:CreateForcedAccountWideCheckbox()
-accwideCheckboxBattlePets:AlignBelow(accwideCheckboxMounts)
-
-local checkboxBattlePets = child:CreateTrackingCheckbox("BATTLE_PETS", "BattlePets")
-checkboxBattlePets:AlignAfter(accwideCheckboxBattlePets)
-
-local accwideCheckboxToys = child:CreateForcedAccountWideCheckbox()
-accwideCheckboxToys:AlignBelow(accwideCheckboxBattlePets)
-
-local checkboxToys = child:CreateTrackingCheckbox("TOYS", "Toys")
-checkboxToys:AlignAfter(accwideCheckboxToys)
+local accwideCheckboxToys =
+child:CreateForcedAccountWideCheckbox()
+	:AlignBelow(accwideCheckboxBattlePets)
+child:CreateTrackingCheckbox("TOYS", "Toys")
+	:AlignAfter(accwideCheckboxToys)
 
 local headerGeneralThings = child:CreateHeaderLabel(L["GENERAL_THINGS_LABEL"])
 headerGeneralThings:SetPoint("LEFT", headerMode, 0, 0)
@@ -1758,50 +1811,57 @@ headerGeneralThings.OnRefresh = function(self)
     end
 end
 
-local accwideCheckboxAchievements = child:CreateAccountWideCheckbox("ACHIEVEMENTS", "Achievements")
-accwideCheckboxAchievements:SetPoint("TOPLEFT", headerGeneralThings, "BOTTOMLEFT", -2, 0)
+local accwideCheckboxAchievements =
+child:CreateAccountWideCheckbox("ACHIEVEMENTS", "Achievements")
+	:AlignBelow(headerGeneralThings, -0.25)
+child:CreateTrackingCheckbox("ACHIEVEMENTS", "Achievements")
+	:AlignAfter(accwideCheckboxAchievements)
 
-local checkboxAchievements = child:CreateTrackingCheckbox("ACHIEVEMENTS", "Achievements")
-checkboxAchievements:AlignAfter(accwideCheckboxAchievements)
+local accwideCheckboxCharacterUnlocks =
+child:CreateAccountWideCheckbox("CHARACTERUNLOCKS", "CharacterUnlocks")
+	:AlignBelow(accwideCheckboxAchievements)
+child:CreateTrackingCheckbox("CHARACTERUNLOCKS", "CharacterUnlocks")
+	:AlignAfter(accwideCheckboxCharacterUnlocks)
 
-local accwideCheckboxFlightPaths = child:CreateAccountWideCheckbox("FLIGHT_PATHS", "FlightPaths")
-accwideCheckboxFlightPaths:AlignBelow(accwideCheckboxAchievements)
+local accwideCheckboxFlightPaths =
+child:CreateAccountWideCheckbox("FLIGHT_PATHS", "FlightPaths")
+	:AlignBelow(accwideCheckboxCharacterUnlocks)
+child:CreateTrackingCheckbox("FLIGHT_PATHS", "FlightPaths")
+	:AlignAfter(accwideCheckboxFlightPaths)
 
-local checkboxFlightPaths = child:CreateTrackingCheckbox("FLIGHT_PATHS", "FlightPaths")
-checkboxFlightPaths:AlignAfter(accwideCheckboxFlightPaths)
+local accwideCheckboxFollowers =
+child:CreateAccountWideCheckbox("FOLLOWERS", "Followers")
+	:AlignBelow(accwideCheckboxFlightPaths)
+child:CreateTrackingCheckbox("FOLLOWERS", "Followers")
+	:AlignAfter(accwideCheckboxFollowers)
 
-local accwideCheckboxFollowers = child:CreateAccountWideCheckbox("FOLLOWERS", "Followers")
-accwideCheckboxFollowers:AlignBelow(accwideCheckboxFlightPaths)
+local accwideCheckboxQuests =
+child:CreateAccountWideCheckbox("QUESTS", "Quests")
+	:AlignBelow(accwideCheckboxFollowers)
+local checkboxQuests =
+child:CreateTrackingCheckbox("QUESTS", "Quests")
+	:AlignAfter(accwideCheckboxQuests)
+child:CreateTrackingCheckbox("QUESTS_LOCKED", "QuestsLocked")
+	:AlignAfter(checkboxQuests)
 
-local checkboxFollowers = child:CreateTrackingCheckbox("FOLLOWERS", "Followers")
-checkboxFollowers:AlignAfter(accwideCheckboxFollowers)
+local accwideCheckboxRecipes =
+child:CreateAccountWideCheckbox("RECIPES", "Recipes")
+	:AlignBelow(accwideCheckboxQuests)
+child:CreateTrackingCheckbox("RECIPES", "Recipes")
+	:AlignAfter(accwideCheckboxRecipes)
 
-local accwideCheckboxQuests = child:CreateAccountWideCheckbox("QUESTS", "Quests")
-accwideCheckboxQuests:AlignBelow(accwideCheckboxFollowers)
+local accwideCheckboxReputations =
+child:CreateAccountWideCheckbox("REPUTATIONS", "Reputations")
+	:AlignBelow(accwideCheckboxRecipes)
+child:CreateTrackingCheckbox("REPUTATIONS", "Reputations")
+	:AlignAfter(accwideCheckboxReputations)
 
-local checkboxQuests = child:CreateTrackingCheckbox("QUESTS", "Quests")
-checkboxQuests:AlignAfter(accwideCheckboxQuests)
-
-local checkboxLockedQuests = child:CreateTrackingCheckbox("QUESTS_LOCKED", "QuestsLocked")
-checkboxLockedQuests:AlignAfter(checkboxQuests)
-
-local accwideCheckboxRecipes = child:CreateAccountWideCheckbox("RECIPES", "Recipes")
-accwideCheckboxRecipes:AlignBelow(accwideCheckboxQuests)
-
-local checkboxRecipes = child:CreateTrackingCheckbox("RECIPES", "Recipes")
-checkboxRecipes:AlignAfter(accwideCheckboxRecipes)
-
-local accwideCheckboxReputations = child:CreateAccountWideCheckbox("REPUTATIONS", "Reputations")
-accwideCheckboxReputations:AlignBelow(accwideCheckboxRecipes)
-
-local checkboxReputations = child:CreateTrackingCheckbox("REPUTATIONS", "Reputations")
-checkboxReputations:AlignAfter(accwideCheckboxReputations)
-
-local accwideCheckboxTitles = child:CreateAccountWideCheckbox("TITLES", "Titles")
-accwideCheckboxTitles:AlignBelow(accwideCheckboxReputations)
-
-local checkboxTitles = child:CreateTrackingCheckbox("TITLES", "Titles")
-checkboxTitles:AlignAfter(accwideCheckboxTitles)
+local accwideCheckboxTitles =
+child:CreateAccountWideCheckbox("TITLES", "Titles")
+	:AlignBelow(accwideCheckboxReputations)
+local checkboxTitles =
+child:CreateTrackingCheckbox("TITLES", "Titles")
+	:AlignAfter(accwideCheckboxTitles)
 
 local headerExpansionThings = child:CreateHeaderLabel(L["EXPANSION_THINGS_LABEL"])
 headerExpansionThings:SetPoint("LEFT", headerMode, 0, 0)
@@ -1814,35 +1874,36 @@ headerExpansionThings.OnRefresh = function(self)
 	end
 end
 
-local accwideCheckboxMusicRollsAndSelfieFilters = child:CreateAccountWideCheckbox("MUSIC_ROLLS_SELFIE_FILTERS", "MusicRollsAndSelfieFilters")
-accwideCheckboxMusicRollsAndSelfieFilters:SetPoint("TOPLEFT", headerExpansionThings, "BOTTOMLEFT", -2, 0)
+local accwideCheckboxMusicRollsAndSelfieFilters =
+child:CreateAccountWideCheckbox("MUSIC_ROLLS_SELFIE_FILTERS", "MusicRollsAndSelfieFilters")
+	:AlignBelow(headerExpansionThings, -0.25)
+child:CreateTrackingCheckbox("MUSIC_ROLLS_SELFIE_FILTERS", "MusicRollsAndSelfieFilters")
+	:AlignAfter(accwideCheckboxMusicRollsAndSelfieFilters)
 
-local checkboxMusicRollsAndSelfieFilters = child:CreateTrackingCheckbox("MUSIC_ROLLS_SELFIE_FILTERS", "MusicRollsAndSelfieFilters")
-checkboxMusicRollsAndSelfieFilters:AlignAfter(accwideCheckboxMusicRollsAndSelfieFilters)
+local accwideCheckboxAzeriteEssences =
+child:CreateAccountWideCheckbox("AZERITE_ESSENCES", "AzeriteEssences")
+	:AlignBelow(accwideCheckboxMusicRollsAndSelfieFilters)
+child:CreateTrackingCheckbox("AZERITE_ESSENCES", "AzeriteEssences")
+	:AlignAfter(accwideCheckboxAzeriteEssences)
 
-local accwideCheckboxAzeriteEssences = child:CreateAccountWideCheckbox("AZERITE_ESSENCES", "AzeriteEssences")
-accwideCheckboxAzeriteEssences:AlignBelow(accwideCheckboxMusicRollsAndSelfieFilters)
+local accwideCheckboxConduits =
+child:CreateAccountWideCheckbox("SOULBINDCONDUITS", "Conduits")
+	:AlignBelow(accwideCheckboxAzeriteEssences)
+child:CreateTrackingCheckbox("SOULBINDCONDUITS", "Conduits")
+	:AlignAfter(accwideCheckboxConduits)
 
-local checkboxAzeriteEssences = child:CreateTrackingCheckbox("AZERITE_ESSENCES", "AzeriteEssences")
-checkboxAzeriteEssences:AlignAfter(accwideCheckboxAzeriteEssences)
+local accwideCheckboxRunecarvingPowers =
+child:CreateForcedAccountWideCheckbox()
+	:AlignBelow(accwideCheckboxConduits)
+child:CreateTrackingCheckbox("RUNEFORGELEGENDARIES", "RuneforgeLegendaries")
+	:AlignAfter(accwideCheckboxRunecarvingPowers)
 
-local accwideCheckboxConduits = child:CreateAccountWideCheckbox("SOULBINDCONDUITS", "Conduits")
-accwideCheckboxConduits:AlignBelow(accwideCheckboxAzeriteEssences)
-
-local checkboxConduits = child:CreateTrackingCheckbox("SOULBINDCONDUITS", "Conduits")
-checkboxConduits:AlignAfter(accwideCheckboxConduits)
-
-local accwideCheckboxRunecarvingPowers = child:CreateForcedAccountWideCheckbox()
-accwideCheckboxRunecarvingPowers:AlignBelow(accwideCheckboxConduits)
-
-local checkboxRunecarvingPowers = child:CreateTrackingCheckbox("RUNEFORGELEGENDARIES", "RuneforgeLegendaries")
-checkboxRunecarvingPowers:AlignAfter(accwideCheckboxRunecarvingPowers)
-
-local accwideCheckboxDrakewatcherManuscripts = child:CreateForcedAccountWideCheckbox()
-accwideCheckboxDrakewatcherManuscripts:AlignBelow(accwideCheckboxRunecarvingPowers)
-
-local checkboxDrakewatcherManuscripts = child:CreateTrackingCheckbox("DRAKEWATCHERMANUSCRIPTS", "DrakewatcherManuscripts")
-checkboxDrakewatcherManuscripts:AlignAfter(accwideCheckboxDrakewatcherManuscripts)
+local accwideCheckboxDrakewatcherManuscripts =
+child:CreateForcedAccountWideCheckbox()
+	:AlignBelow(accwideCheckboxRunecarvingPowers)
+local checkboxDrakewatcherManuscripts =
+child:CreateTrackingCheckbox("DRAKEWATCHERMANUSCRIPTS", "DrakewatcherManuscripts")
+	:AlignAfter(accwideCheckboxDrakewatcherManuscripts)
 
 local headerAdditionalResources = child:CreateHeaderLabel(L["EXTRA_THINGS_LABEL"])
 headerAdditionalResources:SetPoint("LEFT", headerMode, 0, 0)
@@ -1916,6 +1977,13 @@ checkboxDebugMode:AlignBelow(checkboxShowAllTrackableThings)
 -- Column 2
 local headerGeneralContent = child:CreateHeaderLabel(L["GENERAL_CONTENT"])
 headerGeneralContent:SetPoint("TOPLEFT", headerAccountThings, 320, 0)
+headerGeneralContent.OnRefresh = function(self)
+	if settings:Get("DebugMode") then
+		self:SetAlpha(0.4)
+	else
+		self:SetAlpha(1)
+	end
+end
 
 local checkboxShowUnboundItems = child:CreateCheckBox(L["SHOW_BOE_CHECKBOX"],
 function(self)
@@ -2028,10 +2096,24 @@ checkboxShowPvP:AlignBelow(checkboxShowPetBattles)
 local headerAutomatedContent = child:CreateHeaderLabel(L["CUSTOM_FILTERS_LABEL"])
 headerAutomatedContent:SetPoint("TOP", checkboxShowPvP, "BOTTOM", 0, -10)
 headerAutomatedContent:SetPoint("LEFT", headerGeneralContent, 0, 0)
+headerAutomatedContent.OnRefresh = function(self)
+	if settings:Get("DebugMode") then
+		self:SetAlpha(0.4)
+	else
+		self:SetAlpha(1)
+	end
+end
 
 local textAutomatedContentExplain = child:CreateTextLabel(L["CUSTOM_FILTERS_EXPLAIN_LABEL"])
 textAutomatedContentExplain:SetPoint("TOPLEFT", headerAutomatedContent, "BOTTOMLEFT", 0, -4)
 textAutomatedContentExplain:SetWidth(320)
+textAutomatedContentExplain.OnRefresh = function(self)
+	if settings:Get("DebugMode") then
+		self:SetAlpha(0.4)
+	else
+		self:SetAlpha(1)
+	end
+end
 
 	-- Automated Content toggles
 	local insane_color = app.ccColors.Insane
@@ -2118,6 +2200,13 @@ textAutomatedContentExplain:SetWidth(320)
 
 local headerUnobtainableContent = child:CreateHeaderLabel(L["UNOBTAINABLE_LABEL"])
 headerUnobtainableContent:SetPoint("TOPLEFT", ccCheckbox, "BOTTOMLEFT", 0, -10)	-- Place under the last Automated Content checkbox
+headerUnobtainableContent.OnRefresh = function(self)
+	if settings:Get("DebugMode") then
+		self:SetAlpha(0.4)
+	else
+		self:SetAlpha(1)
+	end
+end
 
 	local unobtainables = L["UNOBTAINABLE_ITEM_REASONS"]
 
@@ -2133,14 +2222,20 @@ local checkboxShowAllUnobtainable = child:CreateCheckBox(L["UNOBTAINABLE_ALL"],
 		end
 		self:SetChecked(not anyFiltered)
 		settings:SetValue("Unobtainable", "DoFiltering", anyFiltered)
-		self:Enable()
-		self:SetAlpha(1)
+		if settings:Get("DebugMode") then
+			self:Disable()
+			self:SetAlpha(0.4)
+		else
+			self:Enable()
+			self:SetAlpha(1)
+		end
 	end,
 	function(self)
 		local checked = self:GetChecked()
 		for k,v in pairs(unobtainables) do
 			settings:SetValue("Unobtainable", k, checked)
 		end
+		self:OnRefresh();
 		settings:UpdateMode(1)
 	end
 )
@@ -2157,8 +2252,13 @@ function(self)
 		end
 	end
 	self:SetChecked(not anyFiltered)
-	self:Enable()
-	self:SetAlpha(1)
+	if settings:Get("DebugMode") then
+		self:Disable()
+		self:SetAlpha(0.4)
+	else
+		self:Enable()
+		self:SetAlpha(1)
+	end
 end,
 function(self)
 	local checked = self:GetChecked()
@@ -2167,6 +2267,7 @@ function(self)
 			settings:SetValue("Unobtainable", k, checked)
 		end
 	end
+	checkboxShowAllUnobtainable:OnRefresh();
 	settings:UpdateMode(1)
 end)
 checkboxShowAllNoChance:AlignBelow(checkboxShowAllUnobtainable, 1)
@@ -2178,11 +2279,17 @@ for k,v in pairs(unobtainables) do
 		local filter = child:CreateCheckBox(v[3],
 		function(self)
 			self:SetChecked(settings:GetValue("Unobtainable", k))
-			self:Enable()
-			self:SetAlpha(1)
+			if settings:Get("DebugMode") then
+				self:Disable()
+				self:SetAlpha(0.4)
+			else
+				self:Enable()
+				self:SetAlpha(1)
+			end
 		end,
 		function(self)
 			settings:SetValue("Unobtainable", k, self:GetChecked())
+			checkboxShowAllUnobtainable:OnRefresh();
 			settings:UpdateMode(1)
 		end)
 		filter:SetATTTooltip(v[2])
@@ -2200,23 +2307,29 @@ local checkboxShowAllHighChance = child:CreateCheckBox(L["HIGH_CHANCE_ALL"],
 function(self)
 	local anyFiltered = false
 	for k,v in pairs(unobtainables) do
-		if v[1] == 3 then
+		if v[1] == 2 or v[1] == 3 then
 			if not settings:GetValue("Unobtainable", k) then
 				anyFiltered = true
 			end
 		end
 	end
 	self:SetChecked(not anyFiltered)
-	self:Enable()
-	self:SetAlpha(1)
+	if settings:Get("DebugMode") then
+		self:Disable()
+		self:SetAlpha(0.4)
+	else
+		self:Enable()
+		self:SetAlpha(1)
+	end
 end,
 function(self)
 	local checked = self:GetChecked()
 	for k,v in pairs(unobtainables) do
-		if v[1] == 3 then
+		if v[1] == 2 or v[1] == 3 then
 			settings:SetValue("Unobtainable", k, checked)
 		end
 	end
+	checkboxShowAllUnobtainable:OnRefresh();
 	settings:UpdateMode(1)
 end)
 checkboxShowAllHighChance:AlignBelow(last, -1)
@@ -2224,15 +2337,21 @@ checkboxShowAllHighChance:AlignBelow(last, -1)
 last = checkboxShowAllHighChance
 count = 0
 for k,v in pairs(unobtainables) do
-	if v[1] == 3 then
+	if v[1] == 2 or v[1] == 3 then
 		local filter = child:CreateCheckBox(v[3],
 		function(self)
 			self:SetChecked(settings:GetValue("Unobtainable", k))
-			self:Enable()
-			self:SetAlpha(1)
+			if settings:Get("DebugMode") then
+				self:Disable()
+				self:SetAlpha(0.4)
+			else
+				self:Enable()
+				self:SetAlpha(1)
+			end
 		end,
 		function(self)
 			settings:SetValue("Unobtainable", k, self:GetChecked())
+			checkboxShowAllUnobtainable:OnRefresh();
 			settings:UpdateMode(1)
 		end)
 		filter:SetATTTooltip(v[2])
@@ -2250,9 +2369,23 @@ end
 local headerWeaponsAndArmor = child:CreateHeaderLabel(L["ITEM_FILTER_LABEL"])
 headerWeaponsAndArmor:SetPoint("LEFT", headerMode, 0, 0)
 headerWeaponsAndArmor:SetPoint("TOP", last, "BOTTOM", 0, -10)	-- Place under the last Unobtainable Content checkbox
+headerWeaponsAndArmor.OnRefresh = function(self)
+	if settings:Get("DebugMode") then
+		self:SetAlpha(0.4)
+	else
+		self:SetAlpha(1)
+	end
+end
 
 local textWeaponsAndArmorExplain = child:CreateTextLabel(L["ITEM_EXPLAIN_LABEL"])
 textWeaponsAndArmorExplain:SetPoint("TOPLEFT", headerWeaponsAndArmor, "BOTTOMLEFT", 0, -4)
+textWeaponsAndArmorExplain.OnRefresh = function(self)
+	if settings:Get("DebugMode") then
+		self:SetAlpha(0.4)
+	else
+		self:SetAlpha(1)
+	end
+end
 
 -- Stuff to automatically generate the armor & weapon checkboxes
 local last, xoffset, yoffset = headerWeaponsAndArmor, 0, -4
@@ -3245,6 +3378,18 @@ end)
 checkboxUseMoreColors:SetATTTooltip(L["MORE_COLORS_CHECKBOX_TOOLTIP"])
 checkboxUseMoreColors:AlignBelow(checkboxShowCollectedThings)
 
+local checkboxNestedNPCData = child:CreateCheckBox(L["NPC_DATA_NESTED_CHECKBOX"],
+function(self)
+	self:SetChecked(settings:GetTooltipSetting("NPCData:Nested"))
+end,
+function(self)
+	settings:SetTooltipSetting("NPCData:Nested", self:GetChecked())
+	-- requires re-building of minilist
+	app.LocationTrigger(true)
+end)
+checkboxNestedNPCData:SetATTTooltip(L["NPC_DATA_NESTED_CHECKBOX_TOOLTIP"])
+checkboxNestedNPCData:AlignBelow(checkboxUseMoreColors)
+
 local checkboxNestedQuestChains = child:CreateCheckBox(L["QUEST_CHAIN_NESTED_CHECKBOX"],
 function(self)
 	self:SetChecked(settings:GetTooltipSetting("QuestChain:Nested"))
@@ -3253,7 +3398,7 @@ function(self)
 	settings:SetTooltipSetting("QuestChain:Nested", self:GetChecked())
 end)
 checkboxNestedQuestChains:SetATTTooltip(L["QUEST_CHAIN_NESTED_CHECKBOX_TOOLTIP"])
-checkboxNestedQuestChains:AlignBelow(checkboxUseMoreColors)
+checkboxNestedQuestChains:AlignBelow(checkboxNestedNPCData)
 
 local checkboxSortByProgress = child:CreateCheckBox(L["SORT_BY_PROGRESS_CHECKBOX"],
 function(self)
@@ -3408,13 +3553,10 @@ local function changeBackgroundColor(restore)
 	end
 
 	-- Update our internal storage
- 	local r, g, b, a = newR, newG, newB, newA
 	settings:Set("Window:BackgroundColor", {r = newR, g = newG, b = newB, a = newA})
 
  	-- And update the actual windows
-	for suffix, window in pairs(AllTheThings.Windows) do
-		window:SetBackdropColor(r, g, b, a)
-	end
+	settings.ApplyAllWindowColors()
 end
 
 local function changeBorderColor(restore)
@@ -3428,13 +3570,10 @@ local function changeBorderColor(restore)
 	end
 
 	-- Update our internal storage
- 	local r, g, b, a = newR, newG, newB, newA
 	settings:Set("Window:BorderColor", {r = newR, g = newG, b = newB, a = newA})
 
  	-- And update the actual windows
-	for suffix, window in pairs(AllTheThings.Windows) do
-		window:SetBackdropBorderColor(r, g, b, a)
-	end
+	settings.ApplyAllWindowColors()
 end
 
 function ShowColorPicker(r, g, b, a, changedCallback)
@@ -3501,11 +3640,7 @@ local buttonResetColor = child:CreateButton(
 	OnClick = function(self)
 		settings:Set("Window:BackgroundColor", {r = 0, g = 0, b = 0, a = 1})
 		settings:Set("Window:BorderColor", {r = 1, g = 1, b = 1, a = 1})
-
-		for suffix, window in pairs(AllTheThings.Windows) do
-			window:SetBackdropColor(0, 0, 0, 1)
-			window:SetBackdropBorderColor(1, 1, 1, 1)
-		end
+		settings.ApplyAllWindowColors()
 	end,
 })
 buttonResetColor:SetPoint("BOTTOMLEFT", buttonBorderColor, "BOTTOMRIGHT", 5, 0)
@@ -3516,7 +3651,7 @@ function(self)
 end,
 function(self)
 	settings:SetTooltipSetting("Window:UseClassForBorder", self:GetChecked())
-	app:UpdateWindows()
+	settings.ApplyAllWindowColors()
 end)
 checkboxUseClassColorForBorder:SetATTTooltip(L["CLASS_BORDER_TOOLTIP"])
 checkboxUseClassColorForBorder:SetPoint("TOPLEFT", buttonBackgroundColor, "BOTTOMLEFT", -2, 0)
@@ -3526,67 +3661,102 @@ local headerAdditionalInformation = child:CreateHeaderLabel(L["ADDITIONAL_LABEL"
 headerAdditionalInformation:SetPoint("LEFT", headerTooltips, 0, 0)
 headerAdditionalInformation:SetPoint("TOP", checkboxUseClassColorForBorder, "BOTTOM", 0, -10)
 
+-- TODO: localize
 local ids = {
-	["achievementID"] = "Achievement ID",
-	["achievementCategoryID"] = "Achievement Category ID",
-	["artifactID"] = "Artifact ID",
-	["azeriteEssenceID"] = "Azerite Essence ID",
+	["achievementID"] = L["ACHIEVEMENT_ID"],
+	["achievementCategoryID"] = L["ACHIEVEMENT_CATEGORY_ID"],
+	["artifactID"] = L["ARTIFACT_ID"],
+	["azeriteEssenceID"] = L["AZERITE_ESSENCE_ID"],
+	["b"] = "Binding",
 	["bonusID"] = "Bonus ID",
-	["creatureID"] = "Creature ID",
+	["conduitID"] = "Conduit ID",
+	["creatureID"] = L["CREATURE_ID"],
 	["creatures"] = "Creatures List",
+	["criteriaID"] = "Criteria ID",
 	["currencyID"] = "Currency ID",
-	["difficultyID"] = "Difficulty ID",
+	["difficultyID"] = L["DIFFICULTY_ID"],
 	["displayID"] = "Display ID",
-	["encounterID"] = "Encounter ID",
-	["factionID"] = "Faction ID",
-	["filterID"] = "Filter ID",
-	["flightPathID"] = "Flight Path ID",
-	["followerID"] = "Follower ID",
-	["headerID"] = "Header ID",
+	["encounterID"] = L["ENCOUNTER_ID"],
+	["factionID"] = L["FACTION_ID"],
+	["filterID"] = L["FILTER_ID"],
+	["flightPathID"] = L["FLIGHT_PATH_ID"],
+	["followerID"] = L["FOLLOWER_ID"],
+	["headerID"] = L["HEADER_ID"],
 	["iconPath"] = "Icon Path",
-	["illusionID"] = "Illusion ID",
-	["instanceID"] = "Instance ID",
-	["itemID"] = "Item ID",
+	["illusionID"] = L["ILLUSION_ID"],
+	["instanceID"] = L["INSTANCE_ID"],
+	["itemID"] = L["ITEM_ID"],
 	["itemString"] = "Item String",
-	["mapID"] = "Map ID",
+	["mapID"] = L["MAP_ID"],
 	["modID"] = "Mod ID",
-	["objectID"] = "Object ID",
+	["objectID"] = L["OBJECT_ID"],
 	["questID"] = "Quest ID",
 	["QuestGivers"] = "Quest Givers",
-	["sourceID"] = "Source ID",
-	["speciesID"] = "Species ID",
-	["spellID"] = "Spell ID",
-	["tierID"] = "Tier ID",
-	["titleID"] = "Title ID",
-	["visualID"] = "Visual ID",
+	["runeforgePowerID"] = "Runeforge Power ID",
+	["setID"] = L["SET_ID"],
+	["sourceID"] = L["SOURCE_ID"],
+	["speciesID"] = L["SPECIES_ID"],
+	["spellID"] = L["SPELL_ID"],
+	["tierID"] = L["EXPANSION_ID"],
+	["titleID"] = L["TITLE_ID"],
+	["visualID"] = L["VISUAL_ID"],
+}
+local idsArray = {}
+for id,_ in pairs(ids) do
+	idsArray[#idsArray + 1] = id
+end
+table.sort(idsArray, function(a,b) return string.lower(a) < string.lower(b) end)
+local activeIds = {}
+-- Table of AdditionalID/Localize Name Mappings
+settings.AdditionalIDs = ids
+-- Array of currently-active AdditionalIDs. Refreshed when AdditionalIDs change
+settings.ActiveAdditionalIDs = activeIds
+local function RefreshActiveAdditionalIDs()
+	wipe(activeIds)
+	for _,id in ipairs(idsArray) do
+		if settings:GetTooltipSetting(id) then
+			activeIds[#activeIds + 1] = id
+		end
+	end
+end
+settings.__RefreshActiveAdditionalIDs = RefreshActiveAdditionalIDs
+settings.AdditionalIDValueConversions = {
+	filterID = function(val)
+		return L["FILTER_ID_TYPES"][val]
+	end,
+	b = function(val)
+		return (val == 1 and "BoP") or (val == 2 and "BoA") or nil
+	end
 }
 local last = nil
-local idNo = 1
-for _,id in pairs({"achievementID","achievementCategoryID","artifactID","azeriteEssenceID","bonusID","creatureID","creatures","currencyID", "difficultyID","displayID","encounterID","factionID","filterID","flightPathID","followerID","headerID","iconPath","illusionID","instanceID","itemID","itemString","mapID","modID","objectID","questID","QuestGivers","sourceID","speciesID","spellID","tierID","titleID","visualID"}) do
+local split1 = math.ceil(#idsArray / 3)
+local split2 = 2 * split1
+for idNo,id in ipairs(idsArray) do
 	local filter = child:CreateCheckBox(ids[id],
 	function(self)
 		self:SetChecked(settings:GetTooltipSetting(id))
 	end,
 	function(self)
 		settings:SetTooltipSetting(id, self:GetChecked())
+		RefreshActiveAdditionalIDs()
 		settings:Refresh()
 	end)
 	-- Column 1
 	if idNo == 1 then
 		filter:SetPoint("TOPLEFT", headerAdditionalInformation, "BOTTOMLEFT", -2, 0)
 	-- Column 2
-	elseif idNo == 12 then
+	elseif idNo > split1 then
 		filter:SetPoint("TOPLEFT", headerAdditionalInformation, "BOTTOMLEFT", 212, 0)
+		split1 = 999
 	-- Column 3
-	elseif idNo == 23 then
+	elseif idNo > split2 then
 		filter:SetPoint("TOPLEFT", headerAdditionalInformation, "BOTTOMLEFT", 425, 0)
+		split2 = 999
 	else
 		filter:AlignBelow(last)
 	end
-	idNo = idNo + 1
 	last = filter
 end
-
 end)();
 
 ---------------------
@@ -3728,9 +3898,53 @@ local checkboxScreenshotCollectedThings = child:CreateCheckBox(L["SCREENSHOT_COL
 checkboxScreenshotCollectedThings:SetATTTooltip(L["SCREENSHOT_COLLECTED_CHECKBOX_TOOLTIP"])
 checkboxScreenshotCollectedThings:AlignBelow(checkboxWarnRemovedThings)
 
+local checkboxPlayDeathSound = child:CreateCheckBox("Play a sound when you die" --[[L["PLAY_DEATH_SOUND_CHECKBOX"] ]],
+function(self)
+	self:SetChecked(settings:GetTooltipSetting("PlayDeathSound"))
+end,
+function(self)
+	settings:SetTooltipSetting("PlayDeathSound", self:GetChecked())
+end)
+--checkboxPlayDeathSound:SetATTTooltip(L["PLAY_DEATH_SOUND_CHECKBOX_TOOLTIP"])
+checkboxPlayDeathSound:AlignBelow(checkboxScreenshotCollectedThings)
+
+local textSoundpack = child:CreateTextLabel("|cffFFFFFF"..L["SOUNDPACK"])
+textSoundpack:SetPoint("LEFT", headerCelebrations, 0, 0)
+textSoundpack:SetPoint("TOP", checkboxPlayDeathSound, "BOTTOM", 0, 0)
+textSoundpack:SetWidth(textSoundpack:GetUnboundedStringWidth())
+
+local dropdownSoundpack = CreateFrame("Frame", "dropdownSoundpack", child, "UIDropDownMenuTemplate")
+dropdownSoundpack:SetPoint("TOPLEFT", textSoundpack, "BOTTOMLEFT", -15, 0)
+UIDropDownMenu_SetWidth(dropdownSoundpack, 270) -- Use in place of dropDown:SetWidth
+
+-- Set the dropdown's current text to the active soundpack
+AllTheThings.Audio:RegisterForSoundPackEvents(function(event, soundPack)
+	UIDropDownMenu_SetText(dropdownSoundpack, AllTheThings.Audio:GetActiveSoundPack().name)
+end)
+
+-- Change the active soundpack based on user selection
+local function WPDropDownDemo_OnClick(self, arg1)
+	AllTheThings.Audio:ActivateSoundPack(arg1)
+	UIDropDownMenu_SetText(dropdownSoundpack, AllTheThings.Audio:GetActiveSoundPack().name)
+	AllTheThings.Audio:PlayFanfare()
+end
+
+-- Populate the dropdown menu with all existing soundpacks
+function WPDropDownDemo_Menu(frame, level, menuList)
+	local info = UIDropDownMenu_CreateInfo()
+	info.func = WPDropDownDemo_OnClick
+
+	local soundPacks = AllTheThings.Audio:GetAllSoundPacks()
+	for i, sounds in pairs(soundPacks) do
+		info.text, info.arg1 = sounds.name, sounds.name
+		UIDropDownMenu_AddButton(info)
+	end
+end
+UIDropDownMenu_Initialize(dropdownSoundpack, WPDropDownDemo_Menu)
+
 local headerMinimapButton = child:CreateHeaderLabel(L["MINIMAP_LABEL"])
 headerMinimapButton:SetPoint("LEFT", headerCelebrations, 0, 0)
-headerMinimapButton:SetPoint("TOP", checkboxScreenshotCollectedThings, "BOTTOM", 0, -10)
+headerMinimapButton:SetPoint("TOP", dropdownSoundpack, "BOTTOM", 0, -10)
 
 local checkboxShowMinimapButton = child:CreateCheckBox(L["MINIMAP_BUTTON_CHECKBOX"],
 function(self)
@@ -3823,6 +4037,7 @@ function(self)
 		-- print(self, "OnEvent", ...)
 		MovieFrame:Hide()
 		CinematicFrame_CancelCinematic()
+		app.print(RENOWN_LEVEL_UP_SKIP_BUTTON,CINEMATICS)
 	end)
 	ChangeSkipCutsceneState(self, checked)
 end,
@@ -3960,8 +4175,16 @@ checkboxReportUnsourced:SetATTTooltip(L["REPORT_UNSORTED_CHECKBOX_TOOLTIP"])
 checkboxReportUnsourced:AlignBelow(checkboxReportQuests, 1)
 
 -- Column 2
+local headerIconLegend = child:CreateHeaderLabel(L["ICON_LEGEND_LABEL"])
+headerIconLegend:SetPoint("TOPLEFT", headerCelebrations, 320, 0)
+
+local textIconLegend = child:CreateTextLabel(L["ICON_LEGEND_TEXT"])
+textIconLegend:SetPoint("TOPLEFT", headerIconLegend, "BOTTOMLEFT", 0, -4)
+textIconLegend:SetWidth(320)
+
 local headerChatCommands = child:CreateHeaderLabel(L["CHAT_COMMANDS_LABEL"])
-headerChatCommands:SetPoint("TOPLEFT", headerCelebrations, 320, 0)
+headerChatCommands:SetPoint("LEFT", headerIconLegend, 0, 0)
+headerChatCommands:SetPoint("TOP", textIconLegend, "BOTTOM", 0, -15)
 
 local textChatCommands = child:CreateTextLabel(L["CHAT_COMMANDS_TEXT"])
 textChatCommands:SetPoint("TOPLEFT", headerChatCommands, "BOTTOMLEFT", 0, -4)
@@ -4072,7 +4295,7 @@ local buttonCreateProfile = child:CreateButton(
 					return true
 				end
 				-- TODO dialog about existing profile
-				-- app:ShowPopupDialog("Profile already exists!", function() end)
+				-- app:ShowPopupDialog("Profile already exists!", app.EmptyFunction)
 			end
 		-- end
 	end,
@@ -4097,7 +4320,7 @@ local buttonDeleteProfile = child:CreateButton(
 				return true
 			end
 			-- TODO dialog about not deleting a profile
-			-- app:ShowPopupDialog("Profile cannot be deleted!", function() end)
+			-- app:ShowPopupDialog("Profile cannot be deleted!", app.EmptyFunction)
 		end
 	end
 })
@@ -4341,7 +4564,7 @@ local child = settings:CreateOptionsPage(L["ABOUT_PAGE"], true)
 local textAbout = child:CreateTextLabel(L["TITLE"] .. L["ABOUT_1"])
 textAbout:SetPoint("TOPLEFT", child, 0, 0)
 
-local textShoutout = child:CreateTextLabel(L["ABOUT_2"] .. L["COLLECTED_ICON"] .. " " .. L["COLLECTED_APPEARANCE_ICON"] .. " " ..L["NOT_COLLECTED_ICON"] .. L["ABOUT_3"])
+local textShoutout = child:CreateTextLabel(L["ABOUT_2"] .. L["ABOUT_3"] .. L["ABOUT_4"] .. L["COLLECTED_ICON"] .. " " .. L["COLLECTED_APPEARANCE_ICON"] .. " " ..L["NOT_COLLECTED_ICON"] .. L["ABOUT_5"])
 textShoutout:SetPoint("BOTTOMLEFT", child:GetParent(), 0, 10)
 
 end)();

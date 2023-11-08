@@ -119,8 +119,8 @@ TwitchEmotes_dropdown_options = {
     [14] = { -- 30
         "Drainerx", "drxBrain", "drxCS", "drxD", "drxWeird", "drxSSJ", "drxPog",
         "drxDict", "drxEyes", "drxFE", "drxED", "drxFE1", "drxED2", "drxFEED",
-        "drxCri", "drxGlad", "drxGod", "drxmonkaEYES", "drxR", "drxW", "drxLit",
-        "drxLUL", "drxCozy", "drxHappy", "drxHey", "drxMad", "drxSad",
+        "drxCri", "drxGlad", "drxGod", "drxmonkaEYES", "drxR", "drxW", "drxLUL",
+        "drxCozy", "drxHappy", "drxHey", "drxMad", "drxSad",
         "drxSmart", "drxSmile", "drxSpace", "drxWink"
     },
     [15] = { -- 45

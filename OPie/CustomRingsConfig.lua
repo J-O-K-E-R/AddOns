@@ -463,18 +463,11 @@ ringDetail = CreateFrame("Frame", nil, ringContainer) do
 	ringDetail.binding = config.createBindingButton(ringDetail)
 	ringDetail.bindingContainerFrame = panel
 	ringDetail.binding:SetPoint("TOPLEFT", 267, -68) ringDetail.binding:SetWidth(265)
-	function ringDetail:SetBinding(bind) return api.setRingProperty("hotkey", bind or nil) end
-	function ringDetail:OnBindingAltClick() self:ToggleAlternateEditor(api.getRingProperty("hotkey")) end
+	function ringDetail:SetBinding(bind) return api.setRingBinding(bind or false) end
+	function ringDetail:OnBindingAltClick() self:ToggleAlternateEditor(api.getRingBinding()) end
 	ringDetail.binding.label = ringDetail.scope:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
 	ringDetail.binding.label:SetPoint("TOPLEFT", ringDetail, "TOPLEFT", 10, -73)
 	ringDetail.binding.label:SetText(L"Binding:")
-	ringDetail.bindingQuarantine = TS:CreateOptionsCheckButton(nil, ringDetail)
-	ringDetail.bindingQuarantine:SetHitRectInsets(0,0,0,0)
-	ringDetail.bindingQuarantine:SetPoint("RIGHT", ringDetail.binding, "LEFT", 0, 0)
-	ringDetail.bindingQuarantine:SetScript("OnClick", function(self) PlayCheckboxSound(self) api.setRingProperty("hotkey", api.getRingProperty("quarantineBind")) end)
-	ringDetail.bindingQuarantine:SetScript("OnEnter", config.ui.ShowControlTooltip)
-	ringDetail.bindingQuarantine:SetScript("OnLeave", config.ui.HideTooltip)
-	ringDetail.bindingQuarantine.tooltipText = L"To enable the default binding for this ring, check this box or change the binding."
 	do -- ringDetail.rotation
 		local s, sliderLeftMargin, centerLine = TS:CreateOptionsSlider(ringDetail, nil, 250)
 		s:SetPoint("TOPLEFT", 270-sliderLeftMargin, -95)
@@ -1516,18 +1509,25 @@ function ringDetail.scope:text()
 	)
 end
 function api.getRingProperty(key)
-	if key == "hotkey" then
-		if PC:GetRingInfo(currentRingName) then
-			local skey, _, over = PC:GetRingBinding(currentRingName)
-			if over then return skey end
-		end
-		if currentRing.hotkey and not PC:GetOption("UseDefaultBindings", currentRingName) then
-			return currentRing.hotkey, "|cffa0a0a0"
-		elseif currentRing.quarantineBind and not currentRing.hotkey then
-			return currentRing.quarantineBind, "|cffa0a0a0"
+	return currentRing[key]
+end
+function api.getRingBinding()
+	if PC:GetRingInfo(currentRingName) then
+		local skey, _, over = PC:GetRingBinding(currentRingName, 1)
+		if over then
+			return skey
 		end
 	end
-	return currentRing[key]
+	if currentRing.hotkey then
+		return currentRing.hotkey, PC:GetOption("UseDefaultBindings", currentRingName) and "" or "|cffa0a0a0"
+	end
+end
+function api.setRingBinding(value)
+	if PC:GetRingInfo(currentRingName) then
+		config.undo:saveActiveProfile()
+		PC:SetRingBinding(currentRingName, 1, value)
+		ringDetail.binding:SetBindingText(value)
+	end
 end
 function api.setRingProperty(name, value)
 	if not currentRing then return end
@@ -1535,14 +1535,6 @@ function api.setRingProperty(name, value)
 	if name == "limit" then
 		ringDetail.scope:text()
 		ringOrderMap[currentRingName] = value ~= nil and (value:match("[^A-Z]") and 0 or 2) or nil
-	elseif name == "hotkey" then
-		currentRing.quarantineBind = nil
-		ringDetail.bindingQuarantine:Hide()
-		ringDetail.binding:SetBindingText(value)
-		if PC:GetRingInfo(currentRingName) then
-			config.undo:saveActiveProfile()
-			PC:SetRingBinding(currentRingName, value)
-		end
 	elseif name == "internal" then
 		local source, dest = value and ringNames or ringNames.hidden, value and ringNames.hidden or ringNames
 		for i=1,#source do if source[i] == currentRingName then
@@ -1555,6 +1547,9 @@ function api.setRingProperty(name, value)
 		api.updateRingLine()
 	end
 	api.saveRing(currentRingName, currentRing)
+	if name == "name" then
+		UIDropDownMenu_SetText(ringDropDown, value or currentRingName)
+	end
 end
 function api.setSliceAction()
 	if currentRing and currentSliceIndex then
@@ -1647,7 +1642,7 @@ function api.selectSlice(offset, select)
 end
 function api.updateSliceDisplay(_id, desc)
 	local stype, sname, sicon, icoext = getSliceInfo(desc)
-	if sname ~= "" then
+	if (sname or "") ~= "" and stype ~= sname then
 		sliceDetail.desc:SetFormattedText("%s: |cffffffff%s|r", stype or "?", sname or "?")
 	else
 		sliceDetail.desc:SetText(stype or "?")
@@ -1794,13 +1789,15 @@ function api.saveRing(name, data)
 		RK:SetRing(name, data)
 	end
 	ringDetail.exportFrame:Hide()
+	ringDetail.binding:SetEnabled(not not PC:GetRingInfo(name))
 end
 function api.refreshDisplay()
 	if currentRing and currentRing[currentSliceIndex] then
 		api.updateSliceOptions(currentRing[currentSliceIndex])
 	end
 	if currentRing then
-		ringDetail.binding:SetBindingText(api.getRingProperty("hotkey"))
+		ringDetail.binding:SetBindingText(api.getRingBinding())
+		ringDetail.binding:SetEnabled(not not PC:GetRingInfo(currentRingName))
 		ringDetail.exportFrame:GetScript("OnHide")(ringDetail.exportFrame)
 		local caOptionNames = "|cffffffff" .. L"Quick action at ring center" .. "|r|cff909090 / |r|cffffffff" .. L"Quick action if mouse remains still" .. "|r"
 		local noCA = not PC:GetOption("CenterAction", currentRingName) and (L"You must enable the %s option for this ring in OPie options to use quick actions."):format(caOptionNames) or nil
@@ -1808,8 +1805,6 @@ function api.refreshDisplay()
 		ringDetail.opportunistCA:SetEnabled(not noCA)
 		ringDetail.opportunistCA:SetChecked(not noCA and not currentRing.noOpportunisticCA)
 		ringDetail.opportunistCA.Text:SetVertexColor(noCA and 0.6 or 1,noCA and 0.6 or 1,noCA and 0.6 or 1)
-		ringDetail.bindingQuarantine:SetShown(not not currentRing.quarantineBind)
-		ringDetail.bindingQuarantine:SetChecked(nil)
 		ringDetail.firstOnOpen:SetChecked(currentRing.onOpen == 1)
 		ringDetail.firstOnOpen.quarantineMark:SetShown(currentRing.quarantineOnOpen == 1)
 	end

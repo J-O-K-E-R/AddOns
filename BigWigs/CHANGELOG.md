@@ -1,8 +1,12 @@
 # BigWigs
 
-## [v293.1](https://github.com/BigWigsMods/BigWigs/tree/v293.1) (2023-10-13)
-[Full Changelog](https://github.com/BigWigsMods/BigWigs/compare/v293...v293.1) [Previous Releases](https://github.com/BigWigsMods/BigWigs/releases)
+## [v295](https://github.com/BigWigsMods/BigWigs/tree/v295) (2023-11-08)
+[Full Changelog](https://github.com/BigWigsMods/BigWigs/compare/v294.1...v295) [Previous Releases](https://github.com/BigWigsMods/BigWigs/releases)
 
-- Media: Update fonts  
-- Plugins/BossBlock: Season 3 dungeon talking heads  
-- Amirdrassil/Gnarlroot: Update Tainted Treant marker option  
+- Core/BossPrototype: Add a nil check for Ambiguate  
+- bump version  
+- Amirdrassil: Remove load blockers and stage calls where staging isn't used  
+- Core/BossPrototype: Call Ambiguate on combat log players names, hopefully temporarily  
+- bump toc  
+- Loader: Compensate for some guilds using a custom setup of BigWigs, closes #1430  
+- Update esES (#1442)  

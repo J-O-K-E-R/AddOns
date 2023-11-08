@@ -2,7 +2,7 @@
 ## Interface: 100107
 ## X-Min-Interface: 100107
 ## Title: Rarity
-## Version: 1.0 (r724-release)
+## Version: 1.0 (r725-release)
 ## X-Curse-Project-ID: 30801
 
 ## Notes: Tracks rare drops, including companions and mounts

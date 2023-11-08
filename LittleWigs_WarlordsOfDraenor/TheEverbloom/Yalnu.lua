@@ -84,7 +84,7 @@ function mod:OnBossEnable()
 	-- XXX bring these listeners outside the if block when 10.2 is live everywhere
 	if isTenDotTwo then
 		self:Log("SPELL_CAST_START", "VerdantEruption", 428823)
-		self:Log("SPELL_CAST_SUCCESS", "VibrantFlourish", 428948)
+		self:Log("SPELL_CAST_SUCCESS", "EncounterSpawn", 181113)
 	else
 		-- XXX delete these listeners when 10.2 is live everywhere
 		self:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", nil, "boss1") -- Font of Life
@@ -101,7 +101,7 @@ end
 function mod:OnEngage()
 	colossalBlowCount = 1
 	verdantEruptionCount = 1
-	self:CDBar(169179, 2.4) -- Colossal Blow
+	self:CDBar(169179, 2.4, CL.count:format(self:SpellName(169179), colossalBlowCount)) -- Colossal Blow
 	-- XXX bring this bar outside the if block when 10.2 is live everywhere
 	if isTenDotTwo then
 		self:CDBar(428823, 23.0, CL.count:format(self:SpellName(428823), verdantEruptionCount)) -- Verdant Eruption
@@ -126,13 +126,14 @@ end
 -- Yalnu
 
 function mod:ColossalBlow(args)
-	self:Message(args.spellId, "orange")
+	self:StopBar(CL.count:format(args.spellName, colossalBlowCount))
+	self:Message(args.spellId, "orange", CL.count:format(args.spellName, colossalBlowCount))
 	self:PlaySound(args.spellId, "alarm")
 	colossalBlowCount = colossalBlowCount + 1
 	if colossalBlowCount % 3 ~= 1 then -- 2, 3, 5, 6...
-		self:CDBar(args.spellId, 15.8)
+		self:CDBar(args.spellId, 15.8, CL.count:format(args.spellName, colossalBlowCount))
 	else -- 4, 7 ...
-		self:CDBar(args.spellId, 23.0)
+		self:CDBar(args.spellId, 23.0, CL.count:format(args.spellName, colossalBlowCount))
 	end
 end
 
@@ -147,7 +148,7 @@ end
 do
 	local flourishingAncientGUID = nil
 
-	function mod:VibrantFlourish(args)
+	function mod:EncounterSpawn(args)
 		-- register events to auto-mark the add
 		if self:GetOption(flourishingAncientMarker) then
 			flourishingAncientGUID = args.sourceGUID
@@ -177,7 +178,7 @@ function mod:LumberingSwipe(args)
 	-- this AOE will hit a small area around Lady Baihu
 	self:Message(args.spellId, "red")
 	self:PlaySound(args.spellId, "alarm")
-	-- self:CDBar(args.spellId, 13.3) -- probably not useful
+	--self:CDBar(args.spellId, 13.3) -- probably not useful
 end
 
 -- XXX pre 10.2, delete everything below this comment when 10.2 is live everywhere

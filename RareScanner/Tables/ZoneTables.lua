@@ -79,7 +79,7 @@ private.SUBZONES_IDS = {
 	[2047] = {2048,2049,2050,2051,2052,2055,2061}; --Sepulcher of the First Ones
 	[2024] = {2132}; -- The Azure Span minimaps
 	[2151] = {2100,2101,2102,2154}; --The Forbidden Reach (10.0.7) (Dragonflight)
-	[2133] = {2184}; --Zaralek Cavern (10.1.0) (Dragonflight)
+	[2133] = {2184,2165}; --Zaralek Cavern minimaps (10.1.0) (Dragonflight)
 	[2166] = {2167,2168,2169,2170}; --Aberrus, the Shadowed Crucible
 	[2025] = {2199}; --Thaldraszus minimaps
 }

@@ -1,3 +1,4 @@
+local isTenDotTwo = select(4, GetBuildInfo()) >= 100200 --- XXX delete when 10.2 is live everywhere
 --------------------------------------------------------------------------------
 -- Module Declaration
 --
@@ -34,6 +35,11 @@ if L then
 	L.confessor = "Dazar'ai Confessor"
 	L.augur = "Dazar'ai Augur"
 	L.reanimated_honor_guard = "Reanimated Honor Guard"
+
+	L.stairs_open = "Stairs Open"
+	L.stairs_open_desc = "Show a bar indicating when the stairs open to Yazma."
+	L.stairs_open_icon = "achievement_dungeon_ataldazar"
+	L.stairs_open_trigger = "Impressive. You made it farther than I thought... but I will still be drinking your blood."
 end
 
 --------------------------------------------------------------------------------
@@ -42,6 +48,8 @@ end
 
 function mod:GetOptions()
 	return {
+		-- RP Timers
+		"stairs_open",
 		-- Feasting Skyscreamer
 		255041, -- Terrifying Screech
 		-- T'lonja
@@ -78,6 +86,9 @@ function mod:GetOptions()
 end
 
 function mod:OnBossEnable()
+	-- RP Timers
+	self:RegisterEvent("CHAT_MSG_MONSTER_SAY")
+
 	-- Feasting Skyscreamer
 	self:Log("SPELL_CAST_START", "TerrifyingScreech", 255041)
 
@@ -111,12 +122,26 @@ function mod:OnBossEnable()
 	self:Log("SPELL_CAST_SUCCESS", "FieryEnchant", 253583)
 
 	-- Reanimated Honor Guard
-	self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
+	if isTenDotTwo then
+		self:Log("SPELL_CAST_SUCCESS", "FesteringEruption", 255626)
+	else
+		-- XXX remove when 10.2 is live everywhere
+		self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
+	end
 end
 
 --------------------------------------------------------------------------------
 -- Event Handlers
 --
+
+--RP Timers
+
+function mod:CHAT_MSG_MONSTER_SAY(event, msg)
+	if msg == L.stairs_open_trigger then
+		self:UnregisterEvent(event)
+		self:Bar("stairs_open", 12.3, L.stairs_open, L.stairs_open_icon)
+	end
+end
 
 -- Feasting Skyscreamer
 
@@ -226,6 +251,19 @@ end
 
 -- Reanimated Honor Guard
 
+do
+	local prev = 0
+	function mod:FesteringEruption(args)
+		local t = args.time
+		if t - prev > 1.5 then
+			prev = t
+			self:Message(args.spellId, "orange")
+			self:PlaySound(args.spellId, "alarm")
+		end
+	end
+end
+
+-- XXX delete when 10.2 is live everywhere
 do
 	local prev = nil
 	function mod:UNIT_SPELLCAST_SUCCEEDED(_, _, castGUID, spellId)

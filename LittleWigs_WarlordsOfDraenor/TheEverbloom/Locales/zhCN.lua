@@ -21,4 +21,7 @@ if L then
 	L.infested_icecaller = "被感染的唤冰者"
 	L.putrid_pyromancer = "腐烂的炎术士"
 	L.addled_arcanomancer = "疯狂的奥法师"
+
+	L.gate_opens = "大门开启"
+	L.gate_opens_desc = "显示下级法师克萨伦何时打开通往雅努大门的计时条。"
 end

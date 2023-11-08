@@ -21,4 +21,7 @@ if L then
 	L.infested_icecaller = "被感染的喚冰師"
 	L.putrid_pyromancer = "腐爛的火占師"
 	L.addled_arcanomancer = "混亂的秘卜師"
+
+	L.gate_opens = "傳送門開啟"
+	L.gate_opens_desc = "顯示一個計時條指示黑暗法師克薩隆將開啟往亞爾努的傳送門。"
 end

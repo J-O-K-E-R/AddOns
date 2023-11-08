@@ -12,12 +12,13 @@ local strfind = string.find
 -- Generate our version variables
 --
 
-local BIGWIGS_VERSION = 293
+local BIGWIGS_VERSION = 295
 local BIGWIGS_RELEASE_STRING, BIGWIGS_VERSION_STRING
 local versionQueryString, versionResponseString = "Q^%d^%s^%d^%s", "V^%d^%s^%d^%s"
 local customGuildName = false
 local BIGWIGS_GUILD_VERSION = 0
 local guildWarnMessage = ""
+local guildDisableContentWarnings = false
 
 do
 	local _, tbl = ...
@@ -35,7 +36,7 @@ do
 	local ALPHA = "ALPHA"
 
 	local releaseType
-	local myGitHash = "bb48e67" -- The ZIP packager will replace this with the Git hash.
+	local myGitHash = "d982c4d" -- The ZIP packager will replace this with the Git hash.
 	local releaseString
 	--[=[@alpha@
 	-- The following code will only be present in alpha ZIPs.
@@ -65,6 +66,7 @@ do
 		customGuildName = tbl.guildName
 		BIGWIGS_GUILD_VERSION = tbl.guildVersion
 		guildWarnMessage = tbl.guildWarn
+		guildDisableContentWarnings = tbl.guildDisableContentWarnings
 		releaseString = L.guildRelease:format(BIGWIGS_GUILD_VERSION, BIGWIGS_VERSION)
 		versionQueryString = versionQueryString:format(BIGWIGS_VERSION, myGitHash, tbl.guildVersion, tbl.guildName)
 		versionResponseString = versionResponseString:format(BIGWIGS_VERSION, myGitHash, tbl.guildVersion, tbl.guildName)
@@ -106,7 +108,7 @@ public.SetRaidTarget = SetRaidTarget
 public.UnitHealth = UnitHealth
 public.UnitHealthMax = UnitHealthMax
 public.UnitDetailedThreatSituation = UnitDetailedThreatSituation
-public.onTestBuild = IsTestBuild()
+public.onTestBuild = GetCurrentRegion() == 72 -- PTR/beta
 
 -- Version
 local usersHash = {}
@@ -1121,7 +1123,7 @@ do
 		end
 	end
 
-	if not public.usingBigWigsRepo then -- We're not using BigWigs Git, but required functional addons are missing? Show a warning
+	if not public.usingBigWigsRepo and not guildDisableContentWarnings then -- We're not using BigWigs Git, but required functional addons are missing? Show a warning
 		for k in next, reqFuncAddons do -- List of required addons (core/plugins/options)
 			if not foundReqAddons[k] then -- A required functional addon is missing
 				local msg = L.missingAddOn:format(k)
@@ -1491,6 +1493,7 @@ do
 			if zoneAddon == public.currentExpansion.name and public.isRetail and public.usingBigWigsRepo then return end -- If we are a BW Git user, then current content can't be missing, so return
 			if strfind(zoneAddon, "LittleWigs", nil, true) and public.usingLittleWigsRepo then return end -- If we are a LW Git user, then nothing can be missing, so return
 			if public.currentExpansion.zones[id] then
+				if guildDisableContentWarnings then return end
 				zoneAddon = public.currentExpansion.zones[id] -- Current BigWigs content has individual zone specific addons
 			elseif zoneAddon == public.currentExpansion.littlewigsName and public.isRetail then
 				zoneAddon = "LittleWigs" -- Current LittleWigs content is stored in the main addon

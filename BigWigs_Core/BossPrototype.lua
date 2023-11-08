@@ -32,7 +32,7 @@ local C_EncounterJournal_GetSectionInfo, GetSpellInfo, GetSpellTexture, GetTime,
 local EJ_GetEncounterInfo, UnitGroupRolesAssigned = EJ_GetEncounterInfo, UnitGroupRolesAssigned
 local SendChatMessage, GetInstanceInfo, Timer, SetRaidTarget = BigWigsLoader.SendChatMessage, BigWigsLoader.GetInstanceInfo, BigWigsLoader.CTimerAfter, BigWigsLoader.SetRaidTarget
 local UnitName, UnitGUID, UnitHealth, UnitHealthMax = BigWigsLoader.UnitName, BigWigsLoader.UnitGUID, BigWigsLoader.UnitHealth, BigWigsLoader.UnitHealthMax
-local UnitDetailedThreatSituation = BigWigsLoader.UnitDetailedThreatSituation
+local UnitDetailedThreatSituation, Ambiguate = BigWigsLoader.UnitDetailedThreatSituation, BigWigsLoader.Ambiguate
 local isClassic, isRetail = BigWigsLoader.isClassic, BigWigsLoader.isRetail
 local format, find, gsub, band, tremove, twipe = string.format, string.find, string.gsub, bit.band, table.remove, table.wipe
 local select, type, next, tonumber = select, type, next, tonumber
@@ -586,7 +586,7 @@ do
 						local m = eventMap[self][event]
 						if m and m[mobId] then
 							local func = m[mobId]
-							args.mobId, args.destGUID, args.destName, args.destFlags, args.destRaidFlags, args.time = mobId, destGUID, destName, destFlags, destRaidFlags, time
+							args.mobId, args.destGUID, args.destName, args.destFlags, args.destRaidFlags, args.time = mobId, destGUID, destName and Ambiguate(destName, "none"), destFlags, destRaidFlags, time
 							if type(func) == "function" then
 								func(args)
 							else
@@ -602,8 +602,8 @@ do
 					if m and (m[spellId] or m["*"]) then
 						local func = m[spellId] or m["*"]
 						-- DEVS! Please ask if you need args attached to the table that we've missed out!
-						args.sourceGUID, args.sourceName, args.sourceFlags, args.sourceRaidFlags = sourceGUID, sourceName, sourceFlags, sourceRaidFlags
-						args.destGUID, args.destName, args.destFlags, args.destRaidFlags = destGUID, destName, destFlags, destRaidFlags
+						args.sourceGUID, args.sourceName, args.sourceFlags, args.sourceRaidFlags = sourceGUID, sourceName and Ambiguate(sourceName, "none"), sourceFlags, sourceRaidFlags
+						args.destGUID, args.destName, args.destFlags, args.destRaidFlags = destGUID, destName and Ambiguate(destName, "none"), destFlags, destRaidFlags
 						args.time, args.spellId, args.spellName, args.extraSpellId, args.extraSpellName, args.amount = time, spellId, spellName, extraSpellId, amount, amount
 						if type(func) == "function" then
 							func(args)
@@ -1131,15 +1131,17 @@ do
 		bossTargetScans[#bossTargetScans+1] = {self, func, solo and 0.1 or tankCheckExpiry, guid, 0} -- Tiny allowance when solo
 	end
 
-
 	function boss:NextTarget(event, unit)
-		self:UnregisterUnitEvent(event, unit)
-		local func = self.bossTargetChecks[unit]
-		self.bossTargetChecks[unit] = nil
 		local id = unit.."target"
 		local playerGUID = UnitGUID(id)
-		local name = self:UnitName(id)
-		func(self, name, playerGUID)
+		-- ignore the boss detargeting their current target before targeting the next player
+		if playerGUID then
+			self:UnregisterUnitEvent(event, unit)
+			local func = self.bossTargetChecks[unit]
+			self.bossTargetChecks[unit] = nil
+			local name = self:UnitName(id)
+			func(self, name, playerGUID)
+		end
 	end
 	--- Register a callback to get the next target a boss swaps to (boss1 - boss5).
 	-- Looks for the boss as defined by the GUID and then returns the next target selected by that boss.

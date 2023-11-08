@@ -16,10 +16,10 @@ local name, app = ...;
 CHARACTER_TYPE_FRAME_TRIAL_BOOST_CHARACTER = "Class Trial";
 CHARACTER_UPGRADE_CHARACTER_LIST_LABEL = "Character Boost";
 DRAKE_MANUSCRIPTS = "Drakewatcher Manuscripts";
-TRACK_ACC_WIDE = app.ccColors.Account .. "Track "..ITEM_UPGRADE_DISCOUNT_TOOLTIP_ACCOUNT_WIDE.."|R";
-ACC_WIDE_DEFAULT = "Tracked ".. app.ccColors.Account .. ITEM_UPGRADE_DISCOUNT_TOOLTIP_ACCOUNT_WIDE.."|R by default.";
+local TRACK_ACC_WIDE = app.ccColors.Account .. "Track "..ITEM_UPGRADE_DISCOUNT_TOOLTIP_ACCOUNT_WIDE.."|R";
+local ACC_WIDE_DEFAULT = "Tracked ".. app.ccColors.Account .. ITEM_UPGRADE_DISCOUNT_TOOLTIP_ACCOUNT_WIDE.."|R by default.";
 
-app.L = {
+local L = {
 	-- General Text
 	["TITLE"] = app.ccColors.ATT.."ALL THE THINGS|r";
 	["AUCTION_TAB"] = app.ccColors.ATT.."ATT|r";
@@ -94,12 +94,12 @@ app.L = {
 	["_AND"] = " and";
 	["_MORE"] = " more";
 	["_OTHER_SOURCES"] = " other sources";
-	["DURING_WQ_ONLY"] = "This can be completed when the world quest is active.";
-	["COMPLETED_DAILY"] = "This can be completed daily.";
-	["COMPLETED_WEEKLY"] = "This can be completed weekly.";
-	["COMPLETED_MONTHLY"] = "This can be completed monthly.";
-	["COMPLETED_YEARLY"] = "This can be completed yearly.";
-	["COMPLETED_MULTIPLE"] = "This can be repeated multiple times.";
+	["DURING_WQ_ONLY"] = "Can be completed when the World Quest is active";
+	["COMPLETED_DAILY"] = "Can be completed daily";
+	["COMPLETED_WEEKLY"] = "Can be completed weekly";
+	["COMPLETED_MONTHLY"] = "Can be completed monthly";
+	["COMPLETED_YEARLY"] = "Can be completed yearly";
+	["COMPLETED_MULTIPLE"] = "Can be repeated multiple times";
 	["CRITERIA_FOR"] = "Criteria for";
 	["CURRENCY_FOR"] = "Currency for";
 	["LOOT_TABLE_CHANCE"] = "Loot Table Chance";
@@ -130,7 +130,6 @@ app.L = {
 	["BOUNTY_DESC"] = "This list contains Unobtainable items that the ATT Discord has reported as bugs that Blizzard has yet to fix.\n\nNOTE: All filters are ignored within this list for visibility. Only items removed from the game due to negligence rather than a gigantic fire breathing dragon are present on this list.\n\nTo Blizzard Devs: Please fix the items and encounters listed below.";
 	["OPEN_AUTOMATICALLY"] = "Open Automatically";
 	["OPEN_AUTOMATICALLY_DESC"] = "If you aren't a Blizzard Developer, it might be a good idea to uncheck this. This was done to force Blizzard to fix and/or acknowledge these bugs.";
-	["TWO_CLOAKS"] = "|cffFF0000These two cloaks have very limited confirmed drops if any and are presumed broken!|r";
 	["OGOM_THE_MANGLER_DESC"] = "|cffFF0000Ogom the Mangler seems just to spawn when you are doing the Daily 'Assault on the Iron Siegeworks'. This Quest wasn't active since the start of Legion and the buyable Quest 'Missive: Assault on the Iron Siegeworks' does not work either.|r";
 	["DIFF_COMPLETED_1"] = "You have collected everything from this difficulty. Switch to ";
 	["DIFF_COMPLETED_2"] = " instead.";
@@ -226,8 +225,8 @@ app.L = {
 	["REFRESHING_COLLECTION"] = "Refreshing collection...";
 	["DONE_REFRESHING"] = "Done refreshing collection.";
 	["ADHOC_UNIQUE_COLLECTED_INFO"] = "This Item is Unique-Collected but failed to be detected due to missing Blizzard API information.\n\nIt will be fixed after the next Force-Refresh.";
-	["REQUIRES_PVP"] = "|CFF00FFDEThis Thing requires Player vs Player activities or a currency related to those activities.|r";
-	["REQUIRES_PETBATTLES"] = "|CFF00FFDEThis Thing requires Pet Battling.|r";
+	["REQUIRES_PVP"] = "|CFF00FFDERequires PvP Activities or Currencies|r";
+	["REQUIRES_PETBATTLES"] = "|CFF00FFDERequires Pet Battling|r";
 	["REPORT_INACCURATE_QUEST"] = "Wrong Quest Info! (Click to Report)";
 	["NESTED_QUEST_REQUIREMENTS"] = "Nested Quest Requirements";
 	["MAIN_LIST_REQUIRES_REFRESH"] = "[Open Main list to update progress]";
@@ -242,58 +241,62 @@ app.L = {
 	["FORCE_REFRESH_REQUIRED"] = "This may require a Force Refresh ("..SHIFT_KEY_TEXT.." click) to properly be collected.";
 	["FUTURE_UNOBTAINABLE"] = "Future Unobtainable!";
 	["FUTURE_UNOBTAINABLE_TOOLTIP"] = "This is content that has been confirmed or is highly-probable to be made unobtainable in a known future patch.";
+	["NEW_WITH_PATCH"] = "Newly Added Things";
+	["NEW_WITH_PATCH_TOOLTIP"] = "This shows you all of the content that has been added with the latest patch of the game.";
 	["TRADING_POST"] = "Trading Post";
 
 	["TIER_DATA"] = {
 		{	-- Classic
 			["icon"] = app.asset("Expansion_CLASSIC"),
 			["lore"] = "Four years after the Battle of Mount Hyjal, tensions between the Alliance & the Horde begin to arise once again. Intent on settling the arid region of Durotar, Thrall's new Horde expanded its ranks, inviting the undead Forsaken to join orcs, tauren, & trolls. Meanwhile, dwarves, gnomes & the ancient night elves pledged their loyalties to a reinvigorated Alliance, guided by the human kingdom of Stormwind. After Stormwind's king, Varian Wrynn, mysteriously disappeared, Highlord Bolvar Fordragon served as Regent but his service was marred by the manipulations & mind control of the Onyxia, who ruled in disguise as a human noblewoman. As heroes investigated Onyxia's manipulations, ancient foes surfaced in lands throughout the world to menace Horde & Alliance alike.",
-			["lvl"] = 1,
 		},
-		{	-- Burning Crusade
+		{	-- The Burning Crusade
 			["icon"] = app.asset("Expansion_TBC"),
 			["lore"] = "The Burning Crusade is the first expansion. Its main features include an increase of the level cap up to 70, the introduction of the blood elves & the draenei as playable races, & the addition of the world of Outland, along with many new zones, dungeons, items, quests, & monsters.",
-			["lvl"] = 10,
 		},
 		{	-- Wrath of the Lich King
 			["icon"] = app.asset("Expansion_WOTLK"),
 			["lore"] = "Wrath of the Lich King is the second expansion. The majority of the expansion content takes place in Northrend & centers around the plans of the Lich King. Content highlights include the increase of the level cap from 70 to 80, the introduction of the death knight Hero class, & new PvP/World PvP content.",
-			["lvl"] = 10,
 		},
 		{	-- Cataclysm
 			["icon"] = app.asset("Expansion_CATA"),
 			["lore"] = "Cataclysm is the third expansion. Set primarily in a dramatically reforged Kalimdor & Eastern Kingdoms on the world of Azeroth, the expansion follows the return of Deathwing, who causes a new Sundering as he makes his cataclysmic re-entrance into the world from Deepholm. Cataclysm returns players to the two continents of Azeroth for most of their campaigning, opening new zones such as Mount Hyjal, the sunken world of Vashj'ir, Deepholm, Uldum and the Twilight Highlands. It includes two new playable races, the worgen & the goblins. The expansion increases level cap to 85, adds the ability to fly in Kalimdor & Eastern Kingdoms, introduces Archaeology & reforging, & restructures the world itself.",
-			["lvl"] = 10,
 		},
 		{	-- Mists of Pandaria
 			["icon"] = app.asset("Expansion_MOP"),
-			["lore"] = "Mists of Pandaria is the fourth expansion pack. The expansion refocuses primarily on the war between the Alliance & Horde, in the wake of the accidental rediscovery of Pandaria. Adventurers rediscover the ancient pandaren people, whose wisdom will help guide them to new destinies; the Pandaren Empire's ancient enemy, the mantid; and their legendary oppressors, the enigmatic mogu. The land changes over time & the conflict between Varian Wrynn & Garrosh Hellscream escalates. As civil war wracks the Horde, the Alliance & forces in the Horde opposed to Hellscream's violent uprising join forces to take the battle directly to Hellscream & his Sha-touched allies in Orgrimmar.",
-			["lvl"] = 10,
+			["lore"] = "Mists of Pandaria is the fourth expansion. The expansion refocuses primarily on the war between the Alliance & Horde, in the wake of the accidental rediscovery of Pandaria. Adventurers rediscover the ancient pandaren people, whose wisdom will help guide them to new destinies; the Pandaren Empire's ancient enemy, the mantid; and their legendary oppressors, the enigmatic mogu. The land changes over time & the conflict between Varian Wrynn & Garrosh Hellscream escalates. As civil war wracks the Horde, the Alliance & forces in the Horde opposed to Hellscream's violent uprising join forces to take the battle directly to Hellscream & his Sha-touched allies in Orgrimmar.",
 		},
 		{	-- Warlords of Draenor
 			["icon"] = app.asset("Expansion_WOD"),
 			["lore"] = "Warlords of Draenor is the fifth expansion. Across Draenor's savage jungles & battle-scarred plains, Azeroth's heroes will engage in a mythic conflict involving mystical draenei champions & mighty orc clans, & cross axes with the likes of Grommash Hellscream, Blackhand, & Ner'zhul at the height of their primal power. Players will need to scour this unwelcoming land in search of allies to help build a desperate defense against the old Horde's formidable engine of conquest, or else watch their own world's bloody, war-torn history repeat itself.",
-			["lvl"] = 10,
 		},
 		{	-- Legion
 			["icon"] = app.asset("Expansion_LEGION"),
 			["lore"] = "Legion is the sixth expansion. Gul'dan is expelled into Azeroth to reopen the Tomb of Sargeras & the gateway to Argus, commencing the third invasion of the Burning Legion. After the defeat at the Broken Shore, the defenders of Azeroth search for the Pillars of Creation, which were Azeroth's only hope for closing the massive demonic portal at the heart of the Tomb. However, the Broken Isles came with their own perils to overcome, from Xavius, to God-King Skovald, to the nightborne, & to Tidemistress Athissa. Khadgar moved Dalaran to the shores of this land, the city serves as a central hub for the heroes. The death knights of Acherus also took their floating necropolis to the Isles. The heroes of Azeroth sought out legendary artifact weapons to wield in battle, but also found unexpected allies in the form of the Illidari. Ongoing conflict between the Alliance & the Horde led to the formation of the class orders, with exceptional commanders putting aside faction to lead their classes in the fight against the Legion.",
-			["lvl"] = 10,
 		},
 		{	-- Battle for Azeroth
 			["icon"] = app.asset("Expansion_BFA"),
 			["lore"] = "Battle for Azeroth is the seventh expansion. Azeroth paid a terrible price to end the apocalyptic march of the Legion's crusade—but even as the world's wounds are tended, it is the shattered trust between the Alliance and Horde that may prove the hardest to mend. In Battle for Azeroth, the fall of the Burning Legion sets off a series of disastrous incidents that reignites the conflict at the heart of the Warcraft saga. As a new age of warfare begins, Azeroth's heroes must set out on a journey to recruit new allies, race to claim the world's mightiest resources, and fight on several fronts to determine whether the Horde or Alliance will lead Azeroth into its uncertain future.",
-			["lvl"] = 10,
 		},
 		{	-- Shadowlands
 			["icon"] = app.asset("Expansion_SL"),
 			["lore"] = "Shadowlands is the eighth expansion. What lies beyond the world you know? The Shadowlands, resting place for every mortal soul—virtuous or vile—that has ever lived.",
-			["lvl"] = 48,
 		},
 		{	-- Dragonflight
 			["icon"] = app.asset("Expansion_DF"),
 			["lore"] = "Dragonflight is the ninth expansion. The dragonflights of Azeroth have returned, called upon to defend their ancestral home, the Dragon Isles. Surging with elemental magic and the life energies of Azeroth, the Isles are awakening once more, and it's up to you to explore their primordial wonder and discover long-forgotten secrets.",
-			["lvl"] = 58,
+		},
+		{	-- The War Within
+			["icon"] = app.asset("Expansion_TWW"),
+			["lore"] = "The War Within is the tenth expansion for World of Warcraft and the beginning of the Worldsoul Saga. Journey through never-before-seen subterranean worlds filled with hidden wonders and lurking perils, down to the dark depths of the nerubian empire, where the malicious Harbinger of the Void is gathering arachnid forces to bring Azeroth to its knees.",
+		},
+		{	-- Midnight
+			["icon"] = app.asset("Expansion_MD"),
+			["lore"] = "Midnight is the eleventh expansion for World of Warcraft and the second installment of the Worldsoul Saga.",
+		},
+		{	-- The Last Titan
+			["icon"] = app.asset("Expansion_TLT"),
+			["lore"] = "The Last Titan is the twelfth expansion for World of Warcraft and the final installment of the Worldsoul Saga.",
 		},
 	};
 
@@ -380,6 +383,8 @@ app.L = {
 	["AZERITE_ESSENCES_CHECKBOX_TOOLTIP"] = "Enable this option to track Azerite Essences.\n\nTracked per character by default.";
 	["BATTLE_PETS_CHECKBOX"] = app.ccColors.Insane .. PETS;
 	["BATTLE_PETS_CHECKBOX_TOOLTIP"] = "Enable this option to track battle pets and companions. These can be found in the open world or via boss drops in various Dungeons and Raids as well as from Vendors and Reputation.\n\n"..ACC_WIDE_DEFAULT;
+	["CHARACTERUNLOCKS_CHECKBOX"] = app.ccColors.Insane..CHARACTER.." "..UNLOCK.."s";
+	["CHARACTERUNLOCKS_CHECKBOX_TOOLTIP"] = "Enable this option to track "..CHARACTER.." "..UNLOCK.."s. These are various character-based unlocks which aren't clearly able to be categorized as another type (e.g. Hex variants, Polymorph variants, Hunter species taming unlocks, Pocopoc customizations, etc.)\n\nTracked per character by default.";
 	["FLIGHT_PATHS_CHECKBOX"] = app.ccColors.Insane .. "Flight Paths & Ferry Stations";
 	["FLIGHT_PATHS_CHECKBOX_TOOLTIP"] = "Enable this option to track flight paths and ferry stations.\n\nTo collect these, open the dialog with the flight / ferry master in each continent.\n\nNOTE: Due to phasing technology, you may have to phase to the other versions of a zone to get credit for those points of interest.";
 	["FOLLOWERS_CHECKBOX"] = app.ccColors.Insane .. GARRISON_FOLLOWERS.." & "..COVENANT_MISSIONS_FOLLOWERS;
@@ -395,7 +400,7 @@ app.L = {
 	["MUSIC_ROLLS_SELFIE_FILTERS_CHECKBOX"] = "|T"..app.asset("Expansion_WOD")..":0|t " .. app.ccColors.Insane .. "Music Rolls & Selfie Filters";
 	["MUSIC_ROLLS_SELFIE_FILTERS_CHECKBOX_TOOLTIP"] = "Enable this option to track music rolls and selfie filters.\n\nYou can use your Jukebox Toy to play in-game music and your Selfie Camera toy to collect filters for your selfies from certain locations.";
 	["QUESTS_CHECKBOX"] = app.ccColors.Insane .. QUESTS_LABEL;
-	["QUESTS_CHECKBOX_TOOLTIP"] = "Enable this option to track normal Quests.\n\nYou can right click any Quest in the lists to pop out their full quest chain to show your progress and any prerequisite Quests.\n\nNOTE: Quests are not permanently tracked due to the nature of how Daily, Weekly, Yearly, and World Quests are tracked in the Blizzard Database.";
+	["QUESTS_CHECKBOX_TOOLTIP"] = "Enable this option to track normal Quests.\n\nYou can right click any Quest in the lists to pop out their full quest chain to show your progress and any prerequisite Quests.\n\nNOTE: Tracking of Daily, Weekly, Yearly, and World Quests is not included in this option due to their periodic resets within the Blizzard Database.";
 	["QUESTS_LOCKED_CHECKBOX"] = app.ccColors.Insane .. "+Locked";
 	["QUESTS_LOCKED_CHECKBOX_TOOLTIP"] = "Enable this option to specifically include tracking of Locked Quest completion.\n\nLocked Quests are those which the player is no longer able to complete (according to known ATT data) through normal gameplay.\n\nObtaining these Quests is very reliant on the Party Sync feature or using "..ITEM_UPGRADE_DISCOUNT_TOOLTIP_ACCOUNT_WIDE.." Quests to incorporate progress from other characters.";
 	["RECIPES_CHECKBOX"] = app.ccColors.Insane .. AUCTION_CATEGORY_RECIPES;
@@ -433,7 +438,7 @@ app.L = {
 	["SHOW_PVP_CHECKBOX"] = "|T"..app.asset("Category_PvP")..":0|t " .. app.ccColors.Insane .. PVP_OPTIONS;
 	["SHOW_PVP_CHECKBOX_TOOLTIP"] = "Enable this setting if you want to show content which 'may' require Player vs. Player interactions within the game.";
 	["SHOW_ALL_SEASONAL"] = app.ccColors.Insane .. "All Seasonal Events";
-	["SHOW_ALL_SEASONAL_TOOLTIP"] = "Enable this setting to show all seasonal events, instead of only currently active seasonal events.";
+	["SHOW_ALL_SEASONAL_TOOLTIP"] = "Enable this setting to show all seasonal events, instead of only currently active seasonal events.\n\nNOTE: Seasonal Events will automatically be visible as active 7 days in advance.";
 	["SHOW_PET_BATTLES_CHECKBOX"] = "|T"..app.asset("Category_PetBattles")..":0|t " .. app.ccColors.Insane .. SHOW_PET_BATTLES_ON_MAP_TEXT;
 	["SHOW_PET_BATTLES_CHECKBOX_TOOLTIP"] = "Enable this setting if you want to show content which requires Pet Battles within the game.";
 	["IGNORE_FILTERS_FOR_BOES_CHECKBOX"] = "Ignore BoE/BoA Item Filters";
@@ -456,7 +461,7 @@ app.L = {
 	["DYNAMIC_CATEGORY_SIMPLE_TOOLTIP"] = "Generate Dynamic Categories based only on the very highest Category.";
 	["DYNAMIC_CATEGORY_NESTED"] = "Nested";
 	["DYNAMIC_CATEGORY_NESTED_TOOLTIP"] = "Generate Dynamic Categories based on their exact Source. This will lead to duplicates of Things that are also Sourced in multiple places.";
-	["DYNAMIC_CATEGORY_TOOLTIP_NOTE"] = "\n\n|cffff0000Requires Reload|r";
+	["DYNAMIC_CATEGORY_TOOLTIP_NOTE"] = "\n\n|cffff0000Applied when Generated|r";
 	["CLICK_TO_CREATE_FORMAT"] = "Click to Create %s";
 	["LOADING_FORMAT"] = "%s "..LFG_LIST_LOADING;	-- %s Loading...
 	["READY_FORMAT"] = "%s "..READY;	-- %s Ready
@@ -466,6 +471,7 @@ app.L = {
 	-- Account-Wide Checkboxes
 	["ACCOUNT_WIDE_ACHIEVEMENTS_TOOLTIP"] = TRACK_ACC_WIDE.."\n\nAchievement tracking is usually "..ITEM_UPGRADE_DISCOUNT_TOOLTIP_ACCOUNT_WIDE..", but there are a number of achievements exclusive to specific classes and races that you can't get on your main.";
 	["ACCOUNT_WIDE_AZERITE_ESSENCES_TOOLTIP"] = TRACK_ACC_WIDE.."\n\nAzerite Essences cannot technically be collected and used "..ITEM_UPGRADE_DISCOUNT_TOOLTIP_ACCOUNT_WIDE..", but if you only care about collecting them on your main character then you may prefer tracking them "..ITEM_UPGRADE_DISCOUNT_TOOLTIP_ACCOUNT_WIDE..".";
+	["ACCOUNT_WIDE_CHARACTERUNLOCKS_TOOLTIP"] = TRACK_ACC_WIDE.."\n\nConsider any Character Unlock collected if any character has collected it.";
 	["ACCOUNT_WIDE_FLIGHT_PATHS_TOOLTIP"] = TRACK_ACC_WIDE.."\n\nFlight Paths tracking is only really useful per character, but do you really want to collect them all on all 50 of your characters?";
 	["ACCOUNT_WIDE_FOLLOWERS_TOOLTIP"] = TRACK_ACC_WIDE.."\n\nFollowers are typically per character, but do you really want to have to collect 243 Garrison Inn Followers on one character at a rate of 1 per week?\n\nI think not, good sir.";
 	["ACCOUNT_WIDE_MUSIC_ROLLS_SELFIE_FILTERS_TOOLTIP"] = TRACK_ACC_WIDE.."\n\nMusic Rolls & Selfie Filters are not normally tracked "..ITEM_UPGRADE_DISCOUNT_TOOLTIP_ACCOUNT_WIDE.." in Blizzard's database, but we can do that.\n\nNOTE: You can only play Music Rolls using the Jukebox Toy or snap a selfie with your S.E.L.F.I.E Camera Toy that you have collected on your current character.";
@@ -612,6 +618,8 @@ app.L = {
 	["AUCTION_TAB_CHECKBOX_TOOLTIP"] = "Enable this option if you want to see the Auction House Module provided with ATT.\n\nSome addons are naughty and modify this frame extensively. ATT doesn't always play nice with those toys.";
 	["SORT_BY_PROGRESS_CHECKBOX"] = "Sort By Progress";
 	["SORT_BY_PROGRESS_CHECKBOX_TOOLTIP"] = "Enable this option if you want the 'Sort' operation ("..SHIFT_KEY_TEXT.." right click) to sort by the total progress of each group (instead of by Name)";
+	["NPC_DATA_NESTED_CHECKBOX"] = "Show Nested NPC Data";
+	["NPC_DATA_NESTED_CHECKBOX_TOOLTIP"] = "Enable this option if you want to nest all relevant data to a given npc (Common Boss Drops, Drops, etc) when shown in a mini list. This option may cause a significant amount of duplication, but the idea is that the npc will remain visible on the mini list as if you need something specific to that npc.\n\nDefault: Off";
 	["QUEST_CHAIN_NESTED_CHECKBOX"] = "Show Nested Quest Chains";
 	["QUEST_CHAIN_NESTED_CHECKBOX_TOOLTIP"] = "Enable this option if you want the Quest Chain Requirements (Right-Click on Quest) window to show required Quests as sub-groups of their following Quests, i.e. they must be completed from the inside out.\n\nThis is useful to not miss Breadcrumb Quests and should be used primarily for Quest completion in mind.\n\nOtherwise, Quest Chain Requirements will be displayed in a top-down list, with the earliest available Quest at the very top.";
 	["CELEBRATIONS_LABEL"] = "Celebrations & Sound Effects";
@@ -623,12 +631,15 @@ app.L = {
 	["CHANNEL_DIALOG"] = DIALOG_VOLUME;
 	["CELEBRATE_COLLECTED_CHECKBOX"] = "Collected Things Trigger a Celebration";
 	["CELEBRATE_COLLECTED_CHECKBOX_TOOLTIP"] = "Enable this option if you want to hear a celebratory 'fanfare' sound effect when you obtain a new Thing.\n\nThis feature can greatly help keep you motivated.";
+	["SOUNDPACK"] = "Soundpack";
 	["WARN_REMOVED_CHECKBOX"] = "Removed Things Trigger a Warning";
 	["WARN_REMOVED_CHECKBOX_TOOLTIP"] = "Enable this option if you want to hear a warning sound effect when you accidentally sell back or trade an item that granted you an appearance that would cause you to lose that appearance from your collection.\n\nThis can be extremely helpful if you vendor an item with a purchase timer. The addon will tell you that you've made a mistake.";
 	["SCREENSHOT_COLLECTED_CHECKBOX"] = "Collected Things Trigger a Screenshot";
 	["SCREENSHOT_COLLECTED_CHECKBOX_TOOLTIP"] = "Enable this option if you want to take a screenshot for every Thing you collect.";
+	["ICON_LEGEND_LABEL"] = "Icon Legend";
+	["ICON_LEGEND_TEXT"] = app.ccColors.White .. "|TInterface\\AddOns\\AllTheThings\\assets\\status-unobtainable.blp:0|t " .. "Unobtainable" .. "\n|TInterface\\AddOns\\AllTheThings\\assets\\status-prerequisites.blp:0|t " .. "Obtainable only with prerequisites" .. "\n|TInterface\\AddOns\\AllTheThings\\assets\\status-seasonal-available.blp:0|t " .. "Available seasonal content" .. "\n|TInterface\\AddOns\\AllTheThings\\assets\\status-seasonal-unavailable.blp:0|t " .. "Unavailable seasonal content" .. "\n|TInterface\\FriendsFrame\\StatusIcon-Offline:0|t " .. "Unavailable on current character";
 	["CHAT_COMMANDS_LABEL"] = "Chat Commands";
-	["CHAT_COMMANDS_TEXT"] = "/att |cffFFFFFFor|R /things |cffFFFFFFor|R /allthethings\n|cffFFFFFFOpens the Main List.\n\n|R/att mini |cffFFFFFFor|R /attmini\n|cffFFFFFFOpens the Mini List.\n\n|R/att bounty\n|cffFFFFFFOpens a list of bugged or unconfirmed items.\n\n|R/att ra |cffFFFFFFor|R /attra\n|cffFFFFFFOpens the Raid Assistant.\n\n|R/att wq |cffFFFFFFor|R /attwq\n|cffFFFFFFOpens the World Quests List.\n\n|R/att item:1234 |cffFFFFFFor|R /att [Item Link]\n|cffFFFFFFOpens a window with shared appearances. Also works with other things, such as|R quest:1234|cffFFFFFF, |Rnpcid:1234|cffFFFFFF, |Rmapid:1234|cffFFFFFF or |Rrecipeid:1234|cffFFFFFF.\n\n|R/att rwp\n|cffFFFFFFShows all future Removed With Patch things.\n\n|R/att random |cffFFFFFFor|R /attrandom |cffFFFFFFor|R /attran\n|cffFFFFFFOpens the Random List.\n\n|R/att unsorted\n|cffFFFFFFOpens a list of unsourced items. Best opened in Debug Mode.\n\n|R/rl\n|cffFFFFFFReload your WoW interface.|R";
+	["CHAT_COMMANDS_TEXT"] = "/att |cffFFFFFFor|R /things |cffFFFFFFor|R /allthethings\n|cffFFFFFFOpens the Main List.\n\n|R/att mini |cffFFFFFFor|R /attmini\n|cffFFFFFFOpens the Mini List.\n\n|R/att bounty\n|cffFFFFFFOpens a list of bugged or unconfirmed items.\n\n|R/att ra |cffFFFFFFor|R /attra\n|cffFFFFFFOpens the Raid Assistant.\n\n|R/att wq |cffFFFFFFor|R /attwq\n|cffFFFFFFOpens the World Quests List.\n\n|R/att item:1234 |cffFFFFFFor|R /att [Item Link]\n|cffFFFFFFOpens a window with shared appearances. Also works with other things, such as|R quest:1234|cffFFFFFF, |Rnpcid:1234|cffFFFFFF, |Rmapid:1234|cffFFFFFF or |Rrecipeid:1234|cffFFFFFF.\n\n|R/att rwp\n|cffFFFFFFShows all future Removed With Patch things.\n\n|R/att nwp\n|cffFFFFFFShows all current New With Patch things.\n\n|R/att random |cffFFFFFFor|R /attrandom |cffFFFFFFor|R /attran\n|cffFFFFFFOpens the Random List.\n\n|R/att unsorted\n|cffFFFFFFOpens a list of unsourced items. Best opened in Debug Mode.\n\n|R/rl\n|cffFFFFFFReload your WoW interface.|R";
 
 	-- Profiles tab
 	["PROFILES_PAGE"] = "Profiles";
@@ -666,9 +677,11 @@ app.L = {
 
 	-- About tab
 	["ABOUT_PAGE"] = "About";
-	["ABOUT_1"] = " |CFFFFFFFFis a collection tracking addon that shows you where and how to get everything in the game! We have a large community of users on our Discord (link at the bottom) where you can ask questions, submit suggestions as well as report bugs or missing items. If you find something collectible or a quest that isn't documented, you can tell us on the Discord, or for the more technical savvy, we have a Git that you may contribute directly to.\n\nWhile we do strive for completion, there's a lot of stuff getting added into the game each patch, so if we're missing something, please understand that we're a small team trying to keep up with changes as well as collect things ourselves. :D\n\nFeel free to ask me questions when I'm streaming and I'll try my best to answer it, even if it's not directly related to ATT (general WoW addon programming as well).\n\n- |r|Cffff8000Crieve|CFFFFFFFF\n\nPS: Check out All The Things Classic and TBC Classic!\n\nYes, I intend to play Classic WoW, but between working full time and developing the two versions of the addon, there won't be a lot of time for raiding.\n\nNo, ATT is not the addon that places icons on your bag icons. That's CanIMogIt and Caerdon Wardrobe!\n\nFor online collection comparing check out DataForAzeroth.com from shoogen!|r";
-	["ABOUT_2"] = "Additional Contributors: |CFFFFFFFF(in no particular order)\nDaktar, Lucetia, Slumber, Gold, Avella, Aiue, Dead Serious, Oiche, Oxlotus, Eiltherune, Blueyleader, Iyanden, Pr3vention, BigBlaris, Talonzor, Mogwai, Heallie, Eckhardt, Boohyaka, Sadidorf, Sanctuari, Molkree, Runawaynow, Braghe, Myrhial, Darkal, Tag, and the rest of the ALL THE THINGS Discord!\n\nSpecial Shoutout to AmiYuy (CanIMogIt) and Caerdon (Caerdon Wardrobe).|r  ";
-	["ABOUT_3"] = "\n|CFFFFFFFFYou should absolutely download their addons to get the collection icons on items in your bags!|r";
+	["ABOUT_1"] = " |CFFFFFFFFis a collection tracking addon that shows you where and how to get everything in the game! We have a large community of users on our Discord (link at the bottom) where you can ask questions, submit suggestions as well as report bugs or missing items. If you find something collectible or a quest that isn't documented, you can tell us on the Discord, or for the more technical savvy, we have a Git that you may contribute directly to.\n\nWhile we do strive for completion, there's a lot of stuff getting added into the game each patch, so if we're missing something, please understand that we're a small team trying to keep up with changes as well as collect things ourselves. :D\n\nFeel free to ask me questions when I'm streaming and I'll try my best to answer it, even if it's not directly related to ATT (general WoW addon programming as well).\n\n- |r|Cffff8000Crieve|CFFFFFFFF\n\nPS: Check out All The Things Classic and Wrath Classic!|r";
+	["ABOUT_2"] = "Active Contributors: |CFFFFFFFF(in no particular order)\nGold, Dead Serious, Sanctuari, Molkree, Runawaynow, Braghe, Myrhial, Darkal, Tag, Jezartroz, Pr3vention, AlexSoft, Jenstonedart, and the rest of the ALL THE THINGS Discord!|r";
+	["ABOUT_3"] = "\nHall of Fame: |CFFFFFFFF(in no particular order)\nDaktar, Lucetia, Slumber, Avella, Aiue, Oiche, Oxlotus, Eiltherune, Blueyleader, Iyanden, BigBlaris, Talonzor, Mogwai, Heallie, Eckhardt, Boohyaka, Sadidorf|r";
+	["ABOUT_4"] = "\n\n|CFFFFFFFFSpecial Shoutout to AmiYuy (CanIMogIt) and Caerdon (Caerdon Wardrobe). You should absolutely download their addons to get the collection icons on items in your bags!|r ";
+	["ABOUT_5"] = "\n\n|CFFFFFFFFFor online collection comparing check out DataForAzeroth.com from Shoogen and WoWthing.org from Freddie!|r";
 
 	-- Binding Localizations
 	["TOGGLE_ACCOUNT_MODE"] = "Toggle Account Mode";
@@ -709,8 +722,11 @@ app.L = {
 	["SECRETS_HEADER"] = "Secrets";
 	["LIMITED_QUANTITY"] = "This has a limited quantity and may not always be present on the vendor.";
 	["SOURCE_ID_MISSING"] = "Please report this Item and where it was acquired to the ATT Discord in #retail-errors!";
-	["ADDED_WITH_PATCH_FORMAT"] = "This gets added or expanded with new source(s) in patch %s";
-	["REMOVED_WITH_PATCH_FORMAT"] = "This gets removed in patch %s";
+	["ADDED_WITH_PATCH_FORMAT"] = "Added in %s";
+	["WAS_ADDED_WITH_PATCH_FORMAT"] = "Added in %s";
+	["ADDED_BACK_WITH_PATCH_FORMAT"] = "Re-added in %s";
+	["WAS_ADDED_BACK_WITH_PATCH_FORMAT"] = "Added in %s";
+	["REMOVED_WITH_PATCH_FORMAT"] = "Removed in %s";
 
 	-- Filter Text
 	["ACHIEVEMENT_ID"] = "Achievement ID";
@@ -732,7 +748,7 @@ app.L = {
 	["FLIGHT_PATH_ID"] = "Flight Path ID";
 	["MAP_ID"] = "Map ID";
 	["MOUNT_ID"] = "Mount ID";
-	["MUSIC_ROLL_ID"] = "Music Roll ID";
+	["MUSIC_ROLL_ID"] = "Music Roll ID";	-- not used
 	["NPC_ID"] = "NPC ID";
 	["OBJECT_ID"] = "Object ID";
 	["QUEST_ID"] = "Quest ID";
@@ -752,7 +768,6 @@ app.L = {
 	["TRADEABLE"] = "Tradeable";
 
 	-- Icons and Collection Text
-	["LOGO_SMALL"] = app.asset("logo_tiny");	-- Winner of the Logo Contest (Used to be "Interface\\Icons\\INV_Axe_106.blp")
 	["COLLECTED_ICON"] = "|T" .. app.asset("known") .. ":0|t";	-- Acquired the colors and icon from CanIMogIt.
 	["COLLECTED_APPEARANCE_ICON"] = "|T" .. app.asset("known_circle") .. ":0|t";	-- Acquired the colors and icon from CanIMogIt.
 	["COMPLETE_ICON"] = "|T" .. app.asset("known_green") .. ":0|t";	-- Acquired the colors and icon from CanIMogIt.
@@ -764,20 +779,24 @@ app.L = {
 	["COMPLETE"] = "|T" .. app.asset("known_green") .. ":0|t |cff6dce47Complete|r";	-- Acquired the colors and icon from CanIMogIt.
 	["COMPLETE_OTHER"] = "|T" .. app.asset("known_green") .. ":0|t |cff6dce47Complete*|r";	-- Acquired the colors and icon from CanIMogIt.
 	["INCOMPLETE"] = "|T" .. app.asset("incomplete") .. ":0|t |cff15abffIncomplete|r";	-- Acquired the colors and icon from CanIMogIt.
+	["SAVED"] = "|T" .. app.asset("known_green") .. ":0|t |cff6dce47Saved|r";	-- Acquired the colors and icon from CanIMogIt.
 	["KNOWN_ON_CHARACTER"] = "|T" .. app.asset("known") .. ":0|t |cff15abffKnown on current character|r";
 	["UNKNOWN_ON_CHARACTER"] = "|T" .. app.asset("unknown") .. ":0|t |cffff9333Unknown on current character|r";
 	["COST_ICON"] = "|T" .. app.asset("Currency") .. ":0|t";
 	["COST_TEXT"] = "|T" .. app.asset("Currency") .. ":0|t |cffdedade"..CURRENCY.."|r";
-	["REAGENT_ICON"] = "|T" .. app.asset("Category_Crafting") .. ":0|t";
-	["REAGENT_TEXT"] = "|T" .. app.asset("Category_Crafting") .. ":0|t |cffdedade"..GetItemClassInfo(5).."|r";
+	-- TODO @DeadSerious: NEED GOOD UPGRADE ICON
+	["UPGRADE_ICON"] = "|T" .. app.asset("Interface_Upgrade") .. ":0|t";
+	["UPGRADE_TEXT"] = "|T" .. app.asset("Interface_Upgrade") .. ":0|t |cff62e37e"..UPGRADE.."|r";
+	["REAGENT_ICON"] = "|T" .. app.asset("Interface_Reagent") .. ":0|t";
+	["REAGENT_TEXT"] = "|T" .. app.asset("Interface_Reagent") .. ":0|t |cffdedade"..GetItemClassInfo(5).."|r";
 
 	-- These are solely used to condense the length of Source strings within Tooltips
 	["ABBREVIATIONS"] = {
 		["ALL THE THINGS"] = "ATT",
-		["Antorus, the Burning Throne"] = "Antorus",
 		["Expansion Pre"] = "Pre",
 		["Expansion Features"] = "EF",
 		[GROUP_FINDER] = "D&R",
+		-- Expansion sorted
 		["Classic %> "] = "",
 		["The Burning Crusade"] = "BC",
 		["Burning Crusade"] = "BC",
@@ -787,52 +806,56 @@ app.L = {
 		-- ["Cataic"] = "Cataclysmic",								-- Fix for Cata last PvP Season
 		["Mists of Pandaria"] = "MoP",
 		["Warlords of Draenor"] = "WoD",
+		["Il'gynoth, The Heart of Corruption"] = "Il'gynoth",
+		["Antorus, the Burning Throne"] = "Antorus",
 		["Battle for Azeroth"] = "BFA",
+		["Ny'alotha, the Waking City"] = "Ny'alotha",
 		["The Shadowlands"] = "SL",
 		["Shadowlands"] = "SL",
+		["Tazavesh, the Veiled Market"] = "Tazavesh",
 		["Dragonflight"] = "DF",
+		["Aberrus, the Shadowed Crucible"] = "Aberrus",
+		["Kazzara, the Hellforged"] = "Kazzara",
+		["WoW's Anniversary %> "] = "",
+		["Dragonriding Cup %> "] = "",
 		["Player vs Player"] = "PvP",
 		["Raid Finder"] = "LFR",
 		["Looking For Raid"] = "LFR",
 		["Normal"] = "N",
 		["Heroic"] = "H",
 		["Mythic"] = "M",
-		["Ny'alotha, the Waking City"] = "Ny'alotha",
-		["Tazavesh, the Veiled Market"] = "Tazavesh",
 		["10 Player"] = "10M",
 		["10 Player (Heroic)"] = "10M (H)",
 		["25 Player"] = "25M",
 		["25 Player (Heroic)"] = "25M (H)",
-		["Player vs. Player"] = STAT_CATEGORY_PVP,
-		["Outdoor Zones"] = LFG_TYPE_ZONE,
-		--["Zone Drop"] = LFG_TYPE_ZONE,
-		["Zone Wide"] = LFG_TYPE_ZONE,
-		["Item Sets"] = WARDROBE_SETS,
-		["Pet Journal"] = PETS,
-		--["Pet Battles"] = PETS,
-		["Toy Box"] = TOY,
 		[BATTLEGROUNDS] = "BGs",
 		[BLACK_MARKET_AUCTION_HOUSE] = "BMAH",
-		["Monthly World Events"] = CALENDAR_REPEAT_MONTHLY,
-		["Weekly World Events"] = CALENDAR_REPEAT_WEEKLY,
-		["Mini World Events"] = GetSpellInfo(57055),
 		["Emissary Quests"] = "Emissary",
+		["Item Sets"] = WARDROBE_SETS,
+		["Outdoor Zones"] = LFG_TYPE_ZONE,
+		["Pet Journal"] = PETS,
+		--["Pet Battles"] = PETS,
+		["Player vs. Player"] = STAT_CATEGORY_PVP,
+		["Toy Box"] = TOY,
+		--["Zone Drop"] = LFG_TYPE_ZONE,
+		["Zone Wide"] = LFG_TYPE_ZONE,
+		["Mini World Events"] = GetSpellInfo(57055),
+		["Monthly World Events"] = CALENDAR_REPEAT_MONTHLY,
 		[TRACKER_HEADER_WORLD_QUESTS] = "WQ",
-		["WoW Anniversary"] = "Anniversary",
+		["Weekly World Events"] = CALENDAR_REPEAT_WEEKLY,
+
 		["Covenant:"] = "Cov:",
+		[CLASS.." %> "] = "",
+		["Quartermaster Miranda Breechlock"] = "Quartermaster Miranda",
 		["Season "] = "S",
 		["Sanctum Upgrades %> "] = "",
-		[CLASS.." %> "] = "",
+		["The Azure Span"] = "Azure Span",
+		["The Forbidden Reach"] = "Forbidden Reach",
+		["The Waking Shores"] = "Waking Shores",
 		["The Primalist Future"] = "Primalist Future",
 		["The Storm's Fury"] = "Storm's Fury",
+		["WoW Anniversary"] = "Anniversary",
 		["Zaralek Cavern Racing Completionist: Gold"] = "Racing: Gold",
-	};
-
-	["CUSTOM_DIFFICULTIES"] = {
-		[-1] = "Raid Finder (5.4)",
-		[-2] = "Flexible (5.4)",
-		[-3] = "Normal (5.4)",
-		[-4] = "Heroic (5.4)",
 	};
 
 	-- Custom Icons for Factions (seems to be no automatic Faction-Icon associations in-game)
@@ -844,137 +867,10 @@ app.L = {
 		[1168] = 461821,	-- Guild
 	};
 
-	["FILTER_ID_TYPES"] = {
-		-- "Armor Types"
-		[1] = INVTYPE_HOLDABLE,									-- Held in Off-Hand
-		[2] = GetItemSubClassInfo(4,5),							-- Cosmetic
-		[3] = GetItemSubClassInfo(8,3),							-- Cloaks
-		[4] = GetItemSubClassInfo(4,1),							-- Cloth
-		[5] = GetItemSubClassInfo(4,2),							-- Leather
-		[6] = GetItemSubClassInfo(4,3),							-- Mail
-		[7] = GetItemSubClassInfo(4,4),							-- Plate
-		[8] = GetItemSubClassInfo(4,6),							-- Shields
-		[9] = INVTYPE_TABARD,									-- Tabards
-		[10] = INVTYPE_BODY,									-- Shirts
-		[11] = "Artifacts",										-- Artifacts
-
-		-- PADDING for extra types, if necessary
-
-		-- "Weapon Types"
-		[20] = GetItemSubClassInfo(2,15),						-- Daggers
-		[21] = GetItemSubClassInfo(2,0),						-- 1H Axes
-		[22] = GetItemSubClassInfo(2,1),						-- 2H Axes
-		[23] = GetItemSubClassInfo(2,4),						-- 1H Maces
-		[24] = GetItemSubClassInfo(2,5),						-- 2H Maces
-		[25] = GetItemSubClassInfo(2,7),						-- 1H Swords
-		[26] = GetItemSubClassInfo(2,8),						-- 2H Swords
-		[27] = GetItemSubClassInfo(2,19),						-- Wands
-		[28] = GetItemSubClassInfo(2,10),						-- Staffs
-		[29] = GetItemSubClassInfo(2,6),						-- Polearms
-		[31] = GetItemSubClassInfo(2,3),						-- Guns
-		[32] = GetItemSubClassInfo(2,2),						-- Bows
-		[33] = GetItemSubClassInfo(2,18),						-- Crossbows
-		[34] = GetItemSubClassInfo(2,13),						-- Fist Weapons
-		[35] = GetItemSubClassInfo(2,9),						-- Warglaives
-
-		-- PADDING for extra types, if necessary
-		[50] = GetItemSubClassInfo(2,14),						-- Miscellaneous
-		[51] = GetItemSubClassInfo(8,1),						-- Neck
-		[52] = GetItemSubClassInfo(8,10),						-- Finger
-		[53] = INVTYPE_TRINKET,									-- Trinket
-		[54] = GetItemSubClassInfo(3,11),						-- Relic
-		[55] = "Consumables",									-- Consumable (Artifact Power, etc)
-		[56] = GetItemClassInfo(5),								-- Reagents (Crafting, etc)
-		[57] = INVTYPE_PROFESSION_GEAR,							-- Profession Equipment (Equipment & Tools)
-		[58] = AUCTION_CATEGORY_CONTAINERS,						-- Containers (Tier Tokens, Timeless Isle BoA gear tokens, Bags of loot, etc)
-		[59] = "Class Books",									-- Class Books (Classic Spells, Ashran Books, etc)
-		[60] = GetSpellInfo(181765),							-- S.E.L.F.I.E. Camera (For various filters)
-
-		-- "Non-Equipment Types"
-		[100] = MOUNTS,											-- Mounts
-		[101] = AUCTION_CATEGORY_BATTLE_PETS,					-- Battle Pets
-		[102] = TOY_BOX,										-- Toy Box
-		[103] = "Illusions",									-- Illusions
-		[104] = ITEM_BIND_QUEST,								-- Quest Items
-		[105] = TRACKER_FILTER_ACHIEVEMENTS,					-- Achievements
-		[106] = CALENDAR_FILTER_WEEKLY_HOLIDAYS,				-- Holiday
-		[107] = "Vignettes",
-		[108] = ENABLE_MUSIC.." "..ROLL,						-- Music Rolls
-		[109] = HEIRLOOMS,										-- Heirlooms		-- NOTE: This shouldn't be a filter, it's extra
-		[110] = PAPERDOLL_SIDEBAR_TITLES,						-- Titles
-		[111] = GetItemClassInfo(16),							-- Glyph
-		[112] = FACTION,										-- Factions
-		[113] = INVTYPE_BAG,									-- Bags
-		[114] = GetItemSubClassInfo(13,0),						-- Key
-
-		-- "Recipes"
-		[200] = AUCTION_CATEGORY_RECIPES,						-- Recipes
-
-		[999] = "Event Item",
-	};
-	["FILTER_ID_ICONS"] = {
-		[1] = "Interface\\Icons\\inv_misc_orb_01",								-- Held in Off-hand
-		[2] = "Interface\\Icons\\Ability_Mage_IceForm",							-- Cosmetic
-		[3] = "Interface\\Icons\\inv_misc_cape_11",								-- Cloaks
-		[4] = "Interface\\Icons\\inv_chest_cloth_21",							-- Cloth Armor
-		[5] = "Interface\\Icons\\inv_chest_leather_09",							-- Leather Armor
-		[6] = "Interface\\Icons\\inv_chest_chain_05",							-- Mail Armor
-		[7] = "Interface\\Icons\\inv_chest_plate01",							-- Plate Armor
-		[8] = "Interface\\Icons\\inv_shield_06",								-- Shield
-		[9] = "Interface\\Icons\\inv_misc_tournaments_tabard_gnome",			-- Tabards
-		[10] = "Interface\\Icons\\inv_shirt_grey_01",							-- Shirts
-		[11] = "Interface\\Icons\\Paladin_Protection",							-- Artifacts
-		[20] = "Interface\\Icons\\inv_weapon_shortblade_01",					-- Daggers
-		[21] = "Interface\\Icons\\inv_axe_17",									-- 1H Axes
-		[22] = "Interface\\Icons\\inv_axe_09",									-- 2H Axes
-		[23] = "Interface\\Icons\\inv_mace_02",									-- 1H Maces
-		[24] = "Interface\\Icons\\inv_hammer_16",								-- 2H Maces
-		[25] = "Interface\\Icons\\inv_sword_04",								-- 1H Swords
-		[26] = "Interface\\Icons\\inv_sword_07",								-- 2H Swords
-		[27] = "Interface\\Icons\\inv_wand_02",									-- Wands
-		[28] = "Interface\\Icons\\inv_staff_27",								-- Staves
-		[29] = "Interface\\Icons\\inv_spear_04",								-- Polearms
-		[31] = "Interface\\Icons\\inv_weapon_rifle_01",							-- Guns
-		[32] = "Interface\\Icons\\inv_weapon_bow_05",							-- Bows
-		[33] = "Interface\\Icons\\inv_weapon_crossbow_01",						-- Crossbows
-		[34] = "Interface\\Icons\\inv_misc_monsterclaw_02",						-- Fist Weapons
-		[35] = "Interface\\Icons\\inv_weapon_glave_01",							-- Warglaives
-		[50] = "Interface\\Icons\\Spell_Misc_Drink",							-- Miscellaneous
-		[51] = "Interface\\Icons\\INV_Jewelry_Necklace_02",						-- Neck
-		[52] = "Interface\\Icons\\INV_Jewelry_Ring_04",							-- Finger
-		[53] = "Interface\\Icons\\INV_Trinket_Naxxramas05",						-- Trinket
-		[54] = "Interface\\Icons\\inv_staff_2h_felfireraid_d_03",				-- Relic
-		[55] = "Interface\\Icons\\INV_Drink_25_HoneyTea",						-- Consumables
-		[56] = app.asset("Interface_Zone_drop"),								-- Reagents (@DeadSerious maybe a new one sometime?)
-		[57] = 132932,															-- Fishing Poles
-		[59] = "Interface\\Icons\\INV_Misc_Book_03",							-- Class Books
-		[100] = app.asset("Category_Mounts"),									-- Mounts
-		[101] = "Interface\\Icons\\Tracking_WildPet",							-- Battle Pets
-		[102] = app.asset("Category_ToyBox"),									-- Toy Box
-		[103] = "Interface\\Icons\\inv_inscription_weaponscroll03",				-- Illusions
-		[104] = app.asset("Interface_Quest_header"),							-- Quest Items
-		[109] = app.asset("Weapon_Type_Heirloom"),								-- Heirlooms
-		[110] = app.asset("Category_Titles"),									-- Titles
-		[111] = "Interface\\Icons\\Inv_glyph_minorwarrior",						-- Glyph
-		[113] = "Interface\\Icons\\INV_Misc_Bag_08",							-- Bag
-		[114] = "Interface\\Icons\\inv_blacksmith_leystonehoofplates_orange",	-- Mount Equipment
-		[200] = "Interface\\Icons\\inv_scroll_05",								-- Recipes
-		[999] = "Interface\\Icons\\INV_Holiday_Christmas_Present_01",			-- Event Item
-	};
-
 	-- These need to be localized manually.
 	-- Can also use the direct IconID, i.e. wowhead.com/icon=###
 	-- https://www.wowhead.com/icons
 	["HEADER_ICONS"] = {
-		[-43] = 618859,																		-- Proving Grounds [achievement_challengemode_platinum]
-		[-94] = "Interface\\Icons\\inv_misc_lockbox_1",										-- Black Market AH
-	-- Druid Feral Druid Hidden Artifact Appearance
-		[-130] = "Interface\\Icons\\achievement_zone_duskwood",								-- Duskwood Active
-		[-131] = "Interface\\Icons\\achievement_zone_hinterlands_01",						-- The Hinterlands Active
-		[-132] = "Interface\\Icons\\achievement_zone_feralas",								-- Feralas Active
-		[-133] = "Interface\\Icons\\achievement_zone_duskwood",								-- Duskwood Activated
-	-- Garrisons Invasions TODO: what levels?
-		[-136] = "Interface\\Icons\\achievement_bg_defendxtowers_av",						-- Garrison Invasion
 	-- Class Trial
 		[-137] = "Interface\\Icons\\achievement_level_90",									-- Level 90
 		[-138] = "Interface\\Icons\\achievement_level_100",									-- Level 100
@@ -998,21 +894,14 @@ app.L = {
 		[-154] = "Interface\\Icons\\ability_bossmagistrix_timewarp1",						-- Level 48
 		[-155] = 236566,																	-- Level 50 Character Boost
 		[-156] = 236567,																	-- Level 60 Character Boost
-	-- Druid Feral Druid Hidden Artifact Appearance
-		[-157] = "Interface\\Icons\\achievement_zone_hinterlands_01",						-- The Hinterlands Activated
-		[-158] = "Interface\\Icons\\achievement_zone_feralas",								-- Feralas Activated
 	-- Class Trial
 		[-160] = 236567,																	-- Level 60 Class Trial
 	-- New Characters
 		[-211] = 1530081,																	-- New Character
-	-- Dalaran Sub-Zone
-		[-213] = "Interface\\LFGFRAME\\LFGICON-DALARANSEWERS",								-- The Underbelly
 	-- PvP
 		[-216] = "Interface\\Icons\\ability_rogue_combatreadiness",							-- Prestige
 	-- Fishing
 		[-217] = "Interface\\Icons\\INV_Fishing_Lure_Worm",									-- Lures (for Fishing)
-	-- Class
-		[-219] = "Interface\\Icons\\inv_misc_questionmark",									-- Sourceless
 	-- War Campaign
 		[-236] = "Interface\\Icons\\ui_alliance_7legionmedal",								-- Alliance War Campaign
 	-- PvP
@@ -1029,8 +918,6 @@ app.L = {
 	-- PvP
 		[-302] = "Interface\\Icons\\expansionicon_cataclysm",								-- Level Range 80-84
 		[-303] = "Interface\\Icons\\expansionicon_mistsofpandaria",							-- Level Range 85-89
-	-- First Questline Draenor
-		[-356] = "Interface\\Icons\\achievement_dungeon_outland_dungeonmaster",				-- Assault on the Dark Portal
 	-- Outposts in Draenor
 		[-357] = "Interface\\Icons\\garrison_building_sparringarena",						-- Sparring Arena Outpost (Gorgond)
 		[-358] = "Interface\\Icons\\garrison_building_lumbermill",							-- Lumber Mill Outpost (Gorgrond)
@@ -1147,10 +1034,8 @@ app.L = {
 		[-1130] = "Interface\\Icons\\ui_majorfaction_tuskarr",										-- Iskaara Tuskarr
 		[-1142] = "Interface\\Icons\\inv_checkered_flag",											-- Dragonriding Racing
 		[-1143] = 237274,																			-- Every 30 min Rare
-		[-1144] = "Interface\\Icons\\inv_scroll_11",												-- Weekly Profession Header
 		[-1150] = "Interface\\Icons\\ui_majorfaction_niffen",										-- Loamm Niffen
 		[-1151] = "Interface\\Icons\\achievement_guildperk_bartering",								-- Bartering
-		[-1152] = 4622272,																			-- First Crafts (inv-10-blacksmithing-consumable-repairhammer-color1)
 		[-1200] = "Interface\\Icons\\inv_10_dungeonjewelry_primalist_ring_4_omni",					-- Zskera Vaults
 		[-1202] = "Interface\\Icons\\inv_fyrakk_dragonbreath",										-- Fyrakk Assaults
 		[-1203] = "Interface\\Icons\\inv_pet_mole",													-- Sniffenseeking
@@ -1164,8 +1049,6 @@ app.L = {
 		[-6014] = "Interface\\Icons\\Spell_Arcane_PortalUnderCity",							-- Cities
 	------ ACHIEVEMENT HEADERS SECTION ------
 	-- Is Used Somewhere
-		[-9965] = "Interface\\Icons\\achievement_level_110",						-- Class Hall
-		[-9966] = 1041860,															-- Dreanor Garrison
 		[-10048] = "Interface\\Icons\\buff_feltreasures",							-- Mage Tower
 		[-10050] = "Interface\\Icons\\buff_epichunter",								-- Nether Disruptor
 		[-10058] = app.asset("Category_Zones"),										-- World
@@ -1179,15 +1062,6 @@ app.L = {
 		[-10082] = "Interface\\Icons\\spell_priest_psyfiend",						-- Lost Area (Vision Scenario)
 	};
 	["HEADER_NAMES"] = {
-		[-43] = TRACKER_HEADER_PROVINGGROUNDS,									-- Proving Grounds
-		[-94] = BLACK_MARKET_AUCTION_HOUSE,										-- Black Market Auction House
-	-- Druid Feral Druid Hidden Artifact Appearance
-		[-130] = DUNGEON_FLOOR_NIGHTMARERAID8.." "..GetSpellInfo(133137),		-- Duskwood Active
-		[-131] = DUNGEON_FLOOR_NIGHTMARERAID7.." "..GetSpellInfo(133137),		-- The Hinterlands Active
-		[-132] = DUNGEON_FLOOR_NIGHTMARERAID9.." "..GetSpellInfo(133137),		-- Feralas Active
-		[-133] = DUNGEON_FLOOR_NIGHTMARERAID8.." "..GetSpellInfo(78741),		-- Duskwood Activated
-	-- Garrisons Invasions TODO: what levels?
-		[-136] = GARRISON_LANDING_INVASION,										-- Garrison Invasion
 	-- Class Trial
 		[-137] = string.format(SPELLBOOK_AVAILABLE_AT, 90),						-- Level 90
 		[-138] = string.format(SPELLBOOK_AVAILABLE_AT, 100),					-- Level 100
@@ -1211,22 +1085,14 @@ app.L = {
 		[-154] = string.format(SPELLBOOK_AVAILABLE_AT, 48),						-- Level 48
 		[-155] = string.format(SPELLBOOK_AVAILABLE_AT, 50).." "..CHARACTER_UPGRADE_CHARACTER_LIST_LABEL,	-- Level 50 Character Boost
 		[-156] = string.format(SPELLBOOK_AVAILABLE_AT, 60).." "..CHARACTER_UPGRADE_CHARACTER_LIST_LABEL,	-- Level 60 Character Boost
-	-- Druid Feral Druid Hidden Artifact Appearance
-		[-157] = DUNGEON_FLOOR_NIGHTMARERAID7.." "..GetSpellInfo(78741),		-- The Hinterlands Activated
-		[-158] = DUNGEON_FLOOR_NIGHTMARERAID9.." "..GetSpellInfo(78741),		-- Feralas Activated
-	-- Class Hall /Artifact
-		[-159] = "Event Roll",													-- Daily Dreamway Event Roll
 	-- Class Trial
 		[-160] = string.format(SPELLBOOK_AVAILABLE_AT, 60).." "..CHARACTER_TYPE_FRAME_TRIAL_BOOST_CHARACTER,	-- Level 60 Class Trial
 	-- Item Sets
 		[-211] = NEW.." "..CHARACTER,											-- New Character
-	-- Dalaran Sub-Zone
-		[-213] = DUNGEON_FLOOR_DALARAN2,										-- The Underbelly
 	-- PvP
 		[-216] = PVP_PRESTIGE_RANK_UP_TITLE,									-- Prestige
 	-- Fishing
 		[-217] = "Lures",														-- Lures (for Fishing)
-	[-219] = "Sourceless",														-- Sourceless
 	-- War Campaign
 		[-236] = C_Map.GetAreaInfo(9663),										-- War Campaign - Alliance
 	-- PvP
@@ -1243,8 +1109,6 @@ app.L = {
 	-- PvP
 		[-302] = BATTLEFIELD_LEVEL.." 80-84",									-- Level Range 80-84
 		[-303] = BATTLEFIELD_LEVEL.." 85-89",									-- Level Range 85-89
-	-- First Questline Draenor
-		[-356] = "Assault on the Dark Portal",									-- Assault on the Dark Portal
 	-- Outposts in Draenor
 		[-357] = GetSpellInfo(171866),											-- Sparring Arena Outpost
 		[-358] = GetSpellInfo(164028),											-- Lumber Mill Outpost
@@ -1263,7 +1127,7 @@ app.L = {
 	-- BFA War Chest
 		[-488] = "War Chest",													-- Daily War Chest
 	-- Misc
-		[-493] = "Broken Mission Loot",											-- Temporary Header for WoD Mission Loot.
+		[-493] = "Garrison Mission Loot",										-- Header for WoD Mission Loot
 	-- Mole Machine
 		[-517] = GetSpellInfo(265225),											-- Mole Machine
 	-- Blizzard Events and Anniversaries
@@ -1373,10 +1237,8 @@ app.L = {
 		[-1130] = "Iskaara Tuskarr",												-- Iskaara Tuskarr
 		[-1142] = GetSpellInfo(400433),												-- Dragonriding Racing
 		[-1143] = "DF Rare Rotation",												-- DF Rare Rotation (Every 30 min Rare)
-		[-1144] = "Weekly Profession Knowledge",									-- Weekly Profession Header
 		[-1150] = "Loamm Niffen",													-- Loamm Niffen
 		[-1151] = "Bartering",														-- Bartering
-		[-1152] = "First Crafts",													-- First Crafts
 		[-1200] = "Zskera Vaults",													-- Zskera Vaults
 		[-1202] = "Fyrakk Assaults",												-- Fyrakk Assaults
 		[-1203] = "Sniffenseeking",													-- Sniffenseeking
@@ -1398,8 +1260,6 @@ app.L = {
 		[-6014] = BUG_CATEGORY4,												-- Cities
 
 	------ ACHIEVEMENT HEADERS SECTION ------
-		[-9965] = select(1,GetCategoryInfo(15304)),								-- Class Hall
-		[-9966] = select(1,GetCategoryInfo(15303)),								-- Draenor Garrison
 		[-10048] = BROKENSHORE_BUILDING_MAGETOWER,								-- Mage Tower
 		[-10050] = BROKENSHORE_BUILDING_NETHERDISRUPTOR,						-- Nether Disruptor
 		[-10058] = WORLD,														-- World
@@ -1412,52 +1272,56 @@ app.L = {
 		[-10081] = "Corrupted Area",
 		[-10082] = "Lost Area",
 	};
+
+	-- Deprecated! (move these eventually)
 	["HEADER_DESCRIPTIONS"] = {};
 	["HEADER_EVENTS"] = {};
 	["HEADER_LORE"] = {};
-
 	["EVENT_REMAPPING"] = {};
 	["EVENT_TOOLTIPS"] = {};
+
+	-- These are alternative map names that we don't want to display, but used for mapID calculations.
+	-- If there is a name provided in the table above, it will prefer that name association.
+	["MAP_ID_TO_ZONE_TEXT"] = {};
+	["QUEST_ID_TO_MAP_ID"] = {};
+	["ZONE_TEXT_TO_MAP_ID"] = {};
+	["ALT_ZONE_TEXT_TO_MAP_ID"] = {
+		["Gates of Ahn'Qiraj"] = 1451,
+		["The Temple of Atal'Hakkar"] = 220,
+		["The Battle for Mount Hyjal"] = 329,
+		["The Eye"] = 334,
+	};
 
 	-- Module Localizations
 	["PVP_RANK_DESCRIPTION"] = "There are a total of 14 ranks for both factions. Each rank requires a minimum amount of Rating Points to be calculated every week, then calculated in comparison to other players on your server.\n\nEach rank grants access to different rewards, from PvP consumables to Epic Mounts that do not require Epic Riding Skill and Epic pieces of gear at the highest ranks. Each rank is also applied to your character as a Title.";
 
-	-- This is necessary to have because Blizzard does not always have the correct map ID at the time of zone change.
-	["ZONE_TEXT_TO_MAP_ID"] = {
-		["Onyxia's Lair"] = 248,
-		["The Trial of Style"] = -777,
-		["Razorfen Downs"] = 300,
-		[C_Map.GetAreaInfo(1581)] = 291,	-- "The Deadmines" now points to the Deadmines.
-		[C_Map.GetAreaInfo(3217)] = 234,	-- "The Maul" now points to Dire Maul.
-		[C_Map.GetAreaInfo(4992)] = 234,	-- "Broken Commons" now points to Dire Maul.
-	};
-
 	-- Unobtainable Listing (for fellow 100%s out there)
 	["UNOBTAINABLE_ITEM_TEXTURES"] = {
-		"Interface\\FriendsFrame\\StatusIcon-DnD",								-- No Hope
-		"Interface\\FriendsFrame\\StatusIcon-Away",								-- Little Hope
-		"Interface\\FriendsFrame\\StatusIcon-Online",							-- There is Hope
-		"Interface\\FriendsFrame\\StatusIcon-Offline",							-- Seasonal
+		"Interface\\AddOns\\AllTheThings\\assets\\status-unobtainable.blp",			-- 1
+		"Interface\\AddOns\\AllTheThings\\assets\\status-prerequisites.blp",		-- 2
+		"",																			-- 3, we want no icon for these
+		"Interface\\AddOns\\AllTheThings\\assets\\status-seasonal-unavailable.blp",	-- Seasonal unavailable
+		"Interface\\AddOns\\AllTheThings\\assets\\status-seasonal-available.blp",	-- Seasonal available
 	};
 	["UNOBTAINABLE_ITEM_REASONS"] = {
 		-- [id] = {header, description, name}, header: header id, 1-3 as above, 4 is legacy.
 		[1] = {1, "|CFFFF0000This was never available to players.|r", "Never Implemented"}, -- No Hope
 		[2] = {1, "|CFFFF0000This has been removed from the game.|r", "Removed From Game"}, -- No Hope
-		[4] = {3, "|CFFFF0000This can no longer be purchased or unlocked as Transmog unless you have the required PvP Title, required PvP Rating or were in the Top % of that season.|r", "PvP Elite/Gladiator"},
+		[4] = {2, "|CFFFF0000This can no longer be purchased or unlocked as Transmog unless you have the required PvP Title, required PvP Rating or were in the Top % of that season.|r", "PvP Elite/Gladiator"},
 
 		-- Arbitrary Filters
 		[9] = {3, "|CFFFF0000The original source of obtaining this has been removed and is now only available via the Black Market Auction House.|r", "Black Market AH [BMAH]"},
 		[10] = {3, "|CFFFF0000Originally obtained via a TCG card that is no longer in print, but may still be available via the Black Market, In-Game, or Real Life Auction House.|r", "Trading Card Game [TCG]"},
-		[11] = {3, "|CFFFF0000This is no longer available unless you know someone that has access to the items used to summon the boss.|r", "Requires Summoning Items"},
+		[11] = {2, "|CFFFF0000This is no longer available unless you know someone that has access to the items used to summon the boss.\nNote: Most Summoning Items can be reobtained if you had them in the past by talking to the respective NPC.|r", "Requires Summoning Items"},
 		-- [13] = {1, "|CFFFF0000Your followers are too high and the mission for the cache will no longer spawn.|r", "Legacy Cache"}, Comment: Didnt find this filter used anywhere.
-		[15] = {1, "|CFFFF0000This cannot be permanently learned or used for transmog.|r", "Unlearnable"},
+		[15] = {1, "|CFFFF0000This cannot be permanently collected, learned or used for transmog.|r", "Unlearnable"},
 		[35] = {3, "|CFFFF0000This is locked behind a paywall such as the in-game shop, another Blizzard product, or the Recruit-A-Friend service.|r", "Blizzard Balance"},
 		--[36] = {1, "|CFFFF0000This was only obtainable during the WoW Anniversary when it was active and is no longer available.|r", "WoW Anniversary [Removed]"}, -- not used in Retail... I was confused with seasonal filter.
-		[38] = {1, "|CFFFF0000This is only available to players that completed the Legendary Cloak quest chain during Mists of Pandaria or via the BMAH.|r", "Ordos - Legendary Cloak"},
+		[38] = {2, "|CFFFF0000This is only available to players that completed the Legendary Cloak quest chain during Mists of Pandaria or via the BMAH.|r", "Ordos - Legendary Cloak"},
 		-- #if BEFORE BFA
 		--[41] = {1, "|CFFFF0000This is only available to players that completed the associated Mage Tower Artifact Challenges and earned the base appearance.|r", "Mage Tower Appearances"},
 		-- #endif
-		[45] = {1, "|CFFFF0000Blizzard's Loot changes broke several Items and made them Unobtainable.\nHouse of Nobles Cape/Gurubashi Empire Greatcloak (both BFA Emissary Rewards), Ogom the Mangler, WoD Mission Loot & some Ulduar HM items are currently broken and need to be fixed.|r", "Broken Loot"},
+		[45] = {1, "|CFFFF0000Blizzard's Loot changes broke several Items and made them Unobtainable.\nOgom the Mangler & some Ulduar HM items are currently broken and need to be fixed.|r", "Broken Loot"},
 	};
 
 	["CUSTOM_COLLECTS_REASONS"] = {
@@ -1470,4 +1334,34 @@ app.L = {
 		["SL_COV_NFA"] = { icon = "|T"..("Interface\\Icons\\ui_sigil_nightfae")..":0|t", color = "ffA330C9", text = GetSpellInfo(321077) },
 		["SL_COV_VEN"] = { icon = "|T"..("Interface\\Icons\\ui_sigil_venthyr")..":0|t", color = "fffe040f", text = GetSpellInfo(321079) },
 	};
+};
+app.L = L;
+
+-- Crieve tested all professions in non-english locales and the following skills were not detected without these.
+L["SPELL_NAME_TO_SPELL_ID"] = {
+	-- Riding
+	["Riding"] = 33388,
+	["Equitación"] = 33388,
+	["Reiten"] = 33388,
+	["Monte"] = 33388,
+	["Montaria"] = 33388,
+	["Верховая езда"] = 33388,
+	["탈것 타기"] = 33388,
+	["骑术"] = 33388,
+
+	-- Herb Gathering
+	-- The skill name is "Herbalism", not "Herb Gathering"
+	["Herbalism"] = 2366,
+	["Herboristería"] = 2366,
+	["Kräuterkunde"] = 2366,
+	["Herboristerie"] = 2366,
+	["Herborismo"] = 2366,
+	["Травничество"] = 2366,
+	["약초채집"] = 2366,
+	["草药学"] = 2366,
+	["草藥學"] = 2366,
+
+	["Ganzúa"] = 1809,		-- Lock Pick	-- Required for ES (EU)
+	["Desollar"] = 8613,	-- Skinning		-- Required for ES (EU)
+	["Cнятие шкур"] = 8613,	-- Skinning		-- Required for RU
 };

@@ -11,4 +11,8 @@ if L then
 	L.confessor = "达萨莱神官"
 	L.augur = "达萨莱占卜师"
 	L.reanimated_honor_guard = "复活的荣誉卫士"
+
+	L.stairs_open = "楼梯出现"
+	L.stairs_open_desc = "显示通往亚兹玛楼梯何时出现的计时条。"
+	L.stairs_open_trigger = "不错。你没我想的那么弱……来吧，让我畅饮你的鲜血。"
 end

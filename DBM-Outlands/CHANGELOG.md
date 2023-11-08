@@ -1,10 +1,11 @@
 # <DBM Mod> World Bosses (BC)
 
-## [r702](https://github.com/DeadlyBossMods/DBM-BCVanilla/tree/r702) (2023-09-05)
-[Full Changelog](https://github.com/DeadlyBossMods/DBM-BCVanilla/compare/r701...r702) [Previous Releases](https://github.com/DeadlyBossMods/DBM-BCVanilla/releases)
+## [r703](https://github.com/DeadlyBossMods/DBM-BCVanilla/tree/r703) (2023-11-07)
+[Full Changelog](https://github.com/DeadlyBossMods/DBM-BCVanilla/compare/r702...r703) [Previous Releases](https://github.com/DeadlyBossMods/DBM-BCVanilla/releases)
 
-- Toc Bumps for retail  
-- Wait why does outlands even have a classic era toc, remove that nonsense  
-    Update toc on vanilla raids though  
-- classic toc update  
-- Sync changes to DBM-Classic  
+- Bump tocs  
+- Update koKR (BCVanilla) (#35)  
+- change mark timer color on horseman  
+- bump wrath toc  
+- Use hardcoded countdown On geddon, in case auto countodwn using unitaura information can't be trusted in classic era  
+- Silence error. Closes  

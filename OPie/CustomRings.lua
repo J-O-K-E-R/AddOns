@@ -1,4 +1,4 @@
-local MAJ, REV, _, T = 3, 57, ...
+local MAJ, REV, _, T = 3, 58, ...
 local EV, ORI, PC = T.Evie, OPie.UI, T.OPieCore
 local AB, RW, IM = T.ActionBook:compatible(2,37), T.ActionBook:compatible("Rewire", 1,10), T.ActionBook:compatible("Imp", 1, 0)
 assert(ORI and AB and RW and IM and EV and PC and 1, "Missing required libraries")
@@ -349,6 +349,7 @@ local function RK_SerializeDescription(props)
 	end
 	dropUnderscoreKeys(props)
 	props.sortScope = nil
+	props.quarantineBind = nil -- DEPRECATED [2310/Z2]
 	return props
 end
 local function resyncRings()
@@ -504,7 +505,8 @@ function private:GetRingSnapshot(name, bundleNested)
 	repeat
 		local props = m[table.remove(q)] or props
 		RK_SerializeDescription(props)
-		props.limit, props.save = type(props.limit) == "string" and props.limit:match("[^A-Z]") and "PLAYER" or props.limit
+		props.limit = type(props.limit) == "string" and props.limit:match("[^A-Z]") and "PLAYER" or props.limit
+		props.save, props.hotkey, props.v = nil
 		for i=1,#props do
 			local v = props[i]
 			local st = v[1]
@@ -552,7 +554,7 @@ function private:GetSnapshotRing(snap)
 			dropUnderscoreKeys(v)
 		end
 		ri.name = ri.name:gsub("|?|", "||")
-		ri.quarantineBind, ri.hotkey = type(ri.hotkey) == "string" and ri.hotkey or nil
+		ri.quarantineBind, ri.hotkey = nil, nil
 		ri.quarantineOnOpen, ri.onOpen = ri.onOpen, nil
 		dropUnderscoreKeys(ri)
 	until q[1] == nil

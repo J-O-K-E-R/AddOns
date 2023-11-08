@@ -10,6 +10,10 @@ _G.PrettyReps.Data = {
 					name = "Dragonscale Expedition"
 				},
 				{
+					factionID = 2574,
+					name = "Dream Wardens"
+				},
+				{
 					factionID = 2568,
 					name = "Glimmerogg Racer"
 				},

@@ -2,7 +2,7 @@
 
 ## Author: StormFX
 ## Title: Masque: Serenity
-## Version: 10.1.7
+## Version: 10.2.0
 
 ## Dependencies: Masque
 ## IconTexture: Interface\AddOns\Masque_Serenity\Textures\Icon

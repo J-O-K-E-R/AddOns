@@ -21,4 +21,7 @@ if L then
 	L.infested_icecaller = "Infizierte Eisruferin"
 	L.putrid_pyromancer = "Eitriger Pyromant"
 	L.addled_arcanomancer = "Verwirrter Arkanomant"
+
+	L.gate_opens = "Portal geöffnet"
+	L.gate_opens_desc = "Zeigt eine Leiste wann Untermagier Kesalon das Portal zu Yalnu öffnet."
 end

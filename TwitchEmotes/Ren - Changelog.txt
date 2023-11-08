@@ -3506,7 +3506,7 @@ PagMan
 PauseChamp
 ZULUL
 
-:aware:
+:Aware:
 AYAYA
 :clueless:
 Sussy
@@ -3553,7 +3553,7 @@ Okayge
 OkaygeShrug
 PAUSERS
 peepoFat
-peepoGiggles
+peepoGiggle
 peepoHappy
 peepoLove
 peepoSad
@@ -3579,7 +3579,60 @@ YEP
 4Head
 :tf:
 
+LULE
+CatJAM
+:Classic:
+Concerned
+ICANT
+intjReallyMad
+modCheck
+RAGEY
+PeepoPog
+Chatting
+COCKA
+FeelsLateMan
+FeelsRainMan
+FUARK
+Jammies
+peepoBored
+peepoBye
+peepoCheer
+peepoComfy
+peepoIgnore
+peepoPoo
+PepeBean
+PepeJAM
+PepeMeltdown
+pepeW
+Smadge
+:think:
 
+
+----
+Twitch Emotes V2.62.0 - November update
+----
+
+confuseddoggo
+CUNGUS
+Jammies
+peepoComfy
+SALAMI
+hyperjoy / laughhard
+typegBASED
+typegBricked
+typegChill
+typegKEKB
+typegLoad
+typegPaul
+typegWeed
+typegYIP
+
+Removed CatDance
+
+
+----
+Twitch Emotes V2.62.1 - Christmas update
+----
 
 ----
 To do
