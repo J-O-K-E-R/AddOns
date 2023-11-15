@@ -2,6 +2,8 @@ local L
 L = LibStub("AceLocale-3.0"):NewLocale("Rarity", "enUS", true)
 
 -- L["AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"] = true
+L["Moltenbinder's Disciple"] = true
+L["Molten Lava Ball"] = true
 L["Arfus"] = true
 L["Toggle Debug Window"] = true
 L["Darkmoon Rabbit"] = true
@@ -2034,6 +2036,22 @@ L["Obsidian Grand Cache"] = true
 L["Frozen Coffer"] = true
 L["Obsidian Battle Horn"] = true
 L["Emmah"] = true
+L["Box of Rattling Chains"] = true
+L["Sunreaver Micro-Sentry"] = true
+L["Haywire Sunreaver Construct"] = true
+L["Brul"] = true
+L["Chest of Massive Gains"] = true
+L["Use %s before opening %s, which spawns after %s is defeated."] = true
+L["Brullo the Strong"] = true
+L["Rocks on the Rocks"] = true
+L["Reins of the Winter Night Dreamsaber"] = true
+L["Reins of the Snowfluff Dreamtalon"] = true
+L["Reins of the Evening Sun Dreamsaber"] = true
+L["Reins of the Blossoming Dreamstag"] = true
+L["Reins of the Springtide Dreamtalon"] = true
+L["Reins of the Morning Flourish Dreamsaber"] = true
+L["Reins of the Rekindled Dreamstag"] = true
+L["Dreamseed Cache"] = true
 
 --[[
 					The rest of this file is auto-generated using the WoWAce localization application.

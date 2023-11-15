@@ -12,7 +12,7 @@
 ## Title-zhCN: BigWigs [|cffeda55f亚贝鲁斯，焰影熔炉|r]
 ## Title-zhTW: BigWigs [|cffeda55f『朧影實驗場』亞貝魯斯|r]
 ## Notes: BigWigs Aberrus, the Shadowed Crucible Modules
-## Notes-deDE: BigWigs Aberrus, the Shadowed Crucible Modules
+## Notes-deDE: BigWigs Aberrus, Schmelztiegel der Schatten Module
 ## Notes-esES: BigWigs Aberrus, the Shadowed Crucible Modules
 ## Notes-esMX: BigWigs Aberrus, the Shadowed Crucible Modules
 ## Notes-frFR: BigWigs Aberrus, the Shadowed Crucible Modules
@@ -23,7 +23,7 @@
 ## Notes-zhCN: BigWigs 亚贝鲁斯，焰影熔炉模块
 ## Notes-zhTW: BigWigs 『朧影實驗場』亞貝魯斯模組
 ## IconTexture: Interface\AddOns\BigWigs\Media\Icons\minimap_raid.tga
-## Version: v295
+## Version: v296.1
 
 ## LoadOnDemand: 1
 ## Dependencies: BigWigs

@@ -12,7 +12,7 @@ local strfind = string.find
 -- Generate our version variables
 --
 
-local BIGWIGS_VERSION = 295
+local BIGWIGS_VERSION = 296
 local BIGWIGS_RELEASE_STRING, BIGWIGS_VERSION_STRING
 local versionQueryString, versionResponseString = "Q^%d^%s^%d^%s", "V^%d^%s^%d^%s"
 local customGuildName = false
@@ -36,7 +36,7 @@ do
 	local ALPHA = "ALPHA"
 
 	local releaseType
-	local myGitHash = "d982c4d" -- The ZIP packager will replace this with the Git hash.
+	local myGitHash = "6e509df" -- The ZIP packager will replace this with the Git hash.
 	local releaseString
 	--[=[@alpha@
 	-- The following code will only be present in alpha ZIPs.
@@ -1145,10 +1145,10 @@ do
 		--ruRU = "Russian (ruRU)",
 		--zhCN = "Simplified Chinese (zhCN)",
 		--zhTW = "Traditional Chinese (zhTW)",
-		itIT = "Italian (itIT)",
+		---itIT = "Italian (itIT)",
 		--koKR = "Korean (koKR)",
-		esES = "Spanish (esES)",
-		esMX = "Spanish (esMX)",
+		--esES = "Spanish (esES)",
+		---esMX = "Spanish (esMX)",
 		--deDE = "German (deDE)",
 		--ptBR = "Portuguese (ptBR)",
 		--frFR = "French (frFR)",

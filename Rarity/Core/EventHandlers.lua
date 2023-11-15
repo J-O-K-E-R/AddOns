@@ -27,6 +27,7 @@ local UnitGUID = UnitGUID
 local LoadAddOn = LoadAddOn
 local GetBestMapForUnit = _G.C_Map.GetBestMapForUnit
 local GetMapInfo = _G.C_Map.GetMapInfo
+local IsQuestFlaggedCompleted = C_QuestLog.IsQuestFlaggedCompleted
 local UnitCanAttack = _G.UnitCanAttack
 local UnitIsPlayer = _G.UnitIsPlayer
 local UnitIsDead = _G.UnitIsDead
@@ -1931,6 +1932,10 @@ function R:OnLootReady(event, ...)
 			Rarity:OnDisgustingVatFished()
 		end
 
+		if Rarity.isOpening and Rarity.lastNode == L["Chest of Massive Gains"] then
+			Rarity:OnChestOfMassiveGainsOpened()
+		end
+
 		-- Handle mining Elementium
 		if
 			Rarity.relevantSpells[Rarity.previousSpell] == "Mining"
@@ -1968,6 +1973,10 @@ function R:OnLootReady(event, ...)
 				v.attempts = v.attempts ~= nil and v.attempts + 1 or 1 -- Defaults to 1 if this is the first attempt
 				self:OutputAttempts(v)
 			end
+		end
+
+		if Rarity.isOpening and Rarity.lastNode == L["Dreamseed Cache"] then
+			Rarity:OnDreamseedCacheOpened()
 		end
 
 		-- Handle herb gathering on Argus (Fel Lasher)
@@ -2069,7 +2078,29 @@ function R:OnLootReady(event, ...)
 	end
 end
 
-local IsQuestFlaggedCompleted = C_QuestLog.IsQuestFlaggedCompleted
+function Rarity:OnChestOfMassiveGainsOpened()
+	Rarity:Debug("Detected Opening on Chest of Massive Gains")
+
+	local hasOpenedChestToday = IsQuestFlaggedCompleted(75325)
+	if hasOpenedChestToday then
+		Rarity:Debug("Skipping this attempt (loot lockout for Chest of Massive Gains is active)")
+		return
+	end
+
+	local wasRequiredAuraFoundOnPlayer = false
+	AuraUtil.ForEachAura("player", "HELPFUL", nil, function(_, _, _, _, _, _, _, _, _, spellID)
+		if spellID == CONSTANTS.AURAS.ROCKS_ON_THE_ROCKS then
+			wasRequiredAuraFoundOnPlayer = true
+		end
+	end)
+
+	if not wasRequiredAuraFoundOnPlayer then
+		Rarity:Debug(format("Required aura %s NOT found on player", L["Rocks on the Rocks"]))
+		return
+	end
+
+	addAttemptForItem("Brul", "pets")
+end
 
 function Rarity:OnDisgustingVatFished()
 	local hasFishedEmmahThisWeek = IsQuestFlaggedCompleted(75488)
@@ -2080,6 +2111,23 @@ function Rarity:OnDisgustingVatFished()
 
 	self:Debug("Detected fishing on Disgusting Vat (method = SPECIAL)")
 	addAttemptForItem("Emmah", "pets")
+end
+
+local dreamseedMounts = {
+	"Reins of the Winter Night Dreamsaber",
+	"Reins of the Snowfluff Dreamtalon",
+	"Reins of the Evening Sun Dreamsaber",
+	"Reins of the Blossoming Dreamstag",
+	"Reins of the Springtide Dreamtalon",
+	"Reins of the Morning Flourish Dreamsaber",
+	"Reins of the Rekindled Dreamstag",
+}
+
+function Rarity:OnDreamseedCacheOpened()
+	Rarity:Debug("Detected Opening on Dreamseed Cache")
+	for mount, _ in pairs(dreamseedMounts) do
+		addAttemptForItem(mount, "mounts")
+	end
 end
 
 Rarity.EventHandlers = EventHandlers

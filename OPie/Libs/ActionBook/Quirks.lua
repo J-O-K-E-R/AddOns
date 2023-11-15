@@ -30,20 +30,35 @@ if MODERN then -- class-locked mount spells
 		[229376]="MAGE",
 		[229385]="MONK",
 		[13819]="PALADIN", [23214]="PALADIN", [34767]="PALADIN", [34769]="PALADIN", [66906]="PALADIN", [69820]="PALADIN", [69826]="PALADIN", [221883]="PALADIN", [205656]="PALADIN", [221885]="PALADIN", [221886]="PALADIN", [231587]="PALADIN", [231588]="PALADIN", [231589]="PALADIN", [231435]="PALADIN",
+		[73629]="PALADIN", [73630]="PALADIN", [270564]="PALADIN", [270562]="PALADIN", [290608]="PALADIN", [363613]="PALADIN",
 		[229377]="PRIEST",
 		[231434]="ROGUE", [231523]="ROGUE", [231524]="ROGUE", [231525]="ROGUE",
 		[231442]="SHAMAN",
 		[5784]="WARLOCK", [23161]="WARLOCK", [232412]="WARLOCK", [238452]="WARLOCK", [238454]="WARLOCK",
 		[229388]="WARRIOR",
 	}
-	local function uncastableClassLock()
-		return false, "uncastable-class-lock", true
-	end
-	local _, class = UnitClass("player")
-	for k,v in pairs(classLockedMounts) do
-		if v ~= class then
-			RW:SetSpellCastableChecker(k, uncastableClassLock)
+	local raceLockedMounts = {
+		-- Paladin chargers
+		[73629]="Draenei", [73630]="Draenei",
+		[34769]="BloodElf", [34767]="BloodElf",
+		[69820]="Tauren", [69826]="Tauren",
+		[270564]="Dwarf",
+		[270562]="DarkIronDwarf",
+		[290608]="ZandalariTroll",
+		[363613]="LightforgedDraenei",
+	}
+	local f, m, reason = UnitClass, classLockedMounts, "uncastable-class-lock"
+	for i=1,2 do
+		local function retUncastable()
+			return false, reason, true
 		end
+		local _, me = f("player")
+		for sid, v in pairs(m) do
+			if v ~= me then
+				RW:SetSpellCastableChecker(sid, retUncastable)
+			end
+		end
+		f, m, reason = UnitRace, raceLockedMounts, "uncastable-race-lock"
 	end
 end
 

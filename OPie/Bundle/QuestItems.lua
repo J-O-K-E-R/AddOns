@@ -19,9 +19,6 @@ if MODERN then
 			local q = C_QuestLog.IsOnQuest
 			return q(66805) or q(66133)
 		end
-		local function have15(iid)
-			return GetItemCount(iid) >= 15, nil, nil, 4
-		end
 		local function have1()
 			return true, false, false, 4
 		end
@@ -29,12 +26,6 @@ if MODERN then
 			return true, false, false, 3
 		end
 		local mapMarker = consume
-		local function flightstone100()
-			local ci = C_CurrencyInfo.GetCurrencyInfo(2245)
-			if ci and ci.maxQuantity and ci.maxQuantity > 0 and (ci.quantity or 0) + 100 <= ci.maxQuantity then
-				return true, false, false, 3
-			end
-		end
 		include = {
 			[33634]=true, [35797]=true, [37888]=true, [37860]=true, [37859]=true, [37815]=true, [46847]=true, [47030]=true, [39213]=true, [42986]=true, [49278]=true,
 			[86425]={31332, 31333, 31334, 31335, 31336, 31337}, [90006]=true, [86536]=true, [86534]=true,
@@ -44,9 +35,9 @@ if MODERN then
 			[194540]=mapMarker, [198843]=mapMarker, [198852]=mapMarker, [198854]=mapMarker, [199061]=mapMarker, [199062]=mapMarker, [199065]=mapMarker,
 			[199066]=mapMarker, [199067]=mapMarker, [199068]=mapMarker, [199069]=mapMarker, [200738]=mapMarker, [202667]=mapMarker, [202668]=mapMarker,
 			[202669]=mapMarker, [202670]=mapMarker,
-			[204075]=have15, [204076]=have15, [204078]=have15, [204077]=have15, [204911]=have1,
-			[202171]=flightstone100, [205254]=consume,
-			[199192]=have1, [204359]=have1, [205226]=have1,
+			[204911]=have1,
+			[205254]=consume,
+			[199192]=have1, [204359]=have1, [205226]=have1, [210549]=have1,
 		}
 	end
 	local includeSpell = {
@@ -61,6 +52,7 @@ if MODERN then
 		[198798]=3, [198800]=3, [201359]=3, [198675]=3, [198694]=3, [198689]=3, [198799]=3, [201358]=3,
 		[201356]=3, [201357]=3, [201360]=3, [204990]=3, [205001]=3, [204999]=3,
 		[200939]=3, [200940]=3, [200941]=3, [200942]=3, [200943]=3, [200945]=3, [200946]=3, [200947]=3,
+		[210231]=3, [210228]=3, [210234]=3,
 	}
 	setmetatable(exclude, {__index={
 		[204561]=1,

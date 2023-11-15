@@ -1,6 +1,9 @@
 ------------------------------------------------------------------------------
 -- Dragonflight
 --
+v10.1.7.2771
+	Extra Bars can now be used as additional CD bars that attach to each unit's raid frame.
+
 v10.1.7.2770
 	Shield Charge will correctly go on CD when used out of melee range.
 	Heavy Wingbests/Cloberring Sweep will correctly reduce the CD of Wing Buffet/Tail Swipe.

@@ -127,9 +127,9 @@ local timersMythic = {
 	},
 	[3] = { -- Non decimal timers are taken from a stream (not precise)
 		[404027] = {24.6, 60.0, 57.6, 90.6}, -- Void Bomb
-		[404288] = {4.6, 53.0, 78.8, 35.3, 34.1}, -- Infinite Duress
-		[403741] = {6.9, 57.6, 93.0, 60}, -- Cosmic Ascension
-		[405486] = {18.6, 80.0, 84.0}, -- Hurtling Barrage
+		[404288] = {5.6, 53.0, 78.8, 35.3, 34.1}, -- Infinite Duress
+		[403741] = {6.9, 57.6, 93.0, 55.3}, -- Cosmic Ascension
+		[405486] = {18.6, 80.0, 84.0, 63.5}, -- Hurtling Barrage
 		[403625] = {44.6, 73.0, 76.5}, -- Scouring Eternity
 		[403520] = {23.4, 38.2, 26.5, 40.0, 47.0, 34.7, 26.5}, -- Embrace of Nothingness
 		[408429] = {19.8, 17.7, 36.4, 15.3, 55.2, 35.3, 42.3, 15.3}, -- Void Slash
@@ -433,9 +433,9 @@ do
 				text = CL.bomb
 			end
 			if args.spellId ~= 406428 then -- Dont show message for motes, already have Oblivion messages
-				self:PersonalMessage(spellId, "underyou", text) -- SetOption:404027,401500,406989,406428:::
+				self:PersonalMessage(spellId, "underyou", text) -- SetOption:404027,401500,406989,402746:::
 			end
-			self:PlaySound(spellId, "underyou") -- SetOption:404027,401500,406989,406428:::
+			self:PlaySound(spellId, "underyou") -- SetOption:404027,401500,406989,406428,402746:::
 		end
 	end
 end

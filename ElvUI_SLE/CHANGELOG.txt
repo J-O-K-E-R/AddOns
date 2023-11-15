@@ -1,3 +1,3 @@
-v4.71 10/16/23
+v4.74 11/9/23
 
-• fixed config from erroring when trying to change some settings
+• remove font options that ElvUI will be handling

@@ -12,7 +12,6 @@ local strfind, strlen, tonumber, tostring = strfind, strlen, tonumber, tostring
 local hooksecurefunc = hooksecurefunc
 
 local CreateFrame = CreateFrame
-local GetAddOnEnableState = GetAddOnEnableState
 local GetBattlefieldArenaFaction = GetBattlefieldArenaFaction
 local GetClassInfo = GetClassInfo
 local GetInstanceInfo = GetInstanceInfo
@@ -20,7 +19,6 @@ local GetNumGroupMembers = GetNumGroupMembers
 local GetSpecializationInfoForSpecID = GetSpecializationInfoForSpecID
 local HideUIPanel = HideUIPanel
 local InCombatLockdown = InCombatLockdown
-local IsAddOnLoaded = IsAddOnLoaded
 local IsInRaid = IsInRaid
 local IsLevelAtEffectiveMaxLevel = IsLevelAtEffectiveMaxLevel
 local IsRestrictedAccount = IsRestrictedAccount
@@ -29,7 +27,6 @@ local IsVeteranTrialAccount = IsVeteranTrialAccount
 local IsWargame = IsWargame
 local IsXPUserDisabled = IsXPUserDisabled
 local RequestBattlefieldScoreData = RequestBattlefieldScoreData
-local SetCVar = SetCVar
 local UIParent = UIParent
 local UIParentLoadAddOn = UIParentLoadAddOn
 local UnitAura = UnitAura
@@ -43,7 +40,12 @@ local UnitIsPlayer = UnitIsPlayer
 local UnitIsUnit = UnitIsUnit
 
 local GetSpecialization = (E.Classic or E.Wrath) and LCS.GetSpecialization or GetSpecialization
-local GetSpecializationRole = (E.Classic or E.Wrath) and LCS.GetSpecializationRole or GetSpecializationRole
+local GetSpecializationInfo = (E.Classic or E.Wrath) and LCS.GetSpecializationInfo or GetSpecializationInfo
+
+local IsAddOnLoaded = (C_AddOns and C_AddOns.IsAddOnLoaded) or IsAddOnLoaded
+
+local C_AddOns_GetAddOnEnableState = C_AddOns and C_AddOns.GetAddOnEnableState
+local GetAddOnEnableState = GetAddOnEnableState -- eventually this will be on C_AddOns and args swap
 
 local C_TooltipInfo_GetUnit = C_TooltipInfo and C_TooltipInfo.GetUnit
 local C_TooltipInfo_GetHyperlink = C_TooltipInfo and C_TooltipInfo.GetHyperlink
@@ -290,11 +292,20 @@ end
 
 function E:GetPlayerRole()
 	local role = (E.Retail or E.Wrath) and UnitGroupRolesAssigned('player') or 'NONE'
-	return (role == 'NONE' and E.myspec and GetSpecializationRole(E.myspec)) or role
+	return (role ~= 'NONE' and role) or E.myspecRole or 'NONE'
 end
 
 function E:CheckRole()
 	E.myspec = GetSpecialization()
+
+	if E.myspec then
+		if E.Retail then
+			E.myspecID, E.myspecName, E.myspecDesc, E.myspecIcon, E.myspecRole = GetSpecializationInfo(E.myspec)
+		else -- they add background
+			E.myspecID, E.myspecName, E.myspecDesc, E.myspecIcon, E.myspecBackground, E.myspecRole = GetSpecializationInfo(E.myspec)
+		end
+	end
+
 	E.myrole = E:GetPlayerRole()
 end
 
@@ -399,7 +410,12 @@ do
 end
 
 function E:Dump(object, inspect)
-	if GetAddOnEnableState(E.myname, 'Blizzard_DebugTools') == 0 then
+	if C_AddOns_GetAddOnEnableState then
+		if C_AddOns_GetAddOnEnableState('Blizzard_DebugTools', E.myname) == 0 then
+			E:Print('Blizzard_DebugTools is disabled.')
+			return
+		end
+	elseif GetAddOnEnableState(E.myname, 'Blizzard_DebugTools') == 0 then
 		E:Print('Blizzard_DebugTools is disabled.')
 		return
 	end
@@ -584,7 +600,7 @@ function E:PLAYER_ENTERING_WORLD(_, initLogin, isReload)
 
 	-- Blizzard will set this value to int(60/CVar cameraDistanceMax)+1 at logout if it is manually set higher than that
 	if not E.Retail and E.db.general.lockCameraDistanceMax then
-		SetCVar('cameraDistanceMaxZoomFactor', E.db.general.cameraDistanceMax)
+		E:SetCVar('cameraDistanceMaxZoomFactor', E.db.general.cameraDistanceMax)
 	end
 
 	local _, instanceType = GetInstanceInfo()

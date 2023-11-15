@@ -1,6 +1,6 @@
 # Auctionator
 
-## [10.1.34](https://github.com/Auctionator/Auctionator/tree/10.1.34) (2023-10-27)
-[Full Changelog](https://github.com/Auctionator/Auctionator/compare/10.1.33...10.1.34) 
+## [10.1.36](https://github.com/Auctionator/Auctionator/tree/10.1.36) (2023-11-09)
+[Full Changelog](https://github.com/Auctionator/Auctionator/compare/10.1.35...10.1.36) 
 
-- Mainline: Selling: Bag/Groups: Fix tooltips for DF crafted items  
+- [Fixes #1453] Mainline: Shopping: Missing DF quality icons in results  

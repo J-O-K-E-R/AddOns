@@ -88,7 +88,7 @@ function RSEntityPinMixin:OnMouseDown(button)
 			self:GetMap():RefreshAllDataProviders();
 			RSMinimap.RefreshEntityState(self.POI.entityID)
 		-- Toggle overlay
-		elseif (not IsShiftKeyDown() and not IsAltKeyDown()) then
+		elseif (not IsShiftKeyDown() and not IsAltKeyDown() and not IsControlKeyDown()) then
 			-- If overlay showing then hide it
 			local overlayInfo = RSGeneralDB.GetOverlayActive(self.POI.entityID)
 			if (overlayInfo) then
@@ -113,7 +113,7 @@ function RSEntityPinMixin:OnMouseDown(button)
 				RSWaypoints.AddWorldMapWaypoint(self.POI.mapID, self.POI.x, self.POI.y)
 			end
 		-- Toggle guide
-		else
+		elseif (not IsShiftKeyDown() and not IsAltKeyDown() and not IsControlKeyDown()) then
 			-- If guide showing then hide it
 			local guideEntityID = RSGeneralDB.GetGuideActive()
 			if (guideEntityID) then

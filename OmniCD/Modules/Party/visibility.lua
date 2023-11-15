@@ -298,6 +298,7 @@ local function UpdateRosterInfo(force)
 			else
 				P:SetEnabledColorScheme(info)
 			end
+			info.isDeadOrOffline = isDeadOrOffline
 		end
 	end
 
@@ -429,7 +430,7 @@ end
 
 function P:CHAT_MSG_BG_SYSTEM_NEUTRAL(arg1)
 	if self.disabled then return end
-	if strfind(arg1, "!") then
+	if strfind(arg1, "!$") then
 		CM:EnqueueInspect(true)
 	end
 end

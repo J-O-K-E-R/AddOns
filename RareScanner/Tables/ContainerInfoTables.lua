@@ -4,18 +4,18 @@
 local FOLDER_NAME, private = ...
 
 private.CONTAINER_INFO = {
-	[386158] = { zoneID = 1, artID = { 2 }, x = 5609, y = 1207, overlay = { "5609-1207" }, reset = false, questID = { 74287 }, event = 3 }; --Rumble Foil Bag
+	[386158] = { zoneID = 1, artID = { 2 }, x = 5609, y = 1207, overlay = { "5609-1207" }, reset = false, questID = { 74287 }, event = 3, minieventID = 8 }; --Rumble Foil Bag
 	[310709] = { zoneID = 37, artID = { 41 }, x = 3223, y = 6343, overlay = { "3220-6340" } }; --Waterlogged Chest
 	[320514] = { zoneID = 62, artID = { 67 }, x = 6082, y = 2230, overlay = { "5510-1570","5670-0940","5780-2390","5840-1000","5890-2520","6080-2230","6120-2010","6260-1820","6280-1450" } }; --Darkshore Cache
 	[320515] = { zoneID = 62, artID = { 67 }, x = 4260, y = 3498, overlay = { "3990-2700","4260-3500","4820-2740","4920-2540","4990-1820","5060-2270","5120-2800","5170-2180","5230-1810" } }; --Darkshore Cache
 	[320516] = { zoneID = 62, artID = { 67 }, x = 4238, y = 4333, overlay = { "3840-4340","3920-3780","3990-4090","4080-4340","4110-3800","4110-4170","4240-3850","4240-4350" } }; --Darkshore Cache
 	[320517] = { zoneID = 62, artID = { 67 }, x = 3996, y = 5062, overlay = { "3680-5190","3990-5040","4130-4820","4250-4550","4430-5340","4470-4740","4480-4450","4550-4840","4680-5560" } }; --Darkshore Cache
 	[320518] = { zoneID = 62, artID = { 67 }, x = 3845, y = 6051, overlay = { "3150-8550","3730-7690","3780-6170","3790-8410","3840-6060","3940-6220","4020-7370","4180-8440","4340-8140","4420-6000" } }; --Darkshore Cache
-	[386140] = { zoneID = 84, artID = { 89 }, x = 7517, y = 8611, overlay = { "7517-8611" }, reset = false, questID = { 73937 }, event = 3 }; --Rumble Foil Bag
-	[386157] = { zoneID = 84, artID = { 89 }, x = 3878, y = 4604, overlay = { "3878-4604" }, reset = false, questID = { 74286 }, event = 3 }; --Rumble Foil Bag
-	[387696] = { zoneID = 84, artID = { 89 }, x = 3124, y = 3763, overlay = { "3124-3763" }, reset = false, questID = { 74844 }, event = 3 }; --Rumble Coin Bag
-	[387697] = { zoneID = 85, artID = { 90 }, x = 5439, y = 7760, overlay = { "5439-7760" }, reset = false, questID = { 74845 }, event = 3 }; --Rumble Coin Bag
-	[387718] = { zoneID = 85, artID = { 90 }, x = 5410, y = 7557, overlay = { "5410-7557" }, reset = false, questID = { 74848 }, event = 3 }; --Rumble Foil Bag
+	[386140] = { zoneID = 84, artID = { 89 }, x = 7517, y = 8611, overlay = { "7517-8611" }, reset = false, questID = { 73952 }, event = 3, minieventID = 8 }; --Rumble Foil Bag
+	[386157] = { zoneID = 84, artID = { 89 }, x = 3878, y = 4604, overlay = { "3878-4604" }, reset = false, questID = { 74286 }, event = 3, minieventID = 8 }; --Rumble Foil Bag
+	[387696] = { zoneID = 84, artID = { 89 }, x = 3124, y = 3763, overlay = { "3124-3763" }, reset = false, questID = { 74844 }, event = 3, minieventID = 8 }; --Rumble Coin Bag
+	[387697] = { zoneID = 85, artID = { 90 }, x = 5439, y = 7760, overlay = { "5439-7760" }, reset = false, questID = { 74845 }, event = 3, minieventID = 8 }; --Rumble Coin Bag
+	[387718] = { zoneID = 85, artID = { 90 }, x = 5410, y = 7557, overlay = { "5410-7557" }, reset = false, questID = { 74848 }, event = 3, minieventID = 8 }; --Rumble Foil Bag
 	[192243] = { zoneID = {
 				[120] = { x = 5360, y = 3510, artID = { 125 }, overlay = { "5360-3510" } };
 				[2025] = { x = 4265, y = 6664, artID = { 1708 }, overlay = { "4265-6664" } };
@@ -785,10 +785,10 @@ private.CONTAINER_INFO = {
 				[2024] = { x = 0911, y = 4843, artID = { 1707 }, overlay = { "0910-4840","1400-2980","4920-4090","2990-4570","4330-6260","5300-6610","6570-2780","6590-5560","7230-4210" } };
 				[2025] = { x = 5298, y = 5683, artID = { 1708 }, overlay = { "3510-7040","4260-6660","4290-7900","5020-5210","5300-5690","5410-8390","5480-3260","5860-6750","6130-5400","6220-7180" } };
 			  }, reset = true, factionID = { 2507,2511,2503,2510 } }; --Magic-Bound Chest
-	[385961] = { zoneID = 2022, artID = { 1706 }, x = 5644, y = 1932, overlay = { "5644-1932" }, reset = false, event = 3 }; --Rumble Coin Bag
-	[387720] = { zoneID = 2022, artID = { 1706 }, x = 6310, y = 7861, overlay = { "6310-7861" }, reset = false, questID = { 74850 }, event = 3 }; --Rumble Foil Bag
-	[387721] = { zoneID = 2022, artID = { 1706 }, x = 3459, y = 6378, overlay = { "3459-6378" }, reset = false, questID = { 74851 }, event = 3 }; --Rumble Foil Bag
-	[405585] = { zoneID = 2022, artID = { 1706 }, x = 5644, y = 1932, overlay = { "5644-1932" }, reset = false, questID = { 75039 }, event = 3 }; --Rumble Foil Bag
+	[385961] = { zoneID = 2022, artID = { 1706 }, x = 5644, y = 1932, overlay = { "5644-1932" }, reset = false, questID = { 73182 }, event = 3, minieventID = 8 }; --Rumble Coin Bag
+	[387720] = { zoneID = 2022, artID = { 1706 }, x = 6310, y = 7861, overlay = { "6310-7861" }, reset = false, questID = { 74850 }, event = 3, minieventID = 8 }; --Rumble Foil Bag
+	[387721] = { zoneID = 2022, artID = { 1706 }, x = 3459, y = 6378, overlay = { "3459-6378" }, reset = false, questID = { 74851 }, event = 3, minieventID = 8 }; --Rumble Foil Bag
+	[405585] = { zoneID = 2022, artID = { 1706 }, x = 5644, y = 1932, overlay = { "5644-1932" }, reset = false, questID = { 75039 }, event = 3, minieventID = 8 }; --Rumble Foil Bag
 	[376581] = { zoneID = 2023, artID = { 1705 }, x = 8653, y = 5066, overlay = { "5089-6650","3270-3711","3478-3706","3610-4173","7346-5614","2530-3740","3540-6580","4940-6770","7520-4150","3130-7060","3220-6810","7180-5670","7460-3920","7470-4040","8651-5071","3240-3900","8370-5340","8540-5470","8640-5330","3350-4250" }, factionID = { 2507,2503 } }; --Clan Chest
 	[377900] = { zoneID = 2023, artID = { 1705 }, x = 3247, y = 3811, overlay = { "3243-3815" }, reset = false, questID = { 67049 } }; --Nokhud Warspear
 	[378010] = { zoneID = 2023, artID = { 1705 }, x = 5317, y = 6894, overlay = { "5328-6891" }, reset = false, questID = { 74399 } }; --Forgotten Dragon Treasure
@@ -808,10 +808,10 @@ private.CONTAINER_INFO = {
 	[380860] = { zoneID = 2023, artID = { 1705 }, x = 7346, y = 5616, overlay = { "7349-5614" }, reset = false, questID = { 70402 } }; --Centaur Horn
 	[380991] = { zoneID = 2023, artID = { 1705 }, x = 7055, y = 3553, overlay = { "7064-3537" }, reset = false, questID = { 67950 } }; --Dirt Mound
 	[381712] = { zoneID = 2023, artID = { 1705 }, x = 5600, y = 7878, overlay = { "5600-7878" }, reset = false, questID = { 71033 }, worldmap = true }; --Water-Bound Chest
-	[386138] = { zoneID = 2023, artID = { 1705 }, x = 1909, y = 8197, overlay = { "1909-8197" }, reset = false, event = 3 }; --Rumble Coin Bag
-	[392031] = { zoneID = 2023, artID = { 1705 }, x = 8179, y = 7797, overlay = { "8179-7797" }, reset = false, questID = { 75036 }, event = 3 }; --Rumble Foil Bag
+	[386138] = { zoneID = 2023, artID = { 1705 }, x = 1909, y = 8197, overlay = { "1909-8197" }, reset = false, questID = { 73928 }, event = 3, minieventID = 8 }; --Rumble Coin Bag
+	[392031] = { zoneID = 2023, artID = { 1705 }, x = 8179, y = 7797, overlay = { "8179-7797" }, reset = false, questID = { 75036 }, event = 3, minieventID = 8 }; --Rumble Foil Bag
 	[398815] = { zoneID = 2023, artID = { 1705 }, x = 7376, y = 7248, overlay = { "7376-7248" }, questID = { 75525 } }; --Secured Shipment
-	[405586] = { zoneID = 2023, artID = { 1705 }, x = 1909, y = 8197, overlay = { "1909-8197" }, reset = false, questID = { 75040 }, event = 3 }; --Rumble Foil Bag
+	[405586] = { zoneID = 2023, artID = { 1705 }, x = 1909, y = 8197, overlay = { "1909-8197" }, reset = false, questID = { 75040 }, event = 3, minieventID = 8 }; --Rumble Foil Bag
 	[195373] = { zoneID = 2024, artID = { 1707 }, x = 2654, y = 4629, overlay = { "2654-4629" }, reset = false, questID = { 70441 } }; --Objects
 	[376582] = { zoneID = 2024, artID = { 1707 }, x = 0939, y = 3787, overlay = { "4500-5220","0720-4510","0840-4070","0940-3790","4580-5620","4690-5420","5580-6870","5650-6570","5690-6790","5760-6970","5880-6840","5890-5480","5900-6670","6050-5900","5920-5660" }, reset = true, factionID = { 2507,2511 } }; --Tuskarr Chest
 	[376583] = { zoneID = {
@@ -842,9 +842,9 @@ private.CONTAINER_INFO = {
 	[381160] = { zoneID = 2024, artID = { 1707 }, x = 7485, y = 5500, overlay = { "7490-5500" }, reset = false, questID = { 70606 } }; --Lost Compass
 	[383733] = { zoneID = 2024, artID = { 1707 }, x = 4031, y = 5093, overlay = { "1126-4352","1504-2211","1666-3792","1214-3509","6456-5882","1326-4238","1503-3287","3423-4591","5943-5520","1245-4136","3625-4754","0940-3950","0960-4210","1110-4080","1140-3220","1350-3830","1390-2170","1540-2060","1570-1940","1610-4010","1740-3310","1740-3900","1920-4040","2020-4210","3430-4410","4030-5090","4170-4920","5780-5360","5870-5950","5930-5830","6050-4930","6050-6110","6070-5190","6260-5200","6430-6110","6550-6160","6580-5900","6820-5970" }, reset = true, factionID = { 2507 } }; --Disturbed Dirt
 	[383735] = { zoneID = 2024, artID = { 1707 }, x = 4975, y = 2567, overlay = { "6720-1176","4685-2239","4781-2742","4415-3091","4591-2866","4975-2567","6609-1129","5020-6360","1660-4980","4640-2450","4810-1610","4920-2410","4920-6560","4940-6120","4960-6250","5050-2200","5710-4190","5720-4310","5850-4120","6510-3010","6520-3140","6590-1300","6600-2830","6600-3640","6620-3860","6670-3140","6880-4650","6920-4440","7070-4390","7180-3340","7230-4320","7290-3890","7330-4070","7470-4040","7540-3940","7680-4030","7840-3310","7890-3090","7900-2870" }, reset = true, factionID = { 2507 } }; --Disturbed Dirt
-	[386139] = { zoneID = 2024, artID = { 1707 }, x = 0749, y = 4754, overlay = { "0749-4754" }, reset = false, questID = { 73936 }, event = 3 }; --Rumble Coin Bag
-	[392032] = { zoneID = 2024, artID = { 1707 }, x = 5738, y = 3773, overlay = { "5738-3773" }, reset = false, questID = { 75037 }, event = 3 }; --Rumble Foil Bag
-	[405587] = { zoneID = 2024, artID = { 1707 }, x = 0747, y = 4755, overlay = { "0747-4755" }, reset = false, questID = { 75041 }, event = 3 }; --Rumble Foil Bag
+	[386139] = { zoneID = 2024, artID = { 1707 }, x = 0749, y = 4754, overlay = { "0749-4754" }, reset = false, questID = { 73936 }, event = 3, minieventID = 8 }; --Rumble Coin Bag
+	[392032] = { zoneID = 2024, artID = { 1707 }, x = 5738, y = 3773, overlay = { "5738-3773" }, reset = false, questID = { 75037 }, event = 3, minieventID = 8 }; --Rumble Foil Bag
+	[405587] = { zoneID = 2024, artID = { 1707 }, x = 0747, y = 4755, overlay = { "0747-4755" }, reset = false, questID = { 75041 }, event = 3, minieventID = 8 }; --Rumble Foil Bag
 	[194856] = { zoneID = 2025, artID = { 1708 }, x = 5608, y = 4097, overlay = { "5608-4097" }, reset = false, questID = { 70287 }, prof = 773 }; --Objects
 	[196172] = { zoneID = 2025, artID = { 1708 }, x = 4945, y = 6291, overlay = { "4945-6291" }, questID = { 70611 } }; --Objects
 	[198604] = { zoneID = 2025, artID = { 1708 }, x = 5247, y = 8360, overlay = { "5247-8360" }, questID = { 72355 } }; --Objects
@@ -873,12 +873,12 @@ private.CONTAINER_INFO = {
 				[2112] = { x = 1350, y = 6320, artID = { 1748 }, overlay = { "1320-6320" } };
 				[2199] = { x = 5730, y = 7060, artID = { 1805 }, overlay = { "3600-8170","5710-6990","6820-6090" } };
 			  }, reset = true, factionID = { 2507 } }; --Disturbed Dirt
-	[387695] = { zoneID = 2025, artID = { 1708 }, x = 4926, y = 5837, overlay = { "4926-5837" }, reset = false, event = 3 }; --Rumble Coin Bag
-	[387722] = { zoneID = 2025, artID = { 1708 }, x = 5708, y = 6670, overlay = { "5708-6670" }, reset = false, questID = { 74852 }, event = 3 }; --Rumble Foil Bag
+	[387695] = { zoneID = 2025, artID = { 1708 }, x = 4926, y = 5837, overlay = { "4926-5837" }, reset = false, questID = { 74843 }, event = 3, minieventID = 8 }; --Rumble Coin Bag
+	[387722] = { zoneID = 2025, artID = { 1708 }, x = 5708, y = 6670, overlay = { "5708-6670" }, reset = false, questID = { 74852 }, event = 3, minieventID = 8 }; --Rumble Foil Bag
 	[405584] = { zoneID = {
 				[2025] = { x = 4926, y = 5837, artID = { 1708 }, overlay = { "4926-5837" } };
 				[2199] = { x = 4970, y = 4850, artID = { 1805 }, overlay = { "4970-4850" } };
-			  }, reset = false, questID = { 75038 }, event = 3 }; --Rumble Foil Bag
+			  }, reset = false, questID = { 75038 }, event = 3, minieventID = 8 }; --Rumble Foil Bag
 	[376123] = { zoneID = {
 				[2026] = { x = 6230, y = 4330, artID = { 1709 }, overlay = { "6230-4330" } };
 				[2118] = { x = 6226, y = 4321, artID = { 1709 }, overlay = { "6226-4321" } };
@@ -895,8 +895,8 @@ private.CONTAINER_INFO = {
 	[373548] = { zoneID = 2030, artID = { 1713 }, x = 5179, y = 8619, overlay = { "5157-8596","5100-8780","5230-8790","5280-8680" }, questID = { 65175 } }; --Template Archive
 	[375495] = { zoneID = 2066, artID = { 1728 }, x = 4833, y = 3648, overlay = { "4833-3648" }, questID = { 65572 } }; --Undulating Foliage
 	[382195] = { zoneID = 2085, artID = { 1736 }, x = 2781, y = 2595, overlay = { "2781-2595" } }; --Elemental Bound Chest
-	[385958] = { zoneID = 2112, artID = { 1748 }, x = 4574, y = 4719, overlay = { "4574-4719" }, reset = false, event = 3 }; --Rumble Coin Bag
-	[387719] = { zoneID = 2112, artID = { 1748 }, x = 4623, y = 4664, overlay = { "4623-4664" }, reset = false, questID = { 74849 }, event = 3 }; --Rumble Foil Bag
+	[385958] = { zoneID = 2112, artID = { 1748 }, x = 4574, y = 4719, overlay = { "4574-4719" }, reset = false, questID = { 73180 }, event = 3, minieventID = 8 }; --Rumble Coin Bag
+	[387719] = { zoneID = 2112, artID = { 1748 }, x = 4623, y = 4664, overlay = { "4623-4664" }, reset = false, questID = { 74849 }, event = 3, minieventID = 8 }; --Rumble Foil Bag
 	[191992] = { zoneID = 2118, artID = { 1709 }, x = 4183, y = 2305, overlay = { "4183-2305" }, reset = false, questID = { 67013 } }; --Objects
 	[200618] = { zoneID = 2133, artID = { 1775 }, x = 4296, y = 6039, overlay = { "4296-6039" }, reset = false, questID = { 75232 } }; --Objects
 	[385565] = { zoneID = 2133, artID = { 1775 }, x = 2852, y = 4793, overlay = { "2852-4793" }, reset = false }; --Blazing Shadowflame Chest
@@ -973,4 +973,97 @@ private.CONTAINER_INFO = {
 				[2151] = { x = 5340, y = 3610, artID = { 1781 }, overlay = { "5340-3610","5920-4200","5740-4250","5830-3740","5470-3660","6140-4160","5350-3930","5390-4210","5490-3460","5500-4270" } };
 				[2154] = { x = 6548, y = 2235, artID = { 1784 }, overlay = { "6548-2235" } };
 			  }, reset = true }; --Frozenheart Cairn
+	[405303] = { zoneID = 2200, artID = { 1806 }, x = 5930, y = 5880, overlay = { "5930-5880" }, reset = true, minieventID = 9 }; --Dreamseed Cache
+	[405320] = { zoneID = 2200, artID = { 1806 }, x = 5460, y = 6770, overlay = { "5460-6770" }, reset = true, minieventID = 9 }; --Dreamseed Cache
+	[405321] = { zoneID = 2200, artID = { 1806 }, x = 6390, y = 6490, overlay = { "6390-6490" }, reset = true, minieventID = 9 }; --Dreamseed Cache
+	[405487] = { zoneID = 2200, artID = { 1806 }, x = 4998, y = 3536, overlay = { "4990-3530" }, reset = true, minieventID = 9 }; --Dreamseed Cache
+	[405488] = { zoneID = 2200, artID = { 1806 }, x = 6300, y = 5290, overlay = { "6300-5290" }, reset = true, minieventID = 9 }; --Dreamseed Cache
+	[405929] = { zoneID = 2200, artID = { 1806 }, x = 5660, y = 4491, overlay = { "5660-4490" }, reset = true, minieventID = 9 }; --Dreamseed Cache
+	[405930] = { zoneID = 2200, artID = { 1806 }, x = 4913, y = 4807, overlay = { "4910-4800" }, reset = true, minieventID = 9 }; --Dreamseed Cache
+	[405931] = { zoneID = 2200, artID = { 1806 }, x = 4650, y = 4040, overlay = { "4640-4040" }, reset = true, minieventID = 9 }; --Dreamseed Cache
+	[405932] = { zoneID = 2200, artID = { 1806 }, x = 4000, y = 5270, overlay = { "4000-5270" }, reset = true, minieventID = 9 }; --Dreamseed Cache
+	[406106] = { zoneID = 2200, artID = { 1806 }, x = 5930, y = 5880, overlay = { "5930-5880" }, reset = true, minieventID = 9 }; --Dreamseed Cache
+	[406107] = { zoneID = 2200, artID = { 1806 }, x = 5930, y = 5880, overlay = { "5930-5880" }, reset = true, minieventID = 9 }; --Dreamseed Cache
+	[406116] = { zoneID = 2200, artID = { 1806 }, x = 5458, y = 6774, overlay = { "5460-6770" }, reset = true, minieventID = 9 }; --Dreamseed Cache
+	[406117] = { zoneID = 2200, artID = { 1806 }, x = 5460, y = 6770, overlay = { "5460-6770" }, reset = true, minieventID = 9 }; --Dreamseed Cache
+	[406118] = { zoneID = 2200, artID = { 1806 }, x = 6400, y = 6490, overlay = { "6400-6490" }, reset = true, minieventID = 9 }; --Dreamseed Cache
+	[406119] = { zoneID = 2200, artID = { 1806 }, x = 6400, y = 6490, overlay = { "6400-6490" }, reset = true, minieventID = 9 }; --Dreamseed Cache
+	[406120] = { zoneID = 2200, artID = { 1806 }, x = 4990, y = 3540, overlay = { "4990-3540" }, reset = true, minieventID = 9 }; --Dreamseed Cache
+	[406121] = { zoneID = 2200, artID = { 1806 }, x = 4990, y = 3540, overlay = { "4990-3540" }, reset = true, minieventID = 9 }; --Dreamseed Cache
+	[406123] = { zoneID = 2200, artID = { 1806 }, x = 6300, y = 5290, overlay = { "6300-5290" }, reset = true, minieventID = 9 }; --Dreamseed Cache
+	[406124] = { zoneID = 2200, artID = { 1806 }, x = 6300, y = 5290, overlay = { "6300-5290" }, reset = true, minieventID = 9 }; --Dreamseed Cache
+	[406128] = { zoneID = 2200, artID = { 1806 }, x = 6352, y = 4716, overlay = { "6340-4720" }, reset = true, minieventID = 9 }; --Dreamseed Cache
+	[406129] = { zoneID = 2200, artID = { 1806 }, x = 6350, y = 4720, overlay = { "6340-4720" }, reset = true, minieventID = 9 }; --Dreamseed Cache
+	[406130] = { zoneID = 2200, artID = { 1806 }, x = 6350, y = 4710, overlay = { "6340-4720" }, reset = true, minieventID = 9 }; --Dreamseed Cache
+	[406134] = { zoneID = 2200, artID = { 1806 }, x = 5660, y = 4480, overlay = { "5660-4480" }, reset = true, minieventID = 9 }; --Dreamseed Cache
+	[406135] = { zoneID = 2200, artID = { 1806 }, x = 5660, y = 4490, overlay = { "5660-4490" }, reset = true, minieventID = 9 }; --Dreamseed Cache
+	[406138] = { zoneID = 2200, artID = { 1806 }, x = 4910, y = 4800, overlay = { "4910-4800" }, reset = true, minieventID = 9 }; --Dreamseed Cache
+	[406139] = { zoneID = 2200, artID = { 1806 }, x = 4910, y = 4800, overlay = { "4910-4800" }, reset = true, minieventID = 9 }; --Dreamseed Cache
+	[406142] = { zoneID = 2200, artID = { 1806 }, x = 4640, y = 4040, overlay = { "4640-4040" }, reset = true, minieventID = 9 }; --Dreamseed Cache
+	[406143] = { zoneID = 2200, artID = { 1806 }, x = 4640, y = 4050, overlay = { "4640-4040" }, reset = true, minieventID = 9 }; --Dreamseed Cache
+	[406147] = { zoneID = 2200, artID = { 1806 }, x = 4000, y = 5270, overlay = { "4000-5270" }, reset = true, minieventID = 9 }; --Dreamseed Cache
+	[406148] = { zoneID = 2200, artID = { 1806 }, x = 4000, y = 5270, overlay = { "4000-5270" }, reset = true, minieventID = 9 }; --Dreamseed Cache
+	[406354] = { zoneID = 2200, artID = { 1806 }, x = 4064, y = 2470, overlay = { "4060-2470" }, reset = true, minieventID = 9 }; --Dreamseed Cache
+	[406355] = { zoneID = 2200, artID = { 1806 }, x = 4060, y = 2470, overlay = { "4060-2470" }, reset = true, minieventID = 9 }; --Dreamseed Cache
+	[406356] = { zoneID = 2200, artID = { 1806 }, x = 4060, y = 2470, overlay = { "4060-2470" }, reset = true, minieventID = 9 }; --Dreamseed Cache
+	[406954] = { zoneID = 2200, artID = { 1806 }, x = 5640, y = 3770, overlay = { "5640-3770" }, reset = true, minieventID = 9 }; --Dreamseed Cache
+	[406955] = { zoneID = 2200, artID = { 1806 }, x = 5650, y = 3770, overlay = { "5640-3770" }, reset = true, minieventID = 9 }; --Dreamseed Cache
+	[406956] = { zoneID = 2200, artID = { 1806 }, x = 5647, y = 3767, overlay = { "5640-3770" }, reset = true, minieventID = 9 }; --Dreamseed Cache
+	[406977] = { zoneID = 2200, artID = { 1806 }, x = 4080, y = 4340, overlay = { "4080-4340" }, reset = true, minieventID = 9 }; --Dreamseed Cache
+	[406998] = { zoneID = 2200, artID = { 1806 }, x = 4080, y = 4340, overlay = { "4080-4340" }, reset = true, minieventID = 9 }; --Dreamseed Cache
+	[407001] = { zoneID = 2200, artID = { 1806 }, x = 4084, y = 4352, overlay = { "4080-4340" }, reset = true, minieventID = 9 }; --Dreamseed Cache
+	[407006] = { zoneID = 2200, artID = { 1806 }, x = 3850, y = 5930, overlay = { "3840-5930" }, reset = true, minieventID = 9 }; --Dreamseed Cache
+	[407739] = { zoneID = 2200, artID = { 1806 }, x = 3410, y = 5637, overlay = { "3409-5634" }, reset = false, questID = { 77872 } }; --Triflesnatch's Roving Trove
+	[407862] = { zoneID = 2200, artID = { 1806 }, x = 4748, y = 3497, overlay = { "4749-3484" }, reset = false, questID = { 77858 } }; --Hidden Moonkin Stash
+	[408107] = { zoneID = 2200, artID = { 1806 }, x = 3913, y = 6549, overlay = { "3910-6551" }, reset = false, questID = { 77950 } }; --Crystalline Glowblossom
+	[408706] = { zoneID = 2200, artID = { 1806 }, x = 6164, y = 5952, overlay = { "6161-5954" }, reset = false, questID = { 78005 } }; --Magical Bloom
+	[408707] = { zoneID = 2200, artID = { 1806 }, x = 5520, y = 5728, overlay = { "5526-5724" }, reset = false, questID = { 78006 } }; --Odd Burl
+	[408719] = { zoneID = 2200, artID = { 1806 }, x = 4310, y = 7189, overlay = { "6344-7357","5954-6343","5248-3824","4695-3523","5500-2529","4225-4827","3915-4368","3559-5401","3293-6562","4310-7189","6648-6314","4018-3110","5557-5494","5427-1503","3820-5578","4102-2751","3806-3268","4037-4206","3772-5019","5491-4043","3456-6932","3847-6184","2620-3150","3110-3140","3320-2120","3330-2540","3480-2020","3600-6290","3670-4600","3680-4410","3740-3140","3770-2110","3880-2750","3930-5810","3950-2290","4010-2430","4020-3460","4090-4980","4130-5460","4220-6680","4410-2290","4470-3490","4470-4990","4870-3440","5160-2980","5180-2610","5400-4140","5410-1940","5420-3220","5470-5390","5530-4280","5590-5820","5720-5350","5760-5820","5780-2590","5900-2520","6010-8130","6210-2930","6310-3960","6500-4140","6590-5220","6600-5020","6600-8460","6640-7020","2830-2800","2850-3410","3280-5440","3450-4410","3520-5030","3520-6610","3850-2520","4140-4600","4460-2450","4550-2590","4650-2520","4740-3070","4830-2230","5140-3230","5140-4240","5200-2100","5300-3370","5330-4330","5410-5550","5460-2930","5490-3910","5580-3720","5690-4210","5890-3800","5920-6820","5940-5370","6010-4200","6010-5620","6050-3510","6050-4530","6100-6210","6130-6580","6180-7910","6180-8600","6200-7450","6210-5700","6330-3670","6550-7420","6730-5920" }, reset = true }; --Small Somnut
+	[409220] = { zoneID = 2200, artID = { 1806 }, x = 3840, y = 5930, overlay = { "3840-5930" }, reset = true, minieventID = 9 }; --Dreamseed Cache
+	[409221] = { zoneID = 2200, artID = { 1806 }, x = 3840, y = 5930, overlay = { "3840-5930" }, reset = true, minieventID = 9 }; --Dreamseed Cache
+	[409222] = { zoneID = 2200, artID = { 1806 }, x = 4706, y = 5306, overlay = { "4704-5305" }, reset = false, questID = { 78107 } }; --Boon of Ursol
+	[409223] = { zoneID = 2200, artID = { 1806 }, x = 4270, y = 7390, overlay = { "4270-7390" }, reset = true, minieventID = 9 }; --Dreamseed Cache
+	[409224] = { zoneID = 2200, artID = { 1806 }, x = 4270, y = 7390, overlay = { "4270-7390" }, reset = true, minieventID = 9 }; --Dreamseed Cache
+	[409225] = { zoneID = 2200, artID = { 1806 }, x = 4270, y = 7390, overlay = { "4270-7390" }, reset = true, minieventID = 9 }; --Dreamseed Cache
+	[409226] = { zoneID = 2200, artID = { 1806 }, x = 4870, y = 8050, overlay = { "4870-8040" }, reset = true, minieventID = 9 }; --Dreamseed Cache
+	[409227] = { zoneID = 2200, artID = { 1806 }, x = 4870, y = 8050, overlay = { "4870-8040" }, reset = true, minieventID = 9 }; --Dreamseed Cache
+	[409228] = { zoneID = 2200, artID = { 1806 }, x = 4870, y = 8040, overlay = { "4870-8040" }, reset = true, minieventID = 9 }; --Dreamseed Cache
+	[409440] = { zoneID = 2200, artID = { 1806 }, x = 3721, y = 3072, overlay = { "3726-3068" }, reset = false, questID = { 78120 } }; --Pineshrew Cache
+	[409844] = { zoneID = 2200, artID = { 1806 }, x = 5110, y = 5860, overlay = { "5110-5860" }, reset = true, minieventID = 9 }; --Dreamseed Cache
+	[409847] = { zoneID = 2200, artID = { 1806 }, x = 5110, y = 5863, overlay = { "5110-5870" }, reset = true, minieventID = 9 }; --Dreamseed Cache
+	[409848] = { zoneID = 2200, artID = { 1806 }, x = 5110, y = 5870, overlay = { "5110-5870" }, reset = true, minieventID = 9 }; --Dreamseed Cache
+	[410426] = { zoneID = 2200, artID = { 1806 }, x = 5409, y = 3264, overlay = { "5405-3263" }, reset = false, questID = { 78264 }, prof = 171 }; --Half-Filled Dreamless Sleep Potion
+	[410434] = { zoneID = 2200, artID = { 1806 }, x = 6277, y = 7369, overlay = { "6274-7375" }, reset = false, questID = { 78269 }, prof = 171 }; --Splash Potion of Narcolepsy
+	[410442] = { zoneID = 2200, artID = { 1806 }, x = 3626, y = 4652, overlay = { "3629-4651" }, reset = false, questID = { 78275 }, prof = 171 }; --Root of the Problem
+	[410456] = { zoneID = 2200, artID = { 1806 }, x = 3957, y = 5229, overlay = { "3957-5227" }, reset = false, questID = { 78278 }, prof = 202 }; --Experimental Dreamcatcher
+	[410458] = { zoneID = 2200, artID = { 1806 }, x = 4049, y = 8941, overlay = { "4049-8937" }, reset = false, questID = { 78279 }, prof = 202 }; --Insomniotron
+	[410469] = { zoneID = 2200, artID = { 1806 }, x = 6265, y = 3629, overlay = { "6268-3626" }, reset = false, questID = { 78281 }, prof = 202 }; --Unhatched Battery
+	[410475] = { zoneID = 2200, artID = { 1806 }, x = 3323, y = 4657, overlay = { "3320-4655" }, reset = false, questID = { 78282 }, prof = 755 }; --Petrified Hope
+	[410479] = { zoneID = 2200, artID = { 1806 }, x = 4347, y = 3338, overlay = { "4351-3335" }, reset = false, questID = { 78283 }, prof = 755 }; --Unpolished Blemish
+	[410484] = { zoneID = 2200, artID = { 1806 }, x = 5891, y = 5398, overlay = { "5894-5388" }, reset = false, questID = { 78285 }, prof = 755 }; --Coalesced Dreamstone
+	[410529] = { zoneID = 2200, artID = { 1806 }, x = 4178, y = 6649, overlay = { "4175-6649" }, reset = false, questID = { 78298 }, prof = 165 }; --Tuft of Dreamsaber Fur
+	[410534] = { zoneID = 2200, artID = { 1806 }, x = 3747, y = 7104, overlay = { "3745-7101" }, reset = false, questID = { 78299 }, prof = 165 }; --Molted Faerie Dragon Scales
+	[410550] = { zoneID = 2200, artID = { 1806 }, x = 3399, y = 2964, overlay = { "3398-2969" }, reset = false, questID = { 78305 }, prof = 165 }; --Dreamtalon Claw
+	[410574] = { zoneID = 2200, artID = { 1806 }, x = 3836, y = 3021, overlay = { "3836-3020" }, reset = false, questID = { 78308 }, prof = 333 }; --Pure Dream Water
+	[410575] = { zoneID = 2200, artID = { 1806 }, x = 4614, y = 2062, overlay = { "4616-2059" }, reset = false, questID = { 78309 }, prof = 333 }; --Everburning Core
+	[410582] = { zoneID = 2200, artID = { 1806 }, x = 6629, y = 7417, overlay = { "6635-7419" }, reset = false, questID = { 78310 }, prof = 333 }; --Essence of Dreams
+	[411065] = { zoneID = {
+			[2200] = { x = 6337, y = 7299, artID = { 1806 }, overlay = { "6342-7297" } };
+			[2254] = { x = 6351, y = 3604, artID = { 1850 }, overlay = { "6351-3604" } };
+		  }, reset = false, questID = { 78359 } }; --Boon of Ashamane
+	[411066] = { zoneID = 2200, artID = { 1806 }, x = 6407, y = 1920, overlay = { "6421-1926" }, reset = false, questID = { 78360 } }; --Boon of Aviana
+	[411067] = { zoneID = 2200, artID = { 1806 }, x = 3298, y = 8321, overlay = { "3311-8326" }, reset = false, questID = { 78361 } }; --Boon of Goldrinn
+	[411168] = { zoneID = 2200, artID = { 1806 }, x = 5565, y = 2748, overlay = { "5564-2751" }, reset = false, questID = { 78411 }, prof = 773 }; --Winnie's Notes on Flora and Fauna
+	[411169] = { zoneID = 2200, artID = { 1806 }, x = 6347, y = 7153, overlay = { "6350-7151" }, reset = false, questID = { 78412 }, prof = 773 }; --Grove Keeper's Pillar
+	[411170] = { zoneID = 2200, artID = { 1806 }, x = 3599, y = 4662, overlay = { "3603-4664" }, reset = false, questID = { 78413 }, prof = 773 }; --Primalist Shadowbinding Rune
+	[411171] = { zoneID = 2200, artID = { 1806 }, x = 5323, y = 2791, overlay = { "5326-2790" }, reset = false, questID = { 78414 }, prof = 197 }; --Exceedingly Soft Wildercloth
+	[411176] = { zoneID = 2200, artID = { 1806 }, x = 4984, y = 6152, overlay = { "4983-6147" }, reset = false, questID = { 78415 }, prof = 197 }; --Plush Pillow
+	[411177] = { zoneID = 2200, artID = { 1806 }, x = 4068, y = 8620, overlay = { "4070-8615" }, reset = false, questID = { 78416 }, prof = 197 }; --Snuggle Buddy
+	[411179] = { zoneID = 2200, artID = { 1806 }, x = 4979, y = 6294, overlay = { "4983-6298" }, reset = false, questID = { 78417 }, prof = 164 }; --Amirdrassil Defender's Shield
+	[411180] = { zoneID = 2200, artID = { 1806 }, x = 3630, y = 4689, overlay = { "3634-4679" }, reset = false, questID = { 78418 }, prof = 164 }; --Deathstalker Chassis
+	[411181] = { zoneID = 2200, artID = { 1806 }, x = 3724, y = 2288, overlay = { "3725-2293" }, reset = false, questID = { 78419 }, prof = 164 }; --Flamesworn Render
+	[411447] = { zoneID = 2200, artID = { 1806 }, x = 5571, y = 2255, overlay = { "5567-2256" }, reset = false, questID = { 78547 }, factionID = { 2574 } }; --Unwaking Echo
+	[411463] = { zoneID = 2200, artID = { 1806 }, x = 6956, y = 5287, overlay = { "6957-5284" }, reset = false, questID = { 78550 }, factionID = { 2574 } }; --Unwaking Echo
+	[411465] = { zoneID = 2200, artID = { 1806 }, x = 5528, y = 4533, overlay = { "5532-4538" }, reset = false, questID = { 78551 }, factionID = { 2574 } }; --Unwaking Echo
+	[411466] = { zoneID = 2200, artID = { 1806 }, x = 4639, y = 8620, overlay = { "4640-8614" }, reset = false, questID = { 78552 }, factionID = { 2574 } }; --Unwaking Echo
 }

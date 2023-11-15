@@ -594,10 +594,8 @@ L["Darkweb Hatchling"] = "Darkweb Hatchling"
 --[[Translation missing --]]
 L["Darkweb Recluse"] = "Darkweb Recluse"
 L["DataImportButtonTooltip"] = "匯入外部 NPC 資料。"
---[[Translation missing --]]
-L["DawnOfTheInfiniteLower"] = "DOTI: Galakrond's Fall"
---[[Translation missing --]]
-L["DawnOfTheInfiniteUpper"] = "DOTI: Murozond's Rise"
+L["DawnOfTheInfiniteLower"] = "恆龍黎明: 葛拉克朗殞命之地"
+L["DawnOfTheInfiniteUpper"] = "恆龍黎明: 姆多茲諾高地"
 --[[Translation missing --]]
 L["dawnPortalNote"] = [=[Infinite Riftmage 2 and 4 need to be defeated for the portals to activate.
 Temporal Deviations will keep respawning but give no count.]=]
@@ -736,8 +734,7 @@ L["Dragonflayer Strategist"] = "Dragonflayer Strategist"
 L["Dragonflayer Weaponsmith"] = "Dragonflayer Weaponsmith"
 L["Dragonflight Season 1"] = "巨龍崛起第1季"
 L["Dragonflight Season 2"] = "巨龍崛起第2季"
---[[Translation missing --]]
-L["Dragonflight Season 3"] = "Dragonflight Season 3"
+L["Dragonflight Season 3"] = "巨龍崛起第3季"
 L["Dragonkin"] = "龍類"
 --[[Translation missing --]]
 L["Drakkari Bat"] = "Drakkari Bat"
@@ -2689,8 +2686,7 @@ L["The Culling of Stratholme"] = "The Culling of Stratholme"
 L["The Curator"] = "馆长"
 L["The Drain"] = "排水口"
 L["The Emerald Archives"] = "翡翠圖書館"
---[[Translation missing --]]
-L["The Everbloom"] = "The Everbloom"
+L["The Everbloom"] = "永茂林"
 L["The Festering Sanctum"] = "膿瘡聖所"
 --[[Translation missing --]]
 L["The Gilded Gate"] = "The Gilded Gate"
@@ -2785,8 +2781,7 @@ L["Thistle Acolyte"] = "棘刺助祭"
 L["Thorim"] = "Thorim"
 L["Thornguard"] = "荆棘卫士"
 L["Thrashbite the Scornful"] = "轻蔑的萨什比特"
---[[Translation missing --]]
-L["Throne of Tides"] = "Throne of Tides"
+L["Throne of Tides"] = "海潮王座"
 --[[Translation missing --]]
 L["Thunderhead"] = "Thunderhead"
 --[[Translation missing --]]

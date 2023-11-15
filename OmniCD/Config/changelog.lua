@@ -1,6 +1,9 @@
 local E, L, C = select(2, ...):unpack()
 
 if E.isClassic then E.changelog = [=[
+v1.14.4.2772
+	Fixed an issue that prevented inspecting offline members when they came back online.
+
 v1.14.4.2771
 	Extra Bars can now be used as additional CD bars that attach to each unit's raid frame.
 
@@ -18,6 +21,9 @@ v2.5.4.2722
 	Fixed sync for cross realm group members
 ]=]
 elseif E.isWOTLKC then E.changelog = [=[
+v3.4.3.2772
+	Fixed an issue that prevented inspecting offline members when they came back online.
+
 v3.4.3.2771
 	Extra Bars can now be used as additional CD bars that attach to each unit's raid frame.
 	bump toc
@@ -34,6 +40,10 @@ v3.4.1.2755
 	Added arena season 7, 8 equip bonus items
 ]=]
 else E.changelog = [=[
+v10.2.0.2772
+	Patch 10.2 updates
+	Fixed an issue that prevented inspecting offline members when they came back online.
+
 v10.1.7.2771
 	Extra Bars can now be used as additional CD bars that attach to each unit's raid frame.
 

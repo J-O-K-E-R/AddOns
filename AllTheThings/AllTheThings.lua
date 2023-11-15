@@ -49,6 +49,7 @@ local GetDifficultyInfo = _G["GetDifficultyInfo"];
 local GetFactionInfoByID = _G["GetFactionInfoByID"];
 local GetItemInfo = _G["GetItemInfo"];
 local GetItemInfoInstant = _G["GetItemInfoInstant"];
+local C_CreatureInfo_GetRaceInfo = C_CreatureInfo.GetRaceInfo;
 local PlayerHasToy = _G["PlayerHasToy"];
 local IsTitleKnown = _G["IsTitleKnown"];
 local InCombatLockdown = _G["InCombatLockdown"];
@@ -1097,8 +1098,8 @@ local function GetProgressTextForTooltip(data, iconOnly)
 	return app.TableConcat(text, nil, "", " ");
 end
 local function GetAddedWithPatchString(awp, addedBack)
-	if awp then
 		awp = tonumber(awp);
+	if awp then
 		local formatString = "ADDED";
 		if app.GameBuildVersion == awp then
 			formatString = "WAS_" .. formatString;
@@ -5663,7 +5664,7 @@ local function ProcessIncomingChunk(sender, uid, index, chunk)
 		character.lastPlayed = tonumber(data[9]);
 		character.Deaths = tonumber(data[10]);
 		if character.classID then character.class = C_CreatureInfo.GetClassInfo(character.classID).classFile; end
-		if character.raceID then character.race = C_CreatureInfo.GetRaceInfo(character.raceID).clientFileString; end
+		if character.raceID then character.race = C_CreatureInfo_GetRaceInfo(character.raceID).clientFileString; end
 		for i=11,#data,1 do
 			local piece = splittoarray("/", data[i]);
 			local key = piece[1];
@@ -6888,7 +6889,6 @@ local QuestNameFromServer = setmetatable({}, { __index = function(t, id)
 
 		app.RequestLoadQuestByID(id);
 	end
-	return RETRIEVING_DATA;
 end});
 local QuestNameDefault = setmetatable({}, { __index = function(t, id)
 	if id then
@@ -6898,9 +6898,10 @@ local QuestNameDefault = setmetatable({}, { __index = function(t, id)
 	end
 end});
 local function GetQuestName(id)
-	return L["QUEST_NAMES"][id] or QuestNameFromServer[id] or QuestNameDefault[id];
+	return L.QUEST_NAMES[id] or QuestNameFromServer[id] or QuestNameDefault[id];
 end
-app.GetQuestName = GetQuestName;
+-- Will return a manual Quest locale name, Server name, or a default fallback quest name
+app.GetQuestName = GetQuestName
 local QuestsRequested = {};
 local QuestsToPopulate = {};
 -- This event seems to fire synchronously from C_QuestLog.RequestLoadQuestByID if we already have the data
@@ -6909,13 +6910,8 @@ app.events.QUEST_DATA_LOAD_RESULT = function(questID, success)
 	QuestsRequested[questID] = nil;
 	-- Store the Quest title if successful, regardless of already being cached
 	if success then
-		local name = QuestUtils_GetQuestName(questID);
-		if name and name ~= "" then
-			-- app.PrintDebug("Available QuestData",questID,title)
-			QuestNameFromServer[questID] = name;
 			-- trigger a slight delayed refresh to visible ATT windows since a quest name was now populated
 			app:RefreshWindows();
-		end
 	else
 	-- 	this quest name cannot be populated by the server
 		-- app.PrintDebug("No Server QuestData",questID)
@@ -7937,7 +7933,7 @@ local function BuildTextFromNPCIDs(t, npcIDs)
 			end
 		end
 	end
-	if retry then return RETRIEVING_DATA; end
+	if retry then return end
 	name = table.concat(textTbl);
 	t.name = name;
 	return name;
@@ -8179,10 +8175,11 @@ local function default_name(t)
 				local name
 				for k,id in ipairs(sourceQuests) do
 					name = app.GetQuestName(id);
-					if name then
-						return name
-					end
+					-- special case to ignore caching a default quest name as criteria name
+					if not IsRetrieving(name) and not name:find("Quest #") then return name; end
+					t.__questname = name
 				end
+				-- app.PrintDebug("criteria sq no name",t.achievementID,t.criteriaID,rawget(t,"name"))
 				return
 			end
 		end
@@ -8209,7 +8206,7 @@ local criteriaFields = {
 		end
 	end,
 	["name"] = function(t)
-		return cache.GetCachedField(t, "name", default_name)
+		return cache.GetCachedField(t, "name", default_name) or t.__questname
 	end,
 	["description"] = function(t)
 		if t.encounterID then
@@ -8612,7 +8609,7 @@ local fields = {
 		end
 	end,
 	["text"] = function(t)
-		if not t.artifactinfo then return RETRIEVING_DATA; end
+		if not t.artifactinfo then return end
 		local id = t.parent;
 		id = id and id.headerID;
 		-- Artifact listing in the Main item sets category just show 'Variant #' but elsewhere show the Item's name
@@ -9148,7 +9145,7 @@ local unitFields = {
 				end
 				if character.raceID then
 					t.raceID = character.raceID;
-					t.race = C_CreatureInfo.GetRaceInfo(character.raceID).raceName;
+					t.race = C_CreatureInfo_GetRaceInfo(character.raceID).raceName;
 				end
 				t.name = TryColorizeName(t, character.name or UNKNOWN).."-"..(character.realm or UNKNOWN);
 				t.level = character.lvl;
@@ -9909,6 +9906,7 @@ local FlightPathMapIDs = {
 	2055,	-- Sepulcher of the First Ones (has FPs inside)
 	2149,	-- Ohn'ahran Plains [The Nokhud Offensive] (has FPs inside)
 	2175,	-- Zaralek Cavern
+	2241,	-- Emerald Dream
 };
 local C_TaxiMap_GetTaxiNodesForMap, C_TaxiMap_GetAllTaxiNodes, GetTaxiMapID
 	= C_TaxiMap.GetTaxiNodesForMap, C_TaxiMap.GetAllTaxiNodes, GetTaxiMapID;
@@ -11293,7 +11291,7 @@ itemTooltipHarvesterFields.text = function(t)
 							t.info.retries = (t.info.retries or 0) + 1;
 							-- 30 attempts to load the sub-item, otherwise just continue parsing tooltip without it
 							if t.info.retries < 30 then
-								return RETRIEVING_DATA;
+								return
 							end
 							app.PrintDebug("Failed loading sub-item for",t.info.itemID)
 						end
@@ -12612,7 +12610,6 @@ end)();
 -- Race Lib
 (function()
 local cache = app.CreateCache("raceID");
-local C_CreatureInfo_GetRaceInfo = C_CreatureInfo.GetRaceInfo;
 local C_AlliedRaces_GetRaceInfoByID = C_AlliedRaces.GetRaceInfoByID;
 local function default_name(t)
 	local info = C_CreatureInfo_GetRaceInfo(t.raceID);
@@ -13154,9 +13151,9 @@ local function CacheFilterFunctions()
 	RecursiveGroupRequirementsFilter = app.RecursiveGroupRequirementsFilter;
 	GroupFilter = app.GroupFilter;
 	GroupVisibilityFilter, ThingVisibilityFilter = app.GroupVisibilityFilter, app.CollectedItemVisibilityFilter;
-	TrackableFilter = app.ShowTrackableThings;
+	TrackableFilter = app.ShowTrackableThings
 	DefaultGroupVisibility, DefaultThingVisibility = app.DefaultGroupFilter(), app.DefaultThingFilter();
-	-- app.PrintDebug("CacheFilterFunctions")
+	-- app.PrintDebug("CacheFilterFunctions","DG",DefaultGroupVisibility,"DT",DefaultThingVisibility)
 	-- app.PrintDebug("ItemUnboundSetting",ItemUnboundSetting)
 end
 local function SetGroupVisibility(parent, group)
@@ -14372,7 +14369,7 @@ function app:RefreshWindows()
 	if app.Processing_RefreshWindows then return; end
 	app.Processing_RefreshWindows = true;
 	-- app.PrintDebug("RefreshWindows:Async")
-	AfterCombatOrDelayedCallback(RefreshWindows, 0.1);
+	Callback(RefreshWindows);
 end
 local function ClearRowData(self)
 	self.ref = nil;
@@ -15342,12 +15339,16 @@ RowOnEnter = function (self)
 			GameTooltip:AddDoubleLine(L["CLASSES_CHECKBOX"], str);
 		end
 		if app.Settings:GetTooltipSetting("RaceRequirements") then
+			local usecolors = app.Settings:GetTooltipSetting("UseMoreColors")
 			if reference.races then
-				local str = "";
+				local races_tbl = {}
+				-- temp ref with .raceID of only a single race so we can simply use TryColorizeName
+				local temp_ref = {}
 				for i,race in ipairs(reference.races) do
-					if i > 1 then str = str .. ", "; end
-					str = str .. C_CreatureInfo.GetRaceInfo(race).raceName;
+					temp_ref.raceID = race
+					races_tbl[#races_tbl + 1] = usecolors and TryColorizeName(temp_ref, C_CreatureInfo_GetRaceInfo(race).raceName) or C_CreatureInfo_GetRaceInfo(race).raceName
 				end
+				local str = app.TableConcat(races_tbl, nil, nil, ", ")
 				if #reference.races > 4 then
 					GameTooltip:AddLine(L["RACES_CHECKBOX"] .. " " .. str, nil, nil, nil, 1);
 				else
@@ -15355,9 +15356,9 @@ RowOnEnter = function (self)
 				end
 			elseif reference.r and reference.r > 0 then
 				if reference.r == 2 then
-					GameTooltip:AddDoubleLine(L["RACES_CHECKBOX"], app.Settings:GetTooltipSetting("UseMoreColors") and Colorize(ITEM_REQ_ALLIANCE, app.Colors.Alliance) or ITEM_REQ_ALLIANCE);
+					GameTooltip:AddDoubleLine(L["RACES_CHECKBOX"], usecolors and Colorize(ITEM_REQ_ALLIANCE, app.Colors.Alliance) or ITEM_REQ_ALLIANCE)
 				elseif reference.r == 1 then
-					GameTooltip:AddDoubleLine(L["RACES_CHECKBOX"], app.Settings:GetTooltipSetting("UseMoreColors") and Colorize(ITEM_REQ_HORDE, app.Colors.Horde) or ITEM_REQ_HORDE);
+					GameTooltip:AddDoubleLine(L["RACES_CHECKBOX"], usecolors and Colorize(ITEM_REQ_HORDE, app.Colors.Horde) or ITEM_REQ_HORDE)
 				else
 					GameTooltip:AddDoubleLine(L["RACES_CHECKBOX"], "Unknown");
 				end
@@ -17947,8 +17948,8 @@ customWindowUpdates["CurrentInstance"] = function(self, force, got)
 				for _,group in ipairs(results) do
 					-- do not use any raw Source groups in the final list
 					group = CreateObject(group);
-					-- Instance/Map/Class groups are allowed as root of minilist
-					if (group.instanceID or (group.mapID and (group.key == "mapID" or (group.key == "headerID" and group.mapID < 0 and group.mapID == self.mapID))) or group.key == "classID")
+					-- Instance/Map/Class/Header(of current map) groups are allowed as root of minilist
+					if (group.instanceID or (group.mapID and (group.key == "mapID" or (group.key == "headerID" and group.mapID == self.mapID))) or group.key == "classID")
 						-- and actually match this minilist...
 						-- only if this group mapID matches the minilist mapID directly or by maps
 						and (group.mapID == self.mapID or (group.maps and contains(group.maps, self.mapID))) then

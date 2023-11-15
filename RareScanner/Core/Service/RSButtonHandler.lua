@@ -136,7 +136,7 @@ local function FixVignetteInfo(vignetteInfo)
 	end
 	
 		-- there is one container without name in Shadowlands
-	if (RSConstants.IsContainerAtlas(vignetteInfo.atlasName) and not vignetteInfo.name or string.gsub(vignetteInfo.name, "", "") == "") then
+	if (RSConstants.IsContainerAtlas(vignetteInfo.atlasName) and (not vignetteInfo.name or string.gsub(vignetteInfo.name, "", "") == "")) then
 		vignetteInfo.name = AL["CONTAINER"]
 	end
 	
@@ -509,6 +509,7 @@ function RSButtonHandler.AddAlert(button, vignetteInfo, isNavigating)
 	
 	-- Check it it is an entity that use a vignette but it isn't a rare, event or treasure
 	if (RSUtils.Contains(RSConstants.IGNORED_VIGNETTES, entityID)) then
+		--RSLogger:PrintDebugMessage(string.format("La entidad [%s] se ignora por estar ignorada", entityID))
 		return
 	-- Check if we have already found this vignette in a short period of time
 	elseif (RSNotificationTracker.IsAlreadyNotificated(vignetteInfo.id, isNavigating, entityID)) then

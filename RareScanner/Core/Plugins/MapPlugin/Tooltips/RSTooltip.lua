@@ -298,7 +298,7 @@ local function AddNotesTooltip(tooltip, pin)
 		return
 	end
 	
-	local note = RSNotes.GetNote(pin.POI.entityID, pin.POI.mapID)
+	local note = RSNotes.GetNote(pin.POI.entityID, pin.POI.mapID, pin.POI.minieventID)
 	if (note) then
 		local line = tooltip:AddLine()
 		tooltip:SetCell(line, 1, RSUtils.TextColor(note, "FFFFCC"), nil, "LEFT", 10, nil, nil, nil, RSConstants.TOOLTIP_MAX_WIDTH, RSConstants.TOOLTIP_MAX_WIDTH)

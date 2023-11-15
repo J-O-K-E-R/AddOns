@@ -54,9 +54,6 @@ if L then
 	L.custom_on_repeating_yell_smoldering_suffocation = "Repeating Suffocation Health Yell"
 	L.custom_on_repeating_yell_smoldering_suffocation_desc = "Repeating yell messages for Smoldering Suffocation to let others know when you are below 75% health."
 
-	L.currentHealth = "%d%%"
-	L.currentHealthIcon = "{rt%d}%d%%"
-
 	L.scorching_roots = "Roots"
 	L.furious_charge = "Charge"
 	L.blazing_thorns = "Dodges"
@@ -102,7 +99,7 @@ function mod:GetOptions()
 		["stages"] = "general",
 		[417653] = -27241, -- Stage One: The Cycle of Flame
 		[421316] = -27242, -- Intermission: Unreborn Again
-		[421333] = -27243, -- Stage Two: Avatar of Ash
+		[427252] = -27243, -- Stage Two: Avatar of Ash
 	},{
 		[417653] = CL.adds, -- Fiery Force of Nature (Adds)
 		[422614] = L.scorching_roots, -- Scorching Roots (Roots)
@@ -384,8 +381,11 @@ do
 			local currentHealthPercent = math.floor(mod:GetHealth("player"))
 			if currentHealthPercent < 75 then -- Only let players know when you are below 75%
 				local myIcon = GetRaidTargetIndex("player")
-				local msg = myIcon and L.currentHealthIcon:format(myIcon, currentHealthPercent) or L.currentHealth:format(currentHealthPercent)
-				mod:Yell(false, msg, true)
+				if myIcon then
+					mod:Yell(false, ("{rt%d}%d%%"):format(myIcon, currentHealthPercent), true)
+				else
+					mod:Yell(false, ("%d%%"):format(currentHealthPercent), true)
+				end
 			end
 		else
 			return -- Nothing had to be repeated, stop repeating

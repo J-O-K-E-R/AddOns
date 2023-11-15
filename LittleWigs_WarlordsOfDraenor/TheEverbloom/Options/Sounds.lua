@@ -8,10 +8,7 @@ BigWigs:AddSounds("Witherbark", {
 })
 
 BigWigs:AddSounds("Ancient Protectors", {
-	[167977] = "underyou",
-	[168041] = "alert",
 	[168082] = "warning",
-	[168105] = "alarm",
 	[427459] = "warning",
 	[427498] = "long",
 	[427509] = "long",
@@ -30,22 +27,15 @@ BigWigs:AddSounds("Xeri'tac", {
 })
 
 BigWigs:AddSounds("Archmage Sol", {
-	[166492] = "alert",
-	[166726] = "alarm",
-	[168885] = "warning",
 	[427899] = "long",
 	[428082] = "alarm",
 	[428139] = "info",
 })
 
 BigWigs:AddSounds("Yalnu", {
-	[169120] = "alert",
 	[169179] = "alarm",
-	[169240] = "info",
 	[169613] = "long",
-	[169878] = "alarm",
 	[169929] = "alarm",
-	[170132] = "info",
 	[428823] = "info",
 })
 
