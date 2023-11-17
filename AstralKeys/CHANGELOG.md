@@ -1,8 +1,9 @@
 # Astral Keys
 
-## [3.94](https://github.com/astralguild/AstralKeys/tree/3.94) (2023-11-07)
-[Full Changelog](https://github.com/astralguild/AstralKeys/compare/3.93...3.94) [Previous Releases](https://github.com/astralguild/AstralKeys/releases)
+## [3.95](https://github.com/astralguild/AstralKeys/tree/3.95) (2023-11-16)
+[Full Changelog](https://github.com/astralguild/AstralKeys/compare/3.94...3.95) [Previous Releases](https://github.com/astralguild/AstralKeys/releases)
 
 - Update AstralKeys.toc  
-- Update AceDB-3.0 to minor version 28 (from 26)  
-- Add DF Season 3 dungeons to DUNGEON\_TABLE  
+- Woops, fix dungeon names  
+- Update Affixes.lua  
+- Update affix rotation, week 1  

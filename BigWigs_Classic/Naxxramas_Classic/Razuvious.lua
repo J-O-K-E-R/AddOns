@@ -52,7 +52,7 @@ function mod:OnBossEnable()
 	self:Log("SPELL_CAST_SUCCESS", "ShieldWall", 29061)
 	self:Log("SPELL_AURA_APPLIED", "Exhaustion", 29051)
 
-	self:Log("SPELL_AURA_APPLIED", "MindControl", 10912, true) -- player source
+	self:Log("SPELL_AURA_APPLIED", "MindControl", 10912)
 	self:Death("Deaths", 16803) -- Deathknight Understudy
 end
 
@@ -108,6 +108,6 @@ function mod:Exhaustion(args)
 	local icon = understudyIcons[args.destGUID]
 	if icon then
 		-- Not much of a point if they aren't marked
-		self:StartBar(29051, 60, icon .. args.spellName)
+		self:Bar(29051, 60, icon .. args.spellName)
 	end
 end

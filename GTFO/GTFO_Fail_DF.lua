@@ -1115,7 +1115,21 @@ GTFO.SpellID["427758"] = {
   sound = 3;
 };
 
+GTFO.SpellID["422583"] = {
+  --desc = "Ruptured Earth (Aurostor)";
+  sound = 3;
+};
 
+GTFO.SpellID["421055"] = {
+  --desc = "Cranky Tantrum (Aurostor)";
+  sound = 3;
+};
+
+GTFO.SpellID["420945"] = {
+  --desc = "Pulverizing Outburst (Aurostor)";
+  applicationOnly = true;
+  sound = 3;
+};
 
 --- *******************
 --- * Ruby Life Pools *
@@ -2738,23 +2752,55 @@ GTFO.SpellID["419517"] = {
 --- * Amirdrassil, The Dream's Hope *
 --- *********************************
 
+GTFO.SpellID["423514"] = {
+  --desc = "Burning Fallout (Gnarlroot)";
+  sound = 3;
+};
+
 GTFO.SpellID["422039"] = {
   --desc = "Shadowflame Cleave (Gnarlroot)";
+  sound = 3;
+};
+
+GTFO.SpellID["421960"] = {
+  --desc = "Flaming Pestilence (Gnarlroot)";
+  sound = 3;
+};
+
+GTFO.SpellID["425660"] = {
+  --desc = "Doom Roots (Gnarlroot)";
+  sound = 3;
+};
+
+GTFO.SpellID["418533"] = {
+  --desc = "Smashing Viscera (Igira the Cruel)";
   sound = 3;
   test = true;
 };
 
--- TODO: Doom Roots (Gnarlroot) - Brown swirl
--- TODO: Flaming Pestilence (Gnarlroot) - Red swirl - Spawn of dormant lashers
+GTFO.SpellID["423715"] = {
+  --desc = "Searing Sparks (Igira the Cruel)";
+  sound = 3;
+};
+
+GTFO.SpellID["426202"] = {
+  --desc = "Blistering Spear (Igira the Cruel)";
+  applicationOnly = true;
+  sound = 3;
+};
+
+GTFO.SpellID["423110"] = {
+  --desc = "Vicious Swing (Igira the Cruel)";
+  sound = 3;
+  tankSound = 0;
+};
+
 
 -- TODO: Shared Agony/Drenched Blades (Igira the Cruel) - Non-Tank melee was-too-close fail, applies Drenched Blades?
 -- TODO: Twisting Blade (Igira the Cruel) - Giant missile from boss, everyone can avoid
--- TODO: Searing Sparks (Igira the Cruel) - Fire swirls during intermission
--- TODO: Smashing Viscera (Igira the Cruel) - Giant circle boss leaps to (players take damage outside of the circle too, see if they're different spell IDs)
 -- TODO: Devastation (Igira the Cruel) - Fire swirls after the boss leaps and lands (heroic)
 -- TODO: Vital Rupture (Igira the Cruel) - Friendly-fire fail of standing in someone else's circle (applies debuff)
 -- TODO: Umbral Destruction (Igira the Cruel) - Fail if a player with the Brutalized debuff soaks this
--- TODO: Spawning Weapon (Igira the Cruel) - Unknown ability, fire-tornado when the boss completes forging a weapon
 
 -- TODO: Scorchtail Crash (Volcoross) - Giant tail smash from shadow
 -- TODO: Volcanic Disgorge (Volcoross) - Fire swirls that spawn bad pools
@@ -2764,8 +2810,16 @@ GTFO.SpellID["422039"] = {
 -- TODO: Whimsical Gust (Pip) - Tornados (Heroic)
 -- TODO: Poisonous Javelin (Aerwynn) - Fail if you're not the target (may not be detectable by addons) or get hit multiple times
 
--- TODO: Blazing Thorns (Larodar) - Fire swirls that spawn bad pools
--- TODO: Explosive Bark (Larodar) - Fire swirls when treants die
+GTFO.SpellID["426209"] = {
+  --desc = "Blazing Thorns (Larodar, Keeper of the Flame)";
+  sound = 3;
+};
+
+GTFO.SpellID["418538"] = {
+  --desc = "Explosive Bark (Scorching Roots)";
+  sound = 3;
+};
+
 -- TODO: Smoldering Backdraft (Larodar) - Non-tank fail or tank fail if debuffed with Smoldering Suffocation
 -- TODO: Flash Fire (Larodar) - Giant circle around player, fail if you're not the target or get hit multiple times
 -- TODO: Green Swirls (Larodar) - Unknown ability, green swirls? Probably Avoid
@@ -2775,10 +2829,28 @@ GTFO.SpellID["422039"] = {
 -- TODO: Lumbering Slam (Cycle Warden) - Avoidable brown cone from giant tree add
 -- TODO: Radial Flourish (Cycle Warden) - Green swirl from giant tree add
 
+GTFO.SpellID["426795"] = {
+  --desc = "Fire Rain (Smolderon)";
+  sound = 3;
+};
+
+GTFO.SpellID["425574"] = {
+  --desc = "Lingering Burn (Smolderon)";
+  applicationOnly = true;
+  sound = 3;
+};
+
+GTFO.SpellID["422823"] = {
+  --desc = "Lava Geysers (Smolderon)";
+  sound = 3;
+};
+
+GTFO.SpellID["424233"] = {
+  --desc = "Cauterized Explosion (Smolderon)";
+  sound = 3;
+};
+
 -- TODO: Flame Waves (Smolderon) - Moving fire pillars to avoid (Heroic)
--- TODO: Cauterized Explosion (Smolderon) - Dropped circle on the ground after a Cauterizing Wound is healed off a player
--- TODO: Lava Geysers (Smolderon) - Fire swirl that spawn bad pools
--- TODO: Lingering Burn (Smolderon) - Ticking fire debuff from standing in the fire ring during P2, fail on application
 
 -- TODO: Mass Entanglement (Tindral Sageswift) - Small circles around players, fail if hit more than once
 -- TODO: Falling Stars (Tindral Sageswift) - Giant blue circle around player, fail if you're not the target or get hit multiple times
@@ -2801,7 +2873,45 @@ GTFO.SpellID["422039"] = {
 -- TODO: Swirling Firestorm (Fyrakk)
 
 
+GTFO.SpellID["424808"] = {
+  --desc = "Lunar Blaze (Harbinger of Incineration)";
+  sound = 3;
+  applicationOnly = true;
+};
 
+GTFO.SpellID["425030"] = {
+  --desc = "Volcanic Guard (Zaqali Juggernaut)";
+  sound = 3;
+};
+
+GTFO.SpellID["425149"] = {
+  --desc = "Charged Stomp (Zaqali Juggernaut)";
+  sound = 3;
+  tankSound = 0;
+  damageMinimum = 275000;
+  test = true;
+};
+
+GTFO.SpellID["425395"] = {
+  --desc = "Flame Bursts (Flamewaker Infernoguard)";
+  sound = 3;
+};
+
+GTFO.SpellID["425037"] = {
+  --desc = "Lava Breath (Ancient Core Hound)";
+  sound = 3;
+  applicationOnly = true;
+};
+
+GTFO.SpellID["420410"] = {
+  --desc = "Scorchtail Crash (Volcoross)";
+  sound = 3;
+};
+
+GTFO.SpellID["427589"] = {
+  --desc = "Erupting Rubble (Stalwart Bristlebruin)";
+  sound = 3;
+};
 
 end
 

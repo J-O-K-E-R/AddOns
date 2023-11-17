@@ -461,6 +461,21 @@ GTFO.SpellID["420339"] = {
   sound = 1;
 };
 
+GTFO.SpellID["412391"] = {
+  --desc = "Dust Storm (Underlight Queen)";
+  sound = 1;
+};
+
+GTFO.SpellID["427335"] = {
+  --desc = "Flame Breath (Rydra Scalegorger)";
+  sound = 1;
+};
+
+GTFO.SpellID["420332"] = {
+  --desc = "Dripping Embers (Flamebound Sentinel)";
+  sound = 1;
+};
+
 --- *******************
 --- * Ruby Life Pools *
 --- *******************
@@ -1460,6 +1475,12 @@ GTFO.SpellID["424970"] = {
   negatingDebuffSpellID = 421038; -- Ember-Charred
 };
 
+GTFO.SpellID["422091"] = {
+  --desc = "Controlled Burn (Gnarlroot)";
+  sound = 4;
+  --negatingDebuffSpellID = ????; -- 
+  test = true;
+};
 -- TODO: Controlled Burn (Gnarlroot) - Friendly-Fire warning - Giant circle around players
 
 -- TODO: Gathering Torment (Igira the Cruel) - Only alert when afflicted by Flesh Mortification Debuff
@@ -1491,7 +1512,26 @@ GTFO.SpellID["417632"] = {
   sound = 1;
 };
 
--- TODO: Consuming Flame (Larodar) - Fire damage when within 3 yards - Melee is too close? (like H. Horseman heroic version)
+GTFO.SpellID["429265"] = {
+  --desc = "Burning Ground (Larodar)";
+  sound = 1;
+};
+
+GTFO.SpellID["427429"] = {
+  --desc = "Corrupting Flame (Larodar)";
+  sound = 1;
+};
+
+GTFO.SpellID["419343"] = {
+  --desc = "Raging Inferno (Larodar, Keeper of the Flame)";
+  sound = 1;
+  negatingDebuffSpellID = 419485; -- Nature's Bulwark
+};
+
+GTFO.SpellID["423610"] = {
+  --desc = "Consuming Flame (Larodar, Keeper of the Flame)";
+  sound = 1;
+};
 
 GTFO.SpellID["428474"] = {
   --desc = "Lucid Miasma (Nymue)";
@@ -1504,6 +1544,13 @@ GTFO.SpellID["428474"] = {
 
 GTFO.SpellID["421532"] = {
   --desc = "Smoldering Ground (Smolderon)";
+  sound = 1;
+};
+
+GTFO.SpellID["428388"] = {
+  --desc = "Roiling Lava (Smolderon)";
+  applicationOnly = true;
+  test = true;
   sound = 1;
 };
 
@@ -1533,6 +1580,22 @@ GTFO.SpellID["425483"] = {
 
 -- TODO: Pulsing Core (Fyrakk) - Ranged alert only?
 
+
+
+GTFO.SpellID["425093"] = {
+  --desc = "Shadowflame Residue (Zaqali Steelshaper)";
+  sound = 1;
+};
+
+GTFO.SpellID["421639"] = {
+  --desc = "Burning Heat";
+  sound = 2;
+};
+
+GTFO.SpellID["425658"] = {
+  --desc = "Podling Toxin (Dream Seedling)";
+  sound = 1;
+};
 
 end
 

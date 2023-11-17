@@ -3385,36 +3385,36 @@ private.NPC_INFO = {
 	[192519] = { zoneID = 2165, artID = { 1786 }, x = 2896, y = 4427, overlay = { "2800-4480","2840-4600" }, displayID = 102565 }; --Monstrous Mud
 	[205630] = { zoneID = 2166, artID = { 1767 }, displayID = 103584 }; --Lost Lunker
 	[208658] = { zoneID = 2200, artID = { 1806 }, x = 4581, y = 1883, overlay = { "4576-1876" }, displayID = 114018, questID = { 77941 } }; --Moltenbinder's Disciple
-	[209113] = { zoneID = 2200, artID = { 1806 }, x = 6157, y = 7169, overlay = { "6181-7188" }, displayID = 88863, questID = { 77570 } }; --Nuoberon <The Strongest Monster Ever>
+	[209113] = { zoneID = 2200, artID = { 1806 }, x = 6166, y = 7156, overlay = { "6181-7188" }, displayID = 88863, questID = { 77570 } }; --Nuoberon <The Strongest Monster Ever>
 	[209365] = { zoneID = 2200, artID = { 1806 }, x = 6175, y = 5178, overlay = { "6157-5157","6180-5280" }, displayID = 28505, questID = { 77863 } }; --Splinterlimb
 	[209620] = { zoneID = 2200, artID = { 1806 }, x = 5862, y = 5138, overlay = { "5871-5121" }, displayID = 113930, questID = { 77864 } }; --Ignit the Firebranded
-	[209893] = { zoneID = 2200, artID = { 1806 }, x = 2986, y = 2076, overlay = { "2955-2091" }, displayID = 112975, questID = { 78015 }, resetTimer = 3600 }; --Firebrand Fystia
-	[209898] = { zoneID = 2200, artID = { 1806 }, x = 6404, y = 8391, overlay = { "6415-8417" }, displayID = 114033, questID = { 77867 }, resetTimer = 3600 }; --Reefbreaker Moruud
-	[209902] = { zoneID = 2200, artID = { 1806 }, x = 6138, y = 6727, overlay = { "6139-6745","3460-5500","3500-2260","3720-2260","3720-5520","5880-4520","6160-4500","6280-5220","6280-5520","6340-6920","6420-6640" }, displayID = 114090, questID = { 77994 } }; --Talthonei Ashwhisper <Champion of Flame>
+	[209893] = { zoneID = 2200, artID = { 1806 }, x = 2990, y = 2096, overlay = { "2955-2091" }, displayID = 112975, resetTimer = 3600, questID = { 78015 } }; --Firebrand Fystia
+	[209898] = { zoneID = 2200, artID = { 1806 }, x = 6416, y = 8436, overlay = { "6415-8417" }, displayID = 114033, resetTimer = 3600, questID = { 77867 } }; --Reefbreaker Moruud
+	[209902] = { zoneID = 2200, artID = { 1806 }, x = 6138, y = 6727, overlay = { "6139-6745","3460-5500","3500-2260","3720-2260","3720-5520","5880-4520","6160-4500","6280-5220","6280-5520","6340-6920","6420-6640","5920-4360","6180-4140" }, displayID = 114090, questID = { 77994 } }; --Talthonei Ashwhisper <Champion of Flame>
 	[209909] = { zoneID = 2200, artID = { 1806 }, x = 6609, y = 6303, overlay = { "6608-6291" }, displayID = 83864, questID = { 77862 } }; --Crabtankerous
 	[209911] = { zoneID = 2200, artID = { 1806 }, x = 2588, y = 2692, overlay = { "2601-2654" }, displayID = 113971, questID = { 77990 } }; --The Apostle <Hand of the Prophet>
-	[209912] = { zoneID = 2200, artID = { 1806 }, x = 3979, y = 5100, overlay = { "3980-5120","5040-3840","6540-4340","6740-6620","2420-3240","2640-2800","4620-3560" }, displayID = 73870, questID = { 77859 }, resetTimer = 3600 }; --Raszageth's Last Breath
+	[209912] = { zoneID = 2200, artID = { 1806 }, x = 3979, y = 5100, overlay = { "3980-5120","5040-3840","6540-4340","6740-6620","2420-3240","2640-2800","4620-3560","4100-3140","4300-8060","4700-2020","4900-3020","6360-3460","6380-3580" }, displayID = 73870, resetTimer = 3600, questID = { 77859 } }; --Raszageth's Last Breath
 	[209913] = { zoneID = {
 				[2200] = { x = 6281, y = 7317, artID = { 1806 }, overlay = { "6293-7308" } };
 				[2254] = { x = 5480, y = 3948, artID = { 1850 }, overlay = { "5383-4082","5480-3948" } };
 			  }, displayID = 104695, questID = { 77846 } }; --Fruitface
-	[209915] = { zoneID = 2200, artID = { 1806 }, x = 6280, y = 5200, overlay = { "3960-5380","5160-5860","5180-5740","5820-5940","6280-5200","4840-4880","5780-6740","5800-4560","6380-6380" }, displayID = 115278, questID = { 77856 }, resetTimer = 3600 }; --Amalgamation of Dreams
-	[209919] = { zoneID = 2200, artID = { 1806 }, x = 3750, y = 3166, overlay = { "3756-3189" }, displayID = 111145, questID = { 77989 } }; --Isaqa <The Shatterer>
-	[209929] = { zoneID = 2200, artID = { 1806 }, x = 3510, y = 6322, overlay = { "3460-6403" }, displayID = 111096, questID = { 77878 }, resetTimer = 3600 }; --Envoy of Winter
-	[209936] = { zoneID = 2200, artID = { 1806 }, x = 5473, y = 4012, overlay = { "5388-4145","5340-4020","5480-4040","5440-3920" }, displayID = 112879, questID = { 77982 }, resetTimer = 3600 }; --Greedy Gessie
+	[209915] = { zoneID = 2200, artID = { 1806 }, x = 6280, y = 5200, overlay = { "3960-5380","5160-5860","5180-5740","5820-5940","6280-5200","4840-4880","5780-6740","5800-4560","6380-6380","3980-4420","4040-4560","4060-2500","4520-4000","5740-3620","5920-6640","5920-6760","6100-4460","6140-4600" }, displayID = 115278, resetTimer = 3600, questID = { 77856 } }; --Amalgamation of Dreams
+	[209919] = { zoneID = 2200, artID = { 1806 }, x = 3743, y = 3167, overlay = { "3756-3189" }, displayID = 111145, questID = { 77989 } }; --Isaqa <The Shatterer>
+	[209929] = { zoneID = 2200, artID = { 1806 }, x = 3504, y = 6300, overlay = { "3460-6403" }, displayID = 111096, resetTimer = 3600, questID = { 77878 } }; --Envoy of Winter
+	[209936] = { zoneID = 2200, artID = { 1806 }, x = 5467, y = 4067, overlay = { "5388-4145","5340-4020","5480-4040","5440-3920" }, displayID = 112879, resetTimer = 3600, questID = { 77982 } }; --Greedy Gessie
 	[210045] = { zoneID = 2200, artID = { 1806 }, x = 4027, y = 7219, overlay = { "4044-7263" }, displayID = 112880, questID = { 78210 } }; --Moragh the Slothful
-	[210046] = { zoneID = 2200, artID = { 1806 }, x = 4021, y = 4910, overlay = { "4029-4916","4067-5054","3940-5080","4060-5200" }, displayID = 112939, questID = { 78211 } }; --Keen-eyed Cian
-	[210047] = { zoneID = 2200, artID = { 1806 }, x = 4155, y = 4741, overlay = { "4346-4695","4040-4800","4340-4900","4060-4920","4180-4720" }, displayID = 116135, questID = { 78212 } }; --Somnambulant Ori
-	[210050] = { zoneID = 2200, artID = { 1806 }, x = 5106, y = 3156, overlay = { "5123-3161" }, displayID = 90735, questID = { 77942 } }; --Bloodstripe Great Ray
+	[210046] = { zoneID = 2200, artID = { 1806 }, x = 4021, y = 4910, overlay = { "4029-4916","4067-5054","3940-5080","4060-5200","4000-4780" }, displayID = 112939, questID = { 78211 } }; --Keen-eyed Cian
+	[210047] = { zoneID = 2200, artID = { 1806 }, x = 4155, y = 4741, overlay = { "4346-4695","4040-4800","4340-4900","4060-4920","4180-4720","4200-4940","4280-4540" }, displayID = 116135, questID = { 78212 } }; --Somnambulant Ori
+	[210050] = { zoneID = 2200, artID = { 1806 }, x = 5122, y = 3156, overlay = { "5123-3161" }, displayID = 90735, questID = { 77942 } }; --Bloodstripe Great Ray
 	[210051] = { zoneID = 2200, artID = { 1806 }, x = 4121, y = 7322, overlay = { "4173-7309" }, displayID = 112889, questID = { 78213 } }; --Matriarch Keevah
 	[210064] = { zoneID = 2200, artID = { 1806 }, x = 6389, y = 3637, overlay = { "6378-3621" }, displayID = 113632, questID = { 77943 } }; --Molten Leadspike
 	[210070] = { zoneID = 2200, artID = { 1806 }, x = 5496, y = 3675, overlay = { "5496-3675" }, displayID = 112867, questID = { 77940 } }; --Mosa Umbramane
 	[210075] = { zoneID = 2200, artID = { 1806 }, x = 4707, y = 2975, overlay = { "4707-2975" }, displayID = 113160, questID = { 77944 } }; --Henri Snufftail
 	[210111] = { zoneID = 2200, artID = { 1806 }, x = 5695, y = 5212, overlay = { "5700-5170","5890-7190","4280-3140","4460-3060","4600-3140","5720-5040","5760-5280","5980-6140","6000-6460","6040-6320" }, displayID = 108214, questID = { 78263 } }; --Surging Lasher
-	[210161] = { zoneID = 2200, artID = { 1806 }, x = 4464, y = 3900, overlay = { "4446-3928" }, displayID = 112887, questID = { 77890 } }; --Ristar the Rabid
+	[210161] = { zoneID = 2200, artID = { 1806 }, x = 4453, y = 3912, overlay = { "4446-3928" }, displayID = 112887, questID = { 77890 } }; --Ristar the Rabid
 	[210413] = { zoneID = 2200, artID = { 1806 }, x = 6157, y = 6921, overlay = { "6157-6921" }, displayID = 113133 }; --Talthonei Ashwhisper <Champion of Flame>
 	[210508] = { zoneID = 2200, artID = { 1806 }, x = 3839, y = 6201, overlay = { "3842-6209" }, displayID = 94149, questID = { 78214 } }; --Voracious Mikanji
 	[210559] = { zoneID = 2200, artID = { 1806 }, x = 2281, y = 3230, overlay = { "2274-3225" }, displayID = 102921, questID = { 78039 } }; --Balboan
-	[212090] = { zoneID = 2200, artID = { 1806 }, x = 4132, y = 4916, overlay = { "4132-4916","4380-5060","4400-4940" }, displayID = 112880, questID = { 78394 }, prof = 393 }; --Elusive Blooming Brierhide
-	[212133] = { zoneID = 2200, artID = { 1806 }, x = 6126, y = 3991, overlay = { "6126-3991","5780-3780","5640-3740","5640-4280","5820-4140","5820-4600","5860-4260","6300-4720" }, displayID = 112906, questID = { 78397 }, prof = 393 }; --Elusive Verdant Gladewarden
+	[212090] = { zoneID = 2200, artID = { 1806 }, x = 4132, y = 4916, overlay = { "4132-4916","4380-5060","4400-4940","4020-5300","4040-4320" }, displayID = 112880, questID = { 78394 }, prof = 393 }; --Elusive Blooming Brierhide
+	[212133] = { zoneID = 2200, artID = { 1806 }, x = 6126, y = 3991, overlay = { "6126-3991","5780-3780","5640-3740","5640-4280","5820-4140","5820-4600","5860-4260","6300-4720","5460-3560","5620-4500","5660-3520","5680-3900","5860-4440","5880-4840","5980-3700","5980-3880","5980-4160","6020-4660","6180-4140" }, displayID = 112906, questID = { 78397 }, prof = 393 }; --Elusive Verdant Gladewarden
 }

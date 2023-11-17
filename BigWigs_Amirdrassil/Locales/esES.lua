@@ -12,7 +12,7 @@ if L then
 	L.blistering_torment = "Cadena"
 	L.twisting_blade = "Espadas"
 	L.marked_for_torment = "Tormento"
-	L.wracking_skewer = "Soak"
+	L.umbral_destruction = "Soak"
 	L.heart_stopper = "Absorber curación"
 	L.heart_stopper_single = "Absorber curación"
 end
@@ -51,7 +51,7 @@ L = BigWigs:NewBossLocale("Nymue, Weaver of the Cycle", "esES")
 if L then
 	L.continuum = "Nuevas Lineas"
 	L.impending_loom = "Esquivar"
-	L.viridian_rain = "Daño de Banda"
+	--L.viridian_rain = "Damage + Bombs"
 	L.lumbering_slam = "Cono frontal"
 end
 
@@ -71,7 +71,9 @@ if L then
 	L.mass_entanglement_single = "Raiz"
 	L.incarnation_moonkin = "Forma de Pollo"
 	L.incarnation_tree_of_flame = "Forma de Arbol"
-	L.tranquility_of_flame = "Semillas"
+	L.flaming_germination = "Semillas"
+	--L.suppressive_ember = "Heal Absorbs"
+	--L.suppressive_ember_single = "Heal Absorb"
 end
 
 --L = BigWigs:NewBossLocale("Fyrakk the Blazing", "esES")

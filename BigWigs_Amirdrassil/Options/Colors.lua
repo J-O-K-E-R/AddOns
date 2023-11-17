@@ -58,6 +58,7 @@ BigWigs:AddColors("Council of Dreams", {
 	[421029] = {"green","yellow"},
 	[421032] = "blue",
 	[421292] = {"blue","green","yellow"},
+	[421501] = "cyan",
 	[421570] = "cyan",
 	[423420] = "blue",
 	[423551] = "blue",
@@ -92,15 +93,16 @@ BigWigs:AddColors("Larodar, Keeper of the Flame", {
 })
 
 BigWigs:AddColors("Nymue, Weaver of the Cycle", {
+	[413443] = {"green","yellow"},
 	[420554] = "blue",
 	[420846] = "cyan",
 	[420907] = "yellow",
-	[423195] = "green",
-	[425370] = "cyan",
-	[426519] = "yellow",
+	[422721] = "yellow",
 	[426855] = "green",
-	[429108] = "orange",
+	[427722] = "blue",
+	[429108] = "purple",
 	[429615] = "cyan",
+	[429798] = "red",
 })
 
 BigWigs:AddColors("Smolderon", {
@@ -113,6 +115,7 @@ BigWigs:AddColors("Smolderon", {
 	[422172] = "yellow",
 	[422277] = "orange",
 	[422691] = {"blue","orange"},
+	[423896] = {"cyan","red"},
 	[425885] = "red",
 	[426725] = "red",
 })
@@ -131,7 +134,7 @@ BigWigs:AddColors("Tindral Sageswift, Seer of the Flame", {
 	[423265] = "cyan",
 	[424140] = "red",
 	[424258] = "green",
-	[424495] = "blue",
+	[424495] = {"blue","green"},
 	[424499] = "blue",
 	[424579] = "blue",
 	[424581] = {"blue","yellow"},
@@ -142,7 +145,7 @@ BigWigs:AddColors("Tindral Sageswift, Seer of the Flame", {
 
 BigWigs:AddColors("Fyrakk the Blazing", {
 	[410223] = {"blue","orange"},
-	[412761] = "red",
+	[412761] = "yellow",
 	[414186] = "yellow",
 	[417431] = "purple",
 	[417443] = {"blue","purple"},
@@ -153,7 +156,6 @@ BigWigs:AddColors("Fyrakk the Blazing", {
 	[419504] = "blue",
 	[419506] = "orange",
 	[420422] = "yellow",
-	[421937] = "cyan",
 	[422518] = "orange",
 	[422524] = "yellow",
 	[422837] = "yellow",

@@ -1,6 +1,6 @@
 # LiteBag
 
-## [10.2.0-1](https://github.com/xod-wow/LiteBag/tree/10.2.0-1) (2023-11-07)
-[Full Changelog](https://github.com/xod-wow/LiteBag/compare/10.1.7-6...10.2.0-1) [Previous Releases](https://github.com/xod-wow/LiteBag/releases)
+## [10.2.0-2](https://github.com/xod-wow/LiteBag/tree/10.2.0-2) (2023-11-15)
+[Full Changelog](https://github.com/xod-wow/LiteBag/compare/10.2.0-1...10.2.0-2) [Previous Releases](https://github.com/xod-wow/LiteBag/releases)
 
-- Update ToC for 10.2  
+- Add "Bags - Reverse" layout option and increase max cols to 48.  

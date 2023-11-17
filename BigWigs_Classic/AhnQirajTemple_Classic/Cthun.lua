@@ -80,7 +80,7 @@ function mod:GetOptions()
 	return {
 		"tentacle",
 		{26029, "CASTBAR"}, -- Dark Glare
-		"giant",
+		--"giant",
 		"weakened",
 		"stages",
 		"proximity",

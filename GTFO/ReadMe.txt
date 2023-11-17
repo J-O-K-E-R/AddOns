@@ -1971,3 +1971,7 @@ Change Log:
 * Updated for patch 10.2
 * Added Dragonflight spells (world)
 * Added Dragonflight spells for Amirdrassil, The Dream's Hope
+
+5.5.6
+* Added Dragonflight spells (world)
+* Added Dragonflight spells for Amirdrassil, The Dream's Hope

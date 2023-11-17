@@ -5,7 +5,7 @@ BigWigs:AddColors("Lady Naz'jar", {
 	[428054] = {"blue","red"},
 	[428263] = "red",
 	[428293] = "orange",
-	[428374] = {"blue","yellow"},
+	[428374] = "yellow",
 })
 
 BigWigs:AddColors("Commander Ulthok", {
@@ -41,12 +41,12 @@ BigWigs:AddColors("Ozumat", {
 })
 
 BigWigs:AddColors("Throne of the Tides Trash", {
-	[75992] = {"blue","yellow"},
+	[75992] = {"blue","red"},
 	[76590] = "orange",
 	[76634] = "yellow",
 	[76813] = "yellow",
 	[76820] = {"blue","orange","red"},
-	[426645] = "purple",
+	[426645] = "red",
 	[426663] = {"blue","red"},
 	[426684] = "orange",
 	[426741] = "purple",

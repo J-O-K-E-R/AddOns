@@ -1,15 +1,10 @@
 # LittleWigs
 
-## [v10.2.3](https://github.com/BigWigsMods/LittleWigs/tree/v10.2.3) (2023-11-14)
-[Full Changelog](https://github.com/BigWigsMods/LittleWigs/compare/v10.2.2...v10.2.3) [Previous Releases](https://github.com/BigWigsMods/LittleWigs/releases)
+## [v10.2.5](https://github.com/BigWigsMods/LittleWigs/tree/v10.2.5) (2023-11-16)
+[Full Changelog](https://github.com/BigWigsMods/LittleWigs/compare/v10.2.4...v10.2.5) [Previous Releases](https://github.com/BigWigsMods/LittleWigs/releases)
 
-- WoD/TheEverbloom/Yalnu: Remove pre-10.2 compat  
-- WoD/TheEverbloom/Xeritac: Remove pre-10.2 compat  
-- WoD/TheEverbloom/Witherbark: Remove pre-10.2 compat  
-- WoD/TheEverbloom/ArchmageSol: Remove pre-10.2 compat  
-- WoD/TheEverbloom/AncientProtectors: Remove pre-10.2 compat  
-- WoD/TheEverbloom/Trash: Remove pre-10.2 compat  
-- Cataclysm/ThroneTides/Trash: Support Cataclysm Classic, color update  
-- Cataclysm/ThroneTides/Ozumat: Support Cataclysm Classic  
-- Cataclysm/ThroneTides/Ulthok: Support Cataclysm Classic  
-- Cataclysm/ThroneTides/Nazjar: Support Cataclysm Classic  
+- BfA/AtalDazar/Rezan: Pursuit updates  
+- WoD/TheEverbloom/Trash: Choking Vines throttle, Healing Waters updates  
+- Cataclysm/ThroneTides/Nazjar: Focused Tempest update  
+- Cataclysm/ThroneTides/Trash: Color update  
+- Cataclysm/ThroneTides/Ozumat: Include second debuff in Cleansing Flux alert  

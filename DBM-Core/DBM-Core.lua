@@ -73,7 +73,7 @@ local function showRealDate(curseDate)
 end
 
 DBM = {
-	Revision = parseCurseDate("20231114043954"),
+	Revision = parseCurseDate("20231116224606"),
 }
 
 local fakeBWVersion, fakeBWHash = 290, "894cc27"
@@ -81,12 +81,12 @@ local bwVersionResponseString = "V^%d^%s"
 local PForceDisable
 -- The string that is shown as version
 if isRetail then
-	DBM.DisplayVersion = "10.2.3"
-	DBM.ReleaseRevision = releaseDate(2023, 11, 13) -- the date of the latest stable version that is available, optionally pass hours, minutes, and seconds for multiple releases in one day
+	DBM.DisplayVersion = "10.2.5"
+	DBM.ReleaseRevision = releaseDate(2023, 11, 16) -- the date of the latest stable version that is available, optionally pass hours, minutes, and seconds for multiple releases in one day
 	PForceDisable = 8--When this is incremented, trigger force disable regardless of major patch
 elseif isClassic then
-	DBM.DisplayVersion = "1.14.50 alpha"
-	DBM.ReleaseRevision = releaseDate(2023, 10, 14) -- the date of the latest stable version that is available, optionally pass hours, minutes, and seconds for multiple releases in one day
+	DBM.DisplayVersion = "1.15.1 alpha"
+	DBM.ReleaseRevision = releaseDate(2023, 11, 16) -- the date of the latest stable version that is available, optionally pass hours, minutes, and seconds for multiple releases in one day
 	PForceDisable = 3--When this is incremented, trigger force disable regardless of major patch
 elseif isBCC then
 	DBM.DisplayVersion = "2.6.0 alpha"--When TBC returns (and it will one day). It'll probably be game version 2.6
@@ -958,20 +958,21 @@ do
 	end
 
 	--Function exclusively used in classic era to make it a little cleaner to mass unifiy modules to auto check spellid or spellName based on game flavor
+	--As of 1.15.0 classic era now has spellids, but want to keep wrapper for now in case they ever revert this or they decide to do classic fresh with no IDs one day
 	function argsMT.__index:IsSpell(...)
-		if isClassic then
-			--ugly ass performance wasting checks that have to first convert Ids to names because #nochanges
-			for _, spellId in ipairs({...}) do
-				local spellName = DBM:GetSpellInfo(spellId)
-				if spellName and spellName == args.spellName then
-					return true
-				end
-			end
-			return false
-		else
+	--	if isClassic then
+	--		--ugly ass performance wasting checks that have to first convert Ids to names because #nochanges
+	--		for _, spellId in ipairs({...}) do
+	--			local spellName = DBM:GetSpellInfo(spellId)
+	--			if spellName and spellName == args.spellName then
+	--				return true
+	--			end
+	--		end
+	--		return false
+	--	else
 			--Just simple table comoparison
 			return tIndexOf({...}, args.spellId) ~= nil
-		end
+	--	end
 	end
 
 	function argsMT.__index:IsPlayer()
@@ -1135,13 +1136,13 @@ do
 			if not registeredSpellIds[event] then
 				registeredSpellIds[event] = {}
 			end
-			if isClassic then
-				if not registeredSpellIds[event][spellName] then--Don't register duplicate spell Names
-					registeredSpellIds[event][spellName] = (registeredSpellIds[event][spellName] or 0) + 1--But classic needs spellNames
-				end
-			else
+			--if isClassic then
+			--	if not registeredSpellIds[event][spellName] then--Don't register duplicate spell Names
+			--		registeredSpellIds[event][spellName] = (registeredSpellIds[event][spellName] or 0) + 1--But classic needs spellNames
+			--	end
+			--else
 				registeredSpellIds[event][spellId] = (registeredSpellIds[event][spellId] or 0) + 1
-			end
+			--end
 		end
 
 		function unregisterSpellId(event, spellId)
@@ -1151,11 +1152,11 @@ do
 				DBM:Debug("DBM unregisterSpellId Warning: "..spellId.." spell id does not exist!")
 				return
 			end
-			local regName = isClassic and spellName or spellId
-			local refs = (registeredSpellIds[event][regName] or 1) - 1
-			registeredSpellIds[event][regName] = refs
+			--local regName = isClassic and spellName or spellId
+			local refs = (registeredSpellIds[event][spellId] or 1) - 1
+			registeredSpellIds[event][spellId] = refs
 			if refs <= 0 then
-				registeredSpellIds[event][regName] = nil
+				registeredSpellIds[event][spellId] = nil
 			end
 		end
 
@@ -1420,7 +1421,7 @@ do
 		if not registeredEvents[event] then return end
 		local eventSub6 = event:sub(0, 6)
 		if (eventSub6 == "SPELL_" or eventSub6 == "RANGE_") and not unfilteredCLEUEvents[event] and registeredSpellIds[event] then
-			if not registeredSpellIds[event][isClassic and extraArg2 or extraArg1] then return end -- SpellName filter for Classic
+			if not registeredSpellIds[event][extraArg1] then return end
 		end
 		-- process some high volume events without building the whole table which is somewhat faster
 		-- this prevents work-around with mods that used to have their own event handler to prevent this overhead
@@ -2014,16 +2015,16 @@ function DBM:RepositionFrames()
 	self:UpdateWarningOptions()
 	self:UpdateSpecialWarningOptions()
 	self.Arrow:LoadPosition()
-	local rangeCheck = _G["DBMRangeCheck"]
-	if rangeCheck then
-		rangeCheck:ClearAllPoints()
-		rangeCheck:SetPoint(self.Options.RangeFramePoint, UIParent, self.Options.RangeFramePoint, self.Options.RangeFrameX, self.Options.RangeFrameY)
-	end
-	local rangeCheckRadar = _G["DBMRangeCheckRadar"]
-	if rangeCheckRadar then
-		rangeCheckRadar:ClearAllPoints()
-		rangeCheckRadar:SetPoint(self.Options.RangeFrameRadarPoint, UIParent, self.Options.RangeFrameRadarPoint, self.Options.RangeFrameRadarX, self.Options.RangeFrameRadarY)
-	end
+	--local rangeCheck = _G["DBMRangeCheck"]
+	--if rangeCheck then
+	--	rangeCheck:ClearAllPoints()
+	--	rangeCheck:SetPoint(self.Options.RangeFramePoint, UIParent, self.Options.RangeFramePoint, self.Options.RangeFrameX, self.Options.RangeFrameY)
+	--end
+	--local rangeCheckRadar = _G["DBMRangeCheckRadar"]
+	--if rangeCheckRadar then
+	--	rangeCheckRadar:ClearAllPoints()
+	--	rangeCheckRadar:SetPoint(self.Options.RangeFrameRadarPoint, UIParent, self.Options.RangeFrameRadarPoint, self.Options.RangeFrameRadarX, self.Options.RangeFrameRadarY)
+	--end
 	local infoFrame = _G["DBMInfoFrame"]
 	if infoFrame then
 		infoFrame:ClearAllPoints()
@@ -2784,19 +2785,21 @@ function DBM:GetUnitIdFromCID(creatureID, bossOnly)
 	return returnUnitID
 end
 
-function DBM:CheckNearby(range, targetname)
-	if not targetname and DBM.RangeCheck:GetDistanceAll(range) then--Do not use self on this function, because self might be bossModPrototype
-		return true--No target name means check if anyone is near self, period
-	else
-		local uId = DBM:GetRaidUnitId(targetname)--Do not use self on this function, because self might be bossModPrototype
-		if uId and not UnitIsUnit("player", uId) then
-			local inRange = DBM.RangeCheck:GetDistance(uId)--Do not use self on this function, because self might be bossModPrototype
-			if inRange and inRange < range+0.5 then
-				return true
-			end
-		end
-	end
+--To be removed when cleaned up out of all mods using it
+function DBM:CheckNearby()--range, targetname
 	return false
+	--if not targetname and DBM.RangeCheck:GetDistanceAll(range) then--Do not use self on this function, because self might be bossModPrototype
+	--	return true--No target name means check if anyone is near self, period
+	--else
+	--	local uId = DBM:GetRaidUnitId(targetname)--Do not use self on this function, because self might be bossModPrototype
+	--	if uId and not UnitIsUnit("player", uId) then
+	--		local inRange = DBM.RangeCheck:GetDistance(uId)--Do not use self on this function, because self might be bossModPrototype
+	--		if inRange and inRange < range+0.5 then
+	--			return true
+	--		end
+	--	end
+	--end
+	--return false
 end
 
 function DBM:IsTrivial(customLevel)
@@ -3700,9 +3703,9 @@ do
 		if self:HasMapRestrictions() then
 			self.Arrow:Hide()
 			self.HudMap:Disable()
-			if self.RangeCheck:IsRadarShown() then
-				self.RangeCheck:Hide(true)
-			end
+			--if self.RangeCheck:IsRadarShown() then
+			--	self.RangeCheck:Hide(true)
+			--end
 		end
 	end
 	--Faster and more accurate loading for instances, but useless outside of them
@@ -3721,9 +3724,9 @@ do
 		if self:HasMapRestrictions() then
 			self.Arrow:Hide()
 			self.HudMap:Disable()
-			if self.RangeCheck:IsRadarShown() then
-				self.RangeCheck:Hide(true)
-			end
+			--if self.RangeCheck:IsRadarShown() then
+			--	self.RangeCheck:Hide(true)
+			--end
 		end
 	end
 
@@ -3961,8 +3964,8 @@ do
 			local _, _, _, playerZone = UnitPosition("player")
 			local _, _, _, senderZone = UnitPosition(senderuId)
 			if playerZone ~= senderZone then return end--not same zone
-			local range = DBM.RangeCheck:GetDistance("player", senderuId)--Same zone, so check range
-			if not range or range > 120 then return end
+			--local range = DBM.RangeCheck:GetDistance("player", senderuId)--Same zone, so check range
+			--if not range or range > 120 then return end
 		end
 		if not cSyncSender[sender] then
 			cSyncSender[sender] = true
@@ -7460,7 +7463,7 @@ do
 	local rangeCache = {}
 	local rangeUpdated = {}
 
-	function bossModPrototype:CheckBossDistance(cidOrGuid, onlyBoss, itemId, distance, defaultReturn)
+	function bossModPrototype:CheckBossDistance(cidOrGuid, onlyBoss, _, distance, defaultReturn)--itemId
 		if not DBM.Options.DontShowFarWarnings then return true end--Global disable.
 		cidOrGuid = cidOrGuid or self.creatureId
 		local uId
@@ -7470,14 +7473,14 @@ do
 			uId = DBM:GetUnitIdFromGUID(cidOrGuid, onlyBoss)
 		end
 		if uId then
-			itemId = itemId or 32698
-			local inRange = IsItemInRange(itemId, uId)
-			if inRange then--IsItemInRange was a success
-				return inRange
-			else--IsItemInRange doesn't work on all bosses/npcs, but tank checks do
-				DBM:Debug("CheckBossDistance failed on IsItemInRange for: "..cidOrGuid, 2)
+			--itemId = itemId or 32698
+			--local inRange = IsItemInRange(itemId, uId)
+			--if inRange then--IsItemInRange was a success
+			--	return inRange
+			--else--IsItemInRange doesn't work on all bosses/npcs, but tank checks do
+			--	DBM:Debug("CheckBossDistance failed on IsItemInRange for: "..cidOrGuid, 2)
 				return self:CheckTankDistance(cidOrGuid, distance, onlyBoss, defaultReturn)--Return tank distance check fallback
-			end
+			--end
 		end
 		DBM:Debug("CheckBossDistance failed on uId for: "..cidOrGuid, 2)
 		return (defaultReturn == nil) or defaultReturn--When we simply can't figure anything out, return true and allow warnings using this filter to fire
@@ -7517,12 +7520,12 @@ do
 						return true
 					end
 				end
-				local inRange = DBM.RangeCheck:GetDistance("player", uId)--We check how far we are from the tank who has that boss
-				rangeCache[cidOrGuid] = inRange
-				rangeUpdated[cidOrGuid] = GetTime()
-				if inRange and (inRange > distance) then--You are not near the person tanking boss
-					return false
-				end
+				--local inRange = DBM.RangeCheck:GetDistance("player", uId)--We check how far we are from the tank who has that boss
+				--rangeCache[cidOrGuid] = inRange
+				--rangeUpdated[cidOrGuid] = GetTime()
+				--if inRange and (inRange > distance) then--You are not near the person tanking boss
+				--	return false
+				--end
 				--Tank in range, return true.
 				return true
 			end
@@ -11509,19 +11512,20 @@ function bossModPrototype:AddArrowOption(name, spellId, default, isRunTo)
 	end
 end
 
-function bossModPrototype:AddRangeFrameOption(range, spellId, default)
-	self.DefaultOptions["RangeFrame"] = (default == nil) or default
-	if default and type(default) == "string" then
-		default = self:GetRoleFlagValue(default)
-	end
-	self.Options["RangeFrame"] = (default == nil) or default
-	if spellId then
-		self:GroupSpells(spellId, "RangeFrame")
-		self.localization.options["RangeFrame"] = L.AUTO_RANGE_OPTION_TEXT:format(range, spellId)
-	else
-		self.localization.options["RangeFrame"] = L.AUTO_RANGE_OPTION_TEXT_SHORT:format(range)
-	end
-	self:SetOptionCategory("RangeFrame", "misc")
+function bossModPrototype:AddRangeFrameOption()--range, spellId, default
+	return
+	--self.DefaultOptions["RangeFrame"] = (default == nil) or default
+	--if default and type(default) == "string" then
+	--	default = self:GetRoleFlagValue(default)
+	--end
+	--self.Options["RangeFrame"] = (default == nil) or default
+	--if spellId then
+	--	self:GroupSpells(spellId, "RangeFrame")
+	--	self.localization.options["RangeFrame"] = L.AUTO_RANGE_OPTION_TEXT:format(range, spellId)
+	--else
+	--	self.localization.options["RangeFrame"] = L.AUTO_RANGE_OPTION_TEXT_SHORT:format(range)
+	--end
+	--self:SetOptionCategory("RangeFrame", "misc")
 end
 
 function bossModPrototype:AddHudMapOption(name, spellId, default)

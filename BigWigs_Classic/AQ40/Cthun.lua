@@ -75,7 +75,7 @@ function mod:GetOptions()
 	return {
 		"tentacle",
 		{26029, "CASTBAR"},
-		"giant",
+		--"giant",
 		"weakened",
 		"stages",
 		"proximity",

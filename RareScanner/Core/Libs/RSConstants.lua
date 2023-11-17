@@ -24,8 +24,8 @@ RSConstants.LOOT_ITEM_ID = nil
 -- Current versions
 ---============================================================================
 
-RSConstants.CURRENT_DB_VERSION = 117
-RSConstants.CURRENT_LOOT_DB_VERSION = 128
+RSConstants.CURRENT_DB_VERSION = 118
+RSConstants.CURRENT_LOOT_DB_VERSION = 129
 
 ---============================================================================
 -- Current maps (newer)

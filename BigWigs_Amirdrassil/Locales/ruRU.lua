@@ -12,7 +12,7 @@ if L then
 	L.blistering_torment = "Цепь"
 	L.twisting_blade = "Фронтал"
 	L.marked_for_torment = "Переходка"
-	L.wracking_skewer = "Соак"
+	L.umbral_destruction = "Соак"
 	L.heart_stopper = "Абсорб"
 	L.heart_stopper_single = "Абсорб"
 end
@@ -51,7 +51,7 @@ L = BigWigs:NewBossLocale("Nymue, Weaver of the Cycle", "ruRU")
 if L then
 	L.continuum = "Новые Узоры"
 	L.impending_loom = "Доджи"
-	L.viridian_rain = "Рейд урон"
+	--L.viridian_rain = "Damage + Bombs"
 	L.lumbering_slam = "Фронтал"
 end
 
@@ -71,7 +71,9 @@ if L then
 	L.mass_entanglement_single = "Корни"
 	L.incarnation_moonkin = "Совиная форма "
 	L.incarnation_tree_of_flame = "Древоформа"
-	L.tranquility_of_flame = "Семена"
+	L.flaming_germination = "Семена"
+	--L.suppressive_ember = "Heal Absorbs"
+	--L.suppressive_ember_single = "Heal Absorb"
 end
 
 --L = BigWigs:NewBossLocale("Fyrakk the Blazing", "ruRU")

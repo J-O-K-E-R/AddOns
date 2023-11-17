@@ -26,7 +26,7 @@ BigWigs:AddSounds("Igira the Cruel", {
 	[419048] = "warning",
 	[419462] = "warning",
 	[422776] = "long",
-	[424456] = "warning",
+	[424456] = {"alarm","warning"},
 	[426056] = "alarm",
 	["stages"] = "info",
 })
@@ -91,15 +91,16 @@ BigWigs:AddSounds("Larodar, Keeper of the Flame", {
 })
 
 BigWigs:AddSounds("Nymue, Weaver of the Cycle", {
+	[413443] = "info",
 	[420554] = "underyou",
 	[420846] = "info",
 	[420907] = "alarm",
-	[423195] = "info",
-	[425370] = "alert",
-	[426519] = "alert",
+	[422721] = "alarm",
 	[426855] = "long",
-	[429108] = "alarm",
+	[427722] = "warning",
+	[429108] = "alert",
 	[429615] = "info",
+	[429798] = "alarm",
 })
 
 BigWigs:AddSounds("Smolderon", {
@@ -119,18 +120,16 @@ BigWigs:AddSounds("Smolderon", {
 
 BigWigs:AddSounds("Tindral Sageswift, Seer of the Flame", {
 	[420236] = {"alert","warning"},
-	[420540] = "info",
 	[421398] = {"alert","underyou"},
 	[421939] = "underyou",
 	[422000] = "alarm",
-	[422115] = "info",
 	[422325] = "underyou",
 	[422503] = "underyou",
 	[422509] = "long",
 	[423260] = "alert",
 	[423265] = "info",
 	[424140] = "long",
-	[424495] = "warning",
+	[424495] = {"info","warning"},
 	[424499] = "underyou",
 	[424579] = "alarm",
 	[424581] = "warning",
@@ -141,7 +140,7 @@ BigWigs:AddSounds("Tindral Sageswift, Seer of the Flame", {
 
 BigWigs:AddSounds("Fyrakk the Blazing", {
 	[410223] = {"alert","underyou"},
-	[412761] = "warning",
+	[412761] = "info",
 	[417443] = {"alarm","info","warning"},
 	[417455] = "warning",
 	[417807] = {"alarm","info"},
@@ -150,7 +149,6 @@ BigWigs:AddSounds("Fyrakk the Blazing", {
 	[419504] = "underyou",
 	[419506] = "alert",
 	[420422] = "alert",
-	[421937] = "info",
 	[422518] = "alert",
 	[422524] = "long",
 	[422837] = "long",
