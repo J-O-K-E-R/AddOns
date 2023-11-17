@@ -1,6 +1,3 @@
-@Terciob:
-- Framework Updates.
-
 @cont1nuity:
 - Cleanup and repair of imported Ghost Aura data.
 - Retail toc bump to 10.2.
@@ -8,4 +5,7 @@
 - Fixing some audio cues not being played.
 - Fixing an issue with filtering audio cues.
 - Fixing some channeled casts not showing up properly on the cast list.
+
+@Terciob:
+- Framework Updates.
 
