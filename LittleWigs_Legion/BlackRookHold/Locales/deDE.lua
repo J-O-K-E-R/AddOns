@@ -20,3 +20,8 @@ if L then
 	L.door_opens = "Tür öffnet"
 	L.door_opens_desc = "Zeigt eine Leiste wann die Tür zum versteckten Durchgang geöffnet ist."
 end
+
+L = BigWigs:NewBossLocale("Kurtalos Ravencrest", "deDE")
+if L then
+	L.phase_2_trigger = "Es reicht! Genug der Scharade."
+end

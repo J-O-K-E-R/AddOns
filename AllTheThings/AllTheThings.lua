@@ -2665,7 +2665,7 @@ end
 do
 local select, tremove, unpack =
 	  select, tremove, unpack;
-local FinalizeModID, PruneFinalized;
+local FinalizeModID, PruneFinalized
 -- Checks if any of the provided arguments can be found within the first array object
 local function ContainsAnyValue(arr, ...)
 	local value;
@@ -3002,11 +3002,21 @@ local ResolveFunctions = {
 				app.print("Failed to select achievementID",value);
 			end
 		end
-		PruneFinalized = true;
+		PruneFinalized = { "g" };
 	end,
-	-- Instruction to simply 'prune' sub-groups from the finalized selection
-	["prune"] = function()
-		PruneFinalized = true;
+	-- Instruction to simply 'prune' sub-groups from the finalized selection, or specified fields
+	["prune"] = function(finalized, searchResults, o, cmd, ...)
+		local vals = select("#", ...);
+		if vals < 1 then
+			PruneFinalized = { "g" }
+			return;
+		end
+		local value;
+		for i=1,vals do
+			value = select(i, ...);
+			if PruneFinalized then PruneFinalized[#PruneFinalized + 1] = value
+			else PruneFinalized = { value } end
+		end
 	end,
 	-- Instruction to include only search results where an item is of a specific relic type
 	["relictype"] = function(finalized, searchResults, o, cmd, ...)
@@ -3730,7 +3740,9 @@ ResolveSymbolicLink = function(o)
 				s.sourceParent = nil;
 				s.parent = nil;
 				if PruneFinalized then
-					s.g = nil;
+					for _,field in ipairs(PruneFinalized) do
+						s[field] = nil
+					end
 				end
 				-- if somehow the symlink pulls in the same item as used as the source of the symlink, notify in chat and clear any symlink on it
 				sHash = s.hash;
@@ -3747,7 +3759,9 @@ ResolveSymbolicLink = function(o)
 				s.sourceParent = nil;
 				s.parent = nil;
 				if PruneFinalized then
-					s.g = nil;
+					for _,field in ipairs(PruneFinalized) do
+						s[field] = nil
+					end
 				end
 				-- if somehow the symlink pulls in the same item as used as the source of the symlink, notify in chat and clear any symlink on it
 				sHash = s.hash;
@@ -6891,7 +6905,7 @@ local QuestNameFromServer = setmetatable({}, { __index = function(t, id)
 	end
 end});
 local QuestNameDefault = setmetatable({}, { __index = function(t, id)
-	if id then
+	if id and rawget(QuestNameFromServer, id) ~= nil then
 		local name = "Quest #"..id.."*";
 		t[id] = name;
 		return name;
@@ -8111,7 +8125,7 @@ local EJ_GetCreatureInfo, GetAchievementCriteriaInfoByID
 	= EJ_GetCreatureInfo, GetAchievementCriteriaInfoByID
 -- Criteria field values which will use the value of the respective Achievement instead
 local UseParentAchievementValueKeys = {
-	"c", "classID", "races", "r", "u", "e", "pb", "pvp"
+	"c", "classID", "races", "r", "u", "e", "pb", "pvp", "requireSkill"
 }
 local function GetParentAchievementInfo(t, key)
 	-- if the Achievement data was already cached, but the criteria is still getting here
@@ -8134,12 +8148,15 @@ local function GetParentAchievementInfo(t, key)
 	DelayedCallback(app.report, 1, "Missing Referenced Achievement!",id);
 end
 -- Returns expected criteria data for either criteriaIndex or criteriaID
-local function GetCriteriaInfo(achievementID, criteriaIndexOrID)
+local function GetCriteriaInfo(achievementID, t)
+	-- prioritize the correct id
+	local critUID = t.uid or t.criteriaID
+	local critID = t.id or critUID
 	local criteriaString, criteriaType, completed, quantity, reqQuantity, charName, flags, assetID, quantityString, criteriaID, eligible
-		= GetAchievementCriteriaInfoByID(achievementID, criteriaIndexOrID, true)
-	if not criteriaString and criteriaIndexOrID <= GetAchievementNumCriteria(achievementID) then
+		= GetAchievementCriteriaInfoByID(achievementID, critUID)
+	if IsRetrieving(criteriaString) and critID <= GetAchievementNumCriteria(achievementID) then
 		criteriaString, criteriaType, completed, quantity, reqQuantity, charName, flags, assetID, quantityString, criteriaID, eligible
-		= GetAchievementCriteriaInfo(achievementID, criteriaIndexOrID, true)
+		= GetAchievementCriteriaInfo(achievementID, critID, true)
 	end
 	return criteriaString, criteriaType, completed, quantity, reqQuantity, charName, flags, assetID, quantityString, criteriaID, eligible
 end
@@ -8148,44 +8165,62 @@ local function default_name(t)
 	if t.encounterID then
 		return EJ_GetEncounterInfo(t.encounterID);
 	end
+	local name
 	local achievementID = t.achievementID;
 	if achievementID then
 		local criteriaID = t.criteriaID;
 		if criteriaID then
-			local name = GetCriteriaInfo(achievementID, criteriaID);
+			-- typical criteria name lookup
+			name = GetCriteriaInfo(achievementID, t);
 			if not IsRetrieving(name) then return name; end
 
+			-- app.PrintDebug("fallback crit name",achievementID,criteriaID,t.uid,t.id)
+			-- criteria nested under a parent of a known Thing
+			local parent = t.parent
+			if parent and parent.key and app.ThingKeys[parent.key] and parent.key ~= "achievementID" then
+				name = parent.name
+				if not IsRetrieving(name) and not name:find("Quest #") then return name; end
+			end
+
+			-- criteria with provider data
 			local providers = t.providers;
 			if providers then
 				for k,v in ipairs(providers) do
 					if v[2] > 0 then
 						if v[1] == "o" then
-							return app.ObjectNames[v[2]];
+							name = app.ObjectNames[v[2]];
+							break
 						elseif v[1] == "i" then
-							return GetItemInfo(v[2]);
+							name = GetItemInfo(v[2]);
+							break
 						elseif v[1] == "n" then
-							return app.NPCNameFromID[v[2]];
+							name = app.NPCNameFromID[v[2]];
+							break
 						end
 					end
 				end
+				if not IsRetrieving(name) then return name; end
 			end
 
+			-- criteria with sourceQuests data
 			local sourceQuests = t.sourceQuests;
 			if sourceQuests then
-				local name
 				for k,id in ipairs(sourceQuests) do
 					name = app.GetQuestName(id);
-					-- special case to ignore caching a default quest name as criteria name
-					if not IsRetrieving(name) and not name:find("Quest #") then return name; end
 					t.__questname = name
+					if not IsRetrieving(name) and not name:find("Quest #") then return name; end
 				end
 				-- app.PrintDebug("criteria sq no name",t.achievementID,t.criteriaID,rawget(t,"name"))
 				return
 			end
 		end
 	end
-	app.PrintDebug("failed to retrieve criteria name",achievementID,t.criteriaID)
-	return L["WRONG_FACTION"];
+	app.PrintDebug("failed to retrieve criteria name",achievementID,t.criteriaID,name,t._default_name_retry)
+	t._default_name_retry = (t._default_name_retry or 0) + 1
+	if (t._default_name_retry > 10) then
+		t._default_name_retry = nil
+		return name or UNKNOWN
+	end
 end
 local cache = app.CreateCache("hash")
 local criteriaFields = {
@@ -8265,7 +8300,7 @@ local criteriaFields = {
 			if app.CurrentCharacter.Achievements[achievementID] then return true; end
 			local criteriaID = t.criteriaID;
 			if criteriaID then
-				return select(3, GetCriteriaInfo(achievementID, criteriaID));
+				return select(3, GetCriteriaInfo(achievementID, t));
 			end
 		end
 	end,
@@ -8315,7 +8350,7 @@ harvesterFields.text = function(t)
 			if totalCriteria > 0 then
 				local criteria = {};
 				for criteriaID=totalCriteria,1,-1 do
-					local criteriaString, criteriaType, completed, quantity, reqQuantity, charName, flags, assetID, quantityString, criteriaUID = GetAchievementCriteriaInfo(achievementID, criteriaID);
+					local criteriaString, criteriaType, completed, quantity, reqQuantity, charName, flags, assetID, quantityString, criteriaUID = GetAchievementCriteriaInfo(achievementID, criteriaID, true);
 					local crit = { ["criteriaID"] = criteriaID, ["criteriaUID"] = criteriaUID };
 					if criteriaString ~= nil and criteriaString ~= "" then
 						crit.name = criteriaString;
@@ -17371,7 +17406,7 @@ customWindowUpdates["AchievementHarvester"] = function(self, ...)
 		if not self.initialized then
 			self.doesOwnUpdate = true;
 			self.initialized = true;
-			self.Limit = 18359;	-- MissingAchievements:10.0.2.46781
+			self.Limit = 19451;	-- MissingAchievements:10.2.0.51685
 			self.PartitionSize = 2000;
 			local db = {};
 			local CleanUpHarvests = function()

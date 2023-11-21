@@ -28,7 +28,7 @@ end
 L = BigWigs:NewBossLocale("Council of Dreams", "zhTW")
 if L then
 	L.ultimate_boss = "滿能量 (%s)"
-	L.charge = "衝鋒"
+	L.barreling_charge = "衝鋒"
 	L.poisonous_javelin = "標槍" -- 或者中毒/緩速
 	L.polymorph_bomb = "鴨子"
 	L.polymorph_bomb_single = "鴨子"
@@ -76,7 +76,17 @@ if L then
 	--L.suppressive_ember_single = "Heal Absorb"
 end
 
---L = BigWigs:NewBossLocale("Fyrakk the Blazing", "zhTW")
---if L then
-	--soon
---end
+L = BigWigs:NewBossLocale("Fyrakk the Blazing", "zhTW")
+if L then
+	L.spirit_trigger = "卡多雷精魂"
+
+	--L.firestorm = "Meteors"
+	--L.dream_rend = "Pull In"
+	--L.fyralaths_bite = "Tank Frontal"
+	--L.fyralaths_mark = "Mark"
+	--L.spirits_of_the_kaldorei = "Spirits"
+	--L.greater_firestorm = "Meteors [G]" -- G for Greater
+	--L.incarnate = "Fly Away"
+	--L.shadowflame_devastation = "Deep Breath"
+	--L.eternal_firestorm = "Meteors [E]" -- E for Eternal
+end

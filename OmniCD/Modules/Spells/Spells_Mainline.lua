@@ -754,6 +754,7 @@ E.spell_db = {
 		{ ["class"]="TRINKET",["type"]="consumable",["name"]="Refreshing Healing Potion",["buff"]=370511,["duration"]=300,["icon"]=4497595,["spellID"]=370511,["item"]=nil, }, --["item"]=191378
 		{ ["class"]="TRINKET",["type"]="other",["buff"]=408234,["name"]="Activate Weyrnstone",["duration"]=120,["icon"]=5199618,["spellID"]=408234,["item"]=205146, },
 		{ ["class"]="TRINKET",["type"]="defensive",["buff"]=410232,["name"]="Undulating Sporecloak",["duration"]=120,["icon"]=3752753,["spellID"]=410232,["item"]=205025, },
+		{ ["class"]="TRINKET",["type"]="consumable",["name"]="Dreamwalker's Healing Potion",["buff"]=415569,["duration"]=300,["icon"]=5088844,["spellID"]=415569,["item"]=nil, },
 	},
 }
 

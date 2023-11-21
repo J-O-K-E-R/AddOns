@@ -324,7 +324,11 @@ end
 
 function RSContainerDB.GetContainerName(containerID)
 	if (containerID) then
-		if (private.dbglobal.object_names[GetLocale()][containerID]) then
+		-- Fix for Small Somnut showing as Magical Bloom
+		if (containerID == 408719) then
+			private.dbglobal.object_names[GetLocale()][containerID] = AL[string.format("CONTAINER_%s", containerID)]
+			return AL[string.format("CONTAINER_%s", containerID)]
+		elseif (private.dbglobal.object_names[GetLocale()][containerID]) then
 			return private.dbglobal.object_names[GetLocale()][containerID]
 		elseif (AL[string.format("CONTAINER_%s", containerID)] ~= string.format("CONTAINER_%s", containerID)) then
 			return AL[string.format("CONTAINER_%s", containerID)]

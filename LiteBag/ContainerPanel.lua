@@ -61,7 +61,16 @@ function LiteBagContainerPanelMixin:OnLoad()
         -- The Blizzard token tracker is hard coded to be a single tracker which is updated
         -- by direct call from the TokenFrame UI, Also the event handling for it is done
         -- in MainMenuBar. It's a mess.
-        hooksecurefunc('TokenFrame_Update', function () self.TokenTracker:Update() end)
+        hooksecurefunc('TokenFrame_Update',
+            function ()
+                self.TokenTracker:Update()
+            end)
+        -- How many currencies you can track is tied to BackpackTokenFrame:GetWidth()
+        self.TokenTracker:SetScript('OnSizeChanged',
+            function (self, w, h)
+                BackpackTokenFrame:SetWidth(w)
+                self:Update()
+            end)
     end
 
     if self.showMoneyFrame then
@@ -469,13 +478,6 @@ LAYOUTS.default =
         return grid
     end
 
-LAYOUTS.reverse =
-    function (self, Items, ncols)
-        local grid = LAYOUTS.default(self, Items, ncols)
-        grid.reverseDirection = true
-        return grid
-    end
-
 LAYOUTS.bag =
     function (self, Items, ncols)
         local grid = { }
@@ -507,13 +509,6 @@ LAYOUTS.bag =
         grid.totalWidth  = (maxCol+1) * w + maxCol * BUTTON_X_GAP
         grid.totalHeight = (row+1) * h + row * BUTTON_Y_GAP + yGap
 
-        return grid
-    end
-
-LAYOUTS.bagreverse =
-    function (self, Items, ncols)
-        local grid = LAYOUTS.bag(self, Items, ncols)
-        grid.reverseDirection = true
         return grid
     end
 
@@ -570,17 +565,25 @@ function LiteBagContainerPanelMixin:UpdateItemLayout()
     local adjustedBottomOffset = BOTTOM_OFFSET + self:CalculateExtraHeight()
     local adjustedTopOffset = self:CalculateTopOffset()
 
-    if layoutGrid.reverseDirection then
-        anchor, m, xOff, yOff = 'BOTTOMRIGHT', -1, -RIGHT_OFFSET, -adjustedBottomOffset
+
+    local anchor = self:GetOption("anchor")
+
+    if anchor == 'BOTTOMRIGHT' then
+        xM, yM, xOff, yOff = -1,  1, -RIGHT_OFFSET,  adjustedBottomOffset
+    elseif anchor == 'BOTTOMLEFT' then
+        xM, yM, xOff, yOff =  1,  1,  LEFT_OFFSET,   adjustedBottomOffset
+    elseif anchor == 'TOPRIGHT' then
+        xM, yM, xOff, yOff = -1, -1, -RIGHT_OFFSET, -adjustedTopOffset
     else
-        anchor, m, xOff, yOff = 'TOPLEFT', 1, LEFT_OFFSET, adjustedTopOffset
+        anchor = 'TOPLEFT'
+        xM, yM, xOff, yOff =  1, -1,  LEFT_OFFSET,  -adjustedTopOffset
     end
 
     local n = 1
 
     for _, pos in ipairs(layoutGrid) do
-        local x = xOff + m * pos.x
-        local y = -yOff - m * pos.y
+        local x = xOff + xM * pos.x
+        local y = yOff + yM * pos.y
         pos.b:ClearAllPoints()
         pos.b:SetPoint(anchor, self, x, y)
         pos.b:SetShown(true)

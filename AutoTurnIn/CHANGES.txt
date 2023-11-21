@@ -1,24 +1,18 @@
-tag ff6d464a7b773eb2576f7015712f35095c6dfa33 10.1.0
+tag 59cd96bc94054b6e2d6ea3fcf126a544f23ff7d4 10.1.1
 Author:	Lure <alex.shubert@gmail.com>
-Date:	Sun Jul 16 12:15:48 2023 -0400
+Date:	Sun Nov 19 11:09:33 2023 -0500
 
-fix merchant frame
+10.1.0
 
-commit 605d42d06ac4f29089a9890036b12eeac39d6279
+commit 77dd8f07837190a05e9d9c0515cb6698a2953209
 Author: Lure <alex.shubert@gmail.com>
-Date:   Sun Jul 16 12:14:49 2023 -0400
+Date:   Sun Nov 19 11:07:14 2023 -0500
 
-    cosmetic: add icon
+    bump toc version
 
-commit 02c0803e0553ac5c6cd8ce3bc07e77a90c295f4f
+commit 925de2d01a0d593352a70aad122e117299cf5130
 Author: Lure <alex.shubert@gmail.com>
-Date:   Sun Jul 16 11:54:29 2023 -0400
+Date:   Sun Jul 16 19:37:40 2023 -0400
 
-    keep proposed changes for future investigation
-
-commit 70702285e13521279bcde110c8d9900d957cb052
-Author: Lure <alex.shubert@gmail.com>
-Date:   Sun Jul 16 11:47:01 2023 -0400
-
-    Fix Merchants.lua:21: attempt to index global MerchantRepairText
+    chore: Cleanup merchants.lua
 

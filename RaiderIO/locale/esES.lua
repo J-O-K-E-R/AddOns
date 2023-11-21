@@ -1,3 +1,4 @@
+-- Generated from CurseForge on Tue Nov 21 08:41:14 UTC 2023
 local ns = select(2, ...) ---@class ns @The addon namespace.
 
 if ns:IsSameLocale("esES") then
@@ -7,7 +8,7 @@ if ns:IsSameLocale("esES") then
 
 	L.LOCALE_NAME = "esES"
 
-	L["ALLOW_IN_LFD"] = "Permitir en buscador de mazmorras"
+L["ALLOW_IN_LFD"] = "Permitir en buscador de mazmorras"
 L["ALLOW_IN_LFD_DESC"] = "Click derecho en los grupos o aplicantes en el buscador de mazmorras para copiar la URL de su perfil de Raider.IO"
 L["ALLOW_ON_PLAYER_UNITS"] = "Permitir en marcos de jugador"
 L["ALLOW_ON_PLAYER_UNITS_DESC"] = [=[Click derecho en el marco de un jugador para copiar la URL de su perfil de Raider.IO
@@ -65,12 +66,22 @@ L["DPS"] = "DPS"
 --[[Translation missing --]]
 --[[ L["DUNGEON_SHORT_NAME_AA"] = ""--]] 
 --[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_AD"] = ""--]] 
+--[[Translation missing --]]
 --[[ L["DUNGEON_SHORT_NAME_AV"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["DUNGEON_SHORT_NAME_BH"] = ""--]] 
 --[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_BRH"] = ""--]] 
+--[[Translation missing --]]
 --[[ L["DUNGEON_SHORT_NAME_COS"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_DHT"] = ""--]] 
 L["DUNGEON_SHORT_NAME_DOS"] = "El Otro Lado - DOS"
+--[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_EB"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_FALL"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["DUNGEON_SHORT_NAME_FH"] = ""--]] 
 L["DUNGEON_SHORT_NAME_GD"] = "Terminal Malavía - GD"
@@ -92,6 +103,8 @@ L["DUNGEON_SHORT_NAME_MISTS"] = "Nieblas de Tirna Scithe - MISTS"
 L["DUNGEON_SHORT_NAME_NW"] = "Estela Necrótica - NW"
 L["DUNGEON_SHORT_NAME_PF"] = "Bajapeste - PF"
 --[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_RISE"] = ""--]] 
+--[[Translation missing --]]
 --[[ L["DUNGEON_SHORT_NAME_RLP"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["DUNGEON_SHORT_NAME_SBG"] = ""--]] 
@@ -102,6 +115,8 @@ L["DUNGEON_SHORT_NAME_STRT"] = "Tazavesh: Calles - STRT"
 --[[ L["DUNGEON_SHORT_NAME_TJS"] = ""--]] 
 L["DUNGEON_SHORT_NAME_TOP"] = "Teatro del Dolor - TOP"
 --[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_TOTT"] = ""--]] 
+--[[Translation missing --]]
 --[[ L["DUNGEON_SHORT_NAME_ULD"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["DUNGEON_SHORT_NAME_UNDR"] = ""--]] 
@@ -110,6 +125,8 @@ L["DUNGEON_SHORT_NAME_UPPR"] = "Karazhan: Superior - UPPR"
 --[[ L["DUNGEON_SHORT_NAME_VOTW"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["DUNGEON_SHORT_NAME_VP"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_WM"] = ""--]] 
 L["DUNGEON_SHORT_NAME_WORK"] = "Mechagon: Taller - WORK"
 L["DUNGEON_SHORT_NAME_YARD"] = "Mechagon: Desguace - YARD"
 L["ENABLE_AUTO_FRAME_POSITION"] = "Posicionar automáticamente el marco de perfil de RaiderIO"
@@ -149,6 +166,8 @@ L["HIDE_OWN_PROFILE"] = "Ocultar ventana emergente de perfil personal de RaiderI
 L["HIDE_OWN_PROFILE_DESC"] = "Oculta la ventana emergente de tu perfil personal de RaiderIO. No afecta a las ventanas emergentes de otros jugadores."
 L["INVERSE_PROFILE_MODIFIER"] = "Invertir modificador de marco de perfil"
 L["INVERSE_PROFILE_MODIFIER_DESC"] = "Invierte el comportamiento del modificador del marco de perfil (mayús/ctrl/alt) para que muestre por defecto el perfil del líder del grupo."
+--[[Translation missing --]]
+--[[ L["LOCALE_NAME"] = ""--]] 
 L["LOCKING_PROFILE_FRAME"] = "RaiderIO: bloqueando el marco de perfil de M+."
 L["MAINS_BEST_SCORE_BEST_SEASON"] = "Mejor puntuación en M+ con el main (%s)"
 L["MAINS_RAID_PROGRESS"] = "Progreso de personaje principal"
@@ -179,6 +198,24 @@ L["PROFILE_BEST_RUNS"] = "Mejor de cada mazmorra"
 L["PROVIDER_NOT_LOADED"] = "|cffFF0000Advertencia:|r |cffFFFFFF%s|r no puede encontrar datos para tu facción actual. Compruebe la configuración de |cffFFFFFF/raiderio|r y habilite los datos de información sobre herramientas para |cffFFFFFF%s|r."
 --[[Translation missing --]]
 --[[ L["PVP_DATA_HEADER"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_ATDH_1"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_ATDH_2"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_ATDH_3"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_ATDH_4"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_ATDH_5"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_ATDH_6"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_ATDH_7"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_ATDH_8"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_ATDH_9"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["RAID_BOSS_ATSC_1"] = ""--]] 
 --[[Translation missing --]]
@@ -315,7 +352,19 @@ L["RELOAD_NOW"] = "Reiniciarla ahora"
 --[[Translation missing --]]
 --[[ L["REPLAY_AUTO_SELECTION_TEAM_BEST"] = ""--]] 
 --[[Translation missing --]]
+--[[ L["REPLAY_BACKGROUND_COLOR"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["REPLAY_BACKGROUND_COLOR_DESC"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["REPLAY_DISABLE_CONFIRM"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["REPLAY_FRAME_ALPHA"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["REPLAY_FRAME_ALPHA_DESC"] = ""--]] 
+--[[Translation missing --]]
 --[[ L["REPLAY_MENU_COPY_URL"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["REPLAY_MENU_DISABLE"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["REPLAY_MENU_DOCK"] = ""--]] 
 --[[Translation missing --]]
@@ -342,6 +391,8 @@ L["RELOAD_NOW"] = "Reiniciarla ahora"
 --[[ L["REPLAY_STYLE_TITLE_MODERN"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["REPLAY_STYLE_TITLE_MODERN_COMPACT"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["REPLAY_STYLE_TITLE_MODERN_SPLITS"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["REPLAY_SUMMARY_LOGGED"] = ""--]] 
 --[[Translation missing --]]
@@ -432,6 +483,5 @@ L["WARNING_LOCK_POSITION_FRAME_AUTO"] = "RaiderIO: primero debes deshabilitar el
 L["WIPE_RWF_MODE_BUTTON"] = "Wipe"
 --[[Translation missing --]]
 --[[ L["WIPE_RWF_MODE_BUTTON_TOOLTIP"] = ""--]] 
-
 
 end

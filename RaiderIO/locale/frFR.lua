@@ -1,3 +1,4 @@
+-- Generated from CurseForge on Tue Nov 21 08:41:15 UTC 2023
 local ns = select(2, ...) ---@class ns @The addon namespace.
 
 if ns:IsSameLocale("frFR") then
@@ -7,7 +8,7 @@ if ns:IsSameLocale("frFR") then
 
 	L.LOCALE_NAME = "frFR"
 
-	L["ALLOW_IN_LFD"] = "Autoriser pour la Recherche de Donjon"
+L["ALLOW_IN_LFD"] = "Autoriser pour la Recherche de Donjon"
 L["ALLOW_IN_LFD_DESC"] = "Ajoute une option pour copier l'url du profil Raider.IO dans le menu du bouton droit d'un groupe ou d'un candidat"
 L["ALLOW_ON_PLAYER_UNITS"] = "Autoriser pour les cadres d'unité"
 L["ALLOW_ON_PLAYER_UNITS_DESC"] = "Ajoute une option pour copier l'url du profil Raider.IO dans le menu bouton droit d'un cadre d'unité."
@@ -79,12 +80,22 @@ L["DPS"] = "DPS"
 --[[Translation missing --]]
 --[[ L["DUNGEON_SHORT_NAME_AA"] = ""--]] 
 --[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_AD"] = ""--]] 
+--[[Translation missing --]]
 --[[ L["DUNGEON_SHORT_NAME_AV"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["DUNGEON_SHORT_NAME_BH"] = ""--]] 
 --[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_BRH"] = ""--]] 
+--[[Translation missing --]]
 --[[ L["DUNGEON_SHORT_NAME_COS"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_DHT"] = ""--]] 
 L["DUNGEON_SHORT_NAME_DOS"] = "DOS"
+--[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_EB"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_FALL"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["DUNGEON_SHORT_NAME_FH"] = ""--]] 
 --[[Translation missing --]]
@@ -110,6 +121,8 @@ L["DUNGEON_SHORT_NAME_MISTS"] = "MISTS"
 L["DUNGEON_SHORT_NAME_NW"] = "NW"
 L["DUNGEON_SHORT_NAME_PF"] = "PF"
 --[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_RISE"] = ""--]] 
+--[[Translation missing --]]
 --[[ L["DUNGEON_SHORT_NAME_RLP"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["DUNGEON_SHORT_NAME_SBG"] = ""--]] 
@@ -121,6 +134,8 @@ L["DUNGEON_SHORT_NAME_SOA"] = "SOA"
 --[[ L["DUNGEON_SHORT_NAME_TJS"] = ""--]] 
 L["DUNGEON_SHORT_NAME_TOP"] = "TOP"
 --[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_TOTT"] = ""--]] 
+--[[Translation missing --]]
 --[[ L["DUNGEON_SHORT_NAME_ULD"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["DUNGEON_SHORT_NAME_UNDR"] = ""--]] 
@@ -130,6 +145,8 @@ L["DUNGEON_SHORT_NAME_TOP"] = "TOP"
 --[[ L["DUNGEON_SHORT_NAME_VOTW"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["DUNGEON_SHORT_NAME_VP"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_WM"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["DUNGEON_SHORT_NAME_WORK"] = ""--]] 
 --[[Translation missing --]]
@@ -183,6 +200,8 @@ L["HIDE_OWN_PROFILE"] = "Masquer l'infobulle du profil RaiderIO personnel "
 L["HIDE_OWN_PROFILE_DESC"] = "Lorsque cette option est activée, cette option n’affichera pas votre propre info-bulle de profil RaiderIO, mais peut afficher celles des autres joueurs s’ils en ont une. "
 L["INVERSE_PROFILE_MODIFIER"] = "Inverser le modificateur de l'info bulle"
 L["INVERSE_PROFILE_MODIFIER_DESC"] = "Activer cette option va inverser le comportement de l'info-bulle lorsque l'on utilise les touches (shift/ctrl/alt)."
+--[[Translation missing --]]
+--[[ L["LOCALE_NAME"] = ""--]] 
 L["LOCKING_PROFILE_FRAME"] = "RaiderIO: Verrouiller le cadre de profil M+. "
 L["MAINS_BEST_SCORE_BEST_SEASON"] = "Meilleur score M+ du personnage principal (%s)"
 L["MAINS_RAID_PROGRESS"] = "Progression du personnage principal "
@@ -214,6 +233,24 @@ L["PROFILE_BEST_RUNS"] = "Meilleurs Donjons"
 L["PROVIDER_NOT_LOADED"] = "|cffFF0000Attention:|r |cffFFFFFF%s|r Aucune donnée trouvée pour votre faction actuelle . Veuillez vérifier vos paramètres |cffFFFFFF/raiderio|r et activer les données d'info-bulle pour |cffFFFFFF%s|r."
 --[[Translation missing --]]
 --[[ L["PVP_DATA_HEADER"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_ATDH_1"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_ATDH_2"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_ATDH_3"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_ATDH_4"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_ATDH_5"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_ATDH_6"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_ATDH_7"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_ATDH_8"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_ATDH_9"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["RAID_BOSS_ATSC_1"] = ""--]] 
 --[[Translation missing --]]
@@ -403,7 +440,19 @@ L["RELOAD_NOW"] = "Recharger l'interface maintenant"
 --[[Translation missing --]]
 --[[ L["REPLAY_AUTO_SELECTION_TEAM_BEST"] = ""--]] 
 --[[Translation missing --]]
+--[[ L["REPLAY_BACKGROUND_COLOR"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["REPLAY_BACKGROUND_COLOR_DESC"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["REPLAY_DISABLE_CONFIRM"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["REPLAY_FRAME_ALPHA"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["REPLAY_FRAME_ALPHA_DESC"] = ""--]] 
+--[[Translation missing --]]
 --[[ L["REPLAY_MENU_COPY_URL"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["REPLAY_MENU_DISABLE"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["REPLAY_MENU_DOCK"] = ""--]] 
 --[[Translation missing --]]
@@ -430,6 +479,8 @@ L["RELOAD_NOW"] = "Recharger l'interface maintenant"
 --[[ L["REPLAY_STYLE_TITLE_MODERN"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["REPLAY_STYLE_TITLE_MODERN_COMPACT"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["REPLAY_STYLE_TITLE_MODERN_SPLITS"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["REPLAY_SUMMARY_LOGGED"] = ""--]] 
 --[[Translation missing --]]
@@ -526,6 +577,5 @@ L["WARNING_LOCK_POSITION_FRAME_AUTO"] = "RaiderIO: Vous devez d'abord désactive
 --[[ L["WIPE_RWF_MODE_BUTTON"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["WIPE_RWF_MODE_BUTTON_TOOLTIP"] = ""--]] 
-
 
 end

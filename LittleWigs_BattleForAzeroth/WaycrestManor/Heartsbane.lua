@@ -16,7 +16,6 @@ mod:SetRespawnTime(19.5)
 -- Locals
 --
 
-local playersWithRunicMark = 0
 local bossWithIris = nil
 local isMCApplied = false
 
@@ -29,7 +28,7 @@ function mod:GetOptions()
 		-- Sister Briar
 		260741, -- Jagged Nettles
 		-- Sister Malady
-		{260703, "SAY", "SAY_COUNTDOWN", "FLASH", "PROXIMITY"}, -- Unstable Runic Mark
+		{260703, "SAY", "SAY_COUNTDOWN"}, -- Unstable Runic Mark
 		268086, -- Aura of Dread
 		-- Sister Solena
 		{260907, "ICON", "CASTBAR"}, -- Soul Manipulation
@@ -67,7 +66,6 @@ function mod:OnBossEnable()
 end
 
 function mod:OnEngage()
-	playersWithRunicMark = 0
 	bossWithIris = nil
 	isMCApplied = false
 	if not self:Solo() then
@@ -103,22 +101,13 @@ function mod:UnstableRunicMark(args)
 end
 
 function mod:UnstableRunicMarkApplied(args)
-	playersWithRunicMark = playersWithRunicMark + 1
-	if playersWithRunicMark == 1 then
-		self:OpenProximity(args.spellId, 6)
-	end
 	if self:Me(args.destGUID) then
 		self:Say(args.spellId)
 		self:SayCountdown(args.spellId, 6)
-		self:Flash(args.spellId)
 	end
 end
 
 function mod:UnstableRunicMarkRemoved(args)
-	playersWithRunicMark = playersWithRunicMark - 1
-	if playersWithRunicMark == 0 then
-		self:CloseProximity(args.spellId)
-	end
 	if self:Me(args.destGUID) then
 		self:CancelSayCountdown(args.spellId)
 	end
@@ -127,9 +116,9 @@ end
 function mod:AuraOfDread(args)
 	if self:Me(args.destGUID) then
 		local amount = args.amount
-		if amount % 3 == 0 or amount > 6 then
-			self:StackMessage(args.spellId, "blue", args.destName, amount, 6)
-			if amount > 6 then
+		if amount % 2 == 0 or amount >= 4 then
+			self:StackMessage(args.spellId, "blue", args.destName, amount, 4)
+			if amount >= 4 then
 				self:PlaySound(args.spellId, "warning", nil, args.destName)
 			else
 				self:PlaySound(args.spellId, "alert", nil, args.destName)

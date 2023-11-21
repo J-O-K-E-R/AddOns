@@ -325,7 +325,7 @@ do -- item: items ID/inventory slot
 			local time = GetTime()
 			cdLeft = (cdStart or 0) > 0 and (enabled ~= 0) and (cdStart + cdLen - time)
 		end
-		local inRange, hasRange = NormalizeInRange[IsItemInRange(ident, target or "target")]
+		local inRange, hasRange = NormalizeInRange[(not (MODERN and InCombatLockdown()) or nil) and IsItemInRange(ident, target or "target")]
 		inRange, hasRange = inRange ~= 0, inRange ~= nil
 		if ibag and islot then
 			bag, slot = ibag, islot

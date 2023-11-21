@@ -72,7 +72,6 @@ function mod:GetOptions()
 end
 
 function mod:OnBossEnable()
-
 	-- Stage One: Garden of Despair
 	self:Log("SPELL_CAST_SUCCESS", "FlamingPestilence", 421898)
 	self:Log("SPELL_AURA_APPLIED", "ShadowSpinesApplied", 422053)
@@ -123,7 +122,7 @@ function mod:OnEngage()
 	self:CDBar(421898, self:Easy() and 16.5 or 15.0, CL.count:format(CL.adds, flamingPestilenceCount)) -- Flaming Pestilence
 	self:CDBar(421972, self:Heroic() and 32 or 36, CL.count:format(CL.bombs, controlledBurnCount)) -- Controlled Burn
 	self:CDBar(422039, self:Easy() and 22.4 or 20.0, CL.count:format(L.shadowflame_cleave, shadowflameCleaveCount)) -- Shadowflame Cleave
-	self:CDBar("stages", self:Heroic() and 92.8 or 94.5, CL.count:format(CL.stage:format(2), intermissionCount), 421013) -- Doom Cultivation
+	self:CDBar("stages", 90, CL.count:format(CL.stage:format(2), intermissionCount), 421013) -- Doom Cultivation
 
 	if self:GetOption(taintedTreantMarker) then
 		self:RegisterTargetEvents("AddMarking")
@@ -227,15 +226,6 @@ function mod:TorturedScream(args)
 	self:Message(args.spellId, "red", CL.count:format(L.tortured_scream, torturedScreamCount))
 	self:PlaySound(args.spellId, "alert")
 	torturedScreamCount = torturedScreamCount + 1
-	local cd = self:Mythic() and {3.5, 23.5, 16.4, 22.5, 20.1, 0} or {4.5, 29.2, 23.1, 30.8, 0}
-	self:CDBar(args.spellId, cd[torturedScreamCount], CL.count:format(L.tortured_scream, torturedScreamCount))
-end
-
-function mod:ShadowflameCleave(args)
-	self:StopBar(CL.count:format(L.shadowflame_cleave, shadowflameCleaveCount))
-	self:Message(args.spellId, "yellow", CL.count:format(L.shadowflame_cleave, shadowflameCleaveCount))
-	self:PlaySound(args.spellId, "alert")
-	shadowflameCleaveCount = shadowflameCleaveCount + 1
 
 	local cd
 	if self:Mythic() then
@@ -248,7 +238,20 @@ function mod:ShadowflameCleave(args)
 		local timer = { 3.0, 23.0, 23.0, 24.0, 0 }
 		cd = timer[torturedScreamCount]
 	end
-	self:CDBar(args.spellId, cd, CL.count:format(args.spellName, torturedScreamCount))
+	self:CDBar(args.spellId, cd, CL.count:format(L.tortured_scream, torturedScreamCount))
+end
+
+function mod:ShadowflameCleave(args)
+	self:StopBar(CL.count:format(L.shadowflame_cleave, shadowflameCleaveCount))
+	self:Message(args.spellId, "yellow", CL.count:format(L.shadowflame_cleave, shadowflameCleaveCount))
+	self:PlaySound(args.spellId, "alert")
+	shadowflameCleaveCount = shadowflameCleaveCount + 1
+	if self:Mythic() then
+		local timer = { 21.4, 24.0, 27.0, 0 }
+		self:CDBar(args.spellId, timer[shadowflameCleaveCount], CL.count:format(L.shadowflame_cleave, shadowflameCleaveCount))
+	elseif shadowflameCleaveCount < 4 then -- 3 per
+		self:CDBar(args.spellId, self:Easy() and 26.7 or 24.0, CL.count:format(L.shadowflame_cleave, shadowflameCleaveCount))
+	end
 end
 
 -- Stage Two: Agonizing Growth
@@ -321,7 +324,7 @@ function mod:UprootedAgonyRemoved(args)
 	self:Bar(421898, self:Easy() and 23.5 or 16.4, CL.count:format(CL.adds, flamingPestilenceCount)) -- Flaming Pestilence
 	self:Bar(421972, self:Mythic() and 37.4 or self:Easy() and 44.5 or 33, CL.count:format(CL.bombs, controlledBurnCount)) -- Controlled Burn
 	self:Bar(422039, self:Easy() and 44 or 21.4, CL.count:format(L.shadowflame_cleave, shadowflameCleaveCount)) -- Shadowflame Cleave
-	self:Bar("stages", 94.4, CL.count:format(CL.intermission, intermissionCount), 421013) -- Intermission / Doom Cultivation
+	self:Bar("stages", 92.2, CL.count:format(CL.intermission, intermissionCount), 421013) -- Intermission / Doom Cultivation
 end
 
 -- Mythic

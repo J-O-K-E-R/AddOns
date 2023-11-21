@@ -124,7 +124,7 @@ local function CooldownBarFrame_OnEvent(self, event, ...)
 			end
 
 			info.isDead = nil
-			info.isDeadOrOffline = nil
+			info.isDeadOrOffline = false
 			P:SetEnabledColorScheme(info)
 			self:UnregisterEvent(event)
 		end
