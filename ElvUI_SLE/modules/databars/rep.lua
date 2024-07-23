@@ -1,4 +1,5 @@
-﻿local SLE, T, E, L, V, P, G = unpack(ElvUI_SLE)
+﻿local unpack = unpack
+local SLE, T, E, L, V, P, G = unpack(ElvUI_SLE)
 local DB = SLE.DataBars
 local EDB = E.DataBars
 
@@ -121,14 +122,19 @@ local function ReputationBar_Update()
 end
 
 function DB:PopulateRepPatterns()
-	local symbols = {'%.$','%(','%)','|3%-7%%%(%%s%%%)','%%s([^%%])','%+','%%d','%%.1f','%%.','%%(','%%)','(.-)','(.-)%1','%%+','(%%d-)','(%%d-)'}
+	--Simpy formatting here. Prob shouldn't touch
+	local symbols = {
+		'%.$',    '%(','%)',        '|3%-7%%%(%%s%%%)',        '%%s([^%%])',    '%+',        '%%d',        '%%.1f',
+		'%%.',    '%%(','%%)',    '(.-)',                    '(.-)%1',        '%%+',        '(%%d-)',    '([%%d.]-)'
+	}
 	local pattern
+	--When rep increases
 	pattern = T.rgsub(FACTION_STANDING_INCREASED, unpack(symbols))
 	tinsert(DB.RepIncreaseStrings, pattern)
 
 	pattern = T.rgsub(FACTION_STANDING_INCREASED_ACH_BONUS, unpack(symbols))
 	tinsert(DB.RepIncreaseStrings, pattern)
-
+	--When rep decreases
 	pattern = T.rgsub(FACTION_STANDING_DECREASED, unpack(symbols))
 	tinsert(DB.RepDecreaseStrings, pattern)
 
@@ -136,7 +142,7 @@ function DB:PopulateRepPatterns()
 	tinsert(DB.RepDecreaseStrings, pattern)
 end
 
-local function sendMessage(chatWindowsCache, newMessage)
+local function sendMessage(chatWindowsCache, newMessage) --Sending message in chat. TODO: check if we can actually send messages in respective chats
 	local db = E.db.sle.databars.reputation.chatfilter
 	local chatframe
 

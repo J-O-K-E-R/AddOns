@@ -5,7 +5,7 @@
 GTFO Fail List - Dragonflight
 ]]--
 
-if (not (GTFO.ClassicMode or GTFO.BurningCrusadeMode or GTFO.WrathMode)) then
+if (GTFO.RetailMode) then
 
 --- ************************
 --- * Dragon Isles (World) *
@@ -1094,11 +1094,6 @@ GTFO.SpellID["421867"] = {
   sound = 3;
 };
 
-GTFO.SpellID["427659"] = {
-  --desc = "Primal Smash (Nuoberon)";
-  sound = 3;
-};
-
 GTFO.SpellID["427664"] = {
   --desc = "Banana Barrage (Nuoberon)";
   applicationOnly = true;
@@ -1128,6 +1123,139 @@ GTFO.SpellID["421055"] = {
 GTFO.SpellID["420945"] = {
   --desc = "Pulverizing Outburst (Aurostor)";
   applicationOnly = true;
+  sound = 3;
+};
+
+GTFO.SpellID["395169"] = {
+  --desc = "Break Water (O'nank Shorescour)";
+  sound = 3;
+};
+
+GTFO.SpellID["388540"] = {
+  --desc = "Tidal Smash (O'nank Shorescour)";
+  sound = 3;
+  tankSound = 0;
+};
+
+GTFO.SpellID["210875"] = {
+  --desc = "Charged Pulse (Stormforged Sentinel)";
+  sound = 3;
+};
+
+GTFO.SpellID["423115"] = {
+  --desc = "Spear of Light (Odyn)";
+  sound = 3;
+};
+
+GTFO.SpellID["427421"] = {
+  --desc = "Burning Skies (Prophet of the Flame)";
+  sound = 3;
+};
+
+GTFO.SpellID["427432"] = {
+  --desc = "Molten Slam (Prophet of the Flame)";
+  sound = 3;
+};
+
+GTFO.SpellID["422821"] = {
+  --desc = "Overflow (Guardian Ordan)";
+  sound = 3;
+};
+
+GTFO.SpellID["423643"] = {
+  --desc = "Arcane Echoes (Elisande)";
+  sound = 3;
+};
+
+GTFO.SpellID["423634"] = {
+  --desc = "Delphuric Beam (Elisande)";
+  sound = 3;
+};
+
+GTFO.SpellID["428100"] = {
+  --desc = "Erupting Earth (Verlann Timbercrush)";
+  sound = 3;
+};
+
+GTFO.SpellID["414993"] = {
+  --desc = "Heat Wave (Raelas Firewind)";
+  sound = 3;
+};
+
+GTFO.SpellID["423491"] = {
+  --desc = "Burn Wave (Raelas Firewind)";
+  sound = 3;
+};
+
+GTFO.SpellID["372980"] = {
+  --desc = "Zapped";
+  applicationOnly = true;
+  sound = 3;
+};
+
+GTFO.SpellID["398559"] = {
+  --desc = "Conductive Malice (Ball Lightning)";
+  applicationOnly = true;
+  sound = 3;
+};
+
+GTFO.SpellID["375011"] = {
+  --desc = "Seismic Force (Morchok)";
+  sound = 3;
+  applicationOnly = true;
+};
+
+GTFO.SpellID["430218"] = {
+  --desc = "Radiant Nova (Inquisitor Fairbell)";
+  sound = 3;
+};
+
+GTFO.SpellID["396887"] = {
+  --desc = "Flames (Dragonriding Races)";
+  applicationOnly = true;
+  sound = 3;
+};
+
+GTFO.SpellID["431065"] = {
+  --desc = "Shadowflame Vomit (Doomshadow)";
+  sound = 3;
+};
+
+GTFO.SpellID["414239"] = {
+  --desc = "Ashen Dreams";
+  sound = 3;
+};
+
+GTFO.SpellID["414171"] = {
+  --desc = "Incarnate's Wrath (Fyrakk)";
+  applicationOnly = true;
+  sound = 3;
+};
+
+GTFO.SpellID["414167"] = {
+  --desc = "Incarnate's Wrath (Vyranoth)";
+  applicationOnly = true;
+  sound = 3;
+};
+
+GTFO.SpellID["430685"] = {
+  --desc = "Unstable Void Rift";
+  sound = 3;
+};
+
+GTFO.SpellID["444645"] = {
+  --desc = "Infinite Arrows (Riftwalker Nilara)";
+  sound = 3;
+};
+
+GTFO.SpellID["398373"] = {
+  --desc = "Petrifying Bite (Spinmarrow)";
+  applicationOnly = true;
+  sound = 3;
+};
+
+GTFO.SpellID["412644"] = {
+  --desc = "Rumbling Earth (Kob'rok)";
   sound = 3;
 };
 
@@ -2517,6 +2645,12 @@ GTFO.SpellID["402746"] = {
   sound = 3;
 };
 
+GTFO.SpellID["410981"] = {
+  --desc = "Iron Jaws (Djaradin Dragonhunter)";
+  applicationOnly = true;
+  sound = 3;
+};
+
 
 --- ************************
 --- * Dawn of the Infinite *
@@ -2775,7 +2909,13 @@ GTFO.SpellID["425660"] = {
 GTFO.SpellID["418533"] = {
   --desc = "Smashing Viscera (Igira the Cruel)";
   sound = 3;
-  damageMinimum = 300000;
+  damageMinimum = 600000;
+};
+
+GTFO.SpellID["426056"] = {
+  --desc = "Vital Rupture (Igira the Cruel)";
+  sound = 3;
+  applicationOnly = true;
 };
 
 GTFO.SpellID["423715"] = {
@@ -2876,11 +3016,10 @@ GTFO.SpellID["425370"] = {
   sound = 3;
 };
 
-GTFO.SpellID["420554"] = {
-  --desc = "Verdant Matrix (Nymue)";
-  applicationOnly = true;
+GTFO.SpellID["423369"] = {
+  --desc = "Barrier Blossom (Nymue)";
   sound = 3;
-};
+}
 
 GTFO.SpellID["429785"] = {
   --desc = "Impending Loom (Nymue)";
@@ -2909,7 +3048,10 @@ GTFO.SpellID["424233"] = {
   sound = 3;
 };
 
--- TODO: Flame Waves (Smolderon) - Moving fire pillars to avoid (Heroic)
+GTFO.SpellID["421969"] = {
+  --desc = "Flame Waves (Smolderon)";
+  sound = 3;
+};
 
 GTFO.SpellID["428770"] = {
   --desc = "Feather Bomb (Tindral Sageswift)";
@@ -2994,7 +3136,7 @@ GTFO.SpellID["425149"] = {
   --desc = "Charged Stomp (Zaqali Juggernaut)";
   sound = 3;
   tankSound = 0;
-  damageMinimum = 275000;
+  damageMinimum = 600000;
   test = true;
 };
 

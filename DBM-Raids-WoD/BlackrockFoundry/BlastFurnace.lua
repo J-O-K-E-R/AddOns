@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod(1154, "DBM-Raids-WoD", 2, 457)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20230526083530")
+mod:SetRevision("20240426185029")
 mod:SetCreatureID(76809, 76806)--76809 foreman feldspar, 76806 heart of the mountain, 76809 Security Guard, 76810 Furnace Engineer, 76811 Bellows Operator, 76815 Primal Elementalist, 78463 Slag Elemental, 76821 Firecaller
 mod:SetEncounterID(1690)
 mod:SetUsedIcons(6, 5, 4, 3, 2, 1)
@@ -90,7 +90,7 @@ mod:AddRangeFrameOption(8)
 mod:AddBoolOption("InfoFrame")
 mod:AddSetIconOption("SetIconOnFixate", 155196, false)
 mod:AddHudMapOption("HudMapOnBomb", 155192, false)
-mod:AddDropdownOption("VFYellType2", {"Countdown", "Apply"}, "Apply", "misc")--Countdown is a spammy nightmare on mythic (almost always 10 targets get debuff at same time), let guilds opt into this if they want it.
+mod:AddDropdownOption("VFYellType2", {"Countdown", "Apply"}, "Apply", "misc", nil, 176121)--Countdown is a spammy nightmare on mythic (almost always 10 targets get debuff at same time), let guilds opt into this if they want it.
 
 mod.vb.machinesDead = 0
 mod.vb.elementalistsRemaining = 4
@@ -107,7 +107,7 @@ mod.vb.bellowsOperator = 0
 mod.vb.secondSlagSpawned = false
 mod.vb.volatileActive = 0
 local playerVolatileCount = 0
-local bombDebuff, volatileFireDebuff, fixateDebuff, heatName = DBM:GetSpellInfo(155192), DBM:GetSpellInfo(176121), DBM:GetSpellInfo(155196), DBM:GetSpellInfo(155242)
+local bombDebuff, volatileFireDebuff, fixateDebuff, heatName = DBM:GetSpellName(155192), DBM:GetSpellName(176121), DBM:GetSpellName(155196), DBM:GetSpellName(155242)
 local activeSlagGUIDS = {}
 local activePrimalGUIDS = {}
 local activePrimal = 0 -- health report variable. no sync
@@ -143,18 +143,18 @@ do
 		local regulatorCount = 0
 		--Show heat first
 		addLine(heatName, UnitPower("boss1", 10))--Heart of the mountain always boss1
-		--Show regulator progress second
-		for i = 2, 4 do--Boss order can be random. regulators being 3/4 not guaranteed. Had some pull 2/3, 3/4, etc. Must check all 2-4
-			if UnitExists("boss"..i) then
-				local cid = DBM:GetCIDFromGUID(UnitGUID("boss"..i))
-				if cid == 76808 then--Heat Regulator
-					regulatorCount = regulatorCount + 1
-					local bombsNeeded = mceil(UnitHealth("boss"..i)/100000)
-					addLine(L.Regulator:format(regulatorCount), L.bombNeeded:format(bombsNeeded))
-					if regulatorCount == 2 then break end
-				end
-			end
-		end
+		--Show regulator progress second (uses old health calculations, pre stat squish so values are wrong now
+		--for i = 2, 4 do--Boss order can be random. regulators being 3/4 not guaranteed. Had some pull 2/3, 3/4, etc. Must check all 2-4
+		--	if UnitExists("boss"..i) then
+		--		local cid = DBM:GetCIDFromGUID(UnitGUID("boss"..i))
+		--		if cid == 76808 then--Heat Regulator
+		--			regulatorCount = regulatorCount + 1
+		--			local bombsNeeded = mceil(UnitHealth("boss"..i)/100000)
+		--			addLine(L.Regulator:format(regulatorCount), L.bombNeeded:format(bombsNeeded))
+		--			if regulatorCount == 2 then break end
+		--		end
+		--	end
+		--end
 		return lines, sortedLines
 	end
 
@@ -383,7 +383,7 @@ function mod:SPELL_AURA_APPLIED(args)
 		if self:CheckTankDistance(args.sourceGUID, 40) and self.vb.phase == 1 then--Filter Works very poorly, probably because mob not a BOSS id. usually see ALL warnings and all HUDs :\
 			warnBomb:CombinedShow(1, args.destName)
 			if self.Options.HudMapOnBomb then
-				DBM.HudMap:RegisterRangeMarkerOnPartyMember(155192, "highlight", args.destName, 5, debuffTime+0.5, 1, 1, 0, 0.5, nil, true, 1):Pulse(0.5, 0.5)
+				DBM.HudMap:RegisterRangeMarkerOnPartyMember(155192, "highlight", args.destName, 5, debuffTime+0.5, 1, 1, 0, 0.5):Pulse(0.5, 0.5)
 			end
 		end
 		if args:IsPlayer() then
@@ -648,7 +648,7 @@ function mod:INSTANCE_ENCOUNTER_ENGAGE_UNIT()
 		local unitID = "boss"..i
 		local unitGUID = UnitGUID(unitID)
 		local cid = self:GetCIDFromGUID(unitGUID)
-		if self.vb.phase == 2 and cid == 76815 and UnitExists(unitID) and not activePrimalGUIDS[unitGUID] then
+		if unitGUID and self.vb.phase == 2 and cid == 76815 and UnitExists(unitID) and not activePrimalGUIDS[unitGUID] then
 			activePrimal = activePrimal + 1
 			activePrimalGUIDS[unitGUID] = true
 		end

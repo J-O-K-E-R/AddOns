@@ -5,9 +5,9 @@ if not mod:IsClassic() then--on classic, it's normal10,normal25, defined in toc,
 	mod.statTypes = "normal,timewalker"
 end
 
-mod:SetRevision("20230525074627")
+mod:SetRevision("20240512232312")
 mod:SetCreatureID(33288)
-if not mod:IsClassic() then
+if mod:IsPostCata() then
 	mod:SetEncounterID(1143)
 else
 	mod:SetEncounterID(756)
@@ -78,15 +78,15 @@ else
 	timerAchieve					= mod:NewAchievementTimer(420, 3012)
 end
 
-mod:AddSetIconOption("SetIconOnFearTarget", 63830, true, false, {6})
-mod:AddSetIconOption("SetIconOnFervorTarget", 63138, false, false, {7})
-mod:AddSetIconOption("SetIconOnBrainLinkTarget", 63802, true, false, {1, 2})
-mod:AddSetIconOption("SetIconOnBeacon", 64465, true, true, {1, 2, 3, 4, 5, 6, 7, 8})
+mod:AddSetIconOption("SetIconOnFearTarget", 63830, true, 0, {6})
+mod:AddSetIconOption("SetIconOnFervorTarget", 63138, false, 0, {7})
+mod:AddSetIconOption("SetIconOnBrainLinkTarget", 63802, true, 0, {1, 2})
+mod:AddSetIconOption("SetIconOnBeacon", 64465, true, 5, {1, 2, 3, 4, 5, 6, 7, 8})
 mod:AddInfoFrameOption(63050)
 mod:AddNamePlateOption("NPAuraOnBeacon", 64465, true)
 
 local brainLinkTargets = {}
-local SanityBuff = DBM:GetSpellInfo(63050)
+local SanityBuff = DBM:GetSpellName(63050)
 mod.vb.brainLinkIcon = 2
 mod.vb.beaconIcon = 8
 mod.vb.Guardians = 0
@@ -118,7 +118,6 @@ function mod:OnCombatEnd()
 		DBM.Nameplate:Hide(true, nil, nil, nil, true, true)
 	end
 end
-
 
 function mod:OnTimerRecovery()
 	self.vb.numberOfPlayers = DBM:GetNumRealGroupMembers()
@@ -211,15 +210,9 @@ function mod:SPELL_AURA_APPLIED(args)
 			specWarnMalady:Show()
 			specWarnMalady:Play("targetyou")
 			yellMalady:Yell()
-		else
-			local uId = DBM:GetRaidUnitId(args.destName)
-			if uId then
-				local inRange = CheckInteractDistance(uId, 2)
-				if inRange then
-					specWarnMaladyNear:Show(args.destName)
-					specWarnMaladyNear:Play("runaway")
-				end
-			end
+		elseif self:IsClassic() and self:CheckNearby(10, args.destName) then
+			specWarnMaladyNear:Show(args.destName)
+			specWarnMaladyNear:Play("runaway")
 		end
 	elseif args:IsSpellID(64126, 64125) then	-- Squeeze
 		warnSqueeze:Show(args.destName)

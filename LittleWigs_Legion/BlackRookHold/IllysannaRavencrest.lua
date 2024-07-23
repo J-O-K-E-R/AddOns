@@ -28,7 +28,7 @@ function mod:GetOptions()
 		-- Stage One: Vengeance
 		{197418, "TANK_HEALER"}, -- Vengeful Shear
 		{197478, "SAY", "SAY_COUNTDOWN"}, -- Dark Rush
-		197546, -- Brutal Glaive
+		{197546, "SAY"}, -- Brutal Glaive
 		-- Stage Two: Fury
 		{197696, "SAY"}, -- Eye Beams
 		197797, -- Arcane Blitz
@@ -50,6 +50,7 @@ function mod:OnBossEnable()
 	self:Log("SPELL_AURA_APPLIED", "DarkRushApplied", 197478)
 	self:Log("SPELL_AURA_REMOVED", "DarkRushRemoved", 197478)
 	self:Log("SPELL_CAST_START", "BrutalGlaive", 197546)
+	self:Log("SPELL_CAST_SUCCESS", "BrutalGlaiveSuccess", 197546)
 
 	-- Stage Two: Fury
 	self:Log("SPELL_CAST_SUCCESS", "EyeBeams", 197687)
@@ -61,16 +62,23 @@ function mod:OnBossEnable()
 end
 
 function mod:OnEngage()
-	vengefulShearRemaining = 2
 	darkRushRemaining = 1
-	brutalGlaiveRemaining = 2
 	eyeBeamsRemaining = 3
 	self:SetStage(1)
 	self:CDBar(197546, 5.1) -- Brutal Glaive
 	self:CDBar(197418, 8.3) -- Vengeful Shear
 	self:CDBar(197478, 11.9) -- Dark Rush
-	-- cast at 100 energy, starts at 65 energy, 32s energy gain + 3.2s delay
-	self:CDBar("stages", 35.2, -12281, 197622) -- Stage Two: Fury, Leap
+	if self:Mythic() then
+		vengefulShearRemaining = 2
+		brutalGlaiveRemaining = 2
+		-- cast at 100 energy, starts at 65 energy: 32s energy gain + 3.2s delay
+		self:CDBar("stages", 35.2, -12281, 197622) -- Stage Two: Fury, Leap
+	else -- Heroic, Normal
+		vengefulShearRemaining = 3
+		brutalGlaiveRemaining = 3
+		-- cast at 100 energy, starts at 50 energy: 45s energy gain + 3.2s delay
+		self:CDBar("stages", 48.2, -12281, 197622) -- Stage Two: Fury, Leap
+	end
 end
 
 --------------------------------------------------------------------------------
@@ -143,7 +151,7 @@ do
 		self:PlaySound(args.spellId, "alarm", nil, playerList)
 		self:TargetsMessage(args.spellId, "red", playerList, 3)
 		if self:Me(args.destGUID) then
-			self:Say(args.spellId)
+			self:Say(args.spellId, nil, nil, "Dark Rush")
 			self:SayCountdown(args.spellId, 6)
 		end
 	end
@@ -155,15 +163,29 @@ function mod:DarkRushRemoved(args)
 	end
 end
 
-function mod:BrutalGlaive(args)
-	self:Message(args.spellId, "yellow")
-	self:PlaySound(args.spellId, "alert")
-	brutalGlaiveRemaining = brutalGlaiveRemaining - 1
-	if brutalGlaiveRemaining > 0 then
-		self:CDBar(args.spellId, 14.5)
-	else
-		self:StopBar(args.spellId)
+do
+	local function printTarget(self, name, guid)
+		self:TargetMessage(197546, "yellow", name)
+		self:PlaySound(197546, "alert", nil, name)
+		if self:Me(guid) then
+			self:Say(197546, nil, nil, "Brutal Glaive")
+		end
 	end
+
+	function mod:BrutalGlaive(args)
+		self:GetUnitTarget(printTarget, 0.3, args.sourceGUID)
+		-- only decrement brutalGlaiveRemaining in SUCCESS as this will just be recast if the target
+		-- uses invisibility/vanish/etc
+		if brutalGlaiveRemaining > 1 then
+			self:CDBar(args.spellId, 14.5)
+		else
+			self:StopBar(args.spellId)
+		end
+	end
+end
+
+function mod:BrutalGlaiveSuccess(args)
+	brutalGlaiveRemaining = brutalGlaiveRemaining - 1
 end
 
 -- Stage Two: Fury
@@ -172,7 +194,7 @@ function mod:EyeBeams(args)
 	self:TargetMessage(197696, "red", args.destName)
 	self:PlaySound(197696, "alarm", nil, args.destName)
 	if self:Me(args.destGUID) then
-		self:Say(197696)
+		self:Say(197696, nil, nil, "Eye Beams")
 	end
 	eyeBeamsRemaining = eyeBeamsRemaining - 1
 	if eyeBeamsRemaining > 0 then
@@ -191,13 +213,16 @@ do
 	local blitzTracker = {}
 
 	function mod:ArcaneBlitz(args)
+		if self:Friendly(args.sourceFlags) then -- these NPCs can be mind-controlled by DKs
+			return
+		end
 		local amount = blitzTracker[args.sourceGUID] or 0
 		local _, interruptReady = self:Interrupter()
-		if interruptReady or (self:Dispeller("magic") and amount >= 3) then
+		if interruptReady or (self:Dispeller("magic") and amount >= 2) then
 			if amount >= 1 then
-				self:Message(args.spellId, "yellow", CL.count:format(args.spellName, amount))
+				self:Message(args.spellId, "yellow", CL.casting:format(CL.count:format(args.spellName, amount)))
 			else
-				self:Message(args.spellId, "yellow")
+				self:Message(args.spellId, "yellow", CL.casting:format(args.spellName))
 			end
 			self:PlaySound(args.spellId, "alert")
 		end

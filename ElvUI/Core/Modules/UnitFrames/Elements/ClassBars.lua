@@ -7,12 +7,13 @@ local wipe = wipe
 local next = next
 local pairs = pairs
 local ipairs = ipairs
+local unpack = unpack
 
 local CreateFrame = CreateFrame
 local MAX_COMBO_POINTS = MAX_COMBO_POINTS
 
 local AltManaTypes = { Rage = 1 }
-local ClassPowerTypes = { 'ClassPower', 'AdditionalPower', 'Runes', 'Stagger', 'Totems', 'AlternativePower' }
+local ClassPowerTypes = { 'ClassPower', 'AdditionalPower', 'Runes', 'Stagger', 'Totems', 'AlternativePower', 'EclipseBar' }
 
 if E.Retail then
 	AltManaTypes.LunarPower = 8
@@ -114,7 +115,7 @@ function UF:Configure_ClassBar(frame)
 	end
 
 	if frame.USE_MINI_CLASSBAR and not frame.CLASSBAR_DETACHED then
-		if MAX_CLASS_BAR == 1 or frame.ClassBar == 'AdditionalPower' or frame.ClassBar == 'Stagger' or frame.ClassBar == 'AlternativePower' then
+		if MAX_CLASS_BAR == 1 or frame.ClassBar == 'AdditionalPower' or frame.ClassBar == 'EclipseBar' or frame.ClassBar == 'Stagger' or frame.ClassBar == 'AlternativePower' then
 			CLASSBAR_WIDTH = CLASSBAR_WIDTH * 2/3
 		else
 			CLASSBAR_WIDTH = CLASSBAR_WIDTH * (MAX_CLASS_BAR - 1) / MAX_CLASS_BAR
@@ -188,6 +189,27 @@ function UF:Configure_ClassBar(frame)
 		end
 
 		bars.backdrop:SetShown(not frame.USE_MINI_CLASSBAR and frame.USE_CLASSBAR)
+	elseif frame.ClassBar == 'EclipseBar' then
+		local lunarTex = bars.LunarBar:GetStatusBarTexture()
+
+		local lr, lg, lb = unpack(ElvUF.colors.ClassBars.DRUID[1])
+		bars.LunarBar:SetMinMaxValues(-1, 1)
+		bars.LunarBar:SetStatusBarColor(lr, lg, lb)
+		bars.LunarBar:Size(CLASSBAR_WIDTH - SPACING, frame.CLASSBAR_HEIGHT - SPACING)
+		bars.LunarBar:SetOrientation(isVertical and 'VERTICAL' or 'HORIZONTAL')
+		E:SetSmoothing(bars.LunarBar, UF.db.smoothbars)
+
+		local sr, sg, sb = unpack(ElvUF.colors.ClassBars.DRUID[2])
+		bars.SolarBar:SetMinMaxValues(-1, 1)
+		bars.SolarBar:SetStatusBarColor(sr, sg, sb)
+		bars.SolarBar:Size(CLASSBAR_WIDTH - SPACING, frame.CLASSBAR_HEIGHT - SPACING)
+		bars.SolarBar:SetOrientation(isVertical and 'VERTICAL' or 'HORIZONTAL')
+		bars.SolarBar:ClearAllPoints()
+		bars.SolarBar:Point(isVertical and 'BOTTOM' or 'LEFT', lunarTex, isVertical and 'TOP' or 'RIGHT')
+		E:SetSmoothing(bars.SolarBar, UF.db.smoothbars)
+
+		bars.Arrow:ClearAllPoints()
+		bars.Arrow:Point('CENTER', lunarTex, isVertical and 'TOP' or 'RIGHT', 0, isVertical and -4 or 0)
 	elseif frame.ClassBar == 'AdditionalPower' or frame.ClassBar == 'Stagger' or frame.ClassBar == 'AlternativePower' then
 		bars:SetOrientation(isVertical and 'VERTICAL' or 'HORIZONTAL')
 	end
@@ -280,15 +302,15 @@ function UF:Configure_ClassBar(frame)
 	UF.ToggleResourceBar(bars) -- keep after classbar height update
 end
 
-local function ToggleResourceBar(bars)
-	local frame = bars.origParent or bars:GetParent()
+function UF:ToggleResourceBar()
+	local frame = self.origParent or self:GetParent()
 
 	local db = frame.db
 	if not db then return end
 
 	frame.CLASSBAR_SHOWN = frame[frame.ClassBar]:IsShown()
 
-	if bars.text then bars.text:SetAlpha(frame.CLASSBAR_SHOWN and 1 or 0) end
+	if self.text then self.text:SetAlpha(frame.CLASSBAR_SHOWN and 1 or 0) end
 
 	frame.CLASSBAR_HEIGHT = frame.USE_CLASSBAR and ((db.classbar and db.classbar.height) or (frame.AlternativePower and db.power.height)) or 0
 	frame.CLASSBAR_YOFFSET = (not frame.USE_CLASSBAR or not frame.CLASSBAR_SHOWN or frame.CLASSBAR_DETACHED) and 0 or (frame.USE_MINI_CLASSBAR and ((UF.SPACING+(frame.CLASSBAR_HEIGHT*0.5))) or (frame.CLASSBAR_HEIGHT - (UF.BORDER-UF.SPACING)))
@@ -302,7 +324,6 @@ local function ToggleResourceBar(bars)
 		UF:SetSize_HealComm(frame)
 	end
 end
-UF.ToggleResourceBar = ToggleResourceBar --Make available to combobar
 
 -------------------------------------------------------------
 -- MONK, PALADIN, WARLOCK, MAGE, and COMBOS
@@ -336,8 +357,8 @@ function UF:Construct_ClassBar(frame)
 	bars.UpdateColor = UF.ClassPower_UpdateColor
 	bars.UpdateTexture = E.noop --We don't use textures but statusbars, so prevent errors
 
-	bars:SetScript('OnShow', ToggleResourceBar)
-	bars:SetScript('OnHide', ToggleResourceBar)
+	bars:SetScript('OnShow', UF.ToggleResourceBar)
+	bars:SetScript('OnHide', UF.ToggleResourceBar)
 
 	return bars
 end
@@ -404,7 +425,7 @@ end
 function UF:Runes_GetColor(rune, colors, classPower)
 	local value = rune:GetValue()
 
-	if E.Wrath then
+	if E.Cata then
 		local _, maxDuration = rune:GetMinMaxValues()
 		local duration = value == maxDuration and 1 or ((value * maxDuration) / 255) + .35
 
@@ -487,8 +508,8 @@ function UF:Construct_DeathKnightResourceBar(frame)
 	runes.PostUpdate = UF.Runes_PostUpdate
 	runes.PostUpdateColor = UF.Runes_PostUpdateColor
 
-	runes:SetScript('OnShow', ToggleResourceBar)
-	runes:SetScript('OnHide', ToggleResourceBar)
+	runes:SetScript('OnShow', UF.ToggleResourceBar)
+	runes:SetScript('OnHide', UF.ToggleResourceBar)
 
 	return runes
 end
@@ -518,8 +539,8 @@ function UF:Construct_AdditionalPowerBar(frame)
 	additionalPower.bg:SetInside(nil, 0, 0)
 	additionalPower.bg.multiplier = 0.35
 
-	additionalPower:SetScript('OnShow', ToggleResourceBar)
-	additionalPower:SetScript('OnHide', ToggleResourceBar)
+	additionalPower:SetScript('OnShow', UF.ToggleResourceBar)
+	additionalPower:SetScript('OnHide', UF.ToggleResourceBar)
 
 	UF:Construct_ClipFrame(frame, additionalPower)
 
@@ -556,6 +577,62 @@ function UF:PostVisibilityAdditionalPower(enabled)
 end
 
 -----------------------------------------------------------
+-- Eclipse Bar (Cataclysm)
+-----------------------------------------------------------
+function UF:Construct_DruidEclipseBar(frame)
+	local eclipseBar = CreateFrame('Frame', '$parent_EclipsePowerBar', frame)
+	eclipseBar:CreateBackdrop(nil, nil, nil, self.thinBorders, true)
+
+	eclipseBar.LunarBar = CreateFrame('StatusBar', 'LunarBar', eclipseBar)
+	eclipseBar.LunarBar:Point('LEFT', eclipseBar)
+	eclipseBar.LunarBar:SetStatusBarTexture(E.media.blankTex)
+	UF.statusbars[eclipseBar.LunarBar] = true
+
+	eclipseBar.SolarBar = CreateFrame('StatusBar', 'SolarBar', eclipseBar)
+	eclipseBar.SolarBar:SetStatusBarTexture(E.media.blankTex)
+	UF.statusbars[eclipseBar.SolarBar] = true
+
+	eclipseBar.RaisedElementParent = CreateFrame('Frame', nil, eclipseBar)
+	eclipseBar.RaisedElementParent:SetFrameLevel(eclipseBar:GetFrameLevel() + 100)
+	eclipseBar.RaisedElementParent:SetAllPoints()
+
+	eclipseBar.Arrow = eclipseBar.LunarBar:CreateTexture(nil, 'OVERLAY')
+	eclipseBar.Arrow:SetTexture(E.Media.Textures.ArrowUp)
+	eclipseBar.Arrow:SetPoint('CENTER')
+
+	eclipseBar.PostDirectionChange = UF.EclipsePostDirectionChange
+	eclipseBar.PostUpdateVisibility = UF.EclipsePostUpdateVisibility
+
+	eclipseBar:SetScript('OnShow', UF.ToggleResourceBar)
+	eclipseBar:SetScript('OnHide', UF.ToggleResourceBar)
+
+	return eclipseBar
+end
+
+function UF:EclipsePostDirectionChange(direction)
+	local frame = self.origParent or self:GetParent()
+	local vertical = frame.CLASSBAR_DETACHED and frame.db.classbar.verticalOrientation
+	local r, g, b = unpack(ElvUF.colors.ClassBars.DRUID[direction == 'sun' and 1 or 2])
+
+	self.Arrow:SetRotation(direction == 'sun' and (vertical and 0 or -1.57) or (vertical and 3.14 or 1.57))
+	self.Arrow:SetVertexColor(r, g, b)
+
+	if direction == 'sun' or direction == 'moon' then
+		self.Arrow:Show()
+	else
+		self.Arrow:Hide()
+	end
+end
+
+function UF:EclipsePostUpdateVisibility(enabled, stateChanged)
+	local frame = self.origParent or self:GetParent()
+
+	frame.ClassBar = enabled and 'EclipseBar' or 'AdditionalPower'
+
+	UF:PostVisibility_ClassBars(frame, stateChanged)
+end
+
+-----------------------------------------------------------
 -- Stagger Bar
 -----------------------------------------------------------
 function UF:Construct_Stagger(frame)
@@ -567,8 +644,8 @@ function UF:Construct_Stagger(frame)
 	UF.statusbars[stagger] = true
 	UF.classbars[stagger] = true
 
-	stagger:SetScript('OnShow', ToggleResourceBar)
-	stagger:SetScript('OnHide', ToggleResourceBar)
+	stagger:SetScript('OnShow', UF.ToggleResourceBar)
+	stagger:SetScript('OnHide', UF.ToggleResourceBar)
 
 	return stagger
 end

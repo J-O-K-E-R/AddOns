@@ -8,7 +8,7 @@ if (wowToc >= 100200) then
 	mod.upgradedMPlus = true
 end
 
-mod:SetRevision("20231121073213")
+mod:SetRevision("20240515181120")
 mod:SetCreatureID(82682)
 mod:SetEncounterID(1751)
 mod:SetHotfixNoticeRev(20231020000000)
@@ -43,20 +43,65 @@ if (wowToc >= 100200) then
 	local specWarnFrostbolt								= mod:NewSpecialWarningInterrupt(427863, "HasInterrupt", nil, nil, 1, 2)--Prio frostbolt interrupts over other two, because of slow
 	local specWarnGTFO									= mod:NewSpecialWarningGTFO(426991, nil, nil, nil, 1, 8)
 
-	local timerCinderboltStormCD						= mod:NewCDSourceTimer(60, 427899, nil, nil, nil, 2)
-	local timerGlacialFusionCD							= mod:NewCDSourceTimer(60, 428082, nil, nil, nil, 3)
-	local timerSpetialCompressionCD						= mod:NewCDSourceTimer(60, 428139, nil, nil, nil, 5)
+	local timerCinderboltStormCD						= mod:NewCDTimer(60, 427899, nil, nil, nil, 2)
+	local timerGlacialFusionCD							= mod:NewCDTimer(60, 428082, nil, nil, nil, 3)
+	local timerSpetialCompressionCD						= mod:NewCDTimer(60, 428139, nil, nil, nil, 5)
+--	local timerComboCD									= mod:NewCDComboTimer(20)--Use on mythic instead?
 
 	mod.vb.pullCount = 0
+	mod.vb.comboCount = 0
+
+	--local grip = DBM:GetSpellName(56689)
+
+	--Fire alone (no previos yet, arcane in future combos)
+	--Frost + Previous (fire)
+	--Arcane + Previous (frost)
+	--Repeats
+	--This hardcoded function is required because sometimes boss and add invert who casts what (ie it's right combo, but the previous and current are inverted)
+	local function comboHandler(self)
+		self.vb.comboCount = self.vb.comboCount + 1
+		--Fire alone first time (fire + arcane for 4)
+		if self.vb.comboCount % 3 == 1 then
+			--So next is Frost + Fire
+			timerGlacialFusionCD:Start(18.4)
+			timerCinderboltStormCD:Start(18.4)
+			--timerComboCD:Start(DBM_COMMON_L.AOEDAMAGE, DBM_COMMON_L.ORBS)
+		--Frost + Previous (fire)
+		elseif self.vb.comboCount % 3 == 2 then
+			--So next is Arcane + Frost
+			timerSpetialCompressionCD:Start(18.4)
+			timerGlacialFusionCD:Start(18.4)
+			--timerComboCD:Start(grip, DBM_COMMON_L.ORBS)
+		--Arcane + Previous (frost)
+		else
+			--So next is fire + arcane
+			timerCinderboltStormCD:Start(19.4)
+			timerSpetialCompressionCD:Start(19.4)
+			--timerComboCD:Start(DBM_COMMON_L.AOEDAMAGE, grip)
+		end
+	end
 
 	function mod:OnCombatStart(delay)
 		self.vb.pullCount = 0
-		timerCinderboltStormCD:Start(3, DBM_COMMON_L.BOSS)
+		self.vb.comboCount = 0
+		timerCinderboltStormCD:Start(3)
 		if not self:IsMythic() then--Mythic schedulers timers differently
-			timerGlacialFusionCD:Start(24.1, DBM_COMMON_L.BOSS)
-			timerSpetialCompressionCD:Start(43.7, DBM_COMMON_L.BOSS)
+			timerGlacialFusionCD:Start(24.1)
+			timerSpetialCompressionCD:Start(43.7)
+		end
+		--Haven't seen bug in a while, guess print did it's job. Will remove if no one reports further problems with this boss for a while.
+		--DBM:AddMsg("This boss is very buggy and blizzard has ignored bug reports on the bugs. Sol sometimes resets her rotation back to cinder at random. Now, I've decided to reinstate showing what next rotation is SUPPOSED TO BE but if it's wrong don't complain to me, complain to blizzard for not fixing rotation bug")
+	end
+
+	function mod:OnCombatEnd(wipe, secondRun)
+		if not wipe and not secondRun then
+			local EverBloomTrash = DBM:GetModByName("EverBloomTrash")
+			EverBloomTrash:PortalRP()
 		end
 	end
+
+	--Another great log with variances
+	--https://www.warcraftlogs.com/reports/79WcKGf4znd8qgj2#pins=2%24Off%24%23244F4B%24expression%24%09(ability.id%20%3D%20428139)%20and%20type%20%3D%20%22begincast%22%0A%09%20or%20(ability.id%20%3D%20428177%20or%20ability.id%20%3D%20427899%20or%20ability.id%20%3D%20428082)%20and%20type%20%3D%20%22applybuff%22%0A%09%20or%20type%20%3D%20%22dungeonencounterstart%22%20or%20type%20%3D%20%22dungeonencounterend%22&view=events&boss=61279&difficulty=10&wipes=2
 
 	--boss first / add second
 	--expected:
@@ -79,11 +124,10 @@ if (wowToc >= 100200) then
 			specWarnSpetialCompression:Play("pullin")
 			if self:IsMythic() then
 				if args:GetSrcCreatureID() == 82682 then--Source is Boss
-					timerGlacialFusionCD:Start(20, DBM_COMMON_L.BOSS)--Fire, Ice, Arcane, repeat
-					timerSpetialCompressionCD:Start(20, DBM_COMMON_L.ADD)--Add will recast this next
+					comboHandler(self)
 				end
 			else
-				timerSpetialCompressionCD:Start(60, DBM_COMMON_L.BOSS)
+				timerSpetialCompressionCD:Start(60)
 			end
 		elseif spellId == 427863 then
 			if self:CheckInterruptFilter(args.sourceGUID, false, true) then
@@ -99,28 +143,26 @@ if (wowToc >= 100200) then
 			warnCinderboltStorm:Show()
 			if self:IsMythic() then
 				if args:GetSrcCreatureID() == 82682 then--Source is Boss
-					timerGlacialFusionCD:Start(19.4, DBM_COMMON_L.BOSS)--Fire, Ice, Arcane, repeat
-					timerCinderboltStormCD:Start(20, DBM_COMMON_L.ADD)--Add will recast this next
+					comboHandler(self)
 				end
 			else
-				timerCinderboltStormCD:Start(60, DBM_COMMON_L.BOSS)
+				timerCinderboltStormCD:Start(60)
 			end
 		elseif spellId == 428082 then
 			specWarnGlacialFusion:Show()
 			specWarnGlacialFusion:Play("watchorb")
 			if self:IsMythic() then
 				if args:GetSrcCreatureID() == 82682 then--Source is Boss
-					timerSpetialCompressionCD:Start(20, DBM_COMMON_L.BOSS)--Fire, Ice, Arcane, repeat
-					timerGlacialFusionCD:Start(20, DBM_COMMON_L.ADD)--Add will recast this next
+					comboHandler(self)
 				end
 			else
-				timerGlacialFusionCD:Start(60, DBM_COMMON_L.BOSS)
+				timerGlacialFusionCD:Start(60)
 			end
 		end
 	end
 
 	function mod:SPELL_PERIODIC_DAMAGE(_, _, _, _, destGUID, _, _, _, spellId, spellName)
-		if spellId == 426991 and destGUID == UnitGUID("player") and self:AntiSpam(3, 1) then
+		if spellId == 426991 and destGUID == UnitGUID("player") and self:AntiSpam(3, 2) then
 			specWarnGTFO:Show(spellName)
 			specWarnGTFO:Play("watchfeet")
 		end

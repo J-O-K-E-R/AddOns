@@ -52,21 +52,7 @@ end
 
 L = BigWigs:NewBossLocale("Heigan the Unclean", "esMX")
 if L then
-	--L.teleport_trigger = "The end is upon you."
-
-	--L.teleport = "Teletransporte"
-	--L.teleport_desc = "Warn for Teleports."
-	--L.teleport_1min_message = "Teleport in 1 min"
-	--L.teleport_30sec_message = "Teleport in 30 sec"
-	--L.teleport_10sec_message = "Teleport in 10 sec!"
-	--L.on_platform_message = "Teleport! On platform for 45 sec!"
-
-	--L.to_floor_30sec_message = "Back in 30 sec"
-	--L.to_floor_10sec_message = "Back in 10 sec!"
-	--L.on_floor_message = "Back on the floor! 90 sec to next teleport!"
-
-	--L.teleport_bar = "Teleport!"
-	--L.back_bar = "Back on the floor!"
+	--L.teleport_yell_trigger = "The end is upon you."
 end
 
 L = BigWigs:NewBossLocale("The Four Horsemen", "esMX")
@@ -126,22 +112,7 @@ end
 
 L = BigWigs:NewBossLocale("Noth the Plaguebringer", "esMX")
 if L then
-	--L.add_trigger = "Rise, my soldiers! Rise and fight once more!"
-
-	L.teleport = "Teletransporte"
-	--L.teleport_desc = "Warnings for when Noth teleports."
-	--L.teleport_balcony = "Teleport! He's on the balcony!"
-	--L.teleport_room = "Teleport! He's back in room!"
-
-	--L.curse_explosion = "Curse explosion!"
-	--L.curse_warn = "Curse!"
-	--L.curse_10secwarn = "Curse in ~10 sec"
-	--L.curse_bar = "Next Curse"
-
-	L.wave = "Invocar esqueletos"
-	--L.wave_desc = "Warnings for the skeleton add waves."
-	--L.wave1 = "Wave 1"
-	--L.wave2 = "Wave 2"
+	--L.adds_yell_trigger = "Rise, my soldiers" -- Rise, my soldiers! Rise and fight once more!
 end
 
 L = BigWigs:NewBossLocale("Instructor Razuvious", "esMX")
@@ -170,49 +141,47 @@ end
 
 L = BigWigs:NewBossLocale("Thaddius", "esMX")
 if L then
-	--L.phase1_trigger1 = "Stalagg crush you!"
-	--L.phase1_trigger2 = "Feed you to master!"
-	--L.phase2_trigger1 = "Eat... your... bones..."
-	--L.phase2_trigger2 = "Break... you!!"
-	--L.phase2_trigger3 = "Kill..."
+	L[15929] = "Stalagg"
+	L[15930] = "Feugen"
 
-	--L.add_death_trigger = "%s dies."
-	--L.overload_trigger = "%s overloads!"
+	L.stage1_yell_trigger1 = "¡Stalagg aplasta!"
+	--L.stage1_yell_trigger2 = "Feed you to master!"
 
-	--L.polarity_changed = "Polarity changed!"
-	--L.polarity_nochange = "Same polarity!"
-	--L.polarity_first_positive = "You're POSITIVE!"
-	--L.polarity_first_negative = "You're NEGATIVE!"
+	--L.stage2_yell_trigger1 = "Eat... your... bones..."
+	--L.stage2_yell_trigger2 = "Break... you!!"
+	--L.stage2_yell_trigger3 = "Kill..."
 
-	--L.throw = "Throw"
-	--L.throw_desc = "Warn about tank platform swaps."
-	--L.throw_warning = "Throw in ~5 sec!"
+	--L.add_death_emote_trigger = "%s dies."
+	L.overload_emote_trigger = "¡%s se sobrecarga!"
+	--L.add_revive_emote_trigger = "%s is jolted back to life!"
 
-	--L.polarity_extras = "Additional alerts for Polarity Shift positioning"
+	L.polarity_extras = "Avisos adicionales para el posicionamiento del cambio de polaridad"
 
-	--L.custom_off_select_charge_position = "First position"
-	--L.custom_off_select_charge_position_desc = "Where to move to after the first Polarity Shift."
-	--L.custom_off_select_charge_position_value1 = "|cffff2020Negative (-)|r are LEFT, |cff2020ffPositive (+)|r are RIGHT"
-	--L.custom_off_select_charge_position_value2 = "|cff2020ffPositive (+)|r are LEFT, |cffff2020Negative (-)|r are RIGHT"
+	L.custom_off_select_charge_position = "Primera posición"
+	L.custom_off_select_charge_position_desc = "Posicionamiento después del primer cambio de polaridad."
+	L.custom_off_select_charge_position_value1 = "|cffff2020Carga negativa (-)|r a la IZQUIERDA, |cff2020ffCarga positiva (+)|r a la DERECHA"
+	L.custom_off_select_charge_position_value2 = "|cff2020ffCarga positiva (+)|r a la IZQUIERDA, |cffff2020Carga negativa (-)|r a la DERECHA"
 
-	--L.custom_off_select_charge_movement = "Movement"
-	--L.custom_off_select_charge_movement_desc = "The movement strategy your group uses."
-	--L.custom_off_select_charge_movement_value1 = "Run |cff20ff20THROUGH|r the boss"
-	--L.custom_off_select_charge_movement_value2 = "Run |cff20ff20CLOCKWISE|r around the boss"
-	--L.custom_off_select_charge_movement_value3 = "Run |cff20ff20COUNTER-CLOCKWISE|r around the boss"
-	--L.custom_off_select_charge_movement_value4 = "Four camps 1: Polarity changed moves |cff20ff20RIGHT|r, same polarity moves |cff20ff20LEFT|r"
-	--L.custom_off_select_charge_movement_value5 = "Four camps 2: Polarity changed moves |cff20ff20LEFT|r, same polarity moves |cff20ff20RIGHT|r"
+	L.custom_off_select_charge_movement = "Movimiento"
+	L.custom_off_select_charge_movement_desc = "La estrategia de movimiento que se utiliza tu grupo."
+	L.custom_off_select_charge_movement_value1 = "Corre |cff20ff20A TRAVÉS|r del jefe"
+	L.custom_off_select_charge_movement_value2 = "Corre |cff20ff20EN SENTIDO HORARIO|r alrededor del jefe."
+	L.custom_off_select_charge_movement_value3 = "Corre |cff20ff20EN SENTIDO ANTIHORARIO|r alrededor del jefe."
+	L.custom_off_select_charge_movement_value4 = "Cuatro grupos 1: Cambio de polaridad hacia la |cff20ff20DERECHA|r, misma polaridad hacia la |cff20ff20IZQUIERDA|r."
+	L.custom_off_select_charge_movement_value5 = "Cuatro grupos 2: Cambio de polaridad hacia la |cff20ff20IZQUIERDA|r, misma polaridad hacia la |cff20ff20DERECHA|r."
 
-	--L.custom_off_charge_graphic = "Graphical arrow"
-	--L.custom_off_charge_graphic_desc = "Show an arrow graphic."
-	--L.custom_off_charge_text = "Text arrows"
-	--L.custom_off_charge_text_desc = "Show an additional message."
-	--L.custom_off_charge_voice = "Voice alert"
-	--L.custom_off_charge_voice_desc = "Play a voice alert."
+	L.custom_off_charge_graphic = "Flecha gráfica"
+	L.custom_off_charge_graphic_desc = "Muestra una flecha gráfica."
+	L.custom_off_charge_text = "Flecha de texto"
+	L.custom_off_charge_text_desc = "Muestra un mensaje adicional."
+	L.custom_off_charge_voice = "Alerta de voz"
+	L.custom_off_charge_voice_desc = "Reproduce una alerta de voz."
 
 	--Translate these to get locale sound files!
-	--L.left = "<--- GO LEFT <--- GO LEFT <---"
-	--L.right = "---> GO RIGHT ---> GO RIGHT --->"
-	--L.swap = "^^^^ SWITCH SIDES ^^^^ SWITCH SIDES ^^^^"
-	--L.stay = "==== DON'T MOVE ==== DON'T MOVE ===="
+	L.left = "<--- VE A LA IZQUIERDA <--- VE A LA IZQUIERDA <---"
+	L.right = "---> VE A LA DERECHA ---> VE A LA DERECHA --->"
+	L.swap = "^^^^ CAMBIA DE LADO ^^^^ CAMBIA DE LADO ^^^^"
+	L.stay = "==== NO TE MUEVES ==== NO TE MUEVES ===="
+
+	L.chat_message = "El módulo de Thaddius admite mostrar flechas direccionales y reproducir voces. Abre las opciones para configurarlas."
 end

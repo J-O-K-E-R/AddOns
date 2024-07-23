@@ -7,13 +7,13 @@ local _G = _G
 local format, tonumber = format, tonumber
 local GetAddOnMetadata = C_AddOns and C_AddOns.GetAddOnMetadata or GetAddOnMetadata
 
---GLOBALS: hooksecurefunc, LibStub, GetAddOnMetadata, CreateFrame, GetAddOnEnableState, BINDING_HEADER_SLE
+--GLOBALS: hooksecurefunc, LibStub, GetAddOnMetadata, CreateFrame, BINDING_HEADER_SLE
 
 local SLE = LibStub('AceAddon-3.0'):NewAddon(AddOnName, 'AceConsole-3.0', 'AceEvent-3.0', 'AceTimer-3.0', 'AceHook-3.0')
 SLE.callbacks = SLE.callbacks or LibStub('CallbackHandler-1.0'):New(SLE)
 
 SLE.version = GetAddOnMetadata('ElvUI_SLE', 'Version')
-SLE.DBversion = '4.64'
+SLE.DBversion = '4.78'
 SLE.Title = format('|cff9482c9%s|r', 'Shadow & Light')
 SLE.WoW10 = select(4, GetBuildInfo()) >= 100000
 
@@ -68,7 +68,8 @@ SLE.Minimap = SLE:NewModule('Minimap', 'AceHook-3.0', 'AceEvent-3.0')
 SLE.RectangleMinimap = SLE:NewModule('RectangleMinimap', 'AceHook-3.0', 'AceEvent-3.0')
 SLE.Misc = SLE:NewModule('Misc', 'AceHook-3.0', 'AceEvent-3.0')
 SLE.Nameplates = SLE:NewModule('Nameplates', 'AceHook-3.0', 'AceEvent-3.0', 'AceTimer-3.0')
-SLE.Professions = SLE:NewModule('Professions', 'AceHook-3.0', 'AceEvent-3.0')
+SLE.Professions = SLE:NewModule('Professions', 'AceHook-3.0', 'AceEvent-3.0', 'AceTimer-3.0')
+SLE.Fishing = SLE:NewModule('Fishing', 'AceHook-3.0', 'AceEvent-3.0', 'AceTimer-3.0')
 SLE.PVP = SLE:NewModule('PVP','AceHook-3.0', 'AceEvent-3.0')
 SLE.Quests = SLE:NewModule('Quests', 'AceEvent-3.0')
 SLE.BlizzRaid = SLE:NewModule('BlizzRaid', 'AceEvent-3.0')

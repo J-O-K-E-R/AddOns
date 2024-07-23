@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod(2520, "DBM-Raids-Dragonflight", 2, 1208)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20231120131222")
+mod:SetRevision("20240629030018")
 mod:SetCreatureID(201754)
 mod:SetEncounterID(2685)
 mod:SetUsedIcons(1, 2, 3, 4, 5, 6, 7, 8)
@@ -35,7 +35,7 @@ mod:RegisterEventsInCombat(
  or (ability.id = 401383 or ability.id = 401215 or ability.id = 403997 or ability.id = 407576 or ability.id = 401905 or ability.id = 401680 or ability.id = 401330 or ability.id = 404218 or ability.id = 410642 or ability.id = 404705 or ability.id = 407496 or ability.id = 404288 or ability.id = 411241 or ability.id = 405486 or ability.id = 403520 or ability.id = 408429) and type = "applydebuff"
 --]]
 --General
-local warnPhase								= mod:NewPhaseChangeAnnounce(2, nil, nil, nil, nil, nil, nil, 2)
+local warnPhase								= mod:NewPhaseChangeAnnounce(2, 2, nil, nil, nil, nil, nil, 2)
 local warnOblivionStack						= mod:NewCountAnnounce(401951, 2, nil, nil, DBM_CORE_L.AUTO_ANNOUNCE_OPTIONS.stack:format(401951))
 local warnMindFragment						= mod:NewAddsLeftAnnounce(403997, 1)--Not technically adds, but wording of option and alert text is ambigious that it doesn't matter, it fits
 local warnEmptynessBetweenStars				= mod:NewFadesAnnounce(401215, 1)
@@ -45,13 +45,12 @@ local specWarnOblivionStack					= mod:NewSpecialWarningStack(401951, nil, 6, nil
 local specWarnEmptynessBetweenStars			= mod:NewSpecialWarningYou(401215, nil, nil, nil, 1, 5)
 local specWarnGTFO							= mod:NewSpecialWarningGTFO(406989, nil, nil, nil, 1, 8)
 
-local timerPhaseCD							= mod:NewPhaseTimer(30)
+local timerPhaseCD							= mod:NewStageTimer(30)
 local timerEmptynessBetweenStars			= mod:NewBuffFadesTimer(15, 401215, nil, nil, nil, 3)
 local berserkTimer							= mod:NewBerserkTimer(600)
 
 mod:AddInfoFrameOption(401951, false)
-mod:AddMiscLine(DBM_CORE_L.OPTION_CATEGORY_DROPDOWNS)
-mod:AddDropdownOption("InfoFrameBehaviorTwo", {"OblivionOnly", "HowlOnly", "Hybrid"}, "OblivionOnly", "misc")
+mod:AddDropdownOption("InfoFrameBehaviorTwo", {"OblivionOnly", "HowlOnly", "Hybrid"}, "OblivionOnly", "misc", nil, 401951)
 --Stage One: The Legacy of the Dracthyr
 mod:AddTimerLine(DBM:EJ_GetSectionInfo(26140))
 local warnOppressingHowl						= mod:NewSpellAnnounce(401383, 3, nil, nil, nil, nil, nil, 2)
@@ -251,7 +250,7 @@ local allTimers = {
 			--Void Slash
 			[408422] = {21, 36.2, 37.5, 85.0, 11.2, 61.3},
 			--Scouring Eternity
-			[403625] = {46.2, 77.7, 80.2, 77.9},
+			[403625] = {46.2, 76.5, 80.2, 77.9},
 			--Embrace of Nothingness
 			[403517] = {24.7, 111.2, 50.0},
 		},
@@ -387,14 +386,14 @@ function mod:OnCombatStart(delay)
 	if self.Options.InfoFrame then
 		if self.Options.InfoFrameBehaviorTwo == "OblivionOnly" then
 			oblivionDisabled = false
-			DBM.InfoFrame:SetHeader(DBM:GetSpellInfo(401951))
+			DBM.InfoFrame:SetHeader(DBM:GetSpellName(401951))
 			DBM.InfoFrame:Show(20, "table", oblivionStacks, 1)
 		else
 			if self.Options.InfoFrameBehaviorTwo == "HowlOnly" then
 				oblivionDisabled = true--Means in phase 2 and 3 infoframe just closes
 				--If hybrid is enabled, oblivionDisabled will be set to false on stage 2 trigger
 			end
-			DBM.InfoFrame:SetHeader(DBM:GetSpellInfo(401383))
+			DBM.InfoFrame:SetHeader(DBM:GetSpellName(401383))
 			DBM.InfoFrame:Show(20, "playerdebuffstacks", 401383)--Stacks aren't in combat log so has to use less efficient UnitAura method
 		end
 	end
@@ -413,9 +412,6 @@ function mod:OnTimerRecovery()
 end
 
 function mod:OnCombatEnd()
---	if self.Options.RangeFrame then
---		DBM.RangeCheck:Hide()
---	end
 	if self.Options.InfoFrame then
 		DBM.InfoFrame:Hide()
 	end
@@ -436,6 +432,16 @@ function mod:SPELL_CAST_START(args)
 		local timer = self:GetFromTimersTable(allTimers, difficultyName, self.vb.phase, spellId, self.vb.surgeCount+1)
 		if timer then
 			timerGlitteringSurgeCD:Start(timer, self.vb.surgeCount+1)
+		else--Early push, abort timers even earlier
+			DBM:ShowTestSpecialWarning(L.EarlyStaging, 1, nil, true)
+			timerOppressingHowlCD:Stop()
+			timerGlitteringSurgeCD:Stop()
+			timerScorchingBombCD:Stop()
+			timerMassDisintegrateCD:Stop()
+			timerSearingBreathCD:Stop()
+			timerBurningClawsCD:Stop()
+			timerPhaseCD:Stop()
+			timerPhaseCD:Start(11)
 		end
 	elseif spellId == 401500 then
 		self.vb.bombCount = self.vb.bombCount + 1
@@ -715,7 +721,8 @@ function mod:SPELL_AURA_APPLIED(args)
 				warnBurningClaws:Show(args.destName, amount)
 			end
 		end
-		timerBurningClaws:Restart(27, args.destName)
+		timerBurningClaws:Stop()
+		timerBurningClaws:Start(27, args.destName)
 	elseif spellId == 411241 then
 		if not args:IsPlayer() and not UnitIsDeadOrGhost("player") then--and not DBM:UnitDebuff("player", spellId)
 			specWarnVoidClawsTaunt:Show(args.destName)
@@ -735,7 +742,8 @@ function mod:SPELL_AURA_APPLIED(args)
 				yellVoidClawsFades:Countdown(spellId)
 			end
 		end
-		timerVoidClaws:Restart(18, args.destName)
+		timerVoidClaws:Stop()
+		timerVoidClaws:Start(18, args.destName)
 	elseif spellId == 408429 then
 		local uId = DBM:GetRaidUnitId(args.destName)
 		if self:IsTanking(uId) then--Frontal filter, in case it can hit anyone that's in front of boss
@@ -758,7 +766,8 @@ function mod:SPELL_AURA_APPLIED(args)
 				end
 			end
 		end
-		timerVoidSlash:Restart(21, args.destName)--Needs to show for even non tanks getting hit though
+		timerVoidSlash:Stop()
+		timerVoidSlash:Start(21, args.destName)--Needs to show for even non tanks getting hit though
 	elseif spellId == 404218 then
 		if args:IsPlayer() then
 			playerVoidFracture = true
@@ -966,7 +975,7 @@ function mod:SPELL_AURA_REMOVED(args)
 			if self.Options.InfoFrameBehaviorTwo == "Hybrid" then
 				--Transition from Howl to Oblivion for phase 2 and phase 3
 				oblivionDisabled = false
-				DBM.InfoFrame:SetHeader(DBM:GetSpellInfo(401951))
+				DBM.InfoFrame:SetHeader(DBM:GetSpellName(401951))
 				DBM.InfoFrame:Show(20, "table", oblivionStacks, 1)
 			else
 				--Just close it out, It was howl only

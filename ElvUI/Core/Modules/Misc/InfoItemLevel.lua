@@ -9,7 +9,9 @@ local wipe = wipe
 local next = next
 local pairs = pairs
 local unpack = unpack
+
 local UnitGUID = UnitGUID
+local UnitExists = UnitExists
 local CreateFrame = CreateFrame
 
 local InspectItems = {
@@ -28,9 +30,12 @@ local InspectItems = {
 	'Trinket0Slot',
 	'Trinket1Slot',
 	'BackSlot',
-	'MainHandSlot',
-	'SecondaryHandSlot',
+	'MainHandSlot', -- 16
+	'SecondaryHandSlot', -- 17
+	E.Cata and 'RangedSlot' or nil -- 18
 }
+
+local numInspectItems = #InspectItems
 
 function M:CreateInspectTexture(slot, x, y)
 	local texture = slot:CreateTexture()
@@ -55,12 +60,29 @@ function M:GetInspectPoints(id)
 	elseif (id >= 6 and id <= 8) or (id >= 10 and id <= 14) then
 		return -40, 3, 18, 'BOTTOMRIGHT' -- Right side
 	else
-		return 0, 45, 60, 'BOTTOM'
+		return 0, 46, 60, 'BOTTOM'
 	end
 end
 
-function M:UpdateInspectInfo(_, arg1)
-	M:UpdatePageInfo(_G.InspectFrame, 'Inspect', arg1)
+function M:UpdateInspectInfo(event, arg1)
+	local frame = _G.InspectFrame
+	if not frame then return end
+
+	if event == 'UNIT_MODEL_CHANGED' or event == 'FAKE_INSPECT_UPDATE' then
+		if arg1 == 'target' and frame:IsShown() then
+			arg1 = UnitGUID(arg1)
+		else
+			return
+		end
+	end
+
+	if M.InspectTimer then -- event can spam when it has to load items
+		E:CancelTimer(M.InspectTimer)
+	end
+
+	if arg1 then -- model changed but no guid???
+		M.InspectTimer = E:ScheduleTimer(M.UpdatePageInfo, 0.2, M, frame, 'Inspect', arg1)
+	end
 end
 
 function M:UpdateCharacterInfo(event)
@@ -69,88 +91,113 @@ function M:UpdateCharacterInfo(event)
 	M:UpdatePageInfo(_G.CharacterFrame, 'Character', nil, event)
 end
 
+function M:UpdateSocketDisplay(item, hide)
+	local slots = item.SocketDisplay and item.SocketDisplay.Slots
+	if slots then
+		for _, slot in next, slots do
+			slot:SetAlpha(hide and 0 or 1)
+		end
+	end
+end
+
 function M:ClearPageInfo(frame, which)
 	if not (frame and frame.ItemLevelText) then return end
 	frame.ItemLevelText:SetText('')
 
-	for i = 1, 17 do
-		if i ~= 4 then
-			local inspectItem = _G[which..InspectItems[i]]
-			inspectItem.enchantText:SetText('')
-			inspectItem.iLvlText:SetText('')
+	for i = 1, numInspectItems do
+		local slot = i ~= 4 and _G[which..InspectItems[i]]
+		if slot then
+			slot.enchantText:SetText('')
+			slot.iLvlText:SetText('')
 
-			for y=1, 10 do
-				inspectItem['textureSlot'..y]:SetTexture()
-				inspectItem['textureSlotBackdrop'..y]:Hide()
+			M:UpdateSocketDisplay(slot)
+
+			for y = 1, 10 do
+				slot['textureSlot'..y]:SetTexture()
+				slot['textureSlotBackdrop'..y]:Hide()
 			end
 		end
 	end
 end
 
 function M:ToggleItemLevelInfo(setupCharacterPage)
-	if not E.Retail then return end
+	if E.Classic then return end
 
-	if setupCharacterPage then
-		M:CreateSlotStrings(_G.CharacterFrame, 'Character')
-	end
-
-	if E.db.general.itemLevel.displayCharacterInfo then
-		M:RegisterEvent('AZERITE_ESSENCE_UPDATE', 'UpdateCharacterInfo')
-		M:RegisterEvent('PLAYER_EQUIPMENT_CHANGED', 'UpdateCharacterInfo')
-		M:RegisterEvent('PLAYER_AVG_ITEM_LEVEL_UPDATE', 'UpdateCharacterInfo')
-		M:RegisterEvent('UPDATE_INVENTORY_DURABILITY', 'UpdateCharacterInfo')
-
-		_G.CharacterStatsPane.ItemLevelFrame.Value:Hide()
-
-		if not _G.CharacterFrame.CharacterInfoHooked then
-			_G.CharacterFrame:HookScript('OnShow', M.UpdateCharacterInfo)
-			_G.CharacterFrame.CharacterInfoHooked = true
+	if not E:IsAddOnEnabled('DejaCharacterStats') then
+		if setupCharacterPage then
+			M:CreateSlotStrings(_G.CharacterFrame, 'Character')
 		end
 
-		if not setupCharacterPage then
-			M:UpdateCharacterInfo()
+		if E.db.general.itemLevel.displayCharacterInfo then
+			M:RegisterEvent('AZERITE_ESSENCE_UPDATE', 'UpdateCharacterInfo')
+			M:RegisterEvent('PLAYER_EQUIPMENT_CHANGED', 'UpdateCharacterInfo')
+			M:RegisterEvent('PLAYER_AVG_ITEM_LEVEL_UPDATE', 'UpdateCharacterInfo')
+			M:RegisterEvent('UPDATE_INVENTORY_DURABILITY', 'UpdateCharacterInfo')
+
+			if E.Retail then
+				_G.CharacterStatsPane.ItemLevelFrame.Value:Hide()
+			end
+
+			if not _G.CharacterFrame.CharacterInfoHooked then
+				_G.CharacterFrame:HookScript('OnShow', M.UpdateCharacterInfo)
+				_G.CharacterFrame.CharacterInfoHooked = true
+			end
+
+			if not setupCharacterPage then
+				M:UpdateCharacterInfo()
+			end
+		else
+			M:UnregisterEvent('AZERITE_ESSENCE_UPDATE')
+			M:UnregisterEvent('PLAYER_EQUIPMENT_CHANGED')
+			M:UnregisterEvent('PLAYER_AVG_ITEM_LEVEL_UPDATE')
+			M:UnregisterEvent('UPDATE_INVENTORY_DURABILITY')
+
+			if E.Retail then
+				_G.CharacterStatsPane.ItemLevelFrame.Value:Show()
+			end
+
+			M:ClearPageInfo(_G.CharacterFrame, 'Character')
 		end
-	else
-		M:UnregisterEvent('AZERITE_ESSENCE_UPDATE')
-		M:UnregisterEvent('PLAYER_EQUIPMENT_CHANGED')
-		M:UnregisterEvent('PLAYER_AVG_ITEM_LEVEL_UPDATE')
-		M:UnregisterEvent('UPDATE_INVENTORY_DURABILITY')
-
-		_G.CharacterStatsPane.ItemLevelFrame.Value:Show()
-
-		M:ClearPageInfo(_G.CharacterFrame, 'Character')
 	end
 
 	if E.db.general.itemLevel.displayInspectInfo then
 		M:RegisterEvent('INSPECT_READY', 'UpdateInspectInfo')
+		M:RegisterEvent('UNIT_MODEL_CHANGED', 'UpdateInspectInfo')
 	else
 		M:UnregisterEvent('INSPECT_READY')
+		M:UnregisterEvent('UNIT_MODEL_CHANGED')
 		M:ClearPageInfo(_G.InspectFrame, 'Inspect')
 	end
 end
 
-function M:UpdatePageStrings(i, iLevelDB, inspectItem, slotInfo, which) -- `which` is used by plugins
+function M:UpdatePageStrings(i, iLevelDB, slot, slotInfo, which) -- `which` is used by plugins
 	iLevelDB[i] = slotInfo.iLvl
 
-	inspectItem.enchantText:SetText(slotInfo.enchantTextShort)
-	if slotInfo.enchantColors and next(slotInfo.enchantColors) then
-		inspectItem.enchantText:SetTextColor(unpack(slotInfo.enchantColors))
+	if E.db.general.itemLevel.showEnchants then
+		slot.enchantText:SetText(slotInfo.enchantTextShort)
+		if slotInfo.enchantColors and next(slotInfo.enchantColors) then
+			slot.enchantText:SetTextColor(unpack(slotInfo.enchantColors))
+		end
 	end
 
-	inspectItem.iLvlText:SetText(slotInfo.iLvl)
-	if E.db.general.itemLevel.itemLevelRarity and slotInfo.itemLevelColors and next(slotInfo.itemLevelColors) then
-		inspectItem.iLvlText:SetTextColor(unpack(slotInfo.itemLevelColors))
+	if E.db.general.itemLevel.showItemLevel then
+		slot.iLvlText:SetText(slotInfo.iLvl)
+		if E.db.general.itemLevel.itemLevelRarity and slotInfo.itemLevelColors and next(slotInfo.itemLevelColors) then
+			slot.iLvlText:SetTextColor(unpack(slotInfo.itemLevelColors))
+		end
 	end
 
-	local gemStep, essenceStep = 1, 1
+	M:UpdateSocketDisplay(slot, true)
+
+	local gemStep, essenceStep, showGems = 1, 1, E.db.general.itemLevel.showGems
 	for x = 1, 10 do
-		local texture = inspectItem['textureSlot'..x]
-		local backdrop = inspectItem['textureSlotBackdrop'..x]
-		local essenceType = inspectItem['textureSlotEssenceType'..x]
+		local texture = slot['textureSlot'..x]
+		local backdrop = slot['textureSlotBackdrop'..x]
+		local essenceType = slot['textureSlotEssenceType'..x]
 		if essenceType then essenceType:Hide() end
 
-		local gem = slotInfo.gems and slotInfo.gems[gemStep]
-		local essence = not gem and (slotInfo.essences and slotInfo.essences[essenceStep])
+		local gem = showGems and slotInfo.gems and slotInfo.gems[gemStep]
+		local essence = showGems and not gem and (slotInfo.essences and slotInfo.essences[essenceStep])
 		if gem then
 			texture:SetTexture(gem)
 			backdrop:SetBackdropBorderColor(unpack(E.media.bordercolor))
@@ -167,11 +214,11 @@ function M:UpdatePageStrings(i, iLevelDB, inspectItem, slotInfo, which) -- `whic
 			end
 
 			if not essenceType then
-				essenceType = inspectItem:CreateTexture()
+				essenceType = slot:CreateTexture()
 				essenceType:SetTexture(2907423)
 				essenceType:SetRotation(rad(90))
 				essenceType:SetParent(backdrop)
-				inspectItem['textureSlotEssenceType'..x] = essenceType
+				slot['textureSlotEssenceType'..x] = essenceType
 			end
 
 			essenceType:Point('BOTTOM', texture, 'TOP', 0, -9)
@@ -210,21 +257,22 @@ function M:UpdateAverageString(frame, which, iLevelDB)
 	if avgItemLevel then
 		if charPage then
 			frame.ItemLevelText:SetText(avgItemLevel)
-			frame.ItemLevelText:SetTextColor(_G.CharacterStatsPane.ItemLevelFrame.Value:GetTextColor())
+
+			if E.Retail then
+				frame.ItemLevelText:SetTextColor(_G.CharacterStatsPane.ItemLevelFrame.Value:GetTextColor())
+			end
 		else
-			frame.ItemLevelText:SetFormattedText(L["Item level: %.2f"], avgItemLevel)
+			frame.ItemLevelText:SetText(avgItemLevel)
 		end
 
 		-- we have to wait to do this on inspect so handle it in here
 		if not E.db.general.itemLevel.itemLevelRarity then
-			for i = 1, 17 do
-				if i ~= 4 then
-					local ilvl = iLevelDB[i]
-					if ilvl then
-						local inspectItem = _G[which..InspectItems[i]]
-						local r, g, b = E:ColorizeItemLevel(ilvl - (avgTotal or avgItemLevel))
-						inspectItem.iLvlText:SetTextColor(r, g, b)
-					end
+			for i = 1, numInspectItems do
+				local ilvl = i ~= 4 and iLevelDB[i]
+				if ilvl then
+					local inspectItem = _G[which..InspectItems[i]]
+					local r, g, b = E:ColorizeItemLevel(ilvl - (avgTotal or avgItemLevel))
+					inspectItem.iLvlText:SetTextColor(r, g, b)
 				end
 			end
 		end
@@ -248,15 +296,16 @@ end
 do
 	local iLevelDB = {}
 	function M:UpdatePageInfo(frame, which, guid, event)
+		if which == 'Inspect' then M.InspectTimer = nil end -- clear inspect timer
 		if not (which and frame and frame.ItemLevelText) then return end
 		if which == 'Inspect' and (not frame or not frame.unit or (guid and frame:IsShown() and UnitGUID(frame.unit) ~= guid)) then return end
 
 		wipe(iLevelDB)
 
 		local waitForItems
-		for i = 1, 17 do
-			if i ~= 4 then
-				local inspectItem = _G[which..InspectItems[i]]
+		for i = 1, numInspectItems do
+			local inspectItem = i ~= 4 and _G[which..InspectItems[i]]
+			if inspectItem then
 				inspectItem.enchantText:SetText('')
 				inspectItem.iLvlText:SetText('')
 
@@ -276,7 +325,7 @@ do
 		end
 
 		if waitForItems then
-			E:Delay(0.10, M.UpdateAverageString, M, frame, which, iLevelDB)
+			E:Delay(0.1, M.UpdateAverageString, M, frame, which, iLevelDB)
 		else
 			M:UpdateAverageString(frame, which, iLevelDB)
 		end
@@ -286,40 +335,76 @@ end
 function M:CreateSlotStrings(frame, which)
 	if not (frame and which) then return end
 
-	local itemLevelFont = E.db.general.itemLevel.itemLevelFont
-	local itemLevelFontSize = E.db.general.itemLevel.itemLevelFontSize or 12
-	local itemLevelFontOutline = E.db.general.itemLevel.itemLevelFontOutline or 'OUTLINE'
-
 	if which == 'Inspect' then
 		frame.ItemLevelText = _G.InspectPaperDollItemsFrame:CreateFontString(nil, 'ARTWORK')
-		frame.ItemLevelText:Point('BOTTOMLEFT', 6, 6)
+		frame.ItemLevelText:Point('BOTTOMLEFT', E.Cata and 20 or 6, E.Cata and 84 or 6)
+	elseif E.Cata then
+		frame.ItemLevelText = _G.PaperDollItemsFrame:CreateFontString(nil, 'ARTWORK')
+		frame.ItemLevelText:Point('BOTTOMLEFT', _G.PaperDollItemsFrame, 6, 6)
 	else
 		frame.ItemLevelText = _G.CharacterStatsPane.ItemLevelFrame:CreateFontString(nil, 'ARTWORK')
-		frame.ItemLevelText:Point('BOTTOM', _G.CharacterStatsPane.ItemLevelFrame.Value, 'BOTTOM', 0, 0)
+		frame.ItemLevelText:Point('CENTER', _G.CharacterStatsPane.ItemLevelFrame.Value, 'CENTER', 0, -1)
 	end
-	frame.ItemLevelText:FontTemplate(nil, which == 'Inspect' and 12 or 20)
+
+	local totalLevelFont = LSM:Fetch('font', E.db.general.itemLevel.totalLevelFont)
+	local totalLevelFontSize = E.db.general.itemLevel.totalLevelFontSize or 12
+	local totalLevelFontOutline = E.db.general.itemLevel.totalLevelFontOutline or 'OUTLINE'
+	frame.ItemLevelText:FontTemplate(totalLevelFont, totalLevelFontSize, totalLevelFontOutline)
+
+	M:UpdateSlotPoints(which)
+end
+
+function M:UpdateSlotPoints(which, config)
+	local itemLevelFont = LSM:Fetch('font', E.db.general.itemLevel.itemLevelFont)
+	local itemLevelFontSize = E.db.general.itemLevel.itemLevelFontSize or 12
+	local itemLevelFontOutline = E.db.general.itemLevel.itemLevelFontOutline or 'OUTLINE'
+	local showItemLevel = E.db.general.itemLevel.showItemLevel
+
+	if config and which == 'Inspect' and UnitExists('target') then
+		M:UpdateInspectInfo('FAKE_INSPECT_UPDATE', 'target') -- fake update when inspect is already shown
+	end
 
 	for i, s in pairs(InspectItems) do
-		if i ~= 4 then
-			local slot = _G[which..s]
+		local slot = i ~= 4 and _G[which..s]
+		if slot then
 			local x, y, z, justify = M:GetInspectPoints(i)
-			slot.iLvlText = slot:CreateFontString(nil, 'OVERLAY')
-			slot.iLvlText:FontTemplate(LSM:Fetch('font', itemLevelFont), itemLevelFontSize, itemLevelFontOutline)
+			if not slot.iLvlText then
+				slot.iLvlText = slot:CreateFontString(nil, 'OVERLAY')
+			end
+
+			slot.iLvlText:FontTemplate(itemLevelFont, itemLevelFontSize, itemLevelFontOutline)
+			slot.iLvlText:ClearAllPoints()
 			slot.iLvlText:Point('BOTTOM', slot, x, y)
 
-			slot.enchantText = slot:CreateFontString(nil, 'OVERLAY')
-			slot.enchantText:FontTemplate(LSM:Fetch('font', itemLevelFont), itemLevelFontSize, itemLevelFontOutline)
+			if not slot.enchantText then
+				slot.enchantText = slot:CreateFontString(nil, 'OVERLAY')
+			end
 
-			if i == 16 or i == 17 then
-				slot.enchantText:Point(i==16 and 'BOTTOMRIGHT' or 'BOTTOMLEFT', slot, i==16 and -40 or 40, 3)
+			slot.enchantText:FontTemplate(itemLevelFont, itemLevelFontSize, itemLevelFontOutline)
+			slot.enchantText:ClearAllPoints()
+
+			local itemLeft, itemRight = i == 16, (E.Retail and i == 17) or (E.Cata and i == 18)
+			if itemLeft or itemRight then
+				slot.enchantText:Point(itemLeft and 'BOTTOMRIGHT' or 'BOTTOMLEFT', slot, itemLeft and -40 or 40, 3)
+			elseif E.Cata and i == 17 then -- cata secondary (not ranged)
+				slot.enchantText:Point('TOP', slot, 'BOTTOM', 0, 3)
 			else
 				slot.enchantText:Point(justify, slot, x + (justify == 'BOTTOMLEFT' and 5 or -5), z)
 			end
 
+			local weapon = i == 16 or i == 17 or i == 18
 			for u = 1, 10 do
-				local offset = 8+(u*16)
-				local newX = ((justify == 'BOTTOMLEFT' or i == 17) and x+offset) or x-offset
-				slot['textureSlot'..u], slot['textureSlotBackdrop'..u] = M:CreateInspectTexture(slot, newX, --[[newY or]] y)
+				local offset = (showItemLevel and 8 or 0) + ((u - (showItemLevel and 0 or 1)) * 16)
+				local newX = (weapon and 0) or ((justify == 'BOTTOMLEFT' or itemRight) and x+offset) or x-offset
+				local newY = (weapon and offset+40) or y
+
+				local texSlot = slot['textureSlot'..u]
+				if texSlot then
+					texSlot:ClearAllPoints()
+					texSlot:Point('BOTTOM', newX, newY)
+				else
+					slot['textureSlot'..u], slot['textureSlotBackdrop'..u] = M:CreateInspectTexture(slot, newX, newY)
+				end
 			end
 		end
 	end
@@ -333,17 +418,22 @@ function M:SetupInspectPageInfo()
 end
 
 function M:UpdateInspectPageFonts(which)
-	local itemLevelFont = E.db.general.itemLevel.itemLevelFont
+	local totalLevelFont = LSM:Fetch('font', E.db.general.itemLevel.totalLevelFont)
+	local totalLevelFontSize = E.db.general.itemLevel.totalLevelFontSize or 12
+	local totalLevelFontOutline = E.db.general.itemLevel.totalLevelFontOutline or 'OUTLINE'
+	local frame = (which == 'Character' and _G.CharacterFrame) or _G.InspectFrame
+	if frame and frame.ItemLevelText then
+		frame.ItemLevelText:FontTemplate(totalLevelFont, totalLevelFontSize, totalLevelFontOutline)
+	end
+
+	local itemLevelFont = LSM:Fetch('font', E.db.general.itemLevel.itemLevelFont)
 	local itemLevelFontSize = E.db.general.itemLevel.itemLevelFontSize or 12
 	local itemLevelFontOutline = E.db.general.itemLevel.itemLevelFontOutline or 'OUTLINE'
-
 	for i, s in pairs(InspectItems) do
-		if i ~= 4 then
-			local slot = _G[which..s]
-			if slot then
-				slot.iLvlText:FontTemplate(LSM:Fetch('font', itemLevelFont), itemLevelFontSize, itemLevelFontOutline)
-				slot.enchantText:FontTemplate(LSM:Fetch('font', itemLevelFont), itemLevelFontSize, itemLevelFontOutline)
-			end
+		local slot = i ~= 4 and _G[which..s]
+		if slot then
+			slot.iLvlText:FontTemplate(itemLevelFont, itemLevelFontSize, itemLevelFontOutline)
+			slot.enchantText:FontTemplate(itemLevelFont, itemLevelFontSize, itemLevelFontOutline)
 		end
 	end
 end

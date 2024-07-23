@@ -1,5 +1,43 @@
-local L = BigWigs:NewBossLocale("Blood Prince Council", "frFR")
+local L = BigWigs:NewBossLocale("Lord Marrowgar", "frFR")
 if not L then return end
+if L then
+	L.bone_spike = "Pointe d'os" -- NPC ID 36619
+end
+
+L = BigWigs:NewBossLocale("Lady Deathwhisper", "frFR")
+if L then
+	L.touch = "Toucher"
+	L.deformed_fanatic = "Fanatique déformé" -- NPC ID 38135
+	L.empowered_adherent = "Adhérent investi" -- NPC ID 38136
+end
+
+L = BigWigs:NewBossLocale("Icecrown Gunship Battle", "frFR")
+if L then
+	L.adds_trigger_alliance = "Saccageurs, sergents, à l'attaque !"
+	L.adds_trigger_horde = "Soldats, sergents, à l'attaque !"
+
+	L.mage = "Mage"
+	L.mage_desc = "Prévient quand un mage apparaît pour congeler vos canons."
+	-- Alliance: We're taking hull damage, get a battle-mage out here to shut down those cannons!
+	-- Horde: We're taking hull damage, get a sorcerer out here to shut down those cannons!
+	--L.mage_yell_trigger = "taking hull damage"
+
+	L.warmup_trigger_alliance = "Faites chauffer les moteurs"
+	L.warmup_trigger_horde = "Levez%-vous, fils et filles"
+
+	L.disable_trigger_alliance = "Mes frères et sœurs, en avant"
+	L.disable_trigger_horde = "Sus au roi%-liche"
+end
+
+L = BigWigs:NewBossLocale("Deathbringer Saurfang", "frFR")
+if L then
+	L.blood_beast = "Bête de sang" --  NPC ID 38508
+
+	L.warmup_alliance = "Bon allez, on se bouge ! En route -"
+	L.warmup_horde = "Kor'krons, en route ! Champions, surveillez bien vos arrières. Le Fléau a été -"
+end
+
+L = BigWigs:NewBossLocale("Blood Prince Council", "frFR")
 if L then
 	L.switch_message = "Nouvelle cible : %s"
 	L.switch_bar = "~Prochain chgt de cible"
@@ -16,27 +54,6 @@ if L then
 	L.prison_message = "Prison de l'ombre x%d !"
 end
 
-L = BigWigs:NewBossLocale("Lady Deathwhisper", "frFR")
-if L then
-	L.engage_trigger = "Quelle est cette perturbation ?"
-	L.phase2_message = "Barrière de mana dissipée - Phase 2 !"
-
-	L.dnd_message = "Mort et décomposition sur VOUS !"
-
-	L.adds = "Membres du culte"
-	L.adds_desc = "Affiche des minuteurs concernant l'apparition des membres du culte."
-	L.adds_bar = "Prochains membres du culte"
-	L.adds_warning = "Prochains membres du culte dans 5 sec. !"
-
-	L.touch_message = "%2$dx Toucher sur %1$s"
-	L.touch_bar = "Prochain Toucher"
-
-	L.deformed_fanatic = "Fanatique déformé !"
-
-	L.spirit_message = "Esprit vengeur invoqué !"
-	L.spirit_bar = "Prochain Esprit"
-end
-
 L = BigWigs:NewBossLocale("Festergut", "frFR")
 if L then
 	L.engage_trigger = "On joue ?"
@@ -44,27 +61,6 @@ if L then
 	L.inhale_bar = "Inhalation %d"
 	L.blight_warning = "Chancre âcre dans ~5 sec. !"
 	L.ball_message = "Arrivée d'une Gelée malléable !"
-end
-
-L = BigWigs:NewBossLocale("Icecrown Gunship Battle", "frFR")
-if L then
-	L.adds = "Portails"
-	L.adds_desc = "Prévient de l'arrivée des ennemis sur votre propre bateau."
-	L.adds_trigger_alliance = "Saccageurs, sergents, à l'attaque !"
-	L.adds_trigger_horde = "Soldats, sergents, à l'attaque !"
-	L.adds_message = "Portails !"
-	L.adds_bar = "Prochains portails"
-
-	L.mage = "Mage"
-	L.mage_desc = "Prévient quand un mage apparaît pour congeler vos canons."
-	L.mage_message = "Mage apparu !"
-	L.mage_bar = "Prochain mage"
-
-	L.warmup_trigger_alliance = "Faites chauffer les moteurs"
-	L.warmup_trigger_horde = "Levez%-vous, fils et filles"
-
-	L.disable_trigger_alliance = "Mes frères et sœurs, en avant"
-	L.disable_trigger_horde = "Sus au roi%-liche"
 end
 
 L = BigWigs:NewBossLocale("Blood-Queen Lana'thel", "frFR")
@@ -109,13 +105,6 @@ if L then
 	--L.custom_on_valkyr_marker_desc = "Mark the Val'kyr with {rt8}{rt7}{rt6}, requires promoted or leader.\n|cFFFF0000Only 1 person in the raid should have this enabled to prevent marking conflicts.|r\n|cFFADFF2FTIP: If the raid has chosen you to turn this on, quickly mousing over the Val'kyr is the fastest way to mark them.|r"
 end
 
-L = BigWigs:NewBossLocale("Lord Marrowgar", "frFR")
-if L then
-	L.engage_trigger = "Le Fléau va déferler sur ce monde dans un torrent de mort et de destruction !"
-
-	L.bonestorm_warning = "Tempête d'os dans 5 sec. !"
-end
-
 L = BigWigs:NewBossLocale("Professor Putricide", "frFR")
 if L then
 	L.engage_trigger = "Grande nouvelle, mes amis ! Je crois que j'ai mis au point une peste qui va détruire toute vie sur Azeroth !"
@@ -149,18 +138,6 @@ if L then
 	L.ooze_message = "Limon %dx"
 
 	L.spray_bar = "Prochaine Projection"
-end
-
-L = BigWigs:NewBossLocale("Deathbringer Saurfang", "frFR")
-if L then
-	L.adds = "Bêtes de sang"
-	L.adds_desc = "Affiche un minuteur et des messages indiquant quand des Bêtes de sang apparaissent."
-	L.adds_warning = "Bêtes de sang dans 5 sec. !"
-	L.adds_message = "Bêtes de sang !"
-
-	L.engage_trigger = "PAR LA PUISSANCE DU ROI-LICHE !"
-	L.warmup_alliance = "Bon allez, on se bouge ! En route -"
-	L.warmup_horde = "Kor'krons, en route ! Champions, surveillez bien vos arrières. Le Fléau a été -"
 end
 
 L = BigWigs:NewBossLocale("Sindragosa", "frFR")
@@ -211,6 +188,6 @@ end
 L = BigWigs:NewBossLocale("Icecrown Citadel Trash", "frFR")
 if L then
 	L.deathbound_ward = "Gardien lié par la mort"
-	--L.deathspeaker_adds = "Lady Deathwhisper Trash"
+	L.deathspeaker_high_priest = "Grand prêtre nécrorateur" -- NPC ID 36829
 	L.putricide_dogs = "Bijou & Kifouette"
 end

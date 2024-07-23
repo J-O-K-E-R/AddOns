@@ -40,8 +40,6 @@ if L then
 	L.spike = "Spike"
 	L.silence = mod:SpellName(226452) -- Silence
 	L.miasma = "Miasma" -- Short for Sinister Miasma
-	L.glacial_winds = "Tornadoes"
-	L.foul_winds = "Pushback"
 
 	L.custom_on_nameplate_fixate = "Fixate Nameplate Icon"
 	L.custom_on_nameplate_fixate_desc = "Show an icon on the nameplate of Frostbound Devoted that are fixed on you.\n\nRequires the use of Enemy Nameplates and a supported nameplate addon (KuiNameplates, Plater)."
@@ -98,8 +96,8 @@ function mod:GetOptions()
 		[348760] = CL.meteor, -- Frost Blast (Meteor)
 		[354289] = L.miasma, -- Necrotic Miasma (Miasma)
 		[352293] = self:SpellName(249436), -- Necrotic Destruction (Destruction)
-		[355055] = L.glacial_winds, -- Glacial Winds (Tornadoes)
-		[355127] = L.foul_winds, -- Foul Winds (Pushback)
+		[355055] = CL.tornadoes, -- Glacial Winds (Tornadoes)
+		[355127] = CL.pushback, -- Foul Winds (Pushback)
 	}
 end
 
@@ -509,15 +507,15 @@ function mod:VengefulDestruction(args)
 	-- XXX Starts when the first person enters, should we keep this or just ditch it?
 	-- local remnant = self:GetBossId(176929) -- was only ever boss2, but just to make sure
 	-- if remnant and self:GetHealth(remnant) < 34 then -- final stage 2
-	-- 	--self:CDBar(355055, 3, L.glacial_winds) -- Glacial Winds
+	-- 	--self:CDBar(355055, 3, CL.tornadoes) -- Glacial Winds
 	-- 	--self:CDBar(352379, 11) -- Freezing Blast
 	-- 	-- if self:Mythic() then
-	-- 	-- 	self:CDBar(355127, 7, L.foul_winds) -- Foul Winds
+	-- 	-- 	self:CDBar(355127, 7, CL.pushback) -- Foul Winds
 	-- 	-- end
 	-- else
 	-- 	self:CDBar(352379, self:Mythic() and 3 or 7) -- Freezing Blast
 	-- 	if self:Mythic() then
-	-- 		self:CDBar(355127, 7, L.foul_winds) -- Foul Winds
+	-- 		self:CDBar(355127, 7, CL.pushback) -- Foul Winds
 	-- 	end
 	-- end
 end
@@ -530,8 +528,8 @@ function mod:NecroticSurgeApplied(args)
 	end
 	self:StopBar(CL.cast:format(self:SpellName(249436))) -- Destruction
 	self:StopBar(352379) -- Freezing Blast
-	self:StopBar(L.glacial_winds) -- Glacial Winds
-	self:StopBar(L.foul_winds) -- Foul Winds
+	self:StopBar(CL.tornadoes) -- Glacial Winds
+	self:StopBar(CL.pushback) -- Foul Winds
 	if self:GetStage() == 2 then
 		self:SetStage(1)
 		soulFractureCount = 1
@@ -570,16 +568,16 @@ end
 
 function mod:GlacialWinds(args)
 	if inPhylactery then
-		self:Message(args.spellId, "cyan", L.glacial_winds)
-		self:CDBar(args.spellId, 13.5, L.glacial_winds)
+		self:Message(args.spellId, "cyan", CL.tornadoes)
+		self:CDBar(args.spellId, 13.5, CL.tornadoes)
 		self:PlaySound(args.spellId, "info")
 	end
 end
 
 function mod:FoulWinds(args)
 	if inPhylactery then
-		self:Message(args.spellId, "yellow", L.foul_winds)
-		self:CDBar(args.spellId, 25.5, L.foul_winds)
+		self:Message(args.spellId, "yellow", CL.pushback)
+		self:CDBar(args.spellId, 25.5, CL.pushback)
 		self:PlaySound(args.spellId, "alert")
 	end
 end
@@ -592,8 +590,8 @@ function mod:UndyingWrath(args)
 	end
 
 	self:StopBar(352379) -- Freezing Blast
-	self:StopBar(L.glacial_winds) -- Glacial Winds
-	self:StopBar(L.foul_winds) -- Foul Winds
+	self:StopBar(CL.tornadoes) -- Glacial Winds
+	self:StopBar(CL.pushback) -- Foul Winds
 end
 
 function mod:OnslaughtOfTheDamned(args)

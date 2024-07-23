@@ -83,6 +83,8 @@ addon.Spells = {
     [22734] = { type = BUFF_OTHER }, -- Drink
     [23605] = { type = BUFF_OTHER }, -- Nightfall, Spell Vulnerability
     [13494] = { type = BUFF_OFFENSIVE }, -- Manual Crowd Pummeler Haste buff
+    [446391] = { type = CROWD_CONTROL }, -- Torment
+    [6533] = { type = ROOT }, -- Net
 
     -- Interrupts
 
@@ -134,6 +136,12 @@ addon.Spells = {
     [14892] = { type = BUFF_DEFENSIVE }, -- Inspiration
         [15362] = { parent = 14892 },
         [15363] = { parent = 14892 },
+    [6346] = { type = BUFF_DEFENSIVE }, -- Fear Ward
+    [9484] = { type = CROWD_CONTROL }, -- Shackle Undead
+        [9485] = { parent = 9484 },
+        [10955] = { parent = 9484 },
+    [402004] = { type = BUFF_DEFENSIVE },  -- Pain Suppression
+    [425294] = { type = BUFF_DEFENSIVE },  -- Dispersion
 
     -- Warlock
 
@@ -171,6 +179,8 @@ addon.Spells = {
     [8178] = { type = IMMUNITY }, -- Grounding Totem Effect
     [16188] = { type = BUFF_DEFENSIVE }, -- Nature's Swiftness
     [12548] = { type = ROOT }, -- Frost Shock
+    [425876] = { type = IMMUNITY }, -- Decoy Totem (Redirect)
+    [436391] = { type = BUFF_DEFENSIVE }, -- Decoy Totem (Freedom)
 
     -- Paladin
 
@@ -190,6 +200,9 @@ addon.Spells = {
     [20170] = { type = CROWD_CONTROL }, -- Seal of Justice stun
     [6940] = { type = BUFF_DEFENSIVE }, -- Blessing of Sacrifice
         [20729] = { parent = 6940 },
+    [407613] = { type = BUFF_DEFENSIVE }, -- Beacon of Light
+    [412019] = { type = BUFF_DEFENSIVE }, -- Sacred Shield
+    [427719] = { type = CROWD_CONTROL }, -- Unstable Affliction (Silence)
 
     -- Hunter
 
@@ -218,6 +231,7 @@ addon.Spells = {
     [3034] = { type = ROOT }, -- Viper Sting
         [14279] = { parent = 3034 },
         [14280] = { parent = 3034 },
+    [409368] = { type = BUFF_OFFENSIVE }, -- Beast Mastery
 
     -- Druid
 
@@ -258,6 +272,7 @@ addon.Spells = {
         [778] = { parent = 770 },
         [9749] = { parent = 770 },
         [9907] = { parent = 770 },
+    [417141] = { type = BUFF_OFFENSIVE }, -- Berserk
 
     -- Mage
 
@@ -323,6 +338,7 @@ addon.Spells = {
     [14278] = { type = BUFF_DEFENSIVE }, -- Ghostly Strike
     [3409] = { type = ROOT }, -- Crippling Poison
         [11201] = { parent = 3409 },
+    [400009] = { type = CROWD_CONTROL }, -- Between the Eyes
 
     -- Warrior
 

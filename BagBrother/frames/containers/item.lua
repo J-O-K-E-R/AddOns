@@ -66,7 +66,7 @@ function Item:OnHide()
 end
 
 
---[[ API ]]--
+--[[ Update ]]--
 
 function Item:Update()
 	self:Super(Item):Update()
@@ -76,7 +76,7 @@ function Item:Update()
 		self:GetNormalTexture():SetVertexColor(1,1,1)
 	else
 		local family = self.frame:GetBagFamily(self:GetBag())
-		local color = Addon.sets.colorSlots and Addon.sets[(self.BagFamilies[family] or 'normal') .. 'Color'] or {}
+		local color = Addon.sets.colorSlots and Addon.sets[(self.BagFamilies[family] or 'normal') .. 'Color'] or Addon.None
 		local r,g,b = color[1] or 1, color[2] or 1, color[3] or 1
 
 		SetItemButtonTextureVertexColor(self, r,g,b)
@@ -95,15 +95,35 @@ function Item:UpdateCooldown()
 	end
 end
 
-function Item:MarkSeen()
-	if self.NewItemTexture:IsShown() then
-		C_NewItems.RemoveNewItem(self:GetBag(), self:GetID())
-		self:UpdateNewItemAnimation()
+function Item:UpdateSecondary()
+	self:Super(Item):UpdateSecondary()
+	if self.frame then
+		self:UpdateGlow()
+	end
+end
+
+function Item:UpdateGlow()
+	local new = Addon.sets.glowNew and self.info.isNew
+	self.BattlepayItemTexture:SetShown(new and self.info.isPaid)
+	self.NewItemTexture:SetShown(new)
+
+	if new then
+		self.NewItemTexture:SetAtlas(self.info.quality and NEW_ITEM_ATLAS_BY_QUALITY[self.info.quality] or 'bags-glow-white')
+		self.newitemglowAnim:Play()
+		self.flashAnim:Play()
 	end
 end
 
 
---[[ Properties ]]--
+--[[ API ]]--
+
+function Item:MarkSeen()
+	if self.NewItemTexture:IsShown() then
+		C_NewItems.RemoveNewItem(self:GetBag(), self:GetID())
+		self.info.isNew = false
+		self:UpdateGlow()
+	end
+end
 
 function Item:GetQuestInfo()
 	if self.hasItem then

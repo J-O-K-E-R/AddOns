@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod("VortexPinnacleTrash", "DBM-Party-Cataclysm", 8)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20231112074425")
+mod:SetRevision("20240714045506")
 --mod:SetModelID(47785)
 mod:SetZone(657)
 
@@ -78,7 +78,7 @@ local timerGreaterHealCD						= mod:NewCDNPTimer(14.1, 87779, nil, nil, nil, 4, 
 
 --Antispam IDs for this mod: 1 run away, 2 dodge, 3 dispel, 4 incoming damage, 5 you/role, 6 misc, 7 GTFO
 
-local groundingName = DBM:GetSpellInfo(87726)
+local groundingName = DBM:GetSpellName(87726)
 local playerGrounded = false
 
 function mod:LitTarget(targetname)
@@ -102,7 +102,7 @@ function mod:SPELL_CAST_START(args)
 	elseif spellId == 88010 or spellId == 410870 then--Pre 10.1, post 10.1
 		timerCycloneCD:Start(nil, args.sourceGUID)
 		if self:CheckInterruptFilter(args.sourceGUID, false, true) then
-			specWarnCyclone:Show()
+			specWarnCyclone:Show(args.sourceName)
 			specWarnCyclone:Play("kickcast")
 		end
 	elseif spellId == 87762 then
@@ -111,7 +111,7 @@ function mod:SPELL_CAST_START(args)
 	elseif spellId == 87779 then
 		timerGreaterHealCD:Start(nil, args.sourceGUID)
 		if self:CheckInterruptFilter(args.sourceGUID, false, true) then
-			specWarnGreaterHeal:Show()
+			specWarnGreaterHeal:Show(args.sourceName)
 			specWarnGreaterHeal:Play("kickcast")
 		end
 	elseif spellId == 88201 then--No throttle on purpose. this particular spell always needs awareness

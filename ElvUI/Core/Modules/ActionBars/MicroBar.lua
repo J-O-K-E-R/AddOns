@@ -100,11 +100,10 @@ local function onLeave(button)
 	end
 end
 
-function AB:HandleMicroCoords(button, name)
+function AB:GetMicroCoords(name, icons, character)
 	local l, r, t, b = 0.17, 0.87, 0.5, 0.908
-	local icons = AB.db.microbar.useIcons
 
-	if name == 'PVPMicroButton' or (not E.Retail and name == 'CharacterMicroButton') then
+	if name == 'PVPMicroButton' or (character and name == 'CharacterMicroButton') then
 		l, r, t, b = 0, 1, 0, 1
 	elseif E.Retail or icons then
 		local offset = AB.MICRO_OFFSETS[name]
@@ -113,6 +112,12 @@ function AB:HandleMicroCoords(button, name)
 			t, b = icons and 0.41 or 0.038, icons and 0.72 or 0.35
 		end
 	end
+
+	return l, r, t, b
+end
+
+function AB:HandleMicroCoords(button, name)
+	local l, r, t, b = AB:GetMicroCoords(name, AB.db.microbar.useIcons, not E.Retail)
 
 	local normal = button.GetNormalTexture and button:GetNormalTexture()
 	if normal then
@@ -157,7 +162,7 @@ function AB:HandleMicroTextures(button, name)
 	else
 		local icons = AB.db.microbar.useIcons
 		local character = not E.Retail and name == 'CharacterMicroButton' and E.Media.Textures.Black8x8
-		local faction = name == 'PVPMicroButton' and E.Media.Textures[E.myfaction == 'Horde' and 'PVPHorde' or 'PVPAlliance']
+		local faction = name == 'PVPMicroButton' and ((E.myfaction == 'Horde' and E.Media.Textures.PVPHorde) or E.Media.Textures.PVPAlliance)
 		local texture = faction or (not character and AB.MICRO_OFFSETS[name] and E.Media.Textures.MicroBar)
 		local stock = not E.Retail and not icons and AB.MICRO_CLASSIC[name] -- classic default icons from the game
 		local pushed = button.GetPushedTexture and button:GetPushedTexture()
@@ -330,6 +335,7 @@ function AB:UpdateMicroButtons()
 
 	AB:HandleBackdropMultiplier(microBar, backdropSpacing, db.buttonSpacing, db.widthMult, db.heightMult, anchorUp, anchorLeft, horizontal, lastButton, anchorRowButton)
 	AB:HandleBackdropMover(microBar, backdropSpacing)
+	AB:HandleTicketButton()
 
 	if microBar.mover then
 		if db.enabled then
@@ -358,6 +364,40 @@ end
 
 function AB:HandleCharacterPortrait()
 	self.Portrait:SetInside()
+end
+
+function AB:HasTicketButton()
+	local microMenu = _G.MicroMenu
+	if microMenu and microMenu.UpdateHelpTicketButtonAnchor then
+		return microMenu
+	end
+end
+
+function AB:HandleTicketButton()
+	if AB:HasTicketButton() then
+		AB:UpdateHelpTicketButtonAnchor()
+	end
+end
+
+function AB:UpdateHelpTicketButtonAnchor()
+	local ticket = _G.HelpOpenWebTicketButton
+	if not ticket then return end
+
+	local first = _G[AB.MICRO_BUTTONS[1]]
+	if first then
+		local db = AB.db.microbar
+		local size = ((db.keepSizeRatio and db.buttonSize) or db.buttonHeight) or 20
+		local height = (size / 2) + 7
+		local _, y = first:GetCenter()
+		local middle = E.screenHeight * 0.5
+
+		ticket:ClearAllPoints()
+		ticket:SetPoint('CENTER', first, 0, (y and y >= middle) and -height or height)
+	end
+end
+
+function AB:MicroBar_PostDrag()
+	AB:HandleTicketButton()
 end
 
 function AB:SetupMicroBar()
@@ -394,6 +434,11 @@ function AB:SetupMicroBar()
 
 	AB:SecureHook('UpdateMicroButtons')
 
+	local microMenu = AB:HasTicketButton()
+	if microMenu then
+		hooksecurefunc(microMenu, 'UpdateHelpTicketButtonAnchor', AB.UpdateHelpTicketButtonAnchor)
+	end
+
 	if _G.ResetMicroMenuPosition then
 		_G.ResetMicroMenuPosition()
 	else
@@ -413,5 +458,5 @@ function AB:SetupMicroBar()
 		_G.PVPMicroButtonTexture:SetAlpha(0)
 	end
 
-	E:CreateMover(microBar, 'MicrobarMover', L["Micro Bar"], nil, nil, nil, 'ALL,ACTIONBARS', nil, 'actionbar,microbar')
+	E:CreateMover(microBar, 'MicrobarMover', L["Micro Bar"], nil, nil, AB.MicroBar_PostDrag, 'ALL,ACTIONBARS', nil, 'actionbar,microbar')
 end

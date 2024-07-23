@@ -105,8 +105,10 @@ function mod:OnBossEnable()
 
 	self:RegisterEvent("CHAT_MSG_MONSTER_YELL")
 
-	self:Log("SPELL_DAMAGE", "Damage", 40841, 40611, 40018, 40030) -- Flame Crash, Blaze, Eye Blast, Demon Fire (Eye Blast)
-	self:Log("SPELL_MISSED", "Damage", 40841, 40611, 40018, 40030) -- Flame Crash, Blaze, Eye Blast, Demon Fire (Eye Blast)
+	self:Log("SPELL_DAMAGE", "DemonFireDamage", 40030) -- Demon Fire (Eye Blast)
+	self:Log("SPELL_MISSED", "DemonFireDamage", 40030) -- Demon Fire (Eye Blast)
+	self:Log("SPELL_DAMAGE", "Damage", 40841, 40611, 40018) -- Flame Crash, Blaze, Eye Blast
+	self:Log("SPELL_MISSED", "Damage", 40841, 40611, 40018) -- Flame Crash, Blaze, Eye Blast
 end
 
 function mod:OnEngage()
@@ -132,7 +134,7 @@ function mod:CheckForFixate(_, unit, guid)
 	local mobId = self:MobId(guid)
 	if mobId == 23498 and not fixateList[guid] and self:Me(self:UnitGUID(unit.."target")) then -- Parasitic Shadowfiend
 		fixateList[guid] = true
-		self:Say(41917, 41951) -- 41951 = "Fixate"
+		self:Say(41917, CL.fixate, nil, "Fixate")
 		self:MessageOld(41917, "blue", "long", CL.you:format(self:SpellName(41951)), 41951)
 	end
 end
@@ -148,7 +150,7 @@ function mod:ParasiticShadowfiend(args)
 	self:PrimaryIcon(args.spellId, args.destName)
 	self:TargetBar(args.spellId, 10, args.destName, 36469, args.spellId) -- 36469 = "Parasite"
 	if self:Me(args.destGUID) then
-		self:Say(args.spellId, 36469) -- 36469 = "Parasite"
+		self:Say(args.spellId, CL.parasite, nil, "Parasite")
 	end
 end
 
@@ -156,7 +158,7 @@ function mod:ParasiticShadowfiendFailure(args) -- The parasite reached someone n
 	self:TargetMessageOld(41917, args.destName, "yellow")
 	self:TargetBar(41917, 10, args.destName, 36469, 41917) -- 36469 = "Parasite"
 	if self:Me(args.destGUID) then
-		self:Say(41917, 36469) -- 36469 = "Parasite"
+		self:Say(41917, CL.parasite, nil, "Parasite")
 	end
 end
 
@@ -306,10 +308,20 @@ end
 
 do
 	local prev = 0
+	function mod:DemonFireDamage(args) -- Demon Fire (Eye Blast)
+		if self:Me(args.destGUID) and args.time-prev > 1.5 then
+			prev = args.time
+			self:MessageOld(40018, "blue", "alert", CL.underyou:format(self:SpellName(40018)))
+		end
+	end
+end
+
+do
+	local prev = 0
 	function mod:Damage(args)
-		if self:Me(args.destGUID) and GetTime()-prev > 1.5 then
-			prev = GetTime()
-			self:MessageOld(args.spellId == 40030 and 40018 or args.spellId, "blue", "alert", CL.underyou:format(args.spellId == 40030 and self:SpellName(40018) or args.spellName))
+		if self:Me(args.destGUID) and args.time-prev > 1.5 then
+			prev = args.time
+			self:MessageOld(args.spellId, "blue", "alert", CL.underyou:format(args.spellName))
 		end
 	end
 end

@@ -43,7 +43,9 @@ L['trinket'] = 'Bijou'
 L['activation_unknown'] = 'Activation inconnue'
 L['requirement_not_found'] = 'Emplacement requis inconnu'
 L['multiple_spawns'] = 'Peut apparaître à plusieurs endroits.'
-L['shared_drops'] = 'Drop partagé'
+L['shared_drops'] = 'Butins partagés'
+L['zone_drops_label'] = 'Butins mondiaux'
+L['zone_drops_note'] = 'Les objets listés ci-dessous peuvent être trouvés sur plusieurs monstres de cette zone.'
 
 L['requires'] = 'Requiert'
 L['ranked_research'] = '%s (Rang %d/%d)'
@@ -173,6 +175,8 @@ L['options_restore_hidden_nodes_desc'] = 'Restaure tous les nœuds cachés en ut
 
 L['options_rewards_settings'] = 'Récompenses'
 L['options_reward_types'] = 'Afficher les types de récompenses'
+L['options_manuscript_rewards'] = 'Montrer les Manuscrits guette-drake en récompenses'
+L['options_manuscript_rewards_desc'] = 'Afficher les Manuscrits guette-drake en récompenses dans les infobulles et suivre l\'état de leur acquisition.'
 L['options_mount_rewards'] = 'Afficher les montures en récompense'
 L['options_mount_rewards_desc'] = 'Afficher les montures en récompenses dans les infobulles et suivre leur état de possession.'
 L['options_pet_rewards'] = 'Afficher les familiers en récompense'
@@ -194,6 +198,8 @@ L['options_icons_rares_desc'] = 'Afficher les emplacements des PNJ rares.'
 L['options_icons_rares'] = 'Rares'
 L['options_icons_treasures_desc'] = 'Afficher les emplacements des trésors cachés'
 L['options_icons_treasures'] = 'Trésors'
+L['options_icons_vendors_desc'] = 'Afficher les emplacements des vendeurs.'
+L['options_icons_vendors'] = 'Vendeurs'
 
 ------------------------------------ FOCUS ------------------------------------
 

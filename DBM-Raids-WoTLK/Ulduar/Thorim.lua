@@ -5,9 +5,9 @@ if not mod:IsClassic() then--on classic, it's normal10,normal25, defined in toc,
 	mod.statTypes = "normal,timewalker"
 end
 
-mod:SetRevision("20230522065847")
+mod:SetRevision("20240512232312")
 mod:SetCreatureID(32865)
-if not mod:IsClassic() then
+if mod:IsPostCata() then
 	mod:SetEncounterID(1141)
 else
 	mod:SetEncounterID(752)
@@ -32,7 +32,6 @@ local warnLightningCharge			= mod:NewSpellAnnounce(62466, 2)
 local warningBomb					= mod:NewTargetNoFilterAnnounce(62526, 4)
 
 local yellBomb						= mod:NewYell(62526)
-local specWarnBomb					= mod:NewSpecialWarningClose(62526, nil, nil, nil, 1, 2)
 local specWarnLightningShock		= mod:NewSpecialWarningMove(62017, nil, nil, nil, 1, 2)
 local specWarnUnbalancingStrikeSelf	= mod:NewSpecialWarningDefensive(62130, nil, nil, nil, 1, 2)
 local specWarnUnbalancingStrike		= mod:NewSpecialWarningTaunt(62130, nil, nil, nil, 1, 2)
@@ -47,7 +46,7 @@ local timerUnbalancingStrike		= mod:NewCDTimer(25.6, 62130, nil, "Tank", nil, 5,
 local timerHardmode					= mod:NewTimer(175, "TimerHardmode", 62042)
 
 mod:AddRangeFrameOption("8")
-mod:AddSetIconOption("SetIconOnBomb", 62526, false, false, {7})
+mod:AddSetIconOption("SetIconOnBomb", 62526, false, 0, {7})
 
 local lastcharge = {}
 
@@ -96,13 +95,9 @@ function mod:SPELL_AURA_APPLIED(args)
 			specWarnUnbalancingStrike:Play("tauntboss")
 		end
 	elseif args:IsSpellID(62526, 62527) then
+		warningBomb:Show(args.destName)
 		if args:IsPlayer() then
 			yellBomb:Yell()
-		elseif self:CheckNearby(10, args.destName) then
-			specWarnBomb:Show(args.destName)
-			specWarnBomb:Play("runaway")
-		elseif self:CheckBossDistance(args.sourceGUID, true, 1180) then--Within Scroll of Stamina range (33)
-			warningBomb:Show(args.destName)
 		end
 		if self.Options.SetIconOnBomb then
 			self:SetIcon(args.destName, 7, 5)

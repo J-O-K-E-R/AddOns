@@ -1,35 +1,31 @@
 --------------------------------------------------------------------------------
--- Module declaration
+-- Module Declaration
 --
 
 local mod, CL = BigWigs:NewBoss("Instructor Razuvious", 533, 1607)
 if not mod then return end
 mod:RegisterEnableMob(16061, 16803) -- Instructor Razuvious, Deathknight Understudy
-mod:SetAllowWin(true)
 mod:SetEncounterID(1113)
 
 --------------------------------------------------------------------------------
 -- Locals
 --
 
-local activeUnderstudy
 local understudyIcons = {}
+local mindExhaustionList = {}
+local mindExhaustionDebuffTime = {}
+local UpdateInfoBoxList
 
 --------------------------------------------------------------------------------
 -- Localization
 --
 
-local L = mod:NewLocale()
+local L = mod:GetLocale()
 if L then
 	L.understudy = "Deathknight Understudy"
 
-	L.taunt_warning = "Taunt ready in 5sec!"
-	L.shieldwall_warning = "Barrier gone in 5sec!"
-
-	L.shout = 29107
-	L.shout_icon = 6673
+	L["29107_icon"] = "ability_warrior_battleshout"
 end
-L = mod:GetLocale()
 
 --------------------------------------------------------------------------------
 -- Initialization
@@ -37,77 +33,164 @@ L = mod:GetLocale()
 
 function mod:GetOptions()
 	return {
-		"shout", -- Disrupting Shout
+		29107, -- Disrupting Shout
 		29060, -- Taunt
 		29061, -- Shield Wall
-		29051, -- Mind Exhaustion
+		{29051, "INFOBOX"}, -- Mind Exhaustion
 	}, {
 		[29060] = L.understudy,
 	}
 end
 
+function mod:VerifyEnable(unit, mobId)
+	if mobId == 16061 then
+		return true
+	elseif mobId == 16803 then
+		return self:GetHealth(unit) == 100
+	end
+end
+
 function mod:OnBossEnable()
-	self:Log("SPELL_CAST_SUCCESS", "Shout", 29107)
+	understudyIcons = {}
+	mindExhaustionList = {}
+	mindExhaustionDebuffTime = {}
+
+	self:Log("SPELL_CAST_SUCCESS", "DisruptingShout", 29107)
 	self:Log("SPELL_CAST_SUCCESS", "Taunt", 29060)
+	self:Log("SPELL_AURA_APPLIED", "TauntApplied", 29060)
+	self:Log("SPELL_AURA_REMOVED", "TauntRemoved", 29060)
 	self:Log("SPELL_CAST_SUCCESS", "ShieldWall", 29061)
-	self:Log("SPELL_AURA_APPLIED", "Exhaustion", 29051)
+	--self:Log("SPELL_AURA_APPLIED", "MindExhaustion", 29051) -- Hidden
 
 	self:Log("SPELL_AURA_APPLIED", "MindControl", 10912)
-	self:Death("Deaths", 16803) -- Deathknight Understudy
+	self:Death("UnderstudyKilled", 16803) -- Deathknight Understudy
 end
 
 function mod:OnEngage()
-	understudyIcons = {}
-	self:CDBar("shout", 25, L.shout, L.shout_icon)
-	self:DelayedMessage("shout", 20, "orange", CL.soon:format(self:SpellName(L.shout)), L.shout_icon, "alert")
+	-- Mind Control can happen before engage, so we don't reset any locals
+	self:CDBar(29107, 25, self:SpellName(29107), L["29107_icon"]) -- Disrupting Shout
+	self:DelayedMessage(29107, 20, "red", CL.soon:format(self:SpellName(29107)))
+
+	self:OpenInfo(29051, "BigWigs")
+	self:SetInfo(29051, 1, "|T136222:0:0:0:0:64:64:4:60:4:60|t".. self:SpellName(29051))
+	self:SimpleTimer(UpdateInfoBoxList, 0.1)
 end
 
 --------------------------------------------------------------------------------
 -- Event Handlers
 --
 
-function mod:MindControl(args)
-	local icon = CombatLog_String_GetIcon(args.destRaidFlags)
-	if icon == "" then icon = nil end
-	understudyIcons[args.destGUID] = icon
-	activeUnderstudy = args.destGUID
-end
-
-function mod:Deaths(args)
-	if args.destGUID == activeUnderstudy then
-		self:StopBar(29060) -- Taunt
-		self:CancelDelayedMessage(L.taunt_warning)
-		self:StopBar(29061) -- Shield Wall
-		self:CancelDelayedMessage(L.shieldwall_warning)
-	end
-	local icon = understudyIcons[args.destGUID]
-	if icon then
-		self:StopBar(icon .. self:SpellName(29051))
-	end
-end
-
-function mod:Shout(args)
-	self:Message("shout", "red", args.spellName, L.shout_icon)
-	self:CDBar("shout", 25, args.spellName, L.shout_icon)
-	self:DelayedMessage("shout", 20, "orange", CL.soon:format(args.spellName), L.shout_icon, "alert")
+function mod:DisruptingShout(args)
+	self:Message(args.spellId, "red", args.spellName, L["29107_icon"])
+	self:CDBar(args.spellId, 25, args.spellName, L["29107_icon"])
+	self:DelayedMessage(args.spellId, 20, "red", CL.soon:format(args.spellName))
+	self:PlaySound(args.spellId, "warning")
 end
 
 function mod:Taunt(args)
-	self:Message(29060, "green")
-	self:Bar(29060, 20)
-	self:DelayedMessage(29061, 15, "orange", L.taunt_warning)
+	local icon = understudyIcons[args.sourceGUID]
+	if icon then
+		local msg = icon .. args.spellName
+		self:Message(args.spellId, "orange", msg)
+		self:Bar(args.spellId, 60, msg)
+	else
+		self:Message(args.spellId, "orange")
+		self:Bar(args.spellId, 60)
+	end
+	self:PlaySound(args.spellId, "info")
+end
+
+do
+	local prevTaunt = nil
+	function mod:TauntApplied(args)
+		prevTaunt = args.sourceGUID
+		self:Bar(args.spellId, 20, CL.on:format(args.spellName, CL.boss))
+	end
+
+	function mod:TauntRemoved(args)
+		if prevTaunt == args.sourceGUID then
+			self:StopBar(CL.on:format(args.spellName, CL.boss))
+			self:Message(args.spellId, "orange", CL.over:format(args.spellName))
+		end
+	end
 end
 
 function mod:ShieldWall(args)
-	self:Message(29061, "green")
-	self:Bar(29061, 20)
-	self:DelayedMessage(29060, 15, "yellow", L.shieldwall_warning)
+	if self:MobId(args.sourceGUID) == 16803 then -- Shared with 4 horsemen
+		local icon = understudyIcons[args.sourceGUID]
+		if icon then
+			local msg = icon .. args.spellName
+			self:Message(args.spellId, "yellow", msg)
+			self:Bar(args.spellId, 20, msg)
+		else
+			self:Message(args.spellId, "yellow")
+			self:Bar(args.spellId, 20)
+		end
+		self:PlaySound(args.spellId, "long")
+	end
 end
 
-function mod:Exhaustion(args)
+--function mod:MindExhaustion(args)
+--	local icon = understudyIcons[args.destGUID]
+--	if icon then
+--		-- Not much of a point if they aren't marked
+--		self:Bar(args.spellId, 60, icon .. args.spellName)
+--	end
+--end
+
+function mod:MindControl(args)
+	if self:MobId(args.destGUID) == 16803 then -- Only when mind controlling an understudy
+		self:DeleteFromTable(mindExhaustionList, args.destGUID)
+		local icon = self:GetIconTexture(self:GetIcon(args.destRaidFlags))
+		if icon then
+			mindExhaustionList[#mindExhaustionList + 1] = args.destGUID
+			mindExhaustionDebuffTime[args.destGUID] = GetTime() + 60
+			understudyIcons[args.destGUID] = icon
+		else
+			understudyIcons[args.destGUID] = nil
+		end
+	end
+end
+
+function mod:UnderstudyKilled(args)
+	mindExhaustionDebuffTime[args.destGUID] = -1
 	local icon = understudyIcons[args.destGUID]
 	if icon then
-		-- Not much of a point if they aren't marked
-		self:Bar(29051, 60, icon .. args.spellName)
+		self:StopBar(icon .. self:SpellName(29060)) -- Taunt
+		self:StopBar(icon .. self:SpellName(29061)) -- Shield Wall
+	else
+		self:StopBar(29060) -- Taunt
+		self:StopBar(29061) -- Shield Wall
+	end
+end
+
+function UpdateInfoBoxList()
+	if not mod:IsEngaged() then return end
+	mod:SimpleTimer(UpdateInfoBoxList, 0.1)
+
+	local t = GetTime()
+	local line = 3
+	for i = 1, 5 do
+		local npcGUID = mindExhaustionList[i]
+		if npcGUID then
+			local remaining = (mindExhaustionDebuffTime[npcGUID] or 0) - t
+			mod:SetInfo(29051, line, understudyIcons[npcGUID])
+			if remaining > 0 then
+				mod:SetInfo(29051, line + 1, CL.seconds:format(remaining))
+				mod:SetInfoBar(29051, line, remaining / 60)
+			else
+				if mindExhaustionDebuffTime[npcGUID] == -1 then
+					mod:SetInfo(29051, line + 1, CL.dead, 1, 0.2, 0.2)
+				else
+					mod:SetInfo(29051, line + 1, CL.ready, 0.13, 1, 0.13)
+				end
+				mod:SetInfoBar(29051, line, 0)
+			end
+		else
+			mod:SetInfo(29051, line, "")
+			mod:SetInfo(29051, line + 1, "")
+			mod:SetInfoBar(29051, line, 0)
+		end
+		line = line + 2
 	end
 end

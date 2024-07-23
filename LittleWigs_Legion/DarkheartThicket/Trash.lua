@@ -56,6 +56,7 @@ function mod:GetOptions()
 		200630, -- Unnerving Screech
 		-- Dreadsoul Ruiner
 		200658, -- Star Shower
+		{200642, "DISPEL"}, -- Despair
 		-- Dreadsoul Poisoner
 		{200684, "SAY"}, -- Nightmare Toxin
 		-- Crazed Razorbeak
@@ -110,6 +111,7 @@ function mod:OnBossEnable()
 
 	-- Dreadsoul Ruiner
 	self:Log("SPELL_CAST_START", "StarShower", 200658)
+	self:Log("SPELL_AURA_APPLIED_DOSE", "DespairApplied", 200642)
 
 	-- Dreadsoul Poisoner
 	self:Log("SPELL_AURA_APPLIED", "NightmareToxinApplied", 200684)
@@ -174,6 +176,9 @@ end
 do
 	local prev = 0
 	function mod:UnnervingScreech(args)
+		if self:Friendly(args.sourceFlags) then -- these NPCs can be mind-controlled by Priests
+			return
+		end
 		local t = args.time
 		if t - prev > 1.5 then
 			prev = t
@@ -185,16 +190,49 @@ end
 
 -- Dreadsoul Ruiner
 
-function mod:StarShower(args)
-	self:Message(args.spellId, "yellow", CL.casting:format(args.spellName))
-	self:PlaySound(args.spellId, "alert")
+do
+	local prev = 0
+	function mod:StarShower(args)
+		if self:Friendly(args.sourceFlags) then -- these NPCs can be mind-controlled by Priests
+			return
+		end
+		local t = args.time
+		if t - prev > 1.5 then
+			prev = t
+			self:Message(args.spellId, "yellow", CL.casting:format(args.spellName))
+			self:PlaySound(args.spellId, "alert")
+		end
+	end
+end
+
+do
+	local prev = 0
+	function mod:DespairApplied(args)
+		local t = args.time
+		local amount = args.amount
+		-- 10% heal reduction per stack in M+ (2% otherwise)
+		-- alert at 3, increase severity at 6 and up
+		if self:MythicPlus() and t - prev > 2 and (amount == 3 or amount >= 6)
+				and (self:Me(args.destGUID) or (self:Player(args.destFlags) and self:Dispeller("magic", nil, args.spellId))) then
+			prev = t
+			self:StackMessage(args.spellId, "yellow", args.destName, amount, 6)
+			if amount >= 6 then
+				self:PlaySound(args.spellId, "warning", nil, args.destName)
+			else
+				self:PlaySound(args.spellId, "alert", nil, args.destName)
+			end
+		end
+	end
 end
 
 -- Dreadsoul Poisoner
 
 function mod:NightmareToxinApplied(args)
+	if not self:Player(args.destFlags) then -- don't alert if a NPC is debuffed (usually by a mind-controlled mob)
+		return
+	end
 	if self:Me(args.destGUID) and self:MythicPlus() then -- avoid spamming in trivial difficulties
-		self:Say(args.spellId)
+		self:Say(args.spellId, nil, nil, "Nightmare Toxin")
 	end
 	self:TargetMessage(args.spellId, "red", args.destName)
 	self:PlaySound(args.spellId, "alert", nil, args.destName)
@@ -202,9 +240,16 @@ end
 
 -- Crazed Razorbeak
 
-function mod:PropellingCharge(args)
-	self:Message(args.spellId, "orange")
-	self:PlaySound(args.spellId, "alarm")
+do
+	local prev = 0
+	function mod:PropellingCharge(args)
+		local t = args.time
+		if t - prev > 1.5 then
+			prev = t
+			self:Message(args.spellId, "orange")
+			self:PlaySound(args.spellId, "alarm")
+		end
+	end
 end
 
 -- Festerhide Grizzly
@@ -252,7 +297,8 @@ end
 -- Rotheart Dryad
 
 function mod:PoisonSpear(args)
-	if self:Dispeller("poison", nil, args.spellId) then
+	-- don't alert if a NPC is debuffed (usually by a mind-controlled mob)
+	if self:Player(args.destFlags) and self:Dispeller("poison", nil, args.spellId) then
 		self:TargetMessage(args.spellId, "yellow", args.destName)
 		self:PlaySound(args.spellId, "alert", nil, args.destName)
 	end
@@ -301,7 +347,7 @@ function mod:BloodAssault(args)
 end
 
 function mod:BloodBomb(args)
-	self:Message(args.spellId, "red")
+	self:Message(args.spellId, "yellow")
 	self:PlaySound(args.spellId, "info")
 end
 
@@ -325,7 +371,7 @@ function mod:CurseOfIsolation(args)
 	self:TargetMessage(args.spellId, "orange", args.destName)
 	self:PlaySound(args.spellId, "alarm", nil, args.destName)
 	if self:Me(args.destGUID) then
-		self:Say(args.spellId)
+		self:Say(args.spellId, nil, nil, "Curse of Isolation")
 	end
 end
 
@@ -348,7 +394,8 @@ end
 do
 	local prev = 0
 	function mod:DarksoulDrain(args)
-		-- this can apply to pets, and can be double-applied by a second mob (but doesn't stack)
+		-- this can apply to pets, to hostile NPCs by a mind-controlled Tormented Bloodseeker,
+		-- and can be applied by multiple mobs on the same player
 		local t = args.time
 		if t - prev > 2 and self:Player(args.destFlags) and self:Dispeller("disease", nil, args.spellId) then
 			prev = t

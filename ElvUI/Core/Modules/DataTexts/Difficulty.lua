@@ -47,10 +47,10 @@ for i = 1, 200 do
 end
 
 local DiffIDLabel = { -- also has IDs maintained in Nameplate StyleFilters
-	['N'] = { 1, 14, 38, 173, 201 },
+	['N'] = { 1, 14, 38, 173, 198, 201 },
 	['H'] = { 2, 15, 39, 174 },
 	['M'] = { 16, 23, 40 },
-	['20'] = { 148, 185 },
+	['20'] = { 148, 185, 215 },
 	['10N'] = { 3, 175 },
 	['25N'] = { 4, 176 },
 	['10H'] = { 5, 193 },
@@ -64,6 +64,7 @@ local DiffIDLabel = { -- also has IDs maintained in Nameplate StyleFilters
 	['PvP'] = { 25, 29, 32, 34, 45 },
 	['WF'] = { 147 },
 	['WFH'] = { 149 },
+	['FD'] = { 205 },
 }
 
 local IDTexture = {

@@ -1,6 +1,8 @@
 local E, L = select(2, ...):unpack()
 local P = E.Party
 
+local IsAddOnLoaded = C_AddOns and C_AddOns.IsAddOnLoaded or IsAddOnLoaded
+
 local TM = CreateFrame("Frame")
 
 local addOnTestMode = {}
@@ -115,7 +117,7 @@ function TM:Test(key)
 		if not self.indicator then
 			self.indicator = CreateFrame("Frame", nil, UIParent, "OmniCDTemplate")
 			self.indicator.anchor.background:SetColorTexture(0, 0, 0, 1)
-			if E.isDF or E.isWOTLKC341 or E.isClassic1144 then
+			if E.isDF or E.isCata or E.isWOTLKC341 or E.isClassic1144 then
 				self.indicator.anchor.background:SetGradient("HORIZONTAL", CreateColor(1, 1, 1, 1), CreateColor(1, 1, 1, 0))
 			else
 				self.indicator.anchor.background:SetGradientAlpha("Horizontal", 1, 1, 1, 1, 1, 1, 1, 0)
@@ -135,7 +137,7 @@ function TM:Test(key)
 
 		self:RegisterEvent('PLAYER_LEAVING_WORLD')
 
-		P:Refresh(true)
+		P:Refresh()
 
 		local frame = P.groupInfo[E.userGUID].bar
 		self.indicator.anchor:ClearAllPoints()
@@ -178,7 +180,7 @@ function TM:Test(key)
 		self.indicator:Hide()
 		self:UnregisterEvent('PLAYER_LEAVING_WORLD')
 
-		P:Refresh(true)
+		P:Refresh()
 	end
 end
 

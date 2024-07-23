@@ -52,21 +52,7 @@ end
 
 L = BigWigs:NewBossLocale("Heigan the Unclean", "itIT")
 if L then
-	--L.teleport_trigger = "The end is upon you."
-
-	--L.teleport = "Teleport"
-	--L.teleport_desc = "Warn for Teleports."
-	--L.teleport_1min_message = "Teleport in 1 min"
-	--L.teleport_30sec_message = "Teleport in 30 sec"
-	--L.teleport_10sec_message = "Teleport in 10 sec!"
-	--L.on_platform_message = "Teleport! On platform for 45 sec!"
-
-	--L.to_floor_30sec_message = "Back in 30 sec"
-	--L.to_floor_10sec_message = "Back in 10 sec!"
-	--L.on_floor_message = "Back on the floor! 90 sec to next teleport!"
-
-	--L.teleport_bar = "Teleport!"
-	--L.back_bar = "Back on the floor!"
+	--L.teleport_yell_trigger = "The end is upon you."
 end
 
 L = BigWigs:NewBossLocale("The Four Horsemen", "itIT")
@@ -126,22 +112,7 @@ end
 
 L = BigWigs:NewBossLocale("Noth the Plaguebringer", "itIT")
 if L then
-	--L.add_trigger = "Rise, my soldiers! Rise and fight once more!"
-
-	L.teleport = "Teletrasporto"
-	--L.teleport_desc = "Warnings for when Noth teleports."
-	--L.teleport_balcony = "Teleport! He's on the balcony!"
-	--L.teleport_room = "Teleport! He's back in room!"
-
-	--L.curse_explosion = "Curse explosion!"
-	--L.curse_warn = "Curse!"
-	--L.curse_10secwarn = "Curse in ~10 sec"
-	--L.curse_bar = "Next Curse"
-
-	L.wave = "Evocazione: Scheletri"
-	--L.wave_desc = "Warnings for the skeleton add waves."
-	--L.wave1 = "Wave 1"
-	--L.wave2 = "Wave 2"
+	--L.adds_yell_trigger = "Rise, my soldiers" -- Rise, my soldiers! Rise and fight once more!
 end
 
 L = BigWigs:NewBossLocale("Instructor Razuvious", "itIT")
@@ -170,23 +141,19 @@ end
 
 L = BigWigs:NewBossLocale("Thaddius", "itIT")
 if L then
-	--L.phase1_trigger1 = "Stalagg crush you!"
-	--L.phase1_trigger2 = "Feed you to master!"
-	--L.phase2_trigger1 = "Eat... your... bones..."
-	--L.phase2_trigger2 = "Break... you!!"
-	--L.phase2_trigger3 = "Kill..."
+	L[15929] = "Stalagg"
+	L[15930] = "Feugen"
 
-	--L.add_death_trigger = "%s dies."
-	--L.overload_trigger = "%s overloads!"
+	--L.stage1_yell_trigger1 = "Stalagg crush you!"
+	--L.stage1_yell_trigger2 = "Feed you to master!"
 
-	--L.polarity_changed = "Polarity changed!"
-	--L.polarity_nochange = "Same polarity!"
-	--L.polarity_first_positive = "You're POSITIVE!"
-	--L.polarity_first_negative = "You're NEGATIVE!"
+	--L.stage2_yell_trigger1 = "Eat... your... bones..."
+	--L.stage2_yell_trigger2 = "Break... you!!"
+	--L.stage2_yell_trigger3 = "Kill..."
 
-	--L.throw = "Throw"
-	--L.throw_desc = "Warn about tank platform swaps."
-	--L.throw_warning = "Throw in ~5 sec!"
+	--L.add_death_emote_trigger = "%s dies."
+	--L.overload_emote_trigger = "%s overloads!"
+	--L.add_revive_emote_trigger = "%s is jolted back to life!"
 
 	--L.polarity_extras = "Additional alerts for Polarity Shift positioning"
 
@@ -215,4 +182,6 @@ if L then
 	--L.right = "---> GO RIGHT ---> GO RIGHT --->"
 	--L.swap = "^^^^ SWITCH SIDES ^^^^ SWITCH SIDES ^^^^"
 	--L.stay = "==== DON'T MOVE ==== DON'T MOVE ===="
+
+	--L.chat_message = "The Thaddius mod supports showing you directional arrows and playing voices. Open the options to configure them."
 end

@@ -1,7 +1,9 @@
 
 BigWigs:AddColors("Azuregos", {
-	[22067] = "yellow",
-	["teleport"] = "red",
+	[21097] = "orange",
+	[21099] = "orange",
+	[21147] = "yellow",
+	[22067] = {"green","red"},
 })
 
 BigWigs:AddColors("Lord Kazzak", {
@@ -18,7 +20,7 @@ BigWigs:AddColors("Emeriss", {
 })
 
 BigWigs:AddColors("Lethon", {
-	[24811] = "cyan",
+	[24811] = "red",
 	[24814] = "green",
 	[24818] = {"blue","purple","yellow"},
 	[24821] = "yellow",

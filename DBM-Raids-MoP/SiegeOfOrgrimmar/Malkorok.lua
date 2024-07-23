@@ -3,7 +3,7 @@ local L		= mod:GetLocalizedStrings()
 
 mod.statTypes = "normal,heroic,mythic,lfr"
 
-mod:SetRevision("20230617070727")
+mod:SetRevision("20240525083118")
 mod:SetCreatureID(71454)
 mod:SetEncounterID(1595)
 mod:SetUsedIcons(8, 7, 6, 4, 3, 2, 1)
@@ -54,11 +54,10 @@ local berserkTimer						= mod:NewBerserkTimer(360)
 
 mod:AddRangeFrameOption("8/5")--Various things
 mod:AddSetIconOption("SetIconOnDisplacedEnergy", 142913, false)
-mod:AddSetIconOption("SetIconOnAdds", "ej7952", false, true)
-mod:AddArrowOption("BloodrageArrow", 142879, true, true)
+mod:AddSetIconOption("SetIconOnAdds", "ej7952", false, 5)
 
 --Upvales, don't need variables
-local displacedEnergyDebuff = DBM:GetSpellInfo(142913)
+local displacedEnergyDebuff = DBM:GetSpellName(142913)
 local UnitIsDeadOrGhost = UnitIsDeadOrGhost
 --Not important, don't need to recover
 local playerDebuffs = 0
@@ -85,7 +84,7 @@ function mod:OnCombatStart(delay)
 	self.vb.rageActive = false
 	timerSeismicSlamCD:Start(5-delay, 1)
 	timerArcingSmashCD:Start(11-delay, 1)
-	timerBreathofYShaarjCD:Start(68-delay, 1)
+	timerBreathofYShaarjCD:Start(67.3-delay, 1)
 	if self:IsDifficulty("lfr25") then
 		berserkTimer:Start(720-delay)
 	else
@@ -112,7 +111,7 @@ function mod:SPELL_CAST_START(args)
 		self.vb.rageActive = true
 		specWarnBloodRage:Show()
 		timerBloodRage:Start()
-		timerDisplacedEnergyCD:Start(3.5)
+--		timerDisplacedEnergyCD:Start(3.5)--No longer spell queued/restarted here?
 	elseif spellId == 142842 then
 		self.vb.breathCast = self.vb.breathCast + 1
 		specWarnBreathofYShaarj:Show(self.vb.breathCast)
@@ -123,16 +122,6 @@ function mod:SPELL_CAST_START(args)
 			timerArcingSmashCD:Start(14, 1)
 			timerBreathofYShaarjCD:Start(70, 2)
 		else--Breath 2
-			if self.Options.BloodrageArrow then
-				for uId in DBM:GetGroupMembers() do
-					local tanking, status = UnitDetailedThreatSituation(uId, "boss1")
-					if status == 3 then
-						if UnitIsUnit("player", uId) then return end
-						DBM.Arrow:ShowRunTo(uId, 3, 5)
-						break
-					end
-				end
-			end
 			if self.Options.RangeFrame then
 				DBM.RangeCheck:Hide()
 			end

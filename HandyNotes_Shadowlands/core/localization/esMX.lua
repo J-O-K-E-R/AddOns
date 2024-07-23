@@ -44,6 +44,8 @@ L['activation_unknown'] = nil
 L['requirement_not_found'] = nil
 L['multiple_spawns'] = nil
 L['shared_drops'] = nil
+L['zone_drops_label'] = nil
+L['zone_drops_note'] = nil
 
 L['requires'] = nil
 L['ranked_research'] = nil
@@ -173,6 +175,8 @@ L['options_restore_hidden_nodes_desc'] = nil
 
 L['options_rewards_settings'] = nil
 L['options_reward_types'] = nil
+L['options_manuscript_rewards'] = nil
+L['options_manuscript_rewards_desc'] = nil
 L['options_mount_rewards'] = nil
 L['options_mount_rewards_desc'] = nil
 L['options_pet_rewards'] = nil
@@ -194,6 +198,8 @@ L['options_icons_rares_desc'] = 'Mostrar los lugares de los NPCs raros.'
 L['options_icons_rares'] = 'Raros'
 L['options_icons_treasures_desc'] = nil
 L['options_icons_treasures'] = 'Tesoros'
+L['options_icons_vendors_desc'] = nil
+L['options_icons_vendors'] = nil
 
 ------------------------------------ FOCUS ------------------------------------
 

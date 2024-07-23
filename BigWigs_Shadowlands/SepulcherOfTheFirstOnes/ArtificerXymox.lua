@@ -298,8 +298,12 @@ end
 function mod:DebilitatingRay(args)
 	local canDo, ready = self:Interrupter(args.sourceGUID)
 	if canDo then
-		local icon = CombatLog_String_GetIcon(args.sourceRaidFlags)
-		self:Message(args.spellId, "yellow", icon .. args.spellName)
+		local icon = self:GetIconTexture(self:GetIcon(args.sourceRaidFlags))
+		if icon then
+			self:Message(args.spellId, "yellow", icon .. args.spellName)
+		else
+			self:Message(args.spellId, "yellow")
+		end
 		if ready then
 			self:PlaySound(args.spellId, "alert")
 		end
@@ -376,8 +380,12 @@ end
 function mod:MassiveBlast(args)
 	local canDo, ready = self:Interrupter(args.sourceGUID)
 	if canDo then
-		local icon = CombatLog_String_GetIcon(args.sourceRaidFlags)
-		self:Message(365681, "purple", icon .. args.spellName)
+		local icon = self:GetIconTexture(self:GetIcon(args.sourceRaidFlags))
+		if icon then
+			self:Message(365681, "purple", icon .. args.spellName)
+		else
+			self:Message(365681, "purple")
+		end
 		if self:Tank() then
 			self:PlaySound(365681, "alarm")
 		elseif ready then

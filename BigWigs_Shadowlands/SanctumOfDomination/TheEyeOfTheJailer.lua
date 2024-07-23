@@ -23,8 +23,6 @@ local stage = 1
 local L = mod:GetLocale()
 if L then
 	L.chains = "Chains" -- Short for Dragging Chains
-	L.pool = "Pool" -- Spreading Misery
-	L.pools = "Pools" -- Spreading Misery (multiple)
 	L.death_gaze = "Death Gaze" -- Short for Titanic Death Gaze
 	L.corruption = mod:SpellName(172) -- Corruption // Short for Slothful Corruption
 	L.slow = mod:SpellName(31589) -- Slow
@@ -54,7 +52,7 @@ function mod:GetOptions()
 		355232, -- Scorn and Ire
 	},{
 		["stages"] = "general",
-		[350803] = mod:SpellName(-22896), -- Stage One: His Gaze Upon You
+		[350828] = mod:SpellName(-22896), -- Stage One: His Gaze Upon You
 		[349028] = mod:SpellName(-22897), -- Stage Two: Double Vision
 		[351413] = mod:SpellName(-23375), -- Stage Three: Immediate Extermination
 		[350604] = "mythic", -- Mythic
@@ -63,7 +61,7 @@ function mod:GetOptions()
 		[349028] = L.death_gaze, -- Titanic Death Gaze (Death Gaze)
 		[350847] = CL.beam, -- Desolation Beam (Beam)
 		[350713] = L.corruption, -- Slothful Corruption (Corruption)
-		[351827] = L.pools, -- Spreading Misery (Pools)
+		[351827] = CL.pools, -- Spreading Misery (Pools)
 		[351413] = CL.laser, -- Annihilating Glare (Laser)
 		[350604] = L.slow, -- Hopeless Lethargy (Slow)
 	}
@@ -179,7 +177,7 @@ function mod:StygianDarkshieldApplied()
 	self:StopBar(L.slow)
 
 	self:Bar(350847, self:Mythic() and 21.1 or 8.5, CL.beam) -- Desolation Beam
-	self:Bar(351827, 15, L.pools) -- Spreading Misery
+	self:Bar(351827, 15, CL.pools) -- Spreading Misery
 	self:Bar(349028, self:Mythic() and 28.1 or 17, L.death_gaze) -- Titanic Death Gaze
 	self:Bar(350713, 21, L.corruption) -- Slothful Corruption
 	if self:Mythic() then
@@ -256,15 +254,15 @@ do
 		local t = args.time
 		if t-prev > 5 then -- Both adds cast it seperately
 			prev = t
-			self:Bar(351827, 12, L.pools)
+			self:Bar(351827, 12, CL.pools)
 		end
 	end
 end
 
 function mod:SpreadingMiseryApplied(args)
 	if self:Me(args.destGUID) then
-		self:PersonalMessage(args.spellId, nil, L.pool)
-		self:Say(args.spellId, L.pool)
+		self:PersonalMessage(args.spellId, nil, CL.pool)
+		self:Say(args.spellId, CL.pool)
 		self:SayCountdown(args.spellId, 5)
 		self:PlaySound(args.spellId, "warning")
 	end
@@ -278,7 +276,7 @@ end
 
 function mod:StygianDarkshieldRemoved()
 	self:StopBar(CL.beam) -- Desolation Beam
-	self:StopBar(L.pools) -- Spreading Misery
+	self:StopBar(CL.pools) -- Spreading Misery
 	self:StopBar(L.death_gaze) -- Titanic Death Gaze
 	self:StopBar(L.corruption) -- Slothful Corruption
 

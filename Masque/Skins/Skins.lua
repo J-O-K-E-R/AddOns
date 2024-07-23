@@ -37,7 +37,7 @@ local Hidden = {Hide = true}
 -- Legacy Skin IDs
 local LegacyIDs = {
 	["Blizzard"] = "Blizzard Classic",
-	["Classic"] = "Classic Redux",
+	["Classic"] = "Classic Enhanced",
 	["Default"] = "Blizzard Classic",
 	["Default (Classic)"] = "Blizzard Classic",
 }
@@ -191,7 +191,7 @@ Core.SkinOrder = SkinOrder
 local API = Core.API
 
 -- Wrapper for the AddSkin function.
-function API:AddSkin(SkinID, SkinData, Replace)
+function API:AddSkin(SkinID, SkinData)
 	local Debug = Core.Debug
 
 	if type(SkinID) ~= "string" then

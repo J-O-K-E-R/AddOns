@@ -6,16 +6,18 @@ local TT = E:GetModule('Tooltip')
 local LCS = E.Libs.LCS
 
 local _G = _G
-local wipe, max, next, tinsert = wipe, max, next, tinsert
 local type, ipairs, pairs, unpack = type, ipairs, pairs, unpack
+local wipe, max, next, tinsert, date, time = wipe, max, next, tinsert, date, time
 local strfind, strlen, tonumber, tostring = strfind, strlen, tonumber, tostring
 local hooksecurefunc = hooksecurefunc
 
 local CreateFrame = CreateFrame
 local GetBattlefieldArenaFaction = GetBattlefieldArenaFaction
 local GetClassInfo = GetClassInfo
+local GetGameTime = GetGameTime
 local GetInstanceInfo = GetInstanceInfo
 local GetNumGroupMembers = GetNumGroupMembers
+local GetServerTime = GetServerTime
 local GetSpecializationInfoForSpecID = GetSpecializationInfoForSpecID
 local HideUIPanel = HideUIPanel
 local InCombatLockdown = InCombatLockdown
@@ -29,7 +31,6 @@ local IsXPUserDisabled = IsXPUserDisabled
 local RequestBattlefieldScoreData = RequestBattlefieldScoreData
 local UIParent = UIParent
 local UIParentLoadAddOn = UIParentLoadAddOn
-local UnitAura = UnitAura
 local UnitFactionGroup = UnitFactionGroup
 local UnitGroupRolesAssigned = UnitGroupRolesAssigned
 local UnitHasVehicleUI = UnitHasVehicleUI
@@ -39,13 +40,14 @@ local UnitIsMercenary = UnitIsMercenary
 local UnitIsPlayer = UnitIsPlayer
 local UnitIsUnit = UnitIsUnit
 
-local GetSpecialization = (E.Classic or E.Wrath) and LCS.GetSpecialization or GetSpecialization
-local GetSpecializationInfo = (E.Classic or E.Wrath) and LCS.GetSpecializationInfo or GetSpecializationInfo
+local GetAuraDataByIndex = C_UnitAuras and C_UnitAuras.GetAuraDataByIndex
+local UnpackAuraData = AuraUtil and AuraUtil.UnpackAuraData
+local UnitAura = UnitAura
+
+local GetSpecialization = (E.Classic or E.Cata) and LCS.GetSpecialization or GetSpecialization
+local GetSpecializationInfo = (E.Classic or E.Cata) and LCS.GetSpecializationInfo or GetSpecializationInfo
 
 local IsAddOnLoaded = (C_AddOns and C_AddOns.IsAddOnLoaded) or IsAddOnLoaded
-
-local C_AddOns_GetAddOnEnableState = C_AddOns and C_AddOns.GetAddOnEnableState
-local GetAddOnEnableState = GetAddOnEnableState -- eventually this will be on C_AddOns and args swap
 
 local C_TooltipInfo_GetUnit = C_TooltipInfo and C_TooltipInfo.GetUnit
 local C_TooltipInfo_GetHyperlink = C_TooltipInfo and C_TooltipInfo.GetHyperlink
@@ -163,6 +165,26 @@ E.SpecName = { -- english locale
 	[73]	= 'Protection',
 }
 
+function E:GetDateTime(localTime, unix)
+	if not localTime then -- try to properly handle realm time
+		local dateTable = date('*t', GetServerTime())
+
+		local hours, minutes = GetGameTime() -- realm time since it doesnt match ServerTimeLocal
+		dateTable.hour = hours
+		dateTable.min = minutes
+
+		if unix then
+			return time(dateTable)
+		else
+			return dateTable
+		end
+	elseif unix then
+		return GetServerTime()
+	else
+		return date('*t', GetServerTime())
+	end
+end
+
 function E:ClassColor(class, usePriestColor)
 	if not class then return end
 
@@ -253,6 +275,14 @@ do
 end
 
 do
+	function E:GetAuraData(unitToken, index, filter)
+		if E.Retail then
+			return UnpackAuraData(GetAuraDataByIndex(unitToken, index, filter))
+		else
+			return UnitAura(unitToken, index, filter)
+		end
+	end
+
 	local function FindAura(key, value, unit, index, filter, ...)
 		local name, _, _, _, _, _, _, _, _, spellID = ...
 
@@ -264,16 +294,16 @@ do
 			return ...
 		else
 			index = index + 1
-			return FindAura(key, value, unit, index, filter, UnitAura(unit, index, filter))
+			return FindAura(key, value, unit, index, filter, E:GetAuraData(unit, index, filter))
 		end
 	end
 
 	function E:GetAuraByID(unit, spellID, filter)
-		return FindAura('spellID', spellID, unit, 1, filter, UnitAura(unit, 1, filter))
+		return FindAura('spellID', spellID, unit, 1, filter, E:GetAuraData(unit, 1, filter))
 	end
 
 	function E:GetAuraByName(unit, name, filter)
-		return FindAura('name', name, unit, 1, filter, UnitAura(unit, 1, filter))
+		return FindAura('name', name, unit, 1, filter, E:GetAuraData(unit, 1, filter))
 	end
 end
 
@@ -291,7 +321,7 @@ function E:GetThreatStatusColor(status, nothreat)
 end
 
 function E:GetPlayerRole()
-	local role = (E.Retail or E.Wrath) and UnitGroupRolesAssigned('player') or 'NONE'
+	local role = (E.Retail or E.Cata) and UnitGroupRolesAssigned('player') or 'NONE'
 	return (role ~= 'NONE' and role) or E.myspecRole or 'NONE'
 end
 
@@ -410,12 +440,7 @@ do
 end
 
 function E:Dump(object, inspect)
-	if C_AddOns_GetAddOnEnableState then
-		if C_AddOns_GetAddOnEnableState('Blizzard_DebugTools', E.myname) == 0 then
-			E:Print('Blizzard_DebugTools is disabled.')
-			return
-		end
-	elseif GetAddOnEnableState(E.myname, 'Blizzard_DebugTools') == 0 then
+	if not E:IsAddOnEnabled('Blizzard_DebugTools') then
 		E:Print('Blizzard_DebugTools is disabled.')
 		return
 	end
@@ -534,7 +559,7 @@ function E:RegisterObjectForVehicleLock(object, originalParent)
 	end
 
 	--Check if we are already in a vehicles
-	if (E.Retail or E.Wrath) and UnitHasVehicleUI('player') then
+	if (E.Retail or E.Cata) and UnitHasVehicleUI('player') then
 		object:SetParent(E.HiddenFrame)
 	end
 
@@ -714,17 +739,21 @@ function E:PositionGameMenuButton()
 	if E.Retail then
 		GameMenuFrame.Header.Text:SetTextColor(unpack(E.media.rgbvaluecolor))
 	end
+
 	GameMenuFrame:Height(GameMenuFrame:GetHeight() + GameMenuButtonLogout:GetHeight() - 4)
 
 	local button = GameMenuFrame.ElvUI
-	button:SetFormattedText('%sElvUI|r', E.media.hexvaluecolor)
+	if button then
+		button:SetFormattedText('%sElvUI|r', E.media.hexvaluecolor)
 
-	local _, relTo, _, _, offY = GameMenuButtonLogout:GetPoint()
-	if relTo ~= button then
-		button:ClearAllPoints()
-		button:Point('TOPLEFT', relTo, 'BOTTOMLEFT', 0, -1)
-		GameMenuButtonLogout:ClearAllPoints()
-		GameMenuButtonLogout:Point('TOPLEFT', button, 'BOTTOMLEFT', 0, offY)
+		local _, relTo, _, _, offY = GameMenuButtonLogout:GetPoint()
+		if relTo ~= button then
+			button:ClearAllPoints()
+			button:Point('TOPLEFT', relTo, 'BOTTOMLEFT', 0, -1)
+
+			GameMenuButtonLogout:ClearAllPoints()
+			GameMenuButtonLogout:Point('TOPLEFT', button, 'BOTTOMLEFT', 0, offY)
+		end
 	end
 end
 
@@ -745,15 +774,15 @@ function E:ClickGameMenu()
 end
 
 function E:SetupGameMenu()
+	if GameMenuFrame.ElvUI then return end
+
 	local button = CreateFrame('Button', nil, GameMenuFrame, 'GameMenuButtonTemplate')
 	button:SetScript('OnClick', E.ClickGameMenu)
 	GameMenuFrame.ElvUI = button
 
-	if not E:IsAddOnEnabled('ConsolePortUI_Menu') then
-		button:Size(GameMenuButtonLogout:GetWidth(), GameMenuButtonLogout:GetHeight())
-		button:Point('TOPLEFT', GameMenuButtonAddons, 'BOTTOMLEFT', 0, -1)
-		hooksecurefunc('GameMenuFrame_UpdateVisibleButtons', E.PositionGameMenuButton)
-	end
+	button:Size(GameMenuButtonLogout:GetSize())
+	button:Point('TOPLEFT', GameMenuButtonAddons, 'BOTTOMLEFT', 0, -1)
+	hooksecurefunc('GameMenuFrame_UpdateVisibleButtons', E.PositionGameMenuButton)
 end
 
 function E:IsDragonRiding() -- currently unused, was used to help actionbars fade
@@ -932,7 +961,9 @@ function E:LoadAPI()
 							local localized = (x == 3 and female) or male
 							copy.className = localized
 
-							E.SpecInfoBySpecClass[name..' '..localized] = copy
+							if localized then
+								E.SpecInfoBySpecClass[name..' '..localized] = copy
+							end
 						end
 					end
 				end
@@ -958,7 +989,7 @@ function E:LoadAPI()
 	E.ScanTooltip.GetHyperlinkInfo = E.ScanTooltip_HyperlinkInfo
 	E.ScanTooltip.GetInventoryInfo = E.ScanTooltip_InventoryInfo
 
-	if E.Retail or E.Wrath then
+	if E.Retail or E.Cata then
 		E:RegisterEvent('UNIT_ENTERED_VEHICLE', 'EnterVehicleHideFrames')
 		E:RegisterEvent('UNIT_EXITED_VEHICLE', 'ExitVehicleShowFrames')
 	else

@@ -20,9 +20,10 @@ BigWigs:AddSounds("Illysanna Ravencrest", {
 
 BigWigs:AddSounds("Smashspite", {
 	[198073] = "alert",
-	[198079] = "alarm",
+	[198079] = {"alarm","warning"},
 	[198245] = "alert",
 	[198446] = {"alarm","alert"},
+	[224188] = "info",
 })
 
 BigWigs:AddSounds("Kurtalos Ravencrest", {
@@ -31,6 +32,7 @@ BigWigs:AddSounds("Kurtalos Ravencrest", {
 	[198820] = "alarm",
 	[199143] = "info",
 	[199193] = "long",
+	[199368] = "info",
 	[201733] = "alert",
 	[202019] = {"alert","warning"},
 	["stages"] = "long",
@@ -45,6 +47,7 @@ BigWigs:AddSounds("Black Rook Hold Trash", {
 	[200261] = "alarm",
 	[200291] = "alert",
 	[200343] = "alarm",
+	[200784] = "alert",
 	[200913] = "alarm",
 	[203163] = {"alert","warning"},
 	[204896] = "alert",

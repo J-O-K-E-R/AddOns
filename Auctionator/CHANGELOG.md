@@ -1,6 +1,8 @@
 # Auctionator
 
-## [10.2.1](https://github.com/Auctionator/Auctionator/tree/10.2.1) (2023-11-19)
-[Full Changelog](https://github.com/Auctionator/Auctionator/compare/10.2.0...10.2.1) 
+## [10.2.55](https://github.com/Auctionator/Auctionator/tree/10.2.55) (2024-07-21)
+[Full Changelog](https://github.com/Auctionator/Auctionator/compare/10.2.54...10.2.55) 
 
-- Allow posting when user has 0g and is posting an item with a 0g deposit  
+- [Fixes #1535] Vanilla: Selling: Relic coffer key not appearing in bag view  
+- Remove redundant relativeTo="$parent" (#1532)  
+- Move Offset tags into the Shadows tags (#1531)  

@@ -5,6 +5,8 @@
 local mod = BigWigs:NewBoss("Cho'gall", 671, 167)
 if not mod then return end
 mod:RegisterEnableMob(43324)
+mod:SetEncounterID(1029)
+mod:SetRespawnTime(30)
 
 --------------------------------------------------------------------------------
 -- Locals
@@ -21,7 +23,7 @@ local oozecount = 1
 -- Localization
 --
 
-local L = mod:NewLocale("enUS", true)
+local L = mod:GetLocale()
 if L then
 	L.orders = "Stance changes"
 	L.orders_desc = "Warning for when Cho'gall changes between Shadow/Flame Orders stances."
@@ -49,7 +51,6 @@ if L then
 	L.phase2_message = "Phase 2!"
 	L.phase2_soon = "Phase 2 soon!"
 end
-L = mod:GetLocale()
 
 --------------------------------------------------------------------------------
 -- Initialization
@@ -57,9 +58,9 @@ L = mod:GetLocale()
 
 function mod:GetOptions(CL)
 	return {
-		91303, {81538, "FLASH"}, {81685, "FLASH", "ICON", "SAY"}, 81571, 82524, 81628, 82299,
+		91303, 81538, {81685, "ICON", "SAY"}, 81571, 82524, 81628, 82299,
 		82630, 82414,
-		"orders", {82235, "FLASH", "PROXIMITY"}, "berserk"
+		"orders", 82235, "altpower", "berserk",
 	}, {
 		[91303] = CL.phase:format(1),
 		[82630] = CL.phase:format(2),
@@ -68,6 +69,10 @@ function mod:GetOptions(CL)
 end
 
 function mod:OnBossEnable()
+	if IsEncounterInProgress() then
+		self:OpenAltPower("altpower", 70602) -- Corruption
+	end
+
 	--normal
 	self:Log("SPELL_CAST_SUCCESS", "Orders", 81171, 81556)
 	self:Log("SPELL_AURA_APPLIED", "Worship", 91317)
@@ -80,10 +85,6 @@ function mod:OnBossEnable()
 
 	self:Log("SPELL_DAMAGE", "Blaze", 81538)
 	self:Log("SPELL_MISSED", "Blaze", 81538)
-
-	self:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT", "CheckBossStatus")
-
-	self:Death("Win", 43324)
 end
 
 function mod:OnEngage()
@@ -97,6 +98,8 @@ function mod:OnEngage()
 
 	self:RegisterUnitEvent("UNIT_AURA", "SicknessCheck", "player")
 	self:RegisterUnitEvent("UNIT_HEALTH", nil, "boss1")
+
+	self:OpenAltPower("altpower", 70602) -- Corruption
 end
 
 --------------------------------------------------------------------------------
@@ -111,7 +114,7 @@ do
 			last = time
 			if self:Me(args.destGUID) then
 				self:MessageOld(args.spellId, "blue", "info", L["blaze_message"])
-				self:Flash(args.spellId)
+				--self:Flash(args.spellId)
 			end
 		end
 	end
@@ -124,8 +127,8 @@ do
 			local player = mod:UnitName(mobId.."target")
 			if not player then return end
 			if UnitIsUnit("player", player) then
-				mod:Say(spellId, L["crash_say"])
-				mod:Flash(spellId)
+				mod:Say(spellId, L["crash_say"], nil, "Crash")
+				--mod:Flash(spellId)
 			end
 			mod:TargetMessageOld(spellId, player, "orange", "long") -- Corrupting Crash
 			if counter == 1 then
@@ -148,12 +151,11 @@ do
 	function mod:SicknessCheck(event, unit)
 		local t = GetTime()
 		if (t - prev) > 7 then
-			local sick = self:UnitDebuff(unit, sickness)
+			local sick = self:UnitDebuff(unit, sickness, 82235)
 			if sick then
 				prev = t
 				self:MessageOld(82235, "blue", "long", L["sickness_message"], 81831)
-				self:OpenProximity(82235, 5)
-				self:Flash(82235)
+				--self:Flash(82235)
 			end
 		end
 	end

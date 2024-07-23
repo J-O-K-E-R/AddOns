@@ -26,14 +26,12 @@ local UIParent = UIParent
 local UnitFactionGroup = UnitFactionGroup
 local UnitGUID = UnitGUID
 
-local GetSpecialization = (E.Classic or E.Wrath) and LCS.GetSpecialization or GetSpecialization
+local GetSpecialization = (E.Classic or E.Cata) and LCS.GetSpecialization or GetSpecialization
+local PlayerGetTimerunningSeasonID = PlayerGetTimerunningSeasonID
 
 local DisableAddOn = (C_AddOns and C_AddOns.DisableAddOn) or DisableAddOn
 local GetAddOnMetadata = (C_AddOns and C_AddOns.GetAddOnMetadata) or GetAddOnMetadata
 local GetCVarBool = C_CVar.GetCVarBool
-
-local C_AddOns_GetAddOnEnableState = C_AddOns and C_AddOns.GetAddOnEnableState
-local GetAddOnEnableState = GetAddOnEnableState -- eventually this will be on C_AddOns and args swap
 
 local LE_PARTY_CATEGORY_HOME = LE_PARTY_CATEGORY_HOME
 local LE_PARTY_CATEGORY_INSTANCE = LE_PARTY_CATEGORY_INSTANCE
@@ -62,7 +60,7 @@ local LSM = E.Libs.LSM
 E.noop = function() end
 E.title = format('%s%s|r', E.InfoColor, 'ElvUI')
 E.toc = tonumber(GetAddOnMetadata('ElvUI', 'X-Interface'))
-E.version = tonumber(GetAddOnMetadata('ElvUI', 'Version'))
+E.version, E.versionString, E.versionDev, E.versionGit = E:ParseVersionString('ElvUI')
 E.myfaction, E.myLocalizedFaction = UnitFactionGroup('player')
 E.myLocalizedClass, E.myclass, E.myClassID = UnitClass('player')
 E.myLocalizedRace, E.myrace, E.myRaceID = UnitRace('player')
@@ -195,11 +193,22 @@ function E:GrabColorPickerValues(r, g, b)
 	local oldR, oldG, oldB = _G.ColorPickerFrame:GetColorRGB()
 
 	-- set and define the new values
-	_G.ColorPickerFrame:SetColorRGB(r or 1, g or 1, b or 1)
+	if E.Retail then
+		_G.ColorPickerFrame.Content.ColorPicker:SetColorRGB(r or 1, g or 1, b or 1)
+	else
+		_G.ColorPickerFrame:SetColorRGB(r or 1, g or 1, b or 1)
+	end
+
 	r, g, b = _G.ColorPickerFrame:GetColorRGB()
 
 	-- swap back to the old values
-	if oldR then _G.ColorPickerFrame:SetColorRGB(oldR, oldG, oldB) end
+	if oldR then
+		if E.Retail then
+			_G.ColorPickerFrame.Content.ColorPicker:SetColorRGB(oldR, oldG, oldB)
+		else
+			_G.ColorPickerFrame:SetColorRGB(oldR, oldG, oldB)
+		end
+	end
 
 	-- free it up..
 	_G.ColorPickerFrame.noColorCallback = nil
@@ -511,14 +520,6 @@ do
 		popup.cancel = info.cancel or cancel
 
 		E:StaticPopup_Show('INCOMPATIBLE_ADDON', popup.button1, popup.button2)
-	end
-end
-
-function E:IsAddOnEnabled(addon)
-	if C_AddOns_GetAddOnEnableState then
-		return C_AddOns_GetAddOnEnableState(addon, E.myname) == 2
-	else
-		return GetAddOnEnableState(E.myname, addon) == 2
 	end
 end
 
@@ -944,10 +945,10 @@ do
 	_G.C_ChatInfo.RegisterAddonMessagePrefix('ELVUI_VERSIONCHK')
 
 	local f = CreateFrame('Frame')
+	f:SetScript('OnEvent', SendRecieve)
 	f:RegisterEvent('CHAT_MSG_ADDON')
 	f:RegisterEvent('GROUP_ROSTER_UPDATE')
 	f:RegisterEvent('PLAYER_ENTERING_WORLD')
-	f:SetScript('OnEvent', SendRecieve)
 end
 
 function E:UpdateStart(skipCallback, skipUpdateDB)
@@ -1473,7 +1474,7 @@ function E:UpdateActionBars(skipCallback)
 		ActionBars:UpdateExtraButtons()
 	end
 
-	if E.Wrath and E.myclass == 'SHAMAN' then
+	if E.Cata and E.myclass == 'SHAMAN' then
 		ActionBars:UpdateTotemBindings()
 	end
 
@@ -1553,7 +1554,7 @@ function E:UpdateMisc(skipCallback)
 
 	if E.Retail then
 		TotemTracker:PositionAndSize()
-	elseif E.Wrath then
+	elseif E.Cata then
 		ActionBars:PositionAndSizeTotemBar()
 	end
 
@@ -1949,6 +1950,8 @@ function E:Initialize()
 	E.serverID = tonumber(serverID)
 	E.myguid = playerGUID
 
+	E.TimerunningID = PlayerGetTimerunningSeasonID and PlayerGetTimerunningSeasonID()
+
 	E.data = E.Libs.AceDB:New('ElvDB', E.DF, true)
 	E.data.RegisterCallback(E, 'OnProfileChanged', 'StaggeredUpdateAll')
 	E.data.RegisterCallback(E, 'OnProfileCopied', 'StaggeredUpdateAll')
@@ -1982,7 +1985,7 @@ function E:Initialize()
 		E:Tutorials()
 	end
 
-	if E.Retail or E.Wrath then
+	if E.Retail or E.Cata or E.ClassicSOD then
 		E.Libs.DualSpec:EnhanceDatabase(E.data, 'ElvUI')
 	end
 
@@ -2010,14 +2013,14 @@ function E:Initialize()
 	end
 
 	if E.db.general.loginmessage then
-		local msg = format(L["LOGIN_MSG"], E.version)
+		local msg = format(L["LOGIN_MSG"], E.versionString)
 		if Chat.Initialized then msg = select(2, Chat:FindURL('CHAT_MSG_DUMMY', msg)) end
 		print(msg)
 		print(L["LOGIN_MSG_HELP"])
 	end
 
 	if E.wowtoc > E.toc then
-		local msg = format(L["LOGIN_PTR"], 'https://github.com/tukui-org/ElvUI/archive/refs/heads/ptr.zip')
+		local msg = format(L["LOGIN_PTR"], 'https://api.tukui.org/v1/download/dev/elvui/ptr')
 		if Chat.Initialized then msg = select(2, Chat:FindURL('CHAT_MSG_DUMMY', msg)) end
 		print(msg)
 	end

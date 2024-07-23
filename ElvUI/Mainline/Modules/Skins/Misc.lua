@@ -64,7 +64,7 @@ function S:BlizzardMiscFrames()
 	S:HandleButton(_G.StaticPopup1ExtraButton)
 
 	-- reskin all esc/menu buttons
-	if not E:IsAddOnEnabled('ConsolePortUI_Menu') then
+	if not E:IsAddOnEnabled('ConsolePort_Menu') then
 		for _, Button in next, { _G.GameMenuFrame:GetChildren() } do
 			if Button.IsObjectType and Button:IsObjectType('Button') then
 				S:HandleButton(Button)
@@ -305,6 +305,10 @@ function S:BlizzardMiscFrames()
 			end
 		end
 	end)
+
+	-- LFG -> Custom Groups -> Dungeons -> Filter Button - This sits on the DropDownListMenu 10.2.7
+	S:HandleEditBox(_G.MinRatingFrame.MinRating)
+	_G.MinRatingFrame.MinRating:Size(40, 16) -- Default is 40, 12
 
 	local SideDressUpFrame = _G.SideDressUpFrame
 	S:HandleCloseButton(_G.SideDressUpFrameCloseButton)

@@ -3,9 +3,9 @@ local L		= mod:GetLocalizedStrings()
 
 mod.statTypes = "normal,normal25,heroic,heroic25"
 
-mod:SetRevision("20231013223342")
+mod:SetRevision("20240512232312")
 mod:SetCreatureID(36853)
-mod:SetEncounterID(mod:IsClassic() and 855 or 1105)
+mod:SetEncounterID(not mod:IsPostCata() and 855 or 1105)
 mod:SetModelID(30362)
 mod:SetUsedIcons(1, 2, 3, 4, 5, 6, 7)
 mod:SetMinSyncRevision(20220623000000)
@@ -76,7 +76,7 @@ mod.vb.beaconCount = 0
 
 local beaconDebuffFilter, unchainedDebuffFilter
 do
-	local beaconDebuff, unchainedDebuff = DBM:GetSpellInfo(70126), DBM:GetSpellInfo(69762)
+	local beaconDebuff, unchainedDebuff = DBM:GetSpellName(70126), DBM:GetSpellName(69762)
 	beaconDebuffFilter = function(uId)
 		return DBM:UnitDebuff(uId, beaconDebuff)
 	end

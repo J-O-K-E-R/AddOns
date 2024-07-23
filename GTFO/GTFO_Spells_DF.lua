@@ -5,7 +5,7 @@
 GTFO Spell List - Dragonflight
 ]]--
 
-if (not (GTFO.ClassicMode or GTFO.BurningCrusadeMode or GTFO.WrathMode)) then
+if (GTFO.RetailMode) then
 
 --- ************************
 --- * Dragon Isles (World) *
@@ -458,7 +458,15 @@ GTFO.SpellID["422266"] = {
 
 GTFO.SpellID["420339"] = {
   --desc = "Dripping Embers (Flamebound Sentinel)";
+  sound = 2;
+  tankSound = 0;
+  ignoreApplication = true;
+};
+
+GTFO.SpellID["420332"] = {
+  --desc = "Dripping Embers (Flamebound Sentinel)";
   sound = 1;
+  ignoreApplication = true;
 };
 
 GTFO.SpellID["412391"] = {
@@ -471,14 +479,100 @@ GTFO.SpellID["427335"] = {
   sound = 1;
 };
 
-GTFO.SpellID["420332"] = {
-  --desc = "Dripping Embers (Flamebound Sentinel)";
-  sound = 1;
-};
-
 GTFO.SpellID["422608"] = {
   --desc = "Molten Storm (Volgoth The Flamebringer)";
   sound = 1;
+};
+
+GTFO.SpellID["423100"] = {
+  --desc = "Dancing Blade (Hymdall)";
+  sound = 1;
+};
+
+GTFO.SpellID["428612"] = {
+  --desc = "Crackle (Stormforged Sentinel)";
+  sound = 1;
+};
+
+GTFO.SpellID["427422"] = {
+  --desc = "Heat Wave (Fyrakk)";
+  sound = 1;
+};
+
+GTFO.SpellID["423575"] = {
+  --desc = "Strafe (Ashendir Hartwood)";
+  sound = 1;
+};
+
+GTFO.SpellID["415134"] = {
+  --desc = "Fire Patch";
+  sound = 1;
+};
+
+GTFO.SpellID["401237"] = {
+  --desc = "Burning Ground";
+  sound = 1;
+};
+
+GTFO.SpellID["401229"] = {
+  --desc = "Ire of Fyrakk";
+  sound = 1;
+};
+
+GTFO.SpellID["224683"] = {
+  --desc = "Flaming Arrow (Scarlet Houndsmaster)";
+  ignoreApplication = true;
+  sound = 2;
+};
+
+GTFO.SpellID["20296"] = {
+  --desc = "Flamestrike (Scarlet Technician)";
+  ignoreApplication = true;
+  sound = 2;
+};
+
+GTFO.SpellID["430250"] = {
+  --desc = "Zealous Purification (Hallowed Monstrosity)";
+  sound = 1;
+};
+
+GTFO.SpellID["430267"] = {
+  --desc = "Zealous Purification (Hallowed Monstrosity)";
+  sound = 1;
+};
+
+GTFO.SpellID["414235"] = {
+  --desc = "Ashen Dreams";
+  minimumStacks = 1;
+  sound = 2;
+};
+
+GTFO.SpellID["419289"] = {
+  --desc = "Chaotic Breach";
+  sound = 1;
+  tankSound = 2;
+};
+
+GTFO.SpellID["423073"] = {
+  --desc = "Corrupting Felflame";
+  sound = 1;
+  ignoreApplication = true;
+};
+
+GTFO.SpellID["444640"] = {
+  --desc = "Infinite Arrows (Riftwalker Nilara)";
+  sound = 1;
+};
+
+GTFO.SpellID["443181"] = {
+  --desc = "Desecrating Blades (Corrupted Memory of Turalyon)";
+  sound = 1;
+};
+
+GTFO.SpellID["412360"] = {
+  --desc = "Calcifying Burst (Spinmarrow)";
+  applicationOnly = true;
+  sound = 2;
 };
 
 --- *******************
@@ -1477,7 +1571,6 @@ GTFO.SpellID["422023"] = {
 GTFO.SpellID["424970"] = {
   --desc = "Toxic Loam (Gnarlroot)";
   sound = 1;
-  negatingDebuffSpellID = 421038; -- Ember-Charred
 };
 
 GTFO.SpellID["422091"] = {
@@ -1498,8 +1591,16 @@ GTFO.SpellID["423494"] = {
   sound = 1;
 };
 
--- TODO: Coiling Flames (Volcoross) - Friendly-Fire warning - Giant but shrinking circle around players
--- TODO: Combusting Rage (Volcoross) - Tank-only warning - Tanks out of range
+GTFO.SpellID["424221"] = {
+  --desc = "Combusting Rage (Volcoross)";
+  sound = 0;
+  tankSound = 1;
+};
+
+GTFO.SpellID["429153"] = {
+  --desc = "Twisting Singe (Volcoross)";
+  sound = 4;
+};
 
 GTFO.SpellID["426390"] = {
   --desc = "Corrosive Pollen (Aerwynn)";
@@ -1541,6 +1642,19 @@ GTFO.SpellID["428474"] = {
   affirmingDebuffSpellID = 428479; -- Lucid Vulnerability
 };
 
+GTFO.SpellID["420554"] = {
+  --desc = "Verdant Matrix (Nymue)";
+  applicationOnly = true;
+  soundFunction = function() 
+	local stacks = GTFO_DebuffStackCount("player", 420554);
+	if (stacks > 1) then
+		return 1;
+	else
+		return 2;
+	end
+  end;
+};
+
 GTFO.SpellID["421532"] = {
   --desc = "Smoldering Ground (Smolderon)";
   sound = 1;
@@ -1549,7 +1663,6 @@ GTFO.SpellID["421532"] = {
 GTFO.SpellID["428388"] = {
   --desc = "Roiling Lava (Smolderon)";
   applicationOnly = true;
-  test = true;
   sound = 1;
 };
 
@@ -1569,6 +1682,11 @@ GTFO.SpellID["425451"] = {
   --desc = "Scorching Ground (Tindral Sageswift)";
   sound = 1;
   test = true;
+};
+
+GTFO.SpellID["427311"] = {
+  --desc = "Flame Surge (Tindral Sageswift)";
+  sound = 1;
 };
 
 GTFO.SpellID["419504"] = {
@@ -1603,6 +1721,12 @@ GTFO.SpellID["421639"] = {
 GTFO.SpellID["425658"] = {
   --desc = "Podling Toxin (Dream Seedling)";
   sound = 1;
+};
+
+GTFO.SpellID["425390"] = {
+  --desc = "Inferno Heart (Flamewaker Infernoguard)";
+  sound = 4;
+  negatingDebuffSpellID = 425388; -- Inferno Heart 
 };
 
 end

@@ -3,6 +3,8 @@ local P = E.Party
 
 local _G = _G
 local GetNumGroupMembers, IsInRaid, UnitGUID = GetNumGroupMembers, IsInRaid, UnitGUID
+local IsAddOnLoaded = C_AddOns and C_AddOns.IsAddOnLoaded or IsAddOnLoaded
+
 local isColdStartDC = true
 
 local COMPACT_RAID = {
@@ -64,7 +66,7 @@ function P:FindRelativeFrame(guid)
 			end
 			return
 		end
-		for addon, data in pairs(E.customUF.enabledList) do
+		for _, data in pairs(E.customUF.enabledList) do
 			local frames, unitKey = data.frames, data.unit
 			local n = #frames
 			for i = 1, n do

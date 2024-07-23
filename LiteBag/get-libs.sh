@@ -5,6 +5,42 @@
 # pretty nervous about packaging "the newest version" all the time.
 #
 
+indent () {
+    sed -e 's/^/    /'
+}
+
+get_repotype () {
+    case "$1" in
+    *://repos.curseforge.com/wow/libactionbutton-1-0)
+        echo git
+        ;;
+    *://repos.wowace.com/wow/libbuttonglow-1-0)
+        echo git
+        ;;
+    *://repos.curseforge.com/*)
+        echo svn
+        ;;
+    *://repos.wowace.com/*)
+        echo svn
+        ;;
+    *://svn*)
+        echo svn
+        ;;
+    svn:*)
+        echo svn
+        ;;
+    *://git*)
+        echo git
+        ;;
+    git:*)
+        echo git
+        ;;
+    *)  # I guess
+        echo git
+        ;;
+    esac
+}
+
 get_libs () {
     local INLIBS=0
     local FILE
@@ -24,23 +60,49 @@ get_libs () {
             ;;
         *)
             if [ $INLIBS -eq 1 ]; then
-                echo ${v} ${k/:/}
+                echo ${v} $( get_repotype $v ) ${k/:/}
             fi
             ;;
         esac
     done
 }
 
-indent () {
-    sed -e 's/^/    /'
+update_repo () {
+    local repotype=$1
+    local dir=$2
+
+    case $repotype in
+    git)
+        (cd $dir && git pull && git reset --hard)
+        ;;
+    svn)
+        (cd $dir && svn up)
+        ;;
+    esac
 }
 
-get_libs | while read repo dir; do
+fetch_repo () {
+    local uri=$1
+    local repotype=$2
+    local dir=$3
+
+    case $repotype in
+    git)
+        git clone $uri $dir
+        ;;
+    svn)
+        svn co $uri $dir
+        ;;
+    esac
+}
+
+
+get_libs | while read uri repotype dir; do
     if [ -d $dir ]; then
         echo "Updating $dir"
-        (cd $dir && svn up) 2>&1 | indent
+        update_repo $repotype $dir 2>&1 | indent
     else
-        echo "Cloning $repo into $dir"
-        svn co $repo $dir 2>&1 | indent
+        echo "Cloning $uri into $dir"
+        fetch_repo $uri $repotype $dir 2>&1 | indent
     fi
 done

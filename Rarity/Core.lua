@@ -719,6 +719,11 @@ function R:IsAttemptAllowed(item)
 		end
 	end
 
+	if item.requiredAreaPOIs and not Rarity.AreaPOIs.HasActiveAreaPOIs(item.requiredAreaPOIs) then
+		Rarity:Debug(format("Attempts for item %s are disallowed (requires active area POIs)", item.name))
+		return false
+	end
+
 	-- No valid instance difficulty configuration; allow (this needs to be the second-to-last check)
 	if
 		item.instanceDifficulties == nil
@@ -793,7 +798,6 @@ function R:CheckNpcInterest(guid, zone, subzone, zone_t, subzone_t, curSpell, re
 		return
 	end
 
-	-- We're interested in this loot, process further
 	Rarity.guids[guid] = true
 
 	-- Increment attempt counter(s). One NPC might drop multiple things we want, so scan for them all.

@@ -1,8 +1,6 @@
 # WIM
 
-## [3.10.16](https://github.com/Legacy-of-Sylvanaar/wow-instant-messenger/tree/3.10.16) (2023-11-07)
-[Full Changelog](https://github.com/Legacy-of-Sylvanaar/wow-instant-messenger/compare/3.10.15...3.10.16) [Previous Releases](https://github.com/Legacy-of-Sylvanaar/wow-instant-messenger/releases)
+## [3.11.2](https://github.com/Legacy-of-Sylvanaar/wow-instant-messenger/tree/3.11.2) (2024-06-18)
+[Full Changelog](https://github.com/Legacy-of-Sylvanaar/wow-instant-messenger/compare/3.11.1...3.11.2) [Previous Releases](https://github.com/Legacy-of-Sylvanaar/wow-instant-messenger/releases)
 
-- Bump toc  
-- bump wrath toc  
-- Toc Bump for retail  
+- Fix: filtering events from the default chat frame, prevented whispers from calling FlashClientIcon().  

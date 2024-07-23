@@ -7,10 +7,10 @@ local L = LibStub('AceLocale-3.0'):NewLocale(ADDON, 'koKR')
 if not L then return end
 
 --keybindings
-L.ToggleBags = '소지품 온/오프'
-L.ToggleBank = '은행 온/오프'
-L.ToggleGuild = '길드 금고 온/오프'
-L.ToggleVault = '공허 보관 온/오프'
+L.OpenBags = '소지품 온/오프'
+L.OpenBank = '은행 온/오프'
+L.OpenGuild = '길드 금고 온/오프'
+L.OpenVault = '공허 보관 온/오프'
 
 --terminal
 L.Commands = '명령어:'
@@ -20,7 +20,6 @@ L.CmdShowGuild = '길드 금고 온/오프'
 L.CmdShowVault = '공허 보관 온/오프'
 L.CmdShowVersion = '현재 버전 정보 출력'
 L.CmdShowOptions = '설정메뉴 열기'
-L.Updated = '업데이트 v%s'
 
 --frame titles
 L.TitleBags = '%s의 소지품'
@@ -28,7 +27,6 @@ L.TitleBank = '%s의 은행'
 L.TitleVault = '%s의 공허'
 
 --dropdowns
-L.TitleFrames = '%s 프레임'
 L.SelectCharacter = '캐릭터 선택'
 L.ConfirmDelete = '%s의 캐시된 데이터를 삭제하시겠습니까?'
 
@@ -46,7 +44,6 @@ L.GuildFunds = '길드 금고'
 L.TipGoldOnRealm = '총 %s'
 L.NumWithdraw = '%d 출금'
 L.NumDeposit = '%d 입금'
-L.NumRemainingWithdrawals = '출금 잔고 %d'
 
 --action tooltips
 L.TipChangePlayer = '다른 캐릭터의 아이템 보기'

@@ -93,7 +93,7 @@ function mod:GetOptions()
 	},{
 		["stages"] = "general",
 		[360115] = -23915, -- Stage One: The Reclaimer
-		[362056] = -23917, -- Stage Two: The Shimmering Cliffs
+		[364979] = -23917, -- Stage Two: The Shimmering Cliffs
 		[368529] = -24707, -- Stage Three: A Broken Cycle
 		[368969] = "mythic",
 	},{
@@ -359,7 +359,7 @@ function mod:ReclamationForm(args)
 	self:StopBar(CL.count:format(CL.intermission, reclamationFormCount))
 	self:StopBar(CL.count:format(L.crushing_prism, prismCount))
 	self:StopBar(CL.count:format(L.earthbreaker_missiles, misslesCount))
-	self:StopBar(CL.count:format(self:SpellName(362056), shatterCount))
+	self:StopBar(CL.count:format(self:SpellName(364979), shatterCount))
 	self:StopBar(CL.count:format(CL.beam, beamCount))
 
 	seismicTremorsCount = 1

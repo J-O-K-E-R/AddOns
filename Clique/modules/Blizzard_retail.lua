@@ -8,7 +8,7 @@ local addonName, addon = ...
 local L = addon.L
 
 -- Only load if this is Retail and NOT Dragonflight
-if (not addon:ProjectIsRetail()) or (addon:IsDragonflight()) then
+if (not addon:ProjectIsRetail()) or (addon:ProjectIsDragonflight()) then
     return
 end
 

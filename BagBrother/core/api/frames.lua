@@ -1,10 +1,10 @@
 --[[
-	frames.lua
-		Manages frame creation and display
-		All Rights Reserved
+	Manages frame creation and display.
+	All Rights Reserved
 --]]
 
 local ADDON, Addon = ...
+local C = LibStub('C_Everywhere')
 local Frames = Addon:NewModule('Frames')
 Frames.Registry = {
 	{id = 'inventory', name = INVENTORY_TOOLTIP, icon = 130716},
@@ -79,7 +79,7 @@ end
 function Frames:New(id)
 	if self:IsEnabled(id) then
 		local info = self:Get(id)
-		if not info.addon or LoadAddOn(info.addon) then
+		if not info.addon or C.AddOns.LoadAddOn(info.addon) then
 	 		info.object = info.object or Addon[id:gsub('^.', id.upper)]:New(id)
 	 		return info.object
 		end
@@ -97,7 +97,7 @@ end
 function Frames:IsEnabled(id)
 	local addon = self:Get(id).addon
 	if addon then
-		return GetAddOnEnableState(UnitName('player'), addon) == 2
+		return C.Addons.GetAddOnEnableState(addon, UnitName('player')) == 2
 	else
 		return addon ~= false and Addon.player.profile[id].enabled
 	end

@@ -1,7 +1,6 @@
 --[[
-	autoDisplay.lua
-		Handles when to display the different mod frames and when to keep the blizzard ones hidden. Not pretty.
-		All Rights Reserved
+	Handles when to display the different mod frames and when to keep the blizzard ones hidden. Not pretty.
+	All Rights Reserved
 --]]
 
 local ADDON, Addon = ...
@@ -47,7 +46,7 @@ function AutoDisplay:HookBaseUI()
 
 	self:StopIf(PlayerInteractionFrameManager, 'ShowFrame', function(manager, type)
 		return type == Interactions.Banker and Addon.Frames:Show('bank') or
-			    type == Interactions.GuildBanker and Addon.Frames:Show('guild') or
+				type == Interactions.GuildBanker and Addon.Frames:Show('guild') or
 				type == Interactions.VoidStorageBanker and Addon.Frames:Show('vault')
 	end)
 

@@ -336,6 +336,13 @@ function Heirloom:GetStatus()
 end
 
 -------------------------------------------------------------------------------
+---------------------------------- MANUSCRIPT ---------------------------------
+-------------------------------------------------------------------------------
+
+local Manuscript = Class('Manuscript', Item,
+    {display_option = 'show_manuscript_rewards'})
+
+-------------------------------------------------------------------------------
 ------------------------------------ MOUNT ------------------------------------
 -------------------------------------------------------------------------------
 
@@ -434,8 +441,8 @@ function Recipe:Initialize(attrs)
 end
 
 -- Tooltip Documentation:
--- https://wowpedia.fandom.com/wiki/Patch_10.0.2/API_changes
--- https://wowpedia.fandom.com/wiki/Patch_10.1.0/API_changes
+-- https://warcraft.wiki.gg/wiki/Patch_10.0.2/API_changes
+-- https://warcraft.wiki.gg/wiki/Patch_10.1.0/API_changes
 function Recipe:IsObtained()
     local info = C_TooltipInfo.GetItemByID(self.item)
     if info then
@@ -509,6 +516,28 @@ function Toy:IsObtained() return PlayerHasToy(self.item) end
 function Toy:GetStatus()
     local collected = PlayerHasToy(self.item)
     return collected and Green(L['known']) or Red(L['missing'])
+end
+
+-------------------------------------------------------------------------------
+---------------------------------- APPEARANCE ---------------------------------
+-------------------------------------------------------------------------------
+
+-- Ensemble, Arsenal, Illusion
+
+local Appearance = Class('Appearance', Item, {type = _G.APPEARANCE_LABEL})
+
+function Appearance:IsObtained()
+    local KnownLineType = Enum.TooltipDataLineType.RestrictedSpellKnown
+    local info = C_TooltipInfo.GetItemByID(self.item)
+    if info then
+        for _, line in ipairs(info.lines) do
+            if line.type == KnownLineType then return true end
+        end
+    end
+    return false
+end
+function Appearance:GetStatus()
+    return self:IsObtained() and Green(L['known']) or Red(L['missing'])
 end
 
 -------------------------------------------------------------------------------
@@ -615,6 +644,7 @@ ns.reward = {
     Follower = Follower,
     Item = Item,
     Heirloom = Heirloom,
+    Manuscript = Manuscript,
     Mount = Mount,
     Pet = Pet,
     Quest = Quest,
@@ -622,5 +652,6 @@ ns.reward = {
     Spell = Spell,
     Title = Title,
     Toy = Toy,
+    Appearance = Appearance,
     Transmog = Transmog
 }

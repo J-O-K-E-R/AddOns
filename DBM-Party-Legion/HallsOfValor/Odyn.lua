@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod(1489, "DBM-Party-Legion", 4, 721)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20230504231118")
+mod:SetRevision("20240714045506")
 mod:SetCreatureID(95676)
 mod:SetEncounterID(1809)
 mod:SetHotfixNoticeRev(20230306000000)
@@ -31,21 +31,20 @@ mod:RegisterEvents(
 --TODO, does boss still have old random tempest timers system from legion or are 10.0.2 changes universal?
 local warnSpear						= mod:NewSpellAnnounce(198072, 2)--Target not available so no target warning.
 
-local specWarnTempest				= mod:NewSpecialWarningRun(198263, nil, nil, nil, 4, 2)
+local specWarnTempest				= mod:NewSpecialWarningRunCount(198263, nil, nil, nil, 4, 2)
 local specWarnShatterSpears			= mod:NewSpecialWarningDodge(198077, nil, nil, nil, 2, 2)
 local specWarnRunicBrand			= mod:NewSpecialWarningMoveTo(197961, nil, nil, nil, 2, 6)
 local specWarnAdd					= mod:NewSpecialWarningSwitch(201221, "-Healer", nil, nil, 1, 2)
 local specWarnSurge					= mod:NewSpecialWarningInterrupt(198750, "HasInterrupt", nil, nil, 1, 2)
 
-local timerRP						= mod:NewRPTimer(28.5)
+local timerRP						= mod:NewCombatTimer(28.5)
 --local timerSpearCD					= mod:NewCDTimer(8, 198077, nil, nil, nil, 3)--More data needed
 local timerTempestCD				= mod:NewCDCountTimer(56, 198263, nil, nil, nil, 2, nil, DBM_COMMON_L.DEADLY_ICON)--More data needed
 local timerShatterSpearsCD			= mod:NewCDTimer(56, 198077, nil, nil, nil, 2)
 local timerRunicBrandCD				= mod:NewCDCountTimer(56, 197961, nil, nil, nil, 3)
 local timerAddCD					= mod:NewCDTimer(54, 201221, nil, nil, nil, 1, 201215)--54-58
 
-mod:AddMiscLine(DBM_CORE_L.OPTION_CATEGORY_DROPDOWNS)
-mod:AddDropdownOption("RuneBehavior", {"Icon", "Entrance", "Minimap", "Generic"}, "Generic", "misc")
+mod:AddDropdownOption("RuneBehavior", {"Icon", "Entrance", "Minimap", "Generic"}, "Generic", "misc", nil, 197961)
 
 --Boss has (at least) three timer modes, cannot determine which one on pull so on fly figuring out is used
 local oldTempestTimers = {
@@ -60,6 +59,7 @@ mod.vb.tempestCount = 0
 mod.vb.brandCount = 0
 
 --Should run at 10, 18, 26, and 34
+--[[
 local function tempestDelayed(self)
 	if self.vb.tempestCount == 0 then
 		DBM:AddMsg(L.tempestModeMessage:format(self.vb.temptestMode))
@@ -70,6 +70,7 @@ local function tempestDelayed(self)
 		return
 	end
 end
+--]]
 
 function mod:OnCombatStart(delay)
 	self.vb.temptestMode = 1

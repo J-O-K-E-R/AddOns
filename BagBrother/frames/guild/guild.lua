@@ -6,7 +6,7 @@
 local MODULE =  ...
 local ADDON, Addon = MODULE:match('[^_]+'), _G[MODULE:match('[^_]+')]
 local Guild = Addon.Frame:NewClass('Guild')
-local Sushi = LibStub('Sushi-3.1')
+local Sushi = LibStub('Sushi-3.2')
 
 Guild.PickupItem = PickupGuildBankItem
 Guild.NoGuild = setmetatable({name=RED_FONT_COLOR:WrapTextInColorCode(ERR_GUILD_PLAYER_NOT_IN_GUILD), address='', isguild=true}, {__index = Addon.player})
@@ -32,13 +32,8 @@ function Guild:New(id)
 	log:SetPoint('TOPLEFT', 10, -70)
 	log:Hide()
 
-	local edit = Addon.EditFrame:New(f)
-	edit:SetPoint('BOTTOMRIGHT', -32, 35)
-	edit:SetPoint('TOPLEFT', 10, -75)
-	edit:Hide()
-
 	f.LogToggles = Addon.LogToggle:NewSet(f)
-	f.Log, f.EditFrame = log, edit
+	f.Log = log
 	return f
 end
 
@@ -52,15 +47,14 @@ end
 
 function Guild:OnLogSelected(_, logID)
 	self.ItemGroup:SetShown(not logID)
-	self.EditFrame:SetShown(logID == 3)
-	self.Log:SetShown(logID and logID < 3)
+	self.Log:SetShown(logID)
 end
 
 function Guild:OnHide()
 	self:Super(Guild):OnHide()
-	Sushi.Popup:Hide('GUILDBANK_WITHDRAW')
-	Sushi.Popup:Hide('GUILDBANK_DEPOSIT')
-	Sushi.Popup:Hide('CONFIRM_BUY_GUILDBANK_TAB')
+	Sushi.Popup:Cancel(CONFIRM_BUY_GUILDBANK_TAB)
+	Sushi.Popup:Cancel(GUILDBANK_WITHDRAW)
+	Sushi.Popup:Cancel(GUILDBANK_DEPOSIT)
 	CloseGuildBankFrame()
 end
 
@@ -98,15 +92,6 @@ function Guild:IsShowingBag(bag)
 	return bag == GetCurrentGuildBankTab()
 end
 
+function Guild:GetExtraButtons() return self.LogToggles end
 function Guild:IsBagGroupShown() return true end
 function Guild:HasOwnerSelector() end
-function Guild:HasBagToggle() end
-
-function Guild:ListMenuButtons() -- not bagnon agnostic, must address
-	for i, toggle in ipairs(self.LogToggles) do
-		tinsert(self.menuButtons, toggle)
-	end
-
-	self:Super(Guild):ListMenuButtons()
-end
-

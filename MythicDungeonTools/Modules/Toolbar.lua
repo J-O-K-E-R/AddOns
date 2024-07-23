@@ -55,17 +55,12 @@ function MDT:initToolbar(frame)
   frame.toolbar.widgetGroup = AceGUI:Create("SimpleGroup")
   frame.toolbar.widgetGroup.frame:ClearAllPoints()
   frame.toolbar.widgetGroup.frame:SetAllPoints(frame.toolbar)
+  frame.toolbar.widgetGroup.frame:SetParent(frame.toolbar)
   if not frame.toolbar.widgetGroup.frame.SetBackdrop then
     Mixin(frame.toolbar.widgetGroup.frame, BackdropTemplateMixin)
   end
   frame.toolbar.widgetGroup.frame:SetBackdropColor(0, 0, 0, 0)
-  --frame.toolbar.widgetGroup:SetWidth(350)
-  --frame.toolbar.widgetGroup:SetHeight(15)
-  --frame.toolbar.widgetGroup:SetPoint("TOP",frame.toolbar,"TOP",0,0)
-
   frame.toolbar.widgetGroup:SetLayout("Flow")
-  frame.toolbar.widgetGroup.frame:SetFrameStrata("High")
-  frame.toolbar.widgetGroup.frame:SetFrameLevel(7)
 
   MDT:FixAceGUIShowHide(frame.toolbar.widgetGroup, frame.toolbar)
 
@@ -114,7 +109,7 @@ function MDT:initToolbar(frame)
   local colorPicker = AceGUI:Create("ColorPicker")
   --colorPicker:SetHasAlpha(true)
   colorPicker:SetColor(db.toolbar.color.r, db.toolbar.color.g, db.toolbar.color.b, db.toolbar.color.a)
-  colorPicker:SetCallback("OnValueConfirmed", function(widget, callbackName, r, g, b, a)
+  colorPicker:SetCallback("OnValueChanged", function(widget, callbackName, r, g, b, a)
     db.toolbar.color.r, db.toolbar.color.g, db.toolbar.color.b, db.toolbar.color.a = r, g, b, a
     colorPicker:SetColor(r, g, b, a)
   end)
@@ -1011,9 +1006,10 @@ end
 
 local function makeNoteEditbox()
   local editbox = AceGUI:Create("SimpleGroup")
+  editbox.frame:SetParent(MDT.main_frame)
   editbox:SetWidth(240)
   editbox:SetHeight(120)
-  editbox.frame:SetFrameStrata("HIGH")
+  editbox.frame:SetFrameStrata("DIALOG")
   editbox.frame:SetFrameLevel(50)
   if not editbox.frame.SetBackdrop then
     Mixin(editbox.frame, BackdropTemplateMixin)
@@ -1120,23 +1116,21 @@ function MDT:DrawNote(x, y, text, objectIndex)
   note:ClearAllPoints()
   note:SetPoint("CENTER", MDT.main_frame.mapPanelTile1, "TOPLEFT", x, y)
   note:SetSize(12 * scale, 12 * scale)
-  note.NormalTexture:SetSize(15 * scale, 15 * scale)
-  note.PushedTexture:SetSize(15 * scale, 15 * scale)
-  note.HighlightTexture:SetSize(15 * scale, 15 * scale)
-  note.Display.Icon:SetSize(16 * scale, 16 * scale)
-  note.NormalTexture:SetTexture("Interface/WorldMap/UI-QuestPoi-NumberIcons")
-  note.PushedTexture:SetTexture("Interface/WorldMap/UI-QuestPoi-NumberIcons")
-  note.HighlightTexture:SetTexture("Interface/WorldMap/UI-QuestPoi-NumberIcons")
-  note.Display.Icon:SetTexture("Interface/WorldMap/UI-QuestPoi-NumberIcons")
-  note.NormalTexture:SetTexCoord(0.500, 0.625, 0.375, 0.5)
-  note.PushedTexture:SetTexCoord(0.375, 0.500, 0.375, 0.5)
-  note.HighlightTexture:SetTexCoord(0.625, 0.750, 0.375, 0.5)
-  -- temporary fix for there not being enough textures in the atlas
-  -- should copy and fix the atlas instead
   local idx = note.noteIdx % 25
   if idx == 0 then idx = 1 end
+  note.NormalTexture:SetSize(15 * scale, 15 * scale)
+  note.NormalTexture:SetTexture("Interface/WorldMap/UI-QuestPoi-NumberIcons")
+  note.NormalTexture:SetTexCoord(0.500, 0.625, 0.375, 0.5)
+  note.HighlightTexture:SetSize(15 * scale, 15 * scale)
+  note.HighlightTexture:SetTexture("Interface/WorldMap/UI-QuestPoi-NumberIcons")
+  note.HighlightTexture:SetTexCoord(0.625, 0.750, 0.375, 0.5)
+  note.Display.Icon:SetSize(16 * scale, 16 * scale)
+  note.Display.Icon:SetTexture("Interface/WorldMap/UI-QuestPoi-NumberIcons")
   note.Display.Icon:SetTexCoord(POIButton_CalculateNumericTexCoords(idx, 0))
   note.Display.Icon:Show()
+  note.PushedTexture:SetSize(15 * scale, 15 * scale)
+  note.PushedTexture:SetTexture("Interface/WorldMap/UI-QuestPoi-NumberIcons")
+  note.PushedTexture:SetTexCoord(0.375, 0.500, 0.375, 0.5)
   note.tooltipText = text or ""
 
   note:RegisterForClicks("AnyUp")

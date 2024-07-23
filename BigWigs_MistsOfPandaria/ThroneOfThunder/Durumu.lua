@@ -83,7 +83,7 @@ function mod:OnBossEnable()
 	self:Log("SPELL_AURA_APPLIED", "LifeDrainStunApplied", 137727)
 	self:Log("SPELL_AURA_REMOVED", "LifeDrainStunRemoved", 137727)
 	self:Log("SPELL_AURA_APPLIED_DOSE", "LifeDrainDose", 133798)
-	self:Log("SPELL_DAMAGE", "LingeringGazeDamage", 134044)
+	--self:Log("SPELL_DAMAGE", "LingeringGazeDamage", 134044) -- Invalid ID as of 10.2.7?
 	self:Log("SPELL_AURA_REMOVED", "LingeringGazeRemoved", 134626)
 	self:Log("SPELL_AURA_APPLIED", "LingeringGazeApplied", 134626)
 	self:Log("SPELL_CAST_START", "HardStare", 133765)
@@ -104,7 +104,7 @@ end
 
 function mod:OnEngage()
 	self:Berserk(600)
-	self:CDBar(134626, 15) -- Lingering Gaze
+	self:Bar(134626, 15) -- Lingering Gaze
 	self:Bar(-6905, 33) -- Force of Will
 	self:Bar(-6891, 41) -- Light Spectrum
 	self:Bar(-6882, self:LFR() and 161 or 135, L["death_beam"])
@@ -147,7 +147,7 @@ do
 		end
 	end
 	function mod:DarkParasiteApplied(args)
-		self:CDBar(args.spellId, 60)
+		self:Bar(args.spellId, 60)
 		if self:Me(args.destGUID) then
 			self:MessageOld(args.spellId, "blue", "info", CL["you"]:format(args.spellName))
 			self:Flash(args.spellId)
@@ -208,9 +208,9 @@ function mod:LifeDrainCast(args)
 	self:Bar(133798, 15, CL["cast"]:format(args.spellName))
 	self:DelayedMessage(133798, 15, "green", CL["over"]:format(args.spellName))
 	if lifeDrainCasts == 1 and not self:Heroic() then
-		self:CDBar(133798, self:LFR() and 75 or 50)
+		self:Bar(133798, self:LFR() and 75 or 50)
 	else
-		self:CDBar(133798, 41) -- 41-46 not sure why this one varies, doesn't look like its based on end of color
+		self:Bar(133798, 41) -- 41-46 not sure why this one varies, doesn't look like its based on end of color
 	end
 end
 
@@ -226,7 +226,7 @@ end
 function mod:LifeDrainDose(args)
 	self:StackMessageOld(133798, args.destName, args.amount, "red")
 	if self:Me(args.destGUID) and not self:LFR() then
-		self:Say(args.spellId, L["life_drain_say"]:format(args.amount)) -- this spams but is needed, hack even yell would be better
+		self:Say(args.spellId, L["life_drain_say"]:format(args.amount), nil, ("%dx Drain"):format(args.amount)) -- this spams but is needed, hack even yell would be better
 	end
 end
 
@@ -309,10 +309,10 @@ end
 function mod:ForceOfWill(args)
 	if self:Me(args.destGUID) then
 		self:Flash(-6905)
-		self:Say(-6905)
+		self:Say(-6905, nil, nil, "Force of Will")
 	end
 	self:TargetMessageOld(-6905, args.destName, "yellow", "long")
-	self:CDBar(-6905, 20)
+	self:Bar(-6905, 20)
 end
 
 function mod:CHAT_MSG_MONSTER_EMOTE(_, msg, _, _, _, target)
@@ -337,27 +337,27 @@ function mod:CHAT_MSG_MONSTER_EMOTE(_, msg, _, _, _, target)
 
 	elseif msg:find("134169") then -- Disintegration Beam
 		lifeDrainCasts = 0
-		self:CDBar(133798, 66) -- Life Drain
-		self:CDBar(134626, 76) -- Lingering Gaze
-		self:CDBar(-6905, 78) -- Force of Will
+		self:Bar(133798, 66) -- Life Drain
+		self:Bar(134626, 76) -- Lingering Gaze
+		self:Bar(-6905, 78) -- Force of Will
 		self:Bar(-6882, 54, CL["cast"]:format(L["death_beam"]))
 		self:Bar(-6882, self:LFR() and 241 or 191, L["death_beam"])
 		self:MessageOld(-6882, "yellow", nil, L["death_beam"])
 	end
 end
 
-do
-	local prev = 0
-	function mod:LingeringGazeDamage(args)
-		if not self:Me(args.destGUID) then return end
-		local t = GetTime()
-		if t-prev > 2 then
-			prev = t
-			self:MessageOld(134626, "blue", "info", CL["underyou"]:format(args.spellName))
-			self:Flash(134626)
-		end
-	end
-end
+--do
+--	local prev = 0
+--	function mod:LingeringGazeDamage(args)
+--		if not self:Me(args.destGUID) then return end
+--		local t = GetTime()
+--		if t-prev > 2 then
+--			prev = t
+--			self:MessageOld(134626, "blue", "info", CL["underyou"]:format(args.spellName))
+--			self:Flash(134626)
+--		end
+--	end
+--end
 
 function mod:LingeringGazeRemoved(args)
 	if self:Me(args.destGUID) then
@@ -378,7 +378,7 @@ function mod:LingeringGazeRemoved(args)
 end
 
 function mod:LingeringGazeApplied(args)
-	self:CDBar(args.spellId, 25)
+	self:Bar(args.spellId, 25)
 	if self:Me(args.destGUID) then
 		self:Flash(args.spellId)
 		self:MessageOld(args.spellId, "orange", "alarm", CL["you"]:format(args.spellName))
@@ -420,7 +420,7 @@ function mod:Deaths(args)
 	if deadAdds == 3 then
 		self:PlaySound("adds", "info")
 		self:StopBar(137747) -- Obliterate (heroic)
-		self:CDBar(-6905, 20) -- Force of Will
+		self:Bar(-6905, 20) -- Force of Will
 		mark(blueController, 0)
 		mark(redController, 0)
 	end

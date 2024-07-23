@@ -8,11 +8,12 @@ BigWigs:AddColors("Witherbark", {
 })
 
 BigWigs:AddColors("Ancient Protectors", {
-	[168082] = "red",
+	[168082] = {"red","yellow"},
 	[427459] = "yellow",
 	[427498] = "cyan",
 	[427509] = "cyan",
 	[427510] = "purple",
+	[427513] = "blue",
 })
 
 BigWigs:AddColors("Xeri'tac", {
@@ -46,9 +47,10 @@ BigWigs:AddColors("The Everbloom Trash", {
 	[164965] = {"blue","orange","yellow"},
 	[165123] = {"blue","red"},
 	[165213] = "red",
+	[169445] = "red",
 	[169494] = {"blue","yellow"},
 	[172578] = "orange",
-	[426500] = {"blue","orange"},
+	[426500] = "orange",
 	[426845] = "yellow",
 	[426974] = "red",
 	[427223] = "orange",

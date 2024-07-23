@@ -3,10 +3,11 @@
 -- Module declaration
 --
 
-local mod, CL = BigWigs:NewBoss("High Priest Venoxis", 309, -784)
+local mod, CL = BigWigs:NewBoss("High Priest Venoxis", 309)
 if not mod then return end
 mod:RegisterEnableMob(14507)
 mod:SetEncounterID(784)
+mod:SetAllowWin(true)
 
 --------------------------------------------------------------------------------
 -- Localization
@@ -40,7 +41,7 @@ function mod:OnBossEnable()
 	self:Log("SPELL_INTERRUPT", "HolyFireStop", "*")
 	self:Log("SPELL_CAST_SUCCESS", "PoisonCloud", 23861)
 
-	self:RegisterUnitEvent("UNIT_HEALTH_FREQUENT", nil, "target", "focus")
+	self:RegisteEvent("UNIT_HEALTH")
 end
 
 --------------------------------------------------------------------------------
@@ -70,11 +71,11 @@ function mod:PoisonCloud(args)
 	self:PlaySound(23861, "info")
 end
 
-function mod:UNIT_HEALTH_FREQUENT(event, unit)
+function mod:UNIT_HEALTH(event, unit)
 	if self:MobId(self:UnitGUID(unit)) == 14507 then
 		local hp = self:GetHealth(unit)
 		if hp < 56 then
-			self:UnregisterUnitEvent(event, "target", "focus")
+			self:UnregisterEvent(event)
 			if hp > 50 then -- make sure we're not too late
 				self:Message(23861, "green", CL.soon:format(self:SpellName(23861)), false)
 			end

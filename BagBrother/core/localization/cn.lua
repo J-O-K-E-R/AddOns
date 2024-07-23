@@ -7,10 +7,10 @@ local L = LibStub('AceLocale-3.0'):NewLocale(ADDON, 'zhCN')
 if not L then return end
 
 --keybindings
-L.ToggleBags = '切换背包'
-L.ToggleBank = '切换银行'
-L.ToggleGuild = '切换公会银行'
-L.ToggleVault = '切换虚空仓库'
+L.OpenBags = '切换背包'
+L.OpenBank = '切换银行'
+L.OpenGuild = '切换公会银行'
+L.OpenVault = '切换虚空仓库'
 
 --terminal
 L.Commands = '命令列表'
@@ -20,7 +20,6 @@ L.CmdShowGuild = '切换公会银行'
 L.CmdShowVault = '切换虚空仓库'
 L.CmdShowVersion = '列出当前版本'
 L.CmdShowOptions = '打开配置菜单'
-L.Updated = '已更新到 v%s'
 
 --frame titles
 L.TitleBags = '%s的背包'
@@ -28,7 +27,6 @@ L.TitleBank = '%s的银行'
 L.TitleVault = '%s的虚空仓库'
 
 --dropdowns
-L.TitleFrames = '%s的框架'
 L.SelectCharacter = '选择角色'
 L.ConfirmDelete = '确定要删除 %s 的缓存数据？'
 
@@ -46,7 +44,6 @@ L.GuildFunds = '公会基金'
 L.TipGoldOnRealm = '%s总资产'
 L.NumWithdraw = '%d取出'
 L.NumDeposit = '%d存入'
-L.NumRemainingWithdrawals = '%d取出剩余'
 
 --action tooltips
 L.TipChangePlayer = '<点击>查看其他角色的物品。'

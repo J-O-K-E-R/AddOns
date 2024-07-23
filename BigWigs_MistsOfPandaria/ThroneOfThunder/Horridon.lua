@@ -23,27 +23,25 @@ local doorCounter = 1
 
 local L = mod:NewLocale("enUS", true)
 if L then
-	L.focus_only = "|cffff0000Focus target alerts only.|r "
-
 	L.charge_trigger = "sets his eyes" -- Horridon sets his eyes on PLAYERNAME and stamps his tail!
 	L.door_trigger = "pour" -- Farraki forces pour from the Farraki Tribal Door!
 	L.orb_trigger = "charge" -- PLAYERNAME forces Horridon to charge the Farraki door!
 
 
 	L.chain_lightning = -7124
-	L.chain_lightning_desc = L.focus_only .. "{-7124}"
+	L.chain_lightning_desc = "|cffff0000Focus target alerts only.|r {-7124}"
 	L.chain_lightning_icon = 136480
 	L.chain_lightning_message = "Your focus is casting Chain Lightning!"
 	L.chain_lightning_bar = "Focus: Chain Lightning"
 
 	L.fireball = -7122
-	L.fireball_desc = L.focus_only .. "{-7122}"
+	L.fireball_desc = "|cffff0000Focus target alerts only.|r {-7122}"
 	L.fireball_icon = 136465
 	L.fireball_message = "Your focus is casting Fireball!"
 	L.fireball_bar = "Focus: Fireball"
 
 	L.venom_bolt_volley = -7112
-	L.venom_bolt_volley_desc = L.focus_only .. "{-7112}"
+	L.venom_bolt_volley_desc = "|cffff0000Focus target alerts only.|r {-7112}"
 	L.venom_bolt_volley_icon = 136587
 	L.venom_bolt_volley_message = "Your focus is casting Volley!"
 	L.venom_bolt_volley_bar = "Focus: Volley"
@@ -130,9 +128,9 @@ end
 function mod:OnEngage()
 	doorCounter = 1
 	self:Berserk(720)
-	self:CDBar("adds", 22, L["door_bar"]:format(doorCounter), "inv_shield_11")
-	self:CDBar(-7078, 10) -- Triple Puncture
-	self:CDBar(-7080, 33) -- Charge
+	self:Bar("adds", 22, L["door_bar"]:format(doorCounter), "inv_shield_11")
+	self:Bar(-7078, 10) -- Triple Puncture
+	self:Bar(-7080, 33) -- Charge
 	if self:Heroic() then
 		self:Bar(137458, 61) -- Dire Call
 	end
@@ -186,7 +184,7 @@ end
 
 function mod:DinoMending(args)
 	self:MessageOld(-7090, "red", "long")
-	self:CDBar(-7090, 8) -- to help interrupters keep track
+	self:Bar(-7090, 8) -- to help interrupters keep track
 end
 
 function mod:DinoMendingInterrupt(args)
@@ -348,10 +346,10 @@ end
 
 function mod:Charge(msg, _, _, _, player)
 	self:TargetMessageOld(-7080, player, "yellow", "warning", nil, nil, true)
-	self:CDBar(-7080, 51)
+	self:Bar(-7080, 51)
 	if UnitIsUnit("player", player) then
 		self:Flash(-7080)
-		self:Say(-7080)
+		self:Say(-7080, nil, nil, "Charge")
 	end
 end
 
@@ -381,12 +379,12 @@ end
 function mod:Swipe(args)
 	self:MessageOld(136741, "orange", "long")
 	local timer = (args.spellId == 136770) and 11 or 19 -- after charge swipe is ~10 sec, then ~19 till next charge ( 10 H ptr )
-	self:CDBar(136741, self:LFR() and 16 or timer) -- someone needs to verify LFR timer
+	self:Bar(136741, self:LFR() and 16 or timer) -- someone needs to verify LFR timer
 end
 
 function mod:Puncture(args)
 	self:StackMessageOld(-7078, args.destName, args.amount, "orange")
-	self:CDBar(-7078, 10.9)
+	self:Bar(-7078, 10.9)
 end
 
 function mod:DireCall(args)

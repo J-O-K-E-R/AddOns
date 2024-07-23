@@ -15,8 +15,6 @@ end
 L = BigWigs:NewBossLocale("The Eye of the Jailer", "deDE")
 if L then
 	L.chains = "Ketten" -- Short for Dragging Chains
-	L.pool = "Lache" -- Spreading Misery
-	L.pools = "Lachen" -- Spreading Misery (multiple)
 	L.death_gaze = "Todesblick" -- Short for Titanic Death Gaze
 end
 
@@ -119,18 +117,22 @@ if L then
 	L.custom_on_nameplate_fixate = "Fixieren-Symbol an gegnerischen Namensplaketten"
 	L.custom_on_nameplate_fixate_desc = "Zeigt ein Symbol an der Namensplakette der Dich fixierenden Dunklen Wache an.\n\nBenötigt die Nutzung von Namensplaketten sowie ein unterstütztes Addon (KuiNameplates, Plater)."
 
+	--L.intermission_chains = "Intermission Chains"
 	L.chains = "Ketten" -- Short for Domination Chains
 	L.chain = "Kette" -- Single Domination Chain
 	L.darkness = "Dunkelheit" -- Short for Veil of Darkness
 	L.arrow = "Pfeil" -- Short for Wailing Arrow
+	--L.arrow_done = "DONE" -- Message when the arrow has hit
 	L.wave = "Welle" -- Short for Haunting Wave
 	L.dread = "Angst" -- Short for Crushing Dread
-	L.orbs = "Kugeln" -- Dark Communion
-	L.curse = "Fluch" -- Short for Curse of Lethargy
-	L.pools = "Lachen" -- Banshee's Bane
 	L.scream = "Kreischen" -- Banshee Scream
 
 	L.knife_fling = "Messer fliegen!" -- "Death-touched blades fling out"
+	--L.bridges = "Bridges"
+	--L.rive_counter = "%s (%d/%d)"
+	--L.soaks = "Soaks" -- Merciless
+	--L.count_x = "%s (x%d)(%d)"
+	--L.shroud_active = "Shroud (%d) - %.1f%%!"
 end
 
 L = BigWigs:NewBossLocale("Sanctum of Domination Affixes", "deDE")

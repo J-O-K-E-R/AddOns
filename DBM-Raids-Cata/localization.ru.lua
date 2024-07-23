@@ -6,10 +6,6 @@ local L
 ----------------
 L= DBM:GetModLocalization(139)
 
-L:SetOptionLocalization({
-	SetIconOnConsuming		= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(88954)
-})
-
 -----------------
 --  Occu'thar  --
 -----------------
@@ -33,11 +29,6 @@ L:SetOptionLocalization({
 -------------------------------
 L = DBM:GetModLocalization(169)
 
-L:SetWarningLocalization({
-	SpecWarnActivated			= "Смена цели на: %s!",
-	specWarnGenerator			= "Генератор энергии - Двигайтесь %s!"
-})
-
 L:SetTimerLocalization({
 	timerShadowConductorCast	= "Проводник тьмы",
 	timerArcaneLockout			= "Волшебный уничтожитель",
@@ -49,13 +40,7 @@ L:SetOptionLocalization({
 	timerShadowConductorCast	= "Отсчет времени применения заклинания $spell:92048",
 	timerArcaneLockout			= "Отсчет времени блокировки $spell:79710",
 	timerArcaneBlowbackCast		= "Отсчет времени применения заклинания $spell:91879",
-	timerNefAblity				= "Отсчет времени восстановления баффа (героический режим)",
-	SpecWarnActivated			= "Спецпредупреждение при активации нового босса",
-	specWarnGenerator			= "Спецпредупреждение, когда босс стоит в $spell:79629",
-	AcquiringTargetIcon			= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(79501),
-	ConductorIcon				= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(79888),
-	ShadowConductorIcon			= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(92053),
-	SetIconOnActivated			= "Устанавливать метку на появившегося босса"
+	timerNefAblity				= "Отсчет времени восстановления баффа (героический режим)"
 })
 
 L:SetMiscLocalization({
@@ -87,11 +72,6 @@ L:SetMiscLocalization({
 -----------------
 L = DBM:GetModLocalization(171)
 
-L:SetOptionLocalization({
-	InfoFrame				= "Показывать информационное окно для $journal:3072",
-	TrackingIcon			= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(78092)
-})
-
 L:SetMiscLocalization({
 	NefAdd					= "Атрамед, они вон там!",
 	Airphase				= "Да, беги! С каждым шагом твое сердце бьется все быстрее. Эти громкие, оглушительные удары... Тебе некуда бежать!"
@@ -121,18 +101,9 @@ L:SetWarningLocalization({
 	WarnPhase			= "%s фаза"
 })
 
-L:SetTimerLocalization({
-	TimerPhase			= "Следующая фаза"
-})
-
 L:SetOptionLocalization({
 	WarnPhase			= "Предупреждать о переходе фаз",
-	TimerPhase			= "Показывать таймер до следующей фазы",
-	RangeFrame			= "Показывать окно проверки дистанции (6м) во время синей фазы",
-	SetTextures			= "Автоматически отключить \"Проецирование текстур\" в темной фазе<br/>(включается обратно при выходе из фазы)",
-	FlashFreezeIcon		= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(77699),
-	BitingChillIcon		= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(77760),
-	ConsumingFlamesIcon	= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(77786)
+	SetTextures			= "Автоматически отключить \"Проецирование текстур\" в темной фазе<br/>(включается обратно при выходе из фазы)"
 })
 
 L:SetMiscLocalization({
@@ -148,39 +119,17 @@ L:SetMiscLocalization({
 L = DBM:GetModLocalization(174)
 
 L:SetWarningLocalization({
-	OnyTailSwipe		= "Удар хвостом (Ониксия)",
-	NefTailSwipe		= "Удар хвостом (Нефариан)",
-	OnyBreath			= "Дыхание темного огня (Ониксия)",
-	NefBreath			= "Дыхание темного огня (Нефариан)",
-	specWarnShadowblazeSoon	= "%s",
 	warnShadowblazeSoon		= "%s"
 })
 
 L:SetTimerLocalization({
-	timerNefLanding		= "Приземление Нефариана",
-	OnySwipeTimer		= "Удар хвостом - перезарядка (Ониксия)",
-	NefSwipeTimer		= "Удар хвостом - перезарядка (Нефариан)",
-	OnyBreathTimer		= "Дыхание темного огня (Ониксия)",
-	NefBreathTimer		= "Дыхание темного огня (Нефариан)"
+	timerNefLanding		= "Приземление Нефариана"
 })
 
 L:SetOptionLocalization({
-	OnyTailSwipe		= "Предупреждение для $spell:77827 Ониксии",
-	NefTailSwipe		= "Предупреждение для $spell:77827 Нефариана",
-	OnyBreath			= "Предупреждение для $spell:77826 Ониксии",
-	NefBreath			= "Предупреждение для $spell:77826 Нефариана",
-	specWarnCinderMove	= "Спецпредупреждение за 5 секунд до взрыва $spell:79339",
 	warnShadowblazeSoon	= "Отсчитывать время до $spell:81031 (за 5 секунд до каста)<br/>(Отсчет пойдет только после первой синхронизации с эмоцией босса)",
-	specWarnShadowblazeSoon	= "Предупреждать заранее о $spell:81031<br/>(За 5 секунд до первого каста, за 1 секунду до каждого следующего)",
 	timerNefLanding		= "Отсчет времени до приземления Нефариана",
-	OnySwipeTimer		= "Отсчет времени до восстановления $spell:77827 Ониксии",
-	NefSwipeTimer		= "Отсчет времени до восстановления $spell:77827 Нефариана",
-	OnyBreathTimer		= "Отсчет времени до восстановления $spell:77826 Ониксии",
-	NefBreathTimer		= "Отсчет времени до восстановления $spell:77826 Нефариана",
-	InfoFrame			= "Показывать информационное окно для $journal:3284",
-	SetWater			= "Автоматически отключать настройку Брызги воды<br/>(Включается обратно при выходе из боя)",
-	SetIconOnCinder		= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(79339),
-	RangeFrame			= "Окно проверки дистанции (10м) для $spell:79339<br/>(Если на Вас дебафф - показывает всех, иначе только игроков с метками)"
+	SetWater			= "Автоматически отключать настройку Брызги воды<br/>(Включается обратно при выходе из боя)"
 })
 
 L:SetMiscLocalization({
@@ -188,8 +137,7 @@ L:SetMiscLocalization({
 	YellPhase2			= "Дерзкие смертные! Неуважение к чужой собственности нужно пресекать самым жестоким образом!",
 	YellPhase3			= "Я пытался следовать законам гостеприимства, но вы всё никак не умрете!",
 	YellShadowBlaze		= "И плоть превратится в прах!",
-	ShadowBlazeExact		= "Вспышка пламени тени через %d",
-	ShadowBlazeEstimate		= "Скоро вспышка пламени тени (~5с)"
+	ShadowBlazeExact		= "Вспышка пламени тени через %d"
 })
 
 -------------------------------
@@ -206,10 +154,6 @@ L:SetGeneralLocalization({
 --------------------------
 L= DBM:GetModLocalization(156)
 
-L:SetOptionLocalization({
-	ShowDrakeHealth		= "Показать здоровье подчиненного дракона<br/>(должна быть включена опция отображения здоровья босса)"
-})
-
 
 ---------------------------
 --  Valiona & Theralion  --
@@ -218,11 +162,7 @@ L= DBM:GetModLocalization(157)
 
 L:SetOptionLocalization({
 	TBwarnWhileBlackout		= "Предупреждение о $spell:86369, когда активно $spell:86788",
-	TwilightBlastArrow		= "Показывать стрелку DBM, когда $spell:86369 около Вас",
-	RangeFrame				= "Показывать окно проверки дистанции (10м)",
-	BlackoutShieldFrame		= "Показывать здоровье босса с помощью шкалы здоровья для $spell:86788",
-	BlackoutIcon			= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(86788),
-	EngulfingIcon			= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(86622)
+	BlackoutShieldFrame		= "Показывать здоровье босса с помощью шкалы здоровья для $spell:86788"
 })
 
 L:SetMiscLocalization({
@@ -250,16 +190,7 @@ L:SetOptionLocalization({
 	SpecWarnGrounded		= "Спецпредупреждение, когда у Вас не хватает ауры $spell:83581<br/>(~10сек перед началом применения)",
 	SpecWarnSearingWinds	= "Спецпредупреждение, когда у Вас не хватает ауры $spell:83500<br/>(~10сек перед началом применения)",
 	timerTransition			= "Показывать таймер перехода в другую фазу",
-	RangeFrame				= "Автоматически показывать окно проверки дистанции при необходимости",
-	yellScrewed				= "Кричать, когда на Вас одновременно $spell:83099 и $spell:92307",
-	InfoFrame				= "Показывать игроков без $spell:83581 или $spell:83500",
-	HeartIceIcon			= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(82665),
-	BurningBloodIcon		= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(82660),
-	LightningRodIcon		= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(83099),
-	GravityCrushIcon		= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(84948),
-	FrostBeaconIcon			= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(92307),
-	StaticOverloadIcon		= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(92067),
-	GravityCoreIcon			= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(92075)
+	yellScrewed				= "Кричать, когда на Вас одновременно $spell:83099 и $spell:92307"
 })
 
 L:SetMiscLocalization({
@@ -276,13 +207,6 @@ L:SetMiscLocalization({
 --  Cho'gall  --
 ----------------
 L= DBM:GetModLocalization(167)
-
-L:SetOptionLocalization({
-	CorruptingCrashArrow	= "Показывать стрелку DBM, когда $spell:81685 около Вас",
-	InfoFrame				= "Показывать информационное окно для $journal:3165",
-	RangeFrame				= "Показывать окно проверки дистанции (5м) для $journal:3165",
-	SetIconOnWorship		= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(91317)
-})
 
 ----------------
 --  Sinestra  --

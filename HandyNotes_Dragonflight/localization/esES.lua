@@ -60,6 +60,8 @@ L['options_icons_tuskarr_tacklebox_desc'] = 'Muestra dónde pueden haber {object
 L['squirrels_note'] = 'Has de teclear {emote:/amor} mientras seleccionas alimañas que no sean mascotas de combate.'
 L['options_icons_squirrels'] = '{achievement:16729}'
 L['options_icons_squirrels_desc'] = 'Muestra dónde están las alimañas para el logro {achievement:16729}.'
+L['options_icons_zaralek_squirrels'] = '{achievement:18361}'
+L['options_icons_zaralek_squirrels_desc'] = 'Muestra dónde están las alimañas para el logro {achievement:18361}.'
 
 L['hnj_sublabel'] = 'Requiere Gran Cacería Shikaar local'
 L['hnj_western_azure_span_hunt'] = 'Encima del árbol muerto.'
@@ -144,6 +146,10 @@ L['frostbound_chest'] = 'Cofre Ligado a la Escarcha'
 L['options_icons_frostbound_chest'] = 'Cofre Ligado a la Escarcha'
 L['options_icons_frostbound_chest_desc'] = 'Muestra dónde pueden haber {object:Cofre Ligado a la Escarcha}.'
 
+L['war_supply_chest_note'] = 'Una {npc:135181} sobrevolará una vez cada 45 minutos y lanzará un {npc:135238} en uno de los posibles lugares de entrega.'
+L['options_icons_war_supplies_desc'] = 'Muestra dónde puede caer un {npc:135238}.'
+L['options_icons_war_supplies'] = '{npc:135238}'
+
 L['fyrakk_assault_label'] = 'Asalto de Fyrakk'
 L['fyrakk_secured_shipment'] = 'Envío Seguro'
 
@@ -165,6 +171,29 @@ L['earthwarders_forge_note'] = 'Requerida para crear esta receta:\n{spell:367713
 L['dreamsurge_sublabel'] = '{note:Sólo está disponible cuando {location:Pico Onírico} está activo en esta zona.}'
 L['celestine_vendor_note'] = 'Cambia {item:207026} por una montura, juguetes, mascotas, y transfiguraciones.'
 L['renewed_magmammoth_note'] = 'Reune 20x {item:209419} del boss final del {location:Pico Onírico} y combínalos para crear el {item:192807}.'
+
+L['dragon_pepe_label'] = 'Pepe el Dragón'
+L['dragon_pepe_note'] = 'Encaramado en el pilar a la izquierda de las escaleras que conducen al {location:Trono de los Aspectos}.'
+L['explorer_pepe_label'] = 'Pepe el Explorador'
+L['explorer_pepe_note'] = 'Encaramado en lo alto de la gran tienda de campaña del {location:Campamento Base Dragontina}.'
+L['tuskarr_pepe_label'] = 'Pepe Tuskarr'
+L['tuskarr_pepe_note'] = 'Encaramado en el edificio cerca de {npc:196544} y {npc:187680}.'
+
+L['end_of_august'] = '{note:Sólo está disponible antes de que acabe Agosto.}'
+
+L['rich_soil_label'] = 'Terreno Rico'
+L['rich_soil_note'] = 'Planta varias semillas en una zona de {object:Terreno Rico} en las {location:Islas Dragón} para obtener recompensas aleatorias.\n\n{item:200506} - Crecen hierbas comunes aleatorias de las {location:Islas Dragón}\n\n{item:200508} - Crecen Esencias Reanimadas aleatorias\n\n{item:200507} - Crecen hierbas descompuestas aleatorias\n\n{item:200509} - Aparece un {npc:198571} para varias hierbas y esencias aleatorias'
+L['options_icons_rich_soil'] = 'Terreno Rico'
+L['options_icons_rich_soil_desc'] = 'Muestra dónde hay {object:Terreno Rico}.'
+
+L['information_stuffed_clue'] = 'Pista Rebosante de Información'
+L['clued_in_note'] = 'La {npc:210079} aparece durante el evento {note:La Gran Excavación} y las 3 misiones del mundo {wq:Investigación: ...}.'
+L['options_icons_clued_in'] = '{achievement:19787}'
+L['options_icons_clued_in_desc'] = 'Muestra dónde están las {npc:210079} para el logro {achievement:19787}.'
+
+L['goggle_wobble_note'] = 'Teclea la emoción {emote:/bailar} a {npc:207763} durante la línea de misiones introductorias o durantes las 3 misiones del mundo {wq:Tecnoadivinación ...} mientras usas {item:202247}.'
+L['options_icons_goggle_wobble'] = '{achievement:19791}'
+L['options_icons_goggle_wobble_desc'] = 'Muestra dónde está {npc:207763} para el logro {achievement:19791}.'
 
 -------------------------------------------------------------------------------
 ------------------------------- THE AZURE SPAN --------------------------------
@@ -282,6 +311,16 @@ L['naszuro_azure_archives'] = 'En la ladera de la montaña, sobre una roca peque
 L['naszuro_hudsons_rock'] = 'En la cima de la pequeña colina rocosa.'
 
 L['ferry_to_iskaara'] = 'Barco a Iskaara'
+
+L['options_icons_vegetarian_diet'] = '{achievement:16762}'
+L['options_icons_vegetarian_diet_desc'] = 'Muestra dónde están los {object:Almacén de Carne} para el logro {achievement:16762}.'
+
+L['meat_storage_label'] = 'Almacén de Carne'
+L['meat_storage_note'] = 'Tras rescatar a los 12 {npc:186766} de los {object:Almacén de Carne} dentro de la {location:Hondonada Frondacuero} recibirás un correo de {npc:196267} con {item:200631}.'
+
+L['meat_storage_location_a'] = 'En la playa rodeado de varios {npc:96239}.'
+L['meat_storage_location_b'] = 'Cerca de una cueva detrás de {npc:187192}.'
+L['meat_storage_location_c'] = 'En una cueva pequeña detrás de {npc:197130} y {npc:186226}.'
 
 -------------------------------------------------------------------------------
 ------------------ FORBIDDEN REACH (DRACTHYR STARTING ZONE) -------------------
@@ -415,6 +454,12 @@ L['trader_hagarth_note'] = 'Intercambia {item:190456} por recetas de Bibelot del
 
 L['naszuro_caldera_of_the_menders'] = 'Encima de la torre.'
 
+L['sun_bleached_vase'] = 'Jarrón Blanqueado por el Sol'
+L['untranslated_tome'] = 'Tomo sin Traducir'
+L['untranslated_tome_note'] = 'En el edificio con la entrada bajo del puente.'
+L['mysterious_boot'] = 'Botas Misteriosas'
+L['mysterious_boot_note'] = 'En el piso superior.'
+
 -------------------------------------------------------------------------------
 ------------------------------ OHN'AHRAN PLAINS -------------------------------
 -------------------------------------------------------------------------------
@@ -521,6 +566,12 @@ L['bloodgullet_note'] = 'Consigue el buff {spell:369277} (dura 1 hora) en una ti
 L['naszuro_windsong_rise'] = 'Encima del pilar de rocas.'
 L['naszuro_emerald_gardens'] = 'En la hierba pasada la cascada.'
 
+L['prismatic_leaper_school_label'] = 'Banco de Saltadores Prismáticos'
+L['prismatic_leaper_school_note'] = 'Habla con {npc:195935} en {location:Iskaara} para hacer tus mejoras.\n\nPesca los siguientes objetos de los {object:Banco de Saltadores Prismáticos} a lo largo de las {location:Llanuras de Ohn\'ahra}:\n\n{item:%d}\n{item:%d}\n{item:%d}\n{item:%d}\n{item:%d}'
+
+L['aylaag_spear'] = 'Lanza Aylaag'
+L['dedication_plaquard'] = 'Placa de Dedicación'
+
 -------------------------------------------------------------------------------
 --------------------------------- THALDRASZUS ---------------------------------
 -------------------------------------------------------------------------------
@@ -570,7 +621,17 @@ L['new_perspective_note'] = 'Haz una foto con la cámara S.E.L.F.I.E. al paisaje
 L['options_icons_new_perspective'] = '{achievement:16634}'
 L['options_icons_new_perspective_desc'] = 'Muestra dónde están los paisajes para el logro {achievement:16634}.'
 
+L['fringe_benefits_note'] = 'Completa 8 de las misiones diarias para obtener el logro.'
+L['options_icons_fringe_benefits'] = '{achievement:19507}'
+L['options_icons_fringe_benefits_desc'] = 'Muestra dónde están las misiones diarias para el logro {achievement:19507}.'
+
+L['little_scales_daycare_note'] = 'Necesitas hacer una serie de misiones durante varios días, comenzando con {quest:72664} que te da el {npc:197478}, para conseguir el logro y la mascota.'
+L['options_icons_whelp'] = '{achievement:18384}'
+L['options_icons_whelp_desc'] = 'Muestra dónde están las misiones diarias para el logro {achievement:18384}.'
+
 L['ruby_feast_gourmand'] = 'Cada día, un invitado chef al azar sirve distintos platos y bebidas.'
+L['options_icons_ruby_feast_gourmand'] = '{achievement:16556}'
+L['options_icons_ruby_feast_gourmand_desc'] = 'Muestra dónde están las misiones diarias para el logro {achievement:16556}.'
 
 L['sorotis_note'] = 'Entrega {item:199906} para conseguir reputación con {faction:2510}.'
 L['lillian_brightmoon_note'] = 'Entrega {item:201412} para conseguir reputación con {faction:2507}.'
@@ -600,7 +661,6 @@ Aparecerá una babosa llamada {npc:198590} y huirá a una rama detrás de {npc:1
 Vuelve con {npc:198062}, que está sentado en un banco, y entrega la misión para conseguir tu {item:200872}.
 ]]
 
-L['little_scales_daycare_note'] = 'Necesitas hacer una serie de misiones durante varios días, comenzando con {quest:72664} que te da el {npc:197478}, para conseguir el logro y la mascota.'
 L['naszuro_veiled_ossuary'] = 'Por el santuario pequeño.'
 L['naszuro_algethar_academy'] = 'En el borde de la cima de la torre.'
 L['naszuro_vault_of_the_incarnates'] = 'A los pies de la estatua.'
@@ -608,7 +668,16 @@ L['naszuro_thaldraszus_peak'] = 'En un pico secundario de la montaña.'
 L['naszuro_temporal_conflux'] = 'En la cabeza de la estatua del dragón.'
 
 L['revival_catalyst_label'] = 'Catalizador de Reanimación'
-L['revival_catalyst_note'] = 'Convierte equipo del tier anterior en un objeto del nivel tier actual y de la ranura de equipo equivalente (incluyendo bonus de set para las ranuras que lo lleven).'
+L['revival_catalyst_note'] = 'Convierte equipo que no sea de tier en un objeto del tier actual y de la ranura de equipo equivalente.'
+
+L['provisioner_aristta_note'] = 'Intercambia {currency:2657} por transfiguraciones y una montura.'
+
+L['investigators_pocketwatch_note_a'] = '1. Pídele prestado el {item:208449} a {npc:204990} ({dot:Green}) en el piso superior de la {location:Posada de Todos los Momentos} en {location:El Margen del Eon}.\n\n{note:Tienes que haber completado su cadena de misiones.}'
+L['investigators_pocketwatch_note_b'] = '2. Usa el {item:208449} cerca del {npc:203769} ({dot:Blue}) en el piso inferior de la {location:Posada de Todos los Momentos} en {location:El Margen del Eon} y compra un {item:208448} al {npc:207463}.\n\n{note:{item:208448} dura 30 segundos en el inventario. ¡Sé rápido!}'
+L['investigators_pocketwatch_note_c'] = '3. Ve rápidamente a la cascada y bébete el {item:208448}. Interactúa con el nuevo objeto visible {object:Crocoinvestigador temporal} para hacer aparecer al {npc:201664}.'
+
+L['ominous_portal_label'] = 'Portal Ominoso'
+L['ominous_portal_note'] = 'Cada 30 minutos aparecerá un {object:Portal Ominoso}.\n\n5 minutos después, aparecerá {npc:214984} e invocará algunos bosses. Derrota al {npc:215141}, a {npc:215147}, y a {npc:215146} para tus probabilidades de las recompensas.\n\n{note:Se puede repetir varias veces al día para conseguir botín.}'
 
 -------------------------------------------------------------------------------
 ------------------------------ THE WAKING SHORE -------------------------------
@@ -854,6 +923,11 @@ L['zaralek_event_inactive'] = ns.color.Orange('Esta Zona de Evento no empezará 
 L['options_icons_zone_event'] = 'Zona de Evento'
 L['options_icons_zone_event_desc'] = 'Mustra dónde hay Zonas de Eventos.'
 
+L['djaradin_scroll'] = 'Pergamino Djaradin'
+L['forgotten_incense'] = 'Incienso Olvidado'
+L['forgotten_incense_note'] = '{note:Difícil de alcanzar debido a los límites de la misión.}'
+L['historied_heirloom'] = 'Reliquia Histórica'
+
 -------------------------------------------------------------------------------
 ------------------------------- Emerald Dream ---------------------------------
 -------------------------------------------------------------------------------
@@ -866,7 +940,10 @@ L['fruitface_note'] = 'Ofrece a {npc:209950} {dot:Pink} tu ayuda para conseguir 
 L['greedy_gessie_note'] = 'Necesitas recoger {object:Verduras Salvajes}, {object:Melón Escamarrubí} y {object:Naranjarraíz} alrededor de la zona y ponerlo todo en las cestas cerca de {npc:210285s} para comenzar el encuentro.'
 L['nuoberon_note'] = 'Persigue tortugas, lanza comida a los monos, o lucha contra monstruos oníricos para ayudar a que {npc:209101} tenga un sueño divertido.'
 L['reefbreaker_moruud_note'] = 'Conecta las 6 {npc:210089} cercanas para atacar a {npc:209898}.'
+L['splinterlimb_note'] = 'Se hace hostil tras recibir 8 acumulaciones del debuff {spell:420009}. El debuff se acumula por cada ronda completada. Mata los enemigos que le atacan para que pueda completar la ronda más rápidamente.'
 L['surging_lasher_note'] = 'Puede aparece durante el evento {location:Frenesí Esmeralda} en esta zona.'
+L['talthonei_ashwisper_note'] = 'Mata a los enemigos de los alrededores hasta que el enemigo matado diga "Seré vengado" para hacer aparecer el raro.'
+L['talthonei_ashwisper_wq_note'] = '{note:Sólo puede aparecer aquí si está activa la misión del mundo {wq:Pánico en los portales}.}'
 
 L['in_a_tree'] = 'Encima del árbol.'
 L['inside_building'] = 'En el edificio.'
@@ -911,9 +988,9 @@ La calidad de las {object:Semillas del Sueño} aportadas define el tipo de recom
 {note:Para una lista de recompensas echa un vistazo a {npc:211265} en la isla del norte. Ella vende muchas de las recompensas.}
 ]]
 L['dreamseed_cache'] = 'Alijo de Semillas del Sueño'
-
 L['options_icons_dream_of_seeds'] = '{achievement:19013}'
 L['options_icons_dream_of_seeds_desc'] = 'Muestra dónde están las {object:Tierra con Semillas del Sueño} para el logro {achievement:19013}.'
+L['the_seeds_i_sow_suffix'] = 'Semillas del Sueño entregadas al Regalo Esmeralda'
 
 L['bloom_man_group_suffix'] = 'veces que se ha usado Desbordamiento Feral'
 L['dream_chaser_suffix'] = 'Sueños errantes reunidos'
@@ -930,7 +1007,7 @@ L['moonkin_hatchling_note'] = 'Requiere que la misión del mundo {wq:La preocupa
 L['druid_glyphs_label'] = 'Glifos de Druida'
 L['druid_glyphs_sublabel'] = '{note:Esto NO es un Glifo de Druida. ¡Sólo una lista de verificación!}'
 L['druid_glyphs_note'] = 'Colecciona {note:Glifo de Druida} obtenidos de varias actividades a lo largo del {location:Sueño Esmeralda}.'
-
+L['druid_glyphs_checklist_note'] = 'Seguimiento de las muertes diarias de raros en el {location:Sueño Esmeralda}. Sólo aparecen en la lista los {npc:NPC} con algo necesario por despojar.\n\nLas muertes diarias estarán marcadas como ' .. ns.status.Green('Completado') .. '.'
 L['pollenfused_bristlebruin_fur_sample_note'] = 'Despoja la {object:Muestra de pelaje de erizapúas polinizado} que se encuentra cerca de la parte inferior del arbol de {location:Calcina}.'
 
 L['mbc_note_start'] = 'Despoja la {object:Caja Pequeña de Viales} para conseguir la {item:210991}.\n\nRecibirás 6x {item:210839} que necesitarán ser llenados con agua de la poza de la luna de cada continente.'
@@ -954,7 +1031,7 @@ L['mbc_vial_location'] = 'Llena {item:%d} con agua de la poza de la luna de {loc
 L['mbc_moonwell_label'] = 'Poza de la Luna'
 L['mbc_feral_dreamstone_label'] = 'Piedra del Sueño Feral'
 
-L['azure_somnowl_note'] = 'Completa la corta cadena de misiones (sólo para druidas) que comienza con la misión {quest:78065} que da {npc:209318} para conseguir la {item:210645}.'
+L['azure_somnowl_note'] = 'Completa la corta cadena de misiones que comienza con la misión {quest:78065} que da {npc:209318} para conseguir la {item:210645}.'
 
 L['slumbering_somnowl_note_a'] = 'Consigue 5x {item:210565} poniendo a varios {npc:Somnobúho} a dormir con el hechizo {spell:2637} a lo largo del {location:Sueño Esmeralda}.'
 L['slumbering_somnowl_note_b'] = 'Compra 1x {item:4291} a cualquier vendedor de suministros.'
@@ -990,8 +1067,6 @@ L['options_icons_somnut_desc'] = 'Muestra dónden pueden estar los {object:Somnu
 L['improvised_leafbed_note'] = 'Completa la cadena de misiones comenzando con {quest:77896} para conseguir la {item:210864} de {npc:210164}.'
 L['kalandu_note'] = 'Completa la cadena de misiones comenzando con {quest:77948} para conseguir a {item:210633} de {npc:210196}.'
 
-L['renewed_dream'] = '{note:¡Esto no es un tesoro!}\n{item:201437} puede caer de cualquier enemigo en el {location:Sueño Esmeralda}.\nCombina 5 de ellos para restaurar un {item:201439}.'
-
 L['ochre_note'] = 'Habla con {npc:209253} para empezar la cadena de misiones. {npc:209571} te ofrecerá las siguientes fases.'
 L['ochre_note_stage1'] = '{quest:77677}. {note:5 días para crecer.}'
 L['ochre_note_stage2'] = '{quest:78398}. {note:5 días para crecer.}'
@@ -1021,6 +1096,15 @@ L['thorn_bear_note'] = '1. Mata a {npc:210977}, y usa el {item:209868} en su cue
 L['nahqi_note'] = 'Requiere la {item:211314} para usar {spell:1515} con {npc:210908}, la cual se consigue de la montura {item:210061}.\n\n{npc:210908}{npc:<Ascua del Recrecimiento>} vuela por el cielo alrededor de {location:Amirdrassil} por una ruta {note:en sentido antihorario} que le lleva 17 minutos completarla.\nTras ello, reaparece como mínimo al cabo de 30 minutos.\n\n{note:Es una {npc:Bestia Espíritu}. Sólo pueden domarla los Cazadores Bestias.}'
 
 L['sulraka_note'] = '{npc:210868}{npc:<Hija de Kimbul>} patrulla el área al este de {location:Amirdrassil} por una ruta {note:en sentido antihorario} que le lleva 17 minutos completarla.\nTras ello, reaparece como mínimo al cabo de 30 minutos.\n\nPor donde pasa deja unas {object:Huellas Profundas} que duran 3 minutos.\nCamina siempre en sigilo por lo que para encontrarla tendrás que usar una {spell:1543} frente a una {object:Huella Profunda} fresca.\nUsa la {spell:257284} y/o {spell:187650} e intenta usar {spell:1515}.\n\n{note:Es importante atraparla o revelarla porque {npc:210868} no parará de moverse aunque la ataques. Puede salir fuera de rango de {spell:1543} cancelando la habilidad.}\n\n{note:Es una {npc:Bestia Espíritu}. Sólo pueden domarla los Cazadores Bestias.}'
+
+L['alarashinu_note'] = '{item:210961}, una guja de guerra oculta de naturaleza vil.\n\n{note:Efectos visuales especiales:}\nDejas un rastro de flores cuando usas {spell:195072}/ {spell:189110}/ {spell:198793} con Alara\'shinu equipada o transfigurada.'
+L['alarashinu_note_stage1'] = 'Habla con {npc:213029} en el {location:Campamento Central} del {location:Sueño Esmeralda}.'
+L['alarashinu_note_stage2'] = 'Ves al {location:Templo Perdido} de {location:La Costa Abrupta}, presencia un {npc:213114}.'
+L['alarashinu_note_stage3'] = 'Ves al {location:Templo de Elune} de {location:Val\'Sharah}, presencia otro {npc:213186}.'
+L['alarashinu_note_stage4'] = 'Después de que se acabe el recuerdo, aparecerá un {npc:213248} portando su Guja de Guerra.'
+L['alarashinu_note_stage5'] = 'Imbuye {npc:213308} con tu llama vil.'
+L['alarashinu_note_stage6'] = 'Despoja la {npc:213381} y recibirás {item:210961}.'
+L['alarashinu_note_end'] = 'Vuelve a {npc:213029}, tiene un diálogo adicional después de obtener esta guja de guerra.'
 
 -------------------------------------------------------------------------------
 ----------------------------- SECRETS OF AZEROTH ------------------------------
@@ -1241,3 +1325,31 @@ L['wr_dur_foil_01'] = 'Detrás de unas cajas de suministros.'
 
 L['options_icons_warcraft_rumble'] = 'Warcraft Rumble'
 L['options_icons_warcraft_rumble_desc'] = 'Muestra dónde están las {object:Bolsa de Monedas de Warcraft Rumble} y {object:Caja de Brillos de Warcraft Rumble} vinculadas a la campaña promocional de {object:Warcraft Rumble}.'
+
+-------------------------------------------------------------------------------
+--------------------------------- AMIRDRASSIL ---------------------------------
+-------------------------------------------------------------------------------
+
+L['kaldorei_backpack_label'] = 'Mochila Kaldorei'
+L['kaldorei_bag_label'] = 'Bolsa Kaldorei'
+L['kaldorei_bedroll_label'] = 'Saco de Dormir Kaldorei'
+L['kaldorei_dagger_label'] = 'Daga Kaldorei'
+L['kaldorei_horn_label'] = 'Cuerno Kaldorei'
+L['kaldorei_moon_bow_label'] = 'Arco Lunar Kaldorei'
+L['kaldorei_shield_label'] = 'Escudo Kaldorei'
+L['kaldorei_spear_label'] = 'Lanza Kaldorei'
+L['kaldorei_spyglass_label'] = 'Catalejo Kaldorei'
+
+L['blue_kaldorei_backpack_note'] = 'Encima de una caja en la tienda del puerto de {location:Belanaar}.'
+L['blue_kaldorei_bedroll_note'] = 'Detrás de la mesa cerca del pozo de la luna.'
+L['blue_kaldorei_pouch_note'] = 'En un barril fuera del edificio lleno de portales.'
+L['kaldorei_bow_carver_note'] = 'En una mesa en lo alto de la {location:Atalaya del Crepúsculo} cerca de {npc:216731}.'
+L['kaldorei_sentinels_spyglass_note'] = 'Encima de una caja al final del muelle de {location:Belanaar}.'
+L['night_elven_bow_note'] = 'Apoyado contra el estante de armas del {location:Refugio de Arlithrien}.'
+L['night_elven_horn_note'] = 'En una caja en la parte superior de la {location:Atalaya del Alba} cerca de {npc:216752}.'
+L['night_elven_shield_note'] = 'Apoyado contra una caja cerca del instructor de minería {npc:216269}.'
+L['night_elven_signal_note'] = 'Colgando de un blandón encima de las escaleras.'
+L['night_elven_spear_note'] = 'Apoyado contra la pared de {location:Cámara Afilada}.'
+L['violet_kaldorei_pouch_note'] = 'Cerca de la parte inferior del arco detrás del pozo de la luna.'
+
+L['moon_priestess_lasara_note'] = 'Intercambia {currency:2003} por transfiguraciones.'

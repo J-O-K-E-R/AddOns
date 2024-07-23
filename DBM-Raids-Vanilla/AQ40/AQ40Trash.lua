@@ -9,7 +9,7 @@ end
 local mod	= DBM:NewMod("AQ40Trash", "DBM-Raids-Vanilla", catID)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20230814031337")
+mod:SetRevision("20240426180207")
 --mod:SetModelID(47785)
 mod:SetMinSyncRevision(20200710000000)--2020, 7, 10
 
@@ -17,8 +17,8 @@ mod.isTrashMod = true
 
 mod:RegisterEvents(
 	"ENCOUNTER_END",
-	"SPELL_AURA_APPLIED 22997 25698 26079",
-	"SPELL_AURA_REMOVED 22997",
+	"SPELL_AURA_APPLIED 26556 25698 26079",
+	"SPELL_AURA_REMOVED 26556",
 	"SPELL_DAMAGE",
 	"SPELL_MISSED"
 )
@@ -36,8 +36,8 @@ mod.vb.requiredBosses = 0
 --Register all damage events on mod load
 local eventsRegistered = true
 mod:RegisterShortTermEvents(
-	"SPELL_MISSED",
 	"SWING_DAMAGE",
+	"SWING_MISSED",
 	"SPELL_PERIODIC_DAMAGE",
 	"SPELL_PERIODIC_MISSED"
 )
@@ -46,16 +46,16 @@ mod:RegisterShortTermEvents(
 mod:SendSync("IsAQ40Started")
 
 do-- Anubisath Plague/Explode - keep in sync - AQ40/AQ40Trash.lua AQ20/AQ20Trash.lua
-	local warnPlague                    = mod:NewTargetNoFilterAnnounce(22997, 2)
+	local warnPlague                    = mod:NewTargetNoFilterAnnounce(26556, 2)
 	local warnCauseInsanity             = mod:NewTargetNoFilterAnnounce(26079, 2)
 
-	local specWarnPlague                = mod:NewSpecialWarningMoveAway(22997, nil, nil, nil, 1, 2)
-	local yellPlague                    = mod:NewYell(22997)
+	local specWarnPlague                = mod:NewSpecialWarningMoveAway(26556, nil, nil, nil, 1, 2)
+	local yellPlague                    = mod:NewYell(26556)
 	local specWarnExplode               = mod:NewSpecialWarningRun(25698, "Melee", nil, 3, 4, 2)
 
 	-- aura applied didn't seem to catch the reflects and other buffs
 	function mod:SPELL_AURA_APPLIED(args)
-		if args:IsSpell(22997) and not self:IsTrivial() then
+		if args:IsSpell(26556) and not self:IsTrivial() then
 			if args:IsPlayer() then
 				specWarnPlague:Show()
 				specWarnPlague:Play("runout")
@@ -63,6 +63,9 @@ do-- Anubisath Plague/Explode - keep in sync - AQ40/AQ40Trash.lua AQ20/AQ20Trash
 				if self.Options.RangeFrame then
 					DBM.RangeCheck:Show(10)
 				end
+			elseif UnitGUID("pet") and UnitGUID("pet") == args.destGUID then
+				specWarnPlague:Show()
+				specWarnPlague:Play("runout")
 			else
 				warnPlague:Show(args.destName)
 			end
@@ -75,7 +78,7 @@ do-- Anubisath Plague/Explode - keep in sync - AQ40/AQ40Trash.lua AQ20/AQ20Trash
 	end
 
 	function mod:SPELL_AURA_REMOVED(args)
-		if args:IsSpell(22997) then
+		if args:IsSpell(26556) then
 			if args:IsPlayer() and self.Options.RangeFrame then
 				DBM.RangeCheck:Hide()
 			end
@@ -112,7 +115,7 @@ do
 
 	-- todo: thorns
 	local playerGUID = UnitGUID("player")
-	local ShadowStorm = DBM:GetSpellInfo(26555)--Classic Note
+	local ShadowStorm = DBM:GetSpellName(26555)--Classic Note
 	function mod:SPELL_DAMAGE(_, sourceName, _, _, destGUID, _, _, _, spellId, spellName)
 		if (spellId == 26555 or spellName == ShadowStorm) and destGUID == playerGUID and self:AntiSpam(3, 3) then
 			specWarnShadowStorm:Show(sourceName)

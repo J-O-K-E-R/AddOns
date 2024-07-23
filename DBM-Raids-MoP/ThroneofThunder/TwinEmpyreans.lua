@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod(829, "DBM-Raids-MoP", 2, 362)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20230617070727")
+mod:SetRevision("20240602112551")
 mod:SetCreatureID(68905, 68904)--Lu'lin 68905, Suen 68904
 mod:SetEncounterID(1560)
 mod:SetBossHPInfoToHighest()
@@ -26,7 +26,7 @@ local Suen = select(2, EJ_GetCreatureInfo(2, 829))
 --Darkness
 local warnNight							= mod:NewAnnounce("warnNight", 2, 108558)
 local warnCrashingStarSoon				= mod:NewSoonAnnounce(137129, 3)
-local warnBeastOfNightmares				= mod:NewTargetAnnounce(137375, 3, nil, "Tank|Healer")
+local warnBeastOfNightmares				= mod:NewTargetNoFilterAnnounce(137375, 3, nil, "Tank|Healer")
 --Light
 local warnDay							= mod:NewAnnounce("warnDay", 2, 122789)
 local warnLightOfDay					= mod:NewSpellAnnounce(137403, 2, nil, false)--Spammy, but leave it as an option at least
@@ -84,7 +84,7 @@ local berserkTimer						= mod:NewBerserkTimer(600)
 mod:AddBoolOption("RangeFrame")--For various abilities that target even melee. UPDATE, cosmic barrage (worst of the 3 abilities) no longer target melee. However, light of day and tears of teh sun still do. melee want to split into 2-3 groups (depending on how many) but no longer have to stupidly spread about all crazy and out of range of boss during cosmic barrage to avoid dying. On that note, MAYBE change this to ranged default instead of all.
 
 local phase3Started = false
-local invokeTiger, invokeCrane, invokeSerpent, invokeOx = DBM:GetSpellInfo(138264), DBM:GetSpellInfo(138189), DBM:GetSpellInfo(138267), DBM:GetSpellInfo(138254)
+local invokeTiger, invokeCrane, invokeSerpent, invokeOx = DBM:GetSpellName(138264), DBM:GetSpellName(138189), DBM:GetSpellName(138267), DBM:GetSpellName(138254)
 local infernoCount = 0
 local cosmicCount = 0
 
@@ -249,8 +249,8 @@ function mod:UNIT_SPELLCAST_SUCCEEDED(uId, _, spellId)
 		warnNight:Show()
 		timerDayCD:Start()
 		timerDuskCD:Start()
-		timerCosmicBarrageCD:Start(17, 1)
-		timerTearsOfTheSunCD:Start(28.5)
+		timerCosmicBarrageCD:Start(15.8, 1)
+		timerTearsOfTheSunCD:Start(self:IsRemix() and 8.4 or 28.5)--Confirm the shorter Cd is just remix or all the time
 		timerBeastOfNightmaresCD:Start()
 	elseif spellId == 137187 then--Lu'lin Ports away (Day Phase)
 		self:SendSync("Phase2")
@@ -339,7 +339,7 @@ function mod:OnSync(msg)
 		infernoCount = infernoCount + 1
 		specWarnNuclearInferno:Show(infernoCount)
 		timerNuclearInferno:Start()
-		if phase3Started then
+		if phase3Started and self.vb.bossLeft == 2 then--Only uses longer Cd if both actually alive
 			timerNuclearInfernoCD:Start(73, infernoCount+1)
 		else
 			timerNuclearInfernoCD:Start(nil, infernoCount+1)

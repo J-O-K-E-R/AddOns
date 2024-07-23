@@ -1,6 +1,5 @@
 --[[
-	title.lua
-		A title frame widget
+	A title frame widget that can search on double-click
 --]]
 
 
@@ -22,13 +21,9 @@ function Title:New(parent, title)
 	b:SetScript('OnEnter', b.OnEnter)
 	b:SetScript('OnLeave', b.OnLeave)
 	b:SetScript('OnClick', b.OnClick)
-
 	b:RegisterSignal('SEARCH_TOGGLED', 'UpdateVisible')
 	b:RegisterFrameSignal('OWNER_CHANGED', 'Update')
 	b:RegisterForClicks('anyUp')
-
-	b:SetHighlightFontObject('GameFontHighlightLeft')
-	b:SetNormalFontObject('GameFontNormalLeft')
 	b:SetToplevel(true)
 	b:Update()
 
@@ -37,6 +32,10 @@ end
 
 
 --[[ Interaction ]]--
+
+function Title:OnEnter()
+	self:ShowTooltip(self:GetText(), format('|L %s   |L|L %s', L.Drag, SEARCH), '|R ' .. OPTIONS)
+end
 
 function Title:OnMouseDown()
 	local parent = self:GetParent()
@@ -63,15 +62,6 @@ function Title:OnClick(button)
 	end
 end
 
-function Title:OnEnter()
-	GameTooltip:SetOwner(self:GetTipAnchor())
-	GameTooltip:SetText(self:GetText())
-	GameTooltip:AddLine(L.TipMove:format(L.Drag), 1,1,1)
-	GameTooltip:AddLine(L.TipShowSearch:format(L.DoubleClick), 1,1,1)
-	GameTooltip:AddLine(L.TipConfigure:format(L.RightClick), 1,1,1)
-	GameTooltip:Show()
-end
-
 
 --[[ API ]]--
 
@@ -87,3 +77,7 @@ end
 function Title:IsFrameMovable()
 	return not Addon.sets.locked
 end
+
+function Title:GetTipAnchor()
+	return self, 'ANCHOR_TOPLEFT'
+  end

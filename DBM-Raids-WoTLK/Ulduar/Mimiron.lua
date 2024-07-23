@@ -5,9 +5,9 @@ if not mod:IsClassic() then--on classic, it's normal10,normal25, defined in toc,
 	mod.statTypes = "normal,timewalker"
 end
 
-mod:SetRevision("20230522065847")
+mod:SetRevision("20240516194211")
 mod:SetCreatureID(33432)
-if not mod:IsClassic() then
+if mod:IsPostCata() then
 	mod:SetEncounterID(1138)
 else
 	mod:SetEncounterID(754)
@@ -15,10 +15,11 @@ end
 mod:DisableESCombatDetection()--fires for RP, and we need yells to identify hard mode anyways
 mod:SetModelID(28578)
 mod:SetUsedIcons(1, 2, 3, 4, 5, 6, 7, 8)
-mod:SetHotfixNoticeRev(20230209000000)
-mod:SetMinSyncRevision(20230113000000)
+mod:SetHotfixNoticeRev(20240516000000)
+mod:SetMinSyncRevision(20240516000000)
 
 mod:RegisterCombat("combat_yell", L.YellPull)
+mod:SetWipeTime(30)--Combat drops during long RPs
 
 mod:RegisterEvents(
 	"CHAT_MSG_MONSTER_YELL"
@@ -66,15 +67,15 @@ local timerFlameSuppressant			= mod:NewBuffActiveTimer(10, 65192, nil, nil, nil,
 --local timerNextFrostBomb			= mod:NewNextTimer(80, 64623, nil, nil, nil, 3, nil, DBM_COMMON_L.HEROIC_ICON)
 local timerBombExplosion			= mod:NewCastTimer(15, 65333, nil, nil, nil, 3)
 
-mod:AddSetIconOption("SetIconOnNapalm", 63666, false, false, {1, 2, 3, 4, 5, 6, 7})
-mod:AddSetIconOption("SetIconOnPlasmaBlast", 64529, false, false, {8})
+mod:AddSetIconOption("SetIconOnNapalm", 63666, false, 0, {1, 2, 3, 4, 5, 6, 7})
+mod:AddSetIconOption("SetIconOnPlasmaBlast", 64529, false, 0, {8})
 mod:AddRangeFrameOption("6")
 
 mod:GroupSpells(63274, 63414)--Spinning Up and P3Wx2
 
 mod.vb.hardmode = false
 mod.vb.napalmShellIcon = 7
-local spinningUp = DBM:GetSpellInfo(63414)
+local spinningUp = DBM:GetSpellName(63414)
 local lastSpinUp = 0
 mod.vb.is_spinningUp = false
 local napalmShellTargets = {}
@@ -93,6 +94,10 @@ local function show_warning_for_spinup(self)
 	end
 end
 
+local function unfuckWipeTimer(self)
+	self:SetWipeTime(5)
+end
+
 function mod:OnCombatStart(delay)
 	self.vb.hardmode = false
 	enrage:Start(-delay)
@@ -105,6 +110,8 @@ function mod:OnCombatStart(delay)
 	if self.Options.RangeFrame then
 		DBM.RangeCheck:Show(6)
 	end
+	self:SetWipeTime(15)
+	self:Schedule(15, unfuckWipeTimer, self)
 end
 
 function mod:OnCombatEnd()
@@ -186,7 +193,7 @@ function mod:SPELL_SUMMON(args)
 end
 
 function mod:UNIT_SPELLCAST_CHANNEL_STOP(unit, _, spellId)
-	local spell = DBM:GetSpellInfo(spellId)--DO BETTER with log
+	local spell = DBM:GetSpellName(spellId)--DO BETTER with log
 	if spell == spinningUp and GetTime() - lastSpinUp < 3.9 then
 		self.vb.is_spinningUp = false
 		self:SendSync("SpinUpFail")
@@ -275,10 +282,12 @@ function mod:UNIT_SPELLCAST_SUCCEEDED(uId, _, spellId)
 			--timerNextFlameSuppressant:Stop()
 			timerPlasmaBlastCD:Stop()
 			timerP1toP2:Start()--41.5
+			self:SetWipeTime(44.5)
+			self:Schedule(44.5, unfuckWipeTimer, self)
 --			if self.vb.hardmode then
 --				timerNextFrostBomb:Start(42.2)--Disabled since i'm not entirely convinced this has a timer but instead is cast when a certain fire threshold is triggrred, i've seen from 42 all the way to never cast (solo raids with far less fire).
 --			end
-			timerRocketStrikeCD:Start(63)
+			timerRocketStrikeCD:Start(62)
 			timerNextP3Wx2LaserBarrage:Start(75)
 			if self.Options.RangeFrame then
 				DBM.RangeCheck:Hide()
@@ -289,14 +298,19 @@ function mod:UNIT_SPELLCAST_SUCCEEDED(uId, _, spellId)
 --			timerNextFrostBomb:Stop()
 			timerRocketStrikeCD:Stop()
 			timerP2toP3:Start()--24
+			self:SetWipeTime(27)
+			self:Schedule(27, unfuckWipeTimer, self)
 		elseif self:GetStage(4) then
 			timerP3toP4:Start()--27.9
+			self:SetWipeTime(30.9)
+			self:Schedule(30.9, unfuckWipeTimer, self)
 			--Need to be reverified on live
 --			if self.vb.hardmode then
 --				timerNextFrostBomb:Start(32)
 --			end
+			--These timers may just resume where they left off in earlier stages
+			timerNextP3Wx2LaserBarrage:Start(44)
 			timerRocketStrikeCD:Start(50)
-			timerNextP3Wx2LaserBarrage:Start(59.8)
 			timerNextShockblast:Start(75.5)
 		end
 	elseif (spellId == 64402 or spellId == 65034) then--P2, P4 Rocket Strike
@@ -321,10 +335,12 @@ function mod:OnSync(event, args)
 		timerPlasmaBlastCD:Stop()
 		--Timers are using retail adjusted to yell, need actual confirmation
 		timerP1toP2:Start(37.2)
+		self:SetWipeTime(40.2)
+		self:Schedule(40.2, unfuckWipeTimer, self)
 --		if self.vb.hardmode then
 --			timerNextFrostBomb:Start(42.2)
 --		end
-		timerRocketStrikeCD:Start(58.7)
+		timerRocketStrikeCD:Start(57.7)
 		timerNextP3Wx2LaserBarrage:Start(70.9)
 		if self.Options.RangeFrame then
 			DBM.RangeCheck:Hide()
@@ -336,10 +352,14 @@ function mod:OnSync(event, args)
 --		timerNextFrostBomb:Stop()
 		timerRocketStrikeCD:Stop()
 		timerP2toP3:Start(16.8)--16.8-25, using yells is swell
+		self:SetWipeTime(28)
+		self:Schedule(28, unfuckWipeTimer, self)
 	elseif event == "Phase4" and self:GetStage(3) then
 		self:SetStage(4)
 		--All these timers might be wrong because they are mashed between retail and legacy using math guesses
 		timerP3toP4:Start(24)
+		self:SetWipeTime(27)
+		self:Schedule(27, unfuckWipeTimer, self)
 		--Adjusted to live, but live timers might be wrong, plus need to be classic vetted anyways
 --		if self.vb.hardmode then
 --			timerNextFrostBomb:Start(28.5)

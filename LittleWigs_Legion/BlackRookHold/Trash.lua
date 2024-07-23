@@ -46,9 +46,9 @@ if L then
 	L.risen_swordsman = "Risen Swordsman"
 	L.risen_lancer = "Risen Lancer"
 
-	L.door_opens = "Door Opens"
-	L.door_opens_desc = "Show a bar indicating when the door is opened to the Hidden Passageway."
-	L.door_opens_icon = "achievement_dungeon_blackrookhold"
+	L.door_open = CL.door_open
+	L.door_open_desc = "Show a bar indicating when the door is opened to the Hidden Passageway."
+	L.door_open_icon = "achievement_dungeon_blackrookhold"
 end
 
 --------------------------------------------------------------------------------
@@ -58,7 +58,7 @@ end
 function mod:GetOptions()
 	return {
 		-- RP Timers
-		"door_opens",
+		"door_open",
 		-- Ghostly Retainer
 		{200084, "DISPEL"}, -- Soul Blade
 		-- Ghostly Protector
@@ -80,6 +80,7 @@ function mod:GetOptions()
 		-- Risen Arcanist
 		200248, -- Arcane Blitz
 		-- Wyrmtongue Scavenger
+		200784, -- "Drink" Ancient Potion
 		200913, -- Indigestion
 		-- Bloodscent Felhound
 		204896, -- Drain Life
@@ -101,7 +102,7 @@ function mod:GetOptions()
 		[200291] = L.risen_scout,
 		[200343] = L.risen_archer,
 		[200248] = L.risen_arcanist,
-		[200913] = L.wyrmtongue_scavenger,
+		[200784] = L.wyrmtongue_scavenger,
 		[204896] = L.bloodscent_felhound,
 		[203163] = L.felspite_dominator,
 		[214003] = L.risen_swordsman,
@@ -111,6 +112,8 @@ end
 
 function mod:OnBossEnable()
 	-- Ghostly Retainer
+	self:Log("SPELL_CAST_START", "SoulBlade", 200084)
+	self:Log("SPELL_AURA_APPLIED", "SoulBladeApplied", 200084)
 	self:Log("SPELL_AURA_APPLIED_DOSE", "SoulBladeApplied", 200084)
 
 	-- Ghostly Protector
@@ -139,13 +142,13 @@ function mod:OnBossEnable()
 
 	-- Risen Arcanist
 	self:Log("SPELL_CAST_START", "ArcaneBlitz", 200248)
+	self:Log("SPELL_AURA_APPLIED", "ArcaneBlitzApplied", 200248)
 	self:Log("SPELL_AURA_APPLIED_DOSE", "ArcaneBlitzApplied", 200248)
 	self:Log("SPELL_AURA_REMOVED", "ArcaneBlitzRemoved", 200248)
 
 	-- Wyrmtongue Scavenger
-	-- TODO this is just spammed if you stop the first cast, either delete or see if it's adjusted
-	--self:Log("SPELL_CAST_START", "DrinkAncientPotion", 200784)
-	-- TODO other potion effects? ("Hyperactive, Frenzy Potion)
+	self:Log("SPELL_CAST_START", "DrinkAncientPotion", 200784)
+	-- TODO other potion effects? (Hyperactive, Frenzy Potion)
 	self:Log("SPELL_CAST_START", "Indigestion", 200913)
 
 	-- Bloodscent Felhound
@@ -170,28 +173,52 @@ end
 
 -- triggered from Amalgam of Souls OnWin
 function mod:AmalgamOfSoulsDefeated()
-	self:Bar("door_opens", 35, L.door_opens, L.door_opens_icon)
+	self:Bar("door_open", 35, L.door_open, L.door_open_icon)
 end
 
 -- Ghostly Retainer
 
-function mod:SoulBladeApplied(args)
-	if args.amount % 2 == 0 and (self:Dispeller("magic", nil, args.spellId) or self:Me(args.destGUID)) then
-		self:StackMessage(args.spellId, "orange", args.destName, args.amount, 4)
-		self:PlaySound(args.spellId, "alert", nil, args.destName)
+do
+	local prev = 0
+	function mod:SoulBlade(args)
+		if self:Friendly(args.sourceFlags) then -- these NPCs can be mind-controlled by DKs
+			return
+		end
+		local t = args.time
+		if t - prev > 2 then
+			prev = t
+			self:Message(args.spellId, "yellow")
+			self:PlaySound(args.spellId, "alert")
+		end
+	end
+end
+
+do
+	local prev = 0
+	function mod:SoulBladeApplied(args)
+		if not self:Player(args.destFlags) then -- don't alert if a NPC is debuffed (usually by a mind-controlled mob)
+			return
+		end
+		local t = args.time
+		if t - prev > 3 and (self:Dispeller("magic", nil, args.spellId) or self:Me(args.destGUID)) then
+			prev = t
+			self:StackMessage(args.spellId, "orange", args.destName, args.amount, 2)
+			self:PlaySound(args.spellId, "alert", nil, args.destName)
+		end
 	end
 end
 
 -- Ghostly Protector
 
 function mod:SacrificeSoul(args)
-	self:Message(args.spellId, "yellow", CL.on:format(args.spellName, args.sourceName))
+	self:Message(args.spellId, "cyan")
 	self:PlaySound(args.spellId, "info")
 end
 
 -- Ghostly Councilor
 
 function mod:DarkMending(args)
+	-- non-Mythic+ only
 	self:Message(args.spellId, "red", CL.casting:format(args.spellName))
 	self:PlaySound(args.spellId, "warning")
 end
@@ -206,7 +233,7 @@ function mod:SoulEchoesApplied(args)
 	self:TargetMessage(args.spellId, "orange", args.destName)
 	self:PlaySound(args.spellId, "alarm", nil, args.destName)
 	if self:Me(args.destGUID) then
-		self:Say(args.spellId)
+		self:Say(args.spellId, nil, nil, "Soul Echoes")
 	end
 end
 
@@ -226,10 +253,10 @@ do
 		local amount = args.amount
 		local t = args.time
 		-- stacks very quickly on the tank
-		if t - prev > 3 and amount % 10 == 0 and (self:Me(args.destGUID) or self:Dispeller("magic", nil, 225908)) then
+		if t - prev > 3 and amount % 5 == 0 and (self:Me(args.destGUID) or self:Dispeller("magic", nil, 225908)) then
 			prev = t
-			self:StackMessage(225908, "yellow", args.destName, amount, 30)
-			if amount >= 30 then
+			self:StackMessage(225908, "yellow", args.destName, amount, 10)
+			if amount >= 15 then
 				self:PlaySound(225908, "warning", nil, args.destName)
 			else
 				self:PlaySound(225908, "alert", nil, args.destName)
@@ -257,10 +284,13 @@ end
 do
 	local prev = 0
 	function mod:KnifeDance(args)
+		if self:Friendly(args.sourceFlags) then -- these NPCs can be mind-controlled by DKs
+			return
+		end
 		local t = args.time
 		if t - prev > 1.5 then
 			prev = t
-			self:Message(args.spellId, "yellow")
+			self:Message(args.spellId, "orange")
 			self:PlaySound(args.spellId, "alert")
 		end
 	end
@@ -286,16 +316,23 @@ do
 	local blitzTracker = {}
 
 	function mod:ArcaneBlitz(args)
-		-- only show a message if stacks are getting high
-		local amount = blitzTracker[args.sourceGUID]
-		if amount and amount > 2 and (self:Interrupter() or self:Dispeller("magic", true)) then
-			self:Message(args.spellId, "yellow", CL.count:format(args.spellName, amount))
+		if self:Friendly(args.sourceFlags) then -- these NPCs can be mind-controlled by DKs
+			return
+		end
+		local amount = blitzTracker[args.sourceGUID] or 0
+		local _, interruptReady = self:Interrupter()
+		if interruptReady or (self:Dispeller("magic") and amount >= 2) then
+			if amount >= 1 then
+				self:Message(args.spellId, "yellow", CL.casting:format(CL.count:format(args.spellName, amount)))
+			else
+				self:Message(args.spellId, "yellow", CL.casting:format(args.spellName))
+			end
 			self:PlaySound(args.spellId, "alert")
 		end
 	end
 
 	function mod:ArcaneBlitzApplied(args)
-		blitzTracker[args.destGUID] = args.amount
+		blitzTracker[args.destGUID] = args.amount or 1
 	end
 
 	function mod:ArcaneBlitzRemoved(args)
@@ -307,9 +344,21 @@ end
 
 do
 	local prev = 0
-	function mod:Indigestion(args)
+	function mod:DrinkAncientPotion(args)
 		local t = args.time
 		if t - prev > 2 then
+			prev = t
+			self:Message(args.spellId, "yellow")
+			self:PlaySound(args.spellId, "alert")
+		end
+	end
+end
+
+do
+	local prev = 0
+	function mod:Indigestion(args)
+		local t = args.time
+		if t - prev > 1.5 then
 			prev = t
 			self:Message(args.spellId, "orange")
 			self:PlaySound(args.spellId, "alarm")
@@ -352,6 +401,9 @@ end
 do
 	local prev = 0
 	function mod:CoupDeGrace(args)
+		if self:Friendly(args.sourceFlags) then -- these NPCs can be mind-controlled by DKs
+			return
+		end
 		local t = args.time
 		if t - prev > 2 then
 			prev = t
@@ -366,6 +418,9 @@ end
 do
 	local prev = 0
 	function mod:RavensDive(args)
+		if self:Friendly(args.sourceFlags) then -- these NPCs can be mind-controlled by DKs
+			return
+		end
 		local t = args.time
 		if t - prev > 1.5 then
 			prev = t

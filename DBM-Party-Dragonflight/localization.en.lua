@@ -138,10 +138,6 @@ L:SetGeneralLocalization({
 	name =	"Neltharus Trash"
 })
 
-L:SetOptionLocalization({
-	AGBuffs		= "Auto select gossip to activate buffs when interacting with blacksmithing"
-})
-
 -----------------------
 -- <<<Algeth'ar Academy >>> --
 -----------------------
@@ -183,10 +179,6 @@ L:SetGeneralLocalization({
 	name =	"Algeth'ar Academy Trash"
 })
 
-L:SetOptionLocalization({
-	AGBuffs		= "Auto select gossip to activate buffs when interacting with dragonflight npcs"
-})
-
 -----------------------
 -- <<<The Azure Vault>>> --
 -----------------------
@@ -217,10 +209,6 @@ L = DBM:GetModLocalization("TheAzurevaultTrash")
 
 L:SetGeneralLocalization({
 	name =	"Azure Vault Trash"
-})
-
-L:SetOptionLocalization({
-	AGBook			= "Auto select gossip to teleport interacting with books"
 })
 
 -----------------------
@@ -289,10 +277,6 @@ L:SetGeneralLocalization({
 	name =	"Halls of Infusion Trash"
 })
 
-L:SetOptionLocalization({
-	AGBuffs		= "Auto select gossip to activate usable buffs for engineering and herbalism"
-})
-
 -----------------------
 -- Chronikar --
 -----------------------
@@ -301,7 +285,11 @@ L:SetOptionLocalization({
 -----------------------
 -- Manifested Timeways --
 -----------------------
---L= DBM:GetModLocalization(2528)
+L= DBM:GetModLocalization(2528)
+
+L:SetMiscLocalization({
+	PrePullRP		= "Even the Aspect of Time cannot be allowed to disrupt the timeways!"
+})
 
 -----------------------
 -- Blight of Galakrond --
@@ -311,7 +299,11 @@ L:SetOptionLocalization({
 -----------------------
 -- Iridikron the Stonescaled --
 -----------------------
---L= DBM:GetModLocalization(2537)
+L= DBM:GetModLocalization(2537)
+
+L:SetMiscLocalization({
+	PrePullRP		= "So the titans' puppets have come to face me."
+})
 
 -----------------------
 -- Tyr, the infinite Keeper --
@@ -348,4 +340,8 @@ L = DBM:GetModLocalization("DawnoftheInfiniteTrash")
 
 L:SetGeneralLocalization({
 	name =	"DotI Trash"
+})
+
+L:SetOptionLocalization({
+	AutoRift	= "Auto select gossip to activate rift after gauntlet"
 })

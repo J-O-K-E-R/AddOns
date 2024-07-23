@@ -133,10 +133,6 @@ if L then
 	L.arrow_done = "DONE" -- Message when the arrow has hit
 	L.wave = "Wave" -- Short for Haunting Wave
 	L.dread = "Dread" -- Short for Crushing Dread
-	L.orbs = "Orbs" -- Dark Communion
-	L.curse = "Curse" -- Short for Curse of Lethargy
-	L.pool = "Pool" -- Banshee's Bane / Bane Arrows
-	L.pools = "Pools" -- Banshee's Bane / Bane Arrows
 	L.scream = "Scream" -- Banshee Scream
 
 	L.knife_fling = "Knives out!" -- "Death-touched blades fling out"
@@ -203,7 +199,7 @@ function mod:GetOptions()
 	},{
 		["stages"] = "general",
 		[347504] = -23057, -- Stage One: A Cycle of Hatred
-		[348145] = -22891, -- Intermission: A Monument to our Suffering
+		[353417] = -22891, -- Intermission: A Monument to our Suffering
 		[350857] = -23067, -- Stage Two: The Banshee Queen
 		[353929] = -22890, -- Stage Three: The Freedom of Choice
 		[358704] = "mythic",
@@ -214,11 +210,11 @@ function mod:GetOptions()
 		[358704] = L.arrow, -- Black Arrow (Arrow)
 		[352271] = L.wave, -- Haunting Wave (Wave)
 		[351117] = L.dread, -- Crushing Dread (Dread)
-		[351353] = L.orbs, -- Summon Decrepit Orbs
-		[356021] = L.orbs, -- Dark Communion (Orbs)
-		[351939] = L.curse, -- Curse of Lethargy (Curse)
-		[353929] = L.pools, -- Banshee's Bane (Pools)
-		[354011] = L.pools, -- Bane Arrows (Pools)
+		[351353] = CL.orbs, -- Summon Decrepit Orbs (Orbs)
+		[356021] = CL.orbs, -- Dark Communion (Orbs)
+		[351939] = CL.curse, -- Curse of Lethargy (Curse)
+		[353929] = CL.pools, -- Banshee's Bane (Pools)
+		[354011] = CL.pools, -- Bane Arrows (Pools)
 		[353952] = L.scream, -- Banshee Scream (Scream)
 		[358711] = CL.fixate, -- Rage (Fixate)
 	}
@@ -373,10 +369,10 @@ end
 function mod:DarkCommunion(args)
 	local unit = self:GetUnitIdByGUID(args.sourceGUID)
 	if unit then
-		if IsItemInRange(116139, unit) then -- 50yd
-			self:Message(args.spellId, "orange", L.orbs)
+		if self:UnitWithinRange(unit, 60) then
+			self:Message(args.spellId, "orange", CL.orbs)
 			self:PlaySound(args.spellId, "long")
-			self:CDBar(args.spellId, 16.5, L.orbs)
+			self:CDBar(args.spellId, 16.5, CL.orbs)
 		end
 	end
 end
@@ -384,7 +380,7 @@ end
 function mod:Filth(args)
 	local unit = self:GetUnitIdByGUID(args.sourceGUID)
 	if unit then
-		if IsItemInRange(116139, unit) then -- 50yd
+		if self:UnitWithinRange(unit, 60) then
 			self:Message(351591, "purple", CL.casting:format(args.spellName))
 			self:PlaySound(351591, "alarm")
 			self:CDBar(351591, 13.5)
@@ -405,7 +401,7 @@ do
 		playerList = {}
 		local unit = self:GetUnitIdByGUID(args.sourceGUID)
 		if unit then
-			if IsItemInRange(116139, unit) then -- 50yd
+			if self:UnitWithinRange(unit, 60) then
 				self:Message(args.spellId, "orange", CL.casting:format(args.spellName))
 				self:CDBar(args.spellId, 16)
 			end
@@ -968,7 +964,7 @@ end
 
 function mod:CommanderDeath(args)
 	if args.mobId == 177891 then -- Mawforged Summoner
-		self:StopBar(L.orbs) -- Summon Decrepit Orbs / Dark Communion
+		self:StopBar(CL.orbs) -- Summon Decrepit Orbs / Dark Communion
 	elseif args.mobId == 177893 then -- Mawforged Colossus
 		self:StopBar(351591) -- Filth
 		self:StopBar(351562) -- Expulsion
@@ -1015,22 +1011,22 @@ function mod:SummonDecrepitOrbs(args)
 	if self:Mythic() then
 		local unit = self:GetUnitIdByGUID(args.sourceGUID)
 		if unit then
-			if IsItemInRange(116139, unit) then -- 50yd
-				self:Message(args.spellId, "orange", L.orbs)
+			if self:UnitWithinRange(unit, 60) then
+				self:Message(args.spellId, "orange", CL.orbs)
 				self:PlaySound(args.spellId, "long")
-				self:Bar(args.spellId, 16, L.orbs)
+				self:Bar(args.spellId, 16, CL.orbs)
 			end
 		end
 	else
-		self:Message(args.spellId, "orange", L.orbs)
+		self:Message(args.spellId, "orange", CL.orbs)
 		self:PlaySound(args.spellId, "long")
-		self:Bar(args.spellId, 16, L.orbs)
+		self:Bar(args.spellId, 16, CL.orbs)
 	end
 end
 
 function mod:CurseOfLethargyApplied(args)
 	if self:Me(args.destGUID) then
-		self:PersonalMessage(args.spellId, nil, L.curse)
+		self:PersonalMessage(args.spellId, nil, CL.curse)
 		self:PlaySound(args.spellId, "alarm")
 	end
 end
@@ -1039,7 +1035,7 @@ function mod:FuryApplied(args)
 	if self:Mythic() then
 		local unit = self:GetUnitIdByGUID(args.sourceGUID)
 		if unit then
-			if IsItemInRange(116139, unit) then -- 50yd
+			if self:UnitWithinRange(unit, 60) then
 				local amount = args.amount or 1
 				if amount % 3 == 0 or amount > 10 then
 					self:StackMessage(args.spellId, "purple", args.destName, args.amount, 0)
@@ -1111,16 +1107,16 @@ end
 function mod:BansheesBaneApplied(args)
 	if self:Me(args.destGUID) then
 		local amount = args.amount or 1
-		self:StackMessage(args.spellId, "blue", args.destName, amount, amount, amount > 1 and L.pools or L.pool)
+		self:StackMessage(args.spellId, "blue", args.destName, amount, amount, amount > 1 and CL.pools or CL.pool)
 		self:PlaySound(args.spellId, "alarm")
 	end
 end
 
 function mod:BaneArrows(args)
-	self:Message(args.spellId, "yellow", CL.spawning:format(CL.count:format(L.pools, baneArrowsCount)))
+	self:Message(args.spellId, "yellow", CL.spawning:format(CL.count:format(CL.pools, baneArrowsCount)))
 	self:PlaySound(args.spellId, "alert")
 	baneArrowsCount = baneArrowsCount + 1
-	self:Bar(args.spellId, stageThreeTimers[args.spellId][baneArrowsCount], CL.count:format(L.pools, baneArrowsCount))
+	self:Bar(args.spellId, stageThreeTimers[args.spellId][baneArrowsCount], CL.count:format(CL.pools, baneArrowsCount))
 end
 
 function mod:BansheesHeartseekerApplied(args)

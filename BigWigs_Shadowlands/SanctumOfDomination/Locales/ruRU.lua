@@ -15,8 +15,6 @@ end
 L = BigWigs:NewBossLocale("The Eye of the Jailer", "ruRU")
 if L then
 	L.chains = "Цепи" -- Short for Dragging Chains
-	L.pool = "Лужа" -- Spreading Misery
-	L.pools = "Лужи" -- Spreading Misery (multiple)
 	L.death_gaze = "Взгляд смерти" -- Short for Titanic Death Gaze
 end
 
@@ -119,18 +117,22 @@ if L then
 	L.custom_on_nameplate_fixate = "Метка для преследующего часового"
 	L.custom_on_nameplate_fixate_desc = "Показывать метку на Темном часовом, который преследует вас.\n\nТребует включённых индикаторов здоровья врагов и соответствующего аддона (KuiNameplates, Plater)."
 
+	--L.intermission_chains = "Intermission Chains"
 	L.chains = "Цепи" -- Short for Domination Chains
 	L.chain = "Цепь" -- Single Domination Chain
 	L.darkness = "Завеса тьмы" -- Short for Veil of Darkness
 	L.arrow = "Стрела" -- Short for Wailing Arrow
+	--L.arrow_done = "DONE" -- Message when the arrow has hit
 	L.wave = "Волна" -- Short for Haunting Wave
 	L.dread = "Ужас" -- Short for Crushing Dread
-	L.orbs = "Сферы" -- Dark Communion
-	L.curse = "Проклятие летаргии" -- Short for Curse of Lethargy
-	L.pools = "Лужи" -- Banshee's Bane
 	L.scream = "Вой банши" -- Banshee Scream
 
 	L.knife_fling = "Ножи смерти" -- "Death-touched blades fling out"
+	--L.bridges = "Bridges"
+	--L.rive_counter = "%s (%d/%d)"
+	--L.soaks = "Soaks" -- Merciless
+	--L.count_x = "%s (x%d)(%d)"
+	--L.shroud_active = "Shroud (%d) - %.1f%%!"
 end
 
 L = BigWigs:NewBossLocale("Sanctum of Domination Affixes", "ruRU")

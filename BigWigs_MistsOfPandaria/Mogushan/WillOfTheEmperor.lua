@@ -5,6 +5,7 @@
 
 local mod, CL = BigWigs:NewBoss("Will of the Emperor", 1008, 677)
 if not mod then return end
+mod:RegisterEnableMob(60399, 60400) -- Qin-xi, Jan-xi
 
 --------------------------------------------------------------------------------
 -- Locals
@@ -31,14 +32,12 @@ if L then
 	L.gas_trigger = "The Ancient Mogu Machine breaks down!"
 	L.gas_overdrive_trigger = "The Ancient Mogu Machine goes into overdrive!"
 
-	L.target_only = "|cFFFF0000This warning only shows for the boss you're targeting.|r "
-
 	L.combo = -5672
-	L.combo_desc = L.target_only .. "{-5672}"
+	L.combo_desc = "|cFFFF0000This warning only shows for the boss you're targeting.|r {-5672}"
 	L.combo_message = "%s: Combo soon!"
 
 	L.arc = -5673
-	L.arc_desc = L.target_only .. "{-5673}"
+	L.arc_desc = "|cFFFF0000This warning only shows for the boss you're targeting.|r {-5673}"
 	L.arc_icon = 116835
 
 	L.rage, L.rage_desc = -5678, -5678
@@ -168,13 +167,13 @@ function mod:Bosses()
 	self:Bar("bosses", 13, L["bosses"], L.bosses_icon)
 	self:DelayedMessage("bosses", 13, "yellow", L["bosses"], L.bosses_icon)
 	if not self:Heroic() then
-		self:CDBar(-5670, 123) -- Titan Gas
+		self:Bar(-5670, 123) -- Titan Gas
 	end
 end
 
 do
 	local function fireNext()
-		mod:CDBar(-5670, 120)
+		mod:Bar(-5670, 120)
 	end
 	function mod:TitanGas()
 		gasCounter = gasCounter + 1

@@ -22,7 +22,7 @@ local buttonPositions = {
 
 local textFontSize = { min = 6, max = 42, step = 1 }
 local buttonScale = { min = 0.5, max = 3, step = 0.05 }
-local buttonOffsets = { min = -60, max = 60, step = 1 }
+local buttonOffsets = { min = -100, max = 100, step = 1 }
 
 local Maps = ACH:Group(L["Maps"], nil, 2, 'tab')
 E.Options.args.maps = Maps
@@ -67,14 +67,14 @@ Maps.args.minimap.args.locationTextGroup.args.locationFontSize = ACH:Range(L["Fo
 Maps.args.minimap.args.locationTextGroup.args.locationFontOutline = ACH:FontFlags(L["Font Outline"], nil, 4)
 Maps.args.minimap.args.locationTextGroup.inline = true
 
-Maps.args.minimap.args.timeTextGroup = ACH:Group(L["Time Text"], nil, 20, nil, function(info) return E.db.general.minimap[info[#info]] end, function(info, value) E.db.general.minimap[info[#info]] = value; MM:UpdateSettings() end, function() return not E.private.general.minimap.enable end, not E.Retail)
+Maps.args.minimap.args.timeTextGroup = ACH:Group(L["Time Text"], nil, 20, nil, function(info) return E.db.general.minimap[info[#info]] end, function(info, value) E.db.general.minimap[info[#info]] = value; MM:UpdateSettings() end, function() return E.db.general.minimap.clusterDisable or not E.private.general.minimap.enable end, not E.Retail)
 Maps.args.minimap.args.timeTextGroup.args.timeFont = ACH:SharedMediaFont(L["Font"], nil, 2)
 Maps.args.minimap.args.timeTextGroup.args.timeFontSize = ACH:Range(L["Font Size"], nil, 3, textFontSize)
 Maps.args.minimap.args.timeTextGroup.args.timeFontOutline = ACH:FontFlags(L["Font Outline"], nil, 4)
 Maps.args.minimap.args.timeTextGroup.inline = true
 
 Maps.args.minimap.args.icons = ACH:Group(L["Minimap Buttons"], nil, 50, nil, function(info) return E.db.general.minimap.icons[info[#info - 1]][info[#info]] end, function(info, value) E.db.general.minimap.icons[info[#info - 1]][info[#info]] = value; MM:UpdateSettings() end)
-Maps.args.minimap.args.icons.args.classHall = ACH:Group(L["GARRISON_LANDING_PAGE_TITLE"], nil, 1, nil, nil, nil, nil, not E.Retail)
+Maps.args.minimap.args.icons.args.classHall = ACH:Group(L["Expansion Button"], nil, 1, nil, nil, nil, nil, not E.Retail)
 Maps.args.minimap.args.icons.args.classHall.args.hideClassHallReport = ACH:Toggle(L["Hide"], nil, 1, nil, nil, nil, function() return E.private.general.minimap.hideClassHallReport end, function(_, value) E.private.general.minimap.hideClassHallReport = value; MM:UpdateSettings() end)
 Maps.args.minimap.args.icons.args.classHall.args.spacer = ACH:Spacer(2, 'full')
 Maps.args.minimap.args.icons.args.classHall.args.position = ACH:Select(L["Position"], nil, 3, buttonPositions, nil, nil, nil, nil, function() return E.private.general.minimap.hideClassHallReport end)
@@ -132,9 +132,3 @@ Maps.args.minimap.args.icons.args.difficulty.args.position = ACH:Select(L["Posit
 Maps.args.minimap.args.icons.args.difficulty.args.scale = ACH:Range(L["Scale"], nil, 2, buttonScale)
 Maps.args.minimap.args.icons.args.difficulty.args.xOffset = ACH:Range(L["X-Offset"], nil, 3, buttonOffsets)
 Maps.args.minimap.args.icons.args.difficulty.args.yOffset = ACH:Range(L["Y-Offset"], nil, 4, buttonOffsets)
-
-Maps.args.minimap.args.icons.args.challengeMode = ACH:Group(L["CHALLENGE_MODE"], nil, 9, nil, nil, nil, function() return E.Retail and not E.db.general.minimap.clusterDisable end, not E.Retail)
-Maps.args.minimap.args.icons.args.challengeMode.args.position = ACH:Select(L["Position"], nil, 1, buttonPositions)
-Maps.args.minimap.args.icons.args.challengeMode.args.scale = ACH:Range(L["Scale"], nil, 2, buttonScale)
-Maps.args.minimap.args.icons.args.challengeMode.args.xOffset = ACH:Range(L["X-Offset"], nil, 3, buttonOffsets)
-Maps.args.minimap.args.icons.args.challengeMode.args.yOffset = ACH:Range(L["Y-Offset"], nil, 4, buttonOffsets)

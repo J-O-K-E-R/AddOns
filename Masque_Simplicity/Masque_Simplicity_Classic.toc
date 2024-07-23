@@ -1,4 +1,4 @@
-## Interface: 11404
+## Interface: 11502
 
 ## Title: Masque: Simplicity
 ## Notes: Simplicity skin for Masque.
@@ -10,8 +10,8 @@
 ## Notes-ruRU: Скин Simplicity для Masque.
 ## Notes-zhTW: Masque的Simplicity皮膚。
 
-## Version: 3.6.1
-## Author: Epix
+## Version: 3.7
+## Author: Epix, StormFX
 ## Dependencies: Masque
 
 ## X-Category: Interface Enhancements

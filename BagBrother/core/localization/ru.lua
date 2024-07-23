@@ -7,10 +7,10 @@ local L = LibStub('AceLocale-3.0'):NewLocale(ADDON, 'ruRU')
 if not L then return end
 
 --keybindings
-L.ToggleBags = 'Переключить инвентарь'
-L.ToggleBank = 'Переключить банк'
-L.ToggleGuild = 'Переключить банк гильдии'
-L.ToggleVault = 'Переключить Хранилище Бездны'
+L.OpenBags = 'Переключить инвентарь'
+L.OpenBank = 'Переключить банк'
+L.OpenGuild = 'Переключить банк гильдии'
+L.OpenVault = 'Переключить Хранилище Бездны'
 
 --terminal
 L.Commands = 'Команды:'
@@ -20,7 +20,6 @@ L.CmdShowGuild = 'открыть/закрыть банк гильдии'
 L.CmdShowVault = 'открыть/закрыть Хранилище Бездны'
 L.CmdShowVersion = 'сообщить текущую версию модификации'
 L.CmdShowOptions = 'открыть меню настроек'
-L.Updated = 'Обновлено до v%s'
 
 --frame titles
 L.TitleBags = 'Инвентарь |3-1(%s)'
@@ -28,7 +27,6 @@ L.TitleBank = 'Банк |3-1(%s)'
 L.TitleVault = 'Хранилище Бездны |3-1(%s)'
 
 --dropdowns
-L.TitleFrames = 'Окна %s'
 L.SelectCharacter = 'Выберите персонажа'
 L.ConfirmDelete = 'Удалить кэшированные данные %s?'
 
@@ -46,7 +44,6 @@ L.GuildFunds = 'Золото гильдии'
 L.TipGoldOnRealm = 'Всего золота на %s'
 L.NumWithdraw = '%d снять'
 L.NumDeposit = '%d внести'
-L.NumRemainingWithdrawals = 'Осталось снятий: %d'
 
 --action tooltips
 L.TipChangePlayer = '%s — просмотреть предметы другого персонажа.'

@@ -1,4 +1,6 @@
 local AB, _, T = assert(OPie.ActionBook:compatible(2,14), "Requires a compatible version of ActionBook"), ...
+if T.TenEnv then T.TenEnv() end
+
 local ORI, EV, L, PC, XU, config = OPie.UI, T.Evie, T.L, T.OPieCore, T.exUI, T.config
 local COMPAT = select(4,GetBuildInfo())
 local MODERN, CF_WRATH = COMPAT >= 10e4, COMPAT < 10e4 and COMPAT >= 3e4
@@ -6,8 +8,10 @@ local GameTooltip = T.NotGameTooltip or GameTooltip
 
 local exclude, questItems, IsQuestItem, disItems = PC:RegisterPVar("AutoQuestExclude", {}), {}
 local function getContainerItemQuestInfo(bag, slot)
-	local iqi = C_Container.GetContainerItemQuestInfo(bag, slot)
-	return iqi.isQuestItem, iqi.questID, iqi.isActive
+	if bag and slot then
+		local iqi = C_Container.GetContainerItemQuestInfo(bag, slot)
+		return iqi.isQuestItem, iqi.questID, iqi.isActive
+	end
 end
 if MODERN then
 	questItems[30148] = {72986, 72985}
@@ -38,6 +42,7 @@ if MODERN then
 			[204911]=have1,
 			[205254]=consume,
 			[199192]=have1, [204359]=have1, [205226]=have1, [210549]=have1,
+			[211279]=have1, -- remix lootboxes
 		}
 	end
 	local includeSpell = {
@@ -58,10 +63,13 @@ if MODERN then
 		[204561]=1,
 	}})
 	function IsQuestItem(iid, bag, slot)
-		if exclude[iid] then return false end
-		if disItems[iid] then return true, false, disItems[iid] end
+		if exclude[iid] or not iid then
+			return false
+		elseif disItems[iid] then
+			return true, false, disItems[iid]
+		end
 		local inc, isQuest, startQuestId, isQuestActive = include[iid], getContainerItemQuestInfo(bag, slot)
-		isQuest = iid and ((isQuest and GetItemSpell(iid)) or (inc == true) or (startQuestId and not isQuestActive and not C_QuestLog.IsQuestFlaggedCompleted(startQuestId)))
+		isQuest = iid and ((isQuest and C_Item.GetItemSpell(iid)) or (inc == true) or (startQuestId and not isQuestActive and not C_QuestLog.IsQuestFlaggedCompleted(startQuestId)))
 		local tinc, rcat = inc and not isQuest and type(inc), nil
 		if tinc == "function" then
 			isQuest, startQuestId, isQuestActive, rcat = inc(iid)
@@ -77,7 +85,7 @@ if MODERN then
 			end
 		end
 		if inc == nil and not isQuest then
-			local isn, isid = GetItemSpell(iid)
+			local isn, isid = C_Item.GetItemSpell(iid)
 			if isid and includeSpell[isn] and IsUsableSpell(isid) then
 				isQuest, startQuestId, rcat = true, false, includeSpell[isn]
 			end
@@ -99,10 +107,12 @@ else
 	local QUEST_ITEM = Enum.ItemClass.Questitem
 	function IsQuestItem(iid, bag, slot, skipTypeCheck)
 		local isQuest, startsQuest = false, false
-		if include[iid] then
+		if exclude[iid] or not iid then
+			return false
+		elseif include[iid] then
 			isQuest = true
-		elseif not (iid and GetItemSpell(iid) and not exclude[iid]) then
-		elseif select(12, GetItemInfo(iid)) == QUEST_ITEM then
+		elseif not (C_Item.GetItemSpell(iid) and not exclude[iid]) then
+		elseif select(12, C_Item.GetItemInfo(iid)) == QUEST_ITEM then
 			isQuest = true
 		elseif skipTypeCheck then
 			include[iid], isQuest = true, true
@@ -259,7 +269,7 @@ local function describeQI(name)
 		return L"Quest Items", L"Quest Items", [[Interface\AddOns\OPie\gfx\opie_ring_icon]], nil, nil, nil, "collection"
 	end
 end
-AB:RegisterActionType("opie.autoquest", createQI, describeQI)
+AB:RegisterActionType("opie.autoquest", createQI, describeQI, 1)
 
 local edFrame = CreateFrame("Frame") do
 	edFrame:Hide()
@@ -273,10 +283,7 @@ local edFrame = CreateFrame("Frame") do
 	local bar = XU:Create("ScrollBar", nil, edFrame)
 	bar:SetPoint("TOPRIGHT", -1, 0)
 	bar:SetPoint("BOTTOMRIGHT", -1, 0)
-	local cover = CreateFrame("Frame", nil, clipRoot)
-	cover:SetAllPoints()
-	cover:EnableMouseMotion(true)
-	cover:Hide()
+	bar:SetCoverTarget(clipRoot)
 
 	local rows, controller, idList, numRowsPV, visibleRange = {}, {}, {}, 2, 0 do
 		clipRoot:SetScript("OnSizeChanged", function(self)
@@ -292,10 +299,8 @@ local edFrame = CreateFrame("Frame") do
 		edFrame:SetScript("OnMouseWheel", function(_, delta)
 			bar:Step(-delta*math.max(1, math.ceil(numRowsPV/4)), true)
 		end)
-		bar:SetScript("OnValueChanged", function(self, nv, isInternal)
+		bar:SetScript("OnValueChanged", function(_, nv, isInternal)
 			controller:SetOffset(nv, isInternal)
-			cover:SetShown(not self:IsValueAtRest())
-			cover:SetFrameLevel(edFrame:GetFrameLevel()+20)
 		end)
 		edFrame:SetScript("OnEvent", function(_, e, iid, ok)
 			if e == "GET_ITEM_INFO_RECEIVED" and iid and ok then
@@ -339,11 +344,11 @@ local edFrame = CreateFrame("Frame") do
 		if not (iid and w) then
 			return w and w:Hide()
 		end
-		local n, _, _iq, _, _, _, _, _, _, ico = GetItemInfo(iid or 0)
+		local n, _, _iq, _, _, _, _, _, _, ico = C_Item.GetItemInfo(iid or 0)
 		if n then
 			w.pendingItemID = nil
 		else
-			w.pendingItemID, n, _, _, _, _, ico = iid, "item:" .. iid, GetItemInfoInstant(iid or 0)
+			w.pendingItemID, n, _, _, _, _, ico = iid, "item:" .. iid, C_Item.GetItemInfoInstant(iid or 0)
 		end
 		w.Text:SetText(n)
 		w.Icon:SetTexture(ico)
@@ -394,7 +399,7 @@ local edFrame = CreateFrame("Frame") do
 		local allDone = 1
 		for i=1, numRowsPV do
 			local pid = rows[i].pendingItemID
-			local n = pid and GetItemInfo(pid)
+			local n = pid and C_Item.GetItemInfo(pid)
 			allDone = allDone and (n or not pid)
 			if n then
 				rows[i].pendingItemID = nil
@@ -490,7 +495,7 @@ T.AddSlashSuffix(function(msg)
 	else
 		local flag, _, link
 		flag, args = args:match("^(%-?)(.*)$")
-		_, link = GetItemInfo(args:match("|H(item:%d+)") or args)
+		_, link = C_Item.GetItemInfo(args:match("|H(item:%d+)") or args)
 		local iid = link and link:match("item:(%d+)")
 		if iid then
 			excludeItemID(tonumber(iid) * (flag == "-" and -1 or 1))

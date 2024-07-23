@@ -13,7 +13,7 @@ mod:SetRespawnTime(20)
 --
 
 local rottenExpulsionCount = 1
-local tenderizeCount = 0
+local tenderizeCount = 1
 
 --------------------------------------------------------------------------------
 -- Initialization
@@ -25,7 +25,7 @@ function mod:GetOptions()
 		264931, -- Call Servant
 		265005, -- Well-Fed
 		264923, -- Tenderize
-		264694, -- Rotten Expulsion
+		{264694, "SAY"}, -- Rotten Expulsion
 	}
 end
 
@@ -35,15 +35,15 @@ function mod:OnBossEnable()
 	self:Log("SPELL_AURA_APPLIED", "WellFedApplied", 265005)
 	self:Log("SPELL_AURA_APPLIED_DOSE", "WellFedApplied", 265005)
 	self:Log("SPELL_CAST_START", "Tenderize", 264923)
+	self:Log("SPELL_CAST_SUCCESS", "TenderizeSuccess", 264923)
 	self:Log("SPELL_CAST_START", "RottenExpulsion", 264694)
-	self:Log("SPELL_AURA_APPLIED", "RottenExpulsionDamage", 264712)
-	self:Log("SPELL_PERIODIC_DAMAGE", "RottenExpulsionDamage", 264712)
+	self:Log("SPELL_PERIODIC_DAMAGE", "RottenExpulsionDamage", 264712) -- no alert on APPLIED, doesn't damage right away
 	self:Log("SPELL_PERIODIC_MISSED", "RottenExpulsionDamage", 264712)
 end
 
 function mod:OnEngage()
 	rottenExpulsionCount = 1
-	tenderizeCount = 0
+	tenderizeCount = 1
 	self:CDBar(264694, 5.5) -- Rotten Expulsion
 	self:CDBar(264923, 20.4) -- Tenderize
 	self:CDBar(264931, 32.6) -- Call Servant
@@ -70,24 +70,36 @@ function mod:WellFedApplied(args)
 end
 
 function mod:Tenderize(args)
-	tenderizeCount = tenderizeCount + 1
 	self:Message(args.spellId, "orange", CL.count_amount:format(args.spellName, tenderizeCount, 3))
 	self:PlaySound(args.spellId, "alarm")
 	if tenderizeCount == 1 then
 		self:CDBar(args.spellId, 43.7)
-	elseif tenderizeCount == 3 then
-		tenderizeCount = 0
 	end
 end
 
-function mod:RottenExpulsion(args)
-	self:Message(args.spellId, "yellow")
-	self:PlaySound(args.spellId, "alert")
-	rottenExpulsionCount = rottenExpulsionCount + 1
-	if rottenExpulsionCount == 2 then
-		self:CDBar(args.spellId, 29.2)
-	else
-		self:CDBar(args.spellId, 20.6)
+function mod:TenderizeSuccess(args)
+	-- if one of the 3 Tenderize casts is interrupted (feign, vanish, etc) the boss will just recast it,
+	-- so only increment the count on a successful cast.
+	tenderizeCount = tenderizeCount % 3 + 1
+end
+
+do
+	local function printTarget(self, name, guid)
+		self:TargetMessage(264694, "yellow", name)
+		self:PlaySound(264694, "alert", nil, name)
+		if self:Me(guid) then
+			self:Say(264694, nil, nil, "Rotten Expulsion")
+		end
+	end
+
+	function mod:RottenExpulsion(args)
+		self:GetUnitTarget(printTarget, 0.3, args.sourceGUID)
+		rottenExpulsionCount = rottenExpulsionCount + 1
+		if rottenExpulsionCount == 2 then
+			self:CDBar(args.spellId, 29.2)
+		else
+			self:CDBar(args.spellId, 20.6)
+		end
 	end
 end
 
@@ -99,7 +111,7 @@ do
 			if t - prev > 2 then
 				prev = t
 				self:PersonalMessage(264694, "underyou")
-				self:PlaySound(264694, "underyou", "gtfo")
+				self:PlaySound(264694, "underyou", nil, args.destName)
 			end
 		end
 	end

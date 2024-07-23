@@ -29,7 +29,6 @@ end
 L = BigWigs:NewBossLocale("Artificer Xy'mox", "zhCN")
 if L then
 	L.tear = "撕裂" -- Short for Dimensional Tear
-	L.spirits = "灵魂" -- Short for Fleeting Spirits
 	L.seeds = "种" -- Short for Seeds of Extinction
 end
 
@@ -78,6 +77,7 @@ if L then
 	L.dance_yell_up = "前阔步" -- Prance Forward!
 	L.dance_yell_right = "右摆步" -- Shimmy right!
 	L.dance_yell_down = "后摇步" -- Boogie down!
+	L.dance_yell_down_2 = "后摇步" -- Boogie down!
 	L.dance_yell_left = "左滑步" -- Sashay left!
 end
 

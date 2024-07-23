@@ -1,18 +1,16 @@
 -- Simplified Chinese by Diablohu(diablohudream@gmail.com)
--- Last update: 2/25/2012
+-- 接盘 By Mini Dragon(projecteurs@gmail.NOSPAM.com) <流浪者酒馆-Brilla@金色平原>
+-- Last update: 20240420
 
 if GetLocale() ~= "zhCN"  then return end
 
 local L
 
+--黑翼血环--
 ----------------
 --  Argaloth  --
 ----------------
 L= DBM:GetModLocalization(139)
-
-L:SetOptionLocalization({
-	SetIconOnConsuming		= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(88954)
-})
 
 -----------------
 --  Occu'thar  --
@@ -40,11 +38,6 @@ L:SetMiscLocalization({
 -------------------------------
 L = DBM:GetModLocalization(169)
 
-L:SetWarningLocalization({
-	SpecWarnActivated			= "更换目标 -> %s!",
-	specWarnGenerator			= "能量发生器 - 移动%s!"
-})
-
 L:SetTimerLocalization({
 	timerShadowConductorCast	= "暗影导体",
 	timerArcaneLockout			= "奥术歼灭者反制",
@@ -56,13 +49,7 @@ L:SetOptionLocalization({
 	timerShadowConductorCast	= "计时条：$spell:92048施法时间",
 	timerArcaneLockout			= "计时条：$spell:91542反制时间",
 	timerArcaneBlowbackCast		= "计时条：$spell:91879施法时间",
-	timerNefAblity				= "计时条：英雄模式增益法术冷却时间",
-	SpecWarnActivated			= "特殊警报：新的金刚已激活",
-	specWarnGenerator			= "特殊警报：金刚获得$spell:91557效果",
-	AcquiringTargetIcon			= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(79501),
-	ConductorIcon				= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(79888),
-	ShadowConductorIcon			= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(92053),
-	SetIconOnActivated			= "自动为最新激活的金刚添加团队标记"
+	timerNefAblity				= "计时条：英雄模式增益法术冷却时间"
 })
 
 L:SetMiscLocalization({
@@ -94,11 +81,6 @@ L:SetMiscLocalization({
 -----------------
 L = DBM:GetModLocalization(171)
 
-L:SetOptionLocalization({
-	InfoFrame				= "信息框：团员声音等级列表",
-	TrackingIcon			= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(78092)
-})
-
 L:SetMiscLocalization({
 	NefAdd					= "艾卓曼德斯，那些英雄就在那边！",
 	Airphase				= "对，跑吧！每跑一步你的心跳都会加快。这心跳声，洪亮如雷，震耳欲聋。你逃不掉的！"
@@ -111,7 +93,7 @@ L = DBM:GetModLocalization(172)
 
 L:SetOptionLocalization({
 	RangeFrame		= "距离监视器（6码）",
-	SetIconOnSlime	= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(82935),
+--	SetIconOnSlime	= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(82935),
 	InfoFrame		= "信息框：生命值小于1万的团员的列表"
 })
 
@@ -125,7 +107,7 @@ L:SetMiscLocalization({
 L = DBM:GetModLocalization(173)
 
 L:SetWarningLocalization({
-	WarnPhase			= "%s阶段",
+	WarnPhase			= "第%s阶段"
 })
 
 L:SetTimerLocalization({
@@ -134,12 +116,7 @@ L:SetTimerLocalization({
 
 L:SetOptionLocalization({
 	WarnPhase			= "警报：阶段变化",
-	TimerPhase			= "计时条：下一阶段",
-	RangeFrame			= "在蓝瓶阶段显示距离监视器（6码）",
-	SetTextures			= "在黑暗阶段自动取消材质投射效果（当阶段结束时会自动恢复）",
-	FlashFreezeIcon		= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(92979),
-	BitingChillIcon		= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(77760),
-	ConsumingFlamesIcon	= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(77786)
+	SetTextures			= "在黑暗阶段自动取消材质投射效果（当阶段结束时会自动恢复）"
 })
 
 L:SetMiscLocalization({
@@ -155,40 +132,17 @@ L:SetMiscLocalization({
 L = DBM:GetModLocalization(174)
 
 L:SetWarningLocalization({
-	OnyTailSwipe			= "龙尾扫击（奥妮克希亚）",
-	NefTailSwipe			= "龙尾扫击（奈法利安）",
-	OnyBreath				= "暗影烈焰吐息（奥妮克希亚）",
-	NefBreath				= "暗影烈焰吐息（奈法利安）",
-	specWarnShadowblazeSoon	= "%s",
 	warnShadowblazeSoon		= "%s"
 })
 
 L:SetTimerLocalization({
-	timerNefLanding			= "奈法利安着陆",
-	OnySwipeTimer			= "龙尾扫击冷却（奥妮克希亚）",
-	NefSwipeTimer			= "龙尾扫击冷却（奈法利安）",
-	OnyBreathTimer			= "吐息冷却（奥妮克希亚）",
-	NefBreathTimer			= "吐息冷却（奈法利安）"
+	timerNefLanding			= "奈法利安着陆"
 })
 
 L:SetOptionLocalization({
-	OnyTailSwipe			= "警报：奥妮克希亚的$spell:77827",
-	NefTailSwipe			= "警报：奈法利安的$spell:77827",
-	OnyBreath				= "警报：奥妮克希亚的$spell:94124",
-	NefBreath				= "警报：奈法利安的$spell:94124",
-	specWarnCinderMove		= "特殊警报：当你受到$spell:79339影响需要移动时（爆炸前5秒）",
-	warnShadowblazeSoon		= "提前警报：$spell:81031（5秒）（为保证精确性，仅当暗影爆燃时间同步后才会显示确切时间警报）",
-	specWarnShadowblazeSoon	= "特殊警报：$spell:81031即将施放（为保证精确性，第一次<br/>提前5秒，在暗影爆燃时间同步后提前1秒警报）",
+	warnShadowblazeSoon		= "预警：$spell:81031（5秒）（为保证精确性，仅当暗影爆燃时间同步后才会显示确切时间警报）",
 	timerNefLanding			= "计时条：奈法利安着陆",
-	OnySwipeTimer			= "计时条：奥妮克希亚的$spell:77827冷却时间",
-	NefSwipeTimer			= "计时条：奈法利安的$spell:77827冷却时间",
-	OnyBreathTimer			= "计时条：奥妮克希亚的$spell:94124冷却时间",
-	NefBreathTimer			= "计时条：奈法利安的$spell:94124冷却时间",
-	InfoFrame				= "信息框：奥妮克希亚的电能",
-	SetWater				= "在拉怪时自动取消水体碰撞效果（战斗结束后会自动恢复）",
-	SetIconOnCinder			= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(79339),
-	RangeFrame				= "为$spell:79339显示距离监视器（10码）",-- Shows everyone if you have debuff, only players with icons if not
-	FixShadowblaze        = "自动同步$spell:94085时间（实验功能，利用首领的喊话进行同步）",
+	SetWater				= "在拉怪时自动取消水体碰撞效果（战斗结束后会自动恢复）"
 })
 
 L:SetMiscLocalization({
@@ -196,8 +150,7 @@ L:SetMiscLocalization({
 	YellPhase2				= "诅咒你们，凡人！你们丝毫不尊重他人财产的行为必须受到严厉处罚！",
 	YellPhase3				= "我一直在尝试扮演好客的主人，可你们就是不肯受死！该卸下伪装了……杀光你们！",
 	YellShadowBlaze			= "血肉化为灰烬！",
-	ShadowBlazeExact		= "%d秒后暗影爆燃火花",
-	ShadowBlazeEstimate		= "暗影爆燃火花即将施放（约5秒）"
+	ShadowBlazeExact		= "%d秒后暗影爆燃火花"
 })
 
 -------------------------------
@@ -209,14 +162,11 @@ L:SetGeneralLocalization({
 	name = "黑翼血环小怪"
 })
 
+--暮光堡垒--
 --------------------------
 --  Halfus Wyrmbreaker  --
 --------------------------
 L = DBM:GetModLocalization(156)
-
-L:SetOptionLocalization({
-	ShowDrakeHealth		= "显示已释放幼龙的生命值（需要开启首领生命值显示）"
-})
 
 ---------------------------
 --  Valiona & Theralion  --
@@ -225,11 +175,7 @@ L = DBM:GetModLocalization(157)
 
 L:SetOptionLocalization({
 	TBwarnWhileBlackout		= "警报：$spell:86788时的$spell:92898",
-	TwilightBlastArrow		= "DBM箭头：当有$spell:92898的目标在你附近时",
-	RangeFrame				= "距离监视器（10码）",
-	BlackoutShieldFrame		= "为$spell:92878显示首领血量条",
-	BlackoutIcon			= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(92878),
-	EngulfingIcon			= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(86622)
+	BlackoutShieldFrame		= "为$spell:92878显示首领血量条"
 })
 
 L:SetMiscLocalization({
@@ -257,16 +203,7 @@ L:SetOptionLocalization({
 	SpecWarnGrounded		= "特殊警报：缺少$spell:83581效果（对应技能施放10秒前警报）",
 	SpecWarnSearingWinds	= "特殊警报：缺少$spell:83500效果（对应技能施放10秒前警报）",
 	timerTransition			= "计时条：阶段转换",
-	RangeFrame				= "在需要时自动显示距离监视器",
-	yellScrewed				= "当你同时受到$spell:83099和$spell:92307影响时大喊",
-	InfoFrame				= "信息框：没有$spell:83581或$spell:83500效果的团员的列表",
-	HeartIceIcon			= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(82665),
-	BurningBloodIcon		= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(82660),
-	LightningRodIcon		= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(83099),
-	GravityCrushIcon		= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(84948),
-	FrostBeaconIcon			= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(92307),
-	StaticOverloadIcon		= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(92067),
-	GravityCoreIcon			= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(92075)
+	yellScrewed				= "当你同时受到$spell:83099和$spell:92307影响时大喊"
 })
 
 L:SetMiscLocalization({
@@ -276,20 +213,13 @@ L:SetMiscLocalization({
 	Phase3			= "令人印象深刻……",--"BEHOLD YOUR DOOM!" is about 13 seconds after
 	Kill			= "这不可能……",
 	blizzHatesMe	= "我中了冰霜道标和闪电魔棒！快让路！",--You're probably fucked, and gonna kill half your raid if this happens, but worth a try anyways :).
-	WrongDebuff	= "没有 %s"
+	WrongDebuff		= "没有 %s"
 })
 
 ----------------
 --  Cho'gall  --
 ----------------
 L = DBM:GetModLocalization(167)
-
-L:SetOptionLocalization({
-	CorruptingCrashArrow	= "DBM箭头：当$spell:93178在你附近时",
-	InfoFrame				= "信息框：$journal:3165",
-	RangeFrame				= "为$spell:82235显示距离监视器（5码）",
-	SetIconOnWorship		= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(91317)
-})
 
 ----------------
 --  Sinestra  --
@@ -312,15 +242,14 @@ L:SetTimerLocalization({
 })
 
 L:SetOptionLocalization({
-	WarnOrbSoon			= "提前警报：暗影宝珠（5秒前，每秒警报一次。不精确）",
-	WarnOrbsSoon		= "提前警报：暗影宝珠（5秒前，每秒警报一次。不精确）",
-	WarnEggWeaken		= "提前警报：$spell:87654消失",
+	WarnOrbsSoon		= "预警：暗影宝珠（5秒前，每秒警报一次。不精确）",
+--	WarnEggWeaken		= "预警：$spell:87654消失",
 	warnWrackJump		= "警报：$spell:92955跳跃的目标",
-	WarnWrackCount5s	= "警报：当$spell:92955在某一团员身上持续了10、15和20秒时",
+--	WarnWrackCount5s	= "警报：当$spell:92955在某一团员身上持续了10、15和20秒时",
 	warnAggro			= "警报：暗影宝珠刷新时拥有仇恨的团员（可能成为宝珠的目标）",
 	SpecWarnAggroOnYou	= "特殊警报：当宝珠刷新时你获得仇恨（可能成为宝珠的目标）",
 	SpecWarnOrbs		= "特殊警报：宝珠即将刷新（预计时间，不精确）",
-	SpecWarnDispel		= "特殊警报：提醒驱散$spell:92955（在效果施放或跳跃后的特定时间警报）",
+--	SpecWarnDispel		= "特殊警报：提醒驱散$spell:92955（在效果施放或跳跃后的特定时间警报）",
 	TimerEggWeakening	= "计时条：$spell:87654消失",
 	TimerEggWeaken		= "计时条：$spell:87654再生",
 	TimerOrbs			= "计时条：暗影宝珠冷却时间",
@@ -343,6 +272,7 @@ L:SetGeneralLocalization({
 	name =	"暮光堡垒小怪"
 })
 
+--风神王座--
 ------------------------
 --  Conclave of Wind  --
 ------------------------
@@ -369,7 +299,7 @@ L:SetOptionLocalization({
 })
 
 L:SetMiscLocalization({
-	gatherstrength	= "gather shtrenth" -- die
+	gatherstrength	= "即将获得全部力量！" --大波胡的锅
 })
 
 ---------------
@@ -387,6 +317,7 @@ L:SetOptionLocalization({
 	RangeFrame		= "当你中了$spell:89668时显示距离监视器（20码）"
 })
 
+--火焰之地--
 -----------------
 -- Beth'tilac --
 -----------------
@@ -484,13 +415,15 @@ L:SetOptionLocalization({
 L= DBM:GetModLocalization(198)
 
 L:SetWarningLocalization({
-	warnSplittingBlow		= "%s在%s",--Spellname in Location
-	warnEngulfingFlame		= "%s在%s",--Spellname in Location
+	warnRageRagnarosSoon	= "5秒后 %s -> %s",--Spellname on targetname
+	warnSplittingBlow		= "%s于%s",--Spellname in Location
+	warnEngulfingFlame		= "%s于%s",--Spellname in Location
 	warnEmpoweredSulf		= "%s - 5秒后施放"--The spell has a 5 second channel, but tooltip doesn't reflect it so cannot auto localize
 })
 
 L:SetTimerLocalization({
-	TimerPhaseSons		= "阶段转换"
+		timerRageRagnaros	= "%s -> %s",--Spellname on targetname
+		TimerPhaseSons		= "阶段转换"
 })
 
 L:SetOptionLocalization({
@@ -515,7 +448,7 @@ L:SetMiscLocalization({
 	South				= "场景后方",
 	HealthInfo			= "生命值少于10万",
 	HasNoAggro			= "未获仇恨",
-	MeteorTargets		= "看！流星灰过来咯！",--Keep rollin' rollin' rollin' rollin'.
+	MeteorTargets		= "流星点名",--Keep rollin' rollin' rollin' rollin'.
 	TransitionEnded1	= "够了！我会亲自解决。",--More reliable then adds method.
 	TransitionEnded2	= "萨弗拉斯将会是你的末日。",
 	TransitionEnded3	= "跪下吧，凡人们！一切都结束了。",
@@ -532,6 +465,7 @@ L:SetGeneralLocalization({
 	name = "火焰之地小怪"
 })
 
+-- 巨龙之魂--
 ----------------
 --  Volcanus  --
 ----------------
@@ -601,7 +535,7 @@ L:SetOptionLocalization({
 })
 
 L:SetMiscLocalization({
-	voidYell	= "Gul'kafh an'qov N'Zoth."--Start translating the yell he does for Void of the Unmaking cast, the latest logs from DS indicate blizz removed the event that detected casts. sigh.
+	voidYell	= "Gul'kafh an'qov N'Zoth."--客户端没翻译
 })
 
 -----------------------------
@@ -614,12 +548,14 @@ L:SetWarningLocalization({
 })
 
 L:SetTimerLocalization({
-	timerOozesActive	= "软泥怪可攻击"
+	timerOozesActive	= "软泥怪可攻击",
+	timerOozesReach		= "软泥怪碰到Boss"
 })
 
 L:SetOptionLocalization({
 	warnOozesHit		= "警报：软泥怪种类",
 	timerOozesActive	= "计时条：软泥怪可攻击",
+	timerOozesReach		= "计时条：软泥怪碰到Boss",
 	RangeFrame			= "距离监视器（4码）：应对$spell:104898（普通和英雄难度）"
 })
 
@@ -701,18 +637,19 @@ L:SetWarningLocalization({
 })
 
 L:SetTimerLocalization({
-	TimerCombatStart	= "战斗即将开始",
+--	TimerCombatStart	= "战斗即将开始",
 	TimerAdd			= "下一波暮光精英"
 })
 
 L:SetOptionLocalization({
-	TimerCombatStart	= "计时条：战斗即将开始",
+--	TimerCombatStart	= "计时条：战斗即将开始",
 	TimerAdd			= "计时条：下一波暮光精英",
 	SpecWarnElites		= "特殊警报：新的暮光精英出现",
 	SetTextures			= "在第1阶段自动禁用材质投射（第2阶段自动恢复）"
 })
 
 L:SetMiscLocalization({
+	Pull				= "全速前进。一切取决于我们的速度了！不能让灭世者跑了。",
 	SapperEmote			= "一条幼龙俯冲下来，往甲板上投放了一个暮光工兵！",
 	GorionaRetreat		= "痛苦地尖叫并退入了云海的漩涡中"
 })
@@ -723,12 +660,14 @@ L:SetMiscLocalization({
 L= DBM:GetModLocalization(318)
 
 L:SetWarningLocalization({
+	warnSealArmor			= "%s",
 	SpecWarnTendril			= "小心翻身！"
 })
 
 L:SetOptionLocalization({
+--	warnSealArmor			= DBM_CORE_L.AUTO_ANNOUNCE_OPTIONS.cast:format(105847),
 	SpecWarnTendril			= "特殊警报：当你没有$spell:109454效果时",
-	InfoFrame				= "信息框：没有$spell:109454效果的玩家",
+--	InfoFrame				= "信息框：没有$spell:109454效果的玩家",
 	SetIconOnGrip			= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(109459),
 	ShowShieldInfo			= "首领生命值信息框：应对$spell:105479"
 })
@@ -769,6 +708,7 @@ L:SetWarningLocalization({
 })
 
 L:SetTimerLocalization({
+--	timerRoleplay		= GUILD_INTEREST_RP,
 	TimerDrakes			= "%s"--spellname from mod
 })
 
@@ -779,5 +719,6 @@ L:SetOptionLocalization({
 
 L:SetMiscLocalization({
 	EoEEvent			= "这没有用，巨龙之魂的力量太强大了。",--Partial
-	UltraxionTrash		= "重逢真令我高兴，阿莱克斯塔萨。分开之后，我可是一直很忙。"
+	UltraxionTrash		= "重逢真令我高兴，阿莱克斯塔萨。分开之后，我可是一直很忙。",
+	UltraxionTrashEnded = "这些龙崽子，这些实验，只为一个崇高的目标。你很快就会看到我最伟大的研究成果。"--死亡之翼带配音
 })

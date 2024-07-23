@@ -13,6 +13,7 @@ local UnitIsConnected = UnitIsConnected
 local UnitIsDeadOrGhost = UnitIsDeadOrGhost
 local UnitIsCharmed = UnitIsCharmed
 local UnitIsEnemy = UnitIsEnemy
+local UnitInPartyIsAI = UnitInPartyIsAI
 
 function UF.HealthClipFrame_OnUpdate(clipFrame)
 	UF.HealthClipFrame_HealComm(clipFrame.__frame)
@@ -48,7 +49,7 @@ function UF:Construct_HealthBar(frame, bg, text, textPos)
 	return health
 end
 
-function UF:Configure_HealthBar(frame)
+function UF:Configure_HealthBar(frame, powerUpdate)
 	local db = frame.db
 	local health = frame.Health
 
@@ -98,84 +99,108 @@ function UF:Configure_HealthBar(frame)
 	health:SetColorSelection(colorSelection)
 
 	--Position
-	health:ClearAllPoints()
 	health.WIDTH = db.width
 	health.HEIGHT = db.height
 
+	local BORDER_SPACING = UF.BORDER + UF.SPACING
+	local BORDER_NOSPACING = UF.BORDER - UF.SPACING
+	local LESS_SPACING = -UF.BORDER - UF.SPACING
+
+	local CLASSBAR_YOFFSET = frame.CLASSBAR_YOFFSET or 0
+	local PORTRAIT_WIDTH = frame.PORTRAIT_WIDTH or 0
+	local POWERBAR_HEIGHT = frame.POWERBAR_HEIGHT or 0
+	local POWERBAR_OFFSET = frame.POWERBAR_OFFSET or 0
+	local PVPINFO_WIDTH = frame.PVPINFO_WIDTH or 0
+
+	local BOTTOM_SPACING = BORDER_SPACING + frame.BOTTOM_OFFSET
+	local CLASSBAR_LESSSPACING = LESS_SPACING - CLASSBAR_YOFFSET
+	local CLASSBAR_YSPACING = BORDER_SPACING + CLASSBAR_YOFFSET
+	local PORTRAIT_NOSPACING = -PORTRAIT_WIDTH - BORDER_NOSPACING
+	local PORTRAIT_SPACING = BORDER_SPACING + PORTRAIT_WIDTH
+	local POWERBAR_HALF = UF.SPACING + (POWERBAR_HEIGHT * 0.5) -- this is meant to have UF.SPACING
+	local POWERBAR_SPACING = BORDER_SPACING + POWERBAR_OFFSET
+	local PVPINFO_LESSSPACING = LESS_SPACING - PVPINFO_WIDTH
+	local PVPINFO_SPACING = BORDER_SPACING + PVPINFO_WIDTH
+
+	local HEIGHT_YCLASSBAR = health.HEIGHT - CLASSBAR_YSPACING
+	local WIDTH_POWERBAR = health.WIDTH - POWERBAR_SPACING
+	local WIDTH_PVPINFO = health.WIDTH - PVPINFO_SPACING
+
+	health:ClearAllPoints()
 	if frame.ORIENTATION == 'LEFT' then
-		health:Point('TOPRIGHT', frame, 'TOPRIGHT', -UF.BORDER - UF.SPACING - (frame.PVPINFO_WIDTH or 0), -UF.BORDER - UF.SPACING - frame.CLASSBAR_YOFFSET)
+		health:Point('TOPRIGHT', frame, 'TOPRIGHT', PVPINFO_LESSSPACING, CLASSBAR_LESSSPACING)
 
-		if frame.USE_POWERBAR_OFFSET then
-			health:Point('TOPRIGHT', frame, 'TOPRIGHT', -UF.BORDER - UF.SPACING - frame.POWERBAR_OFFSET, -UF.BORDER - UF.SPACING - frame.CLASSBAR_YOFFSET)
-			health:Point('BOTTOMLEFT', frame, 'BOTTOMLEFT', frame.PORTRAIT_WIDTH + UF.BORDER + UF.SPACING, UF.BORDER + UF.SPACING + frame.POWERBAR_OFFSET)
+		if frame.USE_POWERBAR_OFFSET and frame.POWERBAR_SHOWN then
+			health:Point('TOPRIGHT', frame, 'TOPRIGHT', LESS_SPACING - POWERBAR_OFFSET, CLASSBAR_LESSSPACING)
+			health:Point('BOTTOMLEFT', frame, 'BOTTOMLEFT', PORTRAIT_SPACING, POWERBAR_SPACING)
 
-			health.WIDTH = health.WIDTH - (UF.BORDER + UF.SPACING + frame.POWERBAR_OFFSET) - (UF.BORDER + UF.SPACING + frame.PORTRAIT_WIDTH)
-			health.HEIGHT = health.HEIGHT - (UF.BORDER + UF.SPACING + frame.CLASSBAR_YOFFSET) - (UF.BORDER + UF.SPACING + frame.POWERBAR_OFFSET)
+			health.WIDTH = WIDTH_POWERBAR - PORTRAIT_SPACING
+			health.HEIGHT = HEIGHT_YCLASSBAR - POWERBAR_SPACING
 		elseif frame.POWERBAR_DETACHED or not frame.USE_POWERBAR or frame.USE_INSET_POWERBAR then
-			health:Point('BOTTOMLEFT', frame, 'BOTTOMLEFT', frame.PORTRAIT_WIDTH + UF.BORDER + UF.SPACING, UF.BORDER + UF.SPACING + frame.BOTTOM_OFFSET)
+			health:Point('BOTTOMLEFT', frame, 'BOTTOMLEFT', PORTRAIT_SPACING, BOTTOM_SPACING)
 
-			health.WIDTH = health.WIDTH - (UF.BORDER + UF.SPACING + (frame.PVPINFO_WIDTH or 0)) - (UF.BORDER + UF.SPACING + frame.PORTRAIT_WIDTH)
-			health.HEIGHT = health.HEIGHT - (UF.BORDER + UF.SPACING + frame.CLASSBAR_YOFFSET) - (UF.BORDER + UF.SPACING + frame.BOTTOM_OFFSET)
-		elseif frame.USE_MINI_POWERBAR then
-			health:Point('BOTTOMLEFT', frame, 'BOTTOMLEFT', frame.PORTRAIT_WIDTH + UF.BORDER + UF.SPACING, UF.SPACING + (frame.POWERBAR_HEIGHT*0.5))
+			health.WIDTH = WIDTH_PVPINFO - PORTRAIT_SPACING
+			health.HEIGHT = HEIGHT_YCLASSBAR - BOTTOM_SPACING
+		elseif frame.USE_MINI_POWERBAR and frame.POWERBAR_SHOWN then
+			health:Point('BOTTOMLEFT', frame, 'BOTTOMLEFT', PORTRAIT_SPACING, POWERBAR_HALF)
 
-			health.WIDTH = health.WIDTH - (UF.BORDER + UF.SPACING + (frame.PVPINFO_WIDTH or 0)) - (UF.BORDER + UF.SPACING + frame.PORTRAIT_WIDTH)
-			health.HEIGHT = health.HEIGHT - (UF.BORDER + UF.SPACING + frame.CLASSBAR_YOFFSET) - (UF.SPACING + frame.POWERBAR_HEIGHT * 0.5)
+			health.WIDTH = WIDTH_PVPINFO - PORTRAIT_SPACING
+			health.HEIGHT = HEIGHT_YCLASSBAR - POWERBAR_HALF
 		else
-			health:Point('BOTTOMLEFT', frame, 'BOTTOMLEFT', frame.PORTRAIT_WIDTH + UF.BORDER + UF.SPACING, UF.BORDER + UF.SPACING + frame.BOTTOM_OFFSET)
+			health:Point('BOTTOMLEFT', frame, 'BOTTOMLEFT', PORTRAIT_SPACING, BOTTOM_SPACING)
 
-			health.WIDTH = health.WIDTH - (UF.BORDER + UF.SPACING + (frame.PVPINFO_WIDTH or 0)) - (UF.BORDER + UF.SPACING + frame.PORTRAIT_WIDTH)
-			health.HEIGHT = health.HEIGHT - (UF.BORDER + UF.SPACING + frame.CLASSBAR_YOFFSET) - (UF.BORDER + UF.SPACING + frame.BOTTOM_OFFSET)
+			health.WIDTH = WIDTH_PVPINFO - PORTRAIT_SPACING
+			health.HEIGHT = HEIGHT_YCLASSBAR - BOTTOM_SPACING
 		end
 	elseif frame.ORIENTATION == 'RIGHT' then
-		health:Point('TOPLEFT', frame, 'TOPLEFT', UF.BORDER + UF.SPACING + (frame.PVPINFO_WIDTH or 0), -UF.BORDER - UF.SPACING - frame.CLASSBAR_YOFFSET)
+		health:Point('TOPLEFT', frame, 'TOPLEFT', PVPINFO_SPACING, CLASSBAR_LESSSPACING)
 
-		if frame.USE_POWERBAR_OFFSET then
-			health:Point('TOPLEFT', frame, 'TOPLEFT', UF.BORDER + UF.SPACING + frame.POWERBAR_OFFSET, -UF.BORDER - UF.SPACING - frame.CLASSBAR_YOFFSET)
-			health:Point('BOTTOMRIGHT', frame, 'BOTTOMRIGHT', -frame.PORTRAIT_WIDTH - UF.BORDER - UF.SPACING, UF.BORDER + UF.SPACING + frame.POWERBAR_OFFSET)
+		if frame.USE_POWERBAR_OFFSET and frame.POWERBAR_SHOWN then
+			health:Point('TOPLEFT', frame, 'TOPLEFT', POWERBAR_SPACING, CLASSBAR_LESSSPACING)
+			health:Point('BOTTOMRIGHT', frame, 'BOTTOMRIGHT', PORTRAIT_NOSPACING, POWERBAR_SPACING)
 
-			health.WIDTH = health.WIDTH - (UF.BORDER + UF.SPACING + frame.POWERBAR_OFFSET) - (UF.BORDER + UF.SPACING + frame.PORTRAIT_WIDTH)
-			health.HEIGHT = health.HEIGHT - (UF.BORDER + UF.SPACING + frame.CLASSBAR_YOFFSET) - (UF.BORDER + UF.SPACING + frame.POWERBAR_OFFSET)
+			health.WIDTH = WIDTH_POWERBAR - PORTRAIT_SPACING
+			health.HEIGHT = HEIGHT_YCLASSBAR - POWERBAR_SPACING
 		elseif frame.POWERBAR_DETACHED or not frame.USE_POWERBAR or frame.USE_INSET_POWERBAR then
-			health:Point('BOTTOMRIGHT', frame, 'BOTTOMRIGHT', -frame.PORTRAIT_WIDTH - UF.BORDER - UF.SPACING, UF.BORDER + UF.SPACING + frame.BOTTOM_OFFSET)
+			health:Point('BOTTOMRIGHT', frame, 'BOTTOMRIGHT', PORTRAIT_NOSPACING, BOTTOM_SPACING)
 
-			health.WIDTH = health.WIDTH - (UF.BORDER + UF.SPACING + (frame.PVPINFO_WIDTH or 0)) - (UF.BORDER + UF.SPACING + frame.PORTRAIT_WIDTH)
-			health.HEIGHT = health.HEIGHT - (UF.BORDER + UF.SPACING + frame.CLASSBAR_YOFFSET) - (UF.BORDER + UF.SPACING + frame.BOTTOM_OFFSET)
-		elseif frame.USE_MINI_POWERBAR then
-			health:Point('BOTTOMRIGHT', frame, 'BOTTOMRIGHT', -frame.PORTRAIT_WIDTH - UF.BORDER - UF.SPACING, UF.SPACING + (frame.POWERBAR_HEIGHT*0.5))
+			health.WIDTH = WIDTH_PVPINFO - PORTRAIT_SPACING
+			health.HEIGHT = HEIGHT_YCLASSBAR - BOTTOM_SPACING
+		elseif frame.USE_MINI_POWERBAR and frame.POWERBAR_SHOWN then
+			health:Point('BOTTOMRIGHT', frame, 'BOTTOMRIGHT', PORTRAIT_NOSPACING, POWERBAR_HALF)
 
-			health.WIDTH = health.WIDTH - (UF.BORDER + UF.SPACING + (frame.PVPINFO_WIDTH or 0)) - (UF.BORDER + UF.SPACING + frame.PORTRAIT_WIDTH)
-			health.HEIGHT = health.HEIGHT - (UF.BORDER + UF.SPACING + frame.CLASSBAR_YOFFSET) - (UF.SPACING + frame.POWERBAR_HEIGHT * 0.5)
+			health.WIDTH = WIDTH_PVPINFO - PORTRAIT_SPACING
+			health.HEIGHT = HEIGHT_YCLASSBAR - POWERBAR_HALF
 		else
-			health:Point('BOTTOMRIGHT', frame, 'BOTTOMRIGHT', -frame.PORTRAIT_WIDTH - UF.BORDER - UF.SPACING, UF.BORDER + UF.SPACING + frame.BOTTOM_OFFSET)
+			health:Point('BOTTOMRIGHT', frame, 'BOTTOMRIGHT', PORTRAIT_NOSPACING, BOTTOM_SPACING)
 
-			health.WIDTH = health.WIDTH - (UF.BORDER + UF.SPACING + (frame.PVPINFO_WIDTH or 0)) - (UF.BORDER + UF.SPACING + frame.PORTRAIT_WIDTH)
-			health.HEIGHT = health.HEIGHT - (UF.BORDER + UF.SPACING + frame.CLASSBAR_YOFFSET) - (UF.BORDER + UF.SPACING + frame.BOTTOM_OFFSET)
+			health.WIDTH = WIDTH_PVPINFO - PORTRAIT_SPACING
+			health.HEIGHT = HEIGHT_YCLASSBAR - BOTTOM_SPACING
 		end
 	elseif frame.ORIENTATION == 'MIDDLE' then
-		health:Point('TOPRIGHT', frame, 'TOPRIGHT', -UF.BORDER - UF.SPACING - (frame.PVPINFO_WIDTH or 0), -UF.BORDER - UF.SPACING - frame.CLASSBAR_YOFFSET)
+		health:Point('TOPRIGHT', frame, 'TOPRIGHT', PVPINFO_LESSSPACING, CLASSBAR_LESSSPACING)
 
-		if frame.USE_POWERBAR_OFFSET then
-			health:Point('TOPRIGHT', frame, 'TOPRIGHT', -UF.BORDER - UF.SPACING - frame.POWERBAR_OFFSET, -UF.BORDER - UF.SPACING - frame.CLASSBAR_YOFFSET)
-			health:Point('BOTTOMLEFT', frame, 'BOTTOMLEFT', UF.BORDER + UF.SPACING + frame.POWERBAR_OFFSET, UF.BORDER + UF.SPACING + frame.POWERBAR_OFFSET)
+		if frame.USE_POWERBAR_OFFSET and frame.POWERBAR_SHOWN then
+			health:Point('TOPRIGHT', frame, 'TOPRIGHT', LESS_SPACING - POWERBAR_OFFSET, CLASSBAR_LESSSPACING)
+			health:Point('BOTTOMLEFT', frame, 'BOTTOMLEFT', POWERBAR_SPACING, POWERBAR_SPACING)
 
-			health.WIDTH = health.WIDTH - (UF.BORDER + UF.SPACING + frame.POWERBAR_OFFSET) - (UF.BORDER + UF.SPACING + frame.POWERBAR_OFFSET)
-			health.HEIGHT = health.HEIGHT - (UF.BORDER + UF.SPACING + frame.CLASSBAR_YOFFSET) - (UF.BORDER + UF.SPACING + frame.POWERBAR_OFFSET)
+			health.WIDTH = WIDTH_POWERBAR - POWERBAR_SPACING
+			health.HEIGHT = HEIGHT_YCLASSBAR - POWERBAR_SPACING
 		elseif frame.POWERBAR_DETACHED or not frame.USE_POWERBAR or frame.USE_INSET_POWERBAR then
-			health:Point('BOTTOMLEFT', frame, 'BOTTOMLEFT', UF.BORDER + UF.SPACING, UF.BORDER + UF.SPACING + frame.BOTTOM_OFFSET)
+			health:Point('BOTTOMLEFT', frame, 'BOTTOMLEFT', BORDER_SPACING, BOTTOM_SPACING)
 
-			health.WIDTH = health.WIDTH - (UF.BORDER + UF.SPACING + (frame.PVPINFO_WIDTH or 0)) - (UF.BORDER + UF.SPACING)
-			health.HEIGHT = health.HEIGHT - (UF.BORDER + UF.SPACING + frame.CLASSBAR_YOFFSET) - (UF.BORDER + UF.SPACING + frame.BOTTOM_OFFSET)
-		elseif frame.USE_MINI_POWERBAR then
-			health:Point('BOTTOMLEFT', frame, 'BOTTOMLEFT', UF.BORDER + UF.SPACING, UF.SPACING + (frame.POWERBAR_HEIGHT*0.5))
+			health.WIDTH = WIDTH_PVPINFO - BORDER_SPACING
+			health.HEIGHT = HEIGHT_YCLASSBAR - BOTTOM_SPACING
+		elseif frame.USE_MINI_POWERBAR and frame.POWERBAR_SHOWN then
+			health:Point('BOTTOMLEFT', frame, 'BOTTOMLEFT', BORDER_SPACING, POWERBAR_HALF)
 
-			health.WIDTH = health.WIDTH - (UF.BORDER + UF.SPACING + (frame.PVPINFO_WIDTH or 0)) - (UF.BORDER + UF.SPACING)
-			health.HEIGHT = health.HEIGHT - (UF.BORDER + UF.SPACING + frame.CLASSBAR_YOFFSET) - (UF.SPACING + frame.POWERBAR_HEIGHT * 0.5)
+			health.WIDTH = WIDTH_PVPINFO - BORDER_SPACING
+			health.HEIGHT = HEIGHT_YCLASSBAR - POWERBAR_HALF
 		else
-			health:Point('BOTTOMLEFT', frame, 'BOTTOMLEFT', frame.PORTRAIT_WIDTH + UF.BORDER + UF.SPACING, UF.BORDER + UF.SPACING + frame.BOTTOM_OFFSET)
+			health:Point('BOTTOMLEFT', frame, 'BOTTOMLEFT', PORTRAIT_SPACING, BOTTOM_SPACING)
 
-			health.WIDTH = health.WIDTH - (UF.BORDER + UF.SPACING + (frame.PVPINFO_WIDTH or 0)) - (UF.BORDER + UF.SPACING + frame.PORTRAIT_WIDTH)
-			health.HEIGHT = health.HEIGHT - (UF.BORDER + UF.SPACING + frame.CLASSBAR_YOFFSET) - (UF.BORDER + UF.SPACING + frame.BOTTOM_OFFSET)
+			health.WIDTH = WIDTH_PVPINFO - PORTRAIT_SPACING
+			health.HEIGHT = HEIGHT_YCLASSBAR - BOTTOM_SPACING
 		end
 	end
 
@@ -188,6 +213,8 @@ function UF:Configure_HealthBar(frame)
 		health:SetReverseFill(db.health.reverseFill)
 	end
 
+	if powerUpdate then return end -- we dont need to redo this stuff, power updated it
+
 	UF:ToggleTransparentStatusBar(UF.db.colors.transparentHealth, frame.Health, frame.Health.bg, true, nil, db.health and db.health.reverseFill)
 
 	UF:Configure_FrameGlow(frame)
@@ -198,12 +225,15 @@ function UF:Configure_HealthBar(frame)
 end
 
 function UF:GetHealthBottomOffset(frame)
+	local BORDER_NOSPACING = UF.BORDER - UF.SPACING
 	local bottomOffset = 0
-	if frame.USE_POWERBAR and not frame.POWERBAR_DETACHED and not frame.USE_INSET_POWERBAR then
-		bottomOffset = bottomOffset + frame.POWERBAR_HEIGHT - (UF.BORDER-UF.SPACING)
+
+	if frame.USE_POWERBAR and not frame.POWERBAR_DETACHED and not frame.USE_INSET_POWERBAR and frame.POWERBAR_SHOWN then
+		bottomOffset = bottomOffset + frame.POWERBAR_HEIGHT - BORDER_NOSPACING
 	end
+
 	if frame.USE_INFO_PANEL then
-		bottomOffset = bottomOffset + frame.INFO_PANEL_HEIGHT - (UF.BORDER-UF.SPACING)
+		bottomOffset = bottomOffset + frame.INFO_PANEL_HEIGHT - BORDER_NOSPACING
 	end
 
 	return bottomOffset
@@ -259,7 +289,7 @@ function UF:PostUpdateHealthColor(unit, r, g, b)
 		elseif colors.classbackdrop then
 			local reaction, color = (UnitReaction(unit, 'player'))
 
-			if UnitIsPlayer(unit) then
+			if UnitIsPlayer(unit) or (E.Retail and UnitInPartyIsAI(unit)) then
 				local _, Class = UnitClass(unit)
 				color = parent.colors.class[Class]
 			elseif reaction then
@@ -280,10 +310,14 @@ end
 function UF:PostUpdateHealth(_, cur)
 	local parent = self:GetParent()
 	if parent.isForced then
-		self.cur = random(1, 100)
-		self.max = 100
-		self:SetMinMaxValues(0, self.max)
-		self:SetValue(self.cur)
+		cur = random(1, 100)
+		local max = 100
+
+		self.cur = cur
+		self.max = max
+
+		self:SetMinMaxValues(0, max)
+		self:SetValue(cur)
 	elseif parent.ResurrectIndicator then
 		parent.ResurrectIndicator:SetAlpha(cur == 0 and 1 or 0)
 	end

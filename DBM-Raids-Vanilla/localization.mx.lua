@@ -7,7 +7,7 @@ local L
 L = DBM:GetModLocalization("Kurinnaxx")
 
 L:SetGeneralLocalization{
-	name 		= "Куриннакс"
+	name 		= "Kurinnaxx"
 }
 ------------
 -- Rajaxx --
@@ -15,23 +15,23 @@ L:SetGeneralLocalization{
 L = DBM:GetModLocalization("Rajaxx")
 
 L:SetGeneralLocalization{
-	name 		= "Генерал Раджакс"
+	name 		= "General Rajaxx"
 }
 L:SetWarningLocalization{
-	WarnWave	= "Волна %s",
+	WarnWave	= "Oleada %s"
 }
 L:SetOptionLocalization{
-	WarnWave	= "Показывать предупреждение о следующей волне"
+	WarnWave	= "Mostrar aviso previo para la siguiente oleada"
 }
 L:SetMiscLocalization{
-	Wave1		= "Они пришли. Постарайся не дать себя убить, ",
-	Wave12Alt	= "Раджакс, напомни, когда я в последний раз обещал тебя убить?",
-	Wave3		= "Час возмездия близок! Да охватит мрак сердца наших врагов!",
-	Wave4		= "Мы не будем больше ждать за закрытыми дверьми и каменными стенами! Мы не будем больше отказываться от возмездия! Даже драконы содрогнутся перед нашим гневом!",
-	Wave5		= "Пусть наши враги трепещут! Смерть им!",
-	Wave6		= "Олений Шлем будет скулить и молить о пощаде, в точности как его сопливый сынок! Тысячелетняя несправедливость сегодня закончится!",
-	Wave7		= "Фэндрал! Твой час пробил! Иди же, прячься в изумрудном сне и молись, чтобы мы до тебя не добрались!",
-	Wave8		= "Настырная тварь! Я сам тебя убью!"
+	Wave12		= "Ahí vienen. Intenta que no te maten,",--Followed by 'chico' or 'chica'
+	Wave12Alt	= "Rajaxx, ¿recuerdas que te dije que serías el último en morir?",
+	Wave3		= "¡La hora de las recompensas está próxima! ¡Que la oscuridad reine en el corazón de nuestros enemigos!",
+	Wave4		= "¡No volveremos a esperar detrás de rejas y muros de piedra! ¡Nunca más podrán negarnos nuestra venganza! ¡Hasta los dragones temblarán frente a nuestra ira!",
+	Wave5		= "¡El miedo es para el enemigo! ¡Miedo y muerte!",
+	Wave6		= "¡Corzocelada llorará y rogará por su vida, igual que lo hizo su débil hijo! ¡Hoy acabará un milenio lleno de injusticia!",
+	Wave7		= "¡Fandral! ¡Ha llegado tu hora! ¡Ve y escóndete en el Sueño Esmeralda y reza para que nunca te encontremos!",
+	Wave8		= "¡Loco imprudente! ¡Acabaré contigo yo mismo!"
 }
 
 ----------
@@ -40,7 +40,7 @@ L:SetMiscLocalization{
 L = DBM:GetModLocalization("Moam")
 
 L:SetGeneralLocalization{
-	name 		= "Моам"
+	name 		= "Moam"
 }
 
 ----------
@@ -49,20 +49,20 @@ L:SetGeneralLocalization{
 L = DBM:GetModLocalization("Buru")
 
 L:SetGeneralLocalization{
-	name 		= "Буру Ненасытный"
+	name 		= "Buru el Manducador"
 }
 L:SetWarningLocalization{
-	WarnPursue		= "Преследует >%s<",
-	SpecWarnPursue	= "Преследует вас!",
-	WarnDismember	= "%s на >%s< (%s)"
+	WarnPursue		= "Persiguiendo a >%s<",
+	SpecWarnPursue	= "Buru te está persiguiendo",
+	WarnDismember	= "%s en >%s< (%s)"
 }
 L:SetOptionLocalization{
-	WarnPursue		= "Называть преследуемые цели",
-	SpecWarnPursue	= "Показывать специальное предупреждение, когда преследование на вас",
+	WarnPursue		= "Anunciar objetivos de la persecución de Buru",
+	SpecWarnPursue	= "Mostrar aviso especial cuando te persiga el jefe",
 	WarnDismember	= DBM_CORE_L.AUTO_ANNOUNCE_OPTIONS.spell:format(96)
 }
 L:SetMiscLocalization{
-	PursueEmote 	= "%s смотрит на"
+	PursueEmote 	= "¡%s mira a"
 }
 
 -------------
@@ -71,7 +71,7 @@ L:SetMiscLocalization{
 L = DBM:GetModLocalization("Ayamiss")
 
 L:SetGeneralLocalization{
-	name 		= "Аямисса Охотница"
+	name 		= "Ayamiss el Cazador"
 }
 
 --------------
@@ -80,7 +80,7 @@ L:SetGeneralLocalization{
 L = DBM:GetModLocalization("Ossirian")
 
 L:SetGeneralLocalization{
-	name 		= "Оссириан Неуязвимый"
+	name 		= "Osirio el Sinmarcas"
 }
 L:SetWarningLocalization{
 	WarnVulnerable	= "%s"
@@ -89,8 +89,8 @@ L:SetTimerLocalization{
 	TimerVulnerable	= "%s"
 }
 L:SetOptionLocalization{
-	WarnVulnerable	= "Объявлять слабость",
-	TimerVulnerable	= "Показывать таймер до слабости"
+	WarnVulnerable	= "Anunciar debilidades",
+	TimerVulnerable	= "Mostrar temporizador para la duración de las debilidades"
 }
 
 ----------------
@@ -99,7 +99,7 @@ L:SetOptionLocalization{
 L = DBM:GetModLocalization("AQ20Trash")
 
 L:SetGeneralLocalization{
-	name = "АК20: Треш"
+	name = "AQ20: Bichos"
 }
 
 ------------
@@ -405,9 +405,6 @@ L:SetOptionLocalization{
 }
 L:SetMiscLocalization{
 	Phase2Emote	= "huyen mientras se consume el poder del orbe.",
-	YellEgg1	= "¡Pagarán por obligarme a hacer esto!",
-	YellEgg2	= "¡Locos! ¡Esos huevos son más valiosos de lo que creen!",
-	YellEgg3	= "¡No, otro no! ¡Rodarán sus cabezas por esta infamia!",
 	YellPull	= "¡Los invasores han penetrado en El Criadero! ¡Activa la alarma! ¡Hay que proteger los huevos a toda costa!"
 }
 -------------------
@@ -688,7 +685,7 @@ L:SetGeneralLocalization{
 --------------
 --  Onyxia  --
 --------------
-L = DBM:GetModLocalization("Onyxia")
+L = DBM:GetModLocalization("OnyxiaVanilla")
 
 L:SetGeneralLocalization{
 	name = "Onyxia"
@@ -718,7 +715,7 @@ L:SetMiscLocalization{
 -----------------
 -- Anub'Rekhan --
 -----------------
-L = DBM:GetModLocalization("Anub'Rekhan")
+L = DBM:GetModLocalization("AnubRekhanVanilla")
 
 L:SetGeneralLocalization({
 	name = "Anub'Rekhan"
@@ -744,7 +741,7 @@ L:SetMiscLocalization({
 -------------------------
 -- Gran Viuda Faerlina --
 -------------------------
-L = DBM:GetModLocalization("Faerlina")
+L = DBM:GetModLocalization("FaerlinaVanilla")
 
 L:SetGeneralLocalization({
 	name = "Gran Viuda Faerlina"
@@ -767,7 +764,7 @@ L:SetMiscLocalization({
 -------------
 -- Maexxna --
 -------------
-L = DBM:GetModLocalization("Maexxna")
+L = DBM:GetModLocalization("MaexxnaVanilla")
 
 L:SetGeneralLocalization({
 	name = "Maexxna"
@@ -795,7 +792,7 @@ L:SetMiscLocalization({
 -----------------------
 -- Noth el Pesteador --
 -----------------------
-L = DBM:GetModLocalization("Noth")
+L = DBM:GetModLocalization("NothVanilla")
 
 L:SetGeneralLocalization({
 	name = "Noth el Pesteador"
@@ -828,7 +825,7 @@ L:SetMiscLocalization({
 ----------------------
 -- Heigan el Impuro --
 ----------------------
-L = DBM:GetModLocalization("Heigan")
+L = DBM:GetModLocalization("HeiganVanilla")
 
 L:SetGeneralLocalization({
 	name = "Heigan el Impuro"
@@ -856,7 +853,7 @@ L:SetMiscLocalization({
 -------------
 -- Loatheb --
 -------------
-L = DBM:GetModLocalization("Loatheb")
+L = DBM:GetModLocalization("LoathebVanilla")
 
 L:SetGeneralLocalization({
 	name = "Loatheb"
@@ -875,7 +872,7 @@ L:SetOptionLocalization({
 ---------------
 -- Remendejo --
 ---------------
-L = DBM:GetModLocalization("Patchwerk")
+L = DBM:GetModLocalization("PatchwerkVanilla")
 
 L:SetGeneralLocalization({
 	name = "Remendejo"
@@ -892,7 +889,7 @@ L:SetMiscLocalization({
 ---------------
 -- Grobbulus --
 ---------------
-L = DBM:GetModLocalization("Grobbulus")
+L = DBM:GetModLocalization("GrobbulusVanilla")
 
 L:SetGeneralLocalization({
 	name = "Grobbulus"
@@ -901,7 +898,7 @@ L:SetGeneralLocalization({
 -----------
 -- Gluth --
 -----------
-L = DBM:GetModLocalization("Gluth")
+L = DBM:GetModLocalization("GluthVanilla")
 
 L:SetGeneralLocalization({
 	name = "Gluth"
@@ -910,7 +907,7 @@ L:SetGeneralLocalization({
 --------------
 -- Thaddius --
 --------------
-L = DBM:GetModLocalization("Thaddius")
+L = DBM:GetModLocalization("ThaddiusVanilla")
 
 L:SetGeneralLocalization({
 	name = "Thaddius"
@@ -942,7 +939,7 @@ L:SetWarningLocalization({
 --------------------------
 -- Instructor Razuvious --
 --------------------------
-L = DBM:GetModLocalization("Razuvious")
+L = DBM:GetModLocalization("RazuviousVanilla")
 
 L:SetGeneralLocalization({
 	name = "Instructor Razuvious"
@@ -966,7 +963,7 @@ L:SetWarningLocalization({
 --------------------------
 -- Gothik el Cosechador --
 --------------------------
-L = DBM:GetModLocalization("Gothik")
+L = DBM:GetModLocalization("GothikVanilla")
 
 L:SetGeneralLocalization({
 	name = "Gothik el Cosechador"
@@ -1007,7 +1004,7 @@ L:SetMiscLocalization({
 ------------------------
 -- Los Cuatro Jinetes --
 ------------------------
-L = DBM:GetModLocalization("Horsemen")
+L = DBM:GetModLocalization("HorsemenVanilla")
 
 L:SetGeneralLocalization({
 	name = "Los Cuatro Jinetes"
@@ -1036,7 +1033,7 @@ L:SetMiscLocalization({
 ---------------
 -- Sapphiron --
 ---------------
-L = DBM:GetModLocalization("Sapphiron")
+L = DBM:GetModLocalization("SapphironVanilla")
 
 L:SetGeneralLocalization({
 	name = "Sapphiron"
@@ -1075,7 +1072,7 @@ L:SetTimerLocalization({
 -- Kel'Thuzad --
 ----------------
 
-L = DBM:GetModLocalization("Kel'Thuzad")
+L = DBM:GetModLocalization("KelThuzadVanilla")
 
 L:SetGeneralLocalization({
 	name = "Kel'Thuzad"
@@ -1098,4 +1095,254 @@ L:SetWarningLocalization({
 
 L:SetTimerLocalization({
 	TimerPhase2	= "Fase 2"
+})
+
+---------------------------
+--  Season of Discovery  --
+---------------------------
+
+---------------------------
+--  Blackfathom Deeps  --
+---------------------------
+
+------------------
+--  Baron Aquanis  --
+------------------
+L = DBM:GetModLocalization("BaronAuanisSoD")
+
+L:SetGeneralLocalization({
+	name = "Barón Aquanis"
+})
+
+L:SetMiscLocalization({
+	Water		= "Agua"
+})
+
+------------------
+--  Ghamoo-ra  --
+------------------
+L = DBM:GetModLocalization("GhamooraSoD")
+
+L:SetGeneralLocalization({
+	name = "Ghamoo-ra"
+})
+
+------------------
+--  Lady Sarevess  --
+------------------
+L = DBM:GetModLocalization("LadySarevessSoD")
+
+L:SetGeneralLocalization({
+	name = "Lady Sarevess"
+})
+
+------------------
+--  Gelihast  --
+------------------
+L = DBM:GetModLocalization("GelihastSoD")
+
+L:SetGeneralLocalization({
+	name = "Gelihast"
+})
+
+L:SetTimerLocalization{
+	TimerImmune = "Se termina inmunidad"
+}
+
+L:SetOptionLocalization({
+	TimerImmune	= "Mostrar temporizador para la duración de la inmunidad de Gelihast durante las transiciones de fase."
+})
+------------------
+--  Lorgus Jett  --
+------------------
+L = DBM:GetModLocalization("LorgusJettSoD")
+
+L:SetGeneralLocalization({
+	name = "Lorgus Jett"
+})
+
+L:SetWarningLocalization({
+	warnPriestRemaining		= "%s Sacerdotisas restantes"
+})
+
+L:SetOptionLocalization({
+	warnPriestRemaining	= "Anunciar cuántas Sacerdotisas de las mareas Brazanegra están restantes."
+})
+
+------------------
+--  Twilight Lord Kelris  --
+------------------
+L = DBM:GetModLocalization("TwilightLordKelrisSoD")
+
+L:SetGeneralLocalization({
+	name = "Señor Crepuscular Kelris"
+})
+
+------------------
+--  Aku'mai  --
+------------------
+L = DBM:GetModLocalization("AkumaiSoD")
+
+L:SetGeneralLocalization({
+	name = "Aku'mai"
+})
+
+------------------
+--  Gnomeregan  --
+------------------
+
+---------------------------
+--  Crowd Pummeler 9-60  --
+---------------------------
+L = DBM:GetModLocalization("CrowdPummellerSoD")
+
+L:SetGeneralLocalization({
+	name = "Golpeamasa 9-60"
+})
+
+---------------
+--  Grubbis  --
+---------------
+L = DBM:GetModLocalization("GrubbisSoD")
+
+L:SetGeneralLocalization({
+	name = "Grubbis"
+})
+
+L:SetMiscLocalization({
+	FirstPull = "Aún hay ductos de ventilación que expulsan material radioactivo por todo Gnomeregan.",
+	Pull = "¡No! Temblores como estos solo pueden significar una cosa..."
+})
+----------------------------
+--  Electrocutioner 6000  --
+----------------------------
+L = DBM:GetModLocalization("ElectrocutionerSoD")
+
+L:SetGeneralLocalization({
+	name = "Electrocutor 6000"
+})
+
+-----------------------
+--  Viscous Fallout  --
+-----------------------
+L = DBM:GetModLocalization("ViscousFalloutSoD")
+
+L:SetGeneralLocalization({
+	name = "Radiactivo viscoso"
+})
+
+----------------------------
+--  Mechanical Menagerie  --
+----------------------------
+L = DBM:GetModLocalization("MechanicalMenagerieSoD")
+
+L:SetGeneralLocalization({
+	name = "Sala de fieras mecánicas"
+})
+
+L:SetMiscLocalization{
+	Sheep		= "Oveja",
+	Whelp		= "Dragón",
+	Squirrel	= "Ardilla",
+	Chicken		= "Pollo"
+}
+-----------------------------
+--  Mekgineer Thermaplugg  --
+-----------------------------
+L = DBM:GetModLocalization("ThermapluggSoD")
+
+L:SetGeneralLocalization({
+	name = "Mekigeniero Termochufe"
+})
+
+L:SetTimerLocalization{
+	timerTankCD = "Habilidad de tanque"
+}
+
+L:SetOptionLocalization({
+	timerTankCD	= "Mostrar temporizador para la reutilización aleatoria de habilidades de tanque en la etapa 4."
+})
+
+------------------
+--  Sunken Temple  --
+------------------
+
+--------------
+-- ST Trash --
+--------------
+L = DBM:GetModLocalization("STTrashSoD")
+
+L:SetGeneralLocalization{
+	name = "Bichos del Templo Sumergido"
+}
+
+---------------------------
+--  Atal'alarion  --
+---------------------------
+L = DBM:GetModLocalization("AtalalarionSoD")
+
+L:SetGeneralLocalization({
+	name = "Atal'alarion"
+})
+
+---------------------------
+--  Festering Rotslime  --
+---------------------------
+L = DBM:GetModLocalization("FesteringRotslimeSoD")
+
+L:SetGeneralLocalization({
+	name = "Putrilimo purulento"
+})
+
+---------------------------
+--  Atal'ai Defenders  --
+---------------------------
+L = DBM:GetModLocalization("AtalaiDefendersSoD")
+
+L:SetGeneralLocalization({
+	name = "Defensores de Atal'ai"
+})
+
+L:SetOptionLocalization({
+	SetIconsOnGhosts = "Colocar iconos en jefes fantasmas"
+})
+---------------------------
+--  Dreamscythe and Weaver  --
+---------------------------
+L = DBM:GetModLocalization("DreamscytheAndWeaverSoD")
+
+L:SetGeneralLocalization({
+	name = "Segasueños y Sastrón"
+})
+---------------------------
+--  Avatar of Hakkar  --
+---------------------------
+L = DBM:GetModLocalization("AvatarofHakkarSoD")
+
+L:SetGeneralLocalization({
+	name = "Avatar de Hakkar"
+})
+---------------------------
+--  Jammal'an and Ogom  --
+---------------------------
+L = DBM:GetModLocalization("JammalanAndOgomSoD")
+
+L:SetGeneralLocalization({
+	name = "Jammal'an y Ogom"
+})
+---------------------------
+--  Morphaz and Hazzas  --
+---------------------------
+L = DBM:GetModLocalization("MorphazandHazzasSoD")
+
+L:SetGeneralLocalization({
+	name = "Morphaz y Hazzas"
+})
+---------------------------
+--  Shade of Eranikus  --
+---------------------------
+L = DBM:GetModLocalization("ShadeofEranikusSoD")
+
+L:SetGeneralLocalization({
+	name = "Sombra de Eranikus"
 })

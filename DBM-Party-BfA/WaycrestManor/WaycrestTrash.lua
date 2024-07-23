@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod("WaycrestTrash", "DBM-Party-BfA", 10)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20231114185803")
+mod:SetRevision("20240412075414")
 --mod:SetModelID(47785)
 mod:SetZone(1862)
 
@@ -73,19 +73,19 @@ local timerSpiritedDefenseCD		= mod:NewCDNPTimer(23, 265368, nil, nil, nil, 4, n
 local timerRunicMarkCD				= mod:NewCDNPTimer(12.1, 264105, nil, nil, nil, 3)
 local timerEtchCD					= mod:NewCDNPTimer(12.1, 263943, nil, nil, nil, 3)
 local timerInfectedThornsCD			= mod:NewCDNPTimer(8.5, 264050, nil, nil, nil, 3)
-local timerDrainEssenceCD			= mod:NewCDNPTimer(17, 266036, nil, nil, nil, 4, nil, DBM_COMMON_L.INTERRUPT_ICON)
+local timerDrainEssenceCD			= mod:NewCDNPTimer(15.7, 266036, nil, nil, nil, 4, nil, DBM_COMMON_L.INTERRUPT_ICON)
 local timerTearingStrikeCD			= mod:NewCDNPTimer(10.9, 264556, nil, "Tank|Healer", nil, 5, nil, DBM_COMMON_L.TANK_ICON)
 local timerUprootCD					= mod:NewCDNPTimer(15.2, 264038, nil, nil, nil, 3)
 local timerSplinterSpikeCD			= mod:NewCDNPTimer(15.7, 265759, nil, nil, nil, 3)
-local timerThornedBarrageCD			= mod:NewCDNPTimer(13.3, 265760, nil, "Tank|Healer", nil, 5, nil, DBM_COMMON_L.TANK_ICON)
+local timerThornedBarrageCD			= mod:NewCDNPTimer(11.7, 265760, nil, "Tank|Healer", nil, 5, nil, DBM_COMMON_L.TANK_ICON)
 local timerRavagingLeapCD			= mod:NewCDNPTimer(8.5, 271175, nil, nil, nil, 3)
-local timerRetchCD					= mod:NewCDNPTimer(20.6, 271174, nil, nil, nil, 4, nil, DBM_COMMON_L.INTERRUPT_ICON)
-local timerDinnerBellCD				= mod:NewCDNPTimer(17, 265407, nil, nil, nil, 4, nil, DBM_COMMON_L.INTERRUPT_ICON)
+local timerRetchCD					= mod:NewCDNPTimer(20.2, 271174, nil, nil, nil, 4, nil, DBM_COMMON_L.INTERRUPT_ICON)
+local timerDinnerBellCD				= mod:NewCDNPTimer(16.6, 265407, nil, nil, nil, 4, nil, DBM_COMMON_L.INTERRUPT_ICON)
 local timerSpellbindCD				= mod:NewCDNPTimer(19.2, 264390, nil, nil, nil, 4, nil, DBM_COMMON_L.INTERRUPT_ICON)
-local timerSoulVolleyCD				= mod:NewCDNPTimer(23, 263959, nil, nil, nil, 4, nil, DBM_COMMON_L.INTERRUPT_ICON)
+local timerSoulVolleyCD				= mod:NewCDNPTimer(17.7, 263959, nil, nil, nil, 4, nil, DBM_COMMON_L.INTERRUPT_ICON)
 local timerWardingCandleCD			= mod:NewCDNPTimer(18.2, 263961, nil, "Tank|Healer", nil, 5, nil, DBM_COMMON_L.TANK_ICON)
 local timerRuinousoVolleyCD			= mod:NewCDNPTimer(17, 263959, nil, nil, nil, 4, nil, DBM_COMMON_L.INTERRUPT_ICON)
-local timerDreadMarkCD				= mod:NewCDNPTimer(20.7, 265880, nil, nil, nil, 3)
+local timerDreadMarkCD				= mod:NewCDNPTimer(18.2, 265880, nil, nil, nil, 3)
 local timerHorrificVisageCD			= mod:NewCDNPTimer(24, 264407, nil, nil, nil, 4, nil, DBM_COMMON_L.INTERRUPT_ICON)
 
 --Antispam IDs for this mod: 1 run away, 2 dodge, 3 dispel, 4 incoming damage, 5 you/role, 6 misc, 7 off interrupt, 8 gtfo
@@ -138,7 +138,7 @@ function mod:SPELL_CAST_START(args)
 			specWarnPallidGlare:Show(args.sourceName)
 			specWarnPallidGlare:Play("kickcast")
 		elseif self:AntiSpam(3, 7) then
-			warnPallidGlare()
+			warnPallidGlare:Show()
 		end
 	elseif spellId == 264407 then
 		timerHorrificVisageCD:Start(nil, args.sourceGUID)
@@ -146,7 +146,7 @@ function mod:SPELL_CAST_START(args)
 			specWarnHorrificVisage:Show(args.sourceName)
 			specWarnHorrificVisage:Play("kickcast")
 		elseif self:AntiSpam(3, 7) then
-			warnHorrificVisage()
+			warnHorrificVisage:Show()
 		end
 	elseif spellId == 265368 then
 		timerSpiritedDefenseCD:Start(nil, args.sourceGUID)
@@ -175,7 +175,7 @@ function mod:SPELL_CAST_START(args)
 			specWarnSoulFetish:Show(args.sourceName)
 			specWarnSoulFetish:Play("kickcast")
 		end
-	elseif spellId == 265407 then
+	elseif spellId == 265407 then--Can stutter cast (especially if pulled/kited outside), but can't be moved to success cause there may be one (if kicked).
 		timerDinnerBellCD:Start(nil, args.sourceGUID)
 		if self:CheckInterruptFilter(args.sourceGUID, false, true) then
 			specWarnDinnerBell:Show(args.sourceName)
@@ -300,7 +300,7 @@ function mod:SPELL_AURA_APPLIED(args)
 	end
 end
 
-function mod:SPELL_AURA_APPLIED(args)
+function mod:SPELL_AURA_REMOVED(args)
 	if not self.Options.Enabled then return end
 	local spellId = args.spellId
 	if spellId == 265880 and args:IsPlayer() then

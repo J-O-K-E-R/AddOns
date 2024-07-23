@@ -5,10 +5,9 @@ local LibStub = _G.LibStub
 local _G = _G
 local hooksecurefunc = hooksecurefunc
 local tinsert, xpcall, next, ipairs, pairs = tinsert, xpcall, next, ipairs, pairs
-local unpack, assert, type, strfind = unpack, assert, type, strfind
+local unpack, assert, type, gsub, strfind = unpack, assert, type, gsub, strfind
 
 local CreateFrame = CreateFrame
-
 local IsAddOnLoaded = (C_AddOns and C_AddOns.IsAddOnLoaded) or IsAddOnLoaded
 
 local ITEM_QUALITY_COLORS = ITEM_QUALITY_COLORS
@@ -81,7 +80,7 @@ do
 	end
 
 	function S:HandleCategoriesButtons(button, strip)
-		if button.isSkinned then return end
+		if button.IsSkinned then return end
 
 		if button.SetNormalTexture then button:SetNormalTexture(E.ClearTexture) end
 		if button.SetHighlightTexture then button:SetHighlightTexture(E.ClearTexture) end
@@ -102,7 +101,7 @@ do
 		button:HookScript('OnEnter', HighlightOnEnter)
 		button:HookScript('OnLeave', HighlightOnLeave)
 
-		button.isSkinned = true
+		button.IsSkinned = true
 	end
 end
 
@@ -131,7 +130,7 @@ do
 
 		local total = #self.navList
 		local button = self.navList[total]
-		if button and not button.isSkinned then
+		if button and not button.IsSkinned then
 			S:HandleButton(button, true)
 			button:GetFontString():SetTextColor(1, 1, 1)
 
@@ -153,7 +152,7 @@ do
 				hooksecurefunc(button, 'SetPoint', NavButtonXOffset)
 			end
 
-			button.isSkinned = true
+			button.IsSkinned = true
 		end
 	end
 end
@@ -394,27 +393,146 @@ function S:StatusBarColorGradient(bar, value, max, backdrop)
 	end
 end
 
--- DropDownMenu library support
-function S:SkinLibDropDownMenu(prefix)
-	if S[prefix..'_UIDropDownMenuSkinned'] then return end
+do -- DropDownMenu library support
+	local function HandleBackdrop(frame)
+		local dropdown = (frame and frame.NineSlice) or frame
+		if dropdown and not dropdown.template then
+			dropdown:SetTemplate('Transparent')
+		end
+	end
 
-	local key = (prefix == 'L4' or prefix == 'L3') and 'L' or prefix
+	function S:SkinLibDropDownMenu(prefix)
+		if S[prefix..'_UIDropDownMenuSkinned'] then return end
 
-	local bd = _G[key..'_DropDownList1Backdrop']
-	local mbd = _G[key..'_DropDownList1MenuBackdrop']
-	if bd and not bd.template then bd:SetTemplate('Transparent') end
-	if mbd and not mbd.template then mbd:SetTemplate('Transparent') end
+		local key = (prefix == 'L4' or prefix == 'L3') and 'L' or prefix
 
-	S[prefix..'_UIDropDownMenuSkinned'] = true
+		HandleBackdrop(_G[key..'_DropDownList1Backdrop'])
+		HandleBackdrop(_G[key..'_DropDownList1MenuBackdrop'])
 
-	local lib = prefix == 'L4' and LibStub.libs['LibUIDropDownMenu-4.0']
-	if (lib and lib.UIDropDownMenu_CreateFrames) or _G[key..'_UIDropDownMenu_CreateFrames'] then
-		hooksecurefunc(lib or _G, (lib and '' or key..'_') .. 'UIDropDownMenu_CreateFrames', function()
-			local lvls = _G[(key == 'Lib' and 'LIB' or key)..'_UIDROPDOWNMENU_MAXLEVELS']
-			local ddbd = lvls and _G[key..'_DropDownList'..lvls..'Backdrop']
-			local ddmbd = lvls and _G[key..'_DropDownList'..lvls..'MenuBackdrop']
-			if ddbd and not ddbd.template then ddbd:SetTemplate('Transparent') end
-			if ddmbd and not ddmbd.template then ddmbd:SetTemplate('Transparent') end
+		S[prefix..'_UIDropDownMenuSkinned'] = true
+
+		local lib = prefix == 'L4' and LibStub.libs['LibUIDropDownMenu-4.0']
+		if (lib and lib.UIDropDownMenu_CreateFrames) or _G[key..'_UIDropDownMenu_CreateFrames'] then
+			hooksecurefunc(lib or _G, (lib and '' or key..'_') .. 'UIDropDownMenu_CreateFrames', function()
+				local lvls = _G[(key == 'Lib' and 'LIB' or key)..'_UIDROPDOWNMENU_MAXLEVELS'] or 1
+				for i = 1, lvls do
+					HandleBackdrop(_G[key..'_DropDownList'..i..'Backdrop'])
+					HandleBackdrop(_G[key..'_DropDownList'..i..'MenuBackdrop'])
+				end
+			end)
+		end
+	end
+end
+
+do -- WIM replaces Blizzard globals we need to rehook
+	local hooked = {}
+
+	local function SkinMenu(name)
+		local backdrop = _G[name]
+		if not backdrop then return end
+
+		if backdrop.NineSlice then
+			backdrop = backdrop.NineSlice
+		end
+
+		if not backdrop.template then
+			backdrop:SetTemplate('Transparent')
+		end
+	end
+
+	function S:SkinDropDownMenu(prefix, textX, textY)
+		if hooked[prefix] then return end
+
+		hooksecurefunc('UIDropDownMenu_CreateFrames', function(level, index)
+			local listFrame = _G[prefix..level]
+			local listFrameName = listFrame:GetName()
+			local expandArrow = _G[listFrameName..'Button'..index..'ExpandArrow']
+			if expandArrow then
+				expandArrow:SetNormalTexture(E.Media.Textures.ArrowUp)
+				expandArrow:Size(12)
+
+				local normTex = expandArrow:GetNormalTexture()
+				if normTex then
+					normTex:SetVertexColor(unpack(E.media.rgbvaluecolor))
+					normTex:SetRotation(S.ArrowRotation.right)
+				end
+			end
+
+			SkinMenu(listFrameName..'Backdrop')
+			SkinMenu(listFrameName..'MenuBackdrop')
+		end)
+
+		hooksecurefunc('UIDropDownMenu_SetIconImage', function(icon, texture)
+			if texture:find('Divider') then
+				local r, g, b = unpack(E.media.rgbvaluecolor)
+				icon:SetColorTexture(r, g, b, 0.45)
+				icon:Height(1)
+			end
+		end)
+
+		hooksecurefunc('ToggleDropDownMenu', function(level)
+			if not level then level = 1 end
+			local r, g, b = unpack(E.media.rgbvaluecolor)
+
+			for i = 1, _G.UIDROPDOWNMENU_MAXBUTTONS do
+				local name = prefix..level..'Button'..i
+				local button = _G[name]
+				if not button then -- fallback to blizzards
+					name = 'DropDownList'..level..'Button'..i
+					button = _G[name]
+				end
+
+				local highlight = _G[name..'Highlight']
+				if highlight then
+					highlight:SetTexture(E.Media.Textures.Highlight)
+					highlight:SetBlendMode('BLEND')
+					highlight:SetDrawLayer('BACKGROUND')
+					highlight:SetVertexColor(r, g, b)
+				end
+
+				if not button.backdrop then
+					button:CreateBackdrop()
+				end
+
+				local check = _G[name..'Check']
+				if not button.notCheckable then
+					local text = _G[name..'NormalText']
+					if text then
+						S:HandlePointXY(text, textX or 5, textY)
+					end
+
+					local uncheck = _G[name..'UnCheck']
+					if uncheck then
+						uncheck:SetTexture()
+					end
+
+					if check then
+						if E.private.skins.checkBoxSkin then
+							check:SetTexture(E.media.normTex)
+							check:SetVertexColor(r, g, b, 1)
+							check:Size(10)
+							check:SetDesaturated(false)
+							button.backdrop:SetOutside(check)
+						else
+							check:SetTexture([[Interface\Buttons\UI-CheckBox-Check]])
+							check:SetVertexColor(r, g, b, 1)
+							check:Size(20)
+							check:SetDesaturated(true)
+							button.backdrop:SetInside(check, 4, 4)
+						end
+
+						check:SetTexCoord(0, 1, 0, 1)
+					end
+
+					button.backdrop:Show()
+				else
+					if check then
+						check:Size(16)
+					end
+
+					button.backdrop:Hide()
+				end
+			end
 		end)
 	end
 end
@@ -589,7 +707,7 @@ do
 		for _, name in next, keys do
 			local button = frame[name]
 			if button then
-				if not button.isSkinned then
+				if not button.IsSkinned then
 					S:HandleButton(button)
 					button:Size(22)
 
@@ -614,8 +732,8 @@ do
 	end
 
 	function S:HandleModelSceneControlButtons(frame)
-		if not frame.isSkinned then
-			frame.isSkinned = true
+		if not frame.IsSkinned then
+			frame.IsSkinned = true
 			hooksecurefunc(frame, 'UpdateLayout', UpdateLayout)
 		end
 	end
@@ -624,7 +742,7 @@ end
 function S:HandleButton(button, strip, isDecline, noStyle, createBackdrop, template, noGlossTex, overrideTex, frameLevel, regionsKill, regionsZero)
 	assert(button, 'doesn\'t exist!')
 
-	if button.isSkinned then return end
+	if button.IsSkinned then return end
 
 	if button.SetNormalTexture and not overrideTex then button:SetNormalTexture(E.ClearTexture) end
 	if button.SetHighlightTexture then button:SetHighlightTexture(E.ClearTexture) end
@@ -660,7 +778,7 @@ function S:HandleButton(button, strip, isDecline, noStyle, createBackdrop, templ
 		button:HookScript('OnDisable', S.SetDisabledBackdrop)
 	end
 
-	button.isSkinned = true
+	button.IsSkinned = true
 end
 
 do
@@ -891,7 +1009,7 @@ do --Tab Regions
 end
 
 function S:HandleRotateButton(btn)
-	if btn.isSkinned then return end
+	if btn.IsSkinned then return end
 
 	btn:SetTemplate()
 	btn:Size(btn:GetWidth() - 14, btn:GetHeight() - 14)
@@ -909,7 +1027,7 @@ function S:HandleRotateButton(btn)
 	highlightTex:SetAllPoints(normTex)
 	highlightTex:SetColorTexture(1, 1, 1, 0.3)
 
-	btn.isSkinned = true
+	btn.IsSkinned = true
 end
 
 do
@@ -928,7 +1046,7 @@ do
 	function S:HandleMaxMinFrame(frame)
 		assert(frame, 'doesn\'t exist.')
 
-		if frame.isSkinned then return end
+		if frame.IsSkinned then return end
 
 		frame:StripTextures(true)
 
@@ -952,7 +1070,7 @@ do
 			end
 		end
 
-		frame.isSkinned = true
+		frame.IsSkinned = true
 	end
 end
 
@@ -1056,7 +1174,7 @@ do
 	function S:HandleCheckBox(frame, noBackdrop, noReplaceTextures, frameLevel, template)
 		assert(frame, 'doesn\'t exist.')
 
-		if frame.isSkinned then return end
+		if frame.IsSkinned then return end
 
 		frame:StripTextures()
 
@@ -1108,7 +1226,7 @@ do
 			hooksecurefunc(frame, 'SetHighlightTexture', checkHighlightTexture)
 		end
 
-		frame.isSkinned = true
+		frame.IsSkinned = true
 	end
 end
 
@@ -1121,7 +1239,7 @@ do
 	local function buttonHighlightTexture(frame, texture) if texture ~= E.ClearTexture then frame:SetHighlightTexture(E.ClearTexture) end end
 
 	function S:HandleRadioButton(Button)
-		if Button.isSkinned then return end
+		if Button.IsSkinned then return end
 
 		local InsideMask = Button:CreateMaskTexture()
 		InsideMask:SetTexture(background, 'CLAMPTOBLACKADDITIVE', 'CLAMPTOBLACKADDITIVE')
@@ -1166,8 +1284,16 @@ do
 		hooksecurefunc(Button, 'SetDisabledTexture', buttonDisabledTexture)
 		hooksecurefunc(Button, 'SetHighlightTexture', buttonHighlightTexture)
 
-		Button.isSkinned = true
+		Button.IsSkinned = true
 	end
+end
+
+function S:ReplaceIconString(text)
+	if not text then text = self:GetText() end
+	if not text or text == '' then return end
+
+	local newText, count = gsub(text, '|T([^:]-):[%d+:]+|t', '|T%1:14:14:0:0:64:64:5:59:5:59|t')
+	if count > 0 then self:SetFormattedText('%s', newText) end
 end
 
 function S:HandleIcon(icon, backdrop)
@@ -1179,7 +1305,7 @@ function S:HandleIcon(icon, backdrop)
 end
 
 function S:HandleItemButton(b, setInside)
-	if b.isSkinned then return end
+	if b.IsSkinned then return end
 
 	local name = b:GetName()
 	local icon = b.icon or b.Icon or b.IconTexture or b.iconTexture or (name and (_G[name..'IconTexture'] or _G[name..'Icon']))
@@ -1205,7 +1331,7 @@ function S:HandleItemButton(b, setInside)
 		end
 	end
 
-	b.isSkinned = true
+	b.IsSkinned = true
 end
 
 do
@@ -1213,7 +1339,7 @@ do
 	local closeOnLeave = function(btn) if btn.Texture then btn.Texture:SetVertexColor(1, 1, 1) end end
 
 	function S:HandleCloseButton(f, point, x, y)
-		if f.isSkinned then return end
+		if f.IsSkinned then return end
 
 		f:StripTextures()
 
@@ -1231,11 +1357,11 @@ do
 			f:Point('TOPRIGHT', point, 'TOPRIGHT', x or 2, y or 2)
 		end
 
-		f.isSkinned = true
+		f.IsSkinned = true
 	end
 
 	function S:HandleNextPrevButton(btn, arrowDir, color, noBackdrop, stripTexts, frameLevel, buttonSize)
-		if btn.isSkinned then return end
+		if btn.IsSkinned then return end
 
 		if not arrowDir then
 			arrowDir = 'down'
@@ -1308,7 +1434,7 @@ do
 			Normal:SetVertexColor(1, 1, 1)
 		end
 
-		btn.isSkinned = true
+		btn.IsSkinned = true
 	end
 end
 
@@ -1683,7 +1809,7 @@ do
 	function S:HandleIconSelectionFrame(frame, numIcons, buttonNameTemplate, nameOverride, dontOffset)
 		assert(frame, 'doesn\'t exist!')
 
-		if frame.isSkinned then return end
+		if frame.IsSkinned then return end
 
 		if not dontOffset then -- place it off to the side of parent with correct offsets
 			frame:HookScript('OnShow', selectionOffset)
@@ -1747,7 +1873,7 @@ do
 			end
 		end
 
-		frame.isSkinned = true
+		frame.IsSkinned = true
 	end
 end
 
@@ -1756,9 +1882,9 @@ do -- Handle collapse
 		if skip or not texture then return end
 
 		if type(texture) == 'number' then
-			if texture == 130838 then -- Interface/Buttons/UI-PlusButton-UP
+			if texture == 130838 then -- Interface\Buttons\UI-PlusButton-UP
 				button:SetNormalTexture(E.Media.Textures.PlusButton, true)
-			elseif texture == 130821 then -- Interface/Buttons/UI-MinusButton-UP
+			elseif texture == 130821 then -- Interface\Buttons\UI-MinusButton-UP
 				button:SetNormalTexture(E.Media.Textures.MinusButton, true)
 			end
 		elseif strfind(texture, 'Plus') or strfind(texture, 'Closed') then
@@ -2044,7 +2170,11 @@ function S:Initialize()
 
 	if E.private.skins.libDropdown and S.EarlyDropdowns then
 		for _, n in next, S.EarlyDropdowns do
-			S:SkinLibDropDownMenu(n)
+			if n == 'LibDropDownMenu_List' then
+				S:SkinDropDownMenu(n, 15)
+			else
+				S:SkinLibDropDownMenu(n)
+			end
 		end
 	end
 

@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod(2493, "DBM-Raids-Dragonflight", 3, 1200)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20231102154902")
+mod:SetRevision("20240721192753")
 mod:SetCreatureID(190245)
 mod:SetEncounterID(2614)
 mod:SetUsedIcons(8, 7, 6, 5, 4)
@@ -40,7 +40,7 @@ mod:AddTimerLine(DBM:EJ_GetSectionInfo(25120))
 local warnEggsLeft								= mod:NewCountAnnounce(19873, 1)
 local warnGreatstaffsWrath						= mod:NewTargetNoFilterAnnounce(375889, 2)
 local warnClutchwatchersRage					= mod:NewStackAnnounce(375829, 2)
-local warnRapidIncubation						= mod:NewSpellAnnounce(376073, 3)
+local warnRapidIncubation						= mod:NewCountAnnounce(376073, 3)
 local warnMortalWounds							= mod:NewStackAnnounce(378782, 2, nil, "Tank|Healer")
 local warnDiurnasGaze							= mod:NewYouAnnounce(390561, 3)
 
@@ -83,19 +83,18 @@ local specWarnIonizingCharge					= mod:NewSpecialWarningMoveAway(375630, nil, ni
 local yellIonizingCharge						= mod:NewYell(375630)
 
 local timerPrimalistReinforcementsCD			= mod:NewAddsCustomTimer(60, 257554, nil, nil, nil, 1)
-local timerBurrowingStrikeCD					= mod:NewCDTimer(8.1, 376272, nil, "Tank|Healer", nil, 5, nil, DBM_COMMON_L.TANK_ICON..DBM_COMMON_L.HEROIC_ICON)
-local timerTremorsCD							= mod:NewCDTimer(11, 376257, nil, nil, nil, 3)
-local timerCauterizingFlashflamesCD				= mod:NewCDTimer(11.7, 375485, nil, "MagicDispeller", nil, 5)
-local timerFlameSentryCD						= mod:NewCDTimer(12.2, 375575, nil, nil, nil, 3)
-local timerRendingBiteCD						= mod:NewCDTimer(11, 375475, nil, "Tank|Healer", nil, 5, nil, DBM_COMMON_L.TANK_ICON..DBM_COMMON_L.HEROIC_ICON)
-local timerChillingTantrumCD					= mod:NewCDTimer(11.1, 375457, nil, nil, nil, 3)
-local timerIonizingChargeCD						= mod:NewCDTimer(10, 375630, nil, nil, nil, 3)
+local timerBurrowingStrikeCD					= mod:NewCDNPTimer(8.1, 376272, nil, "Tank|Healer", nil, 5, nil, DBM_COMMON_L.TANK_ICON..DBM_COMMON_L.HEROIC_ICON)
+local timerTremorsCD							= mod:NewCDNPTimer(11, 376257, nil, nil, nil, 3)
+local timerCauterizingFlashflamesCD				= mod:NewCDNPTimer(11.7, 375485, nil, "MagicDispeller", nil, 5)
+local timerFlameSentryCD						= mod:NewCDNPTimer(10.4, 375575, nil, nil, nil, 3)
+local timerRendingBiteCD						= mod:NewCDNPTimer(11, 375475, nil, "Tank|Healer", nil, 5, nil, DBM_COMMON_L.TANK_ICON..DBM_COMMON_L.HEROIC_ICON)
+local timerChillingTantrumCD					= mod:NewCDNPTimer(11.1, 375457, nil, nil, nil, 3)
+local timerIonizingChargeCD						= mod:NewCDNPTimer(10, 375630, nil, nil, nil, 3)
 
---mod:AddRangeFrameOption("8")
 --mod:AddInfoFrameOption(361651, true)
 mod:AddNamePlateOption("NPFixate", 376330, true)
-mod:AddSetIconOption("SetIconOnMages", "ej25144", true, true, {6, 5, 4})
-mod:AddSetIconOption("SetIconOnStormbringers", "ej25139", true, true, {8, 7})
+mod:AddSetIconOption("SetIconOnMages", "ej25144", true, 5, {6, 5, 4})
+mod:AddSetIconOption("SetIconOnStormbringers", "ej25139", true, 5, {8, 7})
 
 mod:GroupSpells(385618, "ej25144", "ej25139")--Icon Marking with general adds announce
 --Stage Two: A Broodkeeper Scorned
@@ -115,7 +114,7 @@ local specWarnDetonatingStoneslamTaunt			= mod:NewSpecialWarningTaunt(396264, ni
 
 local timerBroodkeepersFuryCD					= mod:NewNextCountTimer(30, 375879, nil, nil, nil, 5)--Static CD
 --local timerEGreatstaffoftheBroodkeeperCD		= mod:NewCDCountTimer(17, 380176, L.staff, nil, nil, 5)--Shared CD ability
-local timerFrozenShroudCD						= mod:NewCDCountTimer(40.5, 388918, nil, nil, nil, 2, nil, DBM_COMMON_L.DAMAGE_ICON..DBM_COMMON_L.HEALER_ICON..DBM_COMMON_L.MAGIC_ICON)--Static CD
+local timerFrozenShroudCD						= mod:NewCDCountTimer(39.9, 388918, nil, nil, nil, 2, nil, DBM_COMMON_L.DAMAGE_ICON..DBM_COMMON_L.HEALER_ICON..DBM_COMMON_L.MAGIC_ICON)--Static CD
 local timerMortalStoneSlamCD					= mod:NewCDCountTimer(20.7, 396269, nil, nil, nil, 5, nil, DBM_COMMON_L.TANK_ICON..DBM_COMMON_L.MYTHIC_ICON)
 
 local castsPerGUID = {}
@@ -145,6 +144,7 @@ Key Notes:
 In stage 1 staff is consistently 24 seconds, whether that's actual CD kind of doesn't matter, since other spells have equal CD it'll queue at 24-27sec regardless
 In stage 2, staff has 20 second cd on easy and 17 seconds on normal (at least based on current data) but it'll rarely ever see it's base CD due to spell queuing/ICD
 --]]
+---@param self DBMMod
 local function updateAllTimers(self, ICD, exclusion)
 	if not self.Options.ExperimentalTimerCorrection then return end
 	DBM:Debug("updateAllTimers running", 3)
@@ -212,6 +212,7 @@ local function updateAllTimers(self, ICD, exclusion)
 	end
 end
 
+---@param self DBMMod
 local function resetTankComboState(self)
 	self.vb.tankComboStarted = false
 end
@@ -245,9 +246,6 @@ function mod:OnCombatStart(delay)
 end
 
 function mod:OnCombatEnd()
---	if self.Options.RangeFrame then
---		DBM.RangeCheck:Hide()
---	end
 --	if self.Options.InfoFrame then
 --		DBM.InfoFrame:Hide()
 --	end
@@ -270,7 +268,7 @@ function mod:SPELL_CAST_START(args)
 		specWarnWildfire:Show()
 		specWarnWildfire:Play("scatter")
 		specWarnWildfire:ScheduleVoice(2, "watchstep")
-		timerWildfireCD:Start(self:IsMythic() and 23 or self:IsHeroic() and 21.4 or 25, self.vb.wildFireCount+1)
+		timerWildfireCD:Start(self:IsMythic() and 23 or self:IsHeroic() and 21.4 or 22, self.vb.wildFireCount+1)
 		if self:IsHard() and self:GetStage(2) then
 			updateAllTimers(self, 5)
 		else
@@ -280,7 +278,7 @@ function mod:SPELL_CAST_START(args)
 		self.vb.icyCount = self.vb.icyCount + 1
 		specWarnIcyShroud:Show(self.vb.icyCount)
 		specWarnIcyShroud:Play("aesoon")
-		timerIcyShroudCD:Start(self:IsMythic() and 41 or self:IsHeroic() and 39.1 or 44, self.vb.icyCount+1)
+		timerIcyShroudCD:Start(self:IsMythic() and 41 or self:IsHeroic() and 39.1 or 41.5, self.vb.icyCount+1)
 		updateAllTimers(self, 2.5)
 	elseif spellId == 388918 then
 		self.vb.icyCount = self.vb.icyCount + 1
@@ -302,7 +300,7 @@ function mod:SPELL_CAST_START(args)
 		else
 			timerMortalStoneclawsCD:Stop()--Don't print cast refreshed before expired for a recast
 		end
-		local timer = ((self:IsEasy() or self:GetStage(1)) and 22.4 or 7.3)
+		local timer = ((self:IsEasy() or self:GetStage(1)) and 20.3 or 7.3)
 		timerMortalStoneclawsCD:Start(timer, self.vb.tankCombocount+1)
 		updateAllTimers(self, 2, true)
 	elseif spellId == 396269 then
@@ -327,17 +325,13 @@ function mod:SPELL_CAST_START(args)
 			specWarnBurrowingStrike:Show()
 			specWarnBurrowingStrike:Play("defensive")
 		end
-		if self:AntiSpam(1, spellId) then
-			timerBurrowingStrikeCD:Start(nil, args.sourceGUID)
-		end
+		timerBurrowingStrikeCD:Start(nil, args.sourceGUID)
 	elseif spellId == 375475 then
 		if self:IsTanking("player", nil, nil, true, args.sourceGUID) then
 			specWarnRendingBite:Show()
 			specWarnRendingBite:Play("defensive")
 		end
-		if self:AntiSpam(1, spellId) then
-			timerRendingBiteCD:Start(nil, args.sourceGUID)
-		end
+		timerRendingBiteCD:Start(nil, args.sourceGUID)
 	elseif spellId == 376257 then
 		if self:AntiSpam(3, spellId) then
 			if self:CheckBossDistance(args.sourceGUID, false, 6450, 18) then
@@ -351,24 +345,22 @@ function mod:SPELL_CAST_START(args)
 			if self:CheckBossDistance(args.sourceGUID, false, 13289, 28) then
 				warnCauterizingFlashflames:Show()
 			end
-			timerCauterizingFlashflamesCD:Start(self:IsMythic() and 8.6 or 11.7, args.sourceGUID)--TODO, recheck heroic
 		end
+		timerCauterizingFlashflamesCD:Start(self:IsMythic() and 8.6 or 11.7, args.sourceGUID)--TODO, recheck heroic
 	elseif spellId == 375575 then
 		if self:AntiSpam(3, spellId) then
 			if self:CheckBossDistance(args.sourceGUID, false, 13289, 28) then
 				warnFlameSentry:Show()
 			end
-			timerFlameSentryCD:Start(nil, args.sourceGUID)
 		end
+		timerFlameSentryCD:Start(nil, args.sourceGUID)
 	elseif spellId == 375457 then
 		if self:AntiSpam(3, spellId) then
 			warnChillingTantrum:Show()
-			timerChillingTantrumCD:Start(nil, args.sourceGUID)
 		end
+		timerChillingTantrumCD:Start(nil, args.sourceGUID)
 	elseif spellId == 375630 then
-		if self:AntiSpam(1, spellId) then
-			timerIonizingChargeCD:Start(nil, args.sourceGUID)
-		end
+		timerIonizingChargeCD:Start(nil, args.sourceGUID)
 	elseif spellId == 375716 then
 		if not castsPerGUID[args.sourceGUID] then
 			castsPerGUID[args.sourceGUID] = 0
@@ -429,9 +421,9 @@ function mod:SPELL_CAST_SUCCESS(args)
 		self.vb.staffCount = self.vb.staffCount + 1
 		local staffTimer
 		if self:IsHard() then
-			staffTimer = (self.vb.staffCount >= 14) and 17 or 24.3
+			staffTimer = (self.vb.staffCount >= 14) and 17 or 23.1
 		else
-			staffTimer = (self.vb.staffCount >= 13) and 20 or 24.3
+			staffTimer = (self.vb.staffCount >= 13) and 20 or 23.1
 		end
 		if self:GetStage(1) then
 			specWarnGreatstaffoftheBroodkeeper:Show(self.vb.staffCount)
@@ -568,7 +560,7 @@ function mod:SPELL_AURA_APPLIED(args)
 			--On mythic mortal claws swaps to mortal slam, doesn't change on heroic and below
 			if self:IsMythic() then
 				local remainingCombo = timerMortalStoneclawsCD:GetRemaining(self.vb.tankCombocount+1)
-				if remainingCombo then
+				if remainingCombo and remainingCombo > 0 then
 					timerMortalStoneclawsCD:Stop()
 					timerMortalStoneclawsCD:Start(remainingCombo, self.vb.tankCombocount+1)--Does NOT restart anymore, even though on mythic it inherits a cast sequence, it still finishes out previous CD
 				end
@@ -579,8 +571,8 @@ function mod:SPELL_AURA_APPLIED(args)
 			--	timerGreatstaffoftheBroodkeeperCD:Stop()
 			--	timerEGreatstaffoftheBroodkeeperCD:Start(remainingStaff, self.vb.staffCount+1)--Does NOT restart anymore, even though on mythic it inherits a cast sequence, it still finishes out previous CD
 			--end
-			local remainingIcy = timerGreatstaffoftheBroodkeeperCD:GetRemaining(self.vb.icyCount+1)
-			if remainingIcy then
+			local remainingIcy = timerIcyShroudCD:GetRemaining(self.vb.icyCount+1)
+			if remainingIcy and remainingIcy > 0 then
 				timerIcyShroudCD:Stop()
 				timerFrozenShroudCD:Start(remainingIcy, 1)
 			end

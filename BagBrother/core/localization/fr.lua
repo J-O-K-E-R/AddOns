@@ -7,10 +7,10 @@ local L = LibStub('AceLocale-3.0'):NewLocale(ADDON, 'frFR')
 if not L then return end
 
 --keybindings
-L.ToggleBags = 'Afficher votre inventaire'
-L.ToggleBank = 'Afficher votre banque'
-L.ToggleGuild = 'Afficher votre banque de guilde'
-L.ToggleVault = 'Afficher votre chambre du Vide'
+L.OpenBags = 'Afficher votre inventaire'
+L.OpenBank = 'Afficher votre banque'
+L.OpenGuild = 'Afficher votre banque de guilde'
+L.OpenVault = 'Afficher votre chambre du Vide'
 
 --terminal
 L.Commands = 'Liste des commandes :'
@@ -20,7 +20,6 @@ L.CmdShowGuild = 'Affiche ou cache votre banque de guilde'
 L.CmdShowVault = 'Affiche ou cache votre chambre du Vide'
 L.CmdShowVersion = 'Affiche la version actuelle'
 L.CmdShowOptions = 'Ouvre le menu de configuration'
-L.Updated = 'Mise à jour vers la v%s'
 
 --frame titles
 L.TitleBags = 'Inventaire |2 %s'
@@ -28,7 +27,6 @@ L.TitleBank = 'Banque |2 %s'
 L.TitleVault = 'Chambre du Vide |2 %s'
 
 --dropdowns
-L.TitleFrames = '%s Fenêtres'
 L.SelectCharacter = 'Choisir Personnage'
 L.ConfirmDelete = 'Etes-vous sur de vouloir supprimer le cache de %s ?'
 
@@ -45,7 +43,6 @@ L.GuildFunds = 'Fonds de Guilde'
 L.TipGoldOnRealm = '%s Totals'
 L.NumWithdraw = '%d |4retrait:retraits;'
 L.NumDeposit = '%d |4dépôt:dépôts;'
-L.NumRemainingWithdrawals = '%d Retraits Restant'
 
 --action tooltips
 L.TipChangePlayer = '%s pour afficher les objets d\'un autre personnage.'

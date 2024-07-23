@@ -1,11 +1,11 @@
 local mod	= DBM:NewMod(2553, "DBM-Raids-Dragonflight", 1, 1207)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20231120075644")
+mod:SetRevision("20240721192753")
 mod:SetCreatureID(208445)
 mod:SetEncounterID(2731)
 mod:SetUsedIcons(6, 7, 8)
-mod:SetHotfixNoticeRev(20231119000000)
+mod:SetHotfixNoticeRev(20240315000000)
 mod:SetMinSyncRevision(20231115000000)
 mod.respawnTime = 29
 
@@ -14,8 +14,8 @@ mod:RegisterCombat("combat")
 mod:RegisterEventsInCombat(
 	"SPELL_CAST_START 425889 426524 422614 418637 426206 417634 427252 427343 429973 421325",
 	"SPELL_CAST_SUCCESS 417653 419485 427299",
-	"SPELL_AURA_APPLIED 425888 425468 420544 426387 423719 426249 426256 421316 427299 427306 421594 418520 429032 428946",--421407
-	"SPELL_AURA_APPLIED_DOSE 426249 426256 418520 429032 428946",--421407
+	"SPELL_AURA_APPLIED 425888 425468 420544 426387 423719 426249 426256 421316 427299 427306 421594 418520 429032",-- 428946 421407
+	"SPELL_AURA_APPLIED_DOSE 426249 426256 418520 429032",-- 428946 421407
 	"SPELL_AURA_REMOVED 421316 427299 421594",
 --	"SPELL_AURA_REMOVED_DOSE",
 	"SPELL_PERIODIC_DAMAGE 417632",
@@ -38,7 +38,7 @@ mod:RegisterEventsInCombat(
 --TODO, maybe infoframe for tracking Blazing Coal stacks?
 --TODO, more with the tank stuff?
 --General
-local warnPhase										= mod:NewPhaseChangeAnnounce(2, nil, nil, nil, nil, nil, 2)
+local warnPhase										= mod:NewPhaseChangeAnnounce(2, 2, nil, nil, nil, nil, nil, 2)
 
 local specWarnGTFO									= mod:NewSpecialWarningGTFO(417632, nil, nil, nil, 1, 8)
 
@@ -56,11 +56,11 @@ local warnNaturesBulwark							= mod:NewSpellAnnounce(419485, 1)
 local warnBlazingCoalescence						= mod:NewCountAnnounce(426249, 2, nil, nil, DBM_CORE_L.AUTO_ANNOUNCE_OPTIONS.stack:format(426249))--Player
 local warnBlazingCoalescenceBoss					= mod:NewStackAnnounce(426256, 4)--Boss
 local warnEverlastingBlaze							= mod:NewCountAnnounce(429032, 4, nil, nil, DBM_CORE_L.AUTO_ANNOUNCE_OPTIONS.stack:format(429032))--Player
-local warnAshenAsphyxiation							= mod:NewStackAnnounce(428946, 3, nil, "Tank|Healer")
+local warnIgnitingGrowth							= mod:NewCountAnnounce(425889, 3)
 
 local specWarnCharredBrambles						= mod:NewSpecialWarningSwitch(418655, "Healer", nil, nil, 1, 2)
---local specWarnIgnitingGrowth						= mod:NewSpecialWarningMoveAway(425888, nil, nil, nil, 1, 2, 4)
---local yellIgnitingGrowth							= mod:NewShortYell(425888, nil, false)
+--local specWarnIgnitingGrowth						= mod:NewSpecialWarningMoveAway(425889, nil, nil, nil, 1, 2, 4)
+--local yellIgnitingGrowth							= mod:NewShortYell(425889, nil, false)
 --local specWarnDreamBlossom						= mod:NewSpecialWarningYou(425468, nil, nil, nil, 1, 2)
 --local yellDreamBlossom							= mod:NewShortYell(425468, nil, false)
 local specWarnFieryFlourish							= mod:NewSpecialWarningInterruptCount(426524, "HasInterrupt", nil, nil, 1, 2)
@@ -75,18 +75,22 @@ local specWarnBlazingThornsAvoid					= mod:NewSpecialWarningDodgeCount(426206, "
 local specWarnBlazingThornsSoak						= mod:NewSpecialWarningSoakCount(426249, "-Healer", nil, nil, 1, 2)--Follow up orbs to soak
 local specWarnRagingInferno							= mod:NewSpecialWarningMoveTo(417634, nil, 37625, nil, 3, 2)--Shortname Inferno
 
-local timerIgnitingGrowthCD							= mod:NewCDCountTimer(49, 425888, DBM_COMMON_L.POOLS.." (%s)", nil, nil, 3, nil, DBM_COMMON_L.MYTHIC_ICON)
+local timerIgnitingGrowthCD							= mod:NewCDCountTimer(49, 425889, DBM_COMMON_L.POOLS.." (%s)", nil, nil, 3, nil, DBM_COMMON_L.MYTHIC_ICON)
 local timerFieryForceofNatureCD						= mod:NewCDCountTimer(11.8, 417653, DBM_COMMON_L.ADDS.." (%s)", nil, nil, 1)
 local timerFieryFlourishCD							= mod:NewCDNPTimer(9.7, 426524, nil, nil, nil, 4, nil, DBM_COMMON_L.INTERRUPT_ICON)--Nameplate only timer
 local timerScorchingRootsCD							= mod:NewCDCountTimer(49, 422614, DBM_COMMON_L.ROOTS.." (%s)", nil, nil, 3)
 local timerFuriousChargeCD							= mod:NewCDCountTimer(22.5, 418637, 100, nil, nil, 5, nil, DBM_COMMON_L.TANK_ICON)--SN "Charge"
-local timerBlazingThornsCD							= mod:NewCDCountTimer(49, 426206, DBM_COMMON_L.ORBS.." (%s)", nil, nil, 5, nil, DBM_COMMON_L.DAMAGE_ICON)
+local timerBlazingThornsCD							= mod:NewCDCountTimer(49, 426206, DBM_COMMON_L.DODGES.." (%s)", nil, nil, 3, nil, DBM_COMMON_L.DAMAGE_ICON)
+local timerBlazingThornsSoak						= mod:NewCastTimer(5, 426249, DBM_COMMON_L.ORBS.." (%s)", nil, nil, 5, nil, DBM_COMMON_L.HEROIC_ICON)
 local timerRagingInfernoCD							= mod:NewCDCountTimer(49, 417634, 37625, nil, nil, 2, nil, DBM_COMMON_L.DEADLY_ICON)--SN "Inferno"
 
-mod:AddPrivateAuraSoundOption(425888, true, 425888, 1)--Igniting Growth
+mod:AddPrivateAuraSoundOption(425888, true, 425889, 1)--Igniting Growth
 mod:AddPrivateAuraSoundOption(425468, true, 425468, 1)--Dream Blossom
 mod:AddPrivateAuraSoundOption(420544, true, 420544, 4)--Scorching Pursuit
 mod:AddSetIconOption("SetIconOnForces", 417653, true, 5, {8, 7, 6})
+
+mod:JustSetCustomKeys(426256, "|cff69ccf0426256|r (" .. DBM_COMMON_L.BOSS .. ")")
+mod:JustSetCustomKeys(426249, "|cff69ccf0426249|r (" .. PLAYER .. ")")
 --Intermission: Unreborn Again
 mod:AddTimerLine(DBM:EJ_GetSectionInfo(27242))
 local warnConsumingFlame							= mod:NewTargetNoFilterAnnounce(421316, 2)
@@ -98,7 +102,7 @@ local warnFlashFire									= mod:NewTargetNoFilterAnnounce(427299, 3, nil, "Hea
 local warnEncasedInAsh								= mod:NewTargetNoFilterAnnounce(427306, 4, nil, "RemoveMagic")
 local warnAshenCall									= mod:NewCountAnnounce(421325, 2)
 --local warnSearingAsh								= mod:NewCountAnnounce(421407, 2, nil, nil, DBM_CORE_L.AUTO_ANNOUNCE_OPTIONS.stack:format(426249))
---local warnAshenDevastation						= mod:NewTargetNoFilterAnnounce(428901, 4, nil, nil, 167180)--Shortname "Bombs"
+local warnAshenDevastation							= mod:NewCountAnnounce(428896, 3, nil, nil, 167180)--Shortname "Bombs"
 
 local specWarnFallingEmbers							= mod:NewSpecialWarningSoakCount(427252, nil, nil, nil, 2, 2)
 local specWarnFlashFire								= mod:NewSpecialWarningMoveAway(427299, nil, nil, nil, 1, 2)--Blizzard didn't flag right spellids as private aura, so this probably still works for now
@@ -110,19 +114,19 @@ local specWarnFireWhirl								= mod:NewSpecialWarningDodgeCount(427343, nil, 86
 local specWarnSmolderingBackdraft					= mod:NewSpecialWarningDefensive(429973, nil, nil, nil, 1, 2)
 local specWarnSmolderingSuffocation					= mod:NewSpecialWarningTaunt(421594, nil, nil, nil, 1, 2)
 local yellSmolderingSuffocationRepeater				= mod:NewIconRepeatYell(421594, DBM_CORE_L.AUTO_YELL_ANNOUNCE_TEXT.shortyell, false, nil, "YELL")--using custom yell text "%s" because of custom needs (it has to use not only icons but two asci emoji
---local specWarnAshenDevestation					= mod:NewSpecialWarningMoveAway(428901, nil, 37859, nil, 1, 2, 4)
---local yellAshenDevestation						= mod:NewShortYell(428901, 37859)--Shortname "Bomb"
---local yellAshenDevestationFades					= mod:NewShortFadesYell(428901)
+--local specWarnAshenDevestation					= mod:NewSpecialWarningMoveAway(428896, nil, 37859, nil, 1, 2, 4)
+--local yellAshenDevestation						= mod:NewShortYell(428896, 37859)--Shortname "Bomb"
+--local yellAshenDevestationFades					= mod:NewShortFadesYell(428896)
 
 local timerFallingEmbersCD							= mod:NewCDCountTimer(49, 427252, nil, nil, nil, 5, nil, DBM_COMMON_L.DEADLY_ICON)
 local timerFlashFireCD								= mod:NewCDCountTimer(49, 427299, L.HealAbsorb, nil, nil, 3)
 local timerFireWhirlCD								= mod:NewCDCountTimer(50, 427343, 86189, nil, nil, 3)--Shortname "Tornados"
 local timerSmolderingBackdraftCD					= mod:NewCDCountTimer(49, 429973, DBM_COMMON_L.FRONTAL.." (%s)", nil, nil, 5, nil, DBM_COMMON_L.TANK_ICON)
 local timerAshenCallCD								= mod:NewCDCountTimer(11.8, 421325, DBM_COMMON_L.ADDS.." (%s)", nil, nil, 1, nil, DBM_COMMON_L.DAMAGE_ICON)
-local timerAshenDevestationCD						= mod:NewCDCountTimer(49, 428901, nil, nil, nil, 3, nil, DBM_COMMON_L.MYTHIC_ICON)
+local timerAshenDevestationCD						= mod:NewCDCountTimer(49, 428896, nil, nil, nil, 3, nil, DBM_COMMON_L.MYTHIC_ICON)
 
 mod:AddPrivateAuraSoundOption(421461, true, 427299, 1)--Flash Fire
-mod:AddPrivateAuraSoundOption(428901, true, 428901, 1)--Ashen Devestation
+mod:AddPrivateAuraSoundOption(428901, true, 428896, 1)--Ashen Devestation
 
 --Stage 1
 mod.vb.ignitingCount = 0--Reused in stage 2 for Ashen Devestation
@@ -134,9 +138,9 @@ mod.vb.thornsCount = 0--Reused in Stage 2 for Flash Fire
 mod.vb.infernoCount = 0--Reused in Stage 2 for Fire Whirl
 
 local castsPerGUID = {}
-local difficultyName = "normal"
+local difficultyName = "other"
 local allTimers = {
-	["mythic"] = {
+	["mythic"] = {--Stage 1 seems same as other difficulties, but kept split for now
 		--Stage 1
 		--Fiery Force of Nature
 		[417653] = {6.5, 104.9, 97.7},
@@ -195,20 +199,21 @@ local allTimers = {
 		--Ashen Devestation
 		[428896] = {45.4, 68.5},--Lowest of each used until can figure out how to detect which sequence is used on demand
 	},
-	["heroic"] = {
+	["other"] = {
 		--Stage 1 (same as mythic stage 1 likely)
 		--Fiery Force of Nature
-		[417653] = {6.6, 104.8, 98.6},
+		[417653] = {6.5, 103.6, 98.6},
 		--Blazing Thorns
-		[426206] = {30.7, 24.2, 24.2, 37.8, 52.7, 63.7, 24.2},
+		[426206] = {30.7, 24.1, 24.2, 37.6, 52.7, 63.7, 24.1, 24.1},
 		--Furious Charge
-		[418637] = {21.9, 22.0, 24.2, 35.6, 24.2, 28.5, 25.3, 42.8, 22.0},
+--		[418637] = {21.9, 22.0, 24.2, 35.6, 24.2, 28.5, 25.3, 42.8, 22.0},
 		--Scorching Roots
-		[422614] = {37.3, 110.3, 92.2},
+		[422614] = {37.3, 109.1, 92.2},
 		--Stage 2
 		--Falling Embers
 		[427252] = {7.4, 26.7, 25.0, 23.3, 30.0, 20.0, 25.0, 25.0, 25.0, 26.7, 23.3},
 				  --7.4, 26.7, 25.0, 23.3, 30.1, 20.0, 25.0, 25.0, 25.0, 26.7, 23.3
+				  --7.4, 26.7, 25.0, 23.3, 30.0, 20.0, 25.0, 25.0, 25.0, 26.7, 23.3
 		--FlashFire
 		[427299] = {29.1, 46.7, 26.6, 36.7, 30.9, 37.5, 37.5},--Lowest times used of variations
 				  --29.1, 46.7, 26.6, 36.7, 36.7, 37.5
@@ -224,35 +229,9 @@ local allTimers = {
 		[421325] = {20.7, 44.2, 42.5, 42.5, 38.3, 40.8},
 				  --20.7, 44.2, 42.5, 42.5, 38.3, 40.8
 	},
-	["normal"] = {--Likely obsolete and the same as heroic
-		--Stage 1
-		--Fiery Force of Nature (Differs from heroic, maybe)
-		[417653] = {6.6, 104.8},
-		--Blazing Thorns
-		[426206] = {30.8, 24.1, 24.2, 37.8, 52.7},
-		--Furious Charge
-		[418637] = {22.0, 22.0, 24.2, 35.6, 24.2, 28.6, 25.3},
-		--Scorching Roots
-		[422614] = {37.4, 110.3},
-		--Stage 2 (Seems to be same as Heroic)
-		--Falling Embers
-		[427252] = {7.4, 26.7, 25.0, 23.3, 30.0, 20.0, 25.0, 25.0, 25.0, 26.7, 23.3},
-				  --7.4, 26.7, 25.0, 23.3
-		--FlashFire
-		[427299] = {29.1, 46.7, 26.6, 36.7, 30.9, 37.5, 37.5},--Lowest times used of variations
-				  --29.0, 46.7
-		--Fire Whirl
-		[427343] = {54.0, 40.9, 32.5, 36.6, 36.7, 39.1},
-				  --54.0, 40.8
-		--Smoldering backdraft
-		[429973] = {14.0, 25.9, 30.0, 19.1, 29.2, 20.7, 25.0, 24.2, 25.0, 26.7},--Lowest times used of variations
-				  --14.0, 25.9, 30.0, 19.1
-		--Ashen Call
-		[421325] = {20.7, 44.2, 42.5, 42.5, 38.3, 40.8},
-				  --20.7, 44.2
-	},
 }
 
+---@param self DBMMod
 local function smolderingYellRepeater(self)
 	local health = UnitHealth("player") / UnitHealthMax("player") * 100
 	if health < 75 then -- Only let players know when you are below 75%
@@ -272,7 +251,7 @@ function mod:OnCombatStart(delay)
 	self.vb.thornsCount = 0
 	self.vb.infernoCount = 0
 	table.wipe(castsPerGUID)
-	self:EnablePrivateAuraSound(425888, "runout", 2)--Igniting Growth
+	self:EnablePrivateAuraSound(425888, "targetyou", 2)--Igniting Growth
 	self:EnablePrivateAuraSound(425468, "targetyou", 2)--Dream Blossom. Bad sound, needs better?
 	self:EnablePrivateAuraSound(420544, "justrun", 2)--Scorching Pursuit
 	self:EnablePrivateAuraSound(421461, "runout", 2)--Flash Fire
@@ -284,39 +263,21 @@ function mod:OnCombatStart(delay)
 		timerFuriousChargeCD:Start(21.9-delay, 1)
 		timerBlazingThornsCD:Start(30.7-delay, 1)
 		timerScorchingRootsCD:Start(37.3-delay, 1)
-	elseif self:IsHeroic() then
-		--Pretty much same as mythic
-		difficultyName = "heroic"
-		timerFieryForceofNatureCD:Start(6.5-delay, 1)
+	else--Only normal vetted
+		difficultyName = "other"
+		timerFieryForceofNatureCD:Start(6.1-delay, 1)
 		timerFuriousChargeCD:Start(21.9-delay, 1)
 		timerBlazingThornsCD:Start(30.7-delay, 1)
 		timerScorchingRootsCD:Start(37.3-delay, 1)
-	else--Only normal vetted
-		difficultyName = "normal"
-		timerFieryForceofNatureCD:Start(6.1-delay, 1)
-		timerFuriousChargeCD:Start(22-delay, 1)
-		timerBlazingThornsCD:Start(30.8-delay, 1)
-		timerScorchingRootsCD:Start(37.4-delay, 1)
 	end
-	timerRagingInfernoCD:Start(90.5-delay, 1)
+	timerRagingInfernoCD:Start(90.3-delay, 1)
 end
-
---function mod:OnCombatEnd()
---	if self.Options.RangeFrame then
---		DBM.RangeCheck:Hide()
---	end
---end
 
 function mod:OnTimerRecovery()
 	if self:IsMythic() then
 		difficultyName = "mythic"
-	elseif self:IsHeroic() then
-		difficultyName = "heroic"
---	elseif self:IsNormal() then
---		difficultyName = "normal"
 	else
---		difficultyName = "lfr"
-		difficultyName = "normal"
+		difficultyName = "other"
 	end
 end
 
@@ -324,6 +285,7 @@ function mod:SPELL_CAST_START(args)
 	local spellId = args.spellId
 	if spellId == 425889 then
 		self.vb.ignitingCount = self.vb.ignitingCount + 1
+		warnIgnitingGrowth:Show(self.vb.ignitingCount)
 		local timer = self:GetFromTimersTable(allTimers, difficultyName, false, spellId, self.vb.ignitingCount+1)
 		if timer then
 			timerIgnitingGrowthCD:Start(timer, self.vb.ignitingCount+1)
@@ -382,13 +344,16 @@ function mod:SPELL_CAST_START(args)
 		self.vb.thornsCount = self.vb.thornsCount + 1
 		specWarnBlazingThornsAvoid:Show(self.vb.thornsCount)
 		specWarnBlazingThornsAvoid:Play("watchstep")
-		if not DBM:UnitDebuff("player", 429032) then
+		if not DBM:UnitDebuff("player", 429032) and not self:IsEasy() then
 			specWarnBlazingThornsSoak:Schedule(4, self.vb.thornsCount)
 			specWarnBlazingThornsSoak:ScheduleVoice(4, "helpsoak")
 		end
 		local timer = self:GetFromTimersTable(allTimers, difficultyName, false, spellId, self.vb.thornsCount+1)
 		if timer then
 			timerBlazingThornsCD:Start(timer, self.vb.thornsCount+1)
+		end
+		if self:IsHard() then
+			timerBlazingThornsSoak:Start(5, self.vb.thornsCount)
 		end
 	elseif spellId == 417634 then
 		self.vb.infernoCount = self.vb.infernoCount + 1
@@ -471,7 +436,7 @@ end
 
 function mod:SPELL_AURA_APPLIED(args)
 	local spellId = args.spellId
-	if spellId == 426387 then
+	if spellId == 426387 and self:AntiSpam(3.5, args.destName) then
 		if args:IsPlayer() then
 			specWarnScorchingBramblethorn:Show()
 			specWarnScorchingBramblethorn:Play("targetyou")
@@ -563,8 +528,6 @@ function mod:SPELL_AURA_APPLIED(args)
 			specWarnEncasedInAsh:Play("targetyou")
 			yellEncasedInAsh:Yell()
 		end
-	elseif spellId == 428946 then
-		warnAshenAsphyxiation:Show(args.destName, args.amount or 1)
 	elseif spellId == 421316 then--Consuming Flame
 		self:SetStage(1.5)
 		timerFieryForceofNatureCD:Stop()
@@ -664,8 +627,9 @@ function mod:UNIT_SPELLCAST_SUCCEEDED(uId, _, spellId)
 	elseif spellId == 418655 and self:AntiSpam(3, 6) then
 		specWarnCharredBrambles:Show()
 		specWarnCharredBrambles:Play("healfull")
-	elseif spellId == 428896 then
+	elseif spellId == 428896 and self:AntiSpam(3, 7) then
 		self.vb.ignitingCount = self.vb.ignitingCount + 1
+		warnAshenDevastation:Show(self.vb.ignitingCount)
 		local timer = self:GetFromTimersTable(allTimers, difficultyName, false, spellId, self.vb.ignitingCount+1)
 		if timer then
 			timerAshenDevestationCD:Start(timer, self.vb.ignitingCount+1)

@@ -9,7 +9,7 @@ if (wowToc >= 100200) then
 	mod.sendMainBossGUID = true
 end
 
-mod:SetRevision("20231121073909")
+mod:SetRevision("20240714045506")
 mod:SetCreatureID(81522)
 mod:SetEncounterID(1746)
 mod:SetHotfixNoticeRev(20231020000000)
@@ -19,11 +19,11 @@ mod:RegisterCombat("combat")
 
 mod:RegisterEventsInCombat(
 	"SPELL_CAST_START 164357",
-	"SPELL_CAST_SUCCESS 164302",
+--	"SPELL_CAST_SUCCESS 164302",
 	"SPELL_SUMMON 164556",
 	"SPELL_AURA_APPLIED 164275 164302",
-	"SPELL_AURA_REMOVED 164275"
---	"UNIT_SPELLCAST_SUCCEEDED boss1",
+	"SPELL_AURA_REMOVED 164275",
+	"UNIT_SPELLCAST_SUCCEEDED boss1"
 --	"CHAT_MSG_MONSTER_EMOTE",
 --	"RAID_BOSS_WHISPER"
 )
@@ -42,7 +42,6 @@ local warnBrittleBarkOver			= mod:NewEndAnnounce(164275, 2)
 local warnUncheckedGrowth			= mod:NewTargetAnnounce(164294, 2)
 local warnUncheckedGrowthSpawn		= mod:NewSpellAnnounce(164556, 3)--Add Spawn
 
-local specWarnLivingLeaves			= mod:NewSpecialWarningMove(169495, nil, nil, nil, 1, 8)
 local specWarnUncheckedGrowthYou	= mod:NewSpecialWarningYou(164294, nil, nil, nil, 1, 2)--The add fixate is on you
 local specWarnUncheckedGrowth		= mod:NewSpecialWarningGTFO(164294, nil, nil, nil, 1, 8)--GTFO
 local specWarnUncheckedGrowthAdd	= mod:NewSpecialWarningSwitch(164556, false, nil, nil, 1, 2)--Spawn
@@ -79,12 +78,14 @@ function mod:SPELL_CAST_START(args)
 	end
 end
 
+--[[
 function mod:SPELL_CAST_SUCCESS(args)
 	local spellId = args.spellId
 	if spellId == 164302 then
 		timerUncheckedGrowthCD:Start()
 	end
 end
+--]]
 
 function mod:SPELL_SUMMON(args)
 	local spellId = args.spellId
@@ -122,29 +123,24 @@ function mod:SPELL_AURA_REMOVED(args)
 		warnBrittleBarkOver:Show()
 		timerParchedGrasp:Start(3.6)
 		timerBrittleBarkCD:Start(39.9)
-		timerUncheckedGrowthCD:Restart(3.6)--Needs more review to verify
+		timerUncheckedGrowthCD:Stop()
+		timerUncheckedGrowthCD:Start(3.6)--Needs more review to verify
 	end
 end
 
 function mod:SPELL_PERIODIC_DAMAGE(_, _, _, _, destGUID, destName, _, _, spellId, spellName)
-	if spellId == 169495 and destGUID == UnitGUID("player") and self:AntiSpam(2, 2) then--Deprecated?
-		specWarnLivingLeaves:Show(spellName)
-		specWarnLivingLeaves:Play("watchfeet")
-	elseif spellId == 164294 and destGUID == UnitGUID("player") and self:AntiSpam(2, 2) then
+	if (spellId == 169495 or spellId == 164294) and destGUID == UnitGUID("player") and self:AntiSpam(2, 2) then--Deprecated?
 		specWarnUncheckedGrowth:Show(spellName)
 		specWarnUncheckedGrowth:Play("watchfeet")
 	end
 end
 mod.SPELL_PERIODIC_MISSED = mod.SPELL_PERIODIC_DAMAGE
 
---[[
---Why was this used over 164275 spell aura removed? since i can't verify it on WCL disabling this method for now
 function mod:UNIT_SPELLCAST_SUCCEEDED(uId, _, spellId)
-	if spellId == 164718 then--Cancel Brittle Bark
-		warnBrittleBarkOver:Show()
+	if spellId == 164306 then
+		timerUncheckedGrowthCD:Start()
 	end
 end
---]]
 
 --[[
 function mod:CHAT_MSG_MONSTER_EMOTE(msg)--Message doesn't matter, it occurs only for one thing during this fight (assumption may be invalid in rework)

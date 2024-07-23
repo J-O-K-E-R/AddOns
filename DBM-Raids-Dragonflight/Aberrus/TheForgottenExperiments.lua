@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod(2530, "DBM-Raids-Dragonflight", 2, 1208)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20231120131222")
+mod:SetRevision("20240721192753")
 mod:SetCreatureID(200912, 200913, 200918)
 mod:SetEncounterID(2693)
 mod:SetUsedIcons(1, 2, 3)
@@ -131,6 +131,7 @@ do
 	end
 end
 
+---@param self DBMMod
 local function resetRaidDebuff(self)
 	self.vb.tankSafeClear = true
 end
@@ -149,8 +150,8 @@ function mod:OnCombatStart(delay)
 		timerRendingChargeCD:Start(14-delay, 1)
 		timerMassiveSlamCD:Start(24-delay, 1)
 	else
-		timerBellowingRoarCD:Start(10.9-delay, 1)
-		timerRendingChargeCD:Start(19.4-delay, 1)
+		timerBellowingRoarCD:Start(10.6-delay, 1)
+		timerRendingChargeCD:Start(19-delay, 1)
 		timerMassiveSlamCD:Start(35.2-delay, 1)
 	end
 	--Thadrion
@@ -164,7 +165,7 @@ function mod:OnCombatStart(delay)
 	self.vb.anomalyCount = 0
 	self:EnablePrivateAuraSound(406317, "targetyou", 2)--Rending Charge
 	if self.Options.InfoFrame then
-		DBM.InfoFrame:SetHeader(DBM:GetSpellInfo(406313))
+		DBM.InfoFrame:SetHeader(DBM:GetSpellName(406313))
 		DBM.InfoFrame:Show(5, "function", updateInfoFrame, false, true)
 	end
 end
@@ -230,7 +231,7 @@ function mod:SPELL_CAST_START(args)
 		timerBellowingRoarCD:Start(timer, self.vb.roarCount+1)
 	elseif spellId == 405042 then
 		self.vb.essenceCount = self.vb.essenceCount + 1
-		warnUnstableEssence:Show(self.vb.essenceCount)
+		warnUnstableEssence:Show()
 		local timer
 		if self:IsMythic() then
 			local unit = self:GetUnitIdFromGUID(args.sourceGUID)
@@ -271,7 +272,7 @@ function mod:SPELL_CAST_START(args)
 		timerDeepBreathCD:Start(self:IsMythic() and 55 or 43.7, self.vb.breathCount+1)
 	elseif spellId == 407552 then
 		self.vb.anomalyCount = self.vb.anomalyCount + 1
-		warnTemporalAnomaly:Show(self.vb.anomalyCount)
+		warnTemporalAnomaly:Show()
 		timerTemporalAnomalyCD:Start(self:IsMythic() and 55 or 43.7, self.vb.anomalyCount+1)
 	elseif spellId == 405391 then
 		self.vb.disintegrateCount = self.vb.disintegrateCount + 1
@@ -312,7 +313,8 @@ function mod:SPELL_AURA_APPLIED(args)
 		self.vb.tankSafeClear = false
 		local amount = args.amount or 1
 		warnInfusedExplosion:Show(args.amount or 1)
-		timerInfusedExplosion:Restart()
+		timerInfusedExplosion:Stop()
+		timerInfusedExplosion:Start()
 		self:Unschedule(resetRaidDebuff)
 		self:Schedule(21, resetRaidDebuff, self)--1 extra second for good measure
 	elseif spellId == 407327 then
@@ -335,7 +337,7 @@ function mod:SPELL_AURA_APPLIED(args)
 		else
 			if args:IsPlayer() and amount > 10 then
 				local icon = GetRaidTargetIndex("player")
-				local text = amount
+				local text = tostring(amount)
 				if icon then
 					text = "{rt"..icon.."} "..amount.." {rt"..icon.."}"
 				end

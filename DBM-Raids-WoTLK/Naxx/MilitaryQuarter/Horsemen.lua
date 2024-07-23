@@ -2,7 +2,7 @@ local mod	= DBM:NewMod("Horsemen", "DBM-Raids-WoTLK", 8)
 local L		= mod:GetLocalizedStrings()
 local isRetail = WOW_PROJECT_ID == (WOW_PROJECT_MAINLINE or 1)
 
-mod:SetRevision("20231015033925")
+mod:SetRevision("20240616044352")
 mod:SetCreatureID(16063, 16064, 16065, 30549)
 mod:SetEncounterID(1121)
 mod:SetModelID(10729)
@@ -72,11 +72,13 @@ function mod:SPELL_CAST_SUCCESS(args)
 				specWarnVoidZone:Show()
 				specWarnVoidZone:Play("targetyou")
 				yellVoidZone:Yell()
-			elseif self:CheckNearby(12, args.destName) then
+			else
+				---@diagnostic disable-next-line: param-type-mismatch
 				warnVoidZone:Show(args.destName)
 			end
 		else
 			if self:AntiSpam(3, 2) then--Have to antispam this way since can't by distance in classic
+				---@diagnostic disable-next-line: param-type-mismatch
 				warnVoidZone:Show()
 				warnVoidZone:Play("watchstep")
 			end
@@ -87,7 +89,6 @@ function mod:SPELL_CAST_SUCCESS(args)
 	end
 end
 
-local BoneBarrier = DBM:GetSpellInfo(29061)
 function mod:SPELL_AURA_APPLIED(args)
 	if args.spellId == 29061 then
 		warnBoneBarrier:Show(args.destName)

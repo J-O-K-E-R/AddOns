@@ -3,9 +3,9 @@ local L		= mod:GetLocalizedStrings()
 
 mod.statTypes = "normal,normal25,heroic,heroic25"
 
-mod:SetRevision("20231014022703")
+mod:SetRevision("20240512232312")
 mod:SetCreatureID(36627)
-mod:SetEncounterID(mod:IsClassic() and 850 or 1104)
+mod:SetEncounterID(not mod:IsPostCata() and 850 or 1104)
 mod:SetModelID(31005)
 mod:SetUsedIcons(1, 2)
 mod:RegisterCombat("combat")
@@ -152,7 +152,7 @@ function mod:SPELL_CAST_SUCCESS(args)
 	if args.spellId == 72272 and self:AntiSpam(3, 5) then
 		warnVileGas:Show()
 		timerVileGasCD:Start()
-	elseif args.spellid == 69889 then--Merge
+	elseif args.spellId == 69889 then--Merge
 		timerStickyOoze:Stop(args.sourceGUID)
 	end
 end

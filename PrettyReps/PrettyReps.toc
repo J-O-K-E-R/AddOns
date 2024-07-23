@@ -1,4 +1,4 @@
-## Interface: 100200
+## Interface: 100205
 ## IconTexture: Interface/Addons/PrettyReps/pr_logo.png
 ## Title: PrettyReps
 ## Author: Sida2

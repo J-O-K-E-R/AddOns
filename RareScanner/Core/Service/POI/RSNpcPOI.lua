@@ -179,6 +179,7 @@ function RSNpcPOI.GetNpcPOI(npcID, mapID, npcInfo, alreadyFoundInfo)
 		POI.worldmap = npcInfo.worldmap
 		POI.factionID = npcInfo.factionID
 		POI.minieventID = npcInfo.minieventID
+		POI.custom = npcInfo.custom
 	end
 	
 	-- Coordinates
@@ -202,6 +203,8 @@ function RSNpcPOI.GetNpcPOI(npcID, mapID, npcInfo, alreadyFoundInfo)
 		POI.Texture = RSConstants.LIGHT_BLUE_NPC_TEXTURE
 	elseif (RSRecentlySeenTracker.IsRecentlySeen(npcID, POI.x, POI.y)) then
 		POI.Texture = RSConstants.PINK_NPC_TEXTURE
+	elseif (POI.custom) then
+		POI.Texture = RSConstants.PURPLE_NPC_TEXTURE
 	elseif (not POI.isDiscovered) then
 		POI.Texture = RSConstants.RED_NPC_TEXTURE
 	else
@@ -228,7 +231,17 @@ function RSNpcPOI.GetNpcPOI(npcID, mapID, npcInfo, alreadyFoundInfo)
 	return POI
 end
 
-local function IsNpcPOIFiltered(npcID, mapID, artID, zoneQuestID, prof, minieventID, questTitles, vignetteGUIDs, onWorldMap, onMinimap)
+local function IsEventUnlocked(eventQuestIDs)
+	for _, questID in ipairs(eventQuestIDs) do
+		if (C_TaskQuest.IsActive(questID) or C_QuestLog.IsQuestFlaggedCompleted(questID)) then
+			return true
+		end
+	end
+	
+	return false
+end
+
+local function IsNpcPOIFiltered(npcID, mapID, artID, zoneQuestID, prof, minieventID, group, questTitles, vignetteGUIDs, onWorldMap, onMinimap)
 	local name = RSNpcDB.GetNpcName(npcID)
 	
 	-- Skip if part of a disabled event
@@ -249,10 +262,16 @@ local function IsNpcPOIFiltered(npcID, mapID, artID, zoneQuestID, prof, minieven
 		return true
 	end
 	
+	-- Skip if custom NPC group filtered
+	if (group and RSConfigDB.IsCustomNpcGroupFiltered(group)) then
+		RSLogger:PrintDebugMessageEntityID(npcID, string.format("Saltado NPC [%s]: Filtrado grupo.", npcID))
+		return true
+	end
+	
 	-- Skip if rare part of a filtered minievent
 	local isMinieventWithFilter = false;
 	if (minieventID) then
-		isMinieventWithFilter = RSConstants.MINIEVENTS_WORLDMAP_FILTERS[minieventID]
+		isMinieventWithFilter = RSConstants.MINIEVENTS_WORLDMAP_FILTERS[minieventID].active
 		
 		-- Skip if minievent is filtered
 		if (RSConfigDB.IsMinieventFiltered(minieventID)) then
@@ -309,8 +328,18 @@ local function IsNpcPOIFiltered(npcID, mapID, artID, zoneQuestID, prof, minieven
 		end
 
 		if (not active) then
-			RSLogger:PrintDebugMessageEntityID(npcID, string.format("Saltado NPC [%s]: Evento asociado no esta activo.", npcID))
-			return true
+			local eventUnlocked = true
+			-- If the player haven't unlocked the event associated to the zoneQuestID
+			if (mapID == RSConstants.ULDUM_MAPID and not IsEventUnlocked(RSConstants.ULDUM_INVASSION_QUESTS)) then
+				eventUnlocked = false
+			elseif (mapID == RSConstants.VALLEY_OF_ETERNAL_BLOSSOMS_MAPID and not IsEventUnlocked(RSConstants.VALLEY_BLOSSOMS_INVASSION_QUESTS)) then
+				eventUnlocked = false
+			end
+			
+			if (eventUnlocked) then
+				RSLogger:PrintDebugMessageEntityID(npcID, string.format("Saltado NPC [%s]: Evento asociado no esta activo.", npcID))
+				return true
+			end
 		end
 	end
 
@@ -438,7 +467,7 @@ function RSNpcPOI.GetMapNotDiscoveredNpcPOIs(mapID, questTitles, vignetteGUIDs, 
 		end
 
 		-- Skip if common filters
-		if (not filtered and not IsNpcPOIFiltered(npcID, mapID, RSNpcDB.GetInternalNpcArtID(npcID, mapID), npcInfo.zoneQuestId, npcInfo.prof, npcInfo.minieventID, questTitles, vignetteGUIDs, onWorldMap, onMinimap)) then
+		if (not filtered and not IsNpcPOIFiltered(npcID, mapID, RSNpcDB.GetInternalNpcArtID(npcID, mapID), npcInfo.zoneQuestId, npcInfo.prof, npcInfo.minieventID, npcInfo.group, questTitles, vignetteGUIDs, onWorldMap, onMinimap)) then
 			tinsert(POIs, RSNpcPOI.GetNpcPOI(npcID, mapID, npcInfo))
 		end
 	end
@@ -491,13 +520,15 @@ function RSNpcPOI.GetMapAlreadyFoundNpcPOI(npcID, alreadyFoundInfo, mapID, quest
 	local zoneQuestID
 	local prof
 	local minieventID
+	local group
 	if (npcInfo) then
 		zoneQuestID = npcInfo.zoneQuestId
 		prof = npcInfo.prof
 		minieventID = npcInfo.minieventID
+		group = npcInfo.group
 	end
 
-	if (not IsNpcPOIFiltered(npcID, mapID, alreadyFoundInfo.artID, zoneQuestID, prof, minieventID, questTitles, vignetteGUIDs, onWorldMap, onMinimap)) then
+	if (not IsNpcPOIFiltered(npcID, mapID, alreadyFoundInfo.artID, zoneQuestID, prof, minieventID, group, questTitles, vignetteGUIDs, onWorldMap, onMinimap)) then
 		return RSNpcPOI.GetNpcPOI(npcID, mapID, npcInfo, alreadyFoundInfo)
 	end
 end

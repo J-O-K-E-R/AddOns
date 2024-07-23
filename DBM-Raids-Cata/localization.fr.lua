@@ -6,52 +6,15 @@ local L
 ----------------
 L= DBM:GetModLocalization(139)
 
-L:SetWarningLocalization({
-})
-
-L:SetTimerLocalization({
-})
-
-L:SetMiscLocalization({
-})
-
-L:SetOptionLocalization({
-	SetIconOnConsuming		= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(88954)
-})
-
 -----------------
 --  Occu'thar  --
 -----------------
 L= DBM:GetModLocalization(140)
 
-L:SetWarningLocalization({
-})
-
-L:SetTimerLocalization({
-})
-
-L:SetMiscLocalization({
-})
-
-L:SetOptionLocalization({
-})
-
 ----------------------------------
 --  Alizabal, Mistress of Hate  --
 ----------------------------------
 L= DBM:GetModLocalization(339)
-
-L:SetWarningLocalization({
-})
-
-L:SetTimerLocalization({
-})
-
-L:SetMiscLocalization({
-})
-
-L:SetOptionLocalization({
-})
 
 -------------------------------
 --  Dark Iron Golem Council  --
@@ -100,11 +63,6 @@ L:SetOptionLocalization({
 -----------------
 L = DBM:GetModLocalization(171)
 
-L:SetOptionLocalization({
-	InfoFrame			= "Affiche une fenêtre d'info pour le niveau sonore",
-	TrackingIcon	= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(78092)
-})
-
 L:SetMiscLocalization({
 	Airphase			= "Oui, fuyez ! Chaque foulée accélère votre cœur. Les battements résonnent comme le tonnerre... Assourdissant. Vous ne vous échapperez pas !" -- à vérifier
 })
@@ -133,17 +91,8 @@ L:SetWarningLocalization({
 	WarnPhase		= " Phase %s"
 })
 
-L:SetTimerLocalization({
-	TimerPhase		= "Prochaine Phase"
-})
-
 L:SetOptionLocalization({
-	WarnPhase			= "Affiche l'alerte d'une nouvelle phase",
-	TimerPhase			= "Affiche le timer de la prochaine phase",
-	RangeFrame		= "Affiche la fenêtre de portée (6) durant la Phase Bleue",
-	FlashFreezeIcon		= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(92979),
-	BitingChillIcon		= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(77760),
-	ConsumingFlamesIcon	= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(77786)
+	WarnPhase			= "Affiche l'alerte d'une nouvelle phase"
 })
 
 L:SetMiscLocalization({
@@ -158,39 +107,11 @@ L:SetMiscLocalization({
 ----------------
 L = DBM:GetModLocalization(174)
 
-L:SetWarningLocalization({
-	OnyTailSwipe		= "(Onyxia) Fouette-queue",
-	NefTailSwipe		= "(Nefarian) Fouette-queue",
-	OnyBreath			= "(Onyxia) Souffle",
-	NefBreath			= "(Nefarian) Souffle"
-})
-
-L:SetTimerLocalization({
-	OnySwipeTimer		= "(Ony) CD Fouette-queue",
-	NefSwipeTimer		= "(Nef) CD Fouette-queue",
-	OnyBreathTimer		= "(Ony) CD Souffle",
-	NefBreathTimer		= "(Nef) CD Souffle"
-})
-
-L:SetOptionLocalization({
-	OnyTailSwipe		= "Alerte pour $spell:77827 d'Onyxia",
-	NefTailSwipe		= "Alerte pour $spell:77827 de Nefarian",
-	OnyBreath			= "Alerte pour $spell:94124 d'Onyxia",
-	NefBreath			= "Alerte pour $spell:94124 de Nefarian",
-	OnySwipeTimer		= "Affiche le CoolDown $spell:77827 d'Onyxia",
-	NefSwipeTimer		= "Affiche le CoolDown $spell:77827 de Nefarian",
-	OnyBreathTimer		= "Affiche le CoolDown $spell:94124 d'Onyxia",
-	NefBreathTimer		= "Affiche le CoolDown $spell:94124 de Nefarian",
-	RangeFrame		= "Affiche la fenêtre de portée (10) lorsque vous avez $spell:79339",
-	SetIconOnCinder		= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(79339)
-})
-
 L:SetMiscLocalization({
 	NefAoe			= "L'air craque sous l'électricité !", -- à vérifier
 	YellPhase2			= "Soyez maudits, mortels ! Un tel mépris pour les possessions d'autrui doit être traité avec une extrême fermeté !", -- à vérifier
 	YellPhase3			= "J'ai tout fait pour être un hôte accomodant, mais vous ne daignez pas mourir ! Oublions les bonnes manières et passons aux choses sérieuses... VOUS TUER TOUS !",
-	ShadowBlazeExact		= "Shadowblaze in %ds",
-	ShadowBlazeEstimate		= "Shadowblaze soon (~5s)"
+	ShadowBlazeExact		= "Shadowblaze in %ds"
 })
 
 -------------------------------
@@ -207,35 +128,10 @@ L:SetGeneralLocalization({
 --------------------------
 L= DBM:GetModLocalization(156)
 
-L:SetWarningLocalization({
-})
-
-L:SetTimerLocalization({
-})
-
-L:SetMiscLocalization({
-})
-
-L:SetOptionLocalization({
-})
-
 ---------------------------
 --  Valiona & Theralion  --
 ---------------------------
 L= DBM:GetModLocalization(157)
-
-L:SetWarningLocalization({
-})
-
-L:SetTimerLocalization({
-})
-
-L:SetOptionLocalization({
-	TwilightBlastArrow		= "Afficher la flèche DBM lorsque $spell:92898 est près de vous",
-	RangeFrame				= "Afficher la fenêtre de portée (10)",
-	BlackoutIcon			= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(92878),
-	EngulfingIcon			= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(86622)
-})
 
 L:SetMiscLocalization({
 	Trigger1				= "Theralion, je m'occupe du vestibule. Couvre leur fuite !"--Change this to what deep breath emote is.
@@ -283,21 +179,6 @@ L:SetOptionLocalization({
 --  Cho'gall  --
 ----------------
 L= DBM:GetModLocalization(167)
-
-L:SetWarningLocalization({
---	WarnPhase2Soon	= "Phase 2 imminente"
-})
-
-L:SetTimerLocalization({
-})
-
-L:SetOptionLocalization({
---	WarnPhase2Soon		= "Afficher la pré-alerte pour la Phase 2",
-	CorruptingCrashArrow	= "Afficher la flèche DBM lorsque $spell:93178 est près de vous",
-	InfoFrame			= "Afficher la fenêtre d'info pour le sort $journal:3165",
-	RangeFrame		= "Afficher la fenêtre de portée (5) pour $spell:82235",
-	SetIconOnWorship	= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(91317)
-})
 
 ----------------
 --  Sinestra  --

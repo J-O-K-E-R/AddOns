@@ -1,18 +1,12 @@
-tag 59cd96bc94054b6e2d6ea3fcf126a544f23ff7d4 10.1.1
+tag 16ee4d00fe47d775e7aeb4adf6312a14b96b5a5c 10.3.1
 Author:	Lure <alex.shubert@gmail.com>
-Date:	Sun Nov 19 11:09:33 2023 -0500
+Date:	Wed Jun 19 11:44:00 2024 -0400
 
-10.1.0
+ignore pandarian 'aid the' quests, rework cinematic cancelling
 
-commit 77dd8f07837190a05e9d9c0515cb6698a2953209
+commit 934ddb10d5a788eaed4734ca5243150f9e8c8b82
 Author: Lure <alex.shubert@gmail.com>
-Date:   Sun Nov 19 11:07:14 2023 -0500
+Date:   Wed Jun 19 11:42:42 2024 -0400
 
-    bump toc version
-
-commit 925de2d01a0d593352a70aad122e117299cf5130
-Author: Lure <alex.shubert@gmail.com>
-Date:   Sun Jul 16 19:37:40 2023 -0400
-
-    chore: Cleanup merchants.lua
+    ignore pandarian 'aid the' quests, rework cinematic cancelling
 

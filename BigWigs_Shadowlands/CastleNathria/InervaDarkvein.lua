@@ -77,7 +77,7 @@ function mod:GetOptions()
 		331550, -- Condemn
 	},{
 		[331870] = "general",
-		[325379] = -22571, -- Container of Desire
+		[341621] = -22571, -- Container of Desire
 		[325769] = -22592, -- Container of Bottled Anima
 		[324983] = -22599, -- Container of Sin
 		[332664] = -22567, -- Container of Concentrated Anima
@@ -393,7 +393,7 @@ do
 	end
 
 	function mod:ConcentratedAnimaRemoved(args)
-		tDeleteItem(proxList, args.destName)
+		self:DeleteFromTable(proxList, args.destName)
 		if self:Me(args.destGUID) then
 			isOnMe = nil
 			self:CancelSayCountdown(332664)

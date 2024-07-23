@@ -1,22 +1,7 @@
-local L = BigWigs:NewBossLocale("Lucifron", "deDE")
+local L = BigWigs:NewBossLocale("Ragnaros Classic", "deDE")
 if not L then return end
 if L then
-	--L.mc_bar = "MC: %s"
-end
-
-L = BigWigs:NewBossLocale("Majordomo Executus", "deDE")
-if L then
-	L.disabletrigger = "Haltet ein, Sterbliche"
-	--L.power_next = "Next Power"
-end
-
-L = BigWigs:NewBossLocale("Ragnaros ", "deDE")
-if L then
 	L.submerge_trigger = "KOMMT HERBEI, MEINE DIENER"
-	L.engage_trigger = "NUN ZU EUCH, INSEKTEN"
-
-	--L.knockback_message = "Knockback!"
-	--L.knockback_bar = "Knockback"
 
 	L.submerge = "Untertauchen"
 	L.submerge_desc = "Warnt, wenn Ragnaros untertaucht."
@@ -29,3 +14,7 @@ if L then
 	L.emerge_bar = "Auftauchen"
 end
 
+L = BigWigs:NewBossLocale("The Molten Core", "deDE")
+if L then
+	--L.bossName = "The Molten Core"
+end

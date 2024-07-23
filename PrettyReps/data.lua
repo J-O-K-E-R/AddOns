@@ -7,7 +7,14 @@ _G.PrettyReps.Data = {
 			children = {
 				{
 					factionID = 2507,
-					name = "Dragonscale Expedition"
+					name = "Dragonscale Expedition",
+					children = 
+					{
+						{
+						factionID = 2615,
+						name = "Azerothian Archives"
+						},
+					}
 				},
 				{
 					factionID = 2574,

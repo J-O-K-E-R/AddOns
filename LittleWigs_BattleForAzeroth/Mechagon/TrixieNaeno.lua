@@ -66,8 +66,7 @@ do
 		end
 	end
 	function mod:MegaTaze(args)
-		self:GetBossTarget(printTarget, 0.4, args.sourceGUID)
-		local t = args.time
+		self:GetUnitTarget(printTarget, 0.4, args.sourceGUID)
 		self:CDBar(args.spellId, 25.5)
 	end
 end

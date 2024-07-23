@@ -5,8 +5,8 @@
 ]]
 
 local _G = _G
-local gsub, tinsert, next = gsub, tinsert, next
-local tostring, strfind, type = tostring, strfind, type
+local gsub, tinsert, next, type = gsub, tinsert, next, type
+local tostring, tonumber, strfind, strmatch = tostring, tonumber, strfind, strmatch
 
 local CreateFrame = CreateFrame
 local GetBuildInfo = GetBuildInfo
@@ -21,6 +21,7 @@ local DisableAddOn = (C_AddOns and C_AddOns.DisableAddOn) or DisableAddOn
 local GetAddOnMetadata = (C_AddOns and C_AddOns.GetAddOnMetadata) or GetAddOnMetadata
 local IsAddOnLoaded = (C_AddOns and C_AddOns.IsAddOnLoaded) or IsAddOnLoaded
 local IsHardcoreActive = C_GameRules and C_GameRules.IsHardcoreActive
+local IsEngravingEnabled = C_Engraving and C_Engraving.IsEngravingEnabled
 
 local C_AddOns_GetAddOnEnableState = C_AddOns and C_AddOns.GetAddOnEnableState
 local GetAddOnEnableState = GetAddOnEnableState -- eventually this will be on C_AddOns and args swap
@@ -81,11 +82,14 @@ E.InfoColor2 = '|cff9b9b9b' -- silver
 E.twoPixelsPlease = false -- changing this option is not supported! :P
 
 -- Expansions
+E.TBC = WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC -- not used
+E.Cata = WOW_PROJECT_ID == WOW_PROJECT_CATACLYSM_CLASSIC
+E.Wrath = WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC
 E.Retail = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
 E.Classic = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
-E.ClassicHC = E.Classic and IsHardcoreActive()
-E.TBC = WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC -- not used
-E.Wrath = WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC
+
+E.ClassicHC = IsHardcoreActive and IsHardcoreActive()
+E.ClassicSOD = IsEngravingEnabled and IsEngravingEnabled()
 
 -- Item Qualitiy stuff, also used by MerathilisUI
 E.QualityColors = CopyTable(_G.BAG_ITEM_QUALITY_COLORS)
@@ -102,7 +106,7 @@ do
 end
 
 do -- this is different from E.locale because we need to convert for ace locale files
-	local convert = {enGB = 'enUS', esES = 'esMX', itIT = 'enUS'}
+	local convert = { enGB = 'enUS', esES = 'esMX', itIT = 'enUS' }
 	local gameLocale = convert[E.locale] or E.locale or 'enUS'
 
 	function E:GetLocale()
@@ -110,8 +114,18 @@ do -- this is different from E.locale because we need to convert for ace locale 
 	end
 end
 
+function E:ParseVersionString(addon)
+	local version = GetAddOnMetadata(addon, 'Version')
+	if strfind(version, 'project%-version') then
+		return 13.70, '13.70-git', nil, true
+	else
+		local release, extra = strmatch(version, '^v?([%d.]+)(.*)')
+		return tonumber(release), release..extra, extra ~= ''
+	end
+end
+
 do
-	E.Libs = { version = tonumber(GetAddOnMetadata('ElvUI_Libraries', 'Version')) }
+	E.Libs = { version = E:ParseVersionString('ElvUI_Libraries') }
 	E.LibsMinor = {}
 	function E:AddLib(name, major, minor)
 		if not name then return end
@@ -147,21 +161,12 @@ do
 	E:AddLib('AceConfigRegistry', 'AceConfigRegistry-3.0-ElvUI')
 	E:AddLib('AceDBOptions', 'AceDBOptions-3.0')
 
-	if E.Retail or E.Wrath then
+	if E.Retail or E.Cata or E.ClassicSOD then
 		E:AddLib('DualSpec', 'LibDualSpec-1.0')
 	end
 
 	if not E.Retail then
 		E:AddLib('LCS', 'LibClassicSpecs-ElvUI')
-
-		if E.Classic then
-			E:AddLib('LCD', 'LibClassicDurations')
-			E:AddLib('LCC', 'LibClassicCasterino')
-
-			if E.Libs.LCD then
-				E.Libs.LCD:Register('ElvUI')
-			end
-		end
 	end
 
 	-- backwards compatible for plugins
@@ -259,6 +264,18 @@ function E:SetCVar(cvar, value, ...)
 	end
 end
 
+function E:GetAddOnEnableState(addon, character)
+	if C_AddOns_GetAddOnEnableState then
+		return C_AddOns_GetAddOnEnableState(addon, character)
+	else
+		return GetAddOnEnableState(character, addon)
+	end
+end
+
+function E:IsAddOnEnabled(addon)
+	return E:GetAddOnEnableState(addon, E.myname) == 2
+end
+
 function E:SetEasyMenuAnchor(menu, frame)
 	local point = E:GetScreenQuadrant(frame)
 	local bottom = point and strfind(point, 'BOTTOM')
@@ -339,11 +356,7 @@ function E:OnInitialize()
 		E.Minimap:SetGetMinimapShape() -- This is just to support for other mods, keep below UIMult
 	end
 
-	if C_AddOns_GetAddOnEnableState then
-		if C_AddOns_GetAddOnEnableState('Tukui', E.myname) == 2 then
-			E:StaticPopup_Show('TUKUI_ELVUI_INCOMPATIBLE')
-		end
-	elseif GetAddOnEnableState(E.myname, 'Tukui') == 2 then
+	if E:IsAddOnEnabled('Tukui') then
 		E:StaticPopup_Show('TUKUI_ELVUI_INCOMPATIBLE')
 	end
 end

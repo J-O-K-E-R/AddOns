@@ -2,10 +2,14 @@ local isRetail = WOW_PROJECT_ID == (WOW_PROJECT_MAINLINE or 1)
 local mod	= DBM:NewMod(116, "DBM-Party-Cataclysm", 8, 68)
 local L		= mod:GetLocalizedStrings()
 
-mod.statTypes = "normal,heroic,challenge,timewalker"
-mod.upgradedMPlus = true
+if not mod:IsCata() then
+	mod.statTypes = "normal,heroic,challenge,timewalker"
+	mod.upgradedMPlus = true
+else
+	mod.statTypes = "normal,heroic"
+end
 
-mod:SetRevision("20230621232728")
+mod:SetRevision("20240615053330")
 mod:SetCreatureID(43875)
 mod:SetEncounterID(1042)
 mod:SetHotfixNoticeRev(20230526000000)
@@ -82,9 +86,9 @@ function mod:SPELL_CAST_START(args)
 		--1.25 post nerf in classic, 1 sec pre nerf
 		--3 lol giga nerf in M+
 		warnStaticCling:Show()
-		specWarnStaticCling:Schedule(2.3)--delay message since jumping at start of cast is no longer correct in 4.0.6+
-		specWarnStaticCling:ScheduleVoice(2.3, "jumpnow")
-		timerStaticCling:Start(3)
+		specWarnStaticCling:Schedule(self:IsClassic() and 0.5 or 2.3)--delay message since jumping at start of cast is no longer correct in 4.0.6+
+		specWarnStaticCling:ScheduleVoice(self:IsClassic() and 0.5 or 2.3, "jumpnow")
+		timerStaticCling:Start(self:IsClassic() and 1.25 or 3)
 		local expectedTimer = self:IsMythicPlus() and 29.1 or 15.8
 		if timerGroundingFieldCD:GetRemaining() < expectedTimer then
 			timerStaticClingCD:Start(expectedTimer)
@@ -121,14 +125,19 @@ function mod:SPELL_AURA_APPLIED(args)
 		specWarnGroundingField:Play("findshelter")
 		timerStorm:Start()
 		if self:IsMythicPlus() then
-			timerChainLightningCD:Restart(16.9)--First cast can be delayed or skipped entirely
-			timerNovaCD:Restart(25.4, self.vb.novaCount+1)
-			timerStaticClingCD:Restart(33.7)
+			timerChainLightningCD:Stop()
+			timerChainLightningCD:Start(16.9)--First cast can be delayed or skipped entirely
+			timerNovaCD:Stop()
+			timerNovaCD:Start(25.4, self.vb.novaCount+1)
+			timerStaticClingCD:Stop()
+			timerStaticClingCD:Start(33.7)
 			timerGroundingFieldCD:Start(65.5, self.vb.groundingCount+1)
 		else
-			timerStaticClingCD:Restart(12)
+			timerStaticClingCD:Stop()
+			timerStaticClingCD:Start(12)
 			--timerChainLightningCD:Start(19.3)
-			timerNovaCD:Restart(22.9, self.vb.novaCount+1)
+			timerNovaCD:Stop()
+			timerNovaCD:Start(22.9, self.vb.novaCount+1)
 			timerGroundingFieldCD:Start(45.7, self.vb.groundingCount+1)--45.7
 		end
 	end

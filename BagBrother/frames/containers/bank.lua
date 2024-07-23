@@ -15,6 +15,8 @@ end
 
 function Bank:OnHide()
 	self:Super(Bank):OnHide()
+	LibStub('Sushi-3.2').Popup:Cancel(CONFIRM_BUY_REAGENTBANK_TAB)
+	LibStub('Sushi-3.2').Popup:Cancel(CONFIRM_BUY_BANK_SLOT)
 	CloseBankFrame()
 end
 
@@ -33,15 +35,14 @@ function Bank:SortItems()
 	end
 end
 
-if REAGENTBANK_CONTAINER then
-	function Bank:IsShowingBag(bag)
-		local profile = self:GetProfile()
-		if not profile.exclusiveReagent or bag == REAGENTBANK_CONTAINER or profile.hiddenBags[REAGENTBANK_CONTAINER] then
-			return not profile.hiddenBags[bag]
-		end
-	end
+function Bank:GetExtraButtons()
+	return {
+		self.profile.bagToggle and self:Get('BagToggle', function() return Addon.BagToggle(self) end),
+		DepositReagentBank and self.profile.reagents and self:Get('ReagentButton', function() return Addon.ReagentButton(self) end)
+	}
 end
 
 function Bank:IsCached()
 	return not Addon.Events.AtBank or self:GetOwner().offline
 end
+	

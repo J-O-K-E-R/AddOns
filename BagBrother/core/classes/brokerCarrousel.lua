@@ -1,6 +1,6 @@
 ﻿--[[
-	brokerCarrousel.lua
-		A databroker display object that cycles between plugins
+	A databroker display object that cycles between plugins.
+	All Rights Reserved
 --]]
 
 local ADDON, Addon = ...
@@ -85,7 +85,7 @@ function Carrousel:OnEnter()
 		if object.OnEnter then
 			object.OnEnter(self)
 		else
-			GameTooltip:SetOwner(self:GetTipAnchor())
+			GameTooltip:SetOwner(self, 'ANCHOR_TOPLEFT')
 
 			if object.OnTooltipShow then
 				object.OnTooltipShow(GameTooltip)
@@ -108,9 +108,22 @@ function Carrousel:OnLeave()
 end
 
 function Carrousel:OnClick(...)
-	local object = self:GetObject()
-	if object and object.OnClick then
-		object.OnClick(self, ...)
+	GetValueOrCallFunction(self:GetObject(), 'OnClick', self, ...)
+end
+
+function Carrousel:OnDragStart()
+	GetValueOrCallFunction(self:GetObject(), 'OnDragStart', self)
+end
+
+function Carrousel:OnReceiveDrag()
+	GetValueOrCallFunction(self:GetObject(), 'OnReceiveDrag', self)
+end
+
+function Carrousel:OnMouseWheel(direction)
+	if direction > 0 then
+		self:SetNextObject()
+	else
+		self:SetPreviousObject()
 	end
 end
 
@@ -120,14 +133,6 @@ end
 
 function Carrousel:OnHide()
 	LDB.UnregisterAllCallbacks(self)
-end
-
-function Carrousel:OnMouseWheel(direction)
-	if direction > 0 then
-		self:SetNextObject()
-	else
-		self:SetPreviousObject()
-	end
 end
 
 
@@ -211,7 +216,9 @@ function Carrousel:GetAvailableObjects()
 	wipe(self.objects)
 
 	for name, obj in LDB:DataObjectIterator() do
-		tinsert(self.objects, name)
+		if obj.type == 'launcher' or obj.type == 'data source' then
+			tinsert(self.objects, name)
+		end
 	end
 
 	sort(self.objects)

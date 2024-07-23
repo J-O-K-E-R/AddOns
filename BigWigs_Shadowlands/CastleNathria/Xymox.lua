@@ -38,7 +38,6 @@ local stage3MythicTimers = {
 local L = mod:GetLocale()
 if L then
 	L.tear = "Tear" -- Short for Dimensional Tear
-	L.spirits = "Spirits" -- Short for Fleeting Spirits
 	L.seeds = "Seeds" -- Short for Seeds of Extinction
 end
 
@@ -72,7 +71,7 @@ function mod:GetOptions()
 		[328437] = L.tear, -- Dimensional Tear (Tear)
 		[325236] = CL.bomb, -- Glyph of Destruction (Bomb)
 		[326271] = CL.traps, -- Stasis Trap (Traps)
-		[340758] = L.spirits, -- Fleeting Spirits (Spirits)
+		[340758] = CL.spirits, -- Fleeting Spirits (Spirits)
 		[327902] = CL.fixate, -- Fixate (Fixate)
 		[340788] = L.seeds, -- Seeds of Extinction (Seeds)
 		[329107] = CL.explosion, -- Extinction (Explosion)
@@ -124,7 +123,7 @@ function mod:OnEngage()
 	self:Bar(328437, 17, CL.count:format(L.tear, dimensionalTearCount)) -- Dimensional Tear
 	self:Bar(335013, 21) -- Rift Blast
 	self:Bar(325236, 31, CL.count:format(self:SpellName(325236), glyphCount)) -- Glyph of Destruction
-	self:Bar(340758, 25, CL.count:format(L.spirits, spiritCount)) -- Fleeting Spirit
+	self:Bar(340758, 25, CL.count:format(CL.spirits, spiritCount)) -- Fleeting Spirit
 end
 
 --------------------------------------------------------------------------------
@@ -151,7 +150,7 @@ function mod:RAID_BOSS_EMOTE(_, msg)
 	end
 	if msg:find("327887", nil, true) then -- Spirits
 		playerListSpirits = {}
-		self:Message(340758, "cyan", CL.count:format(L.spirits, spiritCount))
+		self:Message(340758, "cyan", CL.count:format(CL.spirits, spiritCount))
 		self:PlaySound(340758, "long")
 		if allowTimers then
 			spiritCount = spiritCount + 1
@@ -161,7 +160,7 @@ function mod:RAID_BOSS_EMOTE(_, msg)
 			elseif self:GetStage() == 3 then
 				cd = stage3MythicTimers[340758][spiritCount]
 			end
-			self:CDBar(340758, cd, CL.count:format(L.spirits, spiritCount))
+			self:CDBar(340758, cd, CL.count:format(CL.spirits, spiritCount))
 		end
 	elseif msg:find("329834", nil, true) then -- Seeds
 		self:Message(340788, "cyan", CL.count:format(L.seeds, seedCount))
@@ -192,7 +191,7 @@ function mod:EncounterEvent() -- Stage changes
 	if nextStage == 2 then
 		self:StopBar(CL.count:format(CL.traps, trapCount)) -- Stasis Trap
 		self:StopBar(CL.count:format(L.tear, dimensionalTearCount)) -- Dimensional Tear
-		self:StopBar(CL.count:format(L.spirits, spiritCount)) -- Fleeting Spirit
+		self:StopBar(CL.count:format(CL.spirits, spiritCount)) -- Fleeting Spirit
 		self:StopBar(CL.count:format(self:SpellName(325399), sparkCount)) -- Hyperlight Spark
 
 		self:SetStage(2)
@@ -213,12 +212,12 @@ function mod:EncounterEvent() -- Stage changes
 		self:Bar(340788, 22.3, CL.count:format(L.seeds, seedCount)) -- Seeds of Extinction
 		self:Bar(325236, 25.2, CL.count:format(self:SpellName(325236), glyphCount)) -- Glyph of Destruction
 		if self:Mythic() then
-			self:Bar(340758, 27, CL.count:format(L.spirits, spiritCount)) -- Fleeting Spirit
+			self:Bar(340758, 27, CL.count:format(CL.spirits, spiritCount)) -- Fleeting Spirit
 		end
 	elseif nextStage == 3 then
 		self:StopBar(CL.count:format(CL.traps, trapCount)) -- Stasis Trap
 		self:StopBar(CL.count:format(L.tear, dimensionalTearCount)) -- Dimensional Tear
-		self:StopBar(CL.count:format(L.spirits, spiritCount)) -- Fleeting Spirit
+		self:StopBar(CL.count:format(CL.spirits, spiritCount)) -- Fleeting Spirit
 		self:StopBar(CL.count:format(L.seeds, seedCount)) -- Seeds of Extinction
 		self:StopBar(CL.count:format(self:SpellName(325399), sparkCount)) -- Hyperlight Spark
 
@@ -242,7 +241,7 @@ function mod:EncounterEvent() -- Stage changes
 		self:CDBar(325236, self:Mythic() and 52 or 50, CL.count:format(self:SpellName(325236), glyphCount)) -- Glyph of Destruction
 		if self:Mythic() then
 			self:CDBar(340788, 32.3, CL.count:format(L.seeds, seedCount)) -- Seeds of Extinction
-			self:Bar(340758, 34.3, CL.count:format(L.spirits, spiritCount)) -- Fleeting Spirit
+			self:Bar(340758, 34.3, CL.count:format(CL.spirits, spiritCount)) -- Fleeting Spirit
 		end
 	end
 end
@@ -344,10 +343,10 @@ function mod:HyperlightSpark(args)
 end
 -- The Relics of Castle Nathria
 -- function mod:FleetingSpirits(args)
--- 	self:Message(340758, "cyan", CL.count:format(L.spirits, spiritCount))
+-- 	self:Message(340758, "cyan", CL.count:format(CL.spirits, spiritCount))
 -- 	self:PlaySound(340758, "long")
 -- 	spiritCount = spiritCount + 1
--- 	self:CDBar(340758, 41.5, CL.count:format(L.spirits, spiritCount))
+-- 	self:CDBar(340758, 41.5, CL.count:format(CL.spirits, spiritCount))
 -- end
 
 function mod:Fixate(args)

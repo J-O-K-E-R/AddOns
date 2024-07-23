@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod(1653, "DBM-Party-Legion", 1, 740)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20231107025714")
+mod:SetRevision("20240714045506")
 mod:SetCreatureID(98696)
 mod:SetEncounterID(1833)
 mod:SetUsedIcons(3, 2, 1)
@@ -14,7 +14,7 @@ mod:RegisterCombat("combat")
 
 mod:RegisterEventsInCombat(
 	"SPELL_CAST_START 197418 197546 197974 197797",
-	"SPELL_CAST_SUCCESS 197478 197687 197622 197394",
+	"SPELL_CAST_SUCCESS 197478 197687 197622 197394 197546",
 	"SPELL_AURA_APPLIED 197478",
 	"SPELL_AURA_REMOVED 197478",
 --	"SPELL_PERIODIC_DAMAGE",
@@ -43,7 +43,7 @@ local warnDarkRush					= mod:NewTargetAnnounce(197478, 3)
 
 local specWarnBrutalGlaive			= mod:NewSpecialWarningMoveAway(197546, nil, nil, nil, 1, 2)
 local yellBrutalGlaive				= mod:NewYell(197546)
-local specWarnVengefulShear			= mod:NewSpecialWarningDefensive(197418, "Tank", nil, nil, 3, 2)
+local specWarnVengefulShear			= mod:NewSpecialWarningDefensive(197418, nil, nil, nil, 3, 2)
 local specWarnDarkRush				= mod:NewSpecialWarningYou(197478, nil, nil, nil, 1, 2)
 
 local timerBrutalGlaiveCD			= mod:NewCDCountTimer(15.7, 197546, nil, nil, nil, 3)--15 before
@@ -56,7 +56,7 @@ mod:AddSetIconOption("SetIconOnDarkRush", 197478, true, 6, {1, 2, 3})
 mod:AddTimerLine(DBM:EJ_GetSectionInfo(12281))
 local warnEyeBeam					= mod:NewTargetNoFilterAnnounce(197696, 2)
 
-local specWarnEyeBeam				= mod:NewSpecialWarningRun(197696, nil, nil, nil, 4, 2)
+local specWarnEyeBeam				= mod:NewSpecialWarningRunCount(197696, nil, nil, nil, 4, 2)
 local yellEyeBeam					= mod:NewYell(197696)
 local specWarnBonebreakingStrike	= mod:NewSpecialWarningDodge(197974, "Tank", nil, nil, 1, 2)
 local specWarnArcaneBlitz			= mod:NewSpecialWarningInterrupt(197797, "HasInterrupt", nil, nil, 1, 2)
@@ -93,7 +93,7 @@ function mod:OnCombatStart(delay)
 	self.vb.eyeCount = 0
 	timerBrutalGlaiveCD:Start(5.5-delay, 1)
 	timerVengefulShearCD:Start(8-delay, 1)
-	timerDarkRushCD:Start(11.1-delay, 1)
+	timerDarkRushCD:Start(10.8-delay, 1)
 	timerLeapCD:Start(33.9)--33.9-35.2 (they changed his starting energy from Legion)
 end
 
@@ -107,13 +107,13 @@ function mod:SPELL_CAST_START(args)
 	local spellId = args.spellId
 	if spellId == 197418 then
 		self.vb.shearCount = self.vb.shearCount + 1
-		specWarnVengefulShear:Show(self.vb.shearCount)
-		specWarnVengefulShear:Play("defensive")
+		if self:IsTanking("player", "boss1", nil, true) then
+			specWarnVengefulShear:Show()
+			specWarnVengefulShear:Play("defensive")
+		end
 		timerVengefulShearCD:Start(nil, self.vb.shearCount+1)
 	elseif spellId == 197546 then
-		self.vb.glaiveCount = self.vb.glaiveCount + 1
-		timerBrutalGlaiveCD:Start(nil, self.vb.glaiveCount+1)
-		self:BossTargetScanner(98696, "BrutalGlaiveTarget", 0.1, 10, true)
+		self:BossTargetScanner(args.sourceGUID, "BrutalGlaiveTarget", 0.1, 10, true)
 	elseif spellId == 197974 then
 		specWarnBonebreakingStrike:Show()
 		specWarnBonebreakingStrike:Play("shockwave")
@@ -139,6 +139,9 @@ function mod:SPELL_CAST_SUCCESS(args)
 		else
 			warnEyeBeam:Show(args.destName)
 		end
+	elseif spellId == 197546 then
+		self.vb.glaiveCount = self.vb.glaiveCount + 1
+		timerBrutalGlaiveCD:Start(13.7, self.vb.glaiveCount+1)--Stutter casts, so moved to success event
 	elseif spellId == 197622 then--Leap
 		self.vb.eyeCount = 0
 		self:SetStage(2)

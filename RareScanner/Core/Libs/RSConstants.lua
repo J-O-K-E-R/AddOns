@@ -24,8 +24,8 @@ RSConstants.LOOT_ITEM_ID = nil
 -- Current versions
 ---============================================================================
 
-RSConstants.CURRENT_DB_VERSION = 118
-RSConstants.CURRENT_LOOT_DB_VERSION = 130
+RSConstants.CURRENT_DB_VERSION = 124
+RSConstants.CURRENT_LOOT_DB_VERSION = 136
 
 ---============================================================================
 -- Current maps (newer)
@@ -50,11 +50,15 @@ RSConstants.DEFAULT_FILTERED_ENTITIES = {
 RSConstants.SHADOWLANDS_PRE_PATCH_EVENT = 1
 RSConstants.DIABLO_4_GOBLIN_EVENT = 2
 RSConstants.WARCRAFT_RUMBLE_CROSSOVER_EVENT = 3
+RSConstants.HEARTHSTONE_10TH_EVENT = 4
+RSConstants.NOBLEGARDEN_EVENT = 5
 
 RSConstants.EVENTS = {
 	[RSConstants.SHADOWLANDS_PRE_PATCH_EVENT] = false;
 	[RSConstants.DIABLO_4_GOBLIN_EVENT] = false;
 	[RSConstants.WARCRAFT_RUMBLE_CROSSOVER_EVENT] = true;
+	[RSConstants.HEARTHSTONE_10TH_EVENT] = false;
+	[RSConstants.NOBLEGARDEN_EVENT] = false;
 }
 
 ---============================================================================
@@ -73,16 +77,23 @@ RSConstants.DRAGONFLIGHT_DREAMSEED_MINIEVENT = 9
 
 -- Minievents that will have an option to filter/unfilter the icons from the worldmap
 RSConstants.MINIEVENTS_WORLDMAP_FILTERS = {
-	[RSConstants.DRAGONFLIGHT_DREAMSURGE_MINIEVENT] = true;
-	[RSConstants.DRAGONFLIGHT_STORM_INVASTION_FIRE_MINIEVENT] = true;
-	[RSConstants.DRAGONFLIGHT_STORM_INVASTION_WATER_MINIEVENT] = true;
-	[RSConstants.DRAGONFLIGHT_STORM_INVASTION_EARTH_MINIEVENT] = true;
-	[RSConstants.DRAGONFLIGHT_STORM_INVASTION_AIR_MINIEVENT] = true;
-	[RSConstants.DRAGONFLIGHT_HUNTING_PARTY_MINIEVENT] = true;
-	[RSConstants.DRAGONFLIGHT_FYRAKK_MINIEVENT] = true;
-	[RSConstants.DRAGONFLIGHT_WARCRAFT_RUMBLE_MINIEVENT] = true;
-	[RSConstants.DRAGONFLIGHT_DREAMSEED_MINIEVENT] = true;
+	[RSConstants.DRAGONFLIGHT_DREAMSURGE_MINIEVENT] = { active = true, mapIDs = { 2025, 2024, 2023, 2022 } };
+	[RSConstants.DRAGONFLIGHT_STORM_INVASTION_FIRE_MINIEVENT] = { active = true, mapIDs = { 2025, 2024, 2023, 2022 } };
+	[RSConstants.DRAGONFLIGHT_STORM_INVASTION_WATER_MINIEVENT] = { active = true, mapIDs = { 2025, 2024, 2023, 2022 } };
+	[RSConstants.DRAGONFLIGHT_STORM_INVASTION_EARTH_MINIEVENT] = { active = true, mapIDs = { 2025, 2024, 2023, 2022 } };
+	[RSConstants.DRAGONFLIGHT_STORM_INVASTION_AIR_MINIEVENT] = { active = true, mapIDs = { 2025, 2024, 2023, 2022 } };
+	[RSConstants.DRAGONFLIGHT_HUNTING_PARTY_MINIEVENT] = { active = true, mapIDs = { 2025, 2024, 2023, 2022 } };
+	[RSConstants.DRAGONFLIGHT_FYRAKK_MINIEVENT] = { active = true, mapIDs = { 2023, 2024} };
+	[RSConstants.DRAGONFLIGHT_WARCRAFT_RUMBLE_MINIEVENT] = { active = true, mapIDs = { 2025, 2024, 2023, 2022, 2199, 2112, 1, 84, 85 } };
+	[RSConstants.DRAGONFLIGHT_DREAMSEED_MINIEVENT] = { active = true, mapIDs = { 2200 } };
 }
+
+---============================================================================
+-- World events
+---============================================================================
+
+RSConstants.ULDUM_INVASSION_QUESTS = {57157,55350,56308}
+RSConstants.VALLEY_BLOSSOMS_INVASSION_QUESTS = {56064,57728,57008}
 
 ---============================================================================
 -- Timers
@@ -109,11 +120,13 @@ RSConstants.ITEM_SOURCE = {
 }
 
 RSConstants.ITEM_TYPE = {
+	UNKNOWN = 0,
 	APPEARANCE = 1,
 	TOY = 2,
 	PET = 3,
 	MOUNT = 4,
-	DRAKEWATCHER = 5
+	DRAKEWATCHER = 5,
+	CUSTOM = "c%s"
 }
 
 ---============================================================================
@@ -139,6 +152,7 @@ RSConstants.MAP_ANIMATIONS_ON_BOTH = 3
 RSConstants.PROFILE_DEFAULTS = {
 	profile = {
 		general = {
+			rescanTimer = 5,
 			scanRares = true,
 			scanContainers = true,
 			scanEvents = true,
@@ -151,39 +165,34 @@ RSConstants.PROFILE_DEFAULTS = {
 			scanWorldmapVignette = true,
 			scanTargetUnit = false,
 			ignoreCompletedEntities = true,
-			filteredRares = {},
-			filteredContainers = {},
-			filteredEvents = {},
-			filteredZones = {},
-			enableTomtomSupport = false,
-			autoTomtomWaypoints = false,
-			enableWaypointsSupport = false,
-			autoWaypoints = false,
 			showMaker = true,
 			marker = 8,
-			rescanTimer = 5
+			enableWaypointsSupport = false,
+			autoWaypoints = false,
+			enableTomtomSupport = false,
+			autoTomtomWaypoints = false
 		},
 		sound = {
 			soundDisabled = false,
-			soundPlayed = "Horn",
 			soundObjectDisabled = false,
-			soundObjectPlayed = "PVP Horde",
-			soundVolume = 4,
 			soundChannel = "Master",
+			soundVolume = 4,
+			soundPlayed = "Horn",
+			soundObjectPlayed = "PVP Horde",
 			soundCustomFolder = "RareScannerSounds"
 		},
 		display = {
 			displayButton = true,
 			displayMiniature = true,
 			displayButtonContainers = true,
-			scale = 0.8,
 			autoHideButton = 0,
+			scale = 0.8,
+			lockPosition = false,
 			displayRaidWarning = true,
 			displayChatMessage = true,
 			displayTimestampChatMessage = true,
 			enableNavigation = true,
 			navigationLockEntity = false,
-			lockPosition = false,
 			minimapButton = {
 				hide = false
 			},
@@ -199,8 +208,7 @@ RSConstants.PROFILE_DEFAULTS = {
 			defaultEventFilterType = RSConstants.ENTITY_FILTER_ALL
 		},
 		zoneFilters = {
-			filtersToggled = true,
-			filterOnlyMap = false
+			defaultZoneFilterType = RSConstants.ENTITY_FILTER_ALL
 		},
 		collections = {
 			filteredOnlyOnWorldMap = false,
@@ -223,10 +231,8 @@ RSConstants.PROFILE_DEFAULTS = {
 			displayAlreadyKilledNpcIconsReseteable = false,
 			displayProfessionRaresNpcIcons = true,
 			displayAchievementRaresNpcIcons = true,
-			displayMinieventsNpcIcons = {
-				[RSConstants.DRAGONFLIGHT_HUNTING_PARTY_MINIEVENT] = false;
-				[RSConstants.DRAGONFLIGHT_FYRAKK_MINIEVENT] = false;
-			},
+			displayMinieventsNpcIcons = { true, true, true, true, true, false, false },
+			displayCustomGroupNpcIcons = {},
 			displayOtherRaresNpcIcons = true,
 			displayContainerIcons = true,
 			displayAlreadyOpenedContainersIcons = false,
@@ -259,6 +265,7 @@ RSConstants.PROFILE_DEFAULTS = {
 			tooltipsState = true,
 			tooltipsSeen = true,
 			tooltipsCommands = true,
+			tooltipsFilterState = true,
 			lootAchievTooltipsScale = 0.7,
 			lootAchievementsPosition = "ANCHOR_LEFT",
 			overlayMaxColours = 10,
@@ -289,6 +296,7 @@ RSConstants.PROFILE_DEFAULTS = {
 			lootTooltipPosition = "ANCHOR_LEFT",
 			lootMinQuality = 0,
 			filterItemsCompletedQuest = true,
+			filterNotEquipableItems = false,
 			filterNotMatchingClass = false,
 			filterNotMatchingFaction = true,
 			filterAnimaItems = true,
@@ -345,6 +353,7 @@ RSConstants.CMD_TOMTOM_WAYPOINT = "waypoint"
 RSConstants.CMD_TOGGLE_DRAGON_GLYPHS = "tdg"
 RSConstants.CMD_OPEN_EXPLORER = "explorer"
 RSConstants.CMD_RECENTLY_SEEN = "rseen"
+RSConstants.CMD_IMPORT = "import"
 
 ---============================================================================
 -- AtlasNames
@@ -595,6 +604,9 @@ RSConstants.NPCS_WITH_PRE_EVENT = {
 	[210155] = 209898;
 	[210083] = 209912;
 	[210063] = 209915;
+	--Noblegarden
+	[219928] = 213665;
+	[219936] = 213665;
 }
 
 -- Contains that spawn after completing an event
@@ -637,13 +649,19 @@ RSConstants.NPCS_WITH_PRE_NPCS = {
 -- 156480 Next door entity inside Torghast
 -- 155660 Summons from the Depths
 RSConstants.IGNORED_VIGNETTES = { 156480, 155660, 163373, 370467, 370466, 182160, 182668, 182667, 185261, 376210, 200002, 190034, 191125, 210081, 210084, 210544, 210550 }
-RSConstants.NPCS_WITH_EVENT_VIGNETTE = { 72156, 154154, 154330, 164547, 164477, 160629, 175012, 157833, 166398, 164064, 162829, 157964, 162844, 171317, 170774, 162849, 170301, 170302, 170711, 170634, 170731, 172862, 172577, 158025, 158278, 170303, 179684, 179791, 179805, 177444, 180246, 179108, 179853, 179755, 179768, 179779, 179460, 179851, 179735, 169827, 203280 }
+RSConstants.NPCS_WITH_EVENT_VIGNETTE = { 72156, 154154, 154330, 164547, 164477, 160629, 175012, 157833, 166398, 164064, 162829, 157964, 162844, 171317, 170774, 162849, 170301, 170302, 170711, 170634, 170731, 172862, 172577, 158025, 158278, 170303, 179684, 179791, 179805, 177444, 180246, 179108, 179853, 179755, 179768, 179779, 179460, 179851, 179735, 169827, 203280, 213665 }
 RSConstants.NPCS_WITH_CONTAINER_VIGNETTE = { 179883 }
 RSConstants.CONTAINERS_WITH_NPC_VIGNETTE = { 369435, 398828 }
-RSConstants.EVENTS_WITH_NPC_VIGNETTE = { 204131, 204211, 204747, 204768, 203278, 203950, 204101, 203065, 203702, 203889, 205006, 204710, 204967, 204732, 204389, 204423, 204460, 204763 }
+RSConstants.EVENTS_WITH_NPC_VIGNETTE = { 204131, 204211, 204747, 204768, 203278, 203950, 204101, 203065, 203702, 203889, 205006, 204710, 204967, 204732, 204389, 204423, 204460, 204763, 214985 }
 RSConstants.NPCS_WITH_MULTIPLE_SPAWNS = { 69768, 69769, 69841, 69842, 70323 }
 RSConstants.CONTAINERS_WITH_MULTIPLE_SPAWNS = { 375366, 375530, 375362, 375363, 375373, 375290, 376587, 382029, 376386, 383733, 383734, 383735, 383732, 386214, 386165, 386166, 386167, 386168, 386172, 386174, 386179, 386208, 386212, 386213, 401844, 401845, 408719 }
 RSConstants.FIRIM_EXILE_OBJECTS = { 375973, 375982, 375983, 375984, 375985, 375986, 375987 }
+
+---============================================================================
+-- Custom NPCs
+---============================================================================
+
+RSConstants.DEFAULT_GROUP = 0
 
 ---============================================================================
 -- ItemIDs
@@ -687,6 +705,7 @@ RSConstants.NORMAL_NPC_TEXTURE_FILE = "OriginalSkull"
 RSConstants.RED_NPC_TEXTURE_FILE = "RedSkullDark"
 RSConstants.PINK_NPC_TEXTURE_FILE = "PinkSkullDark"
 RSConstants.BLUE_NPC_TEXTURE_FILE = "BlueSkullDark"
+RSConstants.PURPLE_NPC_TEXTURE_FILE = "CustomSkull"
 RSConstants.LIGHT_BLUE_NPC_TEXTURE_FILE = "BlueSkullLight"
 RSConstants.NORMAL_CONTAINER_TEXTURE_FILE = "OriginalChest"
 RSConstants.RED_CONTAINER_TEXTURE_FILE = "RedChest"
@@ -745,6 +764,10 @@ RSConstants.LIGHT_BLUE_NPC_TEXTURE = string.format(RSConstants.TEXTURE_PATH, RSC
 RSConstants.GROUP_LIGHT_BLUE_NPC_T_TEXTURE = string.format(RSConstants.TEXTURE_PATH, string.format("%s%s", RSConstants.LIGHT_BLUE_NPC_TEXTURE_FILE, RSConstants.GROUP_TOP_TEXTURE_FILE));
 RSConstants.GROUP_LIGHT_BLUE_NPC_L_TEXTURE = string.format(RSConstants.TEXTURE_PATH, string.format("%s%s", RSConstants.LIGHT_BLUE_NPC_TEXTURE_FILE, RSConstants.GROUP_LEFT_TEXTURE_FILE));
 RSConstants.GROUP_LIGHT_BLUE_NPC_R_TEXTURE = string.format(RSConstants.TEXTURE_PATH, string.format("%s%s", RSConstants.LIGHT_BLUE_NPC_TEXTURE_FILE, RSConstants.GROUP_RIGHT_TEXTURE_FILE));
+RSConstants.PURPLE_NPC_TEXTURE = string.format(RSConstants.TEXTURE_PATH, RSConstants.PURPLE_NPC_TEXTURE_FILE);
+RSConstants.GROUP_PURPLE_NPC_T_TEXTURE = string.format(RSConstants.TEXTURE_PATH, string.format("%s%s", RSConstants.PURPLE_NPC_TEXTURE_FILE, RSConstants.GROUP_TOP_TEXTURE_FILE));
+RSConstants.GROUP_PURPLE_NPC_L_TEXTURE = string.format(RSConstants.TEXTURE_PATH, string.format("%s%s", RSConstants.PURPLE_NPC_TEXTURE_FILE, RSConstants.GROUP_LEFT_TEXTURE_FILE));
+RSConstants.GROUP_PURPLE_NPC_R_TEXTURE = string.format(RSConstants.TEXTURE_PATH, string.format("%s%s", RSConstants.PURPLE_NPC_TEXTURE_FILE, RSConstants.GROUP_RIGHT_TEXTURE_FILE));
 RSConstants.NORMAL_CONTAINER_TEXTURE = string.format(RSConstants.TEXTURE_PATH, RSConstants.NORMAL_CONTAINER_TEXTURE_FILE);
 RSConstants.GROUP_NORMAL_CONTAINER_T_TEXTURE = string.format(RSConstants.TEXTURE_PATH, string.format("%s%s", RSConstants.NORMAL_CONTAINER_TEXTURE_FILE, RSConstants.GROUP_TOP_TEXTURE_FILE));
 RSConstants.GROUP_NORMAL_CONTAINER_L_TEXTURE = string.format(RSConstants.TEXTURE_PATH, string.format("%s%s", RSConstants.NORMAL_CONTAINER_TEXTURE_FILE, RSConstants.GROUP_LEFT_TEXTURE_FILE));
@@ -818,6 +841,9 @@ RSConstants.APPLY_COLLECTIONS_LOOT_FILTERS = "RARESCANNER_APPLY_COLLECTIONS_LOOT
 RSConstants.EXPLORER_FILTERING_DIALOG = "RARESCANNER_EXPLORER_FILTERING_DIALOG"
 RSConstants.EXPLORER_SCAN_NOT_DONE = "RARESCANNER_EXPLORER_SCAN_NOT_DONE"
 RSConstants.TARGET_UNIT_WARNING = "RARESCANNER_TARGET_UNIT_WARNING"
+RSConstants.ITEM_LIST_VALIDATION_ERROR = "RARESCANNER_INFO_DIALOG"
+RSConstants.ITEM_LIST_WRONG_IDS_ERROR = "RARESCANNER_ITEM_LIST_WRONG_IDS_ERROR"
+RSConstants.DELETE_GROUP_CONFIRMATION = "RARESCANNER_DELETE_GROUP_CONFIRMATION"
 
 ---============================================================================
 -- Explorer filters
@@ -828,6 +854,7 @@ RSConstants.EXPLORER_FILTER_DROP_PETS = 2
 RSConstants.EXPLORER_FILTER_DROP_TOYS = 3
 RSConstants.EXPLORER_FILTER_DROP_APPEARANCES = 4
 RSConstants.EXPLORER_FILTER_DROP_DRAKEWATCHER = 9
+RSConstants.EXPLORER_FILTER_DROP_CUSTOM = "c%s"
 RSConstants.EXPLORER_FILTER_PART_ACHIEVEMENT = 5
 RSConstants.EXPLORER_FILTER_DEAD = 6
 RSConstants.EXPLORER_FILTER_FILTERED = 7

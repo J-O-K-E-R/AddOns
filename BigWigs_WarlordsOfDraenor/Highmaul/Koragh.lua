@@ -365,9 +365,9 @@ do
 	end
 
 	function mod:ExpelMagicFelRemoved(args)
-		tDeleteItem(felMarks, args.destName)
-		if self:Me(args.destName) then
-			self:StopBar(args.spellId, args.destName)
+		self:DeleteFromTable(felMarks, args.destName)
+		if self:Me(args.destGUID) then
+			self:StopBar(args.spellName, args.destName)
 		end
 		if self.db.profile.custom_off_fel_marker then
 			self:CustomIcon(false, args.destName)

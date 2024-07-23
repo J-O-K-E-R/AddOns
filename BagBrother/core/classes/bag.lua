@@ -1,10 +1,10 @@
 --[[
-	bag.lua
-		A bag button object
+	A bag button object.
+	All Rights Reserved
 --]]
 
 local ADDON, Addon = ...
-local Sushi = LibStub('Sushi-3.1')
+local Sushi = LibStub('Sushi-3.2')
 local C = LibStub('C_Everywhere').Container
 local L = LibStub('AceLocale-3.0'):GetLocale(ADDON)
 local Bag = Addon.Tipped:NewClass('Bag', 'CheckButton')
@@ -182,10 +182,9 @@ function Bag:SetFocus(focus)
 end
 
 function Bag:Toggle()
+	local slot = self:GetID()
 	local profile = self:GetProfile()
-	local hidden = profile.hiddenBags
-	local slot = profile.exclusiveReagent and not hidden[REAGENTBANK_CONTAINER] and REAGENTBANK_CONTAINER or self:GetID()
-	hidden[slot] = not hidden[slot]
+	profile.hiddenBags[slot] = not profile.hiddenBags[slot]
 
 	self:SendFrameSignal('FILTERS_CHANGED')
 	self:SetFocus(true)
@@ -203,15 +202,16 @@ function Bag:Purchase()
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN)
 
 	if self:GetID() == REAGENTBANK_CONTAINER then
-		Sushi.Popup('CONFIRM_BUY_REAGENTBANK_TAB')
+		Sushi.Popup {
+			text = CONFIRM_BUY_REAGNETBANK_TAB, button1 = YES, button2 = NO,
+			money = GetReagentBankCost(),
+			OnAccept = BuyReagentBank
+		}
 	else
 		Sushi.Popup {
 			text = CONFIRM_BUY_BANK_SLOT, button1 = YES, button2 = NO,
-			hasMoneyFrame = 1, hideOnEscape = 1, timeout = 0,
-			OnAccept = PurchaseSlot,
-			OnShow = function(popup)
-				MoneyFrame_Update(popup.moneyFrame, GetBankSlotCost(GetNumBankSlots()))
-			end,
+			money = GetBankSlotCost(GetNumBankSlots()),
+			OnAccept = PurchaseSlot
 		}
 	end
 end
@@ -286,7 +286,12 @@ function Bag:UpdateTooltip()
 	elseif self.link then
 		GameTooltip:SetInventoryItem('player', self.slot)
 	elseif self:IsBankBag() then
-		GameTooltip:SetText(BANK_BAG, 1, 1, 1)
+		if self.owned then
+			GameTooltip:SetText(BANK_BAG, 1, 1, 1)
+		else
+			GameTooltip:AddLine(BANK_BAG_PURCHASE, 1,1,1)
+			SetTooltipMoney(GameTooltip, bag == REAGENTBANK_CONTAINER and GetReagentBankCost() or GetBankSlotCost())
+		end
 	elseif bag > NUM_BAG_SLOTS then
 		GameTooltip:SetText(EQUIP_CONTAINER_REAGENT, 1, 1, 1)
 	else
@@ -295,10 +300,7 @@ function Bag:UpdateTooltip()
 
 	-- instructions
 	if self.owned then
-		GameTooltip:AddLine((self:GetChecked() and L.TipHideBag or L.TipShowBag):format(L.Click))
-	elseif not self:IsCached() then
-		GameTooltip:AddLine(L.TipPurchaseBag:format(L.Click))
-		SetTooltipMoney(GameTooltip, bag == REAGENTBANK_CONTAINER and GetReagentBankCost() or GetBankSlotCost())
+		GameTooltip:AddLine(self:GetChecked() and L.HideBag or L.ShowBag)
 	end
 
 	GameTooltip:Show()
@@ -308,4 +310,4 @@ end
 --[[ Properties ]]--
 
 function Bag:IsBankBag() return self:GetID() > Addon.NumBags end
-function Bag:IsCombinedBagContainer() end -- trick blizzard
+function Bag:IsCombinedBagContainer() end -- delicious hack

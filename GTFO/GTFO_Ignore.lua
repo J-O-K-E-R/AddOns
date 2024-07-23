@@ -19,14 +19,15 @@ GTFO.IgnoreSpellCategory["Lava"] = {
 	override = true
 }
 
-if (not (GTFO.ClassicMode or GTFO.BurningCrusadeMode or GTFO.WrathMode)) then
-
+if (GTFO.CataclysmMode or GTFO.RetailMode) then
 	GTFO.IgnoreSpellCategory["HagaraWateryEntrenchment"] = {
 		-- mobID = 55689; -- Hagara the Stormbinder
 		spellID = 110317,
 		desc = "Watery Entrenchment (Hagara - Cataclysm)"
 	}
+end
 
+if (GTFO.RetailMode) then
 	GTFO.IgnoreSpellCategory["GarroshDesecrated"] = {
 		-- Garrosh Hellscream
 		spellID = 144762,
@@ -169,4 +170,14 @@ GTFO.IgnoreScan["421986"] = true; -- Tainted Bloom
 GTFO.IgnoreScan["430052"] = true; -- Searing Screams
 GTFO.IgnoreScan["423705"] = true; -- Burning Scales
 GTFO.IgnoreScan["418978"] = true; -- Burning Presence
-
+GTFO.IgnoreScan["420714"] = true; -- Noxious Blossom
+GTFO.IgnoreScan["425461"] = true; -- Tainted Heart
+GTFO.IgnoreScan["295625"] = true; -- Anger of the Bloodfin
+GTFO.IgnoreScan["422750"] = true; -- Shadowflame Rage
+GTFO.IgnoreScan["453445"] = true; -- Brilliance
+GTFO.IgnoreScan["441197"] = true; -- Righteous Frenzy
+GTFO.IgnoreScan["457686"] = true; -- Sureki Zealot's Oath
+GTFO.IgnoreScan["434796"] = true; -- Resonant Barrage
+GTFO.IgnoreScan["451764"] = true; -- Radiant Flame
+GTFO.IgnoreScan["435148"] = true; -- Blazing Strike
+GTFO.IgnoreScan["423665"] = true; -- Embrace the Light

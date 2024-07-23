@@ -15,8 +15,6 @@ end
 L = BigWigs:NewBossLocale("The Eye of the Jailer", "koKR")
 if L then
 	L.chains = "사슬" -- Short for Dragging Chains
-	L.pool = "바닥 깔기" -- Spreading Misery
-	L.pools = "바닥 깔기" -- Spreading Misery (multiple)
 	L.death_gaze = "죽음의 시선" -- Short for Titanic Death Gaze
 end
 
@@ -119,18 +117,22 @@ if L then
 	--L.custom_on_nameplate_fixate = "시선집중 네임플레이트 아이콘"
 	--L.custom_on_nameplate_fixate_desc = "Show an icon on the nameplate of Dark Sentinels that are fixed on you.\n\nRequires the use of Enemy Nameplates and a supported nameplate addon (KuiNameplates, Plater)."
 
+	--L.intermission_chains = "Intermission Chains"
 	L.chains = "사슬" -- Short for Domination Chains
 	L.chain = "사슬" -- Single Domination Chain
 	L.darkness = "장막" -- Short for Veil of Darkness
 	L.arrow = "화살" -- Short for Wailing Arrow
+	--L.arrow_done = "DONE" -- Message when the arrow has hit
 	L.wave = "파도" -- Short for Haunting Wave
 	L.dread = "공포" -- Short for Crushing Dread
-	L.orbs = "보주" -- Dark Communion
-	L.curse = "저주" -- Short for Curse of Lethargy
-	L.pools = "파멸" -- Banshee's Bane
 	L.scream = "비명" -- Banshee Scream
 
 	L.knife_fling = "비수 조심!" -- "Death-touched blades fling out"
+	--L.bridges = "Bridges"
+	--L.rive_counter = "%s (%d/%d)"
+	--L.soaks = "Soaks" -- Merciless
+	--L.count_x = "%s (x%d)(%d)"
+	--L.shroud_active = "Shroud (%d) - %.1f%%!"
 end
 
 L = BigWigs:NewBossLocale("Sanctum of Domination Affixes", "koKR")

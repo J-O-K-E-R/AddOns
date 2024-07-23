@@ -3,9 +3,9 @@ local L		= mod:GetLocalizedStrings()
 
 mod.statTypes = "normal,normal25,heroic,heroic25"
 
-mod:SetRevision("20231013020938")
+mod:SetRevision("20240512232312")
 mod:SetCreatureID(37813)
-mod:SetEncounterID(mod:IsClassic() and 848 or 1096)
+mod:SetEncounterID(not mod:IsPostCata() and 848 or 1096)
 mod:SetModelID(30790)
 mod:SetUsedIcons(1, 2, 3, 4, 5, 6, 7, 8)
 
@@ -46,14 +46,12 @@ local enrageTimer			= mod:NewBerserkTimer(480)
 mod:AddRangeFrameOption(12, 72378, "Ranged")
 mod:AddSetIconOption("BeastIcons", 72173, true, 5, {8, 7, 6, 5, 4})
 mod:AddSetIconOption("BoilingBloodIcons", 72385, false, 0, {1, 2, 3})
-mod:AddInfoFrameOption(72370, false)--Off by default, since you can literally just watch the bosses power bar
 
 mod.vb.warned_preFrenzy = false
 mod.vb.boilingBloodIcon = 1
 mod.vb.beastIcon = 8
 mod.vb.Mark = 0
 local boilingBloodTargets = {}
-local spellName = DBM:GetSpellInfo(72370)
 
 local function warnBoilingBloodTargets(self)
 	warnBoilingBlood:Show(table.concat(boilingBloodTargets, "<, >"))
@@ -81,18 +79,11 @@ function mod:OnCombatStart(delay)
 	if self.Options.RangeFrame then
 		DBM.RangeCheck:Show(12)
 	end
-	if self.Options.InfoFrame then
-		DBM.InfoFrame:SetHeader(spellName)
-		DBM.InfoFrame:Show(1, "enemypower", 2)
-	end
 end
 
 function mod:OnCombatEnd()
 	if self.Options.RangeFrame then
 		DBM.RangeCheck:Hide()
-	end
-	if self.Options.InfoFrame then
-		DBM.InfoFrame:Hide()
 	end
 end
 

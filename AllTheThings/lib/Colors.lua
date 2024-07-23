@@ -7,8 +7,9 @@ local _, app = ...;
 -- Color |cAARRGGBB values used throughout ATT
 app.Colors = {
 	ATT = "ffb4b4ff",
-	Raid = "ffff8000",
+	Raid = "ffFF7D01",	-- Raid chat color
 	SourceIgnored = "ffd15517",
+	Breadcrumb = "ffcbc3e3",
 	Locked = "ff7f40bf",
 	LockedWarning = "ffd15517",
 	Horde = "ffcc6666",
@@ -19,9 +20,10 @@ app.Colors = {
 	ChatLink = "ff149bfd",
 	TooltipDescription = "ff66ccff",
 	TooltipLore = "ff42a7eb",
+	TooltipWarning = "fffe040f",
 	DefaultDifficulty = "ff1eff00",
-	RemovedWithPatch = "ffffaaaa",
-	AddedWithPatch = "ffaaffaa",
+	RemovedWithPatch = "ffFEC1C0",	-- General channel color
+	AddedWithPatch = "ffC0fEC1",	-- Triad permutation of General channel color
 	Mount = "ffb19cd9",
 	Renown = "ff00bff3",
 	Unavailable = "ff808080",
@@ -29,8 +31,8 @@ app.Colors = {
 	TimeUnder2Hr = "ffffff00",
 	Time = "ff008000",
 	-- Settings
-	Account = "ff00CCFF",
-	Insane = "ffDC267F",
+	Account = "ff00CCFF",	-- Heirloom color
+	Insane = "ffDC267F",	-- Color-impaired friendly
 	-- Flat colors
 	Default = "ffEDBD21",	-- The "default" yellow colour of text labels, in some rare cases this needs to be referenced
 	Red = "ffFF0000",
@@ -66,9 +68,3 @@ end;
 -- Shaman				#0070DD
 -- Warlock				#8788EE
 -- Warrior				#C69B6D
-
--- ATT colours
-
--- Title				#B4B4FF
--- Header				#FFD100
--- Raid					#FF8000		Chat raid color:	#FF7D01

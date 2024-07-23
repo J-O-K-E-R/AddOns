@@ -5,7 +5,7 @@
 local mod, CL = BigWigs:NewBoss("Yogg-Saron", 603, 1649)
 if not mod then return end
 mod:RegisterEnableMob(33288, 33134, 33890) -- Yogg-Saron, Sara, Brain of Yogg-Saron
-mod:SetEncounterID(mod:Classic() and 756 or 1143)
+mod:SetEncounterID(1143)
 mod:SetRespawnTime(46)
 
 --------------------------------------------------------------------------------
@@ -135,8 +135,8 @@ function mod:OnEngage()
 	self:Berserk(900)
 end
 
-function mod:VerifyEnable()
-	return BigWigsLoader.GetBestMapForUnit("player") == 150 -- Floor 4, The Prison of Yogg-Saron
+function mod:VerifyEnable(_, _, mapArtID)
+	return mapArtID == 150 -- Floor 4, The Prison of Yogg-Saron
 end
 
 --------------------------------------------------------------------------------

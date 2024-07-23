@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod(2502, "DBM-Raids-Dragonflight", 3, 1200)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20231102154902")
+mod:SetRevision("20240702200348")
 mod:SetCreatureID(189813)
 mod:SetEncounterID(2635)
 mod:SetUsedIcons(8, 7, 6, 5, 4)
@@ -12,7 +12,7 @@ mod.respawnTime = 29
 mod:RegisterCombat("combat")
 
 mod:RegisterEventsInCombat(
-	"SPELL_CAST_START 387849 388302 376943 388410 375580 387943 385812 384273 387627 391382 395501",
+	"SPELL_CAST_START 387849 388302 376943 388410 375580 387943 385812 384273 387627 391382 395501 397431",
 --	"SPELL_CAST_SUCCESS",
 	"SPELL_SUMMON 387857",
 	"SPELL_AURA_APPLIED 391686 375580",
@@ -51,7 +51,6 @@ local timerCrosswindsCD							= mod:NewCDCountTimer(33, 388410, nil, nil, nil, 3
 local timerZephyrSlamCD							= mod:NewCDCountTimer(15.7, 375580, nil, "Tank|Healer", nil, 5, nil, DBM_COMMON_L.TANK_ICON)
 --local berserkTimer							= mod:NewBerserkTimer(600)
 
-mod:AddRangeFrameOption(5, 391686)
 --mod:AddInfoFrameOption(391686, true)
 --Volatile Infuser
 mod:AddTimerLine(DBM:EJ_GetSectionInfo(25903))
@@ -61,7 +60,8 @@ local specWarnBlowback							= mod:NewSpecialWarningSpell(395501, nil, nil, nil,
 local specWarnDivertedEssence					= mod:NewSpecialWarningInterruptCount(387943, "HasInterrupt", nil, nil, 1, 2)
 local specWarnAerialSlash						= mod:NewSpecialWarningDefensive(385812, nil, nil, nil, 1, 2)
 
-local timerAerialSlashCD						= mod:NewCDTimer(12, 385812, nil, "Tank|Healer", nil, 5, nil, DBM_COMMON_L.TANK_ICON)
+local timerAerialSlashCD						= mod:NewCDNPTimer(11.7, 385812, nil, "Tank|Healer", nil, 5, nil, DBM_COMMON_L.TANK_ICON)
+local timerDivertedEssenceCD					= mod:NewCDNPTimer(13.4, 387943, nil, nil, nil, 4, nil, DBM_COMMON_L.INTERRUPT_ICON)--13.4-15.8. Variance caused by interrupt timing. 13.4 if you kick instantly, 15.8 if you kick at last moment, it's basically 13.4 + cast time
 
 mod:AddSetIconOption("SetIconOnVolatileInfuser", "ej25903", true, 5, {8, 7, 6, 5, 4})
 --Thunder Caller
@@ -89,8 +89,8 @@ function mod:OnCombatStart(delay)
 	timerConductiveMarkCD:Start(4.6-delay, 1)
 	timerRagingBurstCD:Start(7-delay, 1)
 	if self:IsHard() then
-		timerZephyrSlamCD:Start(15.7-delay, 1)
-		timerCrosswindsCD:Start(25.5-delay, 1)
+		timerZephyrSlamCD:Start(15.4-delay, 1)
+		timerCrosswindsCD:Start(25.2-delay, 1)
 		timerCycloneCD:Start(35.2-delay, 1)
 		timerColaescingStormCD:Start(70-delay, 1)--70-73 (check ito it being 73 consistently on mythic)
 	else
@@ -99,19 +99,13 @@ function mod:OnCombatStart(delay)
 		timerCycloneCD:Start(45.2-delay, 1)
 		timerColaescingStormCD:Start(80-delay, 1)
 	end
-	if self.Options.RangeFrame then
-		DBM.RangeCheck:Show(5)
-	end
 --	if self.Options.InfoFrame then
---		DBM.InfoFrame:SetHeader(DBM:GetSpellInfo(391686))
+--		DBM.InfoFrame:SetHeader(DBM:GetSpellName(391686))
 --		DBM.InfoFrame:Show(self:IsMythic() and 20 or 10, "playerdebuffstacks", 391686)
 --	end
 end
 
 function mod:OnCombatEnd()
-	if self.Options.RangeFrame then
-		DBM.RangeCheck:Hide()
-	end
 --	if self.Options.InfoFrame then
 --		DBM.InfoFrame:Hide()
 --	end
@@ -125,20 +119,23 @@ function mod:SPELL_CAST_START(args)
 		specWarnCoalescingStorm:Show(self.vb.stormCount)
 		specWarnCoalescingStorm:Play("mobsoon")
 		--Timers reset by storm
+		timerConductiveMarkCD:Stop()
+		timerZephyrSlamCD:Stop()
+		timerCrosswindsCD:Stop()
 		if self:IsMythic() then
-			timerConductiveMarkCD:Restart(19.5, self.vb.markCount+1)
-			timerZephyrSlamCD:Restart(30, self.vb.slamCount+1)--30-33
-			timerCrosswindsCD:Restart(40, self.vb.crosswindCount+1)--40-45, but always a minimum of 40 from heer
+			timerConductiveMarkCD:Start(19.5, self.vb.markCount+1)
+			timerZephyrSlamCD:Start(30, self.vb.slamCount+1)--30-33
+			timerCrosswindsCD:Start(40, self.vb.crosswindCount+1)--40-45, but always a minimum of 40 from heer
 			timerColaescingStormCD:Start(86.2, self.vb.stormCount+1)
 		elseif self:IsHeroic() then
-			timerZephyrSlamCD:Restart(20.7, self.vb.slamCount+1)
-			timerCrosswindsCD:Restart(30.4, self.vb.crosswindCount+1)--40-45, but always a minimum of 40 from heer
-			timerConductiveMarkCD:Restart(35, self.vb.markCount+1)
+			timerZephyrSlamCD:Start(20.7, self.vb.slamCount+1)
+			timerCrosswindsCD:Start(30.4, self.vb.crosswindCount+1)--40-45, but always a minimum of 40 from heer
+			timerConductiveMarkCD:Start(35, self.vb.markCount+1)
 			timerColaescingStormCD:Start(75.5, self.vb.stormCount+1)
 		else
-			timerConductiveMarkCD:Restart(9.7, self.vb.markCount+1)
-			timerZephyrSlamCD:Restart(15.7, self.vb.slamCount+1)
-			timerCrosswindsCD:Restart(34, self.vb.crosswindCount+1)
+			timerConductiveMarkCD:Start(9.7, self.vb.markCount+1)
+			timerZephyrSlamCD:Start(14.6, self.vb.slamCount+1)
+			timerCrosswindsCD:Start(34, self.vb.crosswindCount+1)
 			timerColaescingStormCD:Start(86.2, self.vb.stormCount+1)
 		end
 	elseif spellId == 388302 then
@@ -149,9 +146,10 @@ function mod:SPELL_CAST_START(args)
 		self.vb.cycloneCount = self.vb.cycloneCount + 1
 		specWarnCyclone:Show(self.vb.cycloneCount)
 		specWarnCyclone:Play("pullin")
-		timerCycloneCD:Start(self:IsHeroic() and 75 or 86.2, self.vb.cycloneCount+1)
+		timerCycloneCD:Start(self:IsHeroic() and 72.8 or 86.2, self.vb.cycloneCount+1)
 		if timerZephyrSlamCD:GetRemaining(self.vb.slamCount+1) < 13.2 then
-			timerZephyrSlamCD:Restart(13.2, self.vb.slamCount+1)--13.2-15
+			timerZephyrSlamCD:Stop()
+			timerZephyrSlamCD:Start(13.2, self.vb.slamCount+1)--13.2-15
 		end
 	elseif spellId == 388410 then
 		self.vb.crosswindCount = self.vb.crosswindCount + 1
@@ -162,7 +160,8 @@ function mod:SPELL_CAST_START(args)
 			timerCrosswindsCD:Start(nil, self.vb.crosswindCount+1)
 		end
 		if timerZephyrSlamCD:GetRemaining(self.vb.slamCount+1) < 6 then
-			timerZephyrSlamCD:Restart(6, self.vb.slamCount+1)--6-8
+			timerZephyrSlamCD:Stop()
+			timerZephyrSlamCD:Start(6, self.vb.slamCount+1)--6-8
 		end
 	elseif spellId == 375580 then
 		self.vb.slamCount = self.vb.slamCount + 1
@@ -171,7 +170,7 @@ function mod:SPELL_CAST_START(args)
 			specWarnZephyrSlam:Play("carefly")
 		end
 		timerZephyrSlamCD:Start(nil, self.vb.slamCount+1)
-	elseif spellId == 387943 then
+	elseif spellId == 387943 or spellId == 397431 then
 		if not castsPerGUID[args.sourceGUID] then
 			castsPerGUID[args.sourceGUID] = 0
 			if self.Options.SetIconOnVolatileInfuser and self.vb.addIcon > 3 then--Only use up to 5 icons
@@ -189,6 +188,7 @@ function mod:SPELL_CAST_START(args)
 				specWarnDivertedEssence:Play("kickcast")
 			end
 		end
+		timerDivertedEssenceCD:Start(nil, args.sourceGUID)--13.4-15.8
 	elseif spellId == 385812 then
 		timerAerialSlashCD:Start(nil, args.sourceGUID)
 		if self:IsTanking("player", nil, nil, true, args.sourceGUID) and self:AntiSpam(3, 1) then
@@ -238,7 +238,8 @@ function mod:SPELL_SUMMON(args)
 			end
 			self.vb.addIcon = self.vb.addIcon - 1
 		end
-		timerAerialSlashCD:Start(6, args.destGUID)
+		timerDivertedEssenceCD:Start(2.3, args.destGUID)
+		timerAerialSlashCD:Start(5.1, args.destGUID)
 --	elseif spellId == 384757 then--Thunder Caller
 
 	end
@@ -282,6 +283,7 @@ function mod:UNIT_DIED(args)
 	local cid = self:GetCIDFromGUID(args.destGUID)
 	if cid == 192934 then--Volatile Infuser
 		timerAerialSlashCD:Stop(args.destGUID)
+		timerDivertedEssenceCD:Stop(args.destGUID)
 --	elseif cid == 194647 then--Thunder Caller
 
 	end

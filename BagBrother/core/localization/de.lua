@@ -7,10 +7,10 @@ local L = LibStub('AceLocale-3.0'):NewLocale(ADDON, 'deDE')
 if not L then return end
 
 --keybindings
-L.ToggleBags = 'Inventar umschalten'
-L.ToggleBank = 'Bank umschalten'
-L.ToggleGuild = 'Gildenbank umschalten'
-L.ToggleVault = 'Leerenlager umschalten'
+L.OpenBags = 'Inventar umschalten'
+L.OpenBank = 'Bank umschalten'
+L.OpenGuild = 'Gildenbank umschalten'
+L.OpenVault = 'Leerenlager umschalten'
 
 --terminal
 L.Commands = 'Befehlsliste'
@@ -20,7 +20,6 @@ L.CmdShowGuild = 'Schaltet die Gildenbank um'
 L.CmdShowVault = 'Schaltet das Leerenlager um'
 L.CmdShowVersion = 'Zeigt die aktuelle Version an'
 L.CmdShowOptions = 'Öffnet das Konfigurationsmenü'
-L.Updated = 'Aktualisiert auf v%s'
 
 --frame titles
 L.TitleBags = 'Inventar von %s'
@@ -28,7 +27,6 @@ L.TitleBank = 'Bank von %s'
 L.TitleVault = 'Leerenlager von %s'
 
 --dropdowns
-L.TitleFrames = '%s Rahmen'
 L.SelectCharacter = 'Charakter auswählen'
 L.ConfirmDelete = 'Sind Sie sicher, dass Sie die zwischengespeicherten Daten von %s löschen möchten?'
 
@@ -46,7 +44,6 @@ L.GuildFunds = 'Gildenkasse'
 L.TipGoldOnRealm = 'Auf %s gesamt'
 L.NumWithdraw = '%d abheben'
 L.NumDeposit = '%d einzahlen'
-L.NumRemainingWithdrawals = '%d verbleibende Abhebungen'
 
 --action tooltips
 L.TipChangePlayer = '%s um die Gegenstände anderer Charaktere anzuzeigen.'

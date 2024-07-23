@@ -3,26 +3,26 @@
 local _, app = ...;
 
 -- Global locals
-local pairs, string_format
-	= pairs, string.format;
+local pairs = pairs;
 
 -- App locals
-local NestObjects, BuildGroups, Colorize, CreateObject, NestObject, SearchForFieldContainer, SearchForObject
+local AssignChildren = app.AssignChildren;
+local NestObjects, CreateObject, NestObject, SearchForFieldContainer, SearchForObject
 
+local DynamicDataCache = app.CreateDataCache("dynamic", true);
+local Runner = app.CreateRunner("dynamic");
 
 -- Miscellaneous API Implementation
 -- Access via AllTheThings.Modules.Miscellaneous
 local api = {};
 app.Modules.Miscellaneous = api;
-api.OnLoad = function()
+app.AddEventHandler("OnLoad", function()
 	NestObject = app.NestObject
 	NestObjects = app.NestObjects
-	BuildGroups = app.BuildGroups
-	Colorize = app.Modules.Color.Colorize
 	CreateObject = app.__CreateObject
 	SearchForFieldContainer = app.SearchForFieldContainer
 	SearchForObject = app.SearchForObject;
-end
+end)
 
 local RecursiveParentMapping = {};
 -- Recurses upwards in the group hierarchy until finding the group with the specified value in the specified field. The
@@ -41,32 +41,27 @@ local function RecursiveParentMapper(group, field, value)
 	end
 end
 
-local DynamicDataCache = app.CreateDataCache("dynamic", true);
 
--- Common function set as the OnUpdate for a group which will build itself a 'nested' version of the
+-- Common function set as the OnClick for a group which will build itself a 'nested' version of the
 -- content which matches the specified .dynamic 'field' and .dynamic_value of the group
 local DynamicCategory_Nested = function(self)
 	-- app.PrintDebug("DC:N",self.dynamic,self.dynamic_value,self.dynamic_withsubgroups)
-	-- dynamic groups are ignored for the source tooltips if they aren't constrained to a specific value
-	self.sourceIgnored = not self.dynamic_value;
-	-- change the text color of the dynamic group to help indicate it is not included in the window total, if it's ignored
-	if self.sourceIgnored then
-		self.text = Colorize(self.text, app.Colors.SourceIgnored);
-	end
 	-- pull out all Things which should go into this category based on field & value
 	local groups = app:BuildSearchResponse(self.dynamic, self.dynamic_value, not self.dynamic_withsubgroups);
 	NestObjects(self, groups);
 	-- reset indents and such
-	BuildGroups(self);
+	AssignChildren(self);
 	-- delay-sort the top level groups
-	app.SortGroupDelayed(self, "name");
+	self.SortType = "Global";
+	-- don't fill into dynamic groups if they are popped out
+	self.skipFull = true
 	-- make sure these things are cached so they can be updated when collected, but run the caching after other dynamic groups are filled
-	app.DynamicRunner.Run(DynamicDataCache.CacheFields, self);
+	Runner.Run(DynamicDataCache.CacheFields, self);
 	-- run a direct update on itself after being populated
 	app.DirectGroupUpdate(self);
 end
 
--- Common function set as the OnUpdate for a group which will build itself a 'simple' version of the
+-- Common function set as the OnClick for a group which will build itself a 'simple' version of the
 -- content which matches the specified .dynamic 'field' of the group
 -- NOTE: Content must be cached using the dynamic 'field'
 local DynamicCategory_Simple = function(self)
@@ -90,8 +85,8 @@ local DynamicCategory_Simple = function(self)
 							-- store a copy of this top header if we dont have it
 							if not topHeaders[topText] then
 								-- app.PrintDebug("New Dynamic Top",self.dynamic,":",dynamicValue,"==>",topText)
-								-- app.PrintTable(topHeaders[topText])
 								topHeaders[topText] = CreateObject(top, true);
+								-- app.PrintTable(topHeaders[topText])
 							end
 							-- put a copy of the Thing into the matching top category (no uniques since only 1 per cached Thing)
 							-- remove it from being considered a cost within the dynamic category
@@ -118,8 +113,8 @@ local DynamicCategory_Simple = function(self)
 						-- store a copy of this top header if we dont have it
 						if not topHeaders[topText] then
 							-- app.PrintDebug("New Dynamic Top",self.dynamic,":",dynamicValue,"==>",topText)
-							-- app.PrintTable(topHeaders[topText])
 							topHeaders[topText] = CreateObject(top, true);
+							-- app.PrintTable(topHeaders[topText])
 						end
 						-- put a copy of the Thing into the matching top category (no uniques since only 1 per cached Thing)
 						-- remove it from being considered a cost within the dynamic category
@@ -129,25 +124,21 @@ local DynamicCategory_Simple = function(self)
 					end
 				end
 			end
-			-- dynamic groups for general Types are ignored for the source tooltips
-			self.sourceIgnored = true;
-		end
-		-- change the text color of the dynamic group to help indicate it is not included in the window total, if it's ignored
-		if self.sourceIgnored then
-			self.text = Colorize(self.text, app.Colors.SourceIgnored);
 		end
 		-- sort all of the Things by name in each top header and put it under the dynamic group
 		for _,header in pairs(topHeaders) do
 			-- delay-sort the groups in each categorized header
-			app.SortGroupDelayed(header, "name");
+			header.SortType = "Global";
 			NestObject(self, header);
 		end
 		-- reset indents and such
-		BuildGroups(self);
+		AssignChildren(self);
 		-- delay-sort the top level groups
-		app.SortGroupDelayed(self, "name");
+		self.SortType = "Global";
+		-- don't fill into dynamic groups if they are popped out
+		self.skipFull = true
 		-- make sure these things are cached so they can be updated when collected, but run the caching after other dynamic groups are filled
-		app.DynamicRunner.Run(DynamicDataCache.CacheFields, self);
+		Runner.Run(DynamicDataCache.CacheFields, self);
 		-- run a direct update on itself after being populated
 		app.DirectGroupUpdate(self);
 	else
@@ -158,27 +149,22 @@ end
 
 local Filler
 local function RecalculateFiller()
-	local dynamicSetting = app.Settings:Get("Dynamic:Style") or 0;
+	local dynamicSetting = app.Settings:Get("Dynamic:Style") or 1;
 	Filler = (dynamicSetting == 2 and DynamicCategory_Nested) or
 			(dynamicSetting == 1 and DynamicCategory_Simple) or nil;
 	-- app.PrintDebug("RecalculateFiller",dynamicSetting)
+	return Filler
 end
 
 -- Adds a Dynamic Category Filler function to the Function Runner which will fill the provided group using the existing dynamic/dynamic_value fields
 local function FillDynamicCategory(group, field, value)
+	-- app.PrintDebug("FDC:",group.dynamic,group.dynamic_value)
 	group.OnClick = false
-	group.OnUpdate = false
-	group.title = false
 	-- mark the top group as dynamic for the field which it used (so popouts under the dynamic header are considered unique from other dynamic popouts)
 	group.dynamic = group.dynamicID or field;
 	group.dynamic_value = group.dynamic_value or value;
-	-- app.PrintDebug("FDC:",group.dynamic,group.dynamic_value)
-	-- run a direct update on itself after being populated if the Filler exists
-	if Filler then
-		local runner = app.DynamicRunner
-		runner.Run(Filler, group);
-		runner.SetPerFrame(5);
-	end
+	Runner.Run(Filler, group);
+	Runner.SetPerFrame(5);
 	return group
 end
 
@@ -186,8 +172,6 @@ end
 -- Can indicate to keep sub-group Things if desired.
 local function NestDynamicValueCategories(group)
 	group.OnClick = false
-	group.OnUpdate = false
-	group.title = false
 	local cat;
 	local field = group.dynamicValueID
 	local cache = SearchForFieldContainer(field);
@@ -209,33 +193,31 @@ local function NestDynamicValueCategories(group)
 		NestObject(group, FillDynamicCategory(cat, field, id));
 	end
 	-- Make sure the Dynamic Category group is sorted when opened since order isn't guaranteed by the table
-	app.SortGroupDelayed(group, "name");
+	group.SortType = "Global";
 	return group
 end
 
 local function dynamic_title(t)
-	local title = string_format(app.L["CLICK_TO_CREATE_FORMAT"], (t.name or UNKNOWN).." "..app.L["DYNAMIC_CATEGORY_LABEL"])
-	t.title = title
-	return title
-end
-local function dynamic_visible()
-	return 0 < app.Settings:Get("Dynamic:Style") or nil
+	if t.__filled then return end
+	return app.L.CLICK_TO_CREATE_FORMAT:format((t.name or UNKNOWN).." "..app.L.SETTINGS_MENU.DYNAMIC_CATEGORY_LABEL)
 end
 local function dynamic_back()
 	return 0.3
 end
 local function dynamic_onclick(row, button)
-	RecalculateFiller()
+	if not RecalculateFiller() then return true end
 	-- fill the dynamic category group
 	FillDynamicCategory(row.ref)
 	-- don't handle further onclick logic (i.e. expanding)
+	row.ref.__filled = true
 	return true
 end
 local function dynamicvalues_onclick(row, button)
-	RecalculateFiller()
+	if not RecalculateFiller() then return end
 	-- fill the dynamic category group
 	NestDynamicValueCategories(row.ref)
 	-- allow further onclick logic (i.e. expanding)
+	row.ref.__filled = true
 end
 
 -- Allows creating an ATT object which can be toggled true/false, and when clicked captures the toggleID state into the parent and passes it into an optional handler
@@ -263,6 +245,16 @@ app.CreateToggle = app.CreateClass("Toggle", "toggleID", {
 	end,
 });
 
+-- Allows creating a group which is keyed based on only its 'text' field
+app.CreateRawText = app.CreateClass("RawText", "text", {
+	name = function(t)
+		return t.text
+	end,
+	isHeader = function()
+		return true
+	end,
+})
+
 -- Allows creating an ATT object which can be expanded to trigger an async population of the dynamic data it should contain, based on provided data in 't'
 -- Expected t-data:
 -- dynamic = The field which should be used for finding the data in this group
@@ -274,14 +266,12 @@ app.CreateDynamicHeader = app.CreateClass("Dynamic", "dynamicID", {
 	end,
 	-- Until clicked, show a description that click/expand will cause populating
 	["title"] = dynamic_title,
-	-- Dynamic categories only show if the setting is enabled
-	["visible"] = dynamic_visible,
+	["visible"] = app.ReturnTrue,
 	-- Tint the row backgrounds for separation from other data
 	["back"] = dynamic_back,
 	-- Always ignore dynamic categories for progress propagation
 	["sourceIgnored"] = app.ReturnTrue,
 });
-
 
 -- Allows creating an ATT object which can be expanded to trigger an async population of the dynamic data it should contain, based on provided data in 't'
 -- Expected t-data:
@@ -293,10 +283,85 @@ app.CreateDynamicHeaderByValue = app.CreateClass("DynamicValues", "dynamicValueI
 	end,
 	-- Until clicked, show a description that click/expand will cause populating
 	["title"] = dynamic_title,
-	-- Dynamic categories only show if the setting is enabled
-	["visible"] = dynamic_visible,
+	["visible"] = app.ReturnTrue,
 	-- Tint the row backgrounds for separation from other data
 	["back"] = dynamic_back,
 	-- Always ignore dynamic categories for progress propagation
 	["sourceIgnored"] = app.ReturnTrue,
 });
+
+local BaseClass__class = app.BaseClass.__class
+local VisualHeaderFields = {
+	-- back = function(t)
+	-- 	return 0.3;	-- visibility of which rows are cloned
+	-- end,
+	__type = function() return "VisualHeader" end,
+	hash = BaseClass__class.hash,
+	text = BaseClass__class.text,
+}
+local CreateVisualHeader, CreateVisualHeader__class
+CreateVisualHeader, CreateVisualHeader__class = app.CreateClass("VisualHeader", "noKey", VisualHeaderFields);
+app.CreateVisualHeader = CreateVisualHeader
+local Wrap = app.WrapObject;
+app.CreateVisualHeaderWithGroups = function(base, groups)
+	return Wrap(CreateVisualHeader(nil, {g=groups}), base)
+end
+
+-- modify some things of this class... the returned Class is actually the metatable for a Class object, so __class contains the actual field functions
+CreateVisualHeader__class = CreateVisualHeader__class.__class
+-- We don't want the BaseClass fields to be part of the VisualHeader __class (due to them being copied from DefaultFields)
+-- since that prevents those fields from falling through to the BaseObject as expected
+for k, v in pairs(BaseClass__class) do
+	if not VisualHeaderFields[k] then
+		CreateVisualHeader__class[k] = nil
+	end
+end
+-- manually remove the 'key' field since it isn't in BaseClass
+CreateVisualHeader__class.key = nil
+local Empty = app.EmptyFunction
+-- Fields which should not pass-through a value in a visual header
+for _,field in ipairs({
+	"collectible",
+	"sourceParent",
+	"customCollect",
+	"minReputation",
+	"maxReputation",
+	"OnUpdate",
+	"OnTooltip",
+	"_SettingsRefresh",
+	"_up",
+	"up",
+	"races",
+	"r",
+	"c",
+	"nmc",
+	"nmr",
+	"expanded",
+	"indent",
+	"g",
+	"progress",
+	"total",
+	"visible",
+	"modItemID",
+	"rawlink",
+	"sourceIgnored",
+	"costTotal",
+	"upgradeTotal",
+	"iconPath",
+	"tooltipInfo",
+	"working",
+	"TLUG",
+	"e",
+	"u",
+	"pb",
+	"pvp",
+	"races",
+	"isDaily",
+	"isWeekly",
+	"isMonthly",
+	"isYearly",
+	"repeatable",
+	"requireSkill",
+}) do
+	CreateVisualHeader__class[field] = Empty
+end

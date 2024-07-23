@@ -21,7 +21,6 @@ local IsPlayerSpell = IsPlayerSpell
 local IsResting = IsResting
 local IsSpellKnownOrOverridesKnown = IsSpellKnownOrOverridesKnown
 local UnitAffectingCombat = UnitAffectingCombat
-local UnitAura = UnitAura
 local UnitCanAttack = UnitCanAttack
 local UnitExists = UnitExists
 local UnitGroupRolesAssigned = UnitGroupRolesAssigned
@@ -102,7 +101,8 @@ NP.TriggerConditions = {
 		[8] = 'mythic+',
 		[23] = 'mythic',
 		[24] = 'timewalking',
-		[201] = 'normal', -- classic hardcore
+		[198] = 'normal', -- Classic: Season of Discovery
+		[201] = 'normal', -- Classic: Hardcore
 		-- raids
 		[7] = 'lfr',
 		[17] = 'lfr',
@@ -143,11 +143,14 @@ NP.TriggerConditions = {
 		[174] = 'heroic',
 		[185] = 'legacy20normal',
 		[186] = 'legacy40normal',
+		[215] = 'normal', -- Classic: Sunken Temple
 		-- wotlk
 		[175] = 'legacy10normal',
 		[176] = 'legacy25normal',
 		[193] = 'legacy10heroic',
-		[194] = 'legacy25heroic'
+		[194] = 'legacy25heroic',
+		-- follower dungeon
+		[205] = 'follower'
 	}
 }
 
@@ -360,7 +363,7 @@ end
 
 function NP:StyleFilterDispelCheck(frame, filter)
 	local index = 1
-	local name, _, _, auraType, _, _, _, isStealable, _, spellID = UnitAura(frame.unit, index, filter)
+	local name, _, _, auraType, _, _, _, isStealable, _, spellID = E:GetAuraData(frame.unit, index, filter)
 	while name do
 		if filter == 'HELPFUL' then
 			if isStealable then
@@ -373,7 +376,7 @@ function NP:StyleFilterDispelCheck(frame, filter)
 		end
 
 		index = index + 1
-		name, _, _, auraType, _, _, _, isStealable, _, spellID = UnitAura(frame.unit, index, filter)
+		name, _, _, auraType, _, _, _, isStealable, _, spellID = E:GetAuraData(frame.unit, index, filter)
 	end
 end
 
@@ -382,7 +385,7 @@ function NP:StyleFilterAuraData(frame, filter, unit)
 
 	if unit then
 		local index = 1
-		local name, _, count, _, _, expiration, source, _, _, spellID, _, _, _, _, modRate = UnitAura(unit, index, filter)
+		local name, _, count, _, _, expiration, source, _, _, spellID, _, _, _, _, modRate = E:GetAuraData(unit, index, filter)
 		while name do
 			local info = temp[name] or temp[spellID]
 			if not info then info = {} end
@@ -393,7 +396,7 @@ function NP:StyleFilterAuraData(frame, filter, unit)
 			info[index] = { count = count, expiration = expiration, source = source, modRate = modRate }
 
 			index = index + 1
-			name, _, count, _, _, expiration, source, _, _, spellID, _, _, _, _, modRate = UnitAura(unit, index, filter)
+			name, _, count, _, _, expiration, source, _, _, spellID, _, _, _, _, modRate = E:GetAuraData(unit, index, filter)
 		end
 	end
 
@@ -566,9 +569,9 @@ function NP:StyleFilterSetChanges(frame, actions, HealthColor, PowerColor, Borde
 	local db = NP:PlateDB(frame)
 
 	if Visibility or NameOnly then
-		c.NameOnly, c.Visibility = NameOnly, Visibility
+		c.Visibility, c.NameOnly = Visibility, NameOnly
 
-		NP:DisablePlate(frame, NameOnly, NameOnly)
+		NP:DisablePlate(frame, NameOnly and 1 or nil)
 
 		if Visibility then
 			frame:ClearAllPoints() -- lets still move the frame out cause its clickable otherwise
@@ -940,13 +943,13 @@ function NP:StyleFilterConditionCheck(frame, filter, trigger)
 	end
 
 	-- Player Vehicle
-	if (E.Retail or E.Wrath) and (trigger.inVehicle or trigger.outOfVehicle) then
+	if (E.Retail or E.Cata) and (trigger.inVehicle or trigger.outOfVehicle) then
 		local inVehicle = UnitInVehicle('player')
 		if (trigger.inVehicle and inVehicle) or (trigger.outOfVehicle and not inVehicle) then passed = true else return end
 	end
 
 	-- Unit Vehicle
-	if (E.Retail or E.Wrath) and (trigger.inVehicleUnit or trigger.outOfVehicleUnit) then
+	if (E.Retail or E.Cata) and (trigger.inVehicleUnit or trigger.outOfVehicleUnit) then
 		if (trigger.inVehicleUnit and frame.inVehicle) or (trigger.outOfVehicleUnit and not frame.inVehicle) then passed = true else return end
 	end
 
@@ -1201,7 +1204,7 @@ function NP:StyleFilterConditionCheck(frame, filter, trigger)
 	if frame.Buffs_ and trigger.buffs then
 		-- Has Stealable
 		if trigger.buffs.hasStealable or trigger.buffs.hasNoStealable then
-			local isStealable = NP:StyleFilterDispelCheck(frame, filter)
+			local isStealable = NP:StyleFilterDispelCheck(frame, 'HELPFUL')
 			if (trigger.buffs.hasStealable and isStealable) or (trigger.buffs.hasNoStealable and not isStealable) then passed = true else return end
 		end
 
@@ -1218,7 +1221,7 @@ function NP:StyleFilterConditionCheck(frame, filter, trigger)
 	if frame.Debuffs_ and trigger.debuffs and trigger.debuffs.names and next(trigger.debuffs.names) then
 		-- Has Dispellable
 		if trigger.debuffs.hasDispellable or trigger.debuffs.hasNoDispellable then
-			local canDispel = NP:StyleFilterDispelCheck(frame, filter)
+			local canDispel = NP:StyleFilterDispelCheck(frame, 'HARMFUL')
 			if (trigger.debuffs.hasDispellable and canDispel) or (trigger.debuffs.hasNoDispellable and not canDispel) then passed = true else return end
 		end
 
@@ -1305,7 +1308,7 @@ end
 
 function NP:StyleFilterVehicleFunction(_, unit)
 	unit = unit or self.unit
-	self.inVehicle = (E.Retail or E.Wrath) and UnitInVehicle(unit) or nil
+	self.inVehicle = (E.Retail or E.Cata) and UnitInVehicle(unit) or nil
 end
 
 function NP:StyleFilterTargetFunction(_, unit)

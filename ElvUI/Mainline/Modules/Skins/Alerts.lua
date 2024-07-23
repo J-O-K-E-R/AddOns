@@ -3,13 +3,14 @@ local S = E:GetModule('Skins')
 
 local _G = _G
 local next = next
+local hooksecurefunc = hooksecurefunc
 local unpack, select = unpack, select
 
 local CreateFrame = CreateFrame
-local GetItemInfo = GetItemInfo
+local GetItemQualityByID = C_Item.GetItemQualityByID
 local SetLargeGuildTabardTextures = SetLargeGuildTabardTextures
+
 local ITEM_QUALITY_COLORS = ITEM_QUALITY_COLORS
-local hooksecurefunc = hooksecurefunc
 
 local function forceAlpha(self, alpha, forced)
 	if alpha ~= 1 and forced ~= true then
@@ -199,7 +200,7 @@ local function SkinHonorAwardedAlert(frame)
 end
 
 local function SkinInvasionAlert(frame)
-	if not frame.isSkinned then
+	if not frame.IsSkinned then
 		frame:SetAlpha(1)
 		hooksecurefunc(frame, 'SetAlpha', forceAlpha)
 
@@ -218,7 +219,7 @@ local function SkinInvasionAlert(frame)
 
 			-- Icon border
 			if icon and icon:IsObjectType('Texture') then
-				if icon:GetTexture() == 236293 then -- interface/icons/ability_warlock_demonicpower
+				if icon:GetTexture() == 236293 then -- interface\icons\ability_warlock_demonicpower
 					icon.b = CreateFrame('Frame', nil, frame)
 					icon.b:SetTemplate()
 					icon.b:SetOutside(icon)
@@ -229,7 +230,7 @@ local function SkinInvasionAlert(frame)
 			end
 		end
 
-		frame.isSkinned = true
+		frame.IsSkinned = true
 	end
 end
 
@@ -274,7 +275,7 @@ local function SkinScenarioAlert(frame)
 end
 
 local function SkinWorldQuestCompleteAlert(frame)
-	if not frame.isSkinned then
+	if not frame.IsSkinned then
 		frame:SetAlpha(1)
 		hooksecurefunc(frame, 'SetAlpha', forceAlpha)
 
@@ -295,12 +296,12 @@ local function SkinWorldQuestCompleteAlert(frame)
 		frame.QuestTexture.b:SetOutside(frame.QuestTexture)
 		frame.QuestTexture:SetParent(frame.QuestTexture.b)
 
-		frame.isSkinned = true
+		frame.IsSkinned = true
 	end
 end
 
 local function SkinGarrisonFollowerAlert(frame, _, _, _, quality)
-	if not frame.isSkinned then
+	if not frame.IsSkinned then
 		frame.glow:Kill()
 		frame.shine:Kill()
 		frame.FollowerBG:SetAlpha(0)
@@ -343,7 +344,7 @@ local function SkinGarrisonFollowerAlert(frame, _, _, _, quality)
 			cover:SetAllPoints(squareBG)
 		end
 
-		frame.isSkinned = true
+		frame.IsSkinned = true
 	end
 
 	local color = ITEM_QUALITY_COLORS[quality]
@@ -355,7 +356,7 @@ local function SkinGarrisonFollowerAlert(frame, _, _, _, quality)
 end
 
 local function SkinGarrisonShipFollowerAlert(frame)
-	if not frame.isSkinned then
+	if not frame.IsSkinned then
 		frame.glow:Kill()
 		frame.shine:Kill()
 		frame.FollowerBG:SetAlpha(0)
@@ -369,12 +370,12 @@ local function SkinGarrisonShipFollowerAlert(frame)
 		frame.backdrop:Point('TOPLEFT', frame, 'TOPLEFT', 16, -3)
 		frame.backdrop:Point('BOTTOMRIGHT', frame, 'BOTTOMRIGHT', -16, 16)
 
-		frame.isSkinned = true
+		frame.IsSkinned = true
 	end
 end
 
 local function SkinGarrisonTalentAlert(frame)
-	if not frame.isSkinned then
+	if not frame.IsSkinned then
 		frame:GetRegions():Hide()
 		frame.glow:Kill()
 		frame.shine:Kill()
@@ -392,12 +393,12 @@ local function SkinGarrisonTalentAlert(frame)
 		frame.backdrop:Point('TOPLEFT', frame, 'TOPLEFT', 8, -2)
 		frame.backdrop:Point('BOTTOMRIGHT', frame, 'BOTTOMRIGHT', -6, 2)
 
-		frame.isSkinned = true
+		frame.IsSkinned = true
 	end
 end
 
 local function SkinGarrisonBuildingAlert(frame)
-	if not frame.isSkinned then
+	if not frame.IsSkinned then
 		frame.glow:Kill()
 		frame.shine:Kill()
 		frame:GetRegions():Hide()
@@ -415,12 +416,12 @@ local function SkinGarrisonBuildingAlert(frame)
 		frame.Icon.b:SetOutside(frame.Icon)
 		frame.Icon:SetParent(frame.Icon.b)
 
-		frame.isSkinned = true
+		frame.IsSkinned = true
 	end
 end
 
 local function SkinGarrisonMissionAlert(frame)
-	if not frame.isSkinned then
+	if not frame.IsSkinned then
 		frame.glow:Kill()
 		frame.shine:Kill()
 		frame.IconBG:Hide()
@@ -439,12 +440,12 @@ local function SkinGarrisonMissionAlert(frame)
 		frame.backdrop:Point('TOPLEFT', frame, 'TOPLEFT', 8, -2)
 		frame.backdrop:Point('BOTTOMRIGHT', frame, 'BOTTOMRIGHT', -6, 2)
 
-		frame.isSkinned = true
+		frame.IsSkinned = true
 	end
 end
 
 local function SkinGarrisonShipMissionAlert(frame)
-	if not frame.isSkinned then
+	if not frame.IsSkinned then
 		frame.Background:Kill()
 		frame.glow:Kill()
 		frame.shine:Kill()
@@ -462,12 +463,12 @@ local function SkinGarrisonShipMissionAlert(frame)
 		frame.backdrop:Point('TOPLEFT', frame, 'TOPLEFT', 8, -2)
 		frame.backdrop:Point('BOTTOMRIGHT', frame, 'BOTTOMRIGHT', -6, 2)
 
-		frame.isSkinned = true
+		frame.IsSkinned = true
 	end
 end
 
 local function SkinGarrisonRandomMissionAlert(frame, _, _, _, _, _, quality)
-	if not frame.isSkinned then
+	if not frame.IsSkinned then
 		frame.Background:Kill()
 		frame.Blank:Kill()
 		frame.IconBG:Kill()
@@ -487,7 +488,7 @@ local function SkinGarrisonRandomMissionAlert(frame, _, _, _, _, _, quality)
 		frame.backdrop:Point('TOPLEFT', frame, 'TOPLEFT', 8, -2)
 		frame.backdrop:Point('BOTTOMRIGHT', frame, 'BOTTOMRIGHT', -6, 2)
 
-		frame.isSkinned = true
+		frame.IsSkinned = true
 	end
 
 	if frame.PortraitFrame and frame.PortraitFrame.squareBG then
@@ -501,7 +502,7 @@ local function SkinGarrisonRandomMissionAlert(frame, _, _, _, _, _, quality)
 end
 
 local function SkinLegendaryItemAlert(frame, itemLink)
-	if not frame.isSkinned then
+	if not frame.IsSkinned then
 		frame.Background:Kill()
 		frame.Background2:Kill()
 		frame.Background3:Kill()
@@ -526,10 +527,10 @@ local function SkinLegendaryItemAlert(frame, itemLink)
 		frame.backdrop:Point('TOPLEFT', frame, 'TOPLEFT', 20, -20)
 		frame.backdrop:Point('BOTTOMRIGHT', frame, 'BOTTOMRIGHT', -20, 20)
 
-		frame.isSkinned = true
+		frame.IsSkinned = true
 	end
 
-	local _, _, itemRarity = GetItemInfo(itemLink)
+	local itemRarity = GetItemQualityByID(itemLink)
 	local color = itemRarity and ITEM_QUALITY_COLORS[itemRarity]
 	if color then
 		frame.Icon.b:SetBackdropBorderColor(color.r, color.g, color.b)

@@ -37,6 +37,9 @@ if L then
 	L.dkbar = "死亡騎士（%d）"
 	L.riderbar = "騎兵（%d）"
 
+	--L.gate = "Gate Open!"
+	--L.gatebar = "Gate opens"
+
 	L.phase_soon = "10秒後進入房間！"
 
 	L.engage_message = "『收割者』高希已進入參戰！"
@@ -49,21 +52,7 @@ end
 
 L = BigWigs:NewBossLocale("Heigan the Unclean", "zhTW")
 if L then
-	L.teleport_trigger = "你的生命正走向終結。"
-
-	L.teleport = "傳送"
-	L.teleport_desc = "當傳送時發出警報。"
-	L.teleport_1min_message = "1分鐘後傳送"
-	L.teleport_30sec_message = "30秒後傳送"
-	L.teleport_10sec_message = "10秒後傳送！"
-	L.on_platform_message = "傳送！ - 45秒後海根出現！"
-
-	L.to_floor_30sec_message = "30 秒後返回"
-	L.to_floor_10sec_message = "10 秒後返回！"
-	L.on_floor_message = "返回！90秒後，傳送！"
-
-	L.teleport_bar = "傳送"
-	L.back_bar = "出現"
+	L.teleport_yell_trigger = "你的生命正走向終結。"
 end
 
 L = BigWigs:NewBossLocale("The Four Horsemen", "zhTW")
@@ -108,22 +97,7 @@ end
 
 L = BigWigs:NewBossLocale("Noth the Plaguebringer", "zhTW")
 if L then
-	L.add_trigger = "起來吧，我的戰士們!起來，再為主人盡忠一次!"
-
-	L.teleport = "傳送"
-	L.teleport_desc = "當施放傳送時發出警報。"
-	--L.teleport_balcony = "Teleport! He's on the balcony!"
-	--L.teleport_room = "Teleport! He's back in room!"
-
-	L.curse_explosion = "詛咒爆炸！"
-	L.curse_warn = "诅咒！"
-	L.curse_10secwarn = "約10秒後，詛咒"
-	L.curse_bar = "下一詛咒"
-
-	L.wave = "召喚骷髏"
-	L.wave_desc = "當召喚骷髏時發出警報。"
-	L.wave1 = "第一波"
-	L.wave2 = "第二波"
+	L.adds_yell_trigger = "起來吧，我的戰士們" -- 起來吧，我的戰士們!起來，再為主人盡忠一次!
 end
 
 L = BigWigs:NewBossLocale("Maexxna", "zhTW")
@@ -145,6 +119,9 @@ if L then
 	L.airphase_trigger = "%s離地升空了!"
 	L.deepbreath_trigger = "%s深深地吸了一口氣……" -- XXX Verify
 
+	--L.air_phase = "Air Phase"
+	--L.ground_phase = "Ground Phase"
+
 	L.ice_bomb = "寒冰炸彈"
 	L.ice_bomb_warning = "即將 寒冰炸彈"
 	L.ice_bomb_bar = "寒冰炸彈 落地"
@@ -163,23 +140,19 @@ end
 
 L = BigWigs:NewBossLocale("Thaddius", "zhTW")
 if L then
-	L.phase1_trigger1 = "斯塔拉格要碾碎你!"
-	L.phase1_trigger2 = "主人要吃了你!"
-	L.phase2_trigger1 = "咬碎……你的……骨頭……"
-	L.phase2_trigger2 = "打…碎…你……"
-	L.phase2_trigger3 = "殺……"
+	--L[15929] = "Stalagg"
+	--L[15930] = "Feugen"
 
-	L.add_death_trigger = "%s死亡了。"
-	L.overload_trigger = "%s超負荷！"
+	L.stage1_yell_trigger1 = "斯塔拉格要碾碎你!"
+	L.stage1_yell_trigger2 = "主人要吃了你!"
 
-	L.polarity_changed = "兩極移形改變！"
-	L.polarity_nochange = "相同兩極移形！"
-	L.polarity_first_positive = "你是 >正極<！"
-	L.polarity_first_negative = "你是 >負極<！"
+	L.stage2_yell_trigger1 = "咬碎……你的……骨頭……"
+	L.stage2_yell_trigger2 = "打…碎…你……"
+	L.stage2_yell_trigger3 = "殺……"
 
-	L.throw = "投擲"
-	L.throw_desc = "當主坦克被投擲到對面平台時發出警報。"
-	L.throw_warning = "約5秒後，投擲！"
+	L.add_death_emote_trigger = "%s死亡了。"
+	L.overload_emote_trigger = "%s超負荷！"
+	--L.add_revive_emote_trigger = "%s is jolted back to life!"
 
 	--L.polarity_extras = "Additional alerts for Polarity Shift positioning"
 
@@ -207,4 +180,6 @@ if L then
 	L.right = "---> 向右 ---> 向右 --->"
 	L.swap = "^^^^ 交換 ^^^^ 交換 ^^^^"
 	L.stay = "==== 不要動 ==== 不要動 ===="
+
+	--L.chat_message = "The Thaddius mod supports showing you directional arrows and playing voices. Open the options to configure them."
 end

@@ -1,6 +1,6 @@
 # <DBM Mod> Raids (Legion)
 
-## [r45](https://github.com/DeadlyBossMods/DBM-Legion/tree/r45) (2023-11-07)
-[Full Changelog](https://github.com/DeadlyBossMods/DBM-Legion/compare/r44...r45) [Previous Releases](https://github.com/DeadlyBossMods/DBM-Legion/releases)
+## [r54](https://github.com/DeadlyBossMods/DBM-Legion/tree/r54) (2024-06-29)
+[Full Changelog](https://github.com/DeadlyBossMods/DBM-Legion/compare/r53...r54) [Previous Releases](https://github.com/DeadlyBossMods/DBM-Legion/releases)
 
-- Bump tocs  
+- Fix deprecated stage timers  

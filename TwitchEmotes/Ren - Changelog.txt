@@ -1926,7 +1926,6 @@ Coomer
 KEKPog
 OkayChomp
 PepeFrench
-PepeJew
 PepeLaffe
 PepePopcorn
 SadBlanket
@@ -3627,12 +3626,52 @@ typegPaul
 typegWeed
 typegYIP
 
-Removed CatDance
 
 
 ----
 Twitch Emotes V2.62.1 - Christmas update
 ----
+
+Restored Christmas emotes
+
+
+
+----
+Twitch Emotes V2.62.1 - Mid-December update
+----
+Added:
+:Awoken:
+LETHIMCOOK
+
+Improved animations for YEPPERS and shadowChatting
+
+
+
+
+----
+Twitch Emotes V2.62.2 - 2024 Update
+----
+Reverted Xmas emotes
+
+Added:
+KEKok
+dejj
+:horror:
+ChipiChipi
+
+
+
+----
+Twitch Emotes V2.62.3 - February update 10.2.5
+----
+Added support for animated emotes in whisper windows
+Updated LibUIDropDownMenu
+
+Added:
+:alert:
+:groove:
+
+
 
 ----
 To do

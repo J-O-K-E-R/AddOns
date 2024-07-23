@@ -1,10 +1,13 @@
 if not WeakAuras.IsLibsOK() then return end
-local AddonName, OptionsPrivate = ...
+---@type string
+local AddonName = ...
+---@class OptionsPrivate
+local OptionsPrivate = select(2, ...)
 local L = WeakAuras.L
 
 local pairs, next, type, unpack = pairs, next, type, unpack
 
-local Type, Version = "WeakAurasPendingUpdateButton", 5
+local Type, Version = "WeakAurasPendingUpdateButton", 6
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
 
@@ -57,7 +60,14 @@ local methods = {
     self.linkedChildren = {}
 
     function self.callbacks.OnUpdateClick()
-      WeakAuras.Import(self.companionData.encoded)
+      local linkedAuras = {}
+      for auraId in pairs(self.linkedAuras) do
+        if not self.linkedChildren[auraId] then
+          tinsert(linkedAuras, auraId)
+        end
+      end
+
+      WeakAuras.Import(self.companionData.encoded, nil, nil, linkedAuras)
     end
 
     self:SetTitle(self.companionData.name)

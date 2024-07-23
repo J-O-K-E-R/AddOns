@@ -15,8 +15,6 @@ end
 L = BigWigs:NewBossLocale("The Eye of the Jailer", "esES")
 if L then
 	L.chains = "Cadenas" -- Short for Dragging Chains
-	L.pool = "Charco" -- Spreading Misery
-	L.pools = "Charcos" -- Spreading Misery (multiple)
 	L.death_gaze = "Mirada Aniquiladora" -- Short for Titanic Death Gaze
 end
 
@@ -119,18 +117,22 @@ if L then
 	L.custom_on_nameplate_fixate = "Icono placa de nombre Fijado"
 	L.custom_on_nameplate_fixate_desc = "Muestra un icono en la placa de nombre del Centinela Oscuro que se fija en ti.\n\nRequiere el uso de Placa de nombre enemigas y un addon de placas de nombres soportado (KuiNameplates, Plater)."
 
+	--L.intermission_chains = "Intermission Chains"
 	L.chains = "Cadenas" -- Short for Domination Chains
 	L.chain = "Cadena" -- Single Domination Chain
 	L.darkness = "Oscuridad" -- Short for Veil of Darkness
 	L.arrow = "Flecha" -- Short for Wailing Arrow
+	--L.arrow_done = "DONE" -- Message when the arrow has hit
 	L.wave = "Ola" -- Short for Haunting Wave
 	L.dread = "Terror" -- Short for Crushing Dread
-	L.orbs = "Orbes" -- Dark Communion
-	L.curse = "Maldicion" -- Short for Curse of Lethargy
-	L.pools = "Charcos" -- Banshee's Bane
 	L.scream = "Alarido" -- Banshee Scream
 
 	L.knife_fling = "¡Cuchillas fuera!" -- "Death-touched blades fling out"
+	--L.bridges = "Bridges"
+	--L.rive_counter = "%s (%d/%d)"
+	--L.soaks = "Soaks" -- Merciless
+	--L.count_x = "%s (x%d)(%d)"
+	--L.shroud_active = "Shroud (%d) - %.1f%%!"
 end
 
 L = BigWigs:NewBossLocale("Sanctum of Domination Affixes", "esES")

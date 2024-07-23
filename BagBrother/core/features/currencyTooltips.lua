@@ -1,7 +1,6 @@
 --[[
-	currencyTooltips.lua
-		Adds counts to currency tooltips and reorganizes meta info for better readability.
-		All Rights Reserved.
+	Adds counts to currency tooltips and reorganizes meta info for better readability.
+	All Rights Reserved
 ]]--
 
 local ADDON, Addon = ...
@@ -17,7 +16,7 @@ local MAXIMUM = CURRENCY_TOTAL_CAP:match('[^:]+')
 
 function TipCounts:OnEnable()
 	if Addon.sets.countCurrency then
-		if TooltipDataProcessor then
+		if C_TooltipInfo then
 			TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Currency,  self.OnCurrency)
 		else
 			for _,frame in pairs {UIParent:GetChildren()} do

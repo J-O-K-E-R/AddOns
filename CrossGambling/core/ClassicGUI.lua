@@ -127,25 +127,33 @@ CGAcceptOnes:SetSize(150, 30)
 CGAcceptOnes:SetPoint("TOPLEFT", GCchatMethod, "BOTTOMLEFT", -0, -25)
 CGAcceptOnes:SetText("New Game")
 CGAcceptOnes:SetNormalFontObject("GameFontNormal")
+
 CGAcceptOnes:SetScript("OnClick", function()
-if CGAcceptOnes:GetText() == "Host Game" then
-CGAcceptOnes:SetText("New Game")
-else
-self.game.state = "START"
-self:SendMsg("R_NewGame")
---Sets same roll for everyone.
-self:SendMsg("SET_WAGER", CGEditBox:GetText())
---Switches everyone to same gamemode. 
-self:SendMsg("GAME_MODE", CGGameMode:GetText())
---Switches everyone to proper chatmethod. 
-self:SendMsg("Chat_Method", GCchatMethod:GetText())
+    CGAcceptOnes:Disable()  -- Disable the button during processing
 
-self:SendMsg("SET_HOUSE", CGGuildPercent:GetText())
---Starts a new game but only if they're host. 
-self.game.host = true
-self:SendMsg("New_Game")
+    if CGAcceptOnes:GetText() == "Host Game" then
+        CGAcceptOnes:SetText("New Game")
+    else
+        self.game.state = "START"
+        self:SendMsg("R_NewGame")
+        self.game.host = true
+        self:SendMsg("New_Game")
 
-end
+        -- Sets same roll for everyone.
+        self:SendMsg("SET_WAGER", CGEditBox:GetText())
+
+        -- Switches everyone to the same gamemode.
+        self:SendMsg("GAME_MODE", CGGameMode:GetText())
+
+        -- Switches everyone to the proper chat method.
+        self:SendMsg("Chat_Method", GCchatMethod:GetText())
+
+        self:SendMsg("SET_HOUSE", CGGuildPercent:GetText())
+
+        -- Starts a new game but only if they're the host.
+    end
+
+    CGAcceptOnes:Enable()   -- Enable the button after processing
 end)
 
 local CGLastCall = CreateFrame("Button", nil, MainMenu, "UIPanelButtonTemplate")
@@ -255,7 +263,7 @@ end)
 local CGRealmFilter = CreateFrame("Button", "CGRealmFilter", OptionsButton, "UIPanelButtonTemplate")
 CGRealmFilter:SetPoint("TOPLEFT", CGReset, "BOTTOMLEFT", -0, -3)
 CGRealmFilter:SetSize(158, 30)
-CGRealmFilter:SetText("Realm Filter(ON)")
+CGRealmFilter:SetText("Realm Filter(OFF)")
 CGRealmFilter:Show()
 
 -- Function to toggle the realm filter
@@ -546,49 +554,65 @@ local playerListFrame = CreateFrame("Frame", "PlayerListFrame", CGLeftMenu)
 playerListFrame:SetSize(300, 150)
 playerListFrame:SetPoint("CENTER")
 
--- Create a new frame to hold the player buttons
-local playerButtonsFrame = CreateFrame("Frame", "PlayerButtonsFrame", playerListFrame)
-playerButtonsFrame:SetSize(300, 150)
-playerButtonsFrame:SetPoint("TOPLEFT", playerListFrame, 0, -1)
+-- Create a scroll frame to hold the player list
+local scrollFrame = CreateFrame("ScrollFrame", "PlayerListScrollFrame", playerListFrame, "UIPanelScrollFrameTemplate")
+scrollFrame:SetSize(266, 170)
+scrollFrame:SetPoint("TOPLEFT", 10, 15)
+
+-- Enable scrolling with the mouse wheel
+scrollFrame:EnableMouseWheel(true)
+scrollFrame:SetScript("OnMouseWheel", function(self, delta)
+    local currentValue = scrollFrame:GetVerticalScroll()
+    local rowHeight = 30
+    local numRows = #CGPlayers
+    local maxRows = math.max(numRows * rowHeight - scrollFrame:GetHeight(), 0)
+    local newValue = math.max(0, math.min(currentValue - delta * rowHeight, maxRows))
+    scrollFrame:SetVerticalScroll(newValue)
+end)
+
+local playerButtonsFrame = CreateFrame("Frame", "PlayerButtonsFrame", scrollFrame)
+playerButtonsFrame:SetSize(280, 1)  -- Set the height to 1 for dynamic sizing
+scrollFrame:SetScrollChild(playerButtonsFrame)
 
 -- create a new table to store the player buttons
 playerButtons = {}
 
 function UpdatePlayerList()
-	row = 0
-	column = 0
--- remove all current player buttons
-	for i, button in ipairs(playerButtons) do
-		button:Hide()
-		button:SetParent(nil)
-	end
--- iterate through the CGPlayers table and create a button for each player
-	for i, player in pairs(CGPlayers) do
-	local playerButton = CreateFrame("Button", "PlayerButton"..i, playerButtonsFrame, "InsetFrameTemplate")
-		playerButton:SetSize(150, 20)
-		playerButton:SetPoint("TOPLEFT", playerButtonsFrame, column*150, -row*20)
-		playerButton:SetNormalFontObject("GameFontNormal")
-		playerButton:SetHighlightFontObject("GameFontHighlight")
-	if player.roll ~=nil then
-		playerButton:SetText(player.name .. " : " .. player.roll)
-	else
-		playerButton:SetText(player.name)
-	end
+    -- Sort CGPlayers table alphabetically by player name
+    table.sort(CGPlayers, function(a, b)
+        return a.name < b.name
+    end)
 
-	table.insert(playerButtons, playerButton)
-		column = column + 1
-	if column == 2 then
-		column = 0
-		row = row + 1
-	end
+    -- Remove all current player buttons
+    for i, button in ipairs(playerButtons) do
+        button:Hide()
+        button:SetParent(nil)
+    end
 
-end
--- For testing
+    for i, player in ipairs(CGPlayers) do
+        local playerButton = CreateFrame("Button", "PlayerButton"..i, playerButtonsFrame, "InsetFrameTemplate")
+        playerButton:SetSize(260, 20)
+        playerButton:SetPoint("TOPLEFT", playerButtonsFrame, 0, -i * 20)
+        playerButton:SetNormalFontObject("GameFontNormal")
+        playerButton:SetHighlightFontObject("GameFontHighlight")
+
+        if player.roll ~= nil then
+            playerButton:SetText(player.name .. " : " .. player.roll)
+        else
+            playerButton:SetText(player.name)
+        end
+
+        table.insert(playerButtons, playerButton)
+    end
+
+	-- For testing
 	--for i = 1, 40 do
   --  local randomName = "Player " .. math.random(1, 20)
    -- CrossGambling:AddPlayer(randomName)
 --end
 end
+
+
 
 CGCall["PLAYER_ROLL"] = function(playerName, value)
     -- find the player in the "CGPlayers" table

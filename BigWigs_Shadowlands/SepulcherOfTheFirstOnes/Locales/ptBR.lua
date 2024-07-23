@@ -31,6 +31,8 @@ if L then
 
 	L.custom_on_ring_timers = "Temporizador de anel individual"
 	L.custom_on_ring_timers_desc = "Halo Desintegrador aciona um conjunto de anéis, esta opção mostrará barras quando cada um dos anéis começar a se mover. Usa as configurações do Halo Desintegrador."
+
+	L.absorb_text = "%s (%.0f%%)"
 end
 
 L = BigWigs:NewBossLocale("Prototype Pantheon", "ptBR")
@@ -87,6 +89,8 @@ if L then
 
 	L.bomb_dropped = "Bomba Derrubada"
 	--L.volatile_charges_new = "New Bombs!"
+
+	L.absorb_text = "%s (%.0f%%)"
 end
 
 L = BigWigs:NewBossLocale("Lords of Dread", "ptBR")
@@ -141,11 +145,11 @@ if L then
 	L.azeroth_new_health_minus = "Saúde de Azeroth: -%.1f%%  (%d)"
 
 	L.mythic_blood_soak_stage_1 = "Estágio 1, Temporizadores para soaks de sangue"
-	L.mythic_blood_soak_stage_1_desc = "Mostra uma barra com temporizadores quando está em um bom momento para curar azeroth, usado pela Echo em sua primeira morte"
+	L.mythic_blood_soak_stage_1_desc = "Mostra uma barra com temporizadores quando está em um bom momento para curar azeroth, usado pela Echo em sua primeira morte."
 	L.mythic_blood_soak_stage_2 = "Estágio 2, Temporizadores para soaks de sangue"
-	L.mythic_blood_soak_stage_2_desc = L.mythic_blood_soak_stage_1_desc
+	L.mythic_blood_soak_stage_2_desc = "Mostra uma barra com temporizadores quando está em um bom momento para curar azeroth, usado pela Echo em sua primeira morte."
 	L.mythic_blood_soak_stage_3 = "Estágio 3, Temporizadores para soaks de sangue"
-	L.mythic_blood_soak_stage_3_desc = L.mythic_blood_soak_stage_1_desc
+	L.mythic_blood_soak_stage_3_desc = "Mostra uma barra com temporizadores quando está em um bom momento para curar azeroth, usado pela Echo em sua primeira morte."
 	L.mythic_blood_soak_bar = "Cure Azeroth"
 
 	L.floors_open = "Abertura de chão"

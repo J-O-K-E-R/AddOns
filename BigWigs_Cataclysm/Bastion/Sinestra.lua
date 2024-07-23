@@ -5,12 +5,14 @@
 local mod, CL = BigWigs:NewBoss("Sinestra", 671, 168)
 if not mod then return end
 mod:RegisterEnableMob(45213)
+mod:SetEncounterID(mod:Retail() and 1083 or 1082)
+mod:SetRespawnTime(40)
 
 --------------------------------------------------------------------------------
 -- Localization
 --
 
-local L = mod:NewLocale("enUS", true)
+local L = mod:GetLocale()
 if L then
 	L.whelps = "Whelps"
 	L.whelps_desc = "Warning for the whelp waves."
@@ -26,29 +28,27 @@ if L then
 	L.phase = "Phase"
 	L.phase_desc = "Warning for phase changes."
 end
-L = mod:GetLocale()
 
 --------------------------------------------------------------------------------
 -- Locals
 --
 
-local roleCheckWarned = false
 local eggs = 0
 local orbList = {}
+local orbOnMe = false
 local orbWarned = nil
-local playerInList = nil
 local whelpGUIDs = {}
 
-local function isTargetableByOrb(unit)
+local function isTargetableByOrb(unit, bossUnit)
 	-- check tanks
 	if mod:Tank(unit) then return false end
 	-- check sinestra's target too
-	if UnitIsUnit("boss1target", unit) then return false end
+	if bossUnit and mod:ThreatTarget(unit, bossUnit) then return false end
 	-- and maybe do a check for whelp targets
-	for k, v in pairs(whelpGUIDs) do
+	for k in next, whelpGUIDs do
 		local whelp = mod:GetUnitIdByGUID(k)
-		if whelp then
-			if UnitIsUnit(whelp.."target", unit) then return false end
+		if whelp and mod:ThreatTarget(unit, whelp) then
+			return false
 		end
 	end
 	return true
@@ -56,40 +56,21 @@ end
 
 local function populateOrbList()
 	orbList = {}
+	orbOnMe = false
+	local bossUnit = mod:GetUnitIdByGUID(45213) -- Sinestra
 	for unit in mod:IterateGroup() do
 		-- Tanking something, but not a tank (aka not tanking Sinestra or Whelps)
-		if UnitThreatSituation(unit) == 3 and isTargetableByOrb(unit) then
-			if UnitIsUnit(unit, "player") then
-				playerInList = true
-			end
-			-- orbList is not created by :NewTargetList
-			-- so we don't have to decolorize when we set icons,
-			-- instead we colorize targets in the module
+		if mod:ThreatTarget(unit) and isTargetableByOrb(unit, bossUnit) then
 			orbList[#orbList + 1] = mod:UnitName(unit)
+			if mod:Me(mod:UnitGUID(unit)) then
+				orbOnMe = true
+			end
 		end
 	end
 end
 
-local function wipeWhelpList(resetWarning)
-	if resetWarning then orbWarned = nil end
-	playerInList = nil
-	whelpGUIDs = {}
-end
-
--- since we don't use :NewTargetList we have to color the targets
-local hexColors = {}
-for k, v in pairs(CUSTOM_CLASS_COLORS or RAID_CLASS_COLORS) do
-	hexColors[k] = "|cff" .. string.format("%02x%02x%02x", v.r * 255, v.g * 255, v.b * 255)
-end
-
-local function colorize(tbl)
-	for i, v in next, tbl do
-		local _, class = UnitClass(v)
-		if class then
-			tbl[i] = hexColors[class] .. v .. "|r"
-		end
-	end
-	return tbl
+local function ResetOrbWarning()
+	orbWarned = nil
 end
 
 --------------------------------------------------------------------------------
@@ -100,27 +81,30 @@ function mod:GetOptions(CL)
 	return {
 	-- Phase 1 and 3
 		90125, -- Breath
-		{92852, "FLASH", "ICON"}, -- Twilight Slicer
+		{92852, "ICON"}, -- Twilight Slicer
 		86227, -- Extinction
 		"whelps",
 
 	-- Phase 2
 		87654, -- Omelet Time
-		{90045, "FLASH"}, -- Indomitable
+		90045, -- Indomitable
 
 	-- General
 		"phase",
 	}, {
-		[90125] = L["phase13"],
-		[87654] = CL["phase"]:format(2),
+		[90125] = CL.plus:format(CL.stage:format(1), CL.stage:format(3)),
+		[87654] = CL.stage:format(2),
 		phase = "general",
 	}
 end
 
 function mod:OnBossEnable()
-	if not roleCheckWarned and (UnitIsGroupLeader("player") or UnitIsGroupAssistant("player")) then
-		BigWigs:Print("It is recommended that your raid has proper main tanks set for this encounter to improve orb target detection.")
-		roleCheckWarned = true
+	if self:Retail() then
+		if self:Difficulty() == 6 then
+			self:SetEncounterID(1083)
+		else
+			self:SetEncounterID(1082)
+		end
 	end
 
 	self:Log("SPELL_DAMAGE", "OrbDamage", 92852, 92958) -- twilight slicer, twilight pulse [May be wrong since MoP id changes]
@@ -128,6 +112,8 @@ function mod:OnBossEnable()
 
 	self:Log("SWING_DAMAGE", "WhelpWatcher", "*")
 	self:Log("SWING_MISSED", "WhelpWatcher", "*")
+	self:Death("TwilightWhelpDeaths", 47265, 48047, 48048, 48049, 48050) -- Twilight Whelp
+	self:RegisterEvent("NAME_PLATE_UNIT_ADDED")
 
 	self:Log("SPELL_CAST_START", "Breath", 90125)
 
@@ -138,22 +124,18 @@ function mod:OnBossEnable()
 	self:BossYell("EggTrigger", L["omelet_trigger"])
 	self:BossYell("Whelps", L["whelps_trigger"])
 
-	self:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT", "CheckBossStatus")
-
-	self:Death("Win", 45213)
 	self:Death("TwilightEggDeaths", 46842) -- Pulsing Twilight Egg
 end
 
 function mod:OnEngage()
-	self:CDBar(90125, 24) -- Slicer
-	self:CDBar(92852, 29) -- Breath
-	self:Bar("whelps", 16, L["whelps"], 69005) -- whelp like icon
-	self:ScheduleTimer("NextOrbSpawned", 29)
-	eggs = 0
-	self:RegisterUnitEvent("UNIT_HEALTH", "PhaseWarn", "boss1")
 	whelpGUIDs = {}
 	orbWarned = nil
-	playerInList = nil
+	eggs = 0
+	self:CDBar(90125, 23) -- Breath
+	self:CDBar(92852, 29) -- Slicer
+	self:Bar("whelps", 16, L["whelps"], 69005) -- whelp like icon
+	self:ScheduleTimer("NextOrbSpawned", 30)
+	self:RegisterUnitEvent("UNIT_HEALTH", "PhaseWarn", "boss1")
 end
 
 --------------------------------------------------------------------------------
@@ -162,57 +144,87 @@ end
 
 do
 	local whelpIds = {
-		47265,
-		48047,
-		48048,
-		48049,
-		48050,
+		[47265] = true,
+		[48047] = true,
+		[48048] = true,
+		[48049] = true,
+		[48050] = true,
 	}
 	function mod:WhelpWatcher(args)
 		local mobId = self:MobId(args.sourceGUID)
-		for i, v in next, whelpIds do
-			if mobId == v then whelpGUIDs[args.sourceGUID] = true end
+		if whelpIds[mobId] then
+			whelpGUIDs[args.sourceGUID] = true
+		else
+			mobId = self:MobId(args.destGUID)
+			if whelpIds[mobId] then
+				whelpGUIDs[args.destGUID] = true
+			end
+		end
+	end
+	function mod:TwilightWhelpDeaths(args)
+		whelpGUIDs[args.destGUID] = nil
+	end
+	function mod:NAME_PLATE_UNIT_ADDED(_, unit)
+		local guid = self:UnitGUID(unit)
+		if whelpIds[self:MobId(guid)] then
+			whelpGUIDs[guid] = true
 		end
 	end
 end
 
-
+local repeatCount = 0
 function mod:OrbWarning(source)
-	if playerInList then mod:Flash(92852) end
-
-	-- this is why orbList can't be created by :NewTargetList
 	if orbList[1] then mod:PrimaryIcon(92852, orbList[1]) end
 	if orbList[2] then mod:SecondaryIcon(92852, orbList[2]) end
 
 	if source == "spawn" then
 		if #orbList > 0 then
-			mod:TargetMessageOld(92852, colorize(orbList), "blue", "alarm", L["slicer_message"])
-			-- if we could guess orb targets lets wipe the whelpGUIDs in 5 sec
-			-- if not then we might as well just save them for next time
-			mod:ScheduleTimer(wipeWhelpList, 5) -- might need to adjust this
+			mod:TargetsMessage(92852, "yellow", orbList, #orbList, L.slicer_message)
+			if #orbList == 1 and repeatCount == 0 then
+				repeatCount = 1
+				self:SimpleTimer(function()
+					populateOrbList()
+					self:OrbWarning("spawn")
+				end, 1)
+			end
+			if orbOnMe then
+				self:PlaySound(92852, "warning")
+			end
 		else
-			mod:MessageOld(92852, "blue")
+			repeatCount = repeatCount + 1
+			if repeatCount <= 6 then
+				self:SimpleTimer(function()
+					populateOrbList()
+					self:OrbWarning("spawn")
+				end, 1)
+			end
 		end
 	elseif source == "damage" then
-		mod:TargetMessageOld(92852, colorize(orbList), "blue", "alarm", L["slicer_message"])
-		mod:ScheduleTimer(wipeWhelpList, 10, true) -- might need to adjust this
+		mod:TargetsMessage(92852, "yellow", orbList, #orbList, L.slicer_message)
+		mod:SimpleTimer(ResetOrbWarning, 10) -- might need to adjust this
+		if orbOnMe then
+			self:PlaySound(92852, "warning")
+		end
 	end
 end
 
 -- this gets run every 30 sec
 -- need to change it once there is a proper trigger for orbs
 function mod:NextOrbSpawned()
-	self:CDBar(92852, 28)
+	repeatCount = 0
+	self:CDBar(92852, 28.5)
+	self:MessageOld(92852, "blue")
 	populateOrbList()
 	self:OrbWarning("spawn")
-	self:ScheduleTimer("NextOrbSpawned", 28)
+	self:ScheduleTimer("NextOrbSpawned", 28.5)
 end
 
 function mod:OrbDamage()
+	repeatCount = 99
 	populateOrbList()
 	if orbWarned then return end
 	orbWarned = true
-	self:OrbWarnin("damage")
+	self:OrbWarning("damage")
 end
 
 function mod:Whelps()
@@ -247,7 +259,7 @@ function mod:Indomitable(args)
 	self:MessageOld(args.spellId, "orange")
 	if self:Dispeller("enrage", true) then
 		self:PlaySound(args.spellId, "info")
-		self:Flash(args.spellId)
+		--self:Flash(args.spellId)
 	end
 end
 
@@ -272,9 +284,9 @@ function mod:TwilightEggDeaths()
 	if eggs == 2 then
 		self:MessageOld("phase", "green", "info", CL["phase"]:format(3), 51070) -- broken egg icon
 		self:Bar("whelps", 50, L["whelps"], 69005)
-		self:CDBar(92852, 30) -- Slicer
+		self:CDBar(92852, 29) -- Slicer
 		self:CDBar(90125, 24) -- Breath
-		self:ScheduleTimer("NextOrbSpawned", 30)
+		self:ScheduleTimer("NextOrbSpawned", 29)
 	end
 end
 

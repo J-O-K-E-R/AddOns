@@ -13,11 +13,9 @@ local addonName, addon = ...
 local L = addon.L
 
 -- Only load if this is Wrath
-if not addon:ProjectIsWrath() then
+if not (addon:ProjectIsWrath() or addon:ProjectIsCataclysm()) then
     return
 end
-
---addon:Printf("Loading Blizzard_wrath integration")
 
 function addon:IntegrateBlizzardFrames()
     self:Wrath_BlizzSelfFrames()

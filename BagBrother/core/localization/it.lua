@@ -1,16 +1,16 @@
 --[[
 	Italian Localization
-]]--
+--]]
 
 local ADDON = ...
 local L = LibStub('AceLocale-3.0'):NewLocale(ADDON, 'itIT')
 if not L then return end
 
 --keybindings
-L.ToggleBags = "Attiva l'Inventario"
-L.ToggleBank = 'Attiva la Banca'
-L.ToggleGuild = 'Attiva la Banca di Gilda'
-L.ToggleVault = 'Attiva la Banca Eterea'
+L.OpenBags = "Attiva l'Inventario"
+L.OpenBank = 'Attiva la Banca'
+L.OpenGuild = 'Attiva la Banca di Gilda'
+L.OpenVault = 'Attiva la Banca Eterea'
 
 --terminal
 L.Commands = 'lista comandi:'
@@ -20,7 +20,6 @@ L.CmdShowGuild = 'Mostra la tua Banca di Gilda'
 L.CmdShowVault = 'Mostra la tua Banca Eterea'
 L.CmdShowVersion = 'Mostra la versione attuale'
 L.CmdShowOptions = 'Apri il menù di configurazione'
-L.Updated = 'Aggiornato a v%s'
 
 --frame titles
 L.TitleBags = 'Inventario di %s'
@@ -28,7 +27,6 @@ L.TitleBank = 'Banca di %s'
 L.TitleVault = 'Banca Eterea di %s'
 
 --dropdowns
-L.TitleFrames = 'Riquadro di %s'
 L.SelectCharacter = 'Seleziona Personaggio'
 L.ConfirmDelete = 'Sei sicuro di voler eliminare i dati di %s presenti nella cache?'
 
@@ -46,7 +44,6 @@ L.GuildFunds = 'Fondi di Gilda'
 L.TipGoldOnRealm = '%s Totali'
 L.NumWithdraw = '%d Prelevati'
 L.NumDeposit = '%d Depositati'
-L.NumRemainingWithdrawals = '%d Rimanenti da Prelevare'
 
 --action tooltips
 L.TipChangePlayer = '%s per vedere gli oggetti di un altro personaggio.'

@@ -220,7 +220,7 @@ function addon:Initialize()
     addon:UpdateCombatWatch()
 
     -- Support mutliple talent specs on release (does not work for WoTLK at the moment)
-    if addon:ProjectIsRetail() or addon:ProjectIsWrath() then
+    if addon:ProjectIsRetail() or addon:ProjectIsWrath() or addon:ProjectIsCataclysm() then
         self:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED", "TalentGroupChanged")
         addon:TalentGroupChanged()
     end
@@ -845,7 +845,7 @@ end
 function addon:GetActiveTalentSpec()
     if addon:ProjectIsRetail() then
         return GetSpecialization()
-    elseif addon:ProjectIsWrath() then
+    elseif addon:ProjectIsWrath() or addon:ProjectIsCataclysm() then
         return GetActiveTalentGroup()
     end
 
@@ -858,7 +858,7 @@ function addon:GetTalentSpecName(idx)
     if addon:ProjectIsRetail() then
         local _, specName = GetSpecializationInfo(idx)
         return specName
-    elseif addon:ProjectIsWrath() then
+    elseif addon:ProjectIsWrath() or addon:ProjectIsCataclysm() then
         if idx == 1 then
             return L["Primary"]
         elseif idx == 2 then
@@ -872,7 +872,7 @@ end
 function addon:GetNumTalentSpecs()
     if addon:ProjectIsRetail() then
         return GetNumSpecializations()
-    elseif addon:ProjectIsWrath() then
+    elseif addon:ProjectIsWrath() or addon:ProjectIsCataclysm() then
         return 2
     end
 end
@@ -910,7 +910,7 @@ function addon:CheckSelfCastIssue()
     end
 
     -- Issue only seems present on Dragonflight at the moment
-    if not addon:IsDragonflight() then
+    if not addon:ProjectIsDragonflight() then
         return
     end
 
@@ -1055,7 +1055,7 @@ function addon:IsFrameBlacklisted(frame)
 end
 
 function addon:UpdateGlobalButtonClicks()
-    if self:IsDragonflight() then
+    if self:ProjectIsDragonflight() then
         self.globutton:RegisterForClicks("AnyUp", "AnyDown")
     else
         local direction = self.settings.downclick and "AnyDown" or "AnyUp"

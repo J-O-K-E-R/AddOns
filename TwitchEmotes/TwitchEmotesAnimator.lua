@@ -5,9 +5,9 @@ function TwitchEmotesAnimator_OnUpdate(self, elapsed)
 
     if (TWITCHEMOTES_TimeSinceLastUpdate >= 0.033) then
         -- Update animated emotes in chat windows
-        for i = 1, NUM_CHAT_WINDOWS do
-            for _, visibleLine in ipairs(_G["ChatFrame" .. i].visibleLines) do
-                if(_G["ChatFrame" .. i]:IsShown() and visibleLine.messageInfo ~= TwitchEmotes_HoverMessageInfo) then 
+        for _, frameName in pairs(CHAT_FRAMES) do
+            for _, visibleLine in ipairs(_G[frameName].visibleLines) do
+                if(_G[frameName]:IsShown() and visibleLine.messageInfo ~= TwitchEmotes_HoverMessageInfo) then 
                     TwitchEmotesAnimator_UpdateEmoteInFontString(visibleLine, 28, 28);
                 end
             end
@@ -119,13 +119,19 @@ function TwitchEmotesAnimator_UpdateEmoteInFontString(fontstring, widthOverride,
     end
 end
 
-
-
 function TwitchEmotes_GetAnimData(imagepath)
     return TwitchEmotes_animation_metadata[imagepath]
 end
 
 function TwitchEmotes_GetCurrentFrameNum(animdata)
+    if(animdata.pingpong) then
+        local vframen = math.floor((TWITCHEMOTES_T * animdata.framerate) % ((animdata.nFrames * 2) - 1));
+        if vframen > animdata.nFrames then
+            vframen = animdata.nFrames - (vframen % animdata.nFrames)
+        end
+        return  vframen
+    end
+    
     return math.floor((TWITCHEMOTES_T * animdata.framerate) % animdata.nFrames);
 end
 

@@ -12,7 +12,7 @@ end
 local mod	= DBM:NewMod("Vaelastrasz", "DBM-Raids-Vanilla", catID)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20230814031337")
+mod:SetRevision("20240428104809")
 mod:SetCreatureID(13020)
 mod:SetEncounterID(611)
 if not mod:IsClassic() then
@@ -45,7 +45,7 @@ local timerAdrenalineCD		= mod:NewCDTimer(15.7, 18173, nil, nil, nil, 3)
 local timerAdrenaline		= mod:NewTargetTimer(20, 18173, nil, nil, nil, 3)
 local timerCombatStart		= mod:NewCombatTimer(43)
 
-mod:AddSetIconOption("SetIconOnDebuffTarget2", 18173, true, false, {8, 7, 6})
+mod:AddSetIconOption("SetIconOnDebuffTarget2", 18173, true, 0, {8, 7, 6})
 
 mod.vb.debuffIcon = 8
 
@@ -103,12 +103,13 @@ function mod:SPELL_AURA_REMOVED(args)
 	end
 end
 
---Missing first line
+--"<??> [CHAT_MSG_MONSTER_YELL] Too late, friends! Nefarius' corruption has taken hold...I cannot...control myself.\r\n#Vaelastrasz the Corrupt###Omegal##0#0##0#7803#nil#0#false#false#false#false",
 --"<8.85 19:59:36> [CHAT_MSG_MONSTER_YELL] I beg you, mortals - FLEE! Flee before I lose all sense of control! The black fire rages within my heart! I MUST- release it! #Vaelastrasz the Corrupt###Adornment##0#0##0#13862#nil#0#false#false#
 --"<28.25 19:59:55> [CHAT_MSG_MONSTER_YELL] FLAME! DEATH! DESTRUCTION! Cower, mortals before the wrath of Lord...NO - I MUST fight this! Alexstrasza help me, I MUST fight it! #Vaelastrasz the Corrupt###Adornment
 --"<38.98 20:00:06> [ENCOUNTER_START] 611#Vaelastrasz the Corrupt#9#40", -- [152]
 function mod:CHAT_MSG_MONSTER_YELL(msg)
 	if msg == L.Event or msg:find(L.Event) then
+		--/run DBM:GetModByName("Vaelastrasz"):SendSync("PullRP")
 		self:SendSync("PullRP")
 	end
 end

@@ -73,13 +73,13 @@ function mod:GetOptions()
 	},{
 		[360374] = "general",
 		[360319] = -23927, -- Mal'Ganis
-		[360417] = -23929, -- Kin'tessa
+		[360717] = -23929, -- Kin'tessa
 	},{
 		[360319] = L.unto_darkness, -- Unto Darkness
-		[366574] = L.cloud_of_carrion, -- Cloud of Carrion
+		[360012] = L.cloud_of_carrion, -- Cloud of Carrion
 		[361913] = CL.adds, -- Manifest Shadows
 		[359960] = L.leeching_claws, -- Leeching Claws
-		[360417] = L.infiltration_of_dread, -- Infiltration of Dread
+		[360717] = L.infiltration_of_dread, -- Infiltration of Dread
 		[360146] = L.fearful_trepidation, -- Fearful Trepidation
 		[360229] = L.slumber_cloud, -- Slumber Cloud
 		[360284] = L.anguishing_strike, -- Anguishing Strike

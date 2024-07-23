@@ -23,17 +23,17 @@ function AuctionatorBagUseMixin:OnShow()
       self.pendingKey = nil
     end
   end, self)
-
   Auctionator.Groups.CallbackRegistry:TriggerEvent("BagCacheOn")
 end
 
 function AuctionatorBagUseMixin:OnHide()
-  self.awaitingCompletion = true
+  self.View:SetSelected(nil)
   Auctionator.Groups.CallbackRegistry:UnregisterCallback("BagUse.BagItemClicked", self)
   Auctionator.Groups.CallbackRegistry:UnregisterCallback("BagUse.AddToDefaultGroup", self)
   Auctionator.Groups.CallbackRegistry:UnregisterCallback("BagUse.RemoveFromDefaultGroup", self)
   Auctionator.Groups.CallbackRegistry:UnregisterCallback("ViewComplete", self)
   Auctionator.Groups.CallbackRegistry:TriggerEvent("BagCacheOff")
+  self.awaitingCompletion = true
 end
 
 function AuctionatorBagUseMixin:ReturnItem(key)
@@ -68,7 +68,7 @@ function AuctionatorBagUseMixin:BagItemClicked(button, mouseButton)
     postingInfo.nextItem = button.nextItem
     postingInfo.prevItem = button.prevItem
     postingInfo.key = button.key
-    postingInfo.groupName = button.itemInfo.group
+    postingInfo.sortKey = button.itemInfo.sortKey
     Auctionator.EventBus:Fire(self, Auctionator.Selling.Events.BagItemClicked, postingInfo)
   elseif mouseButton == "RightButton" then
     local defaultName = Auctionator.Groups.GetGroupNameByIndex(1)
@@ -81,7 +81,11 @@ function AuctionatorBagUseMixin:BagItemClicked(button, mouseButton)
       table.insert(options, { label = AUCTIONATOR_L_ADD_TO_X:format(defaultPrintName), callback = function() self:AddToDefaultGroup(button) end})
     end
     if not button.itemInfo.isCustom then
-      table.insert(options, { label = AUCTIONATOR_L_HIDE, callback = function() self:HideItem(button) end })
+      if not self.View.hiddenItems[button.itemInfo.sortKey] then
+        table.insert(options, { label = AUCTIONATOR_L_HIDE, callback = function() self:HideItem(button) end })
+      else
+        table.insert(options, { label = AUCTIONATOR_L_UNHIDE, callback = function() self:UnhideItem(button) end })
+      end
       table.insert(options, { label = AUCTIONATOR_L_UNHIDE_ALL, callback = function() self:UnhideAll() end, isDisabled = next(self.View.hiddenItems) == nil })
     end
     Auctionator.Selling.ShowPopup(options)
@@ -119,10 +123,14 @@ function AuctionatorBagUseMixin:HideItem(button)
   end
 end
 
-function AuctionatorBagUseMixin:UnhideAll()
-  StaticPopup_Show(Auctionator.Constants.DialogNames.SellingConfirmUnhideAll)
+function AuctionatorBagUseMixin:UnhideItem(button)
+  local hiddenLink = self.View.hiddenItems[button.itemInfo.sortKey]
+  if hiddenLink then
+    Auctionator.Groups.UnhideItemLink(hiddenLink)
+    Auctionator.Groups.CallbackRegistry:TriggerEvent("Customise.EditMade")
+  end
 end
 
-function AuctionatorBagUseMixin:ToggleCustomiseMode()
-  Auctionator.Groups.OpenCustomiseView()
+function AuctionatorBagUseMixin:UnhideAll()
+  StaticPopup_Show(Auctionator.Constants.DialogNames.SellingConfirmUnhideAll)
 end

@@ -1,46 +1,69 @@
 
 BigWigs:AddSounds("Omnotron Defense System", {
-	[79501] = "alarm",
-	[79888] = "alarm",
-	[80053] = "alert",
+	[78740] = "long",
+	[79023] = "alert",
+	[79501] = "warning",
+	[79624] = "info",
+	[79710] = "alert",
+	[79735] = "info",
+	[79888] = "warning",
+	[80053] = "info",
 	[80094] = "alarm",
-	[80161] = "info",
-	["switch"] = "long",
+	[80161] = "underyou",
+	[91879] = {"underyou","warning"},
+	[92048] = "warning",
+	[92053] = "warning",
 })
 
 BigWigs:AddSounds("Magmaw", {
 	[78006] = "alert",
-	[78941] = "alarm",
-	[79011] = "alarm",
+	[78941] = "warning",
+	[79011] = "long",
+	[88253] = "info",
 	[89773] = "info",
-	["blazing"] = "info",
-	["slump"] = "info",
+	[92134] = "underyou",
+	[92177] = "alarm",
+	["adds"] = "info",
 })
 
 BigWigs:AddSounds("Atramedes", {
-	[77840] = "alert",
-	[78092] = "alarm",
-	[92677] = "long",
+	[77611] = "info",
+	[77612] = "alert",
+	[77840] = "warning",
+	[78023] = "underyou",
+	[78075] = "warning",
+	[92685] = "alarm",
+	["stages"] = "long",
 })
 
 BigWigs:AddSounds("Chimaeron", {
-	[82890] = {"info","long"},
-	[88853] = "alarm",
+	[82848] = "info",
+	[88826] = "alert",
+	[88853] = "warning",
+	["stages"] = "long",
 })
 
 BigWigs:AddSounds("Maloriak", {
-	[77569] = "alert",
-	[77699] = "info",
-	[77760] = "info",
-	[77786] = "info",
-	[77912] = "alarm",
-	[77991] = "alert",
-	["phase"] = {"info","long"},
-	["sludge"] = "info",
+	[77569] = "info",
+	[77679] = "alarm",
+	[77699] = "warning",
+	[77760] = "alarm",
+	[77786] = "warning",
+	[77896] = "alert",
+	[77912] = "info",
+	[78124] = "underyou",
+	[78225] = "alarm",
+	[92754] = "info",
+	[92930] = "underyou",
+	["stages"] = "long",
 })
 
 BigWigs:AddSounds("Nefarian", {
-	[79339] = "info",
-	[81007] = {"alarm","info"},
+	[77826] = "info",
+	[79318] = "warning",
+	[79339] = "warning",
+	[80734] = "alert",
+	[81007] = {"alarm","underyou"},
 	[81272] = "alert",
+	["stages"] = "long",
 })

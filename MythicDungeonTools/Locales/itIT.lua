@@ -1,4 +1,4 @@
-if not (GetLocale() == "itIT") then
+if not ((GAME_LOCALE or GetLocale()) == "itIT") then
   return
 end
 local addonName, MDT = ...
@@ -280,6 +280,8 @@ L["Bounty stacks after this pull"] = ""
 L["Bracken Warscourge"] = "Strillaguerra Felcepelle"
 L["Brackenhide Shaper"] = "Plasmatrice Felcepelle"
 --[[Translation missing --]]
+L["brackenhideCage"] = "Meat Storage"
+--[[Translation missing --]]
 L["BrackenhideHollow"] = "Brackenhide Hollow"
 L["Brain of Yogg-Saron"] = "Cervello di Yogg-Saron"
 L["Brawling Patron"] = "Cliente Rissosa"
@@ -328,10 +330,14 @@ L["Chamber Sentinel"] = "Sentinella della Sala"
 L["ChamberOfFlames"] = "Chamber of Flames"
 L["Champion Druna"] = "Campionessa Druna"
 L["Champion of Hodir"] = "Campione di Hodir"
+--[[Translation missing --]]
+L["Change Language"] = "Change Language"
 L["Channeler Varisz"] = "Incanalatrice Varisz"
 L["Chaotic Rift"] = "Fenditura Caotica"
 L["Chargath, Bane of Scales"] = "Chargath, Flagello delle Scaglie"
 L["Charged Dust Devil"] = "Diavolo di Sabbia Energizzato"
+--[[Translation missing --]]
+L["chatNoninteractiveWarning"] = "Chat frame is currently set to noninteractive, you will not be able to click on MDT routes."
 L["Choose Enemy Forces Format"] = "Scegli il formato delle forze nemiche"
 L["Choose Enemy Style. Requires Reload"] = "Scegli lo stile dei nemici. È necessario ricaricare l'interfaccia."
 L["Choose NPC tooltip position"] = "Scegli la posizione della scheda di descrizione dei PNG"
@@ -347,6 +353,8 @@ L["Chrono-Lord Epoch"] = "Cronosignore Epocus"
 L["Claw Fighter"] = "Combattente dell'Artiglio"
 L["Click the fullscreen button for a maximized view of MDT."] = "Clicca il pulsante della modalità schermo intero per visualizzare MDT a tutto schermo."
 L["Click to adjust color settings"] = "Clicca per cambiare le impostazioni del colore"
+--[[Translation missing --]]
+L["Click to assign player"] = "Click to assign player"
 L["Click to go to %s"] = "Clicca per passare a %s"
 L["Click to set dungeon level to 10"] = "Clicca per impostare il livello della spedizione a 10"
 L["Click to switch to current week"] = "Clicca per passare alla settimana corrente"
@@ -586,6 +594,8 @@ L["Dragonflight Season 1"] = "Dragonflight Season 1"
 L["Dragonflight Season 2"] = "Dragonflight Season 2"
 --[[Translation missing --]]
 L["Dragonflight Season 3"] = "Dragonflight Season 3"
+--[[Translation missing --]]
+L["Dragonflight Season 4"] = "Dragonflight Season 4"
 L["Dragonkin"] = "Dragoide"
 L["Drakkari Bat"] = "Pipistrello Drakkari"
 L["Drakkari Battle Rider"] = "Militante Drakkari"
@@ -689,6 +699,8 @@ L["Emissary of the Tides"] = "Emissaria delle Maree"
 --[[Translation missing --]]
 L["Empty"] = "Empty"
 L["Empyrean Assassin"] = "Assassino Empireo"
+--[[Translation missing --]]
+L["Enable Compartment Button"] = "Enable Compartment Button"
 L["Enable Minimap Button"] = "Abilita pulsante della minimappa"
 L["Enchanted Broodling"] = "Progenie Incantata"
 L["Enchanted Emissary"] = "Emissaria Incantata"
@@ -727,7 +739,7 @@ L["Error Message:"] = "Error Message:"
 --[[Translation missing --]]
 L["errorLabel1"] = "MDT has encountered errors."
 --[[Translation missing --]]
-L["errorLabel2"] = "Please visist either GitHub or Discord and report the error message below."
+L["errorLabel2"] = "Please update MDT to the latest version and visit either GitHub or Discord and report the error message below."
 --[[Translation missing --]]
 L["errorLabel3"] = "Press CTRL + C to copy!"
 L["Erudite Slayer"] = "Sicaria Erudita"
@@ -1007,9 +1019,7 @@ L["Hardened Steel Skycaller"] = "Invocatore dei Cieli d'Acciaio Indurito"
 --[[Translation missing --]]
 L["hardResetButton"] = "Reset MDT"
 --[[Translation missing --]]
-L["hardResetPrompt"] = [=[Do you really want to reset all settings to default?
-|cFFFF0000Only do this if MDT is not loading at all and is in a broken state.|r
-This will reload the UI!]=]
+L["hardResetPrompt"] = "Do you really want to reset all settings to default?\\n|cFFFF0000Try updating the AddOn to the latest version first!\\nOnly do this if MDT is not loading at all and is in a broken state.\\nThis will delete ALL YOUR ROUTES!|r\\nThis will reload the UI!"
 --[[Translation missing --]]
 L["hardResetPromptTitle"] = "Delete ALL settings"
 L["Harlan Sweete"] = "Harlan Sweete"
@@ -1270,6 +1280,10 @@ L["Living Rot"] = "Putridume Vivo"
 L["Living Waste"] = "Spazzatura Vivente"
 L["Loatheb"] = "Loatheb"
 L["Local color blind mode"] = "Modalità daltonici locale"
+--[[Translation missing --]]
+L["localeButtonTooltip1"] = "Requires the \"AddonLocale\" AddOn"
+--[[Translation missing --]]
+L["localeButtonTooltip2"] = "Click to start settings dialog in chat"
 L["Locked"] = "Chiuso a chiave"
 L["Loken"] = "Loken"
 L["Lord Chamberlain"] = "Ciambellano Supremo"
@@ -1458,6 +1472,8 @@ L["Neltharion's Lair"] = "Antro di Neltharion"
 L["Neltharion's Lair Sublevel"] = "Antro di Neltharion"
 --[[Translation missing --]]
 L["Neltharus"] = "Neltharus"
+--[[Translation missing --]]
+L["neltharusChain"] = "Burning Chain"
 L["Ner'zhul"] = "Ner'zhul"
 L["Netherspace"] = "Spaziofatuo"
 L["New"] = "Nuovo"
@@ -1518,7 +1534,7 @@ L["Olmyr the Enlightened"] = "Olmyr l'Illuminato"
 L["Omega Buster"] = "Demolitore Omega"
 L["Oozing Leftovers"] = "Rimasugli Melmosi"
 --[[Translation missing --]]
-L["Open an issue on GitHub"] = ""
+L["Open an issue on GitHub"] = "Open an issue on GitHub"
 L["Open MDI override options"] = "Apri le opzioni della Modalità MDI"
 --[[Translation missing --]]
 L["openSettingsTooltip"] = "Click to open settings"
@@ -1634,7 +1650,7 @@ L["Prison Gate"] = "Cancello"
 L["Proto-Drake Handler"] = "Addestratore di Proto-Drachi"
 L["Proto-Drake Rider"] = "Cavaliere di Proto-Drachi"
 --[[Translation missing --]]
-L["Provide feedback in Discord"] = ""
+L["Provide feedback in Discord"] = "Provide feedback in Discord"
 L["Pull Drop Clear Pull"] = "Rimuovi pull"
 L["Pull Drop Close"] = "Chiudi"
 L["Pull Drop Color"] = "Colore"
@@ -1769,6 +1785,8 @@ L["Rook Spiderling"] = "Ragnetto Corvino"
 L["Rook Spinner"] = "Filatore Corvino"
 L["Root"] = "Radici"
 L["Rotation"] = "Rotazione"
+--[[Translation missing --]]
+L["Rotbow Ranger"] = "Rotbow Ranger"
 L["Rotbow Stalker"] = "Inseguitore Arcomarcio"
 L["Rotfang Hyena"] = "Iena Zannamarcia"
 L["Rotheart Dryad"] = "Driade Cuormarcio"
@@ -2317,6 +2335,8 @@ L["Titanium Vanguard"] = "Avanguardia di Titanio"
 L["T'lonja"] = "T'lonja"
 L["To share a different preset while the live session is active simply navigate to the preferred preset and click the new 'Set to Live' Button next to the preset-dropdown"] = "Per condividere un percorso diverso mentre la Sessione Live è attiva è sufficiente aprire il percorso desiderato e fare clic sul nuovo pulsante 'Attiva percorso' accanto al menu a tendina dei percorsi"
 L["tocNotes"] = "Strumento che permette di pianificare e ottimizzare le spedizioni Mitica+"
+--[[Translation missing --]]
+L["Toggle MDT"] = "Toggle MDT"
 L["Toggle Window"] = "Apri/Chiudi finestra"
 L["Toiling Groundskeeper"] = "Custode Affaticato"
 L["Tol Dagor"] = "Tol Dagor"
@@ -2425,6 +2445,8 @@ L["Urg'roth, Breaker of Heroes"] = "Urg'roth lo Spezzaeroi"
 L["Urh Relic"] = "Reliquia Urh"
 L["Use /mdt reset to restore the default position and scale of MDT."] = "Usa il comando /mdt reset per reimpostare la posizione e le dimensioni di default di MDT."
 L["Use as a starting point:"] = "Usa come punto di partenza:"
+--[[Translation missing --]]
+L["Use forces count"] = "Use forces count in Sidebar"
 --[[Translation missing --]]
 L["Utgarde Keep"] = "Utgarde Keep"
 --[[Translation missing --]]

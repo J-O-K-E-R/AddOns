@@ -192,6 +192,10 @@ L:SetOptionLocalization({
 	Hybrid					= "1페이즈에 억압의 포효 중첩, 2페이즈 3페이즈엔 망각 중첩 표시"
 })
 
+L:SetMiscLocalization({
+	EarlyStaging			= "생명력 기준점을 넘어서 페이즈 조기 종료"
+})
+
 -------------
 --  Trash  --
 -------------
@@ -212,11 +216,7 @@ L:SetGeneralLocalization({
 ---------------------------
 --  Igira the Cruel --
 ---------------------------
-L= DBM:GetModLocalization(2554)
-
-L:SetMiscLocalization({
-	HealAbsorbs	= "치유 흡수 (%s)"--Might be common localized later
-})
+--L= DBM:GetModLocalization(2554)
 
 ---------------------------
 --  Volcoross --
@@ -249,7 +249,11 @@ L:SetMiscLocalization({
 ---------------------------
 --  Nymue, Weaver of the Cycle --
 ---------------------------
---L= DBM:GetModLocalization(2556)
+L= DBM:GetModLocalization(2556)
+
+L:SetMiscLocalization({
+	Threads			= "실타래 (%s)"
+})
 
 ---------------------------
 --  Smolderon --
@@ -263,13 +267,27 @@ L= DBM:GetModLocalization(2565)
 
 L:SetMiscLocalization({
 	TreeForm			= "나무 형상",
-	MoonkinForm			= "달빛야수 형상"
+	MoonkinForm			= "달빛야수 형상",
+	Feathers			= "깃털"
 })
 
 ---------------------------
 --  Fyrakk the Blazing --
 ---------------------------
---L= DBM:GetModLocalization(2519)
+L= DBM:GetModLocalization(2519)
+
+L:SetTimerLocalization{
+	timerMythicDebuffs			= "우리 (%s)"
+}
+
+L:SetWarningLocalization{
+	warnMythicDebuffs			= "우리 (%s)"
+}
+
+L:SetOptionLocalization{
+	warnMythicDebuffs			= "$spell:428988|1과;와; $spell:428970 디버프가 시전되면 알림 (횟수 포함)",
+	timerMythicDebuffs			= "$spell:428988|1과;와; $spell:428970 디버프 타이머 보기 (횟수 포함)"
+}
 
 -------------
 --  Trash  --
@@ -278,4 +296,8 @@ L = DBM:GetModLocalization("AmirdrassilTrash")
 
 L:SetGeneralLocalization({
 	name =	"아미드랏실 일반몹"
+})
+
+L:SetMiscLocalization({
+	FyrakkRP			= "또 너인가? 미안하지만 널 직접 소멸시킬 여유가 없어서 말이다."
 })

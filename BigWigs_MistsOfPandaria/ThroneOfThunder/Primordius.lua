@@ -89,11 +89,20 @@ do
 	local function warnPlayerMutations()
 		local totalP, totalN = 0, 0
 		for _, spell in next, theGood do
-			local _, count = mod:UnitDebuff("player", spell)
+			local _, count = mod:UnitDebuff("player", spell,
+				136184, -- diff 7
+				136186, -- diff 7
+				136182, -- diff 5
+				136180 -- diff 5
+			)
 			totalP = totalP + (count or 0)
 		end
 		for _, spell in next, theBad do
-			local _, count = mod:UnitDebuff("player", spell)
+			local _, count = mod:UnitDebuff("player", spell,
+				136185, -- diff 5
+				136181, -- diff 5
+				136183 -- diff 5
+			)
 			totalN = totalN + (count or 0)
 		end
 
@@ -149,7 +158,7 @@ end
 function mod:VolatilePathogen(args)
 	self:PrimaryIcon(args.spellId, args.destName)
 	self:TargetMessageOld(args.spellId, args.destName, "orange", "alarm", nil, nil, self:Healer() and true)
-	self:CDBar(args.spellId, 30)
+	self:Bar(args.spellId, 30)
 	if self:Healer() then
 		self:TargetBar(args.spellId, 10, args.destName)
 	end
@@ -167,7 +176,7 @@ end
 function mod:AcidicSpinesRemoved(args)
 	self:MessageOld(args.spellId, "green", "alert", CL["over"]:format(args.spellName))
 	self:CloseProximity(args.spellId)
-	if self:UnitBuff("boss1", self:SpellName(136246)) then -- Erupting Pustules
+	if self:UnitBuff("boss1", self:SpellName(136246), 136246) then -- Erupting Pustules, difficulty 7
 		self:OpenProximity(136246, 2)
 	end
 end
@@ -179,12 +188,12 @@ end
 
 function mod:CausticGas(args)
 	self:MessageOld(args.spellId, "orange")
-	self:CDBar(args.spellId, 12)
+	self:Bar(args.spellId, 12)
 end
 
 function mod:PrimordialStrike(args)
 	self:MessageOld(args.spellId, "yellow")
-	self:CDBar(args.spellId, 19)
+	self:Bar(args.spellId, 19)
 end
 
 function mod:MalformedBlood(args)

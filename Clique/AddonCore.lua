@@ -86,6 +86,7 @@ local projects = {
     classic = "WOW_PROJECT_CLASSIC",
     bcc = "WOW_PROJECT_BURNING_CRUSADE_CLASSIC",
     wrath = "WOW_PROJECT_WRATH_CLASSIC",
+    cataclysm = "WOW_PROJECT_CATACLYSM_CLASSIC",
 }
 
 local project_id = _G["WOW_PROJECT_ID"]
@@ -103,12 +104,21 @@ function addon:ProjectIsBCC()
 end
 
 function addon:ProjectIsWrath()
-    return project_id ==  _G[projects.wrath]
+    return project_id == _G[projects.wrath]
 end
 
-function addon:IsDragonflight()
+function addon:ProjectIsCataclysm()
+    return project_id == _G[projects.cataclysm]
+end
+
+function addon:ProjectIsDragonflight()
     local toc = select(4, GetBuildInfo())
-    return toc >= 100000
+    return toc >= 100000 and toc < 110000
+end
+
+function addon:ProjectIsWarWithin()
+    local toc = select(4, GetBuildInfo())
+    return toc >= 110000 and toc < 120000
 end
 
 --[[-------------------------------------------------------------------------

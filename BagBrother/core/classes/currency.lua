@@ -1,7 +1,6 @@
 --[[
-	currency.lua
-		A currency button
-		All Rights Reserved
+	A currency button.
+	All Rights Reserved
 --]]
 
 local ADDON, Addon = ...
@@ -19,7 +18,7 @@ function Currency:New(parent)
 end
 
 function Currency:Set(data)
-	self:SetText(format('%s|T%s:14:14:2:0%s|t  ', data.quantity, data.iconFileID, data.iconArgs or ''))
+	self:SetText(format('%s|T%s:14:14:2:0%s|t  ', data.quantity or 0, data.iconFileID or 0, data.iconArgs or ''))
 	self.data = data
 	self:Show()
 	self:SetWidth(self:GetTextWidth() + 2)

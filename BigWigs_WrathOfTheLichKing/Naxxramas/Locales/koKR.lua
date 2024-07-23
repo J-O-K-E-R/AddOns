@@ -52,21 +52,7 @@ end
 
 L = BigWigs:NewBossLocale("Heigan the Unclean", "koKR")
 if L then
-	L.teleport_trigger = "여기가 너희 무덤이 되리라."
-
-	L.teleport = "순간이동"
-	L.teleport_desc = "순간이동을 알립니다."
-	L.teleport_1min_message = "60초 후 순간이동!"
-	L.teleport_30sec_message = "30초 후 순간이동!"
-	L.teleport_10sec_message = "10초 후 순간이동!"
-	L.on_platform_message = "순간이동! 45초간 단상!"
-
-	L.to_floor_30sec_message = "30초 후 단상 내려옴!"
-	L.to_floor_10sec_message = "10초 후 단상 내려옴!"
-	L.on_floor_message = "헤이건 내려옴! 90초 후 순간이동!"
-
-	L.teleport_bar = "순간이동!"
-	L.back_bar = "단상으로 이동!"
+	L.teleport_yell_trigger = "여기가 너희 무덤이 되리라."
 end
 
 L = BigWigs:NewBossLocale("The Four Horsemen", "koKR")
@@ -111,22 +97,7 @@ end
 
 L = BigWigs:NewBossLocale("Noth the Plaguebringer", "koKR")
 if L then
-	L.add_trigger = "일어나라,병사들이여! 다시 일어나 싸워라!"
-
-	L.teleport = "순간이동"
-	L.teleport_desc = "순간이동을 알립니다."
-	L.teleport_balcony = "발코니로 순간이동!"
-	L.teleport_room = "방으로 복귀 순간이동!"
-
-	L.curse_explosion = "역병술사의 저주!"
-	L.curse_warn = "저주!"
-	L.curse_10secwarn = "약 10초 이내 저주"
-	L.curse_bar = "다음 저주"
-
-	L.wave = "해골 소환"
-	L.wave_desc = "웨이브를 알립니다."
-	L.wave1 = "웨이브 1"
-	L.wave2 = "웨이브 2"
+	L.adds_yell_trigger = "일어나라,병사들이여" -- 일어나라,병사들이여! 다시 일어나 싸워라!
 end
 
 L = BigWigs:NewBossLocale("Maexxna", "koKR")
@@ -169,23 +140,19 @@ end
 
 L = BigWigs:NewBossLocale("Thaddius", "koKR")
 if L then
-	L.phase1_trigger1 = "스탈라그, 박살낸다!"
-	L.phase1_trigger2 = "너 주인님께 바칠꺼야!"
-	L.phase2_trigger1 = "잡아... 먹어주마..."
-	L.phase2_trigger2 = "박살을 내주겠다!"
-	L.phase2_trigger3 = "죽여주마..."
+	L[15929] = "스탈라그"
+	L[15930] = "퓨진"
 
-	L.add_death_trigger = "%s|1이;가; 죽습니다."
-	L.overload_trigger = "%s|1이;가; 과부하 상태가 됩니다."
+	L.stage1_yell_trigger1 = "스탈라그, 박살낸다!"
+	L.stage1_yell_trigger2 = "너 주인님께 바칠꺼야!"
 
-	L.polarity_changed = "극성 변경됨!"
-	L.polarity_nochange = "같은 극성!"
-	L.polarity_first_positive = "당신은 플러스!"
-	L.polarity_first_negative = "당신은 마이너스!"
+	L.stage2_yell_trigger1 = "잡아... 먹어주마..."
+	L.stage2_yell_trigger2 = "박살을 내주겠다!"
+	L.stage2_yell_trigger3 = "죽여주마..."
 
-	L.throw = "던지기"
-	L.throw_desc = "탱커 위치 교체를 알립니다."
-	L.throw_warning = "약 5초 후 던지기!"
+	L.add_death_emote_trigger = "%s|1이;가; 죽습니다."
+	L.overload_emote_trigger = "%s|1이;가; 과부하 상태가 됩니다."
+	--L.add_revive_emote_trigger = "%s is jolted back to life!"
 
 	--L.polarity_extras = "Additional alerts for Polarity Shift positioning"
 
@@ -213,4 +180,6 @@ if L then
 	L.right = "---> 오른쪽으로 ---> 오른쪽으로 --->"
 	L.swap = "^^^^ 방향 전환 ^^^^ 방향 전환 ^^^^"
 	L.stay = "==== 움직 이지마 ==== 움직 이지마 ===="
+
+	--L.chat_message = "The Thaddius mod supports showing you directional arrows and playing voices. Open the options to configure them."
 end

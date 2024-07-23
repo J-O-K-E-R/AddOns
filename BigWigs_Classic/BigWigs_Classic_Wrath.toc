@@ -25,7 +25,7 @@
 
 ## LoadOnDemand: 1
 ## Dependencies: BigWigs
-## Version: v10.2.1
+## Version: v10.2.79
 ## IconTexture: Interface\AddOns\BigWigs\Media\Icons\minimap_legacy.tga
 
 ## X-Category: Raid
@@ -36,8 +36,8 @@
 ## X-Wago-ID: rNkPgm6a
 ## X-BigWigs-LoadOn-InstanceId: 409, 469, 509, 531, 309
 
-MoltenCore_Classic\modules.xml
-BlackwingLair_Classic\modules.xml
-AhnQirajRuins_Classic\modules.xml
-AhnQirajTemple_Classic\modules.xml
+MoltenCore\modules.xml
+BlackwingLair\modules.xml
+AQ20\modules.xml
+AQ40\modules.xml
 ZulGurub_Classic\modules.xml

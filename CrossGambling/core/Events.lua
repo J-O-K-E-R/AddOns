@@ -4,32 +4,36 @@ function add_commas(value)
 return #tostring(value) > 3 and tostring(value):gsub("^(-?%d+)(%d%d%d)", "%1,%2"):gsub("(%d)(%d%d%d)", ",%1,%2") or tostring(value) 
 end
 
+
 CGCall["New_Game"] = function()
-       -- Starts a new game
+    -- Starts a new game
     if (self.game.state == "START" and self.game.host == true) then
         -- Start listening to chat messages
-		self:RegisterChatEvents()
+        self:RegisterChatEvents()
+
         -- Change the game state to REGISTRATION
         self.game.state = "REGISTER"
         self:GameStart()
+
         -- Inform players of the selected Game Mode and Wager
         if (self.game.house == false) then
-			local RollNotification = "Wager - " .. add_commas(self.db.global.wager) .. "g"
-				if(self.game.chatframeOption == false and self.game.host == true) then	
-					self:SendMsg(format("CHAT_MSG:%s:%s:%s", self.game.PlayerName, self.game.PlayerClass, RollNotification))
-				else
-					SendChatMessage("Game Mode - " .. self.game.mode .. " - Wager - " .. add_commas(self.db.global.wager) .. "g", self.game.chatMethod)
-                end  	
+            local RollNotification = "Wager - " .. add_commas(self.db.global.wager) .. "g"
+            if(self.game.chatframeOption == false and self.game.host == true) then
+                self:SendMsg(format("CHAT_MSG:%s:%s:%s", self.game.PlayerName, self.game.PlayerClass, RollNotification))
+            else
+                SendChatMessage("Game Mode - " .. self.game.mode .. " - Wager - " .. add_commas(self.db.global.wager) .. "g", self.game.chatMethod)
+            end
         else
             local RollNotification = "Wager - " .. add_commas(self.db.global.wager) .. "g - House Cut - " .. self.db.global.houseCut .. "%"
-				if(self.game.chatframeOption == false and self.game.host == true) then	
-					self:SendMsg(format("CHAT_MSG:%s:%s:%s", self.game.PlayerName, self.game.PlayerClass, RollNotification))
-				else
-					SendChatMessage("Game Mode - " .. self.game.mode .. " - Wager - " .. add_commas(self.db.global.wager) .. "g - House Cut - " .. self.db.global.houseCut .. "%", self.game.chatMethod)
-                end  
-		 end
-		-- Disable Button for clients.
-		self:SendMsg("DisableClient")
+            if(self.game.chatframeOption == false and self.game.host == true) then
+                self:SendMsg(format("CHAT_MSG:%s:%s:%s", self.game.PlayerName, self.game.PlayerClass, RollNotification))
+            else
+                SendChatMessage("Game Mode - " .. self.game.mode .. " - Wager - " .. add_commas(self.db.global.wager) .. "g - House Cut - " .. self.db.global.houseCut .. "%", self.game.chatMethod)
+            end
+        end
+
+        -- Disable Button for clients.
+        self:SendMsg("DisableClient")
     end
 end
 

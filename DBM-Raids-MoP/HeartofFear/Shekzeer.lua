@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod(743, "DBM-Raids-MoP", 4, 330)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20230617070727")
+mod:SetRevision("20240602104531")
 mod:SetCreatureID(62837)--62847 Dissonance Field, 63591 Kor'thik Reaver, 63589 Set'thik Windblade
 mod:SetEncounterID(1501)
 mod:SetUsedIcons(1, 2)
@@ -60,7 +60,7 @@ local timerPhase1				= mod:NewNextTimer(156.4, 125304, nil, nil, nil, 6)--156.4 
 local timerDispatchCD			= mod:NewCDTimer(12, 124077)--Every 12-15 seconds on 25 man. on 10 man i've heard it's every 20ish?
 local timerPhase2				= mod:NewNextTimer(151, 125098)--152 until trigger, but probalby 150 or 151 til adds are targetable.
 local timerCalamityCD			= mod:NewCDTimer(6, 124845, nil, "Healer")
-local timerVisionsCD			= mod:NewCDTimer(19.5, 124862)
+local timerVisionsCD			= mod:NewCDTimer(17, 124862)
 local timerConsumingTerrorCD	= mod:NewCDTimer(32, 124849, nil, "-Tank")
 local timerCorruptedDissonance	= mod:NewNextTimer(20, 126122)--10 seconds after first and 20 seconds after
 local timerHeartOfFear			= mod:NewBuffFadesTimer(6, 125638)
@@ -79,7 +79,7 @@ local resinTargets = {}
 local resinIcon = 2
 local phase3Started = false
 local fieldCount = 0
-local screechDebuff, fixateDebuff = DBM:GetSpellInfo(123735), DBM:GetSpellInfo(125390)
+local screechDebuff, fixateDebuff = DBM:GetSpellName(123735), DBM:GetSpellName(125390)
 
 local function warnVisionsTargets()
 	warnVisions:Show(table.concat(visonsTargets, "<, >"))
@@ -281,8 +281,8 @@ function mod:CHAT_MSG_MONSTER_YELL(msg)
 		timerScreechCD:Cancel()
 		warnPhase2:Show()
 		timerVisionsCD:Start(7)
+		timerConsumingTerrorCD:Start(11.8)
 		timerCalamityCD:Start(12)
-		timerConsumingTerrorCD:Start(14)
 	end
 end
 
@@ -326,7 +326,7 @@ end
 function mod:UNIT_HEALTH_UNFILTERED(uId)
 	local cid = self:GetUnitCreatureId(uId)
 	local guid = UnitGUID(uId)
-	if cid == 62847 and UnitHealth(uId) / UnitHealthMax(uId) <= 0.08 and not sentLowHP[guid] then -- 0.05 seems too late.
+	if cid == 62847 and UnitHealth(uId) / UnitHealthMax(uId) <= 0.08 and guid and not sentLowHP[guid] then -- 0.05 seems too late.
 		sentLowHP[guid] = true
 		self:SendSync("lowhealth", guid)
 	end

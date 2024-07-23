@@ -1,6 +1,7 @@
 # NameplateSCT
 
-## [1.32](https://github.com/Justw8/NameplateSCT/tree/1.32) (2023-05-19)
-[Full Changelog](https://github.com/Justw8/NameplateSCT/compare/1.31...1.32) [Previous Releases](https://github.com/Justw8/NameplateSCT/releases)
+## [1.34](https://github.com/Justw8/NameplateSCT/tree/1.34) (2024-04-24)
+[Full Changelog](https://github.com/Justw8/NameplateSCT/compare/1.33...1.34) [Previous Releases](https://github.com/Justw8/NameplateSCT/releases)
 
-- Fix an issue with spellId being 0 in classic wow resulting in no icons showing  
+- Also up Wrath version  
+- Update toc and versions  

@@ -12,18 +12,19 @@ end
 local mod	= DBM:NewMod("Chromaggus", "DBM-Raids-Vanilla", catID)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20230814031337")
+mod:SetRevision("20240615135519")
 mod:SetCreatureID(14020)
 mod:SetEncounterID(616)
 mod:SetModelID(14367)
 mod:RegisterCombat("combat")
 
 mod:RegisterEventsInCombat(
-	"SPELL_CAST_START 23308 23309 23313 23314 23197 23189 23315 23316 23310 23312",
+	"SPELL_CAST_START 23308 23309 23313 23314 23187 23189 23315 23316 23310 23312",
 	"SPELL_AURA_APPLIED 23155 23169 23153 23154 23170 23128 23537",
 --	"SPELL_AURA_REFRESH",
 	"SPELL_AURA_REMOVED 23155 23169 23153 23154 23170 23128",
-	"UNIT_HEALTH boss1"
+	"UNIT_HEALTH boss1",
+	"CHAT_MSG_MONSTER_EMOTE"
 )
 
 --(ability.id = 23309 or ability.id = 23313 or ability.id = 23189 or ability.id = 23315 or ability.id = 23312 or ability.id = 23314) and type = "begincast"
@@ -35,13 +36,13 @@ local warnBlack			= mod:NewSpellAnnounce(23154, 2, nil, false)
 local warnFrenzy		= mod:NewSpellAnnounce(23128, 3, nil, "Tank|RemoveEnrage|Healer", 4)
 local warnPhase2Soon	= mod:NewPrePhaseAnnounce(2, 1)
 local warnPhase2		= mod:NewPhaseAnnounce(2)
-local warnMutation		= mod:NewCountAnnounce(23174, 4)
-local warnVuln			= mod:NewAnnounce("WarnVulnerable", 1, false)
+local warnMutation		= mod:NewCountAnnounce(23174, 4) ---@type Announce -- string as count in :Show() is unusual but valid
+local warnVuln			= mod:NewAnnounce("WarnVulnerable", 1, nil, false)
 
 local specWarnBronze	= mod:NewSpecialWarningYou(23170, nil, nil, nil, 1, 8)
 local specWarnFrenzy	= mod:NewSpecialWarningDispel(23128, "RemoveEnrage", nil, nil, 1, 6)
 
-local timerBreath		= mod:NewCastTimer(2, "TimerBreath", 23316, nil, nil, 3)
+local timerBreath		= mod:NewTimer(2, "TimerBreath", 23316, nil, nil, 3)
 local timerBreathCD		= mod:NewTimer(60, "TimerBreathCD", 23316, nil, nil, 3)
 local timerFrenzy		= mod:NewBuffActiveTimer(8, 23128, nil, "Tank|RemoveEnrage|Healer", 3, 5, nil, DBM_COMMON_L.TANK_ICON..DBM_COMMON_L.ENRAGE_ICON)
 local timerVuln			= mod:NewTimer(17, "TimerVulnCD")-- seen 16.94 - 25.53, avg 21.8
@@ -113,6 +114,7 @@ local function update_vulnerability(self)
 	timerVuln:UpdateIcon(info[3])
 	timerVuln:UpdateName(name)
 	if not lastVulnName or lastVulnName ~= name then
+		---@diagnostic disable-next-line: inject-field
 		warnVuln.icon = info[3]
 		warnVuln:Show(name)
 		lastVulnName = name
@@ -124,7 +126,7 @@ local function update_vulnerability(self)
 				DBM.InfoFrame:Update()
 			end
 		end
-		if self.Options.NPAuraOnVulnerable then
+		if target and self.Options.NPAuraOnVulnerable then
 			DBM.Nameplate:Hide(true, target, 22277, 135924)
 			DBM.Nameplate:Hide(true, target, 22277, 135808)
 			DBM.Nameplate:Hide(true, target, 22277, 136006)
@@ -193,7 +195,7 @@ function mod:OnCombatEnd()
 end
 
 function mod:SPELL_CAST_START(args)
-	if args:IsSpell(23308, 23309, 23313, 23314, 23197, 23189, 23315, 23316, 23310, 23312) then
+	if args:IsSpell(23308, 23309, 23313, 23314, 23187, 23189, 23315, 23316, 23310, 23312) then
 		warnBreath:Show(args.spellName)
 		timerBreath:Start(2, args.spellName)
 		timerBreath:UpdateIcon(args.spellId)

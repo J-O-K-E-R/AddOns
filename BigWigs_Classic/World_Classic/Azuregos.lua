@@ -1,11 +1,12 @@
-
 --------------------------------------------------------------------------------
 -- Module Declaration
 --
 
+if BigWigsLoader.isSeasonOfDiscovery then return end
 local mod, CL = BigWigs:NewBoss("Azuregos", -1447)
 if not mod then return end
 mod:RegisterEnableMob(6109)
+mod:SetAllowWin(true)
 mod.otherMenu = -947
 mod.worldBoss = 6109
 
@@ -13,16 +14,10 @@ mod.worldBoss = 6109
 -- Localization
 --
 
-local L = mod:NewLocale("enUS", true)
+local L = mod:GetLocale()
 if L then
 	L.bossName = "Azuregos"
-
-	L.teleport = "Teleport Alert"
-	L.teleport_desc = "Warn for teleport."
-	L.teleport_trigger = "Come, little ones"
-	L.teleport_message = "Teleport!"
 end
-L = mod:GetLocale()
 
 --------------------------------------------------------------------------------
 -- Initialization
@@ -30,8 +25,14 @@ L = mod:GetLocale()
 
 function mod:GetOptions()
 	return {
-		22067, -- Reflection
-		"teleport",
+		{22067, "CASTBAR", "EMPHASIZE"}, -- Reflection
+		21147, -- Arcane Vacuum
+		21099, -- Frost Breath
+		21097, -- Manastorm
+	},nil,{
+		[21147] = CL.teleport, -- Arcane Vacuum (Teleport)
+		[21099] = CL.interruptible, -- Frost Breath (Interruptible)
+		[21097] = CL.interruptible, -- Manastorm (Interruptible)
 	}
 end
 
@@ -40,13 +41,11 @@ function mod:OnRegister()
 end
 
 function mod:OnBossEnable()
-	--self:ScheduleTimer("CheckForEngage", 1)
-	--self:RegisterEvent("BOSS_KILL")
-
-	self:Log("SPELL_AURA_APPLIED", "Reflection", 22067)
+	self:Log("SPELL_AURA_APPLIED", "ReflectionApplied", 22067)
 	self:Log("SPELL_AURA_REMOVED", "ReflectionRemoved", 22067)
-
-	self:RegisterEvent("CHAT_MSG_MONSTER_YELL")
+	self:Log("SPELL_CAST_SUCCESS", "ArcaneVacuum", 21147)
+	self:Log("SPELL_CAST_START", "FrostBreath", 21099)
+	self:Log("SPELL_CAST_START", "Manastorm", 21097)
 
 	self:Death("Win", 6109)
 end
@@ -55,25 +54,35 @@ end
 -- Event Handlers
 --
 
---function mod:BOSS_KILL(_, id)
---	if id == 0000 then
---		self:Win()
---	end
---end
-
-function mod:Reflection(args)
-	self:Message(22067, "yellow")
-	self:PlaySound(22067, "long")
-	self:Bar(22067, 10)
-end
-
-function mod:ReflectionRemoved(args)
-	self:Message(22067, "yellow", CL.over:format(args.spellName))
-	self:PlaySound(22067, "info")
-end
-
-function mod:CHAT_MSG_MONSTER_YELL(_, msg)
-	if msg:find(L.teleport_trigger, nil, true) then
-		self:Message("teleport", "red", L.teleport_message, false)
+do
+	local prev = 0
+	function mod:ReflectionApplied(args)
+		prev = args.time
+		self:StopBar(args.spellName)
+		self:Message(args.spellId, "red")
+		self:CastBar(args.spellId, 10)
+		self:PlaySound(args.spellId, "warning")
 	end
+
+	function mod:ReflectionRemoved(args)
+		self:StopBar(CL.cast:format(args.spellName))
+		self:Message(args.spellId, "green", CL.over:format(args.spellName), nil, true) -- Disable emphasize
+		self:CDBar(args.spellId, prev > 0 and (20 - (args.time-prev)) or 10) -- Show the bar after it ends
+		self:PlaySound(args.spellId, "info")
+	end
+end
+
+function mod:ArcaneVacuum(args)
+	self:Message(args.spellId, "yellow", CL.teleport)
+	self:PlaySound(args.spellId, "alarm")
+end
+
+function mod:FrostBreath(args)
+	self:Message(args.spellId, "orange", CL.extra:format(args.spellName, CL.interruptible))
+	self:PlaySound(args.spellId, "alert")
+end
+
+function mod:Manastorm(args)
+	self:Message(args.spellId, "orange", CL.extra:format(args.spellName, CL.interruptible))
+	self:PlaySound(args.spellId, "alert")
 end

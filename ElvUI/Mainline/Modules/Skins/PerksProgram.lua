@@ -2,25 +2,16 @@ local E, L, V, P, G = unpack(ElvUI)
 local S = E:GetModule('Skins')
 
 local _G = _G
-local gsub = gsub
 local hooksecurefunc = hooksecurefunc
-
-local function ReplaceIconString(frame, text)
-	if not text then text = frame:GetText() end
-	if not text or text == '' then return end
-
-	local newText, count = gsub(text, '|T(%d-):%d-:%d-[^|]*|t', ' |T%1:18:18:0:0:64:64:5:59:5:59|t')
-	if count > 0 then frame:SetFormattedText('%s', newText) end
-end
 
 local function HandleRewardButton(box)
 	local container = box.ContentsContainer
-	if container and not container.isSkinned then
-		container.isSkinned = true
+	if container and not container.IsSkinned then
+		container.IsSkinned = true
 
 		S:HandleIcon(container.Icon)
-		ReplaceIconString(container.Price)
-		hooksecurefunc(container.Price, 'SetText', ReplaceIconString)
+		S.ReplaceIconString(container.Price)
+		hooksecurefunc(container.Price, 'SetText', S.ReplaceIconString)
 	end
 end
 
@@ -102,6 +93,11 @@ function S:Blizzard_PerksProgram()
 
 	local frame = _G.PerksProgramFrame
 	local products = frame.ProductsFrame
+
+	if E.private.skins.parchmentRemoverEnable then
+		frame.ThemeContainer:SetAlpha(0)
+	end
+
 	if products then
 		S:HandleButton(products.PerksProgramFilter.FilterDropDownButton)
 
@@ -116,6 +112,7 @@ function S:Blizzard_PerksProgram()
 		if details then
 			details.Border:Hide()
 			details:SetTemplate('Transparent')
+			S:HandleTrimScrollBar(details.SetDetailsScrollBoxContainer.ScrollBar)
 
 			local carousel = details.CarouselFrame
 			if carousel and carousel.IncrementButton then
@@ -147,6 +144,7 @@ function S:Blizzard_PerksProgram()
 	local footer = frame.FooterFrame
 	if footer then
 		S:HandleCheckBox(footer.TogglePlayerPreview)
+		S:HandleCheckBox(footer.ToggleMountSpecial)
 		S:HandleCheckBox(footer.ToggleHideArmor)
 
 		local armorText = footer.ToggleHideArmor.Text

@@ -38,7 +38,7 @@ function mod:GetOptions()
 		{139822, "FLASH", "ICON", "SAY"}, {137731, "HEALER"},
 		{139866, "FLASH", "ICON", "SAY"}, {139909, "FLASH"}, {139843, "TANK"},
 		{139840, "HEALER"},
-		139458, {"breaths", "FLASH"}, "proximity", "berserk",
+		139458, {"breaths", "FLASH"}, "proximity",
 	}, {
 		[140138] = ("%s (%s)"):format(mod:SpellName(-7005), CL["heroic"]), -- Arcane Head
 		[139822] = -6998, -- Fire Head
@@ -207,7 +207,7 @@ do
 			if UnitIsUnit(unit, "player") then
 				self:TargetBar(139866, duration, player)
 				self:Flash(139866)
-				self:Say(139866)
+				self:Say(139866, nil, nil, "Torrent of Ice")
 			end
 			self:TargetMessageOld(139866, player, "orange", "info")
 			self:PrimaryIcon(139866, player)
@@ -246,7 +246,7 @@ function mod:CindersApplied(args)
 	self:TargetBar(args.spellId, 30, args.destName)
 	if self:Me(args.destGUID) then
 		self:Flash(args.spellId)
-		self:Say(args.spellId)
+		self:Say(args.spellId, nil, nil, "Cinders")
 	end
 end
 

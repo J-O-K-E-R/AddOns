@@ -37,7 +37,7 @@ local ITEM_SPELL_KNOWN = ITEM_SPELL_KNOWN
 local NUM_BAG_SLOTS = NUM_BAG_SLOTS
 local MISCELLANEOUS, MOUNT = MISCELLANEOUS, MOUNT
 
-local RECIPE = GetItemClassInfo(Enum.ItemClass.Recipe)
+local RECIPE = C_Item.GetItemClassInfo(Enum.ItemClass.Recipe)
 
 local currencies = {}
 local buttons = {}
@@ -183,7 +183,9 @@ end
 
 local function ListItem_OnLeave(self)
 	if ( self.isShown ) then
-		self.highlight:SetVertexColor(self.oldr, self.oldg, self.oldb, self.olda)
+		if (self.oldr) then
+			self.highlight:SetVertexColor(self.oldr, self.oldg, self.oldb, self.olda)
+		end
 		self.hover = nil
 	else
 		self.highlight:Hide()

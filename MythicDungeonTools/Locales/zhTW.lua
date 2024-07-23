@@ -1,4 +1,4 @@
-if not (GetLocale() == "zhTW") then
+if not ((GAME_LOCALE or GetLocale()) == "zhTW") then
   return
 end
 local addonName, MDT = ...
@@ -351,6 +351,8 @@ L["Bounty stacks after this pull"] = "此次拉怪也會引到"
 L["Bracken Warscourge"] = "Bracken Warscourge"
 --[[Translation missing --]]
 L["Brackenhide Shaper"] = "Brackenhide Shaper"
+--[[Translation missing --]]
+L["brackenhideCage"] = "Meat Storage"
 L["BrackenhideHollow"] = "蕨皮谷"
 --[[Translation missing --]]
 L["Brain of Yogg-Saron"] = "Brain of Yogg-Saron"
@@ -408,12 +410,15 @@ L["ChamberOfFlames"] = "烈焰之室"
 L["Champion Druna"] = "勇士德鲁娜"
 --[[Translation missing --]]
 L["Champion of Hodir"] = "Champion of Hodir"
+L["Change Language"] = "更改語言"
 L["Channeler Varisz"] = "导魔者瓦里兹"
 --[[Translation missing --]]
 L["Chaotic Rift"] = "Chaotic Rift"
 --[[Translation missing --]]
 L["Chargath, Bane of Scales"] = "Chargath, Bane of Scales"
 L["Charged Dust Devil"] = "充能的沙尘恶魔"
+--[[Translation missing --]]
+L["chatNoninteractiveWarning"] = "Chat frame is currently set to noninteractive, you will not be able to click on MDT routes."
 L["Choose Enemy Forces Format"] = "選擇敵方部隊格式"
 L["Choose Enemy Style. Requires Reload"] = "選擇敵人風格 (需要重新載入)"
 L["Choose NPC tooltip position"] = "選擇 NPC 滑鼠提示位置"
@@ -435,6 +440,7 @@ L["Chrono-Lord Epoch"] = "Chrono-Lord Epoch"
 L["Claw Fighter"] = "Claw Fighter"
 L["Click the fullscreen button for a maximized view of MDT."] = "點一下全螢幕按鈕來最大化 MDT 的畫面"
 L["Click to adjust color settings"] = "點一下調整顏色設定"
+L["Click to assign player"] = "點一下指派玩家"
 L["Click to go to %s"] = "點一下前往 %s"
 L["Click to set dungeon level to 10"] = "點一下將地城層數設為 10"
 L["Click to switch to current week"] = "點一下切換到這週"
@@ -735,6 +741,7 @@ L["Dragonflayer Weaponsmith"] = "Dragonflayer Weaponsmith"
 L["Dragonflight Season 1"] = "巨龍崛起第1季"
 L["Dragonflight Season 2"] = "巨龍崛起第2季"
 L["Dragonflight Season 3"] = "巨龍崛起第3季"
+L["Dragonflight Season 4"] = "巨龍崛起第4季"
 L["Dragonkin"] = "龍類"
 --[[Translation missing --]]
 L["Drakkari Bat"] = "Drakkari Bat"
@@ -869,6 +876,8 @@ L["Emissary of the Tides"] = "潮汐使者"
 L["Empty"] = "空白"
 --[[Translation missing --]]
 L["Empyrean Assassin"] = "Empyrean Assassin"
+--[[Translation missing --]]
+L["Enable Compartment Button"] = "Enable Compartment Button"
 L["Enable Minimap Button"] = "啟用小地圖按鈕"
 L["Enchanted Broodling"] = "魔化巢蛛"
 L["Enchanted Emissary"] = "魔力使者"
@@ -912,10 +921,8 @@ L["Erkhart Stormvein"] = "Erkhart Stormvein"
 L["Error Message:"] = "Error Message:"
 --[[Translation missing --]]
 L["errorLabel1"] = "MDT has encountered errors."
---[[Translation missing --]]
-L["errorLabel2"] = "Please visist either GitHub or Discord and report the error message below."
---[[Translation missing --]]
-L["errorLabel3"] = "Press CTRL + C to copy!"
+L["errorLabel2"] = "請將 MDT 更新到最新版本，並且到 GitHub 或 Discord 回報下列錯誤訊息。"
+L["errorLabel3"] = "按 CTRL + C 複製!"
 L["Erudite Slayer"] = "艾瑞迪特屠杀者"
 --[[Translation missing --]]
 L["Erunak Stonespeaker"] = "Erunak Stonespeaker"
@@ -1245,7 +1252,7 @@ L["Hardened Steel Reaver"] = "Hardened Steel Reaver"
 --[[Translation missing --]]
 L["Hardened Steel Skycaller"] = "Hardened Steel Skycaller"
 L["hardResetButton"] = "重置 MDT"
-L["hardResetPrompt"] = "是否確定要重置所有設定，恢復成預設值? 將會需要重新載入介面!"
+L["hardResetPrompt"] = "是否確定要重置所有設定，恢復成預設值? \\n|cFFFF0000請先將插件更新到最新版本!\\n只有當 MDT 完全不會載入，或是壞掉的狀態，才重置設定。\\n這樣做會刪除你的所有路線!|r\\n將會需要重新載入介面!"
 L["hardResetPromptTitle"] = "刪除所有設定"
 L["Harlan Sweete"] = "哈兰·斯威提"
 L["Harugia the Bloodthirsty"] = "嗜血的哈鲁吉亚"
@@ -1525,7 +1532,7 @@ L["Lady Velandras Ravencrest"] = "薇兰达斯·拉文凯斯夫人"
 L["Lady Waycrest"] = "维克雷斯夫人"
 L["Lakesis"] = "拉科西斯"
 L["Language"] = "語言"
-L["LargePresetWarning"] = "你正嘗試分享非常龐大的路線 (%d 個字元)%s建議使用匯出的功能，將大型的路線改為分享到 外部网站。%s是否確定要現在分享這個路線?%s"
+L["LargePresetWarning"] = "你正嘗試分享非常龐大的路線 (傳輸時間: %.1f秒)%s建議使用匯出的功能，將大型的路線改為分享到 外部網站，或是移除路線中的繪圖。%s是否確定要分享這個路線?%s"
 L["Lashing Voidling"] = "鞭笞虚空幼体"
 --[[Translation missing --]]
 L["Latosius"] = ""
@@ -1567,6 +1574,8 @@ L["Living Waste"] = "活体废料"
 --[[Translation missing --]]
 L["Loatheb"] = "Loatheb"
 L["Local color blind mode"] = "局部色盲模式"
+L["localeButtonTooltip1"] = "需要 \"AddonLocale\" 插件"
+L["localeButtonTooltip2"] = "點一下以在聊天中開設定對話框"
 L["Locked"] = "已鎖住"
 --[[Translation missing --]]
 L["Loken"] = "Loken"
@@ -1793,6 +1802,8 @@ L["Neltharion's Lair"] = "奈薩里奧巢穴"
 L["Neltharion's Lair Sublevel"] = "奈薩里奧巢穴"
 L["Neltharus"] = "奈薩魯斯堡"
 --[[Translation missing --]]
+L["neltharusChain"] = "Burning Chain"
+--[[Translation missing --]]
 L["Ner'zhul"] = "Ner'zhul"
 L["Netherspace"] = "虛空空間"
 L["New"] = "新增"
@@ -1850,7 +1861,7 @@ L["Noth the Plaguebringer"] = "Noth the Plaguebringer"
 --[[Translation missing --]]
 L["Novos the Summoner"] = "Novos the Summoner"
 --[[Translation missing --]]
-L["NPCs"] = ""
+L["NPCs"] = "NPCs"
 --[[Translation missing --]]
 L["Nullmagic Hornswog"] = "Nullmagic Hornswog"
 L["Oakheart"] = "橡树之心"
@@ -1866,7 +1877,7 @@ L["Omega Buster"] = "欧米茄破坏者"
 --[[Translation missing --]]
 L["Oozing Leftovers"] = "Oozing Leftovers"
 --[[Translation missing --]]
-L["Open an issue on GitHub"] = ""
+L["Open an issue on GitHub"] = "Open an issue on GitHub"
 L["Open MDI override options"] = "打開 MDI 替代選項"
 L["openSettingsTooltip"] = "點一下打開設定選項"
 L["Opera Hall Balcony"] = "歌劇大廳露臺"
@@ -2032,7 +2043,7 @@ L["Proto-Drake Handler"] = "Proto-Drake Handler"
 --[[Translation missing --]]
 L["Proto-Drake Rider"] = "Proto-Drake Rider"
 --[[Translation missing --]]
-L["Provide feedback in Discord"] = ""
+L["Provide feedback in Discord"] = "Provide feedback in Discord"
 L["Pull Drop Clear Pull"] = "清空拉怪"
 L["Pull Drop Close"] = "關閉"
 L["Pull Drop Color"] = "顏色"
@@ -2201,6 +2212,8 @@ L["Rook Spiderling"] = "鸦堡小蜘蛛"
 L["Rook Spinner"] = "鸦堡织网蛛"
 L["Root"] = "定身"
 L["Rotation"] = "循環"
+--[[Translation missing --]]
+L["Rotbow Ranger"] = "Rotbow Ranger"
 --[[Translation missing --]]
 L["Rotbow Stalker"] = "Rotbow Stalker"
 --[[Translation missing --]]
@@ -2822,7 +2835,8 @@ L["Titanium Vanguard"] = "Titanium Vanguard"
 L["T'lonja"] = "特隆加"
 L["To share a different preset while the live session is active simply navigate to the preferred preset and click the new 'Set to Live' Button next to the preset-dropdown"] = "在連線的過程中要分享不同的路線，只要切換到該路線，然後按下路線下拉選單旁新的 '設為即時連線' 按鈕。"
 L["tocNotes"] = "幫助你計算 M+ 的小怪%，規劃出最佳拉怪路線。"
-L["Toggle Window"] = "切換顯示視窗"
+L["Toggle MDT"] = "切換顯示 MDT"
+L["Toggle Window"] = "切換顯示地城規劃工具"
 L["Toiling Groundskeeper"] = "劳苦的管理员"
 L["Tol Dagor"] = "托達戈爾"
 L["Tol Dagor Sublevel1"] = "托達戈爾"
@@ -2962,6 +2976,8 @@ L["Urg'roth, Breaker of Heroes"] = "乌尔格斯，勇士噬灭者"
 L["Urh Relic"] = "尤型圣物"
 L["Use /mdt reset to restore the default position and scale of MDT."] = "輸入 /mdt reset 來重置 MDT 視窗，恢復成預設的大小和位置。"
 L["Use as a starting point:"] = "從這個規劃路線開始編輯:"
+--[[Translation missing --]]
+L["Use forces count"] = "Use forces count in Sidebar"
 --[[Translation missing --]]
 L["Utgarde Keep"] = "Utgarde Keep"
 --[[Translation missing --]]

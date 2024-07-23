@@ -9,14 +9,14 @@ local select = select
 local unpack = unpack
 
 local CreateFrame = CreateFrame
-local GetItemInfo = GetItemInfo
-local GetItemQualityColor = GetItemQualityColor
 local GetInventoryItemTexture = GetInventoryItemTexture
 local GetInventorySlotInfo = GetInventorySlotInfo
 local hooksecurefunc = hooksecurefunc
 
 local GetCVarBool = C_CVar.GetCVarBool
-local GetContainerItemCooldown = GetContainerItemCooldown or (C_Container and C_Container.GetContainerItemCooldown)
+local GetItemInfo = C_Item.GetItemInfo or GetItemInfo
+local GetItemQualityColor = C_Item.GetItemQualityColor or GetItemQualityColor
+local GetContainerItemCooldown = C_Container.GetContainerItemCooldown or GetContainerItemCooldown
 
 local ITEMQUALITY_POOR = Enum.ItemQuality.Poor
 local NUM_CONTAINER_FRAMES = NUM_CONTAINER_FRAMES
@@ -238,7 +238,7 @@ local function UpdateBankItem(button)
 	end
 
 	local BankFrame = _G.BankFrame
-	if not BankFrame.isSkinned then
+	if not BankFrame.IsSkinned then
 		S:HandleButton(_G.BankFramePurchaseButton, true)
 		S:HandleCloseButton(_G.BankFrameCloseButton)
 
@@ -258,7 +258,7 @@ local function UpdateBankItem(button)
 		BankFrame.backdrop3:Point('TOPLEFT', _G.BankSlotsFrame.Bag1, 'TOPLEFT', -6, 6)
 		BankFrame.backdrop3:Point('BOTTOMRIGHT', _G.BankSlotsFrame.Bag7, 'BOTTOMRIGHT', 6, -6)
 
-		BankFrame.isSkinned = true
+		BankFrame.IsSkinned = true
 	end
 
 	local ReagentBankFrame = _G.ReagentBankFrame

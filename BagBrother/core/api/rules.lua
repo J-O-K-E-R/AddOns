@@ -1,15 +1,14 @@
 --[[
-	rules.lua
-		Methods for creating and browsing item rulesets.
-		See https://github.com/jaliborc/BagBrother/wiki/Ruleset-API for details.
-		All Rights Reserved
+	Methods for creating and browsing item rulesets.
+	See https://github.com/jaliborc/BagBrother/wiki/Ruleset-API for details.
+	All Rights Reserved
 --]]
 
 
 local ADDON, Addon = ...
 local Rules = Addon:NewModule('Rules', 'MutexDelay-1.0')
-Rules.registry = {}
 Rules.hierarchy = {}
+Rules.registry = {}
 
 
 --[[ Public API ]]--

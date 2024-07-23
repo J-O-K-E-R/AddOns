@@ -23,9 +23,6 @@ mod:RegisterEnableMob(
 	129550, -- Bilge Rat Padfoot
 	130024, -- Soggy Shiprat
 	130400, -- Irontide Crusher
-	130086, -- Davey "Two Eyes"
-	130099, -- Lightning
-	129699, -- Ludwig Von Tortollen
 	130011, -- Irontide Buccaneer
 	130012, -- Irontide Ravager
 	127106, -- Irontide Officer
@@ -308,7 +305,7 @@ do
 			local t = GetTime()
 			if t - prev > 2 then
 				prev = t
-				self:Say(272402)
+				self:Say(272402, nil, nil, "Ricocheting Throw")
 				self:TargetMessage(272402, "blue", name)
 				self:PlaySound(272402, "alert", nil, name)
 			end
@@ -505,7 +502,7 @@ end
 do
 	local prev = 0
 	function mod:PainfulMotivationApplied(args)
-		if self:Dispeller("enrage", nil, args.spellId) then
+		if self:Dispeller("enrage", true, args.spellId) then
 			local t = args.time
 			if t - prev > 2 then
 				prev = t

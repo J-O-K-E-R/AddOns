@@ -13,7 +13,7 @@ BigWigs:AddSounds("Vol'kaal", {
 	[250258] = "alarm",
 	[250585] = "underyou",
 	[259531] = "info",
-	[259572] = "warning",
+	[259572] = {"alert","warning"},
 })
 
 BigWigs:AddSounds("Rezan", {
@@ -24,7 +24,7 @@ BigWigs:AddSounds("Rezan", {
 })
 
 BigWigs:AddSounds("Yazma", {
-	[249919] = "alert",
+	[249919] = {"alarm","alert"},
 	[250036] = "underyou",
 	[250050] = "info",
 	[250096] = "alert",
@@ -34,13 +34,15 @@ BigWigs:AddSounds("Yazma", {
 BigWigs:AddSounds("Atal'Dazar Trash", {
 	[252687] = "info",
 	[252781] = {"alarm","warning"},
+	[253239] = "alert",
 	[253517] = "alert",
 	[253544] = "warning",
 	[253583] = "alarm",
 	[253721] = "long",
 	[255041] = "warning",
-	[255567] = "alert",
+	[255567] = "alarm",
 	[255626] = "alarm",
-	[256849] = {"alert","warning"},
-	[260666] = "alert",
+	[256849] = "warning",
+	[256882] = "alert",
+	[260666] = {"alarm","alert"},
 })

@@ -35,6 +35,7 @@ AL["CMD_HELP1"] = "List of commands"
 AL["CMD_HELP10"] = "Enable/disable scanning world map vignettes"
 AL["CMD_HELP11"] = "Show/hide icons of dragon glyphs on the world map"
 AL["CMD_HELP12"] = "Open RareScanner's explorer"
+AL["CMD_HELP13"] = "Import a custom NPC"
 AL["CMD_HELP2"] = "Show/hide all the icons on the world map"
 AL["CMD_HELP3"] = "Show/hide icons of events on the world map"
 AL["CMD_HELP4"] = "Show/hide icons of treasures on the world map"
@@ -482,6 +483,17 @@ AL["CONTAINER_411177"] = "Snuggle Buddy"
 AL["CONTAINER_411179"] = "Amirdrassil Defender's Shield"
 AL["CONTAINER_411180"] = "Deathstalker Chasis"
 AL["CONTAINER_411181"] = "Flamesworn Render"
+AL["CONTAINER_421179"] = "Kaldorei Bedroll"
+AL["CONTAINER_421180"] = "Kaldorei Backpack"
+AL["CONTAINER_421181"] = "Kaldorei Dagger"
+AL["CONTAINER_421182"] = "Kaldorei Horn"
+AL["CONTAINER_421183"] = "Kaldorei Bag"
+AL["CONTAINER_421184"] = "Kaldorei Shield"
+AL["CONTAINER_421185"] = "Kaldorei Spear"
+AL["CONTAINER_421186"] = "Kaldorei Spyglass"
+AL["CONTAINER_421338"] = "Kaldorei Bag"
+AL["CONTAINER_421339"] = "Kaldorei Horn"
+AL["CONTAINER_421555"] = "Kaldorei Moon Bow"
 AL["CONTAINER_FILTER"] = "Container filters"
 AL["CONTAINERS_A_DAMP_SCROLL"] = "A Damp Scroll"
 AL["CONTAINERS_AMATHET_CACHE"] = "Amathet Cache"
@@ -554,14 +566,98 @@ AL["CUSTOM_NPC_DELETE_ZONE_CONFIRM"] = "Are you sure you want to delete this zon
 AL["CUSTOM_NPC_DELETE_ZONE_DESC"] = "Deletes this zone from the list of zones where you can find this NPC."
 AL["CUSTOM_NPC_DISPLAY_ID"] = "Display ID"
 AL["CUSTOM_NPC_DISPLAY_ID_DESC"] = "(Optional) The display ID is a unique number that identifies the model of a NPC. It is used to display the miniature of the NPC on top of the button whenever its found. You can find this identification number on Wowhead or similar websites."
+AL["CUSTOM_NPC_ERROR1_COORDX"] = "COORDX: Error in string."
+AL["CUSTOM_NPC_ERROR1_COORDY"] = "COORDY: Error in string."
+AL["CUSTOM_NPC_ERROR1_DISPLAYID"] = "DISPLAYID [%s]: It should be a number."
+AL["CUSTOM_NPC_ERROR1_GROUP"] = "GROUP [%s]: It cannot have more than 20 characters."
+AL["CUSTOM_NPC_ERROR1_ITEMID"] = "ITEMID: Error in string."
+AL["CUSTOM_NPC_ERROR1_MAPID"] = "MAPID: Error in string."
+AL["CUSTOM_NPC_ERROR1_NPCID"] = "NPCID: It is mandatory."
+AL["CUSTOM_NPC_ERROR2_COORDX"] = "COORDX [%s]: It should be a number."
+AL["CUSTOM_NPC_ERROR2_COORDY"] = "COORDY [%s]: It should be a number."
+AL["CUSTOM_NPC_ERROR2_ITEMID"] = "ITEMID [%s]: It should be a number."
+AL["CUSTOM_NPC_ERROR2_MAPID"] = "MAPID [%s]: It should be a number."
+AL["CUSTOM_NPC_ERROR2_NPCID"] = "NPCID [%s]: It should be a number."
+AL["CUSTOM_NPC_ERROR3_COORDX"] = "COORDX [%s]: It should have 4 digits."
+AL["CUSTOM_NPC_ERROR3_COORDY"] = "COORDY [%s]: It should have 4 digits."
+AL["CUSTOM_NPC_ERROR3_MAPID"] = "MAPID [%s]: This MAP is not supported by RareScanner (report on CurseForge)."
+AL["CUSTOM_NPC_ERROR3_NPCID"] = "NPCID [%s]: This NPC doesn't exist."
+AL["CUSTOM_NPC_ERROR4_NPCID"] = "NPCID [%s]: This NPC is already included with RareScanner."
+AL["CUSTOM_NPC_EXPORT_DESC"] = "Click to open the window to copy the exported strings"
+AL["CUSTOM_NPC_EXPORT_GROUP"] = "Export this group"
+AL["CUSTOM_NPC_EXPORT_NPC"] = "Export this NPC"
 AL["CUSTOM_NPC_EXTRA_INFO"] = "Optional extra information"
 AL["CUSTOM_NPC_FIND_ZONES"] = "Select a zone where you can find this NPC"
+AL["CUSTOM_NPC_GROUP"] = "Group"
+AL["CUSTOM_NPC_GROUP_ADD"] = "Add a new group"
+AL["CUSTOM_NPC_GROUP_ADD_DESC"] = "Type the name of the new group"
+AL["CUSTOM_NPC_GROUP_DEFAULT"] = "Default"
+AL["CUSTOM_NPC_GROUP_DELETE"] = "Delete the group"
+AL["CUSTOM_NPC_GROUP_DELETE_CONFIRM"] = [=[You are going to delete the group [%s] and every custom NPC in this group.
+Are you sure you want to continue?]=]
+AL["CUSTOM_NPC_GROUP_DELETE_DESC"] = "Delete the group and every custom NPC in the group"
+AL["CUSTOM_NPC_GROUP_DESC"] = "Select the group of the custom NPC"
+AL["CUSTOM_NPC_GROUP_NAME"] = "Name"
+AL["CUSTOM_NPC_GROUP_NAME_DESC"] = "Type a new name to change the current value"
+AL["CUSTOM_NPC_IMPORT_HELP"] = [=[# If a line starts with '#' it will be ignored.
+# The parameters in the string are separated by a white character ' '.
+# The format of the string is the following:
+#
+# |cffffcc00NPCID MAPSTRING LOOTSTRING DISPLAYID GROUPNAME|r
+#
+# - |cffffff00NPCID|r: (mandatory) Number -> ID of the NPC to be imported
+#
+# - |cffffff00MAPSTRING|r: (optional) String -> Format: |cffffcc00MAPID1:X1-Y1,X2-Y2,...|MAPID2:X1-Y1,X2-Y2,..|r.
+#   * |cff00ffffMAPIDx|r: (mandatory) Number -> ID of the map. You can extract it from here |cffFF4500https://wago.tools/db2/UiMap|r
+#      * The MAPID and the coordinates are separated by the character colon ':'.
+#   * |cff00ffffX1-Y1|r: (optional) Set of coordinates where it spawns, in format XXXX-YYYY, examples:
+#      * |cff00ffff0001-4012|r: It transforms into 0.01-40.12
+#      * |cff00ffff0010-2045|r: It transforms into 0.1-20.45
+#      * |cff00ffff0103-2045|r: It transforms into 1.03-20.45
+#      * |cff00ffff1023-8960|r: It transforms into 10.23-89.6
+#   * If the NPC appears in multiple maps, use the character pipe '|' to add multiple sets of maps:coordinates.
+#   * If you don't set the MAPID and the coordinates, the whole world will be searched to find the NPC.
+#   * If you don't set the coordinates, the NPC won't show up in the map.
+#   * If the NPC appears in multiple spots in the same map, use the character comma ',' to add multiple sets of coordinates.
+#
+# - |cffffff00LOOTSTRING|r: (optional) String -> Format: |cffffcc00ITEMID1,ITEMID2,...|r
+#   * |cff00ffffITEMIDx|r: Number -> ID of the item that the NPC drops.
+#   * If the NPC drops multiple items, use the character comma ',' to add multiple sets of items.
+#   * If you don't set the loot it won't show up in the world map tooltip or in the loot bar.
+#
+# - |cffffff00DISPLAYID|r: (Optional) Number -> ID of the NPC model. You can find it in |cffFF4500https://www.wowhead.com|r
+#   * If you don't set the DISPLAYID, the miniature model won't be shown when you find the NPC.
+#
+# - |cffffff00GROUPNAME|r: (Optional) String -> Name of the group where you want to add the NPC.
+#   * If you don't set the GROUPNAME, it will be added to the 'Default' one.
+#   * If the group doesn't exist it will be created automatically.
+#
+# If you want to skip one parameter use the character asterisk '*'.
+#
+# Examples:
+#
+# 154394 390:8680-4260,8540-4180 * 154394 Group1
+#    * NPC = 154394, MAP = 390, COORDINATES = 86.8-42.6,85.4-41.8, LOOT = none, DISPLAYID = 154394, GROUP = Group1.
+#
+# 210908 2200 * * Group2
+#    * NPC = 210908, MAP = 2200, COORDINATES = none, LOOT = none, DISPLAYID = none, GROUP = Group2.
+#
+# 210983 2200:0720-4780 207780,207172
+#    * NPC = 210983, MAP = 2200, COORDINATES = 7.2-47.8, LOOT = 207780,207172, DISPLAYID = none, GROUP = Default.
+#
+# 210983
+#    * NPC = 210983, MAP = All the world, COORDINATES = none, LOOT = none, DISPLAYID = none, GROUP = Default.]=]
+AL["CUSTOM_NPC_IMPORT_NPC"] = "Import NPCs"
+AL["CUSTOM_NPC_IMPORT_NPC_DESC"] = "Click to open the window to paste the imported strings"
+AL["CUSTOM_NPC_IMPORT_OK"] = "Imported [%s]."
+AL["CUSTOM_NPC_IMPORT_OR"] = " or "
 AL["CUSTOM_NPC_INFO"] = "Warning: The NPC won't be recorded until you add a zone."
 AL["CUSTOM_NPC_LOOT"] = "Loot"
 AL["CUSTOM_NPC_LOOT_DESC"] = "(Optional) Item IDs of the loot dropped by this NPC. Introduce the item IDs with the next format: ID1,ID2,.... For example: 184198,184198. You can find these identification numbers on Wowhead or similar websites."
 AL["CUSTOM_NPC_TEXT"] = "Important: RareScanner scans for custom NPC using their nameplates, so don't forget to enable them or you won't get alerts for them."
 AL["CUSTOM_NPC_VALIDATION_CHAR"] = "The value introduced contains characters different from '%s'"
 AL["CUSTOM_NPC_VALIDATION_COORD"] = "The coordinates introduced are incorrect. The string should have this format: X1-Y1,X2-Y2,..."
+AL["CUSTOM_NPC_VALIDATION_GROUP"] = "The name of the group cannot have more than 20 characters."
 AL["CUSTOM_NPC_VALIDATION_ITEM"] = "The item IDs introduced are incorrect. The string should have this format: ID1,ID2,..."
 AL["CUSTOM_NPC_VALIDATION_NUMBER"] = "The value introduced has to be a number."
 AL["CUSTOM_NPCS"] = "Custom NPCs"
@@ -652,17 +748,39 @@ AL["ENABLED_SEARCHING_RARE"] = "Enabled alerts for this rare NPC: "
 AL["EVENT"] = "Event"
 AL["EVENT_FILTER"] = "Event filters"
 AL["EXPEDITION_ISLANDS"] = "Expedition islands"
+AL["EXPLORER_APPEARANCES"] = "Missing appearances"
 AL["EXPLORER_AUTO_FILTER"] = "Auto filter NPCs"
-AL["EXPLORER_AUTO_FILTER_DESC"] = "When this is activated, as soon as you collect all the missing items from a NPC, it will be automatically filtered."
+AL["EXPLORER_AUTO_FILTER_DESC"] = "When this is activated, as soon as you collect all the missing items from a NPC, it will be automatically filtered. This doesn't apply to NPCs with custom items."
 AL["EXPLORER_AUTOFILTER"] = "Auto-filtered [%s]. No more missing collectibles."
 AL["EXPLORER_BUTTON_TOOLTIP1"] = "Left-click to see details"
 AL["EXPLORER_BUTTON_TOOLTIP2"] = "Right-click to stop filtering this NPC"
 AL["EXPLORER_BUTTON_TOOLTIP3"] = "Right-click to filter this NPC"
 AL["EXPLORER_CREATE_BACKUP"] = "Create profile's backup"
 AL["EXPLORER_CREATE_BACKUP_DESC"] = "When this is activated, a backup of your current profile will be created when clicking on '%s'. This backup will allow you to return to your previous configurations if needed."
+AL["EXPLORER_CUSTOM"] = "Custom items"
+AL["EXPLORER_CUSTOM_ITEMS_ADD_GROUP"] = "Add a new group"
+AL["EXPLORER_CUSTOM_ITEMS_ADD_GROUP_DESC"] = "Type the name of the new group and press enter"
+AL["EXPLORER_CUSTOM_ITEMS_DELETE_GROUP"] = "Delete group"
+AL["EXPLORER_CUSTOM_ITEMS_DELETE_GROUP_CONFIRMATION"] = "Are you sure you want to delete this group and every item in it?"
+AL["EXPLORER_CUSTOM_ITEMS_EDIT_GROUP"] = "Type a new name for the group and press enter to change it"
+AL["EXPLORER_CUSTOM_ITEMS_GROUP"] = "Group"
+AL["EXPLORER_CUSTOM_ITEMS_GROUP_DEFAULT"] = "Default"
+AL["EXPLORER_CUSTOM_ITEMS_GROUP_DESC"] = "Select the group where you want to add the item/s"
+AL["EXPLORER_CUSTOM_ITEMS_GROUP_EMPTY"] = "Empty group"
+AL["EXPLORER_CUSTOM_ITEMS_LIST"] = "Custom item list"
+AL["EXPLORER_CUSTOM_ITEMS_LIST_DESC"] = [=[Type the item ID/s that you want to look for.
+Format: |cffffcc00ITEMID1,ITEMID2,...|r.]=]
+AL["EXPLORER_CUSTOM_ITEMS_LIST_VALIDATION"] = [=[The string is incorrect.
+Format allowed: |cffffcc00ITEMID1,ITEMID2,...|r, where ITEMIDx are numbers.]=]
+AL["EXPLORER_CUSTOM_ITEMS_TOOLTIP_DROP"] = "Delete this item"
+AL["EXPLORER_CUSTOM_ITEMS_TOOLTIP_ID"] = "ItemID: %s"
+AL["EXPLORER_CUSTOM_ITEMS_WRONG_IDS_CHAT"] = "Wrong itemIDs: %s."
+AL["EXPLORER_CUSTOM_ITEMS_WRONG_IDS_VALIDATION"] = "The game didn't find some of the item IDs introduced. Check your chat to see the list."
+AL["EXPLORER_DRAKEWATCHER"] = "Missing drakewatcher manuscripts"
 AL["EXPLORER_FILTER_ACHIEVEMENT"] = "Is part of an achievement"
 AL["EXPLORER_FILTER_APPEARANCES"] = "Drops missing appearances"
 AL["EXPLORER_FILTER_COLLECTIONS"] = "Collections"
+AL["EXPLORER_FILTER_CUSTOM"] = "Drops custom items. Group %s"
 AL["EXPLORER_FILTER_DEAD"] = "Show already killed NPCs"
 AL["EXPLORER_FILTER_DRAKEWATCHER"] = "Drops missing drakewatcher manuscripts"
 AL["EXPLORER_FILTER_FILTERED"] = "Show filtered NPCs"
@@ -686,12 +804,9 @@ AL["EXPLORER_MISSING_DRAKEWATCHER"] = "Detected %s missing drakewatcher manuscri
 AL["EXPLORER_MISSING_MOUNTS"] = "Detected %s missing mounts..."
 AL["EXPLORER_MISSING_PETS"] = "Detected %s missing pets..."
 AL["EXPLORER_MISSING_TOYS"] = "Detected %s missing toys..."
-AL["EXPLORER_NO_MISSING_APPEARANCES"] = "No missing appearances"
-AL["EXPLORER_NO_MISSING_DRAKEWATCHER"] = "No missing drakewatcher manuscripts"
-AL["EXPLORER_NO_MISSING_MOUNTS"] = "No missing mounts"
-AL["EXPLORER_NO_MISSING_PETS"] = "No missing pets"
-AL["EXPLORER_NO_MISSING_TOYS"] = "No missing toys"
+AL["EXPLORER_MOUNTS"] = "Missing mounts"
 AL["EXPLORER_NO_RESULTS"] = "No results found"
+AL["EXPLORER_PETS"] = "Missing pets"
 AL["EXPLORER_RESCANN"] = "Rescan"
 AL["EXPLORER_RESCANN_DESC"] = "Forces a manual rescan for missing collectibles"
 AL["EXPLORER_SCAN_CLASS_REQUIRED"] = "New version of the database detected, a scan for the current class is required."
@@ -699,12 +814,13 @@ AL["EXPLORER_SCAN_MANUAL"] = "Launching a manual rescan for the current class."
 AL["EXPLORER_SCAN_NOT_DONE"] = "You cannot use this filter because you haven't done a scan with RareScanner's explorer yet. Do you want to do it now?"
 AL["EXPLORER_SCAN_REQUIRED"] = "New version of the database detected, a new scan is required."
 AL["EXPLORER_START_SCAN"] = "Start scan"
+AL["EXPLORER_TOYS"] = "Missing toys"
 AL["FILTER"] = "NPC filters"
 AL["FILTER_CONTINENT"] = "Continent/Category"
 AL["FILTER_CONTINENT_DESC"] = "Continent or category name"
 AL["FILTER_DEFAULT"] = "Default filter behaviour"
 AL["FILTER_DEFAULT_DESC"] = "This is the default behaviour that will be applied when filtering using any of the options available in the addon (worldmap commands, visual alerts, RareScanner's explorer, etc.)."
-AL["FILTER_DESC"] = "Uncheck to filter it. Once it is filtered the behaviour selected will apply: \\n- %s: It won't show up in the map and you won't get alerts either.\\n- %s: It won't show up in the map but you will still get alerts.\\n- %s: It will show up in the map but you won't get alerts.\\nCheck to unfilter it:\\n- It will appear in your map and you will get the alerts."
+AL["FILTER_DESC"] = "Uncheck to filter it. Once it is filtered the behaviour selected will apply: \n- %s: It won't show up in the map and you won't get alerts either.\n- %s: It won't show up in the map but you will still get alerts.\n- %s: It will show up in the map but you won't get alerts.\nCheck to unfilter it:\n- It will appear in your map and you will get the alerts."
 AL["FILTER_EVENT_LIST"] = "Filter searching for events"
 AL["FILTER_TYPE_ALERTS"] = "Filter only audio/visual alerts"
 AL["FILTER_TYPE_ALL"] = "Filter completely"
@@ -755,6 +871,8 @@ AL["LOOT_EXPLORER_FILTER_LONG_DESC"] = "In order to use these filters you have t
 AL["LOOT_EXPLORER_OPEN"] = "Open explorer"
 AL["LOOT_EXPLORER_SHOW_MISSING_APPEARANCES"] = "Show missing appearances"
 AL["LOOT_EXPLORER_SHOW_MISSING_APPEARANCES_DESC"] = "When activated, you will see missing appearances found via the explorer in the loot bar and world map tooltips."
+AL["LOOT_EXPLORER_SHOW_MISSING_CUSTOM"] = "Show custom items. Group %s"
+AL["LOOT_EXPLORER_SHOW_MISSING_CUSTOM_DESC"] = "When activated, you will see custom items from the group %s found via the explorer in the loot bar and world map tooltips."
 AL["LOOT_EXPLORER_SHOW_MISSING_DRAKEWATCHER"] = "Show missing drakewatcher manuscripts"
 AL["LOOT_EXPLORER_SHOW_MISSING_DRAKEWATCHER_DESC"] = "When activated, you will see missing drakewatcher manuscripts found via the explorer in the loot bar and world map tooltips."
 AL["LOOT_EXPLORER_SHOW_MISSING_MOUNTS"] = "Show missing mounts"
@@ -770,6 +888,8 @@ AL["LOOT_FILTER_COMPLETED_QUEST_DESC"] = "When activated, any item that is a req
 AL["LOOT_FILTER_CONDUIT_ITEMS"] = "Filter conduits that you cannot use"
 AL["LOOT_FILTER_CONDUIT_ITEMS_DESC"] = "When activated, any conduit that you cannot use or that you have already collected, won't show up on the loot bar."
 AL["LOOT_FILTER_ITEM_LIST"] = "Filtered items"
+AL["LOOT_FILTER_NOT_EQUIPABLE"] = "Filter non-equipable items"
+AL["LOOT_FILTER_NOT_EQUIPABLE_DESC"] = "When activated, armor and weapons that this character cannot wear won't show up on the loot bar. This filter doesn't affect other kinds of lootable items, whatsoever."
 AL["LOOT_FILTER_NOT_MATCHING_CLASS"] = "Filter items that require a different class than yours"
 AL["LOOT_FILTER_NOT_MATCHING_CLASS_DESC"] = "When activated, any item that requires a specific class to be used that doesn't match yours, won't show up on the loot bar."
 AL["LOOT_FILTER_NOT_MATCHING_FACTION"] = "Filter items that require a different faction than yours"
@@ -798,8 +918,8 @@ AL["LOOT_RESET_DESC"] = "Click the button to reset all the filters to its defaul
 AL["LOOT_RESET_DONE"] = "Loot filters restored"
 AL["LOOT_SEARCH_ITEMS_DESC"] = "Type the name of the item to filter the list below"
 AL["LOOT_SUBCATEGORY_FILTERS"] = "Subcategory filters"
-AL["LOOT_TOGGLE_FILTER"] = "Alt-Left-Click to filter the category (%s/%s)"
-AL["LOOT_TOGGLE_INDIVIDUAL_FILTER"] = "Alt-Shift-Left-Click to filter this item"
+AL["LOOT_TOGGLE_FILTER"] = "Filter category (%s/%s)"
+AL["LOOT_TOGGLE_INDIVIDUAL_FILTER"] = "Filter only this item"
 AL["LOOT_TOOLTIP_POSITION"] = "Loot tooltip position"
 AL["LOOT_TOOLTIP_POSITION_DESC"] = "Defines where to show the loot tooltip that appears when you move the mouse over an icon, in respect to the button"
 AL["LOOT_TOOLTIPS_CANIMOGIT"] = "CanIMogIt support"
@@ -840,6 +960,7 @@ AL["MAP_MENU_SHOW_ACHIEVEMENT_CONTAINERS"] = "Show not completed achievement con
 AL["MAP_MENU_SHOW_ACHIEVEMENT_RARE_NPCS"] = "Show not completed achievement rare NPC icons on map"
 AL["MAP_MENU_SHOW_COMPLETED_EVENTS"] = "Show completed event icons on map"
 AL["MAP_MENU_SHOW_CONTAINERS"] = "Show container icons on map"
+AL["MAP_MENU_SHOW_CUSTOM_NPC_GROUP"] = "Show custom NPC group '%s' icons on map."
 AL["MAP_MENU_SHOW_DEAD_RARE_NPCS"] = "Show already killed rare NPC icons on map"
 AL["MAP_MENU_SHOW_DRAGON_GLYPHS"] = "Show dragon glyphs icons on map"
 AL["MAP_MENU_SHOW_DREAMSEED_CONTAINERS"] = "Dragonflight: Show Dreamseed container icons on map"
@@ -920,6 +1041,11 @@ AL["MAP_TOOLTIPS_ACHIEVEMENT_DESC"] = "When disabled you won't see information a
 AL["MAP_TOOLTIPS_COMMANDS"] = "Show commands"
 AL["MAP_TOOLTIPS_COMMANDS_DESC"] = "When disabled you won't see the description of the commands on the bottom part of the tooltip."
 AL["MAP_TOOLTIPS_DESC"] = "Options to configure what to show in the tooltips"
+AL["MAP_TOOLTIPS_FILTER_STATE"] = "Show if the entity is filtered"
+AL["MAP_TOOLTIPS_FILTER_STATE_ALERTS"] = "Filtered audio/visual alerts"
+AL["MAP_TOOLTIPS_FILTER_STATE_ALL"] = "Filtered completely"
+AL["MAP_TOOLTIPS_FILTER_STATE_DESC"] = "When disabled you won't see the text indicating if the entity is filtered or what type of filter has been applied in the tooltips."
+AL["MAP_TOOLTIPS_FILTER_STATE_WORLDMAP"] = "Filtered in the worldmap"
 AL["MAP_TOOLTIPS_LOOT"] = "Show loot"
 AL["MAP_TOOLTIPS_LOOT_ACHIEVEMENT"] = "Loot/Achievements"
 AL["MAP_TOOLTIPS_LOOT_ACHIEVEMENT_POSITION"] = "Loot/Achievement tooltip position"
@@ -1334,7 +1460,7 @@ AL["NOTE_210045"] = "In a large cave underground."
 AL["NOTE_210051"] = "In a cave."
 AL["NOTE_210070"] = "In a cave."
 AL["NOTE_210075"] = "In a cave"
-AL["NOTE_210111"] = "It spawns while the [Emerald Frenxy] event is active in this area."
+AL["NOTE_210111"] = "It spawns while the [Emerald Frenzy] event is active in this area."
 AL["NOTE_210161"] = "In a cave."
 AL["NOTE_210398"] = "Available only while the world event [Secrets of Azeroth] is active. It requires three players to summon it. Each player has to stand beside a brazier while carrying the toy [Torch of Pyrreth]."
 AL["NOTE_210508"] = "In a cave."
@@ -1791,7 +1917,7 @@ AL["SOUND_RELOAD_DESC"] = "Reloads the interface. Use this button if you copied 
 AL["SOUND_VOLUME"] = "Volume"
 AL["SOUND_VOLUME_DESC"] = "Sets the sound volume level. This doesn't apply to custom sounds."
 AL["STOLEN_ANIMA_VESSEL"] = "Stolen Anima Vessel"
-AL["TARGET_UNIT_WARNING"] = "WARNING!! Read carefully.\\n\\nThis tracker uses a protected function that addons aren't allowed to use, so every single time that the addon detects a NPC using this system the game will show a pop up indicanting that RareScanner produced an error. \\n\\n|cffFF00001. It isn't possible to hide or avoid this error, so use this tracker ONLY when you are intensively looking for an specific rare NPC.|r\\n2. The spot shown in the world map with the pink skull for rare NPCs detected with this system won't be accurate in most cases. The addon cannot know where the NPC is, so the position shown is one of the possible spots where it might be.\\n3. In order to avoid constant errors, if you enable this tracker, |cffFFBF00it will only work in expansions before Pandaria or to detect custom NPCs|r.\\n\\nAre you sure you want to enable it?"
+AL["TARGET_UNIT_WARNING"] = "WARNING!! Read carefully.\n\nThis tracker uses a protected function that addons aren't allowed to use, so every single time that the addon detects a NPC using this system the game will launch a LUA error. \n\n|cffFF00001. It isn't possible to avoid this error, so use this tracker ONLY when you are intensively looking for an specific rare NPC.|r\n2. The spot shown in the world map with the pink skull for rare NPCs detected with this system won't be accurate in most cases. The addon cannot know where the NPC is, so the position shown is one of the possible spots where it might be.\n3. In order to avoid constant errors, if you enable this tracker, |cffFFBF00it will only work in expansions before Pandaria or to detect custom NPCs|r.\n\nAre you sure you want to enable it?"
 AL["TEST"] = "Launch Test"
 AL["TEST_DESC"] = "Press the button to show an alert example. You can drag and drop the panel to another position where it will be shown from now on."
 AL["TOC_NOTES"] = "Minimap scanner. Warns you visually with a button and a miniature and plays a sound everytime a rare NPC, treasure/chest or event shows up in your minimap"

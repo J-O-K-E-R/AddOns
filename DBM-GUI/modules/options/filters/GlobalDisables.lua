@@ -1,5 +1,7 @@
 local L = DBM_GUI_L
 
+--Centralized space to disable any feature from any other panel. Many options are duplicated here, but that's fine
+--It's a one stop shop for disabling any DBM core feature
 local spamPanel = DBM_GUI.Cat_Filters:CreateNewPanel(L.Panel_SpamFilter, "option")
 
 local spamSpecAnnounceFeat = spamPanel:CreateArea(L.Area_SpamFilter_SpecFeatures)
@@ -21,7 +23,6 @@ local spamNameplates = spamPanel:CreateArea(L.Area_SpamFilter_Nameplates)
 spamNameplates:CreateCheckButton(L.SpamBlockNoNameplate, true, nil, "DontShowNameplateIcons")
 spamNameplates:CreateCheckButton(L.SpamBlockNoNameplateCD, true, nil, "DontShowNameplateIconsCD")
 spamNameplates:CreateCheckButton(L.SpamBlockNoBossGUIDs, true, nil, "DontSendBossGUIDs")
-spamNameplates:CreateCheckButton(L.SpamBlockTimersWithNameplates, true, nil, "DontShowTimersWithNameplates")
 
 local spamMisc = spamPanel:CreateArea(L.Area_SpamFilter_Misc)
 spamMisc:CreateCheckButton(L.SpamBlockNoSetIcon, true, nil, "DontSetIcons")
@@ -41,7 +42,6 @@ local spamPTArea = spamPanel:CreateArea(L.Area_PullTimer)
 spamPTArea:CreateCheckButton(L.DontShowPTNoID, true, nil, "DontShowPTNoID")
 spamPTArea:CreateCheckButton(L.DontShowPT, true, nil, "DontShowPT2")
 spamPTArea:CreateCheckButton(L.DontShowPTText, true, nil, "DontShowPTText")
-spamPTArea:CreateCheckButton(L.DontShowPTCountdownText, true, nil, "DontShowPTCountdownText")
 local SPTCDA = spamPTArea:CreateCheckButton(L.DontPlayPTCountdown, true, nil, "DontPlayPTCountdown")
 
 local PTSlider = spamPTArea:CreateSlider(L.PT_Threshold, 1, 10, 1, 300)

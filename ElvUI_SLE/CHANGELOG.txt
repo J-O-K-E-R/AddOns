@@ -1,3 +1,7 @@
-v4.74 11/9/23
+v4.78 & 4.79 6/19/24
 
-• remove font options that ElvUI will be handling
+• Fixed afk error
+• Fixed pvp auto release error
+• Fixed attack power on character armory stats
+• Added Draenei heritage armor quest hearthstone
+• Added/Tweaked Character Armory Average Item Level Options in the Stats section (Some adjustments may be needed after update to 4.78)

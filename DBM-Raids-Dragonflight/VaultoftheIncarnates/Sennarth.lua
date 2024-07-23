@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod(2482, "DBM-Raids-Dragonflight", 3, 1200)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20231102154902")
+mod:SetRevision("20240714045321")
 mod:SetCreatureID(187967)
 mod:SetEncounterID(2592)
 mod:SetUsedIcons(1, 2, 3)
@@ -14,7 +14,6 @@ mod:RegisterCombat("combat")
 mod:RegisterEventsInCombat(
 	"SPELL_CAST_START 371976 372082 373405 374112 373027 371983 372539",
 	"SPELL_CAST_SUCCESS 372238 181113",
-	"SPELL_SUMMON 372242 372843",
 	"SPELL_AURA_APPLIED 371976 372082 372030 372044 385083 373048 374104",
 	"SPELL_AURA_APPLIED_DOSE 372030 385083",
 	"SPELL_AURA_REMOVED 371976 372082 372030 373048",
@@ -43,7 +42,7 @@ local warnChillingBlast							= mod:NewTargetAnnounce(371976, 2)
 local warnEnvelopingWebs						= mod:NewTargetNoFilterAnnounce(372082, 3)
 local warnWrappedInWebs							= mod:NewTargetNoFilterAnnounce(372044, 4)
 local warnCallSpiderlings						= mod:NewCountAnnounce(372238, 2)
-local warnFrostbreathArachnid					= mod:NewSpellAnnounce(-24899, 2)
+local warnFrostbreathArachnid					= mod:NewCountAnnounce(-24899, 2)
 
 local specWarnChillingBlast						= mod:NewSpecialWarningMoveAway(371976, nil, nil, nil, 1, 2)
 local yellChillingBlast							= mod:NewYell(371976)
@@ -52,19 +51,18 @@ local specWarnEnvelopingWebs					= mod:NewSpecialWarningYouPos(372082, nil, nil,
 local yellEnvelopingWebs						= mod:NewShortPosYell(372082)
 local yellEnvelopingWebsFades					= mod:NewIconFadesYell(372082)
 local specWarnStickyWebbing						= mod:NewSpecialWarningStack(372030, nil, 3, nil, nil, 1, 6)
-local specWarnGossamerBurst						= mod:NewSpecialWarningSpell(373405, nil, nil, nil, 2, 12)
+local specWarnGossamerBurst						= mod:NewSpecialWarningCount(373405, nil, nil, nil, 2, 12)
 local specWarnWebBlast							= mod:NewSpecialWarningTaunt(385083, nil, nil, nil, 1, 2)
 local specWarnFreezingBreath					= mod:NewSpecialWarningDodge(374112, nil, nil, nil, 1, 2)
 
 local timerChillingBlastCD						= mod:NewCDCountTimer(18.5, 371976, nil, nil, nil, 3)--18.5-54.5
 local timerEnvelopingWebsCD						= mod:NewCDCountTimer(24, 372082, nil, nil, nil, 3)--24-46.9
-local timerGossamerBurstCD						= mod:NewCDCountTimer(36.9, 373405, nil, nil, nil, 2)--36.9-67.6
+local timerGossamerBurstCD						= mod:NewCDCountTimer(34, 373405, nil, nil, nil, 2)--34-67.6
 local timerCallSpiderlingsCD					= mod:NewCDCountTimer(25.1, 372238, nil, nil, nil, 1)--17.6-37
 local timerFrostbreathArachnidCD				= mod:NewCDCountTimer(98.9, -24899, nil, nil, nil, 1)
 local timerFreezingBreathCD						= mod:NewCDTimer(11.1, 374112, nil, "Tank", nil, 5, nil, DBM_COMMON_L.TANK_ICON)
-local timerPhaseCD								= mod:NewPhaseTimer(30)
+local timerPhaseCD								= mod:NewStageTimer(30)
 
---mod:AddRangeFrameOption("8")
 mod:AddInfoFrameOption(372030, false)--Useful raid leader tool, but not needed by everyone
 mod:GroupSpells(372082, 372030, 372044)--Wrapped in webs and sticking webbing with enveloping Webs
 
@@ -76,12 +74,12 @@ local warnSuffocatinWebs							= mod:NewTargetNoFilterAnnounce(373048, 3)
 local specWarnSuffocatingWebs						= mod:NewSpecialWarningYouPos(373048, nil, nil, nil, 1, 2)
 local yellSuffocatingWebs							= mod:NewShortPosYell(373048)
 local yellSuffocatingWebsFades						= mod:NewIconFadesYell(373048)
-local specWarnRepellingBurst						= mod:NewSpecialWarningSpell(371983, nil, nil, nil, 2, 12)
+local specWarnRepellingBurst						= mod:NewSpecialWarningCount(371983, nil, nil, nil, 2, 12)
 
 local timerSuffocatingWebsCD						= mod:NewCDCountTimer(38.8, 373048, nil, nil, nil, 3)--38-46
 local timerRepellingBurstCD							= mod:NewCDCountTimer(33.9, 371983, nil, nil, nil, 2)--33-37 (unknown on normal
 
-mod:AddSetIconOption("SetIconOnSufWeb", 373048, true, false, {1, 2, 3})
+mod:AddSetIconOption("SetIconOnSufWeb", 373048, true, 0, {1, 2, 3})
 
 local stickyStacks = {}
 mod.vb.webIcon = 1
@@ -97,13 +95,13 @@ local allTimers = {
 	["mythic"] = {--Very close to heroic so won't alter til transcriptor to make it lower work load
 		[1] = {
 			--Chilling Blast
-			[371976] = {15.5, 37.6, 37.4, 29.1, 37.2, 37.5, 21.9, 36.5, 37.3},
+			[371976] = {15.5, 37.6, 36.8, 29.1, 37.2, 37.5, 21.9, 36.5, 37.3},
 			--Enveloping Webs
-			[372082] = {18.1, 26.7, 30.5, 44.8, 26.7, 30.4, 38.9, 26.4, 30.4},
+			[372082] = {18.1, 26.7, 30.5, 43.5, 26.7, 30.4, 38.9, 26.4, 30.4},
 			--Gossamer Burst
-			[373405] = {31.4, 37.7, 65.5, 36.5, 59.6, 37.6},
+			[373405] = {31.4, 37.7, 63.1, 36.5, 59.6, 37.6},
 			--Call Spiderlings
-			[372238] = {0, 25.5, 25.5, 26.7, 38.8, 25.5, 25.5, 25.5, 20.7, 26.7, 26.7},--5th has largest variance, 14-23 because sequencing isn't right way to do this, just the lazy way
+			[372238] = {0, 25.5, 25.5, 25.9, 35.1, 25.5, 25.5, 25.5, 19.5, 26.7, 26.7},--5th has largest variance, 14-23 because sequencing isn't right way to do this, just the lazy way
 		},
 		--[2] = {
 		--	--Chilling Blast
@@ -115,13 +113,13 @@ local allTimers = {
 	["heroic"] = {
 		[1] = {
 			--Chilling Blast
-			[371976] = {15.5, 37.6, 37.4, 26.7, 37.2, 36.4, 21.9, 36.5, 37.3},--likely 36 sec cd that resets on encounter events
+			[371976] = {15.5, 37.6, 36.8, 26.7, 37.2, 36.4, 21.9, 36.5, 37.3},--likely 36 sec cd that resets on encounter events
 			--Enveloping Webs
-			[372082] = {18.1, 26.7, 30.5, 43.8, 24.3, 26.6, 38.9, 26.4, 30.4},--likely 26sec cd that rests on encounter events
+			[372082] = {18.1, 26.7, 30.5, 43.5, 24.3, 26.6, 38.9, 26.4, 30.4},--likely 26sec cd that rests on encounter events
 			--Gossamer Burst
-			[373405] = {31.4, 37.7, 64.3, 36.5, 59.6, 37.6},--likely 36 sec cd that resets on encounter events
+			[373405] = {31.4, 37.7, 63.1, 36.5, 59.6, 37.6},--likely 36 sec cd that resets on encounter events
 			--Call Spiderlings
-			[372238] = {0, 25.5, 25.5, 26.7, 38.8, 25.5, 25.5, 25.5, 19.4, 26.7, 26.7},--likely 25 sec cd that resets on encounter events
+			[372238] = {0, 25.5, 25.5, 25.9, 35.1, 25.5, 25.5, 25.5, 18.2, 26.7, 26.7},--likely 25 sec cd that resets on encounter events
 		},
 		--[2] = {
 		--	--Chilling Blast
@@ -182,7 +180,7 @@ function mod:OnCombatStart(delay)
 	timerEnvelopingWebsCD:Start(17.2-delay, 1)
 	timerGossamerBurstCD:Start(31.4-delay, 1)
 	timerPhaseCD:Start(42.4-delay)
-	timerFrostbreathArachnidCD:Start(103.1, 2)--First one engages with boss
+	timerFrostbreathArachnidCD:Start(102.8, 2)--First one engages with boss
 	if self:IsMythic() then
 		difficultyName = "mythic"
 	elseif self:IsHeroic() then
@@ -193,15 +191,12 @@ function mod:OnCombatStart(delay)
 		difficultyName = "lfr"
 	end
 	if self.Options.InfoFrame then
-		DBM.InfoFrame:SetHeader(DBM:GetSpellInfo(372030))
+		DBM.InfoFrame:SetHeader(DBM:GetSpellName(372030))
 		DBM.InfoFrame:Show(20, "table", stickyStacks, 1)
 	end
 end
 
 function mod:OnCombatEnd()
---	if self.Options.RangeFrame then
---		DBM.RangeCheck:Hide()
---	end
 	if self.Options.InfoFrame then
 		DBM.InfoFrame:Hide()
 	end
@@ -245,10 +240,7 @@ function mod:SPELL_CAST_START(args)
 		self.vb.burstCount = self.vb.burstCount + 1
 		specWarnGossamerBurst:Show(self.vb.burstCount)
 		specWarnGossamerBurst:Play("pullin")
-		local timer = self:GetFromTimersTable(allTimers, difficultyName, 1, spellId, self.vb.burstCount+1)
-		if timer then
-			timerGossamerBurstCD:Start(timer, self.vb.burstCount+1)
-		end
+		timerGossamerBurstCD:Start(34, self.vb.burstCount+1)
 	elseif spellId == 374112 then
 		if self:IsTanking("player", nil, nil, true, args.sourceGUID) then
 			specWarnFreezingBreath:Show()

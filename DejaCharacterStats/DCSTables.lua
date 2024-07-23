@@ -21,8 +21,8 @@ gdbprivate.gdbdefaults.gdbdefaults.dejacharacterstatsItemLevelChecked = {
 	ItemLevelDecimalsSetChecked = false,
 	ItemLevelTwoDecimalsSetChecked = true,
 	ItemLevelClassColorSetChecked = true,
-}	
-	
+}
+
 -----------------------
 -- Item Level Checks --
 -----------------------
@@ -33,7 +33,7 @@ gdbprivate.gdbdefaults.gdbdefaults.dejacharacterstatsItemLevelChecked = {
 	DCS_ILvl_EQ_AV_Check:SetScale(1)
 	DCS_ILvl_EQ_AV_Check.tooltipText = L["Displays Equipped/Available item levels unless equal."] --Creates a tooltip on mouseover.
 	_G[DCS_ILvl_EQ_AV_Check:GetName() .. "Text"]:SetText(L["Equipped/Available"])
-	
+
 	DCS_ILvl_EQ_AV_Check:SetScript("OnEvent", function(self, event)
 		if event == "PLAYER_LOGIN" then
 			ilvl_eq_av = gdbprivate.gdb.gdbdefaults.dejacharacterstatsItemLevelChecked.ItemLevelEQ_AV_SetChecked
@@ -54,7 +54,7 @@ local DCS_ItemLevelDecimalPlacesCheck = CreateFrame("CheckButton", "DCS_ItemLeve
 	DCS_ItemLevelDecimalPlacesCheck:SetScale(1.00)
 	DCS_ItemLevelDecimalPlacesCheck.tooltipText = L["Displays average item level to one decimal place."] --Creates a tooltip on mouseover.
 	_G[DCS_ItemLevelDecimalPlacesCheck:GetName() .. "Text"]:SetText(L["One Decimal Place"])
-	
+
 	DCS_ItemLevelDecimalPlacesCheck:SetScript("OnEvent", function(self, event)
 		if event == "PLAYER_LOGIN" then
 			ilvl_one_decimals = gdbprivate.gdb.gdbdefaults.dejacharacterstatsItemLevelChecked.ItemLevelDecimalsSetChecked
@@ -72,7 +72,7 @@ local DCS_ItemLevelDecimalPlacesCheck = CreateFrame("CheckButton", "DCS_ItemLeve
 		end
 		PaperDollFrame_UpdateStats()
 	end)
-	
+
 local DCS_ItemLevelTwoDecimalsCheck = CreateFrame("CheckButton", "DCS_ItemLevelTwoDecimalsCheck", DejaCharacterStatsPanel, "InterfaceOptionsCheckButtonTemplate")
 	DCS_ItemLevelTwoDecimalsCheck:RegisterEvent("PLAYER_LOGIN")
 	DCS_ItemLevelTwoDecimalsCheck:ClearAllPoints()
@@ -80,7 +80,7 @@ local DCS_ItemLevelTwoDecimalsCheck = CreateFrame("CheckButton", "DCS_ItemLevelT
 	DCS_ItemLevelTwoDecimalsCheck:SetScale(1.00)
 	DCS_ItemLevelTwoDecimalsCheck.tooltipText = L["Displays average item level to two decimal places."] --Creates a tooltip on mouseover.
 	_G[DCS_ItemLevelTwoDecimalsCheck:GetName() .. "Text"]:SetText(L["Two Decimal Places"])
-	
+
 	DCS_ItemLevelTwoDecimalsCheck:SetScript("OnEvent", function(self, event)
 		if event == "PLAYER_LOGIN" then
 			ilvl_two_decimals = gdbprivate.gdb.gdbdefaults.dejacharacterstatsItemLevelChecked.ItemLevelTwoDecimalsSetChecked
@@ -106,7 +106,7 @@ local DCS_ILvl_Class_Color_Check = CreateFrame("CheckButton", "DCS_ILvl_Class_Co
 	DCS_ILvl_Class_Color_Check:SetScale(1)
 	DCS_ILvl_Class_Color_Check.tooltipText = L["Displays average item level with class colors."] --Creates a tooltip on mouseover.
 	_G[DCS_ILvl_Class_Color_Check:GetName() .. "Text"]:SetText(L["Class Colors"]) --wording for both texts is really bad
-	
+
 	DCS_ILvl_Class_Color_Check:SetScript("OnEvent", function(self, event)
 		if event == "PLAYER_LOGIN" then
 			_, unitclass = UnitClass("player");
@@ -121,7 +121,7 @@ local DCS_ILvl_Class_Color_Check = CreateFrame("CheckButton", "DCS_ILvl_Class_Co
 		gdbprivate.gdb.gdbdefaults.dejacharacterstatsItemLevelChecked.ItemLevelClassColorSetChecked = ilvl_class_color
 		PaperDollFrame_UpdateStats()
 	end)
-	
+
 ----------------------------
 -- DCS Functions & Arrays --
 ----------------------------
@@ -132,7 +132,7 @@ function DCS_TableData:CopyTable(tab)
 			tab [k] = nil
 		else
 			copy[k] = (type(v) == "table") and DCS_TableData:CopyTable(v) or v
-		end	
+		end
 	end
 	return copy
 end
@@ -145,7 +145,7 @@ function DCS_TableData:MergeTable(tab)
         end
     end
     for k in pairs(self.StatData) do
-        exists = false 
+        exists = false
         for _, v in ipairs(tab) do
             if (k == v.statKey) then exists = true end
         end
@@ -179,11 +179,6 @@ DCS_TableData.StatData.ItemLevelFrame = {
     category   = true,
     frame      = char_ctats_pane.ItemLevelFrame,
     updateFunc = function(statFrame)
-		if IsAddOnLoaded("ElvUI") then
-			_G.CharacterStatsPane.ItemLevelFrame.Value:Show()
-			_G.CharacterFrame.ItemLevelText:SetText('')
-		end
-
 		local numSlots = 16
 		local upgradeItemLevel = 0
 
@@ -193,11 +188,11 @@ DCS_TableData.StatData.ItemLevelFrame = {
 
 		local avgItemLevel, avgItemLevelEquipped, avgItemLevelPvP = GetAverageItemLevel();
 		local minItemLevel = C_PaperDollInfo.GetMinItemLevel();
-		
+
 		--[[@ Dragonflight launch:
-			avgItemLevel is always the same as avgItemLevelPvp unless we have an item upgrade in bags. 
+			avgItemLevel is always the same as avgItemLevelPvp unless we have an item upgrade in bags.
 			Then Blizzard is adding the whole number difference to indicate an available upgrade; not the average that is added.
-			Example: avgItemLevel = 200 which is also the avgItemLevelPvP. 
+			Example: avgItemLevel = 200 which is also the avgItemLevelPvP.
 			We get a ilvl 240 bracer that is an upgrade over our current ilvl 230 bracer, a difference of 10.
 			Blizzard erroneously calculates avgItemLevel = 200 + 10 = 210; showing an item in bags that will upgrade our average ilvl to 210.
 			The 10 ilvls of the bracer has to be averaged over the 16 or 17 item slots to get the correct average ilvl.
@@ -309,7 +304,7 @@ function MovementSpeed_OnUpdate(statFrame, elapsedTime) --Added this so Vehicles
 	flightSpeed = flightSpeed/BASE_MOVEMENT_SPEED*100;
 	swimSpeed = swimSpeed/BASE_MOVEMENT_SPEED*100;
 	currentSpeed = currentSpeed/BASE_MOVEMENT_SPEED*100;
-	
+
 	-- Pets seem to always actually use run speed
 	if (unit == "pet") then
 		swimSpeed = runSpeed;
@@ -383,7 +378,7 @@ DCS_TableData.StatData.DCS_ALTERNATEMANA = {
 		end
 		local power = UnitPowerMax(unit,powerType);
 		local powerText = BreakUpLargeNumbers(power);
-		
+
 		if (powerToken and _G[powerToken]) then
 			PaperDollFrame_SetLabelAndText(statFrame, _G[powerToken], powerText, false, power);
 			statFrame.tooltip = highlight_code..dcs_format(doll_tooltip_format, _G[powerToken]).." "..powerText..font_color_close;
@@ -436,7 +431,7 @@ DCS_TableData.StatData.DCS_RUNEREGEN = {
 			regenRate = 0
 		end
 		regenRate = tonumber(regenRate)
-		
+
 		local regenRateText = (dcs_format(STAT_RUNE_REGEN_FORMAT, regenRate));
 		PaperDollFrame_SetLabelAndText(statFrame, STAT_RUNE_REGEN, regenRateText, false, regenRate);
 		statFrame.tooltip = highlight_code..dcs_format(doll_tooltip_format, STAT_RUNE_REGEN).." "..regenRateText..font_color_close;
@@ -498,11 +493,11 @@ DCS_TableData.StatData.GCD = {
 			local id = GetShapeshiftFormID()
 			if (id == 1) then --cat form
 				gcd = 1
-			else 
+			else
 				gcd = casterGCD()
 			end
 		else
-			if (primaryStat == LE_UNIT_STAT_INTELLECT) or (classfilename == "HUNTER") or (classfilename == "SHAMAN") or (primaryStat == LE_UNIT_STAT_STRENGTH) or (classfilename == "DEMONHUNTER")then 
+			if (primaryStat == LE_UNIT_STAT_INTELLECT) or (classfilename == "HUNTER") or (classfilename == "SHAMAN") or (primaryStat == LE_UNIT_STAT_STRENGTH) or (classfilename == "DEMONHUNTER")then
 				gcd = casterGCD()
 			else
 				gcd = 1
@@ -527,7 +522,7 @@ DCS_TableData.StatData.REPAIR_COST = {
         end
 
         local totalCost = 0
-        local _, repairCost		
+        local _, repairCost
         for _, index in ipairs({1,3,5,6,7,8,9,10,16,17}) do
 			local repairCost = C_TooltipInfo.GetInventoryItem(unit, index)
 			if (repairCost) then
@@ -538,13 +533,13 @@ DCS_TableData.StatData.REPAIR_COST = {
 				end
 			end
 		end
-		
+
 		MoneyFrame_Update(statFrame.MoneyFrame, totalCost)
 		statFrame.MoneyFrame:Hide()
-		
+
 		local totalRepairCost = GetCoinTextureString(totalCost)
 		local gold = floor(totalCost / 10000)
-		local silver = floor(mod(totalCost / 100, 100)) 
+		local silver = floor(mod(totalCost / 100, 100))
 		local copper = mod(totalCost, 100)
 		local displayRepairTotal = dcs_format("%dg %ds %dc", gold, silver, copper);
 
@@ -565,7 +560,7 @@ DCS_TableData.StatData.DURABILITY_STAT = {
 		end
 
 		DCS_Mean_DurabilityCalc()
-		
+
 		local displayDura = dcs_format("%.2f%%", addon.duraMean);
 
 		PaperDollFrame_SetLabelAndText(statFrame, (L["Durability"]), displayDura, false, addon.duraMean);
@@ -666,7 +661,7 @@ DCS_TableData.StatData.MASTERY_RATING = {
 			return;
 		end
 		local color_rating1 = L["Mastery Rating"]
-		local color_rating2 
+		local color_rating2
 		if namespace.locale == "zhTW" then
 			color_rating2 = color_rating1 .. "：" --Chinese colon
 		else

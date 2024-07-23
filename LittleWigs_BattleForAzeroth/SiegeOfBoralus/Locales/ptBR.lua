@@ -20,16 +20,9 @@ if L then
 	L.bomber = "Bombardeiro Pichenegro"
 end
 
-L = BigWigs:NewBossLocale("Sergeant Bainbridge", "ptBR")
+L = BigWigs:NewBossLocale("Dread Captain Lockwood", "ptBR")
 if L then
-	L.remaining = "%s em %s, %d restando"
-	L.remaining_boss = "%s no CHEFE, %d restando"
-end
-
-L = BigWigs:NewBossLocale("Chopper Redhook", "ptBR")
-if L then
-	L.remaining = "%s em %s, %d restando"
-	L.remaining_boss = "%s no CHEFE, %d restando"
+	--L.ordnance_dropped = "Unstable Ordnance dropped"
 end
 
 L = BigWigs:NewBossLocale("Viq'Goth", "ptBR")

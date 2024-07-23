@@ -44,6 +44,8 @@ L['activation_unknown'] = '啟動條件未知'
 L['requirement_not_found'] = '所需位置未知'
 L['multiple_spawns'] = '可能出現在多個位置'
 L['shared_drops'] = '共享掉落'
+L['zone_drops_label'] = '區域掉落'
+L['zone_drops_note'] = '下列的物品會由此區域的數個怪物掉落.'
 
 L['requires'] = '需要'
 L['ranked_research'] = '%s (等級 %d/%d)'
@@ -61,14 +63,14 @@ L['weekly'] = '每週'
 L['normal'] = '普通'
 L['hard'] = '困難'
 L['heirloom'] = '傳家寶'
-L['item'] = nil
+L['item'] = '物品'
 L['mount'] = '坐騎'
 L['pet'] = '戰寵'
 L['recipe'] = '配方'
 L['spell'] = '法術'
 L['title'] = '稱號'
 L['toy'] = '玩具'
-L['currency'] = nil
+L['currency'] = '通貨'
 L['rep'] = '聲望'
 L['completed'] = '已完成'
 L['incomplete'] = '未完成'
@@ -79,9 +81,9 @@ L['unlearnable'] = '無法解鎖'
 L['defeated'] = '已擊敗'
 L['undefeated'] = '未擊敗'
 L['elite'] = '菁英'
-L['quest'] = nil
-L['quest_repeatable'] = nil
-L['achievement'] = nil
+L['quest'] = '任務'
+L['quest_repeatable'] = '可重複任務'
+L['achievement'] = '成就'
 
 L['follower_type_follower'] = '追隨者'
 L['follower_type_champion'] = '勇士'
@@ -104,12 +106,12 @@ L['dr_best_time'] = ' - %s: %.3fs'
 L['dr_target_time'] = ' - %s: %ss / %ss'
 L['dr_normal'] = '普通'
 L['dr_advanced'] = '進階'
-L['dr_reverse'] = '反向'
+L['dr_reverse'] = '逆向'
 L['dr_challenge'] = '挑戰'
-L['dr_reverse_challenge'] = '反向挑戰'
+L['dr_reverse_challenge'] = '逆向挑戰'
 L['dr_storm_race'] = nil
 L['dr_bronze'] = '完成賽事來取得 ' .. ns.color.Bronze('銅牌') .. '.'
-L['dr_vendor_note'] = nil
+L['dr_vendor_note'] = '使用 {currency:2588} 交換飛龍觀察者手稿和塑型.'
 L['options_icons_dragonrace'] = '飛龍競速'
 L['options_icons_dragonrace_desc'] = '顯示區域內所有飛龍競速的位置.'
 
@@ -173,6 +175,8 @@ L['options_restore_hidden_nodes_desc'] = '恢復所有使用右鍵選單隱藏�
 
 L['options_rewards_settings'] = '獎勵'
 L['options_reward_types'] = '顯示獎勵類型'
+L['options_manuscript_rewards'] = nil
+L['options_manuscript_rewards_desc'] = nil
 L['options_mount_rewards'] = '顯示坐騎獎勵'
 L['options_mount_rewards_desc'] = '在提示顯示坐騎獎勵並追蹤收集狀態'
 L['options_pet_rewards'] = '顯示戰寵獎勵'
@@ -194,6 +198,8 @@ L['options_icons_rares_desc'] = '顯示稀有NPC的位置。'
 L['options_icons_rares'] = '稀有'
 L['options_icons_treasures_desc'] = '顯示隱藏寶藏的位置。'
 L['options_icons_treasures'] = '寶藏'
+L['options_icons_vendors_desc'] = '顯示軍需官的位置.'
+L['options_icons_vendors'] = '軍需官'
 
 ------------------------------------ FOCUS ------------------------------------
 

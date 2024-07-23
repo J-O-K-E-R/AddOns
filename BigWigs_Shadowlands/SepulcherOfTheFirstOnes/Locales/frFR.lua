@@ -31,6 +31,8 @@ if L then
 
 	L.custom_on_ring_timers = "Décomptes Individuels de Halo de Désintégration"
 	L.custom_on_ring_timers_desc = "Halo de Désintégration va déclencher un combo d'anneaux. Ainsi des barres seront affichées pour chaque anneau qui apparaîtra."
+
+	L.absorb_text = "%s (%.0f%%)"
 end
 
 L = BigWigs:NewBossLocale("Prototype Pantheon", "frFR")
@@ -87,6 +89,8 @@ if L then
 
 	L.bomb_dropped = "Bombe posée"
 	--L.volatile_charges_new = "New Bombs!"
+
+	L.absorb_text = "%s (%.0f%%)"
 end
 
 L = BigWigs:NewBossLocale("Lords of Dread", "frFR")
@@ -140,12 +144,12 @@ if L then
 	L.azeroth_new_health_plus = "Vie d'Azeroth: +%.1f%% (%d)"
 	L.azeroth_new_health_minus = "Vie d'Azeroth: -%.1f%%  (%d)"
 
-	L.mythic_blood_soak_stage_1 = "Stage 1 Blood Soak timings"
-	L.mythic_blood_soak_stage_1_desc = "Show a bar for timings when healing azeroth is at a good time, used by Echo on their first kill"
-	L.mythic_blood_soak_stage_2 = "Stage 2 Blood Soak timings"
-	L.mythic_blood_soak_stage_2_desc = L.mythic_blood_soak_stage_1_desc
-	L.mythic_blood_soak_stage_3 = "Stage 3 Blood Soak timings"
-	L.mythic_blood_soak_stage_3_desc = L.mythic_blood_soak_stage_1_desc
+	--L.mythic_blood_soak_stage_1 = "Stage 1 Blood Soak timings"
+	--L.mythic_blood_soak_stage_1_desc = "Show a bar for timings when healing azeroth is at a good time, used by Echo on their first kill."
+	--L.mythic_blood_soak_stage_2 = "Stage 2 Blood Soak timings"
+	--L.mythic_blood_soak_stage_2_desc = "Show a bar for timings when healing azeroth is at a good time, used by Echo on their first kill."
+	--L.mythic_blood_soak_stage_3 = "Stage 3 Blood Soak timings"
+	--L.mythic_blood_soak_stage_3_desc = "Show a bar for timings when healing azeroth is at a good time, used by Echo on their first kill."
 	L.mythic_blood_soak_bar = "Soigner Azeroth"
 
 	L.floors_open = "Sol Ouvert"

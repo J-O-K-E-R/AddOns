@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod(1427, "DBM-Raids-WoD", 1, 669)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20230719202305")
+mod:SetRevision("20240629024620")
 mod:SetCreatureID(92330)
 mod:SetEncounterID(1794)
 mod:SetUsedIcons(1)
@@ -19,8 +19,8 @@ mod:RegisterEventsInCombat(
 	"UNIT_DIED",
 --	"SPELL_PERIODIC_DAMAGE",
 --	"SPELL_ABSORBED",
-	"RAID_BOSS_WHISPER",
-	"UNIT_SPELLCAST_SUCCEEDED boss1 boss2"
+	"RAID_BOSS_WHISPER"
+--	"UNIT_SPELLCAST_SUCCEEDED boss1 boss2"
 )
 
 --TODO, Prisons had no workable targetting of any kind during test. Study of logs and even videos showed no valid target scanning, debuff, whisper, nothing. As such, only aoe warning :\
@@ -71,7 +71,7 @@ local timerVolatileFelOrbCD			= mod:NewCDTimer(23, 180221, 186532, nil, nil, 3)
 local timerFelChargeCD				= mod:NewCDTimer(23, 182051, nil, nil, nil, 3, nil, nil, nil, 2, 4)
 local timerApocalypticFelburstCD	= mod:NewCDCountTimer(30, 188693, 206388, nil, nil, 2, nil, DBM_COMMON_L.HEROIC_ICON)
 --Socrethar
-local timerTransition				= mod:NewPhaseTimer(6.5)
+local timerTransition				= mod:NewStageTimer(6.5)
 local timerExertDominanceCD			= mod:NewCDCountTimer(4.5, 183331, nil, "-Healer", nil, 4, nil, DBM_COMMON_L.INTERRUPT_ICON)
 local timerApocalypseCD				= mod:NewCDTimer(46, 183329, nil, nil, nil, 2)
 --Adds
@@ -87,7 +87,7 @@ mod:AddRangeFrameOption(10, 184124)
 mod:AddHudMapOption("HudMapOnOrb", 180221)
 mod:AddHudMapOption("HudMapOnCharge", 182051)
 mod:AddSetIconOption("SetIconOnCharge", 182051, true)
-mod:AddDropdownOption("InterruptBehavior", {"Count3Resume", "Count3Reset", "Count4Resume", "Count4Reset"}, "Count3Resume", "misc")
+mod:AddDropdownOption("InterruptBehavior", {"Count3Resume", "Count3Reset", "Count4Resume", "Count4Reset"}, "Count3Resume", "misc", nil, 183331)
 
 mod.vb.ReverberatingBlow = 0
 mod.vb.felBurstCount = 0
@@ -100,7 +100,7 @@ mod.vb.dominatorCount = 0
 mod.vb.interruptBehavior = "Count3Resume"
 local soulsSeen = {}
 local playerInConstruct = false
-local exertSpellName, debuffName = DBM:GetSpellInfo(183331), DBM:GetSpellInfo(184124)
+local exertSpellName, debuffName = DBM:GetSpellName(183331), DBM:GetSpellName(184124)
 local debuffFilter
 do
 	debuffFilter = function(uId)
@@ -145,16 +145,16 @@ function mod:ChargeTarget(targetname, uId)
 	if self.Options.HudMapOnCharge then
 		local currentTank = self:GetCurrentTank(90296)
 		if currentTank then
-			DBM.HudMap:RegisterRangeMarkerOnPartyMember(182051, "party", targetname, 0.35, 4, nil, nil, nil, 0.5, nil, false):Appear():SetLabel(targetname, nil, nil, nil, nil, nil, 0.8, nil, -13, 8, nil)
+			DBM.HudMap:RegisterRangeMarkerOnPartyMember(182051, "party", targetname, 0.35, 4, nil, nil, nil, 0.5):Appear():SetLabel(targetname, nil, nil, nil, nil, nil, 0.8, nil, -13, 8, nil)
 			if targetname == UnitName("player") then
 				DBM.HudMap:AddEdge(1, 1, 0, 0.5, 4, currentTank, targetname, nil, nil, nil, nil, 125)
 			else
-				DBM.HudMap:RegisterRangeMarkerOnPartyMember(182051, "party", UnitName("player"), 0.7, 4, nil, nil, nil, 1, nil, false):Appear()
+				DBM.HudMap:RegisterRangeMarkerOnPartyMember(182051, "party", UnitName("player"), 0.7, 4, nil, nil, nil, 1):Appear()
 				DBM.HudMap:AddEdge(1, 0, 0, 0.5, 4, currentTank, targetname, nil, nil, nil, nil, 125)
 			end
 		else--Old school
 			DBM:Debug("Tank Detection Failure in HudMapOnCharge", 2)
-			DBM.HudMap:RegisterRangeMarkerOnPartyMember(182051, "highlight", targetname, 5, 4, 1, 0, 0, 0.5, nil, true, 2):Pulse(0.5, 0.5)
+			DBM.HudMap:RegisterRangeMarkerOnPartyMember(182051, "highlight", targetname, 5, 4, 1, 0, 0, 0.5):Pulse(0.5, 0.5)
 		end
 	end
 	if self.Options.SetIconOnCharge then
@@ -383,7 +383,7 @@ function mod:SPELL_AURA_APPLIED(args)
 			warnVolatileFelOrb:Show(args.destName)
 		end
 		if self.Options.HudMapOnOrb then
-			DBM.HudMap:RegisterRangeMarkerOnPartyMember(180221, "highlight", args.destName, 5, 20, 1, 1, 0, 0.5, nil, true, 1):Pulse(0.5, 0.5)
+			DBM.HudMap:RegisterRangeMarkerOnPartyMember(180221, "highlight", args.destName, 5, 20, 1, 1, 0, 0.5):Pulse(0.5, 0.5)
 		end
 	elseif spellId == 190466 then
 		if args.sourceGUID == UnitGUID("player") then

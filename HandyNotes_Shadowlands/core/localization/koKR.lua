@@ -44,6 +44,8 @@ L['activation_unknown'] = '활성화 방법 알려지지 않음!'
 L['requirement_not_found'] = '요구사항 위치 불명!'
 L['multiple_spawns'] = '생성 위치가 여러 곳입니다.'
 L['shared_drops'] = nil
+L['zone_drops_label'] = nil
+L['zone_drops_note'] = nil
 
 L['requires'] = '요구사항'
 L['ranked_research'] = '%s (연구단계 %d/%d)'
@@ -173,6 +175,8 @@ L['options_restore_hidden_nodes_desc'] = '우클릭 메뉴에서 숨긴 지점 �
 
 L['options_rewards_settings'] = '보상'
 L['options_reward_types'] = '보상 종류 표시'
+L['options_manuscript_rewards'] = nil
+L['options_manuscript_rewards_desc'] = nil
 L['options_mount_rewards'] = '탈것 보상 표시'
 L['options_mount_rewards_desc'] = '탈것 보상을 툴팁에 표시하고 수집 진행상황을 추적합니다'
 L['options_pet_rewards'] = '애완동물 보상 표시'
@@ -194,6 +198,8 @@ L['options_icons_rares_desc'] = '희귀몹 위치 표시'
 L['options_icons_rares'] = '희귀몹'
 L['options_icons_treasures_desc'] = '숨겨진 보물 위치 표시'
 L['options_icons_treasures'] = '보물'
+L['options_icons_vendors_desc'] = nil
+L['options_icons_vendors'] = nil
 
 ------------------------------------ FOCUS ------------------------------------
 

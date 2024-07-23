@@ -1,11 +1,11 @@
 local mod	= DBM:NewMod(2523, "DBM-Raids-Dragonflight", 2, 1208)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20231120131222")
+mod:SetRevision("20240721192753")
 mod:SetCreatureID(201668)
 mod:SetEncounterID(2684)
 mod:SetUsedIcons(6)
-mod:SetHotfixNoticeRev(20230801000000)
+mod:SetHotfixNoticeRev(20240501000000)
 mod:SetMinSyncRevision(20230614000000)
 mod.respawnTime = 29
 
@@ -19,9 +19,8 @@ mod:RegisterEventsInCombat(
 	"SPELL_AURA_REMOVED 405484 407088 407919",--407182 410966
 	"SPELL_AURA_REMOVED_DOSE 407088",
 	"SPELL_PERIODIC_DAMAGE 409058 404277 409183",
-	"SPELL_PERIODIC_MISSED 409058 404277 409183",
---	"UNIT_DIED"
-	"UNIT_SPELLCAST_SUCCEEDED boss1"
+	"SPELL_PERIODIC_MISSED 409058 404277 409183"
+--	"UNIT_SPELLCAST_SUCCEEDED boss1"
 )
 
 --[[
@@ -35,7 +34,7 @@ mod:RegisterEventsInCombat(
 --]]
 --TODO, delete redundant/incorrect events when real events known
 --TODO, Add shatter? https://www.wowhead.com/ptr/spell=401825/shatter
-local warnPhase									= mod:NewPhaseChangeAnnounce(2, nil, nil, nil, nil, nil, nil, 2)
+local warnPhase									= mod:NewPhaseChangeAnnounce(2, 2, nil, nil, nil, nil, nil, 2)
 --Stage One: The Earth Warder
 mod:AddTimerLine(DBM:EJ_GetSectionInfo(26192))
 local warnTwistedEarth							= mod:NewCountAnnounce(402902, 2)
@@ -66,7 +65,6 @@ local timerCalamitousStrikeCD					= mod:NewCDCountTimer(36.3, 401998, nil, "Tank
 
 mod:AddPrivateAuraSoundOption(407182, true, 407221, 1)--Rushing Darkness
 mod:AddPrivateAuraSoundOption(410966, true, 410953, 3)--Volcanic Heart
---mod:AddRangeFrameOption(5, 390715)
 --mod:AddSetIconOption("SetIconOnVolcanicHeart", 410953, true, 0, {1, 2, 3})
 mod:AddSetIconOption("SetIconOnRushingDarkness", 407221, true, 0, {6})
 --mod:AddNamePlateOption("NPAuraOnAscension", 385541)
@@ -83,7 +81,7 @@ local specWarnRazetheEarth						= mod:NewSpecialWarningDodge(409313, nil, nil, n
 local specWarnCorruption						= mod:NewSpecialWarningYou(401010, nil, nil, nil, 1, 2)
 local yellCorruption							= mod:NewShortYell(401010)
 local specWarnUmbralAnnihilation				= mod:NewSpecialWarningCount(405433, nil, nil, nil, 2, 2)
-local specWarnSweepingShadows					= mod:NewSpecialWarningDodgeCount(403846, nil, nil, nil, 2, 2)
+--local specWarnSweepingShadows					= mod:NewSpecialWarningDodgeCount(403846, nil, nil, nil, 2, 2)--Not used by mod?
 local specWarnSunderShadow						= mod:NewSpecialWarningDefensive(407790, nil, nil, nil, 1, 2)
 local specWarnSunderShadowSwap					= mod:NewSpecialWarningTaunt(407790, nil, nil, nil, 1, 2)
 
@@ -98,8 +96,9 @@ local warnEbonDestruction						= mod:NewCountAnnounce(407917, 4)
 
 local specWarnEbonDestructionMove				= mod:NewSpecialWarningMoveTo(407917, nil, 64584, nil, 3, 2)
 
-local timerSunderRealityCD						= mod:NewCDCountTimer(29.1, 407936, 109401, nil, nil, 5)--"Portals"
-local timerEbonDestructionCD					= mod:NewCDCountTimer(29.2, 407917, 64584, nil, nil, 2, nil, DBM_COMMON_L.DEADLY_ICON)--"Big Bang"
+local timerSunderRealityCD						= mod:NewCDCountTimer(35.1, 407936, 109401, nil, nil, 5)--"Portals"
+local timerSunderReality						= mod:NewCastTimer(12, 407936, 109401, nil, nil, 5)--"Portals"
+local timerEbonDestructionCD					= mod:NewCDCountTimer(35.2, 407917, 64584, nil, nil, 2, nil, DBM_COMMON_L.DEADLY_ICON)--"Big Bang"
 
 mod:AddInfoFrameOption(407919, true)
 
@@ -119,14 +118,14 @@ mod.vb.annihilatingCount = 0
 --P3
 mod.vb.sunderRealityCount = 0
 mod.vb.ebonCount = 0
-local realityName = DBM:GetSpellInfo(407919)
+local realityName = DBM:GetSpellName(407919)
 local playerReality = false
 local mythicTwistedP1Timers = {2, 20.6, 19.4, 18.2, 18.2, 18.2, 19.5, 17.0}
 local mythicTwistedP2Timers = {41.6, 18.2, 12.1, 29.2, 13.4, 14.6}
 local volcanicP2Timers = {21.3, 15.7, 17.0, 14.8, 17.3, 16.7, 18, 14.5}
 local volcanicP2LFRTimers = {21.3, 15.6, 16.9, 17, 12, 16.9, 12, 16.9, 12, 17}
 
-
+---@param self DBMMod
 local function checkRealityOnSelf(self)
 	if not playerReality then
 		specWarnEbonDestructionMove:Show(realityName)
@@ -135,6 +134,7 @@ local function checkRealityOnSelf(self)
 end
 
 --Work around for stage 2 bug where sometimes cast success event is missing
+---@param self DBMMod
 local function fixBrokenHeartTimer(self)
 	self.vb.volcanicCount = self.vb.volcanicCount + 1
 	local timer = volcanicP2Timers[self.vb.volcanicCount+1]
@@ -143,6 +143,7 @@ local function fixBrokenHeartTimer(self)
 	end
 end
 
+---@param self DBMMod
 local function checkForSkippedDarkness(self)
 	if self.vb.RushingDarknessCount == 0 then--first one skipped (which is like 95% of pulls)
 		self.vb.RushingDarknessCount = self.vb.RushingDarknessCount + 1
@@ -177,7 +178,7 @@ function mod:OnCombatStart(delay)
 	self.vb.ebonCount = 0
 	playerReality = false
 --	timerTwistedEarthCD:Start(2-delay)--Used 2 sec into pull
-	timerRushingDarknessCD:Start(10.5-delay, 1)
+	timerRushingDarknessCD:Start(8.9-delay, 1)
 	timerVolcanicHeartCD:Start(15.6-delay, 1)
 	timerCalamitousStrikeCD:Start(self:IsMythic() and 25.1 or 24.1-delay, 1)--Delayed by extra wall on mythic
 	timerEchoingFissureCD:Start(33.6-delay, 1)
@@ -204,7 +205,7 @@ function mod:SPELL_CAST_START(args)
 			specWarnCalamitousStrike:Show()
 			specWarnCalamitousStrike:Play("carefly")
 		end
-		timerCalamitousStrikeCD:Start(self:GetStage(1) and 36.3 or 29, self.vb.tankCount+1)
+		timerCalamitousStrikeCD:Start(self:GetStage(1) and 36.3 or 35.2, self.vb.tankCount+1)
 	elseif spellId == 407790 then
 		self.vb.tankCount = self.vb.tankCount + 1
 		if self:IsTanking("player", nil, nil, true, args.sourceGUID) then
@@ -216,8 +217,10 @@ function mod:SPELL_CAST_START(args)
 		self.vb.annihilatingCount = self.vb.annihilatingCount + 1
 		specWarnUmbralAnnihilation:Show(self.vb.annihilatingCount)
 		specWarnUmbralAnnihilation:Play("aesoon")
-		if self.vb.annihilatingCount >= 5 then--Still true?
+		if self.vb.annihilatingCount >= 5 then
 			timerUmbralAnnihilationCD:Start(10.9, self.vb.annihilatingCount+1)
+		elseif self.vb.annihilatingCount == 2 then--A wild fluke that keeps coming up in debug
+			timerUmbralAnnihilationCD:Start(27.9, self.vb.annihilatingCount+1)
 		else
 			timerUmbralAnnihilationCD:Start(29.2, self.vb.annihilatingCount+1)
 		end
@@ -226,7 +229,8 @@ function mod:SPELL_CAST_START(args)
 	elseif spellId == 407936 then
 		self.vb.sunderRealityCount = self.vb.sunderRealityCount + 1
 		warnSunderReality:Show()
-		timerSunderRealityCD:Start(29.1, self.vb.sunderRealityCount+1)
+		timerSunderRealityCD:Start(nil, self.vb.sunderRealityCount+1)
+		timerSunderReality:Start()
 	elseif spellId == 407917 then
 		self.vb.ebonCount = self.vb.ebonCount + 1
 		warnEbonDestruction:Show(self.vb.ebonCount)
@@ -246,9 +250,9 @@ function mod:SPELL_CAST_START(args)
 		--As of May 30th reset, stage 3 no longer has new darkness that causes the 17 second time between darkness 1 and 2 in stage 3
 		--As of June 13th reset, it's kind of up in air how to handle this cause it's still going back and forth, so now code is gonna account for BOTH variations of initial timers
 		if self:GetStage(3) and (self.vb.RushingDarknessCount == 1) and not self.vb.skippedDarkness then
-			timerRushingDarknessCD:Start(17, self.vb.RushingDarknessCount+1)
+			timerRushingDarknessCD:Start(16.6, self.vb.RushingDarknessCount+1)
 		else
-			timerRushingDarknessCD:Start(self:GetStage(1) and 35.9 or 27.9, self.vb.RushingDarknessCount+1)--27.9-29.2, almost always 29 but sometimes 28 :\
+			timerRushingDarknessCD:Start(self:GetStage(2) and 27.9 or 35.2, self.vb.RushingDarknessCount+1)--new, now every 35-36 due to inceased cast time of portals
 		end
 		if self:IsMythic() and self:GetStage(1) then--Mythic P1 only wall breaker strat used by all top guilds (which means everyone else will use it too and expect it in DBM)
 			self:BossTargetScanner(args.sourceGUID, "RushingDarknessTarget", 0.2, 8, true, nil, nil, nil, true)
@@ -401,7 +405,7 @@ mod.SPELL_AURA_APPLIED_DOSE = mod.SPELL_AURA_APPLIED
 
 function mod:SPELL_AURA_REMOVED(args)
 	local spellId = args.spellId
-	if spellId == 407088 and self:GetStage(3, 1) then
+	if spellId == 407088 and self:GetStage(3, 1) then--Empowered Shadows
 		self:SetStage(3)
 		warnPhase:Show(DBM_CORE_L.AUTO_ANNOUNCE_TEXTS.stage:format(3))
 		warnPhase:Play("pthree")
@@ -453,9 +457,3 @@ function mod:SPELL_PERIODIC_DAMAGE(_, _, _, _, destGUID, _, _, _, spellId, spell
 end
 mod.SPELL_PERIODIC_MISSED = mod.SPELL_PERIODIC_DAMAGE
 
-function mod:UNIT_DIED(args)
-	local cid = self:GetCIDFromGUID(args.destGUID)
-	if cid == 199233 then
-		warnHidden:Show()
-	end
-end

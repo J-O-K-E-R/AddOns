@@ -1,15 +1,30 @@
-local mod	= DBM:NewMod("Loatheb", "DBM-Raids-Vanilla", 1)
+local mod	= DBM:NewMod("LoathebVanilla", "DBM-Raids-Vanilla", 1)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20230814031337")
+mod:SetRevision("20240615124047")
 mod:SetCreatureID(16011)
 mod:SetEncounterID(1115)
 mod:SetModelID(16110)
 mod:RegisterCombat("combat")--Maybe change to a yell later so pull detection works if you chain pull him from tash gauntlet
 
+-- There are two types of Corrupted Mind spells for each class.
+-- Let's refer to them as "Corrupted Mind Aura" and "Corrupted Mind Debuff" for clarify
+-- Corrupted Mind Aura
+--   * This is a 2 min debuff that gives you a Corrupted Mind Debuff if you cast a heal.
+--   * This is refreshed every 11 seconds if you're in combat with Loatheb.
+-- Corrupted Mind Debuff
+--   * This is a 1 min debuff that doesn't let you heal.
+--   * This is applied if you heal when you have the Corrupted Mind Aura.
+
+-- Corrupted Mind Aura spell IDs (in the order of Priest, Druid, Paladin, Shaman)
+-- 29185 29194 29196 29198
+
+-- Corrupted Mind Debuff spell IDs (in the order of Priest, Druid, Paladin, Shaman)
+-- 29184 29195 29197 29199
+
 mod:RegisterEventsInCombat(
-	"SPELL_AURA_APPLIED 29185 29194 29196 29198",-- 29184 29195 29197 29199
-	"SPELL_AURA_REMOVED 29185 29194 29196 29198",-- 29184 29195 29197 29199
+	"SPELL_AURA_APPLIED 29184 29195 29197 29199",
+	"SPELL_AURA_REMOVED 29184 29195 29197 29199",
 	"SPELL_CAST_SUCCESS 29234 29204 30281",
 	"UNIT_DIED"
 )
@@ -17,7 +32,7 @@ mod:RegisterEventsInCombat(
 --TODO, the 5xxxx spellIds are not from classic
 local warnSporeNow			= mod:NewCountAnnounce(29234, 2, "134530")
 local warnSporeSoon			= mod:NewSoonAnnounce(29234, 1, "134530")
-local warnDoomNow			= mod:NewSpellAnnounce(29204, 3)
+local warnDoomNow			= mod:NewCountAnnounce(29204, 3)
 local warnRemoveCurse		= mod:NewSpellAnnounce(30281, 3)
 local warnHealSoon			= mod:NewAnnounce("WarningHealSoon", 4, 29184)
 local warnHealNow			= mod:NewAnnounce("WarningHealNow", 1, 29184, false)
@@ -28,7 +43,7 @@ local timerRemoveCurseCD	= mod:NewNextTimer(30.8, 30281, nil, nil, nil, 5)
 --local timerAura			= mod:NewBuffActiveTimer(17, 55593, nil, nil, nil, 5, nil, DBM_COMMON_L.HEALER_ICON)
 
 mod:AddInfoFrameOption(29184, "Tank|Healer")
-mod:AddDropdownOption("CorruptedSorting", {"Alphabetical", "Duration"}, "Alphabetical")
+mod:AddDropdownOption("CorruptedSorting", {"Alphabetical", "Duration"}, "Alphabetical", "misc", nil, 29184)
 
 mod.vb.doomCounter	= 0
 mod.vb.sporeTimer	= 12.9
@@ -79,15 +94,15 @@ function mod:OnCombatStart(delay)
 
 	local startTime = GetTime()
 	table.wipe(hadCorrupted)
-	for unit in DBM:GetGroupMembers() do
-		local _, cls = UnitClass(unit)
-		local _, _, _, mapId = UnitPosition(unit)
-		if not UnitIsDeadOrGhost(unit) and mapId == 533 and (cls == "DRUID" or cls == "PALADIN" or cls == "PRIEST" or cls == "SHAMAN") then
-			hadCorrupted[UnitName(unit)] = startTime
+	for uId in DBM:GetGroupMembers() do
+		local _, cls = UnitClass(uId)
+		local _, _, _, mapId = UnitPosition(uId)
+		if not UnitIsDeadOrGhost(uId) and mapId == 533 and (cls == "DRUID" or cls == "PALADIN" or cls == "PRIEST" or cls == "SHAMAN") then
+			hadCorrupted[DBM:GetUnitFullName(uId)] = startTime
 		end
 	end
 	if self.Options.InfoFrame and not DBM.InfoFrame:IsShown() then
-		DBM.InfoFrame:SetHeader(DBM:GetSpellInfo(29184))
+		DBM.InfoFrame:SetHeader(DBM:GetSpellName(29184))
 		DBM.InfoFrame:Show(40, "function", updateInfoFrame, false, false)
 		DBM.InfoFrame:SetColumns(2)
 	end
@@ -123,12 +138,8 @@ function mod:SPELL_CAST_SUCCESS(args)
 	end
 end
 
---29194--Druid
---29196--Paladin
---29185--Priest
---29198--Shaman
 function mod:SPELL_AURA_APPLIED(args)
-	if args:IsSpell(29185, 29194, 29196, 29198) and DBM:UnitDebuff(args.destName, 29184, 29195, 29197, 29199) then
+	if args:IsSpell(29184, 29195, 29197, 29199) then
 		hadCorrupted[args.destName] = GetTime() + 60
 		if args:IsPlayer() then
 			warnHealSoon:Schedule(55)
@@ -137,7 +148,7 @@ function mod:SPELL_AURA_APPLIED(args)
 end
 
 function mod:SPELL_AURA_REMOVED(args)
-	if args:IsSpell(29185, 29194, 29196, 29198) and not DBM:UnitDebuff(args.destName, 29184, 29195, 29197, 29199) then
+	if args:IsSpell(29184, 29195, 29197, 29199) then
 		if args:IsPlayer() then
 			warnHealNow:Show()
 		end

@@ -1,6 +1,6 @@
-## Interface: 100200
+## Interface: 100207
 ## Title: HandyNotes: Battle for Azeroth
-## Version: 18
+## Version: 62
 ## Notes: Battle for Azeroth Notes
 ## OptionalDeps: Ace3
 ## RequiredDeps: HandyNotes

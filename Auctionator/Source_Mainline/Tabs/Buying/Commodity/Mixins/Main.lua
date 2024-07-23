@@ -25,6 +25,9 @@ function AuctionatorBuyCommodityFrameTemplateMixin:OnLoad()
     else
       local value = tonumber(numericInput:GetText())
       if value and value >= 0 then
+        if self.maxQuantity then
+          value = math.min(value, self.maxQuantity)
+        end
         self.selectedQuantity = value
       end
     end
@@ -45,6 +48,7 @@ function AuctionatorBuyCommodityFrameTemplateMixin:OnHide()
   self:GetParent().ExportCSV:Show()
   self:Hide()
   self.results = nil
+  self.maxQuantity = nil
   if self.waitingForPurchase then
     FrameUtil.UnregisterFrameForEvents(self, PURCHASE_EVENTS)
     C_AuctionHouse.CancelCommoditiesPurchase()
@@ -96,6 +100,7 @@ function AuctionatorBuyCommodityFrameTemplateMixin:OnEvent(eventName, eventData,
           self.expectedItemID == eventData
         ) then
     self.results = self:ProcessCommodityResults(eventData)
+    self.maxQuantity = C_AuctionHouse.GetCommoditySearchResultsQuantity(eventData)
     self.DataProvider:SetListing(self.results)
     self:UpdateView()
 
@@ -134,6 +139,9 @@ function AuctionatorBuyCommodityFrameTemplateMixin:ProcessCommodityResults(itemI
 
   for index = 1, C_AuctionHouse.GetNumCommoditySearchResults(itemID) do
     local resultInfo = C_AuctionHouse.GetCommoditySearchResultInfo(itemID, index)
+    if resultInfo.owners[1] == "player" then
+      resultInfo.owners[1] = GREEN_FONT_COLOR:WrapTextInColorCode(AUCTION_HOUSE_SELLER_YOU)
+    end
     local entry = {
       price = resultInfo.unitPrice,
       owners = resultInfo.owners,

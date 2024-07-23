@@ -1,7 +1,7 @@
-## Interface: 100200
+## Interface: 100207, 110000
 
 ## Title: BigWigs [|cffeda55fShadowlands|r]
-## Title-zhCN: BigWigs [|cffeda55f暗影界|r]
+## Title-zhCN: BigWigs [|cffeda55f暗影国度|r]
 ## Title-zhTW: BigWigs [|cffeda55f暗影之境|r]
 ## Title-deDE: BigWigs [|cffeda55fShadowlands|r]
 ## Title-frFR: BigWigs [|cffeda55fShadowlands|r]
@@ -12,7 +12,7 @@
 ## Title-esES: BigWigs [|cffeda55fShadowlands|r]
 ## Title-esMX: BigWigs [|cffeda55fShadowlands|r]
 ## Notes: A collection of BigWigs modules from the Shadowlands era.
-## Notes-zhCN: A collection of BigWigs modules from the Shadowlands era.
+## Notes-zhCN: BigWigs 暗影国度模块。
 ## Notes-zhTW: A collection of BigWigs modules from the Shadowlands era.
 ## Notes-deDE: A collection of BigWigs modules from the Shadowlands era.
 ## Notes-frFR: A collection of BigWigs modules from the Shadowlands era.
@@ -25,7 +25,7 @@
 
 ## LoadOnDemand: 1
 ## Dependencies: BigWigs
-## Version: v10.2.0
+## Version: v10.2.2
 ## IconTexture: Interface\AddOns\BigWigs\Media\Icons\minimap_legacy.tga
 
 ## X-Category: Raid

@@ -122,7 +122,7 @@ function S:Ace3_ButtonSetPoint(point, anchor, point2, xOffset, yOffset, skip)
 end
 
 function S:Ace3_SkinButton(button)
-	if not button.isSkinned then
+	if not button.IsSkinned then
 		S:HandleButton(button, true)
 
 		hooksecurefunc(button, 'SetPoint', S.Ace3_ButtonSetPoint)
@@ -202,7 +202,7 @@ function S:Ace3_RegisterAsWidget(widget)
 		widget.scrollFrame:Point('BOTTOMRIGHT', widget.scrollBG, 'BOTTOMRIGHT', -4, 8)
 	elseif TYPE == 'CheckBox' then
 		S:Ace3_SkinCheckBox(widget, widget.check, widget.checkbg, widget.highlight)
-	elseif TYPE == 'Dropdown' or TYPE == 'LQDropdown' then
+	elseif TYPE == 'Dropdown' or TYPE == 'Dropdown-ElvUI' or TYPE == 'LQDropdown' then
 		local frame = widget.dropdown
 		local button = widget.button
 		local text = widget.text
@@ -442,7 +442,7 @@ function S:Ace3_RegisterAsContainer(widget)
 	if widget.sizer_se then
 		for _, Region in next, { widget.sizer_se:GetRegions() } do
 			if Region:IsObjectType('Texture') then
-				Region:SetTexture(137057) -- Interface/Tooltips/UI-Tooltip-Border
+				Region:SetTexture(137057) -- Interface\Tooltips\UI-Tooltip-Border
 			end
 		end
 	end
@@ -456,7 +456,7 @@ end
 
 function S:Ace3_StylePopup()
 	if not self:IsForbidden() and E.private.skins.ace3Enable then
-		self:SetTemplate('Transparent', nil, true)
+		self:SetTemplate(nil, nil, true)
 		self:GetChildren():StripTextures()
 
 		S:HandleButton(self.accept, true)
@@ -564,6 +564,7 @@ do -- Early Skin Loading
 		['AceGUI'] = true,
 		['AceConfigDialog'] = true,
 		['AceConfigDialog-3.0-ElvUI'] = true,
+		['LibDropDownMenu'] = true,
 		['LibUIDropDownMenu'] = true,
 		['LibUIDropDownMenuQuestie'] = true,
 		['NoTaint_UIDropDownMenu'] = true,
@@ -591,6 +592,12 @@ do -- Early Skin Loading
 					tinsert(S.EarlyAceTooltips, major)
 				else
 					S:Ace3_SkinTooltip(LibStub.libs[major], LibStub.minors[major])
+				end
+			elseif n == 'LibDropDownMenu' then
+				if early then
+					tinsert(S.EarlyDropdowns, 'LibDropDownMenu_List')
+				elseif E.private.skins.libDropdown then
+					S:SkinDropDownMenu('LibDropDownMenu_List', 15)
 				end
 			else
 				local prefix = (n == 'NoTaint_UIDropDownMenu' and 'Lib') or (n == 'LibUIDropDownMenuQuestie' and 'LQuestie') or (major == 'LibUIDropDownMenu-4.0' and 'L4' or major == 'LibUIDropDownMenu-3.0' and 'L3')

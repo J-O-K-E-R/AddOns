@@ -1,12 +1,12 @@
 local mod	= DBM:NewMod(2369, "DBM-Raids-BfA", 1, 1180)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20230618060944")
+mod:SetRevision("20240428104711")
 mod:SetCreatureID(157620)
 mod:SetEncounterID(2334)
 mod:SetUsedIcons(1, 2, 3)
 mod:SetBossHPInfoToHighest()--Must set boss HP to highest, since boss health will get screwed up during images phase
-mod.noBossDeathKill = true--Killing an image in image phase fires unit Died for boss creature ID, so must filter this
+mod:DisableBossDeathKill()--Killing an image in image phase fires unit Died for boss creature ID, so must filter this
 mod:SetHotfixNoticeRev(20191109000000)--2019, 11, 09
 mod:SetMinSyncRevision(20190918000000)--2019, 9, 18
 --mod.respawnTime = 29
@@ -18,8 +18,8 @@ mod:RegisterEventsInCombat(
 	"SPELL_CAST_SUCCESS 313239 307937 313276",
 	"SPELL_AURA_APPLIED 307784 307785 313208 308065 307950",
 	"SPELL_AURA_APPLIED_DOSE 308059",
-	"SPELL_AURA_REMOVED 313208 308065 307950",--307784 307785
-	"UNIT_SPELLCAST_SUCCEEDED boss1"
+	"SPELL_AURA_REMOVED 313208 308065 307950"--307784 307785
+--	"UNIT_SPELLCAST_SUCCEEDED boss1"
 )
 
 --[[
@@ -40,7 +40,7 @@ local specWarnImagesofAbsolutionSwitch		= mod:NewSpecialWarningSwitch(313239, "d
 local specWarnShadowShock					= mod:NewSpecialWarningStack(308059, nil, 7, nil, nil, 1, 6)
 local specWarnShadowShockTaunt				= mod:NewSpecialWarningTaunt(308059, nil, nil, nil, 1, 2)
 local specWarnShredPsyche					= mod:NewSpecialWarningMoveAway(307937, nil, nil, nil, 1, 2)
-local yellShredPsyche						= mod:NewPosYell(307937, DBM_CORE_L.AUTO_YELL_CUSTOM_POSITION2)
+local yellShredPsyche						= mod:NewShortPosYell(307937)
 local yellShredPsycheFades					= mod:NewIconFadesYell(307937)
 local specWarnShredPsycheSwitch				= mod:NewSpecialWarningSwitch(307937, "dps", nil, nil, 1, 2)
 
@@ -49,7 +49,7 @@ local timerShredPsycheCD					= mod:NewCDTimer(37.7, 307937, nil, nil, nil, 3, ni
 
 local berserkTimer							= mod:NewBerserkTimer(600)--He only gains a 300% damage increase on his berserk, and that's surviable since he doesn't melee and his adds don't gain it
 
-mod:AddSetIconOption("SetIconOnAdds", 307937, true, false, {1, 2})
+mod:AddSetIconOption("SetIconOnAdds", 307937, true, 0, {1, 2})
 mod:AddNamePlateOption("NPAuraOnIntangibleIllusion", 313208)
 
 mod.vb.ImagesOfAbsolutionCast = 0

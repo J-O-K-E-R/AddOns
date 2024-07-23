@@ -183,7 +183,7 @@ local function UpdateRareFound(entityID, vignetteInfo, coordinates)
 		-- MapID always try to get it first from the internal database
 		-- GetBestMapForUnit not always returns the expected value!
 		local eventInfo = RSEventDB.GetInternalEventInfo(entityID)
-		if (eventInfo and eventInfo.zoneID ~= 0) then
+		if (RSEventDB.IsInternalEventMonoZone(entityID) and eventInfo.zoneID ~= 0) then
 			mapID = eventInfo.zoneID
 		else
 			mapID = C_Map.GetBestMapForUnit("player")
@@ -318,7 +318,7 @@ local function ShowAlert(button, vignetteInfo, isNavigating)
 		RSRecentlySeenTracker.AddRecentlySeen(entityID, vignetteInfo.atlasName, false)
 		return true
 	-- disable alerts for filtered zones
-	elseif (RSConfigDB.IsZoneFiltered(mapID) or RSConfigDB.IsZoneFilteredOnlyAlerts(mapID) or RSConfigDB.IsEntityZoneFilteredOnlyAlerts(entityID, vignetteInfo.atlasName)) then
+	elseif (RSConfigDB.IsZoneFiltered(mapID) or RSConfigDB.IsZoneFilteredOnlyAlerts(mapID) or RSConfigDB.IsEntityZoneFilteredOnlyAlerts(entityID, vignetteInfo.atlasName, mapID)) then
 		RSLogger:PrintDebugMessage(string.format("La entidad [%s] se ignora por pertenecer a una zona [%s] filtrada", entityID, mapID))
 		return
 	-- extra checkings for containers

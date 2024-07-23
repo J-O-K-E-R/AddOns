@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod(2529, "DBM-Raids-Dragonflight", 2, 1208)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20231120131222")
+mod:SetRevision("20240721192753")
 mod:SetCreatureID(201774, 201773, 201934)--Krozgoth, Moltannia, Molgoth
 mod:SetEncounterID(2687)
 mod:SetUsedIcons(1, 2, 3, 4)
@@ -14,7 +14,7 @@ mod:RegisterCombat("combat")
 
 mod:RegisterEventsInCombat(
 	"SPELL_CAST_START 403459 405016 407640 403699 404732 403101 404896 405437 405641 408193 405914 406783 403203 409385",
-	"SPELL_CAST_SUCCESS 406730 409385",
+	"SPELL_CAST_SUCCESS 406730",
 	"SPELL_AURA_APPLIED 401809 402617 405036 405394 405642 405914 413597",
 	"SPELL_AURA_APPLIED_DOSE 401809 402617 405394",
 	"SPELL_AURA_REMOVED 401809 402617 405036 405642",
@@ -83,7 +83,7 @@ local specWarnWitheringVulnerability			= mod:NewSpecialWarningDefensive(405914, 
 local specWarnWitheringVulnerabilityTaunt		= mod:NewSpecialWarningTaunt(405914, nil, nil, nil, 1, 2)
 local yellShadowandFlameRepeat					= mod:NewIconRepeatYell(409385, nil, false, 2)
 
-local timerPhaseCD								= mod:NewPhaseTimer(30)
+local timerPhaseCD								= mod:NewStageTimer(30)
 local timerShadowandFlameCD						= mod:NewCDCountTimer(47.4, 409385, nil, nil, nil, 3, nil, DBM_COMMON_L.MYTHIC_ICON)
 local timerGloomConflagCD						= mod:NewCDCountTimer(40, 405437, nil, nil, nil, 3)
 local timerBlisteringTwilightCD					= mod:NewCDCountTimer(40, 405642, 167180, nil, nil, 3)--"Bombs"
@@ -92,7 +92,6 @@ local timerWitheringVulnerabilityCD				= mod:NewCDCountTimer(35.3, 405914, nil, 
 local timerShadowflameBurstCD					= mod:NewCDCountTimer(35.3, 406783, nil, "Tank|Healer", nil, 5, nil, DBM_COMMON_L.TANK_ICON)--Might be redundant if always after crushing
 
 mod:AddSetIconOption("SetIconOnBlistering", 405642, false, 0, {1, 2, 3, 4})
-mod:AddRangeFrameOption(6, 409385)
 
 local nearKroz, nearMolt = true, true
 mod.vb.coalescingCount = 0
@@ -183,7 +182,7 @@ local allTimers = {
 	["hard"] = {
 		----Fire Duder
 		--Flame Slash
-		[403203] = {7, 15.7, 26.7, 15.3, 19.4, 15.8, 18.2, 15.7, 18.6},
+		[403203] = {7, 15.7, 25.5, 15.3, 19.4, 15.8, 18.2, 15.7, 18.6},
 		--Swirling Flame
 		[404896] = {10.6, 14.5, 25.8, 14.1, 20.3, 14.6, 18.2, 14.6, 20.7},
 		--Fiery Meteor
@@ -238,7 +237,7 @@ local allTimers = {
 		--Gloom Conflag
 		[405437] = {50.3, 44.9, 45.2, 44.9, 46.2},
 		--Blistering Twilight
-		[405641] = {20.2, 15.7, 37.5, 15.7, 31.6},
+		[405641] = {20.2, 15.7, 36.4, 15.7, 31.6},
 		--Convergent Eruption (Heroic+)
 --		[408193] = {},
 		--Withering Vulnerability
@@ -250,6 +249,7 @@ local allTimers = {
 
 --As computational as this looks, it's purpose is to just filter information overload.
 --Basically, it solves for what should or shouldn't be shown, not what a player should or shouldn't do.
+---@param self DBMMod
 local function updateBossDistance(self)
 	if not self.Options.AdvancedBossFiltering then return end
 	--Check if near or far from Krozgoth
@@ -291,6 +291,7 @@ local function updateBossDistance(self)
 	self:Schedule(2, updateBossDistance, self)
 end
 
+---@param self DBMMod
 local function yellRepeater(self, text)
 	yellShadowandFlameRepeat:Yell(text)
 	self:Schedule(1.5, yellRepeater, self, text)
@@ -335,7 +336,7 @@ function mod:OnCombatStart(delay)
 		timerMoltenEruptionCD:Start(16.7-delay, 1)
 		timerFieryMeteorCD:Start(35.2-delay, 1)
 	else--Normal and LFR confirmed
-		timerFlameSlashCD:Start(9.3-delay, 1)
+		timerFlameSlashCD:Start(7-delay, 1)
 		timerSwirlingFlameCD:Start(10.5-delay, 1)
 		--timerMoltenEruptionCD:Start(23-delay, 1)
 		timerFieryMeteorCD:Start(35.2-delay, 1)
@@ -353,12 +354,6 @@ function mod:OnTimerRecovery()
 		difficultyName = "hard"
 	else
 		difficultyName = "easy"
-	end
-end
-
-function mod:OnCombatEnd()
-	if self.Options.RangeFrame then
-		DBM.RangeCheck:Hide()
 	end
 end
 
@@ -484,11 +479,8 @@ function mod:SPELL_CAST_START(args)
 		end
 	elseif spellId == 409385 then
 		self.vb.SandFCount = self.vb.SandFCount + 1
-		warnShadowandFlame:Show(self.vb.SandFCount)
+		warnShadowandFlame:Show()
 		timerShadowandFlameCD:Start(self.vb.SandFCount == 1 and 52 or 47, self.vb.SandFCount+1)
-		if self.Options.RangeFrame then
-			DBM.RangeCheck:Show(6)
-		end
 	end
 end
 
@@ -524,10 +516,6 @@ function mod:SPELL_CAST_SUCCESS(args)
 		timerShadowflameBurstCD:Start(18.5, 1)
 		timerBlisteringTwilightCD:Start(20.2, 1)
 		timerGloomConflagCD:Start(50, 1)
-	elseif spellId == 409385 then
-		if self.Options.RangeFrame then
-			DBM.RangeCheck:Hide()
-		end
 	end
 end
 

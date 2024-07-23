@@ -43,7 +43,7 @@ function mod:GetOptions()
 		--[[ Mythic ]]--
 		{204504, "INFOBOX"}, -- Infested
 		{225943, "CASTBAR", "SAY", "FLASH"}, -- Infested Mind
-		205070, -- Spread Infestation
+		--205070, -- Spread Infestation
 	},{
 		[202977] = "general",
 		[204504] = "mythic",
@@ -140,7 +140,7 @@ do
 		if self:GetOption(rotMarker) then
 			self:CustomIcon(false, args.destName)
 		end
-		tDeleteItem(proxList, args.destName)
+		self:DeleteFromTable(proxList, args.destName)
 
 		if not isOnMe then -- Don't change proximity if it's on you and expired on someone else
 			if #proxList == 0 then

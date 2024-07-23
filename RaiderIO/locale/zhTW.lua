@@ -1,4 +1,3 @@
--- Generated from CurseForge on Tue Nov 21 08:41:23 UTC 2023
 local ns = select(2, ...) ---@class ns @The addon namespace.
 
 if ns:IsSameLocale("zhTW") then
@@ -8,7 +7,9 @@ if ns:IsSameLocale("zhTW") then
 
 	L.LOCALE_NAME = "zhTW"
 
-L["ALLOW_IN_LFD"] = "允許用在地城搜尋器"
+	L["ALLOW_IN_LFD"] = "允許用在地城搜尋器"
+L["ALLOW_IN_LFD_CLASSIC"] = "允許在隊伍搜尋器"
+L["ALLOW_IN_LFD_CLASSIC_DESC"] = "在「隊伍搜尋器」中以滑鼠右鍵按一下隊伍或申請人以複製 Raider.IO 個人資料連結。"
 L["ALLOW_IN_LFD_DESC"] = "右鍵點擊地城搜尋器上的隊伍或申請人來複製Raider.IO設定檔網址。"
 L["ALLOW_ON_PLAYER_UNITS"] = "允許用在玩家單位"
 L["ALLOW_ON_PLAYER_UNITS_DESC"] = "右鍵點擊玩家單位來複製Raider.IO資料庫網址。"
@@ -22,6 +23,11 @@ L["AUTO_COMBATLOG_DESC"] = "進入和退出支援的團隊和副本時，自動�
 L["BEST_FOR_DUNGEON"] = "最佳地城"
 L["BEST_RUN"] = "最高紀錄"
 L["BEST_SCORE"] = "最佳大秘分數 (%s)"
+L["BINDING_CATEGORY_RAIDERIO"] = "Raider.IO"
+L["BINDING_HEADER_RAIDERIO_REPLAYUI"] = "回播界面"
+L["BINDING_NAME_RAIDERIO_REPLAYUI_TIMING_BOSS"] = "將時間設為首領時間"
+L["BINDING_NAME_RAIDERIO_REPLAYUI_TIMING_DUNGEON"] = "將時間設為地下城時間"
+L["BINDING_NAME_RAIDERIO_REPLAYUI_TOGGLE"] = "切換回播界面"
 L["CANCEL"] = "取消"
 L["CHANGES_REQUIRES_UI_RELOAD"] = [=[您的更動已儲存，但您必須重載UI以生效。
 
@@ -115,6 +121,7 @@ L["ENABLE_RWF_MODE_BUTTON_TOOLTIP"] = "單擊來啟用競賽世界第一模式�
 L["ENABLE_RWF_MODE_RELOAD"] = "您已啟用競賽世界第一模式。這旨在用於傳奇世界第一競賽，並且只能與 Raider.IO 客戶端一起用於此目的以進行數據上傳。單擊確認將重新載入您的界面。"
 L["ENABLE_SIMPLE_SCORE_COLORS"] = "使用簡易分數著色"
 L["ENABLE_SIMPLE_SCORE_COLORS_DESC"] = "只使用標準物品品質顏色來顯示分數。 這可以使那些具有色弱的人更容易區分評分級別。"
+L["ENTER_REALM_AND_CHARACTER"] = "輸入伺服器以及角色名字："
 L["EXPORTJSON_COPY_TEXT"] = "複製以下內容並將其貼上到|cff00C8FFhttps://raider.io|r上以查找所有玩家。"
 L["GENERAL_TOOLTIP_OPTIONS"] = "一般工具提示選項"
 L["GUILD_BEST_SEASON"] = "公會：當季最佳"
@@ -138,6 +145,15 @@ L["LOCKING_PROFILE_FRAME"] = "RaiderIO：M+紀錄框架鎖定中。"
 L["MAINS_BEST_SCORE_BEST_SEASON"] = "本尊的最佳大秘分數 (%s)"
 L["MAINS_RAID_PROGRESS"] = "本尊進度"
 L["MAINS_SCORE"] = "本尊大秘分數"
+L["MINIMAP_SHORTCUT_ENABLE"] = "啟用按鈕"
+L["MINIMAP_SHORTCUT_ENABLE_DESC"] = "啟用可以顯示在小地圖周圍的圖示。 這也將使它在支持broker系統的任何其他插件中可用。"
+L["MINIMAP_SHORTCUT_HEADER"] = "小地圖"
+L["MINIMAP_SHORTCUT_HELP"] = "|A:newplayertutorial-icon-mouse-leftbutton:16:12|a 搜尋\\n|A:newplayertutorial-icon-mouse-rightbutton:16:12|a 設定"
+L["MINIMAP_SHORTCUT_HELP_LEFT_CLICK"] = "左鍵點擊"
+L["MINIMAP_SHORTCUT_HELP_RIGHT_CLICK"] = "右鍵點擊"
+L["MINIMAP_SHORTCUT_HELP_SEARCH"] = "搜尋"
+L["MINIMAP_SHORTCUT_HELP_SETTINGS"] = "設定"
+L["MINIMAP_SHORTCUT_LOCK"] = "鎖定按鈕"
 L["MODULE_AMERICAS"] = "美洲"
 L["MODULE_EUROPE"] = "歐洲"
 L["MODULE_KOREA"] = "韓國"
@@ -162,6 +178,27 @@ L["PROFILE_BEST_RUNS"] = "地城最高紀錄"
 L["PROFILE_TOOLTIP_ANCHOR_TOOLTIP"] = "鎖定Raider.IO設定檔框架或啟用自動定位以隱藏此定位點。"
 L["PROVIDER_NOT_LOADED"] = "|cffFF0000警告：|r |cffFFFFFF%s|r無法找到當前陣營的數據。請檢查您的|cffFFFFFF/raiderio|r設置並啟用|cffFFFFFF%s|r的數據提示。"
 L["PVP_DATA_HEADER"] = "Raider.IO PvP 設定檔"
+L["RAID_AATDH"] = "覺醒夢境希望"
+L["RAID_AATSC"] = "覺醒亞貝魯斯"
+L["RAID_AVOTI"] = "覺醒洪荒化身牢獄"
+L["RAID_BOSS_AATDH_1"] = "瘤根"
+L["RAID_BOSS_AATDH_2"] = "『殘暴者』伊吉拉"
+L["RAID_BOSS_AATDH_3"] = "弗柯羅斯"
+L["RAID_BOSS_AATDH_4"] = "夢境議會"
+L["RAID_BOSS_AATDH_5"] = "『烈焰守衛者』拉羅達"
+L["RAID_BOSS_AATDH_6"] = "『循環編織者』奈木"
+L["RAID_BOSS_AATDH_7"] = "斯莫德隆"
+L["RAID_BOSS_AATDH_8"] = "『火焰先知』丁卓爾‧睿迅"
+L["RAID_BOSS_AATDH_9"] = "『熾炎者』菲拉卡"
+L["RAID_BOSS_AATSC_1"] = "『地獄鍛造者』卡扎拉"
+L["RAID_BOSS_AATSC_2"] = "融合體之室"
+L["RAID_BOSS_AATSC_3"] = "被遺忘的實驗"
+L["RAID_BOSS_AATSC_4"] = "薩克利的襲擊"
+L["RAID_BOSS_AATSC_5"] = "『長老』拉修克"
+L["RAID_BOSS_AATSC_6"] = "警戒侍者茲坎"
+L["RAID_BOSS_AATSC_7"] = "馬格莫拉克斯"
+L["RAID_BOSS_AATSC_8"] = "奈薩里奧的回響"
+L["RAID_BOSS_AATSC_9"] = "龍隊指揮官沙卡瑞斯"
 L["RAID_BOSS_ATDH_1"] = "瘤根"
 L["RAID_BOSS_ATDH_2"] = "『殘暴者』伊吉拉"
 L["RAID_BOSS_ATDH_3"] = "弗柯羅斯"
@@ -180,6 +217,36 @@ L["RAID_BOSS_ATSC_6"] = "警戒侍者茲坎"
 L["RAID_BOSS_ATSC_7"] = "馬格莫拉克斯"
 L["RAID_BOSS_ATSC_8"] = "奈薩里奧的回響"
 L["RAID_BOSS_ATSC_9"] = "龍隊指揮官沙卡瑞斯"
+L["RAID_BOSS_AVOTI_1"] = "伊拉諾格"
+L["RAID_BOSS_AVOTI_2"] = "忒羅司"
+L["RAID_BOSS_AVOTI_3"] = "洪荒議會"
+L["RAID_BOSS_AVOTI_4"] = "『冰冷之息』賽娜絲"
+L["RAID_BOSS_AVOTI_5"] = "『超凡者』達西亞"
+L["RAID_BOSS_AVOTI_6"] = "庫洛格‧恐怖圖騰"
+L["RAID_BOSS_AVOTI_7"] = "幼龍守衛者戴恩娜"
+L["RAID_BOSS_AVOTI_8"] = "『噬風者』菈薩葛絲"
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_BOT_1"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_BOT_2"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_BOT_3"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_BOT_4"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_BOT_5"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_BWD_1"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_BWD_2"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_BWD_3"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_BWD_4"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_BWD_5"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_BWD_6"] = ""--]] 
 L["RAID_BOSS_CN_1"] = "石嘯翼蝠"
 L["RAID_BOSS_CN_10"] = "戴納瑟斯王"
 L["RAID_BOSS_CN_2"] = "獵人亞提默"
@@ -221,6 +288,31 @@ L["RAID_BOSS_FSOD_6"] = "痛苦工匠拉茲內爾"
 L["RAID_BOSS_FSOD_7"] = "首創者的守護者"
 L["RAID_BOSS_FSOD_8"] = "述命者羅卡洛"
 L["RAID_BOSS_FSOD_9"] = "科爾蘇加德"
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_ICC_1"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_ICC_10"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_ICC_11"] = ""--]] 
+L["RAID_BOSS_ICC_12"] = "巫妖王"
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_ICC_2"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_ICC_3"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_ICC_4"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_ICC_5"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_ICC_6"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_ICC_7"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_ICC_8"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_ICC_9"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_RS_1"] = ""--]] 
 L["RAID_BOSS_SFO_1"] = "戒備守護者"
 L["RAID_BOSS_SFO_10"] = "雷吉隆"
 L["RAID_BOSS_SFO_11"] = "閻獄之主"
@@ -242,6 +334,10 @@ L["RAID_BOSS_SOD_6"] = "痛苦工匠拉茲內爾"
 L["RAID_BOSS_SOD_7"] = "首創者的守護者"
 L["RAID_BOSS_SOD_8"] = "述命者羅卡洛"
 L["RAID_BOSS_SOD_9"] = "科爾蘇加德"
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_TOTFW_1"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_TOTFW_2"] = ""--]] 
 L["RAID_BOSS_VOTI_1"] = "伊拉諾格"
 L["RAID_BOSS_VOTI_2"] = "忒羅司"
 L["RAID_BOSS_VOTI_3"] = "洪荒議會"
@@ -250,13 +346,29 @@ L["RAID_BOSS_VOTI_5"] = "『超凡者』達西亞"
 L["RAID_BOSS_VOTI_6"] = "庫洛格‧恐怖圖騰"
 L["RAID_BOSS_VOTI_7"] = "幼龍守衛者戴恩娜"
 L["RAID_BOSS_VOTI_8"] = "『噬風者』菈薩葛絲"
+--[[Translation missing --]]
+--[[ L["RAID_BOT"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BWD"] = ""--]] 
 L["RAID_DIFFICULTY_NAME_HEROIC"] = "英雄"
+L["RAID_DIFFICULTY_NAME_HEROIC10"] = "英雄10人"
+L["RAID_DIFFICULTY_NAME_HEROIC25"] = "英雄25人"
 L["RAID_DIFFICULTY_NAME_MYTHIC"] = "傳奇"
 L["RAID_DIFFICULTY_NAME_NORMAL"] = "普通"
+L["RAID_DIFFICULTY_NAME_NORMAL10"] = "普通10人"
+L["RAID_DIFFICULTY_NAME_NORMAL25"] = "普通25人"
 L["RAID_DIFFICULTY_SUFFIX_HEROIC"] = "H"
+L["RAID_DIFFICULTY_SUFFIX_HEROIC10"] = "H10"
+L["RAID_DIFFICULTY_SUFFIX_HEROIC25"] = "H25"
 L["RAID_DIFFICULTY_SUFFIX_MYTHIC"] = "M"
 L["RAID_DIFFICULTY_SUFFIX_NORMAL"] = "N"
+L["RAID_DIFFICULTY_SUFFIX_NORMAL10"] = "N10"
+L["RAID_DIFFICULTY_SUFFIX_NORMAL25"] = "N25"
 L["RAID_ENCOUNTERS_DEFEATED_TITLE"] = "已擊敗的團隊首領"
+L["RAID_ICC"] = "冰冠城寨"
+L["RAID_RS"] = "晶紅聖所"
+--[[Translation missing --]]
+--[[ L["RAID_TOTFW"] = ""--]] 
 L["RAIDERIO_AVERAGE_PLAYER_SCORE"] = "限時%s層的建議分數"
 L["RAIDERIO_BEST_RUN"] = "Raider.IO 大秘最佳紀錄"
 L["RAIDERIO_CLIENT_CUSTOMIZATION"] = "RaiderIO客戶端自訂"
@@ -303,6 +415,9 @@ L["REPLAY_STYLE_TITLE_MODERN_SPLITS"] = "僅限首領"
 L["REPLAY_SUMMARY_LOGGED"] = "|cffFFFFFF%s|r 已記錄您完成此 |cffFFFFFF+%s|r 在 |cffFFFFFF%s|r。"
 L["REPLAY_TIMING_TITLE_BOSS"] = "首領計時"
 L["REPLAY_TIMING_TITLE_DUNGEON"] = "地下城計時"
+L["RESET_BUTTON"] = "重置回預設"
+L["RESET_CONFIRM_BUTTON"] = "重置並重載"
+L["RESET_CONFIRM_TEXT"] = "您確定要重置raider.io回到預設設置嗎？"
 L["RWF_MINIBUTTON_TOOLTIP"] = "每當有未決戰利品時左鍵點擊。這將導致您的界面重新載入。右鍵點擊以打開競賽世界第一框架。"
 L["RWF_SUBTITLE_LOGGING_FILTERED_LOOT"] = "（記錄相關項目）"
 L["RWF_SUBTITLE_LOGGING_LOOT"] = "（記錄戰利品）"
@@ -331,6 +446,7 @@ L["SHOW_CURRENT_SEASON_DESC"] = "顯示玩家當季的傳奇+分數作為滑鼠�
 L["SHOW_IN_FRIENDS"] = "顯示在好友名單"
 L["SHOW_IN_FRIENDS_DESC"] = "當你鼠標懸停在好友時顯示傳奇+分數。"
 L["SHOW_IN_LFD"] = "顯示在地城搜尋器"
+L["SHOW_IN_LFD_CLASSIC"] = "在隊伍搜尋器提示中顯示"
 L["SHOW_IN_LFD_DESC"] = "當你鼠標懸停在隊伍或申請人時顯示傳奇+分數。"
 L["SHOW_IN_SLASH_WHO_RESULTS"] = "顯示在 /查詢 結果"
 L["SHOW_IN_SLASH_WHO_RESULTS_DESC"] = "當你具體查詢某人時顯示傳奇+分數。"
@@ -352,6 +468,7 @@ L["SHOW_RAIDERIO_BESTRUN_FIRST"] = "(試驗) 優先顯示Raider.IO最佳紀錄"
 L["SHOW_RAIDERIO_BESTRUN_FIRST_DESC"] = "這是個試驗性功能。在第一行顯示玩家的最佳紀錄而非Raider.IO的分數。"
 L["SHOW_RAIDERIO_PROFILE"] = "在地城搜尋器上顯示大秘紀錄提示"
 L["SHOW_RAIDERIO_PROFILE_DESC"] = "在地城搜尋器上顯示Raider.IO紀錄提示"
+L["SHOW_RAIDERIO_PROFILE_OPTION"] = "顯示Raider.IO資料庫"
 L["SHOW_ROLE_ICONS"] = "顯示角色職責圖示"
 L["SHOW_ROLE_ICONS_DESC"] = "啟用後，會在滑鼠提示中以職責區分顯示玩家的分數"
 L["SHOW_SCORE_IN_COMBAT"] = "戰鬥中顯示分數"
@@ -377,5 +494,6 @@ L["WARNING_LOCK_POSITION_FRAME_AUTO"] = "RaiderIO：您必須先取消M+紀錄�
 L["WARNING_RWF_MODE_ENABLE"] = "|cffFFFFFF%s|r 競賽世界第一模式為啟用。你如想停用請輸入|cffFFFFFF/raiderio rwf|r。"
 L["WIPE_RWF_MODE_BUTTON"] = "清除"
 L["WIPE_RWF_MODE_BUTTON_TOOLTIP"] = "單擊以從儲存檔中清除日誌。這將導致您的界面重新載入。"
+
 
 end

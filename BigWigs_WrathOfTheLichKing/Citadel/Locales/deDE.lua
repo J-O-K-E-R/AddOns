@@ -1,5 +1,43 @@
-local L = BigWigs:NewBossLocale("Blood Prince Council", "deDE")
+local L = BigWigs:NewBossLocale("Lord Marrowgar", "deDE")
 if not L then return end
+if L then
+	L.bone_spike = "Knochenstachel" -- NPC ID 36619
+end
+
+L = BigWigs:NewBossLocale("Lady Deathwhisper", "deDE")
+if L then
+	L.touch = "Berührung"
+	L.deformed_fanatic = "Deformierter Fanatiker" -- NPC ID 38135
+	L.empowered_adherent = "Machterfüllter Kultist" -- NPC ID 38136
+end
+
+L = BigWigs:NewBossLocale("Icecrown Gunship Battle", "deDE")
+if L then
+	L.adds_trigger_alliance = "Häscher, Unteroffiziere, Angriff!"
+	L.adds_trigger_horde = "Soldaten! Zum Angriff!"
+
+	L.mage = "Magier"
+	L.mage_desc = "Warnt, wenn ein Magier erscheint, um die Kanonen einzufrieren."
+	-- Alliance: We're taking hull damage, get a battle-mage out here to shut down those cannons!
+	-- Horde: We're taking hull damage, get a sorcerer out here to shut down those cannons!
+	--L.mage_yell_trigger = "taking hull damage"
+
+	L.warmup_trigger_alliance = "Alle Maschinen auf Volldampf"
+	L.warmup_trigger_horde = "Erhebt Euch, Söhne und Töchter"
+
+	L.disable_trigger_alliance = "Vorwärts, Brüder und Schwestern"
+	L.disable_trigger_horde = "Vorwärts zum Lichkönig"
+end
+
+L = BigWigs:NewBossLocale("Deathbringer Saurfang", "deDE")
+if L then
+	L.blood_beast = "Blutbestie" --  NPC ID 38508
+
+	L.warmup_alliance = "Dann beeilen wir uns! Brechen wir au..."
+	L.warmup_horde = "Kor'kron, Aufbruch! Champions, gebt Acht. Die Geißel ist..."
+end
+
+L = BigWigs:NewBossLocale("Blood Prince Council", "deDE")
 if L then
 	L.switch_message = "Ziel wechseln: %s"
 	L.switch_bar = "~Ziel wechseln"
@@ -34,18 +72,6 @@ if L then
 	L.phase2_bar = "Flugphase"
 end
 
-L = BigWigs:NewBossLocale("Deathbringer Saurfang", "deDE")
-if L then
-	L.adds = "Blutbestien"
-	L.adds_desc = "Zeigt Timer und Nachrichten für das Auftauchen der Blutbestien."
-	L.adds_warning = "Blutbestien in 5 sek!"
-	L.adds_message = "Blutbestien!"
-
-	L.engage_trigger = "BEI DER MACHT DES LICHKÖNIGS!"
-	L.warmup_alliance = "Dann beeilen wir uns! Brechen wir au..."
-	L.warmup_horde = "Kor'kron, Aufbruch! Champions, gebt Acht. Die Geißel ist..."
-end
-
 L = BigWigs:NewBossLocale("Festergut", "deDE")
 if L then
 	L.engage_trigger = "Zeit für Spaß?"
@@ -53,55 +79,6 @@ if L then
 	L.inhale_bar = "Einatmen %d"
 	L.blight_warning = "Stechende Seuche in ~5 sek!"
 	L.ball_message = "Glibber!"
-end
-
-L = BigWigs:NewBossLocale("Icecrown Gunship Battle", "deDE")
-if L then
-	L.adds = "Portal"
-	L.adds_desc = "Warnt vor den Portalen."
-	L.adds_trigger_alliance = "Häscher, Unteroffiziere, Angriff!"
-	L.adds_trigger_horde = "Soldaten! Zum Angriff!"
-	L.adds_message = "Portal!"
-	L.adds_bar = "Nächstes Portal"
-
-	L.mage = "Magier"
-	L.mage_desc = "Warnt, wenn ein Magier erscheint, um die Kanonen einzufrieren."
-	L.mage_message = "Magier gespawnt!"
-	L.mage_bar = "Nächster Magier"
-
-	L.warmup_trigger_alliance = "Alle Maschinen auf Volldampf"
-	L.warmup_trigger_horde = "Erhebt Euch, Söhne und Töchter"
-
-	L.disable_trigger_alliance = "Vorwärts, Brüder und Schwestern"
-	L.disable_trigger_horde = "Vorwärts zum Lichkönig"
-end
-
-L = BigWigs:NewBossLocale("Lady Deathwhisper", "deDE")
-if L then
-	L.engage_trigger = "Was soll die Störung? Ihr wagt es, heiligen Boden zu betreten? Dies wird der Ort Eurer letzten Ruhe sein!"
-	L.phase2_message = "Manabarriere weg - Phase 2!"
-
-	L.dnd_message = "Tod und Verfall auf DIR!"
-
-	L.adds = "Adds"
-	L.adds_desc = "Zeigt Timer und Nachrichten für das Auftauchen der Adds."
-	L.adds_bar = "Nächsten Adds"
-	L.adds_warning = "Adds in 5 sek!"
-
-	L.touch_message = "%2$dx Berührung: %1$s"
-	L.touch_bar = "~Nächste Berührung"
-
-	L.deformed_fanatic = "Deformierter Fanatiker!"
-
-	L.spirit_message = "Geister!"
-	L.spirit_bar = "Nächsten Geister"
-end
-
-L = BigWigs:NewBossLocale("Lord Marrowgar", "deDE")
-if L then
-	L.engage_trigger = "Die Geißel wird über diese Welt kommen wie ein Schwarm aus Tod und Zerstörung!"
-
-	L.bonestorm_warning = "Knochensturm in 5 sek!"
 end
 
 L = BigWigs:NewBossLocale("Professor Putricide", "deDE")
@@ -211,6 +188,6 @@ end
 L = BigWigs:NewBossLocale("Icecrown Citadel Trash", "deDE")
 if L then
 	L.deathbound_ward = "Todesgeweihter Wächter"
-	--L.deathspeaker_adds = "Lady Deathwhisper Trash"
+	L.deathspeaker_high_priest = "Hohepriester der Todessprecher" -- NPC ID 36829
 	L.putricide_dogs = "Schatz & Stinki"
 end

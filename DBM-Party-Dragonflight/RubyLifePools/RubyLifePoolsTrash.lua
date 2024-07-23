@@ -1,13 +1,13 @@
 local mod	= DBM:NewMod("RubyLifePoolsTrash", "DBM-Party-Dragonflight", 7)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20231026112110")
+mod:SetRevision("20240511093504")
 --mod:SetModelID(47785)
 mod.isTrashMod = true
 
 mod:RegisterEvents(
-	"SPELL_CAST_START 372087 391726 391723 373614 392395 372696 384194 392486 392394 392640 392451 372047 372735",
-	"SPELL_CAST_SUCCESS 385536",
+	"SPELL_CAST_START 372087 391726 391723 373614 392395 372696 384194 392486 392394 392640 392451 372047 372735 373692",
+	"SPELL_CAST_SUCCESS 385536 372743",
 	"SPELL_AURA_APPLIED 373693 392641 373972 391050",
 --	"SPELL_AURA_APPLIED_DOSE",
 	"SPELL_AURA_REMOVED 373693 391050",
@@ -28,6 +28,7 @@ local warnFlashfire							= mod:NewCastAnnounce(392451, 4)
 local warnFlameDance						= mod:NewCastAnnounce(385536, 4, 6, nil, nil, nil, nil, 3)
 local warnTectonicSlam						= mod:NewCastAnnounce(372735, 4, nil, nil, nil, nil, nil, 3)
 
+local specWarnInferno						= mod:NewSpecialWarningSpell(373692, nil, nil, nil, 2, 2)
 local specWarnLightningStorm				= mod:NewSpecialWarningSpell(392486, nil, nil, nil, 2, 2)
 local specWarnBlazeofGlory					= mod:NewSpecialWarningSpell(373972, nil, nil, nil, 2, 2)
 local specWarnTempestStormshield			= mod:NewSpecialWarningSwitch(391050, nil, nil, nil, 1, 2)
@@ -46,7 +47,7 @@ local specWarnThunderJaw					= mod:NewSpecialWarningDefensive(392395, nil, nil, 
 local specWarnCinderbolt					= mod:NewSpecialWarningInterrupt(384194, "HasInterrupt", nil, nil, 1, 2)
 local specWarnFlashfire						= mod:NewSpecialWarningInterrupt(392451, "HasInterrupt", nil, nil, 1, 2)
 
-local timerExcavatingBlastCD				= mod:NewCDNPTimer(17, 372696, nil, nil, nil, 3)
+local timerExcavatingBlastCD				= mod:NewCDNPTimer(16.5, 372696, nil, nil, nil, 3)
 local timerSteelBarrageCD					= mod:NewCDNPTimer(17, 372047, nil, "Tank", nil, 5, nil, DBM_COMMON_L.TANK_ICON)
 local timerBlazingRushCD					= mod:NewCDNPTimer(17, 372087, nil, nil, nil, 3)
 local timerStormBreathCD					= mod:NewCDNPTimer(15.7, 391726, nil, nil, nil, 3)
@@ -57,7 +58,8 @@ local timerFlashfireCD						= mod:NewCDNPTimer(12.1, 392451, nil, nil, nil, 4, n
 local timerFlameDanceCD						= mod:NewCDNPTimer(26.6, 385536, nil, nil, nil, 5)
 local timerTectonicSlamCD					= mod:NewCDNPTimer(17, 372735, nil, nil, nil, 5)--17-21
 local timerTempestStormshieldCD				= mod:NewCDNPTimer(18.2, 391050, nil, nil, nil, 5, nil, DBM_COMMON_L.DAMAGE_ICON)
-
+local timerIcyShieldCD						= mod:NewCDNPTimer(21.9, 372743, nil, nil, nil, 5)--17-21
+local timerInfernoCD						= mod:NewCDNPTimer(19.4, 372743, nil, nil, nil, 2)
 
 --local playerName = UnitName("player")
 
@@ -157,6 +159,12 @@ function mod:SPELL_CAST_START(args)
 		if self:AntiSpam(3, 5) then
 			warnSteelBarrage:Show()
 		end
+	elseif spellId == 373692 then
+		timerInfernoCD:Start(nil, args.sourceGUID)
+		if self:AntiSpam(3, 4) then
+			specWarnInferno:Show()
+			specWarnInferno:Play("aesoon")
+		end
 	end
 end
 
@@ -169,6 +177,8 @@ function mod:SPELL_CAST_SUCCESS(args)
 			warnFlameDance:Show()
 			warnFlameDance:Play("crowdcontrol")
 		end
+	elseif spellId == 372743 then
+		timerIcyShieldCD:Start(nil, args.sourceGUID)
 	end
 end
 
@@ -226,5 +236,9 @@ function mod:UNIT_DIED(args)
 		timerFlameDanceCD:Stop(args.destGUID)
 	elseif cid == 187969 then--Flashfrost Earthshaper
 		timerTectonicSlamCD:Stop(args.destGUID)
+	elseif cid == 188067 then--Flashfrost Chillweaver
+		timerIcyShieldCD:Stop(args.destGUID)
+	elseif cid == 190034 then--Blazebound Destroyer
+		timerInfernoCD:Stop(args.destGUID)
 	end
 end

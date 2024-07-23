@@ -5,7 +5,7 @@ local _G = _G
 local next, unpack = next, unpack
 local format, strjoin = format, strjoin
 local wipe, sort, tinsert = wipe, sort, tinsert
-local date, utf8sub = date, string.utf8sub
+local utf8sub = string.utf8sub
 
 local ToggleFrame = ToggleFrame
 local EJ_GetCurrentTier = EJ_GetCurrentTier
@@ -31,19 +31,39 @@ local WORLD_BOSSES_TEXT = RAID_INFO_WORLD_BOSS
 local WEEKLY_RESET = format('%s %s', WEEKLY, RESET)
 
 local C_Map_GetAreaInfo = C_Map.GetAreaInfo
-local C_DateAndTime_GetCurrentCalendarTime = C_DateAndTime.GetCurrentCalendarTime
 local C_DateAndTime_GetSecondsUntilDailyReset = C_DateAndTime.GetSecondsUntilDailyReset
 local C_DateAndTime_GetSecondsUntilWeeklyReset = C_DateAndTime.GetSecondsUntilWeeklyReset
 
 local APM = { _G.TIMEMANAGER_PM, _G.TIMEMANAGER_AM }
-local ukDisplayFormat, europeDisplayFormat = '', ''
-local europeDisplayFormat_nocolor = strjoin('', '%02d', ':|r%02d')
-local ukDisplayFormat_nocolor = strjoin('', '', '%d', ':|r%02d', ' %s|r')
+local lockoutColorExtended = { r = 0.3, g = 1, b = 0.3 }
+local lockoutColorNormal = { r = .8, g = .8, b = .8 }
 local lockoutInfoFormat = '%s%s %s |cffaaaaaa(%s, %s/%s)'
 local lockoutInfoFormatNoEnc = '%s%s %s |cffaaaaaa(%s)'
 local formatBattleGroundInfo = '%s: '
-local lockoutColorExtended, lockoutColorNormal = { r=0.3,g=1,b=0.3 }, { r=.8,g=.8,b=.8 }
 local enteredFrame = false
+local updateTime = 5
+local displayFormats = {
+	na_nocolor = '',
+	eu_nocolor = '',
+	na_color = '',
+	eu_color = ''
+}
+
+local allowID = { -- also has IDs maintained in Nameplate StyleFilters
+	[2] = true,		-- heroic
+	[23] = true,	-- mythic
+	[148] = true,	-- ZG/AQ40
+	[174] = true,	-- heroic (dungeon)
+	[185] = true,	-- normal (legacy)
+	[198] = true,	-- Classic: Season of Discovery
+	[201] = true,	-- Classic: Hardcore
+	[215] = true,	-- Classic: Sunken Temple
+}
+
+local lfrID = {
+	[7] = true,
+	[17] = true
+}
 
 local OnUpdate, db
 
@@ -56,37 +76,33 @@ local function ApplySettings(self, hex)
 		db = E.global.datatexts.settings[self.name]
 	end
 
-	europeDisplayFormat = strjoin('', '%02d', hex, ':|r%02d')
-	ukDisplayFormat = strjoin('', '', '%d', hex, ':|r%02d', hex, ' %s|r')
+	updateTime = db.seconds and 1 or 5
+
+	local sec = db.seconds and ':|r%02d' or '|r%s'
+	displayFormats.eu_nocolor = strjoin('', '%02d', ':|r%02d', sec)
+	displayFormats.na_nocolor = strjoin('', '', '%d', ':|r%02d', sec, ' %s|r')
+	displayFormats.eu_color = strjoin('', '%02d', hex, ':|r%02d', hex, sec)
+	displayFormats.na_color = strjoin('', '', '%d', hex, ':|r%02d', hex, sec, hex, ' %s|r')
 
 	OnUpdate(self, 20000)
 end
 
-local function ConvertTime(h, m)
-	local AmPm
-	if db.time24 == true then
-		return h, m, -1
+local function ConvertTime(h, m, s)
+	local secs = db.seconds and s or ''
+	if db.time24 then
+		return h, m, secs, -1
+	elseif h >= 12 then
+		if h > 12 then h = h - 12 end
+		return h, m, secs, 1
 	else
-		if h >= 12 then
-			if h > 12 then h = h - 12 end
-			AmPm = 1
-		else
-			if h == 0 then h = 12 end
-			AmPm = 2
-		end
+		if h == 0 then h = 12 end
+		return h, m, secs, 2
 	end
-
-	return h, m, AmPm
 end
 
-local function CalculateTimeValues(tooltip)
-	if (tooltip and db.localTime) or (not tooltip and not db.localTime) then
-		local dateTable = C_DateAndTime_GetCurrentCalendarTime()
-		return ConvertTime(dateTable.hour, dateTable.minute)
-	else
-		local dateTable = date('*t')
-		return ConvertTime(dateTable.hour, dateTable.min)
-	end
+local function GetTimeValues(tooltip)
+	local dateTable = E:GetDateTime((tooltip and not db.localTime) or (not tooltip and db.localTime))
+	return ConvertTime(dateTable.hour, dateTable.min, dateTable.sec)
 end
 
 local function OnClick(_, btn)
@@ -94,7 +110,7 @@ local function OnClick(_, btn)
 
 	if btn == 'RightButton' then
 		ToggleFrame(_G.TimeManagerFrame)
-	elseif E.Retail or E.Wrath then
+	elseif E.Retail or E.Cata then
 		_G.GameTimeFrame:Click()
 	end
 end
@@ -183,25 +199,28 @@ local function OnEnter()
 			end
 		end
 
-		local addedHeader = false
-		for i = 1, GetNumWorldPVPAreas() do
-			local _, localizedName, isActive, _, startTime, canEnter = GetWorldPVPAreaInfo(i)
+		local numAreas = GetNumWorldPVPAreas and GetNumWorldPVPAreas()
+		if numAreas then
+			local addedHeader = false
+			for i = 1, numAreas do
+				local _, localizedName, isActive, _, startTime, canEnter = GetWorldPVPAreaInfo(i)
 
-			if isActive then
-				startTime = WINTERGRASP_IN_PROGRESS
-			elseif not startTime then
-				startTime = QUEUE_TIME_UNAVAILABLE
-			elseif startTime ~= 0 then
-				startTime = ToTime(startTime)
-			end
-
-			if canEnter and startTime ~= 0 then
-				if not addedHeader then
-					DT.tooltip:AddLine(VOICE_CHAT_BATTLEGROUND)
-					addedHeader = true
+				if isActive then
+					startTime = WINTERGRASP_IN_PROGRESS
+				elseif not startTime then
+					startTime = QUEUE_TIME_UNAVAILABLE
+				elseif startTime ~= 0 then
+					startTime = ToTime(startTime)
 				end
 
-				DT.tooltip:AddDoubleLine(format(formatBattleGroundInfo, localizedName), startTime, 1, 1, 1, lockoutColorNormal.r, lockoutColorNormal.g, lockoutColorNormal.b)
+				if canEnter and startTime ~= 0 then
+					if not addedHeader then
+						DT.tooltip:AddLine(VOICE_CHAT_BATTLEGROUND)
+						addedHeader = true
+					end
+
+					DT.tooltip:AddDoubleLine(format(formatBattleGroundInfo, localizedName), startTime, 1, 1, 1, lockoutColorNormal.r, lockoutColorNormal.g, lockoutColorNormal.b)
+				end
 			end
 		end
 	end
@@ -212,17 +231,14 @@ local function OnEnter()
 	for i = 1, GetNumSavedInstances() do
 		local info = { GetSavedInstanceInfo(i) } -- we want to send entire info
 		local name, _, _, difficulty, locked, extended, _, isRaid = unpack(info)
-		if name and (locked or extended) then
-			local isDungeon = difficulty == 2 or difficulty == 23 or difficulty == 174 or difficulty == 201
-			if isRaid or isDungeon then
-				local isLFR = difficulty == 7 or difficulty == 17
-				local _, _, isHeroic, _, displayHeroic, displayMythic = GetDifficultyInfo(difficulty)
-				local sortName = name .. (displayMythic and 4 or (isHeroic or displayHeroic) and 3 or isLFR and 1 or 2)
-				local difficultyLetter = (displayMythic and difficultyTag[4]) or ((isHeroic or displayHeroic) and difficultyTag[3]) or (isLFR and difficultyTag[1]) or difficultyTag[2]
-				local buttonImg = instanceIconByName[name] and format('|T%s:16:16:0:0:96:96:0:64:0:64|t ', instanceIconByName[name]) or ''
+		if name and (locked or extended) and (isRaid or allowID[difficulty]) then
+			local isLFR = lfrID[difficulty]
+			local _, _, isHeroic, _, displayHeroic, displayMythic = GetDifficultyInfo(difficulty)
+			local sortName = name .. (displayMythic and 4 or (isHeroic or displayHeroic) and 3 or isLFR and 1 or 2)
+			local difficultyLetter = (displayMythic and difficultyTag[4]) or ((isHeroic or displayHeroic) and difficultyTag[3]) or (isLFR and difficultyTag[1]) or difficultyTag[2]
+			local buttonImg = instanceIconByName[name] and format('|T%s:16:16:0:0:96:96:0:64:0:64|t ', instanceIconByName[name]) or ''
 
-				tinsert(lockedInstances[isRaid and 'raids' or 'dungeons'], { sortName, difficultyLetter, buttonImg, info })
-			end
+			tinsert(lockedInstances[isRaid and 'raids' or 'dungeons'], { sortName, difficultyLetter, buttonImg, info })
 		end
 	end
 
@@ -293,7 +309,7 @@ local function OnEnter()
 		end
 	end
 
-	local Hr, Min, AmPm = CalculateTimeValues(true)
+	local Hr, Min, Sec, AmPm = GetTimeValues(true)
 	if DT.tooltip:NumLines() > 0 then
 		DT.tooltip:AddLine(' ')
 	end
@@ -308,12 +324,7 @@ local function OnEnter()
 		DT.tooltip:AddDoubleLine(WEEKLY_RESET, ToTime(weeklyReset), 1, 1, 1, lockoutColorNormal.r, lockoutColorNormal.g, lockoutColorNormal.b)
 	end
 
-	if AmPm == -1 then
-		DT.tooltip:AddDoubleLine(db.localTime and TIMEMANAGER_TOOLTIP_REALMTIME or TIMEMANAGER_TOOLTIP_LOCALTIME, format(europeDisplayFormat_nocolor, Hr, Min), 1, 1, 1, lockoutColorNormal.r, lockoutColorNormal.g, lockoutColorNormal.b)
-	else
-		DT.tooltip:AddDoubleLine(db.localTime and TIMEMANAGER_TOOLTIP_REALMTIME or TIMEMANAGER_TOOLTIP_LOCALTIME, format(ukDisplayFormat_nocolor, Hr, Min, APM[AmPm]), 1, 1, 1, lockoutColorNormal.r, lockoutColorNormal.g, lockoutColorNormal.b)
-	end
-
+	DT.tooltip:AddDoubleLine(db.localTime and TIMEMANAGER_TOOLTIP_REALMTIME or TIMEMANAGER_TOOLTIP_LOCALTIME, format(displayFormats[AmPm == -1 and 'eu_nocolor' or 'na_nocolor'], Hr, Min, Sec, APM[AmPm]), 1, 1, 1, lockoutColorNormal.r, lockoutColorNormal.g, lockoutColorNormal.b)
 	DT.tooltip:Show()
 end
 
@@ -326,13 +337,13 @@ local function OnEvent(self, event)
 end
 
 function OnUpdate(self, t)
-	self.timeElapsed = (self.timeElapsed or 5) - t
+	self.timeElapsed = (self.timeElapsed or updateTime) - t
 	if self.timeElapsed > 0 then return end
-	self.timeElapsed = 5
+	self.timeElapsed = updateTime
 
 	if E.Retail then
 		if db.flashInvite and _G.GameTimeFrame.flashInvite then
-			E:Flash(self, 0.53, true)
+			E:Flash(self, 0.5, true)
 		else
 			E:StopFlash(self)
 		end
@@ -342,13 +353,8 @@ function OnUpdate(self, t)
 		OnEnter(self)
 	end
 
-	local Hr, Min, AmPm = CalculateTimeValues()
-
-	if AmPm == -1 then
-		self.text:SetFormattedText(europeDisplayFormat, Hr, Min)
-	else
-		self.text:SetFormattedText(ukDisplayFormat, Hr, Min, APM[AmPm])
-	end
+	local Hr, Min, Sec, AmPm = GetTimeValues()
+	self.text:SetFormattedText(displayFormats[AmPm == -1 and 'eu_color' or 'na_color'], Hr, Min, Sec, APM[AmPm])
 end
 
 DT:RegisterDatatext('Time', nil, { 'UPDATE_INSTANCE_INFO', 'LOADING_SCREEN_ENABLED' }, OnEvent, OnUpdate, OnClick, OnEnter, OnLeave, nil, nil, ApplySettings)

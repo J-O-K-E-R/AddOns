@@ -1,14 +1,2 @@
-- v4.2.0.6
-  - Galakrond's Fall: added missing Timestream Leech
-- v4.2.0.4
-  - count updates Everbloom + Waycrest Manor
-- v4.2.0.3
-  - offseason affixes
-- v4.2.0.2
-- v4.2.0.2
-  - fix visual bug of discord and github buttons
-- v4.2.0.1
-  - external link buttons
-- v4.2.0.0
-  - Season 3 dungeons
-  - improved pull outlines performance
+- v4.4.1.1 (2024-06-07)
+  - Improved main window behavior alongside other addons - frame level will dynamically raise and lower within the "HIGH" frame strata

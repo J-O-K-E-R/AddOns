@@ -54,14 +54,14 @@ function mod:GetOptions()
 		248070, -- Empowered Shrapnel Blast
 
 		--[[ Intermission: On Deadly Ground ]]--
-		253302, -- Conflagration
+		--253302, -- Conflagration
 
 	},{
 		["stages"] = "general",
 		[247367] = -16577, -- Stage One: Attack Force
 		[247687] = -16206, -- Stage Two: Contract to Kill
 		[250255] = -16208, -- Stage Three: The Perfect Weapon
-		[253302] = -16205, -- Intermission: On Deadly Ground
+		--[253302] = -16205, -- Intermission: On Deadly Ground
 	}
 end
 
@@ -190,7 +190,7 @@ do
 	end
 
 	function mod:SleepCanisterRemoved(args)
-		tDeleteItem(canisterProxList, args.destName)
+		self:DeleteFromTable(canisterProxList, args.destName)
 		if #canisterProxList == 0 then
 			self:CloseProximity(254244)
 		else

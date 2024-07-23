@@ -1,8 +1,8 @@
---	13.11.2023
+--	20.06.2024
 
 local GlobalAddonName, MRT = ...
 
-MRT.V = 4810
+MRT.V = 4880
 MRT.T = "R"
 
 MRT.Slash = {}			--> функции вызова из коммандной строки
@@ -38,34 +38,31 @@ do
 end
 if MRT.clientVersion < 20000 then
 	MRT.isClassic = true
-	MRT.T = "Classic"
-	if MRT.clientVersion >= 11404 then
-		MRT.isLK1 = true
-	end	
+	MRT.T = "Classic"	
 elseif MRT.clientVersion < 30000 then
 	MRT.isClassic = true
 	MRT.isBC = true
 	MRT.T = "BC"
-	if MRT.clientVersion >= 20505 then
-		MRT.isLK1 = true
-	end
 elseif MRT.clientVersion < 40000 then
 	MRT.isClassic = true
 	MRT.isBC = true
 	MRT.isLK = true
 	MRT.T = "WotLK"
-	if MRT.clientVersion >= 30401 then
-		MRT.isLK1 = true
-	end
 elseif MRT.clientVersion < 50000 then
 	MRT.isClassic = true
 	MRT.isBC = true
 	MRT.isLK = true
-	MRT.isLK1 = true
 	MRT.isCata = true
 	MRT.T = "Cataclysm"
-elseif MRT.clientVersion >= 100000 then
-	MRT.is10 = true
+elseif MRT.clientVersion < 60000 then
+	MRT.isClassic = true
+	MRT.isBC = true
+	MRT.isLK = true
+	MRT.isCata = true
+	MRT.isMoP = true
+	MRT.T = "Pandaria"
+elseif MRT.clientVersion >= 110000 then
+	MRT.is11 = true
 end
 -------------> smart DB <-------------
 MRT.SDB = {}
@@ -761,6 +758,16 @@ MRT.frame:SetScript("OnEvent",function (self, event, ...)
 
 		MRT.AddonLoaded = true
 
+		if not MRT.isClassic then
+			if not VMRT.Addon.EJ_CHECK_VER or VMRT.Addon.EJ_CHECK_VER ~= MRT.clientUIinterface then
+				C_Timer.After(10,function()
+					MRT.F.EJ_AutoScan()
+				end)
+			else
+				MRT.F.EJ_LoadData()
+			end
+		end
+
 		return true	
 	end
 end)
@@ -849,6 +856,9 @@ local function send(self)
 		sendLimit[p] = (sendLimit[p] or SEND_LIMIT) + floor((t - (sendPrev[p] or 0))/1000)
 		if sendLimit[p] > SEND_LIMIT then
 			sendLimit[p] = SEND_LIMIT
+		elseif sendLimit[p] < -30 and sendPrev[p] and t < sendPrev[p] then
+			sendPrev[p] = t
+			sendLimit[p] = 0
 		end
 		if sendLimit[p] > 0 then
 			local cp = 1
@@ -907,6 +917,9 @@ function MRT.F.SendExMsg(prefix, msg, tochat, touser, addonPrefix)
 	else
 		local chat_type, playerName = MRT.F.chatType()
 		if chat_type == "WHISPER" and playerName == MRT.SDB.charName then
+			if type(specialOpt)=="table" and type(specialOpt.ondone)=="function" then
+				specialOpt.ondone()
+			end
 			specialOpt = nil
 			MRT.F.GetExMsg(MRT.SDB.charName, prefix, strsplit("\t", msg))
 			return

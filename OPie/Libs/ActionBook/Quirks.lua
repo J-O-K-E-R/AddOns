@@ -1,9 +1,18 @@
 local COMPAT, _, T = select(4,GetBuildInfo()), ...
 if T.SkipLocalActionBook then return end
+if T.TenEnv then T.TenEnv() end
 
 local EV, AB, RW = T.Evie, T.ActionBook:compatible(2,38), T.ActionBook:compatible("Rewire", 1,27)
 assert(EV and AB and RW and 1, "Incompatible library bundle")
-local MODERN = COMPAT >= 10e4
+local MODERN, CI_ERA, CF_CATA = COMPAT >= 10e4, COMPAT < 2e4, COMPAT < 10e4 and COMPAT > 4e4
+local playerClass, _, playerRace = UnitClassBase("player"), UnitRace("player")
+
+local safequote do
+	local r = {u="\\117", ["{"]="\\123", ["}"]="\\125"}
+	function safequote(s)
+		return (("%q"):format(s):gsub("[{}u]", r))
+	end
+end
 
 if MODERN then -- weirdly-persistent Incarnations
 	local function checkSpellKnown(id)
@@ -22,7 +31,7 @@ if MODERN then -- weirdly-persistent Incarnations
 	end)
 end
 
-if MODERN then -- class-locked mount spells
+if MODERN or CF_CATA then -- class-locked mount spells
 	local classLockedMounts = {
 		[48778]="DEATHKNIGHT", [54729]="DEATHKNIGHT", [229387]="DEATHKNIGHT",
 		[229417]="DEMONHUNTER", [200175]="DEMONHUNTER",
@@ -102,6 +111,51 @@ if MODERN then -- Tarecgosa's Visage
 	EV.QUEST_TURNED_IN = cueVisageCheck
 	EV.PLAYER_ENTERING_WORLD = cueVisageCheck
 	EV.NEW_MOUNT_ADDED = cueVisageCheck
+end
+
+if CF_CATA and playerClass == "PALADIN" and playerRace ~= "Tauren" then -- Only the Sunwalker kodos work with /cast out of the box
+	local pendingMounts, noQueue = {}, 1
+	if playerRace == "BloodElf" then
+		pendingMounts[34767], pendingMounts[34769] = 1, 1
+	else -- Human, Dwarf, Draenei
+		pendingMounts[13819], pendingMounts[23214] = 1, 1
+	end
+	local function castableViaEscape(_, castContext)
+		local castable = type(castContext) == "number" and castContext % 4 >= 2
+		return castable, "pal-catamount", not castable
+	end
+	local function cueMountCheck(ev)
+		if InCombatLockdown() then
+			if noQueue then
+				EV.PLAYER_REGEN_ENABLED, noQueue = cueMountCheck, nil
+			end
+			return
+		end
+		noQueue = 1
+		local foundNew, fromSpell, getInfo = nil, C_MountJournal.GetMountFromSpell, C_MountJournal.GetMountInfoByID
+		for sid in pairs(pendingMounts) do
+			local mid = fromSpell(sid)
+			if mid and select(11, getInfo(mid)) then
+				RW:SetSpellCastableChecker(sid, castableViaEscape)
+				local mslot = AB:GetActionSlot("mount", mid)
+				if mslot then
+					local sname = GetSpellInfo(sid)
+					RW:SetCastEscapeAction("spell:" .. sid, mslot)
+					RW:SetCastEscapeAction(sname, mslot)
+				end
+				foundNew, pendingMounts[sid] = 1, nil
+			end
+		end
+		if foundNew then
+			AB:NotifyObservers("spell")
+		end
+		return (ev == "PLAYER_REGEN_ENABLED" or next(pendingMounts) == nil) and "remove"
+	end
+	if next(pendingMounts) then
+		EV.SPELLS_CHANGED = cueMountCheck
+		EV.PLAYER_ENTERING_WORLD = cueMountCheck
+		EV.NEW_MOUNT_ADDED = cueMountCheck
+	end
 end
 
 if MODERN then -- failing ability rank disambiguation
@@ -195,18 +249,12 @@ if MODERN then -- missing usability conditions for certain toys
 end
 
 if MODERN then -- /ping's option parsing is silly
-	local safequote do
-		local r = {u="\\117", ["{"]="\\123", ["}"]="\\125"}
-		function safequote(s)
-			return s and (("%q"):format(s):gsub("[{}u]", r)) or "nil"
-		end
-	end
-	local f, init = CreateFrame("Frame", nil, nil, "SecureHandlerBaseTemplate"), [[--
+	local f, init = CreateFrame("Frame", nil, nil, "SecureHandlerBaseTemplate"), [[-- AB_PingQuirk_Init 
 		PING_COMMAND, TOKENS = %s, newtable()
 		TOKENS.assist, TOKENS.attack, TOKENS.onmyway, TOKENS.warning = %s, %s, %s, %s
 	]]
 	f:Execute(init:format(safequote(SLASH_PING1 .. " "), safequote(PING_TYPE_ASSIST), safequote(PING_TYPE_ATTACK), safequote(PING_TYPE_ON_MY_WAY), safequote(PING_TYPE_WARNING)))
-	f:SetAttribute("RunSlashCmd", [[--
+	f:SetAttribute("RunSlashCmd", [[-- AB_PingQuirk_Run 
 		local cmd, v, target, s = ...
 		if v then
 			target = target and target ~= "cursor" and "[@" .. target .. "] " or ""
@@ -214,4 +262,55 @@ if MODERN then -- /ping's option parsing is silly
 		end
 	]])
 	RW:RegisterCommand(SLASH_PING1, true, false, f)
+end
+
+if MODERN then -- /equipset {not a set name} errors
+	local function uniqueName(prefix)
+		local bni, bn = 1 repeat
+			bn, bni = prefix .. bni, bni + 1
+		until _G[bn] == nil and GetClickFrame(bn) == nil
+		return bn
+	end
+	local f = CreateFrame("Button", uniqueName("ABEquipSetQuirk!"), nil, "SecureActionButtonTemplate")
+	f:SetAttribute("pressAndHoldAction", 1)
+	f:SetAttribute("type", "equipmentset")
+	f:SetAttribute("DoEquipCommand", SLASH_CLICK1 .. " " .. f:GetName() .. " 1 1")
+	f:SetAttribute("RunSlashCmd", [[-- AB_EquipSetQuirk_Run 
+		local cmd, v = ...
+		if v then
+			self:SetAttribute("equipmentset", v)
+			return self:GetAttribute("DoEquipCommand")
+		end
+	]])
+	RW:RegisterCommand(SLASH_EQUIP_SET1, true, false, f)
+end
+
+if MODERN then -- ClassTalentHelper commands are in SlashCmdList instead of SecureCmdList
+	RW:ImportSlashCmd("TALENT_LOADOUT_BY_NAME", true, false)
+	RW:ImportSlashCmd("TALENT_LOADOUT_BY_INDEX", true, false)
+	RW:ImportSlashCmd("TALENT_SPEC_BY_NAME", true, false)
+	RW:ImportSlashCmd("TALENT_SPEC_BY_INDEX", true, false)
+end
+
+if CI_ERA then -- 1.15.1 SoD rune abilities
+	local function checkRuneSpell(sid)
+		local n1, n2, sid2, _ = IsPlayerSpell(sid) and GetSpellInfo(sid)
+		if n1 then
+			n2, _, _, _, _, _, sid2 = GetSpellInfo(n1)
+		end
+		return n2 and n1 ~= n2 and not IsPassiveSpell(sid2) or false, "rune-ability-spell"
+	end
+	for sid in ("399967 417346 399954 417347 415450 417345 399966 417348 415449"):gmatch("%d+") do
+		RW:SetSpellCastableChecker(sid+0, checkRuneSpell)
+	end
+end
+
+if CF_CATA then -- 4.4.0 misplaces secure commands
+	RW:ImportSlashCmd("WORLD_MARKER", true, false)
+	RW:ImportSlashCmd("CLEAR_WORLD_MARKER", true, false)
+	RW:ImportSlashCmd("EQUIP_SET", true, false)
+end
+
+if MODERN and playerRace ~= "Draenei" and playerRace ~= "LightforgedDraenei" then -- 10.2.7 thinks Draenic Hologem is usable by everyone
+	AB:SetPlayerHasToyOverride(210455, false)
 end

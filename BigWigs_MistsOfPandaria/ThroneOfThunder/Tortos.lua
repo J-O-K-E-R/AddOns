@@ -89,7 +89,7 @@ function mod:OnEngage()
 	self:Bar("bats", 46, 136686) -- Summon Bats
 	self:Bar(133939, 46) -- Furious Stone Breath
 	self:Bar(136294, 21) -- Call of Tortos
-	self:CDBar(134920, 28, CL["count"]:format(self:SpellName(134920), 1)) -- Quake Stomp
+	self:Bar(134920, 28, CL["count"]:format(self:SpellName(134920), 1)) -- Quake Stomp
 	if self:Heroic() then
 		crystalTimer = self:ScheduleRepeatingTimer("CrystalShell", 3, self:SpellName(137633))
 	end
@@ -120,7 +120,7 @@ function mod:BreathUpdate(unit)
 end
 
 function mod:CrystalShell(spellName)
-	if self:UnitDebuff("player", spellName) or not UnitAffectingCombat("player") then
+	if self:UnitDebuff("player", spellName, 137633) or not UnitAffectingCombat("player") then -- diff 5
 		mod:CancelTimer(crystalTimer)
 		crystalTimer = nil
 	else
@@ -141,7 +141,7 @@ function mod:SnappingBite(args)
 	if self:Me(self:UnitGUID("boss1target")) then
 		self:MessageOld(args.spellId, "yellow", self:Heroic() and "warning")
 	end
-	self:CDBar(args.spellId, 7)
+	self:Bar(args.spellId, 7)
 end
 
 function mod:SummonBats(_, _, _, spellId)
@@ -154,12 +154,12 @@ end
 function mod:QuakeStomp(args)
 	quakeCounter = quakeCounter + 1
 	self:MessageOld(args.spellId, "red", "alert", CL["count"]:format(args.spellName, quakeCounter))
-	self:CDBar(args.spellId, 47, CL["count"]:format(args.spellName, quakeCounter+1))
+	self:Bar(args.spellId, 47, CL["count"]:format(args.spellName, quakeCounter+1))
 end
 
 function mod:FuriousStoneBreath(args)
 	self:MessageOld(args.spellId, "red", "long")
-	self:CDBar(args.spellId, 46) -- 45.8-48.2
+	self:Bar(args.spellId, 46) -- 45.8-48.2
 	self:RegisterUnitEvent("UNIT_POWER_FREQUENT", "BreathUpdate", "boss1") -- First is generally fine, register after
 end
 
@@ -208,7 +208,7 @@ do
 	local concussion = mod:SpellName(136431)
 	local prev = 0
 	function mod:ShellConcussionCheck(_, unit)
-		local _, _, _, expires = self:UnitDebuff(unit, concussion)
+		local _, _, _, expires = self:UnitDebuff(unit, concussion, 136431) -- diff 5
 		if expires and expires ~= prev then
 			local t = GetTime()
 			if prev < t then -- buff fell off

@@ -1,3 +1,21 @@
+### 10.2.7.0
+* Updates for Dragonflight 10.2.7
+
+### 10.2.5.1
+* Fixed an issue affecting Polished Pet Charms (thanks tflo for catching it.)
+
+### 10.2.5.0
+* Updates for Dragonflight 10.1, 10.2 and 10.2.5
+
+### 10.1.7
+* TOC Bump
+
+### 10.1.0
+* Added Zaralek Cavern and Flightstone currency
+
+### 10.0.7
+* Added Forbidden Reach zone and Elemental Overflow currency 
+
 ### 10.0.2.8
 * Fixed WQs not properly showing for "Primalist Tomorrow" zone (Dragonflight)
 

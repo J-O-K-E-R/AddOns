@@ -23,6 +23,7 @@ function Auctionator.Groups.Utilities.ToPostingItem(info)
     bagListing = true,
     nextItem = nil,
     prevItem = nil,
+    sortKey = info.sortKey,
   }
 end
 

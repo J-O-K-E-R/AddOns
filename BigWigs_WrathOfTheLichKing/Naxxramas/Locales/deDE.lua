@@ -52,21 +52,7 @@ end
 
 L = BigWigs:NewBossLocale("Heigan the Unclean", "deDE")
 if L then
-	L.teleport_trigger = "Euer Ende naht."
-
-	L.teleport = "Teleport"
-	L.teleport_desc = "Warnungen und Timer für Teleport."
-	L.teleport_1min_message = "Teleport in 1 min"
-	L.teleport_30sec_message = "Teleport in 30 sek"
-	L.teleport_10sec_message = "Teleport in 10 sek!"
-	L.on_platform_message = "Teleport! Auf Plattform für 45 sek!"
-
-	L.to_floor_30sec_message = "Zurück in 30 sek"
-	L.to_floor_10sec_message = "Zurück in 10 sek!"
-	L.on_floor_message = "Zurück im Raum! Nächster Teleport in 90 sek!"
-
-	L.teleport_bar = "Teleport"
-	L.back_bar = "Zurück im Raum"
+	L.teleport_yell_trigger = "Euer Ende naht."
 end
 
 L = BigWigs:NewBossLocale("The Four Horsemen", "deDE")
@@ -111,22 +97,7 @@ end
 
 L = BigWigs:NewBossLocale("Noth the Plaguebringer", "deDE")
 if L then
-	L.add_trigger = "Erhebt euch, Soldaten! Erhebt euch und kämpft erneut!"
-
-	L.teleport = "Teleport"
-	L.teleport_desc = "Warnungen und Timer für Teleport."
-	L.teleport_balcony = "Teleport! Noth auf dem Balkon!"
-	L.teleport_room = "Teleport! Noth zurück im Raum!"
-
-	L.curse_explosion = "Fluch Explosion!"
-	L.curse_warn = "Fluch!"
-	L.curse_10secwarn = "Fluch in ~10 sek!"
-	L.curse_bar = "Nächster Fluch"
-
-	L.wave = "Skelette beschwören"
-	L.wave_desc = "Warnungen für die Gegnerwellen."
-	L.wave1 = "Welle 1"
-	L.wave2 = "Welle 2"
+	L.adds_yell_trigger = "Erhebt euch, Soldaten" -- Erhebt euch, Soldaten! Erhebt euch und kämpft erneut!
 end
 
 L = BigWigs:NewBossLocale("Maexxna", "deDE")
@@ -148,6 +119,9 @@ if L then
 	L.airphase_trigger = "Saphiron erhebt sich in die Lüfte!"
 	L.deepbreath_trigger = "%s holt tief Luft."
 
+	--L.air_phase = "Air Phase"
+	--L.ground_phase = "Ground Phase"
+
 	L.ice_bomb = "Frostatem"
 	L.ice_bomb_warning = "Frostatem kommt!"
 	L.ice_bomb_bar = "Frostatem landet!"
@@ -166,23 +140,19 @@ end
 
 L = BigWigs:NewBossLocale("Thaddius", "deDE")
 if L then
-	L.phase1_trigger1 = "Stalagg zerquetschen!"
-	L.phase1_trigger2 = "Verfüttere euch an Meister!"
-	L.phase2_trigger1 = "Eure... Knochen... zermalmen..."
-	L.phase2_trigger2 = "Euch... zerquetschen!"
-	L.phase2_trigger3 = "Töten..."
+	L[15929] = "Stalagg"
+	L[15930] = "Feugen"
 
-	L.add_death_trigger = "%s stirbt."
-	L.overload_trigger = "%s überlädt!"
+	L.stage1_yell_trigger1 = "Stalagg zerquetschen!"
+	L.stage1_yell_trigger2 = "Verfüttere euch an Meister!"
 
-	L.polarity_changed = "Polarität geändert!"
-	L.polarity_nochange = "Selbe Polarität!"
-	L.polarity_first_positive = "Du bist POSITIV!"
-	L.polarity_first_negative = "Du bist NEGATIV!"
+	L.stage2_yell_trigger1 = "Eure... Knochen... zermalmen..."
+	L.stage2_yell_trigger2 = "Euch... zerquetschen!"
+	L.stage2_yell_trigger3 = "Töten..."
 
-	L.throw = "Magnetische Anziehung"
-	L.throw_desc = "Warnt, wenn die Tanks die Plattform wechseln."
-	L.throw_warning = "Magnetische Anziehung in ~5 sek!"
+	L.add_death_emote_trigger = "%s stirbt."
+	L.overload_emote_trigger = "%s überlädt!"
+	--L.add_revive_emote_trigger = "%s is jolted back to life!"
 
 	L.polarity_extras = "Zusätzliche Warnungen für Polaritätsveränderung-Positionierung"
 
@@ -210,4 +180,6 @@ if L then
 	L.right = "---> Nach Rechts ---> Nach Rechts --->"
 	L.swap = "^^^^ Seitenwechseln ^^^^ Seitenwechseln ^^^^"
 	L.stay = "==== Nicht Bewegen ==== Nicht Bewegen ===="
+
+	--L.chat_message = "The Thaddius mod supports showing you directional arrows and playing voices. Open the options to configure them."
 end

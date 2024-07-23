@@ -1,7 +1,7 @@
 -------------------------------------------------------------------------------
 -- Premade Groups Filter
 -------------------------------------------------------------------------------
--- Copyright (C) 2022 Elotheon-Arthas-EU
+-- Copyright (C) 2024 Bernhard Saumweber
 --
 -- This program is free software; you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -63,11 +63,13 @@ C.ACTIVITY = {
     [ 833] = { difficulty = 1, category =   2, mapID =  553 }, -- The Botanica (Normal)
     [ 834] = { difficulty = 1, category =   2, mapID =  552 }, -- The Arcatraz (Normal)
     [ 835] = { difficulty = 1, category =   2, mapID =  585 }, -- Magisters' Terrace (Normal)
+    [ 836] = { difficulty = 1, category = 114, mapID =  309 }, -- Zul'Gurub
     [ 837] = { difficulty = 1, category = 114, mapID =  229 }, -- Upper Blackrock Spire
     [ 838] = { difficulty = 1, category = 114, mapID =  249 }, -- Onyxia's Lair
     [ 839] = { difficulty = 1, category = 114, mapID =  409 }, -- Molten Core
     [ 840] = { difficulty = 1, category = 114, mapID =  469 }, -- Blackwing Lair
     [ 841] = { difficulty = 1, category = 114, mapID =  533 }, -- Naxxramas (10 Normal)
+    [ 842] = { difficulty = 1, category = 114, mapID =  509 }, -- Ahn'Qiraj Ruins
     [ 843] = { difficulty = 1, category = 114, mapID =  531 }, -- Ahn'Qiraj Temple
     [ 844] = { difficulty = 1, category = 114, mapID =  532 }, -- Karazhan
     [ 845] = { difficulty = 1, category = 114, mapID =  544 }, -- Magtheridon's Lair
@@ -126,6 +128,8 @@ C.ACTIVITY = {
     [1103] = { difficulty = 2, category = 114, mapID =  649 }, -- Trial of the Grand Crusader (10 Normal)
     [1104] = { difficulty = 1, category = 114, mapID =  649 }, -- Trial of the Crusader (25 Normal)
     [1105] = { difficulty = 2, category = 114, mapID =  649 }, -- Trial of the Grand Crusader (25 Normal)
+    [1106] = { difficulty = 1, category = 114, mapID =  603 }, -- Ulduar (10 Normal)
+    [1107] = { difficulty = 1, category = 114, mapID =  603 }, -- Ulduar (25 Normal)
     [1108] = { difficulty = 1, category = 114, mapID =  724 }, -- Ruby Sanctum (10 Normal)
     [1109] = { difficulty = 1, category = 114, mapID =  724 }, -- Ruby Sanctum (25 Normal)
     [1110] = { difficulty = 1, category = 114, mapID =  631 }, -- Icecrown Citadel (10 Normal)
@@ -191,6 +195,7 @@ C.ACTIVITY = {
     [1254] = { difficulty = 2, category = 114, mapID =  249 }, -- Onyxia's Lair (10 Heroic)
     [1255] = { difficulty = 2, category = 114, mapID =  631 }, -- Icecrown Citadel (10 Heroic)
     [1256] = { difficulty = 2, category = 114, mapID =  724 }, -- Ruby Sanctum (10 Heroic)
+    [1257] = { difficulty = 2, category = 114, mapID =  603 }, -- Ulduar (10 Heroic)
     [1258] = { difficulty = 2, category = 114, mapID =  649 }, -- Trial of the Grand Crusader (10 Heroic)
     [1259] = { difficulty = 2, category = 114, mapID =  616 }, -- The Eye of Eternity (10 Heroic)
     [1260] = { difficulty = 2, category = 114, mapID =  615 }, -- The Obsidian Sanctum (10 Heroic)
@@ -199,6 +204,7 @@ C.ACTIVITY = {
     [1263] = { difficulty = 2, category = 114, mapID =  533 }, -- Naxxramas (10 Heroic)
     [1264] = { difficulty = 2, category = 114, mapID =  631 }, -- Icecrown Citadel (25 Heroic)
     [1265] = { difficulty = 2, category = 114, mapID =  724 }, -- Ruby Sanctum (25 Heroic)
+    [1266] = { difficulty = 2, category = 114, mapID =  603 }, -- Ulduar (25 Heroic)
     [1267] = { difficulty = 2, category = 114, mapID =  649 }, -- Trial of the Grand Crusader (25 Heroic)
     [1268] = { difficulty = 2, category = 114, mapID =  649 }, -- Trial of the Crusader (25 Heroic)
     [1269] = { difficulty = 2, category = 114, mapID =  249 }, -- Onyxia's Lair (25 Heroic)
@@ -206,6 +212,20 @@ C.ACTIVITY = {
     [1271] = { difficulty = 2, category = 114, mapID =  615 }, -- The Obsidian Sanctum (25 Heroic)
     [1272] = { difficulty = 2, category = 114, mapID =  624 }, -- Vault of Archavon (25 Heroic)
     [1273] = { difficulty = 2, category = 114, mapID =  616 }, -- The Eye of Eternity (25 Heroic)
+    [1517] = { difficulty = 1, category = 114, mapID =  732 }, -- Baradin Hold (10 Normal)
+    [1522] = { difficulty = 1, category = 114, mapID =  732 }, -- Baradin Hold (25 Normal)
+    [1523] = { difficulty = 1, category = 114, mapID =  669 }, -- Blackwing Descent (10 Normal)
+    [1524] = { difficulty = 1, category = 114, mapID =  669 }, -- Blackwing Descent (25 Normal)
+    [1525] = { difficulty = 2, category = 114, mapID =  669 }, -- Blackwing Descent (10 Heroic)
+    [1526] = { difficulty = 2, category = 114, mapID =  669 }, -- Blackwing Descent (25 Heroic)
+    [1527] = { difficulty = 1, category = 114, mapID =  671 }, -- The Bastion of Twilight (10 Normal)
+    [1528] = { difficulty = 1, category = 114, mapID =  671 }, -- The Bastion of Twilight (25 Normal)
+    [1529] = { difficulty = 2, category = 114, mapID =  671 }, -- The Bastion of Twilight (10 Heroic)
+    [1530] = { difficulty = 2, category = 114, mapID =  671 }, -- The Bastion of Twilight (25 Heroic)
+    [1531] = { difficulty = 1, category = 114, mapID =  754 }, -- Throne of the Four Winds (10 Normal)
+    [1532] = { difficulty = 1, category = 114, mapID =  754 }, -- Throne of the Four Winds (25 Normal)
+    [1533] = { difficulty = 2, category = 114, mapID =  754 }, -- Throne of the Four Winds (10 Heroicl)
+    [1534] = { difficulty = 2, category = 114, mapID =  754 }, -- Throne of the Four Winds (25 Heroic)
 }
 
 -- Return a default set if activity not found

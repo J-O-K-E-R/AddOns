@@ -29,11 +29,6 @@ L:SetOptionLocalization({
 -------------------------------
 L = DBM:GetModLocalization(169)
 
-L:SetWarningLocalization({
-	SpecWarnActivated			= "Wechsel Ziel zu %s!",
-	specWarnGenerator			= "Energiegenerator - Zieh %s raus!"
-})
-
 L:SetTimerLocalization({
 	timerShadowConductorCast	= "Schattenleiter",
 	timerArcaneLockout			= "Annihilator Sperre",
@@ -45,10 +40,7 @@ L:SetOptionLocalization({
 	timerShadowConductorCast	= "Zeige Zeit bis $spell:92048 gewirkt wird",
 	timerArcaneLockout			= "Zeige Zeit, in der $spell:79710 nicht gewirkt werden kann",
 	timerArcaneBlowbackCast		= "Zeige Zeit bis $spell:91879 gewirkt wird",
-	timerNefAblity				= "Zeige Abklingzeit für heroische Fähigkeitsverbesserungen",
-	SpecWarnActivated			= "Spezialwarnung, wenn ein neuer Boss aktiviert wird",
-	specWarnGenerator			= "Spezialwarnung, wenn ein Boss von $spell:79629 profitiert",
-	SetIconOnActivated			= "Setze ein Zeichen auf den zuletzt aktivierten Boss"
+	timerNefAblity				= "Zeige Abklingzeit für heroische Fähigkeitsverbesserungen"
 })
 
 L:SetMiscLocalization({
@@ -80,10 +72,6 @@ L:SetMiscLocalization({
 -----------------
 L = DBM:GetModLocalization(171)
 
-L:SetOptionLocalization({
-	InfoFrame				= "Zeige Infofenster für $journal:3072"
-})
-
 L:SetMiscLocalization({
 	NefAdd					= "Atramedes, die Helden sind direkt DA DRÜBEN!",
 	Airphase				= "Ja, lauft! Jeder Schritt lässt Euer Herz stärker klopfen. Laut und heftig... ohrenbetäubend. Es gibt kein Entkommen!"
@@ -112,14 +100,8 @@ L:SetWarningLocalization({
 	WarnPhase			= "%s Phase"
 })
 
-L:SetTimerLocalization({
-	TimerPhase			= "Nächste Phase"
-})
-
 L:SetOptionLocalization({
 	WarnPhase			= "Verkünde welche Phase als Nächstes kommt",
-	TimerPhase			= "Zeige Zeit bis nächste Phase",
-	RangeFrame			= "Zeige Abstandsfenster (6m) während der blauen Phase",
 	SetTextures			= "Automatische Deaktivierung der Grafikeinstellung 'Projizierte Texturen' in der dunklen Phase (wird nach Verlassen der Phase autom. wieder aktiviert)"
 })
 
@@ -136,38 +118,17 @@ L:SetMiscLocalization({
 L = DBM:GetModLocalization(174)
 
 L:SetWarningLocalization({
-	OnyTailSwipe			= "Schwanzpeitscher (Onyxia)",
-	NefTailSwipe			= "Schwanzpeitscher (Nefarian)",
-	OnyBreath				= "Atem (Onyxia)",
-	NefBreath				= "Atem (Nefarian)",
-	specWarnShadowblazeSoon	= "%s",
 	warnShadowblazeSoon		= "%s"
 })
 
 L:SetTimerLocalization({
-	timerNefLanding			= "Nefarian landet",
-	OnySwipeTimer			= "Schwanzpeitscher CD (Ony)",
-	NefSwipeTimer			= "Schwanzpeitscher CD (Nef)",
-	OnyBreathTimer			= "Atem CD (Ony)",
-	NefBreathTimer			= "Atem CD (Nef)"
+	timerNefLanding			= "Nefarian landet"
 })
 
 L:SetOptionLocalization({
-	OnyTailSwipe			= "Zeige Warnung für Onyxias $spell:77827",
-	NefTailSwipe			= "Zeige Warnung für Nefarians $spell:77827",
-	OnyBreath				= "Zeige Warnung für Onyxias $spell:77826",
-	NefBreath				= "Zeige Warnung für Nefarians $spell:77826",
-	specWarnCinderMove		= "Spezialwarnung zum Weglaufen, wenn du von $spell:79339 betroffen bist (5s vor Explosion)",
 	warnShadowblazeSoon		= "Zeige Vorwarnungscountdown für $spell:81031 (5s zuvor)<br/>(aus Genauigkeitsgründen erst nach Synchronisierung mit erstem Ausruf)",
-	specWarnShadowblazeSoon	= "Spezialvorwarnung für $spell:81031 (aus Genauigkeitsgründen<br/>zu Beginn 5s Vorwarnung, 1s Vorwarnung nach erstem Ausruf)",
 	timerNefLanding			= "Zeige Zeit bis Nefarian landet",
-	OnySwipeTimer			= "Zeige Abklingzeit für Onyxias $spell:77827",
-	NefSwipeTimer			= "Zeige Abklingzeit für Nefarians $spell:77827",
-	OnyBreathTimer			= "Zeige Abklingzeit für Onyxias $spell:77826",
-	NefBreathTimer			= "Zeige Abklingzeit für Nefarians $spell:77826",
-	InfoFrame				= "Zeige Infofenster für $journal:3284",
-	SetWater				= "Automatische Deaktivierung der Kameraeinstellung 'Wasserkollision'<br/>bei Kampfbeginn (wird nach Kampfende automatisch wieder aktiviert)",
-	RangeFrame				= "Zeige Abstandsfenster (10m) für $spell:79339 (zeigt jeden, falls du den Debuff hast; sonst nur betroffene Spieler)"
+	SetWater				= "Automatische Deaktivierung der Kameraeinstellung 'Wasserkollision'<br/>bei Kampfbeginn (wird nach Kampfende automatisch wieder aktiviert)"
 })
 
 L:SetMiscLocalization({
@@ -175,8 +136,7 @@ L:SetMiscLocalization({
 	YellPhase2				= "Verfluchte Sterbliche! Ein solcher Umgang mit dem Eigentum anderer verlangt nach Gewalt!",
 	YellPhase3				= "Ich habe versucht, ein guter Gastgeber zu sein, aber ihr wollt einfach nicht sterben! Genug der Spielchen! Ich werde euch einfach... ALLE TÖTEN!",
 	YellShadowBlaze			= "Fleisch wird zu Asche!",
-	ShadowBlazeExact		= "Schattensengen in %ds",
-	ShadowBlazeEstimate		= "Schattensengen bald  (~5s)"
+	ShadowBlazeExact		= "Schattensengen in %ds"
 })
 
 -------------------------------
@@ -193,10 +153,6 @@ L:SetGeneralLocalization({
 --------------------------
 L = DBM:GetModLocalization(156)
 
-L:SetOptionLocalization({
-	ShowDrakeHealth		= "Zeige die Gesundheit befreiter Drachen (benötigt aktivierte Lebensanzeige)"
-})
-
 ---------------------------
 --  Valiona & Theralion  --
 ---------------------------
@@ -204,8 +160,6 @@ L = DBM:GetModLocalization(157)
 
 L:SetOptionLocalization({
 	TBwarnWhileBlackout		= "Warne auch bei aktivem $spell:86788 vor $spell:86369",
-	TwilightBlastArrow		= "Zeige DBM-Pfeil, falls $spell:86369 in deiner Nähe ist",
-	RangeFrame				= "Zeige Abstandsfenster (10m)",
 	BlackoutShieldFrame		= "Zeige Lebensanzeige mit einem Balken für $spell:86788"
 })
 
@@ -234,9 +188,7 @@ L:SetOptionLocalization({
 	SpecWarnGrounded		= "Spezialwarnung, falls dir der $spell:83581 Buff fehlt<br/>(~10 Sekunden vor dem Wirken von $spell:83067)",
 	SpecWarnSearingWinds	= "Spezialwarnung, falls dir der $spell:83500 Buff fehlt<br/>(~10 Sekunden vor dem Wirken von $spell:83565)",
 	timerTransition			= "Dauer des Phasenübergangs anzeigen",
-	RangeFrame				= "Zeige Abstandsfenster automatisch bei Bedarf",
-	yellScrewed				= "Schreie, wenn du gleichzeitig von $spell:83099 und $spell:92307 betroffen bist",
-	InfoFrame				= "Zeige Infofenster für Spieler ohne $spell:83581 bzw. $spell:83500"
+	yellScrewed				= "Schreie, wenn du gleichzeitig von $spell:83099 und $spell:92307 betroffen bist"
 })
 
 L:SetMiscLocalization({
@@ -253,12 +205,6 @@ L:SetMiscLocalization({
 --  Cho'gall  --
 ----------------
 L = DBM:GetModLocalization(167)
-
-L:SetOptionLocalization({
-	CorruptingCrashArrow	= "Zeige DBM-Pfeil, falls $spell:81685 nahe bei dir ist",
-	InfoFrame				= "Zeige Infofenster für $journal:3165",
-	RangeFrame				= "Zeige Abstandsfenster (5m) für $journal:3165"
-})
 
 ----------------
 --  Sinestra  --

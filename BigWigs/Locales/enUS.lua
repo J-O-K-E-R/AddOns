@@ -1,5 +1,7 @@
 local L = BigWigsAPI:NewLocale("BigWigs", "enUS")
 
+L.tempMessage = "Your bar positions have reset, but you can now Import/Export profiles."
+
 -- Core.lua
 L.berserk = "Berserk"
 L.berserk_desc = "Show a bar and timed warnings for when the boss will go berserk."
@@ -8,16 +10,20 @@ L.altpower_desc = "Show the alternate power window, which displays the amount of
 L.infobox = "Information Box"
 L.infobox_desc = "Display a box with information related to the encounter."
 L.stages = "Stages"
-L.stages_desc = "Enable functions related to the various stages/phases of the boss like proximity, bars, etc."
+L.stages_desc = "Enable functions related to the various stages of the boss encounter such as stage change warnings, stage duration timer bars, etc."
 L.warmup = "Warmup"
 L.warmup_desc = "Time until combat with the boss starts."
 L.proximity = "Proximity display"
 L.proximity_desc = "Show the proximity window when appropriate for this encounter, listing players who are standing too close to you."
+L.adds = "Adds"
+L.adds_desc = "Enable functions related to the various adds that will spawn during the boss encounter."
+L.health = "Health"
+L.health_desc = "Enable functions for displaying various health information during the boss encounter."
 
 L.already_registered = "|cffff0000WARNING:|r |cff00ff00%s|r (|cffffff00%s|r) already exists as a module in BigWigs, but something is trying to register it again. This usually means you have two copies of this module in your addons folder due to some addon updater failure. It is recommended that you delete any BigWigs folders you have and then reinstall it from scratch."
-L.testNameplate = "Target detected, creating a test nameplate bar over target nameplate. |cFF33FF99This feature is rarely used, is usually just 1 bar, and is needed to keep track of cooldowns when fighting multiple bosses/ads that cast the same spell.|r"
 
 -- Loader / Options.lua
+L.okay = "Okay"
 L.officialRelease = "You are running an official release of BigWigs %s (%s)"
 L.alphaRelease = "You are running an ALPHA RELEASE of BigWigs %s (%s)"
 L.sourceCheckout = "You are running a source checkout of BigWigs %s directly from the repository."
@@ -30,7 +36,7 @@ L.warnOldBase = "You are using a guild version of BigWigs (%d), but your base ve
 L.tooltipHint = "|cffeda55fRight-Click|r to access options."
 L.activeBossModules = "Active boss modules:"
 
-L.oldVersionsInGroup = "There are people in your group with older versions or without BigWigs. You can get more details with /bwv."
+L.oldVersionsInGroup = "There are people in your group with |cffff0000older versions|r of BigWigs. You can get more details with /bwv."
 L.upToDate = "Up to date:"
 L.outOfDate = "Out of date:"
 L.dbmUsers = "DBM users:"
@@ -53,6 +59,11 @@ L.expansionNames = {
 	"Battle for Azeroth", -- Battle for Azeroth
 	"Shadowlands", -- Shadowlands
 	"Dragonflight", -- Dragonflight
+	"The War Within", -- The War Within
+}
+L.littleWigsExtras = {
+	["LittleWigs_Delves"] = "Delves",
+	["LittleWigs_CurrentSeason"] = "Current Season",
 }
 
 -- Media.lua (These are the names of the sounds in the dropdown list in the "sounds" section)
@@ -65,34 +76,29 @@ L.spell_under_you = "BigWigs: Spell under you"
 
 -- Options.lua
 L.options = "Options"
-L.optionsKey = "Key: %s" -- The key that messages/bars/options use
+L.optionsKey = "ID: %s" -- The ID that messages/bars/options use
 L.raidBosses = "Raid Bosses"
 L.dungeonBosses = "Dungeon Bosses"
 L.introduction = "Welcome to BigWigs, where the boss encounters roam. Please fasten your seatbelt, eat peanuts and enjoy the ride. It will not eat your children, but it will assist you in preparing that new boss encounter as a 7-course dinner for your raid group."
-L.toggleAnchorsBtnShow = "Show Moving Anchors"
-L.toggleAnchorsBtnHide = "Hide Moving Anchors"
-L.toggleAnchorsBtnShow_desc = "Show all the moving anchors, allowing you to move the bars, messages, etc."
-L.toggleAnchorsBtnHide_desc = "Hide all the moving anchors, locking everything in place."
-L.testBarsBtn = "Create Test Bar"
-L.testBarsBtn_desc = "Creates a bar for you to test your current display settings with."
 L.sound = "Sound"
-L.flashScreen = "Flash Screen"
-L.flashScreenDesc = "Certain abilities are important enough to need your full attention. When these abilities affect you BigWigs can flash the screen."
 L.minimapIcon = "Minimap icon"
 L.minimapToggle = "Toggle show/hide of the minimap icon."
 L.compartmentMenu = "No compartment icon"
 L.compartmentMenu_desc = "Turning this option off will make BigWigs show up in the addon compartment menu. We recommend leaving this option enabled."
 L.configure = "Configure"
-L.test = "Test"
 L.resetPositions = "Reset positions"
 L.colors = "Colors"
 L.selectEncounter = "Select encounter"
+L.privateAuraSounds = "Private Aura Sounds"
+L.privateAuraSounds_desc = "Private auras can't be tracked normally, but you can set a sound to be played when you are targeted with the ability."
 L.listAbilities = "List abilities in group chat"
 
 L.dbmFaker = "Pretend I'm using DBM"
 L.dbmFakerDesc = "If a DBM user does a version check to see who's using DBM, they will see you on the list. Useful for guilds that force using DBM."
 L.zoneMessages = "Show zone messages"
 L.zoneMessagesDesc = "Disabling this will stop showing messages when you enter a zone that BigWigs has timers for, but you don't have installed. We recommend you leave this turned on as it's the only notification you will get if we suddenly create timers for a new zone that you find useful."
+L.englishSayMessages = "English-only say messages"
+L.englishSayMessagesDesc = "All the 'say' and 'yell' messages that you send in chat during a boss encounter will always be in English. Can be useful if you are with a mixed language group of players."
 
 L.slashDescTitle = "|cFFFED000Slash Commands:|r"
 L.slashDescPull = "|cFFFED000/pull:|r Sends a pull countdown to your raid."
@@ -152,7 +158,7 @@ L.ME_ONLY_EMPHASIZE_desc = "Enabling this will emphasize any messages associated
 L.NAMEPLATEBAR = "Nameplate Bars"
 L.NAMEPLATEBAR_desc = "Bars are sometimes attached to nameplates when more than one mob casts the same spell. If this ability is accompanied by a nameplate bar that you want to hide, disable this option."
 L.PRIVATE = "Private Aura"
-L.PRIVATE_desc = "Private auras can't be tracked normally, but the \"on you\" sound (Warning) can be set in the Sound tab."
+L.PRIVATE_desc = "These settings are for general cast alerts and bars only!\n\nYou can change the sound to play when you are targeted by this ability by selecting \"Private Aura Sounds\" in the \"Select encounter\" dropdown in the top right."
 
 L.advanced = "Advanced options"
 L.back = "<< Back"
@@ -161,6 +167,54 @@ L.tank = "|cFFFF0000Tank alerts only.|r "
 L.healer = "|cFFFF0000Healer alerts only.|r "
 L.tankhealer = "|cFFFF0000Tank & Healer alerts only.|r "
 L.dispeller = "|cFFFF0000Dispeller alerts only.|r "
+
+-- Sharing.lua
+L.import = "Import"
+L.import_info = "After entering a string you can select what settings you would like to import.\nIf settings are not available in the import string they will not be selectable.\n\nThis import will only affect the general settings and does not affect boss specific settings."
+L.import_info_active = "Choose what parts you would like to import and then click the import button."
+L.import_info_none = "|cFFFF0000The import string is incompatible or out of date.|r"
+L.export = "Export"
+L.export_info = "Select which settings you would like to export and share with others.\n\nYou can only share general settings and these have no effect on boss specific settings."
+L.export_string = "Export String"
+L.export_string_desc = "Copy this BigWigs string if you want to share your settings."
+L.import_string = "Import String"
+L.import_string_desc = "Paste the BigWigs string you want to import here."
+L.position = "Position"
+L.settings = "Settings"
+L.position_import_bars_desc = "Import the position (anchors) of the bars."
+L.position_import_messages_desc = "Import the position (anchors) of the messages."
+L.position_import_countdown_desc = "Import the position (anchors) of the countdown."
+L.position_export_bars_desc = "Export the position (anchors) of the bars."
+L.position_export_messages_desc = "Export the position (anchors) of the messages."
+L.position_export_countdown_desc = "Export the position (anchors) of the countdown."
+L.settings_import_bars_desc = "Import the general bar settings such as size, font, etc."
+L.settings_import_messages_desc = "Import the general message settings such as size, font, etc."
+L.settings_import_countdown_desc = "Import the general countdown settings such as voice, size, font, etc."
+L.settings_export_bars_desc = "Export the general bar settings such as size, font, etc."
+L.settings_export_messages_desc = "Export the general message settings such as size, font, etc."
+L.settings_export_countdown_desc = "Export the general countdown settings such as voice, size, font, etc."
+L.colors_import_bars_desc = "Import the colors of the bars."
+L.colors_import_messages_desc = "Import the colors of the messages."
+L.color_import_countdown_desc = "Import the color of the countdown."
+L.colors_export_bars_desc = "Export the colors of the bars."
+L.colors_export_messages_desc = "Export the colors of the messages."
+L.color_export_countdown_desc = "Export the color of the countdown."
+L.confirm_import = "The selected settings you are about to import will overwrite the settings in your currently selected profile:\n\n|cFF33FF99\"%s\"|r\n\nAre you sure you want to do this?"
+L.confirm_import_addon = "The addon |cFF436EEE\"%s\"|r wants to automatically import new BigWigs settings that will overwrite the settings in your currently selected BigWigs profile:\n\n|cFF33FF99\"%s\"|r\n\nAre you sure you want to do this?"
+L.confirm_import_addon_new_profile = "The addon |cFF436EEE\"%s\"|r wants to automatically create a new BigWigs profile called:\n\n|cFF33FF99\"%s\"|r\n\nAccepting this new profile will also swap to it."
+L.confirm_import_addon_edit_profile = "The addon |cFF436EEE\"%s\"|r wants to automatically edit one of your BigWigs profiles called:\n\n|cFF33FF99\"%s\"|r\n\nAccepting these changes will also swap to it."
+L.no_string_available = "No import string stored to import. First import a string."
+L.no_import_message = "No settings were imported."
+L.import_success = "Imported: %s" -- Imported: Bar Anchors, Message Colors
+L.imported_bar_positions = "Bar Positions"
+L.imported_bar_settings = "Bar Settings"
+L.imported_bar_colors = "Bar Colors"
+L.imported_message_positions = "Message Positions"
+L.imported_message_settings = "Message Settings"
+L.imported_message_colors = "Message Colors"
+L.imported_countdown_position = "Countdown Position"
+L.imported_countdown_settings = "Countdown Settings"
+L.imported_countdown_color = "Countdown Color"
 
 -- Statistics
 L.statistics = "Statistics"
@@ -171,3 +225,7 @@ L.mythic = "Mythic"
 L.wipes = "Wipes:"
 L.kills = "Kills:"
 L.best = "Best:"
+L.SOD = "Unknown"
+L.level1 = "Level 1"
+L.level2 = "Level 2"
+L.level3 = "Level 3"

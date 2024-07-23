@@ -57,7 +57,7 @@ if L then
 	L.dance_yell_up = "Prance Forward" -- Prance Forward!
 	L.dance_yell_right = "Shimmy right" -- Shimmy right!
 	L.dance_yell_down = "Boogie down" -- Boogie down!
-	L.dance_yell_down_2 = L.dance_yell_down -- Needed because of esMX funkyness
+	L.dance_yell_down_2 = "Boogie down" -- Needed because of esMX funkyness
 	L.dance_yell_left = "Sashay left" -- Sashay left!
 end
 

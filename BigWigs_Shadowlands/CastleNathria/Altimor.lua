@@ -23,7 +23,7 @@ local ripSoulCount = 1
 local shadesOfBargastCount = 1
 local petrifyingHowlCount = 1
 local mobCollector = {}
-local lungeTarget = nil
+local lungeTarget = 0
 
 --------------------------------------------------------------------------------
 -- Localization
@@ -117,7 +117,7 @@ function mod:OnEngage()
 	shadesOfBargastCount = 1
 	petrifyingHowlCount = 1
 	mobCollector = {}
-	lungeTarget = nil
+	lungeTarget = 0
 	self:SetStage(1)
 
 	self:Bar(334404, 6.5) -- Spreadshot
@@ -206,20 +206,22 @@ function mod:JaggedClawsApplied(args)
 end
 
 function mod:ViciousLungeApplied(args)
-	lungeTarget = args.destGUID
 	self:TargetMessage(args.spellId, "orange", args.destName, CL.count:format(args.spellName, viciousLungeCount))
 	self:PrimaryIcon(args.spellId, args.destName)
-	if self:Me(lungeTarget) then
+	if self:Me(args.destGUID) then
+		lungeTarget = 2
 		self:PlaySound(args.spellId, "warning")
 		self:Yell(args.spellId)
 		self:YellCountdown(args.spellId, 6)
+	else
+		lungeTarget = 1
 	end
 	viciousLungeCount = viciousLungeCount + 1
 	self:Bar(args.spellId, 25, CL.count:format(args.spellName, viciousLungeCount))
 end
 
 function mod:ViciousLungeRemoved(args)
-	lungeTarget = nil
+	lungeTarget = 0
 	self:PrimaryIcon(args.spellId)
 	if self:Me(args.destGUID) then
 		self:CancelYellCountdown(args.spellId)
@@ -227,9 +229,9 @@ function mod:ViciousLungeRemoved(args)
 end
 
 function mod:MargoreDeath()
-	if lungeTarget then -- Vicious Lunge
+	if lungeTarget > 0 then -- Currently casting Vicious Lunge on someone
 		self:PrimaryIcon(334945)
-		if self:Me(lungeTarget) then
+		if lungeTarget == 2 then -- Casting it on you
 			self:CancelYellCountdown(334945)
 			self:Yell(334945, CL.cancelled:format(self:SpellName(334945)), true)
 		end

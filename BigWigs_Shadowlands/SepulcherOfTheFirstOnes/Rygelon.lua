@@ -37,7 +37,7 @@ end
 -- Initialization
 --
 
-local darkEclipseMarker = mod:AddMarkerOption(false, "player", 1, 361548, 1, 2, 3, 4) -- Dark Eclipse
+local darkEclipseMarker = mod:AddMarkerOption(false, "player", 1, 362806, 1, 2, 3, 4) -- Dark Eclipse
 function mod:GetOptions()
 	return {
 		{362806, "SAY_COUNTDOWN"}, -- Dark Eclipse
@@ -58,7 +58,7 @@ function mod:GetOptions()
 		362798, -- Cosmic Radiation
 		{368080, "SAY_COUNTDOWN"}, -- Dark Quasar
 	},{
-		[361548] = -24245, -- Rygelon
+		[362806] = -24245, -- Rygelon
 		[362088] = "mythic",
 	},{
 		[362275] = L.celestial_collapse, -- Celestial Collapse

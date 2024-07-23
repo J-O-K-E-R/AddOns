@@ -5,83 +5,103 @@ local _, app = ...
 -- Global locals
 
 -- App locals
-local IsQuestFlaggedCompleted, IsSpellKnownHelper, AccountWideData
 
--- Character Unlock API Implementation
--- Access via AllTheThings.Modules.CharacterUnlocks
-local api = {}
-app.Modules.CharacterUnlocks = api
+-- Module locals
+local OneTimeQuests
+local SETTING = "CharacterUnlocks"
 
-local function Collectible()
-	return app.Settings.Collectibles.CharacterUnlocks
+app.AddEventHandler("OnSavedVariablesAvailable", function(currentCharacter, accountWideData)
+	OneTimeQuests = accountWideData.OneTimeQuests;
+end);
+
+local function Collectible(t)
+	return app.Settings.Collectibles[SETTING]
+		and
+		(
+			app.Settings.AccountWide[SETTING]
+			-- or not OTQ or is OTQ not yet known to be completed by any character, or is OTQ completed by this character
+			or (not OneTimeQuests[t.questID] or OneTimeQuests[t.questID] == app.GUID)
+		)
 end
+-- TODO: Does not consider OPA Quests as Unlocked when not tracking Account-Wide
+-- e.g. Garrison Shipyard Blueprints
+-- https://discord.com/channels/242423099184775169/1233743089630314558
 local function CollectedAsQuest(t)
-	return t.saved
-		or app.Settings.AccountWide.CharacterUnlocks and AccountWideData.Quests[t.questID] and 2
+	local id = t.questID;
+	-- character collected
+	if app.IsCached("Quests", id) then return 1; end
+	-- account-wide collected
+	if app.IsAccountTracked("Quests", id, SETTING) then return 2; end
 end
 local function CollectedAsSpell(t)
-	return t.saved
-		or app.Settings.AccountWide.CharacterUnlocks and AccountWideData.Spells[t.spellID] and 2
+	local id = t.spellID;
+	-- character collected
+	if app.IsCached("Spells", id) then return 1; end
+	-- account-wide collected
+	if app.IsAccountTracked("Spells", id, SETTING) then return 2; end
 end
 local function SavedAsQuest(t)
-	return IsQuestFlaggedCompleted(t.questID)
+	return app.IsCached("Quests", t.questID)
 end
 local function SavedAsSpell(t)
-	return IsSpellKnownHelper(t.spellID)
+	return app.IsCached("Spells", t.spellID)
 end
 
-api.OnStartup = function(ATTAccountWideData)
-	AccountWideData = ATTAccountWideData
+-- CRIEVE NOTE:
+-- These classes are nearly identical to the classes we already provide elsewhere. I'd like to see this refactored back into using the original classes and the class type neutralized. This effectively means being converted into a requireSkill equivalent and then implement a feature where we can allow the user to toggle their professions and this would effectively be the "character unlock" profession, which every user would have by default. I'd also like to add a "Songwriter" and "Photographer" profession to replace the Music Rolls and Selfie Filters... filter.
+-- That would be a future project, of course, but the toggling of individual professions has been on my todo list for a long time. As you can imagine, just been busy with other things.
+-- RUNAWAY NOTE:
+-- I think that sounds more confusing to a user and similarity of classes should not merit merging the classes...
+-- "How do I see/remove Music Rolls in my ATT, they're gone/visible since last update?" "Ah yes, they are now a pseudo-profession type which has to be toggled on a separate screen of the ATT settings" "... uh... ok"
+-- But when that project comes around I guess we will see what happens...
+
+local CreateCharacterUnlockQuestItem = app.ExtendClass("Item", "CharacterUnlockQuestItem", "questID", {
+	collectible = Collectible,
+	collected = CollectedAsQuest,
+	trackable = app.ReturnTrue,
+	saved = SavedAsQuest,
+	characterUnlock = app.ReturnTrue,
+	IsClassIsolated = true,
+})
+local CreateCharacterUnlockSpellItem = app.ExtendClass("Item", "CharacterUnlockSpellItem", "spellID", {
+	collectible = Collectible,
+	collected = CollectedAsSpell,
+	trackable = app.ReturnTrue,
+	saved = SavedAsSpell,
+	characterUnlock = app.ReturnTrue,
+	IsClassIsolated = true,
+})
+local CreateCharacterUnlockQuest = app.ExtendClass("Quest", "CharacterUnlockQuest", "questID", {
+	collectible = Collectible,
+	collected = CollectedAsQuest,
+	trackable = app.ReturnTrue,
+	saved = SavedAsQuest,
+	characterUnlock = app.ReturnTrue,
+	IsClassIsolated = true,
+})
+local CreateCharacterUnlockSpell = app.ExtendClass("Spell", "CharacterUnlockSpell", "spellID", {
+	collectible = Collectible,
+	collected = CollectedAsSpell,
+	trackable = app.ReturnTrue,
+	saved = SavedAsSpell,
+	characterUnlock = app.ReturnTrue,
+	IsClassIsolated = true,
+})
+
+-- no on refresh since collectible types are refreshed by base classes
+-- no saved var setup since caches are setup by base classes
+
+-- Defines a Class type which provides some character-based collectible by questID
+app.CreateCharacterUnlockQuest = function(id, t)
+	if t and t.itemID then
+		return CreateCharacterUnlockQuestItem(id, t)
+	end
+	return CreateCharacterUnlockQuest(id, t)
 end
-
-api.OnLoad = function()
-	IsQuestFlaggedCompleted = app.IsQuestFlaggedCompleted
-	IsSpellKnownHelper = app.IsSpellKnownHelper
-
-	-- Since these classes rely on classes currently-defined in ATT.lua, we can't define these until those are defined prior to OnLoad
-	-- If those classes move into class files, then this file can be adjusted
-
-	local CreateCharacterUnlockQuestItem = app.ExtendClass("BaseItem", "BaseCharacterUnlockQuestItem", "questID", {
-		collectible = Collectible,
-		collected = CollectedAsQuest,
-		trackable = app.ReturnTrue,
-		saved = SavedAsQuest,
-		characterUnlock = app.ReturnTrue,
-	})
-	local CreateCharacterUnlockSpellItem = app.ExtendClass("BaseItem", "BaseCharacterUnlockSpellItem", "spellID", {
-		collectible = Collectible,
-		collected = CollectedAsSpell,
-		trackable = app.ReturnTrue,
-		saved = SavedAsSpell,
-		characterUnlock = app.ReturnTrue,
-	})
-	local CreateCharacterUnlockQuest = app.ExtendClass("BaseQuest", "BaseCharacterUnlockQuest", "questID", {
-		collectible = Collectible,
-		collected = CollectedAsQuest,
-		trackable = app.ReturnTrue,
-		saved = SavedAsQuest,
-		characterUnlock = app.ReturnTrue,
-	})
-	local CreateCharacterUnlockSpell = app.ExtendClass("BaseSpell", "BaseCharacterUnlockSpell", "spellID", {
-		collectible = Collectible,
-		collected = CollectedAsSpell,
-		trackable = app.ReturnTrue,
-		saved = SavedAsSpell,
-		characterUnlock = app.ReturnTrue,
-	})
-
-	-- Defines a Class type which provides some character-based collectible by questID
-	app.CreateCharacterUnlockQuest = function(id, t)
-		if t and t.itemID then
-			return CreateCharacterUnlockQuestItem(id, t)
-		end
-		return CreateCharacterUnlockQuest(id, t)
+-- Defines a Class type which provides some character-based collectible by spelID
+app.CreateCharacterUnlockSpell = function(id, t)
+	if t and t.itemID then
+		return CreateCharacterUnlockSpellItem(id, t)
 	end
-	-- Defines a Class type which provides some character-based collectible by spelID
-	app.CreateCharacterUnlockSpell = function(id, t)
-		if t and t.itemID then
-			return CreateCharacterUnlockSpellItem(id, t)
-		end
-		return CreateCharacterUnlockSpell(id, t)
-	end
+	return CreateCharacterUnlockSpell(id, t)
 end

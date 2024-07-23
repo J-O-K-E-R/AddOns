@@ -1,10 +1,10 @@
 --[[
-	offlineSelector.lua
-		A button for opening offline owners or locations
+	A button for opening offline owners or locations.
+	All Rights Reserved
 --]]
 
 local ADDON, Addon = ...
-local Sushi = LibStub('Sushi-3.1')
+local Sushi = LibStub('Sushi-3.2')
 local L = LibStub('AceLocale-3.0'):GetLocale(ADDON)
 local OfflineSelector = Addon.Tipped:NewClass('OwnerSelector', 'Button', true)
 
@@ -47,13 +47,18 @@ end
 
 --[[ Events ]]--
 
+function OfflineSelector:OnEnter()
+	self:ShowTooltip(L.OfflineViewing, '|L '..L.BrowseItems, '|R '..L.OpenBank)
+end
+
 function OfflineSelector:OnClick(button)
 	if button == 'LeftButton' then
+		local left = self:IsFarLeft()
 		local drop = Sushi.Dropdown:Toggle(self)
 		if drop then
-			drop:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', 0, -11)
+			drop:SetPoint(left and 'TOPRIGHT' or 'TOPLEFT', self, left and 'BOTTOMRIGHT' or 'BOTTOMLEFT', 0, -11)
 			drop:SetChildren(function()
-				drop:Add {text = 'Locations', isTitle = true }
+				drop:Add {text = L.Locations, isTitle = true}
 
 				local locations = drop:Add('Group')
 				locations.right = -12
@@ -65,16 +70,16 @@ function OfflineSelector:OnClick(button)
 						end
 					end
 
-					locations:SetHeight(ceil(locations:NumChildren() / 2) * 32)
+					locations:SetHeight(ceil(locations:NumChildren() / 2) * 33)
 				end)
 
-				local charHeader = drop:Add {text = 'Characters', isTitle = true }
+				local charHeader = drop:Add {text = L.Characters, isTitle = true}
 				local guildHeader = false
 
 				for i, owner in Addon.Owners:Iterate() do
 					if not owner.isguild or Addon.Frames:IsEnabled('guild') then
 						if owner.isguild and not guildHeader then
-							guildHeader = drop:Add {text = 'Guilds', isTitle = true }
+							guildHeader = drop:Add {text = L.Guilds, isTitle = true}
 						end
 
 						self:AddOwner(drop, owner)
@@ -82,17 +87,9 @@ function OfflineSelector:OnClick(button)
 				end
 			end)
 		end
-	else
-		self:GetFrame():SetOwner(nil)
+	elseif button == 'RightButton' then
+		Addon.Frames:Toggle('bank')
 	end
-end
-
-function OfflineSelector:OnEnter()
-	GameTooltip:SetOwner(self:GetTipAnchor())
-	GameTooltip:SetText('Offline Viewing')
-	GameTooltip:AddLine(L.TipChangePlayer:format(L.LeftClick), 1, 1, 1)
-	GameTooltip:AddLine(L.TipResetPlayer:format(L.RightClick), 1, 1, 1)
-	GameTooltip:Show()
 end
 
 

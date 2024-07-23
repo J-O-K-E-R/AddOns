@@ -96,7 +96,6 @@ if L then
 	L.dire_blasphemy = "Marks"
 
 	L.remnant_active = "Remnant Active"
-	L.march_counter = "%s (%d/8)"
 end
 
 --------------------------------------------------------------------------------
@@ -109,7 +108,6 @@ function mod:GetOptions()
 	return {
 		"stages",
 		362405, -- Kingsmourne Hungers
-		362055, -- Lost Soul
 		anduinsHopeMarker,
 		361989, -- Blasphemy
 		"custom_off_repeating_blasphemy",
@@ -431,7 +429,7 @@ function mod:NecroticDetonation(args)
 end
 
 function mod:MarchOfTheDamned()
-	self:Message(363233, "cyan", L.march_counter:format(L.march_of_the_damned, marchCount))
+	self:Message(363233, "cyan", CL.count_amount:format(L.march_of_the_damned, marchCount, 8))
 	self:PlaySound(363233, "info")
 	marchCount = marchCount + 1
 	-- if marchCount < 9 then

@@ -32,7 +32,7 @@ local function SkinOjectiveTrackerHeaders(header)
 end
 
 local function ColorProgressBars(self, value)
-	if not (self.Bar and self.isSkinned and value) then return end
+	if not (self.Bar and self.IsSkinned and value) then return end
 	S:StatusBarColorGradient(self.Bar, value, 100)
 end
 
@@ -107,7 +107,7 @@ local function SkinProgressBars(_, _, line)
 	local icon = bar.Icon
 	local label = bar.Label
 
-	if not progressBar.isSkinned then
+	if not progressBar.IsSkinned then
 		if bar.BarFrame then bar.BarFrame:Hide() end
 		if bar.BarFrame2 then bar.BarFrame2:Hide() end
 		if bar.BarFrame3 then bar.BarFrame3:Hide() end
@@ -144,7 +144,7 @@ local function SkinProgressBars(_, _, line)
 		end
 
 		_G.BonusObjectiveTrackerProgressBar_PlayFlareAnim = E.noop
-		progressBar.isSkinned = true
+		progressBar.IsSkinned = true
 
 		ColorProgressBars(progressBar, bar:GetValue())
 	elseif icon and progressBar.backdrop then
@@ -156,14 +156,14 @@ local function SkinTimerBars(_, _, line)
 	local timerBar = line and line.TimerBar
 	local bar = timerBar and timerBar.Bar
 
-	if not timerBar.isSkinned then
+	if not timerBar.IsSkinned then
 		bar:Height(18)
 		bar:StripTextures()
 		bar:CreateBackdrop('Transparent')
 		bar:SetStatusBarTexture(E.media.normTex)
 		E:RegisterStatusBar(bar)
 
-		timerBar.isSkinned = true
+		timerBar.IsSkinned = true
 	end
 end
 
@@ -219,7 +219,7 @@ function S:ObjectiveTrackerFrame()
 	local minimize = _G.ObjectiveTrackerFrame.HeaderMenu.MinimizeButton
 	minimize:StripTextures(nil, true)
 	minimize:Size(16)
-	minimize:SetHighlightTexture(130837, 'ADD') -- Interface/Buttons/UI-PlusButton-Hilight
+	minimize:SetHighlightTexture(130837, 'ADD') -- Interface\Buttons\UI-PlusButton-Hilight
 	minimize.tex = minimize:CreateTexture(nil, 'OVERLAY')
 	minimize.tex:SetTexture(E.Media.Textures.MinusButton)
 	minimize.tex:SetInside()

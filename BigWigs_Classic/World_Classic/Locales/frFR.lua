@@ -2,46 +2,39 @@ local L = BigWigs:NewBossLocale("Azuregos", "frFR")
 if not L then return end
 if L then
 	L.bossName = "Azuregos"
-
-	L.teleport = "Alerte T\195\169l\195\169portation"
-	L.teleport_desc = "Pr\195\169viens quand Azuregos t\195\169l\195\169porte quelqu'un."
-	L.teleport_trigger = "Venez m'affronter, mes petits\194\160"
-	L.teleport_message = "T\195\169l\195\169portation !"
 end
 
 L = BigWigs:NewBossLocale("Lord Kazzak", "frFR")
 if L then
 	L.bossName = "Seigneur Kazzak"
 
-	L.engage_trigger = "Pour la L\195\169gion ! Pour Kil'Jaeden !"
-
-	L.supreme_mode = "Mode Supr\195\170me"
+	L.engage_trigger = "Pour la Légion ! Pour Kil'Jaeden !"
 end
 
 L = BigWigs:NewBossLocale("Emeriss", "frFR")
 if L then
 	L.bossName = "Emeriss"
 
-	-- L.engage_trigger = "Hope is a DISEASE of the soul! This land shall wither and die!"
+	L.engage_trigger = "L'espoir est une MALADIE de l'âme ! Ces terres vont flétrir et mourir !"
 end
 
 L = BigWigs:NewBossLocale("Lethon", "frFR")
 if L then
 	L.bossName = "Léthon"
 
-	-- L.engage_trigger = "I can sense the SHADOW on your hearts. There can be no rest for the wicked!"
+	L.engage_trigger = "Je sens l'OMBRE dans vos cœurs. Il ne peut y avoir de repos pour les vilains !"
 end
 
 L = BigWigs:NewBossLocale("Taerar", "frFR")
 if L then
 	L.bossName = "Taerar"
 
-	-- L.engage_trigger = "Peace is but a fleeting dream! Let the NIGHTMARE reign!"
+	L.engage_trigger = "La paix n'est qu'un rêve éphémère ! Que le CAUCHEMAR règne !"
 end
 
 L = BigWigs:NewBossLocale("Ysondre", "frFR")
 if L then
 	L.bossName = "Ysondre"
 
-	-- L.engage_trigger = "The strands of LIFE have been severed! The Dreamers must be avenged!"
+	L.engage_trigger = "Les fils de la VIE ont été coupés ! Les Rêveurs doivent être vengés !"
 end

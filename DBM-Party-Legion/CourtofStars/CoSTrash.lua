@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod("CoSTrash", "DBM-Party-Legion", 7)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20231026112110")
+mod:SetRevision("20240622210644")
 --mod:SetModelID(47785)
 mod:SetOOCBWComms()
 mod:SetMinSyncRevision(20221228000000)
@@ -12,6 +12,7 @@ mod.isTrashMod = true
 --LW solution, unregister/reregister other addons/WA frames from GOSSIP_SHOW
 --This is to prevent things like https://wago.io/M+Timer/114 from breaking clue helper do to advancing
 --dialog before we get a chance to read gossipID
+---@type Frame[]
 local frames = {GetFramesRegisteredForEvent("GOSSIP_SHOW")}
 for i = 1, #frames do
 	frames[i]:UnregisterEvent("GOSSIP_SHOW")
@@ -85,9 +86,8 @@ local timerDisintegrationBeamCD		= mod:NewCDNPTimer(6.1, 207980, nil, "HasInterr
 local timerShockwaveCD				= mod:NewCDNPTimer(8.4, 207979, nil, nil, nil, 3)
 local timerCrushingLeapCD			= mod:NewCDNPTimer(16.9, 397897, nil, nil, nil, 3)
 
-mod:AddBoolOption("AGBoat", true)
-mod:AddBoolOption("AGDisguise", true)
-mod:AddBoolOption("AGBuffs", true)
+mod:AddGossipOption(true, "Buff")
+mod:AddGossipOption(true, "Action")
 mod:AddBoolOption("SpyHelper", true)
 mod:AddBoolOption("SendToChat2", true)
 mod:AddBoolOption("SpyHelperClose2", false)
@@ -275,7 +275,7 @@ do
 	local notableBuffNPCs = {
 		--Buffs
 		[105160] = { -- Fel Orb
-			["name"] = DBM:GetSpellInfo(208275),
+			["name"] = DBM:GetSpellName(208275),
 			["buffid"] = 211081,
 			["class"] = {
 				["PALADIN"] = true,
@@ -359,7 +359,7 @@ do
 		},
 		--Debuffs
 		[105117] = { -- Flask of the Solemn Night
-			["name"] = DBM:GetSpellInfo(207815),
+			["name"] = DBM:GetSpellName(207815),
 			["class"] = {
 				["ROGUE"] = true
 			},
@@ -369,7 +369,7 @@ do
 			}
 		},
 		[105157] = {-- Arcane Power Conduit
-			["name"] = DBM:GetSpellInfo(210466),
+			["name"] = DBM:GetSpellName(210466),
 			["raceids"] = {
 				[7] = true,--Gnome
 				[9] = true--Goblin
@@ -615,15 +615,15 @@ do
 
 	function mod:GOSSIP_SHOW()
 		local cid = DBM:GetUnitCreatureId("npc")
-		if self.Options.AGBuffs and notableBuffNPCs[cid] then
+		if self.Options.AutoGossipBuff and notableBuffNPCs[cid] then
 			self:SelectGossip(1)
 			return
 		end
 		local gossipOptionID = self:GetGossipID()
 		if gossipOptionID then
-			if self.Options.AGBoat and gossipOptionID == 45624 then -- Boat
+			if self.Options.AutoGossipAction and gossipOptionID == 45624 then -- Boat
 				self:SelectGossip(gossipOptionID)
-			elseif self.Options.AGDisguise and gossipOptionID == 45656 then -- Disguise
+			elseif self.Options.AutoGossipAction and gossipOptionID == 45656 then -- Disguise
 				self:SelectGossip(gossipOptionID)
 			elseif clueIds[gossipOptionID] then -- SpyHelper
 				if not self.Options.SpyHelper then return end
@@ -697,11 +697,13 @@ do
 			--DBM and BW will both just parse the bigiwgs comms for profession data
 			for icon, skill in extra:gmatch("(%d+):(%d+)#") do
 				icon = tonumber(icon)
-				skill = tonumber(skill)
-				if not professionCache[icon] then
-					professionCache[icon] = {}
+				if icon then
+					skill = tonumber(skill)
+					if not professionCache[icon] then
+						professionCache[icon] = {}
+					end
+					professionCache[icon][#professionCache[icon]+1] = {name=sender, skill=skill}
 				end
-				professionCache[icon][#professionCache[icon]+1] = {name=sender, skill=skill}
 			end
 			self:AntiSpam(300, "CoSProf")
 		end

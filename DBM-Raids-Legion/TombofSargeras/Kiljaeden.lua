@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod(1898, "DBM-Raids-Legion", 2, 875)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20230618064158")
+mod:SetRevision("20240629024612")
 mod:SetCreatureID(117269)--121227 Illiden? 121193 Shadowsoul
 mod:SetEncounterID(2051)
 mod:SetUsedIcons(1, 2, 3, 4, 5, 6, 7, 8)
@@ -65,7 +65,7 @@ local yellFocusedDreadflame			= mod:NewShortYell(238502)
 local yellFocusedDreadflameFades	= mod:NewFadesYell(238502)
 local specWarnFocusedDreadflameOther= mod:NewSpecialWarningTarget(238502, nil, nil, nil, 1, 2)
 local specWarnBurstingDreadflame	= mod:NewSpecialWarningMoveAway(238430, nil, nil, nil, 1, 2)
-local yellBurstingDreadflame		= mod:NewPosYell(238430, DBM_CORE_L.AUTO_YELL_CUSTOM_POSITION2)
+local yellBurstingDreadflame		= mod:NewShortPosYell(238430)
 local yellBurstingDreadflameFades	= mod:NewShortFadesYell(238430, nil, false)
 --Stage Two: Reflected Souls
 local specWarnSRHopeless			= mod:NewSpecialWarningYou(237590, nil, nil, 2, 3, 2)
@@ -90,7 +90,7 @@ local timerArmageddon				= mod:NewCastTimer(9, 234295, nil, nil, nil, 2)--Armage
 local timerShadReflectionEruptingCD	= mod:NewCDTimer(35, 236710, 236711, nil, nil, 3, nil, DBM_COMMON_L.DAMAGE_ICON)--Shortname : Erupting Reflection
 --Intermission: Eternal Flame
 --mod:AddTimerLine(SCENARIO_STAGE:format(1.5))
-local timerTransition				= mod:NewPhaseTimer(57.9)
+local timerTransition				= mod:NewStageTimer(57.9)
 local timerFocusedDreadflameCD		= mod:NewCDCountTimer(31, 238502, nil, nil, nil, 3, nil, nil, nil, 3, 4)
 local timerBurstingDreadflameCD		= mod:NewCDCountTimer(31, 238430, nil, nil, nil, 3)
 --Stage Two: Reflected Souls
@@ -134,7 +134,7 @@ mod.vb.lastTankHit = "None"
 mod.vb.clawCount = 0
 mod.vb.obeliskCount = 0
 mod.vb.wailingCount = 0
-local riftName, gravitySqueezeBuff = DBM:GetSpellInfo(239130), DBM:GetSpellInfo(239154)
+local riftName, gravitySqueezeBuff = DBM:GetSpellName(239130), DBM:GetSpellName(239154)
 local phase1LFRArmageddonTimers = {10, 22, 42}--Incomplete
 local phase1MythicArmageddonTimers = {10, 54, 38, 46}--Incomplete
 local phase1MythicSingularityTimers = {55, 25, 25}--Incomplete
@@ -661,7 +661,7 @@ function mod:CHAT_MSG_RAID_BOSS_EMOTE(msg, npc, _, _, target)
 				specWarnFocusedDreadflameOther:Show(target)
 				specWarnFocusedDreadflameOther:Play("helpsoak")
 			end
-			if self.Options.SetIconOnFocusedDread then
+			if target and self.Options.SetIconOnFocusedDread then
 				self:SetIcon(target, 2, 6)
 			end
 		end

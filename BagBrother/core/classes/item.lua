@@ -1,11 +1,12 @@
 --[[
-	item.lua
-		An item slot button
+	An item slot button.
+	All Rights Reserved
 --]]
 
 local ADDON, Addon = ...
 local Item = Addon.Tipped:NewClass('Item', Addon.IsRetail and 'ItemButton' or 'Button', 'ContainerFrameItemButtonTemplate', true)
 local Search = LibStub('ItemSearch-1.3')
+local C = LibStub('C_Everywhere')
 
 Item.BagFamilies = {
 	[-3] = 'reagent',
@@ -52,18 +53,24 @@ function Item:Construct()
 	local b = self:Super(Item):Construct()
 	local name = b:GetName()
 
-	b.FlashFind = b:CreateAnimationGroup()
-	b.IconGlow = b:CreateTexture(nil, 'OVERLAY', nil, -1)
-	b.Cooldown, b.QuestBorder = _G[name .. 'Cooldown'], _G[name .. 'IconQuestTexture']
 	b.UpdateTooltip = self.OnEnter
-
-	b.BattlepayItemTexture:Hide()
+	b.FlashFind = b:CreateAnimationGroup()
+	b.Cooldown, b.QuestBang = _G[name .. 'Cooldown'], _G[name .. 'IconQuestTexture']
+	b.QuestBang:SetTexture(TEXTURE_ITEM_QUEST_BANG)
 	b.IconOverlay:SetAtlas('AzeriteIconFrame')
-	b.QuestBorder:SetTexture(TEXTURE_ITEM_QUEST_BANG)
+	b.BattlepayItemTexture:Hide()
+	b.NewItemTexture:Hide()
+
+	b.IconGlow = b:CreateTexture(nil, 'OVERLAY', nil, -1)
 	b.IconGlow:SetTexture('Interface/Buttons/UI-ActionButton-Border')
 	b.IconGlow:SetBlendMode('ADD')
 	b.IconGlow:SetPoint('CENTER')
 	b.IconGlow:SetSize(67, 67)
+
+	b.IgnoredOverlay = b:CreateTexture(nil, 'OVERLAY', nil, 1)
+	b.IgnoredOverlay:SetTexture(255353)
+	b.IgnoredOverlay:SetAllPoints(b)
+	b.IgnoredOverlay:Hide()
 
 	for i = 1, 3 do
 		local fade = b.FlashFind:CreateAnimation('Alpha')
@@ -112,13 +119,17 @@ end
 --[[ Interaction ]]--
 
 function Item:OnPostClick(button)
-	if Addon.sets.flashFind and self.hasItem and IsAltKeyDown() and button == 'LeftButton' then
+	if Addon.lockMode then
+		local locks = GetOrCreateTableEntry(self:GetProfile().lockedSlots, self:GetBag())
+		locks[self:GetID()] = not locks[self:GetID()] or nil
+		self:SendSignal('LOCKING_TOGGLED')
+	elseif Addon.sets.flashFind and self.hasItem and IsAltKeyDown() and button == 'LeftButton' then
 		self:SendSignal('FLASH_ITEM', self.info.itemID)
 	end
 end
 
 function Item:OnEnter()
-	if self:IsCached() then
+	if self:IsCached() or Addon.lockMode then
 		self:AttachDummy()
 	elseif self.hasItem then
 		self:ShowTooltip()
@@ -177,7 +188,7 @@ function Item:UpdateBorder()
 
 	self.IconGlow:SetShown(r)
 	self.IconBorder:SetShown(r)
-	self.QuestBorder:SetShown(bang)
+	self.QuestBang:SetShown(bang)
 	self.JunkIcon:SetShown(Addon.sets.glowPoor and quality == 0 and not self.info.hasNoValue)
 end
 
@@ -194,11 +205,10 @@ end
 --[[ Secondary Highlights ]]--
 
 function Item:UpdateSecondary()
-	if self:GetFrame() then
+	if self.frame then
 		self:UpdateFocus()
 		self:UpdateSearch()
 		self:UpdateUpgradeIcon()
-		self:UpdateNewItemAnimation()
 
 		if self.hasItem and GameTooltip:IsOwned(self) then
 			self:ShowTooltip()
@@ -207,7 +217,7 @@ function Item:UpdateSecondary()
 end
 
 function Item:UpdateFocus()
-	self:SetHighlightLocked(self:GetBag() == self:GetFrame().focusedBag)
+	self:SetHighlightLocked(self:GetBag() == self.frame.focusedBag)
 end
 
 function Item:UpdateSearch()
@@ -224,18 +234,6 @@ function Item:UpdateUpgradeIcon()
 		self:Delay(0.5, 'UpdateUpgradeIcon')
 	else
 		self.UpgradeIcon:SetShown(isUpgrade)
-	end
-end
-
-function Item:UpdateNewItemAnimation()
-	local new = Addon.sets.glowNew and self.info.isNew
-	self.BattlepayItemTexture:SetShown(new and self.info.isPaid)
-	self.NewItemTexture:SetShown(new)
-
-	if new then
-		self.NewItemTexture:SetAtlas(self.info.quality and NEW_ITEM_ATLAS_BY_QUALITY[self.info.quality] or 'bags-glow-white')
-		self.newitemglowAnim:Play()
-		self.flashAnim:Play()
 	end
 end
 
@@ -310,7 +308,7 @@ function Item:GetQuery()
 end
 
 function Item:IsUpgrade()
-	return (self.hasItem or false) and IsAddOnLoaded('Pawn') and PawnShouldItemLinkHaveUpgradeArrow(self.info.hyperlink)
+	return (self.hasItem or false) and C.Addons.IsAddOnLoaded('Pawn') and PawnShouldItemLinkHaveUpgradeArrow(self.info.hyperlink)
 end
 
 function Item:GetInventorySlot()

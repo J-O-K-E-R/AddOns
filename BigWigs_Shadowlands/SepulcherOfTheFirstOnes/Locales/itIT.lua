@@ -31,6 +31,8 @@ if L then
 
 	L.custom_on_ring_timers = "Timer Individuali Aureola"
 	L.custom_on_ring_timers_desc = "Aureola Disintegrante attiva una serie di anelli, verranno mostrate barre per quando questi anelli inizieranno a muoversi. Usa le impostazioni di Aureola Disintegrante."
+
+	L.absorb_text = "%s (%.0f%%)"
 end
 
 L = BigWigs:NewBossLocale("Prototype Pantheon", "itIT")
@@ -87,6 +89,8 @@ if L then
 
 	L.bomb_dropped = "Bomba rilasciata"
 	L.volatile_charges_new = "Nuove Bombe!"
+
+	L.absorb_text = "%s (%.0f%%)"
 end
 
 L = BigWigs:NewBossLocale("Lords of Dread", "itIT")
@@ -141,11 +145,11 @@ if L then
 	L.azeroth_new_health_minus = "Salute di Azeroth: -%.1f%%  (%d)"
 
 	L.mythic_blood_soak_stage_1 = "Timing per gli assorbimenti del Sangue in Fase 1"
-	L.mythic_blood_soak_stage_1_desc = "Mostra una barra per illustrare quale è il timing migliore per curare Azeroth, usata dall'Eco dopo la prima uccisione"
+	L.mythic_blood_soak_stage_1_desc = "Mostra una barra per illustrare quale è il timing migliore per curare Azeroth, usata dall'Eco dopo la prima uccisione."
 	L.mythic_blood_soak_stage_2 = "Timing per gli assorbimenti del Sangue in Fase 2"
-	L.mythic_blood_soak_stage_2_desc = L.mythic_blood_soak_stage_1_desc
+	L.mythic_blood_soak_stage_2_desc = "Mostra una barra per illustrare quale è il timing migliore per curare Azeroth, usata dall'Eco dopo la prima uccisione."
 	L.mythic_blood_soak_stage_3 = "Timing per gli assorbimenti del Sangue in Fase 3"
-	L.mythic_blood_soak_stage_3_desc = L.mythic_blood_soak_stage_1_desc
+	L.mythic_blood_soak_stage_3_desc = "Mostra una barra per illustrare quale è il timing migliore per curare Azeroth, usata dall'Eco dopo la prima uccisione."
 	L.mythic_blood_soak_bar = "Cura Azeroth"
 
 	L.floors_open = "Pavimento Aperto"

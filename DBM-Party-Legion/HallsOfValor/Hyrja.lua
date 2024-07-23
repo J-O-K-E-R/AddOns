@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod(1486, "DBM-Party-Legion", 4, 721)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20230504231118")
+mod:SetRevision("20240426175442")
 mod:SetCreatureID(95833)
 mod:SetEncounterID(1806)
 mod:SetHotfixNoticeRev(20230308000000)
@@ -32,19 +32,19 @@ mod:RegisterEventsInCombat(
 local warnExpelLight				= mod:NewTargetAnnounce(192048, 3)
 local warnPhase2					= mod:NewPhaseAnnounce(2, 2, nil, nil, nil, nil, nil, 2)
 
-local specWarnShieldOfLight			= mod:NewSpecialWarningDefensive(192018, "Tank", nil, nil, 3, 2)--Journal lies, this is NOT dodgable
+local specWarnShieldOfLight			= mod:NewSpecialWarningDefensive(192018, nil, nil, nil, 3, 2)--Journal lies, this is NOT dodgable
 local specWarnSanctify				= mod:NewSpecialWarningDodge(192307, nil, nil, nil, 2, 5)
 local specWarnEyeofStorm			= mod:NewSpecialWarningMoveTo(200901, nil, nil, nil, 2, 2)
 local specWarnExpelLight			= mod:NewSpecialWarningMoveAway(192048, nil, nil, nil, 2, 2)
 local yellExpelLight				= mod:NewYell(192048)
 
-local timerShieldOfLightCD			= mod:NewCDTimer(26.6, 192018, nil, "Tank", nil, 5, nil, DBM_COMMON_L.TANK_ICON, nil, mod:IsTank() and 2, 4)--26.6-34
+local timerShieldOfLightCD			= mod:NewCDTimer(26.6, 192018, nil, "Tank", nil, 5, nil, DBM_COMMON_L.TANK_ICON, nil, mod:IsTank() and 2 or nil, 4)--26.6-34
 local timerSpecialCD				= mod:NewCDSpecialTimer(30, nil, nil, nil, nil, 2, nil, DBM_COMMON_L.DEADLY_ICON, nil, 1, 4)--Shared timer by eye of storm and Sanctify
 local timerExpelLightCD				= mod:NewCDTimer(23, 192048, nil, nil, nil, 3)--May be lower but almost always delayed by spell queue ICDs
 
 mod:AddRangeFrameOption(8, 192048)
 
-local eyeShortName = DBM:GetSpellInfo(91320)--Inner Eye
+local eyeShortName = DBM:GetSpellName(91320)--Inner Eye
 
 local function updateAllTimers(self, ICD)
 	DBM:Debug("updateAllTimers running", 3)
@@ -90,8 +90,10 @@ function mod:SPELL_CAST_START(args)
 		timerSpecialCD:Start()
 		updateAllTimers(self, 15.5)
 	elseif spellId == 192018 then
-		specWarnShieldOfLight:Show()
-		specWarnShieldOfLight:Play("defensive")
+		if self:IsTanking("player", nil, nil, true, args.sourceGUID) then
+			specWarnShieldOfLight:Show()
+			specWarnShieldOfLight:Play("defensive")
+		end
 		timerShieldOfLightCD:Start()
 		updateAllTimers(self, 6)
 	elseif spellId == 200901 and args:GetSrcCreatureID() == 95833 then

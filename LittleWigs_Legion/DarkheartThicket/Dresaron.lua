@@ -9,6 +9,13 @@ mod:SetEncounterID(1838)
 mod:SetRespawnTime(25)
 
 --------------------------------------------------------------------------------
+-- Locals
+--
+
+local breathOfCorruptionCount = 1
+local earthshakingRoarCount = 1
+
+--------------------------------------------------------------------------------
 -- Initialization
 --
 
@@ -22,8 +29,7 @@ function mod:GetOptions()
 end
 
 function mod:OnBossEnable()
-	-- TODO: self:Log("SPELL_CAST_START", "BreathOfCorruption", 191325)
-	self:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", nil, "boss1") -- Breath of Corruption
+	self:Log("SPELL_CAST_SUCCESS", "BreathOfCorruption", 199329)
 	self:Log("SPELL_CAST_START", "EarthshakingRoar", 199389)
 	self:Log("SPELL_CAST_START", "DownDraft", 199345)
 	self:Log("SPELL_AURA_APPLIED", "FallingRocksDamage", 199460)
@@ -32,33 +38,45 @@ function mod:OnBossEnable()
 end
 
 function mod:OnEngage()
-	self:CDBar(191325, 14.4) -- Breath of Corruption
-	self:CDBar(199345, 20.4) -- Down Draft
-	self:CDBar(199389, 21.0) -- Earthshaking Roar
+	breathOfCorruptionCount = 1
+	earthshakingRoarCount = 1
+	self:CDBar(191325, 13.0) -- Breath of Corruption
+	self:CDBar(199345, 19.3) -- Down Draft
+	self:CDBar(199389, 31.4, CL.count:format(self:SpellName(199389), earthshakingRoarCount)) -- Earthshaking Roar
 end
 
 --------------------------------------------------------------------------------
 -- Event Handlers
 --
 
-function mod:UNIT_SPELLCAST_SUCCEEDED(_, _, _, spellId)
-	if spellId == 199332 then -- Breath of Corruption
-		self:Message(191325, "orange")
-		self:PlaySound(191325, "alarm")
-		self:CDBar(191325, 29.1)
+function mod:BreathOfCorruption(args)
+	self:Message(191325, "orange")
+	self:PlaySound(191325, "alarm")
+	breathOfCorruptionCount = breathOfCorruptionCount + 1
+	-- 21.9 is likely the "true" cooldown, but after the second cast
+	-- this will always be delayed by the other two abilities.
+	if breathOfCorruptionCount == 2 then
+		self:CDBar(191325, 21.9)
+	else
+		self:CDBar(191325, 30.4)
 	end
+	-- 6.1s before any ability can be cast
 end
 
 function mod:EarthshakingRoar(args)
-	self:Message(args.spellId, "red")
+	self:StopBar(CL.count:format(args.spellName, earthshakingRoarCount))
+	self:Message(args.spellId, "red", CL.count:format(args.spellName, earthshakingRoarCount))
 	self:PlaySound(args.spellId, "alert")
-	self:CDBar(args.spellId, 29.1)
+	earthshakingRoarCount = earthshakingRoarCount + 1
+	self:CDBar(args.spellId, 30.4, CL.count:format(args.spellName, earthshakingRoarCount))
+	-- 3.62s before any ability can be cast
 end
 
 function mod:DownDraft(args)
 	self:Message(args.spellId, "yellow")
 	self:PlaySound(args.spellId, "long")
-	self:CDBar(args.spellId, 29.1)
+	self:CDBar(args.spellId, 30.4)
+	-- 12.1s before any ability can be cast (1s cast + 8s channel + 3.1s delay)
 end
 
 do

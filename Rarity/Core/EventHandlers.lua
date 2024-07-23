@@ -2075,6 +2075,11 @@ function R:OnLootReady(event, ...)
 				end
 			end
 		end
+
+		if requiresPickpocket then
+			-- Pick Pocket triggers the same loot events, but it shouldn't prevent kills from counting afterwards
+			Rarity.guids[guid] = false
+		end
 	end
 end
 
@@ -2125,7 +2130,7 @@ local dreamseedMounts = {
 
 function Rarity:OnDreamseedCacheOpened()
 	Rarity:Debug("Detected Opening on Dreamseed Cache")
-	for mount, _ in pairs(dreamseedMounts) do
+	for _, mount in ipairs(dreamseedMounts) do
 		addAttemptForItem(mount, "mounts")
 	end
 end

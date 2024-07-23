@@ -10,8 +10,8 @@
 ## Notes-ruRU: Скин Simplicity для Masque.
 ## Notes-zhTW: Masque的Simplicity皮膚。
 
-## Version: 3.6
-## Author: Epix
+## Version: 3.7
+## Author: Epix, StormFX
 ## Dependencies: Masque
 
 ## X-Category: Interface Enhancements

@@ -54,7 +54,7 @@ function Auctionator.Tooltip.ShowTipWithPricingDBKey(tooltipFrame, dbKeys, itemL
   local vendorPrice, disenchantStatus, disenchantPrice
   local cannotAuction = 0;
 
-  local itemInfo = { GetItemInfo(itemLink) };
+  local itemInfo = { C_Item.GetItemInfo(itemLink) };
   if (#itemInfo) ~= 0 then
     cannotAuction = Auctionator.Utilities.IsBound(itemInfo)
     local sellPrice = itemInfo[Auctionator.Constants.ITEM_INFO.SELL_PRICE]
@@ -73,7 +73,7 @@ function Auctionator.Tooltip.ShowTipWithPricingDBKey(tooltipFrame, dbKeys, itemL
   local prospectStatus = false
   local prospectValue
   if Auctionator.Prospect then
-    local itemID = GetItemInfoInstant(itemLink)
+    local itemID = C_Item.GetItemInfoInstant(itemLink)
     prospectStatus = Auctionator.Prospect.IsProspectable(itemID)
     local prospectForOne = Auctionator.Prospect.GetProspectAuctionPrice(itemID)
     if prospectForOne ~= nil then
@@ -84,7 +84,7 @@ function Auctionator.Tooltip.ShowTipWithPricingDBKey(tooltipFrame, dbKeys, itemL
   local millStatus = false
   local millValue
   if Auctionator.Mill then
-    local itemID = GetItemInfoInstant(itemLink)
+    local itemID = C_Item.GetItemInfoInstant(itemLink)
     millStatus = Auctionator.Mill.IsMillable(itemID)
     local millForOne = Auctionator.Mill.GetMillAuctionPrice(itemID)
     if millForOne ~= nil then
@@ -183,15 +183,11 @@ function Auctionator.Tooltip.AddVendorTip(tooltipFrame, vendorPrice, countString
 end
 
 function Auctionator.Tooltip.AddAuctionTip (tooltipFrame, auctionPrice, countString, cannotAuction)
+  if cannotAuction then
+    return
+  end
   if Auctionator.Config.Get(Auctionator.Config.Options.AUCTION_TOOLTIPS) then
-    if cannotAuction then
-      tooltipFrame:AddDoubleLine(
-        L("AUCTION") .. countString,
-        WHITE_FONT_COLOR:WrapTextInColorCode(
-          L("CANNOT_AUCTION") .. "  "
-        )
-      )
-    elseif (auctionPrice ~= nil) then
+    if (auctionPrice ~= nil) then
       tooltipFrame:AddDoubleLine(
         L("AUCTION") .. countString,
         WHITE_FONT_COLOR:WrapTextInColorCode(
@@ -319,28 +315,30 @@ function Auctionator.Tooltip.AddPetTip(
     return
   end
 
+  local LibBattlePetTooltipLine = LibStub("LibBattlePetTooltipLine-1-0")
+
   local key = "p:" .. tostring(speciesID)
   local price = Auctionator.Database:GetPrice(key)
   local auctionAge = Auctionator.Database:GetPriceAge(key)
   BattlePetTooltip:AddLine(" ")
   if price ~= nil then
-    BattlePetTooltip:AddLine(
-      L("AUCTION") .. PET_TOOLTIP_SPACING ..
+    LibBattlePetTooltipLine:AddDoubleLine(BattlePetTooltip,
+      L("AUCTION"),
       WHITE_FONT_COLOR:WrapTextInColorCode(
         Auctionator.Utilities.CreatePaddedMoneyString(price)
       )
     )
-    if auctionAge ~= nil then
-      BattlePetTooltip:AddLine(AUCTIONATOR_L_AUCTION_AGE .. PET_TOOLTIP_SPACING .. WHITE_FONT_COLOR:WrapTextInColorCode(AUCTIONATOR_L_X_DAYS:format(tostring(auctionAge))))
-    elseif auctionPrice ~= nil then
-      BattlePetTooltip:AddDoubleLine(AUCTIONATOR_L_AUCTION_AGE .. PET_TOOLTIP_SPACING .. AUCTIONATOR_L_UNKNOWN)
+    if Auctionator.Config.Get(Auctionator.Config.Options.AUCTION_AGE_TOOLTIPS) then
+      if auctionAge ~= nil then
+        LibBattlePetTooltipLine:AddDoubleLine(BattlePetTooltip, AUCTIONATOR_L_AUCTION_AGE, WHITE_FONT_COLOR:WrapTextInColorCode(AUCTIONATOR_L_X_DAYS:format(tostring(auctionAge))))
+      elseif price ~= nil then
+        LibBattlePetTooltipLine:AddDoubleLine(BattlePetTooltip, AUCTIONATOR_L_AUCTION_AGE, AUCTIONATOR_L_UNKNOWN)
+      end
     end
   else
-    BattlePetTooltip:AddLine(
-      L("AUCTION") .. PET_TOOLTIP_SPACING ..
-      WHITE_FONT_COLOR:WrapTextInColorCode(
-        L("UNKNOWN")
-      )
+    LibBattlePetTooltipLine:AddDoubleLine(BattlePetTooltip,
+      L("AUCTION"),
+      WHITE_FONT_COLOR:WrapTextInColorCode(L("UNKNOWN"))
     )
   end
 end

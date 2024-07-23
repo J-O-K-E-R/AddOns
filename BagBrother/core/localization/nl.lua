@@ -1,16 +1,16 @@
 --[[
 	Dutch Localization
-]]--
+--]]
 
 local ADDON = ...
 local L = LibStub('AceLocale-3.0'):NewLocale(ADDON, 'nlNL')
 if not L then return end
 
 --keybindings
-L.ToggleBags = 'Inventaris Wisselen'
-L.ToggleBank = 'Bank Wisselen'
-L.ToggleGuild = 'Gildebank Wisselen'
-L.ToggleVault = 'Lege Opslag Wisselen'
+L.OpenBags = 'Inventaris Wisselen'
+L.OpenBank = 'Bank Wisselen'
+L.OpenGuild = 'Gildebank Wisselen'
+L.OpenVault = 'Lege Opslag Wisselen'
 
 --terminal
 L.Commands = 'commandolijst'
@@ -20,7 +20,6 @@ L.CmdShowGuild = 'Schakelt je gildebank'
 L.CmdShowVault = 'Schakelt je lege opslag'
 L.CmdShowVersion = 'Toont de huidige versie'
 L.CmdShowOptions = 'Opent het configuratiemenu'
-L.Updated = 'Bijgewerkt naar v%s'
 
 --frame titles
 L.TitleBags = 'Inventaris van %s'
@@ -28,7 +27,6 @@ L.TitleBank = 'Bank van %s'
 L.TitleVault = 'Lege Opslag van %s'
 
 --dropdowns
-L.TitleFrames = '%s Frames'
 L.SelectCharacter = 'Selecteer Personage'
 L.ConfirmDelete = 'Weet je zeker dat je de cachegegevens van %s wilt verwijderen?'
 
@@ -44,9 +42,9 @@ L.ShiftClick = '<Shift-Klik>'
 L.Total = 'Totaal'
 L.GuildFunds = 'Gilde Fonds'
 L.TipGoldOnRealm = 'Totaal op %s'
-L.NumWithdraw = '%d opname'
-L.NumDeposit = '%d storting'
-L.NumRemainingWithdrawals = '%d resterende opnames'
+L.NumWithdraw = '%d Opname'
+L.NumDeposit = '%d Storting'
+L.NumRemaining = '%d Resterende'
 
 --action tooltips
 L.TipChangePlayer = '%s om items van een ander personage te bekijken.'

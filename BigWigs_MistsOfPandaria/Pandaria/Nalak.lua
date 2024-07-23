@@ -34,7 +34,7 @@ L = mod:GetLocale()
 --
 
 function mod:GetOptions()
-	return { 136338, {136339, "FLASH"}, {136340, "PROXIMITY", "SAY"}, "ability" }
+	return { 136338, {136339, "FLASH"}, {136340, "PROXIMITY"}, "ability" }
 end
 
 function mod:OnBossEnable()
@@ -51,7 +51,7 @@ function mod:OnBossEnable()
 end
 
 function mod:OnEngage()
-	self:CDBar("ability", 10, L["ability"], L.ability_icon)
+	self:Bar("ability", 10, L["ability"], L.ability_icon)
 	openedForMe = nil
 	stormcloudTargets = {}
 end
@@ -63,11 +63,11 @@ end
 function mod:ArcNova(args)
 	self:MessageOld(args.spellId, "red", "alarm")
 	self:Bar(args.spellId, 3, CL["cast"]:format(args.spellName))
-	self:CDBar("ability", 10, L["ability"], L.ability_icon)
+	self:Bar("ability", 10, L["ability"], L.ability_icon)
 end
 
 function mod:LightningTether(args)
-	self:CDBar("ability", 10, L["ability"], L.ability_icon)
+	self:Bar("ability", 10, L["ability"], L.ability_icon)
 	if self:Me(args.destGUID) then
 		self:MessageOld(args.spellId, "blue", "alert", CL["you"]:format(args.spellName))
 		self:Bar(args.spellId, 15, CL["you"]:format(args.spellName))
@@ -78,7 +78,7 @@ end
 do
 	local scheduled = nil
 	local function warnStormcloud(spellId)
-		mod:CDBar("ability", 10, L["ability"], L.ability_icon)
+		mod:Bar("ability", 10, L["ability"], L.ability_icon)
 		if not openedForMe then
 			mod:MessageOld(spellId, "yellow")
 			if #stormcloudTargets > 0 then
@@ -94,7 +94,6 @@ do
 		end
 		if self:Me(args.destGUID) then
 			self:MessageOld(args.spellId, "blue", "alert", CL["you"]:format(args.spellName))
-			self:Say(args.spellId)
 			self:OpenProximity(args.spellId, 10)
 			openedForMe = true
 		end

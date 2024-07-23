@@ -87,6 +87,16 @@ function WIM.isInTable(tbl, val)
         end
         return false;
 end
+
+function WIM.packTable (...)
+	local tbl = { ... };
+	tbl.n = select('#', ...);
+	return tbl;
+end
+
+function WIM.unpackTable (tbl)
+	return unpack(tbl, tbl.n);
+end
 ----------------------------------------------
 --              Text Formatting             --
 ----------------------------------------------
@@ -94,10 +104,12 @@ end
 
 function WIM.FormatUserName(user)
 	if(user ~= nil and not string.find(user, "^|K")) then
-	    user = string.gsub(user, "[A-Z]", string.lower);
+		if (not string.find(user, "-")) then
+			user = string.gsub(user, "[A-Z]", string.lower);
+			user = string.gsub(user, " [a-z]", string.upper); -- accomodate second name (BN)
+		end
 	    user = string.gsub(user, "^[a-z]", string.upper);
 	    user = string.gsub(user, "-[a-z]", string.upper); -- accomodate for cross server...
-        user = string.gsub(user, " [a-z]", string.upper); -- accomodate second name (BN)
 	end
 	return user;
 end

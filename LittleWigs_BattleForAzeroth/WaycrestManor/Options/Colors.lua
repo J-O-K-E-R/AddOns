@@ -10,7 +10,7 @@ BigWigs:AddColors("Heartsbane Triad", {
 
 BigWigs:AddColors("Soulbound Goliath", {
 	[260508] = "purple",
-	[260512] = {"blue","yellow"},
+	[260512] = "yellow",
 	[260541] = "cyan",
 	[260569] = "blue",
 	[267907] = {"blue","orange"},
@@ -57,7 +57,6 @@ BigWigs:AddColors("Waycrest Manor Trash", {
 	[264456] = "yellow",
 	[264520] = "yellow",
 	[264525] = "orange",
-	[264556] = "blue",
 	[265346] = "orange",
 	[265352] = "orange",
 	[265368] = "cyan",
@@ -65,12 +64,11 @@ BigWigs:AddColors("Waycrest Manor Trash", {
 	[265407] = "red",
 	[265741] = "yellow",
 	[265759] = "orange",
-	[265760] = "red",
+	[265760] = "purple",
 	[265876] = "red",
 	[265880] = {"blue","orange"},
 	[265881] = "yellow",
 	[266036] = "yellow",
 	[271174] = "orange",
 	[278444] = "yellow",
-	[278474] = "red",
 })

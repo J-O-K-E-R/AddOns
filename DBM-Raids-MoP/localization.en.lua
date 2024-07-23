@@ -55,7 +55,8 @@ L:SetOptionLocalization({
 })
 
 L:SetMiscLocalization({
-	Pull	= "It be dyin' time, now!"
+	Pull		= "It be dyin' time, now!",
+	RolePlay	= "Now you done made me angry!"
 })
 
 ----------------------
@@ -280,10 +281,6 @@ L:SetOptionLocalization({
 ------------
 L = DBM:GetModLocalization(742)
 
-L:SetOptionLocalization({
-	warnLightOfDay	= DBM_CORE_L.AUTO_ANNOUNCE_OPTIONS.target:format(123716)
-})
-
 L:SetMiscLocalization{
 	Victory	= "I thank you, strangers. I have been freed."
 }
@@ -334,7 +331,7 @@ L:SetOptionLocalization({
 	warnThrash					= DBM_CORE_L.AUTO_ANNOUNCE_OPTIONS.spell:format(131996),
 	warnBreathOnPlatform		= "Show $spell:119414 warning when you are on platform<br/>(not recommended, for raid leader)",
 	specWarnBreathOfFearSoon	= "Show pre-special warning for $spell:119414 if you not have a $spell:117964 buff",
-	specWarnMovement			= "Show special warning to move when $spell:120047 is being fired",
+	specWarnMovement			= "Show special warning directing where to move when $spell:120047 is being cast<br/>(based on common position strategy of standing at entrance pizza slice and then following movements when DBM gives them)",
 	timerSpecialAbility			= "Show timer for when next special ability will be cast",
 	RangeFrame					= DBM_CORE_L.AUTO_RANGE_OPTION_TEXT:format(2, 119519),
 	SetIconOnHuddle				= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(120629)
@@ -475,8 +472,8 @@ L:SetOptionLocalization({
 	specWarnBigBirdSoon	= DBM_CORE_L.AUTO_SPEC_WARN_OPTIONS.soon:format("ej7827"),
 	timerFlockCD		= DBM_CORE_L.AUTO_TIMER_OPTIONS.nextcount:format("ej7348"),
 	RangeFrame			= DBM_CORE_L.AUTO_RANGE_OPTION_TEXT:format(10, 138923),
-	ShowNestArrows		= "Show DBM arrow for nest activations",
-	Never				= "Never",
+	ShowNestArrows		= "Show special alerts only for your selected nest location",
+	Never				= "All nests",
 	Northeast			= "Blue - Lower & Upper NE",
 	Southeast			= "Green - Lower & Upper SE",
 	Southwest			= "Purple/Red - Lower SW & Upper SW(25) or Upper Middle(10)",
@@ -635,7 +632,8 @@ L:SetOptionLocalization({
 	StaticShockArrow			= "Show DBM Arrow when someone is affected by $spell:135695",
 	OverchargeArrow				= "Show DBM Arrow when someone is affected by $spell:136295",
 	SetIconOnOvercharge			= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(136295),
-	SetIconOnStaticShock		= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(135695)
+	SetIconOnStaticShock		= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(135695),
+	AGStartDP					= "Auto select gossip to use Displacement Pad before Lei Shen"
 })
 
 L:SetMiscLocalization({
@@ -652,8 +650,7 @@ L:SetWarningLocalization({
 })
 
 L:SetOptionLocalization({
-	specWarnUnstablVitaJump	= "Show special warning when $spell:138297 jumps to you",
-	SetIconsOnVita			= "Set icons on $spell:138297 debuffed player and furthest player from them"
+	specWarnUnstablVitaJump	= "Show special warning when $spell:138297 jumps to you"
 })
 
 L:SetMiscLocalization({
@@ -697,6 +694,10 @@ L:SetWarningLocalization({
 ---------------------------
 L = DBM:GetModLocalization(866)
 
+L:SetOptionLocalization({
+	AGStartNorushen		= "Auto select gossip to start fight when interacting with Norushen"
+})
+
 L:SetMiscLocalization({
 	wasteOfTime	= "Very well, I will create a field to keep your corruption quarantined."
 })
@@ -737,7 +738,7 @@ L:SetMiscLocalization({
 	wasteOfTime2	= "Well done. The first brigade has made landfall.",--Horde Version
 	Pull			= "Dragonmaw clan, retake the docks and push them into the sea!  In the name of Hellscream and the True Horde!",
 	newForces1		= "Here they come!",--Jaina's line, alliance
-	newForces1H		= "Bring her down quick so i can wrap my fingers around her neck.",--Sylva's line, horde
+	newForces1H		= "Bring her down quick so I can wrap my fingers around her neck.",--Sylva's line, horde
 	newForces2		= "Dragonmaw, advance!",
 	newForces3		= "For Hellscream!",
 	newForces4		= "Next squad, push forward!",
@@ -870,14 +871,12 @@ L:SetTimerLocalization({
 L:SetOptionLocalization({
 	timerRoleplay		= "Show timer for Garrosh/Thrall RP",
 	RangeFrame			= "Show dynamic range frame (8)<br/>(This is a smart range frame that shows when you reach $spell:147126 threshold)",
-	InfoFrame			= "Show info frame for players without damage reduction during intermission",
-	yellMaliceFading	= "Yell when $spell:147209 is about to fade"
+	InfoFrame			= "Show info frame for players without damage reduction during intermission"
 })
 
 L:SetMiscLocalization({
 	wasteOfTime		= "It is not too late, Garrosh. Lay down the mantle of Warchief. We can end this here, now, with no more bloodshed.",
 	NoReduce		= "No damage reduction",
-	MaliceFadeYell	= "Malice fading on %s (%d)",
 	phase3End		= "You think you have WON?"
 })
 

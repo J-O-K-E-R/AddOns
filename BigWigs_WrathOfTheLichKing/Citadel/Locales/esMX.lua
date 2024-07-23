@@ -1,5 +1,43 @@
-local L = BigWigs:NewBossLocale("Blood Prince Council", "esMX")
+local L = BigWigs:NewBossLocale("Lord Marrowgar", "esMX")
 if not L then return end
+if L then
+	--L.bone_spike = "Bone Spike" -- NPC ID 36619
+end
+
+L = BigWigs:NewBossLocale("Lady Deathwhisper", "esMX")
+if L then
+	L.touch = "Toque"
+	--L.deformed_fanatic = "Deformed Fanatic" -- NPC ID 38135
+	--L.empowered_adherent = "Empowered Adherent" -- NPC ID 38136
+end
+
+L = BigWigs:NewBossLocale("Icecrown Gunship Battle", "esMX")
+if L then
+	L.adds_trigger_alliance = "¡Atracadores, sargentos, atacad!"
+	L.adds_trigger_horde = "Marines, Sergeants, attack!"
+
+	L.mage = "Mago"
+	L.mage_desc = "Avisa cuando aparece un Mago para congelar los cañones."
+	-- Alliance: We're taking hull damage, get a battle-mage out here to shut down those cannons!
+	-- Horde: We're taking hull damage, get a sorcerer out here to shut down those cannons!
+	--L.mage_yell_trigger = "taking hull damage"
+
+	L.warmup_trigger_alliance = "¡Arrancad los motores!"
+	L.warmup_trigger_horde = "Rise up, sons and daughters"
+
+	L.disable_trigger_alliance = "¡No digáis que no lo avisé"
+	L.disable_trigger_horde = "Onward to the Lich King"
+end
+
+L = BigWigs:NewBossLocale("Deathbringer Saurfang", "esMX")
+if L then
+	--L.blood_beast = "Blood Beast" --  NPC ID 38508
+
+	L.warmup_alliance = "¡Entonces movámonos! ¡Sali...!"
+	L.warmup_horde = "Kor'kron, move out! Champions, watch your backs. The Scourge have been..."
+end
+
+L = BigWigs:NewBossLocale("Blood Prince Council", "esMX")
 if L then
 	L.switch_message = "Cambio de objetivo: %s"
 	L.switch_bar = "~Próximo cambio de objetivo"
@@ -16,27 +54,6 @@ if L then
 	L.prison_message = "¡Prisión de las Sombras x%d!"
 end
 
-L = BigWigs:NewBossLocale("Lady Deathwhisper", "esMX")
-if L then
-	L.engage_trigger = "¿Qué es este alboroto? ¿Osáis entrar en suelo sagrado? ¡Este será vuestro lugar de reposo final!"
-	L.phase2_message = "¡Barrera BAJA - Fase 2!"
-
-	L.dnd_message = "¡Muerte y Descomposición en TÍ!"
-
-	L.adds = "Adds"
-	L.adds_desc = "Contador para Nuevos Adds."
-	L.adds_bar = "Nuevos Adds"
-	L.adds_warning = "¡Nuevos adds en 5 sec!"
-
-	L.touch_message = "%2$dx Toque en %1$s"
-	L.touch_bar = "Siguiente Toque"
-
-	L.deformed_fanatic = "¡Fanático deformado!"
-
-	L.spirit_message = "¡Invocando Espíritu!"
-	L.spirit_bar = "Nuevos Espíritus"
-end
-
 L = BigWigs:NewBossLocale("Festergut", "esMX")
 if L then
 	L.engage_trigger = "¿A divertirse?"
@@ -44,27 +61,6 @@ if L then
 	L.inhale_bar = "Inhalar %d"
 	L.blight_warning = "¡Añublo acre en ~5sec!"
 	L.ball_message = "¡Lanzando Moco maleable!"
-end
-
-L = BigWigs:NewBossLocale("Icecrown Gunship Battle", "esMX")
-if L then
-	L.adds = "Portal"
-	L.adds_desc = "Avisar Portal."
-	L.adds_trigger_alliance = "¡Atracadores, sargentos, atacad!"
-	L.adds_trigger_horde = "Marines, Sergeants, attack!"
-	L.adds_message = "¡Portal!"
-	L.adds_bar = "Siguiente Portal"
-
-	L.mage = "Mago"
-	L.mage_desc = "Avisa cuando aparece un Mago para congelar los cañones."
-	L.mage_message = "¡Mago aparece!"
-	L.mage_bar = "Siguiente Mago"
-
-	L.warmup_trigger_alliance = "¡Arrancad los motores!"
-	L.warmup_trigger_horde = "Rise up, sons and daughters"
-
-	L.disable_trigger_alliance = "¡No digáis que no lo avisé"
-	L.disable_trigger_horde = "Onward to the Lich King"
 end
 
 L = BigWigs:NewBossLocale("Blood-Queen Lana'thel", "esMX")
@@ -109,13 +105,6 @@ if L then
 	--L.custom_on_valkyr_marker_desc = "Mark the Val'kyr with {rt8}{rt7}{rt6}, requires promoted or leader.\n|cFFFF0000Only 1 person in the raid should have this enabled to prevent marking conflicts.|r\n|cFFADFF2FTIP: If the raid has chosen you to turn this on, quickly mousing over the Val'kyr is the fastest way to mark them.|r"
 end
 
-L = BigWigs:NewBossLocale("Lord Marrowgar", "esMX")
-if L then
-	L.engage_trigger = "¡La Plaga arrasará este mundo como un enjambre de muerte y destrucción!"
-
-	L.bonestorm_warning = "¡Tormenta ósea en 5 sec!"
-end
-
 L = BigWigs:NewBossLocale("Professor Putricide", "esMX")
 if L then
 	L.engage_trigger = "¡Buenas noticias, amigos!"
@@ -149,18 +138,6 @@ if L then
 	L.ooze_message = "Moco %dx"
 
 	L.spray_bar = "Siguiente Pulverizador"
-end
-
-L = BigWigs:NewBossLocale("Deathbringer Saurfang", "esMX")
-if L then
-	L.adds = "Bestias de sangre"
-	L.adds_desc = "Shows a timer and messages for when Blood Beasts spawn."
-	L.adds_warning = "¡Bestias de sangre en 5 sec!"
-	L.adds_message = "¡Bestias de sangre!"
-
-	L.engage_trigger = "¡POR EL PODER DEL REY EXÁNIME!"
-	L.warmup_alliance = "¡Entonces movámonos! ¡Sali...!"
-	L.warmup_horde = "Kor'kron, move out! Champions, watch your backs. The Scourge have been..."
 end
 
 L = BigWigs:NewBossLocale("Sindragosa", "esMX")
@@ -211,6 +188,6 @@ end
 L = BigWigs:NewBossLocale("Icecrown Citadel Trash", "esMX")
 if L then
 	L.deathbound_ward = "Depositario vinculado a la muerte"
-	--L.deathspeaker_adds = "Lady Deathwhisper Trash"
+	--L.deathspeaker_high_priest = "Deathspeaker High Priest" -- NPC ID 36829
 	L.putricide_dogs = "Precioso & Apestoso"
 end

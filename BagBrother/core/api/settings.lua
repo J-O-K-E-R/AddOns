@@ -1,7 +1,6 @@
 --[[
-	settings.lua
-		Initializes the settings, checks for version updates and provides the necessary API for profile management
-		All Rights Reserved
+	Initializes the settings, checks for version updates and provides the necessary API for profile management.
+	All Rights Reserved
 --]]
 
 local ADDON, Addon = ...
@@ -9,24 +8,7 @@ local VAR = ADDON .. '_Sets'
 local Settings = Addon:NewModule('Settings')
 
 local function AsArray(table)
-	return setmetatable(table, {__metatable = 1})
-end
-
-local function SetDefaults(target, defaults)
-	defaults.__index = nil
-
-	for k, v in pairs(defaults) do
-		if type(v) == 'table' then
-			if getmetatable(v) == 1 then
-				target[k] = target[k] or AsArray(CopyTable(v))
-			else
-				target[k] = SetDefaults(target[k] or {}, v)
-			end
-		end
-	end
-
-	defaults.__index = defaults
-	return setmetatable(target, defaults)
+	return setmetatable(table, {__metatable = false})
 end
 
 local FrameDefaults = {
@@ -34,18 +16,15 @@ local FrameDefaults = {
 	money = true, broker = true,
 	bagToggle = true, sort = true, search = true, options = true,
 
-	strata = 'HIGH', alpha = 1,
-	scale = Addon.FrameScale or 1,
+	strata = 'HIGH', alpha = 1, scale = Addon.FrameScale or 1,
 	color = {0, 0, 0, 0.5},
 	x = 0, y = 0,
 
+	hiddenBags = {}, lockedSlots = {},
 	itemScale = Addon.ItemScale or 1,
-	spacing = 2,
+	spacing = 2, bagBreak = 0,
 
-	brokerObject = Addon.Name .. 'Launcher',
-	hiddenRules = {contain = true},
-	hiddenBags = {},
-
+	brokerObject = ADDON .. 'Launcher',
 	rules = AsArray({
 		'all', 'all/normal', 'all/trade', 'all/reagent', 'all/keys', 'all/quiver',
 		'equip', 'equip/armor', 'equip/weapon', 'equip/trinket',
@@ -56,10 +35,10 @@ local FrameDefaults = {
 }
 
 local ProfileDefaults = {
-	inventory = SetDefaults({
+	inventory = Addon:SetDefaults({
 		reversedTabs = true,
 		borderColor = {1, 1, 1, 1},
-		currency = true, broker = Addon.IsClassic,
+		currency = true, broker = true, reagents = REAGENTBANK_CONTAINER,
 		point = 'BOTTOMRIGHT',
 		x = -50, y = 100,
 		columns = 10,
@@ -67,9 +46,9 @@ local ProfileDefaults = {
 		height = 200,
 	}, FrameDefaults),
 
-	bank = SetDefaults({
+	bank = Addon:SetDefaults({
 		borderColor = {1, 1, 0, 1},
-		currency = true,
+		currency = true, reagents = NUM_TOTAL_EQUIPPED_BAG_SLOTS,
 		point = 'LEFT',
 		columns = 14,
 		width = 600,
@@ -77,14 +56,14 @@ local ProfileDefaults = {
 		x = 95
 	}, FrameDefaults),
 
-	vault = SetDefaults({
+	vault = Addon:SetDefaults({
 		borderColor = {1, 0, 0.98, 1},
 		point = 'LEFT',
 		columns = 16,
 		x = 95
 	}, FrameDefaults),
 
-	guild = SetDefaults({
+	guild = Addon:SetDefaults({
 		borderColor = {0, 1, 0, 1},
 		point = 'CENTER',
 		columns = 7,
@@ -96,9 +75,8 @@ local ProfileDefaults = {
 
 function Settings:OnEnable()
 	BrotherBags = BrotherBags or {}
-	_G[VAR] = SetDefaults(_G[VAR] or {}, {
-		global = SetDefaults({}, ProfileDefaults),
-        version = Addon.Version,
+	Addon.sets = self:SetDefaults(_G[VAR] or {}, {
+		global = self:SetDefaults({}, ProfileDefaults),
 		profiles = {},
 
 		resetPlayer = true, flashFind = true, serverSort = true,
@@ -127,29 +105,44 @@ function Settings:OnEnable()
 		herbColor = {.5, 1, .5},
 	})
 
-	Addon.sets = _G[VAR]
-    Addon.sets.version = Addon.Version
-
-	----- convert old profiles
-	for address, profile in pairs(Addon.sets.profiles) do
-		local realm, name = address:match('(%w+) %- (%w+)')
-		if realm and name then
-			realm = GetOrCreateTableEntry(Addon.sets.profiles, realm)
-			realm[name .. (address:find('^®') and '*' or '')] = profile
-		end
-	end
-	-----
-
+	----- upgrade old settings (temporary till next xpac)
 	for realm, owners in pairs(Addon.sets.profiles) do
 		for id, profile in pairs(owners) do
-			SetDefaults(profile, ProfileDefaults)
+			self:SetDefaults(profile, ProfileDefaults)
+			
+			for frame, options in pairs(profile) do
+				if type(options) == 'table' then
+					if options.bagBreak == true then
+						options.bagBreak = 2
+					elseif not options.bagBreak then
+						options.bagBreak = nil
+					end
+				end
+			end
 		end
 	end
+
+	for frame, options in pairs(Addon.sets.global) do
+		if type(options) == 'table' then
+			if options.bagBreak == true then
+				options.bagBreak = 2
+			elseif not options.bagBreak then
+				options.bagBreak = nil
+			end
+		end
+	end
+
+	if type(Addon.sets.latest) ~= 'table' then
+		Addon.sets.latest = {}
+    end
+	----
+
+	_G[VAR] = Addon.sets
 end
 
 function Settings:SetProfile(realm, id, profile)
 	realm = GetOrCreateTableEntry(Addon.sets.profiles, realm)
-	realm[id] = profile and SetDefaults(profile, ProfileDefaults)
+	realm[id] = profile and self:SetDefaults(profile, ProfileDefaults)
 end
 
 function Settings:GetProfile(realm, id)

@@ -29,6 +29,24 @@ function CrossGambling:CheckRealm(playerName)
 	end
 end
 
+
+function CrossGambling:String(players)
+    -- Add an And or Comma between names of tied players. 
+    local nameString = players[1].name
+
+    if (#players > 1) then
+        for i = 2, #players do
+            if (i == #players) then
+                nameString = nameString .. " and " .. players[i].name
+            else
+                nameString = nameString .. ", " .. players[i].name
+            end
+        end
+    end
+
+    return nameString
+end
+
 function CrossGambling:CResult()
     local winners = {self.game.players[1]}
     local losers = {self.game.players[1]}
@@ -68,64 +86,65 @@ function CrossGambling:CResult()
 
 end
 
-function CrossGambling:detectTie()
-    -- Does a tie-breaker Hi-End/Low-End
-    local tieBreakers = {}
 
-    if (#self.game.result.winners > 1 and #self.game.result.losers ~= 0) then
-        tieBreakers = self.game.result.winners
-    elseif (#self.game.result.losers > 1 and #self.game.result.winners ~= 0) then
-        tieBreakers = self.game.result.losers
+function CrossGambling:detectTie()
+    -- Determine the type of tiebreaker (High/Low).
+    local tieType = ""
+    if #self.game.result.winners > 1 then
+        tieType = "High"
+    elseif #self.game.result.losers > 1 then
+        tieType = "Low"
     end
 
-    if (#tieBreakers > 0) then
-        -- Continue game until no more ties. 
-        self.game.players = tieBreakers
-
+    if tieType ~= "" then
+        local tiedPlayers = {}
         for i = 1, #self.game.players do
-            self.game.players[i].roll = nil
+            if (tieType == "High" and self.game.players[i].roll == self.game.result.winners[1].roll) or
+               (tieType == "Low" and self.game.players[i].roll == self.game.result.losers[1].roll) then
+                tinsert(tiedPlayers, self.game.players[i])
+            end
         end
 
-        self:TieBreaker()
+        if #tiedPlayers > 1 then
+            -- Continue game until no more ties.
+            self.game.players = tiedPlayers
+
+            for i = 1, #self.game.players do
+                self.game.players[i].roll = nil
+            end
+
+            self:TieBreaker(tieType)
+        else
+            self:CloseGame()
+        end
     else
         self:CloseGame()
     end
 end
 
-function CrossGambling:String(players)
-    -- Add an And or Comma between names of tied players. 
-    local nameString = players[1].name
-
-    if (#players > 1) then
-        for i = 2, #players do
-            if (i == #players) then
-                nameString = nameString .. " and " .. players[i].name
-            else
-                nameString = nameString .. ", " .. players[i].name
-            end
-        end
-    end
-
-    return nameString
-end
-
-function CrossGambling:TieBreaker()
-    -- Lets player know there was a Hi-End/Low-End tie and needs to be resolved. 
-    if (#self.game.result.winners > 1) then
-		if(self.game.chatframeOption == false and self.game.host == true) then
-			local RollNotification = "High end tie breaker! " .. self:String(self.game.players) .. " /roll " .. self.db.global.wager .. " now!"
-			self:SendMsg(format("CHAT_MSG:%s:%s:%s", self.game.PlayerName, self.game.PlayerClass, RollNotification))
-		else
-			SendChatMessage("High end tie breaker! " .. self:String(self.game.players) .. " /roll " .. self.db.global.wager .. " now!", self.game.chatMethod)
-		end
-    elseif (#self.game.result.losers > 1) then
-	    if(self.game.chatframeOption == false and self.game.host == true) then
-			local RollNotification = "Low end tie breaker! " .. self:String(self.game.players) .. " /roll " .. self.db.global.wager .. " now!"
-			self:SendMsg(format("CHAT_MSG:%s:%s:%s", self.game.PlayerName, self.game.PlayerClass, RollNotification))
-		else
-			SendChatMessage("Low end tie breaker! " .. self:String(self.game.players) .. " /roll " .. self.db.global.wager .. " now!", self.game.chatMethod)
-		end
+function CrossGambling:TieBreaker(tieType)
+    if self.game.chatframeOption == false and self.game.host == true then
+        local RollNotification = tieType .. " tie breaker! " .. self:String(self.game.players) .. " /roll " .. self.db.global.wager .. " now!"
+        self:SendMsg(format("CHAT_MSG:%s:%s:%s", self.game.PlayerName, self.game.PlayerClass, RollNotification))
+    else
+        SendChatMessage(tieType .. " tie breaker! " .. self:String(self.game.players) .. " /roll " .. self.db.global.wager .. " now!", self.game.chatMethod)
     end
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 C_ChatInfo.RegisterAddonMessagePrefix("CrossGambling")

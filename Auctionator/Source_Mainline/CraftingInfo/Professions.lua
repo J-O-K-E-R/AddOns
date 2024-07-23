@@ -45,7 +45,7 @@ function Auctionator.CraftingInfo.DoTradeSkillReagentsSearch(schematicForm, quan
   -- Probably doesn't have a specific item output, but include the recipe name
   -- anyway just in case
   else
-    table.insert(searchTerms, recipeInfo.name)
+    table.insert(searchTerms, {searchString = recipeInfo.name})
   end
 
   -- Select all mandatory reagents
@@ -64,7 +64,7 @@ function Auctionator.CraftingInfo.DoTradeSkillReagentsSearch(schematicForm, quan
   -- Go through the items one by one and get their names
   local function OnItemInfoReady()
     for index, itemInfo in ipairs(possibleItems) do
-      local itemInfo = {GetItemInfo(itemInfo)}
+      local itemInfo = {C_Item.GetItemInfo(itemInfo)}
       if not Auctionator.Utilities.IsBound(itemInfo) then
         table.insert(searchTerms, {searchString = itemInfo[1], isExact = true, quantity = quantities[index] * quantity})
       end

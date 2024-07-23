@@ -134,7 +134,7 @@ function E:UpdateBlizzardFonts()
 	if replaceFonts then
 		E:MapFont(FontMap.questsmall,				NORMAL, (blizz and 12) or unscale or medium, 'NONE')
 		E:MapFont(FontMap.questtext,				NORMAL, (blizz and 13) or unscale or medium, 'NONE')
-		E:MapFont(FontMap.mailbody,					NORMAL, (blizz and 15) or unscale or big, outline)
+		E:MapFont(FontMap.mailbody,					NORMAL, (blizz and 15) or unscale or big, 'NONE')
 		E:MapFont(FontMap.cooldown,					NORMAL, (blizz and 16) or unscale or big, 'SHADOW')
 		E:MapFont(FontMap.errortext,				NORMAL, (blizz and 16) or unscale or big, 'SHADOW')
 		E:MapFont(FontMap.questtitle,				NORMAL, (blizz and 18) or unscale or big, 'NONE')
@@ -246,6 +246,7 @@ function E:UpdateBlizzardFonts()
 		E:SetFont(_G.QuestFont_Larger,						NORMAL, (blizz and 16) or unscale or big)					-- Wrath
 		E:SetFont(_G.SystemFont_Large,						NORMAL, (blizz and 16) or unscale or big)
 		E:SetFont(_G.SystemFont_Shadow_Large,				NORMAL, (blizz and 16) or unscale or big, 'SHADOW')
+		E:SetFont(_G.SystemFont16_Shadow_ThickOutline,		NORMAL, (blizz and 16) or unscale or big, outline)			-- Talent & Profession SpendText
 		E:SetFont(_G.Game18Font,							NORMAL, (blizz and 18) or unscale or big)					-- MissionUI Bonus Chance
 		E:SetFont(_G.GameFontNormalLarge2,					NORMAL, (blizz and 18) or unscale or big, 'SHADOW')			-- Garrison Follower Names
 		E:SetFont(_G.QuestFont_Huge,						NORMAL, (blizz and 18) or unscale or big)					-- Quest rewards title, Rewards

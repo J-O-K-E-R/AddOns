@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod("MPlusAffixes", "DBM-Affixes")
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20230907175431")
+mod:SetRevision("20240721192753")
 --mod:SetModelID(47785)
 mod:SetZone(DBM_DISABLE_ZONE_DETECTION)--Stays active in all zones for zone change handlers, but registers events based on dungeon ids
 
@@ -14,6 +14,7 @@ mod:RegisterEvents(
 )
 
 --TODO, fine tune tank stacks/throttle?
+--TODO, when Season 4 starts, prune season 3 IDs, and add WW Season 1 ids
 --[[
 (ability.id = 240446 or ability.id = 409492) and type = "begincast"
  or (ability.id = 408556 or ability.id = 408801) and type = "applydebuff"
@@ -22,9 +23,10 @@ mod:RegisterEvents(
 --]]
 local warnExplosion							= mod:NewCastAnnounce(240446, 4)
 local warnIncorporeal						= mod:NewCastAnnounce(408801, 4)
-local warnAfflictedCry						= mod:NewCastAnnounce(409492, 4, nil, nil, nil, nil, nil, 14)--spellId, color, castTime, icon, optionDefault, optionName, _, soundOption
+local warnAfflictedCry						= mod:NewCastAnnounce(409492, 4, nil, nil, "Healer|RemoveMagic|RemoveCurse|RemoveDisease|RemovePoison", 2, nil, 14)--Flagged to only warn players who actually have literally any skill to deal with spirits, else alert is just extra noise to some rogue or warrior with no skills for mechanic
 local warnDestabalize						= mod:NewCastAnnounce(408805, 4, nil, nil, false)
 local warnSpitefulFixate					= mod:NewYouAnnounce(350209, 4)
+local warnUnstablePower						= mod:NewSpellAnnounce(461895, 3, nil, nil, nil, nil, nil, 2)
 
 local specWarnQuake							= mod:NewSpecialWarningMoveAway(240447, nil, nil, nil, 1, 2)
 local specWarnSpitefulFixate				= mod:NewSpecialWarningYou(350209, false, nil, 2, 1, 2)
@@ -34,8 +36,9 @@ local specWarnGTFO							= mod:NewSpecialWarningGTFO(209862, nil, nil, nil, 1, 8
 
 local timerQuakingCD						= mod:NewNextTimer(20, 240447, nil, nil, nil, 3)
 local timerEntangledCD						= mod:NewCDTimer(30, 408556, nil, nil, nil, 3, 396347, nil, nil, 2, 3, nil, nil, nil, true)
-local timerAfflictedCD						= mod:NewCDTimer(30, 409492, nil, nil, nil, 5, nil, DBM_COMMON_L.HEALER_ICON, nil, 3, 3)
+local timerAfflictedCD						= mod:NewCDTimer(30, 409492, nil, nil, nil, 5, 2, DBM_COMMON_L.HEALER_ICON, nil, mod:IsHealer() and 3 or nil, 3)--Timer is still on for all, cause knowing when they spawn still informs decisions like running ahead or pulling
 local timerIncorporealCD					= mod:NewCDTimer(45, 408801, nil, nil, nil, 5, nil, nil, nil, 3, 3)
+local timerUnstablePowerCD					= mod:NewCDTimer(59.9, 461895, nil, nil, nil, 1)
 
 mod:AddNamePlateOption("NPSanguine", 226510, "Tank")
 
@@ -45,7 +48,10 @@ local incorporealCounting = false
 local incorpDetected = false
 local afflictedCounting = false
 local afflictedDetected = false
+local unstableDetected = false
+local unstableCounting = false
 
+---@param self DBMMod
 local function checkEntangled(self)
 	if timerEntangledCD:GetRemaining() > 0 then
 		--Timer exists, do nothing
@@ -55,6 +61,7 @@ local function checkEntangled(self)
 	self:Schedule(30, checkEntangled, self)
 end
 
+---@param self DBMMod
 local function checkAfflicted(self)
 	if timerAfflictedCD:GetRemaining() > 0 then
 		--Timer exists, do nothing
@@ -64,6 +71,7 @@ local function checkAfflicted(self)
 	self:Schedule(30, checkAfflicted, self)
 end
 
+---@param self DBMMod
 local function checkIncorp(self)
 	if timerIncorporealCD:GetRemaining() > 0 then
 		--Timer exists, do nothing
@@ -76,6 +84,7 @@ end
 --UGLY function to detect this because there isn't a good API for this.
 --player regen was very unreliable due to fact it only fires for self
 --This wastes cpu time being an infinite loop though but probably no more so than any WA doing this
+---@param self DBMMod
 local function checkForCombat(self)
 	local combatFound = self:GroupInCombat()
 	if incorpDetected then
@@ -86,7 +95,7 @@ local function checkForCombat(self)
 			if incorpRemaining and incorpRemaining > 0 then--Shouldn't be 0, unless a player clicked it off, in which case we can't reschedule
 				self:Unschedule(checkIncorp)
 				self:Schedule(incorpRemaining+10, checkIncorp, self)
-				DBM:Debug("Experimental reschedule of checkIncorp running because you're in debug mode")
+				DBM:Debug("Experimental reschedule of checkIncorp running")
 			end
 		elseif not combatFound and incorporealCounting then
 			incorporealCounting = false
@@ -102,7 +111,7 @@ local function checkForCombat(self)
 			if afflictRemaining and afflictRemaining > 0 then--Shouldn't be 0, unless a player clicked it off, in which case we can't reschedule
 				self:Unschedule(checkAfflicted)
 				self:Schedule(afflictRemaining+10, checkAfflicted, self)
-				DBM:Debug("Experimental reschedule of checkAfflicted running because you're in debug mode")
+				DBM:Debug("Experimental reschedule of checkAfflicted running")
 			end
 		elseif not combatFound and afflictedCounting then
 			afflictedCounting = false
@@ -110,29 +119,42 @@ local function checkForCombat(self)
 			self:Unschedule(checkAfflicted)--Soon as a pause happens this can no longer be trusted
 		end
 	end
+	--Without transcriptor don't know if it works same as afflicted and incorp do, or same as thundering, so coding like thundering for now
+	--ie pauses out of combat, doesn't skip casts and reloop
+	if unstableDetected then
+		if combatFound and not unstableCounting then
+			unstableCounting = true
+			timerUnstablePowerCD:Resume()
+		elseif not combatFound and unstableCounting then
+			unstableCounting = false
+			timerUnstablePowerCD:Pause()
+		end
+	end
 	self:Schedule(0.25, checkForCombat, self)
 end
 
 do
 	local validZones
-	if (C_MythicPlus.GetCurrentSeason() or 0) == 11 then--DF Season 3
-		--2579, 1279, 1501, 1466, 1763, 643, 1862
-		validZones = {[2579]=true, [1279]=true, [1501]=true, [1466]=true, [1763]=true, [643]=true, [1862]=true}
-	elseif (C_MythicPlus.GetCurrentSeason() or 0) == 10 then--DF Season 2
-		--657, 1841, 1754, 1458, 2527, 2519, 2451, 2520
-		validZones = {[657]=true, [1841]=true, [1754]=true, [1458]=true, [2527]=true, [2519]=true, [2451]=true, [2520]=true}
-	else--Season 1
-		--2516, 2526, 2515, 2521, 1477, 1571, 1176, 960
-		validZones = {[2516]=true, [2526]=true, [2515]=true, [2521]=true, [1477]=true, [1571]=true, [1176]=true, [960]=true}
+	--Upcoming Seasons
+	if (C_MythicPlus.GetCurrentSeason() or 0) == 13 then--War Within Season 1
+		--2652, 2662, 2660, 2669, 670, 1822, 2286, 2290
+		validZones = {[2652]=true, [2662]=true, [2660]=true, [2669]=true, [670]=true, [1822]=true, [2286]=true, [2290]=true}
+	elseif (C_MythicPlus.GetCurrentSeason() or 0) == 14 then--War Within Season 2
+		--2651, 2649, 2648, 2661, ?, ?, ?, ?
+		validZones = {[2651]=true, [2649]=true, [2648]=true, [2661]=true}
+	--Current Season (latest LIVE season put in else so if api fails, it just always returns latest)
+	else--DF Season 4 (12)
+		--2516, 2526, 2515, 2521, 2527, 2519, 2451, 2520
+		validZones = {[2516]=true, [2526]=true, [2515]=true, [2521]=true, [2527]=true, [2519]=true, [2451]=true, [2520]=true}
 	end
 	local eventsRegistered = false
-	local function delayedZoneCheck(self)
+	function mod:DelayedZoneCheck(force)
 		local currentZone = DBM:GetCurrentArea() or 0
-		if validZones[currentZone] and not eventsRegistered then
+		if not force and validZones[currentZone] and not eventsRegistered then
 			eventsRegistered = true
 			self:RegisterShortTermEvents(
 				"SPELL_CAST_START 240446 409492 408805",
-			--	"SPELL_CAST_SUCCESS",
+				"SPELL_CAST_SUCCESS 461895",
 				"SPELL_AURA_APPLIED 240447 226510 226512 350209 408556 408801",
 			--	"SPELL_AURA_APPLIED_DOSE",
 				"SPELL_AURA_REMOVED 226510",
@@ -143,12 +165,15 @@ do
 			if self.Options.NPSanguine then
 				DBM:FireEvent("BossMod_EnableHostileNameplates")
 			end
-		elseif not validZones[currentZone] and eventsRegistered then
+			DBM:Debug("Registering M+ events")
+		elseif force or (not validZones[currentZone] and eventsRegistered) then
 			eventsRegistered = false
+			afflictedDetected = false
 			afflictedCounting = false
 			incorporealCounting = false
 			incorpDetected = false
-			afflictedDetected = false
+			unstableDetected = false
+			unstableCounting = false
 			self:UnregisterShortTermEvents()
 			self:Unschedule(checkForCombat)
 			self:Unschedule(checkEntangled)
@@ -157,27 +182,22 @@ do
 			if self.Options.NPSanguine then
 				DBM.Nameplate:Hide(true, nil, nil, nil, true, true)
 			end
+			DBM:Debug("Unregistering M+ events")
 		end
 	end
 	function mod:LOADING_SCREEN_DISABLED()
-		self:Unschedule(delayedZoneCheck)
-		self:Schedule(1, delayedZoneCheck, self)
-		self:Schedule(3, delayedZoneCheck, self)
+		self:UnscheduleMethod("DelayedZoneCheck")
+		--Checks Delayed 1 second after core checks to prevent race condition of checking before core did and updated cached ID
+		self:ScheduleMethod(2, "DelayedZoneCheck")
+		self:ScheduleMethod(6, "DelayedZoneCheck")
 	end
 	mod.OnInitialize = mod.LOADING_SCREEN_DISABLED
 	mod.ZONE_CHANGED_NEW_AREA	= mod.LOADING_SCREEN_DISABLED
-end
 
-function mod:CHALLENGE_MODE_COMPLETED()
-	afflictedCounting = false
-	incorporealCounting = false
-	incorpDetected = false
-	afflictedDetected = false
-	self:UnregisterShortTermEvents()
-	self:Unschedule(checkForCombat)
-	self:Unschedule(checkEntangled)
-	self:Unschedule(checkAfflicted)
-	self:Stop()--Stop M+ timers on completion as well
+	function mod:CHALLENGE_MODE_COMPLETED()
+		--This basically force unloads things even when in a dungeon, so it's not countdown affixes that are disabled
+		self:DelayedZoneCheck(true)
+	end
 end
 
 function mod:SPELL_CAST_START(args)
@@ -197,21 +217,27 @@ function mod:SPELL_CAST_START(args)
 		self:Unschedule(checkForCombat)
 		self:Unschedule(checkAfflicted)
 		checkForCombat(self)
-		self:Schedule(35, checkAfflicted, self)
+		self:Schedule(40, checkAfflicted, self)
 	elseif spellId == 408805 and self:AntiSpam(3, "aff3") then
 		warnDestabalize:Show()
 	end
 end
 
---[[
 function mod:SPELL_CAST_SUCCESS(args)
 	if not self.Options.Enabled then return end
 	local spellId = args.spellId
-	if spellId == 373370 then
-		timerNightmareCloudCD:Start(30.5, args.sourceGUID)
+	if spellId == 461895 and self:AntiSpam(5, "aff8") then--Takes a good 3-4 seconds for them all to spawn, so 5 second antispam is safe
+		warnUnstablePower:Show()
+		warnUnstablePower:Play("targetchange")--If this affix actually lasts til live, i'll give it a unique voice
+		if not unstableDetected then
+			unstableDetected = true
+		end
+		unstableCounting = true
+		timerUnstablePowerCD:Start()
+		self:Unschedule(checkForCombat)
+		checkForCombat(self)
 	end
 end
---]]
 
 function mod:SPELL_AURA_APPLIED(args)
 	if not self.Options.Enabled then return end
@@ -251,6 +277,7 @@ function mod:SPELL_AURA_APPLIED(args)
 			specWarnEntangled:Play("breakvine")--breakvine
 		end
 	elseif spellId == 408801 and self:AntiSpam(25, "aff7") then
+		warnIncorporeal:Show()
 		if not incorpDetected then
 			incorpDetected = true
 		end

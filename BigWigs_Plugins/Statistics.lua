@@ -14,25 +14,44 @@ local activeDurations = {}
 local healthPools = {}
 local units = {"boss1", "boss2", "boss3", "boss4", "boss5"}
 local difficultyTable = BigWigsLoader.isRetail and {
-	[14] = "normal",
-	[15] = "heroic",
-	[16] = "mythic",
-	[17] = "LFR",
+	[3] = "10N", -- 10 Player
+	[4] = "25N", -- 25 Player
+	[5] = "10H", -- 10 Player (Heroic)
+	[6] = "25H", -- 25 Player (Heroic)
+	[7] = "LFR", -- Looking For Raid [old] (Dragon Soul)
+	--[9] = "normal", -- 40 Player (MC/BWL/AQ40)
+	[14] = "normal", -- Normal
+	[15] = "heroic", -- Heroic
+	[16] = "mythic", -- Mythic
+	[17] = "LFR", -- Looking For Raid
 } or {
-	[3] = "10N", -- 10N
-	[4] = "25N", -- 25N
-	[5] = "10H", -- 10H
-	[6] = "25H", -- 25H
-	[175] = "normal", -- raid10 (karazhan) -- move from 3 (fake) to 175 (guessed)
-	[9] = "normal", -- raid40
-	[148] = "normal", -- raid20
-	[176] = "normal", -- raid 25 (sunwell)
+	[3] = "10N", -- 10 Player
+	[4] = "25N", -- 25 Player
+	[5] = "10H", -- 10 Player (Heroic)
+	[6] = "25H", -- 25 Player (Heroic)
+	[7] = "LFR", -- Looking For Raid [old] (Dragon Soul)
+	[9] = "normal", -- 40 Player (MC/BWL/AQ40)
+	[148] = "normal", -- 20 Player (AQ20)
+	--[175] = "normal", -- 10 Player (karazhan) -- move from 3 (fake) to 175 (guessed)
+	--[176] = "normal", -- 25 Player (sunwell)
+	[198] = "normal", -- Normal [10] (Blackfathom Deeps/Gnomeregan - Classic Season of Discovery)
+	[215] = "normal", -- Normal [20] (Sunken Temple - Classic Season of Discovery)
+	[226] = "SOD", -- XXX verify or remove
 }
 local SPELL_DURATION_SEC = SPELL_DURATION_SEC -- "%.2f sec"
 local GetTime = GetTime
+local dontPrint = { -- Don't print a warning message for these difficulties
+	[1] = true, -- Normal Dungeon
+	[2] = true, -- Heroic Dungeon
+	[8] = true, -- Mythic+ Dungeon
+	[9] = true, -- 40 Player (MC/BWL/AQ40)
+	[23] = true, -- Mythic Dungeon
+	[24] = true, -- Timewalking
+	[208] = true, -- Delves
+}
 
 --[[
-10.1.5
+11.0.2
 1. Normal
 2. Heroic
 3. 10 Player
@@ -65,7 +84,7 @@ local GetTime = GetTime
 45. PvP
 147. Normal
 149. Heroic
-150. Normal
+150. Normal Scaling (1-5)
 151. Looking For Raid
 152. Visions of N'Zoth
 153. Teeming Island
@@ -76,8 +95,12 @@ local GetTime = GetTime
 171. Path of Ascension: Humility
 172. World Boss
 192. Challenge Level 1
+205. Follower
+208. Delves
+216. Quest
+220. Story
 
-3.4.2
+4.4.0
 1. Normal
 2. Heroic
 3. 10 Player
@@ -93,8 +116,25 @@ local GetTime = GetTime
 193. 10 Player (Heroic)
 194. 25 Player (Heroic)
 
-1.14.4
-Doesn't return results
+1.15.3
+1. Normal
+9. 40 Player
+148. 20 Player
+184. Normal
+185. 20 Player
+186. 40 Player
+197. 10 Player
+198. Normal
+201. Normal
+202. Difficulty A
+203. Difficulty B
+204. Difficulty C
+207. Normal
+213. Infinite
+214. DNT - Internal only
+215. Normal
+226. 20 Player
+
 /run for i=1, 1000 do local n = GetDifficultyInfo(i) if n then print(i..".", n) end end
 ]]--
 
@@ -153,21 +193,25 @@ do
 						type = "toggle",
 						name = L.printWipeOption,
 						order = 1,
+						width = 1.5,
 					},
 					printKills = {
 						type = "toggle",
 						name = L.printDefeatOption,
 						order = 2,
+						width = 1.5,
 					},
 					printHealth = {
 						type = "toggle",
 						name = L.printHealthOption,
 						order = 3,
+						width = 1.5,
 					},
 					printNewBestKill = {
 						type = "toggle",
 						name = L.printBestTimeOption,
 						order = 4,
+						width = 1.5,
 						disabled = function() return not plugin.db.profile.saveBestKill or not plugin.db.profile.enabled end,
 					},
 				},
@@ -250,14 +294,23 @@ end
 -- Event Handlers
 --
 
+local function GetModuleID(bossMod)
+	local journalId = bossMod:GetJournalID()
+	if journalId then
+		return journalId
+	elseif not journalId and bossMod:GetAllowWin() and bossMod:GetEncounterID() then
+		return -(bossMod:GetEncounterID()) -- Fallback to record stats for modules with no journal ID, but set to allow win
+	end
+end
+
 do
 	local UnitHealth, UnitHealthMax, IsEncounterInProgress = UnitHealth, UnitHealthMax, IsEncounterInProgress
 	local function StoreHealth(module)
 		if IsEncounterInProgress() then
+			local journalId = GetModuleID(module)
 			for i = 1, 5 do
 				local unit = units[i]
 				local rawHealth = UnitHealth(unit)
-				local journalId = module:GetJournalID()
 				if rawHealth > 0 then
 					local maxHealth = UnitHealthMax(unit)
 					local health = rawHealth / maxHealth
@@ -271,7 +324,7 @@ do
 	end
 	function plugin:BigWigs_OnBossEngage(event, module, diff)
 		local id = module.instanceId
-		local journalId = module:GetJournalID()
+		local journalId = GetModuleID(module)
 
 		if journalId and id and id > 0 and not module.worldBoss then -- Raid restricted for now
 			activeDurations[journalId] = GetTime()
@@ -281,11 +334,21 @@ do
 				if not sDB[id] then sDB[id] = {} end
 				if not sDB[id][journalId] then sDB[id][journalId] = {} end
 				sDB = sDB[id][journalId]
-				if not sDB[difficultyTable[diff]] then sDB[difficultyTable[diff]] = {} end
+				local difficultyText = difficultyTable[diff]
+				if difficultyText == "SOD" then
+					if module:GetPlayerAura(458841) then -- Sweltering Heat
+						difficultyText = "level1"
+					elseif module:GetPlayerAura(458842) then -- Blistering Heat
+						difficultyText = "level2"
+					elseif module:GetPlayerAura(458843) then -- Molten Heat
+						difficultyText = "level3"
+					end
+				end
+				if not sDB[difficultyText] then sDB[difficultyText] = {} end
 
-				local best = sDB[difficultyTable[diff]].best
+				local best = sDB[difficultyText].best
 				if self.db.profile.showBar and best then
-					self:SendMessage("BigWigs_StartBar", self, nil, L.bestTimeBar, best, "Interface\\AddOns\\BigWigs\\Media\\Icons\\spell_holy_borrowedtime") -- 237538 = "Interface\\Icons\\spell_holy_borrowedtime"
+					self:SendMessage("BigWigs_StartBar", self, nil, L.bestTimeBar, best, 237538) -- 237538 = "Interface\\Icons\\spell_holy_borrowedtime"
 				end
 			end
 
@@ -300,7 +363,7 @@ do
 end
 
 local function Stop(self, module)
-	local journalId = module:GetJournalID()
+	local journalId = GetModuleID(module)
 	if journalId then
 		activeDurations[journalId] = nil
 		if healthPools[journalId] then
@@ -313,7 +376,7 @@ local function Stop(self, module)
 end
 
 function plugin:BigWigs_OnBossWin(event, module)
-	local journalId = module:GetJournalID()
+	local journalId = GetModuleID(module)
 	if journalId and activeDurations[journalId] then
 		local elapsed = GetTime()-activeDurations[journalId]
 
@@ -323,7 +386,17 @@ function plugin:BigWigs_OnBossWin(event, module)
 
 		local diff = module:Difficulty()
 		if difficultyTable[diff] then
-			local sDB = BigWigsStatsDB[module.instanceId][journalId][difficultyTable[diff]]
+			local difficultyText = difficultyTable[diff]
+			if difficultyText == "SOD" then
+				if module:GetPlayerAura(458841) then -- Sweltering Heat
+					difficultyText = "level1"
+				elseif module:GetPlayerAura(458842) then -- Blistering Heat
+					difficultyText = "level2"
+				elseif module:GetPlayerAura(458843) then -- Molten Heat
+					difficultyText = "level3"
+				end
+			end
+			local sDB = BigWigsStatsDB[module.instanceId][journalId][difficultyText]
 			if self.db.profile.saveKills then
 				sDB.kills = sDB.kills and sDB.kills + 1 or 1
 			end
@@ -335,7 +408,7 @@ function plugin:BigWigs_OnBossWin(event, module)
 				end
 				sDB.best = elapsed
 			end
-		elseif IsInRaid() and diff ~= 24 then -- Not printing for Timewalking (24)
+		elseif IsInRaid() and not dontPrint[diff] then
 			BigWigs:Error("Tell the devs, the stats for this boss were not recorded because a new difficulty id was found: "..diff)
 		end
 	end
@@ -344,7 +417,7 @@ function plugin:BigWigs_OnBossWin(event, module)
 end
 
 function plugin:BigWigs_OnBossWipe(event, module)
-	local journalId = module:GetJournalID()
+	local journalId = GetModuleID(module)
 	if journalId and activeDurations[journalId] then
 		local elapsed = GetTime()-activeDurations[journalId]
 
@@ -354,10 +427,20 @@ function plugin:BigWigs_OnBossWipe(event, module)
 			end
 
 			local diff = module:Difficulty()
-			if not difficultyTable[diff] and IsInRaid() and diff ~= 24 then -- Not printing for Timewalking (24)
+			if not difficultyTable[diff] and IsInRaid() and not dontPrint[diff] then
 				BigWigs:Error("Tell the devs, the stats for this boss were not recorded because a new difficulty id was found: "..diff)
 			elseif difficultyTable[diff] and self.db.profile.saveWipes then
-				local sDB = BigWigsStatsDB[module.instanceId][journalId][difficultyTable[diff]]
+				local difficultyText = difficultyTable[diff]
+				if difficultyText == "SOD" then
+					if module:GetPlayerAura(458841) then -- Sweltering Heat
+						difficultyText = "level1"
+					elseif module:GetPlayerAura(458842) then -- Blistering Heat
+						difficultyText = "level2"
+					elseif module:GetPlayerAura(458843) then -- Molten Heat
+						difficultyText = "level3"
+					end
+				end
+				local sDB = BigWigsStatsDB[module.instanceId][journalId][difficultyText]
 				sDB.wipes = sDB.wipes and sDB.wipes + 1 or 1
 			end
 

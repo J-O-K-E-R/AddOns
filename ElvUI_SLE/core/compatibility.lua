@@ -1,6 +1,6 @@
 ﻿local SLE, T, E, L, V, P, G = unpack(ElvUI_SLE)
 
-local GetAddOnEnableState = GetAddOnEnableState
+local C_AddOns_GetAddOnEnableState = C_AddOns and C_AddOns.GetAddOnEnableState
 
 --Check if some stuff happens to be enable
 SLE._Compatibility = {}
@@ -22,7 +22,11 @@ local _CompList = {
 
 --Populate compatibility checks table
 for i = 1, #_CompList do
-	if GetAddOnEnableState(E.myname, _CompList[i]) == 0 then SLE._Compatibility[_CompList[i]] = nil else SLE._Compatibility[_CompList[i]] = true end
+	if (C_AddOns_GetAddOnEnableState and C_AddOns_GetAddOnEnableState(_CompList[i], E.myname) == 0) then
+			SLE._Compatibility[_CompList[i]] = nil
+	else
+			SLE._Compatibility[_CompList[i]] = true
+	end
 end
 
 --This function sets up a popup dialog in case there is an incompatible addon running

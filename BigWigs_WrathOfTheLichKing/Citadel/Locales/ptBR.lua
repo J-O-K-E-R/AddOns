@@ -1,5 +1,43 @@
-local L = BigWigs:NewBossLocale("Blood Prince Council", "ptBR")
+local L = BigWigs:NewBossLocale("Lord Marrowgar", "ptBR")
 if not L then return end
+if L then
+	L.bone_spike = "Espigão Ósseo" -- NPC ID 36619
+end
+
+L = BigWigs:NewBossLocale("Lady Deathwhisper", "ptBR")
+if L then
+	L.touch = "Toque"
+	L.deformed_fanatic = "Fanático Deformado" -- NPC ID 38135
+	L.empowered_adherent = "Seguidor Investido de Poderes" -- NPC ID 38136
+end
+
+L = BigWigs:NewBossLocale("Icecrown Gunship Battle", "ptBR")
+if L then
+	--L.adds_trigger_alliance = "Reavers, Sergeants, attack!"
+	--L.adds_trigger_horde = "Marines, Sergeants, attack!"
+
+	--L.mage = "Mage"
+	--L.mage_desc = "Warn when a mage spawns to freeze the gunship cannons."
+	-- Alliance: We're taking hull damage, get a battle-mage out here to shut down those cannons!
+	-- Horde: We're taking hull damage, get a sorcerer out here to shut down those cannons!
+	--L.mage_yell_trigger = "taking hull damage"
+
+	--L.warmup_trigger_alliance = "Fire up the engines"
+	--L.warmup_trigger_horde = "Rise up, sons and daughters"
+
+	--L.disable_trigger_alliance = "Onward, brothers and sisters"
+	--L.disable_trigger_horde = "Onward to the Lich King"
+end
+
+L = BigWigs:NewBossLocale("Deathbringer Saurfang", "ptBR")
+if L then
+	L.blood_beast = "Fera Sangrenta" --  NPC ID 38508
+
+	--L.warmup_alliance = "Let's get a move on then! Move ou..."
+	--L.warmup_horde = "Kor'kron, move out! Champions, watch your backs. The Scourge have been..."
+end
+
+L = BigWigs:NewBossLocale("Blood Prince Council", "ptBR")
 if L then
 	--L.switch_message = "Health swap: %s"
 	--L.switch_bar = "Next health swap"
@@ -16,27 +54,6 @@ if L then
 	--L.prison_message = "Shadow Prison x%d!"
 end
 
-L = BigWigs:NewBossLocale("Lady Deathwhisper", "ptBR")
-if L then
-	--L.engage_trigger = "What is this disturbance?"
-	--L.phase2_message = "Barrier DOWN - Phase 2!"
-
-	--L.dnd_message = "Death and Decay on YOU!"
-
-	--L.adds = "Adds"
-	--L.adds_desc = "Show timers for when the adds spawn."
-	--L.adds_bar = "Next Adds"
-	--L.adds_warning = "New adds in 5 sec!"
-
-	--L.touch_message = "%2$dx Touch on %1$s"
-	--L.touch_bar = "Next Touch"
-
-	--L.deformed_fanatic = "Deformed Fanatic!"
-
-	--L.spirit_message = "Summon Spirit!"
-	--L.spirit_bar = "Next Spirit"
-end
-
 L = BigWigs:NewBossLocale("Festergut", "ptBR")
 if L then
 	--L.engage_trigger = "Fun time?"
@@ -44,27 +61,6 @@ if L then
 	--L.inhale_bar = "Inhale (%d)"
 	--L.blight_warning = "Pungent Blight in ~5sec!"
 	--L.ball_message = "Goo ball incoming!"
-end
-
-L = BigWigs:NewBossLocale("Icecrown Gunship Battle", "ptBR")
-if L then
-	--L.adds = "Portals"
-	--L.adds_desc = "Warn for Portals."
-	--L.adds_trigger_alliance = "Reavers, Sergeants, attack!"
-	--L.adds_trigger_horde = "Marines, Sergeants, attack!"
-	--L.adds_message = "Portals!"
-	--L.adds_bar = "Next Portals"
-
-	--L.mage = "Mage"
-	--L.mage_desc = "Warn when a mage spawns to freeze the gunship cannons."
-	--L.mage_message = "Mage Spawned!"
-	--L.mage_bar = "Next Mage"
-
-	--L.warmup_trigger_alliance = "Fire up the engines"
-	--L.warmup_trigger_horde = "Rise up, sons and daughters"
-
-	--L.disable_trigger_alliance = "Onward, brothers and sisters"
-	--L.disable_trigger_horde = "Onward to the Lich King"
 end
 
 L = BigWigs:NewBossLocale("Blood-Queen Lana'thel", "ptBR")
@@ -109,13 +105,6 @@ if L then
 	--L.custom_on_valkyr_marker_desc = "Mark the Val'kyr with {rt8}{rt7}{rt6}, requires promoted or leader.\n|cFFFF0000Only 1 person in the raid should have this enabled to prevent marking conflicts.|r\n|cFFADFF2FTIP: If the raid has chosen you to turn this on, quickly mousing over the Val'kyr is the fastest way to mark them.|r"
 end
 
-L = BigWigs:NewBossLocale("Lord Marrowgar", "ptBR")
-if L then
-	--L.engage_trigger = "The Scourge will wash over this world as a swarm of death and destruction!"
-
-	--L.bonestorm_warning = "Bone Storm in 5 sec!"
-end
-
 L = BigWigs:NewBossLocale("Professor Putricide", "ptBR")
 if L then
 	--L.engage_trigger = "I think I've perfected a plague"
@@ -149,18 +138,6 @@ if L then
 	--L.ooze_message = "Ooze %dx"
 
 	--L.spray_bar = "Next Spray"
-end
-
-L = BigWigs:NewBossLocale("Deathbringer Saurfang", "ptBR")
-if L then
-	--L.adds = "Blood Beasts"
-	--L.adds_desc = "Shows a timer and messages for when Blood Beasts spawn."
-	--L.adds_warning = "Blood Beasts in 5 sec!"
-	--L.adds_message = "Blood Beasts!"
-
-	--L.engage_trigger = "BY THE MIGHT OF THE LICH KING!"
-	--L.warmup_alliance = "Let's get a move on then! Move ou..."
-	--L.warmup_horde = "Kor'kron, move out! Champions, watch your backs. The Scourge have been..."
 end
 
 L = BigWigs:NewBossLocale("Sindragosa", "ptBR")
@@ -211,6 +188,6 @@ end
 L = BigWigs:NewBossLocale("Icecrown Citadel Trash", "ptBR")
 if L then
 	L.deathbound_ward = "Guardião Ata-morte"
-	--L.deathspeaker_adds = "Lady Deathwhisper Trash"
+	L.deathspeaker_high_priest = "Sumo Sacerdote Morta-voz" -- NPC ID 36829
 	L.putricide_dogs = "Precioso & Inhaca"
 end

@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod(2480, "DBM-Raids-Dragonflight", 3, 1200)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20231102154902")
+mod:SetRevision("20240426174649")
 mod:SetCreatureID(184972)
 mod:SetEncounterID(2587)
 mod:SetUsedIcons(1, 2, 3, 4, 5)
@@ -47,12 +47,11 @@ local specWarnGTFO								= mod:NewSpecialWarningGTFO(370648, nil, nil, nil, 1, 
 
 local timerMoltenCleaveCD						= mod:NewCDCountTimer(29.9, 370615, nil, nil, nil, 3)
 local timerFlameriftCD							= mod:NewCDCountTimer(28.9, 390715, nil, nil, nil, 3, nil, DBM_COMMON_L.DAMAGE_ICON)
-local timerIncineratingRoarCD					= mod:NewCDCountTimer(23.9, 396023, nil, nil, nil, 2, nil, DBM_COMMON_L.HEALER_ICON)
+local timerIncineratingRoarCD					= mod:NewCDCountTimer(22, 396023, nil, nil, nil, 2, nil, DBM_COMMON_L.HEALER_ICON)
 local timerMoltenSpikesCD						= mod:NewCDCountTimer(21.4, 396022, nil, nil, nil, 3)
 --local berserkTimer							= mod:NewBerserkTimer(600)
 
 --mod:AddInfoFrameOption(361651, true)
-mod:AddRangeFrameOption(5, 390715)
 mod:GroupSpells(390715, 396094)
 ---Frenzied Tarasek
 mod:AddTimerLine(DBM:EJ_GetSectionInfo(26005))
@@ -63,7 +62,7 @@ local specWarnKillOrder							= mod:NewSpecialWarningYou(370597, nil, nil, nil, 
 mod:AddNamePlateOption("NPAuraOnKillOrder", 370597, true)
 mod:AddNamePlateOption("NPAuraOnRampage", 371562, true)
 --Flamescale Captain (Mythic)
-mod:AddTimerLine(DBM:GetSpellInfo(396039))
+mod:AddTimerLine(DBM:GetSpellName(396039))
 local warnLeapingFlames							= mod:NewSpellAnnounce(394917, 3)
 
 local specWarnPyroBlast							= mod:NewSpecialWarningInterruptCount(396040, "HasInterrupt", nil, nil, 1, 2)
@@ -104,9 +103,6 @@ function mod:OnCombatStart(delay)
 end
 
 function mod:OnCombatEnd()
-	if self.Options.RangeFrame then
-		DBM.RangeCheck:Hide()
-	end
 --	if self.Options.InfoFrame then
 --		DBM.InfoFrame:Hide()
 --	end
@@ -173,7 +169,7 @@ function mod:SPELL_CAST_SUCCESS(args)
 	elseif spellId == 396022 then
 		self.vb.spikesCount = self.vb.spikesCount + 1
 		specWarnMoltenSpikes:Show(self.vb.spikesCount)
-		specWarnMoltenSpikes:Play(self.vb.spikesCount)
+		specWarnMoltenSpikes:Play("Interface\\AddOns\\DBM-VP"..DBM.Options.ChosenVoicePack2.."\\count\\"..self.vb.spikesCount..".ogg")
 		if self.vb.spikesCount < 3 then
 			timerMoltenSpikesCD:Start(nil, self.vb.spikesCount+1)
 		end
@@ -201,9 +197,6 @@ function mod:SPELL_AURA_APPLIED(args)
 			specWarnFlamerift:Play("range5")
 			yellFlamerift:Yell()
 			yellFlameriftFades:Countdown(spellId)
-			if self.Options.RangeFrame then
-				DBM.RangeCheck:Show(5)
-			end
 		else
 			local uId = DBM:GetRaidUnitId(args.destName)
 			if self:IsTanking(uId) then
@@ -250,9 +243,6 @@ function mod:SPELL_AURA_REMOVED(args)
 	elseif spellId == 390715 or spellId == 396094 then
 		if args:IsPlayer() then
 			yellFlameriftFades:Cancel()
-			if self.Options.RangeFrame then
-				DBM.RangeCheck:Hide()
-			end
 		end
 	elseif spellId == 370307 then--Army ending
 		self.vb.roarCount = 0

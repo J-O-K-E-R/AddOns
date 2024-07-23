@@ -142,7 +142,7 @@ function CrossGambling:InitDB()
             },
             wager = 1000,
             houseCut = 10,
-			colors = { frameColor = {r = 0.27, g = 0.27, b = 0.27}, buttonColor = {r = 0.30, g = 0.30, b = 0.30}, sideColor = {r = 0.20, g = 0.20, b = 0.20} },
+			colors = { frameColor = {r = 0.27, g = 0.27, b = 0.27}, buttonColor = {r = 0.30, g = 0.30, b = 0.30}, sideColor = {r = 0.20, g = 0.20, b = 0.20}, fontColor = {r = 1, g = 0, b = 0} },
             themechoice = 1,
             theme = uiThemes[2],
             stats = {},
@@ -150,6 +150,7 @@ function CrossGambling:InitDB()
             joinstats = {},
             scale = 1,
             scalevalue = 1,
+			fontvalue = 14, 
             bans = {},
 },
 }
@@ -159,7 +160,7 @@ function CrossGambling:InitDB()
 				mode = gameModes[1],
 				state = gameStates[1],
 				chatframeOption = true,
-				realmFilter = true,
+				realmFilter = false,
 				house = false,
 				host = false, 
 				players = {},
@@ -432,7 +433,6 @@ function CrossGambling:CheckRolls(playerName)
     return playersRoll
 end
 
-
 function CrossGambling:CGResults()
     -- Results for winners/losers.
     local result = {}
@@ -460,7 +460,6 @@ function CrossGambling:CGResults()
     self:detectTie()
 end
 
-
 function CrossGambling:CloseGame()
     if (self.game.result ~= nil) then
         if (#self.game.result.losers > 0 and #self.game.result.winners > 0) then
@@ -471,42 +470,40 @@ function CrossGambling:CloseGame()
                 houseAmount = math.floor(self.game.result.amountOwed * (self.db.global.houseCut / 100))
                 self.game.result.amountOwed = self.game.result.amountOwed - houseAmount
             end
+
             -- Update players house/stats
             for i = 1, #self.game.result.losers do
-			 if (self.game.house == false) then
-			    local RollNotification = (self.game.result.losers[i].name .. " owes " .. self.game.result.winners[i].name .. " " .. add_commas(self.game.result.amountOwed) .. " gold!")
-				if(self.game.chatframeOption == false and self.game.host == true) then	
-					self:SendMsg(format("CHAT_MSG:%s:%s:%s", self.game.PlayerName, self.game.PlayerClass, RollNotification))
-				else
-					SendChatMessage(self.game.result.losers[i].name .. " owes " .. self.game.result.winners[i].name .. " " .. add_commas(self.game.result.amountOwed) .. " gold!" , self.game.chatMethod)
-                end               
-			   self:updatePlayerStat(self.game.result.losers[i].name, self.game.result.amountOwed * -1)
-			elseif(self.game.house == true) then
-                if(self.game.chatframeOption == false and self.game.host == true) then
-					local RollNotification = self.game.result.losers[i].name .. " owes " .. self.game.result.winners[i].name .. " " .. add_commas(self.game.result.amountOwed) .. " gold!" .. " plus " .. add_commas(houseAmount) .. " to the guild"
-					self:SendMsg(format("CHAT_MSG:%s:%s:%s", self.game.PlayerName, self.game.PlayerClass, RollNotification))
-				else
-					SendChatMessage(self.game.result.losers[i].name .. " owes " .. self.game.result.winners[i].name .. " " .. add_commas(self.game.result.amountOwed) .. " gold!" .. " plus " .. add_commas(houseAmount) .. " to the guild" , self.game.chatMethod)
-				end
-					self:updatePlayerStat(self.game.result.losers[i].name, self.game.result.amountOwed * -1)
-					self.db.global.housestats = self.db.global.housestats + houseAmount
+                local RollNotification = ""
+                if (self.game.house == false) then
+                    RollNotification = self.game.result.losers[i].name .. " owes " .. self.game.result.winners[i].name .. " " .. add_commas(self.game.result.amountOwed) .. " gold!"
+                elseif (self.game.house == true) then
+                    RollNotification = self.game.result.losers[i].name .. " owes " .. self.game.result.winners[i].name .. " " .. add_commas(self.game.result.amountOwed) .. " gold!" .. " plus " .. add_commas(houseAmount) .. " to the guild"
+                    self:updatePlayerStat("guild", houseAmount) -- Update guild's stats
                 end
+
+                if (self.game.chatframeOption == false and self.game.host == true) then
+                    self:SendMsg(format("CHAT_MSG:%s:%s:%s", self.game.PlayerName, self.game.PlayerClass, RollNotification))
+                else
+                    SendChatMessage(RollNotification, self.game.chatMethod)
+                end
+
+                self:updatePlayerStat(self.game.result.losers[i].name, self.game.result.amountOwed * -1)
             end
-            
+
             for i = 1, #self.game.result.winners do
                 self:updatePlayerStat(self.game.result.winners[i].name, self.game.result.amountOwed * #self.game.result.losers)
             end
         else
-			if(self.game.chatframeOption == false and self.game.host == true) then
-				local RollNotification = "No winners this round!"
-				self:SendMsg(format("CHAT_MSG:%s:%s:%s", self.game.PlayerName, self.game.PlayerClass, RollNotification))
-			else
-				SendChatMessage("No winners this round!" , self.game.chatMethod)
-			end
+            if (self.game.chatframeOption == false and self.game.host == true) then
+                local RollNotification = "No winners this round!"
+                self:SendMsg(format("CHAT_MSG:%s:%s:%s", self.game.PlayerName, self.game.PlayerClass, RollNotification))
+            else
+                SendChatMessage("No winners this round!", self.game.chatMethod)
+            end
         end
     end
 
-	self:UnRegisterChatEvents()
+    self:UnRegisterChatEvents()
     self:UnregisterEvent("CHAT_MSG_SYSTEM")
     self.game.state = gameStates[1]
     self.game.players = {}

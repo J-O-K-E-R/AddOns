@@ -139,10 +139,6 @@ L:SetGeneralLocalization({
 	name =	"Трэш мобы Нелтарий"
 })
 
-L:SetOptionLocalization({
-	AGBuffs		= "Автоматический выбор диалога для активации баффов при взаимодействии с кузнечным делом"
-})
-
 -----------------------
 -- <<<Algeth'ar Academy >>> --
 -----------------------
@@ -183,10 +179,6 @@ L:SetGeneralLocalization({
 	name =	"Трэш мобы Академия Алгет'ар"
 })
 
-L:SetOptionLocalization({
-	AGBuffs		= "Автоматический выбор диалога для активации баффов при взаимодействии с драконьими NPC"
-})
-
 -----------------------
 -- <<<The Azure Vault>>> --
 -----------------------
@@ -217,10 +209,6 @@ L = DBM:GetModLocalization("TheAzurevaultTrash")
 
 L:SetGeneralLocalization({
 	name =	"Трэш мобы Лазурное хранилище"
-})
-
-L:SetOptionLocalization({
-	AGBook			= "Автоматический выбор диалога для телепортации при взаимодействии с книгами"
 })
 
 -----------------------
@@ -289,10 +277,6 @@ L:SetGeneralLocalization({
 	name =	"Трэш мобы Чертоги Насыщения"
 })
 
-L:SetOptionLocalization({
-	AGBuffs		= "Автоматически выбирать диалог, чтобы активировать полезные баффы для инженерии и травничества"
-})
-
 -----------------------
 -- Chronikar --
 -----------------------
@@ -301,7 +285,11 @@ L:SetOptionLocalization({
 -----------------------
 -- Manifested Timeways --
 -----------------------
---L= DBM:GetModLocalization(2528)
+L= DBM:GetModLocalization(2528)
+
+L:SetMiscLocalization({
+	PrePullRP		= "Даже Аспект Времени не должен менять временные пути!"
+})
 
 -----------------------
 -- Blight of Galakrond --
@@ -311,7 +299,11 @@ L:SetOptionLocalization({
 -----------------------
 -- Iridikron the Stonescaled --
 -----------------------
---L= DBM:GetModLocalization(2537)
+L= DBM:GetModLocalization(2537)
+
+L:SetMiscLocalization({
+	PrePullRP		= "Слуги титанов пришли сразиться со мной."
+})
 
 -----------------------
 -- Tyr, the infinite Keeper --

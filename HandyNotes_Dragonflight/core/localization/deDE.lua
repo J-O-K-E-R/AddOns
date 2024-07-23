@@ -44,6 +44,8 @@ L['activation_unknown'] = 'Aktivierung unbekannt!'
 L['requirement_not_found'] = 'Voraussetzungsort unbekannt!'
 L['multiple_spawns'] = 'Kann an mehreren Orten erscheinen.'
 L['shared_drops'] = 'Geteilte Beute'
+L['zone_drops_label'] = 'Zonenbeute'
+L['zone_drops_note'] = 'Die unten aufgeführten Gegenstände können von mehreren Gegnern in dieser Zone fallen gelassen werden.'
 
 L['requires'] = 'Benötigt'
 L['ranked_research'] = '%s (Rang %d/%d)'
@@ -109,7 +111,7 @@ L['dr_challenge'] = 'Herausforderung'
 L['dr_reverse_challenge'] = 'Umgekehrte Herausforderung'
 L['dr_storm_race'] = 'Sturmrennen'
 L['dr_bronze'] = 'Beende das Rennen um ' .. ns.color.Bronze('Bronze') .. ' zu erhalten.'
-L['dr_vendor_note'] = 'Tausche {currency:2588} gegen Drachenanpassungen und Ausrüstungsvorlagen ein.'
+L['dr_vendor_note'] = 'Tausche {currency:2588} gegen Drachenwächtermanuskripte und Ausrüstungsvorlagen ein.'
 L['options_icons_dragonrace'] = 'Drachenrennen'
 L['options_icons_dragonrace_desc'] = 'Zeigt die Positionen der Drachenrennen an.'
 
@@ -173,6 +175,8 @@ L['options_restore_hidden_nodes_desc'] = 'Stellt alle Punkte wieder her, die üb
 
 L['options_rewards_settings'] = 'Belohnungen'
 L['options_reward_types'] = 'Zeige Belohnungstypen'
+L['options_manuscript_rewards'] = 'Zeige Drachenwächtermanuskriptbelohnungen'
+L['options_manuscript_rewards_desc'] = 'Zeige Drachenwächtermanuskriptbelohnungen in Tooltips an und verfolge ihren Sammlungsstatus.'
 L['options_mount_rewards'] = 'Zeige Reittierbelohnungen'
 L['options_mount_rewards_desc'] = 'Zeige Reittierbelohnungen in Tooltips an und verfolge ihren Sammlungsstatus.'
 L['options_pet_rewards'] = 'Zeige Haustierbelohnungen'
@@ -194,6 +198,8 @@ L['options_icons_rares_desc'] = 'Zeigt die Positionen von seltenen Gegnern an.'
 L['options_icons_rares'] = 'Seltene Gegner'
 L['options_icons_treasures_desc'] = 'Zeigt die Positionen versteckter Schätze an.'
 L['options_icons_treasures'] = 'Schätze'
+L['options_icons_vendors_desc'] = 'Zeigt die Positionen von Händlern an.'
+L['options_icons_vendors'] = 'Händler'
 
 ---------------------------------- FOCUS ---------------------------------
 

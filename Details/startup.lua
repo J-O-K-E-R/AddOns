@@ -1,15 +1,11 @@
 
---[=[
-	Details startup file
-	The function Details:StartMeUp() is called when the addon is fully loaded with saved variables and profiles
---]=]
-
 local Loc = _G.LibStub("AceLocale-3.0"):GetLocale("Details")
 local _
 local tocName, Details222 = ...
+local detailsFramework = DetailsFramework
 
 --start funtion
-function Details:StartMeUp()
+function Details222.StartUp.StartMeUp()
 	if (Details.AndIWillNeverStop) then
 		return
 	end
@@ -65,8 +61,17 @@ function Details:StartMeUp()
 		--@deathTable: a table containing all the information about the player's death
 		Details.ShowDeathTooltipFunction = Details.ShowDeathTooltip
 
+		if (C_CVar) then
+			if (not InCombatLockdown() and DetailsFramework.IsDragonflightAndBeyond()) then --disable for releases
+			--C_CVar.SetCVar("cameraDistanceMaxZoomFactor", 2.6)
+			end
+		end
+
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --initialize
+
+	--make an encounter journal cache
+	C_Timer.After(1, Details222.EJCache.CreateEncounterJournalDump)
 
 	--plugin container
 	Details:CreatePluginWindowContainer()
@@ -84,8 +89,16 @@ function Details:StartMeUp()
 	Details:InitializePlaterIntegrationWindow()
 	Details:InitializeMacrosWindow()
 
+	Details222.CreateAllDisplaysFrame()
+
+	Details222.LoadCommentatorFunctions()
+
+	Details222.AuraScan.FindAndIgnoreWorldAuras()
+
 	if (Details.ocd_tracker.show_options) then
 		Details:InitializeCDTrackerWindow()
+	else
+		Details:InitializeCDTrackerWindow() --enabled for v11 beta, debug openraid
 	end
 	--/run Details.ocd_tracker.show_options = true; ReloadUI()
 	--custom window
@@ -175,6 +188,11 @@ function Details:StartMeUp()
 		for id = 1, Details:GetNumInstances() do
 			local instance = Details:GetInstance(id)
 			if (instance:IsEnabled()) then
+				if (instance.modo == 3 and Details.auto_change_to_standard) then --everything
+					instance.LastModo = 2 --standard
+					instance.modo = 2 --standard
+				end
+
 				--refresh wallpaper
 				if (instance.wallpaper.enabled) then
 					instance:InstanceWallpaper(true)
@@ -276,10 +294,13 @@ function Details:StartMeUp()
 			Details.listener:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 			Details.listener:RegisterEvent("PLAYER_TALENT_UPDATE")
 			Details.listener:RegisterEvent("CHALLENGE_MODE_START")
+			--Details.listener:RegisterEvent("CHALLENGE_MODE_END") --doesn't exists ingame (only at cleu)
 			Details.listener:RegisterEvent("CHALLENGE_MODE_COMPLETED")
+			Details.listener:RegisterEvent("WORLD_STATE_TIMER_START")
+
 		end
 
-		Details.parser_frame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+		Details222.parser_frame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 
 	--update is in group
 	Details.details_users = {}
@@ -344,6 +365,12 @@ function Details:StartMeUp()
 			Details:AddDefaultCustomDisplays()
 		end
 		Details:FillUserCustomSpells()
+
+		if (C_CVar) then
+			if (not InCombatLockdown() and DetailsFramework.IsDragonflightAndBeyond()) then
+				C_CVar.SetCVar("cameraDistanceMaxZoomFactor", 2.6)
+			end
+		end
 	end
 
 	--check is this is the first run of this version
@@ -416,7 +443,7 @@ function Details:StartMeUp()
 			--version
 			Details.FadeHandler.Fader(instance._version, 0)
 			instance._version:SetText("Details! " .. Details.userversion .. " (core " .. Details.realversion .. ")")
-			instance._version:SetTextColor(1, 1, 1, .35)
+			instance._version:SetTextColor(1, 1, 1, .95)
 			instance._version:SetPoint("bottomleft", instance.baseframe, "bottomleft", 5, 1)
 
 			if (instance.auto_switch_to_old) then
@@ -481,7 +508,7 @@ function Details:StartMeUp()
 				---@type trinketdata
 				local thisTrinketData = {
 					itemName = C_Item.GetItemNameByID(trinketTable.itemId),
-					spellName = GetSpellInfo(spellId) or "spell not found",
+					spellName = Details222.GetSpellInfo(spellId) or "spell not found",
 					lastActivation = 0,
 					lastPlayerName = "",
 					totalCooldownTime = 0,
@@ -542,6 +569,8 @@ function Details:StartMeUp()
 	Details.standard_skin = false
 	--enforce to show 6 abilities on the tooltip
 	--_detalhes.tooltip.tooltip_max_abilities = 6 freeeeeedooommmmm
+	--no no, enforece 8, 8 is much better, 8 is more lines, we like 8
+	Details.tooltip.tooltip_max_abilities = 8
 
 	Details.InstallRaidInfo()
 
@@ -623,8 +652,6 @@ function Details:StartMeUp()
 
 	Details.InitializeSpellBreakdownTab()
 
-	pcall(Details222.EJCache.MakeCache)
-
 	pcall(Details222.ClassCache.MakeCache)
 
 	Details:BuildSpecsNameCache()
@@ -639,9 +666,31 @@ function Details:StartMeUp()
 		DetailsFramework.table.copy(Details.class_coords, Details.default_profile.class_coords)
 	end
 
-	--shutdown the old OnDeathMenu
-	--cleanup: this line can be removed after the first month of dragonflight
-	Details.on_death_menu = false
+--[=
+	--remove on v11 launch
+	if (DetailsFramework.IsWarWow()) then
+	C_Timer.After(1, function() if (SplashFrame) then SplashFrame:Hide() end end)
+	function HelpTip:SetHelpTipsEnabled(flag, enabled)
+		HelpTip.supressHelpTips[flag] = false
+	end
+	hooksecurefunc(HelpTipTemplateMixin, "OnShow", function(self)
+		self:Hide()
+	end)
+	hooksecurefunc(HelpTipTemplateMixin, "OnUpdate", function(self)
+		self:Hide()
+	end)
+
+	C_Timer.After(5, function()
+	if (TutorialPointerFrame_1) then
+		TutorialPointerFrame_1:Hide()
+		hooksecurefunc(TutorialPointerFrame_1, "Show", function(self)
+			self:Hide()
+		end)
+	end
+end)
+end
+--]=]
+
 end
 
 Details.AddOnLoadFilesTime = _G.GetTime()

@@ -52,21 +52,7 @@ end
 
 L = BigWigs:NewBossLocale("Heigan the Unclean", "ruRU")
 if L then
-	L.teleport_trigger = "Вам конец."
-
-	L.teleport = "Телепорт"
-	L.teleport_desc = "Предупреждать о телепорте."
-	L.teleport_1min_message = "Телепорт через 1 минуту"
-	L.teleport_30sec_message = "Телепорт через 30 секунд"
-	L.teleport_10sec_message = "Телепорт через 10 секунд!"
-	L.on_platform_message = "Телепорт! 45 секунд на платформе!"
-
-	L.to_floor_30sec_message = "Возвращение через 30 секунд"
-	L.to_floor_10sec_message = "Возвращение через 10 секунд!"
-	L.on_floor_message = "Возвращается! 90 секунд до следующего телепорта!"
-
-	L.teleport_bar = "Телепорт!"
-	L.back_bar = "Возвращение!"
+	L.teleport_yell_trigger = "Вам конец."
 end
 
 L = BigWigs:NewBossLocale("The Four Horsemen", "ruRU")
@@ -111,22 +97,7 @@ end
 
 L = BigWigs:NewBossLocale("Noth the Plaguebringer", "ruRU")
 if L then
-	L.add_trigger = "Встаньте мои воины! Встаньте и сражайтесь вновь!"
-
-	L.teleport = "Телепорт"
-	L.teleport_desc = "Предупреждать о телепорте."
-	L.teleport_balcony = "Телепорт! Он на балконе!"
-	L.teleport_room = "Телепорт! Он вернулся в комнат!"
-
-	L.curse_explosion = "Проклятый взрыв!"
-	L.curse_warn = "Проклятие!"
-	L.curse_10secwarn = "Проклятие через ~10 секунд"
-	L.curse_bar = "Следующее проклятие"
-
-	L.wave = "Призыв скелетов"
-	L.wave_desc = "Сообщать о волнах"
-	L.wave1 = "1-я волна"
-	L.wave2 = "2-я волна"
+	L.adds_yell_trigger = "Встаньте мои воины" -- Встаньте мои воины! Встаньте и сражайтесь вновь!
 end
 
 L = BigWigs:NewBossLocale("Maexxna", "ruRU")
@@ -169,23 +140,19 @@ end
 
 L = BigWigs:NewBossLocale("Thaddius", "ruRU")
 if L then
-	L.phase1_trigger1 = "Сталагг сокрушить вас!"
-	L.phase1_trigger2 = "Я скормлю вас господину!"
-	L.phase2_trigger1 = "Отведайте... своих... костей..." -- "Я сожру... ваши... кости..." -- XXX Check which is used
-	L.phase2_trigger2 = "Растерзаю!!!"
-	L.phase2_trigger3 = "Убей..." -- "Убью..." -- XXX Check which is used
+	L[15929] = "Сталагг"
+	L[15930] = "Фойген"
 
-	L.add_death_trigger = "%s умирает."
-	L.overload_trigger = "%s перезагружается!"
+	L.stage1_yell_trigger1 = "Сталагг тебя раздавит!"
+	L.stage1_yell_trigger2 = "На корм хозяину!"
 
-	L.polarity_changed = "Полярность сменилась!"
-	L.polarity_nochange = "Полярность НЕ сменилась!"
-	L.polarity_first_positive = "Вы (+) ПОЛОЖИТЕЛЬНЫЙ!"
-	L.polarity_first_negative = "Вы (-) ОТРИЦАТЕЛЬНЫЙ!"
+	L.stage2_yell_trigger1 = "Отведайте... своих... костей..."
+	L.stage2_yell_trigger2 = "Растерзаю!!!"
+	L.stage2_yell_trigger3 = "Убей..."
 
-	L.throw = "Бросока"
-	L.throw_desc = "Предупреждать о смене танков на платформах."
-	L.throw_warning = "Бросок через 5 секунд!"
+	L.add_death_emote_trigger = "%s умирает."
+	L.overload_emote_trigger = "%s перезагружается!"
+	--L.add_revive_emote_trigger = "%s is jolted back to life!"
 
 	--L.polarity_extras = "Additional alerts for Polarity Shift positioning"
 
@@ -214,4 +181,6 @@ if L then
 	--L.right = "---> GO RIGHT ---> GO RIGHT --->"
 	--L.swap = "^^^^ SWITCH SIDES ^^^^ SWITCH SIDES ^^^^"
 	--L.stay = "==== DON'T MOVE ==== DON'T MOVE ===="
+
+	--L.chat_message = "The Thaddius mod supports showing you directional arrows and playing voices. Open the options to configure them."
 end

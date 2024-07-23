@@ -102,8 +102,8 @@ function mod:OnEngage()
 	if not self:LFR() then
 		self:OpenProximity("proximity", 7) -- for Quicksand
 	end
-	self:CDBar("priestess_adds", 27, L["priestess_adds_message"], L.priestess_adds_icon)
-	self:CDBar(-7062, 7) -- Quicksand
+	self:Bar("priestess_adds", 27, L["priestess_adds_message"], L.priestess_adds_icon)
+	self:Bar(-7062, 7) -- Quicksand
 	self:Bar(136990, 9.7) -- Frostbite -- might be 7.5?
 	frostBiteStart, bitingColdStart = nil, nil
 	sandGuyDead = nil
@@ -153,7 +153,7 @@ end
 
 function mod:PriestessAdds(args)
 	self:MessageOld("priestess_adds", "red", "alarm", args.spellId)
-	self:CDBar("priestess_adds", 33, L["priestess_adds_message"], L.priestess_adds_icon)
+	self:Bar("priestess_adds", 33, L["priestess_adds_message"], L.priestess_adds_icon)
 end
 
 -- Sul the Sandcrawler
@@ -163,15 +163,12 @@ function mod:Sandstorm(args)
 	self:MessageOld(args.spellId, "orange", "alert")
 end
 
-do
-	local mastersCall = select(2, UnitClass("player")) == "HUNTER" and mod:SpellName(53271)
-	function mod:Entrapped(args)
-		if self:Me(args.destGUID) then
-			self:Flash(136857)
-			self:MessageOld(136857, "blue", "info")
-		elseif self:Dispeller("magic", nil, 136857) or (mastersCall and GetSpellCooldown(mastersCall) == 0) then -- Master's Call works on it, too
-			self:TargetMessageOld(136857, args.destName, "yellow", nil, nil, nil, true)
-		end
+function mod:Entrapped(args)
+	if self:Me(args.destGUID) then
+		self:Flash(136857)
+		self:MessageOld(136857, "blue", "info")
+	elseif self:Dispeller("magic", nil, 136857) then
+		self:TargetMessageOld(136857, args.destName, "yellow", nil, nil, nil, true)
 	end
 end
 
@@ -182,7 +179,7 @@ function mod:Ensnared(args)
 end
 
 function mod:Quicksand(args)
-	self:CDBar(-7062, 33, args.spellId)
+	self:Bar(-7062, 33, args.spellId)
 end
 
 function mod:QuicksandApplied(args)
@@ -267,7 +264,7 @@ function mod:BitingColdApplied(args)
 	self:Bar(args.spellId, 45)
 	self:SecondaryIcon(args.spellId, args.destName)
 	if self:Me(args.destGUID) then
-		self:Say(args.spellId)
+		self:Say(args.spellId, nil, nil, "Biting Cold")
 		if sandGuyDead then
 			self:OpenProximity(args.spellId, 4)
 		end
@@ -390,7 +387,7 @@ do
 		if mobId == 69131 then -- Frost King
 			self:StopBar(136992) -- Biting Cold
 			if bitingColdStart then
-				self:CDBar(136990, 45 - (GetTime() - bitingColdStart)) -- Frostbite -- CD bar because of Possessed buff travel time
+				self:Bar(136990, 45 - (GetTime() - bitingColdStart)) -- Frostbite -- CD bar because of Possessed buff travel time
 			end
 		end
 	end

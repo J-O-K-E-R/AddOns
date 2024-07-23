@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod(2343, "DBM-Raids-BfA", 4, 1176)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20230618060944")
+mod:SetRevision("20240629024602")
 mod:SetCreatureID(146409)
 mod:SetEncounterID(2281)
 mod:SetUsedIcons(1, 2, 3)
@@ -48,7 +48,7 @@ local warnSetCharge						= mod:NewSpellAnnounce(285725, 2)
 local warnIceShard						= mod:NewStackAnnounce(285253, 2, nil, "Tank")
 local warnTimeWarp						= mod:NewSpellAnnounce(287925, 3)
 local warnFreezingBlast					= mod:NewSpellAnnounce(285177, 3)
-local warnFrozenSiege					= mod:NewSpellAnnounce(289488, 2)
+local warnFrozenSiege					= mod:NewCountAnnounce(289488, 2)
 --Intermission 1
 local warnHowlingWindsLeft				= mod:NewCountAnnounce(290053, 2)
 --Stage Two: Frozen Wrath
@@ -101,7 +101,7 @@ local specWarnOrbofFrost				= mod:NewSpecialWarningCount(288619, nil, nil, nil, 
 local specWarnPrismaticImage			= mod:NewSpecialWarningSwitchCount(288747, nil, nil, 2, 1, 2)
 
 --General
-local timerPhaseTransition				= mod:NewPhaseTimer(55)
+local timerPhaseTransition				= mod:NewStageTimer(55)
 local timerHowlingWindsCD				= mod:NewCDCountTimer(80, 288169, nil, nil, nil, 6, nil, DBM_COMMON_L.MYTHIC_ICON)--Mythic
 local berserkTimer						= mod:NewBerserkTimer(900)
 local timerIceBlockCD					= mod:NewTargetTimer(20, 287322, nil, nil, nil, 6)
@@ -136,14 +136,13 @@ mod:AddNamePlateOption("NPAuraOnMarkedTarget2", 288038, false)
 mod:AddNamePlateOption("NPAuraOnTimeWarp", 287925)
 mod:AddNamePlateOption("NPAuraOnRefractiveIce", 288219)
 mod:AddNamePlateOption("NPAuraOnHowlingWinds2", 290053, false)
-mod:AddSetIconOption("SetIconAvalanche", 287565, true, false, {1, 2, 3})
-mod:AddSetIconOption("SetIconBroadside", 288212, true, false, {1, 2, 3})
+mod:AddSetIconOption("SetIconAvalanche", 287565, true, 0, {1, 2, 3})
+mod:AddSetIconOption("SetIconBroadside", 288212, true, 0, {1, 2, 3})
 mod:AddRangeFrameOption(10, 289379)
 mod:AddInfoFrameOption(287993, true, 2)
 mod:AddBoolOption("ShowOnlySummary2", true, "misc")
 mod:AddBoolOption("SetWeather", true)
-mod:AddMiscLine(DBM_CORE_L.OPTION_CATEGORY_DROPDOWNS)
-mod:AddDropdownOption("InterruptBehavior", {"Three", "Four", "Five"}, "Three", "misc")
+mod:AddDropdownOption("InterruptBehavior", {"Three", "Four", "Five"}, "Three", "misc", nil, 290084)
 
 mod.vb.corsairCount = 0
 mod.vb.imageCount = 0
@@ -168,32 +167,6 @@ local castsPerGUID = {}
 local rangeThreshold = 1
 local fixStupid = {}
 local CVAR1, CVAR2
-
---/run DBM:GetModByName("2343"):TimerTestFunction(30)
---This will auto loop, just run it once and wait to see how keep timers behave.
---Grasp of frost and ring of ice will be two main ones to watch, they won't be "cast" again but every 30 seconds so a 15 and 20 second timer will be kept for 15 or 10 additional seconds.
-function mod:TimerTestFunction(time)
-	timerFrozenSiegeCD:Start(3.3, 1)
-	timerAvalancheCD:Start(13.4)
-	timerFreezingBlastCD:Start(8.6)
-	timerGraspofFrostCD:Start(15.5)
-	timerRingofIceCD:Stop()
-	timerRingofIceCD:Start(20, 1)
-	timerHowlingWindsCD:Start(25, 1)
-	self:ScheduleMethod(time, "TimerTestFunction", time)
-end
-
---/run DBM:GetModByName("2343"):TimerTestFunctionEnd()
---Just run to end loop and stop all timers
-function mod:TimerTestFunctionEnd()
-	timerFrozenSiegeCD:Stop()
-	timerAvalancheCD:Stop()
-	timerFreezingBlastCD:Stop()
-	timerGraspofFrostCD:Stop()
-	timerRingofIceCD:Stop()
-	timerHowlingWindsCD:Stop()
-	self:UnscheduleMethod("TimerTestFunction")
-end
 
 function mod:HeartofFrostTarget(targetname, uId)
 	if not targetname then return end
@@ -265,7 +238,7 @@ function mod:OnCombatStart(delay)
 		berserkTimer:Start(900)
 	end
 	if self.Options.InfoFrame then
-		DBM.InfoFrame:SetHeader(DBM:GetSpellInfo(287993))
+		DBM.InfoFrame:SetHeader(DBM:GetSpellName(287993))
 		DBM.InfoFrame:Show(10, "table", ChillingTouchStacks, 1)
 	end
 	if self.Options.NPAuraOnMarkedTarget2 or self.Options.NPAuraOnTimeWarp or self.Options.NPAuraOnRefractiveIce or self.Options.NPAuraOnHowlingWinds2 then

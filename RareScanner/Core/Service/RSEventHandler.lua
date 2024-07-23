@@ -52,7 +52,7 @@ local function HandleEntityWithoutVignette(rareScannerButton, unitID)
 	
 		--if (not RSMapDB.IsZoneWithoutVignette(mapID)) then
 			-- Continue if its an NPC that doesnt have vignette in a newer zone
-		--	if (not RSNpcDB.GetInternalNpcInfo(npcID) or not RSNpcDB.GetInternalNpcInfo(npcID).nameplate) then
+		--	if (not RSNpcDB.GetInternalNpcInfo(npcID) or not RSNpcDB.GetInternalNpcInfo(npcID).noVignette) then
 		--		return
 		--	end
 		--end
@@ -214,7 +214,7 @@ local function OnPlayerTargetChanged()
 		-- check if killed
 		if (not RSNpcDB.IsNpcKilled(npcID)) then
 			-- Update coordinates (if zone doesnt use vignettes or it is detected with nameplates)
-			if ((RSMapDB.IsZoneWithoutVignette(playerMapID) or npcInfo.nameplate) and CheckInteractDistance("unit", 4)) then
+			if ((RSMapDB.IsZoneWithoutVignette(playerMapID) or npcInfo.noVignette) and not InCombatLockdown() and CheckInteractDistance("unit", 4)) then
 				RSGeneralDB.UpdateAlreadyFoundEntityPlayerPosition(npcID)
 			end
 			
@@ -371,7 +371,7 @@ local function OnChatMsgMonsterYell(rareScannerButton, message, name)
 				rareScannerButton:SimulateRareFound(npcID, nil, name, x, y, RSConstants.NPC_VIGNETTE)
 			end
 		-- If not in Mechagon check only for NPCs without vignette and scanneable with nameplates
-		elseif (RSNpcDB.GetInternalNpcInfo(npcID) and RSNpcDB.GetInternalNpcInfo(npcID).nameplate and not RSNpcDB.IsNpcKilled(npcID)) then
+		elseif (RSNpcDB.GetInternalNpcInfo(npcID) and RSNpcDB.GetInternalNpcInfo(npcID).noVignette and not RSNpcDB.IsNpcKilled(npcID)) then
 			local x, y = RSNpcDB.GetInternalNpcCoordinates(npcID, mapID)
 			rareScannerButton:SimulateRareFound(npcID, nil, name, x, y, RSConstants.NPC_VIGNETTE)
 		end
@@ -566,6 +566,16 @@ local function OnPlayerLogin(rareScannerButton)
 end
 
 ---============================================================================
+-- Event: PET_BATTLE_CLOSE
+-- Fired when the player closes a pet battle
+---============================================================================
+
+local function OnPetBattleClose()
+	-- For whatever reason the minimap icons are lost after closing a pet battle, so it forzes to show them again
+	RSMinimap.RefreshAllData(true)
+end
+
+---============================================================================
 -- Event handler
 ---============================================================================
 
@@ -616,6 +626,8 @@ local function HandleEvent(rareScannerButton, event, ...)
 		OnCriteriaEarned(...)
 	elseif (event == "UNIT_SPELLCAST_SUCCEEDED") then
 		OnUnitSpellcastSucceeded(...)
+	elseif (event == "PET_BATTLE_CLOSE") then
+		OnPetBattleClose(...)
 	end
 end
 
@@ -642,6 +654,7 @@ function RSEventHandler.RegisterEvents(rareScannerButton, addon)
 	rareScannerButton:RegisterEvent("ACHIEVEMENT_EARNED")
 	rareScannerButton:RegisterEvent("CRITERIA_EARNED")
 	rareScannerButton:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
+	rareScannerButton:RegisterEvent("PET_BATTLE_CLOSE")
 
 	-- Captures all events
 	rareScannerButton:SetScript("OnEvent", function(self, event, ...)

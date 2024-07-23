@@ -5,10 +5,6 @@ local L
 ----------------
 L= DBM:GetModLocalization(139)
 
-L:SetOptionLocalization({
-	SetIconOnConsuming		= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(88954)
-})
-
 -----------------
 --  Occu'thar  --
 -----------------
@@ -32,11 +28,6 @@ L:SetOptionLocalization({
 -------------------------------
 L = DBM:GetModLocalization(169)
 
-L:SetWarningLocalization({
-	SpecWarnActivated			= "Change Target to %s!",
-	specWarnGenerator			= "Power Generator - Move %s!"
-})
-
 L:SetTimerLocalization({
 	timerShadowConductorCast	= "Shadow Conductor",
 	timerArcaneLockout			= "Annihilator Lockout",
@@ -48,13 +39,7 @@ L:SetOptionLocalization({
 	timerShadowConductorCast	= "Show timer for $spell:92048 cast",
 	timerArcaneLockout			= "Show timer for $spell:79710 spell lockout",
 	timerArcaneBlowbackCast		= "Show timer for $spell:91879 cast",
-	timerNefAblity				= "Show timer for heroic ability buff cooldown",
-	SpecWarnActivated			= "Show special warning when new boss activated",
-	specWarnGenerator			= "Show special warning when a boss gains $spell:79629",
-	AcquiringTargetIcon			= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(79501),
-	ConductorIcon				= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(79888),
-	ShadowConductorIcon			= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(92053),
-	SetIconOnActivated			= "Set icon on last activated boss"
+	timerNefAblity				= "Show timer for heroic ability buff cooldown"
 })
 
 L:SetMiscLocalization({
@@ -86,11 +71,6 @@ L:SetMiscLocalization({
 -----------------
 L = DBM:GetModLocalization(171)
 
-L:SetOptionLocalization({
-	InfoFrame				= "Show info frame for $journal:3072",
-	TrackingIcon			= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(78092)
-})
-
 L:SetMiscLocalization({
 	NefAdd					= "Atramedes, the heroes are right THERE!",
 	Airphase				= "Yes, run! With every step your heart quickens. The beating, loud and thunderous... Almost deafening. You cannot escape!"
@@ -104,7 +84,7 @@ L = DBM:GetModLocalization(172)
 L:SetOptionLocalization({
 	RangeFrame		= "Show range frame (6)",
 	SetIconOnSlime	= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(82935),
-	InfoFrame		= "Show info frame for health (<10k hp)"
+	InfoFrame		= "Show info frame for health (&lt;10k hp)"
 })
 
 L:SetMiscLocalization({
@@ -126,12 +106,7 @@ L:SetTimerLocalization({
 
 L:SetOptionLocalization({
 	WarnPhase			= "Show warning which phase is incoming",
-	TimerPhase			= "Show timer for next phase",
-	RangeFrame			= "Show range frame (6) during blue phase",
-	SetTextures			= "Automatically disable projected textures in dark phase<br/>(returns it to enabled upon leaving phase)",
-	FlashFreezeIcon		= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(77699),
-	BitingChillIcon		= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(77760),
-	ConsumingFlamesIcon	= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(77786)
+	SetTextures			= "Automatically disable projected textures in dark phase<br/>(returns it to enabled upon leaving phase)"
 })
 
 L:SetMiscLocalization({
@@ -147,39 +122,17 @@ L:SetMiscLocalization({
 L = DBM:GetModLocalization(174)
 
 L:SetWarningLocalization({
-	OnyTailSwipe			= "Tail Lash (Onyxia)",
-	NefTailSwipe			= "Tail Lash (Nefarian)",
-	OnyBreath				= "Breath (Onyxia)",
-	NefBreath				= "Breath (Nefarian)",
-	specWarnShadowblazeSoon	= "%s",
 	warnShadowblazeSoon		= "%s"
 })
 
 L:SetTimerLocalization({
-	timerNefLanding			= "Nefarian lands",
-	OnySwipeTimer			= "Tail Lash CD (Ony)",
-	NefSwipeTimer			= "Tail Lash CD (Nef)",
-	OnyBreathTimer			= "Breath CD (Ony)",
-	NefBreathTimer			= "Breath CD (Nef)"
+	timerNefLanding			= "Nefarian lands"
 })
 
 L:SetOptionLocalization({
-	OnyTailSwipe			= "Show warning for Onyxia's $spell:77827",
-	NefTailSwipe			= "Show warning for Nefarian's $spell:77827",
-	OnyBreath				= "Show warning for Onyxia's $spell:77826",
-	NefBreath				= "Show warning for Nefarian's $spell:77826",
-	specWarnCinderMove		= "Show special warning to move away when you are affected by<br/> $spell:79339 (5s before explosion)",
 	warnShadowblazeSoon		= "Show pre-warning countdown for $spell:81031 (5s before)<br/>(Only after timer has been synced to first yell to ensure accuracy)",
-	specWarnShadowblazeSoon	= "Show pre-special warning for $spell:81031<br/>(5s prewarn at first, 1s prewarn after first yell sync to ensure accuracy)",
 	timerNefLanding			= "Show timer for when Nefarian lands",
-	OnySwipeTimer			= "Show timer for Onyxia's $spell:77827 cooldown",
-	NefSwipeTimer			= "Show timer for Nefarian's $spell:77827 cooldown",
-	OnyBreathTimer			= "Show timer for Onyxia's $spell:77826 cooldown",
-	NefBreathTimer			= "Show timer for Nefarian's $spell:77826 cooldown",
-	InfoFrame				= "Show info frame for $journal:3284",
-	SetWater				= "Automatically disable water collision on pull<br/>(returns it to enabled upon leaving combat)",
-	SetIconOnCinder			= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(79339),
-	RangeFrame				= "Show range frame (10) for $spell:79339<br/>(Shows everyone if you have debuff, only players with debuff if not)"
+	SetWater				= "Automatically disable water collision on pull<br/>(returns it to enabled upon leaving combat)"
 })
 
 L:SetMiscLocalization({
@@ -187,8 +140,7 @@ L:SetMiscLocalization({
 	YellPhase2				= "Curse you, mortals! Such a callous disregard for one's possessions must be met with extreme force!",
 	YellPhase3				= "I have tried to be an accommodating host, but you simply will not die! Time to throw all pretense aside and just... KILL YOU ALL!",
 	YellShadowBlaze			= "Flesh turns to ash!",
-	ShadowBlazeExact		= "Shadowblaze Spark in %ds",
-	ShadowBlazeEstimate		= "Shadowblaze Spark soon (~5s)"
+	ShadowBlazeExact		= "Shadowblaze Spark in %ds"
 })
 
 -------------------------------
@@ -205,10 +157,6 @@ L:SetGeneralLocalization({
 --------------------------
 L = DBM:GetModLocalization(156)
 
-L:SetOptionLocalization({
-	ShowDrakeHealth		= "Show the health of released drakes<br/>(Requires Boss Health enabled)"
-})
-
 ---------------------------
 --  Valiona & Theralion  --
 ---------------------------
@@ -216,11 +164,7 @@ L = DBM:GetModLocalization(157)
 
 L:SetOptionLocalization({
 	TBwarnWhileBlackout		= "Show $spell:86369 warning when $spell:86788 active",
-	TwilightBlastArrow		= "Show DBM arrow when $spell:86369 is near you",
-	RangeFrame				= "Show range frame (10)",
-	BlackoutShieldFrame		= "Show boss health with a health bar for $spell:86788",
-	BlackoutIcon			= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(86788),
-	EngulfingIcon			= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(86622)
+	BlackoutShieldFrame		= "Show boss health with a health bar for $spell:86788"
 })
 
 L:SetMiscLocalization({
@@ -248,16 +192,7 @@ L:SetOptionLocalization({
 	SpecWarnGrounded		= "Show special warning when you are missing $spell:83581 debuff<br/>(~10sec before cast)",
 	SpecWarnSearingWinds	= "Show special warning when you are missing $spell:83500 debuff<br/>(~10sec before cast)",
 	timerTransition			= "Show Phase transition timer",
-	RangeFrame				= "Show range frame automatically when needed",
-	yellScrewed				= "Yell when you have $spell:83099 &amp; $spell:92307 at same time",
-	InfoFrame				= "Show info frame for players without $spell:83581 or $spell:83500",
-	HeartIceIcon			= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(82665),
-	BurningBloodIcon		= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(82660),
-	LightningRodIcon		= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(83099),
-	GravityCrushIcon		= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(84948),
-	FrostBeaconIcon			= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(92307),
-	StaticOverloadIcon		= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(92067),
-	GravityCoreIcon			= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(92075)
+	yellScrewed				= "Yell when you have $spell:83099 &amp; $spell:92307 at same time"
 })
 
 L:SetMiscLocalization({
@@ -274,13 +209,6 @@ L:SetMiscLocalization({
 --  Cho'gall  --
 ----------------
 L = DBM:GetModLocalization(167)
-
-L:SetOptionLocalization({
-	CorruptingCrashArrow	= "Show DBM arrow when $spell:81685 is near you",
-	InfoFrame				= "Show info frame for $journal:3165",
-	RangeFrame				= "Show range frame (5) for $journal:3165",
-	SetIconOnWorship		= DBM_CORE_L.AUTO_ICONS_OPTION_TARGETS:format(91317)
-})
 
 ----------------
 --  Sinestra  --

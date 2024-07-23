@@ -1,6 +1,6 @@
-﻿## Interface: 100200
+﻿## Interface: 100207
 ## Title: Pawn
-## Version: 2.8.6
+## Version: 2.9.13
 ## Notes: Pawn helps you compare items and find upgrades.
 ## OptionalDependencies: Ace3, ArkInventoryRules, AtlasLoot, EQCompare, EquipCompare, LinkWrangler, MobInfo2, MultiTips, Outfitter
 ## SavedVariables: PawnCommon
@@ -27,6 +27,7 @@ Gems.lua
 GemsClassic.lua
 GemsBurningCrusade.lua
 GemsWrath.lua
+GemsCataclysm.lua
 ScaleTemplates.lua
 ItemIDs.lua
 Pawn.lua

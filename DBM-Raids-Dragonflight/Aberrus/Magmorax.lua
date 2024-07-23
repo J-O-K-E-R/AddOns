@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod(2527, "DBM-Raids-Dragonflight", 2, 1208)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20231120131222")
+mod:SetRevision("20240714045321")
 mod:SetCreatureID(201579)
 mod:SetEncounterID(2683)
 mod:SetUsedIcons(1, 2, 3, 8)
@@ -41,7 +41,7 @@ local specWarnOverpoweringStomp						= mod:NewSpecialWarningCount(403671, nil, 1
 local specWarnMoltenSpittle							= mod:NewSpecialWarningYou(402994, nil, 80801, nil, 1, 2)
 local yellMoltenSpittle								= mod:NewShortPosYell(402994, "%s", nil, nil, "YELL")
 local yellMoltenSpittleFades						= mod:NewIconFadesYell(402994, nil, nil, nil, "YELL")
-local specWarnBlazingBreath							= mod:NewSpecialWarningDodge(409093, nil, 18357, nil, 2, 2)
+local specWarnBlazingBreath							= mod:NewSpecialWarningDodgeCount(409093, nil, 18357, nil, 2, 2)
 local specWarnIncineratingMaws						= mod:NewSpecialWarningStack(404846, nil, 2, nil, nil, 1, 6)
 local specWarnIncineratingMawsSwap					= mod:NewSpecialWarningTaunt(404846, nil, nil, nil, 1, 2)
 local specWarnGTFO									= mod:NewSpecialWarningGTFO(411633, nil, nil, nil, 1, 8)
@@ -99,16 +99,13 @@ function mod:OnCombatStart(delay)
 		DBM:FireEvent("BossMod_EnableHostileNameplates")
 	end
 	if self.Options.InfoFrame then
-		DBM.InfoFrame:SetHeader(DBM:GetSpellInfo(408839))
+		DBM.InfoFrame:SetHeader(DBM:GetSpellName(408839))
 		DBM.InfoFrame:Show(30, "table", heatStacks, 1)
 	end
 end
 
 function mod:OnCombatEnd()
 	table.wipe(heatStacks)
---	if self.Options.RangeFrame then
---		DBM.RangeCheck:Hide()
---	end
 	if self.Options.InfoFrame then
 		DBM.InfoFrame:Hide()
 	end
@@ -278,8 +275,8 @@ function mod:SPELL_AURA_APPLIED(args)
 				if expireTime then
 					remaining = expireTime-GetTime()
 				end
-				local neededTime = timerIncineratingMawsCD:GetRemaining(self.vb.mawCount+1) or 14.4
-				if (not remaining or remaining and remaining < neededTime) and not UnitIsDeadOrGhost("player") and not self:IsHealer() then
+				local timerLeft = timerIncineratingMawsCD:GetRemaining(self.vb.mawCount+1) or 14.4
+				if (not remaining or remaining and remaining < timerLeft) and not UnitIsDeadOrGhost("player") and not self:IsHealer() then
 					specWarnIncineratingMawsSwap:Show(args.destName)
 					specWarnIncineratingMawsSwap:Play("tauntboss")
 				else

@@ -13,6 +13,7 @@ BigWigs:AddSounds("Ancient Protectors", {
 	[427498] = "long",
 	[427509] = "long",
 	[427510] = "alert",
+	[427513] = "underyou",
 })
 
 BigWigs:AddSounds("Xeri'tac", {
@@ -45,6 +46,7 @@ BigWigs:AddSounds("The Everbloom Trash", {
 	[164965] = {"alarm","alert","info"},
 	[165123] = {"alarm","alert"},
 	[165213] = "alert",
+	[169445] = "alert",
 	[169494] = {"info","underyou"},
 	[172578] = "alarm",
 	[426500] = "alarm",

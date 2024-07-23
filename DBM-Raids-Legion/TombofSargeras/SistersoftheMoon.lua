@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod(1903, "DBM-Raids-Legion", 2, 875)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20230618063432")
+mod:SetRevision("20240426185020")
 mod:SetCreatureID(118523, 118374, 118518)--118523 Huntress kasparian, 118374 Captain Yathae Moonstrike, 118518 Prestess Lunaspyre
 mod:SetEncounterID(2050)
 --mod:SetBossHPInfoToHighest()
@@ -101,7 +101,7 @@ mod.vb.moonTalonCount = 0
 mod.vb.pulltime = 0
 mod.vb.specialCount = 0
 mod.vb.lastBeacon = false
-local astralPurge = DBM:GetSpellInfo(234998)
+local astralPurge = DBM:GetSpellName(234998)
 
 function mod:VolleyTarget(targetname, uId)
 	if not targetname then return end
@@ -234,7 +234,7 @@ end
 
 function mod:SPELL_AURA_APPLIED(args)
 	local spellId = args.spellId
-	if (spellId == 234995 or spellId == 234996) and args:IsPlayer() then
+	if (spellId == 234995 or spellId == 234996) and args:IsPlayer() and not self:IsTrivial() then
 		local amount = args.amount or 1
 		if amount >= 12 and amount % 4 == 0 then
 			specWarnFontofElune:Show(amount)

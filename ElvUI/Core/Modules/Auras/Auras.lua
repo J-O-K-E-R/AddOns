@@ -9,7 +9,6 @@ local format, tinsert, next = format, tinsert, next
 local select, unpack, strmatch = select, unpack, strmatch
 local GetInventoryItemQuality = GetInventoryItemQuality
 local GetInventoryItemTexture = GetInventoryItemTexture
-local GetItemQualityColor = GetItemQualityColor
 local GetWeaponEnchantInfo = GetWeaponEnchantInfo
 local RegisterAttributeDriver = RegisterAttributeDriver
 local SecureHandlerSetFrameRef = SecureHandlerSetFrameRef
@@ -18,8 +17,9 @@ local GameTooltip_Hide = GameTooltip_Hide
 local GameTooltip = GameTooltip
 local CreateFrame = CreateFrame
 local UIParent = UIParent
-local UnitAura = UnitAura
 local GetTime = GetTime
+
+local GetItemQualityColor = C_Item.GetItemQualityColor or GetItemQualityColor
 
 local Masque = E.Masque
 local MasqueGroupBuffs = Masque and Masque:Group('ElvUI', 'Buffs')
@@ -268,7 +268,7 @@ function A:ClearAuraTime(button, expired)
 end
 
 function A:UpdateAura(button, index)
-	local name, icon, count, debuffType, duration, expiration, _, _, _, _, _, _, _, _, modRate = UnitAura(button.header:GetAttribute('unit'), index, button.filter)
+	local name, icon, count, debuffType, duration, expiration, _, _, _, _, _, _, _, _, modRate = E:GetAuraData(button.header:GetAttribute('unit'), index, button.filter)
 	if not name then return end
 
 	local db = A.db[button.auraType]
@@ -564,7 +564,7 @@ function A:Initialize()
 			_G.TemporaryEnchantFrame:Kill()
 		end
 
-		if E.Wrath then
+		if E.Cata then
 			_G.ConsolidatedBuffs:Kill()
 		end
 	end

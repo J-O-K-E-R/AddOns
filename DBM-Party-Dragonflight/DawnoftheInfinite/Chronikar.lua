@@ -1,7 +1,9 @@
 local mod	= DBM:NewMod(2521, "DBM-Party-Dragonflight", 9, 1209)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20231102055900")
+mod.statTypes = "normal,heroic,mythic,challenge"--No Follower dungeon
+
+mod:SetRevision("20240714045506")
 mod:SetCreatureID(198995)
 mod:SetEncounterID(2666)
 --mod:SetUsedIcons(1, 2, 3)
@@ -52,7 +54,7 @@ function mod:OnCombatStart(delay)
 	self.vb.stompCount = 0
 	timerSandStompCD:Start(7.4-delay, 1)
 	timerEonShatterCD:Start(19.5-delay)
-	timerChronoShearCD:Start(43.8, 1)
+	timerChronoShearCD:Start(43.4, 1)
 end
 
 function mod:SPELL_CAST_START(args)
@@ -68,9 +70,11 @@ function mod:SPELL_CAST_START(args)
 			timerEonResidue:Start(nil, self.vb.shatterCount)
 		end
 		if self.vb.shatterCount == 1 then
+			---@diagnostic disable-next-line: param-type-mismatch
 			specWarnEonShatter:Show(self.vb.shatterSet.." - "..self.vb.shatterCount)
 			specWarnEonShatter:Play("watchstep")
 		else--Cast 2
+			---@diagnostic disable-next-line: param-type-mismatch
 			warnEonShatter:Show(self.vb.shatterSet.." - "..self.vb.shatterCount)
 			--if self.vb.shatterCount == 2 then
 			--	timerEonShatterCD:Start(42)

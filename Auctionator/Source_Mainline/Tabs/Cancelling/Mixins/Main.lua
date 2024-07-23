@@ -27,6 +27,9 @@ StaticPopupDialogs[ConfirmBidPricePopup] = {
   button2 = CANCEL,
   OnAccept = function(self)
     Auctionator.AH.CancelAuction(self.data)
+    Auctionator.EventBus:RegisterSource(self, "CancellingFramePopupDialog")
+      :Fire(self, Auctionator.Cancelling.Events.CancelConfirmed, self.data)
+      :UnregisterSource(self)
   end,
   hasMoneyFrame = 1,
   showAlert = 1,
@@ -38,7 +41,13 @@ StaticPopupDialogs[ConfirmBidPricePopup] = {
 function AuctionatorCancellingFrameMixin:IsAuctionShown(auctionInfo)
   local searchString = self.SearchFilter:GetText()
   if searchString ~= "" then
-    return string.find(string.lower(auctionInfo.searchName), string.lower(searchString), 1, true)
+    local exact = searchString:match("^\"(.*)\"$")
+    local name = string.lower(auctionInfo.searchName)
+    if exact then
+      return name == exact
+    else
+      return string.find(name, string.lower(searchString), 1, true)
+    end
   else
     return true
   end
@@ -58,6 +67,8 @@ function AuctionatorCancellingFrameMixin:ReceiveEvent(eventName, ...)
       end
     else
       Auctionator.AH.CancelAuction(auctionID)
+      Auctionator.EventBus:RegisterSource(self, "CancellingFrame")
+        :Fire(self, Auctionator.Cancelling.Events.CancelConfirmed, auctionID)
     end
 
     PlaySound(SOUNDKIT.IG_MAINMENU_OPEN)

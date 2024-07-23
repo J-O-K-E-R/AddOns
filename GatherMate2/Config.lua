@@ -1,6 +1,5 @@
 local GatherMate = LibStub("AceAddon-3.0"):GetAddon("GatherMate2")
 local Config = GatherMate:NewModule("Config","AceEvent-3.0")
-local Display = GatherMate:GetModule("Display")
 local L = LibStub("AceLocale-3.0"):GetLocale("GatherMate2", false)
 
 -- Databroker support
@@ -1019,7 +1018,7 @@ importOptions.args.GatherMateData = {
 		local enabled = GetAddOnEnableState(UnitName("player"), "GatherMate2_Data") > 0
 		-- disable if the addon is not enabled, or
 		-- disable if there is a reason why it can't be loaded ("MISSING" or "DISABLED")
-		return not enabled or (reason ~= nil and reason ~= "DEMAND_LOADED")
+		return not enabled or (reason ~= nil and reason ~= "" and reason ~= "DEMAND_LOADED")
 	end,
 	args = {
 		desc = {

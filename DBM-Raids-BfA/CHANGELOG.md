@@ -1,7 +1,6 @@
 # <DBM Mod> Raids (BfA)
 
-## [r24](https://github.com/DeadlyBossMods/DBM-BfA/tree/r24) (2023-11-17)
-[Full Changelog](https://github.com/DeadlyBossMods/DBM-BfA/compare/r23...r24) [Previous Releases](https://github.com/DeadlyBossMods/DBM-BfA/releases)
+## [r35](https://github.com/DeadlyBossMods/DBM-BfA/tree/r35) (2024-06-29)
+[Full Changelog](https://github.com/DeadlyBossMods/DBM-BfA/compare/r34...r35) [Previous Releases](https://github.com/DeadlyBossMods/DBM-BfA/releases)
 
-- missed one cleanup  
-- bulldoze complex distance calculation code from raden  
+- Fix deprecated stage timers  

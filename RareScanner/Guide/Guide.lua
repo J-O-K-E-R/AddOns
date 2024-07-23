@@ -410,7 +410,7 @@ private.NPC_GUIDE = {
 		[RSConstants.ENTRANCE] = { x = 0.792, y = 0.3655 };
 	}; --Irontree
 	["1932252024"] = { 
-		[RSConstants.ENTRANCE] = { x = 0.3403, y = 0.3077 };
+		[RSConstants.ENTRANCE] = { x = 0.2062, y = 0.4979 };
 	}; --Notfar the Unbearable
 	["1931422023"] = { 
 		[RSConstants.ENTRANCE] = { x = 0.5636, y = 0.8168 };

@@ -8,10 +8,18 @@ local _, app = ...;
 -- Capability to add to and run a sequence of Functions with a specific allotment being processed individually each frame
 
 -- Global locals
-local wipe, math_max, tonumber, unpack, coroutine, type, select, tremove, tinsert, pcall, C_Timer_After =
-	  wipe, math.max, tonumber, unpack, coroutine, type, select, tremove, tinsert, pcall,  C_Timer.After;
+local wipe, math_max, tonumber, unpack, coroutine, type, select, tremove, pcall, C_Timer_After =
+	  wipe, math.max, tonumber, unpack, coroutine, type, select, tremove, pcall,  C_Timer.After;
 local c_create, c_yield, c_resume, c_status
 	= coroutine.create, coroutine.yield, coroutine.resume, coroutine.status;
+
+local function PrintError(err, source, co)
+	print("ERROR:",source,":",err)
+	if co and app.Debugging then
+		local instanceTrace = debugstack(co);
+		print(instanceTrace)
+	end
+end
 
 local Stack = {};
 local StackParams = {};
@@ -28,14 +36,14 @@ local function SetStackCo()
 	StackCo = c_create(function()
 		while true do
 			-- app.PrintDebug("StackCo:Call",#Stack)
-			local f, p, s, c;
+			local f, p, status, err;
 			for i=#Stack,1,-1 do
 				f, p = Stack[i], StackParams[i];
 				-- app.PrintDebug("StackCo:Run",i,f,p)
-				s, c = pcall(f, p);
+				status, err = pcall(f, p);
 				-- Function call has an error or it is not continuing, remove it from the Stack
-				if not s or not c then
-					if not s then app.PrintDebug("StackError:",i,f,p,c) end
+				if not status or not err then
+					if not status then PrintError(err, "StackCo", StackCo) end
 					-- app.PrintDebug("StackCo:Remove",i)
 					tremove(Stack, i);
 					tremove(StackParams, i);
@@ -60,13 +68,7 @@ local function RunStack()
 	if c_status(StackCo) == "dead" then SetStackCo() end
 	RunningStack = nil;
 	local ok, err = pcall(c_resume, StackCo);
-	if not ok then
-		app.PrintDebug("RunStack:Error:",err)
-		if app.Debugging then
-			local instanceTrace = debugstack(StackCo, err);
-			print(instanceTrace)
-		end
-	end
+	if not ok then PrintError(err, "RunStack", StackCo) end
 end
 QueueStack = function()
 	-- app.PrintDebug("QueueStackStatus:",RunningStack and "REPEAT" or "FIRST",c_status(StackCo))
@@ -112,18 +114,17 @@ local function ReturnCoroutine(co)
 	CoroutineCache[name] = nil;
 	CoroutineCache[co] = nil;
 end
-local _PushQueue = {};
+-- We will make this a weak-value cache, such that the Push methods can be cleaned up/recreated if needed
+local _PushQueue = setmetatable({}, {__mode = "v",})
 -- Represents a small set of Push functions which are used to allow the Stack to handle coroutine processing. As these functions have no bearing
 -- on the coroutine they run, they can be reused and only created when the current amount is not enough to handle all concurrent coroutines.
--- We will make this a weak-value cache, such that the Push methods can be cleaned up/recreated if needed
 local PushQueue = setmetatable({}, {
-	__mode = "v",
 	-- any index reference will return the next available pusher
 	__index = function()
-		local pusher = _PushQueue[1];
+		local pusher = _PushQueue[#_PushQueue];
 		if pusher then
-			tremove(_PushQueue, 1);
-			-- app.PrintDebug("PUSH:Cache",#PushQueue)
+			-- app.PrintDebug("PUSH:Cache",#_PushQueue)
+			_PushQueue[#_PushQueue] = nil;
 			return pusher;
 		end
 		-- app.PrintDebug("PUSH:New",#_PushQueue + 1)
@@ -141,23 +142,11 @@ local PushQueue = setmetatable({}, {
 						-- app.PrintDebug("PUSH.Run.Yielded",co)
 						return true;
 					end
-				else
-					app.PrintDebug("PUSH.Run.Error",co)
-					-- Throw the error. Returning nothing is the same as canceling the work.
-					-- local instanceTrace = debugstack(instance);
-					if app.Debugging then
-						local instanceTrace = debugstack(co, err);
-						print(instanceTrace)
-					end
-					-- error(err,2);
-					-- print(debugstack(instance));
-					-- print(err);
-					-- app.report();
-				end
+				else PrintError(err, "PUSH.Run", co) end
 			end
 			-- After the pusher is done running the coroutine, it can return itself to the cache
-			-- app.PrintDebug("PUSH:Return",pushfunc,"=>",#_PushQueue + 1)
 			_PushQueue[#_PushQueue + 1] = pushfunc;
+			-- app.PrintDebug("PUSH:Return",pushfunc,"=>",#_PushQueue)
 			-- Then grab the corresponding Name of this coroutine based on the coroutine cache
 			-- and swap in the coroutine for the Name, and un-flag the Name from the NameCache
 			ReturnCoroutine(co);
@@ -197,59 +186,69 @@ local function CreateRunner(name)
 		perFrame = 0
 	end
 	local function Reset()
-		-- app.PrintDebug("FR:Reset."..name,"Qi",QueueIndex,"Ri",RunIndex,"#F",#FunctionQueue)
-		SetPerFrame(1)
+		-- app.PrintDebug("FR:Reset."..name,Pushed and "RUNNING" or "STOPPED","Qi",QueueIndex,"Ri",RunIndex,"@",Config.PerFrame)
+		SetPerFrame(Config.PerFrameDefault or 1)
 		-- when done with all functions in the queue, reset the indexes and clear the queues of data
 		QueueIndex = 1
 		RunIndex = Pushed and 0 or 1	-- reset while running will resume and continue at index 1
 		wipe(FunctionQueue)
 		wipe(ParameterBucketQueue)
 		wipe(ParameterSingleQueue)
-		-- app.PrintDebug("FR:Reset."..name,"Qi",QueueIndex,"Ri",RunIndex,"#F",#FunctionQueue)
+	end
+	local function Stats()
+		app.print(name,Pushed and "RUNNING" or "STOPPED","Qi",QueueIndex,"Ri",RunIndex,"@",Config.PerFrame)
 	end
 
 	-- Static coroutine for the Runner which runs one loop each time the Runner is called, and yields on the Stack
-	local RunnerCoroutine = c_create(function()
-		while true do
-			perFrame = Config.PerFrame
-			local params;
-			local func = FunctionQueue[RunIndex];
-			-- app.PrintDebug("FRC.Running."..name)
-			while func do
-				perFrame = perFrame - 1;
-				params = ParameterBucketQueue[RunIndex];
-				if params then
-					-- app.PrintDebug("FRC.Run.N."..name,RunIndex,unpack(params))
-					pcall(func, unpack(params));
-				else
-					-- app.PrintDebug("FRC.Run.1."..name,RunIndex,ParameterSingleQueue[RunIndex])
-					pcall(func, ParameterSingleQueue[RunIndex]);
+	local RunnerCoroutine
+	local SetRunnerCoroutine = function()
+		RunnerCoroutine = c_create(function()
+			while true do
+				perFrame = Config.PerFrame
+				local params;
+				local func = FunctionQueue[RunIndex];
+				-- app.PrintDebug("FRC.Running."..name)
+				while func do
+					perFrame = perFrame - 1;
+					params = ParameterBucketQueue[RunIndex];
+					if params then
+						-- app.PrintDebug("FRC.Run.N."..name,RunIndex,unpack(params))
+						local ok, err = pcall(func, unpack(params));
+						if not ok then PrintError(err, "Run."..Name) end
+					else
+						-- app.PrintDebug("FRC.Run.1."..name,RunIndex,ParameterSingleQueue[RunIndex])
+						local ok, err = pcall(func, ParameterSingleQueue[RunIndex]);
+						if not ok then PrintError(err, "Run."..Name) end
+					end
+					-- app.PrintDebug("FRC.Done."..name,RunIndex)
+					if perFrame <= 0 then
+						-- app.PrintDebug("FRC.Yield."..name)
+						c_yield();
+						perFrame = Config.PerFrame;
+					end
+					RunIndex = RunIndex + 1;
+					func = FunctionQueue[RunIndex];
 				end
-				-- app.PrintDebug("FRC.Done."..name,RunIndex)
-				if perFrame <= 0 then
-					-- app.PrintDebug("FRC.Yield."..name)
-					c_yield();
-					perFrame = Config.PerFrame;
+				-- Run the OnEnd function if it exists
+				local OnEnd = FunctionQueue[0];
+				if OnEnd then
+					-- app.PrintDebug("FRC.End."..name,#FunctionQueue)
+					OnEnd();
 				end
-				RunIndex = RunIndex + 1;
-				func = FunctionQueue[RunIndex];
+				Pushed = nil;
+				Reset();
+				-- Yield false to kick the StackRun off the Stack to stop calling this coroutine since it is complete until Run is called again
+				c_yield(false);
 			end
-			-- Run the OnEnd function if it exists
-			local OnEnd = FunctionQueue[0];
-			if OnEnd then
-				-- app.PrintDebug("FRC.End."..name,#FunctionQueue)
-				OnEnd();
-			end
-			Pushed = nil;
-			Reset();
-			-- Yield false to kick the StackRun off the Stack to stop calling this coroutine since it is complete until Run is called again
-			c_yield(false);
-		end
-	end);
+		end);
+		-- app.PrintDebug("SetRunnerCoroutine",Name)
+	end
+	SetRunnerCoroutine()
 
 	-- Static Function that handles the Stack-Run for the Runner-Coroutine
 	local function StackRun()
 		-- app.PrintDebug("Stack.Run",Name)
+		if c_status(RunnerCoroutine) == "dead" then SetRunnerCoroutine() end
 		local ok, err = c_resume(RunnerCoroutine);
 		if ok then
 			if err == false then
@@ -259,18 +258,7 @@ local function CreateRunner(name)
 				-- app.PrintDebug("Stack.Run.Yielded",Name)
 				return true;	-- This means more work is required.
 			end
-		else
-			app.PrintDebug("Stack.Run.Error",Name)
-			-- Throw the error. Returning nothing is the same as canceling the work.
-			if app.Debugging then
-				local instanceTrace = debugstack(RunnerCoroutine);
-				print(instanceTrace)
-			end
-			error(err,2);
-			-- print(debugstack(instance));
-			-- print(err);
-			-- app.report();
-		end
+		else PrintError(err, Name, RunnerCoroutine) end
 	end
 
 	-- Provides a utility which will process a given number of functions each frame in a Queue
@@ -298,6 +286,12 @@ local function CreateRunner(name)
 		OnEnd = function(func)
 			FunctionQueue[0] = func;
 		end,
+		-- Return the current PerFrame of the Runner
+		GetPerFrame = function() return Config.PerFrame end,
+		-- Return if the Runner is currently Running
+		IsRunning = function() return Pushed end,
+		-- Allows defining the default PerFrame for this Runner (i.e. when Reset)
+		SetPerFrameDefault = function(count) Config.PerFrameDefault = count end
 	};
 	-- Defines how many functions will be executed per frame. Executes via the Runner when encountered in the Queue, unless specified as 'instant'
 	Runner.SetPerFrame = function(count, instant)
@@ -307,8 +301,16 @@ local function CreateRunner(name)
 			Runner.Run(SetPerFrame, count);
 		end
 	end
-	Runner.Reset = Reset; -- for testing
+
+	Runner.Reset = Reset -- for testing
+	Runner.Stats = Stats -- for testing
+	app.Runners[name] = Runner
 
 	return Runner;
 end
-app.CreateRunner = CreateRunner;
+-- Retrieves an existing or creates a new Runner with the provided name
+app.CreateRunner = function(name)
+	return app.Runners[name] or CreateRunner(name)
+end
+app.Runners = {}
+app.FunctionRunner = CreateRunner("default");

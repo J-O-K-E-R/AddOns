@@ -1,25 +1,32 @@
 --[[
-	frame.lua
-		Useful methods to implement a class for frame objects.
-		All Rights Reserved.
+	Useful methods to implement a class for frame objects.
+	All Rights Reserved
 --]]
 
 
 local ADDON, Addon = ...
 local L = LibStub('AceLocale-3.0'):GetLocale(ADDON)
-local Frame = Addon.Base:NewClass('Frame', 'Frame', Addon.FrameTemplate, true)
-
+local Frame = Addon.Base:NewClass('Frame', 'Frame', nil, true)
 Frame.OpenSound = SOUNDKIT.IG_BACKPACK_OPEN
 Frame.CloseSound = SOUNDKIT.IG_BACKPACK_CLOSE
 Frame.MoneyFrame = Addon.MoneyFrame
 Frame.BagGroup = Addon.BagGroup
 
+local KEYSTONE_FORMAT = '^' .. strrep('%d+:', 6) .. '%d+$'
+local PET_FORMAT = '^' .. strrep('%d+:', 7) .. '%d+$'
 
---[[ Frame Events ]]--
+
+--[[ Events ]]--
 
 function Frame:OnShow()
 	PlaySound(self.OpenSound)
-	self:RegisterSignals()
+	self:RegisterFrameSignal('BAG_FRAME_TOGGLED', 'Layout')
+	self:RegisterFrameSignal('ELEMENT_RESIZED', 'Layout')
+	self:RegisterSignal('SKINS_LOADED', 'UpdateSkin')
+	self:RegisterSignal('RULES_LOADED', 'FindRules')
+	self:RegisterSignal('UPDATE_ALL', 'Update')
+	self:RegisterEvents()
+	self:Update()
 end
 
 function Frame:OnHide()
@@ -32,14 +39,41 @@ function Frame:OnHide()
 end
 
 
---[[ Appearance ]]--
+--[[ UI ]]--
 
-function Frame:UpdateAppearance()
+function Frame:Update()
+	self.profile = self:GetBaseProfile()
 	self:ClearAllPoints()
 	self:SetFrameStrata(self.profile.strata)
 	self:SetAlpha(self.profile.alpha)
 	self:SetScale(self.profile.scale)
 	self:SetPoint(self:GetPosition())
+	self:UpdateSkin()
+	self:Layout()
+end
+
+function Frame:UpdateSkin()
+	if self.bg then
+		Addon.Skins:Release(self.bg)
+	end
+
+	local center = self.profile.color
+	local border = self.profile.borderColor
+	local bg = Addon.Skins:Acquire(self.profile.skin)
+	bg:SetParent(self)
+	bg:SetFrameLevel(self:GetFrameLevel())
+	bg:SetPoint('BOTTOMLEFT', bg.skin.x or 0, bg.skin.y or 0)
+	bg:SetPoint('TOPRIGHT', bg.skin.x1 or 0, bg.skin.y1 or 0)
+	bg:EnableMouse(true)
+
+	self.CloseButton:SetPoint('TOPRIGHT', (bg.skin.closeX or 0)-2, (bg.skin.closeY or 0)-2)
+	self.Title:SetHighlightFontObject(bg.skin.fontH or self.FontH)
+	self.Title:SetNormalFontObject(bg.skin.font or self.Font)
+	self.bg = bg
+
+	Addon.Skins:Call('load', bg)
+	Addon.Skins:Call('borderColor', bg, border[1], border[2], border[3], border[4])
+	Addon.Skins:Call('centerColor', bg, center[1], center[2], center[3], center[4])
 end
 
 function Frame:RecomputePosition()
@@ -79,12 +113,16 @@ function Frame:GetPosition()
 	return self.profile.point or 'CENTER', self.profile.x, self.profile.y
 end
 
+function Frame:GetExtraButtons()
+	return {}
+end
+
 
 --[[ Filtering ]]--
 
 function Frame:FindRules()
 	for id, rule in Addon.Rules:Iterate() do
-		if not tContains(self.profile.rules, id) and not self.profile.hiddenRules[id] then
+		if not tContains(self.profile.rules, id) then
 			self:Delay(0.01, 'SendFrameSignal', 'RULES_UPDATED')
 			tinsert(self.profile.rules, id)
 		end
@@ -123,11 +161,25 @@ function Frame:GetItemInfo(bag, slot)
 	local bag = self:GetOwner()[bag]
 	local data = bag and bag[slot]
 	if data then
-		local link, count = strsplit(';', data)
-		local item = {hyperlink = 'item:' .. link, stackCount = tonumber(count)}
-		item.itemID, _,_,_, item.iconFileID = GetItemInfoInstant(item.hyperlink)
-		_, _, item.quality = GetItemInfo(item.hyperlink) 
-		return item
+		if data:find(PET_FORMAT) then
+			local id, _, quality = data:match('(%d+):(%d+):(%d+)')
+			local item = {itemID = tonumber(id), quality = tonumber(quality)}
+			item.name, item.iconFileID = C_PetJournal.GetPetInfoBySpeciesID(item.itemID)
+			item.hyperlink = format('|c%s|Hbattlepet:%sx0|h[%s]|h|r', select(4, GetItemQualityColor(item.quality)), data, item.name)
+			return item
+		elseif data:find(KEYSTONE_FORMAT) then
+			local item = {itemID = tonumber(data:match('(%d+)'))}
+			_,_,_,_, item.iconFileID = GetItemInfoInstant(item.itemID)
+			_, item.hyperlink, item.quality = GetItemInfo(item.itemID)
+			item.hyperlink = item.hyperlink:gsub('item[:%d]+', data, 1)
+			return item
+		else
+			local link, count = strsplit(';', data)
+			local item = {hyperlink = 'item:' .. link, stackCount = tonumber(count)}
+			item.itemID, _,_,_, item.iconFileID = GetItemInfoInstant(item.hyperlink)
+			_, item.hyperlink, item.quality = GetItemInfo(item.hyperlink) 
+			return item
+		end
 	end
 	return {}
 end

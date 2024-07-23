@@ -15,8 +15,6 @@ end
 L = BigWigs:NewBossLocale("The Eye of the Jailer", "zhTW")
 if L then
 	L.chains = "鎖鏈" -- Short for Dragging Chains
-	L.pool = "黑水" -- Spreading Misery
-	L.pools = "黑水" -- Spreading Misery (multiple)
 	L.death_gaze = "死亡凝視" -- Short for Titanic Death Gaze
 end
 
@@ -119,18 +117,22 @@ if L then
 	L.custom_on_nameplate_fixate = "憤怒名條圖示"
 	L.custom_on_nameplate_fixate_desc = "在追擊你的黑暗哨兵名條上顯示追擊圖示。\n\n需要開啟敵方名條，並使用支援此功能的名條插件（如KuiNameplates、Plater）。"
 
+	--L.intermission_chains = "Intermission Chains"
 	L.chains = "鎖鏈" -- Short for Domination Chains
 	L.chain = "鎖鏈" -- Single Domination Chain
 	L.darkness = "黑暗" -- Short for Veil of Darkness
 	L.arrow = "悲鳴箭" -- Short for Wailing Arrow
+	--L.arrow_done = "DONE" -- Message when the arrow has hit
 	L.wave = "波浪" -- Short for Haunting Wave
 	L.dread = "碎擊" -- Short for Crushing Dread
-	L.orbs = "球" -- Dark Communion; 可能要改
-	L.curse = "詛咒" -- Short for Curse of Lethargy
-	L.pools = "災禍" -- Banshee's Bane
 	L.scream = "號叫" -- Banshee Scream
 
 	L.knife_fling = "飛刀！" -- "Death-touched blades fling out"; 傳奇模式的死亡利刃射出計時
+	--L.bridges = "Bridges"
+	--L.rive_counter = "%s (%d/%d)"
+	--L.soaks = "Soaks" -- Merciless
+	--L.count_x = "%s (x%d)(%d)"
+	--L.shroud_active = "Shroud (%d) - %.1f%%!"
 end
 
 L = BigWigs:NewBossLocale("Sanctum of Domination Affixes", "zhTW")

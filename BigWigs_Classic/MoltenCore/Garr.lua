@@ -1,23 +1,29 @@
 
 --------------------------------------------------------------------------------
--- Module declaration
+-- Module Declaration
 --
 
 local mod = BigWigs:NewBoss("Garr", 409, 1522)
 if not mod then return end
 mod:RegisterEnableMob(12057)
-mod.toggleOptions = {19492}
+mod:SetEncounterID(666)
 
 --------------------------------------------------------------------------------
 -- Initialization
 --
 
+function mod:GetOptions()
+	return {
+		19492, -- Antimagic Pulse
+	}
+end
+
 function mod:OnBossEnable()
-	self:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT", "CheckBossStatus")
-
 	self:Log("SPELL_CAST_SUCCESS", "Pulse", 19492)
+end
 
-	self:Death("Win", 12057)
+function mod:OnEngage()
+	self:CDBar(19492, 11.3) -- Antimagic Pulse
 end
 
 --------------------------------------------------------------------------------
@@ -25,6 +31,6 @@ end
 --
 
 function mod:Pulse(args)
-	self:Bar(args.spellId, 18)
+	self:Message(args.spellId, "yellow")
+	self:CDBar(args.spellId, 17)
 end
-

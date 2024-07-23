@@ -146,7 +146,7 @@ end
 
 function mod:AnimaRing(args)
 	self:MessageOld(args.spellId, "red", "alert")
-	self:CDBar(args.spellId, 22)
+	self:Bar(args.spellId, 22)
 end
 
 do
@@ -200,7 +200,7 @@ end
 do
 	local scheduled = {}
 	local function warnSlam(destName, spellName)
-		local _, amount = mod:UnitDebuff(destName, spellName)
+		local _, amount = mod:UnitDebuff(destName, spellName, 138569) -- difficulty 7
 		if amount then
 			mod:StackMessageOld(-7770, destName, amount, "orange", not mod:LFR() and amount > 3 and "info", L["slam_message"])
 		end
@@ -298,7 +298,7 @@ end
 
 function mod:CHAT_MSG_RAID_BOSS_WHISPER(_, msg, sender)
 	if sender == self:SpellName(138485) then -- Crimson Wake
-		self:Say(138485)
+		self:Say(138485, nil, nil, "Crimson Wake")
 		self:Bar(138485, 30, CL["you"]:format(sender))
 		self:DelayedMessage(138485, 30, "green", CL["over"]:format(sender))
 		self:MessageOld(138485, "orange", "alarm", CL["you"]:format(sender))

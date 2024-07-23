@@ -31,6 +31,8 @@ if L then
 
 	L.custom_on_ring_timers = "개별 후광 타이머"
 	L.custom_on_ring_timers_desc = "분해의 후광은 고리를 한 세트로 생성합니다. 이 옵션은 각각 고리가 언제 퍼지기 시작하는지 보여줍니다. 분해의 후광의 설정을 사용함."
+
+	L.absorb_text = "%s (%.0f%%)"
 end
 
 L = BigWigs:NewBossLocale("Prototype Pantheon", "koKR")
@@ -87,6 +89,8 @@ if L then
 
 	L.bomb_dropped = "폭탄 떨어트림"
 	--L.volatile_charges_new = "New Bombs!"
+
+	L.absorb_text = "%s (%.0f%%)"
 end
 
 L = BigWigs:NewBossLocale("Lords of Dread", "koKR")
@@ -143,9 +147,9 @@ if L then
 	L.mythic_blood_soak_stage_1 = "1페이즈 피 흡수 타이밍"
 	L.mythic_blood_soak_stage_1_desc = "아제로스를 힐할수 있는 좋은 타이밍이 언제인지 보이기. 에코가 첫킬 당시 사용."
 	L.mythic_blood_soak_stage_2 = "2페이즈 피 흡수 타이밍"
-	L.mythic_blood_soak_stage_2_desc = L.mythic_blood_soak_stage_1_desc
+	L.mythic_blood_soak_stage_2_desc = "아제로스를 힐할수 있는 좋은 타이밍이 언제인지 보이기. 에코가 첫킬 당시 사용."
 	L.mythic_blood_soak_stage_3 = "3페이즈 피 흡수 타이밍"
-	L.mythic_blood_soak_stage_3_desc = L.mythic_blood_soak_stage_1_desc
+	L.mythic_blood_soak_stage_3_desc = "아제로스를 힐할수 있는 좋은 타이밍이 언제인지 보이기. 에코가 첫킬 당시 사용."
 	L.mythic_blood_soak_bar = "아제로스 힐"
 
 	L.floors_open = "바닥 열림"

@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod(824, "DBM-Raids-MoP", 2, 362)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20230617070727")
+mod:SetRevision("20240525221104")
 mod:SetCreatureID(69427)
 mod:SetEncounterID(1576)
 mod:SetUsedIcons(1)
@@ -25,9 +25,9 @@ local warnMatterSwapped				= mod:NewAnnounce("warnMatterSwapped", 3, 138618)--Ac
 local warnExplosiveSlam				= mod:NewStackAnnounce(138569, 2, nil, "Tank|Healer")
 --Boss
 local warnActivation				= mod:NewCastAnnounce(139537, 3, 60)
-local warnAnimaRing					= mod:NewTargetAnnounce(136954, 3, nil, "Tank")
+local warnAnimaRing					= mod:NewTargetNoFilterAnnounce(136954, 3, nil, "Tank")
 local warnAnimaFont					= mod:NewTargetAnnounce(138691, 3)
-local warnEmpowerGolem				= mod:NewTargetAnnounce(138780, 3)
+local warnEmpowerGolem				= mod:NewTargetNoFilterAnnounce(138780, 3)
 
 local specWarnCrimsonWakeYou		= mod:NewSpecialWarningRun(138480, nil, nil, nil, 4)--Kiter
 local specWarnCrimsonWake			= mod:NewSpecialWarningMove(138485)--Standing in stuff left behind by kiter
@@ -51,11 +51,11 @@ local timerAnimaRingCD				= mod:NewNextTimer(24.2, 136954, nil, "Tank", nil, 5, 
 local timerAnimaFontCD				= mod:NewCDTimer(25, 138691, nil, nil, nil, 3)
 local timerInterruptingJolt			= mod:NewCastTimer(2.2, 138763)
 local timerInterruptingJoltCD		= mod:NewCDCountTimer(21.5, 138763, nil, nil, nil, 2, nil, nil, nil, 1, 4)--seems 23~24 normal and lfr. every 21.5 exactly on heroic
-local timerEmpowerGolemCD			= mod:NewCDTimer(16, 138780)
+local timerEmpowerGolemCD			= mod:NewCDTimer(15.7, 138780)
 
 local berserkTimer					= mod:NewBerserkTimer(600)
 
-local crimsonWake = DBM:GetSpellInfo(138485)--Debuff ID I believe, not cast one. Same spell name though
+local crimsonWake = DBM:GetSpellName(138485)--Debuff ID I believe, not cast one. Same spell name though
 local siphon = 0
 local jolt = 0
 
@@ -203,7 +203,7 @@ function mod:INSTANCE_ENCOUNTER_ENGAGE_UNIT()
 		self:UnregisterShortTermEvents()--Once boss is out, unregister event, since we need it no longer.
 		if self:IsHeroic() then
 			timerAnimaFontCD:Start(14)
-			timerAnimaRingCD:Start(23)
+			timerAnimaRingCD:Start(18)--Used to be 23
 			timerSiphonAnimaCD:Start(120, 1)--VERY important on heroic. boss activaet on pull, you have 2 minutes to do as much with adds as you can before he starts using siphon anima
 		elseif self:IsDifficulty("normal10", "normal25") then
 			timerSiphonAnimaCD:Start(5.3, 1)
@@ -214,8 +214,5 @@ end
 function mod:OnSync(msg, guid)
 	if msg == "WakeTarget" and guid then
 		warnCrimsonWake:Show(DBM:GetFullPlayerNameByGUID(guid))
-	elseif msg == "TestFunction" then
-		timerAnimaRingCD:Start(13)
-		timerInterruptingJoltCD:Start(11)
 	end
 end

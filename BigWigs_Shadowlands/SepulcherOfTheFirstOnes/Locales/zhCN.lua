@@ -31,6 +31,8 @@ if L then
 
 	L.custom_on_ring_timers = "衰变光环计时条"
 	L.custom_on_ring_timers_desc = "使用衰变光环设置：这是显示衰变光环在触发能量环时,开始移动的计时条。"
+
+	L.absorb_text = "%s（%.0f%%）"
 end
 
 L = BigWigs:NewBossLocale("Prototype Pantheon", "zhCN")
@@ -69,6 +71,8 @@ if L then
 
 	L.bomb_dropped = "炸弹掉落"
 	L.volatile_charges_new = "新炸弹!"
+
+	L.absorb_text = "%s（%.0f%%）"
 end
 
 L = BigWigs:NewBossLocale("Anduin Wrynn", "zhCN")
@@ -143,9 +147,9 @@ if L then
 	L.mythic_blood_soak_stage_1 = "第一阶段输血计时条"
 	L.mythic_blood_soak_stage_1_desc = "显示输血计时条，根据 Echo 的首杀所使用的时间轴制作，会在合适的时间点提醒你治疗艾泽拉斯。"
 	L.mythic_blood_soak_stage_2 = "第二阶段输血计时条"
-	L.mythic_blood_soak_stage_2_desc = L.mythic_blood_soak_stage_1_desc
+	L.mythic_blood_soak_stage_2_desc = "显示输血计时条，根据 Echo 的首杀所使用的时间轴制作，会在合适的时间点提醒你治疗艾泽拉斯。"
 	L.mythic_blood_soak_stage_3 = "第三阶段输血计时条"
-	L.mythic_blood_soak_stage_3_desc = L.mythic_blood_soak_stage_1_desc
+	L.mythic_blood_soak_stage_3_desc = "显示输血计时条，根据 Echo 的首杀所使用的时间轴制作，会在合适的时间点提醒你治疗艾泽拉斯。"
 	L.mythic_blood_soak_bar = "治疗艾泽拉斯"
 
 	L.floors_open = "地板开启"

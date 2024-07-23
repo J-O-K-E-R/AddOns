@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod(2500, "DBM-Raids-Dragonflight", 3, 1200)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20231102154902")
+mod:SetRevision("20240428104643")
 mod:SetCreatureID(190496)
 mod:SetEncounterID(2639)
 mod:SetUsedIcons(1, 2, 3, 4, 5, 6, 7, 8)
@@ -49,9 +49,8 @@ local timerFrenziedDevastationCD				= mod:NewNextTimer(387.9, 377505, nil, nil, 
 
 --local berserkTimer							= mod:NewBerserkTimer(600)
 
---mod:AddRangeFrameOption("8")
 --mod:AddInfoFrameOption(361651, true)--Likely will be used for dust
-mod:AddSetIconOption("SetIconOnAwakenedEarth", 381253, true, false, {1, 2, 3, 4, 5, 6, 7, 8})
+mod:AddSetIconOption("SetIconOnAwakenedEarth", 381253, true, 0, {1, 2, 3, 4, 5, 6, 7, 8})
 
 --mod.vb.rockIcon = 1
 mod.vb.awakenedIcon = 1
@@ -117,9 +116,6 @@ end
 
 function mod:OnCombatEnd()
 	self:UnregisterShortTermEvents()
---	if self.Options.RangeFrame then
---		DBM.RangeCheck:Hide()
---	end
 --	if self.Options.InfoFrame then
 --		DBM.InfoFrame:Hide()
 --	end

@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod(1654, "DBM-Party-Legion", 2, 762)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20231118045752")
+mod:SetRevision("20240714045506")
 mod:SetCreatureID(96512)
 mod:SetEncounterID(1836)
 mod:SetUsedIcons(8, 7)
@@ -31,15 +31,15 @@ ability.id = 198379 and type = "begincast"
 --NOTE: Leap will be broken until 10.2 but that's fine. in TW or while leveling dungeon is easy
 --TODO, min timers could still possibly need tweaking/lowering. Same with min ICD of each ability
 local warnLeap					= mod:NewCountAnnounce(196354, 2)
-local warnNightFall				= mod:NewSpellAnnounce(212464, 2)
+local warnNightFall				= mod:NewCountAnnounce(212464, 2)
 
 local specWarnNightfall			= mod:NewSpecialWarningMove(212464, nil, nil, nil, 1, 2)
 --local specWarnLeap			= mod:NewSpecialWarningDodge(196354, nil, nil, nil, 1)
 local yellLeap					= mod:NewYell(196354)
-local specWarnRampage			= mod:NewSpecialWarningDefensive(198379, "Tank", nil, nil, 1, 2)
+local specWarnRampage			= mod:NewSpecialWarningDefensive(198379, nil, nil, nil, 1, 2)
 local specWarnFixate			= mod:NewSpecialWarningYou(198477, nil, nil, nil, 1, 2)
 
-local timerLeapCD				= mod:NewCDCountTimer(13.2, 196354, nil, nil, nil, 3)--13.2-17 depending on travel time and spell queuing (timer could be even shorter, small sample)
+local timerLeapCD				= mod:NewCDCountTimer(11.9, 196354, nil, nil, nil, 3)--11.9-17 depending on travel time and spell queuing (timer could be even shorter, small sample)
 local timerRampageCD			= mod:NewCDCountTimer(26.7, 198379, nil, "Tank", nil, 5, nil, DBM_COMMON_L.TANK_ICON)--26.7-32.7
 local timerNightfallCD			= mod:NewCDCountTimer(20.6, 212464, nil, nil, nil, 3)--20.6--30.4
 
@@ -53,7 +53,7 @@ mod.vb.leapCount = 0
 mod.vb.rampageCount = 0
 mod.vb.nightCount = 0
 
---Grievous Leap triggers 5.8 ICD (maybe also 5.7 so will use that there too)
+--Grievous Leap triggers 5.1-5.8 ICD
 --Primal rampage triggers 5.7 ICD
 --Nightfall triggers 2.6 ICD
 local function updateAllTimers(self, ICD)
@@ -91,15 +91,19 @@ function mod:OnCombatStart(delay)
 	self.vb.nightCount = 0
 	timerLeapCD:Start(5-delay, 1)
 	timerRampageCD:Start(12.2-delay, 1)
-	timerNightfallCD:Start(20.6-delay, 1)--20.6-25.5
+	timerNightfallCD:Start(19.4-delay, 1)--19.4-25.5
 	if self.Options.NPAuraOnFixate then
 		DBM:FireEvent("BossMod_EnableHostileNameplates")
 	end
 end
 
-function mod:OnCombatEnd()
+function mod:OnCombatEnd(wipe, secondRun)
 	if self.Options.NPAuraOnFixate then
 		DBM.Nameplate:Hide(true, nil, nil, nil, true, true)
+	end
+	if not wipe and not secondRun then
+		local DHTTrash = DBM:GetModByName("DHTTrash")
+		DHTTrash:ResetSecondBossRP()
 	end
 end
 
@@ -107,8 +111,10 @@ function mod:SPELL_CAST_START(args)
 	local spellId = args.spellId
 	if spellId == 198379 then
 		self.vb.rampageCount = self.vb.rampageCount + 1
-		specWarnRampage:Show(self.vb.rampageCount)
-		specWarnRampage:Play("defensive")
+		if self:IsTanking("player", "boss1", nil, true) then
+			specWarnRampage:Show()
+			specWarnRampage:Play("defensive")
+		end
 		timerRampageCD:Start(nil, self.vb.rampageCount+1)
 		updateAllTimers(self, 5.7)
 	end
@@ -132,7 +138,7 @@ function mod:SPELL_CAST_SUCCESS(args)
 			self:BossTargetScanner(args.sourceGUID, "LeapTarget", 0.05, 6, true, nil, nil, nil, true)
 		end
 		timerLeapCD:Start(nil, self.vb.leapCount+1)
-		updateAllTimers(self, 5.7)
+		updateAllTimers(self, 5.1)
 	end
 end
 

@@ -29,7 +29,6 @@ end
 L = BigWigs:NewBossLocale("Artificer Xy'mox", "esES")
 if L then
 	L.tear = "Rasgadura" -- Short for Dimensional Tear
-	L.spirits = "Espíritus" -- Short for Fleeting Spirits
 	L.seeds = "Semillas" -- Short for Seeds of Extinction
 end
 
@@ -78,6 +77,7 @@ if L then
 	--L.dance_yell_up = "Prance Forward" -- Prance Forward!
 	--L.dance_yell_right = "Shimmy right" -- Shimmy right!
 	--L.dance_yell_down = "Boogie down" -- Boogie down!
+	--L.dance_yell_down_2 = "Boogie down" -- Boogie down!
 	--L.dance_yell_left = "Sashay left" -- Sashay left!
 end
 

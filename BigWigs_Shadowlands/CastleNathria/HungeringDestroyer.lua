@@ -37,9 +37,6 @@ if L then
 
 	L.custom_on_repeating_say_laser = "Repeating Volatile Ejection Say"
 	L.custom_on_repeating_say_laser_desc = "Repeating say messages for Volatile Ejection to help when moving into chat range of players that didn't see your first message."
-
-	L.currentHealth = "%d%%"
-	L.currentHealthIcon = "{rt%d}%d%%"
 end
 
 --------------------------------------------------------------------------------
@@ -166,8 +163,8 @@ local function RepeatingChatMessages()
 	elseif miasmaOnMe and mod:GetOption("custom_on_repeating_yell_miasma") then -- Repeat Health instead
 		local currentHealthPercent = math.floor(mod:GetHealth("player"))
 		if currentHealthPercent < 75 then -- Only let players know when you are below 75%
-			local myIcon = GetRaidTargetIndex("player")
-			local msg = myIcon and L.currentHealthIcon:format(myIcon, currentHealthPercent) or L.currentHealth:format(currentHealthPercent)
+			local myIcon = mod:GetIcon("player")
+			local msg = myIcon and ("{rt%d}%d%%"):format(myIcon, currentHealthPercent) or ("%d%%"):format(currentHealthPercent)
 			mod:Yell(false, msg, true)
 		end
 		if not mod:Mythic() then

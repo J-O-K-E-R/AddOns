@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod(2509, "DBM-Party-Dragonflight", 5, 1201)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20231029212301")
+mod:SetRevision("20240605152414")
 mod:SetCreatureID(194181)
 mod:SetEncounterID(2562)
 mod:SetHotfixNoticeRev(20221015000000)
@@ -63,10 +63,10 @@ function mod:OnCombatStart(delay)
 	self.vb.fissureCount = 0
 	timerArcaneOrbsCD:Start(2.1-delay, 1)
 	timerArcaneExpulsionCD:Start(12.1-delay)
-	timerManaBombsCD:Start(23.9-delay)
+	timerManaBombsCD:Start(22.1-delay, 1)
 	timerArcaneFissureCD:Start(40.7-delay, 1)
 	if self.Options.InfoFrame then
-		DBM.InfoFrame:SetHeader(DBM:GetSpellInfo(391977))
+		DBM.InfoFrame:SetHeader(DBM:GetSpellName(391977))
 		DBM.InfoFrame:Show(5, "playerdebuffstacks", 391977)
 	end
 end

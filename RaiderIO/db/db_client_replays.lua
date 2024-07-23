@@ -1,11 +1,6 @@
---
--- Copyright (c) 2023 by Ludicrous Speed, LLC
--- All rights reserved.
---
--- Generated on Tue Nov 21 2023 11:12:31 GMT+0000 (Coordinated Universal Time) - DO NOT EDIT
---
-local _, ns = ...
-ns.REPLAYS = {
-
-}
-
+-- __________        .__    .___           .___________   
+-- \______   \_____  |__| __| _/___________|   \_____  \  
+--  |       _/\__  \ |  |/ __ |/ __ \_  __ \   |/   |   \ 
+--  |    |   \ / __ \|  / /_/ \  ___/|  | \/   /    |    \
+--  |____|_  /(____  /__\____ |\___  >__|  |___\_______  /
+--         \/      \/        \/    \/                  \/

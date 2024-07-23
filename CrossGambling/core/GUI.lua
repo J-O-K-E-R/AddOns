@@ -10,6 +10,8 @@ local Backdrop = {
 local frameColor = {r = 0.27, g = 0.27, b = 0.27}
 local buttonColor = {r = 0.30, g = 0.30, b = 0.30}
 local sideColor = {r = 0.20, g = 0.20, b = 0.20}
+local playerNameColor = "|c" .. RAID_CLASS_COLORS[select(2, UnitClass("player"))].colorStr
+local fontColor = ""
 local BtnClr, SideClr = {}, {}
 local ButtonColors = function(self)
 if not self.SetBackdrop then
@@ -151,6 +153,7 @@ local OptionsButton = CreateFrame("Frame", nil, CrossGamblingUI, "BackdropTempla
 OptionsButton:SetSize(CrossGamblingUI:GetSize(), 21)
 OptionsButton:SetPoint("TOPLEFT", CrossGamblingUI, 0, 0)
 OptionsButton:Hide()
+
 -- Main Menu
 local CGMainMenu = CreateFrame("Button", nil, MainHeader,  "BackdropTemplate")
 CGMainMenu:SetSize(63, 21)
@@ -187,28 +190,43 @@ CGOptions:SetScript("OnMouseUp", function(self)
 		OptionsButton:Show()
 	end
 end)
--- Color functions are place holders until I move them to their own folders
-function SaveColor()
-    self.db.global.colors.frameColor.r, self.db.global.colors.frameColor.g, self.db.global.colors.frameColor.b = frameColor.r, frameColor.g, frameColor.b
-    self.db.global.colors.buttonColor.r, self.db.global.colors.buttonColor.g, self.db.global.colors.buttonColor.b = buttonColor.r, buttonColor.g, buttonColor.b
-	self.db.global.colors.sideColor.r, self.db.global.colors.sideColor.g, self.db.global.colors.sideColor.b = sideColor.r, sideColor.g, sideColor.b
-end
 
+
+
+
+local fontColor = {r = 1.0, g = 1.0, b = 1.0} 
+function setFontColor(r, g, b)
+    fontColor.r, fontColor.g, fontColor.b = r, g, b
+    --print("Font Color Set: " .. fontColor.r .. ", " .. fontColor.g .. ", " .. fontColor.b)
+end
 function LoadColor()
     frameColor.r, frameColor.g, frameColor.b = self.db.global.colors.frameColor.r, self.db.global.colors.frameColor.g, self.db.global.colors.frameColor.b
     CrossGamblingUI:SetBackdropColor(frameColor.r, frameColor.g, frameColor.b)
 
     buttonColor.r, buttonColor.g, buttonColor.b = self.db.global.colors.buttonColor.r, self.db.global.colors.buttonColor.g, self.db.global.colors.buttonColor.b
-	sideColor.r, sideColor.g, sideColor.b = self.db.global.colors.sideColor.r, self.db.global.colors.sideColor.g, self.db.global.colors.sideColor.b
-   
-   	for i = 1, #SideClr do
+    sideColor.r, sideColor.g, sideColor.b = self.db.global.colors.sideColor.r, self.db.global.colors.sideColor.g, self.db.global.colors.sideColor.b
+	
+    local fontColorRGB = self.db.global.colors.fontColor
+    fontColor.r, fontColor.g, fontColor.b = fontColorRGB.r, fontColorRGB.g, fontColorRGB.b
+    setFontColor(fontColor.r, fontColor.g, fontColor.b)
+
+    for i = 1, #SideClr do
         SideClr[i]:SetBackdropColor(sideColor.r, sideColor.g, sideColor.b)
     end
     for i = 1, #BtnClr do
         BtnClr[i]:SetBackdropColor(buttonColor.r, buttonColor.g, buttonColor.b)
     end
-
 end
+
+
+function SaveColor()
+	self.db.global.colors.frameColor.r, self.db.global.colors.frameColor.g, self.db.global.colors.frameColor.b = frameColor.r, frameColor.g, frameColor.b
+    self.db.global.colors.buttonColor.r, self.db.global.colors.buttonColor.g, self.db.global.colors.buttonColor.b = buttonColor.r, buttonColor.g, buttonColor.b
+    self.db.global.colors.sideColor.r, self.db.global.colors.sideColor.g, self.db.global.colors.sideColor.b = sideColor.r, sideColor.g, sideColor.b
+	self.db.global.colors.fontColor = fontColor
+end
+
+
 
 function changeColor(element)
     local color
@@ -218,18 +236,20 @@ function changeColor(element)
         color = buttonColor
     elseif element == "sidecolor" then
         color = sideColor
+    elseif element == "fontcolor" then
+        color = fontColor
     elseif element == "resetColors" then
-    frameColor = {r = 0.27, g = 0.27, b = 0.27}
-    CrossGamblingUI:SetBackdropColor(frameColor.r, frameColor.g, frameColor.b)
-    buttonColor = {r = 0.30, g = 0.30, b = 0.30}
-    for i, button in ipairs(BtnClr) do
-        button:SetBackdropColor(buttonColor.r, buttonColor.g, buttonColor.b)
-    end
-    sideColor = {r = 0.20, g = 0.20, b = 0.20}
-    for i, button in ipairs(SideClr) do
-        button:SetBackdropColor(sideColor.r, sideColor.g, sideColor.b)
-    end
-    SaveColor()
+        frameColor = { r = 0.27, g = 0.27, b = 0.27 }
+        CrossGamblingUI:SetBackdropColor(frameColor.r, frameColor.g, frameColor.b)
+        buttonColor = { r = 0.30, g = 0.30, b = 0.30 }
+        for i, button in ipairs(BtnClr) do
+            button:SetBackdropColor(buttonColor.r, buttonColor.g, buttonColor.b)
+        end
+        sideColor = { r = 0.20, g = 0.20, b = 0.20 }
+        for i, button in ipairs(SideClr) do
+            button:SetBackdropColor(sideColor.r, sideColor.g, sideColor.b)
+        end
+        SaveColor()
         return
     end
 
@@ -239,10 +259,24 @@ function changeColor(element)
         ColorPickerFrame:Hide()
         ColorPickerFrame:Show()
     end
+	
+	ColorPickerFrame.swatchFunc = function()
+        local r, g, b = ColorPickerFrame:GetColorRGB()
+    end
+	
+	
+	
 
-    local function ColorCallback(restore)
-        local newR, newG, newB = ColorPickerFrame:GetColorRGB()
+
+local function ColorCallback(restore)
+    local newR, newG, newB = ColorPickerFrame:GetColorRGB()
+    
+		if element == "fontcolor" then
+		--print("Setting font color with RGB values:", newR, newG, newB)
+		setFontColor(newR, newG, newB)
+		else
         color.r, color.g, color.b = newR, newG, newB
+
         if element == "frame" then
             CrossGamblingUI:SetBackdropColor(color.r, color.g, color.b)
         elseif element == "buttons" then
@@ -254,14 +288,17 @@ function changeColor(element)
                 button:SetBackdropColor(color.r, color.g, color.b)
             end
         end
-        if not restore then
-            SaveColor()
-        end
     end
+
+    if not restore then
+        SaveColor()
+    end
+end
+
+
 
     ShowColorPicker(color.r, color.g, color.b, nil, ColorCallback)
 end
-
 
 local GCchatMethod = CreateFrame("Button", nil, MainMenu, "BackdropTemplate")
 GCchatMethod:SetSize(105, 30)
@@ -269,6 +306,18 @@ GCchatMethod:SetPoint("TOPLEFT", MainHeader, "BOTTOMLEFT", 5, -2)
 GCchatMethod:SetText(self.game.chatMethod)
 GCchatMethod:SetNormalFontObject("GameFontNormal")
 ButtonColors(GCchatMethod)
+GCchatMethod:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square")
+local highlight = GCchatMethod:GetHighlightTexture()
+highlight:SetBlendMode("ADD")
+highlight:SetAllPoints()
+
+GCchatMethod:SetScript("OnEnter", function(self)
+    highlight:Show()
+end)
+
+GCchatMethod:SetScript("OnLeave", function(self)
+    highlight:Hide()
+end)
 GCchatMethod:SetScript("OnClick", function() self:chatMethod() GCchatMethod:SetText(self.game.chatMethod) end)
 
 local CGGameMode = CreateFrame("Button", nil, MainMenu, "BackdropTemplate")
@@ -277,6 +326,18 @@ CGGameMode:SetPoint("TOPRIGHT", MainHeader, "BOTTOMRIGHT", -4, -2)
 CGGameMode:SetText(self.game.mode)
 CGGameMode:SetNormalFontObject("GameFontNormal")
 ButtonColors(CGGameMode)
+CGGameMode:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square")
+local highlight = CGGameMode:GetHighlightTexture()
+highlight:SetBlendMode("ADD")
+highlight:SetAllPoints()
+
+CGGameMode:SetScript("OnEnter", function(self)
+    highlight:Show()
+end)
+
+CGGameMode:SetScript("OnLeave", function(self)
+    highlight:Hide()
+end)
 CGGameMode:SetScript("OnClick", function() self:changeGameMode() CGGameMode:SetText(self.game.mode) end)
 
 local CGEditBox = CreateFrame("EditBox", nil, MainMenu, "InputBoxTemplate")
@@ -305,26 +366,53 @@ CGAcceptOnes:SetPoint("TOPLEFT", GCchatMethod, "BOTTOMLEFT", -0, -25)
 CGAcceptOnes:SetText("New Game")
 CGAcceptOnes:SetNormalFontObject("GameFontNormal")
 ButtonColors(CGAcceptOnes)
-CGAcceptOnes:SetScript("OnClick", function()
-if CGAcceptOnes:GetText() == "Host Game" then
-CGAcceptOnes:SetText("New Game")
-else
-self.game.state = "START"
-self:SendMsg("R_NewGame")
---Sets same roll for everyone.
-self:SendMsg("SET_WAGER", CGEditBox:GetText())
---Switches everyone to same gamemode. 
-self:SendMsg("GAME_MODE", CGGameMode:GetText())
---Switches everyone to proper chatmethod. 
-self:SendMsg("Chat_Method", GCchatMethod:GetText())
 
-self:SendMsg("SET_HOUSE", CGGuildPercent:GetText())
---Starts a new game but only if they're host. 
-self.game.host = true
-self:SendMsg("New_Game")
+-- Add the following lines to create the highlight effect
+CGAcceptOnes:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square")
+local highlight = CGAcceptOnes:GetHighlightTexture()
+highlight:SetBlendMode("ADD")
+highlight:SetAllPoints()
 
-end
+CGAcceptOnes:SetScript("OnEnter", function(self)
+    highlight:Show()
 end)
+
+CGAcceptOnes:SetScript("OnLeave", function(self)
+    highlight:Hide()
+end)
+-- End of highlight effect code
+
+CGAcceptOnes:SetScript("OnClick", function()
+    CGAcceptOnes:Disable()  -- Disable the button during processing
+
+    if CGAcceptOnes:GetText() == "Host Game" then
+        CGAcceptOnes:SetText("New Game")
+    else
+        self.game.state = "START"
+        self:SendMsg("R_NewGame")
+		
+		
+        -- Sets same roll for everyone.
+        self:SendMsg("SET_WAGER", CGEditBox:GetText())
+
+        -- Switches everyone to the same gamemode.
+        self:SendMsg("GAME_MODE", CGGameMode:GetText())
+
+        -- Switches everyone to the proper chat method.
+        self:SendMsg("Chat_Method", GCchatMethod:GetText())
+
+        self:SendMsg("SET_HOUSE", CGGuildPercent:GetText())
+		
+		self.game.host = true
+        self:SendMsg("New_Game")
+
+
+        -- Starts a new game but only if they're the host.
+    end
+
+    CGAcceptOnes:Enable()   -- Enable the button after processing
+end)
+
 
 local CGLastCall = CreateFrame("Button", nil, MainMenu, "BackdropTemplate")
 CGLastCall:SetSize(105, 30)
@@ -332,6 +420,18 @@ CGLastCall:SetPoint("TOPLEFT", CGAcceptOnes, "BOTTOMLEFT", -0, -3)
 CGLastCall:SetText("Last Call!")
 CGLastCall:SetNormalFontObject("GameFontNormal")
 ButtonColors(CGLastCall)
+CGLastCall:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square")
+local highlight = CGLastCall:GetHighlightTexture()
+highlight:SetBlendMode("ADD")
+highlight:SetAllPoints()
+
+CGLastCall:SetScript("OnEnter", function(self)
+    highlight:Show()
+end)
+
+CGLastCall:SetScript("OnLeave", function(self)
+    highlight:Hide()
+end)
 CGLastCall:SetScript("OnClick", function()
 self:SendMsg("LastCall")
 end)
@@ -342,6 +442,18 @@ CGStartRoll:SetPoint("TOPLEFT", CGLastCall, "BOTTOMLEFT", -0, -3)
 CGStartRoll:SetText("Start Rolling")
 CGStartRoll:SetNormalFontObject("GameFontNormal")
 ButtonColors(CGStartRoll)
+CGStartRoll:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square")
+local highlight = CGStartRoll:GetHighlightTexture()
+highlight:SetBlendMode("ADD")
+highlight:SetAllPoints()
+
+CGStartRoll:SetScript("OnEnter", function(self)
+    highlight:Show()
+end)
+
+CGStartRoll:SetScript("OnLeave", function(self)
+    highlight:Hide()
+end)
 CGStartRoll:SetScript("OnClick", function()
 self:CGRolls()
 CGStartRoll:SetText("Whos Left?")
@@ -353,6 +465,18 @@ CGEnter:SetPoint("TOPLEFT", CGGameMode, "BOTTOMLEFT", -0, -25)
 CGEnter:SetText("Join Game")
 CGEnter:SetNormalFontObject("GameFontNormal")
 ButtonColors(CGEnter)
+CGEnter:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square")
+local highlight = CGEnter:GetHighlightTexture()
+highlight:SetBlendMode("ADD")
+highlight:SetAllPoints()
+
+CGEnter:SetScript("OnEnter", function(self)
+    highlight:Show()
+end)
+
+CGEnter:SetScript("OnLeave", function(self)
+    highlight:Hide()
+end)
 CGEnter:SetScript("OnClick", function()
 	if (CGEnter:GetText() == "Join Game") then
          SendChatMessage("1" , self.game.chatMethod)
@@ -369,6 +493,18 @@ CGRollMe:SetPoint("TOPLEFT", CGEnter, "BOTTOMLEFT", -0, -3)
 CGRollMe:SetText("Roll Me")
 CGRollMe:SetNormalFontObject("GameFontNormal")
 ButtonColors(CGRollMe)
+CGRollMe:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square")
+local highlight = CGRollMe:GetHighlightTexture()
+highlight:SetBlendMode("ADD")
+highlight:SetAllPoints()
+
+CGRollMe:SetScript("OnEnter", function(self)
+    highlight:Show()
+end)
+
+CGRollMe:SetScript("OnLeave", function(self)
+    highlight:Hide()
+end)
 CGRollMe:SetScript("OnClick", function()
   rollMe()
 end)
@@ -379,6 +515,18 @@ CGCloseGame:SetPoint("TOPLEFT", CGRollMe, "BOTTOMLEFT", -0, -3)
 CGCloseGame:SetText("Close")
 CGCloseGame:SetNormalFontObject("GameFontNormal")
 ButtonColors(CGCloseGame)
+CGCloseGame:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square")
+local highlight = CGCloseGame:GetHighlightTexture()
+highlight:SetBlendMode("ADD")
+highlight:SetAllPoints()
+
+CGCloseGame:SetScript("OnEnter", function(self)
+    highlight:Show()
+end)
+
+CGCloseGame:SetScript("OnLeave", function(self)
+    highlight:Hide()
+end)
 CGCloseGame:SetScript("OnClick", function()
   CrossGamblingUI:Hide()
 end)
@@ -392,6 +540,18 @@ CGFullStats:SetPoint("TOPLEFT", MainHeader, "BOTTOMLEFT", 5, -2)
 CGFullStats:SetText("Full Stats")
 CGFullStats:SetNormalFontObject("GameFontNormal")
 ButtonColors(CGFullStats)
+CGFullStats:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square")
+local highlight = CGFullStats:GetHighlightTexture()
+highlight:SetBlendMode("ADD")
+highlight:SetAllPoints()
+
+CGFullStats:SetScript("OnEnter", function(self)
+    highlight:Show()
+end)
+
+CGFullStats:SetScript("OnLeave", function(self)
+    highlight:Hide()
+end)
 CGFullStats:SetScript("OnClick", function(full)
   self:reportStats(full)
 end)
@@ -402,6 +562,18 @@ CGGuildCut:SetPoint("TOPLEFT", CGFullStats, "BOTTOMLEFT", -0, -3)
 CGGuildCut:SetText("Guild Cut(OFF)")
 CGGuildCut:SetNormalFontObject("GameFontNormal")
 ButtonColors(CGGuildCut)
+CGGuildCut:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square")
+local highlight = CGGuildCut:GetHighlightTexture()
+highlight:SetBlendMode("ADD")
+highlight:SetAllPoints()
+
+CGGuildCut:SetScript("OnEnter", function(self)
+    highlight:Show()
+end)
+
+CGGuildCut:SetScript("OnLeave", function(self)
+    highlight:Hide()
+end)
 CGGuildCut:SetScript("OnClick", function()
   if (self.game.house == true) then
 		self.game.house = false
@@ -420,6 +592,18 @@ CGReset:SetPoint("TOPLEFT", CGGuildCut, "BOTTOMLEFT", -0, -3)
 CGReset:SetText("Reset Stats!")
 CGReset:SetNormalFontObject("GameFontNormal")
 ButtonColors(CGReset)
+CGReset:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square")
+local highlight = CGReset:GetHighlightTexture()
+highlight:SetBlendMode("ADD")
+highlight:SetAllPoints()
+
+CGReset:SetScript("OnEnter", function(self)
+    highlight:Show()
+end)
+
+CGReset:SetScript("OnLeave", function(self)
+    highlight:Hide()
+end)
 CGReset:SetScript("OnMouseDown", function()
 self.game.host = false
 for i = 1, #CGPlayers do
@@ -442,7 +626,19 @@ local CGRealmFilter = CreateFrame("Button", "CGRealmFilter", OptionsButton, "Bac
 CGRealmFilter:SetPoint("TOPLEFT", CGReset, "BOTTOMLEFT", -0, -3)
 CGRealmFilter:SetSize(105, 30)
 ButtonColors(CGRealmFilter)
-CGRealmFilter:SetText("Realm Filter(ON)")
+CGRealmFilter:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square")
+local highlight = CGRealmFilter:GetHighlightTexture()
+highlight:SetBlendMode("ADD")
+highlight:SetAllPoints()
+
+CGRealmFilter:SetScript("OnEnter", function(self)
+    highlight:Show()
+end)
+
+CGRealmFilter:SetScript("OnLeave", function(self)
+    highlight:Hide()
+end)
+CGRealmFilter:SetText("Realm Filter(OFF)")
 CGRealmFilter:SetNormalFontObject("GameFontNormal")
 CGRealmFilter:Show()
 
@@ -467,6 +663,18 @@ CGFameShame:SetPoint("TOPRIGHT", MainHeader, "BOTTOMRIGHT", -4, -2)
 CGFameShame:SetText("Fame/Shame")
 CGFameShame:SetNormalFontObject("GameFontNormal")
 ButtonColors(CGFameShame)
+CGFameShame:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square")
+local highlight = CGFameShame:GetHighlightTexture()
+highlight:SetBlendMode("ADD")
+highlight:SetAllPoints()
+
+CGFameShame:SetScript("OnEnter", function(self)
+    highlight:Show()
+end)
+
+CGFameShame:SetScript("OnLeave", function(self)
+    highlight:Hide()
+end)
 CGFameShame:SetScript("OnClick", function()
   self:reportStats()
 end)
@@ -477,6 +685,18 @@ CGClassic:SetPoint("TOPRIGHT", CGFameShame, "BOTTOMRIGHT", -0, -36)
 CGClassic:SetText("Classic Theme")
 CGClassic:SetNormalFontObject("GameFontNormal")
 ButtonColors(CGClassic)
+CGClassic:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square")
+local highlight = CGClassic:GetHighlightTexture()
+highlight:SetBlendMode("ADD")
+highlight:SetAllPoints()
+
+CGClassic:SetScript("OnEnter", function(self)
+    highlight:Show()
+end)
+
+CGClassic:SetScript("OnLeave", function(self)
+    highlight:Hide()
+end)
 CGClassic:SetScript("OnClick", function()
   self.db.global.theme = "Classic"
 	  ReloadUI()
@@ -488,6 +708,18 @@ ChangeColorButton:SetPoint("BOTTOMLEFT", MainFooter, "BOTTOMLEFT", 0, 15)
 ChangeColorButton:SetText("Button\nColor")
 ChangeColorButton:SetNormalFontObject("GameFontNormal")
 ButtonColors(ChangeColorButton)
+ChangeColorButton:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square")
+local highlight = ChangeColorButton:GetHighlightTexture()
+highlight:SetBlendMode("ADD")
+highlight:SetAllPoints()
+
+ChangeColorButton:SetScript("OnEnter", function(self)
+    highlight:Show()
+end)
+
+ChangeColorButton:SetScript("OnLeave", function(self)
+    highlight:Hide()
+end)
 ChangeColorButton:SetScript("OnMouseUp", function() changeColor("buttons") end)
 
 local ChangeColorSide = CreateFrame("Button", nil, OptionsButton, "BackdropTemplate")
@@ -496,6 +728,18 @@ ChangeColorSide:SetPoint("BOTTOMLEFT", ChangeColorButton, "BOTTOMRIGHT", 0, 0) -
 ChangeColorSide:SetText("Side\nColor")
 ChangeColorSide:SetNormalFontObject("GameFontNormal")
 ButtonColors(ChangeColorSide)
+ChangeColorSide:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square")
+local highlight = ChangeColorSide:GetHighlightTexture()
+highlight:SetBlendMode("ADD")
+highlight:SetAllPoints()
+
+ChangeColorSide:SetScript("OnEnter", function(self)
+    highlight:Show()
+end)
+
+ChangeColorSide:SetScript("OnLeave", function(self)
+    highlight:Hide()
+end)
 ChangeColorSide:SetScript("OnMouseUp", function() changeColor("sidecolor") end)
 
 local ChangeColorFrame = CreateFrame("Button", nil, OptionsButton, "BackdropTemplate")
@@ -504,6 +748,18 @@ ChangeColorFrame:SetPoint("BOTTOMLEFT", ChangeColorSide, "BOTTOMRIGHT", 0, 0) --
 ChangeColorFrame:SetText("Frame\nColor")
 ChangeColorFrame:SetNormalFontObject("GameFontNormal")
 ButtonColors(ChangeColorFrame)
+ChangeColorFrame:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square")
+local highlight = ChangeColorFrame:GetHighlightTexture()
+highlight:SetBlendMode("ADD")
+highlight:SetAllPoints()
+
+ChangeColorFrame:SetScript("OnEnter", function(self)
+    highlight:Show()
+end)
+
+ChangeColorFrame:SetScript("OnLeave", function(self)
+    highlight:Hide()
+end)
 ChangeColorFrame:SetScript("OnMouseUp", function() changeColor("frame") end)
 
 local ChangeColorReset = CreateFrame("Button", nil, OptionsButton, "BackdropTemplate")
@@ -512,6 +768,18 @@ ChangeColorReset:SetPoint("BOTTOMLEFT", ChangeColorFrame, "BOTTOMRIGHT", 0, 0) -
 ChangeColorReset:SetText("Reset\nColors")
 ChangeColorReset:SetNormalFontObject("GameFontNormal")
 ButtonColors(ChangeColorReset)
+ChangeColorReset:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square")
+local highlight = ChangeColorReset:GetHighlightTexture()
+highlight:SetBlendMode("ADD")
+highlight:SetAllPoints()
+
+ChangeColorReset:SetScript("OnEnter", function(self)
+    highlight:Show()
+end)
+
+ChangeColorReset:SetScript("OnLeave", function(self)
+    highlight:Hide()
+end)
 ChangeColorReset:SetScript("OnMouseUp", function() changeColor("resetColors") end)
 
 
@@ -555,7 +823,7 @@ end)
 CGRightMenu.TextField = CreateFrame("ScrollingMessageFrame", nil, CGRightMenu)
 CGRightMenu.TextField:SetPoint("CENTER", CGRightMenu, 2, -0)
 CGRightMenu.TextField:SetSize(CGRightMenu:GetWidth()-8, -140)
-CGRightMenu.TextField:SetFont("Fonts\\FRIZQT__.TTF", 11, "")
+CGRightMenu.TextField:SetFont("Fonts\\FRIZQT__.TTF", self.db.global.fontvalue, "")
 CGRightMenu.TextField:SetFading(false)
 CGRightMenu.TextField:SetJustifyH("LEFT")
 CGRightMenu.TextField:SetMaxLines(50)
@@ -568,21 +836,78 @@ CGRightMenu.TextField:SetScript("OnMouseWheel", function(self, delta)
 end)
 
 
+-- Variables to store the color and font size settings
+
 local function OnChatSubmit(CGChatBox)
     local message = CGChatBox:GetText()
     if message ~= "" and message ~= " " then
-    local playerName = UnitName("player")
-	local playerClass = select(2, UnitClass("player"))
-	local messageWithPlayerInfo = string.format("%s:%s:%s", playerName, playerClass, message)
-		self:SendMsg("CHAT_MSG", messageWithPlayerInfo)
+        local playerName = UnitName("player")
+
+        -- Apply font color to the message
+        local formattedMessage = string.format("[%s]|r: |cFF%02x%02x%02x%s", playerName, fontColor.r * 255, fontColor.g * 255, fontColor.b * 255, message)
+		--print("Formatted Message: " .. formattedMessage)  -- Debug print
+
+
+        -- Send the modified message with player info and formatting
+        local messageWithPlayerInfo = string.format("%s:%s", playerNameColor .. playerName, formattedMessage)
+        self:SendMsg("CHAT_MSG", messageWithPlayerInfo)
+
+        -- Reset chat box
+        CGChatBox:SetText("")
+        CGChatBox:ClearFocus()
     end
-    CGChatBox:SetText("")
-    CGChatBox:ClearFocus()
-	
 end
 
 
+local fontColorButton = CreateFrame("Button", nil, CGRightMenu, "BackdropTemplate")
+fontColorButton:SetSize(220, 20) --remove the height
+fontColorButton:SetPoint("BOTTOMLEFT", CGRightMenu, "BOTTOMLEFT", 0, -40) -- change position
+fontColorButton:SetText("Font Color")
+fontColorButton:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square")
+local highlight = fontColorButton:GetHighlightTexture()
+highlight:SetBlendMode("ADD")
+highlight:SetAllPoints()
 
+fontColorButton:SetScript("OnEnter", function(self)
+    highlight:Show()
+end)
+
+fontColorButton:SetScript("OnLeave", function(self)
+    highlight:Hide()
+end)
+fontColorButton:SetNormalFontObject("GameFontNormal")
+ButtonColors(fontColorButton)
+fontColorButton:SetScript("OnMouseUp", function() changeColor("fontcolor") end)
+
+local fontSizeSlider = CreateFrame("Slider", nil, fontColorButton, "OptionsSliderTemplate")
+fontSizeSlider:SetPoint("BOTTOMLEFT", 0, -20)
+fontSizeSlider:SetSize(220, 20)
+fontSizeSlider:SetMinMaxValues(1, 100)  -- Set the range from 1 to 100
+fontSizeSlider:SetValueStep(1)
+fontSizeSlider:SetObeyStepOnDrag(true)
+-- Load the saved font size from self.db.global.fontvalue
+fontSizeSlider:SetValue(self.db.global.fontvalue)
+-- Set the slider orientation to horizontal
+fontSizeSlider:SetOrientation("HORIZONTAL")
+-- Set the slider's text to display the selected value
+fontSizeSlider.Low:SetText("1")  
+fontSizeSlider.High:SetText("100")  
+
+-- Create a fontString to display the selected value
+local sliderText = fontSizeSlider:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+sliderText:SetPoint("TOP", 0, -20)  
+sliderText:SetText(self.db.global.fontvalue)  -- Set the initial text
+
+-- Function to update font size and auto-save
+local function UpdateFontSize(_, value)
+    self.db.global.fontvalue = value
+    sliderText:SetText(value)  -- Update the displayed value
+    CGRightMenu.TextField:SetFont("Fonts\\FRIZQT__.TTF", self.db.global.fontvalue, "")  -- Update the chat font size
+end
+
+fontSizeSlider:SetScript("OnValueChanged", function(_, value)
+    UpdateFontSize(_, value)
+end)
 
 
 local CallFrame = CreateFrame("Frame")
@@ -782,55 +1107,86 @@ function CrossGambling:AddPlayer(playerName)
     UpdatePlayerList()
 end
 
+
+
 -- Create the main frame for the player list
 local playerListFrame = CreateFrame("Frame", "PlayerListFrame", CGLeftMenu)
 playerListFrame:SetSize(300, 150)
 playerListFrame:SetPoint("CENTER")
 
--- Create a new frame to hold the player buttons
-local playerButtonsFrame = CreateFrame("Frame", "PlayerButtonsFrame", playerListFrame)
-playerButtonsFrame:SetSize(300, 150)
-playerButtonsFrame:SetPoint("TOPLEFT", playerListFrame, 0, -1)
+-- Create a scroll frame to hold the player list
+local scrollFrame = CreateFrame("ScrollFrame", "PlayerListScrollFrame", playerListFrame, "UIPanelScrollFrameTemplate")
+scrollFrame:SetSize(266, 170)
+scrollFrame:SetPoint("TOPLEFT", 10, 10)
 
--- create a new table to store the player buttons
+-- Enable scrolling with the mouse wheel
+scrollFrame:EnableMouseWheel(true)
+scrollFrame:SetScript("OnMouseWheel", function(self, delta)
+    local currentValue = scrollFrame:GetVerticalScroll()
+    local rowHeight = 30
+    local numRows = #CGPlayers
+    local maxRows = math.max(numRows * rowHeight - scrollFrame:GetHeight(), 0)
+    local newValue = math.max(0, math.min(currentValue - delta * rowHeight, maxRows))
+    scrollFrame:SetVerticalScroll(newValue)
+end)
+
+local playerButtonsFrame = CreateFrame("Frame", "PlayerButtonsFrame", scrollFrame)
+playerButtonsFrame:SetSize(280, 1)  -- Set the height to 1 for dynamic sizing
+scrollFrame:SetScrollChild(playerButtonsFrame)
+
+-- Create a new table to store the player buttons
 playerButtons = {}
 
 function UpdatePlayerList()
-	row = 0
-	column = 0
--- remove all current player buttons
-	for i, button in ipairs(playerButtons) do
-		button:Hide()
-		button:SetParent(nil)
-	end
--- iterate through the CGPlayers table and create a button for each player
-	for i, player in pairs(CGPlayers) do
-	local playerButton = CreateFrame("Button", "PlayerButton"..i, playerButtonsFrame, "BackdropTemplate")
-		playerButton:SetSize(150, 20)
-		playerButton:SetPoint("TOPLEFT", playerButtonsFrame, column*150, -row*20)
-		ButtonColors(playerButton)
-		playerButton:SetNormalFontObject("GameFontNormal")
-		playerButton:SetHighlightFontObject("GameFontHighlight")
-	if player.roll ~=nil then
-		playerButton:SetText(player.name .. " : " .. player.roll)
-	else
-		playerButton:SetText(player.name)
-	end
+    -- Remove all current player buttons
+    for i, button in ipairs(playerButtons) do
+        button:Hide()
+        button:SetParent(nil)
+    end
 
-	table.insert(playerButtons, playerButton)
-		column = column + 1
-	if column == 2 then
-		column = 0
-		row = row + 1
-	end
+    -- Sort the player names alphabetically
+    table.sort(CGPlayers, function(a, b)
+        return a.name < b.name
+    end)
+
+    local row = 0
+    local column = 0
+
+    -- Iterate through the sorted CGPlayers table and create a button for each player
+    for i, player in ipairs(CGPlayers) do
+        -- Create a button for each player
+        local playerButton = CreateFrame("Button", "PlayerButton" .. i, playerButtonsFrame, "BackdropTemplate")
+        playerButton:SetSize(250, 30)
+        playerButton:SetPoint("TOPLEFT", 0, -row * 30)
+        ButtonColors(playerButton)
+		LoadColor()
+
+        -- Create a font string for the button
+        local buttonText = playerButton:CreateFontString(nil, "OVERLAY")
+        buttonText:SetFont("Fonts\\FRIZQT__.TTF", 20)
+        buttonText:SetPoint("LEFT", 5, 0)
+        playerButton.text = buttonText
+
+        -- Get the player's class color
+        local classColor = RAID_CLASS_COLORS[select(2, UnitClass(player.name))]
+        local playerNameColor = "|c" .. classColor.colorStr
+
+        if player.roll ~= nil then
+            buttonText:SetText(playerNameColor .. player.name .. "|r : |cFF000000" .. player.roll .. "|r")
+        else
+            buttonText:SetText(playerNameColor .. player.name .. "|r")
+        end
+
+        table.insert(playerButtons, playerButton)
+        row = row + 1
+    end
+
+    -- Update the height of the scroll frame based on the number of players
+    playerButtonsFrame:SetHeight(row * 30)
+	
 
 end
--- For testing
-	--for i = 1, 40 do
-  --  local randomName = "Player " .. math.random(1, 20)
-   -- CrossGambling:AddPlayer(randomName)
---end
-end
+
 
 CGCall["PLAYER_ROLL"] = function(playerName, value)
     -- find the player in the "CGPlayers" table

@@ -1,8 +1,19 @@
 # TomTom
 
-## [v3.5.4-release](https://github.com/jnwhiteh/TomTom/tree/v3.5.4-release) (2023-11-09)
-[Full Changelog](https://github.com/jnwhiteh/TomTom/commits/v3.5.4-release) [Previous Releases](https://github.com/jnwhiteh/TomTom/releases)
+## [v3.6.4-release](https://github.com/jnwhiteh/TomTom/tree/v3.6.4-release) (2024-07-01)
+[Full Changelog](https://github.com/jnwhiteh/TomTom/commits/v3.6.4-release) [Previous Releases](https://github.com/jnwhiteh/TomTom/releases)
 
+- Better defaults for distance units  
+     - Default to yards in the US  
+     - Default to km/m elsewhere  
+     - Provide options for yards/meters only  
+- Declare UnitGUID global  
+- Add units for waypoint arrow (metric, imperial)  
+- Update TOC for 10.2.7  
+- Update TOC for Cataclysm Classic  
+- Support 11.0 by removing some broken functionality  
+- Update TOC for 10.2.6  
+- Update toc for 10.2.5 and 1.15.0  
 - Update TOC for 10.2.0  
 - Update TOC for 3.4.3  
 - Update TOC for 10.1.7  
@@ -687,13 +698,3 @@
 - * Parent world map icons to the WorldMapDetailFrame  
 - Added in TTA. May need tweaking for cosmetic value.  
 - * Fix for minimap/world textures  
-- * Fix for the crazy arrow  
-- * Fix for the crazy arrow  
-- .toc update  
-- * Updated to Dongle-1.1  
-- * Added a compat version of TomTom:AddZWaypoint(c,z,x,y,desc) that works with other zones  
-- * Waypoints now automatically disappear when you are within 10 yards (this is just to gain compat with the old TomTom).  
-    * Waypoints will automatically be set as a crazy taxi arrow with the last one taking the arrow.  
-- * Minimap waypoints now properly handle zoning between continents and using portals.  
-    * CrazyArrow will be re-displayed when you cross continents, if the active waypoint is on that continent  
-- * Update world map waypoints to change with the map zoom, etc.  

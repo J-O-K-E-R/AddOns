@@ -52,21 +52,7 @@ end
 
 L = BigWigs:NewBossLocale("Heigan the Unclean", "zhCN")
 if L then
-	L.teleport_trigger = "你的生命正走向终结。"
-
-	L.teleport = "传送"
-	L.teleport_desc = "当传送时发出警报。"
-	L.teleport_1min_message = "1分钟后传送"
-	L.teleport_30sec_message = "30秒后传送"
-	L.teleport_10sec_message = "10秒后传送！"
-	L.on_platform_message = "传送！45秒后希尔盖出现！"
-
-	L.to_floor_30sec_message = "30秒后返回"
-	L.to_floor_10sec_message = "10秒后返回！"
-	L.on_floor_message = "返回！90秒后，传送！"
-
-	L.teleport_bar = "传送"
-	L.back_bar = "出现"
+	L.teleport_yell_trigger = "你的生命正走向终结。"
 end
 
 L = BigWigs:NewBossLocale("The Four Horsemen", "zhCN")
@@ -111,22 +97,7 @@ end
 
 L = BigWigs:NewBossLocale("Noth the Plaguebringer", "zhCN")
 if L then
-	L.add_trigger = "起来吧，我的战士们！起来，再为主人尽忠一次！"
-
-	L.teleport = "传送"
-	L.teleport_desc = "当施放传送时发出警报。"
-	--L.teleport_balcony = "传送！他到了上层平台！"
-	--L.teleport_room = "传送！他回到了房间！"
-
-	L.curse_explosion = "诅咒爆炸！"
-	L.curse_warn = "诅咒！"
-	L.curse_10secwarn = "约10秒后，诅咒"
-	L.curse_bar = "下一诅咒"
-
-	L.wave = "召唤骷髅"
-	L.wave_desc = "当召唤骷髅时发出警报。"
-	L.wave1 = "第一波"
-	L.wave2 = "第二波"
+	L.adds_yell_trigger = "起来吧，我的战士们" -- 起来吧，我的战士们！起来，再为主人尽忠一次！
 end
 
 L = BigWigs:NewBossLocale("Maexxna", "zhCN")
@@ -169,23 +140,19 @@ end
 
 L = BigWigs:NewBossLocale("Thaddius", "zhCN")
 if L then
-	L.phase1_trigger1 = "斯塔拉格要碾碎你！"
-	L.phase1_trigger2 = "主人要吃了你！"
-	L.phase2_trigger1 = "咬碎……你的……骨头……"
-	L.phase2_trigger2 = "打……烂……你！"
-	L.phase2_trigger3 = "杀……"
+	L[15929] = "斯塔拉格"
+	L[15930] = "费尔根"
 
-	L.add_death_trigger = "%s死了。"
-	L.overload_trigger = "%s超载了！"
+	L.stage1_yell_trigger1 = "斯塔拉格要碾碎你！"
+	L.stage1_yell_trigger2 = "主人要吃了你！"
 
-	L.polarity_changed = "极性转化改变！"
-	L.polarity_nochange = "相同极性转化！"
-	L.polarity_first_positive = "你是 >正极<！"
-	L.polarity_first_negative = "你是 >负极<！"
+	L.stage2_yell_trigger1 = "咬碎……你的……骨头……"
+	L.stage2_yell_trigger2 = "打……烂……你！"
+	L.stage2_yell_trigger3 = "杀……"
 
-	L.throw = "投掷"
-	L.throw_desc = "当 MT 被投掷到对面平台时发出警报。"
-	L.throw_warning = "约5秒后，投掷！"
+	L.add_death_emote_trigger = "%s死了。"
+	L.overload_emote_trigger = "%s超载了！"
+	--L.add_revive_emote_trigger = "%s is jolted back to life!"
 
 	L.polarity_extras = "有关极性转化后需要跑位的警报"
 
@@ -213,4 +180,6 @@ if L then
 	L.right = "---> 向右 ---> 向右 --->"
 	L.swap = "^^^^ 交换 ^^^^ 迅速 ^^^^"
 	L.stay = "==== 不要动 ==== 不要动 ===="
+
+	--L.chat_message = "The Thaddius mod supports showing you directional arrows and playing voices. Open the options to configure them."
 end

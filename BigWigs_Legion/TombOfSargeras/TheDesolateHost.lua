@@ -79,7 +79,7 @@ function mod:GetOptions()
 		236548, -- Torment
 	},{
 		["infobox"] = "general",
-		[235933] = -14856,-- Corporeal Realm
+		[235924] = -14856,-- Corporeal Realm
 		[235927] = CL.adds,-- Adds
 		[236131] = -14857,-- Spirit Realm
 		[236515] = CL.adds,-- Adds
@@ -249,7 +249,7 @@ do
 
 	function mod:SpiritualBarrier(args)
 		phasedList[#phasedList+1] = args.destName
-		tDeleteItem(unphasedList, args.destName)
+		self:DeleteFromTable(unphasedList, args.destName)
 		if self:Me(args.destGUID) then
 			myRealm = 1
 			self:MessageOld(239006, "cyan", "info", self:SpellName(-14857), false) -- Dissonance // Spirit Realm
@@ -262,7 +262,7 @@ do
 
 	function mod:SpiritualBarrierRemoved(args)
 		unphasedList[#unphasedList+1] = args.destName
-		tDeleteItem(phasedList, args.destName)
+		self:DeleteFromTable(phasedList, args.destName)
 		if self:Me(args.destGUID) then
 			myRealm = 0 -- Corporeal Realm
 			self:MessageOld(239006, "cyan", "info", self:SpellName(-14856), false) -- Dissonance // Corporeal Realm

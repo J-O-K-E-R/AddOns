@@ -211,10 +211,6 @@ L:SetGeneralLocalization({
 	name =	"蒼藍密庫小怪"
 })
 
-L:SetOptionLocalization({
-	AGBook			= "與位移之書互動時自動選擇對話"
-})
-
 -----------------------
 -- <<<Ruby Life Pools>>> --
 -----------------------
@@ -281,10 +277,6 @@ L:SetGeneralLocalization({
 	name =	"灌注迴廊小怪"
 })
 
-L:SetOptionLocalization({
-	AGBuffs		= "為工程學以及草藥學自動選擇對話，以啟動可用的增益。"
-})
-
 -----------------------
 -- <<<Dawn of the Infinite>>> --
 -----------------------
@@ -296,7 +288,11 @@ L:SetOptionLocalization({
 -----------------------
 -- Manifested Timeways --
 -----------------------
---L= DBM:GetModLocalization(2528)
+L= DBM:GetModLocalization(2528)
+
+L:SetMiscLocalization({
+	PrePullRP		= "就算是時間守護者也不能肆意干擾時間之道！"
+})
 
 -----------------------
 -- Blight of Galakrond --
@@ -306,7 +302,11 @@ L:SetOptionLocalization({
 -----------------------
 -- Iridikron the Stonescaled --
 -----------------------
---L= DBM:GetModLocalization(2537)
+L= DBM:GetModLocalization(2537)
+
+L:SetMiscLocalization({
+	PrePullRP		= "泰坦的傀儡居然膽敢挑戰我。"
+})
 
 -----------------------
 -- Tyr, the infinite Keeper --
@@ -343,4 +343,8 @@ L = DBM:GetModLocalization("DawnoftheInfiniteTrash")
 
 L:SetGeneralLocalization({
 	name =	"恆龍黎明小怪"
+})
+
+L:SetOptionLocalization({
+	AutoRift	= "在過場之後自動選擇對話以啟動裂隙"
 })

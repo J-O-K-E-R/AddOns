@@ -1,5 +1,3 @@
-
-
 -- Filter Module
 local _, app = ...;
 
@@ -11,8 +9,11 @@ local _, app = ...;
 -- Encapsulates the functionality for all filtering logic which is used to check if a given Object meets the applicable filters via User Settings
 
 -- Global locals
-local ipairs, select, pairs, type, GetFactionInfoByID, rawget, wipe
-	= ipairs, select, pairs, type, GetFactionInfoByID, rawget, wipe;
+local ipairs, select, pairs, type, rawget, wipe
+	= ipairs, select, pairs, type, rawget, wipe;
+
+-- WoW API Cache
+local GetFactionCurrentReputation = app.WOWAPI.GetFactionCurrentReputation;
 
 -- App locals
 local containsAny = app.containsAny;
@@ -20,7 +21,7 @@ local ALLIANCE_ONLY, HORDE_ONLY = unpack(app.Modules.FactionData.FACTION_RACES);
 local GetRelativeValue = app.GetRelativeValue;
 
 -- Module locals
-local SearchForSourceIDQuickly, ATTAccountWideData, ActiveCustomCollects, FactionID, CollectibleHeirlooms, SettingsUnobtainable;
+local ActiveCustomCollects, FactionID, CollectibleHeirlooms, SettingsUnobtainable;
 local SettingsFilterIDs = {};
 
 -- Filter API Implementation
@@ -69,6 +70,7 @@ local function DefineToggleFilter(name, filterGroup, filter)
 	api.Filters[name] = filter;
 	-- Set implementation
 	api.Set[name] = function(active)
+		-- app.PrintDebug("FILTER",name,"->",active)
 		filterGroup[name] = active and api.Filters[name] or nil;
 	end
 	-- Get implementation
@@ -88,61 +90,81 @@ local function DefineToggleFilter(name, filterGroup, filter)
 		RawCharacterFilters[name] = filter;
 	end
 end
+api.DefineToggleFilter = function(name, filterScope, filter)
+	DefineToggleFilter(name, filterScope == "A" and AccountFilters or CharacterFilters, filter)
+end
 
 -- Whether the group has a binding designation, which means it basically cannot be moved to another Character
-local function FilterBind(group)	-- IsBoP
+local function FilterBind(group)
 	-- 1 = BoP, 4 = Quest Item... probably don't need that?
 	return group.b == 1;-- or group.b == 4;
 end
 api.Filters.Bind = FilterBind;
 -- Used in a lot of places, need to keep for now
 app.IsBoP = FilterBind;
-local function FilterInGame(item)	-- ItemIsInGame
+local function FilterInGame(item)
 	return not item.u or item.u > 2;
 end
 api.Filters.InGame = FilterInGame;
+-- manually track InGame in CurrentCharacterFilters
+RawCharacterFilters.InGame = api.Filters.InGame
 
--- Unobtainable 	-- FilterItemClass_UnobtainableItem
+-- Unobtainable
 DefineToggleFilter("Unobtainable", AccountFilters,
 function(item)
-	return not item.u or SettingsUnobtainable[item.u];
+	local u = item.u
+	return not u or SettingsUnobtainable[u];
 end);
--- manually track Unobtainable in CurrentCharacterFilters
-RawCharacterFilters.Unobtainable = api.Filters.Unobtainable
 
--- PvP	-- FilterItemClass_PvP
+-- PvP
 DefineToggleFilter("PvP", AccountFilters,
 function(item)
-	if item.pvp then
-		return false;
-	else
-		return true;
-	end
+	return not item.pvp or false
 end);
 
 -- PetBattles
 DefineToggleFilter("PetBattles", AccountFilters,
 function(item)
-	if item.pb then
-		return false;
-	else
+	return not item.pb or false
+end);
+
+-- UnavailablePersonalLoot
+DefineToggleFilter("UnavailablePersonalLoot", AccountFilters,
+function(item)
+
+	if not item.sourceID then
+		return true
+	end
+
+	local sp = item.sourceParent
+	if not sp
+	or not sp.questID
+	or not sp.key == "questID" then
 		return true;
 	end
+
+	local specs = app.GetFixedItemSpecInfo(item.itemID);
+	return specs and #specs > 0;
 end);
 
 -- MinReputation
 local ExclusiveFactions = {
-	932,	-- The Aldor
-	934,	-- The Scryers
-	1104,	-- Frenzyheart Tribe
-	1105,	-- The Oracles
-}
+	[70]=1,		-- Syndicate
+	[932]=1,	-- The Aldor
+	[934]=1,	-- The Scryers
+	[1104]=1,	-- Frenzyheart Tribe
+	[1105]=1,	-- The Oracles
+};
 DefineToggleFilter("MinReputation", CharacterFilters,
 function(item)
 	local minReputation = item.minReputation;
-	if minReputation and ExclusiveFactions[minReputation[1]] then
-		if minReputation[2] > (select(6, GetFactionInfoByID(minReputation[1])) or 0) then
-			return false;
+	if minReputation then
+		if ExclusiveFactions[minReputation[1]] then
+			if minReputation[2] > GetFactionCurrentReputation(minReputation[1]) then
+				return false;
+			else
+				return true;
+			end
 		else
 			return true;
 		end
@@ -156,7 +178,7 @@ end);
 -- function(item)
 -- 	local maxReputation = item.maxReputation;
 -- 	if maxReputation then
--- 		if maxReputation[2] > (select(6, GetFactionInfoByID(maxReputation[1])) or 0) then
+-- 		if maxReputation[2] > GetFactionCurrentReputation(maxReputation[1]) then
 -- 			return false;
 -- 		else
 -- 			return true;
@@ -167,7 +189,8 @@ end);
 -- end);
 
 -- Event
--- Defined in OnLoad due to raw logic captured in Events Module
+-- Filters defined in other Modules... maybe link them dynamically somehow instead
+DefineToggleFilter("Event", AccountFilters, app.Modules.Events.FilterIsEventActive);
 
 -- ItemUnbound
 local SettingsFilterItemUnbound;
@@ -187,7 +210,7 @@ api.Set.ItemUnbound = function(active, nested)
 end
 api.Get.ItemUnbound = function() return SettingsFilterItemUnbound == api.Filters.ItemUnbound end
 
--- FilterID -- FilterItemClass_RequireItemFilter
+-- FilterID
 DefineToggleFilter("FilterID", CharacterFilters,
 function(item)
 	local f = item.f;
@@ -197,7 +220,7 @@ function(item)
 			return true;
 		end
 		-- don't filter Heirlooms by their Type if they are collectible as Heirlooms
-		if CollectibleHeirlooms and item.__type == "BaseHeirloom" then
+		if CollectibleHeirlooms and item.__type == "Heirloom" then
 			return true;
 		end
 	else
@@ -205,24 +228,39 @@ function(item)
 	end
 end);
 
--- Bound -- FilterItemClass_RequireBinding
+-- Bound
 DefineToggleFilter("Bound", CharacterFilters,
 function(item)
 	return not item.itemID or item.b == 1;
 end);
+-- binding really doesn't matter as to whether current character can filter to it
+RawCharacterFilters.Bound = nil
 
--- RequireSkill -- FilterItemClass_RequiredSkill
+-- RequireSkill
+local Professions, ActiveSkills
 DefineToggleFilter("RequireSkill", CharacterFilters,
-function(item)
+app.IsRetail and function(item)
 	local requireSkill = item.requireSkill;
 	if requireSkill and (not item.professionID or not GetRelativeValue(item, "DontEnforceSkillRequirements") or FilterBind(item)) then
-		return app.CurrentCharacter.Professions[requireSkill];
+		return Professions[requireSkill];
+	else
+		return true;
+	end
+end or function(item)
+	local requireSkill = item.requireSkill;
+	if requireSkill and (not item.professionID or not GetRelativeValue(item, "DontEnforceSkillRequirements") or FilterBind(item)) then
+		requireSkill = app.SkillIDToSpellID[requireSkill];
+		return requireSkill and ActiveSkills[requireSkill];
 	else
 		return true;
 	end
 end);
+app.AddEventHandler("OnStartup", function()
+	Professions = app.CurrentCharacter.Professions
+	ActiveSkills = app.CurrentCharacter.ActiveSkills
+end)
 
--- Class -- FilterItemClass_RequireClasses
+-- Class
 DefineToggleFilter("Class", CharacterFilters,
 function(item)
 	return not item.nmc;
@@ -231,7 +269,7 @@ end);
 -- Race
 local SettingsFilterRace_CurrentFaction;
 -- Whether this is for the current 'race'
-local function FilterRace(item)	-- FilterItemClass_RequireRaces
+local function FilterRace(item)
 	return not item.nmr;
 end
 api.Filters.Race = FilterRace
@@ -245,7 +283,7 @@ local function FilterRace_Alliance(item)
 	return races and containsAny(races, ALLIANCE_ONLY);
 end
 api.Filters.Race_Alliance = FilterRace_Alliance
-local function FilterRace_CurrentFaction(item)	-- FilterItemClass_RequireRacesCurrentFaction
+local function FilterRace_CurrentFaction(item)
 	if item.nmr then
 		local r = item.r;
 		if r then
@@ -264,11 +302,6 @@ api.Filters.Race_CurrentFaction = FilterRace_CurrentFaction
 api.Set.Race = function(active, factionOnly)
 	if active then
 		if factionOnly then
-			if FactionID == Enum.FlightPathFaction.Horde then
-				SettingsFilterRace_CurrentFaction = api.Filters.Race_Horde;
-			else
-				SettingsFilterRace_CurrentFaction = api.Filters.Race_Alliance;
-			end
 			CharacterFilters.Race = api.Filters.Race_CurrentFaction;
 		else
 			CharacterFilters.Race = api.Filters.Race;
@@ -280,7 +313,7 @@ end
 -- manually track Race in CurrentCharacterFilters
 RawCharacterFilters.Race = api.Filters.Race;
 
--- CustomCollect -- FilterItemClass_CustomCollect
+-- CustomCollect
 DefineToggleFilter("CustomCollect", CharacterFilters,
 function(item)
 	local customCollect = item.customCollect;
@@ -294,7 +327,7 @@ function(item)
 	return true;
 end);
 
--- Level -- FilterGroupsByLevel
+-- Level
 DefineToggleFilter("Level", CharacterFilters,
 function(item)
 	-- after 9.0, transition to a req lvl range, either min, or min + max
@@ -321,146 +354,24 @@ function(item)
 	return true;
 end);
 -- we actually don't "really" care to have level filter in the RawCharacterFilters... just causes more inaccurate quest reports since level req on every expac changes all the time
-RawCharacterFilters["Level"] = nil;
+RawCharacterFilters.Level = nil;
 
--- ItemSource
-if C_TransmogCollection then
-
-local C_TransmogCollection_GetAllAppearanceSources, C_TransmogCollection_GetSourceInfo, C_TransmogCollection_PlayerHasTransmogItemModifiedAppearance
-	= C_TransmogCollection.GetAllAppearanceSources, C_TransmogCollection.GetSourceInfo, C_TransmogCollection.PlayerHasTransmogItemModifiedAppearance;
-
-local function FilterItemSource(sourceInfo)
-	return sourceInfo.isCollected;
-end
-api.Filters.ItemSource = FilterItemSource;
-local function FilterItemSourceUnique(sourceInfo, allSources)
-	if sourceInfo.isCollected then
-		-- NOTE: This makes it so that the loop isn't necessary.
-		return true;
-	else
-		-- If at least one of the sources of this visual ID was collected, that means that we've collected the provided source
-		local item = SearchForSourceIDQuickly(sourceInfo.sourceID);
-		if item then
-			local knownItem, knownSource, valid;
-			local acctSources = ATTAccountWideData.Sources;
-			local factionRaces = app.Modules.FactionData.FACTION_RACES;
-			for _,sourceID in ipairs(allSources or C_TransmogCollection_GetAllAppearanceSources(sourceInfo.visualID)) do
-				-- only compare against other Sources of the VisualID which the Account knows
-				if sourceID ~= sourceInfo.sourceID and acctSources[sourceID] == 1 then
-					knownItem = SearchForSourceIDQuickly(sourceID);
-					if knownItem then
-						-- filter matches or one item is Cosmetic
-						if item.f == knownItem.f or item.f == 2 or knownItem.f == 2 then
-							valid = true;
-							-- verify all possible restrictions that the known source may have against restrictions on the source in question
-							-- if known source has no equivalent restrictions, then restrictions on the source are irrelevant
-							-- Races
-							if knownItem.races then
-								if item.races then
-									-- the known source has a race restriction that is not shared by the source in question
-									if not containsAny(item.races, knownItem.races) then valid = nil; end
-								else
-									valid = nil;
-								end
-							end
-							-- Classes
-							if valid and knownItem.c then
-								if item.c then
-									-- the known source has a class restriction that is not shared by the source in question
-									if not containsAny(item.c, knownItem.c) then valid = nil; end
-								else
-									valid = nil;
-								end
-							end
-							-- Faction
-							if valid and knownItem.r then
-								if item.r then
-									-- the known source has a faction restriction that is not shared by the source or source races in question
-									if knownItem.r ~= item.r or (item.races and not containsAny(factionRaces[knownItem.r], item.races)) then valid = nil; end
-								else
-									valid = nil;
-								end
-							end
-
-							-- found a known item which meets all the criteria to grant credit for the source in question
-							if valid then
-								knownSource = C_TransmogCollection_GetSourceInfo(sourceID);
-								-- both sources are the same category (Equip-Type)
-								if knownSource.categoryID == sourceInfo.categoryID
-									-- and same Inventory Type
-									and (knownSource.invType == sourceInfo.invType
-										or sourceInfo.categoryID == 4 --[[CHEST: Robe vs Armor]]
-										or app.SlotByInventoryType[knownSource.invType] == app.SlotByInventoryType[sourceInfo.invType])
-								then
-									return true;
-								-- else print("sources share visual and filters but different equips",item.s,sourceID)
-								end
-							end
-						end
-					else
-						-- OH NOES! It doesn't exist!
-						knownSource = C_TransmogCollection_GetSourceInfo(sourceID);
-						-- both sources are the same category (Equip-Type)
-						if knownSource.categoryID == sourceInfo.categoryID
-							-- and same Inventory Type
-							and (knownSource.invType == sourceInfo.invType
-								or sourceInfo.categoryID == 4 --[[CHEST: Robe vs Armor]]
-								or app.SlotByInventoryType[knownSource.invType] == app.SlotByInventoryType[sourceInfo.invType])
-						then
-							-- print("OH NOES! MISSING SOURCE ID ", sourceID, " FOUND THAT YOU HAVE COLLECTED, BUT ATT DOESNT HAVE!!!!");
-							return true;
-						-- else print(knownSource.sourceID, sourceInfo.sourceID, "share appearances, but one is ", sourceInfo.invType, "and the other is", knownSource.invType, sourceInfo.categoryID);
-						end
-					end
-				end
-			end
-		end
-		return false;
-	end
-end
-api.Filters.ItemSourceUnique = FilterItemSourceUnique;
-local function FilterItemSourceUniqueOnlyMain(sourceInfo, allSources)
-	if sourceInfo.isCollected then
-		-- NOTE: This makes it so that the loop isn't necessary.
-		return true;
-	else
-		-- If at least one of the sources of this visual ID was collected, that means that we've acquired the base appearance.
-		local item = SearchForSourceIDQuickly(sourceInfo.sourceID);
-		if item and not item.nmc and not item.nmr then
-			-- This item is for my race and class.
-			for i,sourceID in ipairs(allSources or C_TransmogCollection_GetAllAppearanceSources(sourceInfo.visualID)) do
-				if sourceID ~= sourceInfo.sourceID and C_TransmogCollection_PlayerHasTransmogItemModifiedAppearance(sourceID) then
-					local otherItem = SearchForSourceIDQuickly(sourceID);
-					if otherItem and (item.f == otherItem.f or item.f == 2 or otherItem.f == 2) and not otherItem.nmc and not otherItem.nmr then
-						return true; -- Okay, fine. You are this class/race. Enjoy your +1, cheater. D:
-					end
-				end
-			end
-		end
-		return false;
-	end
-end
-api.Filters.ItemSourceUniqueMainOnly = FilterItemSourceUniqueOnlyMain;
-api.Set.ItemSource = function(useUnique, useMainOnly)
-	if useUnique then
-		if useMainOnly then
-			app.ItemSourceFilter = api.Filters.ItemSourceUniqueMainOnly;
-		else
-			app.ItemSourceFilter = api.Filters.ItemSourceUnique;
-		end
-	else
-		app.ItemSourceFilter = api.Filters.ItemSource;
-	end
-end
-else
-api.Set.ItemSource = function(useUnique, useMainOnly)
-	-- Do nothing, not supported without C_TransmogCollection
-end
-end
+-- SkillLevel
+app.MaximumSkillLevel = 99999;
+DefineToggleFilter("SkillLevel", CharacterFilters,
+function(group)
+	if group.learnedAt then
+        return app.MaximumSkillLevel >= group.learnedAt;
+    end
+    -- no skill level requirement on the group, have to include it
+    return true;
+end);
+-- SkillLevel doesn't really exclude a character from seeing a given Thing
+RawCharacterFilters.SkillLevel = nil;
 
 -- Trackable
 -- Whether this group can be 'tracked'
-local function FilterTrackable(group)	-- FilterItemTrackable
+local function FilterTrackable(group)
 	return group.trackable;
 end
 api.Filters.Trackable = FilterTrackable
@@ -480,24 +391,17 @@ api.Get.Visible = function() return app.VisibilityFilter == api.Filters.Visible 
 
 -- Completion
 -- Whether the group is not 'complete'
-local function FilterCompletion(group)	-- FilterGroupsByCompletion
+local function FilterCompletion(group)
 	local total = group.total;
 	return total and (group.progress or 0) < total;
 end
 
 -- Filter Combinations
 local function PrintExclusionCause(name, o)
-	app.PrintDebug("FilterExclude",name,o.hash,o.text)
+	app.PrintDebug("F-EX",name,o.hash,o.link or o.name)
 end
-local function SettingsAccountFilters(o)
-	for name,filter in pairs(AccountFilters) do
-		-- if not filter(o) then PrintExclusionCause(name, o) return end
-		if not filter(o) then return end
-	end
-	return true;
-end
-local function SettingsCharacterFilters(o)
-	for name,filter in pairs(CharacterFilters) do
+local function ApplySettingsFilters(o, filters)
+	for name,filter in pairs(filters) do
 		-- if not filter(o) then PrintExclusionCause(name, o) return end
 		if not filter(o) then return end
 	end
@@ -505,47 +409,32 @@ local function SettingsCharacterFilters(o)
 end
 
 -- Represents filters which should be applied during Updates to groups
-local function SettingsFilters(item)	-- FilterItemClass
-	-- check Account trait filters
-	if SettingsAccountFilters(item)
-		-- and SettingsFilterPvP(item)
-		-- and SettingsFilterPetBattles(item)
-		-- and SettingsFilterUnobtainable(item)
-		-- and SettingsFilterMinReputation(item)
-		-- and SettingsFilterEvent(item)
-		then
+local function SettingsFilters(item)
+	if ApplySettingsFilters(item, AccountFilters) then
 		-- BoE can skip Character trait filters
 		if SettingsFilterItemUnbound(item) then return true; end
-		-- check Character trait filters
-		return SettingsCharacterFilters(item)
-			-- and SettingsFilterBound(item)
-			-- and SettingsFilterClass(item)
-			-- and SettingsFilterRace(item)
-			-- and SettingsFilterFilterID(item)
-			-- and SettingsFilterRequireSkill(item)
-			-- and SettingsFilterCustomCollect(item)
-			-- and SettingsFilterLevel(item);
+		return ApplySettingsFilters(item, CharacterFilters)
+	end
+end
+local function SettingsExtraFilters(item, extraFilters)
+	if SettingsFilters(item) then
+		if extraFilters then
+			local filter
+			for name,_ in pairs(extraFilters) do
+				filter = api.Filters[name]
+				if filter then
+					-- if not filter(item) then PrintExclusionCause(name, item) return end
+					if not filter(item) then return end
+				end
+			end
+		end
+		return true;
 	end
 end
 -- Represents filters which should be applied during Updates to groups, but skips the BoE filter
-local function SettingsFilters_IgnoreBoEFilter(item)	-- FilterItemClass_IgnoreBoEFilter
-	-- check Account trait filters
-	if SettingsAccountFilters(item)
-		-- and SettingsFilterPvP(item)
-		-- and SettingsFilterPetBattles(item)
-		-- and SettingsFilterUnobtainable(item)
-		-- and SettingsFilterMinReputation(item)
-		-- and SettingsFilterEvent(item)
-		then
-		-- check Character trait filters
-		return SettingsCharacterFilters(item)
-			-- and SettingsFilterBound(item)
-			-- and SettingsFilterClass(item)
-			-- and SettingsFilterRace(item)
-			-- and SettingsFilterFilterID(item)
-			-- and SettingsFilterRequireSkill(item)
-			-- and SettingsFilterCustomCollect(item)
-			-- and SettingsFilterLevel(item);
+local function SettingsFilters_IgnoreBoEFilter(item)
+	if ApplySettingsFilters(item, AccountFilters) then
+		return ApplySettingsFilters(item, CharacterFilters)
 	end
 end
 api.SettingsFilters.IgnoreBoEFilter = SettingsFilters_IgnoreBoEFilter
@@ -560,10 +449,19 @@ app.CurrentCharacterFilters = CurrentCharacterFilters
 
 -- TODO: adjust these function names
 -- Used as the general Group filter during updates
+api.Filters.Group = SettingsFilters
+api.Get.Group = function()
+	return app.GroupFilter == SettingsFilters;
+end
 api.Set.Group = function(active)
 	app.GroupFilter = active and SettingsFilters or NoFilter;
+	app.GroupExtraFilter = active and SettingsExtraFilters or NoFilter;
 end
 -- Used to show completed Groups
+api.Filters.CompletedGroups = FilterCompletion
+api.Get.CompletedGroups = function()
+	return app.GroupVisibilityFilter == FilterCompletion;
+end
 api.Set.CompletedGroups = function(active)
 	app.GroupVisibilityFilter = active and FilterCompletion or NoFilter;
 end
@@ -591,6 +489,16 @@ local function RecursiveGroupRequirementsFilter(group)
 	return true;
 end
 app.RecursiveGroupRequirementsFilter = RecursiveGroupRequirementsFilter;
+-- Recursively check outwards to find if any parent group restricts the filter for the current settings
+local function RecursiveGroupRequirementsExtraFilter(group, extraFilters)
+	local Filter = app.GroupExtraFilter;
+	while group do
+		if not Filter(group, extraFilters) then return; end
+		group = group.sourceParent or group.parent;
+	end
+	return true;
+end
+app.RecursiveGroupRequirementsExtraFilter = RecursiveGroupRequirementsExtraFilter;
 -- Recursively check outwards within the direct parent chain only to find if any parent group restricts the filter for this character
 local function RecursiveDirectGroupRequirementsFilter(group)
 	local Filter = app.GroupFilter;
@@ -602,8 +510,10 @@ local function RecursiveDirectGroupRequirementsFilter(group)
 end
 app.RecursiveDirectGroupRequirementsFilter = RecursiveDirectGroupRequirementsFilter;
 local function RecursiveUnobtainableFilter(group)
+	local Unobtainable, Event = AccountFilters.Unobtainable or NoFilter, AccountFilters.Event or NoFilter
 	while group do
-		if not ((AccountFilters.Unobtainable or NoFilter)(group) and (AccountFilters.Event or NoFilter)(group)) then return; end
+		---@diagnostic disable-next-line: redundant-parameter
+		if not (Unobtainable(group) and Event(group)) then return; end
 		group = group.parent;
 	end
 	return true;
@@ -612,35 +522,30 @@ app.RecursiveUnobtainableFilter = RecursiveUnobtainableFilter;
 -- Recursively check outwards to find if any parent group restricts the filter for the current character (regardless of settings)
 local function RecursiveCharacterRequirementsFilter(group)
 	while group do
-		if not SettingsCharacterFilters(group) then return; end
+		if not CurrentCharacterFilters(group) then return; end
 		group = group.sourceParent or group.parent;
 	end
 	return true;
 end
 app.RecursiveCharacterRequirementsFilter = RecursiveCharacterRequirementsFilter;
--- Returns the first encountered group tracing upwards in parent hierarchy which has a value for the provided field.
--- Specify 'followSource' to prioritize the Source Parent of a group over the direct Parent
-local function RecursiveFirstParentWithField(group, field, followSource)
-	if group then
-		return (group[field] and group) or RecursiveFirstParentWithField(followSource and group.sourceParent or group.parent, field);
+local function RecursiveDefaultCharacterRequirementsFilter(group)
+	local defaultClassFilter, defaultRaceFilter = api.Filters.Class, api.Filters.Race;
+	while group do
+		if not (defaultClassFilter(group) and defaultRaceFilter(group)) then return; end
+		group = group.sourceParent or group.parent;
 	end
+	return true;
 end
-app.RecursiveFirstParentWithField = RecursiveFirstParentWithField;
--- Returns the first encountered group's value tracing upwards in parent hierarchy which has a value for the provided field.
--- Specify 'followSource' to prioritize the Source Parent of a group over the direct Parent
-local function RecursiveFirstParentWithFieldValue(group, field, followSource)
-	if group then
-		return group[field] or RecursiveFirstParentWithFieldValue(followSource and group.sourceParent or group.parent, field);
+app.RecursiveDefaultCharacterRequirementsFilter = RecursiveDefaultCharacterRequirementsFilter;
+local function RecursiveFilter(group, filterName)
+	local filter = api.Filters[filterName]
+	while group do
+		if not filter(group) then return; end
+		group = group.sourceParent or group.parent;
 	end
+	return true;
 end
-app.RecursiveFirstParentWithFieldValue = RecursiveFirstParentWithFieldValue;
--- Returns the first encountered group tracing upwards in direct parent hierarchy which has a value for the provided field
-local function RecursiveFirstDirectParentWithField(group, field)
-	if group then
-		return group[field] or RecursiveFirstDirectParentWithField(rawget(group, "parent"), field);
-	end
-end
-app.RecursiveFirstDirectParentWithField = RecursiveFirstDirectParentWithField;
+app.RecursiveFilter = RecursiveFilter;
 
 -- Caching Helpers
 local function CacheSettingsData()
@@ -662,23 +567,67 @@ local function CacheSettingsData()
 	-- app.PrintDebug("SettingsFilterIDs",#SettingsFilterIDs)
 end
 
-api.OnLoad = function()
-	SearchForSourceIDQuickly = app.SearchForSourceIDQuickly
+app.AddEventHandler("OnLoad", function()
 	FactionID = app.FactionID;
-
-	-- Filters defined in other Modules... maybe link them dynamically somehow instead
-	DefineToggleFilter("Event", AccountFilters, app.Modules.Events.FilterIsEventActive);
-end
-api.OnStartup = function(AccountData)
-	ATTAccountWideData = AccountData
+	if FactionID == Enum.FlightPathFaction.Horde then
+		SettingsFilterRace_CurrentFaction = api.Filters.Race_Horde;
+	else
+		SettingsFilterRace_CurrentFaction = api.Filters.Race_Alliance;
+	end
+end)
+app.AddEventHandler("OnStartup", function()
 	-- this table is set once in ATT, but contents are volatile
 	ActiveCustomCollects = app.ActiveCustomCollects;
 	CacheSettingsData();
-end
+end)
 -- Cache filter-related content from Settings here instead of checking in every function call
-api.OnRefreshData_NewSettings = function()
+app.AddEventHandler("OnRecalculate_NewSettings", function()
 	CacheSettingsData();
-end
+end)
+
+-- Maybe need something like this eventually? This hasn't been tested or utilized much
+-- local PreviousFilters = {}
+-- -- Returns the set of Filter names which are currently enabled
+-- api.GetFilterSet = function(filters)
+-- 	local Get = api.Get
+-- 	wipe(PreviousFilters)
+-- 	for name,_ in pairs(api.Filters) do
+-- 		PreviousFilters[name] = Get[name]() or nil
+-- 	end
+-- 	app.PrintDebug("ALL FILTERS GET")
+-- 	return PreviousFilters
+-- end
+-- -- Expects being provided with a table of Filter names for which Filters should be activated
+-- -- If nothing is provided, then the previous filters are re-enabled
+-- -- Ideally used for allowing a swap of filters for processing a specific ATT window
+-- api.SwapFilterSet = function(filters)
+-- 	if not filters and not PreviousFilters then return end
+-- 	local Get = api.Get
+-- 	local Set = api.Set
+-- 	if PreviousFilters then
+-- 		for name,_ in pairs(api.Filters) do
+-- 			Set[name]()
+-- 		end
+-- 		app.PrintDebug("ALL FILTERS OFF")
+-- 		for _,name in pairs(PreviousFilters) do
+-- 			app.PrintDebug("PREV FILTER ON:",name)
+-- 			Set[name](true)
+-- 		end
+-- 		wipe(PreviousFilters)
+-- 	end
+-- 	if filters then
+-- 		PreviousFilters = filters
+-- 		for name,_ in pairs(api.Filters) do
+-- 			PreviousFilters[name] = Get[name]() or nil
+-- 			Set[name]()
+-- 			app.PrintDebug("ALL FILTERS SWAPPED")
+-- 		end
+-- 		for _,name in pairs(filters) do
+-- 			app.PrintDebug("SWAP FILTER ON:",name)
+-- 			Set[name](true)
+-- 		end
+-- 	end
+-- end
 
 -- temp sanity debug logging
 -- for name,setFilter in pairs(api.Set) do

@@ -2,7 +2,7 @@ local mod	= DBM:NewMod("Kel'Thuzad", "DBM-Raids-WoTLK", 8)
 local L		= mod:GetLocalizedStrings()
 local isRetail = WOW_PROJECT_ID == (WOW_PROJECT_MAINLINE or 1)
 
-mod:SetRevision("20230831170830")
+mod:SetRevision("20240616044352")
 mod:SetCreatureID(15990)
 mod:SetEncounterID(1114)
 --mod:SetModelID(15945)--Doesn't work at all, doesn't even render.
@@ -32,7 +32,6 @@ local yellFissure
 if isRetail then
 	warnFissure				= mod:NewTargetNoFilterAnnounce(27810, 4)
 	specWarnFissureYou		= mod:NewSpecialWarningYou(27810, nil, nil, nil, 3, 2)
-	specWarnFissureClose	= mod:NewSpecialWarningClose(27810, nil, nil, nil, 2, 8)
 	yellFissure				= mod:NewYell(27810)
 else
 	warnFissure				= mod:NewSpellAnnounce(27810, 4, nil, nil, nil, nil, nil, 2)
@@ -52,9 +51,9 @@ local timerMC				= mod:NewBuffActiveTimer(20, 28410, nil, nil, nil, 3)
 --local timerMCCD			= mod:NewCDTimer(90, 28410, nil, nil, nil, 3)--actually 60 second cdish but its easier to do it this way for the first one.
 local timerPhase2			= mod:NewTimer(215, "TimerPhase2", "136116", nil, nil, 6)
 
-mod:AddSetIconOption("SetIconOnMC", 28410, true, false, {1, 2, 3})
-mod:AddSetIconOption("SetIconOnManaBomb", 27819, false, false, {8})
-mod:AddSetIconOption("SetIconOnFrostTomb", 27808, true, false, {1, 2, 3, 4, 5, 6, 7, 8})
+mod:AddSetIconOption("SetIconOnMC", 28410, true, 0, {1, 2, 3})
+mod:AddSetIconOption("SetIconOnManaBomb", 27819, false, 0, {8})
+mod:AddSetIconOption("SetIconOnFrostTomb", 27808, true, 0, {1, 2, 3, 4, 5, 6, 7, 8})
 mod:AddRangeFrameOption(10, 27819)
 
 mod.vb.warnedAdds = false
@@ -122,14 +121,13 @@ function mod:SPELL_CAST_SUCCESS(args)
 				specWarnFissureYou:Show()
 				specWarnFissureYou:Play("targetyou")
 				yellFissure:Yell()
-			elseif self:CheckNearby(8, args.destName) then
-				specWarnFissureClose:Show(args.destName)
-				specWarnFissureClose:Play("watchfeet")
 			else
+				---@diagnostic disable-next-line: param-type-mismatch
 				warnFissure:Show(args.destName)
 				warnFissure:Play("watchstep")
 			end
 		else
+			---@diagnostic disable-next-line: param-type-mismatch
 			warnFissure:Show()
 			warnFissure:Play("watchstep")
 		end

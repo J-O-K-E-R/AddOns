@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod(2525, "DBM-Raids-Dragonflight", 2, 1208)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20231120131222")
+mod:SetRevision("20240615122743")
 mod:SetCreatureID(201320)
 mod:SetEncounterID(2680)
 mod:SetUsedIcons(1)
@@ -58,11 +58,9 @@ local timerUnleashedShadowflameCD					= mod:NewCDCountTimer(40, 410070, 98565, n
 --local berserkTimer								= mod:NewBerserkTimer(600)
 
 mod:AddInfoFrameOption(405827)
---mod:AddRangeFrameOption(5, 390715)
 mod:AddSetIconOption("SetIconOnSearingSlam", 405821, false, 0, {1})
 --mod:AddNamePlateOption("NPAuraOnAscension", 385541)
-mod:AddMiscLine(DBM_CORE_L.OPTION_CATEGORY_DROPDOWNS)
-mod:AddDropdownOption("TankSwapBehavior", {"DoubleSoak", "MinMaxSoak", "OnlyIfDanger"}, "DoubleSoak", "misc")
+mod:AddDropdownOption("TankSwapBehavior", {"DoubleSoak", "MinMaxSoak", "OnlyIfDanger"}, "DoubleSoak", "misc", nil, 407641)
 --mod:GroupSpells(390715, 396094)
 
 mod.vb.slamCount = 0
@@ -95,7 +93,7 @@ function mod:OnCombatStart(delay)
 	if self:IsMythic() then
 		timerUnleashedShadowflameCD:Start(4.2-delay, 1)
 		if self.Options.InfoFrame then
-			DBM.InfoFrame:SetHeader(DBM:GetSpellInfo(405827))
+			DBM.InfoFrame:SetHeader(DBM:GetSpellName(405827))
 			DBM.InfoFrame:Show(5, "table", overchargedStacks, 1)
 		end
 		self:RegisterShortTermEvents(
@@ -273,7 +271,7 @@ function mod:SPELL_AURA_REMOVED(args)
 		end
 	elseif spellId == 401419 then
 		self:SetStage(0)--I don't nessesarily agree with this, but needed for WA compatability.
-		warnSiphonEnergyRemoved:Show(args.destName)
+		warnSiphonEnergyRemoved:Show()
 		self.vb.slamCount = 0
 		self.vb.doomCount = 0
 		self.vb.blastCount = 0

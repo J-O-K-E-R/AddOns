@@ -64,7 +64,7 @@ function mod:GetOptions()
 		[368027] = CL.tank_combo, -- Resonance (Tank Combo)
 		[364652] = L.protoform_cascade, -- Protoform Cascade (Circle)
 		[363088] = L.cosmic_shift, -- Cosmic Shift (Pushback)
-		[362601] = L.unstable_mote, -- Unstable Mote (Motes)
+		[362622] = L.unstable_mote, -- Unstable Mote (Motes)
 		[363795] = CL.bombs, -- Deconstructing Energy (Bombs)
 		[360869] = CL.fixate, -- Requisitioned (Fixate)
 	}

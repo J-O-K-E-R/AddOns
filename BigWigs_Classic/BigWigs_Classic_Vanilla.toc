@@ -1,4 +1,4 @@
-## Interface: 11500
+## Interface: 11502, 11503
 
 ## Title: BigWigs [|cffeda55fClassic|r]
 ## Title-zhCN: BigWigs [|cffeda55f经典旧世|r]
@@ -8,9 +8,9 @@
 ## Title-itIT: BigWigs [|cffeda55fClassic|r]
 ## Title-koKR: BigWigs [|cffeda55f오리지널|r]
 ## Title-ruRU: BigWigs [|cffeda55fClassic|r]
-## Title-ptBR: BigWigs [|cffeda55fClassic|r]
-## Title-esES: BigWigs [|cffeda55fClassic|r]
-## Title-esMX: BigWigs [|cffeda55fClassic|r]
+## Title-ptBR: BigWigs [|cffeda55fClássico|r]
+## Title-esES: BigWigs [|cffeda55fClásico|r]
+## Title-esMX: BigWigs [|cffeda55fClásico|r]
 ## Notes: A collection of BigWigs modules from the Classic era.
 ## Notes-zhCN: BigWigs 经典旧世模块。
 ## Notes-zhTW: A collection of BigWigs modules from the Classic era.
@@ -19,13 +19,13 @@
 ## Notes-itIT: A collection of BigWigs modules from the Classic era.
 ## Notes-koKR: 오리지널 BigWigs 모듈 모음집입니다.
 ## Notes-ruRU: A collection of BigWigs modules from the Classic era.
-## Notes-ptBR: A collection of BigWigs modules from the Classic era.
-## Notes-esES: A collection of BigWigs modules from the Classic era.
-## Notes-esMX: A collection of BigWigs modules from the Classic era.
+## Notes-ptBR: Uma coleção de módulos BigWigs da era clássica.
+## Notes-esES: Una colección de módulos BigWigs de la era clásica.
+## Notes-esMX: Una colección de módulos BigWigs de la era clásica.
 
 ## LoadOnDemand: 1
 ## Dependencies: BigWigs
-## Version: v10.2.1
+## Version: v10.2.79
 ## IconTexture: Interface\AddOns\BigWigs\Media\Icons\minimap_raid.tga
 
 ## X-Category: Raid
@@ -34,15 +34,20 @@
 ## X-Curse-Project-ID: 50625
 ## X-WoWI-ID: 22095
 ## X-Wago-ID: rNkPgm6a
-## X-BigWigs-LoadOn-InstanceId: 409, 469, 509, 531, 533, 309, 249
+## X-BigWigs-LoadOn-InstanceId: 409, 469, 509, 531, 533, 309, 249, 48, 90, 109, 2789, 2791
 ## X-BigWigs-ExtraMenu: -947
 ## X-BigWigs-LoadOn-WorldBoss: -1447, 6109, -1419, 12397, -1440, 14889, -1425, 14888, -1431, 14890, -1444, 14887
 
-MoltenCore_Classic\modules.xml
-BlackwingLair_Classic\modules.xml
-AhnQirajRuins_Classic\modules.xml
-AhnQirajTemple_Classic\modules.xml
+MoltenCore\modules.xml
+BlackwingLair\modules.xml
+AQ20\modules.xml
+AQ40\modules.xml
 ZulGurub_Classic\modules.xml
 Naxxramas_Classic\modules.xml
 Onyxia_Classic\modules.xml
 World_Classic\modules.xml
+BlackfathomDeeps_Classic\modules.xml
+Gnomeregan_Classic\modules.xml
+SunkenTemple_Classic\modules.xml
+TheTaintedScar_Classic\modules.xml
+StormCliffs_Classic\modules.xml

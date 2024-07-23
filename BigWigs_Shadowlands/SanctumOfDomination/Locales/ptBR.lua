@@ -15,8 +15,6 @@ end
 L = BigWigs:NewBossLocale("The Eye of the Jailer", "ptBR")
 if L then
 	L.chains = "Correntes" -- Short for Dragging Chains
-	L.pool = "Poça" -- Spreading Misery
-	L.pools = "Poças" -- Spreading Misery (multiple)
 	L.death_gaze = "Mirada da Morte" -- Short for Titanic Death Gaze
 end
 
@@ -119,18 +117,22 @@ if L then
 	L.custom_on_nameplate_fixate = "Ícone de placa de identificação para Fixação"
 	L.custom_on_nameplate_fixate_desc = "Mostra um ícone na placa de identificação para quando as Sentinelas Sombrias estão fixadas em você.\n\nRequer o uso de Placas de Identificação Inimigas e um addon suportado  (KuiNameplates, Plater)."
 
+	--L.intermission_chains = "Intermission Chains"
 	L.chains = "Correntes" -- Short for Domination Chains
 	L.chain = "Corrente" -- Single Domination Chain
 	L.darkness = "Trevas" -- Short for Veil of Darkness
 	L.arrow = "Seta" -- Short for Wailing Arrow
+	--L.arrow_done = "DONE" -- Message when the arrow has hit
 	L.wave = "Onda" -- Short for Haunting Wave
 	L.dread = "Pavor" -- Short for Crushing Dread
-	L.orbs = "Orbes" -- Dark Communion
-	L.curse = "Maldição" -- Short for Curse of Lethargy
-	L.pools = "Poças" -- Banshee's Bane
 	L.scream = "Grito" -- Banshee Scream
 
 	L.knife_fling = "Olha a faca!" -- "Death-touched blades fling out"
+	--L.bridges = "Bridges"
+	--L.rive_counter = "%s (%d/%d)"
+	--L.soaks = "Soaks" -- Merciless
+	--L.count_x = "%s (x%d)(%d)"
+	--L.shroud_active = "Shroud (%d) - %.1f%%!"
 end
 
 L = BigWigs:NewBossLocale("Sanctum of Domination Affixes", "ptBR")

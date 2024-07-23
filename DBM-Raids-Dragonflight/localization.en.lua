@@ -191,6 +191,10 @@ L:SetOptionLocalization({
 	Hybrid					= "Show Oppressing Howl stacks in stage 1 and Oblivion stacks in stages 2 and 3"
 })
 
+L:SetMiscLocalization({
+	EarlyStaging			= "Stage terminated early by health threshold"
+})
+
 -------------
 --  Trash  --
 -------------
@@ -211,11 +215,7 @@ L:SetGeneralLocalization({
 ---------------------------
 --  Igira the Cruel --
 ---------------------------
-L= DBM:GetModLocalization(2554)
-
-L:SetMiscLocalization({
-	HealAbsorb	= "Heal Absorb (%s)"--Might be common localized later
-})
+--L= DBM:GetModLocalization(2554)
 
 ---------------------------
 --  Volcoross --
@@ -250,7 +250,11 @@ L:SetMiscLocalization({
 ---------------------------
 --  Nymue, Weaver of the Cycle --
 ---------------------------
---L= DBM:GetModLocalization(2556)
+L= DBM:GetModLocalization(2556)
+
+L:SetMiscLocalization({
+	Threads			= "Threads (%s)"
+})
 
 ---------------------------
 --  Smolderon --
@@ -264,13 +268,27 @@ L= DBM:GetModLocalization(2565)
 
 L:SetMiscLocalization({
 	TreeForm			= "Tree Form",
-	MoonkinForm			= "Moonkin Form"
+	MoonkinForm			= "Moonkin Form",
+	Feathers			= "Feathers"
 })
 
 ---------------------------
 --  Fyrakk the Blazing --
 ---------------------------
---L= DBM:GetModLocalization(2519)
+L= DBM:GetModLocalization(2519)
+
+L:SetTimerLocalization{
+	timerMythicDebuffs			= "Cages (%s)"
+}
+
+L:SetWarningLocalization{
+	warnMythicDebuffs			= "Cages (%s)"
+}
+
+L:SetOptionLocalization{
+	warnMythicDebuffs			= "Announce when $spell:428988 and $spell:428970 debuffs have been cast (with count)",
+	timerMythicDebuffs			= "Show timer (with count) for $spell:428988 and $spell:428970 debuffs"
+}
 
 -------------
 --  Trash  --
@@ -279,4 +297,8 @@ L = DBM:GetModLocalization("AmirdrassilTrash")
 
 L:SetGeneralLocalization({
 	name =	"Amirdrassil Trash"
+})
+
+L:SetMiscLocalization({
+	FyrakkRP			= "You again. A pity I do not have time to eradicate you myself."
 })

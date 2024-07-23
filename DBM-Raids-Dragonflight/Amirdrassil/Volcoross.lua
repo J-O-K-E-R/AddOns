@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod(2557, "DBM-Raids-Dragonflight", 1, 1207)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20231120073958")
+mod:SetRevision("20240612024811")
 mod:SetCreatureID(208478)
 mod:SetEncounterID(2737)
 mod:SetUsedIcons(1, 2, 3, 4)
@@ -12,22 +12,22 @@ mod.respawnTime = 29
 mod:RegisterCombat("combat")
 
 mod:RegisterEventsInCombat(
-	"SPELL_CAST_START 421672 425401 425400 420933 421616 420415 423117 421703",
-	"SPELL_CAST_SUCCESS 421284",
+	"SPELL_CAST_START 421672 420933 421616 420415 423117 421703",
+--	"SPELL_CAST_SUCCESS 421284",
 	"SPELL_SUMMON 420421",
 	"SPELL_AURA_APPLIED 421207 419054 427201",
 	"SPELL_AURA_APPLIED_DOSE 419054",
-	"SPELL_AURA_REMOVED 421207 427201",
+	"SPELL_AURA_REMOVED 421207 427201 419054",
 --	"SPELL_AURA_REMOVED_DOSE",
 	"SPELL_PERIODIC_DAMAGE 421082 423494",
 	"SPELL_PERIODIC_MISSED 421082 423494",
 --	"UNIT_DIED",
-	"UNIT_SPELLCAST_START boss1",
-	"UNIT_SPELLCAST_SUCCEEDED boss1"
+	"UNIT_SPELLCAST_START boss1"
+--	"UNIT_SPELLCAST_SUCCEEDED boss1"
 )
 
 --[[
-(ability.id = 421672 or ability.id = 425401 or ability.id = 425400 or ability.id = 420933 or ability.id = 421616 or ability.id = 420415 or ability.id = 423117 or ability.id = 421703) and type = "begincast"
+(ability.id = 421672 or ability.id = 420933 or ability.id = 421616 or ability.id = 420415 or ability.id = 423117 or ability.id = 421703) and type = "begincast"
  or ability.id = 421284 and type = "cast"
  or ability.id = 420421
 --]]
@@ -45,8 +45,8 @@ local specWarnCoilingFlames							= mod:NewSpecialWarningYou(421207, nil, 7897, 
 local yellCoilingFlames								= mod:NewYell(421207, 7897)--Shortname Flames
 local yellCoilingFlamesFades						= mod:NewShortFadesYell(421207)
 local specWarnCoilingEruption						= mod:NewSpecialWarningYou(427201, nil, nil, nil, 1, 2)
-local yellCoilingEruption							= mod:NewShortYell(427201, DBM_COMMON_L.GROUPSOAK, nil, nil, "YELL")--NewShortPosYell
-local yellCoilingEruptionFades						= mod:NewShortFadesYell(427201, nil, nil, nil, "YELL")--NewIconFadesYell
+local yellCoilingEruption							= mod:NewShortYell(427201, DBM_COMMON_L.GROUPSOAK, nil, nil, "YELL")
+local yellCoilingEruptionFades						= mod:NewShortFadesYell(427201, nil, nil, nil, "YELL")
 
 --local specWarnMoltenVenom							= mod:NewSpecialWarningStack(419054, nil, 6, nil, nil, 1, 6)
 --local specWarnMoltenVenomSwap						= mod:NewSpecialWarningTaunt(419054, nil, nil, nil, 1, 2)--Need to evaulate whether tanks swap for this or jaws. double tank mechanic fights are redundant
@@ -67,10 +67,9 @@ local timerScorchtailCrashCD						= mod:NewCDCountTimer(20, 420415, 136870, nil,
 local timerCataclysmJawsCD							= mod:NewNextCountTimer(10, 423117, nil, "Tank|Healer", nil, 5, nil, DBM_COMMON_L.TANK_ICON)
 --local berserkTimer								= mod:NewBerserkTimer(600)
 
---mod:AddRangeFrameOption("5/6/10")
 --mod:AddInfoFrameOption(407919, true)
---mod:AddSetIconOption("SetIconOnCoilingFlames", 421207, false, false, {1, 2, 3, 4})
-mod:AddSetIconOption("SetIconOnCoilingEruption", 427201, false, false, {1, 2, 3, 4})--Off by default since other mods don't use icons at all
+--mod:AddSetIconOption("SetIconOnCoilingFlames", 421207, false, 0, {1, 2, 3, 4})
+mod:AddSetIconOption("SetIconOnCoilingEruption", 427201, false, 0, {1, 2, 3, 4})--Off by default since other mods don't use icons at all
 
 mod.vb.flamesIcon = 1
 mod.vb.furyCount = 0
@@ -78,6 +77,7 @@ mod.vb.floodCount = 0
 mod.vb.volcanicCount = 0
 mod.vb.tailCount = 0
 mod.vb.jawsCount = 0
+local playerStacks = 0
 
 local allTimers = {
 	--Cata Jaws
@@ -85,7 +85,7 @@ local allTimers = {
 	--Volcanic Disgorge
 	[421616] = {29.9, 20.0, 40.0, 10.0, 10.0, 10.0, 10.0, 30.0, 10.0, 10.0, 10.0, 10.0, 40.0, 20.0},
 	--Scorchtail Crash
-	[420421] = {19.9, 20, 32.5, 7.4, 12.5, 7.4, 10, 30, 12.5, 7.4, 10, 10, 30, 19.9, 20}
+	[420421] = {19.9, 20, 20, 30, 7.5, 7.4, 7.4, 7.3, 27.5, 7.4, 7.5, 7.5, 7.4, 27, 17.4, 20}
 }
 
 function mod:DisgorgeTarget(targetname, uId)
@@ -106,6 +106,7 @@ function mod:OnCombatStart(delay)
 	self.vb.volcanicCount = 0
 	self.vb.tailCount = 0
 	self.vb.jawsCount = 0
+	playerStacks = 0
 	timerCataclysmJawsCD:Start(4.8-delay, 1)
 	timerSerpentsFuryCD:Start(9.8-delay, 1)
 	timerScorchtailCrashCD:Start(20-delay, 1)
@@ -113,15 +114,9 @@ function mod:OnCombatStart(delay)
 	timerFloodoftheFirelandsCD:Start(69.8-delay, 1)
 end
 
---function mod:OnCombatEnd()
---	if self.Options.RangeFrame then
---		DBM.RangeCheck:Hide()
---	end
---end
-
 function mod:SPELL_CAST_START(args)
 	local spellId = args.spellId
-	if spellId == 421672 or spellId == 425401 or spellId == 425400 then--herioc, Unknown, Mythic?
+	if spellId == 421672 then
 		self.vb.furyCount = self.vb.furyCount + 1
 		self.vb.flamesIcon = 1
 		warnSperentsFury:Show(self.vb.furyCount)
@@ -148,7 +143,7 @@ function mod:SPELL_CAST_START(args)
 		if self:IsTanking("player", "boss1", nil, true) then
 			specWarnCataclysmJaws:Show()
 			specWarnCataclysmJaws:Play("defensive")
-		else
+		elseif playerStacks < 3 then
 			local bossTarget = UnitName("boss1target") or DBM_COMMON_L.UNKNOWN
 			specWarnCataclysmJawsTaunt:Show(bossTarget)
 			specWarnCataclysmJawsTaunt:Play("tauntboss")
@@ -207,18 +202,11 @@ function mod:SPELL_AURA_APPLIED(args)
 		local uId = DBM:GetRaidUnitId(args.destName)
 		if self:IsTanking(uId) then
 			local amount = args.amount or 1
+			if args:IsPlayer() then
+				playerStacks = amount
+			end
 			if amount % 3 == 0 then
---				if args:IsPlayer() and amount >= 6 then
---					specWarnMoltenVenom:Show()
---					specWarnMoltenVenom:Play("stackhigh")
---				else
---					if not DBM:UnitDebuff("player", spellId) and not UnitIsDeadOrGhost("player") and not self:IsHealer() then
---						specWarnMoltenVenomSwap:Show(args.destName)
---						specWarnMoltenVenomSwap:Play("tauntboss")
---					else
-						warnMoltenVenom:Show(args.destName, amount)
---					end
---				end
+				warnMoltenVenom:Show(args.destName, amount)
 			end
 		end
 	end
@@ -241,6 +229,10 @@ function mod:SPELL_AURA_REMOVED(args)
 		if args:IsPlayer() then
 			yellCoilingEruptionFades:Cancel()
 		end
+	elseif spellId == 419054 then
+		if args:IsPlayer() then
+			playerStacks = 0
+		end
 	end
 end
 
@@ -262,9 +254,11 @@ function mod:UNIT_SPELLCAST_START(uId, _, spellId)
 	end
 end
 
+--[[
 --Maybe still use this later with clever filtering
 function mod:UNIT_SPELLCAST_SUCCEEDED(uId, _, spellId)
 	if spellId == 421356 or spellId == 421359 or spellId == 421684 then--Scorchtail Crash
 
 	end
 end
+--]]

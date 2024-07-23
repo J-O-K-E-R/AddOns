@@ -230,7 +230,7 @@ function S:QuestInfo_Display(parentFrame) -- self is template, not S
 		end
 
 		for followerReward in rewardsFrame.followerRewardPool:EnumerateActive() do
-			if not followerReward.isSkinned then
+			if not followerReward.IsSkinned then
 				followerReward:CreateBackdrop()
 				followerReward.backdrop:SetAllPoints(followerReward.BG)
 				followerReward.backdrop:Point('TOPLEFT', 40, -5)
@@ -256,7 +256,7 @@ function S:QuestInfo_Display(parentFrame) -- self is template, not S
 				squareBG:SetTemplate()
 				followerReward.PortraitFrame.squareBG = squareBG
 
-				followerReward.isSkinned = true
+				followerReward.IsSkinned = true
 			end
 
 			local r, g, b = followerReward.PortraitFrame.PortraitRingQuality:GetVertexColor()
@@ -496,13 +496,6 @@ function S:BlizzardQuestFrames()
 		button.hover = hover
 	end
 
-	hooksecurefunc('QuestFrame_ShowQuestPortrait', function(frame, _, _, _, _, _, x, y)
-		local mapFrame = _G.QuestMapFrame:GetParent()
-
-		_G.QuestModelScene:ClearAllPoints()
-		_G.QuestModelScene:Point('TOPLEFT', frame, 'TOPRIGHT', (x or 0) + (frame == mapFrame and 11 or 6), y or 0)
-	end)
-
 	_G.QuestModelScene:Height(247)
 	_G.QuestModelScene:StripTextures()
 	_G.QuestModelScene:CreateBackdrop('Transparent')
@@ -510,7 +503,7 @@ function S:BlizzardQuestFrames()
 
 	_G.QuestNPCModelNameText:ClearAllPoints()
 	_G.QuestNPCModelNameText:Point('TOP', G.QuestModelScene, 0, -10)
-	_G.QuestNPCModelNameText:FontTemplate(nil, 19, 'OUTLINE')
+	_G.QuestNPCModelNameText:FontTemplate(nil, 13, 'OUTLINE')
 
 	_G.QuestNPCModelText:SetJustifyH('CENTER')
 	_G.QuestNPCModelTextScrollFrame:ClearAllPoints()
@@ -519,6 +512,13 @@ function S:BlizzardQuestFrames()
 	_G.QuestNPCModelTextScrollChildFrame:SetInside(_G.QuestNPCModelTextScrollFrame)
 
 	S:HandleTrimScrollBar(_G.QuestNPCModelTextScrollFrame.ScrollBar)
+
+	hooksecurefunc('QuestFrame_ShowQuestPortrait', function(frame, _, _, _, _, _, x, y)
+		local mapFrame = _G.QuestMapFrame:GetParent()
+
+		_G.QuestModelScene:ClearAllPoints()
+		_G.QuestModelScene:Point('TOPLEFT', frame, 'TOPRIGHT', (x or 0) + (frame == mapFrame and 11 or 6), y or 0)
+	end)
 
 	local QuestLogPopupDetailFrame = _G.QuestLogPopupDetailFrame
 	S:HandlePortraitFrame(QuestLogPopupDetailFrame)

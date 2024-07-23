@@ -62,7 +62,7 @@ local bar_icon = bar_icon_texture
 local L = mod:GetLocale()
 if L then
 	L.custom_on_bar_icon = "Bar Icon"
-	L.custom_on_bar_icon_desc = bar_icon_texture.."Show the Fated Raid icon on bars."
+	L.custom_on_bar_icon_desc = "Show the Fated Raid icon on bars."
 
 	L.chaotic_essence = "Essence"
 	L.creation_spark = "Sparks"
@@ -91,8 +91,12 @@ end
 
 function mod:VerifyEnable()
 	if C_ModifiedInstance.GetModifiedInstanceInfoFromMapID(self.instanceId) then
-			return true
+		return true
 	end
+end
+
+function mod:OnRegister()
+	L.custom_on_bar_icon_desc = bar_icon_texture .. L.custom_on_bar_icon_desc
 end
 
 function mod:OnBossEnable()

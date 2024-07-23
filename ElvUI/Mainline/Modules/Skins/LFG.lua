@@ -8,8 +8,8 @@ local min, select = min, select
 local unpack, ipairs, pairs = unpack, ipairs, pairs
 local hooksecurefunc = hooksecurefunc
 
-local GetItemInfo = GetItemInfo
 local UnitIsGroupLeader = UnitIsGroupLeader
+local GetItemInfo = C_Item.GetItemInfo or GetItemInfo
 
 local C_ChallengeMode_GetAffixInfo = C_ChallengeMode.GetAffixInfo
 local C_LFGList_GetAvailableActivities = C_LFGList.GetAvailableActivities
@@ -19,6 +19,12 @@ local C_ChallengeMode_GetSlottedKeystoneInfo = C_ChallengeMode.GetSlottedKeyston
 local C_ChallengeMode_GetMapUIInfo = C_ChallengeMode.GetMapUIInfo
 
 local LE_PARTY_CATEGORY_HOME = LE_PARTY_CATEGORY_HOME
+
+local groupButtonIcons = {
+	133076, -- interface\icons\inv_helmet_08.blp
+	133074, -- interface\icons\inv_helmet_06.blp
+	464820 -- interface\icons\achievement_general_stayclassy.blp
+}
 
 local function LFDQueueFrameRoleButtonIconOnShow(self)
 	LCG.ShowOverlayGlow(self:GetParent().checkButton)
@@ -128,10 +134,6 @@ function S:LookingForGroupFrames()
 	S:HandleButton(_G.LFDQueueFramePartyBackfillBackfillButton)
 	S:HandleButton(_G.LFDQueueFramePartyBackfillNoBackfillButton)
 
-	_G.GroupFinderFrame.groupButton1.icon:SetTexture(133076) -- interface/icons/inv_helmet_08.blp
-	_G.GroupFinderFrame.groupButton2.icon:SetTexture(133074) -- interface/icons/inv_helmet_06.blp
-	_G.GroupFinderFrame.groupButton3.icon:SetTexture(464820) -- interface/icons/achievement_general_stayclassy.blp
-
 	_G.LFGDungeonReadyStatus:StripTextures()
 	_G.LFGDungeonReadyStatus:SetTemplate('Transparent')
 
@@ -195,7 +197,7 @@ function S:LookingForGroupFrames()
 	end
 
 	hooksecurefunc('SetCheckButtonIsRadio', function(button)
-		if not button.isSkinned then
+		if not button.IsSkinned then
 			S:HandleCheckBox(button)
 		end
 	end)
@@ -261,16 +263,27 @@ function S:LookingForGroupFrames()
 		end
 	end)
 
-	for i = 1, 3 do
-		local bu = _G.GroupFinderFrame['groupButton'..i]
-		bu.ring:Kill()
-		bu.bg:Kill()
-		S:HandleButton(bu)
+	do
+		local index = 1
+		local button = _G.GroupFinderFrame['groupButton'..index]
+		while button do
+			button.ring:Hide()
+			button.bg:Kill()
+			S:HandleButton(button)
 
-		bu.icon:Size(45)
-		bu.icon:ClearAllPoints()
-		bu.icon:Point('LEFT', 10, 0)
-		S:HandleIcon(bu.icon, true)
+			local texture = groupButtonIcons[index]
+			if texture then
+				button.icon:SetTexture(texture)
+			end
+
+			button.icon:Size(45)
+			button.icon:ClearAllPoints()
+			button.icon:Point('LEFT', 10, 0)
+			S:HandleIcon(button.icon, true)
+
+			index = index + 1
+			button = _G.GroupFinderFrame['groupButton'..index]
+		end
 	end
 
 	for i = 1, 3 do
@@ -285,9 +298,28 @@ function S:LookingForGroupFrames()
 	_G.PVEFrameTab2:Point('TOPLEFT', _G.PVEFrameTab1, 'TOPRIGHT', -5, 0)
 	_G.PVEFrameTab3:Point('TOPLEFT', _G.PVEFrameTab2, 'TOPRIGHT', -5, 0)
 
+	-- Szenario Tab [[New in 10.2.7]]
+	local ScenarioQueueFrame = _G.ScenarioQueueFrame
+	if ScenarioQueueFrame then
+		ScenarioQueueFrame:StripTextures()
+		_G.ScenarioFinderFrameInset:StripTextures()
+		_G.ScenarioQueueFrameBackground:SetAlpha(0)
+		S:HandleDropDownBox(_G.ScenarioQueueFrameTypeDropDown)
+		S:HandleTrimScrollBar(_G.ScenarioQueueFrameRandomScrollFrame.ScrollBar)
+		S:HandleButton(_G.ScenarioQueueFrameFindGroupButton)
+
+		_G.ScenarioQueueFrameSpecificScrollFrame:StripTextures()
+		S:HandleScrollBar(_G.ScenarioQueueFrameSpecificScrollFrame.ScrollBar)
+
+		if _G.ScenarioQueueFrameRandomScrollFrameScrollBar then
+			_G.ScenarioQueueFrameRandomScrollFrameScrollBar:SetAlpha(0)
+		end
+	end
+
 	-- Raid finder
 	S:HandleButton(_G.LFDQueueFrameFindGroupButton)
 	S:HandleTrimScrollBar(_G.LFDQueueFrameRandomScrollFrame.ScrollBar)
+	S:HandleTrimScrollBar(_G.RaidFinderQueueFrameScrollFrame.ScrollBar)
 
 	_G.LFDParentFrame:StripTextures()
 	_G.LFDParentFrameInset:StripTextures()
@@ -409,6 +441,7 @@ function S:LookingForGroupFrames()
 	S:HandleButton(LFGListFrame.SearchPanel.BackToGroupButton)
 	LFGListFrame.SearchPanel.RefreshButton:Size(24)
 	LFGListFrame.SearchPanel.RefreshButton.Icon:Point('CENTER')
+	S:HandleCloseButton(LFGListFrame.SearchPanel.FilterButton.ResetToDefaults)
 
 	hooksecurefunc('LFGListApplicationViewer_UpdateApplicant', function(button)
 		if not button.DeclineButton.template then
@@ -430,9 +463,9 @@ function S:LookingForGroupFrames()
 
 	hooksecurefunc('LFGListSearchPanel_UpdateAutoComplete', function(panel)
 		for _, child in next, { LFGListFrame.SearchPanel.AutoCompleteFrame:GetChildren() } do
-			if not child.isSkinned and child:IsObjectType('Button') then
+			if not child.IsSkinned and child:IsObjectType('Button') then
 				S:HandleButton(child)
-				child.isSkinned = true
+				child.IsSkinned = true
 			end
 		end
 
@@ -516,7 +549,7 @@ function S:LookingForGroupFrames()
 	hooksecurefunc('LFGListCategorySelection_AddButton', function(btn, btnIndex, categoryID, filters)
 		local button = btn.CategoryButtons[btnIndex]
 		if button then
-			if not button.isSkinned then
+			if not button.IsSkinned then
 				button:SetTemplate()
 				button.Icon:SetDrawLayer('BACKGROUND', 2)
 				button.Icon:SetTexCoord(unpack(E.TexCoords))
@@ -527,7 +560,7 @@ function S:LookingForGroupFrames()
 
 				--Fix issue with labels not following changes to GameFontNormal as they should
 				button.Label:SetFontObject('GameFontNormal')
-				button.isSkinned = true
+				button.IsSkinned = true
 			end
 
 			button.SelectedTexture:Hide()

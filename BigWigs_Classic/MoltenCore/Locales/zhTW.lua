@@ -1,22 +1,7 @@
-local L = BigWigs:NewBossLocale("Lucifron", "zhTW")
+local L = BigWigs:NewBossLocale("Ragnaros Classic", "zhTW")
 if not L then return end
 if L then
-	L.mc_bar = "控制：%s"
-end
-
-L = BigWigs:NewBossLocale("Majordomo Executus", "zhTW")
-if L then
-	L.disabletrigger = "不……不可能！等一下……我投降！我投降！"
-	L.power_next = "下一能量"
-end
-
-L = BigWigs:NewBossLocale("Ragnaros ", "zhTW")
-if L then
-	L.engage_trigger = "現在輪到你們了"
 	L.submerge_trigger = "出現吧，我的奴僕"
-
-	L.knockback_message = "群體擊退！"
-	L.knockback_bar = "群體擊退"
 
 	L.submerge = "消失"
 	L.submerge_desc = "當拉格納羅斯消失時發出警報"
@@ -29,3 +14,7 @@ if L then
 	L.emerge_bar = "出現"
 end
 
+L = BigWigs:NewBossLocale("The Molten Core", "zhTW")
+if L then
+	--L.bossName = "The Molten Core"
+end

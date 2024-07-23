@@ -1,9 +1,5 @@
-**r726:**
+**r732:**
 
-Additions:
-> Added tracking for Box of Rattling Chains
-<br>Added tracking for Sunreaver Micro-Sentry
-<br>Added initial tracking for 10.2.0 collectibles
-
-Contributors (in alphabetical order):
-> cyriun
+Fixes:
+> Implemented a more accurate (though not perfect) detection mechanism for Primal Storms
+<br>Pick Pocket should no longer cause duplicate attempts if there were multiple items in the loot window

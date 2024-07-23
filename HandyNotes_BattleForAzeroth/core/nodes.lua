@@ -175,7 +175,7 @@ function Node:IterateRewards()
             index = index + 1
             if index > #self.rewards then return end
             reward = self.rewards[index]
-        until reward:IsEnabled()
+        until reward and reward:IsEnabled()
         return reward
     end
 end
@@ -541,6 +541,13 @@ function Treasure.getters:label()
 end
 
 -------------------------------------------------------------------------------
+----------------------------------- VENDOR ------------------------------------
+-------------------------------------------------------------------------------
+
+local Vendor = Class('Vendor', Collectible,
+    {icon = 'bag', scale = 1.35, group = ns.groups.VENDOR})
+
+-------------------------------------------------------------------------------
 ------------------------------- Interval Class --------------------------------
 -------------------------------------------------------------------------------
 
@@ -554,7 +561,7 @@ function Interval:Initialize(attrs)
         [2] = self.initial.kr or self.initial.tw,
         [3] = self.initial.eu,
         [5] = self.initial.cn
-    } -- https://wowpedia.fandom.com/wiki/API_GetCurrentRegion
+    } -- https://warcraft.wiki.gg/wiki/API_GetCurrentRegion
 
     if self.id then
         self.SpawnTime = self.id * self.offset +
@@ -609,7 +616,8 @@ ns.node = {
     PetBattle = PetBattle,
     Quest = Quest,
     Rare = Rare,
-    Treasure = Treasure
+    Treasure = Treasure,
+    Vendor = Vendor
 }
 
 ns.Interval = Interval

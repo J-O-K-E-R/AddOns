@@ -44,6 +44,8 @@ L['activation_unknown'] = '¡Activación desconocida!'
 L['requirement_not_found'] = '¡Requerimiento de localización desconocido!'
 L['multiple_spawns'] = 'Puede aparecer en varios sitios.'
 L['shared_drops'] = 'Botín Compartido'
+L['zone_drops_label'] = 'Zonas de Caídas'
+L['zone_drops_note'] = 'Los objetos listados debajo los pueden soltar varios enemigos en esta zona.'
 
 L['requires'] = 'Requiere'
 L['ranked_research'] = '%s (Rango %d/%d)'
@@ -173,6 +175,8 @@ L['options_restore_hidden_nodes_desc'] = 'Vuelve a mostrar todos los nodos ocult
 
 L['options_rewards_settings'] = 'Recompensas'
 L['options_reward_types'] = 'Mostrar tipos de recompensas'
+L['options_manuscript_rewards'] = 'Mostrar las recompensas de los manuscritos de dracovigía'
+L['options_manuscript_rewards_desc'] = 'Muestra las recompensas de los manuscritos de dracovigía en los tooltips y sigue si ya lo has coleccionado.'
 L['options_mount_rewards'] = 'Mostrar recompensas de monturas'
 L['options_mount_rewards_desc'] = 'Muestra las recompensas de monturas en las notas y rastrea el estado de si ha sido aprendida.'
 L['options_pet_rewards'] = 'Mostrar recompensas de mascotas'
@@ -194,6 +198,8 @@ L['options_icons_rares_desc'] = 'Muestra dónde están los NPC raros.'
 L['options_icons_rares'] = 'Raros'
 L['options_icons_treasures_desc'] = 'Muestra dónde están los tesoros ocultos.'
 L['options_icons_treasures'] = 'Tesoros'
+L['options_icons_vendors_desc'] = 'Muestra dónde están los vendedores.'
+L['options_icons_vendors'] = 'Vendedores'
 
 ---------------------------------- FOCUS ---------------------------------
 

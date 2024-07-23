@@ -138,7 +138,7 @@ end
 function mod:EyeOfAnzu(args)
 	eyeTarget = args.destGUID
 	--self:TargetMessageOld(args.spellId, args.destName, "green") -- XXX info display instead?
-	if self:Me(eyeTarget) then
+	if self:Me(args.destGUID) then
 		self:TargetMessageOld(args.spellId, args.destName, "blue", #windTargets > 0 and "warning" or "info")
 		self:Flash(args.spellId)
 	end
@@ -189,7 +189,7 @@ function mod:PhantasmalWindsRemoved(args)
 	if self:GetOption("custom_off_wind_marker") then
 		self:CustomIcon(false, args.destName)
 	end
-	tDeleteItem(windTargets, args.destName)
+	self:DeleteFromTable(windTargets, args.destName)
 end
 
 do
