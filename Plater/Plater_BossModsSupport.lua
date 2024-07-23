@@ -28,7 +28,7 @@ local DBM_TIMER_BARS_TEST_MODE = false --can be changed via callback. will disab
 
 -- core functions
 local function ShowNameplateAura(guid, texture, duration, desaturate)
-	--print("ShowNameplateAura", guid, texture, duration, desaturate)
+	--print("ShowNameplateAura", guid, texture, duration, desaturate, HOSTILE_ENABLED)
 	if not HOSTILE_ENABLED then return end
 	if not guid or not texture then return end
 
@@ -156,15 +156,15 @@ function Plater.UpdateBossModAuras(unitFrame)
 
 	if HOSTILE_ENABLED and UNIT_BOSS_MOD_AURAS_ACTIVE [guid] then
 		for activeIndex, values in pairs(UNIT_BOSS_MOD_AURAS_ACTIVE [guid]) do
-			if values.duration and curTime > values.starttime + values.duration then
+			if values.duration and values.duration > 0 and curTime > values.starttime + values.duration then
 				tremove(UNIT_BOSS_MOD_AURAS_ACTIVE [guid], activeIndex)
 			else
-				local icon = iconFrame:SetIcon(-1, nil, values.duration and values.starttime, values.duration, values.texture)
+				local icon = iconFrame:SetIcon(-1, nil, values.duration and values.duration > 0 and values.starttime, values.duration, values.texture)
 				--							spellId, borderColor, startTime, duration, forceTexture, descText, count, debuffType, caster, canStealOrPurge, spellName, isBuff
 				icon.Texture:SetDesaturated(values.desaturate)
 				--icon.Cooldown:SetDesaturated(values.desaturate)
 
-				local endTime = values.duration and (values.starttime + values.duration) or nil
+				local endTime = values.duration and values.duration > 0 and (values.starttime + values.duration) or nil
 				if not nextUpdateTime or (endTime and endTime < nextUpdateTime) then
 					nextUpdateTime = endTime
 				end
@@ -378,6 +378,22 @@ function Plater.GetBossModsEventTimeLeft(spell) -- more or less deprecated, need
 	end
 end
 
+---@class plater_altcastbarconfig : table
+---@field iconTexture string
+---@field iconTexcoord table
+---@field iconAlpha number
+---@field text string
+---@field texture any
+---@field color any
+---@field isChanneling boolean
+---@field canInterrupt boolean
+---@field height number
+---@field iconSize number
+---@field textSize number
+---@field spellNameAnchor df_anchor
+---@field timerAnchor df_anchor
+---@field iconAnchor df_anchor
+
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --> spell prediction
 
@@ -400,6 +416,7 @@ function Plater.ClearAltCastBar(plateFrame)
 end
 
 function Plater.SetAltCastBar(plateFrame, configTable, timer, startedAt, altCastId)
+	---@cast configTable plater_altcastbarconfig
 
 	--check if the nameplate is valid
 	if (not plateFrame or not plateFrame.unitFrame) then
@@ -533,7 +550,9 @@ function Plater.SetAltCastBar(plateFrame, configTable, timer, startedAt, altCast
 
 	castBar.spellName = 		configTable.text
 	castBar.spellID = 		1
-	castBar.spellTexture = 		configTable.texture
+	castBar.spellTexture = 		configTable.iconTexture or ""
+
+	castBar:SetStatusBarTexture(configTable.texture or [[Interface\AddOns\Plater\images\bar_background]])
 
 	castBar.flashTexture:Hide()
 	castBar:Animation_StopAllAnimations()
@@ -789,7 +808,7 @@ function Plater.RegisterBossModsBars()
 					start = curTime,
 					icon = icon,
 					spellId = spellId,
-					barType = barType,
+					barType = barType or "cd",
 					color = color,
 					colorId = colorId,
 					modId = modId,
@@ -936,10 +955,10 @@ function Plater.RegisterBossModsBars()
 						start = GetTime(),
 						icon = icon,
 						spellId = key,
-						barType = bar,
+						barType = "cd", --bar,
 						--color = {1,1,1,1},
 						--colorId = colorId,
-						modId = module,
+						modId = (module and (module.moduleName or module.name)) or "N/A",
 						--keep = keep,
 						--fade = fade,
 						name = text,

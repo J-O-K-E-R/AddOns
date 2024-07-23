@@ -1,4 +1,8 @@
 
+---@alias scriptname string
+
+
+
 ---@class ctimer : table
 ---@field Cancelled fun(self: ctimer) : boolean if true this timer was cancelled or finished
 ---@field Cancel fun(self: ctimer) cancel the timer
@@ -51,6 +55,21 @@
 ---@field UnitFrame frame unit frame from blizzard
 ---@field unitFramePlater table backup the unit frame address so we can restore it in case a script messes up and override the unit frame
 
+---@class plater_petinfo : table
+---@field ownerGUID string
+---@field ownerName string
+---@field petName string
+---@field time number
+
+---@class plater_spelldata : table
+---@field event string
+---@field source string
+---@field npcID number
+---@field type string?
+---@field isChanneled any
+---@field encounterID number?
+---@field encounterName string?
+
 ---@class unitframe : table
 ---@field healthBar table
 ---@field castBar table
@@ -63,6 +82,8 @@
 ---@class castcolortable : {key1: boolean, key2: string, key3: string} [1] enabled [2] colorId [3] renamed spellname 
 
 ---@class audiocuedb : {[number]: string} dictionary of strings with the path for the audio to play indexed by spellId
+
+---@class npccacheinfo : {key1: string, key2: string, key3: string} [1] npc name [2] zone name [3] language
 
 ---@class dbmtimerbar : table
 ---@field msg string
@@ -144,3 +165,66 @@
 ---@field RemoveForceBlizzardNameplateUnits fun(npcId: number)
 ---@field GetHealthCutoffValue fun() update the execute range by the class, spec and talents the player is using
 ---@field CheckRange fun(plateFrame: table, onAdded: boolean) check if the nameplate is in range and update the alpha
+---@field PlayAudioForScript fun(canUseScriptAudio: boolean, audioFilePath: string, envTable: scriptenv) play an audio for a script
+
+---@class scriptenv : table
+---@field _SpellID number
+---@field _UnitID string
+---@field _SpellName string
+---@field _Texture string
+---@field _Caster string
+---@field _StackCount number
+---@field _Duration number
+---@field _StartTime number
+---@field _EndTime number
+---@field _RemainingTime number
+---@field _CastPercent number
+---@field _CanInterrupt boolean
+---@field _NpcID number
+---@field _UnitName string
+---@field _UnitGUID string
+---@field _HealthPercent number
+---@field _CanStealOrPurge boolean
+---@field _AuraType string
+---@field _AuraAmount number
+---@field _CastBarHeight number
+
+---@class scriptoption : table
+---@field Type number
+---@field Name string
+---@field Value any value can be a number, string, boolean or a table
+---@field Key string
+---@field Icon string
+---@field Desc string
+---@field Fraction boolean
+---@field Min number
+---@field Max number
+
+---@class scriptdata : table
+---@field ScriptType number
+---@field Name string
+---@field Desc string
+---@field Author string
+---@field Revision number
+---@field Time number
+---@field version number
+---@field semver string
+---@field url string
+---@field Icon string
+---@field Prio number
+---@field Enabled boolean
+---@field NpcNames string[]
+---@field SpellIds number[]
+---@field Initialization string
+---@field Temp_Initialization string
+---@field ConstructorCode string
+---@field Temp_ConstructorCode string
+---@field UpdateCode string
+---@field Temp_UpdateCode string
+---@field OnShowCode string
+---@field Temp_OnShowCode string
+---@field OnHideCode string
+---@field Temp_OnHideCode string
+---@field Options scriptoption[]
+---@field OptionsValues table<string, any> store the values of the options
+---@field PlaterCore number

@@ -77,6 +77,13 @@ DF:InstallTemplate ("dropdown", "PLATER_DROPDOWN_OPTIONS", {
 })
 
 
+DF:InstallTemplate ("button", "PLATER_BUTTON_DARK", {
+	backdrop = {edgeFile = [[Interface\Buttons\WHITE8X8]], edgeSize = 1, bgFile = [[Interface\Tooltips\UI-Tooltip-Background]], tileSize = 8, tile = true},
+	backdropcolor = {0.05, 0.05, 0.05, .7},
+	backdropbordercolor = {0, 0, 0, 1},
+})
+
+
 -- those two may be removed, as they are covered by settings now
 DF:NewColor ("PLATER_FRIEND", .71, 1, 1, 1)
 DF:NewColor ("PLATER_GUILD", 0.498039, 1, .2, 1)
@@ -134,6 +141,7 @@ PLATER_DEFAULT_SETTINGS = {
 		--format: [SpellID] = filePath
 		cast_audiocues = {},
 		cast_audiocues_channel = "Master",
+		cast_audiocue_cooldown = 0.25,
 
 		--store the cast colors customized by the user
 		cast_colors = {}, --[spellId] = {[1] = color, [2] = enabled, [3] = custom spell name}
@@ -329,6 +337,7 @@ PLATER_DEFAULT_SETTINGS = {
 				relevance_state = 4,
 				enabled = true,
 				module_enabled = true,
+				follow_blizzard_npc_option = false,
 				
 				health = {112, 12},
 				cast = {112, 10},
@@ -653,6 +662,7 @@ PLATER_DEFAULT_SETTINGS = {
 		use_player_combat_state = false,
 		
 		opt_out_auto_accept_npc_colors = true,
+		auto_translate_npc_names = false, -- one day default to true
 		
 		shadowMode = 1,
 		
@@ -796,11 +806,14 @@ PLATER_DEFAULT_SETTINGS = {
 		aura_cooldown_edge_texture = [[Interface\AddOns\Plater\images\cooldown_edge_2]],
 		
 		aura_enabled = true,
+		auras_experimental_update_classic_era = true,
 		aura_show_tooltip = false,
 		aura_width = 26,
 		aura_height = 16,
+		aura_border_thickness = 1,
 		aura_width2 = 26,
 		aura_height2 = 16,
+		aura_border_thickness2 = 1,
 		auras_per_row_auto = true,
 		auras_per_row_amount = 10,
 		auras_per_row_amount2 = 10,
@@ -868,6 +881,7 @@ PLATER_DEFAULT_SETTINGS = {
 		extra_icon_stack_outline = "NONE",
 		extra_icon_backdrop_color = {0, 0, 0, 0.612853},
 		extra_icon_border_color = {0, 0, 0, 1},
+		extra_icon_border_size = 1,
 		
 		debuff_show_cc = true, --extra frame show cc
 		debuff_show_cc_border = {.3, .2, .2, 1},
@@ -886,6 +900,7 @@ PLATER_DEFAULT_SETTINGS = {
 		
 		aura_width_personal = 32,
 		aura_height_personal = 20,
+		aura_border_thickness_personal = 1,
 		aura_show_buffs_personal = false,
 		aura_show_debuffs_personal = true,
 		aura_show_all_duration_buffs_personal = false,
@@ -911,6 +926,7 @@ PLATER_DEFAULT_SETTINGS = {
 			defensive = {.85, .45, .1, 1},
 			offensive = {0, .65, .1, 1},
 			crowdcontrol = {.3, .2, .2, 1},
+			default = {0, 0, 0, 1},
 		},
 		
 		aura_tracker = {
@@ -2991,6 +3007,7 @@ PLATER_DEFAULT_SETTINGS = {
 		health_statusbar_bgtexture = "PlaterBackground 2",
 		health_statusbar_bgcolor = {0.113725, 0.113725, 0.113725, 0.89000000},
 		
+		cast_statusbar_quickhide = false,
 		cast_statusbar_texture = "Details Flat",
 		cast_statusbar_bgtexture = "PlaterBackground 2",
 		cast_statusbar_bgcolor = {0.113725, 0.113725, 0.113725, 0.891240},
