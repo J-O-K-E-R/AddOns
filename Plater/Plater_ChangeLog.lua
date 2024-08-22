@@ -8,6 +8,19 @@ function Plater.GetChangelogTable()
 	if (not Plater.ChangeLogTable) then
 		Plater.ChangeLogTable = {
 
+			{1723752649, "New Feature", "Aug 13th, 2024", "Adding 'remove all sounds' button.", "Linaori"},
+			{1723752649, "Bug Fix", "Aug 2nd, 2024", "Fixes to default scripts.", "Terciob"},
+			{1723752649, "Backend Change", "Aug 2nd, 2024", "New profile import API.", "cont1nuity"},
+			{1723752649, "Backend Change", "Aug 2nd, 2024", "Fixing Chi resource visuals.", "cont1nuity"},
+			{1723752649, "Backend Change", "Aug 1st, 2024", "Don't show any 'player-realm' or 'realm' default profiles unless they explicitly exist.", "cont1nuity"},
+			{1723752649, "Backend Change", "Aug 1st, 2024", "Fixing cvar last changed recognition.", "cont1nuity"},
+			{1723752649, "New Feature", "July 30th, 2024", "Adding option to change audio colldown on the Cast Colors tab.", "Terciob"},
+			{1723752649, "New Feature", "July 27th, 2024", "Adding option to disable text on DMB timer icons.", "cont1nuity"},
+			{1723752649, "Bug Fix", "July 27th, 2024", "Fixing Mage execute range.", "cont1nuity"},
+			
+			{1722023393, "Bug Fix", "July 26th, 2024", "Fixing issues with range checks on certain classes/specs.", "cont1nuity"},
+			{1722023393, "Bug Fix", "July 25th, 2024", "Fixing Mage execute range.", "cont1nuity"},
+			
 			{1721651703, "Backend Change", "July 20th, 2024", "Adding audio selection to Spell List tab.", "Terciob"},
 			{1721651703, "Backend Change", "July 19th, 2024", "Castbar tests now has individual cast times.", "Terciob"},
 			{1721651703, "Backend Change", "July 18th, 2024", "Cast Color search will now be able to search for script names and show assigned spells.", "Terciob"},
