@@ -9,7 +9,7 @@
 	<Frame name="RSExplorerUITemplate" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="Background" atlas="Dragonflight-Landingpage-Background" useAtlasSize="true">
+				<Texture parentKey="Background" atlas="thewarwithin-landingpage-background" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="5" y="-5" />
 						<Anchor point="BOTTOMRIGHT" x="-5" y="5" />
@@ -20,15 +20,37 @@
 		<Frames>
 			<Button parentKey="CloseButton" inherits="UIPanelCloseButton" frameLevel="800">
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" />
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-15" Y ="-16"/>
 				</Anchors>
 			</Button>
+			<Frame parentKey="Border" setAllPoints="true" frameLevel="100">
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Border" atlas="ui-frame-thewarwithin-border">
+							<Anchors>
+								<Anchor point="TOPLEFT" />
+								<Anchor point="BOTTOMRIGHT" />
+							</Anchors>
+						</Texture>
+						<Texture parentKey="BottomEmbellishment" atlas="ui-frame-thewarwithin-embellishmentbottom" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOM"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="TopEmbellishment" atlas="ui-frame-thewarwithin-embellishmentbottom" useAtlasSize="true" rotation="180">
+							<Anchors>
+								<Anchor point="TOP"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
 		</Frames>
 	</Frame>
 	<Frame name="RSExplorerRareInfoBaseFrameTemplate" virtual="true">
 		<Layers>
 			<Layer level="BORDER">
-				<Texture parentKey="BaseFrameBackground" atlas="Dragonflight-Landingpage-Background" horizTile="true" vertTile="true">
+				<Texture parentKey="BaseFrameBackground" atlas="thewarwithin-landingpage-background" horizTile="true" vertTile="true">
 					<Anchors>
 						<Anchor point="TOPLEFT" />
 						<Anchor point="BOTTOMRIGHT" />
@@ -36,84 +58,41 @@
 				</Texture>
 			</Layer>
 			<Layer level="BORDER" textureSubLevel="1">
-				<Texture parentKey="BoardDropShadow" atlas="Dragonflight-Landingpage-Background">
+				<Texture parentKey="BoardDropShadow" atlas="thewarwithin-landingpage-background">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent"
-							relativePoint="TOPLEFT" />
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent"
-							relativePoint="BOTTOMRIGHT" />
+						<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" />
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" />
 					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="RaisedFrameEdges" setAllPoints="true" frameLevel="50">
+			<Frame parentKey="Border" setAllPoints="true" frameLevel="100">
 				<Layers>
-					<Layer level="BORDER" textureSubLevel="4">
-						<Texture parentKey="BaseFrameTopEdge" atlas="_Dragonflight-Nineslice-EdgeTop" horizTile="true" useAtlasSize="false">
-							<Size y="5" />
+					<Layer level="OVERLAY">
+						<Texture parentKey="Border" atlas="ui-frame-thewarwithin-border">
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="2" />
-								<Anchor point="TOPRIGHT" relativeKey="$parent" relativePoint="TOPRIGHT" x="-2" />
-							</Anchors>
-						</Texture>
-						<Texture parentKey="BaseFrameBottomEdge" atlas="_Dragonflight-Nineslice-EdgeBottom" horizTile="true" useAtlasSize="false">
-							<Size y="5" />
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativeKey="$parent" relativePoint="BOTTOMLEFT" x="2" />
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="-2" />
-							</Anchors>
-						</Texture>
-						<Texture parentKey="BaseFrameLeftEdge" atlas="!Dragonflight-NineSlice-EdgeLeft" vertTile="true" useAtlasSize="false">
-							<Size x="5" />
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" y="-2" />
-								<Anchor point="BOTTOMLEFT" relativeKey="$parent" relativePoint="BOTTOMLEFT" y="2" />
-							</Anchors>
-						</Texture>
-						<Texture parentKey="BaseFrameRightEdge" atlas="!Dragonflight-NineSlice-EdgeRight" vertTile="true" useAtlasSize="false">
-							<Size x="5" />
-							<Anchors>
-								<Anchor point="TOPRIGHT" relativeKey="$parent" relativePoint="TOPRIGHT" y="-2" />
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" y="2" />
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="BORDER" textureSubLevel="5">
-						<Texture parentKey="BaseFrameTopLeftCorner" atlas="Dragonflight-NineSlice-CornerTopLeft" useAtlasSize="false">
-							<Size>
-								<AbsDimension x="32" y="32" />
-							</Size>
-							<Anchors>
-								<Anchor point="TOPLEFT" />
-							</Anchors>
-						</Texture>
-						<Texture parentKey="BaseFrameTopRightCorner" atlas="Dragonflight-NineSlice-CornerTopRight" useAtlasSize="false">
-							<Size>
-								<AbsDimension x="32" y="32" />
-							</Size>
-							<Anchors>
-								<Anchor point="TOPRIGHT" />
-							</Anchors>
-						</Texture>
-						<Texture parentKey="BaseFrameBottomLeftCorner" atlas="Dragonflight-NineSlice-CornerBottomLeft" useAtlasSize="false">
-							<Size>
-								<AbsDimension x="32" y="32" />
-							</Size>
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" />
-							</Anchors>
-						</Texture>
-						<Texture parentKey="BaseFrameBottomRightCorner" atlas="Dragonflight-NineSlice-CornerBottomRight" useAtlasSize="false">
-							<Size>
-								<AbsDimension x="32" y="32" />
-							</Size>
-							<Anchors>
+								<Anchor point="TOPLEFT" x="-8" />
 								<Anchor point="BOTTOMRIGHT" />
+							</Anchors>
+						</Texture>
+						<Texture parentKey="BottomEmbellishment" atlas="ui-frame-thewarwithin-embellishmentbottom" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOM"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="TopEmbellishment" atlas="ui-frame-thewarwithin-embellishmentbottom" useAtlasSize="true" rotation="180">
+							<Anchors>
+								<Anchor point="TOP"/>
 							</Anchors>
 						</Texture>
 					</Layer>
 				</Layers>
+				<Scripts>
+					<OnLoad>
+						self:SetScale(0.4)
+					</OnLoad>
+				</Scripts>
 			</Frame>
 		</Frames>
 	</Frame>
@@ -211,7 +190,7 @@
 			<Layer level="BORDER" textureSubLevel="3">
 				<Texture parentKey="Header">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="0" y="0" />
+						<Anchor point="TOPLEFT" x="18" y="0" />
 						<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="0" y="-66" />
 					</Anchors>
 					<Color r="0" g="0" b="0" a=".35" />
@@ -222,8 +201,8 @@
 					<Size x="0" y="18" />
 					<Color r="1.0" g="1.0" b="1.0" />
 					<Anchors>
-						<Anchor point="TOPLEFT" x="26" y="5" />
-						<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" y="-83" />
+						<Anchor point="TOPLEFT" x="30" y="-5" />
+						<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" y="-70" />
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -232,7 +211,7 @@
 			<Button parentKey="AchievementIcon" hidden="true">
 				<Size x="54" y="54" />
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.Header" relativePoint="TOPRIGHT" x="-60" y="-20" />
+					<Anchor point="TOPLEFT" relativeKey="$parent.Header" relativePoint="TOPRIGHT" x="-70" y="-20" />
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
@@ -248,42 +227,42 @@
 			</Button>
 			<Frame parentKey="Map">
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativeKey="$parent.Header" relativePoint="BOTTOMLEFT" />
-					<Anchor point="TOPRIGHT" x="0" y="-450" />
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.Header" relativePoint="BOTTOMLEFT" x="-10" />
+					<Anchor point="TOPRIGHT" x="-10" y="-450" />
 				</Anchors>
 			</Frame>
 			<Frame parentKey="Mounts" inherits="RSExplorerRareInfoLootTemplate">
-				<Size x="140" y="47"/>
+				<Size x="147" y="47"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.Map" relativePoint="BOTTOMLEFT" y="7" x="5" />
+					<Anchor point="TOPLEFT" relativeKey="$parent.Map" relativePoint="BOTTOMLEFT" y="-5" x="0" />
 				</Anchors>
 			</Frame>
 			<Frame parentKey="Pets" inherits="RSExplorerRareInfoLootTemplate">
-				<Size x="140" y="47"/>
+				<Size x="147" y="47"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.Mounts" relativePoint="TOPRIGHT" x="-2" />
 				</Anchors>
 			</Frame>
 			<Frame parentKey="Toys" inherits="RSExplorerRareInfoLootTemplate">
-				<Size x="140" y="47"/>
+				<Size x="147" y="47"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.Pets" relativePoint="TOPRIGHT" x="-2" />
 				</Anchors>
 			</Frame>
 			<Frame parentKey="Drakewatcher" inherits="RSExplorerRareInfoLootTemplate">
-				<Size x="140" y="47"/>
+				<Size x="147" y="47"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.Toys" relativePoint="TOPRIGHT" x="-2" />
 				</Anchors>
 			</Frame>
 			<Frame parentKey="Custom" inherits="RSExplorerRareInfoLootTemplate">
-				<Size x="281" y="144"/>
+				<Size x="296" y="144"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.Mounts" relativePoint="BOTTOMLEFT" y="2" x="-3" />
 				</Anchors>
 			</Frame>
 			<Frame parentKey="Appearances" inherits="RSExplorerRareInfoLootTemplate">
-				<Size x="281" />
+				<Size x="296" />
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.Custom" relativePoint="TOPRIGHT" x="-4" />
 					<Anchor point="BOTTOM" relativeKey="$parent.Custom" relativePoint="BOTTOM" />
@@ -343,7 +322,7 @@
 	</Frame>
 
 	<Frame name="RSExplorerFrame" hidden="true" inherits="RSExplorerUITemplate" mixin="RSExplorerMixin" enableMouse="true" movable="true" frameLevel="1" frameStrata="HIGH" parent="UIParent" topLevel="true">
-		<Size x="962" y="762" />
+		<Size x="1000" y="785" />
 		<Anchors>
 			<Anchor point="CENTER" />
 		</Anchors>
@@ -363,22 +342,45 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Frame parentKey="RaisedBorder" inherits="NineSlicePanelTemplate" frameLevel="2">
-				<KeyValues>
-					<KeyValue key="layoutType" value="UniqueCornersLayout" type="string" />
-					<KeyValue key="layoutTextureKit" value="Dragonflight" type="string" />
-				</KeyValues>
-				<Anchors>
-					<Anchor point="TOPLEFT" />
-					<Anchor point="BOTTOMRIGHT" />
-				</Anchors>
-			</Frame>
 			<Frame parentKey="Filters" mixin="RSExplorerFilters" name="$parentFilters" frameLevel="4">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="60" y="-30" relativePoint="TOPLEFT" />
 					<Anchor point="BOTTOMRIGHT" x="-60" y="-70" relativePoint="TOPRIGHT" />
 				</Anchors>
 				<Frames>
+					<DropdownButton parentKey="FilterDropDown" inherits="WowStyle1FilterDropdownTemplate">
+						<Size x="100" y="25" />
+						<Anchors>
+							<Anchor point="LEFT" x="0" y="1" />
+						</Anchors>
+						<Scripts>
+							<OnEnter>
+								self:GetParent():GetParent():ShowTooltip(self)
+							</OnEnter>
+							<OnLeave>
+								self:GetParent():GetParent():HideTooltip(self)
+							</OnLeave>
+						</Scripts>
+					</DropdownButton>
+					<DropdownButton parentKey="ContinentDropDown" inherits="WowStyle1DropdownTemplate">
+						<Size x="300" y="25" />
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.FilterDropDown" relativePoint="RIGHT" x="10" y="0" />
+						</Anchors>
+					</DropdownButton>
+					<CheckButton parentKey="LockCurrentZoneCheckButton" inherits="ChatConfigCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.ContinentDropDown" relativePoint="RIGHT" x="10" y="0" />
+						</Anchors>
+						<Scripts>
+							<OnEnter>
+								self:GetParent():GetParent():ShowTooltip(self)
+							</OnEnter>
+							<OnLeave>
+								self:GetParent():GetParent():HideTooltip(self)
+							</OnLeave>
+						</Scripts>
+					</CheckButton>
 					<Button parentKey="RestartScanningButton" inherits="SharedButtonSmallTemplate">
 						<Anchors>
 							<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-5" y="-2" />
@@ -407,15 +409,15 @@
 				</Anchors>
 			</Frame>
 			<Frame parentKey="RareInfo" hidden="true" inherits="RSExplorerRareInfoTemplate" frameLevel="3">
-				<Size x="565" y="638" />
+				<Size x="600" y="655" />
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="-58" y="-65" />
+					<Anchor point="TOPLEFT" relativeKey="$parent.RareNPCList" relativePoint="TOPRIGHT" x="5" y="0" />
 				</Anchors>
 			</Frame>
 			<Frame parentKey="Control" inherits="RSExplorerControlTemplate" mixin="RSExplorerControl" hidden="true" frameLevel="4">
 				<Size x="574" y="60" />
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.RareNPCList" relativePoint="BOTTOMLEFT" x="0" y="0" />
+					<Anchor point="TOPLEFT" relativeKey="$parent.RareNPCList" relativePoint="BOTTOMLEFT" x="0" y="-20" />
 					<Anchor point="BOTTOMRIGHT" x="-38" y="20" />
 				</Anchors>
 			</Frame>

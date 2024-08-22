@@ -18,9 +18,11 @@ local BONUS_ARMOR = BONUS_ARMOR
 local STAT_MASTERY = STAT_MASTERY
 local RETRIEVING_ITEM_INFO = RETRIEVING_ITEM_INFO
 local ITEM_SPELL_TRIGGER_ONEQUIP = ITEM_SPELL_TRIGGER_ONEQUIP
+
+local GetSpellDescription = C_Spell.GetSpellDescription or GetSpellDescription
 local ESSENCE_DESCRIPTION = GetSpellDescription(277253)
 
-local GetItemInfo = C_Item.GetItemInfo or GetItemInfo
+local GetItemInfo = C_Item.GetItemInfo
 local GetCVarBool = C_CVar.GetCVarBool
 
 local MATCH_ITEM_LEVEL = ITEM_LEVEL:gsub('%%d', '(%%d+)')
@@ -72,8 +74,10 @@ function E:InspectGearSlot(line, lineText, slotInfo)
 		local color1, color2 = strmatch(enchant, '(|cn.-:).-(|r)')
 		local text = gsub(gsub(enchant, '%s?|A.-|a', ''), '|cn.-:(.-)|r', '%1')
 
+		local shortStrip = gsub(text, '[&+] ?', '')
+		local shortAbbrev = E.db.general.itemLevel.enchantAbbrev and gsub(shortStrip, '(%w%w%w)%w+', '%1')
 		slotInfo.enchantText = format('%s%s%s', color1 or '', text, color2 or '')
-		slotInfo.enchantTextShort = format('%s%s%s', color1 or '', utf8sub(text, 1, 18), color2 or '')
+		slotInfo.enchantTextShort = format('%s%s%s', color1 or '', utf8sub(shortAbbrev or shortStrip, 1, 20), color2 or '')
 		slotInfo.enchantTextReal = enchant -- unchanged, contains Atlas and color
 
 		slotInfo.enchantColors[1] = r

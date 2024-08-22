@@ -5,7 +5,7 @@
 ## Author: Jaliborc & Tuller
 
 ## Dependencies: Bagnon
-## Interface: 11502
+## Interface: 11503
 ## LoadOnDemand: 1
 
 ..\Bagnon\src\config.lua

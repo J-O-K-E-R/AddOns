@@ -1,7 +1,7 @@
 
 BigWigs:AddSounds("Ol' Waxbeard", {
-	[421665] = "alert",
 	[422116] = "alarm",
+	[422245] = "alert",
 	[423693] = {"info","warning"},
 })
 
@@ -16,7 +16,6 @@ BigWigs:AddSounds("Blazikon", {
 
 BigWigs:AddSounds("The Candle King", {
 	[420659] = "info",
-	[420696] = "alarm",
 	[422648] = {"alarm","warning"},
 	[426145] = "alert",
 })
@@ -40,4 +39,5 @@ BigWigs:AddSounds("Darkflame Cleft Trash", {
 	[426295] = "alert",
 	[426619] = "alarm",
 	[440652] = "alarm",
+	["minecart"] = {"info","long"},
 })

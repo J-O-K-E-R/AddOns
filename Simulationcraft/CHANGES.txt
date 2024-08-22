@@ -1,10 +1,10 @@
-lightweight tag ad308a1ac8831f3c0831625be0e3c54d3e7af577 10.2.7-01
+lightweight tag 16deb18128df08182c091146e52464e4be39cc31 patch-11.0.0-03
 Author:	Dave Hendler <sollaires@gmail.com>
-Date:	Tue May 7 15:54:02 2024 -0700
+Date:	Wed Aug 7 13:47:08 2024 -0700
 
-commit ad308a1ac8831f3c0831625be0e3c54d3e7af577
+commit 16deb18128df08182c091146e52464e4be39cc31
 Author: Dave Hendler <sollaires@gmail.com>
-Date:   Tue May 7 15:54:02 2024 -0700
+Date:   Wed Aug 7 13:47:08 2024 -0700
 
-    Bump version for 10.2.7
+    Add War Within upgrade items/currencies
 

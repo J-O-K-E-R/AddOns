@@ -5,7 +5,7 @@
     <Size x="300" y="575"/>
     <Layers>
       <Layer level="BACKGROUND">
-        <Texture parentKey="background" atlas="Dragonflight-Landingpage-Background">
+        <Texture parentKey="background" atlas="thewarwithin-landingpage-background">
           <Anchors>
             <Anchor point="TOPLEFT"/>
             <Anchor point="BOTTOMRIGHT"/>

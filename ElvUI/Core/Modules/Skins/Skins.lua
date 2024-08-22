@@ -5,10 +5,10 @@ local LibStub = _G.LibStub
 local _G = _G
 local hooksecurefunc = hooksecurefunc
 local tinsert, xpcall, next, ipairs, pairs = tinsert, xpcall, next, ipairs, pairs
-local unpack, assert, type, gsub, strfind = unpack, assert, type, gsub, strfind
+local unpack, assert, type, gsub, rad, strfind = unpack, assert, type, gsub, rad, strfind
 
 local CreateFrame = CreateFrame
-local IsAddOnLoaded = (C_AddOns and C_AddOns.IsAddOnLoaded) or IsAddOnLoaded
+local IsAddOnLoaded = C_AddOns.IsAddOnLoaded
 
 local ITEM_QUALITY_COLORS = ITEM_QUALITY_COLORS
 
@@ -739,7 +739,17 @@ do
 	end
 end
 
-function S:HandleButton(button, strip, isDecline, noStyle, createBackdrop, template, noGlossTex, overrideTex, frameLevel, regionsKill, regionsZero)
+do
+	local arrowDegree = { up = 0, down = 180, left = 90, right = -90 }
+	function S:SetupArrow(tex, direction)
+		if not tex then return end
+
+		tex:SetTexture(E.Media.Textures.ArrowUp)
+		tex:SetRotation(rad(arrowDegree[direction]))
+	end
+end
+
+function S:HandleButton(button, strip, isDecline, noStyle, createBackdrop, template, noGlossTex, overrideTex, frameLevel, regionsKill, regionsZero, isFilterButton, filterDirection)
 	assert(button, 'doesn\'t exist!')
 
 	if button.IsSkinned then return end
@@ -750,6 +760,7 @@ function S:HandleButton(button, strip, isDecline, noStyle, createBackdrop, templ
 	if button.SetDisabledTexture then button:SetDisabledTexture(E.ClearTexture) end
 
 	if strip then button:StripTextures() end
+	if button.Texture then button.Texture:SetAlpha(0) end
 
 	S:HandleBlizzardRegions(button, nil, regionsKill, regionsZero)
 
@@ -776,6 +787,17 @@ function S:HandleButton(button, strip, isDecline, noStyle, createBackdrop, templ
 		button:HookScript('OnEnter', S.SetModifiedBackdrop)
 		button:HookScript('OnLeave', S.SetOriginalBackdrop)
 		button:HookScript('OnDisable', S.SetDisabledBackdrop)
+	end
+
+	if isFilterButton then
+		local arrow = button:CreateTexture(nil, 'ARTWORK')
+		arrow:Size(10)
+		arrow:ClearAllPoints()
+		arrow:Point('RIGHT', -1, 0)
+
+		if filterDirection then
+			S:SetupArrow(arrow, filterDirection)
+		end
 	end
 
 	button.IsSkinned = true
@@ -955,16 +977,19 @@ do
 		if thumb then
 			thumb:DisableDrawLayer('ARTWORK')
 			thumb:DisableDrawLayer('BACKGROUND')
-			thumb:CreateBackdrop('Transparent')
-			thumb.backdrop:SetFrameLevel(thumb:GetFrameLevel()+1)
+
+			if not thumb.backdrop then
+				thumb:CreateBackdrop('Transparent')
+
+				thumb:HookScript('OnEnter', ThumbOnEnter)
+				thumb:HookScript('OnLeave', ThumbOnLeave)
+				thumb:HookScript('OnMouseUp', ThumbOnMouseUp)
+				thumb:HookScript('OnMouseDown', ThumbOnMouseDown)
+			end
 
 			local r, g, b = unpack(E.media.rgbvaluecolor)
 			thumb.backdrop:SetBackdropColor(r, g, b, .25)
-
-			thumb:HookScript('OnEnter', ThumbOnEnter)
-			thumb:HookScript('OnLeave', ThumbOnLeave)
-			thumb:HookScript('OnMouseUp', ThumbOnMouseUp)
-			thumb:HookScript('OnMouseDown', ThumbOnMouseDown)
+			thumb.backdrop:SetFrameLevel(thumb:GetFrameLevel() + 1)
 		end
 	end
 end
@@ -1106,13 +1131,8 @@ function S:HandleEditBox(frame, template)
 	end
 end
 
-function S:HandleDropDownBox(frame, width, pos, template)
+function S:HandleDropDownBox(frame, width, template, old)
 	assert(frame, 'doesn\'t exist!')
-
-	local frameName = frame.GetName and frame:GetName()
-	local button = frame.Button or frameName and (_G[frameName..'Button'] or _G[frameName..'_Button'])
-	local text = frameName and _G[frameName..'Text'] or frame.Text
-	local icon = frame.Icon
 
 	if not width then
 		width = 155
@@ -1120,29 +1140,48 @@ function S:HandleDropDownBox(frame, width, pos, template)
 
 	frame:Width(width)
 	frame:StripTextures()
-	frame:CreateBackdrop(template)
-	frame:SetFrameLevel(frame:GetFrameLevel() + 2)
-	frame.backdrop:Point('TOPLEFT', 20, -2)
-	frame.backdrop:Point('BOTTOMRIGHT', button, 'BOTTOMRIGHT', 2, -2)
 
-	button:ClearAllPoints()
+	if not frame.backdrop then
+		frame:CreateBackdrop(template)
+		frame:SetFrameLevel(frame:GetFrameLevel() + 2)
+	end
 
-	if pos then
-		button:Point('TOPRIGHT', frame.Right, -20, -21)
+	if E.Retail and not old then
+		if frame.Arrow then
+			frame.Arrow:SetAlpha(0)
+		end
+
+		frame.backdrop:Point('TOPLEFT', 0, -2)
+		frame.backdrop:Point('BOTTOMRIGHT', 0, 2)
+
+		local tex = frame:CreateTexture(nil, 'ARTWORK')
+		tex:SetTexture(E.Media.Textures.ArrowUp)
+		tex:SetRotation(3.14)
+		tex:Point('RIGHT', frame.backdrop, -3, 0)
+		tex:Size(14)
 	else
+		local frameName = frame.GetName and frame:GetName()
+		local button = frame.Button or frameName and (_G[frameName..'Button'] or _G[frameName..'_Button'])
+		local text = frameName and _G[frameName..'Text'] or frame.Text
+		local icon = frame.Icon
+
+		frame.backdrop:Point('TOPLEFT', 20, -2)
+		frame.backdrop:Point('BOTTOMRIGHT', button, 'BOTTOMRIGHT', 2, -2)
+
+		button:ClearAllPoints()
 		button:Point('RIGHT', frame, 'RIGHT', -10, 3)
-	end
 
-	button.SetPoint = E.noop
-	S:HandleNextPrevButton(button, 'down')
+		button.SetPoint = E.noop
+		S:HandleNextPrevButton(button, 'down')
 
-	if text then
-		text:ClearAllPoints()
-		text:Point('RIGHT', button, 'LEFT', -2, 0)
-	end
+		if text then
+			text:ClearAllPoints()
+			text:Point('RIGHT', button, 'LEFT', -2, 0)
+		end
 
-	if icon then
-		icon:Point('LEFT', 23, 0)
+		if icon then
+			icon:Point('LEFT', 23, 0)
+		end
 	end
 end
 
@@ -1818,10 +1857,10 @@ do
 
 		local borderBox = frame.BorderBox or _G.BorderBox -- it's a sub frame only on retail, on wrath it's a global?
 		local frameName = nameOverride or frame:GetName() -- we need override in case Blizzard fucks up the naming (guild bank)
-		local scrollFrame = frame.ScrollFrame or _G[frameName..'ScrollFrame']
-		local editBox = (borderBox and borderBox.IconSelectorEditBox) or frame.EditBox or _G[frameName..'EditBox']
-		local cancel = frame.CancelButton or (borderBox and borderBox.CancelButton) or _G[frameName..'Cancel']
-		local okay = frame.OkayButton or (borderBox and borderBox.OkayButton) or _G[frameName..'Okay']
+		local scrollFrame = frame.ScrollFrame or (frameName and _G[frameName..'ScrollFrame'])
+		local editBox = (borderBox and borderBox.IconSelectorEditBox) or frame.EditBox or (frameName and _G[frameName..'EditBox'])
+		local cancel = frame.CancelButton or (borderBox and borderBox.CancelButton) or (frameName and _G[frameName..'Cancel'])
+		local okay = frame.OkayButton or (borderBox and borderBox.OkayButton) or (frameName and _G[frameName..'Okay'])
 
 		frame:StripTextures()
 		frame:SetTemplate('Transparent')
@@ -1829,7 +1868,7 @@ do
 		if borderBox then
 			borderBox:StripTextures()
 
-			local dropdown = borderBox.IconTypeDropDown and borderBox.IconTypeDropDown.DropDownMenu
+			local dropdown = borderBox.IconTypeDropdown or (borderBox.IconTypeDropDown and borderBox.IconTypeDropDown.DropDownMenu)
 			if dropdown then
 				S:HandleDropDownBox(dropdown)
 			end
@@ -1855,9 +1894,11 @@ do
 		end
 
 		if numIcons then
-			scrollFrame:StripTextures()
-			scrollFrame:Height(scrollFrame:GetHeight() + 10)
-			S:HandleScrollBar(scrollFrame.ScrollBar)
+			if scrollFrame then
+				scrollFrame:StripTextures()
+				scrollFrame:Height(scrollFrame:GetHeight() + 10)
+				S:HandleScrollBar(scrollFrame.ScrollBar)
+			end
 
 			for i = 1, numIcons do
 				local button = _G[buttonNameTemplate..i]

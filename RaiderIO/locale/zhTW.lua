@@ -334,10 +334,8 @@ L["RAID_BOSS_SOD_6"] = "痛苦工匠拉茲內爾"
 L["RAID_BOSS_SOD_7"] = "首創者的守護者"
 L["RAID_BOSS_SOD_8"] = "述命者羅卡洛"
 L["RAID_BOSS_SOD_9"] = "科爾蘇加德"
---[[Translation missing --]]
---[[ L["RAID_BOSS_TOTFW_1"] = ""--]] 
---[[Translation missing --]]
---[[ L["RAID_BOSS_TOTFW_2"] = ""--]] 
+L["RAID_BOSS_TOTFW_1"] = "風之議會"
+L["RAID_BOSS_TOTFW_2"] = "奧拉基爾"
 L["RAID_BOSS_VOTI_1"] = "伊拉諾格"
 L["RAID_BOSS_VOTI_2"] = "忒羅司"
 L["RAID_BOSS_VOTI_3"] = "洪荒議會"
@@ -346,10 +344,8 @@ L["RAID_BOSS_VOTI_5"] = "『超凡者』達西亞"
 L["RAID_BOSS_VOTI_6"] = "庫洛格‧恐怖圖騰"
 L["RAID_BOSS_VOTI_7"] = "幼龍守衛者戴恩娜"
 L["RAID_BOSS_VOTI_8"] = "『噬風者』菈薩葛絲"
---[[Translation missing --]]
---[[ L["RAID_BOT"] = ""--]] 
---[[Translation missing --]]
---[[ L["RAID_BWD"] = ""--]] 
+L["RAID_BOT"] = "暮光堡壘"
+L["RAID_BWD"] = "黑翼陷窟"
 L["RAID_DIFFICULTY_NAME_HEROIC"] = "英雄"
 L["RAID_DIFFICULTY_NAME_HEROIC10"] = "英雄10人"
 L["RAID_DIFFICULTY_NAME_HEROIC25"] = "英雄25人"
@@ -367,8 +363,7 @@ L["RAID_DIFFICULTY_SUFFIX_NORMAL25"] = "N25"
 L["RAID_ENCOUNTERS_DEFEATED_TITLE"] = "已擊敗的團隊首領"
 L["RAID_ICC"] = "冰冠城寨"
 L["RAID_RS"] = "晶紅聖所"
---[[Translation missing --]]
---[[ L["RAID_TOTFW"] = ""--]] 
+L["RAID_TOTFW"] = "四風王座"
 L["RAIDERIO_AVERAGE_PLAYER_SCORE"] = "限時%s層的建議分數"
 L["RAIDERIO_BEST_RUN"] = "Raider.IO 大秘最佳紀錄"
 L["RAIDERIO_CLIENT_CUSTOMIZATION"] = "RaiderIO客戶端自訂"

@@ -35,7 +35,7 @@
 --    LibStub("AceConfig-3.0"):RegisterOptionsTable("MyAddOn", options)
 -- end
 
-local MAJOR, MINOR = "LibAboutPanel-2.0", 111 -- MINOR incremented manually
+local MAJOR, MINOR = "LibAboutPanel-2.0RS", 111 -- MINOR incremented manually
 assert(LibStub, MAJOR .. " requires LibStub")
 local AboutPanel = LibStub:NewLibrary(MAJOR, MINOR)
 if not AboutPanel then return end  -- no upgrade necessary
@@ -491,7 +491,14 @@ function AboutPanel:CreateAboutPanel(addon, parent)
 
 		frame.name = not parent and addon or L["About"]
 		frame.parent = parent
-		InterfaceOptions_AddCategory(frame)
+		frame.OnCommit = frame.okay;
+		frame.OnDefault = frame.default;
+		frame.OnRefresh = frame.refresh;
+		
+		local category, layout = Settings.RegisterCanvasLayoutCategory(frame, frame.name, frame.name);
+		category.ID = frame.name;
+		Settings.RegisterAddOnCategory(category);
+		
 		AboutPanel.aboutFrame[addon] = frame
 	end
 

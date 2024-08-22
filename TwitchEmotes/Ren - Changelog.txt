@@ -3674,6 +3674,21 @@ Added:
 
 
 ----
+Twitch Emotes V2.62.4 - MAy update 10.2.7
+----
+Added:
+LETSGOOO
+Cluegi
+intjCaught
+pedro
+:pls:
+:queen:
+:mouse_trap:
+PepeBald
+
+
+
+----
 To do
 ----
 ====

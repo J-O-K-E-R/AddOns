@@ -456,3 +456,26 @@ function ATTmetatest()
 	app.PrintDebugPrior("---")
 
 end
+
+function ATTcheckawquests()
+
+	local isaw = C_QuestLog.IsAccountQuest
+	local dc = app.CallbackHandlers.DelayedCallback
+	local aw, cur, step = {}, 1, 250
+	local lim = step
+	AllTheThingsHarvestItems.AccountWideQuestsDB = aw
+	local awdb = app.AccountWideQuestsDB
+	local function scan()
+		for i=cur,lim do
+			if not awdb[i] and isaw(i) then
+				aw[i] = true
+			end
+		end
+		app.PrintDebug("scanned thru",lim)
+		cur = lim + 1
+		lim = lim + step
+		if lim > 86000 then return end
+		dc(scan, 1)
+	end
+	scan()
+end

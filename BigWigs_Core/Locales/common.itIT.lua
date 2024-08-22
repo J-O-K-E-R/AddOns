@@ -67,6 +67,7 @@ L.you_die = "Tu muori" -- You will die
 L.you_die_sec = "Morirai in %d sec" -- "You die in 15 sec" (sec = seconds)
 --L.next_ability = "Next ability" -- We don't know what ability will be next, we only know when it will happen (showing a bar)
 --L.landing = "%s is landing" -- "NPC_NAME is landing" Used when a flying NPC/dragon/boss is landing
+L.flying_available = "Adesso puoi volare"
 
 -- Add related
 L.add_spawned = "Add Apparso" -- singular
@@ -113,10 +114,12 @@ L.marker_npc_desc = "Marchia %s con %s, necessario ruolo assistente o capo." -- 
 L.link = "Vincolo"
 L.link_with = "Vincolato a %s"
 L.link_with_icon = "Vincolato a |T13700%d:0|t%s"
-L.link_with_rticon = "Vincolato a {rt%d}%s"
+L.link_with_rticon = "{rt%d}Vincolato a %s"
 L.link_both = "%s vincolato a %s" -- XXX needs updated
 L.link_both_icon = "|T13700%d:0|t%s vincolato a |T13700%d:0|t%s" -- XXX needs updated
 L.link_removed = "Vincolo rimosso"
+--L.link_say_option_name = "Repeating 'Linked' say messages"
+--L.link_say_option_desc = "Repeating say messages in chat stating who you are linked with."
 
 -- Abbreviated numbers
 L.amount_one = "%dMrd" -- Billions 1,000,000,000

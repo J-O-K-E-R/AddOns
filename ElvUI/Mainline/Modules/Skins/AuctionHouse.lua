@@ -7,14 +7,7 @@ local hooksecurefunc = hooksecurefunc
 local CreateFrame = CreateFrame
 
 -- Credits: siweia (AuroraClassic)
-local function SkinEditBoxes(Frame)
-	S:HandleEditBox(Frame.MinLevel)
-	S:HandleEditBox(Frame.MaxLevel)
-end
-
 local function SkinFilterButton(Button)
-	SkinEditBoxes(Button.LevelRangeFrame)
-
 	S:HandleCloseButton(Button.ClearFiltersButton)
 	S:HandleButton(Button)
 end
@@ -139,7 +132,7 @@ local function HandleSellFrame(frame)
 		S:HandleEditBox(frame.SecondaryPriceInput.MoneyInputFrame.SilverBox)
 	end
 
-	S:HandleDropDownBox(frame.DurationDropDown.DropDown)
+	S:HandleDropDownBox(frame.Duration.Dropdown)
 	S:HandleButton(frame.PostButton)
 
 	if frame.BuyoutModeCheckButton then

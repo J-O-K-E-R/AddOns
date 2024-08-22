@@ -197,7 +197,7 @@ DCS_TableData.StatData.ItemLevelFrame = {
 			Blizzard erroneously calculates avgItemLevel = 200 + 10 = 210; showing an item in bags that will upgrade our average ilvl to 210.
 			The 10 ilvls of the bracer has to be averaged over the 16 or 17 item slots to get the correct average ilvl.
 			Solution: avgItemLevel = (200) + (10 / 16) = 200.625; showing the correct average ilvl of 200.625.
-		]]--
+		]]
 
 		avgItemLevelEquipped = math.max(minItemLevel or 0, avgItemLevelEquipped);
 
@@ -240,7 +240,7 @@ DCS_TableData.StatData.ItemLevelFrame = {
 			end
 			local temp = DCS_DecimalPlaces .. ")"
 			local format_for_avg_equipped = gsub(STAT_AVERAGE_ITEM_LEVEL_EQUIPPED, "d%)", temp,  1)
-			statFrame.tooltip = statFrame.tooltip .. "  " .. dcs_format(format_for_avg_equipped, avgItemLevel);
+			statFrame.tooltip = statFrame.tooltip .. "  " .. dcs_format(format_for_avg_equipped, avgItemLevelEquipped);
 		else
 			if ilvl_class_color then
 				PaperDollFrame_SetLabelAndText(statFrame, STAT_AVERAGE_ITEM_LEVEL, classColorString .. dcs_format(DCS_DecimalPlaces,avgItemLevelEquipped), false, avgItemLevelEquipped)
@@ -390,6 +390,54 @@ DCS_TableData.StatData.DCS_ALTERNATEMANA = {
 	end
 }
 
+DCS_TableData.StatData.ATTACK_AP = {
+	updateFunc = function(statFrame, unit)
+		local base, posBuff, negBuff;
+
+		local rangedWeapon = IsRangedWeapon();
+
+		local tag, tooltip;
+		if ( rangedWeapon ) then
+			base, posBuff, negBuff = UnitRangedAttackPower(unit);
+			tag, tooltip = RANGED_ATTACK_POWER, RANGED_ATTACK_POWER_TOOLTIP;
+		else
+			base, posBuff, negBuff = UnitAttackPower(unit);
+			tag, tooltip = MELEE_ATTACK_POWER, MELEE_ATTACK_POWER_TOOLTIP;
+		end
+
+		local damageBonus =  BreakUpLargeNumbers(max((base+posBuff+negBuff), 0)/ATTACK_POWER_MAGIC_NUMBER);
+		local spellPower = 0;
+		local value, valueText, tooltipText;
+
+		if (GetOverrideAPBySpellPower() ~= 0) then --{ As pointed out by toshimoto90, GetOverrideAPBySpellPower() apparently zeros out now instead of returning nil.
+			local holySchool = 2;
+			-- Start at 2 to skip physical damage
+			spellPower = GetSpellBonusDamage(holySchool);
+			for i=(holySchool+1), MAX_SPELL_SCHOOLS do
+				spellPower = min(spellPower, GetSpellBonusDamage(i));
+			end
+			spellPower = min(spellPower, GetSpellBonusHealing()) * GetOverrideAPBySpellPower();
+
+			value = spellPower;
+			valueText, tooltipText = PaperDollFormatStat(tag, spellPower, 0, 0);
+			damageBonus = BreakUpLargeNumbers(spellPower / ATTACK_POWER_MAGIC_NUMBER);
+		else
+			value = base;
+			valueText, tooltipText = PaperDollFormatStat(tag, base, posBuff, negBuff);
+		end
+		PaperDollFrame_SetLabelAndText(statFrame, STAT_ATTACK_POWER, valueText, false, value);
+		statFrame.tooltip = tooltipText;
+
+		local effectiveAP = max(0,base + posBuff + negBuff);
+		if (GetOverrideSpellPowerByAP() ~= 0) then --{ As pointed out by toshimoto90, GetOverrideSpellPowerByAP() apparently zeros out now instead of returning nil. Checking both anticipating this is unintended or may otherwise change in the future.
+			statFrame.tooltip2 = format(MELEE_ATTACK_POWER_SPELL_POWER_TOOLTIP, damageBonus, BreakUpLargeNumbers(effectiveAP * GetOverrideSpellPowerByAP() + 0.5));
+		else
+			statFrame.tooltip2 = format(tooltip, damageBonus);
+		end
+		statFrame:Show();
+	end
+}
+
 DCS_TableData.StatData.DCS_ATTACK_ATTACKSPEED = {
 	updateFunc = function(statFrame, unit)
 		local meleeHaste = GetMeleeHaste();
@@ -526,7 +574,7 @@ DCS_TableData.StatData.REPAIR_COST = {
         for _, index in ipairs({1,3,5,6,7,8,9,10,16,17}) do
 			local repairCost = C_TooltipInfo.GetInventoryItem(unit, index)
 			if (repairCost) then
-				TooltipUtil.SurfaceArgs(repairCost)
+				-- TooltipUtil.SurfaceArgs(repairCost)
 				repairCost = repairCost.repairCost
 				if (repairCost and repairCost > 0) then
 					totalCost = totalCost + repairCost

@@ -12,23 +12,24 @@ end
 local mod	= DBM:NewMod("Lucifron", "DBM-Raids-Vanilla", catID)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240428104809")
-mod:SetCreatureID(12118)--, 12119
+mod:SetRevision("20240814223859")
+mod:SetCreatureID(DBM:IsSeasonal("SeasonOfDiscovery") and 228429 or 12118)--, 12119
 mod:SetEncounterID(663)
 mod:SetModelID(13031)
+mod:SetHotfixNoticeRev(20240724000000)
 mod:SetUsedIcons(1, 2)
 
 mod:RegisterCombat("combat")
 
 mod:RegisterEventsInCombat(
 	"SPELL_CAST_START 20604",
-	"SPELL_CAST_SUCCESS 19702 19703",
---	"SPELL_AURA_APPLIED 20604",
+	"SPELL_CAST_SUCCESS 19702 19703 460931 460932",
+	"SPELL_AURA_APPLIED 20604",
 	"SPELL_AURA_REMOVED 20604"
 )
 
 --[[
-(ability.id = 19702 or ability.id = 19703 or ability.id = 20604) and type = "cast"
+(ability.id = 19702 or ability.id = 19703 or ability.id = 20604 or ability.id = 460931 or ability.id = 460932) and type = "cast"
 --]]
 local warnDoom		= mod:NewSpellAnnounce(19702, 2)
 local warnCurse		= mod:NewSpellAnnounce(19703, 3)
@@ -37,8 +38,8 @@ local warnMC		= mod:NewTargetNoFilterAnnounce(20604, 4)
 local specWarnMC	= mod:NewSpecialWarningYou(20604, nil, nil, nil, 1, 2)
 local yellMC		= mod:NewYell(20604)
 
-local timerCurseCD	= mod:NewCDTimer(20.5, 19703, nil, nil, nil, 3, nil, DBM_COMMON_L.CURSE_ICON)--20-25
-local timerDoomCD	= mod:NewCDTimer(20, 19702, nil, nil, nil, 3, nil, DBM_COMMON_L.MAGIC_ICON)--20-25
+local timerCurseCD	= mod:NewCDTimer(20.5, 19703, nil, nil, nil, 3, nil, DBM_COMMON_L.CURSE_ICON)--20-25 (22.6-28 on sod?)
+local timerDoomCD	= mod:NewCDTimer(20, 19702, nil, nil, nil, 3, nil, DBM_COMMON_L.MAGIC_ICON)--20-25 (16-21 on sod)
 --local timerDoom		= mod:NewCastTimer(10, 19702, nil, nil, nil, 3, nil, DBM_COMMON_L.MAGIC_ICON)
 
 mod:AddSetIconOption("SetIconOnMC", 20604, true, 0, {1, 2})
@@ -51,9 +52,11 @@ function mod:OnCombatStart(delay)
 	timerCurseCD:Start(12-delay)--12-15
 end
 
-function mod:MCTarget(targetname, uId)
-	if not targetname then return end
-	if not DBM:GetRaidRoster(targetname) then return end--Ignore junk target scans that include pets
+function mod:MCTarget(targetname)
+	if not targetname or not DBM:GetRaidRoster(targetname) then return end--Ignore junk target scans that include pets
+	if not self:AntiSpam(1.5, "MC" .. targetname) then -- gets called for both SPELL_CAST_START and AURA_APPLIED because the former doesn't seem to exist at least on SoD
+		return
+	end
 	if self.Options.SetIconOnMC then
 		self:SetIcon(targetname, self.vb.lastIcon)
 	end
@@ -63,25 +66,21 @@ function mod:MCTarget(targetname, uId)
 		specWarnMC:Play("targetyou")
 		yellMC:Yell()
 	end
-	--Alternate icon between 1 and 2
-	if self.vb.lastIcon == 1 then
-		self.vb.lastIcon = 2
-	else
-		self.vb.lastIcon = 1
-	end
+	-- Up to 4 targets can be active in SoD if you mess up
+	self.vb.lastIcon = self.vb.lastIcon % 4 + 1
 end
 
 function mod:SPELL_CAST_START(args)
 	if args:IsSpell(20604) and args:IsSrcTypeHostile() then
-		self:BossTargetScanner(args.sourceGUID, "MCTarget", 0.2, 8)
+		self:BossTargetScanner(args.sourceGUID, "MCTarget", 0.2, 5)
 	end
 end
 
---[[function mod:SPELL_AURA_APPLIED(args)
-	if args:IsSpell(20604 then
-		warnMC:CombinedShow(1, args.destName)
+function mod:SPELL_AURA_APPLIED(args)
+	if args:IsSpell(20604) then
+		self:MCTarget(args.destName)
 	end
-end--]]
+end
 
 function mod:SPELL_AURA_REMOVED(args)
 	if args:IsSpell(20604) and args:IsDestTypePlayer() then
@@ -92,11 +91,11 @@ function mod:SPELL_AURA_REMOVED(args)
 end
 
 function mod:SPELL_CAST_SUCCESS(args)
-	if args:IsSpell(19702) then
+	if args:IsSpell(19702, 460931) then
 		warnDoom:Show()
 		--timerDoom:Start()
-		timerDoomCD:Start()
-	elseif args:IsSpell(19703) then
+		timerDoomCD:Start(DBM:IsSeasonal("SeasonOfDiscovery") and 16 or 20)
+	elseif args:IsSpell(19703, 460932) then
 		warnCurse:Show()
 		timerCurseCD:Start()
 	end

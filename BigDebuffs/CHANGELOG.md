@@ -1,8 +1,7 @@
 # BigDebuffs
 
-## [v27](https://github.com/jordonwow/bigdebuffs/tree/v27) (2024-07-22)
-[Full Changelog](https://github.com/jordonwow/bigdebuffs/compare/v26...v27) [Previous Releases](https://github.com/jordonwow/bigdebuffs/releases)
+## [v33](https://github.com/jordonwow/bigdebuffs/tree/v33) (2024-08-15)
+[Full Changelog](https://github.com/jordonwow/bigdebuffs/compare/v32...v33) [Previous Releases](https://github.com/jordonwow/bigdebuffs/releases)
 
-- added Combat Readiness and Strength of Soul (#757)  
-    https://www.wowhead.com/cata/spell=96267/strength-of-soul  
-    https://www.wowhead.com/cata/spell=74001/combat-readiness  
+- Use IsPlayerSpell() instead of IsUsableSpell()  
+    Fixes #770  

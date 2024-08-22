@@ -104,7 +104,7 @@ do
   local currentErrorHandlerUid
   local currentErrorHandlerContext
   local function waErrorHandler(errorMessage)
-    local prefix = ""
+    local juicedMessage = {}
     local data
     if currentErrorHandlerId then
       data = WeakAuras.GetData(currentErrorHandlerId)
@@ -114,17 +114,18 @@ do
     if data then
       Private.AuraWarnings.UpdateWarning(data.uid, "LuaError", "error",
         L["This aura has caused a Lua error."] .. "\n" .. L["Install the addons BugSack and BugGrabber for detailed error logs."], true)
-      prefix = L["Lua error in aura '%s': %s"]:format(data.id, currentErrorHandlerContext or L["unknown location"]) .. "\n"
+      table.insert(juicedMessage, L["Lua error in aura '%s': %s"]:format(data.id, currentErrorHandlerContext or L["unknown location"]))
     else
-      prefix = L["Lua error"] .. "\n"
+      table.insert(juicedMessage, L["Lua error"])
     end
-    prefix = prefix .. L["WeakAuras Version: %s"]:format(WeakAuras.versionString) .. "\n"
+    table.insert(juicedMessage, L["WeakAuras Version: %s"]:format(WeakAuras.versionString))
     local version = data and (data.semver or data.version)
     if version then
-      prefix = prefix .. L["Aura Version: %s"]:format(version) .. "\n"
+      table.insert(juicedMessage, L["Aura Version: %s"]:format(version))
     end
-
-    geterrorhandler()(prefix .. errorMessage)
+    table.insert(juicedMessage, L["Stack trace:"])
+    table.insert(juicedMessage, errorMessage)
+    geterrorhandler()(table.concat(juicedMessage, "\n"))
   end
 
   function Private.GetErrorHandlerId(id, context)
@@ -1003,19 +1004,20 @@ local function CreatePvPTalentCache()
   Private.pvp_talent_types_specific[player_class] = Private.pvp_talent_types_specific[player_class] or {};
   Private.pvp_talent_types_specific[player_class][spec] = Private.pvp_talent_types_specific[player_class][spec] or {};
 
+  --- @type fun(talentId: number): number, string
   local function formatTalent(talentId)
-    local _, name, icon = GetPvpTalentInfoByID(talentId);
-    return "|T"..icon..":0|t "..name
+    local _, name, icon, _, _, spellId = GetPvpTalentInfoByID(talentId);
+    return spellId, "|T"..icon..":0|t "..name
   end
 
   local slotInfo = C_SpecializationInfo.GetPvpTalentSlotInfo(1);
   if (slotInfo) then
-
     Private.pvp_talent_types_specific[player_class][spec] = {};
 
     local pvpSpecTalents = slotInfo.availableTalentIDs;
-    for i, talentId in ipairs(pvpSpecTalents) do
-      Private.pvp_talent_types_specific[player_class][spec][i] = formatTalent(talentId);
+    for _, talentId in ipairs(pvpSpecTalents) do
+      local index, displayText = formatTalent(talentId)
+      Private.pvp_talent_types_specific[player_class][spec][index] = displayText
     end
   end
 end
@@ -1076,10 +1078,15 @@ function Private.CountWagoUpdates()
   return updatedSlugsCount
 end
 
-local function tooltip_draw(isAddonCompartment)
-  local tooltip = GameTooltip;
-  tooltip:ClearLines();
-  tooltip:AddDoubleLine("WeakAuras", versionString);
+local function tooltip_draw(isAddonCompartment, blizzardTooltip)
+  local tooltip
+  if isAddonCompartment then
+    tooltip = blizzardTooltip
+  else
+    tooltip = GameTooltip
+  end
+  tooltip:ClearLines()
+  tooltip:AddDoubleLine("WeakAuras", versionString)
   if Private.CompanionData.slugs then
     local count = Private.CountWagoUpdates()
     if count > 0 then
@@ -3856,12 +3863,16 @@ local wrappedGetOverlayInfo = wrapTriggerSystemFunction("GetOverlayInfo", "table
 
 Private.GetAdditionalProperties = function(data)
   local props = {}
-  for i = 1, #data.triggers do
-    local triggerSystem = GetTriggerSystem(data, i);
-    if (triggerSystem) then
-      local triggerProps = triggerSystem.GetAdditionalProperties(data, i)
-      if triggerProps then
-        props[i] = triggerProps
+  for child in Private.TraverseLeafsOrAura(data) do
+    for i, trigger in ipairs(child.triggers) do
+      local triggerSystem = GetTriggerSystem(child, i)
+      if triggerSystem then
+        local triggerProps = triggerSystem.GetAdditionalProperties(child, i)
+        if triggerProps and props[i] then
+          MergeTable(props[i], triggerProps)
+        elseif triggerProps then
+          props[i] = triggerProps
+        end
       end
     end
   end
@@ -4906,7 +4917,7 @@ local function ReplaceValuePlaceHolders(textStr, region, customFunc, state, form
     end
   end
 
-  return value or "";
+  return type(value) ~= "table" and value or ""
 end
 
 -- States:
@@ -5880,7 +5891,7 @@ function Private.FindUnusedId(prefix)
   return id
 end
 
-function WeakAuras.SetModel(frame, model_path, model_fileId, isUnit, isDisplayInfo)
+function WeakAuras.SetModel(frame, unused, model_fileId, isUnit, isDisplayInfo)
   if isDisplayInfo then
     pcall(frame.SetDisplayInfo, frame, tonumber(model_fileId))
   elseif isUnit then
@@ -5916,14 +5927,14 @@ function WeakAuras.SafeToNumber(input)
 end
 
 local textSymbols = {
-  ["{rt1}"]      = "|TInterface\\TargetingFrame\\UI-RaidTargetingIcon_1:0|t",
-  ["{rt2}"]      = "|TInterface\\TargetingFrame\\UI-RaidTargetingIcon_2:0|t ",
-  ["{rt3}"]      = "|TInterface\\TargetingFrame\\UI-RaidTargetingIcon_3:0|t ",
-  ["{rt4}"]      = "|TInterface\\TargetingFrame\\UI-RaidTargetingIcon_4:0|t ",
-  ["{rt5}"]      = "|TInterface\\TargetingFrame\\UI-RaidTargetingIcon_5:0|t ",
-  ["{rt6}"]      = "|TInterface\\TargetingFrame\\UI-RaidTargetingIcon_6:0|t ",
-  ["{rt7}"]      = "|TInterface\\TargetingFrame\\UI-RaidTargetingIcon_7:0|t ",
-  ["{rt8}"]      = "|TInterface\\TargetingFrame\\UI-RaidTargetingIcon_8:0|t "
+  ["{rt1}"] = "|TInterface\\TargetingFrame\\UI-RaidTargetingIcon_1:0|t",
+  ["{rt2}"] = "|TInterface\\TargetingFrame\\UI-RaidTargetingIcon_2:0|t",
+  ["{rt3}"] = "|TInterface\\TargetingFrame\\UI-RaidTargetingIcon_3:0|t",
+  ["{rt4}"] = "|TInterface\\TargetingFrame\\UI-RaidTargetingIcon_4:0|t",
+  ["{rt5}"] = "|TInterface\\TargetingFrame\\UI-RaidTargetingIcon_5:0|t",
+  ["{rt6}"] = "|TInterface\\TargetingFrame\\UI-RaidTargetingIcon_6:0|t",
+  ["{rt7}"] = "|TInterface\\TargetingFrame\\UI-RaidTargetingIcon_7:0|t",
+  ["{rt8}"] = "|TInterface\\TargetingFrame\\UI-RaidTargetingIcon_8:0|t"
 }
 
 ---@param txt string

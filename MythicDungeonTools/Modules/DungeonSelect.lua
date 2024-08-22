@@ -38,6 +38,8 @@ do
   tinsert(MDT.dungeonSelectionToIndex, { 100, 101, 102, 103, 15, 104, 4, 105 })
   tinsert(MDT.seasonList, L["Dragonflight Season 4"])
   tinsert(MDT.dungeonSelectionToIndex, { 42, 43, 44, 45, 49, 48, 51, 50 })
+  tinsert(MDT.seasonList, L["The War Within Season 1"])
+  tinsert(MDT.dungeonSelectionToIndex, { 31, 35, 19, 110, 111, 112, 113, 114 })
 end
 
 local seasonList = MDT.seasonList
@@ -180,5 +182,17 @@ function MDT:FixDungeonDropDownList()
         end
       end
     end
+  end
+end
+
+function MDT:CheckSeenDungeonLists()
+  db = MDT:GetDB()
+  local defaultSavedVars = MDT:GetDefaultSavedVariables().global
+  local latestSeason = defaultSavedVars.selectedDungeonList
+  local latestDungeon = defaultSavedVars.currentDungeonIdx
+  if latestSeason > db.latestSeenDungeonList then
+    db.latestSeenDungeonList = latestSeason
+    db.selectedDungeonList = latestSeason
+    db.currentDungeonIdx = latestDungeon
   end
 end

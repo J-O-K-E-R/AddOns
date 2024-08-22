@@ -17,9 +17,8 @@ local L = LB.Localize
 -- BoE would be though.
 
 local PetIconString = [[|TInterface\CURSOR\WildPetCapturable:14|t]]
-local BoAIconString = [[|TInterface\Addons\LiteBag\Plugin_BindsOn\Blizz:12:32|t]]
 
-local BoAText = rawget(L, 'BoA') or BoAIconString
+local WarText = L["War"]
 local BoEText = L["BoE"]
 local PetText = rawget(L, 'Pet') or PetIconString
 local NoBindText = false
@@ -28,33 +27,24 @@ local NoBindText = false
 -- Looks through the first five tooltip left texts for these keys.
 
 local TextForBind = {
-    [ITEM_ACCOUNTBOUND]        = BATTLENET_FONT_COLOR:WrapTextInColorCode( BoAText ),
-    [ITEM_BNETACCOUNTBOUND]    = BATTLENET_FONT_COLOR:WrapTextInColorCode( BoAText ),
-    [ITEM_BIND_TO_ACCOUNT]     = BATTLENET_FONT_COLOR:WrapTextInColorCode( BoAText ),
-    [ITEM_BIND_TO_BNETACCOUNT] = BATTLENET_FONT_COLOR:WrapTextInColorCode( BoAText ),
-    [ITEM_BIND_ON_EQUIP]       = GREEN_FONT_COLOR:WrapTextInColorCode( BoEText ),
-    [ITEM_BIND_ON_USE]         = GREEN_FONT_COLOR:WrapTextInColorCode( BoEText ),
-    [ITEM_SOULBOUND]           = false,
-    [ITEM_BIND_ON_PICKUP]      = false,
-    [TOOLTIP_BATTLE_PET]       = HIGHLIGHT_FONT_COLOR:WrapTextInColorCode( PetText ),
+    [ITEM_ACCOUNTBOUND]        =        BRIGHTBLUE_FONT_COLOR:WrapTextInColorCode( WarText ),
+    [ITEM_BNETACCOUNTBOUND]    =        BRIGHTBLUE_FONT_COLOR:WrapTextInColorCode( WarText ),
+    [ITEM_BIND_TO_ACCOUNT]     =        BRIGHTBLUE_FONT_COLOR:WrapTextInColorCode( WarText ),
+    [ITEM_BIND_TO_BNETACCOUNT] =        BRIGHTBLUE_FONT_COLOR:WrapTextInColorCode( WarText ),
+    [ITEM_ACCOUNTBOUND_UNTIL_EQUIP] =   GREEN_FONT_COLOR:WrapTextInColorCode( WarText ),
+    [ITEM_BIND_ON_EQUIP]       =        GREEN_FONT_COLOR:WrapTextInColorCode( BoEText ),
+    [ITEM_BIND_ON_USE]         =        GREEN_FONT_COLOR:WrapTextInColorCode( BoEText ),
+    [ITEM_SOULBOUND]           =        false,
+    [ITEM_BIND_ON_PICKUP]      =        false,
+    [TOOLTIP_BATTLE_PET]       =        HIGHLIGHT_FONT_COLOR:WrapTextInColorCode( PetText ),
 }
 
 local lineQuery = { Enum.TooltipDataLineType.ItemBinding }
 
-local function GetBindText(bag, slot)
-    local _, info
-
-    if bag == Enum.BagIndex.Bank then
-        local id = BankButtonIDToInvSlotID(slot)
-        info = C_TooltipInfo.GetInventoryItem('player', id)
-    elseif bag == Enum.BagIndex.ReagentBank then
-        local id = ReagentBankButtonIDToInvSlotID(slot)
-        info = C_TooltipInfo.GetInventoryItem('player', id)
-    else
-        info = C_TooltipInfo.GetBagItem(bag, slot)
+local function GetInfoBindText(info)
+    if not info then
+        return
     end
-
-    TooltipUtil.SurfaceArgs(info)
 
     if info.battlePetSpeciesID then
         return TextForBind[TOOLTIP_BATTLE_PET]
@@ -68,30 +58,50 @@ local function GetBindText(bag, slot)
             return TextForBind[text]
         end
     end
+
     return NoBindText
 end
 
-local function Update(button)
-    if not button.LiteBagBindsOnText then
-        button.LiteBagBindsOnText = button:CreateFontString(nil, "ARTWORK", "GameFontNormalOutline")
-        button.LiteBagBindsOnText:SetPoint("TOP", button, "TOP", 0, -2)
-    end
+local function GetButtonItemTooltipInfo(button)
 
-    if not LB.GetGlobalOption("showBindsOn") or not button.hasItem then
-        button.LiteBagBindsOnText:Hide()
-        return
+    if button.GetBankTabID then
+        return C_TooltipInfo.GetBagItem(button:GetBankTabID(), button:GetContainerSlotID())
     end
 
     local bag = button:GetBagID()
     local slot = button:GetID()
 
-    local text = GetBindText(bag, slot)
-    if not text then
-        button.LiteBagBindsOnText:Hide()
+    if bag == Enum.BagIndex.Bank then
+        local id = BankButtonIDToInvSlotID(slot)
+        return C_TooltipInfo.GetInventoryItem('player', id)
+    elseif bag == Enum.BagIndex.Reagentbank then
+        local id = ReagentBankButtonIDToInvSlotID(slot)
+        return C_TooltipInfo.GetInventoryItem('player', id)
     else
-        button.LiteBagBindsOnText:SetText(text)
-        button.LiteBagBindsOnText:Show()
+        return C_TooltipInfo.GetBagItem(bag, slot)
     end
 end
 
-LB.RegisterHook('LiteBagItemButton_Update', Update)
+local BindTextsByButton = {}
+
+local function Update(button)
+    if BindTextsByButton[button] == nil then
+        BindTextsByButton[button] = button:CreateFontString(nil, "ARTWORK", "GameFontNormalOutline")
+        BindTextsByButton[button]:SetPoint("TOP", button, "TOP", 0, -2)
+    end
+
+    if LB.GetGlobalOption("showBindsOn") then
+        local info = GetButtonItemTooltipInfo(button)
+        local text = GetInfoBindText(info)
+
+        if text then
+            BindTextsByButton[button]:SetText(text)
+            BindTextsByButton[button]:Show()
+            return
+        end
+    end
+    BindTextsByButton[button]:Hide()
+end
+
+-- LiteBag
+LB.RegisterHook('LiteBagItemButton_Update', Update, true)

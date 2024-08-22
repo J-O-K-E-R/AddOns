@@ -11,6 +11,7 @@ local RSGeneralDB = private.ImportLib("RareScannerGeneralDB")
 local RSAchievementDB = private.ImportLib("RareScannerAchievementDB")
 local RSConfigDB = private.ImportLib("RareScannerConfigDB")
 local RSMapDB = private.ImportLib("RareScannerMapDB")
+local RSProfessionDB = private.ImportLib("RareScannerProfessionDB")
 
 -- RareScanner internal libraries
 local RSConstants = private.ImportLib("RareScannerConstants")
@@ -214,18 +215,10 @@ function RSNpcPOI.GetNpcPOI(npcID, mapID, npcInfo, alreadyFoundInfo)
 	-- Mini icons
 	if (npcInfo and npcInfo.prof) then
 		POI.iconAtlas = RSConstants.PROFFESION_ICON_ATLAS
+	elseif (POI.minieventID and RSConstants.MINIEVENTS_WORLDMAP_FILTERS[POI.minieventID] and RSConstants.MINIEVENTS_WORLDMAP_FILTERS[POI.minieventID].atlas) then
+		POI.iconAtlas = RSConstants.MINIEVENTS_WORLDMAP_FILTERS[POI.minieventID].atlas
 	elseif (RSUtils.GetTableLength(POI.achievementIDs) > 0) then
 		POI.iconAtlas = RSConstants.ACHIEVEMENT_ICON_ATLAS
-	elseif (POI.minieventID) then
-		if (POI.minieventID == RSConstants.DRAGONFLIGHT_HUNTING_PARTY_MINIEVENT) then
-			POI.iconAtlas = RSConstants.HUNTING_PARTY_ICON_ATLAS
-		elseif (POI.minieventID == RSConstants.DRAGONFLIGHT_DREAMSURGE_MINIEVENT) then
-			POI.iconAtlas = RSConstants.DREAMSURGE_ICON_ATLAS
-		elseif (GetStormInvasionAtlasName(POI.minieventID)) then
-			POI.iconAtlas = GetStormInvasionAtlasName(POI.minieventID)
-		elseif (POI.minieventID == RSConstants.DRAGONFLIGHT_FYRAKK_MINIEVENT) then
-			POI.iconAtlas = RSConstants.FYRAKK_ICON_ATLAS
-		end
 	end
 	
 	return POI
@@ -292,9 +285,9 @@ local function IsNpcPOIFiltered(npcID, mapID, artID, zoneQuestID, prof, minieven
 		end
 	end
 	
-	-- Skip if achievement rare and is filtered
-	local isAchievement = RSUtils.GetTableLength(RSAchievementDB.GetNotCompletedAchievementIDsByMap(npcID, mapID)) > 0;
-	if (not RSConfigDB.IsShowingAchievementRareNPCs() and isAchievement) then
+	-- Skip if not completed achievement and is filtered
+	local isNotCompletedAchievement = RSUtils.GetTableLength(RSAchievementDB.GetNotCompletedAchievementIDsByMap(npcID, mapID)) > 0;
+	if (not RSConfigDB.IsShowingAchievementRareNPCs() and isNotCompletedAchievement) then
 		RSLogger:PrintDebugMessageEntityID(npcID, string.format("Saltado NPC [%s]: Filtrado NPC con logro.", npcID))
 		return true
 	end
@@ -306,7 +299,7 @@ local function IsNpcPOIFiltered(npcID, mapID, artID, zoneQuestID, prof, minieven
 	end
 	
 	-- Skip if other filtered
-	if (not RSConfigDB.IsShowingOtherRareNPCs() and not isMinieventWithFilter and not isAchievement and not prof) then
+	if (not RSConfigDB.IsShowingOtherRareNPCs() and not isMinieventWithFilter and not isNotCompletedAchievement and not prof) then
 		RSLogger:PrintDebugMessageEntityID(npcID, string.format("Saltado NPC [%s]: Filtrado otro NPC.", npcID))
 		return true
 	end
@@ -375,18 +368,7 @@ local function IsNpcPOIFiltered(npcID, mapID, artID, zoneQuestID, prof, minieven
 	
 	-- Skip if wrong profession
 	if (prof) then
-		local pindex1, pindex2, _, _, _, _ = GetProfessions();
-		local matches
-		if (pindex1) then
-			local _, _, _, _, _, _, skillLine, _, _, _ = GetProfessionInfo(pindex1)
-			matches = skillLine and skillLine == prof
-		end
-		if (not matches and pindex2) then
-			local _, _, _, _, _, _, skillLine, _, _, _ = GetProfessionInfo(pindex2)
-			matches = skillLine and skillLine == prof
-		end
-		
-		if (not matches) then
+		if (not RSProfessionDB.HasPlayerProfession(prof)) then
 			RSLogger:PrintDebugMessageEntityID(npcID, string.format("Saltado NPC [%s]: Profesión incorrecta.", npcID))
 			return true
 		end
@@ -397,11 +379,11 @@ local function IsNpcPOIFiltered(npcID, mapID, artID, zoneQuestID, prof, minieven
 		local vignetteInfo = C_VignetteInfo.GetVignetteInfo(vignetteGUID);
 		if (vignetteInfo and vignetteInfo.objectGUID) then
 			local _, _, _, _, _, vignetteNPCID, _ = strsplit("-", vignetteInfo.objectGUID);
-			if (onWorldMap and vignetteInfo.onWorldMap and (tonumber(vignetteNPCID) == npcID or RSConstants.NPCS_WITH_PRE_EVENT[tonumber(vignetteNPCID)] == npcID)) then
+			if (onWorldMap and vignetteInfo.onWorldMap and (tonumber(vignetteNPCID) == npcID or RSNpcDB.GetFinalNpcID(vignetteNPCID) == npcID)) then
 				RSLogger:PrintDebugMessageEntityID(npcID, string.format("Saltado NPC [%s]: Hay un vignette del juego mostrándolo (Vignette onWorldmap).", npcID))
 				return true
 			end
-			if (onMinimap and vignetteInfo.onMinimap and (tonumber(vignetteNPCID) == npcID or RSConstants.NPCS_WITH_PRE_EVENT[tonumber(vignetteNPCID)] == npcID)) then
+			if (onMinimap and vignetteInfo.onMinimap and (tonumber(vignetteNPCID) == npcID or RSNpcDB.GetFinalNpcID(vignetteNPCID) == npcID)) then
 				RSLogger:PrintDebugMessageEntityID(npcID, string.format("Saltado NPC [%s]: Hay un vignette del juego mostrándolo (Vignette onMinimap).", npcID))
 				return true
 			end

@@ -1,8 +1,7 @@
 # Auctionator
 
-## [10.2.55](https://github.com/Auctionator/Auctionator/tree/10.2.55) (2024-07-21)
-[Full Changelog](https://github.com/Auctionator/Auctionator/compare/10.2.54...10.2.55) 
+## [11.0.4](https://github.com/Auctionator/Auctionator/tree/11.0.4) (2024-08-14)
+[Full Changelog](https://github.com/Auctionator/Auctionator/compare/11.0.3...11.0.4) 
 
-- [Fixes #1535] Vanilla: Selling: Relic coffer key not appearing in bag view  
-- Remove redundant relativeTo="$parent" (#1532)  
-- Move Offset tags into the Shadows tags (#1531)  
+- Fixes for issues with full scan lag/freezes  
+- Resolve freeze/failed full scans  

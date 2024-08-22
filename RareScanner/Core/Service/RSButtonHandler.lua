@@ -15,6 +15,7 @@ local RSConfigDB = private.ImportLib("RareScannerConfigDB")
 local RSGeneralDB = private.ImportLib("RareScannerGeneralDB")
 local RSContainerDB = private.ImportLib("RareScannerContainerDB")
 local RSEventDB = private.ImportLib("RareScannerEventDB")
+local RSGuideDB = private.ImportLib("RareScannerGuideDB")
 
 -- RareScanner internal libraries
 local RSConstants = private.ImportLib("RareScannerConstants")
@@ -65,7 +66,7 @@ local function FixVignetteInfo(vignetteInfo)
 	
 	-- Check if it is an event to summon another NPC. In that case display NPC information instead
 	if (RSConstants.NPCS_WITH_PRE_EVENT[entityID]) then
-		local rareNpcID = RSConstants.NPCS_WITH_PRE_EVENT[entityID]
+		local rareNpcID = RSNpcDB.GetFinalNpcID(entityID)
 		RSGeneralDB.RemoveAlreadyFoundEntity(entityID)
 		vignetteInfo.name = RSNpcDB.GetNpcName(rareNpcID)
 		vignetteInfo.atlasName = RSConstants.NPC_VIGNETTE
@@ -82,7 +83,7 @@ local function FixVignetteInfo(vignetteInfo)
 	
 	-- Check if it is an event so summon another CONTAINER. In that case display CONTAINER information instead
 	if (RSConstants.CONTAINERS_WITH_PRE_EVENT[entityID]) then
-		local containerID = RSConstants.CONTAINERS_WITH_PRE_EVENT[entityID]
+		local containerID = RSContainerDB.GetFinalContainerID(entityID)
 		RSGeneralDB.RemoveAlreadyFoundEntity(entityID)
 		if (not vignetteInfo.name) then
 			vignetteInfo.name = RSContainerDB.GetContainerName(entityID)
@@ -101,7 +102,7 @@ local function FixVignetteInfo(vignetteInfo)
 	end
 	
 	-- Check if container with NPC vignette
-	if (RSConstants.CONTAINER_WITH_NPC_VIGNETTE[entityID]) then
+	if (RSUtils.Contains(RSConstants.CONTAINER_WITH_NPC_VIGNETTE, entityID) or RSContainerDB.GetInternalContainerInfo(entityID)) then
 		vignetteInfo.atlasName = RSConstants.CONTAINER_VIGNETTE
 	end
 	
@@ -135,9 +136,19 @@ local function FixVignetteInfo(vignetteInfo)
 		vignetteInfo.atlasName = RSConstants.CONTAINER_VIGNETTE
 	end
 	
-		-- there is one container without name in Shadowlands
+	-- These containers are tagged with events
+	if (RSUtils.Contains(RSConstants.CONTAINERS_WITH_EVENT_VIGNETTE, entityID)) then
+		vignetteInfo.atlasName = RSConstants.CONTAINER_VIGNETTE
+	end
+	
+	-- There is one container without name in Shadowlands
 	if (RSConstants.IsContainerAtlas(vignetteInfo.atlasName) and (not vignetteInfo.name or string.gsub(vignetteInfo.name, "", "") == "")) then
 		vignetteInfo.name = AL["CONTAINER"]
+	end
+	
+	-- Track world bosses in the War Within pre-patch
+	if (vignetteInfo.atlasName == RSConstants.NPC_VIGNETTE_BOSS and RSUtils.Contains({221585,224157,212088}, entityID)) then
+		vignetteInfo.atlasName = RSConstants.NPC_VIGNETTE
 	end
 	
 	return entityID, vignetteInfo
@@ -363,7 +374,7 @@ local function ShowAlert(button, vignetteInfo, isNavigating)
 				RSNotificationTracker.AddNotification(vignetteInfo.id, false, entityID)
 				FlashClientIcon()
 				RSAudioAlerts.PlaySoundAlert(vignetteInfo.atlasName)
-				button:DisplayMessages(vignetteInfo.preEvent and string.format(AL["PRE_EVENT"], vignetteInfo.name) or vignetteInfo.name)
+				button:DisplayMessages(entityID, vignetteInfo.preEvent and string.format(AL["PRE_EVENT"], vignetteInfo.name) or vignetteInfo.name)
 				return
 			end
 		end
@@ -389,7 +400,7 @@ local function ShowAlert(button, vignetteInfo, isNavigating)
 	--------------------------------
 	if (not isNavigating) then
 		FlashClientIcon()
-		button:DisplayMessages(vignetteInfo.preEvent and string.format(AL["PRE_EVENT"], vignetteInfo.name) or vignetteInfo.name)
+		button:DisplayMessages(entityID, vignetteInfo.preEvent and string.format(AL["PRE_EVENT"], vignetteInfo.name) or vignetteInfo.name)
 		RSAudioAlerts.PlaySoundAlert(vignetteInfo.atlasName)
 	end
 
@@ -404,7 +415,7 @@ local function ShowAlert(button, vignetteInfo, isNavigating)
 
 		-- Show the button
 		if (not button:IsShown() or isNavigating or not RSConfigDB.IsDisplayingNavigationArrows() or not RSConfigDB.IsNavigationLockEnabled()) then
-			button.npcID = entityID
+			button.entityID = entityID
 			-- Sometimes the vignette name doesn't match the servers name
 			-- Let's try to use always the servers
 			if (RSConstants.IsNpcAtlas(vignetteInfo.atlasName)) then
@@ -459,6 +470,29 @@ local function ShowAlert(button, vignetteInfo, isNavigating)
 
 	-- Add recently seen
 	RSRecentlySeenTracker.AddRecentlySeen(entityID, vignetteInfo.atlasName, isNavigating)
+	
+	-- Enable guidance icons
+	if (RSConfigDB.IsShowingAutoGuidanceIcons()) then
+		local guide = false
+		if (RSConstants.IsNpcAtlas(vignetteInfo.atlasName)) then
+			guide = RSGuideDB.GetNpcGuide(entityID, mapID)
+		elseif (RSConstants.IsContainerAtlas(vignetteInfo.atlasName)) then
+			guide = RSGuideDB.GetContainerGuide(entityID, mapID)
+		else
+			guide = RSGuideDB.GetEventGuide(entityID, mapID)
+		end
+		
+		local guideEntityID = RSGeneralDB.GetGuideActive()
+		if (guideEntityID) then
+			RSGeneralDB.RemoveGuideActive()
+			RSMinimap.RemoveGuide(guideEntityID)
+		end
+		
+		if (guide) then
+			RSGeneralDB.SetGuideActive(entityID)
+			RSMinimap.AddGuide(entityID)
+		end
+	end
 
 	-- Refresh minimap
 	return true
@@ -521,6 +555,7 @@ function RSButtonHandler.AddAlert(button, vignetteInfo, isNavigating)
 		return
 	-- disable ALL alerts while cinematic is playing
 	elseif (RSEventHandler.IsCinematicPlaying()) then
+		--RSLogger:PrintDebugMessage(string.format("La entidad [%s] se ignora por estar reproduciendose un video", entityID))
 		return
 	-- disable ALL alerts in instances
 	elseif (isInstance == true and not isNavigating and not RSConfigDB.IsScanningInInstances()) then
@@ -540,6 +575,7 @@ function RSButtonHandler.AddAlert(button, vignetteInfo, isNavigating)
 		return
 	-- In Dragonflight there are icons in the continent map, ignore them
 	elseif (mapID and mapID == RSConstants.DRAGON_ISLES) then
+		--RSLogger:PrintDebugMessage(string.format("La entidad [%s] se ignora por estar mostrandose en el mapa de las Islas Dragon", entityID))
 		return
 	end
 	
@@ -548,7 +584,7 @@ function RSButtonHandler.AddAlert(button, vignetteInfo, isNavigating)
 		ShowAlert(button, vignetteInfo, isNavigating)
 	-- Otherwise queue and show with a timer
 	else
-		RSLogger:PrintDebugMessage(string.format("Detectado [%s]", GetVignetteInfoGUID(vignetteInfo)))
+		--RSLogger:PrintDebugMessage(string.format("Detectado [%s]", GetVignetteInfoGUID(vignetteInfo)))
 		foundAlerts[GetVignetteInfoGUID(vignetteInfo)] = vignetteInfo
 		
 		if (not BUTTON_TIMER or BUTTON_TIMER:IsCancelled()) then

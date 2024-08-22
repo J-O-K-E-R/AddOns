@@ -1,7 +1,7 @@
 
 BigWigs:AddColors("Ol' Waxbeard", {
-	[421665] = "purple",
 	[422116] = {"blue","orange"},
+	[422245] = "purple",
 	[423693] = {"blue","red"},
 })
 
@@ -40,4 +40,5 @@ BigWigs:AddColors("Darkflame Cleft Trash", {
 	[426295] = "red",
 	[426619] = "purple",
 	[440652] = "orange",
+	["minecart"] = {"cyan","green"},
 })

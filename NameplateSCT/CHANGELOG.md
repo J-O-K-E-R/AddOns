@@ -1,7 +1,9 @@
 # NameplateSCT
 
-## [1.34](https://github.com/Justw8/NameplateSCT/tree/1.34) (2024-04-24)
-[Full Changelog](https://github.com/Justw8/NameplateSCT/compare/1.33...1.34) [Previous Releases](https://github.com/Justw8/NameplateSCT/releases)
+## [1.42](https://github.com/Justw8/NameplateSCT/tree/1.42) (2024-08-19)
+[Full Changelog](https://github.com/Justw8/NameplateSCT/compare/1.41...1.42) [Previous Releases](https://github.com/Justw8/NameplateSCT/releases)
 
-- Also up Wrath version  
-- Update toc and versions  
+- Fix filter options and split up the reverse option.  
+- Update zhCN.lua (#50)  
+- Update zhCN.lua (#48)  
+- Update zhTW.lua (#49)  

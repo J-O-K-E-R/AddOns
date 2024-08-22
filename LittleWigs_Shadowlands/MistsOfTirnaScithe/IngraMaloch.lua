@@ -61,11 +61,11 @@ function mod:OnEngage()
 	nextBewilderingPollen = t + 7.2
 	self:SetStage(1)
 	self:CDBar(323137, 7.2) -- Bewildering Pollen
-	self:CDBar(323177, 15.5) -- Tears of the Forest
+	self:CDBar(323177, 19.6) -- Tears of the Forest
 	if self:Mythic() then
-		self:CDBar(328756, 33.9, CL.fear) -- Repulsive Visage
+		self:CDBar(328756, 31.2, CL.fear) -- Repulsive Visage
 	end
-	self:CDBar(323149, 35.4, CL.count:format(self:SpellName(323149), embraceDarknessCount)) -- Embrace Darkness
+	self:CDBar(323149, 35.3, CL.count:format(self:SpellName(323149), embraceDarknessCount)) -- Embrace Darkness
 end
 
 --------------------------------------------------------------------------------
@@ -77,19 +77,19 @@ end
 function mod:BewilderingPollen(args)
 	self:Message(args.spellId, "yellow")
 	self:PlaySound(args.spellId, "alarm")
-	nextBewilderingPollen = GetTime() + 15.8
-	self:CDBar(args.spellId, 15.8)
+	nextBewilderingPollen = GetTime() + 20.6
+	self:CDBar(args.spellId, 20.6)
 end
 
 function mod:TearsOfTheForest(args)
+	local t = GetTime()
 	self:Message(args.spellId, "red")
 	self:PlaySound(args.spellId, "alarm")
-	self:CDBar(args.spellId, 15.8)
+	self:CDBar(args.spellId, 20.7)
 	-- 9.74 minimum to Bewildering Pollen
-	local t = GetTime()
 	if nextBewilderingPollen - t < 9.74 then
 		nextBewilderingPollen = t + 9.74
-		self:CDBar(323137, {9.74, 15.8}) -- Bewildering Pollen
+		self:CDBar(323137, {9.74, 20.6}) -- Bewildering Pollen
 	end
 end
 
@@ -117,7 +117,7 @@ function mod:DromansWrathApplied(args)
 	self:SetStage(2)
 	self:CastBar(args.spellId, 15)
 	self:CDBar(323137, 27.1) -- Bewildering Pollen
-	self:CDBar(323177, 35.6) -- Tears of the Forest
+	self:CDBar(323177, 41.2) -- Tears of the Forest
 	if self:Mythic() then
 		self:CDBar(328756, 52.8, CL.fear) -- Repulsive Visage
 	end
@@ -145,7 +145,7 @@ end
 function mod:RepulsiveVisage(args)
 	self:Message(args.spellId, "red", CL.casting:format(CL.fear))
 	self:PlaySound(args.spellId, "warning")
-	self:CDBar(args.spellId, 31.6, CL.fear)
+	self:CDBar(args.spellId, 34.9, CL.fear)
 end
 
 function mod:EmbraceDarkness(args)

@@ -14,6 +14,7 @@ local GetRealmName = GetRealmName
 local GetItemInfo = app.WOWAPI.GetItemInfo;
 local GetItemCount = app.WOWAPI.GetItemCount;
 local GetSpellName = app.WOWAPI.GetSpellName;
+local IsQuestFlaggedCompletedOnAccount = app.WOWAPI.IsQuestFlaggedCompletedOnAccount;
 
 -- Settings: Interface Page
 local child = settings:CreateOptionsPage("Information", L.INTERFACE_PAGE)
@@ -32,7 +33,7 @@ local function GetCoordString(x, y)
 end
 local function GetPatchString(patch)
 	patch = tonumber(patch)
-	return patch and (math_floor(patch / 10000) .. "." .. (math_floor(patch / 100) % 10) .. "." .. (patch % 10))
+	return patch and (math_floor(patch / 10000) .. "." .. (math_floor(patch / 100) % 100) .. "." .. (patch % 10))
 end
 local DefaultConversionMethod = function(value)
 	return value;
@@ -202,12 +203,17 @@ local function ProcessForCompletedBy(t, reference, tooltipInfo)
 		if id then
 			-- Account-Wide Quests
 			if app.AccountWideQuestsDB[id] then
-				tinsert(knownBy, {text=ITEM_UPGRADE_DISCOUNT_TOOLTIP_ACCOUNT_WIDE});
+				if IsQuestFlaggedCompletedOnAccount(id) then
+					tinsert(knownBy, {text=ITEM_UPGRADE_DISCOUNT_TOOLTIP_ACCOUNT_WIDE or "Quest completed on your Account"});
+				end
 			else
 				for _,character in pairs(ATTCharacterData) do
 					if character.Quests and character.Quests[id] then
 						tinsert(knownBy, character);
 					end
+				end
+				if #knownBy == 0 and IsQuestFlaggedCompletedOnAccount(id) then
+					tinsert(knownBy, {text=ACCOUNT_COMPLETED_QUEST_NOTICE or "Quest completed on your Account"});
 				end
 			end
 			BuildKnownByInfoForKind(tooltipInfo, L.COMPLETED_BY);
@@ -294,6 +300,10 @@ local function ProcessForCompletedBy(t, reference, tooltipInfo)
 end
 local function ProcessForKnownBy(t, reference, tooltipInfo)
 	if reference.illusionID then return; end
+	if app.IsRetail then
+		-- Classic can pre-emptively see 'fake' future achievements which are based on a spell
+		if reference.achievementID then return end
+	end
 
 	-- This is to show which characters have this profession.
 	local id = reference.spellID;
@@ -529,7 +539,7 @@ local InformationTypes = {
 	}),
 	CreateInformationType("description", { text = L.DESCRIPTIONS, priority = 2.5,
 		Process = function(t, reference, tooltipInfo)
-			local description = reference.description;
+			local description = reference.description or GetRelativeValue(reference, "sharedDescription")
 			if description then
 				tinsert(tooltipInfo, {
 					left = description,

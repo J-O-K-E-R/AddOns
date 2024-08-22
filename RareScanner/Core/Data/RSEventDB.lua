@@ -5,6 +5,10 @@ local ADDON_NAME, private = ...
 
 local RSEventDB = private.NewLib("RareScannerEventDB")
 
+-- RareScanner database libraries
+local RSMapDB = private.ImportLib("RareScannerMapDB")
+local RSProfessionDB = private.ImportLib("RareScannerProfessionDB")
+
 -- RareScanner libraries
 local RSLogger = private.ImportLib("RareScannerLogger")
 local RSConstants = private.ImportLib("RareScannerConstants")
@@ -65,6 +69,33 @@ function RSEventDB.GetAllInternalEventInfo()
 	return private.EVENT_INFO
 end
 
+function RSEventDB.GetEventIDsByMapID(mapID)
+	local eventIDs = {}
+	for eventID, eventInfo in pairs(RSEventDB.GetAllInternalEventInfo()) do
+		if (RSEventDB.IsInternalEventMultiZone(eventID)) then
+			-- First check if there is a matching mapID in the database
+			for internalMapID, _ in pairs (eventInfo.zoneID) do
+				if (internalMapID == mapID) then
+					tinsert(eventIDs,eventID)
+				end
+			end
+			
+			-- Then check if there is a matching subMapID in the database
+			for internalMapID, _ in pairs (eventInfo.zoneID) do
+				if (RSMapDB.IsMapInParentMap(mapID, internalMapID)) then
+					tinsert(eventIDs,eventID)
+				end
+			end
+		elseif (RSEventDB.IsInternalEventMonoZone(eventID)) then
+			if (eventInfo.zoneID == mapID or (eventInfo.noVignette and eventInfo.zoneID == 0)) then
+				tinsert(eventIDs,eventID)
+			end
+		end
+	end
+	
+	return eventIDs
+end
+
 function RSEventDB.GetInternalEventInfo(eventID)
 	if (eventID) then
 		return private.EVENT_INFO[eventID]
@@ -95,6 +126,17 @@ function RSEventDB.GetInternalEventCoordinates(eventID, mapID)
 		local eventInfo = GetInternalEventInfoByMapID(eventID, mapID)
 		if (eventInfo) then
 			return RSUtils.Lpad(eventInfo.x, 4, '0'), RSUtils.Lpad(eventInfo.y, 4, '0')
+		end
+	end
+
+	return nil
+end
+
+function RSEventDB.GetInternalEventOverlay(eventID, mapID)
+	if (eventID and mapID) then
+		local eventInfo = GetInternalEventInfoByMapID(eventID, mapID)
+		if (eventInfo) then
+			return eventInfo.overlay
 		end
 	end
 
@@ -221,4 +263,32 @@ function RSEventDB.GetEventName(eventID)
 	end
 
 	return nil
+end
+
+function RSEventDB.GetActiveEventIDsWithNamesByMapID(mapID)
+	local eventIDs =  RSEventDB.GetEventIDsByMapID(mapID)
+	local eventIDsWithNames = nil
+	
+	if (RSUtils.GetTableLength(eventIDs)) then
+		eventIDsWithNames = {}
+		for _, eventID in ipairs(eventIDs) do
+			local eventInfo = RSEventDB.GetInternalEventInfo(eventID)
+			if (eventInfo and eventInfo.prof and not RSProfessionDB.HasPlayerProfession(eventInfo.prof)) then
+				-- Wrong profession
+			elseif (RSEventDB.IsDisabledEvent(eventID)) then
+				-- World event disabled
+			else
+				local eventName = RSEventDB.GetEventName(eventID)
+				if (eventName) then
+					eventIDsWithNames[eventID] = string.format("%s (%s)", eventName, eventID)
+				else
+					eventIDsWithNames[eventID] = tostring(eventID)
+				end
+			end
+		end
+		
+		return eventIDsWithNames
+	end
+	
+	return eventIDsWithNames
 end

@@ -715,7 +715,6 @@ TwitchEmotes_defaultpack = {
     ["channMies"] = "Interface\\AddOns\\TwitchEmotes\\Emotes\\Custom\\channMies.tga:28:28",
     ["channWeen"] = "Interface\\AddOns\\TwitchEmotes\\Emotes\\Custom\\channWeen.tga:28:28",
     ["Lole"] = "Interface\\AddOns\\TwitchEmotes\\Emotes\\Custom\\Lole.tga:28:28",
-    ["LetsGo"] = "Interface\\AddOns\\TwitchEmotes\\Emotes\\Custom\\LetsGo.tga:28:28",
     ["GasmChamp"] = "Interface\\AddOns\\TwitchEmotes\\Emotes\\Custom\\GasmChamp.tga:28:28",
     ["DonoWall"] = "Interface\\AddOns\\TwitchEmotes\\Emotes\\Custom\\DonoWall.tga:28:28",
     ["sameEnergy"] = "Interface\\AddOns\\TwitchEmotes\\Emotes\\Custom\\sameEnergy.tga:28:28",
@@ -841,6 +840,12 @@ TwitchEmotes_defaultpack = {
     ["BedgeMorgan"] = "Interface\\AddOns\\TwitchEmotes\\Emotes\\Custom\\BedgeMorgan.tga:28:28",
     [":alert:"] = "Interface\\AddOns\\TwitchEmotes\\Emotes\\Custom\\alert.tga:28:28",
     [":groove:"] = "Interface\\AddOns\\TwitchEmotes\\Emotes\\Custom\\groove.tga:28:28",
+    ["LETSGOOO"] = "Interface\\AddOns\\TwitchEmotes\\Emotes\\Custom\\LETSGOOO.tga:28:28",
+    ["pedro"] = "Interface\\AddOns\\TwitchEmotes\\Emotes\\Custom\\pedro.tga:28:28",
+    [":pls:"] = "Interface\\AddOns\\TwitchEmotes\\Emotes\\Custom\\pls.tga:28:28",
+    ["Cluegi"] = "Interface\\AddOns\\TwitchEmotes\\Emotes\\Custom\\Cluegi.tga:28:28",
+    ["intjCaught"] = "Interface\\AddOns\\TwitchEmotes\\Emotes\\Custom\\intjCaught.tga:28:56",
+    [":queen:"] = "Interface\\AddOns\\TwitchEmotes\\Emotes\\Custom\\queen.tga:28:28",
     -- DansGaming -- Outdated
     ["dan7"] = "Interface\\AddOns\\TwitchEmotes\\Emotes\\DansGaming\\dan7.tga:28:28",
     ["dan10"] = "Interface\\AddOns\\TwitchEmotes\\Emotes\\DansGaming\\dan10.tga:28:28",
@@ -1056,6 +1061,7 @@ TwitchEmotes_defaultpack = {
     [":checkmark:"] = "Interface\\AddOns\\TwitchEmotes\\Emotes\\Emoji\\emCheckMarkButton.tga:28:28",
     [":f:"] = "Interface\\AddOns\\TwitchEmotes\\Emotes\\Emoji\\emF.tga:28:28",
     [":turtle_cry:"] = "Interface\\AddOns\\TwitchEmotes\\Emotes\\Emoji\\emTurtleCry.tga:28:28",
+    [":mouse_trap:"] = "Interface\\AddOns\\TwitchEmotes\\Emotes\\Emoji\\emMouseTrap.tga:28:28",
     -- FinalBossTV
     ["finalBAYCHA"] = "Interface\\AddOns\\TwitchEmotes\\Emotes\\FinalBossTV\\finalBAYCHA.tga:28:28",
     ["finalCLAP"] = "Interface\\AddOns\\TwitchEmotes\\Emotes\\FinalBossTV\\finalCLAP.tga:28:28",
@@ -2375,6 +2381,7 @@ TwitchEmotes_defaultpack = {
     ["SALAMI"] = "Interface\\AddOns\\TwitchEmotes\\Emotes\\Pepes\\SALAMI.tga:28:28",
     ["peepoSadPhone"] = "Interface\\AddOns\\TwitchEmotes\\Pepes\\Pepes\\peepoSadPhone.tga:28:28",
     ["dejj"] = "Interface\\AddOns\\TwitchEmotes\\Emotes\\Pepes\\dejj.tga:28:28",
+    ["PepeBald"] = "Interface\\AddOns\\TwitchEmotes\\Emotes\\Pepes\\PepeBald.tga:28:28",
     -- PsheroTV
     ["heroBT"] = "Interface\\AddOns\\TwitchEmotes\\Emotes\\PsheroTV\\heroBT.tga:28:28",
     ["heroFEELS"] = "Interface\\AddOns\\TwitchEmotes\\Emotes\\PsheroTV\\heroFEELS.tga:28:28",
@@ -3714,6 +3721,8 @@ TwitchEmotes_animation_metadata = {
     ["Interface\\AddOns\\TwitchEmotes\\Emotes\\Custom\\Kekflap.tga"] = {["nFrames"] = 2, ["frameWidth"] = 32, ["frameHeight"] = 32, ["imageWidth"]=32, ["imageHeight"]=64, ["framerate"] = 15},["Interface\\AddOns\\TwitchEmotes\\Emotes\\Custom\\Awoken.tga"] = {["nFrames"] = 38, ["frameWidth"] = 32, ["frameHeight"] = 32, ["imageWidth"]=32, ["imageHeight"]=2048, ["framerate"] = 15},
     ["Interface\\AddOns\\TwitchEmotes\\Emotes\\Custom\\ChipiChipi.tga"] = {["nFrames"] = 24, ["frameWidth"] = 32, ["frameHeight"] = 32, ["imageWidth"]=32, ["imageHeight"]=1024, ["framerate"] = 25},
     ["Interface\\AddOns\\TwitchEmotes\\Emotes\\Custom\\alert.tga"] = {["nFrames"] = 17, ["frameWidth"] = 32, ["frameHeight"] = 32, ["imageWidth"]=32, ["imageHeight"]=1024, ["framerate"] = 40},
+    ["Interface\\AddOns\\TwitchEmotes\\Emotes\\Custom\\LETSGOOO.tga"] = {["nFrames"] = 11, ["frameWidth"] = 32, ["frameHeight"] = 32, ["imageWidth"]=32, ["imageHeight"]=512, ["framerate"] = 20},
+    ["Interface\\AddOns\\TwitchEmotes\\Emotes\\Custom\\pedro.tga"] = {["nFrames"] = 48, ["frameWidth"] = 32, ["frameHeight"] = 32, ["imageWidth"]=32, ["imageHeight"]=2048, ["framerate"] = 10},
 }
 
 TwitchEmotes_emoticons = {
@@ -4463,7 +4472,6 @@ TwitchEmotes_emoticons = {
     ["channWeen"] = "channWeen",
     ["Lole"] = "Lole",
     ["lole"] = "Lole",
-    ["LetsGo"] = "LetsGo",
     ["GasmChamp"] = "GasmChamp",
     ["DonoWall"] = "DonoWall",
     ["sameEnergy"] = "sameEnergy",
@@ -4594,6 +4602,12 @@ TwitchEmotes_emoticons = {
     ["BedgeMorgan"] = "BedgeMorgan",
     [":alert:"] = ":alert:",
     [":groove:"] = ":groove:",
+    ["LETSGOOO"] = "LETSGOOO",
+    ["pedro"] = "pedro",
+    [":pls:"] = ":pls:",
+    ["Cluegi"] = "Cluegi",
+    ["intjCaught"] = "intjCaught",
+    [":queen:"] = ":queen:",
     -- DansGaming
     ["dan7"] = "dan7",
     ["dan10"] = "dan10",
@@ -4821,6 +4835,7 @@ TwitchEmotes_emoticons = {
     [":checkmark:"] = ":checkmark:",
     [":f:"] = ":f:",
     [":turtle_cry:"] = ":turtle_cry:",
+    [":mouse_trap:"] = ":mouse_trap:",
     -- FinalBossTV
     ["finalBAYCHA"] = "finalBAYCHA",
     ["finalCLAP"] = "finalCLAP",
@@ -5735,6 +5750,8 @@ TwitchEmotes_emoticons = {
     ["FeelsComradeMan"] = "FeelsComradeMan",
     ["PepOMEGA"] = "PepOMEGA",
     ["peepoV"] = "peepoV",
+    ["partyfish"] = "peepoV",
+    ["Partyfishuwu"] = "peepoV",
     ["peepoVW"] = "peepoVW",
     ["4peepo"] = "4peepo",
     ["FeelsTiredAF"] = "FeelsTiredAF",
@@ -6170,6 +6187,7 @@ TwitchEmotes_emoticons = {
     ["Thinkge"] = "Thinkge",
     [":fml:"] = ":fml:",
     ["binocs"] = "binocs",
+    ["Binocs"] = "binocs",
     ["PepePlan"] = "PepePlan",
     ["peepoM"] = "peepoM",
     ["FARTIUM"] = "FARTIUM",
@@ -6243,6 +6261,7 @@ TwitchEmotes_emoticons = {
     ["SALAMI"] = "SALAMI",
     ["peepoSadPhone"] = "peepoSadPhone",
     ["dejj"] = "dejj",
+    ["PepeBald"] = "PepeBald",
     -- PsheroTV
     ["heroBT"] = "heroBT",
     ["heroFEELS"] = "heroFEELS",

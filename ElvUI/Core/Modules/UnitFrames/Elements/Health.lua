@@ -61,8 +61,8 @@ function UF:Configure_HealthBar(frame, powerUpdate)
 	if db.health and health.value then
 		local attachPoint = UF:GetObjectAnchorPoint(frame, db.health.attachTextTo)
 		health.value:ClearAllPoints()
-		health.value:Point(db.health.position, attachPoint, db.health.position, db.health.xOffset, db.health.yOffset)
-		frame:Tag(health.value, db.health.text_format)
+		health.value:Point(db.health.position or 'RIGHT', attachPoint, db.health.position or 'RIGHT', db.health.xOffset or -2, db.health.yOffset or 0)
+		frame:Tag(health.value, db.health.text_format or '')
 	end
 
 	--Colors
@@ -72,10 +72,10 @@ function UF:Configure_HealthBar(frame, powerUpdate)
 	health.colorClass = nil
 	health.colorReaction = nil
 
-	if db.colorOverride and db.colorOverride == 'FORCE_ON' then
+	if db.colorOverride == 'FORCE_ON' or db.colorOverride == 'ALWAYS' then
 		health.colorClass = true
 		health.colorReaction = true
-	elseif db.colorOverride and db.colorOverride == 'FORCE_OFF' then
+	elseif db.colorOverride == 'FORCE_OFF' then
 		if UF.db.colors.colorhealthbyvalue then
 			health.colorSmooth = true
 		else
@@ -91,7 +91,7 @@ function UF:Configure_HealthBar(frame, powerUpdate)
 				health.colorHealth = true
 			end
 		else
-			health.colorClass = (not UF.db.colors.forcehealthreaction)
+			health.colorClass = not UF.db.colors.forcehealthreaction
 			health.colorReaction = true
 		end
 	end
@@ -103,7 +103,6 @@ function UF:Configure_HealthBar(frame, powerUpdate)
 	health.HEIGHT = db.height
 
 	local BORDER_SPACING = UF.BORDER + UF.SPACING
-	local BORDER_NOSPACING = UF.BORDER - UF.SPACING
 	local LESS_SPACING = -UF.BORDER - UF.SPACING
 
 	local CLASSBAR_YOFFSET = frame.CLASSBAR_YOFFSET or 0
@@ -115,7 +114,7 @@ function UF:Configure_HealthBar(frame, powerUpdate)
 	local BOTTOM_SPACING = BORDER_SPACING + frame.BOTTOM_OFFSET
 	local CLASSBAR_LESSSPACING = LESS_SPACING - CLASSBAR_YOFFSET
 	local CLASSBAR_YSPACING = BORDER_SPACING + CLASSBAR_YOFFSET
-	local PORTRAIT_NOSPACING = -PORTRAIT_WIDTH - BORDER_NOSPACING
+	local PORTRAIT_NOSPACING = -PORTRAIT_WIDTH - BORDER_SPACING
 	local PORTRAIT_SPACING = BORDER_SPACING + PORTRAIT_WIDTH
 	local POWERBAR_HALF = UF.SPACING + (POWERBAR_HEIGHT * 0.5) -- this is meant to have UF.SPACING
 	local POWERBAR_SPACING = BORDER_SPACING + POWERBAR_OFFSET
@@ -207,10 +206,10 @@ function UF:Configure_HealthBar(frame, powerUpdate)
 	if db.health then
 		--Party/Raid Frames allow to change statusbar orientation
 		if db.health.orientation then
-			health:SetOrientation(db.health.orientation)
+			health:SetOrientation(db.health.orientation or 'HORIZONTAL')
 		end
 
-		health:SetReverseFill(db.health.reverseFill)
+		health:SetReverseFill(not not db.health.reverseFill)
 	end
 
 	if powerUpdate then return end -- we dont need to redo this stuff, power updated it
@@ -249,25 +248,27 @@ function UF:PostUpdateHealthColor(unit, r, g, b)
 	local isDeadOrGhost = UnitIsDeadOrGhost(unit)
 	local healthBreak = not isTapped and colors.healthBreak
 
-	if not b then r, g, b = colors.health.r, colors.health.g, colors.health.b end
 	local newr, newg, newb -- fallback for bg if custom settings arent used
-	if ((colors.healthclass and colors.colorhealthbyvalue) or (colors.colorhealthbyvalue and parent.isForced)) and not isTapped then
-		newr, newg, newb = ElvUF:ColorGradient(self.cur, self.max, 1, 0, 0, 1, 1, 0, r, g, b)
-		self:SetStatusBarColor(newr, newg, newb)
-	elseif healthBreak and healthBreak.enabled then
-		local breakPoint = self.max > 0 and (self.cur / self.max) or 1
-		local onlyLow, color = healthBreak.onlyLow
+	if not b then r, g, b = colors.health.r, colors.health.g, colors.health.b end
+	if not parent.db or parent.db.colorOverride ~= 'ALWAYS' then
+		if ((colors.healthclass and colors.colorhealthbyvalue) or (colors.colorhealthbyvalue and parent.isForced)) and not isTapped then
+			newr, newg, newb = ElvUF:ColorGradient(self.cur, self.max, 1, 0, 0, 1, 1, 0, r, g, b)
+			self:SetStatusBarColor(newr, newg, newb)
+		elseif healthBreak and healthBreak.enabled then
+			local breakPoint = self.max > 0 and (self.cur / self.max) or 1
+			local onlyLow, color = healthBreak.onlyLow
 
-		if breakPoint <= healthBreak.low then
-			color = healthBreak.bad
-		elseif breakPoint >= healthBreak.high and breakPoint ~= 1 and not onlyLow then
-			color = healthBreak.good
-		elseif breakPoint >= healthBreak.low and breakPoint < healthBreak.high and not onlyLow then
-			color = colors.healthBreak.neutral
-		end
+			if breakPoint <= healthBreak.low then
+				color = healthBreak.bad
+			elseif breakPoint >= healthBreak.high and breakPoint ~= 1 and not onlyLow then
+				color = healthBreak.good
+			elseif breakPoint >= healthBreak.low and breakPoint < healthBreak.high and not onlyLow then
+				color = colors.healthBreak.neutral
+			end
 
-		if color then
-			self:SetStatusBarColor(color.r, color.g, color.b)
+			if color then
+				self:SetStatusBarColor(color.r, color.g, color.b)
+			end
 		end
 	end
 

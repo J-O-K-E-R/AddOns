@@ -1,8 +1,8 @@
-## Interface: 100207
+## Interface: 110002, 110000
 ## Title: LiteBag
 ## Notes: A minimal one-bag solution for inventory and bank.
 ## Notes-frFR: Regroupe tous les sacs en un seul (pour l'inventaire et la banque).
-## Version: 10.2.7-3
+## Version: 11.0.0-7
 ## Author: Xodiv-Nagrand
 ## Email: mib@post.com
 ## IconTexture: 133639
@@ -25,7 +25,7 @@ BagButton.xml
 ItemButton.xml
 FilterDropDown.xml
 ContainerPanel.xml
-ReagentBankPanel.xml
+WrappedBankPanel.xml
 Frame.xml
 BankFrame.xml
 BackpackFrame.xml

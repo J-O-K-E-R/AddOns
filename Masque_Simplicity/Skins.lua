@@ -22,7 +22,7 @@ local AddOn, Core = ...
 local L = Core.Locale
 
 -- Skin Info
-local Version = GetAddOnMetadata(AddOn, "Version")
+local Version = C_AddOns.GetAddOnMetadata(AddOn, "Version")
 local Websites = {
 	"https://www.curseforge.com/wow/addons/masque-simplicity",
 }

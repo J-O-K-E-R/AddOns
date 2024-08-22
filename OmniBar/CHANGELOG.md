@@ -1,6 +1,6 @@
 # OmniBar
 
-## [v18](https://github.com/jordonwow/omnibar/tree/v18) (2024-06-04)
-[Full Changelog](https://github.com/jordonwow/omnibar/compare/v17...v18) [Previous Releases](https://github.com/jordonwow/omnibar/releases)
+## [v22](https://github.com/jordonwow/omnibar/tree/v22) (2024-08-15)
+[Full Changelog](https://github.com/jordonwow/omnibar/compare/v21...v22) [Previous Releases](https://github.com/jordonwow/omnibar/releases)
 
-- Fix Rogue cooldowns for Cataclysm Classic  
+- 11.0.2 Changes (#262)  

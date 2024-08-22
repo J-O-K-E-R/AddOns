@@ -30,7 +30,7 @@ ANIMATIONS_TYPE[RSConstants.MAP_ANIMATIONS_ON_CLICK] = AL["MAP_ANIMATIONS_ON_CLI
 ANIMATIONS_TYPE[RSConstants.MAP_ANIMATIONS_ON_BOTH] = AL["MAP_ANIMATIONS_ON_BOTH"];
 
 -----------------------------------------------------------------------
--- Options tab: Display
+-- Options tab: Map options
 -----------------------------------------------------------------------
 
 function RSMapOptions.GetMapOptions()	
@@ -694,6 +694,26 @@ function RSMapOptions.GetMapOptions()
 							get = function() return RSConfigDB.IsHighlightingReputation() end,
 							set = function(_, value)
 								RSConfigDB.SetHighlightingReputation(value)
+							end,
+							width = "full",
+						},
+					}
+				},
+				guidance = {
+					type = "group",
+					order = 11,
+					name = AL["MAP_GUIDE"],
+					handler = RareScanner,
+					desc = AL["MAP_GUIDE_DESC"],
+					args = {
+						support = {
+							order = 0,
+							type = "toggle",
+							name = AL["MAP_GUIDE_AUTOMATIC"],
+							desc = AL["MAP_GUIDE_AUTOMATIC_DESC"],
+							get = function() return RSConfigDB.IsShowingAutoGuidanceIcons() end,
+							set = function(_, value)
+								RSConfigDB.SetShowingAutoGuidanceIcons(value)
 							end,
 							width = "full",
 						},

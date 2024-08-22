@@ -11,8 +11,8 @@ L.other = "%s : %s"
 L.onboss = "%s sur le BOSS"
 L.buff_boss = "Buff sur le BOSS : %s"
 L.buff_other = "Buff sur %s : %s"
-L.magic_buff_boss = "Buff magique sur le BOSS : %s" -- Magic buff on BOSS: SPELL_NAME
-L.magic_buff_other = "Buff magique sur %s : %s" -- Magic buff on NPC_NAME: SPELL_NAME
+L.magic_buff_boss = "Buff magique sur le BOSS : %s" -- Magic buff on BOSS: SPELL_NAME
+L.magic_buff_other = "Buff magique sur %s : %s" -- Magic buff on NPC_NAME: SPELL_NAME
 L.on = "%s sur %s"
 L.stack = "%dx %s sur %s"
 L.stackyou = "%dx %s sur VOUS"
@@ -68,6 +68,7 @@ L.you_die = "Vous êtes mort" -- You will die
 L.you_die_sec = "Vous mourrez dans %d sec." -- "You die in 15 sec" (sec = seconds)
 L.next_ability = "Prochaine compétence" -- We don't know what ability will be next, we only know when it will happen (showing a bar)
 L.landing = "%s atterri" -- "NPC_NAME is landing" Used when a flying NPC/dragon/boss is landing
+L.flying_available = "Vous pouvez maintenant voler"
 
 -- Add related
 L.add_spawned = "Add est apparu" -- singular
@@ -114,15 +115,17 @@ L.marker_npc_aura_desc = "Marque les PNJ affectés par '%s' avec %s. Nécessite 
 L.link = "Lien"
 L.link_with = (female and "Liée" or "Lié") .." avec %s"
 L.link_with_icon = (female and "Liée" or "Lié") .." avec |T13700%d:0|t%s"
-L.link_with_rticon = (female and "Liée" or "Lié") .." avec {rt%d}%s"
+L.link_with_rticon = "{rt%d}".. (female and "Liée" or "Lié") .." avec %s"
 L.link_both = "%s et %s sont liés"
 L.link_both_icon = "|T13700%d:0|t%s et |T13700%d:0|t%s sont liés"
 L.link_removed = "Lien enlevé"
+L.link_say_option_name = "Répète '".. (female and "Liée" or "Lié") .."' dans le canal dire"
+L.link_say_option_desc = "Répète le message dans le canal de discussion en disant avec qui vous êtes liés."
 
 -- Abbreviated numbers
-L.amount_one = "%dB" -- Billions 1,000,000,000
+L.amount_one = "%dMd" -- Billions 1,000,000,000
 L.amount_two = "%dM" -- Millions 1,000,000
-L.amount_three = "%dK" -- Thousands 1,000
+L.amount_three = "%dk" -- Thousands 1,000
 L.seconds = "%.1fs" -- 1.1 seconds
 
 -- Directions

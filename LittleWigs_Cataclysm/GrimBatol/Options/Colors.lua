@@ -25,6 +25,7 @@ BigWigs:AddColors("Forgemaster Throngus", {
 
 BigWigs:AddColors("Drahga Shadowburner", {
 	[75218] = "yellow",
+	[82850] = {"blue","red"},
 	[90950] = "red",
 	[448013] = "yellow",
 	[448105] = "red",
@@ -49,10 +50,12 @@ BigWigs:AddColors("Grim Batol Trash", {
 	[76711] = "red",
 	[451224] = {"blue","orange"},
 	[451387] = "cyan",
-	[451391] = "orange",
+	[451391] = {"blue","cyan","orange"},
 	[451613] = {"blue","red"},
 	[451871] = "red",
 	[451939] = "yellow",
+	[451965] = "yellow",
+	[451971] = "purple",
 	[456696] = "orange",
 	[456711] = "orange",
 	[456713] = "red",

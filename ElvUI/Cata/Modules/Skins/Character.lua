@@ -12,7 +12,7 @@ local GetInventoryItemQuality = GetInventoryItemQuality
 local GetItemQualityByID = C_Item.GetItemQualityByID
 local HasPetUI = HasPetUI
 
-local GetContainerItemID = C_Container.GetContainerItemID or GetContainerItemID
+local GetContainerItemID = C_Container.GetContainerItemID
 local EquipmentManager_UnpackLocation = EquipmentManager_UnpackLocation
 local PAPERDOLLFRAME_TOOLTIP_FORMAT = PAPERDOLLFRAME_TOOLTIP_FORMAT
 local HIGHLIGHT_FONT_COLOR_CODE = HIGHLIGHT_FONT_COLOR_CODE
@@ -106,6 +106,8 @@ local function TabTextureCoords(tex, x1)
 end
 
 local function FixSidebarTabCoords()
+	local hasDejaCharacterStats = E:IsAddOnEnabled('DejaCharacterStats')
+
 	local index = 1
 	local tab = _G['PaperDollSidebarTab'..index]
 	while tab do
@@ -116,8 +118,7 @@ local function FixSidebarTabCoords()
 			tab.Highlight:SetColorTexture(1, 1, 1, 0.3)
 			tab.Highlight:SetAllPoints()
 
-			-- Check for DejaCharacterStats. Lets hide the Texture if the AddOn is loaded.
-			if E:IsAddOnEnabled('DejaCharacterStats') then
+			if hasDejaCharacterStats then
 				tab.Hider:SetTexture()
 			else
 				tab.Hider:SetColorTexture(0, 0, 0, 0.8)

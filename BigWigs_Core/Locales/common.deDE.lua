@@ -67,6 +67,7 @@ L.you_die = "Du stirbst" -- You will die
 L.you_die_sec = "Du stirbst in %d Sek" -- "You die in 15 sec" (sec = seconds)
 L.next_ability = "Nächste Fähigkeit" -- We don't know what ability will be next, we only know when it will happen (showing a bar)
 L.landing = "%s landet" -- "NPC_NAME is landing" Used when a flying NPC/dragon/boss is landing
+L.flying_available = "Du kannst jetzt fliegen"
 
 -- Add related
 L.add_spawned = "Add erschienen" -- singular
@@ -113,10 +114,12 @@ L.marker_npc_aura_desc = "Von '%s' betroffene NPCs mit %s markieren. Benötigt L
 L.link = "Verbindung"
 L.link_with = "Verbunden mit %s"
 L.link_with_icon = "Verbunden mit |T13700%d:0|t%s"
-L.link_with_rticon = "Verbunden mit {rt%d}%s"
-L.link_both = "%s verbunden mit %s" -- XXX needs updated
-L.link_both_icon = "|T13700%d:0|t%s verbunden mit |T13700%d:0|t%s" -- XXX needs updated
+L.link_with_rticon = "{rt%d}Verbunden mit %s"
+L.link_both = "%s + %s sind verbunden"
+L.link_both_icon = "|T13700%d:0|t%s + |T13700%d:0|t%s sind verbunden"
 L.link_removed = "Verbindung entfernt"
+L.link_say_option_name = "Wiederholte 'Verbunden' Chatnachrichten"
+L.link_say_option_desc = "Wiederholt Nachrichten im Sprechen-Chat um mitzuteilen mit wem Du verbunden bist."
 
 -- Abbreviated numbers
 L.amount_one = "%dB" -- Billions 1,000,000,000

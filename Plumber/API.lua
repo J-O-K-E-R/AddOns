@@ -16,6 +16,9 @@ local GetCVarBool = C_CVar.GetCVarBool;
 local CreateFrame = CreateFrame;
 local securecallfunction = securecallfunction;
 
+local function Nop(...)
+end
+
 do  -- Table
     local function Mixin(object, ...)
         for i = 1, select("#", ...) do
@@ -93,6 +96,22 @@ do  -- String
         end
     end
     API.GetUnitCreatureID = GetUnitCreatureID;
+
+
+    local function GetGlobalObject(objNameKey)
+        --Get object via string "FrameName.Key1.Key2"
+        local obj = _G;
+
+        for k in string.gmatch(objNameKey, "%w+") do
+            obj = obj[k];
+            if not obj then
+                return
+            end
+        end
+
+        return obj
+    end
+    API.GetGlobalObject = GetGlobalObject;
 end
 
 do  -- DEBUG
@@ -190,6 +209,18 @@ do  -- Color
         return (r > 0.99 and r <= 1) and (g > 0.1254 and g < 0.1255) and (b > 0.1254 and b < 0.1255)
     end
     API.IsWarningColor = IsWarningColor;
+
+
+    local function SetTextColorByGlobal(fontString, colorMixin)
+        local r, g, b;
+        if colorMixin then
+            r, g, b = colorMixin:GetRGB();
+        else
+            r, g, b = 1, 1, 1;
+        end
+        fontString:SetTextColor(r, g, b);
+    end
+    API.SetTextColorByGlobal = SetTextColorByGlobal;
 end
 
 do  -- Time
@@ -760,7 +791,9 @@ do  -- Map
     ---- 2. Dreamseed
 
     local C_Map = C_Map;
+    local GetMapInfo = C_Map.GetMapInfo;
     local GetBestMapForUnit = C_Map.GetBestMapForUnit;
+    local CreateVector2D = CreateVector2D;
     local controller;
     local modules;
     local lastMapID, total;
@@ -900,7 +933,7 @@ do  -- Map
     --Get Player Coord Less RAM cost
     local UnitPosition = UnitPosition;
     local GetPlayerMapPosition = C_Map.GetPlayerMapPosition;
-    local posY, posX, data;
+    local _posY, _posX, _data;
     local lastUiMapID;
     local MapData = {};
 
@@ -917,7 +950,6 @@ do  -- Map
     end
 
     local function GetPlayerMapCoord_Fallback(uiMapID)
-        print(uiMapID)
         local position = GetPlayerMapPosition(uiMapID, "player");
         if position then
             return position.x, position.Y
@@ -925,21 +957,218 @@ do  -- Map
     end
 
     local function GetPlayerMapCoord(uiMapID)
-        posY, posX = UnitPosition("player");
-        if not (posX and posY) then return GetPlayerMapCoord_Fallback(uiMapID) end;
+        _posY, _posX = UnitPosition("player");
+        if not (_posX and _posY) then return GetPlayerMapCoord_Fallback(uiMapID) end;
 
         if uiMapID ~= lastUiMapID then
             lastUiMapID = uiMapID;
             CacheMapData(uiMapID);
         end
 
-        data = MapData[uiMapID]
-        if not data or data[1] == 0 or data[2] == 0 then return GetPlayerMapCoord_Fallback(uiMapID) end;
+        _data = MapData[uiMapID]
+        if not _data or _data[1] == 0 or _data[2] == 0 then return GetPlayerMapCoord_Fallback(uiMapID) end;
 
-        return (data[3] - posX) / data[1], (data[4] - posY) / data[2]
+        return (_data[3] - _posX) / _data[1], (_data[4] - _posY) / _data[2]
+    end
+    API.GetPlayerMapCoord = GetPlayerMapCoord;
+
+
+    local function ConvertMapPositionToContinentPosition(uiMapID, x, y, poiID)
+        local info = GetMapInfo(uiMapID);
+        if not info then return end;
+
+        local continentMapID;   --uiMapID
+
+        while info do
+            if info.mapType == Enum.UIMapType.Continent then
+                continentMapID = info.mapID;
+                break
+            elseif info.parentMapID then
+                info = GetMapInfo(info.parentMapID);
+            else
+                return
+            end
+        end
+
+        if not continentMapID then
+            print(string.format("Map %s doesn't belong to any continent.", uiMapID));
+        end
+
+        local point = {
+            uiMapID = uiMapID,
+            position = CreateVector2D(x, y);
+        };
+    
+        C_Map.SetUserWaypoint(point);
+
+        C_Timer.After(0, function()
+            local posVector = C_Map.GetUserWaypointPositionForMap(continentMapID);
+            if posVector then
+                x, y = posVector:GetXY();
+                print(continentMapID, x, y);
+                
+                if not PlumberDevData then
+                    PlumberDevData = {};
+                end
+
+                if not PlumberDevData.POIPositions then
+                    PlumberDevData.POIPositions = {};
+                end
+    
+                if poiID then
+                    x = floor(x*10000 + 0.5)/10000;
+                    y = floor(y*10000 + 0.5)/10000;
+                    PlumberDevData.POIPositions[poiID] = {
+                        id = poiID,
+                        mapID = uiMapID,
+                        continent = continentMapID,
+                        cx = x,
+                        cy = y,
+                    };
+                end
+
+                C_Map.ClearUserWaypoint();
+            else
+                print("No user waypoint found.")
+            end
+        end);
+    end
+    API.ConvertMapPositionToContinentPosition = ConvertMapPositionToContinentPosition;
+
+
+    --Calculate a list of map positions (cache data) and run callback
+    local Converter;
+
+    local function Converter_OnUpdate(self, elapsed)
+        self.t = self.t + elapsed;
+        if self.t > self.delay then
+            if self.t > 1 then  --The delay is always much shorter than 1s, thie line is to prevent error looping
+                self.t = nil;
+                self:SetScript("OnUpdate", nil);
+                return
+            end
+            self.t = 0;
+        else
+            return
+        end
+
+        self.index = self.index + 1;
+
+        if self.calls[self.index] then
+            self.calls[self.index]();
+        else
+            self:SetScript("OnUpdate", nil);
+            self.t = nil;
+            self.calls = nil;
+            self.index = nil;
+            self.oldWaypoint = nil;
+            if self.onFinished then
+                self.onFinished();
+                self.onFinished = nil;
+            end
+        end
     end
 
-    API.GetPlayerMapCoord = GetPlayerMapCoord;
+    local function ConvertAndCacheMapPositions(positions, onCoordReceivedFunc, onFinishedFunc)
+        if not Converter then
+            Converter = CreateFrame("Frame");
+        end
+
+        local MAPTYPE_CONTINENT = Enum.UIMapType.Continent;
+        if not MAPTYPE_CONTINENT then
+            print("Plumber WoW API Changed");
+            return
+        end
+
+        local calls, n, oldWaypoint;
+
+        if Converter.t then
+            --still processing
+            calls = Converter.calls;
+            n = #calls;
+            oldWaypoint = Converter.oldWaypoint;
+        else
+            calls = {};
+            n = 0;
+            oldWaypoint = C_Map.GetUserWaypoint();
+            Converter.oldWaypoint = oldWaypoint;
+            Converter.index = 0;
+        end
+
+        for _, data in ipairs(positions) do
+            local info = GetMapInfo(data.uiMapID);
+            if info then
+                local continentMapID;   --uiMapID
+
+                while info do
+                    if info.mapType == MAPTYPE_CONTINENT then
+                        continentMapID = info.mapID;
+                        break
+                    elseif info.parentMapID then
+                        info = GetMapInfo(info.parentMapID);
+                    else
+                        info = nil;
+                    end
+                end
+
+                if continentMapID then
+                    local uiMapID = data.uiMapID;
+                    local poiID = data.poiID;
+
+                    local point = {
+                        uiMapID = uiMapID,
+                        position = CreateVector2D(data.x, data.y);
+                    };
+
+                    n = n + 1;
+                    local function SetWaypoint()
+                        C_Map.SetUserWaypoint(point);
+                        Converter.t = 0;
+                    end
+                    calls[n] = SetWaypoint;
+
+                    n = n + 1;
+                    local function ProcessWaypoint()
+                        local posVector = C_Map.GetUserWaypointPositionForMap(continentMapID);
+                        if posVector then
+                            local x, y = posVector:GetXY();
+                            local positionData = {
+                                uiMapID = uiMapID,
+                                continent = continentMapID,
+                                x = x,
+                                y = y,
+                                poiID = poiID,
+                            };
+
+                            onCoordReceivedFunc(positionData)
+                            C_Map.ClearUserWaypoint();
+                        end
+                        Converter.t = 0.033;
+                    end
+                    calls[n] = ProcessWaypoint;
+                end
+            end
+        end
+
+        Converter.onFinished = function()
+            if Converter.oldWaypoint then
+                C_Map.SetUserWaypoint(oldWaypoint);
+                Converter.oldWaypoint = nil;
+            end
+
+            if onFinishedFunc then
+                onFinishedFunc();
+            end
+        end
+
+        Converter.calls = calls;
+        Converter.t = 0;
+        Converter.delay = -0.1;
+        Converter:SetScript("OnUpdate", Converter_OnUpdate);
+
+        return true
+    end
+    API.ConvertAndCacheMapPositions = ConvertAndCacheMapPositions;
 
     --[[
     function YeetPos()
@@ -982,6 +1211,14 @@ do  -- Map
         return C_Map.GetAreaInfo(areaID) or ("Area:"..areaID)
     end
     API.GetZoneName = GetZoneName;
+
+    local HasActiveDelve = C_DelvesUI and C_DelvesUI.HasActiveDelve or Nop;
+    local function IsInDelves()
+        --See Blizzard InstanceDifficulty.lua
+        local _, _, _, mapID = UnitPosition("player");
+        return HasActiveDelve(mapID);
+    end
+    API.IsInDelves = IsInDelves;
 end
 
 do  --Instance --Map
@@ -1230,6 +1467,37 @@ do  --Game UI
     API.IsInEditMode = IsInEditMode;
 end
 
+do  --Reputation
+    local GetFriendshipReputation = C_GossipInfo.GetFriendshipReputation;
+    local GetFriendshipReputationRanks = C_GossipInfo.GetFriendshipReputationRanks;
+
+    local function GetFriendshipProgress(factionID)
+        local repInfo = factionID and GetFriendshipReputation(factionID);
+        if repInfo and repInfo.friendshipFactionID and  repInfo.friendshipFactionID > 0 then
+            local currentValue, maxValue;
+
+            if repInfo.nextThreshold then
+                currentValue = repInfo.standing - repInfo.reactionThreshold;
+                maxValue = repInfo.nextThreshold - repInfo.reactionThreshold;
+                if maxValue == 0 then
+                    currentValue = 1;
+                    maxValue = 1;
+                end
+            else
+                currentValue = 1;
+                maxValue = 1;
+            end
+
+            local rankInfo = GetFriendshipReputationRanks(repInfo.friendshipFactionID);
+            local level = rankInfo.currentLevel;
+            local isFull = level >= rankInfo.maxLevel;
+
+            return level, isFull, currentValue, maxValue
+        end
+    end
+    API.GetFriendshipProgress = GetFriendshipProgress;
+end
+
 do  --Spell
     if IS_TWW then
         local GetSpellInfo_Table = C_Spell.GetSpellInfo;
@@ -1266,7 +1534,24 @@ do  --System
     end
 end
 
+do  --Player
+    local function GetPlayerMaxLevel()
+        local serverExpansionLevel = GetServerExpansionLevel();
+		local maxLevel = GetMaxLevelForExpansionLevel(serverExpansionLevel);
+        return maxLevel or 80
+    end
+    API.GetPlayerMaxLevel = GetPlayerMaxLevel;
+
+    local function IsPlayerAtMaxLevel()
+        local maxLevel = GetPlayerMaxLevel();
+        local playerLevel = UnitLevel("player");
+        return playerLevel >= maxLevel
+    end
+    API.IsPlayerAtMaxLevel = IsPlayerAtMaxLevel;
+end
+
 do  --Scenario
+    --[[
     local SCENARIO_DELVES = addon.L["Scenario Delves"] or "Delves";
 
     local GetScenarioInfo = C_ScenarioInfo.GetScenarioInfo;
@@ -1276,6 +1561,7 @@ do  --Scenario
         return scenarioInfo and scenarioInfo.name == SCENARIO_DELVES
     end
     API.IsInDelves = IsInDelves;
+    --]]
 end
 
 --[[

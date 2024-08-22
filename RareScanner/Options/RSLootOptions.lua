@@ -80,7 +80,7 @@ local function GetMainCategories()
 		main_categories = {}
 		
 		for k, v in pairs(private.ITEM_CLASSES) do
-			main_categories[k] = GetItemClassInfo(k)
+			main_categories[k] = C_Item.GetItemClassInfo(k)
 		end
 	end
 	
@@ -90,7 +90,7 @@ end
 local function LoadSubcategoryCombo(mainClassID)
 	options.args.filters.args.category_filters.args.lootFilters.values = {}
 	for _, subcategoryID in ipairs(private.ITEM_CLASSES[mainClassID]) do
-		options.args.filters.args.category_filters.args.lootFilters.values[subcategoryID] = GetItemSubClassInfo(mainClassID, subcategoryID)
+		options.args.filters.args.category_filters.args.lootFilters.values[subcategoryID] = C_Item.GetItemSubClassInfo(mainClassID, subcategoryID)
 	end
 end
 
@@ -130,7 +130,7 @@ end
 local customLine = "custom_%s_line"
 
 function RSLootOptions.GetLootOptions()	
-	local customItemsPosition = 8
+	local customItemsPosition = 9
 	
 	if (not options) then
 		private.loot_toggle_all = true
@@ -329,12 +329,27 @@ function RSLootOptions.GetLootOptions()
 							get = function() return RSConfigDB.IsShowingMissingAppearances() end,
 							set = function(_, value)
 								RSConfigDB.SetShowingMissingAppearances(value)
+								if (not value) then
+									RSConfigDB.SetShowingMissingClassAppearances(value)
+								end
 							end,
 							width = "full",
 							disabled = function() return (not RSConfigDB.IsFilteringByExplorerResults()) end,
 						},
-						show_drakewatcher = {
+						show_class_appearances = {
 							order = 7,
+							type = "toggle",
+							name = AL["LOOT_EXPLORER_SHOW_MISSING_CLASS_APPEARANCES"],
+							desc = AL["LOOT_EXPLORER_SHOW_MISSING_CLASS_APPEARANCES_DESC"],
+							get = function() return RSConfigDB.IsShowingMissingClassAppearances() end,
+							set = function(_, value)
+								RSConfigDB.SetShowingMissingClassAppearances(value)
+							end,
+							width = "full",
+							disabled = function() return (not RSConfigDB.IsFilteringByExplorerResults() or not RSConfigDB.IsShowingMissingAppearances()) end,
+						},
+						show_drakewatcher = {
+							order = 8,
 							type = "toggle",
 							name = AL["LOOT_EXPLORER_SHOW_MISSING_DRAKEWATCHER"],
 							desc = AL["LOOT_EXPLORER_SHOW_MISSING_DRAKEWATCHER_DESC"],

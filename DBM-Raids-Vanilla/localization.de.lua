@@ -529,6 +529,25 @@ L:SetMiscLocalization{
 	Pull		= "Unverschämte Welpen! Ihr seid sehenden Auges dem Tod in die Arme gelaufen! Seht her, der Meister regt sich!"
 }
 
+----------------------
+--  The Molten Core --
+----------------------
+L = DBM:GetModLocalization("MoltenCore")
+
+L:SetGeneralLocalization{
+	name = "Der geschmolzene Kern"
+}
+
+L:SetOptionLocalization{
+	YellHeartCleared	= "Zeige Sprechblase wenn Herz der Asche/Glut entfernt wurde.",
+	WarnBossPower		= "Zeige Warnungen wenn der Boss 50%, 75%, 90% und 100% Energielevel erreicht"
+}
+
+L:SetWarningLocalization{
+	WarnBossPower		= "Energie bei %d%%"
+}
+
+
 -------------------
 --  Venoxis  --
 -------------------
@@ -679,7 +698,8 @@ L:SetMiscLocalization{
    Breath = "%s atmet tief ein...",
 	YellPull = "Was für ein Zufall. Normalerweise muss ich meinen Unterschlupf verlassen, um etwas zu essen.",
 	YellP2 = "Diese sinnlose Anstrengung langweilt mich. Ich werde Euch alle von oben verbrennen!",
-	YellP3 = "Mir scheint, dass Ihr noch eine Lektion braucht, sterbliche Wesen!"
+	YellP3 = "Mir scheint, dass Ihr noch eine Lektion braucht, sterbliche Wesen!",
+	SoDWarning = "Willkommen in %s. DBM wird während dem Kampf einige witzige Sounds aus einem legendären Classic Raid spielen. Wer keinen Spaß versteht kann das im DBM UI deaktivieren: /dbm eingeben und die Einstellungen für Onyxia unter Raids -> Classic öffnen.",
 }
 
 -------------------

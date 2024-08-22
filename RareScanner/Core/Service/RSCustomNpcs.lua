@@ -20,6 +20,9 @@ local RSUtils = private.ImportLib("RareScannerUtils")
 local RSTooltipScanners = private.ImportLib("RareScannerTooltipScanners")
 local RSRoutines = private.ImportLib("RareScannerRoutines")
 
+-- RareScanner service libraries
+local RSMinimap = private.ImportLib("RareScannerMinimap")
+
 -----------------------------------------------------------------------
 -- Functions to delete custom NPCs
 -----------------------------------------------------------------------
@@ -59,6 +62,9 @@ function RSCustomNpcs.DeleteCustomNpc(npcID, options)
 			private.options_cnpcs[groupKey] = nil
 		end
 	end
+	
+	-- Update minimap
+	RSMinimap.HideIcon(tonumber(npcID))
 end
 
 -----------------------------------------------------------------------

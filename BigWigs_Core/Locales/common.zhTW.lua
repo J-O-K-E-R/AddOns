@@ -67,6 +67,7 @@ L.you_die = "你將死亡" -- You will die
 L.you_die_sec = "你將在%d秒後死亡" -- "You die in 15 sec" (sec = seconds)
 L.next_ability = "下個技能" -- We don't know what ability will be next, we only know when it will happen (showing a bar)
 L.landing = "%s即將著陸" -- "NPC_NAME is landing" Used when a flying NPC/dragon/boss is landing 即將著陸、正在降落
+L.flying_available = "可以飛行"
 
 -- Add related
 L.add_spawned = "增援出現" -- singular 小怪OR增援，開發者要求用增援
@@ -113,10 +114,12 @@ L.marker_npc_aura_desc = "將受到%s影響的 NPC 標記為%s，需要權限。
 L.link = "連結"
 L.link_with = "與%s連結"
 L.link_with_icon = "與|T13700%d:0|t%s連結"
-L.link_with_rticon = "與{rt%d}%s連結"
+L.link_with_rticon = "{rt%d}與%s連結"
 L.link_both = "%s和%s連結"
 L.link_both_icon = "|T13700%d:0|t%s和|T13700%d:0|t%s連結"
 L.link_removed = "連結移除"
+L.link_say_option_name = "重覆「連結」喊話"
+L.link_say_option_desc = "不停地喊話你和誰連結了。" -- 可能需要再改
 
 -- Abbreviated numbers
 L.amount_one = "%.2f億" -- Billions 1,000,000,000

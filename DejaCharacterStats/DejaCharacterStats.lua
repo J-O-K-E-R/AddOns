@@ -1,6 +1,6 @@
 local ADDON_NAME, namespace = ... 	--localization
 local L = namespace.L 				--localization
-local version = GetAddOnMetadata(ADDON_NAME, "Version")
+local version = C_AddOns.GetAddOnMetadata(ADDON_NAME, "Version")
 local addoninfo = 'v'..version
 --------------------------
 -- SavedVariables Setup --
@@ -86,9 +86,9 @@ local loader = CreateFrame("Frame")
 local RegisteredEvents = {};
 local dcsslash = CreateFrame("Frame", "DejaCharacterStatsSlash", UIParent)
 
-dcsslash:SetScript("OnEvent", function (self, event, ...) 
-	if (RegisteredEvents[event]) then 
-	return RegisteredEvents[event](self, event, ...) 
+dcsslash:SetScript("OnEvent", function (self, event, ...)
+	if (RegisteredEvents[event]) then
+	return RegisteredEvents[event](self, event, ...)
 	end
 end)
 
@@ -97,7 +97,7 @@ function RegisteredEvents:ADDON_LOADED(event, addon, ...)
 		--SLASH_DEJACHARACTERSTATS1 = (L["/dcstats"])
 		SLASH_DEJACHARACTERSTATS1 = "/dcstats"
 		SlashCmdList["DEJACHARACTERSTATS"] = function (msg, editbox)
-			DejaCharacterStats.SlashCmdHandler(msg, editbox)	
+			DejaCharacterStats.SlashCmdHandler(msg, editbox)
 	end
 	--	DEFAULT_CHAT_FRAME:AddMessage("DejaCharacterStats loaded successfully. For options: Esc>Interface>AddOns or type /dcstats.",0,192,255)
 	end
@@ -145,10 +145,10 @@ function DejaCharacterStats.SlashCmdHandler(msg, editbox)
 	--print("command is " .. msg .. "\n")
 	--if (string.lower(msg) == L["config"]) then --I think string.lowermight not work for Russian letters
 	if (msg == "config") then
-		InterfaceOptionsFrame_OpenToCategory("DejaCharacterStats"); 
+		InterfaceOptionsFrame_OpenToCategory("DejaCharacterStats");
 		-- InterfaceOptionsFrame_OpenToCategory("DejaCharacterStats"); --previously needed to call 3 times due to Blizzard bug
 		-- InterfaceOptionsFrame_OpenToCategory("DejaCharacterStats");
-	--[[	
+	--[[
 	elseif (string.lower(msg) == L["dumpconfig"]) then
 		print(L["With defaults"])
 		for k,v in pairs(private.db) do --produces error
@@ -164,7 +164,7 @@ function DejaCharacterStats.SlashCmdHandler(msg, editbox)
 		--DejaCharacterStatsDBPC = private.defaults;
 		gdbprivate.gdb.gdbdefaults = gdbprivate.gdbdefaults.gdbdefaults
 		ReloadUI();
-	--[[	
+	--[[
 	elseif (string.lower(msg) == L["perf"]) then
 		DejaCharacterStats.PrintPerformanceData()
 	--]]
@@ -179,7 +179,7 @@ end
 -----------------------
 DejaCharacterStats.panel = CreateFrame( "Frame", "DejaCharacterStatsPanel", UIParent );
 DejaCharacterStats.panel.name = "DejaCharacterStats";
-InterfaceOptions_AddCategory(DejaCharacterStats.panel);
+Settings.RegisterAddOnCategory( Settings.RegisterCanvasLayoutCategory(DejaCharacterStats.panel, ADDON_NAME) )
 
 -- DCS, DejaView Child Panel
 -- DejaViewPanel.DejaCharacterStatsPanel = CreateFrame( "Frame", "DejaCharacterStatsPanel", DejaViewPanel);
@@ -205,7 +205,7 @@ local dcsversionFS = DejaCharacterStatsPanel:CreateFontString(nil, "OVERLAY", "G
 	dcsversionFS:SetText('|cff00c0ff' .. addoninfo .. '|r')
 	dcsversionFS:SetPoint("BOTTOMRIGHT", -10, 10)
 	dcsversionFS:SetFont("Fonts\\FRIZQT__.TTF", 12)
-	
+
 local dcsresetcheck = CreateFrame("Button", "DCSResetButton", DejaCharacterStatsPanel, "UIPanelButtonTemplate")
 	dcsresetcheck:ClearAllPoints()
 	dcsresetcheck:SetPoint("BOTTOMLEFT", 5, 5)
@@ -242,29 +242,29 @@ local dcsresetcheck = CreateFrame("Button", "DCSResetButton", DejaCharacterStats
  		gdbprivate.gdb.gdbdefaults = gdbprivate.gdbdefaults.gdbdefaults;
 		ReloadUI();
 	end)
-		
+
 	----------------------
 	-- Panel Categories --
 	----------------------
-	
+
 	--Average Item Level
 	local dcsILvlPanelCategoryFS = DejaCharacterStatsPanel:CreateFontString("dcsILvlPanelCategoryFS", "OVERLAY", "GameFontNormal")
 	dcsILvlPanelCategoryFS:SetText('|cffffffff' .. L["Average Item Level:"] .. '|r') --wouldn't be more efficient through format?
 	dcsILvlPanelCategoryFS:SetPoint("TOPLEFT", 25, -40)
 	dcsILvlPanelCategoryFS:SetFontObject("GameFontNormalLarge") --Use instead of SetFont("Fonts\\FRIZQT__.TTF", 15) or Russian, Korean and Chinese characters won't work.
-	
-	--Character Stats 
+
+	--Character Stats
 	local dcsStatsPanelcategoryFS = DejaCharacterStatsPanel:CreateFontString("dcsStatsPanelcategoryFS", "OVERLAY", "GameFontNormal")
 	dcsStatsPanelcategoryFS:SetText('|cffffffff' .. L["Character Stats:"] .. '|r')
 	dcsStatsPanelcategoryFS:SetPoint("TOPLEFT", 25, -150)
 	dcsStatsPanelcategoryFS:SetFontObject("GameFontNormalLarge") --Use instead of SetFont("Fonts\\FRIZQT__.TTF", 15) or Russian, Korean and Chinese characters won't work.
-	
+
 	--Item Slots
 	local dcsItemsPanelCategoryFS = DejaCharacterStatsPanel:CreateFontString("dcsItemsPanelCategoryFS", "OVERLAY", "GameFontNormal")
 	dcsItemsPanelCategoryFS:SetText('|cffffffff' .. L["Item Slots:"] .. '|r')
 	dcsItemsPanelCategoryFS:SetPoint("TOPLEFT", 25, -260)
 	dcsItemsPanelCategoryFS:SetFontObject("GameFontNormalLarge") --Use instead of SetFont("Fonts\\FRIZQT__.TTF", 15) or Russian, Korean and Chinese characters won't work.
-	
+
 	--Miscellaneous
 	local dcsMiscPanelCategoryFS = DejaCharacterStatsPanel:CreateFontString("dcsMiscPanelCategoryFS", "OVERLAY", "GameFontNormal")
 	dcsMiscPanelCategoryFS:SetText('|cffffffff' .. L["Miscellaneous:"] .. '|r')
@@ -292,7 +292,7 @@ local dcsresetcheck = CreateFrame("Button", "DCSResetButton", DejaCharacterStats
 -- 	_G[DCSShowCharacterFrameButton:GetName() .. "Text"]:SetText(L["Show Character Frame"])
 -- end)
 
--- DCSShowCharacterFrameButton:SetScript("OnClick", function(self, button, down)	
+-- DCSShowCharacterFrameButton:SetScript("OnClick", function(self, button, down)
 -- 	if CharacterFrame:IsShown() then
 -- 		HideUIPanel(CharacterFrame)
 -- 	else

@@ -5,6 +5,7 @@
 
 
 local ADDON, Addon = ...
+local C = LibStub('C_Everywhere').Item
 local L = LibStub('AceLocale-3.0'):GetLocale(ADDON)
 local Frame = Addon.Base:NewClass('Frame', 'Frame', nil, true)
 Frame.OpenSound = SOUNDKIT.IG_BACKPACK_OPEN
@@ -158,7 +159,7 @@ end
 --[[ Properties ]]--
 
 function Frame:GetItemInfo(bag, slot)
-	local bag = self:GetOwner()[bag]
+	local bag = self:GetBagInfo(bag)
 	local data = bag and bag[slot]
 	if data then
 		if data:find(PET_FORMAT) then
@@ -169,19 +170,23 @@ function Frame:GetItemInfo(bag, slot)
 			return item
 		elseif data:find(KEYSTONE_FORMAT) then
 			local item = {itemID = tonumber(data:match('(%d+)'))}
-			_,_,_,_, item.iconFileID = GetItemInfoInstant(item.itemID)
-			_, item.hyperlink, item.quality = GetItemInfo(item.itemID)
+			_,_,_,_, item.iconFileID = C.GetItemInfoInstant(item.itemID)
+			_, item.hyperlink, item.quality = C.GetItemInfo(item.itemID)
 			item.hyperlink = item.hyperlink:gsub('item[:%d]+', data, 1)
 			return item
 		else
 			local link, count = strsplit(';', data)
 			local item = {hyperlink = 'item:' .. link, stackCount = tonumber(count)}
-			item.itemID, _,_,_, item.iconFileID = GetItemInfoInstant(item.hyperlink)
-			_, item.hyperlink, item.quality = GetItemInfo(item.hyperlink) 
+			item.itemID, _,_,_, item.iconFileID = C.GetItemInfoInstant(item.hyperlink)
+			_, item.hyperlink, item.quality = C.GetItemInfo(item.hyperlink) 
 			return item
 		end
 	end
 	return {}
+end
+
+function Frame:GetBagInfo(bag)
+	return self:GetOwner()[bag]
 end
 
 function Frame:GetBagFamily()

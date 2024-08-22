@@ -189,11 +189,11 @@ TwitchEmotes_dropdown_options = {
         "monkaStab", "PepoScience", "RandomPepe", "PepeKMS", "HappyJammies",
         "FeelsDeadMan", "SucksMan", "WOAW"
     },
-    [22] = { -- 36
+    [22] = { -- 35
         "Pepe 3", "PepePopcorn", "WeirdW", "monkaU", "monkaW", "BadW", "GoodW",
         "OkayW", "OkayLaugh", "CringeW", "TiredW", "monkaPickle", "PepeCozy",
         "POOGERS", "POGGIES", "KEKGA", "PepegaHands", "PepeFU", "Okayge",
-        "Sadge", "Gladge", "Stronge", "Susge", "PepeJew", "monkaGasp",
+        "Sadge", "Gladge", "Stronge", "Susge", "monkaGasp",
         "PepeFrench", "monkaSusp", "PepeWizard", "PepeBruh", "PepeGang",
         "FeelsRottenMan", "peepoAlliance", ":need:", ":memes:", ":drama:",
         ":copium:", "Copege", "COPIUM"

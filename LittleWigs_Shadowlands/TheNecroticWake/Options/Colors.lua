@@ -6,7 +6,7 @@ BigWigs:AddColors("Blightbone", {
 	[320655] = "purple",
 })
 
-BigWigs:AddColors("Amarth, The Reanimator", {
+BigWigs:AddColors("Amarth, The Harvester", {
 	[320012] = "purple",
 	[320171] = "yellow",
 	[321226] = "cyan",
@@ -53,10 +53,11 @@ BigWigs:AddColors("The Necrotic Wake Trash", {
 	[333479] = {"blue","yellow"},
 	[334748] = "red",
 	[335141] = {"green","red"},
-	[335143] = "orange",
+	[335143] = "red",
 	[338353] = "orange",
 	[338357] = "purple",
 	[338456] = "purple",
 	[338606] = {"blue","yellow"},
 	[343470] = "yellow",
+	[345623] = "orange",
 })

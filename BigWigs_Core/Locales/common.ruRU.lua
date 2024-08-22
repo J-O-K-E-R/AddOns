@@ -48,7 +48,7 @@ L.gate_open = "Врата открыты" -- When a gate is open, usually after 
 L.threat = "Угрозе"
 L.energy = "Энергия"
 
-L.remaining = "Осталось: %d" -- 5 remaining
+L.remaining = "%d |4осталось:остались:осталось;" -- 5 remaining
 L.duration = "%s для %s сек" -- Spell for 10 seconds
 L.over = "%s завершается" -- Spell Over
 L.removed = "%s снято" -- Spell Removed
@@ -66,12 +66,13 @@ L.cancelled = "%s отменено" -- Spell Cancelled
 L.you_die = "Умираешь" -- You will die
 L.you_die_sec = "Умрёшь через %d сек" -- "You die in 15 sec" (sec = seconds)
 L.next_ability = "Следующая способность" -- We don't know what ability will be next, we only know when it will happen (showing a bar)
---L.landing = "%s is landing" -- "NPC_NAME is landing" Used when a flying NPC/dragon/boss is landing
+L.landing = "%s приземляется" -- "NPC_NAME is landing" Used when a flying NPC/dragon/boss is landing
+L.flying_available = "Можешь лететь"
 
 -- Add related
 L.add_spawned = "Помощник появился" -- singular
 L.adds_spawned = "Помощники появились" -- plural
---L.adds_spawned_count = "%d |4add:adds; spawned" -- 1 add spawned / 2 adds spawned
+L.adds_spawned_count = "%d |4адд:аддов:адд; spawned" -- 1 add spawned / 2 adds spawned
 L.add_spawning = "Спаун Адда" -- singular
 L.adds_spawning = "Спаун Аддов" -- plural
 L.spawned = "Появление: %s"
@@ -113,10 +114,12 @@ L.marker_npc_aura_desc = "Отмечает НПЦ под воздействие�
 L.link = "Связь"
 L.link_with = "Связан с %s"
 L.link_with_icon = "Связан с |T13700%d:0|t%s"
-L.link_with_rticon = "Связан с {rt%d}%s"
-L.link_both = "%s связан с %s" -- XXX needs updated
-L.link_both_icon = "|T13700%d:0|t%s связан с |T13700%d:0|t%s" -- XXX needs updated
+L.link_with_rticon = "{rt%d}Связан с %s"
+L.link_both = "%s + %s связанны"
+L.link_both_icon = "|T13700%d:0|t%s + |T13700%d:0|t%s связанны"
 L.link_removed = "Связь прервана"
+L.link_say_option_name = "Повторять 'Связан' сообщения в чат"
+L.link_say_option_desc = "Повторяет сообщения в чат с ником связанного игрока."
 
 -- Abbreviated numbers
 L.amount_one = "%dмлрд" -- Billions 1,000,000,000

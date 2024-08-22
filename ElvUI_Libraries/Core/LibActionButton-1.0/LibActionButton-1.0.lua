@@ -1,7 +1,7 @@
 -- License: LICENSE.txt
 
 local MAJOR_VERSION = "LibActionButton-1.0-ElvUI"
-local MINOR_VERSION = 55 -- the real minor version is 117
+local MINOR_VERSION = 56 -- the real minor version is 117
 
 local LibStub = LibStub
 if not LibStub then error(MAJOR_VERSION .. " requires LibStub.") end
@@ -13,11 +13,34 @@ local type, error, tostring, tonumber, assert, select = type, error, tostring, t
 local setmetatable, wipe, unpack, pairs, ipairs, next, pcall = setmetatable, wipe, unpack, pairs, ipairs, next, pcall
 local str_match, format, tinsert, tremove, strsub = string.match, format, tinsert, tremove, strsub
 
+local GetSpellLossOfControlCooldown = C_Spell.GetSpellLossOfControlCooldown or GetSpellLossOfControlCooldown
+local GetSpellTexture = C_Spell.GetSpellTexture or GetSpellTexture
+local IsAttackSpell = C_Spell.IsAutoAttackSpell or IsAttackSpell
+local IsAutoRepeatSpell = C_Spell.IsAutoRepeatSpell or IsAutoRepeatSpell
+local IsPressHoldReleaseSpell = C_Spell.IsPressHoldReleaseSpell or IsPressHoldReleaseSpell
+
 local WoWRetail = (WOW_PROJECT_ID == WOW_PROJECT_MAINLINE)
 local WoWClassic = (WOW_PROJECT_ID == WOW_PROJECT_CLASSIC)
 local WoWBCC = (WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC)
 local WoWWrath = (WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC)
 local WoWCata = (WOW_PROJECT_ID == WOW_PROJECT_CATACLYSM_CLASSIC)
+
+local GetSpellInfo
+do	-- backwards compatibility for GetSpellInfo
+	local C_Spell_GetSpellInfo = C_Spell.GetSpellInfo
+	GetSpellInfo = function(spellID)
+		if not spellID then return end
+
+		if _G.GetSpellInfo then
+			return _G.GetSpellInfo(spellID)
+		else
+			local info = C_Spell_GetSpellInfo(spellID)
+			if info then
+				return info.name, nil, info.iconID, info.castTime, info.minRange, info.maxRange, info.spellID, info.originalIconID
+			end
+		end
+	end
+end
 
 -- local IsHardcoreActive = C_GameRules and C_GameRules.IsHardcoreActive
 -- local IsEngravingEnabled = C_Engraving and C_Engraving.IsEngravingEnabled
@@ -2719,7 +2742,7 @@ end
 
 local GetSpellTexture = C_Spell.GetSpellTexture or GetSpellTexture
 local GetSpellCastCount = C_Spell.GetSpellCastCount or GetSpellCount
-local IsAttackSpell = C_SpellBook and C_SpellBook.IsAutoAttackSpellBookItem or IsAttackSpell
+local IsAttackSpell = C_SpellBook.IsAutoAttackSpellBookItem or IsAttackSpell
 local IsCurrentSpell = C_Spell.IsCurrentSpell or IsCurrentSpell
 local IsAutoRepeatSpell = C_Spell.IsAutoRepeatSpell or IsAutoRepeatSpell
 local IsSpellUsable = C_Spell.IsSpellUsable or IsUsableSpell
@@ -2731,7 +2754,7 @@ local GetSpellLossOfControlCooldown = C_Spell.GetSpellLossOfControlCooldown or G
 local GetSpellCharges = C_Spell.GetSpellCharges and function(spell) local c = C_Spell.GetSpellCharges(spell) if c then return c.currentCharges, c.maxCharges, c.cooldownStartTime, c.cooldownDuration end end or GetSpellCharges
 local GetSpellCooldown = C_Spell.GetSpellCooldown and function(spell) local c = C_Spell.GetSpellCooldown(spell) if c then return c.startTime, c.duration, c.isEnabled, c.modRate end end or GetSpellCooldown
 
-local BOOKTYPE_SPELL = Enum.SpellBookSpellBank and Enum.SpellBookSpellBank.Player or "spell"
+local BOOKTYPE_SPELL = (Enum.SpellBookSpellBank and Enum.SpellBookSpellBank.Player) or BOOKTYPE_SPELL or 'spell'
 
 -----------------------------------------------------------
 --- Spell Button

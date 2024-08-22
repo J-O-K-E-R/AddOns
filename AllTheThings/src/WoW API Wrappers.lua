@@ -93,7 +93,13 @@ if not GetSpellInfo then
 		return spell and C_Spell_GetSpellName(spell);
 	end;
 	lib.GetSpellIcon = C_Spell.GetSpellTexture;
-	lib.GetSpellLink = C_Spell.GetSpellLink;
+	--lib.GetSpellLink = C_Spell.GetSpellLink;
+
+	local C_Spell_GetSpellCooldown = C_Spell.GetSpellCooldown;
+	lib.GetSpellCooldown = function(spellID)
+		local t = C_Spell_GetSpellCooldown(spellID);
+		return t and t.startTime or 0;
+	end
 else
 	local GetSpellInfo = GetSpellInfo;
 	if app.GameBuildVersion >= 40000 then
@@ -102,5 +108,28 @@ else
 		lib.GetSpellName = function(spellID, rank) return rank and select(1, GetSpellInfo(spellID, rank)) or select(1, GetSpellInfo(spellID)); end;
 	end
 	lib.GetSpellIcon = function(spellID) return select(3, GetSpellInfo(spellID)); end;
+	--lib.GetSpellLink = GetSpellLink;
+	lib.GetSpellCooldown = GetSpellCooldown;
+end
+
+-- Quest APIs
+if C_QuestLog and C_QuestLog.IsQuestFlaggedCompletedOnAccount then
+	lib.IsQuestFlaggedCompletedOnAccount = C_QuestLog.IsQuestFlaggedCompletedOnAccount
+else
+	lib.IsQuestFlaggedCompletedOnAccount = function(id)
+		return app.IsAccountCached("Quests",id)
+	end
+end
+
+-- C_TradeSkillUI
+if C_TradeSkillUI then
+	lib.GetTradeSkillTexture = C_TradeSkillUI.GetTradeSkillTexture
+else
+	lib.GetTradeSkillTexture = function() return end
+end
+
+if not GetSpellLink then
+	lib.GetSpellLink = C_Spell.GetSpellLink;
+else
 	lib.GetSpellLink = GetSpellLink;
 end

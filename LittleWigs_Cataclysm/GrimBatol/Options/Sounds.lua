@@ -22,6 +22,7 @@ BigWigs:AddSounds("Forgemaster Throngus", {
 
 BigWigs:AddSounds("Drahga Shadowburner", {
 	[75218] = "info",
+	[82850] = {"alert","warning"},
 	[90950] = "alarm",
 	[448013] = "info",
 	[448105] = "alarm",
@@ -45,10 +46,12 @@ BigWigs:AddSounds("Grim Batol Trash", {
 	[76711] = "alert",
 	[451224] = "alert",
 	[451387] = "info",
-	[451391] = "alarm",
+	[451391] = {"alarm","info"},
 	[451613] = "alert",
 	[451871] = "alert",
 	[451939] = "alarm",
+	[451965] = "info",
+	[451971] = "alert",
 	[456696] = "alarm",
 	[456711] = "alarm",
 	[456713] = "alarm",

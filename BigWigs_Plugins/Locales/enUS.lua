@@ -11,10 +11,12 @@ L.width = "Width"
 L.height = "Height"
 L.sizeDesc = "Normally you set the size by dragging the anchor. If you need an exact size you can use this slider or type the value into the box."
 L.fontSizeDesc = "Adjust the font size using the slider or type the value into the box which has a much higher maximum of 200."
+L.disabled = "Disabled"
 L.disableDesc = "You are about to disable the feature '%s' which is |cffff4411not recommended|r.\n\nAre you sure you want to do this?"
-L.transparency = "Transparency"
 
--- Anchor Points
+-- Anchor Points / Grow Directions
+L.UP = "Up"
+L.DOWN = "Down"
 L.TOP = "Top"
 L.RIGHT = "Right"
 L.BOTTOM = "Bottom"
@@ -35,7 +37,6 @@ L.destinationPoint = "Destination Point"
 L.altPowerTitle = "AltPower"
 L.altPowerDesc = "The AltPower display will only appear for bosses that apply AltPower to players, which is extremely rare. The display measures the amount of 'Alternative Power' you and your group has, displaying it in a list. To move the display around, please use the test button below."
 L.toggleDisplayPrint = "The display will show next time. To disable it completely for this encounter, you need to toggle it off in the encounter options."
-L.disabled = "Disabled"
 L.disabledDisplayDesc = "Disable the display for all modules that use it."
 L.resetAltPowerDesc = "Reset all the options related to AltPower, including the position of the AltPower anchor."
 L.test = "Test"
@@ -88,30 +89,6 @@ L.toggleAnchorsBtnShow = "Show Moving Anchors"
 L.toggleAnchorsBtnHide = "Hide Moving Anchors"
 L.toggleAnchorsBtnHide_desc = "Hide all the moving anchors, locking everything in place."
 L.toggleBarsAnchorsBtnShow_desc = "Show all the moving anchors, allowing you to move the bars."
-
-L.nameplateBars = "Nameplate Bars"
-L.nameplateAutoWidth = "Match width of nameplate"
-L.nameplateAutoWidthDesc = "Sets the width of nameplate bars to the with of their parent nameplate."
-L.nameplateOffsetY = "Y Offset"
-L.nameplateOffsetYDesc = "Offset from the top of the nameplate for upwards bars and the bottom of the nameplate for downwards bars."
-L.nameplateAlphaDesc = "Control how transparent the nameplate bars should be."
-L.testNameplate = "Target detected, creating a test nameplate bar over target nameplate. |cFF33FF99This feature is rarely used, is usually just 1 bar, and is needed to keep track of cooldowns when fighting multiple bosses/ads that cast the same spell.|r"
-
-L.clickableBars = "Clickable Bars"
-L.clickableBarsDesc = "BigWigs bars are click-through by default. This way you can target objects or launch targetted AoE spells behind them, change the camera angle, and so on, while your cursor is over the bars. |cffff4411If you enable clickable bars, this will no longer work.|r The bars will intercept any mouse clicks you perform on them.\n"
-L.interceptMouseDesc = "Enables bars to receive mouse clicks."
-L.modifier = "Modifier"
-L.modifierDesc = "Hold down the selected modifier key to enable click actions on the timer bars."
-L.modifierKey = "Only with modifier key"
-L.modifierKeyDesc = "Allows bars to be click-through unless the specified modifier key is held down, at which point the mouse actions described below will be available."
-
-L.temporaryCountdownDesc = "Temporarily enable countdown on the ability associated with this bar."
-L.report = "Report"
-L.reportDesc = "Reports the current bars status to the active group chat; either instance chat, raid, party or say, as appropriate."
-L.remove = "Remove"
-L.removeBarDesc = "Temporarily removes this bar."
-L.removeOther = "Remove other"
-L.removeOtherBarDesc = "Temporarily removes all other bars (except this one)."
 
 L.emphasizeAt = "Emphasize at... (seconds)"
 L.growingUpwards = "Grow upwards"
@@ -320,6 +297,62 @@ L.fadeTime = "Fade time"
 L.fadeTimeDesc = "How long to fade out a message, in seconds"
 
 -----------------------------------------------------------------------
+-- Nameplates.lua
+--
+
+L.nameplates = "Nameplates"
+L.testNameplateIconBtn = "Show Test Icon"
+L.testNameplateIconBtn_desc = "Creates a test icon for you to test your current display settings with on your targeted nameplate."
+L.stopTestNameplateIconBtn = "Stop Test Icons"
+L.stopTestNameplateIconBtn_desc = "Stops all test icons on your nameplates."
+L.noNameplateTestTarget = "You need to have a hostile target which is attackable selected to test nameplate functionality."
+L.anchoring = "Anchoring"
+L.growStartPosition = "Grow Start Position"
+L.growStartPositionDesc = "The starting position for the first icon."
+L.growDirection = "Grow Direction"
+L.growDirectionDesc = "The direction the icons will grow from the starting position."
+L.iconSpacingDesc = "Change the space between each icon."
+L.nameplateIconSettings = "Icon Settings"
+L.keepAspectRatio = "Keep Aspect Ratio"
+L.keepAspectRatioDesc = "Keep the aspect ratio of the icon 1:1 instead of stretching it to fit the size of the frame."
+L.iconColor = "Icon Color"
+L.iconColorDesc = "Change the color of the icon texture."
+L.desaturate = "Desaturate"
+L.desaturateDesc = "Desaturate the icon texture."
+L.zoom = "Zoom"
+L.zoomDesc = "Zoom the icon texture."
+L.showBorder = "Show Border"
+L.showBorderDesc = "Show a border around the icon."
+L.borderColor = "Border Color"
+L.borderSize = "Border Size"
+L.timer = "Timer"
+L.showTimer = "Show Timer"
+L.showTimerDesc = "Show a text timer on the icon."
+L.cooldown = "Cooldown"
+L.showCooldownSwipe = "Show Swipe"
+L.showCooldownSwipeDesc = "Show a swipe on the icon when the cooldown is active."
+L.showCooldownEdge = "Show Edge"
+L.showCooldownEdgeDesc = "Show an edge on the cooldown when the cooldown is active."
+L.inverse = "Inverse"
+L.inverseSwipeDesc = "Invert the cooldown animations."
+L.iconGlow = "Icon Glow"
+L.enableExpireGlow = "Enable Expire Glow"
+L.enableExpireGlowDesc = "Show a glow around the icon when the cooldown has expired."
+L.glowColor = "Glow Color"
+L.glowType = "Glow Type"
+L.glowTypeDesc = "Change the type of glow that is shown around the icon."
+L.resetNameplateIconsDesc = "Reset all the options related to nameplate icons."
+L.nameplateTextSettings = "Text Settings"
+L.fixate_test = "Fixate Test" -- Text that displays to test on the frame
+L.resetNameplateTextDesc = "Reset all the options related to nameplate text."
+
+-- Glow types as part of LibCustomGlow
+L.pixelGlow = "Pixel Glow"
+L.autocastGlow = "Autocast Glow"
+L.buttonGlow = "Button Glow"
+L.procGlow = "Proc Glow"
+
+-----------------------------------------------------------------------
 -- Proximity.lua
 --
 
@@ -410,24 +443,20 @@ L.resetAllCustomSound = "If you've customized sounds for any boss encounter sett
 -- Statistics.lua
 --
 
-L.bossDefeatDurationPrint = "Defeated '%s' after %s."
-L.bossWipeDurationPrint = "Wiped on '%s' after %s."
-L.newBestTime = "New best time!"
 L.bossStatistics = "Boss Statistics"
-L.bossStatsDescription = "Recording of various boss-related statistics such as the amount of times a boss had been killed, the amount of wipes, total time that combat lasted, or the fastest boss kill. These statistics can be viewed on each boss's configuration screen, but will be hidden for bosses that have no recorded statistics."
-L.enableStats = "Enable Statistics"
-L.chatMessages = "Chat Messages"
-L.printBestTimeOption = "Best Time Notification"
-L.printDefeatOption = "Defeat Time"
-L.printWipeOption = "Wipe Time"
-L.countDefeats = "Count Defeats"
-L.countWipes = "Count Wipes"
-L.recordBestTime = "Remember Best Time"
+L.bossStatsDescription = "Recording of various boss-related statistics such as the amount of times you were victorious, the amount of times you were defeated, date of first victory, and the fastest victory. These statistics can be viewed on each boss's configuration screen, but will be hidden for bosses that have no recorded statistics."
 L.createTimeBar = "Show 'Best Time' bar"
 L.bestTimeBar = "Best Time"
-L.printHealthOption = "Boss Health"
 L.healthPrint = "Health: %s."
 L.healthFormat = "%s (%.1f%%)"
+L.chatMessages = "Chat Messages"
+L.newFastestVictoryOption = "New fastest victory"
+L.victoryOption = "You were victorious"
+L.defeatOption = "You were defeated"
+L.bossHealthOption = "Boss health"
+L.bossVictoryPrint = "You were victorious against '%s' after %s." -- You were victorious against 'BOSS_NAME' after COMBAT_DURATION.
+L.bossDefeatPrint = "You were defeated by '%s' after %s." -- You were defeated by 'BOSS_NAME' after COMBAT_DURATION.
+L.newFastestVictoryPrint = "New fastest victory: (-%s)" -- New fastest victory: (-COMBAT_DURATION)
 
 -----------------------------------------------------------------------
 -- Victory.lua

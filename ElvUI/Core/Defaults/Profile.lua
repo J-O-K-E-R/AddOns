@@ -34,6 +34,7 @@ P.general = {
 	questRewardMostValueIcon = true,
 	questXPPercent = true,
 	durabilityScale = 1,
+	gameMenuScale = 1,
 	lockCameraDistanceMax = true,
 	cameraDistanceMax = E.Retail and 2.6 or 4,
 	afk = true,
@@ -58,6 +59,11 @@ P.general = {
 		transparent = true,
 		height = 22,
 		width = 0
+	},
+	raidUtility = {
+		modifier = 'SHIFT',
+		modifierSwap = 'world',
+		showTooltip = true
 	},
 	fonts = {
 		cooldown = { enable = true, font = 'Expressway', size = 20, outline = 'SHADOWOUTLINE' },
@@ -94,6 +100,7 @@ P.general = {
 	itemLevel = {
 		displayCharacterInfo = true,
 		displayInspectInfo = true,
+		enchantAbbrev = true,
 		showItemLevel = true,
 		showEnchants = true,
 		showGems = true,
@@ -2682,7 +2689,9 @@ P.actionbar = {
 		fontOutline = 'OUTLINE',
 		fontSize = 12,
 		mouseover = false,
-		visibility = '[vehicleui] hide;show'
+		visibility = '[vehicleui] hide;show',
+		frameStrata = 'LOW',
+		frameLevel = 5,
 	},
 	microbar = {
 		enabled = false,

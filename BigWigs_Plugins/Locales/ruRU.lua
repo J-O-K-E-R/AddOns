@@ -12,10 +12,12 @@ L.width = "Ширина"
 L.height = "Высота"
 L.sizeDesc = "Обычно размеры меняются перемещением якоря. Если Вам необходим точный размер, можете использовать слайдер или ввести значение в поле."
 L.fontSizeDesc = "Отрегулируйте размер шрифта с помощью ползунка или введите значение вручную в поле, если оно выше 200."
+L.disabled = "Отключить"
 L.disableDesc = "Вы собираетесь отключить функцию '%s', делать это |cffff4411не рекомендуется|r.\n\nВы уверены, что хотите этого?"
-L.transparency = "Прозрачность"
 
 -- Anchor Points
+--L.UP = "Up"
+--L.DOWN = "Down"
 L.TOP = "Сверху"
 L.RIGHT = "Справа"
 L.BOTTOM = "Снизу"
@@ -25,9 +27,9 @@ L.TOPLEFT = "Сверху слева"
 L.BOTTOMRIGHT = "Снизу справа"
 L.BOTTOMLEFT = "Снизу слева"
 L.CENTER = "По центру"
---L.customAnchorPoint = "Advanced: Custom anchor point"
---L.sourcePoint = "Source Point"
---L.destinationPoint = "Destination Point"
+L.customAnchorPoint = "Дополнительно: Пользовательские якоря"
+L.sourcePoint = "Начальная точка"
+L.destinationPoint = "Конечная точка"
 
 -----------------------------------------------------------------------
 -- AltPower.lua
@@ -36,7 +38,6 @@ L.CENTER = "По центру"
 L.altPowerTitle = "Энергия"
 L.altPowerDesc = "Монитор Энергии будет отображаться только для боссов, которые используют 'Дополнительную Энергию' к игрокам, что бывает крайне редко. Монитор измеряет количество 'Дополнительной Энергии', имеющейся у вас и вашей группы, и отображает его в виде списка. Чтобы перемещать монитор, используйте кнопку тестирования ниже."
 L.toggleDisplayPrint = "Монитор будет показан в следующий раз. Чтобы отключить его полностью, уберите галочку в настройках битв."
-L.disabled = "Отключить"
 L.disabledDisplayDesc = "Отключить монитор для всех модулей."
 L.resetAltPowerDesc = "Сбросить все параметры, связанные с Энергией, включая позицию якоря."
 L.test = "Тест"
@@ -89,30 +90,6 @@ L.toggleAnchorsBtnShow = "Показать фиксаторы"
 L.toggleAnchorsBtnHide = "Спрятать фиксаторы"
 L.toggleAnchorsBtnHide_desc = "Спрятать все фиксаторы, заблокировав их элементы на месте."
 L.toggleBarsAnchorsBtnShow_desc = "Показать все фиксаторы, позволяя двигать полосы."
-
-L.nameplateBars = "Полосы неймплейтов"
-L.nameplateAutoWidth = "Умещать в ширину неймплейта"
-L.nameplateAutoWidthDesc = "Устанавливает ширину полосы неймплейта в соответствии неймплейта, к которому он привязан."
-L.nameplateOffsetY = "Смещение по Y"
-L.nameplateOffsetYDesc = "Для растущих вверх полос - смещение от верха неймплейта. Для растущих полос вниз - смещение от низа неймплейта."
-L.nameplateAlphaDesc = "Управление степенью прозрачности полос неймплейтов."
-L.testNameplate = "Цель обнаружена, создаю тестовую полосу неймплейта на неймплейте цели. |cFF33FF99Это редко используемая вещь, всего одна полоса, необходимая для отслеживания перезарядки при сражении с несколькими боссами / аддами, использующих одно и то же заклинание.|r"
-
-L.clickableBars = "Интерактивные полосы"
-L.clickableBarsDesc = "Полосы BigWigs по умолчанию не реагируют на щелчки мыши в их области. Таким образом, можно выделять объекты или применять АоЕ заклинания за ними, изменять ракурс камеры и т.д., в то время, как курсор находится в области полос. |cffff4411Если вы включите полосы, реагирующие на щелчки мыши, всё это будет невозможно.|r Полосы будут перехватывать любые щелчки мыши в пределах их области.\n"
-L.interceptMouseDesc = "Включает реагирование полос на щелчки мыши."
-L.modifier = "Модификатор"
-L.modifierDesc = "Удерживайте выбранную клавишу, чтобы разрешить нажатие по полосе таймера."
-L.modifierKey = "Только с клавишей-модификатором"
-L.modifierKeyDesc = "Блокирует нажатие на полосы, за исключением удерживания заданной клавиши, после чего действия мышкой, описанные ниже, будут доступны."
-
-L.temporaryCountdownDesc = "Временно включить обратный отсчет способности для этой полосы."
-L.report = "Сообщить"
-L.reportDesc = "Сообщает текущий статус полосы в активный групповой чат; будь то чат подземелья, рейда, группы или гильдии."
-L.remove = "Убрать"
-L.removeBarDesc = "Временно убрать эту полосу."
-L.removeOther = "Убрать другие"
-L.removeOtherBarDesc = "Временно убрать другие полосы (кроме этой)."
 
 L.emphasizeAt = "Увеличение на... (секунды)"
 L.growingUpwards = "Рост вверх"
@@ -321,6 +298,62 @@ L.fadeTime = "Время затухания"
 L.fadeTimeDesc = "Сколько секунд будет затухать сообщение"
 
 -----------------------------------------------------------------------
+-- Nameplates.lua
+--
+
+--L.nameplates = "Nameplates"
+--L.testNameplateIconBtn = "Show Test Icon"
+--L.testNameplateIconBtn_desc = "Creates a test icon for you to test your current display settings with on your targeted nameplate."
+--L.stopTestNameplateIconBtn = "Stop Test Icons"
+--L.stopTestNameplateIconBtn_desc = "Stops all test icons on your nameplates."
+--L.noNameplateTestTarget = "You need to have a hostile target which is attackable selected to test nameplate functionality."
+--L.anchoring = "Anchoring"
+--L.growStartPosition = "Grow Start Position"
+--L.growStartPositionDesc = "The starting position for the first icon."
+--L.growDirection = "Grow Direction"
+--L.growDirectionDesc = "The direction the icons will grow from the starting position."
+--L.iconSpacingDesc = "Change the space between each icon."
+--L.nameplateIconSettings = "Icon Settings"
+--L.keepAspectRatio = "Keep Aspect Ratio"
+--L.keepAspectRatioDesc = "Keep the aspect ratio of the icon 1:1 instead of stretching it to fit the size of the frame."
+--L.iconColor = "Icon Color"
+--L.iconColorDesc = "Change the color of the icon texture."
+--L.desaturate = "Desaturate"
+--L.desaturateDesc = "Desaturate the icon texture."
+--L.zoom = "Zoom"
+--L.zoomDesc = "Zoom the icon texture."
+--L.showBorder = "Show Border"
+--L.showBorderDesc = "Show a border around the icon."
+--L.borderColor = "Border Color"
+--L.borderSize = "Border Size"
+--L.timer = "Timer"
+--L.showTimer = "Show Timer"
+--L.showTimerDesc = "Show a text timer on the icon."
+--L.cooldown = "Cooldown"
+--L.showCooldownSwipe = "Show Swipe"
+--L.showCooldownSwipeDesc = "Show a swipe on the icon when the cooldown is active."
+--L.showCooldownEdge = "Show Edge"
+--L.showCooldownEdgeDesc = "Show an edge on the cooldown when the cooldown is active."
+--L.inverse = "Inverse"
+--L.inverseSwipeDesc = "Invert the cooldown animations."
+--L.iconGlow = "Icon Glow"
+--L.enableExpireGlow = "Enable Expire Glow"
+--L.enableExpireGlowDesc = "Show a glow around the icon when the cooldown has expired."
+--L.glowColor = "Glow Color"
+--L.glowType = "Glow Type"
+--L.glowTypeDesc = "Change the type of glow that is shown around the icon."
+--L.resetNameplateIconsDesc = "Reset all the options related to nameplate icons."
+--L.nameplateTextSettings = "Text Settings"
+--L.fixate_test = "Fixate Test" -- Text that displays to test on the frame
+--L.resetNameplateTextDesc = "Reset all the options related to nameplate text."
+
+-- Glow types as part of LibCustomGlow
+--L.pixelGlow = "Pixel Glow"
+--L.autocastGlow = "Autocast Glow"
+--L.buttonGlow = "Button Glow"
+--L.procGlow = "Proc Glow"
+
+-----------------------------------------------------------------------
 -- Proximity.lua
 --
 
@@ -399,7 +432,7 @@ L.Long = "Долгий"
 L.Warning = "Предупреждение"
 L.onyou = "Заклинание, бафф или дебафф на тебе"
 L.underyou = "Тебе нужно выйти из заклинания под ногами"
---L.privateaura = "Whenever a 'Private Aura' is on you"
+L.privateaura = "Когда на вас 'Приватная Аура'"
 
 L.sound = "Звук"
 
@@ -411,24 +444,20 @@ L.resetAllCustomSound = "Если вы используете свои звук�
 -- Statistics.lua
 --
 
-L.bossDefeatDurationPrint = "'%s' терпит поражение спустя %s"
-L.bossWipeDurationPrint = "'%s' побеждает спустя %s"
-L.newBestTime = "Рекордное убийство!"
 L.bossStatistics = "Статистика боссов"
-L.bossStatsDescription = "Запись статистики боссов, включает в себя количество побед, поражений, общее время сражений или самое быстрое убийство. Эта статистика видна для каждого босса в окне настроек, либо спрятана, если нет записей."
-L.enableStats = "Включить Статистику"
-L.chatMessages = "Сообщения в чат"
-L.printBestTimeOption = "Уведомление о лучшем убийстве"
-L.printDefeatOption = "Время победы"
-L.printWipeOption = "Время поражения"
-L.countDefeats = "Количество побед"
-L.countWipes = "Количество поражений"
-L.recordBestTime = "Запоминать лучшее убийство"
+L.bossStatsDescription = "Recording of various boss-related statistics such as the amount of times you were victorious, the amount of times you were defeated, date of first victory, and the fastest victory. Эта статистика видна для каждого босса в окне настроек, либо спрятана, если нет записей."
 L.createTimeBar = "Отображать полосу 'Лучшее время'"
 L.bestTimeBar = "Лучшее время"
-L.printHealthOption = "Здоровье босса"
 L.healthPrint = "Здоровье: %s."
 L.healthFormat = "%s (%.1f%%)"
+L.chatMessages = "Сообщения в чат"
+L.newFastestVictoryOption = "Новая самая быстрая победа"
+L.victoryOption = "Вы победили"
+L.defeatOption = "Вы проиграли"
+L.bossHealthOption = "Здоровье босса"
+L.bossVictoryPrint = "Вы победили '%s' спустя %s." -- You were victorious against 'BOSS_NAME' after COMBAT_DURATION.
+L.bossDefeatPrint = "Вы проиграли '%s' спустя %s." -- You were defeated by 'BOSS_NAME' after COMBAT_DURATION.
+L.newFastestVictoryPrint = "Новая самая быстрая победа: (-%s)" -- New fastest victory: (-COMBAT_DURATION)
 
 -----------------------------------------------------------------------
 -- Victory.lua

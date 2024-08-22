@@ -115,6 +115,10 @@
 	--pets
 		local petCache = petContainer.Pets
 
+	--store the unit names from all group members
+		---@type table<guid, unitname>
+		local group_roster_name_cache = {}
+
 	--ignore deaths
 		local ignore_death_cache = {}
 	--cache
@@ -358,16 +362,25 @@
 			[217956] = 5308, --warrior execute
 			[217957] = 5308, --warrior execute
 			[224253] = 5308, --warrior execute
+			[260798] = 5308, --warrior execute
 			[199850] = 199658, --warrior whirlwind
 			[190411] = 199658, --warrior whirlwind
 			[44949] = 199658, --warrior whirlwind
 			[199667] = 199658, --warrior whirlwind
 			[199852] = 199658, --warrior whirlwind
 			[199851] = 199658, --warrior whirlwind
-			[199851] = 199658, --warrior whirlwind
 			[411547] = 199658, --arms warrior whirlwind
 			[385228] = 199658, --arms warrior whirlwind
 			[105771] = 126664, --warrior charge
+			[385060] = 385062, --fury warrior odyn fury
+			[385061] = 385062, --fury warrior odyn fury offhand
+			[335097] = 335100, --fury warrior crushing blow	
+			[335098] = 335100, --fury warrior crushing blow offhand		
+			[458459] = 845, --arms warrior cleave	
+			[440884] = 440886, --arms warrior demolish	
+			[440888] = 440886, --arms warrior demolish			
+			[95738] = 50622, --fury warrior bladestorm offhand
+			[460670] = 435791, --fury warrior lightning strike
 
 			[222031] = 199547, --deamonhunter ChaosStrike
 			[200685] = 199552, --deamonhunter Blade Dance
@@ -629,14 +642,18 @@
 		--146739 is corruption that doesn't expire
 
 		local spells_cant_start_combat = {
-			[387846] = true,
-			[352561] = true,
-			[111400] = true,
-			[371070] = true,
-			[368637] = true,
-			[401394] = true,
-			[146739] = true,
+			[368637] = true, --The Third Rune
+			[371070] = true, --Rotting from Within
+			[146739] = true, --Corruption
+			[387846] = true, --Fel Armor
+			[352561] = true, --Undulating Maneuvers
+			[401394] = true, --Unstable Flames
+			[111400] = true, --Burning Rush
+			[12654] = true, --Ignite
+			[419800] = true, --Intensifying Flame
+			[448744] = true, --Authority of Radiant Power
 		}
+
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --internal functions
 
@@ -912,9 +929,9 @@
 		if (not _in_combat) then --~startcombat ~combatstart
 			if (	token ~= "SPELL_PERIODIC_DAMAGE" and
 				(
-					(sourceFlags and bitBand(sourceFlags, AFFILIATION_GROUP) ~= 0 and UnitAffectingCombat(Details:Ambiguate(sourceName))) --error here, need to remove the realm from sourceName
+					(sourceFlags and bitBand(sourceFlags, AFFILIATION_GROUP) ~= 0 and UnitAffectingCombat(sourceName)) --error here, need to remove the realm from sourceName
 					or
-					(targetFlags and bitBand(targetFlags, AFFILIATION_GROUP) ~= 0 and UnitAffectingCombat(Details:Ambiguate(targetName)))
+					(targetFlags and bitBand(targetFlags, AFFILIATION_GROUP) ~= 0 and UnitAffectingCombat(targetName))
 					or
 					(not Details.in_group and sourceFlags and bitBand(sourceFlags, AFFILIATION_GROUP) ~= 0)
 				)
@@ -938,6 +955,7 @@
 					end
 				end
 
+				--local spellInfo = C_Spell.GetSpellInfo(spellId)
 				Details222.StartCombat(sourceSerial, sourceName, sourceFlags, targetSerial, targetName, targetFlags)
 			else
 				--entrar em combate se for dot e for do jogador e o ultimo combate ter sido a mais de 10 segundos atr�s
@@ -946,7 +964,7 @@
 						return
 					end
 
-					--faz o calculo dos 10 segundos
+					--can't start a combat with a dot with the latest combat finished less than 10 seconds ago
 					if (Details.last_combat_time + 10 < _tempo) then
 						Details222.StartCombat(sourceSerial, sourceName, sourceFlags, targetSerial, targetName, targetFlags)
 					end
@@ -1166,36 +1184,39 @@
 			end
 
 			--record death log
-			local t = last_events_cache[targetName]
+			local actorLatestEvents = last_events_cache[targetName]
 
-			if (not t) then
-				t = _current_combat:CreateLastEventsTable(targetName)
+			if (not actorLatestEvents) then
+				actorLatestEvents = _current_combat:CreateLastEventsTable(targetName)
 			end
 
-			local i = t.n
+			local i = actorLatestEvents.n
 
-			local thisEvent = t [i]
+			local thisEvent = actorLatestEvents[i]
 			thisEvent[1] = true --true if this is a damage || false for healing
 			thisEvent[2] = spellId --spellid || false if this is a battle ress line
 			thisEvent[3] = amount --amount of damage or healing
 			thisEvent[4] = time --parser time
 
-			--current unit heal
+			--current unit healh
 			if (targetActor.arena_enemy) then
 				--this is an arena enemy, get the heal with the unit Id
 				local unitId = Details.arena_enemies[targetName]
 				if (not unitId) then
 					unitId = Details:GuessArenaEnemyUnitId(targetName)
 				end
+
 				if (unitId) then
-					thisEvent[5] = UnitHealth(unitId)
+					local health = UnitHealth(unitId)
+					local maxHealth = max(UnitHealthMax(unitId), SMALL_FLOAT)
+					thisEvent[5] = health / maxHealth
 				else
 					thisEvent[5] = cacheAnything.arenaHealth[targetName] or 100000
 				end
 
 				cacheAnything.arenaHealth[targetName] = thisEvent[5]
 			else
-				thisEvent[5] = UnitHealth(Details:Ambiguate(targetName))
+				thisEvent[5] = UnitHealth(targetName) / max(UnitHealthMax(targetName), SMALL_FLOAT)
 			end
 
 			thisEvent[6] = sourceName --source name
@@ -1209,9 +1230,9 @@
 			i = i + 1
 
 			if (i == _amount_of_last_events + 1) then
-				t.n = 1
+				actorLatestEvents.n = 1
 			else
-				t.n = i
+				actorLatestEvents.n = i
 			end
 		end
 
@@ -1296,7 +1317,7 @@
 				thisEvent[2] = spellId --spellid || false if this is a battle ress line
 				thisEvent[3] = amount --amount of damage or healing
 				thisEvent[4] = time --parser time
-				thisEvent[5] = UnitHealth(Details:Ambiguate(targetName)) --current unit heal
+				thisEvent[5] = UnitHealth(targetName) / max(UnitHealthMax(targetName), SMALL_FLOAT) --current unit heal
 				thisEvent[6] = sourceName --source name
 				thisEvent[7] = absorbed
 				thisEvent[8] = spellType or school
@@ -1793,7 +1814,7 @@
 		this_event [2] = spellId --spellid || false if this is a battle ress line
 		this_event [3] = amount --amount of damage or healing
 		this_event [4] = time --parser time
-		this_event [5] = UnitHealth(Details:Ambiguate(sourceName)) --current unit heal
+		this_event [5] = UnitHealth(sourceName) / UnitHealthMax(sourceName) --current unit heal
 		this_event [6] = sourceName --source name
 		this_event [7] = absorbed
 		this_event [8] = school
@@ -1888,7 +1909,7 @@
 		this_event [2] = spellid --spellid || false if this is a battle ress line
 		this_event [3] = amount --amount of damage or healing
 		this_event [4] = time --parser time
-		this_event [5] = UnitHealth(Details:Ambiguate(who_name)) --current unit heal
+		this_event [5] = UnitHealth(who_name) / UnitHealthMax(who_name) --current unit heal
 		this_event [6] = who_name --source name
 		this_event [7] = absorbed
 		this_event [8] = school
@@ -2008,7 +2029,7 @@
 		this_event [2] = spellid --spellid || false if this is a battle ress line
 		this_event [3] = amount --amount of damage or healing
 		this_event [4] = time --parser time
-		this_event [5] = UnitHealth(Details:Ambiguate(alvo_name)) --current unit heal
+		this_event [5] = UnitHealth(alvo_name) / UnitHealthMax(alvo_name) --current unit heal
 		this_event [6] = who_name --source name
 		this_event [7] = absorbed
 		this_event [8] = spelltype or school
@@ -2330,7 +2351,7 @@
 	end
 
 -----------------------------------------------------------------------------------------------------------------------------------------
-	--HEALING 	serach key: ~healing											|
+	--HEALING 	serach key: ~healing	~heal										|
 -----------------------------------------------------------------------------------------------------------------------------------------
 
 	local ignored_shields = {
@@ -2339,6 +2360,7 @@
 		[115069] = true, -- Stance of the Sturdy Ox (Monk)
 		[20711] = true, -- Spirit of Redemption (Priest)
 		[184553]  = true, --Soul Capacitor
+		[357170]  = true, --Time Dilation
 	}
 
 	local ignored_overheal = { --during refresh, some shield does not replace the old value for the new one
@@ -2437,7 +2459,7 @@
 
 		elseif (shieldSpellId == 110913) then
 			--dark bargain
-			local max_health = UnitHealthMax(Details:Ambiguate(shieldOwnerName))
+			local max_health = UnitHealthMax(shieldOwnerName)
 			if ((amount or 0) > (max_health or 1) * 4) then
 				return
 			end
@@ -2637,7 +2659,7 @@
 				end
 				previousEvent[7] = previousEvent[7] or bIsShield
 				previousEvent[1] = false --true if this is a damage || false for healing
-				previousEvent[5] = UnitHealth(Details:Ambiguate(targetName))
+				previousEvent[5] = UnitHealth(targetName) / UnitHealthMax(targetName)
 				previousEvent[11] = (previousEvent[11] or 0) + 1 --attempt to perform arithmetic on a boolean value (during battlegrounds - fix 02 Nov 2023)
 			else
 				local thisEvent = t[i]
@@ -2656,12 +2678,12 @@
 						unitId = Details:GuessArenaEnemyUnitId(targetName)
 					end
 					if (unitId) then
-						thisEvent[5] = UnitHealth(unitId)
+						thisEvent[5] = UnitHealth(unitId) / max(UnitHealthMax(unitId), SMALL_FLOAT)
 					else
 						thisEvent[5] = 0
 					end
 				else
-					thisEvent[5] = UnitHealth(Details:Ambiguate(targetName))
+					thisEvent[5] = UnitHealth(targetName) / max(UnitHealthMax(targetName), SMALL_FLOAT)
 				end
 
 				thisEvent[6] = sourceName
@@ -2825,7 +2847,7 @@
 		this_event [2] = spellid --spellid || false if this is a battle ress line
 		this_event [3] = amount --amount of damage or healing
 		this_event [4] = time --parser time
-		this_event [5] = UnitHealth(Details:Ambiguate(alvo_name)) --current unit heal
+		this_event [5] = UnitHealth(alvo_name)  / UnitHealthMax(alvo_name) --current unit heal
 		this_event [6] = who_name --source name
 		this_event [7] = is_shield
 		this_event [8] = absorbed
@@ -2934,7 +2956,7 @@
 				thisEvent[2] = spellId --spellid
 				thisEvent[3] = 1
 				thisEvent[4] = time --parser time
-				thisEvent[5] = UnitHealth(Details:Ambiguate(targetName)) --current unit heal
+				thisEvent[5] = UnitHealth(targetName) / UnitHealthMax(targetName) --current unit heal
 				thisEvent[6] = sourceName --source name
 				thisEvent[7] = false
 				thisEvent[8] = false
@@ -3443,7 +3465,7 @@
 					thisEvent[2] = spellId --spellid
 					thisEvent[3] = 1
 					thisEvent[4] = time --parser time
-					thisEvent[5] = UnitHealth(Details:Ambiguate(targetName)) --current unit heal
+					thisEvent[5] = UnitHealth(targetName) / UnitHealthMax(targetName) --current unit heal
 					thisEvent[6] = sourceName --source name
 					thisEvent[7] = false
 					thisEvent[8] = false
@@ -3503,7 +3525,7 @@
 						thisEvent[2] = spellId --spellid
 						thisEvent[3] = stackSize or 1
 						thisEvent[4] = time --parser time
-						thisEvent[5] = UnitHealth(Details:Ambiguate(targetName)) --current unit heal
+						thisEvent[5] = UnitHealth(targetName) / UnitHealthMax(targetName) --current unit heal
 						thisEvent[6] = sourceName --source name
 						thisEvent[7] = false
 						thisEvent[8] = false
@@ -3978,7 +4000,7 @@ local SPELL_POWER_PAIN = SPELL_POWER_PAIN or (PowerEnum and PowerEnum.Pain) or 1
 				thisEvent[2] = spellId --spellid || false if this is a battle ress line
 				thisEvent[3] = 1 --amount of damage or healing
 				thisEvent[4] = time
-				thisEvent[5] = UnitHealth(Details:Ambiguate(sourceName))
+				thisEvent[5] = UnitHealth(sourceName) / UnitHealthMax(sourceName)
 				thisEvent[6] = sourceName
 
 				i = i + 1
@@ -4441,7 +4463,7 @@ local SPELL_POWER_PAIN = SPELL_POWER_PAIN or (PowerEnum and PowerEnum.Pain) or 1
 							spellId,
 							1,
 							time,
-							UnitHealth(Details:Ambiguate(targetName)),
+							UnitHealth(targetName) / UnitHealthMax(targetName),
 							sourceName
 						})
 						break
@@ -4584,7 +4606,7 @@ local SPELL_POWER_PAIN = SPELL_POWER_PAIN or (PowerEnum and PowerEnum.Pain) or 1
 			_current_combat.frags_need_refresh = true
 
 		--player death
-		elseif (not UnitIsFeignDeath(Details:Ambiguate(targetName))) then
+		elseif (not UnitIsFeignDeath(targetName)) then
 			if (
 				--player in your group
 				(bitBand(targetFlags, AFFILIATION_GROUP) ~= 0 or (damageActor and damageActor.grupo)) and
@@ -4650,6 +4672,8 @@ local SPELL_POWER_PAIN = SPELL_POWER_PAIN or (PowerEnum and PowerEnum.Pain) or 1
 
 				--get the index of the last event recorded
 				local lastIndex = recordedEvents.n
+
+				--first, remove all healing events where the player was at full health
 
 				--here the event log gets reordered as in the parser it work with index recycling
 				if (lastIndex < _amount_of_last_events+1 and not recordedEvents[lastIndex][4]) then
@@ -4775,8 +4799,6 @@ local SPELL_POWER_PAIN = SPELL_POWER_PAIN or (PowerEnum and PowerEnum.Pain) or 1
 					eventsBeforePlayerDeath[#eventsBeforePlayerDeath+1] = eventTable
 				end
 
-				
-
 				local maxHealth
 				if (thisPlayer.arena_enemy) then
 					--this is an arena enemy, get the heal with the unit Id
@@ -4792,7 +4814,7 @@ local SPELL_POWER_PAIN = SPELL_POWER_PAIN or (PowerEnum and PowerEnum.Pain) or 1
 						maxHealth = 0
 					end
 				else
-					maxHealth = UnitHealthMax(Details:Ambiguate(thisPlayer.nome))
+					maxHealth = UnitHealthMax(thisPlayer.nome)
 				end
 
 				local playerDeathTable
@@ -5901,10 +5923,12 @@ local SPELL_POWER_PAIN = SPELL_POWER_PAIN or (PowerEnum and PowerEnum.Pain) or 1
 	end
 
 	local keystoneLevels = {}
+	local playerRatings = {}
 	Details.KeystoneLevels = keystoneLevels
-	--save the keystone level for each of the 5 party members
+	Details.PlayerRatings = playerRatings
+	--save the keystone and rating level for each of the 5 party members
 
-	local saveGroupMembersKeystoneLevel = function()
+	local saveGroupMembersKeystoneAndRatingLevel = function()
 		wipe(keystoneLevels)
 		local libOpenRaid = LibStub("LibOpenRaid-1.0", true)
 
@@ -5916,6 +5940,7 @@ local SPELL_POWER_PAIN = SPELL_POWER_PAIN or (PowerEnum and PowerEnum.Pain) or 1
 					if (unitKeystoneInfo) then
 						local unitName = Details:GetFullName(unitId)
 						keystoneLevels[unitName] = unitKeystoneInfo.level
+						playerRatings[unitName] = unitKeystoneInfo.rating
 					end
 				end
 			end
@@ -5926,6 +5951,7 @@ local SPELL_POWER_PAIN = SPELL_POWER_PAIN or (PowerEnum and PowerEnum.Pain) or 1
 				if (unitKeystoneInfo) then
 					local unitName = Details:GetFullName(unitId)
 					keystoneLevels[unitName] = unitKeystoneInfo.level
+					playerRatings[unitName] = unitKeystoneInfo.rating
 				end
 			end
 		end
@@ -5934,7 +5960,7 @@ local SPELL_POWER_PAIN = SPELL_POWER_PAIN or (PowerEnum and PowerEnum.Pain) or 1
 	function Details222.CacheKeystoneForAllGroupMembers()
 		local _, instanceType, difficultyID = GetInstanceInfo()
 		if (instanceType == "party") then
-			saveGroupMembersKeystoneLevel()
+			saveGroupMembersKeystoneAndRatingLevel()
 		end
 	end
 
@@ -5942,7 +5968,7 @@ local SPELL_POWER_PAIN = SPELL_POWER_PAIN or (PowerEnum and PowerEnum.Pain) or 1
 		Details222.MythicPlus.WorldStateTimerEndAt = time()
 
 		--wait until the keystone is updated and send it to the party
-		saveGroupMembersKeystoneLevel()
+		saveGroupMembersKeystoneAndRatingLevel()
 
 		---@type number mapID
 		---@type number level
@@ -6186,9 +6212,43 @@ local SPELL_POWER_PAIN = SPELL_POWER_PAIN or (PowerEnum and PowerEnum.Pain) or 1
 		return Details.in_group
 	end
 
+	local update_persistant_unitname_cache = function()
+		Details.UpdatePersistantCacheTimer = nil
+
+		local unitIdCache
+
+		if (IsInRaid()) then
+			unitIdCache = Details222.UnitIdCache.Raid
+		else
+			unitIdCache = Details222.UnitIdCache.Party
+		end
+
+		for i, unitId in ipairs(unitIdCache) do
+			if (UnitExists(unitId)) then
+				local unitGUID = UnitGUID(unitId)
+				if (unitGUID) then
+					if (not group_roster_name_cache[unitGUID]) then
+						local unitFullName = Details:GetFullName(unitId)
+						if (unitFullName) then
+							group_roster_name_cache[unitGUID] = unitFullName
+						end
+					end
+				end
+			else
+				break
+			end
+		end
+	end
+
 	function Details.parser_functions:GROUP_ROSTER_UPDATE(...)
+		local bIsInGroup = IsInGroup() or IsInRaid()
+
+		if (not Details.UpdatePersistantCacheTimer) then
+			Details.UpdatePersistantCacheTimer = C_Timer.NewTimer(2, update_persistant_unitname_cache)
+		end
+
 		if (not Details.in_group) then
-			Details.in_group = IsInGroup() or IsInRaid()
+			Details.in_group = bIsInGroup
 
 			if (Details.in_group) then
 				--player entered in a group, cleanup and set the new enviromnent
@@ -6208,7 +6268,7 @@ local SPELL_POWER_PAIN = SPELL_POWER_PAIN or (PowerEnum and PowerEnum.Pain) or 1
 			end
 
 		else
-			Details.in_group = IsInGroup() or IsInRaid()
+			Details.in_group = bIsInGroup
 
 			if (not Details.in_group) then
 				--player left the group, run routines to cleanup the environment
@@ -6350,6 +6410,8 @@ local SPELL_POWER_PAIN = SPELL_POWER_PAIN or (PowerEnum and PowerEnum.Pain) or 1
 		--load auto run code
 		Details222.AutoRunCode.StartAutoRun()
 
+		update_persistant_unitname_cache()
+
 		Details.isLoaded = true
 	end
 
@@ -6394,8 +6456,17 @@ local SPELL_POWER_PAIN = SPELL_POWER_PAIN or (PowerEnum and PowerEnum.Pain) or 1
 		end
 	end
 
-	function Details.parser_functions:UNIT_NAME_UPDATE(...)
+	function Details.parser_functions:UNIT_NAME_UPDATE(unitId)
 		Details:SchedulePetUpdate(5)
+		local unitGUID = UnitGUID(unitId)
+		if (unitGUID) then
+			if (unitGUID:match("^Pl")) then
+				local unitFullName = Details:GetFullName(unitId)
+				if (unitFullName) then
+					group_roster_name_cache[unitGUID] = unitFullName
+				end
+			end
+		end
 	end
 
 	function Details.parser_functions:PLAYER_TARGET_CHANGED(...)
@@ -6589,24 +6660,67 @@ local SPELL_POWER_PAIN = SPELL_POWER_PAIN or (PowerEnum and PowerEnum.Pain) or 1
 	local eraNamedSpellsToID = {}
 
 	-- ~parserstart ~startparser ~cleu ~parser
-
 	function Details222.Parser.OnParserEvent()
 		local time, token, hidding, who_serial, who_name, who_flags, who_flags2, target_serial, target_name, target_flags, target_flags2, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12 = CombatLogGetCurrentEventInfo()
-
 		local func = token_list[token]
+
 		if (func) then
+			who_name = group_roster_name_cache[who_serial] or who_name
+			target_name = group_roster_name_cache[target_serial] or target_name
 			return func(nil, token, time, who_serial, who_name, who_flags, target_serial, target_name, target_flags, target_flags2, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12)
+		end
+	end
+
+	function Details222.Parser.OnParserEventPVP()
+		local time, token, hidding, sourceGUID, sourceName, sourceFlags, sourceFlags2, targetGUID, targetName, targetFlags, targetFlags2, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12 = CombatLogGetCurrentEventInfo()
+		local func = token_list[token]
+
+		if (func) then
+			if (group_roster_name_cache[sourceGUID]) then
+				sourceName = group_roster_name_cache[sourceGUID]
+			else
+				if (sourceGUID:match("^Pl")) then
+					sourceName = sourceName:gsub("-%a+$", "")
+					group_roster_name_cache[sourceGUID] = sourceName
+				end
+			end
+
+			if (group_roster_name_cache[targetGUID]) then
+				targetName = group_roster_name_cache[targetGUID]
+			else
+				if (targetGUID:match("^Pl")) then
+					targetName = targetName:gsub("-%a+$", "")
+					group_roster_name_cache[targetGUID] = targetName
+				end
+			end
+
+			return func(nil, token, time, sourceGUID, sourceName, sourceFlags, targetGUID, targetName, targetFlags, targetFlags2, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12)
+		end
+	end
+
+	--open world out of combat spell damage
+	local outofcombat_spell_damage = function(unused, token, time, whoGUID, whoName, whoFlags, targetGUID, targetName, targetFlags, targetFlags2, ...)
+		--identify if the attacker is a group member
+		local IS_GROUP_OBJECT 	= 	0x00000007
+		local bIsValidGroupMember = bitBand(whoFlags, IS_GROUP_OBJECT) ~= 0
+		if (bIsValidGroupMember) then
+			token_list[token](nil, token, time, whoGUID, whoName, whoFlags, targetGUID, targetName, targetFlags, targetFlags2, ...)
 		end
 	end
 
 	local out_of_combat_interresting_events = {
 		["SPELL_SUMMON"] = parser.summon,
+		["SWING_DAMAGE"] = outofcombat_spell_damage,
+		["SPELL_DAMAGE"] = outofcombat_spell_damage,
 	}
 
+	--OutOfCombat parser is only used in open world to avoid getting information from people that are outside of the group
 	function Details222.Parser.OnParserEventOutOfCombat()
 		local time, token, hidding, who_serial, who_name, who_flags, who_flags2, target_serial, target_name, target_flags, target_flags2, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12 = CombatLogGetCurrentEventInfo()
 		local func = out_of_combat_interresting_events[token]
 		if (func) then
+			who_name = group_roster_name_cache[who_serial] or who_name
+			target_name = group_roster_name_cache[target_serial] or target_name
 			return func(nil, token, time, who_serial, who_name, who_flags, target_serial, target_name, target_flags, target_flags2, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12)
 		end
 	end
@@ -7234,12 +7348,14 @@ local SPELL_POWER_PAIN = SPELL_POWER_PAIN or (PowerEnum and PowerEnum.Pain) or 1
 					end
 
 					actor = _current_damage_container:GetOrCreateActor (guid, name, flag, true)
-					actor.total = Details:GetOrderNumber()
-					actor.classe = classToken or "UNKNOW"
-
-					if (flag == 0x548) then
-						--oponent
-						actor.enemy = true
+					if (actor) then
+						actor.total = Details:GetOrderNumber()
+						actor.classe = classToken or "UNKNOW"
+						if (flag == 0x548) then
+							--oponent
+							actor.enemy = true
+						end
+						actor.made_by_pvpparser = true
 					end
 				end
 			end
@@ -7254,7 +7370,7 @@ local SPELL_POWER_PAIN = SPELL_POWER_PAIN or (PowerEnum and PowerEnum.Pain) or 1
 				actor.classe = classToken or "UNKNOW"
 
 			elseif (name ~= "Unknown" and type(name) == "string" and string.len(name) > 1) then
-				local guid = UnitGUID(Details:Ambiguate(name))
+				local guid = UnitGUID(name)
 				if (guid) then
 					local flag
 					if (Details.faction_id == faction) then --is from the same faction
@@ -7264,12 +7380,14 @@ local SPELL_POWER_PAIN = SPELL_POWER_PAIN or (PowerEnum and PowerEnum.Pain) or 1
 					end
 
 					actor = _current_heal_container:GetOrCreateActor (guid, name, flag, true)
-					actor.total = Details:GetOrderNumber()
-					actor.classe = classToken or "UNKNOW"
-
-					if (flag == 0x548) then
-						--oponent
-						actor.enemy = true
+					if (actor) then
+						actor.total = Details:GetOrderNumber()
+						actor.classe = classToken or "UNKNOW"
+						if (flag == 0x548) then
+							--oponent
+							actor.enemy = true
+						end
+						actor.made_by_pvpparser = true
 					end
 				end
 			end

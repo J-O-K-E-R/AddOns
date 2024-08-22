@@ -66,6 +66,7 @@ L.you_die = "You die" -- You will die
 L.you_die_sec = "You die in %d sec" -- "You die in 15 sec" (sec = seconds)
 L.next_ability = "Next ability" -- We don't know what ability will be next, we only know when it will happen (showing a bar)
 L.landing = "%s is landing" -- "NPC_NAME is landing" Used when a flying NPC/dragon/boss is landing
+L.flying_available = "You can fly now"
 
 -- Add related
 L.add_spawned = "Add spawned" -- singular
@@ -112,10 +113,12 @@ L.marker_npc_aura_desc = "Mark NPCs affected by '%s' with %s, requires promoted 
 L.link = "Link"
 L.link_with = "Linked with %s"
 L.link_with_icon = "Linked with |T13700%d:0|t%s"
-L.link_with_rticon = "Linked with {rt%d}%s"
+L.link_with_rticon = "{rt%d}Linked with %s"
 L.link_both = "%s + %s are linked"
 L.link_both_icon = "|T13700%d:0|t%s + |T13700%d:0|t%s are linked"
 L.link_removed = "Link removed"
+L.link_say_option_name = "Repeating 'Linked' say messages"
+L.link_say_option_desc = "Repeating say messages in chat stating who you are linked with."
 
 -- Abbreviated numbers
 L.amount_one = "%dB" -- Billions 1,000,000,000

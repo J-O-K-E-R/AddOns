@@ -25,7 +25,6 @@ local GetChatWindowInfo = GetChatWindowInfo
 local GetCursorPosition = GetCursorPosition
 local GetGuildRosterMOTD = GetGuildRosterMOTD
 local GetInstanceInfo = GetInstanceInfo
-local GetMouseFocus = GetMouseFocus
 local GetNumGroupMembers = GetNumGroupMembers
 local GetPlayerCommunityLink = GetPlayerCommunityLink
 local GetPlayerInfoByGUID = GetPlayerInfoByGUID
@@ -300,6 +299,7 @@ do --this can save some main file locals
 			z['Player-1168-0680170F']	= itsSimpy -- DK:		Ezek
 			z['Player-1168-06981C6F']	= itsSimpy -- Warrior:	Glice
 			z['Player-1168-0698066B']	= itsSimpy -- Shaman:	Kalline
+			z['Player-1168-0AD631CE']	= itsSimpy -- Shaman:	Barbossa
 			z['Player-1168-06989ADF']	= itsSimpy -- Druid:	Puttietat
 			z['Player-1168-069837CD']	= itsSimpy -- Warlock:	Simpy
 			z['Player-1168-06984CD4']	= itsSimpy -- Monk:		Twigly
@@ -390,38 +390,38 @@ do --this can save some main file locals
 	elseif portal == 'EU' then
 		if E.Classic then
 			-- Luckyone Seasonal (5826: Lone Wolf EU, 5827: Living Flame EU)
-			z['Player-5826-0202765F']	= ElvBlue -- [Alliance] Hunter
-			z['Player-5826-020F7F10']	= ElvBlue -- [Alliance] Paladin
-			z['Player-5826-02172E79']	= ElvBlue -- [Alliance] Warlock
-			z['Player-5826-0234253E']	= ElvBlue -- [Alliance] Mage
-			z['Player-5826-02342508']	= ElvBlue -- [Alliance] Priest
-			z['Player-5826-023424EF']	= ElvBlue -- [Alliance] Druid
-			z['Player-5826-02342520']	= ElvBlue -- [Alliance] Rogue
-			z['Player-5826-02342556']	= ElvBlue -- [Alliance] Warrior
-			z['Player-5827-02331C4B']	= ElvBlue -- [Horde] Shaman
-			-- Luckyone Hardcore
-			z["Lucky-Nek'Rosh"]			= ElvBlue -- [Horde] Rogue
-			z["Luckyone-Nek'Rosh"]		= ElvBlue -- [Horde] Hunter
-			z["Unluckyone-Nek'Rosh"] 	= ElvBlue -- [Horde] Mage
-			z["Gigachad-Nek'Rosh"] 		= ElvBlue -- [Horde] Druid
+			z['Player-5826-0202765F']	= ElvGreen -- [Alliance] Hunter
+			z['Player-5826-020F7F10']	= ElvGreen -- [Alliance] Paladin
+			z['Player-5826-02172E79']	= ElvGreen -- [Alliance] Warlock
+			z['Player-5826-0234253E']	= ElvGreen -- [Alliance] Mage
+			z['Player-5826-02342508']	= ElvGreen -- [Alliance] Priest
+			z['Player-5826-023424EF']	= ElvGreen -- [Alliance] Druid
+			z['Player-5826-02342520']	= ElvGreen -- [Alliance] Rogue
+			z['Player-5826-02342556']	= ElvGreen -- [Alliance] Warrior
+			z['Player-5827-02331C4B']	= ElvGreen -- [Horde] Shaman
+			-- Luckyone Hardcore (5261: Nek'Rosh)
+			z['Player-5261-01ADAC25']	= ElvGreen -- [Horde] Rogue
+			z['Player-5261-019F4B67']	= ElvGreen -- [Horde] Hunter
+			z['Player-5261-01B3C53A'] 	= ElvGreen -- [Horde] Mage
+			z['Player-5261-01B50AC4'] 	= ElvGreen -- [Horde] Druid
 			-- Luckyone Classic Era (5233: Firemaw)
-			z['Player-5233-01D22A72']	= ElvBlue -- [Horde] Hunter: Unluckyone
-			z['Player-5233-01D27011']	= ElvBlue -- [Horde] Druid: Luckydruid
+			z['Player-5233-01D22A72']	= ElvGreen -- [Horde] Hunter: Unluckyone
+			z['Player-5233-01D27011']	= ElvGreen -- [Horde] Druid: Luckydruid
 		elseif E.Cata then
 			-- Luckyone (4467: Firemaw, 4440: Everlook, 4476: Gehennas)
-			z['Player-4467-04540395']	= ElvBlue -- [Alliance] Druid
-			z['Player-4467-04542B4A']	= ElvBlue -- [Alliance] Priest
-			z['Player-4467-04571AA2']	= ElvBlue -- [Alliance] Warlock
-			z['Player-4467-04571911']	= ElvBlue -- [Alliance] Paladin
-			z['Player-4467-04571A9F']	= ElvBlue -- [Alliance] Mage
-			z['Player-4467-04571A8D']	= ElvBlue -- [Alliance] DK
-			z['Player-4467-048C4EED']	= ElvBlue -- [Alliance] Hunter
-			z['Player-4467-0489BE11']	= ElvBlue -- [Alliance] Shaman
-			z['Player-4467-0489BDFD'] 	= ElvBlue -- [Alliance] Rogue
-			z['Player-4467-04571A98']	= ElvBlue -- [Alliance] Warrior
-			z['Player-4440-03AD654A']	= ElvBlue -- [Alliance] Rogue
-			z['Player-4440-03ADE2DF']	= ElvBlue -- [Alliance] Shaman
-			z['Player-4476-03BF41C9']	= ElvBlue -- [Horde] Hunter
+			z['Player-4467-04540395']	= ElvGreen -- [Alliance] Druid
+			z['Player-4467-04542B4A']	= ElvGreen -- [Alliance] Priest
+			z['Player-4467-04571AA2']	= ElvGreen -- [Alliance] Warlock
+			z['Player-4467-04571911']	= ElvGreen -- [Alliance] Paladin
+			z['Player-4467-04571A9F']	= ElvGreen -- [Alliance] Mage
+			z['Player-4467-04571A8D']	= ElvGreen -- [Alliance] DK
+			z['Player-4467-048C4EED']	= ElvGreen -- [Alliance] Hunter
+			z['Player-4467-0489BE11']	= ElvGreen -- [Alliance] Shaman
+			z['Player-4467-0489BDFD'] 	= ElvGreen -- [Alliance] Rogue
+			z['Player-4467-04571A98']	= ElvGreen -- [Alliance] Warrior
+			z['Player-4440-03AD654A']	= ElvGreen -- [Alliance] Rogue
+			z['Player-4440-03ADE2DF']	= ElvGreen -- [Alliance] Shaman
+			z['Player-4476-03BF41C9']	= ElvGreen -- [Horde] Hunter
 		elseif E.Retail then
 			-- Blazeflack
 			z['Blazii-Silvermoon']		= ElvBlue -- Priest
@@ -444,21 +444,22 @@ do --this can save some main file locals
 			z['Player-1401-041C0AE2']	= ElvGreen	-- [Alliance] Hunter:	Róhal
 			z['Player-1401-05CEABFA']	= ElvRed	-- [Alliance] DK:		Jahzzy
 			-- Luckyone (1598: LaughingSkull)
-			z['Player-1598-0F5E4639']	= ElvBlue -- [Alliance] Druid: Luckyone
-			z['Player-1598-0F3E51B0']	= ElvBlue -- [Alliance] Druid: Luckydruid
-			z['Player-1598-0F46FF5A']	= ElvBlue -- [Horde] Evoker
-			z['Player-1598-0BFF3341']	= ElvBlue -- [Horde] DH
-			z['Player-1598-0BD22704']	= ElvBlue -- [Horde] Priest
-			z['Player-1598-0BEFA545']	= ElvBlue -- [Horde] Monk
-			z['Player-1598-0E1A06DE']	= ElvBlue -- [Horde] Rogue
-			z['Player-1598-0BF2E377']	= ElvBlue -- [Horde] Hunter
-			z['Player-1598-0BF18248']	= ElvBlue -- [Horde] DK
-			z['Player-1598-0BFABB95']	= ElvBlue -- [Horde] Mage
-			z['Player-1598-0E67511D']	= ElvBlue -- [Horde] Paladin
-			z['Player-1598-0C0DD01B']	= ElvBlue -- [Horde] Warlock
-			z['Player-1598-0BF8013A']	= ElvBlue -- [Horde] Warrior
-			z['Player-1598-0BF56103']	= ElvBlue -- [Horde] Shaman
-			z['Player-1598-0F87B5AA']	= ElvBlue -- [Alliance] Priest
+			z['Player-1598-0F5E4639']	= ElvGreen -- [Alliance] Druid: Luckyone
+			z['Player-1598-0F3E51B0']	= ElvGreen -- [Alliance] Druid: Luckydruid
+			z['Player-1598-0F46FF5A']	= ElvGreen -- [Horde] Evoker
+			z['Player-1598-0F92E2B9']	= ElvGreen -- [Horde] Evoker 2
+			z['Player-1598-0BFF3341']	= ElvGreen -- [Horde] DH
+			z['Player-1598-0BD22704']	= ElvGreen -- [Horde] Priest
+			z['Player-1598-0BEFA545']	= ElvGreen -- [Horde] Monk
+			z['Player-1598-0E1A06DE']	= ElvGreen -- [Horde] Rogue
+			z['Player-1598-0BF2E377']	= ElvGreen -- [Horde] Hunter
+			z['Player-1598-0BF18248']	= ElvGreen -- [Horde] DK
+			z['Player-1598-0BFABB95']	= ElvGreen -- [Horde] Mage
+			z['Player-1598-0E67511D']	= ElvGreen -- [Horde] Paladin
+			z['Player-1598-0C0DD01B']	= ElvGreen -- [Horde] Warlock
+			z['Player-1598-0BF8013A']	= ElvGreen -- [Horde] Warrior
+			z['Player-1598-0BF56103']	= ElvGreen -- [Horde] Shaman
+			z['Player-1598-0F87B5AA']	= ElvGreen -- [Alliance] Priest
 			-- Sneaky Darth
 			z['Player-1925-05F494A6']	= ElvPurple
 			z['Player-1925-05F495A1']	= ElvPurple
@@ -550,16 +551,20 @@ function CH:CopyButtonOnMouseUp(btn)
 	local chat = self:GetParent()
 	if btn == 'RightButton' and chat:GetID() == 1 then
 		local menu = _G.ChatMenu
-		menu:ClearAllPoints()
+		if menu then
+			menu:ClearAllPoints()
 
-		local point = E:GetScreenQuadrant(self)
-		if strfind(point, 'LEFT') then
-			menu:SetPoint('BOTTOMLEFT', self, 'TOPRIGHT')
-		else
-			menu:SetPoint('BOTTOMRIGHT', self, 'TOPLEFT')
+			local point = E:GetScreenQuadrant(self)
+			if strfind(point, 'LEFT') then
+				menu:SetPoint('BOTTOMLEFT', self, 'TOPRIGHT')
+			else
+				menu:SetPoint('BOTTOMRIGHT', self, 'TOPLEFT')
+			end
+
+			ToggleFrame(menu)
+		elseif E.Retail then
+			_G.ChatFrameMenuButton:OpenMenu()
 		end
-
-		ToggleFrame(menu)
 	else
 		CH:CopyChat(chat)
 	end
@@ -769,6 +774,18 @@ function CH:StyleChat(frame)
 	tab:SetScript('OnClick', CH.Tab_OnClick)
 	tab.Text:FontTemplate(LSM:Fetch('font', CH.db.tabFont), CH.db.tabFontSize, CH.db.tabFontOutline)
 
+	if frame == _G.GeneralDockManager.primary then
+		local GMChatFrame = _G.GMChatFrame
+		if GMChatFrame then
+			GMChatFrame:FontTemplate(font, size, outline)
+		end
+
+		local communities = _G.CommunitiesFrame and _G.CommunitiesFrame.Chat and _G.CommunitiesFrame.Chat.MessageFrame
+		if communities then
+			communities:FontTemplate(font, size, outline)
+		end
+	end
+
 	if not frame.isDocked then
 		PanelTemplates_TabResize(tab, tab.sizePadding or 0)
 	end
@@ -830,7 +847,15 @@ function CH:StyleChat(frame)
 	if scrollToBottom then scrollToBottom:Kill() end
 
 	local buttonFrame = _G[name..'ButtonFrame']
-	if buttonFrame then buttonFrame:Kill() end
+	if buttonFrame then
+		if E.Retail and name == 'ChatFrame1' then
+			buttonFrame.Background:Hide()
+			buttonFrame.minimizeButton:Hide()
+			buttonFrame:StripTextures()
+		else
+			buttonFrame:Kill()
+		end
+	end
 
 	local thumbTexture = _G[name..'ThumbTexture']
 	if thumbTexture then thumbTexture:Kill() end
@@ -977,17 +1002,15 @@ function CH:GetLines(frame)
 end
 
 function CH:CopyChat(frame)
-	if not _G.CopyChatFrame:IsShown() then
-		local _, fontSize = _G.FCF_GetChatWindowInfo(frame:GetID())
+	if not CH.CopyChatFrame:IsShown() then
+		local count = CH:GetLines(frame)
+		local text = tconcat(copyLines, ' \n', 1, count)
 
-		_G.FCF_SetChatWindowFontSize(frame, frame, 0.01)
-		_G.CopyChatFrame:Show()
-		local lineCt = CH:GetLines(frame)
-		local text = tconcat(copyLines, ' \n', 1, lineCt)
-		_G.FCF_SetChatWindowFontSize(frame, frame, fontSize)
-		_G.CopyChatFrameEditBox:SetText(text)
+		CH.CopyChatFrameEditBox:SetText(text)
+		CH.CopyChatFrame:Show()
 	else
-		_G.CopyChatFrame:Hide()
+		CH.CopyChatFrameEditBox:SetText('')
+		CH.CopyChatFrame:Hide()
 	end
 end
 
@@ -1016,7 +1039,7 @@ function CH:TabOnEnter(tab)
 
 	if not CH.db.hideCopyButton then
 		local chat = CH:GetOwner(tab)
-		if chat and chat.copyButton and GetMouseFocus() ~= chat.copyButton then
+		if chat and chat.copyButton and E:GetMouseFocus() ~= chat.copyButton then
 			chat.copyButton:SetAlpha(0.35)
 		end
 	end
@@ -1031,7 +1054,7 @@ function CH:TabOnLeave(tab)
 
 	if not CH.db.hideCopyButton then
 		local chat = CH:GetOwner(tab)
-		if chat and chat.copyButton and GetMouseFocus() ~= chat.copyButton then
+		if chat and chat.copyButton and E:GetMouseFocus() ~= chat.copyButton then
 			chat.copyButton:SetAlpha(0)
 		end
 	end
@@ -1070,7 +1093,7 @@ function CH:HandleFadeTabs(chat, hook)
 		end
 	end
 
-	local focus = GetMouseFocus()
+	local focus = E:GetMouseFocus()
 	if not hook then
 		CH:TabOnEnter(tab)
 	elseif focus ~= tab and focus ~= chat then
@@ -1607,7 +1630,7 @@ function CH:GetBNFirstToonClassColor(id)
 	if not id then return end
 	for i = 1, BNGetNumFriends() do
 		local info = C_BattleNet_GetFriendAccountInfo(i)
-		if info.bnetAccountID == id then
+		if info and info.bnetAccountID == id then
 			for y = 1, C_BattleNet_GetFriendNumGameAccounts(i) do
 				local gameInfo = C_BattleNet_GetFriendGameAccountInfo(i, y)
 				if gameInfo.clientProgram == BNET_CLIENT_WOW and gameInfo.className and gameInfo.className ~= '' then
@@ -2191,8 +2214,7 @@ function CH:ChatFrame_MessageEventHandler(frame, event, arg1, arg2, arg3, arg4, 
 			elseif arg1 == 'FRIEND_ONLINE' or arg1 == 'FRIEND_OFFLINE' then
 				local accountInfo = C_BattleNet_GetAccountInfoByID(arg13)
 				local gameInfo = accountInfo.gameAccountInfo
-
-				if gameInfo.clientProgram and gameInfo.clientProgram ~= '' then
+				if gameInfo and gameInfo.clientProgram and gameInfo.clientProgram ~= '' then
 					if GetTitleIconTexture then
 						GetTitleIconTexture(gameInfo.clientProgram, TitleIconVersion_Small, function(success, texture)
 							if success then
@@ -2409,7 +2431,6 @@ function CH:SetupChat()
 	_G.GeneralDockManagerScrollFrameChild:Height(22)
 
 	_G.CHAT_FONT_HEIGHTS = CH.FontHeights
-	_G.ChatFrameMenuButton:Kill()
 
 	CH:ToggleHyperlink(CH.db.hyperlinkHover)
 	CH:StyleOverflowButton()
@@ -2419,6 +2440,13 @@ function CH:SetupChat()
 
 	if E.Retail then
 		_G.QuickJoinToastButton:Hide()
+
+		_G.ChatFrameMenuButton:SetAlpha(0)
+		_G.ChatFrameMenuButton:EnableMouse(false)
+		_G.ChatFrameMenuButton:ClearAllPoints()
+		_G.ChatFrameMenuButton:SetPoint('TOPLEFT', _G.ChatFrame1.copyButton, 'TOPRIGHT')
+	else
+		_G.ChatFrameMenuButton:Kill()
 	end
 
 	if not CH.HookSecured then
@@ -2803,17 +2831,19 @@ function CH:SocialQueueIsLeader(playerName, leaderName)
 
 	for i = 1, BNGetNumFriends() do
 		local info = C_BattleNet_GetAccountInfoByID(i)
-		for y = 1, C_BattleNet_GetFriendNumGameAccounts(i) do
-			local gameInfo = C_BattleNet_GetFriendGameAccountInfo(i, y)
-			if gameInfo.clientProgram == BNET_CLIENT_WOW and info.accountName == playerName then
-				playerName = gameInfo.characterName
+		if info and info.accountName then
+			for y = 1, C_BattleNet_GetFriendNumGameAccounts(i) do
+				local gameInfo = C_BattleNet_GetFriendGameAccountInfo(i, y)
+				if gameInfo.clientProgram == BNET_CLIENT_WOW and info.accountName == playerName then
+					playerName = gameInfo.characterName
 
-				if gameInfo.realmName and gameInfo.realmName ~= E.myrealm then
-					playerName = format('%s-%s', playerName, E:ShortenRealm(gameInfo.realmName))
-				end
+					if gameInfo.realmName and gameInfo.realmName ~= E.myrealm then
+						playerName = format('%s-%s', playerName, E:ShortenRealm(gameInfo.realmName))
+					end
 
-				if leaderName == playerName then
-					return true
+					if leaderName == playerName then
+						return true
+					end
 				end
 			end
 		end
@@ -3274,7 +3304,7 @@ function CH:SetupQuickJoin(holder)
 end
 
 function CH:BuildCopyChatFrame()
-	local frame = CreateFrame('Frame', 'CopyChatFrame', E.UIParent)
+	local frame = CreateFrame('Frame', 'ElvUI_CopyChatFrame', E.UIParent)
 	tinsert(_G.UISpecialFrames, 'CopyChatFrame')
 	frame:SetTemplate('Transparent')
 	frame:Size(700, 200)
@@ -3309,36 +3339,39 @@ function CH:BuildCopyChatFrame()
 		end
 	end)
 	frame:SetFrameStrata('DIALOG')
+	CH.CopyChatFrame = frame
 
-	local scrollArea = CreateFrame('ScrollFrame', 'CopyChatScrollFrame', frame, 'UIPanelScrollFrameTemplate')
-	scrollArea:Point('TOPLEFT', frame, 'TOPLEFT', 8, -30)
-	scrollArea:Point('BOTTOMRIGHT', frame, 'BOTTOMRIGHT', -30, 8)
-	S:HandleScrollBar(_G.CopyChatScrollFrameScrollBar)
-	scrollArea:SetScript('OnSizeChanged', function(scroll)
-		_G.CopyChatFrameEditBox:Width(scroll:GetWidth())
-		_G.CopyChatFrameEditBox:Height(scroll:GetHeight())
-	end)
-	scrollArea:HookScript('OnVerticalScroll', function(scroll, offset)
-		_G.CopyChatFrameEditBox:SetHitRectInsets(0, 0, offset, (_G.CopyChatFrameEditBox:GetHeight() - offset - scroll:GetHeight()))
-	end)
-
-	local editBox = CreateFrame('EditBox', 'CopyChatFrameEditBox', frame)
+	local editBox = CreateFrame('EditBox', 'ElvUI_CopyChatFrameEditBox', frame)
+	editBox:Height(200)
 	editBox:SetMultiLine(true)
 	editBox:SetMaxLetters(99999)
 	editBox:EnableMouse(true)
 	editBox:SetAutoFocus(false)
 	editBox:SetFontObject('ChatFontNormal')
-	editBox:Width(scrollArea:GetWidth())
-	editBox:Height(200)
-	editBox:SetScript('OnEscapePressed', function() _G.CopyChatFrame:Hide() end)
-	scrollArea:SetScrollChild(editBox)
-	_G.CopyChatFrameEditBox:SetScript('OnTextChanged', function(_, userInput)
+	editBox:SetScript('OnEscapePressed', function() CH.CopyChatFrame:Hide() end)
+	editBox:SetScript('OnTextChanged', function(_, userInput)
 		if userInput then return end
-		local _, Max = _G.CopyChatScrollFrameScrollBar:GetMinMaxValues()
-		for _ = 1, Max do
-			_G.ScrollFrameTemplate_OnMouseWheel(_G.CopyChatScrollFrame, -1)
+		local _, maxValue = CH.CopyChatScrollFrame.ScrollBar:GetMinMaxValues()
+		for _ = 1, maxValue do
+			_G.ScrollFrameTemplate_OnMouseWheel(CH.CopyChatScrollFrame, -1)
 		end
 	end)
+	CH.CopyChatFrameEditBox = editBox
+
+	local scrollFrame = CreateFrame('ScrollFrame', 'ElvUI_CopyChatScrollFrame', frame, 'UIPanelScrollFrameTemplate')
+	scrollFrame:Point('TOPLEFT', frame, 'TOPLEFT', 8, -30)
+	scrollFrame:Point('BOTTOMRIGHT', frame, 'BOTTOMRIGHT', -30, 8)
+	scrollFrame:SetScript('OnSizeChanged', function(_, width, height)
+		CH.CopyChatFrameEditBox:Size(width, height)
+	end)
+	scrollFrame:HookScript('OnVerticalScroll', function(scroll, offset)
+		CH.CopyChatFrameEditBox:SetHitRectInsets(0, 0, offset, (CH.CopyChatFrameEditBox:GetHeight() - offset - scroll:GetHeight()))
+	end)
+	CH.CopyChatScrollFrame = scrollFrame
+
+	scrollFrame:SetScrollChild(editBox)
+	editBox:Width(scrollFrame:GetWidth())
+	S:HandleScrollBar(scrollFrame.ScrollBar)
 
 	local close = CreateFrame('Button', 'CopyChatFrameCloseButton', frame, 'UIPanelCloseButton')
 	close:Point('TOPRIGHT')
@@ -3617,8 +3650,12 @@ function CH:FCF_Tab_OnClick(button)
 
 		_G.CURRENT_CHAT_FRAME_ID = self:GetID()
 
-		local tabName = self:GetName()
-		_G.ToggleDropDownMenu(1, nil, _G[tabName..'DropDown'], tabName, 0, 0)
+		if E.Retail then
+			_G.FCF_Tab_SetupMenu(self)
+		else
+			local tabName = self:GetName()
+			_G.ToggleDropDownMenu(1, nil, _G[tabName..'DropDown'], tabName, 0, 0)
+		end
 	elseif button == 'MiddleButton' then
 		if (E.Retail or (chat ~= _G.DEFAULT_CHAT_FRAME and not _G.IsCombatLog(chat))) and not _G.IsBuiltinChatWindow(chat) then -- Dynamic between classic/wrath/retail ~Simpy
 			if not chat.isTemporary then
@@ -3637,12 +3674,13 @@ function CH:FCF_Tab_OnClick(button)
 		_G.CloseDropDownMenus() -- Close all dropdowns
 		_G.SELECTED_CHAT_FRAME = chat -- If frame is docked assume that a click is to select a chat window, not drag it
 
-		if chat.isDocked and _G.FCFDock_GetSelectedWindow(_G.GENERAL_CHAT_DOCK) ~= chat then
+		if chat.isDocked and _G.FCFDock_GetSelectedWindow(_G.GeneralDockManager) ~= chat then
 			_G.FCF_SelectDockFrame(chat)
 		end
 
 		if GetCVar('chatStyle') ~= 'classic' then
-			_G.ChatEdit_SetLastActiveWindow(chat.editBox)
+			local chatFrame = (chat.isDocked and _G.GeneralDockManager.primary) or chat
+			_G.ChatEdit_SetLastActiveWindow(chatFrame.editBox)
 		end
 
 		chat:ResetAllFadeTimes()

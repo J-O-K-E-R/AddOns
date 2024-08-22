@@ -29,6 +29,7 @@ local GetFactionName = app.WOWAPI.GetFactionName;
 local GetFactionCurrentReputation = app.WOWAPI.GetFactionCurrentReputation;
 local GetSpellName = app.WOWAPI.GetSpellName;
 local GetSpellIcon = app.WOWAPI.GetSpellIcon;
+local IsQuestFlaggedCompletedOnAccount = app.WOWAPI.IsQuestFlaggedCompletedOnAccount;
 
 -- Class locals
 local LastQuestTurnedIn, MostRecentQuestTurnIns;
@@ -290,7 +291,10 @@ if app.IsRetail then
 		if questID then
 			if IsQuestFlaggedCompleted(questID) then return 1; end
 			if not t.repeatable then
-				return app.IsAccountTracked("Quests", questID) and 2
+				-- ATT Account cache tracking (may eventually remove)
+				if app.IsAccountTracked("Quests", questID) then return 2 end
+				-- WoW Account tracking
+				if app.Settings.AccountWide.Quests and IsQuestFlaggedCompletedOnAccount(questID) then return 2 end
 			end
 		end
 		-- account-mode: any character is viable to complete the quest, so alt quest completion shouldn't count for this quest
@@ -388,17 +392,15 @@ local function CollectibleAsLocked(t, locked)
 	-- not a repeatable quest
 	and not t.repeatable
 	and
+	-- Not Locked by a OPA/AW Quest
+	not AccountWideLockedQuestsCache[t.questID]
+	and
 	(
-		-- Not Locked by a OPA/AW Quest
-		not AccountWideLockedQuestsCache[t.questID]
-		and
-		(
-			-- debug/account mode
-			app.MODE_DEBUG_OR_ACCOUNT
-			or
-			-- available in party sync
-			not t.DisablePartySync
-		)
+		-- debug/account mode
+		app.MODE_DEBUG_OR_ACCOUNT
+		or
+		-- available in party sync
+		not t.DisablePartySync
 	)
 end
 local function CollectibleAsQuestOrAsLocked(t)
@@ -532,9 +534,9 @@ local function BuildDiscordQuestInfoTable(id, infoText, questChange, questRef, c
 			covInfo = covInfo .. "N/A";
 		end
 		if C_MajorFactions then
-			local DFmajorFactionIDs, majorFactionInfo, data = C_MajorFactions.GetMajorFactionIDs(9), {}, nil;
-			if DFmajorFactionIDs then
-				for _,factionID in ipairs(DFmajorFactionIDs) do
+			local MajorFactionIDs, majorFactionInfo, data = C_MajorFactions.GetMajorFactionIDs(10), {}, nil;
+			if MajorFactionIDs then
+				for _,factionID in ipairs(MajorFactionIDs) do
 					tinsert(majorFactionInfo, "|");
 					tinsert(majorFactionInfo, factionID);
 					data = C_MajorFactions.GetMajorFactionData(factionID);
@@ -1149,6 +1151,10 @@ local function IsGroupLocked(t)
 				if critFunc(critVal) then
 					if critKey ~= "questID" then
 						nonQuestLock = true;
+						if critKey == "sourceID" then
+							-- sourceID is account-wide, so any lock via that will lock account-wide
+							AccountWideLockedQuestsCache[t.questID] = true
+						end
 					elseif app.AccountWideQuestsDB[critVal] then
 						-- this quest is locked by a completed AWQ, so we know it can't be completed on another character either
 						AccountWideLockedQuestsCache[t.questID] = true
@@ -1299,13 +1305,13 @@ else
 end
 
 -- Party Sync Support
-local IsQuestReplayable, OnUpdateForPartySyncedQuest = C_QuestLog.IsQuestReplayable, nil;
+local IsQuestReplayable = C_QuestLog.IsQuestReplayable
+local OnSetVisibilityForNestedQuest
 if IsQuestReplayable then
 	-- Provide support for Party Sync'd Quests here
-	local IsPartySynced, IsQuestReplayedRecently =
-		C_QuestSession.Exists, C_QuestLog.IsQuestReplayedRecently;
+	local IsQuestReplayedRecently = C_QuestLog.IsQuestReplayedRecently
 	IsQuestSaved = function(questID)
-		if IsPartySynced() then
+		if IsPartySyncActive then
 			return IsQuestReplayedRecently(questID)
 				or (not IsQuestReplayable(questID) and IsQuestFlaggedCompleted(questID));
 		end
@@ -1313,8 +1319,8 @@ if IsQuestReplayable then
 	end;
 
 	-- Causes a group to remain visible if it is replayable, regardless of collection status
-	OnUpdateForPartySyncedQuest = function(data)
-		data.visible = IsQuestReplayable(data.questID) or app.CollectedItemVisibilityFilter(data);
+	OnSetVisibilityForNestedQuest = function(data)
+		return not data.saved or IsQuestReplayable(data.questID) or app.CollectedItemVisibilityFilter(data);
 	end
 
 	-- Detect state changes
@@ -1342,7 +1348,7 @@ if IsQuestReplayable then
 	end);
 end
 
--- Quest Lib (From Classic)
+-- Quest Lib
 local createQuest = app.CreateClass("Quest", "questID", {
 	text = app.IsClassic and function(t)
 		if t.repeatable then return "|cff0070DD" .. t.name .. "|r"; end
@@ -1857,9 +1863,7 @@ if app.IsRetail then
 			end
 
 			-- If the user is in a Party Sync session, then force showing pre-req quests which are replayable if they are collected already
-			if OnUpdateForPartySyncedQuest and IsPartySyncActive and questRef.collected and not questRef.OnUpdate then
-				questRef.OnUpdate = OnUpdateForPartySyncedQuest;
-			end
+			questRef.OnSetVisibility = OnSetVisibilityForNestedQuest
 
 			-- If the quest is provided by an Item, then show that Item directly under the quest so it can easily show tooltip/Source information if desired
 			if questRef.providers then
@@ -1979,8 +1983,9 @@ if app.IsRetail then
 	-- Quest Harvesting Lib (http://www.wowinterface.com/forums/showthread.php?t=46934)
 	local QuestHarvester = CreateFrame("GameTooltip", "AllTheThingsQuestHarvester", UIParent, "GameTooltipTemplate");
 
-	local GetNumQuestLogRewards,GetQuestLogRewardCurrencyInfo,HaveQuestRewardData =
-		  GetNumQuestLogRewards,GetQuestLogRewardCurrencyInfo,HaveQuestRewardData;
+	local GetNumQuestLogRewards,HaveQuestRewardData =
+		  GetNumQuestLogRewards,HaveQuestRewardData;
+	local GetQuestRewardCurrencies = C_QuestLog.GetQuestRewardCurrencies
 	local function TryPopulateQuestRewards(questObject)
 		-- Will attempt to populate the rewards of the quest object into itself or request itself to be loaded
 		if not questObject then return end
@@ -2065,10 +2070,10 @@ if app.IsRetail then
 
 		-- Add info for currency rewards as containers for their respective collectibles
 		---@diagnostic disable-next-line: redundant-parameter
-		local numCurrencies = GetNumQuestLogRewardCurrencies(questID);
+		local questCurrencies = GetQuestRewardCurrencies(questID) or app.EmptyTable
 		local currencyID, cachedCurrency;
-		for j=1,numCurrencies,1 do
-			currencyID = select(4, GetQuestLogRewardCurrencyInfo(j, questID));
+		for _,currencyInfo in ipairs(questCurrencies) do
+			currencyID = currencyInfo.currencyID
 			if currencyID then
 				-- app.PrintDebug("TryPopulateQuestRewards_currencies:found",questID,currencyID,questObject.missingCurr)
 

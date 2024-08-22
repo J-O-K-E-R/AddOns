@@ -1,7 +1,6 @@
-v4.78 & 4.79 6/19/24
+v4.81 7/26/24
 
-• Fixed afk error
-• Fixed pvp auto release error
-• Fixed attack power on character armory stats
-• Added Draenei heritage armor quest hearthstone
-• Added/Tweaked Character Armory Average Item Level Options in the Stats section (Some adjustments may be needed after update to 4.78)
+• fix some reputation in chat issues
+• get ride of some objective tracker errors and try to fix some styling (wip)
+• able to disenchant with deconstruction button now
+• fixed character frame not being the correct size

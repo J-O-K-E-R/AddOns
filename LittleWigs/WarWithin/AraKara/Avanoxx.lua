@@ -1,4 +1,3 @@
-if not BigWigsLoader.isBeta then return end
 --------------------------------------------------------------------------------
 -- Module Declaration
 --
@@ -75,7 +74,7 @@ function mod:AlertingShrill(args)
 		self:CDBar(args.spellId, 38.4, CL.count:format(args.spellName, alertingShrillCount))
 	else
 		-- syncs up with Gossamer Onslaught timer after the second cast
-		self:CDBar(args.spellId, 40.0, CL.count:format(args.spellName, alertingShrillCount))
+		self:CDBar(args.spellId, 39.2, CL.count:format(args.spellName, alertingShrillCount))
 	end
 	-- 7.25 minimum to next Voracious Bite
 	if nextVoraciousBite - t < 7.25 then
@@ -90,7 +89,7 @@ function mod:GossamerOnslaught(args)
 	self:StopBar(CL.count:format(args.spellName, gossamerOnslaughtCount))
 	self:Message(args.spellId, "red", CL.count:format(args.spellName, gossamerOnslaughtCount))
 	gossamerOnslaughtCount = gossamerOnslaughtCount + 1
-	self:CDBar(args.spellId, 40.0, CL.count:format(args.spellName, gossamerOnslaughtCount))
+	self:CDBar(args.spellId, 39.3, CL.count:format(args.spellName, gossamerOnslaughtCount))
 	-- 12.1 minimum to next Voracious Bite
 	if nextVoraciousBite - t < 12.1 then
 		nextVoraciousBite = t + 12.1
@@ -107,12 +106,12 @@ do
 		if stacks > 1 then
 			self:StopBar(CL.stack:format(stacks - 1, args.spellName, CL.boss))
 		end
-		self:Bar(args.spellId, 12, CL.stack:format(stacks, args.spellName, CL.boss))
+		self:Bar(args.spellId, 60, CL.stack:format(stacks, args.spellName, CL.boss))
 		-- throttle the sound, if your group is failing the boss can eat several at once
 		local t = args.time
-		if t - prev > 2 then
+		if t - prev > 3 then
 			prev = t
-			self:PlaySound(args.spellId, "alarm")
+			self:PlaySound(args.spellId, "warning")
 		end
 	end
 end

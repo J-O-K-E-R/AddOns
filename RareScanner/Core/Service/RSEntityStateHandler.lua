@@ -288,8 +288,8 @@ function RSEntityStateHandler.SetContainerOpen(containerID, loadingAddon)
 	end
 	
 	-- Mark as opened
-	local containerInfo = RSContainerDB.GetInternalContainerInfo(containerID)
-	if (containerInfo) then
+	local containerInfo = RSContainerDB.GetInternalContainerInfo(containerID)	
+	if (containerInfo) then	
 		-- Remove recently seen
 		local x, y = RSRecentlySeenTracker.RemoveRecentlySeen(containerID)
 	

@@ -60,7 +60,7 @@ end
 -- Classic Initialization
 --
 
-if not BigWigsLoader.isBeta then
+if mod:Classic() then
 	function mod:GetOptions()
 		return {
 			75664, -- Shadow Gale

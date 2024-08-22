@@ -14,6 +14,7 @@ local RSContainerDB = private.ImportLib("RareScannerContainerDB")
 local RSGeneralDB = private.ImportLib("RareScannerGeneralDB")
 local RSAchievementDB = private.ImportLib("RareScannerAchievementDB")
 local RSConfigDB = private.ImportLib("RareScannerConfigDB")
+local RSProfessionDB = private.ImportLib("RareScannerProfessionDB")
 
 -- RareScanner internal libraries
 local RSConstants = private.ImportLib("RareScannerConstants")
@@ -91,16 +92,12 @@ function RSContainerPOI.GetContainerPOI(containerID, mapID, containerInfo, alrea
 	-- Mini icons
 	if (containerInfo and containerInfo.prof) then
 		POI.iconAtlas = RSConstants.PROFFESION_ICON_ATLAS
-	elseif (RSUtils.GetTableLength(POI.achievementIDs) > 0) then
-		POI.iconAtlas = RSConstants.ACHIEVEMENT_ICON_ATLAS
 	elseif (RSUtils.Contains(RSConstants.CONTAINERS_WITHOUT_VIGNETTE, containerID)) then
 		POI.iconAtlas = RSConstants.NOT_TRACKABLE_ICON_ATLAS
-	elseif (POI.minieventID) then
-		if (POI.minieventID == RSConstants.DRAGONFLIGHT_WARCRAFT_RUMBLE_MINIEVENT) then
-			POI.iconAtlas = RSConstants.WARCRAFT_RUMBLE_ICON_ATLAS
-		elseif (POI.minieventID == RSConstants.DRAGONFLIGHT_DREAMSEED_MINIEVENT) then
-			POI.iconAtlas = RSConstants.DREAMSEED_ATLAS
-		end
+	elseif (POI.minieventID and RSConstants.MINIEVENTS_WORLDMAP_FILTERS[POI.minieventID] and RSConstants.MINIEVENTS_WORLDMAP_FILTERS[POI.minieventID].atlas) then
+		POI.iconAtlas = RSConstants.MINIEVENTS_WORLDMAP_FILTERS[POI.minieventID].atlas
+	elseif (RSUtils.GetTableLength(POI.achievementIDs) > 0) then
+		POI.iconAtlas = RSConstants.ACHIEVEMENT_ICON_ATLAS
 	end
 
 	return POI
@@ -147,9 +144,9 @@ local function IsContainerPOIFiltered(containerID, mapID, zoneQuestID, prof, min
 		end
 	end
 	
-	-- Skip if achievement and is filtered
-	local isAchievement = RSUtils.GetTableLength(RSAchievementDB.GetNotCompletedAchievementIDsByMap(containerID, mapID, true)) > 0;
-	if (not RSConfigDB.IsShowingAchievementContainers() and isAchievement) then
+	-- Skip if not completed achievement and is filtered
+	local isNotCompletedAchievement = RSUtils.GetTableLength(RSAchievementDB.GetNotCompletedAchievementIDsByMap(containerID, mapID, true)) > 0;
+	if (not RSConfigDB.IsShowingAchievementContainers() and isNotCompletedAchievement) then
 		RSLogger:PrintDebugMessageEntityID(containerID, string.format("Saltado Contenedor [%s]: Filtrado contenedor con logro.", containerID))
 		return true
 	end
@@ -200,18 +197,7 @@ local function IsContainerPOIFiltered(containerID, mapID, zoneQuestID, prof, min
 	
 	-- Skip if wrong profession
 	if (prof) then
-		local pindex1, pindex2, _, _, _, _ = GetProfessions();
-		local matches
-		if (pindex1) then
-			local _, _, _, _, _, _, skillLine, _, _, _ = GetProfessionInfo(pindex1)
-			matches = skillLine and skillLine == prof
-		end
-		if (not matches and pindex2) then
-			local _, _, _, _, _, _, skillLine, _, _, _ = GetProfessionInfo(pindex2)
-			matches = skillLine and skillLine == prof
-		end
-		
-		if (not matches) then
+		if (not RSProfessionDB.HasPlayerProfession(prof)) then
 			RSLogger:PrintDebugMessageEntityID(containerID, string.format("Saltado Contenedor [%s]: Profesión incorrecta.", containerID))
 			return true
 		end
@@ -224,7 +210,7 @@ local function IsContainerPOIFiltered(containerID, mapID, zoneQuestID, prof, min
 			local vignetteInfo = C_VignetteInfo.GetVignetteInfo(vignetteGUID);
 			if (vignetteInfo and vignetteInfo.objectGUID) then
 				local _, _, _, _, _, vignetteNPCID, _ = strsplit("-", vignetteInfo.objectGUID);
-				if (tonumber(vignetteNPCID) == containerID and onWorldMap and vignetteInfo.onWorldMap) then
+				if (onWorldMap and vignetteInfo.onWorldMap and (tonumber(vignetteNPCID) == containerID or RSContainerDB.GetFinalContainerID(vignetteNPCID) == containerID)) then
 					RSLogger:PrintDebugMessageEntityID(containerID, string.format("Saltado Contenedor [%s]: Hay un vignette del juego mostrándolo (Vignette onWorldmap).", containerID))
 					return true
 				end
@@ -256,7 +242,7 @@ function RSContainerPOI.GetMapNotDiscoveredContainerPOIs(mapID, vignetteGUIDs, o
 		local containerInfo = RSContainerDB.GetInternalContainerInfo(containerID)
 
 		-- Skip if it was discovered in this session
-		if (RSGeneralDB.GetAlreadyFoundEntity(containerID)) then
+		if (not filtered and RSGeneralDB.GetAlreadyFoundEntity(containerID)) then
 			RemoveNotDiscoveredContainer(containerID)
 			RSLogger:PrintDebugMessageEntityID(containerID, string.format("Saltado Contenedor N/D [%s]: Ya no es 'no descubierto'.", containerID))
 			filtered = true

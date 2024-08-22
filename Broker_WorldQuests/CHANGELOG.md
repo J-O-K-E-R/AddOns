@@ -1,3 +1,12 @@
+### 11.0.2.0
+* Fixed deprecated call to IsAddonLoaded()
+
+### 11.0.0.2
+* Updates to Faction related calls due to API changes with 11.0.0
+
+### 11.0.0.1
+* Updates for WoW version 11.0.0
+
 ### 10.2.7.0
 * Updates for Dragonflight 10.2.7
 

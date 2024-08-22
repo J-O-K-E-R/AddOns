@@ -808,7 +808,7 @@ end
 		local spellId = @SPELLID@
 		local spellName
 		if (spellId) then
-			spellName = select(1, GetSpellInfo(spellId))
+			spellName = select(1, Details.GetSpellInfo(spellId))
 		end
 
 		---@type actorcontainer
@@ -866,7 +866,7 @@ end
 					for playerName, friendlyFireTable in pairs(actorObject.friendlyfire) do
 						---@cast friendlyFireTable friendlyfiretable
 						for ffSpellId, damageAmount in pairs(friendlyFireTable.spells) do
-							local ffSpellName = select(1, GetSpellInfo(ffSpellId))
+							local ffSpellName = select(1, Details.GetSpellInfo(ffSpellId))
 							if (ffSpellName == spellName) then
 								---@type actordamage
 								local damageActor = damageContainer:GetActor(playerName)
@@ -941,7 +941,7 @@ end
 			if (not bIsCustomSpell) then
 				for thisSpellId, spellTable in pairs(actorObject.spells._ActorTable) do
 					if (thisSpellId ~= spellId) then --this is invalid
-						local spellname = select(1, GetSpellInfo(thisSpellId))
+						local spellname = select(1, Details.GetSpellInfo(thisSpellId))
 						if (spellname == spellName) then
 							for targetName, damageAmount in pairs(spellTable.targets) do
 								local got = false
@@ -2690,7 +2690,7 @@ end
 
 --handle internal details! events
 local eventListener = Details:CreateEventListener()
-eventListener:RegisterEvent("COMBAT_PLAYER_ENTER", function()
+eventListener:RegisterEvent("COMBAT_PLAYER_ENTER", function(eventName, combatObject)
 	if (Details.CacheInLineMaxDistance) then
 		Details:Destroy(Details.CacheInLineMaxDistance)
 
@@ -3414,9 +3414,17 @@ function Details:SetClassIcon(texture, instance, class) --[[exported]] --~icons
 			end
 		end
 
-		local localizedClass, englishClass
+		local englishClass
 		if (self.serial ~= "") then
-			localizedClass, englishClass = GetPlayerInfoByGUID(self.serial)
+			local bResult, sResult = pcall(function() local lClass, eClass = GetPlayerInfoByGUID(self.serial or "") return eClass end) --will error with: nil, table and boolean
+			if (bResult) then
+				englishClass = sResult
+			else
+				local bIncludeStackTrace = true
+				--[[GLOBAL]] DETAILS_FAILED_ACTOR = Details:GenerateActorInfo(self, sResult, bIncludeStackTrace) --avoid the game gc and details gc from destroying the actor info
+				Details:Msg("Bug happend on GetPlayerInfoByGUID() class_damage.lua:3419. Use command '/details bug' to report.")
+				englishClass = "UNKNOW"
+			end
 		end
 
 		if (englishClass) then

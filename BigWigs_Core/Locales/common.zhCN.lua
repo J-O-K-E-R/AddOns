@@ -67,6 +67,7 @@ L.you_die = "你将死亡" -- You will die
 L.you_die_sec = "你将在%d秒后死亡" -- "You die in 15 sec" (sec = seconds)
 L.next_ability = "下个技能" -- We don't know what ability will be next, we only know when it will happen (showing a bar)
 L.landing = "%s 正在着陆" -- "NPC_NAME is landing" Used when a flying NPC/dragon/boss is landing
+L.flying_available = "可以起飞"  --改为简短提示
 
 -- Add related
 L.add_spawned = "增援出现" -- singular
@@ -113,10 +114,12 @@ L.marker_npc_aura_desc = "标记受到'%s'影响的 NPC 为%s，需要权限。"
 L.link = "连接"
 L.link_with = "与%s连接"
 L.link_with_icon = "与|T13700%d:0|t%s连接"
-L.link_with_rticon = "与{rt%d}%s连接"
+L.link_with_rticon = "{rt%d}与%s连接"
 L.link_both = "%s和%s连接"
 L.link_both_icon = "|T13700%d:0|t%s和|T13700%d:0|t%s连接"
 L.link_removed = "连接已移除"
+L.link_say_option_name = "重复“连接”信息"
+L.link_say_option_desc = "已重复喊话方式来发送信息，说明正在与谁连接。"
 
 -- Abbreviated numbers
 L.amount_one = "%.2f亿" -- Billions 1,000,000,000

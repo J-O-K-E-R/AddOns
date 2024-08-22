@@ -30,8 +30,34 @@ local       GetBestMapForUnit,       GetMapInfo
 local       IsWarModeDesired
 	= C_PvP.IsWarModeDesired
 
-local GetFactionInfoByID, GetQuestObjectiveInfo, GetNumQuestLogRewards, GetQuestLogRewardInfo, GetQuestLogRewardMoney, GetNumQuestLogRewardCurrencies, GetQuestLogRewardCurrencyInfo, HaveQuestData
-	= GetFactionInfoByID, GetQuestObjectiveInfo, GetNumQuestLogRewards, GetQuestLogRewardInfo, GetQuestLogRewardMoney, GetNumQuestLogRewardCurrencies, GetQuestLogRewardCurrencyInfo, HaveQuestData
+local GetQuestObjectiveInfo, GetNumQuestLogRewards, GetQuestLogRewardInfo, GetQuestLogRewardMoney, HaveQuestData
+= GetQuestObjectiveInfo, GetNumQuestLogRewards, GetQuestLogRewardInfo, GetQuestLogRewardMoney, HaveQuestData
+
+local GetNumQuestLogRewardCurrencies, GetQuestLogRewardCurrencyInfo = GetNumQuestLogRewardCurrencies, GetQuestLogRewardCurrencyInfo
+if not GetNumQuestLogRewardCurrencies then
+	local reward_cache = {}
+	local function GetData(questID)
+		local data = reward_cache[questID]
+		local t = GetTime()
+		if not data or t > data.expTime then
+			data = C_QuestLog.GetQuestRewardCurrencies(questID)
+			data.expTime = t + 5
+		end
+		return data
+	end
+	function GetNumQuestLogRewardCurrencies(questID)
+		local data = GetData(questID)
+		return #data
+	end
+	function GetQuestLogRewardCurrencyInfo(i, questID)
+		local data = GetData(questID)[i]
+		if not data then
+			return
+		end
+		return data.name, data.texture, data.baseRewardAmount, data.currencyID
+		--data.totalRewardAmount
+	end
+end
 
 local GetAchievementInfo
 	= GetAchievementInfo
@@ -755,7 +781,7 @@ local RetrieveWorldQuests = function(mapId)
 					quest.title = title
 					quest.factionId = factionId
 					if factionId then
-						quest.faction = GetFactionInfoByID(factionId)
+						quest.faction = C_Reputation.GetFactionDataByID(factionId).name
 					end
 					quest.timeLeft = timeLeft
 					quest.bounties = {}
@@ -1336,10 +1362,10 @@ function BWQ:OnFactionUpdate(msg)
 		end
 	end
 
-	local name, factionId
-	for i = 1, GetNumFactions() do
-		name, _, _, _, _, _, _, _, _, _, _, _, _, factionId = GetFactionInfo(i)
-		if faction == name and paragonFactions[factionId] then
+	local factionData
+	for i = 1, C_Reputation.GetNumFactions() do
+		factionData = C_Reputation.GetFactionDataByIndex(i)
+		if faction == factionData.name and paragonFactions[factionData.factionId] then
 			BWQ:UpdateParagonData()
 		end
 	end
@@ -1353,6 +1379,7 @@ function BWQ:UpdateParagonData()
 	local rowIndex = 0
 	
 	local row
+	local factionId
 	for _, factionId in next, paragonFactions.order do
 		if IsFactionParagon(factionId) then
 			
@@ -1396,7 +1423,7 @@ function BWQ:UpdateParagonData()
 			else row:SetPoint("TOP", BWQ.factionFramePool.rows[rowIndex - 1], "BOTTOM", 0, -5) end
 			row:Show()
 
-			local name = GetFactionInfoByID(factionId)
+			local name = C_Reputation.GetFactionDataByID(factionId).name
 			local current, threshold, rewardQuestId, hasRewardPending = GetFactionParagonInfo(factionId)
 			
 			local progress = 0
@@ -1910,7 +1937,7 @@ function BWQ:UpdateBlock()
 			if bountyWidth > bountyMaxWidth then bountyMaxWidth = bountyWidth end
 
 			if not C("hideFactionColumn") then
-				button.factionFS:SetText(button.quest.faction)
+				button.factionFS:SetText(button.quest.factionID)
 				local factionWidth = button.factionFS:GetStringWidth()
 				if factionWidth > factionMaxWidth then factionMaxWidth = factionWidth end
 			else
@@ -2431,7 +2458,7 @@ BWQ:SetScript("OnEvent", function(self, event, arg1)
 			BWQcache = BWQcache or {}
 			BWQ:SwitchExpansion(C("expansion"))
 
-			if IsAddOnLoaded('Blizzard_SharedMapDataProviders') then
+			if C_AddOns.IsAddOnLoaded('Blizzard_SharedMapDataProviders') then
 				BWQ:AddFlightMapHook()
 				BWQ:UnregisterEvent("ADDON_LOADED")
 			end

@@ -7,13 +7,17 @@ local LCG = E.Libs.CustomGlow
 --GLOBALS: unpack, select, CreateFrame, VIDEO_OPTIONS_ENABLED, VIDEO_OPTIONS_DISABLED
 local _G = _G
 local format, strfind, strsplit, gsub, type, tostring = format, strfind, strsplit, gsub, type, tostring
-local GetItemInfo, GetTradeTargetItemLink = GetItemInfo, GetTradeTargetItemLink
+local GetTradeTargetItemLink = GetTradeTargetItemLink
 local InCombatLockdown = InCombatLockdown
 local LOCKED = LOCKED
 local ActionButton_ShowOverlayGlow, ActionButton_HideOverlayGlow, AutoCastShine_AutoCastStart = ActionButton_ShowOverlayGlow, ActionButton_HideOverlayGlow, AutoCastShine_AutoCastStart
 
 local C_Container_GetContainerItemLink = C_Container.GetContainerItemLink
 local C_Container_GetContainerItemInfo = C_Container.GetContainerItemInfo
+
+local C_Spell_GetSpellInfo = C_Spell and C_Spell.GetSpellInfo or GetSpellInfo
+local C_Item_GetItemInfo = C_Item and C_Item.GetItemInfo or GetItemInfo
+local C_Item_GetItemCount = C_Item and C_Item.GetItemCount or GetItemCount
 
 Pr.DeconstructMode = false
 local relicItemTypeLocalized, relicItemSubTypeLocalized
@@ -66,22 +70,22 @@ Pr.ItemTable = {
 	},
 }
 Pr.Keys = {
-	[GetSpellInfo(195809)] = true, -- jeweled lockpick
-	[GetSpellInfo(130100)] = true, -- Ghostly Skeleton Key
-	[GetSpellInfo(94574)] = true, -- Obsidium Skeleton Key
-	[GetSpellInfo(59403)] = true, -- Titanium Skeleton Key
-	[GetSpellInfo(59404)] = true, -- Colbat Skeleton Key
-	[GetSpellInfo(20709)] = true, -- Arcanite Skeleton Key
-	[GetSpellInfo(19651)] = true, -- Truesilver Skeleton Key
-	[GetSpellInfo(19649)] = true, -- Golden Skeleton Key
-	[GetSpellInfo(19646)] = true, -- Silver Skeleton Key
+	[C_Spell_GetSpellInfo(195809)] = true, -- jeweled lockpick
+	[C_Spell_GetSpellInfo(130100)] = true, -- Ghostly Skeleton Key
+	[C_Spell_GetSpellInfo(94574)] = true, -- Obsidium Skeleton Key
+	[C_Spell_GetSpellInfo(59403)] = true, -- Titanium Skeleton Key
+	[C_Spell_GetSpellInfo(59404)] = true, -- Colbat Skeleton Key
+	[C_Spell_GetSpellInfo(20709)] = true, -- Arcanite Skeleton Key
+	[C_Spell_GetSpellInfo(19651)] = true, -- Truesilver Skeleton Key
+	[C_Spell_GetSpellInfo(19649)] = true, -- Golden Skeleton Key
+	[C_Spell_GetSpellInfo(19646)] = true, -- Silver Skeleton Key
 }
 Pr.BlacklistDE = {}
 Pr.BlacklistLOCK = {}
 
 local function HaveKey()
 	for key in pairs(Pr.Keys) do
-		if(GetItemCount(key) > 0) then
+		if(C_Item_GetItemCount(key) > 0) then
 			return key
 		end
 	end
@@ -97,7 +101,7 @@ function Pr:BuildBlacklistDE(...)
 	wipe(Pr.BlacklistDE)
 	for index = 1, select('#', ...) do
 		local name = select(index, ...)
-		local isLink = GetItemInfo(name)
+		local isLink = C_Item_GetItemInfo(name)
 		if isLink then
 			Pr.BlacklistDE[isLink] = true
 		end
@@ -108,16 +112,17 @@ function Pr:BuildBlacklistLOCK(...)
 	wipe(Pr.BlacklistLOCK)
 	for index = 1, select('#', ...) do
 		local name = select(index, ...)
-		local isLink = GetItemInfo(name)
+		local isLink = C_Item_GetItemInfo(name)
 		if isLink then
 			Pr.BlacklistLOCK[isLink] = true
 		end
 	end
 end
 
-function Pr:ApplyDeconstruct(itemLink, itemId, spell, spellType, r, g, b)
-	local slot = GetMouseFocus()
+function Pr:ApplyDeconstruct(itemLink, itemId, spell, spellType, r, g, b, slot)
+	if not slot then return end
 	if slot == Pr.DeconstructionReal then return end
+
 	local bag = slot:GetParent():GetID()
 	if not _G.ElvUI_ContainerFrame.Bags[bag] then return end
 	Pr.DeconstructionReal.Bag = bag
@@ -154,8 +159,8 @@ function Pr:ApplyDeconstruct(itemLink, itemId, spell, spellType, r, g, b)
 		Pr.DeconstructionReal.ID = itemId
 		Pr.DeconstructionReal:SetAttribute('type1', spellType)
 		Pr.DeconstructionReal:SetAttribute(spellType, spell)
-		Pr.DeconstructionReal:SetAttribute('target-bag', bag)
-		Pr.DeconstructionReal:SetAttribute('target-slot', slot:GetID())
+		Pr.DeconstructionReal:SetAttribute('target-bag', Pr.DeconstructionReal.Bag)
+		Pr.DeconstructionReal:SetAttribute('target-slot', Pr.DeconstructionReal.Slot)
 		Pr.DeconstructionReal:SetAllPoints(slot)
 		Pr.DeconstructionReal:Show()
 
@@ -221,17 +226,17 @@ function Pr:DeconstructParser(data)
 			local r, g, b
 			if lib:IsOpenable(itemId) and Pr:IsUnlockable(hyperlink) then
 				r, g, b = 0, 1, 1
-				Pr:ApplyDeconstruct(hyperlink, itemId, Pr.LOCKname, 'spell', r, g, b)
+				Pr:ApplyDeconstruct(hyperlink, itemId, Pr.LOCKname, 'spell', r, g, b, owner)
 			elseif lib:IsOpenableProfession(itemId) and Pr:IsUnlockable(hyperlink) then
 				r, g, b = 0, 1, 1
 				local hasKey = HaveKey()
-				Pr:ApplyDeconstruct(hyperlink, itemId, hasKey, 'item', r, g, b)
+				Pr:ApplyDeconstruct(hyperlink, itemId, hasKey, 'item', r, g, b, owner)
 			elseif lib:IsProspectable(itemId) then
 				r, g, b = 1, 0, 0
-				Pr:ApplyDeconstruct(hyperlink, itemId, Pr.PROSPECTname, 'macro', r, g, b)
+				Pr:ApplyDeconstruct(hyperlink, itemId, Pr.PROSPECTname, 'macro', r, g, b, owner)
 			elseif lib:IsMillable(itemId) then
 				r, g, b = 1, 0, 0
-				Pr:ApplyDeconstruct(hyperlink, itemId, Pr.MILLname, 'spell', r, g, b)
+				Pr:ApplyDeconstruct(hyperlink, itemId, Pr.MILLname, 'spell', r, g, b, owner)
 			elseif Pr.DEname then
 				local isArtRelic
 				local itemName, _, itemQuality, _, _, itemClass, itemSubclass, _, equipSlot = GetItemInfo(itemId)
@@ -241,7 +246,7 @@ function Pr:DeconstructParser(data)
 				end
 				if normalItem or isArtRelic then
 					r, g, b = 1, 0, 0
-					Pr:ApplyDeconstruct(hyperlink, itemId, Pr.DEname, 'spell', r, g, b)
+					Pr:ApplyDeconstruct(hyperlink, itemId, Pr.DEname, 'spell', r, g, b, owner)
 				end
 			end
 		end
@@ -289,7 +294,7 @@ function Pr:Construct_BagButton()
 end
 
 function Pr:ConstructRealDecButton()
-	Pr.DeconstructionReal = CreateFrame('Button', 'SLE_DeconReal', E.UIParent, 'SecureActionButtonTemplate, AutoCastShineTemplate')
+	Pr.DeconstructionReal = CreateFrame('Button', 'SLE_DeconReal', E.UIParent, 'SecureActionButtonTemplate')
 	Pr.DeconstructionReal:SetScript('OnEvent', function(obj, event, ...) obj[event](obj, ...) end)
 	Pr.DeconstructionReal:RegisterForClicks('AnyUp', 'AnyDown')
 	Pr.DeconstructionReal:SetFrameStrata('TOOLTIP')
@@ -327,11 +332,11 @@ end
 
 local function Get_ArtRelic()
 	local noItem = false
-	if select(2, GetItemInfo(132342)) == nil then noItem = true end
+	if select(2, C_Item_GetItemInfo(132342)) == nil then noItem = true end
 	if noItem then
 		E:Delay(5, Get_ArtRelic)
 	else
-		relicItemTypeLocalized, relicItemSubTypeLocalized = select(6, GetItemInfo(132342))
+		relicItemTypeLocalized, relicItemSubTypeLocalized = select(6, C_Item_GetItemInfo(132342))
 	end
 end
 

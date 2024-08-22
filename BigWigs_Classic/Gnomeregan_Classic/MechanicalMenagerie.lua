@@ -103,7 +103,7 @@ function mod:OnEngage()
 	chickenHP = 100
 	repairList = {}
 
-	self:OpenInfo("health", "BigWigs: ".. CL.health)
+	self:OpenInfo("health", CL.other:format("BigWigs", CL.health))
 	local npcId = 218241
 	for i = 1, 7, 2 do
 		npcId = npcId + 1
@@ -118,8 +118,7 @@ function mod:OnEngage()
 end
 
 function mod:OnWin()
-	self:Message("run", "blue", L.run, false)
-	self:SimpleTimer(function() self:Message("run", "blue", L.run, false) end, 1)
+	self:Message("run", "blue", L.run, false, nil, 3)
 end
 
 --------------------------------------------------------------------------------

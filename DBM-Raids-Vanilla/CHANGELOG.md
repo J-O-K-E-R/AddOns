@@ -1,12 +1,15 @@
 # DBM - Vanilla and Season of Discovery
 
-## [r730](https://github.com/DeadlyBossMods/DBM-Vanilla/tree/r730) (2024-07-19)
-[Full Changelog](https://github.com/DeadlyBossMods/DBM-Vanilla/compare/r729...r730) [Previous Releases](https://github.com/DeadlyBossMods/DBM-Vanilla/releases)
+## [r739](https://github.com/DeadlyBossMods/DBM-Vanilla/tree/r739) (2024-08-21)
+[Full Changelog](https://github.com/DeadlyBossMods/DBM-Vanilla/compare/r738...r739) [Previous Releases](https://github.com/DeadlyBossMods/DBM-Vanilla/releases)
 
-- Kazzak has a new ID in SoD, Azuregos is unchanged  
-- enable loadzone for instanced versions of SoD world bosses and add SoD encounter ID detection  
-- Fix flavored toc for vanilla  
-- Fix SoD raid tests loading on retail  
-- bump test toc  
-- Fixed Shade of Eranikus interrupt warning not correctively giving target name and count being in wrong arg for Bellowing Roar  
-    Fixed bug on Hakkar where enrage warning would not give target name  
+- MC: Update test logs  
+    Lucifron: heat 3 covers everything, delete old heat 1 and 2 logs.  
+    TheMoltenCore: Add a kill log and a longer full wipe log that covers the Energy and Doomsday mechanics.  
+- TheMoltenCore: Minor tweaks  
+    * Add warning for meteors  
+    * Add warning for boss energy levels reaching certain thresholds  
+    * Add a yell for when Heart of Ash/Cinder was successfully cleared  
+    * Change Heart of Ash/Cinder chat type to YELL as it's a "come here", not a "go away" thing  
+    * Add some comments from my log analysis  
+- remove 10.2.7 and 11.0.0 game versions from tocs  

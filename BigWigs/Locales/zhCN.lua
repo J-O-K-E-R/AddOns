@@ -1,8 +1,6 @@
 local L = BigWigsAPI:NewLocale("BigWigs", "zhCN")
 if not L then return end
 
-L.tempMessage = "您的计时条位置已重置，现在可以使用新的导入/导出配置功能。"
-
 -- Core.lua
 L.berserk = "狂暴"
 L.berserk_desc = "为首领狂暴显示计时器和警报。"
@@ -28,6 +26,9 @@ L.okay = "确定"
 L.officialRelease = "你所使用的 BigWigs %s 为官方正式版（%s）"
 L.alphaRelease = "你所使用的 BigWigs %s 为“α测试版”（%s）"
 L.sourceCheckout = "你所使用的 BigWigs %s 是从原始代码仓库直接下载的。"
+L.littlewigsOfficialRelease = "你所使用的 LittleWigs 为官方正式版（%s）"
+L.littlewigsAlphaRelease = "你所使用的 LittleWigs 为“α测试版”（%s）"
+L.littlewigsSourceCheckout = "你所使用的 LittleWigs 是从原始代码仓库直接下载的。"
 L.guildRelease = "你正在使用 BigWigs 公会版，版本 %d ，其基于官方版本 %d 。"
 L.getNewRelease = "你的 BigWigs 已过期（/bwv）但是可以使用 CurseForge 客户端轻松升级。另外，也可以从 curseforge.com 或 wowinterface.com 手动升级。"
 L.warnTwoReleases = "你的 BigWigs 已过期2个发行版！你的版本可能有错误，功能缺失或不正确的计时器。所以强烈建议你升级。"
@@ -37,17 +38,22 @@ L.warnOldBase = "你正在使用公会版本 BigWigs（%d），但是它是基�
 L.tooltipHint = "|cffeda55f右击|r打开选项。"
 L.activeBossModules = "激活首领模块："
 
-L.oldVersionsInGroup = "在你队伍里有人使用了旧版本或没有使用 BigWigs。你可以用 /bwv 获得详细信息。" -- XXX needs updated
+L.oldVersionsInGroup = "在你队伍里有人使用了 |cffff0000旧版本|r 的 BigWigs。你可以使用 /bwv 名字获得详细信息。"
 L.upToDate = "已更新："
 L.outOfDate = "过期："
 L.dbmUsers = "DBM 用户："
 L.noBossMod = "没有首领模块："
 L.offline = "离线"
 
-L.missingAddOn = "你缺少 |cFF436EEE%s|r 插件!"
+L.missingAddOnPopup = "你缺少 |cFF436EEE%s|r 插件!"
+L.missingAddOnRaidWarning = "你缺少 |cFF436EEE%s|r 插件！此区域将不显示计时条！"
+L.outOfDateAddOnPopup = "|cFF436EEE%s|r 插件已过期！"
+L.outOfDateAddOnRaidWarning = "|cFF436EEE%s|r 插件已过期！它可能存在错误、功能缺失或计时器完全错误。"
 L.disabledAddOn = "你的 |cFF436EEE%s|r 插件已禁用，计时器将无法显示。"
 L.removeAddOn = "请移除“|cFF436EEE%s|r”，其已被“|cFF436EEE%s|r”所替代。"
 L.alternativeName = "%s（|cFF436EEE%s|r）"
+L.outOfDateContentPopup = "警告！\n你更新了 |cFF436EEE%s|r 但你还需要更新 |cFF436EEEBigWigs|r 主插件。\n忽略这一点将导致功能崩溃。"
+L.outOfDateContentRaidWarning = "|cFF436EEE%s|r 需要安装 %d 版本的 |cFF436EEEBigWigs|r 主插件才能正常运行，但你使用了 %d 版本。"
 
 L.expansionNames = {
 	"经典旧世", -- Classic
@@ -156,8 +162,8 @@ L.SAY_COUNTDOWN = "说话冷却"
 L.SAY_COUNTDOWN_desc = "聊天泡泡很容易被发现。BigWigs 将使用多个说话消息倒计时提醒附近的人身上的技能即将到期。"
 L.ME_ONLY_EMPHASIZE = "醒目（自身）"
 L.ME_ONLY_EMPHASIZE_desc = "启用此选项将醒目如只作用于自身相关技能的任一信息，使它们更大更明显。"
-L.NAMEPLATEBAR = "姓名板条"
-L.NAMEPLATEBAR_desc = "当多个怪物施放相同的法术时，有时会在姓名板上附加条。如果此技能要伴随姓名板条隐藏，则禁用此选项。"
+L.NAMEPLATE = "姓名板"
+L.NAMEPLATE_desc = "如果启用，与此特定技能的相关图标和文字等功能将显示在姓名板上。这样当有多个NPC施放技能时，就能更容易地看到是哪个特定的NPC在施放。"
 L.PRIVATE = "私有光环"
 L.PRIVATE_desc = "私有光环无法用常规手段追踪，但可以在音效分页指定只有“私有光环”出现在你身上时的音效。"
 
@@ -219,14 +225,29 @@ L.imported_countdown_color = "倒数颜色"
 
 -- Statistics
 L.statistics = "统计"
+L.defeat = "被击败"   --用回“被击败”，这样显示统一。
+L.defeat_desc = "你在与该首领战斗时被击败的总次数。"
+L.victory = "获胜"
+L.victory_desc = "你在与该首领战斗时获胜的总次数。"
+L.fastest = "最快"
+L.fastest_desc = "与该首领战斗最快获胜及发生的日期（年/月/日）"
+L.first = "首胜"
+L.first_desc = "你在与该首领战斗时首次获胜的详细信息，格式为：\n[首次获胜前被团灭次数] - [战斗时间] - [年/月/日 首胜]"
+-- Difficulty levels for statistics display on bosses
+L.unknown = "未知"
 L.LFR = "随机团队"
 L.normal = "普通"
 L.heroic = "英雄"
 L.mythic = "史诗"
-L.wipes = "团灭："
-L.kills = "击杀："
-L.best = "最快："
---L.SOD = "Unknown"
---L.level1 = "Level 1"
---L.level2 = "Level 2"
---L.level3 = "Level 3"
+L.timewalk = "时空漫游"
+L.story = "剧情"
+L.mplus = "史诗+ %d"
+L.SOD = "探索赛季"
+L.hardcore = "专家模式"
+L.level1 = "难度等级 1"
+L.level2 = "难度等级 2"
+L.level3 = "难度等级 3"
+L.N10 = "10人普通"
+L.N25 = "25人普通"
+L.H10 = "10人英雄"
+L.H25 = "25人英雄"

@@ -1,5 +1,3 @@
-if not BigWigsLoader.isBeta then return end -- Beta check
-
 --------------------------------------------------------------------------------
 -- Module Declaration
 --
@@ -19,6 +17,7 @@ local brutalLashingsCount = 1
 local stalkersWebbingCount = 1
 local venomousLashCount = 1
 local brutalCrushCount = 1
+local digestiveAcidCount = 1
 
 local hungeringBellowsCount = 1
 local hulkingCrashCount = 1
@@ -47,7 +46,7 @@ function mod:GetOptions()
 		441452, -- Stalkers Webbing
 		439419, -- Stalker Netting
 		435136, -- Venomous Lash
-		{435138, "SAY", "SAY_COUNTDOWN", "ME_ONLY_EMPHASIZE"}, -- Digestive Venom
+		{435138, "SAY", "SAY_COUNTDOWN", "ME_ONLY_EMPHASIZE"}, -- Digestive Acid
 		{434697, "TANK"}, -- Brutal Crush
 		{434705, "TANK"}, -- Tenderized
 		-- Feeding Frenzy
@@ -68,9 +67,8 @@ function mod:GetOptions()
 end
 
 function mod:OnBossEnable()
-	self:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", nil, "boss1") -- Stages
-
 	-- Gleeful Brutality
+	self:Log("SPELL_CAST_SUCCESS", "PhaseTransition", 441425)
 	self:Log("SPELL_CAST_START", "BrutalLashings", 434803)
 	self:RegisterEvent("CHAT_MSG_RAID_BOSS_WHISPER") -- Brutal Lashings Targetting
 	--self:Log("SPELL_AURA_APPLIED", "BrutalLashingsTargetApplied", 458129)
@@ -81,8 +79,9 @@ function mod:OnBossEnable()
 	self:Log("SPELL_CAST_START", "StalkersWebbing", 441452)
 	self:Log("SPELL_AURA_APPLIED", "StalkerNettingApplied", 439419, 455831) -- Stalker Netting/Hardened Netting
 	self:Log("SPELL_CAST_START", "VenomousLash", 435136)
-	self:Log("SPELL_AURA_APPLIED", "DigestiveVenomApplied", 435138)
-	self:Log("SPELL_AURA_REMOVED", "DigestiveVenomRemoved", 435138)
+	self:Log("SPELL_CAST_START", "DigestiveAcid", 435138)
+	self:Log("SPELL_AURA_APPLIED", "DigestiveAcidApplied", 435138)
+	self:Log("SPELL_AURA_REMOVED", "DigestiveAcidRemoved", 435138)
 	self:Log("SPELL_CAST_START", "BrutalCrush", 434697)
 	self:Log("SPELL_AURA_APPLIED", "TenderizedApplied", 434705)
 
@@ -106,11 +105,13 @@ function mod:OnEngage()
 	stalkersWebbingCount = 1
 	venomousLashCount = 1
 	brutalCrushCount = 1
+	digestiveAcidCount = 1
 	foodOnMe = false
 
 	self:Bar(434697, 3, CL.count:format(self:SpellName(434697), brutalCrushCount)) -- Brutal Crush
 	self:Bar(441452, self:Mythic() and 9 or 8, CL.count:format(self:SpellName(441452), stalkersWebbingCount)) -- Stalkers Webbing
 	self:Bar(435136, self:Mythic() and 5 or 14, CL.count:format(self:SpellName(435136), venomousLashCount)) -- Venomous Lash
+	self:Bar(435138, 18, CL.count:format(self:SpellName(435138), digestiveAcidCount)) -- Digestive Acid
 	self:Bar(434803, self:Mythic() and 33 or 23, CL.count:format(self:SpellName(434803), brutalLashingsCount)) -- Brutal Lashings
 	self:Bar("stages", 90, CL.stage:format(2), 438012) -- Hulking Crash Cast (id: 445123), Hungering Bellows icon
 end
@@ -119,36 +120,29 @@ end
 -- Event Handlers
 --
 
-function mod:UNIT_SPELLCAST_SUCCEEDED(_, _, _, spellId) -- Used for Stages
-	if spellId == 441425 then -- Phase Transition None
-		-- Used when the boss runs out of energy, and then when it reaches 100 energy again in P2
-		-- For p1->p2 there is the first Hulking Crash, but there is no good alternative for p2 -> p1
-		-- Events around it as alteratives:
-		-- <162.42 21:00:32> [UNIT_POWER_UPDATE] boss1#Ulgrax the Devourer#TYPE:ENERGY/3#MAIN:100/100#ALT:0/0
-		-- <162.50 21:00:32> [UNIT_SPELLCAST_SUCCEEDED] Ulgrax the Devourer(9.5%-100.0%){Target:??} -Phase Transition None- [[boss1:Cast-3-2085-2657-32566-441425-00756B41CF:441425]]
-		-- <162.71 21:00:32> [CHAT_MSG_MONSTER_YELL] Still hungry!#Ulgrax the Devourer###Ulgrax the Devourer##0#0##0#4325#nil#0#false#false#false#false",
-		-- <166.66 21:00:36> [UNIT_SPELLCAST_SUCCEEDED] Ulgrax the Devourer(8.9%-100.0%){Target:??} -Phase Transition P2 -> P1- [[boss1:Cast-3-2085-2657-32566-441427-0006EB41D4:441427]]
-		if self:GetStage() == 2 then
-			self:StopBar(self:SpellName(445052)) -- Chittering Swarm
-			self:StopBar(self:SpellName(436200)) -- Juggernaut Charge
-			self:StopBar(self:SpellName(443842)) -- Swallowing Darkness
-			self:StopBar(CL.count:format(self:SpellName(438012), hungeringBellowsCount)) -- Hungering Bellows
-			self:StopBar(CL.count:format(self:SpellName(445123), hulkingCrashCount)) -- Hulking Crash
+function mod:PhaseTransition() -- Using HulkingCrashTransition for P1 -> P2, this is P2 -> P1
+	if self:GetStage() == 2 then
+		self:StopBar(self:SpellName(445052)) -- Chittering Swarm
+		self:StopBar(self:SpellName(436200)) -- Juggernaut Charge
+		self:StopBar(self:SpellName(443842)) -- Swallowing Darkness
+		self:StopBar(CL.count:format(self:SpellName(438012), hungeringBellowsCount)) -- Hungering Bellows
+		self:StopBar(CL.count:format(self:SpellName(445123), hulkingCrashCount)) -- Hulking Crash
 
-			self:SetStage(1)
-			brutalLashingsCount = 1
-			stalkersWebbingCount = 1
-			venomousLashCount = 1
-			brutalCrushCount = 1
+		self:SetStage(1)
+		brutalLashingsCount = 1
+		stalkersWebbingCount = 1
+		venomousLashCount = 1
+		brutalCrushCount = 1
+		digestiveAcidCount = 1
 
-			self:Message("stages", "cyan", CL.stage:format(1), false)
+		self:Message("stages", "cyan", CL.stage:format(1), false)
 
-			self:Bar(434697, 7, CL.count:format(self:SpellName(434697), brutalCrushCount)) -- Brutal Crush
-			self:Bar(441452, self:Mythic() and 13 or 12, CL.count:format(self:SpellName(441452), stalkersWebbingCount)) -- Stalkers Webbing
-			self:Bar(435136, self:Mythic() and 9 or 18, CL.count:format(self:SpellName(435136), venomousLashCount)) -- Venomous Lash
-			self:Bar(434803, self:Mythic() and 37 or 27, CL.count:format(self:SpellName(434803), brutalLashingsCount)) -- Brutal Lashings
-			self:Bar("stages", 94, CL.stage:format(2), 438012) -- Hulking Crash Cast (id: 445123), Hungering Bellows icon
-		end
+		self:Bar(434697, 7, CL.count:format(self:SpellName(434697), brutalCrushCount)) -- Brutal Crush
+		self:Bar(441452, self:Mythic() and 13 or 12, CL.count:format(self:SpellName(441452), stalkersWebbingCount)) -- Stalkers Webbing
+		self:Bar(435136, self:Mythic() and 9 or 18, CL.count:format(self:SpellName(435136), venomousLashCount)) -- Venomous Lash
+		self:Bar(435138, 22.5, CL.count:format(self:SpellName(435138), digestiveAcidCount)) -- Digestive Acid
+		self:Bar(434803, self:Mythic() and 37 or 27, CL.count:format(self:SpellName(434803), brutalLashingsCount)) -- Brutal Lashings
+		self:Bar("stages", 94, CL.stage:format(2), 438012) -- Hulking Crash Cast (id: 445123), Hungering Bellows icon
 	end
 end
 
@@ -252,16 +246,26 @@ function mod:VenomousLash(args)
 	end
 end
 
-function mod:DigestiveVenomApplied(args)
+function mod:DigestiveAcid(args)
+	self:StopBar(CL.count:format(args.spellName, digestiveAcidCount))
+	self:Message(args.spellId, "yellow", CL.casting:format(CL.count:format(args.spellName, digestiveAcidCount)))
+	self:PlaySound(args.spellId, "alert")
+	digestiveAcidCount = digestiveAcidCount + 1
+	if digestiveAcidCount <= 2 then-- 2 per stage 1
+		self:Bar(args.spellId, 44, CL.count:format(args.spellName, digestiveAcidCount))
+	end
+end
+
+function mod:DigestiveAcidApplied(args)
 	if self:Me(args.destGUID) then
 		self:PersonalMessage(args.spellId)
-		self:Say(args.spellId, nil, nil, "Digestive Venom")
+		self:Say(args.spellId, nil, nil, "Digestive Acid")
 		self:SayCountdown(args.spellId, 6)
 		self:PlaySound(args.spellId, "warning") -- Clear Webs
 	end
 end
 
-function mod:DigestiveVenomRemoved(args)
+function mod:DigestiveAcidRemoved(args)
 	if self:Me(args.destGUID) then
 		self:CancelSayCountdown(args.spellId)
 	end

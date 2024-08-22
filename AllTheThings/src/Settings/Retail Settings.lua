@@ -235,9 +235,8 @@ settings.Initialize = function(self)
 	local colors = settings:Get("Window:CustomColors") or {}
 	-- make sure the table reference is actually assigned back to be saved
 	settings:Set("Window:CustomColors",colors)
-	setmetatable(colors, { __index = app.Colors });
-	-- replace the direct table with a metatable of the original colors
-	app.Colors = colors;
+	-- replace the direct table with a metatable of the user's colors & Default fallbacks
+	app.SetCustomColors(colors)
 
 	-- Assign the preset filters for your character class as the default states
 	if not AllTheThingsSettingsPerCharacter then AllTheThingsSettingsPerCharacter = {} end
@@ -509,7 +508,7 @@ settings.GetModeString = function(self)
 			mode = app.ClassName .. " " .. mode
 		end
 
-		local solo = true
+		local solo = not app.MODE_DEBUG_OR_ACCOUNT
 		local keyPrefix, thingName, thingActive
 		local insaneTotalCount, insaneCount = 0, 0;
 		local totalThingCount, thingCount, things = 0, 0, {};
@@ -577,7 +576,7 @@ settings.GetShortModeString = function(self)
 		local totalThingCount = 0
 		local keyPrefix, thingName, thingActive
 		local insaneTotalCount, insaneCount = 0, 0;
-		local solo = true
+		local solo = not app.MODE_DEBUG_OR_ACCOUNT
 		for key,_ in pairs(GeneralSettingsBase.__index) do
 			keyPrefix, thingName = (":"):split(key)
 			if keyPrefix == "Thing" then

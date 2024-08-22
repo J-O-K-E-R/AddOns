@@ -19,12 +19,12 @@
 		local addonName, Details222 = ...
 		local version, build, date, tvs = GetBuildInfo()
 
-		Details.build_counter = 12814
-		Details.alpha_build_counter = 12814 --if this is higher than the regular counter, use it instead
+		Details.build_counter = 12879
+		Details.alpha_build_counter = 12879 --if this is higher than the regular counter, use it instead
 		Details.dont_open_news = true
 		Details.game_version = version
 		Details.userversion = version .. " " .. Details.build_counter
-		Details.realversion = 158 --core version, this is used to check API version for scripts and plugins (see alias below)
+		Details.realversion = 159 --core version, this is used to check API version for scripts and plugins (see alias below)
 		Details.gametoc = tvs
 		Details.APIVersion = Details.realversion --core version
 		Details.version = Details.userversion .. " (core " .. Details.realversion .. ")" --simple stirng to show to players
@@ -213,7 +213,7 @@
 		--aura scanner
 		Details222.AuraScan = {}
 
-        local GetSpellInfo = GetSpellInfo or C_Spell.GetSpellInfo
+        local GetSpellInfo = C_Spell and C_Spell.GetSpellInfo or GetSpellInfo
         Details222.GetSpellInfo = GetSpellInfo
 
 		local UnitBuff = UnitBuff or C_UnitAuras.GetBuffDataByIndex
@@ -1218,8 +1218,11 @@ do
 	_detalhes.empty_table = {}
 
 	--register textures and fonts for shared media
+		---@type table
 		local SharedMedia = LibStub:GetLibrary ("LibSharedMedia-3.0")
 		--default bars
+		SharedMedia:Register("statusbar", "Details Hyanda Reverse", [[Interface\AddOns\Details\images\bar_textures\bar_hyanda_reverse.png]])
+		SharedMedia:Register("statusbar", "You Are the Best!", [[Interface\AddOns\Details\images\bar_textures\bar_best.png]])
 		SharedMedia:Register("statusbar", "Details Hyanda", [[Interface\AddOns\Details\images\bar_hyanda]])
 
 		SharedMedia:Register("statusbar", "Details D'ictum", [[Interface\AddOns\Details\images\bar4]])
@@ -1566,7 +1569,7 @@ function Details222.ClassCache.MakeCache()
 end
 
 Details222.UnitIdCache.Party = {"player"}
-Details222.UnitIdCache.PartyPet = {"playetpet"}
+Details222.UnitIdCache.PartyPet = {"playerpet"}
 for i = 1, 4 do
 	table.insert(Details222.UnitIdCache.Party, "party" .. i)
 	table.insert(Details222.UnitIdCache.PartyPet, "partypet" .. i)
@@ -1857,39 +1860,6 @@ function Details:DestroyActor(actorObject, actorContainer, combatObject, callSta
 	actorObject.__destroyed = true
 	actorObject.__destroyedBy = debugstack(callStackDepth or 2, 1, 0)
 end
-
-local restrictedAddons = {
-    '!!WWAddOnsFix',
-}
-
-local restrictedAddonFrame = CreateFrame('frame')
-restrictedAddonFrame:RegisterEvent('PLAYER_ENTERING_WORLD')
-
-local function disableRestrictedAddons()
-    for _, addonName in pairs(restrictedAddons) do
-        if C_AddOns.GetAddOnEnableState(addonName) ~= 0 then
-            StaticPopupDialogs["DETAILS_RESTRICTED_ADDON"] = {
-                text = "You are running " .. addonName .. " which is incompatible with Details! Damage Meter. It must be disabled for Details to function properly.",
-                button1 = "Disable " .. addonName,
-                button2 = "Disable Details!",
-                OnAccept = function()
-                    C_AddOns.DisableAddOn(addonName)
-                    ReloadUI()
-                 end,
-                OnCancel = function()
-                    C_AddOns.DisableAddOn('Details')
-                    ReloadUI()
-                end,
-                timeout = 0,
-                whileDead = true,
-            }
-            StaticPopup_Show("DETAILS_RESTRICTED_ADDON")
-            break
-        end
-    end
-end
-
-restrictedAddonFrame:SetScript('OnEvent', function() C_Timer.After(2, disableRestrictedAddons) end )
 
 C_Timer.After(5, function()
 --TutorialPointerFrame_1:HookScript("OnShow", function(self) self:Hide() end) --remove on v11 launch

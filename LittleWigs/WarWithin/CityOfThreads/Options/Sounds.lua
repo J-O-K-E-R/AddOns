@@ -8,13 +8,12 @@ BigWigs:AddSounds("Orator Krix'vizk", {
 })
 
 BigWigs:AddSounds("Fangs of the Queen", {
-	[439522] = "info",
 	[439621] = "alarm",
 	[439692] = "alarm",
-	[440238] = "alert",
+	[440218] = "alert",
 	[440468] = "alarm",
-	[441286] = "alert",
 	[441298] = "info",
+	[441384] = "long",
 	[458741] = "warning",
 })
 
@@ -35,6 +34,7 @@ BigWigs:AddSounds("Izo, the Grand Splicer", {
 
 BigWigs:AddSounds("City of Threads Trash", {
 	[434137] = "long",
+	[441795] = "info",
 	[443430] = "alert",
 	[443437] = "alarm",
 	[443500] = "alarm",
