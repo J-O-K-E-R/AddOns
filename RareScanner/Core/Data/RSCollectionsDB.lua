@@ -85,7 +85,7 @@ local CLASS_MISSING_APPEARNACES = {
 		[Enum.ItemClass.Armor] = { Enum.ItemArmorSubclass.Leather }
 	};
 	[11] = { --Druid
-		[Enum.ItemClass.Weapon] = { Enum.ItemWeaponSubclass.Axe2H, Enum.ItemWeaponSubclass.Mace1H, Enum.ItemWeaponSubclass.Mace2H, Enum.ItemWeaponSubclass.Polearm, Enum.ItemWeaponSubclass.Staff, Enum.ItemWeaponSubclass.Bearclaw, Enum.ItemWeaponSubclass.Catclaw, Enum.ItemWeaponSubclass.Unarmed, Enum.ItemWeaponSubclass.Generic, Enum.ItemWeaponSubclass.Dagger, Enum.ItemWeaponSubclass.Fishingpole },
+		[Enum.ItemClass.Weapon] = { Enum.ItemWeaponSubclass.Mace1H, Enum.ItemWeaponSubclass.Mace2H, Enum.ItemWeaponSubclass.Polearm, Enum.ItemWeaponSubclass.Staff, Enum.ItemWeaponSubclass.Bearclaw, Enum.ItemWeaponSubclass.Catclaw, Enum.ItemWeaponSubclass.Unarmed, Enum.ItemWeaponSubclass.Generic, Enum.ItemWeaponSubclass.Dagger, Enum.ItemWeaponSubclass.Fishingpole },
 		[Enum.ItemClass.Armor] = { Enum.ItemArmorSubclass.Leather }
 	};
 	[12] = { --Demon Hunter
@@ -759,20 +759,31 @@ local function UpdateNotCollectedAppearanceItemIDs(routines, routineTextOutput)
 							for classID = 1, GetNumClasses() do
 								local sources = C_TransmogCollection.GetValidAppearanceSourcesForClass(visualsList[j].visualID, classID, context.arguments[1], context.arguments[2]);
 								if (sources) then
+									-- If any of the sources collected then ignore
+									local collected = false
 									for k = 1, #sources do
-										if (sources[k].sourceType == 1 or sources[k].sourceType == 4) then --Boss Drop/World drop
-											if (not previousVisualID or previousVisualID ~= sources[k].visualID) then
-												context.counter = context.counter + 1
-												AddAppearanceItemID(sources[k].visualID, sources[k].itemID)
-												previousVisualID = sources[k].visualID
-											end
-											
-											AddAppearanceClassItemID(classID, sources[k].itemID)
+										if (sources[k].isCollected) then
+											collected = true
+											break
+										end
+									end
 									
-											if (not private.dbglobal.not_colleted_appearances_item_ids[sources[k].itemID]) then
-												private.dbglobal.not_colleted_appearances_item_ids[sources[k].itemID] = true
-											end
-										end	
+									if (not collected) then
+										for k = 1, #sources do
+											if (sources[k].sourceType == 1 or sources[k].sourceType == 4) then --Boss Drop/World drop
+												if (not previousVisualID or previousVisualID ~= sources[k].visualID) then
+													context.counter = context.counter + 1
+													AddAppearanceItemID(sources[k].visualID, sources[k].itemID)
+													previousVisualID = sources[k].visualID
+												end
+												
+												AddAppearanceClassItemID(classID, sources[k].itemID)
+										
+												if (not private.dbglobal.not_colleted_appearances_item_ids[sources[k].itemID]) then
+													private.dbglobal.not_colleted_appearances_item_ids[sources[k].itemID] = true
+												end
+											end	
+										end
 									end
 								end
 							end

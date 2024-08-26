@@ -5647,6 +5647,7 @@ local FlightPathMapIDs = {
 	2149,	-- Ohn'ahran Plains [The Nokhud Offensive] (has FPs inside)
 	2175,	-- Zaralek Cavern
 	2241,	-- Emerald Dream
+	2276,	-- Khaz Algar
 };
 local C_TaxiMap_GetTaxiNodesForMap, C_TaxiMap_GetAllTaxiNodes, GetTaxiMapID
 	= C_TaxiMap.GetTaxiNodesForMap, C_TaxiMap.GetAllTaxiNodes, GetTaxiMapID;
@@ -13652,12 +13653,13 @@ app.LoadDebugger = function()
 
 			-- Setup Event Handlers and register for events
 			self:SetScript("OnEvent", function(self, e, ...)
-				app.PrintDebug(e, ...);
+				-- app.PrintDebug(e, ...);
 				if e == "ZONE_CHANGED_NEW_AREA" or e == "NEW_WMO_CHUNK" then
 					AddObject();
 				elseif e == "MERCHANT_SHOW" or e == "MERCHANT_UPDATE" then
-					MerchantFrame_SetFilter(MerchantFrame, 1);
-					DelayedCallback(AddMerchant, 1, UnitGUID("npc"));
+					SetMerchantFilter(LE_LOOT_FILTER_ALL)
+					MerchantFrame_Update()
+					DelayedCallback(AddMerchant, 0.5, UnitGUID("npc"));
 				elseif e == "TRADE_SKILL_LIST_UPDATE" then
 					local tradeSkillID = app.GetTradeSkillLine();
 					local currentCategoryID, categories = -1, {};

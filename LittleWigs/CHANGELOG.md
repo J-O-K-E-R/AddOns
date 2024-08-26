@@ -1,12 +1,9 @@
 # LittleWigs
 
-## [v11.0.15](https://github.com/BigWigsMods/LittleWigs/tree/v11.0.15) (2024-08-22)
-[Full Changelog](https://github.com/BigWigsMods/LittleWigs/compare/v11.0.14...v11.0.15) [Previous Releases](https://github.com/BigWigsMods/LittleWigs/releases)
+## [v11.0.18](https://github.com/BigWigsMods/LittleWigs/tree/v11.0.18) (2024-08-25)
+[Full Changelog](https://github.com/BigWigsMods/LittleWigs/compare/v11.0.17...v11.0.18) [Previous Releases](https://github.com/BigWigsMods/LittleWigs/releases)
 
-- Revert "Don't bundle the locale file used by the parser after it's done"  
-- WarWithin/TheDawnbreaker/Rashanan: Update initial stage 2 timers  
-- WarWithin/TheDawnbreaker/Rashanan: Stage 1 timer improvements, Expel Webs timer rework  
-- WarWithin/TheDawnbreaker/Rashanan: Rework all timers, ability counts  
-- WarWithin/TheDawnbreaker/Anubikkaj: Timer updates  
-- Shadowlands/MistsOfTirnaScithe/Tredova: Consumption duration update  
-- Don't bundle the locale file used by the parser after it's done  
+- Cataclysm/GrimBatol/Erudax: Depth's Grasp  
+- Cataclysm/GrimBatol/Drahga: Shadowflame Bolt  
+- WarWithin/TheDawnbreaker/Shadowcrown: Shadow Bolt  
+- WarWithin/TheStonevault/MasterMachinists: Timer updates, ability counts  

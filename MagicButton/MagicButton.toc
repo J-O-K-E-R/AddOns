@@ -1,0 +1,12 @@
+## Interface: 100002
+## Title: Magic Auctions Button
+## Version: 6.1
+## Author: plusmouse
+## Notes: Buy, Post and Cancel with a keyboard shortcut
+
+Locales\Manifest.xml
+Source\Locales.lua
+Source\MagicButton.lua
+Source\Binding.lua
+Source\Mixins\CommodityBuy.lua
+Source\Frames\CommodityBuy.xml

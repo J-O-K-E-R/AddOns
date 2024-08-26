@@ -189,7 +189,7 @@ function mod:IsBulwarkOnPlatform()
 end
 
 do
-	local normalAnchor, emphasizeAnchor, colors = BigWigsAnchor, BigWigsEmphasizeAnchor, nil
+	local normalAnchor, emphasizeAnchor, colors
 
 	local bulwarkAbilities = {
 		[282939] = true, -- Flames of Punishment
@@ -250,21 +250,30 @@ do
 
 	function mod:CheckBossPlatforms()
 		if not self:GetOption("custom_on_fade_out_bars") then return end
-		if not normalAnchor then return end
-		for k in next, normalAnchor.bars do
-			if k:Get("bigwigs:module") == self and k:Get("bigwigs:option") then
-				handleBarColor(self, k)
+		if normalAnchor then
+			for k in next, normalAnchor.bars do
+				if k:Get("bigwigs:module") == self and k:Get("bigwigs:option") then
+					handleBarColor(self, k)
+				end
 			end
 		end
-		for k in next, emphasizeAnchor.bars do
-			if k:Get("bigwigs:module") == self and k:Get("bigwigs:option") then
-				handleBarColor(self, k)
+		if emphasizeAnchor then
+			for k in next, emphasizeAnchor.bars do
+				if k:Get("bigwigs:module") == self and k:Get("bigwigs:option") then
+					handleBarColor(self, k)
+				end
 			end
 		end
 	end
 
 	function mod:BarCreated(_, _, bar, _, key, text)
 		if not self:GetOption("custom_on_fade_out_bars") then return end
+		local anchor = bar:Get("bigwigs:anchor")
+		if anchor.position == "normalPosition" then
+			normalAnchor = anchor
+		else
+			emphasizeAnchor = anchor
+		end
 		if bulwarkAbilities[key] or text:match(bulwarkPattern) then
 			if not self:IsBulwarkOnPlatform() then
 				fadeOutBar(self, bar)
@@ -278,6 +287,12 @@ do
 
 	function mod:BarEmphasized(_, _, bar)
 		if not self:GetOption("custom_on_fade_out_bars") then return end
+		local anchor = bar:Get("bigwigs:anchor")
+		if anchor.position == "normalPosition" then
+			normalAnchor = anchor
+		else
+			emphasizeAnchor = anchor
+		end
 		if bar:Get("bigwigs:module") == self and bar:Get("bigwigs:option") then
 			handleBarColor(self, bar)
 		end
@@ -452,7 +467,7 @@ do
 		playerList[#playerList+1] = args.destName
 		if self:Me(args.destGUID) then
 			self:PlaySound(283507, "warning")
-			self:Say(283507)
+			self:Say(283507, nil, nil, "Volatile Charge")
 			self:SayCountdown(283507, 8)
 		end
 		if #playerList == 1 and self:GetOption("custom_on_hand_timers") then
@@ -559,7 +574,7 @@ function mod:CritBuffApplied(args)
 
 	self:TargetMessage(284645, "green", args.destName, args.spellName, args.spellId)
 	if self:Me(args.destGUID) then
-		self:Say(284645, args.spellId)
+		self:Say(284645, args.spellId, nil, "Grossly Incandescent!")
 	end
 	self:UpdateTopazInfoBox()
 end
@@ -608,7 +623,7 @@ do
 		end
 		if self:Me(args.destGUID) then
 			self:PlaySound(args.spellId, "warning")
-			self:Say(args.spellId)
+			self:Say(args.spellId, nil, nil, "Liquid Gold")
 			self:SayCountdown(args.spellId, 12)
 		end
 		self:TargetsMessageOld(args.spellId, "yellow", playerList)
@@ -649,7 +664,7 @@ function mod:CoinShowerApplied(args)
 	self:TargetBar(args.spellId, 10, args.destName)
 	self:CDBar(args.spellId, 30.5)
 	if self:Me(args.destGUID) then
-		self:Yell(args.spellId)
+		self:Yell(args.spellId, nil, nil, "Coin Shower")
 		self:YellCountdown(args.spellId, 10)
 	end
 end

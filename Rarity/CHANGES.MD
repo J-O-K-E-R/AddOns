@@ -1,10 +1,7 @@
-**r733:**
+**r735:**
+
+Additions:
+> Added a number of TWW collectibles to the database (the drop rates are placeholders)
 
 Changes:
-> Setting the auto-hide delay to zero will now keep the main window open until manually closed (in click activation mode only)
-
-Fixes:
-> Fixed errors due to WOW API changes introduced in patch 11.0.2
-
-Contributors (in alphabetical order):
-> DakJaniels
+> Replaced the Shadowlands category icon with a brighter version that should be easier to see

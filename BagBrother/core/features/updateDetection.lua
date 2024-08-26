@@ -72,7 +72,7 @@ function Detection:Popup(text, who, version)
             text = format(text, ADDON, who, version), button1 = OKAY,
             icon = format('Interface/Addons/BagBrother/art/%s-big', ADDON)
         }
-    end, function() end)
+    end, nop)
 end
 
 function Detection:RegisterUpdateEvent(event, condition)

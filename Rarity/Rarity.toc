@@ -1,8 +1,8 @@
 ## Author: Allara
-## Interface: 100207
-## X-Min-Interface: 100207
+## Interface: 110002
+## X-Min-Interface: 110002
 ## Title: Rarity
-## Version: 1.0 (r733-release)
+## Version: 1.0 (r735-release)
 ## X-Curse-Project-ID: 30801
 
 ## Notes: Tracks rare drops, including companions and mounts
@@ -71,6 +71,7 @@ DB\Mounts\Legion.lua
 DB\Mounts\BattleForAzeroth.lua
 DB\Mounts\Shadowlands.lua
 DB\Mounts\Dragonflight.lua
+DB\Mounts\TheWarWithin.lua
 
 ## Pets
 DB\Pets\HolidayEvents.lua
@@ -84,6 +85,7 @@ DB\Pets\Legion.lua
 DB\Pets\BattleForAzeroth.lua
 DB\Pets\Shadowlands.lua
 DB\Pets\Dragonflight.lua
+DB\Pets\TheWarWithin.lua
 
 ## Toys (and other items, for now...)
 DB\Toys\HolidayEvents.lua
@@ -97,6 +99,7 @@ DB\Toys\Legion.lua
 DB\Toys\BattleForAzeroth.lua
 DB\Toys\Shadowlands.lua
 DB\Toys\Dragonflight.lua
+DB\Toys\TheWarWithin.lua
 
 # Utility/Helpers
 Utils\DebugCache.lua

@@ -1,39 +1,23 @@
 ------------------------------------------------------------------------
-r102 | nebula169 | 2024-06-24 06:41:52 +0000 (Mon, 24 Jun 2024) | 1 line
+r106 | nebula169 | 2024-08-23 12:53:29 +0000 (Fri, 23 Aug 2024) | 1 line
 Changed paths:
+   M /trunk/LibGroupInSpecT-1.1.lua
+
+Update talent string decoding for v2
+------------------------------------------------------------------------
+r105 | nebula169 | 2024-08-20 06:44:07 +0000 (Tue, 20 Aug 2024) | 2 lines
+Changed paths:
+   M /trunk/LibGroupInSpecT-1.1.lua
+
+- Handle heroic talents
+- Remove tier/column
+------------------------------------------------------------------------
+r104 | nebula169 | 2024-07-25 01:08:28 +0000 (Thu, 25 Jul 2024) | 1 line
+Changed paths:
+   M /trunk/LibGroupInSpecT-1.1.lua
    M /trunk/LibGroupInSpecT-1.1.toc
+   D /trunk/embeds.xml
 
-Update TOC for 10.2.7
-------------------------------------------------------------------------
-r101 | nebula169 | 2024-06-24 06:37:38 +0000 (Mon, 24 Jun 2024) | 2 lines
-Changed paths:
-   M /trunk/LibGroupInSpecT-1.1.lua
-
-- Use UnitTokenFromGUID for :GuidToUnit
-- Use C_Traits.GenerateImportString for talent string
-------------------------------------------------------------------------
-r100 | nebula169 | 2023-11-12 23:08:53 +0000 (Sun, 12 Nov 2023) | 1 line
-Changed paths:
-   M /trunk/LibGroupInSpecT-1.1.lua
-
-Add check for node.activeEntry in talent syncs
-------------------------------------------------------------------------
-r99 | nebula169 | 2023-11-10 03:44:40 +0000 (Fri, 10 Nov 2023) | 1 line
-Changed paths:
-   M /trunk/LibGroupInSpecT-1.1.lua
-
-Update talent handling for 10.0
-------------------------------------------------------------------------
-r98 | nebula169 | 2020-10-18 17:03:06 +0000 (Sun, 18 Oct 2020) | 1 line
-Changed paths:
-   M /trunk/LibGroupInSpecT-1.1.toc
-
-Update the TOC for 9.0.1
-------------------------------------------------------------------------
-r97 | nebula169 | 2020-10-18 17:02:46 +0000 (Sun, 18 Oct 2020) | 1 line
-Changed paths:
-   M /trunk/LibGroupInSpecT-1.1.lua
-
-Update number of pvp talent slots
+Update TOC for 11.0
 ------------------------------------------------------------------------
 

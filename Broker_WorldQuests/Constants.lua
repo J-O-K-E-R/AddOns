@@ -1,12 +1,12 @@
 local _, addon = ...
 local CONSTANTS = {}
 
-
 CONSTANTS.EXPANSIONS = {
 	LEGION = "LEGION",
 	BFA = "BFA",
 	SHADOWLANDS = "SHADOWLANDS",
 	DRAGONFLIGHT = "DRAGONFLIGHT",
+	THEWARWITHIN = "THEWARWITHIN"
 }
 CONSTANTS.FACTIONS = {
 	NEUTRAL = 0,
@@ -75,6 +75,8 @@ CONSTANTS.REWARD_TYPES = {
 	WYRMS_AWAKENED_CREST = 29,
 	ASPECTS_AWAKENED_CREST = 30,
 	MYSTERIOUS_FRAGMENT = 31,
+	RESONANCE_CRYSTALS = 32,
+	THE_ASSEMBLY_OF_THE_DEEPS = 33,
 }
 
 CONSTANTS.QUEST_TYPES = {
@@ -121,6 +123,10 @@ CONSTANTS.CURRENCIES_AFFECTED_BY_WARMODE = {
 	[1560] = true, -- war resources (bfa)
 	[1553] = true, -- azerite (bfa)
 	[2123] = true, -- Bloody Tokens (dragonflight)
+}
+
+CONSTANTS.THEWARWITHIN_REPUTATION_CURRENCY_IDS = {
+	[2902] = true, -- The Assembly of the Deeps
 }
 
 CONSTANTS.DRAGONFLIGHT_REPUTATION_CURRENCY_IDS = {
@@ -181,6 +187,7 @@ CONSTANTS.FAMILY_FAMILIAR_QUEST_IDS = { -- WQ pet battle achievement
 
 CONSTANTS.ACHIEVEMENT_IDS = {
 	PET_BATTLE_WQ = {
+		[CONSTANTS.EXPANSIONS.THEWARWITHIN] = 40153,
 		[CONSTANTS.EXPANSIONS.DRAGONFLIGHT] = 16464,
 		[CONSTANTS.EXPANSIONS.SHADOWLANDS] = 14625,
 		[CONSTANTS.EXPANSIONS.BFA] = 12936,
@@ -366,6 +373,9 @@ CONSTANTS.PARAGON_FACTIONS = {
 		[2510] = "ui_majorfaction_valdrakken", -- Valdrakken Accord
 		[2564] = "ui_majorfaction_niffen", -- Loamm Niffen
 		[2574] = "ui_majorfaction_denizens", -- Dream Wardens
+	},
+	thewarwithin = {			-- TODO
+		order = {},
 	},
 }
 

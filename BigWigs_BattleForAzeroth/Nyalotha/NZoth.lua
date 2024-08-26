@@ -92,7 +92,7 @@ function mod:GetOptions()
 		"altpower",
 		{313609, "SAY_COUNTDOWN"}, -- Gift of N'zoth
 		-- Stage 1
-		{316711, "NAMEPLATEBAR"}, -- Mindwrack
+		{316711, "NAMEPLATE"}, -- Mindwrack
 		310184, -- Creeping Anquish
 		309991, -- Anguish
 		313184, -- Synaptic Shock
@@ -114,7 +114,7 @@ function mod:GetOptions()
 		{317102, "CASTBAR"}, -- Evoke Anguish
 		-21491, -- Thought Harvester
 		harvesterMarker,
-		{317066, "NAMEPLATEBAR"}, -- Harvest Thoughts
+		{317066, "NAMEPLATE"}, -- Harvest Thoughts
 		318091, -- Summon Gateway
 		318196, -- Event Horizon
 		{316970, "CASTBAR"}, -- Cleansing Protocol
@@ -270,9 +270,9 @@ do
 				self:Bar(310184, 12.1, CL.count:format(self:SpellName(310184), creepingAnguishCount)) -- Creeping Anquish
 			elseif mobId == 162933 and not mobCollector[guid] then -- Thought Harvester
 				mobCollector[guid] = true
-				self:NameplateBar(317066, 8.5, guid) -- Harvest Thoughts
+				self:Nameplate(317066, 8.5, guid) -- Harvest Thoughts
 				if self:Tank() then
-					self:NameplateBar(316711, 3, guid) -- Mindwrack
+					self:Nameplate(316711, 3, guid) -- Mindwrack
 				end
 				local t = GetTime()
 				if t-prev > 2 then -- 2 Spawn at the same in Mythic
@@ -341,7 +341,7 @@ do
 				prev = t
 				self:Message(args.spellId, "red")
 				self:PlaySound(args.spellId, "alarm")
-				self:NameplateBar(args.spellId, 8.5, args.sourceGUID)
+				self:Nameplate(args.spellId, 8.5, args.sourceGUID)
 			end
 		end
 	end
@@ -517,7 +517,7 @@ do
 		isCasting = false
 		if self:Me(args.destGUID) then
 			isOnMe = true
-			self:Say(315927, args.spellName, true)
+			self:Say(315927, args.spellName, true, "Paranoia")
 			self:PlaySound(315927, "warning")
 			if self:GetOption("custom_on_repeating_paranoia_say") then
 				sayTimer = self:ScheduleRepeatingTimer("Say", 1.5, false, args.spellName, true)
@@ -749,7 +749,7 @@ do
 			self:Message(args.spellId, "orange")
 			self:PlaySound(args.spellId, "alarm")
 		end
-		self:NameplateBar(args.spellId, self:Mythic() and 30 or 23, args.sourceGUID)
+		self:Nameplate(args.spellId, self:Mythic() and 30 or 23, args.sourceGUID)
 	end
 end
 
@@ -813,7 +813,7 @@ do
 	function mod:AnnihilateApplied(args)
 		playerList[#playerList+1] = args.destName
 		if self:Me(args.destGUID) then
-			self:Say(args.spellId)
+			self:Say(args.spellId, nil, nil, "Annihilate")
 			self:SayCountdown(args.spellId, 8)
 			self:PlaySound(args.spellId, "warning")
 		end

@@ -552,8 +552,8 @@ do
 			},
 			testTextButton = {
 				type = "execute",
-				name = "Show Text Test", --L.testNameplateIconBtn,
-				desc = L.testNameplateIconBtn_desc,
+				name = L.testNameplateTextBtn,
+				desc = L.testNameplateTextBtn_desc,
 				func = function()
 					local guid = plugin:UnitGUID("target")
 					if guid and UnitCanAttack("player", "target") then
@@ -576,8 +576,8 @@ do
 			},
 			stopTestButton = {
 				type = "execute",
-				name = L.stopTestNameplateIconBtn,
-				desc = L.stopTestNameplateIconBtn_desc,
+				name = L.stopTestNameplateBtn,
+				desc = L.stopTestNameplateBtn_desc,
 				func = function()
 					plugin:StopModuleNameplates(nil, plugin)
 				end,
@@ -711,6 +711,7 @@ do
 					nameplateIconBorder = {
 						type = "toggle",
 						name = L.showBorder,
+						desc = L.showBorderDesc,
 						order = 17,
 						width = 1,
 					},
@@ -747,6 +748,7 @@ do
 					nameplateIconCooldownTimer = {
 						type = "toggle",
 						name = L.showTimer,
+						desc = L.showTimerDesc,
 						order = 21,
 						width = 1.4,
 					},
@@ -817,18 +819,21 @@ do
 					nameplateIconCooldownSwipe = {
 						type = "toggle",
 						name = L.showCooldownSwipe,
+						desc = L.showCooldownSwipeDesc,
 						order = 31,
 						width = 1,
 					},
 					nameplateIconCooldownEdge =	{
 						type = "toggle",
 						name = L.showCooldownEdge,
+						desc = L.showCooldownEdgeDesc,
 						order = 32,
 						width = 1,
 					},
 					nameplateIconCooldownInverse = {
 						type = "toggle",
 						name = L.inverse,
+						desc = L.inverseSwipeDesc,
 						order = 33,
 						width = 1,
 						disabled = function() return not db.nameplateIconCooldownSwipe end,
