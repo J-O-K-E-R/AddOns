@@ -2,13 +2,14 @@
 local UB = SLE.UIButtons
 local lib = LibStub('LibElv-UIButtons-1.0')
 
---GLOBALS: DBM, VEM, LibStub, Altoholic, AtlasLoot, xCT_Plus, Swatter, SlashCmdList
+--GLOBALS: DBM, LibStub, Altoholic, AtlasLoot, xCT_Plus, Swatter, SlashCmdList
 local _G = _G
 local C_AddOns_IsAddOnLoaded = C_AddOns.IsAddOnLoaded
 local ADDONS, CUSTOM = ADDONS, CUSTOM
 local RandomRoll = RandomRoll
 local SendChatMessage = SendChatMessage
 local ReloadUI = ReloadUI
+local ShowUIPanel, HideUIPanel = ShowUIPanel, HideUIPanel
 
 local function CustomRollCall()
 	local min, max = tonumber(E.db.sle.uibuttons.customroll.min), tonumber(E.db.sle.uibuttons.customroll.max)
@@ -20,18 +21,19 @@ local function CustomRollCall()
 end
 
 function UB:ConfigSetup(menu)
-	menu:CreateDropdownButton('Config', 'Elv', '|cff1784d1ElvUI|r', L["ElvUI Config"], L["Click to toggle config window"],  function() if InCombatLockdown() then return end; E:ToggleOptions() end, nil, true)
-	menu:CreateDropdownButton('Config', 'SLE', '|cff9482c9S&L|r', L["S&L Config"], L["Click to toggle Shadow & Light config group"],  function() if InCombatLockdown() then return end; E:ToggleOptions(); E.Libs['AceConfigDialog']:SelectGroup('ElvUI', 'sle') end, nil, true)
+	menu:CreateDropdownButton('Config', 'Elv', '|cff1784d1ElvUI|r', L["ElvUI Config"], L["Click to toggle config window"],  function() if InCombatLockdown() then return end E:ToggleOptions() end, nil, true)
+	menu:CreateDropdownButton('Config', 'SLE', '|cff9482c9S&L|r', L["S&L Config"], L["Click to toggle Shadow & Light config group"],  function() if InCombatLockdown() then return end E:ToggleOptions() E.Libs['AceConfigDialog']:SelectGroup('ElvUI', 'sle') end, nil, true)
 	menu:CreateSeparator('Config', 'First', 4, 2)
 	menu:CreateDropdownButton( 'Config', 'Reload', '/reloadui', L["Reload UI"], L["Click to reload your interface"],  function() ReloadUI() end, nil, true)
-	menu:CreateDropdownButton('Config', 'MoveUI', '/moveui', L["Move UI"], L["Unlock various elements of the UI to be repositioned."],  function() if InCombatLockdown() then return end; E:ToggleMoveMode() end, nil, true)
+	menu:CreateDropdownButton('Config', 'MoveUI', '/moveui', L["Move UI"], L["Unlock various elements of the UI to be repositioned."],  function() if InCombatLockdown() then return end E:ToggleMoveMode() end, nil, true)
 end
 
 function UB:AddonSetup(menu)
-	menu:CreateDropdownButton('Addon', 'Manager', ADDONS, L["AddOn Manager"], L["Click to toggle the AddOn Manager frame."],  function() _G["GameMenuButtonAddons"]:Click() end, nil, true)
+	menu:CreateDropdownButton('Addon', 'Manager', ADDONS, L["AddOn Manager"], L["Click to toggle the AddOn Manager frame."],  function()
+		if not _G.AddonList:IsShown() then ShowUIPanel(_G.AddonList) else HideUIPanel(_G.AddonList) end
+	end, nil, true)
 
 	menu:CreateDropdownButton('Addon', 'DBM', L["Boss Mod"], L["Boss Mod"], L["Click to toggle the Configuration/Option Window from the Bossmod you have enabled."], function() DBM:LoadGUI() end, 'DBM-Core')
-	menu:CreateDropdownButton('Addon', 'VEM', L["Boss Mod"], L["Boss Mod"], L["Click to toggle the Configuration/Option Window from the Bossmod you have enabled."], function() VEM:LoadGUI() end, 'VEM-Core')
 	menu:CreateDropdownButton('Addon', 'BigWigs', L["Boss Mod"], L["Boss Mod"], L["Click to toggle the Configuration/Option Window from the Bossmod you have enabled."], function() LibStub('LibDataBroker-1.1'):GetDataObjectByName('BigWigs'):OnClick('RightButton') end, 'BigWigs')
 	menu:CreateSeparator('Addon', 'First', 4, 2)
 	menu:CreateDropdownButton('Addon', 'Altoholic', 'Altoholic', nil, nil, function() AltoholicFrame:ToggleUI() end, 'Altoholic')
@@ -63,17 +65,15 @@ function UB:SetupBar(menu)
 	if E.private.sle.uibuttons.style == 'classic' then
 		menu:CreateCoreButton('Config', 'C', function() E:ToggleOptions() end)
 		menu:CreateCoreButton('Reload', 'R', function() ReloadUI() end)
-		menu:CreateCoreButton('MoveUI', 'M', function(self) E:ToggleMoveMode() end)
-		menu:CreateCoreButton('Boss', 'B', function(self)
+		menu:CreateCoreButton('MoveUI', 'M', function() E:ToggleMoveMode() end)
+		menu:CreateCoreButton('Boss', 'B', function()
 			if C_AddOns_IsAddOnLoaded('DBM-Core') then
 				DBM:LoadGUI()
-			elseif C_AddOns_IsAddOnLoaded('VEM-Core') then
-				VEM:LoadGUI()
 			elseif C_AddOns_IsAddOnLoaded('BigWigs') then
 				LibStub('LibDataBroker-1.1'):GetDataObjectByName('BigWigs'):OnClick('RightButton')
 			end
 		end)
-		menu:CreateCoreButton('Addon', 'A', function(self) _G['GameMenuButtonAddons']:Click() end)
+		menu:CreateCoreButton('Addon', 'A', function() if not E:AlertCombat() and not AddonList:IsShown() then ShowUIPanel(AddonList) else HideUIPanel(AddonList) end end)
 	else
 		menu:CreateCoreButton('Config', 'C')
 		UB:ConfigSetup(menu)

@@ -14,6 +14,7 @@ local AL = LibStub("AceLocale-3.0"):GetLocale("RareScanner");
 local RSNpcDB = private.ImportLib("RareScannerNpcDB")
 local RSContainerDB = private.ImportLib("RareScannerContainerDB")
 local RSEventDB = private.ImportLib("RareScannerEventDB")
+local RSMapDB = private.ImportLib("RareScannerMapDB")
 
 -- RareScanner internal libraries
 local RSConstants = private.ImportLib("RareScannerConstants")
@@ -387,6 +388,50 @@ function RSConfigDB.IsNpcFiltered(npcID)
 		return true
 	end
 	
+	-- If weekly filter
+	local npcInfo = RSNpcDB.GetInternalNpcInfo(npcID)
+	if (npcInfo and RSConfigDB.IsWeeklyRepNpcFilterEnabled()) then
+		if (npcInfo.warbandQuestID) then
+			for _, questID in ipairs(npcInfo.warbandQuestID) do
+				if (C_QuestLog.IsQuestFlaggedCompletedOnAccount(questID)) then
+					return true
+				end
+			end
+		-- Also filter one time kill rare NPCs at Khaz Algar or rare NPCs without quest (monozone)
+		elseif (RSNpcDB.IsInternalNpcMonoZone(npcID) and RSMapDB.GetContinentOfMap(npcInfo.zoneID) == RSConstants.KHAZ_ALGAR and not RSUtils.Contains(RSConstants.KHAZ_ALGAR_NPCS_MOUNTS, npcID)) then
+			if (npcInfo.questID) then
+				for _, questID in ipairs(npcInfo.questID) do
+					if (C_QuestLog.IsQuestFlaggedCompletedOnAccount(questID)) then
+						return true
+					end
+				end
+			else
+				return true
+			end
+		-- Also filter one time kill rare NPCs at Khaz Algar or rare NPCs without quest (multizone)
+		elseif (RSNpcDB.IsInternalNpcMultiZone(npcID) and not RSUtils.Contains(RSConstants.KHAZ_ALGAR_NPCS_MOUNTS, npcID)) then
+			local khazAlgar = false
+			for mapID, _ in pairs (npcInfo.zoneID) do
+				if (RSMapDB.GetContinentOfMap(mapID) == RSConstants.KHAZ_ALGAR) then
+					khazAlgar = true
+					break
+				end
+			end
+			
+			if (khazAlgar) then
+				if (npcInfo.questID) then
+					for _, questID in ipairs(npcInfo.questID) do
+						if (C_QuestLog.IsQuestFlaggedCompletedOnAccount(questID)) then
+							return true
+						end
+					end
+				else
+					return true
+				end
+			end
+		end
+	end
+	
 	return false
 end
 
@@ -469,6 +514,14 @@ function RSConfigDB.FilterAllNpcs(routines, routineTextOutput)
 	table.insert(routines, filterAllNpcsRoutine)
 end
 
+function RSConfigDB.IsWeeklyRepNpcFilterEnabled()
+	return private.db.rareFilters.filterWeeklyRep
+end
+
+function RSConfigDB.SetWeeklyRepNpcFilterEnabled(value)
+	private.db.rareFilters.filterWeeklyRep = value
+end
+
 function RSConfigDB.IsShowingFriendlyNpcs()
 	return private.db.map.displayFriendlyNpcIcons
 end
@@ -483,6 +536,14 @@ end
 
 function RSConfigDB.SetShowingAlreadyKilledNpcs(value)
 	private.db.map.displayAlreadyKilledNpcIcons = value
+end
+
+function RSConfigDB.IsShowingWeeklyRepFilterEnabled()
+	return private.db.map.displayWeeklyRepNpcIcons
+end
+
+function RSConfigDB.SetShowingWeeklyRepFilterEnabled(value)
+	private.db.map.displayWeeklyRepNpcIcons = value
 end
 
 function RSConfigDB.IsShowingNotDiscoveredNpcs()

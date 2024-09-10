@@ -243,12 +243,12 @@ local specInstructionalRemapTable = {
 	["reflect"] = "target",
 }
 
-local function setText(announceType, spellId, stacks, customName)
+local function setText(announceType, spellId, stacks, customName, alternateSpellId)
 	local text, spellName
 	if customName then
 		spellName = customName
 	else
-		spellName = DBM:ParseSpellName(spellId, announceType) or CL.UNKNOWN
+		spellName = DBM:ParseSpellName(alternateSpellId or spellId, announceType) or CL.UNKNOWN
 	end
 	if announceType == "prewarn" then
 		if type(stacks) == "string" then
@@ -268,6 +268,10 @@ local function setText(announceType, spellId, stacks, customName)
 		else
 			text = L.AUTO_SPEC_WARN_TEXTS[announceType]:format(spellName)
 		end
+	end
+	--Automatically register alternate spellnames when detecting their use here
+	if spellId and (customName or alternateSpellId) then
+		DBM:RegisterAltSpellName(spellId, customName or spellName)
 	end
 	return text, spellName
 end
@@ -759,7 +763,7 @@ local function newSpecialWarning(self, announceType, spellId, stacks, optionDefa
 		end
 		optionName = nil
 	end
-	local text, spellName = setText(announceType, alternateSpellId or spellId, stacks)
+	local text, spellName = setText(announceType, spellId, stacks, nil, alternateSpellId)
 	local icon = DBM:ParseSpellIcon(spellId)
 	---@class SpecialWarning
 	local obj = setmetatable( -- todo: fix duplicate code
@@ -1059,30 +1063,35 @@ function bossModPrototype:NewSpecialWarningSwitch(spellId, optionDefault, ...)
 	return newSpecialWarning(self, "switch", spellId, nil, optionDefault, ...)
 end
 
+---Switch object that has string for count
 ---@overload fun(self: DBMMod, spellId: number|string, optionDefault: SpecFlags|boolean?, optionName: number|string|boolean?, optionVersion: number?, runSound: number|boolean?, hasVoice: number?, difficulty: number?): SpecAnnounce1num
 function bossModPrototype:NewSpecialWarningSwitchCount(spellId, optionDefault, ...)
 	---@type SpecAnnounce1num
 	return newSpecialWarning(self, "switchcount", spellId, nil, optionDefault, ...)
 end
 
+---Switch object that has string for extra info (like target)
 ---@overload fun(self: DBMMod, spellId: number|string, optionDefault: SpecFlags|boolean?, optionName: number|string|boolean?, optionVersion: number?, runSound: number|boolean?, hasVoice: number?, difficulty: number?): SpecAnnounce1str
 function bossModPrototype:NewSpecialWarningSwitchCustom(spellId, optionDefault, ...)
 	---@type SpecAnnounce1str
 	return newSpecialWarning(self, "switchcustom", spellId, nil, optionDefault, ...)
 end
 
+---Generic alert for incoming adds without context
 ---@overload fun(self: DBMMod, spellId: number|string, optionDefault: SpecFlags|boolean?, optionName: number|string|boolean?, optionVersion: number?, runSound: number|boolean?, hasVoice: number?, difficulty: number?): SpecAnnounce0
 function bossModPrototype:NewSpecialWarningAdds(spellId, optionDefault, ...)
 	---@type SpecAnnounce0
 	return newSpecialWarning(self, "adds", spellId, nil, optionDefault, ...)
 end
 
+---Generic alert for incoming adds without context, but with count
 ---@overload fun(self: DBMMod, spellId: number|string, optionDefault: SpecFlags|boolean?, optionName: number|string|boolean?, optionVersion: number?, runSound: number|boolean?, hasVoice: number?, difficulty: number?): SpecAnnounce1num
 function bossModPrototype:NewSpecialWarningAddsCount(spellId, optionDefault, ...)
 	---@type SpecAnnounce1num
 	return newSpecialWarning(self, "addscount", spellId, nil, optionDefault, ...)
 end
 
+---Generic alert for incoming adds, but with custom text
 ---@overload fun(self: DBMMod, spellId: number|string, optionDefault: SpecFlags|boolean?, optionName: number|string|boolean?, optionVersion: number?, runSound: number|boolean?, hasVoice: number?, difficulty: number?): SpecAnnounce1str
 function bossModPrototype:NewSpecialWarningAddsCustom(spellId, optionDefault, ...)
 	---@type SpecAnnounce1str

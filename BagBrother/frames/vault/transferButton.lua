@@ -6,7 +6,8 @@
 local MODULE =  ...
 local ADDON, Addon = MODULE:match('[^_]+'), _G[MODULE:match('[^_]+')]
 local L = LibStub('AceLocale-3.0'):GetLocale(ADDON)
-local TransferButton = Addon.MoneyFrame:NewClass('TransferButton', 'Button')
+
+local TransferButton = Addon.PlayerMoney:NewClass('TransferButton', 'Button')
 TransferButton.Type = 'STATIC'
 
 
@@ -25,7 +26,6 @@ function TransferButton:Construct()
 
 	f.Button = b
 	f:SetSize(50, 36)
-	f:SetScript('OnHide', f.OnHide)
 	return f
 end
 

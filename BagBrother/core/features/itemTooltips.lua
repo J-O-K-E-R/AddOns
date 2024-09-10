@@ -156,14 +156,12 @@ function TipCounts:AddOwners(tip, link)
 				end
 			end
 
-			if total > 0 then
-				if #left > 1 then
-					tip:AddLine(format('|n%s: %d', AVAILABLE, total))
-				end
+			if #left > 1 then
+				tip:AddLine(format('|n%s: |cffffffff%d|r', TOTAL, total))
+			end
 
-				for i, who in ipairs(left) do
-					tip:AddDoubleLine(who, right[i])
-				end
+			for i, who in ipairs(left) do
+				tip:AddDoubleLine(who, right[i])
 			end
 
 			tip.__hasCounters = not C_TooltipInfo

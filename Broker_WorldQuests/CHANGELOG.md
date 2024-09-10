@@ -1,3 +1,56 @@
+### 11.0.2.14
+* The locked "Special Assignment" (Capstone) world quests are now included. While
+  locked, what's provided by the addon is primarily informational. Once unlocked, then
+  it becomes like any other world quest. 
+* Dragon Rider Racing type world quests now have the appropriate icon at the front
+  of the row, similar to pet battles, etc.
+* Updated settings options:
+  * Added new option to filter out Dragon Rider Racing type world quests.  It's 
+    under "Filter by type".
+  * Moved the filter setting for "Bloody Tokens" to within the Dragon Isles section.
+  * Added new checkbox option (at the bottom of the list) to enable/disable
+    "Spew Debug Information".  This is intended for use by those working on the 
+    addon and should be unchecked for most users unless requested by a developer.
+
+### 11.0.2.13
+* Added support for world quests that only provide information regarding
+  an XP reward to the addon API. In other words, there are world quests that
+  have a line of blue text when you inspect it, "Awards a one-time Warband
+  reputation bonus", but the addon API provides no other information about it.
+  So, long story short, for these particular quests, the broker window will only
+  show how much XP it provides.
+* Began the process of cleaning up the source to be easier to read, consolidate 
+  local variables together, avoid using local variables that aren't needed, etc.
+  There will be a lot of line changes, but this (and future similar changes) will
+  not affect functionality unless it's described in this file.
+
+### 11.0.2.12
+* Added support for The Weaver, The General, and The Vizier currencies
+
+### 11.0.2.11
+* Fixed shift-clicking rows to set quest tracker
+
+### 11.0.2.10
+* Added support for Council of Dornogal currency
+
+### 11.0.2.9
+* Fixed currencies being incorrect or showing as zero.
+* Increased the max width of the BWQ window.
+* Increased the size of the red highlight arrow (that appears on the map
+  when you click on a WQ in the addon) by 35%.
+
+### 11.0.2.8
+* Added support for Kej currency
+
+### 11.0.2.7
+* Added support for Valorstones currency
+
+### 11.0.2.6
+* Added support for Azj-Kahet
+
+### 11.0.2.5
+* Added support for Hallowfall Arathi currency
+
 ### 11.0.2.4
 * World Quests will now properly unlock for all appropriate characters in The War Within
 

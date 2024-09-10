@@ -3,7 +3,8 @@
 --------------------------------------------------------------------------------
 --            Copyright 2017-2024 Dylan Fortune (Crieve-Sargeras)             --
 --------------------------------------------------------------------------------
-local rawget, ipairs, pairs, tinsert, setmetatable, print = rawget, ipairs, pairs, tinsert, setmetatable, print
+local rawget, ipairs, pairs, tinsert, setmetatable, print,math_sqrt,math_floor
+	= rawget, ipairs, pairs, tinsert, setmetatable, print,math.sqrt,math.floor
 -- This is a hidden frame that intercepts all of the event notifications that we have registered for.
 local appName, app = ...;
 app.EmptyFunction = function() end;
@@ -75,10 +76,12 @@ local function CloneArray(arr)
 	end
 	return clone;
 end
-local function CloneDictionary(data)
-	local clone = {};
+local function CloneDictionary(data, clone)
+	local clone = clone or {};
 	for key,value in pairs(data) do
-		clone[key] = value;
+		if clone[key] == nil then
+			clone[key] = value;
+		end
 	end
 	return clone;
 end
@@ -94,6 +97,14 @@ local function CloneReference(group)
 		clone.g = g;
 	end
 	return setmetatable(clone, { __index = group });
+end
+app.distance = function( x1, y1, x2, y2 )
+	return math_sqrt( (x2-x1)^2 + (y2-y1)^2 )
+end
+-- from http://lua-users.org/wiki/SimpleRound
+app.round = function(num, numDecimalPlaces)
+	local mult = 10^(numDecimalPlaces or 0)
+	return math_floor(num * mult + 0.5) / mult
 end
 -- Returns the best mapID for a group based on that group's coordinate and map data. If the current mapID is included in any of those fields, it will return that. This is used exclusively within tooltips and does not need to reference the source parent.
 local function GetBestMapForGroup(group, currentMapID)

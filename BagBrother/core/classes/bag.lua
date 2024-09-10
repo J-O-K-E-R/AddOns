@@ -78,14 +78,10 @@ function Bag:New(parent, id)
 	b:SetScript('OnShow', b.RegisterEvents)
 	b:SetScript('OnHide', b.UnregisterAll)
 	b:SetScript('OnReceiveDrag', b.OnClick)
-	b:SetScript('OnDragStart', b.OnDrag)
-	b:SetScript('OnEnter', b.OnEnter)
-	b:SetScript('OnLeave', b.OnLeave)
-	b:SetScript('OnClick', b.OnClick)
 	b:SetSize(self.Size, self.Size)
 	b:RegisterForDrag('LeftButton')
 	b:RegisterForClicks('anyUp')
-	b:RegisterEvents()
+	b:Show()
 	return b
 end
 
@@ -154,7 +150,7 @@ function Bag:OnClick(button)
 	self:UpdateToggle()
 end
 
-function Bag:OnDrag()
+function Bag:OnDragStart()
 	if self.slot and not self:IsCached() then
 		PlaySound(SOUNDKIT.IG_BACKPACK_OPEN)
 		PickupBagFromSlot(self.slot)
@@ -186,6 +182,7 @@ function Bag:Toggle()
 	local profile = self:GetProfile()
 	profile.hiddenBags[slot] = not profile.hiddenBags[slot]
 
+	PlaySound(profile.hiddenBags and 856 or 857)
 	self:SendFrameSignal('FILTERS_CHANGED')
 	self:SetFocus(true)
 end
@@ -198,8 +195,6 @@ function Bag:ShowMenu()
 end
 
 function Bag:Purchase()
-	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN)
-
 	if self:GetID() == REAGENTBANK_CONTAINER then
 		Sushi.Popup {
 			text = CONFIRM_BUY_REAGNETBANK_TAB, button1 = YES, button2 = NO,

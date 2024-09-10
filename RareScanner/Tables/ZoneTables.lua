@@ -18,7 +18,7 @@ private.CONTINENT_ZONE_IDS = {
 	[875] = { zonefilter = true, npcfilter = true, id = 11, zones = {862,863,864,1165} }; --Zandalar
 	[1355] = { zonefilter = true, npcfilter = true, id = 12, zones = {1355} }; --Nazjatar
 	[1550] = { zonefilter = true, npcfilter = true, id = 13, zones = {1409,1525,1533,1536,1543,1565,1618,1961,1970,2030} }; --Shadowlands
-	[1978] = { zonefilter = true, npcfilter = true, id = 14, zones = {2112,2118,2022,2023,2024,2025,2085,2107,2133,2151,2199,2200,2239} }; --Dragon Isles
+	[1978] = { zonefilter = true, npcfilter = true, id = 14, zones = {2112,2118,2022,2023,2024,2025,2085,2107,2133,2151,2199,2200,2239,2262} }; --Dragon Isles
 	[2274] = { zonefilter = true, npcfilter = true, id = 15, zones = {2213,2216,2248,2215,2216,2214,2255,2339}, current = { "all" } }; --Khaz Algar
 	[9999] = { zonefilter = true, npcfilter = true, zones = {276,378,628,629,672,734,702,695,747,739} }; --Class Halls
 	[9998] = { zonefilter = true, npcfilter = true, zones = {407}, current = { "all" } }; --Darkmoon Island
@@ -286,8 +286,9 @@ private.PERMANENT_KILLS_ZONE_IDS = {
 	[1618] = { "all" };
 }
 
--- Mechagon construction projects
-private.CONSTRUCTION_PROJECTS = {
+-- Monster emotes
+private.MONSTER_EMOTE = {
+	-- Mechagon construction projects
 	["TR28"] = 153206; --Ol' Big Tusk
 	["TR35"] = 150342; --Earthbreaker Gulroc
 	["CC61"] = 154701; --Gorged Gear-Cruncher
@@ -295,4 +296,9 @@ private.CONSTRUCTION_PROJECTS = {
 	["CC88"] = 152113; --The Kleptoboss
 	["JD41"] = 153200; --Boilburn
 	["JD99"] = 153205; --Gemicide
+	-- Lurker of the deeps
+	["As the earthen machinery turns, something begins to stir in the nearby lake."] = 220285;
+	-- Tka'ktath <Queen's Sweetie>
+	["The shadow of a hungering beast moves over the city."] = 216046;
+	["La sombra de una bestia hambrienta se mueve sobre la ciudad."] = 216046;
 }

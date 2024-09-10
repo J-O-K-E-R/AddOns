@@ -12,9 +12,6 @@ local Item = Addon.Item:NewClass('GuildItem')
 
 function Item:Construct()
 	local b = self:Super(Item):Construct()
-	b:SetScript('OnReceiveDrag', self.OnReceiveDrag)
-	b:SetScript('OnDragStart', self.OnDragStart)
-	b:SetScript('OnClick', self.OnClick)
 	b:RegisterForDrag('LeftButton')
 	b:RegisterForClicks('anyUp')
 	return b
@@ -27,7 +24,7 @@ function Item:OnClick(button)
 	if HandleModifiedItemClick(self.info.hyperlink) then
 		return
 	elseif IsModifiedClick('SPLITSTACK') then
-		if not CursorHasItem() and not self.info.isLocked and self.info.stackCount > 1 then
+		if not CursorHasItem() and self.hasItem and not self.info.isLocked and self.info.stackCount > 1 then
 			if OpenStackSplitFrame then
 				OpenStackSplitFrame(self.info.stackCount, self, 'BOTTOMLEFT', 'TOPLEFT')
 			else

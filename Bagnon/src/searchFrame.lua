@@ -19,13 +19,8 @@ function Search:New(parent)
 	f:Hide()
 
 	f:RegisterSignal('SEARCH_TOGGLED', 'OnToggle')
-	f:SetScript('OnTextChanged', f.OnTextChanged)
-	f:SetScript('OnEscapePressed', f.OnEscape)
-	f:SetScript('OnEnterPressed', f.OnEscape)
-	f:SetScript('OnShow', f.OnShow)
-	f:SetScript('OnHide', f.OnHide)
+	f:SetScript('OnEnterPressed', f.OnEscapePressed)
 	f:SetAutoFocus(false)
-
 	return f
 end
 
@@ -35,6 +30,7 @@ end
 function Search:OnToggle(_, shownFrame)
 	if shownFrame then
 		if not self:IsShown() then
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
 			UIFrameFadeIn(self, 0.1)
 
 			if shownFrame == self:GetFrameID() then
@@ -42,7 +38,8 @@ function Search:OnToggle(_, shownFrame)
 				self:SetFocus()
 			end
 		end
-	else
+	elseif self:IsShown() then
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF)
 		self:Hide()
 	end
 end
@@ -65,7 +62,7 @@ function Search:OnTextChanged()
 	end
 end
 
-function Search:OnEscape()
+function Search:OnEscapePressed()
 	Addon.canSearch = nil
 	self:SendSignal('SEARCH_TOGGLED', nil)
 	self:Hide()

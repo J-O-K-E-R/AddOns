@@ -1,7 +1,7 @@
 ## Interface: 110002
 ## Author: myno (original author; up through 8.x), Amadeus (maintainer since 9.0)
 ## Title: Broker_WorldQuests
-## Version: 11.0.2.4
+## Version: 11.0.2.14
 ## SavedVariables: BWQcfg
 ## SavedVariablesPerCharacter: BWQcache, BWQcfgPerCharacter
 ## Notes: Broker plugin to display world quests as a list.
@@ -9,4 +9,5 @@
 libs/CallbackHandler-1.0.lua
 libs/LibDataBroker-1.1.lua
 Constants.lua
+Globals.lua
 WorldQuests.lua

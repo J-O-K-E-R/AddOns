@@ -2,6 +2,7 @@ local L = BigWigsAPI:NewLocale("BigWigs: Plugins", "ruRU")
 if not L then return end
 
 L.general = "Общие"
+--L.advanced = "Advanced"
 L.comma = ", "
 
 L.positionX = "Позиция X"
@@ -189,10 +190,10 @@ L.blockTalkingHeadTimewalking = "Путешествия во времени (п�
 L.blockTalkingHeadScenarios = "Сценарии"
 
 L.redirectPopups = "Перенапрявлять выскакивающие уведомления в BigWigs"
-L.redirectPopupsDesc = "Уведомления по центру экрана, например '|cFF33FF99хранилище открыто|r' или уведомления при входе в М+ подземелья будет скрыто, и вместо этого будет перенаправленно в BigWigs. Эти уведомления бывают слишком большими, длиться слишком долго и могут блокировать возможность клика сквозь них."
+--L.redirectPopupsDesc = "Popup banners in the middle of your screen such as the '|cFF33FF99vault slot unlocked|r' banner will instead be displayed as BigWigs messages. Эти уведомления бывают слишком большими, длиться слишком долго и могут блокировать возможность клика сквозь них."
 L.redirectPopupsColor = "Цвет перенаправленного уведомления"
 L.blockDungeonPopups = "Скрывать уведомления о входе в подземелья"
-L.blockDungeonPopupsDesc = "Уведомления о входе в подземелья иногда бывают очень длинными. Включив эту настройку, они будут полностью скрыты, заместо перенаправления в BigWigs."
+L.blockDungeonPopupsDesc = "Уведомления о входе в подземелья иногда бывают очень длинными. Включив эту настройку, они будут полностью скрыты."
 L.itemLevel = "Уровень предмета: %d"
 
 L.userNotifySfx = "Звуковые эффекты были отключён BossBlock-ом, включаю обратно..."
@@ -328,9 +329,8 @@ L.fadeTimeDesc = "Сколько секунд будет затухать соо
 --L.showBorderDesc = "Show a border around the icon."
 --L.borderColor = "Border Color"
 --L.borderSize = "Border Size"
---L.timer = "Timer"
---L.showTimer = "Show Timer"
---L.showTimerDesc = "Show a text timer on the icon."
+--L.showNumbers = "Show Numbers"
+--L.showNumbersDesc = "Show numbers on the icon."
 --L.cooldown = "Cooldown"
 --L.showCooldownSwipe = "Show Swipe"
 --L.showCooldownSwipeDesc = "Show a swipe on the icon when the cooldown is active."
@@ -338,7 +338,7 @@ L.fadeTimeDesc = "Сколько секунд будет затухать соо
 --L.showCooldownEdgeDesc = "Show an edge on the cooldown when the cooldown is active."
 --L.inverse = "Inverse"
 --L.inverseSwipeDesc = "Invert the cooldown animations."
---L.iconGlow = "Icon Glow"
+--L.glow = "Glow"
 --L.enableExpireGlow = "Enable Expire Glow"
 --L.enableExpireGlowDesc = "Show a glow around the icon when the cooldown has expired."
 --L.glowColor = "Glow Color"
@@ -348,12 +348,28 @@ L.fadeTimeDesc = "Сколько секунд будет затухать соо
 --L.nameplateTextSettings = "Text Settings"
 --L.fixate_test = "Fixate Test" -- Text that displays to test on the frame
 --L.resetNameplateTextDesc = "Reset all the options related to nameplate text."
+--L.autoScale = "Auto Scale"
+--L.autoScaleDesc = "Automatically change scale according to the nameplate scale."
 
 -- Glow types as part of LibCustomGlow
 --L.pixelGlow = "Pixel Glow"
 --L.autocastGlow = "Autocast Glow"
 --L.buttonGlow = "Button Glow"
 --L.procGlow = "Proc Glow"
+--L.speed = "Speed"
+--L.animation_speed_desc = "The speed at which the glow animation plays."
+--L.lines = "Lines"
+--L.lines_glow_desc = "The number of lines in the glow animation."
+--L.intensity = "Intensity"
+--L.intensity_glow_desc = "The intensity of the glow effect, higher means more sparks."
+--L.length = "Length"
+--L.length_glow_desc = "The length of the lines in the glow animation."
+--L.thickness = "Thickness"
+--L.thickness_glow_desc = "The thickness of the lines in the glow animation."
+--L.scale = "Scale"
+--L.scale_glow_desc = "The scale of the sparks in the animation."
+--L.startAnimation = "Start Animation"
+--L.startAnimation_glow_desc = "This glow has a starting animation, this will enable/disable that animation."
 
 -----------------------------------------------------------------------
 -- Proximity.lua

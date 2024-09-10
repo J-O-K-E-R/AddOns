@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod("DelveTrashCommon", "DBM-Delves-WarWithin")
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240825075851")
+mod:SetRevision("20240910053255")
 mod:SetZone(DBM_DISABLE_ZONE_DETECTION)--Stays active in all zones for zone change handlers, but registers events based on dungeon ids
 
 mod.isTrashMod = true
@@ -20,6 +20,7 @@ mod:RegisterEvents(
 --NOTE: Jagged Slash (450176) has precisely 9.7 CD, but is it worth tracking?
 --NOTE: Stab (443510) is a 14.6 CD, but is it worth tracking?
 --TODO: add "Gatling Wand-461757-npc:228044-00004977F7 = pull:1392.7, 17.0, 17.0", (used by Reno Jackson)
+--TODO: timer for Armored Core from WCL
 local warnDebilitatingVenom					= mod:NewTargetNoFilterAnnounce(424614, 3)--Brann will dispel this if healer role
 local warnCastigate							= mod:NewTargetNoFilterAnnounce(418297, 4)
 local warnSpearFish							= mod:NewTargetNoFilterAnnounce(430036, 2)
@@ -33,8 +34,10 @@ local warnVineSpear							= mod:NewCastAnnounce(424891, 3, nil, nil, nil, nil, n
 local warnSkitterCharge						= mod:NewCastAnnounce(450197, 3, nil, nil, nil, nil, nil, 2)
 local warnWicklighterVolley					= mod:NewCastAnnounce(445191, 3)
 local warnSkullCracker						= mod:NewCastAnnounce(462686, 3)
+local warnThrashingFrenzy					= mod:NewCastAnnounce(445774, 3)
 local warnThrowDyno							= mod:NewSpellAnnounce(448600, 3)
 
+local specWarnSpearFish						= mod:NewSpecialWarningYou(430036, nil, nil, nil, 2, 12)
 local specWarnFearfulShriek					= mod:NewSpecialWarningDodge(433410, nil, nil, nil, 2, 2)
 local specWarnJaggedBarbs					= mod:NewSpecialWarningDodge(450714, nil, nil, nil, 2, 2)--11-26
 local specWarnLavablast	    				= mod:NewSpecialWarningDodge(445781, nil, nil, nil, 2, 2)
@@ -55,29 +58,33 @@ local specWarnRotWaveVolley					= mod:NewSpecialWarningInterrupt(425040, "HasInt
 local specWarnCastigate						= mod:NewSpecialWarningInterrupt(418297, "HasInterrupt", nil, nil, 1, 2)
 local specWarnBattleCry						= mod:NewSpecialWarningInterrupt(448399, "HasInterrupt", nil, nil, 1, 2)
 local specWarnHolyLight						= mod:NewSpecialWarningInterrupt(459421, "HasInterrupt", nil, nil, 1, 2)
+local specWarnArmoredShell					= mod:NewSpecialWarningInterrupt(448179, "HasInterrupt", nil, nil, 1, 2)
 
-local timerFearfulShriekCD					= mod:NewCDNPTimer(13.4, 433410, nil, nil, nil, 3)
+local timerFearfulShriekCD					= mod:NewCDPNPTimer(13.4, 433410, nil, nil, nil, 3)
 local timerShadowsofStrifeCD				= mod:NewCDNPTimer(15.6, 449318, nil, nil, nil, 4, nil, DBM_COMMON_L.INTERRUPT_ICON)
 local timerRotWaveVolleyCD					= mod:NewCDNPTimer(15.2, 425040, nil, nil, nil, 4, nil, DBM_COMMON_L.INTERRUPT_ICON)--15.2-17
 local timerWebbedAegisCD					= mod:NewCDNPTimer(15.8, 450546, nil, nil, nil, 4, nil, DBM_COMMON_L.INTERRUPT_ICON)--14.6 BUT enemies can skip casts sometimes and make it 29.1
 local timerLavablastCD					    = mod:NewCDNPTimer(15.8, 445781, nil, nil, nil, 3)
-local timerBlazingWickCD					= mod:NewCDNPTimer(14.6, 449071, nil, nil, nil, 3)
-local timerBattleRoarCD						= mod:NewCDNPTimer(15.4, 414944, nil, nil, nil, 5, nil, DBM_COMMON_L.MAGIC_ICON)
+local timerLavablast						= mod:NewCastNPTimer(3, 445781, DBM_COMMON_L.FRONTAL, nil, nil, 5)
+local timerBlazingWickCD					= mod:NewCDPNPTimer(14.6, 449071, nil, nil, nil, 3)
+local timerBlazingWick						= mod:NewCastNPTimer(2.25, 449071, DBM_COMMON_L.FRONTAL, nil, nil, 5)
+local timerBattleRoarCD						= mod:NewCDPNPTimer(15.4, 414944, nil, nil, nil, 5, nil, DBM_COMMON_L.MAGIC_ICON)
 local timerDebilitatingVenomCD				= mod:NewCDNPTimer(13.4, 424614, nil, nil, nil, 5, nil, DBM_COMMON_L.POISON_ICON)
 local timerBladeRushCD						= mod:NewCDNPTimer(15.4, 418791, nil, nil, nil, 3)
 local timerVineSpearCD						= mod:NewCDNPTimer(14.9, 424891, nil, nil, nil, 3)
 local timerRelocateCD						= mod:NewCDNPTimer(70, 427812, nil, nil, nil, 3)
 local timerSkitterChargeCD					= mod:NewCDNPTimer(12.2, 450197, nil, nil, nil, 3)
 local timerFungalBreathCD					= mod:NewCDNPTimer(15.4, 415253, nil, nil, nil, 3)
-local timerCastigateCD						= mod:NewCDNPTimer(17.8, 418297, nil, nil, nil, 4, nil, DBM_COMMON_L.INTERRUPT_ICON)
+local timerCastigateCD						= mod:NewCDPNPTimer(17.8, 418297, nil, nil, nil, 4, nil, DBM_COMMON_L.INTERRUPT_ICON)
 local timerBattleCryCD						= mod:NewCDNPTimer(30.3, 448399, nil, nil, nil, 4, nil, DBM_COMMON_L.INTERRUPT_ICON)
-local timerWicklighterVolleyCD				= mod:NewCDNPTimer(21.8, 445191, nil, nil, nil, 4, nil, DBM_COMMON_L.INTERRUPT_ICON)--Needs more Data
+local timerWicklighterVolleyCD				= mod:NewCDNPTimer(20.8, 445191, nil, nil, nil, 4, nil, DBM_COMMON_L.INTERRUPT_ICON)--Needs more Data
 local timerSpearFishCD						= mod:NewCDNPTimer(12.1, 430036, nil, nil, nil, 3)
 local timerViciousStabsCD					= mod:NewCDNPTimer(20.6, 424704, nil, nil, nil, 3)
 local timerThrowDynoCD						= mod:NewCDNPTimer(7.2, 448600, nil, nil, nil, 3)
 local timerSerratedCleaveCD					= mod:NewCDNPTimer(32.7, 445492, nil, nil, nil, 5, nil, DBM_COMMON_L.TANK_ICON)--Not technically tanks only, just whoever has aggro in it
 local timerSkullCrackerCD					= mod:NewCDNPTimer(15.8, 462686, nil, nil, nil, 3)
-local timerHolyLightCD						= mod:NewCDNPTimer(17, 459421, nil, nil, nil, 4, nil, DBM_COMMON_L.INTERRUPT_ICON)--17-18.2
+local timerHolyLightCD						= mod:NewCDPNPTimer(17, 459421, nil, nil, nil, 4, nil, DBM_COMMON_L.INTERRUPT_ICON)--17-18.2
+local timerJaggedBarbs						= mod:NewCastNPTimer(3, 450714, DBM_COMMON_L.FRONTAL, nil, nil, 3)
 
 --Antispam IDs for this mod: 1 run away, 2 dodge, 3 dispel, 4 incoming damage, 5 you/role, 6 misc, 7 off interrupt
 
@@ -89,7 +96,7 @@ do
 		if not force and validZones[currentZone] and not eventsRegistered then
 			eventsRegistered = true
 			self:RegisterShortTermEvents(
-                "SPELL_CAST_START 449318 450546 433410 450714 445781 415253 425040 424704 424798 414944 418791 424891 450197 448399 445191 455932 445492 434281 450637 445210 448528 449071 462686 459421",
+                "SPELL_CAST_START 449318 450546 433410 450714 445781 415253 425040 424704 424798 414944 418791 424891 450197 448399 445191 455932 445492 434281 450637 445210 448528 449071 462686 459421 448179 445774",
                 "SPELL_CAST_SUCCESS 414944 424614 418791 424891 427812 450546 450197 415253 449318 445191 430036 445252 425040 424704 448399 448528 433410 445492 462686 447392 459421",
 				"SPELL_INTERRUPT",
                 "SPELL_AURA_APPLIED 424614 449071 418297 430036 440622 441129",
@@ -145,11 +152,13 @@ function mod:SPELL_CAST_START(args)
 			specWarnFearfulShriek:Play("watchstep")
 		end
 	elseif args.spellId == 450714 then
+		timerJaggedBarbs:Start(nil, args.sourceGUID)
 		if self:AntiSpam(3, 2) then
 			specWarnJaggedBarbs:Show()
 			specWarnJaggedBarbs:Play("shockwave")
 		end
 	elseif args.spellId == 445781 then
+		timerLavablast:Start(nil, args.sourceGUID)
         timerLavablastCD:Start(nil, args.sourceGUID)
 		if self:AntiSpam(3, 2) then
 			specWarnLavablast:Show()
@@ -160,7 +169,7 @@ function mod:SPELL_CAST_START(args)
 			specWarnFungalBreath:Show()
 			specWarnFungalBreath:Play("shockwave")
 		end
-	elseif args.spellId == 424704 then
+	elseif args.spellId == 424704 and self:IsValidWarning(args.sourceGUID) then
 		if self:AntiSpam(3, 2) then
 			specWarnViciousStabs:Show()
 			specWarnViciousStabs:Play("shockwave")
@@ -169,7 +178,7 @@ function mod:SPELL_CAST_START(args)
 		if self:AntiSpam(3, 6) then
 			warnBloatedEruption:Show()
 		end
-	elseif args.spellId == 414944 then
+	elseif args.spellId == 414944 and self:IsValidWarning(args.sourceGUID) then
 		if self:AntiSpam(3, 5) then
 			warnBattleRoar:Show()
 		end
@@ -226,6 +235,7 @@ function mod:SPELL_CAST_START(args)
 			warnThrowDyno:Show()
 		end
 	elseif args.spellId == 449071 then
+		timerBlazingWick:Start(nil, args.sourceGUID)
 		if self:AntiSpam(3, 2) then
 			specWarnBlazingWick:Show()
 			specWarnBlazingWick:Play("shockwave")
@@ -238,6 +248,15 @@ function mod:SPELL_CAST_START(args)
 		if self:CheckInterruptFilter(args.sourceGUID, false, true) then
 			specWarnHolyLight:Show(args.sourceName)
 			specWarnHolyLight:Play("kickcast")
+		end
+	elseif args.spellId == 448179 then
+		if self:CheckInterruptFilter(args.sourceGUID, false, true) then
+			specWarnArmoredShell:Show(args.sourceName)
+			specWarnArmoredShell:Play("kickcast")
+		end
+	elseif args.spellId == 445774 then
+		if self:AntiSpam(3, 6) then
+			warnThrashingFrenzy:Show()
 		end
 	end
 end
@@ -324,7 +343,7 @@ function mod:SPELL_INTERRUPT(args)
 	elseif args.extraSpellId == 433410 then
 		timerFearfulShriekCD:Start(10.4, args.destGUID)--13.4 - 3
 	elseif args.extraSpellId == 459421 then
-		timerHolyLightCD:Start(14.5, args.sourceGUID)--17-2.5
+		timerHolyLightCD:Start(14.5, args.destGUID)--17-2.5
 	end
 end
 
@@ -343,7 +362,12 @@ function mod:SPELL_AURA_APPLIED(args)
 			specWarnCastigate:Play("kickcast")
 		end
 	elseif args.spellId == 430036 then
-		warnSpearFish:Show(args.destName)
+		if args:IsPlayer() then
+			specWarnSpearFish:Show()
+			specWarnSpearFish:Play("pullin")
+		else
+			warnSpearFish:Show(args.destName)
+		end
 	elseif args.spellId == 440622 and args:IsDestTypePlayer() then
 		if self:CheckDispelFilter("curse") then
 			specWarnCurseoftheDepths:Show(args.destName)
@@ -380,10 +404,12 @@ function mod:UNIT_DIED(args)
 		timerShadowsofStrifeCD:Stop(args.destGUID)
     elseif cid == 223541 then--Stolen Loader
         timerLavablastCD:Stop(args.destGUID)
+		timerLavablast:Stop(args.destGUID)
 	elseif cid == 207460 then--Fungarian Flinger
 		timerRotWaveVolleyCD:Stop(args.destGUID)
 	elseif cid == 204127 then--Kobold Taskfinder
 		timerBlazingWickCD:Stop(args.destGUID)
+		timerBlazingWick:Stop(args.destGUID)
 	elseif cid == 207454 then--Fungal Gutter
 		timerBattleRoarCD:Stop(args.destGUID)
 		timerViciousStabsCD:Stop(args.destGUID)
@@ -413,5 +439,11 @@ function mod:UNIT_DIED(args)
 		timerSerratedCleaveCD:Stop(args.destGUID)
 	elseif cid == 216583 then--Chittering Fearmonger
 		timerFearfulShriekCD:Stop(args.destGUID)
+	elseif cid == 219035 then--Deepwalker Guardian
+		timerJaggedBarbs:Stop(args.destGUID)
+	elseif cid == 218103 then--Nerubian Lord
+		timerJaggedBarbs:Stop(args.destGUID)
+	elseif cid == 220510 then--The Puppetmaster?
+		timerJaggedBarbs:Stop(args.destGUID)
 	end
 end

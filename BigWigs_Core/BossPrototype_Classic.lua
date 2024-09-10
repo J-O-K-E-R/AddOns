@@ -18,13 +18,15 @@
 -- @usage local mod, CL = BigWigs:NewBoss("Argus the Unmaker", 1712, 2031)
 
 local boss = {}
-local core
+local core, plugins
 do
 	local _, tbl =...
 	core = tbl.core
+	plugins = tbl.plugins
 	tbl.bossPrototype = boss
 end
 
+local BigWigsAPI = BigWigsAPI
 local L = BigWigsAPI:GetLocale("BigWigs: Common")
 local LibSpec = LibStub("LibSpecialization", true)
 local loader = BigWigsLoader
@@ -100,7 +102,7 @@ local updateData = function(module)
 	myGUID = UnitGUID("player")
 	hasVoice = BigWigsAPI:HasVoicePack()
 
-	local messages = core:GetPlugin("Messages", true)
+	local messages = plugins.Messages
 	if messages and not messages.db.profile.classcolor then
 		classColorMessages = false
 	else
@@ -641,6 +643,13 @@ function boss:GetLocale()
 	return self.localization
 end
 boss.NewLocale = boss.GetLocale
+
+do
+	local SetSpellRename = BigWigsAPI.SetSpellRename
+	function boss:SetSpellRename(spellId, text)
+		SetSpellRename(spellId, text)
+	end
+end
 
 --- Create a custom marking option
 -- @bool state Boolean value to represent default state
@@ -1222,7 +1231,7 @@ do
 	--- Register a callback to get the first non-tank target of a mob.
 	-- Looks for the unit as defined by the GUID and then returns the target of that unit.
 	-- If the target is a tank, it will keep looking until the designated time has elapsed.
-	-- @param func callback function, passed (module, playerName, playerGUID)
+	-- @param func callback function, passed (module, playerName, playerGUID, elapsed)
 	-- @number tankCheckExpiry seconds to wait, if a tank is still the target after this time, it will return the tank as the target (max 0.8)
 	-- @string guid GUID of the mob to get the target of
 	function boss:GetUnitTarget(func, tankCheckExpiry, guid)
@@ -1292,7 +1301,7 @@ do
 
 			if self.privateAuraSoundOptions and not self.privateAuraSounds then
 				self.privateAuraSounds = {}
-				local soundModule = core:GetPlugin("Sounds", true)
+				local soundModule = plugins.Sounds
 				if soundModule then
 					for _, option in next, self.privateAuraSoundOptions do
 						local spellId = option[1]
@@ -2539,6 +2548,11 @@ do
 			end
 		end
 	})
+	coloredNames[L.garrick] = hexColors.PALADIN .. L.garrick_short .. "|r" -- AI paladin tank
+	coloredNames[L.meredy] = hexColors.MAGE .. L.meredy_short .. "|r" -- AI mage dps
+	coloredNames[L.shuja] = hexColors.SHAMAN .. L.shuja_short .. "|r" -- AI shaman dps
+	coloredNames[L.crenna] = hexColors.DRUID .. L.crenna_short .. "|r" -- AI druid healer
+	coloredNames[L.austin] = hexColors.HUNTER .. L.austin_short .. "|r" -- AI hunter dps
 	myNameWithColor = coloredNames[myName]
 
 	--- Get a table that colors player names based on class. [DEPRECATED]
@@ -3100,7 +3114,7 @@ end
 -- @param text the bar text
 -- @return the remaining duration in seconds or 0
 function boss:BarTimeLeft(text)
-	local bars = core:GetPlugin("Bars", true)
+	local bars = plugins.Bars
 	if bars then
 		return bars:GetBarTimeLeft(self, type(text) == "number" and spells[text] or text)
 	end

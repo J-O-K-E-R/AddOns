@@ -39,7 +39,7 @@ L.Money = MONEY
 L.Sort = 'Sort Button'
 L.Search = 'Search Toggle'
 L.Options = 'Options Button'
-L.Reagents = 'Reagents Button'
+L.Deposit = 'Deposit Button'
 L.LeftTabs = 'Rulesets on Left'
 L.LeftTabsTip = [[
 If enabled, the side tabs will be
@@ -79,6 +79,7 @@ L.GlowAlpha = 'Glow Brightness'
 L.EmptySlots = 'Display Background'
 L.SlotBackground = 'Artwork'
 L.ColorSlots = 'Color by Bag Type'
+L.AccountColor = 'Warband Color'
 L.NormalColor = 'Normal Color'
 L.KeyColor = 'Keyring Color'
 L.QuiverColor = 'Quiver Color'

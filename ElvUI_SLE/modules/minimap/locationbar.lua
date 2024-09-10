@@ -126,6 +126,7 @@ LP.PortItems = {
 	{87548}, --Pandaria Arch
 	{180817}, --Cypher of Relocation
 	{151016}, --Fractured Necrolyte Skull
+	{211788, nil, true}, -- Tess's Peacebloom (Gilneas)
 }
 LP.EngineerItems = {
 	{18984, nil, true}, --Dimensional Ripper - Everlook
@@ -195,6 +196,7 @@ LP.Spells = {
 			[13] = LP:CreateSpellsEntry(281404, 'spell', true), -- TP:Dazar'alor
 			[14] = LP:CreateSpellsEntry(344587, 'spell', true), -- TP:Oribos
 			[15] = LP:CreateSpellsEntry(395277, 'spell', true), -- TP:Valdrakken
+			[16] = LP:CreateSpellsEntry(446540, 'spell', true), -- TP:Dornogal
 		},
 		Alliance = {
 			[1] = LP:CreateSpellsEntry(3561, 'spell', true), -- TP:Stormwind
@@ -212,6 +214,7 @@ LP.Spells = {
 			[13] = LP:CreateSpellsEntry(281403, 'spell', true), -- TP:Boralus
 			[14] = LP:CreateSpellsEntry(344587, 'spell', true), -- TP:Oribos
 			[15] = LP:CreateSpellsEntry(395277, 'spell', true), -- TP:Valdrakken
+			[16] = LP:CreateSpellsEntry(446540, 'spell', true), -- TP:Dornogal
 		},
 	},
 	portals = {
@@ -231,6 +234,7 @@ LP.Spells = {
 			[13] = LP:CreateSpellsEntry(281402, 'spell', true), -- P:Dazar'alor
 			[14] = LP:CreateSpellsEntry(344597, 'spell', true), -- P:Oribos
 			[15] = LP:CreateSpellsEntry(395289, 'spell', true), -- P:Valdrakken
+			[16] = LP:CreateSpellsEntry(446534, 'spell', true), -- P:Dornogal
 		},
 		Alliance = {
 			[1] = LP:CreateSpellsEntry(10059, 'spell', true), -- P:Stormwind
@@ -248,6 +252,7 @@ LP.Spells = {
 			[13] = LP:CreateSpellsEntry(281400, 'spell', true), -- P:Boralus
 			[14] = LP:CreateSpellsEntry(344597, 'spell', true), -- P:Oribos
 			[15] = LP:CreateSpellsEntry(395289, 'spell', true), -- P:Valdrakken
+			[16] = LP:CreateSpellsEntry(446534, 'spell', true), -- P:Dornogal
 		},
 	},
 	challenge = {
@@ -372,11 +377,11 @@ end
 
 function LP:UpdateCoords(elapsed)
 	if not E.db.sle.minimap.locPanel.enable then return end
-	LP.elapsed = LP.elapsed + elapsed
+	LP.elapsed = (LP.elapsed or 0) + elapsed
 	if LP.elapsed < (LP.db.throttle or 0.2) then return end
 	if not LP.db.format then return end
-	--Coords
 
+	--Coords
 	if E.MapInfo then
 		loc_panel.Xcoord.Text:SetText(format(LP.db.format, E.MapInfo.xText or 0))
 		loc_panel.Ycoord.Text:SetText(format(LP.db.format, E.MapInfo.yText or 0))
@@ -386,7 +391,7 @@ function LP:UpdateCoords(elapsed)
 	end
 	--Coords coloring
 	local colorC = {r = 1, g = 1, b = 1}
-	if LP.db.colorType_Coords == 'REACTION' then
+	if LP.db.coords.colorType == 'REACTION' then
 		local inInstance, _ = IsInInstance()
 		if inInstance then
 			colorC = {r = 1, g = 0.1, b = 0.1}
@@ -394,17 +399,17 @@ function LP:UpdateCoords(elapsed)
 			local pvpType = C_PvP_GetZonePVPInfo()
 			colorC = LP.ReactionColors[pvpType] or {r = 1, g = 1, b = 0}
 		end
-	elseif LP.db.colorType_Coords == 'CUSTOM' then
-		colorC = LP.db.customColor_Coords
-	elseif LP.db.colorType_Coords == 'CLASS' then
+	elseif LP.db.coords.colorType == 'CUSTOM' then
+		colorC = LP.db.coords.customColor
+	elseif LP.db.coords.colorType == 'CLASS' then
 		colorC = RAID_CLASS_COLORS[E.myclass]
 	end
 	loc_panel.Xcoord.Text:SetTextColor(colorC.r, colorC.g, colorC.b)
 	loc_panel.Ycoord.Text:SetTextColor(colorC.r, colorC.g, colorC.b)
 
 	--Location
-	local subZoneText = GetMinimapZoneText() or ''
-	local zoneText = GetRealZoneText() or UNKNOWN
+	local subZoneText = E.MapInfo.subZoneText or ''
+	local zoneText = E.MapInfo.zoneText or UNKNOWN
 	local displayLine
 	if LP.db.zoneText then
 		if (subZoneText ~= '') and (subZoneText ~= zoneText) then
@@ -415,6 +420,7 @@ function LP:UpdateCoords(elapsed)
 	else
 		displayLine = subZoneText
 	end
+
 	loc_panel.Text:SetText(displayLine)
 	if LP.db.autowidth then loc_panel:Width(loc_panel.Text:GetStringWidth() + 10) end
 
@@ -441,14 +447,23 @@ function LP:UpdateCoords(elapsed)
 end
 
 function LP:Resize()
+	local coordSize = LP.db.fontSize * 3
+	local panelHeight = LP.db.height
+	local panelWidth = LP.db.width
+
 	if LP.db.autowidth then
-		loc_panel:SetSize(loc_panel.Text:GetStringWidth() + 10, LP.db.height)
+		local stringWidth = loc_panel.Text:GetStringWidth() + 10
+		panelWidth = (stringWidth >= E.screenWidth and E.screenWidth) or stringWidth
+		loc_panel:SetSize(panelWidth, panelHeight)
 	else
-		loc_panel:SetSize(LP.db.width, LP.db.height)
+		loc_panel:SetSize(panelWidth, panelHeight)
 	end
-	loc_panel.Text:Width(LP.db.width - 18)
-	loc_panel.Xcoord:SetSize(LP.db.fontSize * 3, LP.db.height)
-	loc_panel.Ycoord:SetSize(LP.db.fontSize * 3, LP.db.height)
+	loc_panel.Text:Width(panelWidth - 18)
+	loc_panel.Xcoord:SetSize(coordSize, panelHeight)
+	loc_panel.Ycoord:SetSize(coordSize, panelHeight)
+
+	loc_panel.Xcoord:SetShown(LP.db.coords.enable)
+	loc_panel.Ycoord:SetShown(LP.db.coords.enable)
 end
 
 function LP:Fonts()
@@ -715,7 +730,7 @@ function LP:PopulateDropdown(click)
 end
 
 function LP:GetProf()
-	LP.EngineerName = C_Spell_GetSpellInfo(4036)
+	LP.EngineerName = C_Spell_GetSpellInfo(4036).name
 	LP:CHAT_MSG_SKILL()
 end
 

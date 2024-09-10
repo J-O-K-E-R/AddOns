@@ -17,9 +17,6 @@ V["sle"] = {
 		["conditions"] = "",
 		["lockbutton"] = false,
 	},
-	media = {
-		enable = true,
-	},
 	--Minimap Module
 	["minimap"] = {
 		rectangle = false,
@@ -35,6 +32,9 @@ V["sle"] = {
 		shadows = {
 			enable = true,
 		},
+	},
+	objectiveTracker = {
+		enable = true,
 	},
 	["pvp"] = {
 		["KBbanner"] = {

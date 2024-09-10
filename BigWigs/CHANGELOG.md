@@ -1,7 +1,15 @@
 # BigWigs
 
-## [v355.3](https://github.com/BigWigsMods/BigWigs/tree/v355.3) (2024-08-25)
-[Full Changelog](https://github.com/BigWigsMods/BigWigs/compare/v355.2...v355.3) [Previous Releases](https://github.com/BigWigsMods/BigWigs/releases)
+## [v357.2](https://github.com/BigWigsMods/BigWigs/tree/v357.2) (2024-09-04)
+[Full Changelog](https://github.com/BigWigsMods/BigWigs/compare/v357.1...v357.2) [Previous Releases](https://github.com/BigWigsMods/BigWigs/releases)
 
-- Update koKR (#1767)  
-- Plugins/Nameplates: Small fixes for options dialog (#1765)  
+- bump version  
+- Update zhCN (#1796)  
+- NerubarPalace: Update option files  
+- Parser: Check for unused bitflags (#1793)  
+- NerubarPalace: Clean up unused bitflags  
+- Parser: Enforce args param exists when used (#1794)  
+- Update koKR (#1795)  
+- Update deDE (#1791)  
+- Parser: Improve validation for `:Death` callbacks (#1792)  
+- NerubarPalace/Ansurek: Fix death events  

@@ -1,3 +1,5 @@
+local _, addon = ...
+local CONSTANTS = addon.CONSTANTS
 --[[----
 --
 -- Broker_WorldQuests
@@ -9,122 +11,60 @@
 --
 --]]----
 
-local GetAchievementInfo
-	= GetAchievementInfo
-
-local REPUTATION
-	= REPUTATION
-
-local _, addon = ...
-local CONSTANTS = addon.CONSTANTS
-local DEBUG = false
-
-local isHorde = UnitFactionGroup("player") == "Horde"
-
-local ITEM_QUALITY_COLORS, WORLD_QUEST_QUALITY_COLORS, UnitLevel
-	= ITEM_QUALITY_COLORS, WORLD_QUEST_QUALITY_COLORS, UnitLevel
-
-local             GetQuestsForPlayerByMapID,             GetQuestTimeLeftMinutes,             GetQuestInfoByQuestID,             GetQuestProgressBarInfo,            QuestHasWarModeBonus
-	= C_TaskQuest.GetQuestsForPlayerByMapID, C_TaskQuest.GetQuestTimeLeftMinutes, C_TaskQuest.GetQuestInfoByQuestID, C_TaskQuest.GetQuestProgressBarInfo, C_QuestLog.QuestHasWarModeBonus
-
-local            GetQuestTagInfo,            IsQuestFlaggedCompleted,            IsQuestCriteriaForBounty,            GetBountiesForMapID,            GetLogIndexForQuestID,            GetTitleForLogIndex,            GetQuestWatchType
-	= C_QuestLog.GetQuestTagInfo, C_QuestLog.IsQuestFlaggedCompleted, C_QuestLog.IsQuestCriteriaForBounty, C_QuestLog.GetBountiesForMapID, C_QuestLog.GetLogIndexForQuestID, C_QuestLog.GetTitleForLogIndex, C_QuestLog.GetQuestWatchType
-
-local              GetSuperTrackedQuestID
-	= C_SuperTrack.GetSuperTrackedQuestID
-
-local              IsFactionParagon,              GetFactionParagonInfo
-	= C_Reputation.IsFactionParagon, C_Reputation.GetFactionParagonInfo
-
-local       GetBestMapForUnit,       GetMapInfo
-	= C_Map.GetBestMapForUnit, C_Map.GetMapInfo
-
-local       IsWarModeDesired
-	= C_PvP.IsWarModeDesired
-
-local GetQuestObjectiveInfo, GetNumQuestLogRewards, GetQuestLogRewardInfo, GetQuestLogRewardMoney, HaveQuestData
-= GetQuestObjectiveInfo, GetNumQuestLogRewards, GetQuestLogRewardInfo, GetQuestLogRewardMoney, HaveQuestData
-
-local GetNumQuestLogRewardCurrencies, GetQuestLogRewardCurrencyInfo = GetNumQuestLogRewardCurrencies, GetQuestLogRewardCurrencyInfo
-if not GetNumQuestLogRewardCurrencies then
-	local reward_cache = {}
-	local function GetData(questID)
-		local data = reward_cache[questID]
-		local t = GetTime()
-		if not data or t > data.expTime then
-			data = C_QuestLog.GetQuestRewardCurrencies(questID)
-			data.expTime = t + 5
-		end
-		return data
-	end
-	function GetNumQuestLogRewardCurrencies(questID)
-		local data = GetData(questID)
-		return #data
-	end
-	function GetQuestLogRewardCurrencyInfo(i, questID)
-		local data = GetData(questID)[i]
-		if not data then
-			return
-		end
-		return data.name, data.texture, data.baseRewardAmount, data.currencyID
-		--data.totalRewardAmount
-	end
-end
-
 -- When adding zones to MAP_ZONES, be sure to also add the zoneID to MAP_ZONES_SORT immediately below
 -- The simplest way to get the MapID for the zone you are currently in is to enter "/dump C_Map.GetBestMapForUnit("player")"
 local MAP_ZONES = {
 	[CONSTANTS.EXPANSIONS.THEWARWITHIN] = {
-		[2248] = { id = 2248, name = GetMapInfo(2248).name, quests = {}, buttons = {}, }, -- Isle of Dorn 11.0
-		[2214] = { id = 2214, name = GetMapInfo(2214).name, quests = {}, buttons = {}, }, -- The Ringing Deeps 11.0
-		[2215] = { id = 2215, name = GetMapInfo(2215).name, quests = {}, buttons = {}, }, -- Hallowfall 11.0
-		[2255] = { id = 2255, name = GetMapInfo(2255).name, quests = {}, buttons = {}, }, -- Azj-Kahet 11.0
+		[2248] = { id = 2248, name = C_Map.GetMapInfo(2248).name, quests = {}, buttons = {}, }, -- Isle of Dorn 11.0
+		[2214] = { id = 2214, name = C_Map.GetMapInfo(2214).name, quests = {}, buttons = {}, }, -- The Ringing Deeps 11.0
+		[2215] = { id = 2215, name = C_Map.GetMapInfo(2215).name, quests = {}, buttons = {}, }, -- Hallowfall 11.0
+		[2255] = { id = 2255, name = C_Map.GetMapInfo(2255).name, quests = {}, buttons = {}, }, -- Azj-Kahet 11.0
 	},
 	[CONSTANTS.EXPANSIONS.DRAGONFLIGHT] = {
-		[2022] = { id = 2022, name = GetMapInfo(2022).name, quests = {}, buttons = {}, }, -- The Waking Shores 10.0
-		[2023] = { id = 2023, name = GetMapInfo(2023).name, quests = {}, buttons = {}, }, -- Ohn'ahran Plains 10.0
-		[2024] = { id = 2024, name = GetMapInfo(2024).name, quests = {}, buttons = {}, }, -- The Azure Span 10.0
-		[2025] = { id = 2025, name = GetMapInfo(2025).name, quests = {}, buttons = {}, }, -- Thaldraszus 10.0
-		[2085] = { id = 2085, name = GetMapInfo(2085).name, quests = {}, buttons = {}, }, -- Primalist Tomorrow 10.0
-		[2151] = { id = 2151, name = GetMapInfo(2151).name, quests = {}, buttons = {}, }, -- The Forbidden Reach 10.0.7
-		[2133] = { id = 2133, name = GetMapInfo(2133).name, quests = {}, buttons = {}, }, -- Zaralek Cavern 10.1
-		[2200] = { id = 2200, name = GetMapInfo(2200).name, quests = {}, buttons = {}, }, -- Emerald Dream 10.2
+		[2022] = { id = 2022, name = C_Map.GetMapInfo(2022).name, quests = {}, buttons = {}, }, -- The Waking Shores 10.0
+		[2023] = { id = 2023, name = C_Map.GetMapInfo(2023).name, quests = {}, buttons = {}, }, -- Ohn'ahran Plains 10.0
+		[2024] = { id = 2024, name = C_Map.GetMapInfo(2024).name, quests = {}, buttons = {}, }, -- The Azure Span 10.0
+		[2025] = { id = 2025, name = C_Map.GetMapInfo(2025).name, quests = {}, buttons = {}, }, -- Thaldraszus 10.0
+		[2085] = { id = 2085, name = C_Map.GetMapInfo(2085).name, quests = {}, buttons = {}, }, -- Primalist Tomorrow 10.0
+		[2151] = { id = 2151, name = C_Map.GetMapInfo(2151).name, quests = {}, buttons = {}, }, -- The Forbidden Reach 10.0.7
+		[2133] = { id = 2133, name = C_Map.GetMapInfo(2133).name, quests = {}, buttons = {}, }, -- Zaralek Cavern 10.1
+		[2200] = { id = 2200, name = C_Map.GetMapInfo(2200).name, quests = {}, buttons = {}, }, -- Emerald Dream 10.2
 	},
 	[CONSTANTS.EXPANSIONS.SHADOWLANDS] = {
-		[1525] = { id = 1525, name = GetMapInfo(1525).name, quests = {}, buttons = {}, }, -- Revendreth 9.0
-		[1533] = { id = 1533, name = GetMapInfo(1533).name, quests = {}, buttons = {}, }, -- Bastion 9.0
-		[1536] = { id = 1536, name = GetMapInfo(1536).name, quests = {}, buttons = {}, }, -- Maldraxxus 9.0
-		[1565] = { id = 1565, name = GetMapInfo(1565).name, quests = {}, buttons = {}, }, -- Ardenwald 9.0
-		[1543] = { id = 1543, name = GetMapInfo(1543).name, quests = {}, buttons = {}, }, -- The Maw 9.1
-		[1970] = { id = 1970, name = GetMapInfo(1970).name, quests = {}, buttons = {}, }, -- Zereth Mortis 9.2
+		[1525] = { id = 1525, name = C_Map.GetMapInfo(1525).name, quests = {}, buttons = {}, }, -- Revendreth 9.0
+		[1533] = { id = 1533, name = C_Map.GetMapInfo(1533).name, quests = {}, buttons = {}, }, -- Bastion 9.0
+		[1536] = { id = 1536, name = C_Map.GetMapInfo(1536).name, quests = {}, buttons = {}, }, -- Maldraxxus 9.0
+		[1565] = { id = 1565, name = C_Map.GetMapInfo(1565).name, quests = {}, buttons = {}, }, -- Ardenwald 9.0
+		[1543] = { id = 1543, name = C_Map.GetMapInfo(1543).name, quests = {}, buttons = {}, }, -- The Maw 9.1
+		[1970] = { id = 1970, name = C_Map.GetMapInfo(1970).name, quests = {}, buttons = {}, }, -- Zereth Mortis 9.2
 	},
 	[CONSTANTS.EXPANSIONS.BFA] = {
-		[863] = { id = 863, name = GetMapInfo(863).name, faction = CONSTANTS.FACTIONS.HORDE, quests = {}, buttons = {}, },  -- Nazmir
-		[864] = { id = 864, name = GetMapInfo(864).name, faction = CONSTANTS.FACTIONS.HORDE, quests = {}, buttons = {}, },  -- Vol'dun
-		[862] = { id = 862, name = GetMapInfo(862).name, faction = CONSTANTS.FACTIONS.HORDE, quests = {}, buttons = {}, },  -- Zuldazar
-		[895] = { id = 895, name = GetMapInfo(895).name, faction = CONSTANTS.FACTIONS.ALLIANCE, quests = {}, buttons = {}, },  -- Tiragarde
-		[942] = { id = 942, name = GetMapInfo(942).name, faction = CONSTANTS.FACTIONS.ALLIANCE, quests = {}, buttons = {}, },  -- Stormsong Valley
-		[896] = { id = 896, name = GetMapInfo(896).name, faction = CONSTANTS.FACTIONS.ALLIANCE, quests = {}, buttons = {}, },  -- Drustvar
-		[1161] = { id = 1161, name = GetMapInfo(1161).name, faction = CONSTANTS.FACTIONS.ALLIANCE, quests = {}, buttons = {}, },  -- Boralus
-		[1527] = { id = 1527, name = GetMapInfo(1527).name, quests = {}, buttons = {}, },  -- Uldum 8.3
-		[1530] = { id = 1530, name = GetMapInfo(1530).name, quests = {}, buttons = {}, },  -- Valley of Eternal Blossoms 8.3
-		[1355] = { id = 1355, name = GetMapInfo(1355).name, quests = {}, buttons = {}, },  -- Nazjatar 8.2
-		[1462] = { id = 1462, name = GetMapInfo(1462).name, quests = {}, buttons = {}, },  -- Mechagon 8.2
-		[14] = { id = 14, name = GetMapInfo(14).name,  quests = {}, buttons = {}, },  -- Arathi
-		[62] = { id = 62, name = GetMapInfo(62).name,  quests = {}, buttons = {}, },  -- Darkshore
+		[863] = { id = 863,   name = C_Map.GetMapInfo(863).name, faction = CONSTANTS.FACTIONS.HORDE, quests = {}, buttons = {}, },      -- Nazmir
+		[864] = { id = 864,   name = C_Map.GetMapInfo(864).name, faction = CONSTANTS.FACTIONS.HORDE, quests = {}, buttons = {}, },      -- Vol'dun
+		[862] = { id = 862,   name = C_Map.GetMapInfo(862).name, faction = CONSTANTS.FACTIONS.HORDE, quests = {}, buttons = {}, },      -- Zuldazar
+		[895] = { id = 895,   name = C_Map.GetMapInfo(895).name, faction = CONSTANTS.FACTIONS.ALLIANCE, quests = {}, buttons = {}, },   -- Tiragarde
+		[942] = { id = 942,   name = C_Map.GetMapInfo(942).name, faction = CONSTANTS.FACTIONS.ALLIANCE, quests = {}, buttons = {}, },   -- Stormsong Valley
+		[896] = { id = 896,   name = C_Map.GetMapInfo(896).name, faction = CONSTANTS.FACTIONS.ALLIANCE, quests = {}, buttons = {}, },   -- Drustvar
+		[1161] = { id = 1161, name = C_Map.GetMapInfo(1161).name, faction = CONSTANTS.FACTIONS.ALLIANCE, quests = {}, buttons = {}, },  -- Boralus
+		[1527] = { id = 1527, name = C_Map.GetMapInfo(1527).name, quests = {}, buttons = {}, },  -- Uldum 8.3
+		[1530] = { id = 1530, name = C_Map.GetMapInfo(1530).name, quests = {}, buttons = {}, },  -- Valley of Eternal Blossoms 8.3
+		[1355] = { id = 1355, name = C_Map.GetMapInfo(1355).name, quests = {}, buttons = {}, },  -- Nazjatar 8.2
+		[1462] = { id = 1462, name = C_Map.GetMapInfo(1462).name, quests = {}, buttons = {}, },  -- Mechagon 8.2
+		[14] = { id = 14,     name = C_Map.GetMapInfo(14).name,  quests = {}, buttons = {}, },   -- Arathi
+		[62] = { id = 62,     name = C_Map.GetMapInfo(62).name,  quests = {}, buttons = {}, },   -- Darkshore
 	},
 	[CONSTANTS.EXPANSIONS.LEGION] = {
-		[630] = { id = 630, name = GetMapInfo(630).name, quests = {}, buttons = {}, },  -- Aszuna
-		[790] = { id = 790, name = GetMapInfo(790).name, quests = {}, buttons = {}, },  -- Eye of Azshara
-		[641] = { id = 641, name = GetMapInfo(641).name, quests = {}, buttons = {}, },  -- Val'sharah
-		[650] = { id = 650, name = GetMapInfo(650).name, quests = {}, buttons = {}, },  -- Highmountain
-		[634] = { id = 634, name = GetMapInfo(634).name, quests = {}, buttons = {}, },  -- Stormheim
-		[680] = { id = 680, name = GetMapInfo(680).name, quests = {}, buttons = {}, },  -- Suramar
-		[627] = { id = 627, name = GetMapInfo(627).name, quests = {}, buttons = {}, },  -- Dalaran
-		[646] = { id = 646, name = GetMapInfo(646).name, quests = {}, buttons = {}, },  -- Broken Shore
-		[830] = { id = 830, name = GetMapInfo(830).name, quests = {}, buttons = {}, },  -- Krokuun
-		[882] = { id = 882, name = GetMapInfo(882).name, quests = {}, buttons = {}, },  -- Mac'aree
-		[885] = { id = 885, name = GetMapInfo(885).name, quests = {}, buttons = {}, },  -- Antoran Wastes
+		[630] = { id = 630,   name = C_Map.GetMapInfo(630).name, quests = {}, buttons = {}, },   -- Aszuna
+		[790] = { id = 790,   name = C_Map.GetMapInfo(790).name, quests = {}, buttons = {}, },   -- Eye of Azshara
+		[641] = { id = 641,   name = C_Map.GetMapInfo(641).name, quests = {}, buttons = {}, },   -- Val'sharah
+		[650] = { id = 650,   name = C_Map.GetMapInfo(650).name, quests = {}, buttons = {}, },   -- Highmountain
+		[634] = { id = 634,   name = C_Map.GetMapInfo(634).name, quests = {}, buttons = {}, },   -- Stormheim
+		[680] = { id = 680,   name = C_Map.GetMapInfo(680).name, quests = {}, buttons = {}, },   -- Suramar
+		[627] = { id = 627,   name = C_Map.GetMapInfo(627).name, quests = {}, buttons = {}, },   -- Dalaran
+		[646] = { id = 646,   name = C_Map.GetMapInfo(646).name, quests = {}, buttons = {}, },   -- Broken Shore
+		[830] = { id = 830,   name = C_Map.GetMapInfo(830).name, quests = {}, buttons = {}, },   -- Krokuun
+		[882] = { id = 882,   name = C_Map.GetMapInfo(882).name, quests = {}, buttons = {}, },   -- Mac'aree
+		[885] = { id = 885,   name = C_Map.GetMapInfo(885).name, quests = {}, buttons = {}, },   -- Antoran Wastes
 	},
 }
 local MAP_ZONES_SORT = {
@@ -145,7 +85,6 @@ local MAP_ZONES_SORT = {
 	},
 }
 
-
 local defaultConfig = {
 	-- general
 	attachToWorldMap = false,
@@ -153,6 +92,7 @@ local defaultConfig = {
 	usePerCharacterSettings = false,
 	enableClickToOpenMap = false,
 	enableTomTomWaypointsOnClick = true,
+	spewDebugInfo = false,
 	alwaysShowBountyQuests = true,
 	alwaysShowEpicQuests = true,
 	onlyShowRareOrAbove = false,
@@ -166,6 +106,7 @@ local defaultConfig = {
 		brokerGratefulOffering = true,
 		brokerShowResources = true,
 		brokerShowLegionfallSupplies = true,
+		brokerShowXP = true,
 		brokerShowHonor = true,
 		brokerShowGold = false,
 		brokerShowGear = false,
@@ -189,6 +130,13 @@ local defaultConfig = {
 		brokerShowMysteriousFragment = true,
 		brokerShowResonanceCrystals = true,
 		brokerShowTheAssemblyoftheDeeps = true,
+		brokerShowValorstones = true,
+		brokerShowKej = true,
+		brokerShowCouncilofDornogal = true,
+		brokerShowHallowfallArathi = true,
+		brokerShowTheWeaver = true,
+		brokerShowTheGeneral = true,
+		brokerShowTheVizier = true,
 		brokerShowBloodyTokens = true,
 		brokerShowPolishedPetCharms = false,
 	sortByTimeRemaining = false,
@@ -206,7 +154,14 @@ local defaultConfig = {
 	showAspectsAwakenedCrest = true,
 	showMysteriousFragment = true,
 	showResonanceCrystals = true,
+	showCouncilofDornogal = true,
 	showTheAssemblyoftheDeeps = true,
+	showHallowfallArathi = true,
+	showTheWeaver = true,
+	showTheGeneral = true,
+	showTheVizier = true,
+	showValorstones = true,
+	showKej = true,
 	showBloodyTokens = true,
 	showArtifactPower = true,
 	showPrismaticManapearl = true,
@@ -224,6 +179,7 @@ local defaultConfig = {
 	showSLReputation = true,
 	showBFAReputation = true,
 	showBFAServiceMedals = true,
+	showXP = true,
 	showHonor = true,
 	showLowGold = true,
 	showHighGold = true,
@@ -251,6 +207,7 @@ local defaultConfig = {
 		showProfessionArchaeology = true,
 		showProfessionFishing = true,
 	showDungeon = true,
+	showDragonRiderRacing = true,
 	showPvP = true,
 	hideFactionColumn = false,
 	hideFactionParagonBars = false,
@@ -307,169 +264,44 @@ local C = function(k)
 	end
 end
 
-local expansion
-local warmodeEnabled = false
-
-local BWQ = CreateFrame("Frame", "Broker_WorldQuests", UIParent, "BackdropTemplate")
-BWQ:EnableMouse(true)
-BWQ:SetBackdrop({
-		bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
-		edgeFile = "Interface\\ChatFrame\\ChatFrameBackground",
-		tile = false,
-		tileSize = 0,
-		edgeSize = 2,
-		insets = { left = 0, right = 0, top = 0, bottom = 0 },
-	})
-BWQ:SetBackdropColor(0, 0, 0, .9)
-BWQ:SetBackdropBorderColor(0, 0, 0, 1)
-BWQ:SetClampedToScreen(true)
-BWQ:Hide()
-
-BWQ.buttonTheWarWithin = CreateFrame("Button", nil, BWQ, "BackdropTemplate")
-BWQ.buttonTheWarWithin:SetSize(20, 15)
-BWQ.buttonTheWarWithin:SetPoint("TOPRIGHT", BWQ, "TOPRIGHT", -146, -8)
-BWQ.buttonTheWarWithin:SetBackdrop({bgFile = "Interface\\ChatFrame\\ChatFrameBackground", tile = false, tileSize = 0, edgeSize = 2, insets = { left = 0, right = 0, top = 0, bottom = 0 }, })
-BWQ.buttonTheWarWithin:SetBackdropColor(0.1, 0.1, 0.1)
-BWQ.buttonTheWarWithin.texture = BWQ.buttonTheWarWithin:CreateTexture(nil, "OVERLAY")
-BWQ.buttonTheWarWithin.texture:SetPoint("TOPLEFT", 1, -1)
-BWQ.buttonTheWarWithin.texture:SetPoint("BOTTOMRIGHT", -1, 1)
-BWQ.buttonTheWarWithin.texture:SetTexture("Interface\\Calendar\\Holidays\\Calendar_WeekendTheWarWithinStart")		-- Use https://github.com/Marlamin/wow.tools.local to find textures
-BWQ.buttonTheWarWithin.texture:SetTexCoord(0.15, 0.55, 0.23, 0.47)
-
-BWQ.buttonDragonflight = CreateFrame("Button", nil, BWQ, "BackdropTemplate")
-BWQ.buttonDragonflight:SetSize(20, 15)
-BWQ.buttonDragonflight:SetPoint("TOPRIGHT", BWQ, "TOPRIGHT", -119, -8)
-BWQ.buttonDragonflight:SetBackdrop({bgFile = "Interface\\ChatFrame\\ChatFrameBackground", tile = false, tileSize = 0, edgeSize = 2, insets = { left = 0, right = 0, top = 0, bottom = 0 }, })
-BWQ.buttonDragonflight:SetBackdropColor(0.1, 0.1, 0.1)
-BWQ.buttonDragonflight.texture = BWQ.buttonDragonflight:CreateTexture(nil, "OVERLAY")
-BWQ.buttonDragonflight.texture:SetPoint("TOPLEFT", 1, -1)
-BWQ.buttonDragonflight.texture:SetPoint("BOTTOMRIGHT", -1, 1)
-BWQ.buttonDragonflight.texture:SetTexture("Interface\\Calendar\\Holidays\\Calendar_dragonflightstart")
-BWQ.buttonDragonflight.texture:SetTexCoord(0.15, 0.55, 0.23, 0.47)
-
-BWQ.buttonShadowlands = CreateFrame("Button", nil, BWQ, "BackdropTemplate")
-BWQ.buttonShadowlands:SetSize(20, 15)
-BWQ.buttonShadowlands:SetPoint("TOPRIGHT", BWQ, "TOPRIGHT", -92, -8)
-BWQ.buttonShadowlands:SetBackdrop({bgFile = "Interface\\ChatFrame\\ChatFrameBackground", tile = false, tileSize = 0, edgeSize = 2, insets = { left = 0, right = 0, top = 0, bottom = 0 }, })
-BWQ.buttonShadowlands:SetBackdropColor(0.1, 0.1, 0.1)
-BWQ.buttonShadowlands.texture = BWQ.buttonShadowlands:CreateTexture(nil, "OVERLAY")
-BWQ.buttonShadowlands.texture:SetPoint("TOPLEFT", 1, -1)
-BWQ.buttonShadowlands.texture:SetPoint("BOTTOMRIGHT", -1, 1)
-BWQ.buttonShadowlands.texture:SetTexture("Interface\\Calendar\\Holidays\\Calendar_WeekendShadowlandsStart")
-BWQ.buttonShadowlands.texture:SetTexCoord(0.15, 0.55, 0.23, 0.47)
-
-BWQ.buttonBFA = CreateFrame("Button", nil, BWQ, "BackdropTemplate")
-BWQ.buttonBFA:SetSize(20, 15)
-BWQ.buttonBFA:SetPoint("TOPRIGHT", BWQ, "TOPRIGHT", -65, -8)
-BWQ.buttonBFA:SetBackdrop({bgFile = "Interface\\ChatFrame\\ChatFrameBackground", tile = false, tileSize = 0, edgeSize = 2, insets = { left = 0, right = 0, top = 0, bottom = 0 }, })
-BWQ.buttonBFA:SetBackdropColor(0.1, 0.1, 0.1)
-BWQ.buttonBFA.texture = BWQ.buttonBFA:CreateTexture(nil, "OVERLAY")
-BWQ.buttonBFA.texture:SetPoint("TOPLEFT", 1, -1)
-BWQ.buttonBFA.texture:SetPoint("BOTTOMRIGHT", -1, 1)
-BWQ.buttonBFA.texture:SetTexture("Interface\\Calendar\\Holidays\\Calendar_WeekendBattleforAzerothStart")
-BWQ.buttonBFA.texture:SetTexCoord(0.15, 0.55, 0.23, 0.45)
-
-BWQ.buttonLegion = CreateFrame("Button", nil, BWQ, "BackdropTemplate")
-BWQ.buttonLegion:SetSize(20, 15)
-BWQ.buttonLegion:SetPoint("TOPRIGHT", BWQ, "TOPRIGHT", -38, -8)
-BWQ.buttonLegion:SetBackdrop({bgFile = "Interface\\ChatFrame\\ChatFrameBackground", tile = false, tileSize = 0, edgeSize = 2, insets = { left = 0, right = 0, top = 0, bottom = 0 }, })
-BWQ.buttonLegion:SetBackdropColor(0.1, 0.1, 0.1)
-BWQ.buttonLegion.texture = BWQ.buttonLegion:CreateTexture(nil, "OVERLAY")
-BWQ.buttonLegion.texture:SetPoint("TOPLEFT", 1, -1)
-BWQ.buttonLegion.texture:SetPoint("BOTTOMRIGHT", -1, 1)
-BWQ.buttonLegion.texture:SetTexture("Interface\\Calendar\\Holidays\\Calendar_WeekendLegionStart")
-BWQ.buttonLegion.texture:SetTexCoord(0.15, 0.55, 0.23, 0.47)
-
-BWQ.buttonTheWarWithin:SetScript("OnClick", function(self) BWQ:SwitchExpansion(CONSTANTS.EXPANSIONS.THEWARWITHIN) end)
-BWQ.buttonDragonflight:SetScript("OnClick", function(self) BWQ:SwitchExpansion(CONSTANTS.EXPANSIONS.DRAGONFLIGHT) end)
-BWQ.buttonShadowlands:SetScript("OnClick", function(self) BWQ:SwitchExpansion(CONSTANTS.EXPANSIONS.SHADOWLANDS) end)
-BWQ.buttonBFA:SetScript("OnClick", function(self) BWQ:SwitchExpansion(CONSTANTS.EXPANSIONS.BFA) end)
-BWQ.buttonLegion:SetScript("OnClick", function(self) BWQ:SwitchExpansion(CONSTANTS.EXPANSIONS.LEGION) end)
-
-BWQ.buttonSettings = CreateFrame("BUTTON", nil, BWQ, "BackdropTemplate")
-BWQ.buttonSettings:SetWidth(15)
-BWQ.buttonSettings:SetHeight(15)
-BWQ.buttonSettings:SetPoint("TOPRIGHT", BWQ, "TOPRIGHT", -12, -8)
-BWQ.buttonSettings.texture = BWQ.buttonSettings:CreateTexture(nil, "BORDER")
-BWQ.buttonSettings.texture:SetAllPoints()
-BWQ.buttonSettings.texture:SetTexture("Interface\\WorldMap\\Gear_64.png")
-BWQ.buttonSettings.texture:SetTexCoord(0, 0.50, 0, 0.50)
-BWQ.buttonSettings.texture:SetVertexColor(1.0, 0.82, 0, 1.0)
-BWQ.buttonSettings:SetScript("OnClick", function(self) BWQ:OpenConfigMenu(self) end)
-
-local Block_OnLeave = function(self)
-	if not C("attachToWorldMap") or (C("attachToWorldMap") and not WorldMapFrame:IsShown()) then
-		if not BWQ:IsMouseOver() then
-			BWQ:Hide()
-		end
-	end
-end
-BWQ:SetScript("OnLeave", Block_OnLeave)
-
-BWQ.slider = CreateFrame("Slider", nil, BWQ, "BackdropTemplate")
-BWQ.slider:SetWidth(16)
-BWQ.slider:SetThumbTexture("Interface\\Buttons\\UI-SliderBar-Button-Horizontal")
-BWQ.slider:SetBackdrop( {
-	bgFile = "Interface\\Buttons\\UI-SliderBar-Background",
-	--edgeFile = "Interface\\Buttons\\UI-SliderBar-Border",
-	edgeSize = 8, tile = true, tileSize = 8,
-	insets = { left=3, right=3, top=6, bottom=6 }
-} )
-BWQ.slider:SetValueStep(1)
-
-BWQ.slider:SetHeight(200)
-BWQ.slider:SetMinMaxValues( 0, 100 )
-BWQ.slider:SetValue(0)
-BWQ.slider:Hide()
-
-
-local bounties = {}
-local questIds = {}
-local numQuestsTotal, totalWidth, offsetTop = 0, 0, -15
-local hasCollapsedQuests = false
-local showDownwards = false
-local blockYPos = 0
-local highlightedRow = true
-
 local CreateErrorFS = function()
 	BWQ.errorFS = BWQ:CreateFontString("BWQerrorFS", "OVERLAY", "SystemFont_Shadow_Med1")
 	BWQ.errorFS:SetJustifyH("CENTER")
 	BWQ.errorFS:SetTextColor(.9, .8, 0)
 end
 
-local hasUnlockedWorldQuests
 function BWQ:WorldQuestsUnlocked()
-	if not hasUnlockedWorldQuests then
-		if (expansion == CONSTANTS.EXPANSIONS.THEWARWITHIN) then
-			hasUnlockedWorldQuests = IsQuestFlaggedCompleted(79573) -- See effect #1 under https://www.wowhead.com/spell=434027/world-quests-adventure-mode
-		elseif (expansion == CONSTANTS.EXPANSIONS.DRAGONFLIGHT) then
-			_, _, _, hasUnlockedWorldQuests = GetAchievementInfo(16326)
-			if not hasUnlockedWorldQuests then
-				hasUnlockedWorldQuests = UnitLevel("player") >= 68 and IsQuestFlaggedCompleted(66221)
+	if not BWQ.hasUnlockedWorldQuests then
+		if (BWQ.expansion == CONSTANTS.EXPANSIONS.THEWARWITHIN) then
+			BWQ.hasUnlockedWorldQuests = C_QuestLog.IsQuestFlaggedCompleted(79573) -- See effect #1 under https://www.wowhead.com/spell=434027/world-quests-adventure-mode
+		elseif (BWQ.expansion == CONSTANTS.EXPANSIONS.DRAGONFLIGHT) then
+			_, _, _, BWQ.hasUnlockedWorldQuests = GetAchievementInfo(16326)
+			if not BWQ.hasUnlockedWorldQuests then
+				BWQ.hasUnlockedWorldQuests = UnitLevel("player") >= 68 and C_QuestLog.IsQuestFlaggedCompleted(66221)
 			end
 		else
-			hasUnlockedWorldQuests = (expansion == CONSTANTS.EXPANSIONS.SHADOWLANDS and UnitLevel("player") >= 51 and IsQuestFlaggedCompleted(57559))
-				or (expansion == CONSTANTS.EXPANSIONS.BFA and UnitLevel("player") >= 50 and
-					(IsQuestFlaggedCompleted(51916) or IsQuestFlaggedCompleted(52451) -- horde
-					or IsQuestFlaggedCompleted(51918) or IsQuestFlaggedCompleted(52450))) -- alliance
-				or (expansion == CONSTANTS.EXPANSIONS.LEGION and UnitLevel("player") >= 45 and
-					(IsQuestFlaggedCompleted(43341) or IsQuestFlaggedCompleted(45727))) -- broken isles
+			BWQ.hasUnlockedWorldQuests = (BWQ.expansion == CONSTANTS.EXPANSIONS.SHADOWLANDS and UnitLevel("player") >= 51 and C_QuestLog.IsQuestFlaggedCompleted(57559))
+				or (BWQ.expansion == CONSTANTS.EXPANSIONS.BFA and UnitLevel("player") >= 50 and
+					(C_QuestLog.IsQuestFlaggedCompleted(51916) or C_QuestLog.IsQuestFlaggedCompleted(52451) -- horde
+					or C_QuestLog.IsQuestFlaggedCompleted(51918) or C_QuestLog.IsQuestFlaggedCompleted(52450))) -- alliance
+				or (BWQ.expansion == CONSTANTS.EXPANSIONS.LEGION and UnitLevel("player") >= 45 and
+					(C_QuestLog.IsQuestFlaggedCompleted(43341) or C_QuestLog.IsQuestFlaggedCompleted(45727))) -- broken isles
 		end
 	end
 
-	if not hasUnlockedWorldQuests then
+	if not BWQ.hasUnlockedWorldQuests then
 		if not BWQ.errorFS then CreateErrorFS() end
 
 		local level, quest, errorText
-		if expansion == CONSTANTS.EXPANSIONS.THEWARWITHIN then
+		if BWQ.expansion == CONSTANTS.EXPANSIONS.THEWARWITHIN then
 			errorText = "You need to unlock The War Within World Quests\non one of your characters."
-		elseif expansion == CONSTANTS.EXPANSIONS.DRAGONFLIGHT then
+		elseif BWQ.expansion == CONSTANTS.EXPANSIONS.DRAGONFLIGHT then
 			errorText = "You need to unlock Dragonflight World Quests\non one of your characters."
-		elseif expansion == CONSTANTS.EXPANSIONS.SHADOWLANDS then
+		elseif BWQ.expansion == CONSTANTS.EXPANSIONS.SHADOWLANDS then
 			errorText = "You need to unlock Shadowlands World Quests\non one of your characters."
-		elseif expansion == CONSTANTS.EXPANSIONS.BFA then
+		elseif BWQ.expansion == CONSTANTS.EXPANSIONS.BFA then
 			level = "50"
-			quest = isHorde and "|cffffff00|Hquest:57559:-1|h[Uniting Zandalar]|h|r" or "|cffffff00|Hquest:51918:-1|h[Uniting Kul Tiras]|h|r"
+			quest = self.isHorde and "|cffffff00|Hquest:57559:-1|h[Uniting Zandalar]|h|r" or "|cffffff00|Hquest:51918:-1|h[Uniting Kul Tiras]|h|r"
 			errorText = ("You need to reach Level %s and complete the\nquest %s to unlock World Quests."):format(level, quest)
 		else -- legion
 			level = "45"
@@ -477,7 +309,7 @@ function BWQ:WorldQuestsUnlocked()
 			errorText = ("You need to reach Level %s and complete the\nquest %s to unlock World Quests."):format(level, quest)
 		end
 
-		BWQ:SetErrorFSPosition(offsetTop)
+		BWQ:SetErrorFSPosition(BWQ.offsetTop)
 		BWQ.errorFS:SetText(errorText)
 		BWQ:SetSize(BWQ.errorFS:GetStringWidth() + 20, BWQ.errorFS:GetStringHeight() + 45)
 		BWQ.errorFS:Show()
@@ -496,15 +328,15 @@ function BWQ:ShowNoWorldQuestsInfo()
 	if not BWQ.errorFS then CreateErrorFS() end
 
 	BWQ.errorFS:ClearAllPoints()
-	BWQ:SetErrorFSPosition(offsetTop - 10)
-	BWQ.errorFS:SetPoint("TOP", BWQ, "TOP", 0, offsetTop - 10)
+	BWQ:SetErrorFSPosition(BWQ.offsetTop - 10)
+	BWQ.errorFS:SetPoint("TOP", BWQ, "TOP", 0, BWQ.offsetTop - 10)
 
 	BWQ.errorFS:SetText("There are no world quests available that match your filter settings.")
 	BWQ.errorFS:Show()
 end
 
 function BWQ:SetErrorFSPosition(offsetTop)
-	if (expansion == CONSTANTS.EXPANSIONS.SHADOWLANDS or expansion == CONSTANTS.EXPANSIONS.DRAGONFLIGHT or expansion == CONSTANTS.EXPANSIONS.THEWARWITHIN) then  -- TODO:  We are not supporting bounty quests for these expansions atm, so the ErrorFS position should be at the top of BWQ
+	if (BWQ.expansion == CONSTANTS.EXPANSIONS.SHADOWLANDS or BWQ.expansion == CONSTANTS.EXPANSIONS.DRAGONFLIGHT or BWQ.expansion == CONSTANTS.EXPANSIONS.THEWARWITHIN) then  -- TODO:  We are not supporting bounty quests for these expansions atm, so the ErrorFS position should be at the top of BWQ
 		BWQ.errorFS:SetPoint("TOP", BWQ, "TOP", 0, offsetTop)
 	else
 		if BWQ.factionDisplay:IsShown() then
@@ -571,7 +403,7 @@ function BWQ:GetItemLevelValueForQuestId(questId)
 end
 
 function BWQ:ValueWithWarModeBonus(questId, value)
-	local multiplier = warmodeEnabled and 1.1 or 1
+	local multiplier = BWQ.warmodeEnabled and 1.1 or 1
 	return floor(value * multiplier + 0.5)
 end
 
@@ -615,7 +447,6 @@ local FormatTimeLeftString = function(timeLeft)
 	return timeLeftStr
 end
 
-
 local tip = GameTooltip
 local ShowQuestObjectiveTooltip = function(row)
 	tip:SetOwner(row, "ANCHOR_CURSOR")
@@ -630,7 +461,7 @@ local ShowQuestObjectiveTooltip = function(row)
 		end
 	end
 
-	local percent = GetQuestProgressBarInfo(row.quest.questId)
+	local percent = C_TaskQuest.GetQuestProgressBarInfo(row.quest.questId)
 	if percent then
 		GameTooltip_ShowProgressBar(tip, 0, 100, percent, PERCENTAGE_STRING:format(percent))
 	end
@@ -649,9 +480,19 @@ local ShowQuestLogItemTooltip = function(button)
 	end
 end
 
+local ShowWorldQuestPOITooltip = function(button,poi)
+    tip:SetOwner(button, "ANCHOR_CURSOR")
+    tip:SetText(poi.name)
+	if button.quest.LockedWQ then
+		local description = string.format("You must complete %d more %s in %s to unlock '%s', which rewards |5 %s.", button.quest.LockedWQ_questsRemaining, button.quest.LockedWQ_questsRemaining > 1 and "WQs" or "WQ", button.quest.LockedWQ_zone, poi.name, button.quest.reward.itemLink)
+    	tip:AddLine(description, 1, 1, 1, true)
+	end
+    tip:Show()
+end
+
 -- super track map ping
 local mapTextures = CreateFrame("Frame", "BWQ_MapTextures", WorldMapFrame:GetCanvas())
-mapTextures:SetSize(200,200)
+mapTextures:SetSize(400,400)
 mapTextures:SetFrameStrata("DIALOG")
 mapTextures:SetFrameLevel(2001)
 local highlightArrow = mapTextures:CreateTexture("highlightArrow")
@@ -682,12 +523,11 @@ upAnimation:SetOrder(2)
 mapTextures.animationGroup = animationGroup
 BWQ.mapTextures = mapTextures
 
-
 function BWQ:QueryZoneQuestCoordinates(mapId)
-	local quests = GetQuestsForPlayerByMapID(mapId)
+	local quests = C_TaskQuest.GetQuestsForPlayerByMapID(mapId)
 	if quests then
 		for _, v in next, quests do
-			local quest = MAP_ZONES[expansion][mapId].quests[v.questId] 
+			local quest = MAP_ZONES[BWQ.expansion][mapId].quests[v.questId] 
 			if quest then
 				quest.x = v.x
 				quest.y = v.y
@@ -702,10 +542,10 @@ end
 local currentTomTomWaypoint
 local Row_OnClick = function(row)
 	if IsShiftKeyDown() then
-		if (GetQuestWatchType(row.quest.questId) == Enum.QuestWatchType.Manual or GetSuperTrackedQuestID() == row.quest.questId) then
-			BonusObjectiveTracker_UntrackWorldQuest(row.quest.questId)
+		if (C_QuestLog.GetQuestWatchType(row.quest.questId) == Enum.QuestWatchType.Manual or C_SuperTrack.GetSuperTrackedQuestID() == row.quest.questId) then
+			C_QuestLog.RemoveWorldQuestWatch(row.quest.questId)
 		else
-			BonusObjectiveTracker_TrackWorldQuest(row.quest.questId, Enum.QuestWatchType.Manual)
+			C_QuestLog.AddWorldQuestWatch(row.quest.questId, Enum.QuestWatchType.Manual)
 		end
 	else
 		if not WorldMapFrame:IsShown() then ShowUIPanel(WorldMapFrame) end
@@ -715,7 +555,7 @@ local Row_OnClick = function(row)
 			if row.quest.x and row.quest.y then
 				local x, y = BWQ:CalculateMapPosition(row.quest.x, row.quest.y)
 				local scale = WorldMapFrame:GetCanvasScale()
-				local size = 30 / scale
+				local size = 30 / scale * 1.35
 				BWQ.mapTextures:ClearAllPoints()
 				BWQ.mapTextures.highlightArrow:SetSize(size, size)
 				BWQ.mapTextures:SetPoint("CENTER", WorldMapFrame:GetCanvas(), "TOPLEFT", x, y + 25 + (scale < 0.5 and 50 or 0))
@@ -733,56 +573,42 @@ local Row_OnClick = function(row)
 	end
 end
 
-
 local lastUpdate, updateTries = 0, 0
 local needsRefresh = false
+local DebugRetrieveWQ = false
 local RetrieveWorldQuests = function(mapId)
-
 	local numQuests = 0
 	local currentTime = GetTime()
-	local questList = GetQuestsForPlayerByMapID(mapId)
-	warmodeEnabled = IsWarModeDesired()
+	local questList = C_TaskQuest.GetQuestsForPlayerByMapID(mapId)
+	BWQ.warmodeEnabled = C_PvP.IsWarModeDesired()
 
-	-- quest object fields are: x, y, floor, numObjectives, questId, inProgress
 	if questList then
 		numQuests = 0
-		MAP_ZONES[expansion][mapId].questsSort = {}
+		MAP_ZONES[BWQ.expansion][mapId].questsSort = {}
 
 		local timeLeft, questTagInfo, title, factionId
 		for i, q in ipairs(questList) do
-				if HaveQuestData(q.questId) and q.mapID == mapId then 
-				--[[
-					questTagInfo = {
-						tagId = 116
-						tagName = Blacksmithing World Quest
-						worldQuestType =
-							1 -> profession,
-							2 -> pve?
-							3 -> pvp
-							4 -> battle pet
-							5 -> ??
-							6 -> dungeon
-							7 -> invasion
-							8 -> raid
-						quality =
-							1 -> normal
-							2 -> rare
-							3 -> epic
-						isElite = true/false
-						tradeskillLineIndex = some number, no idea of meaning atm
-					}
-				]]
+			if DebugRetrieveWQ then
+				print(string.format("[BWQ] questList.%d: ID: %s (mapId: %d)", i, tostring(q.questId), mapId))
+			end
+			if HaveQuestData(q.questId) and q.mapID == mapId then 
+				timeLeft = C_TaskQuest.GetQuestTimeLeftMinutes(q.questId) or 0
+				questTagInfo = C_QuestLog.GetQuestTagInfo(q.questId)
 
-				timeLeft = GetQuestTimeLeftMinutes(q.questId) or 0
-				questTagInfo = GetQuestTagInfo(q.questId)
+				if DebugRetrieveWQ then
+					local _title, _factionId = C_TaskQuest.GetQuestInfoByQuestID(q.questId)
+					print(string.format("[BWQ] questList.%d: %s", i, _title))
+					if _factionId then print(string.format("[BWQ] questList.%d: faction: %d (%s)", i, _factionId, C_Reputation.GetFactionDataByID(_factionId).name)) end
+					if questTagInfo then print(string.format("[BWQ] questList.%d: WorldQuestType: %d", i, questTagInfo.worldQuestType)) end
+				end
 
 				if questTagInfo and questTagInfo.worldQuestType then
 					local questId = q.questId
-					table.insert(MAP_ZONES[expansion][mapId].questsSort, questId)
-					local quest = MAP_ZONES[expansion][mapId].quests[questId] or {}
+					table.insert(MAP_ZONES[BWQ.expansion][mapId].questsSort, questId)
+					local quest = MAP_ZONES[BWQ.expansion][mapId].quests[questId] or {}
 
 					if not quest.timeAdded then
-						quest.wasSaved = questIds[questId] ~= nil
+						quest.wasSaved = BWQ.questIds[questId] ~= nil
 					end
 					quest.timeAdded = quest.timeAdded or currentTime
 					if quest.wasSaved or currentTime - quest.timeAdded > 900 then
@@ -794,20 +620,19 @@ local RetrieveWorldQuests = function(mapId)
 					quest.hide = true
 					quest.sort = 0
 
-					-- GetQuestsForPlayerByMapID fields
+					-- C_TaskQuest.GetQuestsForPlayerByMapID fields
 					quest.questId = questId
 					quest.numObjectives = q.numObjectives
 					quest.xFlight = q.x
 					quest.yFlight = q.y
 
-					-- GetQuestTagInfo fields
+					-- C_QuestLog.GetQuestTagInfo fields
 					quest.tagId = questTagInfo.tagID
-					quest.tagName = questTagInfo.tagName
 					quest.worldQuestType = questTagInfo.worldQuestType
 					quest.quality = questTagInfo.quality
 					quest.isElite = questTagInfo.isElite
 
-					title, factionId = GetQuestInfoByQuestID(quest.questId)
+					title, factionId = C_TaskQuest.GetQuestInfoByQuestID(quest.questId)
 					quest.title = title
 					quest.factionId = factionId
 					if factionId then
@@ -830,6 +655,7 @@ local RetrieveWorldQuests = function(mapId)
 							quest.reward.itemQuality = quality
 							quest.reward.itemQuantity = quantity
 							quest.reward.itemName = itemName
+
 
 							--print(string.format("[BWQ] Quest %s - %s - %s - %s - %s", quest.questId, quest.title, itemName, itemId, quantity))    -- for debugging
 							
@@ -877,6 +703,7 @@ local RetrieveWorldQuests = function(mapId)
 							if C("showHighGold") then quest.hide = false end
 						end
 					end
+					-- honor reward
 					local honor = GetQuestLogRewardHonor(quest.questId)
 					if honor > 0 then
 						hasReward = true
@@ -887,177 +714,223 @@ local RetrieveWorldQuests = function(mapId)
 						if C("showHonor") then quest.hide = false end
 					end
 					-- currency reward
-					local numQuestCurrencies = GetNumQuestLogRewardCurrencies(quest.questId)
-					quest.reward.currencies = {}
-					for i = 1, numQuestCurrencies do
-						local name, texture, numItems, currencyId = GetQuestLogRewardCurrencyInfo(i, quest.questId)
-						if name then
-							hasReward = true
-							local currency = {}
-							if CONSTANTS.CURRENCIES_AFFECTED_BY_WARMODE[currencyId] then
-								currency.amount = BWQ:ValueWithWarModeBonus(quest.questId, numItems)
-							else
-								currency.amount = numItems
-							end
-							currency.name = string.format("%d %s", currency.amount, name)
-							currency.texture = texture
+					local rewardCurrencies = C_QuestInfoSystem.GetQuestRewardCurrencies(quest.questId)	
+					if rewardCurrencies then
+						quest.reward.currencies = {}
+						for i, currencyInfo in ipairs(rewardCurrencies) do
+							local name = currencyInfo.name
+							local texture = currencyInfo.texture
+							local numItems = currencyInfo.totalRewardAmount
+							local currencyId = currencyInfo.currencyID
+							--print(string.format("[BWQ] QuestID: %d", quest.questId))														-- Debugging
+							--print(string.format("[BWQ] - currencyInfo: %d - %s - %d - %d - %d", i, name, texture, numItems, currencyId))	-- Debugging
+							if name then
+								hasReward = true
+								local currency = {}
+								if CONSTANTS.CURRENCIES_AFFECTED_BY_WARMODE[currencyId] then
+									currency.amount = BWQ:ValueWithWarModeBonus(quest.questId, numItems)
+								else
+									currency.amount = numItems
+								end
+								currency.name = string.format("%d %s", currency.amount, name)
+								currency.texture = texture
 
-							--print(string.format("[BWQ] Quest %s - %s - %s - %s - %s - %s - %s", quest.questId, quest.title, name, currencyId, currency.name, currency.texture, currency.amount))    -- for debugging
+								--print(string.format("[BWQ] Quest %s - %s - %s - %s - %s - %s - %s", quest.questId, quest.title, name, currencyId, currency.name, currency.texture, currency.amount))    -- for debugging
 
-							if currencyId == 1553 then -- azerite
-								currency.name = string.format("|cffe5cc80[%d %s]|r", currency.amount, name)
-								rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.ARTIFACTPOWER
-								quest.reward.azeriteAmount = currency.amount -- todo: improve broker text values?
-								if C("showArtifactPower") then quest.hide = false end
-							elseif CONSTANTS.THEWARWITHIN_REPUTATION_CURRENCY_IDS[currencyId] then
-								currency.name = string.format("%s: %d %s", name, currency.amount, REPUTATION)
-								rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.IRRELEVANT
-								if C("showTWWReputation") then quest.hide = false end
-							elseif CONSTANTS.DRAGONFLIGHT_REPUTATION_CURRENCY_IDS[currencyId] then
-								currency.name = string.format("%s: %d %s", name, currency.amount, REPUTATION)
-								rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.IRRELEVANT
-								if C("showDFReputation") then quest.hide = false end
-							elseif CONSTANTS.SHADOWLANDS_REPUTATION_CURRENCY_IDS[currencyId] then
-								currency.name = string.format("%s: %d %s", name, currency.amount, REPUTATION)
-								rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.IRRELEVANT
-								if C("showSLReputation") then quest.hide = false end
-							elseif CONSTANTS.BFA_REPUTATION_CURRENCY_IDS[currencyId] then
-								currency.name = string.format("%s: %d %s", name, currency.amount, REPUTATION)
-								rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.IRRELEVANT
-								if C("showBFAReputation") then quest.hide = false end
-							elseif currencyId == 1560 then -- war resources
-								rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.WAR_RESOURCES
-								quest.reward.warResourceAmount = currency.amount
-								if C("showWarResources") then quest.hide = false end
-							elseif currencyId == 1716 or currencyId == 1717 then -- service medals
-								rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.SERVICE_MEDAL
-								quest.reward.serviceMedalAmount = currency.amount
-								if C("showBFAServiceMedals") then quest.hide = false end
-							elseif currencyId == 1220 then -- order hall resources
-								rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.RESOURCES
-								quest.reward.resourceAmount = currency.amount
-								if C("showResources") then quest.hide = false end
-							elseif currencyId == 1342 then -- legionfall supplies
-								rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.LEGIONFALL_SUPPLIES
-								quest.reward.legionfallSuppliesAmount = currency.amount
-								if C("showLegionfallSupplies") then quest.hide = false end
-							elseif currencyId == 1226 then -- nethershard
-								rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.NETHERSHARD
-								if C("showNethershards") then quest.hide = false end
-							elseif currencyId == 1508 then -- argunite
-								rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.ARGUNITE
-								if C("showArgunite") then quest.hide = false end
-							elseif currencyId == 1533 then
-								rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.WAKENING_ESSENCE
-								quest.reward.wakeningEssencesAmount = currency.amount
-								if C("showWakeningEssences") then quest.hide = false end
-							elseif currencyId == 1721 then -- prismatic manapearl
-								rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.PRISMATIC_MANAPEARL
-								quest.reward.prismaticManapearlAmount = currency.amount
-								if C("showPrismaticManapearl") then quest.hide = false end
-							elseif currencyId == 1979 then -- cyphers of the first ones (Zereth Mortis - 9.2)
-								rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.CYPHERS_OF_THE_FIRST_ONES
-								quest.reward.cyphersOfTheFirstOnesAmount = currency.amount
-								if C("showCyphersOfTheFirstOnes") then quest.hide = false end
-							elseif currencyId == 1885 then -- grateful offering
-								rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.GRATEFUL_OFFERING
-								quest.reward.gratefulOfferingAmount = currency.amount
-								if C("showGratefulOffering") then quest.hide = false end
-							elseif currencyId == 2123 then -- bloody tokens
-								rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.BLOODY_TOKENS
-								quest.reward.bloodyTokensAmount = currency.amount
-								if C("showBloodyTokens") then quest.hide = false end
-							elseif currencyId == 2003 then -- dragon isles supplies
-								rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.DRAGON_ISLES_SUPPLIES
-								quest.reward.dragonIslesSuppliesAmount = currency.amount
-								if C("showDragonIslesSupplies") then quest.hide = false end
-							elseif currencyId == 2118 then -- elemental overflow
-								rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.ELEMENTAL_OVERFLOW
-								quest.reward.elementalOverflowAmount = currency.amount
-								if C("showElementalOverflow") then quest.hide = false end
-							elseif currencyId == 2245 then -- flightstones
-								rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.FLIGHTSTONES
-								quest.reward.flightstonesAmount = currency.amount
-								if C("showFlightstones") then quest.hide = false end
-							elseif currencyId == 2706 then -- Whelplings Dreaming Crest
-								rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.WHELPLINGS_DREAMING_CREST
-								quest.reward.WhelplingsDreamingCrestAmount = currency.amount
-								if C("showWhelplingsDreamingCrest") then quest.hide = false end
-							elseif currencyId == 2707 then -- Drakes Dreaming Crest
-								rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.DRAKES_DREAMING_CREST
-								quest.reward.DrakesDreamingCrestAmount = currency.amount
-								if C("showDrakesDreamingCrest") then quest.hide = false end
-							elseif currencyId == 2708 then -- Wyrms Dreaming Crest
-								rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.WYRMS_DREAMING_CREST
-								quest.reward.WyrmsDreamingCrestAmount = currency.amount
-								if C("showWyrmsDreamingCrest") then quest.hide = false end
-							elseif currencyId == 2709 then -- Aspects Dreaming Crest
-								rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.ASPECTS_DREAMING_CREST
-								quest.reward.AspectsDreamingCrestAmount = currency.amount
-								if C("showAspectsDreamingCrest") then quest.hide = false end
-							elseif currencyId == 2806 then -- Whelplings Awakened Crest
-								rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.WHELPLINGS_Awakened_CREST
-								quest.reward.WhelplingsAwakenedCrestAmount = currency.amount
-								if C("showWhelplingsAwakenedCrest") then quest.hide = false end
-							elseif currencyId == 2807 then -- Drakes Awakened Crest
-								rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.DRAKES_Awakened_CREST
-								quest.reward.DrakesAwakenedCrestAmount = currency.amount
-								if C("showDrakesAwakenedCrest") then quest.hide = false end
-							elseif currencyId == 2809 then -- Wyrms Awakened Crest
-								rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.WYRMS_Awakened_CREST
-								quest.reward.WyrmsAwakenedCrestAmount = currency.amount
-								if C("showWyrmsAwakenedCrest") then quest.hide = false end
-							elseif currencyId == 2812 then -- Aspects Awakened Crest
-								rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.ASPECTS_Awakened_CREST
-								quest.reward.AspectsAwakenedCrestAmount = currency.amount
-								if C("showAspectsAwakenedCrest") then quest.hide = false end
-							elseif currencyId == 2657 then -- Mysterious Fragment
-								rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.MYSTERIOUS_FRAGMENT
-								quest.reward.MysteriousFragmentAmount = currency.amount
-								if C("showMysteriousFragment") then quest.hide = false end
-							elseif currencyId == 2815 then -- Resonance Crystals
-								rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.RESONANCE_CRYSTALS
-								quest.reward.ResonanceCrystalsAmount = currency.amount
-								if C("showResonanceCrystals") then quest.hide = false end
-							elseif currencyId == 2902 then -- The Assembly of the Deeps
-								rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.THE_ASSEMBLY_OF_THE_DEEPS
-								quest.TheAssemblyoftheDeepsAmount = currency.amount
-								if C("showTheAssemblyoftheDeeps") then quest.hide = false end
-							else 
-								if DEBUG then print(string.format("[BWQ] Unhandled currency: ID %s", currencyId)) end
-							end
-							quest.reward.currencies[#quest.reward.currencies + 1] = currency
+								if currencyId == 1553 then -- azerite
+									currency.name = string.format("|cffe5cc80[%d %s]|r", currency.amount, name)
+									rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.ARTIFACTPOWER
+									quest.reward.azeriteAmount = currency.amount -- todo: improve broker text values?
+									if C("showArtifactPower") then quest.hide = false end
+								elseif CONSTANTS.THEWARWITHIN_REPUTATION_CURRENCY_IDS[currencyId] then
+									currency.name = string.format("%s: %d %s", name, currency.amount, REPUTATION)
+									rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.IRRELEVANT
+									if C("showTWWReputation") then quest.hide = false end
+								elseif CONSTANTS.DRAGONFLIGHT_REPUTATION_CURRENCY_IDS[currencyId] then
+									currency.name = string.format("%s: %d %s", name, currency.amount, REPUTATION)
+									rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.IRRELEVANT
+									if C("showDFReputation") then quest.hide = false end
+								elseif CONSTANTS.SHADOWLANDS_REPUTATION_CURRENCY_IDS[currencyId] then
+									currency.name = string.format("%s: %d %s", name, currency.amount, REPUTATION)
+									rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.IRRELEVANT
+									if C("showSLReputation") then quest.hide = false end
+								elseif CONSTANTS.BFA_REPUTATION_CURRENCY_IDS[currencyId] then
+									currency.name = string.format("%s: %d %s", name, currency.amount, REPUTATION)
+									rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.IRRELEVANT
+									if C("showBFAReputation") then quest.hide = false end
+								elseif currencyId == 1560 then -- war resources
+									rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.WAR_RESOURCES
+									quest.reward.warResourceAmount = currency.amount
+									if C("showWarResources") then quest.hide = false end
+								elseif currencyId == 1716 or currencyId == 1717 then -- service medals
+									rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.SERVICE_MEDAL
+									quest.reward.serviceMedalAmount = currency.amount
+									if C("showBFAServiceMedals") then quest.hide = false end
+								elseif currencyId == 1220 then -- order hall resources
+									rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.RESOURCES
+									quest.reward.resourceAmount = currency.amount
+									if C("showResources") then quest.hide = false end
+								elseif currencyId == 1342 then -- legionfall supplies
+									rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.LEGIONFALL_SUPPLIES
+									quest.reward.legionfallSuppliesAmount = currency.amount
+									if C("showLegionfallSupplies") then quest.hide = false end
+								elseif currencyId == 1226 then -- nethershard
+									rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.NETHERSHARD
+									if C("showNethershards") then quest.hide = false end
+								elseif currencyId == 1508 then -- argunite
+									rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.ARGUNITE
+									if C("showArgunite") then quest.hide = false end
+								elseif currencyId == 1533 then
+									rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.WAKENING_ESSENCE
+									quest.reward.wakeningEssencesAmount = currency.amount
+									if C("showWakeningEssences") then quest.hide = false end
+								elseif currencyId == 1721 then -- prismatic manapearl
+									rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.PRISMATIC_MANAPEARL
+									quest.reward.prismaticManapearlAmount = currency.amount
+									if C("showPrismaticManapearl") then quest.hide = false end
+								elseif currencyId == 1979 then -- cyphers of the first ones (Zereth Mortis - 9.2)
+									rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.CYPHERS_OF_THE_FIRST_ONES
+									quest.reward.cyphersOfTheFirstOnesAmount = currency.amount
+									if C("showCyphersOfTheFirstOnes") then quest.hide = false end
+								elseif currencyId == 1885 then -- grateful offering
+									rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.GRATEFUL_OFFERING
+									quest.reward.gratefulOfferingAmount = currency.amount
+									if C("showGratefulOffering") then quest.hide = false end
+								elseif currencyId == 2123 then -- bloody tokens
+									rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.BLOODY_TOKENS
+									quest.reward.bloodyTokensAmount = currency.amount
+									if C("showBloodyTokens") then quest.hide = false end
+								elseif currencyId == 2003 then -- dragon isles supplies
+									rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.DRAGON_ISLES_SUPPLIES
+									quest.reward.dragonIslesSuppliesAmount = currency.amount
+									if C("showDragonIslesSupplies") then quest.hide = false end
+								elseif currencyId == 2118 then -- elemental overflow
+									rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.ELEMENTAL_OVERFLOW
+									quest.reward.elementalOverflowAmount = currency.amount
+									if C("showElementalOverflow") then quest.hide = false end
+								elseif currencyId == 2245 then -- flightstones
+									rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.FLIGHTSTONES
+									quest.reward.flightstonesAmount = currency.amount
+									if C("showFlightstones") then quest.hide = false end
+								elseif currencyId == 2706 then -- Whelplings Dreaming Crest
+									rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.WHELPLINGS_DREAMING_CREST
+									quest.reward.WhelplingsDreamingCrestAmount = currency.amount
+									if C("showWhelplingsDreamingCrest") then quest.hide = false end
+								elseif currencyId == 2707 then -- Drakes Dreaming Crest
+									rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.DRAKES_DREAMING_CREST
+									quest.reward.DrakesDreamingCrestAmount = currency.amount
+									if C("showDrakesDreamingCrest") then quest.hide = false end
+								elseif currencyId == 2708 then -- Wyrms Dreaming Crest
+									rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.WYRMS_DREAMING_CREST
+									quest.reward.WyrmsDreamingCrestAmount = currency.amount
+									if C("showWyrmsDreamingCrest") then quest.hide = false end
+								elseif currencyId == 2709 then -- Aspects Dreaming Crest
+									rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.ASPECTS_DREAMING_CREST
+									quest.reward.AspectsDreamingCrestAmount = currency.amount
+									if C("showAspectsDreamingCrest") then quest.hide = false end
+								elseif currencyId == 2806 then -- Whelplings Awakened Crest
+									rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.WHELPLINGS_Awakened_CREST
+									quest.reward.WhelplingsAwakenedCrestAmount = currency.amount
+									if C("showWhelplingsAwakenedCrest") then quest.hide = false end
+								elseif currencyId == 2807 then -- Drakes Awakened Crest
+									rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.DRAKES_Awakened_CREST
+									quest.reward.DrakesAwakenedCrestAmount = currency.amount
+									if C("showDrakesAwakenedCrest") then quest.hide = false end
+								elseif currencyId == 2809 then -- Wyrms Awakened Crest
+									rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.WYRMS_Awakened_CREST
+									quest.reward.WyrmsAwakenedCrestAmount = currency.amount
+									if C("showWyrmsAwakenedCrest") then quest.hide = false end
+								elseif currencyId == 2812 then -- Aspects Awakened Crest
+									rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.ASPECTS_Awakened_CREST
+									quest.reward.AspectsAwakenedCrestAmount = currency.amount
+									if C("showAspectsAwakenedCrest") then quest.hide = false end
+								elseif currencyId == 2657 then -- Mysterious Fragment
+									rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.MYSTERIOUS_FRAGMENT
+									quest.reward.MysteriousFragmentAmount = currency.amount
+									if C("showMysteriousFragment") then quest.hide = false end
+								elseif currencyId == 2815 then -- Resonance Crystals
+									rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.RESONANCE_CRYSTALS
+									quest.reward.ResonanceCrystalsAmount = currency.amount
+									if C("showResonanceCrystals") then quest.hide = false end
+								elseif currencyId == 2902 then -- The Assembly of the Deeps
+									rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.THE_ASSEMBLY_OF_THE_DEEPS
+									quest.reward.TheAssemblyoftheDeepsAmount = currency.amount
+									if C("showTheAssemblyoftheDeeps") then quest.hide = false end
+								elseif currencyId == 2899 then -- Hallowfall Arathi
+									rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.HALLOWFALL_ARATHI
+									quest.reward.HallowfallArathiAmount = currency.amount
+									if C("showHallowfallArathi") then quest.hide = false end
+								elseif currencyId == 3008 then -- Valorstones
+									rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.VALORSTONES
+									quest.reward.ValorstonesAmount = currency.amount
+									if C("showValorstones") then quest.hide = false end
+								elseif currencyId == 3056 then -- Kej
+									rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.KEJ
+									quest.reward.KejAmount = currency.amount
+									if C("showKej") then quest.hide = false end
+								elseif currencyId == 2897 then -- Council of Dornogal
+									rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.COUNCIL_OF_DORNOGAL
+									quest.reward.CouncilofDornogalAmount = currency.amount
+									if C("showCouncilofDornogal") then quest.hide = false end
+								elseif currencyId == 3002 then -- The Weaver
+									rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.THE_WEAVER
+									quest.reward.TheWeaverAmount = currency.amount
+									if C("showTheWeaver") then quest.hide = false end
+								elseif currencyId == 3003 then -- The General
+									rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.THE_GENERAL
+									quest.reward.TheGeneralAmount = currency.amount
+									if C("showTheGeneral") then quest.hide = false end
+								elseif currencyId == 3004 then -- The Vizier
+									rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.THE_VIZIER
+									quest.reward.TheVizierAmount = currency.amount
+									if C("showTheVizier") then quest.hide = false end																		
+								else 
+									if BWQcfg.spewDebugInfo then print(string.format("[BWQ] Unhandled currency: ID %s", currencyId)) end
+								end
+								quest.reward.currencies[#quest.reward.currencies + 1] = currency
 
-							if currencyId == 1553 then
-								quest.sort = quest.sort > CONSTANTS.SORT_ORDER.ARTIFACTPOWER and quest.sort or CONSTANTS.SORT_ORDER.ARTIFACTPOWER
-							else
-								quest.sort = quest.sort > CONSTANTS.SORT_ORDER.RESOURCES and quest.sort or CONSTANTS.SORT_ORDER.RESOURCES
+								if currencyId == 1553 then
+									quest.sort = quest.sort > CONSTANTS.SORT_ORDER.ARTIFACTPOWER and quest.sort or CONSTANTS.SORT_ORDER.ARTIFACTPOWER
+								else
+									quest.sort = quest.sort > CONSTANTS.SORT_ORDER.RESOURCES and quest.sort or CONSTANTS.SORT_ORDER.RESOURCES
+								end
 							end
 						end
 					end
-
-					if DEBUG and not hasReward and not HaveQuestData(quest.questId) then
+					-- xp reward [Only show if XP is the only reward (i.e., if none of the above are rewards)]
+					if not hasReward then
+						local xp = GetQuestLogRewardXP(quest.questId)
+						if xp > 0 then
+							hasReward = true
+							quest.reward.xp = xp
+							quest.sort = quest.sort > CONSTANTS.SORT_ORDER.XP and quest.sort or CONSTANTS.SORT_ORDER.XP
+							rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.XP
+							
+							if C("showXP") then quest.hide = false end
+						end
+					end
+					if BWQcfg.spewDebugInfo and not hasReward and not HaveQuestData(quest.questId) then
 						print(string.format("[BWQ] Quest with no reward found: ID %s (%s)", quest.questId, quest.title))
 					end
 					if not hasReward then needsRefresh = true end -- in most cases no reward means api returned incomplete data
 					
-					for _, bounty in ipairs(bounties) do
-						if IsQuestCriteriaForBounty(quest.questId, bounty.questID) then
+					for _, bounty in ipairs(BWQ.bounties) do
+						if C_QuestLog.IsQuestCriteriaForBounty(quest.questId, bounty.questID) then
 							quest.bounties[#quest.bounties + 1] = bounty.icon
 						end
 					end
-
 					local questType = {}
+
 					-- quest type filters
-					if quest.worldQuestType == CONSTANTS.WORLD_QUEST_TYPES.PETBATTLE then
+					if quest.worldQuestType == Enum.QuestTagType.PetBattle then
 						if C("showPetBattle") or (C("alwaysShowPetBattleFamilyFamiliar") and CONSTANTS.FAMILY_FAMILIAR_QUEST_IDS[quest.questId] ~= nil) then
 							quest.hide = false
 						else
 							quest.hide = true
 						end
 
-						quest.isMissingAchievementCriteria = BWQ:IsQuestAchievementCriteriaMissing(CONSTANTS.ACHIEVEMENT_IDS.PET_BATTLE_WQ[expansion], quest.questId)
-					elseif quest.worldQuestType == CONSTANTS.WORLD_QUEST_TYPES.PROFESSION then
+						quest.isMissingAchievementCriteria = BWQ:IsQuestAchievementCriteriaMissing(CONSTANTS.ACHIEVEMENT_IDS.PET_BATTLE_WQ[BWQ.expansion], quest.questId)
+					elseif quest.worldQuestType == Enum.QuestTagType.Profession then
 						if C("showProfession") then
 
 							if quest.tagId == 119 then
@@ -1087,8 +960,9 @@ local RetrieveWorldQuests = function(mapId)
 						else
 							quest.hide = true
 						end
-					elseif not C("showPvP") and quest.worldQuestType == CONSTANTS.WORLD_QUEST_TYPES.PVP then quest.hide = true
-					elseif not C("showDungeon") and quest.worldQuestType == CONSTANTS.WORLD_QUEST_TYPES.DUNGEON then quest.hide = true
+					elseif not C("showPvP") and quest.worldQuestType == Enum.QuestTagType.PvP then quest.hide = true
+					elseif not C("showDungeon") and quest.worldQuestType == Enum.QuestTagType.Dungeon then quest.hide = true
+					elseif not C("showDragonRiderRacing") and quest.worldQuestType == Enum.QuestTagType.DragonRiderRacing then quest.hide = true
 					end
 
 					-- only show quest that are blue or above quality
@@ -1138,23 +1012,25 @@ local RetrieveWorldQuests = function(mapId)
 						(C("alwaysShowArgussianReach") and quest.factionId == 2170) then
 
 						-- pet battle override
-						if C("hidePetBattleBountyQuests") and not C("showPetBattle") and quest.worldQuestType == CONSTANTS.WORLD_QUEST_TYPES.PETBATTLE then
+						if C("hidePetBattleBountyQuests") and not C("showPetBattle") and quest.worldQuestType == Enum.QuestTagType.PetBattle then
 							quest.hide = true
 						else
 							quest.hide = false
 						end
 					end
 					-- don't filter epic quests based on setting
-					if C("alwaysShowEpicQuests") and (quest.quality == 2 or quest.worldQuestType == CONSTANTS.WORLD_QUEST_TYPES.RAID) then quest.hide = false end
+					if C("alwaysShowEpicQuests") and (quest.quality == 2 or quest.worldQuestType == Enum.QuestTagType.Raid) then quest.hide = false end
 
-					MAP_ZONES[expansion][mapId].quests[questId] = quest
+					MAP_ZONES[BWQ.expansion][mapId].quests[questId] = quest
 
 					if not quest.hide then
 						numQuests = numQuests + 1
 
 						if rewardType then
 							for _, rtype in next, rewardType do
-								if rtype == CONSTANTS.REWARD_TYPES.ARTIFACTPOWER and quest.reward.azeriteAmount then
+								if rtype == CONSTANTS.REWARD_TYPES.POLISHED_PET_CHARM then
+									BWQ.totalPolishedPetCharms = BWQ.totalPolishedPetCharms + quest.reward.polishedPetCharmsAmount
+								elseif rtype == CONSTANTS.REWARD_TYPES.ARTIFACTPOWER and quest.reward.azeriteAmount then
 									BWQ.totalArtifactPower = BWQ.totalArtifactPower + (quest.reward.azeriteAmount or 0)
 								elseif rtype == CONSTANTS.REWARD_TYPES.WAKENING_ESSENCE and quest.reward.wakeningEssencesAmount then
 									BWQ.totalWakeningEssences = BWQ.totalWakeningEssences + quest.reward.wakeningEssencesAmount
@@ -1166,6 +1042,8 @@ local RetrieveWorldQuests = function(mapId)
 									BWQ.totalResources = BWQ.totalResources + quest.reward.resourceAmount
 								elseif rtype == CONSTANTS.REWARD_TYPES.LEGIONFALL_SUPPLIES and quest.reward.legionfallSuppliesAmount then
 									BWQ.totalLegionfallSupplies = BWQ.totalLegionfallSupplies + quest.reward.legionfallSuppliesAmount
+								elseif rtype == CONSTANTS.REWARD_TYPES.XP and quest.reward.xp then
+									BWQ.totalXP = BWQ.totalXP + quest.reward.xp
 								elseif rtype == CONSTANTS.REWARD_TYPES.HONOR and quest.reward.honor then
 									BWQ.totalHonor = BWQ.totalHonor + quest.reward.honor
 								elseif rtype == CONSTANTS.REWARD_TYPES.MONEY and quest.reward.money then
@@ -1212,8 +1090,20 @@ local RetrieveWorldQuests = function(mapId)
 									BWQ.totalResonanceCrystals = BWQ.totalResonanceCrystals + quest.reward.ResonanceCrystalsAmount
 								elseif rtype == CONSTANTS.REWARD_TYPES.THE_ASSEMBLY_OF_THE_DEEPS then
 									BWQ.totalTheAssemblyOfTheDeeps = BWQ.totalTheAssemblyOfTheDeeps + quest.reward.TheAssemblyoftheDeepsAmount
-								elseif rtype == CONSTANTS.REWARD_TYPES.POLISHED_PET_CHARM then
-									BWQ.totalPolishedPetCharms = BWQ.totalPolishedPetCharms + quest.reward.polishedPetCharmsAmount
+								elseif rtype == CONSTANTS.REWARD_TYPES.HALLOWFALL_ARATHI then
+									BWQ.totalHallowfallArathi = BWQ.totalHallowfallArathi + quest.reward.HallowfallArathiAmount
+								elseif rtype == CONSTANTS.REWARD_TYPES.VALORSTONES then
+									BWQ.totalValorstones = BWQ.totalValorstones + quest.reward.ValorstonesAmount
+								elseif rtype == CONSTANTS.REWARD_TYPES.KEJ then
+									BWQ.totalKej = BWQ.totalKej + quest.reward.KejAmount
+								elseif rtype == CONSTANTS.REWARD_TYPES.COUNCIL_OF_DORNOGAL then
+									BWQ.totalCouncilofDornogal = BWQ.totalCouncilofDornogal + quest.reward.CouncilofDornogalAmount
+								elseif rtype == CONSTANTS.REWARD_TYPES.THE_WEAVER then
+									BWQ.totalTheWeaver = BWQ.totalTheWeaver + quest.reward.TheWeaverAmount
+								elseif rtype == CONSTANTS.REWARD_TYPES.THE_GENERAL then
+									BWQ.totalTheGeneral = BWQ.totalTheGeneral + quest.reward.TheGeneralAmount
+								elseif rtype == CONSTANTS.REWARD_TYPES.THE_VIZIER then
+									BWQ.totalTheVizier = BWQ.totalTheVizier + quest.reward.TheVizierAmount
 								end
 							end
 						end
@@ -1230,18 +1120,141 @@ local RetrieveWorldQuests = function(mapId)
 								end
 							end
 						end
+					else
+						--[[
+						if BWQcfg.spewDebugInfo then
+							print("-------")
+							print("[BWQ] Quest Hidden!")
+							print("[BWQ] -- Title: "..tostring(quest.title))
+							print("[BWQ] -- ID: "..tostring(quest.questId))
+							print("[BWQ] -- tagName: "..tostring(quest.tagName))
+							print("[BWQ] -- tagId: "..tostring(quest.tagId))
+							print("[BWQ] -- worldQuestType: "..tostring(quest.worldQuestType))
+							if (quest.factionId) then
+								print("[BWQ] -- faction: "..tostring(quest.faction).." (factionID: "..tostring(quest.factionId)..")")
+							end
+							print("-------")
+						end
+						]]
 					end
 				end
+			end
+			if DebugRetrieveWQ then
+				print("[BWQ] ---")
 			end
 		end
 
 		if C("sortByTimeRemaining") then
-			table.sort(MAP_ZONES[expansion][mapId].questsSort, function(a, b) return MAP_ZONES[expansion][mapId].quests[a].timeLeft < MAP_ZONES[expansion][mapId].quests[b].timeLeft end)
+			table.sort(MAP_ZONES[BWQ.expansion][mapId].questsSort, function(a, b) return MAP_ZONES[BWQ.expansion][mapId].quests[a].timeLeft < MAP_ZONES[BWQ.expansion][mapId].quests[b].timeLeft end)
 		else -- reward type
-			table.sort(MAP_ZONES[expansion][mapId].questsSort, function(a, b) return MAP_ZONES[expansion][mapId].quests[a].sort > MAP_ZONES[expansion][mapId].quests[b].sort end)
+			table.sort(MAP_ZONES[BWQ.expansion][mapId].questsSort, function(a, b) return MAP_ZONES[BWQ.expansion][mapId].quests[a].sort > MAP_ZONES[BWQ.expansion][mapId].quests[b].sort end)
 		end
 
-		MAP_ZONES[expansion][mapId].numQuests = numQuests
+		MAP_ZONES[BWQ.expansion][mapId].numQuests = numQuests
+	end
+
+	-- Retrieve locked world quests (i.e., capstone quests), which are handled differently
+	local areaPoiIDs = C_AreaPoiInfo.GetAreaPOIForMap(mapId)
+    if areaPoiIDs then
+        for i, poiID in ipairs(areaPoiIDs) do
+            local poi = C_AreaPoiInfo.GetAreaPOIInfo(mapId,poiID)
+            if poi and string.find(poi.name, "Special Assignment") then		-- TODO:  Are there other "names" that should be showing other than "Special Assignment" quests?
+				local questId = poi.areaPoiID
+				table.insert(MAP_ZONES[BWQ.expansion][mapId].questsSort, questId)
+				local quest = MAP_ZONES[BWQ.expansion][mapId].quests[questId] or {}
+				quest.title = poi.name
+				quest.LockedWQ = true
+				if not quest.timeAdded then
+					quest.wasSaved = BWQ.questIds[questId] ~= nil
+				end
+				quest.timeAdded = quest.timeAdded or currentTime
+				if quest.wasSaved or currentTime - quest.timeAdded > 900 then
+					quest.isNew = false
+				else
+					quest.isNew = true
+				end
+				quest.hide = false											-- TODO:  Add option to hide locked world quests ...always showing them for now.
+				quest.sort = 0
+				quest.questId = questId
+				quest.numObjectives = 0										-- Not used
+				quest.xFlight = poi.position.x
+				quest.yFlight = poi.position.x
+				quest.tagId = -1
+				quest.worldQuestType = Enum.QuestTagType.Capstone			-- TODO: all locked WQs are currently capstone types.  (Not sure if this is even needed to be set in this context?)
+				quest.quality = Enum.WorldQuestQuality.Common				-- Set to 'Common' so that the quest title is white.
+				quest.isElite = true										-- TODO: Any reason not to set these locked quests as 'elite'?
+				quest.factionId = poi.factionID
+				if factionId then
+					quest.faction = C_Reputation.GetFactionDataByID(factionId).name
+				end
+				quest.bounties = {}
+				quest.reward = {}
+				local rewardType = {}
+				local hasReward = false
+				quest.isMissingAchievementCriteria = false					-- TODO:  set this properly?  Right now just setting to false as a default.
+				quest.poi = poi
+
+				-- Go through widgets to get reward and time remaining information
+				if not poi.tooltipWidgetSet then
+					quest.hide = true
+				else
+					local widgets = C_UIWidgetManager.GetAllWidgetsBySetID(poi.tooltipWidgetSet)
+					if widgets then
+						for j, widget in pairs(widgets) do
+							if widget.widgetType == Enum.UIWidgetVisualizationType.TextWithState then
+								local widgetInfo = C_UIWidgetManager.GetTextWithStateWidgetVisualizationInfo(widget.widgetID)
+								if widgetInfo then
+									if string.find(widgetInfo.text, "Time Left:") then
+										local timeLeftStr = string.match(widgetInfo.text, "Time Left:%s*(.+)")
+
+										-- Note that WoW uses escape codes for singular/plural type things like this, which will not show up
+										-- with print().  To see them, you have to convert the string to a table, then use DevTools_Dump() -- for example: local tmp = { stringToDump }    DevTools_Dump(tmp)
+										-- See also:  https://warcraft.wiki.gg/wiki/UI_escape_sequences#Plural
+										local days = string.match(timeLeftStr, "(%d+)%s*|4Day:Days;")
+										local hours = string.match(timeLeftStr, "(%d+)%s*|4Hour:Hours;")
+										days = days and tonumber(days) or 0				-- Convert to numbers, default to 0 if not found
+										hours = hours and tonumber(hours) or 0			-- Convert to numbers, default to 0 if not found
+										local totalMinutes = (days * 24 * 60) + (hours * 60)
+										quest.timeLeft = totalMinutes
+										quest.timeLeftString = timeLeftStr
+									elseif string.find(widgetInfo.text, "Complete") then
+										local quests, zone = string.match(widgetInfo.text, "Complete (%d+) |4world quest:world quests; in ?(.-) to unlock")
+										if string.find(zone,"the") then
+											zone = string.match(zone, "^the%s*(.+)")    -- remove the word "the" if it's the first word in the string and lowercase.
+										end
+										quest.LockedWQ_questsRemaining = quests and tonumber(quests) or 0
+										quest.LockedWQ_zone = zone or ""
+									end
+								end
+							elseif widget.widgetType == Enum.UIWidgetVisualizationType.ItemDisplay then
+								local widgetInfo = C_UIWidgetManager.GetItemDisplayVisualizationInfo(widget.widgetID)
+								if widgetInfo then
+									local itemName, itemLink, itemQuality, itemLevel, _, itemType, itemSubType, itemStackCount = C_Item.GetItemInfo(widgetInfo.itemInfo.itemID)  -- https://warcraft.wiki.gg/wiki/API_C_Item.GetItemInfo
+									hasReward = true
+									quest.reward.itemTexture = poi.atlasName
+									quest.reward.itemId = widgetInfo.itemInfo.itemID
+									quest.reward.itemQuality = itemQuality
+									quest.reward.itemQuantity = itemStackCount
+									quest.reward.itemName = itemName
+									quest.reward.itemLink = itemLink
+								end 
+							end
+						end
+					end
+				end
+
+				MAP_ZONES[BWQ.expansion][mapId].quests[questId] = quest
+				numQuests = numQuests + 1
+			end
+		end
+
+		if C("sortByTimeRemaining") then
+			table.sort(MAP_ZONES[BWQ.expansion][mapId].questsSort, function(a, b) return MAP_ZONES[BWQ.expansion][mapId].quests[a].timeLeft < MAP_ZONES[BWQ.expansion][mapId].quests[b].timeLeft end)
+		else -- reward type
+			table.sort(MAP_ZONES[BWQ.expansion][mapId].questsSort, function(a, b) return MAP_ZONES[BWQ.expansion][mapId].quests[a].sort > MAP_ZONES[BWQ.expansion][mapId].quests[b].sort end)
+		end
+
+		MAP_ZONES[BWQ.expansion][mapId].numQuests = numQuests
 	end
 end
 
@@ -1249,21 +1262,21 @@ end
 BWQ.bountyCache = {}
 BWQ.bountyDisplay = CreateFrame("Frame", "BWQ_BountyDisplay", BWQ)
 function BWQ:UpdateBountyData()
-	if expansion == CONSTANTS.EXPANSIONS.THEWARWITHIN then -- TODO: get map id for retrieving bounties
+	if BWQ.expansion == CONSTANTS.EXPANSIONS.THEWARWITHIN then -- TODO: get map id for retrieving bounties
 		BWQ.bountyDisplay:Hide()
 		for i, item in pairs(BWQ.bountyCache) do
 			item.button:Hide()
 		end
 		return
 	end
-	if expansion == CONSTANTS.EXPANSIONS.DRAGONFLIGHT then -- TODO: get map id for retrieving bounties
+	if BWQ.expansion == CONSTANTS.EXPANSIONS.DRAGONFLIGHT then -- TODO: get map id for retrieving bounties
 		BWQ.bountyDisplay:Hide()
 		for i, item in pairs(BWQ.bountyCache) do
 			item.button:Hide()
 		end
 		return
 	end
-	if expansion == CONSTANTS.EXPANSIONS.SHADOWLANDS then -- TODO: get map id for retrieving bounties
+	if BWQ.expansion == CONSTANTS.EXPANSIONS.SHADOWLANDS then -- TODO: get map id for retrieving bounties
 		BWQ.bountyDisplay:Hide()
 		for i, item in pairs(BWQ.bountyCache) do
 			item.button:Hide()
@@ -1274,17 +1287,17 @@ function BWQ:UpdateBountyData()
 		item.button:Show()
 	end
 
-	bounties = GetBountiesForMapID(expansion == CONSTANTS.EXPANSIONS.BFA and CONSTANTS.MAPID_KUL_TIRAS or CONSTANTS.MAPID_DALARAN_BROKEN_ISLES) or {}
-	if #bounties == 0 then
+	BWQ.bounties = C_QuestLog.GetBountiesForMapID(BWQ.expansion == CONSTANTS.EXPANSIONS.BFA and CONSTANTS.MAPID_KUL_TIRAS or CONSTANTS.MAPID_DALARAN_BROKEN_ISLES) or {}
+	if #BWQ.bounties == 0 then
 		BWQ.bountyDisplay:Hide()
 		return
 	end
 
 	local bountyWidth = 0 -- added width of all items inside the bounty block
-	for bountyIndex, bounty in ipairs(bounties) do
-		local questIndex = GetLogIndexForQuestID(bounty.questID)
-		local title = GetTitleForLogIndex(questIndex)
-		local timeleft = GetQuestTimeLeftMinutes(bounty.questID)
+	for bountyIndex, bounty in ipairs(BWQ.bounties) do
+		local questIndex = C_QuestLog.GetLogIndexForQuestID(bounty.questID)
+		local title = C_QuestLog.GetTitleForLogIndex(questIndex)
+		local timeleft = C_TaskQuest.GetQuestTimeLeftMinutes(bounty.questID)
 		local _, _, finished, numFulfilled, numRequired = GetQuestObjectiveInfo(bounty.questID, 1, false)
 
 		local bountyCacheItem
@@ -1332,8 +1345,8 @@ function BWQ:UpdateBountyData()
 	end
 
 	-- remove obsolete bounty entries (completed or disappeared)
-	if #bounties < #BWQ.bountyCache then
-		for i = #bounties + 1, #BWQ.bountyCache do
+	if #BWQ.bounties < #BWQ.bountyCache then
+		for i = #BWQ.bounties + 1, #BWQ.bountyCache do
 			BWQ.bountyCache[i].icon:Hide()
 			BWQ.bountyCache[i].text:Hide()
 			BWQ.bountyCache[i].button:Hide()
@@ -1342,19 +1355,19 @@ function BWQ:UpdateBountyData()
 	end
 
 	-- show if bounties available, otherwise hide the bounty block
-	if #bounties > 0 then
+	if #BWQ.bounties > 0 then
 		BWQ.bountyDisplay:Show()
 		BWQ.bountyDisplay:SetSize(bountyWidth, 30)
-		BWQ.bountyDisplay:SetPoint("TOP", BWQ, "TOP", 0, offsetTop)
-		offsetTop = offsetTop - 40
+		BWQ.bountyDisplay:SetPoint("TOP", BWQ, "TOP", 0, BWQ.offsetTop)
+		BWQ.offsetTop = BWQ.offsetTop - 40
 	else
 		BWQ.bountyDisplay:Hide()
 	end
 end
 
 function BWQ:ShowBountyTooltip(button, questId)
-	local questIndex = GetLogIndexForQuestID(questId)
-	local title = GetTitleForLogIndex(questIndex)
+	local questIndex = C_QuestLog.GetLogIndexForQuestID(questId)
+	local title = C_QuestLog.GetTitleForLogIndex(questIndex)
 	if title then
 		GameTooltip:SetOwner(button, "ANCHOR_BOTTOM")
 		GameTooltip:SetText(title, HIGHLIGHT_FONT_COLOR:GetRGB())
@@ -1388,14 +1401,14 @@ local factionIncreaseString2 = FACTION_STANDING_INCREASED_ACH_BONUS:gsub("%%d", 
 local factionIncreaseString3 = FACTION_STANDING_INCREASED_GENERIC:gsub("%%s", "(.*)"):gsub(" %(%+.*%)" ,"")
 
 function BWQ:SetParagonFactionsByActiveExpansion()
-	if expansion == CONSTANTS.EXPANSIONS.THEWARWITHIN then 
+	if BWQ.expansion == CONSTANTS.EXPANSIONS.THEWARWITHIN then 
 		paragonFactions = CONSTANTS.PARAGON_FACTIONS.thewarwithin
-	elseif expansion == CONSTANTS.EXPANSIONS.DRAGONFLIGHT then 
+	elseif BWQ.expansion == CONSTANTS.EXPANSIONS.DRAGONFLIGHT then 
 		paragonFactions = CONSTANTS.PARAGON_FACTIONS.dragonflight
-	elseif expansion == CONSTANTS.EXPANSIONS.SHADOWLANDS then 
+	elseif BWQ.expansion == CONSTANTS.EXPANSIONS.SHADOWLANDS then 
 		paragonFactions = CONSTANTS.PARAGON_FACTIONS.shadowlands
 	elseif
-		expansion == CONSTANTS.EXPANSIONS.BFA then paragonFactions = isHorde and CONSTANTS.PARAGON_FACTIONS.bfahorde or CONSTANTS.PARAGON_FACTIONS.bfaalliance
+		BWQ.expansion == CONSTANTS.EXPANSIONS.BFA then paragonFactions = self.isHorde and CONSTANTS.PARAGON_FACTIONS.bfahorde or CONSTANTS.PARAGON_FACTIONS.bfaalliance
 	else
 		paragonFactions = CONSTANTS.PARAGON_FACTIONS.legion
 	end
@@ -1438,7 +1451,7 @@ function BWQ:UpdateParagonData()
 	local row
 	local factionId
 	for _, factionId in next, paragonFactions.order do
-		if IsFactionParagon(factionId) then
+		if C_Reputation.IsFactionParagon(factionId) then
 			
 			local factionFrame
 
@@ -1481,7 +1494,7 @@ function BWQ:UpdateParagonData()
 			row:Show()
 
 			local name = C_Reputation.GetFactionDataByID(factionId).name
-			local current, threshold, rewardQuestId, hasRewardPending = GetFactionParagonInfo(factionId)
+			local current, threshold, rewardQuestId, hasRewardPending = C_Reputation.GetFactionParagonInfo(factionId)
 			
 			local progress = 0
 			if current and threshold then progress = (current % threshold) / threshold * 50 end
@@ -1521,8 +1534,8 @@ function BWQ:UpdateParagonData()
 	if (i > 0) then
 		BWQ.factionDisplay:Show()
 		BWQ.factionDisplay:SetSize(maxWidth, 20 * (rowIndex + 1))
-		BWQ.factionDisplay:SetPoint("TOP", BWQ, "TOP", 0, offsetTop)
-		offsetTop = offsetTop - 20 * (rowIndex + 1)
+		BWQ.factionDisplay:SetPoint("TOP", BWQ, "TOP", 0, BWQ.offsetTop)
+		BWQ.offsetTop = BWQ.offsetTop - 20 * (rowIndex + 1)
 	else
 		BWQ.factionDisplay:Hide()
 	end
@@ -1537,7 +1550,6 @@ function BWQ:UpdateFactionDisplayVisible()
 	end
 end
 
-
 function BWQ:UpdateInfoPanel()
 	BWQ:UpdateBountyData()
 	BWQ:UpdateParagonData()
@@ -1546,35 +1558,43 @@ end
 
 local originalMap, originalContinent, originalDungeonLevel
 function BWQ:UpdateQuestData()
-	questIds = BWQcache.questIds or {}
-	BWQ.totalArtifactPower, BWQ.totalGold, BWQ.totalWarResources, BWQ.totalServiceMedals, BWQ.totalResources, BWQ.totalLegionfallSupplies, BWQ.totalHonor, BWQ.totalGear, BWQ.totalHerbalism, BWQ.totalMining, BWQ.totalFishing, BWQ.totalSkinning, BWQ.totalBloodOfSargeras, BWQ.totalWakeningEssences, BWQ.totalMarkOfHonor, BWQ.totalPrismaticManapearl, BWQ.totalCyphersOfTheFirstOnes, BWQ.totalGratefulOffering, BWQ.totalBloodyTokens, BWQ.totalDragonIslesSupplies, BWQ.totalElementalOverflow, BWQ.totalFlightstones, BWQ.totalWhelplingsDreamingCrest, BWQ.totalDrakesDreamingCrest, BWQ.totalWyrmsDreamingCrest, BWQ.totalAspectsDreamingCrest, BWQ.totalWhelplingsAwakenedCrest, BWQ.totalDrakesAwakenedCrest, BWQ.totalWyrmsAwakenedCrest, BWQ.totalAspectsAwakenedCrest, BWQ.totalMysteriousFragment, BWQ.totalResonanceCrystals, BWQ.totalTheAssemblyOfTheDeeps, BWQ.totalPolishedPetCharms = 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+	BWQ.questIds = BWQcache.questIds or {}
+	BWQ.totalArtifactPower, BWQ.totalGold, BWQ.totalWarResources, BWQ.totalServiceMedals, BWQ.totalResources, BWQ.totalLegionfallSupplies = 0, 0, 0, 0, 0, 0
+	BWQ.totalHonor, BWQ.totalGear, BWQ.totalHerbalism, BWQ.totalMining, BWQ.totalFishing, BWQ.totalSkinning, BWQ.totalBloodOfSargeras = 0, 0, 0, 0, 0, 0, 0
+	BWQ.totalWakeningEssences, BWQ.totalMarkOfHonor, BWQ.totalPrismaticManapearl, BWQ.totalCyphersOfTheFirstOnes, BWQ.totalGratefulOffering = 0, 0, 0, 0, 0
+	BWQ.totalBloodyTokens, BWQ.totalDragonIslesSupplies, BWQ.totalElementalOverflow, BWQ.totalFlightstones, BWQ.totalWhelplingsDreamingCrest = 0, 0, 0, 0, 0
+	BWQ.totalDrakesDreamingCrest, BWQ.totalWyrmsDreamingCrest, BWQ.totalAspectsDreamingCrest, BWQ.totalWhelplingsAwakenedCrest = 0, 0, 0, 0
+	BWQ.totalDrakesAwakenedCrest, BWQ.totalWyrmsAwakenedCrest, BWQ.totalAspectsAwakenedCrest, BWQ.totalMysteriousFragment = 0, 0, 0, 0
+	BWQ.totalResonanceCrystals, BWQ.totalTheAssemblyOfTheDeeps, BWQ.totalHallowfallArathi, BWQ.totalValorstones, BWQ.totalKej = 0, 0, 0, 0, 0
+	BWQ.totalPolishedPetCharms, BWQ.totalCouncilofDornogal, BWQ.totalTheWeaver, BWQ.totalTheGeneral, BWQ.totalTheVizier = 0, 0, 0, 0, 0
+	BWQ.totalXP = 0
 
-	for mapId in next, MAP_ZONES[expansion] do
+	for mapId in next, MAP_ZONES[BWQ.expansion] do
 		RetrieveWorldQuests(mapId)
 	end
 
-	numQuestsTotal = 0
-	hasCollapsedQuests = false
-	for mapId in next, MAP_ZONES[expansion] do
-		local num = MAP_ZONES[expansion][mapId].numQuests
+	BWQ.numQuestsTotal = 0
+	BWQ.hasCollapsedQuests = false
+	for mapId in next, MAP_ZONES[BWQ.expansion] do
+		local num = MAP_ZONES[BWQ.expansion][mapId].numQuests
 		if num > 0 then
 			if not C("collapsedZones")[mapId] then
-				numQuestsTotal = numQuestsTotal + num
+				BWQ.numQuestsTotal = BWQ.numQuestsTotal + num
 			else
-				hasCollapsedQuests = true
+				BWQ.hasCollapsedQuests = true
 			end
 		end
 	end
 
 	-- save quests to saved vars to check new status after reload/relog
-	if numQuestsTotal ~= 0 then
-		questIds = {}
-		for mapId in next, MAP_ZONES[expansion] do
-			for _, questId in next, MAP_ZONES[expansion][mapId].questsSort do
-				questIds[questId] = true
+	if BWQ.numQuestsTotal ~= 0 then
+		BWQ.questIds = {}
+		for mapId in next, MAP_ZONES[BWQ.expansion] do
+			for _, questId in next, MAP_ZONES[BWQ.expansion][mapId].questsSort do
+				BWQ.questIds[questId] = true
 			end
 		end
-		BWQcache.questIds = questIds
+		BWQcache.questIds = BWQ.questIds
 	end
 
 	if needsRefresh and updateTries < 3 then
@@ -1586,15 +1606,15 @@ end
 function BWQ:RenderRows()
 	local screenHeight = UIParent:GetHeight()
 	local availableHeight = 0
-	if showDownwards then availableHeight = screenHeight - (screenHeight - blockYPos) - 30
-	else availableHeight = screenHeight - blockYPos - 30 end
+	if BWQ.showDownwards then availableHeight = screenHeight - (screenHeight - BWQ.blockYPos) - 30
+	else availableHeight = screenHeight - BWQ.blockYPos - 30 end
 
 	local ROW_HEIGHT = -16
-	local maxEntries = math.floor((availableHeight + offsetTop - 10) / ( -1 * ROW_HEIGHT ))
+	local maxEntries = math.floor((availableHeight + BWQ.offsetTop - 10) / ( -1 * ROW_HEIGHT ))
 
-	local numEntries = numQuestsTotal
-	for mapId in next, MAP_ZONES[expansion] do
-		if MAP_ZONES[expansion][mapId].numQuests ~= 0 then
+	local numEntries = BWQ.numQuestsTotal
+	for mapId in next, MAP_ZONES[BWQ.expansion] do
+		if MAP_ZONES[BWQ.expansion][mapId].numQuests ~= 0 then
 			numEntries = numEntries + 1
 		end
 	end
@@ -1605,68 +1625,68 @@ function BWQ:RenderRows()
 		BWQ.slider:SetMinMaxValues(0, numEntries - 1 - maxEntries)
 	else
 		BWQ.slider:Show()
-		BWQ.slider:SetPoint("TOPRIGHT", BWQ, "TOPRIGHT", -5, offsetTop)
+		BWQ.slider:SetPoint("TOPRIGHT", BWQ, "TOPRIGHT", -5, BWQ.offsetTop)
 		BWQ.slider:SetHeight((ROW_HEIGHT * -1) * (maxEntries + 1))
 		BWQ.slider:SetMinMaxValues(0, numEntries - 1 - maxEntries)
 	end
 
 	-- all quests filtered or all done (haha.)
-	if numQuestsTotal == 0 and not hasCollapsedQuests then
+	if BWQ.numQuestsTotal == 0 and not BWQ.hasCollapsedQuests then
 		BWQ:ShowNoWorldQuestsInfo()
-		BWQ:SetHeight((offsetTop * -1) + 10 + 30)
+		BWQ:SetHeight((BWQ.offsetTop * -1) + 10 + 30)
 	else
 		if BWQ.errorFS then BWQ.errorFS:Hide() end
-		BWQ:SetHeight((offsetTop * -1) + 10 + (ROW_HEIGHT * -1) * (maxEntries + 1))
+		BWQ:SetHeight((BWQ.offsetTop * -1) + 10 + (ROW_HEIGHT * -1) * (maxEntries + 1))
 	end
 
 	local sliderval = math.floor(BWQ.slider:GetValue())
 	local rowIndex = 0
 	local rowInViewIndex = 0
-	for _, mapId in next, MAP_ZONES_SORT[expansion] do
+	for _, mapId in next, MAP_ZONES_SORT[BWQ.expansion] do
 		
 		local collapsed = C("collapsedZones")[mapId]
 
-		if MAP_ZONES[expansion][mapId].numQuests == 0 or rowIndex < sliderval or rowIndex > sliderval + maxEntries then
+		if MAP_ZONES[BWQ.expansion][mapId].numQuests == 0 or rowIndex < sliderval or rowIndex > sliderval + maxEntries then
 
-			MAP_ZONES[expansion][mapId].zoneSep.fs:Hide()
-			MAP_ZONES[expansion][mapId].zoneSep.texture:Hide()
+			MAP_ZONES[BWQ.expansion][mapId].zoneSep.fs:Hide()
+			MAP_ZONES[BWQ.expansion][mapId].zoneSep.texture:Hide()
 		else
 
-			MAP_ZONES[expansion][mapId].zoneSep.fs:Show()
-			MAP_ZONES[expansion][mapId].zoneSep.fs:SetPoint("TOP", BWQ, "TOP", 15 + (totalWidth / -2) + (MAP_ZONES[expansion][mapId].zoneSep.fs:GetStringWidth() / 2), offsetTop + ROW_HEIGHT * rowInViewIndex - 2)
-			MAP_ZONES[expansion][mapId].zoneSep.texture:Show()
-			MAP_ZONES[expansion][mapId].zoneSep.texture:SetPoint("TOP", BWQ, "TOP", 5, offsetTop + ROW_HEIGHT * rowInViewIndex - 3)
+			MAP_ZONES[BWQ.expansion][mapId].zoneSep.fs:Show()
+			MAP_ZONES[BWQ.expansion][mapId].zoneSep.fs:SetPoint("TOP", BWQ, "TOP", 15 + (BWQ.totalWidth / -2) + (MAP_ZONES[BWQ.expansion][mapId].zoneSep.fs:GetStringWidth() / 2), BWQ.offsetTop + ROW_HEIGHT * rowInViewIndex - 2)
+			MAP_ZONES[BWQ.expansion][mapId].zoneSep.texture:Show()
+			MAP_ZONES[BWQ.expansion][mapId].zoneSep.texture:SetPoint("TOP", BWQ, "TOP", 5, BWQ.offsetTop + ROW_HEIGHT * rowInViewIndex - 3)
 
-			MAP_ZONES[expansion][mapId].zoneSep.collapse:Show()
-			MAP_ZONES[expansion][mapId].zoneSep.collapse:SetAllPoints(MAP_ZONES[expansion][mapId].zoneSep.fs)
+			MAP_ZONES[BWQ.expansion][mapId].zoneSep.collapse:Show()
+			MAP_ZONES[BWQ.expansion][mapId].zoneSep.collapse:SetAllPoints(MAP_ZONES[BWQ.expansion][mapId].zoneSep.fs)
 			local color = not collapsed and {0.9, 0.8, 0} or {0.3, 0.3, 0.3}
-			MAP_ZONES[expansion][mapId].zoneSep.fs:SetTextColor(unpack(color))
+			MAP_ZONES[BWQ.expansion][mapId].zoneSep.fs:SetTextColor(unpack(color))
 			
 			rowInViewIndex = rowInViewIndex + 1
 		end
 
-		if MAP_ZONES[expansion][mapId].numQuests ~= 0 then
+		if MAP_ZONES[BWQ.expansion][mapId].numQuests ~= 0 then
 			rowIndex = rowIndex + 1 -- count up from row with zone name
 		end
 
-		highlightedRow = true
+		BWQ.highlightedRow = true
 		local buttonIndex = 1
-		for _, button in ipairs(MAP_ZONES[expansion][mapId].buttons) do
-			if not button.quest.hide and not collapsed and buttonIndex <= MAP_ZONES[expansion][mapId].numQuests then
+		for _, button in ipairs(MAP_ZONES[BWQ.expansion][mapId].buttons) do
+			if not button.quest.hide and not collapsed and buttonIndex <= MAP_ZONES[BWQ.expansion][mapId].numQuests then
 				if rowIndex < sliderval  or rowIndex > sliderval + maxEntries then
 					button:Hide()
 				else
 					button:Show()
-					button:SetPoint("TOP", BWQ, "TOP", 0, offsetTop + ROW_HEIGHT * rowInViewIndex)
+					button:SetPoint("TOP", BWQ, "TOP", 0, BWQ.offsetTop + ROW_HEIGHT * rowInViewIndex)
 					rowInViewIndex = rowInViewIndex + 1
 
-					if highlightedRow then
+					if BWQ.highlightedRow then
 						button.rowHighlight:Show()
 					else
 						button.rowHighlight:Hide()
 					end
 				end
-				highlightedRow = not highlightedRow
+				BWQ.highlightedRow = not BWQ.highlightedRow
 				buttonIndex = buttonIndex + 1
 				rowIndex = rowIndex + 1
 			else
@@ -1677,7 +1697,7 @@ function BWQ:RenderRows()
 end
 
 function BWQ:SwitchExpansion(expac)
-	expansion = expac
+	BWQ.expansion = expac
 	if not C("usePerCharacterSettings") then
 		BWQcfg["expansion"] = expac
 	else
@@ -1692,14 +1712,14 @@ function BWQ:SwitchExpansion(expac)
 	BWQ.buttonLegion:SetAlpha(expac == CONSTANTS.EXPANSIONS.LEGION and 1 or 0.4)
 
 	BWQ:HideRowsOfInactiveExpansions()
-	hasUnlockedWorldQuests = false
+	BWQ.hasUnlockedWorldQuests = false
 	updateTries = 0
 	BWQ:UpdateBlock()
 end 
 
 function BWQ:HideRowsOfInactiveExpansions()
 	for k, expac in next, MAP_ZONES do
-		if k ~= expansion then
+		if k ~= BWQ.expansion then
 			for mapId, v in next, expac do
 				if v.zoneSep then
 					v.zoneSep.fs:Hide()
@@ -1726,11 +1746,11 @@ function BWQ:RunUpdate()
 end
 
 function BWQ:UpdateBlock()
-	offsetTop = -35 -- initial padding from top
+	BWQ.offsetTop = -35 -- initial padding from top
 	
 	BWQ:UpdateInfoPanel()
 	if not BWQ:WorldQuestsUnlocked() then
-		BWQ:SetHeight(offsetTop * -1 + 20 + 30) -- padding + errorFS height
+		BWQ:SetHeight(BWQ.offsetTop * -1 + 20 + 30) -- padding + errorFS height
 		BWQ:SetWidth(math.max(BWQ.factionDisplay:GetWidth(), BWQ.errorFS:GetWidth()) + 20)
 		return
 	end
@@ -1743,20 +1763,18 @@ function BWQ:UpdateBlock()
 		return
 	end
 
-	
-
 	local titleMaxWidth, bountyMaxWidth, factionMaxWidth, rewardMaxWidth, timeLeftMaxWidth = 0, 0, 0, 0, 0
-	for mapId in next, MAP_ZONES[expansion] do
+	for mapId in next, MAP_ZONES[BWQ.expansion] do
 		local buttonIndex = 1
 
-		if not MAP_ZONES[expansion][mapId].zoneSep then
+		if not MAP_ZONES[BWQ.expansion][mapId].zoneSep then
 			local zoneSep = {
 				fs = BWQ:CreateFontString("BWQzoneNameFS", "OVERLAY", "SystemFont_Shadow_Med1"),
 				texture = BWQ:CreateTexture(),
 				collapse = CreateFrame("Button", nil, BWQ, "BackdropTemplate")
 			}
-			local faction = MAP_ZONES[expansion][mapId].faction
-			local zoneText = MAP_ZONES[expansion][mapId].name
+			local faction = MAP_ZONES[BWQ.expansion][mapId].faction
+			local zoneText = MAP_ZONES[BWQ.expansion][mapId].name
 			if faction then
 				local factionIcon = faction == CONSTANTS.FACTIONS.HORDE and "Interface\\Icons\\inv_misc_tournaments_banner_orc" or "Interface\\Icons\\inv_misc_tournaments_banner_human"
 				zoneText = ("%2$s   |T%1$s:12:12|t"):format(factionIcon, zoneText)
@@ -1774,301 +1792,321 @@ function BWQ:UpdateBlock()
 			zoneSep.texture:SetTexture("Interface\\FriendsFrame\\UI-FriendsFrame-OnlineDivider")
 			zoneSep.texture:SetHeight(8)
 
-			MAP_ZONES[expansion][mapId].zoneSep = zoneSep
+			MAP_ZONES[BWQ.expansion][mapId].zoneSep = zoneSep
 		end
 
 		if not C("collapsedZones")[mapId] then 
+			for _, questId in next, MAP_ZONES[BWQ.expansion][mapId].questsSort do
+				local button
+				if buttonIndex > #MAP_ZONES[BWQ.expansion][mapId].buttons then
 
-		for _, questId in next, MAP_ZONES[expansion][mapId].questsSort do
+					button = CreateFrame("Button", nil, BWQ)
+					button:RegisterForClicks("AnyUp")
 
-			local button
-			if buttonIndex > #MAP_ZONES[expansion][mapId].buttons then
-
-				button = CreateFrame("Button", nil, BWQ)
-				button:RegisterForClicks("AnyUp")
-
-				button.highlight = button:CreateTexture()
-				button.highlight:SetTexture("Interface\\QuestFrame\\UI-QuestTitleHighlight")
-				button.highlight:SetBlendMode("ADD")
-				button.highlight:SetAlpha(0)
-				button.highlight:SetAllPoints(button)
-
-				button.rowHighlight = button:CreateTexture()
-				button.rowHighlight:SetTexture("Interface\\Buttons\\WHITE8x8")
-				button.rowHighlight:SetBlendMode("ADD")
-				button.rowHighlight:SetAlpha(0.05)
-				button.rowHighlight:SetAllPoints(button)
-
-				button:SetScript("OnLeave", function(self)
-					Block_OnLeave()
+					button.highlight = button:CreateTexture()
+					button.highlight:SetTexture("Interface\\QuestFrame\\UI-QuestTitleHighlight")
+					button.highlight:SetBlendMode("ADD")
 					button.highlight:SetAlpha(0)
-				end)
-				button:SetScript("OnEnter", function(self)
-					button.highlight:SetAlpha(1)
-				end)
+					button.highlight:SetAllPoints(button)
 
-				button:SetScript("OnClick", function(self)
-					Row_OnClick(button)
-				end)
+					button.rowHighlight = button:CreateTexture()
+					button.rowHighlight:SetTexture("Interface\\Buttons\\WHITE8x8")
+					button.rowHighlight:SetBlendMode("ADD")
+					button.rowHighlight:SetAlpha(0.05)
+					button.rowHighlight:SetAllPoints(button)
 
-				button.icon = button:CreateTexture()
-				button.icon:SetTexture("Interface\\QUESTFRAME\\WorldQuest")
-				button.icon:SetSize(12, 12)
+					button:SetScript("OnLeave", function()				BWQ:Block_OnLeave()				button.highlight:SetAlpha(0)			end)
+					button:SetScript("OnEnter", function(self)			button.highlight:SetAlpha(1)											end)
 
-				-- create font strings
-				button.title = CreateFrame("Button", nil, button)
-				button.title:SetScript("OnClick", function(self)
-					Row_OnClick(button)
-				end)
-				button.title:SetScript("OnEnter", function(self)
-					button.highlight:SetAlpha(1)
+					button:SetScript("OnClick", function(self)			Row_OnClick(button)														end)
 
-					ShowQuestObjectiveTooltip(button)
-				end)
-				button.title:SetScript("OnLeave", function(self)
-					button.highlight:SetAlpha(0)
+					button.icon = button:CreateTexture()
+					button.icon:SetTexture("Interface\\QUESTFRAME\\WorldQuest")
+					button.icon:SetSize(12, 12)
 
-					tip:Hide()
-					Block_OnLeave()
-				end)
+					-- create font strings
+					button.title = CreateFrame("Button", nil, button)
+					button.title:SetScript("OnClick", function(self)	Row_OnClick(button)														end)
+					button.title:SetScript("OnEnter", function(self)	button.highlight:SetAlpha(1)	ShowQuestObjectiveTooltip(button)		end)
+					button.title:SetScript("OnLeave", function()		button.highlight:SetAlpha(0)	tip:Hide()		BWQ:Block_OnLeave()		end)
 
-				button.titleFS = button:CreateFontString("BWQtitleFS", "OVERLAY", "SystemFont_Shadow_Med1")
-				button.titleFS:SetJustifyH("LEFT")
-				button.titleFS:SetTextColor(.9, .9, .9)
-				button.titleFS:SetWordWrap(false)
+					button.titleFS = button:CreateFontString("BWQtitleFS", "OVERLAY", "SystemFont_Shadow_Med1")
+					--local font, size, flags = button.titleFS:GetFont()
+					--button.titleFS:SetFont(font, 50, flags)  -- Change font size to 50
+					button.titleFS:SetJustifyH("LEFT")
+					button.titleFS:SetTextColor(.9, .9, .9)
+					button.titleFS:SetWordWrap(false)
 
-				button.track = button:CreateTexture()
-				button.track:SetTexture("Interface\\COMMON\\FavoritesIcon")
-				button.track:SetSize(24, 24)
+					button.track = button:CreateTexture()
+					button.track:SetTexture("Interface\\COMMON\\FavoritesIcon")
+					button.track:SetSize(24, 24)
 
-				button.bountyFS = button:CreateFontString("BWQbountyFS", "OVERLAY", "SystemFont_Shadow_Med1")
-				button.bountyFS:SetJustifyH("LEFT")
-				button.bountyFS:SetWordWrap(false)
+					button.bountyFS = button:CreateFontString("BWQbountyFS", "OVERLAY", "SystemFont_Shadow_Med1")
+					button.bountyFS:SetJustifyH("LEFT")
+					button.bountyFS:SetWordWrap(false)
 
-				button.factionFS = button:CreateFontString("BWQfactionFS", "OVERLAY", "SystemFont_Shadow_Med1")
-				button.factionFS:SetJustifyH("LEFT")
-				button.factionFS:SetTextColor(.9, .9, .9)
-				button.factionFS:SetWordWrap(false)
+					button.factionFS = button:CreateFontString("BWQfactionFS", "OVERLAY", "SystemFont_Shadow_Med1")
+					button.factionFS:SetJustifyH("LEFT")
+					button.factionFS:SetTextColor(.9, .9, .9)
+					button.factionFS:SetWordWrap(false)
 
-				button.reward = CreateFrame("Button", nil, button)
-				button.reward:SetScript("OnClick", function(self)
-					Row_OnClick(button)
-				end)
+					button.reward = CreateFrame("Button", nil, button)
+					button.reward:SetScript("OnClick", function(self)	Row_OnClick(button)														end)
 
-				button.rewardFS = button.reward:CreateFontString("BWQrewardFS", "OVERLAY", "SystemFont_Shadow_Med1")
-				button.rewardFS:SetJustifyH("LEFT")
-				button.rewardFS:SetTextColor(.9, .9, .9)
-				button.rewardFS:SetWordWrap(false)
+					button.rewardFS = button.reward:CreateFontString("BWQrewardFS", "OVERLAY", "SystemFont_Shadow_Med1")
+					button.rewardFS:SetJustifyH("LEFT")
+					button.rewardFS:SetTextColor(.9, .9, .9)
+					button.rewardFS:SetWordWrap(false)
 
-				button.timeLeftFS = button:CreateFontString("BWQtimeLeftFS", "OVERLAY", "SystemFont_Shadow_Med1")
-				button.timeLeftFS:SetJustifyH("LEFT")
-				button.timeLeftFS:SetTextColor(.9, .9, .9)
-				button.timeLeftFS:SetWordWrap(false)
+					button.timeLeftFS = button:CreateFontString("BWQtimeLeftFS", "OVERLAY", "SystemFont_Shadow_Med1")
+					button.timeLeftFS:SetJustifyH("LEFT")
+					button.timeLeftFS:SetTextColor(.9, .9, .9)
+					button.timeLeftFS:SetWordWrap(false)
 
-				MAP_ZONES[expansion][mapId].buttons[buttonIndex] = button
-			else
-				button = MAP_ZONES[expansion][mapId].buttons[buttonIndex]
-			end
+					MAP_ZONES[BWQ.expansion][mapId].buttons[buttonIndex] = button
+				else
+					button = MAP_ZONES[BWQ.expansion][mapId].buttons[buttonIndex]
+				end
 
-			button.mapId = mapId
-			button.quest = MAP_ZONES[expansion][mapId].quests[questId]
+				button.mapId = mapId
+				button.quest = MAP_ZONES[BWQ.expansion][mapId].quests[questId]
+				button.questID = button.quest.questId
+				button.worldQuest = true
+				button.numObjectives = button.quest.numObjectives
 
-			button.questID = button.quest.questId
-			button.worldQuest = true
-			button.numObjectives = button.quest.numObjectives
+				-- fill and format row
+				local rewardText = ""
+				if button.quest.LockedWQ then
+					-- To find Atlas textures such as the "padlock" below.  Use the /tav command (Texture Atlas Viewer addon).
+					rewardText = string.format(
+						"|cnWARNING_FONT_COLOR:|A:%s:14:14|a Complete %d more %s in %s|r",
+						"Garr_LockedBuilding",
+						button.quest.LockedWQ_questsRemaining and button.quest.LockedWQ_questsRemaining or "",
+						button.quest.LockedWQ_questsRemaining > 1 and "WQs" or "WQ",
+						button.quest.LockedWQ_zone and button.quest.LockedWQ_zone or "")
+					button.reward:SetScript("OnEvent", function(self, event)
+						if event == "MODIFIER_STATE_CHANGED" then
+							if button.reward:IsMouseOver() and button.reward:IsShown() then
+								ShowWorldQuestPOITooltip(button, button.quest.poi)
+							else
+								button.reward:UnregisterEvent("MODIFIER_STATE_CHANGED")
+							end
+						end
+					end)
+					button.reward:SetScript("OnEnter", function(self)
+						button.highlight:SetAlpha(1)
+						self:RegisterEvent("MODIFIER_STATE_CHANGED")
+						ShowWorldQuestPOITooltip(button, button.quest.poi)
+					end)
+					button.reward:SetScript("OnLeave", function()
+						button.highlight:SetAlpha(0)
+						self:UnregisterEvent("MODIFIER_STATE_CHANGED")
+						tip:Hide()
+						BWQ:Block_OnLeave()
+					end)
+				else
+					if button.quest.reward.xp and button.quest.reward.xp > 0 then
+						rewardText = string.format(
+							"%1$s%2$s|T%3$s:14:14|t %4$d %5$s",
+							rewardText,
+							rewardText ~= "" and "   " or "", -- insert some space between rewards
+							"Interface\\Icons\\xp_icon",
+							button.quest.reward.xp,
+							XP
+						) 
+					end
+					if button.quest.reward.itemName then
+						local itemText = string.format(
+							"%s[%s%s]|r",
+							ITEM_QUALITY_COLORS[button.quest.reward.itemQuality].hex,
+							button.quest.reward.realItemLevel and (button.quest.reward.realItemLevel .. " ") or "",
+							button.quest.reward.itemName
+						)
+						rewardText = string.format(
+							"|T%s$s:14:14|t %s%s",
+							button.quest.reward.itemTexture,
+							button.quest.reward.itemQuantity > 1 and button.quest.reward.itemQuantity .. "x " or "",
+							itemText
+						)
+						button.reward:SetScript("OnEvent", function(self, event)
+							if event == "MODIFIER_STATE_CHANGED" then
+								if button.reward:IsMouseOver() and button.reward:IsShown() then
+									ShowQuestLogItemTooltip(button)
+								else
+									button.reward:UnregisterEvent("MODIFIER_STATE_CHANGED")
+								end
+							end
+						end)
+						button.reward:SetScript("OnEnter", function(self)
+							button.highlight:SetAlpha(1)
+							self:RegisterEvent("MODIFIER_STATE_CHANGED")
 
-			-- fill and format row
-			local rewardText = ""
-			if button.quest.reward.itemName then
-				local itemText = string.format(
-					"%s[%s%s]|r",
-					ITEM_QUALITY_COLORS[button.quest.reward.itemQuality].hex,
-					button.quest.reward.realItemLevel and (button.quest.reward.realItemLevel .. " ") or "",
-					button.quest.reward.itemName
-				)
-
-				rewardText = string.format(
-					"|T%s$s:14:14|t %s%s",
-					button.quest.reward.itemTexture,
-					button.quest.reward.itemQuantity > 1 and button.quest.reward.itemQuantity .. "x " or "",
-					itemText
-				)
-
-				button.reward:SetScript("OnEvent", function(self, event)
-					if event == "MODIFIER_STATE_CHANGED" then
-						if button.reward:IsMouseOver() and button.reward:IsShown() then
 							ShowQuestLogItemTooltip(button)
-						else
-							button.reward:UnregisterEvent("MODIFIER_STATE_CHANGED")
+						end)
+						button.reward:SetScript("OnLeave", function()
+							button.highlight:SetAlpha(0)
+
+							self:UnregisterEvent("MODIFIER_STATE_CHANGED")
+							tip:Hide()
+							BWQ:Block_OnLeave()
+						end)
+					else
+						button.reward:SetScript("OnEnter", function(self)
+							button.highlight:SetAlpha(1)
+						end)
+						button.reward:SetScript("OnLeave", function()
+							button.highlight:SetAlpha(0)
+
+							tip:Hide()
+							BWQ:Block_OnLeave()
+						end)
+					end
+					if button.quest.reward.honor and button.quest.reward.honor > 0 then
+						rewardText = string.format(
+							"%1$s%2$s|T%3$s:14:14|t %4$d %5$s",
+							rewardText,
+							rewardText ~= "" and "   " or "", -- insert some space between rewards
+							"Interface\\Icons\\Achievement_LegionPVPTier4",
+							button.quest.reward.honor,
+							HONOR
+						) 
+					end
+					if button.quest.reward.money and button.quest.reward.money > 0 then
+						local moneyText = GetCoinTextureString(button.quest.reward.money)
+						rewardText = string.format(
+							"%s%s%s",
+							rewardText,
+							rewardText ~= "" and "   " or "", -- insert some space between rewards
+							moneyText
+						)
+					end
+					if button.quest.reward.currencies then
+						for _, currency in next, button.quest.reward.currencies do
+							local currencyText = string.format("|T%1$s:14:14|t %s", currency.texture, currency.name)
+							rewardText = string.format(
+								"%s%s%s",
+								rewardText,
+								rewardText ~= "" and "   " or "", -- insert some space between rewards
+								currencyText
+							)
+							-- Replace "Reputation" with "Rep." to shorten strings
+							rewardText = rewardText:gsub("Reputation", "Rep.")
 						end
 					end
-				end)
-
-				button.reward:SetScript("OnEnter", function(self)
-					button.highlight:SetAlpha(1)
-					self:RegisterEvent("MODIFIER_STATE_CHANGED")
-
-					ShowQuestLogItemTooltip(button)
-				end)
-
-				button.reward:SetScript("OnLeave", function(self)
-					button.highlight:SetAlpha(0)
-
-					self:UnregisterEvent("MODIFIER_STATE_CHANGED")
-					tip:Hide()
-					Block_OnLeave()
-				end)
-			else
-				button.reward:SetScript("OnEnter", function(self)
-					button.highlight:SetAlpha(1)
-				end)
-				button.reward:SetScript("OnLeave", function(self)
-					button.highlight:SetAlpha(0)
-
-					tip:Hide()
-					Block_OnLeave()
-				end)
-			end
-			if button.quest.reward.honor and button.quest.reward.honor > 0 then
-				rewardText = string.format(
-					"%1$s%2$s|T%3$s:14:14|t %4$d %5$s",
-					rewardText,
-					rewardText ~= "" and "   " or "", -- insert some space between rewards
-					"Interface\\Icons\\Achievement_LegionPVPTier4",
-					button.quest.reward.honor,
-					HONOR
-				) 
-			end
-			if button.quest.reward.money and button.quest.reward.money > 0 then
-				local moneyText = GetCoinTextureString(button.quest.reward.money)
-				rewardText = string.format(
-					"%s%s%s",
-					rewardText,
-					rewardText ~= "" and "   " or "", -- insert some space between rewards
-					moneyText
-				)
-			end
-
-			if button.quest.reward.currencies then
-				for _, currency in next, button.quest.reward.currencies do
-					local currencyText = string.format("|T%1$s:14:14|t %s", currency.texture, currency.name)
-
-					rewardText = string.format(
-						"%s%s%s",
-						rewardText,
-						rewardText ~= "" and "   " or "", -- insert some space between rewards
-						currencyText
-					)
 				end
-			end
 
-			-- if button.quest.tagId == 136 or button.quest.tagId == 111 or button.quest.tagId == 112 then
-			--button.icon:SetTexCoord(.81, .84, .68, .79) -- skull tex coords
-			if CONSTANTS.WORLD_QUEST_ICONS_BY_TAG_ID[button.quest.tagId] then
-				button.icon:SetAtlas(CONSTANTS.WORLD_QUEST_ICONS_BY_TAG_ID[button.quest.tagId], true)
-				button.icon:SetAlpha(1)
-			else
-				button.icon:SetAlpha(0)
-			end
-			button.icon:SetSize(12, 12)
+				-- if button.quest.tagId == 136 or button.quest.tagId == 111 or button.quest.tagId == 112 then
+				--button.icon:SetTexCoord(.81, .84, .68, .79) -- skull tex coords
+				if CONSTANTS.WORLD_QUEST_ICONS_BY_TAG_ID[button.quest.tagId] then
+					button.icon:SetAtlas(CONSTANTS.WORLD_QUEST_ICONS_BY_TAG_ID[button.quest.tagId], true)
+					button.icon:SetAlpha(1)
+				else
+					if BWQcfg.spewDebugInfo and button.quest.tagId and button.quest.tagId > 0 and button.quest.tagId ~= 109 then	-- 109 is just your standard world quest
+						print(string.format("[BWQ] Unhandled Quest TagId: %d (%s)", button.quest.tagId, button.quest.title))
+					end
+					button.icon:SetAlpha(0)
+				end
+				button.icon:SetSize(12, 12)
 
-			button.titleFS:SetText(string.format("%s%s%s|r",
-				button.quest.isNew and "|cffe5cc80NEW|r  " or "",
-				button.quest.isMissingAchievementCriteria and "|cff1EFF00" or WORLD_QUEST_QUALITY_COLORS[button.quest.quality].hex,
-				button.quest.title
-			))
-			--local titleWidth = button.titleFS:GetStringWidth()
-			--if titleWidth > titleMaxWidth then titleMaxWidth = titleWidth end
+				-- Set the first cell of the row (the quest title/name)
+				button.titleFS:SetText(string.format("%s%s%s|r",
+					button.quest.isNew and "|cffe5cc80NEW|r  " or "",
+					button.quest.isMissingAchievementCriteria and "|cff1EFF00" or WORLD_QUEST_QUALITY_COLORS[button.quest.quality].hex,
+					button.quest.title
+				))
+				--local titleWidth = button.titleFS:GetStringWidth()
+				--if titleWidth > titleMaxWidth then titleMaxWidth = titleWidth end
 
-			if GetQuestWatchType(button.quest.questId) == Enum.QuestWatchType.Manual or GetSuperTrackedQuestID() == button.quest.questId then
-				button.track:Show()
-			else
-				button.track:Hide()
-			end
+				if C_QuestLog.GetQuestWatchType(button.quest.questId) == Enum.QuestWatchType.Manual or C_SuperTrack.GetSuperTrackedQuestID() == button.quest.questId then
+					button.track:Show()
+				else
+					button.track:Hide()
+				end
 
-			local bountyText = ""
-			for _, bountyIcon in ipairs(button.quest.bounties) do
-				bountyText = string.format("%s |T%s$s:14:14|t", bountyText, bountyIcon)
-			end
-			button.bountyFS:SetText(bountyText)
-			local bountyWidth = button.bountyFS:GetStringWidth()
-			if bountyWidth > bountyMaxWidth then bountyMaxWidth = bountyWidth end
+				local bountyText = ""
+				for _, bountyIcon in ipairs(button.quest.bounties) do
+					bountyText = string.format("%s |T%s$s:14:14|t", bountyText, bountyIcon)
+				end
+				button.bountyFS:SetText(bountyText)
+				local bountyWidth = button.bountyFS:GetStringWidth()
+				if bountyWidth > bountyMaxWidth then bountyMaxWidth = bountyWidth end
 
-			if not C("hideFactionColumn") then
-				button.factionFS:SetText(button.quest.factionID)
-				local factionWidth = button.factionFS:GetStringWidth()
-				if factionWidth > factionMaxWidth then factionMaxWidth = factionWidth end
-			else
-				button.factionFS:SetText("")
-			end
+				if not C("hideFactionColumn") then
+					button.factionFS:SetText(button.quest.factionID)
+					local factionWidth = button.factionFS:GetStringWidth()
+					if factionWidth > factionMaxWidth then factionMaxWidth = factionWidth end
+				else
+					button.factionFS:SetText("")
+				end
 
-			button.timeLeftFS:SetText(FormatTimeLeftString(button.quest.timeLeft))
-			--local timeLeftWidth = button.factionFS:GetStringWidth()
-			--if timeLeftWidth > timeLeftMaxWidth then timeLeftMaxWidth = timeLeftWidth end
+				button.timeLeftFS:SetText(FormatTimeLeftString(button.quest.timeLeft))
+				--local timeLeftWidth = button.factionFS:GetStringWidth()
+				--if timeLeftWidth > timeLeftMaxWidth then timeLeftMaxWidth = timeLeftWidth end
 
-			button.rewardFS:SetText(rewardText)
+				button.rewardFS:SetText(rewardText)
 
-			local rewardWidth = button.rewardFS:GetStringWidth()
-			if rewardWidth > rewardMaxWidth then rewardMaxWidth = rewardWidth end
-			button.reward:SetHeight(button.rewardFS:GetStringHeight())
-			button.title:SetHeight(button.titleFS:GetStringHeight())
+				local rewardWidth = button.rewardFS:GetStringWidth()
+				if rewardWidth > rewardMaxWidth then rewardMaxWidth = rewardWidth end
+				button.reward:SetHeight(button.rewardFS:GetStringHeight())
+				button.title:SetHeight(button.titleFS:GetStringHeight())
 
-			button.icon:SetPoint("LEFT", button, "LEFT", 5, 0)
-			button.titleFS:SetPoint("LEFT", button.icon, "RIGHT", 5, 0)
-			button.title:SetPoint("LEFT", button.titleFS, "LEFT", 0, 0)
-			button.rewardFS:SetPoint("LEFT", button.titleFS, "RIGHT", 10, 0)
-			button.reward:SetPoint("LEFT", button.rewardFS, "LEFT", 0, 0)
-			button.track:SetPoint("LEFT", button.rewardFS, "RIGHT", 5, -3)
-			button.bountyFS:SetPoint("LEFT", button.rewardFS, "RIGHT", 25, 0)
-			button.factionFS:SetPoint("LEFT", button.bountyFS, "RIGHT", 10, 0)
-			button.timeLeftFS:SetPoint("LEFT", button.factionFS, "RIGHT", 10, 0)
+				button.icon:SetPoint("LEFT", button, "LEFT", 5, 0)
+				button.titleFS:SetPoint("LEFT", button.icon, "RIGHT", 5, 0)
+				button.title:SetPoint("LEFT", button.titleFS, "LEFT", 0, 0)
+				button.rewardFS:SetPoint("LEFT", button.titleFS, "RIGHT", 10, 0)
+				button.reward:SetPoint("LEFT", button.rewardFS, "LEFT", 0, 0)
+				button.track:SetPoint("LEFT", button.rewardFS, "RIGHT", 5, -3)
+				button.bountyFS:SetPoint("LEFT", button.rewardFS, "RIGHT", 25, 0)
+				button.factionFS:SetPoint("LEFT", button.bountyFS, "RIGHT", 10, 0)
+				button.timeLeftFS:SetPoint("LEFT", button.factionFS, "RIGHT", 10, 0)
 
-			buttonIndex = buttonIndex + 1
-		end -- quest loop
-	end
+				buttonIndex = buttonIndex + 1
+			end -- quest loop
+		end
 	end -- maps loop
 
-	titleMaxWidth = 125
-	rewardMaxWidth = rewardMaxWidth < 100 and 100 or rewardMaxWidth > 250 and 250 or rewardMaxWidth
+	titleMaxWidth = 300																								-- set max width of title (quest name)
+	rewardMaxWidth = rewardMaxWidth < 235 and 235 or rewardMaxWidth > 385 and 385 or rewardMaxWidth					-- Set max width of reward cell
 	factionMaxWidth = C("hideFactionColumn") and 0 or factionMaxWidth < 100 and 100 or factionMaxWidth
 	timeLeftMaxWidth = 65
-	totalWidth = titleMaxWidth + bountyMaxWidth + factionMaxWidth + rewardMaxWidth + timeLeftMaxWidth + 80
+	BWQ.totalWidth = titleMaxWidth + bountyMaxWidth + factionMaxWidth + rewardMaxWidth + timeLeftMaxWidth + 80		-- Set total max width
 
 	local bountyBoardWidth = BWQ.bountyDisplay:GetWidth()
 	local factionDisplayWidth = BWQ.factionDisplay:GetWidth()
 	local infoPanelWidth = bountyBoardWidth > factionDisplayWidth and bountyBoardWidth or factionDisplayWidth
-	if totalWidth < infoPanelWidth then
-		local diff = infoPanelWidth - totalWidth
-		totalWidth = infoPanelWidth
+	if BWQ.totalWidth < infoPanelWidth then
+		local diff = infoPanelWidth - BWQ.totalWidth
+		BWQ.totalWidth = infoPanelWidth
 		rewardMaxWidth = rewardMaxWidth + diff
 	end
 
-	for mapId in next, MAP_ZONES[expansion] do
-		for i = 1, #MAP_ZONES[expansion][mapId].buttons do
-			if not MAP_ZONES[expansion][mapId].buttons[i].quest.hide then -- dont care about the hidden ones
-				MAP_ZONES[expansion][mapId].buttons[i]:SetHeight(15)
-				MAP_ZONES[expansion][mapId].buttons[i]:SetWidth(totalWidth)
-				MAP_ZONES[expansion][mapId].buttons[i].title:SetWidth(titleMaxWidth)
-				MAP_ZONES[expansion][mapId].buttons[i].titleFS:SetWidth(titleMaxWidth)
-				MAP_ZONES[expansion][mapId].buttons[i].bountyFS:SetWidth(bountyMaxWidth)
-				MAP_ZONES[expansion][mapId].buttons[i].factionFS:SetWidth(factionMaxWidth)
-				MAP_ZONES[expansion][mapId].buttons[i].reward:SetWidth(rewardMaxWidth)
-				MAP_ZONES[expansion][mapId].buttons[i].rewardFS:SetWidth(rewardMaxWidth)
-				MAP_ZONES[expansion][mapId].buttons[i].timeLeftFS:SetWidth(timeLeftMaxWidth)
+	for mapId in next, MAP_ZONES[BWQ.expansion] do
+		for i = 1, #MAP_ZONES[BWQ.expansion][mapId].buttons do
+			if not MAP_ZONES[BWQ.expansion][mapId].buttons[i].quest.hide then -- dont care about the hidden ones
+				MAP_ZONES[BWQ.expansion][mapId].buttons[i]:SetHeight(15)
+				MAP_ZONES[BWQ.expansion][mapId].buttons[i]:SetWidth(BWQ.totalWidth)
+				MAP_ZONES[BWQ.expansion][mapId].buttons[i].title:SetWidth(titleMaxWidth)
+				MAP_ZONES[BWQ.expansion][mapId].buttons[i].titleFS:SetWidth(titleMaxWidth)
+				MAP_ZONES[BWQ.expansion][mapId].buttons[i].bountyFS:SetWidth(bountyMaxWidth)
+				MAP_ZONES[BWQ.expansion][mapId].buttons[i].factionFS:SetWidth(factionMaxWidth)
+				MAP_ZONES[BWQ.expansion][mapId].buttons[i].reward:SetWidth(rewardMaxWidth)
+				MAP_ZONES[BWQ.expansion][mapId].buttons[i].rewardFS:SetWidth(rewardMaxWidth)
+				MAP_ZONES[BWQ.expansion][mapId].buttons[i].timeLeftFS:SetWidth(timeLeftMaxWidth)
 			else
-				MAP_ZONES[expansion][mapId].buttons[i]:Hide()
+				MAP_ZONES[BWQ.expansion][mapId].buttons[i]:Hide()
 			end
 		end
-		MAP_ZONES[expansion][mapId].zoneSep.texture:SetWidth(totalWidth + 20)
+		MAP_ZONES[BWQ.expansion][mapId].zoneSep.texture:SetWidth(BWQ.totalWidth + 20)
 	end
 
-	totalWidth = totalWidth + 20
-	BWQ:SetWidth(totalWidth)
+	BWQ.totalWidth = BWQ.totalWidth + 20
+	BWQ:SetWidth(BWQ.totalWidth)
 
 	if C("showTotalsInBrokerText") then
 		local brokerString = ""
+		if C("brokerShowPolishedPetCharms")    	and BWQ.totalPolishedPetCharms > 0  	then brokerString = string.format("%s|TInterface\\Icons\\inv_currency_petbattle:16:16|t %d  ", brokerString, BWQ.totalPolishedPetCharms) end
 		if C("brokerShowAP")                  	and BWQ.totalArtifactPower > 0      	then brokerString = string.format("%s|TInterface\\Icons\\inv_smallazeriteshard:16:16|t %s  ", brokerString, AbbreviateNumber(BWQ.totalArtifactPower)) end
-		if C("brokerShowServiceMedals")       	and BWQ.totalServiceMedals > 0      	then brokerString = string.format("%s|T%s:16:16|t %s  ", brokerString, isHorde and "Interface\\Icons\\ui_horde_honorboundmedal" or "Interface\\Icons\\ui_alliance_7legionmedal", BWQ.totalServiceMedals) end
+		if C("brokerShowServiceMedals")       	and BWQ.totalServiceMedals > 0      	then brokerString = string.format("%s|T%s:16:16|t %s  ", brokerString, self.isHorde and "Interface\\Icons\\ui_horde_honorboundmedal" or "Interface\\Icons\\ui_alliance_7legionmedal", BWQ.totalServiceMedals) end
 		if C("brokerShowWakeningEssences")    	and BWQ.totalWakeningEssences > 0   	then brokerString = string.format("%s|TInterface\\Icons\\achievement_dungeon_ulduar80_25man:16:16|t %s  ", brokerString, BWQ.totalWakeningEssences) end
 		if C("brokerShowWarResources")        	and BWQ.totalWarResources > 0       	then brokerString = string.format("%s|TInterface\\Icons\\inv__faction_warresources:16:16|t %d  ", brokerString, BWQ.totalWarResources) end
 		if C("brokerShowPrismaticManapearl")  	and BWQ.totalPrismaticManapearl > 0 	then brokerString = string.format("%s|TInterface\\Icons\\Inv_misc_enchantedpearlf:16:16|t %d  ", brokerString, BWQ.totalPrismaticManapearl) end
@@ -2076,6 +2114,7 @@ function BWQ:UpdateBlock()
 		if C("brokerShowGratefulOffering")    	and BWQ.totalGratefulOffering > 0   	then brokerString = string.format("%s|TInterface\\Icons\\inv_misc_ornatebox:16:16|t %d  ", brokerString, BWQ.totalGratefulOffering) end
 		if C("brokerShowResources")           	and BWQ.totalResources > 0          	then brokerString = string.format("%s|TInterface\\Icons\\inv_orderhall_orderresources:16:16|t %d  ", brokerString, BWQ.totalResources) end
 		if C("brokerShowLegionfallSupplies")  	and BWQ.totalLegionfallSupplies > 0 	then brokerString = string.format("%s|TInterface\\Icons\\inv_misc_summonable_boss_token:16:16|t %d  ", brokerString, BWQ.totalLegionfallSupplies) end
+		if C("brokerShowXP")               		and BWQ.totalXP > 0              		then brokerString = string.format("%s|TInterface\\Icons\\xp_icon:16:16|t %d  ", brokerString, BWQ.totalXP) end
 		if C("brokerShowHonor")               	and BWQ.totalHonor > 0              	then brokerString = string.format("%s|TInterface\\Icons\\Achievement_LegionPVPTier4:16:16|t %d  ", brokerString, BWQ.totalHonor) end
 		if C("brokerShowGold")                	and BWQ.totalGold > 0               	then brokerString = string.format("%s|TInterface\\GossipFrame\\auctioneerGossipIcon:16:16|t %d  ", brokerString, math.floor(BWQ.totalGold / 10000)) end
 		if C("brokerShowGear")                	and BWQ.totalGear > 0               	then brokerString = string.format("%s|TInterface\\Icons\\Inv_chest_plate_legionendgame_c_01:16:16|t %d  ", brokerString, BWQ.totalGear) end
@@ -2100,7 +2139,13 @@ function BWQ:UpdateBlock()
 		if C("brokerShowMysteriousFragment") 	and BWQ.totalMysteriousFragment > 0		then brokerString = string.format("%s|TInterface\\Icons\\Inv_7_0raid_trinket_05a:16:16|t %d  ", brokerString, BWQ.totalMysteriousFragment) end
 		if C("brokerShowResonanceCrystals") 	and BWQ.totalResonanceCrystals > 0		then brokerString = string.format("%s|TInterface\\Icons\\spell_azerite_essence14:16:16|t %d  ", brokerString, BWQ.totalResonanceCrystals) end
 		if C("brokerShowTheAssemblyoftheDeeps") and BWQ.totalTheAssemblyOfTheDeeps > 0	then brokerString = string.format("%s|TInterface\\Icons\\ui_majorfactions_candle:16:16|t %d  ", brokerString, BWQ.totalTheAssemblyOfTheDeeps) end
-		if C("brokerShowPolishedPetCharms")    	and BWQ.totalPolishedPetCharms > 0  	then brokerString = string.format("%s|TInterface\\Icons\\inv_currency_petbattle:16:16|t %d  ", brokerString, BWQ.totalPolishedPetCharms) end
+		if C("brokerShowHallowfallArathi") 		and BWQ.totalHallowfallArathi > 0		then brokerString = string.format("%s|TInterface\\Icons\\ui_majorfactions_flame:16:16|t %d  ", brokerString, BWQ.totalHallowfallArathi) end
+		if C("brokerShowValorstones") 			and BWQ.totalValorstones > 0			then brokerString = string.format("%s|TInterface\\Icons\\inv_valorstone_base:16:16|t %d  ", brokerString, BWQ.totalValorstones) end
+		if C("brokerShowKej") 					and BWQ.totalKej > 0					then brokerString = string.format("%s|TInterface\\Icons\\inv_10_tailoring_silkrare_color3:16:16|t %d  ", brokerString, BWQ.totalKej) end
+		if C("brokerShowCouncilofDornogal") 	and BWQ.totalCouncilofDornogal > 0		then brokerString = string.format("%s|TInterface\\Icons\\ui_majorfactions_storm:16:16|t %d  ", brokerString, BWQ.totalCouncilofDornogal) end
+		if C("brokerShowTheWeaver") 			and BWQ.totalTheWeaver > 0				then brokerString = string.format("%s|TInterface\\Icons\\ui_notoriety_theweaver:16:16|t %d  ", brokerString, BWQ.totalTheWeaver) end
+		if C("brokerShowTheGeneral") 			and BWQ.totalTheGeneral > 0				then brokerString = string.format("%s|TInterface\\Icons\\ui_notoriety_thegeneral:16:16|t %d  ", brokerString, BWQ.totalTheGeneral) end
+		if C("brokerShowTheVizier") 			and BWQ.totalTheVizier > 0				then brokerString = string.format("%s|TInterface\\Icons\\ui_notoriety_thevizier:16:16|t %d  ", brokerString, BWQ.totalTheVizier) end
 
 		if brokerString and brokerString ~= "" then
 			BWQ.WorldQuestsBroker.text = brokerString
@@ -2127,8 +2172,9 @@ function BWQ:SetupConfigMenu()
 		{ text = "Only show world quests with |cff0070ddrare|r or above quality", check = "onlyShowRareOrAbove" },
 		{ text = "Don't filter quests for active bounties", check = "alwaysShowBountyQuests" },
 		{ text = "Show total counts in broker text", check = "showTotalsInBrokerText", submenu = {
+				{ text = ("|T%1$s:16:16|t  Polished Pet Charms"):format("Interface\\Icons\\inv_currency_petbattle"), check = "brokerShowPolishedPetCharms" },
 				{ text = ("|T%1$s:16:16|t  Artifact Power"):format("Interface\\Icons\\inv_smallazeriteshard"), check = "brokerShowAP" },
-				{ text = ("|T%1$s:16:16|t  Service Medals"):format(isHorde and "Interface\\Icons\\ui_horde_honorboundmedal" or "Interface\\Icons\\ui_alliance_7legionmedal"), check = "brokerShowServiceMedals" },
+				{ text = ("|T%1$s:16:16|t  Service Medals"):format(self.isHorde and "Interface\\Icons\\ui_horde_honorboundmedal" or "Interface\\Icons\\ui_alliance_7legionmedal"), check = "brokerShowServiceMedals" },
 				{ text = ("|T%1$s:16:16|t  Wakening Essences"):format("Interface\\Icons\\achievement_dungeon_ulduar80_25man"), check = "brokerShowWakeningEssences" },
 				{ text = ("|T%1$s:16:16|t  Prismatic Manapearls"):format("Interface\\Icons\\Inv_misc_enchantedpearlf"), check = "brokerShowPrismaticManapearl" },
 				{ text = ("|T%1$s:16:16|t  Cyphers of the First Ones"):format("Interface\\Icons\\inv_trinket_progenitorraid_02_blue"), check = "brokerShowCyphersOfTheFirstOnes" },
@@ -2136,6 +2182,7 @@ function BWQ:SetupConfigMenu()
 				{ text = ("|T%1$s:16:16|t  War Resources"):format("Interface\\Icons\\inv__faction_warresources"), check = "brokerShowWarResources" },
 				{ text = ("|T%1$s:16:16|t  Order Hall Resources"):format("Interface\\Icons\\inv_orderhall_orderresources"), check = "brokerShowResources" },
 				{ text = ("|T%1$s:16:16|t  Legionfall War Supplies"):format("Interface\\Icons\\inv_misc_summonable_boss_token"), check = "brokerShowLegionfallSupplies" },
+				{ text = ("|T%1$s:16:16|t  XP Only Quests"):format("Interface\\Icons\\xp_icon"), check = "brokerShowXP" },
 				{ text = ("|T%1$s:16:16|t  Honor"):format("Interface\\Icons\\Achievement_LegionPVPTier4"), check = "brokerShowHonor" },
 				{ text = ("|T%1$s:16:16|t  Gold"):format("Interface\\GossipFrame\\auctioneerGossipIcon"), check = "brokerShowGold" },
 				{ text = ("|T%1$s:16:16|t  Gear"):format("Interface\\Icons\\Inv_chest_plate_legionendgame_c_01"), check = "brokerShowGear" },
@@ -2160,7 +2207,13 @@ function BWQ:SetupConfigMenu()
 				{ text = ("|T%1$s:16:16|t  Mysterious Fragment"):format("Interface\\Icons\\Inv_7_0raid_trinket_05a"), check = "brokerShowMysteriousFragment" },
 				{ text = ("|T%1$s:16:16|t  Resonance Crystals"):format("Interface\\Icons\\spell_azerite_essence14"), check = "brokerShowResonanceCrystals" },
 				{ text = ("|T%1$s:16:16|t  The Assembly of the Deeps"):format("Interface\\Icons\\ui_majorfactions_candle"), check = "brokerShowTheAssemblyoftheDeeps" },
-				{ text = ("|T%1$s:16:16|t  Polished Pet Charms"):format("Interface\\Icons\\inv_currency_petbattle"), check = "brokerShowPolishedPetCharms" },
+				{ text = ("|T%1$s:16:16|t  Hallowfall Arathi"):format("Interface\\Icons\\ui_majorfactions_flame"), check = "brokerShowHallowfallArathi" },
+				{ text = ("|T%1$s:16:16|t  Valorstones"):format("Interface\\Icons\\inv_valorstone_base"), check = "brokerShowValorstones" },
+				{ text = ("|T%1$s:16:16|t  Kej"):format("Interface\\Icons\\inv_10_tailoring_silkrare_color3"), check = "brokerShowKej" },
+				{ text = ("|T%1$s:16:16|t  Council of Dornogal"):format("Interface\\Icons\\ui_majorfactions_storm"), check = "brokerShowCouncilofDornogal" },
+				{ text = ("|T%1$s:16:16|t  The Weaver"):format("Interface\\Icons\\ui_notoriety_theweaver"), check = "brokerShowTheWeaver" },
+				{ text = ("|T%1$s:16:16|t  The General"):format("Interface\\Icons\\ui_notoriety_thegeneral"), check = "brokerShowTheGeneral" },
+				{ text = ("|T%1$s:16:16|t  The Vizier"):format("Interface\\Icons\\ui_notoriety_thevizier"), check = "brokerShowTheVizier" },
 			}
 		},
 		{ text = "Sort list by time remaining instead of reward type", check = "sortByTimeRemaining" },
@@ -2173,7 +2226,7 @@ function BWQ:SetupConfigMenu()
 				{ text = "Other", check = "showOtherItems" },
 			}
 		},
-		{ text = ("|T%1$s:16:16|t  Bloody Tokens"):format("Interface\\Icons\\inv_10_dungeonjewelry_titan_trinket_2_color2"), check = "showBloodyTokens" },
+		{ text = ("|T%1$s:16:16|t  XP Only Quests"):format("Interface\\Icons\\xp_icon"), check = "showXP" },
 		{ text = ("|T%1$s:16:16|t  Honor"):format("Interface\\Icons\\Achievement_LegionPVPTier4"), check = "showHonor" },
 		{ text = ("|T%1$s:16:16|t  Low gold reward"):format("Interface\\GossipFrame\\auctioneerGossipIcon"), check = "showLowGold" },
 		{ text = ("|T%1$s:16:16|t  High gold reward"):format("Interface\\GossipFrame\\auctioneerGossipIcon"), check = "showHighGold" },
@@ -2181,10 +2234,18 @@ function BWQ:SetupConfigMenu()
 				{ text = ("|T%1$s:16:16|t  Reputation Tokens"):format("Interface\\Icons\\inv_scroll_11"), check = "showTWWReputation" },
 				{ text = ("|T%s$s:16:16|t  Resonance Crystals"):format("Interface\\Icons\\spell_azerite_essence14"), check = "showResonanceCrystals" },
 				{ text = ("|T%s$s:16:16|t  The Assembly of the Deeps"):format("Interface\\Icons\\ui_majorfactions_candle"), check = "showTheAssemblyoftheDeeps" },
+				{ text = ("|T%s$s:16:16|t  Hallowfall Arathi"):format("Interface\\Icons\\ui_majorfactions_flame"), check = "showHallowfallArathi" },
+				{ text = ("|T%1$s:16:16|t  Valorstones"):format("Interface\\Icons\\inv_valorstone_base"), check = "showValorstones" },
+				{ text = ("|T%1$s:16:16|t  Kej"):format("Interface\\Icons\\inv_10_tailoring_silkrare_color3"), check = "showKej" },
+				{ text = ("|T%1$s:16:16|t  Council of Dornogal"):format("Interface\\Icons\\ui_majorfactions_storm"), check = "showCouncilofDornogal" },
+				{ text = ("|T%1$s:16:16|t  The Weaver"):format("Interface\\Icons\\ui_notoriety_theweaver"), check = "ShowTheWeaver" },
+				{ text = ("|T%1$s:16:16|t  The General"):format("Interface\\Icons\\ui_notoriety_thegeneral"), check = "ShowTheGeneral" },
+				{ text = ("|T%1$s:16:16|t  The Vizier"):format("Interface\\Icons\\ui_notoriety_thevizier"), check = "ShowTheVizier" },
 			}
 		},
 		{ text = "      Dragonflight", submenu = {
 				{ text = ("|T%1$s:16:16|t  Reputation Tokens"):format("Interface\\Icons\\inv_scroll_11"), check = "showDFReputation" },
+				{ text = ("|T%1$s:16:16|t  Bloody Tokens"):format("Interface\\Icons\\inv_10_dungeonjewelry_titan_trinket_2_color2"), check = "showBloodyTokens" },
 				{ text = ("|T%1$s:16:16|t  Dragon Isles Supplies"):format("Interface\\Icons\\inv_faction_warresources"), check = "showDragonIslesSupplies" },
 				{ text = ("|T%1$s:16:16|t  Elemental Overflow"):format("Interface\\Icons\\inv_misc_powder_thorium"), check = "ShowElementalOverflow" },
 				{ text = ("|T%1$s:16:16|t  Flightstones"):format("Interface\\Icons\\flightstone-dragonflight"), check = "showFlightstones" },
@@ -2211,7 +2272,7 @@ function BWQ:SetupConfigMenu()
 				{ text = ("|T%1$s:16:16|t  Reputation Tokens"):format("Interface\\Icons\\inv_scroll_11"), check = "showBFAReputation" },
 				{ text = ("|T%1$s:16:16|t  War Resources"):format("Interface\\Icons\\inv__faction_warresources"), check = "showWarResources" },
 				{ text = ("|T%1$s:16:16|t  Azerite"):format("Interface\\Icons\\inv_smallazeriteshard"), check = "showArtifactPower" },
-				{ text = ("|T%1$s:16:16|t  Service Medals"):format(isHorde and "Interface\\Icons\\ui_horde_honorboundmedal" or "Interface\\Icons\\ui_alliance_7legionmedal"), check = "showBFAServiceMedals" },
+				{ text = ("|T%1$s:16:16|t  Service Medals"):format(self.isHorde and "Interface\\Icons\\ui_horde_honorboundmedal" or "Interface\\Icons\\ui_alliance_7legionmedal"), check = "showBFAServiceMedals" },
 				{ text = ("|T%1$s:16:16|t  Prismatic Manapearl"):format("Interface\\Icons\\Inv_misc_enchantedpearlf"), check = "showPrismaticManapearl" },
 			}
 		},
@@ -2244,6 +2305,7 @@ function BWQ:SetupConfigMenu()
 				{ text = "Fishing", check="showProfessionFishing" },
 			}
 		},
+		{ text = "Dragon Rider Racing", check = "showDragonRiderRacing" },
 		{ text = "Dungeon Quests", check = "showDungeon" },
 		{ text = "PvP Quests", check = "showPvP" },
 		{ text = "Pet Battle Quests", check = "showPetBattle", submenu = {
@@ -2307,7 +2369,9 @@ function BWQ:SetupConfigMenu()
 		table.insert(options, { text = "" })
 		table.insert(options, { text = "Add TomTom waypoint on row click", check = "enableTomTomWaypointsOnClick" })
 	end
-	
+	table.insert(options, { text = "" })
+	table.insert(options, { text = "Spew Debug Information", check = "spewDebugInfo" })
+
 	configMenu = CreateFrame("Frame", "BWQ_ConfigMenu")
 	configMenu.displayMode = "MENU"
 
@@ -2333,9 +2397,9 @@ function BWQ:SetupConfigMenu()
 		end
 
 		if var == "expansion" then
-			expansion = C("expansion")
+			BWQ.expansion = C("expansion")
 			BWQ:HideRowsOfInactiveExpansions()
-			hasUnlockedWorldQuests = false
+			BWQ.hasUnlockedWorldQuests = false
 		end
 
 		if var == "hideFactionParagonBars" then
@@ -2418,10 +2482,10 @@ function BWQ:AttachToBlock(anchor)
 	if not C("attachToWorldMap") or (C("attachToWorldMap") and not WorldMapFrame:IsShown()) then
 		CloseDropDownMenus()
 
-		blockYPos = select(2, anchor:GetCenter())
-		showDownwards = blockYPos > UIParent:GetHeight() / 2
+		BWQ.blockYPos = select(2, anchor:GetCenter())
+		BWQ.showDownwards = BWQ.blockYPos > UIParent:GetHeight() / 2
 		BWQ:ClearAllPoints()
-		BWQ:SetPoint(showDownwards and "TOP" or "BOTTOM", anchor, showDownwards and "BOTTOM" or "TOP", 0, 0)
+		BWQ:SetPoint(BWQ.showDownwards and "TOP" or "BOTTOM", anchor, BWQ.showDownwards and "BOTTOM" or "TOP", 0, 0)
 		BWQ:SetFrameStrata("DIALOG")
 		BWQ:Show()
 
@@ -2552,7 +2616,7 @@ BWQ:SetScript("OnEvent", function(self, event, arg1)
 			BWQ:UnregisterEvent("ADDON_LOADED")
 		end
 	elseif event == "QUEST_ACCEPTED" then
-		if TomTom and currentTomTomWaypoint and (GetTitleForLogIndex(arg1) == currentTomTomWaypoint.title) then TomTom:RemoveWaypoint(currentTomTomWaypoint) end
+		if TomTom and currentTomTomWaypoint and (C_QuestLog.GetTitleForLogIndex(arg1) == currentTomTomWaypoint.title) then TomTom:RemoveWaypoint(currentTomTomWaypoint) end
 	elseif event == "PLAYER_LOGOUT" then
 		if TomTom and currentTomTomWaypoint then TomTom:RemoveWaypoint(currentTomTomWaypoint) end
 	end
@@ -2569,7 +2633,7 @@ BWQ.WorldQuestsBroker = ldb:NewDataObject("WorldQuests", {
 			BWQ:AttachToBlock(self)
 		end
 	end,
-	OnLeave = Block_OnLeave,
+	OnLeave = function() BWQ:Block_OnLeave() end,
 	OnClick = function(self, button)
 		if button == "LeftButton" then
 			if C("showOnClick") then
@@ -2578,7 +2642,7 @@ BWQ.WorldQuestsBroker = ldb:NewDataObject("WorldQuests", {
 				BWQ:RunUpdate()
 			end
 		elseif button == "RightButton" then
-			Block_OnLeave()
+			BWQ:Block_OnLeave()
 			BWQ:OpenConfigMenu(self)
 		end
 	end,

@@ -13,8 +13,8 @@ end
 
 local FrameDefaults = {
 	enabled = true,
+	bagToggle = true, sort = true, search = true, options = true, 
 	money = true, broker = true,
-	bagToggle = true, sort = true, search = true, options = true,
 
 	strata = 'HIGH', alpha = 1, scale = Addon.FrameScale or 1,
 	color = {0, 0, 0, 0.5},
@@ -24,20 +24,13 @@ local FrameDefaults = {
 	itemScale = 1, spacing = 2, bagBreak = 1, breakSpace = 1.3,
 
 	brokerObject = ADDON .. 'Launcher',
-	rules = AsArray({
-		'all', 'all/normal', 'all/trade', 'all/reagent', 'all/keys', 'all/quiver',
-		'equip', 'equip/armor', 'equip/weapon', 'equip/trinket',
-		'use', 'use/consume', 'use/enhance',
-		'trade', 'trade/goods', 'trade/gem', 'trade/glyph', 'trade/recipe',
-		'quest', 'misc',
-	}),
+	rules = AsArray({}),
 }
 
 local ProfileDefaults = {
 	inventory = Addon:SetDefaults({
-		reversedTabs = true,
 		borderColor = {1, 1, 1, 1},
-		currency = true, broker = true, reagents = REAGENTBANK_CONTAINER,
+		deposit = true, currency = true,
 		point = 'BOTTOMRIGHT',
 		x = -50, y = 100,
 		columns = 10,
@@ -47,7 +40,7 @@ local ProfileDefaults = {
 
 	bank = Addon:SetDefaults({
 		borderColor = {1, 1, 0, 1},
-		currency = true, reagents = NUM_TOTAL_EQUIPPED_BAG_SLOTS,
+		currency = true, serverSort = true,
 		point = 'LEFT',
 		columns = 14,
 		width = 600,
@@ -78,8 +71,9 @@ function Settings:OnEnable()
 		global = self:SetDefaults({}, ProfileDefaults),
 		profiles = {},
 
-		resetPlayer = true, flashFind = true, serverSort = true,
+		resetPlayer = true, flashFind = true,
 		countItems = true, countGuild = true, countCurrency = true, 
+		depositAccount = true, depositReagents = true,
 		display = {
 			banker = true, guildBanker = true, voidStorageBanker = true, crafting = true, tradePartner = true, socketing = true,
 			auctioneer = true, merchant = true, mailInfo = true, scrappingMachine = true},
@@ -88,20 +82,23 @@ function Settings:OnEnable()
 		glowQuality = true, glowNew = true, glowQuest = true, glowSets = true, glowUnusable = true, glowPoor = true,
 
 		slotBackground = 2, colorSlots = true,
-		normalColor = {1, 1, 1},
-		keyColor = {1, .9, .19},
-		quiverColor = {1, .87, .68},
-		soulColor = {0.64, 0.39, 1},
-		reagentColor = {1, .87, .68},
-		leatherColor = {1, .6, .45},
-		enchantColor = {0.64, 0.83, 1},
-		inscribeColor = {.64, 1, .82},
-		engineerColor = {0.36, 0.68, 0.52},
-		tackleColor = {0.42, 0.59, 1},
-		fridgeColor = {1, .5, .5},
-		gemColor = {1, .65, .98},
-		mineColor = {0.65, 0.53, 0.25},
-		herbColor = {.5, 1, .5},
+		color = {
+			normal = {1, 1, 1},
+			account = {0.86, 1, .98},
+			key = {1, .9, .19},
+			quiver = {1, .87, .68},
+			soul = {0.64, 0.39, 1},
+			reagent = {1, .87, .68},
+			leather = {1, .6, .45},
+			enchant = {0.64, 0.83, 1},
+			inscribe = {.64, 1, .82},
+			engineer = {0.36, 0.68, 0.52},
+			tackle = {0.42, 0.59, 1},
+			fridge = {1, .5, .5},
+			gem = {1, .65, .98},
+			mine = {0.65, 0.53, 0.25},
+			herb = {.5, 1, .5},
+		}
 	})
 
 	for realm, owners in pairs(Addon.sets.profiles) do

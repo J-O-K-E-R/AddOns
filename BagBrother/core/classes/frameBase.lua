@@ -7,11 +7,14 @@
 local ADDON, Addon = ...
 local C = LibStub('C_Everywhere').Item
 local L = LibStub('AceLocale-3.0'):GetLocale(ADDON)
+
 local Frame = Addon.Base:NewClass('Frame', 'Frame', nil, true)
+Frame.Get = GetOrCreateTableEntryByCallback
 Frame.OpenSound = SOUNDKIT.IG_BACKPACK_OPEN
 Frame.CloseSound = SOUNDKIT.IG_BACKPACK_CLOSE
-Frame.MoneyFrame = Addon.MoneyFrame
+Frame.MoneyFrame = Addon.PlayerMoney
 Frame.BagGroup = Addon.BagGroup
+Frame.RegisterEvents = nop
 
 local KEYSTONE_FORMAT = '^' .. strrep('%d+:', 6) .. '%d+$'
 local PET_FORMAT = '^' .. strrep('%d+:', 7) .. '%d+$'
@@ -112,6 +115,10 @@ end
 
 function Frame:GetPosition()
 	return self.profile.point or 'CENTER', self.profile.x, self.profile.y
+end
+
+function Frame:GetWidget(key)
+	return self:Get(key, function() return Addon[key](self) end)
 end
 
 function Frame:GetExtraButtons()

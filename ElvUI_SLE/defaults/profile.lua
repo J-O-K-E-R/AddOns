@@ -17,6 +17,51 @@ local sharedIndicatorOptions = {
 	custom = '',
 }
 
+local ObjectiveTrackerDefaults = {
+	header = {
+		text = {
+			enable = false,
+			font = 'PT Sans Narrow',
+			fontSize = 20,
+			fontOutline = 'SHADOWOUTLINE',
+			color = {r = 1, g = 0.81960791349411, b = 0},
+		},
+	},
+	headerText = {
+		text = {
+			enable = false,
+			font = 'PT Sans Narrow',
+			fontSize = 17,
+			fontOutline = 'SHADOWOUTLINE',
+			color = {r = 1, g = 0.81960791349411, b = 0},
+			useBlizzardHighlight = false,
+		},
+		icon = {
+			enable = true,
+			scale = 0.9,
+		},
+	},
+	entryText = {
+		text = {
+			enable = false,
+			font = 'PT Sans Narrow',
+			fontSize = 15,
+			fontOutline = 'SHADOWOUTLINE',
+			-- color = {r = 1, g = 0.81960791349411, b = 0},
+			-- color = {r = 0, g = 0, b = 0},
+		},
+	},
+	progressBar = {
+		text = {
+			enable = false,
+			font = 'PT Sans Narrow',
+			fontSize = 16,
+			fontOutline = 'SHADOWOUTLINE',
+			color = {r = 1, g = 1, b = 1},
+		},
+	},
+}
+
 P["sle"] = {
 	--Actionbar
 	actionbar = {
@@ -352,6 +397,7 @@ P["sle"] = {
 			["alpha"] = 0.5,
 		},
 		["combathide"] = "NONE",
+		petbattlehide = 'NONE',
 		["justify"] = {
 			["frame1"] = "LEFT",
 			["frame2"] = "LEFT",
@@ -598,43 +644,6 @@ P["sle"] = {
 			},
 		},
 	},
-	--Media
-	media = {
-		fonts = {
-			mail = {
-				font = 'PT Sans Narrow',
-				fontSize = 12,
-				fontOutline = 'NONE',
-			},
-			objective = {
-				font = 'PT Sans Narrow',
-				fontSize = 12,
-				fontOutline = 'OUTLINE',
-			},
-			objectiveHeader = {
-				font = 'PT Sans Narrow',
-				fontSize = 12,
-				fontOutline = 'NONE',
-			},
-			questFontSuperHuge = {
-				font = 'PT Sans Narrow',
-				fontSize = 24,
-				fontOutline = 'NONE',
-			},
-			scenarioStage = {
-				HeaderText = {
-					font = 'PT Sans Narrow',
-					fontSize = 16,
-					fontOutline = 'OUTLINE',
-				},
-				TimerText = {
-					font = 'PT Sans Narrow',
-					fontSize = 22,
-					fontOutline = 'OUTLINE',
-				},
-			},
-		},
-	},
 	--Minimap Module
 	["minimap"] = {
 		["combat"] = false,
@@ -672,6 +681,11 @@ P["sle"] = {
 		},
 		["locPanel"] = {
 			["enable"] = false,
+			coords = {
+				enable = true,
+				colorType = 'DEFAULT',
+				customColor = {r = 1, g = 1, b = 1 },
+			},
 			["autowidth"] = false,
 			["width"] = 200,
 			["height"] = 21,
@@ -684,9 +698,7 @@ P["sle"] = {
 			["format"] = "%.0f",
 			["zoneText"] = true,
 			["colorType"] = "REACTION",
-			["colorType_Coords"] = "DEFAULT",
 			["customColor"] = {r = 1, g = 1, b = 1 },
-			["customColor_Coords"] = {r = 1, g = 1, b = 1 },
 			["combathide"] = false,
 			["orderhallhide"] = false,
 			["portals"] = {
@@ -734,6 +746,62 @@ P["sle"] = {
 		},
 		["visibleRange"] = 60,
 	},
+	objectiveTracker = {
+		mainHeader = {
+			header = CopyTable(ObjectiveTrackerDefaults.header),
+		},
+		achievement = {
+			header = CopyTable(ObjectiveTrackerDefaults.header),
+			headerText = CopyTable(ObjectiveTrackerDefaults.headerText),
+			entryText = CopyTable(ObjectiveTrackerDefaults.entryText),
+		},
+		adventure = {
+			header = CopyTable(ObjectiveTrackerDefaults.header),
+			headerText = CopyTable(ObjectiveTrackerDefaults.headerText),
+			entryText = CopyTable(ObjectiveTrackerDefaults.entryText),
+		},
+		bonus = {
+			header = CopyTable(ObjectiveTrackerDefaults.header),
+			headerText = CopyTable(ObjectiveTrackerDefaults.headerText),
+			entryText = CopyTable(ObjectiveTrackerDefaults.entryText),
+		},
+		campaign = {
+			header = CopyTable(ObjectiveTrackerDefaults.header),
+			headerText = CopyTable(ObjectiveTrackerDefaults.headerText),
+			entryText = CopyTable(ObjectiveTrackerDefaults.entryText),
+		},
+		monthlyActivities = {
+			header = CopyTable(ObjectiveTrackerDefaults.header),
+			headerText = CopyTable(ObjectiveTrackerDefaults.headerText),
+			entryText = CopyTable(ObjectiveTrackerDefaults.entryText),
+		},
+		professionsReceipe = {
+			header = CopyTable(ObjectiveTrackerDefaults.header),
+			headerText = CopyTable(ObjectiveTrackerDefaults.headerText),
+			entryText = CopyTable(ObjectiveTrackerDefaults.entryText),
+		},
+		quest = {
+			header = CopyTable(ObjectiveTrackerDefaults.header),
+			headerText = CopyTable(ObjectiveTrackerDefaults.headerText),
+			entryText = CopyTable(ObjectiveTrackerDefaults.entryText),
+			progressBar = CopyTable(ObjectiveTrackerDefaults.progressBar),
+		},
+		scenario = {
+			header = CopyTable(ObjectiveTrackerDefaults.header),
+			headerText = CopyTable(ObjectiveTrackerDefaults.headerText),
+			entryText = CopyTable(ObjectiveTrackerDefaults.entryText),
+		},
+		uiWidgets = { -- Maybe
+			header = CopyTable(ObjectiveTrackerDefaults.header),
+			headerText = CopyTable(ObjectiveTrackerDefaults.headerText),
+			entryText = CopyTable(ObjectiveTrackerDefaults.entryText),
+		},
+		worldQuest = {
+			header = CopyTable(ObjectiveTrackerDefaults.header),
+			headerText = CopyTable(ObjectiveTrackerDefaults.headerText),
+			entryText = CopyTable(ObjectiveTrackerDefaults.entryText),
+		},
+	},
 	professions = {
 		fishing = {
 			easyCast = false,
@@ -746,18 +814,6 @@ P["sle"] = {
 	},
 	--Quests
 	["quests"] = {
-		["visibility"] = {
-			["enable"] = false,
-			["bg"] = "COLLAPSED",
-			["arena"] = "COLLAPSED",
-			["dungeon"] = "FULL",
-			["raid"] = "COLLAPSED",
-			["scenario"] = "FULL",
-			["rested"] = "FULL",
-			["garrison"] = "FULL",
-			["orderhall"] = "FULL",
-			["combat"] = "NONE",
-		},
 		["autoReward"] = false,
 	},
 	--PvP
@@ -1601,3 +1657,9 @@ P["sle"] = {
 		},
 	},
 }
+
+--* "All Objectives" Modifications
+P.sle.objectiveTracker.mainHeader.header.text.fontSize = 22
+
+--* Scenario Modifications
+P.sle.objectiveTracker.scenario.header.text.fontSize = 16

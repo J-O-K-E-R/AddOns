@@ -13,7 +13,7 @@ local SLE = LibStub('AceAddon-3.0'):NewAddon(AddOnName, 'AceConsole-3.0', 'AceEv
 SLE.callbacks = SLE.callbacks or LibStub('CallbackHandler-1.0'):New(SLE)
 
 SLE.version = GetAddOnMetadata('ElvUI_SLE', 'Version')
-SLE.DBversion = '4.78'
+SLE.DBversion = '4.82'
 SLE.Title = format('|cff9482c9%s|r', 'Shadow & Light')
 SLE.WoW10 = select(4, GetBuildInfo()) >= 100000
 
@@ -22,8 +22,6 @@ _G.ElvDB.ShadowLightAlpha = false
 --[=[@alpha@
 _G.ElvDB.ShadowLightAlpha = true
 --@end-alpha@]=]
-
-BINDING_HEADER_SLE = '|cff9482c9Shadow & Light|r'
 
 SLE.elvV = tonumber(E.version)
 SLE.elvR = tonumber(GetAddOnMetadata('ElvUI_SLE', 'X-ElvVersion'))
@@ -82,6 +80,7 @@ SLE.WarCampaign = SLE:NewModule('WarCampaign','AceHook-3.0', 'AceEvent-3.0')
 SLE.ElvConfig = SLE:NewModule('ElvConfig', 'AceEvent-3.0')
 SLE.RaidMarkers = SLE:NewModule('RaidMarkers', 'AceHook-3.0')
 SLE.Skins = SLE:NewModule('Skins')
+SLE.ObjectiveTracker = SLE:NewModule('ObjectiveTracker', 'AceHook-3.0')
 
 --A function to concentrate options from different modules to a single table used in plugin reg
 local function GetOptions()
@@ -108,6 +107,8 @@ end
 function SLE:UpdateMedia()
 	E:UpdateClassColor(E.db.sle.shadows.shadowcolor)
 	E:UpdateClassColor(E.db.sle.bags.equipmentmanager.color)
+	E:UpdateClassColor(E.db.sle.armory.stats.itemLevel.EquippedColor)
+	E:UpdateClassColor(E.db.sle.armory.stats.itemLevel.AverageColor)
 end
 
 function SLE:Initialize()
