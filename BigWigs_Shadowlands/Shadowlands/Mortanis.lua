@@ -31,7 +31,7 @@ function mod:GetOptions()
 	return {
 		338848, -- Spine Crawl
 		338847, -- Unholy Frenzy
-		{338851, "FLASH", "SAY", "SAY_COUNTDOWN"}, -- Screaming Skull
+		{338851, "SAY", "SAY_COUNTDOWN"}, -- Screaming Skull
 		338846, -- Bone Cleave
 		338849, -- Unruly Remains
 		338850, -- Lord of the Fallen
@@ -87,7 +87,7 @@ function mod:ScreamingSkull(args)
 
 	if self:Me(args.destGUID) then
 		self:PlaySound(args.spellId, "warning")
-		self:Say(args.spellId)
+		self:Say(args.spellId, nil, nil, "Screaming Skull")
 		self:SayCountdown(args.spellId, 8)
 	end
 end

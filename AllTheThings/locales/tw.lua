@@ -51,8 +51,8 @@ local GetSpellName = app.WOWAPI.GetSpellName;
 	L.HEIRLOOM_TEXT_DESC = "顯示你是否已經獲得或購買了傳家寶。";
 	L.FAILED_ITEM_INFO = "未能獲得物品資訊。該物品可能是無效的或者可能還沒有被快取在你的伺服器上。";
 	L.HEIRLOOMS_UPGRADES_DESC = "這表明你是否已經將傳家寶升級到了一定的級別。\n\n安息吧…金幣。\n - Crieve";
-	L.MUSIC_ROLLS_AND_SELFIE_DESC = "這些是按角色解鎖且目前尚未在戰隊中共享。如果暴雪有人在看，如果能把這些戰隊共享的話那就太好了。\n\n必須通過 "..SHIFT_KEY_TEXT.."點擊要檢測的標題手動刷新插件。";
-	L.MUSIC_ROLLS_AND_SELFIE_DESC_2 = "\n\n必須首先通過在要塞中完成動感低音任務來解鎖要塞點唱機以便掉落此物品。\n\n自拍需要自拍神器玩具。";
+	L.MUSIC_ROLLS_DESC = "這些是按角色解鎖且目前尚未在戰隊中共享。如果暴雪有人在看，如果能把這些戰隊共享的話那就太好了。\n\n必須通過 "..SHIFT_KEY_TEXT.."點擊要檢測的標題手動刷新插件。";
+	L.MUSIC_ROLLS_DESC_2 = "\n\n必須首先通過在要塞中完成動感低音任務來解鎖要塞點唱機以便掉落此物品。\n\n自拍需要自拍神器玩具。";
 	L.OPPOSITE_FACTION_EQ = "與敵對陣營對應：";
 	L.SELFIE_DESC = "使用您的自拍 ";
 	L.SELFIE_DESC_2 = " 和 |cffff8000";
@@ -66,9 +66,9 @@ local GetSpellName = app.WOWAPI.GetSpellName;
 	L.EXPANSION_DATA[8].lore = "決戰艾澤拉斯是第七個資料片。艾澤拉斯為結束燃燒軍團的天啓付出了慘重的代價，但即使世界上的創傷得到了修復，聯盟和部落之間破碎的信任也可能是最難彌補的。在決戰艾澤拉斯中，燃燒軍團的垮台引發了一系列災難性事件，重新引發了魔獸世界中心的衝突。隨着一個新的戰爭時代開始，艾澤拉斯的英雄們必須開始招募新的盟友，爭奪世界上最強大的資源，並在多條戰線上戰鬥，以決定部落或聯盟是否會帶領艾澤拉斯進入不確定的未來。";
 	L.EXPANSION_DATA[9].lore = "暗影之境是第八個資料片。你所知道的世界之外還有什麼? 暗影之境。每一個世俗的人(無論是善良的還是邪惡的)都曾居住過的地方。";
 	L.EXPANSION_DATA[10].lore = "巨龍崛起是第九個資料片。艾澤拉斯的巨龍軍團已經回歸，他們響應了召唤，前去保護自己世代相傳的家園：巨龍群島。巨龍群島湧動着元素魔法和艾澤拉斯的生命能量，如今它已從睡夢中甦醒，原始的奇觀和塵封已久的秘密正等待你去揭曉。";
-	L.EXPANSION_DATA[11].lore = "地心之戰是第十個資料片。也是世界之魂戰記三部曲的開端。穿越前所未見的地下世界，那里充滿了隱藏的奇觀和潜伏的危險，一直到蛛魔帝國的黑暗深處，那里邪惡的虚空先驅正在聚集蛛魔力量，試圖讓艾澤拉斯屈服。"
-	L.EXPANSION_DATA[12].lore = "至暗之夜是第十一個資料片。也是世界之魂戰記的第二部份。"
-	L.EXPANSION_DATA[13].lore = "最後的泰坦是第十二個資料片。也是世界之魂戰記三部曲終章。"
+	L.EXPANSION_DATA[11].lore = "地心之戰是第十個資料片。也是世界之魂戰記三部曲的開端。穿越前所未見的地下世界，那里充滿了隱藏的奇觀和潜伏的危險，一直到蛛魔帝國的黑暗深處，那里邪惡的虚空先驅正在聚集蛛魔力量，試圖讓艾澤拉斯屈服。";
+	L.EXPANSION_DATA[12].lore = "至暗之夜是第十一個資料片。也是世界之魂戰記的第二部份。";
+	L.EXPANSION_DATA[13].lore = "最後的泰坦是第十二個資料片。也是世界之魂戰記三部曲終章。";
 	L.TITLES_DESC = "稱號會在你的戰隊中被追蹤，但是，你的角色必須符合某些稱號的條件才能在該角色上使用。";
 	L.UPON_COMPLETION = "前置條件";
 	L.UPON_COMPLETION_DESC = "以上任務需要完成後才能夠完成以下的事情。";
@@ -322,7 +322,7 @@ local GetSpellName = app.WOWAPI.GetSpellName;
 		L.AUCTION_TAB_CHECKBOX = "顯示拍賣行模組標籤";
 		L.AUCTION_TAB_CHECKBOX_TOOLTIP = "如果你想查看 ATT 提供的拍賣行模組請啟用此選項。\n\n一些插件很調皮會大量修改這個框架。ATT 並不總是和那些玩具玩得很好。";
 		L.ICON_LEGEND_LABEL = "圖標圖例";
-		L.ICON_LEGEND_TEXT = app.ccColors.White .. "|TInterface\\AddOns\\AllTheThings\\assets\\status-unobtainable.blp:0|t " .. "無法獲得" .. "\n|TInterface\\AddOns\\AllTheThings\\assets\\status-prerequisites.blp:0|t " .. "僅在滿足先決條件的情况下獲得" .. "\n|TInterface\\AddOns\\AllTheThings\\assets\\status-seasonal-available.blp:0|t " .. AVAILABLE .."季節性内容" .. "\n|TInterface\\AddOns\\AllTheThings\\assets\\status-seasonal-unavailable.blp:0|t " .. UNAVAILABLE .. "季節性内容" .. "\n|TInterface\\FriendsFrame\\StatusIcon-Offline:0|t " .. "當前角色不可用";	--TODO: check (un)available seasonal content
+		L.ICON_LEGEND_TEXT = app.ccColors.White .. "|T" .. app.asset("status-unobtainable") .. ":0|t " .. "無法獲得" .. "\n|T" .. app.asset("status-prerequisites") .. ":0|t " .. "僅在滿足先決條件的情况下獲得" .. "\n|T" .. app.asset("status-seasonal-available") .. ":0|t " .. AVAILABLE .."季節性内容" .. "\n|T" .. app.asset("status-seasonal-unavailable") .. ":0|t " .. UNAVAILABLE .. "季節性内容" .. "\n|T374225:0|t " .. "當前角色不可用";	--TODO: check (un)available seasonal content
 		L.CHAT_COMMANDS_LABEL = "聊天命令";
 		L.CHAT_COMMANDS_TEXT = "/att |cffFFFFFF或|R /things |cffFFFFFF或|R /allthethings\n|cffFFFFFF打開主列表。\n\n|R/att mini |cffFFFFFF或|R /attmini\n|cffFFFFFF打開小列表。\n\n|R/att bounty\n|cffFFFFFF打開被出錯或未確認的物品列表。\n\n|R/att ra |cffFFFFFF或|R /attra\n|cffFFFFFF打開團隊助手。\n\n|R/att wq |cffFFFFFF或|R /attwq\n|cffFFFFFF打開世界任務列表。\n\n|R/att item:1234 |cffFFFFFF或|R /att [物品連接]\n|cffFFFFFF打開一個共享外觀的視窗。也適用於其他事物，例如|R quest:1234|cffFFFFFF，|Rnpcid:1234|cffFFFFFF，|Rmapid:1234|cffFFFFFF 或 |Rrecipeid:1234|cffFFFFFF。\n\n|R/att rwp\n|cffFFFFFF顯示所有未來用更新刪除的東西。\n\n|R/att random |cffFFFFFF或|R /attrandom |cffFFFFFF或|R /attran\n|cffFFFFFF打開隨機列表。\n\n|R/att unsorted\n|cffFFFFFF打開未知來源物品列表。最好在偵錯模式下打開。\n\n|R/rl\n|cffFFFFFF重載魔獸介面。|R";
 
@@ -617,8 +617,6 @@ for key,value in pairs({
 		DRAKEWATCHERMANUSCRIPTS_CHECKBOX_TOOLTIP = "啟用此選項追蹤 巨龍崛起 觀龍者手稿";
 		FOLLOWERS_CHECKBOX = "|T"..app.asset("Expansion_WOD")..":0|t 追隨者 & 伙伴";
 		FOLLOWERS_CHECKBOX_TOOLTIP = "啟用此選項可追蹤追隨者。\n\n即：要塞追隨者，軍團職業大廳追隨者，決戰艾澤拉斯追隨者，暗影之境追隨者。";
-		MUSIC_ROLLS_SELFIE_FILTERS_CHECKBOX = "|T"..app.asset("Expansion_WOD")..":0|t 樂譜&自拍濾鏡";
-		MUSIC_ROLLS_SELFIE_FILTERS_CHECKBOX_TOOLTIP = "啟用此選項以追蹤樂譜和自拍濾鏡。\n\n你可以用你的點唱機播放遊戲中的音樂並且你的自拍相機玩具為你的自拍收藏特定地點的濾鏡。";
 		RUNEFORGELEGENDARIES_CHECKBOX = "|T"..app.asset("Expansion_SL")..":0|t 符文銘刻之力";
 		RUNEFORGELEGENDARIES_CHECKBOX_TOOLTIP = "啟用此選項以追蹤暗影之境的符文銘刻之力。";
 		SOULBINDCONDUITS_CHECKBOX = "|T"..app.asset("Expansion_SL")..":0|t 導靈器";
@@ -637,7 +635,6 @@ for key,value in pairs({
 		ACCOUNT_WIDE_EXPLORATION_TOOLTIP = "地圖探索追蹤僅對每個角色都非常有用，但你真的想在所有50個角色上收藏它們嗎？";
 		ACCOUNT_WIDE_FLIGHT_PATHS_TOOLTIP = "飛行路線追蹤對每個角色都非常有用，但是你真的想要在所有50個角色上收藏它們嗎？";
 		ACCOUNT_WIDE_FOLLOWERS_TOOLTIP = "追隨者通常是每個角色的，但是你真的想以每周1個的速度在一個角色上收藏243個追隨者嗎？\n\n我想不行，好好先生。";
-		ACCOUNT_WIDE_MUSIC_ROLLS_SELFIE_FILTERS_TOOLTIP = "在暴雪的資料庫中通常不會在帳號通用内追蹤“樂譜和自拍濾鏡”，但是我們可以做到這一點。\n\n注意：你只能使用自動點唱機玩具播放音樂或使用你在當前角色上收藏的自拍相機玩具自拍。";
 		ACCOUNT_WIDE_QUESTS_TOOLTIP = "任務完成通常是每個角色的，但是如果任何一個角色完成了特定的任務，這個任務就會被認為是已完成。";
 		ACCOUNT_WIDE_RECIPES_TOOLTIP = "在暴雪的資料庫中，配方通常不會被帳號通用追蹤，但我們可以這樣做。\n\n在一個角色上不可能收藏到所有的東西，所以有了這個，你就可以赋予你的小號和他們的專業以意義。";
 		ACCOUNT_WIDE_REPUTATIONS_TOOLTIP = "聲望的成就現在會在暴雪的資料庫中追蹤帳號通用，所以開啟這個功能可能是個好主意。";
@@ -844,30 +841,12 @@ for key,value in pairs({
 do a[key] = value; end
 
 if app.IsRetail then
-	local a = L.AVAILABILITY_CONDITIONS;
-	for key,value in pairs({
-		-- Arbitrary Filters
-		[1] = {1, "|CFFFF0000此項玩家永遠無法獲得。|r", "從未實裝"}, -- No Hope
-		[2] = {1, "|CFFFF0000此項已從遊戲中刪除。|r", "已從遊戲中移除"}, -- No Hope
-		[4] = {3, "|CFFFF0000除非您擁有所需的 PvP 稱號、所需的 PvP 等級或處於該賽季的前 %，否則無法再購買或解鎖幻化。|r", "PvP 精良/角鬥士"},
-		[9] = {3, "|CFFFF0000此物品可在黑市拍賣行購買。原始來源可能已被刪除。|r", "黑市拍賣行 [BMAH]"},
-		[10] = {3, "|CFFFF0000最初通過不再印刷的 TCG 卡獲得，但仍可通過黑市、遊戲内或現實中的拍賣行獲得。|r", "集換式卡牌遊戲 [TCG]"},
-		[11] = {3, "|CFFFF0000除非您認識可以使用用於召唤首領的物品的人，否則這將不再可用。\n注意：如果過去擁有大多數召唤物品，則可以通過與相應的 NPC 交談來重新獲得它們。|r", "需要召唤物品"},
-		[15] = {1, "|CFFFF0000這不能永久收集、學習或用於幻化。|r", "不可學"},
-		[35] = {3, "|CFFFF0000這被鎖定在付費牆後面，例如遊戲内商店、另一個暴雪產品或招兵買馬召集令。|r", "暴雪禮品卡"},
-		[38] = {1, "|CFFFF0000這僅適用於在《潘達利亞之謎》或通過黑市拍賣行完成傳奇披風任務鏈的玩家。|r", "決心罩氅，艾夏卡瑪斯"}, --TODO: 確認台版5.4傳奇披風名字 現在的是8.0的披風
-		[45] = {1, "|CFFFF0000暴雪的拾取更改損壞了幾件物品，使其無法獲得。\n“绞肉機”奥戈姆，和奥杜爾英雄模式物品目前已損壞，需要修復。|r", "拾取損壞"},	--TODO: |CFFFF0000Blizzard's loot changes broke several items and made them unobtainable.|r
-	})
-	do a[key] = value; end
-end
-
-if app.IsRetail then
 	local a = L.CUSTOM_COLLECTS_REASONS;
 	for key,value in pairs({
-		["NPE"] = { icon = "|T"..("Interface\\Icons\\achievement_newplayerexperience")..":0|t", color = "ff5bc41d", text = "新玩家體驗", desc = "只有新角色可以收藏這個。" },
+		["NPE"] = { icon = "|T"..(3567434)..":0|t", color = "ff5bc41d", text = "新玩家體驗", desc = "只有新角色可以收藏這個。" },
 		["SL_SKIP"] = { icon = "|T"..app.asset("Expansion_SL")..":0|t", color = "ff76879c", text = "命運絲線", desc = "只有選擇跳過暗影之境故事線的角色才能收集這個。" },
-		["HOA"] = { icon = "|T"..("Interface\\Icons\\inv_heartofazeroth")..":0|t", color = "ffe6cc80", text = GetSpellName(275825), desc = "只有角色獲得 |cffe6cc80"..GetSpellName(275825).."|r 可以收集。" },
-		["!HOA"] = { icon = "|T"..("Interface\\Icons\\mystery_azerite_chest_normal")..":0|t", color = "ffe6cc80", text = "|cffff0000"..NO.."|r "..GetSpellName(275825), desc = "只有角色 |cffff0000沒有|r 獲得 |cffe6cc80"..GetSpellName(275825).."|r 可以收集。" },
+		["HOA"] = { icon = "|T"..(1869493)..":0|t", color = "ffe6cc80", text = GetSpellName(275825), desc = "只有角色獲得 |cffe6cc80"..GetSpellName(275825).."|r 可以收集。" },
+		["!HOA"] = { icon = "|T"..(2480886)..":0|t", color = "ffe6cc80", text = "|cffff0000"..NO.."|r "..GetSpellName(275825), desc = "只有角色 |cffff0000沒有|r 獲得 |cffe6cc80"..GetSpellName(275825).."|r 可以收集。" },
 	})
 	do a[key] = value; end
 end

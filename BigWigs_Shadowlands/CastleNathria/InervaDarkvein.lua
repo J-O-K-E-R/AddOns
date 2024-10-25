@@ -306,7 +306,7 @@ end
 
 function mod:ChangeOfHeartApplied(args)
 	if self:Me(args.destGUID) then
-		self:Say(args.spellId, CL.bomb)
+		self:Say(args.spellId, CL.bomb, nil, "Bomb")
 		self:SayCountdown(args.spellId, 4)
 		self:PlaySound(args.spellId, "warning")
 	end
@@ -337,7 +337,7 @@ do
 		end
 
 		if self:Me(args.destGUID) then
-			self:Say(324983, L.sins)
+			self:Say(324983, L.sins, nil, "Sins")
 			self:PlaySound(324983, "warning")
 		end
 
@@ -380,7 +380,11 @@ do
 		if self:Me(args.destGUID) then
 			isOnMe = true
 			self:PlaySound(332664, "alarm")
-			self:Say(332664, CL.rticon:format(args.spellId == 340477 and CL.big_add or CL.small_add, icon))
+			if args.spellId == 340477 then
+				self:Say(332664, CL.rticon:format(CL.big_add, icon), nil, ("Big Add ({rt%d})"):format(icon))
+			else -- 332664
+				self:Say(332664, CL.rticon:format(CL.small_add, icon), nil, ("Small Add ({rt%d})"):format(icon))
+			end
 			self:SayCountdown(332664, 10, icon)
 			self:OpenProximity(332664, 8)
 		end

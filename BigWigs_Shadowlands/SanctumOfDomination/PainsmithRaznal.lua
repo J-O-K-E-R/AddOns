@@ -133,7 +133,8 @@ function mod:InstrumentApplied(args)
 	self:TargetMessage(args.spellId, "yellow", args.destName, CL.count:format(equippedWeapon, instrumentCount))
 	self:PrimaryIcon(args.spellId, args.destName)
 	if self:Me(args.destGUID) then
-		self:Say(args.spellId, CL.count:format(equippedWeapon, instrumentCount))
+		local equippedWeaponEnglish = args.spellId == 348508 and "Hammer" or args.spellId == 355568 and "Axe" or "Scythe"
+		self:Say(args.spellId, CL.count:format(equippedWeapon, instrumentCount), nil, ("%s (%d)"):format(equippedWeaponEnglish, instrumentCount))
 		self:SayCountdown(args.spellId, 6)
 		self:PlaySound(args.spellId, "warning")
 	else
@@ -193,7 +194,7 @@ do
 		local mark = #playerList + 3
 		playerList[args.destName] = mark -- Set raid marker
 		if self:Me(args.destGUID) then
-			self:Say(args.spellId, CL.rticon:format(L.trap, mark))
+			self:Say(args.spellId, CL.rticon:format(L.trap, mark), nil, ("Trap ({rt%d})"):format(mark))
 			self:SayCountdown(args.spellId, 5, mark)
 			self:PlaySound(args.spellId, "alert")
 		end
@@ -224,7 +225,7 @@ do
 		playerList[count] = args.destName
 		playerList[args.destName] = count -- Set raid marker
 		if self:Me(args.destGUID) then
-			self:Say(args.spellId, CL.rticon:format(L.chains, count))
+			self:Say(args.spellId, CL.rticon:format(L.chains, count), nil, ("Chains ({rt%d})"):format(count))
 			self:SayCountdown(args.spellId, 3, count, 2)
 			self:PlaySound(args.spellId, "warning")
 		end

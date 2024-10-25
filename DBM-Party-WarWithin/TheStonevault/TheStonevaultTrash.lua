@@ -1,10 +1,11 @@
 local mod	= DBM:NewMod("TheStonevaultTrash", "DBM-Party-WarWithin", 4)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240902224710")
+mod:SetRevision("20241020100524")
 --mod:SetModelID(47785)
 mod.isTrashMod = true
 mod.isTrashModBossFightAllowed = true
+mod:SetZone(2652)
 
 mod:RegisterEvents(
 	"SPELL_CAST_START 425027 426283 447141 449455 429109 449130 449154 429545 426345 448852 426771 445207 448640 429427 428879 428703",
@@ -27,12 +28,12 @@ local warnEarthBurstTotem					= mod:NewCastAnnounce(429427, 2, nil, nil, false, 
 local warnFracture							= mod:NewStackAnnounce(427361, 2)
 local warnMoltenMortar						= mod:NewSpellAnnounce(449154, 2)
 
-local specWarnSeismicWave					= mod:NewSpecialWarningDodge(425027, nil, nil, nil, 2, 2)
+local specWarnSeismicWave					= mod:NewSpecialWarningDodge(425027, nil, nil, nil, 2, 15)
 local specWarnPulverizingPounce				= mod:NewSpecialWarningDodge(447141, nil, nil, nil, 2, 2)
 local specWarnLavaCannon					= mod:NewSpecialWarningDodge(449130, nil, nil, nil, 2, 2)
 local specWarnCrystalSalvo					= mod:NewSpecialWarningDodge(426345, nil, nil, nil, 2, 2)
-local specWarnShieldStampede				= mod:NewSpecialWarningDodge(448640, nil, nil, nil, 2, 2)
-local specWarnSmashRock						= mod:NewSpecialWarningDodge(428879, nil, nil, nil, 2, 2)
+local specWarnShieldStampede				= mod:NewSpecialWarningDodge(448640, nil, nil, nil, 2, 15)
+local specWarnSmashRock						= mod:NewSpecialWarningSpell(428879, nil, nil, nil, 2, 15)
 local specWarnGraniteEruption				= mod:NewSpecialWarningDodge(428703, nil, nil, nil, 2, 2)
 local specWarnVoidStorm						= mod:NewSpecialWarningSpell(426771, nil, nil, nil, 2, 2)
 local specWarnEarthBurstTotem				= mod:NewSpecialWarningSwitch(429427, nil, nil, nil, 1, 2)
@@ -52,13 +53,13 @@ local timerLavaCannonCD						= mod:NewCDPNPTimer(9.1, 449130, nil, nil, nil, 3)
 local timerMoltenMortarCD					= mod:NewCDNPTimer(20.6, 449154, nil, nil, nil, 3)--15.3-19
 local timerCrystalSalvoCD					= mod:NewCDNPTimer(16.3, 426345, nil, nil, nil, 3)
 local timerVoidStormCD						= mod:NewCDNPTimer(27.9, 426771, nil, nil, nil, 2)--Cast to cast for now, but if it gets stutter cast reports it'll be moved to success
-local timerShieldStampedeCD					= mod:NewCDPNPTimer(18.1, 448640, nil, nil, nil, 3)
-local timerSmashRockCD						= mod:NewCDNPTimer(23, 428879, nil, nil, nil, 3)
+local timerShieldStampedeCD					= mod:NewCDPNPTimer(17, 448640, nil, nil, nil, 3)
+local timerSmashRockCD						= mod:NewCDNPTimer(28.3, 428879, nil, nil, nil, 3)
 local timerGraniteEruptionCD				= mod:NewCDNPTimer(24.2, 428703, nil, nil, nil, 3)
 local timerEarthBurstTotemCD				= mod:NewCDPNPTimer(30, 429427, nil, nil, nil, 1)
 local timerHowlingFearCD					= mod:NewCDPNPTimer(22.7, 449455, nil, "HasInterrupt", nil, 4, nil, DBM_COMMON_L.INTERRUPT_ICON)--Poor sample size, these mobs rarely live long enough
 local timerRestoringMetalsCD				= mod:NewCDPNPTimer(16.3, 429109, nil, "HasInterrupt", nil, 4, nil, DBM_COMMON_L.INTERRUPT_ICON)
-local timerCensoringGearCD					= mod:NewCDPNPTimer(15.2, 429545, nil, "HasInterrupt", nil, 4, nil, DBM_COMMON_L.INTERRUPT_ICON)
+local timerCensoringGearCD					= mod:NewCDPNPTimer(18.2, 429545, nil, "HasInterrupt", nil, 4, nil, DBM_COMMON_L.INTERRUPT_ICON)
 local timerDefilingOutburstCD				= mod:NewCDNPTimer(14.2, 448852, nil, "HasInterrupt", nil, 4, nil, DBM_COMMON_L.INTERRUPT_ICON)--Insufficient data to be sure of this one yet
 local timerPiercingWailCD					= mod:NewCDPNPTimer(20.1, 445207, nil, "HasInterrupt", nil, 4, nil, DBM_COMMON_L.INTERRUPT_ICON)
 
@@ -68,11 +69,12 @@ local timerPiercingWailCD					= mod:NewCDPNPTimer(20.1, 445207, nil, "HasInterru
 
 function mod:SPELL_CAST_START(args)
 	local spellId = args.spellId
+	if not self.Options.Enabled then return end
 	if not self:IsValidWarning(args.sourceGUID) then return end
 	if spellId == 425027 then
 		if self:AntiSpam(3, 2) then
 			specWarnSeismicWave:Show()
-			specWarnSeismicWave:Play("shockwave")
+			specWarnSeismicWave:Play("frontal")
 		end
 	elseif spellId == 447141 then
 		if self:AntiSpam(3, 2) then
@@ -105,6 +107,7 @@ function mod:SPELL_CAST_START(args)
 		elseif self:AntiSpam(3, 7) then
 			warnPiercingWail:Show()
 		end
+	elseif spellId == 449130 then
 		if self:AntiSpam(3, 2) then
 			specWarnLavaCannon:Show()
 			specWarnLavaCannon:Play("watchorb")
@@ -142,7 +145,7 @@ function mod:SPELL_CAST_START(args)
 		timerShieldStampedeCD:Start(nil, args.sourceGUID)
 		if self:AntiSpam(3, 2) then
 			specWarnShieldStampede:Show()
-			specWarnShieldStampede:Play("shockwave")
+			specWarnShieldStampede:Play("chargemove")
 		end
 	elseif spellId == 429427 then
 		if self:AntiSpam(3, 6) then
@@ -151,9 +154,9 @@ function mod:SPELL_CAST_START(args)
 		end
 	elseif spellId == 428879 then
 		timerSmashRockCD:Start(nil, args.sourceGUID)
-		if self:AntiSpam(3, 2) then
+		if self:AntiSpam(3, 4) then
 			specWarnSmashRock:Show()
-			specWarnSmashRock:Play("shockwave")
+			specWarnSmashRock:Play("carefly")
 		end
 	elseif spellId == 428703 then
 		timerGraniteEruptionCD:Start(nil, args.sourceGUID)
@@ -165,6 +168,7 @@ function mod:SPELL_CAST_START(args)
 end
 
 function mod:SPELL_CAST_SUCCESS(args)
+	if not self.Options.Enabled then return end
 	local spellId = args.spellId
 	if not self:IsValidWarning(args.sourceGUID) then return end
 	if spellId == 429427 then
@@ -184,7 +188,7 @@ function mod:SPELL_CAST_SUCCESS(args)
 	elseif spellId == 445207 then
 		timerPiercingWailCD:Start(20.1, args.sourceGUID)
 	elseif spellId == 429545 then
-		timerCensoringGearCD:Start(15.2, args.sourceGUID)
+		timerCensoringGearCD:Start(18.2, args.sourceGUID)
 	elseif spellId == 429109 then
 		timerRestoringMetalsCD:Start(16.3, args.sourceGUID)
 	elseif spellId == 449130 then
@@ -202,7 +206,7 @@ function mod:SPELL_INTERRUPT(args)
 	elseif spellId == 445207 then
 		timerPiercingWailCD:Start(20.1, args.destGUID)
 	elseif spellId == 429545 then
-		timerCensoringGearCD:Start(15.2, args.destGUID)
+		timerCensoringGearCD:Start(18.2, args.destGUID)
 	elseif spellId == 429109 then
 		timerRestoringMetalsCD:Start(16.3, args.destGUID)
 	elseif spellId == 448852 then
@@ -235,6 +239,7 @@ function mod:SPELL_AURA_APPLIED_DOSE(args)
 end
 
 function mod:UNIT_DIED(args)
+	if not self.Options.Enabled then return end
 	local cid = self:GetCIDFromGUID(args.destGUID)
 	if cid == 210109 then--Earth Infused Golem
 		timerSeismicWaveCD:Stop(args.destGUID)

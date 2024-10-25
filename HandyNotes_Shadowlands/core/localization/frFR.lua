@@ -48,6 +48,8 @@ L['shared_drops'] = 'Butins partagés'
 L['zone_drops_label'] = 'Butins mondiaux'
 L['zone_drops_note'] = 'Les objets listés ci-dessous peuvent être trouvés sur plusieurs monstres de cette zone.'
 
+L['poi_entrance_label'] = 'Entrée'
+
 L['requires'] = 'Requiert'
 L['ranked_research'] = '%s (Rang %d/%d)'
 
@@ -189,6 +191,11 @@ L['options_toggle_per_map_settings'] = 'Utiliser des paramètres spécifiques à
 L['options_toggle_per_map_settings_desc'] = 'Appliquez les paramètres de permutation, d\'échelle et d\'opacité à chaque zone individuellement.'
 L['options_restore_hidden_nodes'] = 'Restaurer les nœuds cachés'
 L['options_restore_hidden_nodes_desc'] = 'Restaure tous les nœuds cachés en utilisant le clic droit du menu contextuel' -- Need review
+
+L['ignore_class_restrictions'] = 'Ignorer les restrictions de classe'
+L['ignore_class_restrictions_desc'] = 'Afficher les groupes, les nœuds et les récompenses qui requièrent une classe différente de celle du personnage actif.'
+L['ignore_faction_restrictions'] = 'Ignorer les restrictions de faction'
+L['ignore_faction_restrictions_desc'] = 'Afficher les groupes, les nœuds et les récompenses qui requièrent la faction opposée.'
 
 L['options_rewards_settings'] = 'Récompenses'
 L['options_reward_behaviors_settings'] = 'Comportements des récompenses'

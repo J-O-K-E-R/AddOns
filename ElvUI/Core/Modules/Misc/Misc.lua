@@ -53,6 +53,7 @@ local GetGameAccountInfoByGUID = C_BattleNet.GetGameAccountInfoByGUID
 local GetItemInfo = C_Item.GetItemInfo
 local IsAddOnLoaded = C_AddOns.IsAddOnLoaded
 local LeaveParty = C_PartyInfo.LeaveParty or LeaveParty
+local IsPartyWalkIn = C_PartyInfo and C_PartyInfo.IsPartyWalkIn
 local IsFriend = C_FriendList.IsFriend
 
 local LE_GAME_ERR_GUILD_NOT_ENOUGH_MONEY = LE_GAME_ERR_GUILD_NOT_ENOUGH_MONEY
@@ -96,6 +97,10 @@ function M:ZoneTextToggle()
 	end
 end
 
+function M:IsRandomGroup()
+	return IsPartyLFG() or (E.Retail and IsPartyWalkIn()) -- This is the API for Delves
+end
+
 function M:COMBAT_LOG_EVENT_UNFILTERED()
 	local inGroup = IsInGroup()
 	if not inGroup then return end
@@ -104,11 +109,11 @@ function M:COMBAT_LOG_EVENT_UNFILTERED()
 	local announce = spellName and (destGUID ~= E.myguid) and (sourceGUID == E.myguid or sourceGUID == UnitGUID('pet')) and strmatch(event, '_INTERRUPT')
 	if not announce then return end -- No announce-able interrupt from player or pet, exit.
 
-	local inRaid, inPartyLFG = IsInRaid(), E.Retail and IsPartyLFG()
+	local inRaid, inPartyLFG = IsInRaid(), M:IsRandomGroup()
 
 	--Skirmish/non-rated arenas need to use INSTANCE_CHAT but IsPartyLFG() returns 'false'
 	local _, instanceType = GetInstanceInfo()
-	if E.Retail and instanceType == 'arena' then
+	if not E.Classic and instanceType == 'arena' then
 		local skirmish = IsArenaSkirmish()
 		local _, isRegistered = IsActiveBattlefieldArena()
 		if skirmish or not isRegistered then
@@ -346,6 +351,15 @@ function M:BossBanner_ConfigureLootFrame(lootFrame)
 	lootFrame.IconHitBox.IconOverlay2:Hide()
 end
 
+function M:ToggleInterrupt()
+	local announce = E.db.general.interruptAnnounce
+	if announce and announce ~= 'NONE' then
+		M:RegisterEvent('COMBAT_LOG_EVENT_UNFILTERED')
+	else
+		M:UnregisterEvent('COMBAT_LOG_EVENT_UNFILTERED')
+	end
+end
+
 function M:Initialize()
 	M.Initialized = true
 
@@ -356,6 +370,7 @@ function M:Initialize()
 	M:ToggleItemLevelInfo(true)
 	M:LoadQueueStatus()
 	M:ZoneTextToggle()
+	M:ToggleInterrupt()
 
 	M:RegisterEvent('MERCHANT_SHOW')
 	M:RegisterEvent('RESURRECT_REQUEST')
@@ -393,10 +408,6 @@ function M:Initialize()
 				M.QuestRewardGoldIconFrame:Hide()
 			end
 		end)
-	end
-
-	if E.db.general.interruptAnnounce ~= 'NONE' then
-		M:RegisterEvent('COMBAT_LOG_EVENT_UNFILTERED')
 	end
 
 	if E.Retail then

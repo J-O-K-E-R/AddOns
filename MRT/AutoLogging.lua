@@ -17,6 +17,7 @@ module.db.mapsToLog_5ppl = {
 	[1651] = true, -- Return to Karazhan
 	[657] = true,	-- The Vortex Pinnacle
 	[643] = true,	-- Throne of the Tides
+	[670] = true,	-- Grim Batol
 }
 
 module.db.mapsSoD = {	--Season of Discovery, Classic
@@ -48,7 +49,7 @@ function module.options:Load()
 		end
 	end)
 
-	self.enable5ppLegion = ELib:Check(self,DUNGEONS..": "..(UnitLevel'player'>50 and EXPANSION_NAME8 or EXPANSION_NAME7).." ("..PLAYER_DIFFICULTY6..", "..PLAYER_DIFFICULTY6.."+)",VMRT.Logging.enable5ppLegion):Point("TOP",self.enable3ppScenario,"BOTTOM",0,-5):Point("LEFT",self,15,0):OnClick(function(self) 
+	self.enable5ppLegion = ELib:Check(self,DUNGEONS.." ("..PLAYER_DIFFICULTY6..", "..PLAYER_DIFFICULTY6.."+)",VMRT.Logging.enable5ppLegion):Point("TOP",self.enable3ppScenario,"BOTTOM",0,-5):Point("LEFT",self,15,0):OnClick(function(self) 
 		if self:GetChecked() then
 			VMRT.Logging.enable5ppLegion = true
 		else

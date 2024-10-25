@@ -1,5 +1,5 @@
-local VERSION_TEXT = "v1.3.7";
-local VERSION_DATE = 1725800000;
+local VERSION_TEXT = "v1.4.5";
+local VERSION_DATE = 1729030000;
 
 
 local addonName, addon = ...
@@ -59,17 +59,26 @@ function CallbackRegistry:Trigger(event, ...)
     end
 end
 
+function CallbackRegistry:RegisterSettingCallback(dbKey, func, owner)
+    self:Register("SettingChanged."..dbKey, func, owner);
+end
+
 
 local function GetDBValue(dbKey)
     return DB[dbKey]
 end
 addon.GetDBValue = GetDBValue;
 
-local function SetDBValue(dbKey, value)
+local function SetDBValue(dbKey, value, userInput)
     DB[dbKey] = value;
-    addon.CallbackRegistry:Trigger("SettingChanged."..dbKey, value);
+    addon.CallbackRegistry:Trigger("SettingChanged."..dbKey, value, userInput);
 end
 addon.SetDBValue = SetDBValue;
+
+local function GetDBBool(dbKey)
+    return DB[dbKey] == true
+end
+addon.GetDBBool = GetDBBool;
 
 
 local DefaultValues = {
@@ -87,8 +96,25 @@ local DefaultValues = {
     HandyLockpick = true,               --Right-click to lockpick inventory items (Rogue/Mechagnome)
     Technoscryers = true,               --Show Technoscryers on QuickSlot (Azerothian Archives World Quest)
     TooltipChestKeys = true,            --Show keys that unlocked the current chest or door
+    TooltipRepTokens = true,            --Show faction info for items that grant rep
     ExpansionLandingPage = true,        --Display extra info on the ExpansionLandingPage
     Delves_SeasonProgress = true,       --Display Seaonal Journey changes on a progress bar
+    WoWAnniversary = true,              --QuickSlot for Mount Maniac Event
+        VotingResultsExpanded = true,
+    BlizzFixFishingArtifact = true,     --Fix Fishing Artifact Traits Not Showing bug
+
+    --Custom Loot Window
+    LootUI = false,
+        LootUI_FontSize = 14,
+        LootUI_ShowItemCount = false,
+        LootUI_UseHotkey = true,
+        LootUI_HotkeyName = "E",
+        LootUI_ForceAutoLoot = true,
+        LootUI_NewTransmogIcon = true,
+        LootUI_FadeDelayPerItem = 0.25,
+        LootUI_ReplaceDefaultAlert = false,
+        LootUI_LootUnderMouse = false;
+        LootUI_UseStockUI = false,
 
 
     --Unified Map Pin System
@@ -137,6 +163,10 @@ local function LoadDatabase()
         end
     end
 
+    for dbKey, value in pairs(DB) do
+        addon.CallbackRegistry:Trigger("SettingChanged."..dbKey, value);
+    end
+
     if not DB.installTime or type(DB.installTime) ~= "number" then
         DB.installTime = VERSION_DATE;
     end
@@ -160,7 +190,8 @@ do
     local tocVersion = select(4, GetBuildInfo());
     tocVersion = tonumber(tocVersion or 0);
 
-    addon.IsGame_10_2_0 = tocVersion >= 100200;
-    addon.IsGame_11_0_0 = tocVersion >= 110000;
-    addon.IsGame_11_0_2 = tocVersion >= 110002;
+    local function IsToCVersionEqualOrNewerThan(targetVersion)
+        return tocVersion >= targetVersion
+    end
+    addon.IsToCVersionEqualOrNewerThan = IsToCVersionEqualOrNewerThan;
 end

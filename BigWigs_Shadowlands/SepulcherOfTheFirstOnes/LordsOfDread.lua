@@ -396,8 +396,9 @@ do
 		playerList[args.destName] = count -- Set raid marker
 		if self:Me(args.destGUID)then
 			local sayIcon = bitesSayTimer and 7 or nil
-			local sayText = bitesSayTimer and CL.count_rticon:format(L.fearful_trepidation, icon, sayIcon) or nil
-			self:Say(args.spellId, sayText)
+			local sayText = bitesSayTimer and CL.count_rticon:format(L.fearful_trepidation, icon, sayIcon) or L.fearful_trepidation
+			local englishText = bitesSayTimer and ("Fears (%d{rt%d})"):format(icon, sayIcon) or "Fears"
+			self:Say(args.spellId, sayText, nil, englishText)
 			self:SayCountdown(args.spellId, 8, sayIcon, 5)
 			if bitesSayTimer then
 				self:CancelTimer(bitesSayTimer)

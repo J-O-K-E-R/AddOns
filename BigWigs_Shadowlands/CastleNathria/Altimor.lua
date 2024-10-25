@@ -165,7 +165,7 @@ do
 		playerList[count] = args.destName
 		playerList[args.destName] = count -- Set raid marker
 		if self:Me(args.destGUID) then
-			self:Say(335114, CL.count_rticon:format(self:SpellName(335114), count, count))
+			self:Say(335114, CL.count_rticon:format(self:SpellName(335114), count, count), nil, ("Sinseeker (%d{rt%d})"):format(count, count))
 			self:SayCountdown(335114, 5.7, count) -- _applied to damage, varys with distance
 			self:PlaySound(335114, "warning")
 			self:Flash(335114)
@@ -211,7 +211,7 @@ function mod:ViciousLungeApplied(args)
 	if self:Me(args.destGUID) then
 		lungeTarget = 2
 		self:PlaySound(args.spellId, "warning")
-		self:Yell(args.spellId)
+		self:Yell(args.spellId, nil, nil, "Vicious Lunge")
 		self:YellCountdown(args.spellId, 6)
 	else
 		lungeTarget = 1
@@ -346,7 +346,7 @@ do
 		playerList[#playerList+1] = args.destName
 		if self:Me(args.destGUID) then
 			self:PlaySound(args.spellId, "warning")
-			self:Say(args.spellId)
+			self:Say(args.spellId, nil, nil, "Petrifying Howl")
 			self:SayCountdown(args.spellId, 8)
 			self:Flash(args.spellId)
 			self:TargetBar(args.spellId, 8, args.destName)

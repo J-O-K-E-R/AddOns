@@ -108,6 +108,7 @@ function TipCounts:AddOwners(tip, link)
 	if not tip.__hasCounters and Addon.sets.countItems then
 		local id = tonumber(link and C.GetItemInfoInstant(link) and link:match(':(%d+)')) -- workaround Blizzard craziness
 		if id and id ~= HEARTHSTONE_ITEM_ID then
+			local carrying = C.GetItemCount(id)
 			local left, right = {}, {}
 			local total = 0
 
@@ -122,8 +123,6 @@ function TipCounts:AddOwners(tip, link)
 				if not owner.isguild then
 					local equip, bags, bank, vault
 					if not owner.offline then
-						local carrying = C.GetItemCount(id)
-
 						equip = find(owner.equip, id)
 						vault = find(owner.vault, id)
 						bank = C.GetItemCount(id, true, nil, true) - carrying
@@ -154,6 +153,13 @@ function TipCounts:AddOwners(tip, link)
 					tinsert(right, locations)
 					total = total + count
 				end
+			end
+
+			local account = C.GetItemCount(id, nil, nil, nil, true) - carrying
+			if account > 0 then
+				tinsert(left, '|A:questlog-questtypeicon-account:0:0|a ' .. ACCOUNT_QUEST_LABEL)
+				tinsert(right, account)
+				total = total + account
 			end
 
 			if #left > 1 then

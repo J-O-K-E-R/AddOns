@@ -1,6 +1,8 @@
 local L = BigWigsAPI:NewLocale("BigWigs", "deDE")
 if not L then return end
 
+L.tempNPMsg = "Unsere Saison 1 Namensplaketten Timer sind aktiv."
+
 -- Core.lua
 L.berserk = "Berserker"
 L.berserk_desc = "Warnt, wenn der Boss zum Berserker wird."
@@ -165,7 +167,7 @@ L.ME_ONLY_EMPHASIZE_desc = "Die Aktivierung dieser Option hebt Nachrichten zu di
 L.NAMEPLATE = "Namensplaketten"
 L.NAMEPLATE_desc = "Wenn aktiviert, werden Funktionen wie Symbole und Text zu dieser spezifischen Fähigkeit an den Namensplaketten dargestellt. Dies macht es einfacher zu erkennen, welcher NPC eine Fähigkeit wirkt, wenn mehrere NPCs diese wirken."
 L.PRIVATE = "Private Aura"
-L.PRIVATE_desc = "Private Auren können normalerweise nicht verfolgt werden, aber der \"auf Dir\" Sound (Warnung) kann im Sound Register gesetzt werden."
+L.PRIVATE_desc = "Diese Einstellungen sind nur für allgemeine Zauberwarnungen und Leisten!\n\nDu kannst den abzuspielenden Sound wenn Du von dieser Fähigkeit betroffen bist unter \"Private Aurasounds\" im \"Wähle Begegnung\" Dropdown-Menü oben rechts ändern."
 
 L.advanced = "Erweiterte Optionen"
 L.back = "<< Zurück"

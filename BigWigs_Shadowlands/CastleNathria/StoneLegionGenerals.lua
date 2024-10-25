@@ -335,7 +335,7 @@ do
 	local function printTarget(self, target, guid)
 		if #playerList ~= 0 then -- Compensate for sometimes taking a very long time (0.5s+) to pick a target by using this fallback
 			if not self:Me(guid) and onMe then
-				self:Say(333387, L.second_blade)
+				self:Say(333387, L.second_blade, nil, "Second Blade")
 				self:PlaySound(333387, "warning")
 			end
 			if self:GetOption(wickedBladeMarker) then
@@ -350,7 +350,7 @@ do
 		end
 
 		if self:Me(guid) then
-			self:Say(333387, L.first_blade)
+			self:Say(333387, L.first_blade, nil, "First Blade")
 			self:PlaySound(333387, "warning")
 		end
 	end
@@ -369,7 +369,7 @@ do
 			playerList[#playerList+1] = args.destName
 			if self:Me(args.destGUID) then
 				onMe = true
-				self:Say(333387)
+				self:Say(333387, nil, nil, "Wicked Blade")
 				self:PlaySound(333387, "warning")
 			end
 			if #playerList == 2 then
@@ -381,7 +381,7 @@ do
 			end
 		elseif firstGUID and firstGUID ~= args.destGUID then
 			if self:Me(args.destGUID) then
-				self:Say(333387, L.second_blade)
+				self:Say(333387, L.second_blade, nil, "Second Blade")
 				self:PlaySound(333387, "warning")
 			end
 			playerList[2] = args.destName
@@ -483,7 +483,7 @@ do
 		prevGUID = args.destGUID
 		self:TargetMessage(args.spellId, "yellow", args.destName, CL.count:format(args.spellName, crystalizeCount-1))
 		if self:Me(args.destGUID) then
-			self:Say(args.spellId)
+			self:Say(args.spellId, nil, nil, "Crystalize")
 			self:SayCountdown(args.spellId, 5)
 			self:PlaySound(args.spellId, "warning")
 		end
@@ -500,7 +500,7 @@ do
 
 	function mod:PulverizingMeteor(args)
 		if self:Me(prevGUID) then
-			self:Yell(args.spellId, CL.meteor) -- Meteor
+			self:Yell(args.spellId, CL.meteor, nil, "Meteor") -- Meteor
 		end
 		self:Message(args.spellId, "orange", CL.count:format(CL.meteor, pulverizingMeteorCount))
 		self:PlaySound(args.spellId, "alert")
@@ -595,7 +595,7 @@ end
 do
 	local function printTarget(self, player, guid)
 		if self:Me(guid) then
-			self:Say(344496, L.eruption) -- Eruption
+			self:Say(344496, L.eruption, nil, "Eruption") -- Eruption
 			self:PlaySound(344496, "warning")
 		end
 		self:TargetMessage(344496, "red", player, CL.count:format(L.eruption, reverberatingLeapCount-1))

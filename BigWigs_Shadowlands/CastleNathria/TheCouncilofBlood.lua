@@ -104,7 +104,7 @@ function mod:GetOptions()
 		--[[ Mythic ]]--
 		-22433, -- Afterimage of Baroness Frieda
 		afterImageMarker,
-		{347350, "SAY", "SAY_COUNTDOWN"}, -- Dancing Fever
+		347350, -- Dancing Fever
 	},{
 		["stages"] = "general",
 		[346690] = -22147, -- Castellan Niklaus

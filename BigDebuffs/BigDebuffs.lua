@@ -397,7 +397,17 @@ local GetAnchor = {
             end
         end
 
-        if unit and (unit:match("party") or unit:match("player")) then
+        if unit and unit:match("player") then
+            local unitGUID = UnitGUID(unit)
+            local elvUIFrame = _G["ElvUF_Player"]
+            if elvUIFrame and elvUIFrame:IsVisible() and elvUIFrame.unit then
+                if unitGUID == UnitGUID(elvUIFrame.unit) then
+                    return elvUIFrame
+                end
+            end
+        end
+
+        if unit and unit:match("party") then
             local unitGUID = UnitGUID(unit)
             for i = 1, 5, 1 do
                 local elvUIFrame = _G["ElvUF_PartyGroup1UnitButton" .. i]
@@ -2188,12 +2198,13 @@ function BigDebuffs:UNIT_AURA(unit)
                     frame.mask:SetAllPoints(frame.icon)
                     frame.mask:SetTexture("Interface/CHARACTERFRAME/TempPortraitAlphaMask", "CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE")
                     if frame.unit == "player" then
-
-                        local container = PlayerFrame.PlayerFrameContainer
-                        -- set the frame.mask atlas only if the new frame textures are actually present (4642466)
-                        if (container.AlternatePowerFrameTexture and container.AlternatePowerFrameTexture:GetTexture() == 4642466)
-                            or (container.FrameTexture and container.FrameTexture:GetTexture() == 4642466) then
-                            frame.mask:SetAtlas("UI-HUD-UnitFrame-Player-Portrait-Mask", _G.TextureKitConstants.UseAtlasSize)
+                        if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
+                            local container = PlayerFrame.PlayerFrameContainer
+                            -- set the frame.mask atlas only if the new frame textures are actually present (4642466)
+                            if (container.AlternatePowerFrameTexture and container.AlternatePowerFrameTexture:GetTexture() == 4642466)
+                                or (container.FrameTexture and container.FrameTexture:GetTexture() == 4642466) then
+                                frame.mask:SetAtlas("UI-HUD-UnitFrame-Player-Portrait-Mask", _G.TextureKitConstants.UseAtlasSize)
+                            end
                         end
                     end
                     frame.icon:AddMaskTexture(frame.mask)

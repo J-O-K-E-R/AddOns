@@ -5,7 +5,7 @@ local _G = _G
 local wipe, next = wipe, next
 local hooksecurefunc = hooksecurefunc
 
-function BL:KillBlizzard() -- current not E.Retail
+function BL:KillBlizzard() -- for Cata (for now)
 	_G.Advanced_UIScaleSlider:Kill()
 	_G.Advanced_UseUIScale:Kill()
 end
@@ -69,9 +69,6 @@ local gameTutorials = {
 	'Class_FirstProfessionWatcher',
 	'Class_FirstProfessionTutorial',
 
-	-- Blizzard_Tutorials_Dracthyr
-	'Class_DracthyrEssenceWatcher',
-
 	-- Blizzard_Tutorials_Classes
 	'Class_StarterTalentWatcher',
 	'Class_TalentPoints',
@@ -86,7 +83,10 @@ local function ShutdownGT()
 
 		-- shut some down, they are running but not used
 		for _, name in next, gameTutorials do
-			_G[name]:Complete()
+			local frame = _G[name]
+			if frame then
+				frame:Complete()
+			end
 		end
 	end
 

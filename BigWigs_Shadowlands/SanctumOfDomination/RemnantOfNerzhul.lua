@@ -181,7 +181,7 @@ do
 			if expires and expires > 0 then
 				local timeLeft = expires - GetTime()
 				self:TargetBar(args.spellId, timeLeft, args.destName, CL.bomb)
-				self:Say(args.spellId, CL.bomb)
+				self:Say(args.spellId, CL.bomb, nil, "Bomb")
 				self:SayCountdown(args.spellId, timeLeft)
 				self:PlaySound(args.spellId, "warning")
 			end
@@ -218,7 +218,7 @@ do
 	local function printTarget(self, name, guid)
 		if self:Me(guid) then
 			self:PlaySound(349890, "warning")
-			self:Say(349890, CL.beam)
+			self:Say(349890, CL.beam, nil, "Beam")
 			self:SayCountdown(349890, 3, nil, 2)
 		else
 			self:PlaySound(349890, "alert")

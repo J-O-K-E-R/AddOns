@@ -1,3 +1,18 @@
+# v104
+
+* Add toggle for faction restrictions
+* Add toggle for class restrictions
+
+# v101
+
+* Added a feature that POIs can have tooltips.
+* Updated core localizations: deDE, esES, frFR, zhCN
+
+# v100
+
+* Added new requirement type for specializations.
+* Updated core localizations: esES
+
 # v95
 
 * Updated core localizations: zhTW

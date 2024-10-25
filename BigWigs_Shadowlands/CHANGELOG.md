@@ -1,8 +1,10 @@
 # BigWigs [Shadowlands]
 
-## [v10.2.2](https://github.com/BigWigsMods/BigWigs_Shadowlands/tree/v10.2.2) (2024-05-08)
-[Full Changelog](https://github.com/BigWigsMods/BigWigs_Shadowlands/compare/v10.2.1...v10.2.2) [Previous Releases](https://github.com/BigWigsMods/BigWigs_Shadowlands/releases)
+## [v11.0.0](https://github.com/BigWigsMods/BigWigs_Shadowlands/tree/v11.0.0) (2024-09-21)
+[Full Changelog](https://github.com/BigWigsMods/BigWigs_Shadowlands/compare/v10.2.2...v11.0.0) [Previous Releases](https://github.com/BigWigsMods/BigWigs_Shadowlands/releases)
 
 - Cleanups  
+- Cleanups  
 - bump toc  
-- Update zhCN (#1)  
+- Define X-BigWigs-Minimum  
+- bump toc  

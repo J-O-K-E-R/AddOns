@@ -1,11 +1,12 @@
 local mod	= DBM:NewMod("TirnaScitheTrash", "DBM-Party-Shadowlands", 3)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240902224710")
+mod:SetRevision("20241020100524")
 --mod:SetModelID(47785)
 
 mod.isTrashMod = true
 mod.isTrashModBossFightAllowed = true
+mod:SetZone(2290)
 
 mod:RegisterEvents(
 	"SPELL_CAST_START 321968 324909 324923 324914 324776 340305 340304 340300 340160 340189 326046 331718 331743 460092 463256 463248 340208 340289 326021",--325418
@@ -39,18 +40,19 @@ local warnHarvestEssence				= mod:NewCastAnnounce(322938, 4, 6)--High Prio off i
 local warnNourishtheForest				= mod:NewCastAnnounce(324914, 4)--High Prio off internet
 local warnBuckingRampage				= mod:NewSpellAnnounce(331743, 3, nil, "Melee")--Annoying spell that can do a lot of burst damage to melee that's not interruptable
 local warnMistveilTear					= mod:NewTargetNoFilterAnnounce(325021, 3, nil, "Tank|Healer|RemoveBleed")
+local warnExpel							= mod:NewTargetAnnounce(463248, 3)
 
 --General
 --local specWarnGTFO					= mod:NewSpecialWarningGTFO(257274, nil, nil, nil, 1, 8)
 local specWarnAcidNova					= mod:NewSpecialWarningSpell(460092, nil, nil, nil, 2, 2)
 local specWarnBrambleBurst				= mod:NewSpecialWarningDodge(324923, nil, nil, nil, 2, 2)
-local specWarnSpearFlurry				= mod:NewSpecialWarningDodge(331718, nil, nil, nil, 2, 2)
+local specWarnSpearFlurry				= mod:NewSpecialWarningDodge(331718, nil, nil, nil, 2, 15)
 local specWarnPoisonousSecretions		= mod:NewSpecialWarningDodge(340304, nil, nil, nil, 2, 2)
 local specWarnTongueLashing				= mod:NewSpecialWarningDodge(340300, nil, nil, nil, 2, 2)
 local specWarnRadiantBreath				= mod:NewSpecialWarningDodge(340160, nil, nil, nil, 2, 2)
 local specWarnPoisonousDischarge		= mod:NewSpecialWarningDodge(340279, nil, nil, nil, 2, 2)
-local specWarnBewilderingPollen			= mod:NewSpecialWarningDodge(321968, nil, nil, nil, 1, 2)
-local specWarnExpel						= mod:NewSpecialWarningDodge(463248, nil, nil, nil, 2, 2)
+local specWarnBewilderingPollen			= mod:NewSpecialWarningDodge(321968, nil, nil, nil, 1, 15)
+local specWarnExpel						= mod:NewSpecialWarningYou(463248, nil, nil, nil, 2, 2)
 local specWarnAcidGlobule				= mod:NewSpecialWarningDodge(326021, nil, nil, nil, 2, 2)
 local specWarnOvergrowth				= mod:NewSpecialWarningMoveTo(322486, nil, nil, nil, 1, 11)
 local specWarnShredArmor				= mod:NewSpecialWarningDefensive(340208, nil, nil, nil, 1, 2)
@@ -93,7 +95,7 @@ local timerMistWardCD					= mod:NewCDNPTimer(22.9, 463256, nil, nil, nil, 5)--Va
 local timerRadiantBreathCD				= mod:NewCDPNPTimer(10.4, 340160, nil, nil, nil, 3)--Valid Aug 8
 local timerShredArmorCD					= mod:NewCDNPTimer(10.6, 340208, nil, nil, nil, 5)----Valid Aug 8, Possible same as breath
 local timerPoolofRadianceCD				= mod:NewCDNPTimer(28, 340189, nil, nil, nil, 5)--Valid Aug 8
-local timerAcidGlobuleCD				= mod:NewCDNPTimer(17.4, 326021, nil, nil, nil, 3)--Valid Aug 8
+local timerAcidGlobuleCD				= mod:NewCDNPTimer(15.7, 326021, nil, nil, nil, 3)--Valid Oct 3
 local timerMistveilBiteCD				= mod:NewCDNPTimer(10.4, 324987, nil, nil, nil, 5)--Valid Aug 8
 local timerTongueLashingCD				= mod:NewCDPNPTimer(7.7, 340300, nil, nil, nil, 3)--Valid Aug 8
 
@@ -107,6 +109,19 @@ function mod:CrushingLeap(targetname, _, unituid)
 --	if targetname == UnitName("player") then
 --		yellRicochetingThrow:Yell()
 --	end
+end
+
+function mod:ExpelTarget(targetname, _, unituid)
+	--Now has death check cause it's possible for mob to die before cast finishes and we don't want scan to return target if it won't finish
+	if not targetname or (unituid and UnitIsDead(unituid)) then return end
+	DBM:Debug("Crushing Leap on "..targetname)
+	if targetname == UnitName("player") then
+		specWarnExpel:Show()
+		specWarnExpel:Play("targetyou")
+		specWarnExpel:ScheduleVoice(1.5, "carefly")
+	else
+		warnExpel:Show(targetname)
+	end
 end
 
 --[[
@@ -133,7 +148,7 @@ function mod:SPELL_CAST_START(args)
 	if spellId == 321968 and self:AntiSpam(3, 2) then
 		if self:IsTanking("player", nil, nil, true, args.sourceGUID) then
 			specWarnBewilderingPollen:Show()
-			specWarnBewilderingPollen:Play("shockwave")
+			specWarnBewilderingPollen:Play("frontal")
 		end
 	elseif spellId == 324909 and self:AntiSpam(3, 4) then
 		warnFuriousThrashing:Show()
@@ -161,10 +176,11 @@ function mod:SPELL_CAST_START(args)
 		specWarnPoisonousSecretions:Play("watchstep")
 	elseif spellId == 340300 and self:AntiSpam(3, 2) then
 		specWarnTongueLashing:Show()
-		specWarnTongueLashing:Play("watchstep")
+		specWarnTongueLashing:Play("frontal")
 	elseif spellId == 340160 and self:AntiSpam(3, 2) then
 		specWarnRadiantBreath:Show()
-		specWarnRadiantBreath:Play("watchstep")
+		specWarnRadiantBreath:Play("breathsoon")
+
 	elseif spellId == 340189 then--No Antispam, not to be throttled against other types
 		if self:IsTanking("player", nil, nil, true, args.sourceGUID) then
 			specWarnPoolOfRadiance:Show()
@@ -179,7 +195,7 @@ function mod:SPELL_CAST_START(args)
 --		self:ScheduleMethod(0.1, "BossTargetScanner", args.sourceGUID, "VolatileAcid", 0.1, 4)
 	elseif spellId == 331718 and self:AntiSpam(3, 2) then
 		specWarnSpearFlurry:Show()
-		specWarnSpearFlurry:Play("shockwave")
+		specWarnSpearFlurry:Play("frontal")
 	elseif spellId == 331743 then
 		warnBuckingRampage:Show()
 	elseif spellId == 460092 then
@@ -188,10 +204,7 @@ function mod:SPELL_CAST_START(args)
 			specWarnAcidNova:Play("aesoon")
 		end
 	elseif spellId == 463248 then
-		if self:AntiSpam(3, 2) then
-			specWarnExpel:Show()
-			specWarnExpel:Play("chargemove")
-		end
+		self:ScheduleMethod(0.1, "BossTargetScanner", args.sourceGUID, "ExpelTarget", 0.1, 6)
 	elseif spellId == 340208 then
 		if self:IsTanking("player", nil, nil, true, args.sourceGUID) and self:AntiSpam(3, 5) then
 			specWarnShredArmor:Show()
@@ -207,10 +220,11 @@ end
 
 function mod:SPELL_CAST_SUCCESS(args)
 	if not self.Options.Enabled then return end
+	if not self:IsValidWarning(args.sourceGUID) then return end--Filter all casts done by mobs in combat with npcs/other mobs.
 	local spellId = args.spellId
 	if spellId == 325418 then
 		timerVolatileAcidCD:Start(nil, args.sourceGUID)
---		if self:AntiSpam(3, args.destName) then--Backup, in case no one in party was targetting mob casting Volatile Acid (ie target scanning would fail)
+		if self:AntiSpam(3, args.destName) then--Backup, in case no one in party was targetting mob casting Volatile Acid (ie target scanning would fail)
 			if args:IsPlayer() then
 				specWarnVolatileAcid:Show()
 				specWarnVolatileAcid:Play("range5")
@@ -218,7 +232,7 @@ function mod:SPELL_CAST_SUCCESS(args)
 			else
 				warnVolatileAcid:Show(args.destName)
 			end
---		end
+		end
 	elseif spellId == 340544 then
 		timerStimulateRegenerationCD:Start(nil, args.sourceGUID)
 		if self:CheckInterruptFilter(args.sourceGUID, false, true) then
@@ -247,7 +261,7 @@ function mod:SPELL_CAST_SUCCESS(args)
 		timerBewilderingPollenCD:Start(nil, args.sourceGUID)
 	elseif spellId == 324923 then
 		timerBrambleBurstCD:Start(nil, args.sourceGUID)
-	elseif spellId == 331718 and self:IsValidWarning(args.sourceGUID) then
+	elseif spellId == 331718 then
 		timerSpearFlurryCD:Start(nil, args.sourceGUID)
 	elseif spellId == 322486 then
 		timerOvergrowthCD:Start(nil, args.sourceGUID)
@@ -281,6 +295,7 @@ function mod:SPELL_CAST_SUCCESS(args)
 end
 
 function mod:SPELL_INTERRUPT(args)
+	if not self.Options.Enabled then return end
 	if type(args.extraSpellId) ~= "number" then return end
 	if args.extraSpellId == 324914 then
 		timerNourishtheForestCD:Start(nil, args.destGUID)
@@ -344,6 +359,7 @@ function mod:SPELL_AURA_REMOVED(args)
 end
 
 function mod:UNIT_DIED(args)
+	if not self.Options.Enabled then return end
 	local cid = self:GetCIDFromGUID(args.destGUID)
 	if cid == 166304 then--Mistveil Stinger
 		timerAnimaInjectionCD:Stop(args.destGUID)
@@ -360,7 +376,7 @@ function mod:UNIT_DIED(args)
 		timerSpearFlurryCD:Stop(args.destGUID)--Removed ability?
 		timerExpelCD:Stop(args.destGUID)
 		timerMistWardCD:Stop(args.destGUID)
-	elseif cid == 164920 then--Drust Soulcleaver
+	elseif cid == 164920 or cid == 172991 then--Drust Soulcleaver
 		timerSoulSpiritCD:Stop(args.destGUID)
 	elseif cid == 166299 then--Mistveil Tender
 		timerNourishtheForestCD:Stop(args.destGUID)

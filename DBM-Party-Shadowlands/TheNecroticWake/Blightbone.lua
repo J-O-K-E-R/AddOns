@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod(2395, "DBM-Party-Shadowlands", 1, 1182)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240817092309")
+mod:SetRevision("20241019035707")
 mod:SetCreatureID(162691)
 mod:SetEncounterID(2387)
 mod:SetHotfixNoticeRev(20240817000000)
@@ -12,8 +12,8 @@ mod:RegisterCombat("combat")
 mod:RegisterEventsInCombat(
 	"SPELL_CAST_START 320596 320637 320655",
 	"SPELL_PERIODIC_DAMAGE 320646",
-	"SPELL_PERIODIC_MISSED 320646",
-	"UNIT_SPELLCAST_START boss1"
+	"SPELL_PERIODIC_MISSED 320646"
+--	"UNIT_SPELLCAST_START boss1"
 )
 
 --TODO, https://shadowlands.wowhead.com/spell=320614/blood-gorge stuff?
@@ -24,7 +24,7 @@ mod:RegisterEventsInCombat(
 local warnFetidGas					= mod:NewCountAnnounce(320637, 2)
 
 local specWarnHeavingRetchYou		= mod:NewSpecialWarningMoveAway(320596, nil, nil, nil, 1, 2)
-local specWarnHeavingRetch			= mod:NewSpecialWarningDodgeLoc(320596, nil, nil, nil, 2, 2)
+local specWarnHeavingRetch			= mod:NewSpecialWarningDodgeLoc(320596, nil, nil, nil, 2, 15)
 local yellHeavingRetch				= mod:NewYell(320596)
 local specWarnCrunch				= mod:NewSpecialWarningDefensive(320655, nil, nil, nil, 1, 2)
 local specWarnGTFO					= mod:NewSpecialWarningGTFO(320646, nil, nil, nil, 1, 8)
@@ -70,7 +70,7 @@ function mod:RetchTarget(targetname, uId)
 		yellHeavingRetch:Yell()
 	else
 		specWarnHeavingRetch:Show(targetname)
-		specWarnHeavingRetch:Play("shockwave")
+		specWarnHeavingRetch:Play("frontal")
 	end
 end
 
@@ -87,7 +87,7 @@ function mod:SPELL_CAST_START(args)
 	local spellId = args.spellId
 	if spellId == 320596 then
 		self.vb.retchCount = self.vb.retchCount + 1
---		self:ScheduleMethod(0.1, "BossTargetScanner", args.sourceGUID, "RetchTarget", 0.1, 4)
+		self:ScheduleMethod(0.1, "BossTargetScanner", args.sourceGUID, "RetchTarget", 0.1, 4)
 		timerHeavingRetchCD:Start(nil, self.vb.retchCount+1)
 		updateAllTimers(self, 6)
 	elseif spellId == 320637 then
@@ -118,8 +118,8 @@ mod.SPELL_PERIODIC_MISSED = mod.SPELL_PERIODIC_DAMAGE
 --"<250.42 21:13:50> [CLEU] SPELL_CAST_START#Creature-0-2085-2286-7772-162691-000026E310#Blightbone##nil#320596#Heaving Retch#nil#nil", -- [2794]
 --"<250.42 21:13:50> [UNIT_TARGET] boss1#Blightbone - Hupe#Blightbone", -- [2795]
 --"<250.60 21:13:50> [CHAT_MSG_MONSTER_YELL] Something... coming... up...#Blightbone###Hupe##0#0##0#30#nil#0#false#false#false#false", -- [2796]
-function mod:UNIT_SPELLCAST_START(uId, _, spellId)
-	if spellId == 320596 then
-		self:BossUnitTargetScanner(uId, "RetchTarget", 1)
-	end
-end
+--function mod:UNIT_SPELLCAST_START(uId, _, spellId)
+--	if spellId == 320596 then
+--		self:BossUnitTargetScanner(uId, "RetchTarget", 1)
+--	end
+--end

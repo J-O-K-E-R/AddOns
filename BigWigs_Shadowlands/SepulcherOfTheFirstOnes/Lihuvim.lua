@@ -188,7 +188,7 @@ do
 		if self:Me(args.destGUID) then
 			self:PersonalMessage(args.spellId)
 			self:PlaySound(args.spellId, "warning")
-			self:Say(args.spellId, L.mote)
+			self:Say(args.spellId, L.mote, nil, "Mote")
 			self:SayCountdown(args.spellId, 4)
 		end
 	end
@@ -215,7 +215,7 @@ do
 		playerList[#playerList+1] = args.destName
 		if self:Me(args.destGUID) then
 			self:PlaySound(363795, "warning")
-			self:Say(363795, CL.bomb)
+			self:Say(363795, CL.bomb, nil, "Bomb")
 			self:SayCountdown(363795, 6)
 		else
 			self:PlaySound(363795, "alert", nil, args.destName)

@@ -3,12 +3,13 @@ local _,app = ...;
 
 -- BFA File
 if app.GameBuildVersion < 80000 or not C_AzeriteEssence then
-	app.CreateAzeriteEssence = app.CreateUnimplementedClass("AzeriteEssence", "azeriteEssenceID");
+	app.CreateAzeriteEssence = app.CreateUnimplementedClass("AzeriteEssence", "azeriteessenceID");
 	return
 end
 
 -- Azerite Essence Lib
-local KEY, CACHE, SETTING = "azeriteEssenceID", "AzeriteEssenceRanks", "AzeriteEssences"
+local KEY, CACHE, SETTING = "azeriteessenceID", "AzeriteEssenceRanks", "AzeriteEssences"
+local CLASSNAME = "AzeriteEssence"
 local C_AzeriteEssence_GetEssenceInfo, C_AzeriteEssence_GetEssenceHyperlink
 	= C_AzeriteEssence.GetEssenceInfo, C_AzeriteEssence.GetEssenceHyperlink;
 local AzeriteEssenceInfoCache = setmetatable({}, {
@@ -18,7 +19,7 @@ local AzeriteEssenceInfoCache = setmetatable({}, {
 		return info
 	end
 })
-app.CreateAzeriteEssence = app.CreateClass("AzeriteEssence", KEY, {
+app.CreateAzeriteEssence = app.CreateClass(CLASSNAME, KEY, {
 	info = function(t)
 		return AzeriteEssenceInfoCache[t[KEY]]
 	end,
@@ -38,13 +39,13 @@ app.CreateAzeriteEssence = app.CreateClass("AzeriteEssence", KEY, {
 		return 50;
 	end,
 	icon = function(t)
-		return t.info.icon or "Interface/ICONS/INV_Glowing Azerite Spire";
+		return t.info.icon or 2065585;
 	end,
 	name = function(t)
 		return t.info.name;
 	end,
 	link = function(t)
-		local link = C_AzeriteEssence_GetEssenceHyperlink(t.azeriteEssenceID, t.rank);
+		local link = C_AzeriteEssence_GetEssenceHyperlink(t.azeriteessenceID, t.rank);
 		t.link = link;
 		return link;
 	end,
@@ -75,6 +76,7 @@ app.AddEventHandler("OnSavedVariablesAvailable", function(currentCharacter, acco
 	if not currentCharacter[CACHE] then currentCharacter[CACHE] = {} end
 	if not accountWideData[CACHE] then accountWideData[CACHE] = {} end
 end);
+app.AddSimpleCollectibleSwap(CLASSNAME, SETTING)
 
 -- Subroutines
 local select = select;

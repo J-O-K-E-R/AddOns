@@ -4,12 +4,42 @@ local panel = DBM_GUI.Cat_Frames:CreateNewPanel(L.Panel_Nameplates, "option")
 
 local general = panel:CreateArea(L.Area_General)
 
-general:CreateCheckButton(L.SpamBlockNoNameplate, true, nil, "DontShowNameplateIcons")
-general:CreateCheckButton(L.SpamBlockNoNameplateCD, true, nil, "DontShowNameplateIconsCD")
-general:CreateCheckButton(L.SpamBlockNoNameplateCasts, true, nil, "DontShowNameplateIconsCast")
-general:CreateCheckButton(L.SpamBlockNoBossGUIDs, true, nil, "DontSendBossGUIDs")
+local testbutton = general:CreateButton(L.NPDemo, 100, 16)
+testbutton:SetPoint("TOPRIGHT", general.frame, "TOPRIGHT", -2, 14)
+testbutton:SetNormalFontObject(GameFontNormalSmall)
+testbutton:SetHighlightFontObject(GameFontNormalSmall)
+testbutton:SetScript("OnClick", function()
+	DBM:DemoMode()
+end)
+testbutton.myheight = 0
 
-local style = panel:CreateArea(L.Area_Style)
+--When using plater, most options are configured in plater
+--so we generate a button to open plater options instead of showing a bunch of options that are ignored
+local Plater = _G["Plater"]
+if Plater then
+	general:CreateCheckButton(L.SpamBlockNoBossGUIDs, true, nil, "DontSendBossGUIDs")--Only option we control that plater doesn't
+
+	local platerButton = general:CreateButton(L.Plater_Config, 100, 25)
+	platerButton:SetPoint("CENTER", general.frame, "CENTER", 0, -20)
+	platerButton:SetNormalFontObject(GameFontNormal)
+	platerButton:SetHighlightFontObject(GameFontNormal)
+	platerButton:SetScript("OnClick", function()
+		Plater.OpenOptionsPanel(28)--Open Plater boss mod options
+		local optionsFrame = _G["DBM_GUI_OptionsFrame"]
+		optionsFrame:Hide()--Close DBM GUI (cause it has higher strata than plater
+	end)
+	platerButton.myheight = 25
+	return--we return here, so no other categories are generated either
+else
+	general:CreateCheckButton(L.SpamBlockNoNameplate, true, nil, "DontShowNameplateIcons")
+	general:CreateCheckButton(L.SpamBlockNoNameplateCD, true, nil, "DontShowNameplateIconsCD")
+	general:CreateCheckButton(L.SpamBlockNoNameplateCasts, true, nil, "DontShowNameplateIconsCast")
+	general:CreateCheckButton(L.SpamBlockNoBossGUIDs, true, nil, "DontSendBossGUIDs")
+end
+
+
+
+local style = panel:CreateArea(L.Area_NPStyle)
 
 local auraSizeSlider = style:CreateSlider(L.NPAuraSize, 20, 80, 1, 200)
 auraSizeSlider:SetPoint("TOPLEFT", style.frame, "TOPLEFT", 20, -25)
@@ -21,17 +51,17 @@ end)
 
 local iconOffsetXSlider = style:CreateSlider(L.NPIcon_BarOffSetX, -50, 50, 1, 200)
 iconOffsetXSlider:SetPoint("TOPLEFT", auraSizeSlider, "BOTTOMLEFT", 0, -20)
-iconOffsetXSlider:SetValue(DBM.Options.NPIconXOffset)
+iconOffsetXSlider:SetValue(DBM.Options.NPIconOffsetX)
 iconOffsetXSlider:HookScript("OnValueChanged", function(self)
-	DBM.Options.NPIconXOffset = self:GetValue()
+	DBM.Options.NPIconOffsetX = self:GetValue()
 	DBM.Nameplate:UpdateIconOptions()
 end)
 
 local iconOffsetYSlider = style:CreateSlider(L.NPIcon_BarOffSetY, -50, 50, 1, 200)
 iconOffsetYSlider:SetPoint("TOPLEFT", iconOffsetXSlider, "BOTTOMLEFT", 0, -20)
-iconOffsetYSlider:SetValue(DBM.Options.NPIconYOffset)
+iconOffsetYSlider:SetValue(DBM.Options.NPIconOffsetY)
 iconOffsetYSlider:HookScript("OnValueChanged", function(self)
-	DBM.Options.NPIconYOffset = self:GetValue()
+	DBM.Options.NPIconOffsetY = self:GetValue()
 	DBM.Nameplate:UpdateIconOptions()
 end)
 
@@ -208,15 +238,6 @@ iconTextMaxLenSlider:HookScript("OnValueChanged", function(self)
 	DBM.Nameplate:UpdateIconOptions()
 end)
 
-local testbutton = style:CreateButton(L.NPDemo, 100, 16)
-testbutton:SetPoint("TOPRIGHT", style.frame, "TOPRIGHT", -2, -4)
-testbutton:SetNormalFontObject(GameFontNormalSmall)
-testbutton:SetHighlightFontObject(GameFontNormalSmall)
-testbutton:SetScript("OnClick", function()
-	DBM:DemoMode()
-end)
-testbutton.myheight = 0
-
 local styleResetbutton = style:CreateButton(L.SpecWarn_ResetMe, 120, 16)
 styleResetbutton:SetPoint("BOTTOMRIGHT", style.frame, "BOTTOMRIGHT", -2, 4)
 styleResetbutton:SetNormalFontObject(GameFontNormalSmall)
@@ -224,8 +245,8 @@ styleResetbutton:SetHighlightFontObject(GameFontNormalSmall)
 styleResetbutton:SetScript("OnClick", function()
 	-- Set Options
 	DBM.Options.NPIconSize = DBM.DefaultOptions.NPIconSize
-	DBM.Options.NPIconXOffset = DBM.DefaultOptions.NPIconXOffset
-	DBM.Options.NPIconYOffset = DBM.DefaultOptions.NPIconYOffset
+	DBM.Options.NPIconOffsetX = DBM.DefaultOptions.NPIconOffsetX
+	DBM.Options.NPIconOffsetY = DBM.DefaultOptions.NPIconOffsetY
 	DBM.Options.NPIconSpacing = DBM.DefaultOptions.NPIconSpacing
 	DBM.Options.NPIconGrowthDirection = DBM.DefaultOptions.NPIconGrowthDirection
 	DBM.Options.NPIconAnchorPoint = DBM.DefaultOptions.NPIconAnchorPoint
@@ -240,8 +261,8 @@ styleResetbutton:SetScript("OnClick", function()
 	DBM.Options.NPIconTextMaxLen = DBM.DefaultOptions.NPIconTextMaxLen
 	-- Set UI visuals
 	auraSizeSlider:SetValue(DBM.DefaultOptions.NPIconSize)
-	iconOffsetXSlider:SetValue(DBM.DefaultOptions.NPIconXOffset)
-	iconOffsetYSlider:SetValue(DBM.DefaultOptions.NPIconYOffset)
+	iconOffsetXSlider:SetValue(DBM.DefaultOptions.NPIconOffsetX)
+	iconOffsetYSlider:SetValue(DBM.DefaultOptions.NPIconOffsetY)
 	iconSpacingSlider:SetValue(DBM.DefaultOptions.NPIconSpacing)
 	iconGrowthDirection:SetSelectedValue(DBM.DefaultOptions.NPIconGrowthDirection)
 	iconAnchorPoint:SetSelectedValue(DBM.DefaultOptions.NPIconAnchorPoint)

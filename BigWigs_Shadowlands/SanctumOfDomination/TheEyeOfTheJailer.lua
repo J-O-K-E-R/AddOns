@@ -195,7 +195,7 @@ end
 do
 	local function printTarget(self, name, guid)
 		if self:Me(guid) then
-			self:Say(350847, CL.beam)
+			self:Say(350847, CL.beam, nil, "Beam")
 			self:SayCountdown(350847, 6)
 			self:PlaySound(350847, "warning")
 		end
@@ -262,7 +262,7 @@ end
 function mod:SpreadingMiseryApplied(args)
 	if self:Me(args.destGUID) then
 		self:PersonalMessage(args.spellId, nil, CL.pool)
-		self:Say(args.spellId, CL.pool)
+		self:Say(args.spellId, CL.pool, nil, "Pool")
 		self:SayCountdown(args.spellId, 5)
 		self:PlaySound(args.spellId, "warning")
 	end
@@ -331,7 +331,7 @@ do
 		local count = #playerList+1
 		playerList[count] = args.destName
 		if self:Me(args.destGUID) then
-			self:Say(args.spellId, L.slow)
+			self:Say(args.spellId, L.slow, nil, "Slow")
 			self:PlaySound(args.spellId, "warning")
 		end
 		self:TargetsMessage(args.spellId, "red", playerList, nil, L.slow)

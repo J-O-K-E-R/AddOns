@@ -197,14 +197,6 @@ function core:RegisterEnableMob(module, ...)
 	end
 end
 
-function core:GetEnableMobs()
-	local t = {}
-	for k,v in next, enablemobs do
-		t[k] = v
-	end
-	return t
-end
-
 -------------------------------------------------------------------------------
 -- Communication
 --
@@ -331,6 +323,10 @@ do
 	local function CheckIfLeavingDelve(_, oldId, newId)
 		if zoneList[oldId] and not zoneList[newId] then
 			DisableCore() -- Leaving a Delve
+		elseif zoneList[newId] then
+			-- Joining a delve but we were already enabled from something
+			DisableCore()
+			--core:Enable() -- We rely on the 0 second delay from the loader to re-enable the core
 		end
 	end
 	function core:Enable(unit)

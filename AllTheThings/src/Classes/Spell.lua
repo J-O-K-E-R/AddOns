@@ -19,6 +19,10 @@ local IsSpellKnown, IsPlayerSpell, GetNumSpellTabs, GetSpellTabInfo, IsSpellKnow
 	= IsSpellKnown, IsPlayerSpell, GetNumSpellTabs, GetSpellTabInfo, IsSpellKnownOrOverridesKnown
 
 -- Consolidates some spell checking
+---@param spellID number
+---@param rank? number
+---@param ignoreHigherRanks? boolean
+---@return boolean isKnown
 local IsSpellKnownHelper = function(spellID, rank, ignoreHigherRanks)
 	if IsPlayerSpell(spellID) or IsSpellKnown(spellID) or IsSpellKnown(spellID, true)
 		or IsSpellKnownOrOverridesKnown(spellID) or IsSpellKnownOrOverridesKnown(spellID, true) then
@@ -153,7 +157,6 @@ do
 		icon = function(t)
 			return cache.GetCachedField(t, "icon", CacheInfo) or 136243;	-- Trade_engineering
 		end,
-		trackable = app.ReturnTrue,
 		saved = function(t)
 			local id = t[KEY];
 			-- character known
@@ -161,11 +164,7 @@ do
 		end,
 		collectible = app.ReturnFalse,
 		collected = function(t)
-			local id = t[KEY];
-			-- character collected
-			if app.IsCached(CACHE, id) then return 1; end
-			-- account-wide collected
-			if app.IsAccountTracked(CACHE, id) then return 2; end
+			return app.TypicalCharacterCollected(CACHE, t[KEY])
 		end,
 		skillID = function(t)
 			return t.requireSkill;
@@ -256,11 +255,7 @@ do
 			-- 	);
 		end,
 		collected = function(t)
-			local id = t[KEY];
-			-- character collected
-			if app.IsCached(CACHE, id) then return 1; end
-			-- account-wide collected
-			if app.Settings.AccountWide[SETTING] and app.IsAccountCached(CACHE, id) then return 2; end
+			return app.TypicalCharacterCollected(CACHE, t[KEY], SETTING)
 		end,
 		b = function(t)
 			-- If not tracking Recipes Account-Wide, then pretend that every Recipe is BoP

@@ -46,7 +46,7 @@ app:CreateWindow("Debugger", {
 			['options'] = {
 				{
 					['text'] = "Clear History",
-					['icon'] = "Interface\\Icons\\Ability_Rogue_FeignDeath.blp",
+					['icon'] = 132293,
 					["description"] = "Click this to fully clear this window.\n\nNOTE: If you click this by accident, use the dynamic Restore Buttons that this generates to reapply the data that was cleared.\n\nWARNING: If you reload the UI, the data stored in the Reload Button will be lost forever!",
 					['visible'] = true,
 					['count'] = 0,
@@ -98,8 +98,7 @@ app:CreateWindow("Debugger", {
 				if addonName ~= appName then return; end
 				self:UnregisterEvent("ADDON_LOADED");
 				if not AllTheThingsDebugData then
-					AllTheThingsDebugData = app.GetDataMember("Debugger", {});
-					app.SetDataMember("Debugger", nil);
+					AllTheThingsDebugData = {};
 				end
 				self.rawData = AllTheThingsDebugData;
 				self.data.g = CloneClassInstance(self.rawData);

@@ -1,6 +1,8 @@
 local L = BigWigsAPI:NewLocale("BigWigs", "ruRU")
 if not L then return end
 
+--L.tempNPMsg = "Our season 1 nameplate timers are active."
+
 -- Core.lua
 L.berserk = "Берсерк"
 L.berserk_desc = "Предупреждать и отсчитывать время до берсерка."
@@ -188,9 +190,9 @@ L.import_string = "Строка импорта"
 L.import_string_desc = "Вставьте сюда строку импорта."
 L.position = "Позиция"
 L.settings = "Настройки"
---L.other_settings = "Other Settings"
---L.nameplate_settings_import_desc = "Import all nameplate settings."
---L.nameplate_settings_export_desc = "Export all nameplate settings."
+L.other_settings = "Другие настройки"
+L.nameplate_settings_import_desc = "Импортировать все настройки полос здоровья."
+L.nameplate_settings_export_desc = "Экспорт всех настроек полос здоровья."
 L.position_import_bars_desc = "Импортировать позицию (якоря) полос."
 L.position_import_messages_desc = "Импортировать позицию (якоря) сообщений."
 L.position_import_countdown_desc = "Импортировать позицию (якоря) отсчёта."
@@ -225,7 +227,7 @@ L.imported_message_colors = "Сообщения: цвет"
 L.imported_countdown_position = "Отсчёт: позиция"
 L.imported_countdown_settings = "Отсчёт: настройки"
 L.imported_countdown_color = "Отсчёт: цвет"
---L.imported_nameplate_settings = "Nameplate Settings"
+L.imported_nameplate_settings = "Настройки полос здоровья"
 
 -- Statistics
 L.statistics = "Статистика"

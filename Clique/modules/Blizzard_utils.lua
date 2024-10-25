@@ -96,10 +96,10 @@ function addon:RegisterBlizzardFrame(frame)
     local statusBarFix = addon.settings.blizzframes.statusBarFix
     if statusBarFix then
         local health, mana = addon:FindHealthManaBars(frame)
-        if health then
+        if health and health.SetPropagateMouseMotion then
             health:SetPropagateMouseMotion(true)
         end
-        if mana then
+        if mana and mana.SetPropagateMouseMotion then
             mana:SetPropagateMouseMotion(true)
         end
     end

@@ -507,7 +507,7 @@ do
 		end
 		if self:Me(args.destGUID)then
 			self:PersonalMessage(args.spellId)
-			self:Say(args.spellId)
+			self:Say(args.spellId, nil, nil, "Feeding Time")
 			self:SayCountdown(args.spellId, 5)
 			self:PlaySound(args.spellId, "warning")
 		end
@@ -538,7 +538,7 @@ do
 		playerList[count] = args.destName
 		playerList[args.destName] = count -- Set raid marker
 		if self:Me(args.destGUID)then
-			self:Yell(args.spellId, CL.count_rticon:format(args.spellName, count, count))
+			self:Yell(args.spellId, CL.count_rticon:format(args.spellName, count, count), nil, ("Night Hunter (%d{rt%d})"):format(count, count))
 			if self:GetOption("custom_on_repeating_nighthunter") then
 				local text = ("{rt%d}{rt%d}{rt%d}"):format(count, count, count)
 				self:YellCountdown(false, 6, text, 4)
@@ -639,7 +639,7 @@ do
 		playerList[count] = args.destName
 		playerList[args.destName] = count -- Set raid marker
 		if self:Me(args.destGUID)then
-			self:Say(args.spellId, CL.count:format(args.spellName, count))
+			self:Say(args.spellId, CL.count:format(args.spellName, count), nil, ("Impale (%d)"):format(count))
 			if self:GetOption("custom_on_repeating_impale") then
 				local msg = sayMessages[count]
 				sayTimer = self:ScheduleRepeatingTimer("Say", 1.5, false, msg, true)
@@ -784,7 +784,7 @@ do
 		playerList[count] = args.destName
 		playerList[args.destName] = count
 		if self:Me(args.destGUID)then
-			self:Say(args.spellId, CL.count_rticon:format(args.spellName, count, count))
+			self:Say(args.spellId, CL.count_rticon:format(args.spellName, count, count), nil, ("Fatal Finesse (%d{rt%d})"):format(count, count))
 			self:SayCountdown(args.spellId, 5, count)
 			self:PlaySound(args.spellId, "warning")
 		end

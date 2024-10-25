@@ -375,7 +375,7 @@ end
 function mod:EmberBlastApplied(args)
 	if self:Me(args.destGUID) then
 		self:PlaySound(325877, "warning")
-		self:Yell(325877)
+		self:Yell(325877, nil, nil, "Ember Blast")
 		self:Flash(325877)
 		if self:LFR() then
 			self:YellCountdown(325877, 5)
@@ -463,9 +463,9 @@ function mod:ConcussiveSmash(args)
 end
 
 function mod:RockboundVanquisherDeath(args)
-	local count = concussiveSmashCountTable[args.sourceGUID] or 1
+	local count = concussiveSmashCountTable[args.destGUID] or 1
 	self:StopBar(CL.count:format(self:SpellName(325506), count)) -- Concussive Smash
-	concussiveSmashCountTable[args.sourceGUID] = nil
+	concussiveSmashCountTable[args.destGUID] = nil
 	self:StopBar(325440) -- Vanquishing Strike
 end
 
@@ -473,7 +473,7 @@ function mod:CrimsonFlurryApplied(args)
 	if self:Me(args.destGUID) then
 		self:PersonalMessage(args.spellId)
 		self:PlaySound(args.spellId, "alarm")
-		self:Say(args.spellId)
+		self:Say(args.spellId, nil, nil, "Crimson Flurry")
 		self:Flash(args.spellId)
 	end
 end
@@ -527,7 +527,7 @@ do
 		proxList[#proxList+1] = args.destName
 		if self:Me(args.destGUID) then
 			isOnMe = true
-			self:Say(328889) -- Greater Castigation
+			self:Say(328889, nil, nil, "Greater Castigation") -- Greater Castigation
 			self:OpenProximity(328889, 6) -- Greater Castigation
 			self:PlaySound(328889, "alarm") -- Greater Castigation
 		end

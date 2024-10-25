@@ -9,6 +9,7 @@ if L then
 	L.infected_beast = "被感染的野兽"
 	L.fungal_gutter = "真菌开膛者"
 	L.fungarian_flinger = "真菌人投掷者"
+	L.fungal_rotcaster = "真菌腐法师"
 	L.particularly_bad_guy = "特别坏的家伙"
 end
 
@@ -30,6 +31,7 @@ if L then
 	L.kobyss_witherer = "唇鱼人枯败者"
 	L.wandering_gutter = "游荡的开膛者"
 	L.crazed_predator = "狂乱掠食者"
+	L.deepwater_makura = "深水龙虾人"
 end
 
 L = BigWigs:NewBossLocale("Nerubian Delve Trash", "zhCN")
@@ -78,4 +80,9 @@ if L then
 	L.tala = "塔拉"
 	L.velo = "威罗"
 	L.anubvir = "阿努布维尔"
+	L.zekvir = "泽克维尔"
+	L.zekvirs_influence = "泽克维尔的影响"
+	L.zekvir_random = "泽克维尔（随机出现）"
+	L.zekvir_breach = "泽克维尔来袭"
+	L.zekvir_breach_desc = "当泽克维尔在地下堡出现时显示警告。"
 end

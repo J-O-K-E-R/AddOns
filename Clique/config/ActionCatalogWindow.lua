@@ -372,8 +372,11 @@ end
 
 function window:SetFilterSearchText(text)
     local filter = window.filterSettings
-    filter.settings.name = text
-    window:CATALOG_FILTER_CHANGED()
+
+    if filter and filter.settings then
+        filter.settings.name = text
+        window:CATALOG_FILTER_CHANGED()
+    end
 end
 
 function window:SetFilterCatalog(catalogType, enabled)

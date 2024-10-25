@@ -2,7 +2,7 @@
 local transcriptorParser = DBM.Test.CreateSharedModule("ParseTranscriptor")
 
 local anonymizer			= require "Anonymizer"
-local parser				= require "StupidParser"
+local parser				= require "Parser"
 local filter    			= require "Data.Transcriptor-Filter"
 local instanceInfoGuesser	= require "InstanceInfoGuesser"
 
@@ -29,6 +29,9 @@ function transcriptorParser:New(data)
 	}
 	if type(obj.data) ~= "table" then
 		error("could not find Transcriptor entry, check that the imported log is a valid Transcriptor log including the `TranscriptDB =` statement at the beginning")
+	end
+	if obj.data.TranscriptDB then
+		obj.data = obj.data.TranscriptDB
 	end
 	return setmetatable(obj, mt)
 end
@@ -112,6 +115,13 @@ local function getEncounters(lines)
 		v.endOffset = select(2, findFrameBoundaries(lines, v.endOffset))
 		v.startTime = timeFromLine(lines[v.startOffset])
 		v.endTime = timeFromLine(lines[v.endOffset])
+	end
+	for i = #encounters, 1, -1 do
+		local v = encounters[i]
+		-- Filter out obviously buggy or empty encounters, e.g., SoD Vaelastrasz triggering ENCOUNTER_START for every single raid member
+		if v.endTime - v.startTime < 1 then
+			table.remove(encounters, i)
+		end
 	end
 	return encounters
 end
@@ -255,10 +265,12 @@ end
 
 local function transcribeUnitSpellEvent(event, params, anon)
 	if params:match("^PLAYER_SPELL") then
-		return -- Note: don't forget to scrub player name if you want to support this event
+		return
 	end
 	-- Transcriptor has some useful extra data that we can use to reconstruct unit targets, health and power
-	local unitName, unitHp, unitPower, unitTarget, unit, guid, spellId = params:match("(.*)%(([%d.]*)%%%-([%d.]*)%%%){Target:([^}]*)} .* %[%[([^:]+):([^:]+):([^%]]+)%]%]")
+	local unitName, unitHp, unitPower, unitTarget, unit, guid, spellId = params:match("(.*)%(([%d.-]*)%%%-([%d.-]*)%%%){Target:([^}]*)} .* %[%[([^:]+):([^:]+):([^%]]+)%]%]")
+	-- This should not be necessary because PLAYER_SPELLS are filtered above, yet I've got a log where this shows up with the player somehow on an arena unit ID in a raid (???)
+	unitName = anon:ScrubName(unitName)
 	guid = anon:ScrubGUID(guid)
 	unitTarget = anon:ScrubTarget(unitTarget)
 	unitHp = tonumber(unitHp) or 0
@@ -432,7 +444,7 @@ local function transcribeCleu(rawParams, anon)
 end
 
 local function transcribeEvent(event, params, anon)
-	if event:match("^DBM_") or event:match("^NAME_PLATE_UNIT_") or event:match("BigWigs_") or event == "Echo_Log" or event == "ARENA_OPPONENT_UPDATE" then
+	if event:match("^DBM_") or event:match("^NAME_PLATE_UNIT_") or event:match("BigWigs_") or event == "Echo_Log" or event == "ARENA_OPPONENT_UPDATE" or event == "PLAYER_INFO" then
 		return
 	end
 	if event:match("^UNIT_SPELL") then
@@ -489,10 +501,12 @@ local function transcribeEvent(event, params, anon)
 		params = anon:ScrubGUID(guid) .. "#" .. suffix
 	end
 	if event == "CHAT_MSG_ADDON" then
+		-- RAID_BOSS_WHISPER_SYNC#|TInterface\\\\ICONS\\\\Misc_Legionfall_Warlock.BLP:20|t %s begins to cast |cFFFF0000|Hspell:447411|h[Wrest]|h|r!#Miniaug-TarrenMill",
 		local subEvent, msg, name = params:match("([^#]*)#([^#]*)#([^#]*)")
 		if subEvent == "RAID_BOSS_WHISPER_SYNC" then
 			-- Name will always contain the server here, even if there is no cross-server stuff otherwise; this is annoying because the anonymizer might not have learned the name with the server suffix
-			return literalsTable("CHAT_MSG_RAID_BOSS_WHISPER", msg, anon:ScrubName(name) or anon:ScrubName(name:match("([^-]*)")), 0, false)
+			local scrubbed = anon:ScrubName(name)
+			return literalsTable("CHAT_MSG_RAID_BOSS_WHISPER", msg, scrubbed ~= name and scrubbed or anon:ScrubName(name:match("([^-]*)")), 0, false)
 		else
 			-- FIXME: do we care about this warning?
 			--logInfo("Unhandled CHAT_MSG_ADDON log message " .. params)
@@ -519,6 +533,7 @@ function testGenerator:parseMetadata()
 	local instanceInfo = {} ---@type DBMInstanceInfo
 	local encounterInfo = {}
 	local zoneId
+	local startsInCombat = false
 	for i, line in ipairs(self.log.lines) do
 		-- Only grab instance and encounter info from within relevant log area
 		if i >= self.firstLine and i <= self.lastLine then
@@ -530,8 +545,8 @@ function testGenerator:parseMetadata()
 				= guessTypes(line:match(
 					"%[DBM_Debug%] GetInstanceInfo%(%) = ([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^,]+), ([^#]+)"
 				))
-			elseif line:match("DBM:GetCurrentInstanceDifficulty%(%) = normal20, 20 Player%(%d%)") then -- SoD/Molten Core heat levels
-				local modifier = line:match("%((%d)%)")
+			elseif line:match("DBM:GetCurrentInstanceDifficulty%(%) = [^,]*,[^,]*,[^,]*,[^,]*, (%d*)") then -- Difficulty modifiers
+				local modifier = line:match(" = [^,]*,[^,]*,[^,]*,[^,]*, (%d*)")
 				instanceInfo.difficultyModifier = tonumber(modifier) or 0
 			elseif line:match("%[ENCOUNTER_[SE][TN][AD]") then
 				local id, name, difficulty, groupSize, success, isStart = parseEncounterEvent(line)
@@ -545,6 +560,12 @@ function testGenerator:parseMetadata()
 					end
 				end
 			end
+		end
+		-- Track current combat state prior to pull to correctly restore it when generating a log from an encounter that starts while you are already in combat
+		if not encounterInfo.id and line:find("[PLAYER_REGEN_DISABLED]", nil, true) then
+			startsInCombat = true
+		elseif not encounterInfo.id and line:find("[PLAYER_REGEN_ENABLED]", nil, true) then
+			startsInCombat = false
 		end
 		-- But we can grab the recording player id from anywhere
 		if not player then
@@ -580,13 +601,18 @@ function testGenerator:parseMetadata()
 		player = player,
 		instanceInfo = instanceInfo,
 		encounterInfo = encounterInfo,
-		gameVersion = gameVersion
+		gameVersion = gameVersion,
+		startsInCombat = startsInCombat
 	}
 end
 
 function testGenerator:guessMod()
-	if not self.metadata.encounterInfo.name then return "" end
-	return self.metadata.encounterInfo.name:gsub("%s*", ""):gsub("'", "")
+	local encounterName = self.metadata.encounterInfo.name
+	if not encounterName then return "" end
+	encounterName = encounterName:gsub(" the .*", "")
+	encounterName = encounterName:gsub(", .*", "")
+	encounterName = encounterName:gsub("^The", "")
+	return encounterName:gsub("%s*", ""):gsub("'", "")
 end
 
 -- TODO: all of these guessing functions could be much smarter, but I'm adding stuff as I go
@@ -595,6 +621,8 @@ function testGenerator:guessTestName()
 	local difficulty = ""
 	if self.metadata.instanceInfo.instanceID == 409 and self.metadata.instanceInfo.difficultyModifier then -- MC heat levels
 		difficulty = "Heat-" .. self.metadata.instanceInfo.difficultyModifier .. "/"
+	elseif self.metadata.instanceInfo.difficultyName then
+		difficulty = self.metadata.instanceInfo.difficultyName .. "/"
 	end
 	local name = self:guessMod() .. "/" .. difficulty .. (self.metadata.encounterInfo.kill and "Kill" or "Wipe")
 	if self.prefix then
@@ -687,6 +715,10 @@ function testGenerator:GetLogAndPlayers()
 	local timeOffset
 	local totalTime = 0
 	local anon = anonymizer:New(self.log.lines, self.firstLine, self.lastLine, self.metadata.player, not self.anonymize)
+	if self.metadata.startsInCombat then
+		resultLog[#resultLog + 1] = {0, "PLAYER_REGEN_DISABLED", "+Entering combat!"}
+		resultLogStr[#resultLogStr + 1] = '{0.00, "PLAYER_REGEN_DISABLED", "+Entering combat!"}'
+	end
 	for i = self.firstLine, self.lastLine do
 		local line = self.log.lines[i]
 		local time, event, params = line:match("^<([%d.]+) [^>]+> %[([^%]]*)%] (.*)")

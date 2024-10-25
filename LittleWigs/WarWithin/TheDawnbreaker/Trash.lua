@@ -62,16 +62,18 @@ function mod:GetOptions()
 		{431364, "NAMEPLATE"}, -- Tormenting Ray
 		-- Nightfall Commander
 		{450756, "NAMEPLATE"}, -- Abyssal Howl
+		{431491, "TANK", "NAMEPLATE"}, -- Tainted Slash
 		-- Sureki Webmage
 		{451107, "SAY", "NAMEPLATE"}, -- Bursting Cocoon
 		-- Arathi Bomb
 		451091, -- Plant Arathi Bomb
 		-- Ascendant Vis'coxria
-		451102, -- Shadowy Decay
+		{451102, "NAMEPLATE"}, -- Shadowy Decay
+		{451119, "ME_ONLY", "NAMEPLATE"}, -- Abyssal Blast
 		-- Deathscreamer Iken'tak
-		450854, -- Dark Orb
+		{450854, "NAMEPLATE"}, -- Dark Orb
 		-- Ixkreten the Unbreakable
-		451117, -- Terrifying Slam
+		{451117, "NAMEPLATE"}, -- Terrifying Slam
 		-- Sureki Militant
 		{451098, "NAMEPLATE"}, -- Tacky Nova
 		{451097, "NAMEPLATE"}, -- Silken Shell
@@ -83,7 +85,7 @@ function mod:GetOptions()
 		{432565, "NAMEPLATE"}, -- Black Hail
 		{431304, "NAMEPLATE"}, -- Dark Floes
 		-- Nightfall Dark Architect
-		431349, -- Tormenting Eruption
+		{431349, "NAMEPLATE"}, -- Tormenting Eruption
 		446615, -- Usher Reinforcements
 	}, {
 		[449042] = L.arathi_lamplighter,
@@ -110,6 +112,7 @@ function mod:OnBossEnable()
 	self:RegisterEvent("CHAT_MSG_RAID_BOSS_WHISPER") -- Radiant Light
 
 	-- Nightfall Shadowmage
+	self:RegisterEngageMob("NightfallShadowmageEngaged", 213892, 228540) -- regular trash, Nightfall Dark Architect summon
 	self:Log("SPELL_CAST_START", "EnsnaringShadows", 431309)
 	self:Log("SPELL_INTERRUPT", "EnsnaringShadowsInterrupt", 431309)
 	self:Log("SPELL_CAST_SUCCESS", "EnsnaringShadowsSuccess", 431309)
@@ -117,6 +120,7 @@ function mod:OnBossEnable()
 	self:Death("NightfallShadowmageDeath", 213892, 228540) -- regular trash, Nightfall Dark Architect summon
 
 	-- Nightfall Ritualist
+	self:RegisterEngageMob("NightfallRitualistEngaged", 214761)
 	self:Log("SPELL_CAST_SUCCESS", "StygianSeed", 432448)
 	self:Log("SPELL_AURA_APPLIED", "StygianSeedApplied", 432448)
 	self:Log("SPELL_CAST_SUCCESS", "TormentingRay", 431364)
@@ -124,12 +128,15 @@ function mod:OnBossEnable()
 	self:Death("NightfallRitualistDeath", 214761)
 
 	-- Nightfall Commander
+	self:RegisterEngageMob("NightfallCommanderEngaged", 214762)
 	self:Log("SPELL_CAST_START", "AbyssalHowl", 450756)
 	self:Log("SPELL_INTERRUPT", "AbyssalHowlInterrupt", 450756)
 	self:Log("SPELL_CAST_SUCCESS", "AbyssalHowlSuccess", 450756)
+	self:Log("SPELL_CAST_START", "TaintedSlash", 431491)
 	self:Death("NightfallCommanderDeath", 214762)
 
 	-- Sureki Webmage
+	self:RegisterEngageMob("SurekiWebmageEngaged", 225479, 210966) -- on ship, in town
 	self:Log("SPELL_CAST_SUCCESS", "BurstingCocoon", 451107)
 	self:Log("SPELL_AURA_APPLIED", "BurstingCocoonApplied", 451107)
 	self:Death("SurekiWebmageDeath", 225479, 210966) -- on ship, in town
@@ -137,19 +144,26 @@ function mod:OnBossEnable()
 	-- Arathi Bomb
 	self:Log("SPELL_CAST_START", "PlantArathiBomb", 451091)
 
+	-- Ascendant Vis'coxria / Deathscreamer Iken'tak / Ixkreten the Unbreakable
+	self:Log("SPELL_CAST_START", "AbyssalBlast", 451119)
+
 	-- Ascendant Vis'coxria
+	self:RegisterEngageMob("AscendantViscoxriaEngaged", 211261)
 	self:Log("SPELL_CAST_START", "ShadowyDecay", 451102)
 	self:Death("AscendantViscoxriaDeath", 211261)
 
 	-- Deathscreamer Iken'tak
+	self:RegisterEngageMob("DeathscreamerIkentakEngaged", 211263)
 	self:Log("SPELL_CAST_START", "DarkOrb", 450854)
 	self:Death("DeathscreamerIkentakDeath", 211263)
 
 	-- Ixkreten the Unbreakable
+	self:RegisterEngageMob("IxkretenTheUnbreakableEngaged", 211262)
 	self:Log("SPELL_CAST_START", "TerrifyingSlam", 451117)
 	self:Death("IxkretenTheUnbreakableDeath", 211262)
 
 	-- Sureki Militant
+	self:RegisterEngageMob("SurekiMilitantEngaged", 213932)
 	self:Log("SPELL_CAST_START", "TackyNova", 451098)
 	self:Log("SPELL_CAST_START", "SilkenShell", 451097)
 	self:Log("SPELL_INTERRUPT", "SilkenShellInterrupt", 451097)
@@ -157,21 +171,25 @@ function mod:OnBossEnable()
 	self:Death("SurekiMilitantDeath", 213932)
 
 	-- Nightfall Tactician
+	self:RegisterEngageMob("NightfallTacticianEngaged", 213934)
 	self:Log("SPELL_CAST_START", "BlackEdge", 431494)
 	self:Death("NightfallTacticianDeath", 213934)
 
 	-- Nightfall Darkcaster
+	--self:RegisterEngageMob("NightfallDarkcasterEngaged", 213893, 228539) -- regular trash, Nightfall Dark Architect summon
 	self:Log("SPELL_CAST_START", "UmbralBarrier", 432520)
 	self:Log("SPELL_INTERRUPT", "UmbralBarrierInterrupt", 432520)
 	self:Log("SPELL_CAST_SUCCESS", "UmbralBarrierSuccess", 432520)
 	self:Death("NightfallDarkcasterDeath", 213893, 228539) -- regular trash, Nightfall Dark Architect summon
 
 	-- Manifested Shadow
+	self:RegisterEngageMob("ManifestedShadowEngaged", 211341)
 	self:Log("SPELL_CAST_SUCCESS", "BlackHail", 432565)
 	self:Log("SPELL_CAST_START", "DarkFloes", 431304)
 	self:Death("ManifestedShadowDeath", 211341)
 
 	-- Nightfall Dark Architect
+	self:RegisterEngageMob("NightfallDarkArchitectEngaged", 213885)
 	self:Log("SPELL_CAST_SUCCESS", "TormentingEruption", 431349)
 	self:Log("SPELL_AURA_APPLIED", "TormentingEruptionApplied", 431350)
 	self:Log("SPELL_CAST_START", "UsherReinforcements", 446615)
@@ -199,10 +217,14 @@ end
 
 -- Nightfall Shadowmage
 
+function mod:NightfallShadowmageEngaged(guid)
+	self:Nameplate(431309, 6.1, guid) -- Ensnaring Shadows
+end
+
 function mod:EnsnaringShadows(args)
 	self:Message(args.spellId, "red", CL.casting:format(args.spellName))
-	self:PlaySound(args.spellId, "alert")
 	self:Nameplate(args.spellId, 0, args.sourceGUID)
+	self:PlaySound(args.spellId, "alert")
 end
 
 function mod:EnsnaringShadowsInterrupt(args)
@@ -225,6 +247,11 @@ function mod:NightfallShadowmageDeath(args)
 end
 
 -- Nightfall Ritualist
+
+function mod:NightfallRitualistEngaged(guid)
+	self:Nameplate(431364, 3.6, guid) -- Tormenting Ray
+	self:Nameplate(432448, 11.2, guid) -- Stygian Seed
+end
 
 function mod:StygianSeed(args)
 	self:Nameplate(args.spellId, 21.8, args.sourceGUID)
@@ -261,11 +288,16 @@ end
 
 -- Nightfall Commander
 
+function mod:NightfallCommanderEngaged(guid)
+	self:Nameplate(431491, 1.1, guid) -- Tainted Slash
+	self:Nameplate(450756, 7.0, guid) -- Abyssal Howl
+end
+
 function mod:AbyssalHowl(args)
 	-- only cast if there are nearby injured enemies
 	self:Message(args.spellId, "red", CL.casting:format(args.spellName))
-	self:PlaySound(args.spellId, "warning")
 	self:Nameplate(args.spellId, 0, args.sourceGUID)
+	self:PlaySound(args.spellId, "warning")
 end
 
 function mod:AbyssalHowlInterrupt(args)
@@ -276,11 +308,21 @@ function mod:AbyssalHowlSuccess(args)
 	self:Nameplate(args.spellId, 25.2, args.sourceGUID)
 end
 
+function mod:TaintedSlash(args)
+	self:Message(args.spellId, "purple")
+	self:Nameplate(args.spellId, 8.5, args.sourceGUID)
+	self:PlaySound(args.spellId, "alert")
+end
+
 function mod:NightfallCommanderDeath(args)
 	self:ClearNameplate(args.destGUID)
 end
 
 -- Sureki Webmage
+
+function mod:SurekiWebmageEngaged(guid)
+	self:Nameplate(451107, 5.1, guid) -- Bursting Cocoon
+end
 
 function mod:BurstingCocoon(args)
 	self:Nameplate(args.spellId, 17.0, args.sourceGUID)
@@ -302,8 +344,36 @@ end
 
 function mod:PlantArathiBomb(args)
 	self:Message(args.spellId, "green", CL.other:format(self:ColorName(args.sourceName), args.spellName))
-	self:PlaySound(args.spellId, "info")
 	self:Bar(args.spellId, 15, CL.explosion)
+	self:PlaySound(args.spellId, "info")
+end
+
+-- Ascendant Vis'coxria / Deathscreamer Iken'tak / Ixkreten the Unbreakable
+
+do
+	local function printTarget(self, name, guid)
+		self:TargetMessage(451119, "red", name, CL.casting:format(self:SpellName(451119)))
+		if self:Me(guid) then
+			self:PlaySound(451119, "alarm", nil, name)
+		else
+			self:PlaySound(451119, "alert", nil, name)
+		end
+	end
+
+	function mod:AbyssalBlast(args)
+		self:GetUnitTarget(printTarget, 0.2, args.sourceGUID)
+		self:CDBar(args.spellId, 10.9)
+		self:Nameplate(args.spellId, 10.9, args.sourceGUID)
+		-- reschedule timer cancellations
+		local mobId = self:MobId(args.sourceGUID)
+		if mobId == 211261 then -- Ascendant Vis'coxria
+			self:AbyssalBlastAscendantViscoxria()
+		elseif mobId == 211263 then -- Deathscreamer Iken'tak
+			self:AbyssalBlastDeathscreamerIkentak()
+		else -- 211262, Ixkreten the Unbreakable
+			self:AbyssalBlastIxkretenTheUnbreakable()
+		end
+	end
 end
 
 -- Ascendant Vis'coxria
@@ -311,22 +381,42 @@ end
 do
 	local timer
 
+	function mod:AscendantViscoxriaEngaged(guid)
+		self:CDBar(451102, 4.9) -- Shadowy Decay
+		self:Nameplate(451102, 4.9, guid) -- Shadowy Decay
+		self:CDBar(451119, 14.6) -- Abyssal Blast
+		self:Nameplate(451119, 14.6, guid) -- Abyssal Blast
+		timer = self:ScheduleTimer("AscendantViscoxriaDeath", 30)
+	end
+
 	function mod:ShadowyDecay(args)
 		if timer then
 			self:CancelTimer(timer)
 		end
 		self:Message(args.spellId, "yellow")
-		self:PlaySound(args.spellId, "alert")
 		self:CDBar(args.spellId, 24.4)
+		self:Nameplate(args.spellId, 24.4, args.sourceGUID)
+		self:PlaySound(args.spellId, "alert")
 		timer = self:ScheduleTimer("AscendantViscoxriaDeath", 30)
 	end
 
-	function mod:AscendantViscoxriaDeath()
+	function mod:AbyssalBlastAscendantViscoxria()
+		if timer then
+			self:CancelTimer(timer)
+		end
+		timer = self:ScheduleTimer("AscendantViscoxriaDeath", 30)
+	end
+
+	function mod:AscendantViscoxriaDeath(args)
 		if timer then
 			self:CancelTimer(timer)
 			timer = nil
 		end
+		self:StopBar(451119) -- Abyssal Blast
 		self:StopBar(451102) -- Shadowy Decay
+		if args then
+			self:ClearNameplate(args.destGUID)
+		end
 	end
 end
 
@@ -335,22 +425,42 @@ end
 do
 	local timer
 
+	function mod:DeathscreamerIkentakEngaged(guid)
+		self:CDBar(451119, 3.6) -- Abyssal Blast
+		self:Nameplate(451119, 3.6, guid) -- Abyssal Blast
+		self:CDBar(450854, 12.1) -- Dark Orb
+		self:Nameplate(450854, 12.1, guid) -- Dark Orb
+		timer = self:ScheduleTimer("DeathscreamerIkentakDeath", 30)
+	end
+
 	function mod:DarkOrb(args)
 		if timer then
 			self:CancelTimer(timer)
 		end
 		self:Message(args.spellId, "orange")
-		self:PlaySound(args.spellId, "alarm")
 		self:CDBar(args.spellId, 21.9)
+		self:Nameplate(args.spellId, 21.9, args.sourceGUID)
+		self:PlaySound(args.spellId, "alarm")
 		timer = self:ScheduleTimer("DeathscreamerIkentakDeath", 30)
 	end
 
-	function mod:DeathscreamerIkentakDeath()
+	function mod:AbyssalBlastDeathscreamerIkentak()
+		if timer then
+			self:CancelTimer(timer)
+		end
+		timer = self:ScheduleTimer("DeathscreamerIkentakDeath", 30)
+	end
+
+	function mod:DeathscreamerIkentakDeath(args)
 		if timer then
 			self:CancelTimer(timer)
 			timer = nil
 		end
+		self:StopBar(451119) -- Abyssal Blast
 		self:StopBar(450854) -- Dark Orb
+		if args then
+			self:ClearNameplate(args.destGUID)
+		end
 	end
 end
 
@@ -359,37 +469,62 @@ end
 do
 	local timer
 
+	function mod:IxkretenTheUnbreakableEngaged(guid)
+		self:CDBar(451119, 5.0) -- Abyssal Blast
+		self:Nameplate(451119, 5.0, guid) -- Abyssal Blast
+		self:CDBar(451117, 6.4) -- Terrifying Slam
+		self:Nameplate(451117, 6.4, guid) -- Terrifying Slam
+		timer = self:ScheduleTimer("IxkretenTheUnbreakableDeath", 30)
+	end
+
 	function mod:TerrifyingSlam(args)
 		if timer then
 			self:CancelTimer(timer)
 		end
 		self:Message(args.spellId, "purple")
-		self:PlaySound(args.spellId, "alarm")
 		self:CDBar(args.spellId, 24.2)
+		self:Nameplate(args.spellId, 24.2, args.sourceGUID)
+		self:PlaySound(args.spellId, "alarm")
 		timer = self:ScheduleTimer("IxkretenTheUnbreakableDeath", 30)
 	end
 
-	function mod:IxkretenTheUnbreakableDeath()
+	function mod:AbyssalBlastIxkretenTheUnbreakable()
+		if timer then
+			self:CancelTimer(timer)
+		end
+		timer = self:ScheduleTimer("IxkretenTheUnbreakableDeath", 30)
+	end
+
+	function mod:IxkretenTheUnbreakableDeath(args)
 		if timer then
 			self:CancelTimer(timer)
 			timer = nil
 		end
+		self:StopBar(451119) -- Abyssal Blast
 		self:StopBar(451117) -- Terrifying Slam
+		if args then
+			self:ClearNameplate(args.destGUID)
+		end
 	end
 end
 
 -- Sureki Militant
 
+function mod:SurekiMilitantEngaged(guid)
+	self:Nameplate(451098, 6.1, guid) -- Tacky Nova
+	self:Nameplate(451097, 7.2, guid) -- Silken Shell
+end
+
 function mod:TackyNova(args)
 	self:Message(args.spellId, "orange")
-	self:PlaySound(args.spellId, "alarm")
 	self:Nameplate(args.spellId, 29.2, args.sourceGUID)
+	self:PlaySound(args.spellId, "alarm")
 end
 
 function mod:SilkenShell(args)
 	self:Message(args.spellId, "red", CL.casting:format(args.spellName))
-	self:PlaySound(args.spellId, "alert")
 	self:Nameplate(args.spellId, 0, args.sourceGUID)
+	self:PlaySound(args.spellId, "alert")
 end
 
 function mod:SilkenShellInterrupt(args)
@@ -405,6 +540,10 @@ function mod:SurekiMilitantDeath(args)
 end
 
 -- Nightfall Tactician
+
+function mod:NightfallTacticianEngaged(guid)
+	self:Nameplate(431494, 3.5, guid) -- Black Edge
+end
 
 do
 	local prev = 0
@@ -424,6 +563,11 @@ function mod:NightfallTacticianDeath(args)
 end
 
 -- Nightfall Darkcaster
+
+--function mod:NightfallDarkcasterEngaged(guid)
+	-- seems to be health based for the first cast, so an initial timer is not very useful
+	--self:Nameplate(432520, 6.4, guid) -- Umbral Barrier
+--end
 
 do
 	local prev = 0
@@ -451,6 +595,11 @@ function mod:NightfallDarkcasterDeath(args)
 end
 
 -- Manifested Shadow
+
+function mod:ManifestedShadowEngaged(guid)
+	self:Nameplate(432565, 8.9, guid) -- Black Hail
+	self:Nameplate(431304, 39.6, guid) -- Dark Floes
+end
 
 do
 	local prev = 0
@@ -487,6 +636,12 @@ end
 do
 	local timer
 
+	function mod:NightfallDarkArchitectEngaged(guid)
+		self:CDBar(431349, 7.3) -- Tormenting Eruption
+		self:Nameplate(431349, 7.3, guid) -- Tormenting Eruption
+		timer = self:ScheduleTimer("NightfallDarkArchitectDeath", 30)
+	end
+
 	do
 		local playerList = {}
 
@@ -496,6 +651,7 @@ do
 			end
 			playerList = {}
 			self:CDBar(args.spellId, 14.6)
+			self:Nameplate(args.spellId, 14.6, args.sourceGUID)
 			timer = self:ScheduleTimer("NightfallDarkArchitectDeath", 30)
 		end
 
@@ -516,11 +672,14 @@ do
 		timer = self:ScheduleTimer("NightfallDarkArchitectDeath", 30)
 	end
 
-	function mod:NightfallDarkArchitectDeath()
+	function mod:NightfallDarkArchitectDeath(args)
 		if timer then
 			self:CancelTimer(timer)
 			timer = nil
 		end
 		self:StopBar(431349) -- Tormenting Eruption
+		if args then
+			self:ClearNameplate(args.destGUID)
+		end
 	end
 end

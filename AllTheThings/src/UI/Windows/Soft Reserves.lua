@@ -132,6 +132,8 @@ else
 	end
 end
 
+-- Module Variable Cache
+local SoftReserves, SoftReservePersistence = {}, {};	-- These get replaced in OnLoad.
 local function ParseSoftReserve(guid, cmd, isSilentMode, isCurrentPlayer)
 	-- Attempt to parse the command.
 	if cmd and cmd ~= "" then
@@ -162,7 +164,7 @@ local function ParseSoftReserve(guid, cmd, isSilentMode, isCurrentPlayer)
 end
 local function PushSoftReserve(ignoreZero)
 	local guid, itemID, timeStamp = UnitGUID("player");
-	local reserves = app.GetDataMember("SoftReserves");
+	local reserves = SoftReserves;
 	if reserves then
 		local oldreserve = reserves[guid];
 		if oldreserve then
@@ -178,7 +180,7 @@ local function PushSoftReserve(ignoreZero)
 	end
 end
 local function PushSoftReserves(method, target)
-	local reserves = app.GetDataMember("SoftReserves");
+	local reserves = SoftReserves;
 	if reserves then
 		local count, length, msg, cmd = 7, 0, "!\tsrml", nil;
 		if not method then method = GetGroupType(); end
@@ -259,7 +261,7 @@ local function QuerySoftReserve(guid, cmd, target)
 			end
 		end
 	else
-		local reserve = rawget(app.GetDataMember("SoftReserves"), guid);
+		local reserve = rawget(SoftReserves, guid);
 		if reserve then
 			-- Parse out the itemID if possible.
 			local itemID = type(reserve) == 'number' and reserve or reserve[1];
@@ -304,7 +306,7 @@ local function SortByTextAndPriority(a, b)
 	end
 end
 local function UpdateSoftReserveInternal(guid, itemID, timeStamp, isCurrentPlayer)
-	local reserves = app.GetDataMember("SoftReserves");
+	local reserves = SoftReserves;
 	
 	-- Check the Old Reserve against the new one.
 	local oldreserve = reserves[guid];
@@ -353,7 +355,7 @@ local function UpdateSoftReserveInternal(guid, itemID, timeStamp, isCurrentPlaye
 	end
 end
 UpdateSoftReserve = function(guid, itemID, timeStamp, silentMode, isCurrentPlayer)
-	if IsInGroup() and app.GetDataMember("SoftReserves")[guid] and not IsPrimaryLooter() and app.Settings:GetTooltipSetting("SoftReservesLocked") then
+	if IsInGroup() and SoftReserves[guid] and not IsPrimaryLooter() and app.Settings:GetTooltipSetting("SoftReservesLocked") then
 		if not silentMode then
 			SendGUIDWhisper("The Soft Reserve is currently locked by your Master Looter. Please make sure to update your Soft Reserve before raid next time!", guid);
 		end
@@ -420,7 +422,7 @@ local function CHAT_MSG_ADDON_HANDLER(prefix, text, channel, sender, target)
 					if target == UnitName("player") then
 						return false;
 					else
-						local softReserve = app.GetDataMember("SoftReserves")[app.GUID];
+						local softReserve = SoftReserves[app.GUID];
 						response = "sr" .. "\t" .. app.GUID .. "\t" .. (softReserve and ((softReserve[1] or 0) .. "\t" .. (softReserve[2] or 0)) or "0\t0");
 					end
 				elseif a == "srml" then -- Soft Reserve (Master Looter) Command
@@ -556,8 +558,30 @@ SoftReserveWindow = app:CreateWindow("SoftReserves", {
 	end,
 	OnLoad = function(self, settings)
 		-- Check the format of the Soft Reserve Cache
-		local reserves = app.GetDataMember("SoftReserves", {});
-		local persistence = app.GetDataMember("SoftReservePersistence", {});
+		local reserves = settings.SoftReserves;
+		if not reserves then
+			reserves = AllTheThingsAD.SoftReserves;
+			if reserves then
+				AllTheThingsAD.SoftReserves = nil;
+			else
+				reserves = {};
+			end
+			settings.SoftReserves = reserves;
+		end
+		SoftReserves = reserves;	-- Now store it in the module variable.
+		local persistence = settings.SoftReservePersistence;
+		if not persistence then
+			persistence = AllTheThingsAD.SoftReservePersistence;
+			if persistence then
+				AllTheThingsAD.SoftReservePersistence = nil;
+			else
+				persistence = {};
+			end
+			settings.SoftReservePersistence = persistence;
+		end
+		AllTheThingsAD.SoftReserves = nil;
+		AllTheThingsAD.SoftReservePersistence = nil;
+		SoftReservePersistence = persistence;	-- Now store it in the module variable.
 		for guid,reserve in pairs(reserves) do
 			if type(reserve) == 'number' then
 				reserve = { reserve, time() };
@@ -590,13 +614,17 @@ SoftReserveWindow = app:CreateWindow("SoftReserves", {
 			end
 		end
 	end,
+	OnSave = function(self, settings)
+		if SoftReserves then settings.SoftReserves = SoftReserves; end
+		if SoftReservePersistence then settings.SoftReservePersistence = SoftReservePersistence; end
+	end,
 	OnRebuild = function(self)
 		if self.data then return true; end
 		self.groupMembers = {};
 		local options = {
 			setmetatable({	-- Lock All Soft Reserves Button
 				text = "Lock All Soft Reserves",
-				icon = "Interface\\Icons\\INV_MISC_KEY_13",
+				icon = 134247,
 				description_ML = "Click to toggle locking the Soft Reserves. You must click this again to turn it back off.",
 				description_PLEB = "Your Master Looter controls whether the Soft Reserve list is locked or not.",
 				visible = true,
@@ -655,7 +683,7 @@ SoftReserveWindow = app:CreateWindow("SoftReserves", {
 			}),
 			setmetatable({	-- Use Persistence Button
 				text = "Use Persistence",
-				icon = "Interface\\Icons\\INV_MISC_KEY_13",
+				icon = 134247,
 				description_ML = "Click to toggle Persistence for this raid.\n\nIf Persistence is active, each member of the raid with a persistence value on their Soft Reserved item gets a +10 to the top end of their roll for each Persistence they have on the item.\n\nYou may import Persistence from a CSV document.\n\nPersistence is stored locally and not sent to your group.",
 				description_PLEB = "Your Master Looter controls whether Persistence is active or not.",
 				description_SOLO = "Click to toggle Persistence for viewing the list outside of raid.\n\nThis state will change when you join a group whose Persistence is inactive.",
@@ -705,7 +733,7 @@ SoftReserveWindow = app:CreateWindow("SoftReserves", {
 			}),
 			{	-- Import Persistence Button
 				text = "Import Persistence",
-				icon = "Interface\\Icons\\INV_MISC_KEY_12",
+				icon = 134246,
 				description = "Click this to import Persistence from a CSV document.\n\nFORMAT:\nPLAYER NAME/GUID \\t ITEM NAME/ID \\t PERSISTENCE\n\nNOTE: There's an issue with Blizzard not finding player GUIDs that aren't in your raid and items that you personally have never encountered. For best performance, import Player GUIDs, Item IDs, and Persistence values.\n\nPersistence is stored locally and not sent to your group.",
 				visible = true,
 				priority = 4,
@@ -762,7 +790,7 @@ SoftReserveWindow = app:CreateWindow("SoftReserves", {
 						if #g > 2 and not g[1]:match("FORMAT: ") then tinsert(pers, g); end
 						if #pers > 0 then
 							local success = 0;
-							local allpersistence, allsrs = app.GetDataMember("SoftReservePersistence"), app.GetDataMember("SoftReserves");
+							local allpersistence, allsrs = SoftReservePersistence, SoftReserves;
 							for i,g in ipairs(pers) do
 								local guid, itemID = PlayerGUIDFromInfo[g[1]], app.ParseItemID(g[2]);
 								if guid and itemID then
@@ -790,7 +818,7 @@ SoftReserveWindow = app:CreateWindow("SoftReserves", {
 			},
 			{	-- Push List to Group Members Button
 				text = "Push List to Group Members",
-				icon = "Interface\\Icons\\INV_Wand_06",
+				icon = 135468,
 				description = "Press this button to send an addon message to your group containing all of the Soft Reserves in this session.",
 				visible = true,
 				priority = 6,
@@ -809,7 +837,7 @@ SoftReserveWindow = app:CreateWindow("SoftReserves", {
 			},
 			{	-- Push Soft Reserve Button
 				text = "Push Soft Reserve",
-				icon = "Interface\\Icons\\INV_Wand_06",
+				icon = 135468,
 				description = "Press this button to send an addon message containing your Soft Reserve to your group or guild.",
 				visible = true,
 				priority = 6,
@@ -828,7 +856,7 @@ SoftReserveWindow = app:CreateWindow("SoftReserves", {
 			},
 			{	-- Query Group Members Button
 				text = "Query Group Members",
-				icon = "Interface\\Icons\\INV_Wand_05",
+				icon = 135467,
 				description = "Press this button to send an addon message to your Group Members to update their Soft Reserves.",
 				priority = 7,
 				OnClick = function(row, button)
@@ -853,7 +881,7 @@ SoftReserveWindow = app:CreateWindow("SoftReserves", {
 			},
 			{	-- Query Guild Members Button
 				text = "Query Guild Members",
-				icon = "Interface\\Icons\\INV_Wand_04",
+				icon = 135466,
 				description = "Press this button to send an addon message to your Guild Members to update their Soft Reserves.",
 				visible = true,
 				priority = 7,
@@ -877,7 +905,7 @@ SoftReserveWindow = app:CreateWindow("SoftReserves", {
 			},
 			{	-- Query Master Looter Button
 				text = "Query Master Looter",
-				icon = "Interface\\Icons\\INV_Wand_06",
+				icon = 135468,
 				description = "Press this button to send an addon message to the Master Looter for a list of all the Soft Reserves in the raid.",
 				cooldown = 0,
 				priority = 7,
@@ -897,7 +925,7 @@ SoftReserveWindow = app:CreateWindow("SoftReserves", {
 			},
 			{	-- Export Soft Reserves Button
 				text = "Export Soft Reserves",
-				icon = "Interface\\Icons\\Spell_Shadow_LifeDrain02",
+				icon = 136169,
 				description = "Press this button to open an edit box containing the full content of your raid's Soft Reserve list in the format expected by the Persistence importer.\n\nYou can give this string to your raid members for them to import the full persistence list for the session.",
 				visible = true,
 				priority = 8,
@@ -927,7 +955,7 @@ SoftReserveWindow = app:CreateWindow("SoftReserves", {
 			},
 			{	-- Guild Members Header
 				text = "Guild Members",
-				icon = "Interface\\Icons\\Ability_Warrior_BattleShout",
+				icon = 132333,
 				description = "These active characters are in your guild.\n\nOnly showing characters logged in the last 2 months.",
 				priority = 10,
 				ranks = {},
@@ -944,7 +972,7 @@ SoftReserveWindow = app:CreateWindow("SoftReserves", {
 						for rankIndex = #g + 1, numRanks, 1 do
 							tinsert(g, {
 								text = GuildControlGetRankName(rankIndex),
-								icon = ("Interface\\PvPRankBadges\\PvPRank%02d"):format(15 - rankIndex),
+								icon = ("interface/PvPRankBadges\\PvPRank%02d"):format(15 - rankIndex),
 								--OnUpdate = app.AlwaysShowUpdate,
 								parent = data,
 								visible = true,
@@ -984,7 +1012,7 @@ SoftReserveWindow = app:CreateWindow("SoftReserves", {
 			},
 			{	-- Non-Group Members Header
 				text = "Non-Group Members",
-				icon = "Interface\\Icons\\INV_Misc_Head_Dragon_01",
+				icon = 134153,
 				description = "These are players that have Soft Reserved something in your raid, but are not currently in your group.",
 				visible = true,
 				priority = 11,
@@ -999,7 +1027,7 @@ SoftReserveWindow = app:CreateWindow("SoftReserves", {
 		if GetLootMethod and SetLootMethod then
 			tinsert(options, {	-- Loot Method Selector
 				text = LOOT_METHOD,
-				icon = "Interface\\Icons\\INV_Misc_Coin_01",
+				icon = 133784,
 				description = "If you are seeing this option, you are the group leader and have not setup Master Looter yet.",
 				visible = true,
 				priority = 1,
@@ -1200,7 +1228,7 @@ app.CreateSoftReserveUnit = app.ExtendClass("Unit", "SoftReserveUnit", "unit", {
 	["itemID"] = function(t)
 		local guid = t.guid;
 		if guid then
-			local reserve = rawget(app.GetDataMember("SoftReserves"), guid);
+			local reserve = rawget(SoftReserves, guid);
 			if reserve then
 				return type(reserve) == 'number' and reserve or reserve[1];
 			end
@@ -1209,11 +1237,11 @@ app.CreateSoftReserveUnit = app.ExtendClass("Unit", "SoftReserveUnit", "unit", {
 	["persistence"] = function(t)
 		local guid = t.guid;
 		if guid then
-			local reserve = rawget(app.GetDataMember("SoftReserves"), guid);
+			local reserve = rawget(SoftReserves, guid);
 			if reserve then
 				local itemID = type(reserve) == 'number' and reserve or reserve[1];
 				if itemID then
-					local persistence = rawget(app.GetDataMember("SoftReservePersistence"), guid);
+					local persistence = rawget(SoftReservePersistence, guid);
 					if persistence then return persistence[itemID]; end
 					return 0;
 				end
@@ -1284,8 +1312,8 @@ app.CreateSoftReserveUnit = app.ExtendClass("Unit", "SoftReserveUnit", "unit", {
 							if o.parent.npcID and o.parent.npcID > 0 then
 								return { o.parent.npcID };
 							end
-							if o.parent.cr then
-								return { o.parent.cr };
+							if o.parent.creatureID then
+								return { o.parent.creatureID };
 							end
 							if o.parent.crs then
 								return o.parent.crs;

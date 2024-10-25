@@ -285,7 +285,7 @@ end
 function mod:GluttonousMiasma(args)
 	if self:MobId(args.sourceGUID) == 173142 then -- Dread Feaster
 		if self:Me(args.destGUID) then
-			self:Yell(args.spellId, L.miasma)
+			self:Yell(args.spellId, L.miasma, nil, "Miasma")
 		end
 		self:TargetMessage(args.spellId, "yellow", args.destName, L.miasma)
 		self:PlaySound(args.spellId, "alarm", nil, args.destName)
@@ -332,7 +332,7 @@ do
 		self:TargetBar(args.spellId, 10, args.destName)
 		if self:Me(args.destGUID) then
 			self:PlaySound(args.spellId, "alarm")
-			self:Say(args.spellId)
+			self:Say(args.spellId, nil, nil, "Concentrate Anima")
 			self:SayCountdown(args.spellId, 10)
 		end
 	end

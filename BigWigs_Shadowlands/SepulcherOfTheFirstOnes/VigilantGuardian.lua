@@ -15,7 +15,7 @@ mod:SetStage(1)
 
 local smallAddCount = 1
 local tankAddCount = 1
-local matterDisolutionCount = 1
+local matterDissolutionCount = 1
 local refractedBlastCount = 1
 local exposedCoreCount = 1
 local deresolutionCount = 1
@@ -26,7 +26,7 @@ local shieldOnMe = false
 local timersMythic = {
 	[360906] = {22, 20.0, 20.0, 33.8, 31.8, 20.0, 33.5, 20.0, 32.4, 20.0, 34, 20}, -- Refracted Blast
 	[359610] = {47.7, 35.2, 49.9, 35.4, 38.9}, -- Deresolution
-	[364881] = {48.5, 31.6, 43.9, 30.5, 30.8, 51.9}, -- Matter Disolution
+	[364881] = {48.5, 31.6, 43.9, 30.5, 30.8, 51.9}, -- Matter Dissolution
 	[360162] = {48.2, 31.6 , 49.9, 32.9, 31.6}, -- Split Resolution
 	[360414] = {34.7, 30.4, 31.6, 50.0, 33.3, 60.8} -- Pneumatic Impact
 }
@@ -57,7 +57,7 @@ function mod:GetOptions()
 		360906, -- Refracted Blast
 		{359610, "SAY", "SAY_COUNTDOWN"}, -- Deresolution
 		360412, -- Exposed Core
-		{364881, "SAY", "SAY_COUNTDOWN"}, -- Matter Disolution
+		{364881, "SAY", "SAY_COUNTDOWN"}, -- Matter Dissolution
 		360162, -- Split Resolution
 		{360414, "TANK"}, -- Pneumatic Impact
 		364962, -- Core Overload
@@ -94,9 +94,9 @@ function mod:OnBossEnable()
 	self:Log("SPELL_AURA_REMOVED", "AncientDefensesRemoved", 360879)
 	self:Log("SPELL_CAST_SUCCESS", "FracturedCore", 364843) -- for mythic stage 2
 	self:Log("SPELL_CAST_START", "SplitResolution", 360162)
-	self:Log("SPELL_CAST_SUCCESS", "MatterDisolution", 364881)
-	self:Log("SPELL_AURA_APPLIED", "MatterDisolutionApplied", 364881)
-	self:Log("SPELL_AURA_REMOVED", "MatterDisolutionRemoved", 364881)
+	self:Log("SPELL_CAST_SUCCESS", "MatterDissolution", 364881)
+	self:Log("SPELL_AURA_APPLIED", "MatterDissolutionApplied", 364881)
+	self:Log("SPELL_AURA_REMOVED", "MatterDissolutionRemoved", 364881)
 	self:Log("SPELL_CAST_START", "PneumaticImpact", 360414)
 	self:Log("SPELL_CAST_SUCCESS", "CoreOverload", 364962)
 end
@@ -119,7 +119,7 @@ function mod:OnEngage()
 	self:Bar(360412, self:Mythic() and 108 or 90, CL.count:format(self:SpellName(360412), exposedCoreCount)) -- Exposed Core
 
 	if self:Mythic() then
-		self:Bar(364881, timers[364881][matterDisolutionCount], CL.count:format(self:SpellName(364881), matterDisolutionCount)) -- Matter Dissolution
+		self:Bar(364881, timers[364881][matterDissolutionCount], CL.count:format(self:SpellName(364881), matterDissolutionCount)) -- Matter Dissolution
 		self:Bar(360162, timers[360162][splitResolutionCount], CL.count:format(self:SpellName(360162), splitResolutionCount)) -- Split Resolution
 		self:Bar(360414, timers[360414][pneumaticImpactCount]) -- Pneumatic Impact
 	end
@@ -229,7 +229,7 @@ function mod:DeresolutionApplied(args)
 	self:StopBar(CL.count:format(args.spellName, deresolutionCount))
 	if self:Me(args.destGUID) then
 		self:PlaySound(args.spellId, "warning")
-		self:Say(args.spellId)
+		self:Say(args.spellId, nil, nil, "Deresolution")
 		self:SayCountdown(args.spellId, 5)
 	else
 		self:PlaySound(args.spellId, "alarm", nil, args.destName)
@@ -287,7 +287,7 @@ function mod:AncientDefensesRemoved()
 
 	self:Bar(360906, 20, CL.count:format(self:SpellName(360906), refractedBlastCount)) -- Refracted Blast
 	self:Bar(360162, 31.5, CL.count:format(self:SpellName(360162), splitResolutionCount)) -- Split Resolution
-	self:Bar(364881, 31.5, CL.count:format(self:SpellName(364881), matterDisolutionCount)) -- Matter Dissolution
+	self:Bar(364881, 31.5, CL.count:format(self:SpellName(364881), matterDissolutionCount)) -- Matter Dissolution
 	self:Bar(360414, 31.5) -- Pneumatic Impact
 end
 
@@ -305,7 +305,7 @@ function mod:FracturedCore(args)
 
 		self:CDBar(360906, 6, CL.count:format(self:SpellName(360906), refractedBlastCount)) -- Refracted Blast
 		self:CDBar(360162, 7.5, CL.count:format(args.spellName, splitResolutionCount)) -- Split Resolution
-		self:CDBar(364881, 11.5, CL.count:format(args.spellName, matterDisolutionCount)) -- Matter Dissolution
+		self:CDBar(364881, 11.5, CL.count:format(args.spellName, matterDissolutionCount)) -- Matter Dissolution
 		self:CDBar(360414, 25) -- Pneumatic Impact
 	end
 end
@@ -320,28 +320,28 @@ end
 
 do
 	local playerList = {}
-	function mod:MatterDisolution(args)
-		self:StopBar(CL.count:format(args.spellName, matterDisolutionCount))
+	function mod:MatterDissolution(args)
+		self:StopBar(CL.count:format(args.spellName, matterDissolutionCount))
 		playerList = {}
-		matterDisolutionCount = matterDisolutionCount + 1
-		self:Bar(args.spellId, (self:Mythic() and self:GetStage() == 1) and timers[args.spellId][matterDisolutionCount] or 20.5, CL.count:format(args.spellName, matterDisolutionCount))
+		matterDissolutionCount = matterDissolutionCount + 1
+		self:Bar(args.spellId, (self:Mythic() and self:GetStage() == 1) and timers[args.spellId][matterDissolutionCount] or 20.5, CL.count:format(args.spellName, matterDissolutionCount))
 	end
 
-	function mod:MatterDisolutionApplied(args)
+	function mod:MatterDissolutionApplied(args)
 		playerList[#playerList+1] = args.destName
 		if self:Me(args.destGUID) then
 			self:PlaySound(args.spellId, "warning")
-			self:Say(args.spellId)
+			self:Say(args.spellId, nil, nil, "Matter Dissolution")
 			local _, _, _, expires = self:UnitDebuff("player", args.spellId)
 			if expires and expires > 0 then
 				local timeLeft = expires - GetTime()
 				self:SayCountdown(args.spellId, timeLeft)
 			end
 		end
-		self:TargetsMessage(args.spellId, "yellow", playerList, nil, CL.count:format(args.spellName, matterDisolutionCount-1))
+		self:TargetsMessage(args.spellId, "yellow", playerList, nil, CL.count:format(args.spellName, matterDissolutionCount-1))
 	end
 
-	function mod:MatterDisolutionRemoved(args)
+	function mod:MatterDissolutionRemoved(args)
 		if self:Me(args.destGUID) then
 			self:CancelSayCountdown(args.spellId)
 		end
@@ -352,14 +352,14 @@ function mod:PneumaticImpact(args)
 	self:Message(args.spellId, "purple")
 	self:PlaySound(args.spellId, "alarm")
 	pneumaticImpactCount = pneumaticImpactCount + 1
-	self:Bar(args.spellId, (self:Mythic() and self:GetStage() == 1) and timers[args.spellId][matterDisolutionCount] or 30.4)
+	self:Bar(args.spellId, (self:Mythic() and self:GetStage() == 1) and timers[args.spellId][matterDissolutionCount] or 30.4)
 end
 
 function mod:CoreOverload(args)
 	self:StopBar(CL.count:format(self:SpellName(359610), deresolutionCount)) -- Deresolution
 	self:StopBar(CL.count:format(self:SpellName(360906), refractedBlastCount)) -- Refracted Blast
 	self:StopBar(CL.count:format(self:SpellName(360162), splitResolutionCount)) -- Split Resolution
-	self:StopBar(CL.count:format(self:SpellName(364881), matterDisolutionCount)) -- Matter Dissolution
+	self:StopBar(CL.count:format(self:SpellName(364881), matterDissolutionCount)) -- Matter Dissolution
 	self:StopBar(360414) -- Pneumatic Impact
 
 	self:Message(args.spellId, "red")

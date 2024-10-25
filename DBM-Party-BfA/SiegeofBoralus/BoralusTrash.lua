@@ -1,14 +1,15 @@
 local mod	= DBM:NewMod("BoralusTrash", "DBM-Party-BfA", 5)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240910053255")
+mod:SetRevision("20241020100524")
 --mod:SetModelID(47785)
 
 mod.isTrashMod = true
 mod.isTrashModBossFightAllowed = true
+mod:SetZone(1822)
 
 mod:RegisterEvents(
-	"SPELL_CAST_START 275826 256627 256957 256709 257170 272546 257169 272713 274569 272571 272888 272711 268260 257288 454440 272662",
+	"SPELL_CAST_START 275826 256627 256957 256709 257170 272546 257169 272713 274569 272571 272888 272711 268260 257288 454440 272662 257732",
 	"SPELL_CAST_SUCCESS 256627 256640 257170 256709 257288 272422 454437 275826 275835 272888 272546 454440 272711 257169 272571 256957 268260",
 	"SPELL_INTERRUPT",
 	"SPELL_AURA_APPLIED 256957 257168 272421 272571 272888 454437",
@@ -36,10 +37,10 @@ local warnAzeriteCharge				= mod:NewTargetAnnounce(454437, 2)
 local warnBurningTar				= mod:NewSpellAnnounce(256640, 2)
 local warnIronHook					= mod:NewSpellAnnounce(272662, 4, nil, nil, nil, nil, nil, 12)
 
-local specWarnSlobberKnocker		= mod:NewSpecialWarningDodge(256627, "Tank", nil, nil, 1, 2)
-local specWarnSingingSteel			= mod:NewSpecialWarningDodge(256709, "Tank", nil, nil, 1, 2)
-local specWarnHeavySlash			= mod:NewSpecialWarningDodge(257288, "Tank", nil, nil, 1, 2)
-local specWarnCrushingSlam			= mod:NewSpecialWarningDodge(272711, "Tank", nil, nil, 1, 2)
+local specWarnSlobberKnocker		= mod:NewSpecialWarningDodge(256627, nil, nil, 2, 1, 15)
+local specWarnSingingSteel			= mod:NewSpecialWarningDodge(256709, "Tank", nil, nil, 1, 15)
+local specWarnHeavySlash			= mod:NewSpecialWarningDodge(257288, "Tank", nil, nil, 1, 15)
+local specWarnCrushingSlam			= mod:NewSpecialWarningSpell(272711, nil, nil, nil, 2, 2)
 --local specWarnTrample				= mod:NewSpecialWarningDodge(272874, nil, nil, nil, 2, 2)
 local specWarnBroadside				= mod:NewSpecialWarningDodge(268260, nil, nil, nil, 2, 2)
 local specWarnSavageTempest			= mod:NewSpecialWarningRun(257170, nil, nil, nil, 4, 2)--can tank run out too? or does it follow tank
@@ -57,14 +58,15 @@ local specWarnCursedSlash			= mod:NewSpecialWarningDispel(257168, "RemoveCurse",
 local specWarnFerocity				= mod:NewSpecialWarningDispel(272888, "RemoveEnrage", nil, 2, 1, 2)
 local specWarnChokingWatersDispel	= mod:NewSpecialWarningDispel(272571, "RemoveMagic", nil, 2, 1, 2)
 local specWarnFear					= mod:NewSpecialWarningSpell(257169, nil, nil, nil, 2, 2)
+local specWarnShatteringBellow		= mod:NewSpecialWarningCast(257732, "SpellCaster", nil, nil, 1, 1)
 
 --copilot, there are no NewCDTimer objects in this mod, only NewCDNPTimer objects
 --copilot, there is no DBM_CORE_L in this mod, only DBM_COMMON_L
-local timerSlobberknockerCD			= mod:NewCDPNPTimer(18.8, 256627, nil, nil, nil, 5)--18.8-20
-local timerBurningTarCD				= mod:NewCDNPTimer(22.6, 256640, nil, nil, nil, 3)
+local timerSlobberknockerCD			= mod:NewCDPNPTimer(18.8, 256627, nil, nil, nil, 5)--18.8-20.6
+local timerBurningTarCD				= mod:NewCDNPTimer(20.6, 256640, nil, nil, nil, 3)
 local timerSavageTempestCD			= mod:NewCDNPTimer(19.1, 257170, nil, nil, nil, 3)
 local timerSavageTempest			= mod:NewCastNPTimer(3, 257170, nil, nil, nil, 5)
-local timerSingSteelCD				= mod:NewCDNPTimer(17, 256709, nil, nil, nil, 5, nil, DBM_COMMON_L.TANK_ICON)
+local timerSingSteelCD				= mod:NewCDNPTimer(16.5, 256709, nil, nil, nil, 5, nil, DBM_COMMON_L.TANK_ICON)
 local timerHeavySlashCD				= mod:NewCDPNPTimer(20.6, 257288, nil, nil, nil, 5)
 local timerSightedArtCD				= mod:NewCDNPTimer(12.1, 272421, nil, nil, nil, 3)
 local timerAzeriteChargeCD			= mod:NewCDNPTimer(15.7, 454437, nil, nil, nil, 3)
@@ -75,10 +77,10 @@ local timerFerocityCD				= mod:NewCDNPTimer(38.9, 272888, nil, nil, nil, 5)--Sma
 local timerBananaRampageCD			= mod:NewCDNPTimer(16.9, 272546, nil, nil, nil, 3)
 local timerBananaRampage			= mod:NewCastNPTimer(1.5, 272546, nil, false, nil, 5)
 local timerStinkyVomitCD			= mod:NewCDPNPTimer(16.1, 454440, nil, nil, nil, 4, nil, DBM_COMMON_L.INTERRUPT_ICON)--16.1-19.4
-local timerCrushingSlamCD			= mod:NewCDNPTimer(20.6, 272711, nil, nil, nil, 3)
+local timerCrushingSlamCD			= mod:NewCDNPTimer(20.6, 272711, nil, nil, nil, 2)
 local timerTerrifyingRoarCD			= mod:NewCDNPTimer(31.6, 257169, nil, nil, nil, 2)
 local timerChoakingWatersCD			= mod:NewCDPNPTimer(29.1, 272571, nil, nil, nil, 4, nil, DBM_COMMON_L.INTERRUPT_ICON)--29.1-31.6
-local timerIronHookCD				= mod:NewCDNPTimer(19.4, 272662, nil, nil, nil, 3)
+local timerIronHookCD				= mod:NewCDNPTimer(23, 272662, nil, nil, nil, 3)
 local timerBroadsideCD				= mod:NewCDPNPTimer(11.5, 268260, nil, nil, nil, 3)--Boss version is 9.1 from previous cast finish, but this one is 11.5
 
 --Antispam IDs for this mod: 1 run away, 2 dodge, 3 dispel, 4 incoming damage, 5 you/role, 6 misc, 7 off interrupt
@@ -96,10 +98,10 @@ function mod:SPELL_CAST_START(args)
 		end
 	elseif spellId == 256627 and self:AntiSpam(3, 2) then
 		specWarnSlobberKnocker:Show()
-		specWarnSlobberKnocker:Play("shockwave")
+		specWarnSlobberKnocker:Play("frontal")
 	elseif spellId == 256709 and self:AntiSpam(3, 2) then
 		specWarnSingingSteel:Show()
-		specWarnSingingSteel:Play("shockwave")
+		specWarnSingingSteel:Play("frontal")
 	elseif spellId == 257170 then
 		timerSavageTempest:Start(nil, args.sourceGUID)
 		if self:AntiSpam(4, 1) then
@@ -133,9 +135,9 @@ function mod:SPELL_CAST_START(args)
 		end
 	elseif spellId == 272888 and self:AntiSpam(4, 6) then
 		warnFerocity:Show()
-	elseif spellId == 272711 and self:AntiSpam(3, 2) then
+	elseif spellId == 272711 and self:AntiSpam(3, 4) then
 		specWarnCrushingSlam:Show()
-		specWarnCrushingSlam:Play("shockwave")
+		specWarnCrushingSlam:Play("aesoon")
 	elseif spellId == 268260 and args:GetSrcCreatureID() == 138465 then--Trash version
 		if self:AntiSpam(3, 2) then
 			specWarnBroadside:Show()
@@ -143,7 +145,7 @@ function mod:SPELL_CAST_START(args)
 		end
 	elseif spellId == 257288 and args:GetSrcCreatureID() == 129879 and self:AntiSpam(3, 2) then--Trash version
 		specWarnHeavySlash:Show()
-		specWarnHeavySlash:Play("shockwave")
+		specWarnHeavySlash:Play("frontal")
 	elseif spellId == 454440 then
 		if self.Options.SpecWarn454440interrupt and self:CheckInterruptFilter(args.sourceGUID, false, true) then
 			specWarnStinkyVomit:Show(args.sourceName)
@@ -151,10 +153,13 @@ function mod:SPELL_CAST_START(args)
 		elseif self:AntiSpam(4, 7) then
 			warnStinkyVomit:Show()
 		end
-	elseif spellId == 272662 then
+	elseif spellId == 272662 and args:GetSrcCreatureID() == 129369 then
 		warnIronHook:Show()
 		warnIronHook:Play("pullin")
-		timerIronHookCD:Start(19.4, args.sourceGUID)
+		timerIronHookCD:Start(23, args.sourceGUID)
+	elseif spellId == 257732 then
+		specWarnShatteringBellow:Show()
+		specWarnShatteringBellow:Play("stopcast")
 	end
 end
 
@@ -169,7 +174,7 @@ function mod:SPELL_CAST_SUCCESS(args)
 	elseif spellId == 257170 then
 		timerSavageTempestCD:Start(16.1, args.sourceGUID)--19.1 - 3
 	elseif spellId == 256709 then
-		timerSingSteelCD:Start(15, args.sourceGUID)--17 - 2
+		timerSingSteelCD:Start(14.5, args.sourceGUID)--16.6 - 2
 	elseif spellId == 257288 and args:GetSrcCreatureID() == 129879 then
 		timerHeavySlashCD:Start(17.8, args.sourceGUID)--20.6 - 2.8
 	elseif spellId == 272422 then--No filter needed, boss version doesn't fire this spellID
@@ -185,7 +190,7 @@ function mod:SPELL_CAST_SUCCESS(args)
 	elseif spellId == 272546 then
 		timerBananaRampageCD:Start(15.4, args.sourceGUID)
 	elseif spellId == 454440 then
-		timerStinkyVomitCD:Start(18.1, args.sourceGUID)--16.1 - 2
+		timerStinkyVomitCD:Start(16.1, args.sourceGUID)
 	elseif spellId == 272711 then
 		timerCrushingSlamCD:Start(17.1, args.sourceGUID)--20.6 - 3.5
 	elseif spellId == 257169 then
@@ -200,11 +205,12 @@ function mod:SPELL_CAST_SUCCESS(args)
 end
 
 function mod:SPELL_INTERRUPT(args)
+	if not self.Options.Enabled then return end
 	if type(args.extraSpellId) ~= "number" then return end
 	if args.extraSpellId == 275826 then
 		timerBolsteringShoutCD:Start(15.6, args.destGUID)--18.1 - 2.5
 	elseif args.extraSpellId == 454440 then
-		timerStinkyVomitCD:Start(18.1, args.destGUID)--16.1 - 2
+		timerStinkyVomitCD:Start(16.1, args.destGUID)
 	elseif args.extraSpellId == 272571 then
 		timerChoakingWatersCD:Start(26.6, args.destGUID)--29.1 - 2.5
 	end
@@ -241,6 +247,7 @@ function mod:SPELL_AURA_APPLIED(args)
 end
 
 function mod:UNIT_DIED(args)
+	if not self.Options.Enabled then return end
 	local cid = self:GetCIDFromGUID(args.destGUID)
 	if cid == 129374 then--Scrimshaw Enforcer
 		timerSlobberknockerCD:Stop(args.destGUID)
@@ -249,6 +256,7 @@ function mod:UNIT_DIED(args)
 	elseif cid == 129369 then--Irontide Raider
 		timerSavageTempestCD:Stop(args.destGUID)
 		timerSavageTempest:Stop(args.destGUID)
+		timerIronHookCD:Stop(args.destGUID)
 	elseif cid == 129371 then--Riptide Shredder
 		timerSingSteelCD:Stop(args.destGUID)
 	elseif cid == 129879 then--Irontide Cleaver (Trash version)
@@ -272,8 +280,6 @@ function mod:UNIT_DIED(args)
 		timerTerrifyingRoarCD:Stop(args.destGUID)
 	elseif cid == 129367 then--Bilge Rat Tempest
 		timerChoakingWatersCD:Stop(args.destGUID)
-	elseif cid == 129369 then--Iron Raider
-		timerIronHookCD:Stop(args.destGUID)
 	elseif cid == 129370 or cid == 144071 then--Ironhull WaveShaper
 		timerWatertightShellCD:Stop(args.destGUID)
 	end
@@ -307,7 +313,7 @@ function mod:OnSync(msg)
 		specWarnTrample:Play("chargemove")
 	elseif msg == "CrushingSlam" and self:AntiSpam(2.5, 2) then
 		specWarnCrushingSlam:Show()
-		specWarnCrushingSlam:Play("shockwave")
+		specWarnCrushingSlam:Play("frontal")
 	elseif msg == "Broadside" then
 		specWarnBroadside:Show()
 		specWarnBroadside:Play("watchstep")

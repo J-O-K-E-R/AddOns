@@ -322,7 +322,7 @@ do
 		playerList[count] = args.destName
 		playerList[args.destName] = count -- Set raid marker
 		if self:Me(args.destGUID) then
-			self:Say(362721, CL.count_rticon:format(L.wormhole, count, count))
+			self:Say(362721, CL.count_rticon:format(L.wormhole, count, count), nil, ("Wormhole (%d{rt%d})"):format(count, count))
 			self:SayCountdown(362721, 8, count)
 			self:PlaySound(362721, "warning")
 		end
@@ -341,7 +341,7 @@ function mod:GlyphOfRelocationApplied(args)
 	self:PlaySound(args.spellId, "warning")
 	self:TargetBar(args.spellId, 5, args.destName, CL.bomb)
 	if self:Me(args.destGUID) then
-		self:Say(args.spellId, CL.bomb)
+		self:Say(args.spellId, CL.bomb, nil, "Bomb")
 		self:SayCountdown(args.spellId, 5)
 	end
 	glyphCount = glyphCount + 1

@@ -1,2 +1,2 @@
-## 5.0.8 (2024-09-07)
-  - Background changes
+## 5.2.0 (2024-10-23)
+  - Patch 10.0.5 Update

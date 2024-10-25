@@ -101,11 +101,42 @@ do
 			return NPCTitlesFromID[t[KEY]]
 		end,
 		icon = function(t)
-			local vendorParent = t.parent and t.parent.headerID == app.HeaderConstants.VENDORS
-			if vendorParent then
-				return "Interface\\Icons\\INV_Misc_Coin_01"
+			return (t.parent and t.parent.headerID and t.parent.headerID == app.HeaderConstants.VENDORS and 133784) or app.GetRelativeDifficultyIcon(t)
+		end,
+		indicatorIcon = function(t)
+			if app.ActiveVignettes.npc[t.npcID] then
+				return app.asset("Interface_Ping")
 			end
-			return app.GetRelativeDifficultyIcon(t)
+		end,
+	},
+	"WithQuest", {
+		CollectibleType = app.IsClassic and function() return "Quests" end
+		-- Retail: NPCs tracked as HQT
+		or function() return "QuestsHidden" end,
+		collectible = app.GlobalVariants.AndLockCriteria.collectible or app.CollectibleAsQuest,
+		locked = app.GlobalVariants.AndLockCriteria.locked,
+		collected = function(t)
+			return IsQuestFlaggedCompletedForObject(t)
+		end,
+		trackable = function(t)
+			-- raw repeatable quests can't really be tracked since they immediately unflag
+			return not rawget(t, "repeatable") and t.repeatable
+		end,
+		saved = function(t)
+			return IsQuestFlaggedCompleted(t.questID)
+		end,
+		repeatable = function(t)
+			return t.isDaily or t.isWeekly or t.isMonthly or t.isYearly
+		end,
+		altcollected = function(t)
+			if t.altQuests then
+				for i,questID in ipairs(t.altQuests) do
+					if IsQuestFlaggedCompleted(questID) then
+						t.altcollected = questID
+						return questID
+					end
+				end
+			end
 		end,
 		-- questID is sometimes a faction-based questID for a single NPC (i.e. BFA Warfront Rares), thanks Blizzard
 		questID = function(t)
@@ -138,11 +169,6 @@ do
 				end
 			end
 		end,
-		indicatorIcon = function(t)
-			if app.ActiveVignettes.npc[t.npcID] then
-				return app.asset("Interface_Ping")
-			end
-		end,
 		-- use custom to track opposite faction questID collection in account/debug if the NPC is considered collectible
 		customTotal = function(t)
 			if app.MODE_DEBUG_OR_ACCOUNT and t.questIDA and t.collectible then
@@ -152,49 +178,22 @@ do
 		customProgress = function(t)
 			return (t.otherFactionQuestID and IsQuestFlaggedCompleted(t.otherFactionQuestID)) and 1 or 0
 		end,
-	},
-	"WithQuest", {
-		collectible = app.GlobalVariants.AndLockCriteria.collectible or app.CollectibleAsQuest,
-		locked = app.GlobalVariants.AndLockCriteria.locked,
-		collected = function(t)
-			return IsQuestFlaggedCompletedForObject(t)
-		end,
-		trackable = function(t)
-			-- raw repeatable quests can't really be tracked since they immediately unflag
-			return not rawget(t, "repeatable")
-		end,
-		saved = function(t)
-			return IsQuestFlaggedCompleted(t.questID)
-		end,
-		repeatable = function(t)
-			return t.isDaily or t.isWeekly or t.isMonthly or t.isYearly
-		end,
-		altcollected = function(t)
-			if t.altQuests then
-				for i,questID in ipairs(t.altQuests) do
-					if IsQuestFlaggedCompleted(questID) then
-						t.altcollected = questID
-						return questID
-					end
-				end
-			end
-		end,
-	}, (function(t) return t.questID end))
+	}, (function(t) return t.questID or t.questIDA or t.questIDH end))
 end
 
 -- Header Lib
--- TODO: eventually maybe this can actually just be a CreateHeader from parser instead of fake NPC header
-local CreateHeader
+-- TODO: eventually maybe this can actually just be a CreateCustomHeader from parser instead of fake NPC header
+local CreateCustomHeader
 do
 	local HeaderEventIDs = L.HEADER_EVENTS
 	local KEY = "headerID"
-	CreateHeader = app.CreateClass("Header", KEY, {
+	CreateCustomHeader = app.CreateClass("Header", KEY, {
 		IsClassIsolated = true,
 		name = function(t)
 			return L.HEADER_NAMES[t[KEY]]
 		end,
 		icon = function(t)
-			return L.HEADER_ICONS[t[KEY]]
+			return L.HEADER_ICONS[t[KEY]] or app.asset("Category_Zones")
 		end,
 		description = function(t)
 			return L.HEADER_DESCRIPTIONS[t[KEY]]
@@ -206,7 +205,7 @@ do
 	"WithQuest", {
 		trackable = function(t)
 			-- raw repeatable quests can't really be tracked since they immediately unflag
-			return not rawget(t, "repeatable")
+			return not rawget(t, "repeatable") and t.repeatable
 		end,
 		saved = function(t)
 			return IsQuestFlaggedCompleted(t.questID)
@@ -227,12 +226,71 @@ do
 			return t.isDaily or t.isWeekly or t.isMonthly or t.isYearly
 		end,
 	}), (function(t) return HeaderEventIDs[t[KEY]] end))
+	app.CreateCustomHeader = CreateCustomHeader
 end
 
 app.CreateNPC = function(id, t)
 	if id < 1 then
-		return CreateHeader(id, t)
+		return CreateCustomHeader(id, t)
 	else
 		return CreateNPC(id, t)
 	end
+end
+
+-- returns the input key unless it's blocked by being set to 0
+local BlockedDisplayID = {
+	[11686] = 0,	-- empty blue thing
+	[16925] = 0,	-- nothing
+	[21072] = 0,	-- empty blue thing
+	[23767] = 0,	-- empty blue thing
+	[27823] = 0,	-- empty blue thing
+	[28016] = 0,	-- empty blue thing
+	[52318] = 0,	-- generic bunny
+	[56187] = 0,	-- generic bunny
+	[64062] = 0,	-- generic bunny
+	[110046] = 0,	-- nothing
+	[112684] = 0,	-- nothing
+}
+local AllowedDisplayID = setmetatable({}, {
+	__index = function(t, key)
+		if BlockedDisplayID[key] then
+			return false
+		end
+		-- app.PrintDebug("DisplayID",key)
+		return key;
+	end
+});
+
+local function GetDisplayID(data)
+	-- don't create a displayID for groups with a sourceID/itemID/difficultyID/mapID
+	if data.sourceID or data.difficultyID or data.mapID or data.itemID then return false end
+
+	local npcID = data.npcID or data.creatureID
+	if npcID then return NPCDisplayIDFromID[npcID] end
+
+	local qgs = data.qgs
+	if qgs and #qgs > 0 then return NPCDisplayIDFromID[qgs[1]] end
+
+	local providers = data.providers
+	if providers and #providers > 0 then
+		for _,v in ipairs(providers) do
+			-- if one of the providers is an NPC, we should show its texture regardless of other providers
+			if v[1] == "n" then
+				return NPCDisplayIDFromID[v[2]]
+			end
+		end
+	end
+	return false
+end
+
+-- Determines an allowed DisplayID for the provided data group based on NPC data
+-- or returns an existing displayID of the group
+app.GetDisplayID = function(data)
+	local id = data.displayID
+	-- app.PrintDebug("old.displayID",id)
+	if id ~= nil then return id end
+	id = AllowedDisplayID[GetDisplayID(data)]
+	-- app.PrintDebug("new.displayID",id)
+	data.displayID = id
+	return id
 end

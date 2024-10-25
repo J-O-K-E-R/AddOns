@@ -23,7 +23,7 @@ local StatScrollFrame = CreateFrame("ScrollFrame", nil, CharacterFrameInsetRight
 	StatScrollFrame.ScrollBar:SetPoint("TOPLEFT", StatScrollFrame, "TOPRIGHT", -16, -16)
 	StatScrollFrame.ScrollBar:SetPoint("BOTTOMLEFT", StatScrollFrame, "BOTTOMRIGHT", -16, 16)
 	StatScrollFrame.ScrollBar:Hide()
-	
+
 	StatScrollFrame:HookScript("OnScrollRangeChanged", function(self, xrange, yrange)
 		if scrollbarchecked then
 			self.ScrollBar:SetShown(floor(yrange) ~= 0)
@@ -31,7 +31,7 @@ local StatScrollFrame = CreateFrame("ScrollFrame", nil, CharacterFrameInsetRight
 			self.ScrollBar:Hide()
 		end
 	end)
-	
+
 	local StatFrame = CreateFrame("Frame", nil, StatScrollFrame)
 	StatFrame:SetWidth(191)
 	StatFrame:SetPoint("TOPLEFT")
@@ -78,7 +78,7 @@ local DefaultTankData = DCS_TableData:MergeTable({
         { statKey = "MANAREGEN" },
         { statKey = "ENERGY_REGEN" },
         { statKey = "DCS_RUNEREGEN" },
-        { statKey = "FOCUS_REGEN" },		
+        { statKey = "FOCUS_REGEN" },
         { statKey = "GCD" },
 	{ statKey = "EnhancementsCategory" }, --Re-order after Offense to appear more logical.
         { statKey = "CRITCHANCE", hideAt = 0 },
@@ -139,7 +139,7 @@ local DefaultNonTankData = DCS_TableData:MergeTable({
         { statKey = "MANAREGEN" },
         { statKey = "ENERGY_REGEN" },
         { statKey = "DCS_RUNEREGEN" },
-        { statKey = "FOCUS_REGEN" },		
+        { statKey = "FOCUS_REGEN" },
         { statKey = "GCD" },
 	{ statKey = "EnhancementsCategory" }, --Re-order after Offense to appear more logical.
         { statKey = "CRITCHANCE", hideAt = 0 },
@@ -173,7 +173,7 @@ local DefaultNonTankData = DCS_TableData:MergeTable({
 	{ statKey = "UserCat4" },
 	{ statKey = "UserCat5" },
 })
-local ShownData = DefaultNonTankData 
+local ShownData = DefaultNonTankData
 
 for k, v in pairs(DCS_TableData.StatData) do
 	if (not v.frame) then
@@ -338,7 +338,7 @@ local function ShowCharacterStats(unit)
 				height = height + stat.frame:GetHeight()
 			end
 		end
-		
+
 	end
 	height = floor(height)
 	StatFrame:SetHeight(height)
@@ -353,7 +353,7 @@ local function ShowCharacterStats(unit)
 		else
 			UpdateStatFrameWidth(191)
 			StatScrollFrame.ScrollBar:Hide()
-		end			
+		end
 	end
 	set_relevant_stat_state()
 end
@@ -374,7 +374,7 @@ local function DCS_Table_Relevant()
 
 	for _, v in ipairs(ShownData) do
 		if v.hidden then v.hidden = false end
-	end 
+	end
 
 	local primaryStat = select(6, GetSpecializationInfo(spec, nil, nil, nil, UnitSex("player")));
     for _, v in ipairs(ShownData) do
@@ -436,7 +436,7 @@ local function DCS_Table_Relevant()
 		--if v.statKey == "DefenseCategory" then v.hidden = true end
 		if v.statKey == "RatingCategory" then v.hidden = true end --ratings are invisible, so the category is also hidden
 		--visiblity of pvp info is off by default
-		if (hashonorlevel < 1 ) then		
+		if (hashonorlevel < 1 ) then
 			if v.statKey == "HonorCategory" then v.hidden = true end
 			if v.statKey == "HONOR_PROGRESS" then v.hidden = true end
 			if v.statKey == "HONOR_LEVEL" then v.hidden = true end
@@ -544,7 +544,7 @@ end
 
 for k, v in pairs(DCS_TableData.StatData) do
 	v.frame:SetMovable(true)
-	v.frame:EnableMouse(true) --without this normal stats (but not categories) are draggable 
+	v.frame:EnableMouse(true) --without this normal stats (but not categories) are draggable
 	v.frame:RegisterForDrag("LeftButton")
 	v.frame:HookScript("OnDragStart", OnDragStart)
 	v.frame:HookScript("OnDragStop", OnDragStop)
@@ -647,12 +647,13 @@ local DCS_InterfaceOptConfigButton = CreateFrame("Button", "DCS_InterfaceOptConf
 	DCS_configButton:SetNormalTexture("Interface\\BUTTONS\\LockButton-Locked-Up")
 	DCS_configButton:SetPushedTexture("Interface\\BUTTONS\\LockButton-Unlocked-Down")
 	DCS_configButton:SetHighlightTexture("Interface\\BUTTONS\\UI-Common-MouseHilight", "ADD")
-	
+
 DCS_configButton:SetScript("OnEvent", function(self, event, ...)
 	PaperDollFrame_UpdateStats()
 end)
 
 local function DCS_configButton_OnEnter(self)
+	GameTooltip_SetDefaultAnchor(GameTooltip, UIParent)
 	GameTooltip:SetOwner(DCS_configButton, "ANCHOR_RIGHT");
 	GameTooltip:SetText(DCS_ConfigtooltipText, 1, 1, 1, 1, true)
 	GameTooltip:Show()
@@ -661,7 +662,7 @@ end
 local function DCS_configButton_OnLeave(self)
 	GameTooltip_Hide()
  end
- 
+
 	DCS_configButton:SetScript("OnEnter", DCS_configButton_OnEnter)
 	DCS_configButton:SetScript("OnLeave", DCS_configButton_OnLeave)
 
@@ -700,7 +701,7 @@ local DCS_ConfigButtonCheck = CreateFrame("CheckButton", "DCS_ConfigButtonCheck"
 	DCS_ConfigButtonCheck:SetScale(1)
 	DCS_ConfigButtonCheck.tooltipText = L['Displays the configuration (lock) button for the character stats frame.'] --Creates a tooltip on mouseover.
 	_G[DCS_ConfigButtonCheck:GetName() .. "Text"]:SetText(L["Show Config"])
-	
+
 	DCS_ConfigButtonCheck:SetScript("OnEvent", function(self, event)
 		if event == "PLAYER_LOGIN" then
 			local checked = gdbprivate.gdb.gdbdefaults.dejacharacterstatsConfigButtonChecked.ConfigButtonSetChecked
@@ -725,7 +726,7 @@ local DCS_ConfigButtonCheck = CreateFrame("CheckButton", "DCS_ConfigButtonCheck"
 
 local function DCS_ClassCrestBGCheck()
 	if DCS_ClassBackgroundCheck:GetChecked(true) then
-		char_ctats_pane.ClassBackground:Show() 
+		char_ctats_pane.ClassBackground:Show()
 	else
 		char_ctats_pane.ClassBackground:Hide()
 	end
@@ -750,7 +751,7 @@ local function DCS_DefaultStatsAnchors()
 
 	char_ctats_pane.ClassBackground:ClearAllPoints()
 	char_ctats_pane.ClassBackground:SetParent(StatScrollFrame)
-	char_ctats_pane.ClassBackground:SetPoint("TOP", StatScrollFrame, "TOP", -2.50, 3)	
+	char_ctats_pane.ClassBackground:SetPoint("TOP", StatScrollFrame, "TOP", -2.50, 3)
 
 	configButtonOnClose()
 	DCS_ClassCrestBGCheck()
@@ -763,7 +764,7 @@ local function DCS_InterfaceOptionsStatsAnchors()
 		DCS_InterfaceOptConfigButton:RegisterEvent("UNIT_AURA")
 		DCS_InterfaceOptConfigButton:RegisterEvent("UPDATE_INVENTORY_DURABILITY")
 		set_config_mode(true)
-				
+
 		StatScrollFrame:ClearAllPoints()
 		StatScrollFrame:SetParent(DejaCharacterStatsPanel)
 		StatScrollFrame:SetPoint("TOPRIGHT", DejaCharacterStatsPanel, "TOPRIGHT", -64, -80)
@@ -793,8 +794,8 @@ local function DCS_InterfaceOptionsStatsAnchors()
 		DCS_ClassCrestBGCheck()
 		ShowCharacterStats("player")
 	end
-end	
-	
+end
+
 CharacterFrameInsetRight:HookScript("OnShow", function(self)
 	DCS_DefaultStatsAnchors()
 end)
@@ -804,7 +805,7 @@ CharacterFrameInsetRight:HookScript("OnHide", function(self)
 		DCS_InterfaceOptionsStatsAnchors()
 	else
 		CharacterFrameInsetRightScrollBar:SetValue(0)
-	
+
 		StatScrollFrame:ClearAllPoints()
 		StatScrollFrame:SetParent(UIParent)
 		StatScrollFrame:SetPoint("BOTTOMRIGHT", UIParent, "TOPLEFT", -100, 100)
@@ -832,7 +833,7 @@ end)
 		configMode = not configMode
 		if (configMode) then
 			self:SetNormalTexture("Interface\\BUTTONS\\LockButton-Unlocked-Up")
-			
+
 			DCS_TableRelevantStats:ClearAllPoints()
 			DCS_TableRelevantStats:SetParent(CharacterFrameInsetRight)
 			DCS_TableRelevantStats:SetPoint("BOTTOMRIGHT", -130,-36)
@@ -840,7 +841,7 @@ end)
 			DCS_TableResetCheck:ClearAllPoints()
 			DCS_TableResetCheck:SetParent(CharacterFrameInsetRight)
 			DCS_TableResetCheck:SetPoint("BOTTOMRIGHT", 5, -36)
-			
+
 			set_config_mode(true)
 		else
 			configButtonOnClose()
@@ -853,6 +854,7 @@ end)
 -- Relevant Stats Button --
 ------------------------
 local function DCS_TableRelevantStats_OnEnter(self)
+	GameTooltip_SetDefaultAnchor(GameTooltip, UIParent)
 	GameTooltip:SetOwner(DCS_TableRelevantStats, "ANCHOR_RIGHT");
 	GameTooltip:SetText(DCS_TableRelevantStatstooltipText, 1, 1, 1, 1, true)
 	GameTooltip:Show()
@@ -861,7 +863,7 @@ end
 local function DCS_TableRelevantStats_OnLeave(self)
 	GameTooltip_Hide()
  end
- 
+
 local DCS_TableRelevantStats = CreateFrame("Button", "DCS_TableRelevantStats", CharacterFrameInsetRight, "UIPanelButtonTemplate")
 	DCS_TableRelevantStats:RegisterEvent("PLAYER_LOGIN")
 	DCS_TableRelevantStats:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
@@ -889,8 +891,8 @@ local DCS_TableRelevantStats = CreateFrame("Button", "DCS_TableRelevantStats", C
 	DCS_TableRelevantStats:SetScript("OnEvent", function(self, event, ...)
 		DCS_Login_Initialization()
 		DCS_TableRelevantStats_init()
-		
-		if event == "PLAYER_SPECIALIZATION_CHANGED" then 
+
+		if event == "PLAYER_SPECIALIZATION_CHANGED" then
 			set_config_mode(true) -- This allows the ratings stats and category headrs to be shown when changin specs. No clue why, but it works.
 			local function DCS_ReShowSelectedStats()
 				set_config_mode(false) -- This hides the above shown config mode 0.01 secs after showing it becasue we dont want it shown, but showing it shows the selected stats, so we need to exit config after entering it.
@@ -899,7 +901,7 @@ local DCS_TableRelevantStats = CreateFrame("Button", "DCS_TableRelevantStats", C
 			ShowCharacterStats("player")
 		end
 	end)
-	
+
 ------------------------------------------
 -- Interface Options Config Mode Toggle --
 ------------------------------------------
@@ -912,8 +914,9 @@ local DCS_TableRelevantStats = CreateFrame("Button", "DCS_TableRelevantStats", C
 	DCS_InterfaceOptConfigButton:SetNormalTexture("Interface\\BUTTONS\\LockButton-Locked-Up")
 	DCS_InterfaceOptConfigButton:SetPushedTexture("Interface\\BUTTONS\\LockButton-Unlocked-Down")
 	DCS_InterfaceOptConfigButton:SetHighlightTexture("Interface\\BUTTONS\\UI-Common-MouseHilight", "ADD")
-	
+
 local function DCS_InterfaceOptConfigButton_OnEnter(self)
+	GameTooltip_SetDefaultAnchor(GameTooltip, UIParent)
 	GameTooltip:SetOwner(DCS_InterfaceOptConfigButton, "ANCHOR_RIGHT");
 	GameTooltip:SetText(DCS_ConfigtooltipText, 1, 1, 1, 1, true)
 	GameTooltip:Show()
@@ -922,14 +925,14 @@ end
 local function DCS_InterfaceOptConfigButton_OnLeave(self)
 	GameTooltip_Hide()
  end
- 
+
 	DCS_InterfaceOptConfigButton:SetScript("OnEnter", DCS_InterfaceOptConfigButton_OnEnter)
 	DCS_InterfaceOptConfigButton:SetScript("OnLeave", DCS_InterfaceOptConfigButton_OnLeave)
 
 	DCS_InterfaceOptConfigButton:SetScript("OnEvent", function(self, event)
 				ShowCharacterStats("player")
 	end)
-	
+
 	DCS_InterfaceOptConfigButton:SetScript("OnMouseUp", function(self, button, up)
 		configMode = not configMode
 		if (configMode) then
@@ -954,7 +957,7 @@ local DCS_ScrollbarCheck = CreateFrame("CheckButton", "DCS_ScrollbarCheck", Deja
 	DCS_ScrollbarCheck:SetScale(1)
 	DCS_ScrollbarCheck.tooltipText = L["Displays the DCS scrollbar."] --Creates a tooltip on mouseover.
 	_G[DCS_ScrollbarCheck:GetName() .. "Text"]:SetText(L["Scrollbar"])
-	
+
 	DCS_ScrollbarCheck:SetScript("OnEvent", function(self, event)
 		if event == "PLAYER_LOGIN" then
 			local checked = gdbprivate.gdb.gdbdefaults.dejacharacterstatsScrollbarChecked.ScrollbarSetChecked
@@ -965,9 +968,9 @@ local DCS_ScrollbarCheck = CreateFrame("CheckButton", "DCS_ScrollbarCheck", Deja
 		end
 	end)
 
-	DCS_ScrollbarCheck:SetScript("OnClick", function(self) 
-		local checked = self:GetChecked() 
-		gdbprivate.gdb.gdbdefaults.dejacharacterstatsScrollbarChecked.ScrollbarSetChecked = checked 
+	DCS_ScrollbarCheck:SetScript("OnClick", function(self)
+		local checked = self:GetChecked()
+		gdbprivate.gdb.gdbdefaults.dejacharacterstatsScrollbarChecked.ScrollbarSetChecked = checked
 		scrollbarchecked = checked
 		ShowCharacterStats("player")
 	end)
@@ -982,15 +985,15 @@ local DCS_ClassBackgroundCheck = CreateFrame("CheckButton", "DCS_ClassBackground
 	DCS_ClassBackgroundCheck:SetScale(1)
 	DCS_ClassBackgroundCheck.tooltipText = L["Displays the class crest background."] --Creates a tooltip on mouseover.
 	_G[DCS_ClassBackgroundCheck:GetName() .. "Text"]:SetText(L["Class Crest Background"])
-	
+
 	DCS_ClassBackgroundCheck:SetScript("OnEvent", function(self, event)
 		if event == "PLAYER_LOGIN" then
 			local checked = gdbprivate.gdb.gdbdefaults.dejacharacterstatsClassBackgroundChecked.ClassBackgroundChecked
 			self:SetChecked(checked)
 			if checked then
-				char_ctats_pane.ClassBackground:Show() 
+				char_ctats_pane.ClassBackground:Show()
 			else
-				char_ctats_pane.ClassBackground:Hide() 
+				char_ctats_pane.ClassBackground:Hide()
 			end
 			self:UnregisterEvent(event);
 		end

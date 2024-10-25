@@ -511,12 +511,13 @@ L.AUTO_TIMER_OPTIONS.roleplay			= "NPC 대사 지속 시간 타이머 바 보기
 L.AUTO_TIMER_OPTIONS.combat				= "전투 시작 타이머 바 보기"
 
 L.AUTO_ICONS_OPTION_TARGETS				= "$spell:%s 대상에 공격대 징표 설정"--Usually used for player targets with no specific sorting
-L.AUTO_ICONS_OPTION_TARGETS_TANK_A		= "$spell:%s 대상에 공격대 징표 설정 (탱커 근접 원거리 순서 및 이름 순서 우선)"
-L.AUTO_ICONS_OPTION_TARGETS_TANK_R		= "$spell:%s 대상에 공격대 징표 설정 (탱커 근접 원거리 순서 및 공격대 배치 순서 우선)"
+L.AUTO_ICONS_OPTION_TARGETS_TANK_A		= "$spell:%s 대상에 공격대 징표 설정 (탱커 근접 원거리 순서 및 미작동시 이름 순서 우선)"
+L.AUTO_ICONS_OPTION_TARGETS_TANK_R		= "$spell:%s 대상에 공격대 징표 설정 (탱커 근접 원거리 순서 및 미작동시 공격대 배치 순서 우선)"
 L.AUTO_ICONS_OPTION_TARGETS_MELEE_A		= "$spell:%s 대상에 공격대 징표 설정 (근접 캐릭터와 이름 순서 우선)"
 L.AUTO_ICONS_OPTION_TARGETS_MELEE_R		= "$spell:%s 대상에 공격대 징표 설정 (근접 캐릭터와 공격대 배치 순서 우선)"
 L.AUTO_ICONS_OPTION_TARGETS_RANGED_A	= "$spell:%s 대상에 공격대 징표 설정 (원거리 캐릭터와 이름 순서 우선)"
 L.AUTO_ICONS_OPTION_TARGETS_RANGED_R	= "$spell:%s 대상에 공격대 징표 설정 (원거리 캐릭터와 공격대 배치 순서 우선)"
+L.AUTO_ICONS_OPTION_TARGETS_MRH			= "$spell:%s 대상에 공격대 징표 설정 (근접 원거리 힐러 순서 및 미작동시 공격대 배치 순서 우선)"
 L.AUTO_ICONS_OPTION_TARGETS_ALPHA		= "$spell:%s 대상에 공격대 징표 설정 (이름순)"
 L.AUTO_ICONS_OPTION_TARGETS_ROSTER		= "$spell:%s 대상에 공격대 징표 설정 (공격대 배치 순서 우선)"
 L.AUTO_ICONS_OPTION_NPCS				= "$spell:%s에 공격대 징표 설정"--usually used for npcs/mobs
@@ -539,10 +540,11 @@ L.AUTO_YELL_OPTION_TEXT.repeatplayer	= "$spell:%s에 걸렸을 때 말풍선 알
 L.AUTO_YELL_OPTION_TEXT.repeaticon	= "$spell:%s에 걸렸을 때 말풍선 알림 반복 (공격대 징표 포함)"
 L.AUTO_YELL_OPTION_TEXT.icontarget	= "$spell:%s의 대상일 때 말풍선으로 공격대 징표 알림 반복"
 
-L.AUTO_YELL_ANNOUNCE_TEXT.yell		= UnitName("player") .. "에게 %s"
-L.AUTO_YELL_ANNOUNCE_TEXT.count		= UnitName("player") .. "에게 %s (%%d)"
-L.AUTO_YELL_ANNOUNCE_TEXT.fade		= "%s %%d초 후 사라짐"
-L.AUTO_YELL_ANNOUNCE_TEXT.position	= "{rt%%3$d}" .. UnitName("player") .. "{rt%%3$d}에게 %1$s %%2$s"
+L.AUTO_YELL_ANNOUNCE_TEXT.yell		= "%s: " .. UnitName("player")
+L.AUTO_YELL_ANNOUNCE_TEXT.count		= "%s: " .. UnitName("player") .. " (%%d)"
+L.AUTO_YELL_ANNOUNCE_TEXT.fade		= "%s 종료 %%d"
+L.AUTO_YELL_ANNOUNCE_TEXT.position		= "%s %%s: {rt%%d}" ..UnitName("player").. "{rt%%d}"
+L.AUTO_YELL_ANNOUNCE_TEXT.positionnoicon	= "%s %%s: " ..UnitName("player")
 L.AUTO_YELL_ANNOUNCE_TEXT.combo		= "%s랑 %%s"--Spell name (from option, plus spellname given in arg)
 
 L.AUTO_YELL_CUSTOM_FADE				= "%s 사라짐"
@@ -633,7 +635,7 @@ L.WORLD_BUFFS.blackfathomBoon	= "검은심연의 은혜"
 
 -- Annoying popup, especially for classic players
 L.DBM_INSTALL_REMINDER_HEADER	= "완료되지 않은 DBM 설치 작업이 감지되었습니다!"
-L.DBM_INSTALL_REMINDER_EXPLAIN	= "%s을 이용해 주셔서 감사합니다. %s에 있는 보스들의 DBM 모듈을 설치하지 않았습니다. %s 설치를 하기 전까지 DBM은 이 지역에서 타이머나 경고를 표시하지 않을 것입니다!"
+L.DBM_INSTALL_REMINDER_EXPLAIN	= "%s에 오신 것을 환영합니다. %s에서 이곳 보스들의 DBM 모듈을 설치하지 않았습니다. %s 설치를 하기 전까지 DBM은 이 지역에서 타이머나 경고를 표시하지 않을 것입니다!"
 L.DBM_INSTALL_REMINDER_DISABLE	= "이 지역의 모든 DBM 경고와 타이머 작동을 중지합니다." -- Used when we believe it's a user error that the mod isn't installed (i.e., current raids)
 L.DBM_INSTALL_REMINDER_DISABLE2 = "이 패키지를 설치하면 이 메시지는 나오지 않습니다." -- Used for unimportant mods, i.e., dungeons
 L.DBM_INSTALL_REMINDER_DL_WAGO	= (IsMacClient() and "Cmd+C" or "Ctrl+C")  ..  "를 누르면 Wago.io 링크를 클립보드로 복사합니다."

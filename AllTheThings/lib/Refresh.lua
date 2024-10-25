@@ -5,9 +5,6 @@
 local _, app = ...;
 local coroutine, InCombatLockdown = coroutine, InCombatLockdown;
 
--- Refresh collection data.
-local RefreshCollections;
-
 -- for the first auto-refresh, don't actually print to chat since some users don't like that auto-chat on login
 local print = app.EmptyFunction;
 local __FirstRefresh = true;
@@ -21,6 +18,8 @@ local math_max, tonumber, type, select, pcall, ipairs, pairs =
 local GetAchievementInfo =
 	  GetAchievementInfo;
 local ATTAccountWideData
+
+-- TODO: try making a NonCollectibleQuest wrapper, and wrapping un-completable quests in the wrapper
 
 local function CacheAccountWideCompleteViaAchievement(accountWideData)
 	-- Cache some collection states for account wide quests that aren't actually granted account wide and can be flagged using an achievementID. (Allied Races)
@@ -247,6 +246,57 @@ local function FixNonOneTimeQuests(accountWideData)
 	end
 end
 
+local OneTimeFixFunctions = {
+	-- ref. https://github.com/DFortun81/AllTheThings/commit/d1b02b8021a7f2aa80c03d212a2ea54a443e9117
+	Spell148972 = function()
+		local ATTCharacterData = app.LocalizeGlobalIfAllowed("ATTCharacterData", true);
+		local found
+		for charGuid,charData in pairs(ATTCharacterData) do
+			if charData.Spells and charData.Spells[148972] then
+				charData.Spells[148972] = nil
+				found = true
+			end
+		end
+		if found then
+			app.print(app.Modules.Color.Colorize("One-Time removal for inaccurate cached data performed!", app.Colors.Account),
+						"If any character knows",
+						app:Linkify("Spell 148972", app.Colors.ChatLink,"search:spellID:148972"),
+						"they will need to log in to properly re-collect in ATT")
+		end
+	end,
+	-- ref. https://github.com/DFortun81/AllTheThings/commit/d1b02b8021a7f2aa80c03d212a2ea54a443e9117
+	Spell241857 = function()
+		local ATTCharacterData = app.LocalizeGlobalIfAllowed("ATTCharacterData", true);
+		local found
+		for charGuid,charData in pairs(ATTCharacterData) do
+			if charData.Spells and charData.Spells[241857] then
+				charData.Spells[241857] = nil
+				found = true
+			end
+		end
+		if found then
+			app.print(app.Modules.Color.Colorize("One-Time removal for inaccurate cached data performed!", app.Colors.Account),
+						"If any character knows",
+						app:Linkify("Spell 241857", app.Colors.ChatLink,"search:spellID:241857"),
+						"they will need to log in to properly re-collect in ATT")
+		end
+	end,
+}
+
+local function OneTimeFixes(accountWideData)
+	if not accountWideData.OneTimeFixes then accountWideData.OneTimeFixes = {} end
+	local appliedFixes = accountWideData.OneTimeFixes
+
+	for fix,func in pairs(OneTimeFixFunctions) do
+		if not appliedFixes[fix] then
+			appliedFixes[fix] = 1
+			func(accountWideData)
+		end
+	end
+
+	OneTimeFixFunctions = nil
+end
+
 local function CheckOncePerAccountQuestsForCharacter(accountWideData)
 	-- Double check if any once-per-account quests which haven't been detected as being completed are completed by this character
 	local acctQuests, oneTimeQuests = accountWideData.Quests, accountWideData.OneTimeQuests;
@@ -272,28 +322,12 @@ app.AddEventHandler("OnRefreshCollections", CacheAccountWideMiscQuests)
 app.AddEventHandler("OnRefreshCollections", CacheAccountWideSharedQuests)
 app.AddEventHandler("OnRefreshCollections", CheckOncePerAccountQuestsForCharacter)
 
-RefreshCollections = function()
-	if InCombatLockdown() then
-		print(app.L.REFRESHING_COLLECTION,"(",COMBAT,")");
-		while InCombatLockdown() do coroutine.yield(); end
-	else
-		print(app.L.REFRESHING_COLLECTION);
-	end
-
+local RefreshCollections = function()
 	-- Execute the OnRefreshCollections handlers.
 	app.HandleEvent("OnRefreshCollections", ATTAccountWideData)
 end
-
 -- [Event]Done is called automatically when processed by a Runner and it completes the set of functions
 app.AddEventHandler("OnRefreshCollectionsDone", function()
-
-	-- Need to update the Settings window as well if User does not have auto-refresh for Settings
-	if app.Settings:Get("Skip:AutoRefresh") or app.Settings.NeedsRefresh then
-		app.Settings:UpdateMode("FORCE");
-	else
-		app:RefreshData(false, false, true);
-	end
-
 	-- Report success once refresh is done
 	print(app.L.DONE_REFRESHING);
 	if __FirstRefresh then
@@ -305,10 +339,23 @@ end)
 app.AddEventHandler("OnSavedVariablesAvailable", function(currentCharacter, accountWideData)
 	ATTAccountWideData = accountWideData
 	FixNonOneTimeQuests(accountWideData)
+	OneTimeFixes(accountWideData)
 end)
+app.RefreshCollections = function()
+	if IsRefreshing then return end
+	IsRefreshing = true
+	if InCombatLockdown() then
+		print(app.L.REFRESHING_COLLECTION,"(",COMBAT,")");
+	else
+		print(app.L.REFRESHING_COLLECTION);
+	end
+
+	app.CallbackHandlers.AfterCombatCallback(RefreshCollections)
+end
+app.AddEventHandler("OnReady", app.RefreshCollections)
 
 else	-- Classic
-RefreshCollections = function()
+local RefreshCollections = function()
 	if InCombatLockdown() then
 		print(app.L.REFRESHING_COLLECTION,"(",COMBAT,")");
 		while InCombatLockdown() do coroutine.yield(); end
@@ -328,17 +375,11 @@ RefreshCollections = function()
 	end
 	IsRefreshing = nil
 end
-end
-
 app.RefreshCollections = function()
 	if IsRefreshing then return end
 	IsRefreshing = true
 	app:StartATTCoroutine("RefreshingCollections", RefreshCollections)
 end
-
-if app.IsRetail then
-	app.AddEventHandler("OnReady", app.RefreshCollections)
-else
-	-- TODO: test Classic with this as 'OnReady' and consolidate with Retail above
-	app.AddEventHandler("OnInit", app.RefreshCollections)
+-- TODO: test Classic with this as 'OnReady'
+app.AddEventHandler("OnInit", app.RefreshCollections)
 end

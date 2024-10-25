@@ -324,7 +324,24 @@ L = DBM:GetModLocalization("Flamegor")
 L:SetGeneralLocalization{
 	name = "Flamagor"
 }
+----------------
+--  Ebonroc and Flamegor  --
+----------------
+L:SetGeneralLocalization{
+	name = "Ebonorroca y Flamagor"
+}
 
+L:SetTimerLocalization{
+	TimerBrandCD	= "Marca"
+}
+L:SetOptionLocalization{
+	TimerBrandCD	= "Mostrar temporizador para la reutilización de Marca"
+}
+
+L:SetMiscLocalization{
+	Ebonroc		= "Ebonorroca",
+	Flamegor	= "Flamagor"
+}
 -----------------------
 --  Vulnerabilities  --
 -----------------------
@@ -368,7 +385,7 @@ L:SetTimerLocalization{
 }
 L:SetOptionLocalization{
 	WarnBreath		= "Mostrar aviso cuando Chromaggus lance uno de sus alientos",
-	WarnVulnerable	= "Mostrar temporizador para el tiempo de reutilización de los alientos",
+	WarnVulnerableNew	= "Mostrar temporizador para el tiempo de reutilización de los alientos",
 	TimerBreathCD	= "Mostrar TdR de aliento",
 	TimerBreath		= "Mostrar lanzamiento de aliento",
 	TimerVulnCD		= "Mostrar TdR de Vulnerabilidad"
@@ -423,6 +440,15 @@ L:SetMiscLocalization{
 	YellDK		= "¡Caballeros de la Muerte... venid aquí!",
 	YellMonk	= "Monjes, ¿no os mareáis con tanta vuelta?",
 	YellDH		= "¿Cazadores de demonios? Qué raro eso de taparos los ojos así. ¿No os cuesta ver lo que tenéis alrededor?"--Demon Hunter call; I know this hasn't been implemented yet in DBM, but I added it just in case.
+}
+
+----------------------
+--  SoD BWL Trials  --
+----------------------
+L = DBM:GetModLocalization("SoDBWLTrials")
+
+L:SetGeneralLocalization{
+	name = "Pruebas de Temporada de descubrimiento"
 }
 
 ----------------
@@ -534,12 +560,21 @@ L:SetMiscLocalization{
 }
 
 -----------------
---  The Molten Core (Placeholder?_  --
+--  The Molten Core  --
 -----------------
 L = DBM:GetModLocalization("MoltenCore")
 
 L:SetGeneralLocalization{
 	name = "El Núcleo de Magma"
+}
+
+L:SetOptionLocalization{
+	YellHeartCleared	= "Gritar cuando el Corazón de pavesa/ceniza sea removido.",
+	WarnBossPower		= "Mostrar avisos cuando la energía del jefe alcance el 50%, 75%, 90% y 100%"
+}
+
+L:SetWarningLocalization{
+	WarnBossPower		= "Energía del jefe al %d%%"
 }
 -------------------
 --  Venoxis  --
@@ -663,7 +698,9 @@ L = DBM:GetModLocalization("Jindo")
 L:SetGeneralLocalization{
 	name = "Jin'do el Malhechor"
 }
-
+L:SetMiscLocalization{
+	Ghosts = "Fantasmas"
+}
 --------------
 --  Onyxia  --
 --------------

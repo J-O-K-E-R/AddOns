@@ -8,6 +8,7 @@ local DCS_tooltipText
 local PaperDollFrame = PaperDollFrame
 local CharacterFrame = CharacterFrame
 local function DCS_ExpandCheck_OnEnter(self)
+	GameTooltip_SetDefaultAnchor(GameTooltip, UIParent)
 	GameTooltip:SetOwner(PaperDollFrame.ExpandButton, "ANCHOR_RIGHT");
 	GameTooltip:SetText(DCS_tooltipText, 1, 1, 1, 1, true)
 	GameTooltip:Show()

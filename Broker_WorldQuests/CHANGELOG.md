@@ -1,3 +1,60 @@
+### 11.0.5.2
+* Added support for Bronze Celebration Token currency
+
+### 11.0.5.1
+* Fixed error caused by recent World of Warcraft patch.
+
+### 11.0.5.0
+* Added functionality to allow for multiple icons. In other words, for the "boss"
+  type world quests, it can show the skull icon surrounded by the silver dragon.
+  (This update is purely cosmetic.)
+* There is now a configuration setting labeled "Show 'NEW' text for recently found
+  world quests".  It defaults to ON (checked), since that's how the addon has always
+  worked.  But, if you prefer not to see the "NEW" text at the beginning of lines,
+  you can toggle this setting.  This is likely more useful for those who are switching
+  between expansions regularly and don't want to see everything listed as "NEW" every
+  time the switch is made.
+
+### 11.0.2.21
+* Fixed bug with the quest icons
+
+### 11.0.2.20
+* The addon will now automatically change expansions if you zone into a zone
+  associated with that expansion (including when you first enter the game).  This
+  should make things easier for those playing alts or who are still completing 
+  world quests in past expansions for achievements, etc.  If you dislike this feature,
+  you can disable it in the settings -- look for "Auto switch expansions based on 
+  current zone".
+* The "Time Remaining" column will now give the remaining time in days/hours for 
+  any quest with more than one day remaining, hours/minutes for any quest with more
+  than one hour remaining, and just minutes for any quest with less than one hour
+  remaining.  (The coloring logic has not changed.)
+  
+### 11.0.2.19
+* Tom Tom is now an optional dependency (i.e., the Tom Tom addon is 
+  no longer required.)
+* TWW Epic PvP type world quests now have the pvp icon at the front
+  of the row, similar to pet battles, etc.
+
+### 11.0.2.18
+* Added support for City of Threads World Quests
+
+### 11.0.2.17
+* Fixed bug:  https://github.com/Amadeus-/Broker_WorldQuests/issues/21
+
+### 11.0.2.16
+* Fixed a bug with the "attach list frame to world map" feature as described at
+  https://github.com/Amadeus-/Broker_WorldQuests/issues/20
+
+### 11.0.2.15
+* When enabled in settings, the Tom Tom waypoints support feature will now "add"
+  waypoints rather than just adding/removing a single waypoint.
+* TWW Epic Boss type world quests now have the appropriate icon at the front
+  of the row, similar to pet battles, etc.
+* Fixed a bug that was introduced in version 11.0.2.13.
+* Now that Bloody Tokens are also part of the TWW expansion, the filter settings
+  for that currency has been moved next to "Honor".
+
 ### 11.0.2.14
 * The locked "Special Assignment" (Capstone) world quests are now included. While
   locked, what's provided by the addon is primarily informational. Once unlocked, then

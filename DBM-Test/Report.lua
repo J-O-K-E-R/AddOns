@@ -56,10 +56,10 @@ function reporter:ObjectToString(obj, skipType, showTriggerTimes)
 		local fileName = obj:match("Interface\\AddOns\\DBM%-VP[^\\]-\\(.-)%.ogg")
 		return ("%sVoicePack/%s"):format(not skipType and "[PlaySound] " or "", fileName)
 	end
-	local spellId = obj.spellId and obj.spellId > 50 and tostring(obj.spellId) or "<none>"
+	local spellId = type(obj.spellId) == "number" and obj.spellId > 50 and tostring(obj.spellId) or "<none>"
 	if obj.objClass == "Timer" then
 		-- FIXME: this should be fixed in timers, not here, can't see a good reason for the late evaluation of the localized text in timers whereas everything else can do it early
-		local text = obj.text or obj.type and obj.mod:GetLocalizedTimerText(obj.type, obj.spellId, obj.name) or obj.name
+		local text = type(obj.text) == "string" and obj.text or obj.type and obj.mod:GetLocalizedTimerText(obj.type, obj.spellId, obj.name) or obj.name
 		return ("%s%s, time=%.2f, type=%s, spellId=%s%s"):format(not skipType and "[Timer] " or "", text, obj.timer, obj.type, spellId, triggerDeltasPretty(showTriggerTimes))
 	elseif obj.objClass == "Announce" then
 		return ("%s%s, type=%s, spellId=%s%s"):format(not skipType and "[Announce] " or "", obj.text, tostring(obj.announceType), spellId, triggerDeltasPretty(showTriggerTimes))
@@ -193,7 +193,7 @@ function reporter:FindSpellIdMismatches(findings)
 				if v.event == "StartTimer" or v.event == "ShowAnnounce" or v.event == "ShowSpecialWarning" or v.event == "ShowYell" then
 					local obj = v[1]
 					-- spellId field is sometimes used for non-spellId things like phases/stages
-					if obj.spellId and obj.spellId > 50 and obj.spellId ~= triggerSpellId then
+					if type(obj.spellId) == "number" and obj.spellId > 50 and obj.spellId ~= triggerSpellId then
 						local ignoreKey, ignoreValue = ignoreSpellIdMismatch(self.testData.ignoreWarnings, triggerSpellId, obj.spellId)
 						if ignoreKey then
 							ignoredTriggerSpells[ignoreKey] = ignoredTriggerSpells[ignoreKey] or {}

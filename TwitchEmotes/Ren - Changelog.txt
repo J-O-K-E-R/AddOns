@@ -3689,6 +3689,30 @@ PepeBald
 
 
 ----
+Twitch Emotes V2.62.4 - Halloween update 10.2.8
+----
+Added:
+LeoHug
+intjSus
+waiting
+
+Added Halloween variants for:
+Kapp
+KKomrade
+LULE
+:Classic: - updated
+LETSGOOO
+:meow:
+SNIFFA
+lookdown
+lookup
+Nerdge
+peepoSure
+PepePoint
+
+
+
+----
 To do
 ----
 ====

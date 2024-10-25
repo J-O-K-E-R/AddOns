@@ -193,7 +193,7 @@ local function GetPlayerPosition()
 			return mapID, px * 100, py * 100;
 		end
 	end
-	return mapID, 50, 50;
+	return mapID, 50, 50, true
 end
 app.GetPlayerPosition = GetPlayerPosition
 local UpdateLocation
@@ -272,13 +272,7 @@ app.AddEventRegistration("PLAYER_INTERACTION_MANAGER_FRAME_HIDE", UpdateLocation
 app.GetMapName = GetMapName;
 
 -- Exploration
-local ExplorationDB = setmetatable(app.ExplorationDB or {}, {
-	__index = function(t, mapID)
-		local data = {};
-		t[mapID] = data;
-		return data;
-	end
-});
+local ExplorationDB = setmetatable(app.ExplorationDB or {}, app.MetaTable.AutoTable);
 local ExplorationAreaPositionDB = app.ExplorationAreaPositionDB or {};
 app.CreateExploration = app.CreateClass("Exploration", "explorationID", {
 	["name"] = function(t)
@@ -410,13 +404,6 @@ end)
 
 -- Harvesting
 local MAXIMUM_COORDS_PER_AREA = 5;
-local AreaExplorationMeta = {
-	__index = function(t, areaID)
-		local coords = {};
-		t[areaID] = coords;
-		return coords;
-	end
-};
 local MapDataMeta = {
 	__index = function(t, mapID)
 		local data = {
@@ -430,7 +417,7 @@ local MapDataMeta = {
 };
 local function GenerateHitsForMap(grid, mapID)
 	if mapID == 594 or mapID == 2091 then return nil, nil; end	-- Shattrath City messing up Talador, War of the Shifting Sands messing up Silithus
-	local any, hits = false, setmetatable({}, AreaExplorationMeta);
+	local any, hits = false, setmetatable({}, app.MetaTable.AutoTable);
 	for _,pos in ipairs(grid) do
 		local explored = C_MapExplorationInfo_GetExploredAreaIDsAtPosition(mapID, pos);
 		if explored then
@@ -658,7 +645,7 @@ local function HarvestExploration(simplify)
 			"```lua",
 		};
 
-		local areasByMapID = setmetatable({}, AreaExplorationMeta);
+		local areasByMapID = setmetatable({}, app.MetaTable.AutoTable);
 		for i,o in ipairs(reportedAreas) do
 			tinsert(areasByMapID[o.mapID], o);
 		end
@@ -886,19 +873,6 @@ local function RefreshSavesCallback()
 		return;
 	end
 
-	-- Make sure there's info available to check save data
-	local saves = GetNumSavedInstances();
-	if saves and saves < 1 then
-		-- While the player is still waiting for information, wait.
-		app.refreshingSaves = (app.refreshingSaves or 30) - 1;
-		if app.refreshingSaves <= 0 then
-			app.refreshingSaves = nil;
-			return;
-		end
-		AfterCombatCallback(RefreshSavesCallback);
-		return;
-	end
-
 	-- Cache the lockouts across your account.
 	local serverTime = GetServerTime();
 
@@ -922,6 +896,14 @@ local function RefreshSavesCallback()
 				end
 			end
 		end
+	end
+
+	-- Make sure there's info available to check save data
+	local saves = GetNumSavedInstances();
+	if not saves then
+		-- While the player is still waiting for information, wait.
+		AfterCombatCallback(RefreshSavesCallback);
+		return;
 	end
 
 	-- Update Saved Instances
@@ -1018,8 +1000,8 @@ local function Event_UPDATE_INSTANCE_INFO()
 	app:UnregisterEvent("UPDATE_INSTANCE_INFO");
 	AfterCombatCallback(RefreshSavesCallback);
 end
-app.AddEventRegistration("UPDATE_INSTANCE_INFO", Event_UPDATE_INSTANCE_INFO)
-app.AddEventHandler("OnStartup", Event_UPDATE_INSTANCE_INFO);
+app.AddEventRegistration("UPDATE_INSTANCE_INFO", Event_UPDATE_INSTANCE_INFO, true)
+app.AddEventHandler("OnRefreshCollectionsDone", Event_UPDATE_INSTANCE_INFO);
 app.AddEventRegistration("BOSS_KILL", function(id, name, ...)
 	-- This is so that when you kill a boss, you can trigger
 	-- an automatic update of your saved instance cache.

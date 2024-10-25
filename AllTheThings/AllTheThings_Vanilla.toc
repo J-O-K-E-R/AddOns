@@ -3,13 +3,13 @@
 ## Name: AllTheThings
 ## Notes: Addon for Tracking Collections & Account Completion
 ## Author: Crieve-Sargeras
-## Version: 4.0.13
-## Interface: 11503
-## X-Interface: 11503
+## Version: 4.0.19
+## Interface: 11504
+## X-Interface: 11504
 ## X-Wago-ID: yQKyY5K7
 ## X-Curse-Project-ID: 267285
-## SavedVariables: ATTCharacterData, ATTAccountWideData, AllTheThingsSavedVariables, AllTheThingsAD, AllTheThingsSettings, AllTheThingsAuctionData, AllTheThingsDebugData, ATTClassicSettings, ATTClassicAuctionData
-## SavedVariablesPerCharacter: AllTheThingsSettingsPerCharacter, ATTClassicSettingsPerCharacter
+## SavedVariables: ATTCharacterData, ATTAccountWideData, AllTheThingsSavedVariables, AllTheThingsAD, AllTheThingsSettings, AllTheThingsAuctionData, AllTheThingsDebugData, AllTheThingsHarvestItems
+## SavedVariablesPerCharacter: AllTheThingsSettingsPerCharacter
 ## AddonCompartmentFunc: AllTheThings_MinimapButtonOnClick
 ## AddonCompartmentFuncOnEnter: AllTheThings_MinimapButtonOnEnter
 ## AddonCompartmentFuncOnLeave: AllTheThings_MinimapButtonOnLeave
@@ -17,7 +17,9 @@ lib\LibStub\LibStub.lua
 lib\CallbackHandler-1.0\CallbackHandler-1.0.lua
 lib\LibDataBroker-1.1\LibDataBroker-1.1.lua
 src\WoW API Wrappers.lua
-db\RaceDB.lua
+
+# Raw DBs
+db\Classic\ReferenceDB.lua
 
 # Libs (no dependencies, only app assignment)
 lib\Debugging.lua
@@ -42,7 +44,6 @@ lib\Audio.lua
 # Load localization modules
 locales\Default Locale.lua
 # locales\en.lua
-classic\locales.lua
 locales\es.lua
 locales\de.lua
 locales\fr.lua
@@ -58,6 +59,7 @@ src\Cache.lua
 
 # Helper Modules
 src\Modules\RetrievingData.lua
+src\Modules\Collection.lua
 src\Modules\FactionData.lua
 src\Modules\Color.lua
 # src\Modules\Costs.lua
@@ -73,10 +75,8 @@ src\Modules\Vignette.lua
 db\Classic\ExplorationDB.lua
 db\Classic\LocalizationDB.lua
 db\Classic\Season of Discovery\LocalizationDB.lua
-# db\Classic\en_auto.lua
 # db\Classic\ReagentsDB.lua
 db\Presets.lua
-db\AccountWideQuestsDB.lua
 
 # Load object class templates
 src\Classes\base.lua
@@ -88,13 +88,17 @@ src\Classes\Quests.lua
 src\Classes\Item.Classic.lua
 src\Classes\Encounter.lua
 src\Classes\Expansion.lua
+src\Classes\FlightPath.lua
+src\Classes\Header.lua
 src\Classes\Maps.lua
+src\Classes\NPC.lua
 src\Classes\Objects.lua
 src\Classes\Category.lua
 src\Classes\Deaths.lua
 src\Classes\Dynamic Categories.lua
 src\Classes\Filter Types.lua
 src\Classes\Gear Sets.lua
+src\Classes\Glyphs.lua
 src\Classes\Illusions.lua
 # src\Classes\Miscellaneous.lua
 src\Classes\PVP Ranks.lua
@@ -122,6 +126,7 @@ src\Settings\Classic Settings.xml
 classic\ATT-Classic.lua
 src\UI\Game Tooltip.lua
 src\UI\Minimap Button.lua
+src\UI\Waypoints.lua
 src\UI\World Map Button.lua
 
 # Window Logic Overhaul

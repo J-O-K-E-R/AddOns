@@ -1,3 +1,0 @@
-local addonName = ...
-local L = DataStore:SetLocale(addonName, "zhTW")
-if not L then return end

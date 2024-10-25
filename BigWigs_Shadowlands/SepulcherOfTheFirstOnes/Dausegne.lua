@@ -132,7 +132,7 @@ function mod:StaggeringBarrageApplied(args)
 	self:TargetMessage(args.spellId, "orange", args.destName, CL.count:format(L.staggering_barrage, barrageCount))
 	if self:Me(args.destGUID) then
 		self:PlaySound(args.spellId, "warning")
-		self:Yell(args.spellId, L.staggering_barrage)
+		self:Yell(args.spellId, L.staggering_barrage, nil, "Barrage")
 		self:YellCountdown(args.spellId, 8)
 	else
 		self:PlaySound(args.spellId, "alert", nil, args.destName)

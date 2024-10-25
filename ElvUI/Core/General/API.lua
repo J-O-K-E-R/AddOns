@@ -289,19 +289,71 @@ do -- backwards compatibility for GetMouseFocus
 	end
 end
 
-do	-- backwards compatibility for GetSpellInfo
+do	-- backwards compatibility for C_Spell
 	local GetSpellInfo = GetSpellInfo
-	local C_Spell_GetSpellInfo = C_Spell.GetSpellInfo
+	local C_Spell_GetSpellInfo = not GetSpellInfo and C_Spell.GetSpellInfo
 	function E:GetSpellInfo(spellID)
 		if not spellID then return end
 
-		if GetSpellInfo then
-			return GetSpellInfo(spellID)
-		else
+		if C_Spell_GetSpellInfo then
 			local info = C_Spell_GetSpellInfo(spellID)
 			if info then
 				return info.name, nil, info.iconID, info.castTime, info.minRange, info.maxRange, info.spellID, info.originalIconID
 			end
+		else
+			return GetSpellInfo(spellID)
+		end
+	end
+
+	local GetSpellCooldown = GetSpellCooldown
+	local C_Spell_GetSpellCooldown = C_Spell.GetSpellCooldown
+	function E:GetSpellCooldown(spellID)
+		if not spellID then return end
+
+		if GetSpellCooldown then
+			return GetSpellCooldown(spellID)
+		else
+			local info = C_Spell_GetSpellCooldown(spellID)
+			if info then
+				return info.startTime, info.duration, info.isEnabled, info.modRate
+			end
+		end
+	end
+
+	local GetSpellCharges = GetSpellCharges
+	local C_Spell_GetSpellCharges = C_Spell.GetSpellCharges
+	function E:GetSpellCharges(spellID)
+		if not spellID then return end
+
+		if GetSpellCharges then
+			return GetSpellCharges(spellID)
+		else
+			local info = C_Spell_GetSpellCharges(spellID)
+			if info then
+				return info.currentCharges, info.maxCharges, info.cooldownStartTime, info.cooldownDuration, info.chargeModRate
+			end
+		end
+	end
+end
+
+do -- Spell renaming provided by BigWigs
+	function E:GetSpellRename(spellID)
+		if not spellID then return end
+
+		local API = _G.BigWigsAPI
+		local GetRename = API and API.GetSpellRename
+		if GetRename then
+			return GetRename(spellID)
+		end
+	end
+
+	function E:SetSpellRename(spellID, text)
+		if not spellID then return end
+
+		local API = _G.BigWigsAPI
+		local SetRename = API and API.SetSpellRename
+		if SetRename then
+			SetRename(spellID, text)
 		end
 	end
 end
@@ -803,8 +855,7 @@ function E:PositionGameMenuButton()
 			if lastIndex == anchorIndex and GameMenuFrame.ElvUI then
 				GameMenuFrame.ElvUI:Point('TOPLEFT', button, 'BOTTOMLEFT', 0, -10)
 			elseif not lastIndex then
-				local point, anchor, point2, x, y = button:GetPoint()
-				button:SetPoint(point, anchor, point2, x, y - 35)
+				button:NudgePoint(nil, -35)
 			end
 		end
 

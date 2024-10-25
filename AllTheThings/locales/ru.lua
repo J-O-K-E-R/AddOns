@@ -51,8 +51,8 @@ local GetSpellName = app.WOWAPI.GetSpellName;
 	L.HEIRLOOM_TEXT_DESC = "Показывает, получено или нет данное наследство.";
 	L.FAILED_ITEM_INFO = "Не удалось получить информацию о предмете. Предмет может быть неправильный или ещё не был кэширован на Вашем сервере.";
 	L.HEIRLOOMS_UPGRADES_DESC = "Показывает, улучшили ли Вы наследство до определённого уровня или нет.\n\nПокойся с миром, Золото.\n - Crieve";
-	L.MUSIC_ROLLS_AND_SELFIE_DESC = "Эти Штучки открываются на каждом персонаже отдельно и на данный момент не распределяются на Вашу учётную запись. Если кто-нибудь из Blizzard читает это, будет просто шикарно, если Вы сделаете их на весь аккаунт.\n\nВы должны вручную обновить коллекцию через "..SHIFT_KEY_TEXT.." клик по заголовку, чтобы засчитать эту Штучку.";
-	L.MUSIC_ROLLS_AND_SELFIE_DESC_2 = "\n\nСначала нужно разблокировать Мелодии, выполнив задание \"Врубай басы\" в Вашем гарнизоне, чтобы данный предмет мог выпасть.\n\nДля фильтров нужно иметь Камеру СЕЛФИ 2.0.";
+	L.MUSIC_ROLLS_DESC = "Эти Штучки открываются на каждом персонаже отдельно и на данный момент не распределяются на Вашу учётную запись. Если кто-нибудь из Blizzard читает это, будет просто шикарно, если Вы сделаете их на весь аккаунт.\n\nВы должны вручную обновить коллекцию через "..SHIFT_KEY_TEXT.." клик по заголовку, чтобы засчитать эту Штучку.";
+	L.MUSIC_ROLLS_DESC_2 = "\n\nСначала нужно разблокировать Мелодии, выполнив задание \"Врубай басы\" в Вашем гарнизоне, чтобы данный предмет мог выпасть.\n\nДля фильтров нужно иметь Камеру СЕЛФИ 2.0.";
 	L.OPPOSITE_FACTION_EQ = "Эквивалент противоположной фракции: ";
 	L.SELFIE_DESC = "Сделайте селфи, используя вашу ";
 	L.SELFIE_DESC_2 = " с |cffff8000";
@@ -320,7 +320,7 @@ local GetSpellName = app.WOWAPI.GetSpellName;
 		L.AUCTION_TAB_CHECKBOX = "Показать Модуль Ауциона";
 		L.AUCTION_TAB_CHECKBOX_TOOLTIP = "Включите данную опцию, если Вы хотите видеть Модуль Аукциона ATT.\n\nНекоторые модификации - плохие ребята, и значительно изменяют это окно. ATT не всегда хорошо играет с такими игрушками.";
 		L.ICON_LEGEND_LABEL = "Аннотация иконок";
-		L.ICON_LEGEND_TEXT = app.ccColors.White .. "|TInterface\\AddOns\\AllTheThings\\assets\\status-unobtainable.blp:0|t " .. "Недоступно" .. "\n|TInterface\\AddOns\\AllTheThings\\assets\\status-prerequisites.blp:0|t " .. "Доступно с условием" .. "\n|TInterface\\AddOns\\AllTheThings\\assets\\status-seasonal-available.blp:0|t " .. "Доступная Праздничная Штучка" .. "\n|TInterface\\AddOns\\AllTheThings\\assets\\status-seasonal-unavailable.blp:0|t " .. "Недоступная Праздничная Штучка" .. "\n|TInterface\\FriendsFrame\\StatusIcon-Offline:0|t " .. "Недоступно на текущем персонаже";
+		L.ICON_LEGEND_TEXT = app.ccColors.White .. "|T" .. app.asset("status-unobtainable") .. ":0|t " .. "Недоступно" .. "\n|T" .. app.asset("status-prerequisites") .. ":0|t " .. "Доступно с условием" .. "\n|T" .. app.asset("status-seasonal-available") .. ":0|t " .. "Доступная Праздничная Штучка" .. "\n|T" .. app.asset("status-seasonal-unavailable") .. ":0|t " .. "Недоступная Праздничная Штучка" .. "\n|T374225:0|t " .. "Недоступно на текущем персонаже";
 		L.CHAT_COMMANDS_LABEL = "Команды Чата";
 		L.CHAT_COMMANDS_TEXT = "/att |cffFFFFFFили|R /things |cffFFFFFFиои|R /allthethings\n|cffFFFFFFОткрыть Главный Список.\n\n|R/att mini |cffFFFFFFиои|R /attmini\n|cffFFFFFFОткрыть Мини Список.\n\n|R/att bounty\n|cffFFFFFFОткрыть список забагованных или неподтверждённых предметов.\n\n|R/att ra |cffFFFFFFили|R /attra\n|cffFFFFFFОткрыть Рейдовый Помощник.\n\n|R/att wq |cffFFFFFFили|R /attwq\n|cffFFFFFFОткрыть Список Локальных Заданий.\n\n|R/att item:1234 |cffFFFFFFили|R /att [Ссылка на Предмет]\n|cffFFFFFFОткрыть окно общих моделей. Также работает с другими Штучками, например, |R quest:1234|cffFFFFFF, |Rnpcid:1234|cffFFFFFF, |Rmapid:1234|cffFFFFFF или |Rrecipeid:1234|cffFFFFFF.\n\n|R/att rwp\n|cffFFFFFFПоказать все Штучки, которые будет невозможно получить в будущем.\n\n|R/att nwp\n|cffFFFFFFПоказать все Штучки, добавленные в последнем патче.\n\n|R/att random |cffFFFFFFили|R /attrandom |cffFFFFFFили|R /attran\n|cffFFFFFFОткрыть Случайный Список.\n\n|R/att unsorted\n|cffFFFFFFОткрыть список несортированных Штучек. Лучше в Режиме Отладки.\n\n|R/rl\n|cffFFFFFFПерезагрузить интерфейс WoW.|R";
 
@@ -599,8 +599,6 @@ for key,value in pairs({
 		DRAKEWATCHERMANUSCRIPTS_CHECKBOX_TOOLTIP = "Включите для отслеживания Манускриптов наблюдений за драконами Dragonflight";
 		FOLLOWERS_CHECKBOX = "|T"..app.asset("Expansion_WOD")..":0|t Соратники & Спутники";
 		FOLLOWERS_CHECKBOX_TOOLTIP = "Включите для отслеживания соратников и чемпионов.\n\nТо есть: Соратники в Гарнизоне, Чемпионы Оплота Класса в Легионе, Спутники Битвы за Азерот, а также Спутники из Тёмных Земель.";
-		MUSIC_ROLLS_SELFIE_FILTERS_CHECKBOX = "|T"..app.asset("Expansion_WOD")..":0|t Мелодии & Фильтры селфи";
-		MUSIC_ROLLS_SELFIE_FILTERS_CHECKBOX_TOOLTIP = "Включите для отслеживания мелодий и фильтров селфи.\n\nВы можете использовать игрушку Переносной музыкальный проигрыватель, чтобы воспроизводить внутриигровую музыку, и Камеру СЕЛФИ 2.0, чтобы собирать селфи для фотографий в определённых местах!";
 		RUNEFORGELEGENDARIES_CHECKBOX = "|T"..app.asset("Expansion_SL")..":0|t Легендарки ТЗ";
 		RUNEFORGELEGENDARIES_CHECKBOX_TOOLTIP = "Включите для отслеживания Легендарных предметов Тёмных Земель.";
 		SOULBINDCONDUITS_CHECKBOX = "|T"..app.asset("Expansion_SL")..":0|t Проводники";
@@ -619,7 +617,6 @@ for key,value in pairs({
 		--TODO: ACCOUNT_WIDE_EXPLORATION_TOOLTIP = "Exploration tracking is only really useful per character, but do you really want to collect them all on all 50 of your characters?";
 		ACCOUNT_WIDE_FLIGHT_PATHS_TOOLTIP = "Отслеживание Путей Полётов отдельное на каждого персонажа, но Вы действительно хотите собирать их на всех Ваших 50 персонажах?";
 		ACCOUNT_WIDE_FOLLOWERS_TOOLTIP = "Спутники обычно считаются по персонажу, но Вы же не хотите собирать 243 спутника в Таверне Гарнизона по одному в неделю?\n\nОчень сомневаюсь.";
-		ACCOUNT_WIDE_MUSIC_ROLLS_SELFIE_FILTERS_TOOLTIP = "Музыкальные ролики и селфи-фильтры обычно не отслеживаются в базе данных Blizzard, но мы можем это сделать.\n\nПРИМЕЧАНИЕ. Вы можете воспроизводить музыкальные композиции только с помощью игрушки «Музыкальный автомат» или делать селфи с помощью игрушечной камеры S.E.L.F.I.E, которую Вы собрали для текущего персонажа.";
 		ACCOUNT_WIDE_QUESTS_TOOLTIP = "Выполнение заданий чаще всего считается отдельно для каждого персонажа, но с этой настройкой будет засчитываться, если хоть один персонаж выполнил задание.";
 		ACCOUNT_WIDE_RECIPES_TOOLTIP = "Рецепты не отслеживаются на всю учётную запись в базе данных Blizzard, но мы можем делать это сами.\n\nНевозможно собрать их все на одном персонаже, поэтому Вы можете придать значение профессиям своих альтов.";
 		ACCOUNT_WIDE_REPUTATIONS_TOOLTIP = "Репутации теперь отслеживаются на всю учётную запись для достижений в базе данных Blizzard, так что включение этой опции может быть хорошей идеей.";
@@ -819,34 +816,12 @@ for key,value in pairs({
 do a[key] = value; end
 
 if app.IsRetail then
-local a = L.AVAILABILITY_CONDITIONS;
-for key,value in pairs({
-	[1] = {1, "|CFFFF0000Никогда не был доступен игрокам.|r", "Никогда Не Доступны"}, -- No Hope
-	[2] = {1, "|CFFFF0000Был убран из игры.|r", "Убраны Из Игры"}, -- No Hope
-	[4] = {3, "|CFFFF0000Это больше нельзя будет купить или получить в коллекцию, если у вас нет необходимого PvP титула или если вы не входили в топ % лучших в этом сезоне.|r", "ПвП Элита / Гладиатор"},
-
-	-- Arbitrary Filters
-		--[9] = {3, "|CFFFF0000This item is available on the Black Market Auction House. The original source may have been removed.|R", "Черный рынок AH [BMAH]"},
-		[10] = {3, "|CFFFF0000Первоначально доступно через карту TCG, которая больше не печатается, но все еще может быть доступна на черном рынке, в игре или на аукционах в реальной жизни.|r", "Коллекционная карточная игра [TCG]"},
-		[11] = {3, "|CFFFF0000Это больше не доступно, если вы не знаете кого-то, у кого есть доступ к предметам, используемым для вызова босса.\nПримечание: Большинство предметов призыва можно получить повторно, если они у Вас были раньше, поговорив с соответствующим NPC.|r", "Требуются предметы для призыва"},
-		-- [13] = {1, "|CFFFF0000Ваши последователи слишком высокого уровня, и миссия для тайника больше не будет появляться.|r", "Устаревший тайник"},
-		[15] = {1, "|CFFFF0000Это нельзя собрать, выучить навсегда или использовать для трансмогрификации.|r", "Неизучаемые"},
-		[35] = {3, "|CFFFF0000Может быть скрыто за вложением денег, возможно, игровой магазин, другая игра Blizzard и \"Пригласи Друга\".|r", "Кошелек Blizzard"},
-		-- [36] = {1, "|CFFFF0000Было доступно для получения только во время Годовщины WoW, и более не доступно.|r", "Годовщина WoW [Убрано]"},	--TODO: Remove.
-		[38] = {1, "|CFFFF0000Это доступно только игрокам, которые выполнили цепочку квестов «Легендарный плащ» во время Mists of Pandaria или через BMAH.|r", "Ордос - Легендарный плащ"},
-		-- #if BEFORE BFA
-		-- [41] = {1, "|CFFFF0000Это доступно только игрокам, которые завершили соответствующие испытания артефактов Башни магов и получили базовый внешний вид.|r", "Появления в Башне Магов"},
-		-- #endif
-		[45] = {1, "|CFFFF0000Изменения добычи Blizzard сломали несколько предметов и сделали их недоступными.|r", "Сломанная добыча"},
-})
-do a[key] = value; end
-
 local a = L.CUSTOM_COLLECTS_REASONS;
 for key,value in pairs({
-	["NPE"] = { icon = "|T"..("Interface\\Icons\\achievement_newplayerexperience")..":0|t", color = "ff5bc41d", text = "Новый Персонаж", desc = "Только Новый Персонаж может собрать эти предметы." },
+	["NPE"] = { icon = "|T"..(3567434)..":0|t", color = "ff5bc41d", text = "Новый Персонаж", desc = "Только Новый Персонаж может собрать эти предметы." },
 	["SL_SKIP"] = { icon = "|T"..app.asset("Expansion_SL")..":0|t", color = "ff76879c", text = "Нити Судьбы", desc = "Только Персонаж, который пропустил сюжет Тёмных Земель, может собрать эти предметы." },
-	["HOA"] = { icon = "|T"..("Interface\\Icons\\inv_heartofazeroth")..":0|t", color = "ffe6cc80", text = GetSpellName(275825), desc = "Только Персонаж с |cffe6cc80Сердцем Азерот|r может собрать эти предметы." },
-	["!HOA"] = { icon = "|T"..("Interface\\Icons\\mystery_azerite_chest_normal")..":0|t", color = "ffe6cc80", text = "|cffff0000Без|r Сердца Азерот", desc = "Только Персонаж |cffff0000без|r |cffe6cc80Сердца Азерот|r может собрать эти предметы." },
+	["HOA"] = { icon = "|T"..(1869493)..":0|t", color = "ffe6cc80", text = GetSpellName(275825), desc = "Только Персонаж с |cffe6cc80Сердцем Азерот|r может собрать эти предметы." },
+	["!HOA"] = { icon = "|T"..(2480886)..":0|t", color = "ffe6cc80", text = "|cffff0000Без|r Сердца Азерот", desc = "Только Персонаж |cffff0000без|r |cffe6cc80Сердца Азерот|r может собрать эти предметы." },
 })
 do a[key] = value; end
 end

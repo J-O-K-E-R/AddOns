@@ -73,8 +73,6 @@ function TipCounts.OnID(tip, id)
 				tinsert(left, owner:GetIconMarkup(12,0,0) ..' '.. color:format(owner.name))
 				tinsert(right, color:format(count))
 				total = total + count
-				--local color = owner:GetColorMarkup()
-				--tip:AddDoubleLine(owner:GetIconMarkup(12,0,0) ..' '.. color:format(owner.name), color:format(count))
 			end
 		end
 

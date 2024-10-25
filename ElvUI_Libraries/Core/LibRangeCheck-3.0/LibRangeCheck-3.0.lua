@@ -40,7 +40,7 @@ License: MIT
 -- @class file
 -- @name LibRangeCheck-3.0
 local MAJOR_VERSION = "LibRangeCheck-3.0-ElvUI"
-local MINOR_VERSION = 21 -- based off real minor version: 23
+local MINOR_VERSION = 24 -- based off real minor version: 26
 
 -- GLOBALS: LibStub, CreateFrame
 
@@ -111,7 +111,7 @@ local CustomSpellBookItemInRange = C_Spell_IsSpellInRange and function(spellID, 
   end
 end or _G.IsSpellInRange
 
-local C_Spell_GetSpellInfo = C_Spell.GetSpellInfo
+local C_Spell_GetSpellInfo = not GetSpellInfo and C_Spell.GetSpellInfo
 local CustomSpellInfo = C_Spell_GetSpellInfo and function(spellID)
   if not spellID then
     return nil;
@@ -191,8 +191,8 @@ end
 -- Evoker
 tinsert(HarmSpells.EVOKER, 362969) -- Azure Strike (25 yards)
 
-tinsert(FriendSpells.EVOKER, 361469) -- Living Flame (25 yards)
 tinsert(FriendSpells.EVOKER, 355913) -- Emerald Blossom (25 yards)
+tinsert(FriendSpells.EVOKER, 361469) -- Living Flame (25 yards)
 
 tinsert(ResSpells.EVOKER, 361227) -- Return (40 yards)
 
@@ -237,8 +237,12 @@ end
 tinsert(PetSpells.HUNTER, 136) -- Mend Pet (45 yards)
 
 -- Mages
-tinsert(FriendSpells.MAGE, 1459) -- Arcane Intellect (40 yards, level 8)
-tinsert(FriendSpells.MAGE, 130) -- Slow Fall (40 yards, level 9)
+tinsert(FriendSpells.MAGE, 1459) -- Arcane Intellect (40 yards retail, 30 cata/era, level 8)
+tinsert(FriendSpells.MAGE, 475) -- Remove Curse (40 yards retail/cata, 30 era, level 30)
+
+if isCata then
+  tinsert(FriendSpells.MAGE, 61316) -- Dalaran Brilliance (40 yards); requires Tome of Dalaran Brilliance
+end
 
 if isEraSOD then
   tinsert(FriendSpells.MAGE, 401417) -- Regeneration (40 yards)
@@ -296,19 +300,16 @@ tinsert(FriendSpells.PRIEST, 527) -- Purify / Dispel Magic (40 yards retail, 30 
 tinsert(FriendSpells.PRIEST, 2061) -- Flash Heal (40 yards, level 3 retail, level 20 tbc)
 
 tinsert(HarmSpells.PRIEST, 589) -- Shadow Word: Pain (40 yards)
+tinsert(HarmSpells.PRIEST, 8092) -- Mindblast (40 yards retail; 30 yards, level 10)
 tinsert(HarmSpells.PRIEST, 585) -- Smite (40 yards)
 tinsert(HarmSpells.PRIEST, 5019) -- Shoot (30 yards)
-
-if not isRetail then
-  tinsert(HarmSpells.PRIEST, 8092) -- Mindblast (30 yards, level 10)
-end
 
 tinsert(ResSpells.PRIEST, 2006) -- Resurrection (40 yards, level 10)
 
 -- Rogues
 if isRetail then
-  tinsert(FriendSpells.ROGUE, 36554) -- Shadowstep (Assassination, Subtlety) (25 yards, level 18) -- works on friendly in retail
-  tinsert(FriendSpells.ROGUE, 921) -- Pick Pocket (10 yards, level 24) -- this works for range, keep it in friendly as well for retail but on classic this is melee range and will return min 0 range 0
+  tinsert(FriendSpells.ROGUE, 36554) -- Shadowstep (Assassination, Subtlety) (25 yards, level 18); works on friendly in retail
+  tinsert(FriendSpells.ROGUE, 921) -- Pick Pocket (10 yards, level 24); this works for range, keep it in friendly as well for retail but on classic this is melee range and will return min 0 range 0
 else
   tinsert(HarmSpells.ROGUE, 2764) -- Throw (30 yards)
 end
@@ -332,12 +333,14 @@ if not isRetail then
 end
 
 tinsert(HarmSpells.SHAMAN, 370) -- Purge (30 yards)
+tinsert(HarmSpells.SHAMAN, 8042) -- Earth Shock (40 yards retail; 20 yards, level 4, rank 1)
+tinsert(HarmSpells.SHAMAN, 117014) -- Elemental Blast (40 yards)
 tinsert(HarmSpells.SHAMAN, 188196) -- Lightning Bolt (40 yards)
+tinsert(HarmSpells.SHAMAN, 188389) -- Flame Shock (40 yards); Fallback for when Lightning Bolt fails due to hero talents
 tinsert(HarmSpells.SHAMAN, 73899) -- Primal Strike (Melee Range)
 
 if not isRetail then
   tinsert(HarmSpells.SHAMAN, 403) -- Lightning Bolt (30 yards, level 1, rank 1)
-  tinsert(HarmSpells.SHAMAN, 8042) -- Earth Shock (20 yards, level 4, rank 1)
 end
 
 tinsert(ResSpells.SHAMAN, 2008) -- Ancestral Spirit (40 yards, level 13)
@@ -469,7 +472,7 @@ local FriendItems = {
 
 if isRetail then
   FriendItems[1] = {
-    90175, -- Gin-Ji Knife Set -- doesn't seem to work for pets (always returns nil)
+    90175, -- Gin-Ji Knife Set; doesn't seem to work for pets (always returns nil)
   }
   FriendItems[4] = {
     129055, -- Shoe Shine Kit
@@ -605,9 +608,7 @@ local lastUpdate = 0
 local checkers_Spell = setmetatable({}, {
   __index = function(t, spellIdx)
     local func = function(unit)
-      if CustomSpellBookItemInRange(spellIdx, BOOKTYPE_SPELL, unit) == 1 then
-        return true
-      end
+      return CustomSpellBookItemInRange(spellIdx, BOOKTYPE_SPELL, unit) == 1
     end
     t[spellIdx] = func
     return func
@@ -650,7 +651,7 @@ local checkers_SpellWithMin = setmetatable({}, {
       local which, id = strsplit(':', key)
       local isInteract = which == 'interact'
 
-      local func = function(unit, skipInCombatCheck)
+      local func = function(unit, skipInCombatCheck, inCombat)
         if isInteract then
           local interactCheck = checkers_Interact[id]
           if interactCheck and interactCheck(unit, skipInCombatCheck) then
@@ -660,7 +661,7 @@ local checkers_SpellWithMin = setmetatable({}, {
           local spellCheck = checkers_Spell[id]
           if spellCheck and spellCheck(unit) then
             return true
-          elseif t.MinInteractList then -- fallback to try interact when a spell failed
+          elseif not inCombat and t.MinInteractList then -- fallback to try interact when a spell failed
             for index in pairs(t.MinInteractList) do
               local interactCheck = checkers_Interact[index]
               if interactCheck and interactCheck(unit, skipInCombatCheck) then
@@ -832,17 +833,18 @@ local function invalidateRangeCache(maxAge)
 end
 
 -- returns minRange, maxRange  or nil
-local function getRangeWithCheckerList(unit, checkerList)
+local function getRangeWithCheckerList(unit, inCombat, checkerList)
   local lo, hi = 1, #checkerList
   while lo <= hi do
     local mid = floor((lo + hi) / 2)
     local rc = checkerList[mid]
-    if rc.checker(unit, true) then
+    if rc.checker(unit, true, inCombat) then
       lo = mid + 1
     else
       hi = mid - 1
     end
   end
+
   if #checkerList == 0 then
     return nil, nil
   elseif lo > #checkerList then
@@ -855,41 +857,24 @@ local function getRangeWithCheckerList(unit, checkerList)
 end
 
 local function getRange(unit, noItems)
+  local inCombat = InCombatLockdownRestriction(unit)
   local canAssist = UnitCanAssist("player", unit)
-  if UnitIsDeadOrGhost(unit) then
-    if canAssist then
-      return getRangeWithCheckerList(unit, InCombatLockdownRestriction(unit) and lib.resRCInCombat or lib.resRC)
-    else
-      return getRangeWithCheckerList(unit, InCombatLockdownRestriction(unit) and lib.miscRCInCombat or lib.miscRC)
-    end
-  end
 
-  if UnitCanAttack("player", unit) then
-    return getRangeWithCheckerList(unit, noItems and lib.harmNoItemsRC or lib.harmRC)
+  if UnitIsDeadOrGhost(unit) then
+    return getRangeWithCheckerList(unit, inCombat, canAssist and (inCombat and lib.resRCInCombat or lib.resRC) or (inCombat and lib.miscRCInCombat or lib.miscRC))
+  elseif UnitCanAttack("player", unit) then
+    return getRangeWithCheckerList(unit, inCombat, noItems and lib.harmNoItemsRC or lib.harmRC)
   elseif UnitIsUnit("pet", unit) then
-    if InCombatLockdownRestriction(unit) then
-      local minRange, maxRange = getRangeWithCheckerList(unit, noItems and lib.friendNoItemsRCInCombat or lib.friendRCInCombat)
-      if minRange or maxRange then
-        return minRange, maxRange
-      else
-        return getRangeWithCheckerList(unit, lib.petRCInCombat)
-      end
+    local minRange, maxRange = getRangeWithCheckerList(unit, inCombat, inCombat and (noItems and lib.friendNoItemsRCInCombat or lib.friendRCInCombat) or (noItems and lib.friendNoItemsRC or lib.friendRC))
+    if minRange or maxRange then
+      return minRange, maxRange
     else
-      local minRange, maxRange = getRangeWithCheckerList(unit, noItems and lib.friendNoItemsRC or lib.friendRC)
-      if minRange or maxRange then
-        return minRange, maxRange
-      else
-        return getRangeWithCheckerList(unit, lib.petRC)
-      end
+      return getRangeWithCheckerList(unit, inCombat, inCombat and lib.petRCInCombat or lib.petRC)
     end
   elseif canAssist then
-    if InCombatLockdownRestriction(unit) then
-      return getRangeWithCheckerList(unit, noItems and lib.friendNoItemsRCInCombat or lib.friendRCInCombat)
-    else
-      return getRangeWithCheckerList(unit, noItems and lib.friendNoItemsRC or lib.friendRC)
-    end
+    return getRangeWithCheckerList(unit, inCombat, inCombat and (noItems and lib.friendNoItemsRCInCombat or lib.friendRCInCombat) or (noItems and lib.friendNoItemsRC or lib.friendRC))
   else
-    return getRangeWithCheckerList(unit, InCombatLockdownRestriction(unit) and lib.miscRCInCombat or lib.miscRC)
+    return getRangeWithCheckerList(unit, inCombat, inCombat and lib.miscRCInCombat or lib.miscRC)
   end
 end
 
@@ -1071,12 +1056,14 @@ function lib:init(forced)
   if self.initialized and not forced then
     return
   end
+
   self.initialized = true
   local _, playerClass = UnitClass("player")
   local _, playerRace = UnitRace("player")
 
   local interactList = InteractLists[playerRace] or DefaultInteractList
   self.handSlotItem = GetInventoryItemLink("player", HandSlotId)
+
   local changed = false
   if updateCheckers(self.friendRC, self.friendRCInCombat, createCheckerList(FriendSpells[playerClass], FriendItems, interactList)) then
     changed = true
@@ -1099,6 +1086,7 @@ function lib:init(forced)
   if updateCheckers(self.petRC, self.petRCInCombat, createCheckerList(PetSpells[playerClass], nil, interactList)) then
     changed = true
   end
+
   if changed and self.callbacks then
     self.callbacks:Fire(self.CHECKERS_CHANGED)
   end
@@ -1116,20 +1104,17 @@ function lib:GetFriendCheckersNoItems(inCombat)
   return rcIterator(inCombat and self.friendNoItemsRCInCombat or self.friendNoItemsRC)
 end
 
-
 --- Return an iterator for checkers usable on enemy units as (**range**, **checker**) pairs.
 -- @param inCombat if true, only checkers that can be used in combat ar returned
 function lib:GetHarmCheckers(inCombat)
   return rcIterator(inCombat and self.harmRCInCombat or self.harmRC)
 end
 
-
 --- Return an iterator for checkers usable on enemy units as (**range**, **checker**) pairs.
 -- @param inCombat if true, only checkers that can be used in combat ar returned
 function lib:GetHarmCheckersNoItems(inCombat)
   return rcIterator(inCombat and self.harmNoItemsRCInCombat or self.harmNoItemsRC)
 end
-
 
 --- Return an iterator for checkers usable on miscellaneous units as (**range**, **checker**) pairs.  These units are neither enemy nor friendly, such as people in sanctuaries or corpses.
 -- @param inCombat if true, only checkers that can be used in combat ar returned
@@ -1436,16 +1421,14 @@ function lib:activate()
     local frame = CreateFrame("Frame")
     self.frame = frame
 
-    frame:RegisterEvent("LEARNED_SPELL_IN_TAB")
     frame:RegisterEvent("CHARACTER_POINTS_CHANGED")
+    frame:RegisterEvent("LEARNED_SPELL_IN_TAB")
     frame:RegisterEvent("SPELLS_CHANGED")
-
-    if isEra or isCata then
-      frame:RegisterEvent("CVAR_UPDATE")
-    end
 
     if isRetail or isCata then
       frame:RegisterEvent("PLAYER_TALENT_UPDATE")
+    elseif isEra then
+      frame:RegisterEvent("CVAR_UPDATE")
     end
 
     local _, playerClass = UnitClass("player")

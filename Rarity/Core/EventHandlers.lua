@@ -166,6 +166,10 @@ function R:OnSpellcastSucceeded(event, unitID, castGUID, spellID)
 		addAttemptForItem("Mail Muncher", "mounts")
 	end
 
+	if spellID == 430315 then
+		addAttemptForItem("Writhing Transmutagen", "pets")
+	end
+
 	-- Detects opening on Dirty Glinting Object which may contain Lucy's Lost Collar
 	if spellID == 345071 and Rarity.lastNode and Rarity.lastNode == L["Dirty Glinting Object"] then
 		Rarity:Debug("Detected Opening on " .. L["Dirty Glinting Object"] .. " (method = SPECIAL)")
@@ -1775,6 +1779,11 @@ function R:OnLootReady(event, ...)
 					end
 				end
 			end
+		end
+
+		if Rarity.isOpening and Rarity.lastNode and Rarity.lastNode == L["Awakened Cache"] then
+			Rarity:Debug("Detected Opening on " .. Rarity.lastNode .. " (method = SPECIAL)")
+			addAttemptForItem("Machine Defense Unit 1-11", "mounts")
 		end
 
 		-- Handle opening Opera Chest (Holoviewers)

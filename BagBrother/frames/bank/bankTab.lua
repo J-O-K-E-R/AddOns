@@ -8,8 +8,9 @@ if not (C_Bank and C_Bank.FetchPurchasedBankTabData) then
 	return
 end
 
-local ADDON, Addon = ...
+local ADDON, Addon = (...):match('%w+'), _G[(...):match('%w+')]
 local L = LibStub('AceLocale-3.0'):GetLocale(ADDON)
+
 local Tab = Addon.Bag:NewClass('BankTab', 'CheckButton')
 Tab.Settings = CreateFrame('Frame', nil, nil, 'BankPanelTabSettingsMenuTemplate')
 Tab.Settings:Hide()
@@ -81,7 +82,7 @@ end
 
 function Tab:UpdateTooltip()
 	GameTooltip:ClearLines()
-	GameTooltip:SetText('|A:warbands-icon:0:0:0:0|a ' .. (self.name or BANK_BAG_PURCHASE), 1, 1, 1)
+	GameTooltip:SetText('|A:questlog-questtypeicon-account:0:0|a ' .. (self.name or BANK_BAG_PURCHASE), 1, 1, 1)
 
 	if self.name then
 		if FlagsUtil.IsSet(self.flags, Enum.BagSlotFlags.ExpansionCurrent) then

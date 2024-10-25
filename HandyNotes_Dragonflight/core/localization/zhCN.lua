@@ -48,6 +48,8 @@ L['shared_drops'] = '共享掉落'
 L['zone_drops_label'] = '区域掉落'
 L['zone_drops_note'] = '下面列出的物品可以由该区域中的多个怪物掉落。'
 
+L['poi_entrance_label'] = '入口'
+
 L['requires'] = '需要'
 L['ranked_research'] = '%s（等级 %d/%d）'
 
@@ -189,6 +191,11 @@ L['options_toggle_per_map_settings'] = '使用区域特定设置'
 L['options_toggle_per_map_settings_desc'] = '应用切换，缩放和透明度设置到每个区域。'
 L['options_restore_hidden_nodes'] = '恢复隐藏项'
 L['options_restore_hidden_nodes_desc'] = '使用右击菜单恢复全部隐藏项。'
+
+L['ignore_class_restrictions'] = '忽略职业限制'
+L['ignore_class_restrictions_desc'] = '显示需要与当前角色不同职业的组、项和奖励。'
+L['ignore_faction_restrictions'] = '忽略阵营限制'
+L['ignore_faction_restrictions_desc'] = '显示需要对立阵营的组、项和奖励。'
 
 L['options_rewards_settings'] = '奖励'
 L['options_reward_behaviors_settings'] = '奖励行为'

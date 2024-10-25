@@ -12,7 +12,7 @@ mod:RegisterEnableMob(
 	220197, -- Royal Swarmguard
 	219984, -- Xeph'itik
 	220401, -- Pale Priest
-	220003, -- Eye of the Queen
+	219983, -- Eye of the Queen
 	223844, -- Covert Webmancer
 	224732, -- Covert Webmancer
 	220423, -- Retired Lord Vul'azak
@@ -48,7 +48,7 @@ if L then
 	L.fangs_of_the_queen_warmup_trigger = "The Transformatory was once the home of our sacred evolution."
 	L.izo_warmup_trigger = "Enough! You've earned a place in my collection. Let me usher you in."
 	L.custom_on_autotalk = CL.autotalk
-	L.custom_on_autotalk_desc = "|cFFFF0000Requires Rogue, Priest, or 25 skill in Khaz Algar Engineering.|r Automatically select the NPC dialog option that grants you the 'Stolen Power' aura.\n\n|T135888:16|tStolen Power\n{448305}"
+	L.custom_on_autotalk_desc = "|cFFFF0000Requires Rogue, Priest, or 25 skill in Khaz Algar Engineering.|r Automatically select the NPC dialog option that grants you the 'Stolen Power' aura."
 	L.custom_on_autotalk_icon = mod:GetMenuIcon("SAY")
 end
 
@@ -59,26 +59,31 @@ end
 function mod:GetOptions()
 	return {
 		"custom_on_autotalk",
+		448305, -- Stolen Power
 		-- Herald of Ansurek
 		{443437, "SAY", "SAY_COUNTDOWN", "NAMEPLATE"}, -- Shadows of Doubt
+		443433, -- Twist Thoughts
 		-- Sureki Silkbinder
 		{443430, "NAMEPLATE"}, -- Silk Binding
 		-- Royal Swarmguard
 		{443500, "NAMEPLATE"}, -- Earthshatter
+		{443507, "NAMEPLATE"}, -- Ravenous Swarm
 		-- Xeph'itik
-		450784, -- Perfume Toss
-		451423, -- Gossamer Barrage
+		{450784, "NAMEPLATE"}, -- Perfume Toss
+		{451423, "NAMEPLATE"}, -- Gossamer Barrage
 		441795, -- Pheromone Veil
 		-- Pale Priest
 		448047, -- Web Wrap
 		-- Eye of the Queen
 		{451543, "NAMEPLATE"}, -- Null Slam
+		{451222, "NAMEPLATE"}, -- Void Rush
 		-- Covert Webmancer
 		{452162, "NAMEPLATE"}, -- Mending Web
 		-- Royal Venomshell
 		{434137, "NAMEPLATE"}, -- Venomous Spray
 		-- Unstable Test Subject
 		{445813, "NAMEPLATE"}, -- Dark Barrage
+		{436205, "NAMEPLATE"}, -- Fierce Stomping
 		-- Sureki Unnaturaler
 		{446086, "NAMEPLATE"}, -- Void Wave
 		-- Elder Shadeweaver
@@ -108,51 +113,67 @@ function mod:OnBossEnable()
 
 	-- Autotalk
 	self:RegisterEvent("GOSSIP_SHOW")
+	self:Log("SPELL_AURA_APPLIED", "StolenPowerApplied", 448305)
 
 	-- Herald of Ansurek
+	self:RegisterEngageMob("HeraldOfAnsurekEngaged", 220196)
 	self:Log("SPELL_CAST_SUCCESS", "ShadowsOfDoubt", 443436)
 	self:Log("SPELL_AURA_APPLIED", "ShadowsOfDoubtApplied", 443437)
 	self:Log("SPELL_AURA_REMOVED", "ShadowsOfDoubtRemoved", 443437)
+	self:Log("SPELL_CAST_START", "TwistThoughts", 443433)
+	self:Log("SPELL_PERIODIC_DAMAGE", "TwistThoughtsDamage", 443435)
+	self:Log("SPELL_PERIODIC_MISSED", "TwistThoughtsDamage", 443435)
 	self:Death("HeraldOfAnsurekDeath", 220196)
 
 	-- Sureki Silkbinder
+	self:RegisterEngageMob("SurekiSilkbinderEngaged", 220195)
 	self:Log("SPELL_CAST_START", "SilkBinding", 443430)
 	self:Log("SPELL_INTERRUPT", "SilkBindingInterrupt", 443430)
 	self:Log("SPELL_CAST_SUCCESS", "SilkBindingSuccess", 443430)
 	self:Death("SurekiSilkbinderDeath", 220195)
 
 	-- Royal Swarmguard
+	self:RegisterEngageMob("RoyalSwarmguardEngaged", 220197, 220423) -- Royal Swarmguard, Retired Lord Vul'azak
 	self:Log("SPELL_CAST_START", "Earthshatter", 443500)
+	self:Log("SPELL_CAST_START", "RavenousSwarm", 443507)
 	self:Death("RoyalSwarmguardDeath", 220197, 220423) -- Royal Swarmguard, Retired Lord Vul'azak
 
 	-- Xeph'itik
+	self:RegisterEngageMob("XephitikEngaged", 219984)
 	self:Log("SPELL_CAST_START", "PerfumeToss", 450784)
 	self:Log("SPELL_CAST_START", "GossamerBarrage", 451423)
-	self:Log("SPELL_CAST_SUCCESS", "PheromoneVeil", 441795)
+	self:Log("SPELL_CAST_SUCCESS", "PheromoneVeil", 441795) -- Xeph'itik defeated
 	self:Log("SPELL_AURA_APPLIED", "PheromoneVeilApplied", 441795)
 
 	-- Pale Priest
 	self:Log("SPELL_AURA_APPLIED", "WebWrap", 448047)
 
 	-- Eye of the Queen
+	self:RegisterEngageMob("EyeOfTheQueenEngaged", 219983)
 	self:Log("SPELL_CAST_START", "NullSlam", 451543)
-	self:Death("EyeOfTheQueenDeath", 220003)
+	self:Log("SPELL_CAST_START", "VoidRush", 451222)
+	self:Death("EyeOfTheQueenDeath", 219983)
 
 	-- Covert Webmancer
+	self:RegisterEngageMob("CovertWebmancerEngaged", 223844, 224732)
 	self:Log("SPELL_CAST_START", "MendingWeb", 452162)
 	self:Log("SPELL_INTERRUPT", "MendingWebInterrupt", 452162)
 	self:Log("SPELL_CAST_SUCCESS", "MendingWebSuccess", 452162)
 	self:Death("CovertWebmancerDeath", 223844, 224732)
 
 	-- Royal Venomshell
+	self:RegisterEngageMob("RoyalVenomshellEngaged", 220730)
 	self:Log("SPELL_CAST_START", "VenomousSpray", 434137)
 	self:Death("RoyalVenomshellDeath", 220730)
 
 	-- Unstable Test Subject
+	self:RegisterEngageMob("UnstableTestSubjectEngaged", 216328)
 	self:Log("SPELL_CAST_START", "DarkBarrage", 445813)
+	self:Log("SPELL_CAST_START", "FierceStomping", 436205)
 	self:Death("UnstableTestSubjectDeath", 216328)
 
 	-- Sureki Unnaturaler
+	self:RegisterEngageMob("SurekiUnnaturalerEngaged", 216339)
 	self:Log("SPELL_CAST_START", "VoidWave", 446086)
 	self:Log("SPELL_INTERRUPT", "VoidWaveInterrupt", 446086)
 	self:Log("SPELL_CAST_SUCCESS", "VoidWaveSuccess", 446086)
@@ -162,10 +183,12 @@ function mod:OnBossEnable()
 	self:Death("CongealedDropletDeath", 216329)
 
 	-- Elder Shadeweaver
+	self:RegisterEngageMob("ElderShadeweaverEngaged", 221102)
 	self:Log("SPELL_CAST_START", "UmbralWeave", 446717)
 	self:Death("ElderShadeweaverDeath", 221102)
 
 	-- Hulking Warshell
+	self:RegisterEngageMob("HulkingWarshellEngaged", 221103)
 	self:Log("SPELL_CAST_START", "TremorSlam", 447271)
 	self:Death("HulkingWarshellDeath", 221103)
 end
@@ -218,7 +241,18 @@ function mod:GOSSIP_SHOW()
 	end
 end
 
+function mod:StolenPowerApplied(args)
+	if self:Me(args.destGUID) then
+		self:Message(args.spellId, "green", CL.on_group:format(args.spellName))
+		self:PlaySound(args.spellId, "info")
+	end
+end
+
 -- Herald of Ansurek
+
+function mod:HeraldOfAnsurekEngaged(guid)
+	self:Nameplate(443437, 8.2, guid) -- Shadows of Doubt
+end
 
 function mod:ShadowsOfDoubt(args)
 	self:Nameplate(443437, 12.2, args.sourceGUID)
@@ -239,19 +273,42 @@ function mod:ShadowsOfDoubtRemoved(args)
 	end
 end
 
+function mod:TwistThoughts(args)
+	local _, isReady = self:Interrupter()
+	if isReady then
+		self:Message(args.spellId, "red", CL.casting:format(args.spellName))
+		self:PlaySound(args.spellId, "alert")
+	end
+end
+
+do
+	local prev = 0
+	function mod:TwistThoughtsDamage(args)
+		if self:Me(args.destGUID) and args.time - prev > 2 then
+			prev = args.time
+			self:PersonalMessage(443433, "underyou")
+			self:PlaySound(443433, "underyou")
+		end
+	end
+end
+
 function mod:HeraldOfAnsurekDeath(args)
 	self:ClearNameplate(args.destGUID)
 end
 
 -- Sureki Silkbinder
 
+function mod:SurekiSilkbinderEngaged(guid)
+	self:Nameplate(443430, 4.7, guid) -- Silk Binding
+end
+
 function mod:SilkBinding(args)
 	if self:Friendly(args.sourceFlags) then -- these NPCs can be mind-controlled by Priests
 		return
 	end
 	self:Message(args.spellId, "red", CL.casting:format(args.spellName))
-	self:PlaySound(args.spellId, "alert")
 	self:Nameplate(args.spellId, 0, args.sourceGUID)
+	self:PlaySound(args.spellId, "alert")
 end
 
 function mod:SilkBindingInterrupt(args)
@@ -268,10 +325,25 @@ end
 
 -- Royal Swarmguard
 
+function mod:RoyalSwarmguardEngaged(guid)
+	self:Nameplate(443500, 5.9, guid) -- Earthshatter
+	self:Nameplate(443507, 12.0, guid) -- Ravenous Swarm
+end
+
 function mod:Earthshatter(args)
 	self:Message(args.spellId, "orange")
-	self:PlaySound(args.spellId, "alarm")
 	self:Nameplate(args.spellId, 14.6, args.sourceGUID)
+	self:PlaySound(args.spellId, "alarm")
+end
+
+function mod:RavenousSwarm(args)
+	self:Message(args.spellId, "yellow")
+	if self:MobId(args.sourceGUID) == 221103 then -- Hulking Warshell
+		self:RavenousSwarmHulkingWarshell(args)
+	else
+		self:Nameplate(args.spellId, 18.2, args.sourceGUID)
+	end
+	self:PlaySound(args.spellId, "info")
 end
 
 function mod:RoyalSwarmguardDeath(args)
@@ -282,24 +354,38 @@ end
 
 do
 	local timer
+	local xephitikGuid
+
+	function mod:XephitikEngaged(guid)
+		xephitikGuid = guid
+		self:CDBar(450784, 7.0) -- Perfume Toss
+		self:Nameplate(450784, 7.0, guid) -- Perfume Toss
+		self:CDBar(451423, 12.6) -- Gossamer Barrage
+		self:Nameplate(451423, 12.6, guid) -- Gossamer Barrage
+		timer = self:ScheduleTimer("XephitikDefeated", 30)
+	end
 
 	function mod:PerfumeToss(args)
+		xephitikGuid = args.sourceGUID
 		if timer then
 			self:CancelTimer(timer)
 		end
 		self:Message(args.spellId, "orange")
-		self:PlaySound(args.spellId, "alarm")
 		self:CDBar(args.spellId, 15.8)
+		self:Nameplate(args.spellId, 15.8, xephitikGuid)
+		self:PlaySound(args.spellId, "alarm")
 		timer = self:ScheduleTimer("XephitikDefeated", 30)
 	end
 
 	function mod:GossamerBarrage(args)
+		xephitikGuid = args.sourceGUID
 		if timer then
 			self:CancelTimer(timer)
 		end
 		self:Message(args.spellId, "red")
-		self:PlaySound(args.spellId, "long")
 		self:CDBar(args.spellId, 23.1)
+		self:Nameplate(args.spellId, 23.1, xephitikGuid)
+		self:PlaySound(args.spellId, "long")
 		timer = self:ScheduleTimer("XephitikDefeated", 30)
 	end
 
@@ -322,6 +408,10 @@ do
 		end
 		self:StopBar(450784) -- Perfume Toss
 		self:StopBar(451423) -- Gossamer Barrage
+		if xephitikGuid then
+			self:ClearNameplate(xephitikGuid)
+			xephitikGuid = nil
+		end
 	end
 end
 
@@ -342,10 +432,21 @@ end
 
 -- Eye of the Queen
 
+function mod:EyeOfTheQueenEngaged(guid)
+	self:Nameplate(451222, 6.8, guid) -- Void Rush
+	self:Nameplate(451543, 17.9, guid) -- Null Slam
+end
+
 function mod:NullSlam(args)
 	self:Message(args.spellId, "orange")
-	self:PlaySound(args.spellId, "alarm")
 	self:Nameplate(args.spellId, 26.7, args.sourceGUID)
+	self:PlaySound(args.spellId, "alarm")
+end
+
+function mod:VoidRush(args)
+	self:Message(args.spellId, "yellow")
+	self:Nameplate(args.spellId, 18.2, args.sourceGUID)
+	self:PlaySound(args.spellId, "info")
 end
 
 function mod:EyeOfTheQueenDeath(args)
@@ -354,10 +455,14 @@ end
 
 -- Covert Webmancer
 
+function mod:CovertWebmancerEngaged(guid)
+	self:Nameplate(452162, 6.0, guid) -- Mending Web
+end
+
 function mod:MendingWeb(args)
 	self:Message(args.spellId, "red", CL.casting:format(args.spellName))
-	self:PlaySound(args.spellId, "alert")
 	self:Nameplate(args.spellId, 0, args.sourceGUID)
+	self:PlaySound(args.spellId, "alert")
 end
 
 function mod:MendingWebInterrupt(args)
@@ -374,10 +479,15 @@ end
 
 -- Royal Venomshell
 
+function mod:RoyalVenomshellEngaged(guid)
+	self:Nameplate(434137, 4.9, guid) -- Venomous Spray
+	self:Nameplate(443500, 19.5, guid) -- Earthshatter
+end
+
 function mod:VenomousSpray(args)
 	self:Message(args.spellId, "yellow")
-	self:PlaySound(args.spellId, "long")
 	self:Nameplate(args.spellId, 24.2, args.sourceGUID)
+	self:PlaySound(args.spellId, "long")
 end
 
 function mod:RoyalVenomshellDeath(args)
@@ -386,10 +496,21 @@ end
 
 -- Unstable Test Subject
 
+function mod:UnstableTestSubjectEngaged(guid)
+	self:Nameplate(445813, 5.4, guid) -- Dark Barrage
+	self:Nameplate(436205, 15.1, guid) -- Fierce Stomping
+end
+
 function mod:DarkBarrage(args)
 	self:Message(args.spellId, "orange")
-	self:PlaySound(args.spellId, "long")
 	self:Nameplate(args.spellId, 27.9, args.sourceGUID)
+	self:PlaySound(args.spellId, "long")
+end
+
+function mod:FierceStomping(args)
+	self:Message(args.spellId, "yellow")
+	self:Nameplate(args.spellId, 27.9, args.sourceGUID)
+	self:PlaySound(args.spellId, "info")
 end
 
 function mod:UnstableTestSubjectDeath(args)
@@ -397,6 +518,10 @@ function mod:UnstableTestSubjectDeath(args)
 end
 
 -- Sureki Unnaturaler
+
+function mod:SurekiUnnaturalerEngaged(guid)
+	self:Nameplate(446086, 4.8, guid) -- Void Wave
+end
 
 do
 	local prev = 0
@@ -450,24 +575,84 @@ end
 
 -- Elder Shadeweaver
 
-function mod:UmbralWeave(args)
-	self:Message(args.spellId, "yellow")
-	self:PlaySound(args.spellId, "alert")
-	self:Nameplate(args.spellId, 23.1, args.sourceGUID)
-end
+do
+	local timer
 
-function mod:ElderShadeweaverDeath(args)
-	self:ClearNameplate(args.destGUID)
+	function mod:ElderShadeweaverEngaged(guid)
+		self:CDBar(446717, 4.1) -- Umbral Weave
+		self:Nameplate(446717, 4.1, guid) -- Umbral Weave
+		timer = self:ScheduleTimer("ElderShadeweaverDeath", 30)
+	end
+
+	function mod:UmbralWeave(args)
+		if timer then
+			self:CancelTimer(timer)
+		end
+		self:Message(args.spellId, "yellow")
+		self:CDBar(args.spellId, 23.1)
+		self:Nameplate(args.spellId, 23.1, args.sourceGUID)
+		self:PlaySound(args.spellId, "alert")
+		timer = self:ScheduleTimer("ElderShadeweaverDeath", 30)
+	end
+
+	function mod:ElderShadeweaverDeath(args)
+		if timer then
+			self:CancelTimer(timer)
+			timer = nil
+		end
+		self:StopBar(446717) -- Umbral Weave
+		if args then
+			self:ClearNameplate(args.destGUID)
+		end
+	end
 end
 
 -- Hulking Warshell
 
-function mod:TremorSlam(args)
-	self:Message(args.spellId, "orange")
-	self:PlaySound(args.spellId, "alarm")
-	self:Nameplate(args.spellId, 23.0, args.sourceGUID)
-end
+do
+	local timer
 
-function mod:HulkingWarshellDeath(args)
-	self:ClearNameplate(args.destGUID)
+	function mod:HulkingWarshellEngaged(guid)
+		-- Ravenous Swarm is cast immediately
+		self:CDBar(447271, 9.9) -- Tremor Slam
+		self:Nameplate(447271, 9.9, guid) -- Tremor Slam
+		timer = self:ScheduleTimer("HulkingWarshellDeath", 30)
+	end
+
+	function mod:RavenousSwarmHulkingWarshell(args)
+		if timer then
+			self:CancelTimer(timer)
+		end
+		if not self:IsMobEngaged(args.sourceGUID) then
+			-- this cast can beat the engage callback, so trigger it manually
+			self:HulkingWarshellEngaged(args.sourceGUID)
+		else
+			timer = self:ScheduleTimer("HulkingWarshellDeath", 30)
+		end
+		self:CDBar(443507, 18.2)
+		self:Nameplate(443507, 18.2, args.sourceGUID)
+	end
+
+	function mod:TremorSlam(args)
+		if timer then
+			self:CancelTimer(timer)
+		end
+		self:Message(args.spellId, "orange")
+		self:CDBar(args.spellId, 23.0)
+		self:Nameplate(args.spellId, 23.0, args.sourceGUID)
+		self:PlaySound(args.spellId, "alarm")
+		timer = self:ScheduleTimer("HulkingWarshellDeath", 30)
+	end
+
+	function mod:HulkingWarshellDeath(args)
+		if timer then
+			self:CancelTimer(timer)
+			timer = nil
+		end
+		self:StopBar(443507) -- Ravenous Swarm
+		self:StopBar(447271) -- Tremor Slam
+		if args then
+			self:ClearNameplate(args.destGUID)
+		end
+	end
 end

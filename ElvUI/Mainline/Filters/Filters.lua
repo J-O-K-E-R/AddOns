@@ -3,6 +3,9 @@ local E, L, V, P, G = unpack(ElvUI)
 local List = E.Filters.List
 local Aura = E.Filters.Aura
 
+-- This used to be standalone and is now merged into G.unitframe.aurafilters.Whitelist
+G.unitframe.aurafilters.PlayerBuffs = nil
+
 -- These are debuffs that are some form of CC
 G.unitframe.aurafilters.CCDebuffs = {
 	type = 'Whitelist',
@@ -108,7 +111,6 @@ G.unitframe.aurafilters.CCDebuffs = {
 		[9484]		= List(3), -- Shackle Undead
 		[200196]	= List(4), -- Holy Word: Chastise
 		[200200]	= List(4), -- Holy Word: Chastise
-		[226943]	= List(3), -- Mind Bomb
 		[605]		= List(5), -- Mind Control
 		[8122]		= List(3), -- Psychic Scream
 		[15487]		= List(2), -- Silence
@@ -236,7 +238,8 @@ G.unitframe.aurafilters.TurtleBuffs = {
 		[353362]	= List(), -- Dematerialize (PvP)
 	-- Paladin
 		[642]		= List(), -- Divine Shield
-		[498]		= List(), -- Divine Protection
+		[498]		= List(), -- Divine Protection (Holy)
+		[403876]	= List(), -- Divine Protection (Retri)
 		[205191]	= List(), -- Eye for an Eye
 		[184662]	= List(), -- Shield of Vengeance
 		[1022]		= List(), -- Blessing of Protection
@@ -289,26 +292,83 @@ G.unitframe.aurafilters.TurtleBuffs = {
 		[12975]		= List(), -- Last Stand
 		[871]		= List(), -- Shield Wall
 		[23920]		= List(), -- Spell Reflection
-		[227744]	= List(), -- Ravager
 		[203524]	= List(), -- Neltharion's Fury
 		[190456]	= List(), -- Ignore Pain
 		[132404]	= List(), -- Shield Block
 	-- Racial
 		[65116]		= List(), -- Stoneform
-	-- Potion
-		[251231]	= List(), -- Steelskin Potion
-	-- Covenant
-		[324867]	= List(), -- Fleshcraft (Necrolord)
-	-- PvP
-		[363522]	= List(), -- Gladiator's Eternal Aegis
-		[362699]	= List(), -- Gladiator's Resolve
 	},
 }
 
--- Personal player buffs (defensives, utility, immunities, etc)
-G.unitframe.aurafilters.PlayerBuffs = {
+-- Buffs that we don't really need to see
+G.unitframe.aurafilters.Blacklist = {
+	type = 'Blacklist',
+	spells = {
+		[8326]		= List(), -- Ghost
+		[8733]		= List(), -- Blessing of Blackfathom
+		[15007]		= List(), -- Ress Sickness
+		[23445]		= List(), -- Evil Twin
+		[24755]		= List(), -- Tricked or Treated
+		[25163]		= List(), -- Oozeling's Disgusting Aura
+		[25771]		= List(), -- Forbearance
+		[26013]		= List(), -- Deserter
+		[36032]		= List(), -- Arcane Charge
+		[36893]		= List(), -- Transporter Malfunction
+		[36900]		= List(), -- Soul Split: Evil!
+		[36901]		= List(), -- Soul Split: Good
+		[41425]		= List(), -- Hypothermia
+		[49822]		= List(), -- Bloated
+		[55711]		= List(), -- Weakened Heart
+		[57723]		= List(), -- Exhaustion (heroism debuff)
+		[57724]		= List(), -- Sated (lust debuff)
+		[58539]		= List(), -- Watcher's Corpse
+		[71041]		= List(), -- Dungeon Deserter
+		[80354]		= List(), -- Temporal Displacement (timewarp debuff)
+		[89140]		= List(), -- Demonic Rebirth: Cooldown
+		[95809]		= List(), -- Insanity debuff (hunter pet heroism: ancient hysteria)
+		[96041]		= List(), -- Stink Bombed
+		[97821]		= List(), -- Void-Touched
+		[113942]	= List(), -- Demonic: Gateway
+		[117870]	= List(), -- Touch of The Titans
+		[123981]	= List(), -- Perdition
+		[124273]	= List(), -- Stagger
+		[124274]	= List(), -- Stagger
+		[124275]	= List(), -- Stagger
+		[195776]	= List(), -- Moonfeather Fever
+		[196342]	= List(), -- Zanzil's Embrace
+		[206150]	= List(), -- Challenger's Burden SL
+		[206151]	= List(), -- Challenger's Burden BfA
+		[206662]	= List(), -- Experience Eliminated (in range)
+		[234143]	= List(), -- Temptation (Upper Karazhan Ring Debuff)
+		[287825]	= List(), -- Lethargy debuff (fight or flight)
+		[306600]	= List(), -- Experience Eliminated (oor - 5m)
+		[313015]	= List(), -- Recently Failed (Mechagnome racial)
+		[322695]	= List(), -- Drained
+		[328891]	= List(), -- A Gilded Perspective
+		[348443]	= List(), -- Experience Eliminated
+		[374037]	= List(), -- Overwhelming Rage
+		[383600]	= List(), -- Surrounding Storm (Strunraan)
+		[390106]	= List(), -- Riding Along
+		[390435]	= List(), -- Exhaustion (Evoker lust debuff)
+		[392960]	= List(), -- Waygate Travel
+		[392992]	= List(), -- Silent Lava
+		[393798]	= List(), -- Activated Defense Systems
+		[418990]	= List(), -- Wicker Men's Curse
+	},
+}
+
+-- A list of important buffs that we always want to see
+G.unitframe.aurafilters.Whitelist = {
 	type = 'Whitelist',
 	spells = {
+	-- General
+		[256948]	= List(), -- Spatial Rift
+		[65116]		= List(), -- Stoneform
+		[59547]		= List(), -- Gift of the Naaru
+		[20572]		= List(), -- Blood Fury
+		[26297]		= List(), -- Berserking
+		[68992]		= List(), -- Darkflight
+		[58984]		= List(), -- Shadowmeld
 	-- Evoker
 		[363916]	= List(), -- Obsidian Scales
 		[374348]	= List(), -- Renewing Blaze
@@ -319,6 +379,7 @@ G.unitframe.aurafilters.PlayerBuffs = {
 		[371807]	= List(), -- Recall
 		[395296]	= List(), -- Ebon Might < self
 		[395152]	= List(), -- Ebon Might < others
+		[390386]	= List(), -- [Evoker] Fury of the Aspects
 	-- Death Knight
 		[48707]		= List(), -- Anti-Magic Shell
 		[81256]		= List(), -- Dancing Rune Weapon
@@ -355,6 +416,7 @@ G.unitframe.aurafilters.PlayerBuffs = {
 		[162264]	= List(), -- Metamorphosis
 		[205629]	= List(), -- Demonic Trample
 		[188501]	= List(), -- Spectral Sight
+		[196718]	= List(), -- Darkness
 	-- Druid
 		[102342]	= List(), -- Ironbark
 		[61336]		= List(), -- Survival Instincts
@@ -433,7 +495,6 @@ G.unitframe.aurafilters.PlayerBuffs = {
 		[116849]	= List(), -- Life Cocoon
 		[202162]	= List(), -- Guard
 		[215479]	= List(), -- Ironskin Brew
-		[152173]	= List(), -- Serenity
 		[137639]	= List(), -- Storm, Earth, and Fire
 		[213664]	= List(), -- Nimble Brew
 		[201447]	= List(), -- Ride the Wind
@@ -493,6 +554,7 @@ G.unitframe.aurafilters.PlayerBuffs = {
 		[210980]	= List(), -- Focus in the Light
 		[221660]	= List(), -- Holy Concentration
 		[15286]		= List(), -- Vampiric Embrace
+		[62618]		= List(), -- Power Word: Barrier
 	-- Rogue
 		[315496]	= List(), -- Slice and Dice
 		[5277]		= List(), -- Evasion
@@ -539,6 +601,7 @@ G.unitframe.aurafilters.PlayerBuffs = {
 		[2645]		= List(), -- Ghost Wolf
 		[32182]		= List(), -- Heroism
 		[108281]	= List(), -- Ancestral Guidance
+		[20608]		= List(), -- Reincarnation
 	-- Warlock
 		[108416]	= List(), -- Dark Pact
 		[113860]	= List(), -- Dark Soul: Misery
@@ -564,7 +627,6 @@ G.unitframe.aurafilters.PlayerBuffs = {
 		[12975]		= List(), -- Last Stand
 		[871]		= List(), -- Shield Wall
 		[23920]		= List(), -- Spell Reflection
-		[227744]	= List(), -- Ravager
 		[203524]	= List(), -- Neltharion's Fury
 		[190456]	= List(), -- Ignore Pain
 		[132404]	= List(), -- Shield Block
@@ -578,104 +640,7 @@ G.unitframe.aurafilters.PlayerBuffs = {
 		[202164]	= List(), -- Bounding Stride
 		[215572]	= List(), -- Frothing Berserker
 		[199203]	= List(), -- Thirst for Battle
-	-- Racials
-		[256948]	= List(), -- Spatial Rift
-		[65116]		= List(), -- Stoneform
-		[59547]		= List(), -- Gift of the Naaru
-		[20572]		= List(), -- Blood Fury
-		[26297]		= List(), -- Berserking
-		[68992]		= List(), -- Darkflight
-		[58984]		= List(), -- Shadowmeld
-	},
-}
-
--- Buffs that we don't really need to see
-G.unitframe.aurafilters.Blacklist = {
-	type = 'Blacklist',
-	spells = {
-		[8326]		= List(), -- Ghost
-		[8733]		= List(), -- Blessing of Blackfathom
-		[15007]		= List(), -- Ress Sickness
-		[23445]		= List(), -- Evil Twin
-		[24755]		= List(), -- Tricked or Treated
-		[25163]		= List(), -- Oozeling's Disgusting Aura
-		[25771]		= List(), -- Forbearance
-		[26013]		= List(), -- Deserter
-		[36032]		= List(), -- Arcane Charge
-		[36893]		= List(), -- Transporter Malfunction
-		[36900]		= List(), -- Soul Split: Evil!
-		[36901]		= List(), -- Soul Split: Good
-		[41425]		= List(), -- Hypothermia
-		[49822]		= List(), -- Bloated
-		[55711]		= List(), -- Weakened Heart
-		[57723]		= List(), -- Exhaustion (heroism debuff)
-		[57724]		= List(), -- Sated (lust debuff)
-		[58539]		= List(), -- Watcher's Corpse
-		[71041]		= List(), -- Dungeon Deserter
-		[80354]		= List(), -- Temporal Displacement (timewarp debuff)
-		[89140]		= List(), -- Demonic Rebirth: Cooldown
-		[95809]		= List(), -- Insanity debuff (hunter pet heroism: ancient hysteria)
-		[96041]		= List(), -- Stink Bombed
-		[97821]		= List(), -- Void-Touched
-		[113942]	= List(), -- Demonic: Gateway
-		[117870]	= List(), -- Touch of The Titans
-		[123981]	= List(), -- Perdition
-		[124273]	= List(), -- Stagger
-		[124274]	= List(), -- Stagger
-		[124275]	= List(), -- Stagger
-		[195776]	= List(), -- Moonfeather Fever
-		[196342]	= List(), -- Zanzil's Embrace
-		[206150]	= List(), -- Challenger's Burden SL
-		[206151]	= List(), -- Challenger's Burden BfA
-		[206662]	= List(), -- Experience Eliminated (in range)
-		[234143]	= List(), -- Temptation (Upper Karazhan Ring Debuff)
-		[287825]	= List(), -- Lethargy debuff (fight or flight)
-		[306600]	= List(), -- Experience Eliminated (oor - 5m)
-		[313015]	= List(), -- Recently Failed (Mechagnome racial)
-		[322695]	= List(), -- Drained
-		[328891]	= List(), -- A Gilded Perspective
-		[348443]	= List(), -- Experience Eliminated
-		[374037]	= List(), -- Overwhelming Rage
-		[383600]	= List(), -- Surrounding Storm (Strunraan)
-		[390106]	= List(), -- Riding Along
-		[390435]	= List(), -- Exhaustion (Evoker lust debuff)
-		[392960]	= List(), -- Waygate Travel
-		[392992]	= List(), -- Silent Lava
-		[393798]	= List(), -- Activated Defense Systems
-		[418990]	= List(), -- Wicker Men's Curse
-	},
-}
-
--- A list of important buffs that we always want to see
-G.unitframe.aurafilters.Whitelist = {
-	type = 'Whitelist',
-	spells = {
-	-- Haste effects
-		[2825]		= List(), -- [Shaman] Bloodlust
-		[32182]		= List(), -- [Shaman] Heroism
-		[80353]		= List(), -- [Mage] Time Warp
-		[90355]		= List(), -- [Hunter] Ancient Hysteria
-		[390386]	= List(), -- [Evoker] Fury of the Aspects
-	-- Paladin
-		[31821]		= List(), -- Aura Mastery
-		[1022]		= List(), -- Blessing of Protection
-		[204018]	= List(), -- Blessing of Spellwarding
-		[6940]		= List(), -- Blessing of Sacrifice
-		[1044]		= List(), -- Blessing of Freedom
-	-- Priest
-		[47788]		= List(), -- Guardian Spirit
-		[33206]		= List(), -- Pain Suppression
-		[62618]		= List(), -- Power Word: Barrier
-	-- Monk
-		[116849]	= List(), -- Life Cocoon
-	-- Druid
-		[102342]	= List(), -- Ironbark
-	-- Shaman
-		[325174]	= List(), -- Spirit Link
-		[20608]		= List(), -- Reincarnation
-	-- Other
 		[97462]		= List(), -- Rallying Cry
-		[196718]	= List(), -- Darkness
 	},
 }
 
@@ -688,14 +653,8 @@ G.unitframe.aurafilters.RaidDebuffs = {
 	----------------------------------------------------------
 	-- Misc
 		[160029] = List(), -- Resurrecting (Pending CR)
-	----------------------------------------------------------
-	-------------------- Mythic+ Specific --------------------
-	----------------------------------------------------------
-	-- General Affixes
-		[226512] = List(), -- Sanguine
-		[240559] = List(), -- Grievous
-		[240443] = List(), -- Bursting
-		[409492] = List(), -- Afflicted Cry
+	-- Affixes
+		[440313] = List(), -- Void Rift
 	----------------------------------------------------------
 	---------------- The War Within Dungeons -----------------
 	----------------------------------------------------------
@@ -882,72 +841,49 @@ G.unitframe.aurafilters.RaidDebuffs = {
 	------------------- Nerub'ar Palace ---------------------
 	---------------------------------------------------------
 	-- Ulgrax the Devourer
+		[434776] = List(), -- Carnivorous Contest
 		[434705] = List(), -- Tenderized
-		[435138] = List(), -- Digestive Acid
+		[439419] = List(), -- Stalker's Netting
 		[439037] = List(), -- Disembowel
-		[439419] = List(), -- Stalker Netting
-		[434778] = List(), -- Brutal Lashings
-		[435136] = List(), -- Venomous Lash
-		[438012] = List(), -- Hungering Bellows
 	-- The Bloodbound Horror
+		[442656] = List(), -- Spewing Hemorrhage
 		[442604] = List(), -- Goresplatter
-		[445570] = List(), -- Unseeming Blight
-		[443612] = List(), -- Baneful Shift
-		[443042] = List(), -- Grasp From Beyond
+		[443612] = List(), -- Gruesome Disgorge
 	-- Sikran
 		[435410] = List(), -- Phase Lunge
-		[458277] = List(), -- Shattering Sweep
+		[439191] = List(), -- Decimate
+		[434860] = List(), -- Phase Blades
+		[433517] = List(), -- Phase Blades 2
 		[438845] = List(), -- Expose
-		[433517] = List(), -- Phase Blades 1
-		[434860] = List(), -- Phase Blades 2
-		[459785] = List(), -- Cosmic Residue
-		[459273] = List(), -- Cosmic Shards
 	-- Rasha'nan
-		[439785] = List(), -- Corrosion
-		[439786] = List(), -- Rolling Acid 1
-		[439790] = List(), -- Rolling Acid 2
 		[439787] = List(), -- Acidic Stupor
-		[458067] = List(), -- Savage Wound
-		[456170] = List(), -- Spinneret's Strands 1
-		[439783] = List(), -- Spinneret's Strands 2
-		[439780] = List(), -- Sticky Webs
-		[439776] = List(), -- Acid Pool
-		[455287] = List(), -- Infested Bite
+		[439815] = List(), -- Infested Spawn
+		[439783] = List(), -- Spinneret's Strands
+		[456170] = List(), -- Spinneret's Strands 2
+		[439790] = List(), -- Rolling Acid
 	-- Eggtender Ovi'nax
-		[442257] = List(), -- Infest
-		[442799] = List(), -- Sanguine Overflow
-		[441362] = List(), -- Volatile Concotion
-		[442660] = List(), -- Rupture
-		[440421] = List(), -- Experimental Dosage
 		[442250] = List(), -- Fixate
-		[442437] = List(), -- Violent Discharge
-		[443274] = List(), -- Reverberation
+		[442257] = List(), -- Infest
+		[446351] = List(), -- Web Eruption
+		[446349] = List(), -- Sticky Web
+		[440421] = List(), -- Experimental Dosage
+		[441362] = List(), -- Volatile Concoction
 	-- Nexus-Princess Ky'veza
-		[440377] = List(), -- Void Shredders
 		[436870] = List(), -- Assassination
-		[440576] = List(), -- Chasmal Gash
 		[437343] = List(), -- Queensbane
-		[436664] = List(), -- Regicide 1
-		[436666] = List(), -- Regicide 2
-		[436671] = List(), -- Regicide 3
-		[435535] = List(), -- Regicide 4
-		[436665] = List(), -- Regicide 5
-		[436663] = List(), -- Regicide 6
+		[440576] = List(), -- Chasmal Gash
 	-- The Silken Court
-		[450129] = List(), -- Entropic Desolation
-		[449857] = List(), -- Impaled
 		[438749] = List(), -- Scarab Fixation
-		[438708] = List(), -- Stinging Swarm
-		[438218] = List(), -- Piercing Strike
-		[454311] = List(), -- Barbed Webs
-		[438773] = List(), -- Shattered Shell
-		[438355] = List(), -- Cataclysmic Entropy
-		[438656] = List(), -- Venomous Rain
-		[441772] = List(), -- Void Bolt
-		[441788] = List(), -- Web Vortex
 		[440001] = List(), -- Binding Webs
+		[449857] = List(), -- Impaled
+		[438218] = List(), -- Piercing Strike
 	-- Queen Ansurek
-		-- TODO: No raid testing available for this boss
+		[441865] = List(), -- Royal Shackles
+		[436800] = List(), -- Liquefy
+		[455404] = List(), -- Feast
+		[439829] = List(), -- Silken Tomb
+		[439825] = List(), -- Silken Tomb 2
+		[437586] = List(), -- Reactive Toxin
 	},
 }
 
@@ -955,13 +891,6 @@ G.unitframe.aurafilters.RaidDebuffs = {
 G.unitframe.aurafilters.RaidBuffsElvUI = {
 	type = 'Whitelist',
 	spells = {
-	----------------------------------------------------------
-	-------------------- Mythic+ Specific --------------------
-	----------------------------------------------------------
-	-- Mythic+ General
-		[209859] = List(), -- Bolster
-		[178658] = List(), -- Raging
-		[226510] = List(), -- Sanguine
 	----------------------------------------------------------
 	---------------- The War Within Dungeons -----------------
 	----------------------------------------------------------
@@ -1046,7 +975,6 @@ G.unitframe.aurafilters.RaidBuffsElvUI = {
 		[272888] = List(), -- Ferocity
 		[275826] = List(), -- Bolstering Shout
 	-- Grim Batol
-		[7603] = List(), -- Twilight Protection
 		[75328] = List(), -- Twilight Shift
 		[449687] = List(), -- Molten Mace
 		[447261] = List(), -- Skullsplitter
@@ -1093,20 +1021,9 @@ G.unitframe.aurafilters.RaidBuffsElvUI = {
 		[438343] = List(), -- Venomous Rain
 		[440179] = List(), -- Entangled
 	-- Queen Ansurek
-		-- TODO: No raid testing available for this boss
-	---------------------------------------------------------
-	----------------------- Open World ----------------------
-	---------------------------------------------------------
-	-- Korthia
-		[354840] = List(), -- Rift Veiled (Silent Soulstalker, Deadsoul Hatcher, Screaming Shade)
-		[355249] = List(), -- Anima Gorged (Consumption)
-	-- Zereth Mortis
-		[360945] = List(), -- Creation Catalyst Overcharge (Nascent Servitor)
-		[366309] = List(), -- Meltdown (Destabilized Core)
-		[365596] = List(), -- Overload (Destabilized Core)
-		[360750] = List(), -- Aurelid Lure
-	-- Emerald Dream
-		[420009] = List(), -- Corrupting Sparks (Splinterlimb)
+		[448488] = List(), -- Worshipper's Protection
+		[448505] = List(), -- Worshipper's Protection 2
+		[445013] = List(), -- Dark Barrier
 	},
 }
 
@@ -1176,7 +1093,6 @@ G.unitframe.aurawatch = {
 		[1044]		= Aura(1044, nil, 'BOTTOMRIGHT', {0.89, 0.45, 0}, true), -- Blessing of Freedom
 		[6940]		= Aura(6940, nil, 'BOTTOMRIGHT', {0.89, 0.1, 0.1}, true), -- Blessing of Sacrifice
 		[204018]	= Aura(204018, nil, 'BOTTOMRIGHT', {0.2, 0.2, 1}, true), -- Blessing of Spellwarding
-		[223306]	= Aura(223306, nil, 'BOTTOMLEFT', {0.7, 0.7, 0.3}), -- Bestow Faith
 		[157047]	= Aura(157047, nil, 'TOP', {0.15, 0.58, 0.84}), -- Saved by the Light (T25 Talent)
 		[148039]	= Aura(148039, nil, 'BOTTOM', {0.98, 0.50, 0.11}), -- Barrier of Faith (accumulation)
 		[395180]	= Aura(395180, nil, 'BOTTOM', {0.93, 0.80, 0.36}), -- Barrier of Faith (absorbtion)
@@ -1195,7 +1111,6 @@ G.unitframe.aurawatch = {
 		[116849]	= Aura(116849, nil, 'TOPRIGHT', {0.2, 0.8, 0.2}, true), -- Life Cocoon
 		[119611]	= Aura(119611, nil, 'TOPLEFT', {0.3, 0.8, 0.6}), -- Renewing Mist
 		[124682]	= Aura(124682, nil, 'BOTTOMLEFT', {0.8, 0.8, 0.25}), -- Enveloping Mist
-		[191840]	= Aura(191840, nil, 'BOTTOMRIGHT', {0.27, 0.62, 0.7}), -- Essence Font
 		[325209]	= Aura(325209, nil, 'BOTTOM', {0.3, 0.6, 0.6}), -- Enveloping Breath
 	},
 	PET = {

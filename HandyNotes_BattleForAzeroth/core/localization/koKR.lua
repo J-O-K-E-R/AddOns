@@ -48,6 +48,8 @@ L['shared_drops'] = nil
 L['zone_drops_label'] = nil
 L['zone_drops_note'] = nil
 
+L['poi_entrance_label'] = nil
+
 L['requires'] = '요구사항'
 L['ranked_research'] = '%s (연구단계 %d/%d)'
 
@@ -189,6 +191,11 @@ L['options_toggle_per_map_settings'] = '지역별 설정 사용'
 L['options_toggle_per_map_settings_desc'] = '개별 지역별로 토글, 크기, 투명도를 따로 설정합니다'
 L['options_restore_hidden_nodes'] = '숨긴 지점 복구'
 L['options_restore_hidden_nodes_desc'] = '우클릭 메뉴에서 숨긴 지점 복구 기능을 켭니다.'
+
+L['ignore_class_restrictions'] = nil
+L['ignore_class_restrictions_desc'] = nil
+L['ignore_faction_restrictions'] = nil
+L['ignore_faction_restrictions_desc'] = nil
 
 L['options_rewards_settings'] = '보상'
 L['options_reward_behaviors_settings'] = nil

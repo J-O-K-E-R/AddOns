@@ -16,7 +16,7 @@ local DCSITEM_SLOT_FRAMES = {
 	CharacterHeadSlot,CharacterNeckSlot,CharacterShoulderSlot,CharacterBackSlot,CharacterChestSlot,CharacterWristSlot,
 	CharacterHandsSlot,CharacterWaistSlot,CharacterLegsSlot,CharacterFeetSlot,
 	CharacterFinger0Slot,CharacterFinger1Slot,CharacterTrinket0Slot,CharacterTrinket1Slot,
-	CharacterMainHandSlot,CharacterSecondaryHandSlot,
+	CharacterMainHandSlot,CharacterSecondaryHandSlot,CharacterShirtSlot,CharacterTabardSlot
 }
 
 local DCSITEM_SLOT_FRAMES_RIGHT = {
@@ -538,7 +538,11 @@ local function attempt_ilvl(v,attempts)
 			if value > 0 then --ilvl of 0 probably indicates that item is not fully loaded
 				local r, g, b = GetItemQualityColor(nItem:GetItemQuality());
 				v.ilevel:SetTextColor(r, g, b, 1) --upvalue call
-				v.ilevel:SetText(value)
+				if ( v==CharacterShirtSlot ) or ( v==CharacterTabardSlot ) then
+					v.ilevel:SetText("")
+				else
+					v.ilevel:SetText(value)
+				end
 			else
 				C_Timer.After(0.2, function() attempt_ilvl(v,attempts-1) end)
 			end
@@ -699,6 +703,145 @@ DCS_AlternateInfoPlacementCheck:SetScript("OnClick", function(self)
 	DCS_Set_Dura_Item_Positions()
 end)
 
+--------------------------
+-- Center Item Tooltips --
+--------------------------
+local centerItemTooltips, DCS_CenterItemTooltipScale
+
+local DCS_ItemTooltipAnchor = CreateFrame("Frame", "DCS_ItemTooltipAnchor", CharacterFrame)
+	DCS_ItemTooltipAnchor:RegisterEvent("MODIFIER_STATE_CHANGED")
+	DCS_ItemTooltipAnchor:ClearAllPoints()
+	DCS_ItemTooltipAnchor:SetPoint("BOTTOMRIGHT", CharacterModelScene, "TOPLEFT")
+	DCS_ItemTooltipAnchor:SetSize(1,1)
+
+	DCS_ItemTooltipAnchor:SetScript("OnEvent", function(self, event, key, down, ...)
+		for _, v in ipairs(DCSITEM_SLOT_FRAMES) do
+			if ( v:IsMouseOver() ) then
+				EquipmentFlyout_UpdateFlyout(v)
+			end
+		end
+	end)
+
+local function DCS_ShowCenterItemTooltip(frame)
+	local slotID = frame:GetID()
+	DCS_CenterItemTooltipScale = gdbprivate.gdb.gdbdefaults.DCS_SetItemTooltipScaleSliderValue.DCS_ItemTooltipScaleSliderValue
+
+	GameTooltip:SetScale(DCS_CenterItemTooltipScale)
+
+	if ( centerItemTooltips ) then
+		GameTooltip:SetOwner(DCS_ItemTooltipAnchor, "ANCHOR_BOTTOMRIGHT");
+	else
+		GameTooltip:SetOwner(frame, "ANCHOR_RIGHT");
+	end
+	GameTooltip:SetInventoryItem("player", slotID);
+	GameTooltip:Show()
+end
+
+local function DCS_ItemSlotIsMouseOver(frame)
+	local itemLink  = GetInventoryItemLink("player", frame:GetID())
+	if ( itemLink ) and ( frame:IsMouseOver() ) then --{ Don't extend pixel range or DCS_CenterItemTooltip may hang and not close OnLeave; I.E. dont use: frame:IsMouseOver(2, -2, -2, 2)
+		DCS_ShowCenterItemTooltip(frame)
+	else
+		GameTooltip_Hide()
+	end
+	if ( IsModifierKeyDown() ) then
+		EquipmentFlyout_UpdateFlyout(frame)
+	end
+end
+
+local function DCS_CenterItemTooltips()
+	for _, v in ipairs(DCSITEM_SLOT_FRAMES) do
+		v:SetScript("OnEnter", function()
+			DCS_ItemSlotIsMouseOver(v)
+		end)
+		v:SetScript("OnLeave", GameTooltip_Hide)
+	end
+end
+
+gdbprivate.gdbdefaults.gdbdefaults.DCS_CenterItemTooltips = {
+	centerItemTooltips = true,
+	DCS_CenterItemTooltipScale = 1,
+}
+
+local DCS_CenterItemTooltipsCheck = CreateFrame("CheckButton", "DCS_CenterItemTooltipsCheck", DejaCharacterStatsPanel, "InterfaceOptionsCheckButtonTemplate")
+	DCS_CenterItemTooltipsCheck:RegisterEvent("PLAYER_LOGIN")
+	DCS_CenterItemTooltipsCheck:ClearAllPoints()
+	DCS_CenterItemTooltipsCheck:SetPoint("TOPLEFT", "dcsItemsPanelCategoryFS", 150, -15)
+	DCS_CenterItemTooltipsCheck:SetScale(1)
+	DCS_CenterItemTooltipsCheck.tooltipText = L["Centers the tooltip of equipped items over the character model."] --Creates a tooltip on mouseover.
+	_G[DCS_CenterItemTooltipsCheck:GetName() .. "Text"]:SetText(L["Center Equipped Item Tooltips"])
+
+DCS_CenterItemTooltipsCheck:SetScript("OnEvent", function(self, ...)
+	centerItemTooltips = gdbprivate.gdb.gdbdefaults.DCS_CenterItemTooltips.centerItemTooltips
+	self:SetChecked(centerItemTooltips)
+	DCS_CenterItemTooltips()
+end)
+
+DCS_CenterItemTooltipsCheck:SetScript("OnClick", function(self)
+	centerItemTooltips = not centerItemTooltips
+	gdbprivate.gdb.gdbdefaults.DCS_CenterItemTooltips.centerItemTooltips = centerItemTooltips
+	DCS_CenterItemTooltips()
+end)
+
+gdbprivate.gdbdefaults.gdbdefaults.DCS_SetItemTooltipScaleSliderValue = {
+	DCS_ItemTooltipScaleSliderValue = 1.00,
+}
+
+-- Quality Color Outlines Alpha Slider:
+local DCS_ItemTooltipScaleSlider = CreateFrame("Slider", "DCS_ItemTooltipScaleSlider", DejaCharacterStatsPanel, "UISliderTemplateWithLabels")
+	DCS_ItemTooltipScaleSlider:RegisterEvent("PLAYER_LOGIN")
+	DCS_ItemTooltipScaleSlider:SetPoint("TOPLEFT", DCS_CenterItemTooltipsCheck, 2, -40)
+	DCS_ItemTooltipScaleSlider:SetWidth(180)
+	DCS_ItemTooltipScaleSlider:SetHeight(16)
+	DCS_ItemTooltipScaleSlider:SetOrientation('HORIZONTAL')
+	DCS_ItemTooltipScaleSlider:SetMinMaxValues(0.5, 2.0)
+	DCS_ItemTooltipScaleSlider.minValue, DCS_ItemTooltipScaleSlider.maxValue = DCS_ItemTooltipScaleSlider:GetMinMaxValues()
+	DCS_ItemTooltipScaleSlider:SetValueStep(0.05)
+	DCS_ItemTooltipScaleSlider:SetObeyStepOnDrag(true)
+
+	DCS_ItemTooltipScaleSlider.tooltipText = "Set the intensity (alpha) of your equipped items' quality colored border glow in increments or decrements of 5. Default is 75." --Creates a tooltip on mouseover.
+
+	DCS_ItemTooltipScaleSlider.Low:SetText(DCS_ItemTooltipScaleSlider.minValue); --Sets the left-side slider text (default is "Low").
+	DCS_ItemTooltipScaleSlider.High:SetText(DCS_ItemTooltipScaleSlider.maxValue); --Sets the right-side slider text (default is "High").
+
+	DCS_ItemTooltipScaleSlider:Show()
+
+	DCS_ItemTooltipScaleSlider:SetScript("OnEvent", function(self, event, arg1)
+		if event == "PLAYER_LOGIN" then
+		local slideValue = gdbprivate.gdb.gdbdefaults.DCS_SetItemTooltipScaleSliderValue.DCS_ItemTooltipScaleSliderValue
+			self:SetValue(slideValue)
+			getglobal(DCS_ItemTooltipScaleSlider:GetName() .. 'Text'):SetFormattedText("Item Tooltip Scale".." = (%.2f)", (slideValue)); --Sets the "title" text (top-centre of slider).
+		end
+	end)
+
+local function DCS_UpdateTooltipScale(frame)
+	local foci = GetMouseFoci()
+	for i = 1, #foci do
+		if ( foci[i] == frame ) then
+			for _, v in ipairs(DCSITEM_SLOT_FRAMES) do
+				local itemLink  = GetInventoryItemLink("player", v:GetID())
+				if ( itemLink ) then
+					DCS_ShowCenterItemTooltip(v)
+					return --{ Display first found item's tooltip then stop
+				end
+			end
+		end
+	end
+end
+
+	DCS_ItemTooltipScaleSlider:SetScript("OnValueChanged", function(self, value)
+	local slideValue = DCS_ItemTooltipScaleSlider:GetValue()
+		DCS_ItemTooltipScaleSlider.Text:SetFormattedText("Item Tooltip Scale".." = (%.2f)", (slideValue)); --Sets the "title" text (top-centre of slider).
+		gdbprivate.gdb.gdbdefaults.DCS_SetItemTooltipScaleSliderValue.DCS_ItemTooltipScaleSliderValue = slideValue
+		DCS_UpdateTooltipScale(self)
+	end)
+
+	DCS_ItemTooltipScaleSlider:SetScript("OnEnter", function(self)
+		DCS_UpdateTooltipScale(self)
+	end)
+
+	DCS_ItemTooltipScaleSlider:SetScript("OnLeave", GameTooltip_Hide)
+
 PaperDollFrame:HookScript("OnShow", function(self)
 	if showitemlevel then
 		DCS_Item_Level_Center()
@@ -741,4 +884,7 @@ PaperDollFrame:HookScript("OnShow", function(self)
 		end
 		duraMeanTexture:Hide()
 	end
+	DCS_CenterItemTooltips()
 end)
+
+CharacterFrame:HookScript("OnHide", GameTooltip_Hide)

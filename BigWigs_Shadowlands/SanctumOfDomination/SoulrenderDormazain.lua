@@ -216,7 +216,7 @@ do
 		playerList[count] = args.destName
 		playerList[args.destName] = count -- Set raid marker
 		if self:Me(args.destGUID) then
-			self:Say(args.spellId, CL.count:format(L.brand, brandCount-1))
+			self:Say(args.spellId, CL.count:format(L.brand, brandCount-1), nil, ("Brand (%d)"):format(brandCount-1))
 			self:PlaySound(args.spellId, "warning")
 			self:SayCountdown(args.spellId, 15)
 		end

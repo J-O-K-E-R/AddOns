@@ -146,8 +146,8 @@ local function FixVignetteInfo(vignetteInfo)
 		vignetteInfo.name = AL["CONTAINER"]
 	end
 	
-	-- Track world bosses in the War Within pre-patch
-	if (vignetteInfo.atlasName == RSConstants.NPC_VIGNETTE_BOSS and RSUtils.Contains({221585,224157,212088}, entityID)) then
+	-- Track world bosses in the War Within pre-patch or 20 anniversary
+	if (vignetteInfo.atlasName == RSConstants.NPC_VIGNETTE_BOSS and RSUtils.Contains(RSConstants.WORLDBOSSES, entityID)) then
 		vignetteInfo.atlasName = RSConstants.NPC_VIGNETTE
 	end
 	
@@ -371,7 +371,12 @@ local function ShowAlert(button, vignetteInfo, isNavigating)
 				RSLogger:PrintDebugMessage(string.format("El contenedor [%s] se ignora porque se ha avisado de esta hace menos de 2 minutos", entityID))
 				return
 			else
-				FlashClientIcon()
+				RSNotificationTracker.AddNotification(vignetteInfo.id, false, entityID)
+				
+				if (RSConfigDB.IsFlashingWindowsTaskbar()) then
+					FlashClientIcon()
+				end
+				
 				RSAudioAlerts.PlaySoundAlert(vignetteInfo.atlasName)
 				button:DisplayMessages(entityID, vignetteInfo.preEvent and string.format(AL["PRE_EVENT"], vignetteInfo.name) or vignetteInfo.name)
 				return
@@ -391,11 +396,17 @@ local function ShowAlert(button, vignetteInfo, isNavigating)
 		end
 	end
 
+	-- Sets the current vignette as new found
+	RSNotificationTracker.AddNotification(vignetteInfo.id, isNavigating, entityID)
+
 	--------------------------------
 	-- show messages and play alarm
 	--------------------------------
 	if (not isNavigating) then
-		FlashClientIcon()
+		if (RSConfigDB.IsFlashingWindowsTaskbar()) then
+			FlashClientIcon()
+		end
+				
 		button:DisplayMessages(entityID, vignetteInfo.preEvent and string.format(AL["PRE_EVENT"], vignetteInfo.name) or vignetteInfo.name)
 		RSAudioAlerts.PlaySoundAlert(vignetteInfo.atlasName)
 	end
@@ -527,7 +538,7 @@ function RSButtonHandler.AddAlert(button, vignetteInfo, isNavigating)
 		return
 	end
 	
-	--RSLogger:PrintDebugMessage(string.format("Vignette ATLAS [%s]", vignetteInfo.atlasName))
+	--RSLogger:PrintDebugMessage(string.format("Vignette ATLAS [%s][%s]", vignetteInfo.atlasName, vignetteInfo.objectGUID))
 	
 	local entityID, vignetteInfo = FixVignetteInfo(vignetteInfo)
 	if (not entityID or not vignetteInfo) then

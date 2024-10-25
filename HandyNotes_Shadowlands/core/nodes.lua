@@ -161,7 +161,17 @@ function Node:IsEnabled()
         if self:IsCompleted() then return false end
     end
 
-    if self.class and self.class ~= ns.class then return false end
+    -- Check faction
+    if self.faction then
+        if ns:GetOpt('ignore_faction_restrictions') then return true end
+        if self.faction ~= ns.faction then return false end
+    end
+
+    -- Check class
+    if self.class then
+        if ns:GetOpt('ignore_class_restrictions') then return true end
+        if self.class ~= ns.class then return false end
+    end
 
     return true
 end
@@ -586,7 +596,7 @@ function Interval:Initialize(attrs)
         [1] = self.initial.us,
         [2] = self.initial.kr or self.initial.tw,
         [3] = self.initial.eu,
-        [5] = self.initial.cn
+        [4] = self.initial.cn
     } -- https://warcraft.wiki.gg/wiki/API_GetCurrentRegion
 
     if self.id then

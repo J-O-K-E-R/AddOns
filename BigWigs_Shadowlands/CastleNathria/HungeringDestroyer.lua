@@ -159,7 +159,7 @@ end
 local function RepeatingChatMessages()
 	local duration = 1.5
 	if volEjectionOnMe and mod:GetOption("custom_on_repeating_say_laser") then
-		mod:Say(false, CL.beam)
+		mod:Say(false, CL.beam, nil, "Beam")
 	elseif miasmaOnMe and mod:GetOption("custom_on_repeating_yell_miasma") then -- Repeat Health instead
 		local currentHealthPercent = math.floor(mod:GetHealth("player"))
 		if currentHealthPercent < 75 then -- Only let players know when you are below 75%
@@ -224,13 +224,13 @@ do
 				miasmaOnMe = true
 				self:PlaySound(args.spellId, "alarm")
 				if not self:LFR() then
-					self:Yell(args.spellId, CL.count_rticon:format(L.miasma, count, count))
+					self:Yell(args.spellId, CL.count_rticon:format(L.miasma, count, count), nil, ("Miasma (%d{rt%d})"):format(count, count))
 					if not scheduledChatMsg and self:GetOption("custom_on_repeating_yell_miasma") then
 						scheduledChatMsg = true
 						self:SimpleTimer(RepeatingChatMessages, 2)
 					end
 				else
-					self:Yell(args.spellId, L.miasma)
+					self:Yell(args.spellId, L.miasma, nil, "Miasma")
 				end
 			end
 
@@ -295,7 +295,7 @@ do
 		if self:Me(args.destGUID) then
 			self:PlaySound(334266, "warning")
 			self:Flash(334266)
-			self:Say(334266, CL.beam)
+			self:Say(334266, CL.beam, nil, "Beam")
 			volEjectionOnMe = true
 			if not scheduledChatMsg and not self:LFR() and self:GetOption("custom_on_repeating_say_laser") then
 				scheduledChatMsg = true

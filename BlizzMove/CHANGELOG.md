@@ -1,7 +1,7 @@
 # BlizzMove
 
-## [v3.5.41](https://github.com/Kiatra/BlizzMove/tree/v3.5.41) (2024-09-09)
-[Full Changelog](https://github.com/Kiatra/BlizzMove/compare/v3.5.40...v3.5.41) [Previous Releases](https://github.com/Kiatra/BlizzMove/releases)
+## [v3.6.0](https://github.com/Kiatra/BlizzMove/tree/v3.6.0) (2024-10-23)
+[Full Changelog](https://github.com/Kiatra/BlizzMove/compare/v3.5.43...v3.6.0) [Previous Releases](https://github.com/Kiatra/BlizzMove/releases)
 
-- Make the crafting reagent quality selection popup movable  
-- Don't attempt to rescale protected frames while in combat  
+- TOC Bump  
+- Rewrite of the "scroll to re-scale" logic, which should remove all posiblity of taint issues  

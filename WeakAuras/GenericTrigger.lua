@@ -702,6 +702,10 @@ local function RunTriggerFunc(allStates, data, id, triggernum, event, arg1, arg2
     elseif (data.statesParameter == "unit") then
       if arg1 then
         if Private.multiUnitUnits[data.trigger.unit] then
+          if data.trigger.unit == "group" and IsInRaid() and Private.multiUnitUnits.party[arg1] then
+            return
+          end
+
           unitForUnitTrigger = arg1
           cloneIdForUnitTrigger = arg1
         else
@@ -1162,6 +1166,7 @@ function HandleEvent(frame, event, arg1, arg2, ...)
   if (event == "PLAYER_ENTERING_WORLD") then
     timer:ScheduleTimer(function()
       HandleEvent(frame, "WA_DELAYED_PLAYER_ENTERING_WORLD", arg1, arg2)
+      Private.ScanForLoads(nil, "WA_DELAYED_PLAYER_ENTERING_WORLD")
       Private.StartProfileSystem("generictrigger WA_DELAYED_PLAYER_ENTERING_WORLD");
       Private.CheckCooldownReady();
       Private.StopProfileSystem("generictrigger WA_DELAYED_PLAYER_ENTERING_WORLD");
@@ -1857,8 +1862,8 @@ function GenericTrigger.Add(data, region)
   end
 
   if warnAboutCLEUEvents then
-    Private.AuraWarnings.UpdateWarning(data.uid, "spammy_event_warning", "warning",
-                L["COMBAT_LOG_EVENT_UNFILTERED without a filter is generally advised against as it’s very performance costly.\nFind more information:\nhttps://github.com/WeakAuras/WeakAuras2/wiki/Custom-Triggers#events"])
+    Private.AuraWarnings.UpdateWarning(data.uid, "spammy_event_warning", "error",
+                L["|cFFFF0000Support for unfiltered COMBAT_LOG_EVENT_UNFILTERED is deprecated|r\nCOMBAT_LOG_EVENT_UNFILTERED without a filter is advised against as it’s very performance costly.\nFind more information:\nhttps://github.com/WeakAuras/WeakAuras2/wiki/Custom-Triggers#events"])
   else
     Private.AuraWarnings.UpdateWarning(data.uid, "spammy_event_warning")
   end
@@ -2299,6 +2304,7 @@ do
     local nowReady = false
     local time = GetTime()
     if self.expirationTime[id] and self.expirationTime[id] <= time and self.expirationTime[id] ~= 0 then
+      self.readyTime[id] = self.expirationTime[id]
       self.duration[id] = 0
       self.expirationTime[id] = 0
       changed = true
@@ -3432,6 +3438,9 @@ do
   end
 
   function Private.ExecEnv.GetEffectiveSpellId(spellId, exactMatch, followoverride)
+    if type(spellId) == "string" then
+      spellId = select(7, Private.ExecEnv.GetSpellInfo(spellId))
+    end
     if not exactMatch then
       local spellName = Private.ExecEnv.GetSpellName(spellId or "")
       if spellName then
@@ -3833,6 +3842,44 @@ function WeakAuras.GetEquipmentSetInfo(itemSetName, partial)
     end
   end
   return bestMatchName, bestMatchIcon, bestMatchNumEquipped, bestMatchNumItems;
+end
+
+-- Workaround Stagger's last tick not resulting in UNIT_ABSORB_AMOUNT_CHANGED
+local staggerWatchFrame
+function Private.WatchStagger()
+  if not staggerWatchFrame then
+    staggerWatchFrame = CreateFrame("FRAME")
+    Private.frames["WeakAuras Stagger Frame"] = staggerWatchFrame
+    staggerWatchFrame:RegisterUnitEvent("UNIT_ABSORB_AMOUNT_CHANGED", "player")
+    staggerWatchFrame:SetScript("OnEvent", function()
+      Private.StartProfileSystem("stagger")
+      local stagger = UnitStagger("player")
+      if stagger > 0 then
+        if not staggerWatchFrame.onupdate then
+          staggerWatchFrame.onupdate = true
+          staggerWatchFrame:SetScript("OnUpdate", function()
+            Private.StartProfileSystem("stagger")
+            local stagger = UnitStagger("player")
+            if stagger ~= staggerWatchFrame.stagger then
+              staggerWatchFrame.stagger = stagger
+              WeakAuras.ScanEvents("WA_UNIT_STAGGER_CHANGED", "player", stagger)
+            end
+            if stagger == 0 then
+              staggerWatchFrame:SetScript("OnUpdate", nil)
+              staggerWatchFrame.onupdate = nil
+            end
+            Private.StopProfileSystem("stagger")
+          end)
+        end
+      end
+
+      if stagger ~= staggerWatchFrame.stagger then
+        staggerWatchFrame.stagger = stagger
+        WeakAuras.ScanEvents("WA_UNIT_STAGGER_CHANGED", "player", stagger)
+      end
+      Private.StopProfileSystem("stagger")
+    end)
+  end
 end
 
 function Private.ExecEnv.CheckTotemName(totemName, triggerTotemName, triggerTotemPattern, triggerTotemOperator)
@@ -5012,16 +5059,20 @@ WeakAuras.GetBonusIdInfo = function(ids, specificSlot)
   end
 end
 
----@param itemName string
+---@param itemId string
 ---@param specificSlot? number
 ---@return boolean|nil isItemEquipped
-WeakAuras.CheckForItemEquipped = function(itemName, specificSlot)
+WeakAuras.CheckForItemEquipped = function(itemId, specificSlot)
   if not specificSlot then
-    return C_Item.IsEquippedItem(itemName or '')
+    return C_Item.IsEquippedItem(itemId or '')
   else
     local item = Item:CreateFromEquipmentSlot(specificSlot)
     if item and not item:IsItemEmpty() then
-      return itemName == item:GetItemName()
+      if type(itemId) == "number" then
+        return itemId == item:GetItemID()
+      else
+        return itemId == item:GetItemName()
+      end
     end
   end
 end

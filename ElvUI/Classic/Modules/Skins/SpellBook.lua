@@ -29,9 +29,12 @@ function S:SpellBookFrame()
 	if not (E.private.skins.blizzard.enable and E.private.skins.blizzard.spellbook) then return end
 
 	S:HandleFrame(_G.SpellBookFrame, true, nil, 11, -12, -32, 76)
-	S:HandleCheckBox(_G.ShowAllSpellRanksCheckBox)
-	_G.ShowAllSpellRanksCheckBox:ClearAllPoints()
-	_G.ShowAllSpellRanksCheckBox:Point('TOPLEFT', _G.SpellButton1, -11, 32)
+
+	local showAllRanks = _G.ShowAllSpellRanksCheckbox
+	if showAllRanks then
+		S:HandleCheckBox(showAllRanks)
+		showAllRanks:Point('TOPLEFT', 20, -20)
+	end
 
 	_G.SpellBookTitleText:Point('TOP', -10, -17)
 	_G.SpellBookTitleText:SetTextColor(1, 1, 1)
@@ -104,15 +107,15 @@ function S:SpellBookFrame()
 		E:RegisterCooldown(cooldown)
 	end
 
-	S:HandlePointXY(_G.SpellButton1, 28, -55)
+	_G.SpellButton1:PointXY(28, -55)
 
 	-- evens
 	for i = 2, _G.SPELLS_PER_PAGE, 2 do
-		S:HandlePointXY(_G['SpellButton'..i], 163, 0)
+		_G['SpellButton'..i]:PointXY(163, 0)
 	end
 	-- odds
 	for i = 3, _G.SPELLS_PER_PAGE, 2 do
-		S:HandlePointXY(_G['SpellButton'..i], 0, -20)
+		_G['SpellButton'..i]:PointXY(0, -20)
 	end
 
 	hooksecurefunc('SpellButton_UpdateButton', function(button)

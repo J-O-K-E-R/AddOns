@@ -185,7 +185,7 @@ function mod:GetOptions()
 		{353952, "CASTBAR"}, -- Banshee Scream
 		354147, -- Raze
 		-- Mythic
-		{358704, "SAY", "SAY_COUNTDOWN", "ME_ONLY_EMPHASIZE"}, -- Black Arrow
+		{358704, "ME_ONLY_EMPHASIZE"}, -- Black Arrow
 		358711, -- Rage
 		"custom_on_nameplate_fixate",
 		356021, -- Dark Communion (Mawforged Summoner)
@@ -414,7 +414,7 @@ do
 		playerList[count] = args.destName
 		if self:Me(args.destGUID) then
 			self:PersonalMessage(args.spellId)
-			self:Say(args.spellId, CL.count_rticon:format(args.spellName, count, count))
+			self:Say(args.spellId, CL.count_rticon:format(args.spellName, count, count), nil, ("Expulsion (%d{rt%d})"):format(count, count))
 			self:SayCountdown(args.spellId, 3, count, 2)
 			self:PlaySound(args.spellId, "warning")
 		end
@@ -463,7 +463,7 @@ do
 		end
 		if self:Me(args.destGUID)then
 			self:PersonalMessage(args.spellId)
-			self:Say(args.spellId)
+			self:Say(args.spellId, nil, nil, "Death Knives")
 			self:SayCountdown(args.spellId, 5)
 			self:PlaySound(args.spellId, "warning")
 		end
@@ -693,7 +693,7 @@ do
 		if self:Me(args.destGUID) then
 			self:PersonalMessage(347609, nil, CL.count:format(L.arrow, wailingArrowPlayerCount))
 			self:PlaySound(347609, "alarm")
-			self:Say(347609, CL.count_rticon:format(L.arrow, wailingArrowPlayerCount, wailingArrowPlayerCount))
+			self:Say(347609, CL.count_rticon:format(L.arrow, wailingArrowPlayerCount, wailingArrowPlayerCount), nil, ("Arrow (%d{rt%d})"):format(wailingArrowPlayerCount, wailingArrowPlayerCount))
 			self:SayCountdown(347609, 9)
 			self:TargetBar(347609, 9, args.destName, CL.count:format(L.arrow, wailingArrowPlayerCount))
 		end

@@ -388,7 +388,9 @@ L = DBM:GetModLocalization("Jindo")
 L:SetGeneralLocalization{
 	name = "Jin'do le Maléficieur"
 }
-
+L:SetMiscLocalization{
+	Ghosts = "Fantômes"
+}
 -----------------
 --  Razorgore  --
 -----------------
@@ -458,7 +460,24 @@ L = DBM:GetModLocalization("Flamegor")
 L:SetGeneralLocalization{
 	name = "Flamegor"
 }
+----------------
+--  Ebonroc and Flamegor  --
+----------------
+L:SetGeneralLocalization{
+	name = "Rochébène et Flamegor"
+}
 
+L:SetTimerLocalization{
+	TimerBrandCD	= "Marque"
+}
+L:SetOptionLocalization{
+	TimerBrandCD	= "Afficher le chronomètre pour le temps de recharge de la marque"
+}
+
+L:SetMiscLocalization{
+	Ebonroc		= "Rochébène",
+	Flamegor	= "Flamegor"
+}
 
 -----------------------
 --  Vulnerabilities  --
@@ -484,7 +503,6 @@ L:SetMiscLocalization{
 	Holy		= "Sacré"
 }
 
-
 ------------------
 --  Chromaggus  --
 ------------------
@@ -504,7 +522,7 @@ L:SetTimerLocalization{
 }
 L:SetOptionLocalization{
 	WarnBreath		= "Afficher un avertissement lorsque Chromaggus lance un de ses souffles",
-	WarnVulnerable	= "Afficher un avertissement pour les vulnérabilités des sorts",
+	WarnVulnerableNew	= "Afficher un avertissement pour les vulnérabilités des sorts",
 	TimerBreathCD	= "Afficher le temps de recharge de souffle",
 	TimerBreath		= "Afficher le lancement du souffle",
 	TimerVulnCD		= "Afficher le temps de recharge de vulnérabilité"
@@ -556,6 +574,15 @@ L:SetMiscLocalization{
     YellWarlock		= "Démonistes, vous ne devriez pas jouer avec une magie qui vous dépasse. Vous voyez ce qui arrive ?",
     YellHunter		= "Ah, les chasseurs et les stupides sarbacanes !",
     YellMage		= "Les mages aussi ? Vous devriez être plus prudents lorsque vous jouez avec la magie."
+}
+
+----------------------
+--  SoD BWL Trials  --
+----------------------
+L = DBM:GetModLocalization("SoDBWLTrials")
+
+L:SetGeneralLocalization{
+	name = "Épreuves de la saison de la découverte"
 }
 
 ----------------
@@ -673,7 +700,7 @@ L:SetMiscLocalization{
 }
 
 -----------------
---  The Molten Core (Placeholder?_  --
+--  The Molten Core  --
 -----------------
 L = DBM:GetModLocalization("MoltenCore")
 
@@ -681,6 +708,14 @@ L:SetGeneralLocalization{
 	name = "Le Cœur du Magma"
 }
 
+L:SetOptionLocalization{
+	YellHeartCleared	= "Crier lorsque le Cœur de cendre/braise est retiré.",
+	WarnBossPower		= "Afficher des avertissements lorsque l'énergie du boss atteint 50 %, 75 %, 90 % et 100 %"
+}
+
+L:SetWarningLocalization{
+	WarnBossPower		= "L'énergie du boss à %d%%"
+}
 -----------------
 --  MC: Trash  --
 -----------------

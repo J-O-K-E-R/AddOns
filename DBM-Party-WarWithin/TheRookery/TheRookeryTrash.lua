@@ -1,10 +1,11 @@
 local mod	= DBM:NewMod("TheRookeryTrash", "DBM-Party-WarWithin", 3)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240902224710")
+mod:SetRevision("20241020100524")
 --mod:SetModelID(47785)
 mod.isTrashMod = true
 mod.isTrashModBossFightAllowed = true
+mod:SetZone(2648)
 
 mod:RegisterEvents(
 	"SPELL_CAST_START 426893 450628 427323 427404 430013 427616 430754 423979 430805 430812 432959",
@@ -75,6 +76,7 @@ end
 --]]
 
 function mod:SPELL_CAST_START(args)
+	if not self.Options.Enabled then return end
 	local spellId = args.spellId
 	if not self:IsValidWarning(args.sourceGUID) then return end
 	if spellId == 426893 then
@@ -133,6 +135,7 @@ function mod:SPELL_CAST_START(args)
 end
 
 function mod:SPELL_CAST_SUCCESS(args)
+	if not self.Options.Enabled then return end
 	local spellId = args.spellId
 	if not self:IsValidWarning(args.sourceGUID) then return end
 	if spellId == 427260 then--Doesn't go on CD until cast, so using stuns to stop it causes recast
@@ -199,6 +202,7 @@ end
 --mod.SPELL_AURA_APPLIED_DOSE = mod.SPELL_AURA_APPLIED
 
 function mod:UNIT_DIED(args)
+	if not self.Options.Enabled then return end
 	local cid = self:GetCIDFromGUID(args.destGUID)
 	if cid == 209801 then--Quartermaster Koratite
 		timerBoundingVoidCD:Stop(args.destGUID)

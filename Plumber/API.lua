@@ -1,6 +1,6 @@
 local _, addon = ...
 local API = addon.API;
-local IS_TWW = addon.IsGame_11_0_0;
+local L = addon.L;
 
 local tonumber = tonumber;
 local match = string.match;
@@ -168,6 +168,15 @@ do  --Math
         return floor(n * 1000 + 0.5) * 0.001
     end
     API.RoundCoord = RoundCoord;
+
+    local function Saturate(value)
+        return Clamp(value, 0.0, 1.0);
+    end
+
+    local function DeltaLerp(startValue, endValue, amount, timeSec)
+        return Lerp(startValue, endValue, Saturate(amount * timeSec * 60.0));
+    end
+    API.DeltaLerp = DeltaLerp;
 end
 
 do  -- Color
@@ -196,6 +205,7 @@ do  -- Color
     -- Make Rare and Epic brighter (use the color in Narcissus)
     local ITEM_QUALITY_COLORS = ITEM_QUALITY_COLORS;
     local QualityColors = {};
+    QualityColors[1] = CreateColor(0.92, 0.92, 0.92, 1);
     QualityColors[3] = CreateColor(105/255, 158/255, 255/255, 1);
     QualityColors[4] = CreateColor(185/255, 83/255, 255/255, 1);
 
@@ -1346,6 +1356,49 @@ do  --Currency
             self:CacheAndGetCurrencyInfo(currencyID);
         end
     end
+
+    local IGNORED_OVERFLOW_ID = {
+        [3068] = true,      --Delver's Journey
+        [3143] = true,      --Delver's Journey
+    };
+
+    local function WillCurrencyRewardOverflow(currencyID, rewardQuantity)
+        if IGNORED_OVERFLOW_ID[currencyID] then
+            return false, 0
+        end
+        local currencyInfo = GetCurrencyInfo(currencyID);
+        local quantity = currencyInfo and (currencyInfo.useTotalEarnedForMaxQty and currencyInfo.totalEarned or currencyInfo.quantity);
+        return quantity and currencyInfo.maxQuantity > 0 and rewardQuantity + quantity > currencyInfo.maxQuantity, quantity
+    end
+    API.WillCurrencyRewardOverflow = WillCurrencyRewardOverflow;
+
+    local CoinUtil = {};
+    addon.CoinUtil = CoinUtil;
+
+    CoinUtil.patternGold = L["Match Pattern Gold"];
+    CoinUtil.patternSilver = L["Match Pattern Silver"];
+    CoinUtil.patternCopper = L["Match Pattern Copper"];
+
+    function CoinUtil:GetCopperFromCoinText(coinText)
+        local rawCopper = 0;
+        local gold = match(coinText, self.patternGold);
+        local silver = match(coinText, self.patternSilver);
+        local copper = match(coinText, self.patternCopper);
+
+        if gold then
+            rawCopper = rawCopper + 10000 * (tonumber(gold) or 0);
+        end
+
+        if silver then
+            rawCopper = rawCopper + 100 * (tonumber(silver) or 0);
+        end
+
+        if copper then
+            rawCopper = rawCopper + (tonumber(copper) or 0);
+        end
+
+        return rawCopper
+    end
 end
 
 do  --Chat Message
@@ -1486,9 +1539,14 @@ do  --Game UI
 end
 
 do  --Reputation
+    local C_Reputation = C_Reputation;
+    local C_MajorFactions = C_MajorFactions;
     local GetFriendshipReputation = C_GossipInfo.GetFriendshipReputation;
     local GetFriendshipReputationRanks = C_GossipInfo.GetFriendshipReputationRanks;
     local GetFactionParagonInfo = C_Reputation.GetFactionParagonInfo;
+    local GetFactionInfoByID = C_Reputation.GetFactionDataByID;
+    local UnitSex = UnitSex;
+    local GetText = GetText;
 
     local function GetFriendshipProgress(factionID)
         local repInfo = factionID and GetFriendshipReputation(factionID);
@@ -1527,10 +1585,125 @@ do  --Reputation
         return 0, 1, 0
     end
     API.GetParagonValuesAndLevel = GetParagonValuesAndLevel;
+
+
+    local function GetFactionStatusText(factionID)
+        --Derived from Blizzard ReputationFrame_InitReputationRow in ReputationFrame.lua
+        if not factionID then return end;
+        local p1, description, standingID, barMin, barMax, barValue = GetFactionInfoByID(factionID);
+
+        if type(p1) == "table" then
+            standingID = p1.reaction;
+            barMin = p1.currentReactionThreshold;
+            barMax = p1.nextReactionThreshold;
+            barValue = p1.currentStanding;
+        end
+
+        local isParagon = C_Reputation.IsFactionParagon(factionID);
+        local isMajorFaction = C_Reputation.IsMajorFaction(factionID);
+        local repInfo = GetFriendshipReputation(factionID);
+
+        local isCapped;
+        local factionStandingtext;  --Revered/Junior/Renown 1
+        local cappedAlert;
+
+        if repInfo and repInfo.friendshipFactionID > 0 then --Friendship
+            factionStandingtext = repInfo.reaction;
+
+            if repInfo.nextThreshold then
+                barMin, barMax, barValue = repInfo.reactionThreshold, repInfo.nextThreshold, repInfo.standing;
+            else
+                barMin, barMax, barValue = 0, 1, 1;
+                isCapped = true;
+            end
+
+            local rankInfo = GetFriendshipReputationRanks(repInfo.friendshipFactionID);
+            if rankInfo then
+                factionStandingtext = factionStandingtext .. string.format(" (Lv. %s/%s)", rankInfo.currentLevel, rankInfo.maxLevel);
+            end
+
+        elseif isMajorFaction then
+            local majorFactionData = C_MajorFactions.GetMajorFactionData(factionID);
+            if majorFactionData then
+                barMin, barMax = 0, majorFactionData.renownLevelThreshold;
+                isCapped = C_MajorFactions.HasMaximumRenown(factionID);
+                barValue = isCapped and majorFactionData.renownLevelThreshold or majorFactionData.renownReputationEarned or 0;
+                factionStandingtext = L["Renown Level Label"] .. majorFactionData.renownLevel;
+
+                if isParagon then
+                    local totalEarned, threshold, rewardQuestID, hasRewardPending = C_Reputation.GetFactionParagonInfo(factionID);
+                    if totalEarned and threshold and threshold ~= 0 then
+                        local paragonLevel = floor(totalEarned / threshold);
+                        local currentValue = totalEarned - paragonLevel * threshold;
+                        factionStandingtext = ("|cff00ccff"..L["Paragon Reputation"].."|r %d/%d"):format(currentValue, threshold);
+                    end
+
+                    if hasRewardPending then
+                        cappedAlert = "|cffff4800"..L["Unclaimed Reward Alert"].."|r";
+                    end
+                else
+                    if isCapped then
+                        factionStandingtext = factionStandingtext.." "..L["Level Maxed"];
+                    end
+                end
+            end
+        elseif (standingID and standingID > 0) then
+            isCapped = standingID == 8;  --MAX_REPUTATION_REACTION
+            local gender = UnitSex("player");
+		    factionStandingtext = GetText("FACTION_STANDING_LABEL"..standingID, gender);    --GetText: Game API that returns localized texts
+        end
+
+        local rolloverText; --(0/24000)
+        if barValue and barMax and (not isCapped) then
+            rolloverText = string.format("(%s/%s)", barValue, barMax);
+        end
+
+        local text;
+
+        if factionStandingtext then
+            if not text then text = L["Current Colon"] end;
+            factionStandingtext = " |cffffffff"..factionStandingtext.."|r";
+            text = text .. factionStandingtext;
+        end
+
+        if rolloverText then
+            if not text then text = L["Current Colon"] end;
+            rolloverText = "  |cffffffff"..rolloverText.."|r";
+            text = text .. rolloverText;
+        end
+
+        if text then
+            text = " \n"..text;
+
+            if cappedAlert then
+                text = text.."\n"..cappedAlert;
+            end
+        end
+
+        return text
+    end
+    API.GetFactionStatusText = GetFactionStatusText;
+
+
+    local function GetReputationChangeFromText(text)
+        local name, amount;
+        name, amount = match(text, L["Match Patter Rep 1"]);
+        if not name then
+            name, amount = match(text, L["Match Patter Rep 2"]);
+        end
+        if name then
+            if amount then
+                amount = gsub(amount, ",", "");
+                amount = tonumber(amount);
+            end
+            return name, amount
+        end
+    end
+    API.GetReputationChangeFromText = GetReputationChangeFromText;
 end
 
 do  --Spell
-    if IS_TWW then
+    if true then    --IS_TWW
         local GetSpellInfo_Table = C_Spell.GetSpellInfo;
         local SPELL_INFO_KEYS = {"name", "rank", "iconID", "castTime", "minRange", "maxRange", "spellID", "originalIconID"};
         local function GetSpellInfo_Flat(spellID)
@@ -1552,7 +1725,7 @@ do  --Spell
 end
 
 do  --System
-    if IS_TWW then
+    if true then    --IS_TWW
         local GetMouseFoci = GetMouseFoci;
 
         local function GetMouseFocus()
@@ -1562,6 +1735,29 @@ do  --System
         API.GetMouseFocus = GetMouseFocus;
     else
         API.GetMouseFocus = GetMouseFocus;
+    end
+
+
+    local ModifierKeyName = {
+        LSHIFT = "Shift",
+        LCTRL = "Ctrl",
+        LALT = "Alt",
+    };
+
+    if IsMacClient and IsMacClient() then
+        --Mac OS
+        ModifierKeyName.LCTRL = "Command";
+        ModifierKeyName.LALT = "Option";
+    end
+
+    ModifierKeyName.RSHIFT = ModifierKeyName.LSHIFT;
+    ModifierKeyName.RCTRL = ModifierKeyName.LCTRL;
+    ModifierKeyName.RALT = ModifierKeyName.LALT;
+
+    API.GetModifierKeyName = function(key)
+        if key and ModifierKeyName[key] then
+            return ModifierKeyName[key]
+        end
     end
 end
 
@@ -1594,6 +1790,272 @@ do  --Scenario
     API.IsInDelves = IsInDelves;
     --]]
 end
+
+do  --ObjectPool
+    local ObjectPoolMixin = {};
+
+    function ObjectPoolMixin:RemoveObject(obj)
+        obj:Hide();
+        obj:ClearAllPoints();
+
+        if obj.OnRemoved then
+            obj:OnRemoved();
+        end
+    end
+
+    function ObjectPoolMixin:RecycleObject(obj)
+        local isActive;
+
+        for i, activeObject in ipairs(self.activeObjects) do
+            if activeObject == obj then
+                tremove(self.activeObjects, i);
+                isActive = true;
+                break
+            end
+        end
+
+        if isActive then
+            self:RemoveObject(obj);
+            self.numUnused = self.numUnused + 1;
+            self.unusedObjects[self.numUnused] = obj;
+        end
+    end
+
+    function ObjectPoolMixin:CreateObject()
+        local obj = self.createObjectFunc();
+        tinsert(self.objects, obj);
+        obj.Release = self.Object_Release;
+        return obj
+    end
+
+    function ObjectPoolMixin:Acquire()
+        local obj;
+
+        if self.numUnused > 0 then
+            obj = tremove(self.unusedObjects, self.numUnused);
+            self.numUnused = self.numUnused - 1;
+        end
+
+        if not obj then
+            obj = self:CreateObject();
+        end
+
+        tinsert(self.activeObjects, obj);
+        obj:Show();
+
+        return obj
+    end
+
+    function ObjectPoolMixin:ReleaseAll()
+        if #self.activeObjects == 0 then return end;
+
+        for _, obj in ipairs(self.activeObjects) do
+            self:RemoveObject(obj);
+        end
+
+        self.activeObjects = {};
+        self.unusedObjects = {};
+
+        for index, obj in ipairs(self.objects) do
+            self.unusedObjects[index] = obj;
+        end
+
+        self.numUnused = #self.objects;
+    end
+
+    function ObjectPoolMixin:GetTotalObjects()
+        return #self.objects
+    end
+
+    function ObjectPoolMixin:CallAllObjects(method, ...)
+        for i, obj in ipairs(self.objects) do
+            obj[method](obj, ...);
+        end
+    end
+
+    function ObjectPoolMixin:Object_Release()
+        --Override
+    end
+
+    local function CreateObjectPool(createObjectFunc)
+        local pool = {};
+        API.Mixin(pool, ObjectPoolMixin);
+
+        local function Object_Release(f)
+            pool:RecycleObject(f);
+        end
+        pool.Object_Release = Object_Release;
+
+        pool.objects = {};
+        pool.activeObjects = {};
+        pool.unusedObjects = {};
+        pool.numUnused = 0;
+        pool.createObjectFunc = createObjectFunc;
+
+        return pool
+    end
+    API.CreateObjectPool = CreateObjectPool;
+end
+
+do  --Transmog
+    local GetItemInfo = C_TransmogCollection.GetItemInfo;
+    local PlayerKnowsSource = C_TransmogCollection.PlayerHasTransmogItemModifiedAppearance;
+
+    local function IsUncollectedTransmogByItemInfo(itemInfo)
+        --C_TransmogCollection.PlayerHasTransmogByItemInfo isn't reliable
+        local visualID, sourceID =GetItemInfo(itemInfo);
+        if sourceID and sourceID ~= 0 and (not PlayerKnowsSource(sourceID)) then
+            return true
+        end
+    end
+    API.IsUncollectedTransmogByItemInfo = IsUncollectedTransmogByItemInfo
+end
+
+do
+    local GetItemCount = C_Item.GetItemCount
+    local GetContainerNumSlots = C_Container.GetContainerNumSlots;
+    local GetContainerItemID = C_Container.GetContainerItemID;
+    local GetItemInfoInstant = C_Item.GetItemInfoInstant;
+    local GetBagItem = C_TooltipInfo.GetBagItem;
+
+    local function GetItemBagPosition(itemID)
+        local count = GetItemCount(itemID); --unused arg2: Include banks
+        if count and count > 0 then
+            for bagID = 0, 4 do
+                for slotID = 1, GetContainerNumSlots(bagID) do
+                    if(GetContainerItemID(bagID, slotID) == itemID) then
+                        return bagID, slotID
+                    end
+                end
+            end
+        end
+    end
+    API.GetItemBagPosition = GetItemBagPosition;
+
+    local Processor = CreateFrame("Frame");
+    local ITEM_OPENABLE = ITEM_OPENABLE or "<Right Click to Open>";
+    local OPENABLE_ITEM = {};
+
+    local function IsItemOpenable(item)
+        local itemID, _, _, _, _, classID, subClassID = GetItemInfoInstant(item);
+        if OPENABLE_ITEM[itemID] ~= nil then
+            return OPENABLE_ITEM[itemID]
+        end
+
+        if classID == 15 and subClassID == 4 then
+            local bag, slot = GetItemBagPosition(itemID);
+            if bag and slot then
+                local tooltipData = GetBagItem(bag, slot);
+                if tooltipData then
+                    local lines = tooltipData.lines;
+                    local leftText = lines[#lines].leftText;
+                    if leftText and leftText == ITEM_OPENABLE then
+                        OPENABLE_ITEM[itemID] = true;
+                        return true
+                    else
+                        OPENABLE_ITEM[itemID] = false;
+                    end
+                end
+            end
+        end
+        return false
+    end
+
+    function Processor:OnUpdate_Queue(elapsed)
+        self.t = self.t + elapsed;
+        if self.t > 0.1 then
+            self.t = 0;
+            self:SetScript("OnUpdate", nil);
+            local itemID;
+            local anyMatch;
+
+            for bagID = 0, 4 do
+                for slotID = 1, GetContainerNumSlots(bagID) do
+                    itemID = GetContainerItemID(bagID, slotID);
+                    if self.queue[itemID] ~= nil then
+                        if self.queue[itemID].bagPosition == nil then
+                            anyMatch = true;
+                            self.queue[itemID].bagPosition = {bagID, slotID};
+                            if OPENABLE_ITEM[itemID] == nil then
+                                GetBagItem(bagID, slotID);
+                            end
+                        end
+                    end
+                end
+            end
+
+            if anyMatch then
+                self:SetScript("OnUpdate", self.OnUpdate_Tooltip);
+            end
+        end
+    end
+
+    function Processor:OnUpdate_Tooltip(elapsed)
+        self.t = self.t + elapsed;
+        if self.t > 0.1 then
+            self.t = 0;
+            self:SetScript("OnUpdate", nil);
+            local tooltipData;
+            local lines;
+            local leftText;
+            local openable;
+            local bag, slot;
+            for itemID, v in pairs(self.queue) do
+                if v.bagPosition then
+                    bag = v.bagPosition[1];
+                    slot = v.bagPosition[2];
+                    tooltipData = GetBagItem(bag, slot);
+
+                    if OPENABLE_ITEM[itemID] then
+                        openable = true;
+                    else
+                        openable = false;
+                        if tooltipData then
+                            lines = tooltipData.lines;
+                            leftText = lines[#lines].leftText;
+                            openable = leftText and leftText == ITEM_OPENABLE
+                            OPENABLE_ITEM[itemID] = openable;
+                        end
+                    end
+
+                    if openable then
+                        for callback in pairs(v) do
+                            if callback ~= "bagPosition" then
+                                callback(bag, slot)
+                            end
+                        end
+                    end
+                end
+            end
+
+            self.queue = nil;
+        end
+    end
+
+    function API.InquiryOpenableItem(itemID, callback)
+        --Pre-exclude invalid item types
+
+        if OPENABLE_ITEM[itemID] == false then
+            return false
+        end
+
+        if not Processor.queue then
+            Processor.queue = {};
+        end
+
+        if not Processor.queue[itemID] then
+            Processor.queue[itemID] = {};
+        end
+
+        callback = callback or Nop;
+
+        Processor.queue[itemID][callback] = true;
+
+        Processor.t = 0;
+        Processor:SetScript("OnUpdate", Processor.OnUpdate_Queue);
+    end
+end
+
 
 --[[
 local DEBUG = CreateFrame("Frame");

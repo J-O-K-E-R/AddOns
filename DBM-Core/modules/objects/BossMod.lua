@@ -24,8 +24,12 @@ local mt = {__index = bossModPrototype}
 
 ---@class DBMMod
 ---@field OnCombatStart fun(self: DBMMod, delay: number, startedByCastOrRegenDisabledOrMessage: boolean, startedByEncounter: boolean)
+---@field OnTrashStart fun(self: DBMMod, delay: number, mob: number,  guid: string)
 ---@field OnCombatEnd fun(self: DBMMod, wipe: boolean, delayedSecondCall: boolean?)
+---@field StartNameplateTimers fun(self: DBMMod, guid: string, cid: number)
 ---@field OnLeavingCombat fun()
+---@field EnteringZoneCombat fun(self: DBMMod)
+---@field LeavingZoneCombat fun(self: DBMMod)
 ---@field OnSync fun(self: DBMMod, event: string, ...: string)
 ---@field OnBWSync fun(self: DBMMod, msg: string, extra: string, sender: string)
 ---@field OnTranscriptorSync fun(self: DBMMod, msg: string, sender: string)
@@ -256,6 +260,7 @@ function bossModPrototype:SetStage(stage)
 		DBM:FireEvent("DBM_SetStage", self, self.id, self.vb.phase, self.multiEncounterPullDetection and self.multiEncounterPullDetection[1] or self.encounterId, self.vb.stageTotality)--Mod, modId, Stage, Encounter Id (if available), total number of times SetStage has been called since combat start
 		--Note, some encounters have more than one encounter Id, for these encounters, the first ID from mod is always returned regardless of actual engage ID triggered fight
 		DBM:Debug("DBM_SetStage: " .. self.vb.phase .. "/" .. self.vb.stageTotality)
+		test:Trace(self, "SetStage", self.vb.phase, self.vb.stageTotality)
 	end
 end
 

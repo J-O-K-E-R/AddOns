@@ -24,6 +24,7 @@ do
 	-- Ugh really annoying that Mounts have a unique ID and we use their SpellID instead, assuming this is because in Classic they
 	-- haven't made them MountID yet... bah
 	local KEY, CACHE, SETTING = "mountID", "Spells", "Mounts"
+	local CLASSNAME = "Mount"
 	local PerCharacterMountSpells = {
 		[75207] = 1,	-- Vashj'ir Seahorse
 		[148970] = 1,	-- Felsteed (Green)
@@ -95,7 +96,7 @@ do
 		return app.EmptyTable;
 	end
 
-	app.CreateMount = app.CreateClass("Mount", KEY, {
+	app.CreateMount = app.CreateClass(CLASSNAME, KEY, {
 		_cache = function(t)
 			return cache;
 		end,
@@ -134,14 +135,8 @@ do
 		collectibleAsCost = app.CollectibleAsCost,
 		collectible = function(t) return app.Settings.Collectibles[SETTING]; end,
 		collected = function(t)
-			local id = t.spellID;
-			-- character collected
-			if app.IsCached(CACHE, id) then return 1; end
-			-- certain Mounts are per Character, so we can implicitly check for them as Account-Wide since Mounts have no toggle for that
-			-- account-wide collected
-			if app.IsAccountCached(CACHE, id) then return 2; end
+			return app.TypicalAccountCollected(CACHE, t.spellID)
 		end,
-		trackable = app.ReturnTrue,
 		saved = function(t)
 			return app.IsCached(CACHE, t.spellID)
 		end,
@@ -196,4 +191,5 @@ do
 		app.SetAccountCollected(mount, CACHE, spellID, true)
 		app.UpdateRawID("spellID", spellID)
 	end);
+	app.AddSimpleCollectibleSwap(CLASSNAME, SETTING)
 end

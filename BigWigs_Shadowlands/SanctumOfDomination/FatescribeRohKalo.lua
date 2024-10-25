@@ -203,7 +203,7 @@ end
 
 function mod:InvokeDestinyApplied(args)
 	if self:Me(args.destGUID) then
-		self:Say(args.spellId, CL.count:format(CL.add, invokeDestinyCount-1))
+		self:Say(args.spellId, CL.count:format(CL.add, invokeDestinyCount-1), nil, ("Add (%d)"):format(invokeDestinyCount-1))
 		self:SayCountdown(args.spellId, 8)
 		self:PlaySound(args.spellId, "warning")
 	end
@@ -298,7 +298,7 @@ do
 		playerList[args.destName] = icon -- Set raid marker
 		if self:Me(args.destGUID) then
 			self:TargetBar(350568, 8, args.destName, CL.count:format(CL.bomb, callOfEternityCount-1))
-			self:Say(350568, CL.count_rticon:format(CL.bomb, count, icon))
+			self:Say(350568, CL.count_rticon:format(CL.bomb, count, icon), nil, ("Bomb (%d{rt%d})"):format(count, icon))
 			self:SayCountdown(350568, 8)
 			self:PlaySound(350568, "warning")
 		end

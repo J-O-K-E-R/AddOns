@@ -476,7 +476,7 @@ do
 		playerList[#playerList+1] = args.destName
 		self:TargetsMessage(args.spellId, "cyan", playerList, nil, L.big_bomb)
 		if self:Me(args.destGUID) then
-			self:Say(args.spellId, L.big_bomb)
+			self:Say(args.spellId, L.big_bomb, nil, "Big Bomb")
 			self:SayCountdown(args.spellId, 10, L.big_bomb) -- Big 3, Big 2, Big 1
 			self:PlaySound(args.spellId, "warning")
 		end
@@ -507,7 +507,7 @@ do
 		end
 
 		if self:Me(args.destGUID) then
-			self:Say(350109, L.small_bombs)
+			self:Say(350109, L.small_bombs, nil, "Small Bombs")
 			self:SayCountdown(350109, 6)
 			self:PlaySound(350109, "alarm")
 		end
@@ -531,7 +531,7 @@ end
 function mod:ArthurasCrushingGazeApplied(args)
 	if self:Me(args.destGUID) then
 		self:PlaySound(args.spellId, "warning")
-		self:Yell(args.spellId, CL.meteor)
+		self:Yell(args.spellId, CL.meteor, nil, "Meteor")
 		self:YellCountdown(args.spellId, 8)
 	else
 		self:PlaySound(args.spellId, "alert", nil, args.destName)

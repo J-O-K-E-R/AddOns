@@ -21,9 +21,7 @@ local toyFields = {
 		-- should be a cached check with a re-evaluation if not cached state
 		return app.SetCollected(t, CACHE, t[KEY], GetItemCount(t[KEY], true) > 0);
 	end or function(t)
-		local id = t[KEY];
-		-- account-wide collected
-		if app.IsAccountTracked(CACHE, id) then return 1; end
+		return app.TypicalAccountCollected(CACHE, t[KEY])
 	end,
 	itemID = function(t)
 		return t[KEY];
@@ -76,7 +74,7 @@ end;
 
 app.AddEventRegistration("TOYS_UPDATED", app.IsRetail and function(itemID, new)
 	if itemID and not AccountWideToyData[itemID] and PlayerHasToy(itemID) then
-		app.SetAccountCollected(app.SearchForObject(KEY, itemID) or app.CreateToy(itemID), CACHE, itemID, true);
+		app.SetAccountCollected(app.SearchForObject(KEY, itemID, "field") or app.CreateToy(itemID), CACHE, itemID, true);
 		app.UpdateRawID("itemID", itemID);
 	end
 end or function(toyID, new)
@@ -143,4 +141,7 @@ app.AddEventHandler("OnSavedVariablesAvailable", function(currentCharacter, acco
 		end
 	end
 end);
-app.CreateToy = app.ExtendClass("Item", "Toy", "toyID", toyFields);
+local CLASSNAME = "Toy"
+app.CreateToy = app.ExtendClass("Item", CLASSNAME, "toyID", toyFields);
+
+app.AddSimpleCollectibleSwap(CLASSNAME, CACHE)

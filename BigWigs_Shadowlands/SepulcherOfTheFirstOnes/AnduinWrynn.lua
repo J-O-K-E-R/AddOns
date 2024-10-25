@@ -308,7 +308,7 @@ do
 		if self:Me(args.destGUID) then
 			self:PersonalMessage(365021, nil, L.wicked_star)
 			self:PlaySound(365021, "warning")
-			self:Say(365021, L.wicked_star)
+			self:Say(365021, L.wicked_star, nil, "Star")
 			self:SayCountdown(365021, 4, starWaveCount)
 		end
 	end

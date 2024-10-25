@@ -21,16 +21,12 @@ local importTranscriptorFrame
 
 local ephemeralTests = {}
 
-local function showImportTranscriptorFrame()
-	if importTranscriptorFrame then
-		importTranscriptorFrame:Show()
-		return
-	end
+local function createImportTranscriptorFrame()
 	---@class DBMImportTranscriptorFrame: Frame, BackdropTemplate
 	importTranscriptorFrame = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
 	importTranscriptorFrame:SetFrameStrata("FULLSCREEN_DIALOG")
 	importTranscriptorFrame:SetFrameLevel(importTranscriptorFrame:GetFrameLevel() + 10)
-	importTranscriptorFrame:SetSize(540, 190)
+	importTranscriptorFrame:SetSize(540, 214)
 	importTranscriptorFrame:SetPoint("CENTER")
 	importTranscriptorFrame.backdropInfo = {
 		bgFile		= "Interface\\ChatFrame\\ChatFrameBackground", -- 130937
@@ -129,7 +125,7 @@ local function showImportTranscriptorFrame()
 	local function dropdownEntryFromLog(log, encounterOffset)
 		if encounterOffset then
 			local encounter = log.encounters[encounterOffset]
-			local timestamp = date("%Y-%m-%d %H:%M:%d", log.timestamp + (encounter.startTime or 0))
+			local timestamp = date("%Y-%m-%d %H:%M:%S", log.timestamp + (encounter.startTime or 0))
 			local name = ("%s: %s (%d) %s, %.0f seconds, %d log entries"):format(
 				timestamp, encounter.name, encounter.id, encounter.success and "Kill" or "Wipe", encounter.endTime - encounter.startTime, encounter.endOffset - encounter.startOffset)
 			return {
@@ -137,7 +133,7 @@ local function showImportTranscriptorFrame()
 				text = name
 			}
 		else
-			local timestamp = date("%Y-%m-%d %H:%M:%d", log.timestamp)
+			local timestamp = date("%Y-%m-%d %H:%M:%S", log.timestamp)
 			local name = ("%s: no encounters detected, %.0f seconds, %d log entries"):format(
 				timestamp, log.endTime - log.startTime, #log.lines
 			)
@@ -153,8 +149,15 @@ local function showImportTranscriptorFrame()
 		local f = function()
 			local ts = parser:New(text)
 			logs = ts:GetLogs()
+			local firstLogWithEncounters = 1
+			for i, v in ipairs(logs) do
+				if #v.encounters >= 1 then
+					firstLogWithEncounters = i
+					break
+				end
+			end
 			if #logs >= 1 then
-				logSelect:SetSelectedValue(dropdownEntryFromLog(logs[1], #logs[1].encounters == 1 and 1 or nil))
+				logSelect:SetSelectedValue(dropdownEntryFromLog(logs[firstLogWithEncounters], #logs[firstLogWithEncounters].encounters >= 1 and 1 or nil))
 				createTestButton:Enable()
 			else
 				logSelect:SetSelectedValue({value = {}, text = L.NoLogsFound})
@@ -236,8 +239,21 @@ local function showImportTranscriptorFrame()
 	logSelect:SetSelectedValue({value = {}, text = L.SelectLogDropdown})
 	logSelect:SetPoint("TOPLEFT", input, "BOTTOMLEFT", -16, -15)
 
+	local anonCheckbox = CreateFrame("CheckButton", nil, importTranscriptorFrame, "OptionsBaseCheckButtonTemplate")
+	local anonCheckboxText = importTranscriptorFrame:CreateFontString(nil, nil, "GameFontNormal")
+	anonCheckboxText:SetText(L.AnonymizeTest)
+	anonCheckbox:SetPoint("TOPLEFT", logSelect, "BOTTOMLEFT", 16, -2)
+	anonCheckboxText:SetPoint("LEFT", anonCheckbox, "RIGHT", 0, 0)
+	anonCheckbox:SetScript("OnShow", function(self)
+		self:SetChecked(DBM_Test_Settings.AnonymizeImports)
+	end)
+	anonCheckbox:SetChecked(DBM_Test_Settings.AnonymizeImports)
+	anonCheckbox:SetScript("OnClick", function()
+		DBM_Test_Settings.AnonymizeImports = not DBM_Test_Settings.AnonymizeImports
+	end)
+
 	createTestButton = CreateFrame("Button", nil, importTranscriptorFrame, "UIPanelButtonTemplate")
-	createTestButton:SetPoint("TOPLEFT", logSelect, "BOTTOMLEFT", 20, 0)
+	createTestButton:SetPoint("TOPLEFT", anonCheckbox, "BOTTOMLEFT", 0, 0)
 	createTestButton:SetSize(100, 20)
 	createTestButton:SetText(L.CreateTest)
 	createTestButton:Disable()
@@ -256,7 +272,7 @@ local function showImportTranscriptorFrame()
 		local frame = CreateFrame("Frame")
 		local f = function()
 			local start = GetTimePreciseSec()
-			local gen = parser:NewTestGenerator(logSelect.value.log, logSelect.value.startOffset, logSelect.value.endOffset, nil, true, true, true)
+			local gen = parser:NewTestGenerator(logSelect.value.log, logSelect.value.startOffset, logSelect.value.endOffset, nil, not DBM_Test_Settings.AnonymizeImports, true, true)
 			local def = gen:GetTestDefinition()
 			def.ephemeral = true
 			def.name = "Imported/" .. logSelect.value.name
@@ -268,6 +284,8 @@ local function showImportTranscriptorFrame()
 			self:SetText(L.CreateTest)
 			input:SetText(L.CreatedTest:format(#def.log, GetTimePreciseSec() - start))
 			self:Enable()
+			importTranscriptorFrame.parentTestSelect:RefreshLazyValues()
+			importTranscriptorFrame.parentTestSelect:SetSelectedValue(def.name)
 		end
 		local cr = coroutine.create(f)
 		frame:SetScript("OnUpdate", function()
@@ -286,6 +304,15 @@ local function showImportTranscriptorFrame()
 		importTranscriptorFrame:Hide()
 	end)
 end
+
+local function showImportTranscriptorFrame(testSelect)
+	if not importTranscriptorFrame then
+		createImportTranscriptorFrame()
+	end
+	importTranscriptorFrame.parentTestSelect = testSelect
+	importTranscriptorFrame:Show()
+end
+
 
 ---@param panel DBMPanel
 ---@param mod DBMMod
@@ -318,9 +345,10 @@ function DBM_GUI:AddModTestOptionsAbove(panel, mod)
 	end)
 
 	local testSelectArea = panel:CreateArea(L.TestSelectArea)
+	local testSelect
 	local importLog = testSelectArea:CreateButton(L.ImportTranscriptor)
 	importLog:SetScript("OnClick", function()
-		showImportTranscriptorFrame()
+		showImportTranscriptorFrame(testSelect)
 	end)
 	local runOrStopTest
 	importLog:SetPoint("TOPLEFT", testSelectArea.frame, "TOPLEFT", 10, -10)
@@ -334,12 +362,13 @@ function DBM_GUI:AddModTestOptionsAbove(panel, mod)
 		end
 		return values
 	end
-	local testSelect
 	local function onTestDropdownSelect(value)
 		testSelect:SetSelectedValue({value = value, text = value.name})
-		runOrStopTest:Enable()
 	end
 	testSelect = testSelectArea:CreateDropdown(L.SelectTestLog, getTestEntries, nil, nil, onTestDropdownSelect, 300)
+	testSelect:OnSelectionChanged(function()
+		if runOrStopTest then runOrStopTest:Enable() end
+	end)
 	testSelect.myheight = 40
 	if #ephemeralTests >= 1 then -- TODO: only select this by default if this was imported from this mod
 		testSelect:SetSelectedValue({value = ephemeralTests[1], text = ephemeralTests[1].name})
@@ -356,9 +385,22 @@ function DBM_GUI:AddModTestOptionsAbove(panel, mod)
 		end
 		local values = {}
 		values[#values + 1] = {text = L.RewriteAllToYou, value = "EverythingOnYou"}
-		values[#values + 1] = {value = DEFAULT, text = DEFAULT}
+		values[#values + 1] = {value = DEFAULT, text = DEFAULT .. (testData.perspective and (" (%s)"):format(testData.perspective) or "")}
 		for _, v in ipairs(testData.players) do
-			values[#values + 1] = {text = v[1], value = v[1]} -- TODO: add extra info
+			local player = v[1]
+			if RAID_CLASS_COLORS[v.class] then
+				player = RAID_CLASS_COLORS[v.class]:WrapTextInColorCode(player)
+			end
+			if v.role then
+				player = player .. (" (%s)"):format(v.role)
+			end
+			if v.logRecorder then
+				player = player .. (" (log recorder)")
+			end
+			values[#values + 1] = {
+				text = player,
+				value = v[1]
+			}
 		end
 		return values
 	end
@@ -371,7 +413,7 @@ function DBM_GUI:AddModTestOptionsAbove(panel, mod)
 	playerSelect:SetSelectedValue({value = DEFAULT, text = DEFAULT})
 	playerSelect:SetPoint("TOPLEFT", testSelect, "BOTTOMLEFT", 0, -10)
 
-	runOrStopTest = panel:CreateButton(L.RunTest, 120, 30)
+	runOrStopTest = panel:CreateButton(L.RunTest, 130, 30)
 	runOrStopTest.myheight = 40
 	runOrStopTest:SetPoint("TOPLEFT", testSelectArea.frame, "BOTTOMLEFT", 0, -10)
 	if #tests == 0 then
@@ -399,13 +441,20 @@ function DBM_GUI:AddModTestOptionsAbove(panel, mod)
 		end
 	end)
 	local lastResults ---@type DBMTestReporterPublic?
-	local showReport = panel:CreateButton(L.ShowReport, 120, 30)
+	local showReport = panel:CreateButton(L.ShowReport, 130, 30)
 	showReport.myheight = 40
 	showReport:SetPoint("TOPLEFT", runOrStopTest, "BOTTOMLEFT", 0, -5)
 	showReport:Disable()
 	showReport:SetScript("OnClick", function()
 		if lastResults then
 			lastResults:ShowReport()
+		end
+	end)
+	local skipStage = panel:CreateButton(L.SkipPhase, 130, 30)
+	skipStage:SetPoint("LEFT", showReport, "RIGHT", 5, 0)
+	skipStage:SetScript("OnClick", function()
+		if DBM.Test.timeWarper then
+			DBM.Test.timeWarper:SkipToStage()
 		end
 	end)
 	-- FIXME: callbacks are not ideal to use here as we would need to filter them to our test

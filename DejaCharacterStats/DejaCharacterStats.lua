@@ -2,6 +2,27 @@ local ADDON_NAME, namespace = ... 	--localization
 local L = namespace.L 				--localization
 local version = C_AddOns.GetAddOnMetadata(ADDON_NAME, "Version")
 local addoninfo = 'v'..version
+
+--{ dcsresetcheck Button Localization Widths }
+local resetLocal = {
+	["enUS"] = 125,
+	["ptBR"] = 175,
+	["frFR"] = 175,
+	["deDE"] = 175,
+	["ruRU"] = 175,
+	["esES"] = 200,
+}
+
+local resetWidth = resetLocal[namespace.locale] or resetLocal["enUS"]
+
+--{ DCSShowCharacterFrameButton Localization Widths }
+local showCharLocal = {
+	["enUS"] = 200,
+	["deDE"] = 230,
+}
+
+local showCharWidth = showCharLocal[namespace.locale] or showCharLocal["enUS"]
+
 --------------------------
 -- SavedVariables Setup --
 --------------------------
@@ -94,12 +115,12 @@ end)
 
 function RegisteredEvents:ADDON_LOADED(event, addon, ...)
 	if (addon == "DejaCharacterStats") then
-		--SLASH_DEJACHARACTERSTATS1 = (L["/dcstats"])
-		SLASH_DEJACHARACTERSTATS1 = "/dcstats"
+		SLASH_DEJACHARACTERSTATS1 = "/dcs"
+		SLASH_DEJACHARACTERSTATS2 = "/dcstats"
 		SlashCmdList["DEJACHARACTERSTATS"] = function (msg, editbox)
 			DejaCharacterStats.SlashCmdHandler(msg, editbox)
 	end
-	--	DEFAULT_CHAT_FRAME:AddMessage("DejaCharacterStats loaded successfully. For options: Esc>Interface>AddOns or type /dcstats.",0,192,255)
+	--	DEFAULT_CHAT_FRAME:AddMessage("DejaCharacterStats loaded successfully. For options: Esc>Interface>AddOns or type /dcs.",0,192,255)
 	end
 end
 
@@ -109,9 +130,9 @@ end
 
 function DejaCharacterStats.ShowHelp()
 	print(addoninfo)
-	print(L["DejaCharacterStats Slash commands (/dcstats):"])
-	print(L["  /dcstats config: Opens the DejaCharacterStats addon config menu."])
-	print(L["  /dcstats reset:  Resets DejaCharacterStats options to default."])
+	print(L["DejaCharacterStats Slash commands (/dcs):"])
+	print(L["  /dcs config: Opens the DejaCharacterStats addon config menu."])
+	print(L["  /dcs reset:  Resets DejaCharacterStats options to default."])
 end
 
 --[[
@@ -142,12 +163,11 @@ end
 
 function DejaCharacterStats.SlashCmdHandler(msg, editbox)
     msg = string.lower(msg)
-	--print("command is " .. msg .. "\n")
-	--if (string.lower(msg) == L["config"]) then --I think string.lowermight not work for Russian letters
 	if (msg == "config") then
-		InterfaceOptionsFrame_OpenToCategory("DejaCharacterStats");
-		-- InterfaceOptionsFrame_OpenToCategory("DejaCharacterStats"); --previously needed to call 3 times due to Blizzard bug
-		-- InterfaceOptionsFrame_OpenToCategory("DejaCharacterStats");
+		ToggleCharacter("PaperDollFrame");
+		C_Timer.After(0.1, function()
+			Settings.OpenToCategory(DejaCharacterStats.category:GetID());
+		end)
 	--[[
 	elseif (string.lower(msg) == L["dumpconfig"]) then
 		print(L["With defaults"])
@@ -177,9 +197,60 @@ end
 -----------------------
 -- DCS Options Panel --
 -----------------------
+gdbprivate.gdbdefaults.gdbdefaults.DCS_SettingsShowCharacterChecked = {
+	settingsShowCharacterChecked = true,
+}
+
+local DCS_SettingsShowCharacter
+
+local function getSettingsShowCharacterChecked()
+	DCS_SettingsShowCharacter = gdbprivate.gdb.gdbdefaults.DCS_SettingsShowCharacterChecked.settingsShowCharacterChecked
+	return DCS_SettingsShowCharacter
+end
+
+local function setSettingsShowCharacterChecked(bool)
+	if bool then
+		-- print("DCS_SettingsShowCharacter true")
+		if not CharacterFrameTab3:GetRight() then
+			CharacterFrame:SetPoint("TOPLEFT", 20, -100)
+		end
+		ToggleCharacter("PaperDollFrame");
+		CharacterFrame:Show()
+		_G[DCSShowCharacterFrameButton:GetName() .. "Text"]:SetText(L["Hide Character Frame"])
+	end
+	if not DCS_SettingsShowCharacter then
+		-- print("DCS_SettingsShowCharacter false")
+		if PaperDollFrame:IsShown() then
+			ToggleCharacter("PaperDollFrame");
+		end
+		CharacterFrame:Hide()
+		_G[DCSShowCharacterFrameButton:GetName() .. "Text"]:SetText(L["Show Character Frame"])
+	end
+end
+
 DejaCharacterStats.panel = CreateFrame( "Frame", "DejaCharacterStatsPanel", UIParent );
 DejaCharacterStats.panel.name = "DejaCharacterStats";
-Settings.RegisterAddOnCategory( Settings.RegisterCanvasLayoutCategory(DejaCharacterStats.panel, ADDON_NAME) )
+DejaCharacterStats.category = Settings.RegisterCanvasLayoutCategory(DejaCharacterStats.panel, ADDON_NAME)
+Settings.RegisterAddOnCategory( DejaCharacterStats.category )
+
+-- The hooksecurefunc doesn't work; doesn't hide OnHide
+-- Hiding DejaCharacterStats.panel doesn't hide either. Need to find Settings Panel function to do so if needed.
+DejaCharacterStats.panel:SetScript("OnShow", function(self)
+	-- print("DejaCharacterStats.panel OnShow")
+	DCS_SettingsShowCharacter = getSettingsShowCharacterChecked()
+	setSettingsShowCharacterChecked(DCS_SettingsShowCharacter)
+end)
+
+SettingsPanel:HookScript("OnHide", function(self)
+	-- print("SettingsPanel OnHide")
+	if PaperDollFrame:IsShown() then
+		-- print("SettingsPanel OnHide PaperDollFrame:IsShown")
+		if not CharacterFrameTab1:GetRight() then
+			CharacterFrame:SetPoint("TOPLEFT", 16, -116)
+		end
+		CharacterFrame:Hide()
+	end
+end)
 
 -- DCS, DejaView Child Panel
 -- DejaViewPanel.DejaCharacterStatsPanel = CreateFrame( "Frame", "DejaCharacterStatsPanel", DejaViewPanel);
@@ -271,36 +342,38 @@ local dcsresetcheck = CreateFrame("Button", "DCSResetButton", DejaCharacterStats
 	dcsMiscPanelCategoryFS:SetPoint("LEFT", 25, -165)
 	dcsMiscPanelCategoryFS:SetFontObject("GameFontNormalLarge") --Use instead of SetFont("Fonts\\FRIZQT__.TTF", 15) or Russian, Korean and Chinese characters won't work.
 
-	--------------------------------
+--------------------------------
 --Show Character Frame Button --
 --------------------------------
--- local DCSShowCharacterFrameButton = CreateFrame("Button", "DCSShowCharacterFrameButton", DejaCharacterStatsPanel, "UIPanelButtonTemplate")
--- DCSShowCharacterFrameButton:RegisterEvent("PLAYER_LOGIN")
+local DCSShowCharacterFrameButton = CreateFrame("Button", "DCSShowCharacterFrameButton", DejaCharacterStatsPanel, "UIPanelButtonTemplate")
+DCSShowCharacterFrameButton:RegisterEvent("PLAYER_LOGIN")
 
--- DCSShowCharacterFrameButton:ClearAllPoints()
--- DCSShowCharacterFrameButton:SetPoint("TOPRIGHT", -73, -57)
--- DCSShowCharacterFrameButton:SetScale(0.80)
--- DCSShowCharacterFrameButton:SetWidth(220)
--- DCSShowCharacterFrameButton:SetHeight(30)
--- _G[DCSShowCharacterFrameButton:GetName() .. "Text"]:SetText(L["Show Character Frame"])
+DCSShowCharacterFrameButton:ClearAllPoints()
+DCSShowCharacterFrameButton:SetPoint("TOPRIGHT", -73, -57)
+DCSShowCharacterFrameButton:SetScale(0.80)
+DCSShowCharacterFrameButton:SetWidth(showCharWidth)
+DCSShowCharacterFrameButton:SetHeight(30)
+_G[DCSShowCharacterFrameButton:GetName() .. "Text"]:SetText(L["Show Character Frame"])
 
--- CharacterFrame:HookScript("OnShow", function(self)
--- 	_G[DCSShowCharacterFrameButton:GetName() .. "Text"]:SetText(L["Hide Character Frame"])
--- end)
+DCSShowCharacterFrameButton:SetScript("OnEvent", function(self, event)
+	DCS_SettingsShowCharacter = getSettingsShowCharacterChecked()
+	-- print("OnEvent", DCS_SettingsShowCharacter)
+end)
 
--- CharacterFrame:HookScript("OnHide", function(self)
--- 	_G[DCSShowCharacterFrameButton:GetName() .. "Text"]:SetText(L["Show Character Frame"])
--- end)
+DCSShowCharacterFrameButton:SetScript("OnClick", function(self, button, down)
+	DCS_SettingsShowCharacter = getSettingsShowCharacterChecked()
+	-- print("OnClick Pre", DCS_SettingsShowCharacter)
+	gdbprivate.gdb.gdbdefaults.DCS_SettingsShowCharacterChecked.settingsShowCharacterChecked = not DCS_SettingsShowCharacter
+	DCS_SettingsShowCharacter = not DCS_SettingsShowCharacter
+	-- print("OnClick Post", DCS_SettingsShowCharacter)
+	setSettingsShowCharacterChecked(DCS_SettingsShowCharacter)
+end)
 
--- DCSShowCharacterFrameButton:SetScript("OnClick", function(self, button, down)
--- 	if CharacterFrame:IsShown() then
--- 		HideUIPanel(CharacterFrame)
--- 	else
--- 		HideUIPanel(SettingsPanel)
--- 		HideUIPanel(GameMenuFrame)
--- 		InterfaceOptionsFrame_OpenToCategory("DejaCharacterStats");
--- 		-- InterfaceOptionsFrame_OpenToCategory("DejaCharacterStats"); --previously needed to call 3 times due to Blizzard bug
--- 		-- InterfaceOptionsFrame_OpenToCategory("DejaCharacterStats");
--- 		ShowUIPanel(CharacterFrame)
--- 	end
--- end)
+--{ CharacterFrame:HookScript SetText is needed for manual closing of the CharacterFrame while the Settings Panel is open }
+CharacterFrame:HookScript("OnShow", function(self)
+	_G[DCSShowCharacterFrameButton:GetName() .. "Text"]:SetText(L["Hide Character Frame"])
+end)
+
+CharacterFrame:HookScript("OnHide", function(self)
+	_G[DCSShowCharacterFrameButton:GetName() .. "Text"]:SetText(L["Show Character Frame"])
+end)

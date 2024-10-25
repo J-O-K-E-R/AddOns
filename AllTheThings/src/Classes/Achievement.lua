@@ -1,5 +1,6 @@
 
 local _, app = ...
+local L = app.L
 
 -- Globals
 local setmetatable, rawget, select, tostring, ipairs, pairs, tinsert, tonumber
@@ -52,23 +53,50 @@ CollectionCache = setmetatable({}, { __index = function(t, key)
 	end
 end})
 
-local AchievementClass
 -- Achievement Lib
 do
 	local KEY, CACHE = "achievementID", "Achievements"
+	local CLASSNAME = "Achievement"
 	local GetStatistic
 		= GetStatistic
 
 	local cache = app.CreateCache(KEY);
+	local FLAG_AccountWide = ACHIEVEMENT_FLAGS_ACCOUNT
+	local FlagsUtil_IsSet,string_len,string_sub
+		= FlagsUtil.IsSet,string.len,string.sub
+	local Colorize = app.Modules.Color.Colorize
 	local function CacheInfo(t, field)
 		local _t, id = cache.GetCached(t);
 		--local IDNumber, Name, Points, Completed, Month, Day, Year, Description, Flags, Image, RewardText, isGuildAch = GetAchievementInfo(t[KEY]);
-		local _, name, _, _, _, _, _, _, _, icon = GetAchievementInfo(id);
-		_t.link = GetAchievementLink(id);
+		local _, name, _, _, _, _, _, _, flags, icon = GetAchievementInfo(id);
+		_t.silentLink = GetAchievementLink(id)
+		local accountWide = FlagsUtil_IsSet(tonumber(flags) or 0, FLAG_AccountWide)
+		_t.accountWide = accountWide
+		if accountWide then
+			local len = string_len(_t.silentLink)
+			_t.text = Colorize(string_sub(_t.silentLink,11,len - 2),app.Colors.Account)
+		else
+			_t.text = _t.silentLink
+		end
 		_t.name = name or ("Achievement #"..id);
 		_t.icon = icon or QUESTION_MARK_ICON;
 		if field then return _t[field]; end
 	end
+	local InvalidStatistics = setmetatable({
+		["0"] = 1,
+		["1"] = 1,
+		["2"] = 1,
+		["3"] = 1,
+		["4"] = 1,
+		["5"] = 1,
+		["6"] = 1,
+		["7"] = 1,
+		["8"] = 1,
+		["9"] = 1,
+		[""] = 1,
+	}, { __index=function(t,key)
+		if not key or key:match("%W") or not key:match(" %/ ") then return 1 end
+	end})
 	-- This was used to update information about achievement progress following Pet Battles
 	-- This unfortunately triggers all the time and rarely actually represents useful Achievement changes
 	-- TODO: Think of another way to represent Achievement changes post Pet Battles
@@ -79,9 +107,12 @@ do
 	-- 	AfterCombatOrDelayedCallback(OnUpdateWindows, 1)
 	-- end
 	-- app.AddEventRegistration("RECEIVED_ACHIEVEMENT_LIST", DelayedOnUpdateWindows);
-	app.CreateAchievement, AchievementClass = app.CreateClass("Achievement", KEY, {
-		link = function(t)
-			return cache.GetCachedField(t, "link", CacheInfo);
+	app.CreateAchievement = app.CreateClass(CLASSNAME, KEY, {
+		silentLink = function(t)
+			return cache.GetCachedField(t, "silentLink", CacheInfo);
+		end,
+		text = function(t)
+			return cache.GetCachedField(t, "text", CacheInfo);
 		end,
 		name = function(t)
 			return cache.GetCachedField(t, "name", CacheInfo);
@@ -89,15 +120,13 @@ do
 		icon = function(t)
 			return cache.GetCachedField(t, "icon", CacheInfo);
 		end,
+		accountWide = function(t)
+			return cache.GetCachedField(t, "accountWide", CacheInfo);
+		end,
 		collectible = function(t) return app.Settings.Collectibles[CACHE] end,
 		collected = function(t)
-			local id = t[KEY];
-			-- character collected
-			if app.IsCached(CACHE, id) then return 1; end
-			-- account-wide collected
-			if app.IsAccountTracked(CACHE, id) then return 2; end
+			return app.TypicalCharacterCollected(CACHE, t[KEY])
 		end,
-		trackable = app.ReturnTrue,
 		saved = function(t)
 			local id = t[KEY];
 			-- character collected
@@ -115,9 +144,8 @@ do
 			end
 			---@diagnostic disable-next-line: missing-parameter
 			local statistic = GetStatistic(t[KEY]);
-			if statistic and statistic ~= '0' and statistic ~= '' and not statistic:match("%W") then
-				return statistic;
-			end
+			if InvalidStatistics[statistic] then return end
+			return statistic
 		end,
 		sortProgress = function(t)
 			if t.collected then
@@ -147,22 +175,25 @@ do
 	end
 
 	app.AddEventHandler("OnRefreshCollections", function()
-		local state
+		local me, completed
 		-- app.PrintDebug("OnRefreshCollections.Achievement")
-		local saved, none = {}, {}
+		local mine, acct, none = {}, {}, {}
 		for _,id in ipairs(CollectionCache.RealAchievementIDs) do
-			state = select(13, GetAchievementInfo(id))
-			if state then
-				saved[id] = true
+			completed, _, _, _, _, _, _, _, _, me = select(4, GetAchievementInfo(id))
+			if me then
+				mine[id] = true
+			elseif completed then	-- any character has completed it, we can cache for account directly
+				acct[id] = true
 			else
 				none[id] = true
 			end
 		end
 		-- Character Cache
-		app.SetBatchCached(CACHE, saved, 1)
+		app.SetBatchCached(CACHE, mine, 1)
 		app.SetBatchCached(CACHE, none)
 		-- Account Cache (removals handled by Sync)
-		app.SetBatchAccountCached(CACHE, saved, 1)
+		app.SetBatchAccountCached(CACHE, mine, 1)
+		app.SetBatchAccountCached(CACHE, acct, 1)
 		-- app.PrintDebugPrior("OnRefreshCollections.Achievement")
 	end);
 	app.AddEventHandler("OnSavedVariablesAvailable", function(currentCharacter, accountWideData)
@@ -177,6 +208,41 @@ do
 			app.UpdateRawID(KEY, id);
 		end
 	end);
+	app.AddSimpleCollectibleSwap(CLASSNAME, CACHE)
+
+	-- Information Types
+	app.AddEventHandler("OnLoad", function()
+		app.Settings.CreateInformationType("Achievement_CriteriaFor", {
+			text = "Achievement_CriteriaFor",
+			priority = 1.5, HideCheckBox = true, ForceActive = true,
+			Process = function(t, reference, tooltipInfo)
+				if reference.criteriaID and reference.achievementID and not (reference.parent and reference.parent.achievementID) then
+					local achievement = SearchForObject("achievementID", reference.achievementID, "key")
+					tinsert(tooltipInfo, {
+						left = L.CRITERIA_FOR,
+						right = achievement.text or GetAchievementLink(reference.achievementID),
+					});
+				end
+			end
+		})
+		app.Settings.CreateInformationType("Achievement_Statistic", {
+			text = "Achievement_Statistic",
+			HideCheckBox = true, ForceActive = true,
+			Process = function(t, reference, tooltipInfo)
+				-- achievement progress. If it has a measurable statistic, show it under the achievement description
+				if reference.achievementID then
+					if reference.statistic then
+						tinsert(tooltipInfo, {
+							left = L.PROGRESS,
+							right = reference.statistic,
+						});
+					end
+				end
+			end
+		})
+
+	end)
+
 end
 
 -- Achievement Category Lib
@@ -350,7 +416,6 @@ do
 			-- account-wide collected achievement
 			if app.IsAccountTracked("Achievements", id) then return 2 end
 		end,
-		trackable = app.ReturnTrue,
 		saved = function(t)
 			local id = t.achievementID
 			-- character collected achievement
@@ -375,24 +440,13 @@ do
 		t.isGuild = true;
 		return t;
 	end
+	app.AddSimpleCollectibleSwap("Criteria", "Achievements")
 end
 
 
 -- Achievement Harvesting
-local function RawCloneData(data, clone)
-	clone = clone or {};
-	for key,value in pairs(data) do
-		if clone[key] == nil then
-			clone[key] = value
-		end
-	end
-	-- maybe better solution at another time?
-	clone.__type = nil;
-	clone.__index = nil;
-	return clone;
-end
 local HarvestedAchievementDatabase = {};
-local harvesterFields = RawCloneData(AchievementClass);
+local harvesterFields = {}
 harvesterFields.visible = app.ReturnTrue;
 harvesterFields.collectible = app.ReturnTrue;
 harvesterFields.collected = app.ReturnFalse;
@@ -641,4 +695,4 @@ harvesterFields.text = function(t)
 	return name;
 end
 harvesterFields.IsClassIsolated = true
-app.CreateAchievementHarvester = app.CreateClass("AchievementHarvester", "achievementID", harvesterFields)
+app.CreateAchievementHarvester = app.ExtendClass("Achievement", "AchievementHarvester", "achievementID", harvesterFields)

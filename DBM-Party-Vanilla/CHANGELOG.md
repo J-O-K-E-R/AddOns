@@ -1,33 +1,36 @@
 # DBM - Dungeons, Delves, & Events
 
-## [r149](https://github.com/DeadlyBossMods/DBM-Dungeons/tree/r149) (2024-09-10)
-[Full Changelog](https://github.com/DeadlyBossMods/DBM-Dungeons/compare/r148...r149) [Previous Releases](https://github.com/DeadlyBossMods/DBM-Dungeons/releases)
+## [r164](https://github.com/DeadlyBossMods/DBM-Dungeons/tree/r164) (2024-10-20)
+[Full Changelog](https://github.com/DeadlyBossMods/DBM-Dungeons/compare/r163...r164) [Previous Releases](https://github.com/DeadlyBossMods/DBM-Dungeons/releases)
 
-- Update localization.ru.lua (#250)  
-- Update localization.fr.lua (#253)  
-- Update localization.br.lua (#254)  
-- Update localization.mx.lua (#255)  
-- Update localization.es.lua (#252)  
-- Update localization.de.lua (#256)  
-- Update localization.cn.lua (#257)  
-- Update localization.ru.lua (#258)  
-- Update localization.tw.lua (#259)  
-- Update koKR (#251)  
-- some mic timer flags for use with recent updates  
-    a lot more will be looked at with M0 and M+ dungeon behaviors and where players need the added visual on dodging abilities in clusters of mobs that hinder more conventional visuals  
-- Fix couple minor bugs in machine scenario  
-- More fixes to coag duder  
-- Fix some bugs with bad spellids in option keys  
-    fix some changed timers  
-    more needs fixing but WCL is down ATM  
-- Mark DBM as compatible/up to date on 11.0.5 PTR  
-- Update localization.ru.lua (#249)  
-- improve vicious stabs and battle roar filtering to more aggressively ignore enemies not attacking player unit  
-- Fix spellid  
-- Add Archavon and Sha of Anger event mods, complete with working alerts already and AI timers. will be polished up from real thing later.  
-- use right map id  
-- Push missing deadmines locales  
-- Preliminary mod layout and combat detection of aniversery dungeon bosses  
-- clarify alert text/audio  
-- Update localization.ru.lua (#248)  
-- Update koKR (#247)  
+- Scope all remaining Season 1 dungeons with zone event filters  
+    Dawnbreaker now has initial timers for trash ability nameplates  
+    Fixed a bug in dawnbreaker wehre ensnaring shadows didn't cancel for summoned nightfall shadowmages  
+    Fixed abug in dawnbreaker where Umbrel rush didn't cancel for any nightfall shadowwalkers  
+- City of Threads Update:  
+     - Fixed a bug Null Slam timer object didn't cancel for auras using callback by adding missing creatureId for Hallows Resident  
+     - Moved xeph combat end detection to new zone combat handler, making it more efficient.  
+     - Added initial nameplate timers for all mobs  
+     - Scoped mod event handlers  
+- timer tweak from testing  
+- now that system is working, can start making timer corrections the debug detects :D  
+- fix invalid modId  
+- Preliminary support for initial nameplate timers on pull and stopping nameplate timers on trash wipes for arakara.  
+    also added zone scoping to reduce overhead of mods event handlers running in other dungeons.  
+- increase darkness comes timer. apparently tooltip is a lie  
+- Update koKR (#298)  
+- adjustments for https://github.com/DeadlyBossMods/DBM-Dungeons/issues/300  
+- switch blightbone to the slower repeat scanner since there are reports the instant scanner doesn't always work  
+- remove redundant call  
+- be more aggressive in filtering non combat mobs  
+- fix double registered creatureId in boralus trash  
+- Update localization.ru.lua (#294)  
+- Clarify forge speakers to actually say what you're actually supposed to  do during exhaust vents in both alert and voice packs  
+    also removed exhaust event over event and message as it's mostly a distraction.  
+- Update stonevault timers that changed with this weeks hotfixes  
+- Add missing count. closes https://github.com/DeadlyBossMods/DBM-Dungeons/issues/295  
+- Add hotfixed Id for tank buster on Coaglamation  
+- improve clarity of dark eruption  
+- Upgrade averting shrill to special announce. thought I had done that sooner.  
+- tweak last  
+- Mark Tongue Lashing as frontal ability in Mists of Tirna (#293)  

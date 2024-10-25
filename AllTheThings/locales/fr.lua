@@ -46,15 +46,15 @@ local GetSpellName = app.WOWAPI.GetSpellName;
 	L.ARTIFACT_INTRO_REWARD = "Attribué après avoir terminé la quête d’introduction de cet artefact.";
 	L.VISIT_FLIGHT_MASTER = "Rendez visite au Maître de vol pour mettre en cache.";
 	L.FLIGHT_PATHS_DESC = "Les trajets de vol sont mis en cache lorsque vous parlez au Maître de vol sur chaque continent.\n- Crieve";
-	--TODO: L.FOLLOWERS_COLLECTION_DESC = "Followers can be collected "..ITEM_UPGRADE_DISCOUNT_TOOLTIP_ACCOUNT_WIDE..", if you enable this setting in ATT.\n\nYou must manually refresh the addon by "..SHIFT_KEY_TEXT.." clicking the header for this to be detected.";	--TODO
+	--TODO: L.FOLLOWERS_COLLECTION_DESC = "Followers can be collected account wide, if you enable this setting in ATT.\n\nYou must manually refresh the addon by "..SHIFT_KEY_TEXT.." clicking the header for this to be detected.";	--TODO
 	L.HEIRLOOM_TEXT = "Objet Héritage déverrouillé";
 	L.HEIRLOOM_TEXT_DESC = "Indique si vous avez ou non déjà acquis ou acheté l’objet d’héritage.";
 	L.FAILED_ITEM_INFO = "Échec de l’acquisition des informations pour cet objet. Il se peut que l’objet soit pas valide ou qu’il n’ait pas encore été mis en cache sur votre serveur.";
 	L.HEIRLOOMS_UPGRADES_DESC = "Indique si vous avez ou non amélioré l’objet d’héritage à un certain niveau.\n\nBye bye votre Or.\n- Crieve";
 	if app.IsRetail then
-	L.MUSIC_ROLLS_AND_SELFIE_DESC = "Ils sont débloqués par personnage et ne sont actuellement pas partagés sur l’ensemble de votre compte. Si une personne de chez Blizzard lit ceci, ce serait vraiment bien si vous les rendiez "..ITEM_UPGRADE_DISCOUNT_TOOLTIP_ACCOUNT_WIDE..". Vous devez rafraîchir manuellement l’addon via "..SHIFT_KEY_TEXT.." + clic sur l’en-tête pour que ce soit détecté.";
+	L.MUSIC_ROLLS_DESC = "Ils sont débloqués par personnage et ne sont actuellement pas partagés sur l’ensemble de votre compte. Si une personne de chez Blizzard lit ceci, ce serait vraiment bien si vous les rendiez à l'échelle du compte. Vous devez rafraîchir manuellement l’addon via "..SHIFT_KEY_TEXT.." + clic sur l’en-tête pour que ce soit détecté.";
 	end
-	L.MUSIC_ROLLS_AND_SELFIE_DESC_2 = "\n\nVous devez d’abord débloquer les rouleaux de musique en accomplissant la quête À fond les basses ! dans votre garnison de fief pour pouvoir avoir cet objet.\n\nLes selfies nécessitent le jouet Appareil photo P.R.O.F.I.L.";
+	L.MUSIC_ROLLS_DESC_2 = "\n\nVous devez d’abord débloquer les rouleaux de musique en accomplissant la quête À fond les basses ! dans votre garnison de fief pour pouvoir avoir cet objet.\n\nLes selfies nécessitent le jouet Appareil photo P.R.O.F.I.L.";
 	L.OPPOSITE_FACTION_EQ = "Équivalent de la faction opposée : ";
 	L.SELFIE_DESC = "Prenez un selfie en utilisant votre ";
 	L.SELFIE_DESC_2 = " avec |cffff8000";
@@ -318,7 +318,7 @@ local GetSpellName = app.WOWAPI.GetSpellName;
 		--TODO: L.AUCTION_TAB_CHECKBOX = "Show the Auction House Module Tab";
 		--TODO: L.AUCTION_TAB_CHECKBOX_TOOLTIP = "Enable this option if you want to see the Auction House Module provided with ATT.\n\nSome addons are naughty and modify this frame extensively. ATT doesn't always play nice with those toys.";
 		--TODO: L.ICON_LEGEND_LABEL = "Icon Legend";
-		--TODO: L.ICON_LEGEND_TEXT = app.ccColors.White .. "|TInterface\\AddOns\\AllTheThings\\assets\\status-unobtainable.blp:0|t " .. "Unobtainable" .. "\n|TInterface\\AddOns\\AllTheThings\\assets\\status-prerequisites.blp:0|t " .. "Obtainable only with prerequisites" .. "\n|TInterface\\AddOns\\AllTheThings\\assets\\status-seasonal-available.blp:0|t " .. "Available seasonal content" .. "\n|TInterface\\AddOns\\AllTheThings\\assets\\status-seasonal-unavailable.blp:0|t " .. "Unavailable seasonal content" .. "\n|TInterface\\FriendsFrame\\StatusIcon-Offline:0|t " .. "Unavailable on current character";
+		--TODO: L.ICON_LEGEND_TEXT = app.ccColors.White .. "|T" .. app.asset("status-unobtainable") .. ":0|t " .. "Unobtainable" .. "\n|T" .. app.asset("status-prerequisites") .. ":0|t " .. "Obtainable only with prerequisites" .. "\n|T" .. app.asset("status-seasonal-available") .. ":0|t " .. "Available seasonal content" .. "\n|T" .. app.asset("status-seasonal-unavailable") .. ":0|t " .. "Unavailable seasonal content" .. "\n|T374225:0|t " .. "Unavailable on current character";
 		L.CHAT_COMMANDS_LABEL = "Commandes du chat";
 		L.CHAT_COMMANDS_TEXT = "/att |cffFFFFFFou|R /things |cffFFFFFFou|R /allthethings\n|cffFFFFFFOuvre la liste principale.\n\n|R/att mini |cffFFFFFFou|R /attmini\n|cffFFFFFFOuvre la mini-liste.\n\n|R/att bounty\n|cffFFFFFFOuvre la liste des éléments non confirmés ou buggés.\n\n|R/att ra |cffFFFFFFou|R /attra\n|cffFFFFFFOuvre l’assistant de raid.\n\n|R/att wq |cffFFFFFFou|R /attwq\n|cffFFFFFFOuvre la liste des quêtes mondiales.\n\n|R/att item:1234 |cffFFFFFFou|R /att [lien objet]\n|cffFFFFFFOuvre une fenêtre des apparences partagées. Fonctionne aussi avec d’autres éléments, tel que|R quest:1234|cffFFFFFF, |Rnpcid:1234|cffFFFFFF, |Rmapid:1234|cffFFFFFF or |Rrecipeid:1234|cffFFFFFF.\n\n|R/att rwp\n|cffFFFFFFAffiche tous les éléments futurs qui seront supprimés lors d’un patch.\n\n|R/att random |cffFFFFFFou|R /attrandom |cffFFFFFFou|R /attran\n|cffFFFFFFOuvre une liste aléatoire.\n\n|R/att unsorted\n|cffFFFFFFOuvre une liste d’éléments non sourcés. Il est préférable d'ouvrir en mode débogage.\n\n|R/rl\n|cffFFFFFFRecharge votre interface WoW.|R";
 
@@ -436,6 +436,7 @@ for key,value in pairs({
 		["Normal"] = "N",
 		["Heroic"] = "H",
 		["Mythic"] = "M",
+		["Clé mythique"] = "M+",
 		["Ny’alotha, la cité en éveil"] = "Ny’alotha",	-- ["Ny'alotha, the Waking City"] = "Ny'alotha"
 		["Tazavesh, le marché dissimulé"] = "Tazavesh",	-- ["Tazavesh, the Veiled Market"] = "Tazavesh"
 		["10 Player"] = "10J",
@@ -604,8 +605,6 @@ for key,value in pairs({
 		--TODO: DRAKEWATCHERMANUSCRIPTS_CHECKBOX_TOOLTIP = "Enable this option to track Dragonflight Manuscrit guette-drake";
 		FOLLOWERS_CHECKBOX = "|T"..app.asset("Expansion_WOD")..":0|t Sujets & Compagnons";
 		--TODO: FOLLOWERS_CHECKBOX_TOOLTIP = "Enable this option to track followers and champions.\n\nIE: Garrison Followers, Legion Class Hall Champions, BFA Campaign Minions and SL Adventurers.";
-		MUSIC_ROLLS_SELFIE_FILTERS_CHECKBOX = "|T"..app.asset("Expansion_WOD")..":0|t Rouleaux à musique & Filtres des portraits";
-		MUSIC_ROLLS_SELFIE_FILTERS_CHECKBOX_TOOLTIP = "Activer cette option pour suivre les rouleaux de musique et les filtres des portraits.\n\nVous pouvez utiliser votre jouet « Lecteur de musique portable » pour jouer de la musique dans le jeu et votre jouet « Appareil photo P.R.O.F.I.L. Mod.II » pour collecter des filtres pour vos portraits à certains endroits.";
 		RUNEFORGELEGENDARIES_CHECKBOX = "|T"..app.asset("Expansion_SL")..":0|t Pouvoirs de gravure runique";
 		RUNEFORGELEGENDARIES_CHECKBOX_TOOLTIP = "Activer cette option pour suivre l’obtention des pouvoirs de gravure runique.";
 		SOULBINDCONDUITS_CHECKBOX = "|T"..app.asset("Expansion_SL")..":0|t Intermédiaires";
@@ -624,7 +623,6 @@ for key,value in pairs({
 		--TODO: ACCOUNT_WIDE_EXPLORATION_TOOLTIP = "Exploration tracking is only really useful per character, but do you really want to collect them all on all 50 of your characters?";
 		--TODO: ACCOUNT_WIDE_FLIGHT_PATHS_TOOLTIP = "Flight Paths tracking is only really useful per character, but do you really want to collect them all on all 50 of your characters?";
 		--TODO: ACCOUNT_WIDE_FOLLOWERS_TOOLTIP = "Followers are typically per character, but do you really want to have to collect 243 Garrison Inn Followers on one character at a rate of 1 per week?\n\nI think not, good sir.";
-		--TODO: ACCOUNT_WIDE_MUSIC_ROLLS_SELFIE_FILTERS_TOOLTIP = "Music Rolls & Selfie Filters are not normally tracked Account-Wide in Blizzard's database, but we can do that.\n\nNOTE: You can only play Music Rolls using the Jukebox Toy or snap a selfie with your S.E.L.F.I.E Camera Toy that you have collected on your current character.";
 		--TODO: ACCOUNT_WIDE_QUESTS_TOOLTIP = "Quest completion is typically per Character, but this will consider a Quest as completed if ANY Character has completed that specific Quest.";
 		--TODO: ACCOUNT_WIDE_RECIPES_TOOLTIP = "Recipes are not normally tracked Account-Wide in Blizzard's database, but we can do that.\n\nIt is impossible to collect them all on one character, so with this, you can give your alts and their professions meaning.";
 		--TODO: ACCOUNT_WIDE_REPUTATIONS_TOOLTIP = "Reputations are now tracked Account-Wide in Blizzard's database for achievements, so turning this on may be a good idea.";
@@ -827,10 +825,10 @@ if app.IsRetail then
 --TODO:
 local a = L.CUSTOM_COLLECTS_REASONS;
 for key,value in pairs({
-	["NPE"] = { icon = "|T"..("Interface\\Icons\\achievement_newplayerexperience")..":0|t", color = "ff5bc41d", text = "Expérience Nouveau Joueur", desc = "Seul un nouveau personnage peut collecter ceci." },
+	["NPE"] = { icon = "|T"..(3567434)..":0|t", color = "ff5bc41d", text = "Expérience Nouveau Joueur", desc = "Seul un nouveau personnage peut collecter ceci." },
 	["SL_SKIP"] = { icon = "|T"..app.asset("Expansion_SL")..":0|t", color = "ff76879c", text = "Fil du destin", desc = "Seul un personnage ayant passé la suite de quête principale de Shadowlands peut collecter ceci." },
-	["HOA"] = { icon = "|T"..("Interface\\Icons\\inv_heartofazeroth")..":0|t", color = "ffe6cc80", text = GetSpellName(275825), desc = "Seul un personnage ayant obtenu le |cffe6cc80"..GetSpellName(275825).."|r peut collecter ceci." },
-	["!HOA"] = { icon = "|T"..("Interface\\Icons\\mystery_azerite_chest_normal")..":0|t", color = "ffe6cc80", text = "|cffff0000"..NO.."|r "..GetSpellName(275825), desc = "Seul un personnage |cffff0000n’ayant pas|r obtenu le |cffe6cc80"..GetSpellName(275825).."|r peut collecter ceci." },
+	["HOA"] = { icon = "|T"..(1869493)..":0|t", color = "ffe6cc80", text = GetSpellName(275825), desc = "Seul un personnage ayant obtenu le |cffe6cc80"..GetSpellName(275825).."|r peut collecter ceci." },
+	["!HOA"] = { icon = "|T"..(2480886)..":0|t", color = "ffe6cc80", text = "|cffff0000"..NO.."|r "..GetSpellName(275825), desc = "Seul un personnage |cffff0000n’ayant pas|r obtenu le |cffe6cc80"..GetSpellName(275825).."|r peut collecter ceci." },
 })
 do a[key] = value; end
 end

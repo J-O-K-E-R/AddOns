@@ -15,10 +15,7 @@ local IsRetrieving = app.Modules.RetrievingData.IsRetrieving
 
 -- App
 local SearchForObject = app.SearchForObject
-local CreateObject
-app.AddEventHandler("OnLoad", function()
-	CreateObject = app.__CreateObject
-end)
+local CreateClassInstance = app.CreateClassInstance
 
 -- Automatic Headers
 local HeaderTypeAbbreviations = {
@@ -74,7 +71,7 @@ local function GetAutomaticHeaderData(id, type)
 		return altFunc(id);
 	end
 	local typeID = HeaderTypeAbbreviations[type] or type;
-	local obj = SearchForObject(typeID, id, "key") or CreateObject({[typeID]=id});
+	local obj = SearchForObject(typeID, id, "key") or CreateClassInstance(typeID,id)
 	if obj then
 		-- app.PrintDebug("GetAutomaticHeaderData", id, typeID, obj.text, obj.key, obj[obj.key]);
 		-- app.PrintDebug("Automatic Header",obj.name or obj.link)
@@ -120,7 +117,7 @@ do
 	"WithQuest", {
 		trackable = function(t)
 			-- raw repeatable quests can't really be tracked since they immediately unflag
-			return not rawget(t, "repeatable")
+			return not rawget(t, "repeatable") and t.repeatable
 		end,
 		saved = function(t)
 			return IsQuestFlaggedCompleted(t.questID)

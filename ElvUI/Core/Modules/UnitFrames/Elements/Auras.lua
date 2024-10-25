@@ -6,7 +6,7 @@ local LSM = E.Libs.LSM
 
 local format, strlower = format, strlower
 local tinsert, strsplit, strmatch = tinsert, strsplit, strmatch
-local sort, wipe, unpack, next, floor = sort, wipe, unpack, next, floor
+local sort, wipe, next, unpack, floor = sort, wipe, next, unpack, floor
 
 local CreateFrame = CreateFrame
 local IsAltKeyDown = IsAltKeyDown
@@ -198,8 +198,8 @@ function UF:Aura_OnClick()
 	local keyDown = IsShiftKeyDown() and 'SHIFT' or IsAltKeyDown() and 'ALT' or IsControlKeyDown() and 'CTRL'
 	if not keyDown then return end
 
-	local spellName, spellID = self.name, self.spellID
 	local listName = UF.db.modifiers[keyDown]
+	local spellName, spellID = self.name, self.spellID
 	if spellName and spellID and listName ~= 'NONE' then
 		if not E.global.unitframe.aurafilters[listName].spells[spellID] then
 			E:Print(format(L["The spell '%s' has been added to the '%s' unitframe aura filter."], spellName, listName))
@@ -207,8 +207,6 @@ function UF:Aura_OnClick()
 		else
 			E.global.unitframe.aurafilters[listName].spells[spellID].enable = true
 		end
-
-		UF:Update_AllFrames()
 	end
 end
 
@@ -506,11 +504,13 @@ function UF:ConvertFilters(auras, priority)
 	if not priority or priority == '' then return end
 
 	local list = auras.filterList or {}
-	if next(list) then wipe(list) end
+	if #list > 0 then wipe(list) end
 
 	local special, filters = G.unitframe.specialFilters, E.global.unitframe.aurafilters
 
-	for _, name in next, { strsplit(',', priority) } do
+	local temp = { strsplit(',', priority) }
+	for i = 1, #temp do
+		local name = temp[i]
 		local friend, enemy = strmatch(name, '^Friendly:([^,]*)'), strmatch(name, '^Enemy:([^,]*)')
 		local real = friend or enemy or name
 		local custom = filters[real]
@@ -524,13 +524,14 @@ function UF:ConvertFilters(auras, priority)
 		end
 	end
 
-	if next(list) then
+	if #list > 0 then
 		return list
 	end
 end
 
 function UF:CheckFilter(source, spellName, spellID, canDispel, isFriend, isPlayer, unitIsCaster, myPet, otherPet, isBossDebuff, allowDuration, noDuration, isMount, castByPlayer, nameplateShowSelf, nameplateShowAll, filterList)
-	for _, data in next, filterList do
+	for i = 1, #filterList do
+		local data = filterList[i]
 		local status = data.status
 		local skip = (status == 1 and not isFriend) or (status == 2 and isFriend)
 		if not skip then

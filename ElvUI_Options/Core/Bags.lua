@@ -144,7 +144,7 @@ Bags.args.general.args.itemLevelGroup = ACH:Group(L["Item Level"], nil, 10, nil,
 Bags.args.general.args.itemLevelGroup.args.itemLevel = ACH:Toggle(L["Display Item Level"], L["Displays item level on equippable items."], 1)
 Bags.args.general.args.itemLevelGroup.args.itemLevelCustomColorEnable = ACH:Toggle(L["Custom Color"], nil, 2, nil, nil, nil, nil, nil, nil, function() return not E.db.bags.itemLevel end)
 Bags.args.general.args.itemLevelGroup.args.itemLevelCustomColor = ACH:Color(L["COLOR"], nil, 3, nil, nil, function(info) local t = E.db.bags[info[#info]] local d = P.bags[info[#info]] return t.r, t.g, t.b, t.a, d.r, d.g, d.b end, function(info, r, g, b) local t = E.db.bags[info[#info]] t.r, t.g, t.b = r, g, b B:UpdateItemDisplay() end, nil, function() return not E.db.bags.itemLevel or not E.db.bags.itemLevelCustomColorEnable end)
-Bags.args.general.args.itemLevelGroup.args.itemLevelThreshold = ACH:Range(L["Item Level Threshold"], L["The minimum item level required for it to be shown."], 4, { min = 1, max = 500, step = 1 }, nil, nil, function(info, value) E.db.bags[info[#info]] = value B:UpdateAllBagSlots() end, nil, function() return not E.db.bags.itemLevel end)
+Bags.args.general.args.itemLevelGroup.args.itemLevelThreshold = ACH:Range(L["Item Level Threshold"], L["The minimum item level required for it to be shown."], 4, { min = 1, max = 800, step = 1 }, nil, nil, function(info, value) E.db.bags[info[#info]] = value B:UpdateAllBagSlots() end, nil, function() return not E.db.bags.itemLevel end)
 Bags.args.general.args.itemLevelGroup.args.fontGroup = ACH:Group(L["Fonts"], nil, 5, nil, nil, nil, nil, function() return not E.db.bags.itemLevel end)
 Bags.args.general.args.itemLevelGroup.args.fontGroup.inline = true
 Bags.args.general.args.itemLevelGroup.args.fontGroup.args.itemLevelFontSize = ACH:Range(L["Font Size"], nil, 6, C.Values.FontSize, nil, nil, nil, nil, function() return not E.db.bags.itemLevel end)
@@ -157,7 +157,8 @@ Bags.args.general.args.itemLevelGroup.args.positionGroup.args.itemLevelxOffset =
 Bags.args.general.args.itemLevelGroup.args.positionGroup.args.itemLevelyOffset = ACH:Range(L["Y-Offset"], nil, 12, { min = -45, max = 45, step = 1 }, nil, nil, nil, nil, function() return not E.db.bags.itemLevel end)
 
 Bags.args.general.args.autoToggle = ACH:Group(L["Auto Toggle"], nil, 11)
-Bags.args.general.args.autoToggle.args.toggles = ACH:MultiSelect('', nil, 1, { bank = L["Bank"], mail = L["MAIL_LABEL"], guildBank = L["Guild Bank"], auctionHouse = L["Auction House"], professions = L["Professions"], trade = L["TRADE"], vendor = L["Vendor"] }, nil, nil, function(_, key) return E.db.bags.autoToggle[key] end, function(_, key, value) E.db.bags.autoToggle[key] = value end)
+Bags.args.general.args.autoToggle.args.enable = ACH:Toggle(L["Enable"], nil, 1, nil, nil, nil, function() return E.db.bags.autoToggle.enable end, function(_, value) E.db.bags.autoToggle.enable = value B:SetupAutoToggle() end)
+Bags.args.general.args.autoToggle.args.toggles = ACH:MultiSelect('', nil, 2, { bank = L["Bank"], mail = L["MAIL_LABEL"], guildBank = L["Guild Bank"], auctionHouse = L["Auction House"], professions = L["Professions"], trade = L["TRADE"], vendor = L["Vendor"] }, nil, nil, function(_, key) return E.db.bags.autoToggle[key] end, function(_, key, value) E.db.bags.autoToggle[key] = value end, function() return not E.db.bags.autoToggle.enable end)
 
 if E.Retail then
 	Bags.args.general.args.autoToggle.args.toggles.values.soulBind = L["Soul Binds"]

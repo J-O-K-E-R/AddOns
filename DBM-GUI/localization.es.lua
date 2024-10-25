@@ -274,11 +274,11 @@ L.Area_CountdownOptions		= "Opciones de cuenta atrás"
 L.Area_VoicePackReplace		= "Opciones de reemplazo de paquetes de voz (que suenan paquetes de voz, cuando están activados, silencian y reemplazan)"
 L.VPReplaceNote				= "Nota: Los paquetes de voz nunca cambian ni eliminan los sonidos de avisos.\nSimplemente se silencian cuando el paquete de voz los reemplaza."
 L.ReplacesAnnounce			= "Reemplazar los sonidos de anuncio (Nota: muy pocos usan paquetes de voz, excepto para cambios de fase y bichos.)"
-L.ReplacesSA1				= "Reemplazar los sonidos del anuncio especial 1 (personal también conocido como 'pvpflag' que no son de correr)"
-L.ReplacesSA2				= "Reemplazar los sonidos del anuncio especial 2 (todos también conocidos como 'cuidado')"
-L.ReplacesSA3				= "Reemplazar los sonidos del anuncio especial 3 (alta prioridad también conocido como 'airhorn')"
-L.ReplacesSA4				= "Reemplazar los sonidos del anuncio especial 4 (correr de alta prioridad)"
-L.ReplacesGTFO				= "Reemplazar los sonidos de correr del anuncio especial"
+L.ReplacesSA1				= "Reemplazar los sonidos de anuncio especial 1 (personal también conocido como 'pvpflag' que no son de correr)"
+L.ReplacesSA2				= "Reemplazar los sonidos de anuncio especial 2 (todos también conocidos como 'cuidado')"
+L.ReplacesSA3				= "Reemplazar los sonidos de anuncio especial 3 (alta prioridad también conocido como 'airhorn')"
+L.ReplacesSA4				= "Reemplazar los sonidos de anuncio especial 4 (correr de alta prioridad)"
+L.ReplacesGTFO				= "Reemplazar los sonidos de anuncio especial de correr"
 L.ReplacesCustom			= "Reemplazar los sonidos de anuncios especiales personalizados establecidos por el usuario (no recomendado)"
 L.Area_VoicePackAdvOptions	= "Opciones avanzadas del paquete de voz"
 L.SpecWarn_AlwaysVoice		= "Reproducir siempre todas las alertas de voz (ignora las opciones de jefe; útil para líderes de banda)"
@@ -301,6 +301,7 @@ L.EventDungeonMusic			= "Música de fondo en mazmorras y bandas"
 L.EventEngageMusic			= "Música de fondo en encuentros"
 L.Area_EventSoundsExtras	= "Opciones de sonidos de eventos"
 L.EventMusicCombined		= "Mostrar toda la selección de música (escribe /reload en el chat para que esta opción surta efecto)"
+L.DisableBuiltInMusic		= "Desactivar sonidos de eventos incorporados y carga solo paquetes de música de terceros."
 L.Area_EventSoundsFilters	= "Filtros de sonidos de evento"
 L.EventFilterDungMythicMusic= "Desactivar música personalizada de mazmorra en dificultad Mítica/M+."
 L.EventFilterMythicMusic	= "Desactivar música personalizada de encuentros en dificultad Mítica/M+."
@@ -357,8 +358,8 @@ L.CBTImportant				= "Importante"
 --Dropdown Options
 L.SAOne						= "Sonido global 1 (personal)"
 L.SATwo						= "Sonido global 2 (todos)"
-L.SAThree					= "Global Sound 3 (acción de alta prioridad)"
-L.SAFour					= "Global Sound 4 (correr de alta prioridad)"
+L.SAThree					= "Sonido global 3 (acción de alta prioridad)"
+L.SAFour					= "Sonido global 4 (correr de alta prioridad)"
 L.ColorDropGeneric			= "Genérico (original)"
 L.ColorDrop1				= "Color 1"
 L.ColorDrop2				= "Color 2"
@@ -466,7 +467,7 @@ L.SpamBlockNoTrivialSpecWarnSound	= "No reproducir sonidos de anuncio especiales
 L.Area_SpamFilter			= "Opciones de filtros de avisos"
 L.DontShowFarWarnings		= "Ocultar anuncios y temporizadores de eventos que están demasiado lejos"
 L.StripServerName			= "Omitir nombre del reino en avisos y temporizadores"
-L.FilterVoidFormSay2			= "Desactivar el envío de mensajes de posición y cuenta atrás en el chat durante Forma del Vacío"
+L.FilterVoidFormSay2		= "Desactivar el envío de mensajes de posición y cuenta atrás en el chat durante Forma del Vacío"
 
 L.Area_SpecFilter			= "Opciones de filtros de rol"
 L.FilterTankSpec			= "Ocultar avisos designados para tanques cuando no sea tu rol"
@@ -501,7 +502,7 @@ L.Panel_HideBlizzard				= "Bloquear funciones de Blizzard"
 L.Area_HideToast					= "Desactivar notificaciones emergentes de Blizzard"
 L.HideGarrisonUpdates				= "Ocultar notificaciones de seguidores durante encuentros contra jefes"
 L.HideGuildChallengeUpdates			= "Ocultar notificaciones de desafíos de hermandad durante encuentros contra jefes"
---L.HideBossKill						= "Ocultar notificaciones de muerte de jefes"--NYI
+--L.HideBossKill					= "Ocultar notificaciones de muerte de jefes"--NYI
 --L.HideVaultUnlock					= "Ocultar notificaciones de desbloqueo de la cámara"--NYI
 --Cut Scenes
 L.Area_Cinematics 					= "Bloquear cinemáticas del juego"
@@ -528,10 +529,10 @@ L.OverrideIcons 					= "Desactivar el marcado de iconos para todos los usuarios 
 L.OverrideSay						= "Desactivar la burbuja de chat/mensajes DECIR para todos los usuarios en la banda, incluido el tuyo"
 L.DisableStatusWhisperShort			= "Desactivar estado/susurros de respuesta para todo el grupo"--Duplicated from privacy but makes sense to include option in both panels
 L.DisableGuildStatusShort			= "Desactivar la sincronización de mensajes de progresión con la hermandad para todo el grupo."--Duplicated from privacy but makes sense to include option in both panels
---L.DisabledForDropdown				= "Elige la desactivación del mod(s) del jefe y se envía a"--NYI
---L.DiabledForBoth					= "Desactiva las funciones anteriores tanto para DBM como para BW"--NYI
---L.DiabledForDBM						= "Desactiva las funciones anteriores solo para usuarios de DBM"--NYI
---L.DiabledForBW						= "Desactiva las funciones anteriores solo para usuarios de BW"--NYI
+--L.DisabledForDropdown				= "Eligir la desactivación del módulos de jefe y se envía a"--NYI
+--L.DiabledForBoth					= "Desactivar las funciones anteriores tanto para DBM como para BW"--NYI
+--L.DiabledForDBM					= "Desactivar las funciones anteriores solo para usuarios de DBM"--NYI
+--L.DiabledForBW					= "Desactivar las funciones anteriores solo para usuarios de BW"--NYI
 
 L.Area_ConfigOverrides				= "Opciones de anulación de configuración"--NYI
 L.OverrideBossAnnounceOptions		= "Establecer la configuración de anuncio de todos los usuarios de DBM en mi configuración"--NYI
@@ -572,6 +573,7 @@ L.Panel_Range				= "Marco de distancia"
 
 -- Panel: Nameplate
 L.Panel_Nameplates			= "Placas de nombres"
+L.Plater_Config				= "Abrir configuración de Plater"
 L.Area_NPStyle				= "Contorno (solo cuando DBM controla las placas de nombres)"
 L.NPAuraText				= "Mostrar texto del temporizador en los iconos de la placa de nombre"
 L.NPAuraSize				= "Tamaño del aura: %d"
@@ -581,22 +583,23 @@ L.NPIcon_GrowthDirection 	= "Dirección de crecimiento del icono"
 L.NPIcon_Spacing		 	= "Espaciado del icono: %d"
 L.NPIcon_MaxTextLen		 	= "Longitud del texto máx.: %d"
 L.NPIconAnchorPoint			= "Punto de anclaje del icono"
-L.NPDemo					= "Probar (Acercase de placas de nombre)"
+L.NPDemo					= "Probar (Acercarse de placas de nombre)"
 L.FontTypeTimer				= "Seleccionar fuente del temporizador"
 L.FontTypeText				= "Seleccionar fuente de texto"
 
---L.Area_NPGlow				= "Glow (Note: Only configures glow when DBM is handling nameplates.)"
+L.Area_NPGlow				= "Resplandor (Nota: Solo configura el resplandor cuando DBM está gestionando las placas de nombre.)"
 L.NPIcon_GlowBehavior 		= "Comportamiento de resplandor del icono"
---L.NPIcon_CastGlowBehavior = "Cast Icon Glow Behavior"
+L.NPIcon_CastGlowBehavior 	= "Comportamiento del resplandor del icono de lanzamiento"
 L.NPIcon_GlowNone			= "Nunca resplandecer los iconos"
 L.NPIcon_GlowImportant		= "Resplandecer iconos importantes de reutilizaciones/lanzamientos a punto de expirar"
 L.NPIcon_GlowAll			= "Resplandecer todos los iconos de reutilizaciones/lanzamientos a punto de expirar"
---L.NPIcon_GlowTypeCD		= "Cooldown Icon Glow Type"
---L.NPIcon_GlowTypeCast		= "Cast Icon Glow Type"
---L.NPIcon_Pixel  			= "Pixel"
---L.NPIcon_Proc  			= "Proc"
---L.NPIcon_AutoCast         = "Auto Cast"
---L.NPIcon_Button           = "Button"
+L.NPIcon_GlowTypeCD			= "Tipo de resplandor del icono de reutilización"
+L.NPIcon_GlowTypeCast		= "Tipo de resplandor del icono de lanzamiento"
+L.NPIcon_Pixel  			= "Píxel"
+L.NPIcon_Proc  				= "Prec"
+L.NPIcon_AutoCast         	= "Lanzamiento automático"
+L.NPIcon_Button           	= "Botón"
+
 
 -- Misc
 L.Area_General				= "General"
@@ -665,3 +668,6 @@ L.ShowDiff							= "Mostrar diferencias"
 L.ShowErrors						= "Mostrar errores"
 L.TestModEntry						= "[Área de pruebas] %s"
 L.EnterTestMode						= "Modo de pruebas"
+L.SkipPhase							= "Saltar a la siguiente fase"
+
+L.AnonymizeTest 					= "Anonimizar nombres de jugadores y GUIDs"

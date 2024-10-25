@@ -160,7 +160,7 @@ do
 
 		playerList[#playerList+1] = args.destName
 		if self:Me(args.destGUID) then
-			self:Say(342074)
+			self:Say(342074, nil, nil, "Echolocation")
 			self:SayCountdown(342074, self:Mythic() and 6 or 8)
 			self:PlaySound(342074, "warning")
 		end

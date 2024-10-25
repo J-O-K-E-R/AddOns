@@ -32,7 +32,7 @@ L["Module Category AzerothianArchives"] = "Azerothian Archives";     --Added in 
 
 --AutoJoinEvents
 L["ModuleName AutoJoinEvents"] = "Auto Join Events";
-L["ModuleDescription AutoJoinEvents"] = "Auto select (Begin Time Rift) when you interact with Soridormi during the event.";
+L["ModuleDescription AutoJoinEvents"] = "Auto join these events when you interact with the NPC: \n\n- Time Rift\n\n- Theater Troupe";
 
 
 --BackpackItemTracker
@@ -159,6 +159,11 @@ L["ModuleName TooltipChestKeys"] = "Tooltip: Chest Keys";
 L["ModuleDescription TooltipChestKeys"] = "Show info on the key required to open the current chest or door.";
 
 
+--Tooltip Reputation Tokens
+L["ModuleName TooltipRepTokens"] = "Tooltip: Reputation Tokens";
+L["ModuleDescription TooltipRepTokens"] = "Show the faction info if the item can be used to increase reputation.";
+
+
 --Merchant UI Price
 L["ModuleName MerchantPrice"] = "Merchant Price";
 L["ModuleDescription MerchantPrice"] = "Modify Merchant UI's behaviors:\n\n- Grey out only the insufficient currencies.\n\n- Show all required items in the coin box.";
@@ -189,12 +194,57 @@ L["ModuleName Delves_SeasonProgress"] = "Delves: Delver's Journey";
 L["ModuleDescription Delves_SeasonProgress"] = "Display a progress bar on the top of the screen whenever you earn Delver's Journey";
 
 
+--WoW Anniversary
+L["ModuleName WoWAnniversary"] = "WoW Anniversary";
+L["ModuleDescription WoWAnniversary"] = "- Summon the corresponding mount easily during the Mount Maniac event.\n\n- Show voting results during the Fashion Frenzy event. ";
+L["Voting Result Header"] = "Results";
+L["Mount Not Collected"] = MOUNT_JOURNAL_NOT_COLLECTED or "You have not collected this mount.";
+
+
+--BlizzFixFishingArtifact
+L["ModuleName BlizzFixFishingArtifact"] = "Blitz Fix: Underlight Angler";
+L["ModuleDescription BlizzFixFishingArtifact"] = "Allow you to view the fishing artifact\'s traits again.";
+
+
+--Loot UI
+L["ModuleName LootUI"] = HUD_EDIT_MODE_LOOT_FRAME_LABEL or "Loot Window";
+L["ModuleDescription LootUI"] = "Replace the default Loot Window and provide some optional features:\n\n- Loot items fast.\n\n- Fix Auto Loot failure bug.\n\n- Show a Take All button when looting manually.";
+L["Take All"] = "Take All";     --Take all items from a loot window
+L["You Received"] = YOU_RECEIVED_LABEL or "You recieved";
+L["Reach Currency Cap"] = "Reached currency caps";
+L["Sample Item 4"] = "Awesome Epic Item";
+L["Sample Item 3"] = "Awesome Rare Item";
+L["Sample Item 2"] = "Awesome Uncommon Item";
+L["Sample Item 1"] = "Common Item";
+L["EditMode LootUI"] =  "Plumber: "..(HUD_EDIT_MODE_LOOT_FRAME_LABEL or "Loot Window");
+L["Manual Loot Instruction Format"] = "To temporarily cancel auto loot on a specific pickup, press and hold |cffffffff%s|r key until the loot window appears.";
+L["LootUI Option Force Auto Loot"] = "Force Auto Loot";
+L["LootUI Option Force Auto Loot Tooltip"] = "Always enable Auto Loot to counter the occasional auto loot failure.";
+L["LootUI Option Owned Count"] = "Show Number Of Owned Items";
+L["LootUI Option New Transmog"] = "Mark Uncollected Appearance";
+L["LootUI Option New Transmog Tooltip"] = "Add a marker %s if you have not collected the item's appearance.";
+L["LootUI Option Use Hotkey"] = "Press Key To Take All Items";
+L["LootUI Option Use Hotkey Tooltip"] = "While in Manual Looting mode, press the following hotkey to take all items.";
+L["LootUI Option Fade Delay"] = "Fade Out Delay Per Item";
+L["LootUI Option Replace Default"] = "Replace Default Loot Alert";
+L["LootUI Option Replace Default Tooltip"] = "Replace the default loot alerts that usually appear above the action bars.";
+L["LootUI Option Loot Under Mouse"] = LOOT_UNDER_MOUSE_TEXT or "Open Loot Window at Mouse";
+L["LootUI Option Loot Under Mouse Tooltip"] = "While in |cffffffffManual Loot|r mode, the window will appear under the current mouse location";
+L["LootUI Option Use Default UI"] = "Use Default Loot Window";
+L["LootUI Option Use Default UI Tooltip"] = "Use WoW\'s default loot window.\n\n|cffff4800Enabling this option nullifies all settings above.|r";
+
+
 --Generic
 L["Reposition Button Horizontal"] = "Move Horizontally";   --Move the window horizontally
 L["Reposition Button Vertical"] = "Move Vertically";
 L["Reposition Button Tooltip"] = "Left-click and drag to move the window.";
 L["Font Size"] = FONT_SIZE or "Font Size";
 L["Reset To Default Position"] = HUD_EDIT_MODE_RESET_POSITION or "Reset To Default Position";
+L["Renown Level Label"] = RENOWN_LEVEL_LABEL or "Renown ";  --There is a space
+L["Paragon Reputation"] = "Paragon";
+L["Level Maxed"] = "(Maxed)";   --Reached max level
+L["Current Colon"] = ITEM_UPGRADE_CURRENT or "Current:";
+L["Unclaimed Reward Alert"] = WEEKLY_REWARDS_UNCLAIMED_TITLE or "You have unclaimed rewards";
 
 
 
@@ -219,3 +269,11 @@ L["Delve Chest 1 Rare"] = "Bountiful Coffer";   --We'll use the GameObjectID onc
 --Map Pin Filter Name (name should be plural)
 L["Bountiful Delve"] =  "Bountiful Delves";
 L["Special Assignment"] = "Special Assignments";
+
+
+L["Match Pattern Gold"] = "([%d%,]+) Gold";
+L["Match Pattern Silver"] = "([%d]+) Silver";
+L["Match Pattern Copper"] = "([%d]+) Copper";
+
+L["Match Patter Rep 1"] = "Your Warband's reputation with (.+) increased by ([%d%,]+)";   --FACTION_STANDING_INCREASED_ACCOUNT_WIDE
+L["Match Patter Rep 2"] = "Reputation with (.+) increased by ([%d%,]+)";   --FACTION_STANDING_INCREASED

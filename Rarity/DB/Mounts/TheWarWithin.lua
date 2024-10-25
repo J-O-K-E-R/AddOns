@@ -12,11 +12,10 @@ local twwMounts = {
 		name = L["Reins of the Sureki Skyrazor"],
 		itemId = 224147,
 		spellId = 451486,
-		npcs = { 219778 },
+		npcs = { 219778, 218370 },
 		groupSize = 5,
 		equalOdds = true,
 		chance = 100, -- No data available
-		instanceDifficulties = { [CONSTANTS.INSTANCE_DIFFICULTIES.MYTHIC_DUNGEON] = true },
 		coords = { { i = true, m = CONSTANTS.UIMAPIDS.NERUBAR_PALACE } },
 	},
 	["Beledar's Spawn"] = {
@@ -75,7 +74,17 @@ local twwMounts = {
 		spellId = 448979,
 		items = { 228741 },
 		chance = 100, -- No data available
-		coords = { { i = true, m = CONSTANTS.UIMAPIDS.HALLOWFALL } },
+		coords = { { m = CONSTANTS.UIMAPIDS.HALLOWFALL } },
+	},
+	["Machine Defense Unit 1-11"] = {
+		cat = CONSTANTS.ITEM_CATEGORIES.TWW,
+		type = CONSTANTS.ITEM_TYPES.MOUNT,
+		method = CONSTANTS.DETECTION_METHODS.SPECIAL,
+		name = L["Machine Defense Unit 1-11"],
+		itemId = 223269,
+		spellId = 448188,
+		chance = 5,
+		coords = { { m = CONSTANTS.UIMAPIDS.THE_RINGING_DEEPS } },
 	},
 }
 

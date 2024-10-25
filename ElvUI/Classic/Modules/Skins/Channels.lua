@@ -13,9 +13,10 @@ function S:Blizzard_Channels()
 	S:HandleButton(ChannelFrame.NewButton)
 	S:HandleButton(ChannelFrame.SettingsButton)
 
-	S:HandlePointXY(ChannelFrame.NewButton, -1, 4)
-	S:HandlePointXY(_G.ChannelFrameCloseButton, 2, 2)
+	ChannelFrame.NewButton:PointXY(-1, 4)
+	_G.ChannelFrameCloseButton:PointXY(2, 2)
 
+	-- ScrollBars
 	S:HandleScrollBar(ChannelFrame.ChannelRoster.ScrollFrame.scrollBar)
 	ChannelFrame.ChannelRoster.ScrollFrame.scrollBar:Point('TOPLEFT', ChannelFrame.ChannelRoster.ScrollFrame, 'TOPRIGHT', 1, -13)
 	ChannelFrame.ChannelRoster.ScrollFrame.scrollBar:Point('BOTTOMLEFT', ChannelFrame.ChannelRoster.ScrollFrame, 'BOTTOMRIGHT', 1, 13)
@@ -23,6 +24,7 @@ function S:Blizzard_Channels()
 	S:HandleScrollBar(ChannelFrame.ChannelList.ScrollBar)
 	ChannelFrame.ChannelList.ScrollBar:Point('BOTTOMLEFT', ChannelFrame.ChannelList, 'BOTTOMRIGHT', 0, 15)
 
+	-- Popups
 	local CreateChannelPopup = _G.CreateChannelPopup
 	S:HandleFrame(CreateChannelPopup, true)
 
@@ -32,7 +34,7 @@ function S:Blizzard_Channels()
 	S:HandleEditBox(CreateChannelPopup.Name)
 	S:HandleEditBox(CreateChannelPopup.Password)
 
-	S:HandlePointXY(CreateChannelPopup.CloseButton, 2, 2)
+	CreateChannelPopup.CloseButton:PointXY(2, 2)
 
 	local VoiceChatPromptActivateChannel = _G.VoiceChatPromptActivateChannel
 	S:HandleFrame(VoiceChatPromptActivateChannel, true)

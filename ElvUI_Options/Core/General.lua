@@ -76,12 +76,12 @@ GenGen.scaling.args.ScaleAuto = ACH:Execute(L["Auto Scale"], nil, 5, function() 
 
 GenGen.gameMenuGroup = ACH:Group(L["Game Menu"], nil, 70, nil, function(info) return E.db.general[info[#info]] end, function(info, value) E.db.general[info[#info]] = value E:ScaleGameMenu() end, nil, not E.Retail)
 GenGen.gameMenuGroup.inline = true
-GenGen.gameMenuGroup.args.gameMenuScale = ACH:Range(E.NewSign..L["Scale"], L["Change the scale of the Game Menu which shows up when you press ESC."], 1, { min = 0.25, max = 1.50, step = 0.000000000000001, bigStep = 0.01 })
+GenGen.gameMenuGroup.args.gameMenuScale = ACH:Range(L["Scale"], L["Change the scale of the Game Menu which shows up when you press ESC."], 1, { min = 0.25, max = 1.50, step = 0.000000000000001, bigStep = 0.01 })
 
 GenGen.automation = ACH:Group(L["Automation"], nil, 80)
 GenGen.automation.inline = true
 
-GenGen.automation.args.interruptAnnounce = ACH:Select(L["Announce Interrupts"], L["Announce when you interrupt a spell to the specified chat channel."], 1, { NONE = L["None"], SAY = L["Say"], YELL = L["Yell"], PARTY = L["Party Only"], RAID = L["Party / Raid"], RAID_ONLY = L["Raid Only"], EMOTE = L["CHAT_MSG_EMOTE"] }, nil, nil, nil, function(info, value) E.db.general[info[#info]] = value if value == 'NONE' then M:UnregisterEvent('COMBAT_LOG_EVENT_UNFILTERED') else M:RegisterEvent('COMBAT_LOG_EVENT_UNFILTERED') end end)
+GenGen.automation.args.interruptAnnounce = ACH:Select(L["Announce Interrupts"], L["Announce when you interrupt a spell to the specified chat channel."], 1, { NONE = L["None"], SAY = L["Say"], YELL = L["Yell"], PARTY = L["Party Only"], RAID = L["Party / Raid"], RAID_ONLY = L["Raid Only"], EMOTE = L["CHAT_MSG_EMOTE"] }, nil, nil, nil, function(info, value) E.db.general[info[#info]] = value M:ToggleInterrupt() end)
 GenGen.automation.args.autoAcceptInvite = ACH:Toggle(L["Accept Invites"], L["Automatically accept invites from guild/friends."], 2)
 GenGen.automation.args.autoTrackReputation = ACH:Toggle(L["Auto Track Reputation"], nil, 4)
 GenGen.automation.args.autoRepair = ACH:Select(L["Auto Repair"], L["Automatically repair using the following method when visiting a merchant."], 5, { NONE = L["None"], GUILD = not E.Classic and L["Guild"] or nil, PLAYER = L["Player"] })
@@ -133,7 +133,7 @@ do
 		pvpzone = { name = L["PVP Zone Text"], order = 54 },
 		pvpsubzone = { name = L["PVP Sub Zone"], order = 55 },
 		objective = { name = L["Objective Text"], order = 56, hidden = not E.Retail },
-		errortext = { name = L["Error Text"], order = 57 },
+		errortext = { name = L["Quest Progress and Error Text"], order = 57 },
 		mailbody = { name = L["Mail Text"], order = 58 },
 		questtitle = { name = L["Quest Title"], order = 59 },
 		questtext = { name = L["Quest Text"], order = 60 },
@@ -213,7 +213,7 @@ General.blizzUIImprovements = ACH:Group(L["BlizzUI Improvements"], nil, 30, 'tab
 local blizz = General.blizzUIImprovements.args
 
 blizz.general = ACH:Group(L["General"], nil, 1)
-blizz.general.args.hideErrorFrame = ACH:Toggle(L["Hide Error Text"], L["Hides the red error text at the top of the screen while in combat."], 1)
+blizz.general.args.hideErrorFrame = ACH:Toggle(L["Hide Quest Progress and Error Text"], L["Hides the yellow quest progress text and red error text at the top of the screen while in combat."], 1)
 blizz.general.args.enhancedPvpMessages = ACH:Toggle(L["Enhanced PVP Messages"], L["Display battleground messages in the middle of the screen."], 2)
 blizz.general.args.disableTutorialButtons = ACH:Toggle(L["Disable Tutorial Buttons"], L["Disables the tutorial button found on some frames."], 3, nil, nil, nil, function(info) return E.global.general[info[#info]] end, function(info, value) E.global.general[info[#info]] = value E.ShowPopup = true end)
 blizz.general.args.voiceOverlay = ACH:Toggle(L["Voice Overlay"], L["Replace Blizzard's Voice Overlay."], 5, nil, nil, nil, function(info) return E.private.general[info[#info]] end, function(info, value) E.private.general[info[#info]] = value E.ShowPopup = true end)
@@ -325,7 +325,7 @@ blizz.guildBank.args.ilvlGroup = ACH:Group(L["Item Level"], nil, 10)
 blizz.guildBank.args.ilvlGroup.args.itemLevel = ACH:Toggle(L["Display Item Level"], L["Displays item level on equippable items."], 1)
 blizz.guildBank.args.ilvlGroup.args.itemLevelCustomColorEnable = ACH:Toggle(L["Custom Color"], nil, 2, nil, nil, nil, nil, nil, nil, function() return not E.db.general.guildBank.itemLevel end)
 blizz.guildBank.args.ilvlGroup.args.itemLevelCustomColor = ACH:Color(L["COLOR"], nil, 3, nil, nil, function(info) local t = E.db.general.guildBank[info[#info]] local d = P.general.guildBank[info[#info]] return t.r, t.g, t.b, t.a, d.r, d.g, d.b end, function(info, r, g, b) local t = E.db.general.guildBank[info[#info]] t.r, t.g, t.b = r, g, b BL:GuildBank_Update() end, nil, function() return not E.db.general.guildBank.itemLevel or not E.db.general.guildBank.itemLevelCustomColorEnable end)
-blizz.guildBank.args.ilvlGroup.args.itemLevelThreshold = ACH:Range(L["Item Level Threshold"], L["The minimum item level required for it to be shown."], 4, { min = 1, max = 500, step = 1 }, nil, nil, function(info, value) E.db.general.guildBank[info[#info]] = value BL:GuildBank_Update() end, nil, function() return not E.db.general.guildBank.itemLevel end)
+blizz.guildBank.args.ilvlGroup.args.itemLevelThreshold = ACH:Range(L["Item Level Threshold"], L["The minimum item level required for it to be shown."], 4, { min = 1, max = 800, step = 1 }, nil, nil, function(info, value) E.db.general.guildBank[info[#info]] = value BL:GuildBank_Update() end, nil, function() return not E.db.general.guildBank.itemLevel end)
 blizz.guildBank.args.ilvlGroup.args.fontGroup = ACH:Group(L["Fonts"], nil, 5, nil, nil, nil, nil, function() return not E.db.general.guildBank.itemLevel end)
 blizz.guildBank.args.ilvlGroup.args.fontGroup.inline = true
 blizz.guildBank.args.ilvlGroup.args.fontGroup.args.itemLevelFontSize = ACH:Range(L["Font Size"], nil, 6, C.Values.FontSize, nil, nil, nil, nil, function() return not E.db.general.guildBank.itemLevel end)

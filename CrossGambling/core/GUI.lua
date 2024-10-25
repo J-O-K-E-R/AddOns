@@ -173,7 +173,7 @@ end)
 local MainFooter = CreateFrame("Button", nil, CrossGamblingUI, "BackdropTemplate")
 MainFooter:SetSize(CrossGamblingUI:GetSize(), 15)
 MainFooter:SetPoint("BOTTOMLEFT", CrossGamblingUI, 0, 0)
-MainFooter:SetText("CrossGambling - Lay@Mal'Ganis")
+MainFooter:SetText("CrossGambling - Jay@Tichondrius")
 MainFooter:SetNormalFontObject("GameFontNormal")
 ButtonColors(MainFooter)
 -- Options Menu

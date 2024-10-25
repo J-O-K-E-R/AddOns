@@ -329,7 +329,7 @@ do
 		playerList[args.destName] = count -- Set raid marker
 		if self:Me(args.destGUID) then
 			self:PlaySound(args.spellId, "alarm")
-			self:Say(args.spellId, L.prism)
+			self:Say(args.spellId, L.prism, nil, "Prism")
 		end
 		self:TargetsMessage(args.spellId, "yellow", playerList, nil, CL.count:format(L.crushing_prism, prismCount-1))
 		self:CustomIcon(crushingPrismMarker, args.destName, count)

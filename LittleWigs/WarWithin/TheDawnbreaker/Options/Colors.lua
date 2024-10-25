@@ -5,7 +5,7 @@ BigWigs:AddColors("Shadowcrown", {
 	[428086] = "red",
 	[445996] = "orange",
 	[451026] = "cyan",
-	[453140] = "orange",
+	[453140] = {"blue","orange"},
 	[453212] = "purple",
 })
 
@@ -33,6 +33,7 @@ BigWigs:AddColors("The Dawnbreaker Trash", {
 	[431309] = {"blue","orange","red"},
 	[431349] = {"blue","red"},
 	[431364] = {"blue","yellow"},
+	[431491] = "purple",
 	[431494] = "purple",
 	[432448] = {"blue","orange"},
 	[432520] = "orange",
@@ -47,4 +48,5 @@ BigWigs:AddColors("The Dawnbreaker Trash", {
 	[451102] = "yellow",
 	[451107] = {"blue","yellow"},
 	[451117] = "purple",
+	[451119] = {"blue","red"},
 })

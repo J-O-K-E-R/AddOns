@@ -266,17 +266,14 @@ do --this can save some main file locals
 			z['Repooc-Atiesh']			= itsPooc -- [Alliance] Paladin
 		elseif E.Retail then
 			-- Elv
-			z['Elv-Spirestone']			= itsElv
-			z['Elvz-Spirestone']		= itsElv
-			z['Fleshlite-Spirestone']	= itsElv
-			z['Elvidan-Spirestone']		= itsElv
-			z['Elvilas-Spirestone']		= itsElv
-			z['Fraku-Spirestone']		= itsElv
-			z['Jarvix-Spirestone']		= itsElv
-			z['Watermelon-Spirestone']	= itsElv
-			z['Zinxbe-Spirestone']		= itsElv
-			z['Whorlock-Spirestone']	= itsElv
+			z['Player-127-0AB2F946']	= itsElv -- Paladin
+			z['Player-5-0E83B943']		= itsElv -- Druid
+			z['Player-5-0E8393EF']		= itsElv -- Monk
+			z['Player-3675-0A85E395']	= itsElv -- Warrior
+			z['Player-5-0E8301B7']		= itsElv -- Mage
+			z['Player-5-0E885971']		= itsElv -- Shaman
 			-- Repooc
+			z['Dapooc-Spirestone']		= itsPooc	-- [Alliance] Druid
 			z['Sifpooc-Stormrage']		= itsPooc	-- [Alliance] DH
 			z['Fragmented-Stormrage']	= itsPooc	-- [Alliance] Warlock
 			z['Sifupooc-Stormrage']		= itsPooc	-- [Alliance] Monk
@@ -390,15 +387,15 @@ do --this can save some main file locals
 		end
 	elseif portal == 'EU' then
 		if E.Classic then
-			-- Luckyone Seasonal (5826: Lone Wolf EU, 5827: Living Flame EU)
-			z['Player-5826-0202765F']	= ElvGreen -- [Alliance] Hunter
-			z['Player-5826-020F7F10']	= ElvGreen -- [Alliance] Paladin
-			z['Player-5826-02172E79']	= ElvGreen -- [Alliance] Warlock
-			z['Player-5826-0234253E']	= ElvGreen -- [Alliance] Mage
-			z['Player-5826-02342508']	= ElvGreen -- [Alliance] Priest
-			z['Player-5826-023424EF']	= ElvGreen -- [Alliance] Druid
-			z['Player-5826-02342520']	= ElvGreen -- [Alliance] Rogue
-			z['Player-5826-02342556']	= ElvGreen -- [Alliance] Warrior
+			-- Luckyone Seasonal (5827: Living Flame EU)
+			z['Player-5827-0273D732']	= ElvGreen -- [Alliance] Hunter
+			z['Player-5827-0273D63E']	= ElvGreen -- [Alliance] Paladin
+			z['Player-5827-0273D63D']	= ElvGreen -- [Alliance] Warlock
+			z['Player-5827-0273D649']	= ElvGreen -- [Alliance] Mage
+			z['Player-5827-0273D661']	= ElvGreen -- [Alliance] Priest
+			z['Player-5827-0273D65D']	= ElvGreen -- [Alliance] Druid
+			z['Player-5827-0273D63F']	= ElvGreen -- [Alliance] Rogue
+			z['Player-5827-0273D638']	= ElvGreen -- [Alliance] Warrior
 			z['Player-5827-02331C4B']	= ElvGreen -- [Horde] Shaman
 			-- Luckyone Hardcore (5261: Nek'Rosh)
 			z['Player-5261-01ADAC25']	= ElvGreen -- [Horde] Rogue
@@ -464,6 +461,11 @@ do --this can save some main file locals
 			-- Sneaky Darth
 			z['Player-1925-05F494A6']	= ElvPurple
 			z['Player-1925-05F495A1']	= ElvPurple
+			-- AcidWeb
+			z['Player-3713-08235A93']	= Gem
+			z['Player-3713-0819EA18']	= Gem
+			z['Player-3713-08FC8520']	= Gem
+			z['Player-3713-0AD1682D']	= Gem
 		end
 	end
 end
@@ -563,7 +565,9 @@ function CH:CopyButtonOnMouseUp(btn)
 			end
 
 			ToggleFrame(menu)
-		elseif E.Retail then
+		else
+			_G.ChatFrameMenuButton:ClearAllPoints()
+			_G.ChatFrameMenuButton:SetPoint('TOPLEFT', _G.ChatFrame1.copyButton, 'TOPRIGHT')
 			_G.ChatFrameMenuButton:OpenMenu()
 		end
 	else
@@ -849,13 +853,9 @@ function CH:StyleChat(frame)
 
 	local buttonFrame = _G[name..'ButtonFrame']
 	if buttonFrame then
-		if E.Retail and name == 'ChatFrame1' then
-			buttonFrame.Background:Hide()
-			buttonFrame.minimizeButton:Hide()
-			buttonFrame:StripTextures()
-		else
-			buttonFrame:Kill()
-		end
+		buttonFrame:SetScale(0.00001)
+		buttonFrame:ClearAllPoints()
+		buttonFrame:SetPoint('TOP', E.UIParent, 'BOTTOM', 0, -500)
 	end
 
 	local thumbTexture = _G[name..'ThumbTexture']
@@ -916,8 +916,8 @@ function CH:StyleChat(frame)
 end
 
 function CH:AddMessageEdits(frame, msg, isHistory, historyTime)
-	if not strmatch(msg, '^|Helvtime|h') and not strmatch(msg, '^|Hcpl:') then
-		local historyTimestamp --we need to extend the arguments on AddMessage so we can properly handle times without overriding
+	if not strmatch(msg, '^%s*$') and not strmatch(msg, '^|Helvtime|h') and not strmatch(msg, '^|Hcpl:') then
+		local historyTimestamp -- we need to extend the arguments on AddMessage so we can properly handle times without overriding
 		if isHistory == 'ElvUI_ChatHistory' then historyTimestamp = historyTime end
 
 		if CH.db.timeStampFormat and CH.db.timeStampFormat ~= 'NONE' then
@@ -2441,13 +2441,6 @@ function CH:SetupChat()
 
 	if E.Retail then
 		_G.QuickJoinToastButton:Hide()
-
-		_G.ChatFrameMenuButton:SetAlpha(0)
-		_G.ChatFrameMenuButton:EnableMouse(false)
-		_G.ChatFrameMenuButton:ClearAllPoints()
-		_G.ChatFrameMenuButton:SetPoint('TOPLEFT', _G.ChatFrame1.copyButton, 'TOPRIGHT')
-	else
-		_G.ChatFrameMenuButton:Kill()
 	end
 
 	if not CH.HookSecured then
@@ -3651,11 +3644,11 @@ function CH:FCF_Tab_OnClick(button)
 
 		_G.CURRENT_CHAT_FRAME_ID = self:GetID()
 
-		if E.Retail then
-			_G.FCF_Tab_SetupMenu(self)
-		else
+		if E.Cata then
 			local tabName = self:GetName()
 			_G.ToggleDropDownMenu(1, nil, _G[tabName..'DropDown'], tabName, 0, 0)
+		else
+			_G.FCF_Tab_SetupMenu(self)
 		end
 	elseif button == 'MiddleButton' then
 		if (E.Retail or (chat ~= _G.DEFAULT_CHAT_FRAME and not _G.IsCombatLog(chat))) and not _G.IsBuiltinChatWindow(chat) then -- Dynamic between classic/wrath/retail ~Simpy

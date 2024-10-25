@@ -7,6 +7,7 @@ if L then
 	--L.waveshaper = "Irontide Waveshaper"
 	L.wavetender = "庫爾提拉斯平浪者"
 	L.raider = "鐵潮劫掠者"
+	--L.shredder = "Riptide Shredder"
 	L.vanguard = "庫爾提拉斯先鋒"
 	L.commander = "艾胥凡指揮官"
 	L.spotter = "艾胥凡偵察兵"
@@ -16,6 +17,8 @@ if L then
 	L.pillager = "污鼠會掠取者"
 	L.tempest = "污鼠會風暴法師"
 	L.invader = "艾胥凡入侵者"
+
+	--L.gate_open_desc = "Show a bar indicating when the Kul Tiran Wavetender will open the gate after Dread Captain Lockwood."
 end
 
 L = BigWigs:NewBossLocale("Dread Captain Lockwood", "zhTW")

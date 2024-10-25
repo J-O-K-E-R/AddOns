@@ -81,6 +81,7 @@ function R:PrepareDefaults()
 			blankLineBeforeTooltipAdditions = true,
 			tooltipAttempts = true,
 			hideKnownItemsInTooltip = false,
+			hideUntrackedItemsInTooltip = false,
 			takeScreenshot = true,
 			hideUnavailable = true,
 			hideDefeated = false,
@@ -186,6 +187,12 @@ function R:PrepareDefaults()
 				16678, -- Adventurer of The Azure Span
 				16679, -- Adventurer of Thaldraszus
 				17525, -- Champion of the Forbidden Reach
+
+				-- The War Within
+				40435, -- Adventurer of the Isle of Dorn
+				40837, -- Adventurer of The Ringing Deeps
+				40840, -- Adventurer of Azj-Kahet
+				40851, -- Adventurer of Hallowfall
 			},
 			-- These are inventory items that may result in another CONSTANTS.ITEM_TYPES.ITEM that Rarity would like to make you aware of
 			extraTooltips = {

@@ -269,7 +269,7 @@ do
 		playerList[count] = args.destName
 		playerList[args.destName] = count -- Set raid marker
 		if self:Me(args.destGUID) then
-			self:Say(328437, CL.count_rticon:format(L.tear, count, count))
+			self:Say(328437, CL.count_rticon:format(L.tear, count, count), nil, ("Tear (%d{rt%d})"):format(count, count))
 			self:SayCountdown(328437, 8)
 			self:PlaySound(328437, "warning")
 		end
@@ -305,7 +305,7 @@ function mod:GlyphOfDestructionApplied(args)
 	self:PlaySound(args.spellId, "warning")
 	self:TargetBar(args.spellId, self:Easy() and 8 or 4, args.destName, CL.bomb)
 	if self:Me(args.destGUID) then
-		self:Say(args.spellId, CL.bomb)
+		self:Say(args.spellId, CL.bomb, nil, "Bomb")
 		self:SayCountdown(args.spellId, self:Easy() and 8 or 4)
 	end
 end

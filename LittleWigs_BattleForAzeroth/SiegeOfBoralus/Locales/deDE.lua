@@ -7,6 +7,7 @@ if L then
 	L.waveshaper = "Wellenformer der Eisenfluträuber"
 	L.wavetender = "Wellenzähmer von Kul Tiras"
 	L.raider = "Eisenfluträuber"
+	L.shredder = "Springflutschredder"
 	L.vanguard = "Vorhut von Kul Tiras"
 	L.commander = "Aschenwindkommandant"
 	L.spotter = "Aschenwindkundschafter"
@@ -16,6 +17,8 @@ if L then
 	L.pillager = "Brandschatzer der Bilgeratten"
 	L.tempest = "Orkan der Bilgeratten"
 	L.invader = "Aschenwindeindringling"
+
+	L.gate_open_desc = "Zeigt einen Timer wann der Wellenzähmer von Kul Tiras das Tor hinter Schreckenskapitänin Luebke öffnet."
 end
 
 L = BigWigs:NewBossLocale("Dread Captain Lockwood", "deDE")

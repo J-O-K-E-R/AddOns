@@ -1,0 +1,52 @@
+## Interface: 110005
+## Title: GroupFinderRio
+## Version: v1.1.9
+## Notes: Adds Rio score to the group finder and allows for sorting
+## SavedVariables: GroupFinderRIO
+## Author: Jods
+## X-Curse-Project-ID: 1066197
+## X-Wago-ID: 56n9wjN9
+## OptionalDeps: Ace3, CustomNames, RaiderIO, PremadeGroupsFilter
+## AddonCompartmentFunc: GroupFinderRIO_AddonCompartmentFunction
+## IconTexture: Interface\AddOns\GroupFinderRio\Files\GroupFinderRio.tga
+
+#Libs
+embeds.xml
+
+# Locales
+Locales\enUS.lua
+Locales\deDE.lua
+Locales\esES.lua
+Locales\itIT.lua
+Locales\frFR.lua
+Locales\esMX.lua
+Locales\koKR.lua
+Locales\ptBR.lua
+Locales\ruRU.lua
+Locales\zhCN.lua
+Locales\zhTW.lua
+ 
+Locales\Locales.lua
+
+# Data
+Data\SpecList.lua
+Data\Realmlist.lua
+Data\InstanceIDList.lua
+Data\Colors.lua
+
+# Utils
+Util\UtilFunctions.lua
+Util\SpecSortFrame.lua
+
+# Options
+Options\OptionDefaults.lua
+Options\Options.lua
+
+#Modules
+Modules\OneClickSign.lua
+
+# Core
+Main.lua
+GroupFinderRio.lua
+
+

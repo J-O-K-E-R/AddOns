@@ -69,7 +69,7 @@ function mod:GetOptions()
 		glacialWrathMarker,
 		{346530, "ME_ONLY"}, -- Frozen Destruction
 		{347292, "SAY", "SAY_COUNTDOWN", "ME_ONLY_EMPHASIZE"}, -- Oblivion's Echo
-		{348760, "SAY", "SAY_COUNTDOWN", "FLASH", "ME_ONLY_EMPHASIZE"}, -- Frost Blast
+		{348760, "SAY", "SAY_COUNTDOWN", "ME_ONLY_EMPHASIZE"}, -- Frost Blast
 		-- Stage Two: The Phylactery Opens
 		354289, -- Sinister Miasma
 		352051, -- Necrotic Surge
@@ -372,7 +372,7 @@ do
 		playerList[count] = args.destName
 		playerList[args.destName] = icon -- Set raid marker
 		if self:Me(args.destGUID) then
-			self:Say(346459, CL.rticon:format(L.spike, count))
+			self:Say(346459, CL.rticon:format(L.spike, count), nil, ("Spike ({rt%d})"):format(count))
 			self:SayCountdown(346459, 5, count)
 			self:PlaySound(346459, "warning")
 		end
@@ -423,7 +423,7 @@ do
 		local count = #playerList+1
 		playerList[count] = args.destName
 		if self:Me(args.destGUID) then
-			self:Say(args.spellId, L.silence)
+			self:Say(args.spellId, L.silence, nil, "Silence")
 			self:SayCountdown(args.spellId, 6)
 			self:PlaySound(args.spellId, "warning")
 		end
@@ -454,8 +454,7 @@ end
 function mod:FrostBlastApplied(args)
 	if self:Me(args.destGUID) then
 		self:PlaySound(args.spellId, "warning")
-		self:Yell(args.spellId, CL.meteor)
-		self:Flash(args.spellId)
+		self:Yell(args.spellId, CL.meteor, nil, "Meteor")
 		self:YellCountdown(args.spellId, 6)
 	else
 		self:PlaySound(args.spellId, "alert", nil, args.destName)

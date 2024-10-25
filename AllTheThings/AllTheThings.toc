@@ -3,7 +3,7 @@
 ## Name: AllTheThings
 ## Notes: Addon for Tracking Collections & Account Completion
 ## Author: Crieve-Sargeras
-## Version: 4.0.13
+## Version: 4.0.19
 ## Interface: 110002
 ## X-Interface: 110002
 ## X-Wago-ID: yQKyY5K7
@@ -20,11 +20,7 @@ lib\LibDataBroker-1.1\LibDataBroker-1.1.lua
 src\WoW API Wrappers.lua
 
 # Raw DBs
-db\RaceDB.lua
-db\ReagentsDB.lua
-db\SkillDB.lua
-db\FlightPathDB.lua
-db\AccountWideQuestsDB.lua
+db\Retail\ReferenceDB.lua
 
 # Libs (no dependencies, only app assignment)
 lib\Debugging.lua
@@ -81,7 +77,6 @@ src\Modules\Contributor.lua
 # Expansion specific localization files
 db\Retail\ExplorationDB.lua
 db\Retail\LocalizationDB.lua
-db\Retail\en_auto.lua
 db\Presets.lua
 
 # Load object class templates
@@ -89,24 +84,27 @@ src\Classes\base.lua
 src\Classes\Achievement.lua
 src\Classes\BattlePet.lua
 src\Classes\CharacterClass.lua
+src\Classes\Currency.lua
 src\Classes\Difficulty.lua
 src\Classes\Factions.lua
-src\Classes\FlightPath.lua
 src\Classes\Quests.lua
 src\Classes\Item.Retail.lua
 # src\Classes\Item.Classic.lua
 src\Classes\Encounter.lua
-src\Classes\Ensemble.lua
 src\Classes\Expansion.lua
+src\Classes\FlightPath.lua
+src\Classes\Header.lua
 src\Classes\Maps.lua
 src\Classes\Mount.lua
-src\Classes\Header.lua
 src\Classes\NPC.lua
 src\Classes\Objects.lua
+src\Classes\Profession.lua
 src\Classes\Category.lua
 src\Classes\Deaths.lua
+# src\Classes\Dynamic Categories.lua
 src\Classes\Filter Types.lua
 src\Classes\Gear Sets.lua
+# src\Classes\Glyphs.lua
 src\Classes\Illusions.lua
 src\Classes\Miscellaneous.lua
 src\Classes\PVP Ranks.lua
@@ -114,6 +112,7 @@ src\Classes\Races.lua
 src\Classes\Title.lua
 src\Classes\Transmog.lua
 src\Classes\Spell.lua
+src\Classes\Ensemble.lua
 src\Classes\CharacterUnlock.lua
 
 # Item Sub-Classes
@@ -134,6 +133,7 @@ src\Settings\Settings.xml
 AllTheThings.lua
 src\UI\Game Tooltip.lua
 src\UI\Minimap Button.lua
+src\UI\Waypoints.lua
 src\UI\World Map Button.lua
 
 # Window Logic Overhaul
@@ -147,5 +147,4 @@ db\Retail\Categories.lua
 # src\UI\Windows\Windows.xml
 
 # Finally, prepare the Data Cache
-# Not used in Retail?
 # src\Root.lua

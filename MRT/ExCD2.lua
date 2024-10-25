@@ -1778,6 +1778,16 @@ local function UpdateBarStatus(self,isTitle)
 	 	end
 	end
 
+	if parent.optionAnimation and parent.optionStyleAnimation == 3 then
+		if isActive and not self.anim.osa3 then
+			self.anim:SetScript("OnLoop",BarAnimation_Reverse)
+			self.anim.osa3 = true
+		elseif not isActive and self.anim.osa3 then
+			self.anim:SetScript("OnLoop",BarAnimation)
+			self.anim.osa3 = false
+		end
+	end
+
 	local doStandartColors = true
 	if parent.optionSmoothAnimation and not self.afterAnimFix then
 		doStandartColors = false
@@ -4985,6 +4995,7 @@ do
 		bit = bit,
 		print = print,
 		abs = abs,
+		floor = floor,
 		C_Timer = C_Timer,
 		C_UnitAuras = C_UnitAuras,
 		GetAuraDataByIndex = C_UnitAuras.GetAuraDataByIndex,
@@ -5211,6 +5222,7 @@ do
 			}
 			shiftingpower = {}
 			timeskip = {}
+			BlessingfromBeyond = {}
 
 			return function (timestamp,event,hideCaster,sourceGUID,sourceName,sourceFlags,sourceFlags2,destGUID,destName,destFlags,destFlags2,spellID,spellName,school,auraType)
 				if not sourceName then
@@ -5418,6 +5430,36 @@ do
 						end
 					end, total_len)
 					timeskip[sourceName].t_end = GetTime() + len
+				elseif (spellID == 462661) and destName then	--Blessing from Beyond
+					if BlessingfromBeyond[destName] then
+						BlessingfromBeyond[destName]:Cancel()
+					end
+					local total_len = 20
+					local changePerTick = 0.5
+					--for i=1,60 do
+					--	local auraData = C_UnitAuras.GetAuraDataByIndex(destName,i,"HARMFUL")
+					--	if not auraData then
+					--		break
+					--	elseif auraData.spellId == 462661 then
+					--		changePerTick = (auraData.points and auraData.points[2] or 50)/100
+					--		total_len = floor(auraData.expirationTime - GetTime() + 0.5)
+					--		break
+					--	end
+					--end
+					BlessingfromBeyond[destName] = C_Timer.NewTicker(1,function()
+						local line, updateReq
+						for j=1,#_C do
+							line = _C[j]
+							if line.fullName == destName then
+								line:ReduceCD(changePerTick,true)
+								updateReq = true
+							end
+						end
+						if updateReq then
+							UpdateAllData()
+						end
+					end, total_len)
+					BlessingfromBeyond[destName].t_end = GetTime() + total_len
 				end
 
 				$$$1
@@ -5562,6 +5604,13 @@ do
 							unitSpellData:SetDur(0,true)
 
 							forceUpdateAllData = true
+						end
+					end
+				elseif (spellID == 462661) then	--Blessing from Beyond
+					if BlessingfromBeyond[destName] then
+						local now = GetTime()
+						if abs(now - BlessingfromBeyond[destName].t_end) > 0.2 then
+							BlessingfromBeyond[destName]:Cancel()
 						end
 					end
 				end
@@ -7718,6 +7767,8 @@ function module.options:Load()
 		optColSet.chkShowOnlyOnCD:SetChecked(VColOpt.methodsShownOnCD)
 		optColSet.chkBotToTop:SetChecked(VColOpt.frameAnchorBottom)
 		optColSet.chkRightToLeft:SetChecked(VColOpt.frameAnchorRightToLeft)
+		optColSet.chkTopBottomCol:SetChecked(VColOpt.frameAnchorTopBottomCol)
+
 		optColSet.chkGeneralMethods:SetChecked(VColOpt.methodsGeneral)
 		do
 			local defStyleAnimation = VColOpt.methodsStyleAnimation or defOpt.methodsStyleAnimation
@@ -8757,7 +8808,7 @@ function module.options:Load()
 
 	--> Method options
 
-	self.optColSet.superTabFrame.tab[6].scroll = ELib:ScrollFrame(self.optColSet.superTabFrame.tab[6]):Point("TOP"):Size(456,444):Height(535+25*2)
+	self.optColSet.superTabFrame.tab[6].scroll = ELib:ScrollFrame(self.optColSet.superTabFrame.tab[6]):Point("TOP"):Size(456,444):Height(610)
 	ELib:Border(self.optColSet.superTabFrame.tab[6].scroll,0)
 	self.optColSet.col6scroll = self.optColSet.superTabFrame.tab[6].scroll.C
 	self.optColSet.col6scroll:SetWidth(456 - 16)
@@ -8789,9 +8840,18 @@ function module.options:Load()
 		module:ReloadAllSplits()
 	end)
 
-	self.optColSet.textStyleAnimation = ELib:Text(self.optColSet.col6scroll,L.cd2OtherSetStyleAnimation..":",11):Size(200,20):Point(10,-105)
-	self.optColSet.dropDownStyleAnimation = ELib:DropDown(self.optColSet.col6scroll,205,2):Size(220):Point(180,-105)
-	self.optColSet.dropDownStyleAnimation.Styles = {L.cd2OtherSetStyleAnimation1,L.cd2OtherSetStyleAnimation2}
+	self.optColSet.chkTopBottomCol = ELib:Check(self.optColSet.col6scroll,L.cd2ColSetTopToBot):Tooltip(L.cd2ColSetTopToBotTip):Point(10,-105):OnClick(function(self) 
+		if self:GetChecked() then
+			currColOpt.frameAnchorTopBottomCol = true
+		else
+			currColOpt.frameAnchorTopBottomCol = nil
+		end
+		module:ReloadAllSplits()
+	end)
+
+	self.optColSet.textStyleAnimation = ELib:Text(self.optColSet.col6scroll,L.cd2OtherSetStyleAnimation..":",11):Size(200,20):Point(10,-130)
+	self.optColSet.dropDownStyleAnimation = ELib:DropDown(self.optColSet.col6scroll,205,3):Size(220):Point(180,-130)
+	self.optColSet.dropDownStyleAnimation.Styles = {L.cd2OtherSetStyleAnimation1,L.cd2OtherSetStyleAnimation2,L.cd2OtherSetStyleAnimation3}
 	for i=1,#self.optColSet.dropDownStyleAnimation.Styles do
 		self.optColSet.dropDownStyleAnimation.List[i] = {
 			text = self.optColSet.dropDownStyleAnimation.Styles[i],
@@ -8805,8 +8865,8 @@ function module.options:Load()
 		}
 	end
 
-	self.optColSet.textTimeLineAnimation = ELib:Text(self.optColSet.col6scroll,L.cd2OtherSetTimeLineAnimation..":",11):Size(200,20):Point(10,-130)
-	self.optColSet.dropDownTimeLineAnimation = ELib:DropDown(self.optColSet.col6scroll,205,2):Size(220):Point(180,-130)
+	self.optColSet.textTimeLineAnimation = ELib:Text(self.optColSet.col6scroll,L.cd2OtherSetTimeLineAnimation..":",11):Size(200,20):Point(10,-155)
+	self.optColSet.dropDownTimeLineAnimation = ELib:DropDown(self.optColSet.col6scroll,205,2):Size(220):Point(180,-155)
 	self.optColSet.dropDownTimeLineAnimation.Styles = {L.cd2OtherSetTimeLineAnimation1,L.cd2OtherSetTimeLineAnimation2}
 	for i=1,#self.optColSet.dropDownTimeLineAnimation.Styles do
 		self.optColSet.dropDownTimeLineAnimation.List[i] = {
@@ -8821,7 +8881,7 @@ function module.options:Load()
 		}
 	end
 
-	self.optColSet.chkIconTooltip = ELib:Check(self.optColSet.col6scroll,L.cd2OtherSetIconToolip):Point(10,-155):OnClick(function(self) 
+	self.optColSet.chkIconTooltip = ELib:Check(self.optColSet.col6scroll,L.cd2OtherSetIconToolip):Point(10,-180):OnClick(function(self) 
 		if self:GetChecked() then
 			currColOpt.methodsIconTooltip = true
 		else
@@ -8830,7 +8890,7 @@ function module.options:Load()
 		module:ReloadAllSplits()
 	end)
 
-	self.optColSet.chkLineClick = ELib:Check(self.optColSet.col6scroll,L.cd2OtherSetLineClick):Point(10,-180):OnClick(function(self) 
+	self.optColSet.chkLineClick = ELib:Check(self.optColSet.col6scroll,L.cd2OtherSetLineClick):Point(10,-205):OnClick(function(self) 
 		if self:GetChecked() then
 			currColOpt.methodsLineClick = true
 		else
@@ -8839,7 +8899,7 @@ function module.options:Load()
 		module:ReloadAllSplits()
 	end)
 
-	self.optColSet.chkLineClickWhisper = ELib:Check(self.optColSet.col6scroll,L.cd2OtherSetLineClickWhisper):Point(10,-205):OnClick(function(self) 
+	self.optColSet.chkLineClickWhisper = ELib:Check(self.optColSet.col6scroll,L.cd2OtherSetLineClickWhisper):Point(10,-230):OnClick(function(self) 
 		if self:GetChecked() then
 			currColOpt.methodsLineClickWhisper = true
 		else
@@ -8848,8 +8908,8 @@ function module.options:Load()
 		module:ReloadAllSplits()
 	end)
 
-	self.optColSet.textLineClickMod = ELib:Text(self.optColSet.col6scroll,L.cd2ClickKeyMod..":",11):Size(200,20):Point(10,-230)
-	self.optColSet.dropDownLineClickMod = ELib:DropDown(self.optColSet.col6scroll,205,4):Size(150):Point(250,-230)
+	self.optColSet.textLineClickMod = ELib:Text(self.optColSet.col6scroll,L.cd2ClickKeyMod..":",11):Size(200,20):Point(10,-255)
+	self.optColSet.dropDownLineClickMod = ELib:DropDown(self.optColSet.col6scroll,205,4):Size(150):Point(250,-255)
 	self.optColSet.dropDownLineClickMod.Mods = {"-",nil,SHIFT_KEY or "Shift","shift",CTRL_KEY or "Ctrl","ctrl",ALT_KEY_TEXT or "Alt","alt"}
 	for i=1,#self.optColSet.dropDownLineClickMod.Mods,2 do
 		local text = self.optColSet.dropDownLineClickMod.Mods[i]
@@ -8865,7 +8925,7 @@ function module.options:Load()
 		}
 	end
 
-	self.optColSet.chkNewSpellNewLine = ELib:Check(self.optColSet.col6scroll,L.cd2NewSpellNewLine):Point(10,-255):Tooltip(L.cd2NewSpellNewLineTooltip):OnClick(function(self) 
+	self.optColSet.chkNewSpellNewLine = ELib:Check(self.optColSet.col6scroll,L.cd2NewSpellNewLine):Point(10,-280):Tooltip(L.cd2NewSpellNewLineTooltip):OnClick(function(self) 
 		if self:GetChecked() then
 			currColOpt.methodsNewSpellNewLine = true
 		else
@@ -8874,8 +8934,8 @@ function module.options:Load()
 		module:ReloadAllSplits()
 	end)
 
-	self.optColSet.textSortingRules = ELib:Text(self.optColSet.col6scroll,L.cd2MethodsSortingRules..":",11):Size(200,20):Point(10,-280)
-	self.optColSet.dropDownSortingRules = ELib:DropDown(self.optColSet.col6scroll,405,6):Size(220):Point(180,-280)
+	self.optColSet.textSortingRules = ELib:Text(self.optColSet.col6scroll,L.cd2MethodsSortingRules..":",11):Size(200,20):Point(10,-305)
+	self.optColSet.dropDownSortingRules = ELib:DropDown(self.optColSet.col6scroll,405,6):Size(220):Point(180,-305)
 	self.optColSet.dropDownSortingRules.Rules = {L.cd2MethodsSortingRules1,L.cd2MethodsSortingRules2,L.cd2MethodsSortingRules3,L.cd2MethodsSortingRules4,L.cd2MethodsSortingRules5,L.cd2MethodsSortingRules6}
 	for i=1,#self.optColSet.dropDownSortingRules.Rules do
 		self.optColSet.dropDownSortingRules.List[i] = {
@@ -8891,7 +8951,7 @@ function module.options:Load()
 		}
 	end
 
-	self.optColSet.chkHideOwnSpells = ELib:Check(self.optColSet.col6scroll,L.cd2MethodsDisableOwn):Point(10,-305):OnClick(function(self) 
+	self.optColSet.chkHideOwnSpells = ELib:Check(self.optColSet.col6scroll,L.cd2MethodsDisableOwn):Point(10,-330):OnClick(function(self) 
 		if self:GetChecked() then
 			currColOpt.methodsHideOwnSpells = true
 		else
@@ -8900,7 +8960,7 @@ function module.options:Load()
 		module:ReloadAllSplits()
 	end)
 
-	self.optColSet.chkAlphaNotInRange = ELib:Check(self.optColSet.col6scroll,L.cd2MethodsAlphaNotInRange):Point(10,-330):OnClick(function(self) 
+	self.optColSet.chkAlphaNotInRange = ELib:Check(self.optColSet.col6scroll,L.cd2MethodsAlphaNotInRange):Point(10,-355):OnClick(function(self) 
 		if self:GetChecked() then
 			currColOpt.methodsAlphaNotInRange = true
 		else
@@ -8917,7 +8977,7 @@ function module.options:Load()
 		self:tooltipReload(self)
 	end)
 
-	self.optColSet.chkDisableActive = ELib:Check(self.optColSet.col6scroll,L.cd2ColSetDisableActive):Point(10,-355):OnClick(function(self) 
+	self.optColSet.chkDisableActive = ELib:Check(self.optColSet.col6scroll,L.cd2ColSetDisableActive):Point(10,-380):OnClick(function(self) 
 		if self:GetChecked() then
 			currColOpt.methodsDisableActive = true
 		else
@@ -8926,7 +8986,7 @@ function module.options:Load()
 		module:ReloadAllSplits()
 	end)
 
-	self.optColSet.chkOneSpellPerCol = ELib:Check(self.optColSet.col6scroll,L.cd2ColSetOneSpellPerCol):Point(10,-380):OnClick(function(self) 
+	self.optColSet.chkOneSpellPerCol = ELib:Check(self.optColSet.col6scroll,L.cd2ColSetOneSpellPerCol):Point(10,-405):OnClick(function(self) 
 		if self:GetChecked() then
 			currColOpt.methodsOneSpellPerCol = true
 		else
@@ -8935,7 +8995,7 @@ function module.options:Load()
 		module:ReloadAllSplits()
 	end):Tooltip(L.cd2ColSetOneSpellPerColTooltip)
 
-	self.optColSet.chkSortByAvailability = ELib:Check(self.optColSet.col6scroll,L.cd2SortByAvailability):Point(10,-405):OnClick(function(self) 
+	self.optColSet.chkSortByAvailability = ELib:Check(self.optColSet.col6scroll,L.cd2SortByAvailability):Point(10,-430):OnClick(function(self) 
 		if self:GetChecked() then
 			currColOpt.methodsSortByAvailability = true
 		else
@@ -9006,7 +9066,9 @@ function module.options:Load()
 
 
 	function self.optColSet.chkGeneralMethods:doAlphas()
-		ExRT.lib.SetAlphas(VMRT.ExCD2.colSet[module.options.optColTabs.selected].methodsGeneral and module.options.optColTabs.selected ~= (module.db.maxColumns + 1) and 0.5 or 1,module.options.optColSet.chkShowOnlyOnCD,module.options.optColSet.chkBotToTop,module.options.optColSet.chkRightToLeft,module.options.optColSet.dropDownStyleAnimation,module.options.optColSet.dropDownTimeLineAnimation,module.options.optColSet.chkIconTooltip,module.options.optColSet.chkLineClick,module.options.optColSet.chkNewSpellNewLine,module.options.optColSet.dropDownSortingRules,module.options.optColSet.textSortingRules,module.options.optColSet.textStyleAnimation,module.options.optColSet.textTimeLineAnimation,module.options.optColSet.chkHideOwnSpells,module.options.optColSet.chkAlphaNotInRange,module.options.optColSet.sliderAlphaNotInRange,module.options.optColSet.chkDisableActive,module.options.optColSet.chkOneSpellPerCol,module.options.optColSet.chkLineClickWhisper,module.options.optColSet.chkSortByAvailability, module.options.optColSet.chkSortByAvailability_activeToTop, module.options.optColSet.chkReverseSorting, module.options.optColSet.chkCDOnlyTimer, module.options.optColSet.chkTextIgnoreActive, module.options.optColSet.chkShowOnlyNotOnCD, module.options.optColSet.dropDownLineClickMod, module.options.optColSet.textLineClickMod)
+		ExRT.lib.SetAlphas(VMRT.ExCD2.colSet[module.options.optColTabs.selected].methodsGeneral and module.options.optColTabs.selected ~= (module.db.maxColumns + 1) and 0.5 or 1,module.options.optColSet.chkShowOnlyOnCD,module.options.optColSet.chkBotToTop,module.options.optColSet.chkRightToLeft,module.options.optColSet.dropDownStyleAnimation,module.options.optColSet.dropDownTimeLineAnimation,module.options.optColSet.chkIconTooltip,module.options.optColSet.chkLineClick,module.options.optColSet.chkNewSpellNewLine,
+			module.options.optColSet.dropDownSortingRules,module.options.optColSet.textSortingRules,module.options.optColSet.textStyleAnimation,module.options.optColSet.textTimeLineAnimation,module.options.optColSet.chkHideOwnSpells,module.options.optColSet.chkAlphaNotInRange,module.options.optColSet.sliderAlphaNotInRange,module.options.optColSet.chkDisableActive,module.options.optColSet.chkOneSpellPerCol,module.options.optColSet.chkLineClickWhisper,module.options.optColSet.chkSortByAvailability, 
+			module.options.optColSet.chkSortByAvailability_activeToTop, module.options.optColSet.chkReverseSorting, module.options.optColSet.chkCDOnlyTimer, module.options.optColSet.chkTextIgnoreActive, module.options.optColSet.chkShowOnlyNotOnCD, module.options.optColSet.dropDownLineClickMod, module.options.optColSet.textLineClickMod,module.options.optColSet.chkTopBottomCol)
 	end
 
 
@@ -11143,6 +11205,7 @@ function module:ColApplyStyle(columnFrame,currColOpt,generalOpt,defOpt,mainWidth
 
 		local frameAnchorBottom = (not currColOpt.methodsGeneral and currColOpt.frameAnchorBottom) or (currColOpt.methodsGeneral and generalOpt.frameAnchorBottom)
 		local frameAnchorRightToLeft = (not currColOpt.methodsGeneral and currColOpt.frameAnchorRightToLeft) or (currColOpt.methodsGeneral and generalOpt.frameAnchorRightToLeft)
+		local frameAnchorTopBottomCol = (not currColOpt.methodsGeneral and currColOpt.frameAnchorTopBottomCol) or (currColOpt.methodsGeneral and generalOpt.frameAnchorTopBottomCol)
 
 		local lastLine = nil
 		for n=1,linesTotal do 
@@ -11153,6 +11216,10 @@ function module:ColApplyStyle(columnFrame,currColOpt,generalOpt,defOpt,mainWidth
 			elseif frameAnchorBottom then
 				local inLine = (n-1) % frameColumns
 				line = ((n-1) - inLine) / frameColumns
+				if frameAnchorTopBottomCol then
+					inLine = floor((n-1) / linesShown)
+					line = (n-1) % linesShown
+				end
 				colLine:ClearAllPoints()
 				if frameAnchorRightToLeft then
 					colLine:SetPoint("BOTTOMRIGHT", -inLine*frameWidth, line*columnFrame.iconSize+line*frameBetweenLines) 
@@ -11163,6 +11230,10 @@ function module:ColApplyStyle(columnFrame,currColOpt,generalOpt,defOpt,mainWidth
 			else
 				local inLine = (n-1) % frameColumns
 				line = ExRT.F.Round( ((n-1) - inLine) / frameColumns )
+				if frameAnchorTopBottomCol then
+					inLine = floor((n-1) / linesShown)
+					line = (n-1) % linesShown
+				end
 				colLine:ClearAllPoints()
 				if frameAnchorRightToLeft then
 					colLine:SetPoint("TOPRIGHT", -inLine*frameWidth, -line*columnFrame.iconSize-line*frameBetweenLines) 
@@ -11588,7 +11659,7 @@ module.db.AllSpells = {
 		nil,nil,{213644,8,0},{213644,8,0},
 		isTalent=true,isDispel=true},
 	{498,	"PALADIN,DEF",4,--Божественная защита
-		nil,{498,60,8},nil,{498,60,8},
+		nil,{498,60,8},nil,{403876,60,8},
 		cdDiff={114154,"*0.7"},icon=524353},
 	{642,	"PALADIN,DEF",2,--Божественный щит
 		{642,300,8},nil,nil,nil,
@@ -12476,7 +12547,7 @@ module.db.AllSpells = {
 		isTalent=true,durationDiff={205727,"*1.4",207321,5},cdDiff={205727,-20},stopDurWithAuraFade=48707},
 	{51052,	"DEATHKNIGHT,RAID",3,--Зона антимагии
 		{51052,120,8},
-		isTalent=true,durationDiff={337764,{2,2.2,2.4,2.6,2.8,3,3.2,3.4,3.6,3.8,4,4.2,4.4,4.6,4.8}}},
+		isTalent=true,durationDiff={337764,{2,2.2,2.4,2.6,2.8,3,3.2,3.4,3.6,3.8,4,4.2,4.4,4.6,4.8}},cdDiff={374383,-30}},
 	{275699,"DEATHKNIGHT,DPS",3,--Апокалипсис
 		nil,nil,nil,{275699,45,15},
 		isTalent=true,cdDiff={288848,-15,296320,"*0.80",338553,-1},reduceCdAfterCast={{47541,276837},-1}},
@@ -14350,7 +14421,7 @@ module.db.AllSpells = {
 		nil,nil,nil,{360827,30,0},
 		isTalent=true,cdDiff={412713,"*0.9"}},
 	{406732,"EVOKER",2,--Spatial Paradox
-		nil,nil,nil,{406732,180,10},
+		{406732,180,10},
 		isTalent=true,cdDiff={412713,"*0.9"}},
 	{409311,"EVOKER",3,--Prescience
 		nil,nil,nil,{409311,12,0},
@@ -15022,7 +15093,6 @@ if ExRT.isCata then
 		{1038,	"PALADIN",	1,	{1038,	120,	10}},	--Salv
 		{6940,	"PALADIN",	1,	{6940,	120,	12}},	--Sac
 		{62124,	"PALADIN",	1,	{62124,	8,	0}},	--Taunt
-		{64205,	"PALADIN",	1,	{64205,	120,	10}},	--Divine Sacrifice
 		{31821,	"PALADIN",	1,	{31821,	120,	6}},	--Aura Mastery
 		{54428,	"PALADIN",	1,	{54428,	120,	9}},	--Divine Plea
 		{70940, "PALADIN", 	1, 	{70940, 180, 	6}}, 	--Divine Guardian
@@ -15077,7 +15147,7 @@ if ExRT.isCata then
 	module.db.spell_isTalent[48505] = true
 	module.db.spell_isTalent[50334] = true
 	module.db.spell_isTalent[98008] = true
-	module.db.spell_isTalent[97462] = true
+	module.db.spell_isTalent[70940] = true
 
 	module.db.spell_resetOtherSpells[GetSpellInfo(11958) or "spell:11958"] = {GetSpellInfo(45438)}
 

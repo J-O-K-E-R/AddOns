@@ -220,8 +220,16 @@ L.mark = "Знак" -- Short name for abilites with "Mark" in the name, for exam
 L.marks = "Знаки" -- Plural of L.marks
 L.mind_control = "Контроль над разумом" -- Any kind of Mind Control ability, where a player loses control of their character
 L.mind_control_short = "КР" -- Short version of Mind Control, mainly for bars
-L.soak = "Сока" -- Abilities you have to stand in on purpose to soak the damage, like a sponge soaks water. Commonly for abilities that split damage between everyone standing in them.
+L.soak = "Соак" -- Abilities you have to stand in on purpose to soak the damage, like a sponge soaks water. Commonly for abilities that split damage between everyone standing in them.
 L.soaks = "Соки" -- Plural of L.soak
 L.spell_reflection = "Отражение заклинаний" -- Any ability that reflects spells
 L.parasite = "Паразит" -- Any ability where a parasite is involved e.g. "Parasitic Infection", "Parasitic Growth", etc
 L.rooted = "Обездвиживание" -- Any ability that roots you in place, preventing you from moving
+
+-- Common ability name replacements A-Z
+--L.dodge = "Dodge" -- When you need to continually run around to dodge abilities, like missiles landing on the ground under you
+L.health_drain = "Потеря здоровья" -- Any ability that drains health from the player
+--L.smash = "Удар" -- Short for any ability with the name "smash" in it e.g. "Darkrift Smash" or "Seismic Smash" or "Arcing Smash"
+L.spike = "Шип" -- Short for any ability with the name "spike" in it e.g. "Glacial Spike" or "Fel Spike" or "Volatile Spike"
+L.spikes = "Шипы" -- Plural of L.spike
+--L.waves = "Waves" -- Multiple waves of a bad ability coming from a boss, like waves in the ocean
