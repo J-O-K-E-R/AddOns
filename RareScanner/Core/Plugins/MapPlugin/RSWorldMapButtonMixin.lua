@@ -98,7 +98,7 @@ function RSWorldMapButtonMixin:SetupMenu()
 			end)
 		npcsLastSeen:SetEnabled(function() return RSConfigDB.IsShowingNpcs() end)
 
-		if (RSMapDB.GetContinentOfMap(mapID) == RSConstants.KHAZ_ALGAR) then
+		if (RSMapDB.GetContinentOfMap(mapID) == RSConstants.KHAZ_ALGAR and not RSUtils.Contains(RSConstants.TWW_MAPS_WITHOUT_REP, mapID)) then
 	    	local npcsWeekly = npcsSubmenu:CreateCheckbox("|T"..RSConstants.NORMAL_NPC_TEXTURE..":18:18:::::0:32:0:32|t "..AL["MAP_MENU_DISABLE_WEEKLY_REP_FILTER"], 
 	    		function() return RSConfigDB.IsShowingWeeklyRepFilterEnabled() end, 
 				function()
@@ -218,12 +218,12 @@ function RSWorldMapButtonMixin:SetupMenu()
 		npcsOthers:SetEnabled(function() return RSConfigDB.IsShowingNpcs() end)
 		
 		-- Filter NPCs		
-		local npcIDsWithNames = RSNpcDB.GetActiveNpcIDsWithNamesByMapID(mapID, false)
+		local npcIDsWithNames = RSNpcDB.GetActiveNpcIDsWithNamesByMapID(mapID)
 		if (RSUtils.GetTableLength(npcIDsWithNames) > 0) then
 			npcsSubmenu:CreateDivider()
 			npcsSubmenu:CreateTitle(AL["MAP_MENU_FILTER"])
 			
-			if (RSMapDB.GetContinentOfMap(mapID) == RSConstants.KHAZ_ALGAR) then
+			if (RSMapDB.GetContinentOfMap(mapID) == RSConstants.KHAZ_ALGAR and not RSUtils.Contains(RSConstants.TWW_MAPS_WITHOUT_REP, mapID)) then
 		    	npcsSubmenu:CreateCheckbox(AL["MAP_MENU_FILTER_WEEKLY_REP_FILTER"], function() return RSConfigDB.IsWeeklyRepNpcFilterEnabled() end, 
 					function()
 						if (RSConfigDB.IsWeeklyRepNpcFilterEnabled()) then
@@ -307,7 +307,7 @@ function RSWorldMapButtonMixin:SetupMenu()
 									return false
 								end
 							end
-						elseif (RSMapDB.GetContinentOfMap(mapID) == RSConstants.KHAZ_ALGAR and not RSUtils.Contains(RSConstants.KHAZ_ALGAR_NPCS_MOUNTS, npcID)) then
+						elseif (RSMapDB.GetContinentOfMap(mapID) == RSConstants.KHAZ_ALGAR and not RSUtils.Contains(RSConstants.KHAZ_ALGAR_NPCS_MOUNTS, npcID) and not RSUtils.Contains(RSConstants.TWW_MAPS_WITHOUT_REP, mapID)) then
 							if (npcInfo.questID) then
 								for _, questID in ipairs(npcInfo.questID) do
 									if (C_QuestLog.IsQuestFlaggedCompletedOnAccount(questID)) then

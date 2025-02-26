@@ -32,9 +32,11 @@
 	<Script file='Loot.lua'/>
 	<Script file='Macro.lua'/>
 	<Script file='Mail.lua'/>
+	<Script file='Menu.lua'/>
 	<Script file='Merchant.lua'/>
 	<Script file='MirrorTimers.lua'/>
 	<Script file='Misc.lua'/>
+	<Script file='NonRaid.lua'/>
 	<Script file='Petition.lua'/>
 	<Script file='PVP.lua'/>
 	<Script file='Quest.lua'/>

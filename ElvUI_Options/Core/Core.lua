@@ -30,6 +30,9 @@ local UnitIsUnit = UnitIsUnit
 local UnitIsFriend = UnitIsFriend
 local UnitIsPlayer = UnitIsPlayer
 
+local CLASS_SORT_ORDER = CLASS_SORT_ORDER
+local NUM_CLASSES = #CLASS_SORT_ORDER
+
 C.Values = {
 	GrowthDirection = {
 		DOWN_RIGHT = format(L["%s and then %s"], L["Down"], L["Right"]),
@@ -41,6 +44,8 @@ C.Values = {
 		LEFT_DOWN = format(L["%s and then %s"], L["Left"], L["Down"]),
 		LEFT_UP = format(L["%s and then %s"], L["Left"], L["Up"]),
 	},
+	MAX_BOSS_FRAMES = 8,
+	NUM_CLASSES = NUM_CLASSES,
 	FontFlags = ACH.FontValues,
 	FontSize = { min = 8, max = 64, step = 1 },
 	Roman = { 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII', 'XIII', 'XIV', 'XV', 'XVI', 'XVII', 'XVIII', 'XIX', 'XX' }, -- 1 to 20
@@ -59,6 +64,14 @@ C.Values = {
 		FLUID_DEBUFFS_ON_BUFFS = L["Fluid Debuffs on Buffs"],
 	}
 }
+
+do
+	C.ClassTable = {}
+
+	for _, info in next, E.ClassInfoByID do
+		C.ClassTable[info.classFile] = info.className
+	end
+end
 
 do
 	C.StateSwitchGetText = function(_, TEXT)
@@ -312,7 +325,7 @@ E.Options.args.profiles.args.private.order = 2
 
 E.Libs.AceConfig:RegisterOptionsTable('ElvProfiles', E.Options.args.profiles.args.profile)
 
-if E.Retail or E.Cata or E.ClassicSOD then
+if E.Retail or E.Cata or E.ClassicSOD or E.ClassicAnniv or E.ClassicAnnivHC then
 	E.Libs.DualSpec:EnhanceOptions(E.Options.args.profiles.args.profile, E.data)
 end
 
@@ -481,8 +494,7 @@ do -- Import and Export
 		export.args.exportButton = ACH:Execute(L["Export"], nil, 1, function() Export('text') end, nil, nil, 120)
 		export.args.decodeButton = ACH:Execute(L["Table"], nil, 2, function() Export('luaTable') end, nil, nil, 120)
 		export.args.pluginButton = ACH:Execute(L["Plugin"], nil, 3, function() Export('luaPlugin') end, nil, nil, 120)
-		export.args.profileTye = ACH:MultiSelect(L["Choose What To Export"], nil, 10, profileTypeItems, nil, nil, Filters_Get, Filters_Set)
-		export.args.profileTye.customWidth = 225
+		export.args.profileTye = ACH:MultiSelect(L["Choose What To Export"], nil, 10, profileTypeItems, nil, 225, Filters_Get, Filters_Set)
 	end
 end
 

@@ -74,17 +74,29 @@ L["DUNGEON_SHORT_NAME_AA"] = "ADA"
 --[[ L["DUNGEON_SHORT_NAME_AD"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["DUNGEON_SHORT_NAME_ARAK"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_ARC"] = ""--]] 
 L["DUNGEON_SHORT_NAME_AV"] = "CA"
 L["DUNGEON_SHORT_NAME_BH"] = "CDF"
+--[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_BREW"] = ""--]] 
 L["DUNGEON_SHORT_NAME_BRH"] = "FC"
+--[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_COEN"] = ""--]] 
 L["DUNGEON_SHORT_NAME_COS"] = "CDS"
 L["DUNGEON_SHORT_NAME_COT"] = "CDF"
 L["DUNGEON_SHORT_NAME_DAWN"] = "ALBA"
+--[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_DFC"] = ""--]] 
 L["DUNGEON_SHORT_NAME_DHT"] = "BC"
 L["DUNGEON_SHORT_NAME_DOS"] = "DOS"
 L["DUNGEON_SHORT_NAME_EB"] = "VE"
+--[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_EOA"] = ""--]] 
 L["DUNGEON_SHORT_NAME_FALL"] = "CDG"
 L["DUNGEON_SHORT_NAME_FH"] = "CDL"
+--[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_FLOOD"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["DUNGEON_SHORT_NAME_GB"] = ""--]] 
 --[[Translation missing --]]
@@ -97,25 +109,43 @@ L["DUNGEON_SHORT_NAME_HOV"] = "SDV"
 --[[Translation missing --]]
 --[[ L["DUNGEON_SHORT_NAME_ID"] = ""--]] 
 --[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_KR"] = ""--]] 
+--[[Translation missing --]]
 --[[ L["DUNGEON_SHORT_NAME_LOWR"] = ""--]] 
 L["DUNGEON_SHORT_NAME_MISTS"] = "NEBBIE"
+--[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_ML"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_MOS"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["DUNGEON_SHORT_NAME_NELT"] = ""--]] 
 L["DUNGEON_SHORT_NAME_NL"] = "ADN"
 L["DUNGEON_SHORT_NAME_NO"] = "ODN"
 L["DUNGEON_SHORT_NAME_NW"] = "SN"
 L["DUNGEON_SHORT_NAME_PF"] = "PF"
+--[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_PSF"] = ""--]] 
 L["DUNGEON_SHORT_NAME_RISE"] = "ADM"
 L["DUNGEON_SHORT_NAME_RLP"] = "PDVDR"
+--[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_ROOK"] = ""--]] 
 L["DUNGEON_SHORT_NAME_SBG"] = "TDT"
 L["DUNGEON_SHORT_NAME_SD"] = "SD"
+--[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_SEAT"] = ""--]] 
 L["DUNGEON_SHORT_NAME_SIEGE"] = "ASSEDIO"
 L["DUNGEON_SHORT_NAME_SOA"] = "SOA"
 --[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_SOTS"] = ""--]] 
+--[[Translation missing --]]
 --[[ L["DUNGEON_SHORT_NAME_STRT"] = ""--]] 
 L["DUNGEON_SHORT_NAME_SV"] = "VDP"
+--[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_TD"] = ""--]] 
 L["DUNGEON_SHORT_NAME_TJS"] = "TDSDG"
 L["DUNGEON_SHORT_NAME_TOP"] = "TOP"
+--[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_TOS"] = ""--]] 
 L["DUNGEON_SHORT_NAME_TOTT"] = "TDM"
 --[[Translation missing --]]
 --[[ L["DUNGEON_SHORT_NAME_ULD"] = ""--]] 
@@ -315,6 +345,22 @@ L["RAID_BOSS_CN_7"] = "Il Concilio del Sangue"
 L["RAID_BOSS_CN_8"] = "Picchiapoltiglia"
 L["RAID_BOSS_CN_9"] = "Generali della Legione di Pietra "
 --[[Translation missing --]]
+--[[ L["RAID_BOSS_DS_1"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_DS_2"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_DS_3"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_DS_4"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_DS_5"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_DS_6"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_DS_7"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_DS_8"] = ""--]] 
+--[[Translation missing --]]
 --[[ L["RAID_BOSS_FCN_1"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["RAID_BOSS_FCN_10"] = ""--]] 
@@ -334,6 +380,20 @@ L["RAID_BOSS_CN_9"] = "Generali della Legione di Pietra "
 --[[ L["RAID_BOSS_FCN_8"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["RAID_BOSS_FCN_9"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_FL_1"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_FL_2"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_FL_3"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_FL_4"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_FL_5"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_FL_6"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_FL_7"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["RAID_BOSS_FSFO_1"] = ""--]] 
 --[[Translation missing --]]
@@ -400,6 +460,22 @@ L["RAID_BOSS_CN_9"] = "Generali della Legione di Pietra "
 --[[ L["RAID_BOSS_ICC_8"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["RAID_BOSS_ICC_9"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_LOU_1"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_LOU_2"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_LOU_3"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_LOU_4"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_LOU_5"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_LOU_6"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_LOU_7"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_LOU_8"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["RAID_BOSS_NP_1"] = ""--]] 
 L["RAID_BOSS_NP_2"] = "Orrore Vincolasangue"
@@ -491,8 +567,14 @@ L["RAID_DIFFICULTY_SUFFIX_NORMAL"] = "NM"
 --[[ L["RAID_DIFFICULTY_SUFFIX_NORMAL10"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["RAID_DIFFICULTY_SUFFIX_NORMAL25"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_DS"] = ""--]] 
 L["RAID_ENCOUNTERS_DEFEATED_TITLE"] = "Boss Incursione Sconfitti"
+--[[Translation missing --]]
+--[[ L["RAID_FL"] = ""--]] 
 L["RAID_ICC"] = "Rocca della Corona di Ghiaccio "
+--[[Translation missing --]]
+--[[ L["RAID_LOU"] = ""--]] 
 L["RAID_NP"] = "Palazzo dei Nerub'ar"
 L["RAID_RS"] = "Santuario di Rubino"
 --[[Translation missing --]]
@@ -507,6 +589,8 @@ L["RAIDERIO_MP_SCORE"] = "Raider.IO Punteggio M+"
 L["RAIDERIO_MYTHIC_OPTIONS"] = "Raider.IO Opzioni Addon"
 L["RAIDING_DATA_HEADER"] = "Raider.IO Progresso Incursione"
 L["RAIDING_DB_MODULES"] = "Moduli di database Raid"
+--[[Translation missing --]]
+--[[ L["RECENT_RUNS_WITH_YOU"] = ""--]] 
 L["RECRUITMENT_DB_MODULES"] = "Moduli del database di reclutamento"
 L["RELOAD_LATER"] = "Ricaricherò Più Tardi"
 L["RELOAD_NOW"] = "Ricarica Ora"

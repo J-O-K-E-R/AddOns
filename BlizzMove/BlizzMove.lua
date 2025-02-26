@@ -41,7 +41,7 @@ if not BlizzMove then return; end
 BlizzMove.Frames = {};
 --- @type table<Frame, BlizzMove_FrameData>
 BlizzMove.FrameData = {};
---- @type table<string, table<string, Frame>> # [addonName][frameName] = frame
+--- @type table<string, table<string, Frame>> # [addOnName][frameName] = frame
 BlizzMove.FrameRegistry = {};
 --- @type BlizzMove_CombatLockdownQueueItem[]
 BlizzMove.CombatLockdownQueue = {};
@@ -895,7 +895,7 @@ do
             --- @type BlizzMoveAPI_FrameData?
             local frameData = self.FrameData[frame];
             local shouldHandleMouseWheel = frameData and not (frameData.IgnoreMouse or frameData.IgnoreMouseWheel);
-            if not shouldHandleMouseWheel and (frame:IsMouseWheelEnabled() or frame:IsMouseClickEnabled()) then return; end -- some clickable/scrollable thing is in the way
+            if not shouldHandleMouseWheel and (frame:IsForbidden() or frame:IsMouseWheelEnabled() or frame:IsMouseClickEnabled()) then return; end -- some clickable/scrollable thing is in the way
 
             if shouldHandleMouseWheel and self.CurrentMouseoverFrames[frame] then
                 captureFrame:EnableMouseWheel(true);
@@ -1322,9 +1322,26 @@ do
         self:ProcessFrames(self.name);
         self:ApplyAddOnSpecificFixes(self.name);
 
-        for addOnName, _ in pairs(self.Frames) do
+        EventRegistry:RegisterCallback('SetItemRef', function(_, link)
+            local linkType, addOnName, linkData = strsplit(':', link, 3);
+            if linkType == 'addon' and addOnName == 'blizzmoveCopy' then
+                self.Config:ShowURLPopup(linkData)
+            elseif linkType == 'addon' and addOnName == 'blizzmoveMuteWarning' and linkData then
+                ---@diagnostic disable-next-line: assign-type-mismatch
+                self.DB.mutedCompatWarnings[linkData] = date('%Y%m%d');
+                self:Print('Muted warning for', linkData);
+            end
+        end);
+
+        for i = 1, C_AddOns.GetNumAddOns() do
+            local addOnName = C_AddOns.GetAddOnInfo(i);
+            if IsAddOnLoaded(addOnName) then
+                self:CheckCompatibility(addOnName);
+            end
+        end
+        for addOnName in pairs(self.Frames) do
             if addOnName ~= self.name and IsAddOnLoaded(addOnName) then
-                self:ADDON_LOADED(_, addOnName);
+                self:ADDON_LOADED(nil, addOnName);
             end
         end
 
@@ -1398,11 +1415,17 @@ do
         saveScaleStrategy = "session",
         points = {},
         scales = {},
+        mutedCompatWarnings = {},
     };
     function BlizzMove:InitDefaults()
         for property, value in pairs(defaults) do
             if self.DB[property] == nil then
                 self.DB[property] = value;
+            end
+        end
+        for addOnName, mutedAt in pairs(self.DB.mutedCompatWarnings) do
+            if type(mutedAt) ~= 'number' then
+                self.DB.mutedCompatWarnings[addOnName] = GetServerTime();
             end
         end
     end
@@ -1412,6 +1435,7 @@ do
 
         self:ProcessFrames(addOnName);
         self:ApplyAddOnSpecificFixes(addOnName);
+        self:CheckCompatibility(addOnName);
     end
 
     function BlizzMove:ApplyAddOnSpecificFixes(addOnName)
@@ -1444,6 +1468,14 @@ do
                 dialog:ClearAllPoints();
                 dialog:SetAllPoints();
             end
+        end
+        -- fix anchor family connection issues when opening PlayerChoiceFrame after moving it
+        if addOnName == "Blizzard_PlayerChoice" and _G.PlayerChoiceFrame then
+            _G.PlayerChoiceFrame:HookScript("OnHide", function()
+                if not InCombatLockdown() or not _G.PlayerChoiceFrame:IsProtected() then
+                    _G.PlayerChoiceFrame:ClearAllPoints();
+                end
+            end);
         end
 
         -- fix anchor family connection issues when opening/closing the hero talents dialog
@@ -1487,6 +1519,17 @@ do
                     skipHook = false
                 end);
             end
+        end
+    end
+
+    function BlizzMove:CheckCompatibility(addOnName)
+        local warnings = {
+            ['MoveAny'] = 'MoveAny is loaded, some users reported this breaks moving frames, if you encounter this issue yourself, try disabling MoveAny.',
+            ['DeModal'] = 'DeModal is loaded, this addon is known to cause issues, consider replacing it with |cff71d5ff|Haddon:blizzmoveCopy:https://www.curseforge.com/wow/addons/no-auto-close|h[NoAutoClose]|h|r instead.',
+        };
+        -- muted warnings are muted for 3 months
+        if warnings[addOnName] and (not self.DB.mutedCompatWarnings[addOnName] or self.DB.mutedCompatWarnings[addOnName] < (GetServerTime() - (3 * 31 * 24 * 3600))) then
+            self:Print(warnings[addOnName], ' |cff71d5ff|Haddon:blizzmoveMuteWarning:'..addOnName..'|h[Mute this warning]|h|r');
         end
     end
 end

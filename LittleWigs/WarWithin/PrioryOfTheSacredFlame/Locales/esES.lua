@@ -10,8 +10,10 @@ if L then
 	L.taener_duelmal = "Taener Duelmal"
 	L.arathi_knight = "Caballero arathi"
 	L.arathi_footman = "Lacayo arathi"
+	L.fervent_sharpshooter = "Tiradora certera fervorosa"
+	L.war_lynx = "Lince de guerra"
 	L.devout_priest = "Sacerdote devoto"
-	--L.fanatical_mage = "Fanatical Mage"
+	L.fanatical_conjuror = "Conjuradora fanática"
 	L.lightspawn = "Engendro de luz"
 	L.ardent_paladin = "Paladín ardoroso"
 	L.risen_mage = "Mago resucitado"
@@ -19,4 +21,9 @@ if L then
 
 	--L.baron_braunpyke_warmup_trigger = "They've served their purpose. Baron, demonstrate your worth."
 	L.custom_on_autotalk_desc = "|cFFFF0000Requiere Sacerdote o Paladín.|r Selecciona automáticamente la opción de diálogo del NPC que te otorga el aura 'Bendición de la Llama Sagrada'."
+end
+
+L = BigWigs:NewBossLocale("Baron Braunpyke", "esES") or BigWigs:NewBossLocale("Baron Braunpyke", "esMX")
+if L then
+	--L.charges = "%d charges"
 end

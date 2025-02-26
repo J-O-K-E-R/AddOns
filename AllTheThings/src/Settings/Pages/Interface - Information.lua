@@ -126,6 +126,8 @@ ConversionMethods.provider = function(provider, reference)
 		return ConversionMethods.creatureName(providerID, reference);
 	elseif providerType == "i" then
 		return ConversionMethods.itemNameAndIcon(providerID, reference);
+	elseif providerType == "s" then
+		return ConversionMethods.spellID(providerID, reference);
 	end
 	return UNKNOWN;
 end;
@@ -574,7 +576,11 @@ local InformationTypes = {
 	}),
 	CreateInformationType("description", { text = L.DESCRIPTIONS, priority = 2.5,
 		Process = function(t, reference, tooltipInfo)
-			local description = reference.description or GetRelativeValue(reference, "sharedDescription")
+			local description = reference.description
+				or GetRelativeValue(reference, "sharedDescription")
+				-- duplicated search results loose their parent references in order to prevent issues in filtering/tooltips
+				-- so also check the active row reference for accuracy if the tooltip is in context of a row
+				or GetRelativeValue(app.ActiveRowReference, "sharedDescription")
 			if description then
 				tinsert(tooltipInfo, {
 					left = description,
@@ -587,18 +593,24 @@ local InformationTypes = {
 	CreateInformationType("maps", { text = L.MAPS, priority = 2.6,
 		Process = function(t, reference, tooltipInfo)
 			local maps = reference.maps;
+			if not maps or #maps == 0 then
+				local coords = reference.coords
+				if coords and #coords > 0 then
+					maps = {}
+					for _,coord in ipairs(coords) do
+						maps[#maps + 1] = coord[3]
+					end
+				end
+			end
 			if maps and #maps > 0 then
-				local currentMapID = app.CurrentMapID;
 				local mapNames,uniques,name = {},{},nil;
 				local rootMapID = reference.mapID;
 				if rootMapID then uniques[app.GetMapName(rootMapID) or rootMapID] = true; end
 				for i,mapID in ipairs(maps) do
-					if mapID ~= currentMapID then
-						name = app.GetMapName(mapID);
-						if name and not uniques[name] then
-							uniques[name] = true;
-							tinsert(mapNames, name);
-						end
+					name = app.GetMapName(mapID);
+					if name and not uniques[name] then
+						uniques[name] = true;
+						tinsert(mapNames, name);
 					end
 				end
 				if #mapNames > 0 then
@@ -951,7 +963,7 @@ local InformationTypes = {
 					if itemID == 54537 or		-- Heart-Shaped Box [Love is in the Air]
 						itemID == 117393 or		-- Keg-Shaped Treasure Chest [Brewfest]
 						itemID == 117394 or		-- Satchel of Chilled Goods [Midsummer Fire Festival]
-						itemID == 209024 or		-- Loot-Filled Pumpkin [Hallow's End]
+						--itemID == 209024 or		-- Loot-Filled Pumpkin [Hallow's End] (Blizz is inconsistent, big mad.)
 						itemID == 216874		-- Loot-Filled Basket [Noblegarden]
 					then
 						tinsert(tooltipInfo, 1, { left = L.HOLIDAY_DROP, wrap = true, color = app.Colors.TooltipDescription });
@@ -1157,9 +1169,9 @@ settings.CreateInformationType("ExclusionFilters", {
 		local Filter = app.Modules.Filter
 		for filterName,filterFunc in pairs(Filter.Filters) do
 			if not filterFunc(reference) then
-				excludes[#excludes + 1] = Colorize(filterName, app.Colors.ChatLinkError)
+				excludes[#excludes + 1] = Colorize(filterName, Filter.Get[filterName]() and app.Colors.ChatLinkError or app.Colors.RemovedWithPatch)
 			else
-				excludes[#excludes + 1] = Colorize(filterName, app.Colors.ChatLinkHQT)
+				excludes[#excludes + 1] = Colorize(filterName, Filter.Get[filterName]() and app.Colors.Time or app.Colors.ChatLinkHQT)
 			end
 		end
 		if #excludes > 0 then
@@ -1208,4 +1220,17 @@ settings.CreateInformationType("hash", {
 	priority = 99999,
 	text = "DEBUG: hash",
 	HideCheckBox = not app.Debugging,
+})
+settings.CreateInformationType("bonuses", {
+	priority = 99999,
+	text = "DEBUG: Item Bonuses",
+	HideCheckBox = not app.Debugging,
+	Process = function(t, data, tooltipInfo)
+		local bonuses = data.bonuses
+		if not bonuses or #bonuses < 1 then return end
+		tinsert(tooltipInfo, {
+			left = "Item Bonuses",
+			right = app.TableConcat(bonuses, nil, nil, " | ")
+		});
+	end
 })

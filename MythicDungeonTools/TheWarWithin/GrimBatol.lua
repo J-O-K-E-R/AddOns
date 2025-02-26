@@ -6,7 +6,9 @@ local dungeonIndex = 112
 MDT.dungeonList[dungeonIndex] = L["Grim Batol"]
 MDT.mapInfo[dungeonIndex] = {
   teleportId = 445424,
-  shortName = L["grimBatolShortName"]
+  shortName = L["grimBatolShortName"],
+  englishName = "Grim Batol",
+  mapID = 507
 }
 
 local zones = { 241, 293 }
@@ -388,6 +390,7 @@ MDT.dungeonEnemies[dungeonIndex] = {
       [451378] = {
       },
       [451379] = {
+        ["enrage"] = true,
       },
     },
     ["clones"] = {
@@ -712,6 +715,7 @@ MDT.dungeonEnemies[dungeonIndex] = {
       [451033] = {
       },
       [451040] = {
+        ["enrage"] = true,
       },
     },
     ["clones"] = {
@@ -781,6 +785,7 @@ MDT.dungeonEnemies[dungeonIndex] = {
       },
       [451224] = {
         ["interruptible"] = true,
+        ["curse"] = true,
       },
     },
     ["clones"] = {
@@ -1424,6 +1429,7 @@ MDT.dungeonEnemies[dungeonIndex] = {
       [447261] = {
       },
       [447268] = {
+        ["bleed"] = true,
       },
       [448847] = {
       },
@@ -1513,6 +1519,7 @@ MDT.dungeonEnemies[dungeonIndex] = {
       [448013] = {
       },
       [450095] = {
+        ["curse"] = true,
       },
     },
     ["clones"] = {

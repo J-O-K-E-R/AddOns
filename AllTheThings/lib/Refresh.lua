@@ -39,14 +39,14 @@ local function CacheAccountWideCompleteViaAchievement(accountWideData)
 		{ 14012, { 58214, 57486, 57487, 57488, 57490, 57491, 57492, 57493, 57494, 57496, 57495, 57497 } },	-- Allied Races: Mechagnome
 		{ 13207, { 53870, 53889, 53890, 53891, 53892, 53893, 53894, 53895, 53897, 53898, 54026, 53899, 58087, 53901, 53900, 53902, 54027, 53903, 53904, 53905, 54036, 53906, 53907, 53908, 57448 } },	-- Allied Races: Vulpera
 		-- Garrison Shipyard Equipment Blueprints
-		{ 10372, { 38932 } }, -- Equipment Blueprint: Bilge Pump
-		{ 10373, { 39366 } }, -- Equipment Blueprint: Felsmoke Launchers
-		{ 10374, { 39356 } }, -- Equipment Blueprint: High Intensity Fog Lights
-		{ 10375, { 39365 } }, -- Equipment Blueprint: Ghostly Spyglass
-		{ 10376, { 39364 } }, -- Equipment Blueprint: Gyroscopic Internal Stabilizer
-		{ 10377, { 39363 } }, -- Equipment Blueprint: Ice Cutter
-		{ 10378, { 39355 } }, -- Equipment Blueprint: Trained Shark Tank
-		{ 10379, { 39360 } }, -- Equipment Blueprint: True Iron Rudder
+		{ 10372, { 38932 } },	-- Equipment Blueprint: Bilge Pump
+		{ 10373, { 39366 } },	-- Equipment Blueprint: Felsmoke Launchers
+		{ 10374, { 39356 } },	-- Equipment Blueprint: High Intensity Fog Lights
+		{ 10375, { 39365 } },	-- Equipment Blueprint: Ghostly Spyglass
+		{ 10376, { 39364 } },	-- Equipment Blueprint: Gyroscopic Internal Stabilizer
+		{ 10377, { 39363 } },	-- Equipment Blueprint: Ice Cutter
+		{ 10378, { 39355 } },	-- Equipment Blueprint: Trained Shark Tank
+		{ 10379, { 39360 } },	-- Equipment Blueprint: True Iron Rudder
 		-- stupid pet tamer breadcrumbs that are once per account (there may be more breadcrumbs for the questline that need to be added here)
 		-- these aren't really 'once per account' in that only a single character gets credit.
 		-- all 5 quests of the faction are marked completed account-wide, and the other 5 can never be completed on that account
@@ -184,7 +184,7 @@ local function CacheAccountWideSharedQuests(accountWideData)
 		},
 		{
 			53061,	-- The Azerite Advantage (BFA Alliance Island Unlock / AWHQT 51994)
-			53062,  -- The Azerite Advantage (BFA Horde Island Unlock / AWHQT 51994)
+			53062,	-- The Azerite Advantage (BFA Horde Island Unlock / AWHQT 51994)
 		},
 		{
 			53055,	-- Pushing Our Influence (BFA Horde PreQ for 1st Foothold)
@@ -247,7 +247,7 @@ local function FixNonOneTimeQuests(accountWideData)
 end
 
 local OneTimeFixFunctions = {
-	-- ref. https://github.com/DFortun81/AllTheThings/commit/d1b02b8021a7f2aa80c03d212a2ea54a443e9117
+	-- ref. https://github.com/ATTWoWAddon/AllTheThings/commit/d1b02b8021a7f2aa80c03d212a2ea54a443e9117
 	Spell148972 = function()
 		local ATTCharacterData = app.LocalizeGlobalIfAllowed("ATTCharacterData", true);
 		local found
@@ -264,7 +264,7 @@ local OneTimeFixFunctions = {
 						"they will need to log in to properly re-collect in ATT")
 		end
 	end,
-	-- ref. https://github.com/DFortun81/AllTheThings/commit/d1b02b8021a7f2aa80c03d212a2ea54a443e9117
+	-- ref. https://github.com/ATTWoWAddon/AllTheThings/commit/d1b02b8021a7f2aa80c03d212a2ea54a443e9117
 	Spell241857 = function()
 		local ATTCharacterData = app.LocalizeGlobalIfAllowed("ATTCharacterData", true);
 		local found

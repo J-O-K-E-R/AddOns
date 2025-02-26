@@ -178,4 +178,30 @@
 			</EventFrame>
 		</Frames>
 	</Frame>
+
+	<Frame name="CliqueUICheckboxRowTemplate" virtual="true">
+		<Size x="200" y="32"/>
+		<Frames>
+			<CheckButton parentKey="CheckButton">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="LEFT" x="5" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentText" inherits="GameFontNormalSmall" parentKey="Text">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="RIGHT" x="-2" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+				<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+				<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+				<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+			</CheckButton>
+		</Frames>
+	</Frame>
 </Ui>

@@ -7,13 +7,15 @@ local IsUncollectedTransmogByItemInfo = API.IsUncollectedTransmogByItemInfo;
 local ipairs = ipairs;
 
 local LootSlot = LootSlot;
+local CloseLoot = CloseLoot;
 local GetPhysicalScreenSize = GetPhysicalScreenSize;
 local InCombatLockdown = InCombatLockdown;
 local CreateFrame = CreateFrame;
 local IsModifiedClick = IsModifiedClick;
-local IsCosmeticItem = C_Item.IsCosmeticItem;
+local IsCosmeticItem = C_Item.IsCosmeticItem or API.Nop;
 local GetItemCount = C_Item.GetItemCount;
 local GetCursorPosition = GetCursorPosition;
+local IsDressableItemByID = C_Item.IsDressableItemByID or API.Nop;
 
 
 -- User Settings
@@ -71,11 +73,12 @@ do
     end
 
     function Formatter:CalculateDimensions(fontSize)
-        if not (fontSize and fontSize >= 12 and fontSize <= 16) then
+        if not (fontSize and fontSize >= 10 and fontSize <= 16) then
             fontSize = nil;
         end
 
-        local fontFile, defaultFontSize = ObjectiveTrackerFont14:GetFont();
+        local baseFont = _G.ObjectiveTrackerFont14 or _G.GameTooltipHeader or _G.GameFontNormal;
+        local fontFile, defaultFontSize = baseFont:GetFont();
         local normalizedFontSize;
 
         if not fontSize then
@@ -105,6 +108,14 @@ do
         self.BUTTON_SPACING = 12;
 
         self.numberWidths = {};
+
+        if MainFrame.Header then
+            if fontSize < defaultFontSize then
+                MainFrame.Header:SetFont(fontFile, fontSize, "");
+            else
+                MainFrame.Header:SetFont(fontFile, defaultFontSize, "");
+            end
+        end
     end
 
     function Formatter:GetNumberWidth(number)
@@ -589,6 +600,17 @@ do  --UI ItemButton
                 tooltip:SetOwner(self, "ANCHOR_RIGHT", -Formatter.BUTTON_SPACING, 0);
                 tooltip:SetLootCurrency(self.data.slotIndex);
             end
+
+            local comparisonTooltip = ShoppingTooltip1;
+            if comparisonTooltip and comparisonTooltip:IsShown() then
+                local left1 = tooltip:GetLeft() or 0;
+                local left2 = comparisonTooltip:GetLeft() or 0;
+                if left2 < left1 then
+                    tooltip:ClearAllPoints();
+                    tooltip:SetPoint("BOTTOMRIGHT", self, "TOPLEFT", 0, 0);
+                end
+            end
+
         elseif self.enableState == 2 then
             if self.data.link then
                 local width = self:GetWidth();
@@ -613,7 +635,7 @@ do  --UI ItemButton
         if button == "LeftButton" then
             if IsModifiedClick("DRESSUP") and not InCombatLockdown() then
                 local itemID = self.data.slotType == Defination.SLOT_TYPE_ITEM and self.data.id;
-                if itemID and C_Item.IsDressableItemByID(itemID) then
+                if itemID and IsDressableItemByID(itemID) then
                     DressUpVisual(self.data.link);
                     return
                 end
@@ -779,6 +801,13 @@ do  --UI Background
         self.Background:SetAlpha(alpha);
     end
 
+    function BackgroundMixin:ShowBorderLine(state)
+        self.LeftLine:SetShown(state);
+        self.LeftLineEnd:SetShown(state);
+        self.TopLine:SetShown(state);
+        self.TopLineEnd:SetShown(state);
+    end
+
     function BackgroundMixin:UpdatePixel()
         local scale = 1;
         local px = API.GetPixelForScale(scale, 1);
@@ -855,6 +884,14 @@ do  --UI Background
         tt:SetAllPoints(true);
         tt:SetColorTexture(1, 0, 0, 0.5);
         --]]
+    end
+
+    function MainFrame:SetBackgroundAlpha(alpha)
+        if self.BackgroundFrame then
+            self.BackgroundFrame:ShowBorderLine(alpha > 0);
+            alpha = 0.9 * alpha;
+            self.BackgroundFrame:SetBackgroundAlpha(alpha);
+        end
     end
 
     function MainFrame:SetBackgroundSize(width, height)
@@ -1220,7 +1257,7 @@ do  --UI Basic
             self.isUpdatingPage = nil;
             self.alpha = self:GetAlpha();
             self:SetScript("OnUpdate", OnUpdate_FadeOut);
-            self:UnregisterEvent("GLOBAL_MOUSE_DOWN");
+            self:UnregisterEvent("GLOBAL_MOUSE_UP");
         else
             self.t = 0;
             self:SetScript("OnUpdate", OnUpdate_FadeOut_IfNotFocused);
@@ -1325,6 +1362,9 @@ do  --UI Basic
     function MainFrame:Init()
         self.Init = nil;
 
+        local Header = self:CreateFontString(nil, "OVERLAY", "GameFontNormal");
+        self.Header = Header;
+
         Formatter:Init()
 
         self.itemFramePool = API.CreateObjectPool(CreateItemFrame);
@@ -1370,8 +1410,6 @@ do  --UI Basic
 
         self:InitBackground();
 
-        local Header = self:CreateFontString(nil, "OVERLAY", "GameFontNormal");
-        self.Header = Header;
         Header:SetJustifyH("CENTER");
         Header:SetPoint("BOTTOM", self, "TOP", 0, Formatter.BUTTON_SPACING);
         Header:SetText(L["You Received"]);
@@ -1475,19 +1513,20 @@ do  --UI Basic
     end
 
     function MainFrame:OnHide()
-        if not self:IsShown() then
-            self:ReleaseAll();
-        end
+        if self:IsShown() then return end;  --Due to hiding UIParent
+        self:ReleaseAll();
         self.isFocused = false;
         self.manualMode = nil;
-        self:UnregisterEvent("GLOBAL_MOUSE_DOWN");
+        self:StopQueue();
+        self:UnregisterEvent("GLOBAL_MOUSE_UP");
     end
     MainFrame:SetScript("OnHide", MainFrame.OnHide);
 
     function MainFrame:OnEvent(event, ...)
-        if event == "GLOBAL_MOUSE_DOWN" then
+        if event == "GLOBAL_MOUSE_UP" then
             local button = ...
             if button == "RightButton" and self:IsMouseOver() then
+                CloseLoot();
                 self:TryHide(true);
             end
         end

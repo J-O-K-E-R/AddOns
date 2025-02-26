@@ -3,6 +3,7 @@ if not L then return end
 if L then
 	L.rank_overseer = "Sobrestante rancio"
 	L.lowly_moleherd = "Pastor de topos humilde"
+	L.royal_wicklighter = "Prendemechas real"
 	L.kobold_taskworker = "Completatareas kóbold"
 	L.wandering_candle = "Vela errante"
 	L.blazing_fiend = "Maligno llameante"
@@ -15,6 +16,11 @@ if L then
 	--L.minecart = "Mine Cart Minigame"
 	--L.hits = "Hits"
 	--L.minecart_over = "Winner: %s (%d hits)"
+end
+
+L = BigWigs:NewBossLocale("Ol' Waxbeard", "esES") or BigWigs:NewBossLocale("Ol' Waxbeard", "esMX")
+if L then
+	--L.dynamite_mine_cart = "Dynamite Mine Cart"
 end
 
 L = BigWigs:NewBossLocale("The Darkness", "esES") or BigWigs:NewBossLocale("The Darkness", "esMX")

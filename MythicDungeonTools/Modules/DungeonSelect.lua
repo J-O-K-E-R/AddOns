@@ -21,7 +21,9 @@ MDT.dungeonSelectionToIndex = {}
 
 do
   tinsert(MDT.seasonList, L["The War Within Season 1"])
+  tinsert(MDT.seasonList, L["The War Within Season 2"])
   tinsert(MDT.dungeonSelectionToIndex, { 31, 35, 19, 110, 111, 112, 113, 114 })
+  tinsert(MDT.dungeonSelectionToIndex, { 115, 116, 117, 118, 119, 120, 121, 122 })
 end
 
 local seasonList = MDT.seasonList
@@ -44,6 +46,22 @@ function MDT:UpdateDungeonSelectHighlight()
   end
 end
 
+local formatTime = function(time)
+  if time then
+    local timeMin = math.floor(time / 60)
+    local timeSec = math.floor(time - (timeMin * 60))
+    if timeMin < 10 then
+      ---@diagnostic disable-next-line: cast-local-type
+      timeMin = ("0%d"):format(timeMin)
+    end
+    if timeSec < 10 then
+      ---@diagnostic disable-next-line: cast-local-type
+      timeSec = ("0%d"):format(timeSec)
+    end
+    return ("%s:%s"):format(timeMin, timeSec)
+  end
+end
+
 function MDT:UpdateDungeonDropDown()
   local currentList = dungeonSelectionToIndex[db.selectedDungeonList]
   for idx, dungeonIdx in ipairs(currentList) do
@@ -63,6 +81,7 @@ function MDT:UpdateDungeonDropDown()
       button.selectedTexture = button:CreateTexture()
       button.selectedTexture:SetAllPoints(button)
       button.selectedTexture:SetAtlas("bags-glow-artifact")
+      button.selectedTexture:SetDrawLayer("OVERLAY")
       button.shortText = button:CreateFontString(nil, "OVERLAY", "GameFontNormal")
       button.shortText:SetPoint("BOTTOM", button, "BOTTOM", 0, 2)
       button.shortText:SetFont(button.shortText:GetFont(), 11, "OUTLINE")
@@ -73,7 +92,7 @@ function MDT:UpdateDungeonDropDown()
     end
     local mapInfo = MDT.mapInfo[dungeonIdx]
     button.dungeonIdx = dungeonIdx
-    button.texture:SetTexture(mapInfo.iconId or C_Spell.GetSpellTexture(mapInfo.teleportId))
+    button.texture:SetTexture(mapInfo.iconId or C_Spell.GetSpellTexture(mapInfo.teleportId) or 134400)
     button.shortText:SetText(mapInfo.shortName)
     button:SetScript("OnClick", function(self, button)
       MDT:UpdateToDungeon(dungeonIdx)
@@ -84,8 +103,22 @@ function MDT:UpdateDungeonDropDown()
     button:SetFrameStrata("HIGH")
     button:SetFrameLevel(50)
     button:SetScript("OnEnter", function()
+      local timer
+      if mapInfo.mapID then
+        timer = select(3, C_ChallengeMode.GetMapUIInfo(mapInfo.mapID))
+        -- TODO: this is completely gone in S2
+        -- we want to always show the correct timer including the Challenger's Peril affix
+        -- add 90s if we are not currently in a key
+        -- local activeKeystoneLevel = select(1, C_ChallengeMode.GetActiveKeystoneInfo())
+        -- if timer and (not activeKeystoneLevel or activeKeystoneLevel < 7) then
+        --   timer = timer + 90
+        -- end
+      end
       GameTooltip:SetOwner(dungeonButtons[idx], "ANCHOR_BOTTOMRIGHT", -dungeonButtons[idx]:GetWidth(), 0)
       GameTooltip:AddLine(MDT.dungeonList[dungeonIdx], 1, 1, 1)
+      if timer then
+        GameTooltip:AddLine(L["Timer"]..": "..formatTime(timer), 1, 1, 1)
+      end
       GameTooltip:Show()
     end)
   end
@@ -179,11 +212,19 @@ end
 function MDT:CheckSeenDungeonLists()
   db = MDT:GetDB()
   local defaultSavedVars = MDT:GetDefaultSavedVariables().global
-  local latestSeason = defaultSavedVars.selectedDungeonList
   local latestDungeon = defaultSavedVars.currentDungeonIdx
-  if latestSeason > db.latestSeenDungeonList then
-    db.latestSeenDungeonList = latestSeason
-    db.selectedDungeonList = latestSeason
-    db.currentDungeonIdx = latestDungeon
+  local latestSeen = db.latestDungeonSeen
+  if latestSeen ~= latestDungeon then
+    -- find list
+    for listIndex, list in pairs(MDT.dungeonSelectionToIndex) do
+      for _, dngIdx in pairs(list) do
+        if dngIdx == latestDungeon then
+          db.latestDungeonSeen = latestDungeon
+          db.currentDungeonIdx = latestDungeon
+          db.selectedDungeonList = listIndex
+          return
+        end
+      end
+    end
   end
 end

@@ -1,14 +1,29 @@
 function CrossGambling:GameStart()
-	if(self.game.chatframeOption == false) then
-		local RollNotification = "has started a roll!"
-		self:SendMsg(format("CHAT_MSG:%s:%s:%s", self.game.PlayerName, self.game.PlayerClass, RollNotification))
+  if self.game.mode == "1v1DeathRoll" then
+        -- Initialize current roll to the wager for 1v1 Deathroll
+        self.currentRoll = self.db.global.wager
+        self.currentPlayerIndex = 1
+    end
+
+    if self.game.chatframeOption == false then
+        local RollNotification = "has started a roll!"
+        self:SendMsg(format("CHAT_MSG:%s:%s:%s", self.game.PlayerName, self.game.PlayerClass, RollNotification))
     else
-		SendChatMessage("CrossGambling: A new game has been started! Type 1 to join! (-1 to withdraw)" , self.game.chatMethod)	
+        SendChatMessage("CrossGambling: A new game has been started! Type 1 to join! (-1 to withdraw)", self.game.chatMethod)
     end
 end
 
 function CrossGambling:RegisterGame(text, playerName)
-    if (text == "1") then
+        -- Handle player joining
+    if text == "1" then
+        -- For 1v1DeathRoll mode, enforce exactly 2 players
+        if self.game.mode == "1v1DeathRoll" then
+            -- Allow the player to join only if the game has fewer than 2 players
+            if #self.game.players == 2 then
+                SendChatMessage("CrossGambling: This is a 1v1 DeathRoll. Only 2 players can join.", self.game.chatMethod)
+                return
+            end
+        end
 		if (self.game.realmFilter == true and self:CheckRealm(playerName) == 0) then
 			SendChatMessage("CrossGambling: You are not on (" .. GetRealmName() .. "). You are not eligible to join this game. The host can turn off the Realm Filter in the options." , self.game.chatMethod)
 		else

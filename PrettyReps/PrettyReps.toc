@@ -1,16 +1,33 @@
-## Interface: 100205
+## Interface: 110007
 ## IconTexture: Interface/Addons/PrettyReps/pr_logo.png
 ## Title: PrettyReps
 ## Author: Sida2
-## Version: 2.06
-## Notes: Display account-wide reputations on any character.
+## Version: 3.01
+## Notes: Display account-wide reputation on any character.
 ## DefaultState: Enabled
 ## LoadOnDemand: 0
 ## SavedVariables: PrettyRepsDB
 
+# Data - Constants
+data/FactionHierarchy.lua
+
+# Data - Core Systems
+data/Events.lua
+data/OptionsManager.lua
+data/DataManager.lua
+
+# Data - Operations
+data/DataTransformer.lua
+data/FactionScanner.lua
+
+# UI Provider
+data/UIDataProvider.lua
+
+# UI Components
+ui/ReputationService.lua
+ui/ReputationFrame.lua
+ui/ReputationFrame.xml
+ui/CharacterFrame.lua
+
+# Main Addon File
 PrettyReps.lua
-data.lua
-callbacks.lua
-dataUtils.lua
-ui.lua
-repPanel.lua

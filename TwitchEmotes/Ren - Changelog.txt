@@ -3713,6 +3713,23 @@ PepePoint
 
 
 ----
+Twitch Emotes V2.62.4 - Christmas update 11.0.5
+----
+Added Christmas emotes
+
+
+----
+Twitch Emotes V2.62.4 - January update 11.0.7
+----
+Reverted Christmas emotes
+Updated .toc file for 11.0.7 / Classic TBC, SoD
+
+Added:
+intjShake
+CatFat
+
+
+----
 To do
 ----
 ====

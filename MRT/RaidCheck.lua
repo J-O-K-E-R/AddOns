@@ -91,6 +91,9 @@ module.db.tableFlask = not ExRT.isClassic and {
 	[79471]=true,	[79470]=true,	[79472]=true,	[92731]=true,	[79469]=true,	[92729]=true,	[94160]=true,	[92730]=true,	
 	[92725]=true,
 
+	--sod
+	[1213886]=true,	[1213892]=true,	[1213901]=true,	[1213897]=true,
+	[1213904]=true,	[1213914]=true,
 }
 module.db.tableFlask_headers = ExRT.isClassic and {0,1} or {0,25,38}
 module.db.tablePotion = {
@@ -665,7 +668,7 @@ local function GetFood(checkType)
 					local spellId = auraData.spellId
 					local stats = auraData.points and auraData.points[1]
 					local foodType = module.db.tableFood[spellId]
-					if foodType or auraData.icon == 136000 then
+					if foodType or auraData.icon == 136000 or auraData.icon == 132805 or auraData.icon == 133950 then
 						local _,unitRace = UnitRace(name)
 
 						if unitRace == "Pandaren" and stats then
@@ -692,7 +695,7 @@ local function GetFood(checkType)
 						if ExRT.isClassic then
 							stats = 375
 						end
-						if auraData.icon == 136000 then
+						if auraData.icon == 136000 or auraData.icon == 132805 or auraData.icon == 133950 then
 							stats = true
 						end
 						if type(stats) ~= "number" then
@@ -1908,7 +1911,7 @@ do
 		button.HighlightTexture:SetTexCoord(unpack(button.TC.up))
 		button.PushedTexture:SetTexCoord(unpack(button.TC.up))
 
-		self:SetHeight(self.SizeMaximized)
+		self:SetHeight(self.SizeMaximized or 200)
 	end
 	function module.frame:SetMinimized()
 		button.isMinimized = true
@@ -1920,7 +1923,7 @@ do
 		button.HighlightTexture:SetTexCoord(unpack(button.TC.down))
 		button.PushedTexture:SetTexCoord(unpack(button.TC.down))
 
-		self:SetHeight(module.frame.SizeMinimized)
+		self:SetHeight(module.frame.SizeMinimized or 100)
 	end
 	function module.frame:SetMinimizedFromOptions()
 		if VMRT.RaidCheck.RCW_Mini and not button.isMinimized then
@@ -2019,8 +2022,20 @@ local function RCW_AddIcon(parent,texture)
 	icon:SetScript("OnLeave",RCW_LineOnLeave)
 
 	icon.texture:SetTexCoord(.1,.9,.1,.9)
-	icon.text = ELib:Text(icon,"100",8):Point("BOTTOMRIGHT",4,0):Right():Color(0,1,0)
-	icon.bigText = ELib:Text(icon,"",10):Point("CENTER",0,0):Center():Color(1,1,1)
+	--icon.text = ELib:Text(icon,"100",8):Point("BOTTOMRIGHT",4,0):Right():Color(0,1,0)
+	--icon.bigText = ELib:Text(icon,"",10):Point("CENTER",0,0):Center():Color(1,1,1)
+
+	icon.text = icon:CreateFontString(nil,"ARTWORK","ExRTFontNormal")
+	icon.text:SetPoint("BOTTOMRIGHT",4,0)
+	icon.text:SetJustifyH("RIGHT")
+	icon.text:SetTextColor(0,1,0,1)
+	icon.text:SetFont(icon.text:GetFont(),8,"")
+
+	icon.bigText = icon:CreateFontString(nil,"ARTWORK","ExRTFontNormal")
+	icon.bigText:SetPoint("CENTER",0,0)
+	icon.bigText:SetJustifyH("CENTER")
+	icon.bigText:SetTextColor(1,1,1,1)
+	icon.bigText:SetFont(icon.text:GetFont(),10,"")
 
 	icon.subIcon = icon:CreateTexture(nil, "BORDER")
 	icon.subIcon:SetPoint("CENTER",icon,"TOPRIGHT",-2,-2)
@@ -2101,6 +2116,10 @@ function module.frame:UpdateCols()
 end
 
 function module.frame:Create()
+	if not self.isFirstFontUpdated and self.isCreated then
+		self.isFirstFontUpdated = true
+		self:UpdateFont()
+	end
 	if self.isCreated then
 		return
 	end
@@ -2176,28 +2195,47 @@ function module.frame:Create()
 end
 
 function module.frame:UpdateFont()
-	if not self.isCreated then
+	if not self.isCreated or not VMRT then
 		return
 	end
+	local font = VMRT.RaidCheck.ReadyCheckFont or ExRT.F.defFont
+	local fontsize = VMRT.RaidCheck.ReadyCheckFontSize or 12
 	for i=1,40 do
 		local line = self.lines[i]
-		line.name:SetFont(VMRT.RaidCheck.ReadyCheckFont or ExRT.F.defFont,VMRT.RaidCheck.ReadyCheckFontSize or 12,"")
-		line.mini.name:SetFont(VMRT.RaidCheck.ReadyCheckFont or ExRT.F.defFont,VMRT.RaidCheck.ReadyCheckFontSize or 12,"")
+		line.name:SetFont(font,fontsize,"")
+		line.mini.name:SetFont(font,fontsize,"")
 
 		for i,key in pairs(RCW_iconsList) do
-			line[key].bigText:SetFont(VMRT.RaidCheck.ReadyCheckFont or ExRT.F.defFont,(VMRT.RaidCheck.ReadyCheckFontSize or 12)-2,"")
+			line[key].bigText:SetFont(font,fontsize-2,"")
 		end
 	end
-	self.title:SetFont(VMRT.RaidCheck.ReadyCheckFont or ExRT.F.defFont,VMRT.RaidCheck.ReadyCheckFontSize or 12,"")
-	self.timeLeftLine.time:SetFont(VMRT.RaidCheck.ReadyCheckFont or ExRT.F.defFont,VMRT.RaidCheck.ReadyCheckFontSize or 12,"")
-	--[[
-	if self.headers then
-		for i=1,#self.headers do
-			self.headers[i]:SetFont(VMRT.RaidCheck.ReadyCheckFont or ExRTFontNormal:GetFont() or ExRT.F.defFont,(VMRT.RaidCheck.ReadyCheckFontSize or 12)-2,"")
-		end
-	end
-	]]
+	self.title:SetFont(font,fontsize,"")
+	self.timeLeftLine.time:SetFont(font,fontsize,"")
+
 end
+--module.frame:Create()
+
+do
+	local scheduledUpdate
+	local function zoneCheck()
+		scheduledUpdate = nil
+		local zoneName, instanceType, difficultyID, _, _, _, _, zoneID = GetInstanceInfo()
+		if instanceType == "raid" then
+			module.frame:Create()
+		end
+	end
+	function module.main:ZONE_CHANGED_NEW_AREA()
+		if module.frame.isCreated then 
+			module:UnregisterEvents('ZONE_CHANGED_NEW_AREA')
+			return
+		end
+		zoneCheck()
+		if not scheduledUpdate then
+			scheduledUpdate = C_Timer.NewTimer(1,zoneCheck)
+		end
+	end
+end
+
 
 do
 	local line = CreateFrame("Frame",nil,module.frame)
@@ -2594,7 +2632,7 @@ function module.frame:UpdateData(onlyLine)
 						end
 
 						buffCount = buffCount + 1
-					elseif auraData.icon == 134062 or auraData.icon == 132805 then
+					elseif auraData.icon == 134062 or auraData.icon == 132805 or auraData.icon == 133950 then
 						line.food.texture:SetTexture(134062)
 						line.food.text:SetText("")
 					elseif auraData.icon == 136000 then
@@ -2883,6 +2921,10 @@ function module.frame:UpdateData(onlyLine)
 							if scrollNum >= 3 then line.scrolls3.texture:SetTexture(RCW_iconsListDebugIcons[3]) line.scrolls3:Show() end
 							if scrollNum >= 4 then line.scrolls4.texture:SetTexture(RCW_iconsListDebugIcons[3]) line.scrolls4:Show() end
 						end
+					else
+						if line.vantus and line.vantus.texture:GetTexture() then
+							line.vantus.text:SetText(math.random(1,8))
+						end
 					end
 
 					local lowFlask = self.testData[line.pos].lowFlask or math.random(1,60)
@@ -2961,63 +3003,58 @@ function module:ReadyCheckWindow(starter,isTest,manual)
 		self.frame:Hide()
 		return
 	end
-	ExRT.F:AddCoroutine(function()
 
-		self.frame:Create()
+	self.frame:Create()
 
-		if InCombatLockdown() then coroutine.yield("sleep",200) end
-	
-		module.db.RaidCheckReadyCheckTime = nil
-	
-		local colsAdd = 0
-		if VMRT.RaidCheck.ReadyCheckSoulstone then
-			colsAdd = bit.bor(colsAdd,0x1)
-		end
-		if (self.frame.colsAdd or -1) ~= colsAdd then
-			self.frame.colsAdd = colsAdd
-			self.frame:UpdateCols()
-		end
-	
-		self.frame.isManual = manual
-	
-		self.frame.isTest = isTest
-		if not self.frame.testData then
-			self.frame.testData = {}
-		else
-			wipe(self.frame.testData)
-		end
-		self.frame:UpdateRoster()
+	module.db.RaidCheckReadyCheckTime = nil
 
-		if InCombatLockdown() then coroutine.yield("sleep",200) end
+	local colsAdd = 0
+	if VMRT.RaidCheck.ReadyCheckSoulstone then
+		colsAdd = bit.bor(colsAdd,0x1)
+	end
+	if (self.frame.colsAdd or -1) ~= colsAdd then
+		self.frame.colsAdd = colsAdd
+		self.frame:UpdateCols()
+	end
 
-		if manual then
-			for i=1,#self.frame.lines do 
-				self.frame.lines[i].rc_status = 4
-			end
-			if UnitLevel'player' >= 50 and not ExRT.isClassic then
-				ExRT.F.SendExMsg("raidcheckreq","REQ\t1")
-			end
+	self.frame.isManual = manual
+
+	self.frame.isTest = isTest
+	if not self.frame.testData then
+		self.frame.testData = {}
+	else
+		wipe(self.frame.testData)
+	end
+	self.frame:UpdateRoster()
+
+	if manual then
+		for i=1,#self.frame.lines do 
+			self.frame.lines[i].rc_status = 4
 		end
-		self.frame:UpdateData()
-	
-		self.frame.headText:SetText("MRT")
-	
+		if UnitLevel'player' >= 50 and not ExRT.isClassic then
+			ExRT.F.SendExMsg("raidcheckreq","REQ\t1")
+		end
+	end
+	self.frame:UpdateData()
+
+	self.frame.headText:SetText("MRT")
+
+	if manual then
 		self.frame.timeLeftLine:Hide()
 	
 		self.frame.mimimize:Hide()
-		self.frame:SetMaximized()
-	
-		if self.frame.hideTimer then
-			self.frame.hideTimer:Cancel()
-		end
-	
-		self.frame.anim:Stop()
-		self.frame:SetAlpha(1)
-		self.frame:Show()
-	
-		self.frame:RegisterEvent("UNIT_AURA")
+	end
+	self.frame:SetMaximized()
+	self.frame.anim:Stop()
+	if self.frame.hideTimer then
+		self.frame.hideTimer:Cancel()
+	end
 
-	end)
+	self.frame:SetAlpha(1)
+	self.frame:Show()
+
+	self.frame:RegisterEvent("UNIT_AURA")
+
 end
 
 function module.main:ADDON_LOADED()
@@ -3064,7 +3101,7 @@ function module.main:ADDON_LOADED()
 		VMRT.RaidCheck.WeaponEnch = {}
 	end
 
-	module:RegisterEvents('READY_CHECK')
+	module:RegisterEvents('READY_CHECK','ZONE_CHANGED_NEW_AREA')
 
 	module:RegisterSlash()
 	module:RegisterAddonMessage()
@@ -3746,7 +3783,7 @@ if (not ExRT.isClassic) and UnitLevel'player' >= 60 then
 				end
 			end
 		elseif not IS_DF then
-			laskCount = GetItemCount(171276,false,false)
+			flaskCount = GetItemCount(171276,false,false)
 			flaskCanCount = GetItemCount(171280,false,false)
 		end
 		if not isFlask and ((flaskCount and flaskCount > 0 and not VMRT.RaidCheck.DisableNotCauldronFlask) or (flaskCanCount and flaskCanCount > 0)) then

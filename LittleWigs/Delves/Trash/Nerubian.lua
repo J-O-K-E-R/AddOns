@@ -18,6 +18,7 @@ mod:RegisterEnableMob(
 	228954, -- Nerubian Marauder
 	216583, -- Chittering Fearmonger
 	208245, -- Skittering Swarmer
+	220148, -- Gem Hoarder
 	216621, -- Nerubian Webspinner
 	219810 -- Nerubian Ritualist
 )
@@ -115,7 +116,7 @@ function mod:OnBossEnable()
 	self:Log("SPELL_CAST_SUCCESS", "WebLaunch", 433448)
 
 	-- also enable the Rares module
-	local raresModule = BigWigs:GetBossModule("Delve Rares", true)
+	local raresModule = BigWigs:GetBossModule("Zekvir Rares", true)
 	if raresModule then
 		raresModule:Enable()
 	end

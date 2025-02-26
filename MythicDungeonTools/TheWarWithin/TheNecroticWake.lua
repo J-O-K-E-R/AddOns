@@ -5,7 +5,9 @@ local dungeonIndex = 35
 MDT.dungeonList[dungeonIndex] = L["The Necrotic Wake"]
 MDT.mapInfo[dungeonIndex] = {
   teleportId = 354462,
-  shortName = L["necroticWakeShortName"]
+  shortName = L["necroticWakeShortName"],
+  englishName = "The Necrotic Wake",
+  mapID = 376
 }
 local zones = { 1533, 1666, 1667, 1668 }
 for _, zone in ipairs(zones) do
@@ -404,8 +406,10 @@ MDT.dungeonEnemies[dungeonIndex] = {
     },
     ["spells"] = {
       [321821] = {
+        ["disease"] = true,
       },
       [335164] = {
+        ["disease"] = true,
       },
       [338022] = {
       },
@@ -681,6 +685,7 @@ MDT.dungeonEnemies[dungeonIndex] = {
       [320696] = {
       },
       [320703] = {
+        ["enrage"] = true,
       },
     },
     ["clones"] = {
@@ -732,6 +737,7 @@ MDT.dungeonEnemies[dungeonIndex] = {
       [322757] = {
       },
       [323347] = {
+        ["magic"] = true,
       },
     },
     ["clones"] = {
@@ -837,6 +843,7 @@ MDT.dungeonEnemies[dungeonIndex] = {
     },
     ["spells"] = {
       [320596] = {
+        ["disease"] = true,
       },
       [320637] = {
       },
@@ -966,6 +973,7 @@ MDT.dungeonEnemies[dungeonIndex] = {
     },
     ["spells"] = {
       [321807] = {
+        ["bleed"] = true,
       },
     },
     ["clones"] = {
@@ -1120,6 +1128,7 @@ MDT.dungeonEnemies[dungeonIndex] = {
       [322493] = {
       },
       [328664] = {
+        ["magic"] = true,
       },
       [328667] = {
         ["interruptible"] = true,
@@ -1248,6 +1257,7 @@ MDT.dungeonEnemies[dungeonIndex] = {
     ["spells"] = {
       [324293] = {
         ["interruptible"] = true,
+        ["magic"] = true,
       },
       [324323] = {
       },
@@ -1425,6 +1435,7 @@ MDT.dungeonEnemies[dungeonIndex] = {
       [327397] = {
       },
       [335141] = {
+        ["magic"] = true,
       },
       [335142] = {
       },
@@ -1527,7 +1538,7 @@ MDT.dungeonEnemies[dungeonIndex] = {
     ["name"] = "Shuffling Corpse",
     ["id"] = 171500,
     ["count"] = 1,
-    ["health"] = 6545484,
+    ["health"] = 7167175,
     ["scale"] = 0.7,
     ["displayId"] = 96132,
     ["creatureType"] = "Undead",
@@ -1622,6 +1633,7 @@ MDT.dungeonEnemies[dungeonIndex] = {
       [319902] = {
       },
       [320012] = {
+        ["enrage"] = true,
       },
       [320171] = {
         ["interruptible"] = true,
@@ -1689,6 +1701,7 @@ MDT.dungeonEnemies[dungeonIndex] = {
       },
       [338353] = {
         ["interruptible"] = true,
+        ["disease"] = true,
       },
     },
     ["clones"] = {
@@ -1979,6 +1992,7 @@ MDT.dungeonEnemies[dungeonIndex] = {
       [320696] = {
       },
       [327155] = {
+        ["enrage"] = true,
       },
       [327240] = {
       },
@@ -2239,7 +2253,7 @@ MDT.dungeonEnemies[dungeonIndex] = {
     ["name"] = "Stitchflesh's Creation",
     ["id"] = 164578,
     ["count"] = 0,
-    ["health"] = 47739204,
+    ["health"] = 39817642,
     ["scale"] = 1.5,
     ["displayId"] = 96218,
     ["creatureType"] = "Undead",
@@ -2276,7 +2290,7 @@ MDT.dungeonEnemies[dungeonIndex] = {
     ["name"] = "Surgeon Stitchflesh",
     ["id"] = 162689,
     ["count"] = 0,
-    ["health"] = 85930569,
+    ["health"] = 68798844,
     ["scale"] = 1.5,
     ["displayId"] = 96477,
     ["creatureType"] = "Humanoid",
@@ -2290,6 +2304,7 @@ MDT.dungeonEnemies[dungeonIndex] = {
     },
     ["spells"] = {
       [320200] = {
+        ["bleed"] = true,
       },
       [320358] = {
       },
@@ -2348,6 +2363,7 @@ MDT.dungeonEnemies[dungeonIndex] = {
       [320784] = {
       },
       [320788] = {
+        ["magic"] = true,
       },
       [321754] = {
       },
@@ -2358,6 +2374,7 @@ MDT.dungeonEnemies[dungeonIndex] = {
       [321956] = {
       },
       [323730] = {
+        ["magic"] = true,
       },
     },
     ["clones"] = {

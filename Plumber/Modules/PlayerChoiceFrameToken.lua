@@ -11,15 +11,17 @@ local PlayerChoiceXCurrency = {
     --[choiceID] = {type, id}     --type: 0(currency) 1(item)
     [832] = {1, 220520},    --Radian Echo, Worldsoul Memory: The Worldcarvers
     [838] = {1, 212493},    --
+    [841] = {0, 3090},      --Flame-Blessed Iron (Siren Isle Command Map)
 };
 
 do  --Radian Echo
-    local RadianEcho = {1, 220520};
     local target = PlayerChoiceXCurrency[832];
     PlayerChoiceXCurrency[827] = target;    --Worldsoul Memory: Primal Predators
     PlayerChoiceXCurrency[829] = target;    --Worldsoul Memory: A Wounded Soul
     PlayerChoiceXCurrency[830] = target;    --Worldsoul Memory: Old Gods Forsaken
     PlayerChoiceXCurrency[831] = target;    --Worldsoul Memory: Ancient Explorers
+    PlayerChoiceXCurrency[831] = target;    --Worldsoul Memory: Ancient Explorers
+    PlayerChoiceXCurrency[854] = target;    --Worldsoul Memory: Early Cartel Wars
 end
 
 
@@ -52,7 +54,7 @@ local function UpdateChoiceCurrency()
 
     local choiceID = f.choiceInfo.choiceID;
     local itemType, tokenInfo;
-
+    --print(choiceID)   --debug
     if PlayerChoiceXCurrency[choiceID] then
         itemType = 0;
         tokenInfo = PlayerChoiceXCurrency[choiceID];
@@ -63,7 +65,6 @@ local function UpdateChoiceCurrency()
             tokenInfo = GUIDXCurrency[creatureID];
         end
     end
-    
 
     if tokenInfo then
         if not TokenDisplay then

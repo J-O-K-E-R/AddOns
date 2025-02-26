@@ -1,9 +1,14 @@
-**r737:**
+**r739:**
 
 Additions:
-> Added tracking for Writhing Transmutagen (Khaz Algar Thaumaturgy)
-<br>Added tracking for TWW achievement rares
+> Added Siren Isle collectibles to the database
+
+Changes:
+> Rarity now uses kill statistics for Queen Ansurek (Reins of the Sureki Skyrazor)
 
 Fixes:
-> Fixed an issue that would prevent attempts from being registered for Sureki Skyrazor
-<br>Dracthyr Evokers should no longer see attempts for Fandral's Seed Pouch and Skull of Corruption
+> Recorded times should once again be displayed correctly in the main window
+
+Contributors (in alphabetical order):
+> Protuhj
+<br>Ellezanor

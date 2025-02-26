@@ -41,6 +41,7 @@ app.CreateArtifact = app.CreateClass(CLASSNAME, KEY, {
 		return info;
 	end,
 	f = function(t) return 11; end,
+	RefreshCollectionOnly = true,
 	collectible = function(t) return app.Settings.Collectibles[SETTING]; end,
 	collected = function(t)
 		return app.TypicalCharacterCollected(CACHE, t[KEY], SETTING)
@@ -61,7 +62,12 @@ app.CreateArtifact = app.CreateClass(CLASSNAME, KEY, {
 	variantText = function(t)
 		local info = t.artifactinfo
 		if not info[4] then return UNKNOWN end
-		local text = ColorizeRGB("Variant " .. info[4], info[9], info[10], info[11]);
+		local text
+		if info[9] > 0 and info[10] > 0 and info[11] > 0 then
+			text = ColorizeRGB("Variant " .. info[4], info[9], info[10], info[11]);
+		else
+			text = ColorizeRGB("Variant " .. info[4], 1, 1, 1); -- Change from black to white, so it's readable
+		end
 		t.variantText = text;
 		return text;
 	end,

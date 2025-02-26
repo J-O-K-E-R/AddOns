@@ -19,7 +19,7 @@ local GetNumLootItems = GetNumLootItems;
 local IsFishingLoot = IsFishingLoot;
 
 local GetMoney = GetMoney;
-local GetItemReagentQualityByItemInfo = C_TradeSkillUI.GetItemReagentQualityByItemInfo;
+local GetItemReagentQualityByItemInfo = C_TradeSkillUI.GetItemReagentQualityByItemInfo or API.Nop;
 local GetItemInfoInstant = C_Item.GetItemInfoInstant;
 local GetItemInfo = C_Item.GetItemInfo;
 local IsModifiedClick = IsModifiedClick;
@@ -39,13 +39,15 @@ local GetReputationChangeFromText = API.GetReputationChangeFromText;
 
 
 local MAX_ITEM_PER_PAGE = 5;
-local EVENT_DURATION = 1.5;     --Unregister ChatMSG x seconds after LOOT_CLOSED
-local AUTO_HIDE_DELAY = 3.0;    --Determined by the number of items. From 2.0s to 3.0s
+local EVENT_DURATION = 1.5;         --Unregister ChatMSG x seconds after LOOT_CLOSED
+local AUTO_HIDE_DELAY = 3.0;        --Determined by the number of items. From 2.0s to 3.0s
+local BG_OPACITY = 0.5;             --Base Alpha: 0.9 (This parameter doesn't affect Manual Mode due to readability concern) / Opacity
 
 
 local EL = CreateFrame("Frame");
 
 local ENABLE_MODULE = false;
+local IS_CLASSIC = not addon.IsToCVersionEqualOrNewerThan(110000);
 
 
 -- User Settings
@@ -143,6 +145,23 @@ local function MergeData(d1, d2)
 end
 
 do  --Process Loot Message
+    function EL:IsMessageSenderPlayer_Retail(text, playerName, languageName, channelName, playerName2, specialFlags, zoneChannelID, channelIndex, channelBaseName, languageID, lineID, guid)
+        return guid == self.playerGUID
+    end
+    EL.IsMessageSenderPlayer = EL.IsMessageSenderPlayer_Retail;
+
+    function EL:IsMessageSenderPlayer_Classic(text, _, _, _, playerName)
+        --Payloads are different on Classic!
+        if not self.playerName then
+            self.playerName = UnitName("player");
+        end
+        return playerName == self.playerName
+    end
+
+    if IS_CLASSIC then
+        EL.IsMessageSenderPlayer = EL.IsMessageSenderPlayer_Classic;
+    end
+
     function EL:ProcessMessageItem(text)
         --Do we need to use the whole itemlink?
         local itemID = match(text, "item:(%d+)", 1);
@@ -223,9 +242,14 @@ do  --Event Handler
         --"TRANSMOG_COLLECTION_SOURCE_ADDED",
     };
 
-    local ALERT_SYSTEM_EVENTS = {
-        "SHOW_LOOT_TOAST",
-    }
+    local ALERT_SYSTEM_EVENTS;
+    if IS_CLASSIC then
+        ALERT_SYSTEM_EVENTS = {};
+    else
+        ALERT_SYSTEM_EVENTS = {
+            "SHOW_LOOT_TOAST",
+        };
+    end
 
     function EL:ListenStaticEvent(state)
         if state then
@@ -270,10 +294,10 @@ do  --Event Handler
 
     local function BuildSlotData(slotIndex)
         local _, slotType, craftQuality, id, itemOverflow, classID, subclassID, questType, hideCount;
-        local icon, name, quantity, currencyID, quality, locked, isQuestItem, questID, isActive, isCoin = GetLootSlotInfo(slotIndex);
+        local icon, name, quantity, currencyID, quality, locked, isQuestItem, questID, isActive, isCoin = GetLootSlotInfo(slotIndex);   --the last 3 args are not presented in Classic/Cata
         local link = GetLootSlotLink(slotIndex);
         slotType = GetLootSlotType(slotIndex) or 0;
-
+        isCoin = isCoin or slotType == 2;
         if isCoin then --Enum.LootSlotType.Money
             slotType = Defination.SLOT_TYPE_MONEY;  --Sort money to top
         else
@@ -395,6 +419,7 @@ do  --Event Handler
 
         self:ListenDynamicEvents(true);
         self:RegisterEvent("UI_ERROR_MESSAGE");
+        self:RegisterEvent("LOOT_BIND_CONFIRM");
         self:RegisterEvent("LOOT_SLOT_CHANGED");
         self:RegisterEvent("LOOT_SLOT_CLEARED");
         if acquiredFromItem then
@@ -437,6 +462,7 @@ do  --Event Handler
         end
         MainFrame.errorMode = nil;
         self:UnregisterEvent("UI_ERROR_MESSAGE");
+        self:UnregisterEvent("LOOT_BIND_CONFIRM");
         self:UnregisterEvent("LOOT_SLOT_CHANGED");
         self:UnregisterEvent("LOOT_SLOT_CLEARED");
     end
@@ -631,7 +657,7 @@ do  --Event Handler
             self:OnLootClosed();
         elseif event == "UI_SCALE_CHANGED" or event == "DISPLAY_SIZE_CHANGED" then
             MainFrame:OnUIScaleChanged();
-        elseif event == "UI_ERROR_MESSAGE" then
+        elseif event == "UI_ERROR_MESSAGE" or event == "LOOT_BIND_CONFIRM" then
             --ERR_INV_FULL, ERR_LOOT_CANT_LOOT_THAT, ERR_LOOT_CANT_LOOT_THAT_NOW, ERR_LOOT_ROLL_PENDING
             if self.lootOpened then
                 local errorType, message = ...
@@ -643,9 +669,8 @@ do  --Event Handler
             --This is the most robust way to determine what's been looted.
             --Less responsive and more costly
             if self.currentLoots then
-                local guid = select(12, ...);
                 if event == "CHAT_MSG_LOOT" then
-                    if guid == self.playerGUID then
+                    if self:IsMessageSenderPlayer(...) then
                         self:ProcessMessageItem(...);
                     end
                 elseif event == "CHAT_MSG_CURRENCY" then    --guid is nil. Appear later than other chat events (~0.8s delay)
@@ -880,6 +905,7 @@ do  --UI Notification Mode
 
                 if foundIndex then
                     tremove(self.lootQueue, dataIndex);
+                    numQueued = numQueued - 1;
                 else
                     dataIndex = dataIndex + 1;
                 end
@@ -979,7 +1005,7 @@ do  --UI Notification Mode
             self:TryHide(true);
         end
 
-        self:RegisterEvent("GLOBAL_MOUSE_DOWN");
+        self:RegisterEvent("GLOBAL_MOUSE_UP");
     end
 
     function MainFrame:DisplayOverflowCurrencies()
@@ -1029,15 +1055,17 @@ do  --UI Manually Pickup Mode
         state = state == true;
         if state or self.manualMode then
             self:ReleaseAll();
+            self:StopQueue();
+        elseif (not state) and self.manualMode then
+            self:ReleaseAll();
         end
         self.manualMode = state;
         self:HighlightItemFrame(nil);
         if state then
             self.Header:Hide();
             self.TakeAllButton:Show();
-            self.BackgroundFrame:SetBackgroundAlpha(0.90);
+            self:SetBackgroundAlpha(1);
             self.isFocused = false;
-
             if LOOT_UNDER_MOUSE then
                 self:PositionUnderMouse();
             end
@@ -1046,8 +1074,7 @@ do  --UI Manually Pickup Mode
         else
             self.Header:Show();
             self.TakeAllButton:Hide();
-            self.BackgroundFrame:SetBackgroundAlpha(0.50);
-
+            self:SetBackgroundAlpha(BG_OPACITY);
             if LOOT_UNDER_MOUSE then
                 self:LoadPosition();
             end
@@ -1084,7 +1111,7 @@ do  --UI Manually Pickup Mode
 
         self:SetScript("OnUpdate", OnUpdate_FadeIn);
         self:Show();
-        self:UnregisterEvent("GLOBAL_MOUSE_DOWN");
+        self:RegisterEvent("GLOBAL_MOUSE_UP");
     end
 
     function MainFrame:ClosePendingLoot()
@@ -1268,14 +1295,20 @@ do  --UI Manually Pickup Mode
 
         self:SetScript("OnUpdate", OnUpdate_FadeIn_ThenHideLootedFrames);
         self:Show();
-        self:UnregisterEvent("GLOBAL_MOUSE_DOWN");
+        self:RegisterEvent("GLOBAL_MOUSE_UP");
     end
 end
 
 
 do  --Edit Mode
-    local L = addon.L;
     local SHOW_ITEM_COUNT = false;
+
+    local SAMPLE_ITEMS = {
+        {icon = IS_CLASSIC and 135331 or 4622270, name = L["Sample Item 4"], quality = 4, quantity = 1, owned = 99},
+        {icon = IS_CLASSIC and 135578 or 463446, name = L["Sample Item 3"], quality = 3, quantity = 20, owned = 99},
+        {icon = IS_CLASSIC and 134010 or 4549280, name = L["Sample Item 2"], quality = 2, quantity = 100, owned = 99},
+        {icon = IS_CLASSIC and 133980 or 2967113, name = L["Sample Item 1"], quality = 1, quantity = 50, owned = 99},
+    };
 
     function MainFrame:ShowSampleItems()
         if self.timerFrame then
@@ -1285,17 +1318,10 @@ do  --Edit Mode
         self:ReleaseAll();
         self:SetScript("OnUpdate", nil);
 
-        local sampleItems = {
-            {icon = 4622270, name = L["Sample Item 4"], quality = 4, quantity = 1, owned = 99},
-            {icon = 463446, name = L["Sample Item 3"], quality = 3, quantity = 20, owned = 99},
-            {icon = 4549280, name = L["Sample Item 2"], quality = 2, quantity = 100, owned = 99},
-            {icon = 2967113, name = L["Sample Item 1"], quality = 1, quantity = 50, owned = 99},
-        };
-
         local itemFrame;
         local activeFrames = {};
 
-        for i, data in ipairs(sampleItems) do
+        for i, data in ipairs(SAMPLE_ITEMS) do
             itemFrame = self:AcquireItemFrame();
             activeFrames[i] = itemFrame;
             itemFrame:SetNameByQuality(data.name, data.quality);
@@ -1316,6 +1342,7 @@ do  --Edit Mode
         self:LayoutActiveFrames();
         self:Show();
         self:SetAlpha(1);
+        self:SetBackgroundAlpha(BG_OPACITY);
 
         self.manualMode = nil;
         self.Header:Hide();
@@ -1340,8 +1367,10 @@ do  --Edit Mode
             self.Selection = addon.CreateEditModeSelection(self, uiName, hideLabel);
         end
         self.Selection:ShowHighlighted();
+        self.Selection:SetAlpha(1);
 
         self:LoadPosition();
+        self:UnregisterEvent("GLOBAL_MOUSE_UP");
     end
 
     function MainFrame:ExitEditMode()
@@ -1354,6 +1383,8 @@ do  --Edit Mode
         self.inEditMode = nil;
         self:Disable();
         self:SetAlpha(0);
+        self:Hide();
+
         self.TakeAllButton:Enable();
 
         if self.Selection then
@@ -1375,14 +1406,8 @@ do  --Edit Mode
         end);
     end
 
-    local function Options_FontSizeSlider_FormatValue(value)
-        return string.format("%.0f", value);
-    end
-
     local function GetValidFadeOutDelay(value)
-        if not value then
-            value = 0.25;
-        end
+        value = value or 0.25;
         return API.Clamp(value, 0.25, 1.0);
     end
 
@@ -1392,8 +1417,38 @@ do  --Edit Mode
         FADE_DELAY_PER_ITEM = value;
     end
 
-    local function Options_FadeOutDelaySlider_FormatValue(value)
-        return string.format("%.2f", value);
+    local function GetValidItemsPerPage(value)
+        value = math.floor(value or 5);
+        value = API.Clamp(value, 5, 8);
+        return value
+    end
+
+    local function Options_ItemsPerPageSlider_OnValueChanged(value)
+        value = GetValidItemsPerPage(value);
+        PlumberDB.LootUI_ItemsPerPage = value;
+        MAX_ITEM_PER_PAGE = value;
+    end
+
+    local function Options_OpacitySlider_OnValueChanged(value)
+        value = API.Clamp(value, 0, 1);
+        if value < 0.01 then
+            value = 0;
+        end
+        BG_OPACITY = value;
+        PlumberDB.LootUI_BackgroundAlpha = value;
+        MainFrame:SetBackgroundAlpha(BG_OPACITY);
+    end
+
+    local function Options_OpacitySlider_OnMouseDown()
+        if MainFrame.Selection then
+            MainFrame.Selection:SetAlpha(0);
+        end
+    end
+
+    local function Options_OpacitySlider_OnMouseUp(slider)
+        if MainFrame.Selection and (not slider:IsMouseMotionFocus()) then
+            MainFrame.Selection:SetAlpha(1);
+        end
     end
 
     local function Options_ForceAutoLoot_OnClick(self, state)
@@ -1433,18 +1488,30 @@ do  --Edit Mode
         return L["Manual Loot Instruction Format"]:format(key)
     end
 
+    local function Validation_TransmogInvented()
+        return addon.IsToCVersionEqualOrNewerThan(40000)
+    end
+
+    local function Validation_IsRetail()
+        return addon.IsToCVersionEqualOrNewerThan(110000)
+    end
+
     local OPTIONS_SCHEMATIC = {
         title = L["EditMode LootUI"],
         widgets = {
-            {type = "Slider", label = L["Font Size"], minValue = 12, maxValue = 16, valueStep = 2, onValueChangedFunc = Options_FontSizeSlider_OnValueChanged, formatValueFunc = Options_FontSizeSlider_FormatValue,  dbKey = "LootUI_FontSize"},
-            {type = "Slider", label = L["LootUI Option Fade Delay"], minValue = 0.25, maxValue = 1.0, valueStep = 0.25, onValueChangedFunc = Options_FadeOutDelaySlider_OnValueChanged, formatValueFunc = Options_FadeOutDelaySlider_FormatValue,  dbKey = "LootUI_FadeDelayPerItem"},
+            {type = "Slider", label = L["Font Size"], minValue = 10, maxValue = 16, valueStep = 2, onValueChangedFunc = Options_FontSizeSlider_OnValueChanged, formatValueMethod = "Decimal1", dbKey = "LootUI_FontSize"},
+            {type = "Slider", label = L["LootUI Option Fade Delay"], minValue = 0.25, maxValue = 1.0, valueStep = 0.25, onValueChangedFunc = Options_FadeOutDelaySlider_OnValueChanged, formatValueMethod = "Decimal2", dbKey = "LootUI_FadeDelayPerItem"},
+            {type = "Slider", label = L["LootUI Option Items Per Page"], minValue = 5, maxValue = 8, valueStep = 1, onValueChangedFunc = Options_ItemsPerPageSlider_OnValueChanged, dbKey = "LootUI_ItemsPerPage", tooltip = L["LootUI Option Items Per Page Tooltip"]},
+            {type = "Slider", label = L["LootUI Option Background Opacity"], minValue = 0.0, maxValue = 1.0, valueStep = 0.1, onValueChangedFunc = Options_OpacitySlider_OnValueChanged,
+                formatValueMethod = "Percentage", dbKey = "LootUI_BackgroundAlpha", tooltip = L["LootUI Option Background Opacity Tooltip"],
+                onMouseDownFunc = Options_OpacitySlider_OnMouseDown, onMouseUpFunc = Options_OpacitySlider_OnMouseUp, onEnterFunc = Options_OpacitySlider_OnMouseDown, onLeaveFunc = Options_OpacitySlider_OnMouseUp},
             {type = "Checkbox", label = L["LootUI Option Owned Count"], onClickFunc = nil, dbKey = "LootUI_ShowItemCount"},
-            {type = "Checkbox", label = L["LootUI Option New Transmog"], onClickFunc = nil, dbKey = "LootUI_NewTransmogIcon", tooltip = L["LootUI Option New Transmog Tooltip"]:format("|TInterface/AddOns/Plumber/Art/LootUI/NewTransmogIcon:0:0|t")},
+            {type = "Checkbox", label = L["LootUI Option New Transmog"], onClickFunc = nil, dbKey = "LootUI_NewTransmogIcon", tooltip = L["LootUI Option New Transmog Tooltip"]:format("|TInterface/AddOns/Plumber/Art/LootUI/NewTransmogIcon:0:0|t"), validityCheckFunc = Validation_TransmogInvented},
 
             {type = "Divider"},
             {type = "Checkbox", label = L["LootUI Option Force Auto Loot"], onClickFunc = Options_ForceAutoLoot_OnClick, validityCheckFunc = Options_ForceAutoLoot_ValidityCheck, dbKey = "LootUI_ForceAutoLoot", tooltip = L["LootUI Option Force Auto Loot Tooltip"], tooltip2 = Tooltip_ManualLootInstruction},
             {type = "Checkbox", label = L["LootUI Option Loot Under Mouse"], onClickFunc = nil, dbKey = "LootUI_LootUnderMouse", tooltip = L["LootUI Option Loot Under Mouse Tooltip"]},
-            {type = "Checkbox", label = L["LootUI Option Replace Default"], onClickFunc = nil, dbKey = "LootUI_ReplaceDefaultAlert", tooltip = L["LootUI Option Replace Default Tooltip"]},
+            {type = "Checkbox", label = L["LootUI Option Replace Default"], onClickFunc = nil, dbKey = "LootUI_ReplaceDefaultAlert", tooltip = L["LootUI Option Replace Default Tooltip"], validityCheckFunc = Validation_IsRetail},
             {type = "Checkbox", label = L["LootUI Option Use Hotkey"], onClickFunc = Options_UseHotkey_OnClick, dbKey = "LootUI_UseHotkey", tooltip = L["LootUI Option Use Hotkey Tooltip"]},
             {type = "Keybind", label = L["Take All"], dbKey = "LootUI_HotkeyName", tooltip = L["LootUI Option Use Hotkey Tooltip"], defaultKey = "E"},
 
@@ -1523,6 +1590,16 @@ do  --Edit Mode
         AUTO_HIDE_DELAY = GetValidFadeOutDelay(value);
     end
     addon.CallbackRegistry:RegisterSettingCallback("LootUI_FadeDelayPerItem", SettingChanged_FadeDelayPerItem);
+
+    local function SettingChanged_ItemsPerPage(value, userInput)
+        MAX_ITEM_PER_PAGE = GetValidItemsPerPage(value);
+    end
+    addon.CallbackRegistry:RegisterSettingCallback("LootUI_ItemsPerPage", SettingChanged_ItemsPerPage);
+
+    local function SettingChanged_BackgroundAlpha(value, userInput)
+        Options_OpacitySlider_OnValueChanged(value or 0.5);
+    end
+    addon.CallbackRegistry:RegisterSettingCallback("LootUI_BackgroundAlpha", SettingChanged_BackgroundAlpha);
 
     local function SettingChanged_ReplaceDefaultAlert(state, userInput)
         REPLACE_LOOT_ALERT = state;
@@ -1639,7 +1716,7 @@ do
 
 
     local function OptionToggle_OnClick(self, button)
-        if MainFrame.OptionFrame and MainFrame.OptionFrame:IsShown() then
+        if MainFrame.OptionFrame and MainFrame.OptionFrame:IsShown() and (MainFrame.OptionFrame:IsOwner(self) or MainFrame.OptionFrame:IsOwner(MainFrame)) then
             MainFrame:ShowOptions(false);
             MainFrame:ExitEditMode();
         else

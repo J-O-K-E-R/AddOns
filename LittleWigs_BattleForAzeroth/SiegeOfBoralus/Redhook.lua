@@ -12,10 +12,11 @@ mod:SetRespawnTime(30)
 -- Locals
 --
 
+local bossCollector = {}
 local callIrontideCount = 1
 --local ordnanceRemaining = 0
 local ordnanceCollector = {}
-local ordnanceExplosionTime = 0
+--local ordnanceExplosionTime = 0
 
 --------------------------------------------------------------------------------
 -- Localization
@@ -68,19 +69,50 @@ function mod:OnBossEnable()
 
 	-- Irontide Cleaver
 	self:Log("SPELL_CAST_START", "HeavySlash", 257288)
+	self:Death("IrontideCleaverDeath", 129879, 129996) -- initial spawn, boss summon
 end
 
 function mod:OnEngage()
+	bossCollector = {}
 	callIrontideCount = 1
 	--ordnanceRemaining = 0
 	ordnanceCollector = {}
-	ordnanceExplosionTime = 0
+	--ordnanceExplosionTime = 0
 	self:CDBar(257585, 11.1) -- Cannon Barrage
+	local _, guid = self:GetBossId(129879) -- Irontide Cleaver
+	if guid then
+		bossCollector[guid] = true
+		self:Nameplate(257288, 6.2, guid) -- Heavy Slash
+	end
+	self:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT")
+end
+
+function mod:OnWin()
+	local trashMod = BigWigs:GetBossModule("Siege of Boralus Trash", true)
+	if trashMod then
+		trashMod:Enable()
+		trashMod:FirstBossDefeated()
+	end
 end
 
 --------------------------------------------------------------------------------
 -- Event Handlers
 --
+
+function mod:INSTANCE_ENCOUNTER_ENGAGE_UNIT(event)
+	for i = 1, 5 do
+		local guid = self:UnitGUID(("boss%d"):format(i))
+		if guid and not bossCollector[guid] then
+			bossCollector[guid] = true
+			local mobId = self:MobId(guid)
+			if mobId == 129879 then -- Irontide Cleaver (initial spawn)
+				self:Nameplate(257288, 6.2, guid) -- Heavy Slash
+			elseif mobId == 129996 then -- Irontide Cleaver (boss summon)
+				self:Nameplate(257288, 3.6, guid) -- Heavy Slash
+			end
+		end
+	end
+end
 
 function mod:CallIrontide(args)
 	if callIrontideCount <= 3 then -- ignore any additional casts
@@ -154,7 +186,7 @@ function mod:UNIT_SPELLCAST_SUCCEEDED(_, _, _, spellId)
 	if spellId == 257540 then -- Cannon Barrage
 		--ordnanceRemaining = 3 -- was 3, 3, 4, 6, 5, 7, 6, 3...
 		ordnanceCollector = {}
-		ordnanceExplosionTime = GetTime() + 52.5
+		--ordnanceExplosionTime = GetTime() + 52.5
 		self:Message(257585, "orange")
 		self:CDBar(257585, 60.7)
 		--self:Bar(273721, 52.5, CL.count:format(self:SpellName(273721), ordnanceRemaining)) -- Heavy Ordnance
@@ -176,7 +208,11 @@ do
 				--self:Bar(273721, ordnanceTimeLeft, CL.count:format(args.spellName, ordnanceRemaining))
 			--end
 			--self:Message(273721, "orange", CL.extra:format(CL.on:format(args.spellName, args.destName), CL.remaining:format(ordnanceRemaining)))
-			self:Message(273721, "orange", CL.on:format(args.spellName, args.destName))
+			if self:Player(args.destFlags) then
+				self:TargetMessage(273721, "orange", args.destName)
+			else
+				self:Message(273721, "orange", CL.on:format(args.spellName, args.destName))
+			end
 			if args.time - prevSound > 1.5 then
 				prevSound = args.time
 				self:PlaySound(273721, "info")
@@ -216,4 +252,8 @@ do
 			end
 		end
 	end
+end
+
+function mod:IrontideCleaverDeath(args)
+	self:ClearNameplate(args.destGUID)
 end

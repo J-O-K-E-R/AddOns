@@ -47,9 +47,9 @@ end
 -- Common function set as the OnClick for a group which will build itself a 'nested' version of the
 -- content which matches the specified .dynamic 'field' and .dynamic_value of the group
 local DynamicCategory_Nested = function(self)
-	-- app.PrintDebug("DC:N",self.dynamic,self.dynamic_value,self.dynamic_withsubgroups)
+	-- app.PrintDebug("DC:N",self.dynamic,self.dynamic_value,self.dynamic_withsubgroups,self.dynamic_searchcriteria)
 	-- pull out all Things which should go into this category based on field & value
-	local groups = app:BuildSearchResponse(self.dynamic, self.dynamic_value, not self.dynamic_withsubgroups);
+	local groups = app:BuildSearchResponse(self.dynamic, self.dynamic_value, {g=not self.dynamic_withsubgroups}, self.dynamic_searchcriteria);
 	NestObjects(self, groups);
 	-- reset indents and such
 	AssignChildren(self);
@@ -303,7 +303,7 @@ local VisualHeaderFields = {
 	text = BaseClass__class.text,
 }
 local CreateVisualHeader, CreateVisualHeader__class
-CreateVisualHeader, CreateVisualHeader__class = app.CreateClass("VisualHeader", "noKey", VisualHeaderFields);
+CreateVisualHeader, CreateVisualHeader__class = app.CreateClass("VisualHeader", "noKey-VisualHeader", VisualHeaderFields);
 app.CreateVisualHeader = CreateVisualHeader
 local Wrap = app.WrapObject;
 app.CreateVisualHeaderWithGroups = function(base, groups)
@@ -365,6 +365,23 @@ for _,field in ipairs({
 	"isYearly",
 	"repeatable",
 	"requireSkill",
+	"sym",
 }) do
 	CreateVisualHeader__class[field] = Empty
+end
+
+local CreateNonCollectible, CreateNonCollectible__class = app.CreateClass("NonCollectible", "noKey-nonCollectible", {
+	-- back = function(t)
+	-- 	return 0.3;	-- visibility of which rows are cloned
+	-- end,
+	collectible = app.EmptyFunction,
+});
+-- manually remove the 'key' field since it isn't in BaseClass
+CreateNonCollectible__class.__class.key = nil
+app.CreateNonCollectibleWithGroups = function(base, groups)
+	if groups and #groups > 0 then
+		return Wrap(CreateNonCollectible(nil, {g=groups}), base)
+	else
+		return Wrap(CreateNonCollectible(), base)
+	end
 end

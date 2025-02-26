@@ -80,6 +80,21 @@ P.general = {
 		talkingtitle = { enable = false, font = 'Expressway', size = 20, outline = 'SHADOW' },
 		talkingtext = { enable = false, font = 'Expressway', size = 18, outline = 'SHADOW' }
 	},
+	classColors = {
+		HUNTER = { b = 0.44, g = 0.82, r = 0.66 },
+		WARRIOR = { b = 0.42, g = 0.60, r = 0.77 },
+		ROGUE = { b = 0.40, g = 0.95, r = 1 },
+		MAGE = { b = 0.92, g = 0.78, r = 0.24 },
+		PRIEST = { b = 1, g = 1, r = 1 },
+		EVOKER = { b = 0.49, g = 0.57, r = 0.20 },
+		SHAMAN = { b = 0.86, g = 0.43, r = 0 },
+		WARLOCK = { b = 0.93, g = 0.53, r = 0.52 },
+		DEMONHUNTER = { b = 0.78, g = 0.18, r = 0.63 },
+		DEATHKNIGHT = { b = 0.22, g = 0.11, r = 0.76 },
+		DRUID = { b = 0.03, g = 0.48, r = 1 },
+		MONK = { b = 0.59, g = 1, r = 0 },
+		PALADIN = { b = 0.72, g = 0.54, r = 0.95 }
+	},
 	debuffColors = { -- handle colors of LibDispel
 		none = { r = 0.8, g = 0, b = 0 },
 		Magic = { r = 0.2, g = 0.6, b = 1 },
@@ -88,9 +103,9 @@ P.general = {
 		Poison = { r = 0, g = 0.6, b = 0 },
 
 		-- These dont exist in Blizzards color table
+		Bleed = { r = 1, g = 0.2, b = 0.6 },
 		EnemyNPC = { r = 0.9, g = 0.1, b = 0.1 },
 		BadDispel = { r = 0.05, g = 0.85, b = 0.94 },
-		Bleed = { r = 1, g = 0.2, b = 0.6 },
 		Stealable = { r = 0.93, g = 0.91, b = 0.55 },
 	},
 	bordercolor = { r = 0, g = 0, b = 0 }, -- updated in E.Initialize
@@ -555,9 +570,10 @@ local NP_Auras = {
 
 local NP_Health = {
 	enable = true,
-	healPrediction = true,
 	height = 10,
+	healPrediction = true,
 	useClassColor = true,
+	smoothbars = false,
 	text = {
 		enable = true,
 		format = '[health:percent]',
@@ -573,6 +589,7 @@ local NP_Health = {
 
 local NP_Power = {
 	enable = false,
+	smoothbars = false,
 	useClassColor = false,
 	hideWhenEmpty = false,
 	costPrediction = true,
@@ -662,6 +679,7 @@ local NP_Castbar = {
 	displayTarget = false,
 	hideSpellName = false,
 	hideTime = false,
+	smoothbars = false,
 	spellRename = true,
 	sourceInterrupt = true,
 	sourceInterruptClassColor = true,
@@ -744,7 +762,6 @@ P.nameplates = {
 	overlapV = 1.1,
 	showEnemyCombat = 'DISABLED',
 	showFriendlyCombat = 'DISABLED',
-	smoothbars = false,
 	statusbar = 'ElvUI Norm',
 	thinBorders = true,
 	clickThrough = {
@@ -926,6 +943,38 @@ P.nameplates = {
 			totems = false,
 		},
 	},
+	enviromentConditions = {
+		enemyEnabled = false,
+		enemy = {
+			party = true,
+			raid = true,
+			arena = true,
+			pvp = true,
+			resting = true,
+			world = true,
+			scenario = true,
+		},
+		friendlyEnabled = false,
+		friendly = {
+			party = false,
+			raid = false,
+			arena = true,
+			pvp = false,
+			resting = true,
+			world = true,
+			scenario = true,
+		},
+		stackingEnabled = false,
+		stackingNameplates = {
+			party = true,
+			raid = true,
+			arena = true,
+			pvp = true,
+			resting = false,
+			world = true,
+			scenario = true,
+		},
+	},
 	cutaway = {
 		health = {
 			enabled = false,
@@ -1097,6 +1146,7 @@ local TopAuras = {
 	sortMethod = 'TIME',
 	verticalSpacing = 16,
 	wrapAfter = 12,
+	smoothbars = false,
 }
 
 --Auras
@@ -1275,7 +1325,6 @@ P.tooltip = {
 	playerTitles = true,
 	guildRanks = true,
 	itemQuality = false,
-	itemCount = 'BAGS_ONLY',
 	includeReagents = true,
 	includeWarband = true,
 	modifierCount = true,
@@ -1292,6 +1341,11 @@ P.tooltip = {
 	smallTextFontSize = 12,
 	colorAlpha = 0.8,
 	fadeOut = true,
+	itemCount = {
+		bags = true,
+		bank = false,
+		stack = false
+	},
 	visibility = {
 		bags = 'SHOW',
 		unitFrames = 'SHOW',
@@ -1363,10 +1417,10 @@ local UF_DebuffHighlight = {
 }
 
 local UF_AuraBars = {
+	enable = true,
 	anchorPoint = 'ABOVE',
 	attachTo = 'DEBUFFS',
 	detachedWidth = 270,
-	enable = true,
 	enemyAuraType = 'HARMFUL',
 	friendlyAuraType = 'HELPFUL',
 	height = 20,
@@ -1381,6 +1435,7 @@ local UF_AuraBars = {
 	clickThrough = false,
 	reverseFill = false,
 	abbrevName = false,
+	smoothbars = false,
 }
 
 local UF_AuraWatch = {
@@ -1433,6 +1488,7 @@ local UF_Castbar = {
 	insideInfoPanel = true,
 	overlayOnFrame = 'None',
 	displayTarget = false,
+	smoothbars = false,
 	reverse = false,
 	spark = true,
 	textColor = {r = 0.84, g = 0.75, b = 0.65, a = 1},
@@ -1479,6 +1535,7 @@ local UF_Health = {
 	orientation = 'HORIZONTAL',
 	position = 'RIGHT',
 	reverseFill = false,
+	smoothbars = false,
 	text_format = '',
 	xOffset = -2,
 	yOffset = 0,
@@ -1585,6 +1642,7 @@ local UF_Power = {
 	width = 'fill',
 	xOffset = 2,
 	yOffset = 0,
+	smoothbars = false,
 	displayAltPower = false,
 	strataAndLevel = CopyTable(UF_StrataAndLevel),
 	useAtlas = false,
@@ -1712,6 +1770,7 @@ local UF_ClassBar = {
 	fill = 'fill',
 	height = 10,
 	autoHide = false,
+	smoothbars = false,
 	sortDirection = 'asc',
 	altPowerColor = { r = 0.2, g = 0.4, b = 0.8 },
 	altPowerTextFormat = E.Retail and '[altpower:current]' or '',
@@ -1732,7 +1791,6 @@ UF_PrivateAuras.duration.enable = false
 
 --UnitFrame
 P.unitframe = {
-	smoothbars = false,
 	statusbar = 'ElvUI Norm',
 	font = 'Homespun',
 	fontSize = 10,
@@ -1757,12 +1815,19 @@ P.unitframe = {
 		healthclass = false,
 		healthBreak = {
 			enabled = false,
-			high = 0.75,
+			high = 0.7,
 			low = 0.3,
-			onlyLow = false,
-			good = { r = 0, g = 1, b = 0 },
-			neutral = { r = 1, g = 1, b = 0 },
-			bad = { r = 1, g = 0, b = 0 },
+			multiplier = 0,
+			onlyFriendly = false,
+			colorBackdrop = false,
+			good = {r = 0.2, g = 0.8, b = 0.2},
+			neutral = {r = 0.85, g = 0.85, b = 0.15},
+			bad = {r = 0.8, g = 0.2, b = 0.2},
+			threshold = {
+				bad = true,
+				neutral = true,
+				good = true
+			},
 		},
 		--healththreat = false,
 		healthselection = false,
@@ -1864,8 +1929,8 @@ P.unitframe = {
 		},
 		powerPrediction = {
 			enable = false,
-			additional = {r = 1, g = 1, b = 1, a = 1},
-			color = {r = 1, g = 1, b = 1, a = 1},
+			additional = {r = 1, g = 0.2, b = 0.4, a = 1},
+			color = {r = 1, g = 0.2, b = 0.2, a = 1},
 		},
 		frameGlow = {
 			mainGlow = {
@@ -2407,6 +2472,7 @@ P.unitframe.units.boss.privateAuras.countdownNumbers = false
 P.unitframe.units.boss.privateAuras.icon.size = 20
 P.unitframe.units.boss.privateAuras.parent.point = 'CENTER'
 P.unitframe.units.boss.castbar.width = 215
+P.unitframe.units.boss.castbar.positionsGroup = {anchorPoint = 'BOTTOM', xOffset = 0, yOffset = 0}
 P.unitframe.units.boss.debuffs.enable = true
 P.unitframe.units.boss.debuffs.anchorPoint = 'LEFT'
 P.unitframe.units.boss.debuffs.numrows = 1
@@ -2499,7 +2565,7 @@ P.unitframe.units.raid1.privateAuras.countdownNumbers = false
 P.unitframe.units.raid1.privateAuras.icon.size = 18
 P.unitframe.units.raid1.privateAuras.parent.point = 'CENTER'
 P.unitframe.units.raid1.castbar = nil
-P.unitframe.units.raid1.CombatIcon = nil
+P.unitframe.units.raid1.CombatIcon.enable = false
 P.unitframe.units.raid1.debuffs.enable = false
 P.unitframe.units.raid1.debuffs.numrows = 1
 P.unitframe.units.raid1.debuffs.perrow = 3

@@ -1,6 +1,6 @@
-## Interface: 110005
+## Interface: 110007
 ## Title: GroupFinderRio
-## Version: v1.1.9
+## Version: v1.2.4a
 ## Notes: Adds Rio score to the group finder and allows for sorting
 ## SavedVariables: GroupFinderRIO
 ## Author: Jods
@@ -33,6 +33,7 @@ Data\SpecList.lua
 Data\Realmlist.lua
 Data\InstanceIDList.lua
 Data\Colors.lua
+Data\RaceOverwrite.lua
 
 # Utils
 Util\UtilFunctions.lua

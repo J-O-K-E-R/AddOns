@@ -1,7 +1,7 @@
-local NARCI_VERSION_INFO = "1.7.1";
+local NARCI_VERSION_INFO = "1.7.7";
 
-local VERSION_DATE = 1729500000;
-local CURRENT_VERSION = 10701;
+local VERSION_DATE = 1738550000;
+local CURRENT_VERSION = 10707;
 local PREVIOUS_VERSION = CURRENT_VERSION;
 local TIME_SINCE_LAST_UPDATE = 0;
 
@@ -69,8 +69,10 @@ local DefaultValues = {
     DressingRoomUseTargetModel = true,          --Replace the the dressing room room with your targeted player
     DressingRoomIncludeItemID = false,          --Show Item ID in the clipboard
     DressingRoomShowIconSelect = false,         --Display a list of icons when saving a new outfit
+    DressingRoomAutoRemoveNonSetItem = false,
 
     -- Minimap Button --
+    UseAddonCompartment = true,
     ShowMinimapButton = true,
     FadeButton = false,
     ShowModulePanelOnMouseOver = true,          --Mouseover to show Module panel while mouseover minimap button
@@ -120,7 +122,7 @@ local DefaultValues = {
     DragonridingTourWorldMapPin = true,         --Show Dragonriding Race location on continent map
 
     -- Perks Program (Trading Post) --
-    TradingPostModifyDefaultPose = false,
+    TradingPostChangePost = true,
 
     --# Initializationd in other files
     --["MinimapIconStyle = 1,                     --Change the icon of minimap button (Main.lua)
@@ -140,6 +142,7 @@ local DefaultValues = {
     --["EnableGrainEffect = false,
     --["AutoColorTheme = true,
     --["ColorChoice = 0,
+    --["TradingPostModifyDefaultPose = false,     --Renamed
 
     --# User Tag
     --"UserIsCurious" (user interacted with our item shop)

@@ -2,18 +2,19 @@ local E, L, V, P, G = unpack(ElvUI)
 local UF = E:GetModule('UnitFrames')
 local ElvUF = E.oUF
 
+local _G = _G
 local random = random
 local strmatch = strmatch
+
 local CreateFrame = CreateFrame
-local UnitIsTapDenied = UnitIsTapDenied
-local UnitReaction = UnitReaction
-local UnitIsPlayer = UnitIsPlayer
-local UnitClass = UnitClass
-local UnitIsConnected = UnitIsConnected
-local UnitIsDeadOrGhost = UnitIsDeadOrGhost
+local UnitInPartyIsAI = UnitInPartyIsAI
 local UnitIsCharmed = UnitIsCharmed
 local UnitIsEnemy = UnitIsEnemy
-local UnitInPartyIsAI = UnitInPartyIsAI
+local UnitIsFriend = UnitIsFriend
+local UnitIsPlayer = UnitIsPlayer
+local UnitIsTapDenied = UnitIsTapDenied
+local UnitReaction = UnitReaction
+local UnitClass = UnitClass
 
 local BACKDROP_MULT = 0.35
 
@@ -57,7 +58,7 @@ function UF:Configure_HealthBar(frame, powerUpdate)
 
 	health:SetColorTapping(true)
 	health:SetColorDisconnected(true)
-	E:SetSmoothing(health, UF.db.smoothbars)
+	E:SetSmoothing(health, db.health and db.health.smoothbars)
 
 	-- Text
 	if db.health and health.value then
@@ -251,9 +252,10 @@ local HOSTILE_REACTION = 2
 function UF:PostUpdateHealthColor(unit, r, g, b)
 	local parent = self:GetParent()
 	local colors = E.db.unitframe.colors
+	local env = (parent.isForced and UF.ConfigEnv) or _G
 
 	local isTapped = UnitIsTapDenied(unit)
-	local isDeadOrGhost = UnitIsDeadOrGhost(unit)
+	local isDeadOrGhost = env.UnitIsDeadOrGhost(unit)
 	local healthBreak = not isTapped and colors.healthBreak
 
 	local color -- main bar
@@ -261,29 +263,36 @@ function UF:PostUpdateHealthColor(unit, r, g, b)
 		r, g, b = colors.health.r, colors.health.g, colors.health.b
 	end
 
+	-- Recheck offline status when forced
+	if parent.isForced and self.colorDisconnected and not env.UnitIsConnected(unit) then
+		color = parent.colors.disconnected
+	end
+
 	-- Charmed player should have hostile color
 	if unit and (strmatch(unit, 'raid%d+') or strmatch(unit, 'party%d+')) then
-		if not isDeadOrGhost and UnitIsConnected(unit) and UnitIsCharmed(unit) and UnitIsEnemy('player', unit) then
+		if not isDeadOrGhost and env.UnitIsConnected(unit) and UnitIsCharmed(unit) and UnitIsEnemy('player', unit) then
 			color = parent.colors.reaction[HOSTILE_REACTION]
 		end
 	end
 
-	local newr, newg, newb
+	local newr, newg, newb, healthbreakBackdrop
 	if not color then -- dont need to process this when its hostile
 		if not parent.db or parent.db.colorOverride ~= 'ALWAYS' then
 			if ((colors.healthclass and colors.colorhealthbyvalue) or (colors.colorhealthbyvalue and parent.isForced)) and not isTapped then
 				newr, newg, newb = ElvUF:ColorGradient(self.cur, self.max, 1, 0, 0, 1, 1, 0, r, g, b)
-			elseif healthBreak and healthBreak.enabled then
+			elseif healthBreak and healthBreak.enabled and (not healthBreak.onlyFriendly or UnitIsFriend('player', unit)) then
 				local breakPoint = self.max > 0 and (self.cur / self.max) or 1
-				local onlyLow = healthBreak.onlyLow
+				local threshold = healthBreak.threshold
 
-				if breakPoint <= healthBreak.low then
+				if threshold.bad and (breakPoint <= healthBreak.low) then
 					color = healthBreak.bad
-				elseif breakPoint >= healthBreak.high and breakPoint ~= 1 and not onlyLow then
+				elseif threshold.good and (breakPoint >= healthBreak.high and breakPoint ~= 1) then
 					color = healthBreak.good
-				elseif breakPoint >= healthBreak.low and breakPoint < healthBreak.high and not onlyLow then
+				elseif threshold.neutral and (breakPoint >= healthBreak.low and breakPoint < healthBreak.high) then
 					color = colors.healthBreak.neutral
 				end
+
+				healthbreakBackdrop = color and healthBreak.colorBackdrop
 			end
 		end
 	end
@@ -299,6 +308,10 @@ function UF:PostUpdateHealthColor(unit, r, g, b)
 		local mult = bg.multiplier or BACKDROP_MULT
 		if colors.useDeadBackdrop and isDeadOrGhost then
 			bgc = colors.health_backdrop_dead
+			mult = 1 -- custom backdrop (dead)
+		elseif healthbreakBackdrop then
+			bgc = color
+			mult = (healthBreak.multiplier > 0 and healthBreak.multiplier) or BACKDROP_MULT
 		elseif colors.healthbackdropbyvalue then
 			if colors.customhealthbackdrop then
 				newr, newg, newb = ElvUF:ColorGradient(self.cur, self.max, 1, 0, 0, 1, 1, 0, colors.health_backdrop.r, colors.health_backdrop.g, colors.health_backdrop.b)
@@ -332,14 +345,11 @@ end
 function UF:PostUpdateHealth(_, cur)
 	local parent = self:GetParent()
 	if parent.isForced then
-		cur = random(1, 100)
-		local max = 100
+		self.cur = random(1, 100)
+		self.max = 100
 
-		self.cur = cur
-		self.max = max
-
-		self:SetMinMaxValues(0, max)
-		self:SetValue(cur)
+		self:SetMinMaxValues(0, self.max)
+		self:SetValue(self.cur)
 	elseif parent.ResurrectIndicator then
 		parent.ResurrectIndicator:SetAlpha(cur == 0 and 1 or 0)
 	end

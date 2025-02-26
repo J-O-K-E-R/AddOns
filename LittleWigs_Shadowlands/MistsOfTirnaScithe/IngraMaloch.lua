@@ -76,6 +76,14 @@ function mod:VerifyEnable(_, mobId)
 	return true
 end
 
+function mod:OnWin()
+	local trashMod = BigWigs:GetBossModule("Mists of Tirna Scithe Trash", true)
+	if trashMod then
+		trashMod:Enable()
+		trashMod:IngraMalochDefeated()
+	end
+end
+
 --------------------------------------------------------------------------------
 -- Event Handlers
 --
@@ -116,11 +124,12 @@ do
 end
 
 function mod:DromansWrath(args)
-	self:Message(args.spellId, "green")
-	self:PlaySound(args.spellId, "long")
+	self:Message(args.spellId, "green", CL.casting:format(args.spellName))
 end
 
 function mod:DromansWrathApplied(args)
+	self:Message(args.spellId, "green", CL.onboss:format(args.spellName))
+	self:PlaySound(args.spellId, "long")
 	self:StopBar(CL.count:format(self:SpellName(323149), embraceDarknessCount))
 	self:SetStage(2)
 	self:CastBar(args.spellId, 15)

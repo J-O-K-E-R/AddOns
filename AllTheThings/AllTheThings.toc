@@ -3,9 +3,9 @@
 ## Name: AllTheThings
 ## Notes: Addon for Tracking Collections & Account Completion
 ## Author: Crieve-Sargeras
-## Version: 4.0.19
-## Interface: 110002
-## X-Interface: 110002
+## Version: 4.2.14
+## Interface: 110007, 110100
+## X-Interface: 110007, 110100
 ## X-Wago-ID: yQKyY5K7
 ## X-Curse-Project-ID: 267285
 ## SavedVariables: ATTCharacterData, ATTAccountWideData, AllTheThingsSavedVariables, AllTheThingsSettings, AllTheThingsAD, AllTheThingsProfiles, AllTheThingsAuctionData, AllTheThingsDebugData, AllTheThingsArtifactsItems, AllTheThingsHarvestItems
@@ -61,6 +61,7 @@ src\Cache.lua
 # Helper Modules
 src\Modules\RetrievingData.lua
 src\Modules\Collection.lua
+src\Modules\CustomCollect.lua
 src\Modules\FactionData.lua
 src\Modules\Color.lua
 src\Modules\Costs.lua
@@ -73,11 +74,10 @@ src\Modules\Tooltip.lua
 src\Modules\Upgrade.lua
 src\Modules\Vignette.lua
 src\Modules\Contributor.lua
+#src\__test.lua
 
 # Expansion specific localization files
-db\Retail\ExplorationDB.lua
 db\Retail\LocalizationDB.lua
-db\Presets.lua
 
 # Load object class templates
 src\Classes\base.lua
@@ -101,7 +101,7 @@ src\Classes\Objects.lua
 src\Classes\Profession.lua
 src\Classes\Category.lua
 src\Classes\Deaths.lua
-# src\Classes\Dynamic Categories.lua
+src\Classes\Dynamic Categories.lua
 src\Classes\Filter Types.lua
 src\Classes\Gear Sets.lua
 # src\Classes\Glyphs.lua

@@ -27,7 +27,6 @@ function panel:OnRefresh ()
     panel.refresh()
 end
 
-
 panel:SetScript("OnShow", function(self)
     if not panel.initialized then
         panel:CreateOptions()
@@ -45,15 +44,6 @@ local function make_label(name, template)
     return label
 end
 
-local function make_checkbox(name, parent, label)
-    local frame = CreateFrame("CheckButton", "CliqueOptionsBlacklist" .. name, parent, "UICheckButtonTemplate")
-    frame.text = _G[frame:GetName() .. "Text"]
-    frame.type = "checkbox"
-    frame.text:SetText(label)
-    return frame
-end
-
-
 local state = {}
 
 function panel:CreateOptions()
@@ -65,40 +55,42 @@ function panel:CreateOptions()
     self.intro:SetHeight(45)
     self.intro:SetText(L["This panel allows you to deny certain frames from being included for Clique bindings. Any frames that are selected in this list will not be registered, although you may have to reload your user interface to have them return to their original bindings."])
 
-    self.scrollframe = CreateFrame("ScrollFrame", "CliqueOptionsBlacklistScrollFrame", self, "FauxScrollFrameTemplate")
-    self.scrollframe:SetPoint("TOPLEFT", self.intro, "BOTTOMLEFT", 0, -5)
-    self.scrollframe:SetPoint("RIGHT", self, "RIGHT", -30, 0)
-    self.scrollframe:SetHeight(320)
-    self.scrollframe:Show()
+    self.background = CreateFrame("Frame", "CliqueDenylistconfigScrollBackground", self, "TooltipBackdropTemplate")
+    self.background:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 4, 535)
+    self.background:SetPoint("BOTTOMRIGHT", -31, 50)
+    self.background:SetFrameLevel(2)
 
+    local bgColor = BLACK_FONT_COLOR
+    local bgAlpha = 1
+    local bgR, bgG, bgB = bgColor:GetRGB()
+    self.background:SetBackdropColor(bgR, bgG, bgB, bgAlpha)
 
-    local function row_onclick(row)
-        state[row.frameName] = not not row:GetChecked()
-    end
+    local bgBorderColor = DARKGRAY_COLOR
+    local borderR, borderG, borderB = bgBorderColor:GetRGB()
+    local borderAlpha = 1
+    self.background:SetBackdropBorderColor(borderR, borderG, borderB, borderAlpha)
 
-    self.rows = {}
+    self.scrollFrame = CreateFrame("Frame", "CliqueDenylistConfigScrollFrame", self.background, "WowScrollBoxList")
+    self.scrollFrame:ClearAllPoints()
+    self.scrollFrame:SetPoint("TOPLEFT", 5, -5)
+    self.scrollFrame:SetPoint("BOTTOMRIGHT", -5, 0)
+    self.scrollFrame:SetHeight(320)
+    self.scrollFrame:Show()
 
-    -- Create and anchor some items
-    for idx = 1, 10 do
-        self.rows[idx] = make_checkbox("Item" .. idx, self.scrollframe, L["Frame name"])
-        self.rows[idx]:SetScript("OnClick", row_onclick)
+    self.scrollbar = CreateFrame("EventFrame", "CliqueDenylistConfigScrollBar", self.background, "MinimalScrollBar")
+    self.scrollbar:ClearAllPoints()
+    self.scrollbar:SetPoint("TOPLEFT", self.background, "TOPRIGHT", 10, 0)
+    self.scrollbar:SetPoint("BOTTOMLEFT", self.background, "BOTTOMRIGHT", 10, 0)
 
-        if idx == 1 then
-            self.rows[idx]:SetPoint("TOPLEFT", self.scrollframe, "TOPLEFT", 0, 0)
-        else
-            self.rows[idx]:SetPoint("TOPLEFT", self.rows[idx-1], "BOTTOMLEFT", 0, 0)
-        end
-    end
+    self.dataProvider = CreateDataProvider()
 
-    self.rowheight = self.rows[1]:GetHeight()
+    local dataProvider = self.dataProvider
+    local scrollView = CreateScrollBoxListLinearView()
+    scrollView:SetDataProvider(dataProvider)
 
-    -- Number of items?
-    local function update()
-        self:UpdateScrollFrame()
-    end
-
-    self.scrollframe:SetScript("OnVerticalScroll", function(frame, offset)
-        FauxScrollFrame_OnVerticalScroll(frame, offset, self.rowheight, update)
+    ScrollUtil.InitScrollBoxListWithScrollBar(self.scrollFrame, self.scrollbar, scrollView)
+    scrollView:SetElementInitializer("CliqueUICheckboxRowTemplate", function(button, data)
+        panel:InitializeCheckboxRow(button, data)
     end)
 
     self.selectall = CreateFrame("Button", "CliqueOptionsBlacklistSelectAll", self, "UIPanelButtonTemplate")
@@ -106,18 +98,16 @@ function panel:CreateOptions()
     self.selectall:SetPoint("BOTTOMLEFT", 10, 10)
     self.selectall:SetWidth(100)
     self.selectall:SetScript("OnClick", function(button)
-        for frame in pairs(addon.ccframes) do
-            local name = frame:GetName()
-            if name then
-                state[name] = true
-            end
+        for idx = 1, panel.dataProvider:GetSize() do
+            local prev = panel.dataProvider:Find(idx)
+            local name = prev.text
+            panel.dataProvider:ReplaceAtIndex(idx, {
+                text = prev.text,
+                checked = true,
+            })
+            panel:ToggleSetting(name, true)
         end
-
-        for name, frame in pairs(addon.hccframes) do
-            state[name] = true
-        end
-
-        self:UpdateScrollFrame()
+        panel:FireBlacklistChanged()
     end)
 
     self.selectnone = CreateFrame("Button", "CliqueOptionsBlacklistSelectNone", self, "UIPanelButtonTemplate")
@@ -125,51 +115,57 @@ function panel:CreateOptions()
     self.selectnone:SetPoint("BOTTOMLEFT", self.selectall, "BOTTOMRIGHT", 5, 0)
     self.selectnone:SetWidth(100)
     self.selectnone:SetScript("OnClick", function(button)
-        for frame in pairs(addon.ccframes) do
-            local name = frame:GetName()
-            if name then
-                state[name] = false
-            end
+        for idx = 1, panel.dataProvider:GetSize() do
+            local prev = panel.dataProvider:Find(idx)
+            local name = prev.text
+            panel.dataProvider:ReplaceAtIndex(idx, {
+                text = prev.text,
+                checked = false,
+            })
+            panel:ToggleSetting(name, false)
         end
-
-        for name, frame in pairs(addon.hccframes) do
-            state[name] = false
-        end
-
-        self:UpdateScrollFrame()
+        panel:FireBlacklistChanged()
     end)
 end
 
-function panel:UpdateScrollFrame()
-    local sort = {}
-    for frame in pairs(addon.ccframes) do
-        local name = frame:GetName()
-        if name then
-            table.insert(sort, name)
-        end
+function panel:InitializeCheckboxRow(button, data)
+    if not button.created then
+        button.created = true
+        button.CheckButton:SetScript("OnClick", function(checkButton)
+            panel:CheckboxRowClicked(checkButton)
+        end)
     end
 
-    for name, frame in pairs(addon.hccframes) do
-        table.insert(sort, name)
+    button.CheckButton.Text:SetText(data.text)
+    button.CheckButton:SetChecked(data.checked)
+    button.CheckButton.data = data
+end
+
+function panel:CheckboxRowClicked(checkButton)
+    local rowIndex = panel.dataProvider:FindIndex(checkButton.data)
+    if rowIndex then
+        -- Found the previous row, let's update the checked state
+        local data = checkButton.data
+        local newData = {
+            text = data.text,
+            checked = not data.checked
+        }
+        panel.dataProvider:ReplaceAtIndex(rowIndex, newData)
+        panel:ToggleSetting(newData.text, newData.checked)
+        panel:FireBlacklistChanged()
     end
+end
 
-    table.sort(sort)
-
-    local offset = FauxScrollFrame_GetOffset(self.scrollframe)
-    FauxScrollFrame_Update(self.scrollframe, #sort, 10, self.rowheight)
-
-    for i=1, 10 do
-        local idx = offset + i
-        local row = self.rows[i]
-        if idx <= #sort then
-            row.frameName = sort[idx]
-            row.text:SetText(sort[idx])
-            row:SetChecked(state[sort[idx]])
-            row:Show()
-        else
-            row:Hide()
-        end
+function panel:ToggleSetting(frame, value)
+    if not not value then
+        addon.settings.blacklist[frame] = true
+    else
+        addon.settings.blacklist[frame] = nil
     end
+end
+
+function panel:FireBlacklistChanged()
+    addon:FireMessage("BLACKLIST_CHANGED")
 end
 
 function panel.okay()
@@ -194,23 +190,31 @@ function panel.refresh()
         panel:CreateOptions()
     end
 
+    local dataProvider = panel.dataProvider
+    dataProvider:Flush()
+
+    local sorted = {}
     for frame in pairs(addon.ccframes) do
         local name = frame:GetName()
-        if name then
-            state[name] = false
-        end
+        table.insert(sorted, name)
     end
 
     for name, frame in pairs(addon.hccframes) do
-        state[name] = false
+        table.insert(sorted, name)
     end
 
-    for frame, value in pairs(addon.settings.blacklist) do
-        state[frame] = value
+    table.sort(sorted)
+
+    for idx, name in ipairs(sorted) do
+        local data = {
+            text = name,
+            checked = not not addon.settings.blacklist[name]
+        }
+
+        dataProvider:Insert(data)
     end
 
-    panel:UpdateScrollFrame()
-    end, geterrorhandler())
+   end, geterrorhandler())
 end
 
 if Settings and Settings.RegisterCanvasLayoutSubcategory then

@@ -6,7 +6,9 @@ local dungeonIndex = 113
 MDT.dungeonList[dungeonIndex] = L["AraKara"]
 MDT.mapInfo[dungeonIndex] = {
   teleportId = 445417,
-  shortName = L["araKaraShortName"]
+  shortName = L["araKaraShortName"],
+  englishName = "Ara-Kara",
+  mapID = 503
 }
 
 local zones = { 2216, 2357, 2358 } -- TODO remove 2216 WHEN ARAKARA IS GONE FROM ROTATION
@@ -68,7 +70,7 @@ MDT.mapPOIs[dungeonIndex] = {
 
 MDT.dungeonEnemies[dungeonIndex] = {
   [1] = {
-    ["name"] = "Starved Crawler",
+    ["name"] = "Ravenous Crawler",
     ["id"] = 216336,
     ["count"] = 1,
     ["health"] = 5092182,
@@ -348,6 +350,7 @@ MDT.dungeonEnemies[dungeonIndex] = {
     },
     ["spells"] = {
       [438599] = {
+        ["bleed"] = true,
       },
     },
     ["clones"] = {
@@ -740,6 +743,7 @@ MDT.dungeonEnemies[dungeonIndex] = {
     },
     ["spells"] = {
       [438618] = {
+        ["poison"] = true,
       },
       [438622] = {
       },
@@ -983,6 +987,7 @@ MDT.dungeonEnemies[dungeonIndex] = {
       },
       [436322] = {
         ["interruptible"] = true,
+        ["poison"] = true,
       },
       [438825] = {
       },
@@ -1546,6 +1551,7 @@ MDT.dungeonEnemies[dungeonIndex] = {
       },
       [448248] = {
         ["interruptible"] = true,
+        ["poison"] = true,
       },
     },
     ["clones"] = {
@@ -1679,6 +1685,8 @@ MDT.dungeonEnemies[dungeonIndex] = {
       [453161] = {
       },
       [465012] = {
+      },
+      [432868] = {
       },
     },
     ["clones"] = {
@@ -1864,6 +1872,7 @@ MDT.dungeonEnemies[dungeonIndex] = {
     },
     ["spells"] = {
       [433841] = {
+        ["poison"] = true,
       },
       [433843] = {
       },
@@ -2411,7 +2420,7 @@ MDT.dungeonEnemies[dungeonIndex] = {
     ["name"] = "Bloodstained Webmage",
     ["id"] = 220599,
     ["count"] = 0,
-    ["health"] = 7160880,
+    ["health"] = 5733236,
     ["scale"] = 1.1,
     ["displayId"] = 117870,
     ["creatureType"] = "Humanoid",
@@ -2478,6 +2487,7 @@ MDT.dungeonEnemies[dungeonIndex] = {
       [439680] = {
       },
       [461487] = {
+        ["poison"] = true,
       },
       [461507] = {
       },

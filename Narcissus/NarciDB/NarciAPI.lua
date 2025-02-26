@@ -3018,42 +3018,6 @@ NarciAPI.GetScreenPixelSize = function()
 end
 
 
-
-local UtilityModel, ValidDisplayIDs;
-
-local function DoesCreatureDisplayIDExist(id)
-    if not id then return end;
-
-    if not UtilityModel then
-        ValidDisplayIDs = {};
-
-        UtilityModel = CreateFrame("CinematicModel", nil, UIParent);
-        UtilityModel:SetKeepModelOnHide(true);
-        UtilityModel:SetSize(2, 2);
-        UtilityModel:SetPoint("TOP", UIParent, "BOTTOM", 0, -3);
-        UtilityModel:SetScript("OnModelLoaded", function(self)
-            local displayID = self:GetDisplayInfo();
-            if displayID and displayID ~= 0 then
-                ValidDisplayIDs[displayID] = true;
-                self.displayID = nil;
-            end
-            self:ClearModel();
-        end);
-        UtilityModel:Hide();
-    end
-
-    if ValidDisplayIDs[id] ~= nil then
-        return ValidDisplayIDs[id];
-    else
-        UtilityModel:ClearModel();
-        UtilityModel:SetDisplayInfo(id);
-    end
-end
-
-NarciAPI.DoesCreatureDisplayIDExist = DoesCreatureDisplayIDExist;
-
-
-
 local function PixelPerfectDriver_Update(self)
     local scale = self:GetParent():GetEffectiveScale();
 
@@ -3287,48 +3251,138 @@ do
     NarciAPI.MuteTargetLostSound = MuteTargetLostSound;
 end
 
---[[
-    /script DEFAULT_CHAT_FRAME:AddMessage("\124Hitem:narcissus:0:\124h[Test Link]\124h\124r");
-function TestFX(modelFileID, zoomDistance, view)
-    NarciAPI_SetupModelScene(TestScene, modelFileID, zoomDistance, view);
-end
---]]
---/run TestFX(3152608, nil, ) 122972
---/run TestFX(1011653, 8, "
---/run TestFX(3004122, 8, "LEFT") --Eyeball
+do  --11.0 Menu Formatter
+    function NarciAPI.TranslateContextMenu(ownerRegion, schematic, contextData)
+        --Currently we only use this function to create a minimap menu.
+        --Owner is set to UIParent so when the mini button is hidden by addon manager, the menu won't hide with it.
+        ownerRegion = UIParent;
 
---Shake Frame SoulbindViewerMixin:Shake() Bliizard Blizzard_SoulbindsViewer.lua
+        local menu = MenuUtil.CreateContextMenu(ownerRegion, function(ownerRegion, rootDescription)
+            rootDescription:SetTag(schematic.tag, contextData);
 
+            for _, info in ipairs(schematic.objects) do
+                local elementDescription;
+                if info.type == "Title" then
+                    elementDescription = rootDescription:CreateTitle();
+                    elementDescription:AddInitializer(function(f, description, menu)
+                        f.fontString:SetText(info.name);
+                    end);
+                elseif info.type == "Divider" then
+                    elementDescription = rootDescription:CreateDivider();
+                elseif info.type == "Spacer" then
+                    elementDescription = rootDescription:CreateSpacer();
+                elseif info.type == "Button" then
+                    elementDescription = rootDescription:CreateButton(info.name, info.OnClick);
+                elseif info.type == "Checkbox" then
+                    elementDescription = rootDescription:CreateCheckbox(info.name, info.IsSelected, info.ToggleSelected);
+                end
 
---Debug
---[[
-local DebugUtil = NarciAPI_CreateAnimationFrame(1, "NarciDebug");
+                if info.tooltip then
+                    elementDescription:SetTooltip(function(tooltip, elementDescription)
+                        GameTooltip_SetTitle(tooltip, MenuUtil.GetElementText(elementDescription));
+                        GameTooltip_AddNormalLine(tooltip, info.tooltip);
+                        --GameTooltip_AddInstructionLine(tooltip, "Test Tooltip Instruction");
+                        --GameTooltip_AddErrorLine(tooltip, "Test Tooltip Colored Line");
+                    end);
+                end
 
-DebugUtil:SetScript("OnUpdate", function(self, elapsed)
-    self.total = self.total + elapsed;
-    if self.total >= self.duration then
-        self:Hide();
-        self.isAdding = nil;
-        print("AVG: ".. self.sum / self.numNumber);
+                if info.rightText then
+                    local rightText;
+                    if type(info.rightText) == "function" then
+                        rightText = info.rightText();
+                    else
+                        rightText = info.rightText;
+                    end
+                    elementDescription:AddInitializer(function(button, description, menu)
+                        --local rightTexture = button:AttachTexture();
+                        --rightTexture:SetSize(18, 18);
+                        --rightTexture:SetPoint("RIGHT");
+                        --rightTexture:SetTexture(nil);
+
+                        local fontString = button.fontString;
+                        fontString:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
+
+                        local fontString2 = button:AttachFontString();
+                        fontString2:SetHeight(20);
+                        fontString2:SetPoint("RIGHT", button, "RIGHT", 0, 0);
+                        fontString2:SetJustifyH("RIGHT");
+                        fontString2:SetText(rightText);
+                        fontString2:SetTextColor(0.5, 0.5, 0.5);
+
+                        local pad = 20;
+                        local width = pad + fontString:GetWrappedWidth() + fontString2:GetWrappedWidth();
+
+                        local height = 20;
+                        return width, height;
+                    end);
+                end
+            end
+        end);
+
+        if schematic.onMenuClosedCallback then
+            menu:SetClosedCallback(schematic.onMenuClosedCallback);
+        end
+
+        return menu
     end
-end);
-
-function DebugUtil:RestartTimer()
-    self.total = 0;
-    self:Show();
 end
 
-function DebugUtil:CalculateAverage(number)
-    if not number then return end;
+do  --Model Util
+    local ModelUtil = {};
+    ModelUtil.validDisplayIDs = {};
+    ModelUtil.validFileIDs = {};
 
-    if self.isAdding then
-        self.sum = self.sum + number;
-        self.numNumber = self.numNumber + 1;
-    else
-        self.sum = number;
-        self.numNumber = 1;
-        self.isAdding = true;
-        self:RestartTimer();
+    function ModelUtil:CreateUitlityModel()
+        local m = CreateFrame("CinematicModel", nil, UIParent);
+        m:SetKeepModelOnHide(true);
+        m:SetSize(2, 2);
+        m:SetPoint("TOP", UIParent, "BOTTOM", 0, -3);
+        m:Hide();
+        return m
+    end
+
+    function NarciAPI.DoesCreatureDisplayIDExist(id)
+        if not id then return false end;
+
+        if not ModelUtil.displayModel then
+            ModelUtil.displayModel = ModelUtil:CreateUitlityModel();
+            ModelUtil.displayModel:SetScript("OnModelLoaded", function(self)
+                local displayID = self:GetDisplayInfo();
+                if displayID and displayID ~= 0 then
+                    ModelUtil.validDisplayIDs[displayID] = true;
+                end
+                self:ClearModel();
+            end);
+        end
+
+        if ModelUtil.validDisplayIDs[id] ~= nil then
+            return ModelUtil.validDisplayIDs[id];
+        else
+            ModelUtil.displayModel:ClearModel();
+            ModelUtil.displayModel:SetDisplayInfo(id);
+        end
+    end
+
+    function NarciAPI.DoesModelFileExist(file)
+        --Unused. Invalid file sometimes crash the game
+        if (not file) or file == 0 then return false end;
+
+        if not ModelUtil.fileModel then
+            ModelUtil.fileModel = ModelUtil:CreateUitlityModel();
+            ModelUtil.fileModel:SetScript("OnModelLoaded", function(self)
+                local fileID = self:GetModelFileID();
+                if fileID and fileID ~= 0 then
+                    ModelUtil.validFileIDs[fileID] = true;
+                end
+                self:ClearModel();
+            end);
+        end
+
+        if ModelUtil.validFileIDs[file] ~= nil then
+            return ModelUtil.validFileIDs[file];
+        else
+            ModelUtil.fileModel:ClearModel();
+            ModelUtil.fileModel:SetModel(file);
+        end
     end
 end
---]]

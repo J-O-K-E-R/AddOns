@@ -51,6 +51,7 @@ local function GetUnitSettings(unit, name)
 	group.args.healthGroup.args.height = ACH:Range(L["Height"], nil, 3, { min = minHeight, max = MaxHeight(unit), step = 1 })
 	group.args.healthGroup.args.width = ACH:Execute(L["Width"], nil, 4, function() ACD:SelectGroup('ElvUI', 'nameplates', 'generalGroup', 'clickableRange') end)
 	group.args.healthGroup.args.healPrediction = ACH:Toggle(L["Heal Prediction"], nil, 5)
+	group.args.healthGroup.args.smoothbars = ACH:Toggle(L["Smooth Bars"], L["Bars will transition smoothly."], 6)
 
 	group.args.healthGroup.args.textGroup = ACH:Group(L["Text"], nil, 200, nil, function(info) return E.db.nameplates.units[unit].health.text[info[#info]] end, function(info, value) E.db.nameplates.units[unit].health.text[info[#info]] = value NP:ConfigureAll() end)
 	group.args.healthGroup.args.textGroup.inline = true
@@ -77,6 +78,7 @@ local function GetUnitSettings(unit, name)
 	group.args.powerGroup.args.displayAltPower = ACH:Toggle(L["Swap to Alt Power"], nil, 7)
 	group.args.powerGroup.args.useAtlas = ACH:Toggle(L["Use Atlas Textures"], nil, 8)
 	group.args.powerGroup.args.useClassColor = ACH:Toggle(L["Use Class Color"], nil, 9)
+	group.args.powerGroup.args.smoothbars = ACH:Toggle(L["Smooth Bars"], L["Bars will transition smoothly."], 10)
 
 	group.args.powerGroup.args.textGroup = ACH:Group(L["Text"], nil, 200, nil, function(info) return E.db.nameplates.units[unit].power.text[info[#info]] end, function(info, value) E.db.nameplates.units[unit].power.text[info[#info]] = value NP:ConfigureAll() end)
 	group.args.powerGroup.args.textGroup.inline = true
@@ -97,6 +99,7 @@ local function GetUnitSettings(unit, name)
 	group.args.castGroup.args.enable = ACH:Toggle(L["Enable"], nil, 1)
 	group.args.castGroup.args.sourceInterrupt = ACH:Toggle(L["Display Interrupt Source"], L["Display the unit name who interrupted a spell on the castbar. You should increase the Time to Hold to show properly."], 2)
 	group.args.castGroup.args.sourceInterruptClassColor = ACH:Toggle(L["Class Color Source"], nil, 3, nil, nil, nil, nil, nil, function() return not E.db.nameplates.units[unit].castbar.sourceInterrupt end)
+	group.args.castGroup.args.smoothbars = ACH:Toggle(L["Smooth Bars"], L["Bars will transition smoothly."], 5)
 
 	-- order 4 is player Display Target
 	group.args.castGroup.args.generalGroup = ACH:Group(L["General"], nil, 10)
@@ -117,7 +120,7 @@ local function GetUnitSettings(unit, name)
 	group.args.castGroup.args.textGroup = ACH:Group(L["Text"], nil, 20)
 	group.args.castGroup.args.textGroup.args.hideSpellName = ACH:Toggle(L["Hide Spell Name"], nil, 1)
 	group.args.castGroup.args.textGroup.args.hideTime = ACH:Toggle(L["Hide Time"], nil, 2)
-	group.args.castGroup.args.textGroup.args.spellRename = ACH:Toggle(E.NewSign..L["BigWigs Spell Rename"], L["Allows BigWigs to rename specific encounter spells on your castbar to something better to understand.\nExample: 'Impaling Eruption' becomes 'Frontal' and 'Twilight Massacre' becomes 'Dash'."], 3)
+	group.args.castGroup.args.textGroup.args.spellRename = ACH:Toggle(L["BigWigs Spell Rename"], L["Allows BigWigs to rename specific encounter spells on your castbar to something better to understand.\nExample: 'Impaling Eruption' becomes 'Frontal' and 'Twilight Massacre' becomes 'Dash'."], 3)
 	group.args.castGroup.args.textGroup.args.textPosition = ACH:Select(L["Position"], nil, 5, { ONBAR = L["Cast Bar"], ABOVE = L["Above"], BELOW = L["Below"] })
 	group.args.castGroup.args.textGroup.args.castTimeFormat = ACH:Select(L["Cast Time Format"], nil, 6, { CURRENT = L["Current"], CURRENTMAX = L["Current / Max"], REMAINING = L["Remaining"], REMAININGMAX = L["Remaining / Max"] })
 	group.args.castGroup.args.textGroup.args.channelTimeFormat = ACH:Select(L["Channel Time Format"], nil, 7, { CURRENT = L["Current"], CURRENTMAX = L["Current / Max"], REMAINING = L["Remaining"], REMAININGMAX = L["Remaining / Max"] })
@@ -178,8 +181,7 @@ local function GetUnitSettings(unit, name)
 	group.args.buffsGroup.args.filtersGroup.args.minDuration = ACH:Range(L["Minimum Duration"], L["Don't display auras that are shorter than this duration (in seconds). Set to zero to disable."], 1, { min = 0, max = 10800, step = 1 })
 	group.args.buffsGroup.args.filtersGroup.args.maxDuration = ACH:Range(L["Maximum Duration"], L["Don't display auras that are longer than this duration (in seconds). Set to zero to disable."], 1, { min = 0, max = 10800, step = 1 })
 	group.args.buffsGroup.args.filtersGroup.args.jumpToFilter = ACH:Execute(L["Filters Page"], L["Shortcut to global filters."], 3, function() ACD:SelectGroup('ElvUI', 'filters') end)
-	group.args.buffsGroup.args.filtersGroup.args.specialFilters = ACH:Select(L["Add Special Filter"], L["These filters don't use a list of spells like the regular filters. Instead they use the WoW API and some code logic to determine if an aura should be allowed or blocked."], 4, function() wipe(filters) local list = E.global.unitframe.specialFilters if not (list and next(list)) then return filters end for filter in pairs(list) do filters[filter] = L[filter] end return filters end, nil, nil, nil, function(_, value) C.SetFilterPriority(E.db.nameplates.units, unit, 'buffs', value) NP:ConfigureAll() end)
-	group.args.buffsGroup.args.filtersGroup.args.specialFilters.sortByValue = true
+	group.args.buffsGroup.args.filtersGroup.args.specialFilters = ACH:Select(L["Add Special Filter"], L["These filters don't use a list of spells like the regular filters. Instead they use the WoW API and some code logic to determine if an aura should be allowed or blocked."], 4, function() wipe(filters) local list = E.global.unitframe.specialFilters if not (list and next(list)) then return filters end for filter in pairs(list) do filters[filter] = L[filter] end return filters end, nil, nil, nil, function(_, value) C.SetFilterPriority(E.db.nameplates.units, unit, 'buffs', value) NP:ConfigureAll() end, nil, nil, true)
 	group.args.buffsGroup.args.filtersGroup.args.filter = ACH:Select(L["Add Regular Filter"], L["These filters use a list of spells to determine if an aura should be allowed or blocked. The content of these filters can be modified in the Filters section of the config."], 5, function() wipe(filters) local list = E.global.unitframe.aurafilters if not (list and next(list)) then return filters end for filter in pairs(list) do filters[filter] = L[filter] end return filters end, nil, nil, nil, function(_, value) C.SetFilterPriority(E.db.nameplates.units, unit, 'buffs', value) NP:ConfigureAll() end)
 	group.args.buffsGroup.args.filtersGroup.args.resetPriority = ACH:Execute(L["Reset Priority"], L["Reset filter priority to the default state."], 7, function() E.db.nameplates.units[unit].buffs.priority = P.nameplates.units[unit].buffs.priority NP:ConfigureAll() end)
 
@@ -234,8 +236,7 @@ local function GetUnitSettings(unit, name)
 	group.args.debuffsGroup.args.filtersGroup.args.minDuration = ACH:Range(L["Minimum Duration"], L["Don't display auras that are shorter than this duration (in seconds). Set to zero to disable."], 1, { min = 0, max = 10800, step = 1 })
 	group.args.debuffsGroup.args.filtersGroup.args.maxDuration = ACH:Range(L["Maximum Duration"], L["Don't display auras that are longer than this duration (in seconds). Set to zero to disable."], 1, { min = 0, max = 10800, step = 1 })
 	group.args.debuffsGroup.args.filtersGroup.args.jumpToFilter = ACH:Execute(L["Filters Page"], L["Shortcut to global filters."], 3, function() ACD:SelectGroup('ElvUI', 'filters') end)
-	group.args.debuffsGroup.args.filtersGroup.args.specialFilters = ACH:Select(L["Add Special Filter"], L["These filters don't use a list of spells like the regular filters. Instead they use the WoW API and some code logic to determine if an aura should be allowed or blocked."], 4, function() wipe(filters) local list = E.global.unitframe.specialFilters if not (list and next(list)) then return filters end for filter in pairs(list) do filters[filter] = L[filter] end return filters end, nil, nil, nil, function(_, value) C.SetFilterPriority(E.db.nameplates.units, unit, 'debuffs', value) NP:ConfigureAll() end)
-	group.args.debuffsGroup.args.filtersGroup.args.specialFilters.sortByValue = true
+	group.args.debuffsGroup.args.filtersGroup.args.specialFilters = ACH:Select(L["Add Special Filter"], L["These filters don't use a list of spells like the regular filters. Instead they use the WoW API and some code logic to determine if an aura should be allowed or blocked."], 4, function() wipe(filters) local list = E.global.unitframe.specialFilters if not (list and next(list)) then return filters end for filter in pairs(list) do filters[filter] = L[filter] end return filters end, nil, nil, nil, function(_, value) C.SetFilterPriority(E.db.nameplates.units, unit, 'debuffs', value) NP:ConfigureAll() end, nil, nil, true)
 	group.args.debuffsGroup.args.filtersGroup.args.filter = ACH:Select(L["Add Regular Filter"], L["These filters use a list of spells to determine if an aura should be allowed or blocked. The content of these filters can be modified in the Filters section of the config."], 5, function() wipe(filters) local list = E.global.unitframe.aurafilters if not (list and next(list)) then return filters end for filter in pairs(list) do filters[filter] = L[filter] end return filters end, nil, nil, nil, function(_, value) C.SetFilterPriority(E.db.nameplates.units, unit, 'debuffs', value) NP:ConfigureAll() end)
 	group.args.debuffsGroup.args.filtersGroup.args.resetPriority = ACH:Execute(L["Reset Priority"], L["Reset filter priority to the default state."], 7, function() E.db.nameplates.units[unit].debuffs.priority = P.nameplates.units[unit].debuffs.priority NP:ConfigureAll() end)
 
@@ -263,8 +264,7 @@ local function GetUnitSettings(unit, name)
 	group.args.privateAuras.args.icon.inline = true
 
 	group.args.privateAuras.args.duration = ACH:Group(L["Duration"], nil, 20, nil, function(info) return E.db.nameplates.units[unit].privateAuras.duration[info[#info]] end, function(info, value) E.db.nameplates.units[unit].privateAuras.duration[info[#info]] = value NP:ConfigureAll() end)
-	group.args.privateAuras.args.duration.args.enable = ACH:Toggle(L["Enable"], nil, 1)
-	group.args.privateAuras.args.duration.args.enable.customWidth = 100
+	group.args.privateAuras.args.duration.args.enable = ACH:Toggle(L["Enable"], nil, 1, nil, nil, 100)
 	group.args.privateAuras.args.duration.args.point = ACH:Select(L["Point"], nil, 5, C.Values.AllPoints)
 	group.args.privateAuras.args.duration.args.offsetX = ACH:Range(L["X-Offset"], nil, 6, { min = -100, max = 100, step = 1 })
 	group.args.privateAuras.args.duration.args.offsetY = ACH:Range(L["Y-Offset"], nil, 7, { min = -100, max = 100, step = 1 })
@@ -419,7 +419,6 @@ NamePlates.generalGroup = ACH:Group(L["General"], nil, 5, nil, nil, function(inf
 NamePlates.generalGroup.args.motionType = ACH:Select(L["UNIT_NAMEPLATES_TYPES"], L["Set to either stack nameplates vertically or allow them to overlap."], 1, { STACKED = L["UNIT_NAMEPLATES_TYPE_2"], OVERLAP = L["UNIT_NAMEPLATES_TYPE_1"] })
 NamePlates.generalGroup.args.showEnemyCombat = ACH:Select(L["Enemy Combat Toggle"], L["Control enemy nameplates toggling on or off when in combat."], 2, { DISABLED = L["Disable"], TOGGLE_ON = L["Toggle On While In Combat"], TOGGLE_OFF = L["Toggle Off While In Combat"] }, nil, nil, nil, function(info, value) E.db.nameplates[info[#info]] = value NP:PLAYER_REGEN_ENABLED() end)
 NamePlates.generalGroup.args.showFriendlyCombat = ACH:Select(L["Friendly Combat Toggle"], L["Control friendly nameplates toggling on or off when in combat."], 3, { DISABLED = L["Disable"], TOGGLE_ON = L["Toggle On While In Combat"], TOGGLE_OFF = L["Toggle Off While In Combat"] }, nil, nil, nil, function(info, value) E.db.nameplates[info[#info]] = value NP:PLAYER_REGEN_ENABLED() end)
-NamePlates.generalGroup.args.smoothbars = ACH:Toggle(L["Smooth Bars"], L["Bars will transition smoothly."], 4, nil, nil, 110)
 NamePlates.generalGroup.args.clampToScreen = ACH:Toggle(L["Clamp Nameplates"], L["Clamp nameplates to the top of the screen when outside of view."], 5, nil, nil, 140)
 NamePlates.generalGroup.args.spacer1 = ACH:Spacer(6, 'full')
 NamePlates.generalGroup.args.overlapV = ACH:Range(L["Overlap Vertical"], L["Percentage amount for vertical overlap of Nameplates."], 10, { min = 0, max = 3, step = .1 })
@@ -444,6 +443,15 @@ NamePlates.generalGroup.args.plateVisibility.args.playerVisibility.args.alphaDel
 
 NamePlates.generalGroup.args.plateVisibility.args.enemyVisibility = ACH:MultiSelect(L["Enemy"], nil, 10, { guardians = L["Guardians"], minions = L["Minions"], minus = L["Minus"], pets = L["Pets"], totems = L["Totems"] }, nil, nil, function(_, key) return E.db.nameplates.visibility.enemy[key] end, function(_, key, value) E.db.nameplates.visibility.enemy[key] = value NP:SetCVars() NP:ConfigureAll() end, function() return not E.db.nameplates.visibility.showAll end)
 NamePlates.generalGroup.args.plateVisibility.args.friendlyVisibility = ACH:MultiSelect(L["Friendly"], nil, 15, { guardians = L["Guardians"], minions = L["Minions"], npcs = L["NPC"], pets = L["Pets"], totems = L["Totems"] }, nil, nil, function(_, key) return E.db.nameplates.visibility.friendly[key] end, function(_, key, value) E.db.nameplates.visibility.friendly[key] = value NP:SetCVars() NP:ConfigureAll() end, function() return not E.db.nameplates.visibility.showAll end)
+
+local envConditions = { party = L["Dungeons"], raid = L["Raids"], scenario = L["Scenario"], arena = L["Arena"], pvp = L["Battleground"], resting = L["Resting"], world = L["World"] }
+NamePlates.generalGroup.args.enviromentConditions = ACH:Group(L["Enviroment Conditions"], nil, 60, nil, function(info) return E.db.nameplates.enviromentConditions[info[#info]] end, function(info, value) E.db.nameplates.enviromentConditions[info[#info]] = value NP:EnviromentConditionals() end)
+NamePlates.generalGroup.args.enviromentConditions.args.enemyEnabled = ACH:Toggle(E.NewSign..L["Enemy Enabled"], L["This option controls whether nameplates will follow the visibility settings below.\n|cffFF3333Warning:|r This will be overridden by the Enemy Combat Toggle."], 10, nil, nil, 250)
+NamePlates.generalGroup.args.enviromentConditions.args.enemy = ACH:MultiSelect(L["Enemy"], nil, 11, envConditions, nil, nil, function(_, key) return E.db.nameplates.enviromentConditions.enemy[key] end, function(_, key, value) E.db.nameplates.enviromentConditions.enemy[key] = value NP:EnviromentConditionals() end, nil, function() return not E.db.nameplates.enviromentConditions.enemyEnabled end)
+NamePlates.generalGroup.args.enviromentConditions.args.friendlyEnabled = ACH:Toggle(E.NewSign..L["Friendly Enabled"], L["This option controls whether nameplates will follow the visibility settings below.\n|cffFF3333Warning:|r This will be overridden by the Friendly Combat Toggle."], 20, nil, nil, 250)
+NamePlates.generalGroup.args.enviromentConditions.args.friendly = ACH:MultiSelect(L["Friendly"], nil, 21, envConditions, nil, nil, function(_, key) return E.db.nameplates.enviromentConditions.friendly[key] end, function(_, key, value) E.db.nameplates.enviromentConditions.friendly[key] = value NP:EnviromentConditionals() end, nil, function() return not E.db.nameplates.enviromentConditions.friendlyEnabled end)
+NamePlates.generalGroup.args.enviromentConditions.args.stackingEnabled = ACH:Toggle(E.NewSign..L["Stacking Enabled"], L["This option controls whether nameplates will follow the settings below.\n|cffFF3333Warning:|r This is an override to the Motion Type setting."], 30, nil, nil, 250)
+NamePlates.generalGroup.args.enviromentConditions.args.stacking = ACH:MultiSelect(L["Stacking Plates"], nil, 31, envConditions, nil, nil, function(_, key) return E.db.nameplates.enviromentConditions.stackingNameplates[key] end, function(_, key, value) E.db.nameplates.enviromentConditions.stackingNameplates[key] = value NP:EnviromentConditionals() end, nil, function() return not E.db.nameplates.enviromentConditions.stackingEnabled end)
 
 NamePlates.generalGroup.args.bossMods = ACH:Group(L["Boss Mod Auras"], nil, 55, nil, function(info) return E.db.nameplates.bossMods[info[#info]] end, function(info, value) E.db.nameplates.bossMods[info[#info]] = value NP:ConfigureAll() end)
 NamePlates.generalGroup.args.bossMods.args.enable = ACH:Toggle(L["Enable"], nil, 0)

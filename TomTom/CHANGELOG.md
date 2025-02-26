@@ -1,8 +1,12 @@
 # TomTom
 
-## [v4.0.3-release](https://github.com/jnwhiteh/TomTom/tree/v4.0.3-release) (2024-08-23)
-[Full Changelog](https://github.com/jnwhiteh/TomTom/commits/v4.0.3-release) [Previous Releases](https://github.com/jnwhiteh/TomTom/releases)
+## [v4.0.7-release](https://github.com/jnwhiteh/TomTom/tree/v4.0.7-release) (2024-12-18)
+[Full Changelog](https://github.com/jnwhiteh/TomTom/commits/v4.0.7-release) [Previous Releases](https://github.com/jnwhiteh/TomTom/releases)
 
+- Update TOC for 11.0.7  
+- Update TOC for classic and cata  
+- Update for 11.0.5  
+- Update TOC for Classic  
 - Respect the set closest waypoint setting  
 - Fix auto quest tracking  
 - Stupid vscode  
@@ -694,7 +698,3 @@
 - * More skeleton work  
 - Added Astrolabe coroutine branch as an external, along with the libs for Ace3Config  
 - * Zomg colors  
-- Updated AStrolabe to fix a typo  
-- * Updated Astrolabe to fix coroutine issues  
-- Zerofill the minutes also  
-- Modified TTA to be a X:XX countdown to avoid having to pluralise minutes/seconds  

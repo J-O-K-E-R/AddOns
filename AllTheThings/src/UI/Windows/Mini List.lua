@@ -157,7 +157,11 @@ local CachedMapData = setmetatable({}, {
 						end
 					end
 				elseif key == "headerID" then
-					MergeObject(groups, clone);
+					if clone.parent and clone.parent.headerID then
+						MergeIntoHeader(clone.parent.headerID, clone);
+					else
+						MergeObject(groups, clone);
+					end
 				else
 					local headerID = GetRelativeValue(group, "headerID");
 					if headerID then
@@ -256,10 +260,13 @@ app:CreateWindow("MiniList", {
 			wipe(CachedMapData);
 			self:Rebuild();
 		end
-		self.SetMapID = function(self, mapID)
+		self.SetMapID = function(self, mapID, show)
 			if mapID and mapID ~= self.mapID then
 				self.mapID = mapID;
 				self:Rebuild();
+			end
+			if show then
+				self:Show();
 			end
 		end
 		app.ToggleMiniListForCurrentZone = function()

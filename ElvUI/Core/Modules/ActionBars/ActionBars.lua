@@ -1013,29 +1013,11 @@ function AB:SpellButtonOnEnter(_, tt)
 		return
 	end
 
-	local slotIndex = self.slotIndex or (not E.Retail and FindSpellBookSlotForSpell(self))
-	local slotBank = self.spellBank or (not E.Retail and _G.SpellBookFrame.bookType)
+	local slotIndex = self.slotIndex or (FindSpellBookSlotForSpell and FindSpellBookSlotForSpell(self))
+	local slotBank = self.spellBank or (_G.SpellBookFrame and _G.SpellBookFrame.bookType)
 	if not (slotIndex and slotBank) then return end -- huh?
 
-	local needsUpdate = tt:SetSpellBookItem(slotIndex, slotBank)
-
-	ClearOnBarHighlightMarks()
-	ClearPetActionHighlightMarks()
-
-	local slotType, actionID = GetSpellBookItemInfo(slotIndex, slotBank)
-	if slotType == 'SPELL' then
-		UpdateOnBarHighlightMarksBySpell(actionID)
-	elseif slotType == 'FLYOUT' then
-		UpdateOnBarHighlightMarksByFlyout(actionID)
-	elseif slotType == 'PETACTION' then
-		UpdateOnBarHighlightMarksByPetAction(actionID)
-
-		if UpdatePetActionHighlightMarks then
-			UpdatePetActionHighlightMarks(actionID)
-		else
-			_G.PetActionBar:UpdatePetActionHighlightMarks(actionID)
-		end
-	end
+	local needsUpdate = tt:SetSpellBookItem(slotIndex, slotBank) -- need this here when its GameTooltip
 
 	local highlight = self.SpellHighlightTexture
 	if highlight and highlight:IsShown() then
@@ -1047,8 +1029,28 @@ function AB:SpellButtonOnEnter(_, tt)
 		tt:SetScript('OnUpdate', (needsUpdate and AB.SpellBookTooltipOnUpdate) or nil)
 	end
 
-	if ActionBarController_UpdateAllSpellHighlights then
-		ActionBarController_UpdateAllSpellHighlights()
+	if E.Retail then
+		ClearOnBarHighlightMarks()
+		ClearPetActionHighlightMarks()
+
+		local slotType, actionID = GetSpellBookItemInfo(slotIndex, slotBank)
+		if slotType == 'SPELL' then
+			UpdateOnBarHighlightMarksBySpell(actionID)
+		elseif slotType == 'FLYOUT' then
+			UpdateOnBarHighlightMarksByFlyout(actionID) -- Cata Flyout one will error cause its not updated
+		elseif slotType == 'PETACTION' then
+			UpdateOnBarHighlightMarksByPetAction(actionID)
+
+			if UpdatePetActionHighlightMarks then
+				UpdatePetActionHighlightMarks(actionID)
+			else
+				_G.PetActionBar:UpdatePetActionHighlightMarks(actionID)
+			end
+		end
+
+		if ActionBarController_UpdateAllSpellHighlights then
+			ActionBarController_UpdateAllSpellHighlights()
+		end
 	end
 
 	tt:Show()
@@ -1223,32 +1225,6 @@ do
 			-- this would taint along with the same path as the SetNoopers: ValidateActionBarTransition
 			_G.VerticalMultiBarsContainer:Size(10) -- dummy values so GetTop etc doesnt fail without replacing
 			AB:SetNoopsi(_G.VerticalMultiBarsContainer)
-
-			if E.Cata then
-				-- hide some interface options we dont use
-				_G.InterfaceOptionsActionBarsPanelStackRightBars:SetScale(0.5)
-				_G.InterfaceOptionsActionBarsPanelStackRightBars:SetAlpha(0)
-				_G.InterfaceOptionsActionBarsPanelStackRightBarsText:Hide() -- hides the !
-				_G.InterfaceOptionsActionBarsPanelRightTwoText:SetTextColor(1,1,1) -- no yellow
-				_G.InterfaceOptionsActionBarsPanelRightTwoText.SetTextColor = E.noop -- i said no yellow
-				_G.InterfaceOptionsActionBarsPanelAlwaysShowActionBars:SetScale(0.00001)
-				_G.InterfaceOptionsActionBarsPanelAlwaysShowActionBars:SetAlpha(0)
-				_G.InterfaceOptionsActionBarsPanelPickupActionKeyDropDownButton:SetScale(0.00001)
-				_G.InterfaceOptionsActionBarsPanelPickupActionKeyDropDownButton:SetAlpha(0)
-				_G.InterfaceOptionsActionBarsPanelPickupActionKeyDropDown:SetScale(0.00001)
-				_G.InterfaceOptionsActionBarsPanelPickupActionKeyDropDown:SetAlpha(0)
-				_G.InterfaceOptionsActionBarsPanelLockActionBars:SetScale(0.00001)
-				_G.InterfaceOptionsActionBarsPanelLockActionBars:SetAlpha(0)
-
-				_G.InterfaceOptionsCombatPanelAutoSelfCast:Hide()
-				_G.InterfaceOptionsCombatPanelSelfCastKeyDropDown:Hide()
-
-				if not E.Classic then
-					_G.InterfaceOptionsCombatPanelFocusCastKeyDropDown:Hide()
-				end
-
-				AB:SecureHook('BlizzardOptionsPanel_OnEvent')
-			end
 		end
 
 		for name in next, untaintButtons do
@@ -1481,6 +1457,13 @@ function AB:FixKeybindText(button)
 	end
 end
 
+local function skinFlyout()
+	if _G.SpellFlyout.Background then _G.SpellFlyout.Background:Hide() end
+	if _G.SpellFlyoutBackgroundEnd then _G.SpellFlyoutBackgroundEnd:Hide() end
+	if _G.SpellFlyoutHorizontalBackground then _G.SpellFlyoutHorizontalBackground:Hide() end
+	if _G.SpellFlyoutVerticalBackground then _G.SpellFlyoutVerticalBackground:Hide() end
+end
+
 local function flyoutButtonAnchor(frame)
 	local parent = frame:GetParent()
 	local _, parentAnchorButton = parent:GetPoint()
@@ -1519,7 +1502,6 @@ function AB:SpellFlyout_OnLeave()
 end
 
 function AB:UpdateFlyoutButtons()
-	if _G.SpellFlyout then _G.SpellFlyout.Background:Hide() end
 	if _G.LABFlyoutHandlerFrame then _G.LABFlyoutHandlerFrame.Background:Hide() end
 
 	local isShown = _G.SpellFlyout:IsShown()
@@ -1791,6 +1773,9 @@ function AB:Initialize()
 		AB.fadeParent:RegisterEvent('UPDATE_OVERRIDE_ACTIONBAR')
 		AB.fadeParent:RegisterEvent('UPDATE_POSSESS_BAR')
 		AB.fadeParent:RegisterEvent('PLAYER_CAN_GLIDE_CHANGED')
+
+		AB:RegisterEvent('PET_BATTLE_CLOSE', 'ReassignBindings')
+		AB:RegisterEvent('PET_BATTLE_OPENING_DONE', 'RemoveBindings')
 	end
 
 	if E.Retail or E.Cata then
@@ -1827,11 +1812,8 @@ function AB:Initialize()
 
 	AB:SetAuraCooldownDuration(E.db.cooldown.targetAuraDuration)
 
-	if E.Retail then
-		AB:SetupExtraButton()
-
-		AB:RegisterEvent('PET_BATTLE_CLOSE', 'ReassignBindings')
-		AB:RegisterEvent('PET_BATTLE_OPENING_DONE', 'RemoveBindings')
+	if E.Retail or E.Cata then
+		AB:SetupExtraButtons()
 	end
 
 	if (E.Cata and E.myclass == 'SHAMAN') and AB.db.totemBar.enable then
@@ -1858,6 +1840,10 @@ function AB:Initialize()
 
 		_G.SpellFlyout:HookScript('OnEnter', AB.SpellFlyout_OnEnter)
 		_G.SpellFlyout:HookScript('OnLeave', AB.SpellFlyout_OnLeave)
+	end
+
+	if not E.Classic then
+		hooksecurefunc(_G.SpellFlyout, 'Toggle', skinFlyout)
 	end
 end
 

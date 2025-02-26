@@ -223,6 +223,7 @@ function mod:GetOptions()
 			441791, -- Burrowed Eruption
 			438801, -- Call of the Swarm
 				shattershellScarabMarker,
+				438749, -- Scarab Fixation
 			440504, -- Impaling Eruption
 				449857, -- Impaled
 			{438218, "TANK"}, -- Piercing Strike
@@ -277,16 +278,21 @@ function mod:GetOptions()
 		[443068] = -29022, -- Stage 3
 		[455849] = "mythic",
 	}, {
+		[440179] = CL.weakened, -- Entangled (Weakened)
 		[438801] = CL.adds, -- Call of the Swarm (Adds)
+		[438749] = CL.fixate, -- Scarab Fixation (Fixate)
 		[440246] = CL.charge, -- Reckless Charge (Charge)
 		[441791] = L.burrowed_eruption, -- Burrowed Eruption (Burrow)
 		[440504] = L.impaling_eruption, -- Impaling Eruption (Frontal [A])
 		[438656] = L.venomous_rain, -- Venomous Rain (Rain)
 		[450045] = CL.leap, -- Skittering Leap (Leap)
+		[450980] = CL.shield, -- Shatter Existence (Shield)
 		[438677] = L.stinging_swarm, -- Stinging Swarm (Dispell Debuffs)
+		[456245] = CL.weakened, -- Stinging Delirium (Weakened)
 		[450129] = L.entropic_desolation, -- Entropic Desolation (Run Out)
 		[441782] = L.strands_of_reality, -- Strands of Reality (Frontal [S])
 		[450483] = CL.teleport, -- Void Step (Teleport)
+		[451277] = CL.shield, -- Spike Storm (Shield)
 		[438355] = L.cataclysmic_entropy, -- Cataclysmic Entropy (Big Boom)
 		[443068] = L.spike_eruption, -- Spike Eruption (Spikes)
 		[442994] = L.unleashed_swarm, -- Unleashed Swarm (Swarm)
@@ -296,15 +302,20 @@ function mod:GetOptions()
 end
 
 function mod:OnRegister()
+	self:SetSpellRename(440179, CL.weakened) -- Entangled (Weakened)
 	self:SetSpellRename(438801, CL.adds) -- Call of the Swarm (Adds)
+	self:SetSpellRename(438749, CL.fixate) -- Scarab Fixation (Fixate)
 	self:SetSpellRename(440246, CL.charge) -- Reckless Charge (Charge)
 	self:SetSpellRename(441791, L.burrowed_eruption) -- Burrowed Eruption (Burrow)
 	self:SetSpellRename(440504, L.impaling_eruption) -- Impaling Eruption (Frontal [A])
 	self:SetSpellRename(450045, CL.leap) -- Skittering Leap (Leap)
+	self:SetSpellRename(450980, CL.shield) -- Shatter Existence (Shield)
 	self:SetSpellRename(438677, L.stinging_swarm) -- Impaling Eruption (Frontal [A])
 	self:SetSpellRename(450129, L.entropic_desolation) -- Entropic Desolation (Run Out)
 	self:SetSpellRename(441782, L.strands_of_reality) -- Strands of Reality (Frontal [S])
 	self:SetSpellRename(450483, CL.teleport) -- Void Step (Teleport)
+	self:SetSpellRename(451277, CL.shield) -- Spike Storm (Shield)
+	self:SetSpellRename(456245, CL.weakened) -- Stinging Delirium (Weakened)
 	self:SetSpellRename(438355, L.cataclysmic_entropy) -- Cataclysmic Entropy (Big Boom)
 	self:SetSpellRename(443068, L.spike_eruption) -- Spike Eruption (Spikes)
 	self:SetSpellRename(442994, L.unleashed_swarm) -- Unleashed Swarm (Swarm)
@@ -317,9 +328,12 @@ function mod:OnBossEnable()
 
 	-- Anub'arash
 	self:Log("SPELL_CAST_START", "PiercingStrike", 438218)
+	self:Log("SPELL_AURA_APPLIED", "PiercingStrikeApplied", 438218)
+	self:Log("SPELL_AURA_APPLIED_DOSE", "PiercingStrikeApplied", 438218)
 	self:Log("SPELL_CAST_START", "ImpalingEruption", 440504)
 	self:Log("SPELL_AURA_APPLIED", "ImpaledApplied", 449857)
 	self:Log("SPELL_CAST_SUCCESS", "CallOfTheSwarm", 438801)
+	self:Log("SPELL_AURA_APPLIED", "ScarabFixationApplied", 438749)
 	self:Log("SPELL_CAST_START", "BurrowedEruption", 441791)
 	self:Log("SPELL_CAST_START", "RecklessCharge", 440246)
 	self:Log("SPELL_AURA_APPLIED", "RecklessImpactApplied", 440178)
@@ -425,6 +439,23 @@ function mod:PiercingStrike(args)
 	self:Message(args.spellId, "purple", CL.count:format(args.spellName, piercingStrikeCount))
 	piercingStrikeCount = piercingStrikeCount + 1
 	self:Bar(args.spellId, timers[self:GetStage()][args.spellId][piercingStrikeCount], CL.count:format(args.spellName, piercingStrikeCount))
+
+	local unit = self:UnitTokenFromGUID(args.sourceGUID)
+	if unit and self:Tanking(unit) then
+		self:PlaySound(args.spellId, "alert") -- targetted
+	end
+end
+
+function mod:PiercingStrikeApplied(args)
+	self:TargetMessage(args.spellId, "purple", args.destName)
+	if self:Me(args.destGUID) then
+		self:PlaySound(args.spellId, "alarm")
+	else
+		local unit = self:UnitTokenFromGUID(args.sourceGUID)
+		if self:Tank() and unit and not self:Tanking(unit) then
+			self:PlaySound(args.spellId, "warning") -- tankswap
+		end
+	end
 end
 
 function mod:ImpalingEruption(args)
@@ -474,6 +505,13 @@ function mod:AddMarking(_, unit, guid)
 	end
 end
 
+function mod:ScarabFixationApplied(args)
+	if self:Me(args.destGUID) then
+		self:PersonalMessage(args.spellId, nil, CL.fixate)
+		self:PlaySound(args.spellId, "alarm")
+	end
+end
+
 function mod:BurrowedEruption(args)
 	self:StopBar(CL.count:format(L.burrowed_eruption, burrowedEruptionCount))
 	self:Message(args.spellId, "cyan", CL.count:format(L.burrowed_eruption, burrowedEruptionCount))
@@ -505,14 +543,14 @@ function mod:RecklessImpactRemoved(args)
 end
 
 function mod:EntangledApplied(args)
-	self:Message(args.spellId, "green")
+	self:TargetMessage(args.spellId, "green", args.destName, CL.weakened)
 	self:PlaySound(args.spellId, "long") -- success
-	self:Bar(args.spellId, 12)
+	self:TargetBar(args.spellId, 12, args.destName, CL.weakened)
 end
 
 function mod:EntangledRemoved(args)
-	self:StopBar(args.spellName)
-	self:Message(args.spellId, "green", CL.over:format(args.spellName))
+	self:StopBar(CL.weakened, args.destName)
+	self:Message(args.spellId, "green", CL.over:format(CL.weakened))
 	self:PlaySound(args.spellId, "info")
 end
 
@@ -618,14 +656,14 @@ do
 	local appliedTime = 0
 	function mod:ShatterExistenceApplied(args)
 		appliedTime = args.time
-		self:Message(args.spellId, "cyan")
+		self:TargetMessage(args.spellId, "cyan", args.destName, CL.shield)
 		self:PlaySound(args.spellId, "alert")
 	end
 
 	function mod:ShatterExistenceRemoved(args)
 		self:StopBar(CL.count:format(self:SpellName(460600), intermissionSpellCount)) -- Entropic Barrage
 		if args.amount == 0 then
-			self:Message(args.spellId, "green", CL.removed_after:format(args.spellName, args.time - appliedTime))
+			self:Message(args.spellId, "green", CL.removed_after:format(CL.shield, args.time - appliedTime))
 			self:PlaySound(args.spellId, "long")
 
 			self:SetStage(2)
@@ -689,7 +727,7 @@ end
 
 function mod:StingingDeliriumApplied(args)
 	if self:MobId(args.destGUID) == 217491 then -- Takazj
-		self:TargetMessage(456245, "green", args.destName)
+		self:TargetMessage(456245, "green", args.destName, CL.weakened)
 		self:PlaySound(456245, "long")
 	else
 		self:TargetMessage(456245, "red", args.destName)
@@ -699,7 +737,7 @@ end
 
 function mod:StingingDeliriumRemoved(args)
 	if self:MobId(args.destGUID) == 217491 then -- Takazj
-		self:Message(456245, "green", CL.over:format(args.spellName))
+		self:Message(456245, "green", CL.over:format(CL.weakened))
 		self:PlaySound(456245, "info")
 	elseif self:Me(args.destGUID) then
 		self:PersonalMessage(456245, "removed")
@@ -816,14 +854,14 @@ do
 	local appliedTime = 0
 	function mod:SpikeStormApplied(args)
 		appliedTime = args.time
-		self:Message(args.spellId, "cyan")
+		self:TargetMessage(args.spellId, "cyan", args.destName, CL.shield)
 		self:PlaySound(args.spellId, "alert")
 	end
 
 	function mod:SpikeStormRemoved(args)
 		self:StopBar(CL.count:format(self:SpellName(460364), intermissionSpellCount)) -- Seismic Upheaval
 		if args.amount == 0 then
-			self:Message(args.spellId, "green", CL.removed_after:format(args.spellName, args.time - appliedTime))
+			self:Message(args.spellId, "green", CL.removed_after:format(CL.shield, args.time - appliedTime))
 			self:PlaySound(args.spellId, "long")
 
 			self:SetStage(3)

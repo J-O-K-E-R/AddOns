@@ -1,169 +1,73 @@
---[[
-			
+local addonName, PrettyReps = ...
 
-								$$$$$$$\                       $$\     $$\                     $$$$$$$\                                
-								$$  __$$\                      $$ |    $$ |                    $$  __$$\                               
-								$$ |  $$ | $$$$$$\   $$$$$$\ $$$$$$\ $$$$$$\   $$\   $$\       $$ |  $$ | $$$$$$\   $$$$$$\   $$$$$$$\ 
-								$$$$$$$  |$$  __$$\ $$  __$$\\_$$  _|\_$$  _|  $$ |  $$ |      $$$$$$$  |$$  __$$\ $$  __$$\ $$  _____|
-								$$  ____/ $$ |  \__|$$$$$$$$ | $$ |    $$ |    $$ |  $$ |      $$  __$$< $$$$$$$$ |$$ /  $$ |\$$$$$$\  
-								$$ |      $$ |      $$   ____| $$ |$$\ $$ |$$\ $$ |  $$ |      $$ |  $$ |$$   ____|$$ |  $$ | \____$$\ 
-								$$ |      $$ |      \$$$$$$$\  \$$$$  |\$$$$  |\$$$$$$$ |      $$ |  $$ |\$$$$$$$\ $$$$$$$  |$$$$$$$  |
-								\__|      \__|       \_______|  \____/  \____/  \____$$ |      \__|  \__| \_______|$$  ____/ \_______/ 
-								                                               $$\   $$ |                          $$ |                
-								                                               \$$$$$$  |                          $$ |                
-								                                                \______/                           \__|                
-												
-												Author: https://wow.curseforge.com/members/Sida2
-												Curse: https://wow.curseforge.com/projects/pretty-reps
-												Thanks to: https://worldofwarcraft.com/en-gb/character/ravencrest/Dayanne
+PrettyReps.frame = CreateFrame("Frame")
 
-]]
-
-local PrettyReps = {}
-
----------------------------------------------------------------------------------------------
---								Exports
----------------------------------------------------------------------------------------------
-_G.PrettyReps = {}
-
-function _G.PrettyReps.Disable()
-    PrettyReps:Disable()
-end
-
-function _G.PrettyReps.Enable()
-    PrettyReps:Enable()
-end
-
-function _G.PrettyReps.Refresh(getServerData)
-    PrettyReps:Refresh(getServerData)
-end
-
----------------------------------------------------------------------------------------------
---								Events
----------------------------------------------------------------------------------------------
-
-local eventFrame = CreateFrame("FRAME", "PrettyRepsUIEventFrame")
-eventFrame:RegisterEvent("ADDON_LOADED")
-eventFrame:SetScript("OnEvent", function(self, event, name, ...)
-    if event == "ADDON_LOADED" and name == "PrettyReps" then
-        _G.PrettyReps.DataUtils.Init()
-        _G.PrettyReps.UI.Init()
-        _G.PrettyReps.UI.BuildUI()
-
-        PrettyReps:RegisterCallbacks()
-    end
+-- Initialize the addon
+function PrettyReps:Init()    
+    -- Initialize core systems in correct order
+    self.DataManager:Init()
+    self.OptionsManager:Init()
+    self.UIDataProvider:Init()
     
-    if event == "UPDATE_FACTION" or event == "QUEST_LOG_UPDATE" or event == "MAJOR_FACTION_RENOWN_LEVEL_CHANGED" or event == "MAJOR_FACTION_UNLOCKED" then
-        if PrettyReps.enabled then
-            PrettyReps:Refresh(true)
+    -- Set up UI components
+    -- self:SetupSlashCommands()    
+    self.CharacterFrame:Init()
+    
+    -- Register for events
+    self.frame:RegisterEvent("PLAYER_LOGIN")
+    self.frame:RegisterEvent("UPDATE_FACTION")
+end
+
+function PrettyReps:SetupSlashCommands()
+    SLASH_PRETTYREPS1 = "/prettyreps"
+    SlashCmdList["PRETTYREPS"] = function(msg)
+        local command = msg:lower():trim()
+
+        if command == "reveal" then
+            self.FactionScanner:RevealAllFactions()
+        elseif command == "reset" then
+            self.OptionsManager:ResetAll()
+            print("PrettyReps: All options reset to defaults.")
+        elseif command == "toggle" then
+            local prettyRepsEnabled = self.OptionsManager:GetOption("enablePrettyReps")
+            if prettyRepsEnabled then
+                self.CharacterFrame:DisablePrettyReps()
+            else
+                self.CharacterFrame:EnablePrettyReps()
+                self.FactionScanner:RevealAllFactions()
+            end
+        else
+            print("PrettyReps: Available commands:")
+            print("  /prettyreps reveal - Expand all faction headers")
+            print("  /prettyreps reset - Reset all options to defaults")
+            print("  /prettyreps toggle - Toggle between custom and default UI")
         end
     end
-end)
+end
 
-function PrettyReps:RegisterCallbacks()
-    _G.PrettyReps.Callbacks.Register("OnOptionChanged", function()
-        if self.enabled then
-            PrettyReps:Refresh()
+-- Handle events
+local function OnEvent(self, event, ...)
+    if event == "ADDON_LOADED" and ... == addonName then
+        PrettyReps:Init()
+        PrettyReps.frame:UnregisterEvent("ADDON_LOADED")
+    elseif event == "PLAYER_LOGIN" then
+        -- Only reveal factions if pretty reps enabled
+        if PrettyReps.OptionsManager:GetOption("enablePrettyReps") then
+            PrettyReps.FactionScanner:RevealAllFactions()
         end
-    end)
-
-    _G.PrettyReps.Callbacks.Register("OnDbStructureChanged", function()
-        if self.enabled then
-            PrettyReps:Refresh()
+    elseif event == "UPDATE_FACTION" then
+        -- Ignore updates while scanning
+        if PrettyReps.FactionScanner.isScanning then
+            return
         end
-    end)
+        
+        -- Update data manager with current server state
+        PrettyReps.DataManager:UpdateFromServer()
+    end
 end
 
-function PrettyReps:OnShow()
-    PrettyReps:Refresh(true)
-    eventFrame:RegisterEvent("QUEST_LOG_UPDATE")
-    eventFrame:RegisterEvent("UPDATE_FACTION")
-    eventFrame:RegisterEvent("MAJOR_FACTION_RENOWN_LEVEL_CHANGED")
-    eventFrame:RegisterEvent("MAJOR_FACTION_UNLOCKED")
-end
+-- Set up event handling
+PrettyReps.frame:SetScript("OnEvent", OnEvent)
+PrettyReps.frame:RegisterEvent("ADDON_LOADED")
 
-function PrettyReps:OnHide()
-    eventFrame:UnregisterEvent("QUEST_LOG_UPDATE")
-	eventFrame:UnregisterEvent("UPDATE_FACTION")
-	eventFrame:UnregisterEvent("MAJOR_FACTION_RENOWN_LEVEL_CHANGED")
-	eventFrame:UnregisterEvent("MAJOR_FACTION_UNLOCKED")
-end
-
----------------------------------------------------------------------------------------------
---								Main
----------------------------------------------------------------------------------------------
-
-local frame = CreateFrame("FRAME", "PrettyRepsEventFrame")
-frame:RegisterEvent("PLAYER_LOGOUT")
-frame:RegisterEvent("PLAYER_LEAVING_WORLD")
-
-frame:SetScript("OnEvent", function(self, event, ...)
-	if event == "PLAYER_LEAVING_WORLD" or event == "PLAYER_LOGOUT" then
-		_G.PrettyReps.DataUtils.Save()
-	end
-end)
-
-onShow_orig = ReputationFrame:GetScript("OnShow")
-onHide_orig = ReputationFrame:GetScript("OnHide")
-ReputationFrame:SetScript("OnShow", function()
-    PrettyReps:Enable()
-end)
-
----------------------------------------------------------------------------------------------
---								Functions
----------------------------------------------------------------------------------------------
-
-function PrettyReps:Refresh(getServerData)
-    PrettyReps:SetDataProvider(_G.PrettyReps.DataUtils.RebuildPanelData({refreshServerData = getServerData}), ScrollBoxConstants.RetainScrollPosition)
-end
-
-function PrettyReps:SetPanelData(panelData)
-    getPanelData = function() return panelData end
-end
-
-function PrettyReps:Enable()
-    self.enabled = true
-    ReputationFrame:SetScript("OnShow", PrettyReps.OnShow)
-    ReputationFrame:SetScript("OnHide", PrettyReps.OnHide)
-    onHide_orig(ReputationFrame)
-    self:OnShow()
-    self:InitScrollBox(function(...) _G.PrettyReps.RepPanel.InitReputationRow(getPanelData(), ...) end)
-    self:Refresh(true)
-    _G.PrettyReps.Callbacks.Trigger("OnPrettyRepsEnabled")
-end
-
-function PrettyReps:Disable()
-    self.enabled = false
-    self:InitScrollBox(ReputationFrame_InitReputationRow)
-    ReputationFrame:SetScript("OnShow", function() onShow_orig(ReputationFrame) end)
-    ReputationFrame:SetScript("OnHide", function() onHide_orig(ReputationFrame) end)
-    onShow_orig(ReputationFrame)
-    self:OnHide()
-    ReputationFrame_Update()
-    _G.PrettyReps.Callbacks.Trigger("OnPrettyRepsDisabled")
-end
-
-function PrettyReps:SetDataProvider(panelData)
-    local scroll = ReputationFrame.ScrollBox:GetDerivedScrollOffset()
-    self:SetPanelData(panelData)
-    local dataProvider = CreateDataProviderByIndexCount(#panelData);
-    ReputationFrame.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
-end
-
-function PrettyReps:InitScrollBox(initReputationRowFunc)
-	local view = CreateScrollBoxListLinearView();
-	view:SetElementInitializer("ReputationBarTemplate", function(button, elementData)
-		initReputationRowFunc(button, elementData);
-	end);
-	view:SetPadding(0,0,0,2,2);
-
-	ScrollUtil.InitScrollBoxListWithScrollBar(ReputationFrame.ScrollBox, ReputationFrame.ScrollBar, view);
-
-	g_selectionBehavior = ScrollUtil.AddSelectionBehavior(ReputationFrame.ScrollBox, SelectionBehaviorFlags.Deselectable, SelectionBehaviorFlags.Intrusive);
-	g_selectionBehavior:RegisterCallback(SelectionBehaviorMixin.Event.OnSelectionChanged, function(o, elementData, selected)
-		local button = ReputationFrame.ScrollBox:FindFrame(elementData);
-		if button then
-			initReputationRowFunc(button, elementData);
-	end
-	end, ReputationFrame);
-end
+return PrettyReps

@@ -64,30 +64,34 @@ CGCall["Chat_Method"] = function(value)
 end
 -- Lets the players know what the roll amount is.
 CGCall["START_ROLLS"] = function(maxAmount)
-	self:SendMsg("Disable_Join")
-	if (self.game.mode == "BigTwo") then
-		self.db.global.wager = 2
-	elseif (self.game.mode == "501") then
-		self.db.global.wager = 501
-	else
-		self.db.global.wager = self.db.global.wager
-	end
-	function rollMe(maxAmount, minAmount)
-			if (minAmount == nil) then
-				minAmount = 1
-			end
-    RandomRoll(minAmount, self.db.global.wager)
-	end
-	if(self.game.host == true) then
-		local RollNotification = "Press Roll Me!"
-	if(self.game.chatframeOption == false and self.game.host == true) then	
-		self:SendMsg(format("CHAT_MSG:%s:%s:%s", self.game.PlayerName, self.game.PlayerClass, RollNotification))
-	else
-		SendChatMessage("Entries have closed. Roll now!", self.game.chatMethod)
-		SendChatMessage(format("Type /roll %s", self.db.global.wager), self.game.chatMethod)
+    self:SendMsg("Disable_Join")
+    
+    -- Set the wager based on the game mode
+    self.db.global.wager = (self.game.mode == "BigTwo") and 2 or self.db.global.wager
+    
+	function rollMe(minAmount)
+        minAmount = minAmount or 1
+        RandomRoll(minAmount, self.db.global.wager)
     end
-  end
+    -- Initial prompt to start the rolls
+    if self.game.host then
+        local initialPrompt = "Entries have closed. Roll now!"
+        
+        if self.game.chatframeOption then
+            SendChatMessage(initialPrompt, self.game.chatMethod)
+        else
+            self:SendMsg(format("CHAT_MSG:%s:%s:%s", self.game.PlayerName, self.game.PlayerClass, initialPrompt))
+        end
+
+        -- Only start prompting rolls if the mode is 1v1 DeathRoll
+        if self.game.mode == "1v1DeathRoll" then
+            self.currentRoll = self.db.global.wager  -- Initialize the first roll amount
+            self.currentPlayerIndex = 1  -- Start with the first player
+            self:PromptNextRoll()  -- Call the function to prompt the first player
+        end
+    end
 end
+
 
 CGCall["LastCall"] = function()
 	if(self.game.chatframeOption == false and self.game.host == true) then

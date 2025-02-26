@@ -345,15 +345,29 @@ do --this can save some main file locals
 			z['Alysneaks-Cenarius']		= itsMel -- [Horde] Rogue
 			z['Alytotes-Cenarius']		= itsMel -- [Horde] Shaman
 			-- Thradex (Simpys Buddy)
-			z['Foam-Area52']			= itsThradex -- Horde
-			z['Gur-Area52']				= itsThradex -- Horde
-			z['Archmage-Area52']		= itsThradex -- Horde
-			z['Counselor-Area52']		= itsThradex -- Horde
-			z['Psychiatrist-Area52']	= itsThradex -- Horde
-			z['Monk-CenarionCircle']	= itsThradex
-			z['Thradex-Stormrage']		= itsThradex
-			z['Wrecked-Stormrage']		= itsThradex
-			z['Tb-Stormrage']			= itsThradex
+			z['Player-3676-0982798A']	= itsThradex -- Foam-Area52
+			z['Player-3676-0E6FC676']	= itsThradex -- Gur-Area52
+			z['Player-3676-0D834080']	= itsThradex -- Counselor-Area52
+			z['Player-3676-0E77A90A']	= itsThradex -- Archmage-Area52
+			z['Player-3676-0EA34C00']	= itsThradex -- Benito-Area52
+			z['Player-3676-0E0547CE']	= itsThradex -- Ahmir-Area52
+			z['Player-3676-0AFA7773']	= itsThradex -- Lifelink-Area52
+			z['Player-3676-0D829A31']	= itsThradex -- Psychiatrist-Area52
+			z['Player-3676-0A5800F2']	= itsThradex -- Italian-Area52
+			z['Player-125-0AA52CD1']	= itsThradex -- Monk-CenarionCircle
+			z['Player-3675-0AB731AC']	= itsThradex -- Jonesy-MoonGuard
+			z['Player-3675-0AD64DD0']	= itsThradex -- PuertoRican-MoonGuard
+			z['Player-3675-0AD64EA1']	= itsThradex -- Rainao-MoonGuard
+			z['Player-60-0A5E33DE']		= itsThradex -- Tb-Stormrage
+			z['Player-60-0A58F3D2']		= itsThradex -- Thradex-Stormrage
+			z['Player-60-0A4E0A3E']		= itsThradex -- Wrecked-Stormrage
+			z['Player-60-0F65AEC4']		= itsThradex -- Puertorican-Stormrage
+			z['Player-60-0AADFA03']		= itsThradex -- Quickscoper-Stormrage
+			z['Player-1168-0AE46826']	= itsThradex -- Daddy-Cairne
+			z['Player-115-0883DF8B']	= itsThradex -- Daddy-EchoIsles
+			z['Player-53-0D463E51']		= itsThradex -- Badbunny-Wildhammer
+			z['Player-113-0A9F78FF']	= itsThradex -- Vanessa-Darrowmere
+			z['Player-127-0AD64E79']	= itsThradex -- Christopher-Firetree
 			-- Affinity
 			z['Affinichi-Illidan']		= Bathrobe
 			z['Affinitii-Illidan']		= Bathrobe
@@ -387,6 +401,11 @@ do --this can save some main file locals
 		end
 	elseif portal == 'EU' then
 		if E.Classic then
+			-- Luckyone Anniversary (6112: Spineshatter EU)
+			z['Player-6112-028A3A6D']	= ElvGreen -- [Horde] Hunter
+			z['Player-6112-02A2F754']	= ElvGreen -- [Horde] Priest
+			z['Player-6112-02A39E0E']	= ElvGreen -- [Horde] Warlock
+			z['Player-6112-02BBE8AB']	= ElvGreen -- [Horde] Hunter 2
 			-- Luckyone Seasonal (5827: Living Flame EU)
 			z['Player-5827-0273D732']	= ElvGreen -- [Alliance] Hunter
 			z['Player-5827-0273D63E']	= ElvGreen -- [Alliance] Paladin
@@ -746,21 +765,31 @@ function CH:UpdateEditboxFont(chatFrame)
 	end
 
 	local id = chatFrame:GetID()
-	local font = LSM:Fetch('font', CH.db.font)
+	local font, outline = LSM:Fetch('font', CH.db.font), CH.db.fontOutline
 	local _, fontSize = _G.FCF_GetChatWindowInfo(id)
 
 	local editbox = _G.ChatEdit_ChooseBoxForSend(chatFrame)
-	editbox:FontTemplate(font, fontSize, 'SHADOW')
-	editbox.header:FontTemplate(font, fontSize, 'SHADOW')
+	editbox:FontTemplate(font, fontSize, outline)
+
+	if editbox.header then
+		editbox.header:FontTemplate(font, fontSize, outline)
+	end
 
 	if editbox.characterCount then
-		editbox.characterCount:FontTemplate(font, fontSize, 'SHADOW')
+		editbox.characterCount:FontTemplate(font, fontSize, outline)
 	end
 
 	-- the header and text will not update the placement without focus
 	if editbox and editbox:IsShown() then
 		editbox:SetFocus()
 	end
+end
+
+function CH:PositionButtonFrame(chat)
+	if not chat.buttonFrame then return end
+
+	chat.buttonFrame:ClearAllPoints()
+	chat.buttonFrame:SetPoint('TOP', chat, 'BOTTOM', 0, -90000)
 end
 
 function CH:StyleChat(frame)
@@ -845,18 +874,13 @@ function CH:StyleChat(frame)
 	end
 
 	-- stuff to hide
+	CH:PositionButtonFrame(frame)
+
 	local scrollBar = frame.ScrollBar
 	if scrollBar then scrollBar:Kill() end
 
 	local scrollToBottom = frame.ScrollToBottomButton
 	if scrollToBottom then scrollToBottom:Kill() end
-
-	local buttonFrame = _G[name..'ButtonFrame']
-	if buttonFrame then
-		buttonFrame:SetScale(0.00001)
-		buttonFrame:ClearAllPoints()
-		buttonFrame:SetPoint('TOP', E.UIParent, 'BOTTOM', 0, -500)
-	end
 
 	local thumbTexture = _G[name..'ThumbTexture']
 	if thumbTexture then thumbTexture:Kill() end
@@ -1400,7 +1424,7 @@ function CH:PositionChats()
 
 	LO:RepositionChatDataPanels()
 
-	-- dont proceed when chat is disabled
+	-- don't proceed when chat is disabled
 	if not E.private.chat.enable then return end
 
 	for _, name in ipairs(_G.CHAT_FRAMES) do
@@ -1424,6 +1448,9 @@ function CH:Panels_ColorUpdate()
 end
 
 function CH:UpdateChatTabColors()
+	-- don't proceed when chat is disabled
+	if not E.private.chat.enable then return end
+
 	for _, name in ipairs(_G.CHAT_FRAMES) do
 		local tab = CH:GetTab(_G[name])
 		CH:FCFTab_UpdateColors(tab, tab.selected)
@@ -1646,11 +1673,11 @@ end
 
 function CH:GetBNFriendColor(name, id, useBTag)
 	local info = C_BattleNet_GetAccountInfoByID(id)
-	local BATTLE_TAG = info.battleTag and strmatch(info.battleTag,'([^#]+)')
-	local TAG = (useBTag or CH.db.useBTagName) and BATTLE_TAG
+	local BNET_TAG = info and info.isBattleTagFriend and info.battleTag and strmatch(info.battleTag,'([^#]+)')
+	local TAG = (useBTag or CH.db.useBTagName) and BNET_TAG
 
 	local Class
-	local gameInfo = info.gameAccountID and C_BattleNet_GetGameAccountInfoByID(info.gameAccountID)
+	local gameInfo = info and info.gameAccountID and C_BattleNet_GetGameAccountInfoByID(info.gameAccountID)
 	if gameInfo and gameInfo.className then
 		Class = E:UnlocalizedClassName(gameInfo.className)
 	else
@@ -1658,12 +1685,12 @@ function CH:GetBNFriendColor(name, id, useBTag)
 		if firstToonClass then
 			Class = E:UnlocalizedClassName(firstToonClass)
 		else
-			return TAG or name, info.isBattleTagFriend and BATTLE_TAG
+			return TAG or name, BNET_TAG
 		end
 	end
 
 	local Color = Class and E:ClassColor(Class)
-	return (Color and format('|c%s%s|r', Color.colorStr, TAG or name)) or TAG or name, info.isBattleTagFriend and BATTLE_TAG
+	return (Color and format('|c%s%s|r', Color.colorStr, TAG or name)) or TAG or name, BNET_TAG
 end
 
 local PluginIconsCalls = {}
@@ -2214,7 +2241,7 @@ function CH:ChatFrame_MessageEventHandler(frame, event, arg1, arg2, arg3, arg4, 
 				message = format(globalstring, arg2)
 			elseif arg1 == 'FRIEND_ONLINE' or arg1 == 'FRIEND_OFFLINE' then
 				local accountInfo = C_BattleNet_GetAccountInfoByID(arg13)
-				local gameInfo = accountInfo.gameAccountInfo
+				local gameInfo = accountInfo and accountInfo.gameAccountInfo
 				if gameInfo and gameInfo.clientProgram and gameInfo.clientProgram ~= '' then
 					if GetTitleIconTexture then
 						GetTitleIconTexture(gameInfo.clientProgram, TitleIconVersion_Small, function(success, texture)
@@ -2795,7 +2822,7 @@ function CH:FCF_SetWindowAlpha(frame, alpha)
 end
 
 function CH:CheckLFGRoles()
-	if not E.Retail or not CH.db.lfgIcons or not IsInGroup() then return end
+	if not E.allowRoles or not CH.db.lfgIcons or not IsInGroup() then return end
 
 	wipe(lfgRoles)
 
@@ -2993,6 +3020,7 @@ function CH:DefaultSmileys()
 	CH:AddSmiley(':scream:', E:TextureString(E.Media.ChatEmojis.Scream,x))
 	CH:AddSmiley(':scream_cat:', E:TextureString(E.Media.ChatEmojis.ScreamCat,x))
 	CH:AddSmiley(':slight_frown:', E:TextureString(E.Media.ChatEmojis.SlightFrown,x))
+	CH:AddSmiley(':slight_smile:', E:TextureString(E.Media.ChatEmojis.SlightSmile,x))
 	CH:AddSmiley(':smile:', E:TextureString(E.Media.ChatEmojis.Smile,x))
 	CH:AddSmiley(':smirk:', E:TextureString(E.Media.ChatEmojis.Smirk,x))
 	CH:AddSmiley(':sob:', E:TextureString(E.Media.ChatEmojis.Sob,x))
@@ -3027,10 +3055,10 @@ function CH:DefaultSmileys()
 	-- old keys
 	CH:AddSmiley(':%-@', E:TextureString(E.Media.ChatEmojis.Angry,x))
 	CH:AddSmiley(':@', E:TextureString(E.Media.ChatEmojis.Angry,x))
-	CH:AddSmiley(':%-%)', E:TextureString(E.Media.ChatEmojis.Smile,x))
-	CH:AddSmiley(':%)', E:TextureString(E.Media.ChatEmojis.Smile,x))
-	CH:AddSmiley(':D', E:TextureString(E.Media.ChatEmojis.Grin,x))
-	CH:AddSmiley(':%-D', E:TextureString(E.Media.ChatEmojis.Grin,x))
+	CH:AddSmiley(':%-%)', E:TextureString(E.Media.ChatEmojis.SlightSmile,x))
+	CH:AddSmiley(':%)', E:TextureString(E.Media.ChatEmojis.SlightSmile,x))
+	CH:AddSmiley(':D', E:TextureString(E.Media.ChatEmojis.Smile,x))
+	CH:AddSmiley(':%-D', E:TextureString(E.Media.ChatEmojis.Smile,x))
 	CH:AddSmiley(';%-D', E:TextureString(E.Media.ChatEmojis.Grin,x))
 	CH:AddSmiley(';D', E:TextureString(E.Media.ChatEmojis.Grin,x))
 	CH:AddSmiley('=D', E:TextureString(E.Media.ChatEmojis.Grin,x))
@@ -3299,7 +3327,7 @@ end
 
 function CH:BuildCopyChatFrame()
 	local frame = CreateFrame('Frame', 'ElvUI_CopyChatFrame', E.UIParent)
-	tinsert(_G.UISpecialFrames, 'CopyChatFrame')
+	tinsert(_G.UISpecialFrames, 'ElvUI_CopyChatFrame')
 	frame:SetTemplate('Transparent')
 	frame:Size(700, 200)
 	frame:Point('BOTTOM', E.UIParent, 'BOTTOM', 0, 3)
@@ -3367,7 +3395,7 @@ function CH:BuildCopyChatFrame()
 	editBox:Width(scrollFrame:GetWidth())
 	S:HandleScrollBar(scrollFrame.ScrollBar)
 
-	local close = CreateFrame('Button', 'CopyChatFrameCloseButton', frame, 'UIPanelCloseButton')
+	local close = CreateFrame('Button', 'ElvUI_CopyChatFrameCloseButton', frame, 'UIPanelCloseButton')
 	close:Point('TOPRIGHT')
 	close:SetFrameLevel(close:GetFrameLevel() + 1)
 	close:EnableMouse(true)
@@ -3643,13 +3671,7 @@ function CH:FCF_Tab_OnClick(button)
 		chat:StopMovingOrSizing()
 
 		_G.CURRENT_CHAT_FRAME_ID = self:GetID()
-
-		if E.Cata then
-			local tabName = self:GetName()
-			_G.ToggleDropDownMenu(1, nil, _G[tabName..'DropDown'], tabName, 0, 0)
-		else
-			_G.FCF_Tab_SetupMenu(self)
-		end
+		_G.FCF_Tab_SetupMenu(self)
 	elseif button == 'MiddleButton' then
 		if (E.Retail or (chat ~= _G.DEFAULT_CHAT_FRAME and not _G.IsCombatLog(chat))) and not _G.IsBuiltinChatWindow(chat) then -- Dynamic between classic/wrath/retail ~Simpy
 			if not chat.isTemporary then
@@ -3747,6 +3769,7 @@ function CH:Initialize()
 	CH:SecureHook('FCFDock_SelectWindow')
 	CH:SecureHook('FCFDock_ScrollToSelectedTab')
 	CH:SecureHook('FCF_SetWindowAlpha')
+	CH:SecureHook('FCF_SetButtonSide', 'PositionButtonFrame')
 	CH:SecureHook('FCF_Close', 'PostChatClose')
 	CH:SecureHook('FCF_DockFrame', 'SnappingChanged')
 	CH:SecureHook('FCF_ResetChatWindows', 'ClearSnapping')

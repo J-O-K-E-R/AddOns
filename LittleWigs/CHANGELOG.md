@@ -1,12 +1,18 @@
 # LittleWigs
 
-## [v11.0.44](https://github.com/BigWigsMods/LittleWigs/tree/v11.0.44) (2024-10-22)
-[Full Changelog](https://github.com/BigWigsMods/LittleWigs/compare/v11.0.43...v11.0.44) [Previous Releases](https://github.com/BigWigsMods/LittleWigs/releases)
+## [v11.0.74](https://github.com/BigWigsMods/LittleWigs/tree/v11.0.74) (2025-02-24)
+[Full Changelog](https://github.com/BigWigsMods/LittleWigs/compare/v11.0.73...v11.0.74) [Previous Releases](https://github.com/BigWigsMods/LittleWigs/releases)
 
-- Delves/NightfallSanctum/CultLeaders: Add boss module (#1178)  
-- Delves/TheSinkhole/Cragpie: Add boss module (#1177)  
-- Cataclysm/GrimBatol/Drahga: Timer improvements  
-- WarWithin/TheStonevault/VoidSpeakerEirich: Entropy under you  
-- Update koKR (#1174)  
-- Update workflow  
-- Update koKR (#1172)  
+- WarWithin/TheRookery/VoidstoneMonstrosity: Stormrider's Charge duration update  
+- WarWithin/TheRookery/StormguardGorren: Timer update  
+- Delves/TheSpiralWeave/ThePuppetmaster: Stinging Swarm timer update  
+- Delves/TheWaterworks/Waxface: Noxious Gas under you  
+- WarWithin/PrioryOfTheSacredFlame/BaronBraunpyke: Unleashed Pyre countdown  
+- WarWithin/PrioryOfTheSacredFlame/Trash: Pounce  
+- Delves: Refactor locale (#1270)  
+- Delves/Trash/ZekvirRares: Rename module  
+- WarWithin/DarkflameCleft/OlWaxbeard: Fix custom locale in marker  
+- Update zhCN (#1269)  
+- WarWithin/DarkflameCleft/TheCandleKing: Throw Darkflame targets, timer updates  
+- WarWithin/DarkflameCleft/OlWaxbeard: Auto-mark Dynamite Mine Cart, timer updates  
+- WarWithin/DarkflameCleft/Blazikon: Extinguishing Gust sound, timer updates  

@@ -64,17 +64,29 @@ L["DPS"] = "伤害输出"
 L["DUNGEON_SHORT_NAME_AA"] = "艾杰斯亚学院"
 L["DUNGEON_SHORT_NAME_AD"] = "阿塔达萨"
 L["DUNGEON_SHORT_NAME_ARAK"] = "回响之城"
+--[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_ARC"] = ""--]] 
 L["DUNGEON_SHORT_NAME_AV"] = "碧蓝魔馆"
 L["DUNGEON_SHORT_NAME_BH"] = "蕨皮山谷"
+--[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_BREW"] = ""--]] 
 L["DUNGEON_SHORT_NAME_BRH"] = "黑鸦堡垒"
+--[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_COEN"] = ""--]] 
 L["DUNGEON_SHORT_NAME_COS"] = "群星庭院"
 L["DUNGEON_SHORT_NAME_COT"] = "千丝之城"
 L["DUNGEON_SHORT_NAME_DAWN"] = "破晨号"
+--[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_DFC"] = ""--]] 
 L["DUNGEON_SHORT_NAME_DHT"] = "黑心林地"
 L["DUNGEON_SHORT_NAME_DOS"] = "彼界"
 L["DUNGEON_SHORT_NAME_EB"] = "永茂林地"
+--[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_EOA"] = ""--]] 
 L["DUNGEON_SHORT_NAME_FALL"] = "永恒：陨落"
 L["DUNGEON_SHORT_NAME_FH"] = "自由镇"
+--[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_FLOOD"] = ""--]] 
 L["DUNGEON_SHORT_NAME_GB"] = "格瑞姆巴托"
 L["DUNGEON_SHORT_NAME_GD"] = "恐轨车站"
 L["DUNGEON_SHORT_NAME_GMBT"] = "集市（后三）"
@@ -82,23 +94,41 @@ L["DUNGEON_SHORT_NAME_HOA"] = "赎罪大厅"
 L["DUNGEON_SHORT_NAME_HOI"] = "注能大厅"
 L["DUNGEON_SHORT_NAME_HOV"] = "英灵殿"
 L["DUNGEON_SHORT_NAME_ID"] = "钢铁码头"
+--[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_KR"] = ""--]] 
 L["DUNGEON_SHORT_NAME_LOWR"] = "卡拉赞下层"
 L["DUNGEON_SHORT_NAME_MISTS"] = "仙林迷雾"
+--[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_ML"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_MOS"] = ""--]] 
 L["DUNGEON_SHORT_NAME_NELT"] = "奈萨鲁斯"
 L["DUNGEON_SHORT_NAME_NL"] = "巢穴"
 L["DUNGEON_SHORT_NAME_NO"] = "诺库德阻击战"
 L["DUNGEON_SHORT_NAME_NW"] = "通灵战潮 "
 L["DUNGEON_SHORT_NAME_PF"] = "凋魂之殇"
+--[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_PSF"] = ""--]] 
 L["DUNGEON_SHORT_NAME_RISE"] = "永恒：崛起"
 L["DUNGEON_SHORT_NAME_RLP"] = "红玉新生法池"
+--[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_ROOK"] = ""--]] 
 L["DUNGEON_SHORT_NAME_SBG"] = "影月墓地"
 L["DUNGEON_SHORT_NAME_SD"] = "赤红深渊"
+--[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_SEAT"] = ""--]] 
 L["DUNGEON_SHORT_NAME_SIEGE"] = "围攻"
 L["DUNGEON_SHORT_NAME_SOA"] = "晋升高塔"
+--[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_SOTS"] = ""--]] 
 L["DUNGEON_SHORT_NAME_STRT"] = "集市（前五）"
 L["DUNGEON_SHORT_NAME_SV"] = "矶石宝库"
+--[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_TD"] = ""--]] 
 L["DUNGEON_SHORT_NAME_TJS"] = "青龙寺"
 L["DUNGEON_SHORT_NAME_TOP"] = "伤逝剧场"
+--[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_TOS"] = ""--]] 
 L["DUNGEON_SHORT_NAME_TOTT"] = "潮汐王座"
 L["DUNGEON_SHORT_NAME_ULD"] = "奥达曼"
 L["DUNGEON_SHORT_NAME_UNDR"] = "地渊孢林"
@@ -275,6 +305,22 @@ L["RAID_BOSS_CN_6"] = "伊涅瓦·暗脉女勋爵"
 L["RAID_BOSS_CN_7"] = "猩红议会"
 L["RAID_BOSS_CN_8"] = "泥拳"
 L["RAID_BOSS_CN_9"] = "顽石军团干将"
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_DS_1"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_DS_2"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_DS_3"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_DS_4"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_DS_5"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_DS_6"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_DS_7"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_DS_8"] = ""--]] 
 L["RAID_BOSS_FCN_1"] = "啸翼（宿命）"
 L["RAID_BOSS_FCN_10"] = "德纳修斯大帝（宿命）"
 L["RAID_BOSS_FCN_2"] = "猎手阿尔迪莫（宿命）"
@@ -285,6 +331,20 @@ L["RAID_BOSS_FCN_6"] = "伊涅瓦·暗脉女勋爵（宿命）"
 L["RAID_BOSS_FCN_7"] = "猩红议会（宿命）"
 L["RAID_BOSS_FCN_8"] = "泥拳（宿命）"
 L["RAID_BOSS_FCN_9"] = "顽石军团干将（宿命）"
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_FL_1"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_FL_2"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_FL_3"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_FL_4"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_FL_5"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_FL_6"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_FL_7"] = ""--]] 
 L["RAID_BOSS_FSFO_1"] = "警戒卫士（宿命）"
 L["RAID_BOSS_FSFO_10"] = "莱葛隆（宿命）"
 L["RAID_BOSS_FSFO_11"] = "典狱长（宿命）"
@@ -318,6 +378,22 @@ L["RAID_BOSS_ICC_6"] = "腐面"
 L["RAID_BOSS_ICC_7"] = "普崔塞德教授"
 L["RAID_BOSS_ICC_8"] = "鲜血王子议会"
 L["RAID_BOSS_ICC_9"] = "鲜血女王兰娜瑟尔"
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_LOU_1"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_LOU_2"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_LOU_3"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_LOU_4"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_LOU_5"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_LOU_6"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_LOU_7"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_LOU_8"] = ""--]] 
 L["RAID_BOSS_NP_1"] = "乌格拉克斯"
 L["RAID_BOSS_NP_2"] = "血缚恐魔"
 L["RAID_BOSS_NP_3"] = "席克兰"
@@ -376,8 +452,14 @@ L["RAID_DIFFICULTY_SUFFIX_MYTHIC"] = "史诗"
 L["RAID_DIFFICULTY_SUFFIX_NORMAL"] = "普通"
 L["RAID_DIFFICULTY_SUFFIX_NORMAL10"] = "10PT"
 L["RAID_DIFFICULTY_SUFFIX_NORMAL25"] = "25PT"
+--[[Translation missing --]]
+--[[ L["RAID_DS"] = ""--]] 
 L["RAID_ENCOUNTERS_DEFEATED_TITLE"] = "已击杀团队副本首领"
+--[[Translation missing --]]
+--[[ L["RAID_FL"] = ""--]] 
 L["RAID_ICC"] = "冰冠堡垒"
+--[[Translation missing --]]
+--[[ L["RAID_LOU"] = ""--]] 
 L["RAID_NP"] = "尼鲁巴尔王宫"
 L["RAID_RS"] = "红玉圣所"
 L["RAID_TOTFW"] = "风神王座"
@@ -391,6 +473,8 @@ L["RAIDERIO_MP_SCORE"] = "大秘境分数"
 L["RAIDERIO_MYTHIC_OPTIONS"] = "Raider.IO插件选项"
 L["RAIDING_DATA_HEADER"] = "团队副本进度"
 L["RAIDING_DB_MODULES"] = "团本数据库模块"
+--[[Translation missing --]]
+--[[ L["RECENT_RUNS_WITH_YOU"] = ""--]] 
 L["RECRUITMENT_DB_MODULES"] = "招募数据库模块"
 L["RELOAD_LATER"] = "我一会儿再重载界面（Reload）"
 L["RELOAD_NOW"] = "现在重载界面（Reload）"

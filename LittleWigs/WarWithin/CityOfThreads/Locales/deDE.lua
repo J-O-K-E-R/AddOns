@@ -2,12 +2,14 @@ local L = BigWigs:NewBossLocale("City of Threads Trash", "deDE")
 if not L then return end
 if L then
 	L.herald_of_ansurek = "Herold von Ansurek"
+	L.sureki_venomblade = "Giftklinge der Sureki"
 	L.sureki_silkbinder = "Seidenbinder der Sureki"
 	L.royal_swarmguard = "Königliche Schwarmwache"
 	L.xephitik = "Xeph'itik"
 	L.pale_priest = "Blasse Priesterin"
 	L.eye_of_the_queen = "Auge der Königin"
 	L.covert_webmancer = "Verdeckte Netzmagierin"
+	L.web_marauder = "Netzmarodeur"
 	L.royal_venomshell = "Königlicher Giftpanzer"
 	L.unstable_test_subject = "Instabiles Versuchsobjekt"
 	L.sureki_unnaturaler = "Entnaturisierer der Sureki"

@@ -1,5 +1,8 @@
 local _, addon = ...;
 local GetItemCount = C_Item.GetItemCount;
+local tinsert = table.insert;
+
+local GemEffects = {};
 
 local PrismaticGems = {
     ----11 TWW---- itemID order: better-lower quality
@@ -150,7 +153,6 @@ do
         32215, 32212, 32216, 37503, 32211, 32213, 32214, 24056, 24055, 30600, 30549, 24054, 24057, 30603, 35707, 30546, 30555, 31865, 30563, 30566, 31116, 31863, 32636, 31118, 30574, 30572, 31117, 30552, 32634, 32836, 32833, 23111, 23108, 23110, 31864, 23109, 31862,
     };
 
-    local tinsert = table.insert;
     for i = 1, #GreenGems do
         tinsert(BlueGems, GreenGems[i]);
         tinsert(YellowGems, GreenGems[i]);
@@ -214,17 +216,40 @@ local PrimordialStones = {
     204015,
     204020,
     204030,
-
-    --In database but not implemented
-    --204016,
-    --204026,
-    --204024,
-    --204017,
-    --204023,
-    --204028,
 };
-
 local IsPrimordialStone;
+
+local Fragrance = {
+    227448,
+    227447,
+    227445,
+    227449,
+};
+GemEffects[227448] = 1;
+GemEffects[227447] = 2;
+GemEffects[227445] = 3;
+GemEffects[227449] = 4;
+
+local SingingThunder = {
+    228642,     --Storm Sewer
+    228648,     --Roaring War-Queen
+    228638,     --Stormbringer
+    228634,     --Thunderlord
+};
+local SingingSea = {
+    228644,     --Mariner
+    228647,     --Seabed Leviathan
+    228639,     --Fathomdweller
+    228636,     --Undersea Overseer
+};
+local SingingWind = {
+    228643,     --Old Salt's Bardic
+    228646,     --Legendary Skipper
+    228640,     --Windsinger
+    228635,     --Squall Sailor
+};
+local IsSingCitrine;
+
 
 local GemData = {
     prismatic = PrismaticGems,
@@ -236,6 +261,17 @@ local GemData = {
     meta = MetaGems,
     tinker = TinkerModules,
     primordial = PrimordialStones,
+    fragrance = Fragrance,
+    singingthunder = SingingThunder,
+    singingsea = SingingSea,
+    singingwind = SingingWind,
+};
+
+local RemovableSocket = {
+    primordial = true,
+    singingthunder = true,
+    singingsea = true,
+    singingwind = true,
 };
 
 local SocketNameXTypeName = {};
@@ -243,7 +279,14 @@ local SocketNameXTypeName = {};
 do
     local postfixes = {
         "BLUE", "COGWHEEL", "HYDRAULIC", "META", "PRISMATIC", "PUNCHCARDBLUE", "PUNCHCARDRED", "PUNCHCARDYELLOW",
-        "RED", "TINKER", "YELLOW", "PRIMORDIAL",
+        "RED", "TINKER", "YELLOW", "PRIMORDIAL", "FRAGRANCE",
+    };
+
+    local postfixLocal = {
+        --For sockets where the EMPTY_SOCKET_ in ItemStats doesn't match the localized EMPTY_SOCKET_
+        SINGINGTHUNDER = "EMPTY_SOCKET_SINGING_THUNDER",
+        SINGINGSEA = "EMPTY_SOCKET_SINGING_SEA",
+        SINGINGWIND = "EMPTY_SOCKET_SINGING_WIND",
     };
 
     local localizedName;
@@ -254,6 +297,16 @@ do
             SocketNameXTypeName[localizedName] = string.lower(postfix);
         end
     end
+
+    for postfix, k in pairs(postfixLocal) do
+        localizedName = _G[k];
+        if localizedName then
+            SocketNameXTypeName[localizedName] = string.lower(postfix);
+        end
+    end
+
+    postfixes = nil;
+    postfixLocal = nil;
 end
 
 local DataProvider = {};
@@ -270,16 +323,19 @@ function DataProvider:GetSocketTypeByLocalizedName(localizedName)
 end
 
 function DataProvider:SetSubsetBySocketName(englishName)
+    local socketTypeName;
+
     if englishName then
-        englishName = string.lower(englishName);
-        self.isDominationItem = englishName == "domination";
-        SUB_SET = GemData[englishName];
+        socketTypeName = string.lower(englishName);
+        self.isDominationItem = socketTypeName == "domination";
+        SUB_SET = GemData[socketTypeName];
     end
+
     if not SUB_SET then
         SUB_SET = {};
     end
 
-    return englishName
+    return socketTypeName
 end
 
 function DataProvider:SetSubsetBySocketLocalizedName(localizedName)
@@ -338,6 +394,57 @@ end
 
 function DataProvider:GetPrimordialStones()
     return PrimordialStones
+end
+
+function DataProvider:IsItemSingCitrine(itemID)
+    if not IsSingCitrine then
+        IsSingCitrine = {};
+        for _, id in pairs(SingingSea) do
+            IsSingCitrine[id] = true;
+        end
+        for _, id in pairs(SingingThunder) do
+            IsSingCitrine[id] = true;
+        end
+        for _, id in pairs(SingingWind) do
+            IsSingCitrine[id] = true;
+        end
+    end
+
+    return IsSingCitrine[itemID]
+end
+
+function DataProvider:IsSocketRemovable(socketTypeName)
+    return socketTypeName and RemovableSocket[socketTypeName]
+end
+
+local GemEffectNames = {
+    [1] = "+ "..(STAT_CRITICAL_STRIKE or "Critical Strike"),
+    [2] = "+ "..(STAT_HASTE or "Haste"),
+    [3] = "+ "..(STAT_MASTERY or "Mastery"),
+    [4] = "+ "..(STAT_VERSATILITY or "Versatility"),
+}
+
+function DataProvider:GetGemEffect(itemID)
+    if GemEffects[itemID] then
+        return GemEffectNames[ GemEffects[itemID] ]
+    end
+end
+
+
+local TooltipLines = {
+    Generic = {3, 4, 5},
+    PrimordialStone = {6, 3, 7},
+    SingCitrine = {2, 5, 6},
+};
+
+function DataProvider:GetItemTooltipLines(itemID)
+    if self:IsItemPrimordialStone(itemID) then
+        return TooltipLines.PrimordialStone
+    elseif self:IsItemSingCitrine(itemID) then
+        return TooltipLines.SingCitrine
+    else
+        return TooltipLines.Generic
+    end
 end
 
 --[[

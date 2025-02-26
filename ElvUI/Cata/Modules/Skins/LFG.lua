@@ -246,15 +246,10 @@ function S:LookingForGroupFrames()
 		end
 	end)
 
-	S:HandleDropDownBox(_G.LFDQueueFrameTypeDropDown)
+	S:HandleDropDownBox(_G.LFDQueueFrameTypeDropdown, 200)
 
 	-- Skin Reward Items (This works for all frames, LFD, Raid, Scenario)
 	hooksecurefunc('LFGRewardsFrame_SetItemButton', SkinItemButton)
-
-	--[[
-		LFGInvitePopup_Update('Elvz', true, true, true)
-		StaticPopupSpecial_Show(LFGInvitePopup)
-	]]
 
 	_G.LFGInvitePopup:StripTextures()
 	_G.LFGInvitePopup:SetTemplate('Transparent')
@@ -266,14 +261,16 @@ function S:LookingForGroupFrames()
 	S:HandleTrimScrollBar(_G.LFDQueueFrameSpecific.ScrollBar)
 
 	local RoleDialog = _G.LFGListCreateRoleDialog
-	RoleDialog:StripTextures()
-	RoleDialog:SetTemplate('Transparent')
-	S:HandleButton(RoleDialog.SignUpButton)
-	S:HandleButton(RoleDialog.CancelButton)
+	if RoleDialog then
+		RoleDialog:StripTextures()
+		RoleDialog:SetTemplate('Transparent')
+		S:HandleButton(RoleDialog.SignUpButton)
+		S:HandleButton(RoleDialog.CancelButton)
 
-	S:HandleCheckBox(RoleDialog.DamagerButton.CheckButton)
-	S:HandleCheckBox(RoleDialog.TankButton.CheckButton)
-	S:HandleCheckBox(RoleDialog.HealerButton.CheckButton)
+		S:HandleCheckBox(RoleDialog.DamagerButton.CheckButton)
+		S:HandleCheckBox(RoleDialog.TankButton.CheckButton)
+		S:HandleCheckBox(RoleDialog.HealerButton.CheckButton)
+	end
 
 	-- LFGListFrame
 	local LFGListFrame = _G.LFGListFrame
@@ -304,16 +301,16 @@ function S:LookingForGroupFrames()
 	S:HandleEditBox(LFGListFrame.EntryCreation.VoiceChat.EditBox)
 	S:HandleEditBox(LFGListFrame.EntryCreation.Name)
 
-	S:HandleDropDownBox(_G.LFGListEntryCreationActivityDropDown)
-	S:HandleDropDownBox(_G.LFGListEntryCreationGroupDropDown)
-	S:HandleDropDownBox(_G.LFGListEntryCreationPlayStyleDropdown)
-
 	S:HandleCheckBox(LFGListFrame.EntryCreation.ItemLevel.CheckButton)
 	S:HandleCheckBox(LFGListFrame.EntryCreation.PrivateGroup.CheckButton)
 	S:HandleCheckBox(LFGListFrame.EntryCreation.PvpItemLevel.CheckButton)
 	S:HandleCheckBox(LFGListFrame.EntryCreation.PVPRating.CheckButton)
 	S:HandleCheckBox(LFGListFrame.EntryCreation.VoiceChat.CheckButton)
 	S:HandleCheckBox(LFGListFrame.EntryCreation.CrossFactionGroup.CheckButton)
+
+	S:HandleDropDownBox(_G.LFGListEntryCreationActivityDropdown)
+	S:HandleDropDownBox(_G.LFGListEntryCreationGroupDropdown)
+	S:HandleDropDownBox(_G.LFGListEntryCreationPlayStyleDropdown)
 
 	LFGListFrame.EntryCreation.ActivityFinder.Dialog:StripTextures()
 	LFGListFrame.EntryCreation.ActivityFinder.Dialog:SetTemplate('Transparent')

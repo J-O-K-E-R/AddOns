@@ -1,6 +1,6 @@
-## Interface: 110002
+## Interface: 110100
 ## Title: WIM - ElvUI Skin
-## Version: 110002.01-Release
+## Version: 110100.01-Release
 ## Author: fuba
 ## IconTexture: Interface\AddOns\WIM_ElvUI_Skin\fubaLogo
 ## Original Author: Divico / Alleria EU

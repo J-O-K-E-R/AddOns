@@ -3,8 +3,8 @@ local appName, app = ...;
 local GetProgressColorText = app.Modules.Color.GetProgressColorText;
 
 -- Global locals
-local ipairs, pairs, time, tinsert, tremove =
-	  ipairs, pairs, time, tinsert, tremove;
+local ipairs, pairs, time, tinsert, tremove, tsort =
+	  ipairs, pairs, time, tinsert, tremove, table.sort;
 local BNGetInfo, BNSendGameData, C_BattleNet, C_ChatInfo = 
 	  BNGetInfo, BNSendGameData, C_BattleNet, C_ChatInfo;
 -- NOTES: BNGetFriendInfo and BNGetNumFriends are useless
@@ -13,41 +13,66 @@ local BNGetInfo, BNSendGameData, C_BattleNet, C_ChatInfo =
 local AccountWideData, CharacterData, CurrentCharacter, LinkedCharacters, OnlineAccounts, SilentlyLinkedCharacters = {}, {}, {}, {}, {}, {}
 
 -- Module locals
-local AddonMessagePrefix, MESSAGE_HANDLERS, pendingReceiveChunksForUser, pendingSendChunksForUser, uid = "ATTSYNC", {}, {}, {}, 1;
+local AddonMessagePrefix, MESSAGE_HANDLERS, EnableBattleNet = "ATTSYNC", {}, true;
+local uid, pendingReceiveChunksForUser, pendingSendChunksForUser, pendingSendResponsesForUser = 1, {}, {}, {};
 local function ProcessSendChunks()
 	local any;
 	repeat
-		any = false;
-		for key,user in pairs(pendingSendChunksForUser) do
-			any = true;
-			for uid,pendingChunk in pairs(user) do
-				-- Acquire the cooldown and see if we're still on cooldown.
-				local cooldown = pendingChunk.cooldown;
-				if cooldown > 0 then
-					-- We're still on cooldown. Don't do anything this cycle.
-					pendingChunk.cooldown = cooldown - 1;
-				else
-					-- Off cooldown! do something!
-					local acks = pendingChunk.acks;
-					local chunks = pendingChunk.chunks;
-					local chunkCount = #chunks;
-					local finished = true;
-					for i=1,chunkCount,1 do
-						if not acks[i] then
-							-- We found one that hasn't been acknowledged yet.
-							pendingChunk.method(pendingChunk.target, "chunk`" .. pendingChunk.uid .. "`" .. i .. "`" .. chunkCount .. "`" .. chunks[i]);
-							pendingChunk.cooldown = 10000;	-- ~10 seconds (resets when an ack is received!)
-							finished = false;
-							cooldown = 60;
-							while cooldown > 0 do
-								cooldown = cooldown - 1;
-								coroutine.yield();
+		repeat
+			any = false;
+			for key,user in pairs(pendingSendChunksForUser) do
+				for uid,pendingChunk in pairs(user) do
+					-- Acquire the cooldown and see if we're still on cooldown.
+					local cooldown = pendingChunk.cooldown;
+					if cooldown > 0 then
+						-- We're still on cooldown. Don't do anything this cycle.
+						pendingChunk.cooldown = cooldown - 1;
+					else
+						-- Off cooldown! do something!
+						local acks = pendingChunk.acks;
+						local chunks = pendingChunk.chunks;
+						local chunkCount = #chunks;
+						local finished = true;
+						for i=1,chunkCount,1 do
+							if not acks[i] then
+								-- We found one that hasn't been acknowledged yet.
+								pendingChunk.method(pendingChunk.target, "chunk`" .. pendingChunk.uid .. "`" .. i .. "`" .. chunkCount .. "`" .. chunks[i]);
+								pendingChunk.cooldown = 10000;	-- ~10 seconds (resets when an ack is received!)
+								finished = false;
+								break;
 							end
-							break;
 						end
+						if finished then user[uid] = nil; end
 					end
-					if finished then user[uid] = nil; end
+					any = true;
+					break;
 				end
+				if any then
+					break;
+				else
+					pendingSendChunksForUser[key] = nil;
+				end
+			end
+			coroutine.yield();
+		until(not any);
+		for key,user in pairs(pendingSendResponsesForUser) do
+			for uid,pendingResponse in pairs(user) do
+				local responses = pendingResponse.responses;
+				local responseCount = #responses;
+				local index = pendingResponse.index;
+				pendingResponse.method(pendingResponse.target, responses[index]);
+				if index == responseCount then
+					user[uid] = nil;
+				else
+					index = index + 1;
+					pendingResponse.index = index;
+				end
+				any = true;
+			end
+			if any then
+				break;
+			else
+				pendingSendResponsesForUser[key] = nil;
 			end
 		end
 		coroutine.yield();
@@ -68,6 +93,26 @@ local function QueueSendChunks(method, target, chunks)
 		uid = uid,
 	};
 	pending[uid] = pendingChunk;
+	uid = uid + 1;
+	app:StartATTCoroutine("Sync_ProcessSendChunks", ProcessSendChunks);
+end
+local function SortByResponseLength(a, b)
+	return #a < #b;
+end
+local function QueueSendResponses(method, target, responses)
+	local pending = pendingSendResponsesForUser[target];
+	if not pending then
+		pending = {};
+		pendingSendResponsesForUser[target] = pending;
+	end
+	local pendingResponse = {
+		method = method,
+		target = target,
+		responses = responses,
+		index = 1,
+	};
+	tsort(responses, SortByResponseLength);
+	pending[uid] = pendingResponse;
 	uid = uid + 1;
 	app:StartATTCoroutine("Sync_ProcessSendChunks", ProcessSendChunks);
 end
@@ -195,7 +240,7 @@ local function SendCharacterMessage(character, msg)
 	if character then
 		msg = ValidateMessage(msg);
 		local gameAccountID = character.gameAccountID;
-		if BNSendGameData and gameAccountID then
+		if BNSendGameData and gameAccountID and EnableBattleNet then
 			SendBattleNetMessage(gameAccountID, msg);
 		elseif character.realm == CurrentCharacter.realm and character.factionID == CurrentCharacter.factionID then
 			SendAddonMessage(character.name, msg);
@@ -284,14 +329,7 @@ local function ProcessAddonMessageMethod(self, method, sender, text)
 	-- Process the addon message and send back a response. (or several)
 	local responses = {};
 	ProcessAddonMessageText(self, sender, text, responses);
-	local responseCount = #responses;
-	if responseCount > 0 then
-		local wad = responses[1];
-		for i=2,responseCount,1 do
-			wad = wad .. "~" .. responses[i];
-		end
-		method(sender, wad);
-	end
+	if #responses > 0 then QueueSendResponses(method, sender, responses); end
 end
 
 -- Account Wide Data handlers
@@ -955,6 +993,7 @@ app:CreateWindow("Synchronization", {
 	IgnoreQuestUpdates = true,
 	Defaults = {
 		AutoSync = true,
+		EnableBattleNet = not not BNGetInfo,
 		LinkedCharacters = LinkedCharacters,
 	},
 	Commands = { "attsync" },
@@ -993,6 +1032,7 @@ app:CreateWindow("Synchronization", {
 		setmetatable(linked, { __index = SilentlyLinkedCharacters });
 		
 		-- Cache the current character's BattleTag. 
+		EnableBattleNet = settings.EnableBattleNet;
 		if BNGetInfo then
 			local battleTag = select(2, BNGetInfo());
 			if battleTag then
@@ -1051,6 +1091,23 @@ app:CreateWindow("Synchronization", {
 				}, { __index = function(t, key)
 					if key == "saved" then
 						return self.Settings.AutoSync;
+					end
+					return table[key];
+				end}),
+				setmetatable({	-- Enable Battle.net
+					text = "Enable Battle.net",
+					icon = 526421,
+					description = "Click here to toggle allowing Battle.net. Sometimes BNET breaks. If it does, you can enable sending messages the old fashioned way by turning this off!",
+					OnClick = function(row, button)
+						EnableBattleNet = not EnableBattleNet;
+						self.Settings.EnableBattleNet = EnableBattleNet;
+						self:Redraw();
+						return true;
+					end,
+					OnUpdate = BNGetInfo and app.AlwaysShowUpdate or nil,
+				}, { __index = function(t, key)
+					if key == "saved" then
+						return EnableBattleNet;
 					end
 					return table[key];
 				end}),

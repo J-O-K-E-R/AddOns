@@ -8,13 +8,16 @@ mod.displayName = CL.trash
 mod:RegisterEnableMob(
 	223254, -- Queen Ansurek / The Vizier (gossip NPC)
 	220196, -- Herald of Ansurek
+	220193, -- Sureki Venomblade
 	220195, -- Sureki Silkbinder
 	220197, -- Royal Swarmguard
 	219984, -- Xeph'itik
 	220401, -- Pale Priest
 	219983, -- Eye of the Queen
-	223844, -- Covert Webmancer
-	224732, -- Covert Webmancer
+	223844, -- Covert Webmancer (with Eye of the Queen)
+	224732, -- Covert Webmancer (after Fangs of the Queen)
+	223182, -- Web Marauder (with Eye of the Queen)
+	224731, -- Web Marauder (after Fangs of the Queen)
 	220423, -- Retired Lord Vul'azak
 	220777, -- Executor Nizrek (warmup NPC)
 	220730, -- Royal Venomshell
@@ -32,12 +35,14 @@ mod:RegisterEnableMob(
 local L = mod:GetLocale()
 if L then
 	L.herald_of_ansurek = "Herald of Ansurek"
+	L.sureki_venomblade = "Sureki Venomblade"
 	L.sureki_silkbinder = "Sureki Silkbinder"
 	L.royal_swarmguard = "Royal Swarmguard"
 	L.xephitik = "Xeph'itik"
 	L.pale_priest = "Pale Priest"
 	L.eye_of_the_queen = "Eye of the Queen"
 	L.covert_webmancer = "Covert Webmancer"
+	L.web_marauder = "Web Marauder"
 	L.royal_venomshell = "Royal Venomshell"
 	L.unstable_test_subject = "Unstable Test Subject"
 	L.sureki_unnaturaler = "Sureki Unnaturaler"
@@ -63,6 +68,8 @@ function mod:GetOptions()
 		-- Herald of Ansurek
 		{443437, "SAY", "SAY_COUNTDOWN", "NAMEPLATE"}, -- Shadows of Doubt
 		443433, -- Twist Thoughts
+		-- Sureki Venomblade
+		{443397, "DISPEL", "NAMEPLATE"}, -- Venom Strike
 		-- Sureki Silkbinder
 		{443430, "NAMEPLATE"}, -- Silk Binding
 		-- Royal Swarmguard
@@ -79,6 +86,8 @@ function mod:GetOptions()
 		{451222, "NAMEPLATE"}, -- Void Rush
 		-- Covert Webmancer
 		{452162, "NAMEPLATE"}, -- Mending Web
+		-- Web Marauder
+		{452151, "TANK", "NAMEPLATE", "OFF"}, -- Rigorous Jab
 		-- Royal Venomshell
 		{434137, "NAMEPLATE"}, -- Venomous Spray
 		-- Unstable Test Subject
@@ -92,12 +101,14 @@ function mod:GetOptions()
 		{447271, "NAMEPLATE"}, -- Tremor Slam
 	}, {
 		[443437] = L.herald_of_ansurek,
+		[443397] = L.sureki_venomblade,
 		[443430] = L.sureki_silkbinder,
 		[443500] = L.royal_swarmguard,
 		[450784] = L.xephitik,
 		[448047] = L.pale_priest,
 		[451543] = L.eye_of_the_queen,
 		[452162] = L.covert_webmancer,
+		[452151] = L.web_marauder,
 		[434137] = L.royal_venomshell,
 		[445813] = L.unstable_test_subject,
 		[446086] = L.sureki_unnaturaler,
@@ -124,6 +135,12 @@ function mod:OnBossEnable()
 	self:Log("SPELL_PERIODIC_DAMAGE", "TwistThoughtsDamage", 443435)
 	self:Log("SPELL_PERIODIC_MISSED", "TwistThoughtsDamage", 443435)
 	self:Death("HeraldOfAnsurekDeath", 220196)
+
+	-- Sureki Venomblade
+	self:RegisterEngageMob("SurekiVenombladeEngaged", 220193)
+	self:Log("SPELL_CAST_SUCCESS", "VenomStrikeSuccess", 443397)
+	self:Log("SPELL_AURA_APPLIED", "VenomStrikeApplied", 443401)
+	self:Death("SurekiVenombladeDeath", 220193)
 
 	-- Sureki Silkbinder
 	self:RegisterEngageMob("SurekiSilkbinderEngaged", 220195)
@@ -160,6 +177,13 @@ function mod:OnBossEnable()
 	self:Log("SPELL_INTERRUPT", "MendingWebInterrupt", 452162)
 	self:Log("SPELL_CAST_SUCCESS", "MendingWebSuccess", 452162)
 	self:Death("CovertWebmancerDeath", 223844, 224732)
+
+	-- Web Marauder
+	self:RegisterEngageMob("WebMarauderEngaged", 223182, 224731)
+	self:Log("SPELL_CAST_SUCCESS", "RigorousJab", 452151)
+	self:Log("SPELL_AURA_APPLIED", "RigorousJabApplied", 452151)
+	self:Log("SPELL_AURA_APPLIED_DOSE", "RigorousJabApplied", 452151)
+	self:Death("WebMarauderDeath", 223182, 224731)
 
 	-- Royal Venomshell
 	self:RegisterEngageMob("RoyalVenomshellEngaged", 220730)
@@ -296,6 +320,36 @@ function mod:HeraldOfAnsurekDeath(args)
 	self:ClearNameplate(args.destGUID)
 end
 
+-- Sureki Venomblade
+
+function mod:SurekiVenombladeEngaged(guid)
+	if self:Tank() or self:Dispeller("poison", nil, 443397) then
+		self:Nameplate(443397, 2.6, guid) -- Silk Binding
+	end
+end
+
+function mod:VenomStrikeSuccess(args)
+	if self:Tank() or self:Dispeller("poison", nil, args.spellId) then
+		self:Nameplate(args.spellId, 11.1, args.sourceGUID)
+	end
+end
+
+do
+	local prev = 0
+	function mod:VenomStrikeApplied(args)
+		-- throttle because separate debuffs can be applied by multiple mobs at once
+		if (self:Me(args.destGUID) or (self:Dispeller("poison", nil, 443397) and self:Friendly(args.destFlags))) and args.time - prev > 2.5 then
+			prev = args.time
+			self:TargetMessage(443397, "purple", args.destName)
+			self:PlaySound(443397, "alert", nil, args.destName)
+		end
+	end
+end
+
+function mod:SurekiVenombladeDeath(args)
+	self:ClearNameplate(args.destGUID)
+end
+
 -- Sureki Silkbinder
 
 function mod:SurekiSilkbinderEngaged(guid)
@@ -326,8 +380,8 @@ end
 -- Royal Swarmguard
 
 function mod:RoyalSwarmguardEngaged(guid)
-	self:Nameplate(443500, 5.9, guid) -- Earthshatter
-	self:Nameplate(443507, 12.0, guid) -- Ravenous Swarm
+	self:Nameplate(443500, 5.5, guid) -- Earthshatter
+	self:Nameplate(443507, 10.4, guid) -- Ravenous Swarm
 end
 
 function mod:Earthshatter(args)
@@ -456,7 +510,7 @@ end
 -- Covert Webmancer
 
 function mod:CovertWebmancerEngaged(guid)
-	self:Nameplate(452162, 6.0, guid) -- Mending Web
+	self:Nameplate(452162, 5.8, guid) -- Mending Web
 end
 
 function mod:MendingWeb(args)
@@ -474,6 +528,31 @@ function mod:MendingWebSuccess(args)
 end
 
 function mod:CovertWebmancerDeath(args)
+	self:ClearNameplate(args.destGUID)
+end
+
+-- Web Marauder
+
+function mod:WebMarauderEngaged(guid)
+	self:Nameplate(452151, 3.7, guid) -- Rigorous Jab
+end
+
+function mod:RigorousJab(args)
+	self:Nameplate(args.spellId, 6.1, args.sourceGUID)
+end
+
+do
+	local prev = 0
+	function mod:RigorousJabApplied(args)
+		if args.time - prev > 2 then
+			prev = args.time
+			self:StackMessage(args.spellId, "purple", args.destName, args.amount, 5)
+			self:PlaySound(args.spellId, "alert", nil, args.destName)
+		end
+	end
+end
+
+function mod:WebMarauderDeath(args)
 	self:ClearNameplate(args.destGUID)
 end
 

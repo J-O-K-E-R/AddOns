@@ -598,7 +598,7 @@ function addon:GetClickAttributes(global)
                 rembits[#rembits + 1] = REMATTR(prefix, "type", suffix)
                 rembits[#rembits + 1] = REMATTR(prefix, "spell", suffix)
             -- Macros aren't available on The War Within and above
-            elseif entry.type == "macro" and self.settings.stopcastingfix then
+            elseif entry.type == "macro" and self.settings.stopcastingfix and entry.macrotext then
                 local macrotext = string.format("/click %s\n%s", self.stopbutton.name, entry.macrotext)
                 bits[#bits + 1] = ATTR(indent, prefix, "type", suffix, entry.type)
                 bits[#bits + 1] = ATTR(indent, prefix, "macrotext", suffix, macrotext)

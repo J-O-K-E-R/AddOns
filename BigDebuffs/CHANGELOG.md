@@ -1,8 +1,6 @@
 # BigDebuffs
 
-## [v41](https://github.com/jordonwow/bigdebuffs/tree/v41) (2024-10-23)
-[Full Changelog](https://github.com/jordonwow/bigdebuffs/compare/v40...v41) [Previous Releases](https://github.com/jordonwow/bigdebuffs/releases)
+## [v43](https://github.com/jordonwow/bigdebuffs/tree/v43) (2024-11-06)
+[Full Changelog](https://github.com/jordonwow/bigdebuffs/compare/v42...v43) [Previous Releases](https://github.com/jordonwow/bigdebuffs/releases)
 
-- 11.0.5 Changes (#803)  
-    * 11.0.5 Changes  
-    * 11.0.5  
+- Change Aura Mastery to only show the kick-immune effect (#810)  

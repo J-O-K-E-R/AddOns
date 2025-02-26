@@ -380,7 +380,7 @@ addon.Spells = {
     [20066] = { type = CROWD_CONTROL }, -- Repentance
     [10326] = { type = CROWD_CONTROL }, -- Turn Evil
     [25771] = { type = BUFF_OTHER }, -- Forbearance
-    [31821] = { type = BUFF_DEFENSIVE }, -- Aura Mastery
+    [317929] = { type = BUFF_DEFENSIVE }, -- Aura Mastery (Concentration Aura)
     [31850] = { type = BUFF_DEFENSIVE }, -- Ardent Defender
     [31884] = { type = BUFF_OFFENSIVE }, -- Avenging Wrath
         [216331] = { type = BUFF_OFFENSIVE, parent = 31884 }, -- Avenging Crusader (Holy Talent)
@@ -705,5 +705,9 @@ addon.Spells = {
     -- Dragonflight Dungeons - Season 2
     [266107] = { type = DEBUFF_OFFENSIVE }, -- Thirst for Blood
     [368091] = { type = DEBUFF_OFFENSIVE }, -- Infected Bite
+
+    -- The War Within World Buffs
+    [443026] = {type = IMMUNITY}, -- General's Phalanx (The General Tier 4 Benefit)
+    [462823] = {type = IMMUNITY}, -- General's Bulwark (The General Tier 6 Benefit)
 
 }

@@ -17,6 +17,7 @@ local inBurrowChargeCombo = false
 local burrowChargeRemaining = 1
 local eyeOfTheSwarmCount = 1
 local bloodstainedWebmageCount = 1
+local nextInfestation = 0
 
 --------------------------------------------------------------------------------
 -- Localization
@@ -54,13 +55,15 @@ end
 function mod:OnBossEnable()
 	self:Log("SPELL_CAST_START", "Impale", 435012)
 	self:Log("SPELL_CAST_START", "BurrowCharge", 439506)
-	self:Log("SPELL_AURA_APPLIED", "Infestation", 433740)
+	self:Log("SPELL_CAST_SUCCESS", "Infestation", 433740)
+	self:Log("SPELL_AURA_APPLIED", "InfestationApplied", 433740)
 	self:RegisterEvent("CHAT_MSG_RAID_BOSS_EMOTE")
 	self:Log("SPELL_CAST_START", "EyeOfTheSwarm", 433766)
 	self:Log("SPELL_AURA_APPLIED", "EyeOfTheSwarmApplied", 434408)
 	self:Log("SPELL_AURA_REMOVED", "EyeOfTheSwarmOver", 434408)
 
 	-- Bloodstained Webmage (Mythic)
+	self:Log("SPELL_CAST_SUCCESS", "EncounterEvent", 181089) -- Bloodstained Webmage spawning
 	self:Log("SPELL_CAST_START", "SilkenRestraints", 442210)
 end
 
@@ -70,10 +73,11 @@ function mod:OnEngage()
 	eyeOfTheSwarmCount = 1
 	bloodstainedWebmageCount = 1
 	self:SetStage(1)
+	-- Infestation is cast immmediately on pull
 	self:CDBar(435012, 4.6) -- Impale
 	self:CDBar(439506, 14.3) -- Burrow Charge
 	if self:Mythic() then
-		self:CDBar("bloodstained_webmage", 17.3, CL.count:format(CL.add_spawning, bloodstainedWebmageCount), L.bloodstained_webmage_icon) -- Bloodstained Webmage
+		self:CDBar("bloodstained_webmage", 17.5, CL.count:format(CL.add_spawning, bloodstainedWebmageCount), L.bloodstained_webmage_icon) -- Bloodstained Webmage
 	end
 	self:CDBar(433766, 29.1, CL.count:format(self:SpellName(433766), eyeOfTheSwarmCount)) -- Eye of the Swarm
 end
@@ -90,6 +94,21 @@ function mod:Impale(args)
 		self:CDBar(args.spellId, 5.8)
 	else
 		self:CDBar(args.spellId, 8.5)
+	end
+	-- 3.5s-5s minimum to Infestation
+	-- this varies by difficulty because Impale cast time is 2.5s Mythic, 4s Normal/Heroic
+	if self:Healer() then
+		if self:Mythic() then
+			if nextInfestation - args.time < 3.5 then
+				nextInfestation = args.time + 3.5
+				self:CDBar(433740, {3.5, 8.5}) -- Infestation
+			end
+		else -- Heroic, Normal
+			if nextInfestation - args.time < 5.0 then
+				nextInfestation = args.time + 5.0
+				self:CDBar(433740, {5.0, 8.5}) -- Infestation
+			end
+		end
 	end
 	self:PlaySound(args.spellId, "alarm")
 end
@@ -113,25 +132,47 @@ do
 			self:StopBar(args.spellId)
 		end
 		self:CDBar(435012, 4.8) -- Impale
-		if self:Mythic() then
-			self:ScheduleTimer("BloodstainedWebmage", 3.0)
+		-- 8.5-9.8s minimum to Infestation
+		-- this varies by difficulty because Impale cast time is 2.5s Mythic, 4s Normal/Heroic
+		if self:Healer() then
+			if self:Mythic() then
+				nextInfestation = args.time + 8.5
+				self:CDBar(433740, {8.5, 10.1}) -- Infestation
+			else -- Heroic, Normal
+				nextInfestation = args.time + 9.8
+				self:CDBar(433740, {9.8, 10.1}) -- Infestation
+			end
 		end
 	end
 end
 
 function mod:Infestation(args)
+	if self:Healer() then
+		if self:GetStage() == 1 then
+			nextInfestation = args.time + 10.1
+			self:CDBar(args.spellId, 10.1)
+		else -- Stage 2
+			nextInfestation = args.time + 8.5
+			self:CDBar(args.spellId, 8.5)
+		end
+	end
+end
+
+function mod:InfestationApplied(args)
 	self:TargetMessage(args.spellId, "yellow", args.destName)
-	--self:CDBar(args.spellId, 8.1)
-	self:PlaySound(args.spellId, "alert", nil, args.destName)
 	if self:Me(args.destGUID) then
 		self:Say(args.spellId, nil, nil, "Infestation")
 	end
+	self:PlaySound(args.spellId, "alert", nil, args.destName)
 end
 
 function mod:CHAT_MSG_RAID_BOSS_EMOTE(_, msg)
 	if msg:find("433779", nil, true) then -- Eye of the Swarm
 		-- [CHAT_MSG_RAID_BOSS_EMOTE] Anub'zekt prepares to trap you within the |TInterface\\ICONS\\Spell_Shadow_UnholyFrenzy.blp:20|t |cFFFF0000|Hspell:433779|h[Eye of the Swarm]|h|r!#Anub'zekt
 		-- boss runs to the center on this emote, these bars will be restarted when the cast begins
+		if self:Healer() then
+			self:StopBar(433740) -- Infestation
+		end
 		self:StopBar(435012) -- Impale
 		self:StopBar(439506) -- Burrow Charge
 		if self:Mythic() then
@@ -146,10 +187,14 @@ function mod:EyeOfTheSwarm(args)
 	self:SetStage(2)
 	self:Message(args.spellId, "cyan", CL.count:format(args.spellName, eyeOfTheSwarmCount))
 	eyeOfTheSwarmCount = eyeOfTheSwarmCount + 1
+	if self:Healer() then
+		nextInfestation = args.time + 7.3
+		self:CDBar(433740, 7.3) -- Infestation
+	end
 	self:CDBar(435012, 10.9) -- Impale
 	self:CDBar(439506, 46.9) -- Burrow Charge
 	if self:Mythic() then
-		self:CDBar("bloodstained_webmage", 49.9, CL.count:format(CL.add_spawning, bloodstainedWebmageCount), L.bloodstained_webmage_icon) -- Bloodstained Webmage
+		self:CDBar("bloodstained_webmage", 49.8, CL.count:format(CL.add_spawning, bloodstainedWebmageCount), L.bloodstained_webmage_icon) -- Bloodstained Webmage
 	end
 	self:CDBar(args.spellId, 78.9, CL.count:format(args.spellName, eyeOfTheSwarmCount))
 	self:PlaySound(args.spellId, "long")
@@ -166,19 +211,18 @@ function mod:EyeOfTheSwarmOver(args)
 	self:PlaySound(433766, "info")
 end
 
-function mod:BloodstainedWebmage()
-	-- always spawns ~3s after Burrow Charge cast start, and there's an additional spawn 17s after every even add spawn
+-- Bloodstained Webmage (Mythic)
+
+function mod:EncounterEvent(args) -- Bloodstained Webmage spawning
+	-- always spawns ~3s after Burrow Charge cast start, and there's an additional spawn ~17s after every even add spawn
 	self:StopBar(CL.count:format(CL.add_spawning, bloodstainedWebmageCount))
 	self:Message("bloodstained_webmage", "cyan", CL.count:format(CL.add_spawned, bloodstainedWebmageCount), L.bloodstained_webmage_icon)
 	bloodstainedWebmageCount = bloodstainedWebmageCount + 1
-	if bloodstainedWebmageCount % 2 == 1 then -- schedule the 3rd, 5th, 7th... etc alert
-		self:CDBar("bloodstained_webmage", 17.0, CL.count:format(CL.add_spawning, bloodstainedWebmageCount), L.bloodstained_webmage_icon)
-		self:ScheduleTimer("BloodstainedWebmage", 17.0)
+	if bloodstainedWebmageCount % 2 == 1 then -- the 3rd, 5th, 7th... etc spawn
+		self:CDBar("bloodstained_webmage", 17.4, CL.count:format(CL.add_spawning, bloodstainedWebmageCount), L.bloodstained_webmage_icon)
 	end
 	self:PlaySound("bloodstained_webmage", "info")
 end
-
--- Bloodstained Webmage (Mythic)
 
 function mod:SilkenRestraints(args)
 	self:Message(args.spellId, "red", CL.casting:format(args.spellName))

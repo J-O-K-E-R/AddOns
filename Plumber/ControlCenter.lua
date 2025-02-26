@@ -19,15 +19,18 @@ local CATEGORY_ORDER = {
 
     [1] = "General",
     [2] = "NPC Interaction",
-    [3] = "Class",
+    [3] = "Tooltip",
+    [4] = "Class",
 
     --Patch Feature uses the tocVersion and #00
-    [10020000] = "Dragonflight",
+    [1002] = "Dragonflight",
+
+    [1208] = "Plumber",
 };
 
 
 local DEFAULT_COLLAPSED_CATEGORY = {
-    [10020000] = true;
+    [1002] = true;
 };
 
 
@@ -36,6 +39,7 @@ addon.ControlCenter = ControlCenter;
 ControlCenter:SetSize(FRAME_WIDTH, FRAME_WIDTH * RATIO);
 ControlCenter:SetPoint("TOP", UIParent, "BOTTOM", 0, -64);
 ControlCenter.modules = {};
+ControlCenter.newDBKeys = {};
 ControlCenter:Hide();
 
 local ScrollFrame = CreateFrame("Frame", nil, ControlCenter);
@@ -54,13 +58,25 @@ do
             if self.scrollOffset < 0 then
                 self.scrollOffset = 0;
             end
-            self.ScrollChild:SetPoint("TOPLEFT", self, "TOPLEFT", 0, self.scrollOffset);
+            ControlCenter:SetScrollOffset(self.scrollOffset, true);
         elseif self.scrollOffset < self.scrollRange and delta < 0 then
             self.scrollOffset = self.scrollOffset + OFFSET_PER_SCROLL;
             if self.scrollOffset > self.scrollRange then
                 self.scrollOffset = self.scrollRange;
             end
-            self.ScrollChild:SetPoint("TOPLEFT", self, "TOPLEFT", 0, self.scrollOffset);
+            ControlCenter:SetScrollOffset(self.scrollOffset, true);
+        end
+    end
+
+    function ControlCenter:SetScrollOffset(offset, fromMouseWheel)
+        self.ScrollFrame.ScrollChild:SetPoint("TOPLEFT", self.ScrollFrame, "TOPLEFT", 0, offset);
+        self.ScrollFrame.scrollOffset = offset;
+        self:UpdateScrollBar(fromMouseWheel);
+    end
+
+    function ControlCenter:UpdateScrollBar(fromMouseWheel)
+        if self.scrollable then
+            self.ScrollBar:SetScrollPercentage(self.ScrollFrame.scrollOffset/self.ScrollFrame.scrollRange, fromMouseWheel);
         end
     end
 
@@ -75,6 +91,11 @@ do
                 self.ScrollFrame.scrollOffset = 0;
             end
             self.ScrollFrame.scrollRange = scrollRange;
+
+            if self.ScrollBar then
+                local frameHeight = ControlCenter:GetHeight();
+                self.ScrollBar:SetVisibleExtentPercentage(frameHeight/(frameHeight + scrollRange));
+            end
         else
             if self.scrollable then
                 self.scrollable = false;
@@ -87,6 +108,13 @@ do
         end
     end
 
+    function ControlCenter:SetScrollPercentage(scrollPercentage)
+        if self.scrollable then
+            local offset = self.ScrollFrame.scrollRange * scrollPercentage;
+            self:SetScrollOffset(offset, true);
+        end
+    end
+
     function ControlCenter:UpdateScrollRange()
         local frameHeight = self.ScrollFrame:GetHeight();
         local firstButton = self.CategoryButtons[1];
@@ -95,6 +123,9 @@ do
         local contentHeight = 2 * PADDING + firstButton:GetTop() - lastObject:GetBottom();
 
         self:SetScrollRange(math.ceil(contentHeight - frameHeight));
+        if self.ShowScrollBar then
+            self:ShowScrollBar(self.scrollable);
+        end
     end
 
     function ControlCenter:OnMouseWheel(delta)
@@ -361,6 +392,10 @@ local function CreateUI()
     dividerBottom:SetTexture("Interface/AddOns/Plumber/Art/Frame/Divider_DropShadow_Vertical");
     dividerMiddle:SetTexture("Interface/AddOns/Plumber/Art/Frame/Divider_DropShadow_Vertical");
 
+    ControlCenter.dividers = {
+        dividerTop, dividerMiddle, dividerBottom,
+    };
+
     API.DisableSharpening(dividerTop);
     API.DisableSharpening(dividerBottom);
     API.DisableSharpening(dividerMiddle);
@@ -432,6 +467,10 @@ local function CreateUI()
         if a.uiOrder ~= b.uiOrder then
             return a.uiOrder < b.uiOrder
             --should be finished here
+        else
+            if (a.categoryID == b.categoryID) and (a ~= b) then
+                --print("Plumber: Duplicated Module uiOrder", a.uiOrder, a.name, b.name);   --debug
+            end
         end
 
         return a.name < b.name
@@ -525,6 +564,20 @@ local function CreateUI()
     db.settingsOpenTime = time();
 
 
+    local ScrollBar = CreateFrame("EventFrame", nil, container, "MinimalScrollBar");
+    ScrollBar:SetPoint("TOP", dividerTop, "TOP", 0, 0)
+    ScrollBar:SetPoint("BOTTOM", dividerBottom, "BOTTOM", 0, 0);
+    ControlCenter.ScrollBar = ScrollBar
+
+    function ScrollBar:SetScrollPercentage(scrollPercentage, fromMouseWheel)
+        ScrollControllerMixin.SetScrollPercentage(ScrollBar, scrollPercentage);
+        ScrollBar:Update();
+        if not fromMouseWheel then
+            ControlCenter:SetScrollPercentage(scrollPercentage);
+        end
+    end
+
+
     function ControlCenter:UpdateLayout()
         local frameWidth = math.floor(self:GetWidth() + 0.5);
         if frameWidth == self.frameWidth then
@@ -541,6 +594,21 @@ local function CreateUI()
         preview:SetSize(previewSize, previewSize);
 
         ScrollFrame:SetWidth(leftSectorWidth);
+    end
+
+    function ControlCenter:ShowScrollBar(state)
+        if state then
+            ScrollBar:Show();
+            dividerTop:SetShown(false);
+            dividerMiddle:SetShown(false);
+            dividerBottom:SetShown(false);
+            self:UpdateScrollBar(true);
+        else
+            ScrollBar:Hide();
+            dividerTop:SetShown(true);
+            dividerMiddle:SetShown(true);
+            dividerBottom:SetShown(true);
+        end
     end
 end
 
@@ -560,11 +628,19 @@ end
 function ControlCenter:InitializeModules()
     --Initial Enable/Disable Modules
     local db = PlumberDB;
-    local enabled;
+    local enabled, isForceEnabled;
 
     for _, moduleData in pairs(self.modules) do
+        isForceEnabled = false;
         if (not moduleData.validityCheck) or (moduleData.validityCheck()) then
             enabled = db[moduleData.dbKey];
+
+            if (not enabled) and (self.newDBKeys[moduleData.dbKey]) then
+                enabled = true;
+                isForceEnabled = true;
+                db[moduleData.dbKey] = true;
+            end
+
             if moduleData.requiredDBValues then
                 for dbKey, value in pairs(moduleData.requiredDBValues) do
                     if db[dbKey] ~= nil and db[dbKey] ~= value then
@@ -572,9 +648,16 @@ function ControlCenter:InitializeModules()
                     end
                 end
             end
+
             moduleData.toggleFunc(enabled);
+
+            if enabled and isForceEnabled then
+                API.PrintMessage(string.format(L["New Feature Auto Enabled Format"], moduleData.name));     --Todo: click link to view detail |cff71d5ff
+            end
         end
     end
+
+    self.newDBKeys = {};
 end
 
 function ControlCenter:UpdateCategoryButtons()
@@ -636,14 +719,37 @@ if Settings then
 end
 
 
-do
+do  --Our SuperTracking system is unused
     function ControlCenter:ShouldShowNavigatorOnDreamseedPins()
         return PlumberDB.Navigator_Dreamseed and not PlumberDB.Navigator_MasterSwitch
     end
 
     function ControlCenter:EnableSuperTracking()
-        PlumberDB.Navigator_MasterSwitch = true;
-        local SuperTrackFrame = addon.GetSuperTrackFrame();
-        SuperTrackFrame:TryEnableByModule();
+        --PlumberDB.Navigator_MasterSwitch = true;
+        --local SuperTrackFrame = addon.GetSuperTrackFrame();
+        --SuperTrackFrame:TryEnableByModule();
     end
+end
+
+
+do
+    addon.CallbackRegistry:Register("NewDBKeysAdded", function(newDBKeys)
+        ControlCenter.newDBKeys = newDBKeys;
+    end);
+
+
+    local function ToggleFunc_EnableNewByDefault(state)
+
+    end
+
+    local moduleData = {
+        name = L["ModuleName EnableNewByDefault"],
+        dbKey = "EnableNewByDefault",
+        description = L["ModuleDescription EnableNewByDefault"],
+        toggleFunc = ToggleFunc_EnableNewByDefault,
+        categoryID = 1208,
+        uiOrder = 1,
+    };
+
+    ControlCenter:AddModule(moduleData);
 end

@@ -1,12 +1,16 @@
 local _, addon = ...
+local L = addon.L;
 local API = addon.API;
 local UIFrameFade = API.UIFrameFade;
+local GetDBBool = addon.GetDBBool;
 
 
 local ACTION_BUTTON_SIZE = 46;
 local ACTION_BUTTON_GAP = 4;
+local REPOSITION_BUTTON_OFFSET = 46;
 
 
+local GetItemCooldown = C_Container.GetItemCooldown;
 local UnitCastingInfo = UnitCastingInfo;
 local UnitChannelInfo = UnitChannelInfo;
 local InCombatLockdown = InCombatLockdown;
@@ -15,17 +19,25 @@ local math = math;
 local UIParent = UIParent;
 local CreateFrame = CreateFrame;
 local tinsert = table.insert;
+local atan2 = math.atan2;
+local ipairs = ipairs;
 
 
 local QuickSlot = CreateFrame("Frame", nil, UIParent);
-addon.QuickSlot = QuickSlot;
-QuickSlot:Hide();
-QuickSlot:SetSize(8, 8);
-QuickSlot:SetAlpha(0);
-QuickSlot:SetFrameStrata("MEDIUM");
-QuickSlot.Buttons = {};
-QuickSlot.numActiveButtons = 0;
-QuickSlot.SpellXButton = {};
+do  --QuickSlot "OnLoad"
+    addon.QuickSlot = QuickSlot;
+    QuickSlot:Hide();
+    QuickSlot:SetSize(46, 46);
+    QuickSlot:SetAlpha(0);
+    QuickSlot:SetFrameStrata("HIGH");
+    QuickSlot.Buttons = {};
+    QuickSlot.ItemButtons = {};
+    QuickSlot.SpellButtons = {};
+    QuickSlot.numActiveButtons = 0;
+    QuickSlot.SpellXButton = {};
+    QuickSlot:SetClampedToScreen(true);
+    QuickSlot:SetClampRectInsets(-ACTION_BUTTON_SIZE, ACTION_BUTTON_SIZE, 8, -8);
+end
 
 local ContextMenu;
 
@@ -34,8 +46,16 @@ local function ContextMenu_EditMode_OnClick(self, button)
     return true
 end
 
+local function ContextMenu_HighContrast_OnClick(self, button)
+    local state = not GetDBBool("QuickSlotHighContrastMode");
+    addon.SetDBValue("QuickSlotHighContrastMode", state);
+    QuickSlot:UseHighContrast(state);
+    return false
+end
+
 local ContextMenuData = {
-    { text = _G["HUD_EDIT_MODE_MENU"] or "Edit Mode", onClickFunc = ContextMenu_EditMode_OnClick},
+    {text = L["Quick Slot Reposition"], onClickFunc = ContextMenu_EditMode_OnClick},
+    {text = L["Quick Slot High Contrast Mode"], onClickFunc = ContextMenu_HighContrast_OnClick,},
 };
 
 
@@ -63,11 +83,28 @@ function Positioner:GetButtonCenterGap()
     return radianGap
 end
 
+function Positioner:GetButtonSpan(numActiveButtons)
+    return (self.buttonSize + self.buttonGap) * numActiveButtons - self.buttonGap;
+end
+
+function Positioner:GetCustomPosition()
+    if self.db then
+        return self.db.quickslot_PositionX, self.db.quickslot_PositionY
+    end
+end
+
+function Positioner:SetCustomPosition(x, y)
+    self.db.quickslot_PositionX = x;
+    self.db.quickslot_PositionY = y;
+end
+
 function Positioner:GetFromRadian()
     return self.fromRadian
 end
 
 function Positioner:SetFromRadian(radian)
+    if not radian then return end;
+
     local snappedRadian = math.rad(45);
 
     if radian > snappedRadian then
@@ -88,8 +125,8 @@ function Positioner:SetFromRadian(radian)
 
     self.fromRadian = radian;
 
-    if PlumberDB then
-        PlumberDB.quickslotFromRadian = radian;
+    if self.db then
+        self.db.quickslotFromRadian = radian;
     end
 end
 
@@ -211,8 +248,6 @@ function Positioner:HideGuideLine()
 end
 
 
-
-
 local function RealActionButton_OnLeave(self)
     if not InCombatLockdown() then
         self:SetScript("OnLeave", nil);
@@ -235,6 +270,10 @@ local function RealActionButton_PostClick(self, button)
     local owner = self.owner;
 
     if owner then
+        if owner.onClickFunc then
+            owner.onClickFunc();
+        end
+
         if button == "LeftButton" and owner:HasCharges() then
             owner:ShowPostClickEffect();
             return
@@ -252,7 +291,23 @@ local function RealActionButton_PostClick(self, button)
             menu:SetOwner(owner);
             menu:ClearAllPoints();
             menu:SetPoint("LEFT", owner, "RIGHT", 12, 0);
-            menu:SetContent(ContextMenuData);
+
+            local menuData;
+            if QuickSlot.buttonData.developerInfo then
+                menuData = API.CopyTable(ContextMenuData);
+                tinsert(menuData, {
+                    type = "divider",
+                });
+                tinsert(menuData, {
+                    --type == "info",
+                    color = {0.5, 0.5, 0.5},
+                    text = L["Quickslot Module Info"];
+                    tooltip = QuickSlot.buttonData.developerInfo,
+                });
+            else
+                menuData = ContextMenuData;
+            end
+            menu:SetContent(menuData);
             menu:Show();
         end
     end
@@ -305,17 +360,21 @@ local function ItemButton_OnEnter(self)
         RealActionButton.owner = self;
 
         local macroText;
-        if self.macroText then
+        if self.onClickFunc then
+
+        elseif self.macroText then
             macroText = self.macroText;
         else
             if self.actionType == "item" then
                 macroText = string.format("/use item:%s", self.id);
             elseif self.actionType == "spell" then
                 local spellName = C_Spell.GetSpellName(self.id);
-                macroText = string.format("/cast %s", spellName);
+                if spellName then
+                    macroText = string.format("/cast %s", spellName);
+                end
             end
         end
-        RealActionButton:SetAttribute("type1", "macro");     --Any Mouseclick
+        RealActionButton:SetAttribute("type1", "macro");
         RealActionButton:SetMacroText(macroText);
         RealActionButton:RegisterForClicks("LeftButtonDown", "LeftButtonUp", "RightButtonUp");
 
@@ -350,10 +409,8 @@ end
 
 
 function QuickSlot:Init()
-    if PlumberDB and PlumberDB.quickslotFromRadian then
-        Positioner:SetFromRadian(PlumberDB.quickslotFromRadian);
-    end
-
+    Positioner.db = PlumberDB;
+    Positioner:SetFromRadian(Positioner.db.quickslotFromRadian);
     self.side = 1;
 
     local Header = self:CreateFontString(nil, "OVERLAY", "GameTooltipText");
@@ -383,8 +440,8 @@ function QuickSlot:Init()
     HeaderShadow:SetTextureSliceMode(0);
     HeaderShadow:Hide();
     HeaderShadow:SetAlpha(0);
-    HeaderShadow:SetPoint("TOPLEFT", Header, "TOPLEFT", -16, 16);
-    HeaderShadow:SetPoint("BOTTOMRIGHT", Header, "BOTTOMRIGHT", 16, -16);
+    HeaderShadow:SetPoint("TOPLEFT", Header, "TOPLEFT", -20, 20);
+    HeaderShadow:SetPoint("BOTTOMRIGHT", Header, "BOTTOMRIGHT", 20, -20);
 
     function QuickSlot:SetHeaderText(text, transparentText)
         if self:IsInEditMode() then return end;
@@ -393,7 +450,7 @@ function QuickSlot:Init()
             Header:SetSize(0, 0);
             Header:SetText(text);
             if transparentText then
-                local toAlpha = 0.6;
+                local toAlpha = self.highContrastMode and 1.0 or 0.6;
                 UIFrameFade(Header, 0.5, toAlpha);
                 UIFrameFade(HeaderShadow, 0.25, 0);
             else
@@ -453,13 +510,20 @@ function QuickSlot:SetButtonData(buttonData)
     self.buttonData = buttonData;
     self.systemName = buttonData.systemName;
     self.layoutDirty = true;
+    self.anyItemAction = nil;
     self.numActiveButtons = #buttonData.buttons;
     self.spellcastType = buttonData.spellcastType;
+    self.SpellXButton = {};
+    self.ItemButtons = {};
+    self.SpellButtons = {};
 
     local buttonSize = ACTION_BUTTON_SIZE;
     local gap = ACTION_BUTTON_GAP;
     local positionIndex = 0;
     local trackIndex = 0;
+
+    local anyItemAction;
+    local anySpellAction;
 
     for i, info in ipairs(buttonData.buttons) do
         positionIndex = positionIndex + 1;
@@ -477,20 +541,28 @@ function QuickSlot:SetButtonData(buttonData)
                 tinsert(self.Buttons, button);
                 button:SetPoint("LEFT", self, "LEFT", (i - 1) * (buttonSize +  gap), 0);
             end
+
             local spellID = info.spellID;
             if spellID then
                 self.SpellXButton[spellID] = button;
             end
+
             if info.actionType == "item" then
+                anyItemAction = true;
                 button:SetItem(info.itemID, info.icon);
+                tinsert(self.ItemButtons, button);
             elseif info.actionType == "spell" then
+                anySpellAction = true;
                 button:SetSpell(spellID, info.icon);
+                tinsert(self.SpellButtons, button);
             end
+
             button.spellID = spellID;
             button.positionIndex = positionIndex;
             button.trackIndex = trackIndex;
             button.overrideName = info.name;
             button.macroText = info.macroText;
+            button.onClickFunc = info.onClickFunc;
             button.tooltipLines = info.tooltipLines;
             button:SetScript("OnEnter", ItemButton_OnEnter);
             button:SetScript("OnLeave", ItemButton_OnLeave);
@@ -508,6 +580,27 @@ function QuickSlot:SetButtonData(buttonData)
 
     for i = self.numActiveButtons + 1, #self.Buttons do
         self.Buttons[i]:Hide();
+    end
+
+    if self.numActiveButtons > 1 then
+        self.layoutIndex = 2;
+    else
+        self.layoutIndex = 1;
+    end
+
+    self.anyItemAction = anyItemAction;
+    self.anySpellAction = anySpellAction;
+
+    if anySpellAction then
+        self:RegisterEvent("SPELL_UPDATE_CHARGES");
+        self:RegisterEvent("SPELL_UPDATE_COOLDOWN");
+    else
+        self:UnregisterEvent("SPELL_UPDATE_CHARGES");
+        self:UnregisterEvent("SPELL_UPDATE_COOLDOWN");
+    end
+
+    if not self.Init then
+        self:UpdateFrameLayout();
     end
 end
 
@@ -544,39 +637,53 @@ function QuickSlot:SetFrameLayout(layoutIndex)
     local buttonSize = Positioner.buttonSize;
     local buttonGap = Positioner.buttonGap;
 
+    local radius = math.floor( (0.5 * UIParent:GetHeight()*16/9 /3) + (buttonSize*0.5) + 0.5);
+    local track0Radius = radius;
+    local gapArc = buttonGap + buttonSize;
+    local fromRadian = Positioner:GetFromRadian();
+    local radianGap = gapArc/radius;
+    local radian;
+    local x, y;
+    local cx, cy = UIParent:GetCenter();
+
+    local cos = math.cos;
+    local sin = math.sin;
+
     if layoutIndex == 1 then
         --Normal, below the center
-        --CastingBar's position is changed conditionally
-
-        local anchorTo = Positioner:GetCastBar();
-        local y = anchorTo:GetTop();
-        local scale = anchorTo:GetScale();
+        x, y = Positioner:GetCustomPosition();
+        if not (x and y) then
+            --x = cx + radius * cos(fromRadian);
+            --y = cy + radius * sin(fromRadian);
+            x = cx + radius;
+            y = cy;
+        end
 
         self:ClearAllPoints();
-        self:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, 250); --(y + 30)*scale   --Default CastingBar moves up 29y when start casting
+        self:SetPoint("CENTER", UIParent, "BOTTOMLEFT", x, y);
 
         for i, button in ipairs(self.Buttons) do
             button:ClearAllPoints();
-            button:SetPoint("LEFT", self, "LEFT", (i - 1) * (buttonSize +  buttonGap), 0);
+            button:SetPoint("CENTER", self, "CENTER", (i - 1) * (buttonSize +  buttonGap), 0);
         end
 
-        self.Header:ClearAllPoints();
-        self.Header:SetPoint("BOTTOM", self, "TOP", 0, 8);
-        self.headerMaxWidth = 0;
+        if self.numActiveButtons > 1 then
+            local buttonMiddlePoint = 0.5 * Positioner:GetButtonSpan(self.numActiveButtons or 1);
+            self.Header:ClearAllPoints();
+            self.Header:SetPoint("BOTTOM", self, "TOPLEFT", buttonMiddlePoint, 8);
+            self.headerMaxWidth = 0;
+        else
+            self.Header:ClearAllPoints();
+            self.Header:SetPoint("RIGHT", self, "LEFT", -16, 0);
+            self.headerMaxWidth = 240;
+        end
+
+        if self.RepositionButton then
+            self.RepositionButton:ClearAllPoints();
+            self.RepositionButton:SetPoint("CENTER", UIParent, "BOTTOMLEFT", x, y + REPOSITION_BUTTON_OFFSET);
+        end
     else
         --Circular, on the right side
-        local radius = math.floor( (0.5 * UIParent:GetHeight()*16/9 /3) + (buttonSize*0.5) + 0.5);
-        local track0Radius = radius;
-        local gapArc = buttonGap + buttonSize;
-        local fromRadian = Positioner:GetFromRadian();
-        local radianGap = gapArc/radius;
-        local radian;
-        local x, y;
-        local cx, cy = UIParent:GetCenter();
-
-        local cos = math.cos;
-        local sin = math.sin;
-
         local trackIndex = 0;
 
         for i, button in ipairs(self.Buttons) do
@@ -627,6 +734,10 @@ function QuickSlot:SetFrameLayout(layoutIndex)
     end
 end
 
+function QuickSlot:UpdateFrameLayout()
+    self:SetFrameLayout(self.layoutIndex or 2);
+end
+
 function QuickSlot:SetInteractable(state, dueToCombat)
     if state then
         UIFrameFade(self, 0.5, 1);
@@ -649,10 +760,14 @@ function QuickSlot:SetInteractable(state, dueToCombat)
 end
 
 function QuickSlot:UpdateItemCount()
-    for i, button in ipairs(self.Buttons) do
-        if button.actionType == "item" then
-            button:UpdateCount();
-        end
+    for i, button in ipairs(self.ItemButtons) do
+        button:UpdateCount();
+    end
+end
+
+function QuickSlot:UpdateSpellCharge()
+    for i, button in ipairs(self.SpellButtons) do
+        button:UpdateCount();
     end
 end
 
@@ -693,10 +808,11 @@ function QuickSlot:OnSpellCastChanged(spellID, isStartCasting)
 end
 
 function QuickSlot:OnShow()
-
+    self.isClosing = nil;
 end
 
 function QuickSlot:OnHide()
+    self.isClosing = nil;
     self:EnableEditMode(false);
 end
 QuickSlot:SetScript("OnHide", QuickSlot.OnHide);
@@ -704,12 +820,12 @@ QuickSlot:SetScript("OnHide", QuickSlot.OnHide);
 
 local function GetCursorRadianToPoint(cx, cy, uiRatio)
     local x, y = GetCursorPosition();
-    x = x *uiRatio;
+    x = x * uiRatio;
     y = y * uiRatio;
-    return math.atan2(y - cy, x - cx);
+    return atan2(y - cy, x - cx);
 end
 
-local function RepositionButton_OnUpdate(self, elapsed)
+local function RepositionButton_OnUpdate_Radial(self, elapsed)
     self.t = self.t + elapsed;
     if self.t >= 0.016 then
         self.t = 0;
@@ -717,7 +833,7 @@ local function RepositionButton_OnUpdate(self, elapsed)
         if radian ~= self.radian then
             self.radian = radian;
             Positioner:SetFromRadian(self.frameRadian + radian - self.selfRadian);
-            QuickSlot:SetFrameLayout(2);
+            QuickSlot:UpdateFrameLayout();
             --[[
             if radian > -1.57 and radian < 1.57 then
                 QuickSlot:SetButtonOrder(1);
@@ -729,10 +845,26 @@ local function RepositionButton_OnUpdate(self, elapsed)
     end
 end
 
+local function RepositionButton_OnUpdate_FreeMove(self, elapsed)
+    self.t = self.t + elapsed;
+    if self.t >= 0.016 then
+        self.t = 0;
+        local x, y = GetCursorPosition();
+        x = self.cxOffset + x * self.uiRatio;
+        y = self.cyOffset + y * self.uiRatio - REPOSITION_BUTTON_OFFSET;
+        Positioner:SetCustomPosition(x, y);
+        QuickSlot:UpdateFrameLayout();
+    end
+end
+
 local function RepositionButton_OnMouseDown(self, button)
     if button == "RightButton" then
-        Positioner:SetFromRadian(0);
-        QuickSlot:SetFrameLayout(2);
+        if QuickSlot.layoutIndex == 1 then
+            Positioner:SetCustomPosition(nil, nil);
+        else
+            Positioner:SetFromRadian(0);
+        end
+        QuickSlot:UpdateFrameLayout();
         return
     end
     self.t = 0;
@@ -741,11 +873,24 @@ local function RepositionButton_OnMouseDown(self, button)
     self.radian = GetCursorRadianToPoint(self.cx, self.cy, self.uiRatio);
     self.selfRadian = Positioner:GetEditButtonRadian();
     self.frameRadian = Positioner:GetFromRadian();
-    self:SetScript("OnUpdate", RepositionButton_OnUpdate);
+
+    local cx0, cy0 = GetCursorPosition();
+    cx0 = cx0 * self.uiRatio;
+    cy0 = cy0 * self.uiRatio;
+    local x0, y0 = self:GetCenter();
+    self.cxOffset = x0 - cx0;
+    self.cyOffset = y0 - cy0;
+
+    local isRadial = QuickSlot.layoutIndex ~= 1;
+    if isRadial then
+        self:SetScript("OnUpdate", RepositionButton_OnUpdate_Radial);
+        Positioner:ShowGuideLineCircle(true);
+    else
+        self:SetScript("OnUpdate", RepositionButton_OnUpdate_FreeMove);
+        Positioner:ShowGuideLineCircle(false);
+    end
     QuickSlot:SetInteractable(false);
     self:LockHighlight();
-
-    Positioner:ShowGuideLineCircle(true);
 end
 
 local function RepositionButton_OnMouseUp(self)
@@ -763,8 +908,7 @@ local function RepositionButton_OnClick(self)
     local dRadian = Positioner:GetButtonCenterGap();
     local newRadian = oldRadian + delta*dRadian;
     Positioner:SetFromRadian(newRadian);
-
-    QuickSlot:SetFrameLayout(2);
+    QuickSlot:UpdateFrameLayout();
 end
 
 local function RepositionButton_SetRotation(self, radian)
@@ -805,7 +949,11 @@ function QuickSlot:EnableEditMode(state)
             b:SetSize(16, 16);
             self.RepositionButton = b;
             b:SetFrameStrata("DIALOG");
+            b:SetFrameLevel(500);
             b:SetFixedFrameStrata(true);
+            b:SetClampedToScreen(true);
+            local offset = 46;
+            b:SetClampRectInsets(-offset, offset, offset, -offset);
 
             local tex = "Interface/AddOns/Plumber/Art/Button/RepositionButton-Circle";
 
@@ -833,6 +981,9 @@ function QuickSlot:EnableEditMode(state)
             self.EditModeConfirmButton = b;
             b:SetFrameStrata("DIALOG");
             b:SetFixedFrameStrata(true);
+            b:SetClampedToScreen(true);
+            local offset = 24;
+            b:SetClampRectInsets(-offset, offset, offset, -offset);
 
             local tex = "Interface/AddOns/Plumber/Art/Button/EditMode-Confirm";
 
@@ -866,7 +1017,14 @@ function QuickSlot:EnableEditMode(state)
                 button.Count:Hide();
             end
             self.isEditing = true;
-            self:SetFrameLayout(2);
+            self:UpdateFrameLayout();
+
+            self.EditModeConfirmButton:ClearAllPoints();
+            if self.layoutIndex == 1 then
+                self.EditModeConfirmButton:SetPoint("CENTER", self, "CENTER", -54, 0);
+            else
+                self.EditModeConfirmButton:SetPoint("CENTER", self.Header, "CENTER", 0, 0);
+            end
         end
     else
         if self.isEditing then
@@ -894,6 +1052,10 @@ function QuickSlot:EnableEditMode(state)
     end
 end
 
+function QuickSlot:CloseUIAfterEditing()
+    self.closeUIAfterEditing = true;
+end
+
 function QuickSlot:ShowUI()
     if self.Init then
         self:Init();
@@ -901,13 +1063,28 @@ function QuickSlot:ShowUI()
 
     if self.layoutDirty then
         self.layoutDirty = nil;
-        self:SetFrameLayout(2);
+        self:UpdateFrameLayout();
     end
 
-    self:RegisterEvent("BAG_UPDATE");
+    self:UpdateItemCount();
+
+    self:RegisterEvent("BAG_UPDATE_DELAYED");
     self:RegisterEvent("PLAYER_REGEN_DISABLED");
     self:RegisterEvent("PLAYER_REGEN_ENABLED");
     self:RegisterEvent("UI_SCALE_CHANGED");
+    self:RegisterEvent("LOADING_SCREEN_ENABLED");
+
+    if self.anyItemAction then
+        self:RegisterEvent("BAG_UPDATE_COOLDOWN");
+        self:UpdateItemCooldowns();
+    end
+
+    if self.anySpellAction then
+        self:RegisterEvent("SPELL_UPDATE_CHARGES");
+        self:RegisterEvent("SPELL_UPDATE_COOLDOWN");
+        self:RequestUpdateSpellCooldowns();
+        self:UpdateSpellCharge();
+    end
 
     if self.spellcastType == 1 then
         self:RegisterUnitEvent("UNIT_SPELLCAST_START", "player");
@@ -918,7 +1095,6 @@ function QuickSlot:ShowUI()
         self:RegisterUnitEvent("UNIT_SPELLCAST_CHANNEL_UPDATE", "player");
     end
 
-    self:UpdateItemCount();
 
     for _, button in ipairs(self.Buttons) do
         button.Count:Show();
@@ -935,14 +1111,16 @@ function QuickSlot:ShowUI()
         self:SetInteractable(true);
     end
 
+    self:UseHighContrast(GetDBBool("QuickSlotHighContrastMode"));
+
     return true
 end
 
 function QuickSlot:CloseUI()
     if self:IsShown() then
         self:EnableEditMode(false);
+        self.isClosing = true;
         UIFrameFade(self, 0.5, 0);
-        self:UnregisterEvent("BAG_UPDATE");
         self:UnregisterEvent("PLAYER_REGEN_DISABLED");
         self:UnregisterEvent("PLAYER_REGEN_ENABLED");
         self:UnregisterEvent("UI_SCALE_CHANGED");
@@ -951,6 +1129,11 @@ function QuickSlot:CloseUI()
         self:UnregisterEvent("UNIT_SPELLCAST_CHANNEL_UPDATE");
         self:UnregisterEvent("UNIT_SPELLCAST_START");
         self:UnregisterEvent("UNIT_SPELLCAST_STOP");
+        self:UnregisterEvent("LOADING_SCREEN_ENABLED");
+        self:UnregisterEvent("BAG_UPDATE_DELAYED");
+        self:UnregisterEvent("BAG_UPDATE_COOLDOWN");
+        self:UnregisterEvent("SPELL_UPDATE_CHARGES");
+        self:UnregisterEvent("SPELL_UPDATE_COOLDOWN");
         self:SetInteractable(false);
         self.isChanneling = nil;
         self.defaultHeaderText = nil;
@@ -968,10 +1151,117 @@ function QuickSlot:RequestCloseUI(systemName)
     end
 end
 
+function QuickSlot:UseHighContrast(state)
+    state = state == true;
+    self.highContrastMode = state;
+
+    for i, button in ipairs(self.Buttons) do
+        button:UseHighContrast(state);
+    end
+
+    if self.Header then
+        local font, height, flag = self.Header:GetFont();
+        flag = state and "OUTLINE" or "";
+        self.Header:SetFont(font, height, flag);
+    end
+end
+
+function QuickSlot:UpdateItemCooldowns()
+    if self.ItemButtons then
+        local startTime, duration, enable;
+        for _, button in ipairs(self.ItemButtons) do
+            if button.id and button.actionType == "item" then
+                startTime, duration, enable = GetItemCooldown(button.id);
+                if enable == 1 and startTime and startTime > 0 and duration and duration > 0 then
+                    button.Cooldown:SetCooldown(startTime, duration);
+                    button.Cooldown:Show();
+                    button.Cooldown:SetHideCountdownNumbers(false);
+                else
+                    button.Cooldown:Hide();
+                end
+            end
+        end
+    end
+end
+
+do  --Spell Cooldown
+    local GetSpellCooldown = API.GetSpellCooldown;
+    local GetSpellCharges = API.GetSpellCharges;
+
+    local Throttler = CreateFrame("Frame", nil, QuickSlot);
+    QuickSlot.Throttler = Throttler;
+    Throttler:SetScript("OnHide", function(self)
+        self:SetScript("OnUpdate", nil);
+        self.pauseUpdate = nil;
+    end);
+
+    local function Throttler_OnUpdate(self, elapsed)
+        self.t = self.t + elapsed;
+        if self.t >= 0.5 then
+            self.t = 0;
+            self:SetScript("OnUpdate", nil);
+            self.pauseUpdate = nil;
+        end
+    end
+
+    function QuickSlot:RequestUpdateSpellCooldowns()
+        if Throttler.pauseUpdate then
+            
+        else
+            Throttler.pauseUpdate = true;
+            Throttler.t = 0;
+            Throttler:SetScript("OnUpdate", Throttler_OnUpdate);
+            self:UpdateSpellCooldowns();
+        end
+    end
+
+    function QuickSlot:UpdateSpellCooldowns()
+        if not self.SpellButtons then return end;
+        local cooldownInfo, chargeInfo, startTime, duration, modRate, fromChargeCooldown;
+        for _, button in ipairs(self.SpellButtons) do
+            if button.id and button.actionType == "spell" then
+                startTime, duration, modRate, fromChargeCooldown = nil, nil, nil, nil;
+
+                chargeInfo = GetSpellCharges(button.id);
+                if chargeInfo and chargeInfo.currentCharges > 0 then
+                    if chargeInfo.cooldownStartTime > 0 and chargeInfo.cooldownDuration > 0 then
+                        startTime = chargeInfo.cooldownStartTime;
+                        duration = chargeInfo.cooldownDuration;
+                        modRate = chargeInfo.chargeModRate;
+                        fromChargeCooldown = true;
+                    end
+                end
+
+                if not (startTime and duration) then
+                    cooldownInfo = GetSpellCooldown(button.id);
+                    if cooldownInfo and cooldownInfo.isEnabled and cooldownInfo.startTime > 0 and cooldownInfo.duration > 0 then
+                        startTime = cooldownInfo.startTime;
+                        duration = cooldownInfo.duration;
+                        modRate = cooldownInfo.modRate
+                    end
+                end
+
+                if startTime and duration then
+                    button.Cooldown:SetCooldown(startTime, duration, modRate);
+                    button.Cooldown:Show();
+                    if fromChargeCooldown then
+                        button.Cooldown:SetHideCountdownNumbers(true);
+                    else
+                        button.Cooldown:SetHideCountdownNumbers(false);
+                    end
+                else
+                    button.Cooldown:Hide();
+                end
+            end
+        end
+    end
+end
 
 function QuickSlot:OnEvent(event, ...)
-    if event == "BAG_UPDATE" then
+    if event == "BAG_UPDATE_DELAYED" then
         self:UpdateItemCount();
+    elseif event == "SPELL_UPDATE_COOLDOWN" then
+        self:RequestUpdateSpellCooldowns();
     elseif event == "PLAYER_REGEN_DISABLED" then
         self:SetInteractable(false, true);
     elseif event == "PLAYER_REGEN_ENABLED" then
@@ -979,7 +1269,7 @@ function QuickSlot:OnEvent(event, ...)
             self:SetInteractable(true);
         end
     elseif event == "UI_SCALE_CHANGED" then
-        self:SetFrameLayout(2);
+        self:UpdateFrameLayout();
     elseif event == "UNIT_SPELLCAST_CHANNEL_START" or event == "UNIT_SPELLCAST_START" then
         local _, _, spellID = ...
         QuickSlot:OnSpellCastChanged(spellID, true);
@@ -988,6 +1278,12 @@ function QuickSlot:OnEvent(event, ...)
     elseif event == "UNIT_SPELLCAST_CHANNEL_STOP" or event == "UNIT_SPELLCAST_STOP" then
         local _, _, spellID = ...
         self:OnSpellCastChanged(spellID, false);
+    elseif event == "LOADING_SCREEN_ENABLED" then
+        self:CloseUI();
+    elseif event == "BAG_UPDATE_COOLDOWN" then
+        self:UpdateItemCooldowns();
+    elseif event == "SPELL_UPDATE_CHARGES" then
+        self:UpdateSpellCharge();
     end
 end
 QuickSlot:SetScript("OnEvent", QuickSlot.OnEvent);

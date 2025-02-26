@@ -535,7 +535,7 @@ end)
 
 -- Left Options
 local CGFullStats = CreateFrame("Button", nil, OptionsButton, "BackdropTemplate")
-CGFullStats:SetSize(105, 30)
+CGFullStats:SetSize(105, 14)
 CGFullStats:SetPoint("TOPLEFT", MainHeader, "BOTTOMLEFT", 5, -2)
 CGFullStats:SetText("Full Stats")
 CGFullStats:SetNormalFontObject("GameFontNormal")
@@ -556,9 +556,31 @@ CGFullStats:SetScript("OnClick", function(full)
   self:reportStats(full)
 end)
 
+local CGDeathStats = CreateFrame("Button", nil, OptionsButton, "BackdropTemplate")
+CGDeathStats:SetSize(105, 14)
+CGDeathStats:SetPoint("TOPLEFT", MainHeader, "BOTTOMLEFT", 5, -20)
+CGDeathStats:SetText("DeathRoll Stats")
+CGDeathStats:SetNormalFontObject("GameFontNormal")
+ButtonColors(CGDeathStats)
+CGDeathStats:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square")
+local highlight = CGDeathStats:GetHighlightTexture()
+highlight:SetBlendMode("ADD")
+highlight:SetAllPoints()
+
+CGDeathStats:SetScript("OnEnter", function(self)
+    highlight:Show()
+end)
+
+CGDeathStats:SetScript("OnLeave", function(self)
+    highlight:Hide()
+end)
+CGDeathStats:SetScript("OnClick", function()
+  self:reportDeathrollStats()
+end)
+
 local CGGuildCut = CreateFrame("Button", nil, OptionsButton, "BackdropTemplate")
 CGGuildCut:SetSize(105, 30)
-CGGuildCut:SetPoint("TOPLEFT", CGFullStats, "BOTTOMLEFT", -0, -3)
+CGGuildCut:SetPoint("TOPLEFT", CGDeathStats, "BOTTOMLEFT", -0, -3)
 CGGuildCut:SetText("Guild Cut(OFF)")
 CGGuildCut:SetNormalFontObject("GameFontNormal")
 ButtonColors(CGGuildCut)
@@ -615,10 +637,7 @@ end
     self.game.state = "START"
     self.game.players = {}
     self.game.result = nil
-    self.db.global.stats = {}
-	self.db.global.joinstats = {}
-	self.db.global.housestats = 0
-	DEFAULT_CHAT_FRAME:AddMessage("ALL STATS RESET!")
+    self:resetStats(info)
 end)
 
 -- Create a button to toggle the realm filter
@@ -658,7 +677,7 @@ CGRealmFilter:SetScript("OnClick", ToggleRealmFilter)
 
 -- Right Options 
 local CGFameShame = CreateFrame("Button", nil, OptionsButton, "BackdropTemplate")
-CGFameShame:SetSize(105, 30)
+CGFameShame:SetSize(105, 14)
 CGFameShame:SetPoint("TOPRIGHT", MainHeader, "BOTTOMRIGHT", -4, -2)
 CGFameShame:SetText("Fame/Shame")
 CGFameShame:SetNormalFontObject("GameFontNormal")
@@ -679,9 +698,32 @@ CGFameShame:SetScript("OnClick", function()
   self:reportStats()
 end)
 
+-- Right Options 
+local CGSessionStats = CreateFrame("Button", nil, OptionsButton, "BackdropTemplate")
+CGSessionStats:SetSize(105, 14)
+CGSessionStats:SetPoint("TOPRIGHT", MainHeader, "BOTTOMRIGHT", -4, -20)
+CGSessionStats:SetText("Session Stats")
+CGSessionStats:SetNormalFontObject("GameFontNormal")
+ButtonColors(CGSessionStats)
+CGSessionStats:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square")
+local highlight = CGSessionStats:GetHighlightTexture()
+highlight:SetBlendMode("ADD")
+highlight:SetAllPoints()
+
+CGSessionStats:SetScript("OnEnter", function(self)
+    highlight:Show()
+end)
+
+CGSessionStats:SetScript("OnLeave", function(self)
+    highlight:Hide()
+end)
+CGSessionStats:SetScript("OnClick", function()
+  self:reportSessionStats()
+end)
+
 local CGClassic = CreateFrame("Button", nil, OptionsButton, "BackdropTemplate")
 CGClassic:SetSize(105, 30)
-CGClassic:SetPoint("TOPRIGHT", CGFameShame, "BOTTOMRIGHT", -0, -36)
+CGClassic:SetPoint("TOPRIGHT", CGFameShame, "BOTTOMRIGHT", -0, -54)
 CGClassic:SetText("Classic Theme")
 CGClassic:SetNormalFontObject("GameFontNormal")
 ButtonColors(CGClassic)

@@ -1,5 +1,5 @@
-local VERSION_TEXT = "v1.4.5";
-local VERSION_DATE = 1729030000;
+local VERSION_TEXT = "v1.6.2";
+local VERSION_DATE = 1740400000;
 
 
 local addonName, addon = ...
@@ -97,28 +97,46 @@ local DefaultValues = {
     Technoscryers = true,               --Show Technoscryers on QuickSlot (Azerothian Archives World Quest)
     TooltipChestKeys = true,            --Show keys that unlocked the current chest or door
     TooltipRepTokens = true,            --Show faction info for items that grant rep
+    TooltipSnapdragonTreats = true,     --Show info on Snapdragon Treats (An item that changes this mount's color)
+    TooltipItemReagents = false,        --For items with "use to combine": show the reagent count
+    PlayerChoiceFrameToken = true,      --Add owned token count to PlayerChoiceFrame
     ExpansionLandingPage = true,        --Display extra info on the ExpansionLandingPage
     Delves_SeasonProgress = true,       --Display Seaonal Journey changes on a progress bar
     WoWAnniversary = true,              --QuickSlot for Mount Maniac Event
         VotingResultsExpanded = true,
     BlizzFixFishingArtifact = true,     --Fix Fishing Artifact Traits Not Showing bug
+    QuestItemDestroyAlert = true,       --Show related quest info when destroying a quest-starting item
+    SpellcastingInfo = false,           --Show the spell info when hovering over target/focus cast bars. Logging target spells and displayed it on UnitPopupMenu
+    ChatOptions = true,                 --Add Leave button to Channel Context Menu
+    NameplateWidget = true,             --Show required items on nameplate widget set
+    PartyInviterInfo = false,           --Show the inviter's level and class
+        PartyInviter_Race = false,
+        PartyInviter_Faction = false,
+    PlayerTitleUI = false,              --Add search box and filter to TitleManagerPane
+    Plunderstore = true,
+        Plunderstore_HideCollected = true,
+    BlizzardSuperTrack = false,         --Add timer to the SuperTrackedFrame when tracking a POI with time format
+
 
     --Custom Loot Window
     LootUI = false,
         LootUI_FontSize = 14,
+        LootUI_FadeDelayPerItem = 0.25,
+        LootUI_ItemsPerPage = 6,
+        LootUI_BackgroundAlpha = 0.5,
         LootUI_ShowItemCount = false,
+        LootUI_NewTransmogIcon = true,
+        LootUI_ForceAutoLoot = true,
+        LootUI_LootUnderMouse = false;
         LootUI_UseHotkey = true,
         LootUI_HotkeyName = "E",
-        LootUI_ForceAutoLoot = true,
-        LootUI_NewTransmogIcon = true,
-        LootUI_FadeDelayPerItem = 0.25,
         LootUI_ReplaceDefaultAlert = false,
-        LootUI_LootUnderMouse = false;
         LootUI_UseStockUI = false,
 
 
     --Unified Map Pin System
     WorldMapPin_TWW = true,             --Master Switch for TWW Map Pins
+        WorldMapPin_Size = 1,           --1: Default
         WorldMapPin_TWW_Delve = true,   --Show Bountiful Delves on continent map
         WorldMapPin_TWW_Quest = true,   --Show Special Assignment on continent map
 
@@ -143,28 +161,51 @@ local DefaultValues = {
         TalkingHead_BelowWorldMap = false,
 
 
+    --QuickSlot
+        QuickSlotHighContrastMode = false,
+
+
+    --SpellFlyout DrawerMacro
+        SpellFlyout_CloseAfterClick = true,
+        SpellFlyout_SingleRow = false,
+        SpellFlyout_HideUnusable = false,
+
+
+    EnableNewByDefault = false,             --Always enable newly added features
+
+
     --Declared elsewhere:
         --DreamseedChestABTesting = math.random(100) >= 50
 
 
     --Deprecated:
     --DruidModelFix = true,               --Fixed by Blizzard in 10.2.0
-    --PlayerChoiceFrameToken = true,      --First implementation in 10.2.0  --We instead revamp the who PlayerChoiceFrame
     --BlizzFixWardrobeTrackingTip = true, --Hide Wardrobe tip that cannot be disabled   --Tip removed by Blizzard
 };
 
 local function LoadDatabase()
     PlumberDB = PlumberDB or {};
+    PlumberStorage = PlumberStorage or {};  --Save large data (Spell)
+
     DB = PlumberDB;
+
+    local alwaysEnableNew = DB.EnableNewByDefault or false;
+    local newDBKeys = {};
 
     for dbKey, value in pairs(DefaultValues) do
         if DB[dbKey] == nil then
             DB[dbKey] = value;
+            if alwaysEnableNew and type(value) == "boolean" then
+                --Not all Booleans are the master switch of individual module
+                --Send these new ones to ControlCenter
+                --Test: /run PlumberDB = {EnableNewByDefault = true}
+                newDBKeys[dbKey] = true;
+            end
         end
     end
 
     for dbKey, value in pairs(DB) do
-        addon.CallbackRegistry:Trigger("SettingChanged."..dbKey, value);
+        CallbackRegistry:Trigger("SettingChanged."..dbKey, value);
     end
 
     if not DB.installTime or type(DB.installTime) ~= "number" then
@@ -172,6 +213,8 @@ local function LoadDatabase()
     end
 
     DefaultValues = nil;
+
+    CallbackRegistry:Trigger("NewDBKeysAdded", newDBKeys);
 end
 
 local EL = CreateFrame("Frame");
@@ -194,4 +237,6 @@ do
         return tocVersion >= targetVersion
     end
     addon.IsToCVersionEqualOrNewerThan = IsToCVersionEqualOrNewerThan;
+
+    addon.IS_CLASSIC = C_AddOns.GetAddOnMetadata(addonName, "X-Flavor") ~= "retail";
 end

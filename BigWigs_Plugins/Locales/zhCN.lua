@@ -231,7 +231,7 @@ L.green = "绿色"
 L.greenDesc = "对你有好事发生的警报，例如负面效果移除。"
 L.cyan = "青色"
 L.cyanDesc = "遇到状态改变的警报，例如进入到下一阶段。"
-L.purple = "粉色"
+L.purple = "紫色"
 L.purpleDesc = "坦克特定技能的警报，例如负面效果叠加。"
 
 -----------------------------------------------------------------------
@@ -354,9 +354,9 @@ L.glowAt = "开始高亮（秒）"
 L.glowAt_desc = "选择在冷却计时剩余多少秒时开始高亮。"
 
 -- Glow types as part of LibCustomGlow
-L.pixelGlow = "线条发光"
-L.autocastGlow = "亮点发光"
-L.buttonGlow = "耀斑发光"
+L.pixelGlow = "像素发光"
+L.autocastGlow = "自动施法发光"
+L.buttonGlow = "快捷键发光"
 L.procGlow = "脉冲发光"
 L.speed = "速度"
 L.animation_speed_desc = "发光动画效果的播放速度。"

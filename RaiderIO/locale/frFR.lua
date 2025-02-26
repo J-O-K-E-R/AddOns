@@ -7,7 +7,7 @@ if ns:IsSameLocale("frFR") then
 
 	L.LOCALE_NAME = "frFR"
 
-	L["ALLOW_IN_LFD"] = "Autoriser pour la Recherche de donjon"
+	L["ALLOW_IN_LFD"] = "Autoriser pour la Recherche de groupe"
 L["ALLOW_IN_LFD_CLASSIC"] = "Autoriser pour la Recherche de groupe"
 L["ALLOW_IN_LFD_CLASSIC_DESC"] = "Clic droit sur les groupes ou les joueurs dans l'outil de Recherche de groupe pour copier l'URL du profil Raider.IO."
 L["ALLOW_IN_LFD_DESC"] = "Clic droit sur les groupes ou les joueurs dans l'outil de Recherche de groupe pour copier l'URL du profil Raider.IO."
@@ -66,19 +66,31 @@ L["DUNGEON_SHORT_NAME_AA"] = "AA"
 L["DUNGEON_SHORT_NAME_AD"] = "AD"
 L["DUNGEON_SHORT_NAME_ARAK"] = "AraK"
 --[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_ARC"] = ""--]] 
+--[[Translation missing --]]
 --[[ L["DUNGEON_SHORT_NAME_AV"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["DUNGEON_SHORT_NAME_BH"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_BREW"] = ""--]] 
 L["DUNGEON_SHORT_NAME_BRH"] = "BdF"
+--[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_COEN"] = ""--]] 
 L["DUNGEON_SHORT_NAME_COS"] = "CoS"
 L["DUNGEON_SHORT_NAME_COT"] = "CdF"
 L["DUNGEON_SHORT_NAME_DAWN"] = "LBA"
+--[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_DFC"] = ""--]] 
 L["DUNGEON_SHORT_NAME_DHT"] = "FS"
 L["DUNGEON_SHORT_NAME_DOS"] = "AC"
 L["DUNGEON_SHORT_NAME_EB"] = "LFé"
+--[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_EOA"] = ""--]] 
 L["DUNGEON_SHORT_NAME_FALL"] = "AdIRdG"
 --[[Translation missing --]]
 --[[ L["DUNGEON_SHORT_NAME_FH"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_FLOOD"] = ""--]] 
 L["DUNGEON_SHORT_NAME_GB"] = "GB "
 --[[Translation missing --]]
 --[[ L["DUNGEON_SHORT_NAME_GD"] = ""--]] 
@@ -91,28 +103,46 @@ L["DUNGEON_SHORT_NAME_HOV"] = "SdI"
 --[[Translation missing --]]
 --[[ L["DUNGEON_SHORT_NAME_ID"] = ""--]] 
 --[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_KR"] = ""--]] 
+--[[Translation missing --]]
 --[[ L["DUNGEON_SHORT_NAME_LOWR"] = ""--]] 
 L["DUNGEON_SHORT_NAME_MISTS"] = "BRUMES"
+--[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_ML"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_MOS"] = ""--]] 
 L["DUNGEON_SHORT_NAME_NELT"] = "NELT"
 L["DUNGEON_SHORT_NAME_NL"] = "RdN"
 --[[Translation missing --]]
 --[[ L["DUNGEON_SHORT_NAME_NO"] = ""--]] 
 L["DUNGEON_SHORT_NAME_NW"] = "SN"
 L["DUNGEON_SHORT_NAME_PF"] = "MP"
+--[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_PSF"] = ""--]] 
 L["DUNGEON_SHORT_NAME_RISE"] = "AdIcdM"
 --[[Translation missing --]]
 --[[ L["DUNGEON_SHORT_NAME_RLP"] = ""--]] 
 --[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_ROOK"] = ""--]] 
+--[[Translation missing --]]
 --[[ L["DUNGEON_SHORT_NAME_SBG"] = ""--]] 
 L["DUNGEON_SHORT_NAME_SD"] = "PS"
+--[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_SEAT"] = ""--]] 
 L["DUNGEON_SHORT_NAME_SIEGE"] = "SIEGE"
 L["DUNGEON_SHORT_NAME_SOA"] = "FdA"
+--[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_SOTS"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["DUNGEON_SHORT_NAME_STRT"] = ""--]] 
 L["DUNGEON_SHORT_NAME_SV"] = "CAVE"
 --[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_TD"] = ""--]] 
+--[[Translation missing --]]
 --[[ L["DUNGEON_SHORT_NAME_TJS"] = ""--]] 
 L["DUNGEON_SHORT_NAME_TOP"] = "TdlS"
+--[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_TOS"] = ""--]] 
 L["DUNGEON_SHORT_NAME_TOTT"] = "TdM"
 L["DUNGEON_SHORT_NAME_ULD"] = "ULD"
 --[[Translation missing --]]
@@ -303,6 +333,22 @@ L["RAID_BOSS_CN_7"] = "Le Conseil du Sang"
 L["RAID_BOSS_CN_8"] = "Fangepoing"
 L["RAID_BOSS_CN_9"] = "Généraux de la Légion de Pierre"
 --[[Translation missing --]]
+--[[ L["RAID_BOSS_DS_1"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_DS_2"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_DS_3"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_DS_4"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_DS_5"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_DS_6"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_DS_7"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_DS_8"] = ""--]] 
+--[[Translation missing --]]
 --[[ L["RAID_BOSS_FCN_1"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["RAID_BOSS_FCN_10"] = ""--]] 
@@ -322,6 +368,20 @@ L["RAID_BOSS_CN_9"] = "Généraux de la Légion de Pierre"
 --[[ L["RAID_BOSS_FCN_8"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["RAID_BOSS_FCN_9"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_FL_1"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_FL_2"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_FL_3"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_FL_4"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_FL_5"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_FL_6"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_FL_7"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["RAID_BOSS_FSFO_1"] = ""--]] 
 --[[Translation missing --]]
@@ -388,6 +448,22 @@ L["RAID_BOSS_CN_9"] = "Généraux de la Légion de Pierre"
 --[[ L["RAID_BOSS_ICC_8"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["RAID_BOSS_ICC_9"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_LOU_1"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_LOU_2"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_LOU_3"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_LOU_4"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_LOU_5"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_LOU_6"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_LOU_7"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_LOU_8"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["RAID_BOSS_NP_1"] = ""--]] 
 --[[Translation missing --]]
@@ -476,8 +552,14 @@ L["RAID_DIFFICULTY_SUFFIX_MYTHIC"] = "M"
 L["RAID_DIFFICULTY_SUFFIX_NORMAL"] = "N"
 L["RAID_DIFFICULTY_SUFFIX_NORMAL10"] = "N10"
 L["RAID_DIFFICULTY_SUFFIX_NORMAL25"] = "N25"
+--[[Translation missing --]]
+--[[ L["RAID_DS"] = ""--]] 
 L["RAID_ENCOUNTERS_DEFEATED_TITLE"] = "Rencontres de Raid vaincues"
+--[[Translation missing --]]
+--[[ L["RAID_FL"] = ""--]] 
 L["RAID_ICC"] = "Citadelle de la Couronne de glace"
+--[[Translation missing --]]
+--[[ L["RAID_LOU"] = ""--]] 
 L["RAID_NP"] = "Palais des Nérub’ar"
 L["RAID_RS"] = "Le sanctum Rubis"
 L["RAID_TOTFW"] = "Trône des quatre vents"
@@ -491,6 +573,8 @@ L["RAIDERIO_MP_SCORE"] = "Score Raider.IO M+"
 L["RAIDERIO_MYTHIC_OPTIONS"] = "Options de l'addon Raider.IO"
 L["RAIDING_DATA_HEADER"] = "Progression de Raid Raider.IO"
 L["RAIDING_DB_MODULES"] = "Modules de base de données de raid"
+--[[Translation missing --]]
+--[[ L["RECENT_RUNS_WITH_YOU"] = ""--]] 
 L["RECRUITMENT_DB_MODULES"] = "Modules de base de données de recrutement"
 L["RELOAD_LATER"] = "Je rechargerai l'interface plus tard"
 L["RELOAD_NOW"] = "Recharger l'interface maintenant"
@@ -547,8 +631,8 @@ L["SHOW_AVERAGE_PLAYER_SCORE_INFO"] = "Afficher le score moyen des joueurs pour 
 L["SHOW_AVERAGE_PLAYER_SCORE_INFO_DESC"] = "Afficher la moyenne des scores Raider.IO des joueurs ayant fini une clé dans les temps. Cela est visible sur l'infobulle de la clé ainsi que des joueurs dans la recherche de groupe."
 L["SHOW_BEST_MAINS_SCORE"] = "Afficher le score Mythique+ de la meilleure saison du personnage principal"
 L["SHOW_BEST_MAINS_SCORE_DESC"] = "Affiche le score Mythique+ de la meilleure saison du personnage principal d'un joueur et la progression du raid dans l'info-bulle. Les joueurs doivent s'être inscrits sur Raider.IO et avoir déclaré un personnage comme personnage principal."
-L["SHOW_BEST_RUN"] = "Afficher la meilleure clé Mythique+ en titre"
-L["SHOW_BEST_RUN_DESC"] = "Affichez la meilleure clé Mythique+ du joueur de la saison en cours sous forme de titre de l'info-bulle."
+L["SHOW_BEST_RUN"] = "Afficher la meilleure clé Mythique+ dans le titre"
+L["SHOW_BEST_RUN_DESC"] = "Affiche la meilleure clé Mythique+ du joueur de la saison en cours sous forme de titre de l'info-bulle."
 L["SHOW_BEST_SEASON"] = "Afficher le meilleur score Mythique+ de la saison dans le titre"
 L["SHOW_BEST_SEASON_DESC"] = "Affiche le meilleur score de la saison Mythique+ du joueur sous forme de titre dans l'info-bulle. Si le score provient d'une saison précédente, la saison sera indiquée dans le titre de l'info-bulle."
 L["SHOW_CHESTS_AS_MEDALS"] = "Afficher les icônes de médaille Mythique+"

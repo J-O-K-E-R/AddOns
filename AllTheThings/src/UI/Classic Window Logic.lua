@@ -160,7 +160,7 @@ local function CalculateRowIndicatorTexture(group)
 			return app.asset("known_green");
 		end
 	end
-	
+
 	if group.u then
 		local phase = L.PHASES[group.u];
 		if phase and (not phase.buildVersion or app.GameBuildVersion < phase.buildVersion) then
@@ -549,7 +549,7 @@ local function RowOnClick(self, button)
 		if reference.OnClick and reference.OnClick(self, button) then
 			return true;
 		end
-		
+
 		local window = self:GetParent():GetParent();
 		if IsShiftKeyDown() then
 			if button == "RightButton" then
@@ -720,12 +720,12 @@ local function RowOnEnter(self)
 		tooltip:ClearATTReferenceTexture();
 	end
 	--print("RowOnEnter", "Rebuilding...");
-	
-	
+
+
 	-- Always display tooltip data when viewing information from our windows.
 	local wereTooltipIntegrationsDisabled = not app.Settings:GetTooltipSetting("Enabled");
 	if wereTooltipIntegrationsDisabled then app.Settings:SetTooltipSetting("Enabled", true); end
-	
+
 	-- Build tooltip information.
 	local tooltipInfo = {};
 	tooltip:ClearLines();
@@ -735,7 +735,7 @@ local function RowOnEnter(self)
 	else
 		tooltip:SetOwner(self, "ANCHOR_RIGHT");
 	end
-	
+
 	-- Attempt to show the object as a hyperlink in the tooltip
 	local linkSuccessful;
 	if reference.key ~= "encounterID" and reference.key ~= "instanceID" and reference.key ~= "questID" then
@@ -749,7 +749,7 @@ local function RowOnEnter(self)
 			--print("Link:", link:gsub("|","\\"));
 			--print("Link Result!", success, reference.key, reference.__type);
 		end
-		
+
 		-- Only if the link was unsuccessful.
 		if (not linkSuccessful or tooltip.ATT_AttachComplete == nil) and reference.currencyID then
 			---@diagnostic disable-next-line: redundant-parameter
@@ -783,7 +783,7 @@ local function RowOnEnter(self)
 			r = 1, g = 1, b = 1,
 		});
 	end
-	
+
 	if reference.cost then
 		if type(reference.cost) == "table" then
 			local _, name, icon, amount;
@@ -822,12 +822,12 @@ local function RowOnEnter(self)
 			});
 		end
 	end
-	
+
 	-- Process all Information Types
 	if tooltip.ATT_AttachComplete == nil then
 		app.ProcessInformationTypes(tooltipInfo, reference);
 	end
-	
+
 	-- Show Breadcrumb information
 	if reference.isBreadcrumb then tinsert(tooltipInfo, { left = "This is a breadcrumb quest.", color = app.Colors.Breadcrumb }); end
 
@@ -953,16 +953,16 @@ local function RowOnEnter(self)
 			end
 		end
 	end
-	
+
 	-- Attach all of the Information to the tooltip.
 	app.Modules.Tooltip.AttachTooltipInformation(tooltip, tooltipInfo);
 	if not IsRefreshing then tooltip:SetATTReferenceForTexture(reference); end
 	tooltip:Show();
 	app.ActiveRowReference = nil;
-	
+
 	-- Reactivate the original tooltip integrations setting.
 	if wereTooltipIntegrationsDisabled then app.Settings:SetTooltipSetting("Enabled", false); end
-	
+
 	-- Tooltip for something which was not attached via search, so mark it as complete here
 	tooltip.ATT_AttachComplete = not reference.working;
 end
@@ -1163,7 +1163,7 @@ app.AddEventHandler("OnStartup", function()
 		windowSettings = {};
 		savedVariables.Windows = windowSettings;
 	end
-	
+
 	-- Rename the old mini list settings container.
 	local oldMiniListData = windowSettings.CurrentInstance;
 	if oldMiniListData then
@@ -1171,7 +1171,7 @@ app.AddEventHandler("OnStartup", function()
 		windowSettings.CurrentInstance = nil;
 		windowSettings.MiniList = oldMiniListData;
 	end
-	
+
 	-- Load the Window Settings
 	if AllWindowSettings then
 		return;
@@ -1360,7 +1360,7 @@ local function RefreshData(source, trigger)
 			refreshDataCooldown = refreshDataCooldown - 1;
 			coroutine.yield();
 		end
-		
+
 		-- Execute the OnRecalculate handlers.
 		app.HandleEvent("OnRecalculate");
 
@@ -1373,14 +1373,14 @@ local function RefreshData(source, trigger)
 
 				app.HandleEvent("OnRecalculate_NewSettings")
 			end
-			
+
 			app:UpdateWindows(source, true, refreshFromTrigger);
 		else
 			app:UpdateWindows(source, nil, refreshFromTrigger);
 		end
 		refreshFromTrigger = nil;
 		currentlyRefreshingData = false;
-		
+
 		-- Execute the OnRefreshComplete handlers.
 		app.HandleEvent("OnRefreshComplete");
 	end);
@@ -1394,83 +1394,99 @@ function app:RefreshDataQuietly(source, trigger)
 end
 
 local BuildCategory = function(self, headers, searchResults, inst)
-	local sources, header, headerType = {}, self, nil;
+	local count = #searchResults;
+	if count == 0 then return; end
+	if count > 1 then
+		-- Find the most accessible version of the thing.
+		app.Sort(searchResults, app.SortDefaults.Accessibility);
+	end
+	local mostAccessibleSource = searchResults[1];
+	inst.sourceParent = mostAccessibleSource;
+	local u = GetRelativeValue(mostAccessibleSource, "u");
+	if u then
+		if u == 1 then return inst; end
+		inst.u = u;
+	end
+	local e = GetRelativeValue(mostAccessibleSource, "e");
+	if e then inst.e = e; end
+	local awp = GetRelativeValue(mostAccessibleSource, "awp");
+	if awp then inst.awp = awp; end
+	local rwp = GetRelativeValue(mostAccessibleSource, "rwp");
+	if rwp then inst.rwp = rwp; end
+	local r = GetRelativeValue(mostAccessibleSource, "r");
+	if r then inst.r = r; end
+	local c = GetRelativeValue(mostAccessibleSource, "c");
+	if c then inst.c = c; end
+	local races = GetRelativeValue(mostAccessibleSource, "races");
+	if races then inst.races = races; end
+	for key,value in pairs(mostAccessibleSource) do
+		inst[key] = value;
+	end
+	
+	local header, headerType = {}, self, nil;
 	for j,o in ipairs(searchResults) do
-		local u = GetRelativeValue(o, "u");
-		if not u or u ~= 1 then
-			app.MergeClone(sources, o);
-			if o.parent then
-				if not o.sourceQuests then
-					local questID = GetRelativeValue(o, "questID");
-					if questID then
+		if o.parent then
+			if not o.sourceQuests then
+				local questID = GetRelativeValue(o, "questID");
+				if questID then
+					if not inst.sourceQuests then
+						inst.sourceQuests = {};
+					end
+					if not contains(inst.sourceQuests, questID) then
+						tinsert(inst.sourceQuests, questID);
+					end
+				else
+					local sourceQuests = GetRelativeValue(o, "sourceQuests");
+					if sourceQuests then
 						if not inst.sourceQuests then
 							inst.sourceQuests = {};
-						end
-						if not contains(inst.sourceQuests, questID) then
-							tinsert(inst.sourceQuests, questID);
-						end
-					else
-						local sourceQuests = GetRelativeValue(o, "sourceQuests");
-						if sourceQuests then
-							if not inst.sourceQuests then
-								inst.sourceQuests = {};
-								for k,questID in ipairs(sourceQuests) do
+							for k,questID in ipairs(sourceQuests) do
+								tinsert(inst.sourceQuests, questID);
+							end
+						else
+							for k,questID in ipairs(sourceQuests) do
+								if not contains(inst.sourceQuests, questID) then
 									tinsert(inst.sourceQuests, questID);
-								end
-							else
-								for k,questID in ipairs(sourceQuests) do
-									if not contains(inst.sourceQuests, questID) then
-										tinsert(inst.sourceQuests, questID);
-									end
 								end
 							end
 						end
 					end
 				end
+			end
 
-				if GetRelativeValue(o, "isHolidayCategory") then
-					headerType = "holiday";
-				elseif GetRelativeValue(o, "isPromotionCategory") then
-					headerType = "promo";
-				elseif GetRelativeValue(o, "isPVPCategory") or o.pvp then
-					headerType = "pvp";
-				elseif GetRelativeValue(o, "isEventCategory") then
-					headerType = "event";
-				elseif GetRelativeValue(o, "isWorldDropCategory") or o.parent.headerID == app.HeaderConstants.COMMON_BOSS_DROPS then
+			if GetRelativeValue(o, "isHolidayCategory") then
+				headerType = "holiday";
+			elseif GetRelativeValue(o, "isPromotionCategory") then
+				headerType = "promo";
+			elseif GetRelativeValue(o, "isPVPCategory") or o.pvp then
+				headerType = "pvp";
+			elseif GetRelativeValue(o, "isEventCategory") then
+				headerType = "event";
+			elseif GetRelativeValue(o, "isWorldDropCategory") or o.parent.headerID == app.HeaderConstants.COMMON_BOSS_DROPS then
+				headerType = "drop";
+			elseif o.parent.npcID then
+				headerType = GetDeepestRelativeValue(o, "headerID") or o.parent.parent.headerID == app.HeaderConstants.VENDORS and app.HeaderConstants.VENDORS or "drop";
+			elseif GetRelativeValue(o, "isCraftedCategory") then
+				headerType = "crafted";
+			elseif o.parent.achievementID then
+				headerType = app.HeaderConstants.ACHIEVEMENTS;
+			else
+				headerType = GetDeepestRelativeValue(o, "headerID") or "drop";
+				if headerType == true then	-- Seriously don't do this...
 					headerType = "drop";
-				elseif o.parent.npcID then
-					headerType = GetDeepestRelativeValue(o, "headerID") or o.parent.parent.headerID == app.HeaderConstants.VENDORS and app.HeaderConstants.VENDORS or "drop";
-				elseif GetRelativeValue(o, "isCraftedCategory") then
-					headerType = "crafted";
-				elseif o.parent.achievementID then
-					headerType = app.HeaderConstants.ACHIEVEMENTS;
-				else
-					headerType = GetDeepestRelativeValue(o, "headerID") or "drop";
-					if headerType == true then	-- Seriously don't do this...
-						headerType = "drop";
-					end
 				end
-				local coords = GetRelativeValue(o, "coords");
-				if coords then
-					if not inst.coords then
-						inst.coords = { unpack(coords) };
-					else
-						for i,coord in ipairs(coords) do
-							tinsert(inst.coords, coord);
-						end
+			end
+			local coords = GetRelativeValue(o, "coords");
+			if coords then
+				if not inst.coords then
+					inst.coords = { unpack(coords) };
+				else
+					for i,coord in ipairs(coords) do
+						tinsert(inst.coords, coord);
 					end
 				end
 			end
 		end
-	end
-	local count = #sources;
-	if count == 0 then return inst; end
-	if count > 1 then
-		-- Find the most accessible version of the thing.
-		app.Sort(sources, app.SortDefaults.Accessibility);
-	end
-	for key,value in pairs(sources[1]) do
-		inst[key] = value;
 	end
 
 	-- Determine the type of header to put the thing into.
@@ -1604,7 +1620,7 @@ function app:CreateWindow(suffix, settings)
 
 
 
-		-- Visible, which overrides the default functions and gives the addon the ability to recieve information about it.
+		-- Visible, which overrides the default functions and gives the addon the ability to receive information about it.
 		local visible, oldShow, oldHide = false, window.Show, window.Hide;
 		function window:Show()
 			if not visible then
@@ -1971,7 +1987,7 @@ function app:CreateWindow(suffix, settings)
 					window:Toggle(cmd);
 				end
 			end
-			
+
 			-- Commands are forced lower case.
 			local commandRoot = settings.Commands[settings.RootCommandIndex or 1]:upper();
 			SlashCmdList[commandRoot] = onCommand;
@@ -1988,7 +2004,7 @@ function app:CreateWindow(suffix, settings)
 		window.IsDynamicCategory = settings.IsDynamicCategory;
 		window.IsTopLevel = settings.IsTopLevel;
 		LoadSettingsForWindow(window);
-		
+
 		-- Replace some functions.
 		local oldSetBackdropColor = window.SetBackdropColor;
 		window.SetBackdropColor = function(self, ...)
@@ -2428,7 +2444,7 @@ local function OnInitForPopout(self, group)
 		end
 	end
 	]]--
-	
+
 	local dataKey = self.data.key;
 	if dataKey then
 		if group.cost and type(group.cost) == "table" then
@@ -2507,7 +2523,7 @@ local function OnInitForPopout(self, group)
 				MergeObject(self.data.g, sourceGroup, 1);
 			end
 		end
-		
+
 		if not (self.data.ignoreSourceLookup or (self.data.g and #self.data.g > 0)) then
 			local results = app:BuildSearchResponse(app:GetDataCache().g, dataKey, self.data[dataKey]);
 			if results and #results > 0 then
@@ -2525,7 +2541,7 @@ end
 function app:CreateMiniListForGroup(group)
 	-- Is this an achievement criteria or lacking some achievement information?
 	local achievementID = group.achievementID;
-	if achievementID and (group.criteriaID or not group.g) then
+	if achievementID and group.criteriaID then
 		local searchResults = SearchForField("achievementID", achievementID);
 		if #searchResults > 0 then
 			local bestResult;

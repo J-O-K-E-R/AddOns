@@ -9,10 +9,10 @@ local ipairs, next, pairs = ipairs, next, pairs
 local setmetatable, tostring, tonumber, type, unpack = setmetatable, tostring, tonumber, type, unpack
 local strmatch, tinsert, tremove, sort, wipe = strmatch, tinsert, tremove, sort, wipe
 
+local GetTime = GetTime
 local GetInstanceInfo = GetInstanceInfo
 local GetInventoryItemID = GetInventoryItemID
 local GetRaidTargetIndex = GetRaidTargetIndex
-local GetTime = GetTime
 local IsPlayerSpell = IsPlayerSpell
 local IsResting = IsResting
 local IsSpellKnownOrOverridesKnown = IsSpellKnownOrOverridesKnown
@@ -50,6 +50,7 @@ local C_Item_IsEquippedItem = C_Item.IsEquippedItem
 local C_PetBattles_IsInBattle = C_PetBattles and C_PetBattles.IsInBattle
 
 local BleedList = E.Libs.Dispel:GetBleedList()
+local DispelTypes = E.Libs.Dispel:GetMyDispelTypes()
 
 local FallbackColor = {r=1, b=1, g=1}
 
@@ -366,9 +367,9 @@ function NP:StyleFilterDispelCheck(frame, filter)
 			if isStealable then
 				return true
 			end
-		elseif auraType and E:IsDispellableByMe(auraType) then
+		elseif auraType and DispelTypes[auraType] then
 			return true
-		elseif not auraType and BleedList[spellID] and E:IsDispellableByMe('Bleed') then
+		elseif not auraType and DispelTypes.Bleed and BleedList[spellID] then
 			return true
 		end
 
@@ -964,7 +965,7 @@ function NP:StyleFilterConditionCheck(frame, filter, trigger)
 	end
 
 	-- Unit Role
-	if E.Retail and (trigger.unitRole.tank or trigger.unitRole.healer or trigger.unitRole.damager) then
+	if E.allowRoles and trigger.unitRole and (trigger.unitRole.tank or trigger.unitRole.healer or trigger.unitRole.damager) then
 		local role = UnitGroupRolesAssigned(frame.unit)
 		if trigger.unitRole[NP.TriggerConditions.roles[role]] then passed = true else return end
 	end
@@ -987,18 +988,18 @@ function NP:StyleFilterConditionCheck(frame, filter, trigger)
 	end
 
 	-- Classification
-	if trigger.classification.worldboss or trigger.classification.rareelite or trigger.classification.elite or trigger.classification.rare or trigger.classification.normal or trigger.classification.trivial or trigger.classification.minus then
+	if trigger.classification and (trigger.classification.worldboss or trigger.classification.rareelite or trigger.classification.elite or trigger.classification.rare or trigger.classification.normal or trigger.classification.trivial or trigger.classification.minus) then
 		if trigger.classification[frame.classification] then passed = true else return end
 	end
 
 	-- Faction
-	if trigger.faction.Alliance or trigger.faction.Horde or trigger.faction.Neutral then
+	if trigger.faction and (trigger.faction.Alliance or trigger.faction.Horde or trigger.faction.Neutral) then
 		if trigger.faction[frame.battleFaction] then passed = true else return end
 	end
 
 	-- My Role
-	if trigger.role.tank or trigger.role.healer or trigger.role.damager then
-		if trigger.role[NP.TriggerConditions.roles[E.myrole]] then passed = true else return end
+	if trigger.myRole and (trigger.myRole.tank or trigger.myRole.healer or trigger.myRole.damager) then
+		if trigger.myRole[NP.TriggerConditions.roles[E.myrole]] then passed = true else return end
 	end
 
 	-- Unit Type
@@ -1027,22 +1028,23 @@ function NP:StyleFilterConditionCheck(frame, filter, trigger)
 	end
 
 	-- Raid Target
-	if trigger.raidTarget.star or trigger.raidTarget.circle or trigger.raidTarget.diamond or trigger.raidTarget.triangle or trigger.raidTarget.moon or trigger.raidTarget.square or trigger.raidTarget.cross or trigger.raidTarget.skull then
+	if trigger.raidTarget and (trigger.raidTarget.star or trigger.raidTarget.circle or trigger.raidTarget.diamond or trigger.raidTarget.triangle or trigger.raidTarget.moon or trigger.raidTarget.square or trigger.raidTarget.cross or trigger.raidTarget.skull) then
 		if trigger.raidTarget[NP.TriggerConditions.raidTargets[frame.RaidTargetIndex]] then passed = true else return end
 	end
 
 	do
-		local instanceName, instanceType, difficultyID, instanceID, _
-		local activeType = trigger.instanceType.none or trigger.instanceType.scenario or trigger.instanceType.party or trigger.instanceType.raid or trigger.instanceType.arena or trigger.instanceType.pvp
-		local activeID = trigger.location.instanceIDEnabled
+		local which, location = trigger.instanceType, trigger.location
+		local activeType = which and (which.none or which.scenario or which.party or which.raid or which.arena or which.pvp)
+		local activeID = location and location.instanceIDEnabled
 
 		-- Instance Type
+		local instanceName, instanceType, difficultyID, instanceID, _
 		if activeType or activeID then
 			instanceName, instanceType, difficultyID, _, _, _, _, instanceID = GetInstanceInfo()
 		end
 
 		if activeType then
-			if trigger.instanceType[instanceType] then
+			if which[instanceType] then
 				passed = true
 
 				-- Instance Difficulty
@@ -1056,18 +1058,18 @@ function NP:StyleFilterConditionCheck(frame, filter, trigger)
 		end
 
 		-- Location
-		if activeID or trigger.location.mapIDEnabled or trigger.location.zoneNamesEnabled or trigger.location.subZoneNamesEnabled then
-			if activeID and next(trigger.location.instanceIDs) then
-				if (instanceID and trigger.location.instanceIDs[tostring(instanceID)]) or trigger.location.instanceIDs[instanceName] then passed = true else return end
+		if activeID or (location and (location.mapIDEnabled or location.zoneNamesEnabled or location.subZoneNamesEnabled)) then
+			if activeID and next(location.instanceIDs) then
+				if (instanceID and location.instanceIDs[tostring(instanceID)]) or location.instanceIDs[instanceName] then passed = true else return end
 			end
-			if trigger.location.mapIDEnabled and next(trigger.location.mapIDs) then
-				if (E.MapInfo.mapID and trigger.location.mapIDs[tostring(E.MapInfo.mapID)]) or trigger.location.mapIDs[E.MapInfo.name] then passed = true else return end
+			if location.mapIDEnabled and next(location.mapIDs) then
+				if (E.MapInfo.mapID and location.mapIDs[tostring(E.MapInfo.mapID)]) or location.mapIDs[E.MapInfo.name] then passed = true else return end
 			end
-			if trigger.location.zoneNamesEnabled and next(trigger.location.zoneNames) then
-				if trigger.location.zoneNames[E.MapInfo.realZoneText] then passed = true else return end
+			if location.zoneNamesEnabled and next(location.zoneNames) then
+				if location.zoneNames[E.MapInfo.realZoneText] then passed = true else return end
 			end
-			if trigger.location.subZoneNamesEnabled and next(trigger.location.subZoneNames) then
-				if trigger.location.subZoneNames[E.MapInfo.subZoneText] then passed = true else return end
+			if location.subZoneNamesEnabled and next(location.subZoneNames) then
+				if location.subZoneNames[E.MapInfo.subZoneText] then passed = true else return end
 			end
 		end
 	end
@@ -1374,6 +1376,7 @@ NP.StyleFilterDefaultEvents = { -- list of events style filter uses to populate 
 	UNIT_CONNECTION = false,
 	UNIT_DISPLAYPOWER = false,
 	UNIT_MAXHEALTH = false,
+	UNIT_HEALTH = false,
 	UNIT_NAME_UPDATE = false,
 	UNIT_PET = false,
 	UNIT_POWER_UPDATE = false,
@@ -1404,8 +1407,6 @@ NP.StyleFilterDefaultEvents = { -- list of events style filter uses to populate 
 
 if E.Classic then
 	NP.StyleFilterDefaultEvents.UNIT_HEALTH_FREQUENT = false
-else
-	NP.StyleFilterDefaultEvents.UNIT_HEALTH = false
 end
 
 NP.StyleFilterCastEvents = {
@@ -1434,8 +1435,8 @@ function NP:StyleFilterConfigure()
 
 	if NP.db.filters then
 		for filterName, filter in pairs(E.global.nameplates.filters) do
-			local t = filter.triggers
-			if t and NP.db.filters[filterName] and NP.db.filters[filterName].triggers and NP.db.filters[filterName].triggers.enable then
+			local t, db = filter.triggers, NP.db.filters[filterName]
+			if t and db and db.triggers and db.triggers.enable then
 				tinsert(list, {filterName, t.priority or 1})
 
 				-- NOTE: 0 for fake events
@@ -1492,11 +1493,10 @@ function NP:StyleFilterConfigure()
 
 				if t.healthThreshold then
 					events.UNIT_MAXHEALTH = 1
+					events.UNIT_HEALTH = 1
 
 					if E.Classic then
 						events.UNIT_HEALTH_FREQUENT = 1
-					else
-						events.UNIT_HEALTH = 1
 					end
 				end
 
@@ -1517,7 +1517,7 @@ function NP:StyleFilterConfigure()
 					events.UNIT_FLAGS = 1
 				end
 
-				if t.inParty or t.notInParty or t.inRaid or t.notInRaid or t.unitRole then
+				if t.inParty or t.notInParty or t.inRaid or t.notInRaid or (E.Retail and t.unitRole and (t.unitRole.tank or t.unitRole.healer or t.unitRole.damager)) then
 					events.GROUP_ROSTER_UPDATE = 1
 				end
 
@@ -1633,64 +1633,91 @@ function NP:StyleFilterUpdate(frame, event)
 end
 
 do -- oUF style filter inject watch functions without actually registering any events
-	local pooler = CreateFrame('Frame')
-	pooler.frames = {}
-	pooler.delay = 0.1 -- update check rate
+	local object = CreateFrame('Frame')
+	object.delay = 0.1 -- update check rate
+	object.instant = 0.3 -- seconds since last event
+	object.active = true -- off is always instant
+	object.tracked = {}
+	object.times = {}
 
-	pooler.update = function()
-		for frame in pairs(pooler.frames) do
+	ElvUF.Pooler.StyleFilter = object
+
+	function NP:StyleFilterPoolerRun()
+		for frame in pairs(object.tracked) do
 			NP:StyleFilterUpdate(frame, 'PoolerUpdate')
 		end
 
-		wipe(pooler.frames) -- clear it out
+		wipe(object.tracked) -- clear it out
 	end
 
-	pooler.onUpdate = function(self, elapsed)
-		if self.elapsed and self.elapsed > pooler.delay then
-			pooler.update()
+	local wait = 0
+	function NP:StyleFilterPoolerOnUpdate(elapsed)
+		if wait > object.delay then
+			NP:StyleFilterPoolerRun()
 
-			self.elapsed = 0
+			wait = 0
 		else
-			self.elapsed = (self.elapsed or 0) + elapsed
+			wait = wait + elapsed
 		end
 	end
 
-	pooler:SetScript('OnUpdate', pooler.onUpdate)
+	object:SetScript('OnUpdate', NP.StyleFilterPoolerOnUpdate)
+	object:Hide()
 
-	local update = function(frame, event, arg1, arg2, arg3, ...)
+	function NP:StyleFilterPoolerTrack(event, arg1, arg2, arg3, ...)
 		local eventFunc = NP.StyleFilterEventFunctions[event]
 		if eventFunc then
-			eventFunc(frame, event, arg1, arg2, arg3, ...)
+			eventFunc(self, event, arg1, arg2, arg3, ...)
 		end
 
 		local auraEvent = event == 'UNIT_AURA'
-		if auraEvent and E.Retail and ElvUF:ShouldSkipAuraUpdate(frame, event, arg1, arg2, arg3) then
+		if auraEvent and E.Retail and ElvUF:ShouldSkipAuraUpdate(self, event, arg1, arg2, arg3) then
 			return
 		end
 
 		-- Trigger Event and (auraEvent or unitless or verifiedUnit); auraEvent is already unit verified by ShouldSkipAuraUpdate
 		local trigger = NP.StyleFilterTriggerEvents[event]
-		if trigger == 2 and (frame.unit ~= arg1) then
+		if trigger == 2 and (self.unit ~= arg1) then
 			return -- this blocks rechecking other plates on added when not using the amount trigger (preformance thing)
-		elseif trigger and (auraEvent or NP.StyleFilterDefaultEvents[event] or (arg1 and arg1 == frame.unit)) then
-			pooler.frames[frame] = true
+		elseif trigger and (auraEvent or NP.StyleFilterDefaultEvents[event] or (arg1 and arg1 == self.unit)) then
+			if object.active then
+				local now = GetTime()
+				local last = object.times[event]
+				if last and (last + object.instant) < now then
+					NP:StyleFilterUpdate(self, 'PoolerUpdate')
+				else
+					object.tracked[self] = true
+
+					if not object:IsShown() then
+						object:Show()
+					end
+				end
+
+				object.times[event] = now
+			else
+				if object:IsShown() then
+					object:Hide()
+				end
+
+				NP:StyleFilterUpdate(self, 'PoolerUpdate')
+			end
 		end
 	end
 
-	local oUF_event_metatable = {
-		__call = function(funcs, frame, ...)
-			for _, func in next, funcs do
-				func(frame, ...)
-			end
-		end,
-	}
+	local update = NP.StyleFilterPoolerTrack
+	function NP:StyleFilterPoolerCall(frame, ...)
+		for _, func in next, self do
+			func(frame, ...)
+		end
+	end
 
-	local oUF_fake_register = function(frame, event, remove)
+	local metatable = { __call = NP.StyleFilterPoolerCall }
+	function NP:StyleFilterFakeRegister(frame, event, remove)
 		local curev = frame[event]
 		if curev then
 			local kind = type(curev)
 			if kind == 'function' and curev ~= update then
-				frame[event] = setmetatable({curev, update}, oUF_event_metatable)
+				frame[event] = setmetatable({curev, update}, metatable)
 			elseif kind == 'table' then
 				for index, infunc in next, curev do
 					if infunc == update then
@@ -1708,7 +1735,7 @@ do -- oUF style filter inject watch functions without actually registering any e
 		end
 	end
 
-	local styleFilterIsWatching = function(frame, event)
+	function NP:StyleFilterIsWatching(frame, event)
 		local curev = frame[event]
 		if curev then
 			local kind = type(curev)
@@ -1726,17 +1753,17 @@ do -- oUF style filter inject watch functions without actually registering any e
 		if frame == _G.ElvNP_Test then return end
 
 		for event in pairs(NP.StyleFilterDefaultEvents) do
-			local holdsEvent = styleFilterIsWatching(frame, event)
+			local holdsEvent = NP:StyleFilterIsWatching(frame, event)
 			if disable then
 				if holdsEvent then
-					oUF_fake_register(frame, event, true)
+					NP:StyleFilterFakeRegister(frame, event, true)
 				end
 			elseif NP.StyleFilterPlateEvents[event] then
 				if not holdsEvent then
-					oUF_fake_register(frame, event)
+					NP:StyleFilterFakeRegister(frame, event)
 				end
 			elseif holdsEvent then
-				oUF_fake_register(frame, event, true)
+				NP:StyleFilterFakeRegister(frame, event, true)
 	end end end
 
 	function NP:StyleFilterRegister(nameplate, event, unitless, func, objectEvent)

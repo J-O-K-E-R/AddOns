@@ -21,16 +21,46 @@ local twwToysAndItems = {
 	["Malfunctioning Mechsuit"] = {
 		cat = CONSTANTS.ITEM_CATEGORIES.TWW,
 		type = CONSTANTS.ITEM_TYPES.ITEM,
-		method = CONSTANTS.DETECTION_METHODS.NPC,
+		method = CONSTANTS.DETECTION_METHODS.BOSS,
 		name = L["Malfunctioning Mechsuit"],
-		npcs = { 219440, 213119 },
+		npcs = { 99999 },
+		tooltipNpcs = { 219440, 213119 },
+		statisticId = { 40722 },
 		itemId = 226683,
 		spellId = 442358,
-		chance = 1, -- No data available
+		chance = 200,
 		groupSize = 5,
 		equalOdds = true,
 		instanceDifficulties = { [CONSTANTS.INSTANCE_DIFFICULTIES.MYTHIC_DUNGEON] = true },
 		coords = { { m = CONSTANTS.UIMAPIDS.THE_STONEVAULT, i = true } },
+	},
+	-- 11,0.7 items and toys
+	["Glittering Vault Shard"] = {
+		cat = CONSTANTS.ITEM_CATEGORIES.TWW,
+		type = CONSTANTS.ITEM_TYPES.ITEM,
+		isToy = true,
+		method = CONSTANTS.DETECTION_METHODS.NPC,
+		name = L["Glittering Vault Shard"],
+		itemId = 235017,
+		npcs = {
+			228159, -- Gunnlod the Sea-Drinker
+			231368, -- Ksvir the Forgotten
+			227550, -- Shardsong
+		},
+		chance = 10,
+		coords = { { m = CONSTANTS.UIMAPIDS.THE_FORGOTTEN_VAULT } },
+	},
+	["Cyclonic Runekey"] = {
+		cat = CONSTANTS.ITEM_CATEGORIES.TWW,
+		type = CONSTANTS.ITEM_TYPES.ITEM,
+		method = CONSTANTS.DETECTION_METHODS.NPC,
+		name = L["Cyclonic Runekey"],
+		itemId = 232569,
+		npcs = {
+			231357, -- Zek'ul the Shipbreaker
+		},
+		chance = 100,
+		coords = { { m = CONSTANTS.UIMAPIDS.THE_FORGOTTEN_VAULT } },
 	},
 }
 

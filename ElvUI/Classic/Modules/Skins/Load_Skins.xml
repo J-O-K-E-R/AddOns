@@ -22,6 +22,7 @@
 	<Script file='GuildRegistrar.lua'/>
 	<Script file='Help.lua'/>
 	<Script file='Inspect.lua'/>
+	<Script file='LFG.lua'/>
 	<Script file='Loot.lua'/>
 	<Script file='Macro.lua'/>
 	<Script file='Mail.lua'/>
@@ -29,6 +30,7 @@
 	<Script file='Merchant.lua'/>
 	<Script file='MirrorTimers.lua'/>
 	<Script file='Misc.lua'/>
+	<Script file='NonRaid.lua'/>
 	<Script file='Petition.lua'/>
 	<Script file='Quest.lua'/>
 	<Script file='QuestTimers.lua'/>

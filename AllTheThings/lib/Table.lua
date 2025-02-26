@@ -34,6 +34,14 @@ app.containsValue = function(dict, value)
 		if value2 == value then return true; end
 	end
 end
+app.containsAnyKey = function(dict, arr)
+	local count = #arr
+	local k
+	for j=1,count do
+		k = arr[j]
+		if dict[k] ~= nil then return k end
+	end
+end
 app.indexOf = function(arr, value)
 	local count = #arr;
 	for i=1,count,1 do

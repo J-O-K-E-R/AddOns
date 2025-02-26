@@ -1,5 +1,5 @@
 --[[
-Copyright 2013-2024 João Cardoso
+Copyright 2013-2025 João Cardoso
 ItemSearch is distributed under the terms of the GNU General Public License (Version 3).
 As a special exception, the copyright holders of this library give you permission to embed it
 with independent modules to produce an addon, regardless of the license terms of these
@@ -15,7 +15,7 @@ GNU General Public License for more details.
 This file is part of ItemSearch.
 --]]
 
-local Lib = LibStub:NewLibrary('ItemSearch-1.3', 9)
+local Lib = LibStub:NewLibrary('ItemSearch-1.3', 10)
 if Lib then
 	Lib.Unusable, Lib.Collected, Lib.Bangs = {}, {}, {}
 	Lib.Filters = nil
@@ -87,9 +87,9 @@ end
 if LE_EXPANSION_LEVEL_CURRENT > 2 then
 	function Lib:IsUncollected(id, link)
 		if not Lib.Collected[id] and C.Item.IsDressableItemByID(id) and not C.TransmogCollection.PlayerHasTransmog(id) then
-			local lines = C.TooltipInfo.GetHyperlink(link).lines
-			if #lines > 0 then
-				local missing = lines[#lines].leftText == TRANSMOGRIFY_TOOLTIP_APPEARANCE_UNKNOWN
+			local data = C.TooltipInfo.GetHyperlink(link)
+			if data and #data.lines > 0 then
+				local missing = data.lines[#data.lines].leftText == TRANSMOGRIFY_TOOLTIP_APPEARANCE_UNKNOWN
 				Lib.Collected[id] = not missing
 				return missing
 			end

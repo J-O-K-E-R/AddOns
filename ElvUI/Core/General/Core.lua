@@ -61,6 +61,7 @@ E.version, E.versionString, E.versionDev, E.versionGit = E:ParseVersionString('E
 E.myfaction, E.myLocalizedFaction = UnitFactionGroup('player')
 E.myLocalizedClass, E.myclass, E.myClassID = UnitClass('player')
 E.myLocalizedRace, E.myrace, E.myRaceID = UnitRace('player')
+E.mygender = UnitSex('player')
 E.mylevel = UnitLevel('player')
 E.myname = UnitName('player')
 E.myrealm = GetRealmName()
@@ -71,6 +72,7 @@ E.physicalWidth, E.physicalHeight = GetPhysicalScreenSize()
 E.screenWidth, E.screenHeight = GetScreenWidth(), GetScreenHeight()
 E.resolution = format('%dx%d', E.physicalWidth, E.physicalHeight)
 E.perfect = 768 / E.physicalHeight
+E.allowRoles = E.Retail or E.Cata or E.ClassicAnniv or E.ClassicAnnivHC
 E.NewSign = [[|TInterface\OptionsFrame\UI-OptionsFrame-NewFeatureIcon:14:14|t]]
 E.NewSignNoWhatsNew = [[|TInterface\OptionsFrame\UI-OptionsFrame-NewFeatureIcon:14:14:0:0|t]]
 E.TexturePath = [[Interface\AddOns\ElvUI\Media\Textures\]] -- for plugins?
@@ -129,7 +131,7 @@ E.InverseAnchors = {
 -- Workaround for people wanting to use white and it reverting to their class color.
 E.PriestColors = { r = 0.99, g = 0.99, b = 0.99, colorStr = 'fffcfcfc' }
 
--- Socket Type info from 10.0.7
+-- Socket Type info from 11.0.7
 E.GemTypeInfo = {
 	Yellow			= { r = 0.97, g = 0.82, b = 0.29 },
 	Red				= { r = 1.00, g = 0.47, b = 0.47 },
@@ -145,6 +147,10 @@ E.GemTypeInfo = {
 	Cypher			= { r = 1.00, g = 0.80, b = 0.00 },
 	Tinker			= { r = 1.00, g = 0.47, b = 0.47 },
 	Primordial		= { r = 1.00, g = 0.00, b = 1.00 },
+	Fragrance		= { r = 1.00, g = 1.00, b = 1.00 },
+	SingingThunder	= { r = 0.97, g = 0.82, b = 0.29 },
+	SingingSea		= { r = 0.47, g = 0.67, b = 1.00 },
+	SingingWind		= { r = 1.00, g = 0.47, b = 0.47 },
 }
 
 --This frame everything in ElvUI should be anchored to for Eyefinity support.
@@ -1430,8 +1436,46 @@ function E:DBConvertDF()
 	end
 end
 
-function E:DBConvertDev()
+function E:DBConvertTWW()
+	-- tooltip item count to be more optional
+	local itemCount = E.db.tooltip.itemCount
+	if type(itemCount) == 'string' then
+		local db = E:CopyTable({}, P.tooltip.itemCount)
+		if itemCount == 'BAGS_ONLY' then
+			db.bags = true
+			db.bank = false
+		elseif itemCount == 'BANK_ONLY' then
+			db.bags = false
+			db.bank = true
+		elseif itemCount == 'BOTH' then
+			db.bags = true
+			db.bank = true
+		elseif itemCount == 'NONE' then
+			db.bags = false
+			db.bank = false
+		end
 
+		E.db.tooltip.itemCount = db
+	end
+
+	local healthBreak = E.db.unitframe.colors.healthBreak
+	local onlyLow = healthBreak.onlyLow
+	if onlyLow ~= nil then
+		healthBreak.onlyLow = nil
+
+		if onlyLow then
+			healthBreak.threshold.bad = true
+			healthBreak.threshold.neutral = false
+			healthBreak.threshold.good = false
+		end
+	end
+end
+
+function E:DBConvertDev()
+	if not ElvCharacterDB.ConvertKeybindings then
+		E:ConvertActionBarKeybinds()
+		ElvCharacterDB.ConvertKeybindings = true
+	end
 end
 
 function E:UpdateDB()
@@ -1468,6 +1512,7 @@ end
 function E:UpdateMediaItems(skipCallback)
 	E:UpdateMedia()
 	E:UpdateDispelColors()
+	E:UpdateCustomClassColors()
 	E:UpdateFrameTemplates()
 	E:UpdateStatusBars()
 
@@ -1493,7 +1538,7 @@ function E:UpdateActionBars(skipCallback)
 	ActionBars:UpdateMicroButtons()
 	ActionBars:UpdatePetCooldownSettings()
 
-	if E.Retail then
+	if E.Retail or E.Cata then
 		ActionBars:UpdateExtraButtons()
 	end
 
@@ -1904,16 +1949,11 @@ function E:DBConversions()
 		E:DBConvertBFA()
 		E:DBConvertSL()
 		E:DBConvertDF()
+		E:DBConvertTWW()
 	end
 
-	-- development converts
+	-- development convert always
 	E:DBConvertDev()
-
-	-- always convert
-	if not ElvCharacterDB.ConvertKeybindings then
-		E:ConvertActionBarKeybinds()
-		ElvCharacterDB.ConvertKeybindings = true
-	end
 end
 
 function E:ConvertActionBarKeybinds()
@@ -1994,6 +2034,7 @@ function E:Initialize()
 	E:LoadMovers()
 	E:UpdateMedia()
 	E:UpdateDispelColors()
+	E:UpdateCustomClassColors()
 	E:UpdateCooldownSettings('all')
 	E:Contruct_StaticPopups()
 
@@ -2001,7 +2042,7 @@ function E:Initialize()
 		E:Tutorials()
 	end
 
-	if E.Retail or E.Cata or E.ClassicSOD then
+	if E.Retail or E.Cata or E.ClassicSOD or E.ClassicAnniv or E.ClassicAnnivHC then
 		E.Libs.DualSpec:EnhanceDatabase(E.data, 'ElvUI')
 	end
 
@@ -2024,7 +2065,7 @@ function E:Initialize()
 		E:StaticPopup_Show('UPDATE_REQUEST')
 	end
 
-	if GetCVarBool('scriptProfile') and not E:IsAddOnEnabled('ElvUI_CPU') then
+	if GetCVarBool('scriptProfile') then
 		E:StaticPopup_Show('SCRIPT_PROFILE')
 	end
 

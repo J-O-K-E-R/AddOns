@@ -5,7 +5,7 @@
 ]]
 
 local _G = _G
-local gsub, tinsert, next, type = gsub, tinsert, next, type
+local gsub, tinsert, next, type, wipe = gsub, tinsert, next, type, wipe
 local tostring, tonumber, strfind, strmatch = tostring, tonumber, strfind, strmatch
 
 local CreateFrame = CreateFrame
@@ -20,8 +20,6 @@ local UIDropDownMenu_SetAnchor = UIDropDownMenu_SetAnchor
 local DisableAddOn = C_AddOns.DisableAddOn
 local GetAddOnMetadata = C_AddOns.GetAddOnMetadata
 local IsAddOnLoaded = C_AddOns.IsAddOnLoaded
-local IsHardcoreActive = C_GameRules and C_GameRules.IsHardcoreActive
-local IsEngravingEnabled = C_Engraving and C_Engraving.IsEngravingEnabled
 
 local C_AddOns_GetAddOnEnableState = C_AddOns.GetAddOnEnableState
 
@@ -30,16 +28,22 @@ local SetCVar = C_CVar.SetCVar
 
 -- GLOBALS: ElvCharacterDB, ElvPrivateDB, ElvDB, ElvCharacterData, ElvPrivateData, ElvData
 
+local oUF = _G.ElvUF
+assert(oUF, 'ElvUI was unable to locate oUF.')
+
 local AceAddon, AceAddonMinor = _G.LibStub('AceAddon-3.0')
 local CallbackHandler = _G.LibStub('CallbackHandler-1.0')
 
 local AddOnName, Engine = ...
-local E = AceAddon:NewAddon(AddOnName, 'AceConsole-3.0', 'AceEvent-3.0', 'AceTimer-3.0', 'AceHook-3.0')
+local Profiler = oUF.Profiler.func -- ElvUI_CPU knock off by Simpy
+local E = Profiler(AceAddon:NewAddon(AddOnName, 'AceConsole-3.0', 'AceEvent-3.0', 'AceTimer-3.0', 'AceHook-3.0'))
 E.DF = {profile = {}, global = {}}; E.privateVars = {profile = {}} -- Defaults
 E.Options = {type = 'group', args = {}, childGroups = 'ElvUI_HiddenTree', get = E.noop, name = ''}
 E.callbacks = E.callbacks or CallbackHandler:New(E)
 E.wowpatch, E.wowbuild, E.wowdate, E.wowtoc = GetBuildInfo()
 E.locale = GetLocale()
+E.Profiler = oUF.Profiler
+E.oUF = oUF
 
 Engine[1] = E
 Engine[2] = {}
@@ -48,47 +52,54 @@ Engine[4] = E.DF.profile
 Engine[5] = E.DF.global
 _G.ElvUI = Engine
 
-E.oUF = _G.ElvUF
-assert(E.oUF, 'ElvUI was unable to locate oUF.')
-
-E.ActionBars = E:NewModule('ActionBars','AceHook-3.0','AceEvent-3.0')
-E.AFK = E:NewModule('AFK','AceEvent-3.0','AceTimer-3.0')
-E.Auras = E:NewModule('Auras','AceHook-3.0','AceEvent-3.0')
-E.Bags = E:NewModule('Bags','AceHook-3.0','AceEvent-3.0','AceTimer-3.0')
-E.Blizzard = E:NewModule('Blizzard','AceEvent-3.0','AceHook-3.0')
-E.Chat = E:NewModule('Chat','AceTimer-3.0','AceHook-3.0','AceEvent-3.0')
-E.DataBars = E:NewModule('DataBars','AceEvent-3.0')
-E.DataTexts = E:NewModule('DataTexts','AceTimer-3.0','AceHook-3.0','AceEvent-3.0')
-E.DebugTools = E:NewModule('DebugTools','AceEvent-3.0','AceHook-3.0')
-E.Distributor = E:NewModule('Distributor','AceEvent-3.0','AceTimer-3.0','AceComm-3.0','AceSerializer-3.0')
-E.EditorMode = E:NewModule('EditorMode','AceEvent-3.0')
-E.Layout = E:NewModule('Layout','AceEvent-3.0')
-E.Minimap = E:NewModule('Minimap','AceHook-3.0','AceEvent-3.0','AceTimer-3.0')
-E.Misc = E:NewModule('Misc','AceEvent-3.0','AceTimer-3.0','AceHook-3.0')
-E.ModuleCopy = E:NewModule('ModuleCopy','AceEvent-3.0','AceTimer-3.0','AceComm-3.0','AceSerializer-3.0')
-E.NamePlates = E:NewModule('NamePlates','AceHook-3.0','AceEvent-3.0','AceTimer-3.0')
-E.PluginInstaller = E:NewModule('PluginInstaller')
-E.PrivateAuras = E:NewModule('PrivateAuras')
-E.RaidUtility = E:NewModule('RaidUtility','AceEvent-3.0')
-E.Skins = E:NewModule('Skins','AceTimer-3.0','AceHook-3.0','AceEvent-3.0')
-E.Tooltip = E:NewModule('Tooltip','AceTimer-3.0','AceHook-3.0','AceEvent-3.0')
-E.TotemTracker = E:NewModule('TotemTracker','AceEvent-3.0')
-E.UnitFrames = E:NewModule('UnitFrames','AceTimer-3.0','AceEvent-3.0','AceHook-3.0')
-E.WorldMap = E:NewModule('WorldMap','AceHook-3.0','AceEvent-3.0','AceTimer-3.0')
+E.ActionBars = Profiler(E:NewModule('ActionBars','AceHook-3.0','AceEvent-3.0'))
+E.AFK = Profiler(E:NewModule('AFK','AceEvent-3.0','AceTimer-3.0'))
+E.Auras = Profiler(E:NewModule('Auras','AceHook-3.0','AceEvent-3.0'))
+E.Bags = Profiler(E:NewModule('Bags','AceHook-3.0','AceEvent-3.0','AceTimer-3.0'))
+E.Blizzard = Profiler(E:NewModule('Blizzard','AceEvent-3.0','AceHook-3.0'))
+E.Chat = Profiler(E:NewModule('Chat','AceTimer-3.0','AceHook-3.0','AceEvent-3.0'))
+E.DataBars = Profiler(E:NewModule('DataBars','AceEvent-3.0'))
+E.DataTexts = Profiler(E:NewModule('DataTexts','AceTimer-3.0','AceHook-3.0','AceEvent-3.0'))
+E.DebugTools = Profiler(E:NewModule('DebugTools','AceEvent-3.0','AceHook-3.0'))
+E.Distributor = Profiler(E:NewModule('Distributor','AceEvent-3.0','AceTimer-3.0','AceComm-3.0','AceSerializer-3.0'))
+E.EditorMode = Profiler(E:NewModule('EditorMode','AceEvent-3.0'))
+E.Layout = Profiler(E:NewModule('Layout','AceEvent-3.0'))
+E.Minimap = Profiler(E:NewModule('Minimap','AceHook-3.0','AceEvent-3.0','AceTimer-3.0'))
+E.Misc = Profiler(E:NewModule('Misc','AceEvent-3.0','AceTimer-3.0','AceHook-3.0'))
+E.ModuleCopy = Profiler(E:NewModule('ModuleCopy','AceEvent-3.0','AceTimer-3.0','AceComm-3.0','AceSerializer-3.0'))
+E.NamePlates = Profiler(E:NewModule('NamePlates','AceHook-3.0','AceEvent-3.0','AceTimer-3.0'))
+E.PluginInstaller = Profiler(E:NewModule('PluginInstaller'))
+E.PrivateAuras = Profiler(E:NewModule('PrivateAuras'))
+E.RaidUtility = Profiler(E:NewModule('RaidUtility','AceEvent-3.0'))
+E.Skins = Profiler(E:NewModule('Skins','AceTimer-3.0','AceHook-3.0','AceEvent-3.0'))
+E.Tooltip = Profiler(E:NewModule('Tooltip','AceTimer-3.0','AceHook-3.0','AceEvent-3.0'))
+E.TotemTracker = Profiler(E:NewModule('TotemTracker','AceEvent-3.0'))
+E.UnitFrames = Profiler(E:NewModule('UnitFrames','AceTimer-3.0','AceEvent-3.0','AceHook-3.0'))
+E.WorldMap = Profiler(E:NewModule('WorldMap','AceHook-3.0','AceEvent-3.0','AceTimer-3.0'))
 
 E.InfoColor = '|cff1784d1' -- blue
 E.InfoColor2 = '|cff9b9b9b' -- silver
 E.twoPixelsPlease = false -- changing this option is not supported! :P
 
--- Expansions
-E.TBC = WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC -- not used
-E.Cata = WOW_PROJECT_ID == WOW_PROJECT_CATACLYSM_CLASSIC
-E.Wrath = WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC
-E.Retail = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
-E.Classic = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
+do -- Expansions
+	E.TBC = WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC -- not used
+	E.Cata = WOW_PROJECT_ID == WOW_PROJECT_CATACLYSM_CLASSIC
+	E.Wrath = WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC
+	E.Retail = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
+	E.Classic = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
 
-E.ClassicHC = IsHardcoreActive and IsHardcoreActive()
-E.ClassicSOD = IsEngravingEnabled and IsEngravingEnabled()
+	local season = C_Seasons and C_Seasons.GetActiveSeason()
+	E.ClassicHC = season == 3 -- Hardcore
+	E.ClassicSOD = season == 2 -- Season of Discovery
+	E.ClassicAnniv = season == 11 -- Anniversary
+	E.ClassicAnnivHC = season == 12 -- Anniversary Hardcore
+
+	local IsHardcoreActive = C_GameRules and C_GameRules.IsHardcoreActive
+	E.IsHardcoreActive = IsHardcoreActive and IsHardcoreActive()
+
+	local IsEngravingEnabled = C_Engraving and C_Engraving.IsEngravingEnabled
+	E.IsEngravingEnabled = IsEngravingEnabled and IsEngravingEnabled()
+end
 
 -- Item Qualitiy stuff, also used by MerathilisUI
 E.QualityColors = CopyTable(_G.BAG_ITEM_QUALITY_COLORS)
@@ -116,7 +127,7 @@ end
 function E:ParseVersionString(addon)
 	local version = GetAddOnMetadata(addon, 'Version')
 	if strfind(version, 'project%-version') then
-		return 13.79, '13.79-git', nil, true
+		return 13.85, '13.85-git', nil, true
 	else
 		local release, extra = strmatch(version, '^v?([%d.]+)(.*)')
 		return tonumber(release), release..extra, extra ~= ''
@@ -146,7 +157,6 @@ do
 	E:AddLib('LAB', 'LibActionButton-1.0-ElvUI')
 	E:AddLib('LDB', 'LibDataBroker-1.1')
 	E:AddLib('SimpleSticky', 'LibSimpleSticky-1.0')
-	E:AddLib('RangeCheck', 'LibRangeCheck-3.0-ElvUI')
 	E:AddLib('CustomGlow', 'LibCustomGlow-1.0')
 	E:AddLib('Deflate', 'LibDeflate')
 	E:AddLib('Masque', 'Masque', true)
@@ -160,7 +170,7 @@ do
 	E:AddLib('AceConfigRegistry', 'AceConfigRegistry-3.0-ElvUI')
 	E:AddLib('AceDBOptions', 'AceDBOptions-3.0')
 
-	if E.Retail or E.Cata or E.ClassicSOD then
+	if E.Retail or E.Cata or E.ClassicSOD or E.ClassicAnniv or E.ClassicAnnivHC then
 		E:AddLib('DualSpec', 'LibDualSpec-1.0')
 	end
 

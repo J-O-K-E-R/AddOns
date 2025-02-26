@@ -21,6 +21,8 @@ mod:RegisterEnableMob(
 	213934, -- Nightfall Tactician
 	213893, -- Nightfall Darkcaster
 	228539, -- Nightfall Darkcaster (summoned)
+	213895, -- Nightfall Shadowalker
+	228537, -- Nightfall Shadowalker (summoned)
 	211341, -- Manifested Shadow
 	213885 -- Nightfall Dark Architect
 )
@@ -43,6 +45,7 @@ if L then
 	L.sureki_militant = "Sureki Militant"
 	L.nightfall_tactician = "Nightfall Tactician"
 	L.nightfall_darkcaster = "Nightfall Darkcaster"
+	L.nightfall_shadowalker = "Nightfall Shadowalker"
 	L.manifested_shadow = "Manifested Shadow"
 	L.nightfall_dark_architect = "Nightfall Dark Architect"
 end
@@ -79,8 +82,11 @@ function mod:GetOptions()
 		{451097, "NAMEPLATE"}, -- Silken Shell
 		-- Nightfall Tactician
 		{431494, "NAMEPLATE"}, -- Black Edge
+		{451112, "DISPEL", "NAMEPLATE"}, -- Tactician's Rage
 		-- Nightfall Darkcaster
 		{432520, "NAMEPLATE"}, -- Umbral Barrier
+		-- Nightfall Shadowalker
+		{431637, "TANK", "NAMEPLATE", "OFF"}, -- Umbral Rush
 		-- Manifested Shadow
 		{432565, "NAMEPLATE"}, -- Black Hail
 		{431304, "NAMEPLATE"}, -- Dark Floes
@@ -100,6 +106,7 @@ function mod:GetOptions()
 		[451098] = L.sureki_militant,
 		[431494] = L.nightfall_tactician,
 		[432520] = L.nightfall_darkcaster,
+		[431637] = L.nightfall_shadowalker,
 		[432565] = L.manifested_shadow,
 		[431349] = L.nightfall_dark_architect,
 	}, {
@@ -173,6 +180,8 @@ function mod:OnBossEnable()
 	-- Nightfall Tactician
 	self:RegisterEngageMob("NightfallTacticianEngaged", 213934)
 	self:Log("SPELL_CAST_START", "BlackEdge", 431494)
+	self:Log("SPELL_CAST_SUCCESS", "TacticiansRage", 451112)
+	self:Log("SPELL_AURA_APPLIED", "TacticiansRageApplied", 451112)
 	self:Death("NightfallTacticianDeath", 213934)
 
 	-- Nightfall Darkcaster
@@ -181,6 +190,12 @@ function mod:OnBossEnable()
 	self:Log("SPELL_INTERRUPT", "UmbralBarrierInterrupt", 432520)
 	self:Log("SPELL_CAST_SUCCESS", "UmbralBarrierSuccess", 432520)
 	self:Death("NightfallDarkcasterDeath", 213893, 228539) -- regular trash, Nightfall Dark Architect summon
+
+	-- Nightfall Shadowalker
+	self:RegisterEngageMob("NightfallShadowalkerEngaged", 213895, 228537) -- regular trash, Nightfall Dark Architect summon
+	self:Log("SPELL_CAST_START", "UmbralRush", 431637)
+	self:Log("SPELL_CAST_SUCCESS", "UmbralRushSuccess", 431637)
+	self:Death("NightfallShadowalkerDeath", 213895, 228537) -- regular trash, Nightfall Dark Architect summon
 
 	-- Manifested Shadow
 	self:RegisterEngageMob("ManifestedShadowEngaged", 211341)
@@ -382,10 +397,10 @@ do
 	local timer
 
 	function mod:AscendantViscoxriaEngaged(guid)
-		self:CDBar(451102, 4.9) -- Shadowy Decay
-		self:Nameplate(451102, 4.9, guid) -- Shadowy Decay
-		self:CDBar(451119, 14.6) -- Abyssal Blast
-		self:Nameplate(451119, 14.6, guid) -- Abyssal Blast
+		self:CDBar(451102, 4.7) -- Shadowy Decay
+		self:Nameplate(451102, 4.7, guid) -- Shadowy Decay
+		self:CDBar(451119, 14.4) -- Abyssal Blast
+		self:Nameplate(451119, 14.4, guid) -- Abyssal Blast
 		timer = self:ScheduleTimer("AscendantViscoxriaDeath", 30)
 	end
 
@@ -470,8 +485,8 @@ do
 	local timer
 
 	function mod:IxkretenTheUnbreakableEngaged(guid)
-		self:CDBar(451119, 5.0) -- Abyssal Blast
-		self:Nameplate(451119, 5.0, guid) -- Abyssal Blast
+		self:CDBar(451119, 3.5) -- Abyssal Blast
+		self:Nameplate(451119, 3.5, guid) -- Abyssal Blast
 		self:CDBar(451117, 6.4) -- Terrifying Slam
 		self:Nameplate(451117, 6.4, guid) -- Terrifying Slam
 		timer = self:ScheduleTimer("IxkretenTheUnbreakableDeath", 30)
@@ -543,6 +558,9 @@ end
 
 function mod:NightfallTacticianEngaged(guid)
 	self:Nameplate(431494, 3.5, guid) -- Black Edge
+	if self:Dispeller("enrage", true, 451112) then
+		self:Nameplate(451112, 9.5, guid) -- Tactician's Rage
+	end
 end
 
 do
@@ -555,6 +573,23 @@ do
 			self:PlaySound(args.spellId, "alarm")
 		end
 		self:Nameplate(args.spellId, 13.3, args.sourceGUID)
+	end
+end
+
+function mod:TacticiansRage(args)
+	if self:Dispeller("enrage", true, args.spellId) then
+		self:Nameplate(args.spellId, 18.2, args.sourceGUID)
+	end
+end
+
+do
+	local prev = 0
+	function mod:TacticiansRageApplied(args)
+		if self:Dispeller("enrage", true, args.spellId) and args.time - prev > 2 then
+			prev = args.time
+			self:Message(args.spellId, "yellow", CL.on:format(args.spellName, args.destName))
+			self:PlaySound(args.spellId, "info")
+		end
 	end
 end
 
@@ -591,6 +626,32 @@ function mod:UmbralBarrierSuccess(args)
 end
 
 function mod:NightfallDarkcasterDeath(args)
+	self:ClearNameplate(args.destGUID)
+end
+
+-- Nightfall Shadowalker
+
+function mod:NightfallShadowalkerEngaged(guid)
+	self:Nameplate(431637, 0, guid) -- Umbral Rush
+end
+
+do
+	local prev = 0
+	function mod:UmbralRush(args)
+		self:Nameplate(args.spellId, 0, args.sourceGUID)
+		if args.time - prev > 1.5 then
+			prev = args.time
+			self:Message(args.spellId, "purple")
+			self:PlaySound(args.spellId, "alert")
+		end
+	end
+end
+
+function mod:UmbralRushSuccess(args)
+	self:Nameplate(args.spellId, 12.2, args.sourceGUID)
+end
+
+function mod:NightfallShadowalkerDeath(args)
 	self:ClearNameplate(args.destGUID)
 end
 

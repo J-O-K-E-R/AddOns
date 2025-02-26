@@ -13,8 +13,8 @@ local UnitPowerBarID = UnitPowerBarID;  --659
 local IsFlying = IsFlying;
 
 local GOGGLE_NAME = C_Item.GetItemNameByID(202247);
-local GOGGLE_ITEM_ID = {202247};
-local GOGGLE_SPELL_ID = {398013};
+local GOGGLE_ITEM_ID = 202247;
+local GOGGLE_SPELL_ID = 398013;
 
 local QUICKSLOT_NAME = "technoscryers";
 
@@ -213,7 +213,7 @@ do
         dbKey = "Technoscryers",
         description = addon.L["ModuleDescription Technoscryers"],
         toggleFunc = EnableModule,
-        categoryID = 10020000,
+        categoryID = 1002,
         uiOrder = 10,
         moduleAddedTime = 1706633000,
     };

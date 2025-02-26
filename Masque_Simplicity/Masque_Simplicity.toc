@@ -1,4 +1,4 @@
-## Interface: 110005
+## Interface: 110007
 
 ## Title: Masque: Simplicity
 ## Notes: Simplicity skin for Masque.
