@@ -1,8 +1,7 @@
 @cont1nuity:
-- Fixing performance units.
-- Fixing aura frame 1 frame levels.
-- Fixing DBM integration.
-- Fixing default 'Countdown' and 'Fixate on you' scripts.
-- Adding LibCustomGlow 'proc' glow support.
-- Adding override flags for performance units to re-enable specific updates (threat, casts, auras).
+- Locale updates and preparation.
+- Fixing Combo Points for low level rogues.
+- Fixing execute recognition for Hunter Black Arrow.
+- Fixing several issues on the Mod Load Conditions panel.
+- Fixing an issue with profiling if stop was not used but results should be shown.
 
