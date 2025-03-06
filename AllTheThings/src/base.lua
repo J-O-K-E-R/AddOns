@@ -658,6 +658,9 @@ function app:SearchLink(group)
 	if not group then return end
 	return app:Linkify(group.text or group.hash or UNKNOWN, app.Colors.ChatLink, "search:"..(group.key or "?")..":"..(group[group.key] or "?"))
 end
+function app:RawSearchLink(field,id)
+	return app:SearchLink(app.SearchForObject(field, id, "field"))
+end
 function app:WaypointLink(mapID, x, y, text)
 	return "|cffffff00|Hworldmap:" .. mapID .. ":" .. math_floor(x * 10000) .. ":" .. math_floor(y * 10000)
 		.. "|h[|A:Waypoint-MapPin-ChatIcon:13:13:0:0|a" .. (text or "") .. "]|h|r";

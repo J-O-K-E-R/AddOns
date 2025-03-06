@@ -3,7 +3,7 @@
 ## Name: AllTheThings
 ## Notes: Addon for Tracking Collections & Account Completion
 ## Author: Crieve-Sargeras
-## Version: 4.2.14
+## Version: 4.3.3
 ## Interface: 40402
 ## X-Interface: 40402
 ## X-Wago-ID: yQKyY5K7

@@ -1,12 +1,59 @@
+-- Demolition Dome
+
+local L = BigWigs:NewBossLocale("The Underpin", "koKR")
+if not L then return end
+if L then
+	--L.the_underpin = "The Underpin (Tier 8)"
+	--L.crony = "Crony"
+end
+
+L = BigWigs:NewBossLocale("The Underpin 2", "koKR")
+if L then
+	--L.the_underpin = "The Underpin (Tier 11)"
+	--L.crony = "Crony"
+end
+
 -- Earthcrawl Mines
 
-local L = BigWigs:NewBossLocale("Web General Ab'enar", "koKR")
-if not L then return end
+L = BigWigs:NewBossLocale("Maklin Drillstab", "koKR")
+if L then
+	--L.maklin_drillstab = "Maklin Drillstab"
+end
+
+L = BigWigs:NewBossLocale("The Biggest Bug", "koKR")
+if L then
+	--L.the_biggest_bug = "The Biggest Bug"
+end
+
+L = BigWigs:NewBossLocale("Web General Ab'enar", "koKR")
 if L then
 	L.web_general_abenar = "거미줄장군 아베나르"
 end
 
+-- Excavation Site 9
+
+L = BigWigs:NewBossLocale("Craggle Fritzbrains", "koKR")
+if L then
+	--L.craggle_fritzbrains = "Craggle Fritzbrains"
+end
+
+L = BigWigs:NewBossLocale("Harbinger Ul'thul", "koKR")
+if L then
+	--L.harbinger_ulthul = "Harbinger Ul'thul"
+end
+
+L = BigWigs:NewBossLocale("Xel'anegh The Many", "koKR")
+if L then
+	--L.xelanegh_the_many = "Xel'anegh The Many"
+end
+
 -- Fungal Folly
+
+L = BigWigs:NewBossLocale("Maulspike", "koKR")
+if L then
+	--L.maulspike = "Maulspike"
+	--L.darkfuse_cackler = "Darkfuse Cackler"
+end
 
 L = BigWigs:NewBossLocale("Spinshroom", "koKR")
 if L then
@@ -45,6 +92,24 @@ if L then
 	L.cult_leaders = "이교 우두머리"
 	L.inquisitor_speaker = "심문관 대변자"
 	L.shadeguard_speaker = "망령수호병 대변자"
+end
+
+-- Sidestreet Sluice
+
+L = BigWigs:NewBossLocale("Geargrave", "koKR")
+if L then
+	--L.geargrave = "Geargrave"
+end
+
+L = BigWigs:NewBossLocale("Gold Elemental", "koKR")
+if L then
+	--L.gold_elemental = "Gold Elemental"
+	--L.gold_shaman = "Gold Shaman"
+end
+
+L = BigWigs:NewBossLocale("Vindle Snapcrank", "koKR")
+if L then
+	--L.vindle_snapcrank = "Vindle Snapcrank"
 end
 
 -- Skittering Breach
@@ -121,7 +186,19 @@ if L then
 	L.researcher_xikvik = "연구원 시크비크"
 end
 
+L = BigWigs:NewBossLocale("Torque Clankfire and Sprok", "koKR")
+if L then
+	--L.bossName = "Torque Clankfire and Sprok"
+	--L.torque_clankfire = "Torque Clankfire"
+	--L.sprok = "Sprok"
+end
+
 -- The Waterworks
+
+L = BigWigs:NewBossLocale("Shroomsprew", "koKR")
+if L then
+	--L.shroomsprew = "Shroomsprew"
+end
 
 L = BigWigs:NewBossLocale("Waxface", "koKR")
 if L then
@@ -132,12 +209,12 @@ end
 
 L = BigWigs:NewBossLocale("Zekvir", "koKR")
 if L then
-	L.zekvir = "제크비르 (1단계)"
+	L.zekvir = "제크비르 (8단계)"
 	L.web_terror = "거미줄 괴물"
 end
 
 L = BigWigs:NewBossLocale("Zekvir 2", "koKR")
 if L then
-	L.zekvir = "제크비르 (2단계)"
+	L.zekvir = "제크비르 (11단계)"
 	L.web_terror = "거미줄 괴물"
 end

@@ -11,10 +11,12 @@ L.OpenBank = 'Open Bank'
 L.OpenGuild = 'Open Guild Bank'
 L.OpenVault = 'Open Void Storage'
 
---frame titles
+--titles
 L.TitleBags = '%s\'s Inventory'
 L.TitleBank = '%s\'s Bank'
 L.TitleVault = '%s\'s Void Storage'
+L.NormalBags = 'Normal Bags'
+L.TradeBags = 'Trade Bags'
 
 --actions
 L.Bags = 'Bags'

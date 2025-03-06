@@ -68,6 +68,7 @@
 ---|"changemt" 2
 ---|"changetarget" 2
 ---|"chargemove" 2
+---|"chargethroughbomb" 18
 ---|"checkhp"
 ---|"cleave" 12
 ---|"cntnuemove"
@@ -88,6 +89,7 @@
 ---|"dpsslow" 16
 ---|"dpsstop" 16
 ---|"dragonnow"
+---|"droptorch" 18
 ---|"dshigh"
 ---|"east"
 ---|"end"
@@ -95,6 +97,7 @@
 ---|"enfeeblingroar" 12
 ---|"engineercoming" 12
 ---|"enrage"
+---|"enteringcombat" 17
 ---|"failed"
 ---|"farfromline"
 ---|"fearsoon"
@@ -175,6 +178,7 @@
 ---|"laserrun"
 ---|"leavecenter"
 ---|"leavemind"
+---|"leavingcombat" 17
 ---|"left"
 ---|"lightinfusion"
 ---|"lightstorm"
@@ -217,6 +221,8 @@
 ---|"movetostatue" 17
 ---|"movetotank"
 ---|"movetoweb" 17
+---|"movetoflamethrower" 17
+---|"movetotendrils" 17
 ---|"mpurple"
 ---|"myellow"
 ---|"negative" 13
@@ -235,6 +241,7 @@
 ---|"phasechange"
 ---|"polarityshift"
 ---|"pone" 12
+---|"poolyou" 18
 ---|"positive" 13
 ---|"pthree"
 ---|"ptran"
@@ -250,15 +257,18 @@
 ---|"redyou" 17
 ---|"riftdispel" 17
 ---|"right"
+---|"rollincoming" 17
 ---|"runaway" 2
 ---|"runin" 2
 ---|"runintofire" 12
 ---|"runout" 2
 ---|"runoverflowers" 12
+---|"runovermobs" 17
 ---|"runtoedge"
 ---|"safenow"
 ---|"scatter"
 ---|"scattersoon"
+---|"screwup" 18
 ---|"securityguardcoming" 12
 ---|"seedyou" 15
 ---|"shadowrun"
@@ -270,10 +280,12 @@
 ---|"shockwave" 2
 ---|"silencesoon"
 ---|"slagelementalcoming" 12
+---|"soakbeam" 17
 ---|"soulcleave" 12
 ---|"south"
 ---|"southeast"
 ---|"southwest"
+---|"sparktowater" 18
 ---|"spear"
 ---|"specialsoon"
 ---|"speedup"

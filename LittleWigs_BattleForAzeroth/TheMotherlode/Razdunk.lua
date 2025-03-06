@@ -1,4 +1,3 @@
-local isElevenDotOne = select(4, GetBuildInfo()) >= 110100 -- XXX remove when 11.1 is live
 --------------------------------------------------------------------------------
 -- Module Declaration
 --
@@ -14,8 +13,8 @@ mod:SetStage(1)
 -- Locals
 --
 
-local gatlingGunCount = 1 -- XXX remove in 11.1
-local homingMissileCount = 1 -- XXX remove in 11.1
+local gatlingGunCount = 1
+local homingMissileCount = 1
 
 --------------------------------------------------------------------------------
 -- Initialization
@@ -29,7 +28,7 @@ function mod:GetOptions()
 		{260813, "SAY", "ME_ONLY_EMPHASIZE"}, -- Homing Missile
 		276229, -- Micro Missiles (Mythic)
 		-- Stage Two: Drill!
-		271456, -- Drill Smash
+		{271456, "SAY", "SAY_COUNTDOWN"}, -- Drill Smash
 	}, {
 		[260280] = -18916, -- Stage One: Big Guns
 		[271456] = -17498, -- Stage Two: Drill!
@@ -39,13 +38,8 @@ end
 function mod:OnBossEnable()
 	-- Stage One: Big Guns
 	self:Log("SPELL_CAST_START", "GatlingGun", 260280)
-	if isElevenDotOne then
-		self:Log("SPELL_CAST_START", "HomingMissile", 260813)
-		self:Log("SPELL_AURA_APPLIED", "HomingMissileApplied", 260811)
-	else -- XXX remove in 11.1
-		self:Log("SPELL_CAST_START", "HomingMissile", 260811)
-		self:Log("SPELL_AURA_APPLIED", "HomingMissileApplied", 260829)
-	end
+	self:Log("SPELL_CAST_START", "HomingMissile", 260813)
+	self:Log("SPELL_AURA_APPLIED", "HomingMissileApplied", 260811)
 	self:Log("SPELL_CAST_START", "MicroMissiles", 276229)
 	self:Log("SPELL_CAST_SUCCESS", "ConfigurationDrill", 260189)
 
@@ -60,11 +54,7 @@ function mod:OnEngage()
 	homingMissileCount = 1
 	self:SetStage(1)
 	self:CDBar(260813, 5.0) -- Homing Missile
-	if isElevenDotOne then
-		self:CDBar(260280, 20.0) -- Gatling Gun
-	else -- XXX remove in 11.1
-		self:CDBar(260280, 15.0) -- Gatling Gun
-	end
+	self:CDBar(260280, 20.0) -- Gatling Gun
 end
 
 --------------------------------------------------------------------------------
@@ -75,9 +65,9 @@ end
 
 function mod:GatlingGun(args)
 	self:Message(args.spellId, "yellow")
-	if isElevenDotOne then
+	if self:GetStage() == 1 then
 		self:CDBar(args.spellId, 30.0)
-	else -- XXX remove in 11.1
+	else -- Stage 3
 		gatlingGunCount = gatlingGunCount + 1
 		if gatlingGunCount % 2 == 0 then
 			self:CDBar(args.spellId, 20.0)
@@ -88,16 +78,15 @@ function mod:GatlingGun(args)
 	self:PlaySound(args.spellId, "alert")
 end
 
-function mod:HomingMissile(args) -- XXX can use args.spellId in 11.1
-	if isElevenDotOne then
-		self:CDBar(260813, 30.0)
-	else -- XXX remove in 11.1
-		self:Message(260813, "red", CL.incoming:format(args.spellName))
+function mod:HomingMissile(args)
+	if self:GetStage() == 1 then
+		self:CDBar(args.spellId, 30.0)
+	else -- Stage 3
 		homingMissileCount = homingMissileCount + 1
 		if homingMissileCount % 2 == 0 then
-			self:CDBar(260813, 21.0)
+			self:CDBar(args.spellId, 21.0)
 		else
-			self:CDBar(260813, 24.0)
+			self:CDBar(args.spellId, 24.0)
 		end
 	end
 end
@@ -125,33 +114,36 @@ do
 end
 
 function mod:ConfigurationDrill(args)
-	homingMissileCount = 1
-	gatlingGunCount = 1
 	self:StopBar(260813) -- Homing Missile
 	self:StopBar(260280) -- Gatling Gun
 	self:SetStage(2)
-	self:Message("stages", "cyan", args.spellName, args.spellId)
-	self:PlaySound("stages", "info")
+	self:Message("stages", "cyan", CL.percent:format(50, args.spellName), args.spellId)
+	self:PlaySound("stages", "long")
 end
 
 -- Stage Two: Drill!
 
 do
-	local function printTarget(self, name, guid)
+	local function printTarget(self, name, guid, elapsed)
 		self:TargetMessage(271456, "orange", name)
+		if self:Me(guid) then
+			self:Say(271456, nil, nil, "Drill Smash")
+			self:SayCountdown(271456, 5 - elapsed)
+		end
 		self:PlaySound(271456, "alert", nil, name)
 	end
 
 	function mod:DrillSmash(args)
 		self:GetUnitTarget(printTarget, 0.4, args.sourceGUID)
-		self:CDBar(args.spellId, 10.9)
+		-- time until next depends on the travel time of the previous Drill Smash
+		self:CDBar(args.spellId, 8.5)
 	end
 end
 
 function mod:ConfigurationCombat(args)
 	if self:IsEngaged() then -- cast on respawn
 		self:StopBar(271456) -- Drill Smash
-		self:SetStage(1)
+		self:SetStage(3)
 		self:Message("stages", "cyan", args.spellName, args.spellId)
 		self:CDBar(260813, 7.1) -- Homing Missile
 		self:CDBar(260280, 17.1) -- Gatling Gun

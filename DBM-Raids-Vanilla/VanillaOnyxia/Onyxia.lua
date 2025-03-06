@@ -1,12 +1,13 @@
 local mod	= DBM:NewMod("OnyxiaVanilla", "DBM-Raids-Vanilla", 7)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240726170848")
+mod:SetRevision("20241214045434")
 mod:SetCreatureID(10184)
 mod:SetEncounterID(1084)
 mod:SetModelID(8570)
 mod:SetUsedIcons(8)
 mod:SetHotfixNoticeRev(20191122000000)--2019, 11, 22
+mod:SetZone(249)
 
 mod:RegisterCombat("combat")
 
@@ -46,7 +47,7 @@ local yellFireball				= mod:NewYell(18392)
 --local specWarnBlastNova		= mod:NewSpecialWarningRun(68958, "Melee", nil, nil, 4, 2)
 --local specWarnAdds			= mod:NewSpecialWarningAdds(68959, "-Healer", nil, nil, 1, 2)
 
-local timerNextFlameBreath	= mod:NewCDTimer(13.3, 18435, nil, "Tank|Healer", 3, 5)--13.3-20 Breath she does on ground in frontal cone.
+local timerNextFlameBreath	= mod:NewVarTimer("v13.3-20", 18435, nil, "Tank|Healer", 3, 5)--13.3-20 Breath she does on ground in frontal cone.
 local timerBreath			= mod:NewCastTimer(5, 18584, nil, nil, nil, 3)
 --local timerWhelps			= mod:NewTimer(105, "TimerWhelps", 10697, nil, nil, 1)
 --local timerBigAddCD			= mod:NewAddsTimer(44.9, 68959, nil, "-Healer")

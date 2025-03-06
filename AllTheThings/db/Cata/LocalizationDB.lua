@@ -1023,7 +1023,7 @@ localize(L.HEADER_EVENTS, {
 });
 -- Programmatic Event Scheduling
 _.Modules.Events.SetEventInformation(446916, {
-	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=1,["monthDay"]=14,["weekday"]=3,["year"]=2025},{["hour"]=0,["minute"]=0,["month"]=2,["monthDay"]=18,["weekday"]=3,["year"]=2025})
+	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=1,["monthDay"]=14,["weekday"]=3,["year"]=2025},{["hour"]=0,["minute"]=0,["month"]=2,["monthDay"]=26,["weekday"]=4,["year"]=2025})
 });
 _.Modules.Events.SetEventInformation(1262, {
 	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=11,["monthDay"]=6,["weekday"]=1,["year"]=2022},{["hour"]=0,["minute"]=0,["month"]=11,["monthDay"]=27,["weekday"]=1,["year"]=2022})
@@ -20336,7 +20336,7 @@ localize(L.HEADER_NAMES, {
 	[-1000135] = select(2,GetAchievementInfo(4599)).."：第8赛季",
 	[-1000140] = "精锐装备",
 	[-1000141] = "角斗士装备",
-	[-1000142] = "荣誉头衔",
+	[-1000142] = HONOR .. PAPERDOLL_SIDEBAR_TITLES,
 	[-1000162] = "共享外观",
 	[-1000163] = "独特外观",
 	[-1000165] = "T0.5套装",
@@ -22093,7 +22093,6 @@ localize(L.HEADER_NAMES, {
 	[-1000135] = select(2,GetAchievementInfo(4599)).."：第8賽季",
 	[-1000140] = "精英裝備",
 	[-1000141] = "鬥士裝備",
-	[-1000142] = "榮譽頭銜",
 	[-1000162] = "共享外觀",
 	[-1000163] = "獨特外觀",
 	[-1000165] = "T0.5套裝",

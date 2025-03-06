@@ -25,9 +25,9 @@ local L = setmetatable({
 		"or Sylvanas might get another lighter.",
 		"as Alexstrasza is worried about you.",
 		"and Invincible will drop |cffffaaaafor sure|r next time.",
-		"this was merely a setback.",
+	--	"this was merely a setback.",
 		", Yes Chef!",
-		"to help a turtle to make it to the water.",
+		"and Crieve will help a turtle to make it to the water.",
 		"CHAMPYUUN, DE AZURIITE.",
 	};
 	SOCIAL_PROGRESS = "Social Progress";
@@ -466,7 +466,10 @@ local L = setmetatable({
 		["Tazavesh, the Veiled Market"] = "Tazavesh",
 		-- TWW
 		["Ara-Kara, City of Echoes"] = "Ara-Kara",
+		["Enterprising Hero: The War Within Season Two"] = "Enterprising Hero: TWW S2",
+		["Mug'Zee, Heads of Security"] = "Mug'Zee",
 		["Sikran, Captain of the Sureki"] = "Sikran",
+		["Vexie and the Geargrinders"] = "Vexie & the Geargrinders",
 		-- Outdoor Zones
 		["Quartermaster Miranda Breechlock"] = "Quartermaster Miranda",
 		["Season "] = "S",

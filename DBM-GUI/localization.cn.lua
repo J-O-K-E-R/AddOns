@@ -1,7 +1,7 @@
 -- Diablohu(diablohudream@gmail.com)
 -- yleaf(yaroot@gmail.com)
 -- sunlcy@NGA
--- Mini Dragon <流浪者酒馆-Brilla@金色平原> 20241010
+-- Mini Dragon <流浪者酒馆-Brilla@金色平原> 20250209
 
 if GetLocale() ~= "zhCN" then return end
 if not DBM_GUI_L then DBM_GUI_L = {} end
@@ -100,6 +100,7 @@ L.Editbox_WindowHeight		= "GUI窗口高度"
 
 L.UIGroupingOptions			= "界面分组选项 (更改这些需要输入 /reload 来重载界面)"
 L.GroupOptionsExcludeIcon	= "按照技能分组排除“设置标记图标”选项 (它们将像以前一样在“图标”类中显示)"
+L.GroupOptionsExcludePrivateAura	= "排除“私人光环”声音选项，不按技能分组（它们将被分组到自己的“私人光环”类别中）"
 L.AutoExpandSpellGroups		= "按照技能分组自动扩展选项"
 L.ShowWAKeys				= "在技能名称旁边显示 WeakAuras 键，以便使用DBM触发器编写WeakAuras脚本。 需要注意的是，在分阵营的对战中，技能的ID可能会因为队长的阵营而变动"
 --L.ShowSpellDescWhenExpanded	= "分组扩展时显示技能描述"
@@ -108,6 +109,7 @@ L.CustomOptions				= "此类别包含针对没有自己的技能或事件ID的�
 
 -- Panel: Auto Logging
 L.Panel_AutoLogging			= "自动记录"
+
 --Auto Logging: Logging toggles/types
 L.Area_AutoLogging			= "自动战斗日志开关"
 L.AutologBosses				= "自动采用官方格式记录日志。"
@@ -134,8 +136,13 @@ L.Area_SoundAlerts			= "语音/闪烁警报选项"
 L.LFDEnhance				= "当发起角色检查或随机团队/战场就绪时，在主声道播放准备音效(即使关闭了音效而且很大声！)并闪烁图标"
 L.WorldBossNearAlert		= "当世界附近的Boss进入战斗时播放准备音效(覆盖单独BOSS设置)并闪烁图标"
 L.RLReadyCheckSound			= "在主声道/对话声道播放检查准备音效并闪烁图标。"
-L.AFKHealthWarning			= "当你在挂机/暂离受到伤害时播放音效并闪烁图标(你会死)"
 L.AutoReplySound			= "当你收到DBM自动回复密语时播放警告声和闪烁图标"
+
+L.Area_CombatAlerts			= "战斗警报选项"
+L.AFKHealthWarning			= "当你在挂机/暂离 状态下（任意生命值）受到伤害时播放音效并闪烁图标"
+L.HealthWarningLow			= "当你的生命值低于35%并受到伤害时播放音效并闪烁图标"
+L.EnteringCombatAlert		= "当你进入战斗模式后播放音效并闪烁图标"
+L.LeavingCombatAlert		= "当你离开战斗后播放音效"
 --
 L.TimerGeneral 				= "计时器选项"
 L.SKT_Enabled				= "总是显示最速胜利计时条(覆盖单独BOSS设置)"
@@ -150,7 +157,6 @@ L.AutoAcceptFriendInvite	= "自动接受来自好友列表里的好友的组队�
 L.AutoAcceptGuildInvite		= "自动接受同公会成员的组队邀请"
 L.Area_Advanced				= "高级选项"
 L.FakeBW					= "当Bigwig启用检测时，假装DBM就是Bigwig"
-L.AITimer					= "DBM为没遇见过的战斗使用人工智能自动产生计时器(在初期的Beta或PTR的Boss测试非常有帮助)。此功能不会对多目标技能生效。"
 
 -- Panel: Profiles
 L.Panel_Profile				= "配置文件"
@@ -187,6 +193,7 @@ L.TabCategory_Alerts	 	= "警报"
 L.Area_SpecAnnounceConfig	= "特殊警报提示和声音指南"
 L.Area_SpecAnnounceNotes	= "特殊警报自定义指南"
 L.Area_VoicePackInfo		= "所有 DBM 语音包信息"
+
 -- Panel: Raidwarning
 L.Tab_RaidWarning 			= "团队警报"
 L.RaidWarning_Header		= "团队警报设置"
@@ -278,15 +285,8 @@ L.Area_CountdownOptions		= "倒计时选项"
 L.Area_VoicePackReplace		= "语音包替换选项 (当语音包启用、静音以及需要替换)"
 L.VPReplaceNote				= "注意: 语音包永远不会更改或删除您的警报声音\n当替换语音包时，它们只是在静音状态。"
 L.ReplacesAnnounce			= "替换提示声音 (注意: 语音包除了阶段转换及小怪外很少使用)"
-L.ReplacesSA1				= "替换特殊警报提示声音 1 (个人的 'pvp拔旗') "
-L.ReplacesSA2				= "替换特殊警报提示声音 2 (每个人 '当心')"
-L.ReplacesSA3				= "替换特殊警报提示声音 3 (高优先级的 '汽笛')"
-L.ReplacesSA4				= "替换特殊警报提示声音 4 (高优先级的 '快跑')"
-L.ReplacesGTFO				= "替换特殊警告的行为提示声音"
-L.ReplacesCustom			= "替换特殊警报提示声音 自定义使用设置(每个警报) 声音 (不建议)"
+L.ReplacesSADefault			= "替换默认特殊警报声音（自定义声音不会被替换）"
 L.Area_VoicePackAdvOptions	= "语音包高级选项"
-L.SpecWarn_AlwaysVoice		= "总是播放所有语音警报(即使已禁用特殊警报，对团队领队是有用的，除此以外不建议使用)"
-L.VPDontMuteSounds			= "当使用语音包时禁用常规警报的静音(只有当您希望在警报期间同时听到两者时才使用此选项)"
 L.Area_VPLearnMore          = "了解更多关于语音包以及如何使用这些选项的信息"
 L.VPLearnMore               = "|cFF73C2FBhttps://github.com/DeadlyBossMods/DBM-Retail/wiki/%5BGuide%5D-DBM-&-Voicepacks#2022-update|r"
 L.Area_BrowseOtherVP		= "获取其他语音包"
@@ -305,6 +305,7 @@ L.EventDungeonMusic			= "设置在副本内播放的音乐"
 L.EventEngageMusic			= "设置战斗过程中的音乐"
 L.Area_EventSoundsExtras	= "事件音效选项"
 L.EventMusicCombined		= "允许在副本内播放在音乐选项中的全部音效(需要/reload 才能加载)"
+L.DisableBuiltInMusic		= "禁用内置事件音乐并仅加载第三方音乐包"
 L.Area_EventSoundsFilters	= "事件音效过滤条件"
 L.EventFilterDungMythicMusic= "不要在M/M+难度下播放副本音乐"
 L.EventFilterMythicMusic	= "不要在M/M+难度下播放战斗音乐"
@@ -356,10 +357,11 @@ L.CBTAdd					= "小怪来临"
 L.CBTAOE					= "AOE技能"
 L.CBTTargeted				= "点名技能"
 L.CBTInterrupt				= "打断技能"
-L.CBTRole					= "剧情"
+L.CBTRole					= "特殊剧情技能"
 L.CBTPhase					= "阶段转换"
-L.CBTImportant				= "重要 (自定义)"
+L.CBTImportant				= "玩家重要技能"
 --Dropdown Options
+--Special Announce Dropdowns
 L.SAOne						= "全局声音1 (个人)"
 L.SATwo						= "全局声音2 (所有人)"
 L.SAThree					= "全局声音3 (优先行动)"
@@ -380,13 +382,21 @@ L.CVoiceTwo					= "全局倒数 2"
 L.CVoiceThree				= "全局倒数 3"
 
 -- Panel: Bar Appearance
-L.Panel_Appearance	 		= "计时条设置"
-L.Panel_Behavior	 		= "计时条特性"
+L.Panel_Appearance	 		= "计时条外观"
+L.Panel_Behavior	 		= "计时条动作"
 L.AreaTitle_BarSetup		= "计时条综合设置"
 L.AreaTitle_Behavior		= "计时条特性设置"
 L.AreaTitle_BarSetupSmall 	= "小型计时条设置"
 L.AreaTitle_BarSetupHuge	= "大型计时条设置"
+L.AreaTitle_BarSetupVariance	= "差异计时条设置"
 L.EnableHugeBar 			= "开启大型计时条（2号计时条）"
+L.EnableVarianceBar 		= "开启差异计时条"
+L.VarianceTransparency		= "差异计时条透明度: %0.1f"
+L.VarianceTimerTextBehavior	= "设置可变计时条行为"
+L.ZeroatWindowEnds			= "文本在CD结束时归零"
+L.ZeroatWindowStartPause	= "文本在CD结束时归零并暂停T"
+L.ZeroatWindowStartRestart	= "文本在CD结束时归零并重复"
+L.ZeroatWindowStartNeg		= "文本在CD结束时归零并变为负数"--Default
 L.BarIconLeft 				= "左侧图标"
 L.BarIconRight 				= "右侧图标"
 L.ExpandUpwards				= "快消失的计时条在上"
@@ -443,6 +453,7 @@ L.SpamBlockNoNameplate				= "不为特殊Boss机制显示姓名面板技能图�
 L.SpamBlockNoNameplateCD			= "不为技能冷却计时器显示姓名面板技能图标"
 L.SpamBlockNoNameplateCasts			= "不为技能施放计时器显示姓名面板技能图标"
 L.SpamBlockNoBossGUIDs				= "不为在使用混合计时条技能冷却计时器显示姓名面板技能图标\n(包括姓名版和普通动作条。通常适用于副本Boss)"
+L.AlwaysKeepNPs						= "保持已过期的计时器冷却计时器图标可见，直到重新施放技能"
 
 L.Area_SpamFilter_Misc		= "其他功能"
 L.SpamBlockNoSetIcon		= "不在目标上设定标记"
@@ -477,16 +488,15 @@ L.StripServerName					= "警报和计时器中不显示服务器名"
 L.FilterVoidFormSay2				= "当在虚无状态下，不播发位置或报数喊叫（喊叫还是发送的）"
 
 L.Area_SpecFilter					= "角色过滤选项"
-L.FilterTankSpec					= "当非坦克专精时，过滤掉给予坦克的专用信息"
-L.FilterDispels						= "当驱散技能在冷却时，过滤掉驱散提示"
-L.FilterCrowdControl				= "当打断技能在冷却时，过滤掉打断提示"
-L.FilterTrashWarnings				= "当进入低等级、普通副本时，过滤掉所有小怪警报"
+L.FilterDispels						= "当驱散技能在冷却时，不显示驱散提示"
+L.FilterCrowdControl				= "当打断技能在冷却时，不显示打断提示"
+L.FilterTrashWarnings				= "当进入低等级、普通副本时，不显示所有小怪警报"
 
 L.Area_BInterruptFilter				= "Boss打断过滤选项"
-L.FilterTargetFocus					= "过滤掉不是你选中目标的打断提示"
-L.FilterInterruptCooldown			= "当打断技能在冷却时, 过滤掉打断提示"
-L.FilterInterruptHealer				= "当你在治疗专精时，过滤掉打断提示"
-L.FilterInterruptNoteName			= "当自定义注记内没有包含你的名字的时候，过滤掉打断提示"--Only used on bosses, trash mods don't assign counts
+L.FilterTargetFocus					= "不显示不是你选中目标的打断提示"
+L.FilterInterruptCooldown			= "当打断技能在冷却时, 不显示打断提示"
+L.FilterInterruptHealer				= "当你在治疗专精时，不显示打断提示"
+L.FilterInterruptNoteName			= "当自定义注记内没有包含你的名字的时候，不显示打断提示"--Only used on bosses, trash mods don't assign counts
 L.Area_BInterruptFilterFooter		= "如果没有选择过滤器，则会显示所有打断（可能会有很多提示）。\n如果一些技能很重要，某些模组可能会完全忽略这些过滤器。"
 L.Area_TInterruptFilter				= "小怪打断过滤选项"--Reuses above 3 strings
 
@@ -494,14 +504,14 @@ L.Area_TInterruptFilter				= "小怪打断过滤选项"--Reuses above 3 strings
 L.Panel_HandFilter					= "减少DBM的辅助"
 L.Area_SpamFilter_SpecRoleFilters	= "特殊警报过滤选项(控制DBM要怎么做)"
 L.SpamSpecInformationalOnly			= "移除特殊警报的全部指示性文字和语音（需要reload界面）。特殊警报会变成普通的声音和文本提示。"
-L.SpamSpecRoleDispel				= "过滤 '驱散/偷取' 警报 (没文字也没声音)"
-L.SpamSpecRoleInterrupt				= "过滤 '打断' 警报 (没文字也没声音)"
-L.SpamSpecRoleDefensive				= "过滤 '自保' 警报 (没文字也没声音)"
-L.SpamSpecRoleTaunt					= "过滤 '嘲讽' 警报 (没文字也没声音)"
-L.SpamSpecRoleSoak					= "过滤 '分担吸收' 警报 (没文字也没声音)"
-L.SpamSpecRoleStack					= "过滤 '叠加层数/层数过高' 警报 (没文字也没声音)"
-L.SpamSpecRoleSwitch				= "过滤 '转火' 警报 (没文字也没声音)"
-L.SpamSpecRoleGTFO					= "过滤 '快躲开' 警报 (没文字也没声音)"
+L.SpamSpecRoleDispel				= "不显示 '驱散/偷取' 警报 (没文字也没声音)"
+L.SpamSpecRoleInterrupt				= "不显示 '打断' 警报 (没文字也没声音)"
+L.SpamSpecRoleDefensive				= "不显示 '自保' 警报 (没文字也没声音)"
+L.SpamSpecRoleTaunt					= "不显示 '嘲讽' 警报 (没文字也没声音)"
+L.SpamSpecRoleSoak					= "不显示 '分担吸收' 警报 (没文字也没声音)"
+L.SpamSpecRoleStack					= "不显示 '叠加层数/层数过高' 警报 (没文字也没声音)"
+L.SpamSpecRoleSwitch				= "不显示 '转火' 警报 (没文字也没声音)"
+L.SpamSpecRoleGTFO					= "不显示 '快躲开' 警报 (没文字也没声音)"
 
 -- Panel: Blizzard Features
 L.Panel_HideBlizzard				= "隐藏游戏自带内容"
@@ -580,6 +590,7 @@ L.Panel_Range				= "距离框"
 
 -- Panel: Nameplate
 L.Panel_Nameplates			= "姓名板"
+L.Plater_Config				= "Open Plater Config"
 L.Area_NPStyle				= "样式(注意：仅在DBM管理姓名版时配置。)"
 L.NPAuraText				= "在姓名版图标上显示计时器"
 L.NPAuraSize				= "技能图标大小 (比例): %d"
@@ -629,7 +640,7 @@ L.DevModPanelExplanation			= [[欢迎来到此模组的开发和测试模式。
 
 L.TimewarpSetting					= "时间扭曲：%dx"
 L.TimewarpDynamic					= "时间扭曲：动态 (最快)"
-L.TestSupportArea					= "模组爱如选项"
+L.TestSupportArea					= "模组载入选项"
 L.ModNotLoadedWithTests				= "警告：本模组尚加载完整的支持测试。如果模组直接调用 UnitHealth()或UnitName()之类的函数，将不会工作正确，一般是与目标的生命值、能量或者目标有关。"
 L.ModLoadedWithTests				= "模组当前载入了测试支持，因为至少有一个插件启动了测试模式。"
 L.AlwaysLoadModWithTests			= "总是载入此模组的测试模式 (轻微延长加载时间)"
@@ -649,6 +660,10 @@ L.LocalImportDone					= "在Transcriptor中导入了 %d 个 logs，包括 %d 场
 L.Parsing							= "分析中..."
 L.SelectLogDropdown					= "选择战斗"
 L.CreateTest						= "创建测试"
+L.ExportTest						= "输出测试"
+L.ExportedTest						= "测试已输出，一共%d行 (过滤了 %.1f%%)."
+L.ExportedTestFailedAnon			= "警告: 日志匿名化失败，发现 %d 个非匿名字符串（详细信息见聊天框架和输出）。"
+L.ExportTestFailedNonAnonString		= "警告: 字符串 %q 看上去非匿名"
 L.CreatedTest						= "为 %d 个事件建立了测试，用时 %.1f 秒。"
 L.NoLogsFound						= "Transcriptor 的导入不包含任何战斗数据。"
 L.NoTestDataAvailable				= "无可用测试数据"
@@ -669,10 +684,15 @@ L.Queued							= "队列中"
 L.Running							= "运行中"
 L.Failed							= "失败"
 L.ShowReport						= "显示报告"
-L.ShowDiff							= "显示区别"
 L.ShowErrors						= "显示错误"
 L.TestModEntry						= "[测试环境] %s"
 L.EnterTestMode						= "测试模式"
 L.SkipPhase							= "转跳至下一阶段"
 
 L.AnonymizeTest						= "将玩家姓名和GUID匿名"
+L.ShowThisTestEverywhere			= "在每个MOD中显示此测试"
+L.SaveThisTest						= "保存此测试记录"
+
+L.BossModTColor						= "条颜色"
+L.BossModCVoice						= "倒数语音"
+L.BossModSWSound					= "警报声音"

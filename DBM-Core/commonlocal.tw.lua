@@ -103,3 +103,17 @@ CL.MARKS					= "標記"--Plural of above
 CL.CURSE					= "詛咒"
 CL.CURSES					= "詛咒"
 CL.SWIRLS					= "迴旋"--Plural of Swirl
+CL.CHARGES					= "衝鋒"--Context, this is plural of boss "charging to players" and NOT bomb charges
+CL.CIRCLES					= "圓圈"--As in circles on ground that players need to move out of or need to drop off
+CL.KNOCKUP					= "敲擊"
+
+-- Colors
+CL.BLACK	= "黑"
+CL.BLUE		= "藍"
+CL.GREEN	= "綠"
+CL.RED		= "紅"
+CL.BRONZE	= "黃"
+
+-- Conjunctions, used to join words, e.g., "Spell1 *and* Spell2 on you!"
+CL.AND						= "以及"
+CL.OR						= "或"

@@ -1,12 +1,59 @@
+-- Demolition Dome
+
+local L = BigWigs:NewBossLocale("The Underpin", "esMX")
+if not L then return end
+if L then
+	--L.the_underpin = "The Underpin (Tier 8)"
+	--L.crony = "Crony"
+end
+
+L = BigWigs:NewBossLocale("The Underpin 2", "esMX")
+if L then
+	--L.the_underpin = "The Underpin (Tier 11)"
+	--L.crony = "Crony"
+end
+
 -- Earthcrawl Mines
 
-local L = BigWigs:NewBossLocale("Web General Ab'enar", "esMX")
-if not L then return end
+L = BigWigs:NewBossLocale("Maklin Drillstab", "esMX")
+if L then
+	--L.maklin_drillstab = "Maklin Drillstab"
+end
+
+L = BigWigs:NewBossLocale("The Biggest Bug", "esMX")
+if L then
+	--L.the_biggest_bug = "The Biggest Bug"
+end
+
+L = BigWigs:NewBossLocale("Web General Ab'enar", "esMX")
 if L then
 	L.web_general_abenar = "General arácnido Ab'enar"
 end
 
+-- Excavation Site 9
+
+L = BigWigs:NewBossLocale("Craggle Fritzbrains", "esMX")
+if L then
+	--L.craggle_fritzbrains = "Craggle Fritzbrains"
+end
+
+L = BigWigs:NewBossLocale("Harbinger Ul'thul", "esMX")
+if L then
+	--L.harbinger_ulthul = "Harbinger Ul'thul"
+end
+
+L = BigWigs:NewBossLocale("Xel'anegh The Many", "esMX")
+if L then
+	--L.xelanegh_the_many = "Xel'anegh The Many"
+end
+
 -- Fungal Folly
+
+L = BigWigs:NewBossLocale("Maulspike", "esMX")
+if L then
+	--L.maulspike = "Maulspike"
+	--L.darkfuse_cackler = "Darkfuse Cackler"
+end
 
 L = BigWigs:NewBossLocale("Spinshroom", "esMX")
 if L then
@@ -45,6 +92,24 @@ if L then
 	--L.cult_leaders = "Cult Leaders"
 	--L.inquisitor_speaker = "Inquisitor Speaker"
 	--L.shadeguard_speaker = "Shadeguard Speaker"
+end
+
+-- Sidestreet Sluice
+
+L = BigWigs:NewBossLocale("Geargrave", "esMX")
+if L then
+	--L.geargrave = "Geargrave"
+end
+
+L = BigWigs:NewBossLocale("Gold Elemental", "esMX")
+if L then
+	--L.gold_elemental = "Gold Elemental"
+	--L.gold_shaman = "Gold Shaman"
+end
+
+L = BigWigs:NewBossLocale("Vindle Snapcrank", "esMX")
+if L then
+	--L.vindle_snapcrank = "Vindle Snapcrank"
 end
 
 -- Skittering Breach
@@ -121,7 +186,19 @@ if L then
 	L.researcher_xikvik = "Investigador Xik'vik"
 end
 
+L = BigWigs:NewBossLocale("Torque Clankfire and Sprok", "esMX")
+if L then
+	--L.bossName = "Torque Clankfire and Sprok"
+	--L.torque_clankfire = "Torque Clankfire"
+	--L.sprok = "Sprok"
+end
+
 -- The Waterworks
+
+L = BigWigs:NewBossLocale("Shroomsprew", "esMX")
+if L then
+	--L.shroomsprew = "Shroomsprew"
+end
 
 L = BigWigs:NewBossLocale("Waxface", "esMX")
 if L then
@@ -132,12 +209,12 @@ end
 
 L = BigWigs:NewBossLocale("Zekvir", "esMX")
 if L then
-	--L.zekvir = "Zekvir (Tier 1)"
+	--L.zekvir = "Zekvir (Tier 8)"
 	L.web_terror = "Terror de telarañas"
 end
 
 L = BigWigs:NewBossLocale("Zekvir 2", "esMX")
 if L then
-	--L.zekvir = "Zekvir (Tier 2)"
+	--L.zekvir = "Zekvir (Tier 11)"
 	L.web_terror = "Terror de telarañas"
 end

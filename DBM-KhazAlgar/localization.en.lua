@@ -3,12 +3,11 @@ local L
 -----------------------
 -- Kordac, the Dormant Protector --
 -----------------------
---L= DBM:GetModLocalization(2637)
+L= DBM:GetModLocalization(2637)
 
---L:SetMiscLocalization({
---	Pull	= ""
---})
-
+L:SetMiscLocalization({
+	Win	= "Critic-... Condi-... Emergen-..."
+})
 
 -----------------------
 -- Aggregation of Horrors --
@@ -33,6 +32,15 @@ local L
 -- Orta, the Broken Mountain --
 -----------------------
 --L= DBM:GetModLocalization(2625)
+
+--L:SetMiscLocalization({
+--	Pull	= ""
+--})
+
+-----------------------
+-- The Gobfather --
+-----------------------
+--L= DBM:GetModLocalization(2683)
 
 --L:SetMiscLocalization({
 --	Pull	= ""

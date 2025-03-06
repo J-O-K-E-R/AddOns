@@ -1,4 +1,3 @@
-local isElevenDotOne = select(4, GetBuildInfo()) >= 110100 -- XXX remove when 11.1 is live
 --------------------------------------------------------------------------------
 -- Module Declaration
 --
@@ -10,33 +9,36 @@ mod:SetEncounterID(2105)
 mod:SetRespawnTime(30)
 
 --------------------------------------------------------------------------------
+-- Localization
+--
+
+local L = mod:GetLocale()
+if L then
+	L.warmup_icon = "achievement_dungeon_kezan"
+end
+
+--------------------------------------------------------------------------------
+-- Locals
+--
+
+local footbombLauncherCount = 1
+local shockingClawCount = 1
+
+--------------------------------------------------------------------------------
 -- Initialization
 --
 
-if isElevenDotOne then
-	function mod:GetOptions()
-		return {
-			269493, -- Footbomb Launcher
-			256493, -- Blazing Azerite
-			271903, -- Coin Magnet
-			271867, -- Pay to Win
-			262347, -- Static Pulse
-			1217294, -- Shocking Claw
-			271784, -- Throw Coins
-		}
-	end
-else -- XXX remove in 11.1
-	function mod:GetOptions()
-		return {
-			269493, -- Footbomb Launcher
-			256493, -- Blazing Azerite
-			271903, -- Coin Magnet
-			271867, -- Pay to Win
-			262347, -- Static Pulse
-			257337, -- Shocking Claw
-			271784, -- Throw Coins
-		}
-	end
+function mod:GetOptions()
+	return {
+		"warmup",
+		269493, -- Footbomb Launcher
+		256493, -- Blazing Azerite
+		271903, -- Coin Magnet
+		271867, -- Pay to Win
+		262347, -- Static Pulse
+		1217294, -- Shocking Claw
+		271784, -- Throw Coins
+	}
 end
 
 function mod:OnBossEnable()
@@ -47,37 +49,44 @@ function mod:OnBossEnable()
 	self:Log("SPELL_AURA_APPLIED", "PayToWinApplied", 271867)
 	self:Log("SPELL_AURA_APPLIED_DOSE", "PayToWinApplied", 271867)
 	self:Log("SPELL_CAST_START", "StaticPulse", 262347)
-	if isElevenDotOne then
-		self:Log("SPELL_CAST_START", "ShockingClaw", 1217294)
-	else -- XXX remove in 11.1
-		self:Log("SPELL_CAST_START", "ShockingClaw", 257337)
-	end
+	self:Log("SPELL_CAST_START", "ShockingClaw", 1217294)
 	self:Log("SPELL_CAST_SUCCESS", "ThrowCoins", 271784)
 end
 
 function mod:OnEngage()
-	if isElevenDotOne then
-		self:CDBar(262347, 6.1) -- Static Pulse
-		self:CDBar(269493, 19.1) -- Footbomb Launcher
-		self:CDBar(1217294, 30.0) -- Shocking Claw
-		self:CDBar(271903, 41.0) -- Coin Magnet
-	else -- XXX remove when 11.1 is live
-		self:CDBar(262347, 6.1) -- Static Pulse
-		self:CDBar(269493, 9.7) -- Footbomb Launcher
-		self:CDBar(257337, 14.2) -- Shocking Claw
-	end
+	footbombLauncherCount = 1
+	shockingClawCount = 1
+	self:StopBar(CL.active)
+	self:CDBar(262347, 6.1) -- Static Pulse
+	self:CDBar(269493, 19.1) -- Footbomb Launcher
+	self:CDBar(1217294, 30.0) -- Shocking Claw
+	self:CDBar(271903, 41.0) -- Coin Magnet
 end
 
 --------------------------------------------------------------------------------
 -- Event Handlers
 --
 
+function mod:Warmup() -- called from trash module
+	-- 17.84 [CLEU] SPELL_CAST_START#Creature-0-3024-1594-15510-144231#Rowdy Reveler##nil#267546#Pony Up
+	-- 17.98 [CHAT_MSG_MONSTER_YELL] Hurry! They're comin'!#Rowdy Reveler
+	-- 20.79 [CHAT_MSG_MONSTER_YELL] Don't rush me! I'm readin' the license agreement!#Rowdy Reveler
+	-- 26.04 [CHAT_MSG_MONSTER_YELL] They're gonna kill us!#Rowdy Reveler
+	-- 26.89 [CLEU] SPELL_CAST_START#Creature-0-3024-1594-15510-144231#Rowdy Reveler(100.0%-0.0%)##nil#267546#Pony Up
+	-- 29.62 [CHAT_MSG_MONSTER_YELL] Okay, okay! Wait... should I purchase an extended warranty?#Rowdy Reveler
+	-- 38.71 [CHAT_MSG_MONSTER_YELL] Moron! NEVER purchase the extended warranty!#Rowdy Reveler
+	-- 44.94 [CHAT_MSG_MONSTER_YELL] Venture Company thanks you for your patronage. Please enjoy your purchase of the [basic|elite] pummeling package.#Coin-Operated Crowd Pummeler
+	-- 48.38 [NAME_PLATE_UNIT_ADDED] Coin-Operated Crowd Pummeler#Creature-0-3024-1594-15510-129214
+	self:Bar("warmup", 30.2, CL.active, L.warmup_icon)
+end
+
 function mod:FootbombLauncher(args)
 	self:Message(args.spellId, "cyan")
-	if isElevenDotOne then
-		self:CDBar(args.spellId, 47.4)
-	else -- XXX remove in 11.1
-		self:CDBar(args.spellId, 34)
+	footbombLauncherCount = footbombLauncherCount + 1
+	if footbombLauncherCount == 2 then
+		self:CDBar(args.spellId, 46.3)
+	else -- 3+
+		self:CDBar(args.spellId, 42.5)
 	end
 	self:PlaySound(args.spellId, "long")
 end
@@ -96,9 +105,7 @@ end
 
 function mod:CoinMagnet(args)
 	self:Message(args.spellId, "purple")
-	if isElevenDotOne then -- XXX remove check in 11.1
-		self:CDBar(args.spellId, 43.8)
-	end
+	self:CDBar(args.spellId, 43.7)
 	if self:Tank() then
 		self:PlaySound(args.spellId, "info")
 	end
@@ -125,20 +132,17 @@ end
 
 function mod:StaticPulse(args)
 	self:Message(args.spellId, "red")
-	if isElevenDotOne then
-		self:CDBar(args.spellId, 43.8)
-	else -- XXX remove in 11.1
-		self:CDBar(args.spellId, 23)
-	end
+	self:CDBar(args.spellId, 43.7)
 	self:PlaySound(args.spellId, "alert")
 end
 
 function mod:ShockingClaw(args)
 	self:Message(args.spellId, "orange")
-	if isElevenDotOne then
-		self:CDBar(args.spellId, 48.6)
-	else -- XXX remove in 11.1
-		self:CDBar(args.spellId, 33)
+	shockingClawCount = shockingClawCount + 1
+	if shockingClawCount == 2 then
+		self:CDBar(args.spellId, 47.5)
+	else -- 3+
+		self:CDBar(args.spellId, 43.7)
 	end
 	self:PlaySound(args.spellId, "alarm")
 end

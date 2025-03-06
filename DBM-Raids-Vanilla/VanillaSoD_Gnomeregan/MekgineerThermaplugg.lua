@@ -1,12 +1,13 @@
 local mod	= DBM:NewMod("ThermapluggSoD", "DBM-Raids-Vanilla", 9)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240601045051")
+mod:SetRevision("20241214191036")
 mod:SetCreatureID(218538, 218970, 218972, 218974, 218537)--(red, blue, green, gray, thermaplugg)
 mod:SetEncounterID(2940)
 mod:SetBossHPInfoToHighest()
 mod:SetHotfixNoticeRev(20240214000000)
 mod:SetMinSyncRevision(20240214000000)
+mod:SetZone(90)
 
 --[[
 STX-99/XD 218975 (inactive id for gray/hybrid main boss)
@@ -125,7 +126,7 @@ mod.vb.currentIcon = 8
 function mod:OnCombatStart(delay)
 	self.vb.currentIcon = 1
 	self:SetStage(1)
-	timerRP:Start(-delay)
+	timerRP:Start(12.45-delay)
 	timerSprocketfireCD:Start(21.4-delay)
 	timerFurnaceSurgeCD:Start(33.7-delay)--33-36
 	if self.Options.InfoFrame then

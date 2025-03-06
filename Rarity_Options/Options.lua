@@ -60,20 +60,32 @@ local TIP_HIDDEN = "TIP_HIDDEN"
 
 -- Classes
 local classes = {
-	["DEATHKNIGHT"] = "|c" .. RAID_CLASS_COLORS["DEATHKNIGHT"]["colorStr"] .. L["Death Knight"] .. "|r",
-	["DEMONHUNTER"] = "|c" .. RAID_CLASS_COLORS["DEMONHUNTER"]["colorStr"] .. L["Demon Hunter"] .. "|r",
 	["DRUID"] = "|c" .. RAID_CLASS_COLORS["DRUID"]["colorStr"] .. L["Druid"] .. "|r",
 	["HUNTER"] = "|c" .. RAID_CLASS_COLORS["HUNTER"]["colorStr"] .. L["Hunter"] .. "|r",
 	["MAGE"] = "|c" .. RAID_CLASS_COLORS["MAGE"]["colorStr"] .. L["Mage"] .. "|r",
-	["MONK"] = "|c" .. RAID_CLASS_COLORS["MONK"]["colorStr"] .. L["Monk"] .. "|r",
 	["PALADIN"] = "|c" .. RAID_CLASS_COLORS["PALADIN"]["colorStr"] .. L["Paladin"] .. "|r",
 	["PRIEST"] = "|c" .. RAID_CLASS_COLORS["PRIEST"]["colorStr"] .. L["Priest"] .. "|r",
 	["ROGUE"] = "|c" .. RAID_CLASS_COLORS["ROGUE"]["colorStr"] .. L["Rogue"] .. "|r",
 	["SHAMAN"] = "|c" .. RAID_CLASS_COLORS["SHAMAN"]["colorStr"] .. L["Shaman"] .. "|r",
 	["WARLOCK"] = "|c" .. RAID_CLASS_COLORS["WARLOCK"]["colorStr"] .. L["Warlock"] .. "|r",
 	["WARRIOR"] = "|c" .. RAID_CLASS_COLORS["WARRIOR"]["colorStr"] .. L["Warrior"] .. "|r",
-	["EVOKER"] = "|c" .. RAID_CLASS_COLORS["EVOKER"]["colorStr"] .. L["Evoker"] .. "|r",
 }
+
+if LE_EXPANSION_LEVEL_CURRENT >= LE_EXPANSION_WRATH_OF_THE_LICH_KING then
+	classes["DEATHKNIGHT"] = "|c" .. RAID_CLASS_COLORS["DEATHKNIGHT"]["colorStr"] .. L["Death Knight"] .. "|r"
+end
+
+if LE_EXPANSION_LEVEL_CURRENT >= LE_EXPANSION_DRAGONFLIGHT then
+	classes["EVOKER"] = "|c" .. RAID_CLASS_COLORS["EVOKER"]["colorStr"] .. L["Evoker"] .. "|r"
+end
+
+if LE_EXPANSION_LEVEL_CURRENT >= LE_EXPANSION_LEGION then
+	classes["DEMONHUNTER"] = "|c" .. RAID_CLASS_COLORS["DEMONHUNTER"]["colorStr"] .. L["Demon Hunter"] .. "|r"
+end
+
+if LE_EXPANSION_LEVEL_CURRENT >= LE_EXPANSION_MISTS_OF_PANDARIA then
+	classes["MONK"] = "|c" .. RAID_CLASS_COLORS["MONK"]["colorStr"] .. L["Monk"] .. "|r"
+end
 
 local red = Rarity.Enum.Colors.Red
 local blue = Rarity.Enum.Colors.Blue
@@ -330,6 +342,20 @@ function R:PrepareOptions()
 									self:Update("OPTIONS")
 								end,
 							}, -- minimap
+							progressBar = {
+								type = "toggle",
+								order = newOrder(),
+								name = L["Show progress bar"],
+								desc = L["Click to toggle the progress bar"] .. ".",
+								get = function()
+									return self.db.profile.bar.visible
+								end,
+								set = function(info, val)
+									self.db.profile.bar.visible = val
+									Rarity.GUI:UpdateBar()
+									Rarity.GUI:UpdateText()
+								end,
+							}, -- progressBar
 							holidayReminder = {
 								type = "toggle",
 								order = newOrder(),
@@ -786,6 +812,9 @@ function R:PrepareOptions()
 									self.db.profile.cats[TBC] = val
 									Rarity.GUI:UpdateText()
 								end,
+								hidden = function()
+									return LE_EXPANSION_LEVEL_CURRENT < LE_EXPANSION_BURNING_CRUSADE
+								end,
 							},
 							wotlk = {
 								type = "toggle",
@@ -797,6 +826,9 @@ function R:PrepareOptions()
 								set = function(info, val)
 									self.db.profile.cats[WOTLK] = val
 									Rarity.GUI:UpdateText()
+								end,
+								hidden = function()
+									return LE_EXPANSION_LEVEL_CURRENT < LE_EXPANSION_WRATH_OF_THE_LICH_KING
 								end,
 							},
 							cata = {
@@ -810,6 +842,9 @@ function R:PrepareOptions()
 									self.db.profile.cats[CATA] = val
 									Rarity.GUI:UpdateText()
 								end,
+								hidden = function()
+									return LE_EXPANSION_LEVEL_CURRENT < LE_EXPANSION_CATACLYSM
+								end,
 							},
 							mop = {
 								type = "toggle",
@@ -821,6 +856,9 @@ function R:PrepareOptions()
 								set = function(info, val)
 									self.db.profile.cats[MOP] = val
 									Rarity.GUI:UpdateText()
+								end,
+								hidden = function()
+									return LE_EXPANSION_LEVEL_CURRENT < LE_EXPANSION_MISTS_OF_PANDARIA
 								end,
 							},
 							wod = {
@@ -834,6 +872,9 @@ function R:PrepareOptions()
 									self.db.profile.cats[WOD] = val
 									Rarity.GUI:UpdateText()
 								end,
+								hidden = function()
+									return LE_EXPANSION_LEVEL_CURRENT < LE_EXPANSION_WARLORDS_OF_DRAENOR
+								end,
 							},
 							legion = {
 								type = "toggle",
@@ -845,6 +886,9 @@ function R:PrepareOptions()
 								set = function(info, val)
 									self.db.profile.cats[LEGION] = val
 									Rarity.GUI:UpdateText()
+								end,
+								hidden = function()
+									return LE_EXPANSION_LEVEL_CURRENT < LE_EXPANSION_LEGION
 								end,
 							},
 							vfa = {
@@ -858,6 +902,9 @@ function R:PrepareOptions()
 									self.db.profile.cats[BFA] = val
 									Rarity.GUI:UpdateText()
 								end,
+								hidden = function()
+									return LE_EXPANSION_LEVEL_CURRENT < LE_EXPANSION_BATTLE_FOR_AZEROTH
+								end,
 							},
 							shadowlands = {
 								type = "toggle",
@@ -869,6 +916,9 @@ function R:PrepareOptions()
 								set = function(info, val)
 									self.db.profile.cats[SHADOWLANDS] = val
 									Rarity.GUI:UpdateText()
+								end,
+								hidden = function()
+									return LE_EXPANSION_LEVEL_CURRENT < LE_EXPANSION_SHADOWLANDS
 								end,
 							},
 							dragonflight = {
@@ -882,6 +932,9 @@ function R:PrepareOptions()
 									self.db.profile.cats[DRAGONFLIGHT] = val
 									Rarity.GUI:UpdateText()
 								end,
+								hidden = function()
+									return LE_EXPANSION_LEVEL_CURRENT < LE_EXPANSION_DRAGONFLIGHT
+								end,
 							},
 							theWarWithin = {
 								type = "toggle",
@@ -893,6 +946,9 @@ function R:PrepareOptions()
 								set = function(info, val)
 									self.db.profile.cats[TWW] = val
 									Rarity.GUI:UpdateText()
+								end,
+								hidden = function()
+									return LE_EXPANSION_LEVEL_CURRENT < LE_EXPANSION_WAR_WITHIN
 								end,
 							},
 						}, -- args

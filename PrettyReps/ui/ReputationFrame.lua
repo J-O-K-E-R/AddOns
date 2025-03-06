@@ -545,7 +545,7 @@ function PrettyRepsReputationEntryMixin:ShowMajorFactionRenownTooltip()
 	local tooltipTitle = majorFactionData.name;
 	GameTooltip_SetTitle(GameTooltip, tooltipTitle, HIGHLIGHT_FONT_COLOR);
 	TryAppendAccountReputationLineToTooltip(GameTooltip, factionID);
-	GameTooltip_AddHighlightLine(GameTooltip, RENOWN_LEVEL_LABEL .. majorFactionData.renownLevel);
+	GameTooltip_AddHighlightLine(GameTooltip, RENOWN_LEVEL_LABEL:format(majorFactionData.renownLevel));
 
 	GameTooltip_AddBlankLineToTooltip(GameTooltip);
 
@@ -736,7 +736,7 @@ local function InitializeBarForMajorFaction(factionData, reputationBar)
 
 	local progressText = not isMaxRenown and HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(REPUTATION_PROGRESS_FORMAT:format(BreakUpLargeNumbers(currentValue), BreakUpLargeNumbers(maxValue))) or nil;
 	reputationBar:UpdateBarProgressText(progressText);
-	reputationBar:UpdateReputationStandingText(RENOWN_LEVEL_LABEL .. majorFactionData.renownLevel);
+	reputationBar:UpdateReputationStandingText(RENOWN_LEVEL_LABEL:format(majorFactionData.renownLevel));
 	reputationBar:TryShowReputationStandingText();
 
 	reputationBar:UpdateBarColor(BLUE_FONT_COLOR);

@@ -1,4 +1,3 @@
-local isElevenDotOne = select(4, GetBuildInfo()) >= 110100 -- XXX remove when 11.1 is live
 --------------------------------------------------------------------------------
 -- Module Declaration
 --
@@ -8,6 +7,16 @@ if not mod then return end
 mod:RegisterEnableMob(207205) -- Stormguard Gorren
 mod:SetEncounterID(2861)
 mod:SetRespawnTime(30)
+
+--------------------------------------------------------------------------------
+-- Locals
+--
+
+local chaoticCorruptionCount = 1
+local darkGravityCount = 1
+local crushRealityCount = 1
+local nextChaoticCorruption = 0
+local nextCrushReality = 0
 
 --------------------------------------------------------------------------------
 -- Initialization
@@ -39,15 +48,15 @@ function mod:OnBossEnable()
 end
 
 function mod:OnEngage()
-	if isElevenDotOne then
-		self:CDBar(424737, 5.8) -- Chaotic Corruption
-		self:CDBar(424958, 9.5) -- Crush Reality
-		self:CDBar(425048, 30.1) -- Dark Gravity
-	else -- XXX remove when 11.1 is live
-		self:CDBar(424958, 9.3) -- Crush Reality
-		self:CDBar(425048, 15.4) -- Dark Gravity
-		self:CDBar(424737, 31.2) -- Chaotic Corruption
-	end
+	local t = GetTime()
+	chaoticCorruptionCount = 1
+	darkGravityCount = 1
+	crushRealityCount = 1
+	nextChaoticCorruption = t + 5.8
+	self:CDBar(424737, 5.8, CL.count:format(self:SpellName(424737), chaoticCorruptionCount)) -- Chaotic Corruption
+	nextCrushReality = t + 9.5
+	self:CDBar(424958, 9.5, CL.count:format(self:SpellName(424958), crushRealityCount)) -- Crush Reality
+	self:CDBar(425048, 30.1, CL.count:format(self:SpellName(425048), darkGravityCount)) -- Dark Gravity
 end
 
 --------------------------------------------------------------------------------
@@ -55,24 +64,40 @@ end
 --
 
 function mod:ChaoticCorruption(args)
-	self:Message(args.spellId, "red")
-	self:CDBar(args.spellId, 32.7)
+	local t = GetTime()
+	self:StopBar(CL.count:format(args.spellName, chaoticCorruptionCount))
+	self:Message(args.spellId, "red", CL.count:format(args.spellName, chaoticCorruptionCount))
+	chaoticCorruptionCount = chaoticCorruptionCount + 1
+	nextChaoticCorruption = t + 32.7
+	self:CDBar(args.spellId, 32.7, CL.count:format(args.spellName, chaoticCorruptionCount))
 	self:PlaySound(args.spellId, "alert")
 end
 
 function mod:DarkGravity(args)
-	self:Message(args.spellId, "yellow")
-	self:CDBar(args.spellId, 32.7)
+	local t = GetTime()
+	self:StopBar(CL.count:format(args.spellName, darkGravityCount))
+	self:Message(args.spellId, "yellow", CL.count:format(args.spellName, darkGravityCount))
+	darkGravityCount = darkGravityCount + 1
+	self:CDBar(args.spellId, 32.4, CL.count:format(args.spellName, darkGravityCount))
+	-- minimum 8.5s until Chaotic Corruption or Crush Reality
+	if nextChaoticCorruption - t < 8.5 then
+		nextChaoticCorruption = t + 8.5
+		self:CDBar(424737, {8.5, 32.7}, CL.count:format(self:SpellName(424737), chaoticCorruptionCount)) -- Chaotic Corruption
+	end
+	if nextCrushReality - t < 8.5 then
+		nextCrushReality = t + 8.5
+		self:CDBar(424958, {8.5, 20.6}, CL.count:format(self:SpellName(424958), crushRealityCount)) -- Crush Reality
+	end
 	self:PlaySound(args.spellId, "long")
 end
 
 function mod:CrushReality(args)
-	self:Message(args.spellId, "orange")
-	if isElevenDotOne then
-		self:CDBar(args.spellId, 20.6)
-	else -- XXX remove in 11.1
-		self:CDBar(args.spellId, 15.7)
-	end
+	local t = GetTime()
+	self:StopBar(CL.count:format(args.spellName, crushRealityCount))
+	self:Message(args.spellId, "orange", CL.count:format(args.spellName, crushRealityCount))
+	crushRealityCount = crushRealityCount + 1
+	nextCrushReality = t + 20.6
+	self:CDBar(args.spellId, 20.6, CL.count:format(args.spellName, crushRealityCount))
 	self:PlaySound(args.spellId, "alarm")
 end
 

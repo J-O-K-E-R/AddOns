@@ -26,7 +26,7 @@ local function createImportTranscriptorFrame()
 	importTranscriptorFrame = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
 	importTranscriptorFrame:SetFrameStrata("FULLSCREEN_DIALOG")
 	importTranscriptorFrame:SetFrameLevel(importTranscriptorFrame:GetFrameLevel() + 10)
-	importTranscriptorFrame:SetSize(540, 214)
+	importTranscriptorFrame:SetSize(540, 207)
 	importTranscriptorFrame:SetPoint("CENTER")
 	importTranscriptorFrame.backdropInfo = {
 		bgFile		= "Interface\\ChatFrame\\ChatFrameBackground", -- 130937
@@ -50,35 +50,21 @@ local function createImportTranscriptorFrame()
 	header:SetText(L.ImportTranscriptorHeader)
 	header:SetJustifyH("LEFT")
 
-	---@class DBMPopupFrameBackdrop: Frame, BackdropTemplate
-	local backdrop = CreateFrame("Frame", nil, importTranscriptorFrame, "BackdropTemplate")
-	backdrop.backdropInfo = {
-		bgFile		= "Interface\\ChatFrame\\ChatFrameBackground",
-		edgeFile	= "Interface\\Tooltips\\UI-Tooltip-Border",
-		tile		= true,
-		tileSize	= 16,
-		edgeSize	= 16,
-		insets		= { left = 3, right = 3, top = 5, bottom = 3 }
-	}
-	backdrop:ApplyBackdrop()
-	backdrop:SetBackdropColor(0.1, 0.1, 0.1, 0.6)
-	backdrop:SetBackdropBorderColor(0.4, 0.4, 0.4)
-	local input = CreateFrame("EditBox", nil, importTranscriptorFrame)
+	local input = CreateFrame("EditBox", nil, importTranscriptorFrame, "InputBoxTemplate")
 	input:SetTextInsets(7, 7, 3, 3)
 	input:SetFontObject(GameFontDisable)
 	input:SetMultiLine(true)
 	input:EnableMouse(true)
 	input:SetAutoFocus(true)
 	input:SetMaxBytes(100)
-	input:SetPoint("TOPLEFT", header, "BOTTOMLEFT", -13, -10)
-	input:SetWidth(360)
-	input:SetHeight(28)
+	input:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 0, -10)
+	input:SetWidth(350)
+	input:SetHeight(32)
 	input:SetScript("OnShow", function(self) self:Enable() self:SetFocus() self:SetCursorPosition(0) end)
 	input:SetText(L.PasteLogHere)
 	input:SetScript("OnEscapePressed", function(self)
 		importTranscriptorFrame:Hide()
 	end)
-	backdrop:SetAllPoints(input)
 	local logSelect
 	local logs ---@type DBMTranscriptorParserLogInfo[]
 	local buf = {}
@@ -121,7 +107,7 @@ local function createImportTranscriptorFrame()
 			pasteOffset1 = pasteOffset1 + 1
 		end
 	end)
-	local importLocalButton, createTestButton
+	local importLocalButton, createTestButton, exportTestButton
 	local function dropdownEntryFromLog(log, encounterOffset)
 		if encounterOffset then
 			local encounter = log.encounters[encounterOffset]
@@ -159,6 +145,7 @@ local function createImportTranscriptorFrame()
 			if #logs >= 1 then
 				logSelect:SetSelectedValue(dropdownEntryFromLog(logs[firstLogWithEncounters], #logs[firstLogWithEncounters].encounters >= 1 and 1 or nil))
 				createTestButton:Enable()
+				exportTestButton:Enable()
 			else
 				logSelect:SetSelectedValue({value = {}, text = L.NoLogsFound})
 				importLocalButton:Enable()
@@ -169,6 +156,7 @@ local function createImportTranscriptorFrame()
 		CreateFrame("Frame"):SetScript("OnUpdate", function(self)
 			if coroutine.status(cr) == "suspended" then
 				local ok, err = coroutine.resume(cr)
+				---@diagnostic disable-next-line: param-type-mismatch
 				if not ok then error("error in async task: " .. tostring(err) .. "\nstack:\n" .. debugstack(cr)) end
 			else
 				self:Hide()
@@ -196,8 +184,11 @@ local function createImportTranscriptorFrame()
 	end)
 
 	importLocalButton = CreateFrame("Button", nil, input, "UIPanelButtonTemplate")
+	importLocalButton:SetNormalFontObject(GameFontNormalSmall)
+	importLocalButton:SetHighlightFontObject(GameFontHighlightSmall)
+	importLocalButton:SetDisabledFontObject(GameFontDisableSmall)
 	importLocalButton:SetPoint("LEFT", input, "RIGHT", 3, 1)
-	importLocalButton:SetSize(140, 40)
+	importLocalButton:SetSize(130, 40)
 	importLocalButton:SetText(L.ImportLocalTranscriptor)
 	importLocalButton:SetScript("OnClick", function()
 		if TranscriptDB and next(TranscriptDB) then
@@ -234,15 +225,17 @@ local function createImportTranscriptorFrame()
 		if value == noLogsDropdownValue then return end
 		logSelect:SetSelectedValue({value = value, text = value.name})
 		createTestButton:Enable()
+		exportTestButton:Enable()
 	end
 	logSelect = DBM_GUI:CreateDropdown(L.SelectLogDropdown, getLogEntries, nil, nil, onLogSelect, 300, nil, importTranscriptorFrame)
+	local isNewDropdown = logSelect.mytype == "dropdown2"
 	logSelect:SetSelectedValue({value = {}, text = L.SelectLogDropdown})
-	logSelect:SetPoint("TOPLEFT", input, "BOTTOMLEFT", -16, -15)
+	logSelect:SetPoint("TOPLEFT", input, "BOTTOMLEFT", isNewDropdown and -5 or -16, -15)
 
 	local anonCheckbox = CreateFrame("CheckButton", nil, importTranscriptorFrame, "OptionsBaseCheckButtonTemplate")
 	local anonCheckboxText = importTranscriptorFrame:CreateFontString(nil, nil, "GameFontNormal")
 	anonCheckboxText:SetText(L.AnonymizeTest)
-	anonCheckbox:SetPoint("TOPLEFT", logSelect, "BOTTOMLEFT", 16, -2)
+	anonCheckbox:SetPoint("TOPLEFT", logSelect, "BOTTOMLEFT", isNewDropdown and 0 or 16, -2)
 	anonCheckboxText:SetPoint("LEFT", anonCheckbox, "RIGHT", 0, 0)
 	anonCheckbox:SetScript("OnShow", function(self)
 		self:SetChecked(DBM_Test_Settings.AnonymizeImports)
@@ -252,49 +245,89 @@ local function createImportTranscriptorFrame()
 		DBM_Test_Settings.AnonymizeImports = not DBM_Test_Settings.AnonymizeImports
 	end)
 
+	---@param callback fun(self: Button, gen: DBMTranscriptorParserTestGenerator, startTimer: number)
+	local function testGenerator(callback)
+		return function(self)
+			if not logSelect.value then
+				input:SetText(L.NoLogSelected)
+				return
+			elseif logSelect.value.imported then
+				input:SetText(L.LogAlreadyImported)
+				return
+			end
+			importLocalButton:Enable()
+			self:SetText(L.Parsing)
+			self:Disable()
+			local parser = DBM.Test.GetSharedModule("ParseTranscriptor")
+			local frame = CreateFrame("Frame")
+			local f = function()
+				local start = GetTimePreciseSec()
+				local gen = parser:NewTestGenerator(logSelect.value.log, logSelect.value.startOffset, logSelect.value.endOffset, nil, not DBM_Test_Settings.AnonymizeImports, true, true)
+				callback(self, gen, start)
+			end
+			local cr = coroutine.create(f)
+			frame:SetScript("OnUpdate", function()
+				if coroutine.status(cr) == "suspended" then
+					local ok, err = coroutine.resume(cr)
+					---@diagnostic disable-next-line: param-type-mismatch
+					if not ok then error("error in async task: " .. tostring(err) .. "\nstack:\n" .. debugstack(cr)) end
+				end
+			end)
+		end
+	end
 	createTestButton = CreateFrame("Button", nil, importTranscriptorFrame, "UIPanelButtonTemplate")
 	createTestButton:SetPoint("TOPLEFT", anonCheckbox, "BOTTOMLEFT", 0, 0)
 	createTestButton:SetSize(100, 20)
 	createTestButton:SetText(L.CreateTest)
 	createTestButton:Disable()
-	createTestButton:SetScript("OnClick", function(self)
-		if not logSelect.value then
-			input:SetText(L.NoLogSelected)
-			return
-		elseif logSelect.value.imported then
-			input:SetText(L.LogAlreadyImported)
-			return
-		end
-		importLocalButton:Enable()
-		self:SetText(L.Parsing)
-		self:Disable()
-		local parser = DBM.Test.GetSharedModule("ParseTranscriptor")
-		local frame = CreateFrame("Frame")
-		local f = function()
-			local start = GetTimePreciseSec()
-			local gen = parser:NewTestGenerator(logSelect.value.log, logSelect.value.startOffset, logSelect.value.endOffset, nil, not DBM_Test_Settings.AnonymizeImports, true, true)
-			local def = gen:GetTestDefinition()
-			def.ephemeral = true
-			def.name = "Imported/" .. logSelect.value.name
-			-- TODO: the name should be unique as it contains timestamp and encounter, so we could prevent double imports across multiple sessions here
-			-- but this is good enough, just want to prevent people from clicking the button twice
-			logSelect.value.imported = true
-			-- TODO: add option to store this persistently, but it's a bit messy because we need to serialize it to avoid size limits
-			ephemeralTests[#ephemeralTests + 1] = def
-			self:SetText(L.CreateTest)
-			input:SetText(L.CreatedTest:format(#def.log, GetTimePreciseSec() - start))
-			self:Enable()
-			importTranscriptorFrame.parentTestSelect:RefreshLazyValues()
-			importTranscriptorFrame.parentTestSelect:SetSelectedValue(def.name)
-		end
-		local cr = coroutine.create(f)
-		frame:SetScript("OnUpdate", function()
-			if coroutine.status(cr) == "suspended" then
-				local ok, err = coroutine.resume(cr)
-				if not ok then error("error in async task: " .. tostring(err) .. "\nstack:\n" .. debugstack(cr)) end
+	createTestButton:SetScript("OnClick", testGenerator(function(self, gen, startTime)
+		local def = gen:GetTestDefinition()
+		def.ephemeral = true
+		def.showInAllMods = false
+		def.mod = importTranscriptorFrame.mod.id
+		-- TODO: add option to rename it
+		def.name = "Imported/" .. logSelect.value.name
+		-- TODO: the name should be unique as it contains timestamp and encounter, so we could prevent double imports across multiple sessions here
+		-- but this is good enough, just want to prevent people from clicking the button twice
+		logSelect.value.imported = true
+		ephemeralTests[#ephemeralTests + 1] = def
+		self:SetText(L.CreateTest)
+		input:SetText(L.CreatedTest:format(#def.log, GetTimePreciseSec() - startTime))
+		self:Enable()
+		importTranscriptorFrame.parentTestSelect:RefreshLazyValues()
+		importTranscriptorFrame.parentTestSelect:SetSelectedValue(def.name)
+		importTranscriptorFrame.parentPlayerSelect:GenerateMenu()
+	end))
+	exportTestButton = CreateFrame("Button", nil, importTranscriptorFrame, "UIPanelButtonTemplate")
+	exportTestButton:SetPoint("LEFT", createTestButton, "RIGHT", 10, 0)
+	exportTestButton:SetSize(100, 20)
+	exportTestButton:SetText(L.ExportTest)
+	exportTestButton:Disable()
+	exportTestButton:SetScript("OnClick", testGenerator(function(self, gen, startTime)
+		local exportedTest =
+			gen:GetHeaderString() .. "\n" ..
+			gen:GetPlayersString() .. "\n" ..
+			gen:GetLogString() .. "\n" ..
+			gen:GetCompressedLogString() .. "\n" ..
+			"}\n"
+		self:SetText(L.ExportTest)
+		input:SetText(L.CreatedTest:format(gen.stats.outputLines, GetTimePreciseSec() - startTime))
+		self:Enable()
+		local infoText = L.ExportedTest:format(gen.stats.outputLines, (1 - gen.stats.outputLines / gen.stats.parsedLines) * 100)
+		if DBM_Test_Settings.AnonymizeImports then
+			local numFailedAnon = 0
+			gen.anonymizer:CheckForLeaks(exportedTest, function(str)
+				numFailedAnon = numFailedAnon + 1
+				DBM:AddMsg(L.ExportTestFailedNonAnonString:format(str))
+				exportedTest = "-- " .. L.ExportTestFailedNonAnonString:format(str) .. "\n" .. exportedTest
+			end)
+			if numFailedAnon > 0 then
+				infoText = L.ExportedTestFailedAnon:format(numFailedAnon)
 			end
-		end)
-	end)
+		end
+		DBM:ShowUpdateReminder(nil, nil, infoText, exportedTest)
+	end))
+
 
 	local close = CreateFrame("Button", nil, importTranscriptorFrame, "UIPanelButtonTemplate")
 	close:SetPoint("BOTTOMRIGHT", -15, 15)
@@ -305,23 +338,47 @@ local function createImportTranscriptorFrame()
 	end)
 end
 
-local function showImportTranscriptorFrame(testSelect)
+local function showImportTranscriptorFrame(testSelect, playerSelect, mod)
 	if not importTranscriptorFrame then
 		createImportTranscriptorFrame()
 	end
 	importTranscriptorFrame.parentTestSelect = testSelect
+	importTranscriptorFrame.parentPlayerSelect = playerSelect
+	importTranscriptorFrame.mod = mod
 	importTranscriptorFrame:Show()
 end
 
+local compressAsync = CreateFrame("Frame")
+---@param testData TestDefinition
+local function serializeLog(testData)
+	if testData.compressedLog then return end
+	local libSerialize = LibStub("LibSerialize")
+	local libDeflate = LibStub("LibDeflate")
+	local handler = libSerialize:SerializeAsync(testData.log)
+	compressAsync:SetScript("OnUpdate", function()
+		local completed, serialized = handler()
+		if completed then
+			compressAsync:Hide()
+			testData.compressedLog = libDeflate:EncodeForPrint(libDeflate:CompressDeflate(serialized))
+		end
+	end)
+	testData.duration = testData.log[#testData.log][1]
+	compressAsync:Show()
+end
 
 ---@param panel DBMPanel
 ---@param mod DBMMod
 function DBM_GUI:AddModTestOptionsAbove(panel, mod)
-	DBM.Test:LoadAllTests() -- Boss mod frames are created lazily so this is actually only run once the user clicks on a test frame
+	local ok = DBM.Test:LoadAllTests() -- Boss mod frames are created lazily so this is actually only run once the user clicks on a test frame
+	if not ok then
+		DBM:AddMsg("Failed not load testing support, make sure that DBM-Test is installed and enabled")
+		return 0
+	end
 	local tests = DBM.Test:GetTestsForMod(mod) or {}
 	local infoArea = panel:CreateArea(L.DevPanelArea)
 	infoArea:CreateText(L.DevModPanelExplanation, nil, true)
 
+	-- Mod loading
 	local loadWithMocksArea = panel:CreateArea(L.TestSupportArea)
 	local isLoadedWithMocks = test.Mocks:IsModLoadedWithMocks(mod)
 	local loadedWithMocksText = loadWithMocksArea:CreateText(isLoadedWithMocks and L.ModLoadedWithTests or L.ModNotLoadedWithTests, nil, true)
@@ -344,13 +401,14 @@ function DBM_GUI:AddModTestOptionsAbove(panel, mod)
 		DBM_ModsToLoadWithFullTestSupport.addonsWithTests[mod.addon.modId] = atLeastOneModNeedsTests or nil
 	end)
 
+	-- Test/player selection
 	local testSelectArea = panel:CreateArea(L.TestSelectArea)
-	local testSelect
+	local testSelect, playerSelect
 	local importLog = testSelectArea:CreateButton(L.ImportTranscriptor)
 	importLog:SetScript("OnClick", function()
-		showImportTranscriptorFrame(testSelect)
+		showImportTranscriptorFrame(testSelect, playerSelect, mod)
 	end)
-	local runOrStopTest
+	local runOrStopTest, saveLogButton, alwaysShowButton
 	importLog:SetPoint("TOPLEFT", testSelectArea.frame, "TOPLEFT", 10, -10)
 	local function getTestEntries()
 		local values = {}
@@ -358,7 +416,12 @@ function DBM_GUI:AddModTestOptionsAbove(panel, mod)
 			values[#values + 1] = {text = v.name, value = v} -- TODO: add extra info
 		end
 		for _, v in ipairs(ephemeralTests) do
-			values[#values + 1] = {text = v.name, value = v}
+			if v.showInAllMods or v.mod == mod.id then
+				values[#values + 1] = {text = v.name, value = v}
+			end
+		end
+		if #values == 0 then
+			values[#values + 1] = {value = {}, text = L.NoTestDataAvailable}
 		end
 		return values
 	end
@@ -366,18 +429,31 @@ function DBM_GUI:AddModTestOptionsAbove(panel, mod)
 		testSelect:SetSelectedValue({value = value, text = value.name})
 	end
 	testSelect = testSelectArea:CreateDropdown(L.SelectTestLog, getTestEntries, nil, nil, onTestDropdownSelect, 300)
+	local isNewDropdown = testSelect.mytype == "dropdown2"
 	testSelect:OnSelectionChanged(function()
 		if runOrStopTest then runOrStopTest:Enable() end
+		if alwaysShowButton then alwaysShowButton:Hide() alwaysShowButton:Show() end
+		if saveLogButton then saveLogButton:Hide() saveLogButton:Show() end
+	end)
+	local function resetTestSelection()
+		local testEntries = getTestEntries()
+		testSelect:RefreshLazyValues()
+		if #testEntries >= 1 then
+			testSelect:SetSelectedValue(testEntries[1].text)
+		else
+			testSelect:SetSelectedValue(L.NoTestDataAvailable)
+		end
+	end
+	testSelect:SetScript("OnShow", function(self)
+		if self.value and self.value.ephemeral and not self.value.showInAllMods and self.value.mod ~= mod.id then
+			-- "Show in all mods" was deselected from a different mod, reset selection
+			resetTestSelection()
+		elseif not self.values then
+			resetTestSelection()
+		end
 	end)
 	testSelect.myheight = 40
-	if #ephemeralTests >= 1 then -- TODO: only select this by default if this was imported from this mod
-		testSelect:SetSelectedValue({value = ephemeralTests[1], text = ephemeralTests[1].name})
-	elseif #tests >= 1 then
-		testSelect:SetSelectedValue({value = tests[1], text = tests[1].name})
-	else
-		testSelect:SetSelectedValue({value = {}, text = L.NoTestDataAvailable})
-	end
-	testSelect:SetPoint("TOPLEFT", importLog, "BOTTOMLEFT", -16, -15)
+	testSelect:SetPoint("TOPLEFT", importLog, "BOTTOMLEFT", isNewDropdown and 0 or -16, -15)
 	local function getPlayerEntries()
 		local testData = testSelect.value ---@type TestDefinition
 		if not testData or not testData.players then
@@ -404,7 +480,6 @@ function DBM_GUI:AddModTestOptionsAbove(panel, mod)
 		end
 		return values
 	end
-	local playerSelect
 	local function onPlayerDropdownSelect(value)
 		playerSelect:SetSelectedValue({value = value, text = value.name})
 	end
@@ -413,10 +488,53 @@ function DBM_GUI:AddModTestOptionsAbove(panel, mod)
 	playerSelect:SetSelectedValue({value = DEFAULT, text = DEFAULT})
 	playerSelect:SetPoint("TOPLEFT", testSelect, "BOTTOMLEFT", 0, -10)
 
+	-- Saved logs
+	alwaysShowButton = testSelectArea:CreateCheckButton(L.ShowThisTestEverywhere, false)
+	alwaysShowButton:SetScript("OnShow", function(self)
+		if not testSelect.value or not testSelect.value.ephemeral then
+			self:Disable()
+			self.textObj:SetFontObject("p", GameFontDisable)
+			self:SetChecked(false)
+			return
+		end
+		self:Enable()
+		self.textObj:SetFontObject("p", GameFontNormal)
+		self:SetChecked(testSelect.value.showInAllMods)
+	end)
+	alwaysShowButton:SetScript("OnClick", function(self)
+		testSelect.value.showInAllMods = not testSelect.value.showInAllMods
+		if not testSelect.value.showInAllMods then
+			testSelect.value.mod = mod.id
+		end
+	end)
+	alwaysShowButton:SetPoint("LEFT", testSelect, "RIGHT", 35, 0)
+	saveLogButton = testSelectArea:CreateCheckButton(L.SaveThisTest, false)
+	saveLogButton:SetScript("OnShow", function(self)
+		if not testSelect.value or not testSelect.value.ephemeral then
+			self:Disable()
+			self.textObj:SetFontObject("p", GameFontDisable)
+			self:SetChecked(testSelect.value)
+			return
+		end
+		self:Enable()
+		self.textObj:SetFontObject("p", GameFontNormal)
+		self:SetChecked(testSelect.value.persistent)
+	end)
+	saveLogButton:SetScript("OnClick", function(self)
+		testSelect.value.persistent = not testSelect.value.persistent
+		if testSelect.value.persistent then
+			serializeLog(testSelect.value)
+			DBM_Test_PersistentImports = DBM_Test_PersistentImports or {}
+			DBM_Test_PersistentImports[testSelect.value.name] = testSelect.value
+		end
+	end)
+	saveLogButton:SetPoint("TOP", alwaysShowButton, "BOTTOM", 0, -10)
+
+	-- Test running
 	runOrStopTest = panel:CreateButton(L.RunTest, 130, 30)
 	runOrStopTest.myheight = 40
 	runOrStopTest:SetPoint("TOPLEFT", testSelectArea.frame, "BOTTOMLEFT", 0, -10)
-	if #tests == 0 then
+	if #tests == 0 and #ephemeralTests == 0 then
 		runOrStopTest:Disable()
 	end
 	runOrStopTest:SetScript("OnClick", function()
@@ -489,3 +607,18 @@ function DBM_GUI:AddModTestOptionsAbove(panel, mod)
 	if oldFrame then DBM_GUI_OptionsFrame:DisplayFrame(oldFrame) end -- nil if this is the very first frame you click on
 	return height
 end
+
+local savedVariablesLoaded = false
+local persistentTestLoader = CreateFrame("Frame")
+persistentTestLoader:RegisterEvent("ADDON_LOADED")
+persistentTestLoader:SetScript("OnEvent", function(self, _, addon)
+	if savedVariablesLoaded then return end
+	if addon == "DBM-Test" or addon == "DBM-GUI" and DBM.Test.loaded then
+		-- Loading order can vary between these two mods
+		DBM_Test_PersistentImports = DBM_Test_PersistentImports or {}
+		for _, v in pairs(DBM_Test_PersistentImports) do
+			ephemeralTests[#ephemeralTests + 1] = v
+		end
+		savedVariablesLoaded = true
+	end
+end)

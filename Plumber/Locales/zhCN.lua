@@ -289,6 +289,18 @@ L["ModuleName BlizzardSuperTrack"] = "导航：事件倒计时";
 L["ModuleDescription BlizzardSuperTrack"] = "如果你正在追踪的地图标记的鼠标提示里包含时间信息，在屏幕导航下方显示此时间。";
 
 
+--ProfessionsBook
+L["ModuleName ProfessionsBook"] = "未使用的知识";
+L["ModuleDescription ProfessionsBook"] = "在专业技能书界面上显示你未使用的专精知识点数。";
+L["Unspent Knowledge Tooltip Format"] = "你有|cffffffff%s|r点未使用的专业专精知识。";
+
+
+--TooltipProfessionKnowledge
+L["ModuleName TooltipProfessionKnowledge"] = "未使用的知识";
+L["ModuleDescription TooltipProfessionKnowledge"] = "在专业技能的鼠标提示上显示你未使用的知识总数。";
+L["Available Knowledge Format"] = "可用知识：|cffffffff%s|r";
+
+
 --Loot UI
 L["ModuleName LootUI"] = "拾取窗口";
 L["ModuleDescription LootUI"] = "替换默认的拾取窗口并提供以下功能：\n\n- 快速拾取所有物品\n\n- 修复自动拾取有时失效的问题\n\n- 手动拾取时显示“全部拾取”按钮";
@@ -335,18 +347,24 @@ L["PlumberMacro DrawerFlag Combat"] = "技能收纳宏将在你离开战斗后�
 L["PlumberMacro DrawerFlag Stuck"] = "更新技能收纳宏时遇到了错误。";
 L["PlumberMacro Error Combat"] = "战斗中不可用";
 L["PlumberMacro Error NoAction"] = "无可用技能";
+L["PlumberMacro Error EditMacroInCombat"] = "战斗中不可编辑";
 L["Dismiss Battle Pet"] = "解散小宠物";
 L["Drag And Drop Item Here"] = "拖拽一个东西放在这里";
 L["Drag To Reorder"] = "左键单击并拖拽以更改位置";
 L["Unsupported Action Type Format"] = "不支持的动作类别： %s";
 L["Drawer Add Action Format"] = "添加 |cffffffff%s|r";
+L["Drawer Add Profession1"] = "第一个专业技能";
+L["Drawer Add Profession2"] = "第二个专业技能";
 L["Drawer Option Global Tooltip"] = "所有的收纳宏共用此设置。";
 L["Drawer Option CloseAfterClick"] = "点击后关闭";
 L["Drawer Option CloseAfterClick Tooltip"] = "在你点击菜单中任何一个按钮后关闭菜单，无论动作是否成功。";
 L["Drawer Option SingleRow"] = "单行排布";
 L["Drawer Option SingleRow Tooltip"] = "勾选此选项后，所有按钮都在一排显示，而不是每排最多4个。";
 L["Drawer Option Hide Unusable"] = "隐藏不可用的动作";
-L["Drawer Option Hide Unusable Tooltip"] = "隐藏身上没有的物品和未学会的法术。\n\n消耗品例如药水不受此选项影响。";
+L["Drawer Option Hide Unusable Tooltip"] = "隐藏身上没有的物品和未学会的法术。";
+L["Drawer Option Hide Unusable Tooltip 2"] = "消耗品例如药水不受此选项影响。"
+L["Drawer Option Update Frequently"] = "频繁更新";
+L["Drawer Option Update Frequently Tooltip"] = "在你背包或法术书发生变化时更新所有收纳宏。启用此选项可能会略微增加运算量。";
 
 
 --Generic

@@ -61,7 +61,7 @@ CL.BOMBS						= "Bombas"--Usually auto localized but kept around in case it need
 CL.ORB							= "Orbe"--Usually auto localized but kept around in case it needs to be used in a place that's not auto localized such as MoveTo or Use alert
 CL.ORBS							= "Orbes"--Doesn't have a direct auto localize so has to be manually localized, unlike non plural version
 CL.RING							= "Anel"
-CL.RINGS						= "Anéis "
+CL.RINGS						= "Anéis"
 CL.CHEST						= "Cofre"--As in Treasure 'Chest'. Not Chest as in body part.
 CL.ADD							= "Add"--A fight Add as in "boss spawned extra adds"
 CL.ADDS							= "Adds"
@@ -102,6 +102,7 @@ CL.CURSES						= "Maldições"
 CL.SWIRLS						= "Redemoinhos"--Plural of Swirl
 CL.CHARGES						= "Cargas"--Context, this is plural of boss "charging to players" and NOT bomb charges
 CL.CIRCLES						= "Círculos"--As in circles on ground that players need to move out of or need to drop off
+CL.KNOCKUP						= "Derrubar"
 -- Colors
 CL.BLACK 						= "Preto"
 CL.BLUE 						= "Azul"

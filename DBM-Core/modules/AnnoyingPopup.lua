@@ -3,6 +3,9 @@ local L = DBM_CORE_L
 ---@class DBM
 local DBM = DBM
 
+---@class DBMCoreNamespace
+local private = select(2, ...)
+
 ---@type DBMAnnoyingPopup
 local frame
 
@@ -109,7 +112,6 @@ end
 
 -- It's kinda sad that this is needed, but I see way too many people running around in SoD without classic mods installed while at the same time complaining that DBM doesn't work.
 -- No one seems to be reading messages in ChatFrame :(
--- /run DBM:ShowAnnoyingPopup("Incomplete DBM installation detected.\nWelcome to Molten Core", "long checkbox text", "Copy this to download from Wago.io", "https://addons.wago.io/addons/7x61xpN1", "Copy this to download from Curse", "https://www.curseforge.com/wow/addons/dbm-vanilla")
 local function show(headerLarge, headerSmall, checkbox, url1Info, url1, url2Info, url2)
 	createFrame()
 	frame.header1:SetText(headerLarge)
@@ -129,6 +131,11 @@ local popupData = {
 		wagoUrl = "https://addons.wago.io/addons/deadly-boss-mods-dbm-bc-vanilla-mods",
 		curseUrl = "https://www.curseforge.com/wow/addons/dbm-vanilla",
 	},
+	BCC = {
+		package = L.DBM_INSTALL_PACKAGE_BCC,
+		wagoUrl = "https://addons.wago.io/addons/deadly-boss-mods-dbm-burning-crusade-mods",
+		curseUrl = "https://www.curseforge.com/wow/addons/deadly-boss-mods-tbc",
+	},
 	WoTLK = {
 		package = L.DBM_INSTALL_PACKAGE_WRATH,
 		wagoUrl = "https://addons.wago.io/addons/deadly-boss-mods-dbm-wrath-of-the-lich-king-mods",
@@ -139,6 +146,11 @@ local popupData = {
 		wagoUrl = "https://addons.wago.io/addons/deadly-boss-mods-dbm-cataclysm-mods",
 		curseUrl = "https://www.curseforge.com/wow/addons/deadly-boss-mods-cataclysm-mods",
 	},
+	MoP = {
+		package = L.DBM_INSTALL_PACKAGE_MOP,
+		wagoUrl = "https://addons.wago.io/addons/deadly-boss-mods-dbm-mists-of-pandaria-mop-mods",
+		curseUrl = "https://www.curseforge.com/wow/addons/deadly-boss-mods-mop",
+	},
 	Dungeons = {
 		package = L.DBM_INSTALL_PACKAGE_DUNGEON,
 		wagoUrl = "https://addons.wago.io/addons/deadly-boss-mods-dbm-old-dungeon-mods",
@@ -147,21 +159,42 @@ local popupData = {
 	}
 }
 
-local annoyingPopupZonesSoD = {
-	[249]  = {addon = "DBM-Raids-Vanilla", package = "Vanilla"},  -- Onyxia
+--Basically no naxx
+local annoyingPopupZonesVanillaRetail = {
 	[409]  = {addon = "DBM-Raids-Vanilla", package = "Vanilla"},  -- Molten Core
-	[2791] = {addon = "DBM-Azeroth",       package = "Vanilla"},  -- Azuregos (instanced in SoD), we literally wiped there to spell reflect because people didn't have this installed in my guild
-	[2784] = {addon = "DBM-Party-Vanilla", package = "Dungeons"}, -- Demon Fall Canyon in SoD, it's a bit harder than usual dungeons, so let's show a warning. Remove if too many people complain.
+	[469]  = {addon = "DBM-Raids-Vanilla", package = "Vanilla"},  -- Blackwing Lair
+	[509]  = {addon = "DBM-Raids-Vanilla", package = "Vanilla"},  -- Ruins of Ahn'Qiraj
+	[531]  = {addon = "DBM-Raids-Vanilla", package = "Vanilla"},  -- Temple of Ahn'Qiraj
+	[2217] = {addon = "DBM-Raids-Vanilla", package = "Vanilla"},  -- BRD Raid
 }
 
-local annoyingPopupZonesVanilla = {
+--Filtering should be handled by core (ie the level up raids won't be triggered if not SoD or too high of level)
+local annoyingPopupZonesVanillaClassic = {
+	[40]  = {addon = "DBM-Raids-Vanilla", package = "Vanilla"},  -- Blackfathom Deeps Level Up Raid
+	[90]  = {addon = "DBM-Raids-Vanilla", package = "Vanilla"},  -- Gnomeragon Level up Raid
+	[109]  = {addon = "DBM-Raids-Vanilla", package = "Vanilla"},  -- Sunken Temple Level up Raid
 	[249]  = {addon = "DBM-Raids-Vanilla", package = "Vanilla"},  -- Onyxia
 	[409]  = {addon = "DBM-Raids-Vanilla", package = "Vanilla"},  -- Molten Core
 	[469]  = {addon = "DBM-Raids-Vanilla", package = "Vanilla"},  -- Blackwing Lair
 	[509]  = {addon = "DBM-Raids-Vanilla", package = "Vanilla"},  -- Ruins of Ahn'Qiraj
 	[531]  = {addon = "DBM-Raids-Vanilla", package = "Vanilla"},  -- Temple of Ahn'Qiraj
-	[533]  = {addon = "DBM-Raids-Vanilla", package = "Vanilla"},  -- Naxxramas
-	[2217]  = {addon = "DBM-Raids-Vanilla", package = "Vanilla"},  -- BRD Raid
+	[533]  = {addon = "DBM-Raids-Vanilla", package = "Vanilla", trackPerInstance = true},  -- Naxxramas, tracking separetely as we may have returning players that clicked the warning away not really understanding it
+	[2791] = {addon = "DBM-Azeroth",       package = "Vanilla"},  -- Azuregos (instanced in SoD), we literally wiped there to spell reflect because people didn't have this installed in my guild
+	[2784] = {addon = "DBM-Party-Vanilla", package = "Dungeons"}, -- Demon Fall Canyon in SoD, it's a bit harder than usual dungeons, so let's show a warning. Remove if too many people complain.
+	[2832] = {addon = "DBM-Azeroth",       package = "Vanilla"},  -- Nightmare Grove (instanced outdoor dragons)
+	[2856] = {addon = "DBM-Raids-Vanilla", package = "Vanilla", useFriendlyMessage = false, trackPerInstance = true},  -- Scarlet Enclave
+	[2875] = {addon = "DBM-Party-Vanilla", package = "Dungeons", useFriendlyMessage = false, trackPerInstance = true}, -- SoD Karazhan Cryptos, much harder than the usual classic dungeon
+}
+
+local annoyingPopupZonesBCC = {
+	[532]  = {addon = "DBM-Raids-BC", package = "BCC"},  -- ???
+	[534]  = {addon = "DBM-Raids-BC", package = "BCC"},  -- ???
+	[544]  = {addon = "DBM-Raids-BC", package = "BCC"},  -- ???
+	[548]  = {addon = "DBM-Raids-BC", package = "BCC"},  -- ???
+	[550]  = {addon = "DBM-Raids-BC", package = "BCC"},  -- ???
+	[564]  = {addon = "DBM-Raids-BC", package = "BCC"},  -- ???
+	[565]  = {addon = "DBM-Raids-BC", package = "BCC"},  -- ???
+	[580]  = {addon = "DBM-Raids-BC", package = "BCC"},  -- ???
 }
 
 --No hard dungeons in wrath, so just popup for raids
@@ -199,19 +232,24 @@ local annoyingPopupZonesRetail = {
 	[2290]  = {addon = "DBM-Party-Dragonflight", package = "Dungeons"},  -- ???
 }
 
-function DBM:ShowAnnoyingPopup(packageId, zone)
-	if DBM_AnnoyingPopupDisables and DBM_AnnoyingPopupDisables[packageId] then
+function DBM:ShowAnnoyingPopup(zoneInfo, zone)
+	local trackId = zoneInfo.trackPerInstance and zoneInfo.package .. tostring(zone) or zoneInfo.package
+	if DBM_AnnoyingPopupDisables and DBM_AnnoyingPopupDisables[trackId] then
 		return
 	end
-	local data = popupData[packageId]
+	local data = popupData[zoneInfo.package]
 	if not data or not zone then
 		if DBM.Options.DebugMode then error("bad arguments") end
 		return
 	end
+	local useFriendlyMessage = data.useFriendlyMessage
+	if zoneInfo.useFriendlyMessage ~= nil then
+		useFriendlyMessage = zoneInfo.useFriendlyMessage
+	end
 	show(
 		L.DBM_INSTALL_REMINDER_HEADER,
 		L.DBM_INSTALL_REMINDER_EXPLAIN:format(zone, data.package, data.package),
-		data.useFriendlyMessage and L.DBM_INSTALL_REMINDER_DISABLE2 or L.DBM_INSTALL_REMINDER_DISABLE,
+		useFriendlyMessage and L.DBM_INSTALL_REMINDER_DISABLE2 or L.DBM_INSTALL_REMINDER_DISABLE,
 		L.DBM_INSTALL_REMINDER_DL_WAGO,
 		data.wagoUrl,
 		L.DBM_INSTALL_REMINDER_DL_CURSE,
@@ -220,7 +258,7 @@ function DBM:ShowAnnoyingPopup(packageId, zone)
 	callback = function()
 		if frame.checkbox:GetChecked() then
 			DBM_AnnoyingPopupDisables = DBM_AnnoyingPopupDisables or {}
-			DBM_AnnoyingPopupDisables[packageId] = GetServerTime()
+			DBM_AnnoyingPopupDisables[trackId] = GetServerTime()
 		end
 	end
 end
@@ -228,11 +266,9 @@ end
 function DBM:AnnoyingPopupCheckZone(mapId, zoneLookup)
 	local zoneInfo
 	if zoneLookup == "Vanilla" then
-		if self:IsSeasonal("SeasonOfDiscovery") then
-			zoneInfo = annoyingPopupZonesSoD[mapId]
-		else
-			zoneInfo = annoyingPopupZonesVanilla[mapId]
-		end
+		zoneInfo = private.isRetail and annoyingPopupZonesVanillaRetail[mapId] or annoyingPopupZonesVanillaClassic[mapId]
+	elseif zoneLookup == "BCC" then
+		zoneInfo = annoyingPopupZonesBCC[mapId]
 	elseif zoneLookup == "WoTLK" then
 		zoneInfo = annoyingPopupZonesWrath[mapId]
 	elseif zoneLookup == "Cata" then
@@ -241,6 +277,6 @@ function DBM:AnnoyingPopupCheckZone(mapId, zoneLookup)
 		zoneInfo = annoyingPopupZonesRetail[mapId]
 	end
 	if zoneInfo and not DBM:DoesAddOnExist(zoneInfo.addon) then
-		self:ShowAnnoyingPopup(zoneInfo.package, (GetInstanceInfo()))
+		self:ShowAnnoyingPopup(zoneInfo, (GetInstanceInfo()))
 	end
 end

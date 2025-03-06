@@ -166,14 +166,14 @@ end
 local providerTypeConverters = {
 	["n"] = cacheCreatureID,
 	["o"] = cacheObjectID,
-	["s"] = cacheSpellID,
+	["s"] = function(group, providerID)
+		CacheField(group, "spellIDAsCost", providerID);
+	end,
 	["c"] = function(group, providerID)
 		CacheField(group, "currencyIDAsCost", providerID);
-		--CacheField(group, "currencyID", providerID);
 	end,
 	["i"] = function(group, providerID)
 		CacheField(group, "itemIDAsCost", providerID);
-		--CacheField(group, "itemID", providerID);
 	end,
 	["g"] = function(group, providerID)
 		-- Do nothing, nothing to cache.
@@ -683,15 +683,6 @@ if app.IsRetail then
 	fieldConverters.c = nil
 	fieldConverters.r = nil
 	fieldConverters.races = nil
-
-	-- Retail doesn't need to double cache the object attached to currencies/items because it uses the cost
-	-- caches for the same information
-	providerTypeConverters.c = function(group, providerID)
-		CacheField(group, "currencyIDAsCost", providerID);
-	end
-	providerTypeConverters.i = function(group, providerID)
-		CacheField(group, "itemIDAsCost", providerID);
-	end
 
 	-- use single iteration of each group by way of not performing any group field additions while the cache process is running
 	_CacheFields = function(group)

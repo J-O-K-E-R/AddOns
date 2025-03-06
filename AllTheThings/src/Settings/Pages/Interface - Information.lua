@@ -135,11 +135,16 @@ settings.InformationTypeConversionMethods = ConversionMethods;
 
 -- Class Template for creating an Information Type instance.
 local function GetValueForInformationType(t, reference)
-	return reference[t.informationTypeID];
+	local rowReference = app.ActiveRowReference
+	local informationTypeID = t.informationTypeID
+	return rowReference and rowReference[informationTypeID] or reference[informationTypeID]
 end
 local function GetRecursiveValueForInformationType(t, reference)
-	local informationTypeID = t.informationTypeID;
-	return reference[informationTypeID] or GetRelativeValue(reference, informationTypeID);
+	local rowReference = app.ActiveRowReference
+	local informationTypeID = t.informationTypeID
+	return rowReference and rowReference[informationTypeID]
+		or reference[informationTypeID]
+		or GetRelativeValue(rowReference or reference, informationTypeID)
 end
 local function ProcessInformationType(t, reference, tooltipInfo)
 	local val = t.GetValue(t, reference);
@@ -605,15 +610,18 @@ local InformationTypes = {
 			if maps and #maps > 0 then
 				local mapNames,uniques,name = {},{},nil;
 				local rootMapID = reference.mapID;
+				local myRealMapID = app.RealMapID
+				local onMyMap = rootMapID == myRealMapID
 				if rootMapID then uniques[app.GetMapName(rootMapID) or rootMapID] = true; end
 				for i,mapID in ipairs(maps) do
+					onMyMap = onMyMap or mapID == myRealMapID
 					name = app.GetMapName(mapID);
 					if name and not uniques[name] then
 						uniques[name] = true;
 						tinsert(mapNames, name);
 					end
 				end
-				if #mapNames > 0 then
+				if #mapNames > 1 or (not onMyMap and #mapNames > 0) then
 					-- If there's a description and it is visible, add some visual space.
 					local description = reference.description;
 					if description and app.Settings:GetTooltipSetting("description") then
@@ -995,7 +1003,7 @@ local InformationTypes = {
 					tinsert(tooltipInfo, { left = L.UNSORTED_DESC, wrap = true, color = app.Colors.ChatLinkError });
 				else
 					-- removed BoE seen with a non-generic BonusID, potentially a level-scaled drop made re-obtainable
-					if reference.u == app.PhaseConstants.REMOVED_FROM_GAME and not app.IsBoP(reference) and (reference.bonusID or 3524) ~= 3524 then
+					if reference.u == app.PhaseConstants.REMOVED_FROM_GAME and not app.Modules.Filter.Filters.Bind(reference) and (reference.bonusID or 3524) ~= 3524 then
 						tinsert(tooltipInfo, { left = L.RECENTLY_MADE_OBTAINABLE });
 					end
 				end

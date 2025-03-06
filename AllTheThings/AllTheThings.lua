@@ -439,6 +439,20 @@ app.SourceSpecificFields = {
 		-- app.PrintDebug("new:",new)
 		return new;
 	end,
+-- Returns the 'earliest' Added with Patch value from the provided set of `awp` values
+	["awp"] = function(...)
+		local min, awp
+		local vals = select("#", ...);
+		for i=1,vals do
+			awp = select(i, ...)
+			-- ignore missing awp...
+			-- track the lowest awp value, which is the furthest-future patch
+			if awp and (not min or awp < min) then
+				min = awp;
+			end
+		end
+		return min
+	end,
 -- Returns the 'highest' Removed with Patch value from the provided set of `rwp` values
 	["rwp"] = function(...)
 		local max, rwp = -1,nil;
@@ -452,7 +466,6 @@ app.SourceSpecificFields = {
 				max = rwp;
 			end
 		end
-		-- print("max:",max)
 		return max;
 	end,
 -- Simple boolean
@@ -460,84 +473,106 @@ app.SourceSpecificFields = {
 	["pb"] = true,
 	["requireSkill"] = true,
 };
+-- Group Merge Handling
+local MergeProperties
+do
+local function Assign_Direct(g, k, v)
+	g[k] = v
+end
+local function Assign_Missing(g, k, v)
+	if rawget(g, k) == nil then g[k] = v end
+end
+local function Assign_sourceParent(g, k, v)
+	g.sourceParent = v
+end
+local MergeFuncByKey = setmetatable({
+	parent = Assign_sourceParent,
+
+}, { __index = function(t,key)
+	return Assign_Direct
+end})
+local MergeFuncByKeyNoReplace = setmetatable({
+	parent = Assign_sourceParent,
+
+}, { __index = function(t,key)
+	return Assign_Missing
+end})
+local MergeFuncByKeyClone = setmetatable({
+	parent = Assign_sourceParent,
+
+}, { __index = function(t,key)
+	return Assign_Direct
+end})
+-- have merge skip fields do nothing
+for k,v in pairs(app.MergeSkipFields) do
+	MergeFuncByKey[k] = app.EmptyFunction
+	MergeFuncByKeyNoReplace[k] = app.EmptyFunction
+	if v == true then
+		MergeFuncByKeyClone[k] = app.EmptyFunction
+	end
+end
+-- have source specific fields do nothing
+for k,v in pairs(app.SourceSpecificFields) do
+	MergeFuncByKey[k] = app.EmptyFunction
+	MergeFuncByKeyNoReplace[k] = app.EmptyFunction
+	MergeFuncByKeyClone[k] = app.EmptyFunction
+end
 -- Merges the properties of the t group into the g group, making sure not to alter the filterability of the group.
 -- Additionally can specify that the object is being cloned so as to skip special merge restrictions
-local function MergeProperties(g, t, noReplace, clone)
-	if g and t then
-		if g ~= t then
-			g.__merge = t.__merge or t
+MergeProperties = function(g, t, noReplace, clone)
+	if not g or not t then return end
+	if g ~= t then
+		g.__merge = t.__merge or t
+	end
+	if noReplace then
+		for k,v in pairs(t) do
+			MergeFuncByKeyNoReplace[k](g,k,v)
 		end
-		local skips = app.MergeSkipFields;
-		if noReplace then
-			for k,v in pairs(t) do
-				-- certain keys should never transfer to the merge group directly
-				if k == "parent" then
-					if not rawget(g, "sourceParent") then
-						g.sourceParent = v;
-					end
-				elseif not skips[k] then
-					if rawget(g, k) == nil then
-						g[k] = v;
-					end
-				end
-			end
-		elseif clone then
-			for k,v in pairs(t) do
-				-- certain keys should never transfer to the merge group directly
-				if k == "parent" then
-					if not rawget(g, "sourceParent") then
-						g.sourceParent = v;
-					end
-				elseif skips[k] ~= true then
-					g[k] = v;
-				end
-			end
-		else
-			for k,v in pairs(t) do
-				-- certain keys should never transfer to the merge group directly
-				if k == "parent" then
-					if not rawget(g, "sourceParent") then
-						g.sourceParent = v;
-					end
-				elseif not skips[k] then
-					g[k] = v;
-				end
-			end
+	elseif clone then
+		for k,v in pairs(t) do
+			MergeFuncByKeyClone[k](g,k,v)
 		end
-		-- custom special logic for fields which need to represent the commonality between all Sources of a group
-		-- loop through specific fields for custom logic
-		-- initial creation of a g object, has no key
-		if not g.key then
-			for k,_ in pairs(app.SourceSpecificFields) do
-				g[k] = t[k];
-			end
-		else
-			local gk, tk;
-			for k,f in pairs(app.SourceSpecificFields) do
-				-- existing is set
-				gk = g[k];
-				if gk then
-					tk = t[k];
-					-- no value on merger
-					if tk == nil then
-						-- app.PrintDebug(g.hash,"remove",k,gk,tk)
-						g[k] = nil;
-					elseif f and type(f) == "function" then
-						-- two different values with a compare function
-						-- app.PrintDebug(g.hash,"compare",k,gk,tk)
-						g[k] = f(gk, tk);
-						-- app.PrintDebug(g.hash,"result",g[k])
-					end
+	else
+		for k,v in pairs(t) do
+			MergeFuncByKey[k](g,k,v)
+		end
+	end
+	-- custom special logic for fields which need to represent the commonality between all Sources of a group
+	-- loop through specific fields for custom logic
+	-- initial creation of a g object, has no key
+	if not g.key then
+		for k,_ in pairs(app.SourceSpecificFields) do
+			g[k] = t[k];
+		end
+	else
+		local gk, tk;
+		for k,f in pairs(app.SourceSpecificFields) do
+			-- existing is set
+			gk = rawget(g, k)
+			-- app.PrintDebug("SSF",k,g,t,gk,rawget(t, k))
+			if gk then
+				tk = rawget(t, k)
+				-- no value on merger
+				if tk == nil then
+					-- app.PrintDebug(g.hash,"remove",k,gk,tk)
+					g[k] = nil;
+				elseif f and type(f) == "function" then
+					-- two different values with a compare function
+					-- app.PrintDebug(g.hash,"compare",k,gk,tk)
+					g[k] = f(gk, tk);
+					-- app.PrintDebug(g.hash,"result",g[k])
 				end
 			end
 		end
-		-- only copy metatable to g if another hasn't been set already
-		if not getmetatable(g) and getmetatable(t) then
-			setmetatable(g, getmetatable(t));
-		end
+	end
+	-- only copy metatable to g if another hasn't been set already
+	if not getmetatable(g) and getmetatable(t) then
+		setmetatable(g, getmetatable(t));
 	end
 end
 app.MergeProperties = MergeProperties;
+end -- Group Merge Handling
+
 -- The base logic for turning a Table of data into an 'object' that provides dynamic information concerning the type of object which was identified
 -- based on the priority of possible key values
 local function CreateObject(t, rootOnly)
@@ -4539,19 +4574,6 @@ app.AddContentTracking = function(group)
 	end
 end
 end
-local function SearchForMissingItemsRecursively(group, listing)
-	if group.visible then
-		if group.itemID and (group.collectible or (group.total and group.total > 0)) and not app.IsBoP(group) then
-			tinsert(listing, group);
-		end
-		if group.g and group.expanded then
-			-- Go through the sub groups and determine if any of them have a response.
-			for i, subgroup in ipairs(group.g) do
-				SearchForMissingItemsRecursively(subgroup, listing);
-			end
-		end
-	end
-end
 
 function app:CreateMiniListForGroup(group, forceFresh)
 	-- Criteria now show their Source Achievement properly
@@ -4765,7 +4787,7 @@ app.AddEventHandler("RowOnClick", function(self, button)
 				local isTSMOpen = TSM_API and TSM_API.IsUIVisible("AUCTION");
 				if isTSMOpen or (AuctionFrame and AuctionFrame:IsShown()) or (AuctionHouseFrame and AuctionHouseFrame:IsShown()) then
 					local missingItems = {};
-					SearchForMissingItemsRecursively(reference, missingItems);
+					app.Search.SearchForMissingItemsRecursively(reference, missingItems);
 					local count = #missingItems;
 					if count > 0 then
 						if isTSMOpen then

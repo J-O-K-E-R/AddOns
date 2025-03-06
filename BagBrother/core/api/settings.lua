@@ -13,38 +13,37 @@ end
 
 local FrameDefaults = {
 	enabled = true,
-	bagToggle = true, sort = true, search = true, options = true, 
-	money = true, broker = true,
-
 	strata = 'HIGH', alpha = 1, scale = Addon.FrameScale or 1,
 	color = {0, 0, 0, 0.5},
 	x = 0, y = 0,
 
-	hiddenBags = {}, lockedSlots = {},
-	itemScale = 1, spacing = 2, bagBreak = 1, breakSpace = 1.3,
-
+	bagToggle = true, sort = true, search = true, options = true, money = true, broker = true,
+	filters = AsArray({'all', 'reagent', 'consumable', 'armor', 'questitem', 'miscellaneous'}),
 	brokerObject = ADDON .. 'Launcher',
-	rules = AsArray({}),
+
+	itemScale = 1, spacing = 2, bagBreak = 1, breakSpace = 1.3,
+	hiddenBags = {}, lockedSlots = {}, serverSort = true,
 }
 
 local ProfileDefaults = {
 	inventory = Addon:SetDefaults({
 		borderColor = {1, 1, 1, 1},
-		deposit = true, currency = true,
+		filters = AsArray({'all', 'normal', 'trade'}),
+		currency = true,
 		point = 'BOTTOMRIGHT',
 		x = -50, y = 100,
+		width = 384, height = 200,
 		columns = 10,
-		width = 384,
-		height = 200,
 	}, FrameDefaults),
 
 	bank = Addon:SetDefaults({
 		borderColor = {1, 1, 0, 1},
+		filters = Addon.IsRetail and AsArray({'all', 'player', 'account'}),
 		columns = Addon.IsRetail and 22 or 14,
-		currency = true, serverSort = true,
+		deposit = true, currency = true,
+		sidebar = Addon.IsRetail,
+		width = 600, height = 500,
 		point = 'LEFT',
-		width = 600,
-		height = 500,
 		x = 95
 	}, FrameDefaults),
 
@@ -69,7 +68,7 @@ function Settings:OnEnable()
 	BrotherBags = BrotherBags or {}
 	Addon.sets = self:SetDefaults(_G[VAR] or {}, {
 		global = self:SetDefaults({}, ProfileDefaults),
-		profiles = {},
+		profiles = {}, customRules = {},
 
 		resetPlayer = true, flashFind = true,
 		countItems = true, countGuild = true, countCurrency = true, 

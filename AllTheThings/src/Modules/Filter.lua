@@ -100,8 +100,6 @@ local function FilterBind(group)
 	return group.b == 1;-- or group.b == 4;
 end
 api.Filters.Bind = FilterBind;
--- Used in a lot of places, need to keep for now
-app.IsBoP = FilterBind;
 local function FilterInGame(item)
 	return not item.u or item.u > 2;
 end

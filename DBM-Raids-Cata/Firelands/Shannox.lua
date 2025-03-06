@@ -3,10 +3,11 @@ local L		= mod:GetLocalizedStrings()
 --local Riplimb	= DBM:EJ_GetSectionInfo(2581)--Unused
 --local Rageface	= DBM:EJ_GetSectionInfo(2583)--Unused
 
-mod:SetRevision("20240905193641")
+mod:SetRevision("20250208214513")
 mod:SetCreatureID(53691)
 mod:SetEncounterID(1205)
 mod:SetUsedIcons(1, 2) -- cross(7) is hard to see in redish environment?
+mod:SetZone(720)
 --mod:SetModelSound("Sound\\Creature\\SHANNOX\\VO_FL_SHANNOX_SPAWN.ogg", "Sound\\Creature\\SHANNOX\\VO_FL_SHANNOX_KILL_04.ogg")
 --Long: Yes, I smell them too, Riplimb. Outsiders encroach on the Firelord's private grounds. Find their trail. Find them for me, that I may dispense punishment!
 --Short: Dog food!
@@ -59,7 +60,7 @@ local timerCrystalPrison		= mod:NewTargetTimer(10, 99837, nil, nil, nil, 5)--Dog
 local timerCrystalPrisonCD		= mod:NewCDTimer(25.5, 99836, nil, nil, nil, 3)--Seems consistent timing, other trap is not.
 local timerSpearCD				= mod:NewCDTimer(42, 100002, nil, nil, nil, 3)--Before riplimb dies
 local timerMagmaRuptureCD		= mod:NewCDTimer(15, 99840, nil, nil, nil, 2)--After riplimb dies
-local timerFaceRageCD			= mod:NewCDTimer(27, 99947, nil, false, nil, 3)--Has a 27-30 sec cd but off by default as it's subject to wild variation do to traps.
+local timerFaceRageCD			= mod:NewVarTimer("v27-30", 99947, nil, nil, nil, 3)--Has a 27-30 sec cd
 
 local berserkTimer				= mod:NewBerserkTimer(600)
 
@@ -207,7 +208,7 @@ end
 
 function mod:UNIT_DIED(args)
 	local cid = self:GetCIDFromGUID(args.destGUID)
-	if cid == 53694 then
+	if cid == 53694 then--Riplimb
 		timerSpearCD:Cancel()--Cancel it and replace it with other timer
 		timerMagmaRuptureCD:Start(10)
 		self.vb.ripLimbDead = true

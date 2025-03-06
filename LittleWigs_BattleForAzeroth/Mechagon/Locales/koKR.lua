@@ -23,7 +23,6 @@ if L then
 	L.rocket_tonk = "로켓 통통 로봇"
 	L.waste_processing_unit = "폐기물 처리 유닛"
 	--L.metal_gunk = "Metal Gunk"
-	L.living_waste = "살아 있는 폐기물"
 	--L.junkyard_d0g = "Junkyard D.0.G."
 	L.mechagon_tinkerer = "메카곤 땜장이"
 	L.anti_personnel_squirrel = "대인 다람쥐"
@@ -36,6 +35,11 @@ end
 L = BigWigs:NewBossLocale("Tussle Tonks", "koKR")
 if L then
 	-- L.warmup_trigger = "Now this is a statistical anomaly! Our visitors are still alive!"
+end
+
+L = BigWigs:NewBossLocale("K.U.-J.0.", "koKR")
+if L then
+	--L.safe = "Safe"
 end
 
 L = BigWigs:NewBossLocale("King Mechagon", "koKR")

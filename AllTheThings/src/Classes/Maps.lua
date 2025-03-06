@@ -955,7 +955,7 @@ app.CreateMap = app.CreateClass("Map", "mapID", {
 	end,
 	isMinilistHeader = function(t)
 		local mapinfo = C_Map_GetMapInfo(t.mapID)
-		local mapType = mapinfo.mapType or 0
+		local mapType = mapinfo and mapinfo.mapType or 0
 		local isHeader = mapType > 2
 		t.isMinilistHeader = isHeader
 		return isHeader

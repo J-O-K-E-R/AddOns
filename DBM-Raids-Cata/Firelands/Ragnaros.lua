@@ -1,12 +1,13 @@
 local mod	= DBM:NewMod(198, "DBM-Raids-Cata", 2, 78)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240923134941")
+mod:SetRevision("20241115112135")
 mod:SetCreatureID(52409)
 mod:SetEncounterID(1203)
 mod:SetHotfixNoticeRev(20200918000000)--2020, 09, 18
 mod:SetMinSyncRevision(20200918000000)--2020, 09, 18
 mod:SetUsedIcons(1, 2)
+mod:SetZone(720)
 --mod:SetModelSound("Sound\\Creature\\RAGNAROS\\VO_FL_RAGNAROS_AGGRO.ogg", "Sound\\Creature\\RAGNAROS\\VO_FL_RAGNAROS_KILL_03.ogg")
 --Long: blah blah blah (didn't feel like transcribing it)
 --Short: This is my realm
@@ -102,7 +103,6 @@ local timerDreadFlameCD		= mod:NewCDTimer(40, 100675, nil, false, nil, 5)--Off b
 
 local berserkTimer			= mod:NewBerserkTimer(1080)
 
-mod:AddRangeFrameOption("6/8")
 mod:AddSetIconOption("BlazingHeatIcons", 100460, true, 0, {1, 2})
 mod:AddBoolOption("InfoHealthFrame", "Healer")--Phase 1 info framefor low health detection.
 mod:AddBoolOption("AggroFrame", false)--Phase 2 info frame for seed aggro detection.
@@ -125,24 +125,7 @@ local elementalsGUID = {}
 local meteorWarned = false
 local dreadflame, meteorTarget, staffDebuff = DBM:GetSpellName(100675), DBM:GetSpellName(99849), DBM:GetSpellName(101109)
 
-local function showRangeFrame(self)
-	if DBM:UnitDebuff("player", staffDebuff) then return end--Staff debuff, don't change their range finder from 8.
-	if self.Options.RangeFrame then
-		if self:GetStage(1) and self:IsRanged() then
-			DBM.RangeCheck:Show(6)--For wrath of rag, only for ranged.
-		elseif self:GetStage(2) then
-			DBM.RangeCheck:Show(6)--For seeds
-		end
-	end
-end
-
-local function hideRangeFrame(self)
-	if DBM:UnitDebuff("player", staffDebuff) then return end--Staff debuff, don't hide it either.
-	if self.Options.RangeFrame then
-		DBM.RangeCheck:Hide()
-	end
-end
-
+---@param self DBMMod
 local function TransitionEnded(self)
 	timerPhaseSons:Stop()
 	timerLavaBoltCD:Stop()
@@ -163,7 +146,6 @@ local function TransitionEnded(self)
 			end
 		end
 		timerFlamesCD:Start()--Probably the only thing that's really consistent.
-		showRangeFrame(self)--Range 6 for seeds
 	elseif self:GetStage(3) then
 		timerSulfurasSmash:Start(15.5)--Also a variation.
 		timerFlamesCD:Start(30)
@@ -188,6 +170,10 @@ local function warnSeeds()
 	timerMoltenSeedCD:Start()
 end
 
+---@param self DBMMod
+---@param spellId number
+---@param spellName string
+---@param adjustedTime number
 local function splittingBlowCasting(self, spellId, spellName, adjustedTime)
 	self.vb.sonsLeft = self.vb.sonsLeft + 8
 	self:SetStage(0)
@@ -198,7 +184,6 @@ local function splittingBlowCasting(self, spellId, spellName, adjustedTime)
 	timerHandRagnaros:Stop()
 	timerWrathRagnaros:Stop()
 	timerFlamesCD:Stop()
-	hideRangeFrame(self)
 	timerPhaseSons:Stop()
 	if self:IsHeroic() then
 		timerPhaseSons:Start(60 - adjustedTime)--Longer on heroic
@@ -282,7 +267,6 @@ function mod:OnCombatStart(delay)
 	table.wipe(magmaTrapGUID)
 	table.wipe(elementalsGUID)
 	meteorWarned = false
-	showRangeFrame(self)
 	if not self:IsHeroic() then--register alternate kill detection, he only dies on heroic.
 		self:RegisterKill("yell", L.Defeat)
 	end
@@ -296,9 +280,6 @@ function mod:OnCombatStart(delay)
 end
 
 function mod:OnCombatEnd()
-	if self.Options.RangeFrame then
-		DBM.RangeCheck:Hide()
-	end
 	if self.Options.MeteorFrame or self.Options.InfoHealthFrame or self.Options.AggroFrame then
 		DBM.InfoFrame:Hide()
 	end
@@ -428,9 +409,6 @@ function mod:SPELL_CAST_SUCCESS(args)
 		warnCloudBurst:Show()
 	elseif spellId == 101110 then
 		warnRageRagnaros:Show(args.destName)
-		if self.Options.RangeFrame and args:IsPlayer() then
-			DBM.RangeCheck:Show(8)
-		end
 	end
 end
 

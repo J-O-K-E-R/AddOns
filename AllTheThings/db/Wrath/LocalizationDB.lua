@@ -608,6 +608,7 @@ localize(L.HEADER_NAMES, {
 	[-1000256] = "Starcraft II: Wings of Liberty",
 	[-1000263] = "iCoke",
 	[-1000264] =  AUCTION_CATEGORY_MISCELLANEOUS,
+	[-1000265] = SCROLL_OF_RESURRECTION,
 	[-1000266] = "Spirit of Competition",
 	[-1000267] = BATTLE_PET_SOURCE_9,
 	[-1000282] = select(1,GetCategoryInfo(162)),
@@ -654,6 +655,7 @@ localize(L.HEADER_DESCRIPTIONS, {
 	[-1000256] = "These rewards are available to anyone who purchased the Collector's Edition for Starcraft II: Wings of Liberty.",
 	[-1000263] = "These were only available through the 2006 iCoke Promotion (China Only)",
 	[-1000264] = "This section is for miscellaneous promotions that took place in the real world or something to do with account management.",
+	[-1000265] = "The following item sets were implemented as boosted character rewards for recipients of the Scroll of Resurrection.\n\nThey were later added to vendors in Mount Hyjal and Vash'jir once the Scroll of Resurrection Service was retired.",
 	[-1000266] = "This is a Battlegrounds-based event that coincides with the beginning of the Summer Olympic games. The only time this was celebrated was in 2008 to correspond to the Beijing Olympics, and although there appeared to be the intention to repeat this event, it never returned.",
 	[-1000284] = "This is a yearly recurring event that occurs between the beginning of November and the end of the year.",
 	[-1000380] = "This list contains Unobtainable items that the ATT Discord has reported as bugs that Blizzard has yet to fix.\n\nNOTE: All filters are ignored within this list for visibility. Only items removed from the game due to negligence rather than a gigantic fire breathing dragon are present on this list.\n\nTo Blizzard Devs: Please fix the items and encounters listed below.",
@@ -806,6 +808,7 @@ localize(L.HEADER_ICONS, {
 	[-1000256] = 254885,
 	[-1000263] = 132797,
 	[-1000264] = 135999,
+	[-1000265] = _.asset("promotion_scroll_of_rez"),
 	[-1000266] = 133278,
 	[-1000267] = 134493,
 	[-1000282] = _.asset("holiday_brewfest"),
@@ -856,7 +859,7 @@ localize(L.EVENT_REMAPPING, {
 
 -- Programmatic Event Scheduling
 _.Modules.Events.SetEventInformation(446916, {
-	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=1,["monthDay"]=14,["weekday"]=3,["year"]=2025},{["hour"]=0,["minute"]=0,["month"]=2,["monthDay"]=18,["weekday"]=3,["year"]=2025})
+	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=1,["monthDay"]=14,["weekday"]=3,["year"]=2025},{["hour"]=0,["minute"]=0,["month"]=2,["monthDay"]=26,["weekday"]=4,["year"]=2025})
 });
 _.Modules.Events.SetEventInformation(1262, {
 	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=11,["monthDay"]=6,["weekday"]=1,["year"]=2022},{["hour"]=0,["minute"]=0,["month"]=11,["monthDay"]=27,["weekday"]=1,["year"]=2022})
@@ -13701,7 +13704,7 @@ localize(L.HEADER_NAMES, {
 	[-1000135] = select(2,GetAchievementInfo(4599)).."：第8赛季",
 	[-1000140] = "精锐装备",
 	[-1000141] = "角斗士装备",
-	[-1000142] = "荣誉头衔",
+	[-1000142] = HONOR .. PAPERDOLL_SIDEBAR_TITLES,
 	[-1000162] = "共享外观",
 	[-1000163] = "独特外观",
 	[-1000165] = "T0.5套装",
@@ -14902,7 +14905,6 @@ localize(L.HEADER_NAMES, {
 	[-1000135] = select(2,GetAchievementInfo(4599)).."：第8賽季",
 	[-1000140] = "精英裝備",
 	[-1000141] = "鬥士裝備",
-	[-1000142] = "榮譽頭銜",
 	[-1000162] = "共享外觀",
 	[-1000163] = "獨特外觀",
 	[-1000165] = "T0.5套裝",

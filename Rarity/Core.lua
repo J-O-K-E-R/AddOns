@@ -5,7 +5,6 @@ local R = Rarity
 local lbz = LibStub("LibBabble-Zone-3.0"):GetUnstrictLookupTable()
 local lbsz = LibStub("LibBabble-SubZone-3.0"):GetUnstrictLookupTable()
 local lbb = LibStub("LibBabble-Boss-3.0"):GetUnstrictLookupTable()
-local hbd = LibStub("HereBeDragons-2.0")
 
 ---
 
@@ -443,34 +442,6 @@ function R:tcopy(to, from)
 	end
 end
 
--- Location/Distance/Zone
-function R:GetDistanceToItem(item)
-	local distance = 999999999
-	if item and type(item) == "table" and item.coords and type(item.coords) == "table" then
-		local playerWorldX, playerWorldY, instance = hbd:GetPlayerWorldPosition()
-		for k, v in pairs(item.coords) do
-			if v and type(v) == "table" and v.m and v.i ~= true then
-				local map = v.m
-				local x = (v.x or 50) / 100
-				local y = (v.y or 50) / 100
-				local itemWorldX, itemWorldY = hbd:GetWorldCoordinatesFromZone(x, y, map, v.f or 1)
-				if itemWorldX ~= nil then -- Library returns nil for instances
-					local thisDistance =
-						hbd:GetWorldDistance(instance, itemWorldX, itemWorldY, playerWorldX, playerWorldY)
-					-- R:Print("map: "..map..", x: "..x..", y: "..y..", itemWorldX: "..itemWorldX..", itemWorldY: "..itemWorldY..", playerWorldX: "..playerWorldX..", playerWorldY: "..playerWorldY..", thisDistance: "..thisDistance)
-					if thisDistance < distance then
-						distance = thisDistance
-					end
-				end
-			end
-		end
-	end
-	if distance ~= 999999999 then
-		return distance
-	end
-	return nil
-end
-
 -- Prepares a set of lookup tables to let us quickly determine if we're interested in various things.
 -- Many of the events we handle fire quite frequently, so speed is of the essence.
 -- Any item that is not enabled for tracking won't show up in these lists.
@@ -679,35 +650,36 @@ function R:IsAttemptAllowed(item)
 		Rarity:Debug(format("Attempts for item %s are disallowed (not a required dungeon: %d)", item.name, dungeonID))
 		return false
 	end
+	if LE_EXPANSION_LEVEL_CURRENT >= LE_EXPANSION_SHADOWLANDS then
+		local activeCovenantID = C_Covenants.GetActiveCovenantID()
+		if item.requiresCovenant and item.requiredCovenantID and activeCovenantID ~= item.requiredCovenantID then
+			local activeCovenantData = C_Covenants.GetCovenantData(activeCovenantID)
+			local requiredCovenantData = C_Covenants.GetCovenantData(item.requiredCovenantID)
 
-	local activeCovenantID = C_Covenants.GetActiveCovenantID()
-	if item.requiresCovenant and item.requiredCovenantID and activeCovenantID ~= item.requiredCovenantID then
-		local activeCovenantData = C_Covenants.GetCovenantData(activeCovenantID)
-		local requiredCovenantData = C_Covenants.GetCovenantData(item.requiredCovenantID)
+			if not activeCovenantData then
+				Rarity:Debug(
+					format(
+						"Attempts for item %s are disallowed (Covenant %d/%s is required, but none is currently active)",
+						item.name,
+						item.requiredCovenantID,
+						requiredCovenantData.name
+					)
+				)
+				return false
+			end
 
-		if not activeCovenantData then
 			Rarity:Debug(
 				format(
-					"Attempts for item %s are disallowed (Covenant %d/%s is required, but none is currently active)",
+					"Attempts for item %s are disallowed (Covenant %d/%s is required, but active covenant is %d/%s)",
 					item.name,
 					item.requiredCovenantID,
-					requiredCovenantData.name
+					requiredCovenantData.name,
+					activeCovenantID,
+					activeCovenantData.name
 				)
 			)
 			return false
 		end
-
-		Rarity:Debug(
-			format(
-				"Attempts for item %s are disallowed (Covenant %d/%s is required, but active covenant is %d/%s)",
-				item.name,
-				item.requiredCovenantID,
-				requiredCovenantData.name,
-				activeCovenantID,
-				activeCovenantData.name
-			)
-		)
-		return false
 	end
 
 	-- If any prerequisite quests exist, check if they are all completed

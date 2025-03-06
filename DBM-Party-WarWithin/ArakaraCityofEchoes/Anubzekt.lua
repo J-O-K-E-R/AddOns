@@ -1,11 +1,12 @@
 local mod	= DBM:NewMod(2584, "DBM-Party-WarWithin", 6, 1271)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20241009083038")
+mod:SetRevision("20241214213130")
 mod:SetCreatureID(215405)
 mod:SetEncounterID(2906)
 mod:SetHotfixNoticeRev(20240817000000)
 mod:SetMinSyncRevision(20240817000000)
+mod:SetZone(2660)
 --mod.respawnTime = 29
 mod.sendMainBossGUID = true
 
@@ -61,16 +62,16 @@ local allTimers = {
 	--Initial set
 	[1] = {
 		--Impale
-		[435012] = {4.8, 13.5, 4.6},--Includes the Burrow Charge Impale
+		[435012] = {4.8, 12.2, 4.6},--Includes the Burrow Charge Impale
 		--Infestation
-		[433740] = {0, 10.0, 10.8},--Can queue up to 13, usually 3rd cast is 12.2 but can also be lower
+		[433740] = {0.000001, 10.0, 10.8},--Can queue up to 13, usually 3rd cast is 12.2 but can also be lower
 	},
 	--2nd set and beyond
 	[2] = {
 		--Impale
 		[435012] = {5.3, 14.7, 4.6, 14.5},--Includes the Burrow Charge Impale
 		--Infestation
-		[433740] = {0, 10.9, 10.8, 10.8},--Can queue up to 13, usually 3rd cast is 12.2 but can also be lower
+		[433740] = {0.000001, 10.9, 10.8, 10.8},--Can queue up to 13, usually 3rd cast is 12.2 but can also be lower
 	}
 }
 

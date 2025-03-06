@@ -12,7 +12,7 @@ local strfind = string.find
 -- Generate our version variables
 --
 
-local BIGWIGS_VERSION = 372
+local BIGWIGS_VERSION = 373
 local BIGWIGS_RELEASE_STRING, BIGWIGS_VERSION_STRING
 local versionQueryString, versionResponseString = "Q^%d^%s^%d^%s", "V^%d^%s^%d^%s"
 local customGuildName = false
@@ -24,6 +24,7 @@ do
 	local _, tbl = ...
 	tbl.loaderPublic = public
 	tbl.loaderPrivate = mod
+	tbl.version = BIGWIGS_VERSION
 	public.isRetail = tbl.isRetail
 	public.isClassic = tbl.isClassic
 	public.isVanilla = tbl.isVanilla
@@ -40,7 +41,7 @@ do
 	local ALPHA = "ALPHA"
 
 	local releaseType
-	local myGitHash = "6b996a4" -- The ZIP packager will replace this with the Git hash.
+	local myGitHash = "6d2bf4b" -- The ZIP packager will replace this with the Git hash.
 	local releaseString
 	--[=[@alpha@
 	-- The following code will only be present in alpha ZIPs.
@@ -53,6 +54,7 @@ do
 		releaseType = REPO
 		public.usingBigWigsRepo = true
 	end
+	tbl.versionHash = myGitHash
 
 	if releaseType == REPO then
 		releaseString = L.sourceCheckout:format(BIGWIGS_VERSION)
@@ -132,6 +134,7 @@ public.isTestBuild = GetCurrentRegion() == 72 or GetCurrentRegion() == 90 -- PTR
 do
 	local _, _, _, build = GetBuildInfo()
 	public.isBeta = build >= 120000
+	public.isNext = build >= 110105
 end
 
 -- Version
@@ -264,7 +267,7 @@ do
 			},
 			zones = {
 				[2657] = "BigWigs_NerubarPalace",
-				[2769] = public.isTestBuild and "BigWigs_LiberationOfUndermine" or nil,
+				[2769] = "BigWigs_LiberationOfUndermine",
 			}
 		}
 	end
@@ -422,7 +425,7 @@ do
 		[939] = lw_cata, -- Well of Eternity
 		[940] = lw_cata, -- Hour of Twilight
 		[657] = lw_cata, -- The Vortex Pinnacle
-		[670] = public.isRetail and not public.isTestBuild and {lw_cata, lw_cs} or lw_cata, -- Grim Batol
+		[670] = lw_cata, -- Grim Batol
 		--[[ LittleWigs: Mists of Pandaria ]]--
 		[959] = lw_mop, -- Shado-Pan Monastery
 		[960] = lw_mop, -- Temple of the Jade Serpent
@@ -463,24 +466,24 @@ do
 		[1754] = lw_bfa, -- Freehold
 		[1762] = lw_bfa, -- King's Rest
 		[1864] = lw_bfa, -- Shrine of the Storm
-		[1822] = public.isRetail and not public.isTestBuild and {lw_bfa, lw_cs} or lw_bfa, -- Siege of Boralus
+		[1822] = lw_bfa, -- Siege of Boralus
 		[1877] = lw_bfa, -- Temple of Sethraliss
-		[1594] = public.isTestBuild and {lw_bfa, lw_cs} or lw_bfa, -- The Motherlode!!
+		[1594] = public.isRetail and {lw_bfa, lw_cs} or lw_bfa, -- The Motherlode!!
 		[1771] = lw_bfa, -- Tol Dagor
 		[1841] = lw_bfa, -- Underrot
 		[1862] = lw_bfa, -- Waycrest Manor
-		[2097] = public.isTestBuild and {lw_bfa, lw_cs} or lw_bfa, -- Operation: Mechagon
+		[2097] = public.isRetail and {lw_bfa, lw_cs} or lw_bfa, -- Operation: Mechagon
 		[2212] = lw_bfa, -- Horrific Vision of Orgrimmar
 		[2213] = lw_bfa, -- Horrific Vision of Stormwind
 		--[[ LittleWigs: Shadowlands ]]--
 		[2284] = lw_s, -- Sanguine Depths
 		[2285] = lw_s, -- Spires of Ascension
-		[2286] = public.isRetail and not public.isTestBuild and {lw_s, lw_cs} or lw_s, -- The Necrotic Wake
+		[2286] = lw_s, -- The Necrotic Wake
 		[2287] = lw_s, -- Halls of Atonement
 		[2289] = lw_s, -- Plaguefall
-		[2290] = public.isRetail and not public.isTestBuild and {lw_s, lw_cs} or lw_s, -- Mists of Tirna Scithe
+		[2290] = lw_s, -- Mists of Tirna Scithe
 		[2291] = lw_s, -- De Other Side
-		[2293] = public.isTestBuild and {lw_s, lw_cs} or lw_s, -- Theater of Pain
+		[2293] = public.isRetail and {lw_s, lw_cs} or lw_s, -- Theater of Pain
 		[2441] = lw_s, -- Tazavesh, the Veiled Market
 		--[[ LittleWigs: Dragonflight ]]--
 		[2451] = lw_df, -- Uldaman: Legacy of Tyr
@@ -493,16 +496,16 @@ do
 		[2527] = lw_df, -- Halls of Infusion
 		[2579] = lw_df, -- Dawn of the Infinite
 		--[[ LittleWigs: The War Within ]]--
-		[2648] = public.isTestBuild and {lw_tww, lw_cs} or lw_tww, -- The Rookery
-		[2649] = public.isTestBuild and {lw_tww, lw_cs} or lw_tww, -- Priory of the Sacred Flame
-		[2651] = public.isTestBuild and {lw_tww, lw_cs} or lw_tww, -- Darkflame Cleft
-		[2652] = public.isRetail and not public.isTestBuild and {lw_tww, lw_cs} or lw_tww, -- The Stonevault
-		[2660] = public.isRetail and not public.isTestBuild and {lw_tww, lw_cs} or lw_tww, -- Ara-Kara, City of Echoes
-		[2661] = public.isTestBuild and {lw_tww, lw_cs} or lw_tww, -- Cinderbrew Meadery
-		[2662] = public.isRetail and not public.isTestBuild and {lw_tww, lw_cs} or lw_tww, -- The Dawnbreaker
-		[2669] = public.isRetail and not public.isTestBuild and {lw_tww, lw_cs} or lw_tww, -- City of Threads
+		[2648] = public.isRetail and {lw_tww, lw_cs} or lw_tww, -- The Rookery
+		[2649] = public.isRetail and {lw_tww, lw_cs} or lw_tww, -- Priory of the Sacred Flame
+		[2651] = public.isRetail and {lw_tww, lw_cs} or lw_tww, -- Darkflame Cleft
+		[2652] = lw_tww, -- The Stonevault
+		[2660] = lw_tww, -- Ara-Kara, City of Echoes
+		[2661] = public.isRetail and {lw_tww, lw_cs} or lw_tww, -- Cinderbrew Meadery
+		[2662] = lw_tww, -- The Dawnbreaker
+		[2669] = lw_tww, -- City of Threads
 		[2710] = lw_tww, -- Awakening the Machine
-		[2773] = public.isTestBuild and {lw_tww, lw_cs} or lw_tww, -- Operation: Floodgate
+		[2773] = public.isRetail and {lw_tww, lw_cs} or lw_tww, -- Operation: Floodgate
 		--[[ LittleWigs: Delves ]]--
 		[2664] = lw_delves, -- Fungal Folly
 		[2679] = lw_delves, -- Mycomancer Cavern
@@ -1479,9 +1482,9 @@ end
 --
 
 do
-	local DBMdotRevision = "20250208184718" -- The changing version of the local client, changes with every new zip using the project-date-integer packager replacement.
-	local DBMdotDisplayVersion = "11.1.4" -- "N.N.N" for a release and "N.N.N alpha" for the alpha duration.
-	local DBMdotReleaseRevision = "20250208000000" -- Hardcoded time, manually changed every release, they use it to track the highest release version, a new DBM release is the only time it will change.
+	local DBMdotRevision = "20250304170728" -- The changing version of the local client, changes with every new zip using the project-date-integer packager replacement.
+	local DBMdotDisplayVersion = "11.1.6" -- "N.N.N" for a release and "N.N.N alpha" for the alpha duration.
+	local DBMdotReleaseRevision = "20250304000000" -- Hardcoded time, manually changed every release, they use it to track the highest release version, a new DBM release is the only time it will change.
 	local protocol = 3
 	local versionPrefix = "V"
 	local PForceDisable = 16
@@ -1750,12 +1753,6 @@ do
 		if type(zoneAddon) == "table" then
 			-- default to the expansion addon for current season modules
 			zoneAddon = zoneAddon[1]
-			if enableZones[id] and not BigWigsTempNameplates then -- XXX temp
-				BigWigsTempNameplates = true
-				CTimerAfter(1, function() sysprint(L.tempNPMsg) end)
-				RaidNotice_AddMessage(RaidWarningFrame, "BigWigs: ".. L.tempNPMsg, {r=1,g=1,b=1}, 10)
-				Popup("BigWigs: ".. L.tempNPMsg)
-			end
 		end
 		if zoneAddon and id > 0 and not fakeZones[id] and not warnedThisZone[id] then
 			if public.usingBigWigsRepo and public.currentExpansion.bigWigsBundled[zoneAddon] then return end -- If we are a BW Git user, then bundled content can't be missing, so return

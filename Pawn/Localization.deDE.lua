@@ -1,6 +1,6 @@
 ﻿-- Pawn by Vger-Azjol-Nerub
 -- www.vgermods.com
--- © 2006-2024 Travis Spomer.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
+-- © 2006-2025 Travis Spomer.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
 -- See Readme.htm for more information.
 
 --
@@ -535,6 +535,7 @@ PawnLocal.TooltipParsing = {
 	["EnchantmentPyriumWeaponChain"] = "^Pyriumwaffenkette$",
 	["EnchantmentTitaniumWeaponChain"] = "^Titanwaffenkette$",
 	["Equip"] = "Anlegen:",
+	["ExpertiseClassic"] = "^Anlegen: Verringert die Chance, dass Eure Angriffe pariert werden oder ihnen ausgewichen wird, um #%%%.$",
 	["ExpertiseRating"] = "^Anlegen: Erhöht Eure Waffenkundewertung um #%.$",
 	["ExpertiseRatingShort"] = "^%+?# Waffenkundewertung$",
 	["FeralAp"] = "^Anlegen: %+# Angriffskraft in Katzengestalt, Bärengestalt oder Terrorbärengestalt%.$",
@@ -553,6 +554,7 @@ PawnLocal.TooltipParsing = {
 	["Gun"] = "^Schusswaffe$",
 	["Haste"] = "^%+?# Tempo$",
 	["Haste2"] = "^UNUSED$",
+	["HasteClassic"] = "^Anlegen: Erhöht Eurer Angriffstempo um #%%%.$",
 	["HasteRating"] = "^Anlegen: Erhöht die Tempowertung um #%.$",
 	["HasteRating2"] = "^UNUSED$",
 	["HasteRatingShort"] = "^%+?# Tempowertung$",
@@ -648,6 +650,7 @@ PawnLocal.TooltipParsing = {
 	["SpellDamageAndHealingEnchant"] = "^%+# Heilung %+# Zauberschaden$",
 	["SpellDamageAndHealingShort"] = "^%+# Heilzauber und %+# Schadenszauber$",
 	["SpellDamageAndHealingShort2"] = "^UNUSED$",
+	["SpellHasteClassic"] = "^Anlegen: Erhöht das Zaubertempo Eurer nicht kanalisierten Zauber um #%%%.$",
 	["SpellHasteRating"] = "^Anlegen: Erhöht d?i?e?E?u?r?e? Zaubertempowertung um #%.$",
 	["SpellHasteRatingShort"] = "^%+?# Zaubertempowertung$",
 	["SpellHit"] = "^Anlegen: Erhöht Eure Chance mit Zaubern zu treffen um #%%%.$",

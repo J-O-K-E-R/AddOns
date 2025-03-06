@@ -18,7 +18,7 @@ else
 	mod.statTypes = "normal"
 end
 
-mod:SetRevision("20241009231849")
+mod:SetRevision("20241214045434")
 mod:SetCreatureID(11583)
 mod:SetEncounterID(617)
 if not mod:IsClassic() then
@@ -28,6 +28,7 @@ mod:RegisterCombat("combat_yell", L.YellP1)--ENCOUNTER_START appears to fire whe
 mod:SetWipeTime(50)--guesswork
 mod:SetHotfixNoticeRev(20200310000000)--2020, Mar, 10th
 mod:SetMinSyncRevision(20200310000000)--2020, Mar, 10th
+mod:SetZone(469)
 
 mod:RegisterEvents(
 	"CHAT_MSG_MONSTER_YELL"
@@ -53,7 +54,7 @@ local specwarnClassCall		= mod:NewSpecialWarning("specwarnClassCall", nil, nil, 
 
 local timerPhase			= mod:NewStageTimer(15)
 local timerClassCall		= mod:NewTimer(30, "TimerClassCall", "136116", nil, nil, 5)
-local timerFearNext			= mod:NewCDTimer(26.7, 22686, nil, nil, nil, 2)--26-42.5
+local timerFearNext			= mod:NewVarTimer("v26.7-42.5", 22686, nil, nil, nil, 2)--26-42.5
 
 mod.vb.addLeft = 42
 local addsGuidCheck = {}

@@ -1,5 +1,5 @@
-local VERSION_TEXT = "v1.6.2";
-local VERSION_DATE = 1740400000;
+local VERSION_TEXT = "v1.6.4";
+local VERSION_DATE = 1741000000;
 
 
 local addonName, addon = ...
@@ -7,6 +7,8 @@ local addonName, addon = ...
 local L = {};       --Locale
 local API = {};     --Custom APIs used by this addon
 local DB;
+
+PlumberGlobals = {};
 
 addon.L = L;
 addon.API = API;
@@ -116,6 +118,8 @@ local DefaultValues = {
     Plunderstore = true,
         Plunderstore_HideCollected = true,
     BlizzardSuperTrack = false,         --Add timer to the SuperTrackedFrame when tracking a POI with time format
+    ProfessionsBook = true,             --Show unspent points on ProfessionsBookFrame
+    TooltipProfessionKnowledge = true,  --Show unspent points on GameTooltip
 
 
     --Custom Loot Window
@@ -169,6 +173,7 @@ local DefaultValues = {
         SpellFlyout_CloseAfterClick = true,
         SpellFlyout_SingleRow = false,
         SpellFlyout_HideUnusable = false,
+        SpellFlyout_UpdateFrequently = false,
 
 
     EnableNewByDefault = false,             --Always enable newly added features

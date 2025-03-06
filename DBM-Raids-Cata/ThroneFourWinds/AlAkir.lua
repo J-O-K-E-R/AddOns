@@ -1,10 +1,11 @@
 local mod	= DBM:NewMod(155, "DBM-Raids-Cata", 3, 75)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240616044344")
+mod:SetRevision("20250208214513")
 mod:SetCreatureID(46753)
 mod:SetEncounterID(1034)
 mod:SetUsedIcons(8)
+mod:SetZone(754)
 
 mod:RegisterCombat("combat")
 
@@ -36,7 +37,7 @@ local specWarnLightningRod	= mod:NewSpecialWarningMoveAway(89668, nil, nil, nil,
 local yellLightningRod		= mod:NewYell(89668)
 
 local timerWindBurst		= mod:NewCastTimer(5, 87770, nil, nil, nil, 2)
-local timerWindBurstCD		= mod:NewCDTimer(25, 87770, nil, nil, nil, 2)		-- 25-30 Variation
+local timerWindBurstCD		= mod:NewVarTimer("v25-30", 87770, nil, nil, nil, 2)		-- 25-30 Variation
 local timerAddCD			= mod:NewCDTimer(20, 88272, nil, nil, nil, 1)
 local timerFeedback			= mod:NewTimer(20, "TimerFeedback", 87904, nil, nil, 5, DBM_COMMON_L.DAMAGE_ICON)
 local timerAcidRainStack	= mod:NewNextTimer(15, 88301, nil, isDKorPaly, nil, 5)
@@ -48,8 +49,7 @@ local timerSquallLineCD		= mod:NewCDTimer(20, 91129, nil, nil, nil, 3, nil, DBM_
 
 local berserkTimer			= mod:NewBerserkTimer(600)
 
-mod:AddBoolOption("LightningRodIcon")
-mod:AddBoolOption("RangeFrame", true)
+mod:AddSetIconOption("LightningRodIcon", 89668, true, 0, {8})
 
 mod.vb.phase2Started = false
 
@@ -77,9 +77,6 @@ function mod:OnCombatStart(delay)
 end
 
 function mod:OnCombatEnd()
-	if self.Options.RangeFrame then
-		DBM.RangeCheck:Hide()
-	end
 	self:UnregisterShortTermEvents()
 end
 
@@ -117,9 +114,6 @@ function mod:SPELL_AURA_APPLIED(args)
 			specWarnLightningRod:Show()
 			specWarnLightningRod:Play("runout")
 			yellLightningRod:Yell()
-			if self.Options.RangeFrame then
-				DBM.RangeCheck:Show(20)
-			end
 		end
 		if self.Options.LightningRodIcon then
 			self:SetIcon(args.destName, 8, 5)
@@ -135,9 +129,6 @@ function mod:SPELL_AURA_REMOVED(args)
 			self:SetIcon(args.destName, 0)
 		end
 		if args:IsPlayer() then
-			if self.Options.RangeFrame then
-				DBM.RangeCheck:Hide()
-			end
 		end
 	end
 end

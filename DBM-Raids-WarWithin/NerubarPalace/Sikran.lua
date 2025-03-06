@@ -1,12 +1,12 @@
-local mod	= DBM:NewMod(2599, "DBM-Raids-WarWithin", 1, 1273)
+local mod	= DBM:NewMod(2599, "DBM-Raids-WarWithin", 2, 1273)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240921150333")
+mod:SetRevision("20250209023836")
 mod:SetCreatureID(214503)
 mod:SetEncounterID(2898)
---mod:SetUsedIcons(1, 2, 3)
 mod:SetHotfixNoticeRev(20240921000000)
 mod:SetMinSyncRevision(20240921000000)
+mod:SetZone(2657)
 mod.respawnTime = 29
 
 mod:RegisterCombat("combat")
@@ -16,13 +16,11 @@ mod.disableHealthCombat = true--^^
 mod:RegisterEventsInCombat(
 	"SPELL_CAST_START 456420 435401 432965 435403 439559 453258 442428",
 	"SPELL_CAST_SUCCESS 439559 453258 433475",
-	"SPELL_AURA_APPLIED 459273 438845 435410 439191",--433517
+	"SPELL_AURA_APPLIED 459273 438845 435410 439191 459785",--433517
 	"SPELL_AURA_APPLIED_DOSE 459273 438845",
-	"SPELL_AURA_REMOVED 459273 439191"--433517
---	"SPELL_PERIODIC_DAMAGE",
---	"SPELL_PERIODIC_MISSED",
---	"CHAT_MSG_RAID_BOSS_WHISPER",
---	"UNIT_SPELLCAST_SUCCEEDED boss1"
+	"SPELL_AURA_REMOVED 459273 439191",--433517
+	"SPELL_PERIODIC_DAMAGE 459785",
+	"SPELL_PERIODIC_MISSED 459785"
 )
 
 --TODO, GTFO for rain of arrows with correct ID
@@ -42,13 +40,7 @@ local specWarnExpose							= mod:NewSpecialWarningDefensive(435401, nil, nil, ni
 local specWarnPhaseLunge						= mod:NewSpecialWarningDefensive(435403, nil, nil, nil, 1, 2)
 local specWarnExposedWeakness					= mod:NewSpecialWarningTaunt(438845, nil, nil, nil, 1, 2)
 local specWarnPiercedDefenses					= mod:NewSpecialWarningTaunt(435410, nil, nil, nil, 1, 2)
---local specWarnPhaseBlades						= mod:NewSpecialWarningYou(433517, nil, nil, nil, 1, 2)
---local yellPhaseBlades							= mod:NewPosYell(433517)
---local yellPhaseBladesFades					= mod:NewIconFadesYell(433517)
---local specWarnDecimate						= mod:NewSpecialWarningYou(442428, nil, nil, nil, 1, 2)
---local yellDecimate							= mod:NewShortYell(442428)
---local yellDecimateFades						= mod:NewShortFadesYell(442428)
---local specWarnGTFO							= mod:NewSpecialWarningGTFO(421532, nil, nil, nil, 1, 8)
+local specWarnGTFO								= mod:NewSpecialWarningGTFO(459785, nil, nil, nil, 1, 8)
 
 local timerShatteringSweepCD					= mod:NewCDCountTimer(97.3, 456420, 394017, nil, nil, 2)--Shortname "Sweep"
 local timerCosmicShards							= mod:NewBuffFadesTimer(6, 459273, nil, nil, nil, 5)
@@ -57,9 +49,6 @@ local timerPhaseBladesCD						= mod:NewCDCountTimer(42.6, 433517, 100, nil, nil,
 local timerRainofArrowsCD						= mod:NewCDCountTimer(52.3, 439559, nil, nil, nil, 3)
 local timerDecimateCD							= mod:NewCDCountTimer(38.1, 442428, nil, nil, nil, 3)
 
---mod:AddInfoFrameOption(407919, true)
---mod:AddSetIconOption("SetIconOnPhaseBlades", 433517, true, 0, {1, 2, 3, 4})
---mod:AddSetIconOption("SetIconOnDecimate", 442428, true, 0, {1, 2, 3})
 mod:AddPrivateAuraSoundOption(433517, true, 433517, 1)--Phase Blades
 mod:AddPrivateAuraSoundOption(439191, true, 442428, 1)--Decimate
 
@@ -70,8 +59,6 @@ mod.vb.bladesCount = 0
 mod.vb.arrowsCount = 0
 mod.vb.arrowsTrackedCount = 0--Because count changes before and after sweep, and since BW doesn't reset timer counts, we have to track a separate variable
 mod.vb.decimateCount = 0
---mod.vb.bladesIcon = 1
---mod.vb.decimateIcon = 1
 
 function mod:OnCombatStart(delay)
 	self.vb.sweepCount = 0
@@ -83,7 +70,7 @@ function mod:OnCombatStart(delay)
 	self.vb.decimateCount = 0
 	timerCaptainsFlourishCD:Start(6-delay, 1)
 	if self:IsMythic() then
-		timerPhaseBladesCD:Start(12.4-delay, 1)
+		timerPhaseBladesCD:Start(12.1-delay, 1)
 		timerRainofArrowsCD:Start(22.2-delay, 1)
 		timerDecimateCD:Start(50.8-delay, 1)
 	else--Confirmed heroic and normal
@@ -104,11 +91,7 @@ function mod:SPELL_CAST_START(args)
 		specWarnShatteringSweep:Play("justrun")
 		timerShatteringSweepCD:Start(nil, self.vb.sweepCount+1)
 		--Restart timers
-		--self.vb.tankCombo = 0
-		--self.vb.bladesCount = 0
-		--self.vb.arrowsCount = 0
 		self.vb.arrowsTrackedCount = 0
-		--self.vb.decimateCount = 0
 		timerCaptainsFlourishCD:Start(10.7, self.vb.tankCombo+1)--10.7-12.3 (likely travel time affected after sweep)
 		timerPhaseBladesCD:Start(19.3, self.vb.bladesCount+1)
 		timerRainofArrowsCD:Start(self:IsMythic() and 19.5 or 39.7, self.vb.arrowsCount+1)
@@ -116,7 +99,6 @@ function mod:SPELL_CAST_START(args)
 	elseif spellId == 435401 or spellId == 432965 then--Second cast / First cast
 		if spellId == 432965 then
 			--First part of Combo
-			--self.vb.firstHitTank = ""
 			self.vb.tankCombo = self.vb.tankCombo + 1
 			self.vb.comboCount = 0
 			if self.vb.tankCombo % 4 ~= 0 then
@@ -156,7 +138,7 @@ function mod:SPELL_CAST_START(args)
 			--prior to first sweep only 2 casts and 2nd delayed
 			--After it's always 3 casts
 			if self.vb.arrowsTrackedCount == 1 then
-				timerRainofArrowsCD:Start(self.vb.sweepCount == 0 and 40.2 or 27.9, self.vb.arrowsCount+1)
+				timerRainofArrowsCD:Start(self.vb.sweepCount == 0 and 40.1 or 27.9, self.vb.arrowsCount+1)
 			elseif self.vb.arrowsTrackedCount == 2 and self.vb.sweepCount > 0 then
 				timerRainofArrowsCD:Start(27.9, self.vb.arrowsCount+1)
 			end
@@ -168,7 +150,6 @@ function mod:SPELL_CAST_START(args)
 	elseif spellId == 442428 then
 		self.vb.decimateCount = self.vb.decimateCount + 1
 		warnDecimate:Show(self.vb.decimateCount)
-		--self.vb.decimateIcon = 1
 		if self.vb.decimateCount % 2 == 1 then
 			--26.1 before sweep, 28 after? (mythic). need more data, it's just an assumption atm
 			timerDecimateCD:Start(self:IsMythic() and (self.vb.sweepCount == 0 and 26.1 or 27.1) or 39.5, self.vb.decimateCount+1)
@@ -186,7 +167,6 @@ function mod:SPELL_CAST_SUCCESS(args)
 		if self:AntiSpam(10, 2) then
 			self.vb.bladesCount = self.vb.bladesCount + 1
 			warnPhaseBlades:Show(self.vb.bladesCount)
-			--self.vb.bladesIcon = 1
 			if self:IsMythic() then
 				if self.vb.bladesCount % 3 ~= 0 then
 					--Mythic consistently same before and after sweep, within the standard variation of ~28
@@ -215,36 +195,9 @@ function mod:SPELL_AURA_APPLIED(args)
 			specWarnExposedWeakness:Show(args.destName)
 			specWarnExposedWeakness:Play("tauntboss")
 		end
-	--elseif spellId == 433517 then
-	--	if self:AntiSpam(10, 2) then--Backup
-	--		self.vb.bladesCount = self.vb.bladesCount + 1
-	--		self.vb.bladesIcon = 1
-	--		if self:IsMythic() then
-	--			if self.vb.bladesCount < 3 then
-	--				--Mythic consistently same before and after sweep, within the standard variation of ~28
-	--				timerPhaseBladesCD:Start(27.6, 1)
-	--			end
-	--		else
-	--			if self.vb.bladesCount == 1 then
-	--				--The 45 seems to be a consisted fluke only in first rotation (ie before first sweep)
-	--				timerPhaseBladesCD:Start(self.vb.sweepCount == 0 and 44.9 or 42.5, 1)
-	--			end
-	--		end
-	--	end
-	--	local icon = self.vb.bladesIcon
-	--	if self.Options.SetIconOnPhaseBlades then
-	--		self:SetIcon(args.destName, icon)
-	--	end
-	--	if args:IsPlayer() then
-	--		specWarnPhaseBlades:Show()
-	--		specWarnPhaseBlades:Play("targetyou")
-	--		yellPhaseBlades:Yell(icon, icon)
-	--		yellPhaseBladesFades:Countdown(5, nil, icon)
-	--	end
-	--	warnPhaseBlades:PreciseShow(4, args.destName)--4 is max targets, but it can scale down to less
-	--	self.vb.bladesIcon = self.vb.bladesIcon + 1
---	elseif spellId == 439191 then
-
+	elseif spellId == 459785 and args:IsPlayer() and self:AntiSpam(3, 3) then
+		specWarnGTFO:Show(args.spellName)
+		specWarnGTFO:Play("watchfeet")
 	end
 end
 mod.SPELL_AURA_APPLIED_DOSE = mod.SPELL_AURA_APPLIED
@@ -253,75 +206,13 @@ function mod:SPELL_AURA_REMOVED(args)
 	local spellId = args.spellId
 	if spellId == 459273 and args:IsPlayer() then
 		timerCosmicShards:Stop()
-	--elseif spellId == 433517 then
-	--	if self.Options.SetIconOnPhaseBlades then
-	--		self:SetIcon(args.destName, 0)
-	--	end
-	--	if args:IsPlayer() then
-	--		yellPhaseBladesFades:Cancel()
-	--	end
-	--elseif spellId == 439191 then
-	--	if self.Options.SetIconOnDecimate then
-	--		self:SetIcon(args.destName, 0)
-	--	end
-	--	if args:IsPlayer() then
-	--		yellDecimateFades:Cancel()
-	--	end
 	end
 end
 
---[[
-function mod:CHAT_MSG_RAID_BOSS_WHISPER(msg)
-	if msg:find("spell:459349") then
-		specWarnDecimate:Show()
-		specWarnDecimate:Play("targetyou")
-		yellDecimate:Yell()--icon, icon
-		yellDecimateFades:Countdown(5.5)--, nil, icon
-	end
-end
-
---Icons will only be marked on targets that have either DBM or BW installed
-function mod:OnTranscriptorSync(msg, targetName)
-	if msg:find("spell:459349") then
-		local icon = self.vb.decimateIcon
-		if self.Options.SetIconOnDecimate then
-			self:SetIcon(targetName, icon, 6)
-		end
-		warnDecimate:PreciseShow(3, targetName)--3 is max targets, but it can scale down to less
-		self.vb.decimateIcon = self.vb.decimateIcon + 1
-	end
-end
---]]
-
---[[
 function mod:SPELL_PERIODIC_DAMAGE(_, _, _, _, destGUID, _, _, _, spellId, spellName)
-	if spellId == 421532 and destGUID == UnitGUID("player") and self:AntiSpam(2, 2) then
+	if spellId == 459785 and destGUID == UnitGUID("player") and self:AntiSpam(2, 3) then
 		specWarnGTFO:Show(spellName)
 		specWarnGTFO:Play("watchfeet")
 	end
 end
 mod.SPELL_PERIODIC_MISSED = mod.SPELL_PERIODIC_DAMAGE
---]]
-
---[[
-function mod:UNIT_SPELLCAST_SUCCEEDED(uId, _, spellId)
-	if spellId == 433475 then
-		if self:AntiSpam(10, 2) then
-			self.vb.bladesCount = self.vb.bladesCount + 1
-			warnPhaseBlades:Show(self.vb.bladesCount)
-			--self.vb.bladesIcon = 1
-			if self:IsMythic() then
-				if self.vb.bladesCount % 3 ~= 0 then
-					--Mythic consistently same before and after sweep, within the standard variation of ~28
-					timerPhaseBladesCD:Start(27.6, 1)
-				end
-			else
-				if self.vb.bladesCount % 2 == 1 then
-					--The 45 seems to be a consisted fluke only in first rotation (ie before first sweep)
-					timerPhaseBladesCD:Start(self.vb.sweepCount == 0 and 44.9 or 42.5, 1)
-				end
-			end
-		end
-	end
-end
---]]

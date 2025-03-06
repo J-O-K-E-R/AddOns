@@ -365,6 +365,7 @@ G.unitframe.aurafilters.Blacklist = {
 		[426790]	= List(), -- Call of the Elder Druid
 		[430191]	= List(), -- Warband Mentored Leveling
 		[455020]	= List(), -- WoW's Anniversary
+		[1219312]	= List(), -- Mmm, Tacos...
 	},
 }
 
@@ -1301,10 +1302,10 @@ G.unitframe.ChannelTicks = {
 	[113656]	= 4, -- Fists of Fury
 }
 
--- Spells that chain, second step
+-- Spells that chain, ticks to add
 G.unitframe.ChainChannelTicks = {
 	-- Evoker
-	[356995]	= 4, -- Disintegrate
+	[356995]	= 1, -- Disintegrate
 }
 
 -- Window to chain time (in seconds); usually the channel duration
@@ -1313,10 +1314,9 @@ G.unitframe.ChainChannelTime = {
 	[356995]	= 3, -- Disintegrate
 }
 
--- Spells Effected By Talents (unused; talents changed)
+-- Spells Effected By Talents
 G.unitframe.TalentChannelTicks = {
-	-- TODO: going to change this to a method which allows for the following API checks
-	-- IsSpellKnownOrOverridesKnown and/or IsPlayerSpell (for some spells, ex: Improved Purify)
+	[356995]	= { [1219723] = 4 }, -- Disintegrate (Azure Celerity)
 }
 
 -- Increase ticks from auras

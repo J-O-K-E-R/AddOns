@@ -1,12 +1,13 @@
-local mod	= DBM:NewMod(2611, "DBM-Raids-WarWithin", 1, 1273)
+local mod	= DBM:NewMod(2611, "DBM-Raids-WarWithin", 2, 1273)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20240923174107")
+mod:SetRevision("20250209023836")
 mod:SetCreatureID(214502)
 mod:SetEncounterID(2917)
 mod:SetUsedIcons(4, 5, 6, 7, 8)
 mod:SetHotfixNoticeRev(20240628000000)
 --mod:SetMinSyncRevision(20230929000000)
+mod:SetZone(2657)
 mod.respawnTime = 29
 
 mod:RegisterCombat("combat")
@@ -21,7 +22,6 @@ mod:RegisterEventsInCombat(
 	"SPELL_PERIODIC_DAMAGE 445518",
 	"SPELL_PERIODIC_MISSED 445518",
 	"UNIT_DIED"
---	"UNIT_SPELLCAST_SUCCEEDED boss1"
 )
 
 --TODO, maybe further warn when the aoe damage from Goresplatter starts for healers?
@@ -85,22 +85,29 @@ mod.vb.disgorgeCount = 0
 mod.vb.curdleCount = 0
 mod.vb.hemorrhageCount = 0
 mod.vb.goresplatterCount = 0
-mod.vb.membraneCount = 0
+mod.vb.crimsonCount = 0
 mod.vb.graspCount = 0
 local castsPerGUID = {}
 local addUsedMarks = {}
---local playerPhased = false
+
+---@param self DBMMod
+local function missingCLEURain(self)
+	self.vb.crimsonCount = self.vb.crimsonCount + 1
+	warnCrimsonRain:Show(self.vb.crimsonCount)
+	if self.vb.crimsonCount < 4 then
+		timerCrimsonRainCD:Start(30, self.vb.crimsonCount+1)
+	end
+end
 
 function mod:OnCombatStart(delay)
 	self.vb.disgorgeCount = 0
 	self.vb.curdleCount = 0
 	self.vb.hemorrhageCount = 0
 	self.vb.goresplatterCount = 0
-	self.vb.membraneCount = 0
+	self.vb.crimsonCount = 0
 	self.vb.graspCount = 0
 	table.wipe(castsPerGUID)
 	table.wipe(addUsedMarks)
-	--playerPhased = false
 	timerCrimsonRainCD:Start(11, 1)
 	timerGruesomeDigorgeCD:Start(self:IsMythic() and 14 or 16, 1)
 	timerGraspFromBeyondCD:Start(self:IsMythic() and 19.1 or 22, 1)
@@ -160,6 +167,8 @@ function mod:SPELL_CAST_START(args)
 			timerGraspFromBeyondCD:Stop()
 			timerGraspFromBeyondCD:Start(30, self.vb.graspCount+1)
 		end
+		--Restart rain timer
+		timerCrimsonRainCD:Start(19, self.vb.crimsonCount+1)
 	elseif spellId == 451288 then
 		--Backup, in case SPELL_SUMMON not exposed
 		if not castsPerGUID[args.sourceGUID] then
@@ -193,9 +202,12 @@ function mod:SPELL_CAST_SUCCESS(args)
 	local spellId = args.spellId
 	if spellId == 443203 then
 		--"Crimson Rain-443203-npc:214502-00006B455A = pull:11.0, 128.0, 128.0, 128.0" (heroic) (mythic is same)
-		self.vb.membraneCount = self.vb.membraneCount +1
-		warnCrimsonRain:Show(self.vb.membraneCount)
-		timerCrimsonRainCD:Start(nil, self.vb.membraneCount+1)--128
+		self.vb.crimsonCount = self.vb.crimsonCount +1
+		warnCrimsonRain:Show(self.vb.crimsonCount)
+		timerCrimsonRainCD:Start(30, self.vb.crimsonCount+1)--128 to next activation
+		self:Schedule(30, missingCLEURain, self)
+		self:Schedule(60, missingCLEURain, self)
+		self:Schedule(90, missingCLEURain, self)
 	elseif spellId == 445016 then
 		timerSpectralSlamCD:Start(10.4, args.sourceGUID)
 	end
@@ -235,7 +247,6 @@ function mod:SPELL_AURA_APPLIED(args)
 	local spellId = args.spellId
 	if spellId == 443612 then
 		if args:IsPlayer() then
-			--playerPhased = true
 			warnBanefulShift:Show()
 			timerBanefulShift:Start()
 		else
@@ -278,7 +289,7 @@ function mod:SPELL_AURA_APPLIED(args)
 				if timerGruesomeDigorgeCD:GetRemaining(self.vb.disgorgeCount+1) > 15 then
 					timerGraspFromBeyondCD:Start(15, self.vb.graspCount+1)
 				else
-					timerGraspFromBeyondCD:Start(21, self.vb.graspCount+1)
+					timerGraspFromBeyondCD:Start(17.3, self.vb.graspCount+1)
 				end
 			end
 		end
@@ -299,7 +310,6 @@ function mod:SPELL_AURA_REMOVED(args)
 	local spellId = args.spellId
 	if spellId == 443612 then
 		if args:IsPlayer() then
---			playerPhased = false
 			warnBanefulShiftFades:Show()
 			timerBanefulShift:Stop()
 		end

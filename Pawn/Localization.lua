@@ -1,6 +1,6 @@
 ﻿-- Pawn by Vger-Azjol-Nerub
 -- www.vgermods.com
--- © 2006-2024 Travis Spomer.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
+-- © 2006-2025 Travis Spomer.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
 -- See Readme.htm for more information.
 
 --
@@ -552,6 +552,7 @@ PawnLocal.TooltipParsing = {
 	["EnchantmentPyriumWeaponChain"] = "^Pyrium Weapon Chain$",
 	["EnchantmentTitaniumWeaponChain"] = "^Titanium Weapon Chain$",
 	["Equip"] = "Equip:",
+	["ExpertiseClassic"] = "^Equip: Reduces the chance for your attacks to be dodged or parried by #%%%.$",
 	["ExpertiseRating"] = "^Equip: Increases your expertise rating by #%.$",
 	["ExpertiseRatingShort"] = "^%+?# Expertise Rating$",
 	["FeralAp"] = "^Equip: %+# Attack Power in Cat, Bear, and Dire Bear forms only%.$",
@@ -570,6 +571,7 @@ PawnLocal.TooltipParsing = {
 	["Gun"] = "^Gun$",
 	["Haste"] = "^%+?# Haste$",
 	["Haste2"] = "^UNUSED$",
+	["HasteClassic"] = "^Equip: Increases your attack speed by #%%%.$",
 	["HasteRating"] = "^Equip: Improves haste rating by #%.$",
 	["HasteRating2"] = "^UNUSED$",
 	["HasteRatingShort"] = "^%+?# Haste Rating$",
@@ -666,6 +668,7 @@ PawnLocal.TooltipParsing = {
 	["SpellDamageAndHealingEnchant"] = "^%+# Healing and %+# Spell Damage$",
 	["SpellDamageAndHealingShort"] = "^%+# Healing Spells and %+# Damage Spells$",
 	["SpellDamageAndHealingShort2"] = "^%+# Healing %+# Spell Damage$",
+	["SpellHasteClassic"] = "^Equip: Increases your casting speed of non%-channeled spells by #%%%.$",
 	["SpellHasteRating"] = "^Equip: Improves spell haste rating by #%.$",
 	["SpellHasteRatingShort"] = "^%+?# Spell Haste Rating$",
 	["SpellHit"] = "^Equip: Improves your chance to hit with spells by #%%%.$",

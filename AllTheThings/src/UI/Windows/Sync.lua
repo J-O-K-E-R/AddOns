@@ -24,9 +24,8 @@ local function ProcessSendChunks()
 				for uid,pendingChunk in pairs(user) do
 					-- Acquire the cooldown and see if we're still on cooldown.
 					local cooldown = pendingChunk.cooldown;
-					if cooldown > 0 then
+					if cooldown > time() then
 						-- We're still on cooldown. Don't do anything this cycle.
-						pendingChunk.cooldown = cooldown - 1;
 					else
 						-- Off cooldown! do something!
 						local acks = pendingChunk.acks;
@@ -37,12 +36,16 @@ local function ProcessSendChunks()
 							if not acks[i] then
 								-- We found one that hasn't been acknowledged yet.
 								pendingChunk.method(pendingChunk.target, "chunk`" .. pendingChunk.uid .. "`" .. i .. "`" .. chunkCount .. "`" .. chunks[i]);
-								pendingChunk.cooldown = 10000;	-- ~10 seconds (resets when an ack is received!)
 								finished = false;
 								break;
 							end
 						end
-						if finished then user[uid] = nil; end
+						if finished then
+							user[uid] = nil;
+						else
+							-- Reset the cooldown
+							pendingChunk.cooldown = time() + 10;
+						end
 					end
 					any = true;
 					break;
@@ -682,7 +685,7 @@ MESSAGE_HANDLERS.ack = function(self, sender, content, responses)
 	local pendingChunk = pending[uid];
 	if not pendingChunk then return false; end
 	pendingChunk.acks[chunkIndex] = true;
-	pendingChunk.cooldown = 10;
+	pendingChunk.cooldown = 0;
 end
 MESSAGE_HANDLERS.check = function(self, sender, content, responses)
 	-- Validate inputs. Battle Tag MUST be supplied and the account must be linked!

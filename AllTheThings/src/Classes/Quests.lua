@@ -1496,7 +1496,7 @@ app.GlobalVariants.WithAutoName = {
 		return t.an
 	end,
 }
--- TODO capture the combined name and use within variants instead of hardcode
+
 app.GlobalVariants.Combine(
 	app.GlobalVariants.AndLockCriteria,
 	app.GlobalVariants.WithAutoName)

@@ -1,7 +1,7 @@
 -- License: LICENSE.txt
 
 local MAJOR_VERSION = "LibActionButton-1.0-ElvUI"
-local MINOR_VERSION = 60 -- the real minor version is 119
+local MINOR_VERSION = 61 -- the real minor version is 119
 
 local LibStub = LibStub
 if not LibStub then error(MAJOR_VERSION .. " requires LibStub.") end
@@ -24,8 +24,6 @@ local WoWClassic = (WOW_PROJECT_ID == WOW_PROJECT_CLASSIC)
 local WoWBCC = (WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC)
 local WoWWrath = (WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC)
 local WoWCata = (WOW_PROJECT_ID == WOW_PROJECT_CATACLYSM_CLASSIC)
-
-local noop = function() end
 
 local GetSpellInfo
 do	-- backwards compatibility for GetSpellInfo
@@ -293,9 +291,6 @@ function lib:CreateButton(id, name, header, config)
 	else
 		button:RegisterForClicks("AnyUp")
 	end
-
-	button.popup = CreateFrame('Frame')
-	button.popup.AttachToButton = noop
 
 	button.cooldown:SetFrameStrata(button:GetFrameStrata())
 	button.cooldown:SetFrameLevel(button:GetFrameLevel() + 1)
@@ -1142,9 +1137,6 @@ if UseCustomFlyout then
 		if maxNumSlots > #lib.FlyoutButtons then
 			for i = #lib.FlyoutButtons + 1, maxNumSlots do
 				local button = lib:CreateButton(i, "LABFlyoutButton" .. i, lib.flyoutHandler, nil)
-
-				button.popup = CreateFrame('Frame')
-				button.popup.AttachToButton = noop
 
 				button:SetScale(0.8)
 				button:Hide()

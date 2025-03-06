@@ -1,6 +1,6 @@
 ﻿-- Pawn by Vger-Azjol-Nerub
 -- www.vgermods.com
--- © 2006-2024 Travis Spomer.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
+-- © 2006-2025 Travis Spomer.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
 -- See Readme.htm for more information.
 --
 -- User interface code
@@ -1609,14 +1609,13 @@ function PawnUIGetAllTextForItem(Item)
 	Tooltip:SetHyperlink(ItemLink)
 
 	local NumLines = Tooltip:NumLines()
-	local i
 	local AllText = ""
 	for i = 1, NumLines do
 		local LeftLine = _G[PawnPrivateTooltipName .. "TextLeft" .. i]
-		AllText = AllText .. LeftLine:GetText() .. "\n"
+		AllText = AllText .. PawnEscapeString(LeftLine:GetText() or "") .. "\n"
 		local RightLine = _G[PawnPrivateTooltipName .. "TextRight" .. i]
 		if RightLine then
-			local RightText = RightLine:GetText()
+			local RightText = PawnEscapeString(RightLine:GetText() or "")
 			if RightText and RightText ~= "" then
 				AllText = AllText .. "    " .. RightText .. "\n"
 			end

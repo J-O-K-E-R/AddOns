@@ -1,8 +1,8 @@
-## Interface: 11504, 40400, 40401, 110002, 110005
+## Interface: 11506, 40402, 110100
 
 ## Author: StormFX
 ## Title: Masque: Serenity
-## Version: 11.0.2
+## Version: 11.1.0
 
 ## Dependencies: Masque
 ## IconTexture: Interface\AddOns\Masque_Serenity\Textures\Icon

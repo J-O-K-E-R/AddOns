@@ -309,6 +309,7 @@ localize(L.HEADER_NAMES, {
 	[-1000245] = "Heroic Edition",
 	[-1000263] = "iCoke",
 	[-1000264] =  AUCTION_CATEGORY_MISCELLANEOUS,
+	[-1000265] = SCROLL_OF_RESURRECTION,
 	[-1000267] = BATTLE_PET_SOURCE_9,
 	[-1000273] = "Season of Discovery",
 	[-1000274] = "Comprehension",
@@ -344,9 +345,9 @@ localize(L.HEADER_NAMES, {
 	[-1001036] = "Seasonal Fish: Winter Squid",
 	[-1001058] = "Nightmare Grove",
 	[-1001070] = UPGRADE,
-	[-1001082] = "Apprentice",
-	[-1001083] = "Opera of Malediction",
-	[-1001084] = "Tier-Set Shoulder Enchants",
+	[-1001084] = "Apprentice",
+	[-1001085] = "Opera of Malediction",
+	[-1001086] = "Tier-Set Shoulder Enchants",
 });
 localize(L.HEADER_DESCRIPTIONS, {
 	[-1000015] = "Warlocks can teach their demons new tricks. Some of the higher level grimoires can only be purchased from the Demon Trainer in your faction's capital cities.",
@@ -371,6 +372,7 @@ localize(L.HEADER_DESCRIPTIONS, {
 	[-1000237] = "The Scourge Invasion was a world event in Patch 1.11 and again during the Wrath of the Lich King Pre-Patch during 3.0.1 that heralded the opening of Naxxramas, the citadel of the dreaded Kel'Thuzad.\n\nSeveral regions of Azeroth came under attack by Scourge forces. Members of the Argent Dawn organized a worldwide counter to the Scourge invasion, keeping an eye out for any necropolis sightings and passing on their information to all adventurers willing to aid them in their struggle.\n\nWith each victory against the Scourge, the defense grows stronger. As more and more invasion attempts are beaten back by the defenders, the Argent Dawn will be able to bestow increasingly more powerful blessings upon those fighting the invaders. If the mortal races focus on clearing the Scourge camps all over the world that have sprung up beneath each necropolis, perhaps the invasion can effectively be halted or even repelled. Those who wish to take up arms against the undead invaders should speak with a representative of the Argent Dawn to learn what regions need help and how the defense is holding up.",
 	[-1000263] = "These were only available through the 2006 iCoke Promotion (China Only)",
 	[-1000264] = "This section is for miscellaneous promotions that took place in the real world or something to do with account management.",
+	[-1000265] = "The following item sets were implemented as boosted character rewards for recipients of the Scroll of Resurrection.\n\nThey were later added to vendors in Mount Hyjal and Vash'jir once the Scroll of Resurrection Service was retired.",
 	[-1000273] = "This Season brings an initial level cap of 25 and a new level-25 endgame, including a 10-player Blackfathom Deeps raid with new mechanics, new and reimagined bosses to challenge player tactics and strategies, and fresh rewards.",
 	[-1000278] = "Rune Engraving is a new class system for Season of Discovery. It allows each class to tailor their gameplay experience by unlocking new unique abilities!",
 	[-1000279] = "Waylaid Supplies quest items drop from mobs of level 6 and above all over Azeroth. These quests request delivery of the Waylaid Supplies to an organization representative in return for a few silver, experience, and Reputation. Of course, there are items missing from the supply shipment, and you can supplement it for greater reputation rewards.",
@@ -384,8 +386,8 @@ localize(L.HEADER_DESCRIPTIONS, {
 	[-1000985] = "After receiving your squire, summon him forth using the Relic and then level him up by getting into combat and keeping him alive.",
 	[-1000997] = "This event occurs every 2 hours from Midnight and lasts 60 minutes. While this event is active, Daily Quests will be available in Searing Gorge for the Thorium Brotherhood. Traditionally Thorium Brotherhood can be quite a grind to achieve reputation with so this addition of a Daily Quest Hub will be very welcome.\nWhen the event is active, new NPCs will spawn and some environmental changes will occur to the outside area of Searing Gorge.",
 	[-1001058] = "Nightmare Grove can be found near the portals to the Emerald Dream.",
-	[-1001082] = "Only 1 of 3 Apprentices can be chosen to challenge.",
-	[-1001083] = "1 of 3 Operas will be randomly selected every day.",
+	[-1001084] = "Only 1 of 3 Apprentices can be chosen to challenge.",
+	[-1001085] = "1 of 3 Operas will be randomly selected every day.",
 });
 localize(L.HEADER_LORE, {
 	[-1000048] = "One of these dragons will spawn randomly at the associated coordinates across Azeroth.",
@@ -497,6 +499,7 @@ localize(L.HEADER_ICONS, {
 	[-1000245] = _.asset("weapon_type_heirloom"),
 	[-1000263] = 132797,
 	[-1000264] = 135999,
+	[-1000265] = _.asset("promotion_scroll_of_rez"),
 	[-1000267] = 134493,
 	[-1000273] = 134269,
 	[-1000274] = 135933,
@@ -589,7 +592,6 @@ _.Modules.Events.SetEventInformation(141, {
 	_.Modules.Events.CreateSchedule({["hour"]=10,["minute"]=0,["month"]=12,["monthDay"]=16,["weekday"]=4,["year"]=2026},{["hour"]=6,["minute"]=0,["month"]=1,["monthDay"]=2,["weekday"]=7,["year"]=2027})
 });
 _.Modules.Events.SetEventInformation(479, {
-	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=2,["monthDay"]=10,["weekday"]=2,["year"]=2025},{["hour"]=0,["minute"]=0,["month"]=2,["monthDay"]=17,["weekday"]=2,["year"]=2025},{["remappedID"]=374}),
 	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=2,["monthDay"]=24,["weekday"]=2,["year"]=2025},{["hour"]=0,["minute"]=0,["month"]=3,["monthDay"]=3,["weekday"]=2,["year"]=2025},{["remappedID"]=375}),
 	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=3,["monthDay"]=10,["weekday"]=2,["year"]=2025},{["hour"]=0,["minute"]=0,["month"]=3,["monthDay"]=17,["weekday"]=2,["year"]=2025},{["remappedID"]=374}),
 	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=3,["monthDay"]=24,["weekday"]=2,["year"]=2025},{["hour"]=0,["minute"]=0,["month"]=3,["monthDay"]=31,["weekday"]=2,["year"]=2025},{["remappedID"]=375}),
@@ -615,7 +617,8 @@ _.Modules.Events.SetEventInformation(479, {
 	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=12,["monthDay"]=29,["weekday"]=2,["year"]=2025},{["hour"]=0,["minute"]=0,["month"]=1,["monthDay"]=5,["weekday"]=2,["year"]=2026},{["remappedID"]=375}),
 	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=1,["monthDay"]=12,["weekday"]=2,["year"]=2026},{["hour"]=0,["minute"]=0,["month"]=1,["monthDay"]=19,["weekday"]=2,["year"]=2026},{["remappedID"]=374}),
 	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=1,["monthDay"]=26,["weekday"]=2,["year"]=2026},{["hour"]=0,["minute"]=0,["month"]=2,["monthDay"]=2,["weekday"]=2,["year"]=2026},{["remappedID"]=375}),
-	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=2,["monthDay"]=9,["weekday"]=2,["year"]=2026},{["hour"]=0,["minute"]=0,["month"]=2,["monthDay"]=16,["weekday"]=2,["year"]=2026},{["remappedID"]=374})
+	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=2,["monthDay"]=9,["weekday"]=2,["year"]=2026},{["hour"]=0,["minute"]=0,["month"]=2,["monthDay"]=16,["weekday"]=2,["year"]=2026},{["remappedID"]=374}),
+	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=2,["monthDay"]=23,["weekday"]=2,["year"]=2026},{["hour"]=0,["minute"]=0,["month"]=3,["monthDay"]=2,["weekday"]=2,["year"]=2026},{["remappedID"]=375})
 });
 _.Modules.Events.SetEventInformation(201, {
 	_.Modules.Events.CreateSchedule({["hour"]=0,["minute"]=0,["month"]=5,["monthDay"]=1,["weekday"]=4,["year"]=2024},{["hour"]=23,["minute"]=59,["month"]=5,["monthDay"]=7,["weekday"]=3,["year"]=2024}),
@@ -2764,6 +2767,7 @@ local ObjectModels = {
 	[410299] = 198039,
 	[410369] = 196989,
 	[410528] = 196987,
+	[410779] = 198238,
 	[410847] = 203020,
 	[411348] = 200953,
 	[411358] = 196987,
@@ -3897,8 +3901,8 @@ localize(L.HEADER_NAMES, {
 	[-1001035] = "Saisonfisch: Sommerbarsch",
 	[-1001036] = "Saisonfisch: Winterkalmar",
 	[-1001058] = "Alptraumhain",
-	[-1001082] = "Lehrling",
-	[-1001083] = "Oper der Verwünschung",
+	[-1001084] = "Lehrling",
+	[-1001085] = "Oper der Verwünschung",
 });
 localize(L.HEADER_DESCRIPTIONS, {
 	[-1000025] = "Es muss möglicherweise ein bestimmter Feiertag aktiv sein, um hier genannte Dinge abschließen zu können.",
@@ -5092,8 +5096,8 @@ localize(L.HEADER_NAMES, {
 	[-1001035] = "Poisson de saison : bar d'été",
 	[-1001036] = "Poisson de saison : calmar d'hiver",
 	[-1001058] = "Bosquet du cauchemar",
-	[-1001082] = "Apprenti",
-	[-1001083] = "Opéra de malédiction",
+	[-1001084] = "Apprenti",
+	[-1001085] = "Opéra de malédiction",
 });
 localize(L.HEADER_DESCRIPTIONS, {
 	[-1000033] = "Contient des objets de récompenses ou disponibles dans d’autres contenus de la section qui les contient.\nIls sont regroupés ici dans le but de réduire la duplication de nombreuses sources possibles.",
@@ -6691,8 +6695,8 @@ localize(L.HEADER_NAMES, {
 	[-1001035] = "Peixe sazonal: robalo de verão",
 	[-1001036] = "Peixe sazonal: Lula de Inverno",
 	[-1001058] = "Bosque do Pesadelo",
-	[-1001082] = "Aprendiz",
-	[-1001083] = "Ópera da Maldição",
+	[-1001084] = "Aprendiz",
+	[-1001085] = "Ópera da Maldição",
 });
 localize(L.HEADER_DESCRIPTIONS, {
 	[-1000040] = "Um mestre de armas é um NPC que oferece aos personagens a oportunidade de aprender habilidades específicas com armas, cuja disponibilidade varia de um mestre de armas para outro. Todas as habilidades com armas podem ser treinadas no nível 1, exceto as armas de haste, que exigem nível 20.\n\nO treinamento com um mestre de armas tornou-se obsoleto no Patch 4.0.1, já que todas as proficiências de armas apropriadas à classe agora são aprendidas por cada classe após a criação. Os mestres de armas foram removidos do jogo logo depois.",
@@ -7738,8 +7742,8 @@ localize(L.HEADER_NAMES, {
 	[-1001035] = "Сезонная рыба: летний окунь",
 	[-1001036] = "Сезонная рыба: зимний кальмар",
 	[-1001058] = "Роща Кошмаров",
-	[-1001082] = "Ученик",
-	[-1001083] = "Проклятая опера",
+	[-1001084] = "Ученик",
+	[-1001085] = "Проклятая опера",
 });
 localize(L.HEADER_DESCRIPTIONS, {
 	[-1000025] = "Чтобы выполнить упомянутые в данной секции Штучки, может быть нужен какой-то праздник.",
@@ -8980,8 +8984,8 @@ localize(L.HEADER_NAMES, {
 	[-1001035] = "제철 생선: 여름 농어",
 	[-1001036] = "제철 생선: 겨울 오징어",
 	[-1001058] = "악몽의 숲",
-	[-1001082] = "수습생",
-	[-1001083] = "악심의 오페라",
+	[-1001084] = "수습생",
+	[-1001085] = "악심의 오페라",
 });
 localize(L.HEADER_DESCRIPTIONS, {
 	[-1000040] = "웨폰 마스터는 캐릭터에게 특정 무기 기술을 배울 수 있는 기회를 제공하는 NPC로, 사용 가능 여부는 웨폰 마스터마다 다릅니다. 모든 무기 기술은 레벨 20이 필요한 폴암을 제외하고 레벨 1에서 훈련할 수 있습니다.\n\n4.0.1 패치에서는 각 병과가 생성 시 모든 병과에 적합한 무기 숙련도를 배우게 되므로 무기 전문가와의 훈련은 더 이상 필요하지 않게 되었습니다. 무기 마스터는 곧 게임에서 제거되었습니다.",
@@ -10063,8 +10067,8 @@ localize(L.HEADER_NAMES, {
 	[-1001035] = "Pescado de temporada: lubina de verano",
 	[-1001036] = "Pescado de temporada: calamares de invierno",
 	[-1001058] = "Arboleda de la Pesadilla",
-	[-1001082] = "Aprendiz",
-	[-1001083] = "Ópera de la maldición",
+	[-1001084] = "Aprendiz",
+	[-1001085] = "Ópera de la maldición",
 });
 localize(L.HEADER_DESCRIPTIONS, {
 	[-1000040] = "Un maestro de armas es un PNJ que ofrece a los personajes la oportunidad de aprender habilidades específicas con armas, cuya disponibilidad varía de un maestro de armas a otro. Todas las habilidades con armas se pueden entrenar en el nivel 1, excepto las armas de asta que requieren el nivel 20.\n\nEl entrenamiento con un maestro de armas quedó obsoleto en el parche 4.0.1, ya que cada clase ahora aprende todas las competencias de armas apropiadas para la clase en el momento de la creación. Los maestros de armas se eliminaron del juego poco después.",
@@ -11155,7 +11159,7 @@ if GetLocale():sub(3,4):lower() == "mx" then
 localize(L.HEADER_NAMES, {
 	[-1000969] = "Incursiones de pesadilla",
 	[-1001058] = "Arboleda de las Pesadillas",
-	[-1001083] = "Ópera de imprecación",
+	[-1001085] = "Ópera de imprecación",
 });
 for key,value in pairs({
 	[428] = "Trueno Furioso, espada bendita del Hijo del Viento",
@@ -11216,7 +11220,7 @@ localize(L.HEADER_NAMES, {
 	[-1000042] = "世界首领",
 	[-1000044] = "地区掉落",
 	[-1000048] = "梦魇之龙",
-	[-1000142] = "荣誉头衔",
+	[-1000142] = HONOR .. PAPERDOLL_SIDEBAR_TITLES,
 	[-1000162] = "共享外观",
 	[-1000163] = "独特外观",
 	[-1000165] = "T0.5套装",
@@ -11267,8 +11271,8 @@ localize(L.HEADER_NAMES, {
 	[-1001035] = "时令鱼类：夏季鲈鱼",
 	[-1001036] = "时令鱼类：冬鱿鱼",
 	[-1001058] = "梦魇林地",
-	[-1001082] = "学徒",
-	[-1001083] = "邪咒歌剧",
+	[-1001084] = "学徒",
+	[-1001085] = "邪咒歌剧",
 });
 localize(L.HEADER_DESCRIPTIONS, {
 	[-1000025] = "你可能需要在特定的节日活动中才能完成本节中的事物。",
@@ -12270,7 +12274,6 @@ localize(L.HEADER_NAMES, {
 	[-1000042] = "世界首領",
 	[-1000044] = "地區掉落",
 	[-1000048] = "夢魘之龍",
-	[-1000142] = "榮譽頭銜",
 	[-1000162] = "共享外觀",
 	[-1000163] = "獨特外觀",
 	[-1000165] = "T0.5套裝",
@@ -12301,8 +12304,8 @@ localize(L.HEADER_NAMES, {
 	[-1001035] = "季節性魚類：夏日鱸魚",
 	[-1001036] = "季節性魚類：冬魷魚",
 	[-1001058] = "夢魘林地",
-	[-1001082] = "(初級)學徒",
-	[-1001083] = "詛咒歌劇",
+	[-1001084] = "(初級)學徒",
+	[-1001085] = "詛咒歌劇",
 });
 localize(L.HEADER_DESCRIPTIONS, {
 	[-1000015] = "術士可以教導他們的惡魔新技能，一些高等級的魔典只能從你陣營首都的惡魔訓練師那裡購買。",

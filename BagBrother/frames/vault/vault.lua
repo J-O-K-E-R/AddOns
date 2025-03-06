@@ -17,8 +17,7 @@ Vault.PickupItem = ClickVoidStorageSlot
 Vault.ItemGroup = Addon.VaultItemGroup
 Vault.MoneyFrame = Addon.TransferButton
 Vault.PurchasePrice = 100 * 100 * 100
-Vault.MoneySpacing = -24
-Vault.BrokerSpacing = -6
+Vault.MoneySpacing = -28
 Vault.Bags = {1}
 
 
@@ -134,4 +133,4 @@ function Vault:NumSlots(bag)
 end
 
 function Vault:HasMoney() return true end
-function Vault:IsBagGroupShown() end
+function Vault:AreBagsShown() end

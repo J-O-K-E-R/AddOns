@@ -65,9 +65,8 @@ L:SetMiscLocalization{
 	Phase5 	= "부서질 것 같습니다!",
 	Phase6 	= "폭발",
 
-	HitsRemain	= "남은 타격",
-	Frost		= "냉기",
-	Physical	= "물리"
+	FrostHitsPerSecond = "초당 냉기 공격 횟수",
+	MeleeHitsPerSecond = "초당 물리 공격 횟수",
 }
 -------------
 -- Huhuran --
@@ -101,8 +100,8 @@ L:SetGeneralLocalization{
 L:SetWarningLocalization{
 	WarnEyeTentacle			= "눈 달린 촉수",
 	WarnClawTentacle2		= "갈고리 촉수",
-	TimerGiantEyeTentacle		= "눈 달린 거대한 촉수",
-	TimerGiantClawTentacle		= "거대한 발톱 촉수",
+	WarnGiantEyeTentacle		= "눈 달린 거대한 촉수",
+	WarnGiantClawTentacle		= "거대한 발톱 촉수",
 	SpecWarnWeakened		= "쑨 약화됨!"
 }
 L:SetTimerLocalization{
@@ -143,6 +142,7 @@ L:SetGeneralLocalization{
 L:SetWarningLocalization{
 	WarnSubmerge		= "잠수",
 	WarnEmerge			= "등장",
+	SpecWarnEye			= "고개 돌리세요",
 }
 L:SetTimerLocalization{
 	TimerSubmerge		= "잠수",
@@ -152,7 +152,8 @@ L:SetOptionLocalization{
 	WarnSubmerge		= "잠수 알림 보기",
 	TimerSubmerge		= "잠수 타이머 바 보기",
 	WarnEmerge			= "등장 알림 보기",
-	TimerEmerge			= "등장 타이머 바 보기"
+	TimerEmerge			= "등장 타이머 바 보기",
+	SpecWarnEye			= "대형 눈알 경고 보기"
 }
 
 ----------------
@@ -162,6 +163,20 @@ L = DBM:GetModLocalization("AQ40Trash")
 
 L:SetGeneralLocalization{
 	name = "안퀴40 일반몹"
+}
+
+L:SetTimerLocalization{
+	TimerExplosion = "폭발하는 유령"
+}
+
+L:SetWarningLocalization{
+	WarnExplosion = "폭발하는 유령 한마리 등장 - 피하세요",
+	SpecWarnExplosion = "폭발하는 유령 - 피하세요",
+}
+L:SetOptionLocalization{
+	WarnExplosion = "폭발하는 유령 알림 보기 ($spell:1214871)",
+	SpecWarnExplosion = "폭발하는 유령이 여러마리 등장시 특수 경고 보기 ($spell:1214871)",
+	TimerExplosion = "폭발하는 유령이 여러마리 등장시 타이머 바 보기 ($spell:1214871)"
 }
 
 ---------------
@@ -214,13 +229,13 @@ L:SetGeneralLocalization{
 	name 		= "먹보 부루"
 }
 L:SetWarningLocalization{
-	WarnPursue		= "추적 : >%s<",
-	SpecWarnPursue	= "당신을 추적!",
-	WarnDismember	= "%s : >%s< (%s)"
+	WarnPursue		= "추적: >%s<",
+	SpecWarnPursue	= "당신을 추적중",
+	WarnDismember	= "%s: >%s< (%s)"
 }
 L:SetOptionLocalization{
-	WarnPursue		= "추적 대상 알림 보기",
-	SpecWarnPursue	= "추적 대상이 된 경우 특수 알림 보기"
+	WarnPursue		= "추적 대상 알림",
+	SpecWarnPursue	= "추적 대상이 됐을 때 특수 알림 보기"
 }
 L:SetMiscLocalization{
 	PursueEmote 	= "노려봅니다!"
@@ -244,7 +259,7 @@ L:SetGeneralLocalization{
 	name 		= "무적의 오시리안"
 }
 L:SetOptionLocalization{
-	WarnVulnerable	= "약화 알림 보기",
+	WarnVulnerable	= "약화 알림",
 	TimerVulnerable	= "약화 타이머 바 보기"
 }
 
@@ -257,6 +272,19 @@ L:SetGeneralLocalization{
 	name = "안퀴20 일반몹"
 }
 
+L:SetTimerLocalization{
+	TimerExplosion = "폭발하는 유령"
+}
+
+L:SetWarningLocalization{
+	WarnExplosion = "폭발하는 유령 한마리 등장 - 피하세요",
+	SpecWarnExplosion = "폭발하는 유령 - 피하세요",
+}
+L:SetOptionLocalization{
+	WarnExplosion = "폭발하는 유령 알림 보기 ($spell:1214871)",
+	SpecWarnExplosion = "폭발하는 유령이 여러마리 등장시 특수 경고 보기 ($spell:1214871)",
+	TimerExplosion = "폭발하는 유령이 여러마리 등장시 타이머 바 보기 ($spell:1214871)"
+}
 -----------------
 --  Razorgore  --
 -----------------
@@ -349,13 +377,13 @@ L:SetMiscLocalization{
 }
 
 -----------------------
---  Vulnerabilities  --
+--  BWL Trash  --
 -----------------------
 -- Chromaggus, Death Talon Overseer and Death Talon Wyrmguard
-L = DBM:GetModLocalization("TalonGuards")
+L = DBM:GetModLocalization("BWLTrash")
 
 L:SetGeneralLocalization{
-	name = "죽음의발톱 수호병"
+	name = "검은날개 둥지 일반몹"
 }
 L:SetWarningLocalization{
 	WarnVulnerable		= "%s 약화"
@@ -386,14 +414,16 @@ L:SetWarningLocalization{
 L:SetTimerLocalization{
 	TimerBreathCD	= "%s 쿨타임",
 	TimerBreath		= "%s 시전",
-	TimerVulnCD		= "약화 쿨타임"
+	TimerVulnCD		= "약화 쿨타임",
+	TimerAllBreaths	= "연발 숨결"
 }
 L:SetOptionLocalization{
 	WarnBreath		= "크로마구스가 숨결 시전 시 알림 보기",
 	WarnVulnerableNew	= "주문 속성 약화 알림 보기",
-	TimerBreathCD	= "숨결 쿨타임 보기",
-	TimerBreath		= "숨결 시전 보기",
-	TimerVulnCD		= "약화 쿨타임 보기"
+	TimerBreathCD	= "숨결 쿨타임 타이머 바 보기",
+	TimerBreath		= "숨결 시전 타이머 바 보기",
+	TimerVulnCD		= "약화 쿨타임 보기",
+	TimerAllBreaths = "연발 숨결 타이머 바 보기"
 }
 L:SetMiscLocalization{
 	Breath1	= "1번 숨결",
@@ -455,6 +485,27 @@ L = DBM:GetModLocalization("SoDBWLTrials")
 
 L:SetGeneralLocalization{
 	name = "디스커버리 시즌 시련"
+}
+L:SetWarningLocalization{
+	SpecWarnBothBombs		= ">%s<에게 파란색과 녹색",
+	SpecWarnBothBombsYou	= "나에게 파란색과 녹색",
+}
+L:SetOptionLocalization{
+	SpecWarnBothBombs		= "파란색 녹색 폭탄에 같이 걸린 사람이 있을 때 특수 알림을 보여줍니다.",
+	SpecWarnBothBombsYou	= "내가 파란색 녹색 폭탄에 같이 걸렸을 때 특수 알림을 보여줍니다.",
+	TimerBombs				= "파란색 녹색 시련 폭탄 타이머 바 보기"
+}
+
+L:SetMiscLocalization{
+	-- Does not need translation if "BLUE BOMB" is okay, the "Blue"/"Green" strings are just fallbacks if Core is outdated
+	-- Only translate that if you need something like "BOMB BLUE"
+	BlueBomb = (DBM_COMMON_L.BLUE or "파란색") .. " " .. DBM_COMMON_L.BOMB,
+	GreenBomb = (DBM_COMMON_L.GREEN or "녹색") .. " " .. DBM_COMMON_L.BOMB,
+
+	-- Used in options
+	BlueTrial = "파란색 시련",
+	GreenTrial = "녹색 시련",
+	GreenAndBlue = "녹색 파란색이 다 걸린 사람",
 }
 
 ----------------
@@ -721,6 +772,10 @@ L:SetGeneralLocalization{
 	name = "주술사 진도"
 }
 
+L:SetMiscLocalization{
+	Ghosts = "망령"
+}
+
 --------------
 --  Onyxia  --
 --------------
@@ -961,6 +1016,7 @@ L:SetOptionLocalization({
 	WarningChargeChanged	= "극성이 바뀔때 특수 알림 보기",
 	WarningChargeNotChanged	= "극성이 바뀌지 않으면 특수 알림 보기",
 	AirowsEnabled			= "$spell:28089 동안 화살표 보기",
+	Never					= "사용 안함",
 	TwoCamp					= "화살표 보기 (일반 \"2점\" 택틱)",
 	ArrowsRightLeft			= "\"4점\" 택틱 왼쪽/오른쪽 화살표 보기 (극성이 바뀌면 왼쪽 화살표가 나오고 바뀌지 않으면 오른쪽이 나옴)",
 	ArrowsInverse			= "역 \"4점\" 택틱 (극성이 바뀌면 오른쪽 화살표가 나오고 바뀌지 않으면 왼쪽이 나옴)"
@@ -1130,6 +1186,72 @@ L:SetTimerLocalization({
 	TimerPhase2			= "2단계"
 })
 
+-----------------
+--  Naxx Trash --
+-----------------
+
+L = DBM:GetModLocalization("NaxxTrash")
+
+L:SetGeneralLocalization({
+	name = "일반몹"
+})
+
+--------------------
+--  SoD Hardmode  --
+--------------------
+
+L = DBM:GetModLocalization("SoD_NaxxHardmode")
+
+L:SetGeneralLocalization({
+	name = "디커 하드모드"
+})
+
+L:SetOptionLocalization({
+	AutomateEmote		= "자동으로 진격 명령에 맞는 감정 표현",
+	AffixTimer			= "하드모드 어픽스 타이머 보기",
+	WarnEggs			= "알 등장 알림 보기 (거미 지구 하드모드)",
+	SpecWarnOrders		= "DBM이 진격 명령을 자동으로 대처하지 못했을 때 특수 경고 보기"
+})
+
+L.MarchingOrderTranslationComplete = false -- Set this to false until *all* of the Order* below are translated to the actual string used in the game
+L:SetMiscLocalization({
+	Affixes				= "어픽스",
+	ConstructAffix		= "번개 폭탄",
+	SpiderAffix			= "알 폭발",
+	UnsupportedLocale	= [[강화된 군사 지구에 오신 것을 환영합니다!
+이곳의 하드모드 패턴은 무작위 플레이어에게 특정 감정 표현을 요구하는 방식입니다.
+DBM은 모든 패턴을 자동화하는 중이나 당신의 클라이언트 언어 %s|1은;는; 아직 전부 지원하지 못해서 DBM이 빼먹는 감정 표현이 있을 것입니다.
+당신이 도울 수 있습니다! 하드모드 패턴마다 정확한 텍스트를 공유해 주세요 (스크린샷, 동영상, Transcriptor 로그) discord.gg/deadlybossmods에 들어가서 보내주시면 됩니다.
+]],
+	AutomatedEmote		= "DBM이 진격 명령에 %s 감정 표현을 자동으로 했습니다.",
+	AutomatedEmoteGuess	= "DBM이 추측을 기반으로 진격 명령에 %s 감정 표현을 자동으로 했습니다. 틀린 감정 표현이었나요? discord.gg/deadlybossmods에서 저희한테 알려주세요",
+	-- List of emotes may not be complete, let me know if I missed one
+	OrderDance			= "DANCE for me!",
+	OrderRoar			= "Show me your best ROAR!",
+	OrderSalute			= "SALUTE, maggot!",
+	OrderBow			= "BOW before me, mortal!",
+	OrderPray			= "Get on your knees and PRAY!",
+	OrderKneel			= nil, -- I thought i saw this one, but maybe I mistook it for pray? Don't have it in logs
+	-- Guessed regexes for emotes, by default the emote tokens are used (which actually works 100% in en locale)
+	-- Optional and obsolete if all Order* strings above are complete
+	GuessOrderDance		= nil,
+	GuessOrderRoar		= nil,
+	GueesOrderSalute	= nil,
+	GuessOrderBow		= nil,
+	GuessOrderPray		= nil,
+	GuessOrderKneel		= nil,
+})
+
+L:SetWarningLocalization({
+	WarnEggs		= "알 등장",
+	SpecWarnOrders	= "진격 명령: %s"
+})
+
+L:SetTimerLocalization({
+	AffixTimer	= "어픽스"
+})
+
+
 ---------------------------
 --  Season of Discovery  --
 ---------------------------
@@ -1196,7 +1318,7 @@ L:SetGeneralLocalization({
 })
 
 L:SetWarningLocalization({
-	warnPriestRemaining		= "여사제 %s 남음"
+	warnPriestRemaining		= "여사제 남은 수: %s"
 })
 
 L:SetOptionLocalization({
