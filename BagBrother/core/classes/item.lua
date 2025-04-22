@@ -18,14 +18,10 @@ Item.Backgrounds = {
 
 function Item:New(parent, bag, slot, info)
 	local b = self:Super(Item):New(parent)
-	b.bag, b.info = bag, info
+	b.bag = bag
 	b:SetID(slot)
-
-	if b:IsVisible() then
-		b:UpdatePrimary()
-	else
-		b:Show()
-	end
+	b:Update(info)
+	b:Show()
 	return b
 end
 
@@ -68,7 +64,7 @@ function Item:Construct()
 	end
 
 	b:SetScript('OnEvent', nil)
-	b:SetScript('OnShow', b.UpdatePrimary)
+	b:SetScript('OnShow', nil)
 	return b
 end
 
@@ -95,8 +91,8 @@ end
 
 function Item:PostClick(button)
 	if Addon.lockMode then
-		local locks = GetOrCreateTableEntry(self:GetProfile().lockedSlots, self:GetBag())
-		locks[self:GetID()] = not locks[self:GetID()] or nil
+		local locked = GetOrCreateTableEntry(self.frame:GetBagInfo(self:GetBag()), 'locked')
+		locked[self:GetID()] = not locked[self:GetID()] or nil
 		self:SendSignal('LOCKING_TOGGLED')
 	elseif Addon.sets.flashFind and self.hasItem and IsAltKeyDown() and button == 'LeftButton' then
 		self:SendSignal('FLASH_ITEM', self.info.itemID)
@@ -119,12 +115,8 @@ end
 
 --[[ Update ]]--
 
-function Item:Update()
-	self.info = self.frame:GetItemInfo(self:GetSlot())
-	self:UpdatePrimary()
-end
-
-function Item:UpdatePrimary()
+function Item:Update(info)
+	self.info = info or self:GetInfo()
 	self.hasItem = self.info.itemID and true -- for blizzard template
 	self.readable = self.info.isReadable -- for blizzard template
 	self:Delay(0.05, 'UpdateSecondary')
@@ -186,6 +178,7 @@ function Item:UpdateSecondary()
 	if self.frame then
 		self:UpdateFocus()
 		self:UpdateSearch()
+		self:UpdateIgnored()
 		self:UpdateUpgradeIcon()
 
 		if self.hasItem and GameTooltip:IsOwned(self) then
@@ -206,12 +199,17 @@ function Item:UpdateSearch()
 	self:SetDesaturated(not matches or self.info.isLocked)
 end
 
+function Item:UpdateIgnored()
+	local cache = Addon.lockMode and self.frame:GetBagInfo(self:GetBag())
+	self.IgnoredOverlay:SetShown(cache and cache.locked and cache.locked[self:GetID()])
+end
+
 function Item:UpdateUpgradeIcon()
 	local isUpgrade = self:IsUpgrade()
+	self.UpgradeIcon:SetShown(isUpgrade)
+
 	if isUpgrade == nil then
 		self:Delay(0.5, 'UpdateUpgradeIcon')
-	else
-		self.UpgradeIcon:SetShown(isUpgrade)
 	end
 end
 

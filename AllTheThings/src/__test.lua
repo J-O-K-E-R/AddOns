@@ -205,6 +205,7 @@ app.errors = function(msg)
 
 	local runner1 = app.CreateRunner("error1")
 	local runner2 = app.CreateRunner("error2")
+	local UpdateRunner = app.CreateRunner("update")
 
 	-- push function error
 	app.Push("push"..msg, "test", throw)
@@ -219,8 +220,8 @@ app.errors = function(msg)
 	runner2.Run(throw, msg.."4")
 
 	-- repeated test on consistent runner
-	app.UpdateRunner.Run(throw, "update"..msg.."5")
-	app.UpdateRunner.Run(throw, "update"..msg.."6")
+	UpdateRunner.Run(throw, "update"..msg.."5")
+	UpdateRunner.Run(throw, "update"..msg.."6")
 
 end
 
@@ -469,13 +470,14 @@ function ATTcheckawquests()
 	local function scan()
 		for i=cur,lim do
 			if not awdb[i] and isaw(i) then
+				app.print("NEW AW-Quest!",i)
 				aw[i] = true
 			end
 		end
 		app.PrintDebug("scanned thru",lim)
 		cur = lim + 1
 		lim = lim + step
-		if lim > 87000 then return end
+		if lim > 95000 then return end
 		dc(scan, 1)
 	end
 	scan()
@@ -538,4 +540,89 @@ function ATTclones(count)
 	-- 0.101 @ 1M
 	local new = CloneArray_index(test)
 	app.PrintDebugPrior("---")
+end
+
+function ATTscripttimeout(source, immediatesec)
+	app.print("Script Timeout test via",source,"@",immediatesec)
+	local Success
+	local function LongRun(sec)
+		Success = nil
+		app.print("waiting",sec,"s ... via",source)
+		local done = GetTimePreciseSec() + (sec or 0)
+		while GetTimePreciseSec() < done do
+		end
+		app.print("waited",sec,"s via",source)
+		Success = true
+	end
+
+	if immediatesec then
+		LongRun(tonumber(immediatesec))
+		return
+	end
+
+	local Runner = app.CreateRunner("TestScriptTimeout")
+	Runner.SetPerFrameDefault(1)
+	local function VerifyPriorSuccess()
+		if Success then
+			app.print("Success!")
+		else
+			app.print("Script Timeout!")
+		end
+	end
+
+	for i=0,5 do
+		-- Runner.Run(LongRun, math.pow(2,i))
+		Runner.Run(LongRun, 5)
+		Runner.Run(VerifyPriorSuccess)
+	end
+end
+
+-- ATTscripttimeout("immediate", 21)
+-- app.AddEventHandler("OnLoad", ATTscripttimeout)
+-- app.AddEventHandler("OnReady", ATTscripttimeout)
+
+function DumpAllGlobals()
+	local ks = {}
+	for k, v in pairs(_G) do
+		if type(v) == "string" then
+			ks[#ks + 1] = ("%s = \"%s\""):format(k,v)
+		end
+	end
+
+	local allkeys = table.concat(ks, "\n")
+	app:ShowPopupDialogWithMultiLineEditBox(allkeys)
+end
+
+function ATTlooptypes(count)
+
+	local ipairs = ipairs
+	local pairs = pairs
+	local z
+	local t = {}
+	for i=1,count do
+		t[i] = i
+	end
+
+	local function Benchmark()
+		-- 0.01164 @ 1M
+		app.PrintDebug("for i=1,#t",count)
+		for i=1,#t do
+			z = t[i]
+		end
+		app.PrintDebugPrior("---")
+		-- 0.13135 @ 1M
+		app.PrintDebug("for i,v in ipairs(t)",count)
+		for i,v in ipairs(t) do
+			z = v
+		end
+		app.PrintDebugPrior("---")
+		-- 0.11951 @ 1M
+		app.PrintDebug("for k,v in pairs(t)",count)
+		for k,v in pairs(t) do
+			z = v
+		end
+		app.PrintDebugPrior("---")
+	end
+
+	Benchmark();
 end

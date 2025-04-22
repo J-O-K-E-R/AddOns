@@ -17,6 +17,8 @@ L["Quick Slot Layout Radial"] = "环形";
 L["Quick Slot High Contrast Mode"] = "切换高对比度模式";
 L["Restriction Combat"] = "战斗中不可用";    --Indicate a feature can only work when out of combat
 L["Map Pin Change Size Method"] = "\n\n*如需更改标记大小，请打开 世界地图 - 地图筛选 - Plumber";
+L["Toggle Plumber UI"] = "Plumber界面可见性";
+L["Toggle Plumber UI Tooltip"] = "在编辑模式中显示以下Plumber界面：\n%s\n\n此选项仅控制它们在编辑模式下是否可见，并不会启用或禁用这些功能。";
 
 
 --Module Categories
@@ -203,9 +205,17 @@ L["Number Millions"] = "M";
 
 --Landing Page (Expansion Summary Minimap)
 L["ModuleName ExpansionLandingPage"] = "卡兹阿加概要";
-L["ModuleDescription ExpansionLandingPage"] = "在概要界面上显示额外信息：\n\n- 斩离之丝等级";
+L["ModuleDescription ExpansionLandingPage"] = "在概要界面上显示额外信息：\n\n- 巅峰进度\n\n- 斩离之丝等级\n\n- 安德麦财阀声望";
 L["Instruction Track Reputation"] = "<按住Shift点击追踪此声望>";
 L["Instruction Untrack Reputation"] = "<按住Shift点击停止追踪>";
+L["Error Show UI In Combat"] = "无法在战斗中打开或关闭此界面。";
+
+
+--Landing Page Switch
+L["ModuleName LandingPageSwitch"] = "小地图要塞任务报告";
+L["ModuleDescription LandingPageSwitch"] = "右键单击小地图上的名望概要按钮来访问要塞和职业大厅任务报告。";
+L["Mission Complete Count Format"] = "已完成%d项任务";
+L["Open Mission Report Tooltip"] = "右键单击来打开任务报告。";
 
 
 --WorldMapPin_TWW (Show Pins On Continent Map)
@@ -220,6 +230,10 @@ L["Item Level Abbr"] = "装等";
 L["Delves Reputation Name"] = "地下堡赛季进度";
 L["ModuleName Delves_SeasonProgress"] = "地下堡: 赛季进度";
 L["ModuleDescription Delves_SeasonProgress"] = "在你提升“地下堡行者的旅程”时显示一个进度条。";
+L["ModuleName Delves_Dashboard"] = "地下堡: 每周奖励";
+L["ModuleDescription Delves_Dashboard"] = "在地下堡赛季界面显示宏伟宝库和鎏金藏匿物的进度。";
+L["Delve Crest Stash No Info"] = "你所在区域无法获取该信息。";
+L["Delve Crest Stash Requirement"] = "仅在11层丰裕地下堡出现。";
 
 
 --WoW Anniversary
@@ -301,6 +315,11 @@ L["ModuleDescription TooltipProfessionKnowledge"] = "在专业技能的鼠标提
 L["Available Knowledge Format"] = "可用知识：|cffffffff%s|r";
 
 
+--MinimapMouseover (click to /tar creature on the minimap)
+L["ModuleName MinimapMouseover"] = "小地图目标";
+L["ModuleDescription MinimapMouseover"] = "按住Alt键并点击小地图上的一个生物来尝试将其设为你的目标。".."\n\n|cffd4641c- " ..L["Restriction Combat"].."|r";
+
+
 --Loot UI
 L["ModuleName LootUI"] = "拾取窗口";
 L["ModuleDescription LootUI"] = "替换默认的拾取窗口并提供以下功能：\n\n- 快速拾取所有物品\n\n- 修复自动拾取有时失效的问题\n\n- 手动拾取时显示“全部拾取”按钮";
@@ -348,9 +367,11 @@ L["PlumberMacro DrawerFlag Stuck"] = "更新技能收纳宏时遇到了错误。
 L["PlumberMacro Error Combat"] = "战斗中不可用";
 L["PlumberMacro Error NoAction"] = "无可用技能";
 L["PlumberMacro Error EditMacroInCombat"] = "战斗中不可编辑";
+L["Random Favorite Mount"] = "召唤随机偏好坐骑";
 L["Dismiss Battle Pet"] = "解散小宠物";
 L["Drag And Drop Item Here"] = "拖拽一个东西放在这里";
 L["Drag To Reorder"] = "左键单击并拖拽以更改位置";
+L["Click To Set Macro Icon"] = "按住Ctrl点击来设为宏图标";
 L["Unsupported Action Type Format"] = "不支持的动作类别： %s";
 L["Drawer Add Action Format"] = "添加 |cffffffff%s|r";
 L["Drawer Add Profession1"] = "第一个专业技能";
@@ -378,6 +399,7 @@ L["Paragon Reputation"] = "巅峰";
 L["Level Maxed"] = "已满级";   --Reached max level
 L["Current Colon"] = "当前：";
 L["Unclaimed Reward Alert"] = "你有未领取的巅峰宝箱";
+L["Total Colon"] = "总计：";
 
 
 --Plumber AddOn Settings
@@ -400,10 +422,11 @@ L["currency-2915"] = "蚀刻";
 L["currency-2916"] = "符文";
 L["currency-2917"] = "鎏金";
 
-
 L["Scenario Delves"] = "地下堡";
 L["GameObject Door"] = "门";
 L["Delve Chest 1 Rare"] = "丰裕宝匣";
+
+L["Season Maximum Colon"] = "赛季上限："
 
 
 --Map Pin Filter Name (name should be plural)

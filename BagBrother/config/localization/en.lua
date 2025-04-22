@@ -15,7 +15,7 @@ L.CountCurrency = 'Currency Tooltip Counts'
 L.FlashFind = 'Flash Find'
 L.FlashFindTip = 'If enabled, alt-clicking an item will flash all slots with that same item across frames.'
 L.DisplayBlizzard = 'Fallback Hidden Bags'
-L.DisplayBlizzardTip = 'If enabled, the default Blizzard UI bag panels will be displayed for hidden inventory or bank containers.\n\n|cffff1919Requires UI reload.|r'
+L.DisplayBlizzardTip = 'If enabled, the default Blizzard UI bag panels will be displayed for hidden inventory or bank containers.\n\n|cffff1919May require UI reload.|r'
 L.ConfirmGlobals = 'Are you sure you want to disable specific settings for this character? All specific settings will be lost.'
 L.CharacterSpecific = 'Character Specific Settings'
 
@@ -25,7 +25,7 @@ L.FrameOptionsDescription = 'These are configuration settings specific to a %s f
 
 L.Frame = 'Frame'
 L.Enabled = 'Enable Frame'
-L.EnabledTip = 'If disabled, the default Blizzard UI will not be replaced for this frame.\n\n|cffff1919Requires UI reload.|r'
+L.EnabledTip = 'If disabled, the default Blizzard UI will not be replaced for this frame.\n\n|cffff1919May require UI reload.|r'
 L.ActPanel = 'Act as Standard Panel'
 L.ActPanelTip = [[
 If enabled, this panel will automatically position

@@ -1,6 +1,8 @@
 # LiteBag
 
-## [11.1.0-2](https://github.com/xod-wow/LiteBag/tree/11.1.0-2) (2025-02-27)
-[Full Changelog](https://github.com/xod-wow/LiteBag/compare/11.1.0-1...11.1.0-2) [Previous Releases](https://github.com/xod-wow/LiteBag/releases)
+## [11.1.5-1](https://github.com/xod-wow/LiteBag/tree/11.1.5-1) (2025-04-21)
+[Full Changelog](https://github.com/xod-wow/LiteBag/compare/11.1.0-3...11.1.5-1) [Previous Releases](https://github.com/xod-wow/LiteBag/releases)
 
-- Workaround Blizzard bug with GetItemButtonIconTexture  
+- Add 11.1.5 to ToC  
+- Revert "Workaround Blizzard bug with GetItemButtonIconTexture"  
+    Blizzard fixed it in a newer update  

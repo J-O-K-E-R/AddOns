@@ -1,7 +1,8 @@
 # GroupFinderRio
 
-## [v1.2.5](https://github.com/Jods-GH/GroupFinderRIO/tree/v1.2.5) (2025-02-26)
-[Full Changelog](https://github.com/Jods-GH/GroupFinderRIO/compare/v1.2.4a...v1.2.5) [Previous Releases](https://github.com/Jods-GH/GroupFinderRIO/releases)
+## [v1.3.0](https://github.com/Jods-GH/GroupFinderRIO/tree/v1.3.0) (2025-04-04)
+[Full Changelog](https://github.com/Jods-GH/GroupFinderRIO/compare/v1.2.9...v1.3.0) [Previous Releases](https://github.com/Jods-GH/GroupFinderRIO/releases)
 
-- add kofi  
-- bump toc  
+- Merge pull request #21 from pabllorsl/master  
+    Rename TWW Season 2 dungeon names to match RaiderIO's abbreviation sy…  
+- Rename TWW Season 2 dungeon names to match RaiderIO's abbreviation system  

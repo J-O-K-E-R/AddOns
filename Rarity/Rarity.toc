@@ -2,7 +2,7 @@
 ## Interface: 110100, 40402, 11506
 ## X-Min-Interface: 110100, 40402, 11506
 ## Title: Rarity
-## Version: 1.0 (r740-release)
+## Version: 1.0 (r742-release)
 ## X-Curse-Project-ID: 30801
 
 ## Notes: Tracks rare drops, including companions and mounts

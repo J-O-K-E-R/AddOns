@@ -20,8 +20,14 @@ mod:RegisterEnableMob(
 	210264, -- Bee Wrangler
 	220946, -- Venture Co. Honey Harvester
 	220141, -- Royal Jelly Purveyor
-	219588 -- Yes Man
+	219588 -- Yes Man / Assent Bloke / Agree Gentleman / Concur Sir
 )
+
+--------------------------------------------------------------------------------
+-- Locals
+--
+
+local thirstyMobs = {}
 
 --------------------------------------------------------------------------------
 -- Localization
@@ -67,6 +73,8 @@ function mod:GetOptions()
 		{437956, "NAMEPLATE"}, -- Erupting Inferno
 		-- Hired Musle
 		{463218, "HEALER", "NAMEPLATE"}, -- Volatile Keg
+		{434756, "ME_ONLY", "NAMEPLATE"}, -- Throw Chair
+		{441408, "DISPEL"}, -- Thirsty
 		-- Tasting Room Attendant
 		{434706, "NAMEPLATE"}, -- Cinderbrew Toss
 		-- Chef Chewie
@@ -81,7 +89,8 @@ function mod:GetOptions()
 		-- Brew Drop
 		441179, -- Oozing Honey
 		-- Taste Tester
-		{441242, "OFF", "NAMEPLATE"}, -- Free Samples?
+		{441214, "DISPEL", "NAMEPLATE"}, -- Spill Drink
+		{441242, "NAMEPLATE", "OFF"}, -- Free Samples?
 		-- Bee Wrangler
 		{441119, "SAY", "NAMEPLATE"}, -- Bee-Zooka
 		{441351, "NAMEPLATE"}, -- Bee-stial Wrath
@@ -101,7 +110,7 @@ function mod:GetOptions()
 		[441627] = L.flavor_scientist,
 		[448619] = L.careless_hopgoblin,
 		[441179] = L.brew_drop,
-		[441242] = L.taste_tester,
+		[441214] = L.taste_tester,
 		[441119] = L.bee_wrangler,
 		[442589] = L.venture_co_honey_harvester,
 		[440687] = L.royal_jelly_purveyor,
@@ -126,6 +135,9 @@ function mod:OnBossEnable()
 	-- Hired Muscle
 	self:RegisterEngageMob("HiredMuscleEngaged", 210269)
 	self:Log("SPELL_CAST_START", "VolatileKeg", 463218)
+	self:Log("SPELL_CAST_START", "ThrowChair", 434756)
+	self:Log("SPELL_AURA_APPLIED", "ThirstyApplied", 441408)
+	self:Log("SPELL_AURA_REMOVED", "ThirstyRemoved", 441408)
 	self:Death("HiredMuscleDeath", 210269)
 
 	-- Tasting Room Attendant
@@ -159,6 +171,8 @@ function mod:OnBossEnable()
 
 	-- Taste Tester
 	self:RegisterEngageMob("TasteTesterEngaged", 220060)
+	self:Log("SPELL_CAST_SUCCESS", "SpillDrink", 441214)
+	self:Log("SPELL_AURA_APPLIED", "SpillDrinkApplied", 441214)
 	self:Log("SPELL_CAST_START", "FreeSamples", 441242)
 	self:Log("SPELL_INTERRUPT", "FreeSamplesInterrupt", 441242)
 	self:Log("SPELL_CAST_SUCCESS", "FreeSamplesSuccess", 441242)
@@ -187,10 +201,14 @@ function mod:OnBossEnable()
 	self:Log("SPELL_CAST_SUCCESS", "RainOfHoney", 440876)
 	self:Death("RoyalJellyPurveyorDeath", 220141)
 
-	-- Yes Man
+	-- Yes Man / Assent Bloke / Agree Gentleman / Concur Sir
 	self:RegisterEngageMob("YesManEngaged", 219588)
 	self:Log("SPELL_CAST_START", "DownwardTrend", 439467)
 	self:Death("YesManDeath", 219588)
+end
+
+function mod:OnBossDisable()
+	thirstyMobs = {}
 end
 
 --------------------------------------------------------------------------------
@@ -247,13 +265,41 @@ end
 -- Hired Muscle
 
 function mod:HiredMuscleEngaged(guid)
-	self:Nameplate(463218, 8.2, guid) -- Volatile Keg
+	self:Nameplate(463218, 8.0, guid) -- Volatile Keg
+	self:Nameplate(434756, 12.0, guid) -- Throw Chair
+	-- Thirsty is only applied out of combat, alert on engage if it's still present
+	if thirstyMobs[guid] and self:Dispeller("enrage", true, 441408) then
+		self:Message(441408, "cyan", CL.on:format(self:SpellName(441408), thirstyMobs[guid]))
+		self:PlaySound(441408, "info")
+	end
 end
 
 function mod:VolatileKeg(args)
 	self:Message(args.spellId, "yellow")
 	self:Nameplate(args.spellId, 24.2, args.sourceGUID)
 	self:PlaySound(args.spellId, "info")
+end
+
+do
+	local function printTarget(self, name, guid)
+		self:TargetMessage(434756, "red", name)
+		self:PlaySound(434756, "alert", nil, name)
+	end
+
+	function mod:ThrowChair(args)
+		self:GetUnitTarget(printTarget, 0.2, args.sourceGUID)
+		self:Nameplate(args.spellId, 15.7, args.sourceGUID)
+	end
+end
+
+function mod:ThirstyApplied(args)
+	-- this applies to Hired Muscle, Venture Co. Patron, and Venture Co. Pyromaniac when out of combat.
+	-- the alert for this is in :HiredMuscleEnaged only, the other mobs are less important to dispel.
+	thirstyMobs[args.destGUID] = args.destName
+end
+
+function mod:ThirstyRemoved(args)
+	thirstyMobs[args.destGUID] = nil
 end
 
 function mod:HiredMuscleDeath(args)
@@ -337,7 +383,7 @@ do
 		self:Nameplate(args.spellId, 0, args.sourceGUID)
 		if args.time - prev > 1.5 then
 			prev = args.time
-			self:Message(args.spellId, "yellow", CL.casting:format(args.spellName))
+			self:Message(args.spellId, "red", CL.casting:format(args.spellName))
 			self:PlaySound(args.spellId, "alert")
 		end
 	end
@@ -351,10 +397,16 @@ function mod:RejuvenatingHoneySuccess(args)
 	self:Nameplate(args.spellId, 24.4, args.sourceGUID)
 end
 
-function mod:FailedBatch(args)
-	self:Message(args.spellId, "cyan", CL.spawning:format(args.spellName))
-	self:Nameplate(args.spellId, 23.0, args.sourceGUID)
-	self:PlaySound(args.spellId, "info")
+do
+	local prev = 0
+	function mod:FailedBatch(args)
+		self:Message(args.spellId, "cyan", CL.spawning:format(args.spellName))
+		self:Nameplate(args.spellId, 23.0, args.sourceGUID)
+		if args.time - prev > 2 then
+			prev = args.time
+			self:PlaySound(args.spellId, "info")
+		end
+	end
 end
 
 do
@@ -424,7 +476,27 @@ end
 -- Taste Tester
 
 function mod:TasteTesterEngaged(guid)
-	self:Nameplate(441242, 15.3, guid) -- Free Samples
+	self:Nameplate(441242, 9.2, guid) -- Free Samples
+	if self:Dispeller("enrage", true, 441214) then
+		self:Nameplate(441214, 11.4, guid) -- Spill Drink
+	end
+end
+
+function mod:SpillDrink(args)
+	if self:Dispeller("enrage", true, args.spellId) then
+		self:Nameplate(args.spellId, 23.1, args.sourceGUID)
+	end
+end
+
+do
+	local prev = 0
+	function mod:SpillDrinkApplied(args)
+		if self:Dispeller("enrage", true, args.spellId) and args.time - prev > 3 then
+			prev = args.time
+			self:Message(args.spellId, "yellow", CL.on:format(args.spellName, args.destName))
+			self:PlaySound(args.spellId, "info")
+		end
+	end
 end
 
 do
@@ -582,7 +654,7 @@ function mod:RoyalJellyPurveyorDeath(args)
 	self:ClearNameplate(args.destGUID)
 end
 
--- Yes Man
+-- Yes Man / Assent Bloke / Agree Gentleman / Concur Sir
 
 function mod:YesManEngaged(guid)
 	self:Nameplate(439467, 6.9, guid) -- Downward Trend
@@ -601,6 +673,22 @@ do
 	end
 end
 
-function mod:YesManDeath(args)
-	self:ClearNameplate(args.destGUID)
+do
+	local prev, deathCount = 0, 0
+	function mod:YesManDeath(args)
+		self:ClearNameplate(args.destGUID)
+		if args.time - prev > 180 then -- 1
+			deathCount = 1
+		elseif deathCount < 3 then -- 2 through 3
+			deathCount = deathCount + 1
+		else -- 4
+			deathCount = 0
+			local goldieBaronbottomModule = BigWigs:GetBossModule("Goldie Baronbottom", true)
+			if goldieBaronbottomModule then
+				goldieBaronbottomModule:Enable()
+				goldieBaronbottomModule:Warmup()
+			end
+		end
+		prev = args.time
+	end
 end

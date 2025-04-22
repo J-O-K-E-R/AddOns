@@ -34,6 +34,7 @@ mod:RegisterEnableMob(
 
 local nextBrutalSmash = 0
 local nextHolyRadiance = 0
+local nextDivineJudgment = 0
 local nextEmberStorm = 0
 local shaynemailGUID = nil
 local elaenaGUID = nil
@@ -93,12 +94,13 @@ function mod:GetOptions()
 		{424423, "NAMEPLATE"}, -- Lunging Strike
 		-- Elaena Emberlanz
 		{424431, "HEALER", "NAMEPLATE"}, -- Holy Radiance
-		{448515, "TANK", "NAMEPLATE"}, -- Divine Judgment
+		{448515, "DISPEL", "NAMEPLATE"}, -- Divine Judgment
 		-- Taener Duelmal
 		{424420, "DISPEL", "NAMEPLATE"}, -- Cinderblast
 		{424462, "NAMEPLATE"}, -- Ember Storm
 		-- Arathi Knight
 		{427609, "NAMEPLATE"}, -- Disrupting Shout
+		{444296, "NAMEPLATE", "OFF"}, -- Impale
 		-- Arathi Footman
 		{427342, "NAMEPLATE"}, -- Defend
 		-- Fervent Sharpshooter
@@ -187,6 +189,7 @@ function mod:OnBossEnable()
 	self:Log("SPELL_CAST_START", "HolyRadiance", 424431)
 	self:Log("SPELL_CAST_SUCCESS", "HolyRadianceSuccess", 424431)
 	self:Log("SPELL_CAST_START", "DivineJudgment", 448515)
+	self:Log("SPELL_AURA_APPLIED", "DivineJudgmentApplied", 448515)
 	self:Death("ElaenaEmberlanzDeath", 211290, 239833)
 
 	-- Taener Duelmal
@@ -206,6 +209,7 @@ function mod:OnBossEnable()
 	-- Arathi Knight
 	self:RegisterEngageMob("ArathiKnightEngaged", 206696)
 	self:Log("SPELL_CAST_START", "DisruptingShout", 427609)
+	self:Log("SPELL_CAST_START", "Impale", 444296)
 	self:Death("ArathiKnightDeath", 206696)
 
 	-- Arathi Footman
@@ -276,6 +280,7 @@ end
 function mod:OnBossDisable()
 	nextBrutalSmash = 0
 	nextHolyRadiance = 0
+	nextDivineJudgment = 0
 	nextEmberStorm = 0
 	shaynemailGUID = nil
 	elaenaGUID = nil
@@ -332,7 +337,7 @@ do
 		self:Nameplate(448485, 2.3, guid) -- Shield Slam
 		self:CDBar(448492, 15.3) -- Thunderclap
 		self:Nameplate(448492, 15.3, guid) -- Thunderclap
-		timer = self:ScheduleTimer("GuardCaptainSuleymanDeath", 30)
+		timer = self:ScheduleTimer("GuardCaptainSuleymanDeath", 20, nil, guid)
 	end
 
 	function mod:ShieldSlam(args)
@@ -347,7 +352,7 @@ do
 		else
 			self:PlaySound(args.spellId, "info")
 		end
-		timer = self:ScheduleTimer("GuardCaptainSuleymanDeath", 30)
+		timer = self:ScheduleTimer("GuardCaptainSuleymanDeath", 30, nil, args.sourceGUID)
 	end
 
 	function mod:Thunderclap(args)
@@ -358,19 +363,17 @@ do
 		self:CDBar(args.spellId, 15.8)
 		self:Nameplate(args.spellId, 15.8, args.sourceGUID)
 		self:PlaySound(args.spellId, "alert")
-		timer = self:ScheduleTimer("GuardCaptainSuleymanDeath", 30)
+		timer = self:ScheduleTimer("GuardCaptainSuleymanDeath", 30, nil, args.sourceGUID)
 	end
 
-	function mod:GuardCaptainSuleymanDeath(args)
+	function mod:GuardCaptainSuleymanDeath(args, guidFromTimer)
 		if timer then
 			self:CancelTimer(timer)
 			timer = nil
 		end
 		self:StopBar(448485) -- Shield Slam
 		self:StopBar(448492) -- Thunderclap
-		if args then
-			self:ClearNameplate(args.destGUID)
-		end
+		self:ClearNameplate(guidFromTimer or args.destGUID)
 	end
 end
 
@@ -380,11 +383,11 @@ do
 	local timer
 
 	function mod:ForgeMasterDamianEngaged(guid)
-		self:CDBar(427950, 4.7) -- Seal of Flame
-		self:Nameplate(427950, 4.7, guid) -- Seal of Flame
-		self:CDBar(427897, 8.4) -- Heat Wave
-		self:Nameplate(427897, 8.4, guid) -- Heat Wave
-		timer = self:ScheduleTimer("ForgeMasterDamianDeath", 30)
+		self:CDBar(427950, 5.1) -- Seal of Flame
+		self:Nameplate(427950, 5.1, guid) -- Seal of Flame
+		self:CDBar(427897, 9.9) -- Heat Wave
+		self:Nameplate(427897, 9.9, guid) -- Heat Wave
+		timer = self:ScheduleTimer("ForgeMasterDamianDeath", 20, nil, guid)
 	end
 
 	function mod:HeatWave(args)
@@ -392,10 +395,10 @@ do
 			self:CancelTimer(timer)
 		end
 		self:Message(args.spellId, "orange")
-		self:CDBar(args.spellId, 17.0)
-		self:Nameplate(args.spellId, 17.0, args.sourceGUID)
+		self:CDBar(args.spellId, 18.2)
+		self:Nameplate(args.spellId, 18.2, args.sourceGUID)
+		timer = self:ScheduleTimer("ForgeMasterDamianDeath", 30, nil, args.sourceGUID)
 		self:PlaySound(args.spellId, "alarm")
-		timer = self:ScheduleTimer("ForgeMasterDamianDeath", 30)
 	end
 
 	function mod:SealOfFlame(args)
@@ -403,10 +406,10 @@ do
 			self:CancelTimer(timer)
 		end
 		self:Message(args.spellId, "red")
-		self:CDBar(args.spellId, 17.0)
-		self:Nameplate(args.spellId, 17.0, args.sourceGUID)
+		self:CDBar(args.spellId, 21.9)
+		self:Nameplate(args.spellId, 21.9, args.sourceGUID)
+		timer = self:ScheduleTimer("ForgeMasterDamianDeath", 30, nil, args.sourceGUID)
 		self:PlaySound(args.spellId, "alert")
-		timer = self:ScheduleTimer("ForgeMasterDamianDeath", 30)
 	end
 
 	do
@@ -420,16 +423,14 @@ do
 		end
 	end
 
-	function mod:ForgeMasterDamianDeath(args)
+	function mod:ForgeMasterDamianDeath(args, guidFromTimer)
 		if timer then
 			self:CancelTimer(timer)
 			timer = nil
 		end
 		self:StopBar(427897) -- Heat Wave
 		self:StopBar(427950) -- Seal of Flame
-		if args then
-			self:ClearNameplate(args.destGUID)
-		end
+		self:ClearNameplate(guidFromTimer or args.destGUID)
 	end
 end
 
@@ -441,7 +442,7 @@ do
 	function mod:HighPriestAemyaEngaged(guid)
 		self:CDBar(428150, 21.4) -- Reflective Shield
 		self:Nameplate(428150, 21.4, guid) -- Reflective Shield
-		timer = self:ScheduleTimer("HighPriestAemyaDeath", 60)
+		timer = self:ScheduleTimer("HighPriestAemyaDeath", 60, nil, guid)
 	end
 
 	function mod:ReflectiveShield(args)
@@ -449,8 +450,8 @@ do
 			self:CancelTimer(timer)
 		end
 		self:Message(args.spellId, "red")
+		timer = self:ScheduleTimer("HighPriestAemyaDeath", 60, nil, args.sourceGUID)
 		self:PlaySound(args.spellId, "alert")
-		timer = self:ScheduleTimer("HighPriestAemyaDeath", 60)
 	end
 
 	function mod:ReflectiveShieldSuccess(args)
@@ -466,15 +467,13 @@ do
 		self:PlaySound(args.spellId, "info")
 	end
 
-	function mod:HighPriestAemyaDeath(args)
+	function mod:HighPriestAemyaDeath(args, guidFromTimer)
 		if timer then
 			self:CancelTimer(timer)
 			timer = nil
 		end
 		self:StopBar(428150) -- Reflective Shield
-		if args then
-			self:ClearNameplate(args.destGUID)
-		end
+		self:ClearNameplate(guidFromTimer or args.destGUID)
 	end
 end
 
@@ -492,7 +491,7 @@ do
 		nextBrutalSmash = GetTime() + 25.2
 		self:CDBar(424621, 25.2) -- Brutal Smash
 		self:Nameplate(424621, 25.2, guid) -- Brutal Smash
-		timer = self:ScheduleTimer("SergeantShaynemailDeath", 30)
+		timer = self:ScheduleTimer("SergeantShaynemailDeath", 20, nil, guid)
 	end
 
 	function mod:BrutalSmash(args)
@@ -503,8 +502,8 @@ do
 		-- 4.5s cast, ~24.6s energy gain
 		self:CDBar(args.spellId, 29.1)
 		self:Nameplate(args.spellId, 29.1, args.sourceGUID)
+		timer = self:ScheduleTimer("SergeantShaynemailDeath", 30, nil, args.sourceGUID)
 		self:PlaySound(args.spellId, "alarm")
-		timer = self:ScheduleTimer("SergeantShaynemailDeath", 30)
 	end
 
 	function mod:BrutalSmashSuccess(args)
@@ -518,8 +517,8 @@ do
 		-- doesn't switch targets until the end of the cast, so can't target scan
 		self:Message(args.spellId, "red")
 		self:Nameplate(args.spellId, 0, args.sourceGUID)
+		timer = self:ScheduleTimer("SergeantShaynemailDeath", 30, nil, args.sourceGUID)
 		self:PlaySound(args.spellId, "alert")
-		timer = self:ScheduleTimer("SergeantShaynemailDeath", 30)
 	end
 
 	function mod:LungingStrikeSuccess(args)
@@ -527,7 +526,7 @@ do
 		self:Nameplate(args.spellId, 12.1, args.sourceGUID)
 	end
 
-	function mod:SergeantShaynemailDeath(args)
+	function mod:SergeantShaynemailDeath(args, guidFromTimer)
 		shaynemailGUID = nil
 		if timer then
 			self:CancelTimer(timer)
@@ -535,9 +534,7 @@ do
 		end
 		self:StopBar(424621) -- Brutal Smash
 		self:StopBar(424423) -- Lunging Strike
-		if args then
-			self:ClearNameplate(args.destGUID)
-		end
+		self:ClearNameplate(guidFromTimer or args.destGUID)
 	end
 end
 
@@ -550,8 +547,11 @@ do
 		if self:MobId(guid) == 211290 then -- Elaena Emberlanz, boss version
 			elaenaGUID = guid
 		end
-		self:CDBar(448515, 8.0) -- Divine Judgment
-		self:Nameplate(448515, 8.0, guid) -- Divine Judgment
+		if self:Dispeller("magic", nil, 448515) or self:Tank() then
+			nextDivineJudgment = GetTime() + 8.0
+			self:CDBar(448515, 8.0) -- Divine Judgment
+			self:Nameplate(448515, 8.0, guid) -- Divine Judgment
+		end
 		local unit = self:UnitTokenFromGUID(guid)
 		if unit then
 			-- Elaena's energy doesn't always reset after a wipe
@@ -564,19 +564,26 @@ do
 			self:CDBar(424431, 25.2) -- Holy Radiance
 			self:Nameplate(424431, 25.2, guid) -- Holy Radiance
 		end
-		timer = self:ScheduleTimer("ElaenaEmberlanzDeath", 30)
+		timer = self:ScheduleTimer("ElaenaEmberlanzDeath", 20, nil, guid)
 	end
 
 	function mod:HolyRadiance(args)
+		local t = GetTime()
 		if timer then
 			self:CancelTimer(timer)
 		end
 		self:Message(args.spellId, "yellow")
+		-- 11.3s minimum to Divine Judgment
+		if (self:Dispeller("magic", nil, 448515) or self:Tank()) and nextDivineJudgment - t < 11.3 then
+			nextDivineJudgment = t + 11.3
+			self:CDBar(448515, 11.3) -- Divine Judgment
+			self:Nameplate(448515, 11.3, args.sourceGUID) -- Divine Judgment
+		end
 		-- 2s cast + 8s channel + 25s energy gain + delay
 		self:CDBar(args.spellId, 36.4)
 		self:Nameplate(args.spellId, 36.4, args.sourceGUID)
+		timer = self:ScheduleTimer("ElaenaEmberlanzDeath", 30, nil, args.sourceGUID)
 		self:PlaySound(args.spellId, "alert")
-		timer = self:ScheduleTimer("ElaenaEmberlanzDeath", 30)
 	end
 
 	function mod:HolyRadianceSuccess(args)
@@ -584,18 +591,30 @@ do
 	end
 
 	function mod:DivineJudgment(args)
+		local t = GetTime()
 		if timer then
 			self:CancelTimer(timer)
 		end
-		self:Message(args.spellId, "purple")
-		self:CDBar(args.spellId, 13.4)
-		self:Nameplate(args.spellId, 13.4, args.sourceGUID)
-		-- TODO magic dispel now
-		self:PlaySound(args.spellId, "alert")
-		timer = self:ScheduleTimer("ElaenaEmberlanzDeath", 30)
+		timer = self:ScheduleTimer("ElaenaEmberlanzDeath", 30, nil, args.sourceGUID)
+		if self:Dispeller("magic", nil, args.spellId) or self:Tank() then
+			self:Message(args.spellId, "purple")
+			nextDivineJudgment = t + 14.5
+			self:CDBar(args.spellId, 14.5)
+			self:Nameplate(args.spellId, 14.5, args.sourceGUID)
+			if self:Tank() then
+				self:PlaySound(args.spellId, "alert")
+			end
+		end
 	end
 
-	function mod:ElaenaEmberlanzDeath(args)
+	function mod:DivineJudgmentApplied(args)
+		if self:Dispeller("magic", nil, args.spellId) then
+			self:TargetMessage(args.spellId, "purple", args.destName)
+			self:PlaySound(args.spellId, "alert", nil, args.destName)
+		end
+	end
+
+	function mod:ElaenaEmberlanzDeath(args, guidFromTimer)
 		elaenaGUID = nil
 		if timer then
 			self:CancelTimer(timer)
@@ -603,9 +622,7 @@ do
 		end
 		self:StopBar(424431) -- Holy Radiance
 		self:StopBar(448515) -- Divine Judgment
-		if args then
-			self:ClearNameplate(args.destGUID)
-		end
+		self:ClearNameplate(guidFromTimer or args.destGUID)
 	end
 end
 
@@ -632,7 +649,7 @@ do
 			self:CDBar(424462, 25.2) -- Ember Storm
 			self:Nameplate(424462, 25.2, guid) -- Ember Storm
 		end
-		timer = self:ScheduleTimer("TaenerDuelmalDeath", 30)
+		timer = self:ScheduleTimer("TaenerDuelmalDeath", 20, nil, guid)
 	end
 
 	function mod:Cinderblast(args)
@@ -641,10 +658,10 @@ do
 		end
 		self:Message(args.spellId, "red", CL.casting:format(args.spellName))
 		self:Nameplate(args.spellId, 0, args.sourceGUID)
+		timer = self:ScheduleTimer("TaenerDuelmalDeath", 30, nil, args.sourceGUID)
 		if self:Interrupter() then
 			self:PlaySound(args.spellId, "warning")
 		end
-		timer = self:ScheduleTimer("TaenerDuelmalDeath", 30)
 	end
 
 	function mod:CinderblastInterrupt(args)
@@ -677,15 +694,15 @@ do
 		-- cast at 100 energy: 1.5s cast, 6s channel, 1s delay, 25s energy gain
 		self:CDBar(args.spellId, 34.0)
 		self:Nameplate(args.spellId, 34.0, args.sourceGUID)
+		timer = self:ScheduleTimer("TaenerDuelmalDeath", 30, nil, args.sourceGUID)
 		self:PlaySound(args.spellId, "long")
-		timer = self:ScheduleTimer("TaenerDuelmalDeath", 30)
 	end
 
 	function mod:EmberStormSuccess(args)
 		nextEmberStorm = GetTime() + 32.5
 	end
 
-	function mod:TaenerDuelmalDeath(args)
+	function mod:TaenerDuelmalDeath(args, guidFromTimer)
 		taenerGUID = nil
 		if timer then
 			self:CancelTimer(timer)
@@ -693,9 +710,7 @@ do
 		end
 		self:StopBar(424420) -- Cinderblast
 		self:StopBar(424462) -- Ember Storm
-		if args then
-			self:ClearNameplate(args.destGUID)
-		end
+		self:ClearNameplate(guidFromTimer or args.destGUID)
 	end
 end
 
@@ -767,6 +782,7 @@ end
 -- Arathi Knight
 
 function mod:ArathiKnightEngaged(guid)
+	self:Nameplate(444296, 4.4, guid) -- Impale
 	self:Nameplate(427609, 20.1, guid) -- Disrupting Shout
 end
 
@@ -778,6 +794,19 @@ do
 			prev = args.time
 			self:Message(args.spellId, "red")
 			self:PlaySound(args.spellId, "alarm")
+		end
+	end
+end
+
+do
+	local prev = 0
+	function mod:Impale(args)
+		-- can't be target scanned
+		self:Nameplate(args.spellId, 17.0, args.sourceGUID)
+		if args.time - prev > 2 then
+			prev = args.time
+			self:Message(args.spellId, "orange")
+			self:PlaySound(args.spellId, "alert")
 		end
 	end
 end
@@ -857,7 +886,7 @@ do
 	end
 
 	function mod:PotShotSuccess(args)
-		self:Nameplate(args.spellId, 4.1, args.sourceGUID)
+		self:Nameplate(args.spellId, 10.2, args.sourceGUID)
 	end
 end
 
@@ -1105,7 +1134,7 @@ do
 	function mod:SirBraunpykeEngaged(guid)
 		self:CDBar(435165, 7.1) -- Blazing Strike
 		self:Nameplate(435165, 7.1, guid) -- Blazing Strike
-		timer = self:ScheduleTimer("SirBraunpykeDeath", 30)
+		timer = self:ScheduleTimer("SirBraunpykeDeath", 20, nil, guid)
 	end
 
 	function mod:BlazingStrike(args)
@@ -1115,18 +1144,16 @@ do
 		self:Message(args.spellId, "purple")
 		self:CDBar(args.spellId, 13.3)
 		self:Nameplate(args.spellId, 13.3, args.sourceGUID)
+		timer = self:ScheduleTimer("SirBraunpykeDeath", 30, nil, args.sourceGUID)
 		self:PlaySound(args.spellId, "alert")
-		timer = self:ScheduleTimer("SirBraunpykeDeath", 30)
 	end
 
-	function mod:SirBraunpykeDeath(args)
+	function mod:SirBraunpykeDeath(args, guidFromTimer)
 		if timer then
 			self:CancelTimer(timer)
 			timer = nil
 		end
 		self:StopBar(435165) -- Blazing Strike
-		if args then
-			self:ClearNameplate(args.destGUID)
-		end
+		self:ClearNameplate(guidFromTimer or args.destGUID)
 	end
 end

@@ -15,12 +15,13 @@ Optional fields:
 - isUnobtainable: boolean - Faction reputation can no longer be obtained
 ]]
 
-PrettyReps.HIERARCHY_VERSION = 1
+PrettyReps.HIERARCHY_VERSION = 2
 
 -- Faction data organized by expansion and category
 PrettyReps.FactionHierarchy = {
 	{ factionID = 2569, name = "The War Within", children = {
 		{ factionID = 2590, name = "Council of Dornogal" },
+		{ factionID = 2688, name = "Flame's Radiance" },
 		{ factionID = 2570, name = "Hallowfall Arathi" },
 		{ factionID = 2594, name = "The Assembly of the Deeps" },
 		{ factionID = 2653, name = "The Cartels of Undermine", isHeaderWithRep = true, children = {

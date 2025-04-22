@@ -659,7 +659,7 @@ PawnLocal.TooltipParsing = {
 	["SpellDamageAndHealingEnchant"] = "^%+# aux soins et %+# aux dégâts des sorts$",
 	["SpellDamageAndHealingShort"] = "^%+# aux sorts de soins et %+# aux dégâts des sorts$",
 	["SpellDamageAndHealingShort2"] = "^UNUSED$",
-	["SpellHasteClassic"] = "^Equipé : Augmente la vitesse d’incantation des sorts non canalisés de # %%%.$",
+	["SpellHasteClassic"] = "^Equipé : Augmente votre vitesse d’incantation de # %%%.$",
 	["SpellHasteRating"] = "^Équipé : Augmente de # le score de hâte des sorts%.$",
 	["SpellHasteRatingShort"] = "^%+?# au score de hâte des sorts$",
 	["SpellHit"] = "^E?\195?\137?quipé : Augmente vos chances de toucher avec des sorts de #%%%.$",
@@ -717,8 +717,8 @@ elseif VgerCore.IsWrath then
 	PawnLocal.ThousandsSeparator = ""
 	PawnLocal.DecimalSeparator = ","
 elseif VgerCore.IsCataclysm then
-	PawnLocal.ThousandsSeparator = "-"
-	PawnLocal.DecimalSeparator = "."
+	PawnLocal.ThousandsSeparator = " "
+	PawnLocal.DecimalSeparator = ","
 end
 
 if VgerCore.IsClassic or VgerCore.IsBurningCrusade or VgerCore.IsWrath or VgerCore.IsCataclysm then

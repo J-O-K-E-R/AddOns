@@ -39,33 +39,40 @@ if L then
 
 	L.electromagnetic_sorting = "Sorting" -- Short for Electromagnetic Sorting
 	L.muffled_doomsplosion = "Bomb Soaked"
+	L.short_fuse = "Bombshell Explosion"
 	L.incinerator = "Fire Circles"
 	L.landing = "Landing" -- Landing down from the sky
+
+	L["467109_desc"] = 467135 -- XXX description fixed in 11.1.5
 end
 
 --------------------------------------------------------------------------------
 -- Initialization
 --
 
-local rollingRubbishMarker = mod:AddMarkerOption(false, "player", 1, 461536, 1, 2, 3, 4)
-local territorialBombshellMarker = mod:AddMarkerOption(false, "npc", 1, -30451, 8, 7, 6, 5)
+local rollingRubbishMarkerMapTable = {1, 2, 3, 4} -- Easier to adjust which icons are used
+local rollingRubbishMarker = mod:AddMarkerOption(false, "player", rollingRubbishMarkerMapTable[1], 461536, unpack(rollingRubbishMarkerMapTable))
+local scrapmasterMarkerMapTable = {8, 7, 6, 5}
+local scrapmasterMarker = mod:AddMarkerOption(false, "npc", scrapmasterMarkerMapTable[1], -31645, unpack(scrapmasterMarkerMapTable))
 function mod:GetOptions()
 	return {
-		territorialBombshellMarker,
+		"berserk",
 		464399, -- Electromagnetic Sorting
-			{461536, "ME_ONLY_EMPHASIZE"}, -- Rolling Rubbish
+			{461536, "ME_ONLY_EMPHASIZE", "COUNTDOWN"}, -- Rolling Rubbish
 				rollingRubbishMarker,
 				465741, -- Garbage Dump
 				465611, -- Rolled!
 			464854, -- Garbage Pile
 				465747, -- Muffled Doomsplosion
 				1217975, -- Doomsploded
-			-- Territorial Bombshell -- XXX announce/count deaths? show bar until all dead?
+			-- Territorial Bombshell
+				473119, -- Short Fuse
 
 		-- Cleanup Crew
 			-- Scrapmaster
 			1219384, -- Scrap Rockets
 			1220648, -- Marked for Recycling
+			scrapmasterMarker,
 			-- Junkyard Hyena
 			466748, -- Infected Bite
 
@@ -80,7 +87,7 @@ function mod:GetOptions()
 
 		-- Overdrive
 		467117, -- Overdrive
-			{467135, "CASTBAR"}, -- Trash Compactor
+			{467109, "CASTBAR"}, -- Trash Compactor
 		-- Mythic
 		1218704, -- Prototype Powercoil
 	},{ -- Sections
@@ -93,9 +100,10 @@ function mod:GetOptions()
 		[1218704] = CL.mythic,
 	},{ -- Renames
 		[464399] = L.electromagnetic_sorting, -- Electromagnetic Sorting (Balls + Adds)
-		[465747] = L.muffled_doomsplosion, -- Muuffled Doomsplosion (Bomb Soaked)
+		[465747] = L.muffled_doomsplosion, -- Muffled Doomsplosion (Bomb Soaked)
+		[473119] = L.short_fuse, -- Short Fuse (Bombshell Explosion)
 		[464149] = L.incinerator, -- Incinerator (Fire Circles)
-		[467135] = L.landing, -- Trash Compactor (Landing)
+		[467109] = L.landing, -- Trash Compactor (Landing)
 	}
 end
 
@@ -106,31 +114,37 @@ function mod:OnRegister()
 end
 
 function mod:OnBossEnable()
-	self:Log("SPELL_CAST_START", "ElectromagneticSorting", 464399)
 	self:Log("SPELL_AURA_APPLIED", "SortedApplied", 465346) -- These players will become Rolling Rubbish
 	self:Log("SPELL_AURA_APPLIED", "RollingRubbishApplied", 461536)
 	self:Log("SPELL_AURA_REMOVED", "RollingRubbishRemoved", 461536)
 	self:Log("SPELL_AURA_APPLIED", "RolledApplied", 465611)
-	self:Log("SPELL_AURA_APPLIED", "DoomsplodedApplied", 1217975)
-	self:Log("SPELL_AURA_APPLIED_DOSE", "DoomsplodedApplied", 1217975)
-	self:Log("SPELL_AURA_APPLIED", "ShortFuseApplied", 473115) -- (Territorial Bombshell)
-	self:Log("SPELL_CAST_SUCCESS", "ScrapRockets", 1219384)
-	self:Log("SPELL_AURA_APPLIED", "InfectedBiteApplied", 466748)
-	self:Log("SPELL_AURA_APPLIED_DOSE", "InfectedBiteApplied", 466748)
+	self:Log("SPELL_DAMAGE", "GarbageDumpDamage", 465741) -- Rolling Rubbish hitting the boss
+
+	self:Log("SPELL_DAMAGE", "DiscardedDoomsplosiveDamage", 464865) -- Doomsplosives detonating
+	self:Log("SPELL_MISSED", "DiscardedDoomsplosiveDamage", 464865)
+	self:Log("SPELL_DAMAGE", "MuffledDoomsplosionDamage", 465747) -- Rolling Rubbish picking up Doomsplosives
+	self:Log("SPELL_MISSED", "MuffledDoomsplosionDamage", 465747)
+	self:Log("SPELL_AURA_APPLIED", "ShortFuseApplied", 473119) -- Bombshell detonating
+
+	self:Log("SPELL_CAST_START", "ElectromagneticSorting", 464399)
 	self:Log("SPELL_CAST_SUCCESS", "Incinerator", 464149)
 	self:Log("SPELL_AURA_APPLIED", "IncinerationApplied", 472893)
 	self:Log("SPELL_CAST_START", "Demolish", 464112)
 	self:Log("SPELL_AURA_APPLIED", "DemolishApplied", 464112)
 	self:Log("SPELL_AURA_APPLIED_DOSE", "DemolishApplied", 464112)
 	self:Log("SPELL_CAST_SUCCESS", "Meltdown", 1217954)
+	-- Scrapmaster
+	self:Log("SPELL_CAST_SUCCESS", "MessedUp", 1217685)
+	self:Log("SPELL_CAST_SUCCESS", "ScrapRockets", 1219384)
+	-- Junkyard Hyena
+	self:Log("SPELL_AURA_APPLIED", "InfectedBiteApplied", 466748)
+	self:Log("SPELL_AURA_APPLIED_DOSE", "InfectedBiteApplied", 466748)
 
 	self:Log("SPELL_CAST_START", "Overdrive", 467117)
+	self:Log("SPELL_AURA_APPLIED", "OverdriveApplied", 467117)
+	self:Log("SPELL_AURA_REMOVED", "OverdriveRemoved", 467117)
 	self:Log("SPELL_CAST_START", "TrashCompactor", 467109)
 	self:Log("SPELL_CAST_SUCCESS", "TrashCompactorSuccess", 467109)
-
-	self:Log("SPELL_DAMAGE", "GarbageDumpDamage", 465741) -- for Rolling Rubbish hitting the boss
-	self:Log("SPELL_DAMAGE", "MuffledDoomsplosionDamage", 465747) -- for Rolling Rubbish picking up Doomsplosives
-	self:Log("SPELL_MISSED", "MuffledDoomsplosionDamage", 465747)
 
 	-- Mythic
 	self:Log("SPELL_AURA_APPLIED", "MarkedForRecyclingApplied", 1220648)
@@ -154,16 +168,22 @@ function mod:OnEngage()
 
 	mobCollector = {}
 
-	self:Bar(464149, 11.1, CL.count:format(L.incinerator, incineratorCount)) -- Incinerator -- Fire
-	self:Bar(464112, 17.7, CL.count:format(self:SpellName(464112), demolishCount)) -- Demolish
-	self:Bar(464399, 22.2, CL.count:format(L.electromagnetic_sorting, electromagneticSortingCount)) -- Electromagnetic Sorting -- Balls + Adds
-	self:Bar(1217954, 45.5, CL.count:format(self:SpellName(1217954), meltdownCount)) -- Meltdown
-	self:Bar(467117, self:Mythic() and 66.7 or 111.2) -- Overdrive
+	if not self:Easy() then
+		self:Berserk(self:Mythic() and 386 or 481, true) -- 6:25/8:00
+	end
+
+	self:Bar(464149, self:Easy() and 10.0 or 11.1, CL.count:format(L.incinerator, incineratorCount)) -- Incinerator -- Fire
+	self:Bar(464112,  self:Easy() and 16.0 or 17.7, CL.count:format(self:SpellName(464112), demolishCount)) -- Demolish
+	self:Bar(464399, self:Easy() and 20.0 or 22.2, CL.count:format(L.electromagnetic_sorting, electromagneticSortingCount)) -- Electromagnetic Sorting -- Balls + Adds
+	if not self:LFR() then
+		self:Bar(1217954, self:Easy() and 41.0 or 45.5, CL.count:format(self:SpellName(1217954), meltdownCount)) -- Meltdown
+	end
+	self:Bar(467117, self:Mythic() and 66.7 or self:Easy() and 100.1 or 111.2) -- Overdrive
 	if self:Mythic() then
 		self:Bar(1218704, 33.3, CL.count:format(self:SpellName(1218704), powercoilCount)) -- Prototype Powercoil
 	end
 
-	if self:GetOption(territorialBombshellMarker) then
+	if self:GetOption(scrapmasterMarker) then
 		self:RegisterTargetEvents("AddMarking")
 	end
 end
@@ -173,16 +193,11 @@ end
 --
 
 function mod:AddMarking(_, unit, guid)
-	if mobCollector[guid] and self:GetOption(territorialBombshellMarker) then
-		self:CustomIcon(territorialBombshellMarker, unit, mobCollector[guid])
-		mobCollector[guid] = nil
+	if mobCollector[guid] then
+		local icon = scrapmasterMarkerMapTable[mobCollector[guid]]
+		self:CustomIcon(scrapmasterMarker, unit, icon)
+		mobCollector[guid] = false
 	end
-end
-
-function mod:ShortFuseApplied(args)
-	if mobMark < 5 then return end -- 8, 7, 6, 5
-	mobCollector[args.destGUID] = mobMark
-	mobMark = mobMark - 1
 end
 
 do
@@ -208,7 +223,8 @@ do
 		table.sort(iconList, sortPriority) -- Priority for tank > others > healers
 		for i = 1, #iconList do
 			local player = iconList[i].player
-			self:CustomIcon(rollingRubbishMarker, player, i)
+			local icon = rollingRubbishMarkerMapTable[i]
+			self:CustomIcon(rollingRubbishMarker, player, icon)
 		end
 	end
 
@@ -220,14 +236,16 @@ do
 
 		local cd
 		if self:Mythic() then
-			cd = electromagneticSortingCount == 2 and (33.4 + 22.5) or 51.1
+			cd = electromagneticSortingCount == 2 and (44.4 + 22.5) or 51.1
+		elseif self:Easy() then
+			cd = electromagneticSortingCount == 3 and (34.0 + 20.3) or 46.0
 		else
 			cd = electromagneticSortingCount == 3 and (37.8 + 22.5) or 51.1
 		end
 		self:Bar(args.spellId, cd, CL.count:format(L.electromagnetic_sorting, electromagneticSortingCount))
 
 		muffledDoomsplosionCount = 0
-		mobMark = 8
+		mobMark = 1
 		iconList = {}
 	end
 
@@ -255,6 +273,7 @@ do
 		if self:Me(args.destGUID) then
 			ballSize = 0
 			self:RegisterUnitEvent("UNIT_POWER_UPDATE", nil, "player", "vehicle")
+			self:TargetBar(args.spellId, 24, args.destName)
 		end
 	end
 
@@ -274,6 +293,7 @@ do
 
 	function mod:RollingRubbishRemoved(args)
 		if self:Me(args.destGUID) then
+			self:StopBar(args.spellName, args.destName)
 			self:PersonalMessage(461536, "removed")
 			self:PlaySound(461536, "info")
 			self:UnregisterUnitEvent("UNIT_POWER_UPDATE", "player", "vehicle")
@@ -300,11 +320,11 @@ end
 
 do
 	local prev = 0
-	function mod:DoomsplodedApplied(args)
+	function mod:DiscardedDoomsplosiveDamage(args)
 		if args.time - prev > 2 then
 			prev = args.time
-			self:Message(args.spellId, "red")
-			self:PlaySound(args.spellId, "warning")
+			self:Message(1217975, "red")
+			self:PlaySound(1217975, "alarm") -- failed
 		end
 	end
 end
@@ -315,26 +335,19 @@ do
 		if args.time - prev > 0.2 then
 			prev = args.time
 			muffledDoomsplosionCount = muffledDoomsplosionCount + 1
-			self:Message(args.spellId, "green", CL.count_amount:format(args.spellName, muffledDoomsplosionCount, self:GetStage()))
+			self:Message(args.spellId, "green", CL.count_amount:format(L.muffled_doomsplosion, muffledDoomsplosionCount, self:GetStage()))
 			-- self:PlaySound(args.spellId, "info")
 		end
 	end
 end
 
-function mod:ScrapRockets(args)
-	local canDo, ready = self:Interrupter(args.sourceGUID)
-	if canDo and ready then
-		self:Message(args.spellId, "yellow")
-		self:PlaySound(args.spellId, "alarm")
-	end
-end
-
-function mod:InfectedBiteApplied(args)
-	if self:Me(args.destGUID) then
-		local amount = args.amount or 1
-		if amount % 2 == 1 then
-			self:StackMessage(args.spellId, "blue", args.destName, amount, 6)
-			self:PlaySound(args.spellId, "alarm")
+do
+	local prev = 0
+	function mod:ShortFuseApplied(args)
+		if args.time - prev > 2 then
+			prev = args.time
+			self:Message(args.spellId, "red", L.short_fuse)
+			self:PlaySound(args.spellId, "alarm") -- failed
 		end
 	end
 end
@@ -348,7 +361,9 @@ function mod:Incinerator(args)
 
 	local cd
 	if self:Mythic() then
-		cd = incineratorCount == 4 and (14.5 + 11.4) or 25.6
+		cd = incineratorCount == 4 and (4.5 + 11.4) or 25.6
+	elseif self:Easy() then
+		cd = incineratorCount == 5 and (21.0 + 10.3) or 23.0
 	else
 		cd = incineratorCount == 5 and (23.4 + 11.4) or 25.6
 	end
@@ -358,7 +373,7 @@ end
 function mod:IncinerationApplied(args)
 	if self:Me(args.destGUID) then
 		self:PersonalMessage(args.spellId)
-		self:PlaySound(args.spellId, "alarm") -- watch surrouding
+		self:PlaySound(args.spellId, "warning") -- watch surrouding
 	end
 end
 
@@ -371,10 +386,12 @@ function mod:Demolish(args)
 	local cd
 	if self:Mythic() then
 		cd = demolishCount == 2 and (48.9 + 18.1) or 51.1
+	elseif self:Easy() then
+		cd = demolishCount == 3 and (38.0 + 16.3) or 46.0
 	else
 		cd = demolishCount == 3 and (42.2 + 18.0) or 51.1
 	end
-	self:Bar(args.spellId, cd, CL.count:format(args.spellName, demolishCount)) -- Delayed once due to overdrive?
+	self:Bar(args.spellId, cd, CL.count:format(args.spellName, demolishCount))
 end
 
 function mod:DemolishApplied(args)
@@ -400,10 +417,42 @@ function mod:Meltdown(args)
 	local cd
 	if self:Mythic() then
 		cd = meltdownCount == 2 and (21.2 + 45.7) or 51.1
+	elseif self:Easy() then
+		cd = meltdownCount == 3 and (13.1 + 41.3) or 46.0
 	else
 		cd = meltdownCount == 3 and (14.5 + 45.7) or 51.1
 	end
-	self:Bar(args.spellId, cd, CL.count:format(args.spellName, meltdownCount)) -- Delayed once due to overdrive?
+	self:Bar(args.spellId, cd, CL.count:format(args.spellName, meltdownCount))
+end
+
+function mod:MessedUp(args)
+	if self:MobId(args.sourceGUID) == 231839 then -- Scrapmaster
+		mobCollector[args.sourceGUID] = mobMark
+		mobMark = mobMark + 1
+	end
+end
+
+function mod:ScrapRockets(args)
+	local canDo, ready = self:Interrupter(args.sourceGUID)
+	if canDo and ready then
+		self:Message(args.spellId, "yellow")
+		self:PlaySound(args.spellId, "alarm")
+	end
+	-- flag the guid for marking if it wasn't rolled over
+	if mobCollector[args.sourceGUID] == nil then
+		mobCollector[args.sourceGUID] = mobMark
+		mobMark = mobMark + 1
+	end
+end
+
+function mod:InfectedBiteApplied(args)
+	if self:Me(args.destGUID) then
+		local amount = args.amount or 1
+		if amount % 2 == 1 then
+			self:StackMessage(args.spellId, "blue", args.destName, amount, 6)
+			self:PlaySound(args.spellId, "alarm")
+		end
+	end
 end
 
 function mod:Overdrive(args)
@@ -412,25 +461,34 @@ function mod:Overdrive(args)
 	self:Message(args.spellId, "cyan")
 	self:PlaySound(args.spellId, "long") -- flying away
 
-	self:PauseBar(464149, CL.count:format(self:SpellName(464149), incineratorCount)) -- Incinerator
+	-- The Overdrive "gap" cds are ((Overdrive _START - last cast) + (next cast - Trash Compactor _SUCCESS))
+	self:PauseBar(464149, CL.count:format(L.incinerator, incineratorCount)) -- Incinerator
 	self:PauseBar(464112, CL.count:format(self:SpellName(464112), demolishCount)) -- Demolish
-	self:PauseBar(464399, CL.count:format(self:SpellName(464399), electromagneticSortingCount)) -- Electromagnetic Sorting
+	self:PauseBar(464399, CL.count:format(L.electromagnetic_sorting, electromagneticSortingCount)) -- Electromagnetic Sorting
 	self:PauseBar(1217954, CL.count:format(self:SpellName(1217954), meltdownCount)) -- Meltdown
 	if self:Mythic() then
 		self:PauseBar(1218704, CL.count:format(self:SpellName(1218704), powercoilCount))
 	end
 end
 
+function mod:OverdriveApplied(args)
+	self:Bar(args.spellId, 9.0, CL.onboss:format(args.spellName))
+end
+
+function mod:OverdriveRemoved(args)
+	self:StopBar(CL.onboss:format(args.spellName))
+end
+
 function mod:TrashCompactor(args)
-	self:Message(467135, "red")
-	self:PlaySound(467135, "warning") -- watch drop location
-	self:CastBar(467135, 3.75)
+	self:Message(args.spellId, "red", L.landing)
+	self:PlaySound(args.spellId, "warning") -- watch drop location
+	self:CastBar(args.spellId, 3.75, L.landing)
 end
 
 function mod:TrashCompactorSuccess(args)
-	self:ResumeBar(464149, CL.count:format(self:SpellName(464149), incineratorCount)) -- Incinerator
+	self:ResumeBar(464149, CL.count:format(L.incinerator, incineratorCount)) -- Incinerator
 	self:ResumeBar(464112, CL.count:format(self:SpellName(464112), demolishCount)) -- Demolish
-	self:ResumeBar(464399, CL.count:format(self:SpellName(464399), electromagneticSortingCount)) -- Electromagnetic Sorting
+	self:ResumeBar(464399, CL.count:format(L.electromagnetic_sorting, electromagneticSortingCount)) -- Electromagnetic Sorting
 	self:ResumeBar(1217954, CL.count:format(self:SpellName(1217954), meltdownCount)) -- Meltdown
 	if self:Mythic() then
 		self:ResumeBar(1218704, CL.count:format(self:SpellName(1218704), powercoilCount)) -- Prototype Powercoil

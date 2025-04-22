@@ -96,7 +96,7 @@ function mod:OnBossEnable()
 	self:Log("SPELL_CAST_START", "InflictDeath", 440205, 470593)
 
 	-- also enable the Rares module
-	local raresModule = BigWigs:GetBossModule("Zekvir Rares", true)
+	local raresModule = BigWigs:GetBossModule("Underpin Rares", true)
 	if raresModule then
 		raresModule:Enable()
 	end
@@ -145,7 +145,8 @@ end
 
 function mod:EchoOfRenilash(args)
 	-- also cast by a boss (Reformed Fury)
-	if self:MobId(args.sourceGUID) ~= 218034 then -- Reformed Fury
+	local mobId = self:MobId(args.sourceGUID)
+	if mobId ~= 218034 and mobId ~= 238833 then -- Reformed Fury
 		self:Message(args.spellId, "yellow", CL.explosion)
 		self:PlaySound(args.spellId, "alarm")
 	end
@@ -165,7 +166,8 @@ end
 
 function mod:InflictDeath(args)
 	-- also cast by a boss (Reformed Fury)
-	if self:MobId(args.sourceGUID) ~= 218034 then -- Reformed Fury
+	local mobId = self:MobId(args.sourceGUID)
+	if mobId ~= 218034 and mobId ~= 238833 then -- Reformed Fury
 		self:Message(440205, "yellow", CL.casting:format(args.spellName))
 		self:PlaySound(440205, "alert")
 	end

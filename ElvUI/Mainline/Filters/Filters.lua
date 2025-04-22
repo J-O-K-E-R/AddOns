@@ -366,6 +366,8 @@ G.unitframe.aurafilters.Blacklist = {
 		[430191]	= List(), -- Warband Mentored Leveling
 		[455020]	= List(), -- WoW's Anniversary
 		[1219312]	= List(), -- Mmm, Tacos...
+		[264689]	= List(), -- Fatigued (11.1 Bloodlust)
+		[1226677]	= List(), -- Cartel Jumper Cables
 	},
 }
 
@@ -911,6 +913,8 @@ G.unitframe.aurafilters.RaidDebuffs = {
 		[260829] = List(), -- Homing Missle (travelling)
 		[260838] = List(), -- Homing Missle (exploded)
 		[263637] = List(), -- Clothesline
+		[262347] = List(), -- Static Pulse
+		[1213141] = List(), -- Heavy Slash
 	-- Theater of Pain
 		[333299] = List(), -- Curse of Desolation 1
 		[333301] = List(), -- Curse of Desolation 2
@@ -928,6 +932,7 @@ G.unitframe.aurafilters.RaidDebuffs = {
 		[319626] = List(), -- Phantasmal Parasite
 		[324449] = List(), -- Manifest Death
 		[341949] = List(), -- Withering Blight
+		[1223804] = List(), -- Well of Darkness
 	-- Operation Mechagon: Workshop
 		[291928] = List(), -- Giga-Zap
 		[292267] = List(), -- Giga-Zap
@@ -953,6 +958,7 @@ G.unitframe.aurafilters.RaidDebuffs = {
 		[301712] = List(), -- Pounce
 		[299475] = List(), -- B.O.R.K
 		[293670] = List(), -- Chain Blade
+		[1215411] = List(), -- Puncture
 	---------------------------------------------------------
 	--------------- Liberation of Undermine -----------------
 	---------------------------------------------------------
@@ -961,21 +967,32 @@ G.unitframe.aurafilters.RaidDebuffs = {
 		[459669] = List(), -- Spew Oil
 	-- Cauldron of Carnage
 		[1213690] = List(), -- Molten Phlegm
+		[1214009] = List(), -- Voltaic Image
 	-- Rik Reverb
 		[1217122] = List(), -- Lingering Voltage
+		[468119] = List(), -- Resonant Echoes
+		[467044] = List(), -- Faulty Zap
 	-- Stix Bunkjunker
 		[461536] = List(), -- Rolling Rubbish
 		[1217954] = List(), -- Meltdown
 		[465346] = List(), -- Sorted
+		[466748] = List(), -- Infected Bite
 	-- Sprocketmonger Lockenstock
 		[1218342] = List(), -- Unstable Shrapnel
 		[465917] = List(), -- Gravi-Gunk
+		[471308] = List(), -- Blisterizer Mk. II
 	-- The One-Armed Bandit
 		[471927] = List(), -- Withering Flames
 		[460420] = List(), -- Crushed!
 	-- Mug'Zee, Heads of Security
 		[4664769] = List(), -- Frostshatter Boots
+		[466509] = List(), -- Stormfury Finger Gun
+		[1215488] = List(), -- Disintegration Beam (Actually getting beamed)
+		[469391] = List(6), -- Perforating Wound
 	-- Chrome King Gallywix
+		[466154] = List(4), -- Blast Burns
+		[466834] = List(6), -- Shock Barrage
+		[469362] = List(6), -- Charged Giga Bomb (Carrying)
 	---------------------------------------------------------
 	------------------- Nerub'ar Palace ---------------------
 	---------------------------------------------------------

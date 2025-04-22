@@ -1357,8 +1357,11 @@ do
 		if iconRoles[which] then
 			UF:Configure_ReadyCheckIcon(frame)
 
-			if not E.Classic then
+			if E.allowRoles then
 				UF:Configure_RoleIcon(frame)
+			end
+
+			if not E.Classic then
 				UF:Configure_SummonIcon(frame)
 				UF:Configure_AltPowerBar(frame)
 			end
@@ -1454,9 +1457,6 @@ function UF:RegisterRaidDebuffIndicator()
 			local otherSpells = ((E.global.unitframe.aurafilters[other] and E.global.unitframe.aurafilters[other].spells) or E.global.unitframe.aurafilters.CCDebuffs.spells)
 			ORD:RegisterDebuffs(otherSpells)
 		end
-
-		local dispelColor = ORD:GetDispelColor()
-		E:CopyTable(dispelColor.none, E.media.bordercolor)
 	end
 end
 

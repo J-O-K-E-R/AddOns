@@ -1,6 +1,8 @@
 # BigWigs [Cataclysm]
 
-## [v11.0.16](https://github.com/BigWigsMods/BigWigs_Cataclysm/tree/v11.0.16) (2025-03-03)
-[Full Changelog](https://github.com/BigWigsMods/BigWigs_Cataclysm/compare/v11.0.15...v11.0.16) [Previous Releases](https://github.com/BigWigsMods/BigWigs_Cataclysm/releases)
+## [v11.1.3](https://github.com/BigWigsMods/BigWigs_Cataclysm/tree/v11.1.3) (2025-04-13)
+[Full Changelog](https://github.com/BigWigsMods/BigWigs_Cataclysm/compare/v11.1.2...v11.1.3) [Previous Releases](https://github.com/BigWigsMods/BigWigs_Cataclysm/releases)
 
-- DragonSoul/DeathwingMadness: Correct shrapnel cast time (#33)  
+- Bump min version  
+- Blackwing/Nefarian: Locale update  
+- Bastion/DoubleDragon: Locale update  

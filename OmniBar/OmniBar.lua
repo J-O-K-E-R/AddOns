@@ -121,6 +121,7 @@ local DEFAULTS = {
 	growUpward           = true,
 	highlightFocus       = false,
 	highlightTarget      = true,
+	iconSorting		     = "TIME_ADDED",
 	locked               = false,
 	maxIcons             = 32,
 	multiple             = true,
@@ -1023,13 +1024,19 @@ function OmniBar_OnEvent(self, event, ...)
 	elseif event == "ARENA_OPPONENT_UPDATE" then
 		if self.disabled or (not self.settings.showUnused) then return end
 
+		local unit, reason = ...
+
+		if reason == "cleared" then
+			wipe(self.detected)
+			wipe(self.spellCasts)
+			OmniBar_Refresh(self)
+		end
+
 		-- we get the info from ARENA_PREP_OPPONENT_SPECIALIZATIONS on retail
 		if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
 			OmniBar_OnEvent(self, "ARENA_PREP_OPPONENT_SPECIALIZATIONS")
 			return
 		end
-
-		local unit = ...
 
 		if (not unit) or (not UnitIsPlayer(unit)) then return end
 
@@ -1447,6 +1454,7 @@ function OmniBar_AddIcon(self, info)
 	icon.timestamp = info.test and GetTime() or info.timestamp
 	icon.duration = info.test and math.random(5,30) or info.duration
 	icon.added = GetTime()
+	icon.expires = info.test and icon.timestamp + icon.duration or info.expires
 
 	if icon.charges and info.charges and icon:IsVisible() then
 		local start, duration = icon.cooldown:GetCooldownTimes()
@@ -1547,6 +1555,18 @@ function OmniBar_Test(self)
 	end
 end
 
+local function SortIconsByRemainingTime(self)
+    table.sort(self.active, function(a, b)
+        return a.expires == b.expires and a.spellID < b.spellID or a.expires < b.expires
+    end)
+end
+
+local function SortIconsByTimeAdded(self)
+    table.sort(self.active, function(a, b)
+        return a.added == b.added and a.spellID < b.spellID or a.added < b.added
+    end)
+end
+
 function OmniBar_Position(self)
 	local numActive = #self.active
 	if numActive == 0 then
@@ -1571,8 +1591,12 @@ function OmniBar_Position(self)
 			return CLASS_ORDER[aClass] < CLASS_ORDER[bClass]
 		end)
 	else
-		-- if we aren't showing unused, just sort by added time
-		table.sort(self.active, function(a, b) return a.added == b.added and a.spellID < b.spellID or a.added < b.added end)
+		-- if we aren't showing unused, sort active icons based on user preference: time remaining or time added
+		if self.settings.iconSorting == "TIME_REMAINING" then
+			SortIconsByRemainingTime(self)
+		else
+			SortIconsByTimeAdded(self)
+		end
 	end
 
 	local count, rows = 0, 1

@@ -12,11 +12,12 @@ Frame.MoneySpacing = 2
 
 --[[ Construct ]]--
 
-function Frame:New(id)
+function Frame:New(params)
 	local f = self:Super(Frame):New(UIParent)
-	f.id, f.quality = id, 0
-	f.profile = f:GetBaseProfile()
+	tinsert(UISpecialFrames, f:GetName())
+	MergeTable(f, params)
 
+	f.profile = f:GetBaseProfile()
 	f.MenuButtons = {}
 	f.Search = Addon.SearchFrame(f)
 	f.Title = Addon.Title(f, f.Title)
@@ -30,7 +31,6 @@ function Frame:New(id)
 	f:EnableMouse(true)
 	f:SetClampedToScreen(true)
 
-	tinsert(UISpecialFrames, f:GetName())
 	return f
 end
 
@@ -153,7 +153,7 @@ function Frame:PlaceItemGroup()
 	local inset = anchor ~= self.BagGroup and self.inset or 0
 
 	self.ItemGroup:SetPoint('TOPLEFT', anchor, 'BOTTOMLEFT', inset, -4-inset)
-	return self.ItemGroup:GetWidth() - 2 + (self.bg.skin.inset or 0) * 2, self.ItemGroup:GetHeight() + 6
+	return self.ItemGroup:GetWidth() - 2 + (self.inset or 0) * 2, self.ItemGroup:GetHeight() + 6
 end
 
 function Frame:PlaceBagGroup()
@@ -168,19 +168,16 @@ function Frame:PlaceBagGroup()
 	end)
 end
 
-function Frame:AreBagsShown()
-	return self:GetProfile().showBags
-end
-
 
 --[[ Sidebar ]]--
 
 function Frame:PlaceSidebar()
-	return self:PlaceWidget('FilterGroup', self:HasSidebar() and function(filters)
+	return self:PlaceWidget('TabGroup', self:HasSidebar() and function(filters)
+		local margin = self.bg.skin.margin or 0
 		if self.id == 'inventory' then
-			filters:SetPoint('TOPRIGHT', self, 'TOPLEFT', 4,0)
+			filters:SetPoint('TOPRIGHT', self, 'TOPLEFT', 4-margin,0)
 		else
-			filters:SetPoint('TOPLEFT', self, 'TOPRIGHT')
+			filters:SetPoint('TOPLEFT', self, 'TOPRIGHT', margin,0)
 		end
 	end)
 end

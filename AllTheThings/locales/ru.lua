@@ -67,6 +67,9 @@ local GetSpellName = app.WOWAPI.GetSpellName;
 	L.EXPANSION_DATA[8].lore = "Когда Саргерас нанес Азерот страшную рану, из недр планеты поднялась нестабильная субстанция, прозванная азеритом — кровь самого спящего титана. Вскоре Альянс и Орда поняли, какой потенциал сокрыт в этом веществе, и взаимная неприязнь перешла в открытую конфронтацию. В стремлении завладеть как можно большим количеством азерита, Орда сожгла Тельдрассил, а затем Альянс осадил Подгород.\n\nОбе фракции были ослаблены и нуждались в новых союзниках и в героях, которые бы помогли их найти. Так Джайна Праудмур отправилась на свою родину, Кул-Тирас, в надежде уговорить морскую державу вновь присоединиться к Альянсу. Однако местные дворянские дома погрязли в конфликтах и проявили единодушие лишь в ненависти к Джайне за ее прошлые поступки. В то же время герои Орды вызволили зандаларскую принцессу Таланджи из тюрьмы Штормграда. И, хотя сперва ее отец, король Растахан, не был настроен слушать послов, со временем Таланджи все-таки уговорила зандаларских троллей присоединиться к Орде. Дипломатия помогла обеим фракциям, и в результате успешных военных кампаний они основали надежные базы в Зандаларе и Кул-Тирасе.\n\nДобившись доверия со стороны своих новых союзников, Альянс и Орда вновь скрестили клинки, не замечая, что над ними нависли грозные волны возмездия…";
 	L.EXPANSION_DATA[9].lore = "Одним отчаянным ударом Сильвана Ветрокрылая разрушила границу между миром живых и загробным царством. Храбрейших защитников Азерота затянула всепожирающая тьма. Несущая смерть древняя сила грозит сбросить оковы и уничтожить саму реальность.\n\nТех, кто осмелится сделать шаг в царство мертвых, ждут чудесные и пугающие неизведанные миры. Темные земли — это царство, в котором обитают души умерших. Это мир между мирами, от хрупкого баланса в котором зависит само существование жизни и смерти.\n\nКак одного из величайших защитников Азерота, вас наделили способностью пребывать в этом мире, не теряя своей телесной оболочки. Теперь вам предстоит раскрыть заговор, грозящий уничтожением Вселенной, и помочь легендарным героям всех эпох Warcraft вернуться в Азерот... или окончательно покинуть этот мир.";
 	L.EXPANSION_DATA[10].lore = "Драконы Азерота откликнулись на зов и вернулись, чтобы защитить свою родину, Драконьи острова. Магия стихий и энергия жизни Азерота наполняют вновь пробудившиеся Драконьи острова, и теперь вам предстоит исследовать их первобытные чудеса и раскрыть давно забытые тайны.";
+	--TODO: L.EXPANSION_DATA[11].lore = "The War Within is the tenth expansion for World of Warcraft and the beginning of the Worldsoul Saga. Journey through never-before-seen subterranean worlds filled with hidden wonders and lurking perils, down to the dark depths of the nerubian empire, where the malicious Harbinger of the Void is gathering arachnid forces to bring Azeroth to its knees.";
+	--TODO: L.EXPANSION_DATA[12].lore = "Midnight is the eleventh expansion for World of Warcraft and the second installment of the Worldsoul Saga.";
+	--TODO: L.EXPANSION_DATA[13].lore = "The Last Titan is the twelfth expansion for World of Warcraft and the final installment of the Worldsoul Saga.";
 	L.TITLES_DESC = "Звания отслеживаются по всей учётной записи, однако, некоторые Ваши персонажи могут иметь звания, доступные только им.";
 	L.UPON_COMPLETION = "По выполнении";
 	L.UPON_COMPLETION_DESC = "Задания выше должны быть выполнены прежде, чем Вы сможете выполнить штучки, указанные ниже.";
@@ -422,7 +425,7 @@ for key,value in pairs({
 	["Expansion Pre"] = "Препатч";
 	["Особый контент"] = "ОК";
 	[GROUP_FINDER] = "П и Р";	-- ["Dungeons & Raids"] = "D&R"
-	["Cataclysm"] = "Ката";
+	["Cataclysm "] = "Ката ";
 	["Темные Земли"] = "ТЗ",
 	["Player vs Player"] = "ПвП";
 	["Поиск рейда"] = "ЛФР";
@@ -442,43 +445,6 @@ do a[key] = value; end
 if app.IsRetail then
 local a = L.HEADER_NAMES;
 for key,value in pairs({
-	-- PvP
-		[-242] = "Нерейтинговые",									-- Unrated
-	-- Outposts in Draenor
-		[-361] = "Артиллерийная башня",								-- Artillery Tower
-	-- BFA Outposts
-		[-397] = "Аванпосты",										-- Outposts
-	-- Misc
-		[-493] = "Сломанный лут с миссий",							-- Broken Mission Loot
-	-- Blizzard Events and Anniversaries
-		[-520] = "Препатч",											-- Expansion Pre-Launch
-		[-543] = "Вторжение Легиона",								-- Legion Invasions
-	-- Mists of Pandaria PvP Seasons
-		[-675] = select(2, GetAchievementInfo(8214))..": Сезон 12",	-- Malevolent Gladiator: Season 12
-		[-653] = "Доспехи Деспотичного гладиатора за очки чести",	-- Honor Gear Tyrannical Season
-		[-676] = select(2, GetAchievementInfo(8791))..": Сезон 13",	-- Tyrannical Gladiator: Season 13
-		[-652] = "Доспехи Бездушного гладиатора за очки чести",		-- Honor Gear Grievous Season
-		[-651] = "Доспехи Гордого гладиатора за очки чести",		-- Honor Gear Prideful Season
-	-- Shadowlands Header
-		[-979] = "Брокер Ве'кен & Брокер Ве'нотт",					-- Broker Ve'ken & Broker Ve'nott
-		[-924] = "Транспортная Сеть",								-- Transport Network
-		-- SL Bastion/Kyrian
-			[-973] = "Верность",									-- Loyalty
-			[-975] = "Смирение",									-- Humility
-		-- SL Revendreth/Venthyr
-			[-954] = "Инквизиторы",									-- Inquisitors
-			[-955] = "Старшие Инквизиторы",							-- High Inquisitors
-			[-956] = "Великие Инквизиторы",							-- Grand Inquisitors
-			[-967] = "Восстановление зеркала",						-- Mirror Restoration
-			[-968] = "Набор A",										-- Set A
-			[-969] = "Набор B",										-- Set B
-			[-970] = "Набор C",										-- Set C
-			[-971] = "Набор D",										-- Set D
-	-- Dragonflight
-		[-1102] = "Гневион и Сабеллиан",							-- Wrathion & Sabellian
-		[-1120] = "Кентавры Маруук",								-- Maruuk Centaur
-		[-1130] = "Искарские клыкарры",								-- Iskaara Tuskarr
-		[-1150] = "Лоаммские ниффы",								-- Loamm Niffen
 	-- Tier/Dungeon/Event/Holiday Sets
 		-- Artifact Strings
 			[-5200] = "Основной облик",								-- Base Appearance

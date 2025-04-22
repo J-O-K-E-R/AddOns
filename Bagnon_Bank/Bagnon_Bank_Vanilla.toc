@@ -5,7 +5,7 @@
 ## Category: Bags & Inventory
 
 ## Dependencies: Bagnon
-## Interface: 11506
+## Interface: 11507
 ## LoadOnDemand: 1
 
 ..\BagBrother\frames\bank\bank.xml

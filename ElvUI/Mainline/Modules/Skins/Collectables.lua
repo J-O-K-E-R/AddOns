@@ -293,17 +293,22 @@ local function SetsFrame_SetItemFrameQuality(_, itemFrame)
 	end
 end
 
-local function HandleDynamicFlightButton(button, index)
-	if button.Border then button.Border:Hide() end
+local function HandleDynamicFlightTexture(button, index)
+	local icon = index and select(index, button:GetRegions())
+	if icon then
+		S:HandleIcon(icon, true)
+	end
+end
 
-	button:SetPushedTexture(0)
+local function HandleDynamicFlightButton(button, index)
+	if button.BorderShadow then button.BorderShadow:SetAlpha(0) end
+	if button.Border then button.Border:SetAlpha(0) end
+
 	button:GetHighlightTexture():SetColorTexture(1, 1, 1, .25)
+	button:SetPushedTexture(0)
 	button:SetNormalTexture(0)
 
-	local icon = select(index, button:GetRegions())
-	if icon then
-		S:HandleIcon(icon)
-	end
+	HandleDynamicFlightTexture(button, index)
 end
 
 local function SkinMountFrame()
@@ -315,6 +320,16 @@ local function SkinMountFrame()
 	local Flyout = _G.MountJournal.ToggleDynamicFlightFlyoutButton.popup
 	if Flyout then
 		Flyout.Background:Hide()
+
+		local DynamicFlight = Flyout.DynamicFlightModeButton
+		if DynamicFlight then
+			HandleDynamicFlightButton(DynamicFlight, 4)
+		end
+
+		local OpenFlight = Flyout.OpenDynamicFlightSkillTreeButton
+		if OpenFlight then
+			HandleDynamicFlightButton(OpenFlight, 4)
+		end
 	end
 
 	_G.MountJournal.FilterDropdown:ClearAllPoints()
@@ -736,7 +751,7 @@ local function HandleTabs()
 		tab:ClearAllPoints()
 
 		if index == 1 then
-			tab:Point('TOPLEFT', _G.CollectionsJournal, 'BOTTOMLEFT', -3, 2)
+			tab:Point('TOPLEFT', _G.CollectionsJournal, 'BOTTOMLEFT', -3, 0)
 		else
 			tab:Point('TOPLEFT', lastTab, 'TOPRIGHT', -5, 0)
 			lastTab = tab
@@ -745,6 +760,13 @@ local function HandleTabs()
 		index = index + 1
 		tab = _G['CollectionsJournalTab'..index]
 	end
+
+	-- Blizzard clears points on the wardrobe tab
+	hooksecurefunc('CollectionsJournal_CheckAndDisplayHeirloomsTab', function()
+		if _G.CollectionsJournalTab5 then
+			_G.CollectionsJournalTab5:Point('TOPLEFT', _G.CollectionsJournalTab4, 'TOPRIGHT', -5, 0)
+		end
+	end)
 end
 
 local function SkinCollectionsFrames()

@@ -22,18 +22,13 @@ L["disableSpecSelectorDescription"] = "Disable the Spec Selector in the Applicat
 L["enableSpecPriority"] = "Включить приоритет специализации"
 L["fifteen"] = "15+"
 L["five"] = "5+"
---[[Translation missing --]]
-L["groupNameBeforeScore"] = "Group Name before Score"
---[[Translation missing --]]
-L["groupNameBeforeScoreDescription"] = "Show the Group Name before the Score of the GroupLeader instead of after"
+L["groupNameBeforeScore"] = "Название группы перед рейтингом"
+L["groupNameBeforeScoreDescription"] = "Показывать название группы перед рейтингом лидера группы, а не после него"
 --[[Translation missing --]]
 L["groupView"] = "Group View"
---[[Translation missing --]]
-L["highest"] = "Highest Keylevel"
---[[Translation missing --]]
-L["oneClickSignup"] = "One Click Signup"
---[[Translation missing --]]
-L["oneClickSignupDescription"] = "Sign up for a group with one click"
+L["highest"] = "Самый высокий уровень ключа"
+L["oneClickSignup"] = "Присоединение в один клик"
+L["oneClickSignupDescription"] = "Присоединитесь к группе одним щелчком мыши"
 --[[Translation missing --]]
 L["OneClickSignupNotAvailable"] = "One Click Signup is not available with Premades Group Filter enabled please disable the option and use Premades Group Filters setting instead"
 --[[Translation missing --]]
@@ -60,10 +55,8 @@ L["showLanguage"] = "Показать язык"
 L["showLanguageDescription"] = "Показать язык кандидатов и лидера группы"
 L["showNote"] = "Показать примечание"
 L["showNoteDescription"] = "Показывать значок, если кандидат добавил примечание"
---[[Translation missing --]]
-L["showRaceIcon"] = "Show race Icon"
---[[Translation missing --]]
-L["showRaceIconDescription"] = "Show a race icon next to the name of the applicant"
+L["showRaceIcon"] = "Показать иконку расы"
+L["showRaceIconDescription"] = "Показывать иконку расы рядом с именем кандидата"
 --[[Translation missing --]]
 L["showTimedKeys"] = "Show Timed Keys"
 --[[Translation missing --]]

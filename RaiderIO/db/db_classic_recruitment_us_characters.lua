@@ -2,12 +2,12 @@
 -- Copyright (c) 2025 by Ludicrous Speed, LLC
 -- All rights reserved.
 --
-local provider={name=...,data=3,region="us",date="2025-03-05T06:05:55Z",numCharacters=97,db={}}
+local provider={name=...,data=3,region="us",date="2025-04-22T06:09:05Z",numCharacters=112,db={}}
 local F
 
-F = function() provider.db["Benediction"]={0,"Avesantana","Custoslucis","Dkarthasdk","Dktankdk","Dártos","Fantacasual","Ghalwise","Herefohero","Incindy","Naahdeadass","Samsdruid","Sapporah","Stokedmyth","Tinkmeister"} end F()
-F = function() provider.db["Mankrik"]={28,"Altere","Caketank","Cawanu","Dknold","Dopåmine","Dromhunter","Dromlock","Drommekage","Droodkage","Drömmekage","Drømmekage","Elder","Elderne","Eldertoo","Elementalino","Gøkù","Habiibi","Howyadóinmon","Kadron","Kèrupt","Lazzarrass","Liljessie","Litler","Lymz","Låymon","Maikeruu","Manlycupcake","Mon","Neroslice","Nevlak","Osakha","Phailme","Pwniszher","Pølsemix","Revirez","Shadowgrave","Shotalotapus","Sinthra","Stitchyboi","Styggmz","Tyder","Vinsmøke","Zaritjr","Zubee","Zuubedoo","Zuubinator","Zúzù","Èpinephrine"} end F()
-F = function() provider.db["Faerlina"]={124,"Blasteleon"} end F()
+F = function() provider.db["Mankrik"]={0,"Altere","Derisbear","Deriscorch","Derisdeath","Derisdots","Deriseal","Derishield","Derishock","Derishot","Derishout","Derismoo","Deristab","Deristas","Deristide","Deristorm","Deristree","Deristrike","Dknold","Eildear","Elder","Elderne","Eldertoo","Elementalino","Galacnocok","Habiibi","Kadron","Lazzarrass","Lymz","Mon","Neroslice","Osakha","Revirez","Shadowgrave","Shotalotapus","Sinthra","Styggmz","Varltok","Zaritjr"} end F()
+F = function() provider.db["Arugal"]={76,"Ayayayayayay","Bktd","Davelol","Davelolfan","Daveloli","Daveloltroll","Denkah","Denkar","Denkr","Dkdave","Fluffysbff","Fluffyshh","Fluffyshype","Fluffyspve","Fluffysum","Fluffyswl","Fluffyzz","Flxffys","Lylie","Notbucket","Photoncannon","Tashy","Txshy","Txshytwo"} end F()
+F = function() provider.db["Pagle"]={124,"Bubblebound","Ticklesand"} end F()
 
 F = nil
 RaiderIO.AddProvider(provider)

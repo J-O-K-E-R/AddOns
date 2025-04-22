@@ -50,6 +50,8 @@ if L then
 	L.bubbles = "Bubbles"
 	L.venture_co_electrician = "Venture Co. Electrician"
 	L.darkfuse_jumpstarter = "Darkfuse Jumpstarter"
+
+	L.geezle_gigazap_warmup = "This project can't continue without the scientist behind it all. Put that big brain on ice!"
 end
 
 --------------------------------------------------------------------------------
@@ -120,6 +122,9 @@ end
 function mod:OnBossEnable()
 	-- Weapons Stockpile
 	self:RegisterWidgetEvent(6270, "WeaponsStockpilePilfered", true)
+
+	-- Warmup
+	self:RegisterEvent("CHAT_MSG_MONSTER_SAY")
 
 	-- Zeppelin
 	-- 1213704 Zeppelin Barrage, hidden
@@ -207,6 +212,7 @@ function mod:OnBossEnable()
 
 	-- Bomb Pile
 	self:Log("SPELL_CAST_START", "PlantBombs", 1214337)
+	self:Log("SPELL_CAST_SUCCESS", "PlantBombsSuccess", 1214337)
 
 	-- Bubbles
 	self:RegisterEngageMob("BubblesEngaged", 231197)
@@ -239,6 +245,19 @@ function mod:WeaponsStockpilePilfered(_, text)
 	self:PlaySound("weapons_stockpiles_pilfered", "info")
 end
 
+-- Warmups
+
+function mod:CHAT_MSG_MONSTER_SAY(event, msg)
+	if msg == L.geezle_gigazap_warmup then
+		self:UnregisterEvent(event)
+		local geezleGigazapModule = BigWigs:GetBossModule("Geezle Gigazap", true)
+		if geezleGigazapModule then
+			geezleGigazapModule:Enable()
+			geezleGigazapModule:Warmup()
+		end
+	end
+end
+
 -- Shreddinator 3000
 
 function mod:Shreddinator3000Engaged(guid)
@@ -264,7 +283,7 @@ do
 end
 
 function mod:Flamethrower(args)
-	self:Message(args.spellId, "yellow") -- TODO purple?
+	self:Message(args.spellId, "yellow")
 	self:Nameplate(args.spellId, 26.7, args.sourceGUID)
 	self:PlaySound(args.spellId, "alarm")
 end
@@ -386,7 +405,7 @@ end
 do
 	local prev = 0
 	function mod:SurpriseInspection(args)
-		self:Nameplate(args.spellId, 8.5, args.sourceGUID)
+		self:Nameplate(args.spellId, 10.9, args.sourceGUID) -- cd on cast start
 		if args.time - prev > 2 then
 			prev = args.time
 			self:Message(args.spellId, "orange")
@@ -591,9 +610,29 @@ end
 
 -- Bomb Pile
 
-function mod:PlantBombs(args)
-	self:Message(args.spellId, "green", CL.other:format(self:ColorName(args.sourceName), args.spellName))
-	self:PlaySound(args.spellId, "info")
+do
+	local prev = 0
+	function mod:PlantBombs(args)
+		self:Message(args.spellId, "green", CL.other:format(self:ColorName(args.sourceName), args.spellName))
+		if args.time - prev > 5 then
+			prev = args.time
+			self:PlaySound(args.spellId, "info")
+		end
+	end
+end
+
+do
+	local prev = 0
+	function mod:PlantBombsSuccess(args)
+		if args.time - prev > 10 then
+			prev = args.time
+			local swampfaceModule = BigWigs:GetBossModule("Swampface", true)
+			if swampfaceModule then
+				swampfaceModule:Enable()
+				swampfaceModule:Warmup()
+			end
+		end
+	end
 end
 
 -- Bubbles

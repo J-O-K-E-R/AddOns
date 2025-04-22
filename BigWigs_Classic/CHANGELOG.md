@@ -1,7 +1,8 @@
 # BigWigs [Classic]
 
-## [v11.0.38](https://github.com/BigWigsMods/BigWigs_Classic/tree/v11.0.38) (2025-02-07)
-[Full Changelog](https://github.com/BigWigsMods/BigWigs_Classic/compare/v11.0.37...v11.0.38) [Previous Releases](https://github.com/BigWigsMods/BigWigs_Classic/releases)
+## [v11.1.29](https://github.com/BigWigsMods/BigWigs_Classic/tree/v11.1.29) (2025-04-22)
+[Full Changelog](https://github.com/BigWigsMods/BigWigs_Classic/compare/v11.1.28...v11.1.29) [Previous Releases](https://github.com/BigWigsMods/BigWigs_Classic/releases)
 
-- Naxxramas\_Classic/Horsemen: Add SoD spell IDs for the marks  
-- Naxxramas\_Classic/Kelthuzad: Stage 1 seems shorter on SoD  
+- ScarletEnclave\_Classic/Beatrix: Tweak wave message  
+- ScarletEnclave\_Classic/Solistrasza: Add explosion bar from adds  
+- ScarletEnclave\_Classic/Mason: Adjust berserk for hotfix  

@@ -1,3 +1,4 @@
+-- Generated from CurseForge on Tue Apr 22 08:18:35 UTC 2025
 local ns = select(2, ...) ---@class ns @The addon namespace.
 
 if ns:IsSameLocale("zhTW") then
@@ -7,7 +8,7 @@ if ns:IsSameLocale("zhTW") then
 
 	L.LOCALE_NAME = "zhTW"
 
-	L["ALLOW_IN_LFD"] = "允許用在隊伍搜尋器"
+L["ALLOW_IN_LFD"] = "允許用在隊伍搜尋器"
 L["ALLOW_IN_LFD_CLASSIC"] = "允許用在隊伍搜尋器"
 L["ALLOW_IN_LFD_CLASSIC_DESC"] = "在隊伍搜尋器中以右鍵點擊隊伍或申請人以複製 Raider.IO 紀錄連結。"
 L["ALLOW_IN_LFD_DESC"] = "右鍵點擊隊伍搜尋器上的隊伍或申請人來複製Raider.IO紀錄網址。"
@@ -538,6 +539,5 @@ L["WARNING_LOCK_POSITION_FRAME_AUTO"] = "RaiderIO：您必須先取消Raider.IO�
 L["WARNING_RWF_MODE_ENABLE"] = "|cffFFFFFF%s|r 世界首推競賽模式已啟用。如想停用請輸入|cffFFFFFF/raiderio rwf|r。"
 L["WIPE_RWF_MODE_BUTTON"] = "清除"
 L["WIPE_RWF_MODE_BUTTON_TOOLTIP"] = "單擊以從儲存檔中清除日誌。這將導致您的介面重新載入。"
-
 
 end

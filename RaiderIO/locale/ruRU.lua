@@ -1,3 +1,4 @@
+-- Generated from CurseForge on Tue Apr 22 08:18:32 UTC 2025
 local ns = select(2, ...) ---@class ns @The addon namespace.
 
 if ns:IsSameLocale("ruRU") then
@@ -7,7 +8,7 @@ if ns:IsSameLocale("ruRU") then
 
 	L.LOCALE_NAME = "ruRU"
 
-	L["ALLOW_IN_LFD"] = "Разрешить в окне поиска группы"
+L["ALLOW_IN_LFD"] = "Разрешить в окне поиска группы"
 L["ALLOW_IN_LFD_CLASSIC"] = "Разрешить в поиске групп"
 L["ALLOW_IN_LFD_CLASSIC_DESC"] = "Щелкните ПКМ на группы или кандидатов в поиске групп, чтобы скопировать ссылку профиля Raider.IO"
 L["ALLOW_IN_LFD_DESC"] = "Нажмите ПКМ на группу или кандидатов в заранее собранных группах для копирования ссылки на профиль Raider.IO."
@@ -539,6 +540,5 @@ L["WARNING_LOCK_POSITION_FRAME_AUTO"] = "Raider.IO: Для начала Вы д�
 L["WARNING_RWF_MODE_ENABLE"] = "|cffFFFFFF%s|r Включен режим Race World First. Вы можете отключить его, набрав |cffFFFFFF/raiderio rwf|r."
 L["WIPE_RWF_MODE_BUTTON"] = "Вайп"
 L["WIPE_RWF_MODE_BUTTON_TOOLTIP"] = "Нажмите, чтобы стереть журнал из файла хранилища. Это приведет к перезагрузке Вашего интерфейса."
-
 
 end

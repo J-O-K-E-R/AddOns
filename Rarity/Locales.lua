@@ -2,6 +2,10 @@ local L
 L = LibStub("AceLocale-3.0"):NewLocale("Rarity", "enUS", true)
 
 -- L["AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"] = true
+L["Venture Co-ordinator"] = true
+L["Blackwater Bonecrusher"] = true
+L["Bilgewater Bombardier"] = true
+L["Attempt to enable the Options module"] = true
 L["Personalized Goblin S.C.R.A.Per"] = true
 L["Bronze Goblin Waveshredder"] = true
 L["Darkfuse Precipitant"] = true
@@ -2221,6 +2225,8 @@ L["Ancient Elethium Coin"] = "Uralte Elethiummünze"
 L["Ancient Mana"] = "Uraltes Mana"
 L["Ancient Salamanther"] = "Uralter Salamanther"
 L["and %d |4other zone:other zones;"] = "und %d |4andere Zone:andere Zonen;"
+--[[Translation missing --]]
+L["Angelo Rustbin"] = "Angelo Rustbin"
 L["Angry Egg"] = "Wütendes Ei"
 L["Anh-De the Loyal"] = "Anh-De der Loyale"
 L["Animated Tome"] = "Belebter Foliant"
@@ -2594,6 +2600,10 @@ L["Corrupted Nest Guardian"] = "Verderbter Nestwächter"
 L["Corrupted Tentacle"] = "Corrupted Tentacle"
 L["Corrupted Thundertail"] = "Verderbter Donnerschwanz"
 --[[Translation missing --]]
+L["Craboom"] = "Craboom"
+--[[Translation missing --]]
+L["Crackleroar"] = "Crackleroar"
+--[[Translation missing --]]
 L["Crackling Shard"] = "Crackling Shard"
 L["Craghoof Kid"] = "Klippenhufkitz"
 L["Craghorn Chasm-Leaper"] = "Klippenhornspringer"
@@ -2642,6 +2652,8 @@ L["Custom"] = "Benutzerdefiniert"
 --[[Translation missing --]]
 L["Cyclarus"] = "Cyclarus"
 --[[Translation missing --]]
+L["Cyclonic Runekey"] = "Cyclonic Runekey"
+--[[Translation missing --]]
 L["Daggertooth Frenzy"] = "Daggertooth Frenzy"
 L["Dandelion Frolicker"] = "Löwenzahnwitzbold"
 L["Darbel Montrose"] = true
@@ -2649,6 +2661,10 @@ L["Dark Gazer"] = "Dunkles Auge"
 L["Dark Iron Deposit"] = "Dunkeleisenablagerung"
 L["Dark Quivering Blob"] = "Dunkler wabernder Klumpen"
 L["Dark Whelpling"] = "Dunkelwelpling"
+--[[Translation missing --]]
+L["Darkfuse Precipitant"] = "Darkfuse Precipitant"
+--[[Translation missing --]]
+L["Darkfuse Spy-Eye"] = "Darkfuse Spy-Eye"
 --[[Translation missing --]]
 L["Darklord Taraxis"] = "Darklord Taraxis"
 L["Darkmaul"] = "Finsterpranke"
@@ -2875,6 +2891,8 @@ L["Experiment 12-B"] = true
 --[[Translation missing --]]
 L["Experimental"] = "Experimental"
 L["Experiment-In-A-Jar"] = "Experiment im Glas"
+--[[Translation missing --]]
+L["Explosive Hearthstone"] = "Explosive Hearthstone"
 L["Export"] = "Export "
 L["Export Rarity Item Pack"] = "Rarity-Gegenstandspaket exportieren"
 L["Export this item"] = "Exportiere diesen Gegenstand "
@@ -3007,6 +3025,8 @@ L["Gahz'rooki's Summoning Stone"] = "Gahz'rookis Beschwörungsstein"
 L["Galakhad"] = "Galakhad"
 --[[Translation missing --]]
 L["Gale Spirit"] = "Gale Spirit"
+--[[Translation missing --]]
+L["Gallagio Garbage"] = "Gallagio Garbage"
 L["Gar'lok"] = true
 L["Garn Nighthowl"] = "Garn Nachtheuler"
 L["Garn Steelmaw"] = "Garnstahlrachen"
@@ -3059,6 +3079,8 @@ L["Glittering Arcane Crystal"] = "Glitzernder arkaner Kristall"
 L["Glittering Ball of Yarn"] = "Schimmerndes Wollknäuel"
 --[[Translation missing --]]
 L["Glittering Diamondshell"] = "Glittering Diamondshell"
+--[[Translation missing --]]
+L["Glittering Vault Shard"] = "Glittering Vault Shard"
 L["Glorious Felcrusher"] = "Glorreicher Teufelszermalmer"
 L["Glowing Jade Lungfish"] = "Leuchtender Jadelungenfisch"
 L["Gluth's Bone"] = "Gluths Knochen"
@@ -3118,6 +3140,8 @@ L["Grow Up"] = "Aufwachsen"
 --[[Translation missing --]]
 L["Grugoth the Hullcrusher"] = "Grugoth the Hullcrusher"
 L["Grumpling"] = true
+--[[Translation missing --]]
+L["Grunch"] = "Grunch"
 L["Guaranteed drop from Dormus the Camel-Hoarder. Accessing this encounter requires finding a rare Mysterious Camel Figurine in Uldum. These are difficult to spot and, when clicked, have a small chance to grant you access to the Dormus encounter. Rarity will count how many Figurines you've found if you mouseover them."] = "Garantierte Beute von Dormus der Kameltreiber. Zugang zu dieser Begegnung erhält man durch Finden einer seltenen mysteriösen Kamelfigur in Uldum. Diese sind schwer auszumachen und haben eine geringe Chance, Zugang zur Begegnung mit Dormus zu gewähren, wenn sie angeklickt werden. Rarity zählt, wie viele Figuren du gefunden hast, wenn du die Maus über sie bewegst."
 L["Gu'chi Swarmling"] = "Schwarmling von Gu'chi"
 L["Guk"] = true
@@ -3852,6 +3876,10 @@ L["Profiling ON"] = "Profiling ON"
 L["Progress"] = "Fortschritt"
 L["Progress Bar"] = "Fortschrittsanzeige"
 --[[Translation missing --]]
+L["Proper Parrot"] = "Proper Parrot"
+--[[Translation missing --]]
+L["Prototype A.S.M.R."] = "Prototype A.S.M.R."
+--[[Translation missing --]]
 L["Proudmoore Music Box"] = "Proudmoore Music Box"
 --[[Translation missing --]]
 L["Pterrordax Egg"] = "Pterrordax Egg"
@@ -4069,6 +4097,8 @@ L["Sack of Spectral Spiders"] = "Sack mit spektralen Spinnen"
 L["Safari Lounge Cushion"] = "Safariräkelkissen"
 L["Sagefish School"] = "Weisenfischschwarm"
 L["Sahn Tidehunter"] = "Sahn Gezeitenjäger"
+--[[Translation missing --]]
+L["Salvaged Goblin Gazillionaire's Flying Machine"] = "Salvaged Goblin Gazillionaire's Flying Machine"
 L["Salyin Battle Banner"] = "Schlachtbanner von Salyis"
 L["Salyin Warscout"] = "Kriegsspäher von Salyis"
 --[[Translation missing --]]
@@ -4205,6 +4235,8 @@ L["Show Luckiness column"] = "Zeige Glück Spalte"
 L["Show minimap icon"] = "Zeige Minimap-Icon"
 --[[Translation missing --]]
 L["Show profiling data"] = "Show profiling data"
+--[[Translation missing --]]
+L["Show progress bar"] = "Show progress bar"
 L["Show Text"] = "Text anzeigen"
 L["Show Time column"] = "Zeit Spalte anzeigen"
 --[[Translation missing --]]
@@ -4779,6 +4811,8 @@ L["Violet Abyssal Eel"] = "Violet Abyssal Eel"
 L["Violet Mistake"] = "Violetter Fehler"
 --[[Translation missing --]]
 L["Viper Fish School"] = "Viper Fish School"
+--[[Translation missing --]]
+L["Viridian Mechasaur"] = "Viridian Mechasaur"
 L["Viscidus Globule"] = "Visciduströpfchen"
 --[[Translation missing --]]
 L["Vixx's Chest of Tricks"] = "Vixx's Chest of Tricks"
@@ -4939,6 +4973,8 @@ L["Wriggler"] = "Wriggler"
 L["Wriggling Darkness"] = "Windende Dunkelheit"
 --[[Translation missing --]]
 L["Writhing Spine"] = "Writhing Spine"
+--[[Translation missing --]]
+L["Writhing Transmutagen"] = "Writhing Transmutagen"
 --[[Translation missing --]]
 L["Wyrmslayer Angvardi"] = "Wyrmslayer Angvardi"
 --[[Translation missing --]]
@@ -5162,6 +5198,8 @@ L["Ancient Elethium Coin"] = "Ancient Elethium Coin"
 L["Ancient Mana"] = "Maná antiguo"
 L["Ancient Salamanther"] = "Salamantra anciana"
 L["and %d |4other zone:other zones;"] = "y %d |4otra zona: otras zonas;"
+--[[Translation missing --]]
+L["Angelo Rustbin"] = "Angelo Rustbin"
 --[[Translation missing --]]
 L["Angry Egg"] = "Angry Egg"
 --[[Translation missing --]]
@@ -5647,6 +5685,10 @@ L["Corrupted Tentacle"] = "Corrupted Tentacle"
 --[[Translation missing --]]
 L["Corrupted Thundertail"] = "Corrupted Thundertail"
 --[[Translation missing --]]
+L["Craboom"] = "Craboom"
+--[[Translation missing --]]
+L["Crackleroar"] = "Crackleroar"
+--[[Translation missing --]]
 L["Crackling Shard"] = "Crackling Shard"
 --[[Translation missing --]]
 L["Craghoof Kid"] = "Craghoof Kid"
@@ -5712,6 +5754,8 @@ L["Custom"] = "Personalizado"
 --[[Translation missing --]]
 L["Cyclarus"] = "Cyclarus"
 --[[Translation missing --]]
+L["Cyclonic Runekey"] = "Cyclonic Runekey"
+--[[Translation missing --]]
 L["Daggertooth Frenzy"] = "Daggertooth Frenzy"
 --[[Translation missing --]]
 L["Dandelion Frolicker"] = "Dandelion Frolicker"
@@ -5723,6 +5767,10 @@ L["Dark Iron Deposit"] = "Depósito de Hierro negro"
 --[[Translation missing --]]
 L["Dark Quivering Blob"] = "Dark Quivering Blob"
 L["Dark Whelpling"] = "Vástago oscuro"
+--[[Translation missing --]]
+L["Darkfuse Precipitant"] = "Darkfuse Precipitant"
+--[[Translation missing --]]
+L["Darkfuse Spy-Eye"] = "Darkfuse Spy-Eye"
 --[[Translation missing --]]
 L["Darklord Taraxis"] = "Darklord Taraxis"
 --[[Translation missing --]]
@@ -6023,6 +6071,8 @@ L["Experimental"] = "Experimental"
 --[[Translation missing --]]
 L["Experiment-In-A-Jar"] = "Experiment-In-A-Jar"
 --[[Translation missing --]]
+L["Explosive Hearthstone"] = "Explosive Hearthstone"
+--[[Translation missing --]]
 L["Export"] = "Export"
 --[[Translation missing --]]
 L["Export Rarity Item Pack"] = "Export Rarity Item Pack"
@@ -6204,6 +6254,8 @@ L["Galakhad"] = "Galakhad"
 --[[Translation missing --]]
 L["Gale Spirit"] = "Gale Spirit"
 --[[Translation missing --]]
+L["Gallagio Garbage"] = "Gallagio Garbage"
+--[[Translation missing --]]
 L["Gar'lok"] = "Gar'lok"
 --[[Translation missing --]]
 L["Garn Nighthowl"] = "Garn Nighthowl"
@@ -6269,6 +6321,8 @@ L["Glittering Arcane Crystal"] = "Cristal Arcano relumbrante"
 L["Glittering Ball of Yarn"] = "Glittering Ball of Yarn"
 --[[Translation missing --]]
 L["Glittering Diamondshell"] = "Glittering Diamondshell"
+--[[Translation missing --]]
+L["Glittering Vault Shard"] = "Glittering Vault Shard"
 --[[Translation missing --]]
 L["Glorious Felcrusher"] = "Glorious Felcrusher"
 --[[Translation missing --]]
@@ -6343,6 +6397,8 @@ L["Grow Up"] = "Grow Up"
 --[[Translation missing --]]
 L["Grugoth the Hullcrusher"] = "Grugoth the Hullcrusher"
 L["Grumpling"] = "Gruñoncito"
+--[[Translation missing --]]
+L["Grunch"] = "Grunch"
 --[[Translation missing --]]
 L["Guaranteed drop from Dormus the Camel-Hoarder. Accessing this encounter requires finding a rare Mysterious Camel Figurine in Uldum. These are difficult to spot and, when clicked, have a small chance to grant you access to the Dormus encounter. Rarity will count how many Figurines you've found if you mouseover them."] = "Guaranteed drop from Dormus the Camel-Hoarder. Accessing this encounter requires finding a rare Mysterious Camel Figurine in Uldum. These are difficult to spot and, when clicked, have a small chance to grant you access to the Dormus encounter. Rarity will count how many Figurines you've found if you mouseover them."
 --[[Translation missing --]]
@@ -7223,6 +7279,10 @@ L["Profiling ON"] = "Profiling ON"
 L["Progress"] = "Progreso"
 L["Progress Bar"] = "Barra de Progreso"
 --[[Translation missing --]]
+L["Proper Parrot"] = "Proper Parrot"
+--[[Translation missing --]]
+L["Prototype A.S.M.R."] = "Prototype A.S.M.R."
+--[[Translation missing --]]
 L["Proudmoore Music Box"] = "Proudmoore Music Box"
 --[[Translation missing --]]
 L["Pterrordax Egg"] = "Pterrordax Egg"
@@ -7488,6 +7548,8 @@ L["Sagefish School"] = "Banco de sabiolas"
 --[[Translation missing --]]
 L["Sahn Tidehunter"] = "Sahn Tidehunter"
 --[[Translation missing --]]
+L["Salvaged Goblin Gazillionaire's Flying Machine"] = "Salvaged Goblin Gazillionaire's Flying Machine"
+--[[Translation missing --]]
 L["Salyin Battle Banner"] = "Salyin Battle Banner"
 --[[Translation missing --]]
 L["Salyin Warscout"] = "Salyin Warscout"
@@ -7650,6 +7712,8 @@ L["Show Luckiness column"] = "Show Luckiness column"
 L["Show minimap icon"] = "Mostrar icono en minimapa"
 --[[Translation missing --]]
 L["Show profiling data"] = "Show profiling data"
+--[[Translation missing --]]
+L["Show progress bar"] = "Show progress bar"
 L["Show Text"] = "Mostrar texto"
 --[[Translation missing --]]
 L["Show Time column"] = "Show Time column"
@@ -8309,6 +8373,8 @@ L["Violet Mistake"] = "Violet Mistake"
 --[[Translation missing --]]
 L["Viper Fish School"] = "Viper Fish School"
 --[[Translation missing --]]
+L["Viridian Mechasaur"] = "Viridian Mechasaur"
+--[[Translation missing --]]
 L["Viscidus Globule"] = "Viscidus Globule"
 --[[Translation missing --]]
 L["Vixx's Chest of Tricks"] = "Vixx's Chest of Tricks"
@@ -8477,6 +8543,8 @@ L["Wriggler"] = "Wriggler"
 L["Wriggling Darkness"] = "Wriggling Darkness"
 --[[Translation missing --]]
 L["Writhing Spine"] = "Writhing Spine"
+--[[Translation missing --]]
+L["Writhing Transmutagen"] = "Writhing Transmutagen"
 --[[Translation missing --]]
 L["Wyrmslayer Angvardi"] = "Wyrmslayer Angvardi"
 --[[Translation missing --]]
@@ -8748,6 +8816,8 @@ L["Ancient Mana"] = "Maná Antiguo"
 L["Ancient Salamanther"] = "Ancient Salamanther"
 --[[Translation missing --]]
 L["and %d |4other zone:other zones;"] = "and %d |4other zone:other zones;"
+--[[Translation missing --]]
+L["Angelo Rustbin"] = "Angelo Rustbin"
 --[[Translation missing --]]
 L["Angry Egg"] = "Angry Egg"
 --[[Translation missing --]]
@@ -9301,6 +9371,10 @@ L["Corrupted Tentacle"] = "Corrupted Tentacle"
 --[[Translation missing --]]
 L["Corrupted Thundertail"] = "Corrupted Thundertail"
 --[[Translation missing --]]
+L["Craboom"] = "Craboom"
+--[[Translation missing --]]
+L["Crackleroar"] = "Crackleroar"
+--[[Translation missing --]]
 L["Crackling Shard"] = "Crackling Shard"
 --[[Translation missing --]]
 L["Craghoof Kid"] = "Craghoof Kid"
@@ -9374,6 +9448,8 @@ L["Custom"] = "Custom"
 --[[Translation missing --]]
 L["Cyclarus"] = "Cyclarus"
 --[[Translation missing --]]
+L["Cyclonic Runekey"] = "Cyclonic Runekey"
+--[[Translation missing --]]
 L["Daggertooth Frenzy"] = "Daggertooth Frenzy"
 --[[Translation missing --]]
 L["Dandelion Frolicker"] = "Dandelion Frolicker"
@@ -9386,6 +9462,10 @@ L["Dark Iron Deposit"] = "Depósito de Hierro Negro"
 L["Dark Quivering Blob"] = "Dark Quivering Blob"
 --[[Translation missing --]]
 L["Dark Whelpling"] = "Dark Whelpling"
+--[[Translation missing --]]
+L["Darkfuse Precipitant"] = "Darkfuse Precipitant"
+--[[Translation missing --]]
+L["Darkfuse Spy-Eye"] = "Darkfuse Spy-Eye"
 --[[Translation missing --]]
 L["Darklord Taraxis"] = "Darklord Taraxis"
 --[[Translation missing --]]
@@ -9714,6 +9794,8 @@ L["Experiment 12-B"] = "Experimento 12-B"
 L["Experimental"] = "Experimental"
 --[[Translation missing --]]
 L["Experiment-In-A-Jar"] = "Experiment-In-A-Jar"
+--[[Translation missing --]]
+L["Explosive Hearthstone"] = "Explosive Hearthstone"
 L["Export"] = "Exportar"
 --[[Translation missing --]]
 L["Export Rarity Item Pack"] = "Export Rarity Item Pack"
@@ -9897,6 +9979,8 @@ L["Galakhad"] = "Galakhad"
 --[[Translation missing --]]
 L["Gale Spirit"] = "Gale Spirit"
 --[[Translation missing --]]
+L["Gallagio Garbage"] = "Gallagio Garbage"
+--[[Translation missing --]]
 L["Gar'lok"] = "Gar'lok"
 --[[Translation missing --]]
 L["Garn Nighthowl"] = "Garn Nighthowl"
@@ -9961,6 +10045,8 @@ L["Glittering Arcane Crystal"] = "Glittering Arcane Crystal"
 L["Glittering Ball of Yarn"] = "Glittering Ball of Yarn"
 --[[Translation missing --]]
 L["Glittering Diamondshell"] = "Glittering Diamondshell"
+--[[Translation missing --]]
+L["Glittering Vault Shard"] = "Glittering Vault Shard"
 --[[Translation missing --]]
 L["Glorious Felcrusher"] = "Glorious Felcrusher"
 --[[Translation missing --]]
@@ -10036,6 +10122,8 @@ L["Grow Up"] = "Grow Up"
 L["Grugoth the Hullcrusher"] = "Grugoth the Hullcrusher"
 --[[Translation missing --]]
 L["Grumpling"] = "Grumpling"
+--[[Translation missing --]]
+L["Grunch"] = "Grunch"
 L["Guaranteed drop from Dormus the Camel-Hoarder. Accessing this encounter requires finding a rare Mysterious Camel Figurine in Uldum. These are difficult to spot and, when clicked, have a small chance to grant you access to the Dormus encounter. Rarity will count how many Figurines you've found if you mouseover them."] = "Item garantizado del encuentro con Dormus el Camellero. El acceso a este encuentro requiere encontrar la figurita de camello misteriosa en Uldum. Estas son difíciles de ver y cuando se clickean, tienen una pequeña oportunidad de iniciar el encuentro con Dormus. Rarity cuenta la cantidad de figuritas que has encontrdo cuando pases sobre ellas con el ratón."
 --[[Translation missing --]]
 L["Gu'chi Swarmling"] = "Gu'chi Swarmling"
@@ -10967,6 +11055,10 @@ L["Profiling ON"] = "Profiling ON"
 L["Progress"] = "Progreso"
 L["Progress Bar"] = "Barra de Progreso"
 --[[Translation missing --]]
+L["Proper Parrot"] = "Proper Parrot"
+--[[Translation missing --]]
+L["Prototype A.S.M.R."] = "Prototype A.S.M.R."
+--[[Translation missing --]]
 L["Proudmoore Music Box"] = "Proudmoore Music Box"
 --[[Translation missing --]]
 L["Pterrordax Egg"] = "Pterrordax Egg"
@@ -11261,6 +11353,8 @@ L["Sagefish School"] = "Sagefish School"
 --[[Translation missing --]]
 L["Sahn Tidehunter"] = "Sahn Tidehunter"
 --[[Translation missing --]]
+L["Salvaged Goblin Gazillionaire's Flying Machine"] = "Salvaged Goblin Gazillionaire's Flying Machine"
+--[[Translation missing --]]
 L["Salyin Battle Banner"] = "Salyin Battle Banner"
 --[[Translation missing --]]
 L["Salyin Warscout"] = "Salyin Warscout"
@@ -11436,6 +11530,8 @@ L["Show Luckiness column"] = "Mostrar columna de Suerte"
 L["Show minimap icon"] = "Mostrar Icono de Mini Mapa"
 --[[Translation missing --]]
 L["Show profiling data"] = "Show profiling data"
+--[[Translation missing --]]
+L["Show progress bar"] = "Show progress bar"
 L["Show Text"] = "Mostrar Texto"
 L["Show Time column"] = "Mostrar columna de Tiempo"
 --[[Translation missing --]]
@@ -12120,6 +12216,8 @@ L["Violet Mistake"] = "Violet Mistake"
 --[[Translation missing --]]
 L["Viper Fish School"] = "Viper Fish School"
 --[[Translation missing --]]
+L["Viridian Mechasaur"] = "Viridian Mechasaur"
+--[[Translation missing --]]
 L["Viscidus Globule"] = "Viscidus Globule"
 L["Vixx's Chest of Tricks"] = "Cofre de Trucos de Vixx"
 --[[Translation missing --]]
@@ -12300,6 +12398,8 @@ L["Wriggler"] = "Wriggler"
 L["Wriggling Darkness"] = "Wriggling Darkness"
 --[[Translation missing --]]
 L["Writhing Spine"] = "Writhing Spine"
+--[[Translation missing --]]
+L["Writhing Transmutagen"] = "Writhing Transmutagen"
 --[[Translation missing --]]
 L["Wyrmslayer Angvardi"] = "Wyrmslayer Angvardi"
 --[[Translation missing --]]
@@ -12501,6 +12601,7 @@ L["Ancient Elethium Coin"] = "Pièce ancienne en éléthium"
 L["Ancient Mana"] = "Mana ancestral"
 L["Ancient Salamanther"] = "Dracamandre antique"
 L["and %d |4other zone:other zones;"] = "et %d |4autre zone:autres zones;"
+L["Angelo Rustbin"] = "Angelo Rouillecorbeille"
 L["Angry Egg"] = "Œuf en colère"
 L["Anh-De the Loyal"] = "Anh-De le Loyal"
 L["Animated Tome"] = "Tome animé"
@@ -12791,6 +12892,8 @@ L["Corrupted Chest"] = "Coffre corrompu"
 L["Corrupted Nest Guardian"] = "Gardien de nid corrompu"
 L["Corrupted Tentacle"] = "Tentacule corrompu"
 L["Corrupted Thundertail"] = "Foudrequeue corrompu"
+L["Craboom"] = "Craboum"
+L["Crackleroar"] = "Crépissement"
 L["Crackling Shard"] = "Éclat crépitant"
 L["Craghoof Kid"] = "Chevreau combesabot"
 L["Craghorn Chasm-Leaper"] = "Bondisseur rochecorne"
@@ -12829,6 +12932,7 @@ L["Cursed Spirit"] = "Esprit maudit"
 L["Custom"] = "Personnalisé"
 L["Cyclarus"] = [=[Cyclarus
 ]=]
+L["Cyclonic Runekey"] = "Clé runique cyclonique"
 L["Daggertooth Frenzy"] = "Furie daguedent"
 L["Dandelion Frolicker"] = "Jonquille boute-en-train"
 L["Darbel Montrose"] = true
@@ -12836,6 +12940,8 @@ L["Dark Gazer"] = "Sombre contemplateur"
 L["Dark Iron Deposit"] = "Gisement de sombrefer"
 L["Dark Quivering Blob"] = "Goutte tremblante sombre"
 L["Dark Whelpling"] = "Bébé dragonnet sombre"
+L["Darkfuse Precipitant"] = "Précipitant imprégné de ténèbres"
+L["Darkfuse Spy-Eye"] = "Œil-espion imprégné de ténèbres"
 L["Darklord Taraxis"] = "Seigneur noir Taraxis"
 L["Darkmaul"] = "Sombres-griffes"
 L["Darkmaul is obtained by feeding a friendly NPC in Korthia called Darkmaul 10 Tasty Mawshroom"] = "Sombres-griffes peut être obtenu après avoir nourri un PNJ amical appelé Sombres-griffes avec 10 Délicieux champignantre"
@@ -13014,6 +13120,7 @@ L["Experiment 12-B"] = "Expérience 12-B"
 L["Experimental"] = [=[
 Expérimental]=]
 L["Experiment-In-A-Jar"] = "Expérience-en-bouteille"
+L["Explosive Hearthstone"] = "Pierre de foyer explosive"
 L["Export"] = "Exporter"
 L["Export Rarity Item Pack"] = "Exporter un pack d'objets Rarity"
 L["Export this item"] = "Exporter cet objet"
@@ -13114,6 +13221,7 @@ L["Gahz'raxes"] = "Gahz'raxes <Rejeton de Gahz'ragon>"
 L["Gahz'rooki's Summoning Stone"] = "Pierre d’invocation de Gahz’rooki"
 L["Galakhad"] = true
 L["Gale Spirit"] = "Esprit de trombe"
+L["Gallagio Garbage"] = "Détritus du Gallagio"
 L["Gar'lok"] = "Gar’lok"
 L["Garn Nighthowl"] = "Garn Nocthurle"
 L["Garn Steelmaw"] = "Garn gueule-d’acier"
@@ -13151,6 +13259,7 @@ L["Glimmering Treasure Chest"] = "Coffre au trésor scintillant"
 L["Glittering Arcane Crystal"] = "Cristal arcanique lumineux"
 L["Glittering Ball of Yarn"] = "Pelote de laine chatoyante"
 L["Glittering Diamondshell"] = "Carapace-diamant lumineux"
+L["Glittering Vault Shard"] = "Éclat du caveau scintillant"
 L["Glorious Felcrusher"] = "Gangrebroyeur glorieux"
 L["Glowing Jade Lungfish"] = "Dipneuste de jade luminescent"
 L["Gluth's Bone"] = "Os de Gluth"
@@ -13191,6 +13300,7 @@ L["Group(s) found!"] = "Groupe(s) trouvé(s) !"
 L["Grow Up"] = "Vers le haut"
 L["Grugoth the Hullcrusher"] = "Grugoth le Brise-coque <Fléau de la côte>"
 L["Grumpling"] = "Ronchonus"
+L["Grunch"] = "Grac"
 L["Guaranteed drop from Dormus the Camel-Hoarder. Accessing this encounter requires finding a rare Mysterious Camel Figurine in Uldum. These are difficult to spot and, when clicked, have a small chance to grant you access to the Dormus encounter. Rarity will count how many Figurines you've found if you mouseover them."] = "Butin garanti de Dormus le Collectionneur de dromadaires. Accéder à sa rencontre nécessite de trouver une\"Figurine de dromadaire mystérieuse\" à Uldum. Celles-ci sont difficiles à trouver et, après avoir cliqué dessus, ont une faible chance de vous téléporter auprès de Dormus. Rarity comptera combien de figurines vous avez trouvé si vous passez la souris dessus."
 L["Gu'chi Swarmling"] = "Couvelin de Gu’chi"
 L["Guk"] = true
@@ -13694,6 +13804,8 @@ L["Profiling OFF"] = "Profilage DÉSACTIVÉ"
 L["Profiling ON"] = "Profilage ACTIVÉ"
 L["Progress"] = "Progression"
 L["Progress Bar"] = "Barre de progression"
+L["Proper Parrot"] = "Véritable perroquet"
+L["Prototype A.S.M.R."] = "Prototype d’A.S.M.R."
 L["Proudmoore Music Box"] = "Boîte à musique de Portvaillant"
 L["Pterrordax Egg"] = "Œuf de pterreurdactyle"
 L["Puddle of Black Liquid"] = "Flaque de liquide noir"
@@ -13848,6 +13960,7 @@ L["Sack of Spectral Spiders"] = "Sac d’araignées spectrales"
 L["Safari Lounge Cushion"] = "Coussin de salon safari"
 L["Sagefish School"] = "Banc de sagerelles"
 L["Sahn Tidehunter"] = "Sahn Chasse Marée"
+L["Salvaged Goblin Gazillionaire's Flying Machine"] = "Machine volante recyclée de Gobelin milliardaire"
 L["Salyin Battle Banner"] = "Bannière de bataille salyin"
 L["Salyin Warscout"] = "Eclaireur de guerre salyin"
 L["Sanctum Gloomcharger's Reins"] = "Rênes de destrier sinistre du sanctum"
@@ -13939,6 +14052,7 @@ L["Show Icon"] = "Afficher l'icône"
 L["Show Luckiness column"] = "Colonne Chance"
 L["Show minimap icon"] = "Icône de la mini-carte"
 L["Show profiling data"] = "Afficher les données de profilage"
+L["Show progress bar"] = "Afficher la barre de progression"
 L["Show Text"] = "Afficher le texte"
 L["Show Time column"] = "Colonne Durée"
 L["Show TSM column"] = "Montrer la colonne TSM"
@@ -14301,6 +14415,7 @@ L["Vile Fiend"] = "Vil indomptable"
 L["Violet Abyssal Eel"] = "Anguille abyssale violette"
 L["Violet Mistake"] = "Erreur pourpre"
 L["Viper Fish School"] = "Banc de poissons-vipères"
+L["Viridian Mechasaur"] = "Mécasaure viridien"
 L["Viscidus Globule"] = "Globule de Viscidus"
 L["Vixx's Chest of Tricks"] = "Coffre à malice de Vixx"
 L["Void Collar"] = "Collier du Vide"
@@ -14394,6 +14509,7 @@ L["Wreath-A-Rang"] = "Couronne-boomerang"
 L["Wriggler"] = "Calimaçon"
 L["Wriggling Darkness"] = "Ténèbres louvoyantes"
 L["Writhing Spine"] = "Echine frétillante"
+L["Writhing Transmutagen"] = "Transmutagène tortillant"
 L["Wyrmslayer Angvardi"] = "Tueur de wyrm Angvardi"
 L["Xaarshej"] = true
 L["Xinlao"] = true
@@ -14609,6 +14725,8 @@ L["Ancient Mana"] = "고대 마나"
 --[[Translation missing --]]
 L["Ancient Salamanther"] = "Ancient Salamanther"
 L["and %d |4other zone:other zones;"] = "및 %d의 기타 지역"
+--[[Translation missing --]]
+L["Angelo Rustbin"] = "Angelo Rustbin"
 --[[Translation missing --]]
 L["Angry Egg"] = "Angry Egg"
 --[[Translation missing --]]
@@ -15110,6 +15228,10 @@ L["Corrupted Tentacle"] = "Corrupted Tentacle"
 --[[Translation missing --]]
 L["Corrupted Thundertail"] = "Corrupted Thundertail"
 --[[Translation missing --]]
+L["Craboom"] = "Craboom"
+--[[Translation missing --]]
+L["Crackleroar"] = "Crackleroar"
+--[[Translation missing --]]
 L["Crackling Shard"] = "Crackling Shard"
 --[[Translation missing --]]
 L["Craghoof Kid"] = "Craghoof Kid"
@@ -15177,6 +15299,8 @@ L["Custom"] = "사용자 정의"
 --[[Translation missing --]]
 L["Cyclarus"] = "Cyclarus"
 --[[Translation missing --]]
+L["Cyclonic Runekey"] = "Cyclonic Runekey"
+--[[Translation missing --]]
 L["Daggertooth Frenzy"] = "Daggertooth Frenzy"
 L["Dandelion Frolicker"] = "민들레 까불이"
 --[[Translation missing --]]
@@ -15185,6 +15309,10 @@ L["Dark Gazer"] = "어둠의 주시자"
 L["Dark Iron Deposit"] = "검은무쇠 광맥"
 L["Dark Quivering Blob"] = "벌벌떠는 검은 수액"
 L["Dark Whelpling"] = "작은 암흑 새끼용"
+--[[Translation missing --]]
+L["Darkfuse Precipitant"] = "Darkfuse Precipitant"
+--[[Translation missing --]]
+L["Darkfuse Spy-Eye"] = "Darkfuse Spy-Eye"
 --[[Translation missing --]]
 L["Darklord Taraxis"] = "Darklord Taraxis"
 --[[Translation missing --]]
@@ -15446,6 +15574,8 @@ L["Experiment 12-B"] = "실험체 12-B"
 L["Experimental"] = "실험"
 --[[Translation missing --]]
 L["Experiment-In-A-Jar"] = "Experiment-In-A-Jar"
+--[[Translation missing --]]
+L["Explosive Hearthstone"] = "Explosive Hearthstone"
 L["Export"] = "내보내기"
 L["Export Rarity Item Pack"] = "Rarity Item Pack 내보내기"
 L["Export this item"] = "이 아이템 내보내기"
@@ -15620,6 +15750,8 @@ L["Galakhad"] = "Galakhad"
 --[[Translation missing --]]
 L["Gale Spirit"] = "Gale Spirit"
 --[[Translation missing --]]
+L["Gallagio Garbage"] = "Gallagio Garbage"
+--[[Translation missing --]]
 L["Gar'lok"] = "Gar'lok"
 --[[Translation missing --]]
 L["Garn Nighthowl"] = "Garn Nighthowl"
@@ -15685,6 +15817,8 @@ L["Glittering Arcane Crystal"] = "Glittering Arcane Crystal"
 L["Glittering Ball of Yarn"] = "Glittering Ball of Yarn"
 --[[Translation missing --]]
 L["Glittering Diamondshell"] = "Glittering Diamondshell"
+--[[Translation missing --]]
+L["Glittering Vault Shard"] = "Glittering Vault Shard"
 --[[Translation missing --]]
 L["Glorious Felcrusher"] = "Glorious Felcrusher"
 --[[Translation missing --]]
@@ -15756,6 +15890,8 @@ L["Grow Up"] = "성장"
 L["Grugoth the Hullcrusher"] = "Grugoth the Hullcrusher"
 --[[Translation missing --]]
 L["Grumpling"] = "Grumpling"
+--[[Translation missing --]]
+L["Grunch"] = "Grunch"
 L["Guaranteed drop from Dormus the Camel-Hoarder. Accessing this encounter requires finding a rare Mysterious Camel Figurine in Uldum. These are difficult to spot and, when clicked, have a small chance to grant you access to the Dormus encounter. Rarity will count how many Figurines you've found if you mouseover them."] = "낙타사육사 도르무스에게서 떨어지는게 확실합니다. 이와 만나 접촉하려면 울둠에 있는 드문 수수께끼 낙타 조각상을 발견해야 합니다. 어떤 것은 장소가 까다롭고, 클릭하면, 도르무스와 만나서 접촉할 수 있는 적은 기회가 있습니다. Rarity는 그것에 마우스를 갖다대면 당신이 얼마나 많은 조각상을 발견했는지 계산합니다."
 --[[Translation missing --]]
 L["Gu'chi Swarmling"] = "Gu'chi Swarmling"
@@ -16587,6 +16723,10 @@ L["Profiling ON"] = "프로필 켬"
 L["Progress"] = "진행"
 L["Progress Bar"] = "진행 바"
 --[[Translation missing --]]
+L["Proper Parrot"] = "Proper Parrot"
+--[[Translation missing --]]
+L["Prototype A.S.M.R."] = "Prototype A.S.M.R."
+--[[Translation missing --]]
 L["Proudmoore Music Box"] = "Proudmoore Music Box"
 --[[Translation missing --]]
 L["Pterrordax Egg"] = "Pterrordax Egg"
@@ -16853,6 +16993,8 @@ L["Sagefish School"] = "총명어 떼"
 --[[Translation missing --]]
 L["Sahn Tidehunter"] = "Sahn Tidehunter"
 --[[Translation missing --]]
+L["Salvaged Goblin Gazillionaire's Flying Machine"] = "Salvaged Goblin Gazillionaire's Flying Machine"
+--[[Translation missing --]]
 L["Salyin Battle Banner"] = "Salyin Battle Banner"
 --[[Translation missing --]]
 L["Salyin Warscout"] = "Salyin Warscout"
@@ -17010,6 +17152,8 @@ L["Show Luckiness column"] = "행운 줄 표시"
 L["Show minimap icon"] = "미니맵 아이콘 표시"
 --[[Translation missing --]]
 L["Show profiling data"] = "Show profiling data"
+--[[Translation missing --]]
+L["Show progress bar"] = "Show progress bar"
 L["Show Text"] = "글자 표시"
 L["Show Time column"] = "시간 줄 표시"
 L["Show TSM column"] = "TSM 줄 표시"
@@ -17614,6 +17758,8 @@ L["Violet Abyssal Eel"] = "Violet Abyssal Eel"
 L["Violet Mistake"] = "Violet Mistake"
 --[[Translation missing --]]
 L["Viper Fish School"] = "Viper Fish School"
+--[[Translation missing --]]
+L["Viridian Mechasaur"] = "Viridian Mechasaur"
 L["Viscidus Globule"] = "비시두스의 수액방울"
 --[[Translation missing --]]
 L["Vixx's Chest of Tricks"] = "Vixx's Chest of Tricks"
@@ -17756,6 +17902,8 @@ L["Wriggler"] = "Wriggler"
 L["Wriggling Darkness"] = "Wriggling Darkness"
 --[[Translation missing --]]
 L["Writhing Spine"] = "Writhing Spine"
+--[[Translation missing --]]
+L["Writhing Transmutagen"] = "Writhing Transmutagen"
 --[[Translation missing --]]
 L["Wyrmslayer Angvardi"] = "Wyrmslayer Angvardi"
 --[[Translation missing --]]
@@ -17968,6 +18116,7 @@ L["Ancient Elethium Coin"] = "Древняя элетиевая монета"
 L["Ancient Mana"] = "Древняя мана "
 L["Ancient Salamanther"] = "Древняя саламантера"
 L["and %d |4other zone:other zones;"] = "и %d |4другая зона:другие зоны:других зон; "
+L["Angelo Rustbin"] = "Анжело Ржавобак"
 L["Angry Egg"] = "Яйцо злобного вида"
 L["Anh-De the Loyal"] = "Анх-Де Верный"
 L["Animated Tome"] = "Оживленный фолиант"
@@ -18273,6 +18422,8 @@ L["Corrupted Chest"] = "Зараженный сундук"
 L["Corrupted Nest Guardian"] = "Оскверненный страж гнезда "
 L["Corrupted Tentacle"] = "Зараженное щупальце"
 L["Corrupted Thundertail"] = "Оскверненный громохвост"
+L["Craboom"] = "Крабомба"
+L["Crackleroar"] = "Громорык"
 L["Crackling Shard"] = "Тлеющий осколок"
 L["Craghoof Kid"] = [=[Скальный козленок
 ]=]
@@ -18312,6 +18463,7 @@ L["Cursed Queenfish School"] = "Косяк проклятой ставриды"
 L["Cursed Spirit"] = "Проклятый дух"
 L["Custom"] = "Прочее"
 L["Cyclarus"] = "Циклар"
+L["Cyclonic Runekey"] = "Ураганный рунический ключ"
 L["Daggertooth Frenzy"] = "Острозубая бешенка"
 L["Dandelion Frolicker"] = "Одуванчиковая резвунья"
 L["Darbel Montrose"] = [=[Дарбелла Монтроуз
@@ -18320,6 +18472,8 @@ L["Dark Gazer"] = "Темный взорень"
 L["Dark Iron Deposit"] = "Залежи черного железа"
 L["Dark Quivering Blob"] = "Темная дрожащая капля"
 L["Dark Whelpling"] = "Маленький темный дракончик"
+L["Darkfuse Precipitant"] = "Стимулирующий реагент Мрачных Минеров"
+L["Darkfuse Spy-Eye"] = "Шпионолет Мрачных Минеров"
 L["Darklord Taraxis"] = "Темный лорд Тараксис"
 L["Darkmaul"] = "Темная Лапа"
 L["Darkmaul is obtained by feeding a friendly NPC in Korthia called Darkmaul 10 Tasty Mawshroom"] = "Темная Лапа получается путем кормления одноименного НПС в Кортии 10 вкусными грибами Утробы"
@@ -18508,6 +18662,7 @@ L["Expedition Scout's Pack"] = "Сумка разведчика экспедиц
 L["Experiment 12-B"] = "Эксперимент 12-Б"
 L["Experimental"] = "Экспериментальный"
 L["Experiment-In-A-Jar"] = "Образец в баночке"
+L["Explosive Hearthstone"] = "Взрывной камень возвращения"
 L["Export"] = "Экспорт"
 L["Export Rarity Item Pack"] = [=[Экспортируйте в Rarity пакет предметов
 ]=]
@@ -18616,6 +18771,7 @@ L["Gahz'raxes"] = "Газ'раксес"
 L["Gahz'rooki's Summoning Stone"] = "Камень призыва Газ'руки"
 L["Galakhad"] = "Галахад"
 L["Gale Spirit"] = "Дух бури"
+L["Gallagio Garbage"] = "Мусор из Галаджио"
 L["Gar'lok"] = "Гар'лок"
 L["Garn Nighthowl"] = "Гарн Ночной Вой"
 L["Garn Steelmaw"] = "Закованный в броню гарн"
@@ -18653,6 +18809,7 @@ L["Glimmering Treasure Chest"] = "Сверкающий сундук с сокр�
 L["Glittering Arcane Crystal"] = "Мерцающий магический кристалл "
 L["Glittering Ball of Yarn"] = "Сверкающий клубок пряжи "
 L["Glittering Diamondshell"] = "Сияющий алмазный панцирник"
+L["Glittering Vault Shard"] = "Блестящий осколок из хранилища"
 L["Glorious Felcrusher"] = "Великолепный сквернопотам"
 L["Glowing Jade Lungfish"] = "Блестящая нефритовая двоякодышащая рыба"
 L["Gluth's Bone"] = "Кость Глута"
@@ -18694,6 +18851,7 @@ L["Group(s) found!"] = "Группа(ы) найдена(ы)! "
 L["Grow Up"] = "Расти"
 L["Grugoth the Hullcrusher"] = "Грагот Крушитель Кораблей"
 L["Grumpling"] = "Ворчунишка "
+L["Grunch"] = "Грюнч"
 L["Guaranteed drop from Dormus the Camel-Hoarder. Accessing this encounter requires finding a rare Mysterious Camel Figurine in Uldum. These are difficult to spot and, when clicked, have a small chance to grant you access to the Dormus encounter. Rarity will count how many Figurines you've found if you mouseover them."] = "Гарантированно выпадает с Дормуса Погонщика верблюдов. Чтобы попасть к нему требуется найти редкую Странную фигурку верблюда в Ульдуме. Их сложно обнаружить, и при клике на них, есть шанс перенестись к Дормусу. Редкость вычисляется тем, сколько фигурок было найдено (при наведениии мыши на них). "
 L["Gu'chi Swarmling"] = "Роевик Гу'чи"
 L["Guk"] = "Гук"
@@ -19208,6 +19366,8 @@ L["Profiling OFF"] = "Профилирование Выкл. "
 L["Profiling ON"] = "Профилирование Вкл. "
 L["Progress"] = "Прогресс"
 L["Progress Bar"] = "Строка прогресса"
+L["Proper Parrot"] = "Приличный попугай"
+L["Prototype A.S.M.R."] = "Прототип АСМР"
 L["Proudmoore Music Box"] = "Музыкальная шкатулка Праудмуров"
 L["Pterrordax Egg"] = "Яйцо терродактиля"
 L["Puddle of Black Liquid"] = "Лужица черной жижи"
@@ -19367,6 +19527,7 @@ L["Sack of Spectral Spiders"] = "Мешок с призрачными паука
 L["Safari Lounge Cushion"] = "Мягкая подушка в стиле сафари"
 L["Sagefish School"] = "Косяк шалфокуня"
 L["Sahn Tidehunter"] = "Сан Охотник Прилива"
+L["Salvaged Goblin Gazillionaire's Flying Machine"] = "Восстановленный ветролет гоблина-триллиардера"
 L["Salyin Battle Banner"] = "Боевое знамя сальинь"
 L["Salyin Warscout"] = "Сальинь-разведчик"
 L["Sanctum Gloomcharger's Reins"] = "Поводья темного скакуна из Святилища"
@@ -19460,6 +19621,7 @@ L["Show Icon"] = "Отображать иконку"
 L["Show Luckiness column"] = "Показ. колонку удачливости "
 L["Show minimap icon"] = "Значок у миникарты"
 L["Show profiling data"] = "Показать данные профилирования"
+L["Show progress bar"] = "Показать полосу прогресса"
 L["Show Text"] = "Отображать текст"
 L["Show Time column"] = "Показ. колонку времени "
 L["Show TSM column"] = "Показать столбец TSM"
@@ -19835,6 +19997,7 @@ L["Vile Fiend"] = "Злобное отродье"
 L["Violet Abyssal Eel"] = "Пурпурный глубинный угорь"
 L["Violet Mistake"] = "Фиолетовая ошибка"
 L["Viper Fish School"] = "Стая рыб-гадюк"
+L["Viridian Mechasaur"] = "Изумрудный мехазавр"
 L["Viscidus Globule"] = "Нечистая капля"
 L["Vixx's Chest of Tricks"] = "Сундук Викса с фокусами"
 L["Void Collar"] = "Ошейник Бездны"
@@ -19931,6 +20094,7 @@ L["Wreath-A-Rang"] = "Венкоранг"
 L["Wriggler"] = "Проныра"
 L["Wriggling Darkness"] = "Извивающаяся тьма"
 L["Writhing Spine"] = "Извивающийся позвоночник"
+L["Writhing Transmutagen"] = "Извивающийся трансмутаген"
 L["Wyrmslayer Angvardi"] = "Ангварди Убийца Змеев"
 L["Xaarshej"] = "Ксааршедж"
 L["Xinlao"] = "Синьлао"
@@ -20117,6 +20281,8 @@ L["Ancient Elethium Coin"] = "古老的阴铁硬币"
 L["Ancient Mana"] = "远古魔力"
 L["Ancient Salamanther"] = "远古蝾螈"
 L["and %d |4other zone:other zones;"] = "和%d个其它区域"
+--[[Translation missing --]]
+L["Angelo Rustbin"] = "Angelo Rustbin"
 L["Angry Egg"] = "愤懑之卵"
 L["Anh-De the Loyal"] = "丹心魁麟昂德"
 L["Animated Tome"] = "活化魔典"
@@ -20416,6 +20582,10 @@ L["Corrupted Chest"] = "腐化的宝箱"
 L["Corrupted Nest Guardian"] = "腐化的巢穴守卫"
 L["Corrupted Tentacle"] = "腐化触须"
 L["Corrupted Thundertail"] = "腐化的雷尾淡水兽"
+--[[Translation missing --]]
+L["Craboom"] = "Craboom"
+--[[Translation missing --]]
+L["Crackleroar"] = "Crackleroar"
 L["Crackling Shard"] = "爆裂碎片"
 L["Craghoof Kid"] = "岩蹄羊崽"
 L["Craghorn Chasm-Leaper"] = "岩角跃渊者"
@@ -20453,6 +20623,8 @@ L["Cursed Queenfish School"] = "诅咒女王鱼群"
 L["Cursed Spirit"] = "诅咒之魂"
 L["Custom"] = "自定义"
 L["Cyclarus"] = "塞克拉鲁斯"
+--[[Translation missing --]]
+L["Cyclonic Runekey"] = "Cyclonic Runekey"
 L["Daggertooth Frenzy"] = "刀齿狂鱼"
 L["Dandelion Frolicker"] = "菊苣嬉闹者"
 L["Darbel Montrose"] = "达贝尔·蒙特罗斯"
@@ -20460,6 +20632,10 @@ L["Dark Gazer"] = "黑暗魔眼"
 L["Dark Iron Deposit"] = "黑铁矿脉"
 L["Dark Quivering Blob"] = "黑色颤动水珠"
 L["Dark Whelpling"] = "黑龙宝宝"
+--[[Translation missing --]]
+L["Darkfuse Precipitant"] = "Darkfuse Precipitant"
+--[[Translation missing --]]
+L["Darkfuse Spy-Eye"] = "Darkfuse Spy-Eye"
 L["Darklord Taraxis"] = "黑暗领主塔拉克西斯"
 L["Darkmaul"] = "暗殴"
 L["Darkmaul is obtained by feeding a friendly NPC in Korthia called Darkmaul 10 Tasty Mawshroom"] = "在刻希亚喂食给友好的 NPC 暗殴10次美味的渊菇会获得暗殴。"
@@ -20641,6 +20817,8 @@ L["Expedition Scout's Pack"] = "探险队斥候的背包"
 L["Experiment 12-B"] = "实验体12-B"
 L["Experimental"] = "实验性"
 L["Experiment-In-A-Jar"] = "实验沙盒"
+--[[Translation missing --]]
+L["Explosive Hearthstone"] = "Explosive Hearthstone"
 L["Export"] = "导出"
 L["Export Rarity Item Pack"] = "导出 Rarity Item Pack"
 L["Export this item"] = "导出这个物品"
@@ -20741,6 +20919,8 @@ L["Gahz'raxes"] = "加兹拉克西斯"
 L["Gahz'rooki's Summoning Stone"] = "加兹洛奇的召唤石"
 L["Galakhad"] = "加拉哈德"
 L["Gale Spirit"] = "阵风精魂"
+--[[Translation missing --]]
+L["Gallagio Garbage"] = "Gallagio Garbage"
 L["Gar'lok"] = "嘎洛克"
 L["Garn Nighthowl"] = "夜嚎铁颚狼"
 L["Garn Steelmaw"] = "钢喉铁颚狼"
@@ -20778,6 +20958,8 @@ L["Glimmering Treasure Chest"] = "闪闪发光的宝箱"
 L["Glittering Arcane Crystal"] = "发光的魔力水晶"
 L["Glittering Ball of Yarn"] = "发光的线团"
 L["Glittering Diamondshell"] = "闪光的钻壳蟹"
+--[[Translation missing --]]
+L["Glittering Vault Shard"] = "Glittering Vault Shard"
 L["Glorious Felcrusher"] = "荣耀邪能碾压者"
 L["Glowing Jade Lungfish"] = "闪光翠绿肺鱼"
 L["Gluth's Bone"] = "格拉斯之骨"
@@ -20818,6 +21000,8 @@ L["Group(s) found!"] = "队伍已找到！"
 L["Grow Up"] = "增长"
 L["Grugoth the Hullcrusher"] = "碾船者格鲁戈斯"
 L["Grumpling"] = "格噜噜"
+--[[Translation missing --]]
+L["Grunch"] = "Grunch"
 L["Guaranteed drop from Dormus the Camel-Hoarder. Accessing this encounter requires finding a rare Mysterious Camel Figurine in Uldum. These are difficult to spot and, when clicked, have a small chance to grant you access to the Dormus encounter. Rarity will count how many Figurines you've found if you mouseover them."] = "由骆驼驭手多尔穆斯固定掉落。进入这场战斗需要在奥丹姆找到一个罕见的神秘骆驼雕像。这些雕像很难发现。点击雕像后，有很小的机会给予进入骆驼驭手多尔穆斯战斗的机会。 如果你鼠标悬停在雕像上，Rarity 将计算你发现了多少个雕像。"
 L["Gu'chi Swarmling"] = "古赤的蚕宝宝"
 L["Guk"] = "甘克"
@@ -21321,6 +21505,10 @@ L["Profiling OFF"] = "建立档案*关闭*"
 L["Profiling ON"] = "建立档案*开启*"
 L["Progress"] = "进度"
 L["Progress Bar"] = "进度条"
+--[[Translation missing --]]
+L["Proper Parrot"] = "Proper Parrot"
+--[[Translation missing --]]
+L["Prototype A.S.M.R."] = "Prototype A.S.M.R."
 L["Proudmoore Music Box"] = "普罗德摩尔音乐盒"
 L["Pterrordax Egg"] = "翼手龙蛋"
 L["Puddle of Black Liquid"] = "一滩黑色液体"
@@ -21475,6 +21663,8 @@ L["Sack of Spectral Spiders"] = "一袋幽灵蜘蛛"
 L["Safari Lounge Cushion"] = "迷彩沙发垫"
 L["Sagefish School"] = "鼠尾鱼群"
 L["Sahn Tidehunter"] = "萨罕·潮猎者"
+--[[Translation missing --]]
+L["Salvaged Goblin Gazillionaire's Flying Machine"] = "Salvaged Goblin Gazillionaire's Flying Machine"
 L["Salyin Battle Banner"] = "萨尔因战旗"
 L["Salyin Warscout"] = "萨尔因作战斥候"
 L["Sanctum Gloomcharger's Reins"] = "圣所阴郁军马的缰绳"
@@ -21566,6 +21756,8 @@ L["Show Icon"] = "显示图标"
 L["Show Luckiness column"] = "显示幸运值列"
 L["Show minimap icon"] = "显示小地图图标"
 L["Show profiling data"] = "显示分析数据"
+--[[Translation missing --]]
+L["Show progress bar"] = "Show progress bar"
 L["Show Text"] = "显示文本"
 L["Show Time column"] = "显示时间列"
 L["Show TSM column"] = "显示 TSM 列"
@@ -21929,6 +22121,8 @@ L["Vile Fiend"] = "邪犬"
 L["Violet Abyssal Eel"] = "紫晶深渊鳗鱼"
 L["Violet Mistake"] = "绛紫之误"
 L["Viper Fish School"] = "蝰鱼群"
+--[[Translation missing --]]
+L["Viridian Mechasaur"] = "Viridian Mechasaur"
 L["Viscidus Globule"] = "维希度斯小水滴"
 L["Vixx's Chest of Tricks"] = "维克斯的伪装箱"
 L["Void Collar"] = "虚空项圈"
@@ -22022,6 +22216,8 @@ L["Wreath-A-Rang"] = "花环回旋镖"
 L["Wriggler"] = "蠕蝓"
 L["Wriggling Darkness"] = "蠕动暗影"
 L["Writhing Spine"] = "蠕动之脊"
+--[[Translation missing --]]
+L["Writhing Transmutagen"] = "Writhing Transmutagen"
 L["Wyrmslayer Angvardi"] = "斩龙者昂瓦尔迪"
 L["Xaarshej"] = "夏尔谢极"
 L["Xinlao"] = "馨劳"
@@ -22265,6 +22461,8 @@ L["Ancient Mana"] = "Ancient Mana"
 L["Ancient Salamanther"] = "Ancient Salamanther"
 --[[Translation missing --]]
 L["and %d |4other zone:other zones;"] = "and %d |4other zone:other zones;"
+--[[Translation missing --]]
+L["Angelo Rustbin"] = "Angelo Rustbin"
 --[[Translation missing --]]
 L["Angry Egg"] = "Angry Egg"
 --[[Translation missing --]]
@@ -22779,6 +22977,10 @@ L["Corrupted Tentacle"] = "Corrupted Tentacle"
 --[[Translation missing --]]
 L["Corrupted Thundertail"] = "Corrupted Thundertail"
 --[[Translation missing --]]
+L["Craboom"] = "Craboom"
+--[[Translation missing --]]
+L["Crackleroar"] = "Crackleroar"
+--[[Translation missing --]]
 L["Crackling Shard"] = "Crackling Shard"
 --[[Translation missing --]]
 L["Craghoof Kid"] = "Craghoof Kid"
@@ -22846,6 +23048,8 @@ L["Custom"] = "自定義"
 --[[Translation missing --]]
 L["Cyclarus"] = "Cyclarus"
 --[[Translation missing --]]
+L["Cyclonic Runekey"] = "Cyclonic Runekey"
+--[[Translation missing --]]
 L["Daggertooth Frenzy"] = "Daggertooth Frenzy"
 L["Dandelion Frolicker"] = "蒲公英小妖"
 --[[Translation missing --]]
@@ -22855,6 +23059,10 @@ L["Dark Gazer"] = "Dark Gazer"
 L["Dark Iron Deposit"] = "黑鐵礦床"
 L["Dark Quivering Blob"] = "黑暗顫動血泡"
 L["Dark Whelpling"] = "暗龍寶寶"
+--[[Translation missing --]]
+L["Darkfuse Precipitant"] = "Darkfuse Precipitant"
+--[[Translation missing --]]
+L["Darkfuse Spy-Eye"] = "Darkfuse Spy-Eye"
 --[[Translation missing --]]
 L["Darklord Taraxis"] = "Darklord Taraxis"
 --[[Translation missing --]]
@@ -23148,6 +23356,8 @@ L["Experimental"] = "Experimental"
 --[[Translation missing --]]
 L["Experiment-In-A-Jar"] = "Experiment-In-A-Jar"
 --[[Translation missing --]]
+L["Explosive Hearthstone"] = "Explosive Hearthstone"
+--[[Translation missing --]]
 L["Export"] = "Export"
 --[[Translation missing --]]
 L["Export Rarity Item Pack"] = "Export Rarity Item Pack"
@@ -23326,6 +23536,8 @@ L["Galakhad"] = "Galakhad"
 --[[Translation missing --]]
 L["Gale Spirit"] = "Gale Spirit"
 --[[Translation missing --]]
+L["Gallagio Garbage"] = "Gallagio Garbage"
+--[[Translation missing --]]
 L["Gar'lok"] = "Gar'lok"
 --[[Translation missing --]]
 L["Garn Nighthowl"] = "Garn Nighthowl"
@@ -23393,6 +23605,8 @@ L["Glittering Arcane Crystal"] = "Glittering Arcane Crystal"
 L["Glittering Ball of Yarn"] = "Glittering Ball of Yarn"
 --[[Translation missing --]]
 L["Glittering Diamondshell"] = "Glittering Diamondshell"
+--[[Translation missing --]]
+L["Glittering Vault Shard"] = "Glittering Vault Shard"
 --[[Translation missing --]]
 L["Glorious Felcrusher"] = "Glorious Felcrusher"
 --[[Translation missing --]]
@@ -23466,6 +23680,8 @@ L["Grow Up"] = "Grow Up"
 L["Grugoth the Hullcrusher"] = "Grugoth the Hullcrusher"
 --[[Translation missing --]]
 L["Grumpling"] = "Grumpling"
+--[[Translation missing --]]
+L["Grunch"] = "Grunch"
 --[[Translation missing --]]
 L["Guaranteed drop from Dormus the Camel-Hoarder. Accessing this encounter requires finding a rare Mysterious Camel Figurine in Uldum. These are difficult to spot and, when clicked, have a small chance to grant you access to the Dormus encounter. Rarity will count how many Figurines you've found if you mouseover them."] = "Guaranteed drop from Dormus the Camel-Hoarder. Accessing this encounter requires finding a rare Mysterious Camel Figurine in Uldum. These are difficult to spot and, when clicked, have a small chance to grant you access to the Dormus encounter. Rarity will count how many Figurines you've found if you mouseover them."
 L["Gu'chi Swarmling"] = "古奇的蟲群"
@@ -24331,6 +24547,10 @@ L["Profiling ON"] = "分析ON"
 L["Progress"] = "進度"
 L["Progress Bar"] = "進度條"
 --[[Translation missing --]]
+L["Proper Parrot"] = "Proper Parrot"
+--[[Translation missing --]]
+L["Prototype A.S.M.R."] = "Prototype A.S.M.R."
+--[[Translation missing --]]
 L["Proudmoore Music Box"] = "Proudmoore Music Box"
 --[[Translation missing --]]
 L["Pterrordax Egg"] = "Pterrordax Egg"
@@ -24587,6 +24807,8 @@ L["Sagefish School"] = "鼠尾魚群"
 --[[Translation missing --]]
 L["Sahn Tidehunter"] = "Sahn Tidehunter"
 --[[Translation missing --]]
+L["Salvaged Goblin Gazillionaire's Flying Machine"] = "Salvaged Goblin Gazillionaire's Flying Machine"
+--[[Translation missing --]]
 L["Salyin Battle Banner"] = "Salyin Battle Banner"
 --[[Translation missing --]]
 L["Salyin Warscout"] = "Salyin Warscout"
@@ -24744,6 +24966,8 @@ L["Show Luckiness column"] = "Show Luckiness column"
 L["Show minimap icon"] = "顯示小地圖圖示"
 --[[Translation missing --]]
 L["Show profiling data"] = "Show profiling data"
+--[[Translation missing --]]
+L["Show progress bar"] = "Show progress bar"
 L["Show Text"] = "顯示文字"
 --[[Translation missing --]]
 L["Show Time column"] = "Show Time column"
@@ -25380,6 +25604,8 @@ L["Violet Abyssal Eel"] = "Violet Abyssal Eel"
 L["Violet Mistake"] = "Violet Mistake"
 --[[Translation missing --]]
 L["Viper Fish School"] = "Viper Fish School"
+--[[Translation missing --]]
+L["Viridian Mechasaur"] = "Viridian Mechasaur"
 L["Viscidus Globule"] = "維希度斯淤泥怪"
 --[[Translation missing --]]
 L["Vixx's Chest of Tricks"] = "Vixx's Chest of Tricks"
@@ -25553,6 +25779,8 @@ L["Wriggler"] = "Wriggler"
 L["Wriggling Darkness"] = "Wriggling Darkness"
 --[[Translation missing --]]
 L["Writhing Spine"] = "Writhing Spine"
+--[[Translation missing --]]
+L["Writhing Transmutagen"] = "Writhing Transmutagen"
 --[[Translation missing --]]
 L["Wyrmslayer Angvardi"] = "Wyrmslayer Angvardi"
 --[[Translation missing --]]
@@ -25771,6 +25999,8 @@ L["Ancient Elethium Coin"] = "Moeda de Elétio Anciente"
 L["Ancient Mana"] = "Mana Ancestral"
 L["Ancient Salamanther"] = "Salamantra Ancestral"
 L["and %d |4other zone:other zones;"] = "e %d 4|outra zona;outras zonas;"
+--[[Translation missing --]]
+L["Angelo Rustbin"] = "Angelo Rustbin"
 L["Angry Egg"] = "Ovo Furioso"
 L["Anh-De the Loyal"] = "Anh-De, o Leal"
 L["Animated Tome"] = "Tomo de Ânima"
@@ -26079,6 +26309,10 @@ L["Corrupted Nest Guardian"] = "Guardião do Ninho Corrompido"
 L["Corrupted Tentacle"] = "Tentáculo Corrompido"
 L["Corrupted Thundertail"] = "Cauda-de-trovão Corrompido"
 --[[Translation missing --]]
+L["Craboom"] = "Craboom"
+--[[Translation missing --]]
+L["Crackleroar"] = "Crackleroar"
+--[[Translation missing --]]
 L["Crackling Shard"] = "Crackling Shard"
 L["Craghoof Kid"] = "Bodinho Barrancudo"
 L["Craghorn Chasm-Leaper"] = "Salta-abismo Petrocórneo"
@@ -26119,6 +26353,8 @@ L["Custom"] = "Personalizado"
 L["Cyclarus"] = [=[Cyclarus
 
 ]=]
+--[[Translation missing --]]
+L["Cyclonic Runekey"] = "Cyclonic Runekey"
 L["Daggertooth Frenzy"] = "Farnesim Dente-de-adaga"
 L["Dandelion Frolicker"] = "Dente-de-leão Bagunceiro"
 L["Darbel Montrose"] = true
@@ -26126,6 +26362,10 @@ L["Dark Gazer"] = "Observador Maligno"
 L["Dark Iron Deposit"] = "Depósito de Ferro Negro"
 L["Dark Quivering Blob"] = "Bolha Escura Trêmula"
 L["Dark Whelpling"] = "Dragonetinho Negro"
+--[[Translation missing --]]
+L["Darkfuse Precipitant"] = "Darkfuse Precipitant"
+--[[Translation missing --]]
+L["Darkfuse Spy-Eye"] = "Darkfuse Spy-Eye"
 L["Darklord Taraxis"] = "Senhor Sombrio Taráxis"
 L["Darkmaul"] = "Malhonegro"
 L["Darkmaul is obtained by feeding a friendly NPC in Korthia called Darkmaul 10 Tasty Mawshroom"] = "Malhonegro é obtido ao alimentar um NPC amigável em Korthia chamado Malhonegro com 10x Gorjumelo Saboroso"
@@ -26395,6 +26635,8 @@ L["Experiment 12-B"] = "Experimento 12-B"
 L["Experimental"] = "Experimental"
 --[[Translation missing --]]
 L["Experiment-In-A-Jar"] = "Experiment-In-A-Jar"
+--[[Translation missing --]]
+L["Explosive Hearthstone"] = "Explosive Hearthstone"
 L["Export"] = "Exportar"
 --[[Translation missing --]]
 L["Export Rarity Item Pack"] = "Export Rarity Item Pack"
@@ -26570,6 +26812,8 @@ L["Galakhad"] = "Galakhad"
 --[[Translation missing --]]
 L["Gale Spirit"] = "Gale Spirit"
 --[[Translation missing --]]
+L["Gallagio Garbage"] = "Gallagio Garbage"
+--[[Translation missing --]]
 L["Gar'lok"] = "Gar'lok"
 --[[Translation missing --]]
 L["Garn Nighthowl"] = "Garn Nighthowl"
@@ -26634,6 +26878,8 @@ L["Glittering Arcane Crystal"] = "Glittering Arcane Crystal"
 L["Glittering Ball of Yarn"] = "Glittering Ball of Yarn"
 --[[Translation missing --]]
 L["Glittering Diamondshell"] = "Glittering Diamondshell"
+--[[Translation missing --]]
+L["Glittering Vault Shard"] = "Glittering Vault Shard"
 --[[Translation missing --]]
 L["Glorious Felcrusher"] = "Glorious Felcrusher"
 --[[Translation missing --]]
@@ -26707,6 +26953,8 @@ L["Grow Up"] = "Grow Up"
 L["Grugoth the Hullcrusher"] = "Grugoth the Hullcrusher"
 --[[Translation missing --]]
 L["Grumpling"] = "Grumpling"
+--[[Translation missing --]]
+L["Grunch"] = "Grunch"
 --[[Translation missing --]]
 L["Guaranteed drop from Dormus the Camel-Hoarder. Accessing this encounter requires finding a rare Mysterious Camel Figurine in Uldum. These are difficult to spot and, when clicked, have a small chance to grant you access to the Dormus encounter. Rarity will count how many Figurines you've found if you mouseover them."] = "Guaranteed drop from Dormus the Camel-Hoarder. Accessing this encounter requires finding a rare Mysterious Camel Figurine in Uldum. These are difficult to spot and, when clicked, have a small chance to grant you access to the Dormus encounter. Rarity will count how many Figurines you've found if you mouseover them."
 --[[Translation missing --]]
@@ -27551,6 +27799,10 @@ L["Profiling ON"] = "Perfis LIGADO"
 L["Progress"] = "Progresso"
 L["Progress Bar"] = "Barra de Progresso"
 --[[Translation missing --]]
+L["Proper Parrot"] = "Proper Parrot"
+--[[Translation missing --]]
+L["Prototype A.S.M.R."] = "Prototype A.S.M.R."
+--[[Translation missing --]]
 L["Proudmoore Music Box"] = "Proudmoore Music Box"
 --[[Translation missing --]]
 L["Pterrordax Egg"] = "Pterrordax Egg"
@@ -27800,6 +28052,8 @@ L["Sagefish School"] = "Cardume de Sabichões"
 --[[Translation missing --]]
 L["Sahn Tidehunter"] = "Sahn Tidehunter"
 --[[Translation missing --]]
+L["Salvaged Goblin Gazillionaire's Flying Machine"] = "Salvaged Goblin Gazillionaire's Flying Machine"
+--[[Translation missing --]]
 L["Salyin Battle Banner"] = "Salyin Battle Banner"
 --[[Translation missing --]]
 L["Salyin Warscout"] = "Salyin Warscout"
@@ -27951,6 +28205,8 @@ L["Show Luckiness column"] = "Show Luckiness column"
 L["Show minimap icon"] = "Mostrar ícone no minimapa"
 --[[Translation missing --]]
 L["Show profiling data"] = "Show profiling data"
+--[[Translation missing --]]
+L["Show progress bar"] = "Show progress bar"
 L["Show Text"] = "Mostrar texto"
 --[[Translation missing --]]
 L["Show Time column"] = "Show Time column"
@@ -28557,6 +28813,8 @@ L["Violet Abyssal Eel"] = "Violet Abyssal Eel"
 L["Violet Mistake"] = "Violet Mistake"
 --[[Translation missing --]]
 L["Viper Fish School"] = "Viper Fish School"
+--[[Translation missing --]]
+L["Viridian Mechasaur"] = "Viridian Mechasaur"
 L["Viscidus Globule"] = "Glóbulo de Viscidus"
 --[[Translation missing --]]
 L["Vixx's Chest of Tricks"] = "Vixx's Chest of Tricks"
@@ -28720,6 +28978,8 @@ L["Wreath-A-Rang"] = "Guirlandarangue"
 L["Wriggler"] = "Chocalhinho"
 L["Wriggling Darkness"] = "Treva Rebolante"
 L["Writhing Spine"] = "Espinha Retorcida"
+--[[Translation missing --]]
+L["Writhing Transmutagen"] = "Writhing Transmutagen"
 --[[Translation missing --]]
 L["Wyrmslayer Angvardi"] = "Wyrmslayer Angvardi"
 L["Xaarshej"] = true

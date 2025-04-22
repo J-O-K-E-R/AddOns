@@ -127,7 +127,7 @@ end
 function E:ParseVersionString(addon)
 	local version = GetAddOnMetadata(addon, 'Version')
 	if strfind(version, 'project%-version') then
-		return 13.86, '13.86-git', nil, true
+		return 13.88, '13.88-git', nil, true
 	else
 		local release, extra = strmatch(version, '^v?([%d.]+)(.*)')
 		return tonumber(release), release..extra, extra ~= ''
@@ -384,6 +384,10 @@ function E:OnInitialize()
 	E:UIMult()
 	E:UpdateMedia()
 	E:InitializeInitialModules()
+
+	if E.private.general.minimap.enable then
+		E.Minimap:SetGetMinimapShape() -- this is just to support for other mods, keep below UIMult
+	end
 
 	if E:IsAddOnEnabled('Tukui') then
 		E:StaticPopup_Show('TUKUI_ELVUI_INCOMPATIBLE')

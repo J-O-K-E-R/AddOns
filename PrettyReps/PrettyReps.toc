@@ -1,8 +1,8 @@
-## Interface: 110007
+## Interface: 110105
 ## IconTexture: Interface/Addons/PrettyReps/pr_logo.png
 ## Title: PrettyReps
 ## Author: Sida2
-## Version: 3.02
+## Version: 3.03
 ## Notes: Display account-wide reputation on any character.
 ## DefaultState: Enabled
 ## LoadOnDemand: 0

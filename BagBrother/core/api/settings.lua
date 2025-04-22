@@ -13,16 +13,18 @@ end
 
 local FrameDefaults = {
 	enabled = true,
+	
 	strata = 'HIGH', alpha = 1, scale = Addon.FrameScale or 1,
 	color = {0, 0, 0, 0.5},
 	x = 0, y = 0,
 
+	itemScale = 1, spacing = 2,
+	bagBreak = 1, breakSpace = 1.3,
+
 	bagToggle = true, sort = true, search = true, options = true, money = true, broker = true,
 	filters = AsArray({'all', 'reagent', 'consumable', 'armor', 'questitem', 'miscellaneous'}),
 	brokerObject = ADDON .. 'Launcher',
-
-	itemScale = 1, spacing = 2, bagBreak = 1, breakSpace = 1.3,
-	hiddenBags = {}, lockedSlots = {}, serverSort = true,
+	serverSort = true,
 }
 
 local ProfileDefaults = {
@@ -65,7 +67,7 @@ local ProfileDefaults = {
 --[[ Methods ]]--
 
 function Settings:OnEnable()
-	BrotherBags = BrotherBags or {}
+	BrotherBags = self:SetDefaults(BrotherBags or {}, {account = {}})
 	Addon.sets = self:SetDefaults(_G[VAR] or {}, {
 		global = self:SetDefaults({}, ProfileDefaults),
 		profiles = {}, customRules = {},
@@ -102,14 +104,53 @@ function Settings:OnEnable()
 
 	for realm, owners in pairs(Addon.sets.profiles) do
 		for id, profile in pairs(owners) do
-			--- upgrade settings
-			if type(profile.bagBreak) ~= 'number' then
-				profile.bagBreak = nil
-			end
-
 			self:SetDefaults(profile, ProfileDefaults)
 		end
 	end
+
+	--- upgrade settings ---
+	pcall(function()
+		for realm, owners in pairs(Addon.sets.profiles) do
+			for id, profile in pairs(owners) do
+				for frame, sets in pairs(profile) do
+					if type(sets.bagBreak) ~= 'number' then
+						sets.bagBreak = nil
+					end
+
+					sets.hiddenBags, sets.lockedSlots = nil
+				end
+			end
+		end
+
+		if type(Addon.sets.global.bagBreak) ~= 'number' then
+			Addon.sets.global.bagBreak = nil
+		end
+
+		local function clean(data)
+			for key, value in pairs(data) do
+				if type(value) == 'table' then
+					if (value.size or value.name or key == 'vault') and not value.items then
+						local items = {}
+
+						for k,v in pairs(value) do
+							if type(k) ~= 'string' then
+								items[k] = v
+								value[k] = nil
+							end
+						end
+
+						if next(items) then
+							value.items = items
+						end
+					else
+						clean(value)
+					end
+				end
+			end
+		end
+
+		clean(BrotherBags)
+	end)
 
 	_G[VAR] = Addon.sets
 end

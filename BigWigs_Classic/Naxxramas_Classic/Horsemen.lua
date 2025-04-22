@@ -164,18 +164,22 @@ end
 function mod:ShieldWall(args)
 	local npcId = self:MobId(args.destGUID)
 	local msg = CL.other:format(args.spellName, L[npcId])
-	self:Message(args.spellId, "yellow", msg)
 	self:Bar(args.spellId, 20, msg)
 	local unit = self:GetUnitIdByGUID(args.destGUID)
-	if unit and self:UnitWithinRange(unit, 35) or args.destGUID == self:UnitGUID("target") then
+	if (unit and self:UnitWithinRange(unit, 35)) or args.destGUID == self:UnitGUID("target") then
+		self:Message(args.spellId, "yellow", msg)
 		self:PlaySound(args.spellId, "long")
+	else
+		self:Message(args.spellId, "yellow", msg, nil, true) -- Disable emphasize when not nearby
 	end
 end
 
 do
 	local unitTracker = {}
+	local currentHealth = {}
 	function mod:Deaths(args)
 		unitTracker[args.mobId] = nil
+		currentHealth[args.mobId] = nil
 		killedBosses[args.mobId] = true
 		local count = #killedBosses + 1
 		killedBosses[count] = true
@@ -194,6 +198,8 @@ do
 
 		if count < 4 then
 			self:Message("stages", "cyan", CL.mob_killed:format(args.destName, count, 4), false)
+		else
+			unitTracker, currentHealth = {}, {}
 		end
 	end
 
@@ -210,8 +216,11 @@ do
 		for npcId, unitToken in next, unitTracker do
 			local line = bossList[npcId]
 			local currentHealthPercent = math.floor(mod:GetHealth(unitToken))
-			mod:SetInfoBar("health", line, currentHealthPercent/100)
-			mod:SetInfo("health", line + 1, ("%d%%"):format(currentHealthPercent))
+			if currentHealthPercent ~= currentHealth[npcId] then
+				currentHealth[npcId] = currentHealthPercent
+				mod:SetInfoBar("health", line, currentHealthPercent/100)
+				mod:SetInfo("health", line + 1, ("%d%%"):format(currentHealthPercent))
+			end
 		end
 	end
 end

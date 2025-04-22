@@ -2,16 +2,14 @@
 -- Copyright (c) 2025 by Ludicrous Speed, LLC
 -- All rights reserved.
 --
-local provider={name=...,data=3,region="eu",date="2025-03-05T06:05:55Z",numCharacters=97,db={}}
+local provider={name=...,data=3,region="eu",date="2025-04-22T06:09:05Z",numCharacters=112,db={}}
 local F
 
-F = function() provider.db["PyrewoodVillage"]={0,"Amoebozoa","Auam","Elfren","Robdot","Roberino"} end F()
-F = function() provider.db["Flamegor"]={10,"Лилантифриз"} end F()
-F = function() provider.db["Gehennas"]={12,"Acidk","Dwaaz","Díca","Trocks"} end F()
-F = function() provider.db["Auberdine"]={20,"Agamourn","Comburstion","Demenor","Drips","Edenor","Judgeret","Lumeniros","Opey","Pakololz","Rhaestra","Selario","Switchfords","Ærròr"} end F()
-F = function() provider.db["Everlook"]={46,"Nexxies","Nexxlock"} end F()
-F = function() provider.db["Lakeshire"]={50,"Tâhrox"} end F()
-F = function() provider.db["Golemagg"]={52,"Justfrosty","Justfrostydd","Justfrostydk","Justfrostydr","Justfrostyh","Justfrostypl","Kedavrakurwa","Shamikazze"} end F()
+F = function() provider.db["Golemagg"]={0,"Seruss","Twism"} end F()
+F = function() provider.db["Gehennas"]={4,"Dwaaz","Dwazzie","Epsteindrip","Exandero","Exanderr","Exandk","Exandri","Exandria","Exandro","Exandrova","Exandru","Exendri","Exmeralda","Hacezbank","Holymoleh","Juliusb","Juliusm","Juliusp","Juliust","Juliusw","Juliuswlx","Juliuswx","Juliusxp","Juliusxpx","Mcflame","Mcgorlock","Mcoprah","Occbull","Occdk","Occdkxy","Occdruid","Occdruidx","Occdruidxy","Occmage","Occmagex","Progress","Trocks","Trockzie","Vashavi"} end F()
+F = function() provider.db["Auberdine"]={82,"Antistäminik","Lunou"} end F()
+F = function() provider.db["Venoxis"]={86,"Chagundk","Keldownz","Shibbyp","Zyonmythos"} end F()
+F = function() provider.db["Everlook"]={94,"Kalytha"} end F()
 
 F = nil
 RaiderIO.AddProvider(provider)
