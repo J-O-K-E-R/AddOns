@@ -8,6 +8,22 @@ function Plater.GetChangelogTable()
 	if (not Plater.ChangeLogTable) then
 		Plater.ChangeLogTable = {
 
+			{1750963632, "Backend Change", "July 19th, 2025", "Changing Drain Soul execute for MoP classic.", "cont1nuity"},
+			{1750963632, "Bug Fix", "July 5th, 2025", "Fixing an error in quest tracking for MoP for certain units.", "cont1nuity"},
+			{1750963632, "Backend Change", "July 4th, 2025", "Changing SW:D execute for MoP classic.", "cont1nuity"},
+			{1750963632, "Backend Change", "June 30th, 2025", "Adding 'Soul Reaper' as DK execute for MoP classic.", "cont1nuity"},
+			{1750963632, "Backend Change", "June 26th, 2025", "Enabling absorb shields when available (MoP classic prep).", "cont1nuity"},
+			
+			{1750232667, "Backend Change", "June 18th, 2025", "Fixing broken glow.", "cont1nuity"},
+			{1750232667, "Backend Change", "June 18th, 2025", "Fixing broken load conditions for affixes.", "cont1nuity"},
+			{1750232667, "Backend Change", "May 31st, 2025", "Adding option to only show buffs on the personal bar which would show on the default one.", "cont1nuity"},
+			{1750232667, "Backend Change", "May 22nd, 2025", "Adding 'resetcvar(s)' command.", "cont1nuity"},
+			
+			{1746914849, "Backend Change", "May 6th, 2025", "Enable 'Shadowburn' for WL execute in classic.", "cont1nuity"},
+			{1746914849, "Backend Change", "Apr 27th, 2025", "Bug fixes for Mists and framework updates.", "Terciob"},
+			{1746914849, "Backend Change", "Apr 27th, 2025", "Preparation for Mists.", "cont1nuity"},
+			{1746914849, "Backend Change", "Apr 23rd, 2025", "Enable support for native compression API for import/export, when available.", "cont1nuity"},
+			
 			{1745324223, "Bug Fix", "Apr 22nd, 2025", "Fixing healthbar animation.", "cont1nuity"},
 			{1745324223, "Backend Change", "Apr 16th, 2025", "Disable garbage collection profiling in preparation for 11.1.5.", "cont1nuity"},
 			
