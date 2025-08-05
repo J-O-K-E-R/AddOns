@@ -519,10 +519,64 @@ GTFO.SpellID["1216577"] = {
   sound = 3;
 };
 
+GTFO.SpellID["1216687"] = {
+  --desc = "Flaming Flames (The Gobfather)";
+  sound = 3;
+};
+
 GTFO.SpellID["1216747"] = {
   --desc = "Death From Above (The Gobfather)";
   sound = 3;
 };
+
+GTFO.SpellID["470847"] = {
+  --desc = "Slobber Volley (Ahn'tak)";
+  sound = 3;
+};
+
+GTFO.SpellID["454875"] = {
+  --desc = "Earthshaking Crash (Kiji the Stomper)";
+  applicationOnly = true;
+  sound = 3;
+};
+
+GTFO.SpellID["454634"] = {
+  --desc = "Leaping Thrash (Clawmother Tengi)";
+  applicationOnly = true;
+  sound = 3;
+};
+
+GTFO.SpellID["456256"] = {
+  --desc = "Earthshatter (Earthfury Cragshar)";
+  sound = 3;
+};
+
+GTFO.SpellID["455152"] = {
+  --desc = "Blast Wave (Crateron)";
+  sound = 3;
+  applicationOnly = true;
+};
+
+GTFO.SpellID["455894"] = {
+  --desc = "Burning Charge (Oremex Flamebreaker)";
+  sound = 3;
+};
+
+GTFO.SpellID["455913"] = {
+  --desc = "Scalding Breath (Oremex Flamebreaker)";
+  sound = 3;
+};
+
+GTFO.SpellID["1218056"] = {
+  --desc = "Demolish (Massive Kaja'mental)";
+  sound = 3;
+};
+
+GTFO.SpellID["1214690"] = {
+  --desc = "Overhead Smash (Deep-King Grobosh)";
+  sound = 3;
+};
+
 
 --- ****************************
 --- * Ara-Kara, City of Echoes *
@@ -597,6 +651,28 @@ GTFO.SpellID["461507"] = {
   --desc = "Cultivated Poisons (Ki'katal the Harvester)";
   sound = 3;
 };
+
+GTFO.SpellID["456320"] = {
+  --desc = "Tide Whirl (Zaniga the Tracker)";
+  sound = 3;
+};
+
+GTFO.SpellID["456280"] = {
+  --desc = "Waterfall (Zaniga the Tracker)";
+  sound = 3;
+};
+
+GTFO.SpellID["455838"] = {
+  --desc = "Umbral Breath (S'toth the Insatiable)";
+  applicationOnly = true;
+  sound = 3;
+};
+
+GTFO.SpellID["457277"] = {
+  --desc = "Azeroth's Rage";
+  sound = 3;
+};
+
 
 
 --- **********************
@@ -1127,13 +1203,6 @@ GTFO.SpellID["426968"] = {
 GTFO.SpellID["430013"] = {
   --desc = "Thunderstrike (Unruly Stormrook)";
   sound = 3;
-  test = true; -- Verification
-};
-
-GTFO.SpellID["427616"] = {
-  --desc = "Energized Barrage (Unruly Stormrook)";
-  sound = 3;
-  tankSound = 0;
   test = true; -- Verification
 };
 
@@ -1725,6 +1794,55 @@ GTFO.SpellID["472850"] = {
 GTFO.SpellID["474314"] = {
   --desc = "Abyssal Grasp (Abyssal Tentacle)";
   applicationOnly = true;
+  sound = 3;
+};
+
+GTFO.SpellID["1216275"] = {
+  --desc = "Molten Cannon (Crony)";
+  sound = 3;
+};
+
+GTFO.SpellID["1216937"] = {
+  --desc = "Underpin's Grand Entrance (The Underpin)";
+  sound = 3;
+};
+
+GTFO.SpellID["1214130"] = {
+  --desc = "Timed Explosion (Puntable Time Bomb)";
+  sound = 3;
+};
+
+GTFO.SpellID["1217371"] = {
+  --desc = "Flamethrower (The Underpin)";
+  sound = 3;
+  applicationOnly = true;
+};
+
+GTFO.SpellID["1213853"] = {
+  --desc = "Crush (The Underpin)";
+  sound = 3;
+  applicationOnly = true;
+};
+
+GTFO.SpellID["1224387"] = {
+  --desc = "Electric Sapper";
+  applicationOnly = true;
+  sound = 3;
+};
+
+GTFO.SpellID["1239731"] = {
+  --desc = "Golem Smash (Awakened Defensive Construct)";
+  sound = 3;
+  applicationOnly = true;
+};
+
+GTFO.SpellID["1220664"] = {
+  --desc = "Overcharged Slam (Overcharged Bot)";
+  sound = 3;
+};
+
+GTFO.SpellID["1228512"] = {
+  --desc = "Titanic Storm Shot (Titanic Storm Crystal)";
   sound = 3;
 };
 
@@ -2426,6 +2544,16 @@ GTFO.SpellID["464487"] = {
   tankSound = 0;
 };
 
+GTFO.SpellID["1214688"] = {
+  --desc = "Pyrotechnics (Rik Reverb)";
+  sound = 3;
+};
+
+GTFO.SpellID["472297"] = {
+  --desc = "Sparkblast Ignition (Pyrotechnics)";
+  sound = 3;
+};
+
 GTFO.SpellID["462797"] = {
   --desc = "Hit and Run (Road Pizza)";
   sound = 3;
@@ -2465,7 +2593,7 @@ GTFO.SpellID["473958"] = {
 GTFO.SpellID["467135"] = {
   --desc = "Trash Compactor (Stix Bunkjunker)";
   sound = 3;
-  test = true; -- Damage radius
+  damageMinimum = 10000000;
 };
 
 GTFO.SpellID["466743"] = {
@@ -2525,6 +2653,12 @@ GTFO.SpellID["1223999"] = {
   sound = 3;
 };
 
+GTFO.SpellID["460430"] = {
+  --desc = "Crushed! (One-Armed Bandit)";
+  sound = 3;
+  applicationOnly = true;
+};
+
 GTFO.SpellID["1218356"] = {
   --desc = "Crowd Divider (Melbo the Magnificent)";
   sound = 3;
@@ -2547,11 +2681,17 @@ GTFO.SpellID["467225"] = {
   sound = 3;
 };
 
+GTFO.SpellID["467201"] = {
+  --desc = "Molten Gold Knuckles (Mug'Zee)";
+  applicationOnly = true;
+  sound = 3;
+  tankSound = 0;
+};
+
 GTFO.SpellID["472659"] = {
   --desc = "Shakedown (Gallagio Goon)";
   sound = 3;
   tankSound = 0;
-
 };
 
 GTFO.SpellID["1218124"] = {
@@ -2626,6 +2766,69 @@ GTFO.SpellID["1214998"] = {
   sound = 3;
   applicationOnly = true;
 };
+
+GTFO.SpellID["470695"] = {
+  --desc = "Mech-a-Zoomies (Mechano Wolf)";
+  applicationOnly = true;
+  sound = 3;
+};
+
+GTFO.SpellID["1218342"] = {
+  --desc = "Unstable Shrapnel (Sprocketmonger Lockenstock)";
+  affirmingDebuffSpellID = 1218342; -- Unstable Shrapnel
+  sound = 3;
+  test = true;
+};
+
+--- ********************
+--- * Eco-Dome Al'dani *
+--- ********************
+
+GTFO.SpellID["1221174"] = {
+  --desc = "Gorging Smash (Voracious Gorger)";
+  sound = 3;
+};
+
+GTFO.SpellID["1217439"] = {
+  --desc = "Toxic Regurgitation (Azhiccar)";
+  applicationOnly = true;
+  sound = 3;
+  test = true; -- Avoidable?
+};
+
+GTFO.SpellID["1231224"] = {
+  --desc = "Arcane Slash (Overcharged Sentinel)";
+  sound = 3;
+  tankSound = 0;
+  applicationOnly = true;
+};
+
+GTFO.SpellID["1222356"] = {
+  --desc = "Warp (Tamed Ruinstalker)";
+  sound = 3;
+};
+
+GTFO.SpellID["1237199"] = {
+  --desc = "Burrow Charge (Burrowing Creeper)";
+  sound = 3;
+  tankSound = 0;
+};
+
+GTFO.SpellID["1215850"] = {
+  --desc = "Earthcrusher (Burrowing Creeper)";
+  sound = 3;
+};
+
+GTFO.SpellID["1223008"] = {
+  --desc = "Burrowing Eruption (Wastes Creeper)";
+  sound = 3;
+};
+
+
+--- *******************
+--- * Manaforge Omega *
+--- *******************
+
 
 end
 

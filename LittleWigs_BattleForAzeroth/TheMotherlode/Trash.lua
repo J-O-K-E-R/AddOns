@@ -64,6 +64,7 @@ function mod:GetOptions()
 		{280604, "DISPEL", "NAMEPLATE"}, -- Iced Spritzer
 		-- Mech Jockey
 		267433, -- Activate Mech
+		{267980, "NAMEPLATE", "OFF"}, -- Grease Gun
 		-- Mechanized Peacekeeper
 		{263628, "NAMEPLATE"}, -- Charged Shield
 		{472041, "NAMEPLATE"}, -- Tear Gas
@@ -93,6 +94,7 @@ function mod:GetOptions()
 		{268846, "NAMEPLATE"}, -- Echo Blade
 		-- Venture Co. Mastermind
 		{473304, "NAMEPLATE"}, -- Brainstorm
+		{262794, "ME_ONLY"}, -- Mind Lash
 		-- Venture Co. Alchemist
 		{268797, "DISPEL", "NAMEPLATE"}, -- Transmute: Enemy to Goo
 		-- Venture Co. War Machine
@@ -138,6 +140,7 @@ function mod:OnBossEnable()
 
 	-- Mech Jockey
 	self:Log("SPELL_CAST_START", "ActivateMech", 267433) --  Heroic and Mythic only
+	self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED") -- Grease Gun
 
 	-- Mechanized Peacekeeper
 	self:RegisterEngageMob("MechanizedPeacekeeperEngaged", 130485, 136139) -- Mech Jockey summon, regular
@@ -210,6 +213,7 @@ function mod:OnBossEnable()
 	-- Venture Co. Mastermind
 	self:RegisterEngageMob("VentureCoMastermindEngaged", 133430)
 	self:Log("SPELL_CAST_SUCCESS", "Brainstorm", 473304)
+	self:Log("SPELL_CAST_START", "MindLash", 262794)
 	self:Death("VentureCoMastermindDeath", 133430)
 
 	-- Venture Co. Alchemist
@@ -304,6 +308,24 @@ do
 			prev = args.time
 			self:Message(args.spellId, "yellow")
 			self:PlaySound(args.spellId, "warning")
+		end
+	end
+end
+
+do
+	local prev = 0
+	function mod:UNIT_SPELLCAST_SUCCEEDED(_, unit, _, spellId)
+		if spellId == 267980 then -- Grease Gun
+			local sourceGUID = self:UnitGUID(unit)
+			if sourceGUID then
+				self:Nameplate(spellId, 4.8, sourceGUID)
+			end
+			local t = GetTime()
+			if t - prev > 2 then
+				prev = t
+				self:Message(spellId, "yellow")
+				self:PlaySound(spellId, "info")
+			end
 		end
 	end
 end
@@ -717,6 +739,17 @@ function mod:Brainstorm(args)
 	self:Message(args.spellId, "orange")
 	self:Nameplate(args.spellId, 16.6, args.sourceGUID)
 	self:PlaySound(args.spellId, "alarm")
+end
+
+do
+	local function printTarget(self, name)
+		self:TargetMessage(262794, "yellow", name)
+		self:PlaySound(262794, "info", nil, name)
+	end
+
+	function mod:MindLash(args)
+		self:GetUnitTarget(printTarget, 0.2, args.sourceGUID)
+	end
 end
 
 function mod:VentureCoMastermindDeath(args)

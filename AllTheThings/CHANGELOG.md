@@ -1,91 +1,179 @@
 # AllTheThings
 
-## [4.3.12](https://github.com/ATTWoWAddon/AllTheThings/tree/4.3.12) (2025-04-21)
-[Full Changelog](https://github.com/ATTWoWAddon/AllTheThings/compare/4.3.11...4.3.12) [Previous Releases](https://github.com/ATTWoWAddon/AllTheThings/releases)
+## [4.5.9](https://github.com/ATTWoWAddon/AllTheThings/tree/4.5.9) (2025-07-13)
+[Full Changelog](https://github.com/ATTWoWAddon/AllTheThings/compare/4.5.8...4.5.9) [Previous Releases](https://github.com/ATTWoWAddon/AllTheThings/releases)
 
-- PTR: stuff that was in logged in discord but wasn't added  
-- [Logic] Title can use CACHE  
-- Add new Noblegarden cosmetics  
-- Fix some minor errors  
-- Kalimdor/Tanaris: Refactor code to eliminate duplicate keys  
-    - Added/Updated some descriptions and coordinates  
-    - Hopefully I didn't scuff any preprocessor as there were a few hairy ones...  
-- Undermine Cartel Rep Items  
-    Correct item levels in list now  
-- [Cata Classic] Wintergrasp item fixes for Cata Classic (#1960)  
-    * Set WG shoulder vendor to Ros'slai and Magruder for Cata Classic, unsure when these are actually moved or added to the other NPCs...  
-    * Wintergrasp jewelry is still present on the vendor in Cata Classic  
-- The Shadowguard quests are Troll only, not Undead.  
-- [Logic] Retail: Simplified some CharacterUnlock structuring  
-- [Logic] Retail: Fixed an issue where Item Recipes which no longer exist would never resolve with a default name  
-- [Logic] Removed automatic source harvest when unknown sources lookup an itemID  
-- small fixes  
-- Fix some reported errors, consolidate some Delve pets  
-- Fix some 11.1.5 stuff  
-- Cata: Fixed objectives for Taragaman the Hungerer.  
-- [Locale] Update esES/esMX (#1959)  
-    More Es / MX translations  
-- Add Beetriz pet, ignore some objects  
-- [Logic] Retail: Pedantic logic review of Quest completion code...  
-    * Fixed dirty quests adding values when no actual change to the player's quest state has changed for a given questID  
-    * Fixed quests performing updates on questID's which are already completed if they are set again  
-    * Fixed potentially reporting more than 50 quest completions at a time due to change in how quest print is being tracked  
-    * Fixed large amounts of unflagged quests being reported with a negative number  
-- Sort and source rares, mounts, pets and toys from 11.1.5 Horrific Visions  
-- [Logic] Retail: The 'No entries found' row no longer appears in empty ATT popouts when the popout is of an actual 'Thing' already  
-- [Logic] Retail: Fixed PrimeData being cached when not accurate & PrimeData cache not being used in minimap tooltip prior to an update on the Main list (fixes #1923)  
-- Sort and restructure some 11.1.5 rewards  
-- Cata: Rebuilt the DB. Also added a Clear Button.  
-- Cata: Updated ItemDB. Also updated the ItemDB Harvester to work more efficiently.  
+- [DB] Mists: add Goblin class quests in Kezan  
+- [DB] Thought we did a good thing but did a bad thing instead  
+- [DB] Mists: add some Tirisfal Glades quests that weren't previously available in Classic  
+- [DB] Mists: putting applyclassicphase first*  
+- [DB] Mists: apply Classic phases to Deepwind Gorge and Proving Grounds  
+- [DB] Mists: Update Elwynn Forest.  
+    Update coord of q 31139, 31140, 31142.  
+    Update timeline of i 57254.  
+    Update objective of q 31142.  
+    Update annotated.  
+- [Misc.] Fix typo.  
+- [Logic] Current Game tooltip will now try to refresh itself after an ATT refresh completes (fixes situations where ATT is refreshed while an Item tooltip is open and the tooltip doesn't refresh)  
+- [Logic] Retail: Improve npc search accuracy by directly searching npcID instead of creatureID  
+- [DB] Add NYI 5.0 QA PVP Test plate gear  
+- [DB] Add NYI QA Combat Test plate gear  
+- [DB] Mists: remove new heirlooms from DMF vendor, a few of these are JP only in MoP Classic  
+- [DB] Mists: add missing RFC quests and fix quest givers IDs  
+- [Logic] Retail: Catalyst Filler adjustments  
+    * Supports multiple returned Catalyst results  
+    * Supports showing cross-class results for BoE/BoA items (if enabled in user settings)  
+    * Some performance improvements WIP  
+    * Possibly an issue with cross-class nested upgrades on Catalyzed-Cloaks... WIP  
+- [DB] Adjusted 'Grimoire of the Xorothian Felhunter' to be more clear and obvious  
+- [Misc] Retail: Moved fill scope check  
+- [Logic] Retail: Including C\_Item.IsItemBindToAccountUntilEquip since some Items are base BoP but can drop as BoE/WuE based on the exact link  
+- MOP: We still want to see "Known By" on certain elements  
+- [DB] Add unnamed MoP Classic items to NYI SourceIDs  
+- Classic: Fix for SetThingCollected being unable to figure out where to save sourceIDs.  
+- PTR: 11.2.0 build 61871 updates  
+    - added war mode gear  
+    - added K'aresh zone drop  
+    - added K'aresh zone reward  
+    - added K'aresh WQs  
+- [DB] Sorted NYI Armors up to and including Legion  
+- [DB] Mists: undo a few NYI items in the 92xxx ID range, these are probably used for class boosts  
+- [DB] Mists: clean up lvl 80 DK boost set for Classic, was never added  
+- [DB] Mists: add proper timeline to Group Finder satchels  
+- [DB] All the Monster NYI items (rawr xD) + some sorting in NYI file  
+- [DB] Budget Bard is properly automated  
+- [DB] Mists: apply classic phases for MoP PVP seasons  
+- [DB] Mists: add some Classic only NYI items to our files  
+- [DB] Free Stylin is automated properly  
+- [Settings] Retail: Added a 'Popout List' scope for Fillers  
+    * (It's nice to have separate toggles for minilist vs. popouts. Minilist is automatic as you move but popouts are intentional... I've found myself needing to constantly swap settings to see proper popout data -- figure that's probably a common issue)  
+- [DB] Gave Lorewalking header a temporary icon  
+- [Logic] Retail: Catalyst icon/text now shows in the tooltip/row similar to Upgrade/Cost/Reagent  
+- [DB] Cata: add some missing NYI cloaks  
+- [DB] Update Classic Missing DBs again :^)  
+- PTR: 11.2.0 build 61871 updates  
+    missing conquest/war mode gear  
+- [DB] Mists: fix currently available Inscription recipes  
+- [DB] Add Darkwalker Dagger and Shiv to NYI weapons  
+- [DB] Iwen's Enchanting Rod (ach) is properly automated  
+    [DB] Found a Healthy Elixir  
+- [Parser] Correct timeline of WSG map (#2088)  
+- [DB] Cata: update Missing DB  
+- [DB] Wrath: update Missing DB  
+- [DB] Mists: I lied, here's some more NYI stuff  
+- [DB] Mists: add Frayfeather and Steelgrill NYI item sets  
+- 2 ToT fixes (#2084)  
+    Fixes the minilist of LFR of ToT where megaera is missing in the common drops parts  
+    Removed redundant comment on LFR and normal because ra den does not exist on those difficulties  
+- [DB] Mists: update Missing DB  
+- [DB] Harvest 5.5.0.61916  
+- [Wago] Update MoP data to 5.5.0.61916  
+- Fixed some Tanaris objectives.  
+- [DB] Mists: MORE NYI ARMOR (last one for now)  
+- [DB] Mists: add Forestwalker NYI item set  
+- [DB] Mists: add even more NYI armor pieces  
+- [DB] WoD: put a proper timeline on Big Crate of Salvage  
+- [DB] Classic: add WotLK Class Trial to database references and improve preprocessor wrapping for Level 80 Boost / Scroll of Resurrection  
+- Deduplicate common drops in Legion raids ahead of InstanceHelper rework  
 - Fix some reported errors  
-- Wago Retail file update  
-- Wago PTR file update  
-- [DB] Added coords to 'Servitor Interface'  
-- [DB] Couple Ritual Offerings coords  
-- [Logic] Transmog: Don't show the force refresh text on Things explicitly-marked as non-collectible  
-- [Locale] Update esES/esMX: Lore.  
-    * update lore tbc-shadowlands in es-es /es-mx  
-    * Add missing lore entrys of worldsoul saga to multiple languages  
-- Timeline event banners correctly, fix some reported errors  
-- Kalimdor/Thousand Needles: Refactor code to eliminate duplicate keys  
-    - Added/Updated some descriptions and coordinates  
-    - Move "Two If By Boat" from Feralas (It's a part of the Needles introductory quest chain)  
-- [Locale] Update esES/esMX. (#1957)  
-- [DB] Reparsed all Classic databases.  
-- Cata: Added back Living Branch's ignore source state.  
-- [Logic] Bad parentheses  
-- [DB} Minor spelling/description adjustment for LIITA  
-- [Logic] Consolidated more Shared Appearance rendering in tooltips  
-    * Fixed inifinite Retrieving data when Blizzard returns unknown appearance information  
-    * Fixed indent of Item links in conjunction with other possible indicators  
-    * Classic: Fixed CreateItemSource exploding when used without an itemID  
-- [Logic] CanRetry now sets HasRetried when the timer expires [Some cases end up with multiple inherited triggers of CanRetry meaning that the initial reason for retrying may not ever resolve CanRetry == false to know it should stop]  
-- Correct LoU Glory requirement, fix many reported quest errors  
-- [Logic] Retail: Adjusted Spell/RecipeWithItem to utilize the Item-based cache instead of doing basic Item data resolving itself  
-- [Logic] Fixed a Lua error when tooltips referenced characters who never had any spells cached  
-- [Logic] Known Toys can now be used in lockCriteria  
-    [DB] Light Camera Action & Crystal Clarity are now properly marked as unavailable if the S.E.L.F.I.E. Camera MkII is learned on the account  
-- Remove some unneeded DF intro sourcequests  
-- Clean up some WoD/BFA alt tmog  
-- [Contrib] Added note for how to properly determine values for MapPrecisionOverrides  
-- [Contrib] Added another attempted protection for checking quests when turned in instead of prior to accepting  
-- [Logic] Simplified default search by value comparison  
-    [Logic] Moved & adjusted trade skill window search by value comparison (should now properly show learnable Recipes even when under an opposite faction Source)  
-- Updated some indents and fixed a missing comma  
-- Update Brewfest.lua  
-- Update WoW Anniversary.lua  
-- [DB] Added learnedAt for couple Ironforge BS quests  
-- [Logic] Improved the Known By / Completed By handling & certain Things which are typically account-wide but are instead learned per Character now show Known By  
-- [Parser] Illusions no longer include unnecessary 'type' field  
-- [Logic] Fixed some Things with SpellID's showing up again in "Known By" tooltips  
-- Add guide for Bounty of the Elements treasure (obj: 233973) (#1956)  
-    Add guide for Bounty of the Elements treasure  
-- [Logic] Event logic now uses for loops instead of ipairs  
-- [Logic] Retail: Refactored handling of the visibility checks after an Update & simplified a few pieces of logic [This seems to perform slightly better from my testing and allows for much cleaner control of visibility checks]  
-    [Logic] Retail: Loot Mode visibility check can now be added/removed from the set of active checks instead of always processed even when the setting is not active  
-    [Logic] Retail: Caching setting data within data handling now happens only when settings actually change/refresh  
-- [Logic] Retail: Converted data handling ipairs to for loops  
-    [Logic] Retail: Fixed some redundant logic being performed when updating search results in ATT windows  
-- [Test] Added a test method to confirm that for loops are an order of magnitude faster than ipairs/pairs lmao  
-- [Logic] Fixed a bug introduced 16 months via the CharacterClass module which prevented spec-based Class headers from being visible unless in Account/Debug modes  
-- Classic: Fixed a missing variable.  
+- MOP: Updated Baron Silverlaine's loot table. They added back a bunch of removed from game stuff!  
+- MOP: Updated Battleground mapIDs - They were all updated to use the mapID from Retail!  
+- WoD gronnsbane treasure daily QI part 2  
+- MOP: Apparently Blizzard is using the retail mapID for ARATHI\_BASIN now.  
+- WoD gronnsbane treasure daily QIs  
+- [DB] Add some more NYI staves found in Classic and improve header consistency in NYI Weapons file  
+- [DB] Sorted NYI weapons until I got bored  
+- [DB] Sort some NYI weapons  
+- [DB] Add Enchanting Test Sword to NYI Weapons  
+- [DB] Add more NYI items found in Classic  
+- [DB] Add a few oddball NYI "weapons" lol  
+- [DB] Mists: add a few NYI Contender's armor set items  
+- portal descrip update  
+- [Logic] Retail: Clean up some Heirloom stuff by relying fully on Item handling  
+- MOP: The Lost Treasure quest was also fixed as a result.  
+- MOP: The Cache of the Legion in the Mechanar has been fixed!  
+- Update Midsummer Fire Festival.lua  
+- [DB] Removed bad objective data  
+- [Logic] ATT version-only check is now sent during OnReady & out-of-date notification message now includes the received Version  
+- [Logic] Some Social fixes  
+    * Social ATT messages no longer duplicate for the user when successfully sent via party/guild  
+    * Retail: Now properly sends a Social update when the Main list receives an actual update  
+- [Logic] Retail: Cleaned up using a parameter when local ref is available  
+- [DB] Mists: add some NYI items I came across in tooltips and sort a few leather NYI items alphabetically  
+- [DB] Order some NYI Plate gear  
+- [DB] Mists: add some NYI items from common appearances at MH vendor for Mage  
+- [Logic] Removed double registration for QUEST\_REMOVED  
+- [Logic] Retail: Source(s) in popouts now properly accounts for Map-based Sources (now that Criteria is being automated directly into Zones)  
+- [Logic] Classic: assign the appropriate "u" field value to NYI list items on addon load, causing them to show unobtainable status properly everywhere (thanks @ImUnicke!)  
+- [DB] Mists: add rest of Galardell set to NYI Armors  
+- [Misc] Added more notes about using MAPID\_MERGE\_REPLACEMENTS  
+- [Parser] Added preprocessor conditions  
+- [Parser] Added 'MAPID\_MERGE\_REPLACEMENTS' to redirect merging against certain mapIDs to other mapIDs (cases where the map is referenced only in 'maps' but no longer really exists, but we need to have automated data sourced under the map)  
+    [Parser] Fixed various Criteria linked to maps being copied under HQT section  
+- Classic: Added a single frame yield to the Refresh Collections call... Apparently this fixes Battle Pets coming back unlearned on startup.  
+- [DB] Fixed some missing commas making VSC upsetti  
+- added lucky tortollan charm to dornogal griftah per report  
+- [Misc] Retail: Removed some unused locals  
+- [Parser] Fixed Criteria getting duplicated under NYI maps used for organization  
+    * Reduced some indentation  
+- Bit of sorting  
+- [Parser] Adjusted patch() so that we can properly show 0.0 patches  
+- [DB] Fix baby mistake  
+- [DB] Mists: fuck it new heirlooms are not available from AT in Classic at all until proven otherwise by Blizzard  
+- [DB] Mists: treat Battle Pet Training as a recipe in Classic  
+- Add new achievements for Season Three and K'aresh zone  
+- [Logic] Retail: Repeatable quests can now be 'filled' even when temporarily-detected as saved  
+- Fix some reported errors, parse  
+- Add new WoD Timewalking items  
+- Resort MoP T14 patterns under all difficulties, fixes #1929  
+- CATA: Fixed the quest rewards for Twilight Falls.  
+- [Logic] Retail: 'Total Cost' calculation now hooks the OnWindowUpdated for an ATT popout rather than needing to be hooked to multiple events and sometimes not properly scanning updated data  
+- [Logic] Retail: ATT Lists now fire an OnWindowUpdated event after they perform an update, followed by a bool as to whether a full update was performed  
+- MOP: Updated the Battle Pets library to use Retail's Battle Pet library.  
+    Classic: Split the Battle Pets & Mounts library a bit to make that possible. Moved the new lib file (temporarily) after ATT-Classic.lua since there's a weird race condition going on due to the Spell lib being declared there instead of earlier.  
+- [Logic] Retail: Refactored Item caching logic to be similar to most other class caching logic  
+    * Item name/icon references now also trigger the Item retrieval from the server  
+    [Logic] Retail: Use Colorize in Illusion class  
+- [Logic] Retail: Moved async-refresh to ATT row population instead of as part of base class text (forgot there are many classes which define their own custom text)  
+- Classic doesn't support AsyncRefreshFunc  
+- Classic: Removed some unreferenced functions  
+- Classic: Now using the Professions lib.  
+- Classic: Fixed some missing references to "app" in ReferenceDB. (again)  
+- Classic: Fixed some missing references to "app" in ReferenceDB.  
+- C.H.E.T.T. cards do not drop outside of Undermine and Sluice  
+- Changed 'Battle Pet Training' spell to Character Unlock.  
+- [DB] Mists: add Battle Pet Training spell to the SW/Org trainers  
+- added Zuldazar Hearthstone to nyi  
+- [DB] Mists: add a few NYI items  
+- [Logic] Retail: Revised some async refresh handling for Items/Quests/NPCs  
+    * The trigger for an async refresh is now on the text field rather than whenever the Thing is cached initially. This greatly reduces situations where the Upgrade Filler would cache lots of content in the minilist, thereby also causing the minilist to refresh itself many times with no visible change  
+    [Logic] Retail: Garrison building Recipes now import from Item instead of containing repeated Item lookups  
+- [DB] Added Wandering Isle's Wind Stone object  
+- Fixed an issue with the short mode string  
+- [DB] Made all anniversary events NYI for Classic up until BfA  
+- [Misc] Adjusted debugging comments for DirectGroupRefresh  
+- [Logic] Retail: Fixed cost information type by using text instead of name  
+- Cost defaulted to On.  
+- Converted the cost field into an Information Type.  
+- Retail: Removed unreferenced function.  
+- Fix Yor ID in timewalking (#2082)  
+- All references to app.Spell* and app.Skill have been converted to use the SkillDB provided in ReferenceDB.  
+- Classic: Moved Mount & Battle Pet logic to its own file. (temporarily)  
+    Classic: Now referencing the SKILL\_ID\_CONVERSION\_TABLE instead of a hardcoded table in ATT-Classic.lua for skill data.  
+    BETA: Fixed the beta config.  
+    Classic: Moved the Omarion's Handbook OnUpdate to the ExportDB.  
+    SOD: Moved the Crafter's OnUpdate to the ExportDB.  
+    Rebuilt all DBs to remove references to a helper function that no longer exists within the addon.  
+- [DB] Couple treasures and uncollectible item  
+- MOP: Battle Pet removal is now properly detected.  
+- Retail: Added \_doautomation to all Loremaster achievements changed in 7.3.5 to allow their Story Criteria to be populated in the addon.  
+- Update Mount/Pet/ToyDB for 11.2.0.61787  
+- Update Timelines dates  
+- Automated a couple more achievements  
+- MOP: Removed non-existent storyline criteria from zones where they do not exist yet.  
+    Pre-7.3.5 Loremaster achievements now show source quests as an alternative.  
+- PTR: Delves & Dornogal stuff update  
+- Deep into Deepholm didn't get achievement criteria until 7.3.5  
+- [DB] Mists: add a few more NYI armors and weapons  
+- [DB] Mists: moved some NYI staves from Poor Items to NYI Weapons  
+- MOP: Illusions weren't added until 7.0.3.  

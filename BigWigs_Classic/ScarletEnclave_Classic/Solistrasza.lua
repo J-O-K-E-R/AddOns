@@ -25,18 +25,22 @@ end
 -- Initialization
 --
 
-local whelpMarker = mod:AddMarkerOption(true, "npc", 8, "whelps", 8, 7, 6) -- Whelp
+local whelpMarker = mod:AddMarkerOption(true, "npc", 8, "whelps", 8, 7) -- Whelp
+local crimsonFlareMarker = mod:AddMarkerOption(true, "player", 6, 1232097, 6) -- Crimson Flare
 function mod:GetOptions()
 	return {
 		"stages",
 		"adds",
+		whelpMarker,
 		1231993, -- Tarnished Breath
 		1227696, -- Hallowed Dive
 		1228063, -- Cremation
-		whelpMarker,
+		{1232097, "SAY", "SAY_COUNTDOWN", "ME_ONLY_EMPHASIZE"}, -- Crimson Flare
+		crimsonFlareMarker,
 		"berserk",
 	},nil,{
 		[1231993] = CL.breath, -- Tarnished Breath (Breath)
+		[1232097] = CL.beam, -- Crimson Flare (Beam)
 	}
 end
 
@@ -57,12 +61,14 @@ function mod:OnBossEnable()
 	self:Log("SPELL_AURA_APPLIED", "CremationDamage", 1228063)
 	self:Log("SPELL_PERIODIC_DAMAGE", "CremationDamage", 1228063)
 	self:Log("SPELL_PERIODIC_MISSED", "CremationDamage", 1228063)
+	self:Log("SPELL_AURA_APPLIED", "SolistraszasGazeApplied", 1232009)
+	self:Log("SPELL_AURA_REMOVED", "SolistraszasGazeRemoved", 1232009)
 end
 
 function mod:OnEngage()
 	self:SetStage(1)
 	self:Message("stages", "cyan", CL.stage:format(1), false)
-	self:Berserk(480, true) -- No engage message
+	self:Berserk(600, true) -- No engage message
 	self:CDBar(1231993, 11.2, CL.breath) -- Tarnished Breath
 end
 
@@ -122,15 +128,17 @@ do
 				iconToUse = 8
 				addsAlive = 3
 			end
-			if self:GetOption(whelpMarker) then
-				guidCollector[args.sourceGUID] = iconToUse
-				self:RegisterTargetEvents("WhelpMarking")
-			end
-			iconToUse = iconToUse - 1
-			if iconToUse == 7 then
-				self:Message("adds", "cyan", CL.adds_spawned, L.adds_icon)
-				self:Bar("adds", 30, CL.extra:format(CL.explosion, CL.adds), L.adds_icon)
-				self:PlaySound("adds", "info")
+			if iconToUse > 6 then -- Only mark the first 2 of 3 whelps
+				if self:GetOption(whelpMarker) then
+					guidCollector[args.sourceGUID] = iconToUse
+					self:RegisterTargetEvents("WhelpMarking")
+				end
+				iconToUse = iconToUse - 1
+				if iconToUse == 7 then
+					self:Message("adds", "cyan", CL.adds_spawned, L.adds_icon)
+					self:Bar("adds", 30, CL.extra:format(CL.explosion, CL.adds), L.adds_icon)
+					self:PlaySound("adds", "info")
+				end
 			end
 		end
 	end
@@ -153,10 +161,27 @@ end
 do
 	local prev = 0
 	function mod:CremationDamage(args)
-		if self:Me(args.destGUID) and args.time - prev > 2 then
+		if self:Me(args.destGUID) and args.time - prev > 3 then
 			prev = args.time
 			self:PersonalMessage(args.spellId, "underyou")
 			self:PlaySound(args.spellId, "underyou")
 		end
+	end
+end
+
+function mod:SolistraszasGazeApplied(args) -- Crimson Flare
+	self:TargetMessage(1232097, "orange", args.destName, CL.beam)
+	self:CustomIcon(crimsonFlareMarker, args.destName, 6)
+	if self:Me(args.destGUID) then
+		self:Say(1232097, CL.beam, nil, "Beam")
+		self:SayCountdown(1232097, 5)
+		self:PlaySound(1232097, "warning", nil, args.destName)
+	end
+end
+
+function mod:SolistraszasGazeRemoved(args) -- Crimson Flare
+	self:CustomIcon(crimsonFlareMarker, args.destName)
+	if self:Me(args.destGUID) then
+		self:CancelSayCountdown(1232097)
 	end
 end

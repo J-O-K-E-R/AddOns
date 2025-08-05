@@ -1,4 +1,5 @@
-local L = BigWigsAPI:NewLocale("BigWigs: Common", "ptBR")
+local _, addonTbl = ...
+local L = addonTbl.API:NewLocale("BigWigs: Common", "ptBR")
 if not L then return end
 
 -- Prototype.lua common words
@@ -13,8 +14,10 @@ L.buff_other = "Buff no %s: %s"
 L.magic_buff_boss = "Buff mágico no CHEFE: %s" -- Magic buff on BOSS: SPELL_NAME
 L.magic_buff_other = "Buff mágico em %s: %s" -- Magic buff on NPC_NAME: SPELL_NAME
 L.on = "%s em %s"
-L.stack = "%dx %s em %s"
-L.stackyou = "%dx %s em VOCÊ"
+L.stack = "%dx %s em %s" -- "5x SPELL_NAME on PLAYER_OR_NPC" showing how many stacks of a buff/debuff are on a player or NPC
+L.stackyou = "%dx %s em VOCÊ" -- "5x SPELL_NAME on YOU" showing how many stacks of a buff/debuff are on you
+--L.stackboss = "%dx %s on BOSS" -- "5x SPELL_NAME on BOSS" showing how many stacks of a buff/debuff are on the boss
+--L.stack_gained = "Gained %dx" -- "Gained 5x" for situations where we show how many stacks of a buff were gained since last time a message showed
 L.cast = "<Conjurando %s>"
 L.casting = "Conjurando: %s"
 L.soon = "%s em breve"
@@ -43,10 +46,11 @@ L.dead = "Morto" -- When a player is dead
 L.general = "Geral" -- General settings, i.e. things that apply to normal, heroic and mythic mode.
 L.health = "Vida" -- The health of an NPC
 L.health_percent = "%d%% de Vida" -- "10% Health" The health percentage of an NPC
+L.energy = "Energia"
+--L.energy_percent = "%d%% Energy" -- "80% Energy" The energy percentage of an NPC
 L.door_open = "Porta Aberta" -- When a door is open, usually after a speech from an NPC
 L.gate_open = "Portão Aberto" -- When a gate is open, usually after a speech from an NPC
 L.threat = "Ameaça"
-L.energy = "Energia"
 
 L.remaining = "%d restantes" -- 5 remaining
 L.duration = "%s durante %s seg" -- Spell for 10 seconds
@@ -74,6 +78,8 @@ L.keep_moving = "Continue se movendo" -- An ability that forces you to keep movi
 L.stand_still = "Fique parado" -- An ability that forces you to stand still or you will take damage
 L.safe_to_stop = "É seguro ficar parado" -- When an ability that forces you to keep moving fades from you, allowing you to stop moving
 L.safe_to_move = "É seguro se mover" -- When an ability to forces you to stand still fades from you, allowing you to move again
+L.safe = "Seguro" -- You are safe from a bad ability
+L.unsafe = "Perigo" -- You are unsafe (in danger) of a bad ability
 
 -- Add related
 L.add_spawned = "Add surgiu" -- singular
@@ -132,6 +138,8 @@ L.marker_player_desc = "Marca jogadores afetados por %s com %s, requer líder ou
 L.marker_npc_desc = "Marca %s com %s, requer líder ou assistente." -- Mark NPC_NAME with SKULL_ICON
 L.marker_npc_aura_desc = "Marca NPCs afetados por '%s' com %s, requer líder ou assistente." -- Mark NPCs affected by 'SPELL_NAME' with SKULL_ICON
 L.disabled = "Desativado"
+L.none = "Nenhum"
+--L.markers = "Markers" -- Plural of marker
 
 -- Ability where two players have to move close to each other
 L.link = "Vínculo"
@@ -170,6 +178,11 @@ L.south = "Sul"
 L.south_west = "Sudoeste"
 L.west = "Oeste"
 L.north_west = "Noroeste"
+
+-- Sizes
+L.small = "Pequeno"
+L.medium = "Médio"
+L.large = "Grande"
 
 -- Schools
 L.fire = "Fogo"
@@ -235,6 +248,8 @@ L.spell_reflection = "Reflexão de Feitiço" -- Any ability that reflects spells
 L.rooted = "Enraizado" -- Any ability that roots you in place, preventing you from moving
 
 -- Common ability name replacements A-Z
+L.ball = "Bola" -- A ball, like a football, basketball, etc
+L.balls = "Bolas" -- Plural of L.ball
 L.blind = "Cegar" -- Any ability that blinds or disorientates you. Usually an ability a boss casts and you need to turn away from the boss or it will blind you.
 L.dodge = "Esquiva" -- When you need to continually run around to dodge abilities, like missiles landing on the ground under you
 L.enrage = "Enfurecer" -- Any enrage buff that can be removed by players using abilities like Soothe (Druid), Tranquilizing Shot (Hunter) and Shiv (Rogue)
@@ -253,6 +268,7 @@ L.soaks = "Soaks" -- Plural of L.soak
 L.spike = "Espinho" -- Short for any ability with the name "spike" in it e.g. "Glacial Spike" or "Fel Spike" or "Volatile Spike"
 L.spikes = "Espinhos" -- Plural of L.spike
 L.spread = "Espalhar" -- An ability that forces you to spread out away from other players, or you might damage them
+--L.tank_bomb = "Tank Bomb" -- Similar to L.bomb but only applies to tanks
 L.tank_combo = "Combo de Tanque" -- Used for tank swap mechanics where the boss casts a sequence of tank buster attacks
 L.tank_debuff = "Debuff do Tanque" -- Used for debuffs that only apply to tanks, usually an indicator that you need to taunt
 L.tank_frontal = "Frontal Tanque" -- Similar to L.frontal_cone but only applies to tanks

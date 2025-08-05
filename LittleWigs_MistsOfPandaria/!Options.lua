@@ -100,16 +100,15 @@ BigWigs:AddSounds("Trial of the King", {
 
 BigWigs:AddColors("Gekkan", {
 	[118903] = {"blue","red"},
+	[118940] = "orange",
 	[118963] = {"blue","purple","yellow"},
-	[118988] = {"blue","red"},
-	["heal"] = "orange",
+	[118988] = "red",
 	["stages"] = "green",
 })
 
 BigWigs:AddSounds("Gekkan", {
+	[118940] = "alert",
 	[118963] = "warning",
-	[118988] = "alarm",
-	["heal"] = "alert",
 	["stages"] = "info",
 })
 
@@ -475,7 +474,7 @@ BigWigs:AddColors("Liu Flameheart", {
 	[106841] = {"blue","purple"},
 	[106856] = "orange",
 	[106864] = "orange",
-	[107110] = {"blue","orange"},
+	[107045] = {"blue","orange"},
 	[118540] = "blue",
 	[396907] = "purple",
 	["stages"] = "cyan",
@@ -486,7 +485,7 @@ BigWigs:AddSounds("Liu Flameheart", {
 	[106841] = "alert",
 	[106856] = "alarm",
 	[106864] = "alarm",
-	[107110] = {"alarm","underyou"},
+	[107045] = {"alarm","underyou"},
 	[118540] = "underyou",
 	[396907] = "alarm",
 	["stages"] = {"info","long"},

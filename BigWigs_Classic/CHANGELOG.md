@@ -1,8 +1,11 @@
 # BigWigs [Classic]
 
-## [v11.1.29](https://github.com/BigWigsMods/BigWigs_Classic/tree/v11.1.29) (2025-04-22)
-[Full Changelog](https://github.com/BigWigsMods/BigWigs_Classic/compare/v11.1.28...v11.1.29) [Previous Releases](https://github.com/BigWigsMods/BigWigs_Classic/releases)
+## [v11.1.52](https://github.com/BigWigsMods/BigWigs_Classic/tree/v11.1.52) (2025-07-11)
+[Full Changelog](https://github.com/BigWigsMods/BigWigs_Classic/compare/v11.1.51...v11.1.52) [Previous Releases](https://github.com/BigWigsMods/BigWigs_Classic/releases)
 
-- ScarletEnclave\_Classic/Beatrix: Tweak wave message  
-- ScarletEnclave\_Classic/Solistrasza: Add explosion bar from adds  
-- ScarletEnclave\_Classic/Mason: Adjust berserk for hotfix  
+- World\_Classic: Fix error on 4 dragons  
+- ScarletEnclave\_Classic/Trash: Remove victory sound  
+- ScarletEnclave\_Classic/Beatrix: Tweak timings  
+- Bump toc  
+- Update issue template to make it as generic as possible  
+- Update workflow  

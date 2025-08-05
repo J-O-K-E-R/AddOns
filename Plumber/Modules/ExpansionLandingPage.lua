@@ -3,6 +3,7 @@ local API = addon.API;
 local L = addon.L;
 
 local C_Reputation = C_Reputation;
+local C_MajorFactions = C_MajorFactions;
 local GetParagonValuesAndLevel = API.GetParagonValuesAndLevel;
 
 local FACTION_FRAME_WIDTH = 60;
@@ -213,6 +214,7 @@ do
 
         return f
     end
+    addon.CreateFactionProgress = CreateFactionProgress;
 end
 
 
@@ -444,38 +446,57 @@ do
         end
     end
 
+    function MajorFactionButtonMod:OnOverlayChanged()
+        if not self.factionEventListener then
+            local LandingOverlay = ExpansionLandingPage and ExpansionLandingPage.Overlay and ExpansionLandingPage.Overlay.WarWithinLandingOverlay;
+            if LandingOverlay then
+                --LandingOverlay may not be loaded in some cases
+                --e.g. Player logged in pre-TWW area
+
+                local factionEventListener = CreateFrame("Frame", nil, LandingOverlay);
+                self.factionEventListener = factionEventListener;
+
+                factionEventListener:SetScript("OnShow", function()
+                    if not self.needChecked then
+                        self.needChecked = true;
+                        if MajorFactionListOverride:IsModificationNeeded() then
+                            self.listNeedModified = true;
+                        end
+                    end
+
+                    if self.listNeedModified and (not self.refreshModified) and LandingOverlay.MajorFactionList then
+                        self.refreshModified = true;
+
+                        MajorFactionListOverride.OnLoad(LandingOverlay.MajorFactionList.ScrollBox);
+
+                        LandingOverlay.MajorFactionList.Refresh = MajorFactionListOverride.RefreshList;
+                        LandingOverlay.MajorFactionList:Refresh();
+                    end
+                end);
+            end
+        end
+
+        if self.factionEventListener then
+            self:WatchOverlayChanged(false);
+        end
+    end
+
+    function MajorFactionButtonMod:WatchOverlayChanged(state)
+        if state and not self.factionEventListener then
+            EventRegistry:RegisterCallback("ExpansionLandingPage.OverlayChanged", self.OnOverlayChanged, self);
+        else
+            EventRegistry:UnregisterCallback("ExpansionLandingPage.OverlayChanged", self);
+        end
+    end
+
     function MajorFactionButtonMod.EnableModule(state)
         --ExpansionLandingPage is not loaded when this file is loaded
 
         local self = MajorFactionButtonMod;
+        self:WatchOverlayChanged(state);
 
         if state then
-            if not self.factionEventListener then
-                local LandingOverlay = ExpansionLandingPage and ExpansionLandingPage.Overlay and ExpansionLandingPage.Overlay.WarWithinLandingOverlay;
-                if LandingOverlay then
-                    --LandingOverlay may not be loaded in some cases
-                    local factionEventListener = CreateFrame("Frame", nil, LandingOverlay);
-                    self.factionEventListener = factionEventListener;
-
-                    factionEventListener:SetScript("OnShow", function()
-                        if not self.needChecked then
-                            self.needChecked = true;
-                            if MajorFactionListOverride:IsModificationNeeded() then
-                                self.listNeedModified = true;
-                            end
-                        end
-
-                        if self.listNeedModified and (not self.refreshModified) and LandingOverlay.MajorFactionList then
-                            self.refreshModified = true;
-
-                            MajorFactionListOverride.OnLoad(LandingOverlay.MajorFactionList.ScrollBox);
-
-                            LandingOverlay.MajorFactionList.Refresh = MajorFactionListOverride.RefreshList;
-                            LandingOverlay.MajorFactionList:Refresh();
-                        end
-                    end);
-                end
-            end
+            self:OnOverlayChanged();
             if self.factionEventListener then
                 self.factionEventListener:Show();
             end
@@ -483,7 +504,6 @@ do
             if self.factionEventListener then
                 self.factionEventListener:Hide();
             end
-
             self:HideAllWidgets();
         end
     end
@@ -500,6 +520,9 @@ do  --Custom List Insert
     local FactionDataOverride = {
         [2685] = {
             uiPriority = 15.5,      --Gallagio Loyalty Rewards Club (15 is Cartels of Undermine)
+        },
+        [2688] = {
+            uiPriority = 16.5,      --Flame's Radiance (0 by default, intentional?)
         },
     };
 
@@ -531,9 +554,11 @@ do  --Custom List Insert
         local isParagon = C_Reputation.IsFactionParagon(factionID);
         local currentValue = isCapped and majorFactionData.renownLevelThreshold or majorFactionData.renownReputationEarned or 0;
         local maxValue = majorFactionData.renownLevelThreshold;
+        local hasRewardPending;
 
         if isParagon then
-            local totalEarned, threshold, rewardQuestID, hasRewardPending = C_Reputation.GetFactionParagonInfo(factionID);
+            local totalEarned, threshold, rewardQuestID;
+            totalEarned, threshold, rewardQuestID, hasRewardPending = C_Reputation.GetFactionParagonInfo(factionID);
             if totalEarned and threshold and threshold ~= 0 then
                 local paragonLevel = math.floor(totalEarned / threshold);
                 currentValue = totalEarned - paragonLevel * threshold;
@@ -542,11 +567,18 @@ do  --Custom List Insert
 
             if hasRewardPending then
                 currentValue = maxValue;
+                self.RenownLevel:SetText(L["Reward Available"]);
+            else
+                self.RenownLevel:SetText(L["Paragon Reputation"]);
             end
-
-            self.RenownLevel:SetText(L["Paragon Reputation"]);
         else
             self.RenownLevel:SetText(MAJOR_FACTION_BUTTON_RENOWN_LEVEL:format(majorFactionData.renownLevel or 0));
+        end
+
+        if hasRewardPending then
+            self.RenownLevel:SetTextColor(0.098, 1.000, 0.098);
+        else
+            self.RenownLevel:SetTextColor(1, 0.82, 0);
         end
 
         self.RenownProgressBar:UpdateBar(currentValue, maxValue);

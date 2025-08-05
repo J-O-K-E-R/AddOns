@@ -1,10 +1,10 @@
-**r742:**
+**r745:**
 
 Additions:
-> Enabled defeat detection for Beledar's Spawn and Regurgitated Mole Reins
+> Added tracking for Treasure Goblins (A Greedy Emissary event)
 
-Fixes:
-> Rarity's tooltip additions should once again be displayed for container items
-<br>Disabling the tooltip additions should work as expected for items, and not just units
+Changes:
+> Battle for Azeroth Timewalking bosses should now register attempts for Infinite Timereaver
 
 Contributors (in alphabetical order):
+> Ellezanor

@@ -93,6 +93,7 @@ src\Modules\Events.lua
 src\Modules\Filter.lua
 # src\Modules\Inventory.lua
 src\Modules\Model.lua
+# src\Modules\Search.lua
 src\Modules\Social.lua
 src\Modules\Tooltip.lua
 # src\Modules\Upgrade.lua
@@ -106,12 +107,16 @@ db\Presets.lua
 
 # Load object class templates
 src\Classes\base.lua
+src\Classes\Achievement Categories.lua
+src\Classes\Achievement Data.lua
+src\Classes\Achievement.Classic.lua
 # src\Classes\Achievement.lua
 # src\Classes\BattlePet.lua
 src\Classes\CharacterClass.lua
 # src\Classes\Currency.lua
 src\Classes\Difficulty.lua
 src\Classes\Factions.lua
+src\Classes\Guild Achievements.lua
 src\Classes\Quests.lua
 # src\Classes\Item.Retail.lua
 src\Classes\Item.Classic.lua
@@ -123,7 +128,7 @@ src\Classes\Maps.lua
 # src\Classes\Mount.lua
 src\Classes\NPC.lua
 src\Classes\Objects.lua
-# src\Classes\Profession.lua
+src\Classes\Profession.lua
 src\Classes\Category.lua
 src\Classes\Deaths.lua
 src\Classes\Dynamic Categories.lua
@@ -157,6 +162,10 @@ src\Settings\Classic Settings.xml
 # Load primary addon source files
 # AllTheThings.lua
 classic\ATT-Classic.lua
+
+# Classic Specific Modules
+src\Classes\Classic\Mounts & Battle Pets.lua
+
 src\UI\Game Tooltip.lua
 src\UI\Minimap Button.lua
 src\UI\Waypoints.lua

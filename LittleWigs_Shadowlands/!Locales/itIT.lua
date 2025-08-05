@@ -31,16 +31,17 @@ end
 
 L = BigWigs:NewBossLocale("Halls of Atonement Trash", "itIT")
 if L then
-	L.houndmaster = "Maestra dei Segugi Degenerata"
-	L.gargon = "Gargon Malvagio"
-	L.loyalstoneborn = "Litogeno Leale"
-	L.darkblade = "Lamanera Degenerata"
-	L.obliterator = "Disintegratore Degenerato"
-	L.collector = "Collettrice Degenerata"
-	L.shard = "Scheggia di Halkias"
-	L.reaver = "Razziatore Litogeno"
-	L.slasher = "Sfregiatore Litogeno"
-	L.sigar = "Inquisitore Sigar"
+	L.depraved_houndmaster = "Maestra dei Segugi Degenerata"
+	L.vicious_gargon = "Gargon Malvagio"
+	L.loyal_stoneborn = "Litogeno Leale"
+	L.depraved_darkblade = "Lamanera Degenerata"
+	L.depraved_obliterator = "Disintegratore Degenerato"
+	L.depraved_collector = "Collettrice Degenerata"
+	L.stoneborn_slasher = "Sfregiatore Litogeno"
+	L.shard_of_halkias = "Scheggia di Halkias"
+	L.stoneborn_reaver = "Razziatore Litogeno"
+	L.stoneborn_eviscerator = "Svisceratrice Litogena"
+	L.inquisitor_sigar = "Inquisitore Sigar"
 end
 
 -- Mists of Tirna Scithe
@@ -148,11 +149,6 @@ end
 
 -- Tazavesh, the Veiled Market
 
-L = BigWigs:NewBossLocale("Zo'phex the Sentinel", "itIT")
-if L then
-	L.zophex_warmup_trigger = "Consegnate... tutto... il contrabbando..."
-end
-
 L = BigWigs:NewBossLocale("The Grand Menagerie", "itIT")
 if L then
 	L.achillite_warmup_trigger = "Delle bestie sfrenate vi rovinano la giornata? Abbiamo la soluzione!"
@@ -170,8 +166,14 @@ if L then
 	--L.add_wave_killed = "Add wave killed (%d/%d)"
 end
 
+L = BigWigs:NewBossLocale("So'leah", "itIT")
+if L then
+	L.group = "GRUPPO"
+end
+
 L = BigWigs:NewBossLocale("Tazavesh Trash", "itIT")
 if L then
+	L.zophex_warmup_trigger = "Consegnate... tutto... il contrabbando..."
 	--L.menagerie_warmup_trigger = "Now for the item you have all been awaiting! The allegedly demon-cursed Edge of Oblivion!"
 	--L.soazmi_warmup_trigger = "Excuse our intrusion, So'leah. I hope we caught you at an inconvenient time."
 	L.portal_authority = "Amministratrice del Portale di Tazavesh"
@@ -191,29 +193,37 @@ if L then
 		["Fiore Pallido"] = 53267,
 		["Coltello Cremisi"] = 53268
 	}
-
+	--L.gatewarden_zomazz = "Gatewarden Zo'mazz"
+	--L.customs_security = "Customs Security"
 	L.interrogation_specialist = "Specialista in Interrogatori"
 	L.portalmancer_zohonn = "Portalmante Zo'honn"
-	L.armored_overseer_tracker_zokorss = "Sovrintendente Corazzato / Braccatore Zo'korss"
+	L.armored_overseer = "Sovrintendente Corazzato"
+	L.support_officer = "Ufficiale Ausiliario"
 	L.tracker_zokorss = "Braccatore Zo'korss"
 	L.ancient_core_hound = "Segugio del Nucleo Antico"
 	L.enraged_direhorn = "Cornofurente Rabbioso"
+	--L.cartel_skulker = "Cartel Skulker"
+	--L.cartel_wiseguy = "Cartel Wiseguy"
 	L.cartel_muscle = "Forzuto del Cartello"
 	L.cartel_smuggler = "Contrabbandiere del Cartello"
-	L.support_officer = "Ufficiale Ausiliario"
 	L.defective_sorter = "Smistatore Difettoso"
+	--L.overloaded_mailemental = "Overloaded Mailemental"
+	--L.post_worker = "P.O.S.T. Worker"
+	--L.bazaar_overseer = "Bazaar Overseer"
 	L.market_peacekeeper = "Pacificatore del Mercato"
 	L.veteran_sparkcaster = "Lanciafaville Veterano"
 	L.commerce_enforcer = "Esecutore del Commercio"
-	L.commerce_enforcer_commander_zofar = "Esecutore del Commercio / Comandante Zo'far"
 	L.commander_zofar = "Comandante Zo'far"
 
 	L.tazavesh_soleahs_gambit = "Tazavesh: Azzardo di So'leah"
 	L.murkbrine_scalebinder = "Vincolascaglie Acquasporca"
+	L.murkbrine_fishmancer = "Pescomante Acquasporca"
 	L.murkbrine_shellcrusher = "Frantumagusci Acquasporca"
 	L.coastwalker_goliath = "Mastodonte Calcacoste"
 	L.stormforged_guardian = "Guardiano Forgiatuono"
 	L.burly_deckhand = "Mozzo Smilzo"
+	L.hourglass_tidesage = "Saggio delle Maree della Clessidra"
+	L.corsair_officer = "Ufficiale Corsaro"
 	L.adorned_starseer = "Veggente Stellare Decorato"
 	L.focused_ritualist = "Ritualista Concentrato"
 	L.devoted_accomplice = "Complice Devoto"

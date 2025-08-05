@@ -1,5 +1,8 @@
-local L = BigWigsAPI:NewLocale("BigWigs", "ruRU")
+local _, addonTbl = ...
+local L = addonTbl.API:NewLocale("BigWigs", "ruRU")
 if not L then return end
+
+--L.tempNew = "NEW: You can now type |cFFFFFFFF/bwtemp|r to see the Mythic+ keystones of your party members."
 
 -- Core.lua
 L.berserk = "Берсерк"
@@ -18,19 +21,21 @@ L.adds = "Адды"
 L.adds_desc = "Включает функционал связанный с различными помощниками во время боя с боссом."
 L.health = "Здоровье"
 L.health_desc = "Активирует отображение различной информации, связанной со здоровьем во время боя с боссом."
+L.energy = "Энергия"
+--L.energy_desc = "Enable functions for displaying information about the various energy levels during the boss encounter."
 
 L.already_registered = "|cffff0000ВНИМАНИЕ:|r |cff00ff00%s|r (|cffffff00%s|r) уже загружен как модуль BigWigs, но что-то пытается зарегистрировать его ещё раз. Обычно, это означает, что у вас две копии этого модуля в папке с модификациями (возможно, из-за ошибки программы для обновления модификаций). Мы рекомендуем вам удалить все папки BigWigs и установить его с нуля."
 
 -- Loader / Options.lua
 L.okay = "OK"
-L.officialRelease = "Вы используете официальную версию BigWigs %s (%s)"
-L.alphaRelease = "Вы используете АЛЬФА-ВЕРСИЮ BigWigs %s (%s)"
+L.officialRelease = "Вы используете официальную версию BigWigs %s (%s)."
+L.alphaRelease = "Вы используете АЛЬФА-ВЕРСИЮ BigWigs %s (%s)."
 L.sourceCheckout = "Вы используете отладочный BigWigs %s прямо из репозитория."
-L.littlewigsOfficialRelease = "Вы используете официальную версию LittleWigs (%s)"
-L.littlewigsAlphaRelease = "Вы используете АЛЬФА-ВЕРСИЮ LittleWigs (%s)"
+L.littlewigsOfficialRelease = "Вы используете официальную версию LittleWigs (%s)."
+L.littlewigsAlphaRelease = "Вы используете АЛЬФА-ВЕРСИЮ LittleWigs (%s)."
 L.littlewigsSourceCheckout = "Вы используете отладочный LittleWigs прямо из репозитория."
 L.guildRelease = "Вы используете версию %d BigWigs, созданную для вашей гильдии на версии %d официального дополнения."
-L.getNewRelease = "Ваш BigWigs устарел(/bwv), но вы можете легко его обновить с помощью CurseForge Client. Также, Вы можете обновиться вручную на сайтах curseforge.com или wowinterface.com."
+L.getNewRelease = "Ваш BigWigs устарел(/bwv), но вы можете легко его обновить с помощью CurseForge Client. Также, Вы можете обновиться вручную на сайтах curseforge.com или addons.wago.io."
 L.warnTwoReleases = "Ваш BigWigs устарел на две версии! Ваша версию может содержать ошибки, меньше возможностей, а может быть и неправильные таймеры. Крайне рекомендуется обновиться."
 L.warnSeveralReleases = "|cffff0000Ваш BigWigs устарел на %d версий!! ОЧЕНЬ рекомендуется обновиться, чтобы предотвратить ошибки синхронизации с другими игроками!|r"
 L.warnOldBase = "Вы используете версию для гильдии BigWigs (%d), но ваша базовая версия (%d) на %d версий устарела. Это может вызвать проблемы."
@@ -48,12 +53,14 @@ L.offline = "Не в сети"
 L.missingAddOnPopup = "Отсутствует модификация |cFF436EEE%s|r."
 L.missingAddOnRaidWarning = "Отсутствует модификация |cFF436EEE%s|r. В этой зоне не будут отображаться таймеры!"
 L.outOfDateAddOnPopup = "Аддон |cFF436EEE%s|r устарел!"
---L.outOfDateAddOnRaidWarning = "Аддон |cFF436EEE%s|r устарел! You have v%d.%d.%d but the latest is v%d.%d.%d!"
+L.outOfDateAddOnRaidWarning = "Аддон |cFF436EEE%s|r устарел! Текущая версия: v%d.%d.%d последняя: v%d.%d.%d!"
 L.disabledAddOn = "У вас выключена модификация |cFF436EEE%s|r, таймеры не будут показываться."
 L.removeAddOn = "Пожалуйста, удалите '|cFF436EEE%s|r', ему на смену пришло '|cFF436EEE%s|r'."
 L.alternativeName = "%s (|cFF436EEE%s|r)"
 L.outOfDateContentPopup = "ВНИМАНИЕ!\nВы обновили |cFF436EEE%s|r но необходимо также обновить основную модификацию |cFF436EEEBigWigs|r .\nИгнорирование приведёт к ошибочному функционированию."
 L.outOfDateContentRaidWarning = "|cFF436EEE%s|r требует %d версию основной модификации |cFF436EEEBigWigs|r для грамотного функционирования. Текущая версия - %d."
+L.addOnLoadFailedWithReason = "BigWigs не смог загрузить аддон |cFF436EEE%s|r по причине: %q. Сообщи разрабу BigWigs!"
+L.addOnLoadFailedUnknownError = "BigWigs вызвал ошибку при попытке загрузить аддон |cFF436EEE%s|r. Сообщи разрабу BigWigs!"
 
 L.expansionNames = {
 	"Классика", -- Classic
@@ -256,7 +263,63 @@ L.N25 = "Нормал 25"
 L.H10 = "Героик 10"
 L.H25 = "Героик 25"
 
+-----------------------------------------------------------------------
+-- TOOLS
+-----------------------------------------------------------------------
 
+--L.tools = "Tools"
+--L.toolsDesc = "BigWigs provides various tools or \"quality of life\" features to speed up and simplify the process of fighting bosses. Expand the menu by clicking the |cFF33FF99+|r icon to see them all."
+--L.youAreInCombat = "You cannot do that in combat."
+
+-----------------------------------------------------------------------
+-- AutoRole.lua
+--
+
+--L.autoRoleTitle = "Auto Role"
+--L.autoRoleExplainer = "Whenever you join a group, or you change your talent specialization whilst being in a group, BigWigs will automatically adjust your group role (Tank, Healer, Damager) accordingly.\n\n"
+
+-----------------------------------------------------------------------
+-- Keystones.lua
+--
+
+--L.keystoneTitle = "BigWigs Keystones"
+--L.keystoneHeaderParty = "Party"
+--L.keystoneRefreshParty = "Refresh Party"
+--L.keystoneHeaderGuild = "Guild"
+--L.keystoneRefreshGuild = "Refresh Guild"
+--L.keystoneLevelTooltip = "Keystone level: |cFFFFFFFF%s|r"
+--L.keystoneMapTooltip = "Dungeon: |cFFFFFFFF%s|r"
+--L.keystoneRatingTooltip = "Mythic+ rating: |cFFFFFFFF%d|r"
+--L.keystoneHiddenTooltip = "The player has chosen to hide this information."
+--L.keystoneTabOnline = "Online"
+--L.keystoneTabAlts = "Alts"
+--L.keystoneTabTeleports = "Teleports"
+--L.keystoneHeaderMyCharacters = "My Characters"
+
+-- It doesn't really matter what you call it as long as it's recognizable and limited to ~6 characters
+--L.keystoneShortName_TheRookery = "ROOK"
+--L.keystoneShortName_DarkflameCleft = "DFC"
+--L.keystoneShortName_PrioryOfTheSacredFlame = "PRIORY"
+--L.keystoneShortName_CinderbrewMeadery = "BREW"
+--L.keystoneShortName_OperationFloodgate = "FLOOD"
+--L.keystoneShortName_TheaterOfPain = "TOP"
+--L.keystoneShortName_TheMotherlode = "ML"
+--L.keystoneShortName_OperationMechagonWorkshop = "WORK"
+--L.keystoneShortName_EcoDomeAldani = "ALDANI"
+--L.keystoneShortName_HallsOfAtonement = "HOA"
+--L.keystoneShortName_AraKaraCityOfEchoes = "ARAK"
+--L.keystoneShortName_TazaveshSoleahsGambit = "GAMBIT"
+--L.keystoneShortName_TazaveshStreetsOfWonder = "STREET"
+--L.keystoneShortName_TheDawnbreaker = "DAWN"
+
+-----------------------------------------------------------------------
+-- LFGTimer.lua
+--
+
+L.lfgTimerTitle = "LFG Timer"
+L.lfgTimerExplainer = "Whenever the LFG queue popup appears, BigWigs will create a timer bar telling you how long you have to accept the queue.\n\n"
+L.lfgUseMaster = "Play LFG ready sound on 'Master' audio channel"
+L.lfgUseMasterDesc = "When this option is enabled the LFG ready sound will play over the 'Master' audio channel. If you disable this option it will play over the '%s' audio channel instead."
 
 -----------------------------------------------------------------------
 -- PLUGINS
@@ -276,6 +339,7 @@ L.sizeDesc = "Обычно размеры меняются перемещени�
 L.fontSizeDesc = "Отрегулируйте размер шрифта с помощью ползунка или введите значение вручную в поле, если оно выше 200."
 L.disabled = "Отключить"
 L.disableDesc = "Вы собираетесь отключить функцию '%s', делать это |cffff4411не рекомендуется|r.\n\nВы уверены, что хотите этого?"
+--L.keybinding = "Keybinding"
 
 -- Anchor Points
 L.UP = "Верх"
@@ -683,6 +747,8 @@ L.sendPull = "Отправляю пулл таймер группе."
 L.wrongPullFormat = "Неправильная команда. Пример правильного формата: /pull 5"
 L.countdownBegins = "Начать отсчет"
 L.countdownBegins_desc = "Выберите, сколько времени должно оставаться до пулла (в секундах), когда начнется обратный отсчет."
+--L.pullExplainer = "\n|cFF33FF99/pull|r will start a normal pull timer.\n|cFF33FF99/pull 7|r will start a 7 second pull timer, you can use any number.\nAlternatively, you can also set a keybinding below.\n\n"
+--L.pullKeybindingDesc = "Choose a keybinding for starting a pull timer."
 
 -----------------------------------------------------------------------
 -- RaidIcon.lua
@@ -721,7 +787,7 @@ L.resetAllCustomSound = "Если вы используете свои звук�
 --
 
 L.bossStatistics = "Статистика боссов"
-L.bossStatsDescription = "Recording of various boss-related statistics such as the amount of times you were victorious, the amount of times you were defeated, date of first victory, and the fastest victory. Эта статистика видна для каждого босса в окне настроек, либо спрятана, если нет записей."
+L.bossStatsDescription = "Запись различных статистик связанных с боссами, такие как количество побед, поражений; дату первого убийства и информацию о самой быстрой победе. Эта статистика видна для каждого босса в окне настроек, либо спрятана, если нет записей."
 L.createTimeBar = "Отображать полосу 'Лучшее время'"
 L.bestTimeBar = "Лучшее время"
 L.healthPrint = "Здоровье: %s."

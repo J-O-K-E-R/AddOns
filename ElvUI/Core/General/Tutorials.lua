@@ -5,6 +5,7 @@ local _G = _G
 local CreateFrame = CreateFrame
 local DISABLE = DISABLE
 local HIDE = HIDE
+
 -- GLOBALS: ElvUITutorialWindow
 
 E.TutorialList = {
@@ -61,7 +62,7 @@ function E:SpawnTutorialFrame()
 	header:SetTemplate(nil, true)
 	header:Width(120); header:Height(25)
 	header:Point('CENTER', f, 'TOP')
-	header:SetFrameLevel(header:GetFrameLevel() + 2)
+	header:OffsetFrameLevel(2)
 
 	local title = header:CreateFontString(nil, 'OVERLAY')
 	title:FontTemplate()

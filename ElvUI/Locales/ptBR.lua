@@ -169,7 +169,7 @@ L["I Swear"] = "Eu Juro"
 L["I"] = true
 L["Icons Only"] = "Apenas Ícones"
 L["If you accidentally removed a default chat tab you can always re-run the chat part of the ElvUI installer."] = "Se você removeu acidentalmente uma aba padrão do Bate-papo você sempre pode rodar a parte de Bate-papo do instalador do ElvUI."
-L["If you are experiencing issues with ElvUI try disabling all your addons except ElvUI first."] = "Se você estiver enfrentando problemas com o ElvUI  tente desabilitar todos os seus addons exceto o ElvUI."
+L["If you are experiencing issues with ElvUI try disabling all your addons except ElvUI first."] = "Se você estiver enfrentando problemas com o ElvUI tente desabilitar todos os seus addons exceto o ElvUI."
 L["If you have an icon or aurabar that you don't want to display simply hold down shift and right click the icon for it to disapear."] = "Se você tiver um Ícone ou Barra de Auras que você não quer mostrar, segure Shift e clique com o botão direito para ela desaparecer."
 L["IL"] = "IL"
 L["Importance: |cFF33FF33Low|r"] = "Importância: |cFF33FF33Baixa|r"
@@ -442,6 +442,7 @@ L["EHELP_COMMANDS"] = ([=[Aqui está a lista de todos os comandos importantes do
  */estatus|r  -  Informações importantes para questões com o suporte.
  */egrid|r ^64|r or ^128|r or ^256|r  -  Alternar o grid de pixels.
  */edebug|r ^on|r or ^off|r  -  Desabilitar todos os AddOns exceto ElvUI.
-  NOTA: */edebug|r ^off|r irá reabilitar os addons desabilitados por ter
-  usar */edebug|r ^on|r nesta sessão.
+  NOTA: */edebug|r ^off|r irá reabilitar os addons desabilitados por ter usar */edebug|r ^on|r nesta sessão.
+ */guildlist|r ^minPlayers|r  -  Dumps the sorted list of guilds from the finder.
+ */guildapply|r ^"message"|r  -  Applies to the top 5 new guilds with an optional message.
 ]=]):gsub('*', E.InfoColor):gsub('%^', E.InfoColor2)

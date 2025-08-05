@@ -13,7 +13,7 @@ local SLE = LibStub('AceAddon-3.0'):NewAddon(AddOnName, 'AceConsole-3.0', 'AceEv
 SLE.callbacks = SLE.callbacks or LibStub('CallbackHandler-1.0'):New(SLE)
 
 SLE.version = GetAddOnMetadata('ElvUI_SLE', 'Version')
-SLE.DBversion = '4.82'
+SLE.DBversion = '4.88'
 SLE.Title = format('|cff9482c9%s|r', 'Shadow & Light')
 SLE.WoW10 = select(4, GetBuildInfo()) >= 100000
 
@@ -92,12 +92,9 @@ local function GetOptions()
 end
 
 function SLE:ConfigCats() --Additional mover groups
-	tinsert(E.ConfigModeLayouts, #(E.ConfigModeLayouts)+1, 'S&L')
-	E.ConfigModeLocalizedStrings['S&L'] = L["S&L: All"]
-	tinsert(E.ConfigModeLayouts, #(E.ConfigModeLayouts)+1, 'S&L BG')
-	E.ConfigModeLocalizedStrings['S&L BG'] = L["S&L: Backgrounds"]
-	tinsert(E.ConfigModeLayouts, #(E.ConfigModeLayouts)+1, 'S&L MISC')
-	E.ConfigModeLocalizedStrings['S&L MISC'] = L["S&L: Misc"]
+	E:ConfigMode_AddGroup('S&L', L["S&L: All"])
+	E:ConfigMode_AddGroup('S&L BG', L["S&L: Backgrounds"])
+	E:ConfigMode_AddGroup('S&L MISC', L["S&L: Misc"])
 end
 
 --ElvUI's version check
@@ -139,7 +136,6 @@ function SLE:Initialize()
 		end
 	end)
 
-	-- SLE:BuildGameMenu()
 	SLE:CyrillicsInit()
 	SLE:LoadCommands()
 

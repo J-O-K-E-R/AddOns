@@ -16,7 +16,7 @@ local AL = LibStub("AceLocale-3.0"):GetLocale("RareScanner");
 local RSLogger = private.ImportLib("RareScannerLogger")
 local RSUtils = private.ImportLib("RareScannerUtils")
 local RSConstants = private.ImportLib("RareScannerConstants")
-
+local RSTimeUtils = private.ImportLib("RareScannerTimeUtils")
 
 ---============================================================================
 -- Opened containers database
@@ -140,7 +140,7 @@ function RSContainerDB.GetInternalContainerCoordinates(containerID, mapID)
 	if (containerID and mapID) then
 		local containerInfo = RSContainerDB.GetInternalContainerInfoByMapID(containerID, mapID)
 		if (containerInfo) then
-			return RSUtils.Lpad(containerInfo.x, 4, '0'), RSUtils.Lpad(containerInfo.y, 4, '0')
+			return RSUtils.FixCoord(containerInfo.x), RSUtils.FixCoord(containerInfo.y)
 		end
 	end
 
@@ -197,7 +197,7 @@ end
 function RSContainerDB.IsDisabledEvent(containerID)
 	if (containerID) then
 		local containerInfo = RSContainerDB.GetInternalContainerInfo(containerID)
-		return containerInfo and containerInfo.event and not RSConstants.EVENTS[containerInfo.event]
+		return containerInfo and containerInfo.event and not RSTimeUtils.IsHolidayEventActive(containerInfo.event)
 	end
 	
 	return false
@@ -597,6 +597,18 @@ function RSContainerDB.SetContainerReseteable(containerID)
 	if (containerID) then
 		private.dbglobal.containers_reseteable[containerID] = true
 	end
+end
+
+---============================================================================
+-- Containers with multi spawn spots
+---============================================================================
+
+function RSContainerDB.IsMultiZoneSpawn(containerID)
+	if (RSUtils.Contains(RSConstants.CONTAINERS_WITH_MULTIPLE_SPAWNS, containerID)) then
+		return true
+	end
+	
+	return false
 end
 
 ---============================================================================

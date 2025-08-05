@@ -1,6 +1,9 @@
 # BigWigs [Shadowlands]
 
-## [v11.0.2](https://github.com/BigWigsMods/BigWigs_Shadowlands/tree/v11.0.2) (2024-11-26)
-[Full Changelog](https://github.com/BigWigsMods/BigWigs_Shadowlands/compare/v11.0.1...v11.0.2) [Previous Releases](https://github.com/BigWigsMods/BigWigs_Shadowlands/releases)
+## [v11.1.1](https://github.com/BigWigsMods/BigWigs_Shadowlands/tree/v11.1.1) (2025-07-12)
+[Full Changelog](https://github.com/BigWigsMods/BigWigs_Shadowlands/compare/v11.1.0...v11.1.1) [Previous Releases](https://github.com/BigWigsMods/BigWigs_Shadowlands/releases)
 
-- SanctumOfDomination/GuardianOfTheFirstOnes: Remove old code remnant, closes #2  
+- Add Wago support  
+- Update issue template  
+- Bump toc  
+- Update workflow  

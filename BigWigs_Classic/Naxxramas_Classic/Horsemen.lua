@@ -108,11 +108,7 @@ do
 
 		if args.time - prev > 5 then
 			prev = args.time
-			local markMsg = CL.count:format(CL.mark, markCounter)
-			if markCounter % 2 == 0 then -- Try reduce the amount of overall messages
-				self:Message("mark", "red", markMsg, L.mark_icon)
-			end
-			self:StopBar(markMsg)
+			self:StopBar(CL.count:format(CL.mark, markCounter))
 			markCounter = markCounter + 1
 			self:CDBar("mark", 12.9, CL.count:format(CL.mark, markCounter), L.mark_icon)
 		end
@@ -130,9 +126,9 @@ end
 
 function mod:Meteor(args)
 	self:CDBar(args.spellId, 12) -- 11~14
-	self:Message(args.spellId, "red")
 	local unit = self:GetUnitIdByGUID(args.sourceGUID)
 	if not unit or self:UnitWithinRange(unit, 35) or args.sourceGUID == self:UnitGUID("target") then
+		self:Message(args.spellId, "red")
 		self:PlaySound(args.spellId, "info")
 	end
 end
@@ -144,9 +140,9 @@ function mod:VoidZone(args)
 		self:PersonalMessage(args.spellId, "underyou")
 		self:PlaySound(args.spellId, "underyou")
 	else
-		self:TargetMessage(args.spellId, "orange", args.destName)
 		local unit = self:GetUnitIdByGUID(args.sourceGUID)
 		if not unit or self:UnitWithinRange(unit, 35) or args.sourceGUID == self:UnitGUID("target") then
+			self:TargetMessage(args.spellId, "orange", args.destName)
 			self:PlaySound(args.spellId, "alarm", nil, args.destName)
 		end
 	end
@@ -154,9 +150,9 @@ end
 
 function mod:HolyWrath(args)
 	self:CDBar(args.spellId, 12) -- 11~14
-	self:Message(args.spellId, "yellow")
 	local unit = self:GetUnitIdByGUID(args.sourceGUID)
 	if not unit or self:UnitWithinRange(unit, 35) or args.sourceGUID == self:UnitGUID("target") then
+		self:Message(args.spellId, "yellow")
 		self:PlaySound(args.spellId, "alert")
 	end
 end

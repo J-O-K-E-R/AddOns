@@ -18,7 +18,6 @@ local GetQuestMoneyToGet = GetQuestMoneyToGet
 local IsQuestComplete = IsQuestComplete
 
 local GetItemQualityByID = C_Item.GetItemQualityByID
-local GetItemQualityColor = C_Item.GetItemQualityColor
 
 local MAX_NUM_ITEMS = MAX_NUM_ITEMS
 local MAX_NUM_QUESTS = MAX_NUM_QUESTS
@@ -30,7 +29,7 @@ local function handleItemButton(item)
 	if item then
 		item:SetTemplate()
 		item:Size(143, 40)
-		item:SetFrameLevel(item:GetFrameLevel() + 2)
+		item:OffsetFrameLevel(2)
 	end
 
 	if item.Icon then
@@ -82,7 +81,7 @@ local function questQualityColors(frame, text, link)
 
 	local quality = GetItemQualityByID(link or 0)
 	if quality and quality > 1 then
-		local r, g, b = GetItemQualityColor(quality)
+		local r, g, b = E:GetItemQualityColor(quality)
 		text:SetTextColor(r, g, b)
 		frame:SetBackdropBorderColor(r, g, b)
 	else
@@ -382,12 +381,12 @@ function S:BlizzardQuestFrames()
 
 	S:HandleFrame(_G.QuestFrame, true, nil, 8, -10, -28, 66)
 	S:HandleFrame(_G.QuestLogFrame, true, nil, 8, -10, -28, 42)
-	S:HandleFrame(_G.QuestLogListScrollFrame, true, nil, -1, 2)
-	S:HandleFrame(_G.QuestLogDetailScrollFrame, true, nil, -1, 2)
-	S:HandleFrame(_G.QuestDetailScrollFrame, true, nil, -6, 2)
-	S:HandleFrame(_G.QuestRewardScrollFrame, true, nil, -6, 2)
-	S:HandleFrame(_G.QuestProgressScrollFrame, true, nil, -6, 2)
-	S:HandleFrame(_G.QuestGreetingScrollFrame, true, nil, -6, 2)
+	S:HandleFrame(_G.QuestLogListScrollFrame, true, nil, -2, 2)
+	S:HandleFrame(_G.QuestLogDetailScrollFrame, true, nil, -2, 2)
+	S:HandleFrame(_G.QuestDetailScrollFrame, true, nil, 2, -2)
+	S:HandleFrame(_G.QuestRewardScrollFrame, true, nil, 2, -2)
+	S:HandleFrame(_G.QuestProgressScrollFrame, true, nil, 2, -2)
+	S:HandleFrame(_G.QuestGreetingScrollFrame, true, nil, 2, -2)
 
 	_G.QuestLogFrameAbandonButton:PointXY(15, 49)
 	_G.QuestFramePushQuestButton:PointXY(-2)

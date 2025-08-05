@@ -85,6 +85,7 @@ do -- Expansions
 	E.TBC = WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC -- not used
 	E.Cata = WOW_PROJECT_ID == WOW_PROJECT_CATACLYSM_CLASSIC
 	E.Wrath = WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC
+	E.Mists = WOW_PROJECT_ID == WOW_PROJECT_MISTS_CLASSIC
 	E.Retail = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
 	E.Classic = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
 
@@ -101,11 +102,11 @@ do -- Expansions
 	E.IsEngravingEnabled = IsEngravingEnabled and IsEngravingEnabled()
 end
 
--- Item Qualitiy stuff, also used by MerathilisUI
+-- DONT USE: Deprecated
 E.QualityColors = CopyTable(_G.BAG_ITEM_QUALITY_COLORS)
-E.QualityColors[-1] = {r = 0, g = 0, b = 0}
 E.QualityColors[Enum.ItemQuality.Poor] = {r = .61, g = .61, b = .61}
 E.QualityColors[Enum.ItemQuality.Common or Enum.ItemQuality.Standard] = {r = 0, g = 0, b = 0}
+E.QualityColors[-1] = {r = 0, g = 0, b = 0}
 
 do
 	function E:AddonCompartmentFunc()
@@ -127,7 +128,7 @@ end
 function E:ParseVersionString(addon)
 	local version = GetAddOnMetadata(addon, 'Version')
 	if strfind(version, 'project%-version') then
-		return 13.88, '13.88-git', nil, true
+		return 13.94, '13.94-git', nil, true
 	else
 		local release, extra = strmatch(version, '^v?([%d.]+)(.*)')
 		return tonumber(release), release..extra, extra ~= ''
@@ -170,11 +171,11 @@ do
 	E:AddLib('AceConfigRegistry', 'AceConfigRegistry-3.0-ElvUI')
 	E:AddLib('AceDBOptions', 'AceDBOptions-3.0')
 
-	if E.Retail or E.Cata or E.ClassicSOD or E.ClassicAnniv or E.ClassicAnnivHC then
+	if E.Retail or E.Mists or E.ClassicSOD or E.ClassicAnniv or E.ClassicAnnivHC then
 		E:AddLib('DualSpec', 'LibDualSpec-1.0')
 	end
 
-	if not E.Retail then
+	if E.Classic then
 		E:AddLib('LCS', 'LibClassicSpecs-ElvUI')
 	end
 
@@ -263,6 +264,38 @@ do
 
 	for _, addon in next, alwaysDisable do
 		DisableAddOn(addon)
+	end
+end
+
+do
+	local others = {} -- addons we check for
+	local addons = { -- a few are not exact matches
+		ArkInventory = true,
+		BigWigs = true,
+		ColorPickerPlus = true,
+		ColorTools = true,
+		DejaCharacterStats = true,
+		DugisGuideViewerZ = true,
+		OptionHouse = true,
+		Questie = true,
+		SimplePowerBar = true,
+		Tukui = true,
+		WeakAuras = true,
+		DBM = 'DBM-Core',
+		ConsolePort = 'ConsolePort_Menu',
+		KalielsTracker = '!KalielsTracker',
+	}
+
+	E.OtherAddons = others
+
+	function E:CheckAddons()
+		for key, value in next, addons do
+			if type(value) == 'string' then
+				others[key] = E:IsAddOnEnabled(value)
+			else
+				others[key] = E:IsAddOnEnabled(key)
+			end
+		end
 	end
 end
 
@@ -380,6 +413,7 @@ function E:OnInitialize()
 	E.Spacing = E.PixelMode and 0 or 1
 	E.loadedtime = GetTime()
 
+	E:CheckAddons()
 	E:SetupDB()
 	E:UIMult()
 	E:UpdateMedia()
@@ -389,7 +423,7 @@ function E:OnInitialize()
 		E.Minimap:SetGetMinimapShape() -- this is just to support for other mods, keep below UIMult
 	end
 
-	if E:IsAddOnEnabled('Tukui') then
+	if E.OtherAddons.Tukui then
 		E:StaticPopup_Show('TUKUI_ELVUI_INCOMPATIBLE')
 	end
 end

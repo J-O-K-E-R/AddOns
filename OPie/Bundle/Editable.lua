@@ -269,7 +269,9 @@ R:AddDefaultRing("CommonHearth", {
 	{"toy", 212337, _u="sh"},
 	{"toy", 210455, _u="dh"},
 	{"toy", 228940, _u="nt"},
-	name=L"Hearthstones", internal=true, _u="OPCHS", v=6
+	{"toy", 235016, _u="rm"},
+	{"toy", 236687, _u="um"},
+	name=L"Hearthstones", internal=true, _u="OPCHS", v=8
 })
 R:AddDefaultRing("SpecMenu", {
 	{"specset", 1, _u="1"},

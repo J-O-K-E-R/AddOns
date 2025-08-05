@@ -7,7 +7,6 @@ local ipairs, pairs, unpack, next = ipairs, pairs, unpack, next
 local hooksecurefunc = hooksecurefunc
 
 local GetItemInfo = C_Item.GetItemInfo
-local GetItemQualityColor = C_Item.GetItemQualityColor
 
 local ITEMQUALITY_ARTIFACT = Enum.ItemQuality.Artifact
 local CurrencyContainerUtil_GetCurrencyContainerInfo = CurrencyContainerUtil.GetCurrencyContainerInfo
@@ -15,7 +14,7 @@ local C_CurrencyInfo_GetCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo
 
 local function HandleRoleButton(button)
 	local checkbox = button.checkButton
-	checkbox:SetFrameLevel(checkbox:GetFrameLevel() + 1)
+	checkbox:OffsetFrameLevel(1)
 	S:HandleCheckBox(checkbox)
 
 	button:Size(40)
@@ -23,6 +22,31 @@ local function HandleRoleButton(button)
 	if button.IconPulse then button.IconPulse:Size(40) end
 	if button.EdgePulse then button.EdgePulse:Size(40) end
 	if button.shortageBorder then button.shortageBorder:Size(40) end
+end
+
+local function HonorSpecificScrollUpdateChild(bu)
+	if not bu.IsSkinned then
+		bu.Bg:Hide()
+		bu.Border:Hide()
+
+		bu:StripTextures()
+		bu:CreateBackdrop()
+		bu.backdrop:Point('TOPLEFT', 2, 0)
+		bu.backdrop:Point('BOTTOMRIGHT', -1, 2)
+		bu:StyleButton(nil, true)
+
+		bu.SelectedTexture:SetInside(bu.backdrop)
+		bu.SelectedTexture:SetColorTexture(1, 1, 0, 0.1)
+
+		bu.Icon:SetTexCoord(unpack(E.TexCoords))
+		bu.Icon:Point('TOPLEFT', 5, -3)
+
+		bu.IsSkinned = true
+	end
+end
+
+local function HonorSpecificScrollUpdate(frame)
+	frame:ForEachFrame(HonorSpecificScrollUpdateChild)
 end
 
 function S:Blizzard_PVPUI()
@@ -112,31 +136,10 @@ function S:Blizzard_PVPUI()
 	end
 
 	-- Honor Frame Specific Buttons
-	hooksecurefunc(HonorFrame.SpecificScrollBox, 'Update', function (box)
-		for _, bu in next, { box.ScrollTarget:GetChildren() } do
-			if not bu.IsSkinned then
-				bu.Bg:Hide()
-				bu.Border:Hide()
+	hooksecurefunc(HonorFrame.SpecificScrollBox, 'Update', HonorSpecificScrollUpdate)
 
-				bu:StripTextures()
-				bu:CreateBackdrop()
-				bu.backdrop:Point('TOPLEFT', 2, 0)
-				bu.backdrop:Point('BOTTOMRIGHT', -1, 2)
-				bu:StyleButton(nil, true)
-
-				bu.SelectedTexture:SetInside(bu.backdrop)
-				bu.SelectedTexture:SetColorTexture(1, 1, 0, 0.1)
-
-				bu.Icon:SetTexCoord(unpack(E.TexCoords))
-				bu.Icon:Point('TOPLEFT', 5, -3)
-
-				bu.IsSkinned = true
-			end
-		end
-	end)
-
-	hooksecurefunc('LFG_PermanentlyDisableRoleButton', function(s)
-		if s.bg then s.bg:SetDesaturated(true) end
+	hooksecurefunc('LFG_PermanentlyDisableRoleButton', function(button)
+		if button.bg then button.bg:SetDesaturated(true) end
 	end)
 
 	HandleRoleButton(HonorFrame.TankIcon)
@@ -188,9 +191,10 @@ function S:Blizzard_PVPUI()
 		end
 
 		if rewardTexture then
-			local r, g, b = GetItemQualityColor(rewardQuaility)
 			rewardFrame.Icon:SetTexture(rewardTexture)
+
 			if rewardFrame.Icon.backdrop then
+				local r, g, b = E:GetItemQualityColor(rewardQuaility)
 				rewardFrame.Icon.backdrop:SetBackdropBorderColor(r, g, b)
 			end
 		end

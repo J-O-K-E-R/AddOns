@@ -122,6 +122,40 @@ local function HandleAffixIcons(self)
 	end
 end
 
+local function LFDCheckboxMini_SetTexture(region, texture)
+	if texture ~= E.Media.Textures.Melli then
+		region:SetTexture(E.Media.Textures.Melli)
+	end
+end
+
+local hookedMiniCheckbox = {}
+local function LFDCheckboxMini_HookTexture(_, region)
+	if region:GetTexture() == 130751 then
+		if E.private.skins.checkBoxSkin then
+			region:SetTexture(E.Media.Textures.Melli) -- set the initial texture
+			if hookedMiniCheckbox[region] then return end -- dont rehook
+			hooksecurefunc(region, 'SetTexture', LFDCheckboxMini_SetTexture)
+			hookedMiniCheckbox[region] = true
+		end
+	else
+		region:SetTexture(E.ClearTexture)
+	end
+end
+
+local function LFDQueueFrameSpecificUpdateChild(child)
+	S:ForEachCheckboxTextureRegion(child.enableButton, LFDCheckboxMini_HookTexture)
+
+	if not child.IsSkinned then
+		S:HandleCheckBox(child.enableButton)
+
+		child.IsSkinned = true
+	end
+end
+
+local function LFDQueueFrameSpecificUpdate(frame)
+	frame:ForEachFrame(LFDQueueFrameSpecificUpdateChild)
+end
+
 function S:LookingForGroupFrames()
 	if not (E.private.skins.blizzard.enable and E.private.skins.blizzard.lfg) then return end
 
@@ -202,7 +236,7 @@ function S:LookingForGroupFrames()
 		end
 	end)
 
-	for _, checkButton in pairs({ --Fix issue with role buttons overlapping each other (Blizzard bug)
+	for _, checkButton in pairs({ -- Fix issue with role buttons overlapping each other (Blizzard bug)
 		_G.LFGListApplicationDialog.TankButton.CheckButton,
 		_G.LFGListApplicationDialog.HealerButton.CheckButton,
 		_G.LFGListApplicationDialog.DamagerButton.CheckButton,
@@ -211,7 +245,7 @@ function S:LookingForGroupFrames()
 		checkButton:Point('BOTTOMLEFT', 0, 0)
 	end
 
-	hooksecurefunc('LFGListApplicationDialog_UpdateRoles', function(dialog) --Copy from Blizzard, we just fix position
+	hooksecurefunc('LFGListApplicationDialog_UpdateRoles', function(dialog) -- Copy from Blizzard, we just fix position
 		local availTank, availHealer, availDPS = C_LFGList_GetAvailableRoles()
 
 		local avail1, avail2
@@ -310,12 +344,10 @@ function S:LookingForGroupFrames()
 		ScenarioQueueFrame:StripTextures()
 		_G.ScenarioFinderFrameInset:StripTextures()
 		_G.ScenarioQueueFrameBackground:SetAlpha(0)
-		S:HandleDropDownBox(_G.ScenarioQueueFrameTypeDropdown)
 		S:HandleTrimScrollBar(_G.ScenarioQueueFrameRandomScrollFrame.ScrollBar)
 		S:HandleButton(_G.ScenarioQueueFrameFindGroupButton)
 
 		_G.ScenarioQueueFrameSpecificScrollFrame:StripTextures()
-		S:HandleScrollBar(_G.ScenarioQueueFrameSpecificScrollFrame.ScrollBar)
 
 		if _G.ScenarioQueueFrameRandomScrollFrameScrollBar then
 			_G.ScenarioQueueFrameRandomScrollFrameScrollBar:SetAlpha(0)
@@ -359,11 +391,6 @@ function S:LookingForGroupFrames()
 	-- Skin Reward Items (This works for all frames, LFD, Raid, Scenario)
 	hooksecurefunc('LFGRewardsFrame_SetItemButton', SkinItemButton)
 
-	--[[
-		LFGInvitePopup_Update('Elvz', true, true, true)
-		StaticPopupSpecial_Show(LFGInvitePopup)
-	]]
-
 	_G.LFGInvitePopup:StripTextures()
 	_G.LFGInvitePopup:SetTemplate('Transparent')
 	S:HandleButton(_G.LFGInvitePopupAcceptButton)
@@ -374,6 +401,8 @@ function S:LookingForGroupFrames()
 	S:HandleButton(_G[_G.RaidFinderQueueFrame.PartyBackfill:GetName()..'BackfillButton'])
 	S:HandleButton(_G[_G.RaidFinderQueueFrame.PartyBackfill:GetName()..'NoBackfillButton'])
 	S:HandleTrimScrollBar(_G.LFDQueueFrameSpecific.ScrollBar)
+
+	hooksecurefunc(_G.LFDQueueFrameSpecific.ScrollBox, 'Update', LFDQueueFrameSpecificUpdate)
 
 	local LFGListFrame = _G.LFGListFrame
 	LFGListFrame.CategorySelection.Inset:StripTextures()
@@ -505,7 +534,7 @@ function S:LookingForGroupFrames()
 	LFGListFrame.SearchPanel.AutoCompleteFrame:Point('TOPLEFT', LFGListFrame.SearchPanel.SearchBox, 'BOTTOMLEFT', -2, -8)
 	LFGListFrame.SearchPanel.AutoCompleteFrame:Point('TOPRIGHT', LFGListFrame.SearchPanel.SearchBox, 'BOTTOMRIGHT', -4, -8)
 
-	--ApplicationViewer (Custom Groups)
+	-- ApplicationViewer (Custom Groups)
 	LFGListFrame.ApplicationViewer.InfoBackground:Hide() -- even the ugly borders are now an atlas on the texutre? wtf????
 	LFGListFrame.ApplicationViewer.InfoBackground:CreateBackdrop('Transparent')
 	LFGListFrame.ApplicationViewer.EntryName:FontTemplate()
@@ -570,7 +599,7 @@ function S:LookingForGroupFrames()
 				button.HighlightTexture:SetColorTexture(1, 1, 1, 0.1)
 				button.HighlightTexture:SetInside()
 
-				--Fix issue with labels not following changes to GameFontNormal as they should
+				-- Fix issue with labels not following changes to GameFontNormal as they should
 				button.Label:SetFontObject('GameFontNormal')
 				button.IsSkinned = true
 			end
@@ -584,6 +613,9 @@ function S:LookingForGroupFrames()
 			end
 		end
 	end)
+
+	-- Follower Dungeons
+	hooksecurefunc(_G.LFDQueueFrameFollower.ScrollBox, 'Update', LFDQueueFrameSpecificUpdate)
 end
 
 function S:Blizzard_ChallengesUI()

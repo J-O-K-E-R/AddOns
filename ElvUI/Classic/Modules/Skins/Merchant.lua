@@ -11,7 +11,6 @@ local GetBuybackItemInfo = GetBuybackItemInfo
 local GetNumBuybackItems = GetNumBuybackItems
 
 local GetItemQualityByID = C_Item.GetItemQualityByID
-local GetItemQualityColor = C_Item.GetItemQualityColor
 
 local MERCHANT_ITEMS_PER_PAGE = MERCHANT_ITEMS_PER_PAGE
 
@@ -72,7 +71,7 @@ function S:MerchantFrame()
 
 			currencyIcon.backdrop = CreateFrame('Frame', nil, currencyItem)
 			currencyIcon.backdrop:SetTemplate()
-			currencyIcon.backdrop:SetFrameLevel(currencyItem:GetFrameLevel())
+			currencyIcon.backdrop:OffsetFrameLevel(nil, currencyItem)
 			currencyIcon.backdrop:SetOutside(currencyIcon)
 
 			currencyIcon:SetTexCoord(unpack(E.TexCoords))
@@ -156,7 +155,7 @@ function S:MerchantFrame()
 				if button.link then
 					local quality = GetItemQualityByID(button.link)
 					if quality and quality > 1 then
-						local r, g, b = GetItemQualityColor(quality)
+						local r, g, b = E:GetItemQualityColor(quality)
 						button:SetBackdropBorderColor(r, g, b)
 						name:SetTextColor(r, g, b)
 					else
@@ -173,7 +172,7 @@ function S:MerchantFrame()
 			if itemName then
 				local quality = GetItemQualityByID(itemName)
 				if quality and quality > 1 then
-					local r, g, b = GetItemQualityColor(quality)
+					local r, g, b = E:GetItemQualityColor(quality)
 					_G.MerchantBuyBackItemItemButton:SetBackdropBorderColor(r, g, b)
 					_G.MerchantBuyBackItemName:SetTextColor(r, g, b)
 				else
@@ -202,7 +201,7 @@ function S:MerchantFrame()
 					local name = _G['MerchantItem'..i..'Name']
 					local quality = GetItemQualityByID(itemName)
 					if quality and quality > 1 then
-						local r, g, b = GetItemQualityColor(quality)
+						local r, g, b = E:GetItemQualityColor(quality)
 						button:SetBackdropBorderColor(r, g, b)
 						name:SetTextColor(r, g, b)
 					else

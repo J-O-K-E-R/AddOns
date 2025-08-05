@@ -1,5 +1,8 @@
-local L = BigWigsAPI:NewLocale("BigWigs", "deDE")
+local _, addonTbl = ...
+local L = addonTbl.API:NewLocale("BigWigs", "deDE")
 if not L then return end
+
+L.tempNew = "NEU: Du kannst jetzt |cFFFFFFFF/bwtemp|r eingeben, um die Mythisch+ Schlüsselsteine Deiner Gruppenmitglieder zu sehen."
 
 -- Core.lua
 L.berserk = "Berserker"
@@ -18,6 +21,8 @@ L.adds = "Adds"
 L.adds_desc = "Aktiviert Funktionen für die verschiedenen Adds, die während der Bossbegegnung erscheinen."
 L.health = "Gesundheit"
 L.health_desc = "Aktiviert Funktionen für die Anzeige verschiedener Gesundheits-Informationen während der Bossbegegnung."
+L.energy = "Energie"
+L.energy_desc = "Aktiviert Funktionen für die Anzeige von Informationen über die verschiedenen Energielevel während der Bossbegegnung."
 
 L.already_registered = "|cffff0000WARNUNG:|r |cff00ff00%s|r (|cffffff00%s|r) existiert bereits als Modul in BigWigs, aber irgend etwas versucht es erneut anzumelden. Dies bedeutet normalerweise, dass Du zwei Kopien des Moduls aufgrund eines Fehlers beim Aktualisieren in Deinem Addon-Ordner hast. Es wird empfohlen, jegliche BigWigs-Ordner zu löschen und dann von Grund auf neu zu installieren."
 
@@ -30,7 +35,7 @@ L.littlewigsOfficialRelease = "Bei dir läuft ein offizieller Release von Little
 L.littlewigsAlphaRelease = "Bei dir läuft ein ALPHA RELEASE von LittleWigs (%s)."
 L.littlewigsSourceCheckout = "Bei dir läuft ein Source Code Checkout von LittleWigs direkt aus dem Repository."
 L.guildRelease = "Du nutzt Version %d von BigWigs für Deine Gilde, basierend auf Version %d des offiziellen Addons."
-L.getNewRelease = "Dein BigWigs ist veraltet (/bwv), aber Du kannst es mit Hilfe des CurseForge Clients einfach aktualisieren. Alternativ kannst Du es auch von curseforge.com oder wowinterface.com herunterladen und manuell aktualisieren."
+L.getNewRelease = "Dein BigWigs ist veraltet (/bwv), aber Du kannst es mit Hilfe des CurseForge Clients einfach aktualisieren. Alternativ kannst Du es auch von curseforge.com oder addons.wago.io herunterladen und manuell aktualisieren."
 L.warnTwoReleases = "Dein BigWigs ist 2 Versionen älter als die neueste Version! Deine Version könnte Fehler, fehlende Funktionen oder völlig falsche Timer beinhalten. Es wird dringend empfohlen, BigWigs zu aktualisieren."
 L.warnSeveralReleases = "|cffff0000Dein BigWigs ist um %d Versionen veraltet!! Wir empfehlen Dir DRINGEND, BigWigs zu aktualisieren, um Synchronisationsprobleme zwischen Dir und anderen Spielern zu verhindern!|r"
 L.warnOldBase = "Du nutzt eine Gildenversion von BigWigs (%d), aber die Basisversion (%d) ist seit %d Veröffentlichungen veraltet. Dies kann zu Problemen führen."
@@ -54,6 +59,8 @@ L.removeAddOn = "Bitte entferne '|cFF436EEE%s|r', da es durch '|cFF436EEE%s|r' e
 L.alternativeName = "%s (|cFF436EEE%s|r)"
 L.outOfDateContentPopup = "WARNUNG!\nDu hast |cFF436EEE%s|r aktualisiert, aber Du musst auch das Haupt |cFF436EEEBigWigs|r Addon aktualisieren.\nAndernfalls wird die Funktionalität eingeschränkt sein."
 L.outOfDateContentRaidWarning = "|cFF436EEE%s|r benötigt Version %d des Haupt |cFF436EEEBigWigs|r Addons zur korrekten Funktion, allerdings hast Du Version %d."
+L.addOnLoadFailedWithReason = "BigWigs konnte das Addon |cFF436EEE%s|r nicht laden wegen %q. Bitte den Entwicklern melden!"
+L.addOnLoadFailedUnknownError = "BigWigs hat einen Fehler beim Laden des Addons |cFF436EEE%s|r verursacht. Bitte den Entwicklern melden!"
 
 L.expansionNames = {
 	"Classic", -- Classic
@@ -256,7 +263,63 @@ L.N25 = "Normal 25"
 L.H10 = "Heroisch 10"
 L.H25 = "Heroisch 25"
 
+-----------------------------------------------------------------------
+-- TOOLS
+-----------------------------------------------------------------------
 
+L.tools = "Werkzeuge"
+L.toolsDesc = "BigWigs bietet verschiedene Werkzeuge oder Features der \"Lebensqualität\" zur Beschleunigung und Vereinfachung von Bossbegegnungen. Menü durch Klicken des |cFF33FF99+|r Symbols erweitern, um alle zu sehen."
+L.youAreInCombat = "Das ist im Kampf nicht möglich."
+
+-----------------------------------------------------------------------
+-- AutoRole.lua
+--
+
+L.autoRoleTitle = "Automatische Rollenwahl"
+L.autoRoleExplainer = "Jedes mal, wenn einer Gruppe beigetreten wird, oder die Talentspezialisierung in einer Gruppe geändert wird, passt BigWigs automatisch die Gruppenrolle (Tank, Heiler, Schaden) entsprechend an.\n\n"
+
+-----------------------------------------------------------------------
+-- Keystones.lua
+--
+
+L.keystoneTitle = "BigWigs Schlüsselsteine"
+L.keystoneHeaderParty = "Gruppe"
+L.keystoneRefreshParty = "Gruppe aktualisieren"
+L.keystoneHeaderGuild = "Gilde"
+L.keystoneRefreshGuild = "Gilde aktualisieren"
+L.keystoneLevelTooltip = "Schlüsselstein Stufe: |cFFFFFFFF%s|r"
+L.keystoneMapTooltip = "Dungeon: |cFFFFFFFF%s|r"
+L.keystoneRatingTooltip = "Mythisch+ Wertung: |cFFFFFFFF%d|r"
+L.keystoneHiddenTooltip = "Der Spieler hat entschieden diese Information zu verstecken."
+L.keystoneTabOnline = "Online"
+L.keystoneTabAlts = "Twinks"
+L.keystoneTabTeleports = "Teleports"
+L.keystoneHeaderMyCharacters = "Meine Charaktere"
+
+-- It doesn't really matter what you call it as long as it's recognizable and limited to ~6 characters
+L.keystoneShortName_TheRookery = "ROOK"
+L.keystoneShortName_DarkflameCleft = "DFC"
+L.keystoneShortName_PrioryOfTheSacredFlame = "PRIO"
+L.keystoneShortName_CinderbrewMeadery = "BREW"
+L.keystoneShortName_OperationFloodgate = "FLOOD"
+L.keystoneShortName_TheaterOfPain = "TOP"
+L.keystoneShortName_TheMotherlode = "ML"
+L.keystoneShortName_OperationMechagonWorkshop = "WORK"
+L.keystoneShortName_EcoDomeAldani = "ALDANI"
+L.keystoneShortName_HallsOfAtonement = "HOA"
+L.keystoneShortName_AraKaraCityOfEchoes = "ARAK"
+L.keystoneShortName_TazaveshSoleahsGambit = "GAMBIT"
+L.keystoneShortName_TazaveshStreetsOfWonder = "STREET"
+L.keystoneShortName_TheDawnbreaker = "DAWN"
+
+-----------------------------------------------------------------------
+-- LFGTimer.lua
+--
+
+L.lfgTimerTitle = "Dungeonbrowser Timer"
+L.lfgTimerExplainer = "Immer wenn ein Dungeonbrowser Popup für eine Warteschlange erscheint, erstellt BigWigs einen Timer mit der verbleibenden Zeit zum Akzeptieren.\n\n"
+L.lfgUseMaster = "Dungeonbrowser Bereitschaftssound auf 'Master' Audiokanal wiedergeben"
+L.lfgUseMasterDesc = "Wenn diese Option aktiviert ist, wird der Bereitschaftssound des Dungeonbrowsers auf dem 'Master' Audiokanal wiedergegeben. Wenn diese Option deaktiviert ist, wird dieser stattdessen auf dem '%s' Audiokanal wiedergegeben."
 
 -----------------------------------------------------------------------
 -- PLUGINS
@@ -276,6 +339,7 @@ L.sizeDesc = "Normalerweise wird die Größe festgelegt, indem Du den Anker bewe
 L.fontSizeDesc = "Schriftgröße über den Schieberegler oder durch Eingabe eines Wertes in der Box (maximal 200) festlegen."
 L.disabled = "Deaktivieren"
 L.disableDesc = "Du bist dabei, das Feature '%s' zu deaktivieren, was |cffff4411nicht empfohlen|r wird.\n\nBist Du sicher, dass Du das tun willst?"
+L.keybinding = "Tastenbelegung"
 
 -- Anchor Points
 L.UP = "Hoch"
@@ -683,6 +747,8 @@ L.sendPull = "Sendet einen Pull-Timer an die Gruppe."
 L.wrongPullFormat = "Ungültiger Pull-Timer. Ein korrektes Beispiel ist: /pull 5"
 L.countdownBegins = "Countdown starten"
 L.countdownBegins_desc = "Verbleibende Zeit des Pulltimers (in Sekunden) wählen, wenn der Countdown beginnt."
+L.pullExplainer = "\n|cFF33FF99/pull|r startet einen normalen Pulltimer.\n|cFF33FF99/pull 7|r startet einen 7-sekündigen Pulltimer, es kann jede Zahl verwendet werden.\nAlternativ kann unten auch eine Tastenbelegung festgelegt werden.\n\n"
+L.pullKeybindingDesc = "Tastenbelegung für den Start eines Pulltimers wählen."
 
 -----------------------------------------------------------------------
 -- RaidIcon.lua

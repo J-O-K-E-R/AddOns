@@ -1,5 +1,8 @@
-local L = BigWigsAPI:NewLocale("BigWigs", "zhTW")
+local _, addonTbl = ...
+local L = addonTbl.API:NewLocale("BigWigs", "zhTW")
 if not L then return end
+
+--L.tempNew = "NEW: You can now type |cFFFFFFFF/bwtemp|r to see the Mythic+ keystones of your party members."
 
 -- Core.lua
 L.berserk = "狂暴"
@@ -18,19 +21,21 @@ L.adds = "增援"
 L.adds_desc = "啟用與首領戰鬥中出現的增援相關的各種功能。"
 L.health = "生命值"
 L.health_desc = "顯示與首領戰鬥中相關的生命值資訊。"
+L.energy = "能量"
+--L.energy_desc = "Enable functions for displaying information about the various energy levels during the boss encounter."
 
 L.already_registered = "|cffff0000警告：|r |cff00ff00%s|r（|cffffff00%s|r）在 BigWigs 中已經存在，但該模組仍試圖重新註冊。通常來說，這可能是由於更新失敗導致你的插件資料夾中同時存在兩份相同模組的拷貝。建議刪除所有 BigWigs 資料夾並重新安裝。"
 
 -- Loader / Options.lua
 L.okay = "確定"
-L.officialRelease = "你所使用的 BigWigs %s 為官方正式版（%s）"
-L.alphaRelease = "你所使用的 BigWigs %s 為「α測試版（%s）」"
+L.officialRelease = "你所使用的 BigWigs %s 為官方正式版（%s）。"
+L.alphaRelease = "你所使用的 BigWigs %s 為「α測試版（%s）」。"
 L.sourceCheckout = "你所使用的 BigWigs（%s）是直接從原始碼倉庫下載的版本。"
-L.littlewigsOfficialRelease = "你所使用的 LittleWigs 為官方正式版（%s）"
-L.littlewigsAlphaRelease = "你所使用的 LittleWigs 為「α測試版（%s）」"
+L.littlewigsOfficialRelease = "你所使用的 LittleWigs 為官方正式版（%s）。"
+L.littlewigsAlphaRelease = "你所使用的 LittleWigs 為「α測試版（%s）」。"
 L.littlewigsSourceCheckout = "你所使用的 LittleWigs 是直接從原始碼倉庫下載的版本。"
 L.guildRelease = "你正在使用公會製作的 BigWigs，版本 %d，其基於官方版 %d。"
-L.getNewRelease = "你的 BigWigs 已過期（/bwv）但是可以使用 CurseForge 客戶端簡單升級。另外，也可以從 curseforge.com 或 wowinterface.com 手動升級。"
+L.getNewRelease = "你的 BigWigs 已過期（/bwv）但是可以使用 CurseForge 客戶端簡單升級。另外，也可以從 curseforge.com 或 addons.wago.io 手動升級。"
 L.warnTwoReleases = "你的 BigWigs 已過期 2 個發行版！你的版本可能有錯誤、功能缺失或不正確的計時器。所以強烈建議你升級。"
 L.warnSeveralReleases = "|cffff0000你的 BigWigs 已過期 %d 個發行版！！我們「強烈」建議你更新，以防止把問題同步給其他玩家！|r"
 L.warnOldBase = "你正在使用公會版 BigWigs（%d），但它所基於的官方版 （%d）已經過期了 %d 個版本，可能會導致問題。"
@@ -48,12 +53,14 @@ L.offline = "離線"
 L.missingAddOnPopup = "缺少 |cFF436EEE%s|r 模組！"
 L.missingAddOnRaidWarning = "缺少 |cFF436EEE%s|r 模組！無法為此區域提供計時條！"
 L.outOfDateAddOnPopup = "|cFF436EEE%s|r 模組已過期！"
---L.outOfDateAddOnRaidWarning = "|cFF436EEE%s|r 模組已過期！You have v%d.%d.%d but the latest is v%d.%d.%d!"
+L.outOfDateAddOnRaidWarning = "|cFF436EEE%s|r 模組已過期！你使用的版本是 v%d.%d.%d，但最新版是 v%d.%d.%d。"
 L.disabledAddOn = "模組 |cFF436EEE%s|r 已被禁用，無法顯示計時器。"
 L.removeAddOn = "請移除「|cFF436EEE%s|r」，其已被「|cFF436EEE%s|r」所替代。"
 L.alternativeName = "%s（|cFF436EEE%s|r）"
 L.outOfDateContentPopup = "警告！\n你更新了 |cFF436EEE%s|r，但還需要更新 |cFF436EEEBigWigs|r 主程式，\n忽略這件事可能使插件故障。"
 L.outOfDateContentRaidWarning = "需要安裝版本 %2$d 的|cFF436EEEBigWigs|r 主程式，才能使用 |cFF436EEE%1$s|r，但你目前使用的版本是 %3$d。"
+L.addOnLoadFailedWithReason = "BigWigs 無法載入模組 |cFF436EEE%s|r，原因是 %q；請將此問題回報給 BigWigs 開發團隊！"
+L.addOnLoadFailedUnknownError = "BigWigs 在載入模組 |cFF436EEE%s|r 的過程中發生錯誤。請將此問題回報給 BigWigs 開發團隊！"
 
 L.expansionNames = {
 	"艾澤拉斯", -- Classic
@@ -69,7 +76,7 @@ L.expansionNames = {
 	"地心之戰", -- The War Within
 }
 L.littleWigsExtras = {
-	["LittleWigs_Delves"] = "Delves",
+	["LittleWigs_Delves"] = "探究",
 	["LittleWigs_CurrentSeason"] = "當前賽季",
 }
 
@@ -256,7 +263,63 @@ L.N25 = "25人普通"
 L.H10 = "10人英雄"
 L.H25 = "25人英雄"
 
+-----------------------------------------------------------------------
+-- TOOLS
+-----------------------------------------------------------------------
 
+--L.tools = "Tools"
+--L.toolsDesc = "BigWigs provides various tools or \"quality of life\" features to speed up and simplify the process of fighting bosses. Expand the menu by clicking the |cFF33FF99+|r icon to see them all."
+--L.youAreInCombat = "You cannot do that in combat."
+
+-----------------------------------------------------------------------
+-- AutoRole.lua
+--
+
+--L.autoRoleTitle = "Auto Role"
+--L.autoRoleExplainer = "Whenever you join a group, or you change your talent specialization whilst being in a group, BigWigs will automatically adjust your group role (Tank, Healer, Damager) accordingly.\n\n"
+
+-----------------------------------------------------------------------
+-- Keystones.lua
+--
+
+--L.keystoneTitle = "BigWigs Keystones"
+--L.keystoneHeaderParty = "Party"
+--L.keystoneRefreshParty = "Refresh Party"
+--L.keystoneHeaderGuild = "Guild"
+--L.keystoneRefreshGuild = "Refresh Guild"
+--L.keystoneLevelTooltip = "Keystone level: |cFFFFFFFF%s|r"
+--L.keystoneMapTooltip = "Dungeon: |cFFFFFFFF%s|r"
+--L.keystoneRatingTooltip = "Mythic+ rating: |cFFFFFFFF%d|r"
+--L.keystoneHiddenTooltip = "The player has chosen to hide this information."
+--L.keystoneTabOnline = "Online"
+--L.keystoneTabAlts = "Alts"
+--L.keystoneTabTeleports = "Teleports"
+--L.keystoneHeaderMyCharacters = "My Characters"
+
+-- It doesn't really matter what you call it as long as it's recognizable and limited to ~6 characters
+--L.keystoneShortName_TheRookery = "ROOK"
+--L.keystoneShortName_DarkflameCleft = "DFC"
+--L.keystoneShortName_PrioryOfTheSacredFlame = "PRIORY"
+--L.keystoneShortName_CinderbrewMeadery = "BREW"
+--L.keystoneShortName_OperationFloodgate = "FLOOD"
+--L.keystoneShortName_TheaterOfPain = "TOP"
+--L.keystoneShortName_TheMotherlode = "ML"
+--L.keystoneShortName_OperationMechagonWorkshop = "WORK"
+--L.keystoneShortName_EcoDomeAldani = "ALDANI"
+--L.keystoneShortName_HallsOfAtonement = "HOA"
+--L.keystoneShortName_AraKaraCityOfEchoes = "ARAK"
+--L.keystoneShortName_TazaveshSoleahsGambit = "GAMBIT"
+--L.keystoneShortName_TazaveshStreetsOfWonder = "STREET"
+--L.keystoneShortName_TheDawnbreaker = "DAWN"
+
+-----------------------------------------------------------------------
+-- LFGTimer.lua
+--
+
+L.lfgTimerTitle = "LFG Timer"
+L.lfgTimerExplainer = "Whenever the LFG queue popup appears, BigWigs will create a timer bar telling you how long you have to accept the queue.\n\n"
+L.lfgUseMaster = "Play LFG ready sound on 'Master' audio channel"
+L.lfgUseMasterDesc = "When this option is enabled the LFG ready sound will play over the 'Master' audio channel. If you disable this option it will play over the '%s' audio channel instead."
 
 -----------------------------------------------------------------------
 -- PLUGINS
@@ -276,6 +339,7 @@ L.sizeDesc = "通常透過拖動錨點來條整尺寸，如果你需要一個精
 L.fontSizeDesc = "調整捲動軸以更改字型大小，或在輸入框輸入精確數值，最大可以到 200。"
 L.disabled = "停用"
 L.disableDesc = "即將禁用「%s」的功能，但|cffff4411不建議|r這麼做。\n\n你確定要這麼做嗎？"
+--L.keybinding = "Keybinding"
 
 -- Anchor Points
 L.UP = "向上"
@@ -683,6 +747,8 @@ L.sendPull = "向你的團隊發送開怪倒數計時器。"
 L.wrongPullFormat = "無效倒數。正確的格式範例： /pull 5"
 L.countdownBegins = "開始倒數"
 L.countdownBegins_desc = "以秒為單位，選擇在開怪計時器剩餘幾秒時開始倒數。"
+--L.pullExplainer = "\n|cFF33FF99/pull|r will start a normal pull timer.\n|cFF33FF99/pull 7|r will start a 7 second pull timer, you can use any number.\nAlternatively, you can also set a keybinding below.\n\n"
+--L.pullKeybindingDesc = "Choose a keybinding for starting a pull timer."
 
 -----------------------------------------------------------------------
 -- RaidIcon.lua

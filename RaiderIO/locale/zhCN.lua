@@ -1,4 +1,3 @@
--- Generated from CurseForge on Tue Apr 22 08:18:34 UTC 2025
 local ns = select(2, ...) ---@class ns @The addon namespace.
 
 if ns:IsSameLocale("zhCN") then
@@ -8,7 +7,7 @@ if ns:IsSameLocale("zhCN") then
 
 	L.LOCALE_NAME = "zhCN"
 
-L["ALLOW_IN_LFD"] = "允许在地下城查找器里显示"
+	L["ALLOW_IN_LFD"] = "允许在地下城查找器里显示"
 L["ALLOW_IN_LFD_CLASSIC"] = "允许在队伍查找器中显示"
 L["ALLOW_IN_LFD_CLASSIC_DESC"] = "在队伍查找器中右键点击队伍或申请者来复制其Raider.IO主页链接、"
 L["ALLOW_IN_LFD_DESC"] = "右键点击地下城查找器上的队伍或申请者来复制Raider.IO人物主页的网址链接。"
@@ -81,6 +80,8 @@ L["DUNGEON_SHORT_NAME_DHT"] = "黑心林地"
 L["DUNGEON_SHORT_NAME_DOS"] = "彼界"
 L["DUNGEON_SHORT_NAME_EB"] = "永茂林地"
 --[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_EDA"] = ""--]] 
+--[[Translation missing --]]
 --[[ L["DUNGEON_SHORT_NAME_EOA"] = ""--]] 
 L["DUNGEON_SHORT_NAME_FALL"] = "永恒：陨落"
 L["DUNGEON_SHORT_NAME_FH"] = "自由镇"
@@ -136,6 +137,10 @@ L["DUNGEON_SHORT_NAME_YARD"] = "麦卡贡垃圾场"
 L["ENABLE_AUTO_FRAME_POSITION"] = "自动调整Raider.IO个人页面的位置"
 L["ENABLE_AUTO_FRAME_POSITION_DESC"] = "开启此项将会在地下城查找器或者玩家框体上显示大秘境个人信息的鼠标提示。"
 L["ENABLE_DEBUG_MODE_RELOAD"] = "你正在开启Debug模式。该模式仅是为了测试插件，并且会使用额外的内存空间。点击确认将会重载你的界面。"
+--[[Translation missing --]]
+--[[ L["ENABLE_LFG_EXPORT_BUTTON"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["ENABLE_LFG_EXPORT_BUTTON_DESC"] = ""--]] 
 L["ENABLE_LOCK_PROFILE_FRAME"] = "锁定Raider.IO个人信息框架"
 L["ENABLE_LOCK_PROFILE_FRAME_DESC"] = "阻止大秘境个人信息框架被拖拽。如果你已经选择了自动调整其位置，则该选项将不会有任何作用。"
 L["ENABLE_NO_SCORE_COLORS"] = "关闭所有大秘境分数颜色"
@@ -192,6 +197,8 @@ L["MINIMAP_SHORTCUT_LOCK"] = "锁定按钮"
 --[[ L["MINIMAP_SHORTCUT_MINIMAP_ENABLE_DESC"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["MINIMAP_SHORTCUT_MINIMAP_LOCK"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["MISC_SETTINGS"] = ""--]] 
 L["MODULE_AMERICAS"] = "美洲"
 L["MODULE_EUROPE"] = "欧洲"
 L["MODULE_KOREA"] = "韩国"
@@ -361,6 +368,18 @@ L["RAID_BOSS_FSOD_6"] = "痛楚工匠莱兹纳尔（宿命）"
 L["RAID_BOSS_FSOD_7"] = "初诞者的卫士（宿命）"
 L["RAID_BOSS_FSOD_8"] = "命运撰写师罗-卡洛（宿命）"
 L["RAID_BOSS_FSOD_9"] = "克尔苏加德（宿命）"
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_HOF_1"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_HOF_2"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_HOF_3"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_HOF_4"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_HOF_5"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_HOF_6"] = ""--]] 
 L["RAID_BOSS_ICC_1"] = "玛洛加尔领主"
 L["RAID_BOSS_ICC_10"] = "踏梦者瓦莉瑟瑞娅"
 L["RAID_BOSS_ICC_11"] = "辛达苟萨"
@@ -389,6 +408,34 @@ L["RAID_BOSS_ICC_9"] = "鲜血女王兰娜瑟尔"
 --[[ L["RAID_BOSS_LOU_7"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["RAID_BOSS_LOU_8"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_MFO_1"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_MFO_2"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_MFO_3"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_MFO_4"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_MFO_5"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_MFO_6"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_MFO_7"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_MFO_8"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_MSV_1"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_MSV_2"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_MSV_3"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_MSV_4"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_MSV_5"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_MSV_6"] = ""--]] 
 L["RAID_BOSS_NP_1"] = "乌格拉克斯"
 L["RAID_BOSS_NP_2"] = "血缚恐魔"
 L["RAID_BOSS_NP_3"] = "席克兰"
@@ -419,6 +466,14 @@ L["RAID_BOSS_SOD_6"] = "痛楚工匠莱兹纳尔"
 L["RAID_BOSS_SOD_7"] = "初诞者的卫士"
 L["RAID_BOSS_SOD_8"] = "命运撰写师罗-卡洛"
 L["RAID_BOSS_SOD_9"] = "克尔苏加德"
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_ToES_1"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_ToES_2"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_ToES_3"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_ToES_4"] = ""--]] 
 L["RAID_BOSS_TOTFW_1"] = "风之议会"
 L["RAID_BOSS_TOTFW_2"] = "奥拉基尔"
 L["RAID_BOSS_VOTI_1"] = "艾拉诺格"
@@ -452,11 +507,19 @@ L["RAID_DIFFICULTY_SUFFIX_NORMAL25"] = "25PT"
 L["RAID_ENCOUNTERS_DEFEATED_TITLE"] = "已击杀团队副本首领"
 --[[Translation missing --]]
 --[[ L["RAID_FL"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_HOF"] = ""--]] 
 L["RAID_ICC"] = "冰冠堡垒"
 --[[Translation missing --]]
 --[[ L["RAID_LOU"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_MFO"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_MSV"] = ""--]] 
 L["RAID_NP"] = "尼鲁巴尔王宫"
 L["RAID_RS"] = "红玉圣所"
+--[[Translation missing --]]
+--[[ L["RAID_ToES"] = ""--]] 
 L["RAID_TOTFW"] = "风神王座"
 L["RAIDERIO_AVERAGE_PLAYER_SCORE"] = "能限时%s层的平均分数"
 L["RAIDERIO_BEST_RUN"] = "大秘境最佳成绩"
@@ -597,5 +660,6 @@ L["WARNING_LOCK_POSITION_FRAME_AUTO"] = "Raider.IO：你必须先关闭Raider.IO
 L["WARNING_RWF_MODE_ENABLE"] = "|cffFFFFFF%s|r 首杀争夺赛模式已开启。你可以通过使用 |cffFFFFFF/raiderio rwf |r来关闭它。"
 L["WIPE_RWF_MODE_BUTTON"] = "清除"
 L["WIPE_RWF_MODE_BUTTON_TOOLTIP"] = "点击以从存储文件中清除日志。 这将需要重新加载您的界面。"
+
 
 end

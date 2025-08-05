@@ -1,5 +1,5 @@
-local VERSION_TEXT = "v1.6.8";
-local VERSION_DATE = 1744850000;
+local VERSION_TEXT = "v1.7.2";
+local VERSION_DATE = 1754400000;
 
 
 local addonName, addon = ...
@@ -73,8 +73,10 @@ end
 addon.GetDBValue = GetDBValue;
 
 local function SetDBValue(dbKey, value, userInput)
-    DB[dbKey] = value;
-    addon.CallbackRegistry:Trigger("SettingChanged."..dbKey, value, userInput);
+    if DB then
+        DB[dbKey] = value;
+        addon.CallbackRegistry:Trigger("SettingChanged."..dbKey, value, userInput);
+    end
 end
 addon.SetDBValue = SetDBValue;
 
@@ -94,6 +96,7 @@ local function SetPersonalData(dbKey, value, userInput)
     DB_PC[dbKey] = value;
 end
 addon.SetPersonalData = SetPersonalData;
+
 
 
 local DefaultValues = {
@@ -135,8 +138,19 @@ local DefaultValues = {
     ProfessionsBook = true,             --Show unspent points on ProfessionsBookFrame
     TooltipProfessionKnowledge = true,  --Show unspent points on GameTooltip
     EditModeShowPlumberUI = true,
-    MinimapMouseover = false,
     LandingPageSwitch = true,           --Right click on ExpansionLandingPageMinimapButton to open a menu to access mission report
+
+
+    --Reduction
+    BossBanner_MasterSwitch = false,
+        BossBanner_HideLootWhenSolo = true,
+        BossBanner_ValuableItemOnly = true,
+
+
+    --New Expansion Landing Page
+    NewExpansionLandingPage = true,
+        LandingPage_Activity_HideCompleted = true,
+        LandingPage_Raid_CollapsedAchievement = false,
 
 
     --Custom Loot Window
@@ -147,6 +161,8 @@ local DefaultValues = {
         LootUI_BackgroundAlpha = 0.5,
         LootUI_ShowItemCount = false,
         LootUI_NewTransmogIcon = true,
+        LootUI_UseCustomColor = false,
+        LootUI_GrowUpwards = false,
         LootUI_ForceAutoLoot = true,
         LootUI_LootUnderMouse = false,
         LootUI_UseHotkey = true,
@@ -201,8 +217,9 @@ local DefaultValues = {
 
 
     --Deprecated:
-    --DruidModelFix = true,               --Fixed by Blizzard in 10.2.0
-    --BlizzFixWardrobeTrackingTip = true, --Hide Wardrobe tip that cannot be disabled   --Tip removed by Blizzard
+    --DruidModelFix = true,                 --Fixed by Blizzard in 10.2.0
+    --BlizzFixWardrobeTrackingTip = true,   --Hide Wardrobe tip that cannot be disabled   --Tip removed by Blizzard
+    --MinimapMouseover = false,             --Ridden with compatibility issue
 };
 
 local function LoadDatabase()
@@ -239,16 +256,23 @@ local function LoadDatabase()
     DefaultValues = nil;
 
     CallbackRegistry:Trigger("NewDBKeysAdded", newDBKeys);
+    CallbackRegistry:Trigger("DBLoaded", DB);
 end
+
 
 local EL = CreateFrame("Frame");
 EL:RegisterEvent("ADDON_LOADED");
 
 EL:SetScript("OnEvent", function(self, event, ...)
-    local name = ...
-    if name == addonName then
+    if event == "ADDON_LOADED" then
+        local name = ...
+        if name == addonName then
+            self:UnregisterEvent(event);
+            LoadDatabase();
+        end
+    elseif event == "LOADING_SCREEN_DISABLED" then
         self:UnregisterEvent(event);
-        LoadDatabase();
+        CallbackRegistry:Trigger("LOADING_SCREEN_DISABLED");
     end
 end);
 
@@ -263,4 +287,6 @@ do
     addon.IsToCVersionEqualOrNewerThan = IsToCVersionEqualOrNewerThan;
 
     addon.IS_CLASSIC = C_AddOns.GetAddOnMetadata(addonName, "X-Flavor") ~= "retail";
+
+    addon.IS_MOP = C_AddOns.GetAddOnMetadata(addonName, "X-Expansion") == "MOP";
 end

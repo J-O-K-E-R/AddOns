@@ -32,6 +32,7 @@ end
 L = BigWigs:NewBossLocale("Cinderbrew Meadery Trash", "deDE")
 if L then
 	L.venture_co_pyromaniac = "Pyromane der Venture Co."
+	L.venture_co_patron = "Kunde der Venture Co."
 	L.hired_muscle = "Angeheuerter Kraftprotz"
 	L.tasting_room_attendant = "Bedienstete des Verkostungsraums"
 	L.chef_chewie = "Chefkoch Nager"
@@ -117,6 +118,27 @@ if L then
 	L.wriggling_darkspawn = "Zuckende Dunkelbrut"
 end
 
+-- Eco-Dome Al'dani
+
+L = BigWigs:NewBossLocale("Eco-Dome Al'dani Trash", "deDE")
+if L then
+	--L.terrified_broker = "Terrified Broker"
+	--L.arcane_siphon = "Arcane Siphon"
+	--L.overgorged_mite = "Overgorged Mite"
+	--L.voracious_gorger = "Voracious Gorger"
+	--L.ravenous_destroyer = "Ravenous Destroyer"
+	--L.overcharged_sentinel = "Overcharged Sentinel"
+	--L.wastelander_farstalker = "Wastelander Farstalker"
+	--L.tamed_ruinstalker = "Tamed Ruinstalker"
+	--L.wastelander_ritualist = "Wastelander Ritualist"
+	--L.wastelander_pactspeaker = "Wastelander Pactspeaker"
+	--L.karesh_elemental = "K'aresh Elemental"
+	--L.burrowing_creeper = "Burrowing Creeper"
+	--L.wastes_creeper = "Wastes Creeper"
+
+	--L.taahbat_and_awazj_warmup_trigger = "I have no time for this. Taah'bat! Be certain they follow no further."
+end
+
 -- Operation: Floodgate
 
 L = BigWigs:NewBossLocale("Operation: Floodgate Trash", "deDE")
@@ -197,6 +219,7 @@ end
 L = BigWigs:NewBossLocale("The Dawnbreaker Trash", "deDE")
 if L then
 	L.arathi_lamplighter = "Lampenanzünder der Arathi"
+	L.nightfall_curseblade = "Fluchklinge von Nachtsturz"
 	L.nightfall_shadowmage = "Schattenmagier von Nachtsturz"
 	L.nightfall_ritualist = "Ritualist von Nachtsturz"
 	L.nightfall_commander = "Kommandant von Nachtsturz"

@@ -42,7 +42,6 @@ local RSAudioAlerts = private.ImportLib("RareScannerAudioAlerts")
 local RSEventHandler = private.ImportLib("RareScannerEventHandler")
 local RSEntityStateHandler = private.ImportLib("RareScannerEntityStateHandler")
 local RSCommandLine = private.ImportLib("RareScannerCommandLine")
-local RSTargetUnitTracker = private.ImportLib("RareScannerTargetUnitTracker")
 local RSRecentlySeenTracker = private.ImportLib("RareScannerRecentlySeenTracker")
 local RSWaypoints = private.ImportLib("RareScannerWaypoints")
 
@@ -441,7 +440,7 @@ scanner_button.PreviousButton:Hide()
 -- Register events
 RSEventHandler.RegisterEvents(scanner_button, RareScanner)
 
-function scanner_button:SimulateRareFound(npcID, objectGUID, name, x, y, atlasName, trackingSystem)
+function scanner_button:SimulateRareFound(npcID, objectGUID, name, x, y, atlasName, trackingSystem, isNavigating)
 	local vignetteInfo = {}
 	vignetteInfo.atlasName = atlasName
 	vignetteInfo.id = npcID
@@ -451,11 +450,6 @@ function scanner_button:SimulateRareFound(npcID, objectGUID, name, x, y, atlasNa
 	vignetteInfo.y = y
 	vignetteInfo.simulated = true
 	vignetteInfo.trackingSystem = trackingSystem
-	self:DetectedNewVignette(self, vignetteInfo)
-end
-
--- Checks if the rare has been found already in the last 5 minutes
-function scanner_button:DetectedNewVignette(self, vignetteInfo, isNavigating)
 	RSButtonHandler.AddAlert(self, vignetteInfo, isNavigating)
 end
 
@@ -1050,10 +1044,7 @@ local function RefreshDatabaseData(previousDbVersion)
 			end
 		)
 		table.insert(routines, fixCustomNpcs)
-	end
-	
-	-- Fix X offset introduced in 11.1 in Ringing Deeps
-	
+	end	
 	
 	-- Launches a forced vignette scan
 	local firstScanRoutine = RSRoutines.LoopRoutineNew()
@@ -1063,10 +1054,10 @@ local function RefreshDatabaseData(previousDbVersion)
 			if (vignetteInfo) then
 				if (vignetteInfo.onWorldMap and RSConfigDB.IsScanningWorldMapVignettes()) then
 					vignetteInfo.id = vignetteGUID
-					scanner_button:DetectedNewVignette(scanner_button, vignetteInfo)	
+					RSButtonHandler.AddAlert(scanner_button, vignetteInfo)	
 				elseif (vignetteInfo.onMinimap) then
 					vignetteInfo.id = vignetteGUID
-					scanner_button:DetectedNewVignette(scanner_button, vignetteInfo)
+					RSButtonHandler.AddAlert(scanner_button, vignetteInfo)	
 				end
 			end
 		end, 
@@ -1091,7 +1082,7 @@ local function RefreshDatabaseData(previousDbVersion)
 			end
 		)
 		table.insert(routines, fixOffsetXRingingDeepsRoutine)
-	end
+	end	
 		
 	-- Launch all the routines in order
 	local chainRoutines = RSRoutines.ChainLoopRoutineNew()
@@ -1099,9 +1090,6 @@ local function RefreshDatabaseData(previousDbVersion)
 	chainRoutines:Run(function(context)
 		-- Initialize respawning tracker and scan the first time
 		RSRespawnTracker.Init()
-		
-		-- Initialize unit target tracker
-		RSTargetUnitTracker.Init(scanner_button)
 		
 		-- Set default filters
 		if (not previousDbVersion or previousDbVersion < RSConstants.DEFAULT_FILTERED_ENTITIES.version) then
@@ -1117,6 +1105,11 @@ local function RefreshDatabaseData(previousDbVersion)
 	
 	-- Clear previous overlay if active when closed the game
 	RSGeneralDB.RemoveAllOverlayActive()
+	
+	-- Updates dragon_glyphs_collected database to global
+	if (private.dbchar.dragon_glyphs_collected) then
+		private.dbchar.dragon_glyphs_collected = nil
+	end
 end
 
 local function UpdateRareNamesDB(currentDbVersion)
@@ -1148,6 +1141,11 @@ local function UpdateRareNamesDB(currentDbVersion)
 				if (eventInfo and eventInfo.atlasName ~= RSConstants.EVENT_VIGNETTE) then
 					eventInfo.atlasName = RSConstants.EVENT_VIGNETTE
 					RSLogger:PrintDebugMessage(string.format("Evento [%s]. Estaba marcado como un rare, Corregido!.", eventID))
+				end
+				
+				-- Also clean the names database just in case it was saved as a rare NPC
+				if (private.dbglobal.rare_names[GetLocale()][eventID]) then
+					RSNpcDB.SetNpcName(eventID, nil)
 				end
 			end
 			

@@ -5,7 +5,7 @@ local _VERSION = 'devel'
 
 local oUF = ns.oUF
 local Profiler = oUF.Profiler.func
-local Private = Profiler(oUF).Private
+local Private = oUF.Private
 
 local argcheck = Private.argcheck
 local error = Private.error
@@ -285,12 +285,14 @@ local function updateRaid(self, event)
 	end
 end
 
--- boss6-8 exsist in some encounters, but unit event registration seems to be
+-- boss6-10 exsist in some encounters, but unit event registration seems to be
 -- completely broken for them, so instead we use OnUpdate to update them.
 local eventlessUnits = {
 	boss6 = true,
 	boss7 = true,
-	boss8 = true
+	boss8 = true,
+	boss9 = true,
+	boss10 = true
 }
 
 local function isEventlessUnit(unit)

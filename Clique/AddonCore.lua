@@ -89,6 +89,7 @@ local projects = {
     bcc = "WOW_PROJECT_BURNING_CRUSADE_CLASSIC",
     wrath = "WOW_PROJECT_WRATH_CLASSIC",
     cataclysm = "WOW_PROJECT_CATACLYSM_CLASSIC",
+    mists = "WOW_PROJECT_MISTS_CLASSIC",
 }
 
 local project_id = _G["WOW_PROJECT_ID"]
@@ -111,6 +112,10 @@ end
 
 function addon:ProjectIsCataclysm()
     return project_id == _G[projects.cataclysm]
+end
+
+function addon:ProjectIsMists()
+    return project_id == _G[projects.mists]
 end
 
 function addon:ProjectIsDragonflight()

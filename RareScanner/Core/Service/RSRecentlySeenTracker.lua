@@ -9,6 +9,7 @@ local RSRecentlySeenTracker = private.NewLib("RareScannerRecentlySeenTracker")
 local RSConfigDB = private.ImportLib("RareScannerConfigDB")
 local RSNpcDB = private.ImportLib("RareScannerNpcDB")
 local RSGeneralDB = private.ImportLib("RareScannerGeneralDB")
+local RSContainerDB = private.ImportLib("RareScannerContainerDB")
 
 -- RareScanner internal libraries
 local RSConstants = private.ImportLib("RareScannerConstants")
@@ -90,8 +91,10 @@ function RSRecentlySeenTracker.AddRecentlySeen(entityID, atlasName, isNavigating
 		return
 	end
 	
-	-- If not spawning in multiple places at the same time stores only the time
-	if (RSNpcDB.IsMultiZoneSpawn(entityID) or RSUtils.Contains(RSConstants.CONTAINERS_WITH_MULTIPLE_SPAWNS, entityID)) then
+	local shouldAnimate = false
+	
+	-- If spawning in multiple places at the same time stores also the coordinates
+	if (RSNpcDB.IsMultiZoneSpawn(entityID) or RSContainerDB.IsMultiZoneSpawn(entityID)) then
 		-- Extracts info from internal database
 		if (not recently_seen_entities[entityID]) then
 			recently_seen_entities[entityID] = {}
@@ -106,19 +109,23 @@ function RSRecentlySeenTracker.AddRecentlySeen(entityID, atlasName, isNavigating
 		recently_seen_entities[entityID][xy].time = currentTime
 		
 		RSGeneralDB.SetRecentlySeen(entityID)
+		shouldAnimate = true
 		--RSLogger:PrintDebugMessage(string.format("AddRecentlySeen[%s] (multi) [%s]", entityID, RSTimeUtils.TimeStampToClock(currentTime)))
-	-- Otherwise stores also the coordinates
-	else
+	-- Otherwise stores only the time if it isn't already seen
+	elseif (not recently_seen_entities[entityID]) then
 		recently_seen_entities[entityID] = currentTime
 		RSGeneralDB.SetRecentlySeen(entityID)
+		shouldAnimate = true
 		--RSLogger:PrintDebugMessage(string.format("AddRecentlySeen[%s] (mono) [%s]", entityID, RSTimeUtils.TimeStampToClock(currentTime)))
 	end
 	
 	-- Adds to the list to show ping animation
-	if ((RSConstants.IsNpcAtlas(atlasName) and RSConfigDB.IsShowingAnimationForNpcs() and RSConfigDB.GetAnimationForNpcs() ~= RSConstants.MAP_ANIMATIONS_ON_CLICK) or 
-			(RSConstants.IsContainerAtlas(atlasName) and RSConfigDB.IsShowingAnimationForContainers() and RSConfigDB.GetAnimationForContainers() ~= RSConstants.MAP_ANIMATIONS_ON_CLICK) or
-			(RSConstants.IsEventAtlas(atlasName) and RSConfigDB.IsShowingAnimationForEvents() and RSConfigDB.GetAnimationForEvents() ~= RSConstants.MAP_ANIMATIONS_ON_CLICK)) then
-		RSRecentlySeenTracker.AddPendingAnimation(entityID, entityInfo.mapID, entityInfo.coordX, entityInfo.coordY)
+	if (shouldAnimate) then
+		if ((RSConstants.IsNpcAtlas(atlasName) and RSConfigDB.IsShowingAnimationForNpcs() and RSConfigDB.GetAnimationForNpcs() ~= RSConstants.MAP_ANIMATIONS_ON_CLICK) or 
+				(RSConstants.IsContainerAtlas(atlasName) and RSConfigDB.IsShowingAnimationForContainers() and RSConfigDB.GetAnimationForContainers() ~= RSConstants.MAP_ANIMATIONS_ON_CLICK) or
+				(RSConstants.IsEventAtlas(atlasName) and RSConfigDB.IsShowingAnimationForEvents() and RSConfigDB.GetAnimationForEvents() ~= RSConstants.MAP_ANIMATIONS_ON_CLICK)) then
+			RSRecentlySeenTracker.AddPendingAnimation(entityID, entityInfo.mapID, entityInfo.coordX, entityInfo.coordY)
+		end
 	end
 end
 

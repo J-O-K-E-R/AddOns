@@ -3,10 +3,10 @@ local CH = E:GetModule('Chat')
 local DT = E:GetModule('DataTexts')
 local AB = E:GetModule('ActionBars')
 
-local type, pairs, sort, tonumber = type, pairs, sort, tonumber
-local lower, wipe, next, print = strlower, wipe, next, print
+local pairs, sort, tonumber, time = pairs, sort, tonumber, time
+local type, lower, wipe, next, print = type, strlower, wipe, next, print
 local ipairs, format, tinsert = ipairs, format, tinsert
-local strmatch, gsub = strmatch, gsub
+local strmatch, gsub, ceil = strmatch, gsub, math.ceil
 
 local CopyTable = CopyTable
 local ReloadUI = ReloadUI
@@ -16,7 +16,15 @@ local EnableAddOn = C_AddOns.EnableAddOn
 local GetAddOnInfo = C_AddOns.GetAddOnInfo
 local GetNumAddOns = C_AddOns.GetNumAddOns
 
+local PlayerClubRequestStatusNone = Enum.PlayerClubRequestStatus.None
+local RequestMembershipToClub = C_ClubFinder.RequestMembershipToClub
+local GetPlayerClubApplicationStatus = C_ClubFinder.GetPlayerClubApplicationStatus
+
 -- GLOBALS: ElvUIGrid, ElvDB
+
+--------------------------------------------------------------------
+-- ELVUI COMMAND FUNCTIONS
+--------------------------------------------------------------------
 
 function E:Grid(msg)
 	msg = msg and tonumber(msg)
@@ -30,18 +38,15 @@ function E:Grid(msg)
 	end
 end
 
-local AddOns = {
-	ElvUI = true,
-	ElvUI_Options = true,
-	ElvUI_Libraries = true
-}
-
 function E:LuaError(msg)
 	local switch = lower(msg)
 	if switch == 'on' or switch == '1' then
-		for i=1, GetNumAddOns() do
+		local addon = E.Status_Addons
+		local bugsack = E.Status_Bugsack
+
+		for i = 1, GetNumAddOns() do
 			local name = GetAddOnInfo(i)
-			if not AddOns[name] and E:IsAddOnEnabled(name) then
+			if (not addon[name] and (switch == '1' or not bugsack[name])) and E:IsAddOnEnabled(name) then
 				DisableAddOn(name, E.myname)
 				ElvDB.DisabledAddOns[name] = i
 			end
@@ -234,11 +239,6 @@ do
 				if data then
 					E:SortProfilerData('E', data)
 				end
-			elseif switch == 'ouf' then
-				local data = E.Profiler.data[E.oUF]
-				if data then
-					E:SortProfilerData('oUF', data)
-				end
 			elseif switch == 'pooler' then
 				local data = E.Profiler.data[E.oUF.Pooler]
 				if data then
@@ -278,288 +278,123 @@ function E:DisplayCommands()
 	print(L["EHELP_COMMANDS"])
 end
 
-local BLIZZARD_DEPRECATED = {
-	'Blizzard_Deprecated',
-	'Blizzard_DeprecatedCurrencyScript',
-	'Blizzard_DeprecatedGlue',
-	'Blizzard_DeprecatedGuildScript',
-	'Blizzard_DeprecatedItemScript',
-	'Blizzard_DeprecatedLFG',
-	'Blizzard_DeprecatedPvpScript',
-	'Blizzard_DeprecatedSoundScript',
-	'Blizzard_DeprecatedSpecialization',
-	'Blizzard_DeprecatedSpellScript',
-	'Blizzard_Deprecated_ArenaUI',
-}
-
-local BLIZZARD_ADDONS = {
-	'Blizzard_AccountSaveUI',
-	'Blizzard_AccountStore',
-	'Blizzard_AchievementUI',
-	'Blizzard_ActionBar',
-	'Blizzard_ActionBarController',
-	'Blizzard_ActionStatus',
-	'Blizzard_AddOnList',
-	'Blizzard_AdventureMap',
-	'Blizzard_AlliedRacesUI',
-	'Blizzard_AnimaDiversionUI',
-	'Blizzard_APIDocumentation',
-	'Blizzard_APIDocumentationGenerated',
-	'Blizzard_ArchaeologyUI',
-	'Blizzard_ArdenwealdGardening',
-	'Blizzard_ArrowCalloutFrame',
-	'Blizzard_ArtifactUI',
-	'Blizzard_AuctionHouseUI',
-	'Blizzard_AuthChallengeUI',
-	'Blizzard_AutoComplete',
-	'Blizzard_AzeriteEssenceUI',
-	'Blizzard_AzeriteRespecUI',
-	'Blizzard_AzeriteUI',
-	'Blizzard_BarbershopUI',
-	'Blizzard_BattlefieldMap',
-	'Blizzard_BehavioralMessaging',
-	'Blizzard_BlackMarketUI',
-	'Blizzard_BNet',
-	'Blizzard_BoostTutorial',
-	'Blizzard_BuffFrame',
-	'Blizzard_Calendar',
-	'Blizzard_ChallengesUI',
-	'Blizzard_Channels',
-	'Blizzard_CharacterCreate',
-	'Blizzard_CharacterCustomize',
-	'Blizzard_ChatFrame',
-	'Blizzard_ChatFrameBase',
-	'Blizzard_ChatFrameUtil',
-	'Blizzard_ChromieTimeUI',
-	'Blizzard_ClassMenu',
-	'Blizzard_ClassTrial',
-	'Blizzard_ClassTrialSecure',
-	'Blizzard_ClickBindingUI',
-	'Blizzard_ClientSavedVariables',
-	'Blizzard_Collections',
-	'Blizzard_CombatLog',
-	'Blizzard_CombatText',
-	'Blizzard_Commentator',
-	'Blizzard_Communities',
-	'Blizzard_CommunitiesSecure',
-	'Blizzard_CompactRaidFrames',
-	'Blizzard_Console',
-	'Blizzard_ContentTracking',
-	'Blizzard_Contribution',
-	'Blizzard_CovenantCallings',
-	'Blizzard_CovenantPreviewUI',
-	'Blizzard_CovenantRenown',
-	'Blizzard_CovenantSanctum',
-	'Blizzard_CovenantToasts',
-	'Blizzard_CUFProfiles',
-	'Blizzard_DeathRecap',
-	'Blizzard_DebugTools',
-	'Blizzard_DeclensionFrame',
-	'Blizzard_DeclensionFrameGlue',
-	'Blizzard_DelvesCompanionConfiguration',
-	'Blizzard_DelvesDashboardUI',
-	'Blizzard_DelvesDifficultyPicker',
-	'Blizzard_Dispatcher',
-	'Blizzard_DurabilityFrame',
-	'Blizzard_EditMode',
-	'Blizzard_EncounterJournal',
-	'Blizzard_EndOfMatchUI',
-	'Blizzard_EnvironmentCleanup',
-	'Blizzard_EventTrace',
-	'Blizzard_ExpansionLandingPage',
-	'Blizzard_ExpansionTrial',
-	'Blizzard_FlightMap',
-	'Blizzard_FontStyles_Frame',
-	'Blizzard_FontStyles_Glue',
-	'Blizzard_FontStyles_Shared',
-	'Blizzard_Fonts_Frame',
-	'Blizzard_Fonts_Glue',
-	'Blizzard_Fonts_Shared',
-	'Blizzard_FrameEffects',
-	'Blizzard_FramerateFrame',
-	'Blizzard_FrameStack',
-	'Blizzard_FrameXML',
-	'Blizzard_FrameXMLBase',
-	'Blizzard_FrameXMLUtil',
-	'Blizzard_FriendsFrame',
-	'Blizzard_GameMenu',
-	'Blizzard_GameTooltip',
-	'Blizzard_GarrisonBase',
-	'Blizzard_GarrisonTemplates',
-	'Blizzard_GarrisonUI',
-	'Blizzard_GenericTraitUI',
-	'Blizzard_GlobalFXModelScenes',
-	'Blizzard_GlueDialogs',
-	'Blizzard_GlueParent',
-	'Blizzard_GlueSavedVariables',
-	'Blizzard_GlueStubs',
-	'Blizzard_GlueXML',
-	'Blizzard_GlueXMLBase',
-	'Blizzard_GMChatUI',
-	'Blizzard_GroupFinder',
-	'Blizzard_GuildBankUI',
-	'Blizzard_GuildControlUI',
-	'Blizzard_HelpFrame',
-	'Blizzard_HybridMinimap',
-	'Blizzard_IME',
-	'Blizzard_InspectUI',
-	'Blizzard_IslandsPartyPoseUI',
-	'Blizzard_IslandsQueueUI',
-	'Blizzard_ItemBeltFrame',
-	'Blizzard_ItemButton',
-	'Blizzard_ItemInteractionUI',
-	'Blizzard_ItemSocketingUI',
-	'Blizzard_ItemUpgradeUI',
-	'Blizzard_Kiosk',
-	'Blizzard_LandingSoulbinds',
-	'Blizzard_LevelUpDisplay',
-	'Blizzard_LoadLocale',
-	'Blizzard_LoginWarningDialogs',
-	'Blizzard_MacroUI',
-	'Blizzard_MailFrame',
-	'Blizzard_MajorFactions',
-	'Blizzard_MapCanvas',
-	'Blizzard_MatchCelebrationPartyPoseUI',
-	'Blizzard_MatchmakingQueueDisplay',
-	'Blizzard_MawBuffs',
-	'Blizzard_Menu',
-	'Blizzard_Minimap',
-	'Blizzard_MirrorTimer',
-	'Blizzard_MoneyFrame',
-	'Blizzard_MoneyReceipt',
-	'Blizzard_MovePad',
-	'Blizzard_NamePlates',
-	'Blizzard_NewPlayerExperience',
-	'Blizzard_NewPlayerExperienceGuide',
-	'Blizzard_ObjectAPI',
-	'Blizzard_ObjectiveTracker',
-	'Blizzard_ObliterumUI',
-	'Blizzard_OrderHallUI',
-	'Blizzard_OverrideActionBar',
-	'Blizzard_PagedContent',
-	'Blizzard_PartyPoseUI',
-	'Blizzard_PerksProgram',
-	'Blizzard_PetBattleUI',
-	'Blizzard_PingUI',
-	'Blizzard_PlayerChoice',
-	'Blizzard_PlayerSpells',
-	'Blizzard_PlunderstormBasics',
-	'Blizzard_PlunderstormPrematchUI',
-	'Blizzard_POIButton',
-	'Blizzard_PrintHandler',
-	'Blizzard_PrivateAurasUI',
-	'Blizzard_Professions',
-	'Blizzard_ProfessionsBook',
-	'Blizzard_ProfessionsCustomerOrders',
-	'Blizzard_ProfessionsTemplates',
-	'Blizzard_PTRFeedback',
-	'Blizzard_PTRFeedbackGlue',
-	'Blizzard_PVPMatch',
-	'Blizzard_PVPUI',
-	'Blizzard_QuestNavigation',
-	'Blizzard_QuestTimer',
-	'Blizzard_QueueStatusFrame',
-	'Blizzard_QuickJoin',
-	'Blizzard_QuickKeybind',
-	'Blizzard_RaidFrame',
-	'Blizzard_RaidUI',
-	'Blizzard_RecruitAFriend',
-	'Blizzard_ReforgingUI',
-	'Blizzard_ReportFrame',
-	'Blizzard_ReportFrameGlue',
-	'Blizzard_ReportFrameShared',
-	'Blizzard_RuneforgeUI',
-	'Blizzard_ScrappingMachineUI',
-	'Blizzard_SecureTransferUI',
-	'Blizzard_SelectorUI',
-	'Blizzard_Settings',
-	'Blizzard_SettingsDefinitions_Frame',
-	'Blizzard_SettingsDefinitions_Shared',
-	'Blizzard_Settings_Shared',
-	'Blizzard_SharedMapDataProviders',
-	'Blizzard_SharedTalentUI',
-	'Blizzard_SharedWidgetFrames',
-	'Blizzard_SharedXML',
-	'Blizzard_SharedXMLBase',
-	'Blizzard_SharedXMLGame',
-	'Blizzard_SocialToast',
-	'Blizzard_Soulbinds',
-	'Blizzard_SpectateFrame',
-	'Blizzard_SpellPickUpIndicator',
-	'Blizzard_SpellSearch',
-	'Blizzard_StableUI',
-	'Blizzard_StaticPopup',
-	'Blizzard_StaticPopup_Frame',
-	'Blizzard_StoreUI',
-	'Blizzard_SubscriptionInterstitialUI',
-	'Blizzard_Subtitles',
-	'Blizzard_TalentUI',
-	'Blizzard_TextStatusBar',
-	'Blizzard_TimeManager',
-	'Blizzard_TimerunningCharacterCreate',
-	'Blizzard_TimerunningUtil',
-	'Blizzard_TokenUI',
-	'Blizzard_TorghastLevelPicker',
-	'Blizzard_TrainerUI',
-	'Blizzard_TransformTree',
-	'Blizzard_TutorialManager',
-	'Blizzard_Tutorials',
-	'Blizzard_UIFrameManager',
-	'Blizzard_UIPanels_Game',
-	'Blizzard_UIPanelTemplates',
-	'Blizzard_UIParent',
-	'Blizzard_UIParentPanelManager',
-	'Blizzard_UIWidgets',
-	'Blizzard_UnitFrame',
-	'Blizzard_UnitPopup',
-	'Blizzard_UnitPopupShared',
-	'Blizzard_VoiceToggleButton',
-	'Blizzard_VoidStorageUI',
-	'Blizzard_WarfrontsPartyPoseUI',
-	'Blizzard_WeeklyRewards',
-	'Blizzard_WeeklyRewardsUtil',
-	'Blizzard_WorldLootObjectList',
-	'Blizzard_WorldMap',
-	'Blizzard_WowTokenUI',
-	'Blizzard_ZoneAbility',
-}
-
-function E:DisableBlizzardDeprecated()
-	for _, addon in pairs(BLIZZARD_DEPRECATED) do
-		local enabled = E:IsAddOnEnabled(addon)
-		if enabled then
-			DisableAddOn(addon)
-			E:Print('The following addon was disabled:', addon)
-		end
-	end
-end
-
-do
-	local function Enable(addon)
-		local _, _, _, _, reason = GetAddOnInfo(addon)
-		if reason == 'DISABLED' then
-			EnableAddOn(addon)
-			E:Print('The following addon was re-enabled:', addon)
-		end
-	end
-
-	function E:EnableBlizzardAddOns()
-		for _, addon in pairs(BLIZZARD_ADDONS) do
-			Enable(addon)
-		end
-
-		for _, addon in pairs(BLIZZARD_DEPRECATED) do
-			Enable(addon)
-		end
-	end
-end
-
 function E:DBConvertProfile()
 	E.db.dbConverted = nil
 	E:DBConversions()
 	ReloadUI()
 end
 
+--------------------------------------------------------------------
+-- GUILD APPLY COMMANDS
+--------------------------------------------------------------------
+function E:GuildListSort(second)
+	return self.numActiveMembers > second.numActiveMembers
+end
+
+function E:ListGuilds(msg)
+	if not next(E.guilds) then
+		E:Print('Error: No guilds found. Open Guild Finder and search first.')
+		return
+	end
+
+	local guildList = {}
+	for _, guildData in pairs(E.guilds) do
+		tinsert(guildList, guildData)
+	end
+
+	sort(guildList, E.GuildListSort)
+
+	E:Print('|cff00BFFF--- Sorted Guild List ---|r')
+
+	local cutoff = tonumber(msg)
+	for _, guildData in ipairs(guildList) do
+		if not cutoff or guildData.numActiveMembers >= cutoff then
+			E:Print(format('Guild: %s, Active Members: %d', guildData.name, guildData.numActiveMembers))
+		end
+	end
+
+	E:Print('|cff00BFFF-------------------------|r')
+end
+
+do
+	local sortedGuilds = {}
+	local appliedGUIDs = {} -- This list resets on every reload.
+	local lastApplyTime = 0 -- Tracks the last time /guildapply was used to enforce a cooldown.
+	local APPLY_COOLDOWN = 120 -- 2 minutes
+
+	function E:ApplyGuilds(msg)
+		local currentTime = time()
+		if currentTime - lastApplyTime < APPLY_COOLDOWN then
+			local timeLeft = ceil(APPLY_COOLDOWN - (currentTime - lastApplyTime))
+			E:Print(format('|cffff0000Guild apply is on cooldown. Please wait %d more seconds.|r', timeLeft))
+			return
+		elseif not next(E.guilds) then
+			E:Print('Error: No guilds found. Open Guild Finder and search first.')
+			return
+		end
+
+		-- The message is the only argument, in quotes.
+		local playerSpecs = E.SpecByClass[E.myclass]
+		if not playerSpecs or #playerSpecs == 0 then
+			E:Print('Error: Could not retrieve player specializations.')
+			return
+		end
+
+		-- Sortable list from the scraped guilds.
+		wipe(sortedGuilds)
+
+		for _, guildData in next, E.guilds do
+			tinsert(sortedGuilds, guildData)
+		end
+
+		-- Sort the list by member count, descending.
+		sort(sortedGuilds, E.GuildListSort)
+
+		local applyMessage = strmatch(msg, '^"(.-)"$') or 'Hello, I am interested in joining your guild!'
+
+		E:Print('Beginning smart apply...')
+		E:Print(format('Using application message: "%s"', applyMessage))
+
+		local appliedCount = 0
+		local maxApplications = 5
+
+		-- Loop through the sorted list and apply to new guilds.
+		for _, guildData in ipairs(sortedGuilds) do
+			local guid = guildData.clubFinderGUID
+			local status = (guid and not appliedGUIDs[guid]) and GetPlayerClubApplicationStatus(guid)
+			if status == PlayerClubRequestStatusNone then -- This is a new guild we can apply to!
+				E:Print(format('|cffffff00Applying to "%s" (%d members)...|r', guildData.name, guildData.numActiveMembers))
+
+				RequestMembershipToClub(guid, applyMessage, playerSpecs)
+
+				-- Record the GUID in our session table so we don't apply again.
+				appliedGUIDs[guid] = true
+				appliedCount = appliedCount + 1
+
+				-- Stop if we've hit our limit.
+				if appliedCount >= maxApplications then
+					E:Print('Application limit of 5 reached for this session.')
+					break
+				end
+			end
+		end
+
+		-- Only set the cooldown if we actually sent an application.
+		if appliedCount > 0 then
+			lastApplyTime = currentTime
+		end
+
+		if appliedCount == 0 then
+			E:Print('|cff00ff00Smart apply complete. No new guilds to apply to in the current list.|r')
+		else
+			E:Print(format('|cff00ff00Smart apply complete. Sent %d new applications.|r', appliedCount))
+		end
+	end
+end
+
+--------------------------------------------------------------------
+-- COMMAND REGISTRATION
+--------------------------------------------------------------------
 function E:LoadCommands()
 	if E.private.actionbar.enable then
 		E:RegisterChatCommand('kb', AB.ActivateBindMode)
@@ -582,8 +417,11 @@ function E:LoadCommands()
 
 	E:RegisterChatCommand('ehelp', 'DisplayCommands')
 	E:RegisterChatCommand('ecommands', 'DisplayCommands')
-	E:RegisterChatCommand('eblizzard', 'EnableBlizzardAddOns')
 	E:RegisterChatCommand('estatus', 'ShowStatusReport')
 	E:RegisterChatCommand('efixdb', 'DBConvertProfile')
 	E:RegisterChatCommand('egrid', 'Grid')
+
+	-- Register Guild Apply Commands
+	E:RegisterChatCommand('guildlist', 'ListGuilds')
+	E:RegisterChatCommand('guildapply', 'ApplyGuilds')
 end

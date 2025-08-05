@@ -1,10 +1,16 @@
-lightweight tag 5308cea4393e6699524d398b086de127e761eb5f patch-11.1.5-01
+lightweight tag 08c3230b2f813b990e3e4387fcc43f663c47db8c 11.2.0-02
 Author:	Dave Hendler <sollaires@gmail.com>
-Date:	Thu Apr 10 11:05:24 2025 -0700
+Date:	Fri Jul 18 10:54:03 2025 -0700
 
-commit 5308cea4393e6699524d398b086de127e761eb5f
+commit 08c3230b2f813b990e3e4387fcc43f663c47db8c
 Author: Dave Hendler <sollaires@gmail.com>
-Date:   Thu Apr 10 11:05:24 2025 -0700
+Date:   Fri Jul 18 10:54:03 2025 -0700
 
-    Bump version and compatibility for 11.1.5
+    Handle 11.2 bank changes, add support for warband bank
+
+commit 254db9d01919cbd7510ce380bd13a15c295896ef
+Author: Dave Hendler <sollaires@gmail.com>
+Date:   Wed Jul 16 20:39:45 2025 -0700
+
+    Fix alpha version
 

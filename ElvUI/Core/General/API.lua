@@ -9,7 +9,7 @@ local ElvUF = E.oUF
 local _G = _G
 local setmetatable = setmetatable
 local hooksecurefunc = hooksecurefunc
-local type, ipairs, pairs, unpack = type, ipairs, pairs, unpack
+local type, ipairs, pairs, unpack, strmatch = type, ipairs, pairs, unpack, strmatch
 local wipe, max, next, tinsert, date, time = wipe, max, next, tinsert, date, time
 local strfind, strlen, tonumber, tostring = strfind, strlen, tonumber, tostring
 
@@ -20,7 +20,8 @@ local GetGameTime = GetGameTime
 local GetInstanceInfo = GetInstanceInfo
 local GetNumGroupMembers = GetNumGroupMembers
 local GetServerTime = GetServerTime
-local GetSpecializationInfoForSpecID = GetSpecializationInfoForSpecID
+local GetSpecializationInfoByID = GetSpecializationInfoByID
+local GetSpecializationInfoForSpecID = C_SpecializationInfo.GetSpecializationInfoForSpecID or GetSpecializationInfoForSpecID
 local HideUIPanel = HideUIPanel
 local InCombatLockdown = InCombatLockdown
 local IsInRaid = IsInRaid
@@ -46,12 +47,13 @@ local UnitSex = UnitSex
 local GetWatchedFactionInfo = GetWatchedFactionInfo
 local GetWatchedFactionData = C_Reputation and C_Reputation.GetWatchedFactionData
 
+local GetColorDataForItemQuality = ColorManager and ColorManager.GetColorDataForItemQuality
 local GetAuraDataByIndex = C_UnitAuras and C_UnitAuras.GetAuraDataByIndex
 local UnpackAuraData = AuraUtil and AuraUtil.UnpackAuraData
 local UnitAura = UnitAura
 
-local GetSpecialization = (E.Classic or E.Cata) and LCS.GetSpecialization or GetSpecialization
-local GetSpecializationInfo = (E.Classic or E.Cata) and LCS.GetSpecializationInfo or GetSpecializationInfo
+local GetSpecialization = (LCS and LCS.GetSpecialization) or C_SpecializationInfo.GetSpecialization or GetSpecialization
+local GetSpecializationInfo = (LCS and LCS.GetSpecializationInfo) or C_SpecializationInfo.GetSpecializationInfo or GetSpecializationInfo
 
 local IsAddOnLoaded = C_AddOns.IsAddOnLoaded
 local StoreEnabled = C_StorePublic.IsEnabled
@@ -172,6 +174,10 @@ E.SpecName = { -- english locale
 	[73]	= 'Protection',
 }
 
+function E:GetCurrencyIDFromLink(link)
+	return link and tonumber(strmatch(link, 'currency:(%d+)'))
+end
+
 function E:GetDateTime(localTime, unix)
 	if not localTime then -- try to properly handle realm time
 		local dateTable = date('*t', GetServerTime())
@@ -211,6 +217,27 @@ function E:ClassColor(class, usePriestColor)
 	end
 end
 
+function E:GetQualityColor(quality)
+	if GetColorDataForItemQuality then
+		return GetColorDataForItemQuality(quality)
+	else
+		return _G.ITEM_QUALITY_COLORS[quality]
+	end
+end
+
+function E:GetItemQualityColor(quality)
+	if quality == -1 then
+		return 0, 0, 0
+	end
+
+	local color = quality and E:GetQualityColor(quality)
+	if color then
+		return color.r, color.g, color.b
+	else
+		return unpack(E.media.bordercolor)
+	end
+end
+
 function E:InverseClassColor(class, usePriestColor, forceCap)
 	local color = E:CopyTable({}, E:ClassColor(class, usePriestColor))
 	local capColor = class == 'PRIEST' or forceCap
@@ -247,19 +274,101 @@ end
 
 do -- other non-english locales require this
 	E.UnlocalizedClasses = {}
-	for k, v in pairs(_G.LOCALIZED_CLASS_NAMES_MALE) do E.UnlocalizedClasses[v] = k end
-	for k, v in pairs(_G.LOCALIZED_CLASS_NAMES_FEMALE) do E.UnlocalizedClasses[v] = k end
+
+	local classMale = _G.LOCALIZED_CLASS_NAMES_MALE
+	local classFemale = _G.LOCALIZED_CLASS_NAMES_FEMALE
+
+	for k, v in pairs(classMale) do E.UnlocalizedClasses[v] = k end
+	for k, v in pairs(classFemale) do E.UnlocalizedClasses[v] = k end
 
 	function E:UnlocalizedClassName(className)
 		return E.UnlocalizedClasses[className]
 	end
 
 	function E:LocalizedClassName(className, unit)
-		local gender = (not unit and E.mygender) or UnitSex(unit)
-		if gender == 3 then
-			return _G.LOCALIZED_CLASS_NAMES_FEMALE[className]
-		else
-			return _G.LOCALIZED_CLASS_NAMES_MALE[className]
+		local gender = (type(unit) == 'number' and unit) or (not unit and E.mygender) or UnitSex(unit)
+		return (gender == 3 and classFemale[className]) or classMale[className]
+	end
+end
+
+function E:GetUnitSpecInfo(unit)
+	if not UnitIsPlayer(unit) then return end
+
+	E.ScanTooltip:SetOwner(UIParent, 'ANCHOR_NONE')
+	E.ScanTooltip:SetUnit(unit)
+	E.ScanTooltip:Show()
+
+	local _, specLine = TT:GetLevelLine(E.ScanTooltip, 1, true)
+	local specText = specLine and specLine.leftText
+	if specText then
+		return E.SpecInfoBySpecClass[specText]
+	end
+end
+
+function E:PopulateSpecInfo()
+	wipe(E.SpecInfoBySpecID)
+	wipe(E.SpecInfoBySpecClass)
+
+	for classFile, specID in next, E.SpecByClass do
+		local info = E.ClassInfoByFile[classFile]
+		if info then -- exclude evoker on mists
+			local classMale, classFemale = E:LocalizedClassName(classFile, 2), E:LocalizedClassName(classFile, 3)
+			for index, id in next, specID do
+				local data = {
+					id = id,
+					index = index,
+					classFile = classFile,
+					className = info.className,
+					classMale = classMale,
+					classFemale = classFemale,
+					englishName = E.SpecName[id]
+				}
+
+				E.SpecInfoBySpecID[id] = data
+
+				for x = 3, 1, -1 do
+					local _, name, desc, icon, role = GetSpecializationInfoForSpecID(id, x)
+					if name then
+						if x == 1 then -- SpecInfoBySpecID
+							data.name = name
+							data.desc = desc
+							data.icon = icon
+							data.role = role
+
+							local specClass = name..' '..info.className
+							E.SpecInfoBySpecClass[specClass] = data
+						else
+							local copy = E:CopyTable({}, data)
+							copy.name = name
+							copy.desc = desc
+							copy.icon = icon
+							copy.role = role
+
+							local localized = (x == 3 and classFemale) or classMale
+							copy.className = localized
+
+							if localized then
+								local specClassLocalized = name..' '..localized
+								E.SpecInfoBySpecClass[specClassLocalized] = copy
+							end
+						end
+					end
+				end
+
+				-- fallback for mop
+				local _, name, desc, icon, role = GetSpecializationInfoByID(id)
+				if name then
+					local specClass = name..' '..info.className
+					if not E.SpecInfoBySpecClass[specClass] then
+						data.name = name
+						data.desc = desc
+						data.icon = icon
+						data.role = role
+
+						E.SpecInfoBySpecClass[specClass] = data
+					end
+				end
+			end
 		end
 	end
 end
@@ -640,11 +749,6 @@ do
 end
 
 function E:Dump(object, inspect)
-	if not E:IsAddOnEnabled('Blizzard_DebugTools') then
-		E:Print('Blizzard_DebugTools is disabled.')
-		return
-	end
-
 	local debugTools = IsAddOnLoaded('Blizzard_DebugTools')
 	if not debugTools then UIParentLoadAddOn('Blizzard_DebugTools') end
 
@@ -707,7 +811,7 @@ function E:RegisterPetBattleHideFrames(object, originalParent, originalStrata)
 	object = _G[object] or object
 
 	--If already doing pokemon
-	if E.Retail and C_PetBattles_IsInBattle() then
+	if (E.Retail or E.Mists) and C_PetBattles_IsInBattle() then
 		object:SetParent(E.HiddenFrame)
 	end
 
@@ -759,7 +863,7 @@ function E:RegisterObjectForVehicleLock(object, originalParent)
 	end
 
 	--Check if we are already in a vehicles
-	if (E.Retail or E.Cata) and UnitHasVehicleUI('player') then
+	if (E.Retail or E.Mists) and UnitHasVehicleUI('player') then
 		object:SetParent(E.HiddenFrame)
 	end
 
@@ -959,7 +1063,9 @@ local gameMenuLastButtons = {
 
 function E:PositionGameMenuButton()
 	if E.Retail then
-		GameMenuFrame.Header.Text:SetTextColor(unpack(E.media.rgbvaluecolor))
+		if E.private.skins.blizzard.enable and E.private.skins.blizzard.misc then
+			GameMenuFrame.Header.Text:SetTextColor(unpack(E.media.rgbvaluecolor))
+		end
 
 		local anchorIndex = (StoreEnabled and StoreEnabled() and 2) or 1
 		for button in GameMenuFrame.buttonPool:EnumerateActive() do
@@ -1057,20 +1163,6 @@ function E:CompatibleTooltip(tt) -- knock off compatibility
 		end
 
 		return info
-	end
-end
-
-function E:GetUnitSpecInfo(unit)
-	if not UnitIsPlayer(unit) then return end
-
-	E.ScanTooltip:SetOwner(UIParent, 'ANCHOR_NONE')
-	E.ScanTooltip:SetUnit(unit)
-	E.ScanTooltip:Show()
-
-	local _, specLine = TT:GetLevelLine(E.ScanTooltip, 1, true)
-	local specText = specLine and specLine.leftText
-	if specText then
-		return E.SpecInfoBySpecClass[specText]
 	end
 end
 
@@ -1189,67 +1281,11 @@ function E:LoadAPI()
 
 	E:SetupGameMenu()
 
-	if E.Retail then
-		for _, mountID in next, C_MountJournal_GetMountIDs() do
-			local _, _, sourceText = C_MountJournal_GetMountInfoExtraByID(mountID)
-			local _, spellID = C_MountJournal_GetMountInfoByID(mountID)
-			E.MountIDs[spellID] = mountID
-			E.MountText[mountID] = sourceText
-		end
+	if E.Retail or E.Mists then
+		E:PopulateSpecInfo()
+	end
 
-		do -- fill the spec info tables
-			local MALE = _G.LOCALIZED_CLASS_NAMES_MALE
-			local FEMALE = _G.LOCALIZED_CLASS_NAMES_FEMALE
-
-			for classFile, specData in next, E.SpecByClass do
-				local male, female = MALE[classFile], FEMALE[classFile]
-				local info = E.ClassInfoByFile[classFile]
-
-				for index, id in next, specData do
-					local data = {
-						id = id,
-						index = index,
-						classFile = classFile,
-						className = info.className,
-						englishName = E.SpecName[id]
-					}
-
-					E.SpecInfoBySpecID[id] = data
-
-					for x = 3, 1, -1 do
-						local _, name, desc, icon, role = GetSpecializationInfoForSpecID(id, x)
-
-						if x == 1 then -- SpecInfoBySpecID
-							data.name = name
-							data.desc = desc
-							data.icon = icon
-							data.role = role
-
-							E.SpecInfoBySpecClass[name..' '..info.className] = data
-						else
-							local copy = E:CopyTable({}, data)
-							copy.name = name
-							copy.desc = desc
-							copy.icon = icon
-							copy.role = role
-
-							local localized = (x == 3 and female) or male
-							copy.className = localized
-
-							if localized then
-								E.SpecInfoBySpecClass[name..' '..localized] = copy
-							end
-						end
-					end
-				end
-			end
-		end
-
-		E:RegisterEvent('NEUTRAL_FACTION_SELECT_RESULT')
-		E:RegisterEvent('PET_BATTLE_CLOSE', 'AddNonPetBattleFrames')
-		E:RegisterEvent('PET_BATTLE_OPENING_START', 'RemoveNonPetBattleFrames')
-		E:RegisterEvent('PLAYER_SPECIALIZATION_CHANGED', 'CheckRole')
-	else
+	if not E.Retail then
 		E:CompatibleTooltip(E.ScanTooltip)
 		E:CompatibleTooltip(E.ConfigTooltip)
 		E:CompatibleTooltip(E.SpellBookTooltip)
@@ -1260,7 +1296,18 @@ function E:LoadAPI()
 	E.ScanTooltip.GetHyperlinkInfo = E.ScanTooltip_HyperlinkInfo
 	E.ScanTooltip.GetInventoryInfo = E.ScanTooltip_InventoryInfo
 
-	if E.Retail or E.Cata then
+	if E.Retail or E.Mists then
+		for _, mountID in next, C_MountJournal_GetMountIDs() do
+			local _, _, sourceText = C_MountJournal_GetMountInfoExtraByID(mountID)
+			local _, spellID = C_MountJournal_GetMountInfoByID(mountID)
+			E.MountIDs[spellID] = mountID
+			E.MountText[mountID] = sourceText
+		end
+
+		E:RegisterEvent('NEUTRAL_FACTION_SELECT_RESULT')
+		E:RegisterEvent('PLAYER_SPECIALIZATION_CHANGED', 'CheckRole')
+		E:RegisterEvent('PET_BATTLE_CLOSE', 'AddNonPetBattleFrames')
+		E:RegisterEvent('PET_BATTLE_OPENING_START', 'RemoveNonPetBattleFrames')
 		E:RegisterEvent('UNIT_ENTERED_VEHICLE', 'EnterVehicleHideFrames')
 		E:RegisterEvent('UNIT_EXITED_VEHICLE', 'ExitVehicleShowFrames')
 	else

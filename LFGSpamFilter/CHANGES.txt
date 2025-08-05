@@ -1,10 +1,10 @@
-lightweight tag 7e4a9ccd4d38e186124d47f4e0c7c736d827b116 v1.6.4
+lightweight tag f98660a719c4e7e544207c6ab0405c3fde3f3fee v1.6.6
 Author:	romdeau23 <43295566+romdeau23@users.noreply.github.com>
-Date:	Sat Mar 1 12:00:04 2025 +0100
+Date:	Mon Aug 4 20:15:21 2025 +0200
 
-commit 7e4a9ccd4d38e186124d47f4e0c7c736d827b116
+commit f98660a719c4e7e544207c6ab0405c3fde3f3fee
 Author: romdeau23 <43295566+romdeau23@users.noreply.github.com>
-Date:   Sat Mar 1 12:00:04 2025 +0100
+Date:   Mon Aug 4 20:15:21 2025 +0200
 
-    Update for 11.1
+    Update for 11.2.0
 

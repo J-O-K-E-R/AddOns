@@ -63,7 +63,7 @@ local BankFrameItemButton_Update = BankFrameItemButton_Update
 local BankFrameItemButton_UpdateLocked = BankFrameItemButton_UpdateLocked
 local SellAllJunkItems = C_MerchantFrame.SellAllJunkItems
 local C_Texture_GetAtlasInfo = C_Texture.GetAtlasInfo
-local C_TransmogCollection_PlayerHasTransmogByItemInfo = C_TransmogCollection and C_TransmogCollection.PlayerHasTransmogByItemInfo
+local C_TransmogCollection_PlayerHasTransmogItemModifiedAppearance = C_TransmogCollection and C_TransmogCollection.PlayerHasTransmogItemModifiedAppearance
 local C_TransmogCollection_GetItemInfo = C_TransmogCollection and C_TransmogCollection.GetItemInfo
 local C_Item_CanScrapItem = C_Item.CanScrapItem
 local C_Item_DoesItemExist = C_Item.DoesItemExist
@@ -76,8 +76,6 @@ local C_Item_IsBound = C_Item.IsBound
 local GetCVarBool = C_CVar.GetCVarBool
 local GetItemInfo = C_Item.GetItemInfo
 local GetItemSpell = C_Item.GetItemSpell
-local GetItemQualityColor = C_Item.GetItemQualityColor
-local SetCurrencyBackpack = C_CurrencyInfo.SetCurrencyBackpack or SetCurrencyBackpack
 
 local SortBags = C_Container.SortBags
 local SortBankBags = C_Container.SortBankBags
@@ -289,12 +287,12 @@ B.IsEquipmentSlot = {
 	INVTYPE_RANGEDRIGHT = true,
 }
 
-if E.Cata then
+if E.Mists then
 	B.IsEquipmentSlot.INVTYPE_RELIC = true
 end
 
 local bagIDs, bankIDs = {0, 1, 2, 3, 4}, { -1 }
-local bankOffset, maxBankSlots = (E.Classic or E.Cata) and 4 or 5, E.Classic and 10 or E.Cata and 11 or 12
+local bankOffset, maxBankSlots = (E.Classic or E.Mists) and 4 or 5, E.Classic and 10 or E.Mists and 11 or 12
 local bankEvents = {'BAG_UPDATE_DELAYED', 'BAG_UPDATE', 'BAG_CLOSED', 'BANK_BAG_SLOT_FLAGS_UPDATED', 'PLAYERBANKBAGSLOTS_CHANGED', 'PLAYERBANKSLOTS_CHANGED'}
 local bagEvents = {'BAG_UPDATE_DELAYED', 'BAG_UPDATE', 'BAG_CLOSED', 'ITEM_LOCK_CHANGED', 'BAG_SLOT_FLAGS_UPDATED', 'QUEST_ACCEPTED', 'QUEST_REMOVED'}
 local presistentEvents = {
@@ -449,7 +447,7 @@ function B:UpdateItemDisplay()
 				if B.db.itemLevelCustomColorEnable then
 					slot.itemLevel:SetTextColor(B.db.itemLevelCustomColor.r, B.db.itemLevelCustomColor.g, B.db.itemLevelCustomColor.b)
 				else
-					local r, g, b = B:GetItemQualityColor(slot.rarity)
+					local r, g, b = E:GetItemQualityColor(slot.rarity)
 					slot.itemLevel:SetTextColor(r, g, b)
 				end
 
@@ -562,17 +560,9 @@ function B:CheckSlotNewItem(slot, bagID, slotID)
 	B:NewItemGlowSlotSwitch(slot, C_NewItems_IsNewItem(bagID, slotID))
 end
 
-function B:GetItemQualityColor(rarity)
-	if rarity then
-		return GetItemQualityColor(rarity)
-	else
-		return 1, 1, 1
-	end
-end
-
-function B:UpdateSlotColors(slot, isQuestItem, questId, isActiveQuest)
-	local questColors, r, g, b, a = B.db.qualityColors and (questId or isQuestItem) and B.QuestColors[not isActiveQuest and 'questStarter' or 'questItem']
-	local qR, qG, qB = B:GetItemQualityColor(slot.rarity)
+function B:UpdateSlotColors(slot, isQuestItem, QuestID, isActiveQuest)
+	local questColors, r, g, b, a = B.db.qualityColors and (isQuestItem or QuestID) and B.QuestColors[not isActiveQuest and 'questStarter' or 'questItem']
+	local qR, qG, qB = E:GetItemQualityColor(slot.rarity)
 
 	if slot.itemLevel then
 		if B.db.itemLevelCustomColorEnable then
@@ -661,6 +651,7 @@ function B:UpdateSlot(frame, bagID, slotID)
 	local info = B:GetContainerItemInfo(bagID, slotID)
 
 	slot.name, slot.spellID, slot.itemID, slot.rarity, slot.locked, slot.readable, slot.itemLink, slot.isBound = nil, nil, info.itemID, info.quality, info.isLocked, info.isReadable, info.hyperlink, info.isBound
+	slot.isQuestItem, slot.QuestID, slot.isActiveQuest = nil, nil, nil
 	slot.isJunk = (slot.rarity and slot.rarity == ITEMQUALITY_POOR) and not info.hasNoValue
 	slot.isEquipment, slot.junkDesaturate = nil, slot.isJunk and B.db.junkDesaturate
 	slot.hasItem = (info.iconFileID and 1) or nil -- used for ShowInspectCursor
@@ -679,7 +670,6 @@ function B:UpdateSlot(frame, bagID, slotID)
 		slot.keyringTexture:SetShown(not info.iconFileID)
 	end
 
-	local isQuestItem, questId, isActiveQuest
 	if slot.itemLink then
 		local _, spellID = GetItemSpell(slot.itemLink)
 		local name, _, _, _, _, _, _, _, itemEquipLoc, _, _, itemClassID, itemSubClassID, bindType = GetItemInfo(slot.itemLink)
@@ -687,10 +677,10 @@ function B:UpdateSlot(frame, bagID, slotID)
 
 		if E.Classic then
 			slot.isBound = C_Item_IsBound(slot.itemLocation)
-			isQuestItem, isActiveQuest = B:GetItemQuestInfo(slot.itemLink, bindType, itemClassID)
+			slot.isQuestItem, slot.isActiveQuest = B:GetItemQuestInfo(slot.itemLink, bindType, itemClassID)
 		else
 			local questInfo = B:GetContainerItemQuestInfo(bagID, slotID)
-			isQuestItem, questId, isActiveQuest = questInfo.isQuestItem, questInfo.questID, questInfo.isActive
+			slot.isQuestItem, slot.QuestID, slot.isActiveQuest = questInfo.isQuestItem, questInfo.questID, questInfo.isActive
 		end
 
 		local WuE = E.Retail and bindType == 2 and C_Item_IsBoundToAccountUntilEquip(slot.itemLocation) and WARBAND_UNTIL_EQUIPPED
@@ -702,9 +692,19 @@ function B:UpdateSlot(frame, bagID, slotID)
 			slot.centerText:SetText(mult * info.stackCount)
 		end
 
+		if E.Retail then
+			slot:RegisterEvent('COLOR_OVERRIDES_RESET')
+			slot:RegisterEvent('COLOR_OVERRIDE_UPDATED')
+		end
+
 		slot:RegisterEvent('INVENTORY_SEARCH_UPDATE')
 		slot.searchOverlay:SetShown(info.isFiltered)
 	else
+		if E.Retail then
+			slot:UnregisterEvent('COLOR_OVERRIDES_RESET')
+			slot:UnregisterEvent('COLOR_OVERRIDE_UPDATED')
+		end
+
 		slot:UnregisterEvent('INVENTORY_SEARCH_UPDATE')
 		slot.searchOverlay:SetShown(false)
 	end
@@ -726,9 +726,9 @@ function B:UpdateSlot(frame, bagID, slotID)
 	end
 
 	B:UpdateItemLevel(slot)
-	B:UpdateSlotColors(slot, isQuestItem, questId, isActiveQuest)
+	B:UpdateSlotColors(slot, slot.isQuestItem, slot.QuestID, slot.isActiveQuest)
 
-	if slot.questIcon then slot.questIcon:SetShown(B.db.questIcon and ((not E.Retail and isQuestItem or questId) and not isActiveQuest)) end
+	if slot.questIcon then slot.questIcon:SetShown(B.db.questIcon and ((E.Classic and slot.isQuestItem or slot.QuestID) and not slot.isActiveQuest)) end
 	if slot.JunkIcon then slot.JunkIcon:SetShown(slot.isJunk and B.db.junkIcon) end
 	if slot.UpgradeIcon and E.Retail then B:UpdateItemUpgradeIcon(slot) end --Check if item is an upgrade and show/hide upgrade icon accordingly
 
@@ -737,7 +737,7 @@ function B:UpdateSlot(frame, bagID, slotID)
 	end
 
 	if not frame.isBank then
-		B.QuestSlots[slot] = questId or nil
+		B.QuestSlots[slot] = slot.QuestID or nil
 	end
 
 	if not slot.hasItem and not GameTooltip:IsForbidden() and GameTooltip:GetOwner() == slot then
@@ -779,13 +779,19 @@ function B:SortingFadeBags(bagFrame, sortingSlots)
 	end
 end
 
-function B:Slot_OnEvent(event)
+function B:Slot_OnEvent(event, arg1)
 	if event == 'SPELL_UPDATE_COOLDOWN' then
 		B:UpdateCooldown(self)
 	elseif event == 'INVENTORY_SEARCH_UPDATE' then
 		if self.BagID and self.SlotID then
 			local info = B:GetContainerItemInfo(self.BagID, self.SlotID)
 			self.searchOverlay:SetShown(info.isFiltered)
+		end
+	elseif event == 'COLOR_OVERRIDES_RESET' then -- no clue why a delay is needed here
+		E:Delay(0.1, B.UpdateSlotColors, B, self, self.isQuestItem, self.QuestID, self.isActiveQuest)
+	elseif event == 'COLOR_OVERRIDE_UPDATED' then
+		if self.rarity == arg1 then
+			B:UpdateSlotColors(self, self.isQuestItem, self.QuestID, self.isActiveQuest)
 		end
 	end
 end
@@ -1508,7 +1514,7 @@ function B:UpdateTokens()
 		button.currencyID = info.currencyTypesID
 		button:Show()
 
-		if button.currencyID and E.Cata then
+		if button.currencyID and E.Mists then
 			local tokens = _G.TokenFrameContainer.buttons
 			if tokens then
 				for _, token in next, tokens do
@@ -1575,6 +1581,11 @@ B.ExcludeVendors = {
 	[100995] = "Auto-Hammer"
 }
 
+function B:SkipAquiredTransmog(itemLink)
+	local appearanceID, modifiedID = C_TransmogCollection_GetItemInfo(itemLink)
+	return not appearanceID or (modifiedID and C_TransmogCollection_PlayerHasTransmogItemModifiedAppearance(modifiedID))
+end
+
 function B:GetGrays(vendor)
 	local value = 0
 
@@ -1585,9 +1596,8 @@ function B:GetGrays(vendor)
 			if itemLink and not info.hasNoValue and not B.ExcludeGrays[info.itemID] then
 				local _, _, rarity, _, _, _, _, _, _, _, itemPrice, classID, _, bindType = GetItemInfo(itemLink)
 
-				if rarity and rarity == 0 -- grays :o
-				and (classID ~= 12 or bindType ~= 4) -- Quest can be classID:12 or bindType:4
-				and (not E.Retail or not C_TransmogCollection_GetItemInfo(itemLink) or C_TransmogCollection_PlayerHasTransmogByItemInfo(itemLink)) then -- skip transmogable items
+				-- rarity:0 is grey items; Quest can be classID:12 or bindType:4
+				if (rarity and rarity == 0) and (classID ~= 12 or bindType ~= 4) and (not E.Mists or B:SkipAquiredTransmog(itemLink)) then
 					local stackCount = info.stackCount or 1
 					local stackPrice = itemPrice * stackCount
 
@@ -2515,7 +2525,7 @@ function B:ConstructContainerFrame(name, isBank)
 		f.editBox:Point('BOTTOMLEFT', f.holderFrame, 'TOPLEFT', E.Border, 4)
 		f.editBox:Point('RIGHT', f.vendorGraysButton, 'LEFT', -5, 0)
 
-		if E.Retail or E.Cata then
+		if E.Retail or E.Mists then
 			--Currency
 			f.currencyButton = CreateFrame('Frame', nil, f)
 			f.currencyButton:Point('BOTTOM', 0, -6)
@@ -2851,7 +2861,7 @@ function B:SelectBankTab(f, bagID)
 end
 
 do
-	local temp  = {}
+	local temp = {}
 	function B:Warband_FetchData()
 		wipe(temp)
 
@@ -3494,7 +3504,7 @@ function B:Initialize()
 	B.BagFrame = B:ConstructContainerFrame('ElvUI_ContainerFrame')
 	B.BankFrame = B:ConstructContainerFrame('ElvUI_BankContainerFrame', true)
 
-	if E.Cata then
+	if E.Mists then
 		B:SecureHook('BackpackTokenFrame_Update', 'UpdateTokens')
 	elseif E.Retail then
 		B:SecureHook(_G.TokenFrame, 'SetTokenWatched', 'UpdateTokensIfVisible')

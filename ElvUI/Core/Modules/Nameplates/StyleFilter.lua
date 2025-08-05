@@ -852,7 +852,7 @@ function NP:StyleFilterConditionCheck(frame, filter, trigger)
 	end
 
 	-- In Pet Battle
-	if E.Retail and (trigger.inPetBattle or trigger.notPetBattle) then
+	if (E.Retail or E.Mists) and (trigger.inPetBattle or trigger.notPetBattle) then
 		local inBattle = C_PetBattles_IsInBattle()
 		if (trigger.inPetBattle and inBattle) or (trigger.notPetBattle and not inBattle) then passed = true else return end
 	end
@@ -948,13 +948,13 @@ function NP:StyleFilterConditionCheck(frame, filter, trigger)
 	end
 
 	-- Player Vehicle
-	if (E.Retail or E.Cata) and (trigger.inVehicle or trigger.outOfVehicle) then
+	if (E.Retail or E.Mists) and (trigger.inVehicle or trigger.outOfVehicle) then
 		local inVehicle = UnitInVehicle('player')
 		if (trigger.inVehicle and inVehicle) or (trigger.outOfVehicle and not inVehicle) then passed = true else return end
 	end
 
 	-- Unit Vehicle
-	if (E.Retail or E.Cata) and (trigger.inVehicleUnit or trigger.outOfVehicleUnit) then
+	if (E.Retail or E.Mists) and (trigger.inVehicleUnit or trigger.outOfVehicleUnit) then
 		if (trigger.inVehicleUnit and frame.inVehicle) or (trigger.outOfVehicleUnit and not frame.inVehicle) then passed = true else return end
 	end
 
@@ -1153,14 +1153,17 @@ function NP:StyleFilterConditionCheck(frame, filter, trigger)
 	if trigger.known and trigger.known.spells and next(trigger.known.spells) then
 		for spell, value in pairs(trigger.known.spells) do
 			if value then -- only run if at least one is selected
-				local known
-				if trigger.known.playerSpell then
-					known = IsPlayerSpell(spell)
-				else
-					known = IsSpellKnownOrOverridesKnown(spell)
-				end
+				local name, _, _, _, _, _, spellID = E:GetSpellInfo(spell)
+				if name then -- check spell name valid
+					local known
+					if trigger.known.playerSpell then
+						known = IsPlayerSpell(spellID)
+					else
+						known = IsSpellKnownOrOverridesKnown(spellID)
+					end
 
-				if (not trigger.known.notKnown and known) or (trigger.known.notKnown and not known) then passed = true else return end
+					if (not trigger.known.notKnown and known) or (trigger.known.notKnown and not known) then passed = true else return end
+				end
 			end
 		end
 	end
@@ -1315,7 +1318,7 @@ end
 
 function NP:StyleFilterVehicleFunction(_, unit)
 	unit = unit or self.unit
-	self.inVehicle = (E.Retail or E.Cata) and UnitInVehicle(unit) or nil
+	self.inVehicle = (E.Retail or E.Mists) and UnitInVehicle(unit) or nil
 end
 
 function NP:StyleFilterTargetFunction(_, unit)

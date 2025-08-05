@@ -4,12 +4,13 @@ local ElvUF = E.oUF
 
 local unpack = unpack
 local CreateFrame = CreateFrame
-local GetSpecializationInfoByID = GetSpecializationInfoByID
-local LOCALIZED_CLASS_NAMES_MALE = LOCALIZED_CLASS_NAMES_MALE
 
 local ArenaHeader = CreateFrame('Frame', 'ArenaHeader', E.UIParent)
 
-function UF:ToggleArenaPreparationInfo(frame, show, specName, specTexture, specClass)
+function UF:ToggleArenaPreparationInfo(frame, specID)
+	local specInfo = E.SpecInfoBySpecID[specID]
+
+	local show = specInfo and not not specInfo.classFile
 	frame.forceInRange = show -- used to force unitframe range
 
 	local visibility = not show
@@ -24,10 +25,10 @@ function UF:ToggleArenaPreparationInfo(frame, show, specName, specTexture, specC
 	frame.Trinket.cd:Clear()
 
 	if E.Retail then -- during `PostUpdateArenaPreparation` this means spec class and name exist
-		frame.ArenaPrepSpec:SetFormattedText(show and '%s - %s' or '', specName, LOCALIZED_CLASS_NAMES_MALE[specClass])
+		frame.ArenaPrepSpec:SetFormattedText(show and '%s - %s' or '', show and specInfo.name or '', show and specInfo.classMale or '')
 
 		if show and frame.db and frame.db.pvpSpecIcon and frame:IsElementEnabled('PVPSpecIcon') then
-			frame.PVPSpecIcon.Icon:SetTexture(specTexture or [[INTERFACE\ICONS\INV_MISC_QUESTIONMARK]])
+			frame.PVPSpecIcon.Icon:SetTexture(specInfo.icon or [[INTERFACE\ICONS\INV_MISC_QUESTIONMARK]])
 			frame.PVPSpecIcon.Icon:SetTexCoord(unpack(E.TexCoords))
 			frame.PVPSpecIcon:Show()
 		end
@@ -41,12 +42,7 @@ function UF:PostUpdateArenaFrame(event)
 end
 
 function UF:PostUpdateArenaPreparation(_, specID)
-	local _, specName, specTexture, specClass
-	if specID and specID > 0 then
-		_, specName, _, specTexture, _, specClass = GetSpecializationInfoByID(specID)
-	end
-
-	UF:ToggleArenaPreparationInfo(self and self.__owner, specClass and specName, specName, specTexture, specClass)
+	UF:ToggleArenaPreparationInfo(self and self.__owner, specID)
 end
 
 function UF:Construct_ArenaFrames(frame)

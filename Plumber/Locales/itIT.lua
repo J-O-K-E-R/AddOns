@@ -18,6 +18,8 @@ L["currency-2916"] = "Runico";
 L["currency-2917"] = "Dorato";
 
 L["Season Maximum Colon"] = "Limite stagionale:";
+L["Item Changed"] = "stato cambiato";   --CHANGED_OWN_ITEM
+L["Completed CHETT List"] = "Lista C.I.H.T.T. Completa";
 
 
 --Map Pin Filter Name (name should be plural)

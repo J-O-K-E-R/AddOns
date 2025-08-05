@@ -1,4 +1,3 @@
--- Generated from CurseForge on Tue Apr 22 08:18:24 UTC 2025
 local ns = select(2, ...) ---@class ns @The addon namespace.
 
 if ns:IsSameLocale("esES") then
@@ -8,7 +7,7 @@ if ns:IsSameLocale("esES") then
 
 	L.LOCALE_NAME = "esES"
 
-L["ALLOW_IN_LFD"] = "Permitir en buscador de mazmorras"
+	L["ALLOW_IN_LFD"] = "Permitir en buscador de mazmorras"
 L["ALLOW_IN_LFD_CLASSIC"] = "Permitir en Buscador de grupos"
 L["ALLOW_IN_LFD_CLASSIC_DESC"] = "Haga clic con el botón derecho del ratón en los grupos o candidatos del Buscador de grupos para copiar la URL del perfil de Raider.IO."
 L["ALLOW_IN_LFD_DESC"] = "Click derecho en los grupos o aplicantes en el buscador de mazmorras para copiar la URL de su perfil de Raider.IO"
@@ -86,6 +85,8 @@ L["DUNGEON_SHORT_NAME_DHT"] = "Arboleda Corazón Oscuro - DHT"
 L["DUNGEON_SHORT_NAME_DOS"] = "El Otro Lado - DOS"
 L["DUNGEON_SHORT_NAME_EB"] = "El Vergel Eterno - EB"
 --[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_EDA"] = ""--]] 
+--[[Translation missing --]]
 --[[ L["DUNGEON_SHORT_NAME_EOA"] = ""--]] 
 L["DUNGEON_SHORT_NAME_FALL"] = [=[Amanecer: Caída de Galakrond - FALL
 ]=]
@@ -143,6 +144,10 @@ L["DUNGEON_SHORT_NAME_YARD"] = "Mechagon: Desguace - YARD"
 L["ENABLE_AUTO_FRAME_POSITION"] = "Posicionar automáticamente el marco de perfil de RaiderIO"
 L["ENABLE_AUTO_FRAME_POSITION_DESC"] = "Fija la ventana emergente de perfil de M+ junto al marco del buscador de grupos o la ventana emergente de jugador."
 L["ENABLE_DEBUG_MODE_RELOAD"] = "Estás activando el modo depuración. Esto es solo para fines de pruebas y desarrollo, y puede incurrir en un aumento del uso de memoria. Haz clic en confirmar para recargar la interfaz."
+--[[Translation missing --]]
+--[[ L["ENABLE_LFG_EXPORT_BUTTON"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["ENABLE_LFG_EXPORT_BUTTON_DESC"] = ""--]] 
 L["ENABLE_LOCK_PROFILE_FRAME"] = "Bloquear el marco de perfil de RaiderIO"
 L["ENABLE_LOCK_PROFILE_FRAME_DESC"] = "Evita que se pueda desplazar el marco de perfil de M+. No tiene efecto si el marco de perfil de M+ está configurado para posicionarse automáticamente."
 L["ENABLE_NO_SCORE_COLORS"] = "Desactivar colores de puntuación"
@@ -194,6 +199,8 @@ L["MINIMAP_SHORTCUT_LOCK"] = "Bloquear Botón"
 L["MINIMAP_SHORTCUT_MINIMAP_ENABLE"] = "Habilitar el botón del minimapa"
 L["MINIMAP_SHORTCUT_MINIMAP_ENABLE_DESC"] = "Habilitar para mostrar el icono alrededor del minimapa."
 L["MINIMAP_SHORTCUT_MINIMAP_LOCK"] = "Bloquear botón del minimapa"
+--[[Translation missing --]]
+--[[ L["MISC_SETTINGS"] = ""--]] 
 L["MODULE_AMERICAS"] = "América"
 L["MODULE_EUROPE"] = "Europa"
 L["MODULE_KOREA"] = "Corea"
@@ -419,6 +426,18 @@ L["RAID_BOSS_FSOD_7"] = "Guardián de los Primeros"
 L["RAID_BOSS_FSOD_8"] = "Escriba del destino Roh-Kalo"
 L["RAID_BOSS_FSOD_9"] = "Kel'Thuzad"
 --[[Translation missing --]]
+--[[ L["RAID_BOSS_HOF_1"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_HOF_2"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_HOF_3"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_HOF_4"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_HOF_5"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_HOF_6"] = ""--]] 
+--[[Translation missing --]]
 --[[ L["RAID_BOSS_ICC_1"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["RAID_BOSS_ICC_10"] = ""--]] 
@@ -458,6 +477,34 @@ L["RAID_BOSS_FSOD_9"] = "Kel'Thuzad"
 --[[ L["RAID_BOSS_LOU_7"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["RAID_BOSS_LOU_8"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_MFO_1"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_MFO_2"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_MFO_3"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_MFO_4"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_MFO_5"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_MFO_6"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_MFO_7"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_MFO_8"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_MSV_1"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_MSV_2"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_MSV_3"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_MSV_4"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_MSV_5"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_MSV_6"] = ""--]] 
 L["RAID_BOSS_NP_1"] = "Ulgrax"
 L["RAID_BOSS_NP_2"] = "Bloodbound Horror"
 L["RAID_BOSS_NP_3"] = "Sikran"
@@ -488,6 +535,14 @@ L["RAID_BOSS_SOD_6"] = "Forjapenas Raznal"
 L["RAID_BOSS_SOD_7"] = "Guardián de los Primeros"
 L["RAID_BOSS_SOD_8"] = "Escriba del destino Roh-Kalo"
 L["RAID_BOSS_SOD_9"] = "Kel'Thuzad"
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_ToES_1"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_ToES_2"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_ToES_3"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_ToES_4"] = ""--]] 
 L["RAID_BOSS_TOTFW_1"] = "El Cónclave del Viento"
 L["RAID_BOSS_TOTFW_2"] = "Al'Akir"
 --[[Translation missing --]]
@@ -526,10 +581,18 @@ L["RAID_DIFFICULTY_SUFFIX_NORMAL25"] = "N25"
 L["RAID_DS"] = "Alma de Dragón - DS"
 L["RAID_ENCOUNTERS_DEFEATED_TITLE"] = "Encuentros de banda derrotados"
 L["RAID_FL"] = "Tierras de Fuego - FL"
+--[[Translation missing --]]
+--[[ L["RAID_HOF"] = ""--]] 
 L["RAID_ICC"] = "Ciudadela de la Corona de Hielo - ICC"
 L["RAID_LOU"] = "Liberación de Minahonda - LOU"
+--[[Translation missing --]]
+--[[ L["RAID_MFO"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_MSV"] = ""--]] 
 L["RAID_NP"] = "Palacio Nerub'ar - NP"
 L["RAID_RS"] = "El Sagrario Rubí - RS"
+--[[Translation missing --]]
+--[[ L["RAID_ToES"] = ""--]] 
 L["RAID_TOTFW"] = "Trono de los Cuatro Vientos - TOTFW"
 L["RAIDERIO_AVERAGE_PLAYER_SCORE"] = "Puntuación media de +%s en tiempo"
 L["RAIDERIO_BEST_RUN"] = "Mejor resultado M+ de Raider.IO"
@@ -664,5 +727,6 @@ L["WARNING_LOCK_POSITION_FRAME_AUTO"] = "RaiderIO: primero debes deshabilitar el
 L["WARNING_RWF_MODE_ENABLE"] = "|cffFFFFFF%s|r Race World First.-Está activado. Puedes desactivarlo introduciendo |cffFFFFFF/raiderio rwf|r."
 L["WIPE_RWF_MODE_BUTTON"] = "Wipe"
 L["WIPE_RWF_MODE_BUTTON_TOOLTIP"] = "Haga clic para borrar el Registro del almacenamiento. Esto hará que la interfaz se recargue."
+
 
 end

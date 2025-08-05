@@ -8,7 +8,6 @@ local unpack = unpack
 
 local CreateFrame = CreateFrame
 local GetAuctionSellItemInfo = GetAuctionSellItemInfo
-local GetItemQualityColor = C_Item.GetItemQualityColor
 
 function S:Blizzard_AuctionUI()
 	if not (E.private.skins.blizzard.enable and E.private.skins.blizzard.auctionhouse) then return end
@@ -217,12 +216,8 @@ function S:Blizzard_AuctionUI()
 			normal:SetInside()
 
 			local _, _, _, quality = GetAuctionSellItemInfo()
-			if quality and quality > 1 then
-				local r, g, b = GetItemQualityColor(quality)
-				button:SetBackdropBorderColor(r, g, b)
-			else
-				button:SetBackdropBorderColor(unpack(E.media.bordercolor))
-			end
+			local r, g, b = E:GetItemQualityColor(quality and quality > 1 and quality)
+			button:SetBackdropBorderColor(r, g, b)
 		else
 			button:SetBackdropBorderColor(unpack(E.media.bordercolor))
 		end
@@ -279,11 +274,11 @@ function S:Blizzard_AuctionUI()
 	for _, Frame in pairs({_G.AuctionFrameBrowse, _G.AuctionFrameAuctions}) do
 		Frame.LeftBackground = CreateFrame('Frame', nil, Frame)
 		Frame.LeftBackground:SetTemplate('Transparent')
-		Frame.LeftBackground:SetFrameLevel(Frame:GetFrameLevel() - 1)
+		Frame.LeftBackground:OffsetFrameLevel(-1, Frame)
 
 		Frame.RightBackground = CreateFrame('Frame', nil, Frame)
 		Frame.RightBackground:SetTemplate('Transparent')
-		Frame.RightBackground:SetFrameLevel(Frame:GetFrameLevel() - 1)
+		Frame.RightBackground:OffsetFrameLevel(-1, Frame)
 	end
 
 	local AuctionFrameAuctions = _G.AuctionFrameAuctions
@@ -303,7 +298,7 @@ function S:Blizzard_AuctionUI()
 	local AuctionFrameBid = _G.AuctionFrameBid
 	AuctionFrameBid.Background = CreateFrame('Frame', nil, AuctionFrameBid)
 	S:HandleFrame(AuctionFrameBid.Background, true, nil, 22, -72, 66, 34)
-	AuctionFrameBid.Background:SetFrameLevel(AuctionFrameBid:GetFrameLevel() - 1)
+	AuctionFrameBid.Background:OffsetFrameLevel(-1, AuctionFrameBid)
 end
 
 S:AddCallbackForAddon('Blizzard_AuctionUI')

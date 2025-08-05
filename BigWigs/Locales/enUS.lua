@@ -1,4 +1,7 @@
-local L = BigWigsAPI:NewLocale("BigWigs", "enUS")
+local _, addonTbl = ...
+local L = addonTbl.API:NewLocale("BigWigs", "enUS")
+
+L.tempNew = "NEW: You can now type |cFFFFFFFF/bwtemp|r to see the Mythic+ keystones of your party members."
 
 -- Core.lua
 L.berserk = "Berserk"
@@ -17,19 +20,21 @@ L.adds = "Adds"
 L.adds_desc = "Enable functions related to the various adds that will spawn during the boss encounter."
 L.health = "Health"
 L.health_desc = "Enable functions for displaying various health information during the boss encounter."
+L.energy = "Energy"
+L.energy_desc = "Enable functions for displaying information about the various energy levels during the boss encounter."
 
 L.already_registered = "|cffff0000WARNING:|r |cff00ff00%s|r (|cffffff00%s|r) already exists as a module in BigWigs, but something is trying to register it again. This usually means you have two copies of this module in your addons folder due to some addon updater failure. It is recommended that you delete any BigWigs folders you have and then reinstall it from scratch."
 
 -- Loader / Options.lua
 L.okay = "Okay"
-L.officialRelease = "You are running an official release of BigWigs %s (%s)"
-L.alphaRelease = "You are running an ALPHA RELEASE of BigWigs %s (%s)"
+L.officialRelease = "You are running an official release of BigWigs %s (%s)."
+L.alphaRelease = "You are running an ALPHA RELEASE of BigWigs %s (%s)."
 L.sourceCheckout = "You are running a source checkout of BigWigs %s directly from the repository."
-L.littlewigsOfficialRelease = "You are running an official release of LittleWigs (%s)"
-L.littlewigsAlphaRelease = "You are running an ALPHA RELEASE of LittleWigs (%s)"
+L.littlewigsOfficialRelease = "You are running an official release of LittleWigs (%s)."
+L.littlewigsAlphaRelease = "You are running an ALPHA RELEASE of LittleWigs (%s)."
 L.littlewigsSourceCheckout = "You are running a source checkout of LittleWigs directly from the repository."
 L.guildRelease = "You are running version %d of BigWigs made for your guild, based on version %d of the official addon."
-L.getNewRelease = "Your BigWigs is old (/bwv) but you can easily update it using the CurseForge Client. Alternatively, you can update manually from curseforge.com or wowinterface.com."
+L.getNewRelease = "Your BigWigs is old (/bwv) but you can easily update it using the CurseForge Client. Alternatively, you can update manually from curseforge.com or addons.wago.io."
 L.warnTwoReleases = "Your BigWigs is 2 releases out of date! Your version may have bugs, missing features, or completely incorrect timers. It is strongly recommended you update."
 L.warnSeveralReleases = "|cffff0000Your BigWigs is %d releases out of date!! We HIGHLY recommend you update to prevent syncing issues with other players!|r"
 L.warnOldBase = "You are using a guild version of BigWigs (%d), but your base version (%d) is %d releases out of date. This may cause issues."
@@ -53,6 +58,8 @@ L.removeAddOn = "Please remove '|cFF436EEE%s|r' as it's been replaced by '|cFF43
 L.alternativeName = "%s (|cFF436EEE%s|r)"
 L.outOfDateContentPopup = "WARNING!\nYou updated |cFF436EEE%s|r but you also need to update the main |cFF436EEEBigWigs|r addon.\nIgnoring this will result in broken functionality."
 L.outOfDateContentRaidWarning = "|cFF436EEE%s|r requires version %d of the main |cFF436EEEBigWigs|r addon to function correctly, but you're on version %d."
+L.addOnLoadFailedWithReason = "BigWigs failed to load the addon |cFF436EEE%s|r with reason %q. Tell the BigWigs devs!"
+L.addOnLoadFailedUnknownError = "BigWigs encountered an error when loading the addon |cFF436EEE%s|r. Tell the BigWigs devs!"
 
 L.expansionNames = {
 	"Classic", -- Classic
@@ -255,7 +262,63 @@ L.N25 = "Normal 25"
 L.H10 = "Heroic 10"
 L.H25 = "Heroic 25"
 
+-----------------------------------------------------------------------
+-- TOOLS
+-----------------------------------------------------------------------
 
+L.tools = "Tools"
+L.toolsDesc = "BigWigs provides various tools or \"quality of life\" features to speed up and simplify the process of fighting bosses. Expand the menu by clicking the |cFF33FF99+|r icon to see them all."
+L.youAreInCombat = "You cannot do that in combat."
+
+-----------------------------------------------------------------------
+-- AutoRole.lua
+--
+
+L.autoRoleTitle = "Auto Role"
+L.autoRoleExplainer = "Whenever you join a group, or you change your talent specialization whilst being in a group, BigWigs will automatically adjust your group role (Tank, Healer, Damager) accordingly.\n\n"
+
+-----------------------------------------------------------------------
+-- Keystones.lua
+--
+
+L.keystoneTitle = "BigWigs Keystones"
+L.keystoneHeaderParty = "Party"
+L.keystoneRefreshParty = "Refresh Party"
+L.keystoneHeaderGuild = "Guild"
+L.keystoneRefreshGuild = "Refresh Guild"
+L.keystoneLevelTooltip = "Keystone level: |cFFFFFFFF%s|r"
+L.keystoneMapTooltip = "Dungeon: |cFFFFFFFF%s|r"
+L.keystoneRatingTooltip = "Mythic+ rating: |cFFFFFFFF%d|r"
+L.keystoneHiddenTooltip = "The player has chosen to hide this information."
+L.keystoneTabOnline = "Online"
+L.keystoneTabAlts = "Alts"
+L.keystoneTabTeleports = "Teleports"
+L.keystoneHeaderMyCharacters = "My Characters"
+
+-- It doesn't really matter what you call it as long as it's recognizable and limited to ~6 characters
+L.keystoneShortName_TheRookery = "ROOK"
+L.keystoneShortName_DarkflameCleft = "DFC"
+L.keystoneShortName_PrioryOfTheSacredFlame = "PRIORY"
+L.keystoneShortName_CinderbrewMeadery = "BREW"
+L.keystoneShortName_OperationFloodgate = "FLOOD"
+L.keystoneShortName_TheaterOfPain = "TOP"
+L.keystoneShortName_TheMotherlode = "ML"
+L.keystoneShortName_OperationMechagonWorkshop = "WORK"
+L.keystoneShortName_EcoDomeAldani = "ALDANI"
+L.keystoneShortName_HallsOfAtonement = "HOA"
+L.keystoneShortName_AraKaraCityOfEchoes = "ARAK"
+L.keystoneShortName_TazaveshSoleahsGambit = "GAMBIT"
+L.keystoneShortName_TazaveshStreetsOfWonder = "STREET"
+L.keystoneShortName_TheDawnbreaker = "DAWN"
+
+-----------------------------------------------------------------------
+-- LFGTimer.lua
+--
+
+L.lfgTimerTitle = "LFG Timer"
+L.lfgTimerExplainer = "Whenever the LFG queue popup appears, BigWigs will create a timer bar telling you how long you have to accept the queue.\n\n"
+L.lfgUseMaster = "Play LFG ready sound on 'Master' audio channel"
+L.lfgUseMasterDesc = "When this option is enabled the LFG ready sound will play over the 'Master' audio channel. If you disable this option it will play over the '%s' audio channel instead."
 
 -----------------------------------------------------------------------
 -- PLUGINS
@@ -275,6 +338,7 @@ L.sizeDesc = "Normally you set the size by dragging the anchor. If you need an e
 L.fontSizeDesc = "Adjust the font size using the slider or type the value into the box which has a much higher maximum of 200."
 L.disabled = "Disabled"
 L.disableDesc = "You are about to disable the feature '%s' which is |cffff4411not recommended|r.\n\nAre you sure you want to do this?"
+L.keybinding = "Keybinding"
 
 -- Anchor Points / Grow Directions
 L.UP = "Up"
@@ -682,6 +746,8 @@ L.sendPull = "Sending a pull timer to your group."
 L.wrongPullFormat = "Invalid pull timer. A correct example is: /pull 5"
 L.countdownBegins = "Begin Countdown"
 L.countdownBegins_desc = "Choose how much time should be remaining on the pull timer (in seconds) when the countdown begins."
+L.pullExplainer = "\n|cFF33FF99/pull|r will start a normal pull timer.\n|cFF33FF99/pull 7|r will start a 7 second pull timer, you can use any number.\nAlternatively, you can also set a keybinding below.\n\n"
+L.pullKeybindingDesc = "Choose a keybinding for starting a pull timer."
 
 -----------------------------------------------------------------------
 -- RaidIcon.lua

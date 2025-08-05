@@ -1,10 +1,25 @@
-if false then return end;
+local M = {
+    AuraWather = false,
+    Prof = false,
+    CurrencyWatcher = false,
+    POI = false,
+    Quest = true,
+};
+
 
 local _, addon = ...
+local API = addon.API;
 local ipairs = ipairs;
 
 
-do  --Aura Watcher
+local function IsEnabled(key)
+    if M[key] then
+        API.PrintMessage("DevTool: "..key.." On");
+        return true
+    end
+end
+
+if IsEnabled("AuraWather") then  --Aura Watcher
     local GetAuraDataByIndex = C_UnitAuras.GetAuraDataByIndex;
     local GetAuraDataByAuraInstanceID = C_UnitAuras.GetAuraDataByAuraInstanceID;
     local GetSpellInfo = C_Spell.GetSpellInfo;
@@ -101,7 +116,7 @@ do  --Aura Watcher
     end
 end
 
-do  --Profession Specialization
+if IsEnabled("Prof") then  --Profession Specialization
     local function GetPrimaryProfessionID(index)
         local prof = select(index, GetProfessions());
         if prof then
@@ -174,7 +189,7 @@ do  --Profession Specialization
     end
 end
 
-do  --Currency Watcher
+if IsEnabled("CurrencyWatcher") then  --Currency Watcher
     local GetCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo;
     local EL = CreateFrame("Frame");
     local GainSourceName = {};
@@ -197,4 +212,53 @@ do  --Currency Watcher
 
     EL:RegisterEvent("CURRENCY_DISPLAY_UPDATE");
     EL:SetScript("OnEvent", EL.OnEvent);
+end
+
+if IsEnabled("POI") then  --AreaPOI
+    function YeetPOI(uiMapID)
+        if not uiMapID then
+            uiMapID = C_Map.GetBestMapForUnit("player");
+        end
+
+        local areaPOIs = C_AreaPoiInfo.GetAreaPOIForMap(uiMapID);
+        local delvePOIs = C_AreaPoiInfo.GetDelvesForMap(uiMapID);
+        if delvePOIs and #delvePOIs > 0 then
+            for _, areaPoiID in ipairs(delvePOIs) do
+                table.insert(areaPOIs, areaPoiID);
+            end
+        end
+        local info;
+
+        for i, areaPoiID in ipairs(areaPOIs) do
+            info = C_AreaPoiInfo.GetAreaPOIInfo(uiMapID, areaPoiID);
+            print(i, areaPoiID, info.name);
+            if info.iconWidgetSet then
+                print("iconWidgetSet:", info.iconWidgetSet);
+            end
+        end
+    end
+
+    function YeetScriptedAnimationEffectInfo(effectID)
+        local effects = {};
+        local effectDescriptions = C_ScriptedAnimations.GetAllScriptedAnimationEffects();
+        local count = #effectDescriptions;
+        for i = 1, count do
+            if effectID == effectDescriptions[i].id then
+               return effectDescriptions[i]
+            end
+        end
+    end
+end
+
+if IsEnabled("Quest") then
+    local EL = CreateFrame("Frame");
+
+    EL:RegisterEvent("QUEST_ACCEPTED");
+    EL:RegisterEvent("QUEST_TURNED_IN");
+
+    EL:SetScript("OnEvent", function(self, event, ...)
+        local questID = ...
+        print(event, questID, API.GetQuestName(questID));
+    end);
+
 end

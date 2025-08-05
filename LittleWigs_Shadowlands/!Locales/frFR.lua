@@ -31,16 +31,17 @@ end
 
 L = BigWigs:NewBossLocale("Halls of Atonement Trash", "frFR")
 if L then
-	L.houndmaster = "Maître-chien dépravé"
-	L.gargon = "Gargon vicieux"
-	L.loyalstoneborn = "Vive-pierre loyal"
-	L.darkblade = "Sombrelame dépravée"
-	L.obliterator = "Oblitérateur dépravé"
-	L.collector = "Collectrice dépravée"
-	L.shard = "Eclat d'Halkias"
-	L.reaver = "Saccageuse vive-pierre"
-	L.slasher = "Balafreur vive-pierre"
-	L.sigar = "Inquisiteur Sigor"
+	L.depraved_houndmaster = "Maître-chien dépravé"
+	L.vicious_gargon = "Gargon vicieux"
+	L.loyal_stoneborn = "Vive-pierre loyal"
+	L.depraved_darkblade = "Sombrelame dépravée"
+	L.depraved_obliterator = "Oblitérateur dépravé"
+	L.depraved_collector = "Collectrice dépravée"
+	L.stoneborn_slasher = "Balafreur vive-pierre"
+	L.shard_of_halkias = "Eclat d'Halkias"
+	L.stoneborn_reaver = "Saccageuse vive-pierre"
+	L.stoneborn_eviscerator = "Eviscératrice vive-pierre"
+	L.inquisitor_sigar = "Inquisiteur Sigor"
 end
 
 -- Mists of Tirna Scithe
@@ -148,11 +149,6 @@ end
 
 -- Tazavesh, the Veiled Market
 
-L = BigWigs:NewBossLocale("Zo'phex the Sentinel", "frFR")
-if L then
-	L.zophex_warmup_trigger = "Toute contrebande… sera saisie…"
-end
-
 L = BigWigs:NewBossLocale("The Grand Menagerie", "frFR")
 if L then
 	L.achillite_warmup_trigger = "Des bêtes enragées vous pourrissent la vie ? Nous avons la solution !"
@@ -170,8 +166,14 @@ if L then
 	L.add_wave_killed = "Vague d'adds tuée (%d/%d)"
 end
 
+L = BigWigs:NewBossLocale("So'leah", "frFR")
+if L then
+	L.group = "GROUPE"
+end
+
 L = BigWigs:NewBossLocale("Tazavesh Trash", "frFR")
 if L then
+	L.zophex_warmup_trigger = "Toute contrebande… sera saisie…"
 	--L.menagerie_warmup_trigger = "Now for the item you have all been awaiting! The allegedly demon-cursed Edge of Oblivion!"
 	L.soazmi_warmup_trigger = "Pardonnez notre intrusion, So’leah. J’espère que nous ne vous dérangeons pas."
 	L.portal_authority = "Garde des portails de Tazavesh"
@@ -191,29 +193,37 @@ if L then
 		["Fleur pâle"] = 53267,
 		["Couteau carmin"] = 53268
 	}
-
+	--L.gatewarden_zomazz = "Gatewarden Zo'mazz"
+	--L.customs_security = "Customs Security"
 	L.interrogation_specialist = "Spécialiste en interrogatoire"
 	L.portalmancer_zohonn = "Portomancien Zo'honn"
-	L.armored_overseer_tracker_zokorss = "Surveillant cuirassé / Pisteur Zo'korss"
+	L.armored_overseer = "Surveillant cuirassé"
+	L.support_officer = "Agent de soutien"
 	L.tracker_zokorss = "Pisteur Zo'korss"
 	L.ancient_core_hound = "Ancien chien du magma"
 	L.enraged_direhorn = "Navrecorne enragé"
+	--L.cartel_skulker = "Cartel Skulker"
+	--L.cartel_wiseguy = "Cartel Wiseguy"
 	L.cartel_muscle = "Gros-bras du cartel"
 	L.cartel_smuggler = "Contrebandier du cartel"
-	L.support_officer = "Agent de soutien"
 	L.defective_sorter = "Trieur défectueux"
+	--L.overloaded_mailemental = "Overloaded Mailemental"
+	--L.post_worker = "P.O.S.T. Worker"
+	--L.bazaar_overseer = "Bazaar Overseer"
 	L.market_peacekeeper = "Garde-paix du marché"
 	L.veteran_sparkcaster = "Embraseur vétéran"
 	L.commerce_enforcer = "Massacreur du marché"
-	L.commerce_enforcer_commander_zofar = "Massacreur du marché / Commandant Zo'far"
 	L.commander_zofar = "Commandant Zo'far"
 
 	L.tazavesh_soleahs_gambit = "Tazavesh : le stratagème de So’leah"
 	L.murkbrine_scalebinder = "Lieur d'écailles bourbe-sel"
+	L.murkbrine_fishmancer = "Pescomancien bourbe-sel"
 	L.murkbrine_shellcrusher = "Brise-conque bourbe-sel"
 	L.coastwalker_goliath = "Goliath marche-côte"
 	L.stormforged_guardian = "Gardien forge-foudren"
 	L.burly_deckhand = "Matelot costaud"
+	L.hourglass_tidesage = "Eaugure du Sablier"
+	L.corsair_officer = "Officier corsaire"
 	L.adorned_starseer = "Stellomancien distingué"
 	L.focused_ritualist = "Ritualiste concentré"
 	L.devoted_accomplice = "Complice loyal"

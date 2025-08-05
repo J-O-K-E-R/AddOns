@@ -318,6 +318,14 @@ function RSConfigDB.SetScanningWorldMapVignettes(value)
 	private.db.general.scanWorldmapVignette = value
 end
 
+function RSConfigDB.IsScanningWithMacro()
+	return private.db.general.scanWithMacro
+end
+
+function RSConfigDB.SetScanningWithMacro(value)
+	private.db.general.scanWithMacro = value
+end
+
 function RSConfigDB.IsIgnoringCompletedEntities()
 	return private.db.general.ignoreCompletedEntities
 end
@@ -356,22 +364,6 @@ end
 
 function RSConfigDB.SetScanningChatAlerts(value)
 	private.db.general.scanChatAlerts = value
-end
-
-function RSConfigDB.IsScanningTargetUnit()
-	return private.db.general.scanTargetUnit
-end
-
-function RSConfigDB.SetScanningTargetUnit(value)
-	private.db.general.scanTargetUnit = value
-end
-
-function RSConfigDB.IsMutingTargetUnitSound()
-	return private.db.general.muteTargetUnit
-end
-
-function RSConfigDB.SetMutingTargetUnitSound(value)
-	private.db.general.muteTargetUnit = value
 end
 
 ---============================================================================
@@ -414,7 +406,7 @@ function RSConfigDB.IsNpcFiltered(npcID)
 				end
 			end
 		-- Also filter one time kill rare NPCs at Khaz Algar or rare NPCs without quest (monozone)
-		elseif (RSNpcDB.IsInternalNpcMonoZone(npcID) and RSMapDB.GetContinentOfMap(npcInfo.zoneID) == RSConstants.KHAZ_ALGAR and not RSUtils.Contains(RSConstants.KHAZ_ALGAR_NPCS_MOUNTS, npcID) and not RSUtils.Contains(RSConstants.TWW_MAPS_WITHOUT_REP, npcInfo.zoneID)) then
+		elseif (RSNpcDB.IsInternalNpcMonoZone(npcID) and RSMapDB.GetContinentOfMap(npcInfo.zoneID) == RSConstants.KHAZ_ALGAR and not RSUtils.Contains(RSConstants.IGNORE_NPCS_REPUTATION, npcID) and not RSUtils.Contains(RSConstants.TWW_MAPS_WITHOUT_REP, npcInfo.zoneID)) then
 			if (npcInfo.questID) then
 				for _, questID in ipairs(npcInfo.questID) do
 					if (C_QuestLog.IsQuestFlaggedCompletedOnAccount(questID)) then
@@ -425,7 +417,7 @@ function RSConfigDB.IsNpcFiltered(npcID)
 				return true
 			end
 		-- Also filter one time kill rare NPCs at Khaz Algar or rare NPCs without quest (multizone)
-		elseif (RSNpcDB.IsInternalNpcMultiZone(npcID) and not RSUtils.Contains(RSConstants.KHAZ_ALGAR_NPCS_MOUNTS, npcID)) then
+		elseif (RSNpcDB.IsInternalNpcMultiZone(npcID) and not RSUtils.Contains(RSConstants.IGNORE_NPCS_REPUTATION, npcID)) then
 			local khazAlgar = false
 			for mapID, _ in pairs (npcInfo.zoneID) do
 				if (RSMapDB.GetContinentOfMap(mapID) == RSConstants.KHAZ_ALGAR and not RSUtils.Contains(RSConstants.TWW_MAPS_WITHOUT_REP, mapID)) then

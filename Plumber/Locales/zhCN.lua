@@ -1,9 +1,14 @@
-﻿if not (GetLocale() == "zhCN") then return end;
+﻿--
 
-
+if not (GetLocale() == "zhCN") then return end;
 
 local _, addon = ...
 local L = addon.L;
+
+
+--Globals
+BINDING_HEADER_PLUMBER = "Plumber插件";
+BINDING_NAME_TOGGLE_PLUMBER_LANDINGPAGE = "打开/关闭资料片概要";   --Show/hide Expansion Summary UI
 
 
 --Module Control Panel
@@ -32,6 +37,8 @@ L["Module Category NPC Interaction"] = "NPC 交互";
 L["Module Category Tooltip"] = "鼠标提示";   --Additional Info on Tooltips
 --- order: 4
 L["Module Category Class"] = "职业";   --Player Class (rogue, paladin...)
+--- order: 5
+L["Module Category Reduction"] = "做减法";   --Reduce UI elements
 
 L["Module Category Dragonflight"] = "巨龙时代";
 L["Module Category Plumber"] = "Plumber";   --This addon's name
@@ -201,6 +208,7 @@ L["Num Items In Bank Format"] = "银行: |cffffffff%d|r";
 L["Num Items In Bag Format"] = "背包: |cffffffff%d|r";
 L["Number Thousands"] = "K";
 L["Number Millions"] = "M";
+L["Questionable Item Count Tooltip"] = "受技术所限该物品数量可能不准确。";
 
 
 --Landing Page (Expansion Summary Minimap)
@@ -234,6 +242,8 @@ L["ModuleName Delves_Dashboard"] = "地下堡: 每周奖励";
 L["ModuleDescription Delves_Dashboard"] = "在地下堡赛季界面显示宏伟宝库和鎏金藏匿物的进度。";
 L["Delve Crest Stash No Info"] = "你所在区域无法获取该信息。";
 L["Delve Crest Stash Requirement"] = "仅在11层丰裕地下堡出现。";
+L["Overcharged Delve"] = "超载地下堡";
+L["Delves History Requires AddOn"] = "地下堡记录由Plumber插件在本地保存。";
 
 
 --WoW Anniversary
@@ -274,8 +284,8 @@ L["Click To Disable"] = "点击禁用";
 
 
 --NameplateWidget
-L["ModuleName NameplateWidget"] = "姓名版: 钥焰";
-L["ModuleDescription NameplateWidget"] = "在钥焰的姓名版进度条上显示你拥有的光耀残渣的数量。";
+L["ModuleName NameplateWidget"] = "姓名板: 钥焰";
+L["ModuleDescription NameplateWidget"] = "在钥焰的姓名板进度条上显示你拥有的光耀残渣的数量。";
 
 
 --PartyInviterInfo
@@ -320,6 +330,15 @@ L["ModuleName MinimapMouseover"] = "小地图目标";
 L["ModuleDescription MinimapMouseover"] = "按住Alt键并点击小地图上的一个生物来尝试将其设为你的目标。".."\n\n|cffd4641c- " ..L["Restriction Combat"].."|r";
 
 
+--BossBanner
+L["ModuleName BossBanner"] = "首领拾取通知";
+L["ModuleDescription BossBanner"] = "修改当你或者你队友获得首领掉落物品时出现在屏幕上方的通知。\n\n- 单刷时隐藏\n\n- 仅显示稀有物品";
+L["BossBanner Hide When Solo"] = "单刷时隐藏";
+L["BossBanner Hide When Solo Tooltip"] = "如果你队伍里没有其他玩家，隐藏此通知。";
+L["BossBanner Valuable Item Only"] = "仅显示稀有物品";
+L["BossBanner Valuable Item Only Tooltip"] = "仅显示坐骑、职业套装兑换物和地下城手册中标注为稀有掉落的物品。";
+
+
 --Loot UI
 L["ModuleName LootUI"] = "拾取窗口";
 L["ModuleDescription LootUI"] = "替换默认的拾取窗口并提供以下功能：\n\n- 快速拾取所有物品\n\n- 修复自动拾取有时失效的问题\n\n- 手动拾取时显示“全部拾取”按钮";
@@ -350,6 +369,11 @@ L["LootUI Option Use Default UI"] = "使用默认拾取窗口";
 L["LootUI Option Use Default UI Tooltip"] = "使用WoW默认的拾取窗口。\n\n|cffff4800勾选此选项会使以上所有选项无效。|r";
 L["LootUI Option Background Opacity"] = "不透明度";
 L["LootUI Option Background Opacity Tooltip"] = "改变通知模式下背景的不透明度。\n\n此选项不影响手动拾取模式。";
+L["LootUI Option Custom Quality Color"] = "使用自定义品质颜色";
+L["LootUI Option Custom Quality Color Tooltip"] = "使用你在 游戏设置> 辅助功能> 颜色 中设置的颜色。"
+L["LootUI Option Grow Direction"] = "向上生长";
+L["LootUI Option Grow Direction Tooltip 1"] = "勾选时：窗口左下角位置保持不变，新提示出现在旧提示的上方。";
+L["LootUI Option Grow Direction Tooltip 2"] = "未勾选时：窗口左上角位置保持不变，新提示出现在旧提示的下方。";
 
 
 --Quick Slot For Third-party Dev
@@ -388,7 +412,37 @@ L["Drawer Option Update Frequently"] = "频繁更新";
 L["Drawer Option Update Frequently Tooltip"] = "在你背包或法术书发生变化时更新所有收纳宏。启用此选项可能会略微增加运算量。";
 
 
+--New Expansion Landing Page
+L["ModuleName NewExpansionLandingPage"] = "资料片概要";
+L["ModuleDescription NewExpansionLandingPage"] = "一个显示声望、每周事件和团本进度的界面。你可从以下方式访问：\n\n- 点击小地图上的卡兹阿加概要按钮。\n\n- 在游戏设置-快捷键中设置一个快捷键。";
+L["Reward Available"] = "奖励待领取";  --As brief as possible
+L["Paragon Reward Available"] = "巅峰奖励待领取";
+L["Until Next Level Format"] = "离下一级还有 %d";   --Earn x reputation to reach the next level
+L["Until Paragon Reward Format"] = "离巅峰宝箱还有 %d";
+L["Instruction Click To View Renown"] = "<点击查看名望>";
+L["Not On Quest"] = "你没有接到该任务";
+L["Factions"] = "声望总览";
+L["Activities"] = "每周活动";
+L["Raids"] = "团队副本";
+L["Instruction Track Achievement"] = "<按住Shift点击追踪此成就>";
+L["Instruction Untrack Achievement"] = "<按住Shift点击取消追踪>";
+L["No Data"] = "没有数据";
+L["No Raid Boss Selected"] = "未选择首领战";
+L["Your Class"] = "(你的职业)";
+L["Great Vault"] = "宏伟宝库";
+L["Item Upgrade"] = "物品升级";
+L["Resources"] = "资源";
+L["Plumber Experimental Feature Tooltip"] = "Plumber插件中的实验性功能。";
+L["Bountiful Delves Rep Tooltip"] = "打开丰裕宝匣有几率奖励此阵营的声望。";
+L["Warband Weekly Reward Tooltip"] = "你的战团每周只能获取一次此奖励。";
+L["Completed"] = "已完成";
+L["Filter Hide Completed Format"] = "隐藏已完成的条目 (%d)";
+L["Weeky Reset Format"] = "周常重置：%s";
+L["Ready To Turn In Tooltip"] = "可以上交任务。";
+
+
 --Generic
+L["Total Colon"] = "总计：";
 L["Reposition Button Horizontal"] = "水平方向移动";   --Move the window horizontally
 L["Reposition Button Vertical"] = "竖直方向移动";
 L["Reposition Button Tooltip"] = "左键点击并拖拉来移动这个窗口。";
@@ -399,7 +453,7 @@ L["Paragon Reputation"] = "巅峰";
 L["Level Maxed"] = "已满级";   --Reached max level
 L["Current Colon"] = "当前：";
 L["Unclaimed Reward Alert"] = "你有未领取的巅峰宝箱";
-L["Total Colon"] = "总计：";
+L["Uncollected Set Counter Format"] = "你有|cffffffff%d|r套未收集的幻化套装。";
 
 
 --Plumber AddOn Settings
@@ -427,6 +481,9 @@ L["GameObject Door"] = "门";
 L["Delve Chest 1 Rare"] = "丰裕宝匣";
 
 L["Season Maximum Colon"] = "赛季上限："
+L["Item Changed"] = "已被替换为";   --CHANGED_OWN_ITEM
+L["Completed CHETT List"] = "完成的C.H.E.T.T.清单";
+L["Devourer Attack"] = "吞噬者入侵";
 
 
 --Map Pin Filter Name (name should be plural)

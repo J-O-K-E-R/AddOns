@@ -6,6 +6,6 @@
 <Script file="NurgashMuckformed.lua"/>
 <Script file="Valinor.lua"/>
 
-<Include file="Options\options.xml"/>
+<Script file="!Options.lua"/>
 
 </Ui>

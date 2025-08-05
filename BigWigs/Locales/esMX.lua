@@ -1,5 +1,8 @@
-local L = BigWigsAPI:NewLocale("BigWigs", "esMX")
+local _, addonTbl = ...
+local L = addonTbl.API:NewLocale("BigWigs", "esMX")
 if not L then return end
+
+L.tempNew = "NUEVO: Ahora puedes escribir |cFFFFFFFF/bwtemp|r para ver las Piedras Angulares de los miembros de tu grupo."
 
 -- Core.lua
 L.berserk = "Enfurecer"
@@ -9,28 +12,30 @@ L.altpower_desc = "Muestra la ventana de poder alternativo, que indica la cantid
 L.infobox = "Caja de información"
 L.infobox_desc = "Muestra un marco con información relacionada con el encuentro."
 L.stages = "Fases"
-L.stages_desc = "Activa funciones relacionadas con varias etapas/fases del jefe como cambios de etapa, barras de temporizador de duración de etapa, etc."
+L.stages_desc = "Activa las funciones relacionadas con varias etapas/fases del jefe como cambios de etapa, barras de temporizador de duración de etapa, etc."
 L.warmup = "Calentamiento"
 L.warmup_desc = "Tiempo hasta que el combate con el jefe comience."
 L.proximity = "Pantalla de proximidad"
 L.proximity_desc = "Muestra la ventana de proximidad cuando sea apropiado para este encuentro, enumerando los jugadores que están demasiado cerca de ti."
 L.adds = "Esbirros"
-L.adds_desc = "Activa funciones relacionadas con los esbirros que aparecerán durante un encuentro con un jefe."
+L.adds_desc = "Activa las funciones relacionadas con los esbirros que aparecerán durante un encuentro con un jefe."
 L.health = "Salud"
-L.health_desc = "Activa funciones para mostrar varias informaciones de salud durante un encuentro con un jefe."
+L.health_desc = "Activa las funciones para mostrar varias informaciones de salud durante un encuentro con un jefe."
+L.energy = "Energía"
+L.energy_desc = "Activa las funciones para mostrar varias informaciones de energía durante un encuentro con un jefe."
 
 L.already_registered = "|cffff0000ATENCIÓN:|r |cff00ff00%s|r (|cffffff00%s|r) ya existe ese módulo en BigWigs, pero sin embargo está intentando registrarlo de nuevo. Esto normalmente ocurre cuando tienes varias copias de este módulo en tu carpeta de addons posiblemente por una actualización fallida. Es recomendable que borres la carpeta de BigWigs y lo reinstales por completo."
 
 -- Loader / Options.lua
 L.okay = "Aceptar"
-L.officialRelease = "Estás usando la versión oficial de BigWigs %s (%s)"
-L.alphaRelease = "Estás usando la VERSIÓN ALFA de BigWigs %s (%s)"
+L.officialRelease = "Estás usando la versión oficial de BigWigs %s (%s)."
+L.alphaRelease = "Estás usando la VERSIÓN ALFA de BigWigs %s (%s)."
 L.sourceCheckout = "Estás usando la versión de BigWigs %s directamente del repositorio."
-L.littlewigsOfficialRelease = "Estás usando la versión oficial de LittleWigs (%s)"
-L.littlewigsAlphaRelease = "Estás usando la VERSIÓN ALFA de LittleWigs (%s)"
+L.littlewigsOfficialRelease = "Estás usando la versión oficial de LittleWigs (%s)."
+L.littlewigsAlphaRelease = "Estás usando la VERSIÓN ALFA de LittleWigs (%s)."
 L.littlewigsSourceCheckout = "Estás usando la versión de LittleWigs directamente del repositorio."
 L.guildRelease = "Estás usando la versión %d de BigWigs hecha para tu hermandad, basado en la versión %d del addon oficial."
-L.getNewRelease = "Tu BigWigs está desactualizado (/bwv) pero puedes actualizarlo fácilmente con el cliente de CurseForge. También puedes actualizarlo manualmente desde curseforge.com o wowinterface.com."
+L.getNewRelease = "Tu BigWigs está desactualizado (/bwv) pero puedes actualizarlo fácilmente con el cliente de CurseForge. También puedes actualizarlo manualmente desde curseforge.com o addons.wago.io."
 L.warnTwoReleases = "Tu BigWigs está 2 versiones desactualizado! Tu versión puede tener fallos, faltarle características, o temporizadores incorrectos. Es muy recomendable que lo actualices."
 L.warnSeveralReleases = "|cffff0000Tu BigWigs está desactualizado %d actualizaciones!! Te recomendamos MUCHÍSIMO que lo actualices cuanto antes para prevenir problemas de sincronización con otros jugadores!|r"
 L.warnOldBase = "Estás usando la versión de hermandad de BigWigs (%d), pero tu versión base (%d) está %d versiones desactualizada. Esto puede provocar problemas."
@@ -54,6 +59,8 @@ L.removeAddOn = "Por favor elimina '|cFF436EEE%s|r' ya que está siendo reemplaz
 L.alternativeName = "%s (|cFF436EEE%s|r)"
 L.outOfDateContentPopup = "CUIDADO!\nActualizaste |cFF436EEE%s|r pero también necesitas actualizar el addon |cFF436EEEBigWigs|r principal.\nIgnorar esto, significa que no funcionará correctamente."
 L.outOfDateContentRaidWarning = "|cFF436EEE%s|r requiere la versión %d del addon principal de|cFF436EEEBigWigs|r para que funcione correctamente, pero tu estan en la versión %d."
+L.addOnLoadFailedWithReason = "BigWigs falló al cargar el addon |cFF436EEE%s|r por razones %q. ¡Avisa a los desarrolladores de BigWigs!"
+L.addOnLoadFailedUnknownError = "BigWigs ha encontrado un error al cargar el addon |cFF436EEE%s|r. ¡Avisa a los desarrolladores de BigWigs!"
 
 L.expansionNames = {
 	"Clásico", -- Classic
@@ -69,7 +76,7 @@ L.expansionNames = {
 	"The War Within", -- The War Within
 }
 L.littleWigsExtras = {
-	["LittleWigs_Delves"] = "Profundidades",
+	["LittleWigs_Delves"] = "Abismos",
 	["LittleWigs_CurrentSeason"] = "Temporada actual",
 }
 
@@ -256,7 +263,63 @@ L.N25 = "Normal 25"
 L.H10 = "Heroico 10"
 L.H25 = "Heroico 25"
 
+-----------------------------------------------------------------------
+-- TOOLS
+-----------------------------------------------------------------------
 
+L.tools = "Herramientas"
+L.toolsDesc = "BigWigs ofrece varias herramientas o características de \"calidad de vida\" para acelerar y simplificar el proceso de enfrentamiento con los jefes. Expande el menú clicando el |cFF33FF99+|r icono para mostrarlas todas."
+L.youAreInCombat = "No puedes hacer eso en combate."
+
+-----------------------------------------------------------------------
+-- AutoRole.lua
+--
+
+L.autoRoleTitle = "Auto Rol"
+L.autoRoleExplainer = "Cuando te unas a un grupo o cambies tu especialización de talentos mientras estés en un grupo, BigWigs ajustará automáticamente tu rol de grupo (Tanque, Sanador, Daño) como corresponda.\n\n"
+
+-----------------------------------------------------------------------
+-- Keystones.lua
+--
+
+L.keystoneTitle = "BigWigs Piedras angulares"
+L.keystoneHeaderParty = "Grupo"
+L.keystoneRefreshParty = "Actualizar Grupo"
+L.keystoneHeaderGuild = "Hermandad"
+L.keystoneRefreshGuild = "Actualizar Hermandad"
+L.keystoneLevelTooltip = "Nivel de Piedra: |cFFFFFFFF%s|r"
+L.keystoneMapTooltip = "Mazmorra: |cFFFFFFFF%s|r"
+L.keystoneRatingTooltip = "Puntuación Mítica+: |cFFFFFFFF%d|r"
+L.keystoneHiddenTooltip = "El jugador ha escogido ocultar esta información."
+L.keystoneTabOnline = "En línea"
+L.keystoneTabAlts = "Alters"
+L.keystoneTabTeleports = "Teletransportes"
+L.keystoneHeaderMyCharacters = "Mis Personajes"
+
+-- It doesn't really matter what you call it as long as it's recognizable and limited to ~6 characters
+--L.keystoneShortName_TheRookery = "ROOK"
+--L.keystoneShortName_DarkflameCleft = "DFC"
+--L.keystoneShortName_PrioryOfTheSacredFlame = "PRIORY"
+--L.keystoneShortName_CinderbrewMeadery = "BREW"
+--L.keystoneShortName_OperationFloodgate = "FLOOD"
+--L.keystoneShortName_TheaterOfPain = "TOP"
+--L.keystoneShortName_TheMotherlode = "ML"
+--L.keystoneShortName_OperationMechagonWorkshop = "WORK"
+--L.keystoneShortName_EcoDomeAldani = "ALDANI"
+--L.keystoneShortName_HallsOfAtonement = "HOA"
+--L.keystoneShortName_AraKaraCityOfEchoes = "ARAK"
+--L.keystoneShortName_TazaveshSoleahsGambit = "GAMBIT"
+--L.keystoneShortName_TazaveshStreetsOfWonder = "STREET"
+--L.keystoneShortName_TheDawnbreaker = "DAWN"
+
+-----------------------------------------------------------------------
+-- LFGTimer.lua
+--
+
+L.lfgTimerTitle = "LFG Timer"
+L.lfgTimerExplainer = "Whenever the LFG queue popup appears, BigWigs will create a timer bar telling you how long you have to accept the queue.\n\n"
+L.lfgUseMaster = "Play LFG ready sound on 'Master' audio channel"
+L.lfgUseMasterDesc = "When this option is enabled the LFG ready sound will play over the 'Master' audio channel. If you disable this option it will play over the '%s' audio channel instead."
 
 -----------------------------------------------------------------------
 -- PLUGINS
@@ -276,6 +339,7 @@ L.sizeDesc = "Normalmente se ajusta el tamaño arrastrando el ancla. Si necesita
 L.fontSizeDesc = "Ajuste el tamaño de la fuente utilizando el control deslizante o escriba el valor en la casilla que tiene un máximo de 200."
 L.disabled = "Desactivado"
 L.disableDesc = "Está a punto de desactivar la función '%s' que |cffff4411no se recomienda|r.\n\n¿Estás seguro de que quieres hacer esto?"
+L.keybinding = "Atajo de teclado"
 
 -- Anchor Points
 L.UP = "Arriba"
@@ -683,6 +747,8 @@ L.sendPull = "Mandar un pull para tu grupo."
 L.wrongPullFormat = "Contador inválido para el pull. Usa algo como: /pull 5"
 L.countdownBegins = "Comenzar cuenta regresiva"
 L.countdownBegins_desc = "Elige cuánto tiempo restante debe de quedar en la llamada de jefe (en segundos) cuando la cuenta regresiva comience."
+L.pullExplainer = "\n|cFF33FF99/pull|r empezará una cuenta atrás normal.\n|cFF33FF99/pull 7|r empezará una cuenta atrás de 7 segundos, puedes utilizar cualquier número.\nO bien puedes asignar un atajo debajo.\n\n"
+L.pullKeybindingDesc = "Elige un atajo para empezar una cuenta atrás."
 
 -----------------------------------------------------------------------
 -- RaidIcon.lua
@@ -721,7 +787,7 @@ L.resetAllCustomSound = "Si has personalizado los sonidos para cualquier encuent
 --
 
 L.bossStatistics = "Estadísticas del jefe"
-L.bossStatsDescription = "Recording of various boss-related statistics such as the amount of times you were victorious, the amount of times you were defeated, date of first victory, and the fastest victory. Estas estadísticas pueden verse en la pantalla de configuración de cada jefe, pero se ocultarán para los jefes que no tengan estadísticas registradas."
+L.bossStatsDescription = "Registro de varias estadísticas relacionadas con los jefes como la cantidad de veces que has salido victorioso, la cantidad de veces que has sido derrotado, la fecha de la primera victoria y la victoria más rápida. Estas estadísticas se pueden ver en la ventana de configuración de cada jefe, pero permanecerán ocultas en los jefes que no tengan todavía registro de estadísticas."
 L.createTimeBar = "Mostrar la barra 'Mejor tiempo'"
 L.bestTimeBar = "Mejor tiempo"
 L.healthPrint = "Vida: %s."

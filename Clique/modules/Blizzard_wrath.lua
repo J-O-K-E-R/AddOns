@@ -14,7 +14,7 @@ local addon = select(2, ...)
 local L = addon.L
 
 -- Only load if this is Wrath
-if not (addon:ProjectIsWrath() or addon:ProjectIsCataclysm()) then
+if not (addon:ProjectIsWrath() or addon:ProjectIsCataclysm() or addon:ProjectIsMists()) then
     return
 end
 

@@ -126,9 +126,28 @@ P.general = {
 		totalLevelFontSize = E.Retail and 20 or 18,
 		totalLevelFontOutline = 'OUTLINE',
 	},
+	rotationAssist = {
+		nextcast = { r = 0.20, g = 0.60, b = 0.95, a = 0.9 },
+		alternative = { r = 0.40, g = 0.99, b = 0.20, a = 0.9 },
+		spells = {
+			HUNTER = {},
+			WARRIOR = {},
+			ROGUE = {},
+			MAGE = {},
+			PRIEST = {},
+			EVOKER = {},
+			SHAMAN = {},
+			WARLOCK = {},
+			DEMONHUNTER = {},
+			DEATHKNIGHT = {},
+			DRUID = {},
+			MONK = {},
+			PALADIN = {}
+		}
+	},
 	customGlow = {
 		style = 'Pixel Glow',
-		color = { r = 0.09, g = 0.52, b = 0.82, a = 0.9 },
+		color = { r = 0.95, g = 0.95, b = 0, a = 0.9 },
 		startAnimation = true,
 		useColor = false,
 		duration = 1,
@@ -235,7 +254,7 @@ P.general = {
 	},
 	totems = { -- totem tracker
 		growthDirection = 'VERTICAL',
-		sortDirection = (E.Cata and 'DESCENDING') or 'ASCENDING',
+		sortDirection = (E.Mists and 'DESCENDING') or 'ASCENDING',
 		size = 40,
 		height = 40,
 		spacing = 4,
@@ -306,6 +325,31 @@ P.general = {
 		countPosition = 'BOTTOMRIGHT',
 		countxOffset = 0,
 		countyOffset = 2,
+	},
+	cooldownManager = {
+		swipeColorSpell = { r = 0, g = 0, b = 0, a = 0.6 },
+		swipeColorAura = { r = 0, g = 1, b = 0.9, a = 0.6 },
+		nameFont = 'Expressway',
+		nameFontSize = 14,
+		nameFontOutline = 'OUTLINE',
+		nameFontColor = { r = 1, g = 1, b = 1 },
+		namePosition = 'LEFT',
+		namexOffset = 4,
+		nameyOffset = 0,
+		durationFont = 'Expressway',
+		durationFontSize = 14,
+		durationFontOutline = 'OUTLINE',
+		durationFontColor = { r = 1, g = 1, b = 1 },
+		durationPosition = 'RIGHT',
+		durationxOffset = -3,
+		durationyOffset = 0,
+		countFont = 'Expressway',
+		countFontSize = 11,
+		countFontOutline = 'OUTLINE',
+		countFontColor = { r = 1, g = 1, b = 1 },
+		countPosition = 'BOTTOMRIGHT',
+		countxOffset = 0,
+		countyOffset = 0,
 	}
 }
 
@@ -515,7 +559,7 @@ P.bags = {
 		mouseover = false,
 		showCount = true,
 		justBackpack = false,
-		visibility = E.Retail and '[petbattle] hide; show' or 'show',
+		visibility = (E.Retail or E.Mists) and '[petbattle] hide; show' or 'show',
 		font = 'PT Sans Narrow',
 		fontOutline = 'OUTLINE',
 		fontSize = 12,
@@ -919,11 +963,21 @@ P.nameplates = {
 				{r = .19, g = .48, b = .60}, -- water
 				{r = .42, g = .18, b = .74}, -- air
 			},
-			WARLOCK = {r = 0.58, g = 0.51, b = 0.79},
+			PRIEST = {r = 0.40, g = 0.00, b = 0.80}, -- shadow orbs
+			WARLOCK = {
+				SOUL_SHARDS = {r = 0.58, g = 0.51, b = 0.79},
+				DEMONIC_FURY = {r = 0.788, g = 0.259, b = 0.992},
+				BURNING_EMBERS = {
+					{r = 1.00, g = 0.60, b = 0.20},
+					{r = 1.00, g = 0.46, b = 0.20},
+					{r = 1.00, g = 0.33, b = 0.20},
+					{r = 1.00, g = 0.20, b = 0.20}
+				},
+			},
 			DRUID = {
 				{r = 0.30, g = 0.52, b = 0.90}, -- negative/lunar
 				{r = 0.80, g = 0.82, b = 0.60}, -- positive/solar
-			},
+			}
 		},
 	},
 	visibility = {
@@ -1784,6 +1838,15 @@ local UF_ClassBar = {
 	strataAndLevel = CopyTable(UF_StrataAndLevel),
 }
 
+local UF_ClassAdditional = {
+	width = 260,
+	height = 12,
+	autoHide = false,
+	orientation = 'HORIZONTAL',
+	frameStrata = 'LOW',
+	frameLevel = 1,
+}
+
 local UF_PrivateAuras = CopyTable(P.general.privateAuras)
 UF_PrivateAuras.enable = false
 UF_PrivateAuras.icon.size = 24
@@ -1805,7 +1868,8 @@ P.unitframe = {
 		ALT = 'NONE',
 	},
 	altManaPowers = {
-		DRUID = { Rage = true, LunarPower = true },
+		DRUID = { Energy = true, Rage = true, LunarPower = true },
+		MONK = { Energy = true, Stagger = true },
 		SHAMAN = { Maelstrom = true },
 		PRIEST = { Insanity = true }
 	},
@@ -1998,6 +2062,7 @@ P.unitframe = {
 			},
 			CombatIcon = CopyTable(UF_CombatIcon),
 			classbar = CopyTable(UF_ClassBar),
+			classAdditional = CopyTable(UF_ClassAdditional),
 			stagger = {
 				enable = true,
 				width = 10,
@@ -2775,25 +2840,6 @@ P.actionbar = {
 		alpha = 1,
 		inheritGlobalFade = false,
 	},
-	totemBar = {
-		enable = true,
-		alpha = 1,
-		spacing = 4,
-		keepSizeRatio = true,
-		buttonSize = 32,
-		buttonHeight = 32,
-		flyoutDirection = 'UP',
-		flyoutSize = 28,
-		flyoutHeight = 28,
-		flyoutSpacing = 2,
-		font = 'PT Sans Narrow',
-		fontOutline = 'OUTLINE',
-		fontSize = 12,
-		mouseover = false,
-		visibility = '[vehicleui] hide;show',
-		frameStrata = 'LOW',
-		frameLevel = 5,
-	},
 	microbar = {
 		enabled = false,
 		mouseover = false,
@@ -2805,7 +2851,7 @@ P.actionbar = {
 		buttonHeight = 28,
 		buttonSpacing = 2,
 		alpha = 1,
-		visibility = E.Retail and '[petbattle] hide; show' or 'show',
+		visibility = (E.Retail or E.Mists) and '[petbattle] hide; show' or 'show',
 		backdrop = false,
 		backdropSpacing = 2,
 		heightMult = 1,
@@ -2834,12 +2880,9 @@ P.actionbar = {
 }
 
 -- Visibility
-if E.Retail then
+if E.Retail or E.Mists then
 	P.actionbar.barPet.visibility = '[petbattle] hide; [novehicleui,pet,nooverridebar,nopossessbar] show; hide'
 	P.actionbar.stanceBar.visibility = '[vehicleui][petbattle] hide; show'
-elseif E.Cata then
-	P.actionbar.barPet.visibility = '[novehicleui,pet,nooverridebar,nopossessbar] show; hide'
-	P.actionbar.stanceBar.visibility = '[vehicleui] hide; show'
 else
 	P.actionbar.barPet.visibility = '[pet,nooverridebar] show; hide'
 	P.actionbar.stanceBar.visibility = 'show'
@@ -2910,10 +2953,8 @@ for i = 1, 15 do
 		local barN = 'bar'..i
 		P.actionbar[barN] = CopyTable(AB_Bar)
 
-		if E.Retail then
+		if E.Retail or E.Mists then
 			P.actionbar[barN].visibility = '[vehicleui][petbattle][overridebar] hide; show'
-		elseif E.Cata then
-			P.actionbar[barN].visibility = '[vehicleui][overridebar] hide; show'
 		else
 			P.actionbar[barN].visibility = '[overridebar] hide; show'
 		end
@@ -2951,14 +2992,17 @@ for _, bar in next, {'barPet', 'stanceBar', 'vehicleExitButton', 'extraActionBut
 end
 
 P.actionbar.bar1.enabled = true
-P.actionbar.bar1.visibility = E.Retail and '[petbattle] hide; show' or 'show'
+P.actionbar.bar1.visibility = (E.Retail or E.Mists) and '[petbattle] hide; show' or 'show'
 
-P.actionbar.bar1.paging.ROGUE = '[bonusbar:1] 7;'..(E.Cata and ' [bonusbar:2] 8;' or '')
-P.actionbar.bar1.paging.WARLOCK = E.Cata and '[form:1] 7;' or nil
+P.actionbar.bar1.paging.ROGUE = '[bonusbar:1] 7;'..(E.Mists and ' [bonusbar:2] 8;' or '')
+P.actionbar.bar1.paging.WARLOCK = E.Mists and '[form:1] 7;' or nil
 P.actionbar.bar1.paging.DRUID = '[bonusbar:1,nostealth] 7; [bonusbar:1,stealth] 8; [bonusbar:2] 10; [bonusbar:3] 9; [bonusbar:4] 10;'
 P.actionbar.bar1.paging.EVOKER = '[bonusbar:1] 7;'
 P.actionbar.bar1.paging.PRIEST = (E.Retail and '[form:1, spec:3] 7;') or (E.Classic and '[form:1] 7;') or '[bonusbar:1] 7;'
 P.actionbar.bar1.paging.WARRIOR = '[bonusbar:1] 7; [bonusbar:2] 8; [bonusbar:3] 9;'
+if E.Mists then
+	P.actionbar.bar1.paging.MONK = '[bonusbar:1] 7;'
+end
 
 P.actionbar.bar3.enabled = true
 P.actionbar.bar3.buttons = 6
@@ -2991,11 +3035,15 @@ do -- cooldown stuff
 	P.nameplates.cooldown = CopyTable(P.actionbar.cooldown)
 	P.unitframe.cooldown = CopyTable(P.actionbar.cooldown)
 
+	P.cdmanager = {} -- Blizzard's Cooldown Manager
+	P.cdmanager.cooldown = CopyTable(P.actionbar.cooldown)
+
 	P.WeakAuras = {} -- native cooldown support with our module
 	P.WeakAuras.cooldown = CopyTable(P.actionbar.cooldown)
-	P.WeakAuras.cooldown.override = false
 
 	-- color override
+	P.WeakAuras.cooldown.override = false
+	P.cdmanager.cooldown.override = false
 	P.auras.cooldown.override = false
 	P.bags.cooldown.override = false
 	P.actionbar.cooldown.override = true

@@ -1,9 +1,14 @@
---Coutesy of ZamestoTV. Thank you!    --Translator: ZamestoTV as of 1.6.8
+--Coutesy of ZamestoTV. Thank you!    --Translator: ZamestoTV as of 1.7.2
 
 if not (GetLocale() == "ruRU") then return end;
 
 local _, addon = ...
 local L = addon.L;
+
+
+--Globals
+BINDING_HEADER_PLUMBER = "Plumber";
+BINDING_NAME_TOGGLE_PLUMBER_LANDINGPAGE = "Окно Резюме расширения";   --Show/hide Expansion Summary UI
 
 
 --Module Control Panel
@@ -32,6 +37,8 @@ L["Module Category NPC Interaction"] = "Взаимодействие с НПС";
 L["Module Category Tooltip"] = "Подсказка";   --Additional Info on Tooltips
 --- order: 4
 L["Module Category Class"] = "Класс";   --Player Class (rogue, paladin...)
+--- order: 5
+L["Module Category Reduction"] = "Уменьшение";   --Reduce UI elements
 
 L["Module Category Dragonflight"] = EXPANSION_NAME9 or "Dragonflight";  --Merge Expansion Feature (Dreamseeds, AzerothianArchives) Modules into this
 L["Module Category Plumber"] = "Plumber";   --This addon's name
@@ -234,6 +241,8 @@ L["ModuleName Delves_Dashboard"] = "Вылазки: Еженедельная н�
 L["ModuleDescription Delves_Dashboard"] = "Отображать прогресс Великого хранилища и Позолоченных тайников на панели Вылазок.";
 L["Delve Crest Stash No Info"] = "Эта информация недоступна в вашем текущем местоположении.";
 L["Delve Crest Stash Requirement"] = "Появляется на 11-м уровне многообещающих вылазок.";
+L["Overcharged Delve"] = "Перегруженная Вылазка";
+L["Delves History Requires AddOn"] = "История Вылазок хранится локально с помощью аддона Plumber.";
 
 
 --WoW Anniversary
@@ -320,6 +329,15 @@ L["ModuleName MinimapMouseover"] = "Цель на миникарте";
 L["ModuleDescription MinimapMouseover"] = "Alt+Клик на существе на мини-карте, чтобы сделать его целью.".."\n\n|cffd4641c- " ..L["Restriction Combat"].."|r";
 
 
+--BossBanner
+L["ModuleName BossBanner"] = "Баннер добычи с боссов";
+L["ModuleDescription BossBanner"] = "Изменяет баннер, появляющийся в верхней части экрана, когда игрок в вашей группе получает добычу.\n\n- Скрывать, если вы один.\n\n- Показывать только ценные предметы.";
+L["BossBanner Hide When Solo"] = "Скрывать, если один";
+L["BossBanner Hide When Solo Tooltip"] = "Скрывать баннер, если в вашей группе только один человек (вы).";
+L["BossBanner Valuable Item Only"] = "Только ценные предметы";
+L["BossBanner Valuable Item Only Tooltip"] = "Отображать на баннере только маунтов, классовые токены и предметы, помеченные как очень редкие или чрезвычайно редкие.";
+
+
 --Loot UI
 L["ModuleName LootUI"] = HUD_EDIT_MODE_LOOT_FRAME_LABEL or "Окно добычи";
 L["ModuleDescription LootUI"] = "Заменить стандартное окно добычи и предоставить некоторые дополнительные функции:\n\n- Быстрый сбор предметов.\n\n- Исправлена ​​ошибка сбоя автоматического сбора добычи.\n\n- Показывать кнопку взять все при ручном сборе.";
@@ -350,6 +368,11 @@ L["LootUI Option Use Default UI"] = "Использовать окно добы�
 L["LootUI Option Use Default UI Tooltip"] = "Использовать стандартное окно добычи WoW.\n\n|cffff4800Включение этой опции отменяет все настройки выше.|r";
 L["LootUI Option Background Opacity"] = "Непрозрачность";
 L["LootUI Option Background Opacity Tooltip"] = "Установите прозрачность фона в режиме уведомления о добыче.\n\nЭта опция не влияет на режим ручной добычи.";
+L["LootUI Option Custom Quality Color"] = "Использовать свой цвет для качества предметов";
+L["LootUI Option Custom Quality Color Tooltip"] = "Используйте цвета, установленные в разделе «Параметры» > «Спец. возможности» > «Цвета»."
+L["LootUI Option Grow Direction"] = "Рост вверх";
+L["LootUI Option Grow Direction Tooltip 1"] = "Когда включено: нижний левый угол окна остается неподвижным, а новые уведомления будут появляться над старыми.";
+L["LootUI Option Grow Direction Tooltip 2"] = "Когда отключено: верхний левый угол окна остается неподвижным, а новые уведомления будут появляться под старыми.";
 
 
 --Quick Slot For Third-party Dev
@@ -388,18 +411,80 @@ L["Drawer Option Update Frequently"] = "Часто обновляйте";
 L["Drawer Option Update Frequently Tooltip"] = "Попробуйте обновить состояние кнопок всякий раз, когда в ваших сумках или книгах заклинаний происходят изменения. Включение этой опции может немного увеличить использование ресурсов.";
 
 
+--New Expansion Landing Page
+L["ModuleName NewExpansionLandingPage"] = "Резюме расширения";
+L["ModuleDescription NewExpansionLandingPage"] = "Интерфейс, который отображает фракции, еженедельные мероприятия и рейдовые кд. Вы можете открыть его:\n\n- Нажав на кнопку Обзор Каз Алгара на мини-карте..\n\n- Установить горячую клавишу в настройках игры - Сочетания клавиш.";
+L["Reward Available"] = "Доступная награда";
+L["Paragon Reward Available"] = "Доступна награда Парагона";
+L["Until Next Level Format"] = "%d до следующего уровня";
+L["Until Paragon Reward Format"] = "%d до награды Парагона";
+L["Instruction Click To View Renown"] = REPUTATION_BUTTON_TOOLTIP_VIEW_RENOWN_INSTRUCTION or "<Нажмите, чтобы посмотреть репутацию>";
+L["Not On Quest"] = "Вы не выполняете это задание";
+L["Factions"] = "Фракции";
+L["Activities"] = MAP_LEGEND_CATEGORY_ACTIVITIES or "Активности";
+L["Raids"] = RAIDS or "Рейды";
+L["Instruction Track Achievement"] = "<Shift + клик, чтобы отслеживать это достижение>";
+L["Instruction Untrack Achievement"] = CONTENT_TRACKING_UNTRACK_TOOLTIP_PROMPT or "<Shift + клик, чтобы прекратить отслеживание>";
+L["No Data"] = "Нет данных";
+L["No Raid Boss Selected"] = "Босс не выбран";
+L["Your Class"] = "(Ваш класс)";
+L["Great Vault"] = DELVES_GREAT_VAULT_LABEL or "Великое Хранилище";
+L["Item Upgrade"] = ITEM_UPGRADE or "Улучшение предмета";
+L["Resources"] = WORLD_QUEST_REWARD_FILTERS_RESOURCES or "Ресурсы";
+L["Plumber Experimental Feature Tooltip"] = "Экспериментальная функция аддона Plumber.";
+L["Bountiful Delves Rep Tooltip"] = "Открытие Щедрого ларца дает шанс увеличить репутацию с этой фракцией.";
+L["Warband Weekly Reward Tooltip"] = "Ваш Боевой Отряд может получить эту награду только раз в неделю.";
+L["Completed"] = CRITERIA_COMPLETED or "Завершено";
+L["Filter Hide Completed Format"] = "Скрыть завершенные (%d)";
+L["Weeky Reset Format"] = "Еженедельный сброс: %s";
+L["Daily Reset Format"] = "Ежедневный сброс: %s";
+L["Ready To Turn In Tooltip"] = "Готов к сдаче.";
+L["Trackers"] = "Отслеживание";
+L["New Tracker Title"] = "Новое отслеживание";     --Create a new Tracker
+L["Edit Tracker Title"] = "Редактировать отслеживание";
+L["Type"] = "Тип";
+L["Select Instruction"] = LFG_LIST_SELECT or "Выбор";
+L["Name"] = "Name";
+L["Difficulty"] = LFG_LIST_DIFFICULTY or "Сложность";
+L["All Difficulties"] = "Все сложностя";
+L["TrackerType Boss"] = "Босс";
+L["TrackerType Instance"] = "Подземелье";
+L["TrackerType Quest"] = "Задание";
+L["TrackerType Rare"] = "Редкий монстр";
+L["TrackerTypePlural Boss"] = "Боссы";
+L["TrackerTypePlural Instance"] = "Подземелья";
+L["TrackerTypePlural Quest"] = "Задания";
+L["TrackerTypePlural Rare"] = "Редкие монстры";
+L["Accountwide"] = "Для всего аккаунта";
+L["Flag Quest"] = "Фракция задания";
+L["Boss Name"] = "Имя босса";
+L["Instance Or Boss Name"] = "Название подземелья или имя босса";
+L["Name EditBox Disabled Reason Format"] = "Это поле будет заполнено автоматически после ввода действительного %s.";
+L["Search No Matches"] = CLUB_FINDER_APPLICANT_LIST_NO_MATCHING_SPECS or "Нет совпадений";
+L["Create New Tracker"] = "Новое отслеживание";
+L["FailureReason Already Exist"] = "Эта запись уже существует.";
+L["Quest ID"] = "ID задания";
+L["Creature ID"] = "ID монстра";
+L["Edit"] = EDIT or "Редактировать";
+L["Delete"] = DELETE or "Удалить";
+L["Visit Quest Hub To Log Quests"] = "Посетите место взятия заданий и пообщайтесь с теми, кто выдает задания, чтобы взять сегодняшние задания."
+L["Quest Hub Instruction Celestials"] = "Посетите интенданта Небожителей в Вечноцветущем доле, чтобы узнать, какой храм нуждается в вашей помощи."
+L["Unavailable Klaxxi Paragons"] = "Недоступные Идеалы Клакси:";
+
+
 --Generic
+L["Total Colon"] = FROM_TOTAL or "Всего:";
 L["Reposition Button Horizontal"] = "Перемещение по горизонтали";   --Move the window horizontally
 L["Reposition Button Vertical"] = "Перемещение по вертикали";
 L["Reposition Button Tooltip"] = "Щелкните ЛКМ и перетащите, чтобы переместить окно.";
 L["Font Size"] = FONT_SIZE or "Размер шрифта";
 L["Reset To Default Position"] = HUD_EDIT_MODE_RESET_POSITION or "Сброс в положение по умолчанию";
-L["Renown Level Label"] = RENOWN_LEVEL_LABEL or "Известность ";  --There is a space
+L["Renown Level Label"] = "Известность ";  --There is a space
 L["Paragon Reputation"] = "Парагон";
 L["Level Maxed"] = "(Максимально)";   --Reached max level
 L["Current Colon"] = ITEM_UPGRADE_CURRENT or "Текущий:";
 L["Unclaimed Reward Alert"] = WEEKLY_REWARDS_UNCLAIMED_TITLE or "У вас есть невостребованные награды";
-L["Total Colon"] = FROM_TOTAL or "Всего:";
+L["Uncollected Set Counter Format"] = "У вас |cffffffff%d|r несобранных |4сета:сетов; трансмогрификации.";
 
 
 --Plumber AddOn Settings
@@ -427,6 +512,8 @@ L["GameObject Door"] = "Дверь";
 L["Delve Chest 1 Rare"] = "Богатый сундук";   --We'll use the GameObjectID once it shows up in the database
 
 L["Season Maximum Colon"] = "Максимум за сезон:";
+L["Item Changed"] = "в предмет";   --CHANGED_OWN_ITEM
+L["Completed CHETT List"] = "Заполненный список КРОТ";
 
 
 --Map Pin Filter Name (name should be plural)

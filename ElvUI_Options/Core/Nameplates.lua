@@ -34,7 +34,7 @@ local function GetUnitSettings(unit, name)
 		end
 	end
 
-	local group = ACH:Group(name, nil, ORDER, 'tree', function(info) return E.db.nameplates.units[unit][info[#info]] end, function(info, value) E.db.nameplates.units[unit][info[#info]] = value NP:ConfigureAll() end, function() return not E.NamePlates.Initialized end)
+	local group = ACH:Group(name, nil, ORDER, 'tree', function(info) return E.db.nameplates.units[unit][info[#info]] end, function(info, value) E.db.nameplates.units[unit][info[#info]] = value NP:ConfigureAll() end, function() return not E.NamePlates.Initialized end, unit == 'PLAYER' and not E.Retail)
 	group.args.enable = ACH:Toggle(L["Enable"], nil, -10)
 	group.args.showTestFrame = ACH:Execute(L["Show/Hide Test Frame"], nil, -9, function() if not _G.ElvNP_Test:IsEnabled() or _G.ElvNP_Test.frameType ~= unit then _G.ElvNP_Test:Enable() _G.ElvNP_Test.frameType = unit NP:NamePlateCallBack(_G.ElvNP_Test, 'NAME_PLATE_UNIT_ADDED') _G.ElvNP_Test:UpdateAllElements('ForceUpdate') else NP:DisablePlate(_G.ElvNP_Test) _G.ElvNP_Test:Disable() end end)
 	group.args.defaultSettings = ACH:Execute(L["Default Settings"], L["Set Settings to Default"], -8, function() NP:ResetSettings(unit) NP:ConfigureAll() end)
@@ -431,9 +431,9 @@ NamePlates.generalGroup.args.fadeIn = ACH:Toggle(L["Alpha Fading"], nil, 14, nil
 NamePlates.generalGroup.args.spacer2 = ACH:Spacer(15, 'full')
 NamePlates.generalGroup.args.plateVisibility = ACH:Group(L["Visibility"], nil, 50)
 NamePlates.generalGroup.args.plateVisibility.args.showAll = ACH:Toggle(L["UNIT_NAMEPLATES_AUTOMODE"], L["This option controls the Blizzard setting for whether or not the Nameplates should be shown."], 0, nil, nil, 250, function(info) return E.db.nameplates.visibility[info[#info]] end, function(info, value) E.db.nameplates.visibility[info[#info]] = value NP:SetCVars() NP:ConfigureAll() end)
-NamePlates.generalGroup.args.plateVisibility.args.showAlways = ACH:Toggle(L["Always Show Player"], nil, 1, nil, nil, nil, function(info) return E.db.nameplates.units.PLAYER.visibility[info[#info]] end, function(info, value) E.db.nameplates.units.PLAYER.visibility[info[#info]] = value NP:SetCVars() NP:ConfigureAll() end)
+NamePlates.generalGroup.args.plateVisibility.args.showAlways = ACH:Toggle(L["Always Show Player"], nil, 1, nil, nil, nil, function(info) return E.db.nameplates.units.PLAYER.visibility[info[#info]] end, function(info, value) E.db.nameplates.units.PLAYER.visibility[info[#info]] = value NP:SetCVars() NP:ConfigureAll() end, nil, not E.Retail)
 NamePlates.generalGroup.args.plateVisibility.args.cvars = ACH:MultiSelect(L["Blizzard CVars"], nil, 3, { nameplateOtherAtBase = L["Nameplate At Base"], nameplateShowOnlyNames = L["Show Only Names"] }, nil, nil, function(_, key) return E.db.nameplates.visibility[key] or GetCVarBool(key) end, function(_, key, value) E:SetCVar(key, value and (key == 'nameplateOtherAtBase' and 2 or 1) or 0) if key == 'nameplateShowOnlyNames' then E.db.nameplates.visibility[key] = value end end)
-NamePlates.generalGroup.args.plateVisibility.args.playerVisibility = ACH:Group(L["Player"], nil, 5, nil, function(info) return E.db.nameplates.units.PLAYER.visibility[info[#info]] end, function(info, value) E.db.nameplates.units.PLAYER.visibility[info[#info]] = value NP:SetCVars() NP:ConfigureAll() end)
+NamePlates.generalGroup.args.plateVisibility.args.playerVisibility = ACH:Group(L["Player"], nil, 5, nil, function(info) return E.db.nameplates.units.PLAYER.visibility[info[#info]] end, function(info, value) E.db.nameplates.units.PLAYER.visibility[info[#info]] = value NP:SetCVars() NP:ConfigureAll() end, nil, not E.Retail)
 NamePlates.generalGroup.args.plateVisibility.args.playerVisibility.inline = true
 NamePlates.generalGroup.args.plateVisibility.args.playerVisibility.args.showInCombat = ACH:Toggle(L["Show In Combat"], nil, 1, nil, nil, nil, nil, nil, function() return not E.db.nameplates.units.PLAYER.enable or E.db.nameplates.units.PLAYER.visibility.showAlways end)
 NamePlates.generalGroup.args.plateVisibility.args.playerVisibility.args.showWithTarget = ACH:Toggle(L["Show With Target"], L["When using Static Position, this option also requires the target to be attackable."], 2, nil, nil, nil, nil, nil, function() return not E.db.nameplates.units.PLAYER.enable or E.db.nameplates.units.PLAYER.visibility.showAlways end)
@@ -446,11 +446,11 @@ NamePlates.generalGroup.args.plateVisibility.args.friendlyVisibility = ACH:Multi
 
 local envConditions = { party = L["Dungeons"], raid = L["Raids"], scenario = L["Scenario"], arena = L["Arena"], pvp = L["Battleground"], resting = L["Resting"], world = L["World"] }
 NamePlates.generalGroup.args.enviromentConditions = ACH:Group(L["Enviroment Conditions"], nil, 60, nil, function(info) return E.db.nameplates.enviromentConditions[info[#info]] end, function(info, value) E.db.nameplates.enviromentConditions[info[#info]] = value NP:EnviromentConditionals() end)
-NamePlates.generalGroup.args.enviromentConditions.args.enemyEnabled = ACH:Toggle(E.NewSign..L["Enemy Enabled"], L["This option controls whether nameplates will follow the visibility settings below.\n|cffFF3333Warning:|r This will be overridden by the Enemy Combat Toggle."], 10, nil, nil, 250)
+NamePlates.generalGroup.args.enviromentConditions.args.enemyEnabled = ACH:Toggle(L["Enemy Enabled"], L["This option controls whether nameplates will follow the visibility settings below.\n|cffFF3333Warning:|r This will be overridden by the Enemy Combat Toggle."], 10, nil, nil, 250)
 NamePlates.generalGroup.args.enviromentConditions.args.enemy = ACH:MultiSelect(L["Enemy"], nil, 11, envConditions, nil, nil, function(_, key) return E.db.nameplates.enviromentConditions.enemy[key] end, function(_, key, value) E.db.nameplates.enviromentConditions.enemy[key] = value NP:EnviromentConditionals() end, nil, function() return not E.db.nameplates.enviromentConditions.enemyEnabled end)
-NamePlates.generalGroup.args.enviromentConditions.args.friendlyEnabled = ACH:Toggle(E.NewSign..L["Friendly Enabled"], L["This option controls whether nameplates will follow the visibility settings below.\n|cffFF3333Warning:|r This will be overridden by the Friendly Combat Toggle."], 20, nil, nil, 250)
+NamePlates.generalGroup.args.enviromentConditions.args.friendlyEnabled = ACH:Toggle(L["Friendly Enabled"], L["This option controls whether nameplates will follow the visibility settings below.\n|cffFF3333Warning:|r This will be overridden by the Friendly Combat Toggle."], 20, nil, nil, 250)
 NamePlates.generalGroup.args.enviromentConditions.args.friendly = ACH:MultiSelect(L["Friendly"], nil, 21, envConditions, nil, nil, function(_, key) return E.db.nameplates.enviromentConditions.friendly[key] end, function(_, key, value) E.db.nameplates.enviromentConditions.friendly[key] = value NP:EnviromentConditionals() end, nil, function() return not E.db.nameplates.enviromentConditions.friendlyEnabled end)
-NamePlates.generalGroup.args.enviromentConditions.args.stackingEnabled = ACH:Toggle(E.NewSign..L["Stacking Enabled"], L["This option controls whether nameplates will follow the settings below.\n|cffFF3333Warning:|r This is an override to the Motion Type setting."], 30, nil, nil, 250)
+NamePlates.generalGroup.args.enviromentConditions.args.stackingEnabled = ACH:Toggle(L["Stacking Enabled"], L["This option controls whether nameplates will follow the settings below.\n|cffFF3333Warning:|r This is an override to the Motion Type setting."], 30, nil, nil, 250)
 NamePlates.generalGroup.args.enviromentConditions.args.stacking = ACH:MultiSelect(L["Stacking Plates"], nil, 31, envConditions, nil, nil, function(_, key) return E.db.nameplates.enviromentConditions.stackingNameplates[key] end, function(_, key, value) E.db.nameplates.enviromentConditions.stackingNameplates[key] = value NP:EnviromentConditionals() end, nil, function() return not E.db.nameplates.enviromentConditions.stackingEnabled end)
 
 NamePlates.generalGroup.args.bossMods = ACH:Group(L["Boss Mod Auras"], nil, 55, nil, function(info) return E.db.nameplates.bossMods[info[#info]] end, function(info, value) E.db.nameplates.bossMods[info[#info]] = value NP:ConfigureAll() end)
@@ -588,7 +588,7 @@ NamePlates.colorsGroup.args.healPrediction.inline = true
 NamePlates.colorsGroup.args.healPrediction.args.personal = ACH:Color(L["Personal"], nil, 1, true)
 NamePlates.colorsGroup.args.healPrediction.args.others = ACH:Color(L["Others"], nil, 2, true)
 NamePlates.colorsGroup.args.healPrediction.args.absorbs = ACH:Color(L["Absorbs"], nil, 3, true, nil, nil, nil, nil, not E.Retail)
-NamePlates.colorsGroup.args.healPrediction.args.healAbsorbs = ACH:Color(L["Heal Absorbs"], nil, 4, true, nil, nil, nil, nil, not E.Retail)
+NamePlates.colorsGroup.args.healPrediction.args.healAbsorbs = ACH:Color(L["Heal Absorbs"], nil, 4, true, nil, nil, nil, nil, E.Classic)
 
 NamePlates.colorsGroup.args.power = ACH:Group(L["Power Color"], nil, 7, nil, function(info) local t, d = E.db.nameplates.colors.power[info[#info]], P.nameplates.colors.power[info[#info]] return t.r, t.g, t.b, t.a, d.r, d.g, d.b, d.a end, function(info, r, g, b, a) local t = E.db.nameplates.colors.power[info[#info]] t.r, t.g, t.b, t.a = r, g, b, a NP:ConfigureAll() end)
 NamePlates.colorsGroup.args.power.inline = true
@@ -633,13 +633,13 @@ for i = 1, 7 do
 	NamePlates.colorsGroup.args.COMBO_POINTS.args[''..i] = ACH:Color(C.Values.Roman[i])
 end
 
-NamePlates.colorsGroup.args.RUNES = ACH:Group(L["RUNES"], nil, 4, nil, function(info) local i = tonumber(info[#info]); local t, d = E.db.nameplates.colors.classResources.DEATHKNIGHT[i], P.nameplates.colors.classResources.DEATHKNIGHT[i] return t.r, t.g, t.b, t.a, d.r, d.g, d.b end, function(info, r, g, b) local t = E.db.nameplates.colors.classResources.DEATHKNIGHT[tonumber(info[#info])] t.r, t.g, t.b = r, g, b NP:ConfigureAll() end, nil, not (E.Retail or E.Cata))
+NamePlates.colorsGroup.args.RUNES = ACH:Group(L["RUNES"], nil, 4, nil, function(info) local i = tonumber(info[#info]); local t, d = E.db.nameplates.colors.classResources.DEATHKNIGHT[i], P.nameplates.colors.classResources.DEATHKNIGHT[i] return t.r, t.g, t.b, t.a, d.r, d.g, d.b end, function(info, r, g, b) local t = E.db.nameplates.colors.classResources.DEATHKNIGHT[tonumber(info[#info])] t.r, t.g, t.b = r, g, b NP:ConfigureAll() end, nil, E.Classic)
 NamePlates.colorsGroup.args.RUNES.inline = true
 
 do
 	local runeText = { [-1] = L["RUNE_CHARGE"], [0] = L["RUNES"], L["RUNE_BLOOD"], L["RUNE_FROST"], L["RUNE_UNHOLY"], L["RUNE_DEATH"] }
 	for i = -1, 4 do
-		NamePlates.colorsGroup.args.RUNES.args[''..i] = ACH:Color(runeText[i], nil, i == -1 and 10 or i, nil, nil, nil, nil, function() return i == -1 and not E.db.nameplates.colors.chargingRunes end, function() return (E.Cata and i < 1) or (not E.Cata and i == 4) or (E.Retail and E.db.unitframe.colors.runeBySpec and i == 0) or (E.Retail and not E.db.unitframe.colors.runeBySpec and i > 0) end)
+		NamePlates.colorsGroup.args.RUNES.args[''..i] = ACH:Color(runeText[i], nil, i == -1 and 10 or i, nil, nil, nil, nil, function() return i == -1 and not E.db.nameplates.colors.chargingRunes end, function() return (E.Mists and i < 1) or (not E.Mists and i == 4) or (E.Retail and E.db.unitframe.colors.runeBySpec and i == 0) or (E.Retail and not E.db.unitframe.colors.runeBySpec and i > 0) end)
 	end
 end
 

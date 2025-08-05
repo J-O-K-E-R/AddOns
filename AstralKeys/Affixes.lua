@@ -64,19 +64,12 @@ local CHALLENGERS_PERIL = 152
 local XALATATHS_BARGAIN_VOIDBOUND = 158
 local XALATATHS_BARGAIN_OBLIVION = 159
 local XALATATHS_BARGAIN_DEVOUR = 160
+local XALATATHS_BARGAIN_PULSAR = 162
 
 local AFFIX_ROTATION = {
-	{ XALATATHS_BARGAIN_ASCENDANT, TYRANNICAL, CHALLENGERS_PERIL, FORTIFIED, XALATATHS_GUILE },
-	{ XALATATHS_BARGAIN_OBLIVION, FORTIFIED, CHALLENGERS_PERIL, TYRANNICAL, XALATATHS_GUILE  },
-	{ XALATATHS_BARGAIN_VOIDBOUND, TYRANNICAL, CHALLENGERS_PERIL, FORTIFIED, XALATATHS_GUILE },
-	{ XALATATHS_BARGAIN_DEVOUR, FORTIFIED, CHALLENGERS_PERIL, TYRANNICAL, XALATATHS_GUILE },
-	{ XALATATHS_BARGAIN_OBLIVION, TYRANNICAL, CHALLENGERS_PERIL, FORTIFIED, XALATATHS_GUILE },
-	{ XALATATHS_BARGAIN_ASCENDANT, FORTIFIED, CHALLENGERS_PERIL, TYRANNICAL, XALATATHS_GUILE },
-	{ XALATATHS_BARGAIN_DEVOUR, TYRANNICAL, CHALLENGERS_PERIL, FORTIFIED, XALATATHS_GUILE },
-	{ XALATATHS_BARGAIN_VOIDBOUND, FORTIFIED, CHALLENGERS_PERIL, TYRANNICAL, XALATATHS_GUILE },
 }
 
-local AFFIX_ROTATION_WEEKS = 10
+local AFFIX_ROTATION_WEEKS = 8
 
 -- Timewalking Affixes
 local INFERNAL = 129
@@ -89,7 +82,7 @@ local LEGION_AFFIX_ROTATION = {
 local AFFIX_INFO = {}
 local ROTATION_WEEK_POSITION = 0
 local AffixIDs = {}
-local AffixOneID, AffixTwoID, AffixThreeID, AffixSeasonID = 0, 0, 0, 0 -- Used to always show the current week's affixes irregardless if the rotation is known or not
+local AffixOneID, AffixTwoID, AffixThreeID = 0, 0, 0 -- Used to always show the current week's affixes irregardless if the rotation is known or not
 
 -- Finds the index of the current week's affixes in the table
 -- @param affixIds Array of integers for the corresponding affix
@@ -247,10 +240,18 @@ end
 
 function addon.GetAffixID(id, weekOffSet)
 	local week = (ROTATION_WEEK_POSITION + weekOffSet) % AFFIX_ROTATION_WEEKS
-	if week == 0 then week = AFFIX_ROTATION_WEEKS end
-	if week > #AFFIX_ROTATION-1 then
-		local affixes = C_MythicPlus.GetCurrentAffixes()
-		return affixes[id].id or 0
+
+	if week == 0 then
+		week = AFFIX_ROTATION_WEEKS
 	end
+
+	if week > #AFFIX_ROTATION then
+		local affixes = C_MythicPlus.GetCurrentAffixes()
+		if affixes[id] ~= nil then
+			return affixes[id].id
+		end
+		return 0
+	end
+
 	return AFFIX_ROTATION[week][id] or 0
 end

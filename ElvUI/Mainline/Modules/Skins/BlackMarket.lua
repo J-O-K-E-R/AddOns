@@ -6,7 +6,6 @@ local next = next
 local hooksecurefunc = hooksecurefunc
 
 local GetItemQualityByID = C_Item.GetItemQualityByID
-local GetItemQualityColor = C_Item.GetItemQualityColor
 
 local function SkinTab(tab)
 	tab.Left:SetAlpha(0)
@@ -14,6 +13,24 @@ local function SkinTab(tab)
 		tab.Middle:SetAlpha(0)
 	end
 	tab.Right:SetAlpha(0)
+end
+
+local function BlackMarketScrollUpdateChild(button)
+	if not button.skinned then
+		S:HandleItemButton(button.Item)
+		S:HandleIconBorder(button.Item.IconBorder)
+
+		button:StripTextures()
+		button:StyleButton(nil, true)
+
+		button.Selection:SetColorTexture(0.9, 0.8, 0.1, 0.3)
+
+		button.skinned = true
+	end
+end
+
+local function BlackMarketScrollUpdate()
+	_G.BlackMarketFrame.ScrollBox:ForEachFrame(BlackMarketScrollUpdateChild)
 end
 
 function S:Blizzard_BlackMarketUI()
@@ -44,21 +61,7 @@ function S:Blizzard_BlackMarketUI()
 	BlackMarketFrame.ColumnName:ClearAllPoints()
 	BlackMarketFrame.ColumnName:Point('TOPLEFT', BlackMarketFrame.TopLeftCorner, 25, -50)
 
-	hooksecurefunc('BlackMarketScrollFrame_Update', function()
-		for _, button in next, { BlackMarketFrame.ScrollBox.ScrollTarget:GetChildren() } do
-			if not button.skinned then
-				S:HandleItemButton(button.Item)
-				S:HandleIconBorder(button.Item.IconBorder)
-
-				button:StripTextures()
-				button:StyleButton(nil, true)
-
-				button.Selection:SetColorTexture(0.9, 0.8, 0.1, 0.3)
-
-				button.skinned = true
-			end
-		end
-	end)
+	hooksecurefunc('BlackMarketScrollFrame_Update', BlackMarketScrollUpdate)
 
 	for _, region in next, { BlackMarketFrame:GetRegions() } do
 		if region:IsObjectType('FontString') and region:GetText() == _G.BLACK_MARKET_TITLE then
@@ -73,14 +76,14 @@ function S:Blizzard_BlackMarketUI()
 	S:HandleItemButton(BlackMarketFrame.HotDeal.Item, true)
 	S:HandleIconBorder(BlackMarketFrame.HotDeal.Item.IconBorder)
 
-	hooksecurefunc('BlackMarketFrame_UpdateHotItem', function(s)
-		local deal = s.HotDeal
+	hooksecurefunc('BlackMarketFrame_UpdateHotItem', function(item)
+		local deal = item.HotDeal
 		local link = deal and deal.Name and deal:IsShown() and deal.itemLink
-		if link then
-			local quality = GetItemQualityByID(link)
-			local r, g, b = GetItemQualityColor(quality)
-			deal.Name:SetTextColor(r, g, b)
-		end
+		if not link then return end
+
+		local quality = GetItemQualityByID(link)
+		local r, g, b = E:GetItemQualityColor(quality)
+		deal.Name:SetTextColor(r, g, b)
 	end)
 end
 

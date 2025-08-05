@@ -1,3 +1,4 @@
+local isElevenDotTwo = BigWigsLoader.isNext -- XXX remove in 11.2
 --------------------------------------------------------------------------------
 -- Module Declaration
 --
@@ -75,76 +76,149 @@ end
 -- Initialization
 --
 
-function mod:GetOptions()
-	return {
-		-- Sacred Flame
-		"custom_on_autotalk",
-		435088, -- Blessing of the Sacred Flame
-		-- Guard Captain Suleyman
-		{448485, "TANK_HEALER", "NAMEPLATE"}, -- Shield Slam
-		{448492, "NAMEPLATE"}, -- Thunderclap
-		-- Forge Master Damian
-		{427897, "NAMEPLATE"}, -- Heat Wave
-		{427950, "NAMEPLATE"}, -- Seal of Flame
-		427900, -- Molten Pool
-		-- High Priest Aemya
-		{428150, "NAMEPLATE"}, -- Reflective Shield
-		-- Sergeant Shaynemail
-		{424621, "NAMEPLATE"}, -- Brutal Smash
-		{424423, "NAMEPLATE"}, -- Lunging Strike
-		-- Elaena Emberlanz
-		{424431, "HEALER", "NAMEPLATE"}, -- Holy Radiance
-		{448515, "DISPEL", "NAMEPLATE"}, -- Divine Judgment
-		-- Taener Duelmal
-		{424420, "DISPEL", "NAMEPLATE"}, -- Cinderblast
-		{424462, "NAMEPLATE"}, -- Ember Storm
-		-- Arathi Knight
-		{427609, "NAMEPLATE"}, -- Disrupting Shout
-		{444296, "NAMEPLATE", "OFF"}, -- Impale
-		-- Arathi Footman
-		{427342, "NAMEPLATE"}, -- Defend
-		-- Fervent Sharpshooter
-		{453458, "DISPEL", "NAMEPLATE"}, -- Caltrops
-		{462859, "ME_ONLY", "NAMEPLATE", "OFF"}, -- Pot Shot
-		-- War Lynx
-		{446776, "NAMEPLATE", "OFF"}, -- Pounce
-		-- Devout Priest
-		{427356, "NAMEPLATE"}, -- Greater Heal
-		-- Fanatical Conjuror
-		{427484, "NAMEPLATE"}, -- Flamestrike
-		-- Lightspawn
-		{448787, "NAMEPLATE"}, -- Purification
-		427601, -- Burst of Light
-		-- Ardent Paladin
-		{424429, "NAMEPLATE"}, -- Consecration
-		{448791, "NAMEPLATE", "OFF"}, -- Sacred Toll
-		-- Zealous Templar
-		{444728, "DISPEL", "NAMEPLATE"}, -- Templar's Wrath
-		{427596, "NAMEPLATE", "OFF"}, -- Seal of Light's Fury
-		-- Risen Mage
-		{444743, "NAMEPLATE"}, -- Fireball Volley
-		-- Sir Braunpyke
-		{435165, "TANK", "NAMEPLATE"}, -- Blazing Strike
-	}, {
-		["custom_on_autotalk"] = L.sacred_flame,
-		[448485] = L.guard_captain_suleyman,
-		[427897] = L.forge_master_damian,
-		[428150] = L.high_priest_aemya,
-		[424621] = L.sergeant_shaynemail,
-		[424431] = L.elaena_emberlanz,
-		[424420] = L.taener_duelmal,
-		[427609] = L.arathi_knight,
-		[427342] = L.arathi_footman,
-		[453458] = L.fervent_sharpshooter,
-		[446776] = L.war_lynx,
-		[427356] = L.devout_priest,
-		[427484] = L.fanatical_conjuror,
-		[448787] = L.lightspawn,
-		[424429] = L.ardent_paladin,
-		[444728] = L.zealous_templar,
-		[444743] = L.risen_mage,
-		[435165] = L.sir_braunpyke,
-	}
+if isElevenDotTwo then -- XXX remove check in 11.2
+	function mod:GetOptions()
+		return {
+			-- Sacred Flame
+			"custom_on_autotalk",
+			435088, -- Blessing of the Sacred Flame
+			-- Guard Captain Suleyman
+			{448485, "TANK_HEALER", "NAMEPLATE"}, -- Shield Slam
+			{448492, "NAMEPLATE"}, -- Thunderclap
+			-- Forge Master Damian
+			{427897, "NAMEPLATE"}, -- Heat Wave
+			{427950, "NAMEPLATE"}, -- Seal of Flame
+			427900, -- Molten Pool
+			-- High Priest Aemya
+			{428150, "NAMEPLATE"}, -- Reflective Shield
+			-- Sergeant Shaynemail
+			{424621, "NAMEPLATE"}, -- Brutal Smash
+			{424423, "NAMEPLATE"}, -- Lunging Strike
+			-- Elaena Emberlanz
+			{424431, "HEALER", "NAMEPLATE"}, -- Holy Radiance
+			{448515, "DISPEL", "NAMEPLATE"}, -- Divine Judgment
+			-- Taener Duelmal
+			{424462, "NAMEPLATE"}, -- Ember Storm
+			-- Arathi Knight
+			{427609, "NAMEPLATE"}, -- Disrupting Shout
+			{427621, "NAMEPLATE", "OFF"}, -- Impale
+			-- Arathi Footman
+			{427342, "NAMEPLATE"}, -- Defend
+			-- Fervent Sharpshooter
+			{453458, "DISPEL", "NAMEPLATE"}, -- Caltrops
+			{462859, "ME_ONLY", "NAMEPLATE", "OFF"}, -- Pot Shot
+			-- War Lynx
+			{446776, "NAMEPLATE", "OFF"}, -- Pounce
+			-- Devout Priest
+			{427356, "NAMEPLATE"}, -- Greater Heal
+			-- Fanatical Conjuror
+			{427484, "NAMEPLATE"}, -- Flamestrike
+			-- Lightspawn
+			{448787, "NAMEPLATE"}, -- Purification
+			427601, -- Burst of Light
+			-- Ardent Paladin
+			{424429, "NAMEPLATE"}, -- Consecration
+			{448791, "NAMEPLATE", "OFF"}, -- Sacred Toll
+			-- Zealous Templar
+			{444728, "DISPEL", "NAMEPLATE"}, -- Templar's Wrath
+			{427596, "NAMEPLATE", "OFF"}, -- Seal of Light's Fury
+			-- Risen Mage
+			{444743, "NAMEPLATE"}, -- Fireball Volley
+			-- Sir Braunpyke
+			{435165, "TANK", "NAMEPLATE"}, -- Blazing Strike
+		}, {
+			["custom_on_autotalk"] = L.sacred_flame,
+			[448485] = L.guard_captain_suleyman,
+			[427897] = L.forge_master_damian,
+			[428150] = L.high_priest_aemya,
+			[424621] = L.sergeant_shaynemail,
+			[424431] = L.elaena_emberlanz,
+			[424462] = L.taener_duelmal,
+			[427609] = L.arathi_knight,
+			[427342] = L.arathi_footman,
+			[453458] = L.fervent_sharpshooter,
+			[446776] = L.war_lynx,
+			[427356] = L.devout_priest,
+			[427484] = L.fanatical_conjuror,
+			[448787] = L.lightspawn,
+			[424429] = L.ardent_paladin,
+			[444728] = L.zealous_templar,
+			[444743] = L.risen_mage,
+			[435165] = L.sir_braunpyke,
+		}
+	end
+else -- XXX remove block in 11.2
+	function mod:GetOptions()
+		return {
+			-- Sacred Flame
+			"custom_on_autotalk",
+			435088, -- Blessing of the Sacred Flame
+			-- Guard Captain Suleyman
+			{448485, "TANK_HEALER", "NAMEPLATE"}, -- Shield Slam
+			{448492, "NAMEPLATE"}, -- Thunderclap
+			-- Forge Master Damian
+			{427897, "NAMEPLATE"}, -- Heat Wave
+			{427950, "NAMEPLATE"}, -- Seal of Flame
+			427900, -- Molten Pool
+			-- High Priest Aemya
+			{428150, "NAMEPLATE"}, -- Reflective Shield
+			-- Sergeant Shaynemail
+			{424621, "NAMEPLATE"}, -- Brutal Smash
+			{424423, "NAMEPLATE"}, -- Lunging Strike
+			-- Elaena Emberlanz
+			{424431, "HEALER", "NAMEPLATE"}, -- Holy Radiance
+			{448515, "DISPEL", "NAMEPLATE"}, -- Divine Judgment
+			-- Taener Duelmal
+			{424420, "DISPEL", "NAMEPLATE"}, -- Cinderblast
+			{424462, "NAMEPLATE"}, -- Ember Storm
+			-- Arathi Knight
+			{427609, "NAMEPLATE"}, -- Disrupting Shout
+			{444296, "NAMEPLATE", "OFF"}, -- Impale
+			-- Arathi Footman
+			{427342, "NAMEPLATE"}, -- Defend
+			-- Fervent Sharpshooter
+			{453458, "DISPEL", "NAMEPLATE"}, -- Caltrops
+			{462859, "ME_ONLY", "NAMEPLATE", "OFF"}, -- Pot Shot
+			-- War Lynx
+			{446776, "NAMEPLATE", "OFF"}, -- Pounce
+			-- Devout Priest
+			{427356, "NAMEPLATE"}, -- Greater Heal
+			-- Fanatical Conjuror
+			{427484, "NAMEPLATE"}, -- Flamestrike
+			-- Lightspawn
+			{448787, "NAMEPLATE"}, -- Purification
+			427601, -- Burst of Light
+			-- Ardent Paladin
+			{424429, "NAMEPLATE"}, -- Consecration
+			{448791, "NAMEPLATE", "OFF"}, -- Sacred Toll
+			-- Zealous Templar
+			{444728, "DISPEL", "NAMEPLATE"}, -- Templar's Wrath
+			{427596, "NAMEPLATE", "OFF"}, -- Seal of Light's Fury
+			-- Risen Mage
+			{444743, "NAMEPLATE"}, -- Fireball Volley
+			-- Sir Braunpyke
+			{435165, "TANK", "NAMEPLATE"}, -- Blazing Strike
+		}, {
+			["custom_on_autotalk"] = L.sacred_flame,
+			[448485] = L.guard_captain_suleyman,
+			[427897] = L.forge_master_damian,
+			[428150] = L.high_priest_aemya,
+			[424621] = L.sergeant_shaynemail,
+			[424431] = L.elaena_emberlanz,
+			[424420] = L.taener_duelmal,
+			[427609] = L.arathi_knight,
+			[427342] = L.arathi_footman,
+			[453458] = L.fervent_sharpshooter,
+			[446776] = L.war_lynx,
+			[427356] = L.devout_priest,
+			[427484] = L.fanatical_conjuror,
+			[448787] = L.lightspawn,
+			[424429] = L.ardent_paladin,
+			[444728] = L.zealous_templar,
+			[444743] = L.risen_mage,
+			[435165] = L.sir_braunpyke,
+		}
+	end
 end
 
 function mod:OnBossEnable()
@@ -172,7 +246,6 @@ function mod:OnBossEnable()
 	-- High Priest Aemya
 	self:RegisterEngageMob("HighPriestAemyaEngaged", 212827)
 	self:Log("SPELL_CAST_START", "ReflectiveShield", 428150)
-	self:Log("SPELL_CAST_SUCCESS", "ReflectiveShieldSuccess", 428150)
 	self:Log("SPELL_AURA_REMOVED", "ReflectiveShieldRemoved", 428150)
 	self:Death("HighPriestAemyaDeath", 212827)
 
@@ -194,10 +267,12 @@ function mod:OnBossEnable()
 
 	-- Taener Duelmal
 	self:RegisterEngageMob("TaenerDuelmalEngaged", 211289, 239834)
-	self:Log("SPELL_CAST_START", "Cinderblast", 424420)
-	self:Log("SPELL_INTERRUPT", "CinderblastInterrupt", 424420)
-	self:Log("SPELL_CAST_SUCCESS", "CinderblastSuccess", 424420)
-	self:Log("SPELL_AURA_APPLIED", "CinderblastApplied", 424420)
+	if not isElevenDotTwo then -- XXX remove block in 11.2
+		self:Log("SPELL_CAST_START", "Cinderblast", 424420)
+		self:Log("SPELL_INTERRUPT", "CinderblastInterrupt", 424420)
+		self:Log("SPELL_CAST_SUCCESS", "CinderblastSuccess", 424420)
+		self:Log("SPELL_AURA_APPLIED", "CinderblastApplied", 424420)
+	end
 	self:Log("SPELL_CAST_START", "EmberStorm", 424462)
 	self:Log("SPELL_CAST_SUCCESS", "EmberStormSuccess", 424462)
 	self:Death("TaenerDuelmalDeath", 211289, 239834)
@@ -209,7 +284,11 @@ function mod:OnBossEnable()
 	-- Arathi Knight
 	self:RegisterEngageMob("ArathiKnightEngaged", 206696)
 	self:Log("SPELL_CAST_START", "DisruptingShout", 427609)
-	self:Log("SPELL_CAST_START", "Impale", 444296)
+	if isElevenDotTwo then -- XXX remove check in 11.2
+		self:Log("SPELL_CAST_START", "Impale", 427621)
+	else -- XXX remove block in 11.2
+		self:Log("SPELL_CAST_START", "Impale", 444296)
+	end
 	self:Death("ArathiKnightDeath", 206696)
 
 	-- Arathi Footman
@@ -347,12 +426,12 @@ do
 		self:Message(args.spellId, "purple")
 		self:CDBar(args.spellId, 10.9)
 		self:Nameplate(args.spellId, 10.9, args.sourceGUID)
+		timer = self:ScheduleTimer("GuardCaptainSuleymanDeath", 30, nil, args.sourceGUID)
 		if self:Tank() then
 			self:PlaySound(args.spellId, "alarm")
 		else
 			self:PlaySound(args.spellId, "info")
 		end
-		timer = self:ScheduleTimer("GuardCaptainSuleymanDeath", 30, nil, args.sourceGUID)
 	end
 
 	function mod:Thunderclap(args)
@@ -362,8 +441,8 @@ do
 		self:Message(args.spellId, "red")
 		self:CDBar(args.spellId, 15.8)
 		self:Nameplate(args.spellId, 15.8, args.sourceGUID)
-		self:PlaySound(args.spellId, "alert")
 		timer = self:ScheduleTimer("GuardCaptainSuleymanDeath", 30, nil, args.sourceGUID)
+		self:PlaySound(args.spellId, "alert")
 	end
 
 	function mod:GuardCaptainSuleymanDeath(args, guidFromTimer)
@@ -383,10 +462,17 @@ do
 	local timer
 
 	function mod:ForgeMasterDamianEngaged(guid)
-		self:CDBar(427950, 5.1) -- Seal of Flame
-		self:Nameplate(427950, 5.1, guid) -- Seal of Flame
-		self:CDBar(427897, 9.9) -- Heat Wave
-		self:Nameplate(427897, 9.9, guid) -- Heat Wave
+		if isElevenDotTwo then -- XXX remove check in 11.2
+			self:CDBar(427897, 5.6) -- Heat Wave
+			self:Nameplate(427897, 5.6, guid) -- Heat Wave
+			self:CDBar(427950, 15.3) -- Seal of Flame
+			self:Nameplate(427950, 15.3, guid) -- Seal of Flame
+		else -- XXX remove block in 11.2
+			self:CDBar(427950, 5.1) -- Seal of Flame
+			self:Nameplate(427950, 5.1, guid) -- Seal of Flame
+			self:CDBar(427897, 9.9) -- Heat Wave
+			self:Nameplate(427897, 9.9, guid) -- Heat Wave
+		end
 		timer = self:ScheduleTimer("ForgeMasterDamianDeath", 20, nil, guid)
 	end
 
@@ -406,8 +492,13 @@ do
 			self:CancelTimer(timer)
 		end
 		self:Message(args.spellId, "red")
-		self:CDBar(args.spellId, 21.9)
-		self:Nameplate(args.spellId, 21.9, args.sourceGUID)
+		if isElevenDotTwo then -- XXX remove check in 11.2
+			self:CDBar(args.spellId, 32.2)
+			self:Nameplate(args.spellId, 32.9, args.sourceGUID)
+		else -- XXX remove block in 11.2
+			self:CDBar(args.spellId, 21.9)
+			self:Nameplate(args.spellId, 21.9, args.sourceGUID)
+		end
 		timer = self:ScheduleTimer("ForgeMasterDamianDeath", 30, nil, args.sourceGUID)
 		self:PlaySound(args.spellId, "alert")
 	end
@@ -440,8 +531,8 @@ do
 	local timer
 
 	function mod:HighPriestAemyaEngaged(guid)
-		self:CDBar(428150, 21.4) -- Reflective Shield
-		self:Nameplate(428150, 21.4, guid) -- Reflective Shield
+		self:CDBar(428150, 10.2) -- Reflective Shield
+		self:Nameplate(428150, 10.2, guid) -- Reflective Shield
 		timer = self:ScheduleTimer("HighPriestAemyaDeath", 60, nil, guid)
 	end
 
@@ -449,14 +540,11 @@ do
 		if timer then
 			self:CancelTimer(timer)
 		end
+		self:StopBar(args.spellId)
+		self:StopNameplate(args.spellId, args.sourceGUID)
 		self:Message(args.spellId, "red")
 		timer = self:ScheduleTimer("HighPriestAemyaDeath", 60, nil, args.sourceGUID)
 		self:PlaySound(args.spellId, "alert")
-	end
-
-	function mod:ReflectiveShieldSuccess(args)
-		self:StopBar(args.spellId)
-		self:StopNameplate(args.spellId, args.sourceGUID)
 	end
 
 	function mod:ReflectiveShieldRemoved(args)
@@ -486,11 +574,11 @@ do
 		if self:MobId(guid) == 211291 then -- Sergeant Shaynemail, boss version
 			shaynemailGUID = guid
 		end
-		self:CDBar(424423, 5.2) -- Lunging Strike
-		self:Nameplate(424423, 5.2, guid) -- Lunging Strike
-		nextBrutalSmash = GetTime() + 25.2
-		self:CDBar(424621, 25.2) -- Brutal Smash
-		self:Nameplate(424621, 25.2, guid) -- Brutal Smash
+		self:CDBar(424423, 4.9) -- Lunging Strike
+		self:Nameplate(424423, 4.9, guid) -- Lunging Strike
+		nextBrutalSmash = GetTime() + 24.5
+		self:CDBar(424621, 24.5) -- Brutal Smash
+		self:Nameplate(424621, 24.5, guid) -- Brutal Smash
 		timer = self:ScheduleTimer("SergeantShaynemailDeath", 20, nil, guid)
 	end
 
@@ -635,8 +723,10 @@ do
 		if self:MobId(guid) == 211289 then -- Taener Duelmal, boss version
 			taenerGUID = guid
 		end
-		self:CDBar(424420, 8.1) -- Cinderblast
-		self:Nameplate(424420, 8.1, guid) -- Cinderblast
+		if not isElevenDotTwo then -- XXX remove in 11.2
+			self:CDBar(424420, 8.1) -- Cinderblast
+			self:Nameplate(424420, 8.1, guid) -- Cinderblast
+		end
 		local unit = self:UnitTokenFromGUID(guid)
 		if unit then
 			-- Taener's energy doesn't always reset after a wipe
@@ -649,10 +739,10 @@ do
 			self:CDBar(424462, 25.2) -- Ember Storm
 			self:Nameplate(424462, 25.2, guid) -- Ember Storm
 		end
-		timer = self:ScheduleTimer("TaenerDuelmalDeath", 20, nil, guid)
+		timer = self:ScheduleTimer("TaenerDuelmalDeath", 30, nil, guid)
 	end
 
-	function mod:Cinderblast(args)
+	function mod:Cinderblast(args) -- XXX remove in 11.2
 		if timer then
 			self:CancelTimer(timer)
 		end
@@ -664,17 +754,17 @@ do
 		end
 	end
 
-	function mod:CinderblastInterrupt(args)
+	function mod:CinderblastInterrupt(args) -- XXX remove in 11.2
 		self:CDBar(424420, 15.0)
 		self:Nameplate(424420, 15.0, args.destGUID)
 	end
 
-	function mod:CinderblastSuccess(args)
+	function mod:CinderblastSuccess(args) -- XXX remove in 11.2
 		self:CDBar(args.spellId, 15.0)
 		self:Nameplate(args.spellId, 15.0, args.sourceGUID)
 	end
 
-	function mod:CinderblastApplied(args)
+	function mod:CinderblastApplied(args) -- XXX remove in 11.2
 		local onMe = self:Me(args.destGUID)
 		if onMe or self:Dispeller("magic", nil, args.spellId) then
 			self:TargetMessage(args.spellId, "orange", args.destName)
@@ -694,7 +784,7 @@ do
 		-- cast at 100 energy: 1.5s cast, 6s channel, 1s delay, 25s energy gain
 		self:CDBar(args.spellId, 34.0)
 		self:Nameplate(args.spellId, 34.0, args.sourceGUID)
-		timer = self:ScheduleTimer("TaenerDuelmalDeath", 30, nil, args.sourceGUID)
+		timer = self:ScheduleTimer("TaenerDuelmalDeath", 40, nil, args.sourceGUID)
 		self:PlaySound(args.spellId, "long")
 	end
 
@@ -708,7 +798,9 @@ do
 			self:CancelTimer(timer)
 			timer = nil
 		end
-		self:StopBar(424420) -- Cinderblast
+		if not isElevenDotTwo then -- XXX remove in 11.2
+			self:StopBar(424420) -- Cinderblast
+		end
 		self:StopBar(424462) -- Ember Storm
 		self:ClearNameplate(guidFromTimer or args.destGUID)
 	end
@@ -782,14 +874,22 @@ end
 -- Arathi Knight
 
 function mod:ArathiKnightEngaged(guid)
-	self:Nameplate(444296, 4.4, guid) -- Impale
+	if isElevenDotTwo then -- XXX remove check in 11.2
+		self:Nameplate(427621, 3.6, guid) -- Impale
+	else -- XXX remove block in 11.2
+		self:Nameplate(444296, 4.4, guid) -- Impale
+	end
 	self:Nameplate(427609, 20.1, guid) -- Disrupting Shout
 end
 
 do
 	local prev = 0
 	function mod:DisruptingShout(args)
-		self:Nameplate(args.spellId, 21.8, args.sourceGUID)
+		if isElevenDotTwo then -- XXX remove check in 11.2
+			self:Nameplate(args.spellId, 23.1, args.sourceGUID)
+		else -- XXX remove block in 11.2
+			self:Nameplate(args.spellId, 21.8, args.sourceGUID)
+		end
 		if args.time - prev > 2 then
 			prev = args.time
 			self:Message(args.spellId, "red")
@@ -802,7 +902,11 @@ do
 	local prev = 0
 	function mod:Impale(args)
 		-- can't be target scanned
-		self:Nameplate(args.spellId, 17.0, args.sourceGUID)
+		if isElevenDotTwo then -- XXX remove check in 11.2
+			self:Nameplate(args.spellId, 15.8, args.sourceGUID)
+		else -- XXX remove block in 11.2
+			self:Nameplate(args.spellId, 17.0, args.sourceGUID)
+		end
 		if args.time - prev > 2 then
 			prev = args.time
 			self:Message(args.spellId, "orange")
@@ -817,13 +921,10 @@ end
 
 -- Arathi Footman
 
---function mod:ArathiFootmanEngaged(guid)
-	-- Defend isn't cast until 50%
---end
-
 do
 	local prev = 0
 	function mod:Defend(args)
+		-- first cast at 50%, then cast on cooldown
 		if self:Normal() then
 			self:Nameplate(args.spellId, 60.7, args.sourceGUID)
 		else -- Heroic, Mythic
@@ -844,7 +945,7 @@ end
 -- Fervent Sharpshooter
 
 function mod:FerventSharpshooterEngaged(guid)
-	self:Nameplate(462859, 4.2, guid) -- Pot Shot
+	self:Nameplate(462859, 3.1, guid) -- Pot Shot
 	self:Nameplate(453458, 8.3, guid) -- Caltrops
 end
 
@@ -886,7 +987,11 @@ do
 	end
 
 	function mod:PotShotSuccess(args)
-		self:Nameplate(args.spellId, 10.2, args.sourceGUID)
+		if isElevenDotTwo then -- XXX remove check in 11.2
+			self:Nameplate(args.spellId, 8.4, args.sourceGUID)
+		else -- XXX remove block in 11.2
+			self:Nameplate(args.spellId, 10.2, args.sourceGUID)
+		end
 	end
 end
 
@@ -897,13 +1002,13 @@ end
 -- War Lynx
 
 function mod:WarLynxEngaged(guid)
-	self:Nameplate(446776, 7.0, guid) -- Pounce
+	self:Nameplate(446776, 4.3, guid) -- Pounce
 end
 
 do
 	local prev = 0
 	function mod:Pounce(args)
-		self:Nameplate(args.spellId, 16.6, args.sourceGUID)
+		self:Nameplate(args.spellId, 15.8, args.sourceGUID)
 		if args.time - prev > 2 then
 			prev = args.time
 			self:Message(args.spellId, "red")
@@ -993,20 +1098,20 @@ function mod:Purification(args)
 end
 
 function mod:PurificationApplied(args)
-	if self:Me(args.destGUID) then
-		self:PersonalMessage(args.spellId)
-		self:PlaySound(args.spellId, "alert")
+	if self:Me(args.destGUID) or self:Healer() then
+		self:TargetMessage(args.spellId, "red", args.destName)
+		self:PlaySound(args.spellId, "alert", nil, args.destName)
 	end
 end
 
 do
 	local prev = 0
 	function mod:BurstOfLight(args)
-		-- cast at 20%, mob dies after this cast
+		-- cast at 25%, mob dies after this cast
 		self:ClearNameplate(args.sourceGUID)
 		if args.time - prev > 2 then
 			prev = args.time
-			self:Message(args.spellId, "yellow")
+			self:Message(args.spellId, "yellow", CL.percent:format(25, args.spellName))
 			self:PlaySound(args.spellId, "long")
 		end
 	end
@@ -1025,14 +1130,14 @@ end
 
 function mod:Consecration(args)
 	self:Message(args.spellId, "orange")
-	self:Nameplate(args.spellId, 23.0, args.sourceGUID)
+	self:Nameplate(args.spellId, 22.8, args.sourceGUID)
 	self:PlaySound(args.spellId, "alarm")
 end
 
 do
 	local prev = 0
 	function mod:SacredToll(args)
-		self:Nameplate(args.spellId, 23.1, args.sourceGUID)
+		self:Nameplate(args.spellId, 17.8, args.sourceGUID)
 		if args.time - prev > 3 then
 			prev = args.time
 			self:Message(args.spellId, "yellow")
@@ -1059,7 +1164,7 @@ end
 -- Zealous Templar
 
 function mod:ZealousTemplarEngaged(guid)
-	self:Nameplate(427596, 5.1, guid) -- Seal of Light's Fury
+	self:Nameplate(427596, 4.8, guid) -- Seal of Light's Fury
 	if self:Dispeller("magic", true, 444728) then
 		self:Nameplate(444728, 9.4, guid) -- Templar's Wrath
 	end

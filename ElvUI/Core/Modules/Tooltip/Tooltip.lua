@@ -71,7 +71,6 @@ local AddTooltipPostCall = TooltipDataProcessor and TooltipDataProcessor.AddTool
 local GetDisplayedItem = TooltipUtil and TooltipUtil.GetDisplayedItem
 
 local GetItemQualityByID = C_Item.GetItemQualityByID
-local GetItemQualityColor = C_Item.GetItemQualityColor
 local GetItemCount = C_Item.GetItemCount
 local GetItemInfo = C_Item.GetItemInfo
 
@@ -300,14 +299,14 @@ function TT:SetUnitText(tt, unit, isPlayerUnit)
 
 		return nameColor
 	else
-		local isPetCompanion = E.Retail and UnitIsBattlePetCompanion(unit)
+		local isPetCompanion = not E.Classic and UnitIsBattlePetCompanion(unit)
 		local levelLine, classLine = TT:GetLevelLine(tt, 1)
 		if levelLine then
 			local pvpFlag, classificationString, diffColor, level = '', ''
 			local creatureClassification = UnitClassification(unit)
 			local creatureType = UnitCreatureType(unit)
 
-			if isPetCompanion or (E.Retail and UnitIsWildBattlePet(unit)) then
+			if isPetCompanion or (not E.Classic and UnitIsWildBattlePet(unit)) then
 				level = UnitBattlePetLevel(unit)
 
 				local petType = UnitBattlePetType(unit)
@@ -404,7 +403,7 @@ end
 
 local lastGUID
 function TT:AddInspectInfo(tt, unit, numTries, r, g, b)
-	if tt.ItemLevelShown or (not unit) or (numTries > 3) or not UnitIsPlayer(unit) or not CanInspect(unit) or (E.Cata and not CheckInteractDistance(unit, 4)) then return end
+	if tt.ItemLevelShown or (not unit) or (numTries > 3) or not UnitIsPlayer(unit) or not CanInspect(unit) or (E.Mists and not CheckInteractDistance(unit, 4)) then return end
 
 	local unitGUID = UnitGUID(unit)
 	if not unitGUID then return end
@@ -563,6 +562,7 @@ function TT:GameTooltip_OnTooltipSetUnit(data)
 
 	local isShiftKeyDown = IsShiftKeyDown()
 	local isControlKeyDown = IsControlKeyDown()
+	local isInCombat = InCombatLockdown()
 
 	local isPlayerUnit = UnitIsPlayer(unit)
 	local color = TT:SetUnitText(self, unit, isPlayerUnit)
@@ -575,19 +575,19 @@ function TT:GameTooltip_OnTooltipSetUnit(data)
 		TT:AddRoleInfo(self, unit)
 	end
 
-	if E.Retail then
-		if not InCombatLockdown() then
-			if not isShiftKeyDown and (isPlayerUnit and unit ~= 'player') and TT.db.showMount and E.Retail then
-				TT:AddMountInfo(self, unit)
-			end
-
-			if TT.db.mythicDataEnable then
-				TT:AddMythicInfo(self, unit)
-			end
+	if (E.Retail or E.Mists) and not isInCombat then
+		if not isShiftKeyDown and (isPlayerUnit and unit ~= 'player') and TT.db.showMount then
+			TT:AddMountInfo(self, unit)
 		end
 	end
 
-	if (E.Retail or E.Cata) and isShiftKeyDown and isPlayerUnit and not InCombatLockdown() and TT.db.inspectDataEnable and not self.ItemLevelShown then
+	if E.Retail and not isInCombat then
+		if TT.db.mythicDataEnable then
+			TT:AddMythicInfo(self, unit)
+		end
+	end
+
+	if (E.Retail or E.Mists) and not isInCombat and isShiftKeyDown and isPlayerUnit and TT.db.inspectDataEnable and not self.ItemLevelShown then
 		if color then
 			TT:AddInspectInfo(self, unit, 0, color.r, color.g, color.b)
 		else
@@ -595,7 +595,7 @@ function TT:GameTooltip_OnTooltipSetUnit(data)
 		end
 	end
 
-	if not isPlayerUnit and TT:IsModKeyDown() and not (E.Retail and C_PetBattles_IsInBattle()) then
+	if not isPlayerUnit and TT:IsModKeyDown() and not ((E.Retail or E.Mists) and C_PetBattles_IsInBattle()) then
 		local guid = (data and data.guid) or UnitGUID(unit) or ''
 		local id = tonumber(strmatch(guid, '%-(%d-)%-%x-$'), 10)
 		if id then -- NPC ID's
@@ -724,7 +724,7 @@ function TT:GameTooltip_OnTooltipSetItem(data)
 		if TT.db.itemQuality then
 			local quality = GetItemQualityByID(link)
 			if quality and quality > 1 then
-				local r, g, b = GetItemQualityColor(quality)
+				local r, g, b = E:GetItemQualityColor(quality)
 				if self.NineSlice then
 					self.NineSlice:SetBorderColor(r, g, b)
 				else
@@ -933,7 +933,7 @@ function TT:SetCurrencyToken(tt, index)
 	if tt:IsForbidden() or not TT:IsModKeyDown() then return end
 
 	local link = index and C_CurrencyInfo_GetCurrencyListLink(index)
-	local id = link and tonumber(strmatch(link, 'currency:(%d+)'))
+	local id = E:GetCurrencyIDFromLink(link)
 	if not id then return end
 
 	tt:AddLine(' ')
@@ -1070,7 +1070,7 @@ function TT:Initialize()
 	local GameTooltipAnchor = CreateFrame('Frame', 'GameTooltipAnchor', E.UIParent)
 	GameTooltipAnchor:Point('BOTTOMRIGHT', _G.RightChatToggleButton, 'BOTTOMRIGHT')
 	GameTooltipAnchor:Size(130, 20)
-	GameTooltipAnchor:SetFrameLevel(GameTooltipAnchor:GetFrameLevel() + 400)
+	GameTooltipAnchor:OffsetFrameLevel(400)
 	E:CreateMover(GameTooltipAnchor, 'TooltipMover', L["Tooltip"], nil, nil, nil, nil, nil, 'tooltip')
 
 	TT:RegisterEvent('MODIFIER_STATE_CHANGED')
@@ -1086,7 +1086,7 @@ function TT:Initialize()
 	TT:SecureHookScript(GameTooltip, 'OnTooltipCleared', 'GameTooltip_OnTooltipCleared')
 	TT:SecureHookScript(GameTooltip.StatusBar, 'OnValueChanged', 'GameTooltipStatusBar_OnValueChanged')
 
-	if AddTooltipPostCall and not E.Cata then -- exists but doesn't work atm on Cata
+	if AddTooltipPostCall and not E.Mists then -- exists but doesn't work atm on Cata
 		AddTooltipPostCall(TooltipDataType.Spell, TT.GameTooltip_OnTooltipSetSpell)
 		AddTooltipPostCall(TooltipDataType.Macro, TT.GameTooltip_OnTooltipSetSpell)
 		AddTooltipPostCall(TooltipDataType.Item, TT.GameTooltip_OnTooltipSetItem)
@@ -1104,6 +1104,10 @@ function TT:Initialize()
 		end
 	end
 
+	if not E.Classic then
+		TT:SecureHook('BattlePetToolTip_Show', 'AddBattlePetID')
+	end
+
 	if E.Retail then
 		TT:RegisterEvent('WORLD_CURSOR_TOOLTIP_UPDATE', 'WorldCursorTooltipUpdate')
 		TT:SecureHook('EmbeddedItemTooltip_SetSpellWithTextureByID', 'EmbeddedItemTooltip_ID')
@@ -1111,7 +1115,6 @@ function TT:Initialize()
 		TT:SecureHook(GameTooltip, 'SetToyByItemID')
 		TT:SecureHook(GameTooltip, 'SetCurrencyToken')
 		TT:SecureHook(GameTooltip, 'SetBackpackToken')
-		TT:SecureHook('BattlePetToolTip_Show', 'AddBattlePetID')
 		TT:SecureHook('QuestMapLogTitleButton_OnEnter', 'AddQuestID')
 		TT:SecureHook('TaskPOI_OnEnter', 'AddQuestID')
 

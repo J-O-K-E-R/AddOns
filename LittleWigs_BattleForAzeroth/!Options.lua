@@ -294,6 +294,7 @@ BigWigs:AddSounds("Rexxar", {
 
 BigWigs:AddColors("Horrific Vision of Orgrimmar Trash", {
 	[11641] = {"blue","orange"},
+	[292240] = "blue",
 	[296492] = "orange",
 	[296510] = "cyan",
 	[296718] = "orange",
@@ -322,21 +323,35 @@ BigWigs:AddColors("Horrific Vision of Orgrimmar Trash", {
 	[305875] = "red",
 	[306001] = "orange",
 	[306199] = "yellow",
-	[306583] = {"blue","green"},
+	[306583] = "blue",
 	[306770] = "orange",
 	[307870] = "green",
 	[308018] = "orange",
 	[308346] = "orange",
 	[311390] = "blue",
 	[311996] = "cyan",
+	[312456] = "green",
 	[312584] = "yellow",
+	[313303] = "blue",
+	[313670] = "green",
+	[313698] = "green",
+	[313770] = "green",
+	[313961] = "green",
 	[314720] = "orange",
 	[314723] = "yellow",
+	[315385] = "blue",
+	[315807] = "yellow",
+	[315814] = "green",
+	[315817] = {"blue","green"},
+	[315845] = {"blue","green"},
+	[315849] = {"blue","green"},
 	[319304] = {"blue","yellow"},
+	[1225675] = "green",
 })
 
 BigWigs:AddSounds("Horrific Vision of Orgrimmar Trash", {
 	[11641] = "info",
+	[292240] = "warning",
 	[296492] = "alarm",
 	[296510] = "info",
 	[296718] = "alarm",
@@ -365,17 +380,30 @@ BigWigs:AddSounds("Horrific Vision of Orgrimmar Trash", {
 	[305875] = "alarm",
 	[306001] = "alert",
 	[306199] = "alarm",
-	[306583] = {"alert","info"},
+	[306583] = "alert",
 	[306770] = "alarm",
 	[307870] = "info",
 	[308018] = "alarm",
 	[308346] = "alarm",
 	[311390] = "info",
 	[311996] = "long",
+	[312456] = "info",
 	[312584] = "info",
+	[313303] = "underyou",
+	[313670] = "info",
+	[313698] = "long",
+	[313770] = "info",
+	[313961] = "info",
 	[314720] = "alarm",
 	[314723] = "info",
+	[315385] = "info",
+	[315807] = "warning",
+	[315814] = "info",
+	[315817] = {"info","warning"},
+	[315845] = {"info","warning"},
+	[315849] = {"info","warning"},
 	[319304] = "alert",
+	[1225675] = "info",
 })
 
 BigWigs:AddColors("Alleria Windrunner", {
@@ -442,7 +470,10 @@ BigWigs:AddSounds("Magister Umbric", {
 
 BigWigs:AddColors("Horrific Vision of Stormwind Trash", {
 	[86736] = "orange",
+	[250505] = "red",
+	[258768] = "orange",
 	[264398] = "yellow",
+	[292240] = "blue",
 	[296492] = "orange",
 	[296510] = "cyan",
 	[296537] = "red",
@@ -453,7 +484,7 @@ BigWigs:AddColors("Horrific Vision of Stormwind Trash", {
 	[298033] = "red",
 	[298074] = "orange",
 	[298584] = "cyan",
-	[306583] = {"blue","green"},
+	[306583] = "blue",
 	[306770] = "red",
 	[307870] = "green",
 	[308265] = {"blue","red"},
@@ -477,13 +508,30 @@ BigWigs:AddColors("Horrific Vision of Stormwind Trash", {
 	[311399] = "orange",
 	[311456] = "yellow",
 	[311996] = "cyan",
+	[312355] = "green",
+	[312456] = "green",
+	[313303] = "blue",
+	[313698] = "green",
+	[314087] = "green",
+	[314165] = "green",
+	[314203] = "green",
+	[315385] = "blue",
+	[315807] = "yellow",
+	[315814] = "green",
+	[315817] = {"blue","green"},
+	[315845] = {"blue","green"},
+	[315849] = {"blue","green"},
 	[1223111] = {"blue","yellow"},
 	[1223112] = "red",
+	["portal_closed"] = "green",
 })
 
 BigWigs:AddSounds("Horrific Vision of Stormwind Trash", {
 	[86736] = "info",
+	[250505] = "warning",
+	[258768] = "alarm",
 	[264398] = "alarm",
+	[292240] = "warning",
 	[296492] = "alarm",
 	[296510] = "info",
 	[296537] = "alert",
@@ -494,7 +542,7 @@ BigWigs:AddSounds("Horrific Vision of Stormwind Trash", {
 	[298033] = "warning",
 	[298074] = "alarm",
 	[298584] = "info",
-	[306583] = {"alert","info"},
+	[306583] = "alert",
 	[306770] = "alarm",
 	[307870] = "info",
 	[308265] = {"info","warning"},
@@ -518,8 +566,22 @@ BigWigs:AddSounds("Horrific Vision of Stormwind Trash", {
 	[311399] = "alarm",
 	[311456] = "warning",
 	[311996] = "long",
+	[312355] = "info",
+	[312456] = "info",
+	[313303] = "underyou",
+	[313698] = "long",
+	[314087] = "info",
+	[314165] = "info",
+	[314203] = "info",
+	[315385] = "info",
+	[315807] = "warning",
+	[315814] = "info",
+	[315817] = {"info","warning"},
+	[315845] = {"info","warning"},
+	[315849] = {"info","warning"},
 	[1223111] = "alarm",
 	[1223112] = "alert",
+	["portal_closed"] = "info",
 })
 
 BigWigs:AddColors("The Golden Serpent", {
@@ -747,15 +809,19 @@ BigWigs:AddSounds("K.U.-J.0.", {
 BigWigs:AddColors("Machinist's Garden", {
 	[285440] = "red",
 	[285454] = {"blue","orange","red"},
+	[292332] = "yellow",
 	[294853] = "cyan",
 	[294855] = {"blue","yellow"},
+	[1213154] = "blue",
 })
 
 BigWigs:AddSounds("Machinist's Garden", {
 	[285440] = "alarm",
 	[285454] = {"alert","info"},
+	[292332] = "info",
 	[294853] = "long",
 	[294855] = "alert",
+	[1213154] = "underyou",
 })
 
 BigWigs:AddColors("King Mechagon", {
@@ -1235,7 +1301,7 @@ BigWigs:AddSounds("Temple of Sethraliss Trash", {
 })
 
 BigWigs:AddColors("Coin-Operated Crowd Pummeler", {
-	[256493] = {"blue","green"},
+	[256493] = "green",
 	[262347] = "red",
 	[269493] = "cyan",
 	[271784] = "yellow",
@@ -1245,7 +1311,7 @@ BigWigs:AddColors("Coin-Operated Crowd Pummeler", {
 })
 
 BigWigs:AddSounds("Coin-Operated Crowd Pummeler", {
-	[256493] = {"alarm","info"},
+	[256493] = "info",
 	[262347] = "alert",
 	[269493] = "long",
 	[271784] = "info",
@@ -1287,7 +1353,7 @@ BigWigs:AddSounds("Rixxa Fluxflame", {
 BigWigs:AddColors("Mogul Razdunk", {
 	[260280] = "yellow",
 	[260813] = {"blue","orange"},
-	[271456] = {"blue","orange"},
+	[271456] = {"blue","green","orange"},
 	[276229] = "red",
 	["stages"] = "cyan",
 })
@@ -1295,7 +1361,7 @@ BigWigs:AddColors("Mogul Razdunk", {
 BigWigs:AddSounds("Mogul Razdunk", {
 	[260280] = "alert",
 	[260813] = {"alarm","warning"},
-	[271456] = "alert",
+	[271456] = {"alert","info","warning"},
 	[276229] = "long",
 	["stages"] = {"info","long"},
 })
@@ -1304,11 +1370,13 @@ BigWigs:AddColors("The MOTHERLODE!! Trash", {
 	[262092] = "orange",
 	[262377] = {"blue","yellow"},
 	[262383] = "cyan",
+	[262794] = {"blue","yellow"},
 	[263202] = "red",
 	[263215] = "orange",
 	[263628] = "purple",
 	[267354] = "yellow",
 	[267433] = "yellow",
+	[267980] = "yellow",
 	[268362] = "orange",
 	[268702] = "red",
 	[268712] = "red",
@@ -1333,11 +1401,13 @@ BigWigs:AddSounds("The MOTHERLODE!! Trash", {
 	[262092] = "alert",
 	[262377] = "info",
 	[262383] = "info",
+	[262794] = "info",
 	[263202] = "alert",
 	[263215] = "alert",
 	[263628] = "alert",
 	[267354] = "alert",
 	[267433] = "warning",
+	[267980] = "info",
 	[268362] = "alarm",
 	[268702] = "warning",
 	[268712] = "alarm",

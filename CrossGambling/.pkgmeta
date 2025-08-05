@@ -1,0 +1,11 @@
+package-as: CrossGambling
+
+ignore:
+  - .git
+  - .github
+  - README.md
+  - LICENSE
+  - docs/
+
+enable-nolib-creation: no
+manual-changelog: true

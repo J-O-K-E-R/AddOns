@@ -20,6 +20,7 @@ timeFormatter:Init(1, SecondsFormatter.Abbreviation.Truncate);
 -- App locals
 local GetRelativeValue, SearchForField, SearchForObject = app.GetRelativeValue, app.SearchForField, app.SearchForObject
 local distance = app.distance
+local Callback = app.CallbackHandlers.Callback
 
 -- Module locals (can be set via OnLoad if they do not change during Session but are not yet defined)
 local SearchForLink, GetPlayerPosition
@@ -29,6 +30,7 @@ local objectNamesToIDs = {};
 local function OnLoad_CacheObjectNames()
 	local o
 	for objectID,name in pairs(app.ObjectNames) do
+		name = name:lower()
 		o = objectNamesToIDs[name];
 		if not o then
 			o = { objectID };
@@ -38,13 +40,17 @@ local function OnLoad_CacheObjectNames()
 		end
 	end
 end
+local function GetObjectIDsByName(name)
+	if not name then return end
+	return objectNamesToIDs[name:trim():lower()]
+end
 local GetBestObjectIDForName;
 if app.IsRetail then
 	local InGame = app.Modules.Filter.Filters.InGame
 	GetBestObjectIDForName = function(name)
 		-- Uses a provided 'name' and scans the ObjectDB to find potentially matching ObjectID's,
 		-- then correlate those search results by closest distance to the player's current position
-		local o = objectNamesToIDs[name];
+		local o = GetObjectIDsByName(name)
 		if o and #o > 0 then
 			local mapID, px, py = GetPlayerPosition();
 			-- if we don't know where the player is, we have literally no way to reduce the set of matching objects by name
@@ -118,7 +124,7 @@ else
 		-- Uses a provided 'name' and scans the ObjectDB to find potentially matching ObjectID's,
 		-- then correlate those search results by closest distance to the player's current position
 		--print("GetBestObjectIDForName:", "'" .. (name or RETRIEVING_DATA) .. "'");
-		local o = objectNamesToIDs[name and name:trim()];
+		local o = GetObjectIDsByName(name)
 		if o and #o > 0 then
 			local objects = {};
 			local mapID, px, py = GetPlayerPosition();
@@ -497,6 +503,23 @@ for i,guid in ipairs({
 	PLAYER_TOOLTIPS[guid] = tooltipFunction;
 end
 
+-- OF_THE_ASYLUM GUIDs
+local OF_THE_ASYLUM_TITLE = app.Modules.Color.Colorize(L.TOOLTIP_MODULE.TITLES.XX_OF_THE_ASYLUM, "ffa335ee");
+tooltipFunction = function(self, locClass, engClass, locRace, engRace, gender, name, server)
+	local leftSide = _G[self:GetName() .. "TextLeft1"];
+	if leftSide then leftSide:SetText(OF_THE_ASYLUM_TITLE:format(name)); end
+end
+for i,guid in ipairs({
+	"Player-4372-03E56CDC",	-- Slorche-Atiesh
+	"Player-4372-03F46784",	-- Bankmänfried-Atiesh
+	"Player-4372-03E57EE7",	-- Slorchey-Atiesh
+	"Player-4372-03E57EE6",	-- Slorchejr-Atiesh
+	"Player-4372-03E57EFD",	-- Slorpp-Atiesh
+	"Player-4372-03E57EE4",	-- Slorloko-Atiesh
+}) do
+	PLAYER_TOOLTIPS[guid] = tooltipFunction;
+end
+
 -- Pinkey GUID
 tooltipFunction = function(self, locClass, engClass, locRace, engRace, gender, name, server)
 	local leftSide = _G[self:GetName() .. "TextLeft1"];
@@ -690,6 +713,18 @@ local function ClearTooltip(tooltip)
 	tooltip.AllTheThingsProcessing = nil;
 	tooltip.ATT_AttachComplete = nil;
 end
+local function ReshowGametooltip()
+	if GameTooltip and GameTooltip:IsVisible() then
+		-- app.PrintDebug("Auto-refresh tooltip",GameTooltip.AllTheThingsProcessing)
+		-- Make sure the tooltip will try to re-attach the data if it's from an ATT row
+		---@diagnostic disable-next-line: inject-field
+		GameTooltip.ATT_AttachComplete = nil
+		GameTooltip:Show()
+	end
+end
+app.AddEventHandler("OnRefreshComplete", function()
+	Callback(ReshowGametooltip)
+end);
 
 -- Stores a cache of the 'tooltipInfo' for a given group
 -- TODO: this isnt too effective right now since we have to clear the search cache as well
@@ -753,6 +788,30 @@ local function AttachTooltipSearchResults(tooltip, method, ...)
 	-- app.PrintDebug("ATT_AttachComplete",tooltip.ATT_AttachComplete,working,group.working)
 end
 
+local AttachTypicalSearchResults
+do
+	local DefaultSearchOptions = { AppendSearchParams = { "field", true }}
+	local NPCSearchOptions = { AppendSearchParams = { "none", true }}
+	local SearchOptionByField = setmetatable({
+		-- TODO: still need this for provider-types which don't translate into Cost...
+		-- will have to adjust how NPC-linked data is Filled so we can consistently
+		-- perform our logic in the future
+		npcID = NPCSearchOptions,
+		objectID = NPCSearchOptions,
+	}, { __index = function() return DefaultSearchOptions end})
+
+	AttachTypicalSearchResults = app.IsRetail and
+	-- In Retail, we want to put the Thing being searched into the tooltip. Whether other content should be included
+	-- is based on Fillers and other logic based on that Thing and is not always included based on caching
+	function(self, field, id)
+		AttachTooltipSearchResults(self, SearchForObject, field, tonumber(id), SearchOptionByField[field])
+	end
+or
+	function(self, field, id)
+		AttachTooltipSearchResults(self, SearchForField, field, tonumber(id))
+	end
+end
+
 -- Battle Pet Tooltips
 local function AttachBattlePetTooltip(tooltip, data, quantity, detail)
 	if not data or data.att or not data.speciesID then return end
@@ -786,8 +845,17 @@ local function AttachBattlePetTooltip(tooltip, data, quantity, detail)
 end
 --hooksecurefunc("BattlePetTooltipTemplate_SetBattlePet", AttachBattlePetTooltip); -- Not ready yet.
 
+-- For some reason, Blizzard puts some secure access functionality within the GetOwner() call on certain
+-- tooltips, which means when ATT checks the Owner via this function, a secure code taint error is thrown
+local function SafeGetOwner(tooltip)
+	local ok, owner = pcall(tooltip.GetOwner,tooltip)
+	if ok then
+		return owner
+	else app.PrintDebug("Bad GetOwner on tooltip",tooltip:GetName())
+	end
+end
 -- Tooltip API Differences between Modern and Legacy APIs.
-if TooltipDataProcessor and app.GameBuildVersion > 50000 then
+if TooltipDataProcessor and app.GameBuildVersion > 60000 then
 	-- 10.0.2
 	-- https://wowpedia.fandom.com/wiki/Patch_10.0.2/API_changes#Tooltip_Changes
 	-- many of these don't include an ID in-game so they don't attach results. maybe someday they will...
@@ -851,7 +919,7 @@ if TooltipDataProcessor and app.GameBuildVersion > 50000 then
 		-- self:Show();
 
 		-- Does the tooltip have an owner?
-		local owner = self:GetOwner();
+		local owner = SafeGetOwner(self)
 		if owner then
 			if owner.SpellHighlightTexture	-- Action bars
 			or owner.TrainBook		-- Spellbook spell tooltips
@@ -881,7 +949,7 @@ if TooltipDataProcessor and app.GameBuildVersion > 50000 then
 
 			local encounterID = owner.encounterID;
 			if encounterID and not owner.itemID then
-				AttachTooltipSearchResults(self, SearchForField, "encounterID", tonumber(encounterID));
+				AttachTypicalSearchResults(self, "encounterID", encounterID)
 				return true;
 			end
 		end
@@ -976,14 +1044,14 @@ if TooltipDataProcessor and app.GameBuildVersion > 50000 then
 				if server_id and zone_uid and app.Settings:GetTooltipSetting("Layer") then
 					self:AddDoubleLine(L.LAYER, app.Modules.Color.Colorize((ServerUID ~= server_id and (server_id .. "-") or "") .. zone_uid, app.Colors.White));
 				end
-				AttachTooltipSearchResults(self, SearchForField, "creatureID", tonumber(npc_id));
+				AttachTypicalSearchResults(self, "npcID", npc_id)
 			end
 			return true;
 		end
 
 		-- Does the tooltip have a spell? [Mount Journal, Action Bars, etc]
 		if self.AllTheThingsProcessing and spellID then
-			AttachTooltipSearchResults(self, SearchForField, "spellID", spellID);
+			AttachTypicalSearchResults(self, "spellID", spellID)
 			return true;
 		end
 
@@ -1040,7 +1108,7 @@ if TooltipDataProcessor and app.GameBuildVersion > 50000 then
 			end
 			if knownSearchField and ttId then
 				-- app.PrintDebug("TT Search",knownSearchField,ttId)
-				AttachTooltipSearchResults(self, SearchForField, knownSearchField, tonumber(ttId));
+				AttachTypicalSearchResults(self, knownSearchField, ttId)
 				if knownSearchField == "currencyID" and self.ATT_AttachComplete == false then
 					app.CallbackHandlers.DelayedCallback(RerenderCurrency, 0.05, self, ttId);
 				end
@@ -1051,13 +1119,7 @@ if TooltipDataProcessor and app.GameBuildVersion > 50000 then
 	end
 
 	app.AddEventRegistration("TOOLTIP_DATA_UPDATE", function(...)
-		if GameTooltip and GameTooltip:IsVisible() then
-			-- app.PrintDebug("Auto-refresh tooltip")
-			-- Make sure the tooltip will try to re-attach the data if it's from an ATT row
-			---@diagnostic disable-next-line: inject-field
-			GameTooltip.ATT_AttachComplete = nil;
-			GameTooltip:Show();
-		end
+		Callback(ReshowGametooltip)
 	end);
 	app.AddEventHandler("OnReady", function()
 		TooltipDataProcessor.AddTooltipPostCall(TooltipDataProcessor.AllTypes, AttachTooltip)
@@ -1098,9 +1160,6 @@ else
 				self:AddDoubleLine("GetUnit", tostring(select(2, self:GetUnit()) or "nil"));
 				--]]--
 
-				-- Does the tooltip have an owner?
-				local owner = self:GetOwner();
-
 				-- Does the tooltip have a target?
 				local target = select(2, self:GetUnit());
 				if target then
@@ -1140,10 +1199,13 @@ else
 					end
 				end
 
+				-- Does the tooltip have an owner?
+				local owner = SafeGetOwner(self)
+
 				-- Does the tooltip have a spell? [Mount Journal, Action Bars, etc]
 				local spellID = select(2, self:GetSpell());
 				if spellID then
-					if owner.SpellHighlightTexture then
+					if owner and owner.SpellHighlightTexture then
 						-- Actionbars, don't want that.
 						return true;
 					end

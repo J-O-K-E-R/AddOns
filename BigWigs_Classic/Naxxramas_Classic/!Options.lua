@@ -164,7 +164,7 @@ BigWigs:AddColors("The Four Horsemen", {
 	[28883] = "yellow",
 	[28884] = "red",
 	[29061] = "yellow",
-	["mark"] = {"blue","red","yellow"},
+	["mark"] = {"blue","yellow"},
 	["stages"] = "cyan",
 })
 
@@ -181,6 +181,7 @@ BigWigs:AddColors("Sapphiron", {
 	[28524] = "red",
 	[28542] = {"green","orange"},
 	[28547] = "blue",
+	[1219728] = {"blue","yellow"},
 	["stages"] = "cyan",
 })
 
@@ -188,6 +189,7 @@ BigWigs:AddSounds("Sapphiron", {
 	[28524] = "warning",
 	[28542] = "alert",
 	[28547] = "underyou",
+	[1219728] = "warning",
 	["stages"] = "long",
 })
 
@@ -207,5 +209,13 @@ BigWigs:AddSounds("Kel'Thuzad", {
 	[27819] = "warning",
 	[28410] = "long",
 	["adds"] = "info",
-	["stages"] = "info",
+	["stages"] = {"info","long"},
+})
+
+BigWigs:AddColors("Naxxramas Trash", {
+	[1219235] = {"blue","yellow"},
+})
+
+BigWigs:AddSounds("Naxxramas Trash", {
+	[1219235] = "warning",
 })

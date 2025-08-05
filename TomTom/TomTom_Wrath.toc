@@ -1,7 +1,7 @@
 ## Interface: 30403
 ## Title: TomTom
 ## Author: Cladhaire, Ludovicus
-## Version: v4.0.8-release
+## Version: v4.0.12-release
 ## License: All Rights Reserved
 ## IconTexture: Interface\AddOns\TomTom\Images\StaticArrow.tga
 ## Notes: Acts as your portable navigation assistant
@@ -42,6 +42,7 @@ Localization.koKR.lua
 Localization.ptBR.lua
 
 TomTom.lua
+
 TomTom_Waypoints.lua
 TomTom_CrazyArrow.lua
 TomTom_Corpse.lua

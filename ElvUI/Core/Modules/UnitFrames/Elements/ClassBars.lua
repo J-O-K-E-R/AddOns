@@ -12,8 +12,9 @@ local unpack = unpack
 local CreateFrame = CreateFrame
 local MAX_COMBO_POINTS = MAX_COMBO_POINTS
 
-local AltManaTypes = { Rage = 1 }
+local AltManaTypes = { Rage = 1, Energy = 3 }
 local ClassPowerTypes = { 'ClassPower', 'AdditionalPower', 'Runes', 'Stagger', 'Totems', 'AlternativePower', 'EclipseBar' }
+local ClassPowerColors = { COMBO_POINTS = 'comboPoints', ESSENCE = 'EVOKER', CHI = 'MONK', Totems = 'SHAMAN' }
 
 if E.Retail then
 	AltManaTypes.LunarPower = 8
@@ -29,6 +30,7 @@ function UF:GetClassPower_Construct(frame)
 		frame.AdditionalPower = UF:Construct_AdditionalPowerBar(frame)
 	elseif E.myclass == 'MONK' then
 		frame.Stagger = UF:Construct_Stagger(frame)
+		frame.AdditionalPower = UF:Construct_AdditionalPowerBar(frame)
 	elseif E.myclass == 'DEATHKNIGHT' then
 		frame.Runes = UF:Construct_DeathKnightResourceBar(frame)
 		frame.ClassBar = 'Runes'
@@ -64,7 +66,7 @@ function UF:ClassPower_UpdateColor(powerType, rune)
 	local isRunes = powerType == 'RUNES'
 
 	local colors = UF.db.colors.classResources
-	local fallback = UF.db.colors.power[powerType]
+	local fallback = UF.db.colors.power[powerType] or UF.db.colors.power.MANA
 
 	if isRunes and UF.db.colors.chargingRunes then
 		UF:Runes_UpdateCharged(self, rune, custom_backdrop)
@@ -72,10 +74,14 @@ function UF:ClassPower_UpdateColor(powerType, rune)
 		local color = colors.DEATHKNIGHT[rune.runeType or 0]
 		UF:ClassPower_SetBarColor(rune, color.r, color.g, color.b, custom_backdrop)
 	else
-		local classColor = (isRunes and colors.DEATHKNIGHT) or (powerType == 'COMBO_POINTS' and colors.comboPoints) or (powerType == 'ESSENCE' and colors.EVOKER) or (powerType == 'CHI' and colors.MONK) or (powerType == 'Totems' and colors.SHAMAN)
+		local classColor = colors[ClassPowerColors[powerType]] or colors[E.myclass][powerType] or colors[E.myclass]
 		for i, bar in ipairs(self) do
-			local color = (isRunes and classColor[bar.runeType or 0]) or (classColor and classColor[i]) or colors[E.myclass] or fallback
-			UF:ClassPower_SetBarColor(bar, color.r, color.g, color.b, custom_backdrop)
+			local color = (isRunes and colors.DEATHKNIGHT[bar.runeType or 0]) or classColor[i] or classColor
+			if not color or not color.r then
+				UF:ClassPower_SetBarColor(bar, fallback.r, fallback.g, fallback.b, custom_backdrop)
+			else
+				UF:ClassPower_SetBarColor(bar, color.r, color.g, color.b, custom_backdrop)
+			end
 		end
 	end
 end
@@ -88,6 +94,7 @@ function UF:Configure_ClassBar(frame)
 	if not bars then return end
 
 	bars.Holder = frame.ClassBarHolder
+	bars.AdditionalHolder = frame.ClassAdditionalHolder
 	bars.origParent = frame
 
 	local MAX_CLASS_BAR = frame.MAX_CLASS_BAR
@@ -115,7 +122,7 @@ function UF:Configure_ClassBar(frame)
 	end
 
 	if frame.USE_MINI_CLASSBAR and not frame.CLASSBAR_DETACHED then
-		if MAX_CLASS_BAR == 1 or frame.ClassBar == 'AdditionalPower' or frame.ClassBar == 'EclipseBar' or frame.ClassBar == 'Stagger' or frame.ClassBar == 'AlternativePower' then
+		if MAX_CLASS_BAR == 1 or frame.ClassBar == 'EclipseBar' or frame.ClassBar == 'Stagger' or frame.ClassBar == 'AlternativePower' then
 			CLASSBAR_WIDTH = CLASSBAR_WIDTH * 2 / 3
 		else
 			CLASSBAR_WIDTH = CLASSBAR_WIDTH * (MAX_CLASS_BAR - 1) / MAX_CLASS_BAR
@@ -210,8 +217,36 @@ function UF:Configure_ClassBar(frame)
 
 		bars.Arrow:ClearAllPoints()
 		bars.Arrow:Point('CENTER', lunarTex, isVertical and 'TOP' or 'RIGHT', 0, isVertical and -4 or 0)
-	elseif frame.ClassBar == 'AdditionalPower' or frame.ClassBar == 'Stagger' or frame.ClassBar == 'AlternativePower' then
+	elseif frame.ClassBar == 'Stagger' or frame.ClassBar == 'AlternativePower' then
 		bars:SetOrientation(isVertical and 'VERTICAL' or 'HORIZONTAL')
+	end
+
+	if bars.AdditionalHolder and (E.myclass == 'DRUID' or (E.Mists and E.myclass == 'MONK')) then
+		bars.AdditionalHolder:Size(db.classAdditional.width, db.classAdditional.height)
+
+		if not bars.AdditionalHolder.mover then
+			E:CreateMover(bars.AdditionalHolder, 'AdditionalPowerMover', L["Additional Class Power"], nil, nil, nil, 'ALL,SOLO', nil, 'unitframe,individualUnits,player,classbar')
+		else
+			E:EnableMover(bars.AdditionalHolder.mover.name)
+		end
+
+		if frame.Stagger then
+			frame.Stagger:ClearAllPoints()
+			frame.Stagger:Point('BOTTOMLEFT', bars.AdditionalHolder, 'BOTTOMLEFT', UF.BORDER + UF.SPACING, UF.BORDER + UF.SPACING)
+			frame.Stagger:Size(db.classAdditional.width - SPACING, db.classAdditional.height - SPACING)
+			frame.Stagger:SetFrameLevel(db.classAdditional.frameLevel)
+			frame.Stagger:SetFrameStrata(db.classAdditional.frameStrata)
+			frame.Stagger:SetOrientation(db.classAdditional.orientation)
+		end
+
+		if frame.AdditionalPower then
+			frame.AdditionalPower:ClearAllPoints()
+			frame.AdditionalPower:Point('BOTTOMLEFT', bars.AdditionalHolder, 'BOTTOMLEFT', UF.BORDER + UF.SPACING, UF.BORDER + UF.SPACING)
+			frame.AdditionalPower:Size(db.classAdditional.width - SPACING, db.classAdditional.height - SPACING)
+			frame.AdditionalPower:SetFrameLevel(db.classAdditional.frameLevel)
+			frame.AdditionalPower:SetFrameStrata(db.classAdditional.frameStrata)
+			frame.AdditionalPower:SetOrientation(db.classAdditional.orientation)
+		end
 	end
 
 	if frame.USE_MINI_CLASSBAR and not frame.CLASSBAR_DETACHED then
@@ -238,15 +273,15 @@ function UF:Configure_ClassBar(frame)
 		bars:SetFrameStrata(db.classbar.strataAndLevel.useCustomStrata and db.classbar.strataAndLevel.frameStrata or 'LOW')
 		bars:SetFrameLevel(db.classbar.strataAndLevel.useCustomLevel and db.classbar.strataAndLevel.frameLevel or frame.Health:GetFrameLevel() + 10) --Health uses 10, Power uses (Health + 5) when attached
 	else
+		bars:OffsetFrameLevel(10, frame.Health) --Health uses 10, Power uses (Health + 5) when attached
+		bars:SetFrameStrata('LOW')
 		bars:ClearAllPoints()
+
 		if frame.ORIENTATION == 'RIGHT' then
 			bars:Point('BOTTOMRIGHT', frame.Health.backdrop, 'TOPRIGHT', -UF.BORDER, UF.SPACING*3)
 		else
 			bars:Point('BOTTOMLEFT', frame.Health.backdrop, 'TOPLEFT', UF.BORDER, UF.SPACING*3)
 		end
-
-		bars:SetFrameStrata('LOW')
-		bars:SetFrameLevel(frame.Health:GetFrameLevel() + 10) --Health uses 10, Power uses (Health + 5) when attached
 
 		if bars.Holder and bars.Holder.mover then
 			E:DisableMover(bars.Holder.mover.name)
@@ -310,7 +345,7 @@ function UF:ToggleResourceBar()
 	if self.text then self.text:SetAlpha(frame.CLASSBAR_SHOWN and 1 or 0) end
 
 	frame.CLASSBAR_HEIGHT = frame.USE_CLASSBAR and ((db.classbar and db.classbar.height) or (frame.AlternativePower and db.power.height)) or 0
-	frame.CLASSBAR_YOFFSET = (not frame.USE_CLASSBAR or not frame.CLASSBAR_SHOWN or frame.CLASSBAR_DETACHED) and 0 or (frame.USE_MINI_CLASSBAR and ((UF.SPACING+(frame.CLASSBAR_HEIGHT*0.5))) or (frame.CLASSBAR_HEIGHT - (UF.BORDER-UF.SPACING)))
+	frame.CLASSBAR_YOFFSET = ((not frame.USE_CLASSBAR or not frame.CLASSBAR_SHOWN or frame.CLASSBAR_DETACHED)) and 0 or (frame.USE_MINI_CLASSBAR and ((UF.SPACING+(frame.CLASSBAR_HEIGHT*0.5))) or (frame.CLASSBAR_HEIGHT - (UF.BORDER-UF.SPACING)))
 
 	UF:Configure_CustomTexts(frame)
 	UF:Configure_HealthBar(frame)
@@ -422,7 +457,7 @@ end
 function UF:Runes_GetColor(rune, colors, classPower)
 	local value = rune:GetValue()
 
-	if E.Cata then
+	if E.Mists then
 		local _, maxDuration = rune:GetMinMaxValues()
 		local duration = value == maxDuration and 1 or ((value * maxDuration) / 255) + .35
 
@@ -557,19 +592,11 @@ function UF:PostUpdateAdditionalPower(CUR, MAX, event)
 	local frame = self.origParent or self:GetParent()
 	local db = frame.db
 
-	if frame.USE_CLASSBAR and event ~= 'ElementDisable' and (CUR ~= MAX or not db.classbar.autoHide) then
-		self:Show()
-	else
-		self:Hide()
-	end
+	self:SetShown((frame.USE_CLASSBAR and event ~= 'ElementDisable') and (CUR ~= MAX or not db.classAdditional.autoHide) and (not E.Mists or E.myclass ~= 'MONK' or E.myspec == 2))
 end
 
-function UF:PostVisibilityAdditionalPower(enabled)
-	local frame = self.origParent or self:GetParent()
-
-	frame.ClassBar = (enabled and 'AdditionalPower') or 'ClassPower'
-
-	UF:PostVisibility_ClassBars(frame)
+function UF:PostVisibilityAdditionalPower()
+	-- this used to do something but now the bar is split off
 end
 
 -----------------------------------------------------------
@@ -589,7 +616,7 @@ function UF:Construct_DruidEclipseBar(frame)
 	UF.statusbars[eclipseBar.SolarBar] = true
 
 	eclipseBar.RaisedElementParent = CreateFrame('Frame', nil, eclipseBar)
-	eclipseBar.RaisedElementParent:SetFrameLevel(eclipseBar:GetFrameLevel() + 100)
+	eclipseBar.RaisedElementParent:OffsetFrameLevel(100, eclipseBar)
 	eclipseBar.RaisedElementParent:SetAllPoints()
 
 	eclipseBar.Arrow = eclipseBar.LunarBar:CreateTexture(nil, 'OVERLAY')
@@ -610,22 +637,17 @@ function UF:EclipsePostDirectionChange(direction)
 	local vertical = frame.CLASSBAR_DETACHED and frame.db.classbar.verticalOrientation
 	local r, g, b = unpack(ElvUF.colors.ClassBars.DRUID[direction == 'sun' and 1 or 2])
 
+	self.Arrow:SetShown(direction == 'sun' or direction == 'moon')
 	self.Arrow:SetRotation(direction == 'sun' and (vertical and 0 or -1.57) or (vertical and 3.14 or 1.57))
 	self.Arrow:SetVertexColor(r, g, b)
-
-	if direction == 'sun' or direction == 'moon' then
-		self.Arrow:Show()
-	else
-		self.Arrow:Hide()
-	end
 end
 
-function UF:EclipsePostUpdateVisibility(enabled, stateChanged)
+function UF:EclipsePostUpdateVisibility(enabled)
 	local frame = self.origParent or self:GetParent()
 
-	frame.ClassBar = enabled and 'EclipseBar' or 'AdditionalPower'
+	frame.ClassBar = (enabled and 'EclipseBar') or 'ClassPower'
 
-	UF:PostVisibility_ClassBars(frame, stateChanged)
+	UF:PostVisibility_ClassBars(frame)
 end
 
 -----------------------------------------------------------
@@ -650,14 +672,19 @@ function UF:PostUpdateStagger(stagger)
 	local frame = self.origParent or self:GetParent()
 	local db = frame.db
 
-	if not frame.USE_CLASSBAR or (stagger == 0 and db.classbar.autoHide) then
-		self:Hide()
+	if E.Retail then
+		local autohide = stagger == 0 and db.classbar.autoHide
+		self:SetShown(frame.USE_CLASSBAR and not autohide)
 	else
-		self:Show()
+		local autohide = stagger == 0 and db.classAdditional.autoHide
+		local altPower = E.db.unitframe.altManaPowers[E.myclass]
+		self:SetShown(altPower and altPower.Stagger and not autohide)
 	end
 end
 
 function UF:PostUpdateVisibilityStagger(_, _, isShown, stateChanged)
+	if not E.Retail then return end
+
 	self.ClassBar = (isShown and 'Stagger') or 'ClassPower'
 
 	if stateChanged then

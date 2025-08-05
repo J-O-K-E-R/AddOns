@@ -572,7 +572,7 @@ function E:StaticPopup_OnUpdate(elapsed)
 		end
 	end
 
-	if info.OnUpdate then
+	if info and info.OnUpdate then
 		info.OnUpdate(self, elapsed)
 	end
 end
@@ -584,27 +584,49 @@ function E:StaticPopup_OnClick(index)
 	local info = E.PopupDialogs[which]
 	if not info then return end
 
-	local hide = true
-	if index == 1 then
-		local OnAccept = info.OnAccept
-		if OnAccept then
-			hide = not OnAccept(self, self.data, self.data2)
+	if info.selectCallbackByIndex then
+		local func
+		if index == 1 then
+			func = info.OnAccept or info.OnButton1
+		elseif index == 2 then
+			func = info.OnCancel or info.OnButton2
+		elseif index == 3 then
+			func = info.OnButton3
+		elseif index == 4 then
+			func = info.OnButton4
+		elseif index == 5 then
+			func = info.OnExtraButton
 		end
-	elseif index == 3 then
-		local OnAlt = info.OnAlt
-		if OnAlt then
-			OnAlt(self, self.data, 'clicked')
+
+		if func then
+			local keepOpen = func(self, self.data, 'clicked')
+			if not keepOpen and which == self.which then
+				self:Hide()
+			end
 		end
 	else
-		local OnCancel = info.OnCancel
-		if OnCancel then
-			hide = not OnCancel(self, self.data, 'clicked')
+		local hide = true
+		if index == 1 then
+			local OnAccept = info.OnAccept or info.OnButton1
+			if OnAccept then
+				hide = not OnAccept(self, self.data, self.data2)
+			end
+		elseif index == 3 then
+			local OnAlt = info.OnAlt or info.OnButton2
+			if OnAlt then
+				OnAlt(self, self.data, 'clicked')
+			end
+		else
+			local OnCancel = info.OnCancel
+			if OnCancel then
+				hide = not OnCancel(self, self.data, 'clicked')
+			end
 		end
-	end
 
-	if hide and (which == self.which) then
-		-- can self.which change inside one of the On* functions???
-		self:Hide()
+		if hide and (which == self.which) then
+			-- can self.which change inside one of the On* functions???
+			self:Hide()
+		end
 	end
 end
 
@@ -674,7 +696,9 @@ function E:StaticPopup_Resize(dialog, which)
 	local maxHeightSoFar, maxWidthSoFar = (dialog.maxHeightSoFar or 0), (dialog.maxWidthSoFar or 0)
 	local width = 320
 
-	if dialog.numButtons == 3 then
+	if dialog.numButtons == 4 then
+		width = 574
+	elseif dialog.numButtons == 3 then
 		width = 440
 	elseif info.showAlert or info.showAlertGear or info.closeButton then
 		-- Widen
@@ -940,7 +964,9 @@ function E:StaticPopup_Show(which, text_arg1, text_arg2, data)
 		local numButtons = #tempButtonLocs
 		dialog.numButtons = numButtons
 
-		if numButtons == 3 then
+		if numButtons == 4 then
+			tempButtonLocs[1]:SetPoint('BOTTOMRIGHT', dialog, 'BOTTOM', -139, 16);
+		elseif numButtons == 3 then
 			tempButtonLocs[1]:Point('BOTTOMRIGHT', dialog, 'BOTTOM', -72, 16)
 		elseif numButtons == 2 then
 			tempButtonLocs[1]:Point('BOTTOMRIGHT', dialog, 'BOTTOM', -6, 16)
@@ -1072,8 +1098,8 @@ end
 
 -- Static popup secure buttons
 local SecureButtons = {}
-local SecureOnEnter = function(s) s.text:SetTextColor(1, 1, 1) end
-local SecureOnLeave = function(s) s.text:SetTextColor(1, 0.2, 0.2) end
+local SecureOnEnter = function(frame) frame.text:SetTextColor(1, 1, 1) end
+local SecureOnLeave = function(frame) frame.text:SetTextColor(1, 0.2, 0.2) end
 function E:StaticPopup_CreateSecureButton(popup, button, text, attributes)
 	local btn = CreateFrame('Button', nil, popup, 'SecureActionButtonTemplate')
 	btn:RegisterForClicks('AnyUp', 'AnyDown')
@@ -1123,6 +1149,14 @@ function E:StaticPopup_SetSecureButton(which, btn)
 	SecureButtons[which] = btn
 end
 
+function E:StaticPopup_HandleButton(button)
+	if not button then return end
+
+	button:OffsetFrameLevel(1)
+	button:SetScript('OnClick', E.StaticPopup_ButtonOnClick)
+	S:HandleButton(button)
+end
+
 function E:Contruct_StaticPopups()
 	E.StaticPopupFrames = {}
 
@@ -1153,17 +1187,16 @@ function E:Contruct_StaticPopups()
 		popup:SetTemplate('Transparent')
 
 		for i = 1, 4 do
-			local button = _G['ElvUI_StaticPopup'..index..'Button'..i]
-			button:SetFrameLevel(button:GetFrameLevel() + 1)
-			button:SetScript('OnClick', E.StaticPopup_ButtonOnClick)
-			S:HandleButton(button)
+			E:StaticPopup_HandleButton(_G['ElvUI_StaticPopup'..index..'Button'..i])
 		end
+
+		E:StaticPopup_HandleButton(_G['ElvUI_StaticPopup'..index..'ExtraButton'])
 
 		local editbox = _G['ElvUI_StaticPopup'..index..'EditBox']
 		editbox:SetScript('OnEnterPressed', E.StaticPopup_EditBoxOnEnterPressed)
 		editbox:SetScript('OnEscapePressed', E.StaticPopup_EditBoxOnEscapePressed)
 		editbox:SetScript('OnTextChanged', E.StaticPopup_EditBoxOnTextChanged)
-		editbox:SetFrameLevel(editbox:GetFrameLevel() + 1)
+		editbox:OffsetFrameLevel(1)
 
 		S:HandleEditBox(_G['ElvUI_StaticPopup'..index..'MoneyInputFrameGold'])
 		S:HandleEditBox(_G['ElvUI_StaticPopup'..index..'MoneyInputFrameSilver'])

@@ -19,8 +19,6 @@ local CreateFrame = CreateFrame
 local UIParent = UIParent
 local GetTime = GetTime
 
-local GetItemQualityColor = C_Item.GetItemQualityColor
-
 local Masque = E.Masque
 local MasqueGroupBuffs = Masque and Masque:Group('ElvUI', 'Buffs')
 local MasqueGroupDebuffs = Masque and Masque:Group('ElvUI', 'Debuffs')
@@ -149,17 +147,11 @@ function A:CreateIcon(button)
 	button.highlight:SetInside()
 
 	button.statusBar = CreateFrame('StatusBar', nil, button)
-	button.statusBar:SetFrameLevel(button:GetFrameLevel())
+	button.statusBar:OffsetFrameLevel(nil, button)
 	button.statusBar:SetFrameStrata(button:GetFrameStrata())
 	button.statusBar:SetMinMaxValues(0, 1)
 	button.statusBar:SetValue(0)
 	button.statusBar:CreateBackdrop()
-
-	if E.Retail then
-		button:RegisterForClicks('RightButtonUp', 'RightButtonDown')
-	else
-		button:RegisterForClicks('RightButtonUp')
-	end
 
 	button:SetScript('OnAttributeChanged', A.Button_OnAttributeChanged)
 	button:SetScript('OnUpdate', A.Button_OnUpdate)
@@ -302,12 +294,8 @@ function A:UpdateTempEnchant(button, index, expiration)
 	if expiration then
 		button.texture:SetTexture(GetInventoryItemTexture('player', index))
 
-		local quality, r, g, b = A.db.colorEnchants and GetInventoryItemQuality('player', index)
-		if quality and quality > 1 then
-			r, g, b = GetItemQualityColor(quality)
-		else
-			r, g, b = unpack(E.media.bordercolor)
-		end
+		local quality = A.db.colorEnchants and GetInventoryItemQuality('player', index)
+		local r, g, b = E:GetItemQualityColor(quality and quality > 1 and quality)
 
 		button:SetBackdropBorderColor(r, g, b)
 		button.statusBar.backdrop:SetBackdropBorderColor(r, g, b)
@@ -561,7 +549,7 @@ function A:Initialize()
 			_G.TemporaryEnchantFrame:Kill()
 		end
 
-		if E.Cata then
+		if E.Mists then
 			_G.ConsolidatedBuffs:Kill()
 		end
 	end

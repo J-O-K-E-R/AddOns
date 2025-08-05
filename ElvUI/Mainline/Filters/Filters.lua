@@ -927,12 +927,15 @@ G.unitframe.aurafilters.RaidDebuffs = {
 		[330608] = List(), -- Vile Eruption
 		[330868] = List(), -- Necrotic Bolt Volley
 		[323750] = List(), -- Vile Gas
-		[323406] = List(), -- Jagged Gash
 		[330700] = List(), -- Decaying Blight
 		[319626] = List(), -- Phantasmal Parasite
 		[324449] = List(), -- Manifest Death
 		[341949] = List(), -- Withering Blight
-		[1223804] = List(), -- Well of Darkness
+		[473576] = List(), -- Well of Darkness (application)
+		[1223804] = List(), -- Well of Darkness (being targeted)
+		[333231] = List(), -- Searing Death
+		[323406] = List(), -- Jagged Gash
+		[330810] = List(), -- Bind Soul
 	-- Operation Mechagon: Workshop
 		[291928] = List(), -- Giga-Zap
 		[292267] = List(), -- Giga-Zap
@@ -985,7 +988,6 @@ G.unitframe.aurafilters.RaidDebuffs = {
 		[471927] = List(), -- Withering Flames
 		[460420] = List(), -- Crushed!
 	-- Mug'Zee, Heads of Security
-		[4664769] = List(), -- Frostshatter Boots
 		[466509] = List(), -- Stormfury Finger Gun
 		[1215488] = List(), -- Disintegration Beam (Actually getting beamed)
 		[469391] = List(6), -- Perforating Wound

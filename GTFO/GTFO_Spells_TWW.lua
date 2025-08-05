@@ -209,6 +209,40 @@ GTFO.SpellID["1218158"] = {
   sound = 1;
 };
 
+GTFO.SpellID["470843"] = {
+  --desc = "Noxious Ooze (Ahn'tak)";
+  ignoreApplication = true;
+  sound = 1;
+};
+
+GTFO.SpellID["470827"] = {
+  --desc = "Poison Breath (Ahn'tak)";
+  sound = 1;
+};
+
+GTFO.SpellID["1231544"] = {
+  --desc = "Zapped (Goblin Zapper)";
+  ignoreApplication = true;
+  sound = 1;
+};
+
+GTFO.SpellID["1240428"] = {
+  --desc = "Blessed Bladestorm (Joseph the Enlightened)";
+  ignoreApplication = true;
+  sound = 1;
+};
+
+GTFO.SpellID["1241134"] = {
+  --desc = "Storm Cloud (Storm Cloud)";
+  sound = 1;
+};
+
+GTFO.SpellID["456890"] = {
+  --desc = "Azeroth's Pain";
+  sound = 1;
+  alwaysAlert = true;
+};
+
 --- ****************************
 --- * Ara-Kara, City of Echoes *
 --- ****************************
@@ -361,6 +395,12 @@ GTFO.SpellID["424223"] = {
   sound = 1;
 };
 
+GTFO.SpellID["443835"] = {
+  --desc = "Blazing Storms (Blazikon)"; -- Tank is out of range
+  tankSound = 1;
+  sound = 0;
+};
+
 GTFO.SpellID["1218133"] = {
   --desc = "Burning Candles (Sootsnout)";
   ignoreApplication = true;
@@ -472,6 +512,12 @@ GTFO.SpellID["424966"] = {
 GTFO.SpellID["433067"] = {
   --desc = "Seeping Fragment (Voidstone Monstrosity)";
   sound = 1;
+};
+
+GTFO.SpellID["423393"] = {
+  --desc = "Entropy (Voidstone Monstrosity)";
+  sound = 0;
+  tankSound = 1;
 };
 
 --- ******************
@@ -1122,6 +1168,11 @@ GTFO.SpellID["474554"] = {
   sound = 1;
 };
 
+GTFO.SpellID["1225931"] = {
+  --desc = "Stormfury Finger Gun (Mug'Zee)";
+  sound = 1;
+};
+
 GTFO.SpellID["466509"] = {
   --desc = "Stormfury Finger Gun (Mug'Zee)";
   applicationOnly = true;
@@ -1168,6 +1219,25 @@ GTFO.SpellID["1215209"] = {
   sound = 1;
 };
 
+--- ********************
+--- * Eco-Dome Al'dani *
+--- ********************
+
+GTFO.SpellID["1217446"] = {
+  --desc = "Digestive Spittle (Azhiccar)";
+  ignoreApplication = true;
+  sound = 1;
+};
+
+GTFO.SpellID["1222202"] = {
+  --desc = "Arcane Burn (Overcharged Sentinel)";
+  ignoreApplication = true;
+  sound = 1;
+};
+
+--- *******************
+--- * Manaforge Omega *
+--- *******************
 
 end
 

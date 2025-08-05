@@ -307,6 +307,10 @@ local function DCS_Durability_Bar_Textures()
 		duraMaxTotal = duraMaxTotal + durMax
 		if ( durCur == durMax ) then
 			v.duratexture:SetColorTexture(0, 0, 0, 0)
+
+			-- Debugg - Uncoment me if durability bars or % is not working!!!
+			-- print("NO DURABILITY LOSS!!! :", "durCur:", durCur, " == ", "durMax", durMax)
+
 		else
 			duraFinite = durCur/durMax
             if duraFinite > 0.66 then

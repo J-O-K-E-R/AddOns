@@ -2246,3 +2246,43 @@ Change Log:
 * Fixed The War Within spells (world)
 * Added TWW spells for Liberation of Undermine
 * Added TWW spells for TWW Delves
+
+5.17
+* Updated for patch 11.1.5
+* Updated TOC for WoW Classic 1.15.7
+* Added "Brann Mode" and "Alert Delay Time" in GTFO Options
+* Added The War Within spells (world)
+* Added TWW spells for Liberation of Undermine
+* Added TWW spells for Darkflame Cleft
+* Added TWW spells for TWW Delves 
+
+5.17.1
+* Fixed LUA crash issues
+
+5.17.2
+* Added TWW spells for The Rookery
+* Added BFA Spells for Horrific Visions
+
+5.17.3
+* Updated for patch 11.1.7
+* Added The War Within spells (world)
+* Removed "TrivialLevel" from Burning Crusade spells
+
+5.17.4
+* Updated for WoW Mists of Pandaria Classic 5.5.0
+* Added BFA spells for Shrine of the Storm
+* Added BFA spells for King's Rest
+
+5.18
+* Fixed spells not loading for Mists of Pandaria Classic
+* Fixed BC spells for Blood Furnace
+* Fixed BFA spells for Freehold
+* Fixed BFA spells for King's Rest
+* Fixed LGN spells for Nighthold
+* Added The War Within spells (world)
+* Added Battle for Azeroth spells (world)
+* Added TWW spells for Liberation of Undermine
+
+5.18.1
+* Updated for patch 11.2
+* Added TWW spells for Eco-Dome Al'dani

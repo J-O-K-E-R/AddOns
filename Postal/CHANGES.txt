@@ -1,8 +1,19 @@
 ------------------------------------------------------------------------
-r646 | Zimzarina | 2025-04-09 14:35:08 +0000 (Wed, 09 Apr 2025) | 1 line
+r653 | Zimzarina | 2025-07-06 16:46:43 +0000 (Sun, 06 Jul 2025) | 1 line
 Changed paths:
-   M /trunk/Postal_Vanilla.toc
+   M /trunk/Postal.lua
 
-TOC Update Classic.
+
+------------------------------------------------------------------------
+r652 | Zimzarina | 2025-07-06 16:42:03 +0000 (Sun, 06 Jul 2025) | 1 line
+Changed paths:
+   M /trunk/Modules/BlackBook.lua
+   M /trunk/Modules/Express.lua
+   M /trunk/Modules/Forward.lua
+   M /trunk/Modules/QuickAttach.lua
+   M /trunk/Postal.lua
+   A /trunk/Postal_Mists.toc
+
+Added support for Mists pre-patch.
 ------------------------------------------------------------------------
 

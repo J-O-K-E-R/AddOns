@@ -280,7 +280,7 @@ function PI:CreateFrame()
 	S:HandleButton(f.Prev)
 
 	f.Status = CreateFrame('StatusBar', 'PluginInstallStatus', f)
-	f.Status:SetFrameLevel(f.Status:GetFrameLevel() + 2)
+	f.Status:OffsetFrameLevel(2)
 	f.Status:CreateBackdrop(nil, true)
 	f.Status:SetStatusBarTexture(E.media.normTex)
 	f.Status:SetStatusBarColor(unpack(E.media.rgbvaluecolor))
@@ -510,6 +510,7 @@ function PI:RunInstall()
 		end
 
 		if db.StepTitles and #db.StepTitles == f.MaxPage then
+			f:ClearAllPoints()
 			f:Point('CENTER', E.UIParent, 'CENTER', -((db.StepTitleWidth or 140)*0.5), 0)
 			f.side:Width(db.StepTitleWidth or 140)
 			f.side:Show()

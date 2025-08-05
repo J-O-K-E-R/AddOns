@@ -1,5 +1,5 @@
-## Updated 2025-03-27
-## Non-SimC edits to resolve Ascendance/trinket sync logic.
+## https://github.com/simulationcraft/simc/blob/thewarwithin/ActionPriorityLists/default/shaman_elemental.simc
+## Up to date with SimC: April 21 2025 - 53f00ae
 
 # Ensure weapon enchant is applied if you've selected Improved Flametongue Weapon.
 actions.precombat+=/flametongue_weapon,if=talent.improved_flametongue_weapon.enabled
@@ -42,7 +42,7 @@ actions+=/natures_swiftness
 ## actions+=/invoke_external_buff,name=power_infusion,if=buff.ascendance.up|cooldown.ascendance.remains>30
 actions+=/potion,if=buff.bloodlust.up|buff.spymasters_web.up|buff.ascendance.remains>12|fight_remains<31&boss
 # [Hekili] Ascendance/trinket sync logic; revised to recover when a trinket is used *before* Ascendance.
-actions+=/variable,name=ascendance_trinket,value=buff.spymasters_web.up|(trinket.1.has_use_buff&!trinket.1.is.spymasters_web|trinket.1.is.funhouse_lens)&(trinket.1.ready_cooldown|trinket.1.cooldown.remains>20)|(trinket.2.has_use_buff&!trinket.2.is.spymasters_web|trinket.2.is.funhouse_lens)&(trinket.2.ready_cooldown|trinket.2.cooldown.remains>20)|equipped.neural_synapse_enhancer&(cooldown.neural_synapse_enhancer.remains=0|cooldown.neural_synapse_enhancer.remains>20)|equipped.best_in_slots&(cooldown.best_in_slots.remains=0|cooldown.best_in_slots.remains>20)
+actions+=/variable,name=ascendance_trinket,value=buff.spymasters_web.up|(trinket.1.has_use_buff&!trinket.1.is.spymasters_web|trinket.1.is.funhouse_lens)&(trinket.1.ready_cooldown|trinket.1.cooldown.remains>20)|(trinket.2.has_use_buff&!trinket.2.is.spymasters_web|trinket.2.is.funhouse_lens)&(trinket.2.ready_cooldown|trinket.2.cooldown.remains>20)|equipped.neural_synapse_enhancer&(cooldown.neural_synapse_enhancer.remains=0|cooldown.neural_synapse_enhancer.remains>20)|equipped.best_in_slots&(cooldown.best_in_slots.remains=0|cooldown.best_in_slots.remains>20)|!trinket.1.has_use_buff&!trinket.2.has_use_buff
 actions+=/run_action_list,name=aoe,strict=1,if=spell_targets.chain_lightning>1
 actions+=/run_action_list,name=single_target
 
@@ -109,8 +109,7 @@ actions.single_target+=/tempest,if=buff.storm_frenzy.stack=2&!talent.surge_of_po
 actions.single_target+=/liquid_magma_totem,if=dot.flame_shock.refreshable&!buff.master_of_the_elements.up
 # Maintain Flame shock if talented into Erupting Lava.
 actions.single_target+=/flame_shock,if=dot.flame_shock.refreshable&!buff.surge_of_power.up&!buff.master_of_the_elements.up&talent.erupting_lava
-# Spend if close to overcaping or MotE buff is up. Respect Echoes of Great Sundering.
-actions.single_target+=/earthquake,if=(buff.echoes_of_great_sundering_es.up|buff.echoes_of_great_sundering_eb.up)&(maelstrom>variable.mael_cap-15|buff.master_of_the_elements.up)
+# Spend if close to overcaping or MotE buff is up. Friendship ended with Echoes of Great Sundering.
 actions.single_target+=/elemental_blast,if=maelstrom>variable.mael_cap-15|buff.master_of_the_elements.up
 actions.single_target+=/earth_shock,if=maelstrom>variable.mael_cap-15|buff.master_of_the_elements.up
 # Use Icefury to proc Fusion of Elements.

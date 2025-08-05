@@ -25,11 +25,11 @@ local L = Core.Locale
 -- Locals
 ---
 
-local API_VERSION = 110000
+local API_VERSION = 110107
 
 -- Skin Info
 local Authors = {"StormFX", "|cff999999Sairen|r"}
-local Version = "11.1.0"
+local Version = "11.1.7"
 local Websites = {
 	"https://github.com/SFX-WoW/Masque_Serenity",
 	"https://www.curseforge.com/wow/addons/masque-serenity",

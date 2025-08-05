@@ -8,6 +8,7 @@ local RSNotificationTracker = private.NewLib("RareScannerNotificationTracker")
 -- RareScanner database libraries
 local RSConfigDB = private.ImportLib("RareScannerConfigDB")
 local RSNpcDB = private.ImportLib("RareScannerNpcDB")
+local RSContainerDB = private.ImportLib("RareScannerContainerDB")
 
 -- RareScanner internal libraries
 local RSConstants = private.ImportLib("RareScannerConstants")
@@ -62,7 +63,7 @@ function RSNotificationTracker.AddNotification(vignetteID, isNavigating, entityI
 	local currentTime = time()
 	
 	-- If not spawning in multiple places at the same time stores entityID
-	if (entityID and not RSNpcDB.IsMultiZoneSpawn(entityID) and not RSUtils.Contains(RSConstants.CONTAINERS_WITH_MULTIPLE_SPAWNS, entityID)) then
+	if (entityID and not RSNpcDB.IsMultiZoneSpawn(entityID) and not RSContainerDB.IsMultiZoneSpawn(entityID)) then
 		current_notifications[entityID] = currentTime
 		--RSLogger:PrintDebugMessage(string.format("AddNotification[%s] at [%s]", entityID, RSTimeUtils.TimeStampToClock(currentTime)))
 	-- Otherwise vignetteID
@@ -72,7 +73,7 @@ function RSNotificationTracker.AddNotification(vignetteID, isNavigating, entityI
 	end
 end
 
-function RSNotificationTracker.IsAlreadyNotificated(vignetteID, isNavigating, entityID)	
+function RSNotificationTracker.IsAlreadyNotificated(vignetteID, isNavigating, entityID, trackingSystem)	
 	-- When navigating never check notifications
 	if (isNavigating) then
 		return false
@@ -84,8 +85,8 @@ function RSNotificationTracker.IsAlreadyNotificated(vignetteID, isNavigating, en
 
 	-- Avoids showing alert if user is targeting that NPC already
 	-- This will avoid getting constant alerts for the same rare NPC if the user takes a while to start combat
-	-- and the vignettes is removed from the alreadyFound list
-	if (UnitExists("target")) then
+	-- and the vignette is removed from the alreadyFound list
+	if ((not trackingSystem or trackingSystem ~= RSConstants.TRACKING_SYSTEM.UNIT_TARGET) and UnitExists("target")) then
 		local targetUid = UnitGUID("target")
 		local _, _, _, _, _, targetNpcID = strsplit(VIGNETTE_ID_SEPARATOR, targetUid)
 		if (tonumber(targetNpcID) == entityID) then

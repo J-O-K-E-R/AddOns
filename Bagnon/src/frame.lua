@@ -17,27 +17,28 @@ function Frame:New(params)
 	tinsert(UISpecialFrames, f:GetName())
 	MergeTable(f, params)
 
-	f.profile = f:GetBaseProfile()
+	f.profile, f.rules, f.compiled = f:GetBaseProfile(), {}, {}
 	f.MenuButtons = {}
-	f.Search = Addon.SearchFrame(f)
+	f.SearchBar = Addon.SearchBar(f)
 	f.Title = Addon.Title(f, f.Title)
 	f.ItemGroup = self.ItemGroup(f, f.Bags)
-	f.Footer = CreateFrame('Frame', nil, f)
-	f.CloseButton = CreateFrame('Button', nil, f, 'UIPanelCloseButtonNoScripts')
 	f.CloseButton:SetScript('OnClick', function() Addon.Frames:Hide(f.id, true) end)
 
-	f:SetMovable(true)
-	f:SetToplevel(true)
-	f:EnableMouse(true)
-	f:SetClampedToScreen(true)
-
 	return f
+end
+
+function Frame:RegisterEvents()
+	self:RegisterFrameSignal('BAG_FRAME_TOGGLED', 'Layout')
+	self:RegisterFrameSignal('ELEMENT_RESIZED', 'Layout')
 end
 
 
 --[[ Update ]]--
 
 function Frame:Layout()
+	self.margin = self.skin.margin or 0
+	self.inset = self.skin.inset or 0
+
 	local width = 44 + self:PlaceMenuButtons()
 	                 + self:PlaceOptionsToggle() + self:PlaceTitle()
 			
@@ -67,38 +68,33 @@ end
 --[[ Top Menu ]]--
 
 function Frame:PlaceMenuButtons()
-	local buttons = {}
-	tinsert(buttons, self:HasOwnerSelector() and self:GetWidget('OwnerSelector'))
-	tAppendAll(buttons, self:GetExtraButtons())
-	tinsert(buttons, self:HasSortButton() and self:GetWidget('SortButton'))
-	tinsert(buttons, self:HasSearchToggle() and self:GetWidget('SearchToggle'))
-
 	for i, button in pairs(self.MenuButtons) do
 		button:Hide()
 	end
+
+	local buttons = { self:HasOwnerSelector() and self:GetWidget('OwnerSelector') }
+	tAppendAll(buttons, self:GetExtraButtons())
+	tinsert(buttons, self:HasSortButton() and self:GetWidget('SortButton'))
+	tinsert(buttons, self:HasSearchToggle() and self:GetWidget('SearchToggle'))
 	self.MenuButtons = tFilter(buttons, function(v) return v end, true)
 
 	for i, button in ipairs(self.MenuButtons) do
-		if i == 1 then
-			button:SetPoint('TOPLEFT', self, 'TOPLEFT', 8, -8)
-		else
-			button:SetPoint('TOPLEFT', self.MenuButtons[i-1], 'TOPRIGHT', 4, 0)
-		end
+		button:SetPoint('TOPLEFT', self, 'TOPLEFT', i*24-16, -8)
 		button:Show()
 	end
 
-	return 20 * #self.MenuButtons, 20
+	return 24 * #self.MenuButtons, 20
 end
 
 function Frame:PlaceSearchBar()
-	self.Search:ClearAllPoints()
-	self.Search:SetPoint('RIGHT', self:HasOptionsToggle() and self.OptionsToggle or self.CloseButton, 'LEFT', -2, 0)
-	self.Search:SetHeight(28)
+	self.SearchBar:ClearAllPoints()
+	self.SearchBar:SetPoint('RIGHT', self:HasOptionsToggle() and self.OptionsToggle or self.CloseButton, 'LEFT', -2, 0)
+	self.SearchBar:SetHeight(28)
 
 	if #self.MenuButtons > 0 then
-		self.Search:SetPoint('LEFT', self.MenuButtons[#self.MenuButtons], 'RIGHT', 2, 0)
+		self.SearchBar:SetPoint('LEFT', self.MenuButtons[#self.MenuButtons], 'RIGHT', 2, 0)
 	else
-		self.Search:SetPoint('TOPLEFT', self, 'TOPLEFT', 8, -8)
+		self.SearchBar:SetPoint('TOPLEFT', self, 'TOPLEFT', 8, -8)
 	end
 end
 
@@ -132,7 +128,7 @@ function Frame:HasOptionsToggle()
 end
 
 function Frame:HasOwnerSelector()
-	return Addon.Owners:Count() > 1
+	return not self:GetOwner().isguild
 end
 
 function Frame:HasSearchToggle()
@@ -172,12 +168,11 @@ end
 --[[ Sidebar ]]--
 
 function Frame:PlaceSidebar()
-	return self:PlaceWidget('TabGroup', self:HasSidebar() and function(filters)
-		local margin = self.bg.skin.margin or 0
+	return self:PlaceWidget('TabGroup', 'sidebar', self:HasSidebar() and function(filters)
 		if self.id == 'inventory' then
-			filters:SetPoint('TOPRIGHT', self, 'TOPLEFT', 4-margin,0)
+			filters:SetPoint('TOPRIGHT', self, 'TOPLEFT', 4-self.margin,-33)
 		else
-			filters:SetPoint('TOPLEFT', self, 'TOPRIGHT', margin,0)
+			filters:SetPoint('TOPLEFT', self, 'TOPRIGHT', self.margin,-33)
 		end
 	end)
 end
@@ -202,7 +197,7 @@ function Frame:PlaceMoney()
 end
 
 function Frame:PlaceCurrencies(width)
-	return self:PlaceWidget('CurrencyTracker', self:HasCurrencies() and function(tracker)
+	return self:PlaceWidget('CurrencyTracker', 'NumberFontNormal', self:HasCurrencies() and function(tracker)
 		local wide = self:HasMoney() and tracker:GetWidth() > (width - self.MoneyFrame:GetWidth() - (self:HasBroker() and 24 or 2))
 		if wide then
 			tracker:SetPoint('BOTTOMRIGHT', self.Footer, -4,2)
@@ -245,10 +240,11 @@ end
 
 --[[ Utilities ]]--
 
-function Frame:PlaceWidget(key, setup)
+function Frame:PlaceWidget(key, ...)
     local widget = rawget(self, key)
+	local setup = select(-1, ...)
     if setup then
-        widget = widget or self:GetWidget(key)
+        widget = widget or self:GetWidget(key, ...)
         widget:ClearAllPoints()
         widget:Show()
 

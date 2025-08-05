@@ -54,6 +54,7 @@ end
 local afk = CreateFrame('Frame', 'ElvUIAFKFrame')
 local chat = CreateFrame('ScrollingMessageFrame', 'ElvUIAFKChat', afk)
 local bottom = CreateFrame('Frame', nil, afk)
+chat:UnregisterAllEvents()
 chat:SetMovable(true)
 
 AFK.AFKMode = afk
@@ -148,7 +149,7 @@ function AFK:OnEvent(event, arg1)
 		return -- Don't activate afk if player is crafting stuff, check back in 30 seconds
 	end
 
-	AFK:SetAFK(UnitIsAFK('player') and not (E.Retail and C_PetBattles_IsInBattle()))
+	AFK:SetAFK(UnitIsAFK('player') and not ((E.Retail or E.Mists) and C_PetBattles_IsInBattle()))
 end
 
 function AFK:Chat_OnMouseWheel(delta)

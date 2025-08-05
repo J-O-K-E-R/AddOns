@@ -206,6 +206,44 @@ local twwMounts = {
 		chance = 20, -- No data available
 		coords = { { m = CONSTANTS.UIMAPIDS.UNDERMINE } },
 	},
+	["Steamwheedle Supplier"] = {
+		cat = CONSTANTS.ITEM_CATEGORIES.TWW,
+		type = CONSTANTS.ITEM_TYPES.MOUNT,
+		method = CONSTANTS.DETECTION_METHODS.USE,
+		name = L["Steamwheedle Supplier"],
+		itemId = 229943,
+		spellId = 466014,
+		items = { 237134 },
+		chance = 20, -- No data available
+		coords = { { m = CONSTANTS.UIMAPIDS.UNDERMINE } },
+	},
+	-- 11.1.5 mounts
+	["Void-Scarred Lynx"] = {
+		cat = CONSTANTS.ITEM_CATEGORIES.TWW,
+		type = CONSTANTS.ITEM_TYPES.MOUNT,
+		method = CONSTANTS.DETECTION_METHODS.USE,
+		name = L["Void-Scarred Lynx"],
+		itemId = 239563,
+		spellId = 1228865,
+		items = { 239546 },
+		chance = 125,
+		coords = { { m = CONSTANTS.UIMAPIDS.HALLOWFALL } },
+	},
+	["Nesting Swarmite"] = {
+		cat = CONSTANTS.ITEM_CATEGORIES.TWW,
+		type = CONSTANTS.ITEM_TYPES.MOUNT,
+		method = CONSTANTS.DETECTION_METHODS.SPECIAL,
+		name = L["Nesting Swarmite"],
+		itemId = 223265,
+		spellId = 447189,
+		npcs = { 239581 },
+		tooltipNpcs = { 239581 },
+		chance = 100,
+		coords = {
+			{ m = CONSTANTS.UIMAPIDS.HORRIFIC_REVISION_OF_STORMWIND },
+			{ m = CONSTANTS.UIMAPIDS.HORRIFIC_REVISION_OF_ORGRIMMAR },
+		},
+	},
 }
 
 Rarity.ItemDB.MergeItems(Rarity.ItemDB.mounts, twwMounts)

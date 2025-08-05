@@ -1,4 +1,4 @@
-## Interface: 110005, 110007, 110002
+## Interface: 110105, 110107, 110200
 
 ## Title: BigWigs [|cffeda55fBattle for Azeroth|r]
 ## Title-zhCN: BigWigs [|cffeda55f争霸艾泽拉斯|r]
@@ -25,7 +25,7 @@
 
 ## LoadOnDemand: 1
 ## Dependencies: BigWigs
-## Version: v11.0.3
+## Version: v11.1.1
 ## IconTexture: Interface\AddOns\BigWigs\Media\Icons\minimap_legacy.tga
 
 ## X-Category: Raid
@@ -33,9 +33,10 @@
 ## X-Website: https://github.com/BigWigsMods/BigWigs_BattleForAzeroth
 ## X-Curse-Project-ID: 420598
 ## X-WoWI-ID: 25791
+## X-Wago-ID: jK8Xl0Ky
 ## X-BigWigs-LoadOn-InstanceId: 1861, 2070, 2096, 2164, 2217
 ## X-BigWigs-ExtraMenu: -947
 ## X-BigWigs-LoadOn-WorldBoss: -942, 140163, -14, 138122, -14, 137374, -864, 138794, -895, 136385, -862, 132253, -896, 140252, -863, 132701
-## X-BigWigs-Minimum: 352
+## X-BigWigs-Minimum: 380
 
 modules.xml

@@ -17,7 +17,7 @@ local InCombatLockdown = InCombatLockdown
 local UnregisterUnitWatch = UnregisterUnitWatch
 local RegisterUnitWatch = RegisterUnitWatch
 local RegisterStateDriver = RegisterStateDriver
-local LOCALIZED_CLASS_NAMES_MALE = LOCALIZED_CLASS_NAMES_MALE
+
 local CLASS_SORT_ORDER = CLASS_SORT_ORDER
 local NUM_CLASS_ORDER = #CLASS_SORT_ORDER
 local MAX_RAID_MEMBERS = MAX_RAID_MEMBERS
@@ -61,9 +61,12 @@ local classPowers = {
 	[3] = PowerType.Energy
 }
 
-if E.Cata then -- also handled in Elements/Power
+if E.Mists then -- also handled in Elements/Power
 	classPowers[4] = PowerType.RunicPower
 	classPowers[26] = PowerType.Balance
+	classPowers[14] = PowerType.BurningEmbers or 14
+	classPowers[15] = PowerType.DemonicFury or 15
+	classPowers[28] = PowerType.ShadowOrbs or 28
 elseif E.Retail then
 	classPowers[4] = PowerType.RunicPower
 	classPowers[5] = PowerType.PAIN
@@ -158,7 +161,8 @@ local function createConfigEnv()
 			end
 
 			local classToken = CLASS_SORT_ORDER[random(1, NUM_CLASS_ORDER)]
-			return LOCALIZED_CLASS_NAMES_MALE[classToken], classToken
+			local localized = E:LocalizedClassName(classToken, unit)
+			return localized, classToken
 		end
 	}
 

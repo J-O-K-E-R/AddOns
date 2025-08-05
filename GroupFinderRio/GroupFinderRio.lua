@@ -230,13 +230,13 @@ local function updateMplusData(searchResult,entry)
     local additionalInfo = ""
     local languageTag = ""
     local highestKey = ""
-    if GFIO.db.profile.showKeyLevelLeader and searchResult.leaderDungeonScoreInfo and 
-        searchResult.leaderDungeonScoreInfo.bestRunLevel and searchResult.leaderDungeonScoreInfo.bestRunLevel >0 then
+    if GFIO.db.profile.showKeyLevelLeader and searchResult.leaderDungeonScoreInfo and searchResult.leaderDungeonScoreInfo[1] and
+        searchResult.leaderDungeonScoreInfo[1].bestRunLevel and searchResult.leaderDungeonScoreInfo[1].bestRunLevel >0 then
         local scoreInfo = searchResult.leaderDungeonScoreInfo
-        local color = scoreInfo.finishedSuccess and GFIO.Color.TimedKeyColor or GFIO.Color.DepletedKeyColor
-        local run = scoreInfo.bestRunLevel or 0
+        local color = scoreInfo[1].finishedSuccess and GFIO.Color.TimedKeyColor or GFIO.Color.DepletedKeyColor
+        local run = scoreInfo[1].bestRunLevel or 0
         local chestPrefix = ""
-        for i= 1, scoreInfo.bestLevelIncrement do
+        for i= 1, scoreInfo[1].bestLevelIncrement do
             chestPrefix= chestPrefix.."+"
         end
         if chestPrefix~="" then
@@ -439,8 +439,6 @@ local function compareSearchEntriesMplus(a,b)
 
     if not searchResultA or not searchResultB then
         return a>b
-    elseif searchResultA.hasSelf ~= searchResultB.hasSelf then
-        return not searchResultB.hasSelf
     elseif searchResultA.isDelisted ~= searchResultB.isDelisted then
         return not searchResultA.isDelisted
     end

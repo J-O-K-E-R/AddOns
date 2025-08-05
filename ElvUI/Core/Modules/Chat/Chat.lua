@@ -256,10 +256,12 @@ do --this can save some main file locals
 		if E.Classic then
 			-- Simpy (5099: Myzrael)
 			z['Player-5099-01947A77']	= itsSimpy -- Warlock: Simpy
-		elseif E.Cata then
+		elseif E.Mists then
 			-- Simpy (4373: Myzrael)
-			z['Player-4373-011657A7']	= itsSimpy -- Paladin:		Cutepally
-			z['Player-4373-032FFEE2']	= itsSimpy -- Shaman:		Kalline
+			z['Player-4373-011657A7']	= itsSimpy -- Paladin:	Cutepally
+			z['Player-4373-032FFEE2']	= itsSimpy -- Shaman:	Kalline
+			z['Player-4373-040E5AA9']	= itsSimpy -- Druid:	Puttietat
+			z['Player-4373-03E24528']	= itsSimpy -- Hunter:	Arieva
 			z['Player-4373-03351BC7']	= itsSimpy -- [Horde] DK:	Imsojelly
 			-- Repooc
 			z['Repooc-Atiesh']			= itsPooc -- [Alliance] Paladin
@@ -423,7 +425,7 @@ do --this can save some main file locals
 			-- Luckyone Classic Era (5233: Firemaw)
 			z['Player-5233-01D22A72']	= ElvGreen -- [Horde] Hunter: Unluckyone
 			z['Player-5233-01D27011']	= ElvGreen -- [Horde] Druid: Luckydruid
-		elseif E.Cata then
+		elseif E.Mists then
 			-- Luckyone (4467: Firemaw, 4440: Everlook, 4476: Gehennas)
 			z['Player-4467-04540395']	= ElvGreen -- [Alliance] Druid
 			z['Player-4467-04542B4A']	= ElvGreen -- [Alliance] Priest
@@ -437,7 +439,11 @@ do --this can save some main file locals
 			z['Player-4467-04571A98']	= ElvGreen -- [Alliance] Warrior
 			z['Player-4440-03AD654A']	= ElvGreen -- [Alliance] Rogue
 			z['Player-4440-03ADE2DF']	= ElvGreen -- [Alliance] Shaman
+			z['Player-4467-0613ECA1']	= ElvGreen -- [Alliance] Monk
 			z['Player-4476-03BF41C9']	= ElvGreen -- [Horde] Hunter
+			z['Player-4476-049F4831']	= ElvGreen -- [Horde] DK
+			z['Player-4476-05C7B834']	= ElvGreen -- [Horde] Mage
+			z['Player-4476-05CAB05D']	= ElvGreen -- [Horde] Monk
 		elseif E.Retail then
 			-- Blazeflack
 			z['Blazii-Silvermoon']		= ElvBlue -- Priest
@@ -462,11 +468,11 @@ do --this can save some main file locals
 			-- Luckyone (1598: LaughingSkull)
 			z['Player-1598-0F5E4639']	= ElvGreen -- [Alliance] Druid: Luckyone
 			z['Player-1598-0F3E51B0']	= ElvGreen -- [Alliance] Druid: Luckydruid
+			z['Player-1598-0FB03F89']	= ElvGreen -- [Alliance] Monk
 			z['Player-1598-0F46FF5A']	= ElvGreen -- [Horde] Evoker
 			z['Player-1598-0F92E2B9']	= ElvGreen -- [Horde] Evoker 2
 			z['Player-1598-0BFF3341']	= ElvGreen -- [Horde] DH
 			z['Player-1598-0BD22704']	= ElvGreen -- [Horde] Priest
-			z['Player-1598-0BEFA545']	= ElvGreen -- [Horde] Monk
 			z['Player-1598-0E1A06DE']	= ElvGreen -- [Horde] Rogue
 			z['Player-1598-0BF2E377']	= ElvGreen -- [Horde] Hunter
 			z['Player-1598-0BF18248']	= ElvGreen -- [Horde] DK
@@ -926,7 +932,7 @@ function CH:StyleChat(frame)
 	copyButton:SetAlpha(0.35)
 	copyButton:Size(20, 22)
 	copyButton:Point('TOPRIGHT', 0, -4)
-	copyButton:SetFrameLevel(frame:GetFrameLevel() + 5)
+	copyButton:OffsetFrameLevel(5, frame)
 	frame.copyButton = copyButton
 
 	local copyTexture = frame.copyButton:CreateTexture(nil, 'OVERLAY')
@@ -1872,8 +1878,8 @@ function CH:MessageFormatter(frame, info, chatType, chatGroup, chatTarget, chann
 		showLink = nil
 
 		-- fix blizzard formatting errors from localization strings
-		arg1 = gsub(arg1, '(%d%%)([^%%%a])', '%1%%%2') -- escape percentages that need it [broken since SL?]
-		arg1 = gsub(arg1, '(%d%%)$', '%1%%') -- escape percentages on the end
+		arg1 = gsub(arg1, '(%d%s?%%)([^%%%a])', '%1%%%2') -- escape percentages that need it [broken since SL?]
+		arg1 = gsub(arg1, '(%d%s?%%)$', '%1%%') -- escape percentages on the end
 		arg1 = gsub(arg1, '^%%o', '%%s') -- replace %o to %s [broken in cata classic?]: "%o gular zila amanare rukadare." from "Cabal Zealot"
 	else
 		arg1 = gsub(arg1, '%%', '%%%%') -- escape any % characters, as it may otherwise cause an 'invalid option in format' error
@@ -3333,6 +3339,55 @@ function CH:SetupQuickJoin(holder)
 	hooksecurefunc(Button, 'HideToast', function() Button.Toast.backdrop:Hide() end)
 end
 
+function CH:CopyChat_OnMouseDown(button)
+	if button == 'LeftButton' and not self.isMoving then
+		self:StartMoving()
+		self.isMoving = true
+	elseif button == 'RightButton' and not self.isSizing then
+		self:StartSizing()
+		self.isSizing = true
+	end
+end
+
+function CH:CopyChat_OnMouseUp(button)
+	if button == 'LeftButton' and self.isMoving then
+		self:StopMovingOrSizing()
+		self.isMoving = false
+	elseif button == 'RightButton' and self.isSizing then
+		self:StopMovingOrSizing()
+		self.isSizing = false
+	end
+end
+
+function CH:CopyChat_OnHide()
+	if self.isMoving or self.isSizing then
+		self:StopMovingOrSizing()
+		self.isMoving = false
+		self.isSizing = false
+	end
+end
+
+function CH:CopyChatEditBox_OnEscapePressed()
+	CH.CopyChatFrame:Hide()
+end
+
+function CH:CopyChatEditBox_OnTextChanged(userInput)
+	if userInput then return end
+
+	local _, maxValue = CH.CopyChatScrollFrame.ScrollBar:GetMinMaxValues()
+	for _ = 1, maxValue do
+		_G.ScrollFrameTemplate_OnMouseWheel(CH.CopyChatScrollFrame, -1)
+	end
+end
+
+function CH:CopyChatScrolFrame_OnSizeChanged(width, height)
+	CH.CopyChatFrameEditBox:Size(width, height)
+end
+
+function CH:CopyChatScrolFrame_OnVerticalScroll(offset)
+	CH.CopyChatFrameEditBox:SetHitRectInsets(0, 0, offset, (CH.CopyChatFrameEditBox:GetHeight() - offset - self:GetHeight()))
+end
+
 function CH:BuildCopyChatFrame()
 	local frame = CreateFrame('Frame', 'ElvUI_CopyChatFrame', E.UIParent)
 	tinsert(_G.UISpecialFrames, 'ElvUI_CopyChatFrame')
@@ -3343,32 +3398,10 @@ function CH:BuildCopyChatFrame()
 	frame:SetMovable(true)
 	frame:EnableMouse(true)
 	frame:SetResizable(true)
-	frame:SetScript('OnMouseDown', function(copyChat, button)
-		if button == 'LeftButton' and not copyChat.isMoving then
-			copyChat:StartMoving()
-			copyChat.isMoving = true
-		elseif button == 'RightButton' and not copyChat.isSizing then
-			copyChat:StartSizing()
-			copyChat.isSizing = true
-		end
-	end)
-	frame:SetScript('OnMouseUp', function(copyChat, button)
-		if button == 'LeftButton' and copyChat.isMoving then
-			copyChat:StopMovingOrSizing()
-			copyChat.isMoving = false
-		elseif button == 'RightButton' and copyChat.isSizing then
-			copyChat:StopMovingOrSizing()
-			copyChat.isSizing = false
-		end
-	end)
-	frame:SetScript('OnHide', function(copyChat)
-		if copyChat.isMoving or copyChat.isSizing then
-			copyChat:StopMovingOrSizing()
-			copyChat.isMoving = false
-			copyChat.isSizing = false
-		end
-	end)
 	frame:SetFrameStrata('DIALOG')
+	frame:SetScript('OnMouseDown', CH.CopyChat_OnMouseDown)
+	frame:SetScript('OnMouseUp', CH.CopyChat_OnMouseUp)
+	frame:SetScript('OnHide', CH.CopyChat_OnHide)
 	CH.CopyChatFrame = frame
 
 	local editBox = CreateFrame('EditBox', 'ElvUI_CopyChatFrameEditBox', frame)
@@ -3378,25 +3411,15 @@ function CH:BuildCopyChatFrame()
 	editBox:EnableMouse(true)
 	editBox:SetAutoFocus(false)
 	editBox:SetFontObject('ChatFontNormal')
-	editBox:SetScript('OnEscapePressed', function() CH.CopyChatFrame:Hide() end)
-	editBox:SetScript('OnTextChanged', function(_, userInput)
-		if userInput then return end
-		local _, maxValue = CH.CopyChatScrollFrame.ScrollBar:GetMinMaxValues()
-		for _ = 1, maxValue do
-			_G.ScrollFrameTemplate_OnMouseWheel(CH.CopyChatScrollFrame, -1)
-		end
-	end)
+	editBox:SetScript('OnEscapePressed', CH.CopyChatEditBox_OnEscapePressed)
+	editBox:SetScript('OnTextChanged', CH.CopyChatEditBox_OnTextChanged)
 	CH.CopyChatFrameEditBox = editBox
 
-	local scrollFrame = CreateFrame('ScrollFrame', 'ElvUI_CopyChatScrollFrame', frame, 'UIPanelScrollFrameTemplate')
+	local scrollFrame = CreateFrame('ScrollFrame', 'ElvUI_CopyChatFrameScrollFrame', frame, 'UIPanelScrollFrameTemplate')
 	scrollFrame:Point('TOPLEFT', frame, 'TOPLEFT', 8, -30)
 	scrollFrame:Point('BOTTOMRIGHT', frame, 'BOTTOMRIGHT', -30, 8)
-	scrollFrame:SetScript('OnSizeChanged', function(_, width, height)
-		CH.CopyChatFrameEditBox:Size(width, height)
-	end)
-	scrollFrame:HookScript('OnVerticalScroll', function(scroll, offset)
-		CH.CopyChatFrameEditBox:SetHitRectInsets(0, 0, offset, (CH.CopyChatFrameEditBox:GetHeight() - offset - scroll:GetHeight()))
-	end)
+	scrollFrame:SetScript('OnSizeChanged', CH.CopyChatScrolFrame_OnSizeChanged)
+	scrollFrame:HookScript('OnVerticalScroll', CH.CopyChatScrolFrame_OnVerticalScroll)
 	CH.CopyChatScrollFrame = scrollFrame
 
 	scrollFrame:SetScrollChild(editBox)
@@ -3405,7 +3428,7 @@ function CH:BuildCopyChatFrame()
 
 	local close = CreateFrame('Button', 'ElvUI_CopyChatFrameCloseButton', frame, 'UIPanelCloseButton')
 	close:Point('TOPRIGHT')
-	close:SetFrameLevel(close:GetFrameLevel() + 1)
+	close:OffsetFrameLevel(1)
 	close:EnableMouse(true)
 	S:HandleCloseButton(close)
 end
@@ -3747,6 +3770,7 @@ function CH:Initialize()
 	if ElvCharacterDB.ChatLog then ElvCharacterDB.ChatLog = nil end --Depreciated
 
 	CH:DelayGuildMOTD() -- Keep this before `is Chat Enabled` check
+	CH:BuildCopyChatFrame() -- Currently use this to display profiler information
 
 	if not E.private.chat.enable then
 		-- if the chat module is off we still need to spawn the dts for the panels
@@ -3832,7 +3856,6 @@ function CH:Initialize()
 	end
 
 	if CH.db.chatHistory then CH:DisplayChatHistory() end
-	CH:BuildCopyChatFrame()
 
 	-- Editbox Backdrop Color
 	hooksecurefunc('ChatEdit_UpdateHeader', function(editbox)

@@ -10,8 +10,6 @@ local unpack, assert, type, gsub, rad, strfind = unpack, assert, type, gsub, rad
 local CreateFrame = CreateFrame
 local IsAddOnLoaded = C_AddOns.IsAddOnLoaded
 
-local ITEM_QUALITY_COLORS = ITEM_QUALITY_COLORS
-
 S.allowBypass = {}
 S.addonsToLoad = {}
 S.nonAddonsToLoad = {}
@@ -253,7 +251,7 @@ function S:HandlePortraitFrame(frame, createBackdrop, noStrip)
 	local portraitFrame = name and _G[name..'Portrait'] or frame.Portrait
 	local portraitFrameOverlay = name and _G[name..'PortraitOverlay'] or frame.PortraitOverlay
 	local artFrameOverlay = name and _G[name..'ArtOverlayFrame'] or frame.ArtOverlayFrame
-	local portraitFrameAlt = frame.portrait  -- blizzard uses the same global name on two frames
+	local portraitFrameAlt = frame.portrait -- blizzard uses the same global name on two frames
 
 	if not noStrip then
 		frame:StripTextures()
@@ -619,31 +617,42 @@ function S:SkinReadyDialog(dialog, bottom)
 end
 
 do
-	local quality = Enum.ItemQuality
+	local ITEMQUALITY = Enum.ItemQuality
 	local iconColors = {
-		['auctionhouse-itemicon-border-gray']		= E.QualityColors[quality.Poor],
-		['auctionhouse-itemicon-border-white']		= E.QualityColors[quality.Common],
-		['auctionhouse-itemicon-border-green']		= E.QualityColors[quality.Uncommon],
-		['auctionhouse-itemicon-border-blue']		= E.QualityColors[quality.Rare],
-		['auctionhouse-itemicon-border-purple']		= E.QualityColors[quality.Epic],
-		['auctionhouse-itemicon-border-orange']		= E.QualityColors[quality.Legendary],
-		['auctionhouse-itemicon-border-artifact']	= E.QualityColors[quality.Artifact],
-		['auctionhouse-itemicon-border-account']	= E.QualityColors[quality.Heirloom]
+		['auctionhouse-itemicon-border-gray']		= ITEMQUALITY.Poor,
+		['auctionhouse-itemicon-border-white']		= ITEMQUALITY.Common,
+		['auctionhouse-itemicon-border-green']		= ITEMQUALITY.Uncommon,
+		['auctionhouse-itemicon-border-blue']		= ITEMQUALITY.Rare,
+		['auctionhouse-itemicon-border-purple']		= ITEMQUALITY.Epic,
+		['auctionhouse-itemicon-border-orange']		= ITEMQUALITY.Legendary,
+		['auctionhouse-itemicon-border-artifact']	= ITEMQUALITY.Artifact,
+		['auctionhouse-itemicon-border-account']	= ITEMQUALITY.Heirloom,
+
+		['Professions-Slot-Frame']					= ITEMQUALITY.Common,
+		['Professions-Slot-Frame-Green']			= ITEMQUALITY.Uncommon,
+		['Professions-Slot-Frame-Blue']				= ITEMQUALITY.Rare,
+		['Professions-Slot-Frame-Epic']				= ITEMQUALITY.Epic,
+		['Professions-Slot-Frame-Legendary']		= ITEMQUALITY.Legendary
 	}
 
 	local function colorAtlas(border, atlas)
-		local color = iconColors[atlas]
-		if not color then return end
+		local quality = iconColors[atlas]
+		if not quality then return end
+
+		local r, g, b = E:GetItemQualityColor(iconColors[atlas])
 
 		if border.customFunc then
 			local br, bg, bb = unpack(E.media.bordercolor)
-			border.customFunc(border, color.r, color.g, color.b, 1, br, bg, bb)
+			border.customFunc(border, r, g, b, 1, br, bg, bb)
 		elseif border.customBackdrop then
-			border.customBackdrop:SetBackdropBorderColor(color.r, color.g, color.b)
+			border.customBackdrop:SetBackdropBorderColor(r, g, b)
 		end
 	end
 
 	local function colorVertex(border, r, g, b, a)
+		local quality = iconColors[border:GetAtlas()]
+		if quality then return end
+
 		if border.customFunc then
 			local br, bg, bb = unpack(E.media.bordercolor)
 			border.customFunc(border, r, g, b, a, br, bg, bb)
@@ -683,7 +692,8 @@ do
 		end
 
 		local r, g, b, a = border:GetVertexColor()
-		local atlas = iconColors[border.GetAtlas and border:GetAtlas()]
+		local quality = iconColors[border:GetAtlas()]
+		local atlas = quality and E:GetQualityColor(quality)
 		if customFunc then
 			border.customFunc = customFunc
 			local br, bg, bb = unpack(E.media.bordercolor)
@@ -1073,7 +1083,7 @@ do
 
 			local r, g, b = unpack(E.media.rgbvaluecolor)
 			thumb.backdrop:SetBackdropColor(r, g, b, .25)
-			thumb.backdrop:SetFrameLevel(thumb:GetFrameLevel() + 1)
+			thumb.backdrop:OffsetFrameLevel(1, thumb)
 		end
 	end
 end
@@ -1227,7 +1237,7 @@ function S:HandleDropDownBox(frame, width, template, old)
 
 	if not frame.backdrop then
 		frame:CreateBackdrop(template)
-		frame:SetFrameLevel(frame:GetFrameLevel() + 2)
+		frame:OffsetFrameLevel(2)
 	end
 
 	if not old then
@@ -1274,12 +1284,20 @@ function S:HandleDropDownBox(frame, width, template, old)
 end
 
 function S:HandleStatusBar(frame, color, template)
-	frame:SetFrameLevel(frame:GetFrameLevel() + 1)
+	frame:OffsetFrameLevel(1)
 	frame:StripTextures()
 	frame:CreateBackdrop(template or 'Transparent')
 	frame:SetStatusBarTexture(E.media.normTex)
 	frame:SetStatusBarColor(unpack(color or {.01, .39, .1}))
 	E:RegisterStatusBar(frame)
+end
+
+function S:ForEachCheckboxTextureRegion(checkbox, func)
+	for _, region in next, { checkbox:GetRegions() } do
+		if region:IsObjectType('Texture') then
+			func(checkbox, region)
+		end
+	end
 end
 
 do
@@ -1712,10 +1730,8 @@ function S:HandleShipFollowerPage(followerTab)
 end
 
 local function UpdateFollowerQuality(self, followerInfo)
-	if followerInfo then
-		local color = E.QualityColors[followerInfo.quality or 1]
-		self.Portrait.backdrop:SetBackdropBorderColor(color.r, color.g, color.b)
-	end
+	local r, g, b = E:GetItemQualityColor(followerInfo.quality)
+	self.Portrait.backdrop:SetBackdropBorderColor(r, g, b)
 end
 
 do
@@ -1777,10 +1793,9 @@ do
 					follower.PortraitFrameStyled = true
 				end
 
-				local quality = portrait.quality or (follower.info and follower.info.quality)
-				local color = portrait.backdrop and ITEM_QUALITY_COLORS[quality]
-				if color then -- sometimes it doesn't have this data since DF
-					portrait.backdrop:SetBackdropBorderColor(color.r, color.g, color.b)
+				if portrait.backdrop then
+					local r, g, b = E:GetItemQualityColor(portrait.quality or (follower.info and follower.info.quality))
+					portrait.backdrop:SetBackdropBorderColor(r, g, b)
 				end
 			end
 
@@ -1996,9 +2011,7 @@ do
 		else
 			S:HandleTrimScrollBar(frame.IconSelector.ScrollBar)
 
-			for _, button in next, { frame.IconSelector.ScrollBox.ScrollTarget:GetChildren() } do
-				handleButton(button)
-			end
+			frame.IconSelector.ScrollBox:ForEachFrame(handleButton)
 		end
 
 		frame.IsSkinned = true

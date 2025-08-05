@@ -72,6 +72,15 @@ end
 
 L = BigWigs:NewBossLocale("Horrific Vision of Orgrimmar Trash", "deDE")
 if L then
+	L.sanity_change = "%d Geistige Gesundheit"
+	L.madnesses = "Wahnsinn"
+	L.potions = "Tränke"
+	L.buffs = "Buffs"
+	L.slowed = "Verlangsamt"
+	L.sluggish_potion_effect = "Heilt alle 5 Sek. 2%"
+	L.sickening_potion_effect = "5% weniger erlittener Schaden"
+	L.spicy_potion_effect = "Speit Feuer"
+
 	L.voidbound_shaman = "Leerengebundener Schamane"
 	L.endless_hunger_totem = "Totem des endlosen Hungers"
 	L.crawling_corruption = "Krabbelnde Verderbnis"
@@ -132,6 +141,17 @@ end
 
 L = BigWigs:NewBossLocale("Horrific Vision of Stormwind Trash", "deDE")
 if L then
+	L.sanity_change = "%d Geistige Gesundheit"
+	L.portal_closed = "Portal geschlossen"
+	L.portal_closed_desc = "Zeigt eine Nachricht wenn ein Portal im Magierviertel geschlossen wird."
+	L.madnesses = "Wahnsinn"
+	L.potions = "Tränke"
+	L.buffs = "Buffs"
+	L.slowed = "Verlangsamt"
+	L.sluggish_potion_effect = "Heilt alle 5 Sek. 2%"
+	L.sickening_potion_effect = "5% weniger erlittener Schaden"
+	L.spicy_potion_effect = "Speit Feuer"
+
 	L.crawling_corruption = "Krabbelnde Verderbnis"
 	L.enthralled_footman = "Bezauberter Fußsoldat"
 	L.fallen_voidspeaker = "Gefallener Leerensprecher"
@@ -156,6 +176,7 @@ if L then
 	L.zardeth_of_the_black_claw = "Zardeth der Schwarzen Klaue"
 	L.unstable_servant = "Instabiler Diener"
 	L.hogger = "Hogger"
+	L.void_scarred_gryphon = "Leerenvernarbter Greif"
 
 	L.therum_deepforge_warmup_trigger = "Ihr spielt wohl gern mit Sprengstoff, was? Dann lasst uns spielen!"
 	L.alleria_windrunner_warmup_trigger = "Mutter... hör nicht auf das Geflüster!"

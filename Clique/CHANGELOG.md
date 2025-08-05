@@ -1,6 +1,6 @@
 # Clique
 
-## [v4.1.0-release](https://github.com/jnwhiteh/Clique/tree/v4.1.0-release) (2025-03-15)
-[Full Changelog](https://github.com/jnwhiteh/Clique/compare/v4.0.37-release...v4.1.0-release) [Previous Releases](https://github.com/jnwhiteh/Clique/releases)
+## [v4.2.2-release](https://github.com/jnwhiteh/Clique/tree/v4.2.2-release) (2025-07-03)
+[Full Changelog](https://github.com/jnwhiteh/Clique/compare/v4.2.1-release...v4.2.2-release) [Previous Releases](https://github.com/jnwhiteh/Clique/releases)
 
-- Fix an issue with off-spec spells being activated on game load  
+- Add packager support for mists, fix a bug with talent swapping  

@@ -31,16 +31,17 @@ end
 
 L = BigWigs:NewBossLocale("Halls of Atonement Trash", "koKR")
 if L then
-	L.houndmaster = "타락한 사냥개조련사"
-	L.gargon = "흉포한 가르곤"
-	L.loyalstoneborn = "충직한 돌숨결"
-	L.darkblade = "타락한 암흑칼날"
-	L.obliterator = "타락한 절멸자"
-	L.collector = "타락한 수집가"
-	L.shard = "할키아스의 조각"
-	L.reaver = "돌숨결 약탈자"
-	L.slasher = "돌숨결 난도질꾼"
-	L.sigar = "심문관 시가르"
+	L.depraved_houndmaster = "타락한 사냥개조련사"
+	L.vicious_gargon = "흉포한 가르곤"
+	L.loyal_stoneborn = "충직한 돌숨결"
+	L.depraved_darkblade = "타락한 암흑칼날"
+	L.depraved_obliterator = "타락한 절멸자"
+	L.depraved_collector = "타락한 수집가"
+	L.stoneborn_slasher = "돌숨결 난도질꾼"
+	L.shard_of_halkias = "할키아스의 조각"
+	L.stoneborn_reaver = "돌숨결 약탈자"
+	L.stoneborn_eviscerator = "돌숨결 적출자"
+	L.inquisitor_sigar = "심문관 시가르"
 end
 
 -- Mists of Tirna Scithe
@@ -148,11 +149,6 @@ end
 
 -- Tazavesh, the Veiled Market
 
-L = BigWigs:NewBossLocale("Zo'phex the Sentinel", "koKR")
-if L then
-	L.zophex_warmup_trigger = "밀수품을... 전부... 내놓아라..."
-end
-
 L = BigWigs:NewBossLocale("The Grand Menagerie", "koKR")
 if L then
 	L.achillite_warmup_trigger = "날뛰는 야수 때문에 두려우신가요? 여기 해결책이 있습니다!"
@@ -170,8 +166,14 @@ if L then
 	L.add_wave_killed = "웨이브 (%d/%d)"
 end
 
+L = BigWigs:NewBossLocale("So'leah", "koKR")
+if L then
+	L.group = "그룹"
+end
+
 L = BigWigs:NewBossLocale("Tazavesh Trash", "koKR")
 if L then
+	L.zophex_warmup_trigger = "밀수품을... 전부... 내놓아라..."
 	L.menagerie_warmup_trigger = "여러분 모두가 고대하던 상품 차례입니다! 이른바 악마의 저주를 받은 망각의 서슬도끼입니다!"
 	L.soazmi_warmup_trigger = "방해해서 참 미안하게 됐습니다, 소레아. 불편할 때 찾아온 거면 좋겠는데 말이죠."
 	L.portal_authority = "타자베쉬 차원문 관리국"
@@ -191,29 +193,37 @@ if L then
 		["창백한 꽃"] = 53267,
 		["진홍색 손칼"] = 53268
 	}
-
+	L.gatewarden_zomazz = "관문지기 조마즈"
+	L.customs_security = "세관 경비원"
 	L.interrogation_specialist = "심문 전문가"
 	L.portalmancer_zohonn = "차원문술사 조혼"
-	L.armored_overseer_tracker_zokorss = "무장한 감독관 / 추적자 조코르스"
+	L.armored_overseer = "무장한 감독관"
+	L.support_officer = "지원 장교"
 	L.tracker_zokorss = "추적자 조코르스"
 	L.ancient_core_hound = "고대의 심장부 사냥개"
 	L.enraged_direhorn = "격노한 공포뿔"
+	L.cartel_skulker = "중개단 잠복꾼"
+	L.cartel_wiseguy = "중개단 폭력단원"
 	L.cartel_muscle = "중개단 불한당"
 	L.cartel_smuggler = "중개단 밀수업자"
-	L.support_officer = "지원 장교"
 	L.defective_sorter = "불량 분류기"
+	L.overloaded_mailemental = "과부하된 우편의 정령"
+	L.post_worker = "우.정.국. 직원"
+	L.bazaar_overseer = "시장 감독관"
 	L.market_peacekeeper = "시장 평화감시단"
 	L.veteran_sparkcaster = "노련한 불꽃술사"
 	L.commerce_enforcer = "상업구 집행자"
-	L.commerce_enforcer_commander_zofar = "상업구 집행자 / 사령관 조파르"
 	L.commander_zofar = "사령관 조파르"
 
 	L.tazavesh_soleahs_gambit = "타자베쉬: 소레아의 승부수"
 	L.murkbrine_scalebinder = "진흙소금 비늘결속자"
+	L.murkbrine_fishmancer = "진흙소금 생선술사"
 	L.murkbrine_shellcrusher = "진흙소금 껍질분쇄자"
 	L.coastwalker_goliath = "해안방랑자 거수"
 	L.stormforged_guardian = "폭풍벼림 수호자"
 	L.burly_deckhand = "건장한 갑판원"
+	L.hourglass_tidesage = "모래시계 파도현자"
+	L.corsair_officer = "해적 장교"
 	L.adorned_starseer = "화려한 별예언가"
 	L.focused_ritualist = "몰두하는 의식술사"
 	L.devoted_accomplice = "헌신적인 동조자"

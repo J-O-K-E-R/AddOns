@@ -1,8 +1,8 @@
 # LiteBag
 
-## [11.1.5-1](https://github.com/xod-wow/LiteBag/tree/11.1.5-1) (2025-04-21)
-[Full Changelog](https://github.com/xod-wow/LiteBag/compare/11.1.0-3...11.1.5-1) [Previous Releases](https://github.com/xod-wow/LiteBag/releases)
+## [11.2.0-1](https://github.com/xod-wow/LiteBag/tree/11.2.0-1) (2025-07-29)
+[Full Changelog](https://github.com/xod-wow/LiteBag/compare/11.1.7-1...11.2.0-1) [Previous Releases](https://github.com/xod-wow/LiteBag/releases)
 
-- Add 11.1.5 to ToC  
-- Revert "Workaround Blizzard bug with GetItemButtonIconTexture"  
-    Blizzard fixed it in a newer update  
+- Delete the entire addon.  
+    Replace it with a wrapper over 11.2 combined bags and bank.  
+    Finally Blizzard obsoleted something I wrote after 14 years.  

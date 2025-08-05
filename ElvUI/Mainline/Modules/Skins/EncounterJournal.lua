@@ -7,7 +7,6 @@ local ipairs, next, rad = ipairs, next, rad
 local hooksecurefunc = hooksecurefunc
 
 local GetItemQualityByID = C_Item.GetItemQualityByID
-local GetItemQualityColor = C_Item.GetItemQualityColor
 
 local lootQuality = {
 	['loottab-set-itemborder-white'] = nil, -- dont show white
@@ -127,12 +126,8 @@ local function ItemSetsItemBorder(border, atlas)
 	local parent = border:GetParent()
 	local backdrop = parent and parent.Icon and parent.Icon.backdrop
 	if backdrop then
-		local color = E.QualityColors[lootQuality[atlas]]
-		if color then
-			backdrop:SetBackdropBorderColor(color.r, color.g, color.b)
-		else
-			backdrop:SetBackdropBorderColor(unpack(E.media.bordercolor))
-		end
+		local r, g, b = E:GetItemQualityColor(lootQuality[atlas])
+		backdrop:SetBackdropBorderColor(r, g, b)
 	end
 end
 
@@ -166,9 +161,105 @@ local function ItemSetElements(set)
 	end
 end
 
-local function HandleItemSetsElements(scrollBox)
-	if scrollBox then
-		scrollBox:ForEachFrame(ItemSetElements)
+local function HandleItemSetsElements(frame)
+	frame:ForEachFrame(ItemSetElements)
+end
+
+local function InstanceSelectScrollUpdateChild(child)
+	if not child.IsSkinned then
+		child:SetNormalTexture(E.ClearTexture)
+		child:SetPushedTexture(E.ClearTexture)
+		child:SetHighlightTexture(E.media.normTex)
+		local hl = child:GetHighlightTexture()
+		hl:SetVertexColor(0.8, 0.8, 0.8, .25)
+		hl:SetInside(child, 3, 3)
+
+		local bgImage = child.bgImage
+		if bgImage then
+			bgImage:CreateBackdrop()
+			bgImage.backdrop:Point('TOPLEFT', 3, -3)
+			bgImage.backdrop:Point('BOTTOMRIGHT', -4, 2)
+		end
+
+		child.IsSkinned = true
+	end
+end
+
+local function InstanceSelectScrollUpdate(frame)
+	frame:ForEachFrame(InstanceSelectScrollUpdateChild)
+end
+
+local function BossesScrollUpdateChild(child)
+	if not child.IsSkinned then
+		S:HandleButton(child)
+
+		local hl = child:GetHighlightTexture()
+		hl:SetColorTexture(1, 1, 1, .25)
+		hl:SetInside()
+
+		child.text:SetTextColor(1, 1, 1)
+		child.text.SetTextColor = E.noop
+		child.creature:Point('TOPLEFT', 0, -4)
+
+		child.IsSkinned = true
+	end
+end
+
+local function BossesScrollUpdate(frame)
+	frame:ForEachFrame(BossesScrollUpdateChild)
+end
+
+local function LootContainerUpdateChild(child)
+	if not child.IsSkinned then
+		if child.bossTexture then child.bossTexture:SetAlpha(0) end
+		if child.bosslessTexture then child.bosslessTexture:SetAlpha(0) end
+
+		if child.name and child.icon then
+			child.icon:SetSize(32, 32)
+			child.icon:Point('TOPLEFT', E.PixelMode and 3 or 4, -(E.PixelMode and 7 or 8))
+			S:HandleIcon(child.icon, true)
+			S:HandleIconBorder(child.IconBorder, child.icon.backdrop)
+
+			child.name:ClearAllPoints()
+			child.name:Point('TOPLEFT', child.icon, 'TOPRIGHT', 6, -2)
+
+			-- we only want this when name and icon both exist
+			if not child.backdrop then
+				child:CreateBackdrop('Transparent')
+				child.backdrop:Point('TOPLEFT')
+				child.backdrop:Point('BOTTOMRIGHT', 0, 1)
+			end
+		end
+
+		if child.boss then
+			child.boss:ClearAllPoints()
+			child.boss:Point('BOTTOMLEFT', 4, 6)
+			child.boss:SetTextColor(1, 1, 1)
+		end
+
+		if child.slot then
+			child.slot:ClearAllPoints()
+			child.slot:Point('TOPLEFT', child.name, 'BOTTOMLEFT', 0, -3)
+			child.slot:SetTextColor(1, 1, 1)
+		end
+
+		if child.armorType then
+			child.armorType:ClearAllPoints()
+			child.armorType:Point('RIGHT', child, 'RIGHT', -10, 0)
+			child.armorType:SetTextColor(1, 1, 1)
+		end
+
+		child.IsSkinned = true
+	end
+end
+
+local function LootContainerUpdate(frame)
+	frame:ForEachFrame(LootContainerUpdateChild)
+end
+
+local function LoreScrollingFontChild(child)
+	if child.FontString then
+		child.FontString:SetTextColor(1, 1, 1)
 	end
 end
 
@@ -438,13 +529,9 @@ function S:Blizzard_EncounterJournal()
 				sugg.reward.icon:SetTexture(rewardData.itemIcon or rewardData.currencyIcon or [[Interface\Icons\achievement_guildperk_mobilebanking]])
 				sugg.reward.icon:SetTexCoord(unpack(E.TexCoords))
 
-				local r, g, b = unpack(E.media.bordercolor)
-				if rewardData.itemID then
-					local quality = GetItemQualityByID(rewardData.itemID)
-					if quality and quality > 1 then
-						r, g, b = GetItemQualityColor(quality)
-					end
-				end
+				local quality = rewardData.itemID and GetItemQualityByID(rewardData.itemID)
+				local r, g, b = E:GetItemQualityColor(quality and quality > 1 and quality)
+
 				sugg.reward.icon.backdrop:SetBackdropBorderColor(r, g, b)
 			end
 		end)
@@ -469,95 +556,15 @@ function S:Blizzard_EncounterJournal()
 		HandleButton(button, true)
 	end
 
-	hooksecurefunc(_G.EncounterJournal.instanceSelect.ScrollBox, 'Update', function(frame)
-		for _, child in next, { frame.ScrollTarget:GetChildren() } do
-			if not child.IsSkinned then
-				child:SetNormalTexture(E.ClearTexture)
-				child:SetPushedTexture(E.ClearTexture)
-				child:SetHighlightTexture(E.media.normTex)
-				local hl = child:GetHighlightTexture()
-				hl:SetVertexColor(0.8, 0.8, 0.8, .25)
-				hl:SetInside(child, 3, 3)
-
-				local bgImage = child.bgImage
-				if bgImage then
-					bgImage:CreateBackdrop()
-					bgImage.backdrop:Point('TOPLEFT', 3, -3)
-					bgImage.backdrop:Point('BOTTOMRIGHT', -4, 2)
-				end
-
-				child.IsSkinned = true
-			end
-		end
-	end)
+	hooksecurefunc(_G.EncounterJournal.instanceSelect.ScrollBox, 'Update', InstanceSelectScrollUpdate)
 
 	if E.private.skins.parchmentRemoverEnable then
 		LJ:StripTextures()
 		LJ:SetTemplate('Transparent')
 
-		hooksecurefunc(_G.EncounterJournal.encounter.info.BossesScrollBox, 'Update', function(frame)
-			for _, child in next, { frame.ScrollTarget:GetChildren() } do
-				if not child.IsSkinned then
-					S:HandleButton(child)
+		hooksecurefunc(_G.EncounterJournal.encounter.info.BossesScrollBox, 'Update', BossesScrollUpdate)
 
-					local hl = child:GetHighlightTexture()
-					hl:SetColorTexture(1, 1, 1, .25)
-					hl:SetInside()
-
-					child.text:SetTextColor(1, 1, 1)
-					child.text.SetTextColor = E.noop
-					child.creature:Point('TOPLEFT', 0, -4)
-
-					child.IsSkinned = true
-				end
-			end
-		end)
-
-		hooksecurefunc(_G.EncounterJournal.encounter.info.LootContainer.ScrollBox, 'Update', function(frame)
-			for _, child in next, { frame.ScrollTarget:GetChildren() } do
-				if not child.IsSkinned then
-					if child.bossTexture then child.bossTexture:SetAlpha(0) end
-					if child.bosslessTexture then child.bosslessTexture:SetAlpha(0) end
-
-					if child.name and child.icon then
-						child.icon:SetSize(32, 32)
-						child.icon:Point('TOPLEFT', E.PixelMode and 3 or 4, -(E.PixelMode and 7 or 8))
-						S:HandleIcon(child.icon, true)
-						S:HandleIconBorder(child.IconBorder, child.icon.backdrop)
-
-						child.name:ClearAllPoints()
-						child.name:Point('TOPLEFT', child.icon, 'TOPRIGHT', 6, -2)
-
-						-- we only want this when name and icon both exist
-						if not child.backdrop then
-							child:CreateBackdrop('Transparent')
-							child.backdrop:Point('TOPLEFT')
-							child.backdrop:Point('BOTTOMRIGHT', 0, 1)
-						end
-					end
-
-					if child.boss then
-						child.boss:ClearAllPoints()
-						child.boss:Point('BOTTOMLEFT', 4, 6)
-						child.boss:SetTextColor(1, 1, 1)
-					end
-
-					if child.slot then
-						child.slot:ClearAllPoints()
-						child.slot:Point('TOPLEFT', child.name, 'BOTTOMLEFT', 0, -3)
-						child.slot:SetTextColor(1, 1, 1)
-					end
-
-					if child.armorType then
-						child.armorType:ClearAllPoints()
-						child.armorType:Point('RIGHT', child, 'RIGHT', -10, 0)
-						child.armorType:SetTextColor(1, 1, 1)
-					end
-
-					child.IsSkinned = true
-				end
-			end
-		end)
+		hooksecurefunc(_G.EncounterJournal.encounter.info.LootContainer.ScrollBox, 'Update', LootContainerUpdate)
 
 		hooksecurefunc('EncounterJournal_SetUpOverview', SkinOverviewInfo)
 		hooksecurefunc('EncounterJournal_SetBullets', SkinOverviewInfoBullets)
@@ -583,9 +590,7 @@ function S:Blizzard_EncounterJournal()
 		_G.EncounterJournalEncounterFrameInstanceFrameTitle:FontTemplate(nil, 25)
 
 		for _, child in next, { _G.EncounterJournalEncounterFrameInstanceFrame.LoreScrollingFont.ScrollBox.ScrollTarget:GetChildren() } do
-			if child.FontString then
-				child.FontString:SetTextColor(1, 1, 1)
-			end
+			LoreScrollingFontChild(child)
 		end
 
 		local parchment = LJ:GetRegions()

@@ -1,4 +1,5 @@
-local L = BigWigsAPI:NewLocale("BigWigs: Common", "enUS")
+local _, addonTbl = ...
+local L = addonTbl.API:NewLocale("BigWigs: Common", "enUS")
 
 -- Prototype.lua common words
 L.you = "%s on YOU"
@@ -12,8 +13,10 @@ L.buff_other = "Buff on %s: %s"
 L.magic_buff_boss = "Magic buff on BOSS: %s" -- Magic buff on BOSS: SPELL_NAME
 L.magic_buff_other = "Magic buff on %s: %s" -- Magic buff on NPC_NAME: SPELL_NAME
 L.on = "%s on %s"
-L.stack = "%dx %s on %s"
-L.stackyou = "%dx %s on YOU"
+L.stack = "%dx %s on %s" -- "5x SPELL_NAME on PLAYER_OR_NPC" showing how many stacks of a buff/debuff are on a player or NPC
+L.stackyou = "%dx %s on YOU" -- "5x SPELL_NAME on YOU" showing how many stacks of a buff/debuff are on you
+L.stackboss = "%dx %s on BOSS" -- "5x SPELL_NAME on BOSS" showing how many stacks of a buff/debuff are on the boss
+L.stack_gained = "Gained %dx" -- "Gained 5x" for situations where we show how many stacks of a buff were gained since last time a message showed
 L.cast = "<Cast: %s>"
 L.casting = "Casting %s"
 L.soon = "%s soon"
@@ -42,10 +45,11 @@ L.dead = "Dead" -- When a player is dead
 L.general = "General" -- General settings, i.e. things that apply to normal, heroic and mythic mode.
 L.health = "Health" -- The health of an NPC
 L.health_percent = "%d%% Health" -- "10% Health" The health percentage of an NPC
+L.energy = "Energy"
+L.energy_percent = "%d%% Energy" -- "80% Energy" The energy percentage of an NPC
 L.door_open = "Door open" -- When a door is open, usually after a speech from an NPC
 L.gate_open = "Gate open" -- When a gate is open, usually after a speech from an NPC
 L.threat = "Threat"
-L.energy = "Energy"
 
 L.remaining = "%d remaining" -- 5 remaining
 L.duration = "%s for %s sec" -- Spell for 10 seconds
@@ -133,6 +137,8 @@ L.marker_player_desc = "Mark players affected by '%s' with %s, requires promoted
 L.marker_npc_desc = "Mark %s with %s, requires promoted or leader." -- Mark NPC_NAME with SKULL_ICON
 L.marker_npc_aura_desc = "Mark NPCs affected by '%s' with %s, requires promoted or leader." -- Mark NPCs affected by 'SPELL_NAME' with SKULL_ICON
 L.disabled = "Disabled"
+L.none = "None"
+L.markers = "Markers" -- Plural of marker
 
 -- Ability where two players have to move close to each other
 L.link = "Link"
@@ -261,6 +267,7 @@ L.soaks = "Soaks" -- Plural of L.soak
 L.spike = "Spike" -- Short for any ability with the name "spike" in it e.g. "Glacial Spike" or "Fel Spike" or "Volatile Spike"
 L.spikes = "Spikes" -- Plural of L.spike
 L.spread = "Spread" -- An ability that forces you to spread out away from other players, or you might damage them
+L.tank_bomb = "Tank Bomb" -- Similar to L.bomb but only applies to tanks
 L.tank_combo = "Tank Combo" -- Used for tank swap mechanics where the boss casts a sequence of tank buster attacks
 L.tank_debuff = "Tank Debuff" -- Used for debuffs that only apply to tanks, usually an indicator that you need to taunt
 L.tank_frontal = "Tank Frontal" -- Similar to L.frontal_cone but only applies to tanks

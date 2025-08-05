@@ -37,7 +37,7 @@ BigWigs:AddColors("Ki'katal the Harvester", {
 	[432117] = "cyan",
 	[432130] = "orange",
 	[432227] = "red",
-	[461487] = "red",
+	[461487] = {"blue","red","yellow"},
 })
 
 BigWigs:AddSounds("Ki'katal the Harvester", {
@@ -45,7 +45,7 @@ BigWigs:AddSounds("Ki'katal the Harvester", {
 	[432117] = "long",
 	[432130] = "alarm",
 	[432227] = "alert",
-	[461487] = "alarm",
+	[461487] = {"alarm","info"},
 })
 
 BigWigs:AddColors("Ara-Kara, City of Echoes Trash", {
@@ -60,13 +60,14 @@ BigWigs:AddColors("Ara-Kara, City of Echoes Trash", {
 	[434824] = "orange",
 	[434830] = "blue",
 	[436614] = {"blue","orange"},
-	[438622] = "yellow",
 	[438826] = {"blue","yellow"},
 	[438877] = "cyan",
 	[439208] = "green",
 	[448248] = "red",
 	[453161] = "orange",
 	[465012] = "yellow",
+	[1241693] = "yellow",
+	[1241785] = {"blue","purple"},
 })
 
 BigWigs:AddSounds("Ara-Kara, City of Echoes Trash", {
@@ -81,18 +82,19 @@ BigWigs:AddSounds("Ara-Kara, City of Echoes Trash", {
 	[434824] = "alarm",
 	[434830] = "underyou",
 	[436614] = "warning",
-	[438622] = "alarm",
 	[438826] = {"alert","underyou"},
 	[438877] = "info",
 	[439208] = "info",
 	[448248] = "alert",
 	[453161] = "alarm",
 	[465012] = "alert",
+	[1241693] = "info",
+	[1241785] = "alert",
 })
 
 BigWigs:AddColors("Brew Master Aldryr", {
 	[431895] = {"blue","green"},
-	[432179] = "red",
+	[432179] = {"blue","red","yellow"},
 	[432196] = "blue",
 	[432198] = "orange",
 	[432229] = "purple",
@@ -101,7 +103,7 @@ BigWigs:AddColors("Brew Master Aldryr", {
 
 BigWigs:AddSounds("Brew Master Aldryr", {
 	[431895] = "info",
-	[432179] = "alert",
+	[432179] = "info",
 	[432196] = "underyou",
 	[432198] = "alarm",
 	[432229] = "alert",
@@ -112,30 +114,30 @@ BigWigs:AddColors("I'pa", {
 	[439031] = "purple",
 	[439202] = {"blue","orange"},
 	[439365] = "yellow",
+	[440087] = "blue",
 	[440147] = "cyan",
-	[441179] = "blue",
 })
 
 BigWigs:AddSounds("I'pa", {
 	[439031] = "alert",
 	[439202] = "alert",
 	[439365] = "long",
+	[440087] = "underyou",
 	[440147] = "warning",
-	[441179] = "underyou",
 })
 
 BigWigs:AddColors("Benk Buzzbee", {
 	[438025] = "yellow",
 	[438971] = "orange",
 	[439524] = "red",
-	[440134] = {"blue","purple"},
+	[440134] = {"blue","green","purple"},
 })
 
 BigWigs:AddSounds("Benk Buzzbee", {
 	[438025] = "info",
 	[438971] = "info",
 	[439524] = "alert",
-	[440134] = {"alarm","underyou"},
+	[440134] = {"alarm","info","underyou"},
 })
 
 BigWigs:AddColors("Goldie Baronbottom", {
@@ -155,6 +157,7 @@ BigWigs:AddSounds("Goldie Baronbottom", {
 BigWigs:AddColors("Cinderbrew Meadery Trash", {
 	[434706] = "orange",
 	[434756] = {"blue","red"},
+	[434773] = {"blue","yellow"},
 	[434998] = "red",
 	[437721] = "red",
 	[437956] = {"blue","yellow"},
@@ -179,6 +182,7 @@ BigWigs:AddColors("Cinderbrew Meadery Trash", {
 BigWigs:AddSounds("Cinderbrew Meadery Trash", {
 	[434706] = "alarm",
 	[434756] = "alert",
+	[434773] = "info",
 	[434998] = "long",
 	[437721] = "alert",
 	[437956] = "alarm",
@@ -428,6 +432,106 @@ BigWigs:AddSounds("Darkflame Cleft Trash", {
 	["minecart"] = {"info","long"},
 })
 
+BigWigs:AddColors("Azhiccar", {
+	[1217232] = "cyan",
+	[1217247] = {"blue","red"},
+	[1217327] = "yellow",
+	[1217446] = "blue",
+	[1217664] = "purple",
+	[1227745] = {"blue","orange"},
+})
+
+BigWigs:AddSounds("Azhiccar", {
+	[1217232] = "long",
+	[1217247] = {"alarm","info"},
+	[1217327] = "alert",
+	[1217446] = "underyou",
+	[1217664] = "warning",
+	[1227745] = "alarm",
+})
+
+BigWigs:AddColors("Taah'bat and A'wazj", {
+	[1219457] = "yellow",
+	[1219482] = "purple",
+	[1219700] = {"cyan","green"},
+	[1227918] = {"blue","orange"},
+	[1236130] = {"blue","red"},
+})
+
+BigWigs:AddSounds("Taah'bat and A'wazj", {
+	[1219457] = "info",
+	[1219482] = "alert",
+	[1219700] = {"info","long"},
+	[1227918] = {"alarm","warning"},
+	[1236130] = "info",
+})
+
+BigWigs:AddColors("Soul-Scribe", {
+	[1224793] = "cyan",
+	[1224865] = "green",
+	[1225174] = "red",
+	[1225218] = "orange",
+	[1226444] = "blue",
+	[1236703] = "yellow",
+})
+
+BigWigs:AddSounds("Soul-Scribe", {
+	[1224793] = "alert",
+	[1224865] = "info",
+	[1225174] = "alarm",
+	[1225218] = "alarm",
+	[1226444] = "warning",
+	[1236703] = "long",
+})
+
+BigWigs:AddColors("Eco-Dome Al'dani Trash", {
+	[1215850] = "orange",
+	[1221152] = "orange",
+	[1221190] = {"blue","yellow"},
+	[1221483] = {"blue","yellow"},
+	[1221532] = "yellow",
+	[1222202] = "blue",
+	[1222341] = "purple",
+	[1222356] = "orange",
+	[1223000] = "orange",
+	[1223007] = "orange",
+	[1226111] = {"blue","orange"},
+	[1226492] = "green",
+	[1229474] = "red",
+	[1229510] = "red",
+	[1231244] = "yellow",
+	[1235368] = "purple",
+	[1236981] = {"blue","green"},
+	[1237195] = {"blue","yellow"},
+	[1237220] = "red",
+	[1239229] = "green",
+	[1248699] = "red",
+})
+
+BigWigs:AddSounds("Eco-Dome Al'dani Trash", {
+	[1215850] = "alarm",
+	[1221152] = "alarm",
+	[1221190] = "info",
+	[1221483] = "alert",
+	[1221532] = "alert",
+	[1222202] = "underyou",
+	[1222341] = "alert",
+	[1222356] = "alarm",
+	[1223000] = "info",
+	[1223007] = "alarm",
+	[1226111] = "alarm",
+	[1226492] = "info",
+	[1229474] = "alert",
+	[1229510] = "alert",
+	[1231244] = "long",
+	[1235368] = {"alarm","alert"},
+	[1236981] = "info",
+	[1237195] = "alarm",
+	[1237220] = "info",
+	[1239229] = "info",
+	[1248699] = "long",
+})
+
 BigWigs:AddColors("Big M.O.M.M.A.", {
 	[460156] = "green",
 	[469981] = "cyan",
@@ -453,6 +557,7 @@ BigWigs:AddSounds("Big M.O.M.M.A.", {
 BigWigs:AddColors("Demolition Duo", {
 	[459779] = {"blue","green","red"},
 	[459799] = "purple",
+	[460602] = {"blue","yellow"},
 	[460867] = "yellow",
 	[470090] = "cyan",
 	[473690] = {"blue","orange"},
@@ -462,6 +567,7 @@ BigWigs:AddColors("Demolition Duo", {
 BigWigs:AddSounds("Demolition Duo", {
 	[459779] = {"alarm","info"},
 	[459799] = "alert",
+	[460602] = "alert",
 	[460867] = "long",
 	[470090] = "long",
 	[473690] = {"alarm","info"},
@@ -501,6 +607,7 @@ BigWigs:AddSounds("Geezle Gigazap", {
 BigWigs:AddColors("Operation: Floodgate Trash", {
 	[462771] = {"blue","red"},
 	[463058] = "red",
+	[463169] = {"blue","yellow"},
 	[465120] = "yellow",
 	[465408] = "cyan",
 	[465666] = "purple",
@@ -526,6 +633,7 @@ BigWigs:AddColors("Operation: Floodgate Trash", {
 BigWigs:AddSounds("Operation: Floodgate Trash", {
 	[462771] = {"alert","underyou"},
 	[463058] = "alert",
+	[463169] = "info",
 	[465120] = "alarm",
 	[465408] = "info",
 	[465666] = "alert",
@@ -553,6 +661,7 @@ BigWigs:AddColors("Captain Dailcry", {
 	[424419] = "red",
 	[447270] = "orange",
 	[447439] = {"blue","green","yellow"},
+	[1238780] = {"blue","orange"},
 })
 
 BigWigs:AddSounds("Captain Dailcry", {
@@ -560,6 +669,7 @@ BigWigs:AddSounds("Captain Dailcry", {
 	[424419] = "warning",
 	[447270] = "alarm",
 	[447439] = {"alert","info"},
+	[1238780] = {"alarm","underyou"},
 })
 
 BigWigs:AddColors("Baron Braunpyke", {
@@ -613,6 +723,7 @@ BigWigs:AddColors("Priory of the Sacred Flame Trash", {
 	[427596] = "purple",
 	[427601] = "yellow",
 	[427609] = "red",
+	[427621] = "orange",
 	[427897] = "orange",
 	[427900] = "blue",
 	[427950] = "red",
@@ -626,7 +737,7 @@ BigWigs:AddColors("Priory of the Sacred Flame Trash", {
 	[448485] = "purple",
 	[448492] = "red",
 	[448515] = {"blue","purple"},
-	[448787] = "blue",
+	[448787] = {"blue","red"},
 	[448791] = "yellow",
 	[453458] = {"blue","yellow"},
 	[462859] = {"blue","orange"},
@@ -645,6 +756,7 @@ BigWigs:AddSounds("Priory of the Sacred Flame Trash", {
 	[427596] = "alert",
 	[427601] = "long",
 	[427609] = "alarm",
+	[427621] = "alert",
 	[427897] = "alarm",
 	[427900] = "underyou",
 	[427950] = "alert",
@@ -769,6 +881,7 @@ BigWigs:AddColors("The Dawnbreaker Trash", {
 	[451112] = "yellow",
 	[451117] = "purple",
 	[451119] = {"blue","red"},
+	[1242074] = "purple",
 })
 
 BigWigs:AddSounds("The Dawnbreaker Trash", {
@@ -784,7 +897,7 @@ BigWigs:AddSounds("The Dawnbreaker Trash", {
 	[432565] = "alarm",
 	[446615] = "info",
 	[449042] = "info",
-	[450756] = "warning",
+	[450756] = {"info","warning"},
 	[450854] = "alarm",
 	[451091] = "info",
 	[451097] = "alert",
@@ -794,6 +907,7 @@ BigWigs:AddSounds("The Dawnbreaker Trash", {
 	[451112] = "info",
 	[451117] = "alarm",
 	[451119] = {"alarm","alert"},
+	[1242074] = "info",
 })
 
 BigWigs:AddColors("Kyrioss", {

@@ -32,7 +32,7 @@ local InspectItems = {
 	'BackSlot',
 	'MainHandSlot', -- 16
 	'SecondaryHandSlot', -- 17
-	E.Cata and 'RangedSlot' or nil -- 18
+	E.Mists and 'RangedSlot' or nil -- 18
 }
 
 local numInspectItems = #InspectItems
@@ -121,7 +121,7 @@ function M:ClearPageInfo(frame, which)
 end
 
 function M:CheckStatsItemLevel()
-	return E.Retail and not E:IsAddOnEnabled('DejaCharacterStats')
+	return E.Retail and not E.OtherAddons.DejaCharacterStats
 end
 
 function M:ToggleItemLevelInfo(setupCharacterPage, config)
@@ -264,7 +264,7 @@ function M:UpdateAverageString(frame, which, iLevelDB)
 		avgItemLevel = E:CalculateAverageItemLevel(iLevelDB, frame.unit)
 	end
 
-	if avgItemLevel and (not charPage or not E:IsAddOnEnabled('DejaCharacterStats')) then
+	if avgItemLevel and (not charPage or not E.OtherAddons.DejaCharacterStats) then
 		if charPage then
 			frame.ItemLevelText:SetText(avgItemLevel)
 
@@ -347,10 +347,10 @@ function M:CreateSlotStrings(frame, which)
 
 	if which == 'Inspect' then
 		frame.ItemLevelText = _G.InspectPaperDollItemsFrame:CreateFontString(nil, 'ARTWORK')
-		frame.ItemLevelText:Point('BOTTOMLEFT', E.Cata and 20 or 6, E.Cata and 84 or 6)
-	elseif E.Cata then
+		frame.ItemLevelText:Point('BOTTOMLEFT', 6, 6)
+	elseif E.Mists then
 		frame.ItemLevelText = _G.PaperDollItemsFrame:CreateFontString(nil, 'ARTWORK')
-		frame.ItemLevelText:Point('BOTTOMLEFT', _G.PaperDollItemsFrame, 6, 6)
+		frame.ItemLevelText:Point('BOTTOMLEFT', 6, 6)
 	else
 		frame.ItemLevelText = _G.CharacterStatsPane.ItemLevelFrame:CreateFontString(nil, 'ARTWORK')
 		frame.ItemLevelText:Point('CENTER', _G.CharacterStatsPane.ItemLevelFrame.Value, 'CENTER', 0, -1)
@@ -393,10 +393,10 @@ function M:UpdateSlotPoints(which, config)
 			slot.enchantText:FontTemplate(itemLevelFont, itemLevelFontSize, itemLevelFontOutline)
 			slot.enchantText:ClearAllPoints()
 
-			local itemLeft, itemRight = i == 16, (E.Retail and i == 17) or (E.Cata and i == 18)
+			local itemLeft, itemRight = i == 16, (E.Retail and i == 17) or (E.Mists and i == 18)
 			if itemLeft or itemRight then
 				slot.enchantText:Point(itemLeft and 'BOTTOMRIGHT' or 'BOTTOMLEFT', slot, itemLeft and -40 or 40, 3)
-			elseif E.Cata and i == 17 then -- cata secondary (not ranged)
+			elseif E.Mists and i == 17 then -- cata secondary (not ranged)
 				slot.enchantText:Point('TOP', slot, 'BOTTOM', 0, 3)
 			else
 				slot.enchantText:Point(justify, slot, x + (justify == 'BOTTOMLEFT' and 5 or -5), z)

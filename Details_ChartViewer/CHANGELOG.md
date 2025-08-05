@@ -1,6 +1,6 @@
 # Details_ChartViewer (plugin)
 
-## [v11.1.0.087](https://github.com/Tercioo/ChartViewer/tree/v11.1.0.087) (2025-02-25)
-[Full Changelog](https://github.com/Tercioo/ChartViewer/compare/v11.0.7.086...v11.1.0.087) 
+## [v11.1.5.090](https://github.com/Tercioo/ChartViewer/tree/v11.1.5.090) (2025-06-07)
+[Full Changelog](https://github.com/Tercioo/ChartViewer/compare/v11.1.7.089...v11.1.5.090) 
 
-- ToC Update  
+- Fix ToC  

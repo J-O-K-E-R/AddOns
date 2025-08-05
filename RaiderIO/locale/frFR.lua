@@ -1,4 +1,3 @@
--- Generated from CurseForge on Tue Apr 22 08:18:25 UTC 2025
 local ns = select(2, ...) ---@class ns @The addon namespace.
 
 if ns:IsSameLocale("frFR") then
@@ -8,7 +7,7 @@ if ns:IsSameLocale("frFR") then
 
 	L.LOCALE_NAME = "frFR"
 
-L["ALLOW_IN_LFD"] = "Autoriser pour la Recherche de groupe"
+	L["ALLOW_IN_LFD"] = "Autoriser pour la Recherche de groupe"
 L["ALLOW_IN_LFD_CLASSIC"] = "Autoriser pour la Recherche de groupe"
 L["ALLOW_IN_LFD_CLASSIC_DESC"] = "Clic droit sur les groupes ou les joueurs dans l'outil de Recherche de groupe pour copier l'URL du profil Raider.IO."
 L["ALLOW_IN_LFD_DESC"] = "Clic droit sur les groupes ou les joueurs dans l'outil de Recherche de groupe pour copier l'URL du profil Raider.IO."
@@ -84,6 +83,8 @@ L["DUNGEON_SHORT_NAME_DHT"] = "FS"
 L["DUNGEON_SHORT_NAME_DOS"] = "AC"
 L["DUNGEON_SHORT_NAME_EB"] = "LFé"
 --[[Translation missing --]]
+--[[ L["DUNGEON_SHORT_NAME_EDA"] = ""--]] 
+--[[Translation missing --]]
 --[[ L["DUNGEON_SHORT_NAME_EOA"] = ""--]] 
 L["DUNGEON_SHORT_NAME_FALL"] = "AdIRdG"
 --[[Translation missing --]]
@@ -155,6 +156,10 @@ L["DUNGEON_SHORT_NAME_WORK"] = "Mécagone"
 L["ENABLE_AUTO_FRAME_POSITION"] = "Positionner automatiquement le cadre de profil Raider.IO"
 L["ENABLE_AUTO_FRAME_POSITION_DESC"] = "L'activation de cette option conservera l'info-bulle du profil M+ à côté du cadre de Recherche de groupe ou de l'info-bulle du joueur."
 L["ENABLE_DEBUG_MODE_RELOAD"] = "Vous activez le mode débogage. Ceci est destiné uniquement à des fins de test et de développement et entraînera une utilisation supplémentaire de la mémoire. En cliquant sur Confirmer, vous rechargerez votre interface."
+--[[Translation missing --]]
+--[[ L["ENABLE_LFG_EXPORT_BUTTON"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["ENABLE_LFG_EXPORT_BUTTON_DESC"] = ""--]] 
 L["ENABLE_LOCK_PROFILE_FRAME"] = "Verrouiller le cadre de profil Raider.IO"
 L["ENABLE_LOCK_PROFILE_FRAME_DESC"] = "Empêche le déplacement du cadre de profil M+. Cela n'a aucun effet si le cadre de profil M+ est configuré pour être positionné automatiquement."
 L["ENABLE_NO_SCORE_COLORS"] = "Désactiver les couleurs de score"
@@ -207,6 +212,8 @@ L["MINIMAP_SHORTCUT_LOCK"] = "Verrouiller le bouton"
 L["MINIMAP_SHORTCUT_MINIMAP_ENABLE"] = "Activer le bouton de la mini-carte"
 L["MINIMAP_SHORTCUT_MINIMAP_ENABLE_DESC"] = "Activez pour afficher le bouton autour de la mini-carte."
 L["MINIMAP_SHORTCUT_MINIMAP_LOCK"] = "Verrouiller le bouton sur la mini-carte"
+--[[Translation missing --]]
+--[[ L["MISC_SETTINGS"] = ""--]] 
 L["MODULE_AMERICAS"] = "Amérique"
 L["MODULE_EUROPE"] = "Europe"
 L["MODULE_KOREA"] = "Corée"
@@ -353,6 +360,18 @@ L["RAID_BOSS_FSOD_6"] = "Mal-ferrant Raznal"
 L["RAID_BOSS_FSOD_7"] = "Gardien des Fondateurs"
 L["RAID_BOSS_FSOD_8"] = "Scribe du destin Roh-Kalo"
 L["RAID_BOSS_FSOD_9"] = "Kel'Thuzad"
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_HOF_1"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_HOF_2"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_HOF_3"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_HOF_4"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_HOF_5"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_HOF_6"] = ""--]] 
 L["RAID_BOSS_ICC_1"] = "Seigneur Gargamoelle"
 L["RAID_BOSS_ICC_10"] = "Valithria Marcherêve"
 L["RAID_BOSS_ICC_11"] = "Sindragosa"
@@ -373,6 +392,34 @@ L["RAID_BOSS_LOU_5"] = "Pignonneur Crosseplatine"
 L["RAID_BOSS_LOU_6"] = "Le Bandit manchot"
 L["RAID_BOSS_LOU_7"] = "Verr’Minh, chefs de la sécurité"
 L["RAID_BOSS_LOU_8"] = "Roi du chrome Gallywix"
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_MFO_1"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_MFO_2"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_MFO_3"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_MFO_4"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_MFO_5"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_MFO_6"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_MFO_7"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_MFO_8"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_MSV_1"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_MSV_2"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_MSV_3"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_MSV_4"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_MSV_5"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_MSV_6"] = ""--]] 
 L["RAID_BOSS_NP_1"] = "Ulgrax le Dévoreur"
 L["RAID_BOSS_NP_2"] = "L'horreur liée par le sang"
 L["RAID_BOSS_NP_3"] = "Sikran"
@@ -403,6 +450,14 @@ L["RAID_BOSS_SOD_6"] = "Mal-ferrant Raznal"
 L["RAID_BOSS_SOD_7"] = "Gardien des Fondateurs"
 L["RAID_BOSS_SOD_8"] = "Scribe du destin Roh-Kalo"
 L["RAID_BOSS_SOD_9"] = "Kel’Thuzad"
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_ToES_1"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_ToES_2"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_ToES_3"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_BOSS_ToES_4"] = ""--]] 
 L["RAID_BOSS_TOTFW_1"] = "Conclave du Vent"
 L["RAID_BOSS_TOTFW_2"] = "Al’Akir"
 L["RAID_BOSS_VOTI_1"] = "Eranog"
@@ -433,10 +488,18 @@ L["RAID_DIFFICULTY_SUFFIX_NORMAL25"] = "N25"
 L["RAID_DS"] = "L’Âme des dragons"
 L["RAID_ENCOUNTERS_DEFEATED_TITLE"] = "Rencontres de Raid vaincues"
 L["RAID_FL"] = "Terres de Feu"
+--[[Translation missing --]]
+--[[ L["RAID_HOF"] = ""--]] 
 L["RAID_ICC"] = "Citadelle de la Couronne de glace"
 L["RAID_LOU"] = "Libération de Terremine"
+--[[Translation missing --]]
+--[[ L["RAID_MFO"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["RAID_MSV"] = ""--]] 
 L["RAID_NP"] = "Palais des Nérub’ar"
 L["RAID_RS"] = "Le sanctum Rubis"
+--[[Translation missing --]]
+--[[ L["RAID_ToES"] = ""--]] 
 L["RAID_TOTFW"] = "Trône des quatre vents"
 L["RAIDERIO_AVERAGE_PLAYER_SCORE"] = "Moy. de score Raider.IO sur des +%s"
 L["RAIDERIO_BEST_RUN"] = "Meilleur donjon M+ Raider.IO"
@@ -572,5 +635,6 @@ L["WARNING_LOCK_POSITION_FRAME_AUTO"] = "Raider.IO : vous devez d'abord désacti
 L["WARNING_RWF_MODE_ENABLE"] = "|cffFFFFFF%s|r Le mode « Course au World First » est activé. Vous pouvez le désactiver en tapant |cffFFFFFF/raiderio rwf|r."
 L["WIPE_RWF_MODE_BUTTON"] = "Wipe"
 L["WIPE_RWF_MODE_BUTTON_TOOLTIP"] = "Cliquez pour effacer le journal du fichier de stockage. Cela entraînera le rechargement de votre interface."
+
 
 end

@@ -117,22 +117,22 @@ if L then
 	L.custom_on_nameplate_fixate = "追击姓名板图标"
 	L.custom_on_nameplate_fixate_desc = "黑暗哨兵追击你时在姓名板显示一个图标。\n\n需要使用敌对姓名板和支持姓名板的插件（KuiNameplates，Plater）。"
 
-	--L.intermission_chains = "Intermission Chains"
+	L.intermission_chains = "中场锁链"
 	L.chains = "锁链" -- Short for Domination Chains
 	L.chain = "锁链" -- Single Domination Chain
 	L.darkness = "黑暗" -- Short for Veil of Darkness
 	L.arrow = "箭" -- Short for Wailing Arrow
-	--L.arrow_done = "DONE" -- Message when the arrow has hit
+	L.arrow_done = "箭" -- Message when the arrow has hit
 	L.wave = "妖魂" -- Short for Haunting Wave
 	L.dread = "压迫" -- Short for Crushing Dread
 	L.scream = "尖啸" -- Banshee Scream
 
 	L.knife_fling = "刀飞出！" -- "Death-touched blades fling out"
-	--L.bridges = "Bridges"
-	--L.rive_counter = "%s (%d/%d)"
-	--L.soaks = "Soaks" -- Merciless
-	--L.count_x = "%s (x%d)(%d)"
-	--L.shroud_active = "Shroud (%d) - %.1f%%!"
+	L.bridges = "桥"
+	L.rive_counter = "%s (%d/%d)"
+	L.soaks = "接圈" -- Merciless
+	L.count_x = "%s (x%d)(%d)"
+	L.shroud_active = "护盾 (%d) - %.1f%%!"
 end
 
 L = BigWigs:NewBossLocale("Sanctum of Domination Affixes", "zhCN")
