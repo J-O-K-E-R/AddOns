@@ -7,6 +7,9 @@ local format = format
 local GameTooltip = GameTooltip
 local RegisterStateDriver = RegisterStateDriver
 local UnregisterStateDriver = UnregisterStateDriver
+local CWM = _G.SLASH_CLEAR_WORLD_MARKER1
+local TM = _G.SLASH_TARGET_MARKER4
+local WM = _G.SLASH_WORLD_MARKER1
 
 --Visiblity state strings to use based on settings
 RM.VisibilityStates = {
@@ -61,7 +64,7 @@ function RM:CreateButton(index)
 
 	if target then
 		button:SetAttribute('type1', 'macro')
-		button:SetAttribute('macrotext1', format('/tm %d', index == 9 and 0 or index))
+		button:SetAttribute('macrotext1', format('%s %d', TM, index == 9 and 0 or index))
 	end
 
 	return button

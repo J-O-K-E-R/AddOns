@@ -2,7 +2,7 @@ local E, L, V, P, G = unpack(ElvUI)
 local S = E:GetModule('Skins')
 
 local _G = _G
-local next, unpack = next, unpack
+local next = next
 
 local CreateFrame = CreateFrame
 local hooksecurefunc = hooksecurefunc
@@ -13,15 +13,35 @@ local function SpellHighlightSetTexture(texture, tex)
 	end
 end
 
-local function TabHighlightSetTexture(texture, tex)
-	if tex ~= nil then
-		texture:SetHighlightTexture(E.ClearTexture)
+local function UpdateButton()
+	if _G.SpellBookFrame.bookType == _G.BOOKTYPE_PROFESSION then
+		return
 	end
-end
 
-local function TabCheckedSetTexture(texture, tex)
-	if tex ~= nil then
-		texture:SetCheckedTexture(E.ClearTexture)
+	for i = 1, _G.SPELLS_PER_PAGE do
+		local button = _G['SpellButton'..i]
+		local highlight = _G['SpellButton'..i..'Highlight']
+
+		if button.backdrop then
+			button.backdrop:SetShown(button.SpellName:IsShown())
+		end
+
+		if highlight then
+			if highlight:IsShown() then
+				E:Flash(highlight, 1, true)
+			else
+				E:StopFlash(highlight, 1)
+			end
+		end
+
+		button.SpellSubName:SetTextColor(0.6, 0.6, 0.6)
+
+		local r = button.SpellName:GetTextColor()
+		if r < 0.8 then
+			button.SpellName:SetTextColor(0.8, 0.8, 0.8)
+		elseif r ~= 1 then
+			button.SpellName:SetTextColor(1, 1, 1)
+		end
 	end
 end
 
@@ -87,9 +107,11 @@ function S:SpellBookFrame()
 			end
 		end
 
-		button:CreateBackdrop(nil, true)
+		E:RegisterCooldown(cooldown)
+		S:HandleIcon(icon)
 
-		button.SpellSubName:SetTextColor(0.6, 0.6, 0.6)
+		button:CreateBackdrop(nil, true)
+		icon:SetInside(button.backdrop)
 
 		button.bg = CreateFrame('Frame', nil, button)
 		button.bg:SetTemplate('Transparent')
@@ -98,12 +120,9 @@ function S:SpellBookFrame()
 		button.bg:Height(46)
 		button.bg:OffsetFrameLevel(-1, button)
 
-		icon:SetTexCoord(unpack(E.TexCoords))
-
 		highlight:SetAllPoints()
 		hooksecurefunc(highlight, 'SetTexture', SpellHighlightSetTexture)
-
-		E:RegisterCooldown(cooldown)
+		hooksecurefunc(button, 'UpdateButton', UpdateButton)
 	end
 
 	_G.SpellButton1:PointXY(28, -55)
@@ -117,36 +136,28 @@ function S:SpellBookFrame()
 		_G['SpellButton'..i]:PointXY(0, -20)
 	end
 
-	hooksecurefunc('SpellButton_UpdateButton', function(button)
-		local spellName = _G[button:GetName()..'SpellName']
-		local r = spellName:GetTextColor()
-
-		if r < 0.8 then
-			spellName:SetTextColor(0.6, 0.6, 0.6)
-		end
-	end)
-
 	for i = 1, _G.MAX_SKILLLINE_TABS do
 		local tab = _G['SpellBookSkillLineTab'..i]
-		local flash = _G['SpellBookSkillLineTab'..i..'Flash']
+		if tab then
+			tab:StripTextures()
+			tab:SetTemplate(nil, true)
+			tab:StyleButton(nil, true)
 
-		tab:StripTextures()
-		tab:SetTemplate()
-		tab:StyleButton(nil, true)
-		tab:SetTemplate(nil, true)
-		tab.pushed = true
+			local normalTexture = tab:GetNormalTexture()
+			if normalTexture then
+				normalTexture:SetInside()
+				normalTexture:SetTexCoords()
+			end
 
-		tab:GetNormalTexture():SetInside()
-		tab:GetNormalTexture():SetTexCoord(unpack(E.TexCoords))
-
-		if i == 1 then
-			tab:Point('TOPLEFT', _G.SpellBookSideTabsFrame, 'TOPRIGHT', -31, -70)
+			if i == 1 then
+				tab:Point('TOPLEFT', _G.SpellBookSideTabsFrame, 'TOPRIGHT', -31, -70)
+			end
 		end
 
-		hooksecurefunc(tab:GetHighlightTexture(), 'SetTexture', TabHighlightSetTexture)
-		hooksecurefunc(tab:GetCheckedTexture(), 'SetTexture', TabCheckedSetTexture)
-
-		flash:Kill()
+		local flash = _G['SpellBookSkillLineTab'..i..'Flash']
+		if flash then
+			flash:Kill()
+		end
 	end
 end
 

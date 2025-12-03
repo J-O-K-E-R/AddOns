@@ -416,21 +416,29 @@ local ResolveFunctions = {
 	end,
 	-- Instruction to include only search results where a key value is not a value
 	["not"] = function(finalized, searchResults, o, cmd, field, ...)
-		local vals = select("#", ...);
-		if vals < 1 then
-			app.print("'",cmd,"' had empty value set")
-			return;
-		end
-		local result, value;
-		for k=#searchResults,1,-1 do
-			result = searchResults[k];
-			for i=1,vals do
-				value = select(i, ...);
-				if result[field] == value then
+		local values = {...};
+		if #values > 1 then
+			local matches = {};
+			for i,o in ipairs(values) do
+				matches[o] = true;
+			end
+			for k=#searchResults,1,-1 do
+				local result = searchResults[k];
+				local value = result[field];
+				if value and matches[value] then
 					tremove(searchResults, k);
-					break;
 				end
 			end
+		elseif #values == 1 then
+			local value = values[1];
+			for k=#searchResults,1,-1 do
+				local result = searchResults[k];
+				if result[field] and result[field] == value then
+					tremove(searchResults, k);
+				end
+			end
+		else
+			app.print("'",cmd,"' had empty value set")
 		end
 	end,
 	-- Instruction to include only search results where a key exists
@@ -780,7 +788,7 @@ local SubroutineCache = {
 	-- Common Northrend/Cataclysm Recipes Vendor
 	["common_recipes_vendor"] = function(finalized, searchResults, o, cmd, npcID)
 			local select, pop, is, exclude = ResolveFunctions.select, ResolveFunctions.pop, ResolveFunctions.is, ResolveFunctions.exclude;
-		select(finalized, searchResults, o, "select", "creatureID", npcID);	-- Main Vendor
+		select(finalized, searchResults, o, "select", "npcID", npcID);	-- Main Vendor
 		pop(finalized, searchResults);	-- Remove Main Vendor and push his children into the processing queue.
 		is(finalized, searchResults, o, "is", "itemID");	-- Only Items
 		-- Exclude items specific to certain vendors
@@ -1154,6 +1162,7 @@ local SourceLocationSettingsKey = setmetatable({
 });
 local UnobtainableTexture = " |T"..L.UNOBTAINABLE_ITEM_TEXTURES[1]..":0|t"
 local NotCurrentCharacterTexture = " |T"..L.UNOBTAINABLE_ITEM_TEXTURES[0]..":0|t"
+local RETRIEVING_DATA = RETRIEVING_DATA
 local SummarizeShowForActiveRowKeys
 local function AddContainsData(group, tooltipInfo)
 	local key = group.key
@@ -1165,7 +1174,7 @@ local function AddContainsData(group, tooltipInfo)
 	if not working and not app.ActiveRowReference then
 		app.Sort(group.g, app.SortDefaults.Hierarchy, true);
 	end
-	-- app.PrintDebug("SummarizeThings",app:SearchLink(group),group.g and #group.g)
+	-- app.PrintDebug("SummarizeThings",app:SearchLink(group),group.g and #group.g,working)
 	local entries = {};
 	-- app.Debugging = "CONTAINS-"..group.hash;
 	ContainsLimit = app.Settings:GetTooltipSetting("ContainsCount") or 25;
@@ -1184,8 +1193,18 @@ local function AddContainsData(group, tooltipInfo)
 			if not entry.objectiveID then
 				left = entry.text;
 				if not left or IsRetrieving(left) then
-					left = RETRIEVING_DATA;
-					working = true;
+					left = RETRIEVING_DATA
+
+					if not working then
+						local AsyncRefreshFunc = entry.AsyncRefreshFunc
+						if AsyncRefreshFunc then
+							AsyncRefreshFunc(entry)
+						else
+							-- app.PrintDebug("No Async Refresh Func for TT Type!",entry.__type)
+							app.ReshowGametooltip()
+						end
+					end
+					working = true
 				end
 				left = TryColorizeName(entry, left);
 				-- app.PrintDebug("Entry#",i,app:SearchLink(entry),app.GenerateSourcePathForTooltip(entry))
@@ -1371,8 +1390,8 @@ local function AddSourceLinesForTooltip(tooltipInfo, paramA, paramB)
 			text = app.GenerateSourcePathForTooltip(parent);
 			-- app.PrintDebug("SourceLocation",text,FilterInGame(j),FilterSettings(parent),FilterCharacter(parent))
 			if showUnsorted or (not text:match(L.UNSORTED) and not text:match(L.HIDDEN_QUEST_TRIGGERS)) then
-				-- doesn't meet current unobtainable filters from the Thing itself
-				if not FilterInGame(parent) then
+				-- doesn't meet current unobtainable filters from the Thing itself and its parent chain
+				if not FilterInGame(j) or not FilterInGame(parent) then
 					unobtainable[#unobtainable + 1] = text..UnobtainableTexture
 				else
 					-- something user would currently see in a list or not
@@ -1399,7 +1418,7 @@ local function AddSourceLinesForTooltip(tooltipInfo, paramA, paramB)
 	if app.MODE_DEBUG then
 		-- app.PrintDebug("+unavailable",#unavailable,"+unobtainable",#unobtainable)
 		app.ArrayAppend(character, unavailable, unobtainable)
-	elseif #character == 0 and not (paramA == "creatureID" or paramA == "encounterID") then
+	elseif #character == 0 and not (paramA == "npcID" or paramA == "creatureID" or paramA == "encounterID") then
 		-- no sources available to the character, add any unavailable/unobtainable sources
 		if #unavailable > 0 then
 			-- app.PrintDebug("+unavailable",#unavailable)
@@ -1497,7 +1516,7 @@ local function GetSearchResults(method, paramA, paramB, options)
 	else
 		group, a, b = method(paramA, paramB)
 	end
-	-- app.PrintDebug("GetSearchResults:method",group and #group,a,b)
+	-- app.PrintDebug("GetSearchResults:method",group and #group,a,b,paramA,paramB)
 	if group then
 		if a then paramA = a; end
 		if b then paramB = b; end
@@ -1505,7 +1524,7 @@ local function GetSearchResults(method, paramA, paramB, options)
 		-- Move all post processing here?
 		if #group > 0 then
 			-- For Creatures, Objects and Encounters that are inside of an instance, we only want the data relevant for the instance + difficulty.
-			if paramA == "creatureID" or paramA == "npcID" or paramA == "encounterID" or paramA == "objectID" then
+			if paramA == "npcID" or paramA == "creatureID" or paramA == "encounterID" or paramA == "objectID" then
 				local subgroup = {};
 				for _,j in ipairs(group) do
 					if not j.ShouldExcludeFromTooltip then
@@ -1597,7 +1616,7 @@ local function GetSearchResults(method, paramA, paramB, options)
 				paramA = "questID";
 				paramB = id;
 			elseif kind == "creatureid" or kind == "npcid" then
-				paramA = "creatureID";
+				paramA = "npcID";
 				paramB = id;
 			elseif kind == "achievementid" then
 				paramA = "achievementID";
@@ -1838,7 +1857,7 @@ local function GetSearchResults(method, paramA, paramB, options)
 
 	group.isBaseSearchResult = true;
 
-	return group
+	return group, group.working
 end
 app.GetCachedSearchResults = function(method, paramA, paramB, options)
 	if options and options.IgnoreCache then
@@ -1890,6 +1909,7 @@ app.ThingKeys = {
 	-- categoryID = true,
 	-- mapID = true,
 	npcID = true,
+	conduitID = true,
 	creatureID = true,
 	currencyID = true,
 	itemID = true,
@@ -1952,7 +1972,7 @@ local function BuildSourceParent(group)
 	end
 	-- group with some Source-able data can be treated as specific Source
 	if not specificSource and (
-		group.npcID or group.creatureID or group.crs or group.providers
+		group.npcID or group.crs or group.providers
 	) then
 		specificSource = true;
 	end
@@ -1967,12 +1987,11 @@ local function BuildSourceParent(group)
 	end
 	-- app.PrintDebug("BuildSourceParent",group.hash,thingCheck,specificSource,keyValue,#things,isDirectSources)
 	-- if app.Debugging then
-	-- 	local sourceGroup = {
-	-- 		["text"] = "DEBUG THINGS",
+	-- 	local sourceGroup = app.CreateRawText("DEBUG THINGS", {
 	-- 		["OnUpdate"] = app.AlwaysShowUpdate,
 	-- 		["skipFill"] = true,
 	-- 		["g"] = {},
-	-- 	};
+	-- 	})
 	-- 	NestObjects(sourceGroup, things, true)
 	-- 	NestObject(group, sourceGroup, nil, 1)
 	-- end
@@ -2000,7 +2019,7 @@ local function BuildSourceParent(group)
 					if parentKey and parent[parentKey] and parent.hash ~= groupHash then
 						-- only show certain types of parents as sources.. typically 'Game World Things'
 						-- or if the parent is directly tied to an NPC
-						if thingKeys[parentKey] or parent.npcID or parent.creatureID then
+						if thingKeys[parentKey] or parent.npcID then
 							-- add the parent for display later
 							parent = CreateObject(parent, true)
 							parents[#parents + 1] = parent
@@ -2023,8 +2042,8 @@ local function BuildSourceParent(group)
 					parent = parent.parent;
 				end
 				-- Things tagged with an npcID should show that NPC as a Source
-				if thing.key ~= "npcID" and (thing.npcID or thing.creatureID) then
-					local parentNPC = CreateObject(SearchForObject("creatureID", thing.npcID or thing.creatureID, "field") or {["npcID"] = thing.npcID or thing.creatureID}, true)
+				if thing.key ~= "npcID" and thing.npcID then
+					local parentNPC = CreateObject(SearchForObject("npcID", thing.npcID, "field") or {["npcID"] = thing.npcID}, true)
 					parents[#parents + 1] = parentNPC
 					-- achievement criteria can nest inside their Source for clarity
 					if isAchievement and KeepSourced[thing.key] then
@@ -2036,7 +2055,7 @@ local function BuildSourceParent(group)
 					-- app.PrintDebug("thing.crs",#thing.crs)
 					local parentNPC;
 					for _,npcID in ipairs(thing.crs) do
-						parentNPC = CreateObject(SearchForObject("creatureID", npcID, "field") or {["npcID"] = npcID}, true)
+						parentNPC = CreateObject(SearchForObject("npcID", npcID, "field") or {["npcID"] = npcID}, true)
 						parents[#parents + 1] = parentNPC
 						-- achievement criteria can nest inside their Source for clarity
 						if isAchievement and KeepSourced[thing.key] then
@@ -2136,6 +2155,7 @@ end)();
 -- Synchronization Functions
 (function()
 local C_CreatureInfo_GetRaceInfo = C_CreatureInfo.GetRaceInfo;
+local SendAddonMessage = app.WOWAPI.SendAddonMessage
 local outgoing,incoming,queue,active = {},{},{},nil;
 local whiteListedFields = { --[["Achievements",]] "Artifacts", "AzeriteEssenceRanks", "BattlePets", "Exploration", "Factions", "FlightPaths", "Followers", "GarrisonBuildings", "Quests", "Spells", "Titles" };
 app.CharacterSyncTables = whiteListedFields;
@@ -2152,7 +2172,7 @@ local function processQueue()
 		tremove(queue, 1);
 		active = data[1];
 		app.print("Updating " .. data[2] .. " from " .. data[3] .. "...");
-		C_ChatInfo.SendAddonMessage("ATT", "!\tsyncsum\t" .. data[1], "WHISPER", data[3]);
+		SendAddonMessage("ATT", "!\tsyncsum\t" .. data[1], "WHISPER", data[3]);
 	end
 end
 
@@ -2163,7 +2183,7 @@ function app:AcknowledgeIncomingChunks(sender, uid, total)
 		incoming[sender] = incomingFromSender;
 	end
 	incomingFromSender[uid] = { ["chunks"] = {}, ["total"] = total };
-	C_ChatInfo.SendAddonMessage("ATT", "chksack\t" .. uid, "WHISPER", sender);
+	SendAddonMessage("ATT", "chksack\t" .. uid, "WHISPER", sender);
 end
 local function ProcessIncomingChunk(sender, uid, index, chunk)
 	if not (chunk and index and uid and sender) then return false; end
@@ -2226,9 +2246,9 @@ local function ProcessIncomingChunk(sender, uid, index, chunk)
 end
 function app:AcknowledgeIncomingChunk(sender, uid, index, chunk)
 	if chunk and ProcessIncomingChunk(sender, uid, index, chunk) then
-		C_ChatInfo.SendAddonMessage("ATT", "chkack\t" .. uid .. "\t" .. index .. "\t1", "WHISPER", sender);
+		SendAddonMessage("ATT", "chkack\t" .. uid .. "\t" .. index .. "\t1", "WHISPER", sender);
 	else
-		C_ChatInfo.SendAddonMessage("ATT", "chkack\t" .. uid .. "\t" .. index .. "\t0", "WHISPER", sender);
+		SendAddonMessage("ATT", "chkack\t" .. uid .. "\t" .. index .. "\t0", "WHISPER", sender);
 	end
 end
 function app:SendChunk(sender, uid, index, success)
@@ -2238,7 +2258,7 @@ function app:SendChunk(sender, uid, index, success)
 		if chunksForUID and success == 1 then
 			local chunk = chunksForUID[index];
 			if chunk then
-				C_ChatInfo.SendAddonMessage("ATT", "chk\t" .. uid .. "\t" .. index .. "\t" .. chunk, "WHISPER", sender);
+				SendAddonMessage("ATT", "chk\t" .. uid .. "\t" .. index .. "\t" .. chunk, "WHISPER", sender);
 			end
 		else
 			outgoingForSender.uids[uid] = nil;
@@ -2378,12 +2398,12 @@ function app:ReceiveSyncRequest(sender, battleTag)
 			if (msg:len() + charsummary:len()) < 255 then
 				msg = msg .. charsummary;
 			else
-				C_ChatInfo.SendAddonMessage("ATT", msg, "WHISPER", sender);
+				SendAddonMessage("ATT", msg, "WHISPER", sender);
 				msg = "?\tsyncsum" .. charsummary;
 			end
 		end
 	end
-	C_ChatInfo.SendAddonMessage("ATT", msg, "WHISPER", sender);
+	SendAddonMessage("ATT", msg, "WHISPER", sender);
 end
 function app:ReceiveSyncSummary(sender, summary)
 	if app:IsAccountLinked(sender) then
@@ -2443,7 +2463,7 @@ function app:ReceiveSyncSummaryResponse(sender, summary)
 			outgoingForSender.total = uid;
 
 			-- Send Addon Message Back
-			C_ChatInfo.SendAddonMessage("ATT", "chks\t" .. uid .. "\t" .. #chunks, "WHISPER", sender);
+			SendAddonMessage("ATT", "chks\t" .. uid .. "\t" .. #chunks, "WHISPER", sender);
 		end
 	end
 end
@@ -2455,7 +2475,7 @@ function app:Synchronize(automatically)
 		local any, msg = false, "?\tsync\t" .. battleTag;
 		for playerName,allowed in pairs(AllTheThingsAD.LinkedAccounts) do
 			if allowed and not playerName:find("#") then
-				C_ChatInfo.SendAddonMessage("ATT", msg, "WHISPER", playerName);
+				SendAddonMessage("ATT", msg, "WHISPER", playerName);
 				any = true;
 			end
 		end
@@ -2469,7 +2489,7 @@ function app:SynchronizeWithPlayer(playerName)
 	local battleTag = select(2, BNGetInfo());
 	if battleTag then
 		app.CurrentCharacter.lastPlayed = time();
-		C_ChatInfo.SendAddonMessage("ATT", "?\tsync\t" .. battleTag, "WHISPER", playerName);
+		SendAddonMessage("ATT", "?\tsync\t" .. battleTag, "WHISPER", playerName);
 	end
 end
 app.AddEventHandler("OnReady", function()
@@ -2484,9 +2504,9 @@ end)();
 
 do	-- Main Data
 -- Returns {name,icon} for a known HeaderConstants NPCID
-local function SimpleNPCGroup(npcID, t)
+local function SimpleHeaderGroup(npcID, t)
 	if t then
-		t.name = app.NPCNameFromID[npcID]
+		t.name = L.HEADER_NAMES[npcID]
 		t.icon = L.HEADER_ICONS[npcID]
 		if t.suffix then
 			t.name = t.name .. " (".. t.suffix ..")"
@@ -2494,7 +2514,7 @@ local function SimpleNPCGroup(npcID, t)
 		end
 	else
 		t = {
-				name = app.NPCNameFromID[npcID],
+				name = L.HEADER_NAMES[npcID],
 				icon = L.HEADER_ICONS[npcID]
 			}
 	end
@@ -2506,49 +2526,53 @@ function app:GetDataCache()
 		return nil;
 	end
 
-	-- app.PrintDebug("Start loading data cache")
-	-- app.PrintMemoryUsage()
+	-- app.PrintMemoryUsage("app:GetDataCache init")
+
+	-- not really worth moving this into a Class since it's literally allowed to be used once
+	local DefaultRootKeys = {
+		__type = function(t) return "ROOT" end,
+		title = function(t)
+			return t.modeString .. DESCRIPTION_SEPARATOR .. t.untilNextPercentage
+		end,
+		progressText = function(t)
+			if not rawget(t,"TLUG") and app.CurrentCharacter then
+				local primeData = app.CurrentCharacter.PrimeData
+				if primeData then
+					return GetProgressColorText(primeData.progress, primeData.total)
+				end
+			end
+			return GetProgressColorText(t.progress, t.total)
+		end,
+		modeString = function(t)
+			return app.Settings:GetModeString()
+		end,
+		untilNextPercentage = function(t)
+			if not rawget(t,"TLUG") and app.CurrentCharacter then
+				local primeData = app.CurrentCharacter.PrimeData
+				if primeData then
+					return app.Modules.Color.GetProgressTextToNextPercent(primeData.progress, primeData.total)
+				end
+			end
+			return app.Modules.Color.GetProgressTextToNextPercent(t.progress, t.total)
+		end,
+		visible = app.ReturnTrue,
+	}
+	app.CloneDictionary(app.BaseClass.__class, DefaultRootKeys)
 
 	-- Update the Row Data by filtering raw data (this function only runs once)
 	local rootData = setmetatable({
+		key = "ROOT",
 		text = L.TITLE,
 		icon = app.asset("logo_32x32"),
 		preview = app.asset("Discord_2_128"),
 		description = L.DESCRIPTION,
 		font = "GameFontNormalLarge",
 		expanded = true,
-		visible = true,
-		progress = 0,
-		total = 0,
 		g = {},
 	}, {
-		-- TODO: yuck all of this... should assign the available functionality during startup events
-		-- and use proper methods
 		__index = function(t, key)
-			-- app.PrintDebug("Top-Root-Get",rawget(t,"TLUG"),key)
-			if key == "title" then
-				return t.modeString .. DESCRIPTION_SEPARATOR .. t.untilNextPercentage;
-			elseif key == "progressText" then
-				if not rawget(t,"TLUG") and app.CurrentCharacter then
-					local primeData = app.CurrentCharacter.PrimeData;
-					if primeData then
-						return GetProgressColorText(primeData.progress, primeData.total);
-					end
-				end
-				return GetProgressColorText(t.progress, t.total);
-			elseif key == "modeString" then
-				return app.Settings:GetModeString();
-			elseif key == "untilNextPercentage" then
-				if not rawget(t,"TLUG") and app.CurrentCharacter then
-					local primeData = app.CurrentCharacter.PrimeData;
-					if primeData then
-						return app.Modules.Color.GetProgressTextToNextPercent(primeData.progress, primeData.total);
-					end
-				end
-				return app.Modules.Color.GetProgressTextToNextPercent(t.progress, t.total);
-			elseif key == "visible" then
-				return true;
-			end
+			local defaultKeyFunc = DefaultRootKeys[key]
+			if defaultKeyFunc then return defaultKeyFunc(t) end
 		end,
 		__newindex = function(t, key, val)
 			-- app.PrintDebug("Top-Root-Set",rawget(t,"TLUG"),key,val)
@@ -2567,6 +2591,9 @@ function app:GetDataCache()
 	});
 	local g, db = rootData.g, nil;
 
+	-----------------------------------------
+	-- P R I M A R Y   C A T E G O R I E S --
+	-----------------------------------------
 	-- Dungeons & Raids
 	db = app.CreateRawText(GROUP_FINDER);
 	db.g = app.Categories.Instances;
@@ -2575,7 +2602,7 @@ function app:GetDataCache()
 
 	-- Delves
 	if app.Categories.Delves then
-		tinsert(g, app.CreateNPC(app.HeaderConstants.DELVES, app.Categories.Delves));
+		tinsert(g, app.CreateCustomHeader(app.HeaderConstants.DELVES, app.Categories.Delves));
 	end
 
 	-- Zones
@@ -2603,16 +2630,6 @@ function app:GetDataCache()
 		tinsert(g, db);
 	end
 
-	-- Achievements
-	if app.Categories.Achievements then
-		db = app.CreateNPC(app.HeaderConstants.ACHIEVEMENTS, app.Categories.Achievements);
-		db.sourceIgnored = 1;	-- everything in this category is now cloned!
-		for _, o in ipairs(db.g) do
-			o.sourceIgnored = nil
-		end
-		tinsert(g, db);
-	end
-
 	-- Expansion Features
 	if app.Categories.ExpansionFeatures then
 		local text = GetCategoryInfo(15301)
@@ -2626,7 +2643,7 @@ function app:GetDataCache()
 
 	-- Holidays
 	if app.Categories.Holidays then
-		db = app.CreateNPC(app.HeaderConstants.HOLIDAYS, app.Categories.Holidays);
+		db = app.CreateCustomHeader(app.HeaderConstants.HOLIDAYS, app.Categories.Holidays);
 		db.isHolidayCategory = true;
 		db.SortType = "EventStart";
 		tinsert(g, db);
@@ -2653,14 +2670,14 @@ function app:GetDataCache()
 
 	-- Pet Battles
 	if app.Categories.PetBattles then
-		db = app.CreateNPC(app.HeaderConstants.PET_BATTLES);
+		db = app.CreateCustomHeader(app.HeaderConstants.PET_BATTLES);
 		db.g = app.Categories.PetBattles;
 		tinsert(g, db);
 	end
 
 	-- PvP
 	if app.Categories.PVP then
-		db = app.CreateNPC(app.HeaderConstants.PVP, app.Categories.PVP);
+		db = app.CreateCustomHeader(app.HeaderConstants.PVP, app.Categories.PVP);
 		db.isPVPCategory = true;
 		tinsert(g, db);
 	end
@@ -2676,16 +2693,19 @@ function app:GetDataCache()
 
 	-- Professions
 	if app.Categories.Professions then
-		db = app.CreateNPC(app.HeaderConstants.PROFESSIONS, app.Categories.Professions);
+		db = app.CreateCustomHeader(app.HeaderConstants.PROFESSIONS, app.Categories.Professions);
 		tinsert(g, db);
 	end
 
 	-- Secrets
 	if app.Categories.Secrets then
-		db = app.CreateNPC(app.HeaderConstants.SECRETS, app.Categories.Secrets);
+		db = app.CreateCustomHeader(app.HeaderConstants.SECRETS, app.Categories.Secrets);
 		tinsert(g, db);
 	end
 
+	-----------------------------------------
+	-- L I M I T E D   C A T E G O R I E S --
+	-----------------------------------------
 	-- Character
 	if app.Categories.Character then
 		db = app.CreateRawText(CHARACTER);
@@ -2694,24 +2714,23 @@ function app:GetDataCache()
 		tinsert(g, db);
 	end
 
+	---------------------------------------
+	-- M A R K E T   C A T E G O R I E S --
+	---------------------------------------
+	-- Black Market
+	if app.Categories.BlackMarket then tinsert(g, app.Categories.BlackMarket[1]); end
+
 	-- In-Game Store
 	if app.Categories.InGameShop then
-		db = app.CreateNPC(app.HeaderConstants.IN_GAME_SHOP, app.Categories.InGameShop);
+		db = app.CreateCustomHeader(app.HeaderConstants.IN_GAME_SHOP, app.Categories.InGameShop);
 		tinsert(g, db);
 	end
 
 	-- Trading Post
 	if app.Categories.TradingPost then
-		db = app.CreateRawText(L.TRADING_POST);	-- Probably some global string Later
+		db = app.CreateRawText(TRANSMOG_SOURCE_7);
 		db.g = app.Categories.TradingPost;
 		db.icon = app.asset("Category_TradingPost");
-		tinsert(g, db);
-	end
-
-	-- Black Market
-	if app.Categories.BlackMarket then
-		db = app.CreateNPC(app.HeaderConstants.BLACK_MARKET_AUCTION_HOUSE, app.Categories.BlackMarket);
-		db.icon = app.asset("Category_Blackmarket");
 		tinsert(g, db);
 	end
 
@@ -2739,8 +2758,24 @@ function app:GetDataCache()
 	-- Module-based Groups
 	app.HandleEvent("OnAddExtraMainCategories", g)
 
+	-- app.PrintMemoryUsage()
+	-- app.PrintDebug("Begin Cache Prime")
+	CacheFields(rootData);
+	-- app.PrintDebugPrior("Ended Cache Prime")
+	-- app.PrintMemoryUsage()
+
+	-- Achievements
+	if app.Categories.Achievements then
+		db = app.CreateCustomHeader(app.HeaderConstants.ACHIEVEMENTS, app.Categories.Achievements);
+		db.sourceIgnored = 1;	-- everything in this category is now cloned!
+		for _, o in ipairs(db.g) do
+			o.sourceIgnored = nil
+		end
+		tinsert(g, db);
+	end
+
 	-- Create Dynamic Groups Button
-	tinsert(g, app.CreateRawText(L.CLICK_TO_CREATE_FORMAT:format(L.SETTINGS_MENU.DYNAMIC_CATEGORY_LABEL), {
+	tinsert(g, app.CreateRawText(L.CLICK_TO_CREATE_FORMAT:format(L.DYNAMIC_CATEGORY_LABEL), {
 		icon = app.asset("Interface_CreateDynamic"),
 		OnUpdate = app.AlwaysShowUpdate,
 		sourceIgnored = true,
@@ -2777,11 +2812,14 @@ function app:GetDataCache()
 				icon = app.asset("Interface_Newly_Added")
 			}),
 
+			-- Achievements
+			app.CreateDynamicHeader("achievementID", SimpleHeaderGroup(app.HeaderConstants.ACHIEVEMENTS)),
+
 			-- Artifacts
-			app.CreateDynamicHeader("artifactID", SimpleNPCGroup(app.HeaderConstants.ARTIFACTS)),
+			app.CreateDynamicHeader("artifactID", SimpleHeaderGroup(app.HeaderConstants.ARTIFACTS)),
 
 			-- Azerite Essences
-			app.CreateDynamicHeader("azeriteessenceID", SimpleNPCGroup(app.HeaderConstants.AZERITE_ESSENCES)),
+			app.CreateDynamicHeader("azeriteessenceID", SimpleHeaderGroup(app.HeaderConstants.AZERITE_ESSENCES)),
 
 			-- Battle Pets
 			app.CreateDynamicHeader("speciesID", {
@@ -2802,7 +2840,7 @@ function app:GetDataCache()
 			}),
 
 			-- Conduits
-			app.CreateDynamicHeader("conduitID", SimpleNPCGroup(app.HeaderConstants.CONDUITS, {suffix=EXPANSION_NAME8})),
+			app.CreateDynamicHeader("conduitID", SimpleHeaderGroup(app.HeaderConstants.CONDUITS, {suffix=EXPANSION_NAME8})),
 
 			-- Currencies
 			app.CreateDynamicHeaderByValue("currencyID", {
@@ -2825,14 +2863,14 @@ function app:GetDataCache()
 			}),
 
 			-- Followers
-			app.CreateDynamicHeader("followerID", SimpleNPCGroup(app.HeaderConstants.FOLLOWERS)),
+			app.CreateDynamicHeader("followerID", SimpleHeaderGroup(app.HeaderConstants.FOLLOWERS)),
 
 			-- Garrison Buildings
 			-- TODO: doesn't seem to work...
-			-- app.CreateDynamicHeader("garrisonbuildingID", SimpleNPCGroup(app.HeaderConstants.BUILDINGS)),
+			-- app.CreateDynamicHeader("garrisonbuildingID", SimpleHeaderGroup(app.HeaderConstants.BUILDINGS)),
 
 			-- Heirlooms
-			app.CreateDynamicHeader("heirloomID", SimpleNPCGroup(app.HeaderConstants.HEIRLOOMS)),
+			app.CreateDynamicHeader("heirloomID", SimpleHeaderGroup(app.HeaderConstants.HEIRLOOMS)),
 
 			-- Illusions
 			app.CreateDynamicHeader("illusionID", {
@@ -2847,10 +2885,10 @@ function app:GetDataCache()
 			}),
 
 			-- Mount Mods
-			app.CreateDynamicHeader("mountmodID", SimpleNPCGroup(app.HeaderConstants.MOUNT_MODS)),
+			app.CreateDynamicHeader("mountmodID", SimpleHeaderGroup(app.HeaderConstants.MOUNT_MODS)),
 
 			-- Pet Battles
-			app.CreateDynamicHeader("pb", SimpleNPCGroup(app.HeaderConstants.PET_BATTLES, {dynamic_withsubgroups = true})),
+			app.CreateDynamicHeader("pb", SimpleHeaderGroup(app.HeaderConstants.PET_BATTLES, {dynamic_withsubgroups = true})),
 
 			-- Professions
 			app.CreateDynamicHeaderByValue("professionID", {
@@ -2861,7 +2899,7 @@ function app:GetDataCache()
 			}),
 
 			-- Runeforge Powers
-			app.CreateDynamicHeader("runeforgepowerID", SimpleNPCGroup(app.HeaderConstants.LEGENDARIES, {suffix=EXPANSION_NAME8})),
+			app.CreateDynamicHeader("runeforgepowerID", SimpleHeaderGroup(app.HeaderConstants.LEGENDARIES, {suffix=EXPANSION_NAME8})),
 
 			-- Titles
 			app.CreateDynamicHeader("titleID", {
@@ -2876,7 +2914,7 @@ function app:GetDataCache()
 			}),
 
 			-- Various Quest groups
-			app.CreateNPC(app.HeaderConstants.QUESTS, {
+			app.CreateCustomHeader(app.HeaderConstants.QUESTS, {
 				visible = true,
 				OnUpdate = app.AlwaysShowUpdate,
 				g = {
@@ -2918,17 +2956,11 @@ function app:GetDataCache()
 	}));
 
 	-- The Main Window's Data
-	app.refreshDataForce = true;
 	-- app.PrintMemoryUsage("Prime.Data Ready")
 	local primeWindow = app:GetWindow("Prime");
 	primeWindow:SetData(rootData);
-	-- app.PrintMemoryUsage("Prime Window Data Set")
+	-- app.PrintMemoryUsage("Prime Window Data Building...")
 	primeWindow:BuildData();
-	-- app.PrintMemoryUsage()
-	-- app.PrintDebug("Begin Cache Prime")
-	CacheFields(rootData);
-	-- app.PrintDebugPrior("Ended Cache Prime")
-	-- app.PrintMemoryUsage()
 
 	-- Function to build a hidden window's data
 	local AllHiddenWindows = {}
@@ -2965,6 +2997,7 @@ function app:GetDataCache()
 	BuildHiddenWindowData(L.HIDDEN_CURRENCY_TRIGGERS, "Interface_Vendor", L.HIDDEN_CURRENCY_TRIGGERS_DESC, "HiddenCurrencyTriggers", { _hqt = true, _nosearch = true, Color = app.Colors.ChatLinkHQT })
 	BuildHiddenWindowData(L.HIDDEN_QUEST_TRIGGERS, "Interface_Quest", L.HIDDEN_QUEST_TRIGGERS_DESC, "HiddenQuestTriggers", { _hqt = true, _nosearch = true, Color = app.Colors.ChatLinkHQT })
 	BuildHiddenWindowData(L.SOURCELESS, "WindowIcon_Unsorted", L.SOURCELESS_DESC, "Sourceless", { _missing = true, _unsorted = true, _nosearch = true, Color = app.Colors.TooltipWarning })
+	-- app.PrintMemoryUsage("Hidden Windows Data Done")
 
 	-- a single Unsorted window to collect all base Unsorted windows
 	-- TODO: migrate this logic once Window creation is revised
@@ -2993,7 +3026,7 @@ function app:GetDataCache()
 	})
 
 	-- StartCoroutine("VerifyRecursionUnsorted", function() app.VerifyCache(); end, 5);
-	-- app.PrintDebug("Finished loading data cache")
+	-- app.PrintMemoryUsage("Finished loading data cache")
 	-- app.PrintMemoryUsage()
 	app.GetDataCache = function()
 		-- app.PrintDebug("Cached data cache")
@@ -3001,7 +3034,6 @@ function app:GetDataCache()
 	end
 	return rootData;
 end
-app.AddEventHandler("OnLoad", app.GetDataCache)
 
 end	-- Dynamic/Main Data
 
@@ -3049,7 +3081,6 @@ customWindowUpdates.AchievementHarvester = function(self, ...)
 			self.initialized = true;
 			self.Limit = 45000;	-- MissingAchievements:11.0.0.54774 (maximum achievementID)
 			self.PartitionSize = 5000;
-			local db = {};
 			local CleanUpHarvests = function()
 				local g, partition, pg, pgcount, refresh = self.data.g, nil, nil, nil, nil;
 				local count = g and #g or 0;
@@ -3093,8 +3124,7 @@ customWindowUpdates.AchievementHarvester = function(self, ...)
 				partitionStart = j * self.PartitionSize;
 				partitionGroups = {};
 				-- define a sub-group for a range of quests
-				partition = {
-					["text"] = tostring(partitionStart + 1).."+",
+				partition = app.CreateRawText(tostring(partitionStart + 1).."+", {
 					["icon"] = app.asset("Interface_Quest_header"),
 					["visible"] = true,
 					["OnClick"] = function(row, button)
@@ -3103,18 +3133,19 @@ customWindowUpdates.AchievementHarvester = function(self, ...)
 						-- no return so that it acts like a normal row
 					end,
 					["g"] = partitionGroups,
-				};
+				})
 				for i=1,self.PartitionSize,1 do
 					tinsert(partitionGroups, dlo(obj, "text", overrides, partitionStart + i));
 				end
 				tinsert(g, partition);
 			end
-			db.g = g;
-			db.text = "Achievement Harvester";
-			db.icon = app.asset("WindowIcon_RaidAssistant");
-			db.description = "This is a contribution debug tool. NOT intended to be used by the majority of the player base.\n\nExpand a group to harvest the 1,000 Achievements within that range.";
-			db.visible = true;
-			db.back = 1;
+			local db = app.CreateRawText("Achievement Harvester", {
+				g = g,
+				icon = app.asset("WindowIcon_RaidAssistant"),
+				description = "This is a contribution debug tool. NOT intended to be used by the majority of the player base.\n\nExpand a group to harvest the 1,000 Achievements within that range.",
+				visible = true,
+				back = 1,
+			})
 			self:SetData(db);
 		end
 		self:BaseUpdate(true);
@@ -3133,15 +3164,13 @@ customWindowUpdates.AuctionData = function(self)
 	if not self.initialized then
 		local C_AuctionHouse_ReplicateItems = C_AuctionHouse.ReplicateItems;
 		self.initialized = true;
-		self:SetData({
-			["text"] = "Auction Module",
-			["visible"] = true,
-			["back"] = 1,
-			["icon"] = 133784,
-			["description"] = "This is a debug window for all of the auction data that was returned. Turn on 'Account Mode' to show items usable on any character on your account!",
-			["options"] = {
-				{
-					["text"] = "Wipe Scan Data",
+		self:SetData(app.CreateRawText("Auction Module", {
+			visible = true,
+			back = 1,
+			icon = 133784,
+			description = "This is a debug window for all of the auction data that was returned. Turn on 'Account Mode' to show items usable on any character on your account!",
+			options = {
+				app.CreateRawText("Wipe Scan Data", {
 					["icon"] = 2065582,
 					["description"] = "Click this button to wipe out all of the previous scan data.",
 					["visible"] = true,
@@ -3162,9 +3191,8 @@ customWindowUpdates.AuctionData = function(self)
 						data.visible = #window.data.g > #window.data.options;
 						return true;
 					end,
-				},
-				{
-					["text"] = "Scan or Load Last Save",
+				}),
+				app.CreateRawText("Scan or Load Last Save", {
 					["icon"] = 1100023,
 					["description"] = "Click this button to perform a full scan of the auction house or load the last scan conducted within 15 minutes. The game may or may not freeze depending on the size of your auction house.\n\nData should populate automatically.",
 					["visible"] = true,
@@ -3185,9 +3213,8 @@ customWindowUpdates.AuctionData = function(self)
 						end
 					end,
 					['OnUpdate'] = app.AlwaysShowUpdate,
-				},
-				{
-					["text"] = "Toggle Debug Mode",
+				}),
+				app.CreateRawText("Toggle Debug Mode", {
 					["icon"] = 134521,
 					["description"] = "Click this button to toggle debug mode to show everything regardless of filters!",
 					["visible"] = true,
@@ -3207,9 +3234,8 @@ customWindowUpdates.AuctionData = function(self)
 						end
 						return true;
 					end,
-				},
-				{
-					["text"] = "Toggle Account Mode",
+				}),
+				app.CreateRawText("Toggle Account Mode", {
 					["icon"] = 413583,
 					["description"] = "Turn this setting on if you want to track all of the Things for all of your characters regardless of class and race filters.\n\nUnobtainable filters still apply.",
 					["visible"] = true,
@@ -3228,9 +3254,8 @@ customWindowUpdates.AuctionData = function(self)
 						end
 						return true;
 					end,
-				},
-				{
-					["text"] = "Toggle Faction Mode",
+				}),
+				app.CreateRawText("Toggle Faction Mode", {
 					["icon"] = 134932,
 					["description"] = "Click this button to toggle faction mode to show everything for your faction!",
 					["visible"] = true,
@@ -3252,9 +3277,8 @@ customWindowUpdates.AuctionData = function(self)
 						end
 						return true;
 					end,
-				},
-				{
-					["text"] = "Toggle Unobtainable Items",
+				}),
+				app.CreateRawText("Toggle Unobtainable Items", {
 					["icon"] = 135767,
 					["description"] = "Click this button to see currently unobtainable items in the auction data.",
 					["visible"] = true,
@@ -3284,10 +3308,10 @@ customWindowUpdates.AuctionData = function(self)
 						end
 						return true;
 					end,
-				},
+				}),
 			},
 			["g"] = {}
-		});
+		}))
 		for i,option in ipairs(self.data.options) do
 			tinsert(self.data.g, option);
 		end
@@ -3317,7 +3341,7 @@ customWindowUpdates.Bounty = function(self, force, got)
 				self:BaseUpdate(true, got);
 			end,
 		});
-		local header = app.CreateNPC(app.HeaderConstants.UI_BOUNTY_WINDOW, {
+		local header = app.CreateCustomHeader(app.HeaderConstants.UI_BOUNTY_WINDOW, {
 			['visible'] = true,
 			["g"] = {
 				autoOpen,
@@ -3328,14 +3352,14 @@ customWindowUpdates.Bounty = function(self, force, got)
 		-- Update this when we merge over Classic's extended window logic.
 		-- NOTE: Everything we want is current marked with a u value of 45, so why not just pull that in? :)
 		NestObjects(header, {
-			app.CreateNPC(app.HeaderConstants.RARES, {
+			app.CreateCustomHeader(app.HeaderConstants.RARES, {
 				app.CreateNPC(87622, {	-- Ogom the Mangler
 					['g'] = {
 						app.CreateItemSource(67041, 119366),
 					},
 				}),
 			}),
-			app.CreateNPC(app.HeaderConstants.ZONE_DROPS, {
+			app.CreateCustomHeader(app.HeaderConstants.ZONE_DROPS, {
 				["description"] = "These items were likely not readded with 10.1.7 or their source is currently unknown.",
 				["g"] = {
 					app.CreateItemSource(85, 778),	-- Kobold Excavation Pick
@@ -3374,8 +3398,7 @@ customWindowUpdates.CosmicInfuser = function(self, force)
 			self.initialized = true;
 			force = true;
 			local g = {};
-			local rootData = {
-				text = "Cosmic Infuser",
+			local rootData = app.CreateRawText("Cosmic Infuser", {
 				icon = app.asset("Category_Zones"),
 				description = "This window helps debug when we're missing map IDs in the addon.",
 				OnUpdate = app.AlwaysShowUpdate,
@@ -3384,16 +3407,17 @@ customWindowUpdates.CosmicInfuser = function(self, force)
 				visible = true,
 				expanded = true,
 				g = g,
-			};
+			})
 
 			-- Cache all maps by their ID number, starting with maps we reference in our DB.
 			local mapsByID = {};
-			for mapID,_ in pairs(app.SearchForFieldContainer("mapID")) do
+			for mapID,cachedMaps in pairs(app.SearchForFieldContainer("mapID")) do
 				if not mapsByID[mapID] then
 					local mapObject = app.CreateMap(mapID, {
 						mapInfo = C_Map_GetMapInfo(mapID),
 						collectible = true,
-						collected = true
+						collected = true,
+						statistic = tostring(#cachedMaps),
 					});
 					mapsByID[mapID] = mapObject;
 					mapObject.g = {};	-- Doing this prevents the CreateMap function from creating an exploration header.
@@ -3830,8 +3854,7 @@ customWindowUpdates.CurrentInstance = function(self, force, got)
 					["description"] = L.MINI_LIST_DESC,
 					["visible"] = true,
 					["g"] = {
-						{
-							["text"] = L.UPDATE_LOCATION_NOW,
+						app.CreateRawText(L.UPDATE_LOCATION_NOW, {
 							["icon"] = 134269,
 							["description"] = L.UPDATE_LOCATION_NOW_DESC,
 							["OnClick"] = function(row, button)
@@ -3839,7 +3862,7 @@ customWindowUpdates.CurrentInstance = function(self, force, got)
 								return true;
 							end,
 							["OnUpdate"] = app.AlwaysShowUpdate,
-						},
+						}),
 					},
 				}));
 				self:BuildData();
@@ -3910,15 +3933,13 @@ customWindowUpdates.ItemFilter = function(self, force)
 			end
 
 			-- Item Filter
-			local data = {
-				['text'] = L.ITEM_FILTER_TEXT,
+			local data = app.CreateRawText(L.ITEM_FILTER_TEXT, {
 				['icon'] = app.asset("Category_ItemSets"),
 				["description"] = L.ITEM_FILTER_DESCRIPTION,
 				['visible'] = true,
 				['back'] = 1,
 				['g'] = {
-					{
-						['text'] = L.ITEM_FILTER_BUTTON_TEXT,
+					app.CreateRawText(L.ITEM_FILTER_BUTTON_TEXT, {
 						['icon'] = 134246,
 						['description'] = L.ITEM_FILTER_BUTTON_DESCRIPTION,
 						['visible'] = true,
@@ -3969,9 +3990,9 @@ customWindowUpdates.ItemFilter = function(self, force)
 							end);
 							return true;
 						end,
-					},
+					}),
 				},
-			};
+			});
 
 			self:SetData(data);
 			self:BuildData();
@@ -4029,14 +4050,14 @@ customWindowUpdates.NWP = function(self, force)
 			local searchResults = app:BuildSearchResponse("awp", app.GameBuildVersion)
 
 			-- Create the dynamic category
-			local dynamicCategory = app.CreateRawText(L.CLICK_TO_CREATE_FORMAT:format(L.SETTINGS_MENU.DYNAMIC_CATEGORY_LABEL), {
+			local dynamicCategory = app.CreateRawText(L.CLICK_TO_CREATE_FORMAT:format(L.DYNAMIC_CATEGORY_LABEL), {
 				icon = app.asset("Interface_CreateDynamic"),
 				OnUpdate = OnUpdate_RemoveEmptyDynamic,
 				g = {}
 			})
 
 			-- Dynamic category headers
-			-- TODO: If possible, change the creation of names and icons to SimpleNPCGroup to take the localized names
+			-- TODO: If possible, change the creation of names and icons to SimpleHeaderGroup to take the localized names
 			local headers = {
 				{ id = "achievementID", name = ACHIEVEMENTS, icon = app.asset("Category_Achievements") },
 				{ id = "sourceID", name = "Appearances", icon = 135276 },
@@ -4220,14 +4241,14 @@ customWindowUpdates.awp = function(self, force)	-- TODO: Change this to remember
 				NestObjects(patchHeader, searchResults)
 
 				-- Create the dynamic category
-				local dynamicCategory = app.CreateRawText(L.CLICK_TO_CREATE_FORMAT:format(L.SETTINGS_MENU.DYNAMIC_CATEGORY_LABEL), {
+				local dynamicCategory = app.CreateRawText(L.CLICK_TO_CREATE_FORMAT:format(L.DYNAMIC_CATEGORY_LABEL), {
 					icon = app.asset("Interface_CreateDynamic"),
 					OnUpdate = OnUpdate_RemoveEmptyDynamic,
 					g = {}
 				})
 
 				-- Dynamic category headers
-				-- TODO: If possible, change the creation of names and icons to SimpleNPCGroup to take the localized names
+				-- TODO: If possible, change the creation of names and icons to SimpleHeaderGroup to take the localized names
 				local headers = {
 					{ id = "achievementID", name = ACHIEVEMENTS, icon = app.asset("Category_Achievements") },
 					{ id = "sourceID", name = "Appearances", icon = 135276 },
@@ -4310,6 +4331,9 @@ customWindowUpdates.RaidAssistant = function(self)
 			local raidassistant, lootspecialization, dungeondifficulty, raiddifficulty, legacyraiddifficulty;
 			local GetDifficultyInfo, GetInstanceInfo = GetDifficultyInfo, GetInstanceInfo;
 
+			local GetSpecialization = app.WOWAPI.GetSpecialization
+			local GetSpecializationInfo = app.WOWAPI.GetSpecializationInfo
+
 			-- Raid Assistant
 			local switchDungeonDifficulty = function(row, button)
 				self:SetData(raidassistant);
@@ -4383,15 +4407,13 @@ customWindowUpdates.RaidAssistant = function(self)
 			local function AttemptResetInstances()
 				ResetInstances();
 			end
-			raidassistant = {
-				['text'] = L.RAID_ASSISTANT,
-				['icon'] = app.asset("WindowIcon_RaidAssistant"),
-				["description"] = L.RAID_ASSISTANT_DESC,
-				['visible'] = true,
-				['back'] = 1,
-				['g'] = {
-					{
-						['text'] = L.LOOT_SPEC_UNKNOWN,
+			raidassistant = app.CreateRawText(L.RAID_ASSISTANT, {
+				icon = app.asset("WindowIcon_RaidAssistant"),
+				description = L.RAID_ASSISTANT_DESC,
+				visible = true,
+				back = 1,
+				g = {
+					app.CreateRawText(L.LOOT_SPEC_UNKNOWN, {
 						['title'] = L.LOOT_SPEC,
 						["description"] = L.LOOT_SPEC_DESC,
 						['visible'] = true,
@@ -4410,7 +4432,7 @@ customWindowUpdates.RaidAssistant = function(self)
 								end
 							end
 						end,
-					},
+					}),
 					app.CreateDifficulty(1, {
 						['title'] = L.DUNGEON_DIFF,
 						["description"] = L.DUNGEON_DIFF_DESC,
@@ -4474,8 +4496,7 @@ customWindowUpdates.RaidAssistant = function(self)
 							end
 						end,
 					}),
-					{
-						['text'] = L.RESET_INSTANCES,
+					app.CreateRawText(L.RESET_INSTANCES, {
 						['icon'] = app.asset("Button_Reset"),
 						['description'] = L.RESET_INSTANCES_DESC,
 						['visible'] = true,
@@ -4501,9 +4522,8 @@ customWindowUpdates.RaidAssistant = function(self)
 								end
 							end
 						end,
-					},
-					{
-						['text'] = L.TELEPORT_TO_FROM_DUNGEON,
+					}),
+					app.CreateRawText(L.TELEPORT_TO_FROM_DUNGEON, {
 						['icon'] = 136222,
 						['description'] = L.TELEPORT_TO_FROM_DUNGEON_DESC,
 						['visible'] = true,
@@ -4514,9 +4534,8 @@ customWindowUpdates.RaidAssistant = function(self)
 						['OnUpdate'] = function(data)
 							data.visible = IsAllowedToUserTeleport();
 						end,
-					},
-					{
-						['text'] = L.DELIST_GROUP,
+					}),
+					app.CreateRawText(L.DELIST_GROUP, {
 						['icon'] = 252175,
 						['description'] = L.DELIST_GROUP_DESC,
 						['visible'] = true,
@@ -4532,9 +4551,8 @@ customWindowUpdates.RaidAssistant = function(self)
 						['OnUpdate'] = function(data)
 							data.visible = C_LFGList.GetActiveEntryInfo();
 						end,
-					},
-					{
-						['text'] = L.LEAVE_GROUP,
+					}),
+					app.CreateRawText(L.LEAVE_GROUP, {
 						['icon'] = 132331,
 						['description'] = L.LEAVE_GROUP_DESC,
 						['visible'] = true,
@@ -4550,11 +4568,10 @@ customWindowUpdates.RaidAssistant = function(self)
 						['OnUpdate'] = function(data)
 							data.visible = IsInGroup();
 						end,
-					},
+					}),
 				}
-			};
-			lootspecialization = {
-				['text'] = L.LOOT_SPEC,
+			})
+			lootspecialization = app.CreateRawText(L.LOOT_SPEC, {
 				['icon'] = 1499566,
 				["description"] = L.LOOT_SPEC_DESC_2,
 				['OnClick'] = function(row, button)
@@ -4566,8 +4583,7 @@ customWindowUpdates.RaidAssistant = function(self)
 					data.g = {};
 					local numSpecializations = GetNumSpecializations();
 					if numSpecializations and numSpecializations > 0 then
-						tinsert(data.g, {
-							['text'] = L.CURRENT_SPEC,
+						tinsert(data.g, app.CreateRawText(L.CURRENT_SPEC, {
 							['title'] = select(2, GetSpecializationInfo(GetSpecialization())),
 							['icon'] = 1495827,
 							['id'] = 0,
@@ -4579,11 +4595,10 @@ customWindowUpdates.RaidAssistant = function(self)
 								Callback(self.Update, self);
 								return true;
 							end,
-						});
+						}))
 						for i=1,numSpecializations,1 do
 							local id, name, description, icon, background, role, primaryStat = GetSpecializationInfo(i);
-							tinsert(data.g, {
-								['text'] = name,
+							tinsert(data.g, app.CreateRawText(name, {
 								['icon'] = icon,
 								['id'] = id,
 								["description"] = description,
@@ -4594,16 +4609,15 @@ customWindowUpdates.RaidAssistant = function(self)
 									Callback(self.Update, self);
 									return true;
 								end,
-							});
+							}))
 						end
 					end
 				end,
 				['visible'] = true,
 				['back'] = 1,
 				['g'] = {},
-			};
-			dungeondifficulty = {
-				['text'] = L.DUNGEON_DIFF,
+			})
+			dungeondifficulty = app.CreateRawText(L.DUNGEON_DIFF, {
 				['icon'] = 236530,
 				["description"] = L.DUNGEON_DIFF_DESC_2,
 				['OnClick'] = function(row, button)
@@ -4634,9 +4648,8 @@ customWindowUpdates.RaidAssistant = function(self)
 						["trackable"] = false,
 					})
 				},
-			};
-			raiddifficulty = {
-				['text'] = L.RAID_DIFF,
+			})
+			raiddifficulty = app.CreateRawText(L.RAID_DIFF, {
 				['icon'] = 236530,
 				["description"] = L.RAID_DIFF_DESC_2,
 				['OnClick'] = function(row, button)
@@ -4667,9 +4680,8 @@ customWindowUpdates.RaidAssistant = function(self)
 						["trackable"] = false,
 					})
 				},
-			};
-			legacyraiddifficulty = {
-				['text'] = L.LEGACY_RAID_DIFF,
+			})
+			legacyraiddifficulty = app.CreateRawText(L.LEGACY_RAID_DIFF, {
 				['icon'] = 236530,
 				["description"] = L.LEGACY_RAID_DIFF_DESC_2,
 				['OnClick'] = function(row, button)
@@ -4706,7 +4718,7 @@ customWindowUpdates.RaidAssistant = function(self)
 						["trackable"] = false,
 					}),
 				},
-			};
+			})
 			self:SetData(raidassistant);
 
 			-- Setup Event Handlers and register for events
@@ -4875,24 +4887,21 @@ customWindowUpdates.Random = function(self)
 
 			local mainHeader
 			local function AddRandomCategoryButton(text, icon, desc, name)
-				return
-				{
-					["text"] = text,
-					["icon"] = icon,
-					["description"] = desc,
-					["visible"] = true,
-					["OnUpdate"] = app.AlwaysShowUpdate,
-					["OnClick"] = function(row, button)
+				return app.CreateRawText(text, {
+					icon = icon,
+					description = desc,
+					visible = true,
+					OnUpdate = app.AlwaysShowUpdate,
+					OnClick = function(row, button)
 						self.RandomSearchFilter = name
 						self:SetData(mainHeader)
 						self:Reroll()
 						return true
 					end,
-				}
+				})
 			end
 
-			local rerollOption = {
-				['text'] = L.REROLL,
+			local rerollOption = app.CreateRawText(L.REROLL, {
 				['icon'] = app.asset("Button_Reroll"),
 				['description'] = L.REROLL_DESC,
 				['visible'] = true,
@@ -4901,9 +4910,8 @@ customWindowUpdates.Random = function(self)
 					return true;
 				end,
 				['OnUpdate'] = app.AlwaysShowUpdate,
-			};
-			local filterHeader = {
-				['text'] = L.APPLY_SEARCH_FILTER,
+			})
+			local filterHeader = app.CreateRawText(L.APPLY_SEARCH_FILTER, {
 				['icon'] = app.asset("Button_Search"),
 				["description"] = L.APPLY_SEARCH_FILTER_DESC,
 				['visible'] = true,
@@ -4911,26 +4919,24 @@ customWindowUpdates.Random = function(self)
 				["indent"] = 0,
 				['back'] = 1,
 				['g'] = {
-					setmetatable({
-						['description'] = L.SEARCH_EVERYTHING_BUTTON_OF_DOOM,
-						['visible'] = true,
-						['OnClick'] = function(row, button)
+					app.CreateRawText(L.TITLE, {
+						icon = app.asset("logo_32x32"),
+						preview = app.asset("Discord_2_128"),
+						description = L.SEARCH_EVERYTHING_BUTTON_OF_DOOM,
+						visible = true,
+						OnClick = function(row, button)
 							self.RandomSearchFilter = appName;
 							self:SetData(mainHeader);
 							self:Reroll();
 							return true;
 						end,
-						['OnUpdate'] = app.AlwaysShowUpdate,
-					}, { __index = function(t, key)
-						if key == "text" or key == "icon" or key == "preview" or key == "texcoord" or key == "previewtexcoord" then
-							return app:GetWindow("Prime").data[key];
-						end
-					end}),
+						OnUpdate = app.AlwaysShowUpdate,
+					}),
 					AddRandomCategoryButton(L.ACHIEVEMENT, app.asset("Category_Achievements"), L.ACHIEVEMENT_DESC, "Achievement"),
 					AddRandomCategoryButton(L.DUNGEON, app.asset("Difficulty_Normal"), L.DUNGEON_DESC, "Dungeon"),
 					AddRandomCategoryButton(L.FACTIONS, app.asset("Category_Factions"), L.FACTION_DESC, "Factions"),
 					-- missing locale values
-					-- AddRandomCategoryButton(app.NPCNameFromID[app.HeaderConstants.FOLLOWERS], L.HEADER_ICONS[app.HeaderConstants.FOLLOWERS], L.FOLLOWER_DESC, "Follower"),
+					-- AddRandomCategoryButton(L.HEADER_NAMES[app.HeaderConstants.FOLLOWERS], L.HEADER_ICONS[app.HeaderConstants.FOLLOWERS], L.FOLLOWER_DESC, "Follower"),
 					AddRandomCategoryButton(L.INSTANCE, app.asset("Category_D&R"), L.INSTANCE_DESC, "Instance"),
 					AddRandomCategoryButton(L.ITEM, app.asset("Interface_Zone_drop"), L.ITEM_DESC, "Item"),
 					AddRandomCategoryButton(L.MOUNT, app.asset("Category_Mounts"), L.MOUNT_DESC, "Mount"),
@@ -4941,9 +4947,8 @@ customWindowUpdates.Random = function(self)
 					AddRandomCategoryButton(L.TOY, app.asset("Category_ToyBox"), L.TOY_DESC, "Toy"),
 					AddRandomCategoryButton(L.ZONE, app.asset("Category_Zones"), L.ZONE_DESC, "Zone"),
 				},
-			};
-			mainHeader = {
-				['text'] = L.GO_GO_RANDOM,
+			})
+			mainHeader = app.CreateRawText(L.GO_GO_RANDOM, {
 				['icon'] = app.asset("WindowIcon_Random"),
 				["description"] = L.GO_GO_RANDOM_DESC,
 				['visible'] = true,
@@ -4951,8 +4956,7 @@ customWindowUpdates.Random = function(self)
 				['back'] = 1,
 				["indent"] = 0,
 				['options'] = {
-					{
-						['text'] = L.CHANGE_SEARCH_FILTER,
+					app.CreateRawText(L.CHANGE_SEARCH_FILTER, {
 						['icon'] = app.asset("Button_Search"),
 						["description"] = L.CHANGE_SEARCH_FILTER_DESC,
 						['visible'] = true,
@@ -4962,11 +4966,11 @@ customWindowUpdates.Random = function(self)
 							return true;
 						end,
 						['OnUpdate'] = app.AlwaysShowUpdate,
-					},
+					}),
 					rerollOption,
 				},
 				['g'] = { },
-			};
+			})
 			self:SetData(mainHeader);
 			self.Rebuild = function(self, no)
 				-- Rebuild all the datas
@@ -5039,14 +5043,13 @@ customWindowUpdates.RWP = function(self, force)
 			return;
 		end
 		self.initialized = true;
-		self:SetData({
-			["text"] = L.FUTURE_UNOBTAINABLE,
+		self:SetData(app.CreateRawText(L.FUTURE_UNOBTAINABLE, {
 			["icon"] = app.asset("WindowIcon_RWP"),
 			["description"] = L.FUTURE_UNOBTAINABLE_TOOLTIP,
 			["visible"] = true,
 			["back"] = 1,
 			["g"] = app:BuildSearchResponse("rwp"),
-		});
+		}))
 		self:BuildData();
 		self.ExpandInfo = { Expand = true, Manual = true };
 	end
@@ -5148,22 +5151,20 @@ customWindowUpdates.Sync = function(self)
 				end
 			end
 
-			local syncHeader = {
-				['text'] = L.ACCOUNT_MANAGEMENT,
-				['icon'] = app.asset("WindowIcon_AccountManagement"),
-				["description"] = L.ACCOUNT_MANAGEMENT_TOOLTIP,
-				['visible'] = true,
-				['back'] = 1,
-				['OnUpdate'] = app.AlwaysShowUpdate,
+			local syncHeader = app.CreateRawText(L.ACCOUNT_MANAGEMENT, {
+				icon = app.asset("WindowIcon_AccountManagement"),
+				description = L.ACCOUNT_MANAGEMENT_TOOLTIP,
+				visible = true,
+				back = 1,
+				OnUpdate = app.AlwaysShowUpdate,
 				OnClick = app.UI.OnClick.IgnoreRightClick,
-				['g'] = {
-					{
-						['text'] = L.ADD_LINKED_CHARACTER_ACCOUNT,
-						['icon'] = app.asset("Button_Add"),
-						['description'] = L.ADD_LINKED_CHARACTER_ACCOUNT_TOOLTIP,
-						['visible'] = true,
-						['OnUpdate'] = app.AlwaysShowUpdate,
-						['OnClick'] = function(row, button)
+				g = {
+					app.CreateRawText(L.ADD_LINKED_CHARACTER_ACCOUNT, {
+						icon = app.asset("Button_Add"),
+						description = L.ADD_LINKED_CHARACTER_ACCOUNT_TOOLTIP,
+						visible = true,
+						OnUpdate = app.AlwaysShowUpdate,
+						OnClick = function(row, button)
 							app:ShowPopupDialogWithEditBox(L.ADD_LINKED_POPUP, "", function(cmd)
 								if cmd and cmd ~= "" then
 									AllTheThingsAD.LinkedAccounts[cmd] = true;
@@ -5172,40 +5173,38 @@ customWindowUpdates.Sync = function(self)
 							end);
 							return true;
 						end,
-					},
+					}),
 					-- Characters Section
-					{
-						['text'] = L.CHARACTERS,
-						['icon'] = 526421,
-						["description"] = L.SYNC_CHARACTERS_TOOLTIP,
-						['visible'] = true,
-						['expanded'] = true,
+					app.CreateRawText(L.CHARACTERS, {
+						icon = 526421,
+						description = L.SYNC_CHARACTERS_TOOLTIP,
+						visible = true,
+						expanded = true,
 						['g'] = {},
 						OnClick = app.UI.OnClick.IgnoreRightClick,
-						['OnUpdate'] = function(data)
+						OnUpdate = function(data)
 							local g = {};
 							for guid,character in pairs(ATTCharacterData) do
 								if character then
 									tinsert(g, app.CreateUnit(guid, {
-										['datalink'] = guid,
-										['OnClick'] = OnRightButtonDeleteCharacter,
-										['OnTooltip'] = OnTooltipForCharacter,
-										["OnUpdate"] = app.AlwaysShowUpdate,
+										datalink = guid,
+										OnClick = OnRightButtonDeleteCharacter,
+										OnTooltip = OnTooltipForCharacter,
+										OnUpdate = app.AlwaysShowUpdate,
 										name = character.name,
 										lvl = character.lvl,
-										['visible'] = true,
+										visible = true,
 									}));
 								end
 							end
 
 							if #g < 1 then
-								tinsert(g, {
-									['text'] = L.NO_CHARACTERS_FOUND,
-									['icon'] = 526421,
-									['visible'] = true,
+								tinsert(g, app.CreateRawText(L.NO_CHARACTERS_FOUND, {
+									icon = 526421,
+									visible = true,
 									OnClick = app.UI.OnClick.IgnoreRightClick,
-									["OnUpdate"] = app.AlwaysShowUpdate,
-								});
+									OnUpdate = app.AlwaysShowUpdate,
+								}));
 							else
 								data.SortType = "textAndLvl";
 							end
@@ -5213,17 +5212,16 @@ customWindowUpdates.Sync = function(self)
 							AssignChildren(data);
 							return true;
 						end,
-					},
+					}),
 
 					-- Linked Accounts Section
-					{
-						['text'] = L.LINKED_ACCOUNTS,
-						['icon'] = 526421,
-						["description"] = L.LINKED_ACCOUNTS_TOOLTIP,
-						['visible'] = true,
+					app.CreateRawText(L.LINKED_ACCOUNTS, {
+						icon = 526421,
+						description = L.LINKED_ACCOUNTS_TOOLTIP,
+						visible = true,
 						['g'] = {},
 						OnClick = app.UI.OnClick.IgnoreRightClick,
-						['OnUpdate'] = function(data)
+						OnUpdate = function(data)
 							data.g = {};
 							local charactersByName = {};
 							for guid,character in pairs(ATTCharacterData) do
@@ -5236,52 +5234,49 @@ customWindowUpdates.Sync = function(self)
 								local character = charactersByName[playerName];
 								if character then
 									tinsert(data.g, app.CreateUnit(playerName, {
-										['datalink'] = playerName,
-										['OnClick'] = OnRightButtonDeleteLinkedAccount,
-										['OnTooltip'] = OnTooltipForLinkedAccount,
-										["OnUpdate"] = app.AlwaysShowUpdate,
-										['visible'] = true,
+										datalink = playerName,
+										OnClick = OnRightButtonDeleteLinkedAccount,
+										OnTooltip = OnTooltipForLinkedAccount,
+										OnUpdate = app.AlwaysShowUpdate,
+										visible = true,
 									}));
 								elseif playerName:find("#") then
 									-- Garbage click handler for unsync'd account data.
-									tinsert(data.g, {
-										['text'] = playerName,
-										['datalink'] = playerName,
-										['icon'] = 526421,
-										['OnClick'] = OnRightButtonDeleteLinkedAccount,
-										['OnTooltip'] = OnTooltipForLinkedAccount,
-										['OnUpdate'] = app.AlwaysShowUpdate,
-										['visible'] = true,
-									});
+									tinsert(data.g, app.CreateRawText(playerName, {
+										datalink = playerName,
+										icon = 526421,
+										OnClick = OnRightButtonDeleteLinkedAccount,
+										OnTooltip = OnTooltipForLinkedAccount,
+										OnUpdate = app.AlwaysShowUpdate,
+										visible = true,
+									}));
 								else
 									-- Garbage click handler for unsync'd character data.
-									tinsert(data.g, {
-										['text'] = playerName,
-										['datalink'] = playerName,
-										['icon'] = 374212,
-										['OnClick'] = OnRightButtonDeleteLinkedAccount,
-										['OnTooltip'] = OnTooltipForLinkedAccount,
-										['OnUpdate'] = app.AlwaysShowUpdate,
-										['visible'] = true,
-									});
+									tinsert(data.g, app.CreateRawText(playerName, {
+										datalink = playerName,
+										icon = 374212,
+										OnClick = OnRightButtonDeleteLinkedAccount,
+										OnTooltip = OnTooltipForLinkedAccount,
+										OnUpdate = app.AlwaysShowUpdate,
+										visible = true,
+									}));
 								end
 							end
 
 							if #data.g < 1 then
-								tinsert(data.g, {
-									['text'] = L.NO_LINKED_ACCOUNTS,
-									['icon'] = 526421,
-									['visible'] = true,
+								tinsert(data.g, app.CreateRawText(L.NO_LINKED_ACCOUNTS, {
+									icon = 526421,
+									visible = true,
 									OnClick = app.UI.OnClick.IgnoreRightClick,
-									["OnUpdate"] = app.AlwaysShowUpdate,
-								});
+									OnUpdate = app.AlwaysShowUpdate,
+								}));
 							end
 							AssignChildren(data);
 							return true;
 						end,
-					},
+					}),
 				}
-			};
+			});
 
 			self.Reset = function()
 				self:SetData(syncHeader);
@@ -5489,6 +5484,8 @@ customWindowUpdates.list = function(self, force, got)
 			visible = true,
 			total = 0,
 			progress = 0,
+			costTotal = 0,
+			upgradeTotal = 0,
 		};
 		local PartitionUpdateFields = {
 			total = true,
@@ -5672,15 +5669,14 @@ customWindowUpdates.Tradeskills = function(self, force, got)
 		self:RegisterEvent("TRADE_SKILL_LIST_UPDATE");
 		self:RegisterEvent("TRADE_SKILL_CLOSE");
 		self:RegisterEvent("GARRISON_TRADESKILL_NPC_CLOSED");
-		self:SetData({
-			['text'] = L.PROFESSION_LIST,
-			['icon'] = 134940,
-			["description"] = L.PROFESSION_LIST_DESC,
-			['visible'] = true,
-			["indent"] = 0,
-			['back'] = 1,
-			['g'] = { },
-		});
+		self:SetData(app.CreateRawText(L.PROFESSION_LIST, {
+			icon = 134940,
+			description = L.PROFESSION_LIST_DESC,
+			visible = true,
+			indent = 0,
+			back = 1,
+			g = { },
+		}))
 
 		local MissingRecipes = {}
 		-- Adds the pertinent information about a given recipeID to the reagentcache
@@ -6441,8 +6437,7 @@ customWindowUpdates.WorldQuests = function(self, force, got)
 				-- app.PrintDebug("Rebuild WQ Data")
 				self.retry = nil;
 				-- Put a 'Clear World Quests' click first in the list
-				local temp = {{
-					['text'] = L.CLEAR_WORLD_QUESTS,
+				local temp = {app.CreateRawText(L.CLEAR_WORLD_QUESTS, {
 					['icon'] = 2447782,
 					['description'] = L.CLEAR_WORLD_QUESTS_DESC,
 					['hash'] = "funClearWorldQuests",
@@ -6451,7 +6446,7 @@ customWindowUpdates.WorldQuests = function(self, force, got)
 						return true;
 					end,
 					['OnUpdate'] = app.AlwaysShowUpdate,
-				}};
+				})}
 
 				-- options when refreshing the list
 				self.includeAll = app.MODE_DEBUG;
@@ -6777,12 +6772,11 @@ app.ProcessAuctionData = function()
 			["description"] = L.ITEMS_FOR_ACHIEVEMENTS_DESC,
 			["priority"] = 1,
 		}),
-		["sourceID"] = {	-- Appearances
-			["text"] = "Appearances",
+		["sourceID"] = app.CreateRawText("Appearances", {	-- Appearances
 			["icon"] = 135276,
 			["description"] = L.ALL_APPEARANCES_DESC,
 			["priority"] = 2,
-		},
+		}),
 		["mountID"] = app.CreateFilter(100, {	-- Mounts
 			["description"] = L.ALL_THE_MOUNTS_DESC,
 			["priority"] = 3,
@@ -6791,7 +6785,7 @@ app.ProcessAuctionData = function()
 			["description"] = L.ALL_THE_BATTLEPETS_DESC,
 			["priority"] = 4,
 		}),
-		["questID"] = app.CreateNPC(app.HeaderConstants.QUESTS, {	-- Quests
+		["questID"] = app.CreateCustomHeader(app.HeaderConstants.QUESTS, {
 			["icon"] = 464068,
 			["description"] = L.ALL_THE_QUESTS_DESC,
 			["priority"] = 5,
@@ -6801,12 +6795,11 @@ app.ProcessAuctionData = function()
 			["description"] = L.ALL_THE_RECIPES_DESC,
 			["priority"] = 6,
 		}),
-		["itemID"] = {					-- General
-			["text"] = "General",
+		["itemID"] = app.CreateRawText(L.GENERAL_PAGE, {
 			["icon"] = 334365,
 			["description"] = L.ALL_THE_ILLUSIONS_DESC,
 			["priority"] = 7,
-		},
+		}),
 		["reagentID"] = app.CreateFilter(56, {	-- Reagent
 			["icon"] = 135851,
 			["description"] = L.ALL_THE_REAGENTS_DESC,
@@ -7092,7 +7085,7 @@ local function PrePopulateAchievementSymlinks()
 		end
 		app.FillRunner.SetPerFrame(25)
 	end
-	app.RemoveEventHandler(PrePopulateAchievementSymlinks)
+	Callback(app.RemoveEventHandler, PrePopulateAchievementSymlinks)
 	-- app.PrintDebug("Done:FillAchSym")
 end
 app.AddEventHandler("OnRefreshCollectionsDone", PrePopulateAchievementSymlinks)
@@ -7258,3 +7251,8 @@ app.Wait_OnStartupDone = true
 app.AddEventHandler("OnStartupDone", function() app.Wait_OnStartupDone = nil end)
 
 -- app.PrintMemoryUsage("AllTheThings.EOF");
+-- app.AddEventHandler("Addon.Memory", function(info)
+-- 	app.PrintMemoryUsage(info)
+-- end)
+-- app.LinkEventSequence("OnStartupDone", "Addon.Memory")
+-- app.LinkEventSequence("OnWindowFillComplete", "Addon.Memory")

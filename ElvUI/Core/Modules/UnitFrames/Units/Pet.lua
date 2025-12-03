@@ -14,6 +14,7 @@ function UF:Construct_PetFrame(frame)
 	frame.Name = UF:Construct_NameText(frame)
 	frame.Portrait3D = UF:Construct_Portrait(frame, 'model')
 	frame.Portrait2D = UF:Construct_Portrait(frame, 'texture')
+	frame.Auras = UF:Construct_Auras(frame)
 	frame.Buffs = UF:Construct_Buffs(frame)
 	frame.Debuffs = UF:Construct_Debuffs(frame)
 	frame.Castbar = UF:Construct_Castbar(frame, L["Pet Castbar"])
@@ -62,7 +63,7 @@ function UF:Update_PetFrame(frame, db)
 	end
 
 	frame.Health.colorPetByUnitClass = db.health.colorPetByUnitClass
-	frame.Health:SetColorHappiness(not E.Retail and E.myclass == 'HUNTER' and db.health.colorHappiness or nil)
+	frame.Health:SetColorHappiness(E.Classic and E.myclass == 'HUNTER' and db.health.colorHappiness or nil)
 
 	frame:Size(frame.UNIT_WIDTH, frame.UNIT_HEIGHT)
 	frame.mover:Size(frame:GetSize())

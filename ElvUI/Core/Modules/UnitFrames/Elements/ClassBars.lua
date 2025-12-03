@@ -11,11 +11,12 @@ local unpack = unpack
 
 local CreateFrame = CreateFrame
 local MAX_COMBO_POINTS = MAX_COMBO_POINTS
+local SPEC_MONK_MISTWEAVER = SPEC_MONK_MISTWEAVER or 2
+
+UF.ClassPowerTypes = { 'ClassPower', 'AdditionalPower', 'Runes', 'Stagger', 'Totems', 'AlternativePower', 'EclipseBar' }
+UF.ClassPowerColors = { COMBO_POINTS = 'comboPoints', ESSENCE = 'EVOKER', CHI = 'MONK' }
 
 local AltManaTypes = { Rage = 1, Energy = 3 }
-local ClassPowerTypes = { 'ClassPower', 'AdditionalPower', 'Runes', 'Stagger', 'Totems', 'AlternativePower', 'EclipseBar' }
-local ClassPowerColors = { COMBO_POINTS = 'comboPoints', ESSENCE = 'EVOKER', CHI = 'MONK', Totems = 'SHAMAN' }
-
 if E.Retail then
 	AltManaTypes.LunarPower = 8
 	AltManaTypes.Maelstrom = 11
@@ -28,16 +29,25 @@ function UF:GetClassPower_Construct(frame)
 
 	if E.myclass == 'DRUID' then
 		frame.AdditionalPower = UF:Construct_AdditionalPowerBar(frame)
+
+		if E.Mists then
+			frame.EclipseBar = UF:Construct_DruidEclipseBar(frame)
+		end
 	elseif E.myclass == 'MONK' then
-		frame.Stagger = UF:Construct_Stagger(frame)
-		frame.AdditionalPower = UF:Construct_AdditionalPowerBar(frame)
+		frame.Stagger = UF:Construct_Stagger(frame) -- Retail: Classbar, Mists: AdditionalPower
+
+		if E.Mists then
+			frame.AdditionalPower = UF:Construct_AdditionalPowerBar(frame)
+		end
 	elseif E.myclass == 'DEATHKNIGHT' then
 		frame.Runes = UF:Construct_DeathKnightResourceBar(frame)
 		frame.ClassBar = 'Runes'
-	elseif E.Retail and (E.myclass == 'SHAMAN' or E.myclass == 'PRIEST') then
-		frame.AdditionalPower = UF:Construct_AdditionalPowerBar(frame)
-	elseif E.myclass == 'SHAMAN' then
+	elseif not E.Retail and E.myclass == 'SHAMAN' then
 		frame.Totems = UF:Construct_Totems(frame)
+	end
+
+	if E.Classic and E.myclass ~= 'WARRIOR' then
+		frame.EnergyManaRegen = UF:Construct_EnergyManaRegen(frame)
 	end
 end
 
@@ -61,22 +71,29 @@ function UF:ClassPower_SetBarColor(bar, r, g, b, custom_backdrop)
 	end
 end
 
+function UF:ClassPower_GetColor(colors, powerType)
+	local all, power = colors.classResources, colors.power
+	local mine = all and all[E.myclass]
+
+	return all, powerType ~= 'MANA' and (all[UF.ClassPowerColors[powerType]] or (mine and mine[powerType]) or mine), power[powerType] or power.MANA
+end
+
+function UF:ClassPower_BarColor(bar, index, colors, powers, isRunes)
+	return (isRunes and colors.DEATHKNIGHT[bar.runeType or 0]) or (index and powers and powers[index]) or powers
+end
+
 function UF:ClassPower_UpdateColor(powerType, rune)
-	local custom_backdrop = UF.db.colors.customclasspowerbackdrop and UF.db.colors.classpower_backdrop
 	local isRunes = powerType == 'RUNES'
-
-	local colors = UF.db.colors.classResources
-	local fallback = UF.db.colors.power[powerType] or UF.db.colors.power.MANA
-
+	local custom_backdrop = UF.db.colors.customclasspowerbackdrop and UF.db.colors.classpower_backdrop
+	local colors, powers, fallback = UF:ClassPower_GetColor(UF.db.colors, powerType)
 	if isRunes and UF.db.colors.chargingRunes then
 		UF:Runes_UpdateCharged(self, rune, custom_backdrop)
 	elseif isRunes and rune then
-		local color = colors.DEATHKNIGHT[rune.runeType or 0]
+		local color = UF:ClassPower_BarColor(isRunes, rune)
 		UF:ClassPower_SetBarColor(rune, color.r, color.g, color.b, custom_backdrop)
 	else
-		local classColor = colors[ClassPowerColors[powerType]] or colors[E.myclass][powerType] or colors[E.myclass]
-		for i, bar in ipairs(self) do
-			local color = (isRunes and colors.DEATHKNIGHT[bar.runeType or 0]) or classColor[i] or classColor
+		for index, bar in ipairs(self) do
+			local color = UF:ClassPower_BarColor(bar, index, colors, powers, isRunes)
 			if not color or not color.r then
 				UF:ClassPower_SetBarColor(bar, fallback.r, fallback.g, fallback.b, custom_backdrop)
 			else
@@ -94,7 +111,7 @@ function UF:Configure_ClassBar(frame)
 	if not bars then return end
 
 	bars.Holder = frame.ClassBarHolder
-	bars.AdditionalHolder = frame.ClassAdditionalHolder
+	bars.AdditionalHolder = frame.AdditionalPower and frame.ClassAdditionalHolder
 	bars.origParent = frame
 
 	local MAX_CLASS_BAR = frame.MAX_CLASS_BAR
@@ -221,7 +238,7 @@ function UF:Configure_ClassBar(frame)
 		bars:SetOrientation(isVertical and 'VERTICAL' or 'HORIZONTAL')
 	end
 
-	if bars.AdditionalHolder and (E.myclass == 'DRUID' or (E.Mists and E.myclass == 'MONK')) then
+	if bars.AdditionalHolder then
 		bars.AdditionalHolder:Size(db.classAdditional.width, db.classAdditional.height)
 
 		if not bars.AdditionalHolder.mover then
@@ -296,7 +313,7 @@ function UF:Configure_ClassBar(frame)
 		bars:SetParent(frame)
 	end
 
-	for _, powerType in pairs(ClassPowerTypes) do
+	for _, powerType in pairs(UF.ClassPowerTypes) do
 		if frame[powerType] then
 			if frame.USE_CLASSBAR then
 				if powerType == 'AdditionalPower' then
@@ -365,13 +382,16 @@ function UF:Construct_ClassBar(frame)
 	bars:CreateBackdrop(nil, nil, nil, nil, true)
 	bars:Hide()
 
+	bars.RaisedElementParent = UF:CreateRaisedElement(bars)
+
+	local frameName = frame:GetName()
 	local maxBars = max(UF.classMaxResourceBar[E.myclass] or 0, MAX_COMBO_POINTS)
 	for i = 1, maxBars do
-		local bar = CreateFrame('StatusBar', frame:GetName()..'ClassIconButton'..i, bars)
+		local bar = CreateFrame('StatusBar', frameName..'ClassIconButton'..i, bars)
 		bar:SetStatusBarTexture(E.media.blankTex) --Dummy really, this needs to be set so we can change the color
 		bar:GetStatusBarTexture():SetHorizTile(false)
 
-		UF.statusbars[bar] = true
+		UF.statusbars[bar] = 'classpower'
 		UF.classbars[bar] = true
 
 		bar:CreateBackdrop(nil, nil, nil, nil, true)
@@ -521,7 +541,7 @@ function UF:Construct_DeathKnightResourceBar(frame)
 		rune:SetStatusBarTexture(E.media.blankTex)
 		rune:GetStatusBarTexture():SetHorizTile(false)
 
-		UF.statusbars[rune] = true
+		UF.statusbars[rune] = 'runes'
 		UF.classbars[rune] = true
 
 		rune:CreateBackdrop(nil, nil, nil, nil, true)
@@ -558,10 +578,10 @@ function UF:Construct_AdditionalPowerBar(frame)
 	additionalPower:CreateBackdrop(nil, nil, nil, nil, true)
 	additionalPower:SetStatusBarTexture(E.media.blankTex)
 
-	UF.statusbars[additionalPower] = true
+	UF.statusbars[additionalPower] = 'additionalpower'
 	UF.classbars[additionalPower] = true
 
-	additionalPower.RaisedElementParent = UF:CreateRaisedElement(additionalPower, true)
+	additionalPower.RaisedElementParent = UF:CreateRaisedElement(additionalPower)
 	additionalPower.text = UF:CreateRaisedText(additionalPower.RaisedElementParent)
 	additionalPower.displayPairs = {[E.myclass] = {}} -- display power types
 
@@ -592,11 +612,51 @@ function UF:PostUpdateAdditionalPower(CUR, MAX, event)
 	local frame = self.origParent or self:GetParent()
 	local db = frame.db
 
-	self:SetShown((frame.USE_CLASSBAR and event ~= 'ElementDisable') and (CUR ~= MAX or not db.classAdditional.autoHide) and (not E.Mists or E.myclass ~= 'MONK' or E.myspec == 2))
+	self:SetShown((frame.USE_CLASSBAR and event ~= 'ElementDisable') and (CUR ~= MAX or not db.classAdditional.autoHide) and (not E.Mists or E.myclass ~= 'MONK' or E.myspec == SPEC_MONK_MISTWEAVER))
 end
 
 function UF:PostVisibilityAdditionalPower()
 	-- this used to do something but now the bar is split off
+end
+
+-----------------------------------------------------------
+-- Energy Mana Regen Ticks
+-----------------------------------------------------------
+function UF:Construct_EnergyManaRegen(frame)
+	local element = CreateFrame('StatusBar', nil, frame.Power)
+	element:SetStatusBarTexture(E.media.blankTex)
+	element:OffsetFrameLevel(10, frame.Power)
+	element:SetMinMaxValues(0, 2)
+	element:SetAllPoints()
+
+	local barTexture = element:GetStatusBarTexture()
+	barTexture:SetAlpha(0)
+
+	element.RaisedElementParent = UF:CreateRaisedElement(element)
+
+	element.Spark = element:CreateTexture(nil, 'OVERLAY')
+	element.Spark:SetTexture(E.media.blankTex)
+	element.Spark:SetVertexColor(0.9, 0.9, 0.9, 0.6)
+	element.Spark:SetBlendMode('ADD')
+	element.Spark:Point('RIGHT', barTexture)
+	element.Spark:Point('BOTTOM')
+	element.Spark:Point('TOP')
+	element.Spark:Width(2)
+
+	return element
+end
+
+function UF:Configure_EnergyManaRegen(frame)
+	if frame.db.power.EnergyManaRegen then
+		if not frame:IsElementEnabled('EnergyManaRegen') then
+			frame:EnableElement('EnergyManaRegen')
+		end
+
+		frame.EnergyManaRegen:SetFrameStrata(frame.Power:GetFrameStrata())
+		frame.EnergyManaRegen:OffsetFrameLevel(10, frame.Power)
+	elseif frame:IsElementEnabled('EnergyManaRegen') then
+		frame:DisableElement('EnergyManaRegen')
+	end
 end
 
 -----------------------------------------------------------
@@ -609,15 +669,13 @@ function UF:Construct_DruidEclipseBar(frame)
 	eclipseBar.LunarBar = CreateFrame('StatusBar', 'LunarBar', eclipseBar)
 	eclipseBar.LunarBar:Point('LEFT', eclipseBar)
 	eclipseBar.LunarBar:SetStatusBarTexture(E.media.blankTex)
-	UF.statusbars[eclipseBar.LunarBar] = true
+	UF.statusbars[eclipseBar.LunarBar] = 'eclipsebar'
 
 	eclipseBar.SolarBar = CreateFrame('StatusBar', 'SolarBar', eclipseBar)
 	eclipseBar.SolarBar:SetStatusBarTexture(E.media.blankTex)
-	UF.statusbars[eclipseBar.SolarBar] = true
+	UF.statusbars[eclipseBar.SolarBar] = 'solarbar'
 
-	eclipseBar.RaisedElementParent = CreateFrame('Frame', nil, eclipseBar)
-	eclipseBar.RaisedElementParent:OffsetFrameLevel(100, eclipseBar)
-	eclipseBar.RaisedElementParent:SetAllPoints()
+	eclipseBar.RaisedElementParent = UF:CreateRaisedElement(eclipseBar)
 
 	eclipseBar.Arrow = eclipseBar.LunarBar:CreateTexture(nil, 'OVERLAY')
 	eclipseBar.Arrow:SetTexture(E.Media.Textures.ArrowUp)
@@ -659,7 +717,7 @@ function UF:Construct_Stagger(frame)
 	stagger.PostUpdate = UF.PostUpdateStagger
 	stagger.PostVisibility = UF.PostUpdateVisibilityStagger
 
-	UF.statusbars[stagger] = true
+	UF.statusbars[stagger] = 'stagger'
 	UF.classbars[stagger] = true
 
 	stagger:SetScript('OnShow', UF.ToggleResourceBar)
@@ -697,7 +755,7 @@ end
 -----------------------------------------------------------
 
 function UF:Totems_PostUpdateColor()
-	UF.ClassPower_UpdateColor(self, 'Totems')
+	UF.ClassPower_UpdateColor(self, 'TOTEMS')
 end
 
 function UF:Construct_Totems(frame)
@@ -709,7 +767,7 @@ function UF:Construct_Totems(frame)
 		totem:CreateBackdrop(nil, nil, nil, UF.thinBorders, true)
 		totem.backdrop:SetParent(totems)
 
-		UF.statusbars[totem] = true
+		UF.statusbars[totem] = 'totems'
 		UF.classbars[totem] = true
 
 		totem:EnableMouse(true)

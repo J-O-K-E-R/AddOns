@@ -15,7 +15,14 @@ _.FlightPathDB=
 	}
 }
 _.OnInitDB=
-{}
+{
+	["GenerateCompareOtherKey_185686"] = function(t)t.otherItemID=185686;t.GetItemCount=function(t)return GetItemCount(t.itemID,true)+ GetItemCount(t.otherItemID,true);end	return t;end,
+	["GenerateCompareOtherKey_185687"] = function(t)t.otherItemID=185687;t.GetItemCount=function(t)return GetItemCount(t.itemID,true)+ GetItemCount(t.otherItemID,true);end	return t;end,
+	["GenerateCompareOtherKey_185690"] = function(t)t.otherItemID=185690;t.GetItemCount=function(t)return GetItemCount(t.itemID,true)+ GetItemCount(t.otherItemID,true);end	return t;end,
+	["GenerateCompareOtherKey_185691"] = function(t)t.otherItemID=185691;t.GetItemCount=function(t)return GetItemCount(t.itemID,true)+ GetItemCount(t.otherItemID,true);end	return t;end,
+	["GenerateCompareOtherKey_185692"] = function(t)t.otherItemID=185692;t.GetItemCount=function(t)return GetItemCount(t.itemID,true)+ GetItemCount(t.otherItemID,true);end	return t;end,
+	["GenerateCompareOtherKey_185693"] = function(t)t.otherItemID=185693;t.GetItemCount=function(t)return GetItemCount(t.itemID,true)+ GetItemCount(t.otherItemID,true);end	return t;end
+}
 _.OnTooltipDB=
 {
 	["DesolaceCentaurs"] = function(t,tooltipInfo)local reputation=t.reputation;if reputation>0 and reputation<9000 then	_.Modules.FactionData.AddReputationTooltipInfo(tooltipInfo,reputation,"Kill Centaurs to Honored.",20,9000);end	end,
@@ -34,6 +41,7 @@ _.OnTooltipDB=
 	["ForWarsongGulch"] = function(t,tooltipInfo)local reputation=t.reputation;if reputation>=0 and reputation<42000 then	local addRepInfo=_.Modules.FactionData.AddReputationTooltipInfo;local repPerFlagCapture=35;addRepInfo(tooltipInfo,reputation,"Flags Captured",repPerFlagCapture,42000);tinsert(tooltipInfo,{left=" Each capture is worth "..repPerFlagCapture.." rep, +10 on WSG Weekend.",r=1,g=1,b=1});end	end,
 	["Ravenholdt"] = function(t,tooltipInfo)local reputation=t.reputation;if reputation<42000 then	if reputation<20999 then	tinsert(tooltipInfo,{left=" * PROTIP: Do NOT turn in Heavy Lockboxes until max Honored!",r=1,g=0.5,b=0.5});_.Modules.FactionData.AddReputationTooltipInfo(tooltipInfo,reputation,"Kill Arathi Syndicate",5,20999);else	tinsert(tooltipInfo,{left=" * PROTIP: Bring a stack of Repair Bots with you.",r=0.5,g=1,b=0.5});_.Modules.FactionData.AddReputationTooltipInfoWithMultiplier(tooltipInfo,reputation,"Turn in Heavy Junkboxes.",75,42000,5);end	end	end,
 	["RuneclothTurnIns"] = function(t,tooltipInfo)local reputation=t.reputation;if reputation<42000 then	_.Modules.FactionData.AddReputationTooltipInfo(tooltipInfo,reputation,"Runecloth Turn Ins",75,42000);end	end,
+	["ShowHonoredKeyComparison"] = function(t,tooltipInfo)local tooltip=_.ShowItemCompareTooltips(t.otherItemID);if _.Settings:GetUnobtainableFilter(20)then	tooltip:AddLine("This is now available at Honored reputation.",0.4,0.8,1,1);else	tooltip:AddLine("This will be available at Honored reputation after TBC Phase 4.",0.4,0.8,1,1);end	tooltip:Show();end,
 	["ThoriumBrotherhood"] = function(t,tooltipInfo)local reputation=t.reputation;if reputation<42000 then	local addRepInfo=_.Modules.FactionData.AddReputationTooltipInfo;addRepInfo(tooltipInfo,reputation,"Turn In Blood & Cores (1x each)",500,42000);addRepInfo(tooltipInfo,reputation,"Turn In Core Leather (2x each)",350,42000);addRepInfo(tooltipInfo,reputation,"Turn In Dark Iron Ore (10x each)",75,42000);end	end
 }
 _.OnUpdateDB=

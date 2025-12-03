@@ -113,11 +113,11 @@ function page:Initialize()
     local horizontalSpacing = 10
     local verticalSpacing = 10
     local scrollView = CreateScrollBoxListGridView(stride, top, bottom, left, right, horizontalSpacing, verticalSpacing)
-    scrollView:SetDataProvider(dataProvider)
 
     scrollView:SetElementInitializer("CliqueMacroIconTemplate", function(button, data)
         page:MacroIconButton_Initializer(button, data)
     end)
+    scrollView:SetDataProvider(dataProvider)
     ScrollUtil.InitScrollBoxListWithScrollBar(scrollFrame, scrollFrame.scrollbar, scrollView)
 
     -- Edit box

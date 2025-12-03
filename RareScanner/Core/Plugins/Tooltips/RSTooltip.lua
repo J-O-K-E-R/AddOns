@@ -268,8 +268,8 @@ local function AddAchievementTooltip(tooltip, pin, addSeparator, isLink)
 				j = 10
 			end
 			
-			tooltip:SetCell(line, j, "|T"..RSAchievementDB.GetCachedAchievementInfo(achievementID).icon..":24|t", nil, "LEFT", 1, nil, nil, nil, nil, 24, 24)
-			tooltip:SetCellScript(line, j, "OnEnter", showAchievementTooltip, { RSAchievementDB.GetCachedAchievementInfo(achievementID).link, isLink })
+			tooltip:SetCell(line, j, "|T"..RSAchievementDB.GetCachedAchievementIcon(achievementID)..":24|t", nil, "LEFT", 1, nil, nil, nil, nil, 24, 24)
+			tooltip:SetCellScript(line, j, "OnEnter", showAchievementTooltip, { RSAchievementDB.GetCachedAchievementLink(achievementID), isLink })
 			tooltip:SetCellScript(line, j, "OnLeave", hideItemToolTip)
 			
 			if (floor(j%10) == 0) then
@@ -807,8 +807,14 @@ function RSTooltip.ShowLinkTooltip(pin, chatFrame)
 	-- Filtered state
 	AddFilterStateTooltip(tooltip, pin, true)
 	
-	tooltip:SmartAnchorTo(chatFrame, true)
-    --tooltip:SetPoint("BOTTOMLEFT", chatFrame, "TOPLEFT")
+	-- Some chat addons replace the chatframe causing issues
+	local retOk = pcall(function() tooltip:SmartAnchorTo(chatFrame, true) end)
+	if (not retOk) then
+		tooltip:ClearAllPoints()
+    	tooltip:SetClampedToScreen(true)
+    	tooltip:SetPoint("CENTER")
+	end
+	
 	tooltip:Show()
 end
 

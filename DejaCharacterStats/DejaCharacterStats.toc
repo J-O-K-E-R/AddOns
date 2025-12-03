@@ -1,33 +1,20 @@
-## Interface: 110107
-## Version: R110107r1
+## Interface: 120000, 110207, 110205
+## Version: R120000r1
 ## Title: |cff00c0ffDejaCharacterStats|r
 ## Author: Dejablue, Kakjens, loudsoul
-## Notes: Dejablue's improved character stats panel view.
-## SavedVariables: DejaCharacterStatsDB
-## SavedVariables: DCS_ClassSpecDB
+## Notes: Dejablue's improved character stats panel.
+## SavedVariables: DejaCharacterStatsDB, DCS_ClassSpecDB
 ## SavedVariablesPerCharacter: DejaCharacterStatsDBPC
 ## IconTexture: Interface\AddOns\DejaCharacterStats\DCSArt\DejoLogo.blp
 
 ## X-Category: Class
-## X-License: All Rights Reserved 2016-2020
-## X-Website: https://www.wowobserver.com/DCS
+## X-License: All Rights Reserved 2016-2025
 ## X-Curse-Project-ID: 99861
 ## X-WoWI-ID: 24060
 ## X-Wago-ID: ME6gdDK1
 
-Localization\localization.core.lua
-Localization\localization.deDE.lua
-Localization\localization.enGB.lua
-Localization\localization.enUS.lua
-Localization\localization.esES.lua
-Localization\localization.esMX.lua
-Localization\localization.frFR.lua
-Localization\localization.itIT.lua
-Localization\localization.koKR.lua
-Localization\localization.ptBR.lua
-Localization\localization.ruRU.lua
-Localization\localization.zhCN.lua
-Localization\localization.zhTW.lua
+Localization\core.lua
+Localization\[TextLocale].lua
 
 DejaCharacterStats.lua
 DCSTables.lua

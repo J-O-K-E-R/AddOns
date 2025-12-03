@@ -6,11 +6,11 @@ local FOLDER_NAME, private = ...
 
 private.CONTINENT_ZONE_IDS = {
 	[905] = { zonefilter = true, npcfilter = true, id = 9, zones = {830,882,885} }; --Argus
-	[619] = { zonefilter = true, npcfilter = true, id = 8, zones = {627,630,646,790,650,634,680,641,649,652} }; --Broken Isles
+	[619] = { zonefilter = true, npcfilter = true, id = 8, zones = {627,630,646,790,650,634,680,641,649,650} }; --Broken Isles
 	[572] = { zonefilter = true, npcfilter = true, id = 7, zones = {525,534,535,539,542,543,550,582,588,590} }; --Draenor
 	[13] = { zonefilter = true, npcfilter = true, id = 2, zones = {14,15,17,18,21,22,23,25,26,27,32,36,37,47,48,49,50,51,52,56,76,84,87,90,94,95,201,203,204,205,210,217,241,425,465,469,943,1470,2404} }; --Eastern Kingdoms
 	[12] = { zonefilter = true, npcfilter = true, id = 1, zones = {1,7,10,57,62,63,64,65,66,69,70,71,76,77,78,80,81,83,85,88,97,103,106,198,199,249,327,338,1332,1469,2403,1527,1571} }; --Kalimdor
-	[113] = { zonefilter = true, npcfilter = true, id = 4, zones = {114,115,116,117,118,119,120,121,126} }; --Northrend
+	[113] = { zonefilter = true, npcfilter = true, id = 4, zones = {114,115,116,117,118,119,120,121,126,127} }; --Northrend
 	[424] = { zonefilter = true, npcfilter = true, id = 6, zones = {371,376,379,388,390,418,422,433,507,504,554,1530,1570} }; --Pandaria
 	[101] = { zonefilter = true, npcfilter = true, id = 3, zones = {100,102,104,105,107,108,109} }; --Outland
 	[948] = { zonefilter = true, npcfilter = true, id = 5, zones = {207} }; --The Maelstrom
@@ -19,17 +19,18 @@ private.CONTINENT_ZONE_IDS = {
 	[1355] = { zonefilter = true, npcfilter = true, id = 12, zones = {1355} }; --Nazjatar
 	[1550] = { zonefilter = true, npcfilter = true, id = 13, zones = {1409,1525,1533,1536,1543,1565,1618,1961,1970,2030} }; --Shadowlands
 	[1978] = { zonefilter = true, npcfilter = true, id = 14, zones = {2112,2118,2022,2023,2024,2025,2085,2107,2133,2151,2199,2200,2239,2262} }; --Dragon Isles
-	[2274] = { zonefilter = true, npcfilter = true, id = 15, zones = {2213,2216,2248,2215,2216,2214,2255,2339,2346,2369}, current = { "all" } }; --Khaz Algar
+	[2274] = { zonefilter = true, npcfilter = true, id = 15, zones = {2213,2216,2248,2215,2216,2214,2255,2339,2346,2369,2371,2472}, current = { "all" } }; --Khaz Algar
 	[9999] = { zonefilter = true, npcfilter = true, zones = {276,378,628,629,672,734,702,695,747,739} }; --Class Halls
 	[9998] = { zonefilter = true, npcfilter = true, zones = {407}, current = { "all" } }; --Darkmoon Island
 	[9997] = { zonefilter = true, npcfilter = true, zones = {35,219,229,237,243,251,274,279,280,301,302,306,316,317,318,616,677,703,706,713,731,733,749,845,897,903,974,1004,1015,1041,1490,1663,1666,1675,1669,1674,1677,1683,1692,2093,2303} }; --Dungeons or scenarios
 	[9996] = { zonefilter = true, npcfilter = true, zones = {366,508,764,850,909,2047,2166,2406} }; --Raids
 	[9995] = { zonefilter = false, npcfilter = true, zones = {0} }; --Unknown
-	[9994] = { zonefilter = true, npcfilter = false, zones = {981,1022,1032,1033,1034,1035,1036,1037,1336,1337,1501,1502} }; --Expedition islands
-	[9993] = { zonefilter = true, npcfilter = false, zones = {2302,2310,2312,2347,2249,2250,2251,2259,2269,2277,2301,2302,2310,2347,2348,2396,2420} }; --Delves
+	[9994] = { zonefilter = true, npcfilter = true, zones = {981,1022,1032,1033,1034,1035,1036,1037,1336,1337,1501,1502} }; --Expedition islands
+	[9993] = { zonefilter = true, npcfilter = true, zones = {2302,2310,2312,2347,2249,2250,2251,2259,2269,2277,2301,2302,2310,2347,2348,2396,2420,2453} }; --Delves
 }
 
 private.SUBZONES_IDS = {
+	[125] = {126}; --Dalaran (old)
 	[764] = {765,766,767,768,769,770,771,772}; --The Nighthold
 	[850] = {851,852,853,854,855,856}; --Tomb of Sargeras
 	[677] = {678,679,710,711,712}; --Vault of the Wardens
@@ -41,7 +42,11 @@ private.SUBZONES_IDS = {
 	[302] = {303,304,305}; --Scarlet Monastery
 	[616] = {617,618}; --Upper Blackrock Spire
 	[749] = {798}; --The Arcway
-	[680] = {686}; --Suramar
+	[680] = {682,683,684,685,686}; --Suramar (Legion)
+	[650] = {651,652,654,655,657,658,659,750}; --Highmountain (Legion)
+	[641] = {642}; --Val'Sharah (Legion)
+	[634] = {636}; --Stormheim (Legion)
+	[630] = {631}; --Azsuna (Legion)
 	[407] = {408}; --Darkmoon Island
 	[734] = {735}; --Hall of the Guardian (mage class hall)
 	[672] = {674,675,719,720,721,879,880,861}; --Mardum, the Shattered Abyss (demon hunter class hall)
@@ -57,7 +62,6 @@ private.SUBZONES_IDS = {
 	[237] = {238}; --Diremaul
 	[251] = {252, 253, 254, 255}; --Blackrock spire
 	[366] = {350,351,352,353,354,355,356,357,358,359,360,361,362,363,364,365}; --Karazhan (Outland raid)
-	[650] = {658,750}; --Highmountain minimaps
 	[7] = {462}; --Mulgore minimaps
 	[504] = {505}; --Isle of Thunder
 	[554] = {555}; --Timeless Isle
@@ -100,6 +104,8 @@ private.SUBZONES_IDS = {
 	[371] = { 372, 373 }; --The jade forest (Pandaria)
 	[388] = { 389 }; --Townlong steppes (Pandaria)
 	[379] = { 380, 381, 382, 384, 385, 434 }; --Kun lai summit (Pandaria)
+	[2371] = { 2477 }; --K'aresh
+	[2453] = { 2476, 2454, 2455, 2476 }; --Archival Assault
 }
 
 private.ZONES_WITHOUT_VIGNETTE = {
@@ -158,15 +164,17 @@ private.ZONES_WITHOUT_VIGNETTE = {
 	[107] = { 112 }; --Nagrand
 	[95] = { 100 }; --Ghostlands
 	[94] = { 99 }; --Eversong woods
+	[114] = { 119 }; --Borean tundra
+	[115] = { 120 }; --Dragonblight
+	[116] = { 121 }; --Grizzly hills
+	[117] = { 122 }; --Howling fjord
+	[118] = { 123 }; --Icecrown
 	[119] = { 124 }; --Sholazar basin
 	[120] = { 125 }; --The storm peaks
-	[116] = { 121 }; --Grizzly hills
 	[121] = { 126 }; --Zul drak
-	[114] = { 119 }; --Borean tundra
-	[117] = { 122 }; --Howling fjord
-	[115] = { 120 }; --Dragonblight
-	--[118] = { 123 }; --Icecrown (uncomment once Shadowlands pre-patch is over)
-	[126] = { 131 }; --Dalaran
+	[125] = { 130 }; --Dalaran
+	[126] = { 131 }; --Dalaran (underbelly)
+	[127] = { 132 }; --Crystalsong Forest
 	[207] = { 212 }; --Deepholm
 	[198] = { 203,227 }; --Mount hyjal
 	[241] = { 338,252 }; --Twilight highlands
@@ -217,11 +225,6 @@ private.ZONES_WITHOUT_VIGNETTE = {
 	--[2151]  = { 1781 }; --The forbidden reach
 	--[2199]  = { 1805 }; --Tyrhold reservoir
 	--[2200]  = { 1806 }; --Emerald dream
-	[2310] = { 1881 }; --Skittering Breach (delve)
-	[2312] = { 1882 }; --Mycomancer Cavern (delve)
-	[2302] = { 1874 }; --The Dead Pit (delve)
-	[2250] = { 1836 }; --Kriegval's Rest (delve)
-	[2269] = { 1861 }; --Earthcrawl Mines (delve)
 }
 
 private.RESETABLE_KILLS_ZONE_IDS = {
@@ -237,6 +240,12 @@ private.RESETABLE_KILLS_ZONE_IDS = {
 	[882] = { "all" }; --Mac-Aree (Legion)
 	[885] = { "all" }; --Antoran wastes (Legion)
 	[646] = { "all" }; --The broken shore (Legion)
+	[630] = { "all" }; -- Azsuna (Legion)
+	[641] = { "all" }; -- Val'Sharah (Legion)
+	[634] = { "all" }; -- Stormheim (Legion)
+	[650] = { "all" }; -- Highmountain (Legion)
+	[680] = { "all" }; -- Suramar (Legion)
+	[649] = { "all" }; -- Helheim (Legion)
 	[81] = { 962 }; --Silithus (Legion, BFA)
 	[1355] = { "all" }; --Nazjatar (BFA)
 	[1462] = { "all" }; --Mechagon (BFA)
@@ -270,6 +279,8 @@ private.RESETABLE_KILLS_ZONE_IDS = {
 	[2213] = { "all" }; --Nerub'ar (The War Within)
 	[2369] = { "all" }; --Isle Siren (The War Within)
 	[2346] = { "all" }; --The undermine (The War Within)
+	[2371] = { "all" }; --K'aresh (The War Within)
+	[2472] = { "all" }; --Tazavesh (The War Within)
 }
 
 private.PERMANENT_KILLS_ZONE_IDS = {
@@ -279,14 +290,8 @@ private.PERMANENT_KILLS_ZONE_IDS = {
 	[543] = { "all" };
 	[550] = { "all" };
 	[535] = { "all" };
-	[630] = { "all" };
 	[625] = { "all" };
 	[790] = { "all" };
-	[650] = { "all" };
-	[634] = { "all" };
-	[680] = { "all" };
-	[641] = { "all" };
-	[649] = { "all" };
 	[942] = { "all" };
 	[895] = { "all" };
 	[896] = { "all" };

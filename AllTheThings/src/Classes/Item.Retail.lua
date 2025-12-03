@@ -85,7 +85,6 @@ local function GroupMatchesParams(group, key, value, ignoreModID)
 		if group.otherFactionQuestID == value then return true; end
 	-- NPCID can be contained in other fields as well (for now)
 	elseif key == "npcID" or key == "creatureID" then
-		if group.creatureID == value then return true; end
 		if group.npcID == value then return true; end
 		-- treat encounters with this NPC as a match for the NPC
 		if group.encounterID then
@@ -203,6 +202,7 @@ local function ItemAsyncRefreshFunc(t)
 	ItemEventListener:AddCallback(math_floor(id), function()
 		-- app.PrintDebug("Item Loaded", id)
 		app.DirectGroupRefresh(t, true)
+		app.ReshowGametooltip()
 	end)
 	return true
 end
@@ -232,8 +232,14 @@ local function CacheInfo(t, field)
 			modID = nil;
 			t.modID = nil;
 		end
+		local rawbonuses = rawget(t, "bonuses")
 		-- app.PrintDebug("default_link",itemLink,modID,bonusID)
-		if bonusID then
+		if rawbonuses then
+			local bonusesString = #rawbonuses..":"..app.TableConcat(rawbonuses, nil, nil, ":")
+			itemLink = ("item:%d:::::::::::%s:%s:"):format(itemLink, modID or "", bonusesString)
+			-- set the bonusID to the first bonusID
+			t.bonusID = rawbonuses[1]
+		elseif bonusID then
 			itemLink = ("item:%d:::::::::::%s:1:%d:"):format(itemLink, modID or "", bonusID);
 		elseif modID then
 			-- bonusID 3524 seems to imply "use ModID to determine SourceID" since without it, everything with ModID resolves as the base SourceID from links
@@ -243,10 +249,11 @@ local function CacheInfo(t, field)
 		end
 		-- save this link so it doesn't need to be built again
 		t.rawlink = itemLink
+		t.modItemID = nil
 	end
 
 	local name, link, quality, _, _, _, _, _, _, icon, _, _, _, b = GetItemInfo(itemLink);
-	-- app.PrintDebug("RawSetLink:=",rawlink,"->",link)
+	-- app.PrintDebug("RawSetLink:=",itemLink,"->",link)
 	local _t, id = cache.GetCached(t)
 	if link then
 		-- app.PrintDebug("rawset item info",id,link,name,quality,b)

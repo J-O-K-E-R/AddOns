@@ -16,7 +16,7 @@ GNU General Public License for more details.
 This file is part of MutexDelay.
 --]]
 
-local Lib = LibStub:NewLibrary('MutexDelay-1.0', 2)
+local Lib = LibStub:NewLibrary('MutexDelay-1.0', 3)
 if Lib then
   Lib.timers = Lib.timers or {}
 else return end
@@ -25,6 +25,10 @@ else return end
 --[[ API ]]--
 
 function Lib:Delay(time, method, ...)
+  if type(time) ~= "number" then
+    return Lib.Delay(self, 0, time, method, ...)
+  end
+
   local timers = Lib.timers[self] or {}
   if not timers[method] then
 		C_Timer.After(time, function()

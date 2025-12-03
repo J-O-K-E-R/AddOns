@@ -1,7 +1,7 @@
 local E, L, V, P, G = unpack(ElvUI)
 local AB = E:GetModule('ActionBars')
 
-local _G, wipe = _G, wipe
+local _G = _G
 local ipairs, pairs, strmatch, next, unpack, tonumber = ipairs, pairs, strmatch, next, unpack, tonumber
 local format, gsub, strsplit, strfind, strsub, strupper = format, gsub, strsplit, strfind, strsub, strupper
 
@@ -32,7 +32,6 @@ local UnitChannelInfo = UnitChannelInfo
 local UnitExists = UnitExists
 local UnitHealth = UnitHealth
 local UnitHealthMax = UnitHealthMax
-local UpdateMicroButtons = UpdateMicroButtons
 local UnregisterStateDriver = UnregisterStateDriver
 local UpdateOnBarHighlightMarksByFlyout = UpdateOnBarHighlightMarksByFlyout
 local UpdateOnBarHighlightMarksByPetAction = UpdateOnBarHighlightMarksByPetAction
@@ -210,9 +209,11 @@ function AB:TrimIcon(button, masque)
 	if not icon then return end
 
 	if button.db and not button.db.keepSizeRatio then
-		icon:SetTexCoord(E:CropRatio(button, button.db.customCoords))
+		local width, height = button:GetSize()
+		local left, right, top, bottom = E:CropRatio(width, height)
+		icon:SetTexCoord(left, right, top, bottom)
 	elseif not masque then
-		icon:SetTexCoord(unpack(E.TexCoords))
+		icon:SetTexCoords()
 	end
 end
 
@@ -398,7 +399,7 @@ function AB:CreateBar(id)
 		if targetReticle then
 			targetReticle:SetAllPoints()
 
-			targetReticle.Base:SetTexCoord(unpack(E.TexCoords))
+			targetReticle.Base:SetTexCoords()
 			targetReticle.Base:SetTexture(E.Media.Textures.TargetReticle)
 			targetReticle.Base:SetInside()
 
@@ -454,17 +455,25 @@ function AB:PLAYER_REGEN_ENABLED()
 		AB:UpdateButtonSettings()
 		AB.NeedsUpdateButtonSettings = nil
 	end
+
 	if AB.NeedsUpdateMicroBarVisibility then
 		AB:UpdateMicroBarVisibility()
 		AB.NeedsUpdateMicroBarVisibility = nil
 	end
+
 	if AB.NeedsAdjustMaxStanceButtons then
 		AB:AdjustMaxStanceButtons(AB.NeedsAdjustMaxStanceButtons) --sometimes it holds the event, otherwise true. pass it before we nil it.
 		AB.NeedsAdjustMaxStanceButtons = nil
 	end
-	if AB.NeedsReparentExtraButtons then
+
+	if AB.NeedsExtraButtonsReparent then
 		AB:ExtraButtons_Reparent()
-		AB.NeedsReparentExtraButtons = nil
+		AB.NeedsExtraButtonsReparent = nil
+	end
+
+	if AB.NeedsExtraButtonsRescale then
+		AB:ExtraButtons_UpdateScale()
+		AB.NeedsExtraButtonsRescale = nil
 	end
 
 	AB:UnregisterEvent('PLAYER_REGEN_ENABLED')
@@ -575,7 +584,7 @@ do
 	local texts = { 'hotkey', 'macro', 'count' }
 	local bars = { 'barPet', 'stanceBar', 'vehicleExitButton', 'extraActionButton' }
 
-	local function saveSetting(option, value)
+	local function SaveSetting(option, value)
 		for i = 1, 10 do
 			E.db.actionbar['bar'..i][option] = value
 		end
@@ -593,10 +602,10 @@ do
 		if fonts then
 			local upperOption = gsub(option, '^%w', strupper) -- font>Font, fontSize>FontSize, fontOutline>FontOutline
 			for _, object in pairs(texts) do
-				saveSetting(object..upperOption, value)
+				SaveSetting(object..upperOption, value)
 			end
 		else
-			saveSetting(option, value)
+			SaveSetting(option, value)
 		end
 
 		AB:UpdateButtonSettings()
@@ -1082,20 +1091,20 @@ function AB:ButtonEventsRegisterFrame(added)
 end
 
 function AB:IconIntroTracker_Skin()
-	local l, r, t, b = unpack(E.TexCoords)
+	local left, right, top, bottom = E:GetTexCoords()
 	for _, iconIntro in ipairs(self.iconList) do
 		if not iconIntro.IsSkinned then
-			iconIntro.trail1.icon:SetTexCoord(l, r, t, b)
-			iconIntro.trail1.bg:SetTexCoord(l, r, t, b)
+			iconIntro.trail1.icon:SetTexCoord(left, right, top, bottom)
+			iconIntro.trail1.bg:SetTexCoord(left, right, top, bottom)
 
-			iconIntro.trail2.icon:SetTexCoord(l, r, t, b)
-			iconIntro.trail2.bg:SetTexCoord(l, r, t, b)
+			iconIntro.trail2.icon:SetTexCoord(left, right, top, bottom)
+			iconIntro.trail2.bg:SetTexCoord(left, right, top, bottom)
 
-			iconIntro.trail3.icon:SetTexCoord(l, r, t, b)
-			iconIntro.trail3.bg:SetTexCoord(l, r, t, b)
+			iconIntro.trail3.icon:SetTexCoord(left, right, top, bottom)
+			iconIntro.trail3.bg:SetTexCoord(left, right, top, bottom)
 
-			iconIntro.icon.icon:SetTexCoord(l, r, t, b)
-			iconIntro.icon.bg:SetTexCoord(l, r, t, b)
+			iconIntro.icon.icon:SetTexCoord(left, right, top, bottom)
+			iconIntro.icon.bg:SetTexCoord(left, right, top, bottom)
 
 			iconIntro.IsSkinned = true
 		end
@@ -1152,7 +1161,7 @@ do
 		self:Flush()
 		self:ClearActiveCategoryTutorial()
 
-		UpdateMicroButtons()
+		_G.UpdateMicroButtons() -- keep this to maintain the hook
 
 		if not InCombatLockdown() then
 			local checked = _G.Settings.GetValue('PROXY_CHARACTER_SPECIFIC_BINDINGS')
@@ -1487,14 +1496,14 @@ function AB:FixKeybindText(button)
 	end
 end
 
-local function skinFlyout()
+local function SkinFlyout()
 	if _G.SpellFlyout.Background then _G.SpellFlyout.Background:Hide() end
 	if _G.SpellFlyoutBackgroundEnd then _G.SpellFlyoutBackgroundEnd:Hide() end
 	if _G.SpellFlyoutHorizontalBackground then _G.SpellFlyoutHorizontalBackground:Hide() end
 	if _G.SpellFlyoutVerticalBackground then _G.SpellFlyoutVerticalBackground:Hide() end
 end
 
-local function flyoutButtonAnchor(frame)
+local function FlyoutButtonAnchor(frame)
 	local parent = frame:GetParent()
 	local _, parentAnchorButton = parent:GetPoint()
 	if not AB.handledbuttons[parentAnchorButton] then return end
@@ -1503,18 +1512,18 @@ local function flyoutButtonAnchor(frame)
 end
 
 function AB:FlyoutButton_OnEnter()
-	local anchor = flyoutButtonAnchor(self)
+	local anchor = FlyoutButtonAnchor(self)
 	if anchor then AB:Bar_OnEnter(anchor) end
 
 	AB:BindUpdate(self, 'FLYOUT')
 end
 
 function AB:FlyoutButton_OnLeave()
-	local anchor = flyoutButtonAnchor(self)
+	local anchor = FlyoutButtonAnchor(self)
 	if anchor then AB:Bar_OnLeave(anchor) end
 end
 
-local function spellFlyoutAnchor(frame)
+local function SpellFlyoutAnchor(frame)
 	local _, anchorButton = frame:GetPoint()
 	if not AB.handledbuttons[anchorButton] then return end
 
@@ -1522,12 +1531,12 @@ local function spellFlyoutAnchor(frame)
 end
 
 function AB:SpellFlyout_OnEnter()
-	local anchor = spellFlyoutAnchor(self)
+	local anchor = SpellFlyoutAnchor(self)
 	if anchor then AB:Bar_OnEnter(anchor) end
 end
 
 function AB:SpellFlyout_OnLeave()
-	local anchor = spellFlyoutAnchor(self)
+	local anchor = SpellFlyoutAnchor(self)
 	if anchor then AB:Bar_OnLeave(anchor) end
 end
 
@@ -1654,13 +1663,13 @@ function AB:UpdateChargeCooldown(button, duration)
 	end
 end
 
-function AB:SetAuraCooldownDuration(value)
-	LAB:SetAuraCooldownDuration(value)
+function AB:SetTargetAuraDuration(value)
+	LAB:SetTargetAuraDuration(value)
 end
 
-function AB:SetAuraCooldowns(enabled)
+function AB:SetTargetAuraCooldowns(enabled)
 	local enable, reverse = E.db.cooldown.enable, E.db.actionbar.cooldown.reverse
-	LAB:SetAuraCooldowns(enabled and (enable and not reverse) or (not enable and reverse))
+	LAB:SetTargetAuraCooldowns(enabled and (enable and not reverse) or (not enable and reverse))
 end
 
 function AB:ToggleCooldownOptions()
@@ -1810,36 +1819,6 @@ do
 			end
 		end
 	end
-
-	-- a few functions to modify what spells are rotation assisted
-	function AB:RotationUpdate()
-		AB:RotationSpellsAdjust()
-	end
-
-	function AB:RotationSpellsClear()
-		AB:RotationSpellsAdjust(true) -- set them back to true
-		wipe(E.db.general.rotationAssist.spells[E.myclass]) -- clear our table now
-	end
-
-	function AB:RotationSpellsAdjust(value)
-		local rotations = _G.AssistedCombatManager.rotationSpells -- Blizzards table
-		if not next(rotations) then return end
-
-		local spells = E.db.general.rotationAssist.spells[E.myclass] -- our table for toggling
-		for spellID, active in next, spells do
-			if rotations[spellID] ~= nil then
-				if value ~= nil then
-					rotations[spellID] = value
-				else
-					rotations[spellID] = active
-				end
-			else -- remove old ones
-				spells[spellID] = nil
-			end
-		end
-
-		_G.AssistedCombatManager:ForceUpdateAtEndOfFrame()
-	end
 end
 
 function AB:Initialize()
@@ -1923,7 +1902,7 @@ function AB:Initialize()
 	AB:RegisterEvent('UPDATE_BINDINGS', 'ReassignBindings')
 	AB:RegisterEvent('SPELL_UPDATE_COOLDOWN', 'UpdateSpellBookTooltip')
 
-	AB:SetAuraCooldownDuration(E.db.cooldown.targetAuraDuration)
+	AB:SetTargetAuraDuration(E.db.cooldown.targetAuraDuration)
 
 	if _G.MacroFrame then
 		AB:ADDON_LOADED(nil, 'Blizzard_MacroUI')
@@ -1952,12 +1931,11 @@ function AB:Initialize()
 
 		AB:AssistedGlowUpdate()
 		hooksecurefunc(_G.AssistedCombatManager, 'UpdateAllAssistedHighlightFramesForSpell', AB.AssistedUpdate)
-		_G.EventRegistry:RegisterCallback('AssistedCombatManager.RotationSpellsUpdated', AB.RotationUpdate)
 		_G.AssistedCombatManager.OnUpdate = AB.AssistedOnUpdate -- use our update function instead
 	end
 
 	if not E.Classic then
-		hooksecurefunc(_G.SpellFlyout, 'Toggle', skinFlyout)
+		hooksecurefunc(_G.SpellFlyout, 'Toggle', SkinFlyout)
 	end
 end
 

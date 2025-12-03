@@ -3,8 +3,8 @@ local UF = E:GetModule('UnitFrames')
 local NP = E:GetModule('NamePlates')
 
 local _G = _G
-local pairs, pcall, unpack = pairs, pcall, unpack
-local strsub, type, next = strsub, type, next
+local strsub, type = strsub, type
+local next, pcall, unpack = next, pcall, unpack
 local hooksecurefunc = hooksecurefunc
 local getmetatable = getmetatable
 local tonumber = tonumber
@@ -41,6 +41,33 @@ local StripTexturesBlizzFrames = {
 	'ScrollUpBorder',
 	'ScrollDownBorder',
 }
+
+local SetTexCoords
+do
+	local left, right, top, bottom = unpack(E.TexCoords)
+
+	SetTexCoords = function(frame)
+		frame:SetTexCoord(left, right, top, bottom)
+	end
+
+	function E:GetTexCoords()
+		return left, right, top, bottom
+	end
+
+	function E:UpdateTexCoords()
+		local m = 0.04 * (E.db.general.cropIcon or 2)
+		for i, v in next, E.TexCoords do
+			local value = (i % 2 == 0) and (v - m) or (v + m)
+
+			E.TexCoords[i] = value
+
+			if i == 1 then left = value
+			elseif i == 2 then right = value
+			elseif i == 3 then top = value
+			elseif i == 4 then bottom = value end
+		end
+	end
+end
 
 -- 8.2 restricted frame check
 function E:SetPointsRestricted(frame)
@@ -99,7 +126,7 @@ local function GetTemplate(template, isUnitFrameElement)
 	backdropa, bordera = 1, 1
 
 	if template == 'ClassColor' then
-		local color = E:ClassColor(E.myclass)
+		local color = E.myClassColor
 		borderr, borderg, borderb = color.r, color.g, color.b
 		backdropr, backdropg, backdropb = unpack(E.media.backdropcolor)
 	elseif template == 'Transparent' then
@@ -410,7 +437,7 @@ local function StripType(which, object, kill, zero)
 	else
 		if which == STRIP_TEX then
 			local FrameName = object.GetName and object:GetName()
-			for _, Blizzard in pairs(StripTexturesBlizzFrames) do
+			for _, Blizzard in next, StripTexturesBlizzFrames do
 				local BlizzFrame = object[Blizzard] or (FrameName and _G[FrameName..Blizzard])
 				if BlizzFrame and BlizzFrame.StripTextures then
 					BlizzFrame:StripTextures(kill, zero)
@@ -543,10 +570,11 @@ local API = {
 	StyleButton = StyleButton,
 	OffsetFrameLevel = OffsetFrameLevel,
 	CreateCloseButton = CreateCloseButton,
+	SetTexCoords = SetTexCoords,
 	GetChild = GetChild,
 }
 
-local function addapi(object)
+local function AddAPI(object)
 	local mk = getmetatable(object).__index
 	for method, func in next, API do
 		if not object[method] then
@@ -569,21 +597,21 @@ end
 
 local handled = { Frame = true }
 local object = CreateFrame('Frame')
-addapi(object)
-addapi(object:CreateTexture())
-addapi(object:CreateFontString())
-addapi(object:CreateMaskTexture())
+AddAPI(object)
+AddAPI(object:CreateTexture())
+AddAPI(object:CreateFontString())
+AddAPI(object:CreateMaskTexture())
 
 object = EnumerateFrames()
 while object do
 	local objType = object:GetObjectType()
 	if not object:IsForbidden() and not handled[objType] then
-		addapi(object)
+		AddAPI(object)
 		handled[objType] = true
 	end
 
 	object = EnumerateFrames(object)
 end
 
-addapi(_G.GameFontNormal) --Add API to `CreateFont` objects without actually creating one
-addapi(CreateFrame('ScrollFrame')) --Hacky fix for issue on 7.1 PTR where scroll frames no longer seem to inherit the methods from the 'Frame' widget
+AddAPI(_G.GameFontNormal) --Add API to `CreateFont` objects without actually creating one
+AddAPI(CreateFrame('ScrollFrame')) --Hacky fix for issue on 7.1 PTR where scroll frames no longer seem to inherit the methods from the 'Frame' widget

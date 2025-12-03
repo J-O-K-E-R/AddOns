@@ -4,9 +4,10 @@ local LSM = E.Libs.LSM
 local ElvUF = E.oUF
 
 local _G = _G
+local strmatch = strmatch
 local tonumber = tonumber
-local unpack, strmatch = unpack, strmatch
-local format, tinsert, next = format, tinsert, next
+local tinsert, next = tinsert, next
+
 local GetInventoryItemQuality = GetInventoryItemQuality
 local GetInventoryItemTexture = GetInventoryItemTexture
 local GetWeaponEnchantInfo = GetWeaponEnchantInfo
@@ -87,11 +88,28 @@ local MasqueButtonData = {
 	AutoCast = nil,
 }
 
+-- use custom script that will only call hide when it needs to, this prevents spam to `SecureAuraHeader_Update`
+A.AttributeCustomVisibility = [[
+	local header = self:GetFrameRef('AuraHeader')
+	local hide, shown = newstate == 0, header:IsShown()
+	if hide and shown then header:Hide() elseif not hide and not shown then header:Show() end
+]]
+
+-- this will handle the size of auras
+A.AttributeInitialConfig = [[
+	local header = self:GetParent()
+
+	self:SetWidth(header:GetAttribute('config-width'))
+	self:SetHeight(header:GetAttribute('config-height'))
+]]
+
 function A:MasqueData(texture, highlight)
-	local btnData = E:CopyTable({}, MasqueButtonData)
-	btnData.Icon = texture
-	btnData.Highlight = highlight
-	return btnData
+	local data = E:CopyTable({}, MasqueButtonData)
+
+	data.Icon = texture
+	data.Highlight = highlight
+
+	return data
 end
 
 function A:UpdateButton(button)
@@ -119,22 +137,23 @@ function A:UpdateButton(button)
 end
 
 function A:CreateIcon(button)
-	button.header = button:GetParent()
-	button.filter = button.header.filter
-	button.auraType = button.header.filter == 'HELPFUL' and 'buffs' or 'debuffs' -- used to update cooldown text
+	local header = button:GetParent()
+
+	button.header = header
+	button.filter = header.filter
+	button.auraType = (header.filter == 'HELPFUL' and 'buffs') or 'debuffs'
 
 	button.name = button:GetName()
 	button.enchantIndex = tonumber(strmatch(button.name, 'TempEnchant(%d)$'))
 	if button.enchantIndex then
-		button.header['enchant'..button.enchantIndex] = button
-		button.header.enchantButtons[button.enchantIndex] = button
+		header['enchant'..button.enchantIndex] = button
+		header.enchantButtons[button.enchantIndex] = button
 	else
 		button.instant = true -- let update on attribute change
 	end
 
 	button.texture = button:CreateTexture(nil, 'ARTWORK')
 	button.texture:SetInside()
-	button.texture:SetTexCoord(unpack(E.TexCoords))
 
 	button.count = button:CreateFontString(nil, 'OVERLAY')
 	button.count:FontTemplate()
@@ -173,49 +192,66 @@ function A:CreateIcon(button)
 
 	A:Update_CooldownOptions(button)
 	A:UpdateIcon(button)
+end
 
-	if button.filter == 'HELPFUL' and MasqueGroupBuffs and E.private.auras.masque.buffs then
-		MasqueGroupBuffs:AddButton(button, A:MasqueData(button.texture, button.highlight))
-		if button.__MSQ_BaseFrame then button.__MSQ_BaseFrame:SetFrameLevel(2) end --Lower the framelevel to fix issue with buttons created during combat
-		MasqueGroupBuffs:ReSkin()
-	elseif button.filter == 'HARMFUL' and MasqueGroupDebuffs and E.private.auras.masque.debuffs then
-		MasqueGroupDebuffs:AddButton(button, A:MasqueData(button.texture, button.highlight))
-		if button.__MSQ_BaseFrame then button.__MSQ_BaseFrame:SetFrameLevel(2) end --Lower the framelevel to fix issue with buttons created during combat
-		MasqueGroupDebuffs:ReSkin()
+function A:UpdateTexture(button) -- self here can be the header from UpdateMasque calling this function
+	local db = A.db[button.auraType]
+	local width, height = db.size, (db.keepSizeRatio and db.size) or db.height
+
+	if db.keepSizeRatio then
+		button.texture:SetTexCoords()
 	else
-		button:SetTemplate()
+		local left, right, top, bottom = E:CropRatio(width, height)
+		button.texture:SetTexCoord(left, right, top, bottom)
 	end
 end
 
 function A:UpdateIcon(button, update)
 	local db = A.db[button.auraType]
 
+	local width, height = db.size, (db.keepSizeRatio and db.size) or db.height
 	if update then
-		button:Size(db.size)
-
-		E:SetSmoothing(button.statusBar, db.smoothbars)
+		button:SetWidth(width)
+		button:SetHeight(height)
+	elseif button.header.MasqueGroup then
+		local data = A:MasqueData(button.texture, button.highlight)
+		button.header.MasqueGroup:AddButton(button, data)
+	elseif not button.template then
+		button:SetTemplate()
 	end
 
-	button.count:ClearAllPoints()
-	button.count:Point('BOTTOMRIGHT', db.countXOffset, db.countYOffset)
-	button.count:FontTemplate(LSM:Fetch('font', db.countFont), db.countFontSize, db.countFontOutline)
+	if button.texture then
+		A:UpdateTexture(button)
+	end
 
-	button.text:ClearAllPoints()
-	button.text:Point('TOP', button, 'BOTTOM', db.timeXOffset, db.timeYOffset)
-	button.text:FontTemplate(LSM:Fetch('font', db.timeFont), db.timeFontSize, db.timeFontOutline)
+	if button.count then
+		button.count:ClearAllPoints()
+		button.count:Point('BOTTOMRIGHT', db.countXOffset, db.countYOffset)
+		button.count:FontTemplate(LSM:Fetch('font', db.countFont), db.countFontSize, db.countFontOutline)
+	end
 
-	local pos, iconSize = db.barPosition, db.size - (E.Border * 2)
-	local onTop, onBottom, onLeft = pos == 'TOP', pos == 'BOTTOM', pos == 'LEFT'
-	local barSpacing = db.barSpacing + (E.PixelMode and 1 or 3)
-	local barSize = db.barSize + (E.PixelMode and 0 or 2)
-	local isHorizontal = onTop or onBottom
+	if button.text then
+		button.text:ClearAllPoints()
+		button.text:Point('TOP', button, 'BOTTOM', db.timeXOffset, db.timeYOffset)
+		button.text:FontTemplate(LSM:Fetch('font', db.timeFont), db.timeFontSize, db.timeFontOutline)
+	end
 
-	button.statusBar:ClearAllPoints()
-	button.statusBar:Size(isHorizontal and iconSize or barSize, isHorizontal and barSize or iconSize)
-	button.statusBar:Point(E.InversePoints[pos], button, pos, isHorizontal and 0 or (onLeft and -barSpacing or barSpacing), not isHorizontal and 0 or (onTop and barSpacing or -barSpacing))
-	button.statusBar:SetStatusBarTexture(LSM:Fetch('statusbar', db.barTexture))
-	button.statusBar:SetOrientation(isHorizontal and 'HORIZONTAL' or 'VERTICAL')
-	button.statusBar:SetRotatesTexture(not isHorizontal)
+	if button.statusBar then
+		E:SetSmoothing(button.statusBar, db.smoothbars)
+
+		local pos, iconSize = db.barPosition, db.size - (E.Border * 2)
+		local onTop, onBottom, onLeft = pos == 'TOP', pos == 'BOTTOM', pos == 'LEFT'
+		local barSpacing = db.barSpacing + (E.PixelMode and 1 or 3)
+		local barSize = db.barSize + (E.PixelMode and 0 or 2)
+		local isHorizontal = onTop or onBottom
+
+		button.statusBar:ClearAllPoints()
+		button.statusBar:Size(isHorizontal and iconSize or barSize, isHorizontal and barSize or iconSize)
+		button.statusBar:Point(E.InversePoints[pos], button, pos, isHorizontal and 0 or (onLeft and -barSpacing or barSpacing), not isHorizontal and 0 or (onTop and barSpacing or -barSpacing))
+		button.statusBar:SetStatusBarTexture(LSM:Fetch('statusbar', db.barTexture))
+		button.statusBar:SetOrientation(isHorizontal and 'HORIZONTAL' or 'VERTICAL')
+		button.statusBar:SetRotatesTexture(not isHorizontal)
+	end
 end
 
 function A:SetAuraTime(button, expiration, duration, modRate)
@@ -324,7 +360,8 @@ function A:Button_OnLeave()
 end
 
 function A:Button_OnEnter()
-	GameTooltip:SetOwner(self, 'ANCHOR_BOTTOMLEFT', -5, -5)
+	local db = A.db[self.auraType]
+	GameTooltip:SetOwner(self, db.tooltipAnchorType or 'ANCHOR_BOTTOMLEFT', db.tooltipAnchorX or -5, db.tooltipAnchorY or-5)
 
 	self.elapsed = 1 -- let the tooltip update next frame
 end
@@ -389,7 +426,18 @@ function A:Button_OnAttributeChanged(attr, value)
 	end
 end
 
+function A:UpdateMasque(header)
+	header.MasqueGroup:ReSkin()
+	header:ForEachChild(A.UpdateTexture) -- masque retrims them all so we have to too
+end
+
 function A:Header_OnEvent(event)
+	if event == 'UNIT_AURA' and self.MasqueGroup then
+		A:UpdateMasque(self)
+	end
+end
+
+function A:Visibility_OnEvent(event)
 	if event == 'WEAPON_ENCHANT_CHANGED' then
 		local header = self.frame
 		for enchantIndex, button in next, header.enchantButtons do
@@ -401,7 +449,7 @@ function A:Header_OnEvent(event)
 	end
 end
 
-function A:Header_OnUpdate(elapsed)
+function A:Visibility_OnUpdate(elapsed)
 	local header = self.frame
 	if header.elapsedSpells and header.elapsedSpells > 0.1 then
 		local button, value = next(header.spells)
@@ -435,57 +483,68 @@ function A:Header_OnUpdate(elapsed)
 	end
 end
 
+function A:UpdateChild(child, index, db) -- self here is the header
+	child.auraType = self.auraType
+	child.db = db
+
+	A:Update_CooldownOptions(child)
+	A:UpdateIcon(child, true)
+
+	-- blizzard bug fix, icons arent being hidden when you reduce the amount of maximum buttons
+	if index > (db.maxWraps * db.wrapAfter) and child:IsShown() then
+		child:Hide()
+	end
+end
+
 function A:UpdateHeader(header)
 	if not E.private.auras.enable then return end
 
 	local db = A.db[header.auraType]
-	local template = format('ElvUIAuraTemplate%d', db.size)
+	local width, height = db.size, (db.keepSizeRatio and db.size) or db.height
 
 	E:UpdateClassColor(db.barColor)
 
-	if header.filter == 'HELPFUL' then
-		header:SetAttribute('weaponTemplate', template)
-	end
-
-	header:SetAttribute('template', template)
+	header:SetAttribute('config-width', width)
+	header:SetAttribute('config-height', height)
+	header:SetAttribute('template', 'ElvUIAuraTemplate')
+	header:SetAttribute('weaponTemplate', header.filter == 'HELPFUL' and 'ElvUIAuraTemplate' or nil)
 	header:SetAttribute('separateOwn', db.seperateOwn)
 	header:SetAttribute('sortMethod', db.sortMethod)
 	header:SetAttribute('sortDirection', db.sortDir)
 	header:SetAttribute('maxWraps', db.maxWraps)
 	header:SetAttribute('wrapAfter', db.wrapAfter)
 	header:SetAttribute('point', DIRECTION_TO_POINT[db.growthDirection])
+	header:SetAttribute('initialConfigFunction', A.AttributeInitialConfig)
 
 	if IS_HORIZONTAL_GROWTH[db.growthDirection] then
-		header:SetAttribute('minWidth', ((db.wrapAfter == 1 and 0 or db.horizontalSpacing) + db.size) * db.wrapAfter)
-		header:SetAttribute('minHeight', (db.verticalSpacing + db.size) * db.maxWraps)
-		header:SetAttribute('xOffset', DIRECTION_TO_HORIZONTAL_SPACING_MULTIPLIER[db.growthDirection] * (db.horizontalSpacing + db.size))
+		header:SetAttribute('minWidth', ((db.wrapAfter == 1 and 0 or db.horizontalSpacing) + width) * db.wrapAfter)
+		header:SetAttribute('minHeight', (db.verticalSpacing + height) * db.maxWraps)
+		header:SetAttribute('xOffset', DIRECTION_TO_HORIZONTAL_SPACING_MULTIPLIER[db.growthDirection] * (db.horizontalSpacing + width))
 		header:SetAttribute('yOffset', 0)
 		header:SetAttribute('wrapXOffset', 0)
-		header:SetAttribute('wrapYOffset', DIRECTION_TO_VERTICAL_SPACING_MULTIPLIER[db.growthDirection] * (db.verticalSpacing + db.size))
+		header:SetAttribute('wrapYOffset', DIRECTION_TO_VERTICAL_SPACING_MULTIPLIER[db.growthDirection] * (db.verticalSpacing + height))
 	else
-		header:SetAttribute('minWidth', (db.horizontalSpacing + db.size) * db.maxWraps)
-		header:SetAttribute('minHeight', ((db.wrapAfter == 1 and 0 or db.verticalSpacing) + db.size) * db.wrapAfter)
+		header:SetAttribute('minWidth', (db.horizontalSpacing + width) * db.maxWraps)
+		header:SetAttribute('minHeight', ((db.wrapAfter == 1 and 0 or db.verticalSpacing) + height) * db.wrapAfter)
 		header:SetAttribute('xOffset', 0)
-		header:SetAttribute('yOffset', DIRECTION_TO_VERTICAL_SPACING_MULTIPLIER[db.growthDirection] * (db.verticalSpacing + db.size))
-		header:SetAttribute('wrapXOffset', DIRECTION_TO_HORIZONTAL_SPACING_MULTIPLIER[db.growthDirection] * (db.horizontalSpacing + db.size))
+		header:SetAttribute('yOffset', DIRECTION_TO_VERTICAL_SPACING_MULTIPLIER[db.growthDirection] * (db.verticalSpacing + height))
+		header:SetAttribute('wrapXOffset', DIRECTION_TO_HORIZONTAL_SPACING_MULTIPLIER[db.growthDirection] * (db.horizontalSpacing + width))
 		header:SetAttribute('wrapYOffset', 0)
 	end
 
-	for index, child in next, { header:GetChildren() } do
-		child.db = db
-		child.auraType = header.auraType -- used to update cooldown text
+	header:ForEachChild(A.UpdateChild, db)
 
-		A:Update_CooldownOptions(child)
-		A:UpdateIcon(child, true)
-
-		--Blizzard bug fix, icons arent being hidden when you reduce the amount of maximum buttons
-		if index > (db.maxWraps * db.wrapAfter) and child:IsShown() then
-			child:Hide()
-		end
+	if header.MasqueGroup then
+		A:UpdateMasque(header)
 	end
+end
 
-	if MasqueGroupBuffs and E.private.auras.buffsHeader and E.private.auras.masque.buffs then MasqueGroupBuffs:ReSkin() end
-	if MasqueGroupDebuffs and E.private.auras.debuffsHeader and E.private.auras.masque.debuffs then MasqueGroupDebuffs:ReSkin() end
+function A:ForEachChild(func, ...)
+	if not func then return end
+
+	for index, child in next, { self:GetChildren() } do
+		func(self, child, index, ...)
+	end
 end
 
 function A:CreateAuraHeader(filter)
@@ -497,13 +556,15 @@ function A:CreateAuraHeader(filter)
 	header:RegisterUnitEvent('UNIT_AURA', 'player', 'vehicle')
 	header:SetAttribute('unit', 'player')
 	header:SetAttribute('filter', filter)
+	header:HookScript('OnEvent', A.Header_OnEvent)
+	header.ForEachChild = A.ForEachChild
 	header.enchantButtons = {}
 	header.enchants = {}
 	header.spells = {}
 
 	header.visibility = CreateFrame('Frame', nil, UIParent, 'SecureHandlerStateTemplate')
-	header.visibility:SetScript('OnUpdate', A.Header_OnUpdate) -- dont put this on the main frame
-	header.visibility:SetScript('OnEvent', A.Header_OnEvent) -- dont put this on the main frame
+	header.visibility:SetScript('OnUpdate', A.Visibility_OnUpdate) -- dont put this on the main frame
+	header.visibility:SetScript('OnEvent', A.Visibility_OnEvent) -- dont put this on the main frame
 	header.visibility.frame = header
 	header.auraType = auraType
 	header.filter = filter
@@ -516,18 +577,19 @@ function A:CreateAuraHeader(filter)
 	RegisterAttributeDriver(header, 'unit', '[vehicleui] vehicle; player')
 	SecureHandlerSetFrameRef(header.visibility, 'AuraHeader', header)
 	RegisterStateDriver(header.visibility, 'customVisibility', '[petbattle] 0;1')
-	header.visibility:SetAttribute('_onstate-customVisibility', [[
-		local header = self:GetFrameRef('AuraHeader')
-		local hide, shown = newstate == 0, header:IsShown()
-		if hide and shown then header:Hide() elseif not hide and not shown then header:Show() end
-	]]) -- use custom script that will only call hide when it needs to, this prevents spam to `SecureAuraHeader_Update`
+	header.visibility:SetAttribute('_onstate-customVisibility', A.AttributeCustomVisibility)
 
 	if filter == 'HELPFUL' then
 		header:SetAttribute('consolidateDuration', -1)
 		header:SetAttribute('includeWeapons', 1)
+
+		if MasqueGroupBuffs and E.private.auras.masque.buffs then
+			header.MasqueGroup = MasqueGroupBuffs
+		end
+	elseif MasqueGroupDebuffs and E.private.auras.masque.debuffs then
+		header.MasqueGroup = MasqueGroupDebuffs
 	end
 
-	A:UpdateHeader(header)
 	header:Show()
 
 	return header
@@ -561,19 +623,22 @@ function A:Initialize()
 	local xoffset = -(6 + E.Border)
 	if E.private.auras.buffsHeader then
 		A.BuffFrame = A:CreateAuraHeader('HELPFUL')
+		A:UpdateHeader(A.BuffFrame)
 
 		A.BuffFrame:ClearAllPoints()
 		A.BuffFrame:SetPoint('TOPRIGHT', _G.ElvUI_MinimapHolder or _G.Minimap, 'TOPLEFT', xoffset, -E.Spacing)
+
 		E:CreateMover(A.BuffFrame, 'BuffsMover', L["Player Buffs"], nil, nil, nil, nil, nil, 'auras,buffs')
-		if Masque and MasqueGroupBuffs then A.BuffsMasqueGroup = MasqueGroupBuffs end
 	end
 
 	if E.private.auras.debuffsHeader then
 		A.DebuffFrame = A:CreateAuraHeader('HARMFUL')
+		A:UpdateHeader(A.DebuffFrame)
+
 		A.DebuffFrame:ClearAllPoints()
 		A.DebuffFrame:SetPoint('BOTTOMRIGHT', _G.ElvUI_MinimapHolder or _G.Minimap, 'BOTTOMLEFT', xoffset, E.Spacing)
+
 		E:CreateMover(A.DebuffFrame, 'DebuffsMover', L["Player Debuffs"], nil, nil, nil, nil, nil, 'auras,debuffs')
-		if Masque and MasqueGroupDebuffs then A.DebuffsMasqueGroup = MasqueGroupDebuffs end
 	end
 end
 

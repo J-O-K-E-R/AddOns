@@ -19,9 +19,9 @@ end
 function NP:Portrait_PostUpdate(unit, hasStateChanged, texCoords)
 	local nameplate = self.__owner
 	local db = NP:PlateDB(nameplate)
-	local sf = NP:StyleFilterChanges(nameplate)
+	local styleFilter = NP:StyleFilterChanges(nameplate)
 
-	if db.portrait and (sf.Portrait or db.portrait.enable) then
+	if db.portrait and (styleFilter.general and styleFilter.general.portrait or db.portrait.enable) then
 		local specIcon = db.portrait.specicon and nameplate.specIcon
 		if specIcon then
 			self:SetTexture(specIcon)
@@ -34,9 +34,11 @@ function NP:Portrait_PostUpdate(unit, hasStateChanged, texCoords)
 			local left, right, top, bottom = unpack(texCoords)
 			self:SetTexCoord(left+0.02, right-0.02, top+0.02, bottom-0.02)
 		elseif db.portrait.keepSizeRatio then
-			self:SetTexCoord(unpack(E.TexCoords))
+			self:SetTexCoords()
 		else
-			self:SetTexCoord(E:CropRatio(self))
+			local width, height = self:GetSize()
+			local left, right, top, bottom = E:CropRatio(width, height)
+			self:SetTexCoord(left, right, top, bottom)
 		end
 	end
 end
@@ -65,9 +67,9 @@ end
 
 function NP:Update_Portrait(nameplate)
 	local db = NP:PlateDB(nameplate)
-	local sf = NP:StyleFilterChanges(nameplate)
+	local styleFilter = NP:StyleFilterChanges(nameplate)
 
-	if db.portrait and (sf.Portrait or db.portrait.enable) then
+	if db.portrait and ((styleFilter.general and styleFilter.general.portrait) or db.portrait.enable) then
 		if not nameplate:IsElementEnabled('Portrait') then
 			nameplate:EnableElement('Portrait')
 			nameplate.Portrait:ForceUpdate()
@@ -76,7 +78,7 @@ function NP:Update_Portrait(nameplate)
 		nameplate.Portrait:Size(db.portrait.width, db.portrait.height)
 
 		-- These values are forced in name only mode inside of DisablePlate
-		if not (db.nameOnly or sf.NameOnly) then
+		if not (db.nameOnly or (styleFilter.general and styleFilter.general.nameOnly)) then
 			nameplate.Portrait:ClearAllPoints()
 			nameplate.Portrait:Point(E.InversePoints[db.portrait.position], nameplate, db.portrait.position, db.portrait.xOffset, db.portrait.yOffset)
 		end

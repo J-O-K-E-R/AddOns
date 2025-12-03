@@ -1,7 +1,7 @@
-## Interface: 110107
+## Interface: 110205, 120000
 ## Title: Clique
 ## Author: Cladhaire
-## Version: v4.2.2-release
+## Version: v4.2.6-release
 ## Notes: Simply powerful click-casting interface
 ## Notes-ruRU: Простой и мощный интерфейс для привязки заклинаний к щелчку мыши.
 ## IconTexture: Interface\AddOns\Clique\images\icon_square_64.tga
@@ -56,6 +56,7 @@ modules\Blizzard_classic.lua
 modules\Blizzard_wrath.lua
 modules\Blizzard_dragonflight.lua
 modules\Blizzard_warwithin.lua
+modules\Blizzard_midnight.lua
 
 #tests\HeaderTest.xml
 #tests\HeaderTest.lua

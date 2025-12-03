@@ -6,9 +6,9 @@ local Aura = E.Filters.Aura
 -- This used to be standalone and is now merged into G.unitframe.aurafilters.Whitelist
 G.unitframe.aurafilters.PlayerBuffs = nil
 
--- These are debuffs that are some form of CC
 G.unitframe.aurafilters.CCDebuffs = {
 	type = 'Whitelist',
+	desc = L["Debuffs that are some form of CC. This can be stuns, roots, slows, etc."],
 	spells = {
 	-- Death Knight
 		[47476] = List(2),	-- Strangulate
@@ -94,9 +94,9 @@ G.unitframe.aurafilters.CCDebuffs = {
 	},
 }
 
--- These are buffs that can be considered 'protection' buffs
 G.unitframe.aurafilters.TurtleBuffs = {
 	type = 'Whitelist',
+	desc = L["Immunity buffs like Bubble and Ice Block, but also most major defensive class cooldowns."],
 	spells = {
 	-- Mage
 		[45438] = List(5),	-- Ice Block
@@ -151,9 +151,9 @@ G.unitframe.aurafilters.TurtleBuffs = {
 	},
 }
 
--- Buffs that we don't really need to see
 G.unitframe.aurafilters.Blacklist = {
 	type = 'Blacklist',
+	desc = L["Auras you don't want to see on your frames."],
 	spells = {
 	-- General
 		[186403] = List(),	-- Sign of Battle
@@ -182,9 +182,9 @@ G.unitframe.aurafilters.Blacklist = {
 	},
 }
 
--- A list of important buffs that we always want to see
 G.unitframe.aurafilters.Whitelist = {
 	type = 'Whitelist',
+	desc = L["Auras which should always be displayed."],
 	spells = {
 	-- General
 		[96694] = List(),	-- Reflective Shield
@@ -305,9 +305,9 @@ G.unitframe.aurafilters.Whitelist = {
 	},
 }
 
--- RAID DEBUFFS: This should be pretty self explainitory
 G.unitframe.aurafilters.RaidDebuffs = {
 	type = 'Whitelist',
+	desc = L["List of important Dungeon and Raid debuffs. Includes affixes and utility on dead players like pending resurrection and available reincarnation."],
 	spells = {
 	-------------------------------------------------
 	-------------------- Dungeons -------------------
@@ -535,9 +535,9 @@ G.unitframe.aurafilters.RaidDebuffs = {
 	},
 }
 
--- Buffs applied by bosses, adds or trash
 G.unitframe.aurafilters.RaidBuffsElvUI = {
 	type = 'Whitelist',
+	desc = L["List of important Dungeon and Raid buffs."],
 	spells = {
 	-------------------------------------------------
 	-------------------- Dungeons -------------------
@@ -627,46 +627,51 @@ G.unitframe.aurawatch = {
 -- List of spells to display ticks
 G.unitframe.ChannelTicks = {
 	-- Warlock
-	[1120]	= 5, -- Drain Soul
-	[689]	= 5, -- Drain Life
-	[5740]	= 4, -- Rain of Fire
-	[755]	= 10, -- Health Funnel
-	[79268]	= 3, -- Soul Harvest
-	[1949]	= 15, -- Hellfire
+	[1120]		= 6, -- Drain Soul
+	[689]		= 6, -- Drain Life
+	[5740]		= 6, -- Rain of Fire
+	[755]		= 6, -- Health Funnel
+	[1949]		= 14, -- Hellfire
+	[103103] 	= 4, -- Malefic Grasp
 	-- Druid
-	[44203]	= 4, -- Tranquility
-	[16914]	= 10, -- Hurricane
+	[44203]		= 4, -- Tranquility
+	[16914]		= 10, -- Hurricane
 	-- Priest
-	[15407]	= 3, -- Mind Flay
-	[129197] = 3, -- Mind Flay (Insanity)
-	[48045]	= 5, -- Mind Sear
-	[47540]	= 3, -- Penance
-	[64901]	= 4, -- Hymn of Hope
-	[64843]	= 4, -- Divine Hymn
+	[15407]		= 3, -- Mind Flay
+	[129197] 	= 3, -- Mind Flay (Insanity)
+	[48045]		= 5, -- Mind Sear
+	[47758]		= 3, -- Penance
+	[64901]		= 4, -- Hymn of Hope
+	[64843]		= 4, -- Divine Hymn
 	-- Mage
-	[5143]	= 5, -- Arcane Missiles
-	[10]	= 8, -- Blizzard
-	[12051]	= 4, -- Evocation
+	[5143]		= 5, -- Arcane Missiles
+	[10]		= 8, -- Blizzard
+	[12051]		= 4, -- Evocation
 	-- Death Knight
-	[42650]	= 8, -- Army of the Dead
+	[42650]		= 8, -- Army of the Dead
 	-- First Aid
-	[45544]	= 8, -- Heavy Frostweave Bandage
-	[45543]	= 8, -- Frostweave Bandage
-	[27031]	= 8, -- Heavy Netherweave Bandage
-	[27030]	= 8, -- Netherweave Bandage
-	[23567]	= 8, -- Warsong Gulch Runecloth Bandage
-	[23696]	= 8, -- Alterac Heavy Runecloth Bandage
-	[24414]	= 8, -- Arathi Basin Runecloth Bandage
-	[18610]	= 8, -- Heavy Runecloth Bandage
-	[18608]	= 8, -- Runecloth Bandage
-	[10839]	= 8, -- Heavy Mageweave Bandage
-	[10838]	= 8, -- Mageweave Bandage
-	[7927]	= 8, -- Heavy Silk Bandage
-	[7926]	= 8, -- Silk Bandage
-	[3268]	= 7, -- Heavy Wool Bandage
-	[3267]	= 7, -- Wool Bandage
-	[1159]	= 6, -- Heavy Linen Bandage
-	[746]	= 6 -- Linen Bandage
+	[102695] 	= 8, -- Heavy Windwool Bandage
+    [102694] 	= 8, -- Windwool Bandage
+    [74555] 	= 8, -- Dense Embersilk Bandage
+    [74554] 	= 8, -- Heavy Embersilk Bandage
+    [74553]		= 8, -- Embersilk Bandage
+	[45544]		= 8, -- Heavy Frostweave Bandage
+	[45543]		= 8, -- Frostweave Bandage
+	[27031]		= 8, -- Heavy Netherweave Bandage
+	[27030]		= 8, -- Netherweave Bandage
+	[23567]		= 8, -- Warsong Gulch Runecloth Bandage
+	[23696]		= 8, -- Alterac Heavy Runecloth Bandage
+	[24414]		= 8, -- Arathi Basin Runecloth Bandage
+	[18610]		= 8, -- Heavy Runecloth Bandage
+	[18608]		= 8, -- Runecloth Bandage
+	[10839]		= 8, -- Heavy Mageweave Bandage
+	[10838]		= 8, -- Mageweave Bandage
+	[7927]		= 8, -- Heavy Silk Bandage
+	[7926]		= 8, -- Silk Bandage
+	[3268]		= 7, -- Heavy Wool Bandage
+	[3267]		= 7, -- Wool Bandage
+	[1159]		= 6, -- Heavy Linen Bandage
+	[746]		= 6 -- Linen Bandage
 }
 
 -- Spells that chain, second step
@@ -682,15 +687,7 @@ G.unitframe.TalentChannelTicks = {}
 G.unitframe.AuraChannelTicks = {}
 
 -- Spells Effected By Haste, value is Base Tick Size
-G.unitframe.HastedChannelTicks = {
-	-- Warlock
-	[1120]	= true, -- Drain Soul
-	[689]	= true, -- Drain Life
-	[5740]	= true, -- Rain of Fire
-	[755]	= true, -- Health Funnel
-	[79268]	= true, -- Soul Harvest
-	[1949]	= true, -- Hellfire
-}
+G.unitframe.HastedChannelTicks = {}
 
 -- This should probably be the same as the whitelist filter + any personal class ones that may be important to watch
 G.unitframe.AuraBarColors = {

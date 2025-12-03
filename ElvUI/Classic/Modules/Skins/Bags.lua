@@ -23,7 +23,7 @@ local bagIconCache = {
 	[0] = E.Media.Textures.Backpack
 }
 
-local function setBagIcon(frame, texture)
+local function SetBagIcon(frame, texture)
 	if not frame.BagIcon then
 		local portraitButton = _G[frame:GetName()..'PortraitButton']
 
@@ -34,7 +34,7 @@ local function setBagIcon(frame, texture)
 		portraitButton.hover:SetAllPoints()
 
 		frame.BagIcon = portraitButton:CreateTexture()
-		frame.BagIcon:SetTexCoord(unpack(E.TexCoords))
+		frame.BagIcon:SetTexCoords()
 		frame.BagIcon:SetAllPoints()
 	end
 
@@ -63,7 +63,7 @@ function S:ContainerFrame()
 			local icon = _G['ContainerFrame'..i..'Item'..j..'IconTexture']
 			if icon then
 				icon:SetInside()
-				icon:SetTexCoord(unpack(E.TexCoords))
+				icon:SetTexCoords()
 			end
 
 			local questIcon = _G['ContainerFrame'..i..'Item'..j..'IconQuestTexture']
@@ -91,9 +91,9 @@ function S:ContainerFrame()
 				bagIconCache[itemID] = select(10, GetItemInfo(itemID))
 			end
 
-			setBagIcon(frame, bagIconCache[itemID])
+			SetBagIcon(frame, bagIconCache[itemID])
 		else
-			setBagIcon(frame, bagIconCache[id])
+			SetBagIcon(frame, bagIconCache[id])
 		end
 	end)
 
@@ -163,7 +163,7 @@ function S:ContainerFrame()
 		button.IconOverlay:StripTextures()
 
 		icon:SetInside()
-		icon:SetTexCoord(unpack(E.TexCoords))
+		icon:SetTexCoords()
 
 		button.IconQuestTexture:SetTexture(E.Media.Textures.BagQuestIcon)
 		button.IconQuestTexture.SetTexture = E.noop
@@ -184,7 +184,7 @@ function S:ContainerFrame()
 			button:StyleButton()
 
 			button.icon:SetInside()
-			button.icon:SetTexCoord(unpack(E.TexCoords))
+			button.icon:SetTexCoords()
 
 			button.HighlightFrame.HighlightTexture:SetInside()
 			button.HighlightFrame.HighlightTexture:SetTexture(unpack(E.media.rgbvaluecolor), 0.3)

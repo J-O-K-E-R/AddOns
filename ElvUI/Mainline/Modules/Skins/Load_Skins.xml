@@ -18,15 +18,16 @@
 	<Script file='Binding.lua'/>
 	<Script file='BlackMarket.lua'/>
 	<Script file='Calendar.lua'/>
+	<Script file='CatalogShop.lua'/>
 	<Script file='Channels.lua'/>
 	<Script file='Character.lua'/>
 	<Script file='ChatConfig.lua'/>
 	<Script file='ChromieTime.lua'/>
 	<Script file='Collectables.lua'/>
-	<Script file='CooldownManager.lua'/>
 	<Script file='CombatLog.lua' />
 	<Script file='Communities.lua'/>
 	<Script file='Contribution.lua'/>
+	<Script file='CooldownManager.lua'/>
 	<Script file='CovenantPreview.lua'/>
 	<Script file='CovenantRenown.lua'/>
 	<Script file='CovenantSanctum.lua'/>
@@ -72,6 +73,7 @@
 	<Script file='ObjectiveTracker.lua'/>
 	<Script file='Obliterum.lua'/>
 	<Script file='Orderhall.lua'/>
+	<Script file='PerksProgram.lua'/>
 	<Script file='PetBattle.lua'/>
 	<Script file='Petition.lua'/>
 	<Script file='PlayerChoice.lua'/>
@@ -100,11 +102,7 @@
 	<Script file='Trade.lua'/>
 	<Script file='Trainer.lua'/>
 	<Script file='TutorialFrame.lua'/>
-	<Script file='VoidStorage.lua'/>
 	<Script file='WarfrontPartyPose.lua'/>
 	<Script file='WeeklyRewards.lua'/>
 	<Script file='WorldMap.lua'/>
-
-	<!-- DF new ones -->
-	<Script file='PerksProgram.lua'/>
 </Ui>

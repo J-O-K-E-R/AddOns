@@ -6,17 +6,22 @@ local LSM = E.Libs.LSM
 local _G = _G
 local gsub = gsub
 local ipairs = ipairs
-local unpack = unpack
 local tinsert = tinsert
 local hooksecurefunc = hooksecurefunc
 
 local CreateFrame = CreateFrame
 local GameTooltip = GameTooltip
+local GetKeyRingSize = GetKeyRingSize
+local IsKeyRingEnabled = IsKeyRingEnabled
+local IsModifiedClick = IsModifiedClick
+local PutItemInBackpack = PutItemInBackpack
 local InCombatLockdown = InCombatLockdown
 local RegisterStateDriver = RegisterStateDriver
 local CalculateTotalNumberOfFreeBagSlots = CalculateTotalNumberOfFreeBagSlots
 
-local NUM_BAG_FRAMES = NUM_BAG_FRAMES
+local NUM_BAG_FRAMES = NUM_BAG_FRAMES or 4
+local KEYRING_CONTAINER = Enum.BagIndex.Keyring
+local BACKPACK_CONTAINER = Enum.BagIndex.Backpack
 
 local commandNames = {
 	[-1] = 'TOGGLEBACKPACK',
@@ -27,11 +32,11 @@ local commandNames = {
 }
 
 function B:BagBar_OnEnter()
-	return E.db.bags.bagBar.mouseover and E:UIFrameFadeIn(B.BagBar, 0.2, B.BagBar:GetAlpha(), 1)
+	return B.BagBar.db.mouseover and E:UIFrameFadeIn(B.BagBar, 0.2, B.BagBar:GetAlpha(), 1)
 end
 
 function B:BagBar_OnLeave()
-	return E.db.bags.bagBar.mouseover and E:UIFrameFadeOut(B.BagBar, 0.2, B.BagBar:GetAlpha(), 0)
+	return B.BagBar.db.mouseover and E:UIFrameFadeOut(B.BagBar, 0.2, B.BagBar:GetAlpha(), 0)
 end
 
 function B:BagButton_OnEnter()
@@ -40,10 +45,18 @@ function B:BagButton_OnEnter()
 		AB:BindUpdate(self)
 	end
 
+	if not B.BagBar.db.justBackpack and B.BagFrame and B:IsBagShown(self.BagID) then
+		B:SetSlotAlphaForBag(B.BagFrame, self.BagID)
+	end
+
 	B:BagBar_OnEnter()
 end
 
 function B:BagButton_OnLeave()
+	if not B.BagBar.db.justBackpack and B.BagFrame then
+		B:ResetSlotAlphaForBags(B.BagFrame)
+	end
+
 	B:BagBar_OnLeave()
 end
 
@@ -52,6 +65,10 @@ function B:KeyRing_OnEnter()
 		GameTooltip:SetOwner(self, 'ANCHOR_LEFT')
 		GameTooltip:AddLine(_G.KEYRING, 1, 1, 1)
 		GameTooltip:Show()
+	end
+
+	if B.BagFrame and B:IsBagShown(self.BagID) then
+		B:SetSlotAlphaForBag(B.BagFrame, self.BagID)
 	end
 
 	B:BagBar_OnEnter()
@@ -67,40 +84,52 @@ function B:KeyRing_OnLeave()
 		GameTooltip:Hide()
 	end
 
+	if B.BagFrame then
+		B:ResetSlotAlphaForBags(B.BagFrame)
+	end
+
 	B:BagBar_OnEnter()
 end
 
 function B:SkinBag(bag)
 	local icon = bag.icon or _G[bag:GetName()..'IconTexture']
-	bag.oldTex = icon:GetTexture()
+	bag.oldTex = icon and icon:GetTexture()
 
 	bag:StripTextures(E.Retail)
 	bag:SetTemplate()
 	bag:StyleButton(true)
+
+	if bag.searchOverlay then
+		bag.searchOverlay:SetColorTexture(0, 0, 0, 0.6)
+	end
 
 	if E.Retail then
 		bag:GetNormalTexture():SetAlpha(0)
 		bag:GetHighlightTexture():SetAlpha(0)
 		bag.CircleMask:Hide()
 
-		icon.Show = nil
-		icon:Show()
+		if icon then -- needed for retail
+			icon.Show = nil
+			icon:Show()
+		end
 	end
 
-	icon:SetInside()
-	icon:SetTexture((not bag.oldTex or bag.oldTex == 1721259) and E.Media.Textures.Backpack or bag.oldTex)
-	icon:SetTexCoord(unpack(E.TexCoords))
+	if icon then
+		icon:SetInside()
+		icon:SetTexture((not bag.oldTex or bag.oldTex == 1721259) and E.Media.Textures.Backpack or bag.oldTex)
+		icon:SetTexCoords()
+	end
 end
 
 function B:BagBar_UpdateVisibility()
-	local visibility = gsub(E.db.bags.bagBar.visibility, '[\n\r]', '')
+	local visibility = gsub(B.BagBar.db.visibility, '[\n\r]', '')
 	RegisterStateDriver(B.BagBar, 'visibility', visibility)
 end
 
 function B:SizeAndPositionBagBar()
 	if not B.BagBar then return end
 
-	local db = E.db.bags.bagBar
+	local db = B.BagBar.db
 	local bagBarSize = db.size
 	local buttonSpacing = db.spacing
 	local growthDirection = db.growthDirection
@@ -115,6 +144,8 @@ function B:SizeAndPositionBagBar()
 		B:BagBar_UpdateVisibility()
 	end
 
+	B:PositionButtons(B.BagFrame) -- show the bag button again
+
 	B.BagBar:SetAlpha(db.mouseover and 0 or 1)
 
 	_G.MainMenuBarBackpackButtonCount:FontTemplate(LSM:Fetch('font', db.font), db.fontSize, db.fontOutline)
@@ -127,7 +158,16 @@ function B:SizeAndPositionBagBar()
 
 		button:Size(bagBarSize)
 		button:ClearAllPoints()
-		button:SetShown(not justBackpack or i == 1)
+
+		if button.BagID == KEYRING_CONTAINER then
+			button:SetShown(not justBackpack and IsKeyRingEnabled() and GetKeyRingSize() > 0)
+		else
+			button:SetShown(not justBackpack or i == 1)
+		end
+
+		if button.checked then
+			button.checked:SetAlpha(0)
+		end
 
 		if sortDirection == 'ASCENDING'then
 			if i == 1 then firstButton = button else lastButton = button end
@@ -162,7 +202,9 @@ function B:SizeAndPositionBagBar()
 			end
 		end
 
-		B:GetBagAssignedInfo(button)
+		if button.bagID ~= KEYRING_CONTAINER then
+			B:GetBagAssignedInfo(button)
+		end
 	end
 
 	local btnSize = bagBarSize * (NUM_BAG_FRAMES + 1)
@@ -186,8 +228,16 @@ end
 
 function B:UpdateMainButtonCount()
 	local mainCount = B.BagBar.buttons[1].Count
-	mainCount:SetShown(E.db.bags.bagBar.showCount)
+	mainCount:SetShown(B.BagBar.db.showCount)
 	mainCount:SetText(CalculateTotalNumberOfFreeBagSlots())
+end
+
+function B:BackpackButton_OnClick()
+	if IsModifiedClick('OPENALLBAGS') then
+		_G.ToggleAllBags() -- dont cache, see below
+	elseif not PutItemInBackpack() then
+		_G.ToggleBag(self.BagID) -- dont cache, bag module hooks
+	end
 end
 
 function B:BagButton_OnClick(key)
@@ -207,6 +257,27 @@ function B:BagButton_UpdateTextures()
 	end
 end
 
+function B:BagBar_UpdateDesaturated(inactive)
+	if inactive == nil then -- Determine if we are in a "partial" state (not all bags shown, but not zero either)
+		inactive = B:AnyBagsShown() and not B:AllBagsShown()
+	end
+
+	-- Now, apply the appearance to each button
+	for _, button in ipairs(B.BagBar.buttons) do
+		local shown = B:IsBagShown(button.BagID)
+		local desaturate = inactive and not shown
+
+		local icon = button.icon or _G[button:GetName()..'IconTexture']
+		if icon then
+			icon:SetDesaturated(desaturate)
+		end
+
+		if button.searchOverlay then
+			button.searchOverlay:SetShown(desaturate)
+		end
+	end
+end
+
 function B:LoadBagBar()
 	if E.Retail then
 		_G.BagsBar:SetParent(E.HiddenFrame)
@@ -222,6 +293,7 @@ function B:LoadBagBar()
 	B.BagBar:SetScript('OnLeave', B.BagBar_OnLeave)
 	B.BagBar:SetScript('OnEvent', B.BagBar_OnEvent)
 	B.BagBar:EnableMouse(true)
+	B.BagBar.db = E.db.bags.bagBar
 	B.BagBar.buttons = {}
 
 	_G.MainMenuBarBackpackButton:SetParent(B.BagBar)
@@ -231,7 +303,7 @@ function B:LoadBagBar()
 
 	_G.MainMenuBarBackpackButtonCount:ClearAllPoints()
 	_G.MainMenuBarBackpackButtonCount:Point('BOTTOMRIGHT', _G.MainMenuBarBackpackButton, 0, 1)
-	_G.MainMenuBarBackpackButtonCount:FontTemplate(LSM:Fetch('font', E.db.bags.bagBar.font), E.db.bags.bagBar.fontSize, E.db.bags.bagBar.fontOutline)
+	_G.MainMenuBarBackpackButtonCount:FontTemplate(LSM:Fetch('font', B.BagBar.db.font), B.BagBar.db.fontSize, B.BagBar.db.fontOutline)
 
 	if E.Retail then
 		hooksecurefunc(_G.BagsBar, 'Layout', B.SizeAndPositionBagBar)
@@ -292,18 +364,35 @@ function B:LoadBagBar()
 
 		B:SetButtonTexture(KeyRing, [[Interface\ICONS\INV_Misc_Key_03]])
 
+		KeyRing.icon = KeyRing:GetNormalTexture()
+
+		if not KeyRing.searchOverlay then
+			KeyRing.searchOverlay = KeyRing:CreateTexture(nil, 'OVERLAY', nil, 1)
+			KeyRing.searchOverlay:SetInside()
+			KeyRing.searchOverlay:Hide()
+		end
+
+		KeyRing.searchOverlay:SetColorTexture(0, 0, 0, 0.6)
+
 		tinsert(B.BagBar.buttons, KeyRing)
 	end
 
 	for i, button in ipairs(B.BagBar.buttons) do
-		button.BagID = i - 1
+		if button == KeyRing then
+			button.BagID = KEYRING_CONTAINER
+		else
+			local bagID = i - 1
+			button.BagID = bagID
+
+			if not E.Retail and button.BagID == BACKPACK_CONTAINER then
+				button:SetScript('OnClick', B.BackpackButton_OnClick)
+			end
+
+			button:HookScript('OnClick', B.BagButton_OnClick)
+		end
 
 		if E.Retail then -- Item Assignment
 			B:CreateFilterIcon(button)
-		end
-
-		if button ~= KeyRing then
-			button:HookScript('OnClick', B.BagButton_OnClick)
 		end
 	end
 

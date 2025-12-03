@@ -78,6 +78,21 @@ GFIO.RAIDS = {
 		difficulty = 3, -- mythic
 		shortName = "Undermine (M)"
 	},
+	[1617] = {
+		id = 16178, -- manaforge-omega
+		difficulty = 1, -- normal
+		shortName = "MFO (NHC)"
+	},
+	[1618] = {
+		id = 16178, -- manaforge-omega
+		difficulty = 2, -- heroic
+		shortName = "MFO (HC)"
+	},
+	[1619] = {
+		id = 16178, -- manaforge-omega
+		difficulty = 3, -- mythic
+		shortName = "MFO (M)"
+	},
 
 }
 
@@ -133,6 +148,21 @@ GFIO.DUNGEONS = {
 		difficulty = 3, -- M+
 		shortName = "WORK (M)"
 	},
+	[696] = {
+		id = 12831, -- Halls of Atonement
+		difficulty = 2, -- Heroic
+		shortName = "HOA (HC)"
+	},
+	[698] = {
+		id = 12831, -- Halls of Atonement
+		difficulty = 3, -- Mythic
+		shortName = "HOA (M)"
+	},
+	[699] = {
+		id = 12831, -- Halls of Atonement
+		difficulty = 4, -- Mythic
+		shortName = "HOA (M+)"
+	},
 	[702] = {
 		id = 13334, -- Mists of Tirna scithe
 		difficulty = 4, -- Mythic plus
@@ -163,11 +193,26 @@ GFIO.DUNGEONS = {
 		difficulty = 3,-- Mythic
 		shortName = "TOP (M)"
 	},
-	--TODO FIX THESE ↑
-	[1157] = {
-		id = 14032, -- Academy
+	[1019] = {
+		id = 13577, -- Tazavesh
 		difficulty = 1, -- Normal
 		shortName = "AA (NHC)"
+	},
+	[1016] = {
+		id = 1000000, -- Tazavesh
+		difficulty = 4, -- M+
+		shortName = "STREET (M+)"
+	},
+	[1017] = {
+		id = 1000001, -- Tazavesh
+		difficulty = 4, -- M+
+		shortName = "GAM (M+)"
+	},
+	--TODO FIX THESE ↑
+	[1157] = {
+		id = 14032, -- Tazavesh
+		difficulty = 2, -- Heroic
+		shortName = "TV (HC)"
 	},
 	[1158] = {
 		id = 14032, -- Academy
@@ -365,6 +410,11 @@ GFIO.DUNGEONS = {
 		difficulty = 4, -- Mythic + 
 		shortName = "PSF (M+)"
 	},
+	[1512] = {
+		id = 15093, -- Priory of the Sacred Flame
+		difficulty = 3, -- Mythic
+		shortName = "PSF (M)"
+	},
 	[1285] = {
 		id = 14971, -- The Dawnbreaker
 		difficulty = 4, -- Mythic + 
@@ -465,10 +515,33 @@ GFIO.DUNGEONS = {
 		difficulty = 4, -- M+ 
 		shortName = "FLOOD (M+)"
 	},
+	[1707] = {
+		id = 16104, -- Eco-Dome Al'dani
+		difficulty = 1, -- M 
+		shortName = "EDA (NHC)"
+	},
+	[1708] = {
+		id = 16104, -- Eco-Dome Al'dani
+		difficulty = 2, -- M 
+		shortName = "EDA (HC)"
+	},
+	[1709] = {
+		id = 16104, -- Eco-Dome Al'dani
+		difficulty = 3, -- M 
+		shortName = "EDA (M)"
+	},
+	[1694] = {
+		id = 16104, -- Eco-Dome Al'dani
+		difficulty = 4, -- M+ 
+		shortName = "EDA (M+)"
+	},
 	--TODO FIX THESE ↑
 }
 
 GFIO.ACTIVITY_ORDER = {
+	[1619] = 11230, -- Manaforge Omega mythic
+	[1618] = 11220, -- Manaforge Omega heroic
+	[1617] = 11210, -- Manaforge Omega normal
 	[1602] = 11130, -- Liberation of Undermine mythic
 	[1600] = 11120, -- Liberation of Undermine heroic
 	[1601] = 11110, -- Liberation of Undermine normal

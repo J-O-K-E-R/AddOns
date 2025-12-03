@@ -2,9 +2,7 @@ local E, L, V, P, G = unpack(ElvUI)
 local UF = E:GetModule('UnitFrames')
 local LSM = E.Libs.LSM
 
-local wipe = wipe
 local ipairs = ipairs
-local unpack = unpack
 local strfind = strfind
 
 local CreateFrame = CreateFrame
@@ -24,9 +22,9 @@ function UF:Construct_AuraBars(bar)
 	bar.icon:CreateBackdrop(nil, nil, nil, nil, true)
 	bar.icon:ClearAllPoints()
 	bar.icon:Point('RIGHT', bar, 'LEFT', -self.barSpacing, 0)
-	bar.icon:SetTexCoord(unpack(E.TexCoords))
+	bar.icon:SetTexCoords()
 
-	UF.statusbars[bar] = true
+	UF.statusbars[bar] = 'aurabars'
 	UF:Update_StatusBar(bar)
 
 	UF:Configure_FontString(bar.timeText)
@@ -47,11 +45,7 @@ function UF:AuraBars_UpdateBar(bar)
 	local bars = bar:GetParent()
 	bar.db = bars.db
 
-	if bar.auraInfo then
-		wipe(bar.auraInfo)
-	else
-		bar.auraInfo = {}
-	end
+	UF:CleanCache(bar)
 
 	if bars.db then
 		E:SetSmoothing(bar, bars.db.smoothbars)
@@ -110,6 +104,9 @@ function UF:Configure_AuraBars(frame)
 		bars.disableMouse = db.clickThrough
 		bars.filterList = UF:ConvertFilters(bars, db.priority)
 		bars.auraSort = UF.SortAuraFuncs[db.sortMethod]
+		bars.tooltipAnchor = db.tooltipAnchorType
+		bars.tooltipAnchorX = db.tooltipAnchorX
+		bars.tooltipAnchorY = db.tooltipAnchorY
 
 		for _, bar in ipairs(bars) do
 			UF:AuraBars_UpdateBar(bar)

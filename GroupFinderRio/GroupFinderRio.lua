@@ -53,14 +53,6 @@ local function getProgressForRioProfile(profile, instanceID, activeDifficulty)
         highestDifficultyKilledBosses = 0,
         difficulty = 0,
     }
-    if GFIO.db.profile.debugMode then
-        if not GFIO.RIOProfiles[profile.name.."-"..profile.realm] then
-            GFIO.RIOProfiles[profile.name.."-"..profile.realm] = profile
-            if DevTool then
-                DevTool:AddData(GFIO.RIOProfiles,"RIOProfiles")
-            end
-        end
-    end
     for _,raid in pairs(profile.raidProfile.raidProgress) do
         if raid.raid.id == instanceID then -- this actually breaks in awakened seasons we might need to do sth about that
             bosscount = raid.raid.bossCount
@@ -84,7 +76,19 @@ local function getProgressForRioProfile(profile, instanceID, activeDifficulty)
             end
         end
     end
-    
+    if GFIO.db.profile.debugMode then
+        if not GFIO.RIOProfiles[profile.name.."-"..profile.realm] then
+            profile.gfioData = {
+                charData = charData,
+                maindata = maindata,
+                bosscount = bosscount
+            }
+            GFIO.RIOProfiles[profile.name.."-"..profile.realm] = profile
+            if DevTool then
+                DevTool:AddData(GFIO.RIOProfiles,"RIOProfiles")
+            end
+        end
+    end
     return bosscount , charData, maindata 
 end
 
@@ -106,7 +110,9 @@ local function getScoreForLeader(searchResult)
     local shortLanguage  = ""
     if leaderFullName then
         local realm = leaderFullName:match("-(.+)") or GetNormalizedRealmName()
-        local language = realm and GFIO.REALMS[realm] or ""
+        assert(realm, "No realm found for player: "..leaderFullName)
+        local language = realm and GFIO.REALMS[realm]
+        assert(language, "No language found for realm: "..realm)
         shortLanguage = GFIO.LANGUAGES[language] or ""
     end
 
@@ -137,7 +143,7 @@ local function getProgressForLeader(searchResult)
             raidZone = GFIO.RAIDS[activityID]
         end
     end
-    if not leaderName or searchResult.isDelisted or not raidZone or raidZone == {} then 
+    if not leaderName or searchResult.isDelisted or not raidZone or raidZone == {} or leaderName:find("-")==nil and not GetNormalizedRealmName() then 
         return nil, nil, nil, nil, nil
     end
     local leaderFullName = leaderName:find("-")~=nil and leaderName or leaderName.."-"..GetNormalizedRealmName()
@@ -145,7 +151,9 @@ local function getProgressForLeader(searchResult)
     local shortLanguage  = ""
     if leaderFullName then
         local realm = leaderFullName:match("-(.+)") or GetNormalizedRealmName()
-        local language = realm and GFIO.REALMS[realm] or ""
+        assert(realm, "No realm found for player: "..leaderFullName)    
+        local language = realm and GFIO.REALMS[realm]
+        assert(language, "No language found for realm: "..realm)
         shortLanguage = GFIO.LANGUAGES[language] or ""
     end
     if RaiderIO and RaiderIO.GetProfile(leaderFullName,faction) then
@@ -514,14 +522,14 @@ local function compareSearchEntriesRaid(a,b)
         return false
     end
 
-    if GFIO.db.profile.debugMode then -- use this to gather raid ids for the raidlist
-        assert(GFIO.RAIDS[searchResultA.activityID], "No Raid Data for ID: "..searchResultA.activityID)
-        assert(GFIO.RAIDS[searchResultB.activityID], "No Raid Data for ID: "..searchResultB.activityID)
-        assert(GFIO.ACTIVITY_ORDER[searchResultA.activityID] , "Activity ID has no order: "..searchResultA.activityID)
-        assert(GFIO.ACTIVITY_ORDER[searchResultB.activityID] , "Activity ID has no order: "..searchResultB.activityID)
-    end
     for _, activityIDA in pairs(searchResultA.activityIDs) do
         for _, activityIDB in pairs(searchResultB.activityIDs) do
+            if GFIO.db.profile.debugMode then -- use this to gather raid ids for the raidlist
+                assert(GFIO.RAIDS[activityIDA], "No Raid Data for ID: "..activityIDA)
+                assert(GFIO.RAIDS[activityIDB], "No Raid Data for ID: "..activityIDB)
+                assert(GFIO.ACTIVITY_ORDER[activityIDA] , "Activity ID has no order: "..activityIDA)
+                assert(GFIO.ACTIVITY_ORDER[activityIDB] , "Activity ID has no order: "..activityIDB)
+            end
             if not GFIO.ACTIVITY_ORDER[activityIDA] or not GFIO.ACTIVITY_ORDER[activityIDB] 
                 or not GFIO.RAIDS[activityIDA] or not GFIO.RAIDS[activityIDB] then
                 return activityIDA > activityIDB
@@ -650,13 +658,16 @@ end
 ---@return boolean isMainRole
 ---@return number raceID
 ---@return table timedKeystonesList
+---@return boolean isLeaver
 local function getApplicantInfoForKeys(applicantID, numMember)
-    local name, class, localizedClass, level, itemLevel, honorLevel, tank, healer, damage, assignedRole, relationship, dungeonScore, pvpItemLevel, factionGroup, raceID, specID = C_LFGList.GetApplicantMemberInfo(applicantID, numMember)
+    local name, class, localizedClass, level, itemLevel, honorLevel, tank, healer, damage, assignedRole, relationship, dungeonScore, pvpItemLevel, factionGroup, raceID, specID, isLeaver = C_LFGList.GetApplicantMemberInfo(applicantID, numMember)
     itemLevel = itemLevel or 0
     local shortLanguage  = ""
     if name then
         local realm = name:match("-(.+)") or GetNormalizedRealmName()
-        local language = realm and realm ~= "" and GFIO.REALMS[realm] or ""
+        assert(realm, "No realm found for player: "..name)    
+        local language = GFIO.REALMS[realm]
+        assert(language, "No language found for realm: "..realm)
         shortLanguage = language and GFIO.LANGUAGES[language] or ""
     end
     if RaiderIO and RaiderIO.GetProfile(name,factionGroup) then
@@ -665,9 +676,9 @@ local function getApplicantInfoForKeys(applicantID, numMember)
         if dungeonScore and score and dungeonScore>score then
             score = dungeonScore
         end
-        return mainScore, score or 0, itemLevel, specID, name, shortLanguage, tank, healer, damage, isMainRole, raceID, getTimedKeys(profile)
+        return mainScore, score or 0, itemLevel, specID, name, shortLanguage, tank, healer, damage, isMainRole, raceID, getTimedKeys(profile), isLeaver
     else
-        return nil, dungeonScore or 0, itemLevel, specID, name, shortLanguage, tank, healer, damage, true, raceID, nil
+        return nil, dungeonScore or 0, itemLevel, specID, name, shortLanguage, tank, healer, damage, true, raceID, nil, isLeaver
     end
 end
 ---comment
@@ -689,9 +700,11 @@ local function getApplicantInfoForRaid(applicantID, numMember, entryData)
     itemLevel = itemLevel or 0
     local shortLanguage  = ""
     if name then
-        local realm = name:match("-(.+)") or GetNormalizedRealmName()
-        local language = realm and GFIO.REALMS[realm] or ""
-        shortLanguage = GFIO.LANGUAGES[language] or ""
+        local realm = name:match("-(.+)") or GetNormalizedRealmName() or GFIO.PLAYER_NORMALIZED_REALM
+        assert(realm, "No realm found for player: "..name)
+        local language = realm and GFIO.REALMS[realm]
+        assert(language, "No language found for realm: "..realm)
+        shortLanguage = language and GFIO.LANGUAGES[language] or ""
     end
     for _,activityID in pairs (entryData.activityIDs) do
        
@@ -713,6 +726,7 @@ end
 ---@return boolean SpecIdsActive
 ---@return boolean CanFit this is an application we cant check any multi asignments cause that calculation will get hardcore expensive with recursive calls etc
 ---@return boolean everyoneIsMain if everyone is on his main role or if someone is on alt role
+---@return boolean hasLeaver if any member has left the group
 local function getScoreForApplication(applicationID)
     -- we are calculating the average score and ilvl of a group to sort by
     local applicantInfo = C_LFGList.GetApplicantInfo(applicationID)
@@ -725,14 +739,18 @@ local function getScoreForApplication(applicationID)
     local healerSpots = 1-group.HEALER
     local groupExceedsMembers = applicantInfo.numMembers > (dpsSpots + tankSpots + healerSpots)
     local everyoneIsMain = true
+    local hasLeaver = false
     for i= 0,applicantInfo.numMembers do 
-        local applicantMainScore, applicantScore, applicantIlvl, specID, name,_, tank, healer, damage, isMainRole = getApplicantInfoForKeys(applicationID,i)
+        local applicantMainScore, applicantScore, applicantIlvl, specID, name,_, tank, healer, damage, isMainRole, _, _, isLeaver = getApplicantInfoForKeys(applicationID,i)
         if tank and not healer and not damage then
             tankSpots = tankSpots - 1
         elseif not tank and healer and not damage then
             healerSpots = healerSpots - 1
         elseif not tank and not healer and damage then
             dpsSpots = dpsSpots - 1
+        end
+        if isLeaver then
+            hasLeaver = true
         end
         if applicantMainScore then
             score = score + applicantMainScore
@@ -750,19 +768,19 @@ local function getScoreForApplication(applicationID)
     score = score/applicantInfo.numMembers
     ilvl = ilvl/applicantInfo.numMembers
     if groupExceedsMembers then
-        return score, ilvl, specIDs, false, everyoneIsMain
+        return score, ilvl, specIDs, false, everyoneIsMain, hasLeaver
     elseif tankSpots < 0 or healerSpots < 0 or dpsSpots < 0 then
-        return score, ilvl, specIDs, false, everyoneIsMain
+        return score, ilvl, specIDs, false, everyoneIsMain, hasLeaver
     end
-    return score, ilvl, specIDs, true, everyoneIsMain
+    return score, ilvl, specIDs, true, everyoneIsMain, hasLeaver
 end
 ---comment compares two different applicants to sort them by score
 ---@param a number
 ---@param b number
 ---@return boolean
 local function compareApplicantsDungeons(a,b)
-    local scoreA,ilvlA,specIDsA,CanFitA, everyoneIsMainA = getScoreForApplication(a)
-    local scoreB,ilvlB,specIDsB,CanFitB, everyoneIsMainB = getScoreForApplication(b)
+    local scoreA,ilvlA,specIDsA,CanFitA, everyoneIsMainA, hasLeaverA = getScoreForApplication(a)
+    local scoreB,ilvlB,specIDsB,CanFitB, everyoneIsMainB, hasLeaverB = getScoreForApplication(b)
     if CanFitA and not CanFitB then
         return true
     elseif CanFitB and not CanFitA then
@@ -772,6 +790,9 @@ local function compareApplicantsDungeons(a,b)
         return true
     elseif specIDsB and not specIDsA then
         return false
+    end
+    if hasLeaverA ~= hasLeaverB then
+        return hasLeaverB
     end
     local difference = GFIO.db.profile.wrongRoleScoreLimitForSorting or 100
     if everyoneIsMainA ~= everyoneIsMainB and scoreA-scoreB<difference  and scoreA-scoreB>-difference then
@@ -886,15 +907,17 @@ local function compareApplicantsRaid(a,b)
         return not specIDsB
     end
     if avgDifficultyA ~= avgDifficultyB then
-        return GFIO.sortFunc(avgDifficultyA, avgDifficultyB)
+        assert(tonumber(avgDifficultyA), "GroupFinderRio: avgDifficultyA is not a number: ".. avgDifficultyA)
+        assert(tonumber(avgDifficultyB), "GroupFinderRio: avgDifficultyB is not a number: ".. avgDifficultyB)
+        return GFIO.sortFunc(tonumber(avgDifficultyA), tonumber(avgDifficultyB))
     end
     if avgKilledBossesA == avgKilledBossesB then
         if ilvlA == ilvlB then
-            return GFIO.sortFunc(a,b)
+            return GFIO.sortFunc(tonumber(a), tonumber(b))
         end
-        return GFIO.sortFunc(ilvlA,ilvlB)
+        return GFIO.sortFunc(tonumber(ilvlA), tonumber(ilvlB))
     end
-    return GFIO.sortFunc(avgKilledBossesA,avgKilledBossesB) 
+    return GFIO.sortFunc(tonumber(avgKilledBossesA), tonumber(avgKilledBossesB))
 end
 ---comment hooked to the sortApplicants function to calls compareApplicants to sort the applicants
 ---@param applicants table

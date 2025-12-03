@@ -48,7 +48,7 @@ function DB:CreateBar(name, key, updateFunc, onEnter, onClick, points)
 	bar:Hide()
 
 	bar.barTexture = bar:GetStatusBarTexture()
-	bar.text = bar:CreateFontString(nil, 'OVERLAY', nil, 7)
+	bar.text = bar:CreateFontString(nil, 'OVERLAY')
 	bar.text:FontTemplate()
 	bar.text:Point('CENTER')
 
@@ -178,7 +178,7 @@ function DB:ToggleAll()
 	if E.Retail then
 		DB:HonorBar_Toggle()
 		DB:AzeriteBar_Toggle()
-	elseif E.myclass == 'HUNTER' then
+	elseif E.Classic and E.myclass == 'HUNTER' then
 		DB:PetExperienceBar_Toggle()
 	end
 end
@@ -191,7 +191,7 @@ function DB:CreateAll()
 	if E.Retail then
 		DB:HonorBar()
 		DB:AzeriteBar()
-	elseif E.myclass == 'HUNTER' then
+	elseif E.Classic and E.myclass == 'HUNTER' then
 		DB:PetExperienceBar()
 	end
 end

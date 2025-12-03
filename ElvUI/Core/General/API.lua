@@ -3,15 +3,14 @@
 ------------------------------------------------------------------------
 local E, L, V, P, G = unpack(ElvUI)
 local TT = E:GetModule('Tooltip')
-local LCS = E.Libs.LCS
 local ElvUF = E.oUF
 
 local _G = _G
 local setmetatable = setmetatable
 local hooksecurefunc = hooksecurefunc
-local type, ipairs, pairs, unpack, strmatch = type, ipairs, pairs, unpack, strmatch
+local type, pairs, unpack, strmatch = type, pairs, unpack, strmatch
 local wipe, max, next, tinsert, date, time = wipe, max, next, tinsert, date, time
-local strfind, strlen, tonumber, tostring = strfind, strlen, tonumber, tostring
+local strlen, tonumber, tostring = strlen, tonumber, tostring
 
 local CopyTable = CopyTable
 local CreateFrame = CreateFrame
@@ -19,11 +18,14 @@ local GetBattlefieldArenaFaction = GetBattlefieldArenaFaction
 local GetGameTime = GetGameTime
 local GetInstanceInfo = GetInstanceInfo
 local GetNumGroupMembers = GetNumGroupMembers
+local GetNumSubgroupMembers = GetNumSubgroupMembers
+local GetPartyAssignment = GetPartyAssignment
 local GetServerTime = GetServerTime
 local GetSpecializationInfoByID = GetSpecializationInfoByID
 local GetSpecializationInfoForSpecID = C_SpecializationInfo.GetSpecializationInfoForSpecID or GetSpecializationInfoForSpecID
 local HideUIPanel = HideUIPanel
 local InCombatLockdown = InCombatLockdown
+local IsInGroup = IsInGroup
 local IsInRaid = IsInRaid
 local IsLevelAtEffectiveMaxLevel = IsLevelAtEffectiveMaxLevel
 local IsRestrictedAccount = IsRestrictedAccount
@@ -34,26 +36,27 @@ local IsXPUserDisabled = IsXPUserDisabled
 local RequestBattlefieldScoreData = RequestBattlefieldScoreData
 local UIParent = UIParent
 local UIParentLoadAddOn = UIParentLoadAddOn
+local UnitExists = UnitExists
 local UnitFactionGroup = UnitFactionGroup
 local UnitGroupRolesAssigned = UnitGroupRolesAssigned
+local UnitGUID = UnitGUID
+local UnitThreatSituation = UnitThreatSituation
 local UnitHasVehicleUI = UnitHasVehicleUI
-local UnitInParty = UnitInParty
-local UnitInRaid = UnitInRaid
 local UnitIsMercenary = UnitIsMercenary
 local UnitIsPlayer = UnitIsPlayer
-local UnitIsUnit = UnitIsUnit
+local UnitIsVisible = UnitIsVisible
 local UnitSex = UnitSex
 
+local WorldFrame = WorldFrame
 local GetWatchedFactionInfo = GetWatchedFactionInfo
-local GetWatchedFactionData = C_Reputation and C_Reputation.GetWatchedFactionData
+local GetWatchedFactionData = C_Reputation.GetWatchedFactionData
 
 local GetColorDataForItemQuality = ColorManager and ColorManager.GetColorDataForItemQuality
-local GetAuraDataByIndex = C_UnitAuras and C_UnitAuras.GetAuraDataByIndex
-local UnpackAuraData = AuraUtil and AuraUtil.UnpackAuraData
-local UnitAura = UnitAura
+local GetAuraDataByIndex = C_UnitAuras.GetAuraDataByIndex
+local UnpackAuraData = AuraUtil.UnpackAuraData
 
-local GetSpecialization = (LCS and LCS.GetSpecialization) or C_SpecializationInfo.GetSpecialization or GetSpecialization
-local GetSpecializationInfo = (LCS and LCS.GetSpecializationInfo) or C_SpecializationInfo.GetSpecializationInfo or GetSpecializationInfo
+local GetSpecialization = C_SpecializationInfo.GetSpecialization or GetSpecialization
+local GetSpecializationInfo = C_SpecializationInfo.GetSpecializationInfo or GetSpecializationInfo
 
 local IsAddOnLoaded = C_AddOns.IsAddOnLoaded
 local StoreEnabled = C_StorePublic.IsEnabled
@@ -61,11 +64,13 @@ local GetClassInfo = C_CreatureInfo.GetClassInfo
 local C_TooltipInfo_GetUnit = C_TooltipInfo and C_TooltipInfo.GetUnit
 local C_TooltipInfo_GetHyperlink = C_TooltipInfo and C_TooltipInfo.GetHyperlink
 local C_TooltipInfo_GetInventoryItem = C_TooltipInfo and C_TooltipInfo.GetInventoryItem
-local C_MountJournal_GetMountIDs = C_MountJournal and C_MountJournal.GetMountIDs
-local C_MountJournal_GetMountInfoByID = C_MountJournal and C_MountJournal.GetMountInfoByID
-local C_MountJournal_GetMountInfoExtraByID = C_MountJournal and C_MountJournal.GetMountInfoExtraByID
+local C_MountJournal_GetMountIDs = C_MountJournal.GetMountIDs
+local C_MountJournal_GetMountInfoByID = C_MountJournal.GetMountInfoByID
+local C_MountJournal_GetMountInfoExtraByID = C_MountJournal.GetMountInfoExtraByID
 local C_PetBattles_IsInBattle = C_PetBattles and C_PetBattles.IsInBattle
-local C_PvP_IsRatedBattleground = C_PvP and C_PvP.IsRatedBattleground
+local C_PvP_IsRatedBattleground = C_PvP.IsRatedBattleground
+local C_Spell_GetSpellCharges = C_Spell.GetSpellCharges
+local C_Spell_GetSpellInfo = C_Spell.GetSpellInfo
 
 local ERR_NOT_IN_COMBAT = ERR_NOT_IN_COMBAT
 local FACTION_ALLIANCE = FACTION_ALLIANCE
@@ -83,9 +88,23 @@ local DispelTypes = E.Libs.Dispel:GetMyDispelTypes()
 
 E.MountIDs = {}
 E.MountText = {}
+E.GroupRoles = {}
+E.GroupUnitsByRole = {
+	TANK = {},
+	HEALER = {},
+	DAMAGER = {},
+	NONE = {}
+}
 
 E.SpecInfoBySpecClass = {} -- ['Protection Warrior'] = specInfo (table)
 E.SpecInfoBySpecID = {} -- [250] = specInfo (table)
+
+E.ThreatPets = {
+	[61146] = true,		-- Monk's Black Ox Statue
+	[103822] = true,	-- Druid's Force of Nature Treants
+	[95072] = true,		-- Shaman's Earth Elemental
+	[61056] = true,		-- Primal Earth Elemental
+}
 
 E.SpecByClass = {
 	DEATHKNIGHT	= { 250, 251, 252 },
@@ -173,6 +192,16 @@ E.SpecName = { -- english locale
 	[72]	= 'Fury',
 	[73]	= 'Protection',
 }
+
+-- the secure header is different on retail because of evokers
+-- if both are registered on non-retail, it will fire on down and up
+function E:RegisterClicks(frame)
+	if E.Retail then
+		frame:RegisterForClicks('AnyDown', 'AnyUp')
+	else
+		frame:RegisterForClicks('AnyUp')
+	end
+end
 
 function E:GetCurrencyIDFromLink(link)
 	return link and tonumber(strmatch(link, 'currency:(%d+)'))
@@ -294,11 +323,11 @@ end
 function E:GetUnitSpecInfo(unit)
 	if not UnitIsPlayer(unit) then return end
 
-	E.ScanTooltip:SetOwner(UIParent, 'ANCHOR_NONE')
+	E.ScanTooltip:SetOwner(WorldFrame, 'ANCHOR_NONE')
 	E.ScanTooltip:SetUnit(unit)
-	E.ScanTooltip:Show()
 
 	local _, specLine = TT:GetLevelLine(E.ScanTooltip, 1, true)
+
 	local specText = specLine and specLine.leftText
 	if specText then
 		return E.SpecInfoBySpecClass[specText]
@@ -434,20 +463,19 @@ do -- backwards compatibility for GetMouseFocus
 	end
 end
 
-do	-- backwards compatibility for C_Spell
-	local GetSpellInfo = GetSpellInfo
-	local C_Spell_GetSpellInfo = not GetSpellInfo and C_Spell.GetSpellInfo
+do
 	function E:GetSpellInfo(spellID)
-		if not spellID then return end
+		local info = spellID and C_Spell_GetSpellInfo(spellID)
+		if not info then return end
 
-		if C_Spell_GetSpellInfo then
-			local info = C_Spell_GetSpellInfo(spellID)
-			if info then
-				return info.name, nil, info.iconID, info.castTime, info.minRange, info.maxRange, info.spellID, info.originalIconID
-			end
-		else
-			return GetSpellInfo(spellID)
-		end
+		return info.name, nil, info.iconID, info.castTime, info.minRange, info.maxRange, info.spellID, info.originalIconID
+	end
+
+	function E:GetSpellCharges(spellID)
+		local info = spellID and C_Spell_GetSpellCharges(spellID)
+		if not info then return end
+
+		return info.currentCharges, info.maxCharges, info.cooldownStartTime, info.cooldownDuration, info.chargeModRate
 	end
 
 	local GetSpellCooldown = GetSpellCooldown
@@ -461,21 +489,6 @@ do	-- backwards compatibility for C_Spell
 			local info = C_Spell_GetSpellCooldown(spellID)
 			if info then
 				return info.startTime, info.duration, info.isEnabled, info.modRate
-			end
-		end
-	end
-
-	local GetSpellCharges = GetSpellCharges
-	local C_Spell_GetSpellCharges = C_Spell.GetSpellCharges
-	function E:GetSpellCharges(spellID)
-		if not spellID then return end
-
-		if GetSpellCharges then
-			return GetSpellCharges(spellID)
-		else
-			local info = C_Spell_GetSpellCharges(spellID)
-			if info then
-				return info.currentCharges, info.maxCharges, info.cooldownStartTime, info.cooldownDuration, info.chargeModRate
 			end
 		end
 	end
@@ -505,11 +518,7 @@ end
 
 do
 	function E:GetAuraData(unitToken, index, filter)
-		if E.Retail then
-			return UnpackAuraData(GetAuraDataByIndex(unitToken, index, filter))
-		else
-			return UnitAura(unitToken, index, filter)
-		end
+		return UnpackAuraData(GetAuraDataByIndex(unitToken, index, filter))
 	end
 
 	local function FindAura(key, value, unit, index, filter, ...)
@@ -647,6 +656,10 @@ do
 			color.colorStr = E:RGBToHex(r, g, b, 'ff')
 		end
 
+		if classTag == E.myclass then
+			E.myClassColor = E:ClassColor(E.myclass, true)
+		end
+
 		local db = E.db.general.classColors[classTag]
 		if db then
 			db.r, db.g, db.b = r, g, b
@@ -667,52 +680,15 @@ do
 				color.r, color.g, color.b = r, g, b
 				color.colorStr = E:RGBToHex(r, g, b, 'ff')
 
+				if classTag == E.myclass then
+					E.myClassColor = E:ClassColor(E.myclass, true)
+				end
+
 				changed = true
 			end
 		end
 
 		return changed
-	end
-end
-
-do
-	local function SetOriginalHeight(f)
-		if InCombatLockdown() then
-			E:RegisterEventForObject('PLAYER_REGEN_ENABLED', SetOriginalHeight, SetOriginalHeight)
-			return
-		end
-
-		E.UIParent:SetHeight(E.UIParent.origHeight)
-
-		if f == SetOriginalHeight then
-			E:UnregisterEventForObject('PLAYER_REGEN_ENABLED', SetOriginalHeight, SetOriginalHeight)
-		end
-	end
-
-	local function SetModifiedHeight(f)
-		if InCombatLockdown() then
-			E:RegisterEventForObject('PLAYER_REGEN_ENABLED', SetModifiedHeight, SetModifiedHeight)
-			return
-		end
-
-		E.UIParent:SetHeight(E.UIParent.origHeight - (_G.OrderHallCommandBar:GetHeight() + E.Border))
-
-		if f == SetModifiedHeight then
-			E:UnregisterEventForObject('PLAYER_REGEN_ENABLED', SetModifiedHeight, SetModifiedHeight)
-		end
-	end
-
-	--This function handles disabling of OrderHall Bar or resizing of ElvUIParent if needed
-	function E:HandleCommandBar()
-		if E.global.general.commandBarSetting == 'DISABLED' then
-			_G.OrderHallCommandBar:UnregisterAllEvents()
-			_G.OrderHallCommandBar:SetScript('OnShow', _G.OrderHallCommandBar.Hide)
-			_G.OrderHallCommandBar:Hide()
-			UIParent:UnregisterEvent('UNIT_AURA') --Only used for OrderHall Bar
-		elseif E.global.general.commandBarSetting == 'ENABLED_RESIZEPARENT' then
-			_G.OrderHallCommandBar:HookScript('OnShow', SetModifiedHeight)
-			_G.OrderHallCommandBar:HookScript('OnHide', SetOriginalHeight)
-		end
 	end
 end
 
@@ -997,34 +973,12 @@ do
 	end
 end
 
-function E:XPIsUserDisabled()
-	return E.Retail and IsXPUserDisabled()
-end
-
 function E:XPIsTrialMax()
-	return E.Retail and (IsRestrictedAccount() or IsTrialAccount() or IsVeteranTrialAccount()) and (E.myLevel == 20)
+	return (IsRestrictedAccount() or IsTrialAccount() or IsVeteranTrialAccount()) and (E.myLevel == 20)
 end
 
 function E:XPIsLevelMax()
-	return IsLevelAtEffectiveMaxLevel(E.mylevel) or E:XPIsUserDisabled() or E:XPIsTrialMax()
-end
-
-function E:GetGroupUnit(unit)
-	if UnitIsUnit(unit, 'player') then return end
-	if strfind(unit, 'party') or strfind(unit, 'raid') then
-		return unit
-	end
-
-	-- returns the unit as raid# or party# when grouped
-	if UnitInParty(unit) or UnitInRaid(unit) then
-		local isInRaid = IsInRaid()
-		for i = 1, GetNumGroupMembers() do
-			local groupUnit = (isInRaid and 'raid' or 'party')..i
-			if UnitIsUnit(unit, groupUnit) then
-				return groupUnit
-			end
-		end
-	end
+	return IsLevelAtEffectiveMaxLevel(E.mylevel) or IsXPUserDisabled() or E:XPIsTrialMax()
 end
 
 function E:GetUnitBattlefieldFaction(unit)
@@ -1056,10 +1010,17 @@ function E:PLAYER_LEVEL_UP(_, level)
 	E.mylevel = level
 end
 
-local gameMenuLastButtons = {
-	[_G.GAMEMENU_OPTIONS] = 1,
-	[_G.BLIZZARD_STORE] = 2
-}
+local gameMenuLastButtons = {}
+if _G.GAMEMENU_EXTERNALEVENT then
+	gameMenuLastButtons.ElvUI = StoreEnabled and StoreEnabled() and 3 or 2
+	gameMenuLastButtons[_G.GAMEMENU_EXTERNALEVENT] = 1
+	gameMenuLastButtons[_G.GAMEMENU_OPTIONS] = 2
+	gameMenuLastButtons[_G.BLIZZARD_STORE] = 3
+else
+	gameMenuLastButtons.ElvUI = StoreEnabled and StoreEnabled() and 2 or 1
+	gameMenuLastButtons[_G.GAMEMENU_OPTIONS] = 1
+	gameMenuLastButtons[_G.BLIZZARD_STORE] = 2
+end
 
 function E:PositionGameMenuButton()
 	if E.Retail then
@@ -1067,14 +1028,13 @@ function E:PositionGameMenuButton()
 			GameMenuFrame.Header.Text:SetTextColor(unpack(E.media.rgbvaluecolor))
 		end
 
-		local anchorIndex = (StoreEnabled and StoreEnabled() and 2) or 1
 		for button in GameMenuFrame.buttonPool:EnumerateActive() do
 			local text = button:GetText()
 
 			GameMenuFrame.MenuButtons[text] = button -- export these
 
 			local lastIndex = gameMenuLastButtons[text]
-			if lastIndex == anchorIndex and GameMenuFrame.ElvUI then
+			if lastIndex == gameMenuLastButtons.ElvUI and GameMenuFrame.ElvUI then
 				GameMenuFrame.ElvUI:Point('TOPLEFT', button, 'BOTTOMLEFT', 0, -10)
 			elseif not lastIndex then
 				button:NudgePoint(nil, -35)
@@ -1145,18 +1105,16 @@ end
 function E:CompatibleTooltip(tt) -- knock off compatibility
 	if tt.GetTooltipData then return end -- real support exists
 
-	local info = { name = tt:GetName(), lines = {} }
-	info.leftTextName = info.name .. 'TextLeft'
-	info.rightTextName = info.name .. 'TextRight'
+	local info = { lines = {}, name = tt:GetName() }
 
 	tt.GetTooltipData = function()
 		wipe(info.lines)
 
 		for i = 1, tt:NumLines() do
-			local left = _G[info.leftTextName..i]
+			local left = info.name and _G[info.name..'TextLeft'..i]
 			local leftText = left and left:GetText() or nil
 
-			local right = _G[info.rightTextName..i]
+			local right = info.name and _G[info.name..'TextRight'..i]
 			local rightText = right and right:GetText() or nil
 
 			tinsert(info.lines, i, { lineIndex = i, leftText = leftText, rightText = rightText })
@@ -1181,11 +1139,11 @@ function E:GetClassCoords(classFile, crop, get)
 	end
 end
 
-function E:CropRatio(frame, coords, mult)
-	local left, right, top, bottom = unpack(coords or E.TexCoords)
+function E:CropRatio(width, height, mult)
 	if not mult then mult = 0.5 end
 
-	local width, height = frame:GetSize()
+	local left, right, top, bottom = E:GetTexCoords()
+
 	local ratio = width / height
 	if ratio > 1 then
 		local trimAmount = (1 - (1 / ratio)) * mult
@@ -1204,9 +1162,8 @@ function E:ScanTooltip_UnitInfo(unit)
 	if C_TooltipInfo_GetUnit then
 		return C_TooltipInfo_GetUnit(unit)
 	else
-		E.ScanTooltip:SetOwner(UIParent, 'ANCHOR_NONE')
+		E.ScanTooltip:SetOwner(WorldFrame, 'ANCHOR_NONE')
 		E.ScanTooltip:SetUnit(unit)
-		E.ScanTooltip:Show()
 
 		return E.ScanTooltip:GetTooltipData()
 	end
@@ -1216,9 +1173,8 @@ function E:ScanTooltip_InventoryInfo(unit, slot)
 	if C_TooltipInfo_GetInventoryItem then
 		return C_TooltipInfo_GetInventoryItem(unit, slot)
 	else
-		E.ScanTooltip:SetOwner(UIParent, 'ANCHOR_NONE')
+		E.ScanTooltip:SetOwner(WorldFrame, 'ANCHOR_NONE')
 		E.ScanTooltip:SetInventoryItem(unit, slot)
-		E.ScanTooltip:Show()
 
 		return E.ScanTooltip:GetTooltipData()
 	end
@@ -1228,9 +1184,8 @@ function E:ScanTooltip_HyperlinkInfo(link)
 	if C_TooltipInfo_GetHyperlink then
 		return C_TooltipInfo_GetHyperlink(link)
 	else
-		E.ScanTooltip:SetOwner(UIParent, 'ANCHOR_NONE')
+		E.ScanTooltip:SetOwner(WorldFrame, 'ANCHOR_NONE')
 		E.ScanTooltip:SetHyperlink(link)
-		E.ScanTooltip:Show()
 
 		return E.ScanTooltip:GetTooltipData()
 	end
@@ -1272,14 +1227,70 @@ do -- complicated backwards compatible menu
 	end
 end
 
+function E:UnitTankedByGroup(unit)
+	for _, unitToken in next, E.GroupUnitsByRole.TANK do
+		if E:GetThreatSituation(unit, unitToken) == 3 then
+			return unitToken
+		end
+	end
+end
+
+function E:GetThreatSituation(unit, feedbackUnit)
+	if not unit or not E:UnitExists(unit) then return end
+
+	if feedbackUnit and feedbackUnit ~= unit and E:UnitExists(feedbackUnit) then
+		return UnitThreatSituation(feedbackUnit, unit)
+	else
+		return UnitThreatSituation(unit)
+	end
+end
+
+function E:GROUP_ROSTER_UPDATE()
+	local isInRaid = IsInRaid()
+	E.IsInGroup = isInRaid or IsInGroup()
+
+	wipe(E.GroupRoles)
+
+	for _, units in next, E.GroupUnitsByRole do
+		wipe(units)
+	end
+
+	if E.IsInGroup then
+		local group = isInRaid and 'raid' or 'party'
+		for i = 1, (isInRaid and GetNumGroupMembers()) or GetNumSubgroupMembers() do
+			local unit = group..i
+			local guid = UnitGUID(unit)
+			local role = guid and (not E.allowRoles and (GetPartyAssignment('MAINTANK', unit) and 'TANK' or 'NONE') or UnitGroupRolesAssigned(unit))
+			if role then
+				E.GroupRoles[guid] = role
+				E.GroupUnitsByRole[role][guid] = unit
+			end
+		end
+	end
+end
+
+function E:GROUP_LEFT()
+	E.IsInGroup = IsInRaid() or IsInGroup()
+
+	wipe(E.GroupRoles)
+end
+
+function E:UnitExists(unit) -- oUF way
+	return unit and (UnitExists(unit) or UnitIsVisible(unit))
+end
+
 function E:LoadAPI()
+	E:RegisterEvent('GROUP_LEFT')
+	E:RegisterEvent('GROUP_ROSTER_UPDATE')
 	E:RegisterEvent('PLAYER_LEVEL_UP')
 	E:RegisterEvent('PLAYER_ENTERING_WORLD')
 	E:RegisterEvent('PLAYER_REGEN_ENABLED')
 	E:RegisterEvent('PLAYER_REGEN_DISABLED')
 	E:RegisterEvent('UI_SCALE_CHANGED', 'PixelScaleChanged')
 
+	E:GROUP_ROSTER_UPDATE()
 	E:SetupGameMenu()
+	E:UpdateTexCoords() -- update cropIcon texCoords
 
 	if E.Retail or E.Mists then
 		E:PopulateSpecInfo()
@@ -1312,37 +1323,5 @@ function E:LoadAPI()
 		E:RegisterEvent('UNIT_EXITED_VEHICLE', 'ExitVehicleShowFrames')
 	else
 		E:RegisterEvent('CHARACTER_POINTS_CHANGED', 'CheckRole')
-	end
-
-	do -- setup cropIcon texCoords
-		local opt = E.db.general.cropIcon
-		local modifier = 0.04 * opt
-		for i, v in ipairs(E.TexCoords) do
-			if i % 2 == 0 then
-				E.TexCoords[i] = v - modifier
-			else
-				E.TexCoords[i] = v + modifier
-			end
-		end
-	end
-
-	if _G.OrderHallCommandBar then
-		E:HandleCommandBar()
-	elseif E.Retail then
-		local frame = CreateFrame('Frame')
-		frame:RegisterEvent('ADDON_LOADED')
-		frame:SetScript('OnEvent', function(Frame, event, addon)
-			if event == 'ADDON_LOADED' and addon == 'Blizzard_OrderHallUI' then
-				if InCombatLockdown() then
-					Frame:RegisterEvent('PLAYER_REGEN_ENABLED')
-				else
-					E:HandleCommandBar()
-				end
-				Frame:UnregisterEvent(event)
-			elseif event == 'PLAYER_REGEN_ENABLED' then
-				E:HandleCommandBar()
-				Frame:UnregisterEvent(event)
-			end
-		end)
 	end
 end

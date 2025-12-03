@@ -379,6 +379,18 @@ function RSConfigDB.SetShowingOldNotDiscoveredMapIcons(value)
 end
 
 ---============================================================================
+-- Ingame filters database
+---============================================================================
+
+function RSConfigDB.IsShowingFilteredIngameMapIcons()
+	return private.db.map.displayFilteredIngameMapIcons
+end
+
+function RSConfigDB.SetShowingFilteredIngameMapIcons(value)
+	private.db.map.displayFilteredIngameMapIcons = value
+end
+
+---============================================================================
 -- NPC filters database
 ---============================================================================
 
@@ -420,6 +432,12 @@ function RSConfigDB.IsNpcFiltered(npcID)
 		elseif (RSNpcDB.IsInternalNpcMultiZone(npcID) and not RSUtils.Contains(RSConstants.IGNORE_NPCS_REPUTATION, npcID)) then
 			local khazAlgar = false
 			for mapID, _ in pairs (npcInfo.zoneID) do
+				-- If dungeons/delve/raid ignore
+				local mapInfo = C_Map.GetMapInfo(mapID)
+				if (mapInfo and mapInfo.mapType == Enum.UIMapType.Dungeon) then
+					break
+				end
+				
 				if (RSMapDB.GetContinentOfMap(mapID) == RSConstants.KHAZ_ALGAR and not RSUtils.Contains(RSConstants.TWW_MAPS_WITHOUT_REP, mapID)) then
 					khazAlgar = true
 					break
@@ -852,6 +870,14 @@ end
 
 function RSConfigDB.SetShowingOtherContainers(value)
 	private.db.map.displayOtherContainerIcons = value
+end
+
+function RSConfigDB.IsAchievementContainerFilterEnabled()
+	return private.db.containerFilters.filterAchievements
+end
+
+function RSConfigDB.SetAchievementContainerFilterEnabled(value)
+	private.db.containerFilters.filterAchievements = value
 end
 
 ---============================================================================
@@ -1426,6 +1452,14 @@ end
 
 function RSConfigDB.IsSearchingDrakewatcher()
 	return private.db.collections.searchingDrakewatcher
+end
+
+function RSConfigDB.SetSearchingMissingAchievementCriteria(value)
+	private.db.collections.searchingMissingAchievementCriteria = value
+end
+
+function RSConfigDB.IsSearchingMissingAchievementCriteria()
+	return private.db.collections.searchingMissingAchievementCriteria
 end
 
 function RSConfigDB.SetShowFiltered(value)

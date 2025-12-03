@@ -38,8 +38,8 @@ local function PlotCachedCoords()
 					local root,rootByCreatureID,rootByObjectID = {},{},{};
 					for key,group in pairs(datas) do
 						local creatureID, objectID;
-						if group.npcID or group.creatureID then
-							creatureID = group.npcID or group.creatureID;
+						if group.npcID then
+							creatureID = group.npcID
 						elseif group.objectID then
 							objectID = group.objectID;
 						else
@@ -380,7 +380,7 @@ app.AddEventHandler("OnReady", function()
 										local achGroup = SearchForObject("achievementID", o.achievementID, "key")
 										tooltip:AddDoubleLine(L.CRITERIA_FOR, achGroup.text or GetAchievementLink(o.achievementID));
 									else
-										if key == "npcID" then key = "creatureID"; end
+										if key == "creatureID" then key = "npcID"; end
 										AttachTooltipSearchResults(tooltip, SearchForField, key, o.keyval);
 									end
 								end

@@ -15,7 +15,7 @@ Optional fields:
 - isUnobtainable: boolean - Faction reputation can no longer be obtained
 ]]
 
-PrettyReps.HIERARCHY_VERSION = 2
+PrettyReps.HIERARCHY_VERSION = 3
 
 -- Faction data organized by expansion and category
 PrettyReps.FactionHierarchy = {
@@ -24,6 +24,8 @@ PrettyReps.FactionHierarchy = {
 		{ factionID = 2688, name = "Flame's Radiance" },
 		{ factionID = 2570, name = "Hallowfall Arathi" },
 		{ factionID = 2594, name = "The Assembly of the Deeps" },
+		{ factionID = 2658, name = "The K'aresh Trust" },
+		{ factionID = 2736, name = "Manaforge Vandals" },
 		{ factionID = 2653, name = "The Cartels of Undermine", isHeaderWithRep = true, children = {
 			{ factionID = 2685, name = "Gallagio Loyalty Rewards Club" },
 			{ factionID = 2673, name = "Bilgewater Cartel" },

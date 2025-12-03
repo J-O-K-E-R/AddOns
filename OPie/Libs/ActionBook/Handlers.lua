@@ -2,7 +2,7 @@ local COMPAT, _, T = select(4,GetBuildInfo()), ...
 if T.SkipLocalActionBook then return end
 if T.TenEnv then T.TenEnv() end
 
-local MODERN, CF_CLASSIC, CI_ERA = COMPAT >= 10e4 or nil, COMPAT < 10e4 or nil, COMPAT < 2e4 or nil
+local MODERN, CF_CLASSIC, CI_ERA, TWELVE = COMPAT >= 10e4 or nil, COMPAT < 10e4 or nil, COMPAT < 2e4 or nil, COMPAT >= 12e4
 local CF_WRATH, CF_CATA, CF_MISTS = COMPAT < 10e4 and COMPAT > 3e4 or nil, COMPAT < 10e4 and COMPAT > 4e4 or nil, COMPAT < 10e4 and COMPAT > 5e4 or nil
 local MODERN_MOUNTS, MODERN_BATTLEPETS = MODERN or CF_WRATH, MODERN or CF_MISTS
 local EV = T.Evie
@@ -118,11 +118,12 @@ securecall(function() -- mount: mount ID
 		return actionMap[id]
 	end
 	local function describeMount(id)
-		local name, sid, icon, _4, _5, _6, _7, factionLocked, factionId = C_MountJournal.GetMountInfoByID(id)
+		local name, sid, icon, _4, _5, _6, _7, factionLocked, factionId, _, collected = C_MountJournal.GetMountInfoByID(id)
 		if name and factionLocked then
 			name = name .. (factionId == 0 and "|A:QuestPortraitIcon-Horde-small:14:14:0:-1|a" or "|A:QuestPortraitIcon-Alliance-small:15:13:-1:-1|a")
 		end
-		return L"Mount", name, icon, nil, callMethod.SetMountBySpellID, sid
+		local actionFlags = collected and not checkUsableMountID(id) and 1 or nil
+		return L"Mount", name, icon, nil, callMethod.SetMountBySpellID, sid, nil, actionFlags
 	end
 	AB:RegisterActionType("mount", createMount, describeMount, 1)
 	if MODERN then -- random
@@ -206,13 +207,19 @@ securecall(function() -- spell: spell ID + mount spell ID
 		end})
 	end
 	local iconOverrideHandlers = {}
+	local SBA_SPELL_ID = 1229376
 	local function spellHint(n, _modState, target)
 		if not n then return end
 		local sname, _, _, _, _, _, sid = GetSpellInfo(n)
+		local ncid = sid == SBA_SPELL_ID and MODERN and C_AssistedCombat.GetNextCastSpell(false)
+		if ncid then
+			sname, _, _, _, _, _, sid = GetSpellInfo(ncid)
+			n = sname
+		end
 		local mjID = sid and getSpellMountID(sid)
 		if mjID then return mountHint(mjID) end
 		if not sname then return end
-		local now, msid = GetTime(), spellMap[lowered[n]] or sid
+		local now, msid = GetTime(), sid or spellMap[lowered[n]]
 		local inRange, usable, nomana, hasRange = NormalizeInRange[IsSpellInRange(sid and RUNE_BASESPELL_CACHE[sid] or n, target or "target")], IsUsableSpell(n)
 		inRange, hasRange = inRange ~= 0, inRange ~= nil
 		local cdLeft, cdLength, enabled = toCooldown(now, GetSpellCooldown(n))
@@ -232,7 +239,7 @@ securecall(function() -- spell: spell ID + mount spell ID
 			end
 		end
 		local sbslot = msid and msid ~= 161691 and FindSpellBookSlotBySpellID(msid)
-		return usable, state, ico or GetSpellTexture(n), sname or n, count <= 1 and charges or count, cdLeft, cdLength, sbslot and SetSpellBookItem or msid and SetSpellByID, sbslot or msid
+		return usable, state, ico or GetSpellTexture(n), sname, count <= 1 and charges or count, cdLeft, cdLength, sbslot and SetSpellBookItem or msid and SetSpellByID, sbslot or msid
 	end
 	function spellFeedback(sname, target, spellId)
 		spellMap[sname] = spellId or spellMap[sname] or getSpellIDFromName(sname)
@@ -271,7 +278,7 @@ securecall(function() -- spell: spell ID + mount spell ID
 			if not actionMap[action] then
 				actionMap[action] = AB:CreateActionSlot(spellHint, action, "attribute", "type","spell", "spell",action, "checkselfcast",true, "checkfocuscast",true)
 			end
-			if type(action) == "string" and spellMap[action] ~= id then
+			if type(action) == "string" and spellMap[lowered[action]] ~= id then
 				spellMap[lowered[action]] = id
 			end
 		end
@@ -283,7 +290,7 @@ securecall(function() -- spell: spell ID + mount spell ID
 		local _, castType = RW:IsSpellCastable(id, nil, laxRank)
 		if castType == "rune-ability-spell" then
 			_, icon2 = GetSpellTexture(id)
-		elseif name and castType ~= "forced-id-cast" then
+		elseif name and castType ~= "forced-id-cast"  and castType ~= "rewire-escape" then
 			local qRank = (MODERN or q == "list-query" or not laxRank) and rank or nil
 			rank, name2, _, icon2, _, _, _, sid2 = GetSpellSubtext(name, rank), GetSpellInfo(name, qRank)
 			if MODERN and sid2 and IsPassiveSpell(sid2) or RUNE_SPELLS[id] then
@@ -317,6 +324,9 @@ securecall(function() -- spell: spell ID + mount spell ID
 			return error('SetSpellIconOverride: invalid arguments', 2)
 		end
 		iconOverrideHandlers[id] = f
+	end
+	function AB.HUM:GetNativeSpellFeedback(spell, target)
+		return spellHint(spell, nil, target)
 	end
 end)
 securecall(function() -- item: items ID/inventory slot
@@ -876,7 +886,7 @@ securecall(function() -- raidmark
 			return "remove"
 		end
 	end
-	map[0] = AB:CreateActionSlot(removeHint, nil, "func", function()
+	map[0] = not TWELVE and AB:CreateActionSlot(removeHint, nil, "func", function()
 		if not CanChangeRaidTargets() then return end
 		local pt = GetRaidTargetIndex("player")
 		for i=8, 0, -1 do
@@ -885,9 +895,11 @@ securecall(function() -- raidmark
 		if not (pt or waitingToClearSelf) and IsInGroup() then
 			waitingToClearSelf, EV.RAID_TARGET_UPDATE = 1, FinishClearRaidTargets
 		end
-	end)
+	end) or nil
+	local tf = TWELVE and (SLASH_TARGET_MARKER1 .. " %d\n" .. SLASH_TARGET_MARKER1 .. " [group] 0")
 	for i=1,8 do
-		map[i] = AB:CreateActionSlot(raidmarkHint, i, "func", setRaidTarget, i)
+		map[i] = TWELVE and AB:CreateActionSlot(raidmarkHint, i, "retext", tf:format(i))
+		                 or AB:CreateActionSlot(raidmarkHint, i, "func", setRaidTarget, i)
 	end
 	local function createRaidMark(id)
 		return map[id]
@@ -1157,7 +1169,7 @@ securecall(function() -- toy: item ID, flags[FORCE_SHOW]
 		[89222]=1, [63141]="[alliance]", [64997]="[horde]", [66888]=1, [89869]=1, [90175]=1,
 		[103685]=1, [115468]="[horde]", [115472]="[alliance]", [119160]="[horde]", [119182]="[alliance]",
 		[122283]=1, [142531]=1, [142532]=1, [163211]=1,
-		[85500]="[fish5]",
+		[85500]=MODERN and "[fish5]",
 		[182773]="[coven:necro][acoven80:necro]", [184353]="[coven:kyrian][acoven80:kyrian]", [180290]="[coven:fae][acoven80:fae]", [183716]="[coven:venthyr][acoven80:venthyr]", [190237] = 1,
 	}
 	local function playerHasToy(id)
@@ -1219,12 +1231,15 @@ securecall(function() -- toy: item ID, flags[FORCE_SHOW]
 		end
 	end
 	local function createToy(id, flags)
-		local forceShow = flags == 1
-		local mid, ignUse = map[id], IGNORE_TOY_USABILITY[id]
-		if not (mid or ignUse or type(id) == "number") or not (forceShow or playerHasToy(id)) then
+		if type(id) ~= "number" or id < 1 then
 			return
 		end
-		local isUsable = ignUse or C_ToyBox.IsToyUsable(id)
+		local forceShow, ignUse = flags == 1, IGNORE_TOY_USABILITY[id]
+		local qid = forceShow and (ignUse or 1) ~= 1 and -id or id
+		if not (forceShow or playerHasToy(id)) then
+			return
+		end
+		local isUsable, mid = ignUse or C_ToyBox.IsToyUsable(id), map[qid]
 		if isUsable == nil then
 			isUsable, uq[id] = lastUsability[id], 1
 			C_Item.GetItemInfo(id)
@@ -1234,15 +1249,17 @@ securecall(function() -- toy: item ID, flags[FORCE_SHOW]
 		if not (forceShow or isUsable) then
 			mid = nil
 		elseif mid == nil then
-			mid = AB:CreateActionSlot(toyHint, id, wrapCondition(ignUse, "attribute", "type","toy", "toy",id))
-			map[id] = mid
+			mid = AB:CreateActionSlot(toyHint, id, wrapCondition(forceShow and 1 or ignUse, "attribute", "type","toy", "toy",id))
+			map[qid] = mid
 		end
 		return mid
 	end
 	local function describeToy(id)
 		if type(id) ~= "number" then return end
-		local _, name, tex = C_ToyBox.GetToyInfo(id)
-		return L"Toy", name, tex or C_Item.GetItemIconByID(id), nil, callMethod.SetToyByItemID, id
+		local ignUse, haveToy, _, name, tex = IGNORE_TOY_USABILITY[id], playerHasToy(id), C_ToyBox.GetToyInfo(id)
+		local canUse = haveToy and (type(ignUse) ~= "string" or KR:EvaluateCmdOptions(ignUse)) and (ignUse or C_ToyBox.IsToyUsable(id))
+		local actionFlags = haveToy and not canUse and 1 or nil
+		return L"Toy", name, tex or C_Item.GetItemIconByID(id), nil, callMethod.SetToyByItemID, id, nil, actionFlags
 	end
 	AB:RegisterActionType("toy", createToy, describeToy, 2)
 	RW:SetCommandHint(SLASH_USE_TOY1, 60, function(_, _, clause, target)

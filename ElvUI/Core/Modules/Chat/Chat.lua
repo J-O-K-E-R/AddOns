@@ -45,9 +45,6 @@ local RemoveNewlines = RemoveNewlines
 local ToggleFrame = ToggleFrame
 local ToggleQuickJoinPanel = ToggleQuickJoinPanel
 local UIParent = UIParent
-local UnitExists = UnitExists
-local UnitGroupRolesAssigned = UnitGroupRolesAssigned
-local UnitIsUnit = UnitIsUnit
 local UnitName = UnitName
 
 local C_BattleNet_GetAccountInfoByID = C_BattleNet.GetAccountInfoByID
@@ -80,6 +77,7 @@ local GetChannelRulesetForChannelID = C_ChatInfo.GetChannelRulesetForChannelID
 local GetChannelShortcutForChannelID = C_ChatInfo.GetChannelShortcutForChannelID
 local IsChannelRegionalForChannelID = C_ChatInfo.IsChannelRegionalForChannelID
 
+local IsRecentAllyByGUID = C_RecentAllies and C_RecentAllies.IsRecentAllyByGUID
 local GetTitleIconTexture = C_Texture.GetTitleIconTexture
 local GetClientTexture = _G.BNet_GetClientEmbeddedAtlas or _G.BNet_GetClientEmbeddedTexture
 
@@ -93,8 +91,11 @@ local SOUND_U_CHAT_SCROLL_BUTTON = SOUNDKIT.U_CHAT_SCROLL_BUTTON
 local NPEV2_CHAT_USER_TAG_GUIDE = gsub(NPEV2_CHAT_USER_TAG_GUIDE or '', '(|A.-|a).+', '%1') -- we only want the icon
 local SOCIAL_QUEUE_QUEUED_FOR = gsub(SOCIAL_QUEUE_QUEUED_FOR or '', ':%s?$', '') -- some language have `:` on end
 
-local TIMERUNNING_ATLAS = '|A:timerunning-glues-icon-small:%s:%s:0:0|a'
+local TIMERUNNING_ATLAS = '|A:timerunning-glues-icon-small:%s:%s:0:0|a '
 local TIMERUNNING_SMALL = format(TIMERUNNING_ATLAS, 12, 10)
+
+local RECENTALLY_ATLAS = '|A:friendslist-recentallies-yellow:%s:%s:0:0|a '
+local RECENTALLY_SMALL = format(RECENTALLY_ATLAS, 11, 11)
 
 -- GLOBALS: ElvCharacterDB
 
@@ -126,7 +127,6 @@ local DEFAULT_STRINGS = {
 	RAID_LEADER = L["RL"],
 	INSTANCE_CHAT = L["I"],
 	INSTANCE_CHAT_LEADER = L["IL"],
-	PET_BATTLE_COMBAT_LOG = _G.PET_BATTLE_COMBAT_LOG,
 }
 
 local hyperlinkTypes = {
@@ -197,6 +197,7 @@ do --this can save some main file locals
 	local x, y = ':16:16',':13:25'
 
 	local ElvBlue		= E:TextureString(E.Media.ChatLogos.ElvBlue,y)
+	local ElvPink		= E:TextureString(E.Media.ChatLogos.ElvPink,y)
 	local ElvGreen		= E:TextureString(E.Media.ChatLogos.ElvGreen,y)
 	local ElvOrange		= E:TextureString(E.Media.ChatLogos.ElvOrange,y)
 	local ElvPurple		= E:TextureString(E.Media.ChatLogos.ElvPurple,y)
@@ -204,7 +205,6 @@ do --this can save some main file locals
 	local ElvYellow		= E:TextureString(E.Media.ChatLogos.ElvYellow,y)
 	local ElvSimpy		= E:TextureString(E.Media.ChatLogos.ElvSimpy,y)
 
-	local Bathrobe		= E:TextureString(E.Media.ChatLogos.Bathrobe,x)
 	local Rainbow		= E:TextureString(E.Media.ChatLogos.Rainbow,x)
 	local Hibiscus		= E:TextureString(E.Media.ChatLogos.Hibiscus,x)
 	local Gem			= E:TextureString(E.Media.ChatLogos.Gem,x)
@@ -218,8 +218,8 @@ do --this can save some main file locals
 		(a = a - (b and 1 or -1) if (b and a == 1 or a == 0) or a == #c then b = not b end return c[a])
 	]]
 
-	local itsElv, itsMis, itsSimpy, itsMel, itsThradex, itsPooc
-	do	--Simpy Chaos: super cute text coloring function that ignores hyperlinks and keywords
+	local itsElv, itsWife, itsSimpy, itsMel, itsMis, itsThradex, itsPooc, itsBot
+	do	-- Simpy Chaos: super cute text coloring function that ignores hyperlinks and keywords
 		local e, f, g = {'||','|Helvmoji:.-|h.-|h','|[Cc].-|[Rr]','|[TA].-|[ta]','|H.-|h.-|h'}, {}, {}
 		local prettify = function(t,...) return gsub(gsub(E:TextGradient(gsub(gsub(t,'%%%%','\27'),'\124\124','\26'),...),'\27','%%%%'),'\26','||') end
 		local protectText = function(t, u, v) local w = E:EscapeString(v) local r, s = strfind(u, w) while f[r] do r, s = strfind(u, w, s) end if r then tinsert(g, r) f[r] = w end return gsub(t, w, '\24') end
@@ -227,25 +227,31 @@ do --this can save some main file locals
 			if next(g) then if #g > 1 then sort(g) end for n in gmatch(t, '\24') do local _, v = next(g) t = gsub(t, n, f[v], 1) tremove(g, 1) f[v] = nil end end return t
 		end
 
-		--Simpys: Turquoise (49CAF5), Sea Green (80C661), Khaki (FFF461), Salmon (F6885F), Orchid (CD84B9), Light Sky Blue (58CCF5)
+		-- Simpy: Turquoise (49CAF5), Sea Green (80C661), Khaki (FFF461), Salmon (F6885F), Orchid (CD84B9), Light Sky Blue (58CCF5)
 		local SimpyColors = function(t) return specialText(t, 0.28,0.79,0.96, 0.50,0.77,0.38, 1.00,0.95,0.38, 0.96,0.53,0.37, 0.80,0.51,0.72, 0.34,0.80,0.96) end
-		--Detroit Lions: Honolulu Blue to Silver [Elv: I stoles it @Simpy]
+		-- Detroit Lions: Honolulu Blue to Silver [Elv: I stoles it @Simpy]
 		local ElvColors = function(t) return specialText(t, 0,0.42,0.69, 0.61,0.61,0.61) end
-		--Rainbow: FD3E44, FE9849, FFDE4B, 6DFD65, 54C4FC, A35DFA, C679FB, FE81C1
+		-- Rainbow: FD3E44, FE9849, FFDE4B, 6DFD65, 54C4FC, A35DFA, C679FB, FE81C1
 		local MisColors = function(t) return specialText(t, 0.99,0.24,0.26, 0.99,0.59,0.28, 1,0.87,0.29, 0.42,0.99,0.39, 0.32,0.76,0.98, 0.63,0.36,0.98, 0.77,0.47,0.98, 0.99,0.5,0.75) end
-		--Mels: Fiery Rose (F94F6D), Saffron (F7C621), Emerald (4FC16D), Medium Slate Blue (7C7AF7), Cyan Process (11AFEA)
+		-- Wife Colors
+		local WifeColors = function(t) return specialText(t, 0.32,0.76,0.98, 0.63,0.36,0.98, 0.77,0.47,0.98, 0.99,0.5,0.75) end
+		-- Mels: Fiery Rose (F94F6D), Saffron (F7C621), Emerald (4FC16D), Medium Slate Blue (7C7AF7), Cyan Process (11AFEA)
 		local MelColors = function(t) return specialText(t, 0.98,0.31,0.43, 0.97,0.78,0.13, 0.31,0.76,0.43, 0.49,0.48,0.97, 0.07,0.69,0.92) end
-		--Thradex: summer without you
+		-- Thradex: summer without you
 		local ThradexColors = function(t) return specialText(t, 0.00,0.60,0.09, 0.22,0.65,0.90, 0.22,0.65,0.90, 1.00,0.74,0.27, 1.00,0.66,0.00, 1.00,0.50,0.20, 0.92,0.31,0.23) end
-		--Repooc: Something to change it up a little
+		-- Repooc: Something to change it up a little
 		local PoocsColors = function(t) return specialText(t, 0.9,0.8,0.5) end
+		-- Botanica: Dark Cyan (048BA8), Mid Turquoise (52CCC0), Lime Green (32CD32), Khaki (EFEA5A), Coral (FF8348), Salmon (F24374), Blue Violet (9933ff), Sea Green (0DB39E)
+		local BotsColors = function(t) return specialText(t, 0.01,0.54,0.65, 0.30,0.80,0.64, 0.19,0.80,0.19, 0.93,0.91,0.35, 1.00,0.51,0.28, 0.94,0.26,0.45, 0.60,0.20,1.00, 0.05,0.70,0.61) end
 
 		itsSimpy = function() return ElvSimpy, SimpyColors end
 		itsElv = function() return ElvBlue, ElvColors end
+		itsWife = function() return ElvPink, WifeColors end
 		itsMel = function() return Hibiscus, MelColors end
 		itsMis = function() return Rainbow, MisColors end
 		itsThradex = function() return PalmTree, ThradexColors end
 		itsPooc = function() return ElvBlue, PoocsColors end
+		itsBot = function() return Gem, BotsColors end
 	end
 
 	local z = {}
@@ -254,15 +260,20 @@ do --this can save some main file locals
 	local portal = GetCVar('portal')
 	if portal == 'US' then
 		if E.Classic then
-			-- Simpy (5099: Myzrael)
-			z['Player-5099-01947A77']	= itsSimpy -- Warlock: Simpy
+			-- Simpy Seasonal (5813: Wild Growth)
+			z['Player-5813-0301DEC1']	= itsSimpy -- Warlock: Yubi
+			-- Simpy Era (5149: Mankrik)
+			z['Player-5149-04172B76']	= itsSimpy -- Warlock: Simpy
+			-- Simpy Anniversary (6103: Dreamscythe)
+			z['Player-6103-02A886D5']	= itsSimpy -- Warlock: Simpy
+			z['Player-6103-0301DECC']	= itsSimpy -- Priest: Hunie
 		elseif E.Mists then
-			-- Simpy (4373: Myzrael)
-			z['Player-4373-011657A7']	= itsSimpy -- Paladin:	Cutepally
-			z['Player-4373-032FFEE2']	= itsSimpy -- Shaman:	Kalline
-			z['Player-4373-040E5AA9']	= itsSimpy -- Druid:	Puttietat
-			z['Player-4373-03E24528']	= itsSimpy -- Hunter:	Arieva
-			z['Player-4373-03351BC7']	= itsSimpy -- [Horde] DK:	Imsojelly
+			-- Simpy (4385: Pagle)
+			z['Player-4385-05E5F6DF']	= itsSimpy -- Shaman:	Kybi
+			z['Player-4385-05E5F60B']	= itsSimpy -- Druid:	Puttietat
+			z['Player-4385-05E5F466']	= itsSimpy -- Hunter:	Arbi
+			z['Player-4385-05E5F597']	= itsSimpy -- [Horde] DK:		Imsojelly
+			z['Player-4385-05E5F601']	= itsSimpy -- [Horde] Shaman:	Yube
 			-- Repooc
 			z['Repooc-Atiesh']			= itsPooc -- [Alliance] Paladin
 		elseif E.Retail then
@@ -273,6 +284,21 @@ do --this can save some main file locals
 			z['Player-3675-0A85E395']	= itsElv -- Warrior
 			z['Player-5-0E8301B7']		= itsElv -- Mage
 			z['Player-5-0E885971']		= itsElv -- Shaman
+			z['Player-162-0BB751DE']	= itsElv -- DH
+			z['Player-53-0DFD6F64']		= itsElv -- Hunter
+			-- Elvs Wife
+			z['Player-5-0E8B3558']		= itsWife -- Panda Mage
+			z['Player-53-0DFD6F4E']		= itsWife -- Cow Mage
+			-- Botanica (115: Draenor)
+			z['Player-115-01C73081']	= itsBot -- Druid:		Botanica
+			z['Player-115-00D6F2F0']	= itsBot -- Shaman:		Elysium
+			z['Player-115-00D69928']	= itsBot -- Priest:		Kamasuture
+			z['Player-115-016AA043']	= itsBot -- Paladin:	Pliades
+			z['Player-115-01492461']	= itsBot -- Warlock:	Ophiuchi
+			z['Player-115-022388DF']	= itsBot -- DK:			Chthonica
+			z['Player-115-00D75DD8']	= itsBot -- Druid:		Aluragon
+			z['Player-115-00977558']	= itsBot -- Hunter:		Pavonis
+			z['Player-115-007A62F0']	= itsBot -- Mage:		Aliandrill
 			-- Repooc
 			z['Dapooc-Spirestone']		= itsPooc	-- [Alliance] Druid
 			z['Sifpooc-Stormrage']		= itsPooc	-- [Alliance] DH
@@ -346,34 +372,38 @@ do --this can save some main file locals
 			z['Alysneaks-Cenarius']		= itsMel -- [Horde] Rogue
 			z['Alytotes-Cenarius']		= itsMel -- [Horde] Shaman
 			-- Thradex (Simpys Buddy)
-			z['Player-3676-0982798A']	= itsThradex -- Foam-Area52
-			z['Player-3676-0E6FC676']	= itsThradex -- Gur-Area52
-			z['Player-3676-0D834080']	= itsThradex -- Counselor-Area52
-			z['Player-3676-0E77A90A']	= itsThradex -- Archmage-Area52
-			z['Player-3676-0EA34C00']	= itsThradex -- Benito-Area52
-			z['Player-3676-0E0547CE']	= itsThradex -- Ahmir-Area52
-			z['Player-3676-0AFA7773']	= itsThradex -- Lifelink-Area52
-			z['Player-3676-0D829A31']	= itsThradex -- Psychiatrist-Area52
-			z['Player-3676-0A5800F2']	= itsThradex -- Italian-Area52
-			z['Player-125-0AA52CD1']	= itsThradex -- Monk-CenarionCircle
-			z['Player-3675-0AB731AC']	= itsThradex -- Jonesy-MoonGuard
-			z['Player-3675-0AD64DD0']	= itsThradex -- PuertoRican-MoonGuard
-			z['Player-3675-0AD64EA1']	= itsThradex -- Rainao-MoonGuard
-			z['Player-60-0A5E33DE']		= itsThradex -- Tb-Stormrage
-			z['Player-60-0A58F3D2']		= itsThradex -- Thradex-Stormrage
-			z['Player-60-0A4E0A3E']		= itsThradex -- Wrecked-Stormrage
-			z['Player-60-0F65AEC4']		= itsThradex -- Puertorican-Stormrage
-			z['Player-60-0AADFA03']		= itsThradex -- Quickscoper-Stormrage
-			z['Player-1168-0AE46826']	= itsThradex -- Daddy-Cairne
-			z['Player-115-0883DF8B']	= itsThradex -- Daddy-EchoIsles
-			z['Player-53-0D463E51']		= itsThradex -- Badbunny-Wildhammer
-			z['Player-113-0A9F78FF']	= itsThradex -- Vanessa-Darrowmere
-			z['Player-127-0AD64E79']	= itsThradex -- Christopher-Firetree
-			-- Affinity
-			z['Affinichi-Illidan']		= Bathrobe
-			z['Affinitii-Illidan']		= Bathrobe
-			z['Affinity-Illidan']		= Bathrobe
-			z['Uplift-Illidan']			= Bathrobe
+			z['Player-53-0D463E51']		= itsThradex -- [Wildhammer] Badbunny
+			z['Player-60-0A4E0A3E']		= itsThradex -- [Stormrage] Wrecked
+			z['Player-60-0A58F3D2']		= itsThradex -- [Stormrage] Thradex
+			z['Player-60-0A58F3D4']		= itsThradex -- [Stormrage] Rn
+			z['Player-60-0A5E33DE']		= itsThradex -- [Stormrage] Tb
+			z['Player-60-0AADFA03']		= itsThradex -- [Stormrage] Quickscoper
+			z['Player-60-0F65AEC4']		= itsThradex -- [Stormrage] Puertorican
+			z['Player-104-0EA94774']	= itsThradex -- [Onyxia] Alma
+			z['Player-104-0EBD81BA']	= itsThradex -- [Onyxia] Itachi
+			z['Player-104-0EBD81BF']	= itsThradex -- [Onyxia] Pompompurin
+			z['Player-104-0EBD81CD']	= itsThradex -- [Onyxia] Chococat
+			z['Player-104-0EBD81E4']	= itsThradex -- [Onyxia] Cinnamoroll
+			z['Player-113-0A9F78FF']	= itsThradex -- [Darrowmere] Vanessa
+			z['Player-115-0883DF8B']	= itsThradex -- [EchoIsles] Daddy
+			z['Player-121-0AF2D3EF']	= itsThradex -- [Khaz Modan] Juicewrld
+			z['Player-121-0AF2D3FC']	= itsThradex -- [Khaz Modan] Christopher
+			z['Player-125-0AA52CD1']	= itsThradex -- [CenarionCircle] Monk
+			z['Player-127-0AD64E79']	= itsThradex -- [Firetree] Christopher
+			z['Player-1168-0AE46826']	= itsThradex -- [Cairne] Daddy
+			z['Player-3675-0AB731AC']	= itsThradex -- [MoonGuard] Jonesy
+			z['Player-3675-0AD64DD0']	= itsThradex -- [MoonGuard] PuertoRican
+			z['Player-3675-0AD64EA1']	= itsThradex -- [MoonGuard] Rainao
+			z['Player-3676-0982798A']	= itsThradex -- [Area52] Foam
+			z['Player-3676-0A5800F2']	= itsThradex -- [Area52] Italian
+			z['Player-3676-0AFA7773']	= itsThradex -- [Area52] Lifelink
+			z['Player-3676-0D829A31']	= itsThradex -- [Area52] Psychiatrist
+			z['Player-3676-0D834080']	= itsThradex -- [Area52] Counselor
+			z['Player-3676-0DE1CF52']	= itsThradex -- [Area52] Trashmaster
+			z['Player-3676-0E0547CE']	= itsThradex -- [Area52] Ahmir
+			z['Player-3676-0E6FC676']	= itsThradex -- [Area52] Gur
+			z['Player-3676-0E77A90A']	= itsThradex -- [Area52] Archmage
+			z['Player-3676-0EA34C00']	= itsThradex -- [Area52] Benito
 			-- Tirain (NOTE: lol)
 			z['Tierone-Spirestone']		= TyroneBiggums
 			z['Tirain-Spirestone']		= TyroneBiggums
@@ -426,24 +456,25 @@ do --this can save some main file locals
 			z['Player-5233-01D22A72']	= ElvGreen -- [Horde] Hunter: Unluckyone
 			z['Player-5233-01D27011']	= ElvGreen -- [Horde] Druid: Luckydruid
 		elseif E.Mists then
-			-- Luckyone (4467: Firemaw, 4440: Everlook, 4476: Gehennas)
-			z['Player-4467-04540395']	= ElvGreen -- [Alliance] Druid
-			z['Player-4467-04542B4A']	= ElvGreen -- [Alliance] Priest
-			z['Player-4467-04571AA2']	= ElvGreen -- [Alliance] Warlock
-			z['Player-4467-04571911']	= ElvGreen -- [Alliance] Paladin
-			z['Player-4467-04571A9F']	= ElvGreen -- [Alliance] Mage
-			z['Player-4467-04571A8D']	= ElvGreen -- [Alliance] DK
-			z['Player-4467-048C4EED']	= ElvGreen -- [Alliance] Hunter
-			z['Player-4467-0489BE11']	= ElvGreen -- [Alliance] Shaman
-			z['Player-4467-0489BDFD'] 	= ElvGreen -- [Alliance] Rogue
-			z['Player-4467-04571A98']	= ElvGreen -- [Alliance] Warrior
-			z['Player-4440-03AD654A']	= ElvGreen -- [Alliance] Rogue
-			z['Player-4440-03ADE2DF']	= ElvGreen -- [Alliance] Shaman
-			z['Player-4467-0613ECA1']	= ElvGreen -- [Alliance] Monk
-			z['Player-4476-03BF41C9']	= ElvGreen -- [Horde] Hunter
-			z['Player-4476-049F4831']	= ElvGreen -- [Horde] DK
-			z['Player-4476-05C7B834']	= ElvGreen -- [Horde] Mage
-			z['Player-4476-05CAB05D']	= ElvGreen -- [Horde] Monk
+			-- Luckyone (Horde: Garalon, Alliance: Shek'zeer)
+			z['Player-4454-060E2FD9']	= ElvGreen -- [Horde] Mage
+			z['Player-4454-060E336E']	= ElvGreen -- [Horde] Hunter
+			z['Player-4454-060E339A']	= ElvGreen -- [Horde] Monk
+			z['Player-4454-060E4058']	= ElvGreen -- [Alliance] Druid
+			z['Player-4454-060E4064']	= ElvGreen -- [Alliance] Priest
+			z['Player-4454-060E406B']	= ElvGreen -- [Alliance] Warlock
+			z['Player-4454-060E4071']	= ElvGreen -- [Alliance] Shaman
+			z['Player-4454-060E4076']	= ElvGreen -- [Alliance] Warrior
+			z['Player-4454-060E4089'] 	= ElvGreen -- [Alliance] Rogue
+			z['Player-4454-060E4091']	= ElvGreen -- [Alliance] Paladin
+			z['Player-4454-060E4086']	= ElvGreen -- [Alliance] DK
+			z['Player-4454-060E45B6']	= ElvGreen -- [Alliance] Mage
+			z['Player-4454-060E45EA']	= ElvGreen -- [Alliance] Hunter
+			-- Luckyone (Horde: Norushen, Alliance: Everlook)
+			z['Player-4440-037C7E29']	= ElvGreen -- [Alliance] DK
+			z['Player-4454-060E3657']	= ElvGreen -- [Horde] Druid
+			z['Player-4454-060E364E']	= ElvGreen -- [Horde] Priest
+			z['Player-4454-060E361A']	= ElvGreen -- [Horde] Shaman
 		elseif E.Retail then
 			-- Blazeflack
 			z['Blazii-Silvermoon']		= ElvBlue -- Priest
@@ -451,9 +482,8 @@ do --this can save some main file locals
 			-- Merathilis (1401: Shattrath/Garrosh)
 			z['Player-1401-04217BB2']	= ElvPurple	-- [Alliance] Warlock:	Asragoth
 			z['Player-1401-0421EB9F']	= ElvBlue	-- [Alliance] Warrior:	Brítt
-			z['Player-1401-0ABBE432']	= ElvBlue	-- [Alliance] Warrior:	Brìtt/WoW Remix
 			z['Player-1401-0421F909']	= ElvRed	-- [Alliance] Paladin:	Damará
-			z["Player-1401-0AB0E6D1"]	= ElvRed --	 . [Alliance] Paladin:	Damara/WoW Remix
+			z['Player-1401-0B12A2DC']	= ElvRed	-- [Alliance] Paladin:	Damara/Legion Remix
 			z['Player-1401-0421EC36']	= ElvBlue	-- [Alliance] Priest:	Jazira
 			z['Player-1401-0A9B0131']	= ElvYellow	-- [Alliance] Rogue:	Anonia
 			z['Player-1401-041E4D64']	= ElvGreen	-- [Alliance] Monk:		Maithilis
@@ -469,6 +499,7 @@ do --this can save some main file locals
 			z['Player-1598-0F5E4639']	= ElvGreen -- [Alliance] Druid: Luckyone
 			z['Player-1598-0F3E51B0']	= ElvGreen -- [Alliance] Druid: Luckydruid
 			z['Player-1598-0FB03F89']	= ElvGreen -- [Alliance] Monk
+			z['Player-1598-0FBCD9A2']	= ElvGreen -- [Alliance] DH
 			z['Player-1598-0F46FF5A']	= ElvGreen -- [Horde] Evoker
 			z['Player-1598-0F92E2B9']	= ElvGreen -- [Horde] Evoker 2
 			z['Player-1598-0BFF3341']	= ElvGreen -- [Horde] DH
@@ -982,8 +1013,12 @@ function CH:AddMessage(msg, infoR, infoG, infoB, infoID, accessID, typeID, event
 end
 
 function CH:UpdateSettings()
-	for _, name in ipairs(_G.CHAT_FRAMES) do
-		_G[name..'EditBox']:SetAltArrowKeyMode(CH.db.useAltKey)
+	for _, frameName in ipairs(_G.CHAT_FRAMES) do
+		local chat = _G[frameName]
+		local editbox = chat and chat.editBox
+		if editbox then
+			editbox:SetAltArrowKeyMode(CH.db.useAltKey)
+		end
 	end
 end
 
@@ -1007,7 +1042,7 @@ do
 	end
 end
 
-local function colorizeLine(text, r, g, b)
+local function ColorizeLine(text, r, g, b)
 	local hexCode = E:RGBToHex(r, g, b)
 	return format('%s%s|r', hexCode, text)
 end
@@ -1025,7 +1060,7 @@ function CH:GetLines(frame)
 			message = removeIconFromLine(message)
 
 			--Add text color
-			message = colorizeLine(message, r, g, b)
+			message = ColorizeLine(message, r, g, b)
 
 			copyLines[index] = message
 			index = index + 1
@@ -1174,23 +1209,24 @@ function CH:UpdateEditboxAnchors(cvar, value)
 	local leftChat = classic and _G.LeftChatPanel
 	local panel = 22
 
-	for _, name in ipairs(_G.CHAT_FRAMES) do
-		local frame = _G[name]
-		local editbox = frame and frame.editBox
-		if not editbox then return end
-		editbox.chatStyle = value
-		editbox:ClearAllPoints()
+	for _, frameName in ipairs(_G.CHAT_FRAMES) do
+		local chat = _G[frameName]
+		local editbox = chat and chat.editBox
+		if editbox then
+			editbox.chatStyle = value
+			editbox:ClearAllPoints()
 
-		local anchorTo = leftChat or frame
-		local below, belowInside = CH.db.editBoxPosition == 'BELOW_CHAT', CH.db.editBoxPosition == 'BELOW_CHAT_INSIDE'
-		if below or belowInside then
-			local showLeftPanel = E.db.datatexts.panels.LeftChatDataPanel.enable
-			editbox:Point('TOPLEFT', anchorTo, 'BOTTOMLEFT', classic and (showLeftPanel and 1 or 0) or -2, (classic and (belowInside and 1 or 0) or -5))
-			editbox:Point('BOTTOMRIGHT', anchorTo, 'BOTTOMRIGHT', classic and (showLeftPanel and -1 or 0) or -2, (classic and (belowInside and 1 or 0) or -5) + (belowInside and panel or -panel))
-		else
-			local aboveInside = CH.db.editBoxPosition == 'ABOVE_CHAT_INSIDE'
-			editbox:Point('BOTTOMLEFT', anchorTo, 'TOPLEFT', classic and (aboveInside and 1 or 0) or -2, (classic and (aboveInside and -1 or 0) or 2))
-			editbox:Point('TOPRIGHT', anchorTo, 'TOPRIGHT', classic and (aboveInside and -1 or 0) or 2, (classic and (aboveInside and -1 or 0) or 2) + (aboveInside and -panel or panel))
+			local anchorTo = leftChat or chat
+			local below, belowInside = CH.db.editBoxPosition == 'BELOW_CHAT', CH.db.editBoxPosition == 'BELOW_CHAT_INSIDE'
+			if below or belowInside then
+				local showLeftPanel = E.db.datatexts.panels.LeftChatDataPanel.enable
+				editbox:Point('TOPLEFT', anchorTo, 'BOTTOMLEFT', classic and (showLeftPanel and 1 or 0) or -2, (classic and (belowInside and 1 or 0) or -5))
+				editbox:Point('BOTTOMRIGHT', anchorTo, 'BOTTOMRIGHT', classic and (showLeftPanel and -1 or 0) or -2, (classic and (belowInside and 1 or 0) or -5) + (belowInside and panel or -panel))
+			else
+				local aboveInside = CH.db.editBoxPosition == 'ABOVE_CHAT_INSIDE'
+				editbox:Point('BOTTOMLEFT', anchorTo, 'TOPLEFT', classic and (aboveInside and 1 or 0) or -2, (classic and (aboveInside and -1 or 0) or 2))
+				editbox:Point('TOPRIGHT', anchorTo, 'TOPRIGHT', classic and (aboveInside and -1 or 0) or 2, (classic and (aboveInside and -1 or 0) or 2) + (aboveInside and -panel or panel))
+			end
 		end
 	end
 end
@@ -1206,9 +1242,9 @@ function CH:FindChatWindows()
 	end
 
 	local docker = _G.GeneralDockManager.primary
-	for index, name in ipairs(_G.CHAT_FRAMES) do
-		local chat = _G[name]
-		if (chat.isDocked and chat == docker) or (not chat.isDocked and chat:IsShown()) then
+	for index, frameName in ipairs(_G.CHAT_FRAMES) do
+		local chat = _G[frameName]
+		if chat and ((chat.isDocked and chat == docker) or (not chat.isDocked and chat:IsShown())) then
 			if not left and index ~= CH.db.panelSnapRightID then
 				if CH.db.panelSnapLeftID then
 					if CH.db.panelSnapLeftID == index then
@@ -1297,20 +1333,26 @@ function CH:UpdateChatTab(chat)
 end
 
 function CH:UpdateChatTabs()
-	for _, name in ipairs(_G.CHAT_FRAMES) do
-		CH:UpdateChatTab(_G[name])
+	for _, frameName in ipairs(_G.CHAT_FRAMES) do
+		local chat = _G[frameName]
+		if chat then
+			CH:UpdateChatTab(chat)
+		end
 	end
 end
 
 function CH:ToggleChatButton(button)
-	if button then
-		button:SetShown(not CH.db.hideCopyButton)
-	end
+	if not button then return end
+
+	button:SetShown(not CH.db.hideCopyButton)
 end
 
 function CH:ToggleCopyChatButtons()
-	for _, name in ipairs(_G.CHAT_FRAMES) do
-		CH:ToggleChatButton(_G[name].copyButton)
+	for _, frameName in ipairs(_G.CHAT_FRAMES) do
+		local chat = _G[frameName]
+		if chat and chat.copyButton then
+			CH:ToggleChatButton(chat.copyButton)
+		end
 	end
 end
 
@@ -1436,8 +1478,11 @@ function CH:PositionChats()
 	-- don't proceed when chat is disabled
 	if not E.private.chat.enable then return end
 
-	for _, name in ipairs(_G.CHAT_FRAMES) do
-		CH:PositionChat(_G[name])
+	for _, frameName in ipairs(_G.CHAT_FRAMES) do
+		local chat = _G[frameName]
+		if chat then
+			CH:PositionChat(chat)
+		end
 	end
 end
 
@@ -1460,9 +1505,12 @@ function CH:UpdateChatTabColors()
 	-- don't proceed when chat is disabled
 	if not E.private.chat.enable then return end
 
-	for _, name in ipairs(_G.CHAT_FRAMES) do
-		local tab = CH:GetTab(_G[name])
-		CH:FCFTab_UpdateColors(tab, tab.selected)
+	for _, frameName in ipairs(_G.CHAT_FRAMES) do
+		local chat = _G[frameName]
+		local tab = chat and CH:GetTab(chat)
+		if tab then
+			CH:FCFTab_UpdateColors(tab, tab.selected)
+		end
 	end
 end
 E.valueColorUpdateFuncs.Chat = CH.UpdateChatTabColors
@@ -1629,16 +1677,18 @@ end
 
 function CH:ToggleHyperlink(enable)
 	for _, frameName in ipairs(_G.CHAT_FRAMES) do
-		local frame = _G[frameName]
-		local hooked = CH.hooks and CH.hooks[frame] and CH.hooks[frame].OnHyperlinkEnter
-		if enable and not hooked then
-			CH:HookScript(frame, 'OnHyperlinkEnter')
-			CH:HookScript(frame, 'OnHyperlinkLeave')
-			CH:HookScript(frame, 'OnMouseWheel')
-		elseif not enable and hooked then
-			CH:Unhook(frame, 'OnHyperlinkEnter')
-			CH:Unhook(frame, 'OnHyperlinkLeave')
-			CH:Unhook(frame, 'OnMouseWheel')
+		local chat = _G[frameName]
+		if chat then
+			local hooked = CH.hooks and CH.hooks[chat] and CH.hooks[chat].OnHyperlinkEnter
+			if enable and not hooked then
+				CH:HookScript(chat, 'OnHyperlinkEnter')
+				CH:HookScript(chat, 'OnHyperlinkLeave')
+				CH:HookScript(chat, 'OnMouseWheel')
+			elseif not enable and hooked then
+				CH:Unhook(chat, 'OnHyperlinkEnter')
+				CH:Unhook(chat, 'OnHyperlinkLeave')
+				CH:Unhook(chat, 'OnMouseWheel')
+			end
 		end
 	end
 end
@@ -1768,9 +1818,9 @@ function CH:ChatFrame_ReplaceIconAndGroupExpressions(message, noIconReplacement,
 				seenGroups[groupIndex] = true
 				local groupList = '['
 				for i = 1, GetNumGroupMembers() do
-					local name, _, subgroup, _, _, classFileName = GetRaidRosterInfo(i)
+					local name, _, subgroup, _, _, classFilename = GetRaidRosterInfo(i)
 					if name and subgroup == groupIndex then
-						local classColorTable = E:ClassColor(classFileName)
+						local classColorTable = E:ClassColor(classFilename)
 						if classColorTable then
 							name = format('|cff%.2x%.2x%.2x%s|r', classColorTable.r*255, classColorTable.g*255, classColorTable.b*255, name)
 						end
@@ -1808,8 +1858,14 @@ function CH:GetPFlag(specialFlag, zoneChannelID, unitGUID)
 		end
 	end
 
-	if E.Retail and CH.db.timerunningIcon and unitGUID and IsTimerunningPlayer(unitGUID) then
-		flag = flag .. TIMERUNNING_SMALL
+	if E.Retail and unitGUID then
+		if CH.db.timerunningIcon and IsTimerunningPlayer(unitGUID) then
+			flag = flag .. TIMERUNNING_SMALL
+		end
+
+		if CH.db.recentAllyIcon and IsRecentAllyByGUID(unitGUID) then
+			flag = flag .. RECENTALLY_SMALL
+		end
 	end
 
 	return flag
@@ -2439,28 +2495,30 @@ function CH:SetupChat()
 	if not E.private.chat.enable then return end
 
 	for _, frameName in ipairs(_G.CHAT_FRAMES) do
-		local frame = _G[frameName]
-		local id = frame:GetID()
-		CH:StyleChat(frame)
+		local chat = _G[frameName]
+		if chat then
+			CH:StyleChat(chat)
 
-		_G.FCFTab_UpdateAlpha(frame)
+			_G.FCFTab_UpdateAlpha(chat)
 
-		local allowHooks = not ignoreChats[id]
-		if allowHooks and not frame.OldAddMessage then
-			--Don't add timestamps to combat log, they don't work.
-			--This usually taints, but LibChatAnims should make sure it doesn't.
-			frame.OldAddMessage = frame.AddMessage
-			frame.AddMessage = CH.AddMessage
-		end
-
-		if not frame.scriptsSet then
-			if allowHooks then
-				frame:SetScript('OnEvent', FloatingChatFrameOnEvent)
+			local id = chat:GetID()
+			local allowHooks = id and not ignoreChats[id]
+			if allowHooks and not chat.OldAddMessage then
+				--Don't add timestamps to combat log, they don't work.
+				--This usually taints, but LibChatAnims should make sure it doesn't.
+				chat.OldAddMessage = chat.AddMessage
+				chat.AddMessage = CH.AddMessage
 			end
 
-			frame:SetScript('OnMouseWheel', CH.ChatFrame_OnMouseScroll)
-			hooksecurefunc(frame, 'SetScript', CH.ChatFrame_SetScript)
-			frame.scriptsSet = true
+			if not chat.scriptsSet then
+				if allowHooks then
+					chat:SetScript('OnEvent', FloatingChatFrameOnEvent)
+				end
+
+				chat:SetScript('OnMouseWheel', CH.ChatFrame_OnMouseScroll)
+				hooksecurefunc(chat, 'SetScript', CH.ChatFrame_SetScript)
+				chat.scriptsSet = true
+			end
 		end
 	end
 
@@ -2691,11 +2749,8 @@ function CH:PET_BATTLE_CLOSE()
 
 	for _, frameName in ipairs(_G.CHAT_FRAMES) do
 		local chat = _G[frameName]
-		local tab = CH:GetTab(chat)
-		local text = tab and tab.Text:GetText()
-		if text and strmatch(text, DEFAULT_STRINGS.PET_BATTLE_COMBAT_LOG) then
+		if chat and chat.chatType == 'PET_BATTLE_COMBAT_LOG' then
 			CH.FCF_Close(chat)
-			break -- we found it, dont gotta keep lookin'
 		end
 	end
 end
@@ -2709,10 +2764,10 @@ end
 
 function CH:UpdateFading()
 	for _, frameName in ipairs(_G.CHAT_FRAMES) do
-		local frame = _G[frameName]
-		if frame then
-			frame:SetTimeVisible(CH.db.inactivityTimer)
-			frame:SetFading(CH.db.fade)
+		local chat = _G[frameName]
+		if chat then
+			chat:SetTimeVisible(CH.db.inactivityTimer)
+			chat:SetFading(CH.db.fade)
 		end
 	end
 end
@@ -2728,17 +2783,20 @@ function CH:DisplayChatHistory()
 
 	CH.SoundTimer = true -- ignore sounds during pass through ChatFrame_GetMessageEventFilters
 
-	for _, chat in ipairs(_G.CHAT_FRAMES) do
-		for _, d in ipairs(data) do
-			if type(d) == 'table' then
-				for _, messageType in pairs(_G[chat].messageTypeList) do
-					local historyType, skip = historyTypes[d[50]]
-					if historyType then -- let others go by..
-						if not CH.db.showHistory[historyType] then skip = true end -- but kill ignored ones
-					end
-					if not skip and gsub(strsub(d[50],10),'_INFORM','') == messageType then
-						if d[1] and not CH:MessageIsProtected(d[1]) then
-							CH:ChatFrame_MessageEventHandler(_G[chat],d[50],d[1],d[2],d[3],d[4],d[5],d[6],d[7],d[8],d[9],d[10],d[11],d[12],d[13],d[14],d[15],d[16],d[17],'ElvUI_ChatHistory',d[51],d[52],d[53])
+	for _, frameName in ipairs(_G.CHAT_FRAMES) do
+		local chat = _G[frameName]
+		if chat then
+			for _, d in ipairs(data) do
+				if type(d) == 'table' then
+					for _, messageType in pairs(chat.messageTypeList) do
+						local historyType, skip = historyTypes[d[50]]
+						if historyType then -- let others go by..
+							if not CH.db.showHistory[historyType] then skip = true end -- but kill ignored ones
+						end
+						if not skip and gsub(strsub(d[50],10),'_INFORM','') == messageType then
+							if d[1] and not CH:MessageIsProtected(d[1]) then
+								CH:ChatFrame_MessageEventHandler(chat,d[50],d[1],d[2],d[3],d[4],d[5],d[6],d[7],d[8],d[9],d[10],d[11],d[12],d[13],d[14],d[15],d[16],d[17],'ElvUI_ChatHistory',d[51],d[52],d[53])
+							end
 						end
 					end
 				end
@@ -2751,15 +2809,15 @@ end
 
 tremove(_G.ChatTypeGroup.GUILD, 2)
 function CH:DelayGuildMOTD()
-	local delay, checks, delayFrame, chat = 0, 0, CreateFrame('Frame')
+	local delay, checks, delayFrame = 0, 0, CreateFrame('Frame')
 	tinsert(_G.ChatTypeGroup.GUILD, 2, 'GUILD_MOTD')
 	delayFrame:SetScript('OnUpdate', function(df, elapsed)
 		delay = delay + elapsed
 		if delay < 5 then return end
 		local msg = GetGuildRosterMOTD()
 		if msg and strlen(msg) > 0 then
-			for _, frame in ipairs(_G.CHAT_FRAMES) do
-				chat = _G[frame]
+			for _, frameName in ipairs(_G.CHAT_FRAMES) do
+				local chat = _G[frameName]
 				if chat and chat:IsEventRegistered('CHAT_MSG_GUILD') then
 					CH:ChatFrame_SystemEventHandler(chat, 'GUILD_MOTD', msg)
 					chat:RegisterEvent('GUILD_MOTD')
@@ -2836,21 +2894,18 @@ function CH:FCF_SetWindowAlpha(frame, alpha)
 end
 
 function CH:CheckLFGRoles()
-	if not E.allowRoles or not CH.db.lfgIcons or not IsInGroup() then return end
+	if not E.allowRoles or not E.IsInGroup or not CH.db.lfgIcons then return end
 
 	wipe(lfgRoles)
 
-	local playerRole = UnitGroupRolesAssigned('player')
-	if playerRole then
-		lfgRoles[PLAYER_NAME] = CH.RoleIcons[playerRole]
+	if E.myrole then
+		lfgRoles[PLAYER_NAME] = CH.RoleIcons[E.myrole]
 	end
 
-	local unit = (IsInRaid() and 'raid' or 'party')
-	for i = 1, GetNumGroupMembers() do
-		if UnitExists(unit..i) and not UnitIsUnit(unit..i, 'player') then
-			local role = UnitGroupRolesAssigned(unit..i)
-			local name, realm = UnitName(unit..i)
-
+	for guid, role in next, E.GroupRoles do
+		local unit = E.GroupUnitsByRole[role][guid]
+		if unit then
+			local name, realm = UnitName(unit)
 			if role and name then
 				name = (realm and realm ~= '' and name..'-'..realm) or name..'-'..PLAYER_REALM
 				lfgRoles[name] = CH.RoleIcons[role]
@@ -3198,7 +3253,7 @@ end
 
 do -- securely lock the atlas texture; we need this cause its not shown on init login
 	local ttsAtlas = 'chatframe-button-icon-TTS'
-	local function lockAtlas(icon, atlas)
+	local function LockAtlas(icon, atlas)
 		if atlas ~= ttsAtlas then
 			icon:SetAtlas(ttsAtlas)
 		end
@@ -3208,7 +3263,7 @@ do -- securely lock the atlas texture; we need this cause its not shown on init 
 		button.highlightAtlas = nil -- hide the highlight
 
 		if button.Icon and not button.Icon.isHookedAtlas then
-			hooksecurefunc(button.Icon, 'SetAtlas', lockAtlas)
+			hooksecurefunc(button.Icon, 'SetAtlas', LockAtlas)
 			button.Icon.isHookedAtlas = true
 		end
 	end
@@ -3770,7 +3825,7 @@ function CH:Initialize()
 	if ElvCharacterDB.ChatLog then ElvCharacterDB.ChatLog = nil end --Depreciated
 
 	CH:DelayGuildMOTD() -- Keep this before `is Chat Enabled` check
-	CH:BuildCopyChatFrame() -- Currently use this to display profiler information
+	CH:BuildCopyChatFrame()
 
 	if not E.private.chat.enable then
 		-- if the chat module is off we still need to spawn the dts for the panels

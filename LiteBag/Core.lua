@@ -1,7 +1,5 @@
 --[[----------------------------------------------------------------------------
 
-  LiteBag/Core.lua
-
   Copyright 2013 Mike Battersby
 
   Released under the terms of the GNU General Public License version 2 (GPLv2).
@@ -9,86 +7,76 @@
 
 ----------------------------------------------------------------------------]]--
 
-local addonName, LB = ...
+local _, LB = ...
 
-local L = LB.Localize
+local hiddenParent = CreateFrame('Frame')
+hiddenParent:Hide()
+
+--[[ LiteBagManager --------------------------------------------------------]]--
+
 
 LB.Manager = CreateFrame('Frame', "LiteBagManager", UIParent)
 
-local InitializeHooks = {}
-
-function LB.Manager:RegisterInitializeHook(f)
-    table.insert(InitializeHooks, f)
-end
-
-function LB.Manager:CallInitializeHooks()
-    for _,f in ipairs(InitializeHooks) do
-        f()
-    end
-end
-
-
-local function HookBlizzardBank()
-    local hookedButtons = {}
-    local function hook(self)
-        for itemButton in self:EnumerateValidItems() do
-            if not hookedButtons[itemButton] then
-                hooksecurefunc(itemButton, 'Refresh',
-                    function (itemButton)
-                        LB.CallHooks('LiteBagItemButton_Update', itemButton)
-                    end)
-                hookedButtons[itemButton] = true
+function LB.Manager:CanManageBagButtons()
+    if BagsBar then
+        if BagsBar:GetParent() ~= UIParent and BagsBar:GetParent() ~= hiddenParent then
+            return false
+        end
+        for _, b in MainMenuBarBagManager:EnumerateBagButtons() do
+            if b:GetParent() ~= BagsBar and b:GetParent() ~= hiddenParent then
+                return false
             end
         end
     end
-    hooksecurefunc(BankPanel, 'GenerateItemSlotsForSelectedTab', hook)
+    return true
 end
 
-local BlizzardContainerFrames = {
-    ContainerFrameCombinedBags,
-    ContainerFrame1,
-    ContainerFrame2,
-    ContainerFrame3,
-    ContainerFrame4,
-    ContainerFrame5,
-    ContainerFrame6,
-}
-
-local function HookBlizzardBags()
-    for _, f in ipairs(BlizzardContainerFrames) do
-        hooksecurefunc(f, 'UpdateItems',
-            function (self)
-                for _, itemButton in self:EnumerateValidItems() do
-                    LB.CallHooks('LiteBagItemButton_Update', itemButton)
-                end
-            end)
+function LB.Manager:ManageBlizzardBagButtons(editMode)
+    if self:CanManageBagButtons() then
+        local show = editMode or not LB.GetGlobalOption('hideBlizzardBagButtons')
+        if BagsBar then
+            local newParent = show and UIParent or hiddenParent
+            BagsBar:SetShown(show)
+            BagsBar:SetParent(newParent)
+        else
+            local newParent = show and MicroButtonAndBagsBar or hiddenParent
+            for _, bagButton in MainMenuBarBagManager:EnumerateBagButtons() do
+                bagButton:SetShown(show)
+                bagButton:SetParent(newParent)
+            end
+            BagBarExpandToggle:SetShown(show)
+            BagBarExpandToggle:SetParent(newParent)
+        end
     end
 end
 
 -- register here some other open/close events I liked.
 
+function LB.Manager:Initialize()
+    LB.InitializeOptions()
+    LB.InitializeGUIOptions()
+    LB.BagsManager:Initialize()
+    LB.BankManager:Initialize()
+
+    -- Force show the Bag Buttons in Edit Mode
+    EventRegistry:RegisterCallback("EditMode.Enter", function () self:ManageBlizzardBagButtons(true) end)
+    EventRegistry:RegisterCallback("EditMode.Exit", function () self:ManageBlizzardBagButtons() end)
+    self:ManageBlizzardBagButtons()
+    LB.db:RegisterCallback('OnOptionsModified', function () self:ManageBlizzardBagButtons() end)
+
+end
+
 function LB.Manager:OnEvent(event, ...)
-    if LB.db then LB.EventDebug(self, event, ...) end
-    if event == 'PLAYER_INTERACTION_MANAGER_FRAME_SHOW' then
-        local type = ...
-        if type == Enum.PlayerInteractionType.GuildBanker then
-            OpenAllBags()
-        end
-    elseif event == 'PLAYER_INTERACTION_MANAGER_FRAME_HIDE' then
-        local type = ...
-        if type == Enum.PlayerInteractionType.GuildBanker then
-            CloseAllBags()
-        end
-    elseif event == 'PLAYER_LOGIN' then
-        LB.InitializeOptions()
-        LB.InitializeGUIOptions()
-        LB.PatchCombinedBags()
-        HookBlizzardBags()
-        HookBlizzardBank()
-        self:CallInitializeHooks()
-        self:RegisterEvent('PLAYER_INTERACTION_MANAGER_FRAME_SHOW')
-        self:RegisterEvent('PLAYER_INTERACTION_MANAGER_FRAME_HIDE')
+    if event == 'PLAYER_LOGIN' then
+        self:Initialize()
+    else
+        LB.BagsManager:CallHooks()
+        LB.BankManager:CallHooks()
     end
+end
+
+function LB.Manager:AddPluginEvent(e)
+    self:RegisterEvent(e)
 end
 
 LB.Manager:RegisterEvent('PLAYER_LOGIN')

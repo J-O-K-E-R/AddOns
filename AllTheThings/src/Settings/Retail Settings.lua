@@ -1,5 +1,5 @@
 local appName, app = ...;
-local L = app.L.SETTINGS_MENU;
+local L = app.L;
 local settings = app.Settings;
 
 -- Settings Class
@@ -120,7 +120,9 @@ local TooltipSettingsBase = {
 		["DisplayInCombat"] = true,
 		["Enabled"] = true,
 		["Enabled:Mod"] = "None",
+		["EnablePetCageTooltips"] = true,
 		["Expand:Difficulty"] = true,
+		["Expand:MiniList"] = true,
 		["IncludeOriginalSource"] = true,
 		["LootSpecializations"] = true,
 		["WorldMapButton"] = true,
@@ -136,6 +138,7 @@ local TooltipSettingsBase = {
 		["MainListScale"] = 1,
 		["MiniListScale"] = 1,
 		["Objectives"] = false,
+		["Owned Pets"] = true,
 		["Precision"] = 2,
 		["PlayDeathSound"] = false,
 		["Progress"] = true,
@@ -213,6 +216,11 @@ local TooltipSettingsBase = {
 		["u"] = true,
 	},
 };
+local UnobtainableSettingsBase = {
+	__index = {
+		[7] = true,	-- Trading Post
+	}
+};
 
 local RawSettings;
 local function SetupRawSettings()
@@ -223,6 +231,7 @@ local function SetupRawSettings()
 	setmetatable(RawSettings.General, GeneralSettingsBase)
 	setmetatable(RawSettings.Tooltips, TooltipSettingsBase)
 	setmetatable(RawSettings.Filters, FilterSettingsBase)
+	setmetatable(RawSettings.Unobtainable, UnobtainableSettingsBase)
 end
 settings.Initialize = function(self)
 	-- app.PrintDebug("settings.Initialize")
@@ -406,12 +415,12 @@ settings.ApplyProfile = function()
 			end
 
 			-- when applying a profile, clean out any 'false' Unobtainable keys for cleaner settings storage
-			-- since there are no situations where Unobtainables are included by default
+			-- for non-defaulted fields
 			local unobCopy = app.CloneDictionary(RawSettings.Unobtainable)
 			-- this key is no longer used
 			unobCopy.DoFiltering = false
 			for unobID,set in pairs(unobCopy) do
-				if not set then
+				if not set and not UnobtainableSettingsBase.__index[unobID] then
 					RawSettings.Unobtainable[unobID] = nil
 				end
 			end
@@ -741,7 +750,7 @@ settings.GetShortModeString = function(self)
 		end
 		-- Waiting on Refresh to properly show values
 		if self.NeedsRefresh then
-			style = "R:" .. " " .. style
+			style = "R: " .. style
 		end
 		if self:Get("Completionist") then
 			if app.MODE_ACCOUNT then
@@ -809,7 +818,7 @@ settings.GetUnobtainableFilter = function(self, u)
 	return not u or RawSettings.Unobtainable[u]
 end
 settings.SetUnobtainableFilter = function(self, u, value)
-	self:SetValue("Unobtainable", u, value and true or nil)
+	self:SetValue("Unobtainable", u, value)
 	self:UpdateMode(1);
 end
 
@@ -1179,7 +1188,7 @@ end
 
 Mixin(settings, ATTSettingsPanelMixin);
 
-local Categories, AddOnCategoryID, RootCategoryID = {}, appName, nil;
+local OptionsPages, AddOnCategoryID, RootCategoryID = {}, appName, nil;
 local openToCategory = Settings and Settings.OpenToCategory or InterfaceOptionsFrame_OpenToCategory;
 settings.Open = function(self)
 	if not openToCategory(RootCategoryID or AddOnCategoryID) then
@@ -1202,7 +1211,7 @@ settings.CreateOptionsPage = function(self, text, parentCategory, isRootCategory
 			Settings.RegisterAddOnCategory(category);
 			AddOnCategoryID = category.ID;
 		else
-			parentCategory = Categories[parentCategory or appName];
+			parentCategory = OptionsPages[parentCategory or appName];
 			category = Settings.RegisterCanvasLayoutSubcategory(parentCategory.category, subcategory, text)
 			if isRootCategory then RootCategoryID = category.ID; end
 		end
@@ -1213,7 +1222,7 @@ settings.CreateOptionsPage = function(self, text, parentCategory, isRootCategory
 		if text ~= appName then subcategory.parent = parentCategory or appName; end
 		InterfaceOptions_AddCategory(subcategory);
 	end
-	Categories[text] = subcategory;
+	OptionsPages[text] = subcategory;
 
 	-- Common Header
 	local logo = subcategory:CreateTexture(nil, "ARTWORK");

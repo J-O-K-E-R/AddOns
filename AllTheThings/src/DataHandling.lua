@@ -854,8 +854,8 @@ local function CreateObject(t, rootOnly)
 			else
 				t = app.CreateItem(itemID, t);
 			end
-		elseif t.npcID or t.creatureID then
-			t = app.CreateNPC(t.npcID or t.creatureID, t);
+		elseif t.npcID then
+			t = app.CreateNPC(t.npcID, t);
 		elseif t.questID then
 			t = app.CreateQuest(t.questID, t);
 		-- Non-Thing groups
@@ -866,7 +866,7 @@ local function CreateObject(t, rootOnly)
 		elseif t.raceID then
 			t = app.CreateRace(t.raceID, t);
 		elseif t.headerID then
-			t = app.CreateNPC(t.headerID, t);
+			t = app.CreateCustomHeader(t.headerID, t);
 		elseif t.expansionID then
 			t = app.CreateExpansion(t.expansionID, t);
 		elseif t.difficultyID then

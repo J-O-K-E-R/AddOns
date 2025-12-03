@@ -1,16 +1,10 @@
-lightweight tag 08c3230b2f813b990e3e4387fcc43f663c47db8c 11.2.0-02
+lightweight tag a0ea176f951651f6b9c33acb93a61833c1dcec89 12.0.0-02
 Author:	Dave Hendler <sollaires@gmail.com>
-Date:	Fri Jul 18 10:54:03 2025 -0700
+Date:	Wed Oct 8 14:49:46 2025 -0500
 
-commit 08c3230b2f813b990e3e4387fcc43f663c47db8c
+commit a0ea176f951651f6b9c33acb93a61833c1dcec89
 Author: Dave Hendler <sollaires@gmail.com>
-Date:   Fri Jul 18 10:54:03 2025 -0700
+Date:   Wed Oct 8 14:49:46 2025 -0500
 
-    Handle 11.2 bank changes, add support for warband bank
-
-commit 254db9d01919cbd7510ce380bd13a15c295896ef
-Author: Dave Hendler <sollaires@gmail.com>
-Date:   Wed Jul 16 20:39:45 2025 -0700
-
-    Fix alpha version
+    Add Starlight Matrix to currency export
 

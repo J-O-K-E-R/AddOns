@@ -8,6 +8,7 @@ local format, strmatch = format, strmatch
 local tonumber = tonumber
 
 local GameTooltip = GameTooltip
+local GetCVarBool = C_CVar.GetCVarBool
 local GetItemInfo = C_Item.GetItemInfo
 local SetInsertItemsLeftToRight = C_Container.SetInsertItemsLeftToRight
 
@@ -24,7 +25,7 @@ Bags.args.general.args.currencyFormat = ACH:Select(L["Currency Format"], L["The 
 Bags.args.general.args.moneyFormat = ACH:Select(L["Gold Format"], L["The display format of the money text that is shown at the top of the main bag."], 3, { SMART = L["Smart"], FULL = L["Full"], SHORT = L["SHORT"], SHORTSPACED = L["Short (Whole Numbers Spaced)"], SHORTINT = L["Short (Whole Numbers)"], CONDENSED = L["Condensed"], CONDENSED_SPACED = L["Condensed (Spaced)"], BLIZZARD = L["Blizzard Style"], BLIZZARD2 = L["Blizzard Style"].." 2", HIDE = L["Hide"] }, nil, nil, nil, function(info, value) E.db.bags[info[#info]] = value B:UpdateGoldText() end)
 Bags.args.general.args.moneyCoins = ACH:Toggle(L["Show Coins"], L["Use coin icons instead of colored text."], 4, nil, nil, nil, nil, function(info, value) E.db.bags[info[#info]] = value B:UpdateGoldText() end)
 
-Bags.args.general.args.generalGroup = ACH:MultiSelect(L["General"], nil, 5, nil, nil, nil, function(_, key) return E.db.bags[key] end)
+Bags.args.general.args.generalGroup = ACH:MultiSelect(L["General"], nil, 5)
 Bags.args.general.args.generalGroup.values = {
 	transparent = L["Transparent"],
 	questIcon = L["Quest Starter Icon"],
@@ -35,23 +36,36 @@ Bags.args.general.args.generalGroup.values = {
 	clearSearchOnClose = L["Clear Search On Close"],
 	reverseLoot = L["REVERSE_NEW_LOOT_TEXT"],
 	reverseSlots = L["Reverse Bag Slots"],
-	useBlizzardCleanup = L["Use Blizzard Cleanup"]
+	upgradeIcon = L["Upgrade Icon"]
 }
 
 if E.Retail then
 	Bags.args.general.args.generalGroup.values.scrapIcon = L["Scrap Icon"]
-	Bags.args.general.args.generalGroup.values.upgradeIcon = L["Upgrade Icon"]
 	Bags.args.general.args.generalGroup.values.showAssignedIcon = L["Assigned Icon"]
 	Bags.args.general.args.generalGroup.values.useBlizzardJunk = L["Use Blizzard Sell Junk"]
+	Bags.args.general.args.generalGroup.values.bankAutoDepositReagents = L["Auto Deposit Reagents"]
 end
 
 local excludeUpdates = {
 	clearSearchOnClose = true,
-	useBlizzardCleanup = true,
 	auctionToggle = true
 }
 
+Bags.args.general.args.generalGroup.get = function(_, key)
+	if key == 'bankAutoDepositReagents' then
+		return GetCVarBool('bankAutoDepositReagents')
+	else
+		return E.db.bags[key]
+	end
+end
+
 Bags.args.general.args.generalGroup.set = function(_, key, value)
+	if key == 'bankAutoDepositReagents' then
+		E:SetCVar('bankAutoDepositReagents', value and 1 or 0)
+
+		return
+	end
+
 	E.db.bags[key] = value
 
 	if key == 'showAssignedIcon' then
@@ -70,11 +84,13 @@ Bags.args.general.args.playerGroup.args.bagSize = ACH:Range(L["Button Size"], ni
 Bags.args.general.args.playerGroup.args.bagButtonSpacing = ACH:Range(L["Button Spacing"], nil, 3, { min = -3, max = 20, step = 1 })
 Bags.args.general.args.playerGroup.args.bagWidth = ACH:Range(L["Panel Width"], L["Adjust the width of the bag frame."], 4, { min = 150, max = 1400, step = 1 })
 Bags.args.general.args.playerGroup.args.disableBagSort = ACH:Toggle(L["Disable Sort"], nil, 5, nil, nil, nil, nil, function(info, value) E.db.bags[info[#info]] = value B:ToggleSortButtonState(false) end)
+Bags.args.general.args.playerGroup.args.useBlizzardCleanup = ACH:Toggle(L["Use Blizzard Cleanup"], nil, 6, nil, nil, nil, nil, function(info, value) E.db.bags[info[#info]] = value end, nil, not E.Retail)
 
 Bags.args.general.args.playerGroup.args.split = ACH:Group(L["Split"], nil, -1, nil, function(info) return E.db.bags.split[info[#info]] end, function(info, value) E.db.bags.split[info[#info]] = value B:Layout() end)
 Bags.args.general.args.playerGroup.args.split.args.player = ACH:Toggle(L["Enable"], nil, 1)
 Bags.args.general.args.playerGroup.args.split.args.bagSpacing = ACH:Range(L["Bag Spacing"], nil, 2, { min = -3, max = 20, step = 1 }, nil, nil, nil, nil, function() return not E.db.bags.split.player end)
-Bags.args.general.args.playerGroup.args.split.args.splitbags = ACH:MultiSelect('', nil, 4, {}, nil, nil, function(_, key) return E.db.bags.split[key] end, function(_, key, value) E.db.bags.split[key] = value B:Layout() end, nil, function() return not E.db.bags.split.player end)
+Bags.args.general.args.playerGroup.args.split.args.alwaysProfessionBags = ACH:Toggle(L["Always Split Professions"], nil, 4, nil, nil, nil, nil, nil, nil, function() return not E.db.bags.split.player end)
+Bags.args.general.args.playerGroup.args.split.args.splitbags = ACH:MultiSelect('', nil, 5, {}, nil, nil, function(_, key) return E.db.bags.split[key] end, function(_, key, value) E.db.bags.split[key] = value B:Layout() end, nil, function() return not E.db.bags.split.player end)
 Bags.args.general.args.playerGroup.args.split.inline = true
 
 Bags.args.general.args.bankGroup = ACH:Group(L["Bank"], nil, 7, nil, nil, function(info, value) E.db.bags[info[#info]] = value B:Layout(true) end, function() return not E.Bags.Initialized end)
@@ -82,11 +98,14 @@ Bags.args.general.args.bankGroup.args.bankSize = ACH:Range(L["Button Size"], nil
 Bags.args.general.args.bankGroup.args.bankButtonSpacing = ACH:Range(L["Button Spacing"], nil, 3, { min = -3, max = 20, step = 1 })
 Bags.args.general.args.bankGroup.args.bankWidth = ACH:Range(L["Panel Width"], L["Adjust the width of the bank frame."], 4, { min = 150, max = 1400, step = 1 })
 Bags.args.general.args.bankGroup.args.disableBankSort = ACH:Toggle(L["Disable Sort"], nil, 5, nil, nil, nil, nil, function(info, value) E.db.bags[info[#info]] = value B:ToggleSortButtonState(true) end)
+Bags.args.general.args.bankGroup.args.useBlizzardCleanupBank = ACH:Toggle(L["Use Blizzard Cleanup"], nil, 6, nil, nil, nil, nil, function(info, value) E.db.bags[info[#info]] = value end, nil, not E.Retail)
+Bags.args.general.args.bankGroup.args.bankCombined = ACH:Toggle(L["Combined"], nil, 7, nil, nil, nil, nil, nil, nil, not E.Retail)
 
 Bags.args.general.args.bankGroup.args.split = ACH:Group(L["Split"], nil, -1, nil, function(info) return E.db.bags.split[info[#info]] end, function(info, value) E.db.bags.split[info[#info]] = value B:Layout(true) end)
 Bags.args.general.args.bankGroup.args.split.args.bank = ACH:Toggle(L["Enable"], nil, 1)
 Bags.args.general.args.bankGroup.args.split.args.bankSpacing = ACH:Range(L["Bag Spacing"], nil, 2, { min = -3, max = 20, step = 1 }, nil, nil, nil, nil, function() return not E.db.bags.split.bank end)
-Bags.args.general.args.bankGroup.args.split.args.splitbank = ACH:MultiSelect('', nil, 4, {}, nil, nil, function(_, key) return E.db.bags.split[key] end, function(_, key, value) E.db.bags.split[key] = value B:Layout(true) end, nil, function() return not E.db.bags.split.bank end, true)
+Bags.args.general.args.bankGroup.args.split.args.alwaysProfessionBank = ACH:Toggle(L["Always Split Professions"], nil, 4, nil, nil, nil, nil, nil, nil, function() return E.Retail or not E.db.bags.split.bank end)
+Bags.args.general.args.bankGroup.args.split.args.splitbank = ACH:MultiSelect('', nil, 5, {}, nil, nil, function(_, key) return E.db.bags.split[key] end, function(_, key, value) E.db.bags.split[key] = value B:Layout(true) end, nil, function() return not E.db.bags.split.bank end, true)
 Bags.args.general.args.bankGroup.args.split.inline = true
 
 Bags.args.general.args.warbandGroup = ACH:Group(L["Warband"], nil, 7, nil, nil, function(info, value) E.db.bags[info[#info]] = value B:Layout(true) end, function() return not E.Bags.Initialized end)
@@ -101,13 +120,19 @@ Bags.args.general.args.warbandGroup.args.split.args.warbandSpacing = ACH:Range(L
 Bags.args.general.args.warbandGroup.args.split.args.splitWarband = ACH:MultiSelect('', nil, 4, {}, nil, nil, function(_, key) return E.db.bags.split[key] end, function(_, key, value) E.db.bags.split[key] = value B:Layout(true) end, nil, function() return not E.db.bags.split.warband end)
 Bags.args.general.args.warbandGroup.args.split.inline = true
 
-for i = 1, (E.Retail and 12 or 11) do
+for i = 1, 11 do
 	local bag = 'bag'..i
 	local lastSlot = (E.Retail and 5 or 4)
 	if i >= 1 and i <= lastSlot then
 		Bags.args.general.args.playerGroup.args.split.args.splitbags.values[bag] = i == 5 and L["Reagent"] or format(L["Bag %d"], i)
-	else
+	elseif not E.Retail then
 		Bags.args.general.args.bankGroup.args.split.args.splitbank.values[bag] = format(L["Bank %d"], i - lastSlot)
+	end
+end
+
+for id, index in next, B.CharacterBanks do
+	if index ~= 1 then
+		Bags.args.general.args.bankGroup.args.split.args.splitbank.values['bank'..id] = format(L["Tab %d"], index)
 	end
 end
 
@@ -229,7 +254,7 @@ Bags.args.vendorGrays.args.interval = ACH:Range(L["Sell Interval"], L["Will atte
 Bags.args.vendorGrays.args.details = ACH:Toggle(L["Vendor Gray Detailed Report"], L["Displays a detailed report of every item sold when enabled."], 3)
 Bags.args.vendorGrays.args.progressBar = ACH:Toggle(L["Progress Bar"], nil, 4)
 
-Bags.args.bagSortingGroup = ACH:Group(L["Sorting"], nil, 5, nil, nil, nil, function() return (not E.Bags.Initialized) or E.db.bags.useBlizzardCleanup end)
+Bags.args.bagSortingGroup = ACH:Group(L["Sorting"], nil, 5, nil, nil, nil, function() return not E.Bags.Initialized end)
 Bags.args.bagSortingGroup.args.sortInverted = ACH:Toggle(L["Sort Inverted"], L["Direction the bag sorting will use to allocate the items."], 1)
 Bags.args.bagSortingGroup.args.description = ACH:Description(L["Here you can add items that you want to be excluded from sorting. To remove an item just click on its name in the list."], 3)
 Bags.args.bagSortingGroup.args.addEntryGroup = ACH:Group(L["Add Item"], nil, 3)
@@ -237,7 +262,7 @@ Bags.args.bagSortingGroup.args.addEntryGroup.inline = true
 Bags.args.bagSortingGroup.args.addEntryGroup.args.addEntryProfile = ACH:Input(L["Profile"], L["Add an Item by dragging it, shift-clicking, or entering the Item ID onto this field."], 1, nil, nil, C.Blank, function(_, value) if value == '' or gsub(value, '%s+', '') == '' then return end local itemID = strmatch(value, 'item:(%d+)') E.db.bags.ignoredItems[(itemID or value)] = value end)
 Bags.args.bagSortingGroup.args.addEntryGroup.args.addEntryGlobal = ACH:Input(L["Global"], L["Add an Item by dragging it, shift-clicking, or entering the Item ID onto this field."], 2, nil, nil, C.Blank, function(_, value) if value == '' or gsub(value, '%s+', '') == '' then return end local itemID = strmatch(value, 'item:(%d+)') E.global.bags.ignoredItems[(itemID or value)] = value if E.db.bags.ignoredItems[(itemID or value)] then E.db.bags.ignoredItems[(itemID or value)] = nil end end)
 
-local function getIgnoreList(list)
+local function GetIgnoreList(list)
 	local data = {}
 
 	for key, value in pairs(list) do
@@ -250,5 +275,5 @@ local function getIgnoreList(list)
 	return data
 end
 
-Bags.args.bagSortingGroup.args.ignoredEntriesProfile = ACH:MultiSelect(L["Ignored Items (Profile)"], nil, 4, function() return getIgnoreList(E.db.bags.ignoredItems) end, nil, nil, function(_, value) return E.db.bags.ignoredItems[value] end, function(_, value) E.db.bags.ignoredItems[value] = nil GameTooltip:Hide() end, nil, function() return not next(E.db.bags.ignoredItems) end)
-Bags.args.bagSortingGroup.args.ignoredEntriesGlobal = ACH:MultiSelect(L["Ignored Items (Global)"], nil, 5, function() return getIgnoreList(E.global.bags.ignoredItems) end, nil, nil, function(_, value) return E.global.bags.ignoredItems[value] end, function(_, value) E.global.bags.ignoredItems[value] = nil GameTooltip:Hide() end, nil, function() return not next(E.global.bags.ignoredItems) end)
+Bags.args.bagSortingGroup.args.ignoredEntriesProfile = ACH:MultiSelect(L["Ignored Items (Profile)"], nil, 4, function() return GetIgnoreList(E.db.bags.ignoredItems) end, nil, nil, function(_, value) return E.db.bags.ignoredItems[value] end, function(_, value) E.db.bags.ignoredItems[value] = nil GameTooltip:Hide() end, nil, function() return not next(E.db.bags.ignoredItems) end)
+Bags.args.bagSortingGroup.args.ignoredEntriesGlobal = ACH:MultiSelect(L["Ignored Items (Global)"], nil, 5, function() return GetIgnoreList(E.global.bags.ignoredItems) end, nil, nil, function(_, value) return E.global.bags.ignoredItems[value] end, function(_, value) E.global.bags.ignoredItems[value] = nil GameTooltip:Hide() end, nil, function() return not next(E.global.bags.ignoredItems) end)

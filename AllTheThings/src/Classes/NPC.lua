@@ -237,6 +237,7 @@ end
 
 app.CreateNPC = function(id, t)
 	if id < 1 then
+		print("HEY! USE app.CreateCustomHeader(", id, ") instead!");
 		return CreateCustomHeader(id, t)
 	else
 		return CreateNPC(id, t)
@@ -255,6 +256,7 @@ local BlockedDisplayID = {
 	[56187] = 0,	-- generic bunny
 	[64062] = 0,	-- generic bunny
 	[110046] = 0,	-- nothing
+	[111386] = 0,	-- nothing
 	[112684] = 0,	-- nothing
 }
 local AllowedDisplayID = setmetatable({}, {
@@ -271,7 +273,7 @@ local function GetDisplayID(data)
 	-- don't create a displayID for groups with a sourceID/itemID/difficultyID/mapID
 	if data.sourceID or data.difficultyID or data.mapID or data.itemID then return false end
 
-	local npcID = data.npcID or data.creatureID
+	local npcID = data.npcID
 	if npcID then return NPCDisplayIDFromID[npcID] end
 
 	local qgs = data.qgs

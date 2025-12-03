@@ -17,11 +17,11 @@ local GetItemQualityByID = C_Item.GetItemQualityByID
 
 local ITEMQUALITY_HEIRLOOM = Enum.ItemQuality.Heirloom or 7
 
-local function clearBackdrop(backdrop)
+local function ClearBackdrop(backdrop)
 	backdrop:SetBackdropColor(0, 0, 0, 0)
 end
 
-local function toyTextColor(text, r, g, b)
+local function ToyTextColor(text, r, g, b)
 	if r == 0.33 and g == 0.27 and b == 0.2 then
 		text:SetTextColor(0.4, 0.4, 0.4)
 	elseif r == 1 and g == 0.82 and b == 0 then
@@ -29,7 +29,7 @@ local function toyTextColor(text, r, g, b)
 	end
 end
 
-local function mountNameColor(object)
+local function MountNameColor(object)
 	local button = object:GetParent()
 	local name = button.name
 
@@ -48,7 +48,7 @@ local function mountNameColor(object)
 	end
 end
 
-local function selectedTextureSetShown(texture, shown) -- used sets list
+local function SelectedTextureSetShown(texture, shown) -- used sets list
 	local parent = texture:GetParent()
 	if shown then
 		parent.backdrop:SetBackdropBorderColor(1, .8, .1)
@@ -58,12 +58,12 @@ local function selectedTextureSetShown(texture, shown) -- used sets list
 	end
 end
 
-local function selectedTextureShow(texture) -- used for pets/mounts
+local function SelectedTextureShow(texture) -- used for pets/mounts
 	local parent = texture:GetParent()
 	parent.backdrop:SetBackdropBorderColor(1, .8, .1)
 end
 
-local function selectedTextureHide(texture) -- used for pets/mounts
+local function SelectedTextureHide(texture) -- used for pets/mounts
 	local parent = texture:GetParent()
 	if not parent.hovered then
 		local r, g, b = unpack(E.media.bordercolor)
@@ -71,14 +71,14 @@ local function selectedTextureHide(texture) -- used for pets/mounts
 	end
 end
 
-local function buttonOnEnter(button)
+local function ButtonOnEnter(button)
 	local r, g, b = unpack(E.media.rgbvaluecolor)
 	button.backdrop:SetBackdropBorderColor(r, g, b)
 
 	button.hovered = true
 end
 
-local function buttonOnLeave(button)
+local function ButtonOnLeave(button)
 	if button.selected or (button.SelectedTexture and button.SelectedTexture:IsShown()) then
 		button.backdrop:SetBackdropBorderColor(1, .8, .1)
 	else
@@ -108,8 +108,8 @@ local function SkinJournalScrollButton(bu)
 		bu.backdrop:Point('BOTTOMRIGHT', bu, 0, 2)
 		icon:SetTexture(savedIconTexture) -- restore the texture
 
-		bu:HookScript('OnEnter', buttonOnEnter)
-		bu:HookScript('OnLeave', buttonOnLeave)
+		bu:HookScript('OnEnter', ButtonOnEnter)
+		bu:HookScript('OnLeave', ButtonOnLeave)
 
 		if bu.ProgressBar then
 			bu.ProgressBar:SetTexture(E.media.normTex)
@@ -121,11 +121,11 @@ local function SkinJournalScrollButton(bu)
 			bu.Favorite:SetAtlas('PetJournal-FavoritesIcon', true)
 			bu.Favorite:Point('TOPLEFT', bu.Icon, 'TOPLEFT', -8, 8)
 
-			hooksecurefunc(bu.SelectedTexture, 'SetShown', selectedTextureSetShown)
+			hooksecurefunc(bu.SelectedTexture, 'SetShown', SelectedTextureSetShown)
 		else
 			bu.selectedTexture:SetTexture()
-			hooksecurefunc(bu.selectedTexture, 'Show', selectedTextureShow)
-			hooksecurefunc(bu.selectedTexture, 'Hide', selectedTextureHide)
+			hooksecurefunc(bu.selectedTexture, 'Show', SelectedTextureShow)
+			hooksecurefunc(bu.selectedTexture, 'Hide', SelectedTextureHide)
 
 			local isPet = parent == _G.PetJournal
 			local isMount = parent == _G.MountJournal
@@ -167,8 +167,8 @@ local function SkinJournalScrollButton(bu)
 				bu.favorite:Point('TOPLEFT', bu.DragButton, 'TOPLEFT' , -8, 8)
 				bu.favorite:Size(32)
 
-				hooksecurefunc(bu.name, 'SetFontObject', mountNameColor)
-				hooksecurefunc(bu.background, 'SetVertexColor', mountNameColor)
+				hooksecurefunc(bu.name, 'SetFontObject', MountNameColor)
+				hooksecurefunc(bu.background, 'SetVertexColor', MountNameColor)
 			end
 		end
 
@@ -190,7 +190,7 @@ local function HeirloomsJournalUpdateButton(_, button)
 	if not button.IsSkinned then
 		S:HandleItemButton(button, true)
 
-		button.iconTextureUncollected:SetTexCoord(unpack(E.TexCoords))
+		button.iconTextureUncollected:SetTexCoords()
 		button.iconTextureUncollected:SetInside(button)
 		button.iconTexture:SetDrawLayer('ARTWORK')
 		button.hover:SetAllPoints(button.iconTexture)
@@ -254,7 +254,7 @@ local function SetsFrame_SetItemFrameQuality(_, itemFrame)
 	local icon = itemFrame.Icon
 	if not icon.backdrop then
 		icon:CreateBackdrop()
-		icon:SetTexCoord(unpack(E.TexCoords))
+		icon:SetTexCoords()
 		itemFrame.IconBorder:Hide()
 	end
 
@@ -275,11 +275,17 @@ local function SkinMountFrame()
 
 	local MountJournal = _G.MountJournal
 	MountJournal:StripTextures()
-	MountJournal.MountDisplay:StripTextures()
-	MountJournal.MountDisplay.ShadowOverlay:StripTextures()
 	MountJournal.MountCount:StripTextures()
 
-	S:HandleIcon(MountJournal.MountDisplay.InfoButton.Icon, true)
+	local MountDisplay = MountJournal.MountDisplay
+	if MountDisplay then
+		MountJournal.MountDisplay:StripTextures()
+		MountJournal.MountDisplay.ShadowOverlay:StripTextures()
+
+		S:HandleRotateButton(MountJournal.MountDisplay.ModelScene.RotateLeftButton)
+		S:HandleRotateButton(MountJournal.MountDisplay.ModelScene.RotateRightButton)
+		S:HandleIcon(MountJournal.MountDisplay.InfoButton.Icon, true)
+	end
 
 	S:HandleButton(_G.MountJournalMountButton)
 	_G.MountJournalMountButton:NudgePoint(0, -3)
@@ -409,7 +415,7 @@ local function SkinPetFrame()
 		frame:OffsetFrameLevel(2)
 		frame:DisableDrawLayer('BACKGROUND')
 		frame:SetTemplate()
-		frame.icon:SetTexCoord(unpack(E.TexCoords))
+		frame.icon:SetTexCoords()
 	end
 
 	Card.HealthFrame.healthBar:StripTextures()
@@ -447,15 +453,15 @@ local function SkinToyFrame()
 		local button = ToyBox.iconsFrame['spellButton'..i]
 		S:HandleItemButton(button, true)
 
-		button.iconTextureUncollected:SetTexCoord(unpack(E.TexCoords))
+		button.iconTextureUncollected:SetTexCoords()
 		button.iconTextureUncollected:SetInside(button)
 		button.hover:SetAllPoints(button.iconTexture)
 		button.checked:SetAllPoints(button.iconTexture)
 		button.pushed:SetAllPoints(button.iconTexture)
 		button.cooldown:SetAllPoints(button.iconTexture)
 
-		hooksecurefunc(button.name, 'SetTextColor', toyTextColor)
-		hooksecurefunc(button.new, 'SetTextColor', toyTextColor)
+		hooksecurefunc(button.name, 'SetTextColor', ToyTextColor)
+		hooksecurefunc(button.new, 'SetTextColor', ToyTextColor)
 		E:RegisterCooldown(button.cooldown)
 	end
 
@@ -519,7 +525,7 @@ local function SkinTransmogFrames()
 				border:Point('TOPLEFT', Model, 'TOPLEFT', 0, 1) -- dont use set inside, left side needs to be 0
 				border:Point('BOTTOMRIGHT', Model, 'BOTTOMRIGHT', 1, -1)
 				border:SetBackdropColor(0, 0, 0, 0)
-				border.callbackBackdropColor = clearBackdrop
+				border.callbackBackdropColor = ClearBackdrop
 
 				if Model.NewGlow then Model.NewGlow:SetParent(border) end
 				if Model.NewString then Model.NewString:SetParent(border) end
@@ -610,7 +616,7 @@ local function SkinTransmogFrames()
 		slotButton:StripTextures()
 		slotButton:CreateBackdrop(nil, nil, nil, nil, nil, nil, nil, true)
 		slotButton.Border:Kill()
-		slotButton.Icon:SetTexCoord(unpack(E.TexCoords))
+		slotButton.Icon:SetTexCoords()
 		slotButton.Icon:SetInside(slotButton.backdrop)
 
 		local undo = slotButton.UndoButton

@@ -21,6 +21,13 @@ function RSNotes.GetNote(entityID, mapID, minieventID)
 	-- Crafting rare NPCs event
 	if (RSUtils.Contains(RSConstants.CRAFTING_NPCS, entityID)) then
 		return string.format(AL["NOTE_CRAFTING_NPCS"], AL[string.format("NOTE_%s", entityID)])
+	-- Containers that require Reshii Wraps upgrade
+	elseif (RSUtils.Contains(RSConstants.RESHII_WRAPS_CONTAINERS, entityID)) then
+		if (AL[string.format("NOTE_%s", entityID)] ~= string.format("NOTE_%s", entityID)) then
+			return string.format(AL["NOTE_RESHII_WRAPS"], " "..AL[string.format("NOTE_%s", entityID)])
+		else
+			return string.format(AL["NOTE_RESHII_WRAPS"], "")
+		end
 		
 	-- Covenants rare NPCs
 	elseif (entityID == RSConstants.WINGFLAYER_CRUEL) then
@@ -189,7 +196,21 @@ function RSNotes.GetNote(entityID, mapID, minieventID)
 	-- Containers for the achievement Nine tenths of Law
 	elseif (RSUtils.Contains(RSConstants.NINE_TENTHS_LAW_CHAPTER_4, entityID)) then
 		return AL["NINE_TENTHS_LAW_CHAPTER_4"]
+	-- NPCs and containers that require Phase Diving at K'aresh
+	elseif (RSUtils.Contains(RSConstants.PHASE_DIVING, entityID)) then
+		return AL["PHASE_DIVING"]
+	-- Containers in caves that require Light's judgment to open them
+	elseif (RSUtils.Contains(RSConstants.CONTAINERS_LIGHTS_JUDGMENT, entityID)) then
+		return AL["NOTE_LIGHTS_JUDGMENT"]
+	-- Containers that require a goblin glider kit to reach its position
+	elseif (RSUtils.Contains(RSConstants.CONTAINERS_GOBLIN_GLIDER_KIT, entityID)) then
+		return AL["NOTE_GOBLIN_GLIDER_KIT"]
+	-- Containers in caves that require Shroud arcane echoes to open them
+	elseif (RSUtils.Contains(RSConstants.CONTAINERS_SHROUD_ARCANE_ECHOES, entityID)) then
+		return AL["NOTE_SHROUD_ARCANE_ECHOES"]
+	-- Containers in caves that require Light's judgment to open them
+	elseif (RSUtils.Contains(RSConstants.CONTAINERS_LIGHTFORGED_WARFRAME, entityID)) then
+		return AL["NOTE_LIGHTFORGED_WARFRAME"]
 	end
-	
 	
 end

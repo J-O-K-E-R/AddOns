@@ -1,7 +1,6 @@
 # Details! Damage Meter
 
-## [Details.20250727.13642.165](https://github.com/Tercioo/Details-Damage-Meter/tree/Details.20250727.13642.165) (2025-07-27)
-[Full Changelog](https://github.com/Tercioo/Details-Damage-Meter/compare/Details.20250727.13641.165...Details.20250727.13642.165) 
+## [Details.20251105.13857.166](https://github.com/Tercioo/Details-Damage-Meter/tree/Details.20251105.13857.166) (2025-11-05)
+[Full Changelog](https://github.com/Tercioo/Details-Damage-Meter/compare/Details.20251023.13811.166...Details.20251105.13857.166) 
 
-- Version up  
-- Remove prints  
+- Several fixes for Vanilla wow.  

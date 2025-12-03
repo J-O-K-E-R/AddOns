@@ -117,7 +117,6 @@ function R:PrepareDefaults()
 				height = 12,
 				scale = 1.0,
 				visible = false,
-				anchor = true,
 				locked = false,
 				texture = nil,
 				font = nil,
@@ -126,6 +125,7 @@ function R:PrepareDefaults()
 				rightAligned = false,
 				showIcon = true,
 				showText = true,
+				showSpark = true,
 			},
 			cats = {
 				[CONSTANTS.ITEM_CATEGORIES.CLASSIC] = true,

@@ -1,7 +1,5 @@
 --[[----------------------------------------------------------------------------
 
-  LiteBag/Localization.lua
-
   LiteBag translations into other languages.
 
   Copyright 2013 Mike Battersby
@@ -11,9 +9,9 @@
 -- Vim reformatter from curseforge "Global Strings" export.
 -- %s/^\(L\..*\) = \(.*\)/\=printf('%-24s= %s', submatch(1), submatch(2))/
 
-local addonName, LB = ...
+local _, LB = ...
 
-LB.Localize = setmetatable({ }, {__index=function (t,k) return k end})
+LB.Localize = setmetatable({ }, {__index=function (_,k) return k end})
 
 local L = LB.Localize
 

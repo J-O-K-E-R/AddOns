@@ -13,7 +13,6 @@ local RU = E:GetModule('RaidUtility')
 local ACH = E.Libs.ACH
 
 local _G = _G
-local tonumber, format = tonumber, format
 local wipe, next, ceil = wipe, next, ceil
 local IsMouseButtonDown = IsMouseButtonDown
 local FCF_GetNumActiveChatFrames = FCF_GetNumActiveChatFrames
@@ -31,28 +30,6 @@ local function GetChatWindowInfo()
 	return ChatTabInfo
 end
 
-local function GetSpellText(spell)
-	local spellID = tonumber(spell)
-	if spellID then
-		local spellName = E:GetSpellInfo(spellID)
-		if spellName then
-			spell = format('|cFFffff00%s|r |cFFffffff(%d)|r', spellName, spellID)
-		end
-	end
-
-	return spell
-end
-
-local function RotationAssistSpells()
-	local info = {}
-
-	for spellID in next, _G.AssistedCombatManager.rotationSpells do
-		info[spellID] = GetSpellText(spellID)
-	end
-
-	return info
-end
-
 local modifierValues = { SHIFT = L["SHIFT_KEY_TEXT"], CTRL = L["CTRL_KEY_TEXT"], ALT = L["ALT_KEY_TEXT"] }
 
 E.Options.args.general = ACH:Group(L["General"], nil, 1, 'tab', function(info) return E.db.general[info[#info]] end, function(info, value) E.db.general[info[#info]] = value end)
@@ -66,7 +43,7 @@ GenGen.decimalLength = ACH:Range(L["Decimal Length"], L["Controls the amount of 
 GenGen.tagUpdateRate = ACH:Range(L["Tag Update Rate"], L["Maximum tick rate allowed for tag updates per second."], 3, { min = 0.05, max = 0.5, step = 0.01 }, nil, nil, function(info, value) E.db.general[info[#info]] = value; E:TagUpdateRate(value) end)
 GenGen.smoothingAmount = ACH:Range(L["Smoothing Amount"], L["Controls the speed at which smoothed bars will be updated."], 4, { isPercent = true, min = 0.2, max = 0.8, softMax = 0.75, softMin = 0.25, step = 0.01 }, nil, nil, function(info, value) E.db.general[info[#info]] = value E:SetSmoothingAmount(value) end)
 
-GenGen.locale = ACH:Select(L["LANGUAGE"], nil, 6, { deDE = 'Deutsch', enUS = 'English', esMX = 'Español', frFR = 'Français', ptBR = 'Português', ruRU = 'Русский', trTR ='Turkce', zhCN = '简体中文', zhTW = '正體中文', koKR = '한국어', itIT = 'Italiano' }, nil, nil, function() return E.global.general.locale end, function(_, value) E.global.general.locale = value E.ShowPopup = true end)
+GenGen.locale = ACH:Select(L["LANGUAGE"], nil, 6, { deDE = 'Deutsch', enUS = 'English', esMX = 'Español', frFR = 'Français', ptBR = 'Português', ruRU = 'Русский', trTR ='Turkce', zhCN = '简体中文', zhTW = '繁體中文', koKR = '한국어', itIT = 'Italiano' }, nil, nil, function() return E.global.general.locale end, function(_, value) E.global.general.locale = value E.ShowPopup = true end)
 GenGen.messageRedirect = ACH:Select(L["Chat Output"], L["This selects the Chat Frame to use as the output of ElvUI messages."], 7, function() return GetChatWindowInfo() end)
 GenGen.numberPrefixStyle = ACH:Select(L["Unit Prefix Style"], L["The unit prefixes you want to use when values are shortened in ElvUI. This is mostly used on UnitFrames."], 8, { TCHINESE = '萬, 億', CHINESE = '万, 亿', ENGLISH = 'K, M, B', GERMAN = 'Tsd, Mio, Mrd', KOREAN = '천, 만, 억', METRIC = 'k, M, G' }, nil, nil, nil, function(info, value) E.db.general[info[#info]] = value E:BuildPrefixValues() E:StaggeredUpdateAll() end)
 
@@ -131,7 +108,7 @@ Fonts.blizzard.args.noFontScale = ACH:Toggle(L["No Font Scale"], L["Dont scale b
 Fonts.blizzard.inline = true
 
 Fonts.combat = ACH:Group('', nil, 13, nil, function(info) return E.private.general[info[#info]] end, function(info, value) E.private.general[info[#info]] = value E.ShowPopup = true end)
-Fonts.combat.args.dmgfont = ACH:SharedMediaFont(L["Combat Font"], L["The font that combat text will use. |cffFF3333WARNING: This requires a game restart or re-log for this change to take effect.|r"], 1, nil, nil, nil, function() return E.eyefinity or E.ultrawide or not E.private.general.replaceCombatFont end)
+Fonts.combat.args.dmgfont = ACH:SharedMediaFont(L["Combat Font"], L["The font that combat text will use. |cffFF3333WARNING: This requires a game restart or re-log for this change to take effect.|r"], 1, nil, nil, nil, function() return not E.private.general.replaceCombatFont end)
 Fonts.combat.args.replaceCombatFont = ACH:Toggle(L["Enable"], nil, 2, nil, nil, 130)
 Fonts.combat.args.replaceCombatText = ACH:Toggle(L["Replace Text on Me"], nil, 3, nil, nil, nil, nil, nil, function() return not E.private.general.replaceCombatFont end)
 Fonts.combat.inline = true
@@ -162,9 +139,9 @@ do
 		objective = { name = L["Objective Text"], order = 56, hidden = not E.Retail },
 		errortext = { name = L["Quest Progress and Error Text"], order = 57 },
 		mailbody = { name = L["Mail Text"], order = 58 },
-		questtitle = { name = L["Quest Title"], order = 59 },
-		questtext = { name = L["Quest Text"], order = 60 },
-		questsmall = { name = L["Quest Small"], order = 61 },
+		questtitle = { name = L["Quest Title"], order = 59, hidden = not E.Retail },
+		questtext = { name = L["Quest Text"], order = 60, hidden = not E.Retail },
+		questsmall = { name = L["Quest Small"], order = 61, hidden = not E.Retail },
 		talkingtitle = { name = L["Talking Head Name"], order = 62, hidden = not E.Retail },
 		talkingtext = { name = L["Talking Head Text"], order = 63, hidden = not E.Retail },
 	}
@@ -225,7 +202,8 @@ Cosmetic.afkGroup.inline = true
 Cosmetic.afkGroup.args.afk = ACH:Toggle(L["Enable"], L["When you go AFK display the AFK screen."], 1, nil, nil, nil, nil, function(info, value) E.db.general[info[#info]] = value AFK:Toggle() end)
 Cosmetic.afkGroup.args.afkSpin = ACH:Toggle(L["Camera Spin"], L["Toggle the camera spin on the AFK screen."], 2, nil, nil, nil, nil, function(info, value) E.db.general[info[#info]] = value end)
 Cosmetic.afkGroup.args.afkChat = ACH:Toggle(L["Chat"], L["Display messages from Guild and Whisper on AFK screen.\nThis chat can be dragged around (position will be saved)."], 3, nil, nil, nil, nil, function(info, value) E.db.general[info[#info]] = value AFK:Toggle() end)
-Cosmetic.afkGroup.args.afkChatReset = ACH:Execute(L["Reset Chat Position"], nil, 4, function() AFK:ResetChatPosition(true) end)
+Cosmetic.afkGroup.args.afkAnimation = ACH:Select(L["Idle Animation"], L["Select the idle animation on the AFK screen."], 4, { dance = L["Dance"], salute = L["Salute"], talk = L["Talk"], shy = L["Shy"], roar = L["Roar"], lean = E.Retail and L["Lean"] or nil })
+Cosmetic.afkGroup.args.afkChatReset = ACH:Execute(L["Reset Chat Position"], nil, 5, function() AFK:ResetChatPosition(true) end)
 
 Cosmetic.chatBubblesGroup = ACH:Group(L["Chat Bubbles"], nil, 35, nil, function(info) return E.private.general[info[#info]] end, function(info, value) E.private.general[info[#info]] = value E.ShowPopup = true end)
 Cosmetic.chatBubblesGroup.inline = true
@@ -258,7 +236,6 @@ blizz.quest = ACH:Group(L["Quests"], nil, 10)
 blizz.quest.args.questRewardMostValueIcon = ACH:Toggle(L["Mark Quest Reward"], L["Marks the most valuable quest reward with a gold coin."], 1)
 blizz.quest.args.questXPPercent = ACH:Toggle(L["XP Quest Percent"], nil, 2, nil, nil, nil, nil, nil, nil, not E.Retail)
 blizz.quest.args.objectiveTracker = ACH:Toggle(L["Objective Frame"], L["Enable"], 3, nil, function() E.ShowPopup = true end, nil, nil, nil, nil, not E.Classic)
-blizz.quest.args.commandBarSetting = ACH:Select(L["Order Hall Command Bar"], nil, 4, { DISABLED = L["Disable"], ENABLED = L["Enable"], ENABLED_RESIZEPARENT = L["Enable + Adjust Movers"] }, nil, nil, function(info) return E.global.general[info[#info]] end, function(info, value) E.global.general[info[#info]] = value E.ShowPopup = true end, nil, not E.Retail)
 blizz.quest.inline = true
 
 blizz.objectiveFrameGroup = ACH:Group(L["Objective Frame"], nil, 20, nil, function(info) return E.db.general[info[#info]] end, nil, function() return BL:ObjectiveTracker_HasQuestTracker() end, E.Classic)
@@ -270,9 +247,9 @@ blizz.objectiveFrameGroup.inline = true
 
 blizz.raidControl = ACH:Group(L["RAID_CONTROL"], nil, 30, nil, function(info) return E.db.general.raidUtility[info[#info]] end, function(info, value) E.db.general.raidUtility[info[#info]] = value RU:TargetIcons_Update() end)
 blizz.raidControl.args.raidUtility = ACH:Toggle(L["Enable"], L["Enables the ElvUI Raid Control panel."], 1, nil, nil, nil, function(info) return E.private.general[info[#info]] end, function(info, value) E.private.general[info[#info]] = value E.ShowPopup = true end)
-blizz.raidControl.args.modifier = ACH:Select(L["Modifier"], nil, 2, modifierValues)
-blizz.raidControl.args.modifierSwap = ACH:Select(L["Swap Modifier"], nil, 3, { world = L["World"], target = L["Target"] })
-blizz.raidControl.args.showTooltip = ACH:Toggle(L["Tooltip"], L["Display Tooltip on Raid Markers."], 4, nil, nil, nil, function(info) return E.db.general.raidUtility[info[#info]] end, function(info, value) E.db.general.raidUtility[info[#info]] = value end)
+blizz.raidControl.args.modifier = ACH:Select(L["Modifier"], nil, 2, modifierValues, nil, nil, nil, nil, nil, E.Classic)
+blizz.raidControl.args.modifierSwap = ACH:Select(L["Swap Modifier"], nil, 3, { world = L["World"], target = L["Target"] }, nil, nil, nil, nil, nil, E.Classic)
+blizz.raidControl.args.showTooltip = ACH:Toggle(L["Tooltip"], L["Display Tooltip on Raid Markers."], 4, nil, nil, nil, function(info) return E.db.general.raidUtility[info[#info]] end, function(info, value) E.db.general.raidUtility[info[#info]] = value end, nil, E.Classic)
 
 blizz.lootRollGroup = ACH:Group(L["Loot Roll"], nil, 40, nil, function(info) return E.db.general.lootRoll[info[#info]] end, function(info, value) E.db.general.lootRoll[info[#info]] = value M:UpdateLootRollFrames() end)
 blizz.lootRollGroup.args.lootRoll = ACH:Toggle(L["Enable"], L["Enable/Disable the loot roll frame."], 0, nil, nil, nil, function(info) return E.private.general[info[#info]] end, function(info, value) E.private.general[info[#info]] = value; E.ShowPopup = true end)
@@ -328,12 +305,6 @@ blizz.addonCompartment.args.fontGroup.args.font = ACH:SharedMediaFont(L["Font"],
 blizz.addonCompartment.args.fontGroup.args.fontSize = ACH:Range(L["Font Size"], nil, 2, C.Values.FontSize)
 blizz.addonCompartment.args.fontGroup.args.fontOutline = ACH:FontFlags(L["Font Outline"], nil, 3)
 blizz.addonCompartment.args.fontGroup.inline = true
-
-blizz.rotationAssist = ACH:Group(E.NewSign..L["Assisted Highlight"], nil, 70, nil, function(info) return E.db.general.rotationAssist[info[#info]] end, function(info, value) E.db.general.rotationAssist[info[#info]] = value end, nil, not E.Retail)
-blizz.rotationAssist.args.spellsDesc = ACH:Description(L["List of spells that will show when using Blizzard's assisted highlighting."], 1, 'medium')
-blizz.rotationAssist.args.resetSpells = ACH:Execute(L["Reset"], nil, 2, function() AB:RotationSpellsClear() end)
-blizz.rotationAssist.args.colorButton = ACH:Execute(L["Colors"], nil, 3, function() E.Libs.AceConfigDialog:SelectGroup('ElvUI', 'general', 'cosmetic') end)
-blizz.rotationAssist.args.spells = ACH:MultiSelect(L["Spells"], nil, 10, RotationAssistSpells, nil, nil, function(_, key) local t = E.db.general.rotationAssist.spells[E.myclass] return t[key] == nil or t[key] end, function(_, key, value) E.db.general.rotationAssist.spells[E.myclass][key] = value; AB:RotationSpellsAdjust() end)
 
 blizz.cooldownManager = ACH:Group(L["Cooldown Manager"], nil, 80, 'tab', function(info) return E.db.general.cooldownManager[info[#info]] end, function(info, value) E.db.general.cooldownManager[info[#info]] = value S:CooldownManager_UpdateViewers() end, function() return not (E.private.skins.blizzard.enable and E.private.skins.blizzard.cooldownManager) end, not E.Retail)
 local cdManager = blizz.cooldownManager.args

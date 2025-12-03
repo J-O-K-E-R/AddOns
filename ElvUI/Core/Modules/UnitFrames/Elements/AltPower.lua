@@ -8,14 +8,14 @@ function UF:Construct_AltPowerBar(frame)
 	altpower:SetStatusBarTexture(E.media.blankTex)
 	altpower:SetStatusBarColor(.7, .7, .6)
 	altpower:GetStatusBarTexture():SetHorizTile(false)
-	UF.statusbars[altpower] = true
+	UF.statusbars[altpower] = 'altpower'
 
 	altpower:CreateBackdrop(nil, nil, nil, nil, true)
 	altpower.BG = altpower:CreateTexture(nil, 'BORDER')
 	altpower.BG:SetAllPoints()
 	altpower.BG:SetTexture(E.media.blankTex)
 
-	altpower.RaisedElementParent = UF:CreateRaisedElement(altpower, true)
+	altpower.RaisedElementParent = UF:CreateRaisedElement(altpower)
 
 	altpower.value = UF:CreateRaisedText(altpower.RaisedElementParent)
 	altpower.value:SetJustifyH('CENTER')

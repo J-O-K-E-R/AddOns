@@ -239,7 +239,7 @@ local subroutines;
 subroutines = {
 	["common_recipes_vendor"] = function(npcID)
 		return {
-			{"select", "creatureID", npcID},	-- Main Vendor
+			{"select", "npcID", npcID},	-- Main Vendor
 			{"pop"},	-- Remove Main Vendor and push his children into the processing queue.
 			{"is", "itemID"},	-- Only Items
 			{"exclude", "itemID",
@@ -268,7 +268,7 @@ subroutines = {
 	end,
 	["common_vendor"] = function(npcID)
 		return {
-			{"select", "creatureID", npcID},	-- Main Vendor
+			{"select", "npcID", npcID},	-- Main Vendor
 			{"pop"},	-- Remove Main Vendor and push his children into the processing queue.
 			{"is", "itemID"},	-- Only Items
 		};
@@ -352,7 +352,7 @@ ResolveSymbolicLink = function(o)
 				response = app:BuildSearchResponse(app.Categories.Craftables, "requireSkill", requireSkill);
 				if response then tinsert(searchResults, {text=LOOT_JOURNAL_LEGENDARIES_SOURCE_CRAFTED_ITEM,icon = app.asset("Category_Crafting"),g=response});  end
 				response = app:BuildSearchResponse(app.Categories.Holidays, "requireSkill", requireSkill);
-				if response then tinsert(searchResults, app.CreateNPC(app.HeaderConstants.HOLIDAYS, response));  end
+				if response then tinsert(searchResults, app.CreateCustomHeader(app.HeaderConstants.HOLIDAYS, response));  end
 				response = app:BuildSearchResponse(app.Categories.WorldEvents, "requireSkill", requireSkill);
 				if response then tinsert(searchResults, {text=BATTLE_PET_SOURCE_7,icon = app.asset("Category_Event"),g=response});  end
 				if app.Categories.ExpansionFeatures then
@@ -391,30 +391,25 @@ ResolveSymbolicLink = function(o)
 					end
 				end
 			elseif cmd == "not" then
-				-- Instruction to include only search results where a key value is not a value
+				-- Instruction to include only search results where a key value for a field is not a value
+				local field = sym[2];
 				if #sym > 3 then
-					local dict = {};
-					for k=2,#sym,2 do
-						dict[sym[k] ] = sym[k + 1];
+					local matches = {};
+					for k=3,#sym,1 do
+						matches[sym[k]] = true;
 					end
 					for k=#searchResults,1,-1 do
 						local result = searchResults[k];
-						local matched = true;
-						for key,value in pairs(dict) do
-							if not result[key] or result[key] ~= value then
-								matched = false;
-								break;
-							end
-						end
-						if matched then
+						local value = result[field];
+						if value and matches[value] then
 							tremove(searchResults, k);
 						end
 					end
 				else
-					local key, value = sym[2], sym[3];
+					local value = sym[3];
 					for k=#searchResults,1,-1 do
 						local result = searchResults[k];
-						if result[key] and result[key] == value then
+						if result[field] and result[field] == value then
 							tremove(searchResults, k);
 						end
 					end
@@ -1135,7 +1130,7 @@ local function GetSearchResults(method, paramA, paramB, ...)
 		local costResults = SearchForField("currencyIDAsCost", paramB);
 		if #costResults > 0 then
 			if not group.g then group.g = {} end
-			local usedToBuy = app.CreateNPC(app.HeaderConstants.VENDORS);
+			local usedToBuy = app.CreateCustomHeader(app.HeaderConstants.VENDORS);
 			usedToBuy.text = "Currency For";
 			if not usedToBuy.g then usedToBuy.g = {}; end
 			for i,o in ipairs(costResults) do
@@ -1147,9 +1142,9 @@ local function GetSearchResults(method, paramA, paramB, ...)
 		local costResults = SearchForField("itemIDAsCost", paramB);
 		if #costResults > 0 then
 			if not group.g then group.g = {} end
-			local attunement = app.CreateNPC(app.HeaderConstants.QUESTS);
+			local attunement = app.CreateCustomHeader(app.HeaderConstants.QUESTS);
 			if not attunement.g then attunement.g = {}; end
-			local usedToBuy = app.CreateNPC(app.HeaderConstants.VENDORS);
+			local usedToBuy = app.CreateCustomHeader(app.HeaderConstants.VENDORS);
 			if not usedToBuy.g then usedToBuy.g = {}; end
 			for i,o in ipairs(costResults) do
 				if o.key == "instanceID" or ((o.key == "difficultyID" or o.key == "mapID" or o.key == "headerID") and (o.parent and GetRelativeValue(o.parent, "instanceID")) and not o[o.key] == app.HeaderConstants.REWARDS) then
@@ -1535,7 +1530,10 @@ function app:GetDataCache()
 			end
 		});
 		local g = rootData.g;
-
+		
+		-----------------------------------------
+		-- P R I M A R Y   C A T E G O R I E S --
+		-----------------------------------------
 		-- Dungeons & Raids
 		if app.Categories.Instances then
 			tinsert(g, {
@@ -1589,14 +1587,14 @@ function app:GetDataCache()
 		end
 
 		-- Professions
-		local ProfessionsHeader = app.CreateNPC(app.HeaderConstants.PROFESSIONS, {
+		local ProfessionsHeader = app.CreateCustomHeader(app.HeaderConstants.PROFESSIONS, {
 			g = app.Categories.Professions or {}
 		});
 		tinsert(g, ProfessionsHeader);
 
 		-- Holidays
 		if app.Categories.Holidays then
-			tinsert(g, app.CreateNPC(app.HeaderConstants.HOLIDAYS, {
+			tinsert(g, app.CreateCustomHeader(app.HeaderConstants.HOLIDAYS, {
 				description = "These events occur at consistent dates around the year based on and themed around real world holiday events.",
 				g = app.Categories.Holidays,
 				SortType = "EventStart",
@@ -1612,7 +1610,10 @@ function app:GetDataCache()
 				g = app.Categories.ExpansionFeatures
 			});
 		end
-
+		
+		-----------------------------------------
+		-- L I M I T E D   C A T E G O R I E S --
+		-----------------------------------------
 		-- Character
 		if app.Categories.Character then
 			local db = {};
@@ -1623,17 +1624,9 @@ function app:GetDataCache()
 			tinsert(g, db);
 		end
 
-		-- In-Game Store
-		if app.Categories.InGameShop then
-			tinsert(g, app.CreateNPC(app.HeaderConstants.IN_GAME_SHOP, {
-				g = app.Categories.InGameShop,
-				expanded = false
-			}));
-		end
-
 		-- PvP
 		if app.Categories.PVP then
-			tinsert(g, app.CreateNPC(app.HeaderConstants.PVP, {
+			tinsert(g, app.CreateCustomHeader(app.HeaderConstants.PVP, {
 				g = app.Categories.PVP,
 				isPVPCategory = true
 			}));
@@ -1676,8 +1669,24 @@ function app:GetDataCache()
 				isEventCategory = true,
 			});
 		end
-
-		-- Dynamic Categories
+		
+		---------------------------------------
+		-- M A R K E T   C A T E G O R I E S --
+		---------------------------------------
+		-- Black Market
+		if app.Categories.BlackMarket then tinsert(g, app.Categories.BlackMarket[1]); end
+		
+		-- In-Game Store
+		if app.Categories.InGameShop then
+			tinsert(g, app.CreateCustomHeader(app.HeaderConstants.IN_GAME_SHOP, {
+				g = app.Categories.InGameShop,
+				expanded = false
+			}));
+		end
+		
+		-----------------------------------------
+		-- D Y N A M I C   C A T E G O R I E S --
+		-----------------------------------------
 		if app.Windows then
 			local keys,sortedList = {},{};
 			for suffix,window in pairs(app.Windows) do
@@ -1717,7 +1726,9 @@ function app:GetDataCache()
 			end
 			app.Sort(sortedList, app.SortDefaults.Strings);
 			for i,suffix in ipairs(sortedList) do
-				tinsert(g, app.CreateDynamicCategory(suffix));
+				local dynamicCategory = app.CreateDynamicCategory(suffix);
+				dynamicCategory.sourceIgnored = 1;
+				tinsert(g, dynamicCategory);
 			end
 		end
 
@@ -1726,7 +1737,7 @@ function app:GetDataCache()
 
 		-- Yourself.
 		tinsert(g, app.CreateUnit("player", {
-			description = "Awarded for logging in.\n\nGood job! YOU DID IT!\n\nOnly visible while in Debug Mode.",
+			description = L.DEBUG_LOGIN,
 			races = { app.RaceIndex },
 			c = { app.ClassIndex },
 			r = app.FactionID,

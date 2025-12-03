@@ -128,6 +128,11 @@ function addon:ProjectIsWarWithin()
     return toc >= 110000 and toc < 120000
 end
 
+function addon:ProjectIsMidnight()
+    local toc = select(4, GetBuildInfo())
+    return toc >= 120000 and toc < 130000
+end
+
 --[[-------------------------------------------------------------------------
 --  Print/Printf support
 -------------------------------------------------------------------------]]--

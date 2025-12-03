@@ -20,7 +20,7 @@ local FrameDefaults = {
 	bagBreak = 1, breakSpace = 1.3,
 
 	rules = {sidebar = AsArray({'all', 'tradegoods', 'consumable', 'armor', 'questitem', 'miscellaneous'})},
-	brokerObject = ADDON .. 'Launcher',
+	activeRules = {}, brokerObject = ADDON .. 'Launcher',
     skin = Addon.Skins.Default,
 }
 

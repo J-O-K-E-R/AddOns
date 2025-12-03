@@ -18,7 +18,9 @@ mod:RegisterEnableMob(
 	214551, -- Wandering Gutter
 	216325, -- Crazed Predator
 	220643, -- Deepwater Makura
-	214343 -- Kobyss Trickster
+	214343, -- Kobyss Trickster
+	246897, -- Crazed Devilfish
+	246733 -- Soaring Devilfish
 )
 
 --------------------------------------------------------------------------------
@@ -117,7 +119,7 @@ function mod:OnBossEnable()
 	self:Log("SPELL_CAST_START", "IllusiveStep", 433040)
 
 	-- also enable the Rares module
-	local raresModule = BigWigs:GetBossModule("Underpin Rares", true)
+	local raresModule = BigWigs:GetBossModule("Ky'veza Rares", true)
 	if raresModule then
 		raresModule:Enable()
 	end

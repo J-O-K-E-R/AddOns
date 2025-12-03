@@ -48,8 +48,8 @@ L.health = "血量" -- The health of an NPC
 L.health_percent = "%d%% 血量" -- "10% Health" The health percentage of an NPC
 L.energy = "能量"
 L.energy_percent = "%d%% 能量" -- "80% Energy" The energy percentage of an NPC
-L.door_open = "门开了" -- When a door is open, usually after a speech from an NPC
-L.gate_open = "门开了" -- When a gate is open, usually after a speech from an NPC
+L.door_open = "开门" -- When a door is open, usually after a speech from an NPC
+L.gate_open = "开门" -- When a gate is open, usually after a speech from an NPC
 L.threat = "威胁"
 
 L.remaining = "剩余：%d" -- 5 remaining
@@ -195,6 +195,7 @@ L.arcane = "奥术"
 L.autotalk = "自动与NPC对话"
 L.autotalk_boss_desc = "自动选择NPC对话选项，使首领战开始。"
 L.autotalk_generic_desc = "自动选择使你进入地下城下一阶段的NPC对话选项。"
+L.autotalk_notice = "自动与NPC %s 交互。"
 
 -- Common ability name replacements
 L.absorb = "吸收" -- Used for shield-like abilities that absorb damage or healing

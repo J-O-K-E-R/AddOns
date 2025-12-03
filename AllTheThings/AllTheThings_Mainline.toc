@@ -24,9 +24,9 @@
 ## Notes-ruRU: Отслеживает вашу коллекцию ездовых животных, питомцев, игрушек, трансмогрификации и многого другого.|nФильтруйте по своему вкусу или попытайтесь собрать все!|n|nНочные сборки и еженедельные обновления.
 ## Notes-zhCN: 追踪你所收藏的坐骑、宠物、玩具、幻化等。。|n按你的喜好筛选，或尝试收集所有物品！|n|n每晚构建，每周更新。
 ## Notes-zhTW: 追蹤你所收藏的坐騎、寵物、玩具、塑形等。。|n依你的喜好篩選，或試著收集所有物品！|n|n每晚構建，每週更新。
-## Version: 4.5.9
-## Interface: 110107, 110200
-## X-Interface: 110107, 110200
+## Version: 4.6.0
+## Interface: 110200, 110107
+## X-Interface: 110200, 110107
 ## X-Wago-ID: yQKyY5K7
 ## X-Curse-Project-ID: 267285
 ## SavedVariables: ATTCharacterData, ATTAccountWideData, AllTheThingsSavedVariables, AllTheThingsSettings, AllTheThingsAD, AllTheThingsProfiles, AllTheThingsAuctionData, AllTheThingsDebugData, AllTheThingsArtifactsItems, AllTheThingsHarvestItems
@@ -67,17 +67,6 @@ lib\Audio.lua
 
 # Load localization modules
 locales\Default Locale.lua
-locales\en.lua
-locales\de.lua
-locales\es.lua
-locales\mx.lua
-locales\fr.lua
-locales\it.lua
-locales\ko.lua
-locales\pt.lua
-locales\ru.lua
-locales\cn.lua
-locales\tw.lua
 
 # Search Cache
 src\Cache.lua
@@ -88,7 +77,6 @@ src\Modules\RetrievingData.lua
 src\Modules\Catalyst.lua
 src\Modules\Collection.lua
 src\Modules\CustomCollect.lua
-src\Modules\ExtraCategories.lua
 src\Modules\FactionData.lua
 src\Modules\Fill.lua
 src\Modules\Color.lua
@@ -148,9 +136,6 @@ src\Classes\Spell.lua
 src\Classes\Ensemble.lua
 src\Classes\CharacterUnlock.lua
 
-# Classic Specific Modules
-# src\Classes\Classic\Mounts & Battle Pets.lua
-
 # Item Sub-Classes
 src\Classes\Heirloom.lua
 src\Classes\Toys.lua
@@ -168,6 +153,10 @@ src\Settings\Settings.xml
 
 # Load primary addon source files
 AllTheThings.lua
+
+# Classic Specific Modules
+# src\Classes\Classic\Mounts & Battle Pets.lua
+
 src\UI\Game Tooltip.lua
 src\UI\Minimap Button.lua
 src\UI\Waypoints.lua
@@ -185,4 +174,4 @@ db\Retail\Categories.lua
 src\UI\Windows\Debugger.lua
 
 # Finally, prepare the Data Cache
-# src\Root.lua
+src\Root.lua

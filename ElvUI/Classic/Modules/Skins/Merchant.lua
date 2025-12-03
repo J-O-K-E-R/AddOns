@@ -14,7 +14,7 @@ local GetItemQualityByID = C_Item.GetItemQualityByID
 
 local MERCHANT_ITEMS_PER_PAGE = MERCHANT_ITEMS_PER_PAGE
 
-local function merchantItemPoint()
+local function MerchantItemPoint()
 	_G.MerchantItem1:PointXY(6, -40)
 
 	for i = 2, _G.BUYBACK_ITEMS_PER_PAGE do
@@ -55,7 +55,7 @@ function S:MerchantFrame()
 		button:Size(40)
 		button:Point('TOPLEFT', item, 'TOPLEFT', 4, -2)
 
-		icon:SetTexCoord(unpack(E.TexCoords))
+		icon:SetTexCoords()
 		icon:SetInside()
 
 		nameFrame:Point('LEFT', slot, 'RIGHT', -6, -17)
@@ -74,7 +74,7 @@ function S:MerchantFrame()
 			currencyIcon.backdrop:OffsetFrameLevel(nil, currencyItem)
 			currencyIcon.backdrop:SetOutside(currencyIcon)
 
-			currencyIcon:SetTexCoord(unpack(E.TexCoords))
+			currencyIcon:SetTexCoords()
 			currencyIcon:SetParent(currencyIcon.backdrop)
 		end
 	end
@@ -121,7 +121,7 @@ function S:MerchantFrame()
 	_G.MerchantBuyBackItemItemButton:Size(40)
 	_G.MerchantBuyBackItemItemButton:Point('TOPLEFT', 4, -2)
 
-	_G.MerchantBuyBackItemItemButtonIconTexture:SetTexCoord(unpack(E.TexCoords))
+	_G.MerchantBuyBackItemItemButtonIconTexture:SetTexCoords()
 	_G.MerchantBuyBackItemItemButtonIconTexture:SetInside()
 
 	_G.MerchantBuyBackItemNameFrame:Point('LEFT', _G.MerchantBuyBackItemSlotTexture, 'RIGHT', -6, -17)
@@ -186,7 +186,7 @@ function S:MerchantFrame()
 
 		_G.MerchantRepairText:Point('BOTTOMLEFT', 14, 69)
 
-		merchantItemPoint()
+		MerchantItemPoint()
 	end)
 
 	hooksecurefunc('MerchantFrame_UpdateBuybackInfo', function()
@@ -212,7 +212,7 @@ function S:MerchantFrame()
 			end
 		end
 
-		merchantItemPoint()
+		MerchantItemPoint()
 	end)
 end
 

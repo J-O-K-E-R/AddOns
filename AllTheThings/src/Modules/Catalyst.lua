@@ -2,8 +2,8 @@
 local _, app = ...;
 
 -- Globals
-local setmetatable,tonumber,ipairs,tremove,unpack
-	= setmetatable,tonumber,ipairs,tremove,unpack
+local setmetatable,tonumber,ipairs,tremove,unpack,string_match
+	= setmetatable,tonumber,ipairs,tremove,unpack,string.match
 local GameTooltip = GameTooltip
 
 -- WOWAPI
@@ -23,7 +23,7 @@ app.Modules.Catalyst = api
 -- then narrow down the matching armor slot, apply the bonusIDs to the new item, and render into tooltip
 
 -- Helpful Reference: https://www.raidbots.com/static/data/live/item-conversions.json
--- Wago: https://wago.tools/db2/ItemBonus?build=11.1.5.60568&filter%5BType%5D=37&page=2
+-- Wago: https://wago.tools/db2/ItemBonus?filter%5BType%5D=37&page=2
 -- References the CatalystID of the corresponding Catalyst object which contains the available Catalyst results in ATT
 -- Blizzard likely has some other meaning for the value I've used for 'catalystID' but it seems to correlate to this purpose
 local PossibleCatalystBonusIDLookups = app.ItemConversionDB
@@ -31,6 +31,7 @@ if not PossibleCatalystBonusIDLookups then
 	app.print("Catalyst Module missing ItemConversionDB! Cannot load!")
 	return
 end
+local BonusCatalysts = PossibleCatalystBonusIDLookups.BonusCatalysts
 
 local CatalystArmorSlots = {
 	["INVTYPE_HEAD"] = true,
@@ -75,14 +76,27 @@ for classID,armorType in pairs(CatalystArmorSubtypesByClass) do
 	classes[#classes + 1] = classID
 end
 
-local function IncludeCatalystResults(data)
-	-- TODO: improve this, swap function based on settings changes, localize filter check
-	local canShowResults = (app.MODE_DEBUG_OR_ACCOUNT or app.Settings:Get("Filter:BoEs")) and not app.Modules.Filter.Filters.Bind(data)
-	if not canShowResults then return end
+local function IncludeOtherClassCatalystResults(data)
+	-- TODO: improve this, swap function based on settings changes
+	local showWithinBoEs = app.MODE_DEBUG_OR_ACCOUNT or app.Settings:Get("Filter:BoEs")
+	if not showWithinBoEs then return end
+
+	local ItemUnbound = app.Modules.Filter.Filters.ItemUnbound
+	local canShowResults = ItemUnbound(data)
+	if not canShowResults then
+		-- last check if nested inside a BoE/BoA and allowed to show when nested
+		return app.GetRelativeByFunc(data, ItemUnbound)
+	end
 
 	local tooltipData = GameTooltip and GameTooltip:GetTooltipData()
-	tooltipData = tooltipData and tooltipData.lines
 	-- not sure how this could happen
+	if not tooltipData then return true end
+
+	-- only need to check tooltip data if it matches the data we are testing to catalyst
+	if tooltipData.id ~= data.itemID then return true end
+
+	tooltipData = tooltipData.lines
+	-- not sure how this could happen either
 	if not tooltipData then return true end
 
 	for i=1,#tooltipData do
@@ -91,6 +105,29 @@ local function IncludeCatalystResults(data)
 		if tooltipData[i].bonding == 3 then return end
 	end
 	return true
+end
+local ItemUpgradeLevelMatch = ITEM_UPGRADE_TOOLTIP_FORMAT_STRING:gsub("%%d/%%d", "(%%d+)/%%d+")
+ItemUpgradeLevelMatch = ItemUpgradeLevelMatch:gsub("%%s","[^%s]+")
+local function CheckGameTooltipForUpgradeLevel()
+	local tooltipData = GameTooltip and GameTooltip:GetTooltipData()
+	-- not sure how this could happen
+	if not tooltipData then return true end
+
+	-- only need to check tooltip data if it matches the data we are testing to catalyst
+	if not tooltipData.id then return true end
+
+	tooltipData = tooltipData.lines
+	-- not sure how this could happen either
+	if not tooltipData then return true end
+
+	-- scan first 3 lines possibly for an Upgrade Level
+	local level
+	local text
+	for i=1,3 do
+		text = tooltipData[i]
+		level = string_match(text and text.leftText or "", ItemUpgradeLevelMatch)
+		if level then return tonumber(level) end
+	end
 end
 
 local function GetCatalystSlot(data)
@@ -103,10 +140,10 @@ local function GetCatalystSlot(data)
 	-- Armor only / Slot
 	if classID ~= 4 or not CatalystArmorSlots[itemEquipLoc] then return end
 
-	-- Correct Armor type for current Class (or a Cloth Cloak) or BoA included
+	-- Correct Armor type for current Class (or a Cloth Cloak)
 	if not (subclassID == ClassArmorSubtype or (itemEquipLoc == "INVTYPE_CLOAK" and subclassID == 1)) then
 		-- check BoA too if not for current class
-		local boaIncluded = IncludeCatalystResults(data)
+		local boaIncluded = IncludeOtherClassCatalystResults(data)
 		if not boaIncluded then return end
 
 		data.__boaIncluded = boaIncluded
@@ -131,18 +168,41 @@ local function GetCatalysts(data)
 	data._cata = 0
 	local bonuses = data.bonuses
 	if not bonuses or #bonuses < 1 then return end
-	local bonusID = containsAnyKey(PossibleCatalystBonusIDLookups, bonuses)
+
+	local bonusID = containsAnyKey(BonusCatalysts, bonuses)
 	if not bonusID then return end
+
 	local slot = GetCatalystSlot(data)
 	if not slot then return end
 
-	local catalystID = PossibleCatalystBonusIDLookups[bonusID]
-	-- app.PrintDebug("Can Catalyst!",catalystID,app:SearchLink(data))
+	local catalystID = BonusCatalysts[bonusID]
 	local upgradeInfo = C_Item_GetItemUpgradeInfo(data.link)
-	if not upgradeInfo then return end -- shouldn't happen
-
-	local upgradeTrackID = upgradeInfo.trackStringID or 0
+	-- app.PrintDebug("Can Catalyst!",catalystID,bonusID,app:SearchLink(data))
+	if not upgradeInfo then upgradeInfo = app.EmptyTable end
+	local upgradeTrackID = upgradeInfo.trackStringID
 	local upgradeLevel = upgradeInfo.currentLevel or 0
+
+	-- Non-Upgrade cases (use bonusID to find the matching upgradeTrackID lookup)
+	if not upgradeTrackID then
+		-- app.PrintDebug("Non-upgrade Item",data.link)
+		-- app.PrintTable(upgradeInfo)
+		-- Primalist Items, DF S1
+		if upgradeLevel == 2 and upgradeInfo.maxLevel == 3 then
+			-- Primalist converts to Normal
+			upgradeTrackID = 973
+		-- past upgrade items (Blizz returns no upgrade info because why...?)
+		-- TODO: if Blizzard ever fixes C_Item.GetItemUpgradeInfo returning nothing useful for old season items, this can all be simplified/removed
+		elseif upgradeLevel == 0 then
+			-- use the mapped upgradeTrack for the bonusID
+			upgradeTrackID = PossibleCatalystBonusIDLookups.BonusUpgradeTracks[bonusID]
+			-- then we need to scan the current tooltip to determine whether the item showing an actual upgrade level above it's mapped
+			-- upgrade track ID because THANKS BLIZZARD clearly there's no reason I would want to actually KNOW that information from an API
+			-- which says "GetItemUpgradeInfo" just because the item cannot be upgraded "further", the "current" upgrade level is still
+			-- IMPORTANT to some game functionality... reeeee
+			upgradeLevel = CheckGameTooltipForUpgradeLevel() or 0
+		end
+		-- app.PrintDebug("Using UpgradeTrackID",upgradeTrackID,"@",upgradeLevel)
+	end
 
 	-- If our upgrade level is 5+ then the item is actually on the next matching trackID for catalyst output
 	if upgradeLevel > 4 then
@@ -165,16 +225,21 @@ local function GetCatalysts(data)
 		return
 	end
 
-	tremove(bonuses, app.indexOf(bonuses, bonusID))
+	local newBonuses = app.CloneArray(bonuses)
+	tremove(newBonuses, app.indexOf(newBonuses, bonusID))
 	local catalystResult
 	for i=1,#catalystResults do
 		catalystResult = catalystResults[i]
 		-- Copy all but the catalyst bonusID to the resulting item
 		-- TODO: probably build a proper rawlink instead so it works properly for further nesting
-		catalystResult.bonuses = app.CloneArray(bonuses)
+		catalystResult.bonuses = newBonuses
+		-- use a ridiculous bonusID to force the item cache to not find a matching modItemID
+		-- hacky af but idk...
+		catalystResult.bonusID = 99999
 		-- Don't let a baked-in upgrade persist since our upgradeLevel might not allow it
 		catalystResult.up = nil
 		catalystResult._up = nil
+		catalystResult.rawlink = nil
 		catalystResult.filledType = "CATALYST"
 	end
 
@@ -195,6 +260,7 @@ local function catalyst_select_proper_tier_item(ResolveFunctions)
 		ResolveFunctions.isnt
 	return function(finalized, searchResults, o, cmd, catalystID, trackID, classID, armorSlot, baseItem)
 
+		-- app.PrintDebug("Find Catalyst",catalystID, trackID, classID, armorSlot, app:SearchLink(baseItem))
 		-- Select the Catalyst Object
 		-- TODO: need to standardize Catalyst data listings...
 		-- 1 Catalyst per Tier, list entirely within respective Raid
@@ -221,7 +287,7 @@ local function catalyst_select_proper_tier_item(ResolveFunctions)
 
 		-- Only 1 Class result
 		-- if item is really BoP or not Account Mode or not Ignore BoE Filters
-		local includeBoA = baseItem.__boaIncluded or IncludeCatalystResults(baseItem)
+		local includeBoA = baseItem.__boaIncluded or IncludeOtherClassCatalystResults(baseItem)
 		if not includeBoA then
 			-- Find the Class
 			contains(finalized, searchResults, o, "contains", "c", classID)
@@ -255,9 +321,7 @@ end
 -- Event Handling
 app.AddEventHandler("OnLoad", function()
 	app.RegisterSymlinkSubroutine("catalyst_select_proper_tier_item", catalyst_select_proper_tier_item)
-end)
 
-app.AddEventHandler("OnLoad", function()
 	local Fill = app.Modules.Fill
 	if not Fill then return end
 

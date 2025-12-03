@@ -111,8 +111,29 @@ end
 function RSContainerDB.GetInternalContainerInfoByMapID(containerID, mapID)
 	if (containerID and mapID) then
 		if (RSContainerDB.IsInternalContainerMultiZone(containerID)) then
-			for internalMapID, containerInfo in pairs (RSContainerDB.GetInternalContainerInfo(containerID).zoneID) do
+			for internalMapID, zoneInfo in pairs (RSContainerDB.GetInternalContainerInfo(containerID).zoneID) do
 				if (internalMapID == mapID) then
+					local containerInfo = {}
+					RSUtils.CloneTable(RSContainerDB.GetInternalContainerInfo(containerID), containerInfo)
+					containerInfo.zoneID = internalMapID
+					containerInfo.x = zoneInfo.x
+					containerInfo.y = zoneInfo.y
+					containerInfo.artID = zoneInfo.artID
+					containerInfo.overlay = zoneInfo.overlay
+					return containerInfo
+				end
+			end
+			
+			-- Then check if there is a matching subMapID in the database
+			for internalMapID, zoneInfo in pairs (RSContainerDB.GetInternalContainerInfo(containerID).zoneID) do
+				if (RSMapDB.IsMapInParentMap(mapID, internalMapID)) then
+					local containerInfo = {}
+					RSUtils.CloneTable(RSContainerDB.GetInternalContainerInfo(containerID), containerInfo)
+					containerInfo.zoneID = internalMapID
+					containerInfo.x = zoneInfo.x
+					containerInfo.y = zoneInfo.y
+					containerInfo.artID = zoneInfo.artID
+					containerInfo.overlay = zoneInfo.overlay
 					return containerInfo
 				end
 			end
@@ -168,17 +189,21 @@ function RSContainerDB.IsInternalContainerMonoZone(containerID)
 	return containerInfo and type(containerInfo.zoneID) ~= "table"
 end
 
-function RSContainerDB.IsInternalContainerInMap(containerID, mapID)
+function RSContainerDB.IsInternalContainerInMap(containerID, mapID, checkSubzones, ignoreAtlas)
 	if (containerID and mapID) then
 		if (RSContainerDB.IsInternalContainerMultiZone(containerID)) then
 			for internalMapID, internalContainerInfo in pairs(RSContainerDB.GetInternalContainerInfo(containerID).zoneID) do
-				if (internalMapID == mapID and (not internalContainerInfo.artID or RSUtils.Contains(internalContainerInfo.artID, C_Map.GetMapArtID(mapID)))) then
+				if (internalMapID == mapID and (ignoreAtlas or not internalContainerInfo.artID or RSUtils.Contains(internalContainerInfo.artID, C_Map.GetMapArtID(mapID)))) then
+					return true;
+				elseif (checkSubzones and RSMapDB.IsMapInParentMap(mapID, internalMapID)) then
 					return true;
 				end
 			end
 		elseif (RSContainerDB.IsInternalContainerMonoZone(containerID)) then
 			local containerInfo = RSContainerDB.GetInternalContainerInfo(containerID)
-			if (containerInfo.zoneID == mapID and (not containerInfo.artID or RSUtils.Contains(containerInfo.artID, C_Map.GetMapArtID(mapID)))) then
+			if (containerInfo.zoneID == mapID and (ignoreAtlas or not containerInfo.artID or RSUtils.Contains(containerInfo.artID, C_Map.GetMapArtID(mapID)))) then
+				return true;
+			elseif (checkSubzones and RSMapDB.IsMapInParentMap(mapID, containerInfo.zoneID)) then
 				return true;
 			end
 		end

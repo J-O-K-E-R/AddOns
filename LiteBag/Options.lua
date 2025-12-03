@@ -1,7 +1,5 @@
 --[[----------------------------------------------------------------------------
 
-  LiteBag/Options.lua
-
   Copyright 2013 Mike Battersby
 
   Released under the terms of the GNU General Public License version 2 (GPLv2).
@@ -9,7 +7,7 @@
 
 ----------------------------------------------------------------------------]]--
 
-local addonName, LB = ...
+local _, LB = ...
 
 local defaults = {
     profile = {
@@ -17,20 +15,23 @@ local defaults = {
             columns = 10,
             xbreak = 0,
             ybreak = 0,
-            anchor = 'TOPLEFT',
+            snap = true,
             layout = 'default',
-            order = 'default',
+            locked = true,
+            bagButtons = true,
+            position = nil,
         },
         BANK = {
             columns = 14,
             xbreak = 0,
             ybreak = 0,
-            anchor = 'TOPLEFT',
+            snap = true,
             layout = 'default',
-            order = 'default',
+            locked = true,
         },
         showEquipmentSets = false,
         showBindsOn = false,
+        hideBlizzardBagButtons = false,
         thickerIconBorder = false,
         debug = nil,
         eventDebug = nil,

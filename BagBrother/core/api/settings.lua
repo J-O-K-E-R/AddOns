@@ -21,8 +21,13 @@ function Settings:OnLoad()
 		countItems = true, countGuild = true, countCurrency = true, 
 		depositAccount = true, depositReagents = true,
 		display = {
-			banker = true, guildBanker = true, voidStorageBanker = true, crafting = true, tradePartner = true, socketing = true,
-			auctioneer = true, merchant = true, mailInfo = true, scrappingMachine = true},
+			banker = true, accountBanker = true, characterBanker = true, guildBanker = true, voidStorageBanker = true,
+			auctioneer = true, blackMarketAuctioneer = true, mailInfo = true, merchant = true, vendor = true,
+			transmogrifier = true, socketing = true, itemUpgrade = true,
+			crafting = true, tradePartner = true,
+
+			scrappingMachine = true, soulbind = true, itemInteraction = true,
+		},
 
 		glowAlpha = 0.5,
 		glowQuality = true, glowNew = true, glowQuest = true, glowSets = true, glowUnusable = true, glowPoor = true,
@@ -95,9 +100,12 @@ function Settings:Upgrade() -- all code temporary, will be removed eventually
 		end
 		upgradeProfile(Addon.sets.global)
 
+		local OLD_KEYSTONE_FORMAT = '^' .. strrep('%d+:', 6) .. '%d+$'
+		local OLD_PET_FORMAT = '^' .. strrep('%d+:', 7) .. '%d+$'
 		local function clean(data)
 			for key, value in pairs(data) do
-				if type(value) == 'table' then
+				local kind = type(value)
+				if kind == 'table' then
 					if (value.size or value.name or key == 'vault') and not value.items then
 						local items = {}
 
@@ -112,7 +120,14 @@ function Settings:Upgrade() -- all code temporary, will be removed eventually
 							value.items = items
 						end
 					else
+						value.tabNameEditBoxHeader, value.tabCleanupConfirmation = nil
 						clean(value)
+					end
+				elseif kind == 'string' then
+					if value:find(OLD_KEYSTONE_FORMAT) then
+						data[key] = 'keystone:' .. value
+					elseif value:find(OLD_PET_FORMAT) then
+						data[key] = 'battlepet:' .. value
 					end
 				end
 			end

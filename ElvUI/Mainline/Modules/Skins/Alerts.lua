@@ -3,16 +3,16 @@ local S = E:GetModule('Skins')
 
 local _G = _G
 local next = next
+local select = select
 local hooksecurefunc = hooksecurefunc
-local unpack, select = unpack, select
 
 local CreateFrame = CreateFrame
 local GetItemQualityByID = C_Item.GetItemQualityByID
 local SetLargeGuildTabardTextures = SetLargeGuildTabardTextures
 
-local function forceAlpha(self, alpha, forced)
+local function ForceAlpha(frame, alpha, forced)
 	if alpha ~= 1 and forced ~= true then
-		self:SetAlpha(1, true)
+		frame:SetAlpha(1, true)
 	end
 end
 
@@ -20,7 +20,7 @@ local function SkinAchievementAlert(frame)
 	frame:SetAlpha(1)
 
 	if not frame.hooked then
-		hooksecurefunc(frame, 'SetAlpha', forceAlpha)
+		hooksecurefunc(frame, 'SetAlpha', ForceAlpha)
 		frame.hooked = true
 	end
 
@@ -48,7 +48,7 @@ local function SkinAchievementAlert(frame)
 
 		local texture = frame.Icon.Texture
 		if texture then
-			texture:SetTexCoord(unpack(E.TexCoords))
+			texture:SetTexCoords()
 			texture:ClearAllPoints()
 			texture:Point('LEFT', frame, 7, 0)
 
@@ -64,7 +64,7 @@ local function SkinCriteriaAlert(frame)
 	frame:SetAlpha(1)
 
 	if not frame.hooked then
-		hooksecurefunc(frame, 'SetAlpha', forceAlpha)
+		hooksecurefunc(frame, 'SetAlpha', ForceAlpha)
 		frame.hooked = true
 	end
 
@@ -91,14 +91,14 @@ local function SkinCriteriaAlert(frame)
 		frame.Icon.Texture:SetParent(frame.Icon.Texture.b)
 	end
 
-	frame.Icon.Texture:SetTexCoord(unpack(E.TexCoords))
+	frame.Icon.Texture:SetTexCoords()
 end
 
 local function SkinDungeonCompletionAlert(frame)
 	frame:SetAlpha(1)
 
 	if not frame.hooked then
-		hooksecurefunc(frame, 'SetAlpha', forceAlpha)
+		hooksecurefunc(frame, 'SetAlpha', ForceAlpha)
 		frame.hooked = true
 	end
 
@@ -126,7 +126,7 @@ local function SkinDungeonCompletionAlert(frame)
 	if frame.dungeonArt4 then frame.dungeonArt4:Kill() end
 
 	-- Icon
-	frame.dungeonTexture:SetTexCoord(unpack(E.TexCoords))
+	frame.dungeonTexture:SetTexCoords()
 	frame.dungeonTexture:SetDrawLayer('OVERLAY')
 	frame.dungeonTexture:ClearAllPoints()
 	frame.dungeonTexture:Point('LEFT', frame, 7, 0)
@@ -143,7 +143,7 @@ local function SkinGuildChallengeAlert(frame)
 	frame:SetAlpha(1)
 
 	if not frame.hooked then
-		hooksecurefunc(frame, 'SetAlpha', forceAlpha)
+		hooksecurefunc(frame, 'SetAlpha', ForceAlpha)
 		frame.hooked = true
 	end
 
@@ -180,7 +180,7 @@ end
 
 local function SkinHonorAwardedAlert(frame)
 	frame:SetAlpha(1)
-	if not frame.hooked then hooksecurefunc(frame, 'SetAlpha', forceAlpha); frame.hooked = true end
+	if not frame.hooked then hooksecurefunc(frame, 'SetAlpha', ForceAlpha); frame.hooked = true end
 
 	frame.Background:Kill()
 	frame.IconBorder:Kill()
@@ -203,7 +203,7 @@ end
 local function SkinInvasionAlert(frame)
 	if not frame.IsSkinned then
 		frame:SetAlpha(1)
-		hooksecurefunc(frame, 'SetAlpha', forceAlpha)
+		hooksecurefunc(frame, 'SetAlpha', ForceAlpha)
 
 		frame:CreateBackdrop('Transparent')
 		frame.backdrop:Point('TOPLEFT', frame, 'TOPLEFT', 4, 4)
@@ -226,7 +226,7 @@ local function SkinInvasionAlert(frame)
 					icon.b:SetOutside(icon)
 					icon:SetParent(icon.b)
 					icon:SetDrawLayer('OVERLAY')
-					icon:SetTexCoord(unpack(E.TexCoords))
+					icon:SetTexCoords()
 				end
 			end
 		end
@@ -239,7 +239,7 @@ local function SkinScenarioAlert(frame)
 	frame:SetAlpha(1)
 
 	if not frame.hooked then
-		hooksecurefunc(frame, 'SetAlpha', forceAlpha)
+		hooksecurefunc(frame, 'SetAlpha', ForceAlpha)
 		frame.hooked = true
 	end
 
@@ -278,7 +278,7 @@ end
 local function SkinWorldQuestCompleteAlert(frame)
 	if not frame.IsSkinned then
 		frame:SetAlpha(1)
-		hooksecurefunc(frame, 'SetAlpha', forceAlpha)
+		hooksecurefunc(frame, 'SetAlpha', ForceAlpha)
 
 		frame:CreateBackdrop('Transparent')
 		frame.backdrop:Point('TOPLEFT', frame, 'TOPLEFT', 10, -6)
@@ -290,7 +290,7 @@ local function SkinWorldQuestCompleteAlert(frame)
 		frame.ToastBackground:Kill()
 
 		--Icon
-		frame.QuestTexture:SetTexCoord(unpack(E.TexCoords))
+		frame.QuestTexture:SetTexCoords()
 		frame.QuestTexture:SetDrawLayer('ARTWORK')
 		frame.QuestTexture.b = CreateFrame('Frame', nil, frame)
 		frame.QuestTexture.b:SetTemplate()
@@ -378,7 +378,7 @@ local function SkinGarrisonTalentAlert(frame)
 		frame.shine:Kill()
 
 		--Icon
-		frame.Icon:SetTexCoord(unpack(E.TexCoords))
+		frame.Icon:SetTexCoords()
 		frame.Icon:SetDrawLayer('ARTWORK')
 		frame.Icon.b = CreateFrame('Frame', nil, frame)
 		frame.Icon.b:SetTemplate()
@@ -425,7 +425,7 @@ local function SkinGarrisonMissionAlert(frame)
 		frame.Background:Kill()
 
 		--Icon
-		frame.MissionType:SetTexCoord(unpack(E.TexCoords))
+		frame.MissionType:SetTexCoords()
 		frame.MissionType:SetDrawLayer('ARTWORK')
 		frame.MissionType.b = CreateFrame('Frame', nil, frame)
 		frame.MissionType.b:SetTemplate()
@@ -448,7 +448,7 @@ local function SkinGarrisonShipMissionAlert(frame)
 		frame.shine:Kill()
 
 		--Icon
-		frame.MissionType:SetTexCoord(unpack(E.TexCoords))
+		frame.MissionType:SetTexCoords()
 		frame.MissionType:SetDrawLayer('ARTWORK')
 		frame.MissionType.b = CreateFrame('Frame', nil, frame)
 		frame.MissionType.b:SetTemplate()
@@ -473,7 +473,7 @@ local function SkinGarrisonRandomMissionAlert(frame, _, _, _, _, _, quality)
 		frame.shine:Kill()
 
 		--Icon
-		frame.MissionType:SetTexCoord(unpack(E.TexCoords))
+		frame.MissionType:SetTexCoords()
 		frame.MissionType:SetDrawLayer('ARTWORK')
 		frame.MissionType.b = CreateFrame('Frame', nil, frame)
 		frame.MissionType.b:SetTemplate()
@@ -508,7 +508,7 @@ local function SkinLegendaryItemAlert(frame, itemLink)
 		frame.shine:Kill()
 
 		--Icon
-		frame.Icon:SetTexCoord(unpack(E.TexCoords))
+		frame.Icon:SetTexCoords()
 		frame.Icon:SetDrawLayer('ARTWORK')
 		frame.Icon.b = CreateFrame('Frame', nil, frame)
 		frame.Icon.b:SetTemplate()
@@ -530,7 +530,7 @@ end
 
 local function SkinLootWonAlert(frame)
 	if not frame.hooked then
-		hooksecurefunc(frame, 'SetAlpha', forceAlpha)
+		hooksecurefunc(frame, 'SetAlpha', ForceAlpha)
 		frame.hooked = true
 	end
 
@@ -567,7 +567,7 @@ local function SkinLootUpgradeAlert(frame)
 	frame:SetAlpha(1)
 
 	if not frame.hooked then
-		hooksecurefunc(frame, 'SetAlpha', forceAlpha)
+		hooksecurefunc(frame, 'SetAlpha', ForceAlpha)
 		frame.hooked = true
 	end
 
@@ -598,7 +598,7 @@ local function SkinMoneyWonAlert(frame)
 	frame:SetAlpha(1)
 
 	if not frame.hooked then
-		hooksecurefunc(frame, 'SetAlpha', forceAlpha)
+		hooksecurefunc(frame, 'SetAlpha', ForceAlpha)
 		frame.hooked = true
 	end
 
@@ -625,7 +625,7 @@ local function SkinEntitlementDeliveredAlert(frame)
 	frame:SetAlpha(1)
 
 	if not frame.hooked then
-		hooksecurefunc(frame, 'SetAlpha', forceAlpha)
+		hooksecurefunc(frame, 'SetAlpha', ForceAlpha)
 		frame.hooked = true
 	end
 
@@ -659,7 +659,7 @@ local function SkinRafRewardDeliveredAlert(frame)
 	frame:SetAlpha(1)
 
 	if not frame.hooked then
-		hooksecurefunc(frame, 'SetAlpha', forceAlpha)
+		hooksecurefunc(frame, 'SetAlpha', ForceAlpha)
 		frame.hooked = true
 	end
 
@@ -693,7 +693,7 @@ local function SkinDigsiteCompleteAlert(frame)
 	frame:SetAlpha(1)
 
 	if not frame.hooked then
-		hooksecurefunc(frame, 'SetAlpha', forceAlpha)
+		hooksecurefunc(frame, 'SetAlpha', ForceAlpha)
 		frame.hooked = true
 	end
 
@@ -713,7 +713,7 @@ local function SkinNewRecipeLearnedAlert(frame)
 	frame:SetAlpha(1)
 
 	if not frame.hooked then
-		hooksecurefunc(frame, 'SetAlpha', forceAlpha)
+		hooksecurefunc(frame, 'SetAlpha', ForceAlpha)
 		frame.hooked = true
 	end
 
@@ -747,7 +747,7 @@ local function SkinMiscAlerts(frame)
 	frame:SetAlpha(1)
 
 	if not frame.hooked then
-		hooksecurefunc(frame, 'SetAlpha', forceAlpha)
+		hooksecurefunc(frame, 'SetAlpha', ForceAlpha)
 		frame.hooked = true
 	end
 
@@ -755,7 +755,7 @@ local function SkinMiscAlerts(frame)
 	frame.IconBorder:Kill()
 
 	frame.Icon:SetMask('')
-	frame.Icon:SetTexCoord(unpack(E.TexCoords))
+	frame.Icon:SetTexCoords()
 	frame.Icon:SetDrawLayer('BORDER', 5)
 
 	-- Icon border
@@ -826,7 +826,7 @@ function S:AlertSystem()
 	--Bonus Roll Money
 	local frame = _G.BonusRollMoneyWonFrame
 	frame:SetAlpha(1)
-	hooksecurefunc(frame, 'SetAlpha', forceAlpha)
+	hooksecurefunc(frame, 'SetAlpha', ForceAlpha)
 	frame.Background:Kill()
 	frame.Icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
 	frame.IconBorder:Kill()
@@ -845,7 +845,7 @@ function S:AlertSystem()
 	--Bonus Roll Loot
 	frame = _G.BonusRollLootWonFrame
 	frame:SetAlpha(1)
-	hooksecurefunc(frame, 'SetAlpha', forceAlpha)
+	hooksecurefunc(frame, 'SetAlpha', ForceAlpha)
 	frame.Background:Kill()
 	frame.glow:Kill()
 	frame.shine:Kill()

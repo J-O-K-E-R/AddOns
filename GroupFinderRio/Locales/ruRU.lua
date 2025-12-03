@@ -10,8 +10,8 @@ L["AccessOptionsMessage"] = "Доступ к настройкам через /gf
 L["addHighestDifficulty"] = "Добавить максимальную сложность"
 L["addHighestDifficultyDescription"] = "Добавить наивысшую пройденную сложность (либо уровень ключа, либо рейдовый прогресс)"
 L["addonOptions"] = "Настройки аддона"
-L["addScoreToGroup"] = "Добавить рейтинг в группу"
-L["addScoreToGroupDescription"] = "Добавить рейтинг лидера группы в просмотр групп"
+L["addScoreToGroup"] = "Добавить наивысший рейтинг в группу"
+L["addScoreToGroupDescription"] = "Добавить наивысший рейтинг лидера группы в просмотр групп. (Это может быть как основной, так и текущий рейтинг персонажа)."
 L["applicantView"] = "Просмотр кандидата"
 --[[Translation missing --]]
 L["Disable"] = "Disabled"
@@ -40,7 +40,7 @@ L["shortenActivityName"] = "Shorten Activity Name"
 --[[Translation missing --]]
 L["shortenActivityNameDescription"] = "Shorten the Activity Name in the Group View"
 L["showCurrentScoreInGroup"] = "Показать текущий рейтинг в группе"
-L["showCurrentScoreInGroupDescription"] = "Показать текущий рейтинг лидера группы в просмотре групп"
+L["showCurrentScoreInGroupDescription"] = "Показать текущий рейтинг лидера группы дополнение к наивысшему рейтингу (если отличается)"
 --[[Translation missing --]]
 L["showInfoInActivityName"] = "Show Info in Activity Name"
 --[[Translation missing --]]
@@ -51,12 +51,12 @@ L["showKeyLevelApplicantsDescription"] = "Показать наивысший п
 L["showKeyLevelDescription"] = "Показать наивысший пройденный уровень ключа для текущего подземелья"
 L["showKeyLevelLeader"] = "Показать уровень ключа лидера"
 L["showKeyLevelLeaderDescription"] = "Показывать наивысший завершенный уровень ключа лидера группы в просмотре групп"
-L["showLanguage"] = "Показать язык"
+L["showLanguage"] = "Показывать язык"
 L["showLanguageDescription"] = "Показать язык кандидатов и лидера группы"
-L["showNote"] = "Показать примечание"
-L["showNoteDescription"] = "Показывать значок, если кандидат добавил примечание"
-L["showRaceIcon"] = "Показать иконку расы"
-L["showRaceIconDescription"] = "Показывать иконку расы рядом с именем кандидата"
+L["showNote"] = "Показывать примечание"
+L["showNoteDescription"] = "Показать значок, если кандидат добавил примечание"
+L["showRaceIcon"] = "Показывать иконку расы"
+L["showRaceIconDescription"] = "Показать иконку расы рядом с именем кандидата"
 --[[Translation missing --]]
 L["showTimedKeys"] = "Show Timed Keys"
 --[[Translation missing --]]

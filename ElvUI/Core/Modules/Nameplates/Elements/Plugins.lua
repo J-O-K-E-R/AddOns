@@ -3,7 +3,7 @@ local NP = E:GetModule('NamePlates')
 local PA = E:GetModule('PrivateAuras')
 local LSM = E.Libs.LSM
 
-local ipairs, unpack = ipairs, unpack
+local ipairs = ipairs
 local CreateFrame = CreateFrame
 
 local targetIndicators = {'Spark', 'TopIndicator', 'LeftIndicator', 'RightIndicator'}
@@ -28,7 +28,7 @@ function NP:Construct_QuestIcons(nameplate)
 		QuestIcons[object] = icon
 	end
 
-	QuestIcons.Item:SetTexCoord(unpack(E.TexCoords))
+	QuestIcons.Item:SetTexCoords()
 	QuestIcons.Chat:SetTexture([[Interface\WorldMap\ChatBubble_64.PNG]])
 	QuestIcons.Chat:SetTexCoord(0, 0.5, 0.5, 1)
 
@@ -37,7 +37,7 @@ end
 
 function NP:Update_QuestIcons(nameplate)
 	local plateDB = NP:PlateDB(nameplate)
-	local db = E.Retail and plateDB.questIcon
+	local db = not E.Classic and plateDB.questIcon
 
 	if db and db.enable and not nameplate.isBattlePet and (nameplate.frameType == 'FRIENDLY_NPC' or nameplate.frameType == 'ENEMY_NPC') then
 		if not nameplate:IsElementEnabled('QuestIcons') then
@@ -189,7 +189,7 @@ function NP:Update_Highlight(nameplate, nameOnlySF)
 
 		if db.health.enable and not (db.nameOnly or nameOnlySF) then
 			nameplate.Highlight.texture:SetColorTexture(1, 1, 1, 0.25)
-			nameplate.Highlight.texture:SetAllPoints(nameplate.HealthFlashTexture)
+			nameplate.Highlight.texture:SetAllPoints(nameplate.Health.flashTexture)
 			nameplate.Highlight.texture:SetAlpha(0.75)
 		else
 			nameplate.Highlight.texture:SetTexture(E.Media.Textures.Spark)

@@ -2,7 +2,6 @@ local E, L, V, P, G = unpack(ElvUI)
 local S = E:GetModule('Skins')
 
 local _G = _G
-local unpack = unpack
 local next, select = next, select
 local hooksecurefunc = hooksecurefunc
 
@@ -11,11 +10,11 @@ local GetProfessionInfo = GetProfessionInfo
 local IsPassiveSpell = IsPassiveSpell
 local SpellBook_GetWhatChangedItem = SpellBook_GetWhatChangedItem
 
-local function clearBackdrop(backdrop)
+local function ClearBackdrop(backdrop)
 	backdrop:SetBackdropColor(0, 0, 0, 1)
 end
 
-local function spellButtonHighlight(button, texture)
+local function SpellButtonHighlight(button, texture)
 	if texture == [[Interface\Buttons\ButtonHilight-Square]] then
 		button:SetColorTexture(1, 1, 1, 0.3)
 	end
@@ -47,7 +46,7 @@ local function UpdateButton()
 
 			local r = button.SpellName:GetTextColor()
 			if r < 0.8 then
-				button.SpellName:SetTextColor(0.6, 0.6, 0.6)
+				button.SpellName:SetTextColor(0.8, 0.8, 0.8)
 			elseif r ~= 1 then
 				button.SpellName:SetTextColor(1, 1, 1)
 			end
@@ -143,8 +142,7 @@ function S:SpellBookFrame()
 		end
 
 		highlight:SetAllPoints(button.IconTexture)
-		hooksecurefunc(highlight, 'SetTexture', spellButtonHighlight)
-
+		hooksecurefunc(highlight, 'SetTexture', SpellButtonHighlight)
 		hooksecurefunc(button, 'UpdateButton', UpdateButton)
 	end
 
@@ -201,7 +199,7 @@ function S:SpellBookFrame()
 			button.backdrop.Center:SetDrawLayer('BORDER', -1)
 			button.backdrop:SetOutside(button.icon)
 			button.backdrop:SetBackdropColor(0, 0, 0, 1)
-			button.backdrop.callbackBackdropColor = clearBackdrop
+			button.backdrop.callbackBackdropColor = ClearBackdrop
 
 			button.icon:SetDesaturated(false)
 			button.icon:SetAlpha(1)
@@ -224,7 +222,7 @@ function S:SpellBookFrame()
 	local SpellBookCoreAbilitiesFrame = _G.SpellBookCoreAbilitiesFrame
 	SpellBookCoreAbilitiesFrame:Point('TOPLEFT', -80, 5)
 
-	local classTextColor = E:ClassColor(E.myclass)
+	local classTextColor = E.myClassColor
 	SpellBookCoreAbilitiesFrame.SpecName:SetTextColor(classTextColor.r, classTextColor.g, classTextColor.b)
 	SpellBookCoreAbilitiesFrame.SpecName:Point('TOP', 37, -30)
 
@@ -234,7 +232,7 @@ function S:SpellBookFrame()
 			local button = buttons[i]
 			if not button then return end
 
-			if not button.isSkinned then
+			if not button.IsSkinned then
 				button:CreateBackdrop()
 				button.backdrop:SetAllPoints()
 				button:StyleButton()
@@ -243,7 +241,7 @@ function S:SpellBookFrame()
 				button.ActiveTexture:SetAlpha(0)
 				button.FutureTexture:SetAlpha(0)
 
-				button.iconTexture:SetTexCoord(unpack(E.TexCoords))
+				button.iconTexture:SetTexCoords()
 				button.iconTexture:SetInside()
 
 				button.Name:Point('TOPLEFT', 50, 0)
@@ -257,7 +255,7 @@ function S:SpellBookFrame()
 					end)
 				end
 
-				button.isSkinned = true
+				button.IsSkinned = true
 			end
 
 			if button.FutureTexture:IsShown() then
@@ -279,7 +277,7 @@ function S:SpellBookFrame()
 		for i = 1, #tabs do
 			local tab = tabs[i]
 
-			if tab and not tab.isSkinned then
+			if tab and not tab.IsSkinned then
 				tab:GetRegions():Hide()
 				tab:SetTemplate()
 				tab:StyleButton(nil, true)
@@ -290,9 +288,9 @@ function S:SpellBookFrame()
 
 				local normal = tab:GetNormalTexture()
 				normal:SetInside()
-				normal:SetTexCoord(unpack(E.TexCoords))
+				normal:SetTexCoords()
 
-				tab.isSkinned = true
+				tab.IsSkinned = true
 			end
 		end
 	end)

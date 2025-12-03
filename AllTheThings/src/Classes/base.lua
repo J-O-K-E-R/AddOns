@@ -48,12 +48,11 @@ local function CreateHash(t)
 			hash = hash .. ":" .. t.achievementID;
 		elseif key == "itemID" and t.modItemID and t.modItemID ~= t.itemID then
 			hash = key .. t.modItemID;
-		elseif key == "creatureID" then
-			if t.encounterID then hash = hash .. ":" .. t.encounterID; end
+		elseif key == "npcID" or key == "creatureID" then
 			local difficultyID = GetRelativeValue(t, "difficultyID");
 			if difficultyID then hash = hash .. "-" .. difficultyID; end
 		elseif key == "encounterID" then
-			if t.creatureID then hash = hash .. ":" .. t.creatureID; end
+			if t.npcID then hash = hash .. ":" .. t.npcID; end
 			local difficultyID = GetRelativeValue(t, "difficultyID");
 			if difficultyID then hash = hash .. "-" .. difficultyID; end
 			if t.crs then
@@ -150,21 +149,21 @@ local DefaultFields = {
 		-- i.e. if searching 13544, we allow 13544.01 to count as a non-missing representation of the search... makes sense?
 		-- TODO: would be nice to store _missing in the Thing's cache instead of every reference of that Thing
 		local os = searcher(key, t[key]) or app.EmptyTable
-		local missing = true
 		local o
 		for i=1,#os do
 			o = os[i]
 			while o do
-				missing = rawget(o, "_missing")
-				if missing then
+				if rawget(o, "_missing") then
 					t._missing = true
 					return true
 				end
-				o = o.sourceParent or o.parent
+				o = o.parent
 			end
+			t._missing = false
+			return false
 		end
-		t._missing = missing or false
-		return missing
+		t._missing = true
+		return true
 	end,
 	-- Whether or not something is repeatable.
 	["repeatable"] = function(t)

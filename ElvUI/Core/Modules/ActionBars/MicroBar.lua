@@ -5,11 +5,9 @@ local _G = _G
 local next = next
 local wipe = wipe
 local gsub = gsub
-local assert = assert
 local unpack = unpack
 local tinsert = tinsert
 local CreateFrame = CreateFrame
-local UpdateMicroButtonsParent = UpdateMicroButtonsParent
 local RegisterStateDriver = RegisterStateDriver
 local InCombatLockdown = InCombatLockdown
 local hooksecurefunc = hooksecurefunc
@@ -55,17 +53,17 @@ end
 local microBar = CreateFrame('Frame', 'ElvUI_MicroBar', E.UIParent)
 microBar:SetSize(100, 100)
 
-local function onLeaveBar()
+local function OnLeaveBar()
 	return AB.db.microbar.mouseover and E:UIFrameFadeOut(microBar, 0.2, microBar:GetAlpha(), 0)
 end
 
 local watcher = 0
-local function onUpdate(self, elapsed)
+local function OnUpdate(self, elapsed)
 	if watcher > 0.1 then
 		if not self:IsMouseOver() then
 			self.IsMouseOvered = nil
 			self:SetScript('OnUpdate', nil)
-			onLeaveBar()
+			OnLeaveBar()
 		end
 		watcher = 0
 	else
@@ -73,10 +71,10 @@ local function onUpdate(self, elapsed)
 	end
 end
 
-local function onEnter(button)
+local function OnEnter(button)
 	if AB.db.microbar.mouseover and not microBar.IsMouseOvered then
 		microBar.IsMouseOvered = true
-		microBar:SetScript('OnUpdate', onUpdate)
+		microBar:SetScript('OnUpdate', OnUpdate)
 		E:UIFrameFadeIn(microBar, 0.2, microBar:GetAlpha(), AB.db.microbar.alpha)
 	end
 
@@ -96,7 +94,7 @@ local function onEnter(button)
 	end
 end
 
-local function onLeave(button)
+local function OnLeave(button)
 	if button:IsEnabled() then
 		button:SetBackdropBorderColor(unpack(E.media.bordercolor))
 	end
@@ -195,7 +193,12 @@ function AB:HandleMicroTextures(button, name)
 
 		local disabled = button.GetDisabledTexture and button:GetDisabledTexture()
 		if disabled then
-			disabled:SetTexture(texture)
+			if stock and stock.disabled then
+				disabled:SetTexture(stock.disabled)
+			else
+				disabled:SetTexture(texture)
+			end
+
 			disabled:SetDesaturated(true)
 			disabled:SetInside(button)
 		end
@@ -223,27 +226,24 @@ function AB:HandleMicroTextures(button, name)
 end
 
 function AB:HandleMicroButton(button, name)
-	assert(button, 'Invalid micro button name.')
-
 	button:SetTemplate()
-	button:HookScript('OnEnter', onEnter)
-	button:HookScript('OnLeave', onLeave)
+	button:HookScript('OnEnter', OnEnter)
+	button:HookScript('OnLeave', OnLeave)
 	button:SetHitRectInsets(0, 0, 0, 0)
 
 	if not E.Retail then
+		local pushed = button.GetPushedTexture and button:GetPushedTexture()
+		local normal = button.GetNormalTexture and button:GetNormalTexture()
+		local disabled = button.GetDisabledTexture and button:GetDisabledTexture()
+
 		AB.MICRO_CLASSIC[name] = {
-			pushed = button:GetPushedTexture():GetTexture(),
-			normal = button:GetNormalTexture():GetTexture()
+			pushed = pushed and pushed:GetTexture() or nil,
+			normal = normal and normal:GetTexture() or nil,
+			disabled = disabled and disabled:GetTexture() or nil
 		}
 	end
 
 	AB:UpdateMicroButtonTexture(name)
-end
-
-function AB:UpdateMicroButtonsParent()
-	for _, x in next, AB.MICRO_BUTTONS do
-		_G[x]:SetParent(microBar)
-	end
 end
 
 function AB:UpdateMicroBarVisibility()
@@ -257,8 +257,29 @@ function AB:UpdateMicroBarVisibility()
 	RegisterStateDriver(microBar.visibility, 'visibility', (AB.db.microbar.enabled and visibility) or 'hide')
 end
 
+function AB:UpdateMicroButtonTexture(name)
+	local button = _G[name]
+	if not button then return end
+
+	AB:HandleMicroTextures(button, name)
+	AB:HandleMicroCoords(button, name)
+end
+
+function AB:UpdateMicroBarTextures()
+	for _, name in next, AB.MICRO_BUTTONS do
+		AB:UpdateMicroButtonTexture(name)
+	end
+end
+
+function AB:UpdateMicroButtonsParent()
+	for _, x in next, AB.MICRO_BUTTONS do
+		_G[x]:SetParent(microBar)
+	end
+end
+
 do
-	local buttons = {}
+	local unsorted = {}
+	local sorted = {}
 	local sorting = {
 		-- order this as a safe way to fix glyph taint on mists, warning: adjusting this can lead to
 		-- action failed because cannot anchor to a region dependent on it (Mists/MainMenuBarMicroButtons.lua:133)
@@ -269,21 +290,26 @@ do
 	}
 
 	function AB:ShownMicroButtons()
-		wipe(buttons)
+		wipe(unsorted)
+		wipe(sorted)
 
 		for _, name in next, AB.MICRO_BUTTONS do
 			local button = _G[name]
 			if button and button:IsShown() then
 				local order = sorting[name]
 				if order then
-					tinsert(buttons, order, name)
+					tinsert(unsorted, order, name)
 				else
-					tinsert(buttons, name)
+					tinsert(unsorted, name)
 				end
 			end
 		end
 
-		return buttons
+		for _, name in next, unsorted do
+			tinsert(sorted, name)
+		end
+
+		return sorted
 	end
 end
 
@@ -362,20 +388,6 @@ do
 		end
 
 		AB:UpdateMicroBarVisibility()
-	end
-end
-
-function AB:UpdateMicroButtonTexture(name)
-	local button = _G[name]
-	if not button then return end
-
-	AB:HandleMicroTextures(button, name)
-	AB:HandleMicroCoords(button, name)
-end
-
-function AB:UpdateMicroBarTextures()
-	for _, name in next, AB.MICRO_BUTTONS do
-		AB:UpdateMicroButtonTexture(name)
 	end
 end
 
@@ -462,8 +474,8 @@ function AB:SetupMicroBar()
 	if _G.ResetMicroMenuPosition then
 		_G.ResetMicroMenuPosition()
 	else
+		_G.UpdateMicroButtonsParent(microBar)
 		AB:SecureHook('UpdateMicroButtonsParent')
-		UpdateMicroButtonsParent(microBar)
 	end
 
 	if not E.Retail then

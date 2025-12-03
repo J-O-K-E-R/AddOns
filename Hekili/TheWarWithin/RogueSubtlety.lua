@@ -200,6 +200,27 @@ spec:RegisterAuras( {
         duration = function() return 60 * ( talent.airborne_irritant.enabled and 0.6 or 1 ) end,
         max_stack = 1
     },
+    coup_de_grace = {
+    id = 462127,
+    duration = 3600,
+    max_stack = 1,
+    generate = function( t )
+        local eb = buff.escalating_blade
+        if eb.up and eb.at_max_stacks then
+            t.name = "coup_de_grace"
+            t.count = 1
+            t.expires = eb.expires
+            t.applied = query_time
+            t.caster = "player"
+        else
+            t.name = "coup_de_grace"
+            t.count = 0
+            t.expires = 0
+            t.applied = 0
+            t.caster = "nobody"
+        end
+    end
+},
     darkest_night = {
         id = 457280,
         duration = 30,
@@ -438,13 +459,13 @@ spec:RegisterAuras( {
 local true_stealth_change, emu_stealth_change = 0, 0
 local last_mh, last_oh, last_shadow_techniques, swings_since_sht, sht = 0, 0, 0, 0, {} -- Shadow Techniques
 local danse_ends, danse_macabre_actual = 0, {}
-
+local lastUnseenBlade, disorientStacks = 0, 0
 spec:RegisterEvent( "UPDATE_STEALTH", function ()
     true_stealth_change = GetTime()
 end )
 
 spec:RegisterCombatLogEvent( function( _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName, _, amount, interrupt, a, b, c, d, offhand, multistrike )
-    if not sourceGUID == state.GUID then return end
+    if sourceGUID ~= state.GUID then return end
 
     if subtype == "SPELL_ENERGIZE" and spellID == 196911 then
         last_shadow_techniques = GetTime()
@@ -463,23 +484,45 @@ spec:RegisterCombatLogEvent( function( _, subtype, _, sourceGUID, sourceName, _,
 
         if offhand then last_mh = GetTime()
         else last_mh = GetTime() end
-    end
 
-    if state.talent.danse_macabre.enabled and subtype == "SPELL_CAST_SUCCESS" then
-        if spellID == 185313 then
-            -- Start fresh with each Shadow Dance.
-            wipe( danse_macabre_actual )
-            danse_ends = GetTime() + 8
+    elseif subtype == "SPELL_DAMAGE" then
+        local now = GetTime()
+        if spellID == 441144 then  -- Unseen Blade damage event.
+            if disorientStacks < 0 then
+                lastUnseenBlade = now
+            end
+        end
+        return
 
-        elseif danse_ends > GetTime() then
-            local ability = class.abilities[ spellName ] -- use spellName to capture spellID variants
+    elseif subtype == "SPELL_CAST_SUCCESS" then
+        if spellID == 280719 and state.talent.disorienting_strikes.enabled then -- SecTec grants 2 stacks of Disorienting Strikes (hidden aura)
+            disorientStacks = 2
+            return
+        end
 
-            if ability then
-                danse_macabre_actual[ ability.key ] = true
+        if spellID == 53 or spellID == 185438 then -- Backstab (53) or Shadowstrike (185438) consumes 1 Disorienting Strike stack.
+            disorientStacks = disorientStacks - 1
+            return
+        end
+
+        if state.talent.danse_macabre.enabled then
+            if spellID == 185313 then
+                -- Start fresh with each Shadow Dance.
+                wipe( danse_macabre_actual )
+                danse_ends = GetTime() + 8
+                return
+            end
+
+            if danse_ends > GetTime() then
+                local ability = class.abilities[ spellName ] -- use spellName to capture spellID variants
+                if ability then danse_macabre_actual[ ability.key ] = true end
             end
         end
     end
 end )
+
+-- Table is defined in RogueOutlaw.lua
+spec:RegisterStateTable( "unseen_blade", ns.RogueUtils.unseen_blade )
 
 spec:RegisterStateTable( "time_to_sht", setmetatable( {}, {
     __index = function( t, k )
@@ -760,8 +803,6 @@ spec:RegisterHook( "reset_precast", function( amt, resource )
 
     class.abilities.apply_poison = class.abilities[ action.apply_poison_actual.next_poison ]
 
-    if buff.cold_blood.up then setCooldown( "cold_blood", action.cold_blood.cooldown ) end
-
     if talent.lingering_darkness.enabled and buff.shadow_blades.up then
         state:QueueAuraEvent( "lingering_darkness", TriggerLingeringDarkness, buff.shadow_blades.expires, "AURA_EXPIRATION" )
     end
@@ -775,8 +816,19 @@ spec:RegisterHook( "reset_precast", function( amt, resource )
         buff.first_dance.applied = query_time + buff.first_dance_prep.remains
     end
 
-    if prev_gcd[1].coup_de_grace then removeBuff( "coup_de_grace" ); removeBuff( "escalating_blade" ) end
-    if buff.escalating_blade.stack == 4 then applyBuff( "coup_de_grace" ); removeBuff( "escalating_blade" ) end
+
+    if talent.unseen_blade.enabled then
+        unseen_blade.sync()
+        if prev[1].coup_de_grace and buff.escalating_blade.at_max_stacks then
+            if set_bonus.tww3 >= 4 then
+                local dur = 5 + ( gcd.max ) - ( query_time - action.coup_de_grace.lastCast )
+                applyBuff( "tww3_trickster_4pc", dur )
+                applyBuff( "escalating_blade", dur, 4 )
+                applyBuff( "coup_de_grace", dur )
+            end
+        end
+    end
+
 end )
 
 spec:RegisterHook( "step", function()
@@ -809,8 +861,9 @@ spec:RegisterGear({
                 duration = 5,
                 max_stack = 1,
                 generate = function( t )
-                    local cdg = buff.coup_de_grace
-                    if set_bonus.tww3 >= 4 and cdg.up and cdg.remains <= 10 then
+                    local cdg = buff.escalating_blade
+                    local delta = query_time - action.coup_de_grace.lastCast
+                    if set_bonus.tww3 >= 4 and cdg.up and cdg.at_max_stacks and delta < 5 then
                         -- Only treat this as the "trickster window" version if it's the 5s duration .. use 10s just as a safety net. The other version of the aura is 3600
                         t.name = "tww3_trickster_4pc"
                         t.count = 1
@@ -987,6 +1040,7 @@ spec:RegisterAbilities( {
                 addStack( "perforate" )
                 gainChargeTime( "shadow_blades", 0.5 )
             end
+            if talent.unseen_blade.enabled then unseen_blade.trigger() end
         end,
 
         bind = "gloomblade"
@@ -1153,9 +1207,9 @@ spec:RegisterAbilities( {
             if debuff.fazed.up then addStack( "flawless_form", nil, 5 ) end
 
             if set_bonus.tww3 >= 4 and buff.tww3_trickster_4pc.down  then
-                applyBuff( "coup_de_grace", 5 ) -- recast within 5 seconds
-                applyBuff( "tww3_trickster_4pc" )
-                applyBuff( "escalating_blade", 5, 4 )
+                applyBuff( "coup_de_grace", ( 5 + gcd.max ) ) -- recast within 5 seconds
+                applyBuff( "tww3_trickster_4pc", ( 5 + gcd.max ) )
+                applyBuff( "escalating_blade", ( 5 + gcd.max ), 4 )
             else
                 removeBuff( "coup_de_grace" )
                 removeBuff( "escalating_blade" )
@@ -1278,6 +1332,9 @@ spec:RegisterAbilities( {
             if talent.goremaws_bite.enabled and buff.goremaws_bite.up then removeStack( "goremaws_bite" ) end
             spend( combo_points.current, "combo_points" )
             if talent.shadowcraft.enabled and buff.symbols_of_death.up then Shadowcraft() end
+            if talent.disorienting_strikes.enabled then
+                unseen_blade.v_disorient_stacks = 2
+            end
         end
     },
 
@@ -1311,7 +1368,13 @@ spec:RegisterAbilities( {
 
         startsCombat = false,
 
-        toggle = "cooldowns",
+        toggle = function ()
+            if talent.double_dance.enabled and settings.dance_one_charge then
+                if cooldown.shadow_dance.true_time_to_max_charges > gcd.max then return "cooldowns" end
+                return
+            end
+            return "cooldowns"
+        end,
         nobuff = "shadow_dance",
 
         usable = function ()
@@ -1396,7 +1459,7 @@ spec:RegisterAbilities( {
                 addStack( "perforated_veins" )
             end
             if azerite.blade_in_the_shadows.enabled then addStack( "blade_in_the_shadows" ) end
-
+            if talent.unseen_blade.enabled then unseen_blade.trigger() end
 
         end,
 
@@ -1547,7 +1610,13 @@ spec:RegisterAbilities( {
 
         spend = -40,
         spendType = "energy",
-        toggle = "essences",
+        toggle = function ()
+            if talent.death_perception.enabled and settings.symbols_one_charge then
+                if cooldown.symbols_of_death.true_time_to_max_charges > gcd.max then return "cooldowns" end
+                return
+            end
+            return "cooldowns"
+        end,
 
         startsCombat = false,
 
@@ -1590,6 +1659,7 @@ spec:RegisterOptions( {
 
     package = "Subtlety",
 } )
+local NewFeature = "|TInterface\\OptionsFrame\\UI-OptionsFrame-NewFeatureIcon:0|t"
 
 spec:RegisterSetting( "priority_rotation", false, {
     name = "Subtlety Rogue is able to do funnel damage. Head over to |cFFFFD100Toggles|r to learn how to turn the feature on and off. " ..
@@ -1599,6 +1669,42 @@ spec:RegisterSetting( "priority_rotation", false, {
     fontSize = "medium",
     width = "full"
 })
+
+spec:RegisterSetting( "dance_one_charge", false, {
+    name = strformat( "%s %s: Reserve 1 Charge for Cooldowns Toggle", NewFeature, Hekili:GetSpellLinkWithTexture( spec.abilities.shadow_dance.id ) ),
+    desc = strformat( "If checked, %s can be recommended while Cooldowns are disabled, as long as you will retain 1 remaining charge.\n\n"
+            .. "If |W%s's|w |cFFFFD100Required Toggle|r is changed from |cFF00B4FFDefault|r, this feature is disabled.\n\n"
+            .. "|cFFFF0000This setting only applies when talented into 2 %s charges.|r",
+            Hekili:GetSpellLinkWithTexture( spec.abilities.shadow_dance.id ), spec.abilities.shadow_dance.name, Hekili:GetSpellLinkWithTexture( spec.abilities.shadow_dance.id ) ),
+    type = "toggle",
+    width = "full"
+} )
+
+spec:RegisterSetting( "symbols_one_charge", true, {
+    name = strformat( "%s %s: Reserve Charges for Cooldowns Toggle", NewFeature, Hekili:GetSpellLinkWithTexture( spec.abilities.symbols_of_death.id ) ),
+    desc = strformat( "If checked, %s can be recommended while Cooldowns are disabled, as long as you will retain 1 remaining charge per rank of Death Perception talent.\n\n"
+            .. "If |W%s's|w |cFFFFD100Required Toggle|r is changed from |cFF00B4FFDefault|r, this feature is disabled.\n\n"
+            .. "|cFFFF0000This setting only applies when talented into 2 or more %s charges.|r",
+            Hekili:GetSpellLinkWithTexture( spec.abilities.symbols_of_death.id ), spec.abilities.symbols_of_death.name, Hekili:GetSpellLinkWithTexture( spec.abilities.symbols_of_death.id ) ),
+    type = "toggle",
+    width = "full"
+} )
+
+spec:RegisterSetting( "allow_overcap_cp", false, {
+    name = strformat( "Allow Overcapping Combo Points Before %s", Hekili:GetSpellLinkWithTexture( spec.abilities.flagellation.id ) ),
+    desc = strformat(
+        "If checked, the addon will avoid recommending %s in the 10 seconds before %s becomes ready, " ..
+        "even if this means overcapping Combo Points. \n\n" ..
+        "This playstyle sims about |cFFFFD1001.5%% DPS higher|r.\n\n" ..
+        "If unchecked (default), finishers like %s can still be recommended during that window, preventing long periods of only " ..
+        "building Combo Points.\n\n",
+        Hekili:GetSpellLinkWithTexture( spec.abilities.eviscerate.id ),
+        Hekili:GetSpellLinkWithTexture( spec.abilities.flagellation.id ),
+        Hekili:GetSpellLinkWithTexture( spec.abilities.eviscerate.id )
+    ),
+    type = "toggle",
+    width = "full"
+} )
 
 spec:RegisterSetting( "allow_shadowmeld", nil, {
     name = strformat( "Allow %s", Hekili:GetSpellLinkWithTexture( 58984 ) ),  -- Shadowmeld
@@ -1643,4 +1749,4 @@ spec:RegisterSetting( "rupture_duration", 12, {
     width = 1.5,
 } )
 
-spec:RegisterPack( "Subtlety", 20250805, [[Hekili:nZZAVTTr2(BrOaksj2Yuu2oPbwgOBcwSnOBrrv37(HlwrrtosMRPiv5J46le0V975mCiNh8mK0ojDxGI2AYzoZ59R5qTE(6FB9Qq)c26F21X9kN35C1S5x789UVB9QINoWwV6GFWd(7G)Ne)9W)Ev5DfXSINWx8uCQFicG80YSa4L3xuCi)9xCXUOI7lVBwq6(lYJ2xg7xeLMeK5VTa)7GlUlo9UlkUN9OF2JWsJsU4hcWL8lzrPzrfp9tr5f5xeY26xgxCrw6UsMxU4GNHqy9Q7kJIl(XK13rI(oa6NFGfap(65aEffgYQwllh285NFAZVDp70M)PFg8V4OWPnRy(5PW)DXPpHa7CN3DUZvV)0M)AuwEXPn)WV8tN(0Pp19EDR37LN7CnS3vr7)a8VFkjO(flo39klVGVJ)zA2d(zPLjHN2SnfoISYdfLzWbMFWFp8NmeLIbrsCfF90MG004W0htuG083la(gKbxDCRxfJ8vuGHCpuY9ZC5plX)Uyw46)Y6v(C5aSaqQNx4l4yzrhQE8hs3Fx6Pn)sAucWr(liuyzRxblOGLf5VE1KtBk8JzjfZktYzSeV7I9dzZeNWPnhpEAZN9HLc)5Sc)SDSI8tBUzjY52m90MXN2aG4UYTBNLFVpquEH(jbSzLh0E3Hm2EwyubNbWFjcy1TXp3C(RQa7OtBkZzHEapfHzoRApJuWN8cMFmYTgBhwRlaDkdMMK8TI4FnoDP0zxCkiiWNJOZclYWQ9NxKf9atfjdzCWVnkj07rM)djS88zad1pkrklgtjNAEvVYyc6TIli2PUaSg5xf8uqmZtCEO2jqEx2n3ookzh8Nj7GZjRIwQ1heNviZV4Eqzo(bwwU3EyvsCDS06XGF3WqUfO6f24i8xQDA08KkDxsXnTjHaWgMepbMFX5EPB94evdLcaoZpk0J9zef8ddR1wvugkr9GeVI0SeGoro7vDZzbrHFMh4M2d8HGmwHnqfcrJYUn4JDeMcRYb0ApItx)mvMhMmgWhHwpXcf0KvzqBFskoeA87q7ssGEitmlTOGLirRP0Q7V1QqzyKknzmHlAEdNEETnhSDkyExF4vxk(voCI9FmguJqNc7hcx3Q5sf6hHhBfc2n0UQLp1bsZFF3gifp(4cpqJedvYY8U8qqnE0J)72N0Ch8OOv2LiaUqZi2sCkado7DaJnNdAjBJcIkeStLqhPOJThZ9Ud2ghGUQNSsKfJZDH6YKPhOUOcm2cpNTMulAOOkXNbq1o6ha(OX7nJSLc8WCwHCp1YB8)lUKzlaSuNPcn0F4N9tIYVNlGa45vLNBnctea6lglWavS8cVKOD3x08keAFM5Xsy7Jycn33ze2mJDiokaCXaH7ekjAMADykQrCpeDWtKxjvGG(PqWMomfWNkymRaKDaozemt9yAfkdOdMNpKcsyKc)XKjuNzOk2JXLbpPiFLkIr)iFxzP1HaAIsUcBvsaxj3PtBU2rpPc6fElyt6OkX4o19oWGYOoOMsuFsvdwtoliJvqfgPFUI9yC2DE2eTxGI67vLg6o)L7sZZ5lBlYX9uzOUoQeyMFqKFSxouAdvqP(PsvNKvQxZ70YKllv3cAw(2QTW2ULvPV2Ejx3NKttSDFOxWbQiogvFvPuLlPVa)4yVQ)WdRURQgpbydcZLXwiYPckdpfsrVm7jJd6x5C5C1Glng1gsGoIhrUf5HdzVWYqVgYOqdgmw1jLWFBugJtGYOxdg8sOGGfIddph50CqzgoqJZ9JfS9GgWKFdQi5bibKP19nPiJ5hCpdkSphszaQiAFeKoyME87UDUitV2Q5cQoFLe7TDOizy6ZVEpr7bVqOETNFEalbzSp5bsQY9RxbL0b2UB92feIX3fKwx7qPQtQWfJLPg2qXE8NuYnhMBRCG9(HE)EjyuHzaNW7aKExiK(KikqSXXuJHFhvrY(9YOdhyHZSWnvISnAiRgHzJO2YQ0Iu4604PTpbFDaYwmhKxAgsqQLW1vNBWbL5sx9EULHxECAbVraZhsHrDGUkuv)hMRchwSIzfUZAyJaxm8j9aV2QMV5KN2UfmehoyaJ)p5kSjKxAg4XGx6(84LU)zYlNtXlN)FeEPlNxoSyEIUHUQUqc7raLCEIci1cqkEMNiqPRzGsnm5VgHLjWDB9RLqDSdgfSNzrpjq8Cslb2rWbWC)p8YpWscLztdHqcslpajC5TdcXXiLV80g9kyb3NebEo0eXoASSTCUaNBzg5FiDkEq5Tu1DA8imZkWqGehZYod0joaXoYR644PnrBpT5P0sG88t4p70MK0IkbhloNnBWcUo1D2gXZha2ZHmgkl8Bx1R)HdXpHIOC8VAx67ZkZ1I0D7aCzBzscl2GvS6rFqPOay4hexHYPnzPfI7ha5if4vwudt4ra7Iir06D7vV5xwv4AHsu8XCVFUhMdbQut7rxFf8oOj3EuE3rvP8MfwMj4cOrfvSd5k0kLQL)RxwRaCjzfMekLd5oyfKy)T9Xa6N8UQ3w2u04bG4YJeCJOTg2rcn3az5lAkV)VREklA7)60g(nRHAMs9uW2cBPDERRb7X7zaj9HpcVXhFA1zaM)q(PGlbmuby0ZYEmcDaaNhqN4RdlzvgkHLqgFiBzhWpoe7)eAq85OS0K9m0LLkZQbZ9Yt5210sBp09IsE8wcBYtwBXqAtau(7CNATd1eOvxXK(du)gYmlu0mekhCn2T(ivq4IIOMjr)gK6mgbsOCFuV26(pPRm83Ln3bV5vuvtVkPrwBWuJrK1otLX2MXaMax1Qj6kvXhATdISTfJT3SkrP)yhOHZFpZRi1lmIXvWvJSEnLlLwSNbs6QVSLBCRyK8UbETzgfvKHglJGM5x6ZAYBYWwfM0c(gVa)JCeU)n2drXrNJxIF02OavFc(Onp4bO5IYx)mUmIgEKUnTvARYo1MTNwU4unJSjtd1uWmO8pgbjqaEC(O)EqrKwRV(oB9))GslBsaS7Emkkma1ZPkx0HQnH0kB06tnVEVQnBLvy1)qQSi0fhYDznPVwYATtUuN8vQLQ0NEIDamGeRTOinvT1B(bpaMApgw1og73U2aKYZDSFdckx9d7Zr5bSSQ2bG56gMtffxQYgh6v1bnRTHKanBvlrNDqUvDmYENAeKrcen)1hafhiPCr)I6zYm4utCzUubcV18kiBVd0lC6jyHKNDiL)FjI6P1oa6OkAMNlMDvVgzYATjghHrDgDdxbPtnoeC07PLWwrtbuRfAdqhfH55ytQ4rAgnSl(yafOEd)sY0Vfc7WC6qL6lRqv1Bh2qCrf7MidjtXMuRM3Z)UnnQLHMZwGcwPMrhvqxdlaTtrRroAhiuUCEbgqN5RDCkpNkAxa5DrREj89LP6nsf4bjKCv62TQYxLho1(70HNovMIzH18xHXMH3b1v8)WVRySNd8xSNfhU2sR(QfW66MKd(uT5wxg7dXwazixQfFdh8KT48lke5QwxwA2ypJCKMv91Tddtn(ux)mT8C62xoeGlB3tvG(shnfxCkrzzBl3X6RhB3OhCSAia62ZnX5oOzUixQRiQGooUl9r)Sa)emh9SmqgAOrwvHm2ikS5wL(XXpHOrsrf)tPFPvt(zcdQloOOk15O9h8XunlU3VaBqwjpx7DXP35hlvXYBt060g6A8ny9Y8xLX2XsAKygeXHsEnXQ9q4N1gLKyu(N79Vld3TNtTAl9s1LEN)oupSAIBm7lbSZpJ5calSAwGV0561RE0plbk)lh5Bv0FAwHOvYVsmSkVcRY53lHSWbvZ809yjgLfP7HeLGheCVFYoqH(0N(POe4vZXH09dPjWHXF)RAA6ILRYrPX6CD8xv1)Hxn07a6vYJ(TwoAZBcP(iSEvjWcMm)pM(TaYsy(olW08UgAbtIfOJTF9GCdmDD0Hz6bwv3ra7dCaVF1iYYqgt7E52LxF8i9gux2YLQ9S)4r7LvmUx3)36utTFtW0VQi6mCq6jmiB6K(ZZKCHv1b1EOsOmy8AnLmBa1TBG261dcOD1BBc8UZfpWdSvdI7YyrznFtbFVaMOZ3D5s65I3VuW3a4l)wO1ydOFr632X0xgl4Bm47fWVuvUbI3VuWZD19JCVCi8EBDVJQsHd9HH36wkKsiKL039DN28N23q1PpHh3Qgy)be2iXVFpMNh(1d9EmhXV3DlBr1I)i4)99ySY6VokK4QON8znoVFZYluV4tyRa0(cUGs6JOEPNHxrZYwDO8m(TzSu7sthcGect59Ija08ZI2UK2WB8Kr0M5hpoe)7QRQL(ZTl7WWz6xcb5QsqU2iO5wiicS52oidlyA9q9l1IuFO8r4OHR(36uOydc6IQzkImCKt)T4bnt(DL6T8Ii)v8gb53x4DSyS(FPIzvvvgTALVDB4NO7Cc8lhhwH6BkzM(xcqh0OY190pHAMkxvcBs892LVB8i7Ju(yIMJBh1u6vHaZMqCbChpsE1vthpPIomhhCtu(MLUt7G9WZ1SdgZy6KIpECsJUkvVlV5ANXDUGBx4m2sxhP4IDqckJFAnBKSbnJPiVPhpoIAeSht3dhUIsAE(yTMVCJRthCyE3SeyMALb3SC(qkG42LV94rRLGqRX9DQTZqbZmhBNkmmimNVfXWlRUb5GoJo9AuevhOy1v3mzYdz1nZzSTftkWuHG(mgB)m19XeL850haZJ)acHKaRbpfrSW0hzzErjBlXUHGWJgdaW1ACLvXl0RFeSG64iKrVqW3Tj0sxsLTLZVYKKct9SCkG)Y8hSrj2bVnAX(elFMYioxfZNWxwLeL8IvSEKTNjxe4tgzDiLfgvKdMmyj1Zygd(vh13AKrZhARRU11z6ZHBNFgFEpRtZGZpNiV1kZmtwoFmTpp6ZKJmDboxTmZ078JsFkO6BnsPOtv7qN0uXGGD7JGD)6sWZ1YC7RpbB4swBIC73bTYTXG8f5r1KX33vp8dYPSTFWwnpACishg6lRXxFv78LGbsmAS9tN8PIvWJEzd(A)NbEZewKnda1NXrrmcQ4ZdLR(teAxjzqrIWy6D62cnzUv9uZRaToLEddNPJhP)7oGQkTGwgtVZ2KH8JH1wONx8P1(We5ExGLdCM24ujId1XVAda3BSjhfEejN3aJBQdqJbtHE6)(b0WrSeGY6a(0NFOLlAtlWdBGOk1aU7mz3TvTGn3OArLi8O2)YjqOlOxOwd1t)BKW4jTrcilOr2qcYZRB1b783rD9lDafR1EmiAdVcZFtdge7Yoc3gLM4(MfVMSoNNXjPROuNYM2VabKCdcvQkur)3BaI9EfDTzdbN5BK83tGxI)dcxzQF2)v5S3(IRbQVlNG29Z3kZGMvcX6XGnP1JsMw5ceJkgjhCSz1Isjehce5JlhlmtCPAeTA45QJe2XJORGXePETWrOe0zs)ItW0aNhfK20VX)9IzxjPkLoQq5jzrTNekK54rIX6c2JdwraXGCD8y393a255ZV61JS1KJEt65M3j7nH5UNANJdvumTfJv1iqRozvoMu5G3YcAnQrK(2mpqLXDIodGMKNfauFUPmbNkd20ge9E0DKXBqbVv2L7vcJW)mMpejHHjmITWqBIvqAtFSrUfeNVrDCrSbb(4I06LgZisR3Rnyic(W)D(vLOI6yzlVXSpBn8y(yPFw6HL8VOMZajiOOc7C5iZpNgrt54F3gNj)quw2N608fD3BZBM7mEcH3KBM0nKFdreRMlcykbhW01HMPTy6Frrk53gcb8Q7tUEHmkDDgCfs2IALp2Ho83p2AECJ9dm7z942F1fNx7146oWDIu(SqlYh36sWioCm5QxR64z6yfQ2GaGSw1TLE(FBgDlEOsvRHC0nfAHAlgtPBQpoHiYB7ZRGaZ0QQxTOlXNDrp3fWsxinbZWyoeNJ60)RlzBlcPZkyYKwsQX2ZWEITB)Gm2OjKVcBmeLKQ9c7S)iTeGu(cKFKc92zziOIt7B2AHW))aMCx5XR0AkzEgCgIEh8QsPqMqJwcetTiR6pfPLUxQvwLYe7APzf2kOTH1CnzdsKVUZuVCSXzQUWuz89BxEPtT7q1jV1sp3UrTadkEokvmGULcvwVYVS4(0S1R4)0MIZ)56))d]] )
+spec:RegisterPack( "Subtlety", 20250913, [[Hekili:fZXAVTTrYFlchGSStSmLKLJtGLbAtrbAqVIIQC39HdNOOjxjXZuKS8HDvHG(TFZSlFS7YzjPDs6bu0ytUC259RDwVAYQpVAPNtgB1Vm1A6CR3pz24jtUEI17wTm7qmB1Yyh3hD2c)qOZE4)Vm)HSaw2b8fhcIC8qaKgLN4cVCxwwC6hU6QT(z7YFySB0(Rs93Nh4K5hf6M4Sjd)D3REii6HRY2XE2j5zyP(Hx9DU4s(1e)Oe)Sd)SFAw6vESno5bzxLeTnNzNwSXJriSA5d5(bz)u4Qhiq)zwZVfqQyMl84BMa4LVNhtSwwk8XxE5P1FEh706)Ltc8)4OWP1lzoPrW)o70NqGDP17V06Mpap)qO7P1iIc)S)(pw(6BVCMf(ANNy4I2)quq6P1ozNwVXF7USZGFHf6vV6PTdmR5WR)r)KuaaF3V(ZRwgGCbK9UXpia(3FHlSyHopeW8w99Rw6WzAW)M46eYSZIssyHzcImXpw8YpVZhqeewNwNNM7eeC40A3OWmh)q4fFmkkWl6z8hfiviBBaZnd3KtR93dIF4dZ2HKLRtEkdw4wq85eGqP4BxTe2VmwIVdIFSKThgdcpFxF4JUFXP1tMFA9BqUb)vjSTGWidKni9OreX5bPmzQew3m51fG82u7)BU329CQvzPxlV0hC2AhTXolX39Xu1fY5sC1RkgB5xLMXCcY2PbyfC9raGu4OKSjkgGelR(BEYbypWBXFkiNHAWB2moDNdWbT9CcDzJZJpT(4XtRfVrGgQp8jNq)u8zC4zlmjlr4sY)Rjw45K8ilnZoe56vVcH2tmBqEU3hviqz81Nwp806rNwpauxCcardiOJd8DbJ)WT2ITiDCbYXxCXYYdtzSq7hcC8y1V)Cfs8r)y7K84S8egsNZFX0jGyErakjGX4mqccOLGCkx8y5TbWGsksWJasHz7e6z75lXL0zf3bSIPAy)EWuldWwG7Ii)nVyKNwinKZRBrmnQ2eD8MaWjEGWtmiy2lS(V706BS4qQJfEp4w0swO5XCY2zhZa)(ChnVwblZnHHMJ)Y7EXCLkjJGXW3M0sodnl7CbJPwfv9BLPbbaeE1rViCcU24iknLVmUREBzg6ulzcmXX13jWofC7Ju5TVyQecI(qKDCeOcvOEnPv7tUSu(tqJZ3j(e2MnmH(AZLCtxsofX2opB3yKGEVgbPe75J1bikPpxiaKT4xSXGsIWCfG11lfH5eldb6G8gI8S3KNCqBJ(noxwjouLrTMeyIEu0o(K6nNLKYsqVgCWm9fbgJ6K1WFJFcJtGCWRhpPVyjc20Se45iNMdk9GckCUFkJTh0ag95e)WhzzPNxMOxwcZXDhljkpfIG6eMU3pdWazmPlNlcxHTAUWtoOg7nTPizO7ZV8BGCuyjOETTtQlKWfWboydsQ89Rwc5Ra2UBS366Hr5liT2(IAQJmCrPuuMIT5pjNBomr35ELEFoO94zNMfbj547ffyc5iwinov7Bg5ZZBh36wmaUTq8x3nCj(NhEWNf4HHYdzqQ7jXj(Pg5WMwDnLy2ZDPBDGaaxr2fjnMMb1HiO1B5jtc))ludX5K48NP2Woaj5AVjkzlYJC8ou5ZN975(XXmpIvkhAO1LrZ8EVvfa6bpwpiqjpEVJN9VNdoEtT3djAGL1iXXusTkayTWJb(lgbiKLkf8Qk4aXIk1eQOrdwCsz)mOpRgHzLGWWQuYMyA)4yOZHYKOAWCqEPE8NApjC)zt04GvoplEp37PDAqeuPIi0QCkFnup7cDLOQU3SPYzmlwX4SPJRyJfkVYjNPIre8ZAT422CWjp(dPsSjSehtHDlw00xgVC6FL8Yju8Yj)FHxoLZl1ZYGoViGWJaRNLLLCAolPAoVm(uvRQusufpZUizQP6jQOGj)Opwqjp02VLhWAnrnfuWC2NDKK5lj1v4lCJbZ9)WongBLsvfxqAgUr5Xqs52BH0GyKYxEPf2zm3DH(GNdfrSLclBdNlW5w65DPj3aS706FfrVtR)(C)apmJOELBl2WkEQDtBnFSF0piGL8wqNigIHNI9Sb9P7V506dr5ypyc5p706WOmHGJfKYg3BbxR6o8onX7osCcdLfon7pItCCWbueLI)wZMK8IQUjlA7wax2KhgYc0yflF2bukYagECrFbpTojkJNxJGJKH9WReMWJsXEmj2DPIvk)A7Yp(11VgLqjs(y25KAJzbHk10E0vxbQdl95(PThvLYBMxEsbxanQOIDuVcLYTB4)6110OPKScDcLYHClScsS)(UyaDtEZ7S5EzvEaiAYkrHxfnTOgOAEAOmfkxBztSuv1)71Dic7bmIlQLAnWyxQQ4YgBVvcBtcdI2XTrQC)sxLWW6Ekr27JHM74vr)dGSKbzL)ESF02E(WwEjIc1UEVr1nTH(nHX0TOmuBWi7jts(Ln8iye3r8yeN(Uqp4KGGvyUeChEXzasEWnaGkFhsrLmc7Ukh4Yr20uu(bFWVme75hC27S1GUIhtiGD(tiJ96IQ6bhht8rT)ykRTQcJImJOYx3IQ9S0IiAPq1R3lBtiibX)rYIlKG19Mekym4rwcwTqYJkD2Bux9n1y7wP255Y5k2AJpnaGRR(6oYSH6JNX9awQ5aBO7JGc6ZEIEMO3mcL037H(WKxM(GbeSacqif8Kashd5Nam2ONyjUoXyBeRWF2t(PUSerTDzI(b2Y5E5ceGTOLzg77ir3QAKyyRTmUrsP1nlvlGGs9okUxJb9qijlvfSMoGvSK4swIajATqHt(b5Ya3CRPNz1raGAEBCKPmLuuIOJuOsiJN3PHDdnNQUCN447zZEc19C88QRCCqNn7YyVYMzP2DJwvTvASHzlfeMxkoOZlKbARhtspkv5oEJUuTbndZE1qfjDDD5gImkou0xbvylIeK0LW1gk8ZnODRTsjlubYEMNVi0GIUPsL7ThVP5UOuOVYgcLtLMHrPzokBN0ZB3PAt)eZ1KZ0TC4UA)KT2qePgLlRjk8vkx2Fl(mL5f61BXFfMBb8oOc0)j)WMXsr5VypdQF1qhGkLRQkQQsqzT0oCh0hddKHCTsuxOAq7n48tuiPLn1m0dkTJ41OFm9ExyQ3rIL1hZqR29Tl66DrccwkQP4GWWs2KVL1vhx46vYLXv2LdZU0j2xzyQowhZ0vR4QiCTrr3oATCQrDKUevgfk1AmQfNiJm4eXOmSwByGONlyd)ryMYA2gWcBTw1SKYkdskdYg9HEen3G)WVy8Pgz2c5lSN)82kUQyAnG6PFKrvAHFON9ZmhXzkKODGFePQQNHUzjob1oStFk9R(knEDlNos)QJOl36CteA(rdRNCKthIJWviaR2JP1vrgvokKMGOHLfp1MAMYmrWhxVolEzMCp6)I(Et6Z9ZfGP50yaDgKN3oV3CiE(UbQAoj2y4MN9ZqfhLdV0q5PYjTsIUu4ukGu7rmY0XYAYqTFAWyxJew0elSLAENr5)v)ODm7(vkEnu6pe7xz4GOmL1pX0xkHsreI268go1CHjdJwfk6N9y)nrLQs85aqbcD3TVBooPnsDanFCtfOxhDSy4RIEBmxonlfm75NNvmWLWBSVo2vvHaY30jqmrGcUsX56VOSpi0b86uBJIoVUlYrDSpvSKQjYSwN1NELC02imMWZP2p4xCQ1kt0QuizT9vBAwlsJqR31q2wpH9xawtXqqBDZ4jRw(Stsi2VfCeGfJYBuswXboEwXWVEg2aZFp3pb1ltJ2dRZjplAVtg(a3DoqiY0XN(0p7hcVAY7(aoWWHW2XF)zLTMNyYlup51ZeNJZzDoRgNvVz3AyZmnDbs7ipaCJ9SJXsqARFVHTw)W5l3cJNEpSGrt(JZ)wa5kyo1Yam1p(7gWKybky7xrixdZPQWmkMjokhWOfhc)ZgiIhP1y2H014C)IBoEK(dKx2IfYhJ8XJctkQgToSZspV3QKA)MGPFvruGRF6tew)vhU7lZ(FMr1b5J1Jqzq71kkzMa602bAJx3lG22XTsG3TU4EUHnoZY2mwKwZ3uW3jGjom22Cj9sX7xl4Ra81Fl0Amb0Vi9BZy6RJf8ng8Dc4xRkxpX7xl45U6(jUxoeEVR800ex9j0hgKjvE2UOKvlX7DfowirB8XHA4V93oT(FeNIw67bS6VSlX2PpH78Yky)re2ixz)Emjs8MIbOZ8jSBEVJNyX)a4y(dyG5YRNgs1ccnDCLx93S4k5H0b(uaAFbdtd9wuU03IZEXIghM7B5ZkYcLb8PpaQqkxpdhfaAYB93SG2IC4Ob02)hp2hh)YRQHI19lAXI68VecAQmbn1ebnXabrGn33czyatllISwls(H1pcVWBY)Ukfw8bf0fvHLfP(u3rQIhuDF2eQ3)7Lhs838FoT(YFJfha56awYpWcWdLOwXuCnf1k4J)5MWVIEjuGFP4G1v2FHXQLf2cnknpjDtO654jYKRgFVFX1Om241KBirdeo3mYjDekf42iIPb64rYPJ58HJeuI(fCthPVBX0wWbrAOTWAgsNV8XJJQ0wPoF17UXAyRl4(zwdnCYOVq2O0fQPKns2YHHuK35hpoG6sLvS4MD8duvIsthQC4q3n1Qfom)q2kWm5IgUBXK(uBX9lE3XJgRoHIxXJCupSYsyM(qMkWqxVu(NuCDSK)G6RUf62Rsru(ksjV6Q7AvFwD1nNY0IjfyYqq9wtzEpv9Y4h(u0JG5XFabrcH1G7sr0WONzj2(HBYX(YGWJgdaW14cyjJxOFFFybLrsiJFHGVDtOftjv2wmzUoj5fzByxapMPpAIsmdEt0I57G1BLUsrIO(e(YesuYH)W4w24Mv1(ov6EzX05M3nAcx1kwflOVAunrfAppchsexnQ7xC7BU9IrLPa0zh5aVvTCpNoV9xRtVV368xoJO5f6bj7QOInpEUcFCKNBh4yRJ7OeeMBqxRPo9Q(2KX7NAI0Pv(tFl)YIuM3hxspQYxtJufxmziDiitSBazAdCtvsvwvJqQJsuNNjsPOAHzOt65sJGN2fbp9Rlbprjv6V(eSwesLRZt3XlLMzhKVmOXH7Gqx)k60nyfdZohI0zf8L1IYVQ9OSGbsCVA6Mo5dzsbp61DRz6EpWBeJbztDjvCebtBP4iA4k5e5trLrTQ(EvYYINQF(PL1rPzCC(WbQNyMSABb(oK(lBse1hhLPO9V6DR5MjFQBVv5KFlci3YaNaCVHQ8t4bKCDn8D4aQHjHc5uhnGk(HHqqgpl6U80SyMoLapQF4db9wuOvDX2dhrRJnO5aB0enqhS9CDn1cmRUtvp0GMJQbH(PAf7vYe6HYy4iDefsfEGjuGC3Axb1SmFqBJwrt(N54E0ocAmef9IvzgD1rOrtFZSlOuBEj7JIA5OYSOvg5bcord9Os3EQd4qJVCoDH59bFf4g50luS50tUWIRB471OGuhDVUd1ncxZYdsGOSVMJFaPRJAN6MJA1iBMQvc5NGbiJkVUfkvCsCDkiLdd1B4qTuMdHA9dQlorHuW4LM4oWdKoclUddvEiKVQeKPtoZY4U0SdLNw)DEETpi9y329Y3hZ)7Tgy8IbzkAbp3jN4T8SrGCp4N3k4zbYEbxNZP17pa5Q4(MIjjwJ403ZATytJXmWIgpVMRl10WgEjNC8ytFXLooPRdMS05zwNx3Nt5V74X27Ph8Lxoz(fdm1yVoZS8UBR7hN(xBSInd9Qd3Ogkxk23kDmsMXwRJZBEhTHXasx86BO01qGoXSQ6wkaO69zqhCYSDDxjOR02tzb0Lmur28c3i)v83DWAActthik1)siIKft5phH3dc53WK(ZqOjiW)ZqyJxQ93EWgVx5p4GYfiiQid1A0uxvuCkUgzi3J8cbtaVYtKqTcfPU7dMFKhfG09wTfNEdnMQevQDnVaTxwQtEth9WFXeRwOoI8UmqT1pUXbssGEywoxiR4F(qj(sJ8lMYfnMUcUe4VsnXYLZuC1Ch2(rFa7OvTxm5vaEW0DErX)Eq6(GQY0AYDOJlmQz(ZdnNd5ithXdPBVgPVHTBHkXXMjo1AxhAKq55eSM6RAkpWzNANgLdn2nyLgVQRf(g7XnTQgLLAsuDyhotuTxAIim14Ps8KZniF7oo6IPxRuSH0nSYqlfmvIxf38gY2yu)AtXNTmXuehJCT7EqfXQ01L8TLYqJVUtoJzk2nkq0GUHmV5ZJ7Q)3p]] )

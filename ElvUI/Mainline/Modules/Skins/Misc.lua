@@ -3,17 +3,10 @@ local S = E:GetModule('Skins')
 
 local _G = _G
 local next = next
-local unpack = unpack
 
 local UnitIsUnit = UnitIsUnit
 local CreateFrame = CreateFrame
 local hooksecurefunc = hooksecurefunc
-
-local function ClearSetTexture(texture, tex)
-	if tex ~= nil then
-		texture:SetTexture()
-	end
-end
 
 local function FixReadyCheckFrame(frame)
 	if frame.initiator and UnitIsUnit('player', frame.initiator) then
@@ -170,69 +163,8 @@ function S:BlizzardMiscFrames()
 	end
 
 	-- reskin popup buttons
-	for i = 1, 4 do
-		local StaticPopup = _G['StaticPopup'..i]
-		local ItemFrame = _G['StaticPopup'..i..'ItemFrame']
-		local ItemNameFrame = _G['StaticPopup'..i..'ItemNameFrame']
-		local IconTexture = _G['StaticPopup'..i..'ItemFrameIconTexture']
-		local CloseButton = _G['StaticPopup'..i..'CloseButton']
-
-		local EditBox = _G['StaticPopup'..i..'EditBox']
-		local Gold = _G['StaticPopup'..i..'MoneyInputFrameGold']
-		local Silver = _G['StaticPopup'..i..'MoneyInputFrameSilver']
-		local Copper = _G['StaticPopup'..i..'MoneyInputFrameCopper']
-
-		StaticPopup:StripTextures()
-		StaticPopup:SetTemplate('Transparent')
-		StaticPopup:HookScript('OnShow', function() -- UpdateRecapButton is created OnShow
-			if StaticPopup.UpdateRecapButton and (not StaticPopup.UpdateRecapButtonHooked) then
-				StaticPopup.UpdateRecapButtonHooked = true -- we should only hook this once
-				hooksecurefunc(StaticPopup, 'UpdateRecapButton', S.UpdateRecapButton)
-			end
-		end)
-
-		for j = 1, 4 do
-			local button = _G["StaticPopup"..i.."Button"..j]
-			S:HandleButton(button)
-
-			button:OffsetFrameLevel(1)
-			button:CreateShadow(5)
-			button.shadow:SetAlpha(0)
-			button.shadow:SetBackdropBorderColor(unpack(E.media.rgbvaluecolor))
-			button.Flash:Hide()
-
-			local anim1, anim2 = button.PulseAnim:GetAnimations()
-			anim1:SetTarget(button.shadow)
-			anim2:SetTarget(button.shadow)
-		end
-
-		S:HandleEditBox(Gold)
-		S:HandleEditBox(Silver)
-		S:HandleEditBox(Copper)
-		S:HandleEditBox(EditBox)
-		EditBox:OffsetFrameLevel(1)
-		EditBox.backdrop:Point('TOPLEFT', -2, -4)
-		EditBox.backdrop:Point('BOTTOMRIGHT', 2, 4)
-
-		S:HandleCloseButton(CloseButton)
-
-		if ItemNameFrame then
-			ItemNameFrame:Hide()
-		end
-
-		if ItemFrame then
-			ItemFrame:SetTemplate()
-			ItemFrame:StyleButton()
-
-			S:HandleIcon(IconTexture)
-			S:HandleIconBorder(ItemFrame.IconBorder)
-
-			local normTex = ItemFrame:GetNormalTexture()
-			if normTex then
-				normTex:SetTexture()
-				hooksecurefunc(normTex, 'SetTexture', ClearSetTexture)
-			end
-		end
+	for i = 1, E.MAX_STATIC_POPUPS do
+		S:HandleStaticPopup(_G['StaticPopup'..i])
 	end
 
 	-- skin return to graveyard button
@@ -245,7 +177,7 @@ function S:BlizzardMiscFrames()
 		_G.GhostFrame:Point('TOP', E.UIParent, 'TOP', 0, -200)
 		_G.GhostFrameContentsFrame:SetTemplate('Transparent')
 		_G.GhostFrameContentsFrameText:Point('TOPLEFT', 53, 0)
-		_G.GhostFrameContentsFrameIcon:SetTexCoord(unpack(E.TexCoords))
+		_G.GhostFrameContentsFrameIcon:SetTexCoords()
 		_G.GhostFrameContentsFrameIcon:Point('RIGHT', _G.GhostFrameContentsFrameText, 'LEFT', -12, 0)
 
 		local x = E.PixelMode and 1 or 2

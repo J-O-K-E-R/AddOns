@@ -25,7 +25,6 @@ local _G = _G
 local hooksecurefunc = hooksecurefunc
 local tinsert = tinsert
 local format = format
-local unpack = unpack
 local next = next
 local max = max
 
@@ -51,7 +50,7 @@ local UnitName = UnitName
 local StaticPopup_Hide = StaticPopup_Hide
 
 local GetCVarBool = C_CVar.GetCVarBool
-local GetItemReagentQualityByItemInfo = C_TradeSkillUI and C_TradeSkillUI.GetItemReagentQualityByItemInfo
+local GetItemReagentQualityByItemInfo = C_TradeSkillUI.GetItemReagentQualityByItemInfo
 
 local TEXTURE_ITEM_QUEST_BANG = TEXTURE_ITEM_QUEST_BANG
 local LOOT = LOOT
@@ -162,7 +161,7 @@ local function CreateSlot(id)
 	E.frames[iconFrame] = nil
 
 	local icon = iconFrame:CreateTexture(nil, 'ARTWORK')
-	icon:SetTexCoord(unpack(E.TexCoords))
+	icon:SetTexCoords()
 	icon:SetInside()
 	slot.icon = icon
 
@@ -192,7 +191,7 @@ local function CreateSlot(id)
 	local questTexture = iconFrame:CreateTexture(nil, 'OVERLAY')
 	questTexture:SetInside()
 	questTexture:SetTexture(TEXTURE_ITEM_QUEST_BANG)
-	questTexture:SetTexCoord(unpack(E.TexCoords))
+	questTexture:SetTexCoords()
 	slot.questTexture = questTexture
 
 	local profQuality = E.Retail and iconFrame:CreateTexture(nil, 'OVERLAY')

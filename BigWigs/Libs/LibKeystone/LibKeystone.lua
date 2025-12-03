@@ -1,7 +1,7 @@
 --@curseforge-project-slug: libkeystone@
 if WOW_PROJECT_ID ~= 1 then return end -- Retail
 
-local LKS = LibStub:NewLibrary("LibKeystone", 4)
+local LKS = LibStub:NewLibrary("LibKeystone", 6)
 if not LKS then return end -- No upgrade needed
 
 LKS.callbackMap = LKS.callbackMap or {}
@@ -48,8 +48,14 @@ end
 
 local GetInfo
 do
+	-- Normal APIs
 	local GetOwnedKeystoneLevel, GetOwnedKeystoneChallengeMapID = C_MythicPlus.GetOwnedKeystoneLevel, C_MythicPlus.GetOwnedKeystoneChallengeMapID
 	local GetPlayerMythicPlusRatingSummary = C_PlayerInfo.GetPlayerMythicPlusRatingSummary
+
+	-- Timerunning APIs
+	local GetContainerNumSlots, GetContainerItemID, GetContainerItemLink = C_Container.GetContainerNumSlots, C_Container.GetContainerItemID, C_Container.GetContainerItemLink
+	local IsItemKeystoneByID, PlayerIsTimerunning = C_Item.IsItemKeystoneByID, PlayerIsTimerunning
+	local strsplit = string.split
 	function GetInfo()
 		-- Keystone level
 		local keyLevel = GetOwnedKeystoneLevel()
@@ -62,6 +68,29 @@ do
 		if type(keyChallengeMapID) ~= "number" then
 			keyChallengeMapID = 0
 		end
+
+		if keyLevel == 0 and keyChallengeMapID == 0 and PlayerIsTimerunning and PlayerIsTimerunning() then
+			for currentBag = 0, 4 do -- 0=Backpack, 1/2/3/4=Bags
+				local slots = GetContainerNumSlots(currentBag)
+				for currentSlot = 1, slots do
+					local itemID = GetContainerItemID(currentBag, currentSlot)
+					if itemID and IsItemKeystoneByID(itemID) then
+						local itemLink = GetContainerItemLink(currentBag, currentSlot)
+						if type(itemLink) == "string" then
+							local _, _, _, strChallengeMapID, strLevel = strsplit(":", itemLink)
+							local challengeMapID = tonumber(strChallengeMapID)
+							local level = tonumber(strLevel)
+							if challengeMapID and level then
+								keyChallengeMapID = challengeMapID
+								keyLevel = level
+								break
+							end
+						end
+					end
+				end
+			end
+		end
+
 		-- M+ rating
 		local playerRatingSummary = GetPlayerMythicPlusRatingSummary("player")
 		local playerRating = 0
@@ -87,15 +116,18 @@ do
 	local Ambiguate = Ambiguate
 
 	do
+		local IsInGroup, IsInGuild = IsInGroup, IsInGuild
 		local function SendToParty()
 			if timerTable.PARTY then
 				timerTable.PARTY:Cancel()
 				timerTable.PARTY = nil
 			end
-			local keyLevel, keyChallengeMapID, playerRating = GetInfo()
-			local result = SendAddonMessage("LibKS", format("%d,%d,%d", keyLevel, keyChallengeMapID, playerRating), "PARTY")
-			if result == 9 then
-				timerTable.PARTY = CTimerNewTimer(throttleTime, SendToParty)
+			if IsInGroup() then
+				local keyLevel, keyChallengeMapID, playerRating = GetInfo()
+				local result = SendAddonMessage("LibKS", format("%d,%d,%d", keyLevel, keyChallengeMapID, playerRating), "PARTY")
+				if result == 9 then
+					timerTable.PARTY = CTimerNewTimer(throttleTime, SendToParty)
+				end
 			end
 		end
 		local function SendToGuild()
@@ -103,13 +135,15 @@ do
 				timerTable.GUILD:Cancel()
 				timerTable.GUILD = nil
 			end
-			local keyLevel, keyChallengeMapID, playerRating = GetInfo()
-			if keyLevel ~= 0 and LKS.isGuildHidden then
-				keyLevel, keyChallengeMapID = -1, -1
-			end
-			local result = SendAddonMessage("LibKS", format("%d,%d,%d", keyLevel, keyChallengeMapID, playerRating), "GUILD")
-			if result == 9 then
-				timerTable.GUILD = CTimerNewTimer(throttleTime, SendToGuild)
+			if IsInGuild() then
+				local keyLevel, keyChallengeMapID, playerRating = GetInfo()
+				if keyLevel ~= 0 and LKS.isGuildHidden then
+					keyLevel, keyChallengeMapID = -1, -1
+				end
+				local result = SendAddonMessage("LibKS", format("%d,%d,%d", keyLevel, keyChallengeMapID, playerRating), "GUILD")
+				if result == 9 then
+					timerTable.GUILD = CTimerNewTimer(throttleTime, SendToGuild)
+				end
 			end
 		end
 		functionTable = {
@@ -118,33 +152,62 @@ do
 		}
 	end
 
-	LKS.frame:SetScript("OnEvent", function(_, _, prefix, msg, channel, sender)
-		if prefix == "LibKS" and throttleTable[channel] then
-			if msg == "R" then
-				local t = GetTime()
-				if t - throttleTable[channel] > throttleTime then
-					throttleTable[channel] = t
-					functionTable[channel]()
-				elseif not timerTable[channel] then
-					timerTable[channel] = CTimerNewTimer(throttleTime, functionTable[channel])
-				end
-				return
+	local currentLevel, currentMap = nil, nil
+	local function DidKeystoneChange()
+		local keyLevel, keyChallengeMapID = GetInfo()
+		if keyLevel ~= currentLevel or keyChallengeMapID ~= currentMap then
+			currentLevel, currentMap = keyLevel, keyChallengeMapID
+			local t = GetTime()
+			if t - throttleTable.PARTY > throttleTime then
+				throttleTable.PARTY = t
+				functionTable.PARTY()
+			elseif not timerTable.PARTY then
+				timerTable.PARTY = CTimerNewTimer(throttleTime, functionTable.PARTY)
 			end
+		end
+	end
+	LKS.frame:SetScript("OnEvent", function(self, event, prefix, msg, channel, sender)
+		if event == "CHAT_MSG_ADDON" then
+			if prefix == "LibKS" and throttleTable[channel] then
+				if msg == "R" then
+					local t = GetTime()
+					if t - throttleTable[channel] > throttleTime then
+						throttleTable[channel] = t
+						functionTable[channel]()
+					elseif not timerTable[channel] then
+						timerTable[channel] = CTimerNewTimer(throttleTime, functionTable[channel])
+					end
+					return
+				end
 
-			local keyLevelStr, keyChallengeMapIDStr, playerRatingStr = match(msg, "^(%d+),(%d+),(%d+)$")
-			if keyLevelStr and keyChallengeMapIDStr and playerRatingStr then
-				local keyLevel = tonumber(keyLevelStr)
-				local keyChallengeMapID = tonumber(keyChallengeMapIDStr)
-				local playerRating = tonumber(playerRatingStr)
-				if keyLevel and keyChallengeMapID and playerRating then
-					for _,func in next, callbackMap do
-						func(keyLevel, keyChallengeMapID, playerRating, Ambiguate(sender, "none"), channel)
+				local keyLevelStr, keyChallengeMapIDStr, playerRatingStr = match(msg, "^(%d+),(%d+),(%d+)$")
+				if keyLevelStr and keyChallengeMapIDStr and playerRatingStr then
+					local keyLevel = tonumber(keyLevelStr)
+					local keyChallengeMapID = tonumber(keyChallengeMapIDStr)
+					local playerRating = tonumber(playerRatingStr)
+					if keyLevel and keyChallengeMapID and playerRating then
+						for _,func in next, callbackMap do
+							func(keyLevel, keyChallengeMapID, playerRating, Ambiguate(sender, "none"), channel)
+						end
 					end
 				end
 			end
+		elseif event == "CHALLENGE_MODE_COMPLETED" then -- We start listening to events at the end of a Mythic+ to check if a player gets a new keystone
+			currentLevel, currentMap = GetInfo()
+			self:RegisterEvent("ITEM_CHANGED")
+			self:RegisterEvent("ITEM_PUSH")
+			self:RegisterEvent("PLAYER_LEAVING_WORLD")
+		elseif event == "PLAYER_LEAVING_WORLD" then -- Stop listening to events when we leave the dungeon
+			self:UnregisterEvent("ITEM_CHANGED")
+			self:UnregisterEvent("ITEM_PUSH")
+			self:UnregisterEvent(event)
+		elseif event == "ITEM_CHANGED" or (event == "ITEM_PUSH" and msg == 4352494) then -- We automatically broadcast newly received keystones, but only at the end of a Mythic+
+			-- Check if the player got a new keystone from the NPC (ITEM_CHANGED) or the chest (ITEM_PUSH)
+			CTimerNewTimer(1, DidKeystoneChange) -- There can sometimes be delay with the API updating, especially on PTR, so wait 1 second before checking
 		end
 	end)
 	LKS.frame:RegisterEvent("CHAT_MSG_ADDON")
+	LKS.frame:RegisterEvent("CHALLENGE_MODE_COMPLETED")
 end
 
 do

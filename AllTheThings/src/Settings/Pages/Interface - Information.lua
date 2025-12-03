@@ -1,5 +1,5 @@
 local _, app = ...;
-local L, settings = app.L.SETTINGS_MENU, app.Settings;
+local L, settings = app.L, app.Settings;
 
 -- Global locals
 local pairs, ipairs, tonumber, math_floor, select, type, tostring, tinsert, tremove, RETRIEVING_DATA
@@ -19,7 +19,7 @@ local GetSpellIcon = app.WOWAPI.GetSpellIcon;
 local IsQuestFlaggedCompletedOnAccount = app.WOWAPI.IsQuestFlaggedCompletedOnAccount;
 
 -- Settings: Interface Page
-local child = settings:CreateOptionsPage("Information", L.INTERFACE_PAGE)
+local child = settings:CreateOptionsPage(L.INFORMATION_PAGE, L.INTERFACE_PAGE)
 
 -- Conversion Methods for specific formats for a given Information Type.
 local function GetCoordString(x, y)
@@ -155,31 +155,37 @@ end
 local function GetRecursiveValueForInformationType(t, reference)
 	local rowReference = app.ActiveRowReference
 	local informationTypeID = t.informationTypeID
+	-- prioritize sourceParent for recursive values, and only allow parent when not a sourceIgnored group
+	local idealParent = (rowReference and rowReference.sourceParent)
+					or reference.sourceParent
+					or (not reference.sourceIgnored and reference.parent)
+					or (rowReference and not rowReference.sourceIgnored and rowReference.parent)
+					or nil
 	-- app.PrintDebug("IT-recur",informationTypeID,rowReference,rowReference and rowReference[informationTypeID],
 	-- 				reference,reference[informationTypeID],GetRelativeValue(rowReference or reference, informationTypeID),
-	-- 				app:SearchLink(app.GetRelativeGroup((rowReference and rowReference.sourceParent)
-						-- or reference.sourceParent
-						-- or (not reference.sourceIgnored and reference.parent)
-						-- or nil, informationTypeID)))
+	-- 				app:SearchLink(app.GetRelativeGroup(idealParent, informationTypeID)))
 	return rowReference and rowReference[informationTypeID]
 		or reference[informationTypeID]
-		-- prioritize sourceParent for recursive values, and only allow parent when not a sourceIgnored group
-		or GetRelativeValue((rowReference and rowReference.sourceParent)
-						or reference.sourceParent
-						or (not reference.sourceIgnored and reference.parent)
-						or nil, informationTypeID)
+		or GetRelativeValue(idealParent, informationTypeID)
 end
 local function ProcessInformationType(t, reference, tooltipInfo)
 	local val = t.GetValue(t, reference);
 	if val then
 		local text = ConversionMethods[t.informationTypeID](val, reference)
 		if text then
-			tinsert(tooltipInfo, { left = t.text, right = text});
+			tinsert(tooltipInfo, { left = t.text, right = text });
 		end
 	end
 end
 local CreateInformationType = app.CreateClass("InformationType", "informationTypeID", {
 	textLower = function(t)
+		if not t.text then
+			print("TEXT MISSING FOR INFORMATION TYPE");
+			for key,value in pairs(t) do
+				print("  ", key, value);
+			end
+			t.text = "WTF";
+		end
 		local textLower = t.text:lower();
 		t.textLower = textLower;
 		return textLower;
@@ -770,7 +776,7 @@ local InformationTypes = {
 	}),
 	CreateInformationType("maps", { text = L.MAPS, priority = 2.6,
 		Process = function(t, reference, tooltipInfo)
-			local maps = reference.maps;
+			local maps = reference.maps or reference.maps_disp
 			if not maps or #maps == 0 then
 				local coords = reference.coords
 				if coords and #coords > 0 then
@@ -1029,8 +1035,8 @@ local InformationTypes = {
 			end
 		end,
 	}),
-	CreateInformationType("criteriaID", { text = "Criteria ID" }),
-	CreateInformationType("currencyID", { text = "Currency ID" }),
+	CreateInformationType("criteriaID", { text = L.CRITERIA_ID }),
+	CreateInformationType("currencyID", { text = L.CURRENCY_ID }),
 	CreateInformationType("difficultyID", { text = L.DIFFICULTY_ID }),
 	CreateInformationType("displayID", { text = L.DISPLAY_ID }),
 	CreateInformationType("encounterID", { text = L.ENCOUNTER_ID }),
@@ -1196,7 +1202,7 @@ local InformationTypes = {
 	});
 
 	-- Summary Information Types
-	CreateInformationType("Repeatables", { text = "Repeatables", priority = 10999, ShouldDisplayInExternalTooltips = false,
+	CreateInformationType("Repeatables", { text = L.REPEATABLES_LABEL, priority = 10999, ShouldDisplayInExternalTooltips = false,
 		Process = function(t, reference, tooltipInfo)
 			if reference.isWorldQuest then tinsert(tooltipInfo, { left = L.DURING_WQ_ONLY }); end
 			if reference.isDaily then tinsert(tooltipInfo, { left = L.COMPLETED_DAILY });
@@ -1256,9 +1262,11 @@ local InformationTypes = {
 					tinsert(tooltipInfo, { left = L.UNSORTED_DESC, wrap = true, color = app.Colors.ChatLinkError });
 				else
 					-- removed BoE seen with a non-generic BonusID, potentially a level-scaled drop made re-obtainable
-					if reference.u == app.PhaseConstants.REMOVED_FROM_GAME and not app.Modules.Filter.Filters.Bind(reference) and (reference.bonusID or 3524) ~= 3524 then
-						tinsert(tooltipInfo, { left = L.RECENTLY_MADE_OBTAINABLE });
-					end
+					-- TODO: this is pretty out-dated, and should be revised for verbiage and qualification
+					-- currently it shows on BoA items which come from removed sources
+					-- if reference.u == app.PhaseConstants.REMOVED_FROM_GAME and not app.Modules.Filter.Filters.Bind(reference) and (reference.bonusID or 3524) ~= 3524 then
+					-- 	tinsert(tooltipInfo, { left = L.RECENTLY_MADE_OBTAINABLE });
+					-- end
 				end
 			end
 
@@ -1268,10 +1276,17 @@ local InformationTypes = {
 			end
 		end,
 	}),
+	CreateInformationType("sourceIgnored", { text = "sourceIgnored", priority = 11001, HideCheckBox = true, ForceActive = true, ShouldDisplayInExternalTooltips = false,
+		Process = function(t, reference, tooltipInfo)
+			if reference.sourceIgnored then
+				tinsert(tooltipInfo, { left = L.DOES_NOT_CONTRIBUTE_TO_PROGRESS, wrap = true });
+			end
+		end,
+	}),
 
 	CreateInformationType("SpecializationRequirements", {
 		priority = 9003,
-		text = "Specializations",
+		text = L.SPEC_CHECKBOX,
 		Process = app.GameBuildVersion >= 50000 and function(t, reference, tooltipInfo)
 			local specs = reference.specs;
 			if not specs then

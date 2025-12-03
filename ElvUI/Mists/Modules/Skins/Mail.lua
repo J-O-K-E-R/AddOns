@@ -2,7 +2,6 @@ local E, L, V, P, G = unpack(ElvUI)
 local S = E:GetModule('Skins')
 
 local _G = _G
-local unpack = unpack
 local hooksecurefunc = hooksecurefunc
 
 local function Skin_SendMail()
@@ -18,12 +17,13 @@ local function Skin_SendMail()
 
 		local icon = btn:GetNormalTexture()
 		if icon then
-			icon:SetTexCoord(unpack(E.TexCoords))
+			icon:SetTexCoords()
 			icon:SetInside()
 		end
 	end
 
 	_G.MailEditBox.ScrollBox.EditBox:SetTextColor(1, 1, 1)
+	_G.MailEditBox:Size(285, _G.SendStationeryBackgroundLeft:GetHeight())
 end
 
 local function Skin_OpenMail()
@@ -39,7 +39,7 @@ local function Skin_OpenMail()
 
 		local icon = btn.icon or btn.Icon
 		if icon then
-			icon:SetTexCoord(unpack(E.TexCoords))
+			icon:SetTexCoords()
 			icon:SetInside()
 		end
 	end
@@ -61,7 +61,7 @@ local function Skin_InboxItems()
 
 		local icon = btn.icon or btn.Icon
 		if icon then
-			icon:SetTexCoord(unpack(E.TexCoords))
+			icon:SetTexCoords()
 			icon:SetInside()
 		end
 	end
@@ -97,14 +97,18 @@ function S:MailFrame()
 	_G.MailFrameTab2:Point('TOPLEFT', _G.MailFrameTab1, 'TOPRIGHT', -19, 0)
 
 	-- send mail
+	_G.SendMailFrame:StripTextures()
+	_G.SendStationeryBackgroundLeft:Hide()
+	_G.SendStationeryBackgroundRight:Hide()
+
+	_G.MailEditBox:ClearAllPoints()
+	_G.MailEditBox:Point('TOPLEFT', _G.SendMailFrame, 20, -80)
+
 	_G.MailEditBox.ScrollBox:StripTextures(true)
 	_G.MailEditBox.ScrollBox:SetTemplate()
-	_G.MailEditBox.ScrollBox:ClearAllPoints()
-	_G.MailEditBox.ScrollBox:Point('TOPLEFT', _G.SendStationeryBackgroundLeft, 'TOPLEFT', 8, 0)
-	_G.MailEditBox.ScrollBox:Point('BOTTOMRIGHT', _G.SendStationeryBackgroundRight, 'BOTTOMRIGHT', -18, -8)
 
-	_G.SendStationeryBackgroundLeft:StripTextures(true)
-	_G.SendStationeryBackgroundRight:StripTextures(true)
+	_G.SendMailTitleText:Point('CENTER', _G.SendMailFrame, 'TOP', -10, -17)
+	_G.InboxTitleText:Point('CENTER', _G.InboxFrame, 'TOP', -10, -17)
 
 	S:HandleTrimScrollBar(_G.MailEditBoxScrollBar)
 	_G.MailEditBoxScrollBar:ClearAllPoints()
@@ -128,8 +132,6 @@ function S:MailFrame()
 	_G.SendMailSubjectEditBox:Width(214)
 	_G.SendMailSubjectEditBox:Height(18)
 
-	_G.SendMailFrame:StripTextures()
-
 	Skin_SendMail()
 	Skin_OpenMail()
 	Skin_InboxItems()
@@ -143,6 +145,9 @@ function S:MailFrame()
 
 	S:HandleRadioButton(_G.SendMailSendMoneyButton)
 	S:HandleRadioButton(_G.SendMailCODButton)
+
+	_G.SendMailSendMoneyButton:ClearAllPoints()
+	_G.SendMailSendMoneyButton:Point('TOPRIGHT', _G.SendMailMoney, 'TOPRIGHT', 20, 8)
 
 	-- open mail (cod)
 	_G.OpenMailFrame:StripTextures(true)
@@ -172,13 +177,13 @@ function S:MailFrame()
 	_G.OpenMailLetterButton:StripTextures()
 	_G.OpenMailLetterButton:SetTemplate(nil, true)
 	_G.OpenMailLetterButton:StyleButton()
-	_G.OpenMailLetterButtonIconTexture:SetTexCoord(unpack(E.TexCoords))
+	_G.OpenMailLetterButtonIconTexture:SetTexCoords()
 	_G.OpenMailLetterButtonIconTexture:SetInside()
 
 	_G.OpenMailMoneyButton:StripTextures()
 	_G.OpenMailMoneyButton:SetTemplate(nil, true)
 	_G.OpenMailMoneyButton:StyleButton()
-	_G.OpenMailMoneyButtonIconTexture:SetTexCoord(unpack(E.TexCoords))
+	_G.OpenMailMoneyButtonIconTexture:SetTexCoords()
 	_G.OpenMailMoneyButtonIconTexture:SetInside()
 
 	_G.OpenMailReplyButton:Point('RIGHT', _G.OpenMailDeleteButton, 'LEFT', -2, 0)

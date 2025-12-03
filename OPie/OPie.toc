@@ -1,6 +1,6 @@
-## Interface: 11507, 30405, 50500, 110107
+## Interface: 11508, 50502, 110205, 110207
 ## Title: OPie
-## Version: Ånd 7a
+## Version: 7.11.1
 ## Author: foxlit
 ## Notes: Group abilities into rings that appear when you hold down a binding.
 ## X-Website: https://www.townlong-yak.com/addons/opie
@@ -11,6 +11,7 @@
 ## Notes-esES: Agrupa habilidades en anillos que se muestran al pulsar una tecla.
 ## Notes-esMX: Agrupar habilitades en anillos que se aparecen al presionar teclados.
 ## Notes-frFR: Regrouper les sorts dans des anneaux qui apparaissent quand vous maintenez un raccourci
+## Notes-itIT: Raggruppa le abilità in anelli che compaiono quando tieni premuto un legame.
 ## Notes-koKR: 단축키를 눌렀을 때 표시되는 고리로 능력을 분류합니다.
 ## Notes-ruRU: Объединяет умения в кольца, которые появляются при нажатии назначенных клавиш.
 ## Notes-zhCN: 当你按下快捷键时显示一个环形的技能分组.
@@ -20,9 +21,9 @@
 ## SavedVariablesPerCharacter: OPie_SavedDataPC
 ## OptionalDeps: TaintLess
 ## X-M6-AB: OPie.ActionBook
+Meta\PackTag-4.lua
 Libs\Evie.lua
 Libs\Niji.lua
-Libs\TaintLess.xml
 Libs\exui\exui.xml
 Libs\Ware.lua
 Libs\BrokenSun.xml
@@ -30,15 +31,16 @@ Libs\ActionBook\ActionBook.xml
 Libs\Mirage.lua
 Libs\NotGameTooltip.lua
 Libs\TenSettings.lua
-Meta\Widgets.lua
-Meta\PackTag-3.lua
+UI\Widgets.lua
 Locale.lua
 OPieCore.lua
-OPieUI.lua
-OPieOptions.lua
-OPieBindings.lua
+UI\RingView.lua
 CustomRings.lua
-CustomRingsConfig.lua
+UI\ConfigHost.lua
+UI\Panel\Home.lua
+UI\Panel\Options.lua
+UI\Panel\Bindings.lua
+UI\Panel\CRings.lua
 Meta\StanceBar.lua
 Meta\SpecSet.lua
 Meta\DataBroker.lua
@@ -46,5 +48,6 @@ Meta\EQSet2.lua
 Meta\PSConfig.lua
 Bundle\QuestItems.lua
 Bundle\ExtraActions.lua
+Bundle\Mythport.lua
 Bundle\Tracking.lua
 Bundle\Editable.lua

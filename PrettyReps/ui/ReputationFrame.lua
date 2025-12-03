@@ -160,7 +160,7 @@ end
 
 function PrettyRepsReputationFrameMixin:OnShow()
     FrameUtil.RegisterFrameForEvents(self, ReputationFrameEvents)
-    self:Update()
+    self:Update();
 
     local parent = self:GetParent()
     if HelpTip:IsShowing(parent, REPUTATION_EXALTED_PLUS_HELP) then

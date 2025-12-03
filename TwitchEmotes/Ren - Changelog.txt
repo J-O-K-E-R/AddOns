@@ -3730,6 +3730,14 @@ CatFat
 
 
 ----
+Twitch Emotes V2.62.4 - Christmas update 11.2.7
+----
+Added Christmas emotes
+Added :Classic: Christmas variant
+Renamed `Kiss` to `:kissing:`
+
+
+----
 To do
 ----
 ====

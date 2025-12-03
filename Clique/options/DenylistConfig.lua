@@ -86,12 +86,12 @@ function panel:CreateOptions()
 
     local dataProvider = self.dataProvider
     local scrollView = CreateScrollBoxListLinearView()
-    scrollView:SetDataProvider(dataProvider)
 
     ScrollUtil.InitScrollBoxListWithScrollBar(self.scrollFrame, self.scrollbar, scrollView)
     scrollView:SetElementInitializer("CliqueUICheckboxRowTemplate", function(button, data)
         panel:InitializeCheckboxRow(button, data)
     end)
+    scrollView:SetDataProvider(dataProvider)
 
     self.selectall = CreateFrame("Button", "CliqueOptionsBlacklistSelectAll", self, "UIPanelButtonTemplate")
     self.selectall:SetText(L["Select All"])

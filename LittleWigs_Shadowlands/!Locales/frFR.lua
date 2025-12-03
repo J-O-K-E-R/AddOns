@@ -1,7 +1,6 @@
 -- De Other Side
 
 local L = BigWigs:NewBossLocale("De Other Side Trash", "frFR")
-if not L then return end
 if L then
 	-- [[ The ring ]] --
 	L.cultist = "Sectateur ressuscité"
@@ -24,10 +23,15 @@ if L then
 	L.shimmermoth = "Phaluisant sylvestre"
 	L.mythresh = "Mythresh, Serres des Cieux"
 
-	--L.soporific_shimmerdust_desc = "Curse that makes your character fall asleep at 10 stacks. Jumping resets stacks."
+	L.soporific_shimmerdust_desc = "Malédiction qui causera le sommeil sur votre personnage à 10 effets. Sauter réinitialise les effets."
 end
 
 -- Halls of Atonement
+
+L = BigWigs:NewBossLocale("High Adjudicator Aleez", "frFR")
+if L then
+	L.empty_anima_vessel = "Réceptacle d'anima vide"
+end
 
 L = BigWigs:NewBossLocale("Halls of Atonement Trash", "frFR")
 if L then
@@ -68,7 +72,7 @@ if L then
 	L.gormling_larva = "Larve gormeline"
 	L.spinemaw_reaver = "Saccageur gueule-épine"
 
-	--L.gate_open_desc = "Show a bar indicating when the gate to the next area will open after defeating each boss."
+	L.gate_open_desc = "Affiche une barre indiquant lorsque la porte de la prochaine zone s'ouvre après avoir vaincu chaque boss."
 end
 
 L = BigWigs:NewBossLocale("Mistcaller", "frFR")
@@ -158,12 +162,13 @@ end
 L = BigWigs:NewBossLocale("Mailroom Mayhem", "frFR")
 if L then
 	L.delivery_portal = "Portail de livraison"
-	--L.delivery_portal_desc = "Shows a timer for when the Delivery Portal will change locations."
+	L.delivery_portal_desc = "Affiche un compte à rebours lorsque le portail de livraison change de place."
 end
 
 L = BigWigs:NewBossLocale("Myza's Oasis", "frFR")
 if L then
-	L.add_wave_killed = "Vague d'adds tuée (%d/%d)"
+	--L.notes = "Notes"
+	--L.notes_desc = "Show a message when the notes are available. Hit the notes with your instrument's ability to gain 'Jazzy'.\n\n|T237554:16|tJazzy\n{348567}"
 end
 
 L = BigWigs:NewBossLocale("So'leah", "frFR")
@@ -175,12 +180,23 @@ L = BigWigs:NewBossLocale("Tazavesh Trash", "frFR")
 if L then
 	L.zophex_warmup_trigger = "Toute contrebande… sera saisie…"
 	--L.menagerie_warmup_trigger = "Now for the item you have all been awaiting! The allegedly demon-cursed Edge of Oblivion!"
+	--L.menagerie_warmup_trigger2 = "Cartel Xy has a profitable venture. Hopefully this inclines them to aid our own."
+	--L.mailroom_door_trigger = "A friend here may be of help in acquiring Zo's signature."
+	--L.vendor_active_trigger = "Myza's Oasis. The most intoxicating establishment in Tazavesh. Gaining the owner's favor will secure Cartel Au's signature."
 	L.soazmi_warmup_trigger = "Pardonnez notre intrusion, So’leah. J’espère que nous ne vous dérangeons pas."
 	L.portal_authority = "Garde des portails de Tazavesh"
-	--L.custom_on_portal_autotalk_desc = "Instantly open portals back to the entrance when talking to Broker NPCs."
-	--L.trading_game = "Trading Game"
-	--L.trading_game_desc = "Alerts with the right password during the Trading Game."
-	--L.custom_on_trading_game_autotalk_desc = "Instantly select the right password after the Trading Game has been completed."
+	L.custom_on_portal_autotalk_desc = "Ouvre les portails de retour vers l'entrée lorsque vous parlez aux négociants."
+	--L.mailroom_door_desc = "Show a bar indicating when the door to the mailroom will open."
+	--L.vendor_active = "Vendor active"
+	--L.vendor_active_desc = "Show a bar indicating when the vendor for the Trading Game will be active."
+	--L.vendor_autopurchase = "Auto-purchase trading game item"
+	--L.vendor_autopurchase_desc = "Automatically purchase the initial trading game item from the vendor."
+	--L.vendor_autopurchase_message = "Purchased %s"
+	--L.tradeable_goods = "Tradeable Goods"
+	--L.tradeable_goods_desc = "Show a message indicating when tradeable goods have been picked up."
+	L.trading_game = "Jeu d'échange"
+	L.trading_game_desc = "Alerte avec le bon mot de passe pendant le jeu d'échange."
+	L.custom_on_trading_game_autotalk_desc = "Choisit automatiquement le bon mot de passe après que le jeu des échanges ait été complété."
 	L.password_triggers = {
 		["Coquillage d’ivoire"] = 53259,
 		["Oasis de saphir"] = 53260,
@@ -193,8 +209,8 @@ if L then
 		["Fleur pâle"] = 53267,
 		["Couteau carmin"] = 53268
 	}
-	--L.gatewarden_zomazz = "Gatewarden Zo'mazz"
-	--L.customs_security = "Customs Security"
+	L.gatewarden_zomazz = "Gardien de portail Zo'mazz"
+	L.customs_security = "Agent de sécurité des douanes"
 	L.interrogation_specialist = "Spécialiste en interrogatoire"
 	L.portalmancer_zohonn = "Portomancien Zo'honn"
 	L.armored_overseer = "Surveillant cuirassé"
@@ -202,20 +218,24 @@ if L then
 	L.tracker_zokorss = "Pisteur Zo'korss"
 	L.ancient_core_hound = "Ancien chien du magma"
 	L.enraged_direhorn = "Navrecorne enragé"
-	--L.cartel_skulker = "Cartel Skulker"
-	--L.cartel_wiseguy = "Cartel Wiseguy"
+	L.frenzied_nightclaw = "Griffenuit frénétique"
+	L.cartel_skulker = "Furtif du cartel"
+	L.cartel_wiseguy = "Crapule du cartel"
 	L.cartel_muscle = "Gros-bras du cartel"
 	L.cartel_smuggler = "Contrebandier du cartel"
 	L.defective_sorter = "Trieur défectueux"
-	--L.overloaded_mailemental = "Overloaded Mailemental"
-	--L.post_worker = "P.O.S.T. Worker"
-	--L.bazaar_overseer = "Bazaar Overseer"
+	L.overloaded_mailemental = "Postier-lémentaire surchargé"
+	L.post_worker = "Employé de P.O.S.T.E."
+	L.smuggled_creature = "Créature de contrebande"
+	L.bazaar_overseer = "Surveillant du bazar"
 	L.market_peacekeeper = "Garde-paix du marché"
 	L.veteran_sparkcaster = "Embraseur vétéran"
 	L.commerce_enforcer = "Massacreur du marché"
 	L.commander_zofar = "Commandant Zo'far"
 
-	L.tazavesh_soleahs_gambit = "Tazavesh : le stratagème de So’leah"
+	--L.hylbrande_warmup_trigger = "See how your wisdom fares against the might of the titans."
+	--L.portal_open = "Portal opens"
+	--L.portal_open_desc = "Show a bar indicating when the portal to the next area will open."
 	L.murkbrine_scalebinder = "Lieur d'écailles bourbe-sel"
 	L.murkbrine_fishmancer = "Pescomancien bourbe-sel"
 	L.murkbrine_shellcrusher = "Brise-conque bourbe-sel"

@@ -31,7 +31,7 @@ local MainMenuMicroButton_SetNormal = MainMenuMicroButton_SetNormal
 
 local IsAddOnLoaded = C_AddOns.IsAddOnLoaded
 local StoreEnabled = C_StorePublic.IsEnabled
-local GetZonePVPInfo = (C_PvP and C_PvP.GetZonePVPInfo) or GetZonePVPInfo
+local GetZonePVPInfo = C_PvP.GetZonePVPInfo or GetZonePVPInfo
 
 local PlayerSpellsUtil = _G.PlayerSpellsUtil
 local WorldMapFrame = _G.WorldMapFrame
@@ -171,7 +171,7 @@ function M:HandleTrackingButton()
 
 		if _G.MiniMapTrackingIcon then
 			_G.MiniMapTrackingIcon:SetDrawLayer('ARTWORK')
-			_G.MiniMapTrackingIcon:SetTexCoord(unpack(E.TexCoords))
+			_G.MiniMapTrackingIcon:SetTexCoords()
 			_G.MiniMapTrackingIcon:SetInside()
 		end
 	end
@@ -474,7 +474,7 @@ function M:UpdateIcons()
 
 			if _G.BattlegroundShine then _G.BattlegroundShine:Hide() end
 			if _G.MiniMapBattlefieldBorder then _G.MiniMapBattlefieldBorder:Hide() end
-			if _G.MiniMapBattlefieldIcon then _G.MiniMapBattlefieldIcon:SetTexCoord(unpack(E.TexCoords)) end
+			if _G.MiniMapBattlefieldIcon then _G.MiniMapBattlefieldIcon:SetTexCoords() end
 		end
 
 		if difficulty then

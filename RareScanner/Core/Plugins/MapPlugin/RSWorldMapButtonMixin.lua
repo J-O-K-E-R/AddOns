@@ -98,17 +98,20 @@ function RSWorldMapButtonMixin:SetupMenu()
 			end)
 		npcsLastSeen:SetEnabled(function() return RSConfigDB.IsShowingNpcs() end)
 
-		if (RSMapDB.GetContinentOfMap(mapID) == RSConstants.KHAZ_ALGAR and not RSUtils.Contains(RSConstants.TWW_MAPS_WITHOUT_REP, mapID)) then
-	    	local npcsWeekly = npcsSubmenu:CreateCheckbox("|T"..RSConstants.NORMAL_NPC_TEXTURE..":18:18:::::0:32:0:32|t "..AL["MAP_MENU_DISABLE_WEEKLY_REP_FILTER"], 
-	    		function() return RSConfigDB.IsShowingWeeklyRepFilterEnabled() end, 
-				function()
-					if (RSConfigDB.IsShowingWeeklyRepFilterEnabled()) then
-						RSConfigDB.SetShowingWeeklyRepFilterEnabled(false)
-					else
-						RSConfigDB.SetShowingWeeklyRepFilterEnabled(true)
-					end
-				end)
-			npcsWeekly:SetEnabled(function() return RSConfigDB.IsShowingNpcs() and not RSConfigDB.IsWeeklyRepNpcFilterEnabled() end)
+		local mapInfo = C_Map.GetMapInfo(mapID)
+		if (mapInfo and mapInfo.mapType ~= Enum.UIMapType.Dungeon) then
+			if (RSMapDB.GetContinentOfMap(mapID) == RSConstants.KHAZ_ALGAR and not RSUtils.Contains(RSConstants.TWW_MAPS_WITHOUT_REP, mapID)) then
+		    	local npcsWeekly = npcsSubmenu:CreateCheckbox("|T"..RSConstants.NORMAL_NPC_TEXTURE..":18:18:::::0:32:0:32|t "..AL["MAP_MENU_DISABLE_WEEKLY_REP_FILTER"], 
+		    		function() return RSConfigDB.IsShowingWeeklyRepFilterEnabled() end, 
+					function()
+						if (RSConfigDB.IsShowingWeeklyRepFilterEnabled()) then
+							RSConfigDB.SetShowingWeeklyRepFilterEnabled(false)
+						else
+							RSConfigDB.SetShowingWeeklyRepFilterEnabled(true)
+						end
+					end)
+				npcsWeekly:SetEnabled(function() return RSConfigDB.IsShowingNpcs() and not RSConfigDB.IsWeeklyRepNpcFilterEnabled() end)
+			end
 		end
 		
     	local npcsDead = npcsSubmenu:CreateCheckbox("|T"..RSConstants.BLUE_NPC_TEXTURE..":18:18:::::0:32:0:32|t "..AL["MAP_MENU_SHOW_DEAD_RARE_NPCS"], 
@@ -223,7 +226,7 @@ function RSWorldMapButtonMixin:SetupMenu()
 			npcsSubmenu:CreateDivider()
 			npcsSubmenu:CreateTitle(AL["MAP_MENU_FILTER"])
 			
-			if (RSMapDB.GetContinentOfMap(mapID) == RSConstants.KHAZ_ALGAR and not RSUtils.Contains(RSConstants.TWW_MAPS_WITHOUT_REP, mapID)) then
+			if (mapInfo and mapInfo.mapType ~= Enum.UIMapType.Dungeon and RSMapDB.GetContinentOfMap(mapID) == RSConstants.KHAZ_ALGAR and not RSUtils.Contains(RSConstants.TWW_MAPS_WITHOUT_REP, mapID)) then
 		    	npcsSubmenu:CreateCheckbox(AL["MAP_MENU_FILTER_WEEKLY_REP_FILTER"], function() return RSConfigDB.IsWeeklyRepNpcFilterEnabled() end, 
 					function()
 						if (RSConfigDB.IsWeeklyRepNpcFilterEnabled()) then
@@ -238,6 +241,7 @@ function RSWorldMapButtonMixin:SetupMenu()
 			npcsFilterSubmenu:SetScrollMode(500)
 			npcsFilterSubmenu:CreateTitle(AL["MAP_MENU_FILTER_DESELECT"])
 			
+			-- Select/deselect all
 			local npcDesSel = npcsFilterSubmenu:CreateButton(AL["MAP_MENU_FILTER_ALL"])
 			npcDesSel:SetResponder(function(data, menuInputData, menu)
 	    		local anySelected = true
@@ -260,6 +264,38 @@ function RSWorldMapButtonMixin:SetupMenu()
     
 				return MenuResponse.Refresh;
 			end)
+			
+			-- Select/deselect by group
+		    if (RSUtils.GetTableLength(groups) > 0) then
+				for _, group in ipairs(groups) do
+			    	local npcDesSelGroup = npcsFilterSubmenu:CreateButton(string.format(AL["MAP_MENU_FILTER_ALL_GROUP"], RSNpcDB.GetCustomNpcGroupByKey(group))) 
+			    	npcDesSelGroup:SetResponder(function(data, menuInputData, menu)
+			    		local anySelected = true
+		    			for npcID, _ in pairs (npcIDsWithNames) do
+		    				if (RSNpcDB.IsCustomNpcInGroup(npcID, group) and not RSConfigDB.GetNpcFiltered(npcID)) then
+		    					anySelected = false
+		    					break
+		    				end
+		    			end
+		    			
+		    			if (anySelected) then
+		    				for npcID, _ in pairs (npcIDsWithNames) do
+		    					if (RSNpcDB.IsCustomNpcInGroup(npcID, group)) then
+			    					RSConfigDB.DeleteNpcFiltered(npcID)
+			    				end
+			    			end
+		    			else
+		    				for npcID, _ in pairs (npcIDsWithNames) do
+		    					if (RSNpcDB.IsCustomNpcInGroup(npcID, group)) then
+			    					RSConfigDB.SetNpcFiltered(npcID)
+			    				end
+			    			end
+		    			end
+		    
+						return MenuResponse.Refresh;
+					end)
+				end
+			end
 	
 			for _, npcID in ipairs (RSUtils.GetSortedKeysByValue(npcIDsWithNames, function(a, b) return a < b end)) do
 				local npcName = npcIDsWithNames[npcID]
@@ -280,7 +316,7 @@ function RSWorldMapButtonMixin:SetupMenu()
 						text = text.."|A:"..RSConstants.PROFFESION_ICON_ATLAS..":18:18::::|a "..npcName
 					elseif (npcInfo.minieventID and RSConstants.MINIEVENTS_WORLDMAP_FILTERS[npcInfo.minieventID] and RSConstants.MINIEVENTS_WORLDMAP_FILTERS[npcInfo.minieventID].atlas) then
 						text = text.."|A:"..RSConstants.MINIEVENTS_WORLDMAP_FILTERS[npcInfo.minieventID].atlas..":18:18::::|a "..npcName
-					elseif (RSUtils.GetTableLength(RSAchievementDB.GetNotCompletedAchievementIDsByMap(npcID, mapID)) > 0) then
+					elseif (RSUtils.GetTableLength(RSAchievementDB.GetNotCompletedAchievementIDsByMap(npcID, mapID, npcInfo.achievementID, npcInfo.questID, npcInfo.criteria)) > 0) then
 						text = text.."|A:"..RSConstants.ACHIEVEMENT_ICON_ATLAS..":18:18::::|a "..npcName
 					else
 						text = text..npcName
@@ -300,7 +336,7 @@ function RSWorldMapButtonMixin:SetupMenu()
 					end)
 				npcFilter:SetEnabled(function() 
 					local npcInfo = RSNpcDB.GetInternalNpcInfo(npcID)
-					if (npcInfo and RSConfigDB.IsWeeklyRepNpcFilterEnabled() and RSMapDB.GetContinentOfMap(mapID) == RSConstants.KHAZ_ALGAR and not RSUtils.Contains(RSConstants.IGNORE_NPCS_REPUTATION, npcID) and not RSUtils.Contains(RSConstants.TWW_MAPS_WITHOUT_REP, mapID)) then
+					if (npcInfo and RSConfigDB.IsWeeklyRepNpcFilterEnabled() and mapInfo and mapInfo.mapType ~= Enum.UIMapType.Dungeon and RSMapDB.GetContinentOfMap(mapID) == RSConstants.KHAZ_ALGAR and not RSUtils.Contains(RSConstants.IGNORE_NPCS_REPUTATION, npcID) and not RSUtils.Contains(RSConstants.TWW_MAPS_WITHOUT_REP, mapID)) then
 						return false
 					end
 					
@@ -429,6 +465,15 @@ function RSWorldMapButtonMixin:SetupMenu()
 			containersSubmenu:CreateDivider()
 			containersSubmenu:CreateTitle(AL["MAP_MENU_FILTER"])
 			
+			local containersAchievementFilter = containersSubmenu:CreateCheckbox(AL["MAP_MENU_FILTER_CONTAINERS_ACHIEVEMENT"], function() return RSConfigDB.IsAchievementContainerFilterEnabled() end, 
+				function()
+					if (RSConfigDB.IsAchievementContainerFilterEnabled()) then
+						RSConfigDB.SetAchievementContainerFilterEnabled(false)
+					else
+						RSConfigDB.SetAchievementContainerFilterEnabled(true)
+					end
+				end)
+			
 	    	local containersFilterSubmenu = containersSubmenu:CreateButton(AL["MAP_MENU_FILTER_CONTAINERS"])
 			containersFilterSubmenu:SetScrollMode(500)
 			containersFilterSubmenu:CreateTitle(AL["MAP_MENU_FILTER_DESELECT"])
@@ -473,7 +518,7 @@ function RSWorldMapButtonMixin:SetupMenu()
 						text = text.."|A:"..RSConstants.PROFFESION_ICON_ATLAS..":18:18::::|a "..containerName
 					elseif (containerInfo.minieventID and RSConstants.MINIEVENTS_WORLDMAP_FILTERS[containerInfo.minieventID] and RSConstants.MINIEVENTS_WORLDMAP_FILTERS[containerInfo.minieventID].atlas) then
 						text = text.."|A:"..RSConstants.MINIEVENTS_WORLDMAP_FILTERS[containerInfo.minieventID].atlas..":18:18::::|a "..containerName
-					elseif (RSUtils.GetTableLength(RSAchievementDB.GetNotCompletedAchievementIDsByMap(containerID, mapID)) > 0) then
+					elseif (RSUtils.GetTableLength(RSAchievementDB.GetNotCompletedAchievementIDsByMap(containerID, mapID, containerInfo.achievementID, containerInfo.questID, containerInfo.criteria)) > 0) then
 						text = text.."|A:"..RSConstants.ACHIEVEMENT_ICON_ATLAS..":18:18::::|a "..containerName
 					elseif (RSUtils.Contains(RSConstants.CONTAINERS_WITHOUT_VIGNETTE, containerID)) then
 						text = text.."|A:"..RSConstants.NOT_TRACKABLE_ICON_ATLAS..":18:18::::|a "..containerName
@@ -493,6 +538,14 @@ function RSWorldMapButtonMixin:SetupMenu()
 							RSConfigDB.SetContainerFiltered(containerID)
 						end
 					end)
+				containerFilter:SetEnabled(function() 
+					local conatinerInfo = RSContainerDB.GetInternalContainerInfo(containerID)
+					if (conatinerInfo and RSConfigDB.IsAchievementContainerFilterEnabled() and conatinerInfo.achievementID and RSUtils.GetTableLength(RSAchievementDB.GetNotCompletedAchievementIDsByMap(containerID, mapID, containerInfo.achievementID, containerInfo.questID, containerInfo.criteria, true)) == 0) then
+						return false
+					end
+					
+					return true				
+				end)
 			end
 		end
 		
@@ -592,7 +645,7 @@ function RSWorldMapButtonMixin:SetupMenu()
 						text = text.."|A:"..RSConstants.PROFFESION_ICON_ATLAS..":18:18::::|a "..eventName
 					elseif (eventInfo.minieventID and RSConstants.MINIEVENTS_WORLDMAP_FILTERS[eventInfo.minieventID] and RSConstants.MINIEVENTS_WORLDMAP_FILTERS[eventInfo.minieventID].atlas) then
 						text = text.."|A:"..RSConstants.MINIEVENTS_WORLDMAP_FILTERS[eventInfo.minieventID].atlas..":18:18::::|a "..eventName
-					elseif (RSUtils.GetTableLength(RSAchievementDB.GetNotCompletedAchievementIDsByMap(eventID, mapID)) > 0) then
+					elseif (RSUtils.GetTableLength(RSAchievementDB.GetNotCompletedAchievementIDsByMap(eventID, mapID, eventInfo.achievementID, eventInfo.questID, eventInfo.criteria)) > 0) then
 						text = text.."|A:"..RSConstants.ACHIEVEMENT_ICON_ATLAS..":18:18::::|a "..eventName
 					else
 						text = text..eventName

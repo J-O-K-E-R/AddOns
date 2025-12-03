@@ -47,7 +47,7 @@ L.general = "通用" -- General settings, i.e. things that apply to normal, hero
 L.health = "生命值" -- The health of an NPC
 L.health_percent = "%d%% 生命值" -- "10% Health" The health percentage of an NPC
 L.energy = "能量"
---L.energy_percent = "%d%% Energy" -- "80% Energy" The energy percentage of an NPC
+L.energy_percent = "%d%% 能量" -- "80% Energy" The energy percentage of an NPC
 L.door_open = "開門" -- 小的門 When a door is open, usually after a speech from an NPC
 L.gate_open = "開門" -- 大的門 When a gate is open, usually after a speech from an NPC
 L.threat = "威脅"
@@ -73,7 +73,7 @@ L.next_ability = "下個技能" -- We don't know what ability will be next, we o
 L.boss_landing = "%s即將著陸" -- "NPC_NAME is landing" Used when a flying NPC/dragon/boss is landing 即將著陸、正在降落
 L.landing = "著陸" -- Used when a flying NPC/dragon/boss is landing，沿用上一條
 L.flying_available = "可以飛行"
---L.bosses_too_close = "Bosses are too close" -- When 2 or more bosses are too close to each other, buffing each other with a shield, extra damage, etc.
+L.bosses_too_close = "首領距離過近" -- 首領之間距離過近/首領彼此距離過近 When 2 or more bosses are too close to each other, buffing each other with a shield, extra damage, etc.
 L.keep_moving = "保持移動" -- An ability that forces you to keep moving or you will take damage
 L.stand_still = "站住別動" -- An ability that forces you to stand still or you will take damage 站住別動、禁止移動、不要移動，或乾脆兩個字，別動
 L.safe_to_stop = "停止移動" -- When an ability that forces you to keep moving fades from you, allowing you to stop moving
@@ -139,7 +139,7 @@ L.marker_npc_desc = "標記%s為%s，需要權限。" -- Mark NPC_NAME with SKUL
 L.marker_npc_aura_desc = "將受到%s影響的 NPC 標記為%s，需要權限。" -- Mark NPCs affected by 'SPELL_NAME' with SKULL_ICON
 L.disabled = "被停用"
 L.none = "無"
---L.markers = "Markers" -- Plural of marker
+L.markers = "標記" -- Plural of marker
 
 -- Ability where two players have to move close to each other
 L.link = "連結"
@@ -195,6 +195,7 @@ L.arcane = "秘法"
 L.autotalk = "自動與 NPC 對話"
 L.autotalk_boss_desc = "自動選擇開始首領戰鬥的對話選項。"
 L.autotalk_generic_desc = "自動選擇使地城進入下一階段的對話選項。"
+L.autotalk_notice = "自動與 NPC %s互動。"
 
 -- Common ability name replacements
 L.absorb = "吸收" -- Used for shield-like abilities that absorb damage or healing

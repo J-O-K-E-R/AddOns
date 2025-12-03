@@ -51,8 +51,8 @@ function Cacher:OnLoad()
 		self:SaveBag(i)
 	end
 
-	if HasKey and HasKey() then
-		self:SaveBag(KEYRING_CONTAINER)
+	if KEYRING_CONTAINER and HasKey then
+		self:SaveBag(KEYRING_CONTAINER, not HasKey())
 	end
 
 	for i = 1, INVSLOT_LAST_EQUIPPED do
@@ -171,24 +171,25 @@ end
 
 --[[ API ]]--
 
-function Cacher:SaveBank(domain, type)
-	for i, bag in pairs(C.Bank.FetchPurchasedBankTabData(type)) do
-		Mixin(self:PopulateBag(domain, bag.ID), bag)
-	end
-end
-
 function Cacher:SaveEquip(slot)
 	self.player.equip[slot] = self:ParseItem(GetInventoryItemLink('player', slot), GetInventoryItemCount('player', slot))
 end
 
-function Cacher:SaveBag(bag)
-	self:PopulateBag(self.player, bag)
+function Cacher:SaveBank(domain, type)
+	for i, bag in pairs(C.Bank.FetchPurchasedBankTabData(type)) do
+		bag.tabNameEditBoxHeader, bag.tabCleanupConfirmation = nil
+		Mixin(self:PopulateBag(domain, bag.ID), bag)
+	end
 end
 
-function Cacher:PopulateBag(data, bag)
+function Cacher:SaveBag(bag, ignore)
+	self:PopulateBag(self.player, bag, ignore)
+end
+
+function Cacher:PopulateBag(data, bag, ignore)
 	local size = C.Container.GetContainerNumSlots(bag)
 	local data = GetOrCreateTableEntry(data, bag)
-	if size > 0 then
+	if not ignore and size > 0 then
 		data.link = bag > BACKPACK_CONTAINER and self:ParseItem(GetInventoryItemLink('player', C.Container.ContainerIDToInventoryID(bag))) or nil
 		data.size = (bag >= BACKPACK_CONTAINER or bag == KEYRING_CONTAINER) and size or nil
 		data.items = {}
@@ -208,23 +209,33 @@ end
 
 function Cacher:ParseItem(link, count)
 	if link then
-		local id = tonumber(link:match('item:(%d+):')) -- check for profession window bug
-		if id == 0 and TradeSkillFrame then
+		local id = link:match('item:(%d+):')
+		if id == '0' and TradeSkillFrame then -- check for profession window bug
 			local focus = GetMouseFoci and GetMouseFoci()[1] or GetMouseFocus and GetMouseFocus()
 			local name = focus:GetName()
 			if name == 'TradeSkillSkillIcon' then
-				link = GetTradeSkillItemLink(TradeSkillFrame.selectedSkill)
+				return self:ParseItem(GetTradeSkillItemLink(TradeSkillFrame.selectedSkill), count)
 			else
 				local i = name:match('TradeSkillReagent(%d+)')
 				if i then
-					link = GetTradeSkillReagentItemLink(TradeSkillFrame.selectedSkill, tonumber(i))
+					return self:ParseItem(GetTradeSkillReagentItemLink(TradeSkillFrame.selectedSkill, tonumber(i)), count)
 				end
 			end
 		end
 
-		link = link:match('|H%l+:(%d+)::::::::%d+:%d+:::::::::') or link:match('|H%l+:([%d:]+)')
-		if count and count > 1 then
-			link = link .. ';' .. count
+		if id then
+			local payload = link:match('|Hitem:([%d:]+)')
+			local entries = 0
+			for _ in payload:gmatch('%d+') do
+				entries = entries + 1
+			end
+
+			link = entries <= 3 and id or payload
+			if count and count > 1 then
+				link = link .. ';' .. count
+			end
+		else
+			link = link:match('|H(%l+:[%d:]+)')
 		end
 		return link
 	end

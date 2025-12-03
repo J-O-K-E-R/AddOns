@@ -134,12 +134,12 @@ function page:Initialize()
 
     local dataProvider = frame.dataProvider
     local scrollView = CreateScrollBoxListLinearView()
-    scrollView:SetDataProvider(dataProvider)
 
     ScrollUtil.InitScrollBoxListWithScrollBar(frame.scrollFrame, frame.scrollbar, scrollView)
     scrollView:SetElementInitializer("CliqueBindingTemplate", function(button, data)
         page:InitializeBindingRow(button, data)
     end)
+    scrollView:SetDataProvider(dataProvider)
 
     -- Options button
     frame.OptionsButton = CreateFrame("DropDownToggleButton", nil, frame, "UIMenuButtonStretchTemplate")
@@ -354,6 +354,8 @@ function page:UPDATE_BROWSE_PAGE()
     end
 
     -- Send the bindings to the data provider
+    local bindingData = {}
+
     for idx,  bind in ipairs(sorted) do
         local data = {
             id = bind,
@@ -371,6 +373,8 @@ function page:UPDATE_BROWSE_PAGE()
             end
         end
 
-        dataProvider:Insert(data)
+        table.insert(bindingData, data)
     end
+
+    dataProvider:InsertTable(bindingData)
 end
