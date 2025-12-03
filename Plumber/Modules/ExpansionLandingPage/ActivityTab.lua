@@ -54,7 +54,7 @@ do  --Checklist Button
             if self.completed then
                 self.Icon:SetAtlas("checkmark-minimal-disabled");
             elseif data.icon then
-                if data.itemID then
+                if data.itemID or data.useItemIcon then
                     self.Icon:SetTexCoord(6/64, 58/64, 6/64, 58/64);
                 else
                     self.Icon:SetTexCoord(0, 1, 0, 1);
@@ -221,7 +221,7 @@ do  --Checklist Button
                     TooltipUpdator:SetHeaderText(self.Name:GetText());
                     local tooltipLines = {};
 
-                    if data.children then
+                    if data.children and data.addChildrenToTooltip then
                         TooltipUpdator:RequestEntryChildren(data.children);
                     else
                         if data.completed then
@@ -273,6 +273,7 @@ do
         "QUEST_TURNED_IN",
         --"LOOT_CLOSED",       --Looting some items triggers hidden quest flag, but the quest events don't fire
         "ZONE_CHANGED_NEW_AREA",
+        "BAG_UPDATE_DELAYED",
     };
 
     local OptionalEvents = {
@@ -372,7 +373,7 @@ do
     function ActivityTabMixin:OnEvent(event, ...)
         if event == "QUEST_LOG_UPDATE" then
             self:RequestUpdate();
-        elseif event == "QUEST_REMOVED" or event == "QUEST_ACCEPTED" or event == "QUEST_TURNED_IN" or event == "QUESTLINE_UPDATE" or event == "UPDATE_FACTION" then
+        elseif event == "QUEST_REMOVED" or event == "QUEST_ACCEPTED" or event == "QUEST_TURNED_IN" or event == "QUESTLINE_UPDATE" or event == "UPDATE_FACTION" or event == "BAG_UPDATE_DELAYED" then
             self:RequestUpdate(true);
         elseif event == "ZONE_CHANGED_NEW_AREA" then
             self:UpdateMap(true);
@@ -403,7 +404,7 @@ do
             WeeklyResetTimer:SetLowThresholdAndColor(2*3600, "ffe24c45");
         else
             WeeklyResetTimer:SetTimeGetter(C_DateAndTime.GetSecondsUntilWeeklyReset);
-            WeeklyResetTimer:SetTimeTextFormat(L["Weeky Reset Format"]);
+            WeeklyResetTimer:SetTimeTextFormat(L["Weekly Reset Format"]);
             WeeklyResetTimer:SetLowThresholdAndColor(6*3600, "ffe24c45");
         end
         WeeklyResetTimer:SetDisplayStyle("FormattedText");
@@ -511,3 +512,20 @@ LandingPageUtil.AddTab(
         dimBackground = true,
     }
 );
+
+
+do  --Debug
+    local function Plumber_PrintWorldQuestsForMap(uiMapID)
+        if not uiMapID and WorldMapFrame:IsShown() then
+            uiMapID = WorldMapFrame:GetMapID();
+        end
+        if not uiMapID then
+            uiMapID = C_Map.GetBestMapForUnit("player");
+        end
+        local quests = C_TaskQuest.GetQuestsOnMap(uiMapID);
+        for _, v in ipairs(quests) do
+            local name = C_TaskQuest.GetQuestInfoByQuestID(v.questID);
+            print(v.questID, name);
+        end
+    end
+end

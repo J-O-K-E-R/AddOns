@@ -1,9 +1,11 @@
 local M = {
-    AuraWather = false,
+    AuraWather = true,
     Prof = false,
     CurrencyWatcher = false,
     POI = false,
-    Quest = true,
+    Quest = false,
+    ModelStressTest = false;
+    SetAlphaGradient = false,
 };
 
 
@@ -109,7 +111,7 @@ if IsEnabled("AuraWather") then  --Aura Watcher
         end
     end);
 
-    if false then
+    if true then
         EL:RegisterUnitEvent("UNIT_AURA", "player");
         EL:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", "player");
         EL:RegisterEvent("PLAYER_ENTERING_WORLD");
@@ -252,13 +254,129 @@ end
 
 if IsEnabled("Quest") then
     local EL = CreateFrame("Frame");
+    local CompletedQuests = {};
 
     EL:RegisterEvent("QUEST_ACCEPTED");
     EL:RegisterEvent("QUEST_TURNED_IN");
+    EL:RegisterEvent("QUEST_REMOVED");
+    EL:RegisterEvent("QUEST_WATCH_UPDATE");
+    EL:RegisterEvent("PLAYER_ENTERING_WORLD");
 
     EL:SetScript("OnEvent", function(self, event, ...)
+        if event == "PLAYER_ENTERING_WORLD" then
+            self:UnregisterEvent(event);
+            CompletedQuests = C_QuestLog.GetAllCompletedQuestIDs();
+            return
+        end
         local questID = ...
         print(event, questID, API.GetQuestName(questID));
     end);
 
+    function YeetNewlyCompletedQuests()
+        local wasQuestCompleted = {};
+        for _, questID in ipairs(CompletedQuests) do
+            wasQuestCompleted[questID] = true;
+        end
+        local tbl = C_QuestLog.GetAllCompletedQuestIDs();
+        for _, questID in ipairs(tbl) do
+            if not wasQuestCompleted[questID] then
+                local questName = API.GetQuestName(questID);
+                if questName then
+                    print("(NEW)", questID, questName);
+                else
+                    C_Timer.After(0.5, function()
+                        print("(NEW)", questID, API.GetQuestName(questID));
+                    end);
+                end
+            end
+        end
+        CompletedQuests = tbl;
+    end
+end
+
+if IsEnabled("ModelStressTest") then
+    local MODEL_W, MODEL_H = 78, 104;
+
+    local EL = CreateFrame("Frame", nil, UIParent);
+    EL:Hide();
+    EL:SetSize(16, 16);
+    EL:SetPoint("CENTER", UIParent, "CENTER", 0, 0);
+
+    local function Model_Create()
+        local widget = CreateFrame("DressUpModel", nil, EL, "WardrobeItemsModelTemplate");
+        return widget
+    end
+
+    local function Model_Remove(widget)
+
+    end
+
+    EL.pool = API.CreateObjectPool(Model_Create, Model_Remove);
+
+    function Plumber_ModelStressTest(numModels)
+        CollectionsJournal_LoadUI();
+
+        numModels = numModels or (6 * 3);
+        EL.pool:ReleaseAll();
+
+        local width = MODEL_W * numModels;
+        local height = MODEL_H;
+        EL:SetSize(width, height);
+        for i = 1, numModels do
+            local widget = EL.pool:Acquire();
+            widget:SetPoint("LEFT", EL, "LEFT", (i - 1) * MODEL_W, 0);
+            widget:SetUnit("player", false, PlayerUtil.ShouldUseNativeFormInModelScene());
+        end
+
+        EL:Show();
+    end
+end
+
+if IsEnabled("SetAlphaGradient") then  --Frame SetAlphaGradient Test. Doesn't do anything?
+    local n = 16;
+    local h = 16;
+    local gap = 8;
+
+
+    local f = CreateFrame("Frame", nil, UIParent);
+    f:SetPoint("CENTER", UIParent, "CENTER", 0, 0);
+    f:SetSize(128, n*(h + gap) - gap);
+
+    for i = 1, 16 do
+        local tex = f:CreateTexture(nil, "OVERLAY");
+        tex:SetSize(128, h);
+        tex:SetColorTexture(1, 0.125, 0.125);
+        tex:SetPoint("TOP", f, "TOP", 0, (1 - i)*(h + gap));
+    end
+
+    local length = 16;
+    local edgeFade = CreateVector2D(0, math.abs(length));
+
+    local function ApplyEdgeFade(frame, ...)
+        for i = 1, select("#", ...) do
+            local strength = Saturate(select(i, ...));
+            print(i - 1, strength)
+            frame:SetAlphaGradient(i - 1, edgeFade:Clone():ScaleBy(strength));
+        end
+    end
+
+    local function CalculateEdgeFade()
+        local firstStrength, secondStrength = 1, 1;
+        local offset = 0.5;
+        if offset ~= nil then
+            if offset < 0.15 then
+                firstStrength = ClampedPercentageBetween(offset, 0, 0.15);
+            end
+
+            if offset > 0.85 then
+                secondStrength = 1 - ClampedPercentageBetween(offset, 0.85, 1);
+            end
+
+            return firstStrength, secondStrength;
+        end
+
+        return 0, 0;
+    end
+
+    ApplyEdgeFade(f, CalculateEdgeFade());
 end

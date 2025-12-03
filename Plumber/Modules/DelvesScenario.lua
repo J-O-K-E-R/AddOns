@@ -466,7 +466,7 @@ end
 
 
 
-do
+do  --Module Registry: Delves_SeasonProgress
     local function EnableModule(state)
         SeasonTracker:SetEnabled(state);
     end
@@ -479,6 +479,9 @@ do
         categoryID = 1,
         uiOrder = 1105,
         moduleAddedTime = 1724100000,
+		categoryKeys = {
+			"Instance",
+		},
     };
 
     addon.ControlCenter:AddModule(moduleData);

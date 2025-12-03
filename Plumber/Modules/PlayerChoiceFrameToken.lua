@@ -9,7 +9,7 @@ local TimerFrame;
 
 local PlayerChoiceXCurrency = {
     --[choiceID] = {type, id}     --type: 0(currency) 1(item)
-    [832] = {1, 235897},    --Radian Echo (change every season), Worldsoul Memory: The Worldcarvers
+    [832] = {1, addon.ItemUpgradeConstant.RadiantEchoItemID},    --Radian Echo (change every season), Worldsoul Memory: The Worldcarvers
     [838] = {1, 212493},    --
     [841] = {0, 3090},      --Flame-Blessed Iron (Siren Isle Command Map)
 };
@@ -115,6 +115,9 @@ do
         categoryID = 2,
         uiOrder = 5,
         moduleAddedTime = 1718500000,
+		categoryKeys = {
+			"Inventory",
+		},
     };
 
     addon.ControlCenter:AddModule(moduleData);

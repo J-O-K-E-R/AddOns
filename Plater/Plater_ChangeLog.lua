@@ -8,6 +8,29 @@ function Plater.GetChangelogTable()
 	if (not Plater.ChangeLogTable) then
 		Plater.ChangeLogTable = {
 
+			{1764718947, "Backend Change", "Dec 3rd, 2025", "More support for Midnight (work in progress).", "cont1nuity"},
+			
+			{1764011311, "Backend Change", "Oct 21st, 2025", "Initial support for Midnight (work in progress).", "cont1nuity"},
+			{1764011311, "Bug Fix", "Oct 22nd, 2025", "Fixing nameplate alpha for nameplates which are in the fade-in animation when being shown.", "cont1nuity"},
+			
+			{1758569637, "Bug Fix", "Sept 26th, 2025", "Fixing soft-interact icons on classic and era.", "cont1nuity"},
+			{1758569637, "New Feature", "Sept 22nd, 2025", "Adding combat auto toggle option for 'Always Show Nameplates'.", "cont1nuity"},
+			{1758569637, "Bug Fix", "Sept 14th, 2025", "Adding 'Dispatch' as rogue execute in MoP.", "cont1nuity"},
+			{1758569637, "New Feature", "Sept 4th, 2025", "Adding possiblitly to add new NPCs via '/plater add <npcID>' with automatic name but 'UNKNOWN' zone.", "cont1nuity"},
+			{1758569637, "Bug Fix", "Sept 3rd, 2025", "Removing 'Twist of Fate' as 35% execute for priests. Use a mod if you need this.", "cont1nuity"},
+			
+			{1755715831, "Backend Change", "Aug 25th, 2025", "Fixing texture artifacts and unifying to tga.", "cont1nuity"},
+			{1755715831, "Backend Change", "Aug 25th, 2025", "Correction to tank recognition adjustments for MoP.", "cont1nuity"},
+			{1755715831, "Bug Fix", "Aug 25th, 2025", "Recognizing 'Twist of Fate' as 35% execute for priests.", "cont1nuity"},
+			{1755715831, "Bug Fix", "Aug 25th, 2025", "Fixing send to party/raid functionality.", "cont1nuity"},
+			
+			{1754345972, "Backend Change", "Aug 10th, 2025", "MoP has spec specific ghost auras.", "cont1nuity"},
+			{1754345972, "Bug Fix", "Aug 9th, 2025", "Recognizing 'Deathspeaker' as 35% execute for priests.", "cont1nuity"},
+			{1754345972, "Backend Change", "Aug 5th, 2025", "NpcColorPanels: Add Remove All Renames Button.", "Wtz_LASR"},
+			{1754345972, "Backend Change", "Aug 5th, 2025", "Improve/fix the cast bar script previews.", "gareth3001"},
+			{1754345972, "Backend Change", "Aug 4th, 2025", "Updated the wording of the priority tooltip.", "Lynn"},
+			{1754345972, "Backend Change", "Aug 3rd, 2025", "Tank recognition adjustments for MoP.", "cont1nuity"},
+			
 			{1750963632, "Backend Change", "July 19th, 2025", "Changing Drain Soul execute for MoP classic.", "cont1nuity"},
 			{1750963632, "Bug Fix", "July 5th, 2025", "Fixing an error in quest tracking for MoP for certain units.", "cont1nuity"},
 			{1750963632, "Backend Change", "July 4th, 2025", "Changing SW:D execute for MoP classic.", "cont1nuity"},

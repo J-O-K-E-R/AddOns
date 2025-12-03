@@ -88,6 +88,10 @@ do  --Object Pool
         end
     end
 
+    function ObjectPoolMixin:EnumerateActive()
+        return ipairs(self.activeObjects)
+    end
+
     function ObjectPoolMixin:ProcessActiveObjects(processFunc)
         for _, object in ipairs(self.activeObjects) do
             if processFunc(object) then
@@ -190,8 +194,8 @@ do
 
         local Background = f:CreateTexture(nil, "BACKGROUND");
         f.Background = Background;
-        Background:SetPoint("TOPLEFT", parent, "TOPLEFT", 4, -4);
-        Background:SetPoint("BOTTOMRIGHT", parent, "BOTTOMRIGHT", -4, 4);
+        Background:SetPoint("TOPLEFT", f.pieces[1], "TOPLEFT", 4, -4);
+        Background:SetPoint("BOTTOMRIGHT", f.pieces[9], "BOTTOMRIGHT", -4, 4);
         Background:SetColorTexture(0.067, 0.040, 0.024);    --0.082, 0.047, 0.027
 
         f:SetTexture(tex);
@@ -379,6 +383,7 @@ end
 
 do  --TabUtil
     local Tabs = {};
+    local SelectedTabIndex = 1;
     local SelectedTabKay;
 
     local function SortFunc_Tab(a, b)
@@ -391,6 +396,35 @@ do  --TabUtil
     function LandingPageUtil.AddTab(tabInfo)
         table.insert(Tabs, tabInfo);
         table.sort(Tabs, SortFunc_Tab);
+    end
+
+    function LandingPageUtil.DeleteTab(tabKey)
+        for i, tabInfo in ipairs(Tabs) do
+            if tabInfo.key == tabKey then
+                table.remove(Tabs, i);
+                break
+            end
+        end
+    end
+
+    function LandingPageUtil.ReplaceTab(newTabInfo)
+        --If found the same key, replace
+        --Otherwise add this tab
+        local found;
+
+        for i, tabInfo in ipairs(Tabs) do
+            if tabInfo.key == newTabInfo.key then
+                Tabs[i] = newTabInfo;
+                found = true;
+                break
+            end
+        end
+
+        if found then
+            table.sort(Tabs, SortFunc_Tab);
+        else
+            LandingPageUtil.AddTab(newTabInfo)
+        end
     end
 
     function LandingPageUtil.AcquireTabFrame(tabContainer, index)
@@ -432,12 +466,14 @@ do  --TabUtil
 
         SelectedTabKay = tabKey;
 
-        for _, tabInfo in ipairs(Tabs) do
+        for index, tabInfo in ipairs(Tabs) do
             if tabInfo.frame then
                 tabInfo.frame:SetShown(tabInfo.key == tabKey);
             end
 
             if tabInfo.key == tabKey then
+                SelectedTabIndex = index;
+
                 if not tabInfo.useCustomLeftFrame then
                     LandingPageUtil.ShowLeftFrame(true);
                 end
@@ -462,6 +498,20 @@ do  --TabUtil
 
     function LandingPageUtil.GetSelectedTabKey()
         return SelectedTabKay
+    end
+
+    function LandingPageUtil.SelectTabByDelta(delta)
+        --Prev -1, Next +1
+        local index = SelectedTabIndex + (delta > 0 and 1 or -1);
+        local numTabs = #Tabs;
+        if index < 0 then
+            index = numTabs;
+        elseif index > numTabs then
+            index = 1;
+        else
+            LandingPageUtil.SelectTabByIndex(index);
+            return true
+        end
     end
 end
 
@@ -522,16 +572,25 @@ do  --Dropdown Menu
     function MenuButtonMixin:OnEnter()
         self.Text:SetTextColor(1, 1, 1);
         self.parent:HighlightButton(self);
+        if self.tooltip then
+            local tooltip = GameTooltip;
+            tooltip:SetOwner(self, "ANCHOR_NONE");
+            tooltip:SetPoint("TOPLEFT", self, "TOPRIGHT", 4, 4);
+            tooltip:SetText(self.Text:GetText(), 1, 1, 1, 1, true);
+            tooltip:AddLine(self.tooltip, 1, 0.82, 0, true);
+            tooltip:Show();
+        end
     end
 
     function MenuButtonMixin:OnLeave()
         self:UpdateVisual();
         self.parent:HighlightButton(nil);
+        GameTooltip:Hide();
     end
 
     function MenuButtonMixin:UpdateVisual()
         if self.isHeader then
-            self.Text:SetTextColor(0.804, 0.667, 0.498);
+            self.Text:SetTextColor(148/255, 124/255, 102/255);  --0.804, 0.667, 0.498
             return
         end
 
@@ -539,10 +598,14 @@ do  --Dropdown Menu
             if self.isDangerousAction then
                 self.Text:SetTextColor(1.000, 0.125, 0.125);
             else
-                self.Text:SetTextColor(0.922, 0.871, 0.761);
+                self.Text:SetTextColor(215/255, 192/255, 163/255);  --0.922, 0.871, 0.761
             end
+            self.LeftTexture:SetDesaturated(false);
+            self.LeftTexture:SetVertexColor(1, 1, 1);
         else
             self.Text:SetTextColor(0.5, 0.5, 0.5);
+            self.LeftTexture:SetDesaturated(true);
+            self.LeftTexture:SetVertexColor(0.6, 0.6, 0.6);
         end
     end
 
@@ -553,6 +616,8 @@ do  --Dropdown Menu
 
         if self.closeAfterClick then
             self.parent:HideMenu();
+        elseif self.refreshAfterClick then
+            self.parent:RefreshMenu();
         end
     end
 
@@ -591,6 +656,7 @@ do  --Dropdown Menu
         self.leftOffset = 20;
         self.selected = selected;
         self.isHeader = nil;
+        self.refreshAfterClick = true;
         self.LeftTexture:SetTexture("Interface/AddOns/Plumber/Art/ExpansionLandingPage/DropdownMenu", nil, nil, "LINEAR");
         if selected then
             self.LeftTexture:SetTexCoord(32/512, 64/512, 0/512, 32/512);
@@ -605,6 +671,7 @@ do  --Dropdown Menu
         self.leftOffset = 20;
         self.selected = selected;
         self.isHeader = nil;
+        self.refreshAfterClick = true;
         self.LeftTexture:SetTexture("Interface/AddOns/Plumber/Art/ExpansionLandingPage/DropdownMenu", nil, nil, "LINEAR");
         if selected then
             self.LeftTexture:SetTexCoord(96/512, 128/512, 0/512, 32/512);
@@ -687,6 +754,12 @@ do  --Dropdown Menu
         self.texturePool:ReleaseAll();
     end
 
+    function SharedMenuMixin:IsShown()
+        if self.Frame then
+            return self.Frame:IsShown()
+        end
+    end
+
     function SharedMenuMixin:HideMenu()
         if self.Frame then
             self.Frame:Hide();
@@ -695,6 +768,7 @@ do  --Dropdown Menu
                 self:ReleaseAllObjects();
             end
         end
+        self.menuInfoGetter = nil;
     end
 
     function SharedMenuMixin:SetKeepContentOnHide(keepContentOnHide)
@@ -780,6 +854,7 @@ do  --Dropdown Menu
                     contentHeight = contentHeight + buttonHeight;
                     widget.onClickFunc = v.onClickFunc;
                     widget.closeAfterClick = v.closeAfterClick;
+                    widget.refreshAfterClick = v.refreshAfterClick;
                     widget.isDangerousAction = v.isDangerousAction;
                     widget:SetLeftText(v.text);
                     if v.type == "Radio" then
@@ -790,6 +865,9 @@ do  --Dropdown Menu
                         widget:SetHeader(v.text);
                     else
                         widget:SetRegular();
+                    end
+                    if v.disabled then
+                        widget:Disable();
                     end
                     widget:UpdateVisual();
                 elseif v.type == "Divider" then
@@ -805,6 +883,7 @@ do  --Dropdown Menu
                     contentHeight = contentHeight + dividerHeight + 2 * gap;
                 end
                 widget.parent = self;
+                widget.tooltip = v.tooltip;
                 widgets[n] = widget;
                 if widget.GetContentWidth then
                     widgetWidth = widget:GetContentWidth();
@@ -844,8 +923,16 @@ do  --Dropdown Menu
         if self.owner == owner and (self.Frame and self.Frame:IsShown()) then
             self:HideMenu();
         else
-            local menuInfo = (owner.menuInfoGetter and owner.menuInfoGetter()) or (menuInfoGetter and menuInfoGetter()) or nil;
+            self.menuInfoGetter = owner.menuInfoGetter or menuInfoGetter;
+            local menuInfo = self.menuInfoGetter and self.menuInfoGetter() or nil;
             self:ShowMenu(owner, menuInfo);
+        end
+    end
+
+    function SharedMenuMixin:RefreshMenu()
+        if self.owner and self.owner:IsVisible() and self:IsShown() and self.menuInfoGetter then
+            local menuInfo = self.menuInfoGetter and self.menuInfoGetter() or nil;
+            self:ShowMenu(self.owner, menuInfo);
         end
     end
 
@@ -988,7 +1075,7 @@ do  --Dropdown Button
         if textTruncated or self.tooltip then
             local tooltip = GameTooltip;
             tooltip:SetOwner(self, "ANCHOR_RIGHT");
-            tooltip:SetText(self.Text:GetText(), 1, 1, 1, true);
+            tooltip:SetText(self.Text:GetText(), 1, 1, 1, 1, true);
             if self.tooltip then
                 tooltip:AddLine(self.tooltip, 1, 0.82, 0, true);
             end
@@ -1125,8 +1212,8 @@ do  --Red Button
         self.ButtonText:SetText(text);
     end
 
-    function RedButtonMixin:UpdateVisual()
-        local isFocused = self:IsMouseMotionFocus();
+    function RedButtonMixin:UpdateVisual(forceFocus)
+        local isFocused = self:IsMouseMotionFocus() or forceFocus;
         local top;
         if self.buttonState == 1 then
             if isFocused then
@@ -1179,10 +1266,16 @@ do  --Red Button
 
     function RedButtonMixin:OnEnter()
         self:UpdateVisual();
+        if self.onEnterFunc then
+            self.onEnterFunc(self);
+        end
     end
 
     function RedButtonMixin:OnLeave()
         self:UpdateVisual();
+        if self.onLeaveFunc then
+            self.onLeaveFunc(self);
+        end
     end
 
     function RedButtonMixin:OnEnable()
@@ -1197,6 +1290,33 @@ do  --Red Button
 
     function RedButtonMixin:OnClick(button)
 
+    end
+
+    function RedButtonMixin:SetTheme(theme)
+        local file;
+        if theme == "LEGION" then
+            file = "Interface/AddOns/Plumber/Art/ExpansionLandingPage/ExpansionBorder_LEGION";
+        else
+            file = TEXTURE_FILE;
+        end
+        SetupThreeSliceBackground(self, file, -2.5, 2.5);
+    end
+
+    function RedButtonMixin:ShowLoadingIndicator(state)
+        if state then
+            if not self.LoadingIndicator then
+                self.LoadingIndicator = CreateFrame("Frame", nil, self, "PlumberLoadingIndicatorTemplate");
+                self.LoadingIndicator:SetSize(14, 14);
+                self.LoadingIndicator:SetAlpha(0.5);
+            end
+            local offset = -4 - 0.5 * (self.ButtonText:GetWrappedWidth() or 0);
+            self.LoadingIndicator:Show();
+            self.LoadingIndicator:SetPoint("RIGHT", self, "CENTER", offset, 0);
+        else
+            if self.LoadingIndicator then
+                self.LoadingIndicator:Hide();
+            end
+        end
     end
 
     local function CreateRedButton(parent)

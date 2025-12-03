@@ -42,6 +42,9 @@ local DelvePOI = {
     --Undermine
     {2346, 8140, 8246},   --Sidestreet Sluice
 
+    --K'aresh
+    {2371, 8274, 8273},   --Archival Assault
+
 
     --{0, 7875, nil},    --Zekvir's Lair (Mystery 13th Delve)
     --8142 Demolition Dome  --Undermine Challenge
@@ -137,14 +140,6 @@ local DelvesPinDataProvider = {};
 do
     local POIxDelveIndex;
 
-    local function onCoordReceivedFunc(positionData)
-        POILocation[positionData.poiID] = positionData;
-    end
-
-    local function onConvertFinishedFunc()
-        PinController:RequestUpdate();
-    end
-
     function DelvesPinDataProvider:GetPinDataForMap(uiMapID)
         --Bountiful Delves won't appear in GetDelvesForMap() table, that's how we identify them
         --The method above no longer works
@@ -190,11 +185,11 @@ do
             end
 
             if poiInfo then
-                overcharged = IsOverchargedDelve(poiInfo);
+                --overcharged = IsOverchargedDelve(poiInfo);
             end
 
             if poiInfo and (bountiful or overcharged) then
-                overcharged = IsOverchargedDelve(poiInfo);
+                --overcharged = IsOverchargedDelve(poiInfo);
 
                 if POILocation[poiID] then
                     n = n + 1;
@@ -373,6 +368,14 @@ POILocation = {
         ["y"] = 0.687,  --0.753
         ["x"] = 0.744,  --0.794
         ["poiID"] = 8246,
+        ["continent"] = 2274,
+    },
+
+    [8273] = {  --K'aresh
+        ["uiMapID"] = 2371,
+        ["y"] = 0.290,
+        ["x"] = 0.178,
+        ["poiID"] = 8273,
         ["continent"] = 2274,
     },
 };

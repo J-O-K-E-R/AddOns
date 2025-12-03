@@ -1,6 +1,7 @@
 local _, addon = ...
 local API = addon.API;
 local L = addon.L;
+local GetDBBool = addon.GetDBBool;
 
 
 local ActivityUtil = {};
@@ -34,7 +35,7 @@ local function ShownIfOnQuest(questID)
 end
 
 local function IsCategoryCollapsed(categoryID)
-    return addon.GetDBBool("LandingPage_Activity_Collapsed_"..categoryID)
+    return GetDBBool("LandingPage_Activity_Collapsed_"..categoryID)
 end
 
 local function SetCategoryCollapsed(categoryID, isCollapsed)
@@ -46,6 +47,8 @@ local SortedActivity;
 local MapQuestData;     --Show quests available on certain maps. The quest markers need to be visible on the world map
 
 local DELVES_REP_TOOLTIP = L["Bountiful Delves Rep Tooltip"];
+
+local DynamicQuestDataProvider = {};
 
 
 local ConditionFuncs = {};
@@ -77,25 +80,211 @@ do
         ShouldShowActivity = function()
             return GetCurrentRenownLevel(2658) >= 3
         end,
-    }
+    };
+
+    Conditions.DelversBounty = {
+        ShouldShowActivity = function()
+            return GetCurrentRenownLevel(2722) >= 2
+        end,
+    };
 end
 
 
 local TooltipFuncs = {};
 do
+    local function ShouldShowAdvancedTooltip()
+        return GetDBBool("LandingPage_AdvancedTooltip");
+    end
+
+    --Similar to Bullet list
+    local function Tooltip_AddListNewLine(tooltip, text, r, g, b)
+        tooltip:AddLine("|TInterface/AddOns/Plumber/Art/Tooltip/TabChar_Dash:0:0|t"..text, r, g, b);
+    end
+    local function Tooltip_AddListInLine(tooltip, text, r, g, b)
+        tooltip:AddLine("|TInterface/AddOns/Plumber/Art/Tooltip/TabChar_Space:0:0|t"..text, r, g, b);
+    end
+
+    local function Tooltip_AddListQuest(tooltip, questID, questName)
+        if IsQuestFlaggedCompleted(questID) then
+            Tooltip_AddListInLine(tooltip, questName, 0.251, 0.753, 0.251)
+        else
+            Tooltip_AddListInLine(tooltip, questName, 0.5, 0.5, 0.5);
+        end
+    end
+
+
     function TooltipFuncs.DevouredEnergyPod(tooltip)
         --Devoured Energy-Pod (20)  Translocated Gorger
         --Add item count if mount not learnt
-        if API.IsMountCollected(2602) then return end;
+        if API.IsMountCollected(2602) then return true end;
         local quantityRequired = 20;
         tooltip:AddLine(" ");
         API.AddCraftingReagentToTooltip(tooltip, 246240, quantityRequired);
         return true
     end
+
+    function TooltipFuncs.WeeklyCofferKey_Shared(tooltip, title, dataKey)
+        local loaded = true;
+        local keepUpdating = false;
+
+        tooltip:AddLine(title, 1, 1, 1, true);
+
+        local tbl = addon.WeeklyRewardsConstant;
+
+        if ShouldShowAdvancedTooltip() then
+            for _, itemID in ipairs(tbl[dataKey]) do
+                local itemName = C_Item.GetItemNameByID(itemID);
+                local sources = tbl.ChestSources[itemID];
+
+                if itemName then
+                    tooltip:AddLine(" ");
+                    Tooltip_AddListNewLine(tooltip, itemName, 1, 0.82, 0);
+                else
+                    loaded = false;
+                end
+
+                if sources then
+                    local quests = sources.quests or (sources.questMap and DynamicQuestDataProvider:GetQuestsByMap(sources.questMap));
+                    if quests then
+                        if sources.questMap then
+                            keepUpdating = true;
+                            for _, questInfo in ipairs(quests) do
+                                local questID = questInfo.questID;
+                                local rewards, missingData = API.GetQuestRewards(questID);
+                                if missingData then
+                                    loaded = false;
+                                end
+                                if rewards then
+                                    if rewards.items then
+                                        for _, v in ipairs(rewards.items) do
+                                            if v.id == itemID then
+                                                local questName = API.GetQuestName(questID);
+                                                if questName then
+                                                    Tooltip_AddListQuest(tooltip, questID, questName);
+                                                else
+                                                    loaded = false;
+                                                end
+                                                break
+                                            end
+                                        end
+                                    end
+                                end
+                            end
+                        else
+                            for _, questID in ipairs(quests) do
+                                local questName = API.GetQuestName(questID);
+                                if questName then
+                                    Tooltip_AddListQuest(tooltip, questID, questName);
+                                else
+                                    loaded = false;
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+        else
+            tooltip:AddLine(" ");
+            for _, itemID in ipairs(tbl.MajorChests) do
+                local name = C_Item.GetItemNameByID(itemID);
+                if name then
+                    tooltip:AddLine("- "..name, 1, 1, 1, false);
+                else
+                    loaded = false;
+                end
+            end
+        end
+
+        return loaded, keepUpdating
+    end
+
+    function TooltipFuncs.WeeklyRestoredCofferKey(tooltip)
+        return TooltipFuncs.WeeklyCofferKey_Shared(tooltip, L["Weekly Coffer Key Tooltip"], "MajorChests");
+    end
+
+    function TooltipFuncs.WeeklyCofferKeyShard(tooltip)
+        return TooltipFuncs.WeeklyCofferKey_Shared(tooltip, L["Weekly Coffer Key Shards Tooltip"], "MinorChests");
+    end
 end
 
 
+local function CreateChildrenFromQuestList(list)
+    local tbl = {};
+    for i, questID in ipairs(list) do
+        tbl[i] = {questID = questID};
+    end
+    return tbl
+end
+
 local ActivityData = {  --Constant
+    --questClassification: 5 is recurring
+
+    {isHeader = true, name = "Delves", localizedName = DELVES_LABEL, categoryID = 10000,
+        entries = {
+            {name = "The Key to Success", questID = 84370, atlas = WEEKLY_QUEST, accountwide = true},
+            {name = "Delver\'s Bounty", itemID = 233071, flagQuest = 86371, icon = 1064187, conditions = Conditions.DelversBounty},
+
+            {name = "Coffer Keys", label = L["Restored Coffer Key"], questClassification = 5, tooltipSetter = TooltipFuncs.WeeklyRestoredCofferKey, icon = 4622270, useItemIcon = true,
+                children = CreateChildrenFromQuestList(addon.WeeklyRewardsConstant.CofferKeyFlags),
+            },
+
+            {name = "Coffer Key Shards", label = L["Coffer Key Shard"], questClassification = 5, tooltipSetter = TooltipFuncs.WeeklyCofferKeyShard, icon = 133016, useItemIcon = true,
+                children = CreateChildrenFromQuestList(addon.WeeklyRewardsConstant.CofferKeyShardFlags),
+            },
+        }
+    },
+
+    {isHeader = true, name = "K\'aresh", factionID = 2658, categoryID = 2658, uiMapID = 2371, --areaID = 15792 (Oasis)
+        entries = {
+            {name = "More Than Just a Phase", questID = 91093, atlas = WEEKLY_QUEST, uiMapID = 2371},
+            {name = "Ecological Succession", questID = 85460, atlas = WEEKLY_QUEST, uiMapID = 2371},
+            {name = "Anima Reclamation Program", questID = 85459, atlas = WEEKLY_QUEST, uiMapID = 2371},
+            {name = "Food Run", questID = 85461, atlas = WEEKLY_QUEST, uiMapID = 2371},
+            {name = "A Reel Problem", questID = 90545, atlas = WEEKLY_QUEST, uiMapID = 2371},
+            {name = "Weekly Delve", localizedName = L["Bountiful Delve"], atlas = DELVES_BOUNTIFUL, flagQuest = 91453, accountwide = true, tooltip = DELVES_REP_TOOLTIP},
+
+            --{name = "Eliminate Grubber", questID = 90126, atlas = WEEKLY_QUEST, uiMapID = 2371, conditions = Conditions.KareshWarrant},   --one-time?
+
+            --the following don't reward rep
+            {name = "Funny Buzzness", questID = 89195, shownIfOnQuest = true, uiMapID = 2371},
+            {name = "Leafing Things on the Ground", questID = 89221, shownIfOnQuest = true, uiMapID = 2371},
+            {name = "Bu-zzz", questID = 89209, shownIfOnQuest = true, uiMapID = 2371},
+            {name = "Shake your Bee-hind", questID = 89194, shownIfOnQuest = true, uiMapID = 2371},
+            {name = "Who You Gonna Call?", questID = 88980, shownIfOnQuest = true, uiMapID = 2371},
+            {name = "Royal Photographer", questID = 89212, shownIfOnQuest = true, uiMapID = 2371},
+            {name = "Ray-ket Ball, Redux", questID = 89056, shownIfOnQuest = true, uiMapID = 2371},
+            {name = "Ridge Racer", questID = 85481, shownIfOnQuest = true, uiMapID = 2371},
+            {name = "Follow-up Appointment", questID = 89238, shownIfOnQuest = true, uiMapID = 2371},
+            {name = "Shutterbug", questID = 89254, shownIfOnQuest = true, uiMapID = 2371},
+            {name = "Dream-Dream-Dream-Dream-Dreameringeding!", questID = 89240, shownIfOnQuest = true, uiMapID = 2371},
+            {name = "Ray-cing for the Future", questID = 89065, shownIfOnQuest = true, uiMapID = 2371},
+            {name = "Nesting Upkeep", questID = 88981, shownIfOnQuest = true, uiMapID = 2371},
+            {name = "Not as Cute When They Are Bigger and Angrier", questID = 89297, shownIfOnQuest = true, uiMapID = 2371},
+            {name = "Pee-Yew de Foxy", questID = 89057, shownIfOnQuest = true, uiMapID = 2371},
+            {name = "Dry Cleaning", questID = 89198, shownIfOnQuest = true, uiMapID = 2371},
+            {name = "Flights of Fancy", questID = 89213, shownIfOnQuest = true, uiMapID = 2371},
+            {name = "A Challenge for Dominance", questID = 85462, shownIfOnQuest = true, uiMapID = 2371},
+            {name = "A Hard Day's Work", questID = 89192, shownIfOnQuest = true, uiMapID = 2371},
+            {name = "Ray Ranching", questID = 89197, shownIfOnQuest = true, uiMapID = 2371},
+            {name = "Sizing Them Up", questID = 85710, shownIfOnQuest = true, uiMapID = 2371},
+
+            --Devourer Attack
+            {name = "Devourer Attack", label = L["Devourer Attack"], uiMapID = 2371, questClassification = 5, tooltipSetter = TooltipFuncs.DevouredEnergyPod, addChildrenToTooltip = true,
+                children = {
+                    --Sorted by location: North-South
+                    {name = "Devourer Attack: The Oasis", questID = 84993, uiMapID = 2371},
+                    {name = "Devourer Attack: Eco-dome: Primus", questID = 86447, uiMapID = 2371},
+                    {name = "Devourer Attack: Atrium", questID = 86464, uiMapID = 2371},
+                    {name = "Devourer Attack: Tazavesh", questID = 86465, uiMapID = 2371},
+                },
+            },
+
+            --{name = "Making a Deposit", questID = 85722, shownIfOnQuest = true, uiMapID = 2371},
+            --{name = "Making a Deposit", questID = 89061, shownIfOnQuest = true, uiMapID = 2371},
+            --{name = "Making a Deposit", questID = 89062, shownIfOnQuest = true, uiMapID = 2371},
+            --{name = "Making a Deposit", questID = 89063, shownIfOnQuest = true, uiMapID = 2371},
+        }
+    },
 
     {isHeader = true, name = "Council of Dornogal", factionID = 2590, categoryID = 2590, uiMapID = 2248,
         entries = {
@@ -152,57 +341,13 @@ local ActivityData = {  --Constant
             {name = "Radiant Incursion: Toxins and Pheromones", questID = 88711, atlas = DAILY_QUEST, shownIfOnQuest = true, uiMapID = 2255},
         }
     },
-
-    {isHeader = true, name = "Delves", localizedName = DELVES_LABEL, categoryID = 10000,
-        entries = {
-            {name = "The Key to Success", questID = 84370, atlas = WEEKLY_QUEST, accountwide = true},
-            --{name = "Delver\'s Bounty", itemID = 233071, flagQuest = 86371, icon = 1064187},
-        }
-    },
 };
 
+
 if addon.IsToCVersionEqualOrNewerThan(110200) then  --PTR debug
-    table.insert(ActivityData, 1, {
-        isHeader = true, name = "K\'aresh", factionID = 2658, categoryID = 2658, uiMapID = 2371, --areaID = 15792 (Oasis)
-        entries = {
-            {name = "More Than Just a Phase", questID = 91093, atlas = WEEKLY_QUEST, uiMapID = 2371},
-            {name = "Ecological Succession", questID = 85460, atlas = WEEKLY_QUEST, uiMapID = 2371},
-            {name = "Anima Reclamation Program", questID = 85459, atlas = WEEKLY_QUEST, uiMapID = 2371},
-            {name = "Food Run", questID = 85461, atlas = WEEKLY_QUEST, uiMapID = 2371},
-            {name = "A Reel Problem", questID = 90545, atlas = WEEKLY_QUEST, uiMapID = 2371},
-
-            --{name = "Eliminate Grubber", questID = 90126, atlas = WEEKLY_QUEST, uiMapID = 2371, conditions = Conditions.KareshWarrant},   --one-time?
-
-            --the following don't reward rep
-            {name = "Funny Buzzness", questID = 89195, shownIfOnQuest = true, uiMapID = 2371},
-            {name = "Leafing Things on the Ground", questID = 89221, shownIfOnQuest = true, uiMapID = 2371},
-            {name = "Who You Gonna Call?", questID = 88980, shownIfOnQuest = true, uiMapID = 2371},
-            {name = "Ray-ket Ball, Redux", questID = 89056, shownIfOnQuest = true, uiMapID = 2371},
-            {name = "Dream-Dream-Dream-Dream-Dreameringeding!", questID = 89240, shownIfOnQuest = true, uiMapID = 2371},
-            {name = "Ray-cing for the Future", questID = 89065, shownIfOnQuest = true, uiMapID = 2371},
-            {name = "Not as Cute When They Are Bigger and Angrier", questID = 89297, shownIfOnQuest = true, uiMapID = 2371},
-            {name = "Pee-Yew de Foxy", questID = 89057, shownIfOnQuest = true, uiMapID = 2371},
-            {name = "Flights of Fancy", questID = 89213, shownIfOnQuest = true, uiMapID = 2371},
-            {name = "A Challenge for Dominance", questID = 85462, shownIfOnQuest = true, uiMapID = 2371},
-
-            --Devourer Attack
-            {name = "Devourer Attack", label = L["Devourer Attack"], uiMapID = 2371, questClassification = 5, tooltipSetter = TooltipFuncs.DevouredEnergyPod,
-                children = {
-                    --Sorted by location: North-South
-                    {name = "Devourer Attack: The Oasis", questID = 84993, uiMapID = 2371},
-                    {name = "Devourer Attack: Eco-dome: Primus", questID = 86447, uiMapID = 2371},
-                    {name = "Devourer Attack: Atrium", questID = 86464, uiMapID = 2371},
-                    {name = "Devourer Attack: Tazavesh", questID = 86465, uiMapID = 2371},
-                },
-            },
-
-            --{name = "Making a Deposit", questID = 85722, shownIfOnQuest = true, uiMapID = 2371},
-            --{name = "Making a Deposit", questID = 89061, shownIfOnQuest = true, uiMapID = 2371},
-            --{name = "Making a Deposit", questID = 89062, shownIfOnQuest = true, uiMapID = 2371},
-            --{name = "Making a Deposit", questID = 89063, shownIfOnQuest = true, uiMapID = 2371},
-        },
-    });
+    --table.insert(ActivityData, 1, {});
 end
+
 
 do  --Assign ID
     for k, v in ipairs(ActivityData) do
@@ -226,7 +371,7 @@ do
             return b.completed
         end
 
-        if a.isOnQuest ~= b.isOnQuest then
+        if (a.isOnQuest ~= nil) and (b.isOnQuest ~= nil) and a.isOnQuest ~= b.isOnQuest then
             return b.isOnQuest
         end
 
@@ -297,8 +442,7 @@ local function InitQuestData(info)
 end
 
 
-local DynamicQuestDataProvider = {};
-do  --Dynamic Quests are acquired using Game API, instead of using a pre-determined table
+do  --DynamicQuestDataProvider  Dynamic Quests are acquired using Game API, instead of using a pre-determined table
     local MapMetaQuestLines = {
         [2339] = {  --Dornogal
             5572,   --Worldsoul: Weekly Meata
@@ -444,6 +588,10 @@ do  --Dynamic Quests are acquired using Game API, instead of using a pre-determi
             self:AddQuestsFromMap(uiMapID, categoryID);
         end
     end
+
+    function DynamicQuestDataProvider:GetQuestsByMap(uiMapID)
+        return self.questsByMap[uiMapID]
+    end
 end
 
 
@@ -552,7 +700,9 @@ local function FlattenData(activityData, n, outputTbl, numCompleted)
             flagQuest = nil;
 
             if entry.children then
-                entry.icon = InProgressQuestIconFile[128];
+                if not entry.icon then
+                    entry.icon = InProgressQuestIconFile[128];
+                end
                 local completed = true;
                 local totalChildren = #entry.children;
                 local numCompletedChildren = 0;

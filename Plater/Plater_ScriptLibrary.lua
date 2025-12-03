@@ -26,6 +26,8 @@ platerInternal.Scripts.DefaultCastScripts = {
 	"Cast - Very Important [Plater]",
 }
 
+platerInternal.Scripts.CurrentCastScripts = {}
+
 do
 	PlaterScriptLibrary = {}
 
@@ -1533,6 +1535,23 @@ do
 						Plater.AddTriggerToScript(spellId, "cast", scriptName)
 					end
 				end
+			end
+		end,
+	})
+	
+	--#40 pre-set 'always show' auto toggle
+	tinsert (PlaterPatchLibrary, {
+		NotEssential = false,
+
+		Notes = {
+			"- Setup 'Always Show Nameplates' auto toggle."
+		},
+		Func = function()
+			local alwaysShow = GetCVarBool("nameplateShowAll")
+			local profile = Plater.db.profile
+			if profile.auto_toggle_combat_enabled then
+				profile.auto_toggle_combat.always_show_ic = alwaysShow
+				profile.auto_toggle_combat.always_show_ooc = alwaysShow
 			end
 		end,
 	})

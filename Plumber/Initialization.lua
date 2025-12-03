@@ -1,5 +1,5 @@
-local VERSION_TEXT = "v1.7.2";
-local VERSION_DATE = 1754400000;
+local VERSION_TEXT = "v1.8.1";
+local VERSION_DATE = 1764600000;
 
 
 local addonName, addon = ...
@@ -21,51 +21,84 @@ CallbackRegistry.events = {};
 addon.CallbackRegistry = CallbackRegistry;
 
 local tinsert = table.insert;
+local tremove = table.remove;
 local type = type;
 local ipairs = ipairs;
 
---[[
-    callbackType:
-        1. Function func(owner)
-        2. Method owner:func()
---]]
+do  --CallbackRegistry
+    --[[
+        callbackType:
+            1. Function func(owner)
+            2. Method owner:func()
+    --]]
 
-function CallbackRegistry:Register(event, func, owner)
-    if not self.events[event] then
-        self.events[event] = {};
+    function CallbackRegistry:Register(event, func, owner)
+        if not self.events[event] then
+            self.events[event] = {};
+        end
+
+        local callbackType;
+
+        if type(func) == "string" then
+            callbackType = 2;
+        else
+            callbackType = 1;
+        end
+
+        tinsert(self.events[event], {callbackType, func, owner})
     end
+    CallbackRegistry.RegisterCallback = CallbackRegistry.Register;
 
-    local callbackType;
-
-    if type(func) == "string" then
-        callbackType = 2;
-    else
-        callbackType = 1;
-    end
-
-    tinsert(self.events[event], {callbackType, func, owner})
-end
-
-function CallbackRegistry:Trigger(event, ...)
-    if self.events[event] then
-        for _, cb in ipairs(self.events[event]) do
-            if cb[1] == 1 then
-                if cb[3] then
-                    cb[2](cb[3], ...);
+    function CallbackRegistry:Trigger(event, ...)
+        if self.events[event] then
+            for _, cb in ipairs(self.events[event]) do
+                if cb[1] == 1 then
+                    if cb[3] then
+                        cb[2](cb[3], ...);
+                    else
+                        cb[2](...);
+                    end
                 else
-                    cb[2](...);
+                    cb[3][cb[2]](cb[3], ...);
+                end
+            end
+        end
+    end
+
+    function CallbackRegistry:RegisterSettingCallback(dbKey, func, owner)
+        self:Register("SettingChanged."..dbKey, func, owner);
+    end
+
+    function CallbackRegistry:UnregisterCallback(event, callback, owner)
+        if not owner then return end;
+
+        if self.events[event] then
+            local callbacks = self.events[event];
+            local i = 1;
+            local cb = callbacks[i];
+
+            if type(callback) == "string" then
+                while cb do
+                    if cb[1] == 2 and cb[2] == callback and cb[3] == owner then
+                        tremove(callbacks, i);
+                    else
+                        i = i + 1;
+                    end
+                    cb = callbacks[i];
                 end
             else
-                cb[3][cb[2]](cb[3], ...);
+                while cb do
+                    if cb[1] == 1 and cb[2] == callback and cb[3] == owner then
+                        tremove(callbacks, i);
+                    else
+                        i = i + 1;
+                    end
+                    cb = callbacks[i];
+                end
             end
         end
     end
 end
-
-function CallbackRegistry:RegisterSettingCallback(dbKey, func, owner)
-    self:Register("SettingChanged."..dbKey, func, owner);
-end
-
 
 local function GetDBValue(dbKey)
     return DB[dbKey]
@@ -85,6 +118,11 @@ local function GetDBBool(dbKey)
 end
 addon.GetDBBool = GetDBBool;
 
+local function FlipDBBool(dbKey)
+    SetDBValue(dbKey, not GetDBBool(dbKey), true);
+end
+addon.FlipDBBool = FlipDBBool;
+
 
 local function GetPersonalData(dbKey)
     --From SavedVariablesPerCharacter
@@ -97,6 +135,14 @@ local function SetPersonalData(dbKey, value, userInput)
 end
 addon.SetPersonalData = SetPersonalData;
 
+local function GetValidOptionChoice(optionsTbl, dbKey)
+    local index = GetDBValue(dbKey);
+    if not (index and optionsTbl[index]) then
+        index = 1;
+    end
+    return optionsTbl[index]
+end
+addon.GetValidOptionChoice = GetValidOptionChoice;
 
 
 local DefaultValues = {
@@ -113,14 +159,11 @@ local DefaultValues = {
     AlternativePlayerChoiceUI = true,   --Revamp PlayerChoiceFrame for Dreamseed Nurturing
     HandyLockpick = true,               --Right-click to lockpick inventory items (Rogue/Mechagnome)
     Technoscryers = true,               --Show Technoscryers on QuickSlot (Azerothian Archives World Quest)
-    TooltipChestKeys = true,            --Show keys that unlocked the current chest or door
-    TooltipRepTokens = true,            --Show faction info for items that grant rep
-    TooltipSnapdragonTreats = true,     --Show info on Snapdragon Treats (An item that changes this mount's color)
-    TooltipItemReagents = false,        --For items with "use to combine": show the reagent count
     PlayerChoiceFrameToken = true,      --Add owned token count to PlayerChoiceFrame
     ExpansionLandingPage = true,        --Display extra info on the ExpansionLandingPage
     Delves_Dashboard = true,            --Show Great Vault Progress on DelvesDashboardFrame
     Delves_SeasonProgress = true,       --Display Seaonal Journey changes on a progress bar
+    Delves_Automation = true,           --Auto select enhancement (PlayerChoiceFrame)
     WoWAnniversary = true,              --QuickSlot for Mount Maniac Event
         VotingResultsExpanded = true,
     BlizzFixFishingArtifact = true,     --Fix Fishing Artifact Traits Not Showing bug
@@ -136,9 +179,36 @@ local DefaultValues = {
         Plunderstore_HideCollected = true,
     BlizzardSuperTrack = false,         --Add timer to the SuperTrackedFrame when tracking a POI with time format
     ProfessionsBook = true,             --Show unspent points on ProfessionsBookFrame
-    TooltipProfessionKnowledge = true,  --Show unspent points on GameTooltip
     EditModeShowPlumberUI = true,
     LandingPageSwitch = true,           --Right click on ExpansionLandingPageMinimapButton to open a menu to access mission report
+    SoftTargetName = false,             --Show object's name on SoftTargetFrame
+        SoftTarget_TextOutline = false,
+        SoftTarget_FontSize = 2,
+        SoftTarget_IconSize = 2,
+        SoftTarget_CastBar = true,
+        SoftTarget_Objectives = false,
+    AppearanceTab = false,              --Adjust Appearance Tab models to reduce GPU usage spike
+        AppearanceTab_ModelCount = 1,
+    ItemUpgradeUI = true,
+    HolidayDungeon = true,              --Auto select holiday dungeons once
+    StaticPopup_Confirm = true,         --Add a brief delay to purchase non-refundable items / Reduce item conversion confirm delay
+    QueueStatus = false,                --Add a progress bar to LFG Eye
+        QueueStatus_ShowTime = false,   --Relative Queue Time
+        QueueStatus_TextPosition = 1,   --0:Center, 1-4:Clockwise
+    InstanceDifficulty = false,         --Instance Difficulty Selector
+    TransmogChatCommand = false,        --Adjust /outfit command behavior
+
+
+    --Tooltip
+    TooltipChestKeys = true,            --Show keys that unlocked the current chest or door
+    TooltipRepTokens = true,            --Show faction info for items that grant rep
+    TooltipSnapdragonTreats = true,     --Show info on Snapdragon Treats (An item that changes this mount's color)
+    TooltipItemReagents = false,        --For items with "use to combine": show the reagent count
+    TooltipProfessionKnowledge = true,  --Show unspent points on GameTooltip
+    TooltipDelvesItem = true,           --Show weekly Coffer Key cap on chest tooltip
+    TooltipItemQuest = true,            --Show the quest of quest starting items in bags
+    TooltipTransmogEnsemble = true,     --A Raid Ensemble now unlocks outfits (tints) from 4 difficulties, but the default UI only gives one
+    TooltipHousing = true,              --TEMP Midnight BETA PTR
 
 
     --Reduction
@@ -151,6 +221,7 @@ local DefaultValues = {
     NewExpansionLandingPage = true,
         LandingPage_Activity_HideCompleted = true,
         LandingPage_Raid_CollapsedAchievement = false,
+        LandingPage_AdvancedTooltip = true,
 
 
     --Custom Loot Window
@@ -169,6 +240,9 @@ local DefaultValues = {
         LootUI_HotkeyName = "E",
         LootUI_ReplaceDefaultAlert = false,
         LootUI_UseStockUI = false,
+        LootUI_WindowHide = false,
+        LootUI_CombineItems = false,
+        LootUI_LowFrameStrata = false,
 
 
     --Unified Map Pin System
@@ -176,6 +250,7 @@ local DefaultValues = {
         WorldMapPin_Size = 1,           --1: Default
         WorldMapPin_TWW_Delve = true,   --Show Bountiful Delves on continent map
         WorldMapPin_TWW_Quest = true,   --Show Special Assignment on continent map
+        WorldMapPin_PlayerPing = true,
 
 
     --Modify default interface behavior:
@@ -209,7 +284,22 @@ local DefaultValues = {
         SpellFlyout_UpdateFrequently = false,
 
 
+    --LegionRemix
+    LegionRemix = true,
+        LegionRemix_TraitSubIconStyle = 3,  --1:OFF, 2:Mini Icon, 3:Replace Icon
+        LegionRemix_AutoUpgrade = true,
+        LegionRemix_PaperDollTraitDetail = false,
+    LegionRemix_HideWorldTier = true,
+    LegionRemix_LFGSpam = true,
+
+
     EnableNewByDefault = false,             --Always enable newly added features
+    SettingsPanel_AutoShowChangelog = false,
+
+
+    --Test Server
+    DecorModelScaleRef = true,
+        DecorModelScaleRef_ShowBanana = false,
 
 
     --Declared elsewhere:
@@ -221,6 +311,12 @@ local DefaultValues = {
     --BlizzFixWardrobeTrackingTip = true,   --Hide Wardrobe tip that cannot be disabled   --Tip removed by Blizzard
     --MinimapMouseover = false,             --Ridden with compatibility issue
 };
+
+
+local NeverEnableByDefault = {
+    AppearanceTab = true,
+};
+
 
 local function LoadDatabase()
     PlumberDB = PlumberDB or {};
@@ -236,7 +332,7 @@ local function LoadDatabase()
     for dbKey, value in pairs(DefaultValues) do
         if DB[dbKey] == nil then
             DB[dbKey] = value;
-            if alwaysEnableNew and type(value) == "boolean" then
+            if alwaysEnableNew and type(value) == "boolean" and not NeverEnableByDefault[dbKey] then
                 --Not all Booleans are the master switch of individual module
                 --Send these new ones to ControlCenter
                 --Test: /run PlumberDB = {EnableNewByDefault = true}
@@ -253,6 +349,13 @@ local function LoadDatabase()
         DB.installTime = VERSION_DATE;
     end
 
+    if DB.lastVersionTime then
+        if (VERSION_DATE - 1 > DB.lastVersionTime) and DB.SettingsPanel_AutoShowChangelog then
+            CallbackRegistry:Trigger("ShowChangelog");
+        end
+    end
+    DB.lastVersionTime = VERSION_DATE;
+
     DefaultValues = nil;
 
     CallbackRegistry:Trigger("NewDBKeysAdded", newDBKeys);
@@ -262,6 +365,7 @@ end
 
 local EL = CreateFrame("Frame");
 EL:RegisterEvent("ADDON_LOADED");
+EL:RegisterEvent("PLAYER_ENTERING_WORLD");
 
 EL:SetScript("OnEvent", function(self, event, ...)
     if event == "ADDON_LOADED" then
@@ -270,9 +374,13 @@ EL:SetScript("OnEvent", function(self, event, ...)
             self:UnregisterEvent(event);
             LoadDatabase();
         end
-    elseif event == "LOADING_SCREEN_DISABLED" then
+    elseif event == "PLAYER_ENTERING_WORLD" then
         self:UnregisterEvent(event);
-        CallbackRegistry:Trigger("LOADING_SCREEN_DISABLED");
+        local seasonID = API.GetTimerunningSeason();
+        if seasonID and seasonID > 0 then
+            CallbackRegistry:Trigger("TimerunningSeason", seasonID);
+        end
+        addon.ControlCenter:InitializeModules();
     end
 end);
 
@@ -285,6 +393,8 @@ do
         return tocVersion >= targetVersion
     end
     addon.IsToCVersionEqualOrNewerThan = IsToCVersionEqualOrNewerThan;
+
+    addon.IS_MIDNIGHT = IsToCVersionEqualOrNewerThan(120000);
 
     addon.IS_CLASSIC = C_AddOns.GetAddOnMetadata(addonName, "X-Flavor") ~= "retail";
 

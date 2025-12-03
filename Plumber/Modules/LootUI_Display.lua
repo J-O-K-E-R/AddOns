@@ -7,6 +7,7 @@ local P_Loot = addon.P_Loot;
 local MainFrame = P_Loot.MainFrame;
 local Defination = P_Loot.Defination;
 local Formatter = P_Loot.Formatter;
+local MergeSimilarItems = P_Loot.MergeSimilarItems;
 
 
 local LootSlot = LootSlot;
@@ -28,6 +29,7 @@ local IsModifiedClick = IsModifiedClick;
 local GetCVarBool = C_CVar.GetCVarBool;
 local GetCurrencyIDFromLink = C_CurrencyInfo.GetCurrencyIDFromLink;
 local GetCurrencyInfoFromLink = C_CurrencyInfo.GetCurrencyInfoFromLink;
+local Secret_CanAccess = API.Secret_CanAccess;
 
 
 local tsort = table.sort;
@@ -63,6 +65,8 @@ local FADE_DELAY_PER_ITEM = 0.25;
 local REPLACE_LOOT_ALERT = true;
 local LOOT_UNDER_MOUSE = false;
 local USE_STOCK_UI = false;
+local MERGE_SIMILAR_ITEMS = true;
+local LOW_FRAME_STRATA = false;
 ------------------
 
 local CLASS_SORT_ORDER = {
@@ -132,13 +136,15 @@ local function MergeData(d1, d2)
                     return true
                 end
             else
-                if d1.id == d2.id then
+                if (d1.id == d2.id) and (not d1.mergedData) and (not d2.mergedData) then
                     if (d1.quantity == d2.quantity) and (d1.toast ~= d2.toast) then
                         d1.toast = true;
                     else
                         d1.quantity = d1.quantity + d2.quantity;
                     end
                     return true
+                elseif MERGE_SIMILAR_ITEMS then
+                    return MergeSimilarItems(d1, d2)
                 end
             end
         end
@@ -294,12 +300,20 @@ do  --Process Loot Message
         EL.IsMessageSenderPlayer = EL.IsMessageSenderPlayer_Classic;
     end
 
+    local function Debug_LogLootMessage(text)
+        if not PlumberDevData.LootMessages then
+            PlumberDevData.LootMessages = {};
+        end
+        table.insert(PlumberDevData.CurrencyMessages, text);
+    end
+
     function EL:ProcessMessageItem(text)
         --Do we need to use the whole itemlink?
         local itemID = match(text, "item:(%d+)", 1);
         if itemID then
             itemID = tonumber(itemID);
             if itemID then
+                --Debug_LogLootMessage(text)
                 if self.alwaysListenLootMsg then
                     local link, name = match(text, "(|Hitem:.+|h)%[(.+)%]|h");
                     if link then
@@ -342,6 +356,7 @@ do  --Process Loot Message
         local currencyID = match(text, "currency:(%d+)", 1);
         if currencyID then
             currencyID = tonumber(currencyID);
+            --Debug_LogLootMessage(text)
             if currencyID then
                 if self.alwaysListenLootMsg then
                     local link, name = match(text, "(|Hcurrency:.+|h)%[(.+)%]|h");
@@ -377,6 +392,7 @@ do  --Process Loot Message
     end
 
     function EL:ProcessMessageFaction(text)
+        if not Secret_CanAccess(text) then return end;
         local factionName, amount = GetReputationChangeFromText(text);
         if factionName then
             if not self.repDummyIndex then
@@ -831,7 +847,11 @@ do  --Event Handler
                     };
                     MainFrame:QueueDisplayLoot(data);
                 end
-                self.playerMoney = nil;
+                if MainFrame:IsVisible() then
+                    self.playerMoney = money;
+                else
+                    self.playerMoney = nil;
+                end
             end
         elseif event == "LOOT_SLOT_CHANGED" then
             --Can happen during AoE Loot
@@ -857,7 +877,7 @@ do  --UI Notification Mode
         --The response should be as swift as possible but we must count for event delay
         self.t = self.t + elapsed;
         if self.t > 0.15 then   --5/60
-            self.t = 0;
+            self.t = nil;
             self:SetScript("OnUpdate", nil);
             MainFrame:DisplayLootResult();
         end
@@ -945,7 +965,8 @@ do  --UI Notification Mode
     end
 
     function MainFrame:QueueDisplayLoot(lootData)
-        if not (lootData and lootData.quantity) then return end;
+        if LootUI_WindowHide == true then return end;
+		if not (lootData and lootData.quantity) then return end;
         if self.manualMode then return end;
 
         if not self.timerFrame then
@@ -987,6 +1008,7 @@ do  --UI Notification Mode
 
     function MainFrame:DisplayLootResult()
         local overflowWarning;
+        local anyNotification;  --Other Plumber module may use this as notification (e.g. auto-selected trait)
 
         if self.lootQueue then
             overflowWarning = false;
@@ -1041,6 +1063,10 @@ do  --UI Notification Mode
                     if object:IsSameItem(data) then
                         foundIndex = i;
                         object:SetData(data);
+                        break
+                    elseif MERGE_SIMILAR_ITEMS and data.slotType == Defination.SLOT_TYPE_ITEM and object.data and MergeSimilarItems(object.data, data) then
+                        foundIndex = i;
+                        object:SetMergedItem(object.data);
                         break
                     end
                 end
@@ -1102,6 +1128,10 @@ do  --UI Notification Mode
                 itemFrame:EnableMouseScript(enableState);
                 itemFrame.hasItem = true;
             end
+
+            if data.isNotification then
+                anyNotification = true;
+            end
         end
 
         local numFrames = (self.activeFrames and #self.activeFrames) or 0;
@@ -1112,6 +1142,9 @@ do  --UI Notification Mode
                 self.Header:SetText(L["Reach Currency Cap"]);
             else
                 AUTO_HIDE_DELAY = 2.0 + numFrames * FADE_DELAY_PER_ITEM;
+                if anyNotification then
+                    AUTO_HIDE_DELAY = AUTO_HIDE_DELAY + 2.0;
+                end
                 self.Header:SetText(L["You Received"]);
             end
 
@@ -1169,6 +1202,21 @@ do  --UI Notification Mode
             return false
         end
     end
+
+    function MainFrame:OnHide()
+        if self.manualMode then
+            CloseLoot();
+        end
+        if self:IsShown() then return end;  --Due to hiding UIParent
+        self:ReleaseAll();
+        self.isFocused = false;
+        self.manualMode = nil;
+        self:StopQueue();
+        self:UnregisterEvent("GLOBAL_MOUSE_UP");
+        self:UnregisterEvent("BAG_UPDATE_DELAYED");
+        EL.playerMoney = nil;
+    end
+    MainFrame:SetScript("OnHide", MainFrame.OnHide);
 end
 
 
@@ -1498,12 +1546,12 @@ do  --Edit Mode
     end
 
     function MainFrame:EnterEditMode()
-        self:SetFrameStrata("HIGH");
         EL:ListenStaticEvent(false);
         EL.overflowCurrencies = nil;
 
         self.errorMode = nil;
         self.inEditMode = true;
+        self:UpdateFrameStrata();
         self:ShowSampleItems();
 
         if not self.Selection then
@@ -1516,13 +1564,12 @@ do  --Edit Mode
 
         self:LoadPosition();
         self:UnregisterEvent("GLOBAL_MOUSE_UP");
+        self:UnregisterEvent("BAG_UPDATE_DELAYED");
 
         EventGenerator:Stop();
     end
 
     function MainFrame:ExitEditMode()
-        self:SetFrameStrata("DIALOG");
-
         if ENABLE_MODULE then
             EL:ListenStaticEvent(true);
         end
@@ -1531,7 +1578,7 @@ do  --Edit Mode
         self:Disable();
         self:SetAlpha(0);
         self:Hide();
-
+        self:UpdateFrameStrata();
         self:EnableHeaderWidgets(true);
 
         if self.Selection then
@@ -1553,13 +1600,13 @@ do  --Edit Mode
         end);
     end
 
-    local function GetValidFadeOutDelay(value)
+    local function GetValidFadeOutDelayPerItem(value)
         value = value or 0.25;
         return API.Clamp(value, 0.25, 1.0);
     end
 
     local function Options_FadeOutDelaySlider_OnValueChanged(value)
-        value = GetValidFadeOutDelay(value);
+        value = GetValidFadeOutDelayPerItem(value);
         PlumberDB.LootUI_FadeDelayPerItem = value;
         FADE_DELAY_PER_ITEM = value;
     end
@@ -1656,6 +1703,12 @@ do  --Edit Mode
         return addon.IsToCVersionEqualOrNewerThan(110000)
     end
 
+    local function Tooltip_HideWindow()
+        if addon.GetDBBool("LootUI_UseStockUI") then
+            return "|cffff4800"..L["LootUI Option Hide Window Tooltip 2"].."|r";
+        end
+    end
+
     local OPTIONS_SCHEMATIC = {
         title = L["EditMode LootUI"],
         widgets = {
@@ -1669,6 +1722,8 @@ do  --Edit Mode
             {type = "Checkbox", label = L["LootUI Option New Transmog"], onClickFunc = nil, dbKey = "LootUI_NewTransmogIcon", tooltip = L["LootUI Option New Transmog Tooltip"]:format("|TInterface/AddOns/Plumber/Art/LootUI/NewTransmogIcon:0:0|t"), validityCheckFunc = Validation_TransmogInvented},
             {type = "Checkbox", label = L["LootUI Option Custom Quality Color"], tooltip = L["LootUI Option Custom Quality Color Tooltip"], onClickFunc = nil, dbKey = "LootUI_UseCustomColor", validityCheckFunc = function() return C_ColorOverrides and ColorManager and ColorManager.GetColorDataForItemQuality ~= nil end},
             {type = "Checkbox", label = L["LootUI Option Grow Direction"], tooltip = Tooltip_GrowDirection, onClickFunc = Options_GrowDirection_OnClick, dbKey = "LootUI_GrowUpwards", keepTooltipAfterClicks = true},
+            {type = "Checkbox", label = L["LootUI Option Combine Items"], tooltip = L["LootUI Option Combine Items Tooltip"], onClickFunc = nil, dbKey = "LootUI_CombineItems"},
+            {type = "Checkbox", label = L["LootUI Option Low Frame Strata"], tooltip = L["LootUI Option Low Frame Strata Tooltip"], onClickFunc = nil, dbKey = "LootUI_LowFrameStrata"},
             {type = "Divider"},
             {type = "Checkbox", label = L["LootUI Option Force Auto Loot"], onClickFunc = Options_ForceAutoLoot_OnClick, validityCheckFunc = Options_ForceAutoLoot_ValidityCheck, dbKey = "LootUI_ForceAutoLoot", tooltip = L["LootUI Option Force Auto Loot Tooltip"], tooltip2 = Tooltip_ManualLootInstruction},
             {type = "Checkbox", label = L["LootUI Option Loot Under Mouse"], onClickFunc = nil, dbKey = "LootUI_LootUnderMouse", tooltip = L["LootUI Option Loot Under Mouse Tooltip"]},
@@ -1678,12 +1733,12 @@ do  --Edit Mode
 
             {type = "Divider"},
             {type = "Checkbox", label = L["LootUI Option Use Default UI"], onClickFunc = nil, dbKey = "LootUI_UseStockUI", tooltip = L["LootUI Option Use Default UI Tooltip"], tooltip2 = Tooltip_ManualLootInstruction},
+            {type = "Checkbox", label = L["LootUI Option Hide Window"], onClickFunc = nil, dbKey = "LootUI_WindowHide", tooltip = L["LootUI Option Hide Window Tooltip"], tooltip2 = Tooltip_HideWindow},
 
             {type = "Divider"},
             {type = "UIPanelButton", label = L["Reset To Default Position"], onClickFunc = Options_ResetPosition_OnClick, stateCheckFunc = Options_ResetPosition_ShouldEnable, widgetKey = "ResetButton"},
         }
     };
-
 
     function MainFrame:ShowOptions(state)
         if state then
@@ -1754,7 +1809,7 @@ do  --Edit Mode
     addon.CallbackRegistry:RegisterSettingCallback("LootUI_ShowItemCount", SettingChanged_ShowItemCount);
 
     local function SettingChanged_FadeDelayPerItem(value, userInput)
-        AUTO_HIDE_DELAY = GetValidFadeOutDelay(value);
+        FADE_DELAY_PER_ITEM = GetValidFadeOutDelayPerItem(value);
     end
     addon.CallbackRegistry:RegisterSettingCallback("LootUI_FadeDelayPerItem", SettingChanged_FadeDelayPerItem);
 
@@ -1787,6 +1842,42 @@ do  --Edit Mode
         end
     end
     addon.CallbackRegistry:RegisterSettingCallback("LootUI_LootUnderMouse", SettingChanged_LootUnderMouse);
+
+    local function SettingChanged_CombineItems(state, userInput)
+        MERGE_SIMILAR_ITEMS = state;
+    end
+    addon.CallbackRegistry:RegisterSettingCallback("LootUI_CombineItems", SettingChanged_CombineItems);
+
+    local function SettingChanged_LowFrameStrata(state, userInput)
+        LOW_FRAME_STRATA = state;
+    end
+    addon.CallbackRegistry:RegisterSettingCallback("LootUI_LowFrameStrata", SettingChanged_LowFrameStrata);
+	
+	local function SettingChanged_WindowDisabled(state, userInput)
+    LootUI_WindowHide = state;
+    end
+    addon.CallbackRegistry:RegisterSettingCallback("LootUI_WindowHide", SettingChanged_WindowDisabled);
+end
+
+
+do  --Dynamic Frame Strata
+    local IsInteractingWithNpcOfType = C_PlayerInteractionManager.IsInteractingWithNpcOfType;
+
+    function MainFrame:UpdateFrameStrata()
+        if IsInteractingWithNpcOfType(40) then
+            --Lower frame strata when using Scrapping Machine so our window appear behind bag UI
+            self:SetFrameStrata("LOW");
+        else
+            if self.inEditMode then
+                self:SetFrameStrata("HIGH");
+            elseif LOW_FRAME_STRATA and not self.manualMode then
+                self:SetFrameStrata("MEDIUM");
+                self:Lower();
+            else
+                self:SetFrameStrata("DIALOG");
+            end
+        end
+    end
 end
 
 
@@ -1814,7 +1905,7 @@ do  --EventGenerator
 end
 
 
-do
+do  --Module Registry
     local STOCK_UI_MUTED = false;
 
     local function SettingChanged_UseStockUI(state, userInput)
@@ -1910,7 +2001,7 @@ do
         description = addon.L["ModuleDescription LootUI"],
         toggleFunc = EnableModule,
         categoryID = 1,
-        uiOrder = 1115,
+        uiOrder = 0,
         moduleAddedTime = 1727793830,
         optionToggleFunc = OptionToggle_OnClick,
 
@@ -1921,7 +2012,44 @@ do
         exitEditMode = function()
             MainFrame:ExitEditMode();
         end,
+
+		categoryKeys = {
+			"Signature", "Loot",
+		},
     };
 
     addon.ControlCenter:AddModule(moduleData);
+end
+
+
+do  --Use Loot UI as Notification Center
+    function MainFrame:QueueDisplaySpell(spellData)
+        if not spellData.spellID then return false end;
+
+        local spellID = spellData.spellID;
+        local icon = spellData.icon or C_Spell.GetSpellTexture(spellID);
+        local name = spellData.name or C_Spell.GetSpellName(spellID);
+        local quality = spellData.quality or 1;
+
+		if not name then return end;
+
+        if spellData.subtitle then
+            name = string.format("%s\n|cffebebeb%s|r", name, spellData.subtitle);
+        end
+
+		local data = {
+			slotType = -1,
+			id = spellID,
+			icon = icon,
+			quality = quality,
+            quantity = 1,
+			name = name,
+			hideCount = true,
+			showGlow = true,
+			tooltipMethod = "SetSpellByID",
+            isNotification = true,
+		};
+
+		self:QueueDisplayLoot(data);
+    end
 end

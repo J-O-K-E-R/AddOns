@@ -11,11 +11,24 @@ do
         if self.enabled then
             local factionID = GetFactionGrantedByItem(itemID);
             if factionID then
-                local factionStatus = GetFactionStatusText(factionID);
-                if factionStatus then
-                    tooltip:AddLine(factionStatus);
+                if type(factionID) == "table" then
+                    tooltip:AddLine(" ");
+                    local showFactionName = true;
+                    for _, id in ipairs(factionID) do
+                        local factionStatus = GetFactionStatusText(id, nil, showFactionName);
+                        if factionStatus then
+                            tooltip:AddLine(factionStatus);
+                        end
+                    end
                     return true
+                else
+                    local factionStatus = GetFactionStatusText(factionID);
+                    if factionStatus then
+                        tooltip:AddLine(factionStatus);
+                        return true
+                    end
                 end
+
             end
             return false
         else
@@ -103,6 +116,12 @@ do
         categoryID = 3,
         uiOrder = 1111,
         moduleAddedTime = 1726674500,
+		categoryKeys = {
+			"Inventory",
+		},
+        searchTags = {
+            "Tooltip",
+        },
     };
 
     addon.ControlCenter:AddModule(moduleData);

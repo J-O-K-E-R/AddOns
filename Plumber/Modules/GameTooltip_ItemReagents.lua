@@ -1,6 +1,8 @@
 local _, addon = ...
 local L = addon.L;
 local GameTooltipItemManager = addon.GameTooltipManager:GetItemManager();
+local AddTextureToTooltip = addon.API.AddTextureToTooltip;
+
 
 local floor = math.floor;
 local GetItemSpell = C_Item.GetItemSpell;
@@ -16,11 +18,9 @@ local IsShiftKeyDown = IsShiftKeyDown;
 local ItemReagentCache = {};
 local ItemRecipeIDCache = {};   --Debug
 local QuantityOverride = {};
-local TextureInfoTable = {
-    width = 14,
-    height = 14,
-    margin = { left = 0, right = 4, top = 0, bottom = 0 },
-    texCoords = { left = 0.0625, right = 0.9375, top = 0.0625, bottom = 0.9375 },
+
+local IgnoredItems = {
+    [254267] = true,    --Fragmented Memento of Epoch Challenges
 };
 
 
@@ -77,7 +77,7 @@ function ItemSubModule:ProcessData(tooltip, itemID)
             end
         end
 
-        if ItemReagentCache[itemID] then
+        if ItemReagentCache[itemID] and not IgnoredItems[itemID] then
             tooltip:AddLine(" ");
             local info = ItemReagentCache[itemID];
             local name, count, quantityText, icon, maxOutput, numOuput;
@@ -120,7 +120,7 @@ function ItemSubModule:ProcessData(tooltip, itemID)
                         tooltip:AddDoubleLine(name, quantityText, 1, 0.125, 0.125, 1, 0.125, 0.125);
                         maxOutput = 0;
                     end
-                    tooltip:AddTexture(icon, TextureInfoTable);
+                    AddTextureToTooltip(tooltip, icon);
                 end
             end
 
@@ -214,6 +214,12 @@ do
         categoryID = 3,
         uiOrder = 10,
         moduleAddedTime = 1736940000,
+		categoryKeys = {
+			"Inventory",
+		},
+        searchTags = {
+            "Tooltip",
+        },
     };
 
     addon.ControlCenter:AddModule(moduleData);

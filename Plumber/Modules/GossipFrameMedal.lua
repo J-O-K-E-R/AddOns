@@ -4,10 +4,14 @@ local _, addon = ...
 local EL = CreateFrame("Frame");
 
 local match = string.match;
-local UnitName = UnitName;
+local UnitName = addon.API.Secret_GetUnitName;
 
 local RACE_TIMES = "^Race Times";
 local Timekeepers = {};
+
+local SpecialNPCs = {
+    234643,     --Omtroid, Ecological Succession
+};
 
 local RankIcons = {
     [1] = "Interface\\AddOns\\Plumber\\Art\\GossipIcons\\Medal_Gold",
@@ -315,6 +319,11 @@ local function UdpateGossipIcons_Storyline(ranks)
     end)
 end
 
+local function OnCreatureNameReceived(creatureID, creatureName)
+    if creatureName and creatureName ~= "" then
+        Timekeepers[creatureName] = true;
+    end
+end
 
 function EL:EnableModule()
     self:RegisterEvent("GOSSIP_SHOW");
@@ -331,6 +340,8 @@ function EL:EnableModule()
             UpdateGossipIcons = UdpateGossipIcons_Storyline;
         end
     end
+
+    addon.API.LoadCreatureNameWithCallback(SpecialNPCs, OnCreatureNameReceived);
 end
 
 function EL:DisableModule()
@@ -364,6 +375,9 @@ do
         toggleFunc = EnableModule,
         categoryID = 2,
         uiOrder = 1,
+		categoryKeys = {
+			"Quest",
+		},
     };
 
     addon.ControlCenter:AddModule(moduleData);

@@ -1,4 +1,4 @@
---Coutesy of ZamestoTV. Thank you!    --Translator: ZamestoTV as of 1.7.2
+--Coutesy of ZamestoTV. Thank you!    --Translator: ZamestoTV as of 1.7.10
 
 if not (GetLocale() == "ruRU") then return end;
 
@@ -8,7 +8,7 @@ local L = addon.L;
 
 --Globals
 BINDING_HEADER_PLUMBER = "Plumber";
-BINDING_NAME_TOGGLE_PLUMBER_LANDINGPAGE = "Окно Резюме расширения";   --Show/hide Expansion Summary UI
+BINDING_NAME_TOGGLE_PLUMBER_LANDINGPAGE = "Окно Резюме дополнения";   --Show/hide Expansion Summary UI
 
 
 --Module Control Panel
@@ -39,6 +39,9 @@ L["Module Category Tooltip"] = "Подсказка";   --Additional Info on Tool
 L["Module Category Class"] = "Класс";   --Player Class (rogue, paladin...)
 --- order: 5
 L["Module Category Reduction"] = "Уменьшение";   --Reduce UI elements
+--- order: -1
+L["Module Category Timerunning"] = "Legion Remix";   --Change this based on timerunning season
+
 
 L["Module Category Dragonflight"] = EXPANSION_NAME9 or "Dragonflight";  --Merge Expansion Feature (Dreamseeds, AzerothianArchives) Modules into this
 L["Module Category Plumber"] = "Plumber";   --This addon's name
@@ -85,6 +88,7 @@ L["ModuleDescription GossipFrameMedal Format"] = "Замените значок 
 --DruidModelFix (Disabled after 10.2.0)
 L["ModuleName DruidModelFix"] = "Исправлена модель друида";
 L["ModuleDescription DruidModelFix"] = "Исправлена проблема с отображением модели пользовательского интерфейса персонажа, вызванная использованием символа звезд\n\nЭта ошибка будет исправлена Blizzard в версии 10.2.0, и этот модуль будет удален.";
+L["Model Layout"] = "Макет модели";
 
 
 --PlayerChoiceFrameToken (PlayerChoiceFrame)
@@ -126,6 +130,8 @@ L["EditMode TalkingHead"] = "Plumber: "..L["ModuleName TalkingHead"];
 L["TalkingHead Option InstantText"] = "Мгновенный текст";   --Should texts immediately, no gradual fading
 L["TalkingHead Option TextOutline"] = "Текстовый контур";
 L["TalkingHead Option Condition Header"] = "Скрыть тексты из источника:";
+L["TalkingHead Option Hide Everything"] = "Скрыть все";
+L["TalkingHead Option Hide Everything Tooltip"] = "|cffff4800Субтитры больше не будут отображаться.|r\n\nЗакадровый голос продолжит воспроизводиться, а транскрипция будет отображаться в окне чата.";
 L["TalkingHead Option Condition WorldQuest"] = TRACKER_HEADER_WORLD_QUESTS or "Локальные задания";
 L["TalkingHead Option Condition WorldQuest Tooltip"] = "Скрыть текст, если он из локального задания.\nИногда «Говорящая голова» срабатывает до принятия локального задания, и мы не сможем это скрыть.";
 L["TalkingHead Option Condition Instance"] = INSTANCE or "Подземелье";
@@ -194,6 +200,25 @@ L["ModuleDescription TooltipItemReagents"] = "Если предметы можн
 L["Can Create Multiple Item Format"] = "У вас есть ресурсы для создания |cffffffff%d|r предмета.";
 
 
+--Tooltip DelvesItem
+L["ModuleName TooltipDelvesItem"] = "Предметы из Вылазок";
+L["ModuleDescription TooltipDelvesItem"] = "Показать, сколько ключей и осколков вы заработали из еженедельных сундуков.";
+L["You Have Received Weekly Item Format"] = "На этой неделе вы получили %s.";
+
+
+--Tooltip ItemQuest
+L["ModuleName TooltipItemQuest"] = "Начальные предметы заданий";
+L["ModuleDescription TooltipItemQuest"] = "Если предмет в вашей сумке начинает задание, показывать детали задания.\n\nЕсли вы уже выполняете задание, вы можете щелкнуть ЛКМ по предмету, удерживая клавишу Ctrl, чтобы просмотреть его в журнале заданий.";
+L["Instruction Show In Quest Log"] = "<ЛКМ по предмету, удерживая клавишу Ctrl, чтобы просмотреть журнал заданий>";
+
+
+--Tooltip Housing
+L["ModuleName TooltipHousing"] = "Дома";
+L["ModuleDescription TooltipHousing"] = "Дома";
+L["Instruction View In Dressing Room"] = "<Нажмите Ctrl, чтобы просмотреть в примерочной>";  --VIEW_IN_DRESSUP_FRAME
+L["Data Loading In Progress"] = "Plumber загружает данные";
+
+
 --Plunderstore
 L["ModuleName Plunderstore"] = "Пиратская буря";
 L["ModuleDescription Plunderstore"] = "Изменить магазин, открытый через Заранее собранные группы:\n\n- Добавлен флажок, позволяющий скрыть собранные предметы.\n\n- Отображение количества несобранных предметов на кнопках категорий.\n\n- В подсказки добавлено место экипировки оружия и брони.\n\n- Позволяет просматривать экипируемые предметы в примерочной.";
@@ -208,6 +233,14 @@ L["Num Items In Bank Format"] = (BANK or "Банк") ..": |cffffffff%d|r";
 L["Num Items In Bag Format"] = (HUD_EDIT_MODE_BAGS_LABEL or "Сумка") ..": |cffffffff%d|r";
 L["Number Thousands"] = "Т";    --15K  15,000
 L["Number Millions"] = "М";     --1.5M 1,500,000
+L["Questionable Item Count Tooltip"] = "Количество предметов может быть неверным из-за ограничений аддона.";
+
+
+--QueueStatus
+L["ModuleName QueueStatus"] = "Статус очереди";
+L["ModuleDescription QueueStatus"] = "Добавьте в «Глаз поиска группы» индикатор прогресса, показывающий процент найденных товарищей по команде. Танки и целители весят больше.\n\n(Необязательно) Показывать разницу между средним временем ожидания и временем в очереди.";
+L["QueueStatus Show Time"] = "Показывать время";
+L["QueueStatus Show Time Tooltip"] = "Показывать разницу между средним временем ожидания и временем в очереди.";
 
 
 --Landing Page (Expansion Summary Minimap)
@@ -239,10 +272,14 @@ L["ModuleName Delves_SeasonProgress"] = "Вылазки: Путешествие 
 L["ModuleDescription Delves_SeasonProgress"] = "Отображение шкалы прогресса в верхней части экрана каждый раз, когда вы получаете опыт для вылазки";
 L["ModuleName Delves_Dashboard"] = "Вылазки: Еженедельная награда";
 L["ModuleDescription Delves_Dashboard"] = "Отображать прогресс Великого хранилища и Позолоченных тайников на панели Вылазок.";
+L["ModuleName Delves_Automation"] = "Вылазки: Автоматический выбор усиления";
+L["ModuleDescription Delves_Automation"] = "Автоматически выбирать силу, выпадающую из сокровищ и редких монстров.";
 L["Delve Crest Stash No Info"] = "Эта информация недоступна в вашем текущем местоположении.";
 L["Delve Crest Stash Requirement"] = "Появляется на 11-м уровне многообещающих вылазок.";
 L["Overcharged Delve"] = "Перегруженная Вылазка";
 L["Delves History Requires AddOn"] = "История Вылазок хранится локально с помощью аддона Plumber.";
+L["Auto Select"] = "Автоматический выбор";
+L["Power Borrowed"] = "Заимствованная мощность";
 
 
 --WoW Anniversary
@@ -338,6 +375,85 @@ L["BossBanner Valuable Item Only"] = "Только ценные предметы
 L["BossBanner Valuable Item Only Tooltip"] = "Отображать на баннере только маунтов, классовые токены и предметы, помеченные как очень редкие или чрезвычайно редкие.";
 
 
+--AppearanceTab
+L["ModuleName AppearanceTab"] = "Вкладка Модели";
+L["ModuleDescription AppearanceTab"] = "Измените вкладку Модели в коллекциях отрядов:\n\n- Уменьшите нагрузку на графический процессор, улучшив последовательность загрузки моделей и изменив количество предметов, отображаемых на странице. Это может снизить вероятность графического сбоя при открытии этого интерфейса.\n\n- Запоминает страницу, которую вы посетили после смены слотов.";
+
+
+--SoftTargetName
+L["ModuleName SoftTargetName"] = "Табличка: Мягкая цель";
+L["ModuleDescription SoftTargetName"] = "Отображать имя объекта мягкой цели.";
+L["SoftTargetName Req Title"] = "|cffd4641cВам нужно вручную изменить эти настройки, чтобы это работало:|r";
+L["SoftTargetName Req 1"] = "|cffffd100Включите клавишу взаимодействия|r в параметрах игры > Игровой процесс > Управление.";
+L["SoftTargetName Req 2"] = "Установите CVar |cffffd100SoftTargetIconGameObject|r на |cffffffff1|r";
+L["SoftTargetName CastBar"] = "Показывать полосу заклинаний";
+L["SoftTargetName CastBar Tooltip"] = "Показывать радиальную полосу заклинаний на табличке с именем.\n\n|cffff4800Аддон не сможет определить, какой объект является целью вашего заклинания.|r";
+L["SoftTargetName QuestObjective"] = QUEST_LOG_SHOW_OBJECTIVES or "Показывать цели заданий";
+L["SoftTargetName QuestObjective Tooltip"] = "Показывать цели заданий (если есть) под именем.";
+L["SoftTargetName QuestObjective Alert"] = "Эта функция требует включения |cffffffffПоказывать всплывающую подсказку цели|r в настройках игры > Доступность > Общие.";
+L["SoftTargetName ShowNPC"] = "Включать НПС";
+L["SoftTargetName ShowNPC Tooltip"] = "Если отключено, имя будет отображаться только на интерактивных игровых объектах.";
+
+
+--LegionRemix
+L["ModuleName LegionRemix"] = "Legion Remix"
+L["ModuleDescription LegionRemix"] = "- Автоматическое изучение черт.\n\n- Добавление виджета на панель персонажа, предоставляющего различную информацию. Вы можете кликнуть по этому виджету, чтобы открыть новый интерфейс артефакта."
+L["ModuleName LegionRemix_HideWorldTier"] = "Скрыть значок сложности мира";
+L["ModuleDescription LegionRemix_HideWorldTier"] = "Скрыть значок Героического мира на мини-карте.";
+L["Artifact Weapon"] = "Артефактное оружие"
+L["Artifact Ability"] = "Способность артефакта"
+L["Artifact Traits"] = "Черты артефакта";
+L["Earn X To Upgrade Y Format"] = "Заработайте еще |cffffffff%s|r %s для улучшения %s" --Example: Earn another 100 Infinite Power to upgrade Artifact Weapon
+L["Until Next Upgrade Format"] = "%s до следующего улучшения"
+L["New Trait Available"] = "Доступна новая черта"
+L["Rank Format"] = "Ранг %s"
+L["Rank Increased"] = "Ранг повышен"
+L["Infinite Knowledge Tooltip"] = "Вы можете получить Бесконечное знание, зарабатывая определенные достижения Legion Remix."
+L["Stat Bonuses"] = "Бонусы к характеристикам"
+L["Bonus Traits"] = "Бонусные черты:"
+L["Instruction Open Artifact UI"] = "ЛКМ для переключения интерфейса артефакта\nПКМ для отображения настроек"
+L["LegionRemix Widget Title"] = "Виджет Plumber"
+L["Trait Icon Mode"] = "Режим иконок черт:"
+L["Trait Icon Mode Hidden"] = "Не показывать"
+L["Trait Icon Mode Mini"] = "Показывать мини-иконки"
+L["Trait Icon Mode Replace"] = "Заменить иконки предметов"
+L["Error Drag Spell In Combat"] = "Вы не можете перетаскивать заклинание во время боя."
+L["Error Change Trait In Combat"] = "Вы не можете изменять черты во время боя."
+L["Amount Required To Unlock Format"] = "%s для разблокировки" --Earn another x amount to unlock (something)
+L["Soon To Unlock"] = "Скоро будет разблокировано"
+L["You Can Unlock Title"] = "Вы можете разблокировать";
+L["Artifact Ability Auto Unlock Tooltip"] = "Эта черта будет автоматически разблокирована, как только у вас будет достаточно Бесконечной силы."
+L["Require More Bag Slot Alert"] = "Вам нужно освободить место в сумках перед выполнением этого действия"
+L["Spell Not Known"] = SPELL_FAILED_NOT_KNOWN or "Заклинание не изучено"
+L["Fully Upgraded"] = AZERITE_EMPOWERED_ITEM_FULLY_UPGRADED or "Полностью улучшен";
+L["Unlock Level Requirement Format"] = "Достигните %d уровня, чтобы разблокировать";
+L["Auto Learn Traits"] = "Авто обучение чертам";
+L["Auto Learn Traits Tooltip"] = "Автоматически улучшайте характеристики артефакта, когда у вас достаточно Бесконечной силы.";
+L["Infinite Power Yield Format"] = "Показывает |cffffffff%s|r Силу на вашем текущем уровне Знаний.";
+L["Infinite Knowledge Bonus Format"] = "Текущий бонус: |cffffffff%s|r";
+L["Infinite Knowledge Bonus Next Format"] = "Следующий Ранг: %s";
+
+
+--ItemUpgradeUI
+L["ModuleName ItemUpgradeUI"] = "Улучшение предметов: Показывать панель персонажа";
+L["ModuleDescription ItemUpgradeUI"] = "Автоматически открывать панель персонажа при взаимодействии с НПС для улучшения предметов.";
+
+
+--HolidayDungeon
+L["ModuleName HolidayDungeon"] = "Авто выбор праздничного подземелья";
+L["ModuleDescription HolidayDungeon"] = "Автоматически выбирает праздничные и вневременные подземелья при первом открытии Поиска Подземелий.";
+
+
+--PlayerPing
+L["ModuleName PlayerPing"] = "Значок карты: пинг игрока";
+L["ModuleDescription PlayerPing"] = "Выделите местоположение игрока с помощью эффекта пинга, когда вы:\n\n- На карте открытого мира.\n\n- Нажмите клавишу ALT.\n\n- Нажмите кнопку Развернуть.\n\n|cffd4641cПо умолчанию WoW показывает пинг игрока только при смене карты.|r";
+
+
+--StaticPopup_Confirm
+L["ModuleName StaticPopup_Confirm"] = "Оповещение о невозвратной покупке";
+L["ModuleDescription StaticPopup_Confirm"] = "Настройте диалоговое окно подтверждения, которое появляется при покупке невозвратного товара, добавив кратковременную блокировку кнопки \'Да\' и выделив ключевые слова красным цветом.\n\nЭтот модуль также вдвое сокращает задержку преобразования набора классов.";
+
+
 --Loot UI
 L["ModuleName LootUI"] = HUD_EDIT_MODE_LOOT_FRAME_LABEL or "Окно добычи";
 L["ModuleDescription LootUI"] = "Заменить стандартное окно добычи и предоставить некоторые дополнительные функции:\n\n- Быстрый сбор предметов.\n\n- Исправлена ​​ошибка сбоя автоматического сбора добычи.\n\n- Показывать кнопку взять все при ручном сборе.";
@@ -373,6 +489,11 @@ L["LootUI Option Custom Quality Color Tooltip"] = "Используйте цве
 L["LootUI Option Grow Direction"] = "Рост вверх";
 L["LootUI Option Grow Direction Tooltip 1"] = "Когда включено: нижний левый угол окна остается неподвижным, а новые уведомления будут появляться над старыми.";
 L["LootUI Option Grow Direction Tooltip 2"] = "Когда отключено: верхний левый угол окна остается неподвижным, а новые уведомления будут появляться под старыми.";
+L["Junk Items"] = "Мусорные предметы";
+L["LootUI Option Combine Items"] = "Объединять похожие предметы";
+L["LootUI Option Combine Items Tooltip"] = "Отображать похожие предметы в одной строке. Поддерживаемые категории:\n\n- Мусорные предметы\n- Осколки времени (Legion Remix)";
+L["LootUI Option Low Frame Strata"] = "Отправить на задний план";
+L["LootUI Option Low Frame Strata Tooltip"] = "В режиме уведомления о добыче поместите окно добычи за другим элементом пользовательского интерфейса.\n\nЭта опция не влияет на режим ручной добычи.";
 
 
 --Quick Slot For Third-party Dev
@@ -412,7 +533,7 @@ L["Drawer Option Update Frequently Tooltip"] = "Попробуйте обнов�
 
 
 --New Expansion Landing Page
-L["ModuleName NewExpansionLandingPage"] = "Резюме расширения";
+L["ModuleName NewExpansionLandingPage"] = "Резюме дополнения";
 L["ModuleDescription NewExpansionLandingPage"] = "Интерфейс, который отображает фракции, еженедельные мероприятия и рейдовые кд. Вы можете открыть его:\n\n- Нажав на кнопку Обзор Каз Алгара на мини-карте..\n\n- Установить горячую клавишу в настройках игры - Сочетания клавиш.";
 L["Reward Available"] = "Доступная награда";
 L["Paragon Reward Available"] = "Доступна награда Парагона";
@@ -436,7 +557,7 @@ L["Bountiful Delves Rep Tooltip"] = "Открытие Щедрого ларца 
 L["Warband Weekly Reward Tooltip"] = "Ваш Боевой Отряд может получить эту награду только раз в неделю.";
 L["Completed"] = CRITERIA_COMPLETED or "Завершено";
 L["Filter Hide Completed Format"] = "Скрыть завершенные (%d)";
-L["Weeky Reset Format"] = "Еженедельный сброс: %s";
+L["Weekly Reset Format"] = "Еженедельный сброс: %s";
 L["Daily Reset Format"] = "Ежедневный сброс: %s";
 L["Ready To Turn In Tooltip"] = "Готов к сдаче.";
 L["Trackers"] = "Отслеживание";
@@ -470,6 +591,17 @@ L["Delete"] = DELETE or "Удалить";
 L["Visit Quest Hub To Log Quests"] = "Посетите место взятия заданий и пообщайтесь с теми, кто выдает задания, чтобы взять сегодняшние задания."
 L["Quest Hub Instruction Celestials"] = "Посетите интенданта Небожителей в Вечноцветущем доле, чтобы узнать, какой храм нуждается в вашей помощи."
 L["Unavailable Klaxxi Paragons"] = "Недоступные Идеалы Клакси:";
+L["Weekly Coffer Key Tooltip"] = "Первые четыре еженедельных сундука, которые вы зарабатываете каждую неделю, содержат Отреставрированный ключ от сундука.";
+L["Weekly Coffer Key Shards Tooltip"] = "Первые четыре еженедельных сундука, которые вы зарабатываете каждую неделю, содержат осколки ключа от сундука.";
+L["Weekly Cap"] = "Еженедельный лимит";
+L["Weekly Cap Reached"] = "Достигнут недельный лимит.";
+L["Instruction Right Click To Use"] = "<ПКМ, чтобы использовать>";
+L["Join Queue"] = WOW_LABS_JOIN_QUEUE or "Присоединиться к очереди";
+L["In Queue"] = BATTLEFIELD_QUEUE_STATUS or "В очереди";
+L["Click To Switch"] = "Нажмите, чтобы переключиться на |cffffffff%s|r";
+L["Click To Queue"] = "Нажмите, чтобы встать в очередь в |cffffffff%s|r";
+L["Click to Open Format"] = "Нажмите, чтобы открыть %s";
+L["List Is Empty"] = "Список пуст.";
 
 
 --Generic
@@ -479,6 +611,7 @@ L["Reposition Button Vertical"] = "Перемещение по вертикал�
 L["Reposition Button Tooltip"] = "Щелкните ЛКМ и перетащите, чтобы переместить окно.";
 L["Font Size"] = FONT_SIZE or "Размер шрифта";
 L["Reset To Default Position"] = HUD_EDIT_MODE_RESET_POSITION or "Сброс в положение по умолчанию";
+L["Icon Size"] = "Размер иконки";
 L["Renown Level Label"] = "Известность ";  --There is a space
 L["Paragon Reputation"] = "Парагон";
 L["Level Maxed"] = "(Максимально)";   --Reached max level
@@ -492,8 +625,19 @@ L["ModuleName EnableNewByDefault"] = "Всегда включайте новые
 L["ModuleDescription EnableNewByDefault"] = "Всегда включайте новые добавленные функции.\n\n*При включении нового модуля таким образом вы увидите уведомление в окне чата.";
 L["New Feature Auto Enabled Format"] = "Новый модуль %s был включен.";
 L["Click To See Details"] = "Нажмите, чтобы увидеть подробности";
+L["Click To Show Settings"] = "Нажмите, чтобы переключить настройки.";
 
 
+--WIP Merchant UI
+L["ItemType Consumables"] = AUCTION_CATEGORY_CONSUMABLES or "Материалы";
+L["ItemType Weapons"] = AUCTION_CATEGORY_WEAPONS or "Оружие";
+L["ItemType Gems"] = AUCTION_CATEGORY_GEMS or "Камни";
+L["ItemType Armor Generic"] = AUCTION_SUBCATEGORY_PROFESSION_ACCESSORIES or "Аксессуары";  --Trinkets, Rings, Necks
+L["ItemType Mounts"] = MOUNTS or "Маунты";
+L["ItemType Pets"] = PETS or "Питомцы";
+L["ItemType Toys"] = "Игрушки";
+L["ItemType TransmogSet"] = PERKS_VENDOR_CATEGORY_TRANSMOG_SET or "Набор трансмогрификации";
+L["ItemType Transmog"] = "Трансмогрификация";
 
 
 -- !! Do NOT translate the following entries
@@ -514,6 +658,15 @@ L["Delve Chest 1 Rare"] = "Богатый сундук";   --We'll use the GameO
 L["Season Maximum Colon"] = "Максимум за сезон:";
 L["Item Changed"] = "в предмет";   --CHANGED_OWN_ITEM
 L["Completed CHETT List"] = "Заполненный список КРОТ";
+L["Devourer Attack"] = "Атака Пожирателей";
+L["Restored Coffer Key"] = "Отреставрированный ключ от сундука";
+L["Coffer Key Shard"] = "Осколок ключа от сундука";
+L["Epoch Mementos"] = "Сокровище эпох";
+L["Timeless Scrolls"] = "Вневременный свиток"; --item: 217605
+
+L["CONFIRM_PURCHASE_NONREFUNDABLE_ITEM"] = "Вы уверены что хотите обменять %s на данный предмет?\n\n|cffff2020Возврат будет невозможен.|r\n %s";
+
+L["CONFIRM_PURCHASE_NONREFUNDABLE_ITEM"] = "Вы уверены, что хотите обменять %s на следующий товар?\n\n|cffff2020Ваша покупка не подлежит возврату.|r\n %s";  --Base: CONFIRM_PURCHASE_NONREFUNDABLE_ITEM Change the warning's color and added a new line.
 
 
 --Map Pin Filter Name (name should be plural)
@@ -535,3 +688,5 @@ L["Upgrade Track 3"] = "Ветеран";
 L["Upgrade Track 4"] = "Защитник";
 L["Upgrade Track 5"] = "Герой";
 L["Upgrade Track 6"] = "Легенда";
+
+L["Match Pattern Transmog Set Partially Known"] = "^Содержит (%d+) ";   --TRANSMOG_SET_PARTIALLY_KNOWN_CLASS

@@ -15,6 +15,14 @@ local GAP_H = 2;
 local GAP_V = 8;
 
 
+local function ShowGreatVaultUI()
+    if API.CheckAndDisplayErrorIfInCombat() then
+        return
+    end
+    WeeklyRewards_ShowUI();
+end
+
+
 local GreatVaultButtonMixin = {};
 do
     function GreatVaultButtonMixin:SetUnlockedState()
@@ -73,9 +81,7 @@ do
     end
 
     function GreatVaultButtonMixin:OnClick()
-        if not InCombatLockdown() then
-            WeeklyRewards_ShowUI();
-        end
+        ShowGreatVaultUI();
     end
 
     function GreatVaultButtonMixin:CanShowPreviewItemTooltip()
@@ -136,7 +142,7 @@ do
         local button;
         local n = 0;
 
-        for _, type in ipairs(Layout) do
+        for row, type in ipairs(Layout) do
             activities = C_WeeklyRewards.GetActivities(type);
             if activities then
                 table.sort(activities, SortFunc_Index);
@@ -144,8 +150,15 @@ do
                     n = n + 1;
                     activityInfo = activities[i];
                     if activityInfo then
-                        itemLink, upgradeItemLink = C_WeeklyRewards.GetExampleRewardItemHyperlinks(activityInfo.id);
-                        itemLevel, upgradeItemLevel = nil, nil;
+                        itemLevel, upgradeItemLevel, itemLink = nil, nil, nil;
+
+                        if row == 3 then
+                            itemLevel = API.GetDelvesGreatVaultItemLevel(activityInfo.level);
+                        end
+
+                        if not itemLevel then
+                            itemLink, upgradeItemLink = C_WeeklyRewards.GetExampleRewardItemHyperlinks(activityInfo.id);
+                        end
 
                         if itemLink then
                             --itemLink is "" when the reward is not earned
@@ -187,7 +200,7 @@ do
 
     function GreatVaultFrameMixin:OnUpdate(elapsed)
         self.t = self.t + elapsed;
-        if self.t > 0.2 then
+        if self.t > 0.5 then
             self.t = nil;
             self:SetScript("OnUpdate", nil);
             self:Refresh();
@@ -212,6 +225,7 @@ do
     function GreatVaultFrameMixin:OnShow()
         API.RegisterFrameForEvents(self, DynamicEvents);
         self:Refresh();
+        self:RequestFullUpdate();
     end
 
     function GreatVaultFrameMixin:OnEvent(event, ...)
@@ -279,17 +293,21 @@ function LandingPageUtil.CreateGreatVaultFrame(parent)
     };
 
     local function ShowTooltip(self)
-        BlizzardMixin.OnEnter(self);
         local tooltip = GameTooltip;
+
+        if self.info.type == Enum.WeeklyRewardChestThresholdType.World then
+            tooltip:SetOwner(self, "ANCHOR_RIGHT", 0, 0);
+            API.DisplayDelvesGreatVaultTooltip(self, tooltip, self.col, self.info.level, self.info.id, self.progressDelta);
+            if API.AddRecentDelvesRecordsToTooltip(tooltip, self.info.threshold) then
+                tooltip:Show();
+            end
+        else
+            BlizzardMixin.OnEnter(self);
+        end
+
         if tooltip:IsShown() and tooltip:GetOwner() == self then
             tooltip:ClearAllPoints();
             tooltip:SetPoint("BOTTOMLEFT", self, "TOPRIGHT", -4, -4);
-
-            if self.info.type == Enum.WeeklyRewardChestThresholdType.World then
-                if API.AddRecentDelvesRecordsToTooltip(tooltip, self.info.threshold) then
-                    tooltip:Show();
-                end
-            end
         end
     end
 
@@ -299,6 +317,7 @@ function LandingPageUtil.CreateGreatVaultFrame(parent)
             local button = CreateButton(ButtonContainer);
             buttons[n] = button;
             button.id = n;
+            button.col = col;
             button:SetPoint("TOPLEFT", f, "TOPLEFT", offsetX, -offsetY);
             offsetX = offsetX + BUTTON_WIDTH + GAP_H;
             if BlizzardMixin then
@@ -334,7 +353,7 @@ function LandingPageUtil.CreateGreatVaultFrame(parent)
 
 
     --Notify player of unclaimed chest
-    local ClaimChestAlert = CreateFrame("Frame", nil, f);
+    local ClaimChestAlert = CreateFrame("Button", nil, f);
     f.ClaimChestAlert = ClaimChestAlert;
     ClaimChestAlert:Hide();
     ClaimChestAlert:SetAllPoints(true);
@@ -357,6 +376,7 @@ function LandingPageUtil.CreateGreatVaultFrame(parent)
     ag:SetLooping("REPEAT");
     ClaimChestAlert.AnimSwirl = ag;
 
+
     local AlertText = ClaimChestAlert:CreateFontString(nil, "OVERLAY", "GameFontNormal");
     ClaimChestAlert.AlertText = AlertText;
     AlertText:SetWidth(208);
@@ -376,6 +396,10 @@ function LandingPageUtil.CreateGreatVaultFrame(parent)
 
     ClaimChestAlert:SetScript("OnLeave", function()
         GameTooltip:Hide();
+    end);
+
+    ClaimChestAlert:SetScript("OnClick", function()
+        ShowGreatVaultUI();
     end);
 
     return f, height

@@ -34,7 +34,7 @@ do  --TabButtonMixin
                 tooltip:SetOwner(self, "ANCHOR_RIGHT", -8, -4);
                 for i, line in ipairs(tooltipLines) do
                     if i == 1 then
-                        tooltip:SetText(line, 1, 1, 1, true);
+                        tooltip:SetText(line, 1, 1, 1, 1, true);
                     else
                         tooltip:AddLine(line, 1, 0.82, 0, true);
                     end
@@ -149,29 +149,40 @@ do
         Divider:SetPoint("LEFT", self.RightSection.Header, "BOTTOMLEFT", 32, 0);
         Divider:SetPoint("RIGHT", self.RightSection.Header, "BOTTOMRIGHT", -32, 0);
 
-        self:InitTabButtons();
-        self:InitLeftSection();
+        --self:InitLeftSection();
 
         table.insert(UISpecialFrames, self:GetName());
-
-        LandingPageUtil.SelectTabByIndex(1);
 
         self:SetScript("OnShow", self.OnShow);
         self:SetScript("OnHide", self.OnHide);
 
 
         --Events triggerd in ModuleRegistry.lua
-        CallbackRegistry:Register("ParagonRewardReady", self.RequestUpdateTabButtons, self);
-        CallbackRegistry:Register("ParagonRewardQuestTurnedIn", self.RequestUpdateTabButtons, self);
+        CallbackRegistry:Register("LandingPage.UpdateNotification", self.UpdateNotification, self);
     end
 
-    addon.CallbackRegistry:Register("DBLoaded", function(db)
-        local tabKey = addon.GetDBValue("LandingPage_DefaultTab");
-        LandingPageUtil.SelectTab(tabKey);
+    addon.CallbackRegistry:Register("TimerunningSeason", function(seasonID)
+        if seasonID == 2 then
+            MainFrame.isLegionRemix = true;
+        end
     end);
 
 
     function PlumberExpansionLandingPageMixin:OnShow()
+        if self.InitLeftSection then
+            self:InitLeftSection();
+        end
+
+        if self.InitTabButtons then
+            self:InitTabButtons();
+        end
+
+        if not self.loaded then
+            self.loaded = true;
+            local tabKey = addon.GetDBValue("LandingPage_DefaultTab");
+            LandingPageUtil.SelectTab(tabKey);
+        end
+
         self:UpdateTabs();    --The selected tab will be created here
         LandingPageUtil.PlayUISound("LandingPageOpen");
         if not self:IsUserPlaced() then
@@ -185,6 +196,8 @@ do
     end
 
     function PlumberExpansionLandingPageMixin:InitTabButtons()
+        self.InitTabButtons = nil;
+
         if not self.TabButtons then
             self.TabButtons = {};
         end
@@ -213,6 +226,14 @@ do
         end
 
         self:UpdateTabButtons();
+
+
+        local function Header_OnMouseWheel(_, delta)
+            --Scroll up will go the left tab
+            LandingPageUtil.SelectTabByDelta(-delta);
+            self:UpdateTabs();
+        end
+        buttonContainer:SetScript("OnMouseWheel", Header_OnMouseWheel);
     end
 
     function PlumberExpansionLandingPageMixin:UpdateTabButtons()
@@ -226,6 +247,18 @@ do
     function PlumberExpansionLandingPageMixin:RequestUpdateTabButtons()
         if self.TabButtons and self:IsVisible() then
             self:UpdateTabButtons();
+        end
+    end
+
+    function PlumberExpansionLandingPageMixin:UpdateNotification(tabKey)
+        if tabKey then
+            for _, button in ipairs(self.TabButtons) do
+                if button.tabKey == tabKey then
+                    button:UpdateNotification();
+                end
+            end
+        else
+            self:RequestUpdateTabButtons();
         end
     end
 
@@ -249,11 +282,23 @@ do
     end
 
     function PlumberExpansionLandingPageMixin:InitLeftSection()
+        self.InitLeftSection = nil;
+
         local categories = {
             {name = L["Great Vault"], frameGetter = LandingPageUtil.CreateGreatVaultFrame, validate = API.IsGreatVaultFeatureAvailable},
             {name = L["Item Upgrade"], frameGetter = LandingPageUtil.CreateItemUpgradeFrame},
             {name = L["Resources"], frameGetter = LandingPageUtil.CreateCurrencyList},
         };
+
+        if self.isLegionRemix then
+            table.remove(categories, 1);
+            table.remove(categories, 1);
+
+            table.insert(categories, 1, {
+                name = L["Artifact Traits"],
+                frameGetter = LandingPageUtil.LegionRemixCreateNextTraitFrame,
+            });
+        end
 
         local numCategories = #categories;
 
@@ -278,6 +323,9 @@ do
                         frame:SetPoint("BOTTOM", relativeTo, "BOTTOM", 0, 16);
                     end
                     frame:Refresh();
+                    if frame.OnShow and frame:IsVisible() then
+                        frame:OnShow();
+                    end
                 end
                 offsetY = offsetY + paragraphGap;
             end
