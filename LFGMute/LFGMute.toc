@@ -1,0 +1,8 @@
+## Interface: 120000
+## Version: 12.1
+## Title: LFGMute
+## Notes: Mute the annoying pinging sound
+## Author: Hemario
+## SavedVariables: LFGMuteDB
+embeds.xml
+LFGMute.lua

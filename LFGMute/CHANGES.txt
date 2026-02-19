@@ -1,0 +1,10 @@
+lightweight tag c760b9dc6772e0738a6e458cfabf78909d392045 11.2.0.1
+Author:	Kevin De Smet <kevin.de.smet@outlook.be>
+Date:	Fri Aug 8 03:23:19 2025 +0200
+
+commit c760b9dc6772e0738a6e458cfabf78909d392045
+Author: Kevin De Smet <kevin.de.smet@outlook.be>
+Date:   Fri Aug 8 03:23:19 2025 +0200
+
+    Update for WoW 11.2.0
+
