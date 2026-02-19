@@ -91,7 +91,8 @@ end
 function BWQ:GetArtifactPowerValue(itemId)
 	local millionSearchLocalized = { enUS = "million", enGB = "million", zhCN = "万", frFR = "million", deDE = "Million", esES = "mill", itIT = "milion", koKR = "만", esMX = "mill", ptBR = "milh", ruRU = "млн", zhTW = "萬", }
 	local billionSearchLocalized = { enUS = "billion", enGB = "billion", zhCN = "亿", frFR = "milliard", deDE = "Milliarde", esES = "mil millones", itIT = "miliard", koKR = "억", esMX = "mil millones", ptBR = "bilh", ruRU = "млрд", zhTW = "億", }
-	local _, itemLink = GetItemInfo(itemId)
+	local itemInfo = C_Item.GetItemInfo(itemId)
+	local itemLink = itemInfo and itemInfo.itemLink
 	BWQ.ScanTooltip:SetOwner(BWQ, "ANCHOR_NONE")
 	BWQ.ScanTooltip:SetHyperlink(itemLink)
 	local numLines = BWQ.ScanTooltip:NumLines()
@@ -199,7 +200,7 @@ local ShowWorldQuestPOITooltip = function(button,poi)
 end
 
 function BWQ:QueryZoneQuestCoordinates(mapId)
-	local quests = C_TaskQuest.GetQuestsForPlayerByMapID(mapId)
+	local quests = C_TaskQuest.GetQuestsOnMap(mapId)
 	if quests then
 		for _, v in next, quests do
 			local quest = BWQ.MAP_ZONES[BWQ.expansion][mapId].quests[v.questID] 
@@ -257,7 +258,7 @@ local DebugRetrieveWQ = false
 local RetrieveWorldQuests = function(mapId)
 	local numQuests = 0
 	local currentTime = GetTime()
-	local questList = C_TaskQuest.GetQuestsForPlayerByMapID(mapId)
+	local questList = C_TaskQuest.GetQuestsOnMap(mapId)
 	BWQ.warmodeEnabled = C_PvP.IsWarModeDesired()
 
 	if questList then
@@ -298,7 +299,7 @@ local RetrieveWorldQuests = function(mapId)
 					quest.hide = true
 					quest.sort = 0
 
-					-- C_TaskQuest.GetQuestsForPlayerByMapID fields
+					-- C_TaskQuest.GetQuestsOnMap fields
 					quest.questID = questID
 					quest.numObjectives = q.numObjectives
 					quest.xFlight = q.x
@@ -335,7 +336,16 @@ local RetrieveWorldQuests = function(mapId)
 							quest.reward.itemName = itemName
 							--print(string.format("[BWQ] Quest %s - %s - %s - %s - %s", quest.questID, quest.title, itemName, itemId, quantity))    -- for debugging
 							
-							local _, _, _, _, _, _, _, _, equipSlot, _, _, classId, subClassId = GetItemInfo(quest.reward.itemId)
+							local equipSlot, classId, subClassId
+							local itemInfo = C_Item.GetItemInfo(quest.reward.itemId)
+							if not itemInfo then
+								C_Item.RequestLoadItemDataByID(quest.reward.itemId)
+								return  -- wait for item data event
+							end
+							equipSlot  = itemInfo.itemEquipLoc
+							classId    = itemInfo.classID
+							subClassId = itemInfo.subclassID
+
 							if classId == 7 then
 								quest.sort = quest.sort > CONSTANTS.SORT_ORDER.PROFESSION and quest.sort or CONSTANTS.SORT_ORDER.PROFESSION
 								if quest.reward.itemId == 124124 then
@@ -568,6 +578,10 @@ local RetrieveWorldQuests = function(mapId)
 									rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.WEATHERED_UNDERMINE_CREST
 									quest.reward.WeatheredUndermineCrestAmount = currency.amount
 									if BWQ:C("showWeatheredUndermineCrest") then quest.hide = false end
+								elseif currencyId == 3319 then -- Twilight's Blade Insignia
+									rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.TWILIGHTS_BLADE_INSIGNIA
+									quest.reward.TwilightsBladeInsigniaAmount = currency.amount
+									if BWQ:C("showTwilightsBladeInsignia") then quest.hide = false end
 								elseif currencyId == 3108 then -- Carved Undermine Crest
 									rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.CARVED_UNDERMINE_CREST
 									quest.reward.CarvedUndermineCrestAmount = currency.amount
@@ -820,6 +834,8 @@ local RetrieveWorldQuests = function(mapId)
 									BWQ.totalBronzeCelebrationToken = BWQ.totalBronzeCelebrationToken + quest.reward.BronzeCelebrationTokenAmount
 								elseif rtype == CONSTANTS.REWARD_TYPES.WEATHERED_UNDERMINE_CREST then
 									BWQ.totalWeatheredUndermineCrest = BWQ.totalWeatheredUndermineCrest + quest.reward.WeatheredUndermineCrestAmount
+								elseif rtype == CONSTANTS.REWARD_TYPES.TWILIGHTS_BLADE_INSIGNIA then
+									BWQ.totalTwilightsBladeInsignia = BWQ.totalTwilightsBladeInsignia + quest.reward.TwilightsBladeInsigniaAmount
 								elseif rtype == CONSTANTS.REWARD_TYPES.CARVED_UNDERMINE_CREST then
 									BWQ.totalCarvedUndermineCrest = BWQ.totalCarvedUndermineCrest + quest.reward.CarvedUndermineCrestAmount
 								elseif rtype == CONSTANTS.REWARD_TYPES.THE_CARTELS_OF_UNDERMINE then
@@ -1025,6 +1041,7 @@ function BWQ:UpdateQuestData()
 	BWQ.totalPolishedPetCharms, BWQ.totalCouncilofDornogal, BWQ.totalTheWeaver, BWQ.totalTheGeneral, BWQ.totalTheVizier = 0, 0, 0, 0, 0
 	BWQ.totalXP, BWQ.totalBronzeCelebrationToken, BWQ.totalWeatheredUndermineCrest, BWQ.totalCarvedUndermineCrest, BWQ.totalTheCartelsOfUndermine = 0, 0, 0, 0, 0
 	BWQ.totalTheBilgewaterCartel, BWQ.totalTheBlackwaterCartel, BWQ.totalTheSteamwheedleCartel, BWQ.totalTheVentureCompany, BWQ.totalWeatheredEtherealCrest = 0, 0, 0, 0, 0
+	BWQ.totalTwilightsBladeInsignia = 0
 
 	for mapId in next, BWQ.MAP_ZONES[BWQ.expansion] do
 		RetrieveWorldQuests(mapId)
@@ -1634,6 +1651,7 @@ function BWQ:UpdateBlock()
 		if BWQ:C("brokerShowTheGeneral") 			and BWQ.totalTheGeneral > 0				then brokerString = string.format("%s|TInterface\\Icons\\ui_notoriety_thegeneral:16:16|t %d  ", brokerString, BWQ.totalTheGeneral) end
 		if BWQ:C("brokerShowTheVizier") 			and BWQ.totalTheVizier > 0				then brokerString = string.format("%s|TInterface\\Icons\\ui_notoriety_thevizier:16:16|t %d  ", brokerString, BWQ.totalTheVizier) end
 		if BWQ:C("brokerShowWeatheredUndermineCrest") and BWQ.totalWeatheredUndermineCrest > 0	then brokerString = string.format("%s|TInterface\\Icons\\inv_crestupgrade_undermine_weathered:16:16|t %d  ", brokerString, BWQ.totalWeatheredUndermineCrest) end
+		if BWQ:C("brokerShowTwilightsBladeInsignia") and BWQ.totalTwilightsBladeInsignia > 0	then brokerString = string.format("%s|TInterface\\Icons\\inv12_twilight_-blade_cultist_insignia:16:16|t %d  ", brokerString, BWQ.totalTwilightsBladeInsignia) end
 		if BWQ:C("brokerShowCarvedUndermineCrest") 	and BWQ.totalCarvedUndermineCrest > 0	then brokerString = string.format("%s|TInterface\\Icons\\inv_crestupgrade_undermine_carved:16:16|t %d  ", brokerString, BWQ.totalCarvedUndermineCrest) end
 		if BWQ:C("brokerShowTheCartelsOfUndermine") and BWQ.totalTheCartelsOfUndermine > 0	then brokerString = string.format("%s|TInterface\\Icons\\ui_majorfactions_rocket:16:16|t %d  ", brokerString, BWQ.totalTheCartelsOfUndermine) end
 		if BWQ:C("brokerShowTheBilgewaterCartel") 	and BWQ.totalTheBilgewaterCartel > 0	then brokerString = string.format("%s|TInterface\\Icons\\inv_1115_reputationcurrencies_bilgewater:16:16|t %d  ", brokerString, BWQ.totalTheBilgewaterCartel) end
@@ -1672,7 +1690,11 @@ end
 
 function BWQ:AttachToBlock(anchor)
 	if not BWQ:C("attachToWorldMap") or (BWQ:C("attachToWorldMap") and not WorldMapFrame:IsShown()) then
-		CloseDropDownMenus()
+		-- Close any open context menus (modern Menu API)
+		local openMenu = Menu and Menu.GetOpenMenu and Menu.GetOpenMenu()
+		if openMenu then
+			openMenu:Close()
+		end
 
 		BWQ.blockYPos = select(2, anchor:GetCenter())
 		BWQ.showDownwards = BWQ.blockYPos > UIParent:GetHeight() / 2

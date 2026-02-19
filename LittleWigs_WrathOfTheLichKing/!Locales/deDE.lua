@@ -41,6 +41,14 @@ if L then
 	L.victory = "Sieg"
 end
 
+-- Pit of Saron
+
+L = BigWigs:NewBossLocale("Pit of Saron Trash", "deDE")
+if L then
+	L.quarry_camps_liberated = "Steinbruchlager befreit"
+	L.quarry_camps_liberated_desc = "Zeigt einen Alarm, wenn ein Steinbruchlager befreit wurde."
+end
+
 -- The Culling of Stratholme
 
 L = BigWigs:NewBossLocale("The Culling of Stratholme Trash", "deDE")

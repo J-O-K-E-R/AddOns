@@ -19,7 +19,6 @@ local UpdateUIPanelPositions = UpdateUIPanelPositions;
 local MouseIsOver = MouseIsOver;
 local xpcall = xpcall;
 local CallErrorHandler = CallErrorHandler;
-local Settings_OpenToCategory = Settings and Settings.OpenToCategory or InterfaceOptionsFrame_OpenToCategory;
 local strsplit = strsplit;
 local GetBuildInfo = GetBuildInfo;
 local tinsert = tinsert;
@@ -51,6 +50,8 @@ BlizzMove.MoveHandles = {};
 BlizzMove.CombatLockdownQueue = {};
 --- @type table<Frame, true>
 BlizzMove.CurrentMouseoverFrames = {};
+--- @type table<string, number> # [frameName] = scale
+BlizzMove.SessionScales = {}
 
 local MAX_SCALE = 2.5;
 local MIN_SCALE = 0.3; -- steps are in 0.1 increments, and we'd like to stay above 0.25
@@ -135,6 +136,7 @@ do
                 or key == "SilenceCompatabilityWarnings"
                 or key == "IgnoreSavedPositionWhenMaximized"
                 or key == "ForcePosition"
+                or key == "ForceUseSecureMoveHandle"
             then
                 if type(value) ~= "boolean" then validationError = true; end
             elseif key == "FrameReference" then
@@ -452,6 +454,7 @@ do
         return nil;
     end
 
+    --- @return nil|{ [1]: { anchorPoint: FramePoint, relativeFrame: "UIParent", relativePoint: FramePoint, offX: number, offY: number } }
     function GetAbsoluteFramePosition(frame)
         -- inspired by LibWindow-1.1 (https://www.wowace.com/projects/libwindow-1-1)
 
@@ -598,7 +601,7 @@ do
     end
 
     function SetFrameScale(frame, frameScale)
-        if InCombatLockdown() and frame:IsProtected() then return false; end
+        if InCombatLockdown() and frame:IsProtected() then return true; end
         local frameData = BlizzMove.FrameData[frame];
         local oldScale = GetFrameScale(frame);
         local newScale = frameScale;
@@ -613,6 +616,7 @@ do
         end
 
         BlizzMove.DB.scales[frameData.storage.frameName] = newScale;
+        BlizzMove.SessionScales[frameData.storage.frameName] = newScale;
         frame:SetScale(newScale);
         BlizzMove:DebugPrint("SetFrameScale:", frameData.storage.frameName, string__format("%.2f %.2f %.2f", frameScale, frame:GetScale(), GetFrameScale(frame)));
 
@@ -663,7 +667,7 @@ local StartMoving;
 local StopMoving;
 do
     local function setNil(table, key)
-        TextureLoadingGroupMixin.RemoveTexture({ textures = table, }, key);
+        TextureLoadingGroupMixin.RemoveTexture({ textures = table }, key);
     end
     local function returnFalse() return false; end
 
@@ -857,8 +861,11 @@ do
 
         SetFrameParent(frame);
 
-        if BlizzMove.DB.saveScaleStrategy == 'permanent' and BlizzMove.DB.scales[BlizzMove:GetFrameName(frame)] then
-            SetFrameScale(frame, BlizzMove.DB.scales[BlizzMove:GetFrameName(frame)]);
+        local frameName = BlizzMove:GetFrameName(frame);
+        if BlizzMove.DB.saveScaleStrategy == 'permanent' and BlizzMove.DB.scales[frameName] then
+            SetFrameScale(frame, BlizzMove.DB.scales[frameName]);
+        elseif BlizzMove.SessionScales[frameName] then
+            SetFrameScale(frame, BlizzMove.SessionScales[frameName]);
         end
 
         if not skipAdditionalRunNextFrame then
@@ -922,7 +929,7 @@ do
         captureFrame:SetScript("OnEvent", function() self:CheckMouseWheelCapture(); end);
         captureFrame:RegisterEvent("MODIFIER_STATE_CHANGED")
         captureFrame:SetScript("OnMouseWheel", function(_, delta)
-            for i, frame in ipairs(GetMouseFoci()) do
+            for _, frame in ipairs(GetMouseFoci()) do
                 --- @type BlizzMoveAPI_FrameData?
                 local frameData = self.FrameData[frame];
 
@@ -959,6 +966,7 @@ do
                 not shouldHandleMouseWheel
                 and (
                     frame:IsForbidden()
+                    or (frame.HasSecretValues and frame:HasSecretValues())
                     or (not self.MoveHandles[frame] and (frame:IsMouseWheelEnabled() or frame:IsMouseClickEnabled()))
                 )
             then
@@ -1040,8 +1048,11 @@ do
             return;
         end
 
-        if BlizzMove.DB.scales[BlizzMove:GetFrameName(frame)] then
-            SetFrameScale(frame, BlizzMove.DB.scales[BlizzMove:GetFrameName(frame)]);
+        local frameName = BlizzMove:GetFrameName(frame);
+        if BlizzMove.DB.saveScaleStrategy == 'permanent' and BlizzMove.DB.scales[frameName] then
+            SetFrameScale(frame, BlizzMove.DB.scales[frameName]);
+        elseif BlizzMove.SessionScales[frameName] then
+            SetFrameScale(frame, BlizzMove.SessionScales[frameName]);
         end
     end
 end
@@ -1077,6 +1088,7 @@ do
         handle:SetAllPoints(frame);
         handle:SetFrameLevel(frame:GetFrameLevel() + 1);
         handle:SetPropagateMouseMotion(true);
+        handle:SetPropagateMouseClicks(true);
         handle.onDragStartCallback = function() return false end;
         handle:HookScript('OnMouseDown', OnMouseDown);
         handle:HookScript('OnMouseUp', OnMouseUp);
@@ -1135,7 +1147,7 @@ do
     local function MakeFrameMovable(frame, addOnName, frameName, frameData, frameParent)
         if not frame then return false; end
 
-        if InCombatLockdown() and frame:IsProtected() then return false; end
+        if InCombatLockdown() and (frameData.ForceUseSecureMoveHandle or frame:IsProtected()) then return false; end
 
         local clampFrame = false;
         if not frameParent or frameData.Detachable then
@@ -1165,7 +1177,7 @@ do
                     while rootFrameData.parentData do
                         rootFrameData = rootFrameData.parentData;
                     end
-                    if frame:IsProtected() or rootFrameData.storage.frame:IsProtected() then
+                    if frameData.ForceUseSecureMoveHandle or frame:IsProtected() or rootFrameData.storage.frame:IsProtected() then
                         MakeMoveHandles(frame, frameData);
                     else
                         frame:EnableMouse(true);
@@ -1205,7 +1217,7 @@ do
                 while rootFrameData.parentData do
                     rootFrameData = rootFrameData.parentData;
                 end
-                if frame:IsProtected() or rootFrameData.storage.frame:IsProtected() then
+                if frameData.ForceUseSecureMoveHandle or frame:IsProtected() or rootFrameData.storage.frame:IsProtected() then
                     MakeMoveHandles(frame, frameData);
                 else
                     frame:EnableMouse(true);
@@ -1580,7 +1592,7 @@ do
             return;
         end
 
-        Settings_OpenToCategory('BlizzMove');
+        self.Config:OpenConfig();
     end
 
     --- @type BlizzMoveDB
@@ -1645,18 +1657,48 @@ do
         end
         -- fix anchor family connection issues when opening PlayerChoiceFrame after moving it
         if addOnName == "Blizzard_PlayerChoice" and _G.PlayerChoiceFrame then
+            local function startStopMoving(frame)
+                if InCombatLockdown() and frame:IsProtected() then
+                    return;
+                end
+                local wasMovable = frame:IsMovable();
+                local userPlaced = frame:IsUserPlaced();
+
+                frame:SetMovable(true);
+                StartMoving(frame);
+                frame:SetUserPlaced(userPlaced);
+                StopMoving(frame);
+                frame:SetMovable(wasMovable);
+            end
+            local toggleButtons = {
+                [_G.TorghastPlayerChoiceToggleButton] = true,
+                [_G.CypherPlayerChoiceToggleButton] = true,
+                [_G.GenericPlayerChoiceToggleButton] = true,
+            };
             _G.PlayerChoiceFrame:HookScript("OnHide", function()
+                for toggleButton in pairs(toggleButtons) do
+                    startStopMoving(toggleButton);
+                end
                 if not InCombatLockdown() or not _G.PlayerChoiceFrame:IsProtected() then
                     _G.PlayerChoiceFrame:ClearAllPoints();
                 end
             end);
+            for toggleButton in pairs(toggleButtons) do
+                toggleButton:HookScript("OnHide", function()
+                    if not InCombatLockdown() or not toggleButton:IsProtected() then
+                        toggleButton:ClearAllPoints();
+                        toggleButton:SetPoint("TOP", _G.PlayerChoiceFrame, "BOTTOM", 0, 0);
+                    end
+                end);
+            end
         end
 
         -- fix anchor family connection issues when opening/closing the hero talents dialog
         if addOnName == "Blizzard_PlayerSpells" and _G.HeroTalentsSelectionDialog and _G.PlayerSpellsFrame then
-            local skipHook = false;
+            local skipHook = { general = false, showDialog = false };
             hooksecurefunc(TalentFrameUtil, "GetNormalizedSubTreeNodePosition", function(talentFrame)
-                if skipHook then return; end
+                local hook = debugstack(3):find("in function .ShowDialog.") and "showDialog" or "general";
+                if skipHook[hook] then return; end
                 if
                     (
                         debugstack(3):find("in function .UpdateContainerVisibility.")
@@ -1665,14 +1707,14 @@ do
                     )
                     and not (debugstack(3):find("in function .InstantiateTalentButton."))
                 then
-                    skipHook = true
+                    skipHook[hook] = true;
                     for talentButton in talentFrame:EnumerateAllTalentButtons() do
                         local nodeInfo = talentButton:GetNodeInfo();
                         if nodeInfo.subTreeID then
                             talentButton:ClearAllPoints();
                         end
                     end
-                    RunNextFrame(function() skipHook = false; end);
+                    RunNextFrame(function() skipHook[hook] = false; end);
                 end
             end);
         end

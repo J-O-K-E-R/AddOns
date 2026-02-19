@@ -10,13 +10,14 @@ PrettyReps.OptionsManager = {
         selectedFactionIndex = 0,
         enablePrettyReps = true,     -- Whether to use our custom frame vs default
         groupUnobtainable = true,
-        hideUnobtainable = false,    
-        displayGroupTotals = true,    
+        hideUnobtainable = false,
+        displayGroupTotals = true,
         displayTotalsAsPercentage = false,  -- New option
-        hideInactiveGroup = false,    
-        showOppositeFaction = true,   
-        hideParagonIcons = false,    
-        showParagonRewards = false,  
+        hideInactiveGroup = false,
+        showOppositeFaction = true,
+        useParagonBars = true,       -- Show paragon progress with blue bars
+        hideParagonIcons = true,     -- Hide paragon reward icons by default
+        showParagonRewards = true,   -- But show when reward is available
         hideGuildReputation = false,
     }
 }

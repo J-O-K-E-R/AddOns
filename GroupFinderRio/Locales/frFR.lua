@@ -7,121 +7,127 @@ if L then
 
 -- LocalisationData[""] =
 --[[Translation missing --]]
-L["AccessOptionsMessage"] = "Access the options via /gfio"
+L["AccessOptionsMessage"] = "AccessOptionsMessage"
 --[[Translation missing --]]
-L["addHighestDifficulty"] = "Add Highest Difficulty"
+L["addHighestDifficulty"] = "addHighestDifficulty"
 --[[Translation missing --]]
-L["addHighestDifficultyDescription"] = "Add the highest completed difficulty (Either keylevel or Raidprogress)"
+L["addHighestDifficultyDescription"] = "addHighestDifficultyDescription"
 --[[Translation missing --]]
-L["addonOptions"] = "Addon Options"
+L["addonOptions"] = "addonOptions"
 --[[Translation missing --]]
-L["addScoreToGroup"] = "Add highest Score to Group"
+L["addScoreToGroup"] = "addScoreToGroup"
 --[[Translation missing --]]
-L["addScoreToGroupDescription"] = "Add the highest Score of the GroupLeader to the Group View. (This can be both main and current character score)"
+L["addScoreToGroupDescription"] = "addScoreToGroupDescription"
 --[[Translation missing --]]
-L["applicantView"] = "Applicant View"
+L["applicantView"] = "applicantView"
 --[[Translation missing --]]
-L["Disable"] = "Disabled"
+L["debugMode"] = "debugMode"
 --[[Translation missing --]]
-L["disableSpecSelector"] = "Disable Spec Selector"
+L["debugModeDescription"] = "debugModeDescription"
 --[[Translation missing --]]
-L["disableSpecSelectorDescription"] = "Disable the Spec Selector in the Application view which can be used to prioritise specs in searching"
+L["debugModeWarning"] = "debugModeWarning"
 --[[Translation missing --]]
-L["enableSpecPriority"] = "Enable Spec Priority"
+L["Disable"] = "Disable"
 --[[Translation missing --]]
-L["fifteen"] = "15+"
+L["disableSpecSelector"] = "disableSpecSelector"
 --[[Translation missing --]]
-L["five"] = "5+"
+L["disableSpecSelectorDescription"] = "disableSpecSelectorDescription"
 --[[Translation missing --]]
-L["groupNameBeforeScore"] = "Group Name before Score"
+L["enableSpecPriority"] = "enableSpecPriority"
 --[[Translation missing --]]
-L["groupNameBeforeScoreDescription"] = "Show the Group Name before the Score of the GroupLeader instead of after"
+L["fifteen"] = "fifteen"
 --[[Translation missing --]]
-L["groupView"] = "Group View"
+L["five"] = "five"
 --[[Translation missing --]]
-L["highest"] = "Highest Keylevel"
+L["groupNameBeforeScore"] = "groupNameBeforeScore"
 --[[Translation missing --]]
-L["oneClickSignup"] = "One Click Signup"
+L["groupNameBeforeScoreDescription"] = "groupNameBeforeScoreDescription"
 --[[Translation missing --]]
-L["oneClickSignupDescription"] = "Sign up for a group with one click"
+L["groupView"] = "groupView"
 --[[Translation missing --]]
-L["OneClickSignupNotAvailable"] = "One Click Signup is not available with Premades Group Filter enabled please disable the option and use Premades Group Filters setting instead"
+L["highest"] = "highest"
 --[[Translation missing --]]
-L["resortGroupsConstantly"] = "Resort Groups Constantly"
+L["oneClickSignup"] = "oneClickSignup"
 --[[Translation missing --]]
-L["resortGroupsConstantlyDescription"] = "Resort the groups every 3 Seconds to remove groups that are no longer available and update score if data becomes available later."
+L["oneClickSignupDescription"] = "oneClickSignupDescription"
 --[[Translation missing --]]
-L["shortenActivityName"] = "Shorten Activity Name"
+L["OneClickSignupNotAvailable"] = "OneClickSignupNotAvailable"
 --[[Translation missing --]]
-L["shortenActivityNameDescription"] = "Shorten the Activity Name in the Group View"
+L["resortGroupsConstantly"] = "resortGroupsConstantly"
 --[[Translation missing --]]
-L["showCurrentScoreInGroup"] = "Show Current Score in Group"
+L["resortGroupsConstantlyDescription"] = "resortGroupsConstantlyDescription"
 --[[Translation missing --]]
-L["showCurrentScoreInGroupDescription"] = "Show the current Score of the GroupLeader in addition to the highest score (if different)"
+L["shortenActivityName"] = "shortenActivityName"
 --[[Translation missing --]]
-L["showInfoInActivityName"] = "Show Info in Activity Name"
+L["shortenActivityNameDescription"] = "shortenActivityNameDescription"
 --[[Translation missing --]]
-L["showInfoInActivityNameDescription"] = "Show information in the Activity Name in the Group View"
+L["showCurrentScoreInGroup"] = "showCurrentScoreInGroup"
+--[[Translation missing --]]
+L["showCurrentScoreInGroupDescription"] = "showCurrentScoreInGroupDescription"
+--[[Translation missing --]]
+L["showInfoInActivityName"] = "showInfoInActivityName"
+--[[Translation missing --]]
+L["showInfoInActivityNameDescription"] = "showInfoInActivityNameDescription"
 --[[Translation missing --]]
 L["showKeyLevel"] = "Show Key Level"
 --[[Translation missing --]]
-L["showKeyLevelApplicants"] = "Show Key Level"
+L["showKeyLevelApplicants"] = "showKeyLevelApplicants"
 --[[Translation missing --]]
-L["showKeyLevelApplicantsDescription"] = "Show the highest completed Key Level of the Applicant for the current Dungeon"
+L["showKeyLevelApplicantsDescription"] = "showKeyLevelApplicantsDescription"
 --[[Translation missing --]]
 L["showKeyLevelDescription"] = "Show the highest completed Key Level of the Applicant for the current Dungeon"
 --[[Translation missing --]]
-L["showKeyLevelLeader"] = "Show Key Level"
+L["showKeyLevelLeader"] = "showKeyLevelLeader"
 --[[Translation missing --]]
-L["showKeyLevelLeaderDescription"] = "Show the highest completed Key Level of the GroupLeader in the Group View"
+L["showKeyLevelLeaderDescription"] = "showKeyLevelLeaderDescription"
 --[[Translation missing --]]
-L["showLanguage"] = "Show Language"
+L["showLanguage"] = "showLanguage"
 --[[Translation missing --]]
-L["showLanguageDescription"] = "Show the Language of Applicants and the GroupLeader"
+L["showLanguageDescription"] = "showLanguageDescription"
 --[[Translation missing --]]
-L["showNote"] = "Show Note"
+L["showNote"] = "showNote"
 --[[Translation missing --]]
-L["showNoteDescription"] = "Show an icon if an Applicant has added a Note"
+L["showNoteDescription"] = "showNoteDescription"
 --[[Translation missing --]]
-L["showRaceIcon"] = "Show race Icon"
+L["showRaceIcon"] = "showRaceIcon"
 --[[Translation missing --]]
-L["showRaceIconDescription"] = "Show a race icon next to the name of the applicant"
+L["showRaceIconDescription"] = "showRaceIconDescription"
 --[[Translation missing --]]
-L["showTimedKeys"] = "Show Timed Keys"
+L["showTimedKeys"] = "showTimedKeys"
 --[[Translation missing --]]
-L["showTimedKeysDescription"] = "Show the amount of the timed keys above a certain threshold in the Applicant View"
+L["showTimedKeysDescription"] = "showTimedKeysDescription"
 --[[Translation missing --]]
-L["sortApplicants"] = "Sort Applicants"
+L["sortApplicants"] = "sortApplicants"
 --[[Translation missing --]]
-L["sortApplicantsDescription"] = "Sort the Applicants - rule is Spec Priority > (Main) Score > Item Level"
+L["sortApplicantsDescription"] = "sortApplicantsDescription"
 --[[Translation missing --]]
-L["sortAscending"] = "Sort Ascending"
+L["sortAscending"] = "sortAscending"
 --[[Translation missing --]]
-L["sortAscendingDescription"] = "Sort the list in Ascending order instead of descending"
+L["sortAscendingDescription"] = "sortAscendingDescription"
 --[[Translation missing --]]
-L["sortGroupsByScore"] = "Sort Groups by Score"
+L["sortGroupsByScore"] = "sortGroupsByScore"
 --[[Translation missing --]]
-L["sortGroupsByScoreDescription"] = "Sort the Groups by the Score of the GroupLeader"
+L["sortGroupsByScoreDescription"] = "sortGroupsByScoreDescription"
 --[[Translation missing --]]
-L["ten"] = "10+"
+L["ten"] = "ten"
 --[[Translation missing --]]
-L["twenty"] = "20+"
+L["twenty"] = "twenty"
 --[[Translation missing --]]
-L["useMainInfo"] = "Use Main Info"
+L["useMainInfo"] = "useMainInfo"
 --[[Translation missing --]]
-L["useMainInfoDescription"] = "Use the Progress or Score info of the main instead of the current Score for display and sort (if available)"
+L["useMainInfoDescription"] = "useMainInfoDescription"
 --[[Translation missing --]]
 L["useMainScore"] = "Use Main Score"
 --[[Translation missing --]]
 L["useMainScoreDescription"] = "Use the Main Score instead of the current Score for display and sort"
 --[[Translation missing --]]
-L["useOfWrongRoleHighlight"] = "Use Wrong Role Highlight"
+L["useOfWrongRoleHighlight"] = "useOfWrongRoleHighlight"
 --[[Translation missing --]]
-L["useOfWrongRoleHighlightDescription"] = "Highlights the Spec Icon in the Application View if the Applicant is not using the Role with the highest Score"
+L["useOfWrongRoleHighlightDescription"] = "useOfWrongRoleHighlightDescription"
 --[[Translation missing --]]
-L["wrongRoleScoreLimitForSorting"] = "Wrong Role Score Limit for Sorting"
+L["wrongRoleScoreLimitForSorting"] = "wrongRoleScoreLimitForSorting"
 --[[Translation missing --]]
-L["wrongRoleScoreLimitForSortingDescription"] = "The Score Limit for the Sorting Offroles behind mainroles. If set to 0 will always sort mainrole before offrole. If set to 5000 will always ignore main or offrole and only sort by score"
+L["wrongRoleScoreLimitForSortingDescription"] = "wrongRoleScoreLimitForSortingDescription"
 
 
 

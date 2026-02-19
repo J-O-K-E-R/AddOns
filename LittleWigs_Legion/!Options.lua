@@ -1360,11 +1360,11 @@ BigWigs:AddSounds("Neltharions Lair Trash", {
 })
 
 BigWigs:AddColors("Zuraal", {
-	[244433] = "blue",
+	[244433] = {"blue","yellow"},
 	[244579] = "orange",
 	[244602] = "yellow",
 	[244621] = {"cyan","green"},
-	[244653] = "blue",
+	[244653] = {"blue","red"},
 	[246134] = "red",
 })
 
@@ -1386,7 +1386,7 @@ BigWigs:AddColors("Saprish", {
 })
 
 BigWigs:AddSounds("Saprish", {
-	[245802] = {"alert","long"},
+	[245802] = {"long","underyou"},
 	[245873] = "info",
 	[247206] = "alarm",
 	[247245] = "alert",
@@ -1405,7 +1405,7 @@ BigWigs:AddColors("Viceroy Nezhar", {
 BigWigs:AddSounds("Viceroy Nezhar", {
 	[-15926] = "info",
 	[244751] = "alarm",
-	[244906] = "alert",
+	[244906] = "underyou",
 	[246324] = "long",
 	[248736] = "long",
 	[248804] = "info",
@@ -1434,6 +1434,7 @@ BigWigs:AddColors("Seat of the Triumvirate Trash", {
 	[248227] = "red",
 	[249078] = "yellow",
 	[249081] = "blue",
+	["void_rifts_closed"] = "green",
 })
 
 BigWigs:AddSounds("Seat of the Triumvirate Trash", {
@@ -1441,6 +1442,7 @@ BigWigs:AddSounds("Seat of the Triumvirate Trash", {
 	[248227] = "warning",
 	[249078] = "info",
 	[249081] = "alarm",
+	["void_rifts_closed"] = "info",
 })
 
 BigWigs:AddColors("Ivanyr", {

@@ -269,8 +269,8 @@ end
 
 -- Warmup
 
-function mod:CHAT_MSG_MONSTER_YELL(event, msg)
-	if msg == L.mordretha_warmup_trigger then -- Mordretha Warmup
+function mod:CHAT_MSG_MONSTER_YELL(_, msg)
+	if not self:IsSecret(msg) and msg == L.mordretha_warmup_trigger then -- Mordretha Warmup
 		local mordrethaModule = BigWigs:GetBossModule("Mordretha, the Endless Empress", true)
 		if mordrethaModule then
 			mordrethaModule:Enable()

@@ -1,6 +1,6 @@
-local _, namespace = ... 	--localization
-local L = namespace.L 				--localization
-local _,addon = ...
+local addonName, addonTab = ...
+local L = addonTab.L --{ Localization
+addonTab.version = C_AddOns.GetAddOnMetadata(addonName, "Version")
 
 local char_ctats_pane = CharacterStatsPane
 DCS_ClassSpecDB = {}
@@ -173,7 +173,8 @@ local DefaultNonTankData = DCS_TableData:MergeTable({
 	{ statKey = "UserCat4" },
 	{ statKey = "UserCat5" },
 })
-local ShownData = DefaultNonTankData
+
+addonTab.ShownData = DefaultNonTankData
 
 for k, v in pairs(DCS_TableData.StatData) do
 	if (not v.frame) then
@@ -219,11 +220,11 @@ for k, v in pairs(DCS_TableData.StatData) do
 end
 
 local function verify_sanity()
-	for k, i in ipairs(ShownData) do
+	for k, i in ipairs(addonTab.ShownData) do
 		for l, j in ipairs(DefaultNonTankData) do
 			if i.statKey == j.statKey then
 				if i.hideAt ~= j.hideAt then
-					ShownData[k] = DefaultNonTankData[l]
+					addonTab.ShownData[k] = DefaultNonTankData[l]
 				end
 			end
 		end
@@ -232,7 +233,7 @@ end
 
 local function UpdateStatFrameWidth(width)
 	local stat
-	for _, v in ipairs(ShownData) do
+	for _, v in ipairs(addonTab.ShownData) do
 		stat = DCS_TableData.StatData[v.statKey]
 		if (stat) then
 			stat.frame:SetWidth(width)
@@ -260,16 +261,16 @@ end
 -- Config Mode Setup --
 -----------------------
 
-local function set_relevant_stat_state()
+function addonTab.set_relevant_stat_state()
 	local stat
 	local ccount = 0
-	for _, v in ipairs(ShownData) do
+	for _, v in ipairs(addonTab.ShownData) do
         stat = DCS_TableData.StatData[v.statKey]
 		if stat then
 			if not v.hidden then ccount = ccount +1 end
 		end
 	end
-	local temp = ccount/#ShownData
+	local temp = ccount/#addonTab.ShownData
 	if temp < 1 then --playing safe, probably 0.9 is sufficient; maybe epsilon check is needed?
 		relevantStatsSetChecked = false
 	else
@@ -278,20 +279,19 @@ local function set_relevant_stat_state()
 	DCS_TableRelevantStats_init()
 end
 
-local configMode = false
+addonTab.configMode = false
 
-local function ShowCharacterStats(unit)
+function addonTab.ShowCharacterStats(unit)
 	if not PaperDollFrame:IsVisible() and not SettingsPanel:IsVisible() then
 		return
 	end
-	namespace.configMode = configMode
     local stat
     local count, backgroundcount, height = 0, false, 4
 	local hideatzero = gdbprivate.gdb.gdbdefaults.dejacharacterstatsHideAtZeroChecked.SetChecked --placeholder for the checkbox hideatzero
-    for _, v in ipairs(ShownData) do
+    for _, v in ipairs(addonTab.ShownData) do
         stat = DCS_TableData.StatData[v.statKey]
 		if stat then
-			if (configMode) then
+			if (addonTab.configMode) then
 				stat.frame:Show()
 				stat.updateFunc(stat.frame, unit)
 				stat.frame.checkButton:Show()
@@ -332,7 +332,7 @@ local function ShowCharacterStats(unit)
 					stat.frame.Background:SetShown(backgroundcount)
 					backgroundcount = not backgroundcount
 				end
-				if not (configMode) then
+				if not (addonTab.configMode) then
 					stat.frame:SetAlpha(1)
 				end
 				height = height + stat.frame:GetHeight()
@@ -355,14 +355,14 @@ local function ShowCharacterStats(unit)
 			StatScrollFrame.ScrollBar:Hide()
 		end
 	end
-	set_relevant_stat_state()
+	addonTab.set_relevant_stat_state()
 end
 
 local function DCS_Table_ShowAllStats()
-	for _, v in ipairs(ShownData) do
+	for _, v in ipairs(addonTab.ShownData) do
 		v.hidden = false
 	end
-	ShowCharacterStats("player")
+	addonTab.ShowCharacterStats("player")
 end
 
 local function DCS_Table_Relevant()
@@ -372,12 +372,12 @@ local function DCS_Table_Relevant()
 	local role = GetSpecializationRole(spec)
 	local hashonorlevel = UnitHonorLevel("player")
 
-	for _, v in ipairs(ShownData) do
+	for _, v in ipairs(addonTab.ShownData) do
 		if v.hidden then v.hidden = false end
 	end
 
 	local primaryStat = select(6, GetSpecializationInfo(spec, nil, nil, nil, UnitSex("player")));
-    for _, v in ipairs(ShownData) do
+    for _, v in ipairs(addonTab.ShownData) do
 		if primaryStat ~= LE_UNIT_STAT_STRENGTH then
 			if v.statKey == "STRENGTH" then v.hidden = true end
 			if v.statKey == "DCS_RUNEREGEN" then v.hidden = true end
@@ -442,8 +442,8 @@ local function DCS_Table_Relevant()
 			if v.statKey == "HONOR_LEVEL" then v.hidden = true end
 		end
 	end
-	ShownData.uniqueKey = uniqueKey
-	DCS_ClassSpecDB[uniqueKey] = ShownData
+	addonTab.ShownData.uniqueKey = uniqueKey
+	DCS_ClassSpecDB[uniqueKey] = addonTab.ShownData
 end
 
 local function DCS_Login_Initialization()
@@ -452,15 +452,15 @@ local function DCS_Login_Initialization()
 	local primaryStat = select(6, GetSpecializationInfo(spec, nil, nil, nil, UnitSex("player")));
 	local uniqueKey = UnitName("player") .. ":" .. GetRealmName() .. ":" .. spec
 	if (DCS_ClassSpecDB[uniqueKey]) then
-		if (ShownData.uniqueKey ~= uniqueKey) then
-			ShownData = DCS_TableData:MergeTable(DCS_ClassSpecDB[uniqueKey]) --not so easy to understand when gets here. is it during change of specialisation?
+		if (addonTab.ShownData.uniqueKey ~= uniqueKey) then
+			addonTab.ShownData = DCS_TableData:MergeTable(DCS_ClassSpecDB[uniqueKey]) --not so easy to understand when gets here. is it during change of specialisation?
 			verify_sanity()
 		end
 	else
 		if role == "TANK" then
-			ShownData = DCS_TableData:CopyTable(DefaultTankData)
+			addonTab.ShownData = DCS_TableData:CopyTable(DefaultTankData)
 		else
-			ShownData = DCS_TableData:CopyTable(DefaultNonTankData)
+			addonTab.ShownData = DCS_TableData:CopyTable(DefaultNonTankData)
 		end
 		DCS_Table_Relevant()
 	end
@@ -475,19 +475,20 @@ local function DCS_Table_Reset()
 	else
 		temp = DCS_TableData:CopyTable(DefaultNonTankData)
 	end
-	local uniqueKey = UnitName("player") .. ":" .. GetRealmName() .. ":" .. spec
 	for _, v1 in ipairs(temp) do
-		for _, v2 in ipairs(ShownData) do
+		for _, v2 in ipairs(addonTab.ShownData) do
 			if v1.statKey == v2.statKey then
 				v1.hidden = v2.hidden
 			end
 		end
 	end
-	ShownData = temp
-	ShownData.uniqueKey = uniqueKey
-	DCS_ClassSpecDB[uniqueKey] = ShownData
+	
+	local uniqueKey = UnitName("player") .. ":" .. GetRealmName() .. ":" .. spec
+	addonTab.ShownData = temp
+	addonTab.ShownData.uniqueKey = uniqueKey
+	DCS_ClassSpecDB[uniqueKey] = addonTab.ShownData
 	if IsModifierKeyDown() then DCS_Table_Relevant() end
-	ShowCharacterStats("player")
+	addonTab.ShowCharacterStats("player")
 end
 
 
@@ -497,7 +498,7 @@ end
 local DragSourceFrame, DragTargetFrame
 
 local function OnDragStart(self)
-	if (not configMode) then return end
+	if (not addonTab.configMode) then return end
 	DragSourceFrame = self
 	local cursorX, cursorY = GetCursorPosition()
 	local uiScale = UIParent:GetScale()
@@ -508,21 +509,21 @@ local function OnDragStart(self)
 end
 
 local function OnDragStop(self)
-	if (not configMode) then return end
+	if (not addonTab.configMode) then return end
 	DragSourceFrame = false
 	self:StopMovingOrSizing()
 	local stat, dst
-	for i, v in ipairs(ShownData) do
+	for i, v in ipairs(addonTab.ShownData) do
 		stat = DCS_TableData.StatData[v.statKey]
 		if (stat.frame.statKey ~= self.statKey and stat.frame:IsMouseOver()) then
-			DCS_TableData:SwapStat(ShownData, self.statKey, v)
+			DCS_TableData:SwapStat(addonTab.ShownData, self.statKey, v)
 			break
 		end
 	end
 	if (DragTargetFrame) then
 		DragTargetFrame.anchorBar:Hide()
 	end
-	ShowCharacterStats("player")
+	addonTab.ShowCharacterStats("player")
 end
 
 local function onCheckClick(self)
@@ -533,13 +534,13 @@ local function onCheckClick(self)
 	else
 		self:GetParent():SetAlpha(0.32)
 	end
-	for _, v in ipairs(ShownData) do
+	for _, v in ipairs(addonTab.ShownData) do
 		if (v.statKey == statKey) then
 			v.hidden = not checked
 			break
 		end
 	end
-	set_relevant_stat_state()
+	addonTab.set_relevant_stat_state()
 end
 
 for k, v in pairs(DCS_TableData.StatData) do
@@ -565,7 +566,7 @@ StatScrollFrame:HookScript("OnUpdate", function(self, elasped)
 		self.timer = (self.timer or 0) + elasped
 		if (self.timer > 0.2) then
 			local stat
-			for i, v in ipairs(ShownData) do
+			for i, v in ipairs(addonTab.ShownData) do
 				stat = DCS_TableData.StatData[v.statKey]
 				if (stat.frame.statKey ~= DragSourceFrame.statKey and stat.frame:IsMouseOver()) then
 					DragTargetFrame = stat.frame
@@ -588,7 +589,7 @@ char_ctats_pane:HookScript("OnShow", function(self)
 end)
 
 hooksecurefunc("PaperDollFrame_UpdateStats", function()
-		ShowCharacterStats("player")
+		addonTab.ShowCharacterStats("player")
 end)
 
 hooksecurefunc("PaperDollFrame_SetSidebar", function(self, index)
@@ -622,8 +623,8 @@ local DCS_TableResetCheck = CreateFrame("Button", "DCS_TableResetButton", Charac
 ------------------------
 local DCS_ConfigtooltipText = L["Unlock DCS"]
 
-local function set_config_mode(state)
-	configMode = state
+function addonTab.set_config_mode(state)
+	addonTab.configMode = state
 	if state then --on
 		DCS_ConfigtooltipText = L["Lock DCS"]
 		DCS_TableResetCheck:Show()
@@ -678,12 +679,12 @@ end
 
 local function configButtonOnClose()
 	StatScrollFrame:SetVerticalScroll(0)
-	set_config_mode(false)
+	addonTab.set_config_mode(false)
 	dcsRStatConfigButtonsHide()
 
 	DCS_configButton:SetNormalTexture("Interface\\BUTTONS\\LockButton-Locked-Up")
 	DCS_InterfaceOptConfigButton:SetNormalTexture("Interface\\BUTTONS\\LockButton-Locked-Up")
-	ShowCharacterStats("player")
+	addonTab.ShowCharacterStats("player")
 end
 
 --------------------------
@@ -755,7 +756,7 @@ local function DCS_DefaultStatsAnchors()
 
 	configButtonOnClose()
 	DCS_ClassCrestBGCheck()
-	ShowCharacterStats("player")
+	addonTab.ShowCharacterStats("player")
 end
 
 local function DCS_InterfaceOptionsStatsAnchors()
@@ -763,7 +764,7 @@ local function DCS_InterfaceOptionsStatsAnchors()
 	if (DejaCharacterStatsPanel~=nil) then
 		DCS_InterfaceOptConfigButton:RegisterEvent("UNIT_AURA")
 		DCS_InterfaceOptConfigButton:RegisterEvent("UPDATE_INVENTORY_DURABILITY")
-		set_config_mode(true)
+		addonTab.set_config_mode(true)
 
 		StatScrollFrame:ClearAllPoints()
 		StatScrollFrame:SetParent(DejaCharacterStatsPanel)
@@ -792,7 +793,7 @@ local function DCS_InterfaceOptionsStatsAnchors()
 		char_ctats_pane.ClassBackground:Show()
 
 		DCS_ClassCrestBGCheck()
-		ShowCharacterStats("player")
+		addonTab.ShowCharacterStats("player")
 	end
 end
 
@@ -830,8 +831,8 @@ CharacterFrameInsetRight:HookScript("OnHide", function(self)
 end)
 
 	DCS_configButton:SetScript("OnMouseUp", function(self, button, up)
-		configMode = not configMode
-		if (configMode) then
+		addonTab.configMode = not addonTab.configMode
+		if (addonTab.configMode) then
 			self:SetNormalTexture("Interface\\BUTTONS\\LockButton-Unlocked-Up")
 
 			DCS_TableRelevantStats:ClearAllPoints()
@@ -842,11 +843,11 @@ end)
 			DCS_TableResetCheck:SetParent(CharacterFrameInsetRight)
 			DCS_TableResetCheck:SetPoint("BOTTOMRIGHT", 5, -36)
 
-			set_config_mode(true)
+			addonTab.set_config_mode(true)
 		else
 			configButtonOnClose()
 		end
-		ShowCharacterStats("player")
+		addonTab.ShowCharacterStats("player")
 		DCS_configButton_OnEnter()
 	end)
 
@@ -884,7 +885,7 @@ local DCS_TableRelevantStats = CreateFrame("Button", "DCS_TableRelevantStats", C
 		else
 			DCS_Table_ShowAllStats()
 		end
-		ShowCharacterStats("player")
+		addonTab.ShowCharacterStats("player")
 		DCS_TableRelevantStats_OnEnter()
 	end)
 
@@ -893,12 +894,12 @@ local DCS_TableRelevantStats = CreateFrame("Button", "DCS_TableRelevantStats", C
 		DCS_TableRelevantStats_init()
 
 		if event == "PLAYER_SPECIALIZATION_CHANGED" then
-			set_config_mode(true) -- This allows the ratings stats and category headrs to be shown when changin specs. No clue why, but it works.
+			addonTab.set_config_mode(true) -- This allows the ratings stats and category headrs to be shown when changin specs. No clue why, but it works.
 			local function DCS_ReShowSelectedStats()
-				set_config_mode(false) -- This hides the above shown config mode 0.01 secs after showing it becasue we dont want it shown, but showing it shows the selected stats, so we need to exit config after entering it.
+				addonTab.set_config_mode(false) -- This hides the above shown config mode 0.01 secs after showing it becasue we dont want it shown, but showing it shows the selected stats, so we need to exit config after entering it.
 			end
 			C_Timer.After(0.01, DCS_ReShowSelectedStats)
-			ShowCharacterStats("player")
+			addonTab.ShowCharacterStats("player")
 		end
 	end)
 
@@ -930,19 +931,19 @@ local function DCS_InterfaceOptConfigButton_OnLeave(self)
 	DCS_InterfaceOptConfigButton:SetScript("OnLeave", DCS_InterfaceOptConfigButton_OnLeave)
 
 	DCS_InterfaceOptConfigButton:SetScript("OnEvent", function(self, event)
-				ShowCharacterStats("player")
+				addonTab.ShowCharacterStats("player")
 	end)
 
 	DCS_InterfaceOptConfigButton:SetScript("OnMouseUp", function(self, button, up)
-		configMode = not configMode
-		if (configMode) then
+		addonTab.configMode = not addonTab.configMode
+		if (addonTab.configMode) then
 			self:SetNormalTexture("Interface\\BUTTONS\\LockButton-Unlocked-Up")
-			set_config_mode(true) --might get improved into set_config_mode(configMode)
+			addonTab.set_config_mode(true) --might get improved into addonTab.set_config_mode(addonTab.configMode)
 		else
 			self:SetNormalTexture("Interface\\BUTTONS\\LockButton-Locked-Up")
-			set_config_mode(false)
+			addonTab.set_config_mode(false)
 		end
-		ShowCharacterStats("player")
+		addonTab.ShowCharacterStats("player")
 		DCS_InterfaceOptConfigButton_OnEnter()
 	end)
 
@@ -964,7 +965,7 @@ local DCS_ScrollbarCheck = CreateFrame("CheckButton", "DCS_ScrollbarCheck", Deja
 			self:SetChecked(checked)
 			scrollbarchecked = checked
 			self:UnregisterEvent(event)
-			--Logic is built into ShowCharacterStats("player")
+			--Logic is built into addonTab.ShowCharacterStats("player")
 		end
 	end)
 
@@ -972,7 +973,7 @@ local DCS_ScrollbarCheck = CreateFrame("CheckButton", "DCS_ScrollbarCheck", Deja
 		local checked = self:GetChecked()
 		gdbprivate.gdb.gdbdefaults.dejacharacterstatsScrollbarChecked.ScrollbarSetChecked = checked
 		scrollbarchecked = checked
-		ShowCharacterStats("player")
+		addonTab.ShowCharacterStats("player")
 	end)
 
 -----------------------------------
@@ -1007,7 +1008,7 @@ local DCS_ClassBackgroundCheck = CreateFrame("CheckButton", "DCS_ClassBackground
 		else
 			char_ctats_pane.ClassBackground:Hide()
 		end
-        ShowCharacterStats("player") --does it need to be called?
+        addonTab.ShowCharacterStats("player") --does it need to be called?
 	end)
 
 SettingsPanel:HookScript("OnShow", function(self)

@@ -27,12 +27,20 @@ function config:GetBrowsePage()
 end
 
 function page:Show()
+    page.frame:ClearAllPoints()
+    page.frame:SetAllPoints(config.ui)
     page.frame:Show()
     config.BrowsePage:UPDATE_BROWSE_PAGE()
 end
 
+function page:IsShown()
+    return page.frame:IsShown()
+end
+
 function page:Hide()
     page.frame:Hide()
+    page.frame:ClearAllPoints()
+    page.frame:SetPoint("RIGHT", UIParent, "LEFT", 0, 0)
 end
 
 function page:Initialize()
@@ -222,6 +230,14 @@ function page:Initialize()
         keepShown = true,
     })
 
+    frame.SearchBox = CreateFrame("EditBox", "CliqueConfigUIBrowseSearch", frame, "SearchBoxTemplate")
+    local searchBox = frame.SearchBox
+
+    searchBox:SetHeight(22)
+    searchBox:SetWidth(285)
+    searchBox:SetPoint("TOPLEFT", frame, "TOPLEFT", 60, -40)
+    page:EnableSearch()
+
     page:UPDATE_BROWSE_PAGE()
 end
 
@@ -229,6 +245,12 @@ page.bindRows = {}
 
 local BindRowButton_OnClick = function(button)
     page:SelectBindRow(button)
+end
+
+local BindRowButton_OnDoubleClick = function(button)
+    page:ClearSelectedBindRow()
+    page:SelectBindRow(button)
+    config:SwitchToEditPage(page.selectedBind, false)
 end
 
 local BindRowButton_OnEnter = function(button)
@@ -275,6 +297,7 @@ function page:InitializeBindingRow(button, data)
 
         button:SetPushedAtlas("ClickCastList-ButtonHighlight")
         button:SetScript("OnClick", BindRowButton_OnClick)
+        button:SetScript("OnDoubleClick", BindRowButton_OnDoubleClick)
         button:SetScript("OnEnter", BindRowButton_OnEnter)
         button:SetScript("OnLeave", BindRowButton_OnLeave)
 
@@ -294,6 +317,10 @@ function page:InitializeBindingRow(button, data)
     else
         button:ClearNormalTexture()
     end
+end
+
+function page:ClearSelectedBindRow()
+    page.selectedBind = nil
 end
 
 ---Select or deselect a row in the binding list
@@ -336,6 +363,37 @@ function page:GetSortOrder()
     return page.sortOrder
 end
 
+function page:SetFilterSearchText(text)
+    -- Filter by name
+    -- strip out non-alpha and space chars
+    local filter = text:gsub("[^a-zA-Z0-9%s]", ""):lower()
+    page.searchFilter = filter
+    page:UPDATE_BROWSE_PAGE()
+end
+
+function page:EnableSearch()
+    page.frame.SearchBox:SetScript("OnTextChanged", function(me)
+        SearchBoxTemplate_OnTextChanged(me)
+        page:SetFilterSearchText(me:GetText())
+    end)
+end
+
+-- Use the data tables from below to filter
+function page:FilterEntry(data)
+    if not page.searchFilter then return true end
+    local filter = page.searchFilter
+
+    if string.lower(data.name or ""):match(filter) then
+        return true
+    elseif string.lower(data.text or ""):match(filter) then
+        return true
+    elseif string.lower(data.bindingText or ""):match(filter) then
+        return true
+    end
+
+    return false
+end
+
 function page:UPDATE_BROWSE_PAGE()
     local dataProvider = page.frame.dataProvider
     dataProvider:Flush()
@@ -373,7 +431,13 @@ function page:UPDATE_BROWSE_PAGE()
             end
         end
 
-        table.insert(bindingData, data)
+        if addon:IsGamePadBinding(bind) and not addon:IsGamePadEnabled() then
+            data.text = "|cffFF4800" .. L["Disabled - Gamepad not enabled"] .. "|r"
+        end
+
+        if page:FilterEntry(data) then
+            table.insert(bindingData, data)
+        end
     end
 
     dataProvider:InsertTable(bindingData)

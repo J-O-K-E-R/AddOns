@@ -8,6 +8,7 @@ local GetItemIconByID = C_Item.GetItemIconByID;
 local GetItemLinkByGUID = C_Item.GetItemLinkByGUID;
 local gsub = string.gsub;
 local match = string.match;
+local Secret_CanAccess = addon.API.Secret_CanAccess;
 
 
 local ItemIconInfoTable = {
@@ -17,6 +18,61 @@ local ItemIconInfoTable = {
     --texCoords = { left = 0.0625, right = 0.9375, top = 0.0625, bottom = 0.9375 },
     verticalOffset = 6;
 };
+
+
+local AltModeListener = CreateFrame("Frame");
+do
+    --Alt Mode Instruction Color: 0.000, 0.800, 1.000
+
+    function AltModeListener:OnUpdate(elapsed)
+        self.t = self.t + elapsed;
+        if self.t >= 0.5 then
+            self.t = nil;
+            self:SetScript("OnUpdate", nil);
+            self:UnregisterEvent("MODIFIER_STATE_CHANGED");
+        end
+    end
+
+    function AltModeListener:OnEvent(event, key, down)
+        if down == 1 and (key == "LALT" or key == "RALT") then
+            if self.handler then
+                self.handler:TriggerAltMode();
+            end
+        end
+    end
+
+    function AltModeListener:SetHandlerAndStart(handler)
+        if not self.t then
+            self:SetScript("OnEvent", self.OnEvent);
+            self:SetScript("OnUpdate", self.OnUpdate);
+            self:RegisterEvent("MODIFIER_STATE_CHANGED");
+        end
+        self.handler = handler;
+        self.t = 0;
+    end
+end
+
+
+local function GetModuleAltModeDBKey(module)
+    if module.hasAltMode then
+        return module:GetDBKey().."_AltMode"
+    end
+end
+
+local function LoadModuleAltMode(module)
+    local key = GetModuleAltModeDBKey(module);
+    if key then
+        module.altModeEnabled = addon.GetDBBool(key);
+    end
+end
+
+local function ToggleModuleAltMode(module)
+    local key = GetModuleAltModeDBKey(module);
+    if key then
+        addon.FlipDBBool(key);
+        LoadModuleAltMode(module);
+    end
+end
 
 
 local HandlerMixin = {};
@@ -32,14 +88,27 @@ do
         table.insert(self.modules, module);
     end
 
-    function HandlerMixin:CallSubModules(tooltip, itemID, hyperlink)
+    function HandlerMixin:CallSubModules(tooltip, id, hyperlink)
+        if not Secret_CanAccess(id) then return end;
+
+        self.hasAltMode = nil;
+        self.currentTooltip = tooltip;
+
         for _, m in ipairs(self.modules) do
-            if m:ProcessData(tooltip, itemID, hyperlink) then
+            if m:ProcessData(tooltip, id, hyperlink) then
                 self.anyChange = true;
+                if m.hasAltMode then
+                    self.hasAltMode = true;
+                end
             end
         end
+
         if self.anyChange then
             tooltip:Show();
+        end
+
+        if self.hasAltMode then
+            AltModeListener:SetHandlerAndStart(self);
         end
     end
 
@@ -49,6 +118,9 @@ do
         for _, m in ipairs(self.modules) do
             if m:IsEnabled() then
                 self.noModuleEnabled = false;
+            end
+            if m.hasAltMode then
+                LoadModuleAltMode(m);
             end
         end
 
@@ -75,6 +147,7 @@ do
     end
 
     function HandlerMixin:AppendTooltipInfo(tooltip, method, arg1, arg2, arg3, arg4)
+        self.currentTooltip = tooltip;
         if C_TooltipInfo[method] then
             local tooltipData = C_TooltipInfo[method](arg1, arg2, arg3, arg4);
             if tooltipData then
@@ -87,6 +160,7 @@ do
     end
 
     function HandlerMixin:AppendItemInfo(tooltip, itemID)
+        self.currentTooltip = tooltip;
         local tooltipData = C_TooltipInfo.GetItemByID(itemID);
         if tooltipData then
             tooltip:AddLine(" ");
@@ -97,6 +171,22 @@ do
                     tooltip:AddTexture(icon, ItemIconInfoTable);
                 end
             end
+        end
+    end
+
+    function HandlerMixin:TriggerAltMode()
+        if not (self.currentTooltip and self.currentTooltip:IsVisible()) then return end;
+
+        local anyChange;
+        for _, m in ipairs(self.modules) do
+            if m.hasAltMode and m:IsEnabled() then
+                ToggleModuleAltMode(m);
+                anyChange = true;
+            end
+        end
+
+        if anyChange and self.currentTooltip.RebuildFromTooltipInfo then
+            self.currentTooltip:RebuildFromTooltipInfo();
         end
     end
 
@@ -193,20 +283,20 @@ do  --GameTooltipManager
     end
 
     function GameTooltipManager:GetItemManager()
-        return self:GetHandler(0)   ----Enum.TooltipDataType.Item
+        return self:GetHandler(Enum.TooltipDataType.Item)
     end
 
     function GameTooltipManager:GetSpellManager()
-        return self:GetHandler(1)   ----Enum.TooltipDataType.Spell
+        return self:GetHandler(Enum.TooltipDataType.Spell)
     end
 
     function GameTooltipManager:GetCurrencyManager()
-        return self:GetHandler(5)   ----Enum.TooltipDataType.Currency
+        return self:GetHandler(Enum.TooltipDataType.Currency)
     end
 
     function GameTooltipManager:GetMinimapManager()
         local useLeftTextAsArgument = true;
-        return self:GetHandler(21, useLeftTextAsArgument)   ----Enum.TooltipDataType.MinimapMouseover
+        return self:GetHandler(Enum.TooltipDataType.MinimapMouseover, useLeftTextAsArgument)
     end
 end
 

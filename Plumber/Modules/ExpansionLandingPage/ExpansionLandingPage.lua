@@ -9,10 +9,14 @@ local IS_MOP = addon.IS_MOP;
 local MainFrame;
 
 
+local Def = {
+    TabButtonHeight = 32,
+    TabButtonTextOffset = 10,
+};
+
+
 local CreateTabButton;
 do  --TabButtonMixin
-    local TEXT_OFFSET = 10;
-    local BUTTON_HEIGHT = 32;
     local TabButtonMixin = {};
 
     function TabButtonMixin:OnClick()
@@ -60,21 +64,21 @@ do  --TabButtonMixin
     end
 
     function TabButtonMixin:OnMouseDown()
-        self.Name:SetPoint("LEFT", self, "LEFT", self.leftOffset or TEXT_OFFSET, -1);
+        self.Name:SetPoint("LEFT", self, "LEFT", self.leftOffset or Def.TabButtonTextOffset, -1);
     end
 
     function TabButtonMixin:OnMouseUp()
-        self.Name:SetPoint("LEFT", self, "LEFT", self.leftOffset or TEXT_OFFSET, 0);
+        self.Name:SetPoint("LEFT", self, "LEFT", self.leftOffset or Def.TabButtonTextOffset, 0);
     end
 
     function TabButtonMixin:SetName(name)
         self.Name:SetText(name);
-        local width = self.Name:GetWrappedWidth() + 2 * TEXT_OFFSET;
-        if width < BUTTON_HEIGHT then
-            self.leftOffset = 0.5 * (BUTTON_HEIGHT - width);
-            width = BUTTON_HEIGHT;
+        local width = self.Name:GetWrappedWidth() + 2 * Def.TabButtonTextOffset;
+        if width < Def.TabButtonHeight then
+            self.leftOffset = 0.5 * (Def.TabButtonHeight - width);
+            width = Def.TabButtonHeight;
         else
-            self.leftOffset = TEXT_OFFSET;
+            self.leftOffset = Def.TabButtonTextOffset;
         end
         self.Name:SetPoint("LEFT", self, "LEFT", self.leftOffset, 0);
         self:SetWidth(width);
@@ -103,10 +107,10 @@ do  --TabButtonMixin
         button:SetScript("OnLeave", button.OnLeave);
         button:SetScript("OnMouseDown", button.OnMouseDown);
         button:SetScript("OnMouseUp", button.OnMouseUp);
-        button:SetSize(BUTTON_HEIGHT, BUTTON_HEIGHT);
+        button:SetSize(Def.TabButtonHeight, Def.TabButtonHeight);
 
         button.Name = button:CreateFontString(nil, "OVERLAY", "PlumberFont_16");
-        button.Name:SetPoint("LEFT", button, "LEFT", TEXT_OFFSET, 0);
+        button.Name:SetPoint("LEFT", button, "LEFT", Def.TabButtonTextOffset, 0);
         button.Name:SetAlpha(0.9);
 
         button.GreenDot = button:CreateTexture(nil, "OVERLAY");
@@ -121,11 +125,100 @@ do  --TabButtonMixin
 end
 
 
+local CreateExpansionSelectButton;
+do  --Expansion Select
+    local ExpansionSelectButtonMixin = {};
+
+    function ExpansionSelectButtonMixin:OnClick()
+        --We only have 2 expansions right now, click to switch directly
+        LandingPageUtil.SwitchExpansion();
+    end
+
+    function ExpansionSelectButtonMixin:OnEnter()
+        self:SetAlpha(1);
+        self.Name:SetTextColor(1, 1, 1);
+    end
+
+    function ExpansionSelectButtonMixin:OnLeave()
+        self:SetAlpha(0.9);
+        self.Name:SetTextColor(1, 0.82, 0);
+    end
+
+    function ExpansionSelectButtonMixin:OnMouseDown()
+        self.Name:SetPoint("RIGHT", self, "RIGHT", -Def.TabButtonTextOffset, -1);
+    end
+
+    function ExpansionSelectButtonMixin:OnMouseUp()
+        self.Name:SetPoint("RIGHT", self, "RIGHT", -Def.TabButtonTextOffset, 0);
+    end
+
+    function ExpansionSelectButtonMixin:OnShow()
+        self:Refresh();
+    end
+
+    function ExpansionSelectButtonMixin:Refresh()
+        self.Name:SetText(LandingPageUtil.GetCurrentExpansionInfo());
+        self:Hide();    --TEMP disabled until Midnight
+        --self:SetShown(#LandingPageUtil.GetAvailableExpansions() > 1);
+    end
+
+    function ExpansionSelectButtonMixin:AdjustToMaxTextWidth()
+        local names = LandingPageUtil.GetAllExpansionNames();
+        local extraWidth = Def.TabButtonTextOffset + 18;
+        local minWidth = 2*Def.TabButtonHeight;
+        for _, name in ipairs(names) do
+            if name then
+                self.Name:SetText(name);
+                local width = math.floor(math.max(self.Name:GetWrappedWidth() + extraWidth, Def.TabButtonHeight));
+                if width > minWidth then
+                    minWidth = width;
+                end
+            end
+        end
+        self:SetWidth(minWidth);
+        self.Name:SetText(nil);
+    end
+
+    function CreateExpansionSelectButton(parent)
+        local button = CreateFrame("Button", nil, parent);
+        API.Mixin(button, ExpansionSelectButtonMixin);
+        button:SetScript("OnClick", button.OnClick);
+        button:SetScript("OnEnter", button.OnEnter);
+        button:SetScript("OnLeave", button.OnLeave);
+        button:SetScript("OnMouseDown", button.OnMouseDown);
+        button:SetScript("OnMouseUp", button.OnMouseUp);
+        button:SetScript("OnShow", button.OnShow);
+        button:SetSize(Def.TabButtonHeight, Def.TabButtonHeight);
+        button:SetAlpha(0.9);
+
+        button.Name = button:CreateFontString(nil, "OVERLAY", "GameFontNormal");
+        button.Name:SetPoint("RIGHT", button, "RIGHT", -Def.TabButtonTextOffset, 0);
+
+        button.Arrow = button:CreateTexture(nil, "OVERLAY");
+        button.Arrow:SetSize(18, 18);
+        button.Arrow:SetPoint("RIGHT", button.Name, "LEFT", 0, 0);
+        button.Arrow:SetTexture("Interface/AddOns/Plumber/Art/ExpansionLandingPage/ChecklistButton.tga", nil, nil, "TRILINEAR");
+        button.Arrow:SetTexCoord(0, 48/512, 208/512, 256/512);
+
+        button:AdjustToMaxTextWidth();
+
+        CallbackRegistry:Register("LandingPage.ExpansionChanged", function(expansionID)
+            button:Refresh();
+        end);
+
+        return button
+    end
+end
+
+
 do
     PlumberExpansionLandingPageMixin = {};
 
     function PlumberExpansionLandingPageMixin:OnLoad()
         self.OnLoad = nil;
+        self:SetScript("OnLoad", nil);
+        PlumberExpansionLandingPageMixin.OnLoad = nil;
+
         MainFrame = self;
 
         local NineSlice;
@@ -161,13 +254,6 @@ do
         CallbackRegistry:Register("LandingPage.UpdateNotification", self.UpdateNotification, self);
     end
 
-    addon.CallbackRegistry:Register("TimerunningSeason", function(seasonID)
-        if seasonID == 2 then
-            MainFrame.isLegionRemix = true;
-        end
-    end);
-
-
     function PlumberExpansionLandingPageMixin:OnShow()
         if self.InitLeftSection then
             self:InitLeftSection();
@@ -181,6 +267,7 @@ do
             self.loaded = true;
             local tabKey = addon.GetDBValue("LandingPage_DefaultTab");
             LandingPageUtil.SelectTab(tabKey);
+            LandingPageUtil.SelectExpansion();
         end
 
         self:UpdateTabs();    --The selected tab will be created here
@@ -208,6 +295,7 @@ do
 
         local button;
         local buttonWidth;
+        local offsetY = -12;
         local totalWidth = 46;
         local buttonContainer = self.RightSection.Header;
 
@@ -221,7 +309,7 @@ do
             button.notificationGetter = tabInfo.notificationGetter;
             buttonWidth = API.Round(button:SetName(tabInfo.name));
             button:ClearAllPoints();
-            button:SetPoint("LEFT", buttonContainer, "LEFT", totalWidth, -12);
+            button:SetPoint("LEFT", buttonContainer, "LEFT", totalWidth, offsetY);
             totalWidth = totalWidth + buttonWidth + 0;
         end
 
@@ -234,6 +322,11 @@ do
             self:UpdateTabs();
         end
         buttonContainer:SetScript("OnMouseWheel", Header_OnMouseWheel);
+
+
+        local ExpansionSelectButton = CreateExpansionSelectButton(buttonContainer);
+        ExpansionSelectButton:SetPoint("RIGHT", buttonContainer, "RIGHT", -48, offsetY);
+        ExpansionSelectButton:Refresh();
     end
 
     function PlumberExpansionLandingPageMixin:UpdateTabButtons()
@@ -289,16 +382,6 @@ do
             {name = L["Item Upgrade"], frameGetter = LandingPageUtil.CreateItemUpgradeFrame},
             {name = L["Resources"], frameGetter = LandingPageUtil.CreateCurrencyList},
         };
-
-        if self.isLegionRemix then
-            table.remove(categories, 1);
-            table.remove(categories, 1);
-
-            table.insert(categories, 1, {
-                name = L["Artifact Traits"],
-                frameGetter = LandingPageUtil.LegionRemixCreateNextTraitFrame,
-            });
-        end
 
         local numCategories = #categories;
 
@@ -356,6 +439,12 @@ do
 
     function PlumberExpansionLandingPageMixin:ToggleUI()
         self:SetShown(not self:IsShown());
+    end
+
+    function LandingPageUtil.ToggleUI()
+        if MainFrame then
+            MainFrame:ToggleUI();
+        end
     end
 
     function PlumberExpansionLandingPageMixin:ResetPosition()

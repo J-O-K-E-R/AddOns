@@ -1,5 +1,5 @@
 --[[
-2019-2024 João Cardoso
+2019-2026 João Cardoso
 WildAddon is distributed under the terms of the GNU General Public License (Version 3).
 As a special exception, the copyright holders of this library give you permission to embed it
 with independent modules to produce an addon, regardless of the license terms of these
@@ -15,7 +15,7 @@ GNU General Public License for more details.
 This file is part of WildAddon.
 ]]--
 
-local Lib = LibStub:NewLibrary('WildAddon-1.1', 10)
+local Lib = LibStub:NewLibrary('WildAddon-1.1', 11)
 if not Lib then return end
 
 
@@ -159,6 +159,7 @@ function Embeds:SetDefaults(target, defaults)
 	return setmetatable(target, defaults)
 end
 
+Embeds.Yup = function() return true end
 Embeds.None = setmetatable({}, {__newindex = function() error('None table is immutable.', 2) end, __metatable = false})
 Embeds.UnregisterEvent, Embeds.UnregisterAll = Lib.Unregister, Lib.UnregisterAll
 Embeds:ContinueOn('PLAYER_LOGIN', function()

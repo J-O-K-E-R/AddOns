@@ -290,7 +290,7 @@ local DCSShowCharacterFrameButton = CreateFrame("Button", "DCSShowCharacterFrame
 DCSShowCharacterFrameButton:RegisterEvent("PLAYER_LOGIN")
 
 DCSShowCharacterFrameButton:ClearAllPoints()
-DCSShowCharacterFrameButton:SetPoint("TOPRIGHT", -73, -57)
+DCSShowCharacterFrameButton:SetPoint("TOPRIGHT", -77, -10)
 DCSShowCharacterFrameButton:SetScale(0.80)
 DCSShowCharacterFrameButton:SetWidth(showCharWidth)
 DCSShowCharacterFrameButton:SetHeight(30)

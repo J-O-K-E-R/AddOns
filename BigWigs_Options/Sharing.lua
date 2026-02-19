@@ -4,8 +4,6 @@ local sharingModule = {}
 -- Libraries
 --
 
-local LibSerialize = LibStub("LibSerialize")
-local LibDeflate = LibStub("LibDeflate")
 local AceGUI = LibStub("AceGUI-3.0")
 
 -------------------------------------------------------------------------------
@@ -57,7 +55,7 @@ end
 
 local L = BigWigsAPI:GetLocale("BigWigs")
 local BigWigs = BigWigs
-local sharingVersion = "BW1"
+local sharingVersion = "BW2"
 
 -- Position Args
 local barPositionsToExport = {
@@ -97,13 +95,17 @@ local barSettingsToExport = {
 	"emphasizeRestart",
 	"emphasizeTime",
 	"emphasizeMultiplier",
+	"spacing",
+	"visibleBarLimit",
+	"visibleBarLimitEmph",
 	"normalWidth",
 	"normalHeight",
 	"expWidth",
 	"expHeight",
-	"spacing",
-	"visibleBarLimit",
-	"visibleBarLimitEmph",
+	"spellIndicators",
+	"spellIndicatorsSize",
+	"spellIndicatorsPosition",
+	"spellIndicatorsOffset",
 }
 
 local messageSettingsToExport = {
@@ -126,9 +128,10 @@ local messageSettingsToExport = {
 }
 
 local countdownSettingsToExport = {
+	"textEnabled",
 	"fontName",
-	"fontSize",
 	"outline",
+	"fontSize",
 	"monochrome",
 	"voice",
 	"countdownTime",
@@ -286,6 +289,15 @@ local battleResSettingsToExport = {
 	"cooldownInverse",
 }
 
+-- PrivateAuras
+local privateAurasSettingsToExport = {
+	"showDispelType",
+	"player",
+	"other",
+	"otherPlayerType",
+	"onlyWhenYouAreTank",
+}
+
 -- Default Options
 local sharingExportOptionsSettings = {
 	exportBarPositions = true,
@@ -300,6 +312,7 @@ local sharingExportOptionsSettings = {
 	exportNameplateSettings = true,
 	exportMythicPlusSettings = true,
 	exportBattleResSettings = true,
+	exportPrivateAurasSettings = true,
 }
 
 local sharingImportOptionsSettings = {}
@@ -338,7 +351,6 @@ do
 		local barSettings = BigWigs:GetPlugin("Bars")
 		local messageSettings = BigWigs:GetPlugin("Messages")
 		local countdownSettings = BigWigs:GetPlugin("Countdown")
-		local nameplateSettings = BigWigs:GetPlugin("Nameplates")
 
 		if requestAll or sharingExportOptionsSettings.exportBarPositions then
 			exportOptions["barPositions"] = exportProfileSettings(barPositionsToExport, barSettings.db.profile)
@@ -377,7 +389,10 @@ do
 		end
 
 		if requestAll or sharingExportOptionsSettings.exportNameplateSettings then
-			exportOptions["nameplateSettings"] = exportProfileSettings(nameplateSettingsToExport, nameplateSettings.db.profile)
+			local nameplateSettings = BigWigs:GetPlugin("Nameplates", true)
+			if nameplateSettings then
+				exportOptions["nameplateSettings"] = exportProfileSettings(nameplateSettingsToExport, nameplateSettings.db.profile)
+			end
 		end
 
 		if requestAll or sharingExportOptionsSettings.exportMythicPlusSettings then
@@ -394,10 +409,17 @@ do
 			end
 		end
 
-		local serialized = LibSerialize:Serialize(exportOptions)
-		local compressed = LibDeflate:CompressDeflate(serialized)
-		local compressedForPrint = LibDeflate:EncodeForPrint(compressed)
-		return sharingVersion..":"..compressedForPrint
+		if requestAll or sharingExportOptionsSettings.exportPrivateAurasSettings then
+			local plugin = BigWigs:GetPlugin("PrivateAuras", true)
+			if plugin then
+				exportOptions["privateAurasSettings"] = exportProfileSettings(privateAurasSettingsToExport, plugin.db.profile)
+			end
+		end
+
+		local serialized = C_EncodingUtil.SerializeCBOR(exportOptions)
+		local compressed = C_EncodingUtil.CompressString(serialized, 0) -- Enum.CompressionMethod.Deflate = 0
+		local encoded = C_EncodingUtil.EncodeBase64(compressed)
+		return sharingVersion..":"..encoded
 	end
 	local _, addonTable = ...
 	addonTable.GetExportString = function(requestAll) return GetExportString(requestAll) end
@@ -431,7 +453,7 @@ local function IsOptionGroupAvailable(group)
 		end
 	end
 	if group == "other" then
-		if IsOptionInString("nameplateSettings") or IsOptionInString("mythicPlusSettings") or IsOptionInString("battleResSettings") then
+		if IsOptionInString("nameplateSettings") or IsOptionInString("mythicPlusSettings") or IsOptionInString("battleResSettings") or IsOptionInString("privateAurasSettings") then
 			return true
 		end
 	end
@@ -466,12 +488,13 @@ do
 
 		local versionPlain, importData = string:match("^(%w+):(.+)$")
 		if versionPlain ~= sharingVersion then return end
-		local decodedForPrint = LibDeflate:DecodeForPrint(importData)
+		local decodedForPrint = C_EncodingUtil.DecodeBase64(importData)
 		if not decodedForPrint then return end
-		local decompressed = LibDeflate:DecompressDeflate(decodedForPrint)
+		local decompressed = C_EncodingUtil.DecompressString(decodedForPrint, 0) -- Enum.CompressionMethod.Deflate = 0
 		if not decompressed then return end
-		local success, data = LibSerialize:Deserialize(decompressed)
-		if not success or not data.version or data.version ~= sharingVersion then return end
+		local data = C_EncodingUtil.DeserializeCBOR(decompressed)
+		if not data then return end
+		if data.version ~= sharingVersion then return end -- encoded version does not match expected version
 		local importSucceeded = PreProcess(data)
 		return importSucceeded
 	end
@@ -487,7 +510,6 @@ do
 		local messageplugin = BigWigs:GetPlugin("Messages")
 		local countdownPlugin = BigWigs:GetPlugin("Countdown")
 		local colorplugin = BigWigs:GetPlugin("Colors")
-		local nameplatePlugin = BigWigs:GetPlugin("Nameplates")
 
 		-- Colors are stored for each plugin/module (e.g. BigWigs_Plugins_Colors for the defaults, BigWigs_Bosses_* for bosses)
 		-- We only want to modify the defaults with these imports right now.
@@ -525,7 +547,12 @@ do
 		importSettings("importCountdownPositions", "countdownPositions", countdownPositionsToExport, countdownPlugin, L.imported_countdown_position)
 		importSettings("importCountdownSettings", "countdownSettings", countdownSettingsToExport, countdownPlugin, L.imported_countdown_settings)
 		importSettings("importCountdownColors", "countdownColors", countdownColorsToExport, countdownPlugin, L.imported_countdown_color) -- Not part of color plugin
-		importSettings("importNameplateSettings", "nameplateSettings", nameplateSettingsToExport, nameplatePlugin, L.imported_nameplate_settings)
+		do
+			local nameplatePlugin = BigWigs:GetPlugin("Nameplates", true)
+			if nameplatePlugin then
+				importSettings("importNameplateSettings", "nameplateSettings", nameplateSettingsToExport, nameplatePlugin, L.imported_nameplate_settings)
+			end
+		end
 		do
 			local db = BigWigsLoader.db:GetNamespace("MythicPlus", true)
 			if db then
@@ -536,6 +563,12 @@ do
 			local plugin = BigWigs:GetPlugin("BattleRes", true)
 			if plugin then
 				importSettings("importBattleResSettings", "battleResSettings", battleResSettingsToExport, plugin, L.imported_battleres_settings)
+			end
+		end
+		do
+			local plugin = BigWigs:GetPlugin("PrivateAuras", true)
+			if plugin then
+				importSettings("importPrivateAurasSettings", "privateAurasSettings", privateAurasSettingsToExport, plugin, L.imported_privateAuras_settings)
 			end
 		end
 
@@ -599,6 +632,9 @@ do
 		end
 		if IsOptionInString("battleResSettings") then
 			sharingImportOptionsSettings.importBattleResSettings = true
+		end
+		if IsOptionInString("privateAurasSettings") then
+			sharingImportOptionsSettings.importPrivateAurasSettings = true
 		end
 		sharingModule:SaveData()
 	end
@@ -763,7 +799,7 @@ local sharingOptions = {
 						desc = L.nameplate_settings_import_desc,
 						order = 1,
 						width = 1,
-						disabled = function() return not IsOptionInString("nameplateSettings") end,
+						disabled = function() return not IsOptionInString("nameplateSettings") or not BigWigs:GetPlugin("Nameplates", true) end,
 					},
 					importMythicPlusSettings = {
 						type = "toggle",
@@ -780,6 +816,14 @@ local sharingOptions = {
 						order = 3,
 						width = 1,
 						disabled = function() return not IsOptionInString("battleResSettings") or not BigWigs:GetPlugin("BattleRes", true) end,
+					},
+					importPrivateAurasSettings = {
+						type = "toggle",
+						name = L.privateAuras,
+						desc = L.privateAuras_settings_import_desc,
+						order = 4,
+						width = 1,
+						disabled = function() return not IsOptionInString("privateAurasSettings") or not BigWigs:GetPlugin("PrivateAuras", true) end,
 					},
 				},
 			},
@@ -923,6 +967,8 @@ local sharingOptions = {
 						desc = L.nameplate_settings_export_desc,
 						order = 1,
 						width = 1,
+						get = function(i) return sharingExportOptionsSettings[i[#i]] and BigWigs:GetPlugin("Nameplates", true) end,
+						disabled = function() return not BigWigs:GetPlugin("Nameplates", true) end,
 					},
 					exportMythicPlusSettings = {
 						type = "toggle",
@@ -941,6 +987,15 @@ local sharingOptions = {
 						width = 1,
 						get = function(i) return sharingExportOptionsSettings[i[#i]] and BigWigs:GetPlugin("BattleRes", true) end,
 						disabled = function() return not BigWigs:GetPlugin("BattleRes", true) end,
+					},
+					exportPrivateAurasSettings = {
+						type = "toggle",
+						name = L.privateAuras,
+						desc = L.privateAuras_settings_export_desc,
+						order = 4,
+						width = 1,
+						get = function(i) return sharingExportOptionsSettings[i[#i]] and BigWigs:GetPlugin("PrivateAuras", true) end,
+						disabled = function() return not BigWigs:GetPlugin("PrivateAuras", true) end,
 					},
 				},
 			},
@@ -962,3 +1017,4 @@ local sharingOptions = {
 }
 
 addonTable.sharingOptions = sharingOptions
+addonTable.sharingVersion = sharingVersion

@@ -5,6 +5,12 @@
 
 local ADDON, Addon = ...
 local Tipped = Addon.Parented:NewClass('Tipped')
+Tipped.Markup = {
+	['|LS'] = '|TInterface/AddOns/BagBrother/art/shift:14:26.6875:0:0:64:64:0:61:0:32|t',
+	['|RS'] = '|TInterface/AddOns/BagBrother/art/shift:14:26.6875:0:0:64:64:0:61:32:64|t',
+	['|L'] = '|A:NPE_LeftClick:14:14|a',
+	['|R'] = '|A:NPE_RightClick:14:14|a',
+}
 
 function Tipped:OnLeave()
 	if GameTooltip:IsOwned(self) then
@@ -27,7 +33,7 @@ function Tipped:ShowTooltip(title, ...)
 end
 
 function Tipped.MarkupTooltip(text)
-	return text:gsub('|L', '|A:NPE_LeftClick:14:14|a'):gsub('|R', '|A:NPE_RightClick:14:14|a'), nil
+	return text:gsub('(%|%u+)', Tipped.Markup), nil
 end
 
 function Tipped:GetTipAnchor()

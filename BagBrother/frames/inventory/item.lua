@@ -42,7 +42,10 @@ if C.Bank.AreAnyBankTypesViewable then
 	function Item:PreClick(button)
 		if C.Bank.AreAnyBankTypesViewable() and self.hasItem then
 			if button == 'RightButton' and Addon.Frames:IsEnabled('bank') then
-				local bankType = C.Bank.CanUseBank(2) and (IsShiftKeyDown() or not C.Bank.CanUseBank(0)) and 2 or 0
+				local bankType = Addon_GetBankType()
+				bankType = IsShiftKeyDown() and (2 - bankType) or bankType
+				bankType = not C.Bank.CanUseBank(bankType) and (2 - bankType) or bankType
+
 				C.Container.UseContainerItem(self:GetBag(), self:GetID(), nil, bankType)
 			end
 		end
@@ -63,7 +66,7 @@ function Item:Update(...)
 
 	local r,g,b = 1,1,1
 	if not self.hasItem then
-		local family = self.frame:GetBagFamily(self:GetBag())
+		local family = self:GetBagFamily(self:GetBag())
 		local color = Addon.sets.colorSlots and Addon.sets.color[self.BagFamilies[family] or 'normal'] or Addon.None
 
 		r,g,b = color[1] or 1, color[2] or 1, color[3] or 1

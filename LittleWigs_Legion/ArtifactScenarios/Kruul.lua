@@ -78,7 +78,7 @@ end
 
 function mod:OnBossEnable()
 	self:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT", "CheckBossStatus")
-	self:RegisterEvent("CHAT_MSG_MONSTER_SAY", "SayTriggers")
+	self:RegisterEvent("CHAT_MSG_MONSTER_SAY")
 	self:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", nil, "boss1")
 
 	self:Log("SPELL_CAST_START", "NetherStorm", 240790)
@@ -105,7 +105,8 @@ end
 -- Event Handlers
 --
 
-function mod:SayTriggers(_, msg)
+function mod:CHAT_MSG_MONSTER_SAY(_, msg)
+	if self:IsSecret(msg) then return end
 	if msg == L.warmup_trigger then
 		self:Bar("warmup", 25, CL.active, "inv_pet_inquisitoreye")
 	elseif msg == L.win_trigger then
@@ -114,6 +115,7 @@ function mod:SayTriggers(_, msg)
 end
 
 function mod:UNIT_SPELLCAST_SUCCEEDED(_, _, _, spellId)
+	if self:IsSecret(spellId) then return end
 	if spellId == 234428 then -- Summon Tormenting Eye
 		self:Message(spellId, "yellow")
 		self:CDBar(spellId, 17)

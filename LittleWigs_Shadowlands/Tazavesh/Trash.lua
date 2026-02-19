@@ -520,7 +520,7 @@ function mod:OnBossEnable()
 
 	-- Hourglass Tidesage
 	self:RegisterEngageMob("HourglassTidesageEngaged", 179388)
-	self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED") -- Tidal Burst
+	--self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED") -- Tidal Burst
 	self:Death("HourglassTidesageDeath", 179388)
 
 	-- Corsair Officer
@@ -558,6 +558,7 @@ end
 ------ Streets of Wonder ------
 
 function mod:CHAT_MSG_MONSTER_SAY(event, msg)
+	if self:IsSecret(msg) then return end
 	if L.password_triggers[msg] then
 		-- Market Trading Game
 		passwordId = L.password_triggers[msg]
@@ -601,7 +602,7 @@ function mod:CHAT_MSG_MONSTER_SAY(event, msg)
 end
 
 function mod:CHAT_MSG_MONSTER_YELL(event, msg)
-	if msg == L.zophex_warmup_trigger then
+	if not self:IsSecret(msg) and msg == L.zophex_warmup_trigger then
 		-- Zo'phex warmup
 		local zophexModule = BigWigs:GetBossModule("Zo'phex the Sentinel", true)
 		if zophexModule then
@@ -615,12 +616,12 @@ function mod:MERCHANT_SHOW()
 	if self:GetOption("vendor_autopurchase") > 0 then
 		local mobId = self:MobId(self:UnitGUID("npc"))
 		if mobId == 177999 then -- Xy'darid
-			local itemName, _, _, _, numAvailable = GetMerchantItemInfo(1)
-			if numAvailable == 1 then
-				if itemName then
+			local info = C_MerchantFrame.GetItemInfo(1)
+			if info and info.numAvailable == 1 then
+				if info.name then
 					BuyMerchantItem(1, 1)
 					CloseMerchant()
-					self:Message("vendor_autopurchase", "cyan", L.vendor_autopurchase_message:format(itemName), L.vendor_autopurchase_icon)
+					self:Message("vendor_autopurchase", "cyan", L.vendor_autopurchase_message:format(info.name), L.vendor_autopurchase_icon)
 					self:PlaySound("vendor_autopurchase", "info")
 				else
 					-- item info wasn't loaded, try again
@@ -1543,7 +1544,7 @@ end
 
 function mod:CHAT_MSG_RAID_BOSS_WHISPER(event, msg)
 	-- the debuff for Blood in the Water (358443) is a hidden aura that does not fire the SPELL_AURA events
-	if msg:find("INV_Pet_BabyShark", nil, true) then
+	if not self:IsSecret(msg) and msg:find("INV_Pet_BabyShark", nil, true) then
 		self:Bar(358443, 5.25) -- Blood in the Water
 	end
 end
@@ -1765,7 +1766,7 @@ end
 do
 	local prevCast, prev = nil, 0
 	function mod:UNIT_SPELLCAST_SUCCEEDED(_, unit, castGUID, spellId)
-		if spellId == 1244650 and castGUID ~= prevCast then -- Tidal Burst
+		if not self:IsSecret(spellId) and spellId == 1244650 and castGUID ~= prevCast then -- Tidal Burst
 			prevCast = castGUID
 			local sourceGUID = self:UnitGUID(unit)
 			if sourceGUID then
@@ -1777,7 +1778,7 @@ do
 				self:Message(spellId, "orange", nil, L["1244650_icon"])
 				self:PlaySound(spellId, "alarm")
 			end
-		elseif spellId == 357828 and castGUID ~= prevCast then -- Frantic Leap
+		elseif not self:IsSecret(spellId) and spellId == 357828 and castGUID ~= prevCast then -- Frantic Leap
 			prevCast = castGUID
 			local sourceGUID = self:UnitGUID(unit)
 			if sourceGUID then

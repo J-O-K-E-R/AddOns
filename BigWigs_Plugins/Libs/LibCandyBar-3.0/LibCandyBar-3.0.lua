@@ -21,7 +21,7 @@ local CreateFrame, error, setmetatable, UIParent = CreateFrame, error, setmetata
 if not LibStub then error("LibCandyBar-3.0 requires LibStub.") end
 local cbh = LibStub:GetLibrary("CallbackHandler-1.0")
 if not cbh then error("LibCandyBar-3.0 requires CallbackHandler-1.0") end
-local lib = LibStub:NewLibrary("LibCandyBar-3.0", 104) -- Bump minor on changes
+local lib = LibStub:NewLibrary("LibCandyBar-3.0", 108) -- Bump minor on changes
 if not lib then return end
 lib.callbacks = lib.callbacks or cbh:New(lib)
 local cb = lib.callbacks
@@ -52,19 +52,6 @@ local issecretvalue = issecretvalue or function() -- 12.0 compatibility
 	return false
 end
 
-local function stopBar(bar)
-	bar.updater:Stop()
-	bar.data = nil
-	bar.funcs = nil
-	bar.running = nil
-	bar.paused = nil
-	bar.pauseWhenDone = nil
-	bar.timeCallback = nil
-	bar.timeCallbackTrigger = nil
-	bar:Hide()
-	bar:SetParent(UIParent)
-end
-
 local tformat1 = "%d:%02d:%02d"
 local tformat2 = "%d:%02d"
 local tformat3 = "%.1f"
@@ -79,6 +66,12 @@ local function barUpdate(updater)
 			bar.candyBarBar:SetValue(0)
 			bar:SetDuration(0)
 			bar:SetTimeVisibility(false)
+			if bar.maxPauseDuration then
+				bar.maxPauseDurationCallback = C_Timer.NewTimer(bar.maxPauseDuration, function()
+					bar.maxPauseDurationCallback = nil
+					bar:Stop()
+				end)
+			end
 		else
 			bar:Stop()
 		end
@@ -352,6 +345,10 @@ function barPrototype:SetIconPosition(position)
 	self.iconPosition = position
 	restyleBar(self)
 end
+--- Returns the side of the bar where the icon should appear.
+function barPrototype:GetIconPosition()
+	return self.iconPosition
+end
 --- Sets wether or not the time indicator on the right of the bar should be shown.
 -- Time is shown by default.
 -- @param bool true to show the time, false/nil to hide the time.
@@ -376,9 +373,15 @@ function barPrototype:SetLabelVisibility(bool)
 end
 --- Sets wether or not the bar should pause when its done.
 -- It will show as full and the time label will be hidden
--- @param bool true to pause the bar when done
-function barPrototype:SetPauseWhenDone(bool)
-	self.pauseWhenDone = bool
+-- @param value Seconds to pause the bar when done or true for indefinitely
+function barPrototype:SetPauseWhenDone(value)
+	if type(value) == "number" then
+		self.maxPauseDuration = value
+		self.pauseWhenDone = true
+	else
+		self.maxPauseDuration = nil
+		self.pauseWhenDone = value or nil
+	end
 end
 --- Sets a one-time callback to fire after reaching a certain time remaining on the bar
 -- @param func The callback function to fire
@@ -458,20 +461,41 @@ function barPrototype:Resume()
 		self.paused = nil
 	end
 end
---- Stops the bar.
--- This will stop the bar, fire the LibCandyBar_Stop callback, and recycle the bar into the candybar pool.
--- Note: make sure you remove all references to the bar in your addon upon receiving the LibCandyBar_Stop callback.
--- @usage
--- -- The example below shows the use of the LibCandyBar_Stop callback by printing the contents of the label in the chatframe
--- local function barstopped( callback, bar )
---   print( bar:GetLabel(), "stopped")
--- end
--- LibStub("LibCandyBar-3.0"):RegisterCallback(myaddonobject, "LibCandyBar_Stop", barstopped)
--- @param ... Optional args to pass across in the LibCandyBar_Stop callback.
-function barPrototype:Stop(...)
-	cb:Fire("LibCandyBar_Stop", self, ...)
-	stopBar(self)
-	barCache[self] = true
+
+do
+	local function stopBar(bar)
+		bar.updater:Stop()
+		bar.data = nil
+		bar.funcs = nil
+		bar.running = nil
+		bar.paused = nil
+		bar.pauseWhenDone = nil
+		bar.maxPauseDuration = nil
+		if bar.maxPauseDurationCallback then
+			bar.maxPauseDurationCallback:Cancel()
+			bar.maxPauseDurationCallback = nil
+		end
+		bar.timeCallback = nil
+		bar.timeCallbackTrigger = nil
+		bar:Hide()
+		bar:SetParent(UIParent)
+	end
+
+	--- Stops the bar.
+	-- This will stop the bar, fire the LibCandyBar_Stop callback, and recycle the bar into the candybar pool.
+	-- Note: make sure you remove all references to the bar in your addon upon receiving the LibCandyBar_Stop callback.
+	-- @usage
+	-- -- The example below shows the use of the LibCandyBar_Stop callback by printing the contents of the label in the chatframe
+	-- local function barstopped( callback, bar )
+	--   print( bar:GetLabel(), "stopped")
+	-- end
+	-- LibStub("LibCandyBar-3.0"):RegisterCallback(myaddonobject, "LibCandyBar_Stop", barstopped)
+	-- @param ... Optional args to pass across in the LibCandyBar_Stop callback.
+	function barPrototype:Stop(...)
+		cb:Fire("LibCandyBar_Stop", self, ...)
+		stopBar(self)
+		barCache[self] = true
+	end
 end
 
 -- ------------------------------------------------------------------------------
@@ -511,18 +535,13 @@ function lib:New(texture, width, height)
 		bar.candyBarBackdrop = backdrop
 
 		local iconBackdrop = CreateFrame("Frame", nil, bar, "BackdropTemplate") -- Used by bar stylers for backdrops
-		iconBackdrop:SetFrameLevel(0)
 		bar.candyBarIconFrameBackdrop = iconBackdrop
 
-		local duration = statusbar:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmallOutline")
-		duration:SetPoint("TOPLEFT", statusbar, "TOPLEFT", 2, 0)
-		duration:SetPoint("BOTTOMRIGHT", statusbar, "BOTTOMRIGHT", -2, 0)
-		bar.candyBarDuration = duration
-
 		local label = statusbar:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmallOutline")
-		label:SetPoint("TOPLEFT", statusbar, "TOPLEFT", 2, 0)
-		label:SetPoint("BOTTOMRIGHT", statusbar, "BOTTOMRIGHT", -2, 0)
 		bar.candyBarLabel = label
+
+		local duration = statusbar:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmallOutline")
+		bar.candyBarDuration = duration
 
 		local updater = bar:CreateAnimationGroup()
 		updater:SetLooping("REPEAT")
@@ -533,6 +552,23 @@ function lib:New(texture, width, height)
 		bar.repeater = anim
 	else
 		barCache[bar] = nil
+
+		-- Clear secrets from icon textures
+		if bar.candyBarIconFrame.SetToDefaults then
+			bar.candyBarIconFrame:SetToDefaults()
+		end
+		bar.candyBarIconFrame:ClearAllPoints()
+		bar.candyBarIconFrameBackdrop:ClearAllPoints()
+
+		-- Clear secrets from fontstrings
+		if bar.candyBarLabel.ClearText then
+			bar.candyBarLabel:ClearText()
+		end
+		bar.candyBarLabel:ClearAllPoints()
+		if bar.candyBarDuration.ClearText then
+			bar.candyBarDuration:ClearText()
+		end
+		bar.candyBarDuration:ClearAllPoints()
 	end
 
 	bar:SetFrameStrata("MEDIUM")
@@ -541,6 +577,10 @@ function lib:New(texture, width, height)
 	bar.candyBarBackground:SetTexture(texture)
 	bar.width = width
 	bar.height = height
+	bar.candyBarLabel:SetPoint("TOPLEFT", bar.candyBarBar, "TOPLEFT", 2, 0)
+	bar.candyBarLabel:SetPoint("BOTTOMRIGHT", bar.candyBarBar, "BOTTOMRIGHT", -2, 0)
+	bar.candyBarDuration:SetPoint("TOPLEFT", bar.candyBarBar, "TOPLEFT", 2, 0)
+	bar.candyBarDuration:SetPoint("BOTTOMRIGHT", bar.candyBarBar, "BOTTOMRIGHT", -2, 0)
 
 	-- RESET ALL THE THINGS!
 	bar.fill = nil
@@ -565,6 +605,8 @@ function lib:New(texture, width, height)
 	bar:SetFont(_fontName, _fontSize)
 	bar:SetShadowOffset(_fontShadowX, _fontShadowY)
 	bar:SetShadowColor(_fontShadowR, _fontShadowG, _fontShadowB, _fontShadowA)
+
+	bar.candyBarIconFrameBackdrop:SetFrameLevel(0)
 
 	bar.candyBarLabel:SetJustifyH("LEFT")
 	bar.candyBarLabel:SetJustifyV("MIDDLE")

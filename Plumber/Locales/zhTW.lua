@@ -397,6 +397,7 @@ L["Drawer Option Update Frequently Tooltip"] = "在你背包或法術書發生�
 --New Expansion Landing Page
 L["ModuleName NewExpansionLandingPage"] = "資料片總覽";
 L["ModuleDescription NewExpansionLandingPage"] = "一個顯示聲望、每週事件和團隊副本進度的介面。你可從以下方式打開：\n\n- 點擊小地圖上的卡茲阿加概要按鈕。\n\n- 在遊戲設定-快捷鍵中設定一個快捷鍵。";
+L["Abbr NewExpansionLandingPage"] = "資料片總覽";
 L["Reward Available"] = "獎勵待領取";  --As brief as possible
 L["Paragon Reward Available"] = "巔峰獎勵待領取";
 L["Until Next Level Format"] = "離下一級還有 %d";   --Earn x reputation to reach the next level
@@ -476,3 +477,14 @@ L["Match Pattern Rep 1"] = "戰隊的(.+)聲望提高([%d%,]+)";   --FACTION_STA
 L["Match Pattern Rep 2"] = "你於(.+)的聲望提高了([%d%,]+)";   --FACTION_STANDING_INCREASED
 
 L["Match Pattern Transmog Set Partially Known"] = "^包含(%d)";   --TRANSMOG_SET_PARTIALLY_KNOWN_CLASS
+
+L["DyeColorNameAbbr Black"] = "黑色";
+L["DyeColorNameAbbr Blue"] = "藍色";
+L["DyeColorNameAbbr Brown"] = "棕色";
+L["DyeColorNameAbbr Green"] = "綠色";
+L["DyeColorNameAbbr Orange"] = "橙色";
+L["DyeColorNameAbbr Purple"] = "紫色";
+L["DyeColorNameAbbr Red"] = "紅色";
+L["DyeColorNameAbbr Teal"] = "水藍色";
+L["DyeColorNameAbbr White"] = "白色";
+L["DyeColorNameAbbr Yellow"] = "黄色";

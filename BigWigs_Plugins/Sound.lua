@@ -7,6 +7,7 @@ local plugin, L = BigWigs:NewPlugin("Sounds", {
 	"soundOptions",
 	"SetSoundOptions",
 	"GetDefaultSound",
+	"GetDefaultSoundFile",
 })
 if not plugin then return end
 
@@ -257,7 +258,7 @@ end
 -- Initialization
 --
 
-function plugin:OnRegister()
+function plugin:OnPluginEnable()
 	updateProfile()
 
 	soundList = LibSharedMedia:List(SOUND)
@@ -340,12 +341,9 @@ function plugin:OnRegister()
 		if played then StopSound(id) end
 	end
 	timer = BigWigsLoader.CTimerNewTicker(0, Loop)
-end
 
-function plugin:OnPluginEnable()
 	self:RegisterMessage("BigWigs_Sound")
 	self:RegisterMessage("BigWigs_ProfileUpdate", updateProfile)
-	updateProfile()
 end
 
 -------------------------------------------------------------------------------
@@ -385,6 +383,11 @@ do
 			return
 		end
 		return custom or db.media[soundName]
+	end
+
+	function plugin:GetDefaultSoundFile(soundName)
+		local defaultSound = self:GetDefaultSound(soundName)
+		return defaultSound and LibSharedMedia:Fetch(SOUND, defaultSound, true)
 	end
 end
 

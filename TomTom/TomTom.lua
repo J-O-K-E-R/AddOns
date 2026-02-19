@@ -5,12 +5,12 @@
 ----------------------------------------------------------------------------]]
 
 -- Simple localization table for messages
-local L = TomTomLocals
 local ldb = LibStub("LibDataBroker-1.1")
 local hbd = LibStub("HereBeDragons-2.0")
 
 local addonName, addon = ...
 local TomTom = addon
+local L = addon.L
 
 addon.hbd = hbd
 addon.WOW_MAINLINE = (WOW_PROJECT_ID == WOW_PROJECT_MAINLINE)
@@ -49,6 +49,7 @@ function TomTom:Initialize(event, addon)
                 width = 100,
                 fontsize = 12,
                 throttle = 0.2,
+                showWayCommand = true,
             },
             mapcoords = {
                 playerenable = true,
@@ -131,6 +132,7 @@ function TomTom:Initialize(event, addon)
             },
             paste = {
                 minimap_button = false,
+                addon_compartment_button = true,
             }
         },
     }
@@ -1115,12 +1117,31 @@ do
     function Block_OnClick(self, button, down)
         local m,x,y = TomTom:GetCurrentPlayerPosition()
         if m and x and y then
+            local targetName = UnitName("target")
+            if issecretvalue and issecretvalue(targetName) then
+                targetName = "Unnamed NPC"
+            end
+
+            local fromText = targetName and targetName or L["TomTom/Block"]
+
             local zoneName = hbd:GetLocalizedMap(m) or L["Unnamed Map"]
             local desc = string.format("%s: %.2f, %.2f", zoneName, x*100, y*100)
+            if targetName then
+                desc = desc .. " - " .. tostring(targetName)
+            end
+
             TomTom:AddWaypoint(m, x, y, {
                 title = desc,
-                from = "TomTom/Block"
+                from = fromText,
             })
+
+            if TomTom.db.profile.block.showWayCommand then
+                local output = string.format("/way #%d %.2f %.2f %s", m, x*100, y*100, zoneName)
+                if targetName then
+                    output = output .. " - " .. tostring(targetName)
+                end
+                print(output)
+            end
         end
     end
 

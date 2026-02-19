@@ -69,7 +69,6 @@ function CurrencyTracker:Layout()
 	end
 
 	self:SetSize(max(w, x), y+22)
-	self:SendFrameSignal('ELEMENT_RESIZED')
 end
 
 function CurrencyTracker:GetButton(i)

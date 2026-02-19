@@ -25,7 +25,7 @@ local STATUSBAR = LibSharedMedia.MediaType and LibSharedMedia.MediaType.STATUSBA
 local next = next
 local db = nil
 local normalAnchor, emphasizeAnchor = nil, nil
-local rearrangeBars
+local rearrangeBars, getBar
 
 local minBarWidth, minBarHeight, maxBarWidth, maxBarHeight = 120, 10, 550, 100
 
@@ -62,6 +62,10 @@ plugin.defaultDB = {
 	normalHeight = 18,
 	expWidth = 260,
 	expHeight = 22,
+	spellIndicators = 1023, -- Constants.EncounterTimelineIconMasks.EncounterTimelineAllIcons = 1023
+	spellIndicatorsSize = 4,
+	spellIndicatorsPosition = "LEFT",
+	spellIndicatorsOffset = 2,
 	normalPosition = {"CENTER", "CENTER", 450, 200, "UIParent"},
 	expPosition = {"CENTER", "CENTER", 0, -100, "UIParent"},
 }
@@ -130,6 +134,19 @@ local function updateProfile()
 	end
 	if db.expHeight < minBarHeight or db.expHeight > maxBarHeight then
 		db.expHeight = plugin.defaultDB.expHeight
+	end
+
+	if db.spellIndicators < 0 or db.spellIndicators > plugin.defaultDB.spellIndicators then
+		db.spellIndicators = plugin.defaultDB.spellIndicators
+	end
+	if db.spellIndicatorsSize < 0 or db.spellIndicatorsSize > 5 then
+		db.spellIndicatorsSize = plugin.defaultDB.spellIndicatorsSize
+	end
+	if db.spellIndicatorsPosition ~= "LEFT" and db.spellIndicatorsPosition ~= "RIGHT" then
+		db.spellIndicatorsPosition = plugin.defaultDB.spellIndicatorsPosition
+	end
+	if db.spellIndicatorsOffset < 0 or db.spellIndicatorsOffset > 100 then
+		db.spellIndicatorsOffset = plugin.defaultDB.spellIndicatorsOffset
 	end
 
 	if type(db.normalPosition[1]) ~= "string" or type(db.normalPosition[2]) ~= "string"
@@ -208,18 +225,28 @@ local function updateProfile()
 	local font = LibSharedMedia:Fetch(FONT, db.fontName)
 	local texture = LibSharedMedia:Fetch(STATUSBAR, db.texture)
 
+	local lastIndicatorFrame = nil
 	for bar in next, normalAnchor.bars do
 		currentBarStyler.BarStopped(bar)
-		if db.emphasizeMove then
-			bar:SetHeight(db.normalHeight)
-			bar:SetWidth(db.normalWidth)
-		elseif bar:Get("bigwigs:emphasized") then
-			bar:SetHeight(db.normalHeight * db.emphasizeMultiplier)
+		local height
+		if bar:Get("bigwigs:emphasized") then
+			height = db.normalHeight * db.emphasizeMultiplier
+			bar:SetHeight(height)
 			bar:SetWidth(db.normalWidth * db.emphasizeMultiplier)
+			bar:SetFont(font, db.fontSizeEmph, flags)
+			if db.emphasizeMove then
+				normalAnchor.bars[bar] = nil
+				emphasizeAnchor.bars[bar] = true
+				bar:Set("bigwigs:anchor", "expPosition")
+			end
+		else
+			height = db.normalHeight
+			bar:SetHeight(height)
+			bar:SetWidth(db.normalWidth)
+			bar:SetFont(font, db.fontSize, flags)
 		end
 		bar:SetTexture(texture)
 		bar:SetFill(db.fill)
-		bar:SetFont(font, db.fontSize, flags)
 		bar:SetLabelVisibility(db.text)
 		bar.candyBarLabel:SetJustifyH(db.alignText)
 		bar:SetTimeVisibility(db.time)
@@ -230,8 +257,17 @@ local function updateProfile()
 			bar:SetIcon(bar:GetIcon() or "Interface\\AddOns\\BigWigs\\Media\\Icons\\minimap_raid.tga")
 		end
 		bar:SetIconPosition(db.iconPosition)
+		local indicatorFrame = bar:Get("bigwigs:indicatorFrame")
+		if indicatorFrame then
+			lastIndicatorFrame = indicatorFrame
+			indicatorFrame:ClearTextures()
+			indicatorFrame:SetIndicatorSize(height)
+			indicatorFrame:AddIndicators(bar:Get("bigwigs:eventId"))
+		end
 		currentBarStyler.ApplyStyle(bar)
 	end
+
+	local rerun = false
 	for bar in next, emphasizeAnchor.bars do
 		currentBarStyler.BarStopped(bar)
 		bar:SetHeight(db.expHeight)
@@ -243,17 +279,38 @@ local function updateProfile()
 		bar.candyBarLabel:SetJustifyH(db.alignText)
 		bar:SetTimeVisibility(db.time)
 		bar.candyBarDuration:SetJustifyH(db.alignTime)
+		if not db.emphasizeMove then
+			rerun = true
+			normalAnchor.bars[bar] = true
+			emphasizeAnchor.bars[bar] = nil
+			bar:Set("bigwigs:anchor", "normalPosition")
+		end
 		if not db.icon then
 			bar:SetIcon(nil)
 		else
 			bar:SetIcon(bar:GetIcon() or "Interface\\AddOns\\BigWigs\\Media\\Icons\\minimap_raid.tga")
 		end
 		bar:SetIconPosition(db.iconPosition)
+		local indicatorFrame = bar:Get("bigwigs:indicatorFrame")
+		if indicatorFrame then
+			lastIndicatorFrame = indicatorFrame
+			indicatorFrame:ClearTextures()
+			indicatorFrame:SetIndicatorSize(db.expHeight)
+			indicatorFrame:AddIndicators(bar:Get("bigwigs:eventId"))
+		end
 		currentBarStyler.ApplyStyle(bar)
+	end
+
+	if lastIndicatorFrame then
+		lastIndicatorFrame:UpdateAllIndicatorPoints()
 	end
 
 	rearrangeBars(normalAnchor)
 	rearrangeBars(emphasizeAnchor)
+
+	if rerun then
+		updateProfile()
+	end
 end
 
 --------------------------------------------------------------------------------
@@ -268,6 +325,9 @@ do
 		"Interface\\AddOns\\BigWigs\\Media\\Icons\\minimap_raid.tga",
 		"Interface\\AddOns\\BigWigs\\Media\\Icons\\minimap_party.tga",
 	}
+	local function HiddenOnRetail() return not BigWigsLoader.isRetail end
+	local function IsNormalAnchorPointDefault() return db.normalPosition[5] == plugin.defaultDB.normalPosition[5] end
+	local function IsExpAnchorPointDefault() return db.expPosition[5] == plugin.defaultDB.expPosition[5] end
 	plugin.pluginOptions = {
 		type = "group",
 		name = "|TInterface\\AddOns\\BigWigs\\Media\\Icons\\Menus\\Bars:20|t ".. L.bars,
@@ -404,6 +464,11 @@ do
 								else
 									db.outline = plugin.defaultDB.outline
 								end
+								if type(style.spellIndicatorsOffset) == "number" and db.spellIndicatorsOffset > 0 and db.spellIndicatorsOffset <= 100 then
+									db.spellIndicatorsOffset = style.spellIndicatorsOffset
+								else
+									db.spellIndicatorsOffset = plugin.defaultDB.spellIndicatorsOffset
+								end
 
 								plugin:UpdateGUI()
 							end
@@ -513,17 +578,83 @@ do
 						},
 						disabled = function() return not db.icon end,
 					},
-					header3 = {
+					spellIndicators = {
+						type = "multiselect",
+						name = L.indicatorTitle,
+						order = 18,
+						width = 2,
+						control = "Dropdown",
+						values = {
+							[1] = "|A:icons_16x16_deadly:16:16|a " .. L.indicatorType_Deadly,
+							[2] = "|A:icons_16x16_enrage:16:16|a " .. BigWigsAPI:GetLocale("BigWigs: Common").enrage,
+							[4] = "|A:icons_16x16_bleed:16:16|a " .. L.indicatorType_Bleed,
+							[8] = "|A:icons_16x16_magic:16:16|a " .. L.indicatorType_Magic,
+							[16] = "|A:icons_16x16_disease:16:16|a " .. BigWigsAPI:GetLocale("BigWigs: Common").disease,
+							[32] = "|A:icons_16x16_curse:16:16|a " .. BigWigsAPI:GetLocale("BigWigs: Common").curse,
+							[64] = "|A:icons_16x16_poison:16:16|a " .. BigWigsAPI:GetLocale("BigWigs: Common").poison,
+							[128] = "|A:icons_16x16_tank:16:16|a " .. L.indicatorType_Tank,
+							[256] = "|A:icons_16x16_heal:16:16|a " .. L.indicatorType_Healer,
+							[512] = "|A:icons_16x16_damage:16:16|a " .. L.indicatorType_Damager,
+						},
+						get = function(info, entry)
+							return bit.band(plugin.db.profile[info[#info]], entry) == entry
+						end,
+						set = function(info, entry, value)
+							if value then
+								plugin.db.profile[info[#info]] = plugin.db.profile[info[#info]] + entry
+							else
+								plugin.db.profile[info[#info]] = plugin.db.profile[info[#info]] - entry
+							end
+							updateProfile()
+						end,
+						hidden = HiddenOnRetail,
+					},
+					spellIndicatorsSize = {
+						type = "select",
+						name = L.spellIndicatorSize,
+						order = 19,
+						values = {
+							L.spellIndicatorSizeDropdown_Large1,
+							L.spellIndicatorSizeDropdown_Large2,
+							L.spellIndicatorSizeDropdown_Large3,
+							L.spellIndicatorSizeDropdown_Small4,
+							L.spellIndicatorSizeDropdown_Small2,
+						},
+						hidden = HiddenOnRetail,
+					},
+					spellIndicatorsPosition = {
+						type = "select",
+						name = L.spellIndicatorsPosition,
+						desc = L.spellIndicatorsPositionDesc,
+						order = 20,
+						width = 2,
+						values = {
+							LEFT = L.LEFT,
+							RIGHT = L.RIGHT,
+						},
+						hidden = HiddenOnRetail,
+					},
+					spellIndicatorsOffset = {
+						type = "range",
+						name = L.spellIndicatorsOffset,
+						desc = L.positionDesc,
+						order = 21,
+						max = 100,
+						min = 0,
+						step = 1,
+						hidden = HiddenOnRetail,
+					},
+					resetHeader = {
 						type = "header",
 						name = "",
-						order = 18,
+						order = 22,
 					},
 					reset = {
 						type = "execute",
 						name = L.resetAll,
 						desc = L.resetBarsDesc,
 						func = function() plugin.db:ResetProfile() updateProfile() end,
-						order = 19,
+						order = 23,
 					},
 				},
 			},
@@ -647,7 +778,7 @@ do
 								max = 2048,
 								step = 1,
 								order = 1,
-								width = 3.2,
+								width = 3,
 								get = function()
 									return db.normalPosition[3]
 								end,
@@ -664,7 +795,7 @@ do
 								max = 2048,
 								step = 1,
 								order = 2,
-								width = 3.2,
+								width = 3,
 								get = function()
 									return db.normalPosition[4]
 								end,
@@ -681,7 +812,7 @@ do
 								max = maxBarWidth,
 								step = 1,
 								order = 3,
-								width = 1.6,
+								width = 1.5,
 							},
 							normalHeight = {
 								type = "range",
@@ -691,7 +822,7 @@ do
 								max = maxBarHeight,
 								step = 1,
 								order = 4,
-								width = 1.6,
+								width = 1.5,
 							},
 							normalCustomAnchorPoint = {
 								type = "input",
@@ -699,10 +830,6 @@ do
 									return db.normalPosition[5]
 								end,
 								set = function(_, value)
-									local frame = _G[value]
-									if type(frame) ~= "table" or type(frame.GetObjectType) ~= "function" or type(frame.IsForbidden) ~= "function" or frame:IsForbidden() then
-										return
-									end
 									if value ~= plugin.defaultDB.normalPosition[5] then
 										db.normalPosition[1] = "CENTER"
 										db.normalPosition[2] = "CENTER"
@@ -718,9 +845,16 @@ do
 									end
 									updateProfile()
 								end,
+								validate = function(_, value)
+									local frame = _G[value]
+									if type(frame) ~= "table" or type(frame.GetObjectType) ~= "function" or type(frame.IsForbidden) ~= "function" or frame:IsForbidden() then
+										return false
+									end
+									return true
+								end,
 								name = L.customAnchorPoint,
 								order = 5,
-								width = 3.2,
+								width = 3,
 							},
 							normalCustomAnchorPointSource = {
 								type = "select",
@@ -736,8 +870,8 @@ do
 								values = BigWigsAPI.GetFramePointList(),
 								name = L.sourcePoint,
 								order = 6,
-								width = 1.6,
-								hidden = function() return db.normalPosition[5] == plugin.defaultDB.normalPosition[5] end,
+								width = 1.5,
+								disabled = IsNormalAnchorPointDefault,
 							},
 							normalCustomAnchorPointDestination = {
 								type = "select",
@@ -753,8 +887,8 @@ do
 								values = BigWigsAPI.GetFramePointList(),
 								name = L.destinationPoint,
 								order = 7,
-								width = 1.6,
-								hidden = function() return db.normalPosition[5] == plugin.defaultDB.normalPosition[5] end,
+								width = 1.5,
+								disabled = IsNormalAnchorPointDefault,
 							},
 						},
 					},
@@ -771,7 +905,7 @@ do
 								max = 2048,
 								step = 1,
 								order = 1,
-								width = 3.2,
+								width = 3,
 								get = function()
 									return plugin.db.profile.expPosition[3]
 								end,
@@ -788,7 +922,7 @@ do
 								max = 2048,
 								step = 1,
 								order = 2,
-								width = 3.2,
+								width = 3,
 								get = function()
 									return plugin.db.profile.expPosition[4]
 								end,
@@ -805,7 +939,7 @@ do
 								max = maxBarWidth,
 								step = 1,
 								order = 3,
-								width = 1.6,
+								width = 1.5,
 							},
 							expHeight = {
 								type = "range",
@@ -815,7 +949,7 @@ do
 								max = maxBarHeight,
 								step = 1,
 								order = 4,
-								width = 1.6,
+								width = 1.5,
 							},
 							expCustomAnchorPoint = {
 								type = "input",
@@ -823,10 +957,6 @@ do
 									return db.expPosition[5]
 								end,
 								set = function(_, value)
-									local frame = _G[value]
-									if type(frame) ~= "table" or type(frame.GetObjectType) ~= "function" or type(frame.IsForbidden) ~= "function" or frame:IsForbidden() then
-										return
-									end
 									if value ~= plugin.defaultDB.expPosition[5] then
 										db.expPosition[1] = "CENTER"
 										db.expPosition[2] = "CENTER"
@@ -842,9 +972,16 @@ do
 									end
 									updateProfile()
 								end,
+								validate = function(_, value)
+									local frame = _G[value]
+									if type(frame) ~= "table" or type(frame.GetObjectType) ~= "function" or type(frame.IsForbidden) ~= "function" or frame:IsForbidden() then
+										return false
+									end
+									return true
+								end,
 								name = L.customAnchorPoint,
 								order = 5,
-								width = 3.2,
+								width = 3,
 							},
 							expCustomAnchorPointSource = {
 								type = "select",
@@ -860,8 +997,8 @@ do
 								values = BigWigsAPI.GetFramePointList(),
 								name = L.sourcePoint,
 								order = 6,
-								width = 1.6,
-								hidden = function() return db.expPosition[5] == plugin.defaultDB.expPosition[5] end,
+								width = 1.5,
+								disabled = IsExpAnchorPointDefault,
 							},
 							expCustomAnchorPointDestination = {
 								type = "select",
@@ -877,8 +1014,8 @@ do
 								values = BigWigsAPI.GetFramePointList(),
 								name = L.destinationPoint,
 								order = 7,
-								width = 1.6,
-								hidden = function() return db.expPosition[5] == plugin.defaultDB.expPosition[5] end,
+								width = 1.5,
+								disabled = IsExpAnchorPointDefault,
 							},
 						},
 					},
@@ -943,6 +1080,10 @@ do
 end
 
 local function barStopped(event, bar)
+	local indicatorFrame = bar:Get("bigwigs:indicatorFrame")
+	if indicatorFrame then
+		indicatorFrame:RemoveIndicators()
+	end
 	local anchorText = bar:Get("bigwigs:anchor")
 	if anchorText then
 		local anchor = anchorText == "expPosition" and emphasizeAnchor or normalAnchor
@@ -960,6 +1101,7 @@ end
 
 do
 	local function OnSizeChanged(self, width, height)
+		if not self:IsShown() then return end
 		width = math.floor(width+0.5)
 		height = math.floor(height+0.5)
 		if self == normalAnchor then
@@ -971,18 +1113,32 @@ do
 		end
 		for k in next, self.bars do
 			currentBarStyler.BarStopped(k)
+			local indicatorFrame = k:Get("bigwigs:indicatorFrame")
 			if db.emphasizeMove then
 				if self == normalAnchor then
 					k:SetSize(db.normalWidth, db.normalHeight)
+					if indicatorFrame then
+						indicatorFrame:SetIndicatorSize(db.normalHeight)
+					end
 				else
 					k:SetSize(db.expWidth, db.expHeight)
+					if indicatorFrame then
+						indicatorFrame:SetIndicatorSize(db.expHeight)
+					end
 				end
 			elseif self == normalAnchor then
 				-- Move is disabled and we are configuring the normal anchor. Don't apply normal bar sizes to emphasized bars
 				if k:Get("bigwigs:emphasized") then
-					k:SetSize(db.normalWidth * db.emphasizeMultiplier, db.normalHeight * db.emphasizeMultiplier)
+					local newHeight = db.normalHeight * db.emphasizeMultiplier
+					k:SetSize(db.normalWidth * db.emphasizeMultiplier, newHeight)
+					if indicatorFrame then
+						indicatorFrame:SetIndicatorSize(newHeight)
+					end
 				else
 					k:SetSize(db.normalWidth, db.normalHeight)
+					if indicatorFrame then
+						indicatorFrame:SetIndicatorSize(db.normalHeight)
+					end
 				end
 			end
 			currentBarStyler.ApplyStyle(k)
@@ -1103,6 +1259,19 @@ local function hideAnchors(_, mode)
 	end
 end
 
+function getBar(anchor, module, text, eventId)
+	if not anchor then return end
+	for bar in next, anchor.bars do
+		if eventId then
+			if bar:Get("bigwigs:eventId") == eventId then
+				return bar
+			end
+		elseif text and bar:Get("bigwigs:module") == module and bar:GetLabel() == text then
+			return bar
+		end
+	end
+end
+
 --------------------------------------------------------------------------------
 -- Initialization
 --
@@ -1127,12 +1296,6 @@ function plugin:OnPluginEnable()
 	-- custom bars
 	self:RegisterMessage("BigWigs_PluginComm")
 	self:RegisterMessage("DBM_AddonMessage")
-
-	if BigWigsLoader.isBeta then -- XXX 12.0
-		self:RegisterEvent("ENCOUNTER_TIMELINE_EVENT_ADDED")
-		self:RegisterEvent("ENCOUNTER_TIMELINE_EVENT_STATE_CHANGED")
-		self:RegisterEvent("ENCOUNTER_TIMELINE_EVENT_REMOVED")
-	end
 end
 
 function plugin:OnPluginDisable()
@@ -1190,67 +1353,31 @@ end
 -- Pausing bars
 --
 
-function plugin:PauseBar(_, module, text)
+function plugin:PauseBar(_, module, text, eventId)
 	if not normalAnchor then return end
-	for k in next, normalAnchor.bars do
-		if k:Get("bigwigs:module") == module and k:GetLabel() == text then
-			k:Pause()
-			return
-		end
+	local bar = getBar(normalAnchor, module, text, eventId)
+	if bar then
+		bar:Pause()
+		return
 	end
-	for k in next, emphasizeAnchor.bars do
-		if k:Get("bigwigs:module") == module and k:GetLabel() == text then
-			k:Pause()
-			return
-		end
+	bar = getBar(emphasizeAnchor, module, text, eventId)
+	if bar then
+		bar:Pause()
+		return
 	end
 end
 
-function plugin:ResumeBar(_, module, text)
+function plugin:ResumeBar(_, module, text, eventId)
 	if not normalAnchor then return end
-	for k in next, normalAnchor.bars do
-		if k:Get("bigwigs:module") == module and k:GetLabel() == text then
-			k:Resume()
-			return
-		end
+	local bar = getBar(normalAnchor, module, text, eventId)
+	if bar then
+		bar:Resume()
+		return
 	end
-	for k in next, emphasizeAnchor.bars do
-		if k:Get("bigwigs:module") == module and k:GetLabel() == text then
-			k:Resume()
-			return
-		end
-	end
-end
-
-function plugin:PauseSecretBar(key)
-	if not normalAnchor then return end
-	for k in next, normalAnchor.bars do
-		if k:Get("bigwigs:hasSecrets") and k:Get("bigwigs:option") == key then
-			k:Pause()
-			return
-		end
-	end
-	for k in next, emphasizeAnchor.bars do
-		if k:Get("bigwigs:hasSecrets") and k:Get("bigwigs:option") == key then
-			k:Pause()
-			return
-		end
-	end
-end
-
-function plugin:ResumeSecretBar(key)
-	if not normalAnchor then return end
-	for k in next, normalAnchor.bars do
-		if k:Get("bigwigs:hasSecrets") and k:Get("bigwigs:option") == key then
-			k:Resume()
-			return
-		end
-	end
-	for k in next, emphasizeAnchor.bars do
-		if k:Get("bigwigs:hasSecrets") and k:Get("bigwigs:option") == key then
-			k:Resume()
-			return
-		end
+	bar = getBar(emphasizeAnchor, module, text, eventId)
+	if bar then
+		bar:Resume()
+		return
 	end
 end
 
@@ -1258,17 +1385,17 @@ end
 -- Stopping bars
 --
 
-function plugin:StopSpecificBar(_, module, text)
+function plugin:StopSpecificBar(_, module, text, eventId)
 	if not normalAnchor then return end
-	for k in next, normalAnchor.bars do
-		if k:Get("bigwigs:module") == module and k:GetLabel() == text then
-			k:Stop()
-		end
+	local bar = getBar(normalAnchor, module, text, eventId)
+	if bar then
+		bar:Stop()
+		return
 	end
-	for k in next, emphasizeAnchor.bars do
-		if k:Get("bigwigs:module") == module and k:GetLabel() == text then
-			k:Stop()
-		end
+	bar = getBar(emphasizeAnchor, module, text, eventId)
+	if bar then
+		bar:Stop()
+		return
 	end
 end
 
@@ -1281,20 +1408,6 @@ function plugin:StopModuleBars(_, module)
 	end
 	for k in next, emphasizeAnchor.bars do
 		if k:Get("bigwigs:module") == module then
-			k:Stop()
-		end
-	end
-end
-
-function plugin:StopSecretBar(key)
-	if not normalAnchor then return end
-	for k in next, normalAnchor.bars do
-		if k:Get("bigwigs:hasSecrets") and k:Get("bigwigs:option") == key then
-			k:Stop()
-		end
-	end
-	for k in next, emphasizeAnchor.bars do
-		if k:Get("bigwigs:hasSecrets") and k:Get("bigwigs:option") == key then
 			k:Stop()
 		end
 	end
@@ -1314,17 +1427,15 @@ function plugin:HasActiveBars()
 	return false
 end
 
-function plugin:GetBarTimeLeft(module, text)
+function plugin:GetBarTimeLeft(module, text, eventId)
 	if normalAnchor then
-		for k in next, normalAnchor.bars do
-			if k:Get("bigwigs:module") == module and k:GetLabel() == text then
-				return k.remaining
-			end
+		local bar = getBar(normalAnchor, module, text, eventId)
+		if bar then
+			return bar.remaining
 		end
-		for k in next, emphasizeAnchor.bars do
-			if k:Get("bigwigs:module") == module and k:GetLabel() == text then
-				return k.remaining
-			end
+		bar = getBar(emphasizeAnchor, module, text, eventId)
+		if bar then
+			return bar.remaining
 		end
 	end
 	return 0
@@ -1335,8 +1446,180 @@ end
 --
 
 do
+	local GetBarIndicatorFrame
+	do
+		local function ClearTextures(self)
+			self.textureLists[4][1]:SetTexture(nil)
+			self.textureLists[4][2]:SetTexture(nil)
+			self.textureLists[4][3]:SetTexture(nil)
+			self.textureLists[4][4]:SetTexture(nil)
+		end
+
+		local function SetIndicatorSize(self, size)
+			self:SetSize(size, size)
+			if db.spellIndicatorsSize >= 4 then
+				size = size / 2
+			end
+			self.textureLists[4][1]:SetSize(size, size)
+			self.textureLists[4][2]:SetSize(size, size)
+			self.textureLists[4][3]:SetSize(size, size)
+			self.textureLists[4][4]:SetSize(size, size)
+		end
+
+		local function AddIndicators(self, eventId)
+			self:ClearAllPoints()
+			if db.spellIndicatorsPosition == "LEFT" then
+				self:SetPoint("BOTTOMRIGHT", self.bar, "BOTTOMLEFT", -db.spellIndicatorsOffset, 0)
+			else
+				self:SetPoint("BOTTOMLEFT", self.bar, "BOTTOMRIGHT", db.spellIndicatorsOffset, 0)
+			end
+			C_EncounterTimeline.SetEventIconTextures(eventId, bit.band(1023, db.spellIndicators), self.textureLists[db.spellIndicatorsSize])
+		end
+
+		local indicatorList = {}
+		local function UpdateAllIndicatorPoints()
+			if db.spellIndicatorsSize >= 4 then
+				if db.spellIndicatorsPosition == "LEFT" then
+					for indicatorCount = 1, #indicatorList do
+						local indicatorFrame = indicatorList[indicatorCount]
+						indicatorFrame.textureLists[4][1]:ClearAllPoints()
+						indicatorFrame.textureLists[4][2]:ClearAllPoints()
+						indicatorFrame.textureLists[4][3]:ClearAllPoints()
+						indicatorFrame.textureLists[4][4]:ClearAllPoints()
+						indicatorFrame.textureLists[4][1]:SetPoint("TOPRIGHT")
+						indicatorFrame.textureLists[4][2]:SetPoint("BOTTOMRIGHT")
+						indicatorFrame.textureLists[4][3]:SetPoint("TOPLEFT")
+						indicatorFrame.textureLists[4][4]:SetPoint("BOTTOMLEFT")
+					end
+				else
+					for indicatorCount = 1, #indicatorList do
+						local indicatorFrame = indicatorList[indicatorCount]
+						indicatorFrame.textureLists[4][1]:ClearAllPoints()
+						indicatorFrame.textureLists[4][2]:ClearAllPoints()
+						indicatorFrame.textureLists[4][3]:ClearAllPoints()
+						indicatorFrame.textureLists[4][4]:ClearAllPoints()
+						indicatorFrame.textureLists[4][1]:SetPoint("TOPLEFT")
+						indicatorFrame.textureLists[4][2]:SetPoint("BOTTOMLEFT")
+						indicatorFrame.textureLists[4][3]:SetPoint("TOPRIGHT")
+						indicatorFrame.textureLists[4][4]:SetPoint("BOTTOMRIGHT")
+					end
+				end
+			else
+				if db.spellIndicatorsPosition == "LEFT" then
+					for indicatorCount = 1, #indicatorList do
+						local indicatorFrame = indicatorList[indicatorCount]
+						indicatorFrame.textureLists[4][1]:ClearAllPoints()
+						indicatorFrame.textureLists[4][2]:ClearAllPoints()
+						indicatorFrame.textureLists[4][3]:ClearAllPoints()
+						indicatorFrame.textureLists[4][4]:ClearAllPoints()
+						indicatorFrame.textureLists[4][1]:SetPoint("CENTER")
+						indicatorFrame.textureLists[4][2]:SetPoint("RIGHT", indicatorFrame.textureLists[4][1], "LEFT", -2, 0)
+						indicatorFrame.textureLists[4][3]:SetPoint("RIGHT", indicatorFrame.textureLists[4][2], "LEFT", -2, 0)
+						indicatorFrame.textureLists[4][4]:SetPoint("RIGHT", indicatorFrame.textureLists[4][3], "LEFT", -2, 0)
+					end
+				else
+					for indicatorCount = 1, #indicatorList do
+						local indicatorFrame = indicatorList[indicatorCount]
+						indicatorFrame.textureLists[4][1]:ClearAllPoints()
+						indicatorFrame.textureLists[4][2]:ClearAllPoints()
+						indicatorFrame.textureLists[4][3]:ClearAllPoints()
+						indicatorFrame.textureLists[4][4]:ClearAllPoints()
+						indicatorFrame.textureLists[4][1]:SetPoint("CENTER")
+						indicatorFrame.textureLists[4][2]:SetPoint("LEFT", indicatorFrame.textureLists[4][1], "RIGHT", -2, 0)
+						indicatorFrame.textureLists[4][3]:SetPoint("LEFT", indicatorFrame.textureLists[4][2], "RIGHT", -2, 0)
+						indicatorFrame.textureLists[4][4]:SetPoint("LEFT", indicatorFrame.textureLists[4][3], "RIGHT", -2, 0)
+					end
+				end
+			end
+		end
+
+		local indicatorCache = {}
+		local function RemoveIndicators(self)
+			self:ClearTextures()
+			self:ClearAllPoints()
+			self:SetParent(UIParent)
+			self.bar = nil
+			indicatorCache[#indicatorCache+1] = self
+		end
+
+		function GetBarIndicatorFrame()
+			local indicatorFrame
+
+			if next(indicatorCache) then
+				indicatorFrame = table.remove(indicatorCache)
+			else
+				indicatorFrame = CreateFrame("Frame", nil, UIParent)
+				indicatorList[#indicatorList+1] = indicatorFrame
+				indicatorFrame:SetPoint("CENTER")
+				indicatorFrame:Hide()
+				indicatorFrame:SetSize(34,34)
+				indicatorFrame.ClearTextures = ClearTextures
+				indicatorFrame.RemoveIndicators = RemoveIndicators
+				indicatorFrame.SetIndicatorSize = SetIndicatorSize
+				indicatorFrame.AddIndicators = AddIndicators
+				indicatorFrame.UpdateAllIndicatorPoints = UpdateAllIndicatorPoints
+
+				local indicatorTexture1 = indicatorFrame:CreateTexture()
+				indicatorTexture1:SetSnapToPixelGrid(false)
+				indicatorTexture1:SetTexelSnappingBias(0)
+				indicatorTexture1:SetSize(16,16)
+
+				local indicatorTexture2 = indicatorFrame:CreateTexture()
+				indicatorTexture2:SetSnapToPixelGrid(false)
+				indicatorTexture2:SetTexelSnappingBias(0)
+				indicatorTexture2:SetSize(16,16)
+
+				local indicatorTexture3 = indicatorFrame:CreateTexture()
+				indicatorTexture3:SetSnapToPixelGrid(false)
+				indicatorTexture3:SetTexelSnappingBias(0)
+				indicatorTexture3:SetSize(16,16)
+
+				local indicatorTexture4 = indicatorFrame:CreateTexture()
+				indicatorTexture4:SetSnapToPixelGrid(false)
+				indicatorTexture4:SetTexelSnappingBias(0)
+				indicatorTexture4:SetSize(16,16)
+
+				indicatorFrame.textureLists = {
+					{indicatorTexture1},
+					{indicatorTexture1, indicatorTexture2},
+					{indicatorTexture1, indicatorTexture2, indicatorTexture3},
+					{indicatorTexture1, indicatorTexture2, indicatorTexture3, indicatorTexture4},
+					{indicatorTexture1, indicatorTexture2},
+				}
+
+				if db.spellIndicatorsSize >= 4 then
+					if db.spellIndicatorsPosition == "LEFT" then
+						indicatorTexture1:SetPoint("TOPRIGHT")
+						indicatorTexture2:SetPoint("BOTTOMRIGHT")
+						indicatorTexture3:SetPoint("TOPLEFT")
+						indicatorTexture4:SetPoint("BOTTOMLEFT")
+					else
+						indicatorTexture1:SetPoint("TOPLEFT")
+						indicatorTexture2:SetPoint("BOTTOMLEFT")
+						indicatorTexture3:SetPoint("TOPRIGHT")
+						indicatorTexture4:SetPoint("BOTTOMRIGHT")
+					end
+				else
+					if db.spellIndicatorsPosition == "LEFT" then
+						indicatorTexture1:SetPoint("CENTER")
+						indicatorTexture2:SetPoint("RIGHT", indicatorTexture1, "LEFT", -2, 0)
+						indicatorTexture3:SetPoint("RIGHT", indicatorTexture2, "LEFT", -2, 0)
+						indicatorTexture4:SetPoint("RIGHT", indicatorTexture3, "LEFT", -2, 0)
+					else
+						indicatorTexture1:SetPoint("CENTER")
+						indicatorTexture2:SetPoint("LEFT", indicatorTexture1, "RIGHT", -2, 0)
+						indicatorTexture3:SetPoint("LEFT", indicatorTexture2, "RIGHT", -2, 0)
+						indicatorTexture4:SetPoint("LEFT", indicatorTexture3, "RIGHT", -2, 0)
+					end
+				end
+			end
+
+			return indicatorFrame
+		end
+	end
+
 	local initial = true
-	function plugin:CreateBar(module, key, text, time, icon, isApprox, hasSecrets)
+	function plugin:CreateBar(module, key, text, time, icon, isApprox, eventId)
 		local width, height
 		width = db.normalWidth
 		height = db.normalHeight
@@ -1353,7 +1636,9 @@ do
 		bar:SetFont(f, db.fontSize, flags)
 		bar:Set("bigwigs:module", module)
 		bar:Set("bigwigs:option", key)
-		bar:Set("bigwigs:hasSecrets", hasSecrets and hasSecrets or false)
+		if eventId then
+			bar:Set("bigwigs:eventId", eventId)
+		end
 		bar:Set("bigwigs:anchor", "normalPosition")
 		normalAnchor.bars[bar] = true
 		if db.icon then
@@ -1361,7 +1646,16 @@ do
 		else
 			bar:SetIcon(nil)
 		end
-		bar:SetDuration(time, isApprox)
+		if eventId then
+			local indicatorFrame = GetBarIndicatorFrame()
+			indicatorFrame:SetParent(bar)
+			indicatorFrame:Show()
+			indicatorFrame.bar = bar
+			indicatorFrame:SetIndicatorSize(height)
+			indicatorFrame:AddIndicators(eventId)
+			bar:Set("bigwigs:indicatorFrame", indicatorFrame)
+		end
+		bar:SetDuration(time, not eventId and isApprox) -- isApprox is maxQueueDuration for timeline bars
 		bar:SetColor(colors:GetColor("barColor", module, key))
 		bar:SetBackgroundColor(colors:GetColor("barBackground", module, key))
 		bar:SetTextColor(colors:GetColor("barText", module, key))
@@ -1374,11 +1668,11 @@ do
 		bar:SetIconPosition(db.iconPosition)
 		bar:SetFill(db.fill)
 		bar:SetLabel(text)
-		if not issecretvalue and initial then -- XXX 12.0 compat
+		if initial then
 			-- Workaround for wow custom font loading issues
 			self:SimpleTimer(function()
 				initial = false
-				if bar:GetLabel() == text then
+				if (not eventId and bar:GetLabel() == text) or (eventId and bar:Get("bigwigs:eventId") == eventId) then
 					bar:SetLabel("-1")
 					bar:SetLabel(text)
 				end
@@ -1397,15 +1691,11 @@ do
 		rearrangeBars(emphasizeAnchor)
 	end
 
-	function plugin:BigWigs_StartBar(_, module, key, text, time, icon, isApprox, maxTime, hasSecrets)
-		if not hasSecrets and not text then text = "" end
-		if not hasSecrets then
-			self:StopSpecificBar(nil, module, text)
-		end
-		local bar = self:CreateBar(module, key, text, time, icon, isApprox, hasSecrets)
-		if isApprox then
-			bar:SetPauseWhenDone(true)
-		end
+	function plugin:BigWigs_StartBar(_, module, key, text, time, icon, isApprox, maxTime, eventId)
+		if (issecretvalue == nil or not issecretvalue(text)) and not text then text = "" end
+		self:StopSpecificBar(nil, module, text, eventId)
+		local bar = self:CreateBar(module, key, text, time, icon, isApprox, eventId)
+		bar:SetPauseWhenDone(isApprox)
 		if db.emphasize and time < db.emphasizeTime then
 			if db.emphasizeRestart and maxTime and maxTime > db.emphasizeTime then
 				bar:Start(db.emphasizeTime)
@@ -1462,12 +1752,21 @@ function plugin:EmphasizeBar(bar, freshBar)
 	bar:SetFont(f, db.fontSizeEmph, flags)
 
 	bar:SetColor(colors:GetColor("barEmphasized", module, key))
+	local indicatorFrame = bar:Get("bigwigs:indicatorFrame")
 	if db.emphasizeMove then
-		bar:SetHeight(db.expHeight)
+		local height = db.expHeight
+		bar:SetHeight(height)
 		bar:SetWidth(db.expWidth)
+		if indicatorFrame then
+			indicatorFrame:SetIndicatorSize(height)
+		end
 	else
-		bar:SetHeight(db.normalHeight * db.emphasizeMultiplier)
+		local height = db.normalHeight * db.emphasizeMultiplier
+		bar:SetHeight(height)
 		bar:SetWidth(db.normalWidth * db.emphasizeMultiplier)
+		if indicatorFrame then
+			indicatorFrame:SetIndicatorSize(height)
+		end
 	end
 	bar:SetFrameLevel(105) -- Put emphasized bars just above normal bars (LibCandyBar 100)
 	currentBarStyler.ApplyStyle(bar)
@@ -1578,7 +1877,6 @@ do
 	local dbmPrefix = BigWigsLoader.dbmPrefix
 	local times
 	function plugin:SendCustomBarToGroup(message, duration)
-		if BigWigsLoader.isBeta then return end -- XXX 12.0 Needs fixing (not allowed in raids/dungeons atm)
 		if not duration or duration < 3 then BigWigs:Print(L.wrongTime) return end
 		if not IsInGroup() or (not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player")) then BigWigs:Print(L.requiresLeadOrAssist) return end
 		if not plugin:IsEnabled() then BigWigs:Enable() end
@@ -1624,48 +1922,3 @@ BigWigsAPI.RegisterSlashCommand("/localbar", function(input)
 
 	startCustomBar(seconds, plugin:UnitName("player"), barText)
 end)
-
--------------------------------------------------------------------------------
--- 12.0 Midnight
---
-
-function plugin:ENCOUNTER_TIMELINE_EVENT_ADDED(_, eventInfo)
-	-- Not Secrets
-	local eventID = eventInfo.id
-	local duration = eventInfo.duration
-	local source = eventInfo.source
-	local state = C_EncounterTimeline.GetEventState(eventID) -- 0 = Running, 1 = Paused
-
-	-- Secrets
-	local spellId = eventInfo.spellID
-	local spellName = eventInfo.spellName
-	local iconId = eventInfo.iconFileID
-	-- local dispelType = eventInfo.dispelType
-	-- local role = eventInfo.role
-	-- local priority = eventInfo.priority
-	self:BigWigs_StartBar(nil, nil, eventID, spellName, duration, iconId, nil, nil, true)
-
-	if state == 1 then -- Starting Paused
-		self:PauseSecretBar(eventID)
-	end
-end
-
-function plugin:ENCOUNTER_TIMELINE_EVENT_STATE_CHANGED(_, eventID)
-	local newState = C_EncounterTimeline.GetEventState(eventID) -- 0 = Running, 1 = Paused
-	if newState == 0 then -- Resumed
-		self:ResumeSecretBar(eventID)
-	elseif newState == 1 then -- Paused
-		self:PauseSecretBar(eventID)
-
-	-- Are Finished and/or Canceled needed?
-	-- it also triggers `ENCOUNTER_TIMELINE_EVENT_REMOVED` when the timer is removed.
-	-- elseif newState == 2 then -- Finished
-	-- 	plugin:StopSecretBar(eventID)
-	-- elseif newState == 3 then -- Canceled
-	-- 	plugin:StopSecretBar(eventID)
-	end
-end
-
-function plugin:ENCOUNTER_TIMELINE_EVENT_REMOVED(_, eventID)
-	self:StopSecretBar(eventID)
-end

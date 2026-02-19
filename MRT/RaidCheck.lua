@@ -2700,6 +2700,10 @@ function module.frame:UpdateData(onlyLine)
 					local auraData = C_UnitAuras.GetAuraDataByIndex(line.unit, i,"HELPFUL")
 					if not auraData then
 						break
+					elseif C_Secrets and C_Secrets.ShouldAurasBeSecret() then
+						break
+					elseif canaccessvalue and not canaccessvalue(auraData.spellId) then
+						break
 					elseif module.db.tableFood[auraData.spellId] then
 						local val = module.db.tableFood[auraData.spellId]
 
@@ -3810,6 +3814,15 @@ if (not ExRT.isClassic) and UnitLevel'player' >= 60 then
 	local isElvUIFix
 
 	function module.consumables:Update()
+		if C_Secrets and C_Secrets.ShouldAurasBeSecret() then
+			return
+		elseif canaccessvalue then
+			local accessData = C_UnitAuras.GetAuraDataByIndex("player", 1, "HELPFUL")
+			if accessData and not canaccessvalue(accessData.icon) then
+				return
+			end
+		end
+
 		if (IsAddOnLoaded("ElvUI") or IsAddOnLoaded("ShestakUI")) and not isElvUIFix then
 			self:SetParent(ReadyCheckFrame)
 			self:ClearAllPoints()

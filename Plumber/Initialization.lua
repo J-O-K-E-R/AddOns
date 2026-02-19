@@ -1,5 +1,5 @@
-local VERSION_TEXT = "v1.8.1";
-local VERSION_DATE = 1764600000;
+local VERSION_TEXT = "1.8.7";
+local VERSION_DATE = 1771000000;
 
 
 local addonName, addon = ...
@@ -98,6 +98,24 @@ do  --CallbackRegistry
             end
         end
     end
+
+    function CallbackRegistry:UnregisterCallbackOwner(event, owner)
+        if not owner then return end;
+
+        if self.events[event] then
+            local callbacks = self.events[event];
+            local i = 1;
+            local cb = callbacks[i];
+            while cb do
+                if cb[3] == owner then
+                    tremove(callbacks, i);
+                else
+                    i = i + 1;
+                end
+                cb = callbacks[i];
+            end
+        end
+    end
 end
 
 local function GetDBValue(dbKey)
@@ -180,13 +198,14 @@ local DefaultValues = {
     BlizzardSuperTrack = false,         --Add timer to the SuperTrackedFrame when tracking a POI with time format
     ProfessionsBook = true,             --Show unspent points on ProfessionsBookFrame
     EditModeShowPlumberUI = true,
-    LandingPageSwitch = true,           --Right click on ExpansionLandingPageMinimapButton to open a menu to access mission report
     SoftTargetName = false,             --Show object's name on SoftTargetFrame
         SoftTarget_TextOutline = false,
         SoftTarget_FontSize = 2,
         SoftTarget_IconSize = 2,
         SoftTarget_CastBar = true,
         SoftTarget_Objectives = false,
+        SoftTarget_House_HideIcon = false,
+        SoftTarget_House_HideName = false,
     AppearanceTab = false,              --Adjust Appearance Tab models to reduce GPU usage spike
         AppearanceTab_ModelCount = 1,
     ItemUpgradeUI = true,
@@ -197,6 +216,9 @@ local DefaultValues = {
         QueueStatus_TextPosition = 1,   --0:Center, 1-4:Clockwise
     InstanceDifficulty = false,         --Instance Difficulty Selector
     TransmogChatCommand = false,        --Adjust /outfit command behavior
+    CraftSearchExtended = false,        --Show more search result, custom keywords
+    SourceAchievementLink = true,       --Make Achievement name in MountJournal, DecorCatalog interactable
+    TransmogOutfitSelect = true,        --Show Minimized Transmog Outfit Collection
 
 
     --Tooltip
@@ -208,7 +230,6 @@ local DefaultValues = {
     TooltipDelvesItem = true,           --Show weekly Coffer Key cap on chest tooltip
     TooltipItemQuest = true,            --Show the quest of quest starting items in bags
     TooltipTransmogEnsemble = true,     --A Raid Ensemble now unlocks outfits (tints) from 4 difficulties, but the default UI only gives one
-    TooltipHousing = true,              --TEMP Midnight BETA PTR
 
 
     --Reduction
@@ -223,6 +244,17 @@ local DefaultValues = {
         LandingPage_Raid_CollapsedAchievement = false,
         LandingPage_AdvancedTooltip = true,
 
+        LandingButton_ShowButton = true,
+        LandingButton_Unaffected = false,
+        LandingButton_PrimaryUI = 1,
+        LandingButton_SmartExpansion = false,
+        LandingButton_ReduceSize = false,
+        LandingButton_DarkColor = false,
+        LandingButton_HideWhenIdle = false,
+        --LandingButton_UseLibDBIcon = nil,     --Addon-dependant. Init on first load
+
+        --LandingButton_Pos_X, LandingButton_Pos_Y
+
 
     --Custom Loot Window
     LootUI = false,
@@ -234,15 +266,19 @@ local DefaultValues = {
         LootUI_NewTransmogIcon = true,
         LootUI_UseCustomColor = false,
         LootUI_GrowUpwards = false,
+        LootUI_WindowHide = false,
+        LootUI_CombineItems = false,
+        LootUI_LowFrameStrata = false,
+        LootUI_HideTitle = false,
+        LootUI_ShowReputation = false,
+        LootUI_ShowAllMoneyChange = false,
+        LootUI_ShowAllCurrencyChange = false,
+        LootUI_ReplaceDefaultAlert = false,
         LootUI_ForceAutoLoot = true,
         LootUI_LootUnderMouse = false,
         LootUI_UseHotkey = true,
         LootUI_HotkeyName = "E",
-        LootUI_ReplaceDefaultAlert = false,
         LootUI_UseStockUI = false,
-        LootUI_WindowHide = false,
-        LootUI_CombineItems = false,
-        LootUI_LowFrameStrata = false,
 
 
     --Unified Map Pin System
@@ -295,11 +331,38 @@ local DefaultValues = {
 
     EnableNewByDefault = false,             --Always enable newly added features
     SettingsPanel_AutoShowChangelog = false,
+    SettingsPanel_ChangelogFontSize = 1,
 
 
-    --Test Server
+    --Housing
     DecorModelScaleRef = true,
         DecorModelScaleRef_ShowBanana = false,
+    Housing_Macro = true,
+    Housing_DecorHover = true,
+        Housing_DecorHover_EnableDupe = true,
+        Housing_DecorHover_DuplicateKey = 2,    --1:Ctrl, 2:Alt
+    Housing_CustomizeMode = true,
+    Housing_Clock = true,
+        Housing_Clock_AnalogClock = true,
+    TooltipDyeDeez = true,                  --Show dyes on pigment tooltip
+    Housing_CatalogSearch = false,
+    Housing_ItemAcquiredAlert = true,       --Click AlertFrame to view decor model
+
+
+    --Namaplte: Quest Indicator
+    NameplateQuest = false,
+        NameplateQuest_IconSize = 2,
+        NameplateQuest_ShowPartyQuest = false,
+        NameplateQuest_ShowTargetProgress = false,
+        NameplateQuest_ShowProgressOnHover = false,
+        NameplateQuest_ShowProgressOnKeyPress = false,
+            NameplateQuest_ShowProgressModifierKey = "ALT",
+        NameplateQuest_WidgetOffsetX = 0,
+        NameplateQuest_WidgetOffsetY = 0,
+        NameplateQuest_ProgressFormat = 1,
+        NameplateQuest_ProgressShowIcon = false,
+        NameplateQuest_TextOutline = true,
+        --NameplateQuest_Side = "RIGHT",    --Initial value dedfined by detecting addon
 
 
     --Declared elsewhere:
@@ -310,17 +373,19 @@ local DefaultValues = {
     --DruidModelFix = true,                 --Fixed by Blizzard in 10.2.0
     --BlizzFixWardrobeTrackingTip = true,   --Hide Wardrobe tip that cannot be disabled   --Tip removed by Blizzard
     --MinimapMouseover = false,             --Ridden with compatibility issue
+    --LandingPageSwitch = true,             --Right click on ExpansionLandingPageMinimapButton to open a menu to access mission report  --Merged into NewExpansionLandingPage
 };
 
 
 local NeverEnableByDefault = {
     AppearanceTab = true,
+    NameplateQuest = true,
 };
 
 
 local function LoadDatabase()
     PlumberDB = PlumberDB or {};
-    PlumberStorage = PlumberStorage or {};  --Save large data (Spell)
+    PlumberStorage = PlumberStorage or {};
     PlumberDB_PC = PlumberDB_PC or {};
 
     DB = PlumberDB;
@@ -360,6 +425,9 @@ local function LoadDatabase()
 
     CallbackRegistry:Trigger("NewDBKeysAdded", newDBKeys);
     CallbackRegistry:Trigger("DBLoaded", DB);
+
+
+    PlumberStorage.CreatureSpells = nil;    --Store SpellcastingInfo, retired in  Midnight
 end
 
 

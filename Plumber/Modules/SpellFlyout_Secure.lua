@@ -8,6 +8,7 @@ local _, addon = ...
 local API = addon.API;
 local L = addon.L;
 local CallbackRegistry = addon.CallbackRegistry;
+local CooldownUtil = addon.CooldownUtil;
 
 local tinsert = table.insert;
 local InCombatLockdown = InCombatLockdown;
@@ -29,8 +30,6 @@ local VisualButtonMixin = {};
 
 local SpellFlyout = CreateFrame("Frame", nil, UIParent);
 addon.SecureSpellFlyout = SpellFlyout;
-SpellFlyout.UpdateSpellCooldowns = addon.QuickSlot.UpdateSpellCooldowns;
-SpellFlyout.UpdateItemCooldowns = addon.QuickSlot.UpdateItemCooldowns;
 
 
 local function SetupClampedFrame(frame)
@@ -58,6 +57,14 @@ do --SpellFlyout Main
         self.actions = nil;
         self:Hide();
         self:ClearAllPoints();
+    end
+
+    function SpellFlyout:UpdateSpellCooldowns()
+        CooldownUtil.UpdateSpellButtonCooldowns(self.SpellButtons);
+    end
+
+    function SpellFlyout:UpdateItemCooldowns()
+        CooldownUtil.UpdateItemButtonCooldowns(self.ItemButtons);
     end
 
     function SpellFlyout:SetArrowDirection(direction)
@@ -314,6 +321,8 @@ do  --VisualButtonMixin
             --Only RandomFavoriteMount use this method
             --Regular mounts have been converted to spells 
             self:SetMount(self.id);
+        elseif self.actionType == "teleportHome" then
+            self:SetTeleportHome();
         elseif self[action.actionType] then
             self[action.actionType](self, action.id);
         end
@@ -392,6 +401,13 @@ do  --VisualButtonMixin
             tooltip:Show();
             self.UpdateTooltip = nil;
             return true
+        elseif self.tooltipFunc then
+            local tooltip = GameTooltip;
+            tooltip:SetOwner(self, "ANCHOR_RIGHT");
+            self.tooltipFunc(tooltip, self.id);
+            tooltip:Show();
+            self.UpdateTooltip = self.ShowTooltip;
+            return true
         else
             self.UpdateTooltip = nil;
         end
@@ -403,6 +419,7 @@ do  --VisualButtonMixin
             self.id = nil;
             self.actionType = nil;
             self.tooltipMethod = nil;
+            self.tooltipFunc = nil;
             self.macroText = nil;
             self.rawMacroText = nil;
             self.tooltipLineText = nil;
@@ -489,6 +506,11 @@ do  --VisualButtonMixin
         self.Icon:SetTexture(GetSpellTexture(spellID));
     end
 
+    function VisualButtonMixin:SetTeleportHome()
+        self.tooltipMethod = nil;
+        self.tooltipText = nil;
+        self.tooltipFunc = addon.Housing and addon.Housing.SetupTeleportTooltip;
+    end
 
     function SpellFlyout:PopulateButtonMixin(externalMixin)
         for k, v in pairs(VisualButtonMixin) do

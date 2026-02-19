@@ -1,8 +1,7 @@
 # BigWigs
 
-## [v402.1](https://github.com/BigWigsMods/BigWigs/tree/v402.1) (2025-11-27)
-[Full Changelog](https://github.com/BigWigsMods/BigWigs/compare/v402...v402.1) [Previous Releases](https://github.com/BigWigsMods/BigWigs/releases)
+## [v406.4](https://github.com/BigWigsMods/BigWigs/tree/v406.4) (2026-02-17)
+[Full Changelog](https://github.com/BigWigsMods/BigWigs/compare/v406.3...v406.4) [Previous Releases](https://github.com/BigWigsMods/BigWigs/releases)
 
-- Bump version  
-- Bump toc  
-- Loader: Add Deeprun Tram and Brawl'gar Arena (#2297)  
+- Tools/Keystones: Tweak  
+- Tools/Keystones: Add best score to dungeon panel icons  

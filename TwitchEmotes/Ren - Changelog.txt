@@ -3738,6 +3738,82 @@ Renamed `Kiss` to `:kissing:`
 
 
 ----
+Twitch Emotes V2.62.5 - January update 11.2.7
+----
+Removed Christmas emotes
+Converted indentation of .lua files to tabs
+
+Added:
+PepeSmug
+
+
+----
+Twitch Emotes V2.63 - Midnight update 12.0.0
+----
+Added checks for if 12.0 chat restrictions are enabled:
+- Emotes sent before restrictions are enforced should persist in animation.
+- Emotes sent after restrictions are enabled are forever secret.
+
+Revamped AnnieFuschia emotes. Previous emote library has been deleted and replaced with the following:
+anniesAngry.tga
+anniesAw.tga
+anniesAYAYA.tga
+anniesBlind.tga
+anniesCheer.tga
+anniesCHEER_2.tga
+anniesCopium.tga
+anniesCozy.tga
+anniesCry.tga
+anniesCute.tga
+anniesDab.tga
+anniesDinkDonk.tga
+anniesFingi.tga
+anniesFull.tga
+anniesGasp.tga
+anniesGiggle.tga
+anniesHAA.tga
+anniesHi.tga
+anniesHi5.tga
+anniesHmm.tga
+anniesHype.tga
+anniesHypers.tga
+anniesJAM.tga
+anniesKnight.tga
+anniesL.tga
+anniesLUL.tga
+anniesLurk.tga
+anniesMega.tga
+anniesNo.tga
+anniesNodders.tga
+anniesNoted.tga
+anniesPanic.tga
+anniesPet.tga
+anniesPls.tga
+anniesPog.tga
+anniesPoint.tga
+anniesPray.tga
+anniesPrime.tga
+anniesRage.tga
+anniesRave.tga
+anniesREE.tga
+anniesRiot.tga
+anniesRIP.tga
+anniesSad.tga
+anniesShrug.tga
+anniesSHY.tga
+anniesSkal.tga
+anniesSmug.tga
+anniesSteer.tga
+anniesSwe.tga
+anniesThisIsFine.tga
+anniesToxic.tga
+anniesW.tga
+anniesYikes.tga
+anniesZug.tga
+
+
+----
 To do
 ----
+Christmas Krug
 ====

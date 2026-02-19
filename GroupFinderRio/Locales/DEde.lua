@@ -13,6 +13,12 @@ L["addonOptions"] = "Addon-Optionen"
 L["addScoreToGroup"] = "Punktzahl zur Gruppe hinzufügen"
 L["addScoreToGroupDescription"] = "Die Punktzahl des Gruppenleiters zur Gruppenansicht hinzufügen"
 L["applicantView"] = "Bewerberansicht"
+--[[Translation missing --]]
+L["debugMode"] = "debugMode"
+--[[Translation missing --]]
+L["debugModeDescription"] = "debugModeDescription"
+--[[Translation missing --]]
+L["debugModeWarning"] = "debugModeWarning"
 L["Disable"] = "deaktiviert"
 L["disableSpecSelector"] = "Spezifikationsauswahl deaktivieren"
 L["disableSpecSelectorDescription"] = "Deaktiviert die Spezifikationsauswahl in der Bewerberansicht, die zur Priorisierung von Spezifikationen bei der Suche verwendet werden kann"
@@ -27,9 +33,9 @@ L["oneClickSignup"] = "Schnell Anmeldung"
 L["oneClickSignupDescription"] = "Mit einem Klick für eine Gruppe anmelden"
 L["OneClickSignupNotAvailable"] = "Schnell Anmeldung ist nicht verfügbar wenn das Addon \"Premades Group Filter\" aktiviert ist, bitte deaktiviere die Option und nutze stattdessen die \"Premades Group Filters\" Einstellung"
 --[[Translation missing --]]
-L["resortGroupsConstantly"] = "Resort Groups Constantly"
+L["resortGroupsConstantly"] = "resortGroupsConstantly"
 --[[Translation missing --]]
-L["resortGroupsConstantlyDescription"] = "Resort the groups every 3 Seconds to remove groups that are no longer available and update score if data becomes available later."
+L["resortGroupsConstantlyDescription"] = "resortGroupsConstantlyDescription"
 L["shortenActivityName"] = "Aktivitätsname verkürzen"
 L["shortenActivityNameDescription"] = "Verkürzt den Aktivitätsnamen in der Gruppenansicht"
 L["showCurrentScoreInGroup"] = "Aktuelle Punktzahl in der Gruppe anzeigen"

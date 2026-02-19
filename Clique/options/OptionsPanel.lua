@@ -186,13 +186,16 @@ function panel:CreateOptions()
     local bits = {}
 
     self.updown = make_checkbox("CliqueOptionsUpDownClick", self)
-    self.updown.text:SetText(L["Trigger bindings on the 'down' portion of the click (experimental)"])
+    self.updown.text:SetText(L["Trigger bindings on the 'down' portion of the click or keypress"])
 
-    self.fastooc = make_checkbox("CliqueOptionsFastOoc", self)
-    self.fastooc.text:SetText(L["Disable out of combat clicks when party members enter combat"])
+    self.removeWildcard = make_checkbox("CliqueOptionsRemoveWildcard", self)
+    self.removeWildcard.text:SetText(L["Remove wildcard target and menu actions on registered frames"])
 
-    if addon:ProjectIsClassic() then
-    end
+    self.disableDuringHousing = make_checkbox("CliqueOptionsDisableDuringHousing", self)
+    self.disableDuringHousing.text:SetText(L["Disable all bindings when in housing edit mode"])
+
+    self.enableGamePad = make_checkbox("CliqueOptionsEnableGamePad", self)
+    self.enableGamePad.text:SetText(L["Enable GamePad binding support"])
 
     -- Set up multiple talent profiles
     self.talentProfiles = {}
@@ -210,9 +213,7 @@ function panel:CreateOptions()
     end
     self.specswap:SetScript("PostClick", self.specswap.EnableDisable)
 
-    if addon:ProjectIsClassic() then
-        -- There are no talent specs in classic-era so skip these options
-    else
+    if addon:GameVersionHasTalentSpecs() then
         for i = 1, addon:GetNumTalentSpecs() do
             local specName = addon:GetTalentSpecName(i)
             local name = "CliqueOptionsSpec" .. i
@@ -228,7 +229,7 @@ function panel:CreateOptions()
     self.profilelabel:SetText(L["Profile Management:"])
     self.profiledd = make_dropdown("CliqueOptionsProfileMgmt", self)
 
-	self.stopcastingfix = make_checkbox("CliqueOptionsStopCastingFix", self)
+    self.stopcastingfix = make_checkbox("CliqueOptionsStopCastingFix", self)
     self.stopcastingfix.text:SetText(L["Attempt to fix the issue introduced in 4.3 with casting on dead targets"])
 
     self.exportbindingslabel = make_label("CliqueOptionsExportBindingsLabel", self, "GameFontNormalSmall")
@@ -280,8 +281,10 @@ function panel:CreateOptions()
 
     -- Collect and anchor the bits together
     table.insert(bits, self.updown)
-    table.insert(bits, self.fastooc)
-	table.insert(bits, self.stopcastingfix)
+    table.insert(bits, self.removeWildcard)
+    table.insert(bits, self.disableDuringHousing)
+    table.insert(bits, self.enableGamePad)
+    table.insert(bits, self.stopcastingfix)
 
     if #self.talentProfiles > 0 then
         table.insert(bits, self.specswap)
@@ -321,7 +324,7 @@ function panel:CreateOptions()
 end
 
 StaticPopupDialogs["CLIQUE_CONFIRM_PROFILE_DELETE"] = {
-	preferredIndex = STATICPOPUPS_NUMDIALOGS,
+    preferredIndex = STATICPOPUPS_NUMDIALOGS,
     button1 = L["Yes"],
     button2 = L["No"],
     hideOnEscape = 1,
@@ -336,50 +339,50 @@ local function messageAndSwitchProfile(profileName)
 end
 
 StaticPopupDialogs["CLIQUE_NEW_PROFILE"] = {
-	preferredIndex = STATICPOPUPS_NUMDIALOGS,
-	text = L["Enter the name of a new profile you'd like to create"],
-	button1 = L["Okay"],
-	button2 = L["Cancel"],
-	OnAccept = function(self)
-		local base = self:GetName()
-		local editbox = _G[base .. "EditBox"]
+    preferredIndex = STATICPOPUPS_NUMDIALOGS,
+    text = L["Enter the name of a new profile you'd like to create"],
+    button1 = L["Okay"],
+    button2 = L["Cancel"],
+    OnAccept = function(self)
+        local base = self:GetName()
+        local editbox = _G[base .. "EditBox"]
         local profileName = editbox:GetText()
         messageAndSwitchProfile(profileName)
-	end,
-	timeout = 0,
-	whileDead = 1,
-	exclusive = 1,
-	showAlert = 1,
-	hideOnEscape = 1,
-	hasEditBox = 1,
-	maxLetters = 32,
-	OnShow = function(self)
-		_G[self:GetName().."Button1"]:Disable();
-		_G[self:GetName().."EditBox"]:SetFocus();
-	end,
-	EditBoxOnEnterPressed = function(self)
-		local button = _G[self:GetParent():GetName().."Button1"]
-		if addon:APIIsTrue(button:IsEnabled()) then
-			local base = self:GetParent():GetName()
-			local editbox = _G[base .. "EditBox"]
-			local profileName = editbox:GetText()
-			messageAndSwitchProfile(profileName)
-		end
-		self:GetParent():Hide();
-	end,
-	EditBoxOnTextChanged = function (self)
-		local editBox = _G[self:GetParent():GetName().."EditBox"];
-		local txt = editBox:GetText()
-		if #txt > 0 then
-			_G[self:GetParent():GetName().."Button1"]:Enable();
-		else
-			_G[self:GetParent():GetName().."Button1"]:Disable();
-		end
-	end,
-	EditBoxOnEscapePressed = function(self)
-		self:GetParent():Hide();
-		ClearCursor();
-	end
+    end,
+    timeout = 0,
+    whileDead = 1,
+    exclusive = 1,
+    showAlert = 1,
+    hideOnEscape = 1,
+    hasEditBox = 1,
+    maxLetters = 32,
+    OnShow = function(self)
+        _G[self:GetName().."Button1"]:Disable();
+        _G[self:GetName().."EditBox"]:SetFocus();
+    end,
+    EditBoxOnEnterPressed = function(self)
+        local button = _G[self:GetParent():GetName().."Button1"]
+        if addon:APIIsTrue(button:IsEnabled()) then
+            local base = self:GetParent():GetName()
+            local editbox = _G[base .. "EditBox"]
+            local profileName = editbox:GetText()
+            messageAndSwitchProfile(profileName)
+        end
+        self:GetParent():Hide();
+    end,
+    EditBoxOnTextChanged = function (self)
+        local editBox = _G[self:GetParent():GetName().."EditBox"];
+        local txt = editBox:GetText()
+        if #txt > 0 then
+            _G[self:GetParent():GetName().."Button1"]:Enable();
+        else
+            _G[self:GetParent():GetName().."Button1"]:Disable();
+        end
+    end,
+    EditBoxOnEscapePressed = function(self)
+        self:GetParent():Hide();
+        ClearCursor();
+    end
 }
 
 local function getsorttbl()
@@ -569,9 +572,11 @@ function panel.refresh()
     end
 
 
-    panel.updown:SetChecked(settings.downclick)
-    panel.fastooc:SetChecked(settings.fastooc)
-	panel.stopcastingfix:SetChecked(settings.stopcastingfix)
+    panel.updown:SetChecked(settings.downClick)
+    panel.removeWildcard:SetChecked(settings.removeWildcardActions)
+    panel.disableDuringHousing:SetChecked(settings.disableInHousing)
+    panel.enableGamePad:SetChecked(settings.enableGamePad)
+    panel.stopcastingfix:SetChecked(settings.stopcastingfix)
 
     end, geterrorhandler())
 end
@@ -582,12 +587,23 @@ function panel.okay()
     local settings = addon.settings
     local currentProfile = addon.db:GetCurrentProfile()
 
-    local changed = (not not panel.stopcastingfix:GetChecked()) ~= settings.stopcastingfix
+    local newDownClick = not not panel.updown:GetChecked()
+    local newRemoveWildcard = not not panel.removeWildcard:GetChecked()
+    local newDisableInHousing = not not panel.disableDuringHousing:GetChecked()
+    local newEnableGamePad = not not panel.enableGamePad:GetChecked()
+    local newStopCasting = not not panel.stopcastingfix:GetChecked()
+
+    local downClickChanged = newDownClick ~= settings.downClick
+    local wildcardChanged = newRemoveWildcard ~= settings.removeWildcardActions
+    local gamePadChanged = newEnableGamePad ~= settings.enableGamePad
+    local stopCastingChanged = newStopCasting ~= settings.stopcastingfix
 
     -- Update the saved variables
-    settings.downclick = not not panel.updown:GetChecked()
-	settings.stopcastingfix = not not panel.stopcastingfix:GetChecked()
-    settings.fastooc = not not panel.fastooc:GetChecked()
+    settings.downClick = newDownClick
+    settings.removeWildcardActions = newRemoveWildcard
+    settings.disableInHousing = newDisableInHousing
+    settings.enableGamePad = newEnableGamePad
+    settings.stopcastingfix = newStopCasting
 
     if #panel.talentProfiles > 0 then
         settings.specswap = not not panel.specswap:GetChecked()
@@ -605,9 +621,13 @@ function panel.okay()
         end
     end
 
-    addon:UpdateCombatWatch()
+    addon:HouseEditorModeChanged()
 
-    if changed then
+    if downClickChanged or gamePadChanged then
+        addon:UpdateRegisteredClicks()
+    end
+
+    if downClickChanged or wildcardChanged or stopCastingChanged or gamePadChanged then
         addon:FireMessage("BINDINGS_CHANGED")
     end
 

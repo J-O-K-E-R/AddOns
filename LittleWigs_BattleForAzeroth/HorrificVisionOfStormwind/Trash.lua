@@ -417,6 +417,7 @@ end
 -- Warmups
 
 function mod:CHAT_MSG_MONSTER_YELL(_, msg)
+	if self:IsSecret(msg) then return end
 	if msg == L.therum_deepforge_warmup_trigger then
 		local therumDeepforgeModule = BigWigs:GetBossModule("Therum Deepforge", true)
 		if therumDeepforgeModule then
@@ -437,12 +438,12 @@ end
 do
 	local prevCast
 	function mod:UNIT_SPELLCAST_START(_, unit, castGUID, spellId)
-		if spellId == 311996 and castGUID ~= prevCast then -- Open Vision (Image of Wrathion)
+		if not self:IsSecret(spellId) and spellId == 311996 and castGUID ~= prevCast then -- Open Vision (Image of Wrathion)
 			prevCast = castGUID
 			self:Message(spellId, "cyan")
 			self:CastBar(spellId, 10)
 			self:PlaySound(spellId, "long")
-		elseif spellId == 264398 and castGUID ~= prevCast then -- Hoppy Finish (Dod)
+		elseif not self:IsSecret(spellId) and spellId == 264398 and castGUID ~= prevCast then -- Hoppy Finish (Dod)
 			prevCast = castGUID
 			self:HoppyFinish({sourceGUID = self:UnitGUID(unit)})
 		end

@@ -6,7 +6,7 @@
 local ADDON, Addon = ...
 local Sushi = LibStub('Sushi-3.2')
 local L = LibStub('AceLocale-3.0'):GetLocale(ADDON)
-local OfflineSelector = Addon.Tipped:NewClass('OwnerSelector', 'Button', true)
+local OfflineSelector = Addon.Tipped:NewClass('OfflineSelector', 'Button', true)
 
 
 --[[ Construct ]]--
@@ -83,7 +83,7 @@ function OfflineSelector:OnClick(button)
 					drop:CreateTitle(L.Guilds)
 					start, more = i, false
 				else
-					overflow = (i-start) >= 8 and not owner.favorite
+					overflow = (i-start) >= 10 and not owner.favorite
 					if overflow and not more then
 						more = drop:CreateButton('    '..FRIENDS_WOW_NAME_COLOR:WrapTextInColorCode(LFG_LIST_MORE))
 						more:SetScrollMode(500)
@@ -119,7 +119,7 @@ function OfflineSelector:AddLocations(parent)
 end
 
 function OfflineSelector:AddLocation(parent, frame)
-	local size = Addon.IsClassic and 34 or 28
+	local size = Addon.IsModern and 28 or 34
 	local button = Sushi.DropButton(parent, {
 		text = CreateSimpleTextureMarkup(frame.icon, size,size) .. ' '.. frame.name,
 		func = function() Addon.Frames:Show(frame.id) end,
@@ -132,7 +132,7 @@ function OfflineSelector:AddLocation(parent, frame)
 end
 
 function OfflineSelector:AddOwner(parent, owner)
-	local name = owner:GetIconMarkup(16) .. ' '.. owner:GetColorMarkup():format(owner.name)
+	local name = owner:GetDisplayName(16)
 	local isSelected = function() return owner == self:GetOwner() end
 	local onClick = function()
 		Addon.Frames:Show(owner.isguild and 'guild' or self:GetFrameID(), owner)

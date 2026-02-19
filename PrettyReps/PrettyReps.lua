@@ -16,6 +16,9 @@ function PrettyReps:Init()
     -- Register for events
     self.frame:RegisterEvent("PLAYER_LOGIN")
     self.frame:RegisterEvent("UPDATE_FACTION")
+    self.frame:RegisterEvent("QUEST_LOG_UPDATE")
+    self.frame:RegisterEvent("MAJOR_FACTION_RENOWN_LEVEL_CHANGED")
+    self.frame:RegisterEvent("MAJOR_FACTION_UNLOCKED")
 end
 
 function PrettyReps:SetupSlashCommands()
@@ -55,12 +58,12 @@ local function OnEvent(self, event, ...)
         if PrettyReps.OptionsManager:GetOption("enablePrettyReps") then
             PrettyReps.FactionScanner:RevealAllFactions()
         end
-    elseif event == "UPDATE_FACTION" then
+    elseif event == "UPDATE_FACTION" or event == "QUEST_LOG_UPDATE" or event == "MAJOR_FACTION_RENOWN_LEVEL_CHANGED" or event == "MAJOR_FACTION_UNLOCKED" then
         -- Ignore updates while scanning
         if PrettyReps.FactionScanner.isScanning then
             return
         end
-        
+
         -- Update data manager with current server state
         PrettyReps.DataManager:UpdateFromServer()
     end

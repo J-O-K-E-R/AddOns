@@ -8,6 +8,7 @@ local Item = Addon.Tipped:NewClass('Item', 'ItemButton', 'ContainerFrameItemButt
 local Search = LibStub('ItemSearch-1.3')
 local C = LibStub('C_Everywhere')
 
+Item.UpdateSecondary = nop -- backwards support
 Item.Backgrounds = {
 	LAYOUT_STYLE_MODERN and 'item/weapon/1_null',
 	'interface/paperdoll/ui-backpack-emptyslot'
@@ -27,11 +28,18 @@ end
 
 function Item:Construct()
 	local b = self:Super(Item):Construct()
-	local name = b:GetName()
+	b:SetScript('OnEvent', nil)
+	b:SetScript('OnShow', nil)
 
-	b.UpdateTooltip = self.OnEnter
+	if b.Cooldown then
+		b.QuestBang = b.IconQuestTexture
+	else
+		local name = b:GetName()
+		b.Cooldown, b.QuestBang = _G[name .. 'Cooldown'], _G[name .. 'IconQuestTexture']
+	end
+
+	b.UpdateTooltip = b.OnEnter
 	b.FlashFind = b:CreateAnimationGroup()
-	b.Cooldown, b.QuestBang = _G[name .. 'Cooldown'], _G[name .. 'IconQuestTexture']
 	b.QuestBang:SetTexture(TEXTURE_ITEM_QUEST_BANG)
 	b.BattlepayItemTexture:Hide()
 	b.NewItemTexture:Hide()
@@ -63,27 +71,26 @@ function Item:Construct()
 		fade:SetToAlpha(.1)
 	end
 
-	b:SetScript('OnEvent', nil)
-	b:SetScript('OnShow', nil)
 	return b
 end
 
 function Item:Bind(button) -- required for secure frames
-	for k in pairs(button) do
-		if self[k] then
-			button[k] = nil
+	local list = rawget(self, '__bindList')
+	if not list then
+		list = {}
+		self.__bindList = list
+
+		local class = self
+		while class do
+			for k,v in pairs(class) do
+				list[k] = list[k] or v
+			end
+
+			class = class:GetSuper()
 		end
 	end
 
-	local class = self
-	while class do
-		for k,v in pairs(class) do
-			button[k] = button[k] or v
-		end
-
-		class = class:GetSuper()
-	end
-	return button
+	return Mixin(button, list)
 end
 
 
@@ -91,7 +98,7 @@ end
 
 function Item:PostClick(button)
 	if Addon.lockMode then
-		local locked = GetOrCreateTableEntry(self.frame:GetBagInfo(self:GetBag()), 'locked')
+		local locked = GetOrCreateTableEntry(self:GetBagInfo(self:GetBag()), 'locked')
 		locked[self:GetID()] = not locked[self:GetID()] or nil
 		self:SendSignal('LOCKING_TOGGLED')
 	elseif Addon.sets.flashFind and self.hasItem and IsAltKeyDown() and button == 'LeftButton' then
@@ -119,12 +126,33 @@ function Item:Update(info)
 	self.info = info or self:GetInfo()
 	self.hasItem = self.info.itemID and true -- for blizzard template
 	self.readable = self.info.isReadable -- for blizzard template
-	self:Delay(0.05, 'UpdateSecondary')
+
 	self:UpdateBorder()
+	self:UpdateFocus()
+	self:UpdateSearch()
+	self:UpdateIgnored()
+	self:UpdateUpgradeIcon()
+	self:UpdateSecondary()
+
+	if self.hasItem and GameTooltip:IsOwned(self) then
+		self:ShowTooltip()
+	end
 
 	SetItemButtonTexture(self, self.info.iconFileID or self.Backgrounds[Addon.sets.slotBackground])
 	SetItemButtonCount(self, self.info.stackCount)
 end
+
+function Item:UpdateLocked()
+	self.info = self:GetInfo()
+	self:SetDesaturated(self.info.isLocked)
+end
+
+function Item:SetDesaturated(locked)
+	SetItemButtonDesaturated(self, locked)
+end
+
+
+--[[ Secondary Highlights ]]--
 
 function Item:UpdateBorder()
 	local id, link, quality = self.info.itemID, self.info.hyperlink, self.info.quality
@@ -162,31 +190,6 @@ function Item:UpdateBorder()
 	self.JunkIcon:SetShown(Addon.sets.glowPoor and quality == 0 and not self.info.hasNoValue)
 end
 
-function Item:UpdateLocked()
-	self.info = self:GetInfo()
-	self:SetDesaturated(self.info.isLocked)
-end
-
-function Item:SetDesaturated(locked)
-	SetItemButtonDesaturated(self, locked)
-end
-
-
---[[ Secondary Highlights ]]--
-
-function Item:UpdateSecondary()
-	if self.frame then
-		self:UpdateFocus()
-		self:UpdateSearch()
-		self:UpdateIgnored()
-		self:UpdateUpgradeIcon()
-
-		if self.hasItem and GameTooltip:IsOwned(self) then
-			self:ShowTooltip()
-		end
-	end
-end
-
 function Item:UpdateFocus()
 	self:SetHighlightLocked(self:GetBag() == self.frame.focusedBag)
 end
@@ -200,7 +203,7 @@ function Item:UpdateSearch()
 end
 
 function Item:UpdateIgnored()
-	local cache = Addon.lockMode and self.frame:GetBagInfo(self:GetBag())
+	local cache = Addon.lockMode and self:GetBagInfo(self:GetBag())
 	self.IgnoredOverlay:SetShown(cache and cache.locked and cache.locked[self:GetID()])
 end
 
@@ -217,8 +220,10 @@ end
 --[[ Tooltip ]]--
 
 function Item:ShowTooltip()
-	(self:GetInventorySlot() and BankFrameItemButton_OnEnter or
-		ContainerFrameItemButtonMixin and ContainerFrameItemButtonMixin.OnUpdate or ContainerFrameItemButton_OnEnter)(self)
+	if self:GetRight() then -- prevents bug in blizzard code
+		(self:GetInventorySlot() and BankFrameItemButton_OnEnter or
+			ContainerFrameItemButtonMixin and ContainerFrameItemButtonMixin.OnUpdate or ContainerFrameItemButton_OnEnter)(self)
+	end
 end
 
 function Item:AttachDummy()
@@ -272,7 +277,7 @@ end
 --[[ Properties ]]--
 
 function Item:GetInfo()
-	return self.frame:GetItemInfo(self:GetSlot())
+	return self:GetItemInfo(self:GetSlot())
 end
 
 function Item:GetQuestInfo()

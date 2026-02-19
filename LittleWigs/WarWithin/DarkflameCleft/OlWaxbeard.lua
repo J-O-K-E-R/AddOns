@@ -86,11 +86,11 @@ do
 	end
 
 	function mod:UNIT_SPELLCAST_START(_, unit, _, spellId)
-		if spellId == 422116 then -- Reckless Charge
+		if not self:IsSecret(spellId) and spellId == 422116 then -- Reckless Charge
 			-- there is an emote for this with a target, but the emote often lists the wrong player
 			self:GetUnitTarget(printTarget, 0.1, self:UnitGUID(unit))
 			self:CDBar(spellId, 35.2)
-		elseif spellId == 422163 then -- Luring Candleflame
+		elseif not self:IsSecret(spellId) and spellId == 422163 then -- Luring Candleflame
 			self:CDBar(spellId, 38.4)
 		end
 	end
@@ -104,7 +104,7 @@ end
 
 function mod:CHAT_MSG_RAID_BOSS_WHISPER(_, msg)
 	-- |TInterface\\ICONS\\Ability_Fixated_State_Red.blp|t %s targets you with |cFFFF0000|Hspell:423693|h[Luring Candleflame!]|h|r
-	if msg:find("spell:423693", nil, true) then -- Luring Candleflame
+	if not self:IsSecret(msg) and msg:find("spell:423693", nil, true) then -- Luring Candleflame
 		self:PersonalMessage(422163, nil, CL.casting:format(self:SpellName(422163))) -- Luring Candleflame
 	end
 end
@@ -122,7 +122,7 @@ end
 
 function mod:CHAT_MSG_RAID_BOSS_EMOTE(_, msg)
 	-- |TInterface\\ICONS\\Ability_Foundryraid_TrainDeath.BLP:20|t Waxbeard snickers as he resorts to |cFFFF0000|Hspell:428268|h[Underhanded Track-tics]|h|r!#Ol' Waxbeard
-	if msg:find("spell:428268", nil, true) then -- Underhanded Track-tics
+	if not self:IsSecret(msg) and msg:find("spell:428268", nil, true) then -- Underhanded Track-tics
 		self:StopBar(CL.count:format(L.dynamite_mine_cart, dynamiteMineCartCount))
 		self:Message(429093, "cyan", CL.count:format(CL.incoming:format(L.dynamite_mine_cart), dynamiteMineCartCount))
 		dynamiteMineCartCount = dynamiteMineCartCount + 1

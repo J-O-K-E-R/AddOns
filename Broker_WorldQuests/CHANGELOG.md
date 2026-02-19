@@ -1,3 +1,17 @@
+### 12.0.0.2
+* Added support for Twighlight Highlands (Midnight Pre-patch)
+* Added support for Twilight's Blade Insignia currency
+
+### 12.0.0.1
+* Migrated configuration menu from deprecated UIDropDownMenu to modern MenuUtil.CreateContextMenu API for WoW 12.0.1+ compatibility
+
+### 12.0.0.0
+* Initial updates to support 12.0.0.0
+
+### 11.2.5.0
+* Added support for the "raid" world quest icon in Broken Isles
+* Updated TOC for 11.2.5
+
 ### 11.2.0.0
 * Added support for K'aresh (TWW)
 * Added support for Tazavesh (TWW)

@@ -18,6 +18,7 @@ function Items:New(parent, bags)
 		f.bags[i] = CreateFrame('Frame', nil, f)
 		f.bags[i]:SetID(tonumber(bag) or 1)
 		f.bags[i].id = bag
+		f.bags[i].frame = f.frame
 	end
 
 	f:SetScript('OnHide', f.UnregisterAll)
@@ -37,6 +38,7 @@ end
 function Items:RegisterEvents()
 	self:UnregisterAll()
 	self:RegisterSignal('UPDATE_ALL', 'Layout')
+	self:RegisterSignal('RULES_CHANGED', 'Layout')
 	self:RegisterFrameSignal('OWNER_CHANGED', 'OnShow')
 	self:RegisterFrameSignal('FILTERS_CHANGED', 'Layout')
 	self:RegisterFrameSignal('FOCUS_BAG', 'ForAll', 'UpdateFocus')
@@ -97,12 +99,12 @@ function Items:Layout()
 	local breaks, group = {0}, 0
 
 	for k = reverseBags and #self.bags or 1, reverseBags and 1 or #self.bags, reverseBags and -1 or 1 do
-		local frame = self.bags[k]
-		local bag = frame.id
-		local numSlots = self.frame:NumSlots(bag)
+		local proxy = self.bags[k]
+		local bag = proxy.id
+		local numSlots = self:NumSlots(bag)
 
-		if numSlots > 0 and self.frame:IsShowingBag(bag) then
-			local family = self.frame:GetBagFamily(bag)
+		if numSlots > 0 and self:IsShowingBag(bag) then
+			local family = self:GetBagFamily(bag)
 			local slots = {}
 
 			if (bagBreak > 1 or bagBreak > 0 and family ~= group and family * group <= 0) and #self.buttons > breaks[#breaks] then
@@ -110,12 +112,12 @@ function Items:Layout()
 			end
 
 			for slot = reverseSlots and numSlots or 1, reverseSlots and 1 or numSlots, reverseSlots and -1 or 1 do
-				local info = self.frame:GetItemInfo(bag, slot)
+				local info = self:GetItemInfo(bag, slot)
 
-				if self.frame:IsShowingItem(bag, slot, info, family) then
-					local button = self.Button(frame, bag, slot, info)
-					slots[slot] = button
+				if self:IsShowingItem(bag, slot, info, family) then
+					local button = self.Button(proxy, bag, slot, info)
 					tinsert(self.buttons, button)
+					slots[slot] = button
 				end
 			end
 
@@ -147,7 +149,6 @@ function Items:Layout()
 	-- Resize grid
 	local width, height = max(columns * size * scale, 1), max((y+1) * size * scale, 1)
 	self:SetSize(self.Transposed and height or width, self.Transposed and width or height)
-	self:SendFrameSignal('ELEMENT_RESIZED')
 end
 
 function Items:ForAll(method)
@@ -163,13 +164,9 @@ function Items:ForBag(bag, method)
 end
 
 function Items:IsStatic()
-	local profile = self.frame.profile
-	for set, rule in pairs(profile.activeRules) do
-		if profile[set] then
-			rule = Addon.Rules:Get(rule)
-			if rule and not rule.static then
-				return false
-			end
+	for set, rule in pairs(self.frame.rules) do
+		if self.frame.profile[set] and not rule.data.static then
+			return false
 		end
 	end
 	return true

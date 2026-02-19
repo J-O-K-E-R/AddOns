@@ -30,7 +30,8 @@ local BigWigsAPI = BigWigsAPI
 local L = BigWigsAPI:GetLocale("BigWigs: Common")
 local LibSpec = LibStub("LibSpecialization")
 local loader = BigWigsLoader
-local isClassic, isRetail, isVanilla, isCata, isMists, season = loader.isClassic, loader.isRetail, loader.isVanilla, loader.isCata, loader.isMists, loader.season
+local season = loader.season
+local isClassic, isRetail, isVanilla, isTBC, isWrath, isCata, isMists = loader.isClassic, loader.isRetail, loader.isVanilla, loader.isTBC, loader.isWrath, loader.isCata, loader.isMists
 local C_EncounterJournal_GetSectionInfo = (isCata or isMists) and function(key)
 	return C_EncounterJournal.GetSectionInfo(key) or BigWigsAPI:GetLocale("BigWigs: Encounter Info")[key]
 end or isRetail and C_EncounterJournal.GetSectionInfo or function(key)
@@ -46,7 +47,8 @@ end or isRetail and EJ_GetEncounterInfo or function(key)
 end
 local SendChatMessage, GetInstanceInfo, SimpleTimer, SetRaidTarget = loader.SendChatMessage, loader.GetInstanceInfo, loader.CTimerAfter, loader.SetRaidTarget
 local IsEncounterInProgress = C_InstanceEncounter and C_InstanceEncounter.IsEncounterInProgress or IsEncounterInProgress -- XXX 12.0 compat
-local UnitGUID, UnitHealth, UnitHealthMax = loader.UnitGUID, loader.UnitHealth, loader.UnitHealthMax
+local hasanysecretvalues = hasanysecretvalues or function() return false end -- XXX 12.0 compat
+local UnitGUID = loader.UnitGUID
 local RegisterAddonMessagePrefix = loader.RegisterAddonMessagePrefix
 local format, find, gsub, band, tremove, twipe = string.format, string.find, string.gsub, bit.band, table.remove, table.wipe
 local select, type, next, tonumber = select, type, next, tonumber
@@ -216,7 +218,7 @@ local bossNames = setmetatable({}, {__index =
 --- Register the module to enable on mob id.
 -- @number ... Any number of mob ids
 function boss:RegisterEnableMob(...)
-	core:RegisterEnableMob(self, ...)
+	core:RegisterEnableMob(self.moduleName, ...)
 end
 
 --- Check if a specific mob id would enable this module.
@@ -272,7 +274,7 @@ function boss:IsEncounterID(encounterId)
 	return encounterId == self.engageId or (self.extraEncounterIDs and self.extraEncounterIDs[encounterId])
 end
 
---- Get the zone ID used for this module. (Negative for mapArtID, positive for instanceID)
+--- Get the zone ID used for this module.
 -- @return number
 -- @within Enable triggers
 function boss:GetZoneID()
@@ -283,6 +285,26 @@ function boss:GetZoneID()
 			return unpack(self.instanceId)
 		else
 			return self.instanceId
+		end
+	end
+end
+
+--- Check if a specific zone ID is registered for this module.
+-- @number zoneId A singular specific zone ID
+-- @return boolean
+-- @within Enable triggers
+function boss:IsZoneID(zoneId)
+	if self.mapId then
+		return self.mapId == zoneId
+	else
+		if type(self.instanceId) == "table" then
+			for i = 1, #self.instanceId do
+				if self.instanceId[i] == zoneId then
+					return true
+				end
+			end
+		else
+			return self.instanceId == zoneId
 		end
 	end
 end
@@ -377,15 +399,35 @@ function boss:RegisterPrivateAuraSounds()
 	self.privateAuraSounds = {}
 	for _, opt in next, self.privateAuraSoundOptions do
 		local key = opt[1]
-		local sound = soundModule:GetSoundFile(self, key, "privateaura")
+		local sound
+		if opt.sound then
+			-- use the spell table default if the sound hasn't been changed in the config
+			local sDB = soundModule.db.profile["privateaura"]
+			if not sDB[self.name] or not sDB[self.name][key] then
+				sound = soundModule:GetDefaultSoundFile(opt.sound)
+			end
+		end
+		if not sound then
+			sound = soundModule:GetSoundFile(self, key, "privateaura")
+		end
 		if sound then
 			for i = 1, #opt do
-				local privateAuraSoundID = C_UnitAuras.AddPrivateAuraAppliedSound({
-					spellID = opt[i],
-					unitToken = "player",
-					soundFileName = sound,
-					outputChannel = "master",
-				})
+				local privateAuraSoundID
+				if type(sound) == "string" then -- sound file path
+					privateAuraSoundID = C_UnitAuras.AddPrivateAuraAppliedSound({
+						spellID = opt[i],
+						unitToken = "player",
+						soundFileName = sound,
+						outputChannel = "master",
+					})
+				else -- sound file id
+					privateAuraSoundID = C_UnitAuras.AddPrivateAuraAppliedSound({
+						spellID = opt[i],
+						unitToken = "player",
+						soundFileID = sound,
+						outputChannel = "master",
+					})
+				end
 				if privateAuraSoundID then
 					self.privateAuraSounds[#self.privateAuraSounds + 1] = privateAuraSoundID
 				end
@@ -483,7 +525,7 @@ function boss:Error(message)
 	self.errorPrints[#self.errorPrints+1] = message
 end
 
-function boss:Initialize() core:RegisterBossModule(self) end
+function boss:Initialize() core:RegisterBossModule(self.moduleName) end
 function boss:Enable(isWipe)
 	if not self:IsEnabled() then
 		self.enabled = true
@@ -505,9 +547,7 @@ function boss:Enable(isWipe)
 		if self.SetupOptions then self:SetupOptions() end
 
 		if self:GetEncounterID() then
-			if loader.isBeta then
-				self:RegisterEvent("ENCOUNTER_START", "EncounterStart")
-			else
+			if not self:Retail() then
 				self:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT", "CheckForEncounterEngage")
 			end
 			self:RegisterEvent("ENCOUNTER_END", "EncounterEnd")
@@ -549,7 +589,7 @@ function boss:Disable(isWipe)
 
 		-- No enabled modules? Unregister the combat log!
 		if #enabledModules == 0 then
-			if not loader.isBeta then
+			if not self:Retail() then
 				bossUtilityFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 			end
 			petUtilityFrame:UnregisterEvent("UNIT_PET")
@@ -756,12 +796,14 @@ do
 	local multipleRegistration = "Module %q registered the event %q with spell id %q multiple times."
 
 	function boss:CHAT_MSG_RAID_BOSS_EMOTE(event, msg, ...)
-		if eventMap[self][event][msg] then
-			self[eventMap[self][event][msg]](self, msg, ...)
-		else
-			for emote, func in next, eventMap[self][event] do
-				if find(msg, emote, nil, true) or find(msg, emote) then -- Preserve backwards compat by leaving in the 2nd check
-					self[func](self, msg, ...)
+		if not self:IsSecret(msg) then
+			if eventMap[self][event][msg] then
+				self[eventMap[self][event][msg]](self, msg, ...)
+			else
+				for emote, func in next, eventMap[self][event] do
+					if find(msg, emote, nil, true) or find(msg, emote) then -- Preserve backwards compat by leaving in the 2nd check
+						self[func](self, msg, ...)
+					end
 				end
 			end
 		end
@@ -780,12 +822,14 @@ do
 	end
 
 	function boss:CHAT_MSG_MONSTER_YELL(event, msg, ...)
-		if eventMap[self][event][msg] then
-			self[eventMap[self][event][msg]](self, msg, ...)
-		else
-			for yell, func in next, eventMap[self][event] do
-				if find(msg, yell, nil, true) or find(msg, yell) then -- Preserve backwards compat by leaving in the 2nd check
-					self[func](self, msg, ...)
+		if not self:IsSecret(msg) then
+			if eventMap[self][event][msg] then
+				self[eventMap[self][event][msg]](self, msg, ...)
+			else
+				for yell, func in next, eventMap[self][event] do
+					if find(msg, yell, nil, true) or find(msg, yell) then -- Preserve backwards compat by leaving in the 2nd check
+						self[func](self, msg, ...)
+					end
 				end
 			end
 		end
@@ -858,7 +902,7 @@ do
 	-- @param func callback function, passed a keyed table (sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, spellId, spellName, extraSpellId, extraSpellName, amount)
 	-- @number ... any number of spell ids
 	function boss:Log(event, func, ...)
-		if loader.isBeta then return end -- XXX Needs updating for 12.0
+		if self:Retail() then return end
 		if not event or not func then core:Print(format(missingArgument, self.moduleName)) return end
 		if type(func) ~= "function" and not self[func] then core:Print(format(missingFunction, self.moduleName, func)) return end
 		if not eventMap[self][event] then eventMap[self][event] = {} end
@@ -891,7 +935,7 @@ do
 	-- @param func callback function, passed a keyed table (mobId, destGUID, destName, destFlags, destRaidFlags)
 	-- @number ... any number of mob ids
 	function boss:Death(func, ...)
-		if loader.isBeta then return end -- XXX Needs updating for 12.0
+		if self:Retail() then return end
 		if not func then core:Print(format(missingArgument, self.moduleName)) return end
 		if type(func) ~= "function" and not self[func] then core:Print(format(missingFunction, self.moduleName, func)) return end
 		if not eventMap[self].UNIT_DIED then eventMap[self].UNIT_DIED = {} end
@@ -943,6 +987,7 @@ do
 		-- @param func callback function, passed (guid, mobId)
 		-- @number ... any number of mob ids
 		function boss:RegisterEngageMob(func, ...)
+			if self:Retail() then return end
 			if not func then core:Print(format(missingArgument, self.moduleName)) return end
 			if type(func) ~= "function" and not self[func] then core:Print(format(missingFunction, self.moduleName, func)) return end
 			if not eventMap[self].UNIT_ENTERING_COMBAT then eventMap[self].UNIT_ENTERING_COMBAT = {} end
@@ -983,11 +1028,13 @@ do
 
 	local frameTbl = {}
 	local eventFunc = function(_, event, unit, ...)
-		for i = #enabledModules, 1, -1 do
-			local self = enabledModules[i]
-			local m = unitEventMap[self] and unitEventMap[self][event]
-			if m and m[unit] then
-				self[m[unit]](self, event, unit, ...)
+		if not hasanysecretvalues(unit, ...) then
+			for i = #enabledModules, 1, -1 do
+				local self = enabledModules[i]
+				local m = unitEventMap[self] and unitEventMap[self][event]
+				if m and m[unit] then
+					self[m[unit]](self, event, unit, ...)
+				end
 			end
 		end
 	end
@@ -1155,7 +1202,7 @@ do
 
 	-- Query boss units to update engage status.
 	function boss:CheckBossStatus()
-		local hasBoss = UnitHealth("boss1") > 0 or UnitHealth("boss2") > 0 or UnitHealth("boss3") > 0 or UnitHealth("boss4") > 0 or UnitHealth("boss5") > 0
+		local hasBoss = self:GetHealth("boss1") > 0 or self:GetHealth("boss2") > 0 or self:GetHealth("boss3") > 0 or self:GetHealth("boss4") > 0 or self:GetHealth("boss5") > 0
 		if not hasBoss and self:IsEngaged() then
 			self:Debug(":CheckBossStatus wipeCheck scheduled", self:GetEncounterID(), self.moduleName)
 			self:ScheduleTimer(wipeCheck, 6, self)
@@ -1174,7 +1221,7 @@ do
 		-- disables the module if set as engaged but has no boss match.
 		-- noEngage if set to "NoEngage", the module is prevented from engaging if enabling during a boss fight (after a DC)
 		function boss:CheckForEncounterEngage(noEngage)
-			if loader.isBeta then return end -- XXX needs updating for 12.0
+			if self:Retail() then return end
 			if not self:IsEngaged() then
 				for i = 1, 10 do
 					local bossUnit = bosses[i]
@@ -1195,12 +1242,6 @@ do
 						end
 					end
 				end
-			end
-		end
-
-		function boss:EncounterStart(_, id, name, diff, size, status)
-			if self:IsEncounterID(id) then
-				self:Engage()
 			end
 		end
 
@@ -1353,7 +1394,7 @@ do
 		local isNumber = type(id) == "number"
 		for i = 1, 5 do
 			local unit = unitTable[i]
-			local guid = UnitGUID(unit)
+			local guid = self:UnitGUID(unit)
 			if id == guid then
 				return unit, guid
 			elseif guid and isNumber then
@@ -1457,8 +1498,14 @@ do
 
 				self:SendMessage("BigWigs_OnBossEngage", self)
 
-				if self.OnEngage then
-					self:OnEngage(difficulty)
+				if self:Retail() then
+					if self.OnEncounterStart then
+						self:OnEncounterStart(difficulty)
+					end
+				else
+					if self.OnEngage then
+						self:OnEngage(difficulty)
+					end
 				end
 			elseif noEngage == "NoEngage" then
 				self:SendMessage("BigWigs_OnBossEngageMidEncounter", self)
@@ -1741,22 +1788,46 @@ function boss:MythicPlus()
 	return difficulty == 8
 end
 
---- Check if on a retail server.
+--- Check if the current game type is Retail.
 -- @return boolean
 function boss:Retail()
 	return isRetail
 end
 
---- Check if on a classic server.
+--- Check if the current game type is any form of Classic.
 -- @return boolean
 function boss:Classic()
 	return isClassic
 end
 
---- Check if on a vanilla server.
+--- Check if the current game type is Vanilla.
 -- @return boolean
 function boss:Vanilla()
 	return isVanilla
+end
+
+--- Check if the current game type is Burning Crusade.
+-- @return boolean
+function boss:TBC()
+	return isTBC
+end
+
+--- Check if the current game type is Wrath of the Lich King.
+-- @return boolean
+function boss:Wrath()
+	return isWrath
+end
+
+--- Check if the current game type is Cataclysm.
+-- @return boolean
+function boss:Cataclysm()
+	return isCata
+end
+
+--- Check if the current game type is Mists of Pandaria.
+-- @return boolean
+function boss:MistsOfPandaria()
+	return isMists
 end
 
 --- Get the current season.
@@ -1884,10 +1955,11 @@ end
 -- @string unit unit token or name
 -- @return guid guid of the unit
 function boss:UnitGUID(unit)
-	if loader.isBeta then return end -- XXX needs updating for 12.0
-	local guid = UnitGUID(unit)
-	if guid then
-		return guid
+	if not self:IsSecret(unit) then
+		local guid = UnitGUID(unit)
+		if not self:IsSecret(guid) then
+			return guid
+		end
 	end
 end
 
@@ -1932,16 +2004,21 @@ do
 	end
 end
 
---- Get the health percentage of a unit.
--- @string unit unit token or name
--- @return hp health of the unit as a percentage between 0 and 100
-function boss:GetHealth(unit)
-	if loader.isBeta then return end -- XXX needs updating for 12.0
-	local maxHP = UnitHealthMax(unit)
-	if maxHP == 0 then
-		return maxHP
-	else
-		return UnitHealth(unit) / maxHP * 100
+do
+	local UnitHealth, UnitHealthMax = loader.UnitHealth, loader.UnitHealthMax
+	--- Get the health percentage of a unit.
+	-- @string unit unit token or name
+	-- @return hp health of the unit as a percentage between 0 and 100
+	function boss:GetHealth(unit)
+		if not self:IsSecret(unit) then
+			local hp = UnitHealth(unit)
+			local maxHP = UnitHealthMax(unit)
+			if self:IsSecret(hp) or maxHP == 0 then
+				return 0
+			else
+				return hp / maxHP * 100
+			end
+		end
 	end
 end
 
@@ -1964,7 +2041,19 @@ do
 end
 
 do
-	local UnitAura = C_UnitAuras and C_UnitAuras.GetAuraDataByIndex or UnitAura
+	local GetUnitAuraBySpellID = loader.GetUnitAuraBySpellID
+	--- Get the aura info of a specific unit using a spell ID.
+	-- @string unit unit token or name
+	-- @number spellId the spell ID of the aura
+	-- @return table the table full of aura info, or nil if not found
+	function boss:GetUnitAura(unit, spellId)
+		local tbl = GetUnitAuraBySpellID(unit, spellId)
+		return tbl
+	end
+end
+
+do
+	local GetAuraDataByIndex = C_UnitAuras.GetAuraDataByIndex
 	local blacklist = {}
 	--- Get the buff info of a unit.
 	-- @string unit unit token or name
@@ -1980,49 +2069,36 @@ do
 			end
 			local t1, t2, t3, t4, t5
 			for i = 1, 100 do
-				local name, _, stack, _, duration, expirationTime, _, _, _, spellId, _, _, _, _, _, value = UnitAura(unit, i, "HELPFUL")
-				if type(name) == "table" then
-					stack = name.applications
-					duration = name.duration
-					expirationTime = name.expirationTime
-					spellId = name.spellId
-					value = name.points and name.points[1]
-					name = name.name
+				local auraTable = GetAuraDataByIndex(unit, i, "HELPFUL")
+				if not auraTable or self:IsSecret(auraTable.name) then
+					return t1, t2, t3, t4, t5
 				end
 
-				if name == spell then
+				if auraTable.name == spell then
+					local spellId = auraTable.spellId
 					if not blacklist[spellId] then
 						blacklist[spellId] = true
-						core:Error(format("Found spell '%s' using id %d on %d, tell the authors!", name, spellId, self:Difficulty()))
+						core:Error(format("Found spell '%s' using id %d on %d, tell the authors!", auraTable.name, spellId, self:Difficulty()))
 					end
-					t1, t2, t3, t4, t5 = name, stack, duration, expirationTime, value
-				end
-
-				if not spellId then
-					return t1, t2, t3, t4, t5
+					local value = auraTable.points and auraTable.points[1]
+					t1, t2, t3, t4, t5 = auraTable.name, auraTable.applications, auraTable.duration, auraTable.expirationTime, value
 				end
 			end
 		else
 			for i = 1, 100 do
-				local name, _, stack, auraType, duration, expirationTime, _, _, _, spellId, _, _, _, _, _, value = UnitAura(unit, i, "HELPFUL")
-				if type(name) == "table" then
-					stack = name.applications
-					duration = name.duration
-					expirationTime = name.expirationTime
-					spellId = name.spellId
-					value = name.points and name.points[1]
-					name = name.name
+				local auraTable = GetAuraDataByIndex(unit, i, "HELPFUL")
+				if not auraTable or self:IsSecret(auraTable.name) then
+					return
 				end
 
-				if not spellId then
-					return
-				elseif not spell then
+				if not spell then
 					local desiredType = ...
-					if auraType == desiredType then
-						return name, stack, duration, expirationTime
+					if auraTable.dispelName == desiredType then
+						return auraTable.name, auraTable.applications, auraTable.duration, auraTable.expirationTime
 					end
-				elseif spellId == spell then
-					return name, stack, duration, expirationTime, value
+				elseif auraTable.spellId == spell then
+					local value = auraTable.points and auraTable.points[1]
+					return auraTable.name, auraTable.applications, auraTable.duration, auraTable.expirationTime, value
 				end
 			end
 		end
@@ -2042,49 +2118,36 @@ do
 			end
 			local t1, t2, t3, t4, t5
 			for i = 1, 100 do
-				local name, _, stack, _, duration, expirationTime, _, _, _, spellId, _, _, _, _, _, value = UnitAura(unit, i, "HARMFUL")
-				if type(name) == "table" then
-					stack = name.applications
-					duration = name.duration
-					expirationTime = name.expirationTime
-					spellId = name.spellId
-					value = name.points and name.points[1]
-					name = name.name
+				local auraTable = GetAuraDataByIndex(unit, i, "HARMFUL")
+				if not auraTable or self:IsSecret(auraTable.name) then
+					return t1, t2, t3, t4, t5
 				end
 
-				if name == spell then
+				if auraTable.name == spell then
+					local spellId = auraTable.spellId
 					if not blacklist[spellId] then
 						blacklist[spellId] = true
-						core:Error(format("Found spell '%s' using id %d on %d, tell the authors!", name, spellId, self:Difficulty()))
+						core:Error(format("Found spell '%s' using id %d on %d, tell the authors!", auraTable.name, spellId, self:Difficulty()))
 					end
-					t1, t2, t3, t4, t5 = name, stack, duration, expirationTime, value
-				end
-
-				if not spellId then
-					return t1, t2, t3, t4, t5
+					local value = auraTable.points and auraTable.points[1]
+					t1, t2, t3, t4, t5 = auraTable.name, auraTable.applications, auraTable.duration, auraTable.expirationTime, value
 				end
 			end
 		else
 			for i = 1, 100 do
-				local name, _, stack, auraType, duration, expirationTime, _, _, _, spellId, _, _, _, _, _, value = UnitAura(unit, i, "HARMFUL")
-				if type(name) == "table" then
-					stack = name.applications
-					duration = name.duration
-					expirationTime = name.expirationTime
-					spellId = name.spellId
-					value = name.points and name.points[1]
-					name = name.name
+				local auraTable = GetAuraDataByIndex(unit, i, "HARMFUL")
+				if not auraTable or self:IsSecret(auraTable.name) then
+					return
 				end
 
-				if not spellId then
-					return
-				elseif not spell then
+				if not spell then
 					local desiredType = ...
-					if auraType == desiredType then
-						return name, stack, duration, expirationTime
+					if auraTable.dispelName == desiredType then
+						return auraTable.name, auraTable.applications, auraTable.duration, auraTable.expirationTime
 					end
-				elseif spellId == spell then
-					return name, stack, duration, expirationTime, value
+				elseif auraTable.spellId == spell then
+					local value = auraTable.points and auraTable.points[1]
+					return auraTable.name, auraTable.applications, auraTable.duration, auraTable.expirationTime, value
 				end
 			end
 		end
@@ -3760,6 +3823,7 @@ end
 -- @param key the option key
 -- @string[opt] player the player to mark (if nil, the icon is removed)
 function boss:PrimaryIcon(key, player)
+	if isRetail then return end
 	if key and not checkFlag(self, key, C.ICON) then return end
 	if not player then
 		self:SendMessage("BigWigs_RemoveRaidIcon", self, 1)
@@ -3772,6 +3836,7 @@ end
 -- @param key the option key
 -- @string[opt] player the player to mark (if nil, the icon is removed)
 function boss:SecondaryIcon(key, player)
+	if isRetail then return end
 	if key and not checkFlag(self, key, C.ICON) then return end
 	if not player then
 		self:SendMessage("BigWigs_RemoveRaidIcon", self, 2)
@@ -3785,6 +3850,7 @@ end
 -- @string unit the unit (player/npc) to mark
 -- @number[opt] icon the icon to mark the player with, numbering from 1-8 (if nil, the icon is removed)
 function boss:CustomIcon(key, unit, icon)
+	if isRetail then return end
 	if key == false or self:GetOption(key) then
 		if solo then -- setting the same icon twice while not in a group removes it
 			SetRaidTarget(unit, 0)
@@ -3814,7 +3880,8 @@ do
 			local icon = GetRaidTargetIndex(unitOrFlags)
 			return icon
 		else
-			return flagToIcon[unitOrFlags]
+			local flag = band(unitOrFlags, 255) -- COMBATLOG_OBJECT_RAIDTARGET_MASK = 255
+			return flagToIcon[flag]
 		end
 	end
 end
@@ -3962,6 +4029,13 @@ end
 -- @section misc
 --
 
+do
+	local issecretvalue = issecretvalue or function() return false end -- XXX 12.0 compat
+	function boss:IsSecret(value)
+		return issecretvalue(value)
+	end
+end
+
 --- Trigger a function after a specific delay
 -- @param func callback function to trigger after the delay
 -- @number delay how long to wait until triggering the function
@@ -4090,7 +4164,6 @@ do
 	-- @usage self:Sync("abilityPrefix", data)
 	-- @usage self:Sync("ability")
 	function boss:Sync(msg, extra, noResend)
-		if loader.isBeta then return end -- XXX 12.0 Needs fixing (not allowed in raids/dungeons atm)
 		if msg then
 			if IsInGroup() then
 				if extra then
@@ -4100,12 +4173,12 @@ do
 				end
 				local result = SendAddonMessage("BigWigs", msg, IsInGroup(2) and "INSTANCE_CHAT" or "RAID")
 				if type(result) == "number" and result > 0 then
-					if result == 3 or result == 8 or result == 9 then
+					if result == 3 or result == 8 or result == 9 then -- AddonMessageThrottle, ChannelThrottle, GeneralError
 						if not noResend then
 							self:SimpleTimer(function() if self:IsEnabled() then self:Sync(msg, extra) end end, 1)
 							return
 						end
-					else
+					elseif result ~= 11 then -- AddOnMessageLockdown
 						local errorMsg = format("Failed to send boss comm %q. Error code: %d", msg, result)
 						core:Error(errorMsg)
 					end

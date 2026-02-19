@@ -38,7 +38,7 @@ local CategoryDefinition = {
 
 local PrimaryCategory = {
     "Signature", "Current",
-    "ActionBar", "Chat", "Collection", "Instance", "Inventory", "Loot", "Map", "Profession", "Quest", "UnitFrame", "Old",
+    "ActionBar", "Chat", "Collection", "Housing", "Instance", "Inventory", "Loot", "Map", "Profession", "Quest", "UnitFrame", "Old",
     "Uncategorized",
 };
 
@@ -62,7 +62,7 @@ function ControlCenter:InitializeModules()
     for _, moduleData in pairs(self.modules) do
         isForceEnabled = false;
         if (not moduleData.validityCheck) or (moduleData.validityCheck()) then
-            enabled = db[moduleData.dbKey];
+            enabled = db[moduleData.dbKey] or moduleData.virtual;
             moduleData.isValid = true;
 
             if (not enabled) and (self.newDBKeys[moduleData.dbKey]) then
@@ -79,7 +79,19 @@ function ControlCenter:InitializeModules()
                 end
             end
 
-            moduleData.toggleFunc(enabled);
+            if moduleData.toggleFunc then
+                if enabled then
+                    moduleData.toggleFunc(enabled);
+                end
+            else
+                moduleData.virtual = true;
+            end
+
+            if moduleData.virtual then
+                if moduleData.description then
+                    moduleData.description = moduleData.description.."\n\n"..L["Always On Module"];
+                end
+            end
 
             if enabled and isForceEnabled then
                 API.PrintMessage(string.format(L["New Feature Auto Enabled Format"], moduleData.name));     --Todo: click link to view detail |cff71d5ff
@@ -104,6 +116,8 @@ function ControlCenter:InitializeModules()
         db.seenNewFeatureMark = {};
     end
     self.seenNewFeatureMark = db.seenNewFeatureMark;
+
+    addon.CallbackRegistry:Trigger("ModulesLoaded");
 end
 
 function ControlCenter:AddModule(moduleData)
@@ -112,7 +126,7 @@ function ControlCenter:AddModule(moduleData)
     if not moduleData.categoryID then
         moduleData.categoryID = 0;
         moduleData.uiOrder = 0;
-        print("Plumber Debug:", moduleData.name, "No Category");
+        --print("Plumber Debug:", moduleData.name, "No Category");
     end
 
     table.insert(self.modules, moduleData);
@@ -157,6 +171,10 @@ function ControlCenter:GetValidModules()
             if (a.categoryID == b.categoryID) and (a ~= b) then
                 --print("Plumber: Duplicated Module uiOrder", a.uiOrder, a.name, b.name);   --debug
             end
+        end
+
+        if a.virtual ~= b.virtual then
+            return not a.virtual
         end
 
         return a.name < b.name
@@ -240,10 +258,18 @@ do  --Settings Panel Revamp
     local SortFunc = {};
 
     function SortFunc.Alphabet(a, b)
+        if a.virtual ~= b.virtual then
+            return not a.virtual
+        end
+
         return a.name < b.name
     end
 
     function SortFunc.Date(a, b)
+        if a.virtual ~= b.virtual then
+            return not a.virtual
+        end
+
         if a.moduleAddedTime and b.moduleAddedTime then
             return a.moduleAddedTime > b.moduleAddedTime
         end

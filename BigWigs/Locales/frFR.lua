@@ -277,6 +277,27 @@ L.mythicplus_settings_export_desc = "Exporter tous les paramètres mythique +."
 L.imported_battleres_settings = "Paramètres Battle Rez"
 L.battleres_settings_import_desc = "Importer tous les paramètres de Battle Rez."
 L.battleres_settings_export_desc = "Exporter tous les paramètres de Battle Rez."
+--L.imported_privateAuras_settings = "Private Auras Settings"
+--L.privateAuras_settings_import_desc = "Import all Private Auras settings."
+--L.privateAuras_settings_export_desc = "Export all Private Auras settings."
+
+-- InstanceSharing.lua
+L.sharing_window_title = "Partage des paramètres de Boss"
+L.sharing_flags = "Paramètres généraux"
+L.sharing_flags_desc = "Paramètres d'import contrôlant des menus comme 'affiche une barre', 'joue un son', 'affiche un message' etc.\nCes paramètres couvrent la plupart des cases à cocher des paramètres d'une technique."
+L.sharing_export_flags_desc = "Paramètres d'export contrôlant des menus comme 'affiche une barre', 'joue un son', 'affiche un message' etc.\nCes paramètres couvrent la plupart des cases à cocher des paramètres d'une technique."
+L.sharing_sounds_desc = "Import des sons à jouer pour les techniques."
+L.sharing_export_sounds_desc = "Export des sons à jouer pour les techniques."
+L.sharing_private_auras = "Auras Privées"
+L.sharing_private_auras_desc = "Import des sons des auras privées configurées."
+L.sharing_export_private_auras_desc = "Export des sons des auras privées configurées."
+L.sharing_colors_desc = "Import des paramètres de couleurs des barres et messages."
+L.sharing_export_colors_desc = "Export des paramètres de couleurs des barres et messages."
+L.confirm_instance_import = "Les paramètres sélectionnés que vous êtes en train d'importer va écraser vos paramètres du profil actuel :\n\n|cFF33FF99\"%s\"|r\n\nInstance :\n|cFFBB66FF\"%s\"|r\n\nÊtes-vous sûr de vouloir faire cela ?"
+L.status_text_paste_import = "Coller une chaîne d'import valide"
+L.exporting_instance = "Export |cFFBB66FF%s|r" -- Exporting Molten Core
+L.importing_instance = "Import |cFFBB66FF%s|r" -- Importing Molten Core
+L.share = "Partager"
 
 -- Statistics
 L.statistics = "Statistiques"
@@ -313,6 +334,7 @@ L.N10 = "10 joueurs"
 L.N25 = "25 joueurs"
 L.H10 = "Héroïque 10"
 L.H25 = "Héroïque 25"
+L.titan = "Titan" -- Chinese-only "Titan Reforged" servers
 
 -----------------------------------------------------------------------
 -- TOOLS
@@ -320,6 +342,8 @@ L.H25 = "Héroïque 25"
 
 L.tools = "Outils"
 L.toolsDesc = "BigWigs propose divers outils ou des fonctionnalités \"qualité de vie\" afin d'accélérer et simplifier les combats de boss."
+
+L.reloadUIWarning = "Changer cette fonctionnalité va recharger votre IU, affichant l'écran de chargement pendant un moment. Êtes-vous sûr(e) ?"
 
 -----------------------------------------------------------------------
 -- AutoRole.lua
@@ -412,6 +436,8 @@ L.keystoneTimeUnder = "|cFF33FF99-%02d:%02d|r"
 L.keystoneTimeOver = "|cFFFF4411+%02d:%02d|r"
 L.keystoneTeleportTip = "Cliquez sur le nom du donjon ci-dessous afin de vous |cFF33FF99TÉLÉPORTER|r directement à l'entrée du donjon."
 L.keystoneTimerunner = "|A:timerunning-glues-icon:14:14|aCeci est un personnage du cours du temps." -- Note: Timerunning is a mode like "Legion Remix", it is NOT the same as Timewalking
+L.keystoneSlashKeys = "Prend également en compte la commande |cFF33FF99/keys|r"
+L.keystoneSlashKeystone = "Prend également en compte la commande |cFF33FF99/keystone|r"
 
 -- It doesn't really matter what you call it as long as it's recognizable and limited to ~6 characters
 L.keystoneShortName_TheRookery = "COLONIE"
@@ -441,6 +467,13 @@ L.keystoneShortName_ReturnToKarazhanLower = "LKARA"
 L.keystoneShortName_ReturnToKarazhanUpper = "UKARA"
 L.keystoneShortName_CathedralOfEternalNight = "COEN"
 L.keystoneShortName_SeatOfTheTriumvirate = "TRIUM"
+L.keystoneShortName_WindrunnerSpire = "FLÈCHE"
+L.keystoneShortName_MagistersTerrace = "TERRASSE"
+L.keystoneShortName_MaisaraCaverns = "MAISARA"
+L.keystoneShortName_NexusPointXenas = "XENAS"
+L.keystoneShortName_AlgetharAcademy = "ACADÉMIE"
+L.keystoneShortName_Skyreach = "ORÉE"
+L.keystoneShortName_PitOfSaron = "FOSSES"
 
 -- These short names are for the bar that shows during the Mythic+ countdown
 -- Use the real dungeon names but make them shorter to fit on the bar better
@@ -471,6 +504,13 @@ L.keystoneShortName_ReturnToKarazhanLower_Bar = "Kara bas"
 L.keystoneShortName_ReturnToKarazhanUpper_Bar = "Kara haut"
 L.keystoneShortName_CathedralOfEternalNight_Bar = "Cathédrale"
 L.keystoneShortName_SeatOfTheTriumvirate_Bar = "Triumvirat"
+L.keystoneShortName_WindrunnerSpire_Bar = "Flèche"
+L.keystoneShortName_MagistersTerrace_Bar = "Terrasse"
+L.keystoneShortName_MaisaraCaverns_Bar = "Maisara"
+L.keystoneShortName_NexusPointXenas_Bar = "Xenas"
+L.keystoneShortName_AlgetharAcademy_Bar = "Académie"
+L.keystoneShortName_Skyreach_Bar = "Orée-du-Ciel"
+L.keystoneShortName_PitOfSaron_Bar = "Fosses"
 
 -- Instance Keys "Who has a key?"
 L.instanceKeysTitle = "Qui a une clef ?"
@@ -596,6 +636,7 @@ L.autoReplyLeftCombatAdvancedWipe = "J'ai perdu face à '%s' : %s"
 L.bars = "Barres"
 L.style = "Style"
 L.bigWigsBarStyleName_Default = "Défaut"
+L.bigWigsBarStyleName_Blizzard = "Blizzard"
 L.resetBarsDesc = "Réinitialise toutes les options relatives aux barres, y compris la position des ancres des barres."
 L.testBarsBtn = "Créer une barre de test"
 L.testBarsBtn_desc = "Créée une barre pour que vous puissiez tester vos paramètres d'affichage actuels."
@@ -655,6 +696,25 @@ L.breakBar = "Temps de pause"
 L.breakMinutes = "Fin de la pause dans %d |4minute:minutes; !"
 L.breakSeconds = "Fin de la pause dans %d |4seconde:secondes; !"
 L.breakFinished = "Le temps de pause est terminé !"
+
+L.indicatorTitle = "Indicateur de sorts"
+L.indicatorType_Deadly = "Mortel"
+L.indicatorType_Bleed = "Saignement"
+L.indicatorType_Magic = "Magique"
+L.indicatorType_Dispels = "Dissipations"
+L.indicatorType_Tank = "Tank"
+L.indicatorType_Healer = "Soigneur"
+L.indicatorType_Damager = "Dégâts"
+
+L.spellIndicatorsPosition = "Position d'indicateurs de sort"
+L.spellIndicatorsPositionDesc = "Choisissez où sur la barre les indicateurs de sorts sera positionnée."
+L.spellIndicatorsOffset = "Décalage des Indicateurs de sorts"
+L.spellIndicatorSize = "Taille de l'indicateur de sorts"
+L.spellIndicatorSizeDropdown_Large1 = "Large (1 indicateur)"
+L.spellIndicatorSizeDropdown_Large2 = "Large (2 indicateurs)"
+L.spellIndicatorSizeDropdown_Large3 = "Large (3 indicateurs)"
+L.spellIndicatorSizeDropdown_Small4 = "Petit (4 indicateurs)"
+L.spellIndicatorSizeDropdown_Small2 = "Petit (2 indicateurs)"
 
 -----------------------------------------------------------------------
 -- BossBlock.lua
@@ -901,6 +961,36 @@ L.nameplateOptInTitle = "Choix du mode barres d'infos des boss"
 L.nameplateOptInWarning = "|cffff4411ATTENTION !|r\n\nActiver ce choix va désactiver les barres d'infos de TOUS les modules de boss. Vous devrez aller sur chaque boss et activer les barres d'infos que vous souhaiterez.\n\nVotre Interface utilisateur va recharger, êtes-vous sûr(e) ?"
 
 -----------------------------------------------------------------------
+-- PrivateAuras.lua
+--
+
+L.privateAuras = "Auras privées"
+
+L.createTestAura = "Créer une Aura de Test"
+L.showDispelType = "Afficher l'indicateur du type de dispell"
+L.showDispelTypeDesc = "Affiche une icône sur le cadre de l'aura privée si elle a un type de dispell.\n\n|cffffd200Note : Ceci affecte tous les cadres d'aura privée.|r"
+L.iconSize = "Taille d'icône"
+L.iconSpacing = "Espacement d'icône"
+L.showCooldown = "Afficher la spirale de recharge"
+L.showCooldownText = "Afficher le texte de recharge"
+L.cooldownTextScale = "Échelle de texte de recharge"
+L.growthDirection = "Direction des icônes"
+L.aurasOnYou = "Auras sur vous"
+L.aurasOnYouDesc = "Customise les icônes des auras qui s'appliquent à vous.\n\n"
+L.aurasOnAnother = "Auras sur les autres"
+L.aurasOnAnotherDesc = "Choisissez un joueur spécifique et customisez les icônes des auras s'appliquant à lui.\n\n"
+L.chooseAPlayer = "Choisissez un joueur"
+L.theOtherTank = "Cherche automatiquement un tank"
+L.theOtherTankDesc = "Affiche les auras privées sur le premier tank de votre groupe n'étant pas vous. (Actuel : %s)"
+--L.onlyWhenYouAreTank = "Only show when you are also a tank"
+L.playerInYourGroup = "Un joueur dans votre groupe"
+L.maxIcons = "Icônes Max"
+L.maxIconsDesc = "Nombre maximum d'icônes à afficher."
+L.privateAurasHelpTip = "|TInterface\\AddOns\\BigWigs\\Media\\Icons\\minimap_raid:0:0|tBigWigs : Vous pouvez voir vos affaiblissements d'aura privée en tant qu'icônes, ou même les auras privées d'un autre joueur (comme un a tank)."
+
+L.privateAurasTestAnchorText = "AP %d"
+
+-----------------------------------------------------------------------
 -- Proximity.lua
 --
 
@@ -1006,6 +1096,25 @@ L.bossHealthOption = "Vie du boss"
 L.bossVictoryPrint = "Vous avez vaincu '%s' après %s." -- You were victorious against 'BOSS_NAME' after COMBAT_DURATION.
 L.bossDefeatPrint = "Vous avez été vaincu par '%s' après %s." -- You were defeated by 'BOSS_NAME' after COMBAT_DURATION.
 L.newFastestVictoryPrint = "Nouvelle victoire la plus rapide : (-%s)" -- New fastest victory: (-COMBAT_DURATION)
+
+-----------------------------------------------------------------------
+-- Timeline.lua
+--
+
+L.timeline = "Ligne temporelle"
+L.blizzTimersAsBigWigsBars = "Affiche les CàR (Comptes à Rebours) de Blizz (ligne temporelle) comme barres de BigWigs"
+L.blizzTimersAsBigWigsBarsDesc = "Tous les CàR de boss de Blizz (ligne temporelle) seront affichés comme barres de BigWigs."
+L.blizzWarningsAsBigWigsMessages = "Affiche les avertissements de boss de Blizz comme messages de BigWigs"
+L.blizzWarningsAsBigWigsMessagesDesc = "Tous les avertissements de boss de Blizz seront affichés comme messages de BigWigs."
+L.blizzAudioAsBigWigsAudio = "Convertit les sons de Blizz à des sons de BigWigs"
+L.blizzAudioAsBigWigsAudioDesc = "Joue vos sons de BigWigs (Alertes, Alarmes & Avertissements) par rapport à la sévérité de la rencontre."
+L.blizzWarningSettings = "Paramètres des avertissements de Blizz"
+L.blizzTimelineSettings = "Paramètres de la ligne temporelle de Blizz"
+L.blizzTimelineSettingsNote = "|cffff4411Ces options ne contrôlent que les paramètres de Blizz settings et sont ici par commodité.|r"
+L.enableBlizzTimeline = "Activer la ligne temporelle de Blizz"
+L.enableBlizzTimelineDesc = "Cela affichera tous les CàR sur la ligne temporelle de Blizz."
+L.enableBlizzWarnings = "Activer les avertissements de boss de Blizz"
+L.enableBlizzWarningsDesc = "Lorsque vous activez les avertissements de boss de Blizz, vous devriez désactiver l'affichage en tant que message BigWigs ou vous verrez les messages deux fois."
 
 -----------------------------------------------------------------------
 -- Victory.lua

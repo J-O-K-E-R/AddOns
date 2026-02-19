@@ -1,8 +1,28 @@
 # TomTom
 
-## [v4.2.3-release](https://github.com/jnwhiteh/TomTom/tree/v4.2.3-release) (2025-11-30)
-[Full Changelog](https://github.com/jnwhiteh/TomTom/commits/v4.2.3-release) [Previous Releases](https://github.com/jnwhiteh/TomTom/releases)
+## [v4.2.20-release](https://github.com/jnwhiteh/TomTom/tree/v4.2.20-release) (2026-02-14)
+[Full Changelog](https://github.com/jnwhiteh/TomTom/commits/v4.2.20-release) [Previous Releases](https://github.com/jnwhiteh/TomTom/releases)
 
+- Remove CN from TOC  
+- Update TOC for Mists/Classic  
+- Add an Export Waypoints button to /ttpaste  
+- Add an option to print a /way command when right-clicking the coord block  
+- Update TOC for 12.0.1  
+- Add split configuration for addon compartment button  
+- Remove AceEvent so TomTom can't get blamed  
+- Update TOC for 12.0  
+- Fix opening options with /tomtom  
+- Add control-enter to paste window for easy submit  
+- Update TOC for TBC Anniversary  
+- Update TOC to work for retail + beta + PTR  
+- Fix duplicate localization  
+- Update HBD again, maybe fix issues  
+- Update HBD embed and TOC for 12.0.1  
+- More efficiently compute the distance and angle  
+    If the minimap waypoint isn't shown, we should still function  
+    and not invoke all of those computations in HBD.  
+- Update frFR Localization  
+- Update TOC  
 - Update HBD to work properly with some Midnight zones  
 - Add a minimap button for /ttpaste  
     Can be configured in the options window or /ttpaste minimap  
@@ -668,29 +688,3 @@
 - * Expose TomTom:InitializeDropdown(uid) that can be used to init the dropdown  
     * Fix a bug where checkboxes could be put in the wrong place on dropdown menus  
 - * Guarded the ColorGradient() function against specific odd cases  
-- * Added a comment clarifying that TomTom\_Waypoints API is private  
-    * When a duplicate waypoint is set, return the original uid  
-- * Stop duplicate waypoints from being set  
-- * Fix a bug where players were receiving their own messages  
-- * Fixed an issue where waypoint would appear out of nowhere when zoning  
-    * Fixed the slash command handler so it properly accepts multi word zone names  
-- * Reverted to a different version of Astrolabe for testing purposes  
-    * Added a "Send Waypoint" option, needs testing  
-    * Fixed an issue with the waypoint arrow when using minimap rotation  
-    * Added the waypoint removal (all, zone) options to the crazy arrow right-click  
-- * Added alpha for border  
-- * Fix a bug where the "Enable" checkbox wasn't working for minimap or worldmap waypoints  
-- * Added a right-click option to clear the current waypoint on the arrow  
-- * Fixing an issue where crazy arrow would appear even when disabled  
-    * Updated externals to fix config issue  
-- * Fixed waypoints not automatically clearing when that option is set  
-- Removed Dongle from scm control  
-- * Added version information to TomTom  
-- * Added version number to .toc  
-- * Make sure to return the uid from AddZWaypoints  
-- * Fixed the parenting of the options panel  
-- * Added property so zips are generated properly  
-- * Removed Dongle from .toc  
-    * Updated externals  
-    * Updated localization file  
-- Fixed an issue  

@@ -45,6 +45,7 @@ local configFrame
 
 local showToggleOptions, getAdvancedToggleOption = nil, nil
 local toggleOptionsStatusTable, lastOptionsTab = {}, nil
+local lastTabSelected, lastTreeGroupSelected, lastBossModuleGroup = nil, nil, nil
 
 local C_EncounterJournal_GetSectionInfo = loader.isClassic and function(key)
 	local info = (loader.isCata or loader.isMists) and C_EncounterJournal.GetSectionInfo(key)
@@ -352,9 +353,10 @@ spellDescriptionUpdater:SetScript("OnEvent", function(_, _, spellId)
 	end
 end)
 
-function options:Open()
+local OpenConfig = nil
+function options:Open(specificPanel)
 	if not configFrame then
-		options:OpenConfig()
+		OpenConfig(specificPanel)
 	end
 end
 
@@ -730,7 +732,7 @@ end
 
 local function flagOnEnter(widget)
 	bwTooltip:SetOwner(widget.frame, "ANCHOR_TOPRIGHT")
-	bwTooltip:SetText(widget:GetUserData("tooltipText"), 1, 1, 1, true)
+	bwTooltip:AddLine(widget:GetUserData("tooltipText"), 1, 1, 1, true)
 	bwTooltip:Show()
 end
 
@@ -1072,7 +1074,6 @@ function populatePrivateAuraOptions(widget)
 
 	local privateAuraSoundOptions = widget:GetUserData("privateAuraSoundOptions")
 	local soundList = LibStub("LibSharedMedia-3.0"):List("sound")
-	local defaultSound = soundModule:GetDefaultSound("privateaura")
 	local sDB = soundModule.db.profile["privateaura"]
 	-- preserve module order
 	for _, module in ipairs(widget:GetUserData("moduleList")) do
@@ -1088,6 +1089,7 @@ function populatePrivateAuraOptions(widget)
 				local spellId = option[1]
 				local key = spellId
 				local id = option.tooltip or spellId
+				local defaultSound = soundModule:GetDefaultSound(option.sound or "privateaura")
 
 				local name = loader.GetSpellName(id)
 				local texture = loader.GetSpellTexture(id)
@@ -1376,7 +1378,7 @@ local function populateToggleOptions(widget, module)
 	if #tabs > 0 then -- tabs!
 		local generalTabExists = nil
 		local tabbedOptions = {}
-		local tabInfo, tabOptions  = {}, {}
+		local tabInfo, tabOptions = {}, {}
 		for _, tab in next, tabs do
 			local text = tab.tabName
 			if text == "general" or text == CL.general then
@@ -1442,6 +1444,7 @@ local function populateToggleOptions(widget, module)
 end
 
 function showToggleOptions(widget, event, group, noScrollReset)
+	lastBossModuleGroup = group
 	widget:SetUserData("bossIndex", group)
 	-- reset scroll bar if not hitting the back button
 	if not noScrollReset then
@@ -1493,7 +1496,7 @@ local function onZoneShow(treeWidget, instanceIdOrMapId)
 	outerContainer:SetFullWidth(true)
 	treeWidget:AddChild(outerContainer)
 
-	local innerContainer = AceGUI:Create("DropdownGroup")
+	local innerContainer = AceGUI:Create("BossDropdownGroup") -- Adds extra share buttons
 	innerContainer:SetTitle(L.selectEncounter)
 	innerContainer:SetLayout("Flow")
 	innerContainer:SetCallback("OnGroupSelected", showToggleOptions)
@@ -1517,14 +1520,27 @@ local function onZoneShow(treeWidget, instanceIdOrMapId)
 	outerContainer:ResumeLayout()
 	outerContainer:PerformLayout() -- Everything added, gogo
 
-	-- Find the first enabled module and select that in the dropdown if possible.
+	-- Find the last opened module or the first enabled module and select that in the dropdown if possible.
 	local index = 1
-	for i = 1, #zoneSort do
-		local name = zoneSort[i]
-		local m = BigWigs:GetBossModule(name, true)
-		if m and m:IsEnabled() and m:GetJournalID() then
-			index = i
-			break
+	local bossFound = false
+	if lastBossModuleGroup then
+		for i = 1, #zoneSort do
+			if zoneSort[i] == lastBossModuleGroup then
+				index = i
+				bossFound = true
+				break
+			end
+		end
+	end
+
+	if not bossFound then
+		for i = 1, #zoneSort do
+			local name = zoneSort[i]
+			local m = BigWigs:GetBossModule(name, true)
+			if m and m:IsEnabled() and m:GetJournalID() then
+				index = i
+				break
+			end
 		end
 	end
 	innerContainer:SetGroup(zoneSort[index])
@@ -1591,6 +1607,7 @@ do
 			"Shadowlands",
 			"Dragonflight",
 			"TheWarWithin",
+			"Midnight",
 		}
 	end
 
@@ -1600,6 +1617,7 @@ do
 	local remappedZones = loader.remappedZones
 
 	local function onTreeGroupSelected(widget, event, value)
+		lastTreeGroupSelected = value
 		visibleSpellDescriptionWidgets = {}
 		widget:ReleaseChildren()
 		local instanceIdOrMapId = value:match("\001(-?%d+)$")
@@ -1681,10 +1699,15 @@ do
 		end
 	end
 
-	local currentlyOpenContainer
+	local currentlyOpenContainer, openPath
 	local function onTabGroupSelected(widget, event, value)
 		visibleSpellDescriptionWidgets = {}
 		widget:ReleaseChildren()
+
+		if value ~= lastTabSelected then
+			lastTabSelected = value
+			lastTreeGroupSelected, lastBossModuleGroup = nil, nil
+		end
 
 		if value == "options" then
 			configFrame:SetTitle("BigWigs")
@@ -1699,6 +1722,11 @@ do
 			currentlyOpenContainer = container
 			acd:Open("BigWigs", container)
 
+			if openPath then
+				container.children[1]:SelectByPath(unpack(openPath))
+				openPath = nil
+			end
+
 			widget:AddChild(container)
 		elseif value == "tools" then
 			configFrame:SetTitle("BigWigs")
@@ -1712,6 +1740,11 @@ do
 			-- Have to use :Open instead of just :FeedGroup because some widget types (range, color) call :Open to refresh on change
 			currentlyOpenContainer = container
 			acd:Open("BigWigsTools", container)
+
+			if openPath then
+				container.children[1]:SelectByPath(unpack(openPath))
+				openPath = nil
+			end
 
 			widget:AddChild(container)
 		else
@@ -1817,6 +1850,7 @@ do
 			end
 
 			local tree = AceGUI:Create("TreeGroup")
+			tree:EnableButtonTooltips(false)
 			tree:SetFullWidth(true)
 			tree:SetFullHeight(true)
 			tree:SetStatusTable(statusTable)
@@ -1844,7 +1878,7 @@ do
 				local current = treeTbl[parent].value
 				tree:SelectByValue(moduleList and ("%s\001%d"):format(current, id) or current)
 			else
-				tree:SelectByValue(defaultHeader)
+				tree:SelectByValue(lastTreeGroupSelected or defaultHeader)
 			end
 
 			widget:AddChild(tree)
@@ -1858,7 +1892,16 @@ do
 	end
 	acr.RegisterCallback(options, "ConfigTableChange")
 
-	function options:OpenConfig()
+	local allowedDirectOpens = {
+		["PrivateAuras"] = {tab = "options", path = {"general", "PrivateAuras"}},
+	}
+	function OpenConfig(specificPanel)
+		if allowedDirectOpens[specificPanel] then
+			lastTabSelected = allowedDirectOpens[specificPanel].tab
+			openPath = allowedDirectOpens[specificPanel].path
+		elseif specificPanel then
+			return
+		end
 		spellDescriptionUpdater:RegisterEvent("SPELL_TEXT_UPDATE")
 
 		local bw = AceGUI:Create("Frame")
@@ -1891,11 +1934,12 @@ do
 			{ text = L.dungeonBosses, value = "littlewigs" },
 		})
 		tabs:SetCallback("OnGroupSelected", onTabGroupSelected)
-		tabs:SelectTab("options")
+		tabs:SelectTab(lastTabSelected or "options")
 		bw:AddChild(tabs)
+		bw.tabs = tabs
 
 		bw:Show()
-		self:SendMessage("BigWigs_OpenGUI")
+		options:SendMessage("BigWigs_OpenGUI")
 	end
 end
 
@@ -1977,11 +2021,28 @@ do
 	end)
 
 	local _, addonTable = ...
+
+	-- A verify check for API usages
+	function options.VerifyAddOnProfileString(profileString)
+		if type(profileString) ~= "string" then return end
+		local versionPlain, importData = profileString:match("^(%w+):(.+)$")
+		if versionPlain ~= addonTable.sharingVersion then return end
+		local decodedForPrint = C_EncodingUtil.DecodeBase64(importData)
+		if not decodedForPrint then return end
+		local decompressed = C_EncodingUtil.DecompressString(decodedForPrint, 0) -- Enum.CompressionMethod.Deflate = 0
+		if not decompressed then return end
+		local data = C_EncodingUtil.DeserializeCBOR(decompressed)
+		if not data then return end
+		if data.version ~= addonTable.sharingVersion then return end -- encoded version does not match expected version
+		return true
+	end
+
 	-- DO NOT USE THIS DIRECTLY. This code may not be loaded
 	-- Use BigWigsAPI.RegisterProfile(addonName, profileString, optionalCustomProfileName, optionalCallbackFunction)
 	function options.SaveImportStringDataFromAddOn(addonName, profileString, optionalCustomProfileName, optionalCallbackFunction)
 		if type(addonName) ~= "string" or #addonName < 3 then error("Invalid addon name for profile import.") end
 		if type(profileString) ~= "string" or #profileString < 3 then error("Invalid profile string for profile import.") end
+		if not options.VerifyAddOnProfileString(profileString) then error("Invalid profile string for profile import.") end
 		if optionalCustomProfileName and (type(optionalCustomProfileName) ~= "string" or #optionalCustomProfileName < 3) then error("Invalid custom profile name for the string you want to import.") end
 		if optionalCallbackFunction and type(optionalCallbackFunction) ~= "function" then error("Invalid custom callback function for the string you want to import.") end
 		-- All AceConfigDialog code, go there for original

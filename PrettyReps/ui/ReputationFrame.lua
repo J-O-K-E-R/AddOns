@@ -210,7 +210,7 @@ end
 function PrettyRepsReputationFrameMixin:RefreshAccountWideReputationTutorial()
 	HelpTip:Hide(self, ACCOUNT_WIDE_REPUTATION_TUTORIAL);
 
-	local tutorialAcknowledged = GetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCOUNT_WIDE_REPUTATION);
+	local tutorialAcknowledged = GetCVarBitfield("closedInfoFramesAccountWide", Enum.FrameTutorialAccount.AccountWideReputation);
 	if tutorialAcknowledged then
 		return;
 	end
@@ -224,7 +224,7 @@ function PrettyRepsReputationFrameMixin:RefreshAccountWideReputationTutorial()
 		text = ACCOUNT_WIDE_REPUTATION_TUTORIAL,
 		buttonStyle = HelpTip.ButtonStyle.Close,
 		cvarBitfield = "closedInfoFramesAccountWide",
-		bitfieldFlag = LE_FRAME_TUTORIAL_ACCOUNT_WIDE_REPUTATION,
+		bitfieldFlag = Enum.FrameTutorialAccount.AccountWideReputation,
 		targetPoint = HelpTip.Point.RightEdgeCenter,
 		offsetX = 40,
 		alignment = HelpTip.Alignment.Center,
@@ -362,7 +362,7 @@ function PrettyRepsReputationEntryMixin:TryInitParagonDisplay()
     local paragonIcon = self.Content.ParagonIcon;
     
     -- Get paragon info first to check for rewards
-    local currentValue, threshold, rewardQuestID, hasRewardPending, tooLowLevelForParagon = ReputationService:GetFactionParagonInfo(factionID);
+    local currentValue, threshold, rewardQuestID, hasRewardPending, tooLowLevelForParagon, paragonStorageLevel = ReputationService:GetFactionParagonInfo(factionID);
     
     -- Check if we should hide the icon
     if ReputationService:IsHideParagonIcons() and 
@@ -542,6 +542,11 @@ function PrettyRepsReputationEntryMixin:ShowMajorFactionRenownTooltip()
 	local factionID = self.elementData.factionID;
 	local majorFactionData = C_MajorFactions.GetMajorFactionData(factionID);
 
+	-- WoW 12.0: Blizzard added defensive nil checks, indicating majorFactionData can be nil in some cases
+	if not majorFactionData then
+		return;
+	end
+
 	local tooltipTitle = majorFactionData.name;
 	GameTooltip_SetTitle(GameTooltip, tooltipTitle, HIGHLIGHT_FONT_COLOR);
 	TryAppendAccountReputationLineToTooltip(GameTooltip, factionID);
@@ -674,8 +679,16 @@ end
 
 local function InitializeBarForStandardReputation(factionData, reputationBar)
 	local isCapped = factionData.reaction == MAX_REPUTATION_REACTION;
+	local useParagonBars = PrettyReps.ReputationService:IsUseParagonBars();
+	local showParagonBar = isCapped and useParagonBars and factionData.hasParagon and factionData.paragonData;
+
 	local minValue, maxValue, currentValue;
-	if isCapped then
+	if showParagonBar then
+		-- Show paragon progress bar
+		local paragonData = factionData.paragonData;
+		local rawProgress = paragonData.currentValue % paragonData.threshold;
+		minValue, maxValue, currentValue = 0, paragonData.threshold, rawProgress;
+	elseif isCapped then
 		-- Max rank, make it look like a full bar
 		minValue, maxValue, currentValue = 0, 1, 1;
 	else
@@ -683,16 +696,32 @@ local function InitializeBarForStandardReputation(factionData, reputationBar)
 	end
 	minValue, maxValue, currentValue = NormalizeBarValues(minValue, maxValue, currentValue);
 	reputationBar:UpdateBarValues(minValue, maxValue, currentValue);
-	
-	local progressText = not isCapped and HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(REPUTATION_PROGRESS_FORMAT:format(BreakUpLargeNumbers(currentValue), BreakUpLargeNumbers(maxValue))) or nil; 
+
+	local progressText;
+	if showParagonBar then
+		progressText = HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(REPUTATION_PROGRESS_FORMAT:format(BreakUpLargeNumbers(currentValue), BreakUpLargeNumbers(maxValue)));
+	else
+		progressText = not isCapped and HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(REPUTATION_PROGRESS_FORMAT:format(BreakUpLargeNumbers(currentValue), BreakUpLargeNumbers(maxValue))) or nil;
+	end
 	reputationBar:UpdateBarProgressText(progressText);
-	local gender = UnitSex("player");
-	local reputationStandingtext = GetText("FACTION_STANDING_LABEL" .. factionData.reaction, gender);
+
+	local reputationStandingtext;
+	if showParagonBar then
+		reputationStandingtext = "Paragon";
+	else
+		local gender = UnitSex("player");
+		reputationStandingtext = GetText("FACTION_STANDING_LABEL" .. factionData.reaction, gender);
+	end
 	reputationBar:UpdateReputationStandingText(reputationStandingtext);
 	reputationBar:TryShowReputationStandingText();
 
 	local colorIndex = factionData.reaction;
-	reputationBar:UpdateBarColor(FACTION_BAR_COLORS[colorIndex]);
+	if showParagonBar then
+		-- Use blue color for paragon bars (same as major factions)
+		reputationBar:UpdateBarColor(BLUE_FONT_COLOR);
+	else
+		reputationBar:UpdateBarColor(FACTION_BAR_COLORS[colorIndex]);
+	end
 end
 
 local function InitializeBarForFriendship(factionData, reputationBar)
@@ -728,15 +757,19 @@ local function InitializeBarForMajorFaction(factionData, reputationBar)
 	if isMaxRenown then
 		-- Max renown, make it look like a full bar
 		minValue, maxValue, currentValue = 0, 1, 1;
-	else
+	elseif majorFactionData then
 		minValue, maxValue, currentValue = 0, majorFactionData.renownLevelThreshold, majorFactionData.renownReputationEarned;
+	else
+		-- WoW 12.0: Blizzard added defensive nil checks, indicating majorFactionData can be nil in some cases
+		minValue, maxValue, currentValue = 0, 0, 0;
 	end
 	minValue, maxValue, currentValue = NormalizeBarValues(minValue, maxValue, currentValue);
 	reputationBar:UpdateBarValues(minValue, maxValue, currentValue);
 
 	local progressText = not isMaxRenown and HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(REPUTATION_PROGRESS_FORMAT:format(BreakUpLargeNumbers(currentValue), BreakUpLargeNumbers(maxValue))) or nil;
 	reputationBar:UpdateBarProgressText(progressText);
-	reputationBar:UpdateReputationStandingText(RENOWN_LEVEL_LABEL:format(majorFactionData.renownLevel));
+	-- WoW 12.0: Use nil-safe formatting as majorFactionData can be nil
+	reputationBar:UpdateReputationStandingText(RENOWN_LEVEL_LABEL:format(majorFactionData and majorFactionData.renownLevel or 0));
 	reputationBar:TryShowReputationStandingText();
 
 	reputationBar:UpdateBarColor(BLUE_FONT_COLOR);
@@ -919,7 +952,19 @@ function PrettyRepsReputationParagonFrame_SetupParagonTooltip(frame)
 		local gender = UnitSex("player");
 		factionStandingtext = GetText("FACTION_STANDING_LABEL"..factionData.reaction, gender);
 	end
-	local currentValue, threshold, rewardQuestID, hasRewardPending, tooLowLevelForParagon = ReputationService:GetFactionParagonInfo(factionID);
+
+	-- Use stored paragon data from factionData (which may be from account data) instead of fetching fresh from server
+	local currentValue, threshold, rewardQuestID, hasRewardPending, tooLowLevelForParagon;
+	if factionData.paragonData then
+		currentValue = factionData.paragonData.currentValue;
+		threshold = factionData.paragonData.threshold;
+		rewardQuestID = factionData.paragonData.rewardQuestID;
+		hasRewardPending = factionData.paragonData.hasRewardPending;
+		tooLowLevelForParagon = factionData.paragonData.tooLowLevel;
+	else
+		-- Fallback to server data if paragon data not available (shouldn't normally happen)
+		currentValue, threshold, rewardQuestID, hasRewardPending, tooLowLevelForParagon, paragonStorageLevel = ReputationService:GetFactionParagonInfo(factionID);
+	end
 
 	if ( tooLowLevelForParagon ) then
 		GameTooltip_SetTitle(EmbeddedItemTooltip, PARAGON_REPUTATION_TOOLTIP_TEXT_LOW_LEVEL, NORMAL_FONT_COLOR);
@@ -931,10 +976,9 @@ function PrettyRepsReputationParagonFrame_SetupParagonTooltip(frame)
 
 		local description = PARAGON_REPUTATION_TOOLTIP_TEXT:format(factionData.name);
 		if ( hasRewardPending ) then
-			local questIndex = C_QuestLog.GetLogIndexForQuestID(rewardQuestID);
-			local text = GetQuestLogCompletionText(questIndex);
-			if ( text and text ~= "" ) then
-				description = text;
+			-- Use stored reward text if available, otherwise use generic message
+			if factionData.paragonData.rewardText then
+				description = factionData.paragonData.rewardText;
 			end
 		end
 		GameTooltip_AddNormalLine(EmbeddedItemTooltip, description);
@@ -1132,21 +1176,23 @@ function PrettyRepsReputationDetailViewRenownButtonMixin:Refresh()
 
 	local majorFactionData = C_MajorFactions.GetMajorFactionData(self.factionID);
 
-	self.disabledTooltip = majorFactionData.unlockDescription;
-	self:SetEnabled(majorFactionData.isUnlocked);
+	-- WoW 12.0: Use nil-safe property access as majorFactionData can be nil
+	self.disabledTooltip = majorFactionData and majorFactionData.unlockDescription or "";
+	self:SetEnabled(majorFactionData and majorFactionData.isUnlocked or false);
 	self:Show();
 end
 
 function PrettyRepsReputationDetailViewRenownButtonMixin:OnClick()
-	MajorFactions_LoadUI();
-
-	if MajorFactionRenownFrame:IsShown() and MajorFactionRenownFrame:GetCurrentFactionID() == self.factionID then
-		ToggleMajorFactionRenown();
-	else
-		HideUIPanel(MajorFactionRenownFrame);
-		EventRegistry:TriggerEvent("MajorFactionRenownMixin.MajorFactionRenownRequest", self.factionID);
-		ShowUIPanel(MajorFactionRenownFrame);
+	if not EncounterJournal then
+		EncounterJournal_LoadUI();
 	end
+
+	if not EncounterJournal:IsShown() then
+		ShowUIPanel(EncounterJournal);
+	end
+
+	EJ_ContentTab_Select(EncounterJournal.JourneysTab:GetID());
+	EncounterJournalJourneysFrame:ResetView(nil, self.factionID);
 end
 
 PrettyRepsReputationDetailAtWarCheckboxMixin = {};
@@ -1390,11 +1436,25 @@ function PrettyRepsSettingsFrameMixin:OnLoad()
             or SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF)
     end)
 
+    local useParagonBarsCheckbox = layoutSection.UseParagonBarsCheckbox;
     local hideParagonIconsCheckbox = layoutSection.HideParagonIconsCheckbox;
     local showParagonRewardsCheckbox = layoutSection.ShowParagonRewardsCheckbox;
 
     -- Set initial enabled state of child checkbox
     showParagonRewardsCheckbox:SetEnabled(false) -- Start disabled until parent is checked
+
+    -- Use Paragon Bars checkbox handler
+    useParagonBarsCheckbox:SetScript("OnClick", function(checkbox)
+        local isChecked = checkbox:GetChecked()
+        PrettyReps.ReputationService:SetUseParagonBars(isChecked)
+
+        -- Update the UI
+        if PrettyRepsReputationFrame then
+            PrettyRepsReputationFrame:Update()
+        end
+        PlaySound(isChecked and SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON
+            or SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF)
+    end)
 
     -- Hide Paragon Icons checkbox handler
     hideParagonIconsCheckbox:SetScript("OnClick", function(checkbox)
@@ -1482,6 +1542,7 @@ function PrettyRepsSettingsFrameMixin:OnLoad()
         layoutSection.DisplayGroupTotalsCheckbox,
         layoutSection.HideInactiveCheckbox,
         visibilitySection.ShowOppositeFactionCheckbox,
+        layoutSection.UseParagonBarsCheckbox,
         layoutSection.HideParagonIconsCheckbox,
         layoutSection.ShowParagonRewardsCheckbox,
         layoutSection.HideGuildReputationCheckbox,
@@ -1725,6 +1786,12 @@ function PrettyRepsSettingsFrameMixin:UpdateCheckboxStates()
     local showOppositeFactionCheckbox = visibilitySection.ShowOppositeFactionCheckbox;
     if showOppositeFactionCheckbox then
         showOppositeFactionCheckbox:SetChecked(PrettyReps.OptionsManager:GetOption("showOppositeFaction"))
+    end
+
+    -- Update Use Paragon Bars checkbox
+    local useParagonBarsCheckbox = layoutSection.UseParagonBarsCheckbox;
+    if useParagonBarsCheckbox then
+        useParagonBarsCheckbox:SetChecked(PrettyReps.ReputationService:IsUseParagonBars())
     end
 
     -- Update Hide Paragon Icons checkbox and its child

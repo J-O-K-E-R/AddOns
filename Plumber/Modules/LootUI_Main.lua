@@ -17,7 +17,6 @@ local GetItemCount = C_Item.GetItemCount;
 local GetCursorPosition = GetCursorPosition;
 local IsDressableItemByID = C_Item.IsDressableItemByID or API.Nop;
 local QualityColorGetter = API.GetItemQualityColor;
-local HousingDataProvider = addon.HousingDataProvider;
 
 
 -- User Settings
@@ -788,6 +787,8 @@ do  --UI ItemButton
         self:ResetHoverVisual();
         FocusSolver:SetFocus(nil);
         MainFrame:SetFocused(false);
+        self:UnregisterEvent("MODIFIER_STATE_CHANGED");
+        self:SetScript("OnEvent", nil);
     end
 
     function ItemFrameMixin:ShowTooltip()
@@ -796,6 +797,7 @@ do  --UI ItemButton
         if self.enableState == 1 then   --Manual Loot
             if self.data.slotType == Defination.SLOT_TYPE_ITEM then
                 tooltip:SetOwner(self, "ANCHOR_RIGHT", -Formatter.BUTTON_SPACING, 0);
+                tooltip.suppressAutomaticCompareItem = true;
                 tooltip:SetLootItem(self.data.slotIndex);
             elseif self.data.slotType == Defination.SLOT_TYPE_CURRENCY then
                 tooltip:SetOwner(self, "ANCHOR_RIGHT", -Formatter.BUTTON_SPACING, 0);
@@ -804,26 +806,36 @@ do  --UI ItemButton
 
             local comparisonTooltip = ShoppingTooltip1;
             if comparisonTooltip and comparisonTooltip:IsShown() then
-                local left1 = tooltip:GetLeft() or 0;
-                local left2 = comparisonTooltip:GetLeft() or 0;
-                if left2 < left1 then
-                    tooltip:ClearAllPoints();
-                    tooltip:SetPoint("BOTTOMRIGHT", self, "TOPLEFT", 0, 0);
+                local left1 = tooltip:GetLeft();
+                local left2 = comparisonTooltip:GetLeft();
+                if API.Secret_CanAccessValues(left1, left2) then
+                    if left2 < left1 then
+                        tooltip:ClearAllPoints();
+                        tooltip:SetPoint("BOTTOMRIGHT", self, "TOPLEFT", 0, 0);
+                    end
                 end
             end
 
         elseif self.enableState == 2 then   --Auto Loot
             local hyperLink = self.data.mergedData and self.data.mergedData[1].link or self.data.link;
+            local width = self:GetWidth();
+            local textWidth = self.Text:GetWrappedWidth();
+            local offset = -(width - textWidth - (self.textOffset or 0));
             if hyperLink then
-                local width = self:GetWidth();
-                local textWidth = self.Text:GetWrappedWidth();
-                tooltip:SetOwner(self, "ANCHOR_RIGHT", -(width - textWidth - (self.textOffset or 0)), 0);
+                tooltip:SetOwner(self, "ANCHOR_RIGHT", offset, 0);
+                tooltip.suppressAutomaticCompareItem = true;
                 tooltip:SetHyperlink(hyperLink);
             elseif self.data.tooltipMethod then
-                tooltip:SetOwner(self, "ANCHOR_RIGHT", -Formatter.BUTTON_SPACING, 0);
+                tooltip:SetOwner(self, "ANCHOR_RIGHT", offset, 0);
                 tooltip[self.data.tooltipMethod](tooltip, self.data.id);
+            elseif self.data.tooltipFunc then
+                tooltip:SetOwner(self, "ANCHOR_RIGHT", offset, 0);
+                self.data.tooltipFunc(tooltip, self.data.id, self.data);
             end
         end
+
+        self:RegisterEvent("MODIFIER_STATE_CHANGED");
+        self:SetScript("OnEvent", self.OnEvent);
     end
 
     function ItemFrameMixin:OnFocused()
@@ -850,10 +862,9 @@ do  --UI ItemButton
                         return
                     end
 
-                    if C_Item.IsDecorItem and C_Item.IsDecorItem(itemID) and HousingDataProvider then
-                        if HousingDataProvider:GetDecorModelFileIDByItem(itemID) then
-                            DressUpLink(self.data.link);
-                        end
+                    if C_Item.IsDecorItem and C_Item.IsDecorItem(itemID) then
+                        DressUpLink(self.data.link);
+                        return
                     end
                 end
             elseif IsModifiedClick("CHATLINK") then
@@ -893,8 +904,17 @@ do  --UI ItemButton
         end
     end
 
-    function ItemFrameMixin:LayoutStackedItems()
-
+    function ItemFrameMixin:OnEvent(event, ...)
+        if event == "MODIFIER_STATE_CHANGED" then
+            local key, down = ...
+            if self:IsMouseMotionFocus() then  --IsModifiedClick("COMPAREITEMS")
+                if key == "LSHIFT" or key == "RSHIFT" then
+                    self:ShowTooltip();
+                end
+            else
+                self:UnregisterEvent(event);
+            end
+        end
     end
 
     local function CreateIconFrame(itemFrame)

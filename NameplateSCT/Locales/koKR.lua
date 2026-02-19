@@ -1,6 +1,13 @@
 local L = LibStub("AceLocale-3.0"):NewLocale("NameplateSCT", "koKR")
 if not L then return end
 
+L["Fireworks Settings"] = "Fireworks Settings"
+L["Fireworks Duration"] = "Fireworks Duration"
+L["Duration of the fireworks animation"] = "Duration of the fireworks animation"
+
+--L["Unfortunately Blizzard has not added a SCT API in Midnight, until they do this addon will not have any functionality."]
+--L["If you want to enable or disable the blizzard SCT you can do so here"] = true
+--L["Thank you for the years of support, and hopefully we'll be able to bring NameplateSCT back in the future! - Justwait"] = true
 --L["%s (A: %s)"] = "%s (A: %s)" -- A for Absorb
 --L["%s (O: %s)"] = "%s (O: %s)" -- O for Overkill
 L["Abilities"] = "능력"
@@ -22,6 +29,8 @@ L["Center"] = "중앙"
 L["Comma Seperate"] = "콤마 구분"
 --L["Crit Color"] = "Crit Color"
 L["Criticals"] = "치명타 및 극대화"
+--L["Custom Miss Color"] = "Custom Miss Color"
+--L["Miss Color"] = "Miss Color"
 L["Default Color"] = "기본 색상"
 L["Default speed: 1"] = "기본 속도: 1"
 L["Default"] = "기본값"
@@ -31,6 +40,8 @@ L["Disabled"] = "사용 안함"
 L["Display Icon"] = "아이콘 표시"
 L["Display Icon Only"] = "아이콘만 표시"
 L["Display only the icon for damage.\nWill not change Miss, Dodge, Parry, etc displays"] = "손상에 대한 아이콘만 표시합니다.\nMiss、 Dodge、 Parry 등의 디스플레이를 변경하지 않습니다"
+L["Remove Icon borders"] = "아이콘 테두리 제거"
+L["Zoom a bit into the icon to remove default blizzard border"] = "기본 블리자드 테두리를 제거하려면 아이콘을 살짝 누르십시오"
 --L["Display Off-Target Text"] = "Display Off-Target Text"
 --L["Display Overkill"] = "Display Overkill"
 --L["Display your overkill for a target over your own nameplate"] = "Display your overkill for a target over your own nameplate"
@@ -50,6 +61,9 @@ L["Evaded"] = "벗어남"
 L["Font Flags"] = "글꼴 외곽선"
 L["Font"] = "글꼴"
 L["Fountain"] = "분수"
+L["Fireworks"] = "불꽃놀이"
+L["Fireworks Radius"] = "Fireworks Radius"
+L["Start radius for fireworks animation"] = "Start radius for fireworks animation"
 L["Has soft max/min, you can type whatever you'd like into the editbox"] = "최대/최소 값이 있습니다, 입력창에 원하는 값을 입력할 수 있습니다."
 L["Hide hits that are below a running average of your recent damage output"] = "피해량이 최근 피해량의 평균보다 낮으면 숨깁니다"
 --L["Hide hits that are below this threshold."] = "Hide hits that are below this threshold."

@@ -1,4 +1,4 @@
-## Interface: 40000
+## Interface: 120000
 
 ## Title: ButtonFacade: |c007c7c7c*Shadow*|r
 ## Notes: Skin for ButtonFacade.

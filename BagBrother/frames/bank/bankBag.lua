@@ -39,7 +39,7 @@ function Bag:RegisterEvents()
 	if not self:IsCached() then
 		if NUM_BANKBAGSLOTS and self.slot then
 			self:RegisterEvent('PLAYERBANKBAGSLOTS_CHANGED', 'Update')
-			self:RegisterSignal('BAG_UPDATED')
+			self:RegisterSignal('BAGS_UPDATED')
 		elseif self:GetID() == REAGENTBANK_CONTAINER then
 			self:RegisterEvent('REAGENTBANK_PURCHASED', 'Update')
 		elseif C.FetchPurchasedBankTabData then
@@ -56,7 +56,7 @@ function Bag:UpdateInfo()
 		local id = self:GetID()
 		if id == REAGENTBANK_CONTAINER then
 			if self:IsCached() then
-				self.owned = self.frame:GetBagInfo(id) and true
+				self.owned = self:GetBagInfo(id) and true
 			else
 				self.owned = IsReagentBankUnlocked()
 			end
@@ -139,7 +139,7 @@ end
 function Bag:GetInfo()
 	return (not self:IsCached() and
 		FindValueInTableIf(C.FetchPurchasedBankTabData(self:GetType()), function(data) return data.ID == self:GetID() end) or
-		self.frame:GetBagInfo(self:GetID())) or Addon.None
+		self:GetBagInfo(self:GetID())) or Addon.None
 end
 
 function Bag:GetCost()

@@ -8,6 +8,9 @@ mod:RegisterEnableMob(177269) -- So'leah
 mod:SetEncounterID(2442)
 mod:SetRespawnTime(30)
 mod:SetStage(1)
+mod:SetPrivateAuraSounds({
+	{350804, sound = "alert"}, -- Collapsing Energy
+})
 
 --------------------------------------------------------------------------------
 -- Locals
@@ -98,7 +101,7 @@ end
 -- Staging
 
 function mod:UNIT_SPELLCAST_SUCCEEDED(_, _, _, spellId)
-	if spellId == 351104 then -- Phase Transition
+	if not self:IsSecret(spellId) and spellId == 351104 then -- Phase Transition
 		self:SetStage(2)
 		self:Message("stages", "cyan", CL.percent:format(40, CL.stage:format(2)), false)
 		self:StopBar(350796) -- Hyperlight Spark

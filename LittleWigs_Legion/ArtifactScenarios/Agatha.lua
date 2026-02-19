@@ -180,6 +180,7 @@ end
 
 function mod:Warmup(event, msg)
 	self:UnregisterEvent(event)
+	if self:IsSecret(msg) then return end
 	if msg:find(L.warmup_trigger1, nil, true) or msg:find(L.levia, nil, true) then
 		self:Bar("warmup", 35, CL.active, "sha_spell_shaman_lavaburst_nightborne")
 	elseif msg:find(L.warmup_trigger2, nil, true) then
@@ -248,7 +249,7 @@ function mod:Translocate(args)
 end
 
 function mod:UNIT_SPELLCAST_SUCCEEDED(_, unit, _, spellId)
-	if spellId == 242987 then -- Translocate
+	if not self:IsSecret(spellId) and spellId == 242987 then -- Translocate
 		if phase == 1 then
 			phase = 2
 			self:MessageOld(242989, "cyan", nil, CL.percent:format(50, self:SpellName(spellId)), false)

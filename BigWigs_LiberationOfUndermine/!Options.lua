@@ -217,7 +217,7 @@ BigWigs:AddSounds("The One-Armed Bandit", {
 	[471927] = {"alert","warning"},
 	[474665] = "alert",
 	["rewards"] = "long",
-	["stages"] = {"info","long"},
+	["stages"] = "long",
 })
 
 BigWigs:AddColors("Mug'Zee, Heads of Security", {

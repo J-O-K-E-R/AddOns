@@ -277,6 +277,27 @@ L.mythicplus_settings_export_desc = "모든 신화+ 설정 내보내기."
 L.imported_battleres_settings = "전투 부활 설정"
 L.battleres_settings_import_desc = "모든 전투 부활 설정을 가져옵니다."
 L.battleres_settings_export_desc = "모든 전투 부활 설정을 내보냅니다."
+--L.imported_privateAuras_settings = "Private Auras Settings"
+--L.privateAuras_settings_import_desc = "Import all Private Auras settings."
+--L.privateAuras_settings_export_desc = "Export all Private Auras settings."
+
+-- InstanceSharing.lua
+L.sharing_window_title = "보스 설정 공유"
+L.sharing_flags = "일반 설정"
+L.sharing_flags_desc = "바 표시, 사운드 재생, 메시지 표시 등의 설정을 가져옵니다.\n이것은 능력 설정의 대부분 체크박스를 포함합니다."
+L.sharing_export_flags_desc = "바 표시, 사운드 재생, 메시지 표시 등의 설정을 내보냅니다.\n이것은 능력 설정의 대부분 체크박스를 포함합니다."
+L.sharing_sounds_desc = "능력에 재생할 사운드를 가져옵니다."
+L.sharing_export_sounds_desc = "능력에 재생할 사운드를 내보냅니다."
+L.sharing_private_auras = "비공개 오라"
+L.sharing_private_auras_desc = "설정된 비공개 오라 사운드를 가져옵니다."
+L.sharing_export_private_auras_desc = "설정된 비공개 오라 사운드를 내보냅니다."
+L.sharing_colors_desc = "바와 메시지의 색상 설정을 가져옵니다."
+L.sharing_export_colors_desc = "바와 메시지의 색상 설정을 내보냅니다."
+L.confirm_instance_import = "가져올 선택된 설정이 현재 선택된 프로필을 덮어씁니다:\n\n|cFF33FF99\"%s\"|r\n\n인스턴스:\n|cFFBB66FF\"%s\"|r\n\n정말 하시겠습니까?"
+L.status_text_paste_import = "유효한 가져오기 문자열 붙여넣기"
+L.exporting_instance = "|cFFBB66FF%s|r 내보내기" -- Exporting Molten Core
+L.importing_instance = "|cFFBB66FF%s|r 가져오기" -- Importing Molten Core
+L.share = "공유"
 
 -- Statistics
 L.statistics = "통계"
@@ -313,6 +334,7 @@ L.N10 = "일반 10"
 L.N25 = "일반 25"
 L.H10 = "영웅 10"
 L.H25 = "영웅 25"
+L.titan = "티탄" -- Chinese-only "Titan Reforged" servers
 
 -----------------------------------------------------------------------
 -- TOOLS
@@ -320,6 +342,8 @@ L.H25 = "영웅 25"
 
 L.tools = "도구"
 L.toolsDesc = "BigWigs은 보스와의 전투를 더욱 빠르고 간편하게 만들어 주는 다양한 도구 또는 \"편의 기능\"을 제공합니다."
+
+L.reloadUIWarning = "이 기능을 변경하면 UI가 재시작되며 잠시 로딩 화면이 표시됩니다. 정말로 변경하시겠습니까?"
 
 -----------------------------------------------------------------------
 -- AutoRole.lua
@@ -412,6 +436,8 @@ L.keystoneTimeUnder = "|cFF33FF99-%02d:%02d|r"
 L.keystoneTimeOver = "|cFFFF4411+%02d:%02d|r"
 L.keystoneTeleportTip = "아래 던전 이름을 클릭하면 |cFF33FF99순간이동|r 던전 입구로 바로 이동합니다."
 L.keystoneTimerunner = "|A:timerunning-glues-icon:14:14|a이것은 시간질주자 캐릭터입니다." -- Note: Timerunning is a mode like "Legion Remix", it is NOT the same as Timewalking
+L.keystoneSlashKeys = "|cFF33FF99/keys|r 슬래시 명령어도 등록"
+L.keystoneSlashKeystone = "|cFF33FF99/keystone|r 슬래시 명령어도 등록"
 
 -- It doesn't really matter what you call it as long as it's recognizable and limited to ~6 characters
 L.keystoneShortName_TheRookery = "부화장"
@@ -441,6 +467,13 @@ L.keystoneShortName_ReturnToKarazhanLower = "하층"
 L.keystoneShortName_ReturnToKarazhanUpper = "상층"
 L.keystoneShortName_CathedralOfEternalNight = "대성당"
 L.keystoneShortName_SeatOfTheTriumvirate = "삼두정"
+L.keystoneShortName_WindrunnerSpire = "첨탑"
+L.keystoneShortName_MagistersTerrace = "정원"
+L.keystoneShortName_MaisaraCaverns = "마이사라"
+L.keystoneShortName_NexusPointXenas = "제나스"
+L.keystoneShortName_AlgetharAcademy = "대학"
+L.keystoneShortName_Skyreach = "하늘탑"
+L.keystoneShortName_PitOfSaron = "사론"
 
 -- These short names are for the bar that shows during the Mythic+ countdown
 -- Use the real dungeon names but make them shorter to fit on the bar better
@@ -471,6 +504,13 @@ L.keystoneShortName_ReturnToKarazhanLower_Bar = "하층"
 L.keystoneShortName_ReturnToKarazhanUpper_Bar = "상층"
 L.keystoneShortName_CathedralOfEternalNight_Bar = "대성당"
 L.keystoneShortName_SeatOfTheTriumvirate_Bar = "삼두정"
+L.keystoneShortName_WindrunnerSpire_Bar = "첨탑"
+L.keystoneShortName_MagistersTerrace_Bar = "정원"
+L.keystoneShortName_MaisaraCaverns_Bar = "마이사라"
+L.keystoneShortName_NexusPointXenas_Bar = "제나스"
+L.keystoneShortName_AlgetharAcademy_Bar = "대학"
+L.keystoneShortName_Skyreach_Bar = "하늘탑"
+L.keystoneShortName_PitOfSaron_Bar = "사론"
 
 -- Instance Keys "Who has a key?"
 L.instanceKeysTitle = "누가 쐐기돌을 가지고 있나요?"
@@ -596,6 +636,7 @@ L.autoReplyLeftCombatAdvancedWipe = "'%s'에게 %s 에서 전멸하였습니다.
 L.bars = "바"
 L.style = "모양"
 L.bigWigsBarStyleName_Default = "기본"
+L.bigWigsBarStyleName_Blizzard = "블리자드"
 L.resetBarsDesc = "위치를 비롯한 모든 바 관련 설정을 초기화합니다."
 L.testBarsBtn = "테스트 바 만들기"
 L.testBarsBtn_desc = "당신의 현재 표시 설정으로 테스트용 바를 만듭니다."
@@ -655,6 +696,25 @@ L.breakBar = "휴식 시간"
 L.breakMinutes = "%d분 후 휴식 종료!"
 L.breakSeconds = "%d초 후 휴식 종료!"
 L.breakFinished = "휴식 시간이 끝났습니다!"
+
+L.indicatorTitle = "주문 표시기"
+L.indicatorType_Deadly = "치명적"
+L.indicatorType_Bleed = "출혈"
+L.indicatorType_Magic = "마법"
+L.indicatorType_Dispels = "무효화"
+L.indicatorType_Tank = "방어 전담"
+L.indicatorType_Healer = "치유 전담"
+L.indicatorType_Damager = "딜러"
+
+L.spellIndicatorsPosition = "주문 표시기 위치"
+L.spellIndicatorsPositionDesc = "바에서 주문 표시기가 위치할 위치를 선택하세요."
+L.spellIndicatorsOffset = "주문 표시기 위치 조정"
+L.spellIndicatorSize = "주문 표시기 크기"
+L.spellIndicatorSizeDropdown_Large1 = "큰 사이즈 (1개 표시)"
+L.spellIndicatorSizeDropdown_Large2 = "큰 사이즈 (2개 표시"
+L.spellIndicatorSizeDropdown_Large3 = "큰 사이즈 (3개 표시"
+L.spellIndicatorSizeDropdown_Small4 = "작은 사이즈 (4개 표시)"
+L.spellIndicatorSizeDropdown_Small2 = "작은 사이즈 (2개 표시)"
 
 -----------------------------------------------------------------------
 -- BossBlock.lua
@@ -901,6 +961,36 @@ L.nameplateOptInTitle = "보스 모드 이름표 '선택 활성화' 모드"
 L.nameplateOptInWarning = "|cffff4411경고!|r\n\n'선택 활성화' 모드를 활성화하면 모든 보스 모듈에서 이름표가 비활성화됩니다. 원하는 이름표만 각 모듈에서 수동으로 활성화해야 합니다.\n\nUI가 재시작됩니다. 계속하시겠습니까?"
 
 -----------------------------------------------------------------------
+-- PrivateAuras.lua
+--
+
+--L.privateAuras = "Private Auras"
+
+--L.createTestAura = "Create Test Aura"
+--L.showDispelType = "Show Dispel Type Indicator"
+--L.showDispelTypeDesc = "Show an icon on the private aura frame if it has a dispel type.\n\n|cffffd200Note: This is a global option for all private aura frames.|r"
+--L.iconSize = "Icon Size"
+--L.iconSpacing = "Icon Spacing"
+--L.showCooldown = "Show Cooldown Spiral"
+--L.showCooldownText = "Show Cooldown Text"
+--L.cooldownTextScale = "Cooldown Text Scale"
+--L.growthDirection = "Icon Growth Direction"
+--L.aurasOnYou = "Auras On You"
+--L.aurasOnYouDesc = "Customize the icons for auras that apply to you.\n\n"
+--L.aurasOnAnother = "Auras On Another"
+--L.aurasOnAnotherDesc = "Choose a specific player and then customize the icons for auras that apply to them.\n\n"
+--L.chooseAPlayer = "Choose a player"
+--L.theOtherTank = "Automatically find a tank"
+--L.theOtherTankDesc = "Show private auras on the first tank in your group that isn't you. (Current: %s)"
+--L.onlyWhenYouAreTank = "Only show when you are also a tank"
+--L.playerInYourGroup = "A player in your group"
+--L.maxIcons = "Max Icons"
+--L.maxIconsDesc = "The maximum amount of icons to be displayed."
+--L.privateAurasHelpTip = "|TInterface\\AddOns\\BigWigs\\Media\\Icons\\minimap_raid:0:0|tBigWigs: You can now see your private aura debuffs as icons, or even the private auras of another player (e.g. a tank)."
+
+--L.privateAurasTestAnchorText = "PA %d"
+
+-----------------------------------------------------------------------
 -- Proximity.lua
 --
 
@@ -1008,6 +1098,25 @@ L.bossDefeatPrint = "'%s'에게 %s 후 패배했습니다." -- You were defeated
 L.newFastestVictoryPrint = "새로운 최고 승리 시간: (-%s)" -- New fastest victory: (-COMBAT_DURATION)
 
 -----------------------------------------------------------------------
+-- Timeline.lua
+--
+
+L.timeline = "타임라인"
+L.blizzTimersAsBigWigsBars = "블리자드 타이머(타임라인)를 BigWigs 바 형태로 표시"
+L.blizzTimersAsBigWigsBarsDesc = "모든 블리자드 보스 타이머(타임라인)가 BigWigs 바로 표시됩니다."
+L.blizzWarningsAsBigWigsMessages = "블리자드 보스 경고 메시지를 BigWigs 메시지로 표시"
+L.blizzWarningsAsBigWigsMessagesDesc = "모든 블리자드 보스 경고 메시지가 BigWigs 메시지로 표시됩니다."
+L.blizzAudioAsBigWigsAudio = "블리자드 사운드를 BigWigs 사운드로 변환"
+L.blizzAudioAsBigWigsAudioDesc = "전투 경고 심각도에 따라 BigWigs 사운드(경보, 알람, 경고)를 재생합니다."
+L.blizzWarningSettings = "블리자드 경고 설정"
+L.blizzTimelineSettings = "블리자드 타임라인 설정"
+L.blizzTimelineSettingsNote = "|cffff4411이 옵션은 블리자드 설정을 제어하며 편의를 위해 제공됩니다.|r"
+L.enableBlizzTimeline = "블리자드 타임라인 활성화"
+L.enableBlizzTimelineDesc = "이 옵션을 활성화하면 모든 보스 전투 타이머가 블리자드 타임라인에 표시됩니다."
+L.enableBlizzWarnings = "블리자드 보스 경고 활성화"
+L.enableBlizzWarningsDesc = "블리자드 보스 경고를 활성화할 경우, BigWigs 메시지로 표시하는 기능을 비활성화해야 합니다. 그렇지 않으면 모든 메시지가 두 번 표시됩니다."
+
+-----------------------------------------------------------------------
 -- Victory.lua
 --
 
@@ -1018,7 +1127,7 @@ L.victoryMessages = "보스 처치 메시지 표시"
 L.victoryMessageBigWigs = "BigWigs 메시지 표시"
 L.victoryMessageBigWigsDesc = "BigWigs 메시지는 단순한 \"보스를 처치했습니다\" 메시지입니다."
 L.victoryMessageBlizzard = "블리자드 메시지 표시"
-L.victoryMessageBlizzardDesc = "Blizzard 메시지는 화면 중앙의 아주 큰 \"보스 처치\" 애니메이션입니다."
+L.victoryMessageBlizzardDesc = "블리자드 메시지는 화면 중앙의 아주 큰 \"보스 처치\" 애니메이션입니다."
 L.defeated = "%s|1을;를; 처치했습니다"
 
 -----------------------------------------------------------------------

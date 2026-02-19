@@ -9,7 +9,7 @@ local C = LibStub('C_Everywhere')
 local Addon = LibStub('WildAddon-1.1'):NewAddon(ADDON, Addon, 'StaleCheck-1.0')
 
 Addon.IsRetail = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
-Addon.IsClassic = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
+Addon.IsClassic = LE_EXPANSION_LEVEL_CURRENT == LE_EXPANSION_CLASSIC
 Addon.IsModern = LE_EXPANSION_LEVEL_CURRENT >= LE_EXPANSION_CATACLYSM
 
 Addon.NumBags = NUM_TOTAL_EQUIPPED_BAG_SLOTS or NUM_BAG_SLOTS
@@ -39,10 +39,18 @@ if REAGENTBANK_CONTAINER then
 	tinsert(Addon.BankBags, REAGENTBANK_CONTAINER)
 end
 
-if C.Bank.FetchPurchasedBankTabIDs then
+if C.Bank.AreAnyBankTypesViewable then
 	for i = Addon.LastBankBag + 1, Addon.LastAccountBag do
 		tinsert(Addon.BankBags, i)
 	end
+end
+
+function Addon_SetBankType(type)
+	Addon.BankType = type
+end
+
+function Addon_GetBankType()
+	return Addon.BankType or 0
 end
 
 if not GameFontNormalCenter then
@@ -63,7 +71,7 @@ function Addon:OnLoad()
 
 	self:ContinueOn('PLAYER_ENTERING_WORLD', function()
 		self:CheckForUpdates(ADDON, self.sets, 'interface/addons/bagbrother/art/'..ADDON..'-big')
-		self.Frames:New('inventory') -- prevent combat block
+		self.Frames:New('inventory'):Update() -- prevent combat block
 	end)
 end
 

@@ -15,12 +15,12 @@ if Settings then
 
     BlizzardPanel:SetScript("OnShow", function(self)
         MainFrame:Hide();
-        MainFrame:SetParent(BlizzardPanel);
+        MainFrame:ShowUI("blizzard");
         MainFrame:ClearAllPoints();
+        MainFrame:SetParent(BlizzardPanel);
         MainFrame:SetPoint("TOPLEFT", self, "TOPLEFT", -10, 6);
         --MainFrame:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 0);
         MainFrame:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", 0, 0);
-        MainFrame:ShowUI("blizzard");
     end);
 
     BlizzardPanel:SetScript("OnHide", function(self)
@@ -40,7 +40,9 @@ do  --Press Escape to close
     table.insert(UISpecialFrames, CloseDummy:GetName());
 
     CloseDummy:SetScript("OnHide", function()
-        MainFrame:Hide();
+        if MainFrame:HandleEscape() then
+            CloseDummy:Show();
+        end
     end);
 
     MainFrame:HookScript("OnShow", function()

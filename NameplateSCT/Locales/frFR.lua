@@ -1,6 +1,13 @@
 local L = LibStub("AceLocale-3.0"):NewLocale("NameplateSCT", "frFR")
 if not L then return end
 
+L["Fireworks Settings"] = "Fireworks Settings"
+L["Fireworks Duration"] = "Fireworks Duration"
+L["Duration of the fireworks animation"] = "Duration of the fireworks animation"
+
+--L["Unfortunately Blizzard has not added a SCT API in Midnight, until they do this addon will not have any functionality."]
+--L["If you want to enable or disable the blizzard SCT you can do so here"] = true
+--L["Thank you for the years of support, and hopefully we'll be able to bring NameplateSCT back in the future! - Justwait"] = true
 --L["%s (A: %s)"] = "%s (A: %s)" -- A for Absorb
 --L["%s (O: %s)"] = "%s (O: %s)" -- O for Overkill
 L["Abilities"] = "Abilités"
@@ -22,6 +29,8 @@ L["Center"] = "Centre"
 L["Comma Seperate"] = "Séparer par une virgule"
 --L["Crit Color"] = "Crit Color"
 L["Criticals"] = "Critiques"
+--L["Custom Miss Color"] = "Custom Miss Color"
+--L["Miss Color"] = "Miss Color"
 L["Default Color"] = "Couleur par défaut"
 L["Default speed: 1"] = "Vitesse par défaut: 1"
 L["Default"] = "Défaut"
@@ -31,6 +40,8 @@ L["Disabled"] = "Désactivé"
 L["Display Icon"] = "Afficher l’icône"
 L["Display Icon Only"] = "Afficher l’icône uniquement"
 L["Display only the icon for damage.\nWill not change Miss, Dodge, Parry, etc displays"] = "Afficher l’icône uniquement pour les dommages.\n Ne change pas l'affichage des Ratés, Evités, Parriés, etc"
+L["Remove Icon borders"] = "Supprimer les bordures de l’icône"
+L["Zoom a bit into the icon to remove default blizzard border"] = "Zoom un peu sur l’icône pour supprimer la bordure de blizzard par défaut"
 --L["Display Off-Target Text"] = "Display Off-Target Text"
 --L["Display Overkill"] = "Display Overkill"
 --L["Display your overkill for a target over your own nameplate"] = "Display your overkill for a target over your own nameplate"
@@ -50,6 +61,9 @@ L["Evaded"] = "Évité"
 --L["Font Flags"] = "Font Flags"
 L["Font"] = "Police de caractère"
 L["Fountain"] = "Fontaine"
+L["Fireworks"] = "Feux d'artifice"
+L["Fireworks Radius"] = "Fireworks Radius"
+L["Start radius for fireworks animation"] = "Start radius for fireworks animation"
 --L["Has soft max/min, you can type whatever you'd like into the editbox"] = "Has soft max/min, you can type whatever you'd like into the editbox"
 L["Hide hits that are below a running average of your recent damage output"] = "Cacher les dégâts qui sont en dessous de la moyenne des dégâts récents"
 --L["Hide hits that are below this threshold."] = "Hide hits that are below this threshold."

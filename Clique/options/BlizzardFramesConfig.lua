@@ -65,6 +65,7 @@ function panel:CreateOptions()
     self.intro:SetHeight(40)
 
     self.statusBarFix = make_checkbox("statusBarFix", L["Fix issue with health and power bars"])
+    self.wipeMenuAction= make_checkbox("wipeMenuAction", L["Completely remove the menu action from Blizzard frames"])
     self.PlayerFrame = make_checkbox("PlayerFrame", L["Player frame"])
     self.PetFrame = make_checkbox("PetFrame", L["Player's pet frame"])
     self.TargetFrame = make_checkbox("TargetFrame", L["Player's target frame"])
@@ -79,21 +80,18 @@ function panel:CreateOptions()
 
     table.insert(bits, self.intro)
     table.insert(bits, self.statusBarFix)
+    table.insert(bits, self.wipeMenuAction)
     table.insert(bits, self.PlayerFrame)
     table.insert(bits, self.PetFrame)
     table.insert(bits, self.TargetFrame)
-	table.insert(bits, self.TargetFrameToT)
+    table.insert(bits, self.TargetFrameToT)
 
     -- No focus frames in Classic
-    if not addon:ProjectIsClassic() then
-        table.insert(bits, self.FocusFrame)
-        table.insert(bits, self.FocusFrameToT)
-    end
+    table.insert(bits, self.FocusFrame)
+    table.insert(bits, self.FocusFrameToT)
 
     -- Arena comes in in retail
-    if addon:ProjectIsRetail() then
-        table.insert(bits, self.arena)
-    end
+    table.insert(bits, self.arena)
 
     -- Group these together
     bits[1]:SetPoint("TOPLEFT", 5, -5)
@@ -125,6 +123,7 @@ function panel.refresh()
     local opt = addon.settings.blizzframes
 
     panel.statusBarFix:SetChecked(opt.statusBarFix)
+    panel.wipeMenuAction:SetChecked(opt.wipeMenuAction)
     panel.PlayerFrame:SetChecked(opt.PlayerFrame)
     panel.PetFrame:SetChecked(opt.PetFrame)
     panel.TargetFrame:SetChecked(opt.TargetFrame)
@@ -150,6 +149,7 @@ function panel.okay()
     local opt = addon.settings.blizzframes
 
     opt.statusBarFix = not not panel.statusBarFix:GetChecked()
+    opt.wipeMenuAction = not not panel.wipeMenuAction:GetChecked()
     opt.PlayerFrame = not not panel.PlayerFrame:GetChecked()
     opt.PetFrame = not not panel.PetFrame:GetChecked()
     opt.TargetFrame = not not panel.TargetFrame:GetChecked()

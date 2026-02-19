@@ -6,7 +6,7 @@
 
 
 local ADDON, Addon = ...
-local Search = LibStub('ItemSearch-1.3')
+local C = LibStub('C_Everywhere')
 local Rules = Addon:NewModule('Rules', 'MutexDelay-1.0')
 Rules.Registry = {}
 
@@ -29,7 +29,14 @@ function Rules:Register(data)
 	assert(not self.Registry[data.id], 'data.id must be unique, id already registered')
 
 	self.Registry[data.id] = setmetatable(data, self)
-	self:Delay('SendSignal', 'RULES_LOADED')
+	self:Delay('SendSignal', 'RULES_CHANGED')
+end
+
+function Rules:Unregister(id)
+	assert(self.Registry[id], 'id not registered')
+
+	self.Registry[id] = nil
+	self:Delay('SendSignal', 'RULES_CHANGED')
 end
 
 function Rules:Get(id)
@@ -51,13 +58,13 @@ end
 
 function Rules:GetIcon(frame)
 	local icon = self:GetValue('icon', frame) or QUESTION_MARK_ICON
-	return icon, C_Texture.GetAtlasID(icon) ~= 0
+	return icon, C.Texture.GetAtlasExists(icon)
 end
 
 function Rules:Compile()
 	local macro = self.macro and loadstring(format('return function(frame, bag, slot, family, info) %s end', self.macro))
-	local search = self.search and function(_,_,_,_, info)
-		return info.itemID and Search:Matches(info.hyperlink, self.search)
+	local search = self.search and function(frame, bag, slot, _, info)
+		return frame:SearchItem(self.search, bag, slot, info)
 	end
 
 	return macro and macro() or search or self.filter

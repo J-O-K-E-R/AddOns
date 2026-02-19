@@ -517,8 +517,8 @@ end
 function mod:UNIT_HEALTH(event, unit)
 	if self:GetHealth(unit) < 53 then -- Intermission at ~50%
 		self:UnregisterUnitEvent(event, unit)
-		self:Message("stages", "cyan", CL.soon:format(CL.intermission), false)
-		self:PlaySound("stages", "info")
+		--self:Message("stages", "cyan", CL.soon:format(CL.intermission), false)
+		--self:PlaySound("stages", "info")
 	end
 end
 
@@ -579,6 +579,7 @@ function mod:GigaBlastSuccess()
 end
 
 function mod:CHAT_MSG_MONSTER_YELL(_, msg)
+	if self:IsSecret(msg) then return end
 	if msg:find(L.story_phase_trigger, nil, true) then
 		self:StopBar(CL.count:format(self:SpellName(465952), fullBombsCount)) -- Big Bad Buncha Bombs
 		self:StopBar(CL.count:format(self:SpellName(467182), fullSuppressionCount)) -- Suppression
@@ -635,6 +636,7 @@ function mod:MechengineersCanistersApplied(args)
 end
 
 function mod:CHAT_MSG_RAID_BOSS_EMOTE(_, msg)
+	if self:IsSecret(msg) then return end
 	-- a bit earlier than the cast, bar is aligned with when the debuffs go out
 	if msg:find("spell:465952", nil, true) then
 		-- |TInterface\\ICONS\\Ships_ABILITY_Bombers.BLP:20|t %s begins to cast |cFFFF0000|Hspell:465952|h[Big Bad Buncha Bombs]|h|r!

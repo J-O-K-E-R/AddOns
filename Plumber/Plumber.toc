@@ -1,7 +1,7 @@
 ## X-Flavor: retail
 ## X-Expansion: TWW
-## Interface: 110205, 110207, 120000
-## Version: 1.8.1
+## Interface: 120000, 120001
+## Version: 1.8.7
 
 ## Title: Plumber
 
@@ -19,12 +19,10 @@ Initialization.lua
 Locales\Localization.xml
 API.lua
 
-Modules\SharedData.lua
-Modules\SharedFonts.xml
-Modules\SharedWidgets.xml
-Modules\SharedTooltip.lua
-Modules\BlizzardEditMode.lua
+Modules\Shared\Load.xml
+
 Modules\ScenarioTracker.lua
+Modules\ReputationTracker.lua
 #Modules\DirectionArrow.lua
 #Modules\SuperTrack.xml
 
@@ -55,7 +53,7 @@ Modules\BossBanner.lua
 Modules\SoftTargetName.lua
 
 
-Modules\Beta\Beta.xml
+Modules\Housing\Housing.xml
 
 
 #TWW
@@ -63,26 +61,30 @@ Modules\DelvesScenario.lua
 Modules\DelvesDashboard.lua
 Modules\DelvesAutomation.lua
 Modules\ExpansionLandingPage.xml
-Modules\LandingPageSwitch.lua
 Modules\GameTooltipExtension.xml
 Modules\LootUI.xml
 Modules\UnderlightAngler.lua
 Modules\SpellcastInfo.lua
 Modules\ChatOptions.lua
 Modules\NameplateResources.lua
+Modules\NameplateQuestIndicator.lua
 Modules\StaticPopupEnhancement.xml
 Modules\PlayerTitleUI.lua
 Modules\BlizzardSuperTrack.lua
 Modules\ItemUpgradeUI.xml
 Modules\Macros.lua
 Modules\ProfessionsBook.lua
-Modules\ExpansionLandingPage\ExpansionLandingPage_TWW.xml
+Modules\ExpansionLandingPage\ExpansionLandingPage_Retail.xml
 Modules\BlizzFix_ModelLoading.lua
 Modules\Timerunning\LegionRemix.xml
 Modules\HolidayDungeon.lua
 Modules\QueueStatus.lua
 Modules\RaidCheck\RaidCheck.xml
 Modules\TransmogUtil.lua
+Modules\QuestWatchCycle.lua
+Modules\CraftSearchExtended.lua
+Modules\SourceAchievementLink.lua
+Modules\OutfitSelect.lua
 
 #Modules\MerchantUI\MerchantUI.xml
 
@@ -92,7 +94,7 @@ Modules\TransmogUtil.lua
 #Modules\SecretOfAzeroth.lua
 #Modules\AddonList.lua
 #Modules\BlizzFix_WardrobeTrackingHelpTip.lua
-Modules\WoWAnniversary.lua
+#Modules\WoWAnniversary.lua
 #Modules\Navigator_Dreamseed.lua
 #Modules\AccountStore.lua
 #Modules\MinimapMouseover.lua

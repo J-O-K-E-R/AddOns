@@ -139,7 +139,7 @@ L = BigWigs:NewBossLocale("Mephistroth", "zhCN")
 if L then
 	L.custom_on_time_lost = "暗影消退计时"
 	L.custom_on_time_lost_desc = "显示暗影消退为|cffff0000红色|r计时条。"
-	--L.time_lost = "%s |cffff0000(+%ds)|r"
+	L.time_lost = "%s |cffff0000(+%ds)|r"
 end
 
 L = BigWigs:NewBossLocale("Domatrax", "zhCN")
@@ -367,7 +367,7 @@ end
 L = BigWigs:NewBossLocale("Moroes", "zhCN")
 if L then
 	L.cc = "群体控制"
-	L.cc_desc = "群体控制晚餐客人的计时器和警报。"
+	L.cc_desc = "群体控制晚餐客人的计时器和警告。"
 end
 
 L = BigWigs:NewBossLocale("Nightbane", "zhCN")
@@ -433,6 +433,7 @@ end
 
 L = BigWigs:NewBossLocale("Seat of the Triumvirate Trash", "zhCN")
 if L then
+	-- Pre-Midnight
 	L.custom_on_autotalk_desc = "立即选择奥蕾莉亚·风行者对话选项。"
 	L.gossip_available = "可对话"
 	L.alleria_gossip_trigger = "跟我走！" -- Allerias yell after the first boss is defeated
@@ -442,6 +443,10 @@ if L then
 	L.voidbender = "影卫缚灵师"
 	L.conjurer = "影卫召唤师"
 	L.weaver = "大织影者"
+
+	-- Midnight+
+	--L.void_rifts_closed = "Void Rifts Closed"
+	--L.void_rifts_closed_desc = "Show an alert when a Void Rift has been closed."
 end
 
 -- The Arcway

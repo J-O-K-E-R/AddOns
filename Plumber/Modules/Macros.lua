@@ -160,7 +160,8 @@ local EL = CreateFrame("Frame");
 EL.macroIndexMin1 = 1;
 EL.macroIndexMax1 = MAX_ACCOUNT_MACROS or 120;
 EL.macroIndexMin2 = EL.macroIndexMax1 + 1;
-EL.macroIndexMax2 = EL.macroIndexMin2 + (MAX_CHARACTER_MACROS or 30);
+EL.maxCharacterMacros = MAX_CHARACTER_MACROS or 30;
+EL.macroIndexMax2 = EL.macroIndexMin2 + EL.maxCharacterMacros;
 EL.macroEvents = {};
 
 
@@ -232,7 +233,11 @@ function EL:CheckSupportedMacros()
         --print("Plumber Macro Found:", n);
         MacroInterpreter:Init();
         for event in pairs(self.macroEvents) do
-            self:RegisterEvent(event);
+            if event == "UNIT_AURA" then
+                self:RegisterUnitEvent(event, "player");
+            else
+                self:RegisterEvent(event);
+            end
         end
     end
 
@@ -357,6 +362,7 @@ function EL:UpdateMacros(commands)
 
                             if commandData.writeFunc then
                                 local _body, _icon = commandData.writeFunc(body);
+                                --print(math.random(100), _body)    --debug
                                 if _body then
                                     body = _body;
                                 end
@@ -1048,6 +1054,18 @@ do  --MacroInterpreter
                 end
             end
 
+            if not processed then
+                if find(line, "/home") then
+                    if addon.Housing then
+                        processed = true;
+                        icon, macroText, name = addon.Housing.GetDynamicTeleportAction();
+                        id = -1;
+                        actionType = "teleportHome";
+                        usable = true;
+                    end
+                end
+            end
+
             if not processed then   --generic macro command match
                 local arg;
                 for pattern, handler in pairs(MacroHandlers) do
@@ -1275,7 +1293,7 @@ do  --Editor Setup
                 EditorUI:HighlightIconButton(self);
                 if self:ShowTooltip() then
                     local tooltip = GameTooltip;
-                    if self.tooltipMethod then
+                    if self.tooltipMethod or self.tooltipFunc then
                         tooltip:AddLine(" ");
                     end
 
@@ -1863,11 +1881,25 @@ do  --For other modules like Legion Remix
     local function AddPlumberMacro(commandInfo)
         local command = commandInfo.command;
         local type = commandInfo.modifyType and ModifyType[commandInfo.modifyType];
+        if not commandInfo.conditionFunc then
+            commandInfo.conditionFunc = function()
+                return true
+            end
+        end
         if not PlumberMacros[command] then
             PlumberMacros[command] = commandInfo;
         end
     end
     addon.AddPlumberMacro = AddPlumberMacro;
+
+
+    local function IsCharacterMarcoFull()
+        local _, numCharacterMacros = GetNumMacros();
+        if numCharacterMacros >= EL.maxCharacterMacros then
+            return true
+        end
+    end
+    API.IsCharacterMarcoFull = IsCharacterMarcoFull;
 
 
     local function CreateCharacterMacro(name, icon, body)
@@ -1877,7 +1909,7 @@ do  --For other modules like Legion Remix
             reason = 1;
         else
             local _, numCharacterMacros = GetNumMacros();
-            if numCharacterMacros < 30 then
+            if numCharacterMacros < EL.maxCharacterMacros then
                 local perCharacter = true;
                 local macroID = CreateMacro(name, icon, body, perCharacter);
                 success = true;
@@ -1890,7 +1922,35 @@ do  --For other modules like Legion Remix
         return success, reason
     end
 
+
+    local function CanPickupOrCreateCommand(command)
+        if not command then return end;
+
+        local _, numCharacterMacros = GetNumMacros();
+        local fromIndex = EL.macroIndexMin2;
+        local toIndex = fromIndex + numCharacterMacros - 1;
+        local body, _command;
+        local macroID;
+
+        if toIndex >= fromIndex then
+            for index = fromIndex, toIndex do
+                body = GetMacroBody(index);
+                if body then
+                    _command = match(body, "#plumber:(%w+)");
+                    if _command == command then
+                        return true
+                    end
+                end
+            end
+        end
+
+        return not IsCharacterMarcoFull()
+    end
+    addon.CanPickupOrCreateCommand = CanPickupOrCreateCommand;
+
+
     local function AcquireCharacterMacro(command, generatorFunc)
+        if not command then return end;
         local _, numCharacterMacros = GetNumMacros();
         local fromIndex = EL.macroIndexMin2;
         local toIndex = fromIndex + numCharacterMacros - 1;
@@ -1921,4 +1981,24 @@ do  --For other modules like Legion Remix
         return macroID
     end
     addon.AcquireCharacterMacro = AcquireCharacterMacro;
+end
+
+
+do  --Module Registry
+    local moduleData = {
+        name = L["ModuleName DrawerMacro"],
+        dbKey = "DrawerMacro",
+        description = L["ModuleDescription DrawerMacro"],
+        categoryID = 1,
+        uiOrder = 1,
+        virtual = true,
+		categoryKeys = {
+			"Signature",
+		},
+        searchTags = {
+            "ActionBar", "Combat",
+        },
+    };
+
+    addon.ControlCenter:AddModule(moduleData);
 end

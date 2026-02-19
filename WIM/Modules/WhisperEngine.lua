@@ -207,14 +207,50 @@ function WhisperEngine:OnDisable()
 end
 
 local function safeName(user)
-	return string.lower(user or "")
+	-- nil check. For some reason, events get modified by other addons and return nil for user.
+	if _G.type(user) ~= "string" or user == "" then
+        return ""
+    end
+
+	-- check if cross realm or if realm is included and the same as player, then strip realm
+	if string.find(user or "", "-") then
+		local player, realm = user:match("^(.-)-(.-)$");
+		if string.lower(realm) == string.lower(env.realm) then
+			user = player;
+		end
+	end
+
+	return string.lower(user or "");
+end
+
+local function findWhisperWindowByBNetID(bnID)
+	for _, win in pairs(Windows) do
+		if(win.isBN and win.bn.id == bnID) then
+			return win;
+		end
+	end
+	return nil;
 end
 
 local function getWhisperWindowByUser(user, isBN, bnID, fromEvent)
 	if isBN then
-		if bnID and not string.find(user, "^|K") then
-			local _
-			_, user = GetBNGetFriendInfoByID(bnID) -- fix window handler when using the chat hyperlink
+		local _;
+		local bnWin = findWhisperWindowByBNetID(bnID);
+		local _user = user;
+
+		_, user = GetBNGetFriendInfoByID(bnID) -- fix window handler when using the chat hyperlink
+
+		user = user and user ~= "" and user or _user;
+
+		-- if window already exists for bnID but name has changed, update it.
+		if (bnWin and safeName(bnWin.theUser) ~= safeName(user)) then
+			-- swap the indexed name to the new name
+			Windows[safeName(user)] = bnWin;
+			Windows[safeName(bnWin.theUser)] = nil;
+
+			bnWin:Rename(user);
+
+			return bnWin;
 		end
 	else
 		user = string.gsub(user," ","") -- Drii: WoW build15050 whisper bug for x-realm server with space
@@ -232,18 +268,18 @@ local function getWhisperWindowByUser(user, isBN, bnID, fromEvent)
 		-- update name if from event
 		obj.user = user
 		obj.theUser = user
-
         return obj;
     else
         -- otherwise, create a new one.
-        Windows[safeName(user)] = CreateWhisperWindow(user);
-		Windows[safeName(user)].isBN = isBN;
-		Windows[safeName(user)].bn = Windows[safeName(user)].bn or {};
-        if(db.whoLookups or lists.gm[safeName(user)] or Windows[safeName(user)].isBN) then
-            Windows[safeName(user)]:SendWho(); -- send who request
-        end
-        Windows[safeName(user)].online = true;
-        return Windows[safeName(user)], true;
+        Windows[safeName(user)] = CreateWhisperWindow(user, function(win)
+			win.isBN = isBN;
+			win.bn = win.bn or {};
+			if(db.whoLookups or lists.gm[safeName(user)] or win.isBN) then
+				win:SendWho(); -- send who request
+			end
+			win.online = true;
+		end);
+		return Windows[safeName(user)], true;
     end
 end
 
@@ -274,6 +310,18 @@ end
 
 local splitMessage, splitMessageLinks = {}, {};
 function SendSplitMessage(PRIORITY, HEADER, theMsg, CHANNEL, EXTRA, to)
+	-- ignore completely empty messages
+    if _G.type(theMsg) ~= "string" or theMsg == "" then
+        return
+    end
+
+    -- for whisper-style channels we *must* have a target
+    if (CHANNEL == "WHISPER" or CHANNEL == "BN_WHISPER")
+       and (_G.type(to) ~= "string" or to == "") then
+        -- no valid target, don't try to send or open windows
+        return
+    end
+
     -- determine isBNET
     local isBN, messageLimit = false, 255;
     if(Windows[safeName(to)] and Windows[safeName(to)].isBN) then
@@ -309,8 +357,7 @@ function SendSplitMessage(PRIORITY, HEADER, theMsg, CHANNEL, EXTRA, to)
 			if(isBN) then
 				(_G.C_BattleNet and _G.C_BattleNet.SendWhisper or _G.BNSendWhisper)(Windows[safeName(to)].bn.id, chunk);
 			else
-                _G.SendChatMessage(chunk, CHANNEL, EXTRA, to)
-				-- _G.ChatThrottleLib:SendChatMessage(PRIORITY, HEADER, chunk, CHANNEL, EXTRA, to);
+                (_G.C_ChatInfo and _G.C_ChatInfo.SendChatMessage or _G.SendChatMessage)(chunk, CHANNEL, EXTRA, to)
 			end
 			chunk = (splitMessage[i] or "").." ";
 		end
@@ -343,6 +390,53 @@ RegisterWidgetTrigger("msg_box", "whisper", "OnEnterPressed", function(self)
         self:SetText("");
     end);
 
+--------------------------------------
+--		  Tell & Told Targets       --
+--------------------------------------
+local lastTellTarget = nil;
+local lastToldTarget = nil;
+
+local function setLastTellTarget(name, chatType, ...)
+	if (lastTellTarget ~= nil) then
+		if lastTellTarget[1] == name and lastTellTarget[2] == chatType then
+			return;
+		end
+	end
+
+	lastTellTarget = { name, chatType, ... };
+end
+
+local function setLastToldTarget(name, chatType, ...)
+	if (lastToldTarget ~= nil) then
+		if lastToldTarget[1] == name and lastToldTarget[2] == chatType then
+			return;
+		end
+	end
+
+	lastToldTarget = { name, chatType, ... };
+end
+
+function GetLastWhisperTarget (sent)
+	local target, chatType, extra = unpack(sent and lastTellTarget or lastToldTarget or {});
+	if target and chatType and (chatType == "WHISPER" or chatType == "BN_WHISPER") then
+		return target, chatType, extra;
+	end
+	return nil;
+end
+
+function GetLastWhisperWindow (sent)
+	local target, chatType, extra = GetLastWhisperTarget(sent)
+	if target then
+		local win = getWhisperWindowByUser(target, chatType:find("BN_"), extra);
+		if win then
+			win.widgets.msg_box.setText = 1;
+			win:Pop(true); -- force popup
+			win.widgets.msg_box:SetFocus();
+		end
+		return win;
+	end
+	return nil;
+end
 
 --------------------------------------
 --          Event Handlers          --
@@ -356,6 +450,11 @@ local CMS_PATTERNS = {
 };
 
 function WhisperEngine.ChatMessageEventFilter (frame, event, ...)
+	-- check if message or sender is secret, if so, do not process
+	if HasAnySecretValues(...) or not db or not db.enabled then
+		return false
+	end
+
 	-- Process all events except for CHAT_MSG_SYSTEM
 	if (event ~= "CHAT_MSG_SYSTEM") then
 		local ignore, block = (IgnoreOrBlockEvent or function () end)(event, ...)
@@ -420,7 +519,7 @@ function WhisperEngine.ChatMessageEventFilter (frame, event, ...)
 		end
 	end
 
-	return false, ...
+	return false
 end
 
 -- compatibility function for processing message event filters
@@ -459,6 +558,12 @@ end
 WhisperEngine.processMessageEventFilters = processMessageEventFilters; -- make accessible to other modules
 
 function WhisperEngine:CHAT_MSG_WHISPER(...)
+	-- check if sender is secret, if so, do not process
+	if HasAnySecretValues(...) then
+		self:DeferEvent("CHAT_MSG_WHISPER", ...);
+		return;
+	end
+
 	local arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17 = ...;
 
 	arg2 = _G.Ambiguate(arg2, "none")
@@ -475,9 +580,11 @@ function WhisperEngine:CHAT_MSG_WHISPER(...)
     local color = WIM.db.displayColors.wispIn; -- color contains .r, .g & .b
 
     win.unreadCount = win.unreadCount and (win.unreadCount + 1) or 1;
-    win:AddEventMessage(color.r, color.g, color.b, "CHAT_MSG_WHISPER", arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14);
+    win:AddEventMessage(color.r, color.g, color.b, "CHAT_MSG_WHISPER", arg1, arg2, select(3, ...));
     win:Pop("in");
-	(ChatFrameUtil and ChatFrameUtil.SetLastTellTarget or _G.ChatEdit_SetLastTellTarget)(arg2, "WHISPER");
+
+	setLastTellTarget(arg2, "WHISPER");
+
     win.online = true;
     updateMinimapAlerts();
 
@@ -501,10 +608,15 @@ function WhisperEngine:CHAT_MSG_WHISPER(...)
 		FlashClientIcon();
 	end
 
-    CallModuleFunction("PostEvent_Whisper", arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14);
+    CallModuleFunction("PostEvent_Whisper", arg1, arg2, select(3, ...));
 end
 
 function WhisperEngine:CHAT_MSG_WHISPER_INFORM(...)
+	if HasAnySecretValues(...) then
+		self:DeferEvent("CHAT_MSG_WHISPER_INFORM", ...);
+		return;
+	end
+
     local arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17 = ...;
 
 	arg2 = _G.Ambiguate(arg2, "none")
@@ -520,14 +632,16 @@ function WhisperEngine:CHAT_MSG_WHISPER_INFORM(...)
 
     local color = db.displayColors.wispOut; -- color contains .r, .g & .b
 
-    win:AddEventMessage(color.r, color.g, color.b, "CHAT_MSG_WHISPER_INFORM", arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14);
+    win:AddEventMessage(color.r, color.g, color.b, "CHAT_MSG_WHISPER_INFORM", arg1, arg2, select(3, ...));
     win.unreadCount = 0; -- having replied  to conversation implies the messages have been read.
     win:Pop("out");
-	(ChatFrameUtil and ChatFrameUtil.SetLastTellTarget or _G.ChatEdit_SetLastTellTarget)(arg2, "WHISPER");
+
+	setLastToldTarget(arg2, "WHISPER");
+
     win.online = true;
     win.msgSent = false;
     updateMinimapAlerts();
-    CallModuleFunction("PostEvent_WhisperInform", arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14);
+    CallModuleFunction("PostEvent_WhisperInform", arg1, arg2, select(3, ...));
     addToTableUnique(recentSent, arg1);
 	if(#recentSent > maxRecent) then
 		table.remove(recentSent, 1);
@@ -535,6 +649,11 @@ function WhisperEngine:CHAT_MSG_WHISPER_INFORM(...)
 end
 
 function WhisperEngine:CHAT_MSG_BN_WHISPER_INFORM(...)
+	if HasAnySecretValues(...) then
+		self:DeferEvent("CHAT_MSG_BN_WHISPER_INFORM", ...);
+		return;
+	end
+
     local arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17 = ...;
 
 	local win, isNew = getWhisperWindowByUser(arg2, true, arg13, true);
@@ -550,10 +669,13 @@ function WhisperEngine:CHAT_MSG_BN_WHISPER_INFORM(...)
     local color = db.displayColors.BNwispOut; -- color contains .r, .g & .b
 
 	if not win then return end	--due to a client bug, we can not receive the other player's name, so do nothing
-    win:AddEventMessage(color.r, color.g, color.b, "CHAT_MSG_BN_WHISPER_INFORM", arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14);
-    win.unreadCount = 0; -- having replied  to conversation implies the messages have been read.
+    win:AddEventMessage(color.r, color.g, color.b, "CHAT_MSG_BN_WHISPER_INFORM", arg1, arg2, select(3, ...));
+
+	win.unreadCount = 0; -- having replied  to conversation implies the messages have been read.
     win:Pop("out");
-	(ChatFrameUtil and ChatFrameUtil.SetLastTellTarget or _G.ChatEdit_SetLastTellTarget)(arg2, "BN_WHISPER");
+
+	setLastToldTarget(arg2, "BN_WHISPER", arg13);
+
     win.online = true;
     win.msgSent = false;
     updateMinimapAlerts();
@@ -563,7 +685,7 @@ function WhisperEngine:CHAT_MSG_BN_WHISPER_INFORM(...)
 		FlashClientIcon();
 	end
 
-    CallModuleFunction("PostEvent_WhisperInform", arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14);
+    CallModuleFunction("PostEvent_WhisperInform", arg1, arg2, select(3, ...));
 
 	addToTableUnique(recentSent, arg1);
 	if(#recentSent > maxRecent) then
@@ -572,6 +694,11 @@ function WhisperEngine:CHAT_MSG_BN_WHISPER_INFORM(...)
 end
 
 function WhisperEngine:CHAT_MSG_BN_WHISPER(...)
+	if HasAnySecretValues(...) then
+		self:DeferEvent("CHAT_MSG_BN_WHISPER", ...);
+		return;
+	end
+
     local arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17 = ...;
 
 	local win, isNew = getWhisperWindowByUser(arg2, true, arg13, true);
@@ -587,44 +714,75 @@ function WhisperEngine:CHAT_MSG_BN_WHISPER(...)
     local color = WIM.db.displayColors.BNwispIn; -- color contains .r, .g & .b
 
     win.unreadCount = win.unreadCount and (win.unreadCount + 1) or 1;
-    win:AddEventMessage(color.r, color.g, color.b, "CHAT_MSG_BN_WHISPER", arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14);
+    win:AddEventMessage(color.r, color.g, color.b, "CHAT_MSG_BN_WHISPER", arg1, arg2, select(3, ...));
     win:Pop("in");
-	(ChatFrameUtil and ChatFrameUtil.SetLastTellTarget or _G.ChatEdit_SetLastTellTarget)(arg2, "BN_WHISPER");
+
+	setLastTellTarget(arg2, "BN_WHISPER", arg13);
+
     win.online = true;
     updateMinimapAlerts();
-    CallModuleFunction("PostEvent_Whisper", arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14);
+    CallModuleFunction("PostEvent_Whisper", arg1, arg2, select(3, ...));
 end
 
 function WhisperEngine:CHAT_MSG_AFK(...)
+	-- check if sender is secret, if so, do not process
+	if HasAnySecretValues(...) then
+		self:DeferEvent("CHAT_MSG_AFK", ...);
+		return;
+	end
+
     local color = db.displayColors.wispIn; -- color contains .r, .g & .b
     local win = Windows[safeName(select(2, ...))];
+
     if(win) then
+
         win:AddEventMessage(color.r, color.g, color.b, "CHAT_MSG_AFK", ...);
         win:Pop("out");
-   		(ChatFrameUtil and ChatFrameUtil.SetLastTellTarget or _G.ChatEdit_SetLastTellTarget)(select(2, ...), "AFK");
         win.online = true;
+
+		setLastTellTarget(select(2, ...), "WHISPER");
     end
 end
 
 function WhisperEngine:CHAT_MSG_DND(...)
+	-- check if sender is secret, if so, do not process
+	if HasAnySecretValues(...) then
+		self:DeferEvent("CHAT_MSG_DND", ...);
+		return;
+	end
+
     local color = db.displayColors.wispIn; -- color contains .r, .g & .b
     local win = Windows[safeName(select(2, ...))];
     if(win) then
-        win:AddEventMessage(color.r, color.g, color.b, "CHAT_MSG_AFK", ...);
+        win:AddEventMessage(color.r, color.g, color.b, "CHAT_MSG_DND", ...);
         win:Pop("out");
-   		(ChatFrameUtil and ChatFrameUtil.SetLastTellTarget or _G.ChatEdit_SetLastTellTarget)(select(2, ...), "AFK");
         win.online = true;
+
+		setLastTellTarget(select(2, ...), "WHISPER");
     end
 end
 
 local CMS_SLUG = {};
 function WhisperEngine:CHAT_MSG_SYSTEM(...)
+	-- check if sender is secret, if so, do not process
+	if HasAnySecretValues(...) then
+		self:DeferEvent("CHAT_MSG_SYSTEM", ...);
+		return;
+	end
+
 	-- the proccessing of the actual message is taking place within the ChatMessageFilter
 	CMS_SLUG._isWIM = true;
 	processMessageEventFilters(CMS_SLUG, 'CHAT_MSG_SYSTEM', ...);
 end
 
-function WhisperEngine:CHAT_MSG_BN_INLINE_TOAST_ALERT(process, playerName, languageName, channelName, playerName2, specialFlags, zoneChannelID, channelIndex, channelBaseName, unused, lineID, guid, bnSenderID, isMobile, isSubtitle, hideSenderInLetterbox, supressRaidIcons)
+function WhisperEngine:CHAT_MSG_BN_INLINE_TOAST_ALERT(...)
+	-- check if sender is secret, if so, do not process
+	if HasAnySecretValues(...) then
+		self:DeferEvent("CHAT_MSG_BN_INLINE_TOAST_ALERT", ...);
+		return;
+	end
+
+	local process, playerName, languageName, channelName, playerName2, specialFlags, zoneChannelID, channelIndex, channelBaseName, unused, lineID, guid, bnSenderID, isMobile, isSubtitle, hideSenderInLetterbox, supressRaidIcons = ...;
 
 	local online = process == "FRIEND_ONLINE"
 	local offline = process == "FRIEND_OFFLINE"
@@ -644,236 +802,179 @@ end
 --------------------------------------
 --          Whisper Related Hooks   --
 --------------------------------------
-local function replyTellTarget(TellNotTold)
-	if (db.enabled) then
-		local curState = curState;
-		curState = db.pop_rules.whisper.alwaysOther and "other" or curState;
-		local lastTell;
-		if (TellNotTold) then
-		lastTell = ChatFrameUtil and ChatFrameUtil.GetLastTellTarget and ChatFrameUtil.GetLastTellTarget() or _G.ChatEdit_GetLastTellTarget();
-		else
-		lastTell = ChatFrameUtil and ChatFrameUtil.GetLastToldTarget and ChatFrameUtil.GetLastToldTarget() or _G.ChatEdit_GetLastToldTarget();
-		end
 
-		-- Grab the string after the slash command
-		if not lastTell then return end--because if you fat finger R or try to re ply before someone sent a tell, it generates a lua error without this
-		local bNetID;
-		if (lastTell:find("^|K")) then
-		lastTell = _G.BNTokenFindName(lastTell) or lastTell;
-		bNetID = _G.BNet_GetBNetIDAccount(lastTell);
-		end
+-- hook SendChatMessage to track sent messages
+hooksecurefunc(_G.C_ChatInfo or _G, "SendChatMessage", function(...)
+	if HasAnySecretValues(...) then
+		return;
+	end
 
-		if (lastTell ~= "" and db.pop_rules.whisper.intercept) then
-		lastTell = _G.Ambiguate(lastTell, "none")
-		local win = getWhisperWindowByUser(lastTell, bNetID and true, bNetID);
+	if(select(2, ...) == "WHISPER") then
+		local win = Windows[safeName(FormatUserName(select(4, ...))) or "NIL"];
+		if(win) then
+			win.msgSent = true;
+		end
+	end
+end);
 
-		if (win:IsVisible() or db.pop_rules.whisper[curState].onSend) then
-			win.widgets.msg_box.setText = 1;
-			win:Pop(true); -- force popup
-			win.widgets.msg_box:SetFocus();
-			local eb = getVisibleChatFrameEditBox();
-			if _G.ChatFrameEditBoxMixin and _G.ChatFrameEditBoxMixin.OnEscapePressed then
-				_G.ChatFrameEditBoxMixin.OnEscapePressed(getVisibleChatFrameEditBox() or _G.ChatFrame1EditBox)
-			else
-				_G.ChatEdit_OnEscapePressed(getVisibleChatFrameEditBox() or _G.ChatFrame1EditBox);
-			end
-		end
-		end
+local stickyTypes = {};
+local function setSticky (sticky)
+	for i = 1, #stickyTypes do
+		local chatTypeInfo = _G.ChatTypeInfo[stickyTypes[i]] or {};
+		chatTypeInfo.sticky = sticky and 1 or 0;
 	end
 end
 
--- "/w |Kf287|k0000000000000|k "
-local tellTargetExtractionAutoComplete = _G.AUTOCOMPLETE_LIST.ALL;
-function CF_ExtractTellTarget(editBox, msg, chatType)
-	-- Grab the string after the slash command
-	local target = string.match(msg, "%s*(.*)");
-	local bNetID;
-	-- _G.DEFAULT_CHAT_FRAME:AddMessage("Raw: "..msg:gsub("|", ":")); -- debugging
-	if (target:find("^|K")) then
-		local old_target, old_msg = target, msg
-		target, msg = _G.BNTokenFindName(target)
-		target = target or old_target
-		msg = msg or old_msg
-		bNetID = _G.BNet_GetBNetIDAccount(target);
-	else
-		--If we haven't even finished one word, we aren't done.
-		if (not target or not string.find(target, "%s") or (string.sub(target, 1, 1) == "|")) then
-			return false;
-		end
+local prevChatType, prevTellTarget;
+local function editBoxUpdateHeader(self, internalCall)
+	local chatType, tellTarget = self:GetAttribute("chatType"),  self:GetAttribute("tellTarget");
 
-		--Keep pulling off everything after the last space until we either have something on the AutoComplete list or
-		-- -- only a single word is left.
-		while (string.find(target, "%s")) do
-			--Pull off everything after the last space.
-			target = string.match(target, "(%S+)%s+[^%s]*");
-			target = _G.Ambiguate(target, "none")
-			if (_G.GetAutoCompleteResults(target, 1, 0, tellTargetExtractionAutoComplete.include,
-				tellTargetExtractionAutoComplete.exclude, 1, nil, true)) then
-				break;
-			end
-		end
-		msg = string.sub(msg, string.len(target) + 2);
+	if HasAnySecretValues(chatType, tellTarget) or not db or not db.enabled then
+		prevChatType, prevTellTarget = nil, nil;
+		setSticky(true);
+		return;
 	end
 
-	if (db and db.enabled) then
-		local curState = curState;
-		curState = db.pop_rules.whisper.alwaysOther and "other" or curState;
-		if (db.pop_rules.whisper.intercept and db.pop_rules.whisper[curState].onSend) then
-			target = _G.Ambiguate(target, "none")--For good measure, ambiguate again cause it seems some mods interfere with this process
-			local win = getWhisperWindowByUser(target, bNetID and true, bNetID);
-			if not win then return end	--due to a client bug, we can not receive the other player's name, so do nothing
-			win.widgets.msg_box.setText = 1;
-			win:Pop(true); -- force popup
-			win.widgets.msg_box:SetFocus();
-
-			if _G.ChatFrameEditBoxMixin and _G.ChatFrameEditBoxMixin.OnEscapePressed then
-				_G.ChatFrameEditBoxMixin.OnEscapePressed(getVisibleChatFrameEditBox() or _G.ChatFrame1EditBox)
-			else
-				_G.ChatEdit_OnEscapePressed(getVisibleChatFrameEditBox() or _G.ChatFrame1EditBox);
-			end
-		end
+	-- prevent duplicates
+	if internalCall or (prevChatType == chatType and prevTellTarget == tellTarget) then
+		return;
 	end
-end
+	prevChatType, prevTellTarget = chatType, tellTarget;
 
-function CF_SentBNetTell(target)
-	if (db and db.enabled) then
-		local curState = curState;
-		curState = db.pop_rules.whisper.alwaysOther and "other" or curState;
-		if (db.pop_rules.whisper.intercept and db.pop_rules.whisper[curState].onSend) then
-			local bNetID = _G.BNet_GetBNetIDAccount(target);
-			target = _G.Ambiguate(target, "none")--For good measure, ambiguate again cause it seems some mods interfere with this process
-			local win = getWhisperWindowByUser(target, true, bNetID);
-			if not win then return end	--due to a client bug, we can not receive the other player's name, so do nothing
-			win.widgets.msg_box.setText = 1;
-			win:Pop(true); -- force popup
-			win.widgets.msg_box:SetFocus();
+	if (chatType == "WHISPER" or chatType == "BN_WHISPER") then
+		local target = tellTarget;
 
-			local editBox = _G.LAST_ACTIVE_CHAT_EDIT_BOX;
-			if (editBox) then
-				if _G.ChatFrameEditBoxMixin and _G.ChatFrameEditBoxMixin.OnEscapePressed then
-					_G.ChatFrameEditBoxMixin.OnEscapePressed(editBox)
-				else
-					_G.ChatEdit_OnEscapePressed(editBox);
+		-- handle the whisper interception
+		if (not InChatMessagingLockdown() and target and db and db.enabled) then
+			local curState = curState;
+			curState = db.pop_rules.whisper.alwaysOther and "other" or curState;
+			if (db.pop_rules.whisper.intercept and db.pop_rules.whisper[curState].onSend) then
+
+				local bNetID;
+				if (chatType == "BN_WHISPER" or target:find("^|K")) then
+					bNetID = _G.BNet_GetBNetIDAccount(target);
 				end
-				return;
+
+				local win = getWhisperWindowByUser(target, bNetID and true, bNetID);
+				if win then
+					win.widgets.msg_box.setText = 1;
+					win:Pop(true); -- force popup
+					win.widgets.msg_box:SetFocus();
+
+					if (_G.ChatTypeInfo[chatType] and _G.ChatTypeInfo[chatType].sticky) then
+						table.insert(stickyTypes, chatType);
+						setSticky(false);
+					end
+
+					_G.C_Timer.After(0, function()
+						if self:GetAttribute("chatType"):find("WHISPER") then
+							self:SetAttribute("chatType", "SAY");
+							self:SetAttribute("tellTarget", nil);
+							(self.UpdateHeader or _G.ChatEdit_UpdateHeader)( self, true );
+						end
+
+						if _G.ChatFrameEditBoxMixin and _G.ChatFrameEditBoxMixin.OnEscapePressed then
+							_G.ChatFrameEditBoxMixin.OnEscapePressed(self)
+						else
+							_G.ChatEdit_OnEscapePressed(self);
+						end
+
+					end);
+				end
+			else
+				setSticky(true);
 			end
+		else
+			setSticky(true);
 		end
 	end
+
 end
-
-function CF_OpenChat(text, chatFrame, desiredCursorPosition)
-	local editBox = _G.ChatEdit_ChooseBoxForSend(chatFrame)
-
-	local chatType = editBox:GetAttribute("chatType")
-    local target = editBox:GetAttribute("tellTarget")
-	local sticky = editBox:GetAttribute("stickyType")
-
-	if chatType == "WHISPER" then
-		if not string.find(target, "^|K") then
-			return
-		end
-	elseif chatType ~= "BN_WHISPER" or not target then
-		return
-	end
-
-	if not editBox:IsVisible() then return end
-
-	if (db and db.enabled) then
-		local curState = curState;
-		curState = db.pop_rules.whisper.alwaysOther and "other" or curState;
-		if (db.pop_rules.whisper.intercept and db.pop_rules.whisper[curState].onSend) then
-			local bNetID = _G.BNet_GetBNetIDAccount(target);
-			target = _G.Ambiguate(target, "none")--For good measure, ambiguate again cause it seems some mods interfere with this process
-			local win = getWhisperWindowByUser(target, bNetID and true, bNetID);
-			if not win then return end	--due to a client bug, we can not receive the other player's name, so do nothing
-			win.widgets.msg_box.setText = 1;
-			win:Pop(true); -- force popup
-			if not (sticky == "WHISPER" or sticky == "BN_WHISPER") then
-				win.widgets.msg_box:SetFocus();
-				_G.ChatEdit_OnEscapePressed(editBox);
-			end
-		end
-	end
-end
-
-if ChatFrameUtil and ChatFrameUtil.SendBNetTell then
-	hooksecurefunc(ChatFrameUtil, "SendBNetTell", CF_SentBNetTell);
-else
-	hooksecurefunc("ChatFrame_SendBNetTell", CF_SentBNetTell);
-end
-
---Hook ChatFrame_ReplyTell & ChatFrame_ReplyTell2
-if ChatFrameUtil and ChatFrameUtil.ReplyTell then
-	hooksecurefunc(ChatFrameUtil, "ReplyTell", function() replyTellTarget(true) end);
-	hooksecurefunc(ChatFrameUtil, "ReplyTell2", function() replyTellTarget(false) end);
-else
-	hooksecurefunc("ChatFrame_ReplyTell", function() replyTellTarget(true) end);
-	hooksecurefunc("ChatFrame_ReplyTell2", function() replyTellTarget(false) end);
-end
-
-local hookedSendChatMessage = _G.SendChatMessage;
-function _G.SendChatMessage(...)
-    if(select(2, ...) == "WHISPER") then
-        local win = Windows[safeName(FormatUserName(select(4, ...))) or "NIL"];
-        if(win) then
-            win.msgSent = true;
-        end
-    end
-    hookedSendChatMessage(...);
-end
-
 
 -- ChatEditBoxMixin hooking
 if ChatFrameUtil and ChatFrameUtil.ActivateChat then
 	-- each time a chat edit box is activated, check if it is hooked accordingly.
 	hooksecurefunc(ChatFrameUtil, "ActivateChat", function(editBox)
+
 		-- first check that the editBox is not WIM's msg_box, if it is, then do nothing.
 		if(editBox._WIM_WhisperEngine_Hooked or editBox.widgetName == "msg_box") then
 			return;
 		end
 
-		-- ExtractTellTarget
-		-- hooksecurefunc(editBox, "ExtractTellTarget", CF_ExtractTellTarget);
-
-		-- UpdateHeader -- appears to be a better place to hook into for our purposes
-		hooksecurefunc(editBox, "UpdateHeader", function (editBox)
-			local type = editBox:GetAttribute("chatType");
-			local target  = editBox:GetAttribute("tellTarget");
-
-			if (type ~= "WHISPER" and type ~= "BN_WHISPER") then
-				return;
-			end
-
-			if (target and db and db.enabled) then
-				local curState = curState;
-				curState = db.pop_rules.whisper.alwaysOther and "other" or curState;
-				if (db.pop_rules.whisper.intercept and db.pop_rules.whisper[curState].onSend) then
-					target = _G.Ambiguate(target, "none")--For good measure, ambiguate again cause it seems some mods interfere with this process
-					local win = getWhisperWindowByUser(target, bNetID and true, bNetID);
-					if not win then return end	--due to a client bug, we can not receive the other player's name, so do nothing
-					win.widgets.msg_box.setText = 1;
-					win:Pop(true); -- force popup
-					win.widgets.msg_box:SetFocus();
-
-					if _G.ChatFrameEditBoxMixin and _G.ChatFrameEditBoxMixin.OnEscapePressed then
-						_G.ChatFrameEditBoxMixin.OnEscapePressed(editBox)
-					else
-						_G.ChatEdit_OnEscapePressed(editBox);
-					end
-				end
-			end
-		end);
+		hooksecurefunc(editBox, "UpdateHeader", editBoxUpdateHeader);
 
 		-- mark it as hooked
 		editBox._WIM_WhisperEngine_Hooked = true;
 	end);
+else
+	-- fallback to hooking all edit boxes on update header, this is less efficient but ensures compatibility with older clients.
+	hooksecurefunc("ChatEdit_UpdateHeader", editBoxUpdateHeader);
 end
 
--- Legacy hooks
-if not _G.ChatFrameEditBoxBaseMixin or not _G.ChatFrameEditBoxBaseMixin.ExtractTellTarget then
-	hooksecurefunc("ChatEdit_ExtractTellTarget", CF_ExtractTellTarget);
-	hooksecurefunc("ChatFrame_OpenChat", CF_OpenChat);
-end
+-- ReplyTell: LastTellTarget
+hooksecurefunc((ChatFrameUtil and ChatFrameUtil.ReplyTell) and ChatFrameUtil or _G, (ChatFrameUtil and ChatFrameUtil.ReplyTell) and "ReplyTell" or "ChatFrame_ReplyTell", function()
+	if (not InChatMessagingLockdown() and db and db.enabled) then
+		local _tellTarget, _chatType = unpack(lastTellTarget or {});
+
+		if (HasAnySecretValues(_tellTarget, _chatType)) then
+			return;
+		end
+
+		local target, chatType = GetLastWhisperTarget();
+
+		if target and chatType then
+			local curState = curState;
+			curState = db.pop_rules.whisper.alwaysOther and "other" or curState;
+			if (db.pop_rules.whisper.intercept and db.pop_rules.whisper[curState].onSend) then
+				if GetLastWhisperWindow() and _G.LAST_ACTIVE_CHAT_EDIT_BOX then
+					(_G.ChatFrameEditBoxMixin and _G.ChatFrameEditBoxMixin.OnEscapePressed or _G.ChatEdit_OnEscapePressed)(_G.LAST_ACTIVE_CHAT_EDIT_BOX)
+				end
+
+			-- have default UI handle the reply
+			elseif _G.LAST_ACTIVE_CHAT_EDIT_BOX then
+				_G.LAST_ACTIVE_CHAT_EDIT_BOX:SetAttribute("chatType", chatType);
+				_G.LAST_ACTIVE_CHAT_EDIT_BOX:SetAttribute("tellTarget", target);
+				(ChatFrameUtil and ChatFrameUtil.ActivateChat or _G.ChatEdit_ActivateChat)(_G.LAST_ACTIVE_CHAT_EDIT_BOX);
+				_G.LAST_ACTIVE_CHAT_EDIT_BOX.text = "";
+				_G.LAST_ACTIVE_CHAT_EDIT_BOX.setText = 1;
+				(_G.LAST_ACTIVE_CHAT_EDIT_BOX.UpdateHeader or _G.ChatEdit_UpdateHeader)(_G.LAST_ACTIVE_CHAT_EDIT_BOX, true);
+			end
+		end
+	end
+end);
+
+-- ReplyTell2: LastToldTarget
+hooksecurefunc((ChatFrameUtil and ChatFrameUtil.ReplyTell2) and ChatFrameUtil or _G, (ChatFrameUtil and ChatFrameUtil.ReplyTell2) and "ReplyTell2" or "ChatFrame_ReplyTell2", function()
+	if (not InChatMessagingLockdown() and db and db.enabled) then
+		local _tellTarget, _chatType = unpack(lastTellTarget or {});
+
+		if (HasAnySecretValues(_tellTarget, _chatType)) then
+			return;
+		end
+
+		local target, chatType = GetLastWhisperTarget(true);
+
+		if target and chatType then
+			local curState = curState;
+			curState = db.pop_rules.whisper.alwaysOther and "other" or curState;
+			if (db.pop_rules.whisper.intercept and db.pop_rules.whisper[curState].onSend) then
+				if GetLastWhisperWindow(true) and _G.LAST_ACTIVE_CHAT_EDIT_BOX then
+					(_G.ChatFrameEditBoxMixin and _G.ChatFrameEditBoxMixin.OnEscapePressed or _G.ChatEdit_OnEscapePressed)(_G.LAST_ACTIVE_CHAT_EDIT_BOX)
+				end
+
+			-- have default UI handle the re-tell
+			elseif _G.LAST_ACTIVE_CHAT_EDIT_BOX then
+				_G.LAST_ACTIVE_CHAT_EDIT_BOX:SetAttribute("chatType", chatType);
+				_G.LAST_ACTIVE_CHAT_EDIT_BOX:SetAttribute("tellTarget", target);
+				(ChatFrameUtil and ChatFrameUtil.ActivateChat or _G.ChatEdit_ActivateChat)(_G.LAST_ACTIVE_CHAT_EDIT_BOX);
+				_G.LAST_ACTIVE_CHAT_EDIT_BOX.text = "";
+				_G.LAST_ACTIVE_CHAT_EDIT_BOX.setText = 1;
+				(_G.LAST_ACTIVE_CHAT_EDIT_BOX.UpdateHeader or _G.ChatEdit_UpdateHeader)(_G.LAST_ACTIVE_CHAT_EDIT_BOX, true);
+			end
+		end
+	end
+end);
+
 
 -- global reference
 GetWhisperWindowByUser = getWhisperWindowByUser;

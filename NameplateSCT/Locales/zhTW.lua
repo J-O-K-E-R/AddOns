@@ -1,6 +1,13 @@
 local L = LibStub("AceLocale-3.0"):NewLocale("NameplateSCT", "zhTW")
 if not L then return end
 
+L["Fireworks Settings"] = "煙火設定"
+L["Fireworks Duration"] = "煙火持續時間"
+L["Duration of the fireworks animation"] = "煙火動畫的持續時間"
+
+--L["Unfortunately Blizzard has not added a SCT API in Midnight, until they do this addon will not have any functionality."]
+--L["If you want to enable or disable the blizzard SCT you can do so here"] = true
+--L["Thank you for the years of support, and hopefully we'll be able to bring NameplateSCT back in the future! - Justwait"] = true
 L["%s (A: %s)"] = "%s (吸收: %s)" -- A for Absorb
 L["%s (O: %s)"] = "%s (過量: %s)" -- O for Overkill
 L["Abilities"] = "技能"
@@ -20,8 +27,10 @@ L["Bottom Right"] = "右下"
 L["Bottom"] = "下"
 L["Center"] = "中"
 L["Comma Seperate"] = "顯示千分位逗號"
-L["Crit Color"] = "致命顏色"
+L["Crit Color"] = "致命一擊顏色"
 L["Criticals"] = "致命一擊"
+L["Custom Miss Color"] = "自訂未擊中顏色"
+L["Miss Color"] = "未擊中顏色"
 L["Default Color"] = "預設顏色"
 L["Default speed: 1"] = "預設速度: 1"
 L["Default"] = "預設"
@@ -31,6 +40,8 @@ L["Disabled"] = "停用"
 L["Display Icon"] = "顯示圖示"
 L["Display Icon Only"] = "只顯示圖標"
 L["Display only the icon for damage.\nWill not change Miss, Dodge, Parry, etc displays"] = "只顯示傷害圖標，無改變 Miss、Dodge、Parry 等提示"
+L["Remove Icon borders"] = "去除圖示邊框"
+L["Zoom a bit into the icon to remove default blizzard border"] = "稍微放大圖示，去除Blizzard預設的邊框"
 L["Display Off-Target Text"] = "顯示非目標文字"
 L["Display Overkill"] = "顯示過量傷害"
 L["Display your overkill for a target over your own nameplate"] = "在你自己身上顯示你對目標的過量傷害。"
@@ -50,6 +61,9 @@ L["Filters"] = "過濾器"
 L["Font Flags"] = "文字樣式"
 L["Font"] = "字體"
 L["Fountain"] = "潮吹噴泉"
+L["Fireworks"] = "煙花"
+L["Fireworks Radius"] = "煙火起始半徑"
+L["Start radius for fireworks animation"] = "煙火動畫的起始半徑"
 L["Has soft max/min, you can type whatever you'd like into the editbox"] = "有軟上限 / 下限，請隨意輸入喜愛的數值。"
 L["Hide hits that are below a running average of your recent damage output"] = "隱藏低於最近輸出平均值的傷害。"
 L["Hide hits that are below this threshold."] = "隱藏低於此閥值的命中。"

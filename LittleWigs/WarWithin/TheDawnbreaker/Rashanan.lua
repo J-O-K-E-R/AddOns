@@ -11,6 +11,8 @@ mod:SetStage(1)
 mod:SetPrivateAuraSounds({
 	434406, -- Rolling Acid
 	434090, -- Spinneret's Strands
+	{434668, sound = "info"}, -- Sparking Arathi Bomb
+	{438957, sound = "underyou"}, -- Acid Pools
 })
 
 --------------------------------------------------------------------------------
@@ -127,6 +129,7 @@ end
 -- Stage 1: The Dawnbreaker
 
 function mod:CHAT_MSG_RAID_BOSS_EMOTE(_, msg)
+	if self:IsSecret(msg) then return end
 	if msg:find("434655", nil, true) then -- Arathi Bomb
 		-- |TInterface\\ICONS\\INV_Eng_BombFire.blp:20|t A %s arrives to throw |cFFFF0000|Hspell:434655|h[Arathi Bomb]|h|rs!#Nightfall Bomber
 		self:Message(434655, "cyan", CL.spawning:format(CL.bombs))

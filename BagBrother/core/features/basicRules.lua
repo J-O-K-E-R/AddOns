@@ -26,7 +26,7 @@ Rules:Register {id = 'trade', title = L.TradeBags, icon = 133669, macro = 'retur
 
 if Addon.IsRetail then
 	Rules:Register {id = 'player', title = PLAYER, icon = function(frame) return frame:GetOwner():GetIcon() end, macro = 'return family >= 0', static = true}
-	Rules:Register {id = 'account', title = ACCOUNT_QUEST_LABEL, icon = 413577, macro = 'return family < 0', static = true}
+	Rules:Register {id = 'account', title = ACCOUNT_QUEST_LABEL, icon = 413577, macro = 'return family < 0', static = true, bankType = 2}
 elseif not Addon.IsModern then
 	local function ammoIcon()
 		local equipped = GetInventoryItemID('player', INVSLOT_AMMO)
@@ -40,9 +40,9 @@ end
 
 do
 	local classes = {
+		['Interface/Addons/BagBrother/art/achievement_quests_completed_06'] = {'Questitem'},
 		[132894] = {'Tradegoods', 'Profession', 'Reagent', 'Recipe'},
 		[133126] = {'Armor', 'Weapon', 'Gem'},
-		[236669] = {'Questitem'},
 		[134414] = {'Miscellaneous'},
 		[134756] = {'Consumable'},
 	}
@@ -50,4 +50,22 @@ do
 	for icon, ids in pairs(classes) do
 		Rules:Register {id = ids[1]:lower(), title = C.Item.GetItemClassInfo(Enum.ItemClass[ids[1]]), icon = icon, macro = belongsToClass(ids)}
 	end
+end
+
+if C.EquipmentSet.GetEquipmentSetIDs then
+	local function registerSets()
+		for id in Rules:Iterate() do
+			if string.sub(id, 1, 4) == 'set#' then
+				Rules:Unregister(id)
+			end
+		end
+		
+		for _, setID in pairs(C.EquipmentSet.GetEquipmentSetIDs()) do
+			local name, icon = C.EquipmentSet.GetEquipmentSetInfo(setID)
+			Rules:Register {id = 'set#' .. setID, title = name, icon = icon, search = 'set:' .. name, equipSet = setID}
+		end
+	end
+
+	Rules:RegisterEvent('EQUIPMENT_SETS_CHANGED', registerSets)
+	EventUtil.ContinueOnPlayerLogin(registerSets)
 end

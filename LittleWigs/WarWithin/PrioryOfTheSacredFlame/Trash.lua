@@ -27,6 +27,10 @@ mod:RegisterEnableMob(
 	221760, -- Risen Mage
 	217658 -- Sir Braunpyke
 )
+mod:SetPrivateAuraSounds({
+	{424426, sound = "alarm"}, -- Lunging Strike
+	{448515, sound = "alert"}, -- Divine Judgment
+})
 
 --------------------------------------------------------------------------------
 -- Locals
@@ -300,7 +304,7 @@ end
 -- Warmups
 
 function mod:CHAT_MSG_MONSTER_SAY(_, msg)
-	if msg == L.baron_braunpyke_warmup_trigger then
+	if not self:IsSecret(msg) and msg == L.baron_braunpyke_warmup_trigger then
 		-- Baron Braunpyke warmup
 		local baronBraunpykeModule = BigWigs:GetBossModule("Baron Braunpyke", true)
 		if baronBraunpykeModule then

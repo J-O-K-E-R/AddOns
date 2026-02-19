@@ -96,16 +96,21 @@ function Bag:RegisterEvents()
 	if not self:IsCached() then
 		if self.slot then
 			self:RegisterEvent('ITEM_LOCK_CHANGED', 'UpdateLock')
-			self:RegisterEvent('BAG_SLOT_FLAGS_UPDATED', 'BAG_UPDATED')
-			self:RegisterEvent('BAG_CLOSED', 'BAG_UPDATED')
-			self:RegisterSignal('BAG_UPDATED')
+			self:RegisterEvent('BAG_SLOT_FLAGS_UPDATED')
+			self:RegisterSignal('BAGS_UPDATED')
 		end
 	elseif self.slot then
 		self:RegisterEvent('GET_ITEM_INFO_RECEIVED')
 	end
 end
 
-function Bag:BAG_UPDATED(bag)
+function Bag:BAGS_UPDATED(bags)
+	if bags[self:GetID()] then
+		self:Update()
+	end
+end
+
+function Bag:BAG_SLOT_FLAGS_UPDATED(bag)
 	if bag == self:GetID() then
 		self:Update()
 	end
@@ -166,7 +171,7 @@ function Bag:SetFocus(focus)
 end
 
 function Bag:Toggle()
-	local data = self.frame:GetBagInfo(self:GetID())
+	local data = self:GetBagInfo(self:GetID())
 	data.hidden = not data.hidden
 
 	PlaySound(data.hidden and 856 or 857)
@@ -215,7 +220,7 @@ function Bag:UpdateInfo()
 	local icon = self.StaticIcons[id]
 	if not icon then
 		if self:IsCached() then
-			local data = self.frame:GetBagInfo(id)
+			local data = self:GetBagInfo(id)
 			if data and data.link then
 				self.link, self.owned = 'item:' .. data.link, true
 				self.itemID, _,_,_, self.icon = GetItemInfoInstant(self.link)
@@ -233,7 +238,7 @@ function Bag:UpdateInfo()
 end
 
 function Bag:UpdateToggle()
-	self:SetChecked(self.owned and self.frame:IsShowingBag(self:GetID()))
+	self:SetChecked(self.owned and self:IsShowingBag(self:GetID()))
 end
 
 function Bag:UpdateLock()

@@ -7,6 +7,10 @@ if not mod then return end
 mod:RegisterEnableMob(190609) -- Echo of Doragosa
 mod:SetEncounterID(2565)
 mod:SetRespawnTime(30)
+mod:SetPrivateAuraSounds({
+	{389007, sound = "underyou"}, -- Wild Energy
+	{389011, sound = "info"}, -- Overwhelming Power
+})
 
 --------------------------------------------------------------------------------
 -- Locals
@@ -53,6 +57,22 @@ function mod:OnEngage()
 	self:CDBar(388822, 22.8) -- Power Vacuum
 	nextAstralBreath = t + 28.8
 	self:CDBar(374361, 28.8) -- Astral Breath
+end
+
+--------------------------------------------------------------------------------
+-- Midnight Initialization
+--
+
+if mod:Retail() then -- Midnight+
+	function mod:GetOptions()
+		return {
+			{389007, "PRIVATE"}, -- Wild Energy
+			{389011, "PRIVATE"}, -- Overwhelming Power
+		}
+	end
+
+	function mod:OnBossEnable()
+	end
 end
 
 --------------------------------------------------------------------------------
@@ -105,7 +125,7 @@ function mod:AstralBreath(args)
 end
 
 function mod:UNIT_SPELLCAST_SUCCEEDED(_, _, _, spellId)
-	if spellId == 388820 then -- Power Vacuum
+	if not self:IsSecret(spellId) and spellId == 388820 then -- Power Vacuum
 		local t = GetTime()
 		-- using this event (the actual pull in) instead of SPELL_CAST_START on 388822 allows us to alert 2s earlier
 		self:Message(388822, "red")

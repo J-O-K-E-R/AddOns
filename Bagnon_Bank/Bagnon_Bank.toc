@@ -6,7 +6,7 @@
 ## Group: BagBrother
 
 ## Dependencies: Bagnon
-## Interface: 110205, 50501, 40402, 30404, 20504, 11507
+## Interface: 120001, 120000, 50501, 40402, 30404, 20505, 11507
 ## LoadOnDemand: 1
 
 ..\BagBrother\frames\bank\bank.xml

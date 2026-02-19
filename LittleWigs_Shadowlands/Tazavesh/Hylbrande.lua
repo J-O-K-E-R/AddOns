@@ -8,6 +8,9 @@ mod:RegisterEnableMob(175663) -- Hylbrande
 mod:SetEncounterID(2426)
 mod:SetRespawnTime(30)
 mod:SetStage(1)
+mod:SetPrivateAuraSounds({
+	{352345, sound = "warning"}, -- Anchor Shot
+})
 
 --------------------------------------------------------------------------------
 -- Locals
@@ -135,7 +138,7 @@ end
 
 function mod:CHAT_MSG_RAID_BOSS_WHISPER(_, msg)
 	-- |TInterface\\ICONS\\Ability_Priest_Flashoflight.blp:20|t %s targets you with |cFFFF0000|Hspell:346959|h[Purged by Fire]|h|r!#Titanic Defense Turret###playerName
-	if msg:find("346959", nil, true) then -- Purged by Fire
+	if not self:IsSecret(msg) and msg:find("346959", nil, true) then -- Purged by Fire
 		self:PersonalMessage(346957)
 		self:Say(346957, nil, nil, "Purged by Fire")
 		self:PlaySound(346957, "warning")
@@ -219,7 +222,7 @@ function mod:BypassCodeApplied(args)
 end
 
 function mod:UNIT_SPELLCAST_SUCCEEDED(_, _, _, spellId)
-	if spellId == 346971 then -- [DNT] Summon Vault Defender
+	if not self:IsSecret(spellId) and spellId == 346971 then -- [DNT] Summon Vault Defender
 		self:Message("vault_purifier", "yellow", CL.adds_spawning, L.vault_purifier_icon)
 		if nextSanitizingCycle - GetTime() > 29.8 then
 			self:CDBar("vault_purifier", 27.8, CL.adds, L.vault_purifier_icon)

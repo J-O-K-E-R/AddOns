@@ -150,8 +150,17 @@ function config:ToggleQuickbind(enabled)
     config.quickbinding = not not enabled
 end
 
+function config:BrowsePageShown()
+    return config.BrowsePage:IsShown()
+end
+
 function config:EditPageShown()
     return config.EditPage:IsShown()
+end
+
+function config:SendActionToNewEditPage(entryType, entryId)
+    config:SwitchToEditPage()
+    config.EditPage:ChangeBindingAction(entryType, entryId)
 end
 
 function config:SendActionToEditPage(entryType, entryId)

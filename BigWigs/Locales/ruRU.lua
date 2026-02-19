@@ -277,6 +277,27 @@ L.imported_nameplate_settings = "Настройки полос здоровья"
 --L.imported_battleres_settings = "Battle Res Settings"
 --L.battleres_settings_import_desc = "Import all Battle Res settings."
 --L.battleres_settings_export_desc = "Export all Battle Res settings."
+--L.imported_privateAuras_settings = "Private Auras Settings"
+--L.privateAuras_settings_import_desc = "Import all Private Auras settings."
+--L.privateAuras_settings_export_desc = "Export all Private Auras settings."
+
+-- InstanceSharing.lua
+--L.sharing_window_title = "Share Boss Settings"
+--L.sharing_flags = "General Settings"
+--L.sharing_flags_desc = "Import settings which control things like 'show bar', 'play sound', 'show message' etc.\nThese cover most checkboxes in an abilities settings."
+--L.sharing_export_flags_desc = "Export settings which control things like 'show bar', 'play sound', 'show message' etc.\nThese cover most checkboxes in an abilities settings."
+--L.sharing_sounds_desc = "Import which sounds to play for abilities."
+--L.sharing_export_sounds_desc = "Export which sounds to play for abilities."
+--L.sharing_private_auras = "Private Auras"
+--L.sharing_private_auras_desc = "Import the configured Private Auras sounds."
+--L.sharing_export_private_auras_desc = "Export the configured Private Auras sounds."
+--L.sharing_colors_desc = "Import the color settings for bars and messages."
+--L.sharing_export_colors_desc = "Export the color settings for bars and messages."
+--L.confirm_instance_import = "The selected settings you are about to import will overwrite the settings in your currently selected profile:\n\n|cFF33FF99\"%s\"|r\n\nInstance:\n|cFFBB66FF\"%s\"|r\n\nAre you sure you want to do this?"
+--L.status_text_paste_import = "Paste a valid import string"
+--L.exporting_instance = "Exporting |cFFBB66FF%s|r" -- Exporting Molten Core
+--L.importing_instance = "Importing |cFFBB66FF%s|r" -- Importing Molten Core
+--L.share = "Share"
 
 -- Statistics
 L.statistics = "Статистика"
@@ -313,6 +334,7 @@ L.N10 = "Нормал 10"
 L.N25 = "Нормал 25"
 L.H10 = "Героик 10"
 L.H25 = "Героик 25"
+--L.titan = "Titan" -- Chinese-only "Titan Reforged" servers
 
 -----------------------------------------------------------------------
 -- TOOLS
@@ -320,6 +342,8 @@ L.H25 = "Героик 25"
 
 L.tools = "Инструменты"
 L.toolsDesc = "BigWigs предоставляет различные инструменты или \"упрощающие жизнь\" функции для ускорения и упрощения процесса убийства боссов."
+
+--L.reloadUIWarning = "Changing this feature will reload your UI, showing the loading screen for a moment. Are you sure?"
 
 -----------------------------------------------------------------------
 -- AutoRole.lua
@@ -412,6 +436,8 @@ L.keystoneTimeUnder = "|cFF33FF99-%02d:%02d|r"
 L.keystoneTimeOver = "|cFFFF4411+%02d:%02d|r"
 --L.keystoneTeleportTip = "Click the dungeon name below to |cFF33FF99TELEPORT|r directly to the dungeon entrance."
 --L.keystoneTimerunner = "|A:timerunning-glues-icon:14:14|aThis is a timerunning character." -- Note: Timerunning is a mode like "Legion Remix", it is NOT the same as Timewalking
+--L.keystoneSlashKeys = "Also register the |cFF33FF99/keys|r slash command"
+--L.keystoneSlashKeystone = "Also register the |cFF33FF99/keystone|r slash command"
 
 -- It doesn't really matter what you call it as long as it's recognizable and limited to ~6 characters
 L.keystoneShortName_TheRookery = "ROOK"
@@ -441,6 +467,13 @@ L.keystoneShortName_TheDawnbreaker = "DAWN"
 --L.keystoneShortName_ReturnToKarazhanUpper = "UKARA"
 --L.keystoneShortName_CathedralOfEternalNight = "COEN"
 --L.keystoneShortName_SeatOfTheTriumvirate = "SOTT"
+--L.keystoneShortName_WindrunnerSpire = "SPIRE"
+--L.keystoneShortName_MagistersTerrace = "MT"
+--L.keystoneShortName_MaisaraCaverns = "CAVERN"
+--L.keystoneShortName_NexusPointXenas = "XENAS"
+--L.keystoneShortName_AlgetharAcademy = "AA"
+--L.keystoneShortName_Skyreach = "SKY"
+--L.keystoneShortName_PitOfSaron = "PIT"
 
 -- These short names are for the bar that shows during the Mythic+ countdown
 -- Use the real dungeon names but make them shorter to fit on the bar better
@@ -471,6 +504,13 @@ L.keystoneShortName_TheDawnbreaker_Bar = "Рассвет"
 --L.keystoneShortName_ReturnToKarazhanUpper_Bar = "Upper Kara"
 --L.keystoneShortName_CathedralOfEternalNight_Bar = "Cathedral"
 --L.keystoneShortName_SeatOfTheTriumvirate_Bar = "Triumvirate"
+--L.keystoneShortName_WindrunnerSpire_Bar = "Spire"
+--L.keystoneShortName_MagistersTerrace_Bar = "Terrace"
+--L.keystoneShortName_MaisaraCaverns_Bar = "Caverns"
+--L.keystoneShortName_NexusPointXenas_Bar = "Xenas"
+--L.keystoneShortName_AlgetharAcademy_Bar = "Academy"
+--L.keystoneShortName_Skyreach_Bar = "Skyreach"
+--L.keystoneShortName_PitOfSaron_Bar = "Pit"
 
 -- Instance Keys "Who has a key?"
 L.instanceKeysTitle = "У кого есть ключ?"
@@ -596,6 +636,7 @@ L.autoReplyLeftCombatAdvancedWipe = "Я проиграл '%s' на: %s"
 L.bars = "Полосы"
 L.style = "Стиль"
 L.bigWigsBarStyleName_Default = "По умолчанию"
+--L.bigWigsBarStyleName_Blizzard = "Blizzard"
 L.resetBarsDesc = "Сбросить все параметры, связанные с полосами, включая позицию якоря."
 L.testBarsBtn = "Создать тестовый индикатор оповещений"
 L.testBarsBtn_desc = "Создаёт индикатор для теста ваших текущих настроек отображения оповещений BigWigs."
@@ -655,6 +696,25 @@ L.breakBar = "Перерыв"
 L.breakMinutes = "Перерыв закончится через %d |4минуту:минуты:минут;!"
 L.breakSeconds = "Перерыв закончится через %d секунд!"
 L.breakFinished = "Перерыв закончен!"
+
+--L.indicatorTitle = "Spell Indicators"
+L.indicatorType_Deadly = "Смертельные"
+L.indicatorType_Bleed = "Кровотечение"
+L.indicatorType_Magic = "Магия"
+L.indicatorType_Dispels = "Развеивание"
+L.indicatorType_Tank = "Танк"
+L.indicatorType_Healer = "Лекарь"
+L.indicatorType_Damager = "Боец"
+
+--L.spellIndicatorsPosition = "Spell Indicators Position"
+--L.spellIndicatorsPositionDesc = "Choose where on the bar the spell indicators should be positioned."
+--L.spellIndicatorsOffset = "Spell Indicators Offset"
+--L.spellIndicatorSize = "Spell Indicator Size"
+--L.spellIndicatorSizeDropdown_Large1 = "Large (1 indicator)"
+--L.spellIndicatorSizeDropdown_Large2 = "Large (2 indicators)"
+--L.spellIndicatorSizeDropdown_Large3 = "Large (3 indicators)"
+--L.spellIndicatorSizeDropdown_Small4 = "Small (4 indicators)"
+--L.spellIndicatorSizeDropdown_Small2 = "Small (2 indicators)"
 
 -----------------------------------------------------------------------
 -- BossBlock.lua
@@ -812,6 +872,36 @@ L.fadeTimeDesc = "Сколько секунд будет затухать соо
 --L.messagesOptInHeaderOn = "Boss mod messages 'opt-in' mode is |cFF33FF99ACTIVE|r. To see boss mod messages, go into the settings of a specific boss ability and turn on the '|cFF33FF99Messages|r' option.\n\n"
 --L.messagesOptInTitle = "Boss mod messages 'opt-in' mode"
 --L.messagesOptInWarning = "|cffff4411WARNING!|r\n\nEnabling 'opt-in' mode will turn off messages across ALL of your boss modules. You will need to go through each one and manually turn on the messages you want.\n\nYour UI will now reload, are you sure?"
+
+-----------------------------------------------------------------------
+-- PrivateAuras.lua
+--
+
+--L.privateAuras = "Private Auras"
+
+--L.createTestAura = "Create Test Aura"
+--L.showDispelType = "Show Dispel Type Indicator"
+--L.showDispelTypeDesc = "Show an icon on the private aura frame if it has a dispel type.\n\n|cffffd200Note: This is a global option for all private aura frames.|r"
+--L.iconSize = "Icon Size"
+--L.iconSpacing = "Icon Spacing"
+--L.showCooldown = "Show Cooldown Spiral"
+--L.showCooldownText = "Show Cooldown Text"
+--L.cooldownTextScale = "Cooldown Text Scale"
+--L.growthDirection = "Icon Growth Direction"
+--L.aurasOnYou = "Auras On You"
+--L.aurasOnYouDesc = "Customize the icons for auras that apply to you.\n\n"
+--L.aurasOnAnother = "Auras On Another"
+--L.aurasOnAnotherDesc = "Choose a specific player and then customize the icons for auras that apply to them.\n\n"
+--L.chooseAPlayer = "Choose a player"
+--L.theOtherTank = "Automatically find a tank"
+--L.theOtherTankDesc = "Show private auras on the first tank in your group that isn't you. (Current: %s)"
+--L.onlyWhenYouAreTank = "Only show when you are also a tank"
+--L.playerInYourGroup = "A player in your group"
+--L.maxIcons = "Max Icons"
+--L.maxIconsDesc = "The maximum amount of icons to be displayed."
+--L.privateAurasHelpTip = "|TInterface\\AddOns\\BigWigs\\Media\\Icons\\minimap_raid:0:0|tBigWigs: You can now see your private aura debuffs as icons, or even the private auras of another player (e.g. a tank)."
+
+--L.privateAurasTestAnchorText = "PA %d"
 
 -----------------------------------------------------------------------
 -- Nameplates.lua
@@ -1006,6 +1096,25 @@ L.bossHealthOption = "Здоровье босса"
 L.bossVictoryPrint = "Вы победили '%s' спустя %s." -- You were victorious against 'BOSS_NAME' after COMBAT_DURATION.
 L.bossDefeatPrint = "Вы проиграли '%s' спустя %s." -- You were defeated by 'BOSS_NAME' after COMBAT_DURATION.
 L.newFastestVictoryPrint = "Новая самая быстрая победа: (-%s)" -- New fastest victory: (-COMBAT_DURATION)
+
+-----------------------------------------------------------------------
+-- Timeline.lua
+--
+
+--L.timeline = "Timeline"
+--L.blizzTimersAsBigWigsBars = "Show Blizz timers (timeline) as BigWigs bars"
+--L.blizzTimersAsBigWigsBarsDesc = "All Blizzard boss timers (timeline) will display as BigWigs bars instead."
+--L.blizzWarningsAsBigWigsMessages = "Show Blizz boss warnings as BigWigs messages"
+--L.blizzWarningsAsBigWigsMessagesDesc = "All Blizzard boss warnings will display as BigWigs messages instead."
+--L.blizzAudioAsBigWigsAudio = "Convert Blizz sounds to BigWigs sounds"
+--L.blizzAudioAsBigWigsAudioDesc = "Play your BigWigs sounds (Alert, Alarm & Warning) based on the encounter warning severity."
+--L.blizzWarningSettings = "Blizzard Warnings Settings"
+--L.blizzTimelineSettings = "Blizzard Timeline Settings"
+--L.blizzTimelineSettingsNote = "|cffff4411These options just control the Blizzard settings and are here as a convenience.|r"
+--L.enableBlizzTimeline = "Enable Blizz timeline"
+--L.enableBlizzTimelineDesc = "This will show all boss encounter timers on the Blizzard timeline."
+--L.enableBlizzWarnings = "Enable Blizz boss warnings"
+--L.enableBlizzWarningsDesc = "When enabling the Blizzard boss warnings you should also disable showing them as BigWigs messages or you will see all messages twice."
 
 -----------------------------------------------------------------------
 -- Victory.lua

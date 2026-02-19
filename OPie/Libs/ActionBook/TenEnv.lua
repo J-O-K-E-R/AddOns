@@ -1,6 +1,6 @@
 local COMPAT, _, T = select(4, GetBuildInfo()), ...
 if COMPAT < 11e4 then return end
-local TWELVE, env = COMPAT >= 12e4, {}
+local env = {}
 
 function env.GetSpellTabInfo(idx)
 	local i = C_SpellBook.GetSpellBookSkillLineInfo(idx)
@@ -43,7 +43,7 @@ function env.GetSpellCooldown(id)
 	id = id and C_Spell.GetOverrideSpell(id)
 	local ci = id and C_Spell.GetSpellCooldown(id)
 	if ci then
-		return ci.startTime, ci.duration, ci.isEnabled and 1 or 0, ci.modRate
+		return ci.startTime, ci.duration, ci.isEnabled, ci.modRate
 	end
 end
 function env.GetSpellCharges(id)
@@ -63,26 +63,25 @@ env.GetSpellTexture = C_Spell.GetSpellTexture
 env.DoesSpellExist = C_Spell.DoesSpellExist
 env.GetSpellLink = C_Spell.GetSpellLink
 env.IsSpellOverlayed = C_SpellActivationOverlay.IsSpellOverlayed
+function env.GetActionCharges(slot)
+	local ci = slot and C_ActionBar.GetActionCharges(slot)
+	if ci then
+		return ci.currentCharges, ci.maxCharges, ci.cooldownStartTime, ci.cooldownDuration, ci.chargeModRate
+	end
+end
+function env.GetActionCooldown(slot)
+	local ci = slot and C_ActionBar.GetActionCooldown(slot)
+	if ci then
+		return ci.startTime, ci.duration, ci.isEnabled, ci.modRate
+	end
+end
+
 
 function env.GetStablePetInfo(idx)
 	local si = C_StableInfo.GetStablePetInfo(idx)
 	if si then
 		return si.icon, si.name, si.level, si.familyName, si.specialization, si.specID
 	end
-end
-
-if TWELVE then
-	local function nop() end
-	function env.GetSpellCooldown()
-		return 0, 0, 1, 1
-	end
-	function env.GetSpellCharges()
-		return 1, 1, 0, 0, 0
-	end
-	function env.GetSpellCount()
-		return 1
-	end
-	env.GetRaidTargetIndex = nop
 end
 
 env.Vector2DMixin = Vector2DMixin

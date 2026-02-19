@@ -1,5 +1,5 @@
 ## Author: Jerbal of Cho'gall
-## Interface: 60000
+## Interface: 120000
 ## SavedVariablesPerCharacter: LFG_Silence_SV
 ## Title: Group Finder Silence
 ## Title-ptBR: Group Finder Silence

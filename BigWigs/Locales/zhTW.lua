@@ -4,7 +4,7 @@ if not L then return end
 
 -- API.lua
 L.showAddonBar = "插件「|cFF436EEE%s|r」創建了「%s」計時器。"
---L.requestAddonProfile = "The addon '|cFF436EEE%s|r' just made a copy of your profile export string."
+L.requestAddonProfile = "插件「|cFF436EEE%s|r」剛剛複製了你的設定檔匯出字串。"
 
 -- Core.lua
 L.berserk = "狂暴"
@@ -17,8 +17,8 @@ L.stages = "階段"
 L.stages_desc = "啟用首領戰鬥中與階段相關的各種功能，例如階段轉換的訊息提示、階段持續時間的計時器等。"
 L.warmup = "預備"
 L.warmup_desc = "首領戰鬥開始之前的預備時間。"
-L.proximity = "玩家雷達"
-L.proximity_desc = "顯示玩家雷達視窗，列出距離你過近的玩家。"
+L.proximity = "距離監視"
+L.proximity_desc = "顯示距離監視器，列出離你過近的玩家。"
 L.adds = "增援"
 L.adds_desc = "啟用與首領戰鬥中出現的增援相關的各種功能。"
 L.health = "生命值"
@@ -26,7 +26,7 @@ L.health_desc = "顯示與首領戰鬥中相關的生命值資訊。"
 L.energy = "能量"
 L.energy_desc = "啟用後，在首領戰鬥中顯示各種能量等級的資訊。"
 
-L.already_registered = "|cffff0000警告：|r |cff00ff00%s|r（|cffffff00%s|r）在 BigWigs 中已經存在，但該模組仍試圖重新註冊。通常來說，這可能是由於更新失敗導致你的插件資料夾中同時存在兩份相同模組的拷貝。建議刪除所有 BigWigs 資料夾並重新安裝。"
+L.already_registered = "|cffff0000警告：|r |cff00ff00%s|r（|cffffff00%s|r）在 BigWigs 中已經存在，但該模組仍試圖重新註冊；可能是因為更新失敗，導致你的插件資料夾中同時存在兩份相同模組的拷貝。建議刪除所有 BigWigs 資料夾並重新安裝。"
 
 -- Loader / Options.lua
 L.okay = "確定"
@@ -37,10 +37,10 @@ L.littlewigsOfficialRelease = "你所使用的 LittleWigs 為官方正式版（%
 L.littlewigsAlphaRelease = "你所使用的 LittleWigs 為「α測試版（%s）」。"
 L.littlewigsSourceCheckout = "你所使用的 LittleWigs 是直接從原始碼倉庫下載的版本。"
 L.guildRelease = "你正在使用公會製作的 BigWigs，版本 %d，其基於官方版 %d。"
-L.getNewRelease = "你的 BigWigs 已過期（/bwv）但是可以使用 CurseForge 客戶端簡單升級。另外，也可以從 curseforge.com 或 addons.wago.io 手動升級。"
+L.getNewRelease = "你的 BigWigs 已過期（輸入 /bwv 查看版本）。建議使用 CurseForge 客戶端進行快速更新，或前往 curseforge.com 或 addons.wago.io 手動下載最新版本。"
 L.warnTwoReleases = "你的 BigWigs 已過期 2 個發行版！你的版本可能有錯誤、功能缺失或不正確的計時器。所以強烈建議你升級。"
-L.warnSeveralReleases = "|cffff0000你的 BigWigs 已過期 %d 個發行版！！我們「強烈」建議你更新，以防止把問題同步給其他玩家！|r"
-L.warnOldBase = "你正在使用公會版 BigWigs（%d），但它所基於的官方版 （%d）已經過期了 %d 個版本，可能會導致問題。"
+L.warnSeveralReleases = "|cffff0000你的 BigWigs 已落後 %d 個版本！！強烈建議「立即更新」，以避免與其他隊友發生同步異常！|r"
+L.warnOldBase = "你正在使用公會版 BigWigs（%d），但它所基於的官方版（%d）已經落後了 %d 個版本，可能會導致插件運作異常。"
 
 L.tooltipHint = "|cffeda55f右擊|r打開選項。"
 L.activeBossModules = "啟動首領模組："
@@ -57,14 +57,14 @@ L.missingAddOnRaidWarning = "缺少 |cFF436EEE%s|r 模組！無法為此區域�
 L.outOfDateAddOnPopup = "|cFF436EEE%s|r 模組已過期！"
 L.outOfDateAddOnRaidWarning = "|cFF436EEE%s|r 模組已過期！你使用的版本是 v%d.%d.%d，但最新版是 v%d.%d.%d。"
 L.disabledAddOn = "模組 |cFF436EEE%s|r 已被禁用，無法顯示計時器。"
-L.removeAddOn = "請移除「|cFF436EEE%s|r」，其已被「|cFF436EEE%s|r」所替代。"
+L.removeAddOn = "請移除「|cFF436EEE%s|r」，其已被「|cFF436EEE%s|r」所取代。"
 L.alternativeName = "%s（|cFF436EEE%s|r）"
-L.outOfDateContentPopup = "警告！\n你更新了 |cFF436EEE%s|r，但還需要更新 |cFF436EEEBigWigs|r 主程式，\n忽略這件事可能使插件故障。"
-L.outOfDateContentRaidWarning = "需要安裝版本 %2$d 的|cFF436EEEBigWigs|r 主程式，才能使用 |cFF436EEE%1$s|r，但你目前使用的版本是 %3$d。"
+L.outOfDateContentPopup = "警告！\n更新 |cFF436EEE%s|r 模組後必需同步更新 |cFF436EEEBigWigs|r 核心，\n如果不更新，將會導致插件功能異常或無法運作。。"
+L.outOfDateContentRaidWarning = "需要安裝版本 %2$d 的|cFF436EEEBigWigs|r 核心，才能使用 |cFF436EEE%1$s|r，但你目前使用的版本是 %3$d。"
 L.addOnLoadFailedWithReason = "BigWigs 無法載入模組 |cFF436EEE%s|r，原因是 %q；請將此問題回報給 BigWigs 開發團隊！"
 L.addOnLoadFailedUnknownError = "BigWigs 在載入模組 |cFF436EEE%s|r 的過程中發生錯誤。請將此問題回報給 BigWigs 開發團隊！"
---L.newFeatures = "New BigWigs features:"
---L.parentheses = "%s (%s)"
+L.newFeatures = "BigWigs 新功能："
+L.parentheses = "%s（%s）"
 
 L.expansionNames = {
 	"艾澤拉斯", -- Classic
@@ -78,45 +78,45 @@ L.expansionNames = {
 	"暗影之境", -- Shadowlands
 	"巨龍崛起", -- Dragonflight
 	"地心之戰", -- The War Within
-	"至​暗​之​夜", -- Midnight
+	"至暗之夜", -- Midnight
 }
 L.littleWigsExtras = {
 	["LittleWigs_Delves"] = "探究",
 	["LittleWigs_CurrentSeason"] = "當前賽季",
 }
---L.dayNamesShort = {
---	"SUN", -- Sunday
---	"MON", -- Monday
---	"TUE", -- Tuesday
---	"WED", -- Wednesday
---	"THU", -- Thursday
---	"FRI", -- Friday
---	"SAT", -- Saturday
---}
---L.dayNames = {
---	"Sunday",
---	"Monday",
---	"Tuesday",
---	"Wednesday",
---	"Thursday",
---	"Friday",
---	"Saturday",
---}
---L.monthNames = {
---	"January",
---	"February",
---	"March",
---	"April",
---	"May",
---	"June",
---	"July",
---	"August",
---	"September",
---	"October",
---	"November",
---	"December",
---}
---L.dateFormat = "%s %d %s %d" -- Date format: "Monday 1 January 2025"
+L.dayNamesShort = {
+	"星期日", -- Sunday
+	"星期一", -- Monday
+	"星期二", -- Tuesday
+	"星期三", -- Wednesday
+	"星期四", -- Thursday
+	"星期五", -- Friday
+	"星期六", -- Saturday
+}
+L.dayNames = {
+	"星期日",
+	"星期一",
+	"星期二",
+	"星期三",
+	"星期四",
+	"星期五",
+	"星期六",
+}
+L.monthNames = {
+	"1月",
+	"2月",
+	"3月",
+	"4月",
+	"5月",
+	"6月",
+	"7月",
+	"8月",
+	"9月",
+	"10月",
+	"11月",
+	"12月",
+}
+L.dateFormat = "%1$s，%4$d年%3$d%2$s日" -- Date format: "Monday 1 January 2025" 中文格式1：2025年1月1日，周一 /格式2:周一，2025年1月1日
 
 -- Media.lua (These are the names of the sounds in the dropdown list in the "sounds" section)
 L.Beware = "當心（艾爾加隆）"
@@ -125,7 +125,7 @@ L.Destruction = "毀滅（基爾加丹）"
 L.RunAway = "快逃啊小女孩，快逃……（大野狼）"
 L.spell_on_you = "BigWigs: 法術在你身上"
 L.spell_under_you = "BigWigs: 法術在你腳下"
-L.simple_no_voice = "簡單（無語音） "
+L.simple_no_voice = "簡單（無語音）"
 
 -- Options.lua
 L.options = "選項"
@@ -146,22 +146,22 @@ L.privateAuraSounds_desc = "插件無法用一般的方式追蹤私有光環，�
 L.listAbilities = "將技能列表發送到團隊聊天頻道"
 
 L.dbmFaker = "假裝我是 DBM 用戶"
-L.dbmFakerDesc = "當一個 DBM 使用者執行版本檢查以確認哪些人用了 DBM 的時候，他們會看到你在名單之上。當你的公會強制要求使用DBM，這是很有用的。"
+L.dbmFakerDesc = "當一個 DBM 使用者執行版本檢查以確認哪些人用了 DBM 的時候，他們會看到你在名單之上。這可以在你的公會強制要求使用 DBM 時派上用場。"
 L.zoneMessages = "顯示區域訊息"
-L.zoneMessagesDesc = "此選項於進入區域時提示可安裝的 BigWigs 模組。建議啟用此選項，因為當我們為一個新區域建立 BigWigs 模組，這將會是唯一的提示安裝訊息。"
+L.zoneMessagesDesc = "當你進入 BigWigs 支援但你尚未安裝對應模組的區域時，提示可安裝的 BigWigs 模組。我們強烈建議保持開啟，因為當 BigWigs 新增了對你有幫助的新模組時，這是唯一能提醒你進行安裝的通知管道。"
 L.englishSayMessages = "英文喊話"
 L.englishSayMessagesDesc = "首領戰中所有以「說」與「大喊」發送的提示訊息都會以英文發送。這對多語言團隊非常有用。"
 
 L.slashDescTitle = "|cFFFED000指令：|r"
-L.slashDescPull = "|cFFFED000/pull:|r 發送拉怪倒數提示到團隊。"
-L.slashDescBreak = "|cFFFED000/break:|r 發送休息時間到團隊。"
-L.slashDescRaidBar = "|cFFFED000/raidbar:|r 發送自訂計時條到團隊。"
+L.slashDescPull = "|cFFFED000/pull:|r 向團隊發送開怪倒數。"
+L.slashDescBreak = "|cFFFED000/break:|r 向團隊發送休息時間計時器。"
+L.slashDescRaidBar = "|cFFFED000/raidbar:|r 向團隊發送自訂計時器。"
 L.slashDescLocalBar = "|cFFFED000/localbar:|r 創建一個只有自身可見的自訂計時條。"
-L.slashDescRange = "|cFFFED000/range:|r 開啟範圍偵測。"
-L.slashDescVersion = "|cFFFED000/bwv:|r 進行 BigWigs 版本檢測。"
-L.slashDescConfig = "|cFFFED000/bw:|r 開啟 BigWigs 配置。"
+L.slashDescRange = "|cFFFED000/range:|r 開啟距離監視器。"
+L.slashDescVersion = "|cFFFED000/bwv:|r 進行 BigWigs 版本檢查。"
+L.slashDescConfig = "|cFFFED000/bw:|r 開啟 BigWigs 設定選項。"
 
-L.gitHubDesc = "|cFF33FF99BigWigs 是一個在 GitHub 上的開源軟體。我們一直在尋找新的朋友幫助我們和歡迎任何人檢測我們的代碼，做出貢獻和提交錯誤報告。BigWigs 今天的偉大很大程度上一部分因為偉大的魔獸世界社區幫助我們。|r"
+L.gitHubDesc = "|cFF33FF99BigWigs 是在 GitHub 上的開源軟體。我們隨時歡迎新成員加入，任何人都可以檢視原始碼、貢獻程式碼或提交錯誤報告。BigWigs 能有今天的成就，很大程度上歸功於魔獸社群與廣大玩家的熱心支持。|r"
 
 L.BAR = "計時條"
 L.MESSAGE = "訊息"
@@ -179,18 +179,18 @@ L.FLASH_desc = "某些技能可能比其他技能更重要。如果你希望此�
 L.ICON_desc = "BigWigs 可以根據技能用圖示標記人物。這將使他們更容易被辨認。"
 L.SAY_desc = "對話泡泡容易被看見。BigWigs 將以說話訊息通知附近的人你中了什麼技能。"
 L.EMPHASIZE_desc = "啟用後會強調所有與此技能相關的訊息，使它們更大和更容易看到。你可以在「訊息」選項中調整強調訊息的字型及大小。"
-L.PROXIMITY = "玩家雷達"
-L.PROXIMITY_desc = "有時候，某些技能會要求團隊散開。玩家雷達是一個為此類技能獨立顯示的視窗，告訴你誰距離過近並且不安全。"
+L.PROXIMITY = "距離監視器"
+L.PROXIMITY_desc = "有時候，某些技能會要求團隊散開。啟用此選項會在特定首領戰中顯示距離監視視窗，列出所有離你過近的玩家。"
 L.ALTPOWER = "顯示替代能量"
-L.ALTPOWER_desc = "玩家在一些首領戰鬥中會使用替代能量機制。替代能量視窗讓玩家快速查看團隊中誰有最少或最多替代能量，對特定戰術或分配會有幫助。"
+L.ALTPOWER_desc = "某些首領戰鬥會使用替代能量機制。替代能量視窗讓玩家快速查看團隊中誰有最少或最多替代能量，對特定戰術或分配會有幫助。"
 L.TANK = "只對坦克"
-L.TANK_desc = "有些技能只對坦克重要。如果想無視職業看到這些技能警報，停用此選項。"
+L.TANK_desc = "有些技能只對坦克重要。如果想無視角色類型看到這些技能警報，停用此選項。"
 L.HEALER = "只對治療"
-L.HEALER_desc = "有些技能只對治療重要。如果想無視你的職業一律看到此技能警報，停用此選項。"
+L.HEALER_desc = "有些技能只對治療重要。如果想無視角色類型看到此技能警報，停用此選項。"
 L.TANK_HEALER = "只對坦克和治療"
-L.TANK_HEALER_desc = "有些技能只對坦克和治療重要。如果想無視職業看到這些技能警報，停用此選項。"
-L.DISPEL = "只對驅散和打斷"
-L.DISPEL_desc = "如果你希望在你不能打斷或驅散的情況下仍然警報此技能，停用此選項。"
+L.TANK_HEALER_desc = "有些技能只對坦克和治療重要。如果無視角色類型看到這些技能警報，停用此選項。"
+L.DISPEL = "只對驅散"
+L.DISPEL_desc = "如果你希望在你不能驅散的情況下仍然警報此技能，停用此選項。"
 L.VOICE = "語音"
 L.VOICE_desc = "如果安裝了語音插件，此選項可以開啟並播放警報音效文件。"
 L.COUNTDOWN = "倒數"
@@ -218,7 +218,7 @@ L.back = "<< 返回"
 L.tank = "|cFFFF0000只警報坦克。|r"
 L.healer = "|cFFFF0000只警報治療。|r"
 L.tankhealer = "|cFFFF0000只警報坦克和治療。|r"
-L.dispeller = "|cFFFF0000只警報驅散和打斷。|r"
+L.dispeller = "|cFFFF0000只警報驅散。|r"
 
 -- Sharing.lua
 L.import = "匯入"
@@ -277,6 +277,27 @@ L.mythicplus_settings_export_desc = "匯出傳奇+ 設定。"
 L.imported_battleres_settings = "戰復設定"
 L.battleres_settings_import_desc = "匯入戰復設定。"
 L.battleres_settings_export_desc = "匯出戰復設定。"
+--L.imported_privateAuras_settings = "Private Auras Settings"
+--L.privateAuras_settings_import_desc = "Import all Private Auras settings."
+--L.privateAuras_settings_export_desc = "Export all Private Auras settings."
+
+-- InstanceSharing.lua
+L.sharing_window_title = "分享首領設定"
+L.sharing_flags = "通用設定"
+L.sharing_flags_desc = "匯入控制各項功能的設定，例如「顯示計時條」、「播放音效」、「顯示訊息」等。\n這涵蓋了技能設置中大部分勾選選項。"
+L.sharing_export_flags_desc = "匯出控制各項功能的設定，例如「顯示計時條」、「播放音效」、「顯示訊息」等。\n這涵蓋了技能設置中大部分勾選選項。"
+L.sharing_sounds_desc = "匯入技能對應的音效設定。"
+L.sharing_export_sounds_desc = "匯出技能對應的音效設定。"
+L.sharing_private_auras = "私有光環"
+L.sharing_private_auras_desc = "匯入私有光環的音效設定。"
+L.sharing_export_private_auras_desc = "匯出私有光環的音效設定。"
+L.sharing_colors_desc = "匯入計時條與訊息文字的顏色設定。"
+L.sharing_export_colors_desc = "匯出計時條與訊息文字的顏色設定。"
+L.confirm_instance_import = "你即將匯入的設定將會覆蓋目前所選設定檔中的內容：\n\n|cFF33FF99「%s」|r\n\n副本：\n|cFFBB66FF「%s」|r\n\n你確定要執行此操作嗎？"
+L.status_text_paste_import = "貼上有效的匯入字串"
+L.exporting_instance = "匯出 |cFFBB66FF%s|r" -- Exporting Molten Core
+L.importing_instance = "匯入 |cFFBB66FF%s|r" -- Importing Molten Core
+L.share = "分享"
 
 -- Statistics
 L.statistics = "統計"
@@ -313,6 +334,7 @@ L.N10 = "10人普通"
 L.N25 = "25人普通"
 L.H10 = "10人英雄"
 L.H25 = "25人英雄"
+L.titan = "25人泰坦" -- Chinese-only "Titan Reforged" servers
 
 -----------------------------------------------------------------------
 -- TOOLS
@@ -321,12 +343,14 @@ L.H25 = "25人英雄"
 L.tools = "工具"
 L.toolsDesc = "BigWigs 提供了多種實用工具或便利功能，讓你可以輕鬆寫意地擊敗首領。"
 
+L.reloadUIWarning = "變更此功能需要重載介面，系統將會出現短暫的載入畫面。你確定要繼續嗎？"
+
 -----------------------------------------------------------------------
 -- AutoRole.lua
 --
 
-L.autoRoleTitle = "自動設定職責"
-L.autoRoleExplainer = "當你加入隊伍或是在隊伍中更換專精時，BigWigs 會自動根據你的專精調整你的隊伍職責（坦克、治療者、傷害輸出）。\n\n"
+L.autoRoleTitle = "自動設定角色類型"
+L.autoRoleExplainer = "當你加入隊伍或是在隊伍中更換專精時，BigWigs 會自動根據你的專精調整你在隊伍中的角色類型（坦克、治療者、傷害輸出）。\n\n"
 
 -----------------------------------------------------------------------
 -- BattleRes.lua
@@ -347,7 +371,7 @@ L.iconTextureSpellIDError = "要設定顯示的圖示，你必需輸入一個有
 L.battleResModeIcon = "圖示模式"
 L.battleResModeText = "純文字模式"
 L.battleResModeTextTooltip = "顯示一個臨時背景，以便你調整戰鬥復活功能的位置，並查看滑鼠指向的區域範圍。"
---L.battleResNoteTooltip = "Note: This tooltip will only show when you are out of combat."
+L.battleResNoteTooltip = "注意：滑鼠提示僅在非戰鬥狀態下顯示。"
 
 -----------------------------------------------------------------------
 -- Keystones.lua
@@ -411,7 +435,9 @@ L.keystoneHistoryScoreOlderTooltip = "上周分數：|cFFFFFFFF+%d|r"
 L.keystoneTimeUnder = "|cFF33FF99-%02d:%02d|r"
 L.keystoneTimeOver = "|cFFFF4411+%02d:%02d|r"
 L.keystoneTeleportTip = "點擊副本名字可以直接|cFF33FF99傳送|r到該副本。"
---L.keystoneTimerunner = "|A:timerunning-glues-icon:14:14|aThis is a timerunning character." -- Note: Timerunning is a mode like "Legion Remix", it is NOT the same as Timewalking
+L.keystoneTimerunner = "|A:timerunning-glues-icon:14:14|a時空奔行者。" -- Note: Timerunning is a mode like "Legion Remix", it is NOT the same as Timewalking
+L.keystoneSlashKeys = "同時註冊 |cFF33FF99/keys|r 指令"
+L.keystoneSlashKeystone = "同時註冊 |cFF33FF99/keystone|r 指令"
 
 -- It doesn't really matter what you call it as long as it's recognizable and limited to ~6 characters
 L.keystoneShortName_TheRookery = "培育所" --培育
@@ -428,19 +454,26 @@ L.keystoneShortName_AraKaraCityOfEchoes = "回音" --回音
 L.keystoneShortName_TazaveshSoleahsGambit = "險招" --索利亞?
 L.keystoneShortName_TazaveshStreetsOfWonder = "街道" --街道
 L.keystoneShortName_TheDawnbreaker = "破曉" --破曉
---L.keystoneShortName_BlackRookHold = "BRH"
---L.keystoneShortName_CourtOfStars = "COS"
---L.keystoneShortName_DarkheartThicket = "DHT"
---L.keystoneShortName_EyeOfAzshara = "EOA"
---L.keystoneShortName_HallsOfValor = "HOV"
---L.keystoneShortName_MawOfSouls = "MOS"
---L.keystoneShortName_NeltharionsLair = "NL"
---L.keystoneShortName_TheArcway = "ARCWAY"
---L.keystoneShortName_VaultOfTheWardens = "VOTW"
---L.keystoneShortName_ReturnToKarazhanLower = "LKARA"
---L.keystoneShortName_ReturnToKarazhanUpper = "UKARA"
---L.keystoneShortName_CathedralOfEternalNight = "COEN"
---L.keystoneShortName_SeatOfTheTriumvirate = "SOTT"
+L.keystoneShortName_BlackRookHold = "玄鴉"
+L.keystoneShortName_CourtOfStars = "眾星"
+L.keystoneShortName_DarkheartThicket = "暗心"
+L.keystoneShortName_EyeOfAzshara = "艾薩拉"
+L.keystoneShortName_HallsOfValor = "英靈"
+L.keystoneShortName_MawOfSouls = "靈魂"
+L.keystoneShortName_NeltharionsLair = "巢穴"
+L.keystoneShortName_TheArcway = "地道"
+L.keystoneShortName_VaultOfTheWardens = "看守"
+L.keystoneShortName_ReturnToKarazhanLower = "卡拉下"
+L.keystoneShortName_ReturnToKarazhanUpper = "卡拉上"
+L.keystoneShortName_CathedralOfEternalNight = "永夜"
+L.keystoneShortName_SeatOfTheTriumvirate = "三傑"
+L.keystoneShortName_WindrunnerSpire = "風行者"
+L.keystoneShortName_MagistersTerrace = "博學者"
+L.keystoneShortName_MaisaraCaverns = "梅薩拉"
+L.keystoneShortName_NexusPointXenas = "奧核點"
+L.keystoneShortName_AlgetharAcademy = "學院"
+L.keystoneShortName_Skyreach = "擎天峰"
+L.keystoneShortName_PitOfSaron = "薩倫"
 
 -- These short names are for the bar that shows during the Mythic+ countdown
 -- Use the real dungeon names but make them shorter to fit on the bar better
@@ -458,19 +491,26 @@ L.keystoneShortName_AraKaraCityOfEchoes_Bar = "回音"
 L.keystoneShortName_TazaveshSoleahsGambit_Bar = "險招"
 L.keystoneShortName_TazaveshStreetsOfWonder_Bar = "街道"
 L.keystoneShortName_TheDawnbreaker_Bar = "破曉"
---L.keystoneShortName_BlackRookHold_Bar = "Black Rook"
---L.keystoneShortName_CourtOfStars_Bar = "Court"
---L.keystoneShortName_DarkheartThicket_Bar = "Darkheart"
---L.keystoneShortName_EyeOfAzshara_Bar = "Eye"
---L.keystoneShortName_HallsOfValor_Bar = "Halls"
---L.keystoneShortName_MawOfSouls_Bar = "Maw"
---L.keystoneShortName_NeltharionsLair_Bar = "Lair"
---L.keystoneShortName_TheArcway_Bar = "Arcway"
---L.keystoneShortName_VaultOfTheWardens_Bar = "Vault"
---L.keystoneShortName_ReturnToKarazhanLower_Bar = "Lower Kara"
---L.keystoneShortName_ReturnToKarazhanUpper_Bar = "Upper Kara"
---L.keystoneShortName_CathedralOfEternalNight_Bar = "Cathedral"
---L.keystoneShortName_SeatOfTheTriumvirate_Bar = "Triumvirate"
+L.keystoneShortName_BlackRookHold_Bar = "玄鴉"
+L.keystoneShortName_CourtOfStars_Bar = "眾星"
+L.keystoneShortName_DarkheartThicket_Bar = "暗心"
+L.keystoneShortName_EyeOfAzshara_Bar = "艾薩拉"
+L.keystoneShortName_HallsOfValor_Bar = "英靈"
+L.keystoneShortName_MawOfSouls_Bar = "靈魂"
+L.keystoneShortName_NeltharionsLair_Bar = "巢穴"
+L.keystoneShortName_TheArcway_Bar = "地道"
+L.keystoneShortName_VaultOfTheWardens_Bar = "看守"
+L.keystoneShortName_ReturnToKarazhanLower_Bar = "卡拉下"
+L.keystoneShortName_ReturnToKarazhanUpper_Bar = "卡拉上"
+L.keystoneShortName_CathedralOfEternalNight_Bar = "永夜"
+L.keystoneShortName_SeatOfTheTriumvirate_Bar = "三傑"
+L.keystoneShortName_WindrunnerSpire_Bar = "風行者"
+L.keystoneShortName_MagistersTerrace_Bar = "博學者"
+L.keystoneShortName_MaisaraCaverns_Bar = "梅薩拉"
+L.keystoneShortName_NexusPointXenas_Bar = "奧核點"
+L.keystoneShortName_AlgetharAcademy_Bar = "學院"
+L.keystoneShortName_Skyreach_Bar = "擎天峰"
+L.keystoneShortName_PitOfSaron_Bar = "薩倫"
 
 -- Instance Keys "Who has a key?"
 L.instanceKeysTitle = "誰有鑰石？"
@@ -596,6 +636,7 @@ L.autoReplyLeftCombatAdvancedWipe = "在「%s」的戰鬥中滅團：%s"
 L.bars = "計時條"
 L.style = "風格"
 L.bigWigsBarStyleName_Default = "預設"
+L.bigWigsBarStyleName_Blizzard = "暴雪"
 L.resetBarsDesc = "重設所有計時條自訂選項，包括錨點和位置。"
 L.testBarsBtn = "創建測試計時條"
 L.testBarsBtn_desc = "創建一個測試計時條以測試當前顯示設定。"
@@ -655,6 +696,25 @@ L.breakBar = "休息時間"
 L.breakMinutes = "休息時間將在 %d 分鐘後結束！"
 L.breakSeconds = "休息時間將在 %d 秒後結束！"
 L.breakFinished = "休息時間結束！"
+
+L.indicatorTitle = "法術類型指示"
+L.indicatorType_Deadly = "致命"
+L.indicatorType_Bleed = "流血"
+L.indicatorType_Magic = "魔法"
+L.indicatorType_Dispels = "驅散"
+L.indicatorType_Tank = "坦克"
+L.indicatorType_Healer = "治療者"
+L.indicatorType_Damager = "傷害輸出"
+
+L.spellIndicatorsPosition = "圖示位置"
+L.spellIndicatorsPositionDesc = "選擇將指示圖示顯示在計時條的哪一側。"
+L.spellIndicatorsOffset = "圖示位置偏移"
+L.spellIndicatorSize = "圖示大小"
+L.spellIndicatorSizeDropdown_Large1 = "一個大圖示"
+L.spellIndicatorSizeDropdown_Large2 = "二個大圖示"
+L.spellIndicatorSizeDropdown_Large3 = "三個大圖示"
+L.spellIndicatorSizeDropdown_Small4 = "四個小圖示"
+L.spellIndicatorSizeDropdown_Small2 = "二個小圖示"
 
 -----------------------------------------------------------------------
 -- BossBlock.lua
@@ -901,19 +961,49 @@ L.nameplateOptInTitle = "名條「手動啟用」模式"
 L.nameplateOptInWarning = "|cffff4411警告！|r\n\n開啟「手動啟用」模式會關閉所有首領模組的名條圖示。你必須分別進入每個模組，啟用你需要顯示圖示的名條。\n\n即將重載介面，確定要啟用嗎？"
 
 -----------------------------------------------------------------------
+-- PrivateAuras.lua
+--
+
+L.privateAuras = "私有光環"
+
+L.createTestAura = "創建測試光環"
+L.showDispelType = "顯示驅散類型圖示"
+L.showDispelTypeDesc = "若該私有光環可被驅散，則在框架上顯示對應的驅散類型圖示。\n\n|cffffd200注意：此選項是全域設定，啟用後會套用到所有的私有光環。|r"
+L.iconSize = "圖示大小"
+L.iconSpacing = "圖示間距"
+L.showCooldown = "顯示冷卻動畫"
+L.showCooldownText = "顯示冷卻文字"
+L.cooldownTextScale = "冷卻文字尺寸"
+L.growthDirection = "圖示增長方向"
+L.aurasOnYou = "自身光環"
+L.aurasOnYouDesc = "設定你的光環圖示外觀。\n\n"
+L.aurasOnAnother = "他人光環"
+L.aurasOnAnotherDesc = "指定一名玩家，設定該玩家身上的光環圖示外觀。\n\n"
+L.chooseAPlayer = "選擇一名玩家"
+L.theOtherTank = "自動尋找坦克"
+L.theOtherTankDesc = "按照隊伍的排列順序，自動尋找隊伍中的另一名坦克，顯示該坦克的私有光環。（目前：%s）"
+--L.onlyWhenYouAreTank = "Only show when you are also a tank"
+L.playerInYourGroup = "隊伍中的玩家"
+L.maxIcons = "圖示最大數量"
+L.maxIconsDesc = "最多顯示幾個圖示。"
+L.privateAurasHelpTip = "|TInterface\\AddOns\\BigWigs\\Media\\Icons\\minimap_raid:0:0|tBigWigs: 現在，你可以在受到私有光環減益效果時，獲得大圖示提示；並且，你可以設定是否要監視其他隊友（例如坦克）的狀態。"
+
+L.privateAurasTestAnchorText = "私有 %d"
+
+-----------------------------------------------------------------------
 -- Proximity.lua
 --
 
 L.customRange = "自訂距離指示器"
 L.proximityTitle = "%d碼 / %d 玩家" -- yd = yards (short)
-L.proximity_name = "玩家雷達"
+L.proximity_name = "距離監視"
 L.soundDelay = "音效延遲"
 L.soundDelayDesc = "當有人太靠近你時指定多長時間 BigWigs 重複間隔等待指定的音效。"
 
-L.resetProximityDesc = "重設所有玩家雷達自訂選項，包括錨點和位置。"
+L.resetProximityDesc = "重設所有距離監視自訂選項，包括錨點和位置。"
 
 L.close = "關閉"
-L.closeProximityDesc = "關閉玩家雷達。\n\n要在所有首領戰鬥中停用此功能，你需要到選項的「玩家雷達」中勾選停用。"
+L.closeProximityDesc = "關閉距離監視器。\n\n要在所有首領戰鬥中停用此功能，你需要到選項的「距離監視」中勾選停用。"
 L.lock = "鎖定"
 L.lockDesc = "鎖定顯示視窗，防止被移動和縮放。"
 L.title = "標題"
@@ -938,21 +1028,21 @@ L.tooltipDesc = "顯示或隱藏近距離顯示從首領戰鬥技能獲取的法
 
 L.countdownType = "倒數類型"
 L.combatLog = "自動戰鬥記錄"
-L.combatLogDesc = "從拉怪計時器開始時自動開始戰鬥記錄，戰鬥結束後自動停止。"
+L.combatLogDesc = "開怪倒數啟動時，自動開始戰鬥記錄，戰鬥結束後自動停止。"
 
 L.pull = "開怪倒數"
 L.engageSoundTitle = "首領戰開始時播放音效"
-L.pullStartedSoundTitle = "開怪倒數計時器開始時播放音效"
-L.pullStartedMessageTitle = "啟動倒數計時時顯示訊息"
-L.pullFinishedSoundTitle = "開怪倒數計時器結束時播放音效"
+L.pullStartedSoundTitle = "開怪倒數啟動時播放音效"
+L.pullStartedMessageTitle = "開怪倒數啟動時顯示訊息"
+L.pullFinishedSoundTitle = "開怪倒數結束時播放音效"
 L.pullStartedBy = "%s發起開怪倒數。"
 L.pullStopped = "%s取消了開怪倒數。"
-L.pullStoppedCombat = "開怪倒數計時器因為你進入戰鬥而取消。"
+L.pullStoppedCombat = "開怪倒數因為你進入戰鬥而取消。"
 L.pullIn = "%d秒後開怪"
-L.sendPull = "向你的團隊發送開怪倒數計時器。"
+L.sendPull = "向你的團隊發送開怪倒數。"
 L.wrongPullFormat = "無效倒數。正確的格式範例： /pull 5"
 L.countdownBegins = "開始倒數"
-L.countdownBegins_desc = "以秒為單位，選擇在開怪計時器剩餘幾秒時開始倒數。"
+L.countdownBegins_desc = "以秒為單位，選擇在開怪倒數剩餘幾秒時開始倒數。"
 L.pullExplainer = "\n|cFF33FF99/pull|r 會啟動預設的 10 秒倒數計時器。\n|cFF33FF99/pull 7|r 會啟動一個 7 秒倒數計時器，你可以自行設定秒數。\n另外，你也可以在下方設定倒數快捷鍵。\n\n"
 L.pullKeybindingDesc = "設定用來啟動開怪倒數的快捷鍵。"
 
@@ -986,7 +1076,7 @@ L.privateaura = "當私有光環施放在你身上時（點名）"
 
 L.customSoundDesc = "播放選定的自訂的聲音，而不是由模塊提供的。"
 L.resetSoundDesc = "將前面的音效設定重設為預設值。"
-L.resetAllCustomSound = "如果設置全部首領戰鬥自訂的聲音，此按鈕將重置“全部”以這裡自訂的聲音來代替。"
+L.resetAllCustomSound = "如果設置全部首領戰鬥自訂的聲音，此按鈕將重置「全部」以這裡自訂的聲音來代替。"
 
 -----------------------------------------------------------------------
 -- Statistics.lua
@@ -1006,6 +1096,25 @@ L.bossHealthOption = "首領血量"
 L.bossVictoryPrint = "你擊敗了「%s」，用時%s。" -- You were victorious against 'BOSS_NAME' after COMBAT_DURATION.
 L.bossDefeatPrint = "你被「%s」擊敗，用時%s。" -- You were defeated by 'BOSS_NAME' after COMBAT_DURATION.
 L.newFastestVictoryPrint = "新的最快紀錄：（-%s）" -- New fastest victory: (-COMBAT_DURATION)
+
+-----------------------------------------------------------------------
+-- Timeline.lua
+--
+
+L.timeline = "暴雪時間軸"
+L.blizzTimersAsBigWigsBars = "用 BigWigs 計時條取代暴雪內建時間軸"
+L.blizzTimersAsBigWigsBarsDesc = "將所有暴雪內建的首領計時（時間軸）替換為 BigWigs 樣式的計時條。"
+L.blizzWarningsAsBigWigsMessages = "用 BigWigs 訊息取代暴雪內建首領警告"
+L.blizzWarningsAsBigWigsMessagesDesc = "將所有暴雪內建的首領警告訊息替換為 BigWigs 風格的提示訊息"
+L.blizzAudioAsBigWigsAudio = "將暴雪內建音效替換為 BigWigs 音效"
+L.blizzAudioAsBigWigsAudioDesc = "將暴雪原本的內建音效替換為 BigWigs 音效，並根據重要程度播放對應的聲音（提示、警報或警告）"
+L.blizzWarningSettings = "暴雪警告設定"
+L.blizzTimelineSettings = "暴雪時間軸設定"
+L.blizzTimelineSettingsNote = "|cffff4411本頁選項僅控制暴雪內建設定，在此提供是為了方便你與 BigWigs 的設定一起調整。|r"
+L.enableBlizzTimeline = "啟用暴雪時間軸"
+L.enableBlizzTimelineDesc = "在暴雪內建的時間軸上顯示所有的首領戰計時條。"
+L.enableBlizzWarnings = "啟用暴雪首領警告"
+L.enableBlizzWarningsDesc = "若啟用暴雪內建的首領警告，建議關閉「使用 BigWigs 訊息取代暴雪內建首領警告」功能，以免出現重複警報。"
 
 -----------------------------------------------------------------------
 -- Victory.lua

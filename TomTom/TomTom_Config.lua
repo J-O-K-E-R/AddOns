@@ -1,6 +1,6 @@
 local addonName, addon = ...
 
-local L = TomTomLocals
+local L = addon.L
 
 local function createconfig()
 	local options = {}
@@ -86,17 +86,26 @@ local function createconfig()
 				width = "double",
 				arg = "block.lock",
 			},
-			accuracy = {
+			printwaycommand = {
 				order = 4,
+				type = "toggle",
+				name = L["Print a /way command when right-clicking the coordinate block"],
+				desc = L["Prints a version of the /way command that can be shared with others to your chat, when right-clicking the coordinate block"],
+				width = "double",
+				arg = "block.showWayCommand",
+			},
+			accuracy = {
+				order = 5,
 				type = "range",
 				name = L["Coordinate Accuracy"],
 				desc = L["Coordinates can be displayed as simple XX, YY coordinate, or as more precise XX.XX, YY.YY.  This setting allows you to control that precision"],
+				width = "double",
 				min = 0, max = 2, step = 1,
 				arg = "block.accuracy",
 			},
             coords_throttle = {
 				type = "range",
-				order = 5,
+				order = 6,
 				name = L["Update throttle"],
 				desc = L["Controls the frequency of updates for the coordinate block."],
 				width = "double",
@@ -104,7 +113,7 @@ local function createconfig()
 				arg = "block.throttle",
 			},
 			display = {
-				order = 5,
+				order = 7,
 				type = "group",
 				inline = true,
 				name = L["Display Settings"],
@@ -757,7 +766,7 @@ local function createconfig()
 						order = 7,
 						type = "range",
 						name = L["Cursor coordinate offset"],
-						desc = L["Coordinates can be moved from the default location, this setting allows you to control that offse"],
+						desc = L["Coordinates can be moved from the default location, this setting allows you to control that offset"],
 						min = -32, max = 128, step = 1,
 						arg = "mapcoords.cursoroffset",
 					},
@@ -1016,13 +1025,21 @@ local function createconfig()
 				type = "description",
 				name = L["TomTom supports setting multiple waypoints at the same time, and storing and loading pages of waypoints. This section enables you to configure some settings for this feature."],
 			},
-			enable = {
+			enableMinimap = {
 				order = 2,
 				type = "toggle",
-				name = L["Show minimap/addon compartment button"],
-				desc = L["Enables or disables the showing of a minimap/addon-compartment button to toggle the paste window."],
+				name = L["Show minimap button to open TomTom-Paste window"],
+				desc = L["Enables or disables the showing of a minimap button to toggle the paste window."],
 				width = "double",
 				arg = "paste.minimap_button",
+			},
+			enableAddonCompartment = {
+				order = 3,
+				type = "toggle",
+				name = L["Show addon compartment button to open TomTom-Paste window"],
+				desc = L["Enables or disables the showing of an addon-compartment button to toggle the paste window."],
+				width = "double",
+				arg = "paste.addon_compartment_button",
 			},
 		}
 	}
@@ -1154,7 +1171,8 @@ local aboutOptions = {
 local blizzPanel
 function addon:CreateConfigPanels()
 	config:RegisterOptionsTable("TomTom", aboutOptions)
-	local aboutFrame = dialog:AddToBlizOptions("TomTom", "TomTom")
+	local aboutFrame, category = dialog:AddToBlizOptions("TomTom", "TomTom")
+	addon.aboutCategory = category
 	if not registered then
 		blizzPanel = createBlizzOptions()
 		registered = true
@@ -1172,7 +1190,7 @@ SlashCmdList["TOMTOM"] = function(msg)
 	end
 
 	if Settings then
-		Settings.OpenToCategory("TomTom")
+		Settings.OpenToCategory(addon.aboutCategory)
 	elseif InterfaceOptionsFrame_OpenToCategory then
 		InterfaceOptionsFrame_OpenToCategory("TomTom")
 		InterfaceOptionsFrame_OpenToCategory("TomTom")

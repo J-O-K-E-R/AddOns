@@ -7,6 +7,9 @@ if not mod then return end
 mod:RegisterEnableMob(234893) -- Azhiccar
 mod:SetEncounterID(3107)
 mod:SetRespawnTime(30)
+mod:SetPrivateAuraSounds({
+	{1217439, sound = "alarm"}, -- Toxic Regurgitation
+})
 
 --------------------------------------------------------------------------------
 -- Locals
@@ -154,7 +157,7 @@ do
 
 	function mod:CHAT_MSG_RAID_BOSS_WHISPER(_, msg)
 		-- target's aura 1227748 is hidden
-		if msg:find("1227748", nil, true) then -- Toxic Regurgitation
+		if not self:IsSecret(msg) and msg:find("1227748", nil, true) then -- Toxic Regurgitation
 			-- [CHAT_MSG_RAID_BOSS_WHISPER] |TInterface\\ICONS\\Spell_Fire_BluePyroblast.blp:20|t You have been targeted for |cFFFF0000|Hspell:1227748|h[Toxic Regurgitation]|h|r!
 			self:PersonalMessage(1227745)
 			self:Say(1227745, nil, nil, "Toxic Regurgitation")

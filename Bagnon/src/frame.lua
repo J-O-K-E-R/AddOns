@@ -17,18 +17,17 @@ function Frame:New(params)
 	tinsert(UISpecialFrames, f:GetName())
 	MergeTable(f, params)
 
-	f.profile, f.compiled, f.wait = f:GetBaseProfile(), {}, 0
+	f.rules, f.wait = {}, 0
+	f.profile = f:GetBaseProfile()
 	f.MenuButtons = {}
 	f.SearchBar = Addon.SearchBar(f)
 	f.Title = Addon.Title(f, f.Title)
-	f.ItemGroup = self.ItemGroup(f, f.Bags)
 	f.CloseButton:SetScript('OnClick', function() Addon.Frames:Hide(f.id) end)
 
 	return f
 end
 
 function Frame:RegisterEvents()
-	self:RegisterFrameSignal('ELEMENT_RESIZED', 'Layout')
 	self:RegisterFrameSignal('BAG_FRAME_TOGGLED', 'Layout')
 end
 
@@ -37,7 +36,7 @@ end
 
 function Frame:Layout()
 	self.wait = self.wait + 1
-	if self.wait == 1 then
+	if self.wait == 1 then -- making sure an infinite loop can never happen, just in case
 		self.margin = self.skin.margin or 0
 		self.inset = self.skin.inset or 0
 
@@ -65,7 +64,7 @@ function Frame:Layout()
 
 		if self.wait == 1 then
 			self.wait = 0
-			self:SendFrameSignal('LAYOUT_FINISHED')
+			self.skin('layout')
 		else
 			self.wait = 0
 			self:Layout()
@@ -81,7 +80,7 @@ function Frame:PlaceMenuButtons()
 		button:Hide()
 	end
 
-	local buttons = { self:HasOwnerSelector() and self:GetWidget('OwnerSelector') }
+	local buttons = { self:HasOfflineSelector() and self:GetWidget('OfflineSelector') }
 	tAppendAll(buttons, self:GetExtraButtons())
 	tinsert(buttons, self:HasSortButton() and self:GetWidget('SortButton'))
 	tinsert(buttons, self:HasSearchToggle() and self:GetWidget('SearchToggle'))
@@ -136,7 +135,7 @@ function Frame:HasOptionsToggle()
 	return C.AddOns.GetAddOnEnableState(ADDON .. '_Config', UnitName('player')) >= 2 and self.profile.options
 end
 
-function Frame:HasOwnerSelector()
+function Frame:HasOfflineSelector()
 	return not self:GetOwner().isguild
 end
 
@@ -152,13 +151,15 @@ end
 --[[ Main Grid ]]--
 
 function Frame:PlaceItemGroup()
+	local group = self:GetWidget('ItemGroup', self.Bags)
 	local anchor = self:AreBagsShown() and self.BagGroup
-					or #self.MenuButtons > 0 and self.MenuButtons[1]
-					or self.Title
+				or #self.MenuButtons > 0 and self.MenuButtons[1]
+				or self.Title
 	local inset = anchor ~= self.BagGroup and self.inset or 0
 
-	self.ItemGroup:SetPoint('TOPLEFT', anchor, 'BOTTOMLEFT', inset, -4-inset)
-	return self.ItemGroup:GetWidth() - 2 + (self.inset or 0) * 2, self.ItemGroup:GetHeight() + 6
+	group:SetScript('OnSizeChanged', function() self:Layout() end)
+	group:SetPoint('TOPLEFT', anchor, 'BOTTOMLEFT', inset, -4-inset)
+	return group:GetWidth() - 2 + (self.inset or 0) * 2, group:GetHeight() + 6
 end
 
 function Frame:PlaceBagGroup()
@@ -178,6 +179,8 @@ end
 
 function Frame:PlaceSidebar()
 	return self:PlaceWidget('TabGroup', 'sidebar', self:HasSidebar() and function(filters)
+		filters:SetScript('OnSizeChanged', function() self:Layout() end)
+
 		if self.id == 'inventory' then
 			filters:SetPoint('TOPRIGHT', self, 'TOPLEFT', 4-self.margin,-33)
 		else
@@ -214,6 +217,7 @@ function Frame:PlaceCurrencies(width)
 			tracker:SetPoint('TOPLEFT', self.Footer, 6,0)
 		end
 
+		tracker:SetScript('OnSizeChanged', function() self:Layout() end)
 		return not wide and self:HasMoney() and 0
 	end)
 end

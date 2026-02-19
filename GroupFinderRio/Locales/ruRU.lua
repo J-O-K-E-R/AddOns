@@ -14,37 +14,43 @@ L["addScoreToGroup"] = "Добавить наивысший рейтинг в г
 L["addScoreToGroupDescription"] = "Добавить наивысший рейтинг лидера группы в просмотр групп. (Это может быть как основной, так и текущий рейтинг персонажа)."
 L["applicantView"] = "Просмотр кандидата"
 --[[Translation missing --]]
-L["Disable"] = "Disabled"
+L["debugMode"] = "debugMode"
 --[[Translation missing --]]
-L["disableSpecSelector"] = "Disable Spec Selector"
+L["debugModeDescription"] = "debugModeDescription"
 --[[Translation missing --]]
-L["disableSpecSelectorDescription"] = "Disable the Spec Selector in the Application view which can be used to prioritise specs in searching"
+L["debugModeWarning"] = "debugModeWarning"
+--[[Translation missing --]]
+L["Disable"] = "Disable"
+--[[Translation missing --]]
+L["disableSpecSelector"] = "disableSpecSelector"
+--[[Translation missing --]]
+L["disableSpecSelectorDescription"] = "disableSpecSelectorDescription"
 L["enableSpecPriority"] = "Включить приоритет специализации"
 L["fifteen"] = "15+"
 L["five"] = "5+"
 L["groupNameBeforeScore"] = "Название группы перед рейтингом"
 L["groupNameBeforeScoreDescription"] = "Показывать название группы перед рейтингом лидера группы, а не после него"
 --[[Translation missing --]]
-L["groupView"] = "Group View"
+L["groupView"] = "groupView"
 L["highest"] = "Самый высокий уровень ключа"
 L["oneClickSignup"] = "Присоединение в один клик"
 L["oneClickSignupDescription"] = "Присоединитесь к группе одним щелчком мыши"
 --[[Translation missing --]]
-L["OneClickSignupNotAvailable"] = "One Click Signup is not available with Premades Group Filter enabled please disable the option and use Premades Group Filters setting instead"
+L["OneClickSignupNotAvailable"] = "OneClickSignupNotAvailable"
 --[[Translation missing --]]
-L["resortGroupsConstantly"] = "Resort Groups Constantly"
+L["resortGroupsConstantly"] = "resortGroupsConstantly"
 --[[Translation missing --]]
-L["resortGroupsConstantlyDescription"] = "Resort the groups every 3 Seconds to remove groups that are no longer available and update score if data becomes available later."
+L["resortGroupsConstantlyDescription"] = "resortGroupsConstantlyDescription"
 --[[Translation missing --]]
-L["shortenActivityName"] = "Shorten Activity Name"
+L["shortenActivityName"] = "shortenActivityName"
 --[[Translation missing --]]
-L["shortenActivityNameDescription"] = "Shorten the Activity Name in the Group View"
+L["shortenActivityNameDescription"] = "shortenActivityNameDescription"
 L["showCurrentScoreInGroup"] = "Показать текущий рейтинг в группе"
 L["showCurrentScoreInGroupDescription"] = "Показать текущий рейтинг лидера группы дополнение к наивысшему рейтингу (если отличается)"
 --[[Translation missing --]]
-L["showInfoInActivityName"] = "Show Info in Activity Name"
+L["showInfoInActivityName"] = "showInfoInActivityName"
 --[[Translation missing --]]
-L["showInfoInActivityNameDescription"] = "Show information in the Activity Name in the Group View"
+L["showInfoInActivityNameDescription"] = "showInfoInActivityNameDescription"
 L["showKeyLevel"] = "Показать уровень ключа"
 L["showKeyLevelApplicants"] = "Показать уровень ключа кандидата"
 L["showKeyLevelApplicantsDescription"] = "Показать наивысший пройденный уровень ключа кандидата для текущего подземелья"
@@ -58,9 +64,9 @@ L["showNoteDescription"] = "Показать значок, если кандид
 L["showRaceIcon"] = "Показывать иконку расы"
 L["showRaceIconDescription"] = "Показать иконку расы рядом с именем кандидата"
 --[[Translation missing --]]
-L["showTimedKeys"] = "Show Timed Keys"
+L["showTimedKeys"] = "showTimedKeys"
 --[[Translation missing --]]
-L["showTimedKeysDescription"] = "Show the amount of the timed keys above a certain threshold in the Applicant View"
+L["showTimedKeysDescription"] = "showTimedKeysDescription"
 L["sortApplicants"] = "Сортировать кандидатов"
 L["sortApplicantsDescription"] = "Сортировка кандидатов - правило: Приоритет специализации > (Основной) рейтинг > Уровень предметов"
 L["sortAscending"] = "Сортировать по возрастанию"
@@ -71,16 +77,16 @@ L["ten"] = "10+"
 L["twenty"] = "20+"
 L["useMainInfo"] = "Использовать основную информацию"
 --[[Translation missing --]]
-L["useMainInfoDescription"] = "Use the Progress or Score info of the main instead of the current Score for display and sort (if available)"
+L["useMainInfoDescription"] = "useMainInfoDescription"
 L["useMainScore"] = "Использовать основной рейтинг"
 L["useMainScoreDescription"] = "Использовать основной рейтинг вместо текущего для отображения и сортировки"
 L["useOfWrongRoleHighlight"] = "Использовать выделение неправильной роли"
 --[[Translation missing --]]
-L["useOfWrongRoleHighlightDescription"] = "Highlights the Spec Icon in the Application View if the Applicant is not using the Role with the highest Score"
+L["useOfWrongRoleHighlightDescription"] = "useOfWrongRoleHighlightDescription"
 --[[Translation missing --]]
-L["wrongRoleScoreLimitForSorting"] = "Wrong Role Score Limit for Sorting"
+L["wrongRoleScoreLimitForSorting"] = "wrongRoleScoreLimitForSorting"
 --[[Translation missing --]]
-L["wrongRoleScoreLimitForSortingDescription"] = "The Score Limit for the Sorting Offroles behind mainroles. If set to 0 will always sort mainrole before offrole. If set to 5000 will always ignore main or offrole and only sort by score"
+L["wrongRoleScoreLimitForSortingDescription"] = "wrongRoleScoreLimitForSortingDescription"
 
 
 

@@ -22,18 +22,19 @@ end
 
 -- Get paragon info for a faction if it exists
 function PrettyReps.ReputationService:GetFactionParagonInfo(factionID)
-    if not factionID then return nil, nil, nil, false, true end
-    
+    if not factionID then return nil, nil, nil, false, true, nil end
+
     local faction = PrettyReps.UIDataProvider:GetRawFactionData(factionID)
     if not faction or not faction.hasParagon then
-        return nil, nil, nil, false, true
+        return nil, nil, nil, false, true, nil
     end
-    
+
     return faction.paragonData.currentValue,
            faction.paragonData.threshold,
            faction.paragonData.rewardQuestID,
            faction.paragonData.hasRewardPending,
-           faction.paragonData.tooLowLevel
+           faction.paragonData.tooLowLevel,
+           faction.paragonData.storageLevel
 end
 
 -- Get/set currently selected faction index
@@ -263,6 +264,14 @@ end
 
 function PrettyReps.ReputationService:IsShowParagonRewards()
     return PrettyReps.OptionsManager:GetOption("showParagonRewards")
+end
+
+function PrettyReps.ReputationService:SetUseParagonBars(enabled)
+    PrettyReps.OptionsManager:SetOption("useParagonBars", enabled)
+end
+
+function PrettyReps.ReputationService:IsUseParagonBars()
+    return PrettyReps.OptionsManager:GetOption("useParagonBars")
 end
 
 function PrettyReps.ReputationService:SetHideGuildReputation(enabled)

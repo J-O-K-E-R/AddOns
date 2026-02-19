@@ -1,6 +1,7 @@
 # Clique
 
-## [v4.2.6-release](https://github.com/jnwhiteh/Clique/tree/v4.2.6-release) (2025-10-08)
-[Full Changelog](https://github.com/jnwhiteh/Clique/compare/v4.2.5-release...v4.2.6-release) [Previous Releases](https://github.com/jnwhiteh/Clique/releases)
+## [v4.6.7-release](https://github.com/jnwhiteh/Clique/tree/v4.6.7-release) (2026-02-17)
+[Full Changelog](https://github.com/jnwhiteh/Clique/compare/v4.6.6-release...v4.6.7-release) [Previous Releases](https://github.com/jnwhiteh/Clique/releases)
 
-- Update TOC for 11.2.5  
+- Use new method to populate denylist  
+- Add early blacklist population in Initialize()  

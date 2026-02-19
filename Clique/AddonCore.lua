@@ -15,7 +15,34 @@
 
 local addonName = select(1, ...)
 
----@class addon
+---@alias EventHandler
+---| string
+---| fun(...: any)
+
+---@class AddonCore
+---@field RegisterEvent fun(self: AddonCore, event: string, handler: EventHandler?)
+---@field UnregisterEvent fun(self: AddonCore, event: string, handler: EventHandler?)
+---@field APIIsTrue fun(self:AddonCore, val: any): boolean
+---@field ProjectIsRetail fun(self: AddonCore): boolean
+---@field ProjectIsClassic fun(self: AddonCore): boolean
+---@field ProjectIsBCC fun(self: AddonCore): boolean
+---@field ProjectIsWrath fun(self: AddonCore): boolean
+---@field ProjectIsCataclysm fun(self: AddonCore): boolean
+---@field ProjectIsMists fun(self: AddonCore): boolean
+---@field ProjectIsDragonflight fun(self: AddonCore): boolean
+---@field ProjectIsWarWithin fun(self: AddonCore): boolean
+---@field ProjectIsMidnight fun(self: AddonCore): boolean
+---@field Printf fun(self: AddonCore, msg: string, ...: any)
+---@field version string
+---@field IsInitialized fun(self: AddonCore): boolean
+---@field RegisterModule fun(self: AddonCore, module: table, name: string)
+---@field RegisterMessage fun(self: AddonCore, name: string, handler: EventHandler?)
+---@field UnregisterMessage fun(self: AddonCore, name: string)
+---@field FireMessage fun(self: AddonCore, name: string, ...: any)
+---@field Defer fun(self: AddonCore, ...:any)
+---@field L table<string,string>
+---@field RegisterLocale fun(self: AddonCore, locale: string, tbl: table<string,string>)
+
 local addon = select(2, ...)
 
 -- Set global name of addon
@@ -73,14 +100,14 @@ end
 -------------------------------------------------------------------------]]--
 
 -- Returns true if the API value is true-ish (handles old 1/nil returns)
-function addon:APIIsTrue(val, ...)
-	if type(val) == "boolean" then
-		return val
-	elseif type(val) == "number" then
-		return val == 1
-	else
-		return false
-	end
+function addon:APIIsTrue(val)
+    if type(val) == "boolean" then
+        return val
+    elseif type(val) == "number" then
+        return val == 1
+    else
+        return false
+    end
 end
 
 local projects = {
@@ -153,7 +180,7 @@ end
 --  Event registration and dispatch
 -------------------------------------------------------------------------]]--
 
-addon.eventFrame = CreateFrame("Frame", addonName .. "EventFrame", UIParent)
+local eventFrame = CreateFrame("Frame", addonName .. "EventFrame", UIParent)
 local eventMap = {}
 local EventedMixin = {}
 
@@ -166,8 +193,11 @@ function EventedMixin:RegisterEvent(event, handler)
         for idx, value in ipairs(eventMap[event]) do
             if type(handler) == "function" and value == handler then
                 found = true
-            elseif type(handler) == "string" and type(value) == "table" and value.key == handler then
-                found = true
+            elseif type(handler) == "string" and type(value) == "table" then
+                -- Method call, so make sure obj matches as well
+                if value.obj == self and value.key == handler then
+                    found = true
+                end
             end
         end
 
@@ -190,7 +220,7 @@ function EventedMixin:RegisterEvent(event, handler)
     table.insert(eventMap[event], handler)
 
     if #eventMap[event] == 1 then
-        addon.eventFrame:RegisterEvent(event)
+        eventFrame:RegisterEvent(event)
     end
 end
 
@@ -215,13 +245,14 @@ function EventedMixin:UnregisterEvent(event, handler)
 
         if #eventMap[event] == 0 then
             eventMap[event] = nil
-            addon.eventFrame:UnregisterEvent(event)
+            eventFrame:UnregisterEvent(event)
         end
     end
 end
 
-addon.eventFrame:SetScript("OnEvent", function(frame, event, ...)
+eventFrame:SetScript("OnEvent", function(frame, event, ...)
     local handlers = eventMap[event]
+    if not handlers then return end
 
     for idx, handler in ipairs(handlers) do
         local handler_t = type(handler)
@@ -238,6 +269,95 @@ addon.eventFrame:SetScript("OnEvent", function(frame, event, ...)
 end)
 
 Mixin(addon, EventedMixin)
+
+--[[-------------------------------------------------------------------------
+--  Message registration and dispatch
+-------------------------------------------------------------------------]]--
+
+local messageMap = {}
+local MessagedMixin = {}
+
+-- Allow multiple handlers to be registered, called in registration order
+function MessagedMixin:RegisterMessage(message, handler)
+    local handler = handler and handler or message
+    if messageMap[message] then
+        local found = false
+
+        for idx, value in ipairs(messageMap[message]) do
+            if type(handler) == "function" and value == handler then
+                found = true
+            elseif type(handler) == "string" and type(value) == "table" then
+                -- Method call, so make sure obj matches as well
+                if value.obj == self and value.key == handler then
+                    found = true
+                end
+            end
+        end
+
+        if found then
+            assert(messageMap[message] == nil, string.format("Attempt to re-register message '%s' with handler '%s'", tostring(message), tostring(handler)))
+        end
+    end
+
+    messageMap[message] = messageMap[message] or {}
+
+    -- Convert handler to a table if it's a string
+    if type(handler) == "string" then
+        handler = {
+            type = "method",
+            key = handler,
+            obj = self,
+        }
+    end
+
+    table.insert(messageMap[message], handler)
+end
+
+-- Remove message registration for a specific handler, idempotent
+function MessagedMixin:UnregisterMessage(message, handler)
+    assert(type(message) == "string", "Invalid argument to 'Unregistermessage'")
+
+    local handler = handler and handler or message
+    if messageMap[message] then
+        local foundIdx = nil
+        for idx, value in ipairs(messageMap[message]) do
+            if type(handler) == "function" and value == handler then
+                foundIdx = idx
+            elseif type(handler) == "string" and type(value) == "table" and value.key == handler then
+                foundIdx = idx
+            end
+        end
+
+        if foundIdx and foundIdx > 0 then
+            table.remove(messageMap[message], foundIdx)
+        end
+
+        if #messageMap[message] == 0 then
+            messageMap[message] = nil
+        end
+    end
+end
+
+function MessagedMixin:FireMessage(message, ...)
+    local handlers = messageMap[message]
+    if not handlers then return end
+
+    for idx, handler in ipairs(handlers) do
+        local handler_t = type(handler)
+        if handler_t == "function" then
+            xpcall(handler, errorHandler, message, ...)
+        elseif handler_t == "table" then
+            local obj = handler.obj
+            local key = handler.key
+            if obj[key] then
+                xpcall(obj[key], errorHandler, obj, message, ...)
+            end
+        end
+    end
+end
+
+Mixin(addon, MessagedMixin)
+
 
 --[[-------------------------------------------------------------------------
 --  Module support
@@ -261,6 +381,7 @@ function addon:RegisterModule(module, name)
     table.insert(modules, module)
 
     Mixin(module, EventedMixin)
+    Mixin(module, MessagedMixin)
     Mixin(module, {
         Printf = addon.Printf,
     })
@@ -273,10 +394,16 @@ end
 --  Setup Initialize/Enable support
 -------------------------------------------------------------------------]]--
 
+local initializeFrame = CreateFrame("Frame")
+
 local enableCalled = false
 local initializeCalled = false
 
-local enableHandler = function(event, ...)
+function addon:IsInitialized()
+    return initializeCalled
+end
+
+local enableHandler = function()
     enableCalled = true
     local handler = "Enable"
 
@@ -284,7 +411,7 @@ local enableHandler = function(event, ...)
         xpcall(addon[handler], errorHandler, addon)
     end
 
-    for idx, module in ipairs(modules) do
+    for _, module in ipairs(modules) do
         if type(module[handler]) == "function" then
             xpcall(module[handler], errorHandler, module)
         end
@@ -297,23 +424,20 @@ initializeHandler = function(event, ...)
     initializeCalled = true
     local handler = "Initialize"
 
-    if ... == addonName then
-        addon:UnregisterEvent("ADDON_LOADED", initializeHandler)
-        if type(addon[handler]) == "function" then
-            xpcall(addon[handler], errorHandler, addon)
-        end
+    if type(addon[handler]) == "function" then
+        xpcall(addon[handler], errorHandler, addon)
+    end
 
-        for idx, module in ipairs(modules) do
-            if type(module[handler]) == "function" then
-                xpcall(module[handler], errorHandler, module)
-            end
+    for _, module in ipairs(modules) do
+        if type(module[handler]) == "function" then
+            xpcall(module[handler], errorHandler, module)
         end
+    end
 
-        -- If this addon was loaded-on-demand, trigger 'Enable' as well
-        if IsLoggedIn() then
-            -- defer to the enableHandler directly
-            enableHandler()
-        end
+    -- If this addon was loaded-on-demand, trigger 'Enable' as well
+    if IsLoggedIn() then
+        -- defer to the enableHandler directly
+        enableHandler()
     end
 end
 
@@ -327,35 +451,16 @@ initializeModule = function(module)
     end
 end
 
-addon:RegisterEvent("PLAYER_LOGIN", enableHandler)
-addon:RegisterEvent("ADDON_LOADED", initializeHandler)
-
---[[-------------------------------------------------------------------------
---  Message support
--------------------------------------------------------------------------]]--
-
-local messageMap = {}
-
-function addon:RegisterMessage(name, handler)
-    assert(messageMap[name] == nil, "Attempt to re-register message: " .. tostring(name))
-    messageMap[name] = handler and handler or name
-end
-
-function addon:UnregisterMessage(name)
-    assert(type(name) == "string", "Invalid argument to 'UnregisterMessage'")
-    messageMap[name] = nil
-end
-
-function addon:FireMessage(name, ...)
-    assert(type(name) == "string", "Invalid argument to 'FireMessage'")
-    local handler = messageMap[name]
-    local handler_t = type(handler)
-    if handler_t == "function" then
-        handler(name, ...)
-    elseif handler_t == "string" and addon[handler] then
-        addon[handler](addon, name, ...)
+initializeFrame:RegisterEvent("PLAYER_LOGIN", enableHandler)
+initializeFrame:RegisterEvent("ADDON_LOADED", initializeHandler)
+initializeFrame:SetScript("OnEvent", function(_, event, arg1)
+    if event == "PLAYER_LOGIN" and not enableCalled then
+        enableHandler()
+    elseif event == "ADDON_LOADED" and arg1 == addonName and not initializeCalled then
+        initializeFrame:UnregisterEvent("ADDON_LOADED")
+        initializeHandler()
     end
-end
+end)
 
 --[[-------------------------------------------------------------------------
 --  Support for deferred execution (when in-combat)
@@ -376,25 +481,22 @@ end
 -- This method will defer the execution of a method or function until the
 -- player has exited combat. If they are already out of combat, it will
 -- execute the function immediately.
-function addon:Defer(...)
-    for i = 1, select("#", ...) do
-        local thing = select(i, ...)
-        local thing_t = type(thing)
-        if thing_t == "string" or thing_t == "function" then
-            if InCombatLockdown() then
-                deferframe.queue[#deferframe.queue + 1] = select(i, ...)
-            else
-                runDeferred(thing)
-            end
+function addon:Defer(thing)
+    local thing_t = type(thing)
+    if thing_t == "string" or thing_t == "function" then
+        if InCombatLockdown() then
+            deferframe.queue[#deferframe.queue + 1] = thing
         else
-            error("Invalid object passed to 'Defer'")
+            runDeferred(thing)
         end
+    else
+        error("Invalid object passed to 'Defer'")
     end
 end
 
 deferframe:RegisterEvent("PLAYER_REGEN_ENABLED")
 deferframe:SetScript("OnEvent", function(self, event, ...)
-    for idx, thing in ipairs(deferframe.queue) do
+    for _, thing in ipairs(deferframe.queue) do
         runDeferred(thing)
     end
     twipe(deferframe.queue)

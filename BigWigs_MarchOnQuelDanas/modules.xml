@@ -2,8 +2,9 @@
 ..\FrameXML\UI.xsd">
 
 <Script file="Beloren.lua"/>
+<Script file="MidnightFalls.lua"/>
 
-<!-- <Include file="Locales\locales.xml"/> -->
-<!-- <Script file="!Options.lua"/> -->
+<Include file="Locales\locales.xml"/>
+<Script file="!Options.lua"/>
 
 </Ui>

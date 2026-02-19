@@ -12,6 +12,11 @@ mod:RegisterEnableMob(
 mod:SetEncounterID(2441)
 mod:SetRespawnTime(30)
 mod:SetStage(1)
+mod:SetPrivateAuraSounds({
+	{349627, sound = "info"}, -- Gluttony
+	{349954, sound = "alarm"}, -- Purification Protocol
+	{350101, sound = "warning"}, -- Chains of Damnation
+})
 
 --------------------------------------------------------------------------------
 -- Locals
@@ -119,6 +124,7 @@ function mod:WarmupMythicPlus() -- called from trash module
 end
 
 function mod:CHAT_MSG_MONSTER_SAY(event, msg)
+	if self:IsSecret(msg) then return end
 	if msg == L.achillite_warmup_trigger then
 		self:Message("warmup", "cyan", CL.incoming:format(self:SpellName(-23231)), L.warmup_icon) -- Achillite
 		self:Bar("warmup", 13.5, CL.count:format(CL.active, 2), L.warmup_icon)

@@ -2,7 +2,9 @@
 -- Module Declaration
 --
 
-local plugin, L = BigWigs:NewPlugin("Messages")
+local plugin, L = BigWigs:NewPlugin("Messages", {
+	"db",
+})
 if not plugin then return end
 
 -------------------------------------------------------------------------------

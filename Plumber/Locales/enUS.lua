@@ -9,9 +9,12 @@ local L = addon.L;
 --Globals
 BINDING_HEADER_PLUMBER = "Plumber Addon";
 BINDING_NAME_TOGGLE_PLUMBER_LANDINGPAGE = "Toggle Plumber Expansion Summary";   --Show/hide Expansion Summary UI
+BINDING_NAME_PLUMBER_QUESTWATCH_NEXT = "Focus On Next Quest";
+BINDING_NAME_PLUMBER_QUESTWATCH_PREVIOUS = "Focus On Previous Quest";
 
 
 --Module Control Panel
+L["Addon Name Colon"] =  "Plumber: ";
 L["Module Control"] = "Module Control";
 L["Quick Slot Generic Description"] = "\n\n*Quick Slot is a set of clickable buttons that appear under certain conditions.";
 L["Quick Slot Edit Mode"] = HUD_EDIT_MODE_MENU or "Edit Mode";
@@ -21,9 +24,10 @@ L["Quick Slot Layout"] = "Layout";
 L["Quick Slot Layout Linear"] = "Linear";
 L["Quick Slot Layout Radial"] = "Radial";
 L["Restriction Combat"] = "Does not work in combat";    --Indicate a feature can only work when out of combat
+L["Restriction Instance"] = "This feature does not work in instances.";
 L["Map Pin Change Size Method"] = "\n\n*You can change the pin size in World Map> Map Filter> Plumber";
 L["Toggle Plumber UI"] = "Toggle Plumber UI";
-L["Toggle Plumber UI Tooltip"] = "Show the following Plumber UI in the Edit Mode:\n%s\n\nThis checkbox only controls their visibility in the Edit Mode. It will not enable or disable these modules.";
+L["Toggle Plumber UI Tooltip"] = "Show the following Plumber UI in the Edit Mode:\n\n%s\n\nThis checkbox only controls their visibility in the Edit Mode. It will not enable or disable these modules.";
 L["Remove New Feature Marker"] = "Remove New Feature Marker";
 L["Remove New Feature Marker Tooltip"] = "New Feature Markers %s disappear after a week. But you can click this button to remove them now.";
 L["Modules"] = "Modules";
@@ -31,13 +35,16 @@ L["Release Notes"] = "Release Notes";
 L["Option AutoShowChangelog"] = "Auto Show Release Notes";
 L["Option AutoShowChangelog Tooltip"] = "Automatically show release notes after an update.";
 L["Category Colon"] = (CATEGORY or "Category")..": ";
-L["Module Wrong Game Version"] = "This module is ineffective for your current game version.";
+L["Module Wrong Game Version"] = "This feature is ineffective for your current game version.";
 L["Changelog Wrong Game Version"] = "The following changes do not apply to your current game version.";
 L["Settings Panel"] = "Settings Panel";
 L["Version"] = "Version";
 L["New Features"] = "New Features";
 L["New Feature Abbr"] = "New";
 L["Format Month Day"] = EVENT_SCHEDULER_DAY_FORMAT or "%s %d";
+L["Always On Module"] = "This module is always enabled.";
+L["Return To Module List"] = "Return to List";
+L["Generic Addon Conflict"] = "This module might be incompatible with addons of similar functionalities:";
 
 
 --Settings Category
@@ -54,6 +61,7 @@ L["SC Profession"] = "Professions";
 L["SC Quest"] = "Quests";
 L["SC UnitFrame"] = "Unit Frame";
 L["SC Old"] = "Legacy Content";
+L["SC Housing"] = AUCTION_CATEGORY_HOUSING or "Housing";
 L["SC Uncategorized"] = "Uncategorized";
 
 --Settings Search Keywords, Search Tags
@@ -62,6 +70,9 @@ L["KW Transmog"] = "Transmog";
 L["KW Vendor"] = "Vendor";
 L["KW LegionRemix"] = "Legion Remix";
 L["KW Housing"] = "Player Housing House";
+L["KW Combat"] = "Combat";
+L["KW ActionBar"] = "Action Bars";
+L["KW Console"] = "Console Gamepad Controller";
 
 --Filter Sort Method
 L["SortMethod 1"] = "Name";  --Alphabetical Order
@@ -170,7 +181,6 @@ L["ModuleDescription BlizzFixEventToast"] = "Modify the behavior of Event Toasts
 --Talking Head
 L["ModuleName TalkingHead"] = HUD_EDIT_MODE_TALKING_HEAD_FRAME_LABEL or "Talking Head";
 L["ModuleDescription TalkingHead"] = "Replace the default Talking Head UI with a clean, headless one.";
-L["EditMode TalkingHead"] = "Plumber: "..L["ModuleName TalkingHead"];
 L["TalkingHead Option InstantText"] = "Instant Text";   --Should texts immediately, no gradual fading
 L["TalkingHead Option TextOutline"] = "Text Outline";   --Added a stroke/outline to the letter
 L["TalkingHead Option Condition Header"] = "Hide Texts From Source:";
@@ -299,6 +309,8 @@ L["ModuleDescription ExpansionLandingPage"] = "Display extra info on the landing
 L["Instruction Track Reputation"] = "<Shift click to track this reputation>";
 L["Instruction Untrack Reputation"] = CONTENT_TRACKING_UNTRACK_TOOLTIP_PROMPT or "<Shift click to stop tracking>";
 L["Error Show UI In Combat"] = "You cannot toggle this UI while in combat.";
+L["Error Show UI In Combat 1"] = "You really cannot toggle this UI while in combat.";
+L["Error Show UI In Combat 2"] = "PLEASE STOP";
 
 
 --Landing Page Switch
@@ -315,6 +327,7 @@ L["ModuleDescription WorldMapPin_TWW"] = "Show additional pins on Khaz Algar con
 
 --Delves
 L["Great Vault Tier Format"] = GREAT_VAULT_WORLD_TIER or "Tier %s";
+L["Great Vault World Activity Tooltip"] = "Tier 1 and World Activities";
 L["Item Level Format"] = ITEM_LEVEL or "Item Level %d";
 L["Item Level Abbr"] = ITEM_LEVEL_ABBR or "iLvl";
 L["Delves Reputation Name"] = "Delver's Journey";
@@ -372,6 +385,25 @@ L["Click To Disable"] = "Click to disable";
 --NameplateWidget
 L["ModuleName NameplateWidget"] = "Nameplate: Keyflame";
 L["ModuleDescription NameplateWidget"] = "Show the number of owned Radiant Remnant on the nameplate.";
+
+
+--NameplateQuestIndicator
+L["ModuleName NameplateQuest"] = "Nameplate: Quest Indicator";
+L["ModuleDescription NameplateQuest"] = "Show quest indicator on nameplates.\n\n- (Optional) Show quest objective progress for your target.\n\n- (Optional) Show quest indicator if your party members haven't completed the objective.";
+L["NameplateQuest ShowPartyQuest"] = "Show Party Member's Quest";
+L["NameplateQuest ShowPartyQuest Tooltip"] = "Show a marker %s if one of your party members hasn't completed the quest objective.";
+L["NameplateQuest ShowTargetProgress"] = "Show Progress on Target";
+L["NameplateQuest ShowTargetProgress Tooltip"] = "Show the quest objective progress on your target's nameplate.";
+L["NameplateQuest ShowProgressOnHover"] = "Show Progress on Hover";
+L["NameplateQuest ShowProgressOnHover Tooltip"] = "Show the quest objective progress when you hover the cursor over a nameplate or a unit.";
+L["NameplateQuest ShowProgressOnKeyPress"] = "Show Progress When Pressing";
+L["NameplateQuest ShowProgressOnKeyPress Tooltip Title"] = "Show Progress When Pressing Key";
+L["NameplateQuest ShowProgressOnKeyPress Tooltip Format"] = "Show the quest objective progress when pressing the |cffffffff%s|r Key.";
+L["NameplateQuest Instruction Find Nameplate"] = "To adjust the icon position, go to a place with visible NPC nameplates.";
+L["NameplateQuest Progress Format"] = "Progress Format";
+L["Progress Show Icon"] = "Show Icon";
+L["Progress Format Completed"] = "Completed/Required";
+L["Progress Format Remaining"] = "Remaining";
 
 
 --PartyInviterInfo
@@ -443,6 +475,10 @@ L["SoftTargetName QuestObjective Tooltip"] = "Show quest objectives (if any) bel
 L["SoftTargetName QuestObjective Alert"] = "This feature requires enabling |cffffffffShow Target Tooltip|r in Game Options> Accessibility> General.";   --See globals: TARGET_TOOLTIP_OPTION
 L["SoftTargetName ShowNPC"] = "Include NPC";
 L["SoftTargetName ShowNPC Tooltip"] = "If disabled, the name will only appear on interactable Game Objects";
+L["SoftTargetName HideIcon"] = "Hide Interact Icon";
+L["SoftTargetName HideIcon Tooltip"] = "Hide the interact icon and the radial cast bar when you are in a house.";
+L["SoftTargetName HideName"] = "Hide Object Name";
+L["SoftTargetName HideName Tooltip"] = "Hide the soft target object name when you are in a house."
 
 
 --LegionRemix
@@ -516,7 +552,6 @@ L["Sample Item 4"] = "Awesome Epic Item";
 L["Sample Item 3"] = "Awesome Rare Item";
 L["Sample Item 2"] = "Awesome Uncommon Item";
 L["Sample Item 1"] = "Common Item";
-L["EditMode LootUI"] =  "Plumber: "..(HUD_EDIT_MODE_LOOT_FRAME_LABEL or "Loot Window");
 L["Manual Loot Instruction Format"] = "To temporarily cancel auto loot on a specific pickup, press and hold |cffffffff%s|r key until the loot window appears.";
 L["LootUI Option Hide Window"] = "Hide Plumber Loot Window";
 L["LootUI Option Hide Window Tooltip"] = "Hide Plumber Loot Notification Window, but still enable any features such as Force Auto Loot in the background.";
@@ -549,6 +584,14 @@ L["LootUI Option Combine Items"] = "Combine Similar Items";
 L["LootUI Option Combine Items Tooltip"] = "Display similar items on a single row. Supported Categories:\n\n- Junk Items\n- Epoch Mementos (Legion Remix)";
 L["LootUI Option Low Frame Strata"] = "Send to Back";
 L["LootUI Option Low Frame Strata Tooltip"] = "While in Loot Notification Mode, place the loot window behind other UI.\n\nThis option doesn't affect Manual Loot Mode.";
+L["LootUI Option Show Reputation"] = "Show Reputation Changes";
+L["LootUI Option Show Reputation Tooltip"] = "Display any reputation increases in the loot window.\n\nReputations earned during combat or in PvP instances will be displayed afterwards.";
+L["LootUI Option Show All Money"] = "Show Any Money Changes";
+L["LootUI Option Show All Money Tooltip"] = "Show money earned from all sources, not just loot.";
+L["LootUI Option Show All Currency"] = "Show Any Currency Changes";
+L["LootUI Option Show All Currency Tooltip"] = "Show currencies earned from all sources, not just loot.\n\n|cffff4800You may sometimes see currencies that are not displayed in the chat window.|r";
+L["LootUI Option Hide Title"] = "Hide \"You Received\" Text";
+L["LootUI Option Hide Title Tooltip"] = "Hide the \"You received\" text on the top of the loot window.";
 
 
 --Quick Slot For Third-party Dev
@@ -561,6 +604,9 @@ L["QuickSlot Error 3"] = "Quick Slot: A controller with the same key \"%s\" alre
 --Plumber Macro
 L["PlumberMacro Drive"] = "Plumber D.R.I.V.E. Macro";
 L["PlumberMacro Drawer"] = "Plumber Drawer Macro";
+L["PlumberMacro Housing"] = "Plumber Housing Macro";
+L["PlumberMacro Torch"] = "Plumber Torch Macro";
+L["PlumberMacro Outfit"] = "Plumber Outfit Macro";
 L["PlumberMacro DrawerFlag Combat"] = "The drawer will be updated after leaving combat.";
 L["PlumberMacro DrawerFlag Stuck"] = "Something went wrong when updating the drawer.";
 L["PlumberMacro Error Combat"] = "Unavailable in combat";
@@ -585,11 +631,15 @@ L["Drawer Option Hide Unusable Tooltip"] = "Hide unowned items and unlearned spe
 L["Drawer Option Hide Unusable Tooltip 2"] = "Consumable items like potions will always be shown."
 L["Drawer Option Update Frequently"] = "Update Frequently";
 L["Drawer Option Update Frequently Tooltip"] = "Attempt to update the button states whenever there is a change in your bags or spellbooks. Enabling this option may slightly increase resource usage.";
+L["ModuleName DrawerMacro"] = "Drawer Macro";
+L["ModuleDescription DrawerMacro"] = "Create a custom flyout menu to manage your items, spells, pets, mounts, toys.\n\nTo make a Drawer Macro, create a new macro first, then enter |cffd7c0a3#plumber:drawer|r in the command editbox.";
+L["No Slot For New Character Macro Alert"] = "You need to have a spare Character Specific Macro slot to complete this action.";
 
 
 --New Expansion Landing Page
 L["ModuleName NewExpansionLandingPage"] = "Expansion Summary";
-L["ModuleDescription NewExpansionLandingPage"] = "A UI that displays factions, weekly activities, and raid lockouts. You can open it by:\n\n- Click Khaz Algar Summary button on the minimap.\n\n- Set a hotkey in Game Setting> Keybindings.";
+L["ModuleDescription NewExpansionLandingPage"] = "A UI that displays factions, weekly activities, and raid lockouts. You can open it by:\n\n- Enable the minimap button.\n\n- Set a hotkey in Game Settings> Keybindings> Plumber Addon.\n\n- Use the Addon Compartment under the Calendar button.";
+L["Abbr NewExpansionLandingPage"] = "Expansion Summary";    --An abbreviated version of the same phrase. Affects German.
 L["Reward Available"] = "Reward Available";  --As brief as possible
 L["Paragon Reward Available"] = "Paragon Reward Available";
 L["Until Next Level Format"] = "%d until next level";   --Earn x reputation to reach the next level
@@ -643,8 +693,8 @@ L["Quest ID"] = "Quest ID";
 L["Creature ID"] = "Creature ID";
 L["Edit"] = EDIT or "Edit";
 L["Delete"] = DELETE or "Delete";
-L["Visit Quest Hub To Log Quests"] = "Visit the quest hub and interact with the quest givers to log today's quests."
-L["Quest Hub Instruction Celestials"] = "Visit the August Celestials Quartermaster in Vale of Eternal Blossoms to find out which temple needs your assistance."
+L["Visit Quest Hub To Log Quests"] = "Visit the quest hub and interact with the quest givers to log today's quests.";
+L["Quest Hub Instruction Celestials"] = "Visit the August Celestials Quartermaster in Vale of Eternal Blossoms to find out which temple needs your assistance.";
 L["Unavailable Klaxxi Paragons"] = "Unavailable Klaxxi Paragons:";
 L["Weekly Coffer Key Tooltip"] = "The first four weekly caches you earn each week contain a Restored Coffer Key.";
 L["Weekly Coffer Key Shards Tooltip"] = "The first four weekly caches you earn each week contain Coffer Key Shards.";
@@ -659,10 +709,38 @@ L["Click to Open Format"] = "Click to open %s";
 L["List Is Empty"] = "The list is empty.";
 
 
+--ExpansionSummaryMinimapButton
+L["LandingButton Settings Title"] = "Expansion Summary: Minimap Button";
+L["LandingButton Tooltip Format"] = "Left click to toggle %s.\nRight click for more options.";
+L["LandingButton Customize"] = "Customize";
+L["LandingButton Reposition Tooltip"] = "Press |cffffffffShift|r to Unlock";
+L["LandingButtonOption ShowButton"] = "Enable Minimap Button";
+L["LandingButtonOption Unaffected"] = "Unaffected By Minimap AddOns";
+L["LandingButtonOption Unaffected Tooltip"] = "Make this button unaffected by other minimap addons, preventing it from being re-skinned or repositioned.\n\nOnce enabled, this button will no longer move with Minimap or respect Minimap\'s scale, and will instead use the global UI scale.\n\n|cffff4800You may need to reload the UI after changing this option.|r";
+L["LandingButtonOption UseLibDBIcon"] = "Use Standarized Design";
+L["LandingButtonOption UseLibDBIcon Tooltip"] = "Let LibDBIcon handles this button\'s appearance and position.";
+L["LandingButtonOption PrimaryUI"] = "Left Click to Open";   --Control which UI to open on left-click
+L["LandingButtonOption PrimaryUI Tooltip"] = "Choose which UI to open when left-clicking the minimap button.";
+L["LandingButtonOption SmartExpansion"] = "Auto Choose Expansion";
+L["LandingButtonOption SmartExpansion Tooltip 1"] = "When enabled: left-clicking the minimap button opens the game UI suitable for your current location, such as opening Covenant Sanctum Report when you are in Shadowlands.";
+L["LandingButtonOption SmartExpansion Tooltip 2"] = "When disabled: left-clicking the minimap button always opens %s.";
+L["LandingButtonOption ReduceSize"] = "Reduce Button Size";
+L["LandingButtonOption DarkColor"] = "Use Dark Theme";
+L["LandingButtonOption HideWhenIdle"] = "Hide When Idle";
+L["LandingButtonOption HideWhenIdle Tooltip"] = "The minimap button will stay invisible until you move the cursor to its vicinity or receive a notification.\n\nThis option takes effect after closing the settings.";
+
+
 --RaidCheck
-L["ModuleName InstanceDifficulty"] = "Instance Difficulty";
+L["ModuleName InstanceDifficulty"] = "Instance Difficulty Selector";
 L["ModuleDescription InstanceDifficulty"] = "- Show a Difficulty Selector when you are at the entrance of a raid or dungeon.\n\n- Show the current difficulty and lockout info at the top of the screen when you enter an instance.";
 L["Cannot Change Difficulty"] = "Instance difficulty cannot be changed at this time.";
+L["Cannot Reset Instance"] = "You cannot reset instances at this time.";
+L["Difficulty Not Accurate"] = "Difficulty is inaccurate because you are not the party leader";
+L["Instruction Click To Open Adventure Guide"] = "Left-Click: |cffffffffOpen Adventure Guide|r";
+L["Instruction Alt Click To Reset Instance"] = "Alt Right-Click: |cffffffffReset all instances|r";
+L["Instruction Link Progress In Chat"] = "<Shift click to post progress in chat>";
+L["Instance Name"] = "Instance Name";   --Dungeon/Raid Name
+L["EditMode Instruction InstanceDifficulty"] = "The frame width is affected by the number of available options.";
 
 
 --TransmogChatCommand
@@ -674,9 +752,81 @@ L["Missing Appearances Format"] = "%d |4appearance:appearances; missing";
 L["Press Key To Copy Format"] = "Press |cffffd100%s|r to Copy";
 
 
+--TransmogOutfitSelect
+L["ModuleName TransmogOutfitSelect"] = "Outfit Collection: Quick Access";
+L["ModuleDescription1 TransmogOutfitSelect"] = "Allows you open the outfit collection and enable saved appearance anywhere.";
+L["ModuleDescription2 TransmogOutfitSelect"] = "To do this: open the Transmog UI, then drag the |cffd7c0a3Quick Access|r button above the outfit list to your action bars.";
+L["Outfit Collection"] = "Outfit Collection";
+L["Quick Access Outfit Button"] = "Quick Access";
+L["Quick Access Outfit Button Tooltip"] = "Click and drag this button to your action bars so you can change outfits anywhere.";
+
+
+--QuestWatchCycle
+L["ModuleName QuestWatchCycle"] = "Keybindings: Focus On Quest";
+L["ModuleDescription QuestWatchCycle"] = "Allows you to press hotkeys to focus on the next/previous quest in the objective tracker.\n\n|cffd4641cSet your hotkeys in Keybindings> Plumber Addon.|r";
+
+
+--CraftSearchExtended
+L["ModuleName CraftSearchExtended"] = "Extend Search Results";
+L["ModuleDescription CraftSearchExtended"] = "Shows more results when searching certain words.\n\n- Alchemy and Inscription: Find housing pigment recipes by searching dye colors.";
+
+
 --DecorModelScaleRef
-L["ModuleName DecorModelScaleRef"] = "Decor Catalog: Banana For Scale"; --See HOUSING_DASHBOARD_CATALOG_TOOLTIP
+L["ModuleName DecorModelScaleRef"] = "Decor Preview: Banana For Scale"; --See HOUSING_DASHBOARD_CATALOG_TOOLTIP
 L["ModuleDescription DecorModelScaleRef"] = "- Add a size reference (a banana) to the decor preview window, allowing you to gauge the size of the objects.\n\n- Also allow you to change the camera pitch by holding down the Left Button and moving vertically.";
+L["Toggle Banana"] = "Toggle Banana";
+
+
+--Player Housing
+L["ModuleName Housing_Macro"] = "Housing Macros";
+L["ModuleDescription Housing_Macro"] = "You can create a Teleport Home macro: create a new macro first, then enter |cffd7c0a3#plumber:home|r in the command editbox.";
+L["Teleport Home"] = "Teleport Home";
+L["Instruction Drag To Action Bar"] = "<Click and Drag this to your Action Bars>";
+L["Leave Home"] = HOUSING_DASHBOARD_RETURN or "Return to Previous Location";
+L["Toggle Torch"] = "Toggle Torch";
+L["ModuleName Housing_DecorHover"] = "Editor: 1 Decorate Mode";
+L["ModuleDescription Housing_DecorHover"] = "In Decorate Mode:\n\n- Hover the cursor over a decor to display its placement cost, name, and its item count in storage.\n\n- Allows you to \"duplicate\" a decor by pressing Alt.\n\nThe new object will not inherit the current angles and scales.";
+L["Duplicate"] = "Duplicate";
+L["Duplicate Decor Key"] = "\"Duplicate\" Key";
+L["Enable Duplicate"] = "Enable \"Duplicate\"";
+L["Enable Duplicate tooltip"] = "While in Decorate Mode, you can hover the cursor over a decor and then press a key to place another instance of this object.";
+L["ModuleName Housing_CustomizeMode"] = "Editor: 3 Customize Mode";
+L["ModuleDescription Housing_CustomizeMode"] = "In Customize Mode:\n\n- Allows you to copy dyes from one decor to another.\n\n- Change the dye slot name from index to the color's name.\n\n- Shift Click a dye swatch to track the recipe.";
+L["Copy Dyes"] = "Copy";
+L["Dyes Copied"] = "Dyes Copied";
+L["Apply Dyes"] = "Apply";
+L["Preview Dyes"] = "Preview";
+L["ModuleName TooltipDyeDeez"] = "Tooltip: Dye Pigment";
+L["ModuleDescription TooltipDyeDeez"] = "Display the dye color names on housing pigment's tooltip.";
+L["Instruction Show More Info"] = "<Press Alt to Show More Info>";
+L["Instruction Show Less Info"] = "<Press Alt to Show Less Info>";
+L["ModuleName Housing_ItemAcquiredAlert"] = "Decor Collected Alert";
+L["ModuleDescription Housing_ItemAcquiredAlert"] = "Allows you to left click the Decor Collected Alert to preview its model.";
+
+
+--Housing Clock
+L["ModuleName Housing_Clock"] = "Editor: Clock";
+L["ModuleDescription Housing_Clock"] = "While using the house editor, show a clock on the top of the screen.\n\nIt also tracks the time you spent in house editor.";
+L["Time Spent In Editor"] = "Time Spent In Editor";
+L["This Session Colon"] = "This Session: ";
+L["Time Spent Total Colon"] = "Total: ";
+L["Right Click Show Settings"] = "Right click to show settings.";
+L["Plumber Clock"] = "Plumber Clock";
+L["Clock Type"] = "Clock Type";
+L["Clock Type Analog"] = "Analog";
+L["Clock Type Digital"] = "Digital";
+
+
+--CatalogExtendedSearch
+L["ModuleName Housing_CatalogSearch"] = "Decor Catalog";
+L["ModuleDescription Housing_CatalogSearch"] = "- Enhances the search box on the Decor Catalog and Storage Tab, allowing you to find items by achievement, vendor, zone, or currency.\n\n- Shows the number of matches next to the category.\n\n- Allows you to link decor in chat.";
+L["Match Sources"] = "Match Sources";
+
+
+--SourceAchievementLink
+L["ModuleName SourceAchievementLink"] = "Interactable Source Info";
+L["ModuleDescription SourceAchievementLink"] = "Makes most achievement names on the following UI become clickable, allowing you to see their details or track them.\n\n- Decor Catalog\n\n- Mount Journal";
+
 
 --Generic
 L["Total Colon"] = FROM_TOTAL or "Total:";
@@ -692,6 +842,13 @@ L["Level Maxed"] = "(Maxed)";   --Reached max level
 L["Current Colon"] = ITEM_UPGRADE_CURRENT or "Current:";
 L["Unclaimed Reward Alert"] = WEEKLY_REWARDS_UNCLAIMED_TITLE or "You have unclaimed rewards";
 L["Uncollected Set Counter Format"] = "You have |cffffffff%d|r uncollected transmog |4set:sets;.";
+L["InstructionFormat Left Click"] = "Left Click to %s";
+L["InstructionFormat Right Click"] = "Right Click to %s";
+L["InstructionFormat Ctrl Left Click"] = "Ctrl Left Click to %s";
+L["InstructionFormat Ctrl Right Click"] = "Ctrl Right Click to %s";
+L["InstructionFormat Alt Left Click"] = "Alt Left Click to %s";
+L["InstructionFormat Alt Right Click"] = "Alt Right Click to %s";
+L["Close Frame Format"]= "|cff808080(Close %s)|r";
 
 
 --Plumber AddOn Settings
@@ -762,3 +919,14 @@ L["Upgrade Track 5"] = "Hero";
 L["Upgrade Track 6"] = "Myth";
 
 L["Match Pattern Transmog Set Partially Known"] = "^Contains (%d+) uncollected";   --TRANSMOG_SET_PARTIALLY_KNOWN_CLASS
+
+L["DyeColorNameAbbr Black"] = "Black";
+L["DyeColorNameAbbr Blue"] = "Blue";
+L["DyeColorNameAbbr Brown"] = "Brown";
+L["DyeColorNameAbbr Green"] = "Green";
+L["DyeColorNameAbbr Orange"] = "Orange";
+L["DyeColorNameAbbr Purple"] = "Purple";
+L["DyeColorNameAbbr Red"] = "Red";
+L["DyeColorNameAbbr Teal"] = "Teal";
+L["DyeColorNameAbbr White"] = "White";
+L["DyeColorNameAbbr Yellow"] = "Yellow";

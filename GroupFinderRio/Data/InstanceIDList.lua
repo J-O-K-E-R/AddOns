@@ -103,6 +103,27 @@ GFIO.DUNGEONS = {
 		difficulty = 2, -- Heroic
 		shortName = "GB (HC)"
 	},
+	[404] = {
+		id = 6988, -- Skyreach
+		difficulty = 3, -- Mythic
+		shortName = "SR (M)"
+	},
+	[182] = {
+		id = 6988, -- Skyreach
+		difficulty = 4, -- Mythic plus
+		shortName = "SR (M+)"
+	},
+	
+	[485] = {
+		id = 8910, -- Seat of the Triumvirate
+		difficulty = 3, -- Mythic plus
+		shortName = "SEAT (M)"
+	},
+	[486] = {
+		id = 8910, -- Seat of the Triumvirate
+		difficulty = 4, -- Mythic plus
+		shortName = "SEAT (M+)"
+	},
 	[534] = {
 		id = 9354, -- Siege Of Boralus
 		difficulty = 4, -- Mythic plus
@@ -534,6 +555,16 @@ GFIO.DUNGEONS = {
 		id = 16104, -- Eco-Dome Al'dani
 		difficulty = 4, -- M+ 
 		shortName = "EDA (M+)"
+	},
+	[1769] = {
+		id = 4813, -- Pit of Saron
+		difficulty = 3, -- Mythic
+		shortName = "POS (M)"
+	},
+	[1770] = {
+		id = 4813, -- Pit of Saron
+		difficulty = 4, -- Mythic plus
+		shortName = "POS (M+)"
 	},
 	--TODO FIX THESE ↑
 }

@@ -62,11 +62,16 @@ end)
 -- [[ hooking Merchant Frame ]]--
 hooksecurefunc(MerchantFrame, "Show", function()
 	selljunk.vendorAvailable = true;
-	if AutoTurnIn.db.profile.sell_junk == 2 then
-		SellButton:Click()
-	end
-	if AutoTurnIn.db.profile.auto_repair and CanMerchantRepair() then
-		AutoTurnIn:RepairEquipment()
+	if not InCombatLockdown() then
+		if AutoTurnIn.db.profile.sell_junk == 2 then
+			SellButton:Click()
+		end
+		if AutoTurnIn.db.profile.auto_repair and CanMerchantRepair() then
+			AutoTurnIn:RepairEquipment()
+		end
+	else
+		AutoTurnIn.defer.merchant.sell = AutoTurnIn.db.profile.sell_junk == 2
+		AutoTurnIn.defer.merchant.repair = AutoTurnIn.db.profile.auto_repair and CanMerchantRepair()
 	end
 end)
 hooksecurefunc(MerchantFrame, "Hide", function() selljunk.vendorAvailable = false; end)
@@ -76,6 +81,20 @@ function AutoTurnIn:SwitchSellJunk(flag)
 		SellButton:Show()
 	elseif flag == 1 then
 		SellButton:Hide()
+	end
+end
+
+function AutoTurnIn:HandleMerchantDeferred()
+	if not MerchantFrame or not MerchantFrame:IsShown() or InCombatLockdown() then
+		return
+	end
+	if self.defer.merchant.sell and self.db.profile.sell_junk == 2 then
+		self.defer.merchant.sell = false
+		SellButton:Click()
+	end
+	if self.defer.merchant.repair and self.db.profile.auto_repair and CanMerchantRepair() then
+		self.defer.merchant.repair = false
+		self:RepairEquipment()
 	end
 end
 
@@ -89,14 +108,24 @@ function AutoTurnIn:RepairEquipment()
 		-- Blizzard_GuildBankUI.lua: If M >= 0 then it's a regualar member, otherwise it is guildmaster
 		-- there is a catch, sometimes the return is NaN. 
 		local canUseGuildMoney = false
+		local usedGuildMoney = false
 		if CanGuildBankRepair() then
-			local withdrawLimit = GetGuildBankWithdrawMoney() or -1
-			canUseGuildMoney = withdrawLimit < 0 or withdrawLimit >= repairCost
+			local GUILD_WITHDRAW_UNLIMITED = 2^64
+			local withdrawLimit = GetGuildBankWithdrawMoney() or 0
+			local unlimited = withdrawLimit >= GUILD_WITHDRAW_UNLIMITED
+			canUseGuildMoney = unlimited or withdrawLimit >= repairCost
 		end
 
-		if canUseGuildMoney or GetMoney() >= repairCost then
-			RepairAllItems(guild)
+		if canUseGuildMoney then
+			usedGuildMoney = true
+			RepairAllItems(true)
 			self:Print("Repaired for:", GetCoinTextureString(repairCost))
+		elseif GetMoney() >= repairCost then
+			RepairAllItems(false)
+			self:Print("Repaired for:", GetCoinTextureString(repairCost))
+		end
+		if AutoTurnIn.db.profile.debug then
+			AutoTurnIn:DebugPrint(usedGuildMoney and "Repair used guild funds" or "Repair used personal funds")
 		end
 
 		-- if (GetRepairAllCost() > 0 ) then

@@ -19,12 +19,30 @@ end
 -- Current database version
 local DB_VERSION = 1
 
+-- Fast numeric hash based on faction IDs - detects new/deleted/reordered factions
+local function hashHierarchy(node)
+    local sum = 0
+    local count = 0
+    local function traverse(tbl)
+        for _, v in ipairs(tbl) do
+            count = count + 1
+            sum = sum + (v.factionID or 0) * count
+            if v.children then traverse(v.children) end
+        end
+    end
+    traverse(node)
+    return sum
+end
+
 -- Initialize the data structure
 function PrettyReps.DataManager:Init()
+    -- Compute hash once for reuse
+    local currentHash = hashHierarchy(PrettyReps.FactionHierarchy)
+
     if PrettyRepsDB then
         local currentVersion = PrettyRepsDB.Version
         if not currentVersion or currentVersion < DB_VERSION then
-            PrettyRepsDB.Version = DB_VERSION            
+            PrettyRepsDB.Version = DB_VERSION
             local msg = string.format(
                 "PrettyReps has been factory reset due to a major update.\n\n " ..
                 "You will need to login to your other characters again to load their data."
@@ -32,27 +50,32 @@ function PrettyReps.DataManager:Init()
             self:FactoryReset(msg)
             return
         end
-        
+
         -- Check hierarchy version and migrate if needed
-        if not PrettyRepsDB.HierarchyVersion or not PrettyReps.HIERARCHY_VERSION or PrettyRepsDB.HierarchyVersion < PrettyReps.HIERARCHY_VERSION then
+        local needsMigration = PrettyRepsDB.HierarchyHash ~= currentHash
+                            or PrettyRepsDB.HierarchyMetaVersion ~= PrettyReps.HIERARCHY_METADATA_VERSION
+
+        if needsMigration then
             self:MigrateHierarchy()
-            PrettyRepsDB.HierarchyVersion = PrettyReps.HIERARCHY_VERSION
+            PrettyRepsDB.HierarchyHash = currentHash
+            PrettyRepsDB.HierarchyMetaVersion = PrettyReps.HIERARCHY_METADATA_VERSION
         end
     end
-    
+
     -- Initialize saved variables with all required fields
     if not PrettyRepsDB then
         PrettyRepsDB = {}
     end
-    
+
     -- Ensure all required fields exist FIRST
     PrettyRepsDB.Version = PrettyRepsDB.Version or DB_VERSION
-    PrettyRepsDB.HierarchyVersion = PrettyRepsDB.HierarchyVersion or PrettyReps.HIERARCHY_VERSION
+    PrettyRepsDB.HierarchyHash = PrettyRepsDB.HierarchyHash or currentHash
+    PrettyRepsDB.HierarchyMetaVersion = PrettyRepsDB.HierarchyMetaVersion or PrettyReps.HIERARCHY_METADATA_VERSION
     PrettyRepsDB.HeaderStates = PrettyRepsDB.HeaderStates or {}
     PrettyRepsDB.FavoriteFactions = PrettyRepsDB.FavoriteFactions or {}
     PrettyRepsDB.KnownCharacters = PrettyRepsDB.KnownCharacters or {}
     PrettyRepsDB.AccountData = PrettyRepsDB.AccountData or {}
-    
+
     -- Initialize default header states if not already set
     for _, customID in pairs(self.CustomHeaders) do
         if PrettyRepsDB.HeaderStates[customID] == nil then
@@ -60,10 +83,10 @@ function PrettyReps.DataManager:Init()
             PrettyRepsDB.HeaderStates[customID] = (customID ~= self.CustomHeaders.FAVORITES)
         end
     end
-    
+
     -- Initialize memory-only character data
     self.CurrentCharacterData = nil
-    
+
     -- Now build initial structure if needed
     if not PrettyRepsDB.AccountData or not next(PrettyRepsDB.AccountData) then
         PrettyRepsDB.AccountData = self:BuildInitialStructure()
@@ -74,7 +97,8 @@ end
 function PrettyReps.DataManager:FactoryReset(completionMessage)
     PrettyRepsDB = {
         Version = DB_VERSION,  -- Preserve version to prevent re-reset
-        HierarchyVersion = PrettyReps.HIERARCHY_VERSION,
+        HierarchyHash = hashHierarchy(PrettyReps.FactionHierarchy),
+        HierarchyMetaVersion = PrettyReps.HIERARCHY_METADATA_VERSION,
         HeaderStates = {},
         FavoriteFactions = {},
         KnownCharacters = {},
@@ -386,17 +410,31 @@ function PrettyReps.DataManager:UpdateFactionFromServer(charFaction, accountFact
             charFaction.friendshipData = friendshipInfo
         end
         
-        if C_Reputation.IsFactionParagon(serverData.factionID) then
+        if C_Reputation.IsFactionParagonForCurrentPlayer(serverData.factionID) then
             charFaction.hasParagon = true
-            local currentValue, threshold, rewardQuestID, hasRewardPending, tooLowLevel = 
+            -- Request paragon reward data to be preloaded
+            C_Reputation.RequestFactionParagonPreloadRewardData(serverData.factionID)
+
+            local currentValue, threshold, rewardQuestID, hasRewardPending, tooLowLevel, paragonStorageLevel =
                 C_Reputation.GetFactionParagonInfo(serverData.factionID)
+
             charFaction.paragonData = {
                 currentValue = currentValue,
                 threshold = threshold,
                 rewardQuestID = rewardQuestID,
                 hasRewardPending = hasRewardPending,
-                tooLowLevel = tooLowLevel
+                tooLowLevel = tooLowLevel,
+                storageLevel = paragonStorageLevel
             }
+
+            -- Store the quest completion text if reward is pending
+            if hasRewardPending then
+                local questIndex = C_QuestLog.GetLogIndexForQuestID(rewardQuestID)
+                local questText = GetQuestLogCompletionText(questIndex)
+                if questText and questText ~= "" then
+                    charFaction.paragonData.rewardText = questText
+                end
+            end
         end
 
         -- Calculate max level status for character
@@ -418,17 +456,67 @@ function PrettyReps.DataManager:UpdateFactionFromServer(charFaction, accountFact
     if serverReputation and (not accountFaction.currentStanding or serverReputation > accountFaction.currentStanding) then
         shouldUpdateAccount = true
     end
-    
+
+    -- Also check major faction renown level if applicable
+    -- For major factions, currentStanding doesn't change with renown. Some major
+    -- factions have paragon (covered by the paragon check below), but not all do,
+    -- so we need an explicit renown level check to trigger the update
+    if charFaction.isMajorFaction and charFaction.majorFactionData then
+        if not accountFaction.majorFactionData or
+           not accountFaction.majorFactionData.renownLevel or
+           charFaction.majorFactionData.renownLevel > accountFaction.majorFactionData.renownLevel then
+            shouldUpdateAccount = true
+        end
+    end
+
     -- Also check friendship reputation if applicable
     if charFaction.isFriendship and charFaction.friendshipData then
         local charStanding = charFaction.friendshipData.standing
-        if not accountFaction.friendshipData or 
-           not accountFaction.friendshipData.standing or 
+        if not accountFaction.friendshipData or
+           not accountFaction.friendshipData.standing or
            charStanding > accountFaction.friendshipData.standing then
             shouldUpdateAccount = true
         end
     end
-    
+
+    -- Also check paragon reputation if applicable
+    if charFaction.hasParagon and charFaction.paragonData then
+        local charHasReward = charFaction.paragonData.hasRewardPending
+        local accountHasReward = accountFaction.paragonData and accountFaction.paragonData.hasRewardPending
+
+        -- Extract current cycle progress (ignore total cycles completed)
+        local threshold = charFaction.paragonData.threshold
+        local charRawProgress = charFaction.paragonData.currentValue % threshold
+
+        local accountRawProgress = 0
+        if accountFaction.paragonData and accountFaction.paragonData.currentValue then
+            accountRawProgress = accountFaction.paragonData.currentValue % threshold
+        end
+
+        -- For comparison, treat pending rewards OR being at/past threshold as complete progress
+        -- This handles the case where hasRewardPending hasn't been set yet by the server
+        local charCompareProgress = (charHasReward or charRawProgress >= threshold) and threshold or charRawProgress
+        local accountCompareProgress = (accountHasReward or accountRawProgress >= threshold) and threshold or accountRawProgress
+
+        -- Check if this character is the one who owns the account reputation
+        local isOwner = accountFaction.character and
+                       accountFaction.character.name == charFaction.character.name and
+                       accountFaction.character.realm == charFaction.character.realm
+
+        if not accountFaction.paragonData or
+           not accountFaction.paragonData.currentValue or
+           -- Prioritize having a reward pending (highest possible state)
+           (charHasReward and not accountHasReward) or
+           -- Same reward status, but higher current cycle progress
+           (charHasReward == accountHasReward and charCompareProgress > accountCompareProgress) or
+           -- Owner's reward status changed or their raw progress changed
+           (isOwner and (charHasReward ~= accountHasReward or charRawProgress ~= accountRawProgress)) or
+           -- Owner has reward text that's missing from account data (stale data migration)
+           (isOwner and charHasReward and charFaction.paragonData.rewardText and not accountFaction.paragonData.rewardText) then
+            shouldUpdateAccount = true
+        end
+    end
+
     if shouldUpdateAccount then
         -- Copy all relevant fields to account data
         accountFaction.reaction = charFaction.reaction
@@ -443,7 +531,7 @@ function PrettyReps.DataManager:UpdateFactionFromServer(charFaction, accountFact
         accountFaction.hasBeenEncountered = true
         accountFaction.isHeaderWithRep = charFaction.isHeaderWithRep
         accountFaction.isAccountWide = serverData.isAccountWide
-        
+
         -- Copy special reputation data
         accountFaction.isMajorFaction = charFaction.isMajorFaction
         accountFaction.majorFactionData = charFaction.majorFactionData
@@ -459,8 +547,26 @@ function PrettyReps.DataManager:UpdateFactionFromServer(charFaction, accountFact
     end
 end
 
--- Update faction data in both character and account storage
+-- Debounce timer for UpdateFromServer
+local updateFromServerTimer = nil
+local UPDATE_DEBOUNCE_TIME = 0.2
+
+-- Update faction data in both character and account storage (debounced)
 function PrettyReps.DataManager:UpdateFromServer()
+    -- Cancel any pending update
+    if updateFromServerTimer then
+        updateFromServerTimer:Cancel()
+    end
+
+    -- Schedule new update
+    updateFromServerTimer = C_Timer.NewTimer(UPDATE_DEBOUNCE_TIME, function()
+        updateFromServerTimer = nil
+        self:DoUpdateFromServer()
+    end)
+end
+
+-- Actual update implementation
+function PrettyReps.DataManager:DoUpdateFromServer()
     -- Get server data
     local serverData = {}
     for i = 1, C_Reputation.GetNumFactions() do
@@ -478,7 +584,7 @@ function PrettyReps.DataManager:UpdateFromServer()
     for _, serverFaction in ipairs(serverData) do
         local charFaction = self:FindFactionInData(charData, serverFaction.factionID)
         local accountFaction = self:FindFactionInData(accountData, serverFaction.factionID)
-        
+
         if charFaction and accountFaction then
             self:UpdateFactionFromServer(charFaction, accountFaction, serverFaction)
         end
