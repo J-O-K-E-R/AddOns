@@ -1,16 +1,14 @@
-lightweight tag 6da4d4a8c65d4f3b2627249ec9a3b373fa4ce5b7 v1.7.3
+lightweight tag 803347150f1238ff0753883f5d00488d605d0bec v1.8.0
 Author:	romdeau23 <43295566+romdeau23@users.noreply.github.com>
-Date:	Mon Jan 19 19:58:28 2026 +0100
+Date:	Mon Feb 23 00:34:37 2026 +0100
 
-commit 6da4d4a8c65d4f3b2627249ec9a3b373fa4ce5b7
+commit 803347150f1238ff0753883f5d00488d605d0bec
 Author: romdeau23 <43295566+romdeau23@users.noreply.github.com>
-Date:   Mon Jan 19 19:58:28 2026 +0100
+Date:   Mon Feb 23 00:34:37 2026 +0100
 
-    Update TOC
-
-commit b1bcf2adc97e65a71636f0def733df83577c41e2
-Author: romdeau23 <43295566+romdeau23@users.noreply.github.com>
-Date:   Wed Sep 17 02:01:07 2025 +0200
-
-    Update README
+    1.8.0
+    
+    Add a new "filter carry groups" option
+    Fix message()-related errors
+    Update TOC for 12.0.1
 

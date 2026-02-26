@@ -245,7 +245,7 @@ do
 			plugin.db.profile[info[#info]] = value
 			UpdateFont()
 		end,
-		order = 6,
+		order = 8,
 		args = {
 			general = {
 				type = "group",

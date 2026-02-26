@@ -136,6 +136,7 @@ if L then
 	L.enchantress = "Incantatrice Spiraguzza"
 	L.healer = "Guaritrice di Scaglie Spiraguzza"
 	L.collaborator = "Collaboratore Spiraguzza"
+	L.soothsayer = "Indovina Spiraguzza"
 	L.ray = "Manta Spiraguzza"
 end
 

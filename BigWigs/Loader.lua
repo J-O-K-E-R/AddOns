@@ -12,11 +12,11 @@ local strfind = string.find
 -- Generate our version variables
 --
 
-local BIGWIGS_VERSION = 406
+local BIGWIGS_VERSION = 407
 local CONTENT_PACK_VERSIONS = {
-	["LittleWigs"] = {12, 0, 10},
-	["BigWigs_Classic"] = {12, 0, 4},
-	["BigWigs_BurningCrusade"] = {12, 0, 0},
+	["LittleWigs"] = {12, 0, 13},
+	["BigWigs_Classic"] = {12, 0, 9},
+	["BigWigs_BurningCrusade"] = {12, 0, 6},
 	["BigWigs_WrathOfTheLichKing"] = {12, 0, 2},
 	["BigWigs_Cataclysm"] = {12, 0, 0},
 	["BigWigs_MistsOfPandaria"] = {12, 0, 1},
@@ -24,7 +24,8 @@ local CONTENT_PACK_VERSIONS = {
 	["BigWigs_Legion"] = {12, 0, 0},
 	["BigWigs_BattleForAzeroth"] = {12, 0, 0},
 	["BigWigs_Shadowlands"] = {12, 0, 0},
-	["BigWigs_Dragonflight"] = {12, 0, 1},
+	["BigWigs_Dragonflight"] = {12, 0, 3},
+	["BigWigs_TheWarWithin"] = {12, 0, 1},
 }
 local BIGWIGS_RELEASE_STRING
 local versionQueryString, versionResponseString = "Q^%d^%s^%d^%s", "V^%d^%s^%d^%s"
@@ -56,11 +57,12 @@ do
 	local ALPHA = "ALPHA"
 
 	local releaseType
-	local myGitHash = "f84b5fd" -- The ZIP packager will replace this with the Git hash.
+	local myGitHash = "a8dc1a4" -- The ZIP packager will replace this with the Git hash.
 	local releaseString
 	--[=[@alpha@
 	-- The following code will only be present in alpha ZIPs.
 	releaseType = ALPHA
+	public.usingBigWigsAlpha = true
 	--@end-alpha@]=]
 
 	-- If we find "@" then we're running from Git directly.
@@ -91,6 +93,7 @@ do
 		releaseString = L.guildRelease:format(BIGWIGS_GUILD_VERSION, BIGWIGS_VERSION)
 		versionQueryString = versionQueryString:format(BIGWIGS_VERSION, myGitHash, tbl.guildVersion, tbl.guildName)
 		versionResponseString = versionResponseString:format(BIGWIGS_VERSION, myGitHash, tbl.guildVersion, tbl.guildName)
+		public.usingBigWigsGuild = true
 	else
 		versionQueryString = versionQueryString:format(BIGWIGS_VERSION, myGitHash, 0, "")
 		versionResponseString = versionResponseString:format(BIGWIGS_VERSION, myGitHash, 0, "")
@@ -286,12 +289,10 @@ do
 			name = mn,
 			bigWigsBundled = {
 				[mn] = true,
-				[tww] = true,
 			},
 			littlewigsDefault = lw_cs,
 			littleWigsBundled = {
 				[lw_mn] = true,
-				[lw_tww] = true,
 				[lw_delves] = true,
 				[lw_cs] = true,
 			},
@@ -319,13 +320,11 @@ do
 		public.currentExpansion = { -- Change on new expansion releases
 			name = mn,
 			bigWigsBundled = {
-				[tww] = true,
 				[mn] = true,
 			},
 			littlewigsDefault = lw_cs,
 			littleWigsBundled = {
 				[lw_mn] = true,
-				[lw_tww] = true,
 				[lw_delves] = true,
 				[lw_cs] = true,
 			},
@@ -355,9 +354,6 @@ do
 				--[658] = lw_cs, -- Pit of Saron
 			},
 			zones = {
-				[2657] = "BigWigs_NerubarPalace",
-				[2769] = "BigWigs_LiberationOfUndermine",
-				[2810] = "BigWigs_ManaforgeOmega",
 				[2939] = "BigWigs_TheDreamrift",
 				[2912] = "BigWigs_TheVoidspire",
 				[2913] = "BigWigs_MarchOnQuelDanas",
@@ -1356,6 +1352,10 @@ do
 		BigWigs_Amirdrassil = "BigWigs_Dragonflight",
 		BigWigs_DragonIsles = "BigWigs_Dragonflight",
 		BigWigs_VaultOfTheIncarnates = "BigWigs_Dragonflight",
+		BigWigs_NerubarPalace = "BigWigs_TheWarWithin",
+		BigWigs_LiberationOfUndermine = "BigWigs_TheWarWithin",
+		BigWigs_ManaforgeOmega = "BigWigs_TheWarWithin",
+		BigWigs_KhazAlgar = "BigWigs_TheWarWithin",
 	}
 	local DisableAddOn = C_AddOns.DisableAddOn
 	local delayedMessages = {}
@@ -1378,6 +1378,7 @@ do
 		BigWigs_BattleForAzeroth = true,
 		BigWigs_Shadowlands = true,
 		BigWigs_Dragonflight = true,
+		BigWigs_TheWarWithin = true,
 		LittleWigs = true,
 		LittleWigs_Classic = true,
 		LittleWigs_BurningCrusade = true,
@@ -1389,10 +1390,8 @@ do
 		LittleWigs_BattleForAzeroth = true,
 		LittleWigs_Shadowlands = true,
 		LittleWigs_Dragonflight = true,
+		LittleWigs_TheWarWithin = true,
 		-- Dynamic content
-		BigWigs_NerubarPalace = true,
-		BigWigs_LiberationOfUndermine = true,
-		BigWigs_ManaforgeOmega = true,
 		BigWigs_TheVoidspire = true,
 		BigWigs_TheDreamrift = true,
 		BigWigs_MarchOnQuelDanas = true,
@@ -1619,12 +1618,12 @@ end
 --
 
 do
-	local DBMdotRevision = "20260214044057" -- The changing version of the local client, changes with every new zip using the project-date-integer packager replacement.
-	local DBMdotDisplayVersion = "12.0.20" -- "N.N.N" for a release and "N.N.N alpha" for the alpha duration.
-	local DBMdotReleaseRevision = "20260213000000" -- Hardcoded time, manually changed every release, they use it to track the highest release version, a new DBM release is the only time it will change.
+	local DBMdotRevision = "20260224045406" -- The changing version of the local client, changes with every new zip using the project-date-integer packager replacement.
+	local DBMdotDisplayVersion = "12.0.25" -- "N.N.N" for a release and "N.N.N alpha" for the alpha duration.
+	local DBMdotReleaseRevision = "20260223000000" -- Hardcoded time, manually changed every release, they use it to track the highest release version, a new DBM release is the only time it will change.
 	local protocol = 3
 	local versionPrefix = "V"
-	local PForceDisable = public.isRetail and 22 or 20
+	local PForceDisable = 22
 
 	local timer = nil
 	local function sendDBMMsg()

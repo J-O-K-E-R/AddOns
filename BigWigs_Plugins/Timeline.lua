@@ -1,4 +1,4 @@
-if not BigWigsLoader.isMidnight then return end -- XXX Only for Midnight
+if not BigWigsLoader.isRetail then return end -- Retail only module
 --------------------------------------------------------------------------------
 -- Module Declaration
 --
@@ -11,15 +11,14 @@ if not plugin then return end
 --
 
 local db = nil
+local hasCustomTimers = {}
 
 --------------------------------------------------------------------------------
 -- Profile
 --
 
 plugin.defaultDB = {
-	show_bars = true,
-	show_messages = true,
-	play_sound = true,
+	timer_mode = "enhanced",
 }
 
 local function updateProfile()
@@ -33,6 +32,10 @@ local function updateProfile()
 			db[k] = plugin.defaultDB[k]
 		end
 	end
+
+	if db.timer_mode ~= "enhanced" and db.timer_mode ~= "blizzbars" and db.timer_mode ~= "blizztimeline" and db.timer_mode ~= "dev" then
+		db.timer_mode = plugin.defaultDB.timer_mode
+	end
 end
 
 --------------------------------------------------------------------------------
@@ -45,15 +48,12 @@ do
 	local function timelineDisabled()
 		return not C_CVar.GetCVarBool("combatWarningsEnabled") or not C_CVar.GetCVarBool("encounterTimelineEnabled")
 	end
-	local function warningsDisabled()
-		return not C_CVar.GetCVarBool("combatWarningsEnabled") or not C_CVar.GetCVarBool("encounterWarningsEnabled")
-	end
 
 	plugin.pluginOptions = {
 		type = "group",
 		name = "|TInterface\\AddOns\\BigWigs\\Media\\Icons\\Menus\\Timeline:20|t ".. L.timeline,
 		childGroups = "tab",
-		order = 0.1,
+		order = 5,
 		args = {
 			anchorsButton = {
 				type = "execute",
@@ -80,49 +80,30 @@ do
 				width = "full",
 				order = 2,
 			},
-			show_bars = {
-				type = "toggle",
-				name = L.blizzTimersAsBigWigsBars,
-				desc = L.blizzTimersAsBigWigsBarsDesc,
+			timer_mode = {
+				type = "select",
+				name = L.show_bars,
+				values = {
+					enhanced = L.bigwigsEnhancedTimers,
+					blizzbars = L.blizzBasicAsBars,
+					blizztimeline = L.blizzBasicAsBlizzTimeline,
+					dev = (BigWigsLoader.isTestBuild or BigWigsLoader.usingBigWigsAlpha or BigWigsLoader.usingBigWigsGuild) and L.developerMode or nil,
+				},
+				sorting = {
+					"enhanced",
+					"blizzbars",
+					"blizztimeline",
+					(BigWigsLoader.isTestBuild or BigWigsLoader.usingBigWigsAlpha or BigWigsLoader.usingBigWigsGuild) and "dev" or nil,
+				},
 				get = function(info)
 					return db[info[#info]]
 				end,
 				set = function(info, value)
 					db[info[#info]] = value
-					if value then
-						plugin:StartBars()
-					else
-						plugin:OnPluginDisable()
-					end
+					plugin:UpdateBarsShown()
 				end,
-				width = "full",
+				width = 3,
 				order = 3,
-			},
-			show_messages = {
-				type = "toggle",
-				name = L.blizzWarningsAsBigWigsMessages,
-				desc = L.blizzWarningsAsBigWigsMessagesDesc,
-				get = function(info)
-					return db[info[#info]]
-				end,
-				set = function(info, value)
-					db[info[#info]] = value
-				end,
-				width = "full",
-				order = 4,
-			},
-			play_sound = {
-				type = "toggle",
-				name = L.blizzAudioAsBigWigsAudio,
-				desc = L.blizzAudioAsBigWigsAudioDesc,
-				get = function(info)
-					return db[info[#info]]
-				end,
-				set = function(info, value)
-					db[info[#info]] = value
-				end,
-				width = "full",
-				order = 5,
 			},
 			timeline = {
 				type = "group",
@@ -209,67 +190,6 @@ do
 					},
 				},
 			},
-			warnings = {
-				type = "group",
-				name = L.blizzWarningSettings,
-				get = function(info)
-					local cvar = info[#info]
-					return C_CVar.GetCVarBool(cvar)
-				end,
-				set = function(info, value)
-					local cvar = info[#info]
-					C_CVar.SetCVar(cvar, value and "1" or "0")
-				end,
-				order = 20,
-				args = {
-					header = {
-						type = "description",
-						name = L.blizzTimelineSettingsNote,
-						order = 0,
-					},
-					encounterWarningsEnabled = {
-						type = "toggle",
-						name = L.enableBlizzWarnings,
-						desc = L.enableBlizzWarningsDesc,
-						width = 1.5,
-						order = 1,
-						disabled = function() return db.show_messages end,
-					},
-					encounterWarningsLevel = {
-						type = "select",
-						name = _G.COMBAT_WARNINGS_ENABLE_ENCOUNTER_WARNINGS_LABEL,
-						desc = ("%s|n|n%s: %s|n|n%s: %s|N|n%s: %s"):format(_G.COMBAT_WARNINGS_ENABLE_ENCOUNTER_WARNINGS_TOOLTIP,
-							NORMAL_FONT_COLOR:WrapTextInColorCode(_G.COMBAT_WARNINGS_TEXT_LEVEL_MINOR_LABEL), WHITE_FONT_COLOR:WrapTextInColorCode(_G.COMBAT_WARNINGS_TEXT_LEVEL_MINOR_TOOLTIP),
-							NORMAL_FONT_COLOR:WrapTextInColorCode(_G.COMBAT_WARNINGS_TEXT_LEVEL_MEDIUM_LABEL), WHITE_FONT_COLOR:WrapTextInColorCode(_G.COMBAT_WARNINGS_TEXT_LEVEL_MEDIUM_TOOLTIP),
-							NORMAL_FONT_COLOR:WrapTextInColorCode(_G.COMBAT_WARNINGS_TEXT_LEVEL_CRITICAL_LABEL), WHITE_FONT_COLOR:WrapTextInColorCode(_G.COMBAT_WARNINGS_TEXT_LEVEL_CRITICAL_TOOLTIP)
-						),
-						values = {
-							[Enum.EncounterEventSeverity.Low] = _G.COMBAT_WARNINGS_TEXT_LEVEL_MINOR_LABEL,
-							[Enum.EncounterEventSeverity.Medium] = _G.COMBAT_WARNINGS_TEXT_LEVEL_MEDIUM_LABEL,
-							[Enum.EncounterEventSeverity.High] = _G.COMBAT_WARNINGS_TEXT_LEVEL_CRITICAL_LABEL,
-						},
-						get = function(info)
-							local cvar = info[#info]
-							return tonumber(C_CVar.GetCVar(cvar))
-						end,
-						set = function(info, value)
-							local cvar = info[#info]
-							C_CVar.SetCVar(cvar, tostring(value))
-						end,
-						disabled = warningsDisabled,
-						width = 1,
-						order = 2,
-					},
-					encounterWarningsHideIfNotTargetingPlayer = {
-						type = "toggle",
-						name = _G.COMBAT_WARNINGS_HIDE_IF_NOT_TARGETING_PLAYER_LABEL,
-						desc = _G.COMBAT_WARNINGS_HIDE_IF_NOT_TARGETING_PLAYER_TOOLTIP,
-						disabled = warningsDisabled,
-						width = 2,
-						order = 3,
-					},
-				},
-			},
 		},
 	}
 
@@ -306,12 +226,37 @@ do
 
 	function plugin:DoTestMessage(name, icon)
 		local severity = math.random(1, 3)
-		if db.show_messages then
-			plugin:SendMessage("BigWigs_Message", plugin, nil, name, colors[severity], icon, false)
+		plugin:SendMessage("BigWigs_Message", plugin, nil, name, colors[severity], icon, false)
+		plugin:SendMessage("BigWigs_Sound", plugin, nil, sounds[severity])
+	end
+end
+
+function plugin:UpdateBarsShown(event, module)
+	local showBlizzardBars = db.timer_mode ~= "blizztimeline"
+
+	local encounterID = module and module:GetEncounterID()
+	if encounterID then
+		if event == "BigWigs_OnBossEngage" or event == "BigWigs_OnBossEngageMidEncounter" then
+			hasCustomTimers[encounterID] = module.useCustomTimers or nil
+			if module.useCustomTimers and db.timer_mode == "enhanced" then
+				showBlizzardBars = false
+			end
+		else -- BigWigs_OnBossDisable
+			hasCustomTimers[encounterID] = nil
+			showBlizzardBars = not next(hasCustomTimers) or db.timer_mode == "enhanced"
 		end
-		if db.play_sound then
-			plugin:SendMessage("BigWigs_Sound", plugin, nil, sounds[severity])
-		end
+	end
+
+	if showBlizzardBars then
+		self:RegisterEvent("ENCOUNTER_TIMELINE_EVENT_ADDED")
+		self:RegisterEvent("ENCOUNTER_TIMELINE_EVENT_STATE_CHANGED")
+		self:RegisterEvent("ENCOUNTER_TIMELINE_EVENT_REMOVED")
+		self:StartBars()
+	else
+		self:UnregisterEvent("ENCOUNTER_TIMELINE_EVENT_ADDED")
+		self:UnregisterEvent("ENCOUNTER_TIMELINE_EVENT_STATE_CHANGED")
+		self:UnregisterEvent("ENCOUNTER_TIMELINE_EVENT_REMOVED")
+		self:StopBars()
 	end
 end
 
@@ -330,23 +275,18 @@ function plugin:OnPluginEnable()
 	self:RegisterMessage("BigWigs_ProfileUpdate", updateProfile)
 	updateProfile()
 
-	self:RegisterEvent("ENCOUNTER_TIMELINE_EVENT_ADDED")
-	self:RegisterEvent("ENCOUNTER_TIMELINE_EVENT_STATE_CHANGED")
-	self:RegisterEvent("ENCOUNTER_TIMELINE_EVENT_REMOVED")
+	self:RegisterMessage("BigWigs_OnBossEngage", "UpdateBarsShown")
+	self:RegisterMessage("BigWigs_OnBossEngageMidEncounter", "UpdateBarsShown")
+	self:RegisterMessage("BigWigs_OnBossDisable", "UpdateBarsShown")
+	self:UpdateBarsShown()
 
 	self:RegisterEvent("ENCOUNTER_WARNING")
 
-	if db.show_messages then
-		C_CVar.SetCVar("encounterWarningsEnabled", "0")
-	end
-
-	self:StartBars()
+	C_CVar.SetCVar("encounterWarningsEnabled", "0")
 end
 
 function plugin:OnPluginDisable()
-	for _, eventId in next, C_EncounterTimeline.GetEventList() do
-		self:SendMessage("BigWigs_StopBar", nil, nil, eventId)
-	end
+	self:StopBars()
 end
 
 function plugin:StartBars()
@@ -367,12 +307,16 @@ function plugin:StartBars()
 	end
 end
 
+function plugin:StopBars()
+	for _, eventId in next, C_EncounterTimeline.GetEventList() do
+		self:SendMessage("BigWigs_StopBar", nil, nil, eventId)
+	end
+end
+
 -------------------------------------------------------------------------------
 -- Bars
 
 function plugin:ENCOUNTER_TIMELINE_EVENT_ADDED(_, eventInfo)
-	if not db.show_bars then return end
-
 	-- Not Secret
 	local eventId = eventInfo.id
 	local duration = eventInfo.duration
@@ -391,7 +335,7 @@ function plugin:ENCOUNTER_TIMELINE_EVENT_ADDED(_, eventInfo)
 		-- EditMode spells all have the same name
 		spellName = ("%s (%d)"):format(L.test, tonumber(strsub(eventId, -1)) + 1)
 	end
-	self:SendMessage("BigWigs_StartBar", nil, nil, spellName, duration, icon, maxQueueDuration, nil, eventId)
+	self:SendMessage("BigWigs_StartBar", nil, nil, spellName, duration, icon, maxQueueDuration, nil, eventId, eventId)
 
 	local state = C_EncounterTimeline.GetEventState(eventId)
 	if state == Enum.EncounterTimelineEventState.Paused then
@@ -413,7 +357,7 @@ function plugin:ENCOUNTER_TIMELINE_EVENT_STATE_CHANGED(_, eventId)
 	elseif newState == Enum.EncounterTimelineEventState.Finished then
 		local info = C_EncounterTimeline.GetEventInfo(eventId)
 		if info.source == Enum.EncounterTimelineEventSource.EditMode then
-			self:DoTestMessage(("%s (%d)"):format(info.spellName, tonumber(strsub(eventId, -1)) + 1), info.iconFileID)
+			self:DoTestMessage(("%s (%d)"):format(L.test, tonumber(strsub(eventId, -1)) + 1), info.iconFileID)
 		end
 		self:SendMessage("BigWigs_StopBar", nil, nil, eventId)
 	end
@@ -427,6 +371,16 @@ end
 -------------------------------------------------------------------------------
 -- Messages
 
+local severitySoundMap = {
+	[0] = "alert",
+	[1] = "alarm",
+	[2] = "warning",
+}
+local severityColorMap = {
+	[0] = "yellow",
+	[1] = "orange",
+	[2] = "red",
+}
 function plugin:ENCOUNTER_WARNING(_, eventInfo)
 	-- Not Secret
 	-- local duration = eventInfo.duration
@@ -448,10 +402,10 @@ function plugin:ENCOUNTER_WARNING(_, eventInfo)
 	-- we obviously can't check if the message is targeting the player, so we lose that functionality
 	-- local shouldShowWarningBasedOnSeverity = severity >= tonumber(C_CVar.GetCVar("encounterWarningsLevel"))
 
-	if db.show_messages then
+	local formattedTargetName = targetName
+	if targetGUID then
 		local messages = BigWigs:GetPlugin("Messages", true)
-		local formattedTargetName = targetName
-		if targetGUID and messages.db.profile.classcolor then
+		if not messages or (messages and messages.db.profile.classcolor) then
 			local _, className = GetPlayerInfoByGUID(targetGUID)
 			if className then
 				local classColor = C_ClassColor.GetClassColor(className)
@@ -460,24 +414,12 @@ function plugin:ENCOUNTER_WARNING(_, eventInfo)
 				end
 			end
 		end
-		local formattedText = string.format(text, casterName, formattedTargetName)
-
-		local severityColorMap = {
-			[0] = "yellow",
-			[1] = "orange",
-			[2] = "red",
-		}
-
-		self:SendMessage("BigWigs_Message", nil, false, formattedText, severityColorMap[severity] or "yellow", iconFileID, false)
 	end
+	local formattedText = string.format(text, casterName, formattedTargetName)
 
-	if shouldPlaySound and db.play_sound then
-		local severitySoundMap = {
-			[0] = "alert",
-			[1] = "alarm",
-			[2] = "warning",
-		}
+	self:SendMessage("BigWigs_Message", nil, false, formattedText, severityColorMap[severity] or "yellow", iconFileID, false)
 
+	if shouldPlaySound then
 		self:SendMessage("BigWigs_Sound", nil, false, severitySoundMap[severity] or "alert")
 	end
 end

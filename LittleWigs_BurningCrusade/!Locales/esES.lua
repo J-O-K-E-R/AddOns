@@ -136,6 +136,7 @@ if L then
 	L.enchantress = "Encantadora Colmillo Torcido"
 	L.healer = "Sanadora de escamas Colmillo Torcido"
 	L.collaborator = "Colaborador Colmillo Torcido"
+	L.soothsayer = "Veritas Colmillo Torcido"
 	L.ray = "Raya Colmillo Torcido"
 end
 

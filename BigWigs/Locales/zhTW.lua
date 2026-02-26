@@ -277,9 +277,9 @@ L.mythicplus_settings_export_desc = "匯出傳奇+ 設定。"
 L.imported_battleres_settings = "戰復設定"
 L.battleres_settings_import_desc = "匯入戰復設定。"
 L.battleres_settings_export_desc = "匯出戰復設定。"
---L.imported_privateAuras_settings = "Private Auras Settings"
---L.privateAuras_settings_import_desc = "Import all Private Auras settings."
---L.privateAuras_settings_export_desc = "Export all Private Auras settings."
+L.imported_privateAuras_settings = "私有光環設定"
+L.privateAuras_settings_import_desc = "匯入私有光環設定。"
+L.privateAuras_settings_export_desc = "匯出私有光環設定。"
 
 -- InstanceSharing.lua
 L.sharing_window_title = "分享首領設定"
@@ -438,6 +438,7 @@ L.keystoneTeleportTip = "點擊副本名字可以直接|cFF33FF99傳送|r到該�
 L.keystoneTimerunner = "|A:timerunning-glues-icon:14:14|a時空奔行者。" -- Note: Timerunning is a mode like "Legion Remix", it is NOT the same as Timewalking
 L.keystoneSlashKeys = "同時註冊 |cFF33FF99/keys|r 指令"
 L.keystoneSlashKeystone = "同時註冊 |cFF33FF99/keystone|r 指令"
+--L.unavailableWhilstInCombat = "Unavailable whilst in combat"
 
 -- It doesn't really matter what you call it as long as it's recognizable and limited to ~6 characters
 L.keystoneShortName_TheRookery = "培育所" --培育
@@ -965,6 +966,8 @@ L.nameplateOptInWarning = "|cffff4411警告！|r\n\n開啟「手動啟用」模�
 --
 
 L.privateAuras = "私有光環"
+--L.privateAurasDesc1 = "'Private Auras' are a special type of debuff that addons cannot detect or perform any automation on. These debuffs are used by all modern boss encounters now.\n\n"
+--L.privateAurasDesc2 = "BigWigs can help you keep track of when they are applied to you by displaying them as icons. |cFF33FF99This can help you by displaying critical debuffs separately from your normal debuffs.|r\n\n"
 
 L.createTestAura = "創建測試光環"
 L.showDispelType = "顯示驅散類型圖示"
@@ -982,13 +985,14 @@ L.aurasOnAnotherDesc = "指定一名玩家，設定該玩家身上的光環圖�
 L.chooseAPlayer = "選擇一名玩家"
 L.theOtherTank = "自動尋找坦克"
 L.theOtherTankDesc = "按照隊伍的排列順序，自動尋找隊伍中的另一名坦克，顯示該坦克的私有光環。（目前：%s）"
---L.onlyWhenYouAreTank = "Only show when you are also a tank"
+L.onlyWhenYouAreTank = "僅在你也是坦克時顯示"
 L.playerInYourGroup = "隊伍中的玩家"
 L.maxIcons = "圖示最大數量"
 L.maxIconsDesc = "最多顯示幾個圖示。"
 L.privateAurasHelpTip = "|TInterface\\AddOns\\BigWigs\\Media\\Icons\\minimap_raid:0:0|tBigWigs: 現在，你可以在受到私有光環減益效果時，獲得大圖示提示；並且，你可以設定是否要監視其他隊友（例如坦克）的狀態。"
 
-L.privateAurasTestAnchorText = "私有 %d"
+L.privateAurasTestAnchorText = "私有\n（%d）"
+--L.privateAurasTestTankAnchorText = "Tank\nAura\n(%d)"
 
 -----------------------------------------------------------------------
 -- Proximity.lua
@@ -1102,19 +1106,15 @@ L.newFastestVictoryPrint = "新的最快紀錄：（-%s）" -- New fastest victo
 --
 
 L.timeline = "暴雪時間軸"
-L.blizzTimersAsBigWigsBars = "用 BigWigs 計時條取代暴雪內建時間軸"
-L.blizzTimersAsBigWigsBarsDesc = "將所有暴雪內建的首領計時（時間軸）替換為 BigWigs 樣式的計時條。"
-L.blizzWarningsAsBigWigsMessages = "用 BigWigs 訊息取代暴雪內建首領警告"
-L.blizzWarningsAsBigWigsMessagesDesc = "將所有暴雪內建的首領警告訊息替換為 BigWigs 風格的提示訊息"
-L.blizzAudioAsBigWigsAudio = "將暴雪內建音效替換為 BigWigs 音效"
-L.blizzAudioAsBigWigsAudioDesc = "將暴雪原本的內建音效替換為 BigWigs 音效，並根據重要程度播放對應的聲音（提示、警報或警告）"
-L.blizzWarningSettings = "暴雪警告設定"
-L.blizzTimelineSettings = "暴雪時間軸設定"
+L.blizzTimelineSettings = "暴雪首領技能時間軸"	-- follow official translate
 L.blizzTimelineSettingsNote = "|cffff4411本頁選項僅控制暴雪內建設定，在此提供是為了方便你與 BigWigs 的設定一起調整。|r"
-L.enableBlizzTimeline = "啟用暴雪時間軸"
-L.enableBlizzTimelineDesc = "在暴雪內建的時間軸上顯示所有的首領戰計時條。"
-L.enableBlizzWarnings = "啟用暴雪首領警告"
-L.enableBlizzWarningsDesc = "若啟用暴雪內建的首領警告，建議關閉「使用 BigWigs 訊息取代暴雪內建首領警告」功能，以免出現重複警報。"
+L.enableBlizzTimeline = "啟用暴雪的首領技能（時間軸）"	-- follow official translate，編輯模式裡這個元素就叫「首領技能」
+L.enableBlizzTimelineDesc = "在暴雪內建的首領技能時間軸上顯示所有的首領戰計時條。"
+L.show_bars = "顯示來源"
+--L.bigwigsEnhancedTimers = "BigWigs enhanced timers displayed as BigWigs bars |cFF33FF99(recommended)|r"
+--L.blizzBasicAsBars = "Blizzard basic timers displayed as BigWigs bars"
+--L.blizzBasicAsBlizzTimeline = "Blizzard basic timers displayed on the Blizzard timeline"
+--L.developerMode = "Developer Mode"
 
 -----------------------------------------------------------------------
 -- Victory.lua

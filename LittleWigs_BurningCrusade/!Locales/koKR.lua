@@ -136,6 +136,7 @@ if L then
 	L.enchantress = "갈퀴송곳니 요술사"
 	L.healer = "갈퀴송곳니 치유사"
 	L.collaborator = "갈퀴송곳니 공모자"
+	L.soothsayer = "갈퀴송곳니 예언자"
 	L.ray = "갈퀴송곳니 가오리"
 end
 

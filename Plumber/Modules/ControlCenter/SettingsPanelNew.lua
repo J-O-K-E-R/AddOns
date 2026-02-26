@@ -659,6 +659,13 @@ do
                 addon.LandingPageUtil.PlayUISound("CheckboxOff");
                 addon.CloseSettingsDialogByModuleDBKey(self.dbKey);
             end
+
+            if self:IsMouseMotionFocus() then
+                --Some module descriptions change with enable states
+                if not self.isChangelogButton then
+                    MainFrame:ShowFeaturePreview(self.data, self.parentDBKey);
+                end
+            end
         end
 
         MainFrame:UpdateSettingsEntries();
@@ -2016,15 +2023,16 @@ end
 do  --MainFrame Minimize UI while certain module options are shown
     function MainFrame:OnShow()
         addon.CallbackRegistry:Register("SettingsPanel.ModuleOptionClosed", self.Maximize, self);
+        addon.CallbackRegistry:Trigger("SettingsPanel.Show");
     end
     MainFrame:SetScript("OnShow", MainFrame.OnShow);
 
     function MainFrame:OnHide()
         addon.CallbackRegistry:UnregisterCallbackOwner("SettingsPanel.ModuleOptionClosed", self);
-
         if self.minimized then
             self:Maximize();
         end
+        addon.CallbackRegistry:Trigger("SettingsPanel.Hide");
     end
     MainFrame:SetScript("OnHide", MainFrame.OnHide);
 

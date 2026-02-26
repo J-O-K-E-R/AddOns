@@ -71,7 +71,7 @@ do
 		desc = L.autoReplyDesc,
 		type = "group",
 		childGroups = "tab",
-		order = 12,
+		order = 16,
 		get = function(info)
 			return plugin.db.profile[info[#info]]
 		end,

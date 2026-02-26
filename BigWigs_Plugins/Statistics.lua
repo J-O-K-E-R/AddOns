@@ -45,11 +45,13 @@ local dontPrint = { -- Don't print a warning message for these difficulties
 	[9] = true, -- 40 Player (MC/BWL/AQ40)
 	[23] = true, -- Mythic Dungeon
 	[24] = true, -- Timewalking
+	[173] = true, -- Normal Dungeon (Classic)
+	[174] = true, -- Heroic Dungeon (Classic)
 	[208] = true, -- Delves
 }
 
 --[[
-11.2.0
+12.0.1
 1. Normal
 2. Heroic
 3. 10 Player
@@ -100,8 +102,9 @@ local dontPrint = { -- Don't print a warning message for these difficulties
 230. Heroic
 232. Event
 236. Lorewalking
+241. Lorewalking
 
-5.5.0
+5.5.3
 1. Normal
 2. Heroic
 3. 10 Player
@@ -121,6 +124,7 @@ local dontPrint = { -- Don't print a warning message for these difficulties
 176. 25 Player
 193. 10 Player (Heroic)
 194. 25 Player (Heroic)
+237. Celestial
 
 4.4.2
 1. Normal
@@ -139,7 +143,19 @@ local dontPrint = { -- Don't print a warning message for these difficulties
 194. 25 Player (Heroic)
 244. Raid: 25 Titan-Reforged
 
-1.15.7
+2.5.5
+1. Normal
+2. Heroic
+3. 10 Player
+4. 25 Player
+9. 40 Player
+148. 20 Player
+173. Normal
+174. Heroic
+175. 10 Player
+176. 25 Player
+
+1.15.8
 1. Normal
 9. 40 Player
 148. 20 Player
@@ -181,7 +197,7 @@ do
 		name = "|TInterface\\AddOns\\BigWigs\\Media\\Icons\\Menus\\Stats:20|t ".. BigWigsAPI:GetLocale("BigWigs").statistics,
 		type = "group",
 		childGroups = "tab",
-		order = 11,
+		order = 13,
 		get = function(i) return plugin.db.profile[i[#i]] end,
 		set = function(i, value) plugin.db.profile[i[#i]] = value end,
 		args = {
@@ -403,7 +419,7 @@ do
 
 				local best = sDB[difficultyText].best
 				if self.db.profile.showBar and best then
-					self:SendMessage("BigWigs_StartBar", self, nil, L.bestTimeBar, best, 237538) -- 237538 = "Interface\\Icons\\spell_holy_borrowedtime"
+					self:SendMessage("BigWigs_StartBar", self, nil, L.bestTimeBar, best, module:TBC() and 132768 or 237538) -- 237538 = "Interface\\Icons\\spell_holy_borrowedtime" -- TBC is lacking icons vanilla has
 					self:SendMessage("BigWigs_Timer", self, nil, best, best, L.bestTimeBar, 0, 237538, false, true)
 				end
 			end
@@ -465,7 +481,7 @@ function plugin:BigWigs_OnBossWin(event, module)
 				sDB.bestDate = date("%Y/%m/%d")
 			end
 		elseif IsInRaid() and not dontPrint[diff] then
-			BigWigs:Error("Tell the devs, the stats for this boss were not recorded because a new difficulty id was found: "..diff)
+			BigWigs:Error(("Tell the devs! The stats for this boss were not recorded: ID#%s#Instance#%s#Journal#%s"):format(diff, module:GetZoneID(), journalID))
 		end
 	end
 

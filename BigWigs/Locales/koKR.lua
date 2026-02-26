@@ -209,7 +209,7 @@ L.ME_ONLY_EMPHASIZE = "강조(나에게 걸렸을 때만)"
 L.ME_ONLY_EMPHASIZE_desc = "이 옵션을 활성화하면 이 능력이 자신에게 영향을 끼칠때 메세지를 더 크고 눈에 띄게 표시합니다."
 L.NAMEPLATE = "이름표"
 L.NAMEPLATE_desc = "활성화하면 특정 능력에 대한 아이콘과 텍스트와 같은 기능이 이름표에 표시됩니다. 이는 여러 NPC가 동일한 능력을 사용할 때 어떤 NPC가 능력을 사용하는지 더 쉽게 인식할 수 있게 합니다."
-L.PRIVATE = "개인 오라"
+L.PRIVATE = "비공개 오라"
 L.PRIVATE_desc = "이 설정은 일반 시전 알림과 바에만 적용됩니다!\n\n이 능력에 대상이 될 때 재생할 소리는 우측 상단의 \"보스 전투 선택\" 드롭다운에서 \"비공개 오라 소리\"를 선택하여 변경할 수 있습니다."
 
 L.advanced_options = "고급 옵션"
@@ -277,9 +277,9 @@ L.mythicplus_settings_export_desc = "모든 신화+ 설정 내보내기."
 L.imported_battleres_settings = "전투 부활 설정"
 L.battleres_settings_import_desc = "모든 전투 부활 설정을 가져옵니다."
 L.battleres_settings_export_desc = "모든 전투 부활 설정을 내보냅니다."
---L.imported_privateAuras_settings = "Private Auras Settings"
---L.privateAuras_settings_import_desc = "Import all Private Auras settings."
---L.privateAuras_settings_export_desc = "Export all Private Auras settings."
+L.imported_privateAuras_settings = "비공개 오라 설정"
+L.privateAuras_settings_import_desc = "모든 비공개 오라 설정을 가져옵니다."
+L.privateAuras_settings_export_desc = "모든 비공개 오라 설정을 내보냅니다."
 
 -- InstanceSharing.lua
 L.sharing_window_title = "보스 설정 공유"
@@ -438,6 +438,7 @@ L.keystoneTeleportTip = "아래 던전 이름을 클릭하면 |cFF33FF99순간�
 L.keystoneTimerunner = "|A:timerunning-glues-icon:14:14|a이것은 시간질주자 캐릭터입니다." -- Note: Timerunning is a mode like "Legion Remix", it is NOT the same as Timewalking
 L.keystoneSlashKeys = "|cFF33FF99/keys|r 슬래시 명령어도 등록"
 L.keystoneSlashKeystone = "|cFF33FF99/keystone|r 슬래시 명령어도 등록"
+L.unavailableWhilstInCombat = "전투 중에는 사용할 수 없음"
 
 -- It doesn't really matter what you call it as long as it's recognizable and limited to ~6 characters
 L.keystoneShortName_TheRookery = "부화장"
@@ -964,31 +965,34 @@ L.nameplateOptInWarning = "|cffff4411경고!|r\n\n'선택 활성화' 모드를 �
 -- PrivateAuras.lua
 --
 
---L.privateAuras = "Private Auras"
+L.privateAuras = "비공개 오라"
+--L.privateAurasDesc1 = "'Private Auras' are a special type of debuff that addons cannot detect or perform any automation on. These debuffs are used by all modern boss encounters now.\n\n"
+--L.privateAurasDesc2 = "BigWigs can help you keep track of when they are applied to you by displaying them as icons. |cFF33FF99This can help you by displaying critical debuffs separately from your normal debuffs.|r\n\n"
 
---L.createTestAura = "Create Test Aura"
---L.showDispelType = "Show Dispel Type Indicator"
---L.showDispelTypeDesc = "Show an icon on the private aura frame if it has a dispel type.\n\n|cffffd200Note: This is a global option for all private aura frames.|r"
---L.iconSize = "Icon Size"
---L.iconSpacing = "Icon Spacing"
---L.showCooldown = "Show Cooldown Spiral"
---L.showCooldownText = "Show Cooldown Text"
---L.cooldownTextScale = "Cooldown Text Scale"
---L.growthDirection = "Icon Growth Direction"
---L.aurasOnYou = "Auras On You"
---L.aurasOnYouDesc = "Customize the icons for auras that apply to you.\n\n"
---L.aurasOnAnother = "Auras On Another"
---L.aurasOnAnotherDesc = "Choose a specific player and then customize the icons for auras that apply to them.\n\n"
---L.chooseAPlayer = "Choose a player"
---L.theOtherTank = "Automatically find a tank"
---L.theOtherTankDesc = "Show private auras on the first tank in your group that isn't you. (Current: %s)"
---L.onlyWhenYouAreTank = "Only show when you are also a tank"
---L.playerInYourGroup = "A player in your group"
---L.maxIcons = "Max Icons"
---L.maxIconsDesc = "The maximum amount of icons to be displayed."
---L.privateAurasHelpTip = "|TInterface\\AddOns\\BigWigs\\Media\\Icons\\minimap_raid:0:0|tBigWigs: You can now see your private aura debuffs as icons, or even the private auras of another player (e.g. a tank)."
+L.createTestAura = "테스트 오라 생성"
+L.showDispelType = "해제 유형 표시기 표시"
+L.showDispelTypeDesc = "비공개 오라 프레임에 해제 유형이 있는 경우 아이콘을 표시합니다.\n\n|cffffd200참고: 이 옵션은 모든 비공개 오라 프레임에 적용되는 전역 옵션입니다.|r"
+L.iconSize = "아이콘 크기"
+L.iconSpacing = "아이콘 간격"
+L.showCooldown = "재사용 대기시간 표시"
+L.showCooldownText = "재사용 대기시간 텍스트 표시"
+L.cooldownTextScale = "재사용 대기시간 텍스트 크기"
+L.growthDirection = "아이콘 성장 방향"
+L.aurasOnYou = "본인에게 적용되는 오라"
+L.aurasOnYouDesc = "본인에게 적용되는 오라 아이콘을 사용자 지정합니다.\n\n"
+L.aurasOnAnother = "다른 플레이어에게 적용되는 오라"
+L.aurasOnAnotherDesc = "특정 플레이어를 선택한 다음 해당 플레이어에게 적용되는 오라 아이콘을 사용자 지정합니다.\n\n"
+L.chooseAPlayer = "플레이어 선택"
+L.theOtherTank = "탱커 자동 찾기"
+L.theOtherTankDesc = "자신이 아닌 그룹 내 첫 번째 탱커에게 비공개 오라를 표시합니다. (현재: %s)"
+L.onlyWhenYouAreTank = "자신도 탱커일 때만 표시"
+L.playerInYourGroup = "그룹 내 플레이어"
+L.maxIcons = "최대 아이콘 수"
+L.maxIconsDesc = "표시할 최대 아이콘 수"
+L.privateAurasHelpTip = "|TInterface\\AddOns\\BigWigs\\Media\\Icons\\minimap_raid:0:0|tBigWigs: 이제 비공개 오라 디버프를 아이콘으로 볼 수 있으며, 다른 플레이어(예: 탱커)의 비공개 오라도 볼 수 있습니다."
 
---L.privateAurasTestAnchorText = "PA %d"
+L.privateAurasTestAnchorText = "오라\n(%d)"
+--L.privateAurasTestTankAnchorText = "Tank\nAura\n(%d)"
 
 -----------------------------------------------------------------------
 -- Proximity.lua
@@ -1102,19 +1106,15 @@ L.newFastestVictoryPrint = "새로운 최고 승리 시간: (-%s)" -- New fastes
 --
 
 L.timeline = "타임라인"
-L.blizzTimersAsBigWigsBars = "블리자드 타이머(타임라인)를 BigWigs 바 형태로 표시"
-L.blizzTimersAsBigWigsBarsDesc = "모든 블리자드 보스 타이머(타임라인)가 BigWigs 바로 표시됩니다."
-L.blizzWarningsAsBigWigsMessages = "블리자드 보스 경고 메시지를 BigWigs 메시지로 표시"
-L.blizzWarningsAsBigWigsMessagesDesc = "모든 블리자드 보스 경고 메시지가 BigWigs 메시지로 표시됩니다."
-L.blizzAudioAsBigWigsAudio = "블리자드 사운드를 BigWigs 사운드로 변환"
-L.blizzAudioAsBigWigsAudioDesc = "전투 경고 심각도에 따라 BigWigs 사운드(경보, 알람, 경고)를 재생합니다."
-L.blizzWarningSettings = "블리자드 경고 설정"
 L.blizzTimelineSettings = "블리자드 타임라인 설정"
 L.blizzTimelineSettingsNote = "|cffff4411이 옵션은 블리자드 설정을 제어하며 편의를 위해 제공됩니다.|r"
 L.enableBlizzTimeline = "블리자드 타임라인 활성화"
 L.enableBlizzTimelineDesc = "이 옵션을 활성화하면 모든 보스 전투 타이머가 블리자드 타임라인에 표시됩니다."
-L.enableBlizzWarnings = "블리자드 보스 경고 활성화"
-L.enableBlizzWarningsDesc = "블리자드 보스 경고를 활성화할 경우, BigWigs 메시지로 표시하는 기능을 비활성화해야 합니다. 그렇지 않으면 모든 메시지가 두 번 표시됩니다."
+L.show_bars = "바 표시"
+--L.bigwigsEnhancedTimers = "BigWigs enhanced timers displayed as BigWigs bars |cFF33FF99(recommended)|r"
+--L.blizzBasicAsBars = "Blizzard basic timers displayed as BigWigs bars"
+--L.blizzBasicAsBlizzTimeline = "Blizzard basic timers displayed on the Blizzard timeline"
+--L.developerMode = "Developer Mode"
 
 -----------------------------------------------------------------------
 -- Victory.lua

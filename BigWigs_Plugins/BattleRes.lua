@@ -475,7 +475,7 @@ do
 	plugin.pluginOptions = {
 		type = "group",
 		childGroups = "tab",
-		order = 7,
+		order = 9,
 		name = L.battleResTitle,
 		get = GetSettings,
 		set = UpdateSettingsAndWidgets,

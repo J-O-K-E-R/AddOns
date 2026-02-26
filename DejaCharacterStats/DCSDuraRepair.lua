@@ -738,15 +738,17 @@ local function DCS_ShowCenterItemTooltip(frame)
 		GameTooltip:SetOwner(frame, "ANCHOR_RIGHT");
 	end
 	GameTooltip:SetInventoryItem("player", slotID);
-	GameTooltip:Show()
 end
 
 local function DCS_ItemSlotIsMouseOver(frame)
 	local itemLink  = GetInventoryItemLink("player", frame:GetID())
 	if ( itemLink ) and ( frame:IsMouseOver() ) then --{ Don't extend pixel range or DCS_CenterItemTooltip may hang and not close OnLeave; I.E. dont use: frame:IsMouseOver(2, -2, -2, 2)
-		DCS_ShowCenterItemTooltip(frame)
-	else
-		GameTooltip_Hide()
+		local userCVar = GetCVar("alwaysCompareItems")
+		if userCVar then
+			SetCVar("alwaysCompareItems", 0)
+			DCS_ShowCenterItemTooltip(frame)
+		end
+		SetCVar("alwaysCompareItems", userCVar)
 	end
 	if ( IsModifierKeyDown() ) then
 		EquipmentFlyout_UpdateFlyout(frame)
@@ -888,7 +890,7 @@ PaperDollFrame:HookScript("OnShow", function(self)
 		end
 		duraMeanTexture:Hide()
 	end
-	DCS_CenterItemTooltips()
+	-- DCS_CenterItemTooltips()
 end)
 
 CharacterFrame:HookScript("OnHide", GameTooltip_Hide)

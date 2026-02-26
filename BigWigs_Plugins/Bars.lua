@@ -262,7 +262,7 @@ local function updateProfile()
 			lastIndicatorFrame = indicatorFrame
 			indicatorFrame:ClearTextures()
 			indicatorFrame:SetIndicatorSize(height)
-			indicatorFrame:AddIndicators(bar:Get("bigwigs:eventId"))
+			indicatorFrame:AddIndicators(bar:Get("bigwigs:indicators"))
 		end
 		currentBarStyler.ApplyStyle(bar)
 	end
@@ -296,7 +296,7 @@ local function updateProfile()
 			lastIndicatorFrame = indicatorFrame
 			indicatorFrame:ClearTextures()
 			indicatorFrame:SetIndicatorSize(db.expHeight)
-			indicatorFrame:AddIndicators(bar:Get("bigwigs:eventId"))
+			indicatorFrame:AddIndicators(bar:Get("bigwigs:indicators"))
 		end
 		currentBarStyler.ApplyStyle(bar)
 	end
@@ -328,6 +328,33 @@ do
 	local function HiddenOnRetail() return not BigWigsLoader.isRetail end
 	local function IsNormalAnchorPointDefault() return db.normalPosition[5] == plugin.defaultDB.normalPosition[5] end
 	local function IsExpAnchorPointDefault() return db.expPosition[5] == plugin.defaultDB.expPosition[5] end
+
+	local inTestMode = false
+	local StartTest, StopTest
+	do
+		local timer = nil
+		local function QueueEditModeEvents()
+			local duration = C_EncounterTimeline.AddEditModeEvents()
+			timer = plugin:ScheduleTimer(QueueEditModeEvents, duration)
+		end
+
+		function StartTest()
+			inTestMode = true
+			if not timer then
+				QueueEditModeEvents()
+			end
+		end
+
+		function StopTest()
+			inTestMode = false
+			if timer then
+				plugin:CancelTimer(timer)
+				timer = nil
+				C_EncounterTimeline.CancelEditModeEvents()
+			end
+		end
+	end
+
 	plugin.pluginOptions = {
 		type = "group",
 		name = "|TInterface\\AddOns\\BigWigs\\Media\\Icons\\Menus\\Bars:20|t ".. L.bars,
@@ -367,7 +394,25 @@ do
 				width = 1.5,
 				order = 0.2,
 			},
-			testButton = {
+			testButton = BigWigsLoader.isRetail and {
+				type = "execute",
+				name = function()
+					if inTestMode then
+						return L.stopTest
+					else
+						return L.startTest
+					end
+				end,
+				func = function()
+					if inTestMode then
+						StopTest()
+					else
+						StartTest()
+					end
+				end,
+				width = 1.5,
+				order = 0.4,
+			} or {
 				type = "execute",
 				name = L.testBarsBtn,
 				desc = L.testBarsBtn_desc,
@@ -1619,7 +1664,7 @@ do
 	end
 
 	local initial = true
-	function plugin:CreateBar(module, key, text, time, icon, isApprox, eventId)
+	function plugin:CreateBar(module, key, text, time, icon, isApprox, eventId, spellIndicators)
 		local width, height
 		width = db.normalWidth
 		height = db.normalHeight
@@ -1646,14 +1691,16 @@ do
 		else
 			bar:SetIcon(nil)
 		end
-		if eventId then
+		local indicators = spellIndicators or eventId
+		if indicators then
 			local indicatorFrame = GetBarIndicatorFrame()
 			indicatorFrame:SetParent(bar)
 			indicatorFrame:Show()
 			indicatorFrame.bar = bar
 			indicatorFrame:SetIndicatorSize(height)
-			indicatorFrame:AddIndicators(eventId)
+			indicatorFrame:AddIndicators(indicators)
 			bar:Set("bigwigs:indicatorFrame", indicatorFrame)
+			bar:Set("bigwigs:indicators", indicators)
 		end
 		bar:SetDuration(time, not eventId and isApprox) -- isApprox is maxQueueDuration for timeline bars
 		bar:SetColor(colors:GetColor("barColor", module, key))
@@ -1691,10 +1738,10 @@ do
 		rearrangeBars(emphasizeAnchor)
 	end
 
-	function plugin:BigWigs_StartBar(_, module, key, text, time, icon, isApprox, maxTime, eventId)
+	function plugin:BigWigs_StartBar(_, module, key, text, time, icon, isApprox, maxTime, eventId, spellIndicators)
 		if (issecretvalue == nil or not issecretvalue(text)) and not text then text = "" end
 		self:StopSpecificBar(nil, module, text, eventId)
-		local bar = self:CreateBar(module, key, text, time, icon, isApprox, eventId)
+		local bar = self:CreateBar(module, key, text, time, icon, isApprox, eventId, spellIndicators)
 		bar:SetPauseWhenDone(isApprox)
 		if db.emphasize and time < db.emphasizeTime then
 			if db.emphasizeRestart and maxTime and maxTime > db.emphasizeTime then

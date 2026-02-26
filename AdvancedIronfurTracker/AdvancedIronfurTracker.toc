@@ -1,0 +1,8 @@
+## Interface: 120000, 120001
+## Title: Advanced Ironfur Tracker
+## Notes: Visualizes overlapping Ironfur stacks as moving ticks on a timeline.
+## Author: Gemini/Aeratil
+## Version: 1.0
+## SavedVariables: AIT_Settings
+
+AdvancedIronfurTracker.lua

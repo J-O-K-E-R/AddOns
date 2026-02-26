@@ -136,6 +136,7 @@ if L then
 	L.enchantress = "Verzauberin des Echsenkessels"
 	L.healer = "Schuppenheilerin des Echsenkessels"
 	L.collaborator = "Kollaborateur des Echsenkessels"
+	L.soothsayer = "Sterndeuter des Echsenkessels"
 	L.ray = "Rochen des Echsenkessels"
 end
 

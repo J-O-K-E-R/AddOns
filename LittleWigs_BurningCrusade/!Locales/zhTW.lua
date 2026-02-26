@@ -136,6 +136,7 @@ if L then
 	--L.enchantress = "Coilfang Enchantress"
 	--L.healer = "Coilfang Scale-Healer"
 	--L.collaborator = "Coilfang Collaborator"
+	L.soothsayer = "盤牙預言者"
 	--L.ray = "Coilfang Ray"
 end
 

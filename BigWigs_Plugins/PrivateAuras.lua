@@ -278,14 +278,33 @@ do
 			end
 		end
 	end
+	local function IsFeatureEntirelyDisabled()
+		if db.player.disabled and db.other.disabled then
+			return true
+		end
+	end
 
 	plugin.pluginOptions = {
 		type = "group",
 		name = "|TInterface\\AddOns\\BigWigs\\Media\\Icons\\Menus\\Private:20|t ".. L.privateAuras,
 		childGroups = "tab",
 		handler = plugin,
-		order = 3,
+		order = 4,
 		args = {
+			heading1 = {
+				type = "description",
+				name = L.privateAurasDesc1,
+				order = 0,
+				width = "full",
+				fontSize = "medium",
+			},
+			heading2 = {
+				type = "description",
+				name = L.privateAurasDesc2,
+				order = 0.5,
+				width = "full",
+				fontSize = "medium",
+			},
 			anchorsButton = {
 				type = "execute",
 				name = function()
@@ -304,6 +323,7 @@ do
 				end,
 				width = 1.5,
 				order = 1,
+				disabled = IsFeatureEntirelyDisabled,
 			},
 			testButton = {
 				type = "execute",
@@ -311,6 +331,7 @@ do
 				func = "CreateTestAura",
 				width = 1.5,
 				order = 2,
+				disabled = IsFeatureEntirelyDisabled,
 			},
 			showDispelType = {
 				type = "toggle",
@@ -323,11 +344,7 @@ do
 				end,
 				width = "full",
 				order = 3,
-				disabled = function()
-					if db.player.disabled and db.other.disabled then
-						return true
-					end
-				end,
+				disabled = IsFeatureEntirelyDisabled,
 			},
 			player = {
 				type = "group",
@@ -887,7 +904,7 @@ do
 		bg:SetColorTexture(0, 0, 0, parent.hasTestIcon and 0 or 0.3)
 		display.bg = bg
 
-		local header = display:CreateFontString(nil, "ARTWORK")
+		local header = display:CreateFontString()
 		header:SetFont(plugin:GetDefaultFont(12))
 		header:SetShadowOffset(1, -1)
 		header:SetTextColor(1, 0.82, 0, 1)
@@ -908,7 +925,7 @@ do
 				local anchor = unitAnchors[i]
 				if not anchor.configModeFrame then
 					anchor.configModeFrame = createDragAnchor(anchor)
-					anchor.configModeFrame.text:SetText(anchor.hasTestIcon and "" or L.privateAurasTestAnchorText:format(i))
+					anchor.configModeFrame.text:SetText(anchor.hasTestIcon and "" or (anchor.unitType == "player" and L.privateAurasTestAnchorText or L.privateAurasTestTankAnchorText):format(i))
 					anchor.configModeFrame.dragAnchor = unitAnchors[1]
 				end
 				anchor.configModeFrame:Show()
@@ -1176,7 +1193,7 @@ do
 		frame:Hide()
 		anchor.hasTestIcon = nil
 		if anchor.configModeFrame then
-			anchor.configModeFrame.text:SetText(L.privateAurasTestAnchorText:format(anchor:GetID()))
+			anchor.configModeFrame.text:SetText((anchor.unitType == "player" and L.privateAurasTestAnchorText or L.privateAurasTestTankAnchorText):format(anchor:GetID()))
 			anchor.configModeFrame.bg:SetColorTexture(0, 0, 0, 0.3)
 		end
 

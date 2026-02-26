@@ -436,6 +436,19 @@ function addon:UpdateAttributes()
     globutton.setbinds, globutton.clearbinds = self:GetBindingAttributes(true)
 end
 
+-- Remove any OnEnter and OnLeave scripts that we're written to frames
+function addon:UnwrapOnEnterOnLeave(button)
+    self.header:UnwrapScript(button, "OnEnter")
+    self.header:UnwrapScript(button, "OnLeave")
+end
+
+-- Wrap the OnEnter and OnLeave scripts to run our secure snippet. This
+-- is needed to activate the keyboard bindings on unit frames.
+function addon:WrapOnEnterOnLeave(button)
+    self.header:WrapScript(button, "OnEnter", [[control:RunFor(self, control:GetAttribute('setup_onenter'))]])
+    self.header:WrapScript(button, "OnLeave", [[control:RunFor(self, control:GetAttribute('setup_onleave'))]])
+end
+
 function addon:ApplyAttributes()
     -- Handle all of the securely registered frames
     self.header:Execute([[
@@ -444,17 +457,18 @@ function addon:ApplyAttributes()
         end
     ]])
 
-    -- Now any compat frames that used the old method
-    for button, enabled in pairs(self.ccframes) do
-        -- Unwrap any existing enter/leave scripts
-        self.header:UnwrapScript(button, "OnEnter")
-        self.header:UnwrapScript(button, "OnLeave")
-        self.header:WrapScript(button, "OnEnter", addon.header:GetAttribute("setup_onenter"))
-        self.header:WrapScript(button, "OnLeave", addon.header:GetAttribute("setup_onleave"))
-
-        -- Perform the setup of click bindings
+    -- Update the clicks on frames registered using ClickCastFrames directly.
+    -- Since unit frames can change their OnEnter/OnLeave scripts, we need to
+    -- unwrap and wrap them to make sure we're still active.
+    for button in pairs(self.ccframes) do
         self.header:SetFrameRef("cliquesetup_button", button)
         self.header:Execute(self.header:GetAttribute("setup_clicks"), button)
+
+        -- Unwrap anything we've done before and then wrap again
+        -- otherwise key-based bindings might not work, if someone
+        -- replaced our handler
+        self:UnwrapOnEnterOnLeave(button)
+        self:WrapOnEnterOnLeave(button)
     end
 
     -- Update the global button attributes

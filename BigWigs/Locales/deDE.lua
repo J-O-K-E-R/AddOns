@@ -438,6 +438,7 @@ L.keystoneTeleportTip = "Dungeonnamen unten anklicken um direkt zum Dungeoneinga
 L.keystoneTimerunner = "|A:timerunning-glues-icon:14:14|aDies ist ein Zeitläufer Charakter." -- Note: Timerunning is a mode like "Legion Remix", it is NOT the same as Timewalking
 L.keystoneSlashKeys = "Den |cFF33FF99/keys|r Slash-Befehl registrieren"
 L.keystoneSlashKeystone = "Den |cFF33FF99/keystone|r Slash-Befehl registrieren"
+L.unavailableWhilstInCombat = "Im Kampf nicht verfügbar"
 
 -- It doesn't really matter what you call it as long as it's recognizable and limited to ~6 characters
 L.keystoneShortName_TheRookery = "ROOK"
@@ -965,6 +966,8 @@ L.nameplateOptInWarning = "|cffff4411WARNUNG!|r\n\nDurch Aktivierung des 'Opt-in
 --
 
 L.privateAuras = "Private Auren"
+L.privateAurasDesc1 = "'Private Auren' sind ein spezieller Debuff-Typ, welcher von Addons nicht erkannt oder zu Automatisierung genutzt werden kann. Diese Debuffs werden jetzt in allen aktuellen Bossbegegnungen verwendet.\n\n"
+L.privateAurasDesc2 = "BigWigs kann helfen, diese bei Anwendung auf Dich zu verfolgen, indem diese als Symbole angezeigt werden. |cFF33FF99Dies kann helfen, da diese kritischen Debuffs separat von den übrigen Debuffs angezeigt werden.|r\n\n"
 
 L.createTestAura = "Testaura erstellen"
 L.showDispelType = "Bannhinweise anzeigen"
@@ -988,7 +991,8 @@ L.maxIcons = "Maximale Symbolanzahl"
 L.maxIconsDesc = "Die maximale Anzahl der angezeigten Symbole."
 L.privateAurasHelpTip = "|TInterface\\AddOns\\BigWigs\\Media\\Icons\\minimap_raid:0:0|tBigWigs: Du kannst jetzt Deine privaten Aura Debuffs als Symbole sehen, oder sogar die privaten Auren eines anderen Spielers (z.B. eines Tanks)."
 
-L.privateAurasTestAnchorText = "PA %d"
+L.privateAurasTestAnchorText = "Private\nAura\n(%d)"
+L.privateAurasTestTankAnchorText = "Tank\nAura\n(%d)"
 
 -----------------------------------------------------------------------
 -- Proximity.lua
@@ -1102,19 +1106,15 @@ L.newFastestVictoryPrint = "Neuer schnellster Sieg: (-%s)" -- New fastest victor
 --
 
 L.timeline = "Zeitlinie"
-L.blizzTimersAsBigWigsBars = "Blizz Timer (Zeitlinie) als BigWigs Leisten anzeigen"
-L.blizzTimersAsBigWigsBarsDesc = "Alle Blizzard Bosstimer (Zeitlinie) werden stattdessen als BigWigs Leisten angezeigt."
-L.blizzWarningsAsBigWigsMessages = "Blizz Bosswarnungen als BigWigs Nachrichten anzeigen"
-L.blizzWarningsAsBigWigsMessagesDesc = "Alle Blizzard Bosswarnungen werden stattdessen als BigWigs Nachrichten angezeigt."
-L.blizzAudioAsBigWigsAudio = "Blizz Sounds zu BigWigs Sounds konvertieren"
-L.blizzAudioAsBigWigsAudioDesc = "Spielt die BigWigs Sounds (Alarmruf, Alarm & Warnung) basierend auf der Gewichtung."
-L.blizzWarningSettings = "Blizzard Warnungen Einstellungen"
 L.blizzTimelineSettings = "Blizzard Zeitlinie Einstellungen"
 L.blizzTimelineSettingsNote = "|cffff4411Diese Optionen spiegeln lediglich die Blizzard Einstellungen und sind zum Komfort hier aufgeführt.|r"
 L.enableBlizzTimeline = "Blizz Zeitlinie aktivieren"
 L.enableBlizzTimelineDesc = "Diese Option zeigt alle Boss Timer in der Blizzard Zeitlinie."
-L.enableBlizzWarnings = "Blizz Bosswarnungen aktivieren"
-L.enableBlizzWarningsDesc = "Beim Aktivieren der Blizzard Bosswarnungen sollte die Option zur Anzeige als BigWigs Nachrichten deaktiviert werden, da diese ansonsten doppelt angezeigt werden."
+L.show_bars = "Zeige Leisten von"
+L.bigwigsEnhancedTimers = "Erweiterte BigWigs Timer als BigWigs Leisten anzeigen |cFF33FF99(empfohlen)|r"
+L.blizzBasicAsBars = "Blizzard Standardtimer als BigWigs Leisten anzeigen"
+L.blizzBasicAsBlizzTimeline = "Blizzard Standardtimer in der Blizzard Zeitlinie anzeigen"
+L.developerMode = "Entwicklermodus"
 
 -----------------------------------------------------------------------
 -- Victory.lua

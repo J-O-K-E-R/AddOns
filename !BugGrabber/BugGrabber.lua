@@ -35,7 +35,7 @@ local real_seterrorhandler = seterrorhandler
 -- Global config variables
 --
 
-MAX_BUGGRABBER_ERRORS = 1000
+MAX_BUGGRABBER_ERRORS = 500
 
 -- If we get more errors than this per second, we stop all capturing
 BUGGRABBER_ERRORS_PER_SEC_BEFORE_THROTTLE = 10
@@ -177,9 +177,6 @@ do
 				local debugStackLevel = currentStackHeight - errorStackOffset
 
 				local stack = debugstack(debugStackLevel)
-				if debugStackLevel > 3 then
-					debugStackLevel = 3 -- XXX temp until Blizz fixes debuglocals() killing execution when there are some specific errors
-				end
 				local locals = debuglocals(debugStackLevel)
 				return stack, locals
 			else
@@ -194,6 +191,7 @@ do
 	local GetTime, date = GetTime, date
 	local msgsAllowedLastTime = GetTime()
 	local lastWarningTime = 0
+	local issecretvalue = issecretvalue or function() return false end
 	function grabError(errorMessage, isSimple)
 		-- Flood protection --
 		msgsAllowed = msgsAllowed + (GetTime()-msgsAllowedLastTime)*BUGGRABBER_ERRORS_PER_SEC_BEFORE_THROTTLE
@@ -216,26 +214,21 @@ do
 			msgsAllowed = BUGGRABBER_ERRORS_PER_SEC_BEFORE_THROTTLE
 		end
 		msgsAllowed = msgsAllowed - 1
-
-		-- Grab it --
 		errorMessage = tostring(errorMessage)
 
-		local looping = errorMessage:find("BugGrabber") and true or nil
-		if looping then
-			print(errorMessage)
+		if issecretvalue(errorMessage) or errorMessage:find("BugGrabber", nil, true) then
+			print("|cffffff00BugGrabber|r:", errorMessage)
 			return
 		end
 
 		-- Insert the error into the correct database if it's not there
 		-- already. If it is, just increment the counter.
-		local found
+		local errorObject
 		if db then
-			found = fetchFromDatabase(db, errorMessage)
+			errorObject = fetchFromDatabase(db, errorMessage)
 		else
-			found = fetchFromDatabase(loadErrors, errorMessage)
+			errorObject = fetchFromDatabase(loadErrors, errorMessage)
 		end
-
-		local errorObject = found
 
 		if not errorObject then -- New error
 			-- Store the error
@@ -258,13 +251,16 @@ do
 				}
 			end
 		else -- Old error
-			if errorObject.session ~= addon:GetSessionId() then -- Error from a different session, update it
-				local stack, locals = GetErrorData()
-				errorObject.stack = stack or "Debugstack was nil."
-				errorObject.locals = locals or "Debuglocals was nil."
-				errorObject.session = addon:GetSessionId()
-				errorObject.time = date("%Y/%m/%d %H:%M:%S")
+			local session = addon:GetSessionId()
+			if errorObject.session ~= session then -- Error from a different session, update it
+				if not isSimple then
+					local stack, locals = GetErrorData()
+					errorObject.stack = stack or "Debugstack was nil."
+					errorObject.locals = locals or "Debuglocals was nil."
+				end
+				errorObject.session = session
 			end
+			errorObject.time = date("%Y/%m/%d %H:%M:%S")
 			errorObject.counter = errorObject.counter + 1
 		end
 
@@ -495,7 +491,10 @@ do
 end
 events.ADDON_ACTION_BLOCKED = events.ADDON_ACTION_FORBIDDEN
 function events:LUA_WARNING(_, warningText, pre11_1_5warningText) -- XXX changed in 11.1.5, need to wait until it's ported to all classic versions
-	grabError(pre11_1_5warningText or warningText, true)
+	local text = pre11_1_5warningText or warningText
+	if not text then text = "" end
+	text = "LUA_WARNING: " .. text
+	grabError(text, true)
 end
 
 UIParent:UnregisterEvent("LUA_WARNING") -- XXX pre-11.1.5

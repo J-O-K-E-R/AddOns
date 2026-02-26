@@ -136,6 +136,7 @@ if L then
 	L.enchantress = "Encantadora Presacurva"
 	L.healer = "Skamasara Presacurva"
 	L.collaborator = "Colaborador Presacurva"
+	L.soothsayer = "Adivinhadora Presacurva"
 	L.ray = "Arraia Presacurva"
 end
 

@@ -438,6 +438,7 @@ L.keystoneTeleportTip = "点击下方地下城名称可直接|cFF33FF99传送|r�
 L.keystoneTimerunner = "|A:timerunning-glues-icon:14:14|a时空奔行者。" -- Note: Timerunning is a mode like "Legion Remix", it is NOT the same as Timewalking
 L.keystoneSlashKeys = "同时注册 |cFF33FF99/keys|r 命令"
 L.keystoneSlashKeystone = "同时注册 |cFF33FF99/keystone|r 命令"
+L.unavailableWhilstInCombat = "战斗中无法使用"
 
 -- It doesn't really matter what you call it as long as it's recognizable and limited to ~6 characters
 L.keystoneShortName_TheRookery = "驭雷栖巢"
@@ -965,6 +966,8 @@ L.nameplateOptInWarning = "|cffff4411警告！|r\n\n启用'手动选择'模式�
 --
 
 L.privateAuras = "私有光环"
+L.privateAurasDesc1 = "“私有光环”是一种特殊的减益效果，插件既无法检测，也无法对其进行任何自动化操作。如今，这类机制已普遍应用于所有现代首领战中。\n\n"
+L.privateAurasDesc2 = "BigWigs 会用醒目的图标为你单独显示这些效果，|cFF33FF99帮助你精准定位关键减益，不再受普通减益的干扰。|r\n\n"
 
 L.createTestAura = "创建测试光环"
 L.showDispelType = "显示驱散类型图标"
@@ -988,7 +991,8 @@ L.maxIcons = "最大图标数"
 L.maxIconsDesc = "显示图标的最大数量。"
 L.privateAurasHelpTip = "|TInterface\\AddOns\\BigWigs\\Media\\Icons\\minimap_raid:0:0|tBigWigs：现在您可以显示自己的私有光环减益图标，甚至还可以显示其他玩家（例如坦克）的私有光环。"
 
-L.privateAurasTestAnchorText = "私有 %d"
+L.privateAurasTestAnchorText = "私有\n光环\n（%d）"
+L.privateAurasTestTankAnchorText = "坦克\n光环\n（%d）"
 
 -----------------------------------------------------------------------
 -- Proximity.lua
@@ -1101,20 +1105,16 @@ L.newFastestVictoryPrint = "新的最快获胜：（-%s）" -- New fastest victo
 -- Timeline.lua
 --
 
-L.timeline = "时间轴"
-L.blizzTimersAsBigWigsBars = "使用 BigWigs 计时条替换暴雪内置时间轴"
-L.blizzTimersAsBigWigsBarsDesc = "所有暴雪内置的首领计时器（时间轴）替换为 BigWigs 的计时条样式。"
-L.blizzWarningsAsBigWigsMessages = "使用 BigWigs 信息替换暴雪内置首领预警"
-L.blizzWarningsAsBigWigsMessagesDesc = "将所有暴雪首领预警信息将显示为 BigWigs 的消息风格。"
-L.blizzAudioAsBigWigsAudio = "使用 BigWigs 音效替换暴雪内置音效"
-L.blizzAudioAsBigWigsAudioDesc = "将暴雪的内置音效替换为 BigWigs 音效，并根据重要程度播放对应的音效（警告、警示、警报）。"
-L.blizzWarningSettings = "暴雪首领预警设置"
-L.blizzTimelineSettings = "暴雪时间轴设置"
-L.blizzTimelineSettingsNote = "|cffff4411本页选项仅控制暴雪内置设置，此处提供是为了方便你与 BigWigs 的选项一起设置。|r"
-L.enableBlizzTimeline = "启用暴雪时间轴"
-L.enableBlizzTimelineDesc = "在暴雪时间轴上显示所有首领战斗计时器。"
-L.enableBlizzWarnings = "启用暴雪首领预警"
-L.enableBlizzWarningsDesc = "启用暴雪首领预警时，建议同时关闭“使用 BigWigs 信息替换暴雪内置首领预警”功能，否则所有信息将会重复显示。"
+L.timeline = "暴雪首领预警"
+L.blizzTimelineSettings = "暴雪首领预警设置"
+L.blizzTimelineSettingsNote = "|cffff4411本页选项仅控制暴雪内置的首领预警设置，此处提供是为了方便你与 BigWigs 的选项一起设置。|r"
+L.enableBlizzTimeline = "启用暴雪的内置首领预警"
+L.enableBlizzTimelineDesc = "在暴雪的内置的首领技能“类型”上显示所有的首领战计时。"
+L.show_bars = "显示来源"
+L.bigwigsEnhancedTimers = "将 BigWigs 强化的首领预警，显示为 BigWigs 计时条|cFF33FF99（推荐）|r"
+L.blizzBasicAsBars = "暴雪内置的首领预警，显示为 BigWigs 计时条"
+L.blizzBasicAsBlizzTimeline = "暴雪内置的首领预警，显示在暴雪内置的首领技能“类型”上"
+L.developerMode = "开发者模式"
 
 -----------------------------------------------------------------------
 -- Victory.lua

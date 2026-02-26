@@ -136,6 +136,7 @@ if L then
 	L.enchantress = "Enchanteresse de Glissecroc"
 	L.healer = "Soigne-écaille de Glissecroc"
 	L.collaborator = "Collaborateur de Glissecroc"
+	L.soothsayer = "Devineresse de Glissecroc"
 	L.ray = "Raie de Glissecroc"
 end
 

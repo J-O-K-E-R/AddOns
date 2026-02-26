@@ -228,6 +228,34 @@ function boss:IsEnableMob(mobId)
 	return self.enableMobs[mobId]
 end
 
+--- Set this module to have custom timers and stop listening to Blizzard's timeline timers.
+-- @bool useCustomTimers When true, disables listening to Blizz timeline timers
+function boss:UseCustomTimers(useCustomTimers)
+	if useCustomTimers then
+		self.useCustomTimers = true
+	end
+end
+
+--- Check if this module should show custom timer bars.
+-- @return true or nil
+function boss:ShouldShowBars()
+	if self.useCustomTimers and plugins.Timeline then
+		-- XXX should probably add an API in Timeline instead of accessing the db directly >.> like :CanShowCustom()
+		local timelineDB = plugins.Timeline.db.profile
+		return timelineDB.timer_mode == "enhanced" or timelineDB.timer_mode == "dev"
+	end
+end
+
+--- Check if this module should show custom timer bars as well as blizzard timers.
+-- @return true or nil
+function boss:ShouldShowBothBars()
+	if self.useCustomTimers and plugins.Timeline then
+		-- XXX should probably add an API in Timeline instead of accessing the db directly >.> like :CanShowCustom()
+		local timelineDB = plugins.Timeline.db.profile
+		return timelineDB.timer_mode == "dev"
+	end
+end
+
 --- Set the encounter id for this module. (As used by events ENCOUNTER_START, ENCOUNTER_END & BOSS_KILL)
 -- If this is set, no engage or wipe checking is required. The module will use this id and all engage/wipe checking will be handled automatically.
 -- @number encounterId The encounter id
@@ -518,11 +546,33 @@ end
 
 --- Show an error after the encounter has ended
 -- @string message the message to show to the user
-function boss:Error(message)
-	if not self.errorPrints then
-		self.errorPrints = {}
+-- @bool chatOnly if the message should only be shown in chat, and not sent to the error handler
+function boss:Error(message, chatOnly)
+	if chatOnly then
+		if not self.errorChatPrints then
+			self.errorChatPrints = {}
+		end
+		self.errorChatPrints[#self.errorChatPrints+1] = message
+	else
+		if not self.errorMessages then
+			self.errorMessages = {}
+		end
+		self.errorMessages[#self.errorMessages+1] = message
 	end
-	self.errorPrints[#self.errorPrints+1] = message
+end
+
+do
+	local unhandledEventString = "Event error %q for module %q (stage %d), %s (%d), duration %d."
+	--- Print an error message with event information after the encounter has ended
+	-- @param eventInfo The event information table from the ENCOUNTER_TIMELINE_EVENT_ADDED events
+	function boss:ErrorForTimelineEvent(eventInfo)
+		if not self:ShouldShowBothBars() then -- only error with debug info if you are showing both timers
+			return
+		end
+		local stage = self:GetStage() or 0
+		local eventErrorMessage = unhandledEventString:format(eventInfo.id, self:GetEncounterID(), stage, eventInfo.spellName, eventInfo.spellID, eventInfo.duration)
+		self:Error(eventErrorMessage, true)
+	end
 end
 
 function boss:Initialize() core:RegisterBossModule(self.moduleName) end
@@ -682,11 +732,17 @@ function boss:Disable(isWipe)
 			end
 			self.missing = nil
 		end
-		if self.errorPrints then
-			for i = 1, #self.errorPrints do
-				core:Error(self.errorPrints[i])
+		if self.errorMessages then
+			for i = 1, #self.errorMessages do
+				core:Error(self.errorMessages[i])
 			end
-			self.errorPrints = nil
+			self.errorMessages = nil
+		end
+		if self.errorChatPrints then
+			for i = 1, #self.errorChatPrints do
+				core:Print(self.errorChatPrints[i])
+			end
+			self.errorChatPrints = nil
 		end
 	end
 end
@@ -1969,18 +2025,19 @@ do
 		[5] = 8149, -- Voodoo Charm
 		[10] = 17626, -- Frostwolf Muzzle
 		[20] = 10645, -- Gnomish Death Ray
+		[25] = 13289, -- Egan's Blaster
 		[30] = 835, -- Large Rope Net
 		[35] = 18904, -- Zorbin's Ultra-Shrinker
-		[40] = 28767, -- The Decapitator (TBC+ only)
+		[40] = 4945, -- Faintly Glowing Skull
 		[45] = 23836, -- Goblin Rocket Launcher (TBC+ only)
 		[60] = 32825, -- Soul Cannon (TBC+ only)
-		[100] = 33119, -- Malister's Frost Wand (WotlK+ only)
+		[100] = 5418, -- Weapon of Mass Destruction (test)
 	}
 	for _,v in next, items do
 		C_Item.RequestLoadItemDataByID(v)
 	end
 	--- Check whether a hostile unit is within a specific range, check is performed based on specific item ranges.
-	-- Available Ranges: 10, 20, 30, 35, (TBC+: 40, 45, 60), (WotlK+: 100)
+	-- Available Ranges: 10, 20, 30, 35, 40, 100, (TBC+: 45, 60)
 	-- @string unit unit token or name
 	-- @number range the range to check
 	-- @return boolean
@@ -3519,7 +3576,8 @@ do
 	-- @param length the bar duration in seconds, or a table containing {remaining duration, max duration}
 	-- @param[opt] text the bar text (if nil, key is used)
 	-- @param[opt] icon the bar icon (spell id or texture name)
-	function boss:Bar(key, length, text, icon)
+	-- @param[opt] eventId the timeline event ID (Retail only)
+	function boss:Bar(key, length, text, icon, eventId)
 		local lengthType = type(length)
 		if not length then
 			if not self.missing then self.missing = {} end
@@ -3552,7 +3610,7 @@ do
 		local msg = textType == "string" and text or spells[text or key]
 		local isBarEnabled = checkFlag(self, key, C.BAR)
 		if isBarEnabled then
-			self:SendMessage("BigWigs_StartBar", self, key, msg, time, icons[icon or textType == "number" and text or key], false, maxTime)
+			self:SendMessage("BigWigs_StartBar", self, key, msg, time, icons[icon or textType == "number" and text or key], false, maxTime, nil, eventId)
 		end
 		if checkFlag(self, key, C.COUNTDOWN) then
 			self:SendMessage("BigWigs_StartCountdown", self, key, msg, time)
@@ -3567,7 +3625,8 @@ do
 	-- @param length the bar duration in seconds, or a table containing {current duration, max duration}
 	-- @param[opt] text the bar text (if nil, key is used)
 	-- @param[opt] icon the bar icon (spell id or texture name)
-	function boss:CDBar(key, length, text, icon)
+	-- @param[opt] eventId the timeline event ID (Retail only)
+	function boss:CDBar(key, length, text, icon, eventId)
 		local lengthType = type(length)
 		if not length then
 			if not self.missing then self.missing = {} end
@@ -3600,7 +3659,7 @@ do
 		local msg = textType == "string" and text or spells[text or key]
 		local isBarEnabled = checkFlag(self, key, C.BAR)
 		if checkFlag(self, key, C.BAR) then
-			self:SendMessage("BigWigs_StartBar", self, key, msg, time, icons[icon or textType == "number" and text or key], true, maxTime)
+			self:SendMessage("BigWigs_StartBar", self, key, msg, time, icons[icon or textType == "number" and text or key], true, maxTime, nil, eventId)
 		end
 		if checkFlag(self, key, C.COUNTDOWN) then
 			self:SendMessage("BigWigs_StartCountdown", self, key, msg, time)
@@ -3659,7 +3718,8 @@ do
 	-- @param length the bar duration in seconds, or a table containing {current duration, max duration}
 	-- @param[opt] text the bar text (if nil, key is used)
 	-- @param[opt] icon the bar icon (spell id or texture name)
-	function boss:CastBar(key, length, text, icon)
+	-- @param[opt] eventId the timeline event ID (Retail only)
+	function boss:CastBar(key, length, text, icon, eventId)
 		local lengthType = type(length)
 		if (lengthType ~= "number" and lengthType ~= "table") or length == 0 then
 			core:Print(format(badBar, key))
@@ -3677,7 +3737,7 @@ do
 		local msg = format(L.cast, rawText)
 		local isBarEnabled = checkFlag(self, key, C.CASTBAR)
 		if isBarEnabled then
-			self:SendMessage("BigWigs_StartBar", self, key, msg, time, icons[icon or textType == "number" and text or key], false, maxTime)
+			self:SendMessage("BigWigs_StartBar", self, key, msg, time, icons[icon or textType == "number" and text or key], false, maxTime, nil, eventId)
 		end
 		if checkFlag(self, key, C.CASTBAR_COUNTDOWN) then
 			self:SendMessage("BigWigs_StartCountdown", self, key, msg, time)
