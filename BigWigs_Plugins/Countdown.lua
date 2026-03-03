@@ -453,7 +453,7 @@ local function createOptions()
 			order = 3,
 		}
 		sModule.soundOptions.args.countdown = {
-			name = "Countdown",
+			name = L.countdown,
 			type = "select",
 			values = BigWigsAPI.GetCountdownList,
 			sorting = voiceSorting,

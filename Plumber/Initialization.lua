@@ -1,5 +1,5 @@
-local VERSION_TEXT = "1.8.8";
-local VERSION_DATE = 1771800000;
+local VERSION_TEXT = "1.8.8 c";
+local VERSION_DATE = 1772460000;
 
 
 local addonName, addon = ...
@@ -252,6 +252,7 @@ local DefaultValues = {
         LandingButton_DarkColor = false,
         LandingButton_HideWhenIdle = false,
         --LandingButton_UseLibDBIcon = nil,     --Addon-dependant. Init on first load
+        LandingButton_UseLibDBIcon_NoBorder = true, --Remove the golden button border if supported
 
         --LandingButton_Pos_X, LandingButton_Pos_Y
 
@@ -370,6 +371,7 @@ local DefaultValues = {
         BreakTime_Cycle = 30,
         BreakTime_Rest = 5,
         BreakTime_Delay = 5,
+        BreakTime_FlashTaskbar = false,
 
 
     --Declared elsewhere:

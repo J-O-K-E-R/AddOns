@@ -646,6 +646,7 @@ L["Paragon Reward Available"] = "巅峰奖励待领取";
 L["Until Next Level Format"] = "离下一级还有 %d";   --Earn x reputation to reach the next level
 L["Until Paragon Reward Format"] = "离巅峰宝箱还有 %d";
 L["Instruction Click To View Renown"] = "<点击查看名望>";
+L["Instruction Click To View Companion"] = "<点击查看地下堡伙伴>";
 L["Not On Quest"] = "你没有接到该任务";
 L["Factions"] = "声望总览";
 L["Activities"] = "每周活动";
@@ -687,12 +688,14 @@ L["LandingButton Reposition Tooltip"] = "按|cffffffffShift|r解锁";
 L["LandingButtonOption ShowButton"] = "启用小地图按钮";
 L["LandingButtonOption Unaffected"] = "不受小地图插件影响";
 L["LandingButtonOption Unaffected Tooltip"] = "让此按钮不受其他小地图插件影响，防止其外观或位置被修改。\n\n勾选后，此按钮将不再随小地图一起移动，也将不遵循小地图的界面缩放而是使用全局缩放。\n\n|cffff4800你可能需要重载界面来使改变生效。|r";
-L["LandingButtonOption UseLibDBIcon"] = "使用标准样式";
-L["LandingButtonOption UseLibDBIcon Tooltip"] = "让 LibDBIcon 控制此按钮的外观和位置。";
-L["LandingButtonOption PrimaryUI"] = "左键点击以打开";   --Control which UI to open on left-click
+L["LandingButtonOption UseLibDBIcon"] = "使用LibDBIcon";
+L["LandingButtonOption UseLibDBIcon Tooltip"] = "让LibDBIcon控制此按钮的外观和位置。";
+L["LandingButtonOption UseLibDBIcon NoBorder"] = "去除按钮边框";
+L["LandingButtonOption UseLibDBIcon NoBorder Tooltip"] = "去除小地图按钮的金色边框。\n\n当你使用某些小地图按钮插件时，此选项可能不起作用。";
+L["LandingButtonOption PrimaryUI"] = "左键点击以打开";
 L["LandingButtonOption PrimaryUI Tooltip"] = "选择左键点击小地图按钮后打开的界面。";
 L["LandingButtonOption SmartExpansion"] = "自动选择资料片";
-L["LandingButtonOption SmartExpansion Tooltip 1"] = "勾选时：左键点击小地图按钮将自动打开适合当前游戏内容的界面。例如当你在暗影过度时打开圣所报告。";
+L["LandingButtonOption SmartExpansion Tooltip 1"] = "勾选时：左键点击小地图按钮将自动打开适合当前游戏内容的界面。例如当你在暗影国度时打开圣所报告。";
 L["LandingButtonOption SmartExpansion Tooltip 2"] = "未勾选时：左键点击小地图按钮将仅打开%s。";
 L["LandingButtonOption ReduceSize"] = "缩小按钮";
 L["LandingButtonOption DarkColor"] = "深色模式";
@@ -815,8 +818,12 @@ L["BreakTime Option Rest"] = "休息时长";
 L["BreakTime Option Rest Tooltip"] = "每周期内休息的分钟数。";
 L["BreakTime Option Delay"] = "推迟时长";
 L["BreakTime Option Delay Tooltip"] = "按下推迟按钮推迟的分钟数。";
+L["BreakTime Option FlashTaskbar"] = "任务栏图标闪烁";
+L["BreakTime Option FlashTaskbar Tooltip"] = "到预定休息时间时让系统任务栏里的魔兽图标闪烁。";
+L["BreakTime AFK Pause"] = "由于你处于暂离状态，倒计时已暂停。";
 L["BreakTime Reset Cancellation"] = "重置已取消的休息时间";
 L["BreakTime Annouce Timer Deferred Combat"] = "战斗过后请记得休息！";
+L["BreakTime Shared Countdown Tooltip Format"] = "计划休息将于|cffffffff%d|r分钟后开始。";
 
 
 --Generic
@@ -882,6 +889,13 @@ L["Match Pattern Copper"] = "([%d]+) 铜";
 
 L["Match Pattern Rep 1"] = "你的战团在(.+)中的声望值提高了([%d%,]+)点";   --FACTION_STANDING_INCREASED_ACCOUNT_WIDE
 L["Match Pattern Rep 2"] = "你在(.+)中的声望值提高了([%d%,]+)点";   --FACTION_STANDING_INCREASED
+
+L["Upgrade Track 1"] = "冒险者";
+L["Upgrade Track 2"] = "探险者";
+L["Upgrade Track 3"] = "老兵";
+L["Upgrade Track 4"] = "勇士";
+L["Upgrade Track 5"] = "英雄";
+L["Upgrade Track 6"] = "神话";
 
 L["Match Pattern Transmog Set Partially Known"] = "^包含(%d)";   --TRANSMOG_SET_PARTIALLY_KNOWN_CLASS
 

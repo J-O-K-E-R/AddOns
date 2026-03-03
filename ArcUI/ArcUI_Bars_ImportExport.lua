@@ -108,6 +108,11 @@ local function ExtractAuraBarConfig(bar)
     out.colorRanges = bar.colorRanges and DeepCopy(bar.colorRanges) or {}
     out.events = bar.events and DeepCopy(bar.events) or {}
     
+    -- PRESETS (auto-switch rules)
+    if bar.presets then
+        out.presets = DeepCopy(bar.presets)
+    end
+    
     return out
 end
 

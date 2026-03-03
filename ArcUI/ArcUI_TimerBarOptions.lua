@@ -177,6 +177,14 @@ local function CreateTimerEntry(timerID, orderBase)
     name = "",
     inline = true,
     order = orderBase,
+    hidden = function()
+      -- Hide if timer was deleted (config removed from DB and activeTimers)
+      local cfgExists = ns.db and ns.db.char and ns.db.char.timerBarConfigs
+        and ns.db.char.timerBarConfigs[timerID]
+      local activeExists = ns.CooldownBars and ns.CooldownBars.activeTimers
+        and ns.CooldownBars.activeTimers[timerID]
+      return not cfgExists and not activeExists
+    end,
     args = {
       header = {
         type = "toggle",

@@ -97,7 +97,12 @@ local function ApplyClickThrough(frame, enable)
     if not frame then return end
     
     if enable then
-        frame:EnableMouse(false)
+        -- CRITICAL ORDER: Clear drag FIRST, then disable mouse
+        -- RegisterForDrag("LeftButton") implicitly re-enables mouse in WoW,
+        -- so we must clear it and disable movable before calling EnableMouse(false)
+        frame:RegisterForDrag()         -- Clear drag registration
+        frame:SetMovable(false)         -- Clear movable flag
+        frame:EnableMouse(false)        -- NOW disable mouse (will stick)
         
         -- Disable ArcUI overlays
         local overlays = { frame._arcOverlay, frame._arcTextOverlay, frame._arcIconOverlay }
@@ -313,8 +318,19 @@ local function SetupFrameInContainer(frame, container, slotW, slotH, cooldownID)
             if db then
                 clickThroughEnabled = db.clickThrough == true
             end
+            -- CRITICAL ORDER: Tooltips FIRST, then click-through LAST.
+            -- SetScript("OnEnter", fn) implicitly re-enables mouse in WoW,
+            -- so click-through's EnableMouse(false) must come AFTER tooltip restore.
+            -- When click-through is ON, force tooltips off (can't fire without mouse anyway).
+            ApplyTooltipSettings(frame, clickThroughEnabled or ShouldDisableTooltips())
             ApplyClickThrough(frame, clickThroughEnabled)
+        else
+            -- Panel open - just apply tooltip settings normally
+            ApplyTooltipSettings(frame, ShouldDisableTooltips())
         end
+    else
+        -- Drag mode - just apply tooltip settings normally
+        ApplyTooltipSettings(frame, ShouldDisableTooltips())
     end
     
     -- Return effective dimensions for centering calculations
@@ -408,8 +424,13 @@ function ns.CDMGroups.RefreshIconSettings()
     end
     
     -- Also refresh free icons
+    -- CRITICAL: When click-through is ON, force tooltips off too.
+    -- SetScript("OnEnter", fn) implicitly re-enables mouse in WoW,
+    -- so restoring tooltip handlers after ApplyClickThrough undoes EnableMouse(false).
+    local disableTooltips = clickThrough or ShouldDisableTooltips()
     for cdID, data in pairs(ns.CDMGroups.freeIcons or {}) do
         if data.frame then
+            ApplyTooltipSettings(data.frame, disableTooltips)
             ApplyClickThrough(data.frame, clickThrough)
         end
     end

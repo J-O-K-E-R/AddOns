@@ -513,9 +513,14 @@ function ns.Masque.AddFrame(frame, viewerName, cdID)
     -- Re-registering triggers Masque's SkinButton which resets Icon dimensions
     -- from the skin's intended inset size (e.g. 44.2x44.2) to full frame size (45x45),
     -- causing icon textures to bleed under Masque border artwork.
-    if frame._arcMasqueAdded and frame._arcMasqueGroupKey == groupKey then
+    -- Exception: _arcMasqueForceReskin flag (set by NotifyMasqueFrameResized) forces
+    -- a full remove+add cycle when the frame was resized externally.
+    if frame._arcMasqueAdded and frame._arcMasqueGroupKey == groupKey
+       and not frame._arcMasqueForceReskin then
         return
     end
+    local forceReskin = frame._arcMasqueForceReskin
+    frame._arcMasqueForceReskin = nil
     
     -- Wrap GetAlpha on Icon to defuse secret values for Masque (idempotent)
     WrapIconGetAlpha(frame)
@@ -525,9 +530,37 @@ function ns.Masque.AddFrame(frame, viewerName, cdID)
         ns.Masque.RemoveFrame(frame)
     end
     
+    -- CRITICAL: Set frame.IconMask BEFORE AddButton so Masque's Skin_Mask can find it.
+    -- Masque's Mask.lua does: _mcfg.ButtonMask = _mcfg.ButtonMask or Button.IconMask
+    -- Without this, shaped skins (Circle, Hexagon, etc.) can't clip the icon properly.
+    -- MasqueBlizzBars does this same thing: iconParent.IconMask = iconParent.Icon:GetMaskTexture(1)
+    if frame.Icon and not frame.IconMask then
+        -- Try to get the original CDM mask (may have been stripped by ArcUI texcoord code)
+        if frame.Icon._arcOrigMasks and frame.Icon._arcOrigMasks[1] then
+            frame.IconMask = frame.Icon._arcOrigMasks[1]
+        else
+            local ok, mask = pcall(function() return frame.Icon:GetMaskTexture(1) end)
+            if ok and mask then
+                frame.IconMask = mask
+            end
+        end
+    end
+    
+    -- Restore masks on Icon texture that ArcUI may have stripped for SetTexCoord.
+    -- Masque manages its own masks via Skin_RegionMask/Skin_ButtonMask, but it needs
+    -- the original CDM masks present on the Icon so it can properly remove/replace them.
+    -- Without restoration, Masque's mask management gets confused on re-registration.
+    if frame.Icon and frame.Icon._arcMasksRemoved and frame.Icon._arcOrigMasks then
+        for _, mask in ipairs(frame.Icon._arcOrigMasks) do
+            pcall(function() frame.Icon:AddMaskTexture(mask) end)
+        end
+        frame.Icon._arcMasksRemoved = nil
+    end
+    
     -- Build regions table - ONLY include Icon by default
     -- By not including other regions at all, Masque won't try to manage them
     -- Previously we set regions to false which could cause Masque to hide them
+    -- NOTE: IconMask is NOT a Masque region - it's set on the frame directly above.
     local regions = {}
     
     if frame.Icon then

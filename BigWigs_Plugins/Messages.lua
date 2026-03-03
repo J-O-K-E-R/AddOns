@@ -2,9 +2,7 @@
 -- Module Declaration
 --
 
-local plugin, L = BigWigs:NewPlugin("Messages", {
-	"db",
-})
+local plugin, L = BigWigs:NewPlugin("Messages")
 if not plugin then return end
 
 -------------------------------------------------------------------------------
@@ -743,6 +741,9 @@ function plugin:OnPluginEnable()
 	updateProfile()
 
 	self:RegisterMessage("BigWigs_Message")
+	if BigWigsLoader.isRetail then
+		self:RegisterEvent("ENCOUNTER_WARNING")
+	end
 	self:RegisterMessage("BigWigs_StartConfigureMode", showAnchors)
 	self:RegisterMessage("BigWigs_StopConfigureMode", hideAnchors)
 end
@@ -875,7 +876,7 @@ end
 do
 	local unpack, type = unpack, type
 	local format, upper, gsub = string.format, string.upper, string.gsub
-	function plugin:BigWigs_Message(event, module, key, text, color, icon, emphasized, customDisplayTime)
+	function plugin:BigWigs_Message(_, module, key, text, color, icon, emphasized, customDisplayTime)
 		if not text then return end
 
 		local r, g, b = 1, 1, 1 -- Default to white.
@@ -909,6 +910,47 @@ do
 			DEFAULT_CHAT_FRAME:AddMessage(text, r, g, b)
 		end
 	end
+end
+
+local severityColorMap = {
+	[0] = "yellow",
+	[1] = "orange",
+	[2] = "red",
+}
+function plugin:ENCOUNTER_WARNING(_, eventInfo)
+	-- Not Secret
+	-- local duration = eventInfo.duration
+	local severity = eventInfo.severity
+	local shouldPlaySound = eventInfo.shouldPlaySound
+	-- local shouldShowChatMessage = eventInfo.shouldShowChatMessage
+	local shouldShowWarning = eventInfo.shouldShowWarning
+
+	-- Secret
+	local text = eventInfo.text
+	-- local casterGUID = eventInfo.casterGUID
+	local casterName = eventInfo.casterName
+	local targetGUID = eventInfo.targetGUID
+	local targetName = eventInfo.targetName
+	local iconFileID = eventInfo.iconFileID
+	-- local tooltipSpellID = eventInfo.tooltipSpellID
+
+	-- shouldShowWarning gets set to false if encounterWarningsEnabled is false
+	-- we obviously can't check if the message is targeting the player, so we lose that functionality
+	-- local shouldShowWarningBasedOnSeverity = severity >= tonumber(C_CVar.GetCVar("encounterWarningsLevel"))
+
+	local formattedTargetName = targetName
+	if targetGUID and self.db.profile.classcolor then
+		local _, className = GetPlayerInfoByGUID(targetGUID)
+		if className then
+			local classColor = C_ClassColor.GetClassColor(className)
+			if classColor then
+				formattedTargetName = classColor:WrapTextInColorCode(targetName)
+			end
+		end
+	end
+	local formattedText = string.format(text, casterName, formattedTargetName)
+
+	self:BigWigs_Message(nil, nil, nil, formattedText, severityColorMap[severity] or "yellow", iconFileID, false)
 end
 
 -- Always last to prevent a potential error breaking the plugin

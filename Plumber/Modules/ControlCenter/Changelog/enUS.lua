@@ -13,8 +13,83 @@ local changelogs = addon.ControlCenter.changelogs;
 changelogs[10808] = {
     {
         type = "date",
+        versionText = "1.8.8 c",
+        timestamp = 1772460000,
+    },
+
+    {
+        type = "h1",
+        text = "Bug Fixes",
+    },
+
+    {
+        type = "p",
+        bullet = true,
+        text = "Loot UI: Midnight ores, herbs, and skins should use the updated version of quality icons.",
+    },
+
+    {
+        type = "p",
+        bullet = true,
+        text = "Expansion Summary: Clicking Valeera should show her abilities instead of Brann's.",
+    },
+
+    {
+        type = "p",
+        bullet = true,
+        text = "Plumber Torch Macro: Fixed an issue that affected typing in the macro edit box if you used Plumber Torch macro.",
+    },
+
+    {
+        type = "p",
+        bullet = true,
+        text = "Fixed an error when pressing hotkeys to focus on the next/previous quest in the objective tracker.",
+    },
+
+    {
+        type = "p",
+        bullet = true,
+        text = "Instance Difficulty Selector: Adjusted entrance coordinates for the two Utgarde dungeons.",
+    },
+
+    {
+        type = "br",
+    },
+
+    {
+        type = "h1",
+        text = "Added",
+    },
+
+    {
+        type = "p",
+        bullet = true,
+        text = "Break Time Reminder: Auto postpone schedule when AFK. The countdown to your next scheduled break will pause when you are AFK. It will continue pausing if the break time is over, but you have not performed any action.",
+    },
+
+    {
+        type = "p",
+        bullet = true,
+        text = "Break Time Reminder: The time until your next scheduled break will be displayed on the Plumber minimap button's tooltip.",
+    },
+
+    {
+        type = "p",
+        bullet = true,
+        text = "Updated the currencies (crests) used for upgrading Midnight items.",
+    },
+
+    {
+        type = "br",
+    },
+    {
+        type = "br",
+    },
+
+    {
+        type = "date",
         versionText = "1.8.8",
-        timestamp = 1771800000,
+        timestamp = 1772120000,
     },
 
     {
@@ -67,6 +142,12 @@ changelogs[10808] = {
     },
 
     {
+        type = "p",
+        bullet = true,
+        text = "Map Pin modules have been retired. Displaying Bountiful Delves and Special Assignments on Quel'Thalas map is a WoW native feature now.",
+    },
+
+    {
         type = "br",
     },
 
@@ -85,6 +166,12 @@ changelogs[10808] = {
         type = "p",
         bullet = true,
         text = "Expansion Summary Minimap Button: This button should correctly become hidden when you start pet battle.",
+    },
+
+    {
+        type = "p",
+        bullet = true,
+        text = "Queue Status: Fixed the timer for PvP queues.",
     },
 };
 

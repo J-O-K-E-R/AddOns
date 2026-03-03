@@ -72,15 +72,16 @@ local SECONDARY_POWER_TYPES = {
 
 local CLASS_POWER_TYPES = {
   ["WARRIOR"] = {1}, ["PALADIN"] = {0, 9}, ["HUNTER"] = {2},
-  ["ROGUE"] = {3, 4}, ["PRIEST"] = {0, 13}, ["DEATHKNIGHT"] = {6, 5},
+  ["ROGUE"] = {3, 4}, ["PRIEST"] = {0}, ["DEATHKNIGHT"] = {6, 5},
   ["SHAMAN"] = {0}, ["MAGE"] = {0, 16}, ["WARLOCK"] = {0, 7},
   ["MONK"] = {12}, ["DRUID"] = {0, 1, 3, 8, 4},
-  ["DEMONHUNTER"] = {17, 18}, ["EVOKER"] = {0, 19}
+  ["DEMONHUNTER"] = {17}, ["EVOKER"] = {0, 19}
 }
 
 local SPEC_POWER_TYPES = {
-  ["SHAMAN"] = { [1] = {11}, [2] = {}, [3] = {} },
-  ["MONK"]   = { [1] = {3}, [2] = {0}, [3] = {3} },  -- BrM=Energy, MW=Mana, WW=Energy
+  ["SHAMAN"] = { [1] = {11}, [2] = {}, [3] = {} },       -- Ele=+Maelstrom
+  ["MONK"]   = { [1] = {3}, [2] = {0}, [3] = {3} },      -- BrM=Energy, MW=Mana, WW=Energy
+  ["PRIEST"] = { [1] = {}, [2] = {}, [3] = {13} },        -- Shadow=+Insanity
 }
 
 -- ===================================================================
@@ -2446,6 +2447,64 @@ function ns.TrackingOptions.GetResourceSetupTable()
     return false
   end
   
+  -- Helper: check if a power type is available for the current class (any spec)
+  local function IsPowerTypeForClass(powerType)
+    local _, playerClass = UnitClass("player")
+    local classPowers = CLASS_POWER_TYPES[playerClass] or {}
+    for _, pType in ipairs(classPowers) do
+      if pType == powerType and not SECONDARY_POWER_TYPES[powerType] then return true end
+    end
+    -- Check all specs
+    local specPowers = SPEC_POWER_TYPES[playerClass]
+    if specPowers then
+      for _, specList in pairs(specPowers) do
+        for _, pType in ipairs(specList) do
+          if pType == powerType and not SECONDARY_POWER_TYPES[powerType] then return true end
+        end
+      end
+    end
+    return false
+  end
+  
+  -- Create a track toggle for one power type inside an autoPrimary bar
+  local function CreateAutoPowerToggleEntry(barNum, barKey, powerType, order)
+    local powerName = ALL_POWER_TYPES[powerType] or ("Power " .. powerType)
+    return {
+      type = "toggle",
+      name = powerName,
+      desc = "Track " .. powerName .. " on this bar.\n\nUnchecking will hide the bar when this power type is active.",
+      get = function()
+        local cfg = ns.API.GetResourceBarConfig(barNum)
+        if not cfg or not cfg.tracking then return true end
+        local excl = cfg.tracking.autoPowerExclude
+        if not excl then return true end
+        return not excl[powerType]
+      end,
+      set = function(info, value)
+        local cfg = ns.API.GetResourceBarConfig(barNum)
+        if cfg then
+          if not cfg.tracking.autoPowerExclude then cfg.tracking.autoPowerExclude = {} end
+          if value then
+            cfg.tracking.autoPowerExclude[powerType] = nil
+          else
+            cfg.tracking.autoPowerExclude[powerType] = true
+          end
+          if ns.Resources and ns.Resources.UpdateAllBars then
+            ns.Resources.UpdateAllBars()
+          end
+        end
+      end,
+      order = order,
+      width = 1.0,
+      hidden = function()
+        if not expandedResources[barKey] then return true end
+        local cfg = ns.API.GetResourceBarConfig(barNum)
+        if not cfg or cfg.tracking.resourceCategory ~= "autoPrimary" then return true end
+        return not IsPowerTypeForClass(powerType)
+      end
+    }
+  end
+  
   -- Create collapsible resource bar entry (matches Bars tab style)
   local function CreateResourceBarEntry(barNum, orderBase)
     local barKey = "resource_" .. barNum
@@ -2475,7 +2534,13 @@ function ns.TrackingOptions.GetResourceSetupTable()
               local resourceCategory = cfg.tracking.resourceCategory or "primary"
               local icon
               
-              if resourceCategory == "secondary" then
+              if resourceCategory == "autoPrimary" then
+                -- Show current power type dynamically
+                local currentPower = UnitPowerType("player")
+                icon = GetPowerIcon(currentPower)
+                local currentName = ALL_POWER_TYPES[currentPower] or "Unknown"
+                name = "Auto Primary (" .. currentName .. ")"
+              elseif resourceCategory == "secondary" then
                 icon = GetSecondaryIcon(cfg.tracking.secondaryType)
               else
                 icon = GetPowerIcon(cfg.tracking.powerType)
@@ -2489,10 +2554,12 @@ function ns.TrackingOptions.GetResourceSetupTable()
                 end
               end
               
-              -- Add category label for secondary
+              -- Add category label
               local categoryLabel = ""
               if resourceCategory == "secondary" then
                 categoryLabel = " |cff00ccff(Secondary)|r"
+              elseif resourceCategory == "autoPrimary" then
+                categoryLabel = " |cff00ff00(Auto)|r"
               end
               
               return string.format("|T%d:16:16:0:0|t Resource %d: %s%s%s", icon, barNum, name, categoryLabel, talentLabel)
@@ -2843,6 +2910,39 @@ function ns.TrackingOptions.GetResourceSetupTable()
           width = "full",
           hidden = function() return not expandedResources[barKey] end
         },
+        autoPowerColorsHeader = {
+          type = "description",
+          name = "|cffffd700Per-Resource Settings|r",
+          fontSize = "medium",
+          order = 5.91,
+          width = "full",
+          hidden = function()
+            if not expandedResources[barKey] then return true end
+            local cfg = ns.API.GetResourceBarConfig(barNum)
+            return not cfg or cfg.tracking.resourceCategory ~= "autoPrimary"
+          end
+        },
+        autoPowerColorsDesc = {
+          type = "description",
+          name = "|cff888888Uncheck a resource to hide the bar when that power type is active.|r",
+          fontSize = "small",
+          order = 5.911,
+          width = "full",
+          hidden = function()
+            if not expandedResources[barKey] then return true end
+            local cfg = ns.API.GetResourceBarConfig(barNum)
+            return not cfg or cfg.tracking.resourceCategory ~= "autoPrimary"
+          end
+        },
+        autoPowerToggle0  = CreateAutoPowerToggleEntry(barNum, barKey, 0,  5.9200),
+        autoPowerToggle1  = CreateAutoPowerToggleEntry(barNum, barKey, 1,  5.9210),
+        autoPowerToggle2  = CreateAutoPowerToggleEntry(barNum, barKey, 2,  5.9220),
+        autoPowerToggle3  = CreateAutoPowerToggleEntry(barNum, barKey, 3,  5.9230),
+        autoPowerToggle6  = CreateAutoPowerToggleEntry(barNum, barKey, 6,  5.9240),
+        autoPowerToggle8  = CreateAutoPowerToggleEntry(barNum, barKey, 8,  5.9250),
+        autoPowerToggle11 = CreateAutoPowerToggleEntry(barNum, barKey, 11, 5.9260),
+        autoPowerToggle13 = CreateAutoPowerToggleEntry(barNum, barKey, 13, 5.9270),
+        autoPowerToggle17 = CreateAutoPowerToggleEntry(barNum, barKey, 17, 5.9280),
         hideBlizzFrame = {
           type = "toggle",
           name = "Hide Blizzard Frame",
@@ -2998,7 +3098,51 @@ function ns.TrackingOptions.GetResourceSetupTable()
         order = 1
       },
       
-      -- Primary power type icon grid
+      -- Auto Primary Resource (one bar for all specs)
+      autoPrimary = {
+        type = "execute",
+        name = "Auto",
+        desc = "|cff00ff00Auto Primary Resource|r\n\nCreates a single bar that |cff00ccffautomatically switches|r power type per spec and form.\n\n"
+            .. "Examples:\n"
+            .. "- Shaman: Maelstrom (Ele) \226\134\148 Mana (Enh/Resto)\n"
+            .. "- Druid: Astral Power (Moonkin) \226\134\148 Energy (Cat) \226\134\148 Rage (Bear)\n"
+            .. "- DH: Fury on all specs\n\n"
+            .. "|cff888888Click to create.|r",
+        func = function()
+          local barNum = ns.API.InitializeNewResourceBar(nil, "Auto Primary", "autoPrimary", nil)
+          if barNum then
+            print("|cff00ccffArc UI|r: Created auto-switching primary resource bar #" .. barNum)
+          else
+            print("|cff00ccffArc UI|r: All resource bar slots are full")
+          end
+          LibStub("AceConfigRegistry-3.0"):NotifyChange("ArcUI")
+        end,
+        image = function()
+          local CLASS_ICONS = {
+            ["WARRIOR"]     = 626008,
+            ["PALADIN"]     = 626003,
+            ["HUNTER"]      = 626000,
+            ["ROGUE"]       = 626005,
+            ["PRIEST"]      = 626004,
+            ["DEATHKNIGHT"] = 135771,
+            ["SHAMAN"]      = 626006,
+            ["MAGE"]        = 626001,
+            ["WARLOCK"]     = 626007,
+            ["MONK"]        = 626002,
+            ["DRUID"]       = 625999,
+            ["DEMONHUNTER"] = 1260827,
+            ["EVOKER"]      = 4574311,
+          }
+          local _, playerClass = UnitClass("player")
+          return CLASS_ICONS[playerClass] or 134400
+        end,
+        imageWidth = 32,
+        imageHeight = 32,
+        order = 1.5,
+        width = 0.22,
+      },
+      
+      -- Primary power type icon grid (manual — one power type per bar)
       powerMana = CreatePowerIconEntry(0, 2.0),
       powerRage = CreatePowerIconEntry(1, 2.1),
       powerFocus = CreatePowerIconEntry(2, 2.2),

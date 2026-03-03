@@ -23,8 +23,14 @@ if not AceConfigDialog._arcUIHooked then
     hooksecurefunc(AceConfigDialog, "Close", function(self, appName)
         if appName == "ArcUI" then
             ns._arcUIOptionsOpen = false
+            -- NOTE: ns.optionsPanelOpen is set by CDM_Shared.SetPanelState()
+            -- Do NOT set it here or CDM_Shared's guard blocks all callbacks
             if ns.CDMGroups and ns.CDMGroups.DynamicLayout and ns.CDMGroups.DynamicLayout.OnOptionsPanelClosed then
                 ns.CDMGroups.DynamicLayout.OnOptionsPanelClosed()
+            end
+            -- IMMEDIATE: All panel-close logic (reflow, click-through, visuals)
+            if ns.CDMGroups and ns.CDMGroups.OnArcUIPanelChanged then
+                ns.CDMGroups.OnArcUIPanelChanged(false)
             end
         end
     end)
@@ -33,8 +39,13 @@ if not AceConfigDialog._arcUIHooked then
     hooksecurefunc(AceConfigDialog, "Open", function(self, appName)
         if appName == "ArcUI" then
             ns._arcUIOptionsOpen = true
+            -- NOTE: ns.optionsPanelOpen is set by CDM_Shared.SetPanelState()
             if ns.CDMGroups and ns.CDMGroups.DynamicLayout and ns.CDMGroups.DynamicLayout.OnOptionsPanelOpened then
                 ns.CDMGroups.DynamicLayout.OnOptionsPanelOpened()
+            end
+            -- IMMEDIATE: All panel-open logic (borders, scan, drag, visuals)
+            if ns.CDMGroups and ns.CDMGroups.OnArcUIPanelChanged then
+                ns.CDMGroups.OnArcUIPanelChanged(true)
             end
         end
     end)
@@ -140,7 +151,7 @@ ns.API.OpenOptions = function()
   ns._arcPendingOptionsOpen = nil
   ns._arcUIOptionsOpen = true  -- Flag for Resources module to detect options are open
   AceConfigDialog:Open("ArcUI")
-  -- NOTE: OnOptionsPanelOpened is called automatically via AceConfigDialog:Open hook above
+  -- CDM_Shared's ACD:Open posthook sets ns.optionsPanelOpen and fires all callbacks
   
   -- Refresh resource bars immediately so they show despite talent/spec/combat conditions
   if ns.Resources and ns.Resources.RefreshAllBars then
@@ -190,8 +201,15 @@ ns.API.OpenOptions = function()
         actualFrame:SetScript("OnHide", function(self, ...)
           if originalOnHide then originalOnHide(self, ...) end
           
-          -- Clear options open flag (backup - hook also sets this)
+          -- Clear options open flag (backup - Close hook also does this)
           ns._arcUIOptionsOpen = false
+          -- NOTE: ns.optionsPanelOpen is set by CDM_Shared.SetPanelState()
+          
+          -- BACKUP: Run panel-close logic if Close hook didn't fire
+          -- (e.g. Escape key, other addons closing the frame)
+          if ns.CDMGroups and ns.CDMGroups.OnArcUIPanelChanged then
+              ns.CDMGroups.OnArcUIPanelChanged(false)
+          end
           
           -- Hide "Hidden by Bar" overlays
           if ns.API.HideHiddenByBarOverlays then
@@ -308,14 +326,14 @@ local function GetOptionsTable()
             },
           },
           
-          -- Profile Manager tab
-          importExport = (function()
-            local tbl = ns.GetCDMImportExportOptionsTable and ns.GetCDMImportExportOptionsTable() or {
+          -- Extras tab (Keybind Display, Assisted Combat Highlight, Button Press Highlight)
+          extras = (function()
+            local tbl = ns.GetCDMUtilitiesOptionsTable and ns.GetCDMUtilitiesOptionsTable() or {
               type = "group",
-              name = "Profile Manager",
+              name = "Extras",
               args = { loading = { type = "description", name = "Loading...", order = 1 } }
             }
-            tbl.name = "Profile Manager"
+            tbl.name = "Extras"
             tbl.order = 4
             return tbl
           end)(),
@@ -329,6 +347,18 @@ local function GetOptionsTable()
             }
             tbl.name = "Arc Auras"
             tbl.order = 5
+            return tbl
+          end)(),
+          
+          -- Profile Manager tab
+          importExport = (function()
+            local tbl = ns.GetCDMImportExportOptionsTable and ns.GetCDMImportExportOptionsTable() or {
+              type = "group",
+              name = "Profile Manager",
+              args = { loading = { type = "description", name = "Loading...", order = 1 } }
+            }
+            tbl.name = "Profile Manager"
+            tbl.order = 6
             return tbl
           end)(),
         },

@@ -196,10 +196,58 @@ local function BuildExportData(options)
             local specData = cdmGroupsDB.specData[currentSpec]
             
             -- ═══════════════════════════════════════════════════════════════════════════
-            -- PHASE 1: Export from PROFILE (single source of truth)
+            -- PRE-EXPORT: Flush runtime Arc Aura positions to profile's savedPositions
+            -- Arc Aura frames in CDMGroups may have runtime group membership that hasn't
+            -- been persisted to the profile's savedPositions (e.g., after RegisterExternalFrame
+            -- or after the user assigns icons to groups). Sync them now so export is complete.
             -- ═══════════════════════════════════════════════════════════════════════════
             local activeProfileName = specData.activeProfile or "Default"
             local profile = specData.layoutProfiles and specData.layoutProfiles[activeProfileName]
+            
+            if profile and ns.CDMGroups and ns.CDMGroups.groups then
+                if not profile.savedPositions then profile.savedPositions = {} end
+                
+                local flushedCount = 0
+                for groupName, group in pairs(ns.CDMGroups.groups) do
+                    if group.members then
+                        for cdID, member in pairs(group.members) do
+                            -- Flush any arc_ IDs that are in runtime groups but missing from profile savedPositions
+                            if type(cdID) == "string" and cdID:find("^arc_") then
+                                local existing = profile.savedPositions[cdID]
+                                -- Always update to current runtime state (group may have changed)
+                                profile.savedPositions[cdID] = {
+                                    type = "group",
+                                    target = groupName,
+                                    row = member.row or 0,
+                                    col = member.col or 0,
+                                    gridSlot = member.gridSlot,
+                                }
+                                flushedCount = flushedCount + 1
+                            end
+                        end
+                    end
+                end
+                
+                -- Also flush free arc_ icons
+                if ns.CDMGroups.freeIcons then
+                    for cdID, freeData in pairs(ns.CDMGroups.freeIcons) do
+                        if type(cdID) == "string" and cdID:find("^arc_") then
+                            profile.savedPositions[cdID] = {
+                                type = "free",
+                                x = freeData.x or 0,
+                                y = freeData.y or 0,
+                                iconSize = freeData.iconSize or 36,
+                            }
+                            flushedCount = flushedCount + 1
+                        end
+                    end
+                end
+                
+                if flushedCount > 0 then
+                    -- Debug: uncomment to see flush count
+                    -- print(MSG_PREFIX .. "Flushed " .. flushedCount .. " Arc Aura positions to profile")
+                end
+            end
             
             -- Build layoutProfiles with ONLY the active profile
             local exportedLayoutProfiles = nil
@@ -275,6 +323,9 @@ local function BuildExportData(options)
             globalApplyHideShadow = cdmEnhance.globalApplyHideShadow,
             disableRightClickSelect = cdmEnhance.disableRightClickSelect,
             lockGridSize = cdmEnhance.lockGridSize,
+            -- Master customization toggles
+            enableAuraCustomization = cdmEnhance.enableAuraCustomization,
+            enableCooldownCustomization = cdmEnhance.enableCooldownCustomization,
         }
     end
     
@@ -652,6 +703,9 @@ function IE.Import(importString, options)
     end
     
     local importedCounts = {
+        groups = 0,
+        savedPositions = 0,
+        iconSettings = 0,
         layoutProfiles = 0,
         arcAuras = 0,
     }
@@ -699,9 +753,9 @@ function IE.Import(importString, options)
         end
         
         -- ═══════════════════════════════════════════════════════════════════════════
-        -- ADD IMPORTED PROFILES
-        -- Naming strategy: If profile name exists, use "ProfileName (ExportedBy)"
-        -- If that also exists, append number: "ProfileName (ExportedBy) 2", etc.
+        -- IMPORT PROFILES (REPLACE mode - wipe existing profile if same name)
+        -- Full replacement ensures the importer gets an exact copy of the export.
+        -- Old profiles with different names are preserved for safety.
         -- ═══════════════════════════════════════════════════════════════════════════
         local importedProfileName = nil
         local exportedBy = data.exportedBy or "Imported"
@@ -710,26 +764,36 @@ function IE.Import(importString, options)
             for profileName, profileData in pairs(data.cdmGroups.layoutProfiles) do
                 local finalName = profileName
                 
-                -- Check if profile name already exists
+                -- If profile name already exists, REPLACE it entirely
+                -- This gives the importer an exact copy of the exporter's setup
                 if specData.layoutProfiles[profileName] then
-                    -- Profile exists - create new name with exportedBy
-                    local baseName = profileName .. " (" .. exportedBy .. ")"
-                    finalName = baseName
-                    
-                    -- If that also exists, append numbers
-                    local counter = 2
-                    while specData.layoutProfiles[finalName] do
-                        finalName = baseName .. " " .. counter
-                        counter = counter + 1
-                    end
-                    
-                    print(MSG_PREFIX .. "|cffFFFF00Profile '" .. profileName .. "' already exists|r - importing as '" .. finalName .. "'")
+                    print(MSG_PREFIX .. "|cffFFFF00Replacing existing profile '|r" .. profileName .. "|cffFFFF00' with imported data|r")
+                    -- Wipe the old profile before deep-copying new data
+                    wipe(specData.layoutProfiles[profileName])
+                    specData.layoutProfiles[profileName] = nil
                 end
                 
-                -- Import the profile with the final (possibly renamed) name
+                -- Import the profile
                 specData.layoutProfiles[finalName] = DeepCopy(profileData)
                 importedCounts.layoutProfiles = importedCounts.layoutProfiles + 1
                 importedProfileName = importedProfileName or finalName
+                
+                -- Count groups and positions in imported profile
+                if profileData.groupLayouts then
+                    for _ in pairs(profileData.groupLayouts) do
+                        importedCounts.groups = importedCounts.groups + 1
+                    end
+                end
+                if profileData.savedPositions then
+                    for _ in pairs(profileData.savedPositions) do
+                        importedCounts.savedPositions = importedCounts.savedPositions + 1
+                    end
+                end
+                if profileData.iconSettings then
+                    for _ in pairs(profileData.iconSettings) do
+                        importedCounts.iconSettings = importedCounts.iconSettings + 1
+                    end
+                end
             end
         end
         
@@ -890,6 +954,13 @@ function IE.Import(importString, options)
         if data.cdmEnhance.lockGridSize ~= nil then
             cdmEnhance.lockGridSize = data.cdmEnhance.lockGridSize
         end
+        -- Master customization toggles
+        if data.cdmEnhance.enableAuraCustomization ~= nil then
+            cdmEnhance.enableAuraCustomization = data.cdmEnhance.enableAuraCustomization
+        end
+        if data.cdmEnhance.enableCooldownCustomization ~= nil then
+            cdmEnhance.enableCooldownCustomization = data.cdmEnhance.enableCooldownCustomization
+        end
     end
     
     -- ═══════════════════════════════════════════════════════════════════════════
@@ -910,11 +981,11 @@ function IE.Import(importString, options)
         
         -- Add tracked items (REPLACE existing - wipe first to prevent duplicates from old items surviving)
         if data.arcAuras.trackedItems then
-        wipe(arcAuras.trackedItems)
-        for arcID, config in pairs(data.arcAuras.trackedItems) do
-            arcAuras.trackedItems[arcID] = DeepCopy(config)
-            importedCounts.arcAuras = importedCounts.arcAuras + 1
-        end
+            wipe(arcAuras.trackedItems)
+            for arcID, config in pairs(data.arcAuras.trackedItems) do
+                arcAuras.trackedItems[arcID] = DeepCopy(config)
+                importedCounts.arcAuras = importedCounts.arcAuras + 1
+            end
         end
         
         -- Add tracked spell cooldowns (REPLACE existing)
@@ -938,9 +1009,18 @@ function IE.Import(importString, options)
             end
         end
         
-        -- Set enabled
-        if data.arcAuras.enabled then
+        -- Set enabled (use ~= nil to handle false correctly)
+        if data.arcAuras.enabled ~= nil then
             arcAuras.enabled = data.arcAuras.enabled
+        end
+        
+        -- Restore global visual settings for Arc Aura frames
+        if data.arcAuras.globalSettings then
+            if not arcAuras.globalSettings then arcAuras.globalSettings = {} end
+            wipe(arcAuras.globalSettings)
+            for k, v in pairs(data.arcAuras.globalSettings) do
+                arcAuras.globalSettings[k] = DeepCopy(v)
+            end
         end
         
         -- Restore auto-track settings
@@ -964,6 +1044,7 @@ function IE.Import(importString, options)
                     trackedItems = DeepCopy(arcAuras.trackedItems),
                     trackedSpells = arcAuras.trackedSpells and DeepCopy(arcAuras.trackedSpells) or nil,
                     positions = DeepCopy(arcAuras.positions),
+                    globalSettings = arcAuras.globalSettings and next(arcAuras.globalSettings) and DeepCopy(arcAuras.globalSettings) or nil,
                     enabled = arcAuras.enabled,
                     autoTrackEquippedTrinkets = arcAuras.autoTrackEquippedTrinkets,
                     autoTrackSlots = arcAuras.autoTrackSlots and DeepCopy(arcAuras.autoTrackSlots) or nil,
@@ -2916,6 +2997,17 @@ local function GetOptionsTable()
                         "|cff888888Global CD Defaults:|r   " .. (stats.hasGlobalCooldown and "|cff00ff00Yes|r" or "|cff666666No|r"),
                         "|cff888888Group Settings:|r       " .. (stats.hasGroupSettings and "|cff00ff00Yes|r" or "|cff666666No|r"),
                     }
+                    -- Add Arc Auras info if present
+                    if (stats.arcAuras or 0) > 0 or (stats.arcAurasSpells or 0) > 0 then
+                        table.insert(lines, "")
+                        table.insert(lines, "|cff888888Arc Auras:|r")
+                        if (stats.arcAuras or 0) > 0 then
+                            table.insert(lines, "  Tracked Items:  |cffffffff" .. stats.arcAuras .. "|r")
+                        end
+                        if (stats.arcAurasSpells or 0) > 0 then
+                            table.insert(lines, "  Tracked Spells: |cffffffff" .. stats.arcAurasSpells .. "|r")
+                        end
+                    end
                     return table.concat(lines, "\n")
                 end,
                 fontSize = "medium",
@@ -3119,6 +3211,17 @@ local function GetOptionsTable()
                         "  Global Defaults: " .. (p.hasGlobalAuraSettings and "|cff00ff00Aura|r " or "") .. (p.hasGlobalCooldownSettings and "|cff00ff00Cooldown|r" or ""),
                         "  Group Settings: " .. (p.hasGroupSettings and "|cff00ff00Yes|r" or "|cff666666No|r"),
                     }
+                    -- Add Arc Auras info if present
+                    if (p.arcAuras or 0) > 0 or (p.arcAurasSpells or 0) > 0 then
+                        table.insert(lines, "")
+                        table.insert(lines, "|cff00ccffArc Auras:|r")
+                        if (p.arcAuras or 0) > 0 then
+                            table.insert(lines, "  Tracked Items: |cffffffff" .. p.arcAuras .. "|r")
+                        end
+                        if (p.arcAurasSpells or 0) > 0 then
+                            table.insert(lines, "  Tracked Spells: |cffffffff" .. p.arcAurasSpells .. "|r")
+                        end
+                    end
                     return table.concat(lines, "\n")
                 end,
                 fontSize = "medium",
@@ -3229,8 +3332,11 @@ local function GetOptionsTable()
                     if success then
                         PrintMsg("|cff00ff00Import successful!|r")
                         if type(result) == "table" then
-                            PrintMsg(string.format("Imported: %d groups, %d positions, %d icon settings",
-                                result.groups or 0, result.savedPositions or 0, result.iconSettings or 0))
+                            PrintMsg(string.format("Imported: %d profiles, %d groups, %d positions, %d icon settings",
+                                result.layoutProfiles or 0, result.groups or 0, result.savedPositions or 0, result.iconSettings or 0))
+                            if (result.arcAuras or 0) > 0 then
+                                PrintMsg(string.format("Arc Auras: %d tracked items/spells", result.arcAuras))
+                            end
                         end
                         -- Clear import state
                         uiState.importString = ""

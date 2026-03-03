@@ -20,20 +20,20 @@ PrettyReps.HIERARCHY_METADATA_VERSION = 1
 
 -- Faction data organized by expansion and category
 PrettyReps.FactionHierarchy = {
-	-- {factionID = 2698, name = "Midnight", children = {
-	-- 	{ factionID = 2696, name = "Amani Tribe" },        
-    --     { factionID = 2704, name = "Hara'ti" },        
-    --     { factionID = 2764, name = "Prey: Season 1" }, -- Currently not active on default reputation frame. May not be added will remove if so
-    --     { factionID = 2710, name = "Silvermoon Court", isHeaderWithRep = true, children = {
-	-- 	    { factionID = 2712, name = "Blood Knights" },
-	-- 		{ factionID = 2713, name = "Farstriders" },
-	-- 		{ factionID = 2711, name = "Magisters" },
-	-- 		{ factionID = 2714, name = "Shades of the Row" },
-	-- 	}},
-    --     { factionID = 2770, name = "Slayer's Duellum" },
-    --     { factionID = 2699, name = "The Singularity" },
-	-- 	{ factionID = 2744, name = "Valeera Sanguinar"}
-	-- }},
+	{factionID = 2698, name = "Midnight", children = {
+		{ factionID = 2696, name = "Amani Tribe" },        
+        { factionID = 2704, name = "Hara'ti" },        
+        { factionID = 2764, name = "Prey: Season 1" }, -- Currently not active on default reputation frame. May not be added
+        { factionID = 2710, name = "Silvermoon Court", isHeaderWithRep = true, children = {
+		    { factionID = 2712, name = "Blood Knights" },
+			{ factionID = 2713, name = "Farstriders" },
+			{ factionID = 2711, name = "Magisters" },
+			{ factionID = 2714, name = "Shades of the Row" },
+		}},
+        { factionID = 2770, name = "Slayer's Duellum" },
+        { factionID = 2699, name = "The Singularity" },
+		{ factionID = 2744, name = "Valeera Sanguinar"}
+	}},
 	{ factionID = 2569, name = "The War Within", children = {
 		{ factionID = 2590, name = "Council of Dornogal" },
 		{ factionID = 2688, name = "Flame's Radiance" },

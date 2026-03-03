@@ -246,16 +246,6 @@ function boss:ShouldShowBars()
 	end
 end
 
---- Check if this module should show custom timer bars as well as blizzard timers.
--- @return true or nil
-function boss:ShouldShowBothBars()
-	if self.useCustomTimers and plugins.Timeline then
-		-- XXX should probably add an API in Timeline instead of accessing the db directly >.> like :CanShowCustom()
-		local timelineDB = plugins.Timeline.db.profile
-		return timelineDB.timer_mode == "dev"
-	end
-end
-
 --- Set the encounter id for this module. (As used by events ENCOUNTER_START, ENCOUNTER_END & BOSS_KILL)
 -- If this is set, no engage or wipe checking is required. The module will use this id and all engage/wipe checking will be handled automatically.
 -- @number encounterId The encounter id
@@ -562,11 +552,12 @@ function boss:Error(message, chatOnly)
 end
 
 do
-	local unhandledEventString = "Event error %q for module %q (stage %d), %s (%d), duration %d."
+	local unhandledEventString = "Event error %q for module %q (stage %s), %s (%d), duration %s."
 	--- Print an error message with event information after the encounter has ended
 	-- @param eventInfo The event information table from the ENCOUNTER_TIMELINE_EVENT_ADDED events
 	function boss:ErrorForTimelineEvent(eventInfo)
-		if not self:ShouldShowBothBars() then -- only error with debug info if you are showing both timers
+		local option = plugins.Timeline and plugins.Timeline.db.profile.timer_mode
+		if option ~= "dev" then -- only error with debug info if you are showing both timers
 			return
 		end
 		local stage = self:GetStage() or 0
@@ -1673,19 +1664,27 @@ do
 	end
 end
 
-function boss:EncounterEnd(_, id, name, diff, size, status)
-	if self:IsEncounterID(id) and self:IsEnabled() then
-		if status == 1 then
-			if self:GetJournalID() or self:GetAllowWin() then
-				self:Win() -- Official boss module
-			else
-				self:Disable() -- Custom external boss module
+do
+	local modulesWiping = {}
+	function boss:IsWiping()
+		return modulesWiping[self]
+	end
+
+	function boss:EncounterEnd(_, id, name, diff, size, status)
+		if self:IsEncounterID(id) and self:IsEnabled() then
+			if status == 1 then
+				if self:GetJournalID() or self:GetAllowWin() then
+					self:Win() -- Official boss module
+				else
+					self:Disable() -- Custom external boss module
+				end
+			elseif status == 0 then
+				modulesWiping[self] = true
+				self:SendMessage("BigWigs_StopBars", self)
+				SimpleTimer(5, function() modulesWiping[self] = nil self:Wipe() end) -- Delayed due to issues with some multi-boss encounters showing/hiding the boss frames (IEEU) rapidly whilst wiping.
 			end
-		elseif status == 0 then
-			self:SendMessage("BigWigs_StopBars", self)
-			SimpleTimer(5, function() self:Wipe() end) -- Delayed due to issues with some multi-boss encounters showing/hiding the boss frames (IEEU) rapidly whilst wiping.
+			self:SendMessage("BigWigs_EncounterEnd", self, id, name, diff, size, status) -- Do NOT use this for wipe detection, use BigWigs_OnBossWipe.
 		end
-		self:SendMessage("BigWigs_EncounterEnd", self, id, name, diff, size, status) -- Do NOT use this for wipe detection, use BigWigs_OnBossWipe.
 	end
 end
 

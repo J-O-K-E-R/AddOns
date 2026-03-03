@@ -3813,6 +3813,11 @@ anniesZug.tga
 
 
 ----
+Twitch Emotes V2.64 - Midnight launch 12.0.01
+----
+Updated .toc version for all clients
+
+----
 To do
 ----
 Christmas Krug

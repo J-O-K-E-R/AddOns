@@ -646,6 +646,7 @@ L["Paragon Reward Available"] = "Paragon Reward Available";
 L["Until Next Level Format"] = "%d until next level";   --Earn x reputation to reach the next level
 L["Until Paragon Reward Format"] = "%d until Paragon reward";
 L["Instruction Click To View Renown"] = REPUTATION_BUTTON_TOOLTIP_VIEW_RENOWN_INSTRUCTION or "<Click to view Renown>";
+L["Instruction Click To View Companion"] = "<Click to view Delve companion>";
 L["Not On Quest"] = "You are not on this quest";
 L["Factions"] = "Factions";
 L["Activities"] = MAP_LEGEND_CATEGORY_ACTIVITIES or "Activities";
@@ -718,8 +719,10 @@ L["LandingButton Reposition Tooltip"] = "Press |cffffffffShift|r to Unlock";
 L["LandingButtonOption ShowButton"] = "Enable Minimap Button";
 L["LandingButtonOption Unaffected"] = "Unaffected By Minimap AddOns";
 L["LandingButtonOption Unaffected Tooltip"] = "Make this button unaffected by other minimap addons, preventing it from being re-skinned or repositioned.\n\nOnce enabled, this button will no longer move with Minimap or respect Minimap\'s scale, and will instead use the global UI scale.\n\n|cffff4800You may need to reload the UI after changing this option.|r";
-L["LandingButtonOption UseLibDBIcon"] = "Use Standarized Design";
+L["LandingButtonOption UseLibDBIcon"] = "Use LibDBIcon";
 L["LandingButtonOption UseLibDBIcon Tooltip"] = "Let LibDBIcon handles this button\'s appearance and position.";
+L["LandingButtonOption UseLibDBIcon NoBorder"] = "Remove Button Border";
+L["LandingButtonOption UseLibDBIcon NoBorder Tooltip"] = "Remove the button's golden border.\n\nThis option may have no effect when using certain minimap button manager addons.";
 L["LandingButtonOption PrimaryUI"] = "Left Click to Open";   --Control which UI to open on left-click
 L["LandingButtonOption PrimaryUI Tooltip"] = "Choose which UI to open when left-clicking the minimap button.";
 L["LandingButtonOption SmartExpansion"] = "Auto Choose Expansion";
@@ -847,8 +850,12 @@ L["BreakTime Option Rest"] = "Break Duration";
 L["BreakTime Option Rest Tooltip"] = "The length of a break per cycle.";
 L["BreakTime Option Delay"] = "Delay Duration";
 L["BreakTime Option Delay Tooltip"] = "Delay the timer by this amount of minutes when clicking the Delay button.";
+L["BreakTime Option FlashTaskbar"] = "Flash Taskbar Icon";
+L["BreakTime Option FlashTaskbar Tooltip"] = "Flash WoW's taskbar icon when the timer goes off.";
+L["BreakTime AFK Pause"] = "The countdown is on hold because you are AFK.";
 L["BreakTime Reset Cancellation"] = "Reset Cancelled Break";
 L["BreakTime Annouce Timer Deferred Combat"] = "Remember to take a break after fight!";
+L["BreakTime Shared Countdown Tooltip Format"] = "Scheduled break in |cffffffff%d|r min.";
 
 
 --Generic

@@ -344,6 +344,9 @@ function plugin:OnPluginEnable()
 
 	self:RegisterMessage("BigWigs_Sound")
 	self:RegisterMessage("BigWigs_ProfileUpdate", updateProfile)
+	if BigWigsLoader.isRetail then
+		self:RegisterEvent("ENCOUNTER_WARNING")
+	end
 end
 
 -------------------------------------------------------------------------------
@@ -395,5 +398,18 @@ function plugin:BigWigs_Sound(event, module, key, soundName)
 	local soundPath = self:GetSoundFile(module, key, soundName)
 	if soundPath then
 		self:PlaySoundFile(soundPath)
+	end
+end
+
+local severitySoundMap = {
+	[0] = "alert",
+	[1] = "alarm",
+	[2] = "warning",
+}
+function plugin:ENCOUNTER_WARNING(_, eventInfo)
+	local shouldPlaySound = eventInfo.shouldPlaySound
+	local severity = eventInfo.severity
+	if shouldPlaySound then
+		self:BigWigs_Sound(nil, nil, false, severitySoundMap[severity] or "alert")
 	end
 end

@@ -232,19 +232,27 @@ do
 end
 
 function plugin:UpdateBarsShown(event, module)
-	local showBlizzardBars = db.timer_mode ~= "blizztimeline"
+	local showBlizzardBars = db.timer_mode ~= "blizztimeline" -- True unless set to "blizztimeline" mode (no bars)
 
 	local encounterID = module and module:GetEncounterID()
-	if encounterID then
+	if encounterID and showBlizzardBars then -- If module has encounter ID and we're not set to "blizztimeline" mode (no bars)
 		if event == "BigWigs_OnBossEngage" or event == "BigWigs_OnBossEngageMidEncounter" then
-			hasCustomTimers[encounterID] = module.useCustomTimers or nil
-			if module.useCustomTimers and db.timer_mode == "enhanced" then
+			if db.timer_mode == "enhanced" then
+				if module.useCustomTimers then
+					hasCustomTimers[encounterID] = true
+					showBlizzardBars = false
+				elseif next(hasCustomTimers) then
+					showBlizzardBars = false
+				end
+			end
+		elseif db.timer_mode == "enhanced" then -- BigWigs_OnBossDisable
+			hasCustomTimers[encounterID] = nil
+			if next(hasCustomTimers) then
 				showBlizzardBars = false
 			end
-		else -- BigWigs_OnBossDisable
-			hasCustomTimers[encounterID] = nil
-			showBlizzardBars = not next(hasCustomTimers) or db.timer_mode == "enhanced"
 		end
+	elseif next(hasCustomTimers) then -- Compensate for this function being called manually, outside of BigWigs_OnBossEngage/BigWigs_OnBossDisable
+		showBlizzardBars = false
 	end
 
 	if showBlizzardBars then
@@ -267,6 +275,7 @@ end
 function plugin:OnRegister()
 	self.displayName = L.timeline
 	C_CVar.SetCVar("combatWarningsEnabled", "1")
+	C_CVar.SetCVar("encounterWarningsEnabled", "0")
 end
 
 function plugin:OnPluginEnable()
@@ -280,8 +289,7 @@ function plugin:OnPluginEnable()
 	self:RegisterMessage("BigWigs_OnBossDisable", "UpdateBarsShown")
 	self:UpdateBarsShown()
 
-	self:RegisterEvent("ENCOUNTER_WARNING")
-
+	C_CVar.SetCVar("combatWarningsEnabled", "1")
 	C_CVar.SetCVar("encounterWarningsEnabled", "0")
 end
 
@@ -291,18 +299,19 @@ end
 
 function plugin:StartBars()
 	for _, eventId in next, C_EncounterTimeline.GetEventList() do
-		-- not crazy about this basically being :ENCOUNTER_TIMELINE_EVENT_ADDED
-		local info = C_EncounterTimeline.GetEventInfo(eventId)
-		local remaining = C_EncounterTimeline.GetEventTimeRemaining(eventId)
-		local spellName = info.spellName
-		if info.source == Enum.EncounterTimelineEventSource.EditMode then
-			spellName = ("%s (%d)"):format(L.test, tonumber(strsub(eventId, -1)) + 1)
-		end
-		self:SendMessage("BigWigs_StartBar", nil, nil, spellName, remaining, info.iconFileID, info.maxQueueDuration, info.duration, eventId)
-
 		local state = C_EncounterTimeline.GetEventState(eventId)
-		if state == Enum.EncounterTimelineEventState.Paused then
-			self:SendMessage("BigWigs_PauseBar", nil, nil, eventId)
+		if state == Enum.EncounterTimelineEventState.Paused or state == Enum.EncounterTimelineEventState.Active then
+			local info = C_EncounterTimeline.GetEventInfo(eventId)
+			local remaining = C_EncounterTimeline.GetEventTimeRemaining(eventId)
+			local spellName = info.spellName
+			if info.source == Enum.EncounterTimelineEventSource.EditMode then
+				spellName = ("%s (%d)"):format(L.test, tonumber(strsub(eventId, -1)) + 1)
+			end
+			self:SendMessage("BigWigs_StartBar", nil, nil, spellName, remaining, info.iconFileID, info.maxQueueDuration, info.duration, eventId)
+
+			if state == Enum.EncounterTimelineEventState.Paused then
+				self:SendMessage("BigWigs_PauseBar", nil, nil, eventId)
+			end
 		end
 	end
 end
@@ -365,61 +374,4 @@ end
 
 function plugin:ENCOUNTER_TIMELINE_EVENT_REMOVED(_, eventId)
 	self:SendMessage("BigWigs_StopBar", nil, nil, eventId)
-end
-
-
--------------------------------------------------------------------------------
--- Messages
-
-local severitySoundMap = {
-	[0] = "alert",
-	[1] = "alarm",
-	[2] = "warning",
-}
-local severityColorMap = {
-	[0] = "yellow",
-	[1] = "orange",
-	[2] = "red",
-}
-function plugin:ENCOUNTER_WARNING(_, eventInfo)
-	-- Not Secret
-	-- local duration = eventInfo.duration
-	local severity = eventInfo.severity
-	local shouldPlaySound = eventInfo.shouldPlaySound
-	-- local shouldShowChatMessage = eventInfo.shouldShowChatMessage
-	local shouldShowWarning = eventInfo.shouldShowWarning
-
-	-- Secret
-	local text = eventInfo.text
-	-- local casterGUID = eventInfo.casterGUID
-	local casterName = eventInfo.casterName
-	local targetGUID = eventInfo.targetGUID
-	local targetName = eventInfo.targetName
-	local iconFileID = eventInfo.iconFileID
-	-- local tooltipSpellID = eventInfo.tooltipSpellID
-
-	-- shouldShowWarning gets set to false if encounterWarningsEnabled is false
-	-- we obviously can't check if the message is targeting the player, so we lose that functionality
-	-- local shouldShowWarningBasedOnSeverity = severity >= tonumber(C_CVar.GetCVar("encounterWarningsLevel"))
-
-	local formattedTargetName = targetName
-	if targetGUID then
-		local messages = BigWigs:GetPlugin("Messages", true)
-		if not messages or (messages and messages.db.profile.classcolor) then
-			local _, className = GetPlayerInfoByGUID(targetGUID)
-			if className then
-				local classColor = C_ClassColor.GetClassColor(className)
-				if classColor then
-					formattedTargetName = classColor:WrapTextInColorCode(targetName)
-				end
-			end
-		end
-	end
-	local formattedText = string.format(text, casterName, formattedTargetName)
-
-	self:SendMessage("BigWigs_Message", nil, false, formattedText, severityColorMap[severity] or "yellow", iconFileID, false)
-
-	if shouldPlaySound then
-		self:SendMessage("BigWigs_Sound", nil, false, severitySoundMap[severity] or "alert")
-	end
 end

@@ -32,6 +32,7 @@ local collapsedSections = {
   tickMarks = true,
   cdText = true,
   prediction = true,
+  forecastSpells = true,
   stackText = true,
   durationText = true,
   readyText = true,
@@ -40,12 +41,16 @@ local collapsedSections = {
   position = true,
   groupAnchor = true,
   behavior = true,
+  presets = true,
+  autoSwitch = true,
+  autoShare = true,
 }
 
 local AceConfig = LibStub("AceConfig-3.0")
 local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 local AceGUI = LibStub("AceGUI-3.0")
 local LSM = LibStub and LibStub("LibSharedMedia-3.0", true)
+local forecastAddState = { spellID = "", gain = "" }
 
 -- Custom widget ArcUI_EditBox is registered in Core.lua
 
@@ -113,6 +118,24 @@ local SPEC_RESTRICTED_POWERS = {
   }
 }
 
+-- All primary power types each class can use across any spec/form
+-- Used by autoPrimary color pickers to show only relevant entries
+local CLASS_PRIMARY_POWERS = {
+  ["WARRIOR"]     = {1},
+  ["PALADIN"]     = {0},
+  ["HUNTER"]      = {2},
+  ["ROGUE"]       = {3},
+  ["PRIEST"]      = {0, 13},
+  ["DEATHKNIGHT"] = {6},
+  ["SHAMAN"]      = {0, 11},
+  ["MAGE"]        = {0},
+  ["WARLOCK"]     = {0},
+  ["MONK"]        = {0, 3},
+  ["DRUID"]       = {0, 1, 3, 8},
+  ["DEMONHUNTER"] = {17},
+  ["EVOKER"]      = {0},
+}
+
 local function IsPowerTypeValidForSpec(powerType)
   local _, playerClass = UnitClass("player")
   local currentSpec = GetSpecialization() or 0
@@ -130,6 +153,25 @@ local function IsPowerTypeValidForSpec(powerType)
   end
   
   return false
+end
+
+-- Check if the player's class uses multiple primary power types
+-- (e.g., Druid: Mana/Rage/Energy/Astral Power across forms).
+-- These classes use per-power-type profiles instead of per-spec profiles.
+local function IsMultiPowerClass()
+  local _, playerClass = UnitClass("player")
+  local powers = CLASS_PRIMARY_POWERS[playerClass]
+  return powers and #powers > 1
+end
+
+-- Get the friendly name for a power type ID
+local function GetPowerTypeName(powerTypeId)
+  if ns.Resources and ns.Resources.PowerTypes then
+    for _, pt in ipairs(ns.Resources.PowerTypes) do
+      if pt.id == powerTypeId then return pt.name end
+    end
+  end
+  return "Power " .. tostring(powerTypeId)
 end
 
 local function GetAllBarsDropdown()
@@ -226,20 +268,29 @@ local function GetAllBarsDropdown()
   
   -- ═══════════════════════════════════════════════════════════════
   -- COOLDOWN BARS (from CooldownBars system)
-  -- Format: "cd_barType_spellID" e.g. "cd_cooldown_12345"
+  -- Format: "cd_barTypeKey_spellID" e.g. "cd_cooldown_12345", "cd_cooldown_2_12345"
   -- 3 bar types: Duration, Charge, Resource
   -- ═══════════════════════════════════════════════════════════════
   if ns.CooldownBars then
-    -- Duration bars
-    for spellID, _ in pairs(ns.CooldownBars.activeCooldowns or {}) do
+    local ParseBarID = ns.CooldownBars.ParseBarID
+    local GetBarTypeKey = ns.CooldownBars.GetBarTypeKey
+    
+    -- Duration bars (all instances)
+    for barID, _ in pairs(ns.CooldownBars.activeCooldowns or {}) do
+      local spellID, instance = ParseBarID(barID)
+      local barTypeKey = GetBarTypeKey("cooldown", instance)
       local name = C_Spell.GetSpellName(spellID) or "Unknown"
-      values["cd_cooldown_" .. spellID] = string.format("|cffff8800CD Duration|r: %s", name)
+      local instLabel = instance > 1 and (" #" .. instance) or ""
+      values["cd_" .. barTypeKey .. "_" .. spellID] = string.format("|cffff8800CD Duration%s|r: %s", instLabel, name)
     end
     
-    -- Charge bars
-    for spellID, _ in pairs(ns.CooldownBars.activeCharges or {}) do
+    -- Charge bars (all instances)
+    for barID, _ in pairs(ns.CooldownBars.activeCharges or {}) do
+      local spellID, instance = ParseBarID(barID)
+      local barTypeKey = GetBarTypeKey("charge", instance)
       local name = C_Spell.GetSpellName(spellID) or "Unknown"
-      values["cd_charge_" .. spellID] = string.format("|cff00ccffCD Charges|r: %s", name)
+      local instLabel = instance > 1 and (" #" .. instance) or ""
+      values["cd_" .. barTypeKey .. "_" .. spellID] = string.format("|cff00ccffCD Charges%s|r: %s", instLabel, name)
     end
     
     -- Resource bars (Coming Soon - grayed out)
@@ -250,14 +301,45 @@ local function GetAllBarsDropdown()
   end
   
   -- ═══════════════════════════════════════════════════════════════
-  -- TIMER BARS (from TimerBars system)
+  -- TIMER BARS (from TimerBars/CooldownBars system)
   -- Format: "timer_timerID" e.g. "timer_1"
+  -- Shows Timer/Toggle/Stack distinction based on bar mode
+  -- Includes both active AND DB-saved configs (for bars not yet triggered)
   -- ═══════════════════════════════════════════════════════════════
+  local seenTimerIDs = {}
+  
+  -- Helper: add a timer bar entry with mode-based label
+  local function AddTimerEntry(timerID)
+    if seenTimerIDs[timerID] then return end
+    seenTimerIDs[timerID] = true
+    local cfg = ns.CooldownBars and ns.CooldownBars.GetTimerConfig and ns.CooldownBars.GetTimerConfig(timerID)
+    local name = cfg and cfg.tracking and cfg.tracking.barName or "Custom Bar"
+    local barMode = cfg and cfg.tracking and cfg.tracking.barMode or "timer"
+    local modeLabel, modeColor
+    if barMode == "stack" then
+      modeLabel = "Custom Stack"
+      modeColor = "ffcc66ff"  -- Purple (matches all custom bar types)
+    elseif cfg and cfg.tracking and cfg.tracking.unlimitedDuration then
+      modeLabel = "Custom Toggle"
+      modeColor = "ffcc66ff"  -- Purple
+    else
+      modeLabel = "Custom Timer"
+      modeColor = "ffcc66ff"  -- Purple
+    end
+    values["timer_" .. timerID] = string.format("|c%s%s|r: %s", modeColor, modeLabel, name)
+  end
+  
+  -- First: active runtime timers
   if ns.TimerBars and ns.TimerBars.activeTimers then
     for timerID in pairs(ns.TimerBars.activeTimers) do
-      local cfg = ns.TimerBars.GetTimerConfig and ns.TimerBars.GetTimerConfig(timerID)
-      local name = cfg and cfg.tracking and cfg.tracking.barName or "Timer"
-      values["timer_" .. timerID] = string.format("|cffcc66ffTimer|r: %s", name)
+      AddTimerEntry(timerID)
+    end
+  end
+  
+  -- Second: DB-saved timer configs (may not be active yet)
+  if ns.db and ns.db.char and ns.db.char.timerBarConfigs then
+    for timerID in pairs(ns.db.char.timerBarConfigs) do
+      AddTimerEntry(timerID)
     end
   end
   
@@ -271,6 +353,10 @@ end
 -- Store selected bar
 local selectedAppearanceBar = nil
 
+-- Auto Primary: which power type profile is being edited in options
+-- nil = editing base/current, number = editing that power type's profile
+local editingAutoPowerProfile = nil
+
 local function GetSelectedBarType()
   if not selectedAppearanceBar then return nil, nil end
   
@@ -280,8 +366,10 @@ local function GetSelectedBarType()
     return "timer", tonumber(timerID)
   end
   
-  -- Handle cooldown bars: "cd_barType_spellID" format
-  local cdType, spellID = selectedAppearanceBar:match("cd_(%w+)_(%d+)")
+  -- Handle cooldown bars: "cd_barTypeKey_spellID" format
+  -- barTypeKey can include instance suffix like "cooldown_2"
+  -- Use greedy (.+) to capture barTypeKey, anchored to end for spellID
+  local cdType, spellID = selectedAppearanceBar:match("^cd_(.+)_(%d+)$")
   if cdType and spellID then
     return "cd_" .. cdType, tonumber(spellID)
   end
@@ -304,7 +392,8 @@ IsDurationBar = function()
   
   -- Cooldown bars from CooldownBars system ARE duration bars
   -- cd_cooldown = duration bar, cd_charge = recharge bar (both show time progression)
-  if barType == "cd_cooldown" or barType == "cd_charge" then
+  -- Also matches instance-suffixed types like cd_cooldown_2, cd_charge_3
+  if barType:find("^cd_cooldown") or barType:find("^cd_charge") then
     return true
   end
   
@@ -368,6 +457,69 @@ local function IsResourceBar()
   return barType == "resource"
 end
 
+-- Check if selected bar is an autoPrimary resource bar
+local function IsAutoPrimaryBar()
+  if not IsResourceBar() then return false end
+  local cfg = GetSelectedConfig()
+  return cfg and cfg.tracking and cfg.tracking.resourceCategory == "autoPrimary"
+end
+
+-- Auto-initialize editingAutoPowerProfile when landing on an autoPrimary bar.
+-- Single-power classes: auto-enable per-spec profiles.
+-- Multi-power classes (Druid): always use per-power-type profiles.
+local function SyncEditingAutoPower()
+  if not IsAutoPrimaryBar() then return end
+  local _, barNum = GetSelectedBarType()
+  barNum = tonumber(barNum)
+  if not barNum then return end
+  
+  local cfg = GetSelectedConfig()
+  if not cfg or not cfg.tracking then return end
+  
+  if IsMultiPowerClass() then
+    -- Multi-power classes (Druid, Monk, etc.) use per-POWER-TYPE profiles.
+    -- If per-spec was erroneously enabled (from older version), revert it now.
+    if cfg.tracking.usePerSpecProfiles then
+      if ns.Resources and ns.Resources.DisablePerSpecProfiles then
+        ns.Resources.DisablePerSpecProfiles(barNum)
+      else
+        cfg.tracking.usePerSpecProfiles = nil
+      end
+    end
+    -- Ensure autoShareCategories exists with all-independent defaults
+    -- (each power type gets its own look by default, user can opt-in to sharing)
+    if not cfg.tracking.autoShareCategories then
+      cfg.tracking.autoShareCategories = {
+        colors = false, fill = false, text = false,
+        background = false, border = false, tickMarks = false,
+      }
+    end
+    -- Sync to current power type
+    local currentPower = UnitPowerType("player")
+    editingAutoPowerProfile = currentPower
+    if ns.Resources and ns.Resources.SetEditingAutoPower then
+      ns.Resources.SetEditingAutoPower(barNum, currentPower)
+    end
+  else
+    -- Single-power classes: use per-SPEC profiles.
+    if not cfg.tracking.usePerSpecProfiles then
+      if ns.Resources and ns.Resources.EnablePerSpecProfiles then
+        ns.Resources.EnablePerSpecProfiles(barNum)
+      end
+    end
+    local currentKey
+    if ns.Resources and ns.Resources.GetCurrentProfileKey then
+      currentKey = ns.Resources.GetCurrentProfileKey(barNum)
+    else
+      currentKey = "spec" .. (GetSpecialization() or 1)
+    end
+    editingAutoPowerProfile = currentKey
+    if ns.Resources and ns.Resources.SetEditingAutoPower then
+      ns.Resources.SetEditingAutoPower(barNum, currentKey)
+    end
+  end
+end
+
 -- Check if selected bar supports CDM Group anchoring
 -- Includes: resource bars, cooldown bars (cd_cooldown, cd_charge, cd_resource), timer bars
 local function SupportsCDMGroupAnchor()
@@ -406,7 +558,9 @@ end
 local function GetCooldownBarType()
   local barType, _ = GetSelectedBarType()
   if barType and barType:find("^cd_") then
-    return barType:gsub("^cd_", "")
+    local cdType = barType:gsub("^cd_", "")
+    -- Strip instance suffix: "charge_2" -> "charge", "cooldown_3" -> "cooldown"
+    return cdType:match("^(%a+)") or cdType
   end
   return nil
 end
@@ -483,6 +637,16 @@ local function IsNonContinuousMode()
   local cfg = GetSelectedConfig()
   if not cfg then return false end
   local mode = cfg.display and cfg.display.thresholdMode
+  if not mode then return false end
+  -- Primary/autoPrimary resource bars can NEVER be fragmented/icons (SECRET crash).
+  -- If a skin left an invalid mode, fix it now so the UI stays correct.
+  if (mode == "fragmented" or mode == "icons") and IsResourceBar() then
+    local resCat = cfg.tracking and cfg.tracking.resourceCategory
+    if resCat ~= "secondary" then
+      cfg.display.thresholdMode = "simple"
+      return false
+    end
+  end
   return mode == "perStack" or mode == "fragmented" or mode == "icons"
 end
 
@@ -558,6 +722,19 @@ end
 -- ===================================================================
 local livePreviewEnabled = false
 local livePreviewStatic = false  -- Static mode vs animated
+local _presetSaveName = ""  -- Input field for save skin name
+local _presetSaveCategories = nil  -- Category toggles for saving (lazy init)
+
+-- Initialize category toggles with defaults
+local function EnsureSaveCategories()
+  if not _presetSaveCategories then
+    _presetSaveCategories = ns.Presets and ns.Presets.DefaultCategories() or {
+      colors = true, fill = true, size = true, text = true,
+      background = true, border = true, tickMarks = true,
+    }
+  end
+  return _presetSaveCategories
+end
 local staticPreviewValue = 5
 local previewTimer = nil
 local previewValue = 0
@@ -588,7 +765,10 @@ local function ClearSelectedBarColorCurve()
   end
 end
 
-local function RefreshBar()
+-- Throttle timer handle for RefreshBar (prevents flickering from rapid color picker changes)
+local refreshBarTimer = nil
+
+local function RefreshBarImmediate()
   local barType, barNum = GetSelectedBarType()
   if not barType or not barNum then return end
   
@@ -642,7 +822,21 @@ local function RefreshBar()
   end
 end
 
-local function UpdateBar()
+-- Throttled RefreshBar: batches rapid calls (e.g. from color picker dragging) into a single update
+-- Prevents flickering caused by ApplyAppearance recreating charge slots on every call
+local function RefreshBar()
+  if refreshBarTimer then
+    refreshBarTimer:Cancel()
+  end
+  refreshBarTimer = C_Timer.NewTimer(0.03, function()
+    refreshBarTimer = nil
+    RefreshBarImmediate()
+  end)
+end
+
+local updateBarTimer = nil
+
+local function UpdateBarImmediate()
   local barType, barNum = GetSelectedBarType()
   if not barType or not barNum then return end
   
@@ -682,6 +876,17 @@ local function UpdateBar()
       end
     end)
   end
+end
+
+-- Throttled UpdateBar: batches rapid calls into a single update
+local function UpdateBar()
+  if updateBarTimer then
+    updateBarTimer:Cancel()
+  end
+  updateBarTimer = C_Timer.NewTimer(0.03, function()
+    updateBarTimer = nil
+    UpdateBarImmediate()
+  end)
 end
 
 -- Helper: Refresh bar + notify AceConfig to update color swatches
@@ -953,6 +1158,17 @@ optionsCleanupFrame:SetScript("OnEvent", function(self, event, arg1)
             -- Hide editing indicator
             HideEditingIndicator()
             optionsFrameVisible = false
+            -- Restore autoPrimary profiles to actual current power type
+            if editingAutoPowerProfile then
+              local barType, barNum = GetSelectedBarType()
+              if barType == "resource" and barNum then
+                local num = tonumber(barNum)
+                if num and ns.Resources and ns.Resources.RestoreActiveAutoPower then
+                  ns.Resources.RestoreActiveAutoPower(num)
+                end
+              end
+              editingAutoPowerProfile = nil
+            end
           end
         end)
         
@@ -975,6 +1191,9 @@ optionsCleanupFrame:SetScript("OnEvent", function(self, event, arg1)
           if not frame or not frame:IsShown() then
             HideEditingIndicator()
             optionsFrameVisible = false
+            if editingAutoPowerProfile then
+              editingAutoPowerProfile = nil
+            end
           end
         end
       end
@@ -989,12 +1208,30 @@ end)
 -- SET SELECTED BAR (for external access)
 -- ===================================================================
 function ns.AppearanceOptions.SetSelectedBar(barType, barNum)
+  -- If we were editing a power profile on the previous bar, restore its actual power type
+  if editingAutoPowerProfile then
+    local prevBarType, prevBarNum = GetSelectedBarType()
+    if prevBarType == "resource" and prevBarNum then
+      local prevNum = tonumber(prevBarNum)
+      if prevNum and ns.Resources and ns.Resources.RestoreActiveAutoPower then
+        ns.Resources.RestoreActiveAutoPower(prevNum)
+      end
+    end
+    editingAutoPowerProfile = nil
+  end
   selectedAppearanceBar = barType .. "_" .. barNum
+  -- Auto-init power profile editing for autoPrimary bars
+  SyncEditingAutoPower()
   if ns.devMode then
     print(string.format("|cff00FFFF[ArcUI Debug]|r AppearanceOptions.SetSelectedBar: set to '%s'", 
       selectedAppearanceBar))
   end
 end
+
+-- ===================================================================
+-- AUTO PRIMARY: Per-Power-Type Color Helpers
+-- Used by both the Appearance Options table and TrackingOptions
+-- ===================================================================
 
 -- ===================================================================
 -- APPEARANCE OPTIONS TABLE
@@ -1034,6 +1271,10 @@ function ns.AppearanceOptions.GetOptionsTable()
             if not currentEditingFrame then
               C_Timer.After(0.1, ShowEditingIndicator)
             end
+            -- Auto-init power profile editing for autoPrimary bars (once per bar selection)
+            if not editingAutoPowerProfile and IsAutoPrimaryBar() then
+              C_Timer.After(0.05, SyncEditingAutoPower)
+            end
             return selectedAppearanceBar
           end
           
@@ -1050,6 +1291,7 @@ function ns.AppearanceOptions.GetOptionsTable()
           -- Current selection invalid - find first valid bar using SORTED order
           -- (pairs() order is not guaranteed, so we need to sort for consistency)
           selectedAppearanceBar = nil
+          editingAutoPowerProfile = nil
           local sortedKeys = {}
           for k, v in pairs(bars) do
             if k ~= "none" then
@@ -1060,6 +1302,8 @@ function ns.AppearanceOptions.GetOptionsTable()
           
           if #sortedKeys > 0 then
             selectedAppearanceBar = sortedKeys[1]
+            -- Auto-init power profile editing if autoPrimary
+            C_Timer.After(0.15, SyncEditingAutoPower)
           end
           
           -- Show editing indicator for newly selected bar
@@ -1071,7 +1315,18 @@ function ns.AppearanceOptions.GetOptionsTable()
         end,
         set = function(info, value)
           if value ~= "none" then
+            if editingAutoPowerProfile then
+              local prevBarType, prevBarNum = GetSelectedBarType()
+              if prevBarType == "resource" and prevBarNum then
+                local prevNum = tonumber(prevBarNum)
+                if prevNum and ns.Resources and ns.Resources.RestoreActiveAutoPower then
+                  ns.Resources.RestoreActiveAutoPower(prevNum)
+                end
+              end
+              editingAutoPowerProfile = nil
+            end
             selectedAppearanceBar = value
+            SyncEditingAutoPower()
             ShowEditingIndicator()
           end
         end,
@@ -1125,6 +1380,509 @@ function ns.AppearanceOptions.GetOptionsTable()
         end
       },
       -- Multi-icon mode removed in v2.7.0 - was causing issues
+      
+      -- ============================================================
+      -- AUTO PRIMARY: Profile Note (always visible above Auto Share)
+      -- ============================================================
+      profileNote = {
+        type = "description",
+        name = function()
+          if editingAutoPowerProfile then
+            local keyName = tostring(editingAutoPowerProfile)
+            local isPowerKey = type(editingAutoPowerProfile) == "number"
+            if isPowerKey then
+              -- Power-type mode: show power name
+              keyName = GetPowerTypeName(editingAutoPowerProfile)
+            else
+              -- Spec mode: show spec name
+              local specNum = tonumber(tostring(editingAutoPowerProfile):match("spec(%d+)"))
+              if specNum then
+                local _, specName = GetSpecializationInfo(specNum)
+                keyName = specName or keyName
+              end
+            end
+            local contextWord = isPowerKey and "power type" or "spec"
+            return "|cff00ff00Editing " .. keyName .. ".|r All settings below apply when this " .. contextWord .. " is active."
+          end
+          return ""
+        end,
+        fontSize = "small",
+        order = 2.55,
+        width = "full",
+        hidden = function()
+          if not IsAutoPrimaryBar() then return true end
+          return not editingAutoPowerProfile
+        end
+      },
+      -- ============================================================
+      -- AUTO SHARE: Collapsible section (like Skins)
+      -- Controls which appearance categories are shared across specs
+      -- vs independent per spec.
+      -- ============================================================
+      autoShareHeader = {
+        type = "toggle",
+        name = "Auto Share",
+        desc = "Click to expand/collapse",
+        dialogControl = "CollapsibleHeader",
+        get = function() return not collapsedSections.autoShare end,
+        set = function(info, value) collapsedSections.autoShare = not value end,
+        order = 2.56,
+        width = "full",
+        hidden = function()
+          return not IsAutoPrimaryBar()
+        end
+      },
+      autoShareDesc = {
+        type = "description",
+        name = function()
+          local cfg = GetSelectedConfig()
+          if cfg and cfg.tracking and not cfg.tracking.usePerSpecProfiles then
+            return "Control which appearance categories are shared across all power types vs customized per power type."
+          end
+          return "Control which appearance categories are shared across all specs vs customized per spec."
+        end,
+        fontSize = "small",
+        order = 2.561,
+        hidden = function()
+          return not IsAutoPrimaryBar() or collapsedSections.autoShare
+        end
+      },
+      profileSelector = {
+        type = "select",
+        name = function()
+          local cfg = GetSelectedConfig()
+          if cfg and cfg.tracking and not cfg.tracking.usePerSpecProfiles then
+            return "Power Type Profile"
+          end
+          return "Spec Profile"
+        end,
+        desc = function()
+          local cfg = GetSelectedConfig()
+          if cfg and cfg.tracking and not cfg.tracking.usePerSpecProfiles then
+            return "Select which power type to edit. Each power type can have its own appearance when that form/power is active.\n\nWhen the panel closes, the bar auto-detects your current power type."
+          end
+          return "Select which specialization to edit. Each spec can have independent settings for unchecked categories below.\n\nWhen the panel closes, the bar auto-detects your current spec."
+        end,
+        values = function()
+          local vals = {}
+          local cfg = GetSelectedConfig()
+          if cfg and cfg.tracking and not cfg.tracking.usePerSpecProfiles then
+            -- Power-type mode (Druid/multi-power classes)
+            local _, playerClass = UnitClass("player")
+            local powers = CLASS_PRIMARY_POWERS[playerClass] or {}
+            for _, ptId in ipairs(powers) do
+              vals[tostring(ptId)] = GetPowerTypeName(ptId)
+            end
+          else
+            -- Per-spec mode
+            local numSpecs = GetNumSpecializations and GetNumSpecializations() or 4
+            for i = 1, numSpecs do
+              local _, specName = GetSpecializationInfo(i)
+              vals["spec" .. i] = specName or ("Spec " .. i)
+            end
+          end
+          return vals
+        end,
+        sorting = function()
+          local sorted = {}
+          local cfg = GetSelectedConfig()
+          if cfg and cfg.tracking and not cfg.tracking.usePerSpecProfiles then
+            local _, playerClass = UnitClass("player")
+            local powers = CLASS_PRIMARY_POWERS[playerClass] or {}
+            for _, ptId in ipairs(powers) do
+              sorted[#sorted + 1] = tostring(ptId)
+            end
+          else
+            local numSpecs = GetNumSpecializations and GetNumSpecializations() or 4
+            for i = 1, numSpecs do
+              sorted[#sorted + 1] = "spec" .. i
+            end
+          end
+          return sorted
+        end,
+        get = function()
+          if editingAutoPowerProfile then
+            return tostring(editingAutoPowerProfile)
+          end
+          local _, barNum = GetSelectedBarType()
+          barNum = tonumber(barNum)
+          if barNum and ns.Resources and ns.Resources.GetCurrentProfileKey then
+            return tostring(ns.Resources.GetCurrentProfileKey(barNum))
+          end
+          local cfg = GetSelectedConfig()
+          if cfg and cfg.tracking and not cfg.tracking.usePerSpecProfiles then
+            return tostring(UnitPowerType("player"))
+          end
+          return "spec" .. (GetSpecialization() or 1)
+        end,
+        set = function(info, value)
+          local cfg = GetSelectedConfig()
+          if not cfg then return end
+          local _, barNum = GetSelectedBarType()
+          barNum = tonumber(barNum)
+          if not barNum then return end
+          
+          -- Convert string key back to integer for power-type mode
+          local profileKey = value
+          if cfg.tracking and not cfg.tracking.usePerSpecProfiles then
+            profileKey = tonumber(value) or value
+          end
+          
+          editingAutoPowerProfile = profileKey
+          if ns.Resources and ns.Resources.SetEditingAutoPower then
+            ns.Resources.SetEditingAutoPower(barNum, profileKey)
+          end
+          if LibStub and LibStub("AceConfigRegistry-3.0", true) then
+            LibStub("AceConfigRegistry-3.0"):NotifyChange("ArcUI")
+          end
+        end,
+        order = 2.562,
+        width = 1.2,
+        hidden = function()
+          return not IsAutoPrimaryBar() or collapsedSections.autoShare
+        end
+      },
+      autoShareBreak = {
+        type = "description",
+        name = " ",
+        order = 2.563,
+        width = "full",
+        hidden = function()
+          return not IsAutoPrimaryBar() or collapsedSections.autoShare
+        end
+      },
+      autoShareLabel = {
+        type = "description",
+        name = "|cffffd700Shared:|r",
+        fontSize = "small",
+        order = 2.564,
+        width = 0.4,
+        hidden = function()
+          return not IsAutoPrimaryBar() or collapsedSections.autoShare
+        end
+      },
+      autoShareColors = {
+        type = "toggle", name = "Colors",
+        desc = function()
+          if IsMultiPowerClass() then
+            return "When checked, colors are SHARED across all power types.\nWhen unchecked, each power type gets its own colors."
+          end
+          return "When checked, colors (bar color, thresholds, color curves, spec colors) are SHARED across all specs.\nWhen unchecked, each spec gets its own colors."
+        end,
+        get = function()
+          local cfg = GetSelectedConfig()
+          if not cfg or not cfg.tracking then return true end
+          local shared = cfg.tracking.autoShareCategories
+          if not shared then return true end
+          return shared.colors ~= false
+        end,
+        set = function(_, v)
+          local cfg = GetSelectedConfig()
+          if not cfg or not cfg.tracking then return end
+          if not cfg.tracking.autoShareCategories then
+            cfg.tracking.autoShareCategories = {
+              colors = true, fill = true, text = true,
+              background = true, border = true, tickMarks = true,
+            }
+          end
+          cfg.tracking.autoShareCategories.colors = v and true or false
+          local _, barNum = GetSelectedBarType()
+          barNum = tonumber(barNum)
+          if barNum and ns.Resources then
+            if not v and ns.Resources.SeedCategoryIntoProfiles then
+              ns.Resources.SeedCategoryIntoProfiles(barNum, "colors")
+            elseif ns.Resources.FlushActiveProfileToStorage then
+              ns.Resources.FlushActiveProfileToStorage(barNum)
+            end
+          end
+        end,
+        order = 2.5650, width = 0.5,
+        hidden = function()
+          return not IsAutoPrimaryBar() or collapsedSections.autoShare
+        end
+      },
+      autoShareFill = {
+        type = "toggle", name = "Fill",
+        desc = function()
+          if IsMultiPowerClass() then
+            return "When checked, fill settings are SHARED across all power types.\nWhen unchecked, each power type gets its own fill settings."
+          end
+          return "When checked, fill settings (texture, orientation, gradient) are SHARED across all specs.\nWhen unchecked, each spec gets its own fill settings."
+        end,
+        get = function()
+          local cfg = GetSelectedConfig()
+          if not cfg or not cfg.tracking then return true end
+          local shared = cfg.tracking.autoShareCategories
+          if not shared then return true end
+          return shared.fill ~= false
+        end,
+        set = function(_, v)
+          local cfg = GetSelectedConfig()
+          if not cfg or not cfg.tracking then return end
+          if not cfg.tracking.autoShareCategories then
+            cfg.tracking.autoShareCategories = {
+              colors = true, fill = true, text = true,
+              background = true, border = true, tickMarks = true,
+            }
+          end
+          cfg.tracking.autoShareCategories.fill = v and true or false
+          local _, barNum = GetSelectedBarType()
+          barNum = tonumber(barNum)
+          if barNum and ns.Resources then
+            if not v and ns.Resources.SeedCategoryIntoProfiles then
+              ns.Resources.SeedCategoryIntoProfiles(barNum, "fill")
+            elseif ns.Resources.FlushActiveProfileToStorage then
+              ns.Resources.FlushActiveProfileToStorage(barNum)
+            end
+          end
+        end,
+        order = 2.5651, width = 0.4,
+        hidden = function()
+          return not IsAutoPrimaryBar() or collapsedSections.autoShare
+        end
+      },
+      autoShareText = {
+        type = "toggle", name = "Text",
+        desc = function()
+          if IsMultiPowerClass() then
+            return "When checked, text settings are SHARED across all power types.\nWhen unchecked, each power type gets its own text settings."
+          end
+          return "When checked, text settings (fonts, sizes, formats, anchors) are SHARED across all specs.\nWhen unchecked, each spec gets its own text settings."
+        end,
+        get = function()
+          local cfg = GetSelectedConfig()
+          if not cfg or not cfg.tracking then return true end
+          local shared = cfg.tracking.autoShareCategories
+          if not shared then return true end
+          return shared.text ~= false
+        end,
+        set = function(_, v)
+          local cfg = GetSelectedConfig()
+          if not cfg or not cfg.tracking then return end
+          if not cfg.tracking.autoShareCategories then
+            cfg.tracking.autoShareCategories = {
+              colors = true, fill = true, text = true,
+              background = true, border = true, tickMarks = true,
+            }
+          end
+          cfg.tracking.autoShareCategories.text = v and true or false
+          local _, barNum = GetSelectedBarType()
+          barNum = tonumber(barNum)
+          if barNum and ns.Resources then
+            if not v and ns.Resources.SeedCategoryIntoProfiles then
+              ns.Resources.SeedCategoryIntoProfiles(barNum, "text")
+            elseif ns.Resources.FlushActiveProfileToStorage then
+              ns.Resources.FlushActiveProfileToStorage(barNum)
+            end
+          end
+        end,
+        order = 2.5652, width = 0.4,
+        hidden = function()
+          return not IsAutoPrimaryBar() or collapsedSections.autoShare
+        end
+      },
+      autoShareBG = {
+        type = "toggle", name = "Background",
+        desc = function()
+          if IsMultiPowerClass() then
+            return "When checked, background settings are SHARED across all power types.\nWhen unchecked, each power type gets its own background."
+          end
+          return "When checked, background settings are SHARED across all specs.\nWhen unchecked, each spec gets its own background."
+        end,
+        get = function()
+          local cfg = GetSelectedConfig()
+          if not cfg or not cfg.tracking then return true end
+          local shared = cfg.tracking.autoShareCategories
+          if not shared then return true end
+          return shared.background ~= false
+        end,
+        set = function(_, v)
+          local cfg = GetSelectedConfig()
+          if not cfg or not cfg.tracking then return end
+          if not cfg.tracking.autoShareCategories then
+            cfg.tracking.autoShareCategories = {
+              colors = true, fill = true, text = true,
+              background = true, border = true, tickMarks = true,
+            }
+          end
+          cfg.tracking.autoShareCategories.background = v and true or false
+          local _, barNum = GetSelectedBarType()
+          barNum = tonumber(barNum)
+          if barNum and ns.Resources then
+            if not v and ns.Resources.SeedCategoryIntoProfiles then
+              ns.Resources.SeedCategoryIntoProfiles(barNum, "background")
+            elseif ns.Resources.FlushActiveProfileToStorage then
+              ns.Resources.FlushActiveProfileToStorage(barNum)
+            end
+          end
+        end,
+        order = 2.5653, width = 0.6,
+        hidden = function()
+          return not IsAutoPrimaryBar() or collapsedSections.autoShare
+        end
+      },
+      autoShareBorder = {
+        type = "toggle", name = "Border",
+        desc = function()
+          if IsMultiPowerClass() then
+            return "When checked, border settings are SHARED across all power types.\nWhen unchecked, each power type gets its own border."
+          end
+          return "When checked, border settings are SHARED across all specs.\nWhen unchecked, each spec gets its own border."
+        end,
+        get = function()
+          local cfg = GetSelectedConfig()
+          if not cfg or not cfg.tracking then return true end
+          local shared = cfg.tracking.autoShareCategories
+          if not shared then return true end
+          return shared.border ~= false
+        end,
+        set = function(_, v)
+          local cfg = GetSelectedConfig()
+          if not cfg or not cfg.tracking then return end
+          if not cfg.tracking.autoShareCategories then
+            cfg.tracking.autoShareCategories = {
+              colors = true, fill = true, text = true,
+              background = true, border = true, tickMarks = true,
+            }
+          end
+          cfg.tracking.autoShareCategories.border = v and true or false
+          local _, barNum = GetSelectedBarType()
+          barNum = tonumber(barNum)
+          if barNum and ns.Resources then
+            if not v and ns.Resources.SeedCategoryIntoProfiles then
+              ns.Resources.SeedCategoryIntoProfiles(barNum, "border")
+            elseif ns.Resources.FlushActiveProfileToStorage then
+              ns.Resources.FlushActiveProfileToStorage(barNum)
+            end
+          end
+        end,
+        order = 2.5654, width = 0.5,
+        hidden = function()
+          return not IsAutoPrimaryBar() or collapsedSections.autoShare
+        end
+      },
+      autoShareTicks = {
+        type = "toggle", name = "Tick Marks",
+        desc = function()
+          if IsMultiPowerClass() then
+            return "When checked, tick marks are SHARED across all power types.\nWhen unchecked, each power type gets its own tick mark configuration."
+          end
+          return "When checked, tick marks and ability cost markers are SHARED across all specs.\nWhen unchecked, each spec gets its own tick mark configuration."
+        end,
+        get = function()
+          local cfg = GetSelectedConfig()
+          if not cfg or not cfg.tracking then return true end
+          local shared = cfg.tracking.autoShareCategories
+          if not shared then return true end
+          return shared.tickMarks ~= false
+        end,
+        set = function(_, v)
+          local cfg = GetSelectedConfig()
+          if not cfg or not cfg.tracking then return end
+          if not cfg.tracking.autoShareCategories then
+            cfg.tracking.autoShareCategories = {
+              colors = true, fill = true, text = true,
+              background = true, border = true, tickMarks = true,
+            }
+          end
+          cfg.tracking.autoShareCategories.tickMarks = v and true or false
+          local _, barNum = GetSelectedBarType()
+          barNum = tonumber(barNum)
+          if barNum and ns.Resources then
+            if not v and ns.Resources.SeedCategoryIntoProfiles then
+              ns.Resources.SeedCategoryIntoProfiles(barNum, "tickMarks")
+            elseif ns.Resources.FlushActiveProfileToStorage then
+              ns.Resources.FlushActiveProfileToStorage(barNum)
+            end
+          end
+        end,
+        order = 2.5655, width = 0.55,
+        hidden = function()
+          return not IsAutoPrimaryBar() or collapsedSections.autoShare
+        end
+      },
+      autoShareNote = {
+        type = "description",
+        name = function()
+          if IsMultiPowerClass() then
+            return "|cff888888Checked = shared across all power types. Unchecked = independent per power type.|r"
+          end
+          return "|cff888888Checked = shared across all specs. Unchecked = independent per spec.|r"
+        end,
+        fontSize = "small",
+        order = 2.566,
+        width = "full",
+        hidden = function()
+          return not IsAutoPrimaryBar() or collapsedSections.autoShare
+        end
+      },
+      profileResetCurrent = {
+        type = "execute",
+        name = "Reset to Base",
+        desc = function()
+          local cfg = GetSelectedConfig()
+          if cfg and cfg.tracking and not cfg.tracking.usePerSpecProfiles then
+            return "Reset this power type's profile back to the base settings."
+          end
+          return "Reset this spec's profile back to the base settings."
+        end,
+        confirm = true,
+        confirmText = "Reset this profile's visual settings to match the base?",
+        func = function()
+          if not editingAutoPowerProfile then return end
+          local _, barNum = GetSelectedBarType()
+          barNum = tonumber(barNum)
+          if not barNum then return end
+          
+          if ns.Resources and ns.Resources.ResetAutoPowerProfile then
+            ns.Resources.ResetAutoPowerProfile(barNum, editingAutoPowerProfile)
+          end
+          RefreshBar()
+          if LibStub and LibStub("AceConfigRegistry-3.0", true) then
+            LibStub("AceConfigRegistry-3.0"):NotifyChange("ArcUI")
+          end
+        end,
+        order = 2.567,
+        width = 0.8,
+        hidden = function()
+          if not IsAutoPrimaryBar() or collapsedSections.autoShare then return true end
+          return not editingAutoPowerProfile
+        end
+      },
+      profileClearAll = {
+        type = "execute",
+        name = "Clear All Profiles",
+        desc = function()
+          local cfg = GetSelectedConfig()
+          if cfg and cfg.tracking and not cfg.tracking.usePerSpecProfiles then
+            return "Remove all profiles. The bar will use the same settings regardless of power type."
+          end
+          return "Remove all profiles. The bar will use the same settings regardless of spec."
+        end,
+        confirm = true,
+        confirmText = "Remove all profiles? The bar will use a single set of settings.",
+        func = function()
+          local _, barNum = GetSelectedBarType()
+          barNum = tonumber(barNum)
+          if not barNum then return end
+          editingAutoPowerProfile = nil
+          if ns.Resources and ns.Resources.ClearAutoPowerProfiles then
+            ns.Resources.ClearAutoPowerProfiles(barNum)
+          end
+          RefreshBar()
+          if LibStub and LibStub("AceConfigRegistry-3.0", true) then
+            LibStub("AceConfigRegistry-3.0"):NotifyChange("ArcUI")
+          end
+        end,
+        order = 2.568,
+        width = 0.8,
+        hidden = function()
+          if not IsAutoPrimaryBar() or collapsedSections.autoShare then return true end
+          local cfg = GetSelectedConfig()
+          return not cfg or not cfg.autoPowerProfiles
+        end
+      },
+      
       noBarWarning = {
         type = "description",
         name = "|cffff6b6bNo items configured. Go to Bars Setup or Icon Setup tab to add items.|r",
@@ -1145,21 +1903,11 @@ function ns.AppearanceOptions.GetOptionsTable()
           return not IsCooldownResourceBar()
         end
       },
-      livePreviewSpacer = {
-        type = "description",
-        name = "  ",
-        order = 3.4,
-        width = 0.35,
-        hidden = function()
-          if IsIconMode() then return true end
-          return GetSelectedConfig() == nil
-        end
-      },
       livePreviewLabel = {
         type = "description",
-        name = "Live Preview:",
-        order = 3.5,
-        width = 0.65,
+        name = "Preview:",
+        order = 2.15,
+        width = 0.4,
         hidden = function()
           if IsIconMode() then return true end
           return GetSelectedConfig() == nil
@@ -1179,8 +1927,8 @@ function ns.AppearanceOptions.GetOptionsTable()
             StopPreview()
           end
         end,
-        order = 4,
-        width = 0.7,
+        order = 2.16,
+        width = 0.5,
         hidden = function()
           if IsIconMode() then return true end
           return GetSelectedConfig() == nil
@@ -1200,8 +1948,8 @@ function ns.AppearanceOptions.GetOptionsTable()
             StopPreview()
           end
         end,
-        order = 4.5,
-        width = 0.6,
+        order = 2.17,
+        width = 0.5,
         hidden = function()
           if IsIconMode() then return true end
           return GetSelectedConfig() == nil
@@ -1248,7 +1996,7 @@ function ns.AppearanceOptions.GetOptionsTable()
             ApplyPreviewValue(num)
           end
         end,
-        order = 4.6,
+        order = 2.18,
         width = 0.35,
         hidden = function()
           if IsIconMode() then return true end
@@ -2682,6 +3430,63 @@ function ns.AppearanceOptions.GetOptionsTable()
         width = "full",
         hidden = function() return GetSelectedConfig() == nil or IsIconMode() end
       },
+      resetDisplayStyle = {
+        type = "execute",
+        name = "Reset Style",
+        desc = "Clear stale display settings and reset to Continuous mode.\nUse this if the bar is stuck or color options are missing.",
+        confirm = true,
+        confirmText = "Reset this bar's display style to Continuous? This clears fragmented/icons settings that may be causing issues.",
+        func = function()
+          local cfg = GetSelectedConfig()
+          if not cfg or not cfg.display then return end
+          -- Reset mode to simple
+          cfg.display.thresholdMode = "simple"
+          -- Clear stale fragmented/icons keys that can hide UI elements
+          cfg.display.fragmentedSpecColors = nil
+          cfg.display.fragmentedColors = nil
+          cfg.display.fragmentedChargingColor = nil
+          cfg.display.fragmentedSpacing = nil
+          cfg.display.fragmentedFillOrientation = nil
+          cfg.display.fragmentedShowSegmentText = nil
+          cfg.display.fragmentedTextSize = nil
+          cfg.display.fragmentedTextOffsetX = nil
+          cfg.display.fragmentedTextOffsetY = nil
+          cfg.display.iconsMode = nil
+          cfg.display.iconsPositions = nil
+          cfg.display.iconsShowCooldownText = nil
+          -- Bust caches
+          cfg.display.stackColors = nil
+          cfg.stackColors = nil
+          if ns.Resources and ns.Resources.ClearAllResourceColorCurves then
+            ns.Resources.ClearAllResourceColorCurves()
+          end
+          RefreshBar()
+          if LibStub and LibStub("AceConfigRegistry-3.0", true) then
+            LibStub("AceConfigRegistry-3.0"):NotifyChange("ArcUI")
+          end
+          print("|cff00ccffArcUI|r: Display style reset to Continuous.")
+        end,
+        order = 30.01,
+        width = 0.7,
+        hidden = function()
+          local cfg = GetSelectedConfig()
+          if not cfg or not cfg.display then return true end
+          if collapsedSections.colorOptions then return true end
+          if IsIconMode() then return true end
+          -- Show when bar has stale mode-specific keys that shouldn't be there
+          local mode = cfg.display.thresholdMode or "simple"
+          local resCat = cfg.tracking and cfg.tracking.resourceCategory
+          -- Always show for primary/autoPrimary resource bars stuck in wrong mode
+          if resCat and resCat ~= "secondary" and (mode == "fragmented" or mode == "icons" or mode == "perStack") then
+            return false
+          end
+          -- Show if fragmentedSpecColors is enabled on a non-secondary resource bar
+          if resCat and resCat ~= "secondary" and cfg.display.fragmentedSpecColors then
+            return false
+          end
+          return true
+        end
+      },
       
       -- Display Style Dropdown (in Fill section, before Orientation)
       displayStyle = {
@@ -3151,6 +3956,19 @@ function ns.AppearanceOptions.GetOptionsTable()
               end
               cfg.thresholds[1].color = {r=r, g=g, b=b, a=a}
               cfg.display.barColor = {r=r, g=g, b=b, a=a}
+              -- Sync to active profile storage if autoPrimary with profiles
+              if cfg.tracking.resourceCategory == "autoPrimary" and cfg.autoPowerProfiles then
+                local _, bn = GetSelectedBarType()
+                local activePower = ns.Resources and ns.Resources.GetActiveProfilePower and ns.Resources.GetActiveProfilePower(tonumber(bn))
+                if activePower and cfg.autoPowerProfiles[activePower] then
+                  local prof = cfg.autoPowerProfiles[activePower]
+                  if not prof.display then prof.display = {} end
+                  prof.display.barColor = {r=r, g=g, b=b, a=a}
+                  if not prof.thresholds then prof.thresholds = {} end
+                  if not prof.thresholds[1] then prof.thresholds[1] = { enabled = true, minValue = 0, maxValue = 100 } end
+                  prof.thresholds[1].color = {r=r, g=g, b=b, a=a}
+                end
+              end
             else
               -- Buff bar, Cooldown bar, or Charge bar
               cfg.display.barColor = {r=r, g=g, b=b, a=a}
@@ -3168,7 +3986,7 @@ function ns.AppearanceOptions.GetOptionsTable()
             if cfg.display.thresholdMode == "perStack" then
               ApplyColorRanges(cfg)
             end
-            RefreshBarAndSwatches()  -- Use RefreshBarAndSwatches to apply appearance changes including colors
+            RefreshBar()  -- Use RefreshBarAndSwatches to apply appearance changes including colors
           end
         end,
         order = 30.2,
@@ -3183,9 +4001,21 @@ function ns.AppearanceOptions.GetOptionsTable()
               return true
             end
           end
+          -- Hide when per-spec colors are active (ONLY for secondary resource bars)
+          -- Primary/autoPrimary bars never use fragmentedSpecColors
+          if IsResourceBar() then
+            local cfg = GetSelectedConfig()
+            if cfg and cfg.tracking and cfg.tracking.resourceCategory == "secondary" then
+              local sc = cfg.display.fragmentedSpecColors
+              if sc and sc.enabled then return true end
+              if sc == nil and cfg.tracking.secondaryType == "runes" then return true end
+            end
+          end
           return false
         end
       },
+      
+      
       
       -- Per-Slot Colors toggle (Charge bars only - right of barColor)
       usePerSlotColors = {
@@ -4368,7 +5198,7 @@ function ns.AppearanceOptions.GetOptionsTable()
             local c = cfg.display.barColor
             return c.r, c.g, c.b, c.a or 1
           end
-          local dc = ns.Resources and ns.Resources.GetSecondaryResourceDefaultColor and ns.Resources.GetSecondaryResourceDefaultColor() or {r=0.5,g=0.5,b=0.5,a=1}; return dc.r, dc.g, dc.b, dc.a or 1
+          local dc = (ns.Resources.GetSpecAwareBarColor and ns.Resources.GetSpecAwareBarColor(cfg)) or (ns.Resources.GetSecondaryResourceDefaultColor and ns.Resources.GetSecondaryResourceDefaultColor()) or {r=0.5,g=0.5,b=0.5,a=1}; return dc.r, dc.g, dc.b, dc.a or 1
         end,
         set = function(info, r, g, b, a)
           local cfg = GetSelectedConfig()
@@ -4380,7 +5210,7 @@ function ns.AppearanceOptions.GetOptionsTable()
             for i = 1, maxVal do
               cfg.display.fragmentedColors[i] = {r=r, g=g, b=b, a=a}
             end
-            RefreshBarAndSwatches()
+            RefreshBar()
           end
         end,
         order = 30.315,
@@ -4389,7 +5219,12 @@ function ns.AppearanceOptions.GetOptionsTable()
           if collapsedSections.colorOptions then return true end
           if not IsResourceBar() then return true end
           local cfg = GetSelectedConfig()
-          return not cfg or (cfg.display.thresholdMode ~= "fragmented" and cfg.display.thresholdMode ~= "icons")
+          if not cfg or (cfg.display.thresholdMode ~= "fragmented" and cfg.display.thresholdMode ~= "icons") then return true end
+          -- Hide when per-spec colors are active (spec colors replace "All")
+          local sc = cfg.display.fragmentedSpecColors
+          if sc and sc.enabled then return true end
+          if sc == nil and cfg.tracking and cfg.tracking.secondaryType == "runes" then return true end
+          return false
         end
       },
       -- Segment 1 color
@@ -4403,7 +5238,7 @@ function ns.AppearanceOptions.GetOptionsTable()
             local c = cfg.display.fragmentedColors[1]
             return c.r, c.g, c.b, c.a or 1
           end
-          local dc = ns.Resources and ns.Resources.GetSecondaryResourceDefaultColor and ns.Resources.GetSecondaryResourceDefaultColor() or {r=0.5,g=0.5,b=0.5,a=1}; return dc.r, dc.g, dc.b, dc.a or 1
+          local dc = (ns.Resources.GetSpecAwareBarColor and ns.Resources.GetSpecAwareBarColor(cfg)) or (ns.Resources.GetSecondaryResourceDefaultColor and ns.Resources.GetSecondaryResourceDefaultColor()) or {r=0.5,g=0.5,b=0.5,a=1}; return dc.r, dc.g, dc.b, dc.a or 1
         end,
         set = function(info, r, g, b, a)
           local cfg = GetSelectedConfig()
@@ -4411,6 +5246,8 @@ function ns.AppearanceOptions.GetOptionsTable()
             if not cfg.display.fragmentedColors then cfg.display.fragmentedColors = {} end
             cfg.display.fragmentedColors[1] = {r=r, g=g, b=b, a=a}
             RefreshBar()
+            -- Delayed notify so Clear Overrides button appears (skipped during drag)
+            C_Timer.After(0.1, function() if not ColorPickerFrame:IsVisible() then LibStub("AceConfigRegistry-3.0"):NotifyChange("ArcUI") end end)
           end
         end,
         order = 30.32,
@@ -4433,7 +5270,7 @@ function ns.AppearanceOptions.GetOptionsTable()
             local c = cfg.display.fragmentedColors[2]
             return c.r, c.g, c.b, c.a or 1
           end
-          local dc = ns.Resources and ns.Resources.GetSecondaryResourceDefaultColor and ns.Resources.GetSecondaryResourceDefaultColor() or {r=0.5,g=0.5,b=0.5,a=1}; return dc.r, dc.g, dc.b, dc.a or 1
+          local dc = (ns.Resources.GetSpecAwareBarColor and ns.Resources.GetSpecAwareBarColor(cfg)) or (ns.Resources.GetSecondaryResourceDefaultColor and ns.Resources.GetSecondaryResourceDefaultColor()) or {r=0.5,g=0.5,b=0.5,a=1}; return dc.r, dc.g, dc.b, dc.a or 1
         end,
         set = function(info, r, g, b, a)
           local cfg = GetSelectedConfig()
@@ -4441,6 +5278,8 @@ function ns.AppearanceOptions.GetOptionsTable()
             if not cfg.display.fragmentedColors then cfg.display.fragmentedColors = {} end
             cfg.display.fragmentedColors[2] = {r=r, g=g, b=b, a=a}
             RefreshBar()
+            -- Delayed notify so Clear Overrides button appears (skipped during drag)
+            C_Timer.After(0.1, function() if not ColorPickerFrame:IsVisible() then LibStub("AceConfigRegistry-3.0"):NotifyChange("ArcUI") end end)
           end
         end,
         order = 30.33,
@@ -4463,7 +5302,7 @@ function ns.AppearanceOptions.GetOptionsTable()
             local c = cfg.display.fragmentedColors[3]
             return c.r, c.g, c.b, c.a or 1
           end
-          local dc = ns.Resources and ns.Resources.GetSecondaryResourceDefaultColor and ns.Resources.GetSecondaryResourceDefaultColor() or {r=0.5,g=0.5,b=0.5,a=1}; return dc.r, dc.g, dc.b, dc.a or 1
+          local dc = (ns.Resources.GetSpecAwareBarColor and ns.Resources.GetSpecAwareBarColor(cfg)) or (ns.Resources.GetSecondaryResourceDefaultColor and ns.Resources.GetSecondaryResourceDefaultColor()) or {r=0.5,g=0.5,b=0.5,a=1}; return dc.r, dc.g, dc.b, dc.a or 1
         end,
         set = function(info, r, g, b, a)
           local cfg = GetSelectedConfig()
@@ -4471,6 +5310,8 @@ function ns.AppearanceOptions.GetOptionsTable()
             if not cfg.display.fragmentedColors then cfg.display.fragmentedColors = {} end
             cfg.display.fragmentedColors[3] = {r=r, g=g, b=b, a=a}
             RefreshBar()
+            -- Delayed notify so Clear Overrides button appears (skipped during drag)
+            C_Timer.After(0.1, function() if not ColorPickerFrame:IsVisible() then LibStub("AceConfigRegistry-3.0"):NotifyChange("ArcUI") end end)
           end
         end,
         order = 30.34,
@@ -4493,7 +5334,7 @@ function ns.AppearanceOptions.GetOptionsTable()
             local c = cfg.display.fragmentedColors[4]
             return c.r, c.g, c.b, c.a or 1
           end
-          local dc = ns.Resources and ns.Resources.GetSecondaryResourceDefaultColor and ns.Resources.GetSecondaryResourceDefaultColor() or {r=0.5,g=0.5,b=0.5,a=1}; return dc.r, dc.g, dc.b, dc.a or 1
+          local dc = (ns.Resources.GetSpecAwareBarColor and ns.Resources.GetSpecAwareBarColor(cfg)) or (ns.Resources.GetSecondaryResourceDefaultColor and ns.Resources.GetSecondaryResourceDefaultColor()) or {r=0.5,g=0.5,b=0.5,a=1}; return dc.r, dc.g, dc.b, dc.a or 1
         end,
         set = function(info, r, g, b, a)
           local cfg = GetSelectedConfig()
@@ -4501,6 +5342,8 @@ function ns.AppearanceOptions.GetOptionsTable()
             if not cfg.display.fragmentedColors then cfg.display.fragmentedColors = {} end
             cfg.display.fragmentedColors[4] = {r=r, g=g, b=b, a=a}
             RefreshBar()
+            -- Delayed notify so Clear Overrides button appears (skipped during drag)
+            C_Timer.After(0.1, function() if not ColorPickerFrame:IsVisible() then LibStub("AceConfigRegistry-3.0"):NotifyChange("ArcUI") end end)
           end
         end,
         order = 30.35,
@@ -4523,7 +5366,7 @@ function ns.AppearanceOptions.GetOptionsTable()
             local c = cfg.display.fragmentedColors[5]
             return c.r, c.g, c.b, c.a or 1
           end
-          local dc = ns.Resources and ns.Resources.GetSecondaryResourceDefaultColor and ns.Resources.GetSecondaryResourceDefaultColor() or {r=0.5,g=0.5,b=0.5,a=1}; return dc.r, dc.g, dc.b, dc.a or 1
+          local dc = (ns.Resources.GetSpecAwareBarColor and ns.Resources.GetSpecAwareBarColor(cfg)) or (ns.Resources.GetSecondaryResourceDefaultColor and ns.Resources.GetSecondaryResourceDefaultColor()) or {r=0.5,g=0.5,b=0.5,a=1}; return dc.r, dc.g, dc.b, dc.a or 1
         end,
         set = function(info, r, g, b, a)
           local cfg = GetSelectedConfig()
@@ -4531,6 +5374,8 @@ function ns.AppearanceOptions.GetOptionsTable()
             if not cfg.display.fragmentedColors then cfg.display.fragmentedColors = {} end
             cfg.display.fragmentedColors[5] = {r=r, g=g, b=b, a=a}
             RefreshBar()
+            -- Delayed notify so Clear Overrides button appears (skipped during drag)
+            C_Timer.After(0.1, function() if not ColorPickerFrame:IsVisible() then LibStub("AceConfigRegistry-3.0"):NotifyChange("ArcUI") end end)
           end
         end,
         order = 30.36,
@@ -4556,7 +5401,7 @@ function ns.AppearanceOptions.GetOptionsTable()
             local c = cfg.display.fragmentedColors[6]
             return c.r, c.g, c.b, c.a or 1
           end
-          local dc = ns.Resources and ns.Resources.GetSecondaryResourceDefaultColor and ns.Resources.GetSecondaryResourceDefaultColor() or {r=0.5,g=0.5,b=0.5,a=1}; return dc.r, dc.g, dc.b, dc.a or 1
+          local dc = (ns.Resources.GetSpecAwareBarColor and ns.Resources.GetSpecAwareBarColor(cfg)) or (ns.Resources.GetSecondaryResourceDefaultColor and ns.Resources.GetSecondaryResourceDefaultColor()) or {r=0.5,g=0.5,b=0.5,a=1}; return dc.r, dc.g, dc.b, dc.a or 1
         end,
         set = function(info, r, g, b, a)
           local cfg = GetSelectedConfig()
@@ -4564,6 +5409,8 @@ function ns.AppearanceOptions.GetOptionsTable()
             if not cfg.display.fragmentedColors then cfg.display.fragmentedColors = {} end
             cfg.display.fragmentedColors[6] = {r=r, g=g, b=b, a=a}
             RefreshBar()
+            -- Delayed notify so Clear Overrides button appears (skipped during drag)
+            C_Timer.After(0.1, function() if not ColorPickerFrame:IsVisible() then LibStub("AceConfigRegistry-3.0"):NotifyChange("ArcUI") end end)
           end
         end,
         order = 30.37,
@@ -4684,12 +5531,12 @@ function ns.AppearanceOptions.GetOptionsTable()
       specColorToggle = {
         type = "toggle",
         name = "Per-Spec Colors",
-        desc = "Base ready color changes by specialization.\n\nSegment Colors (1-6) above become per-segment overrides.",
+        desc = "Bar color changes by specialization. Works in all display modes.\n\nIn fragmented/icons mode, replaces the 'All' base color. Per-segment overrides (1-6) still work on top.",
         get = function()
           local cfg = GetSelectedConfig()
           if not cfg then return false end
           local sc = cfg.display.fragmentedSpecColors
-          if sc == nil and cfg.tracking.secondaryType == "runes" then return true end
+          if sc == nil and cfg.tracking and cfg.tracking.secondaryType == "runes" then return true end
           return sc and sc.enabled or false
         end,
         set = function(info, value)
@@ -4697,7 +5544,6 @@ function ns.AppearanceOptions.GetOptionsTable()
           if cfg then
             if not cfg.display.fragmentedSpecColors then cfg.display.fragmentedSpecColors = {} end
             cfg.display.fragmentedSpecColors.enabled = value
-            if value then cfg.display.fragmentedColors = {} end
             RefreshBar()
           end
         end,
@@ -4707,98 +5553,115 @@ function ns.AppearanceOptions.GetOptionsTable()
           if collapsedSections.colorOptions then return true end
           if not IsResourceBar() then return true end
           local cfg = GetSelectedConfig()
-          if not cfg or (cfg.display.thresholdMode ~= "fragmented" and cfg.display.thresholdMode ~= "icons") then return true end
+          if not cfg then return true end
           return cfg.tracking.secondaryType ~= "runes"
         end
       },
       specColorBlood = {
-        type = "color", name = "Blood", desc = "Ready color in Blood spec", hasAlpha = true,
+        type = "color", name = "Blood", desc = "Bar color in Blood spec (specID 250)", hasAlpha = true,
         get = function()
           local cfg = GetSelectedConfig()
-          if cfg and cfg.display.fragmentedSpecColors and cfg.display.fragmentedSpecColors[250] then
-            local c = cfg.display.fragmentedSpecColors[250]; return c.r, c.g, c.b, c.a or 1
+          if not cfg then return 0.77, 0.12, 0.23, 1 end
+          local sc = cfg.display.fragmentedSpecColors
+          if sc and sc[250] then
+            return sc[250].r, sc[250].g, sc[250].b, sc[250].a or 1
           end
-          return 0.77, 0.12, 0.23, 1
+          local dk = ns.Resources.DK_SPEC_DEFAULT_COLORS[250]
+          return dk.r, dk.g, dk.b, dk.a
         end,
         set = function(info, r, g, b, a)
           local cfg = GetSelectedConfig()
-          if cfg then
-            if not cfg.display.fragmentedSpecColors then cfg.display.fragmentedSpecColors = { enabled = true } end
-            cfg.display.fragmentedSpecColors[250] = {r=r, g=g, b=b, a=a}; RefreshBarAndSwatches()
+          if not cfg then return end
+          if not cfg.display.fragmentedSpecColors then
+            cfg.display.fragmentedSpecColors = { enabled = true }
           end
+          cfg.display.fragmentedSpecColors[250] = {r=r, g=g, b=b, a=a}
+          RefreshBar()
         end,
         order = 30.398, width = 0.45,
         hidden = function()
           if collapsedSections.colorOptions or not IsResourceBar() then return true end
           local cfg = GetSelectedConfig()
-          if not cfg or (cfg.display.thresholdMode ~= "fragmented" and cfg.display.thresholdMode ~= "icons") then return true end
-          if cfg.tracking.secondaryType ~= "runes" then return true end
+          if not cfg or cfg.tracking.secondaryType ~= "runes" then return true end
           local sc = cfg.display.fragmentedSpecColors
-          if sc == nil then return false end; return not (sc and sc.enabled)
+          if sc == nil then return false end  -- Auto-enabled for runes: show pickers
+          return not sc.enabled
         end
       },
       specColorFrost = {
-        type = "color", name = "Frost", desc = "Ready color in Frost spec", hasAlpha = true,
+        type = "color", name = "Frost", desc = "Bar color in Frost spec (specID 251)", hasAlpha = true,
         get = function()
           local cfg = GetSelectedConfig()
-          if cfg and cfg.display.fragmentedSpecColors and cfg.display.fragmentedSpecColors[251] then
-            local c = cfg.display.fragmentedSpecColors[251]; return c.r, c.g, c.b, c.a or 1
+          if not cfg then return 0.2, 0.6, 1.0, 1 end
+          local sc = cfg.display.fragmentedSpecColors
+          if sc and sc[251] then
+            return sc[251].r, sc[251].g, sc[251].b, sc[251].a or 1
           end
-          return 0.2, 0.6, 1.0, 1
+          local dk = ns.Resources.DK_SPEC_DEFAULT_COLORS[251]
+          return dk.r, dk.g, dk.b, dk.a
         end,
         set = function(info, r, g, b, a)
           local cfg = GetSelectedConfig()
-          if cfg then
-            if not cfg.display.fragmentedSpecColors then cfg.display.fragmentedSpecColors = { enabled = true } end
-            cfg.display.fragmentedSpecColors[251] = {r=r, g=g, b=b, a=a}; RefreshBarAndSwatches()
+          if not cfg then return end
+          if not cfg.display.fragmentedSpecColors then
+            cfg.display.fragmentedSpecColors = { enabled = true }
           end
+          cfg.display.fragmentedSpecColors[251] = {r=r, g=g, b=b, a=a}
+          RefreshBar()
         end,
         order = 30.399, width = 0.45,
         hidden = function()
           if collapsedSections.colorOptions or not IsResourceBar() then return true end
           local cfg = GetSelectedConfig()
-          if not cfg or (cfg.display.thresholdMode ~= "fragmented" and cfg.display.thresholdMode ~= "icons") then return true end
-          if cfg.tracking.secondaryType ~= "runes" then return true end
+          if not cfg or cfg.tracking.secondaryType ~= "runes" then return true end
           local sc = cfg.display.fragmentedSpecColors
-          if sc == nil then return false end; return not (sc and sc.enabled)
+          if sc == nil then return false end
+          return not sc.enabled
         end
       },
       specColorUnholy = {
-        type = "color", name = "Unholy", desc = "Ready color in Unholy spec", hasAlpha = true,
+        type = "color", name = "Unholy", desc = "Bar color in Unholy spec (specID 252)", hasAlpha = true,
         get = function()
           local cfg = GetSelectedConfig()
-          if cfg and cfg.display.fragmentedSpecColors and cfg.display.fragmentedSpecColors[252] then
-            local c = cfg.display.fragmentedSpecColors[252]; return c.r, c.g, c.b, c.a or 1
+          if not cfg then return 0.0, 0.8, 0.2, 1 end
+          local sc = cfg.display.fragmentedSpecColors
+          if sc and sc[252] then
+            return sc[252].r, sc[252].g, sc[252].b, sc[252].a or 1
           end
-          return 0.0, 0.8, 0.2, 1
+          local dk = ns.Resources.DK_SPEC_DEFAULT_COLORS[252]
+          return dk.r, dk.g, dk.b, dk.a
         end,
         set = function(info, r, g, b, a)
           local cfg = GetSelectedConfig()
-          if cfg then
-            if not cfg.display.fragmentedSpecColors then cfg.display.fragmentedSpecColors = { enabled = true } end
-            cfg.display.fragmentedSpecColors[252] = {r=r, g=g, b=b, a=a}; RefreshBarAndSwatches()
+          if not cfg then return end
+          if not cfg.display.fragmentedSpecColors then
+            cfg.display.fragmentedSpecColors = { enabled = true }
           end
+          cfg.display.fragmentedSpecColors[252] = {r=r, g=g, b=b, a=a}
+          RefreshBar()
         end,
         order = 30.3995, width = 0.45,
         hidden = function()
           if collapsedSections.colorOptions or not IsResourceBar() then return true end
           local cfg = GetSelectedConfig()
-          if not cfg or (cfg.display.thresholdMode ~= "fragmented" and cfg.display.thresholdMode ~= "icons") then return true end
-          if cfg.tracking.secondaryType ~= "runes" then return true end
+          if not cfg or cfg.tracking.secondaryType ~= "runes" then return true end
           local sc = cfg.display.fragmentedSpecColors
-          if sc == nil then return false end; return not (sc and sc.enabled)
+          if sc == nil then return false end
+          return not sc.enabled
         end
       },
       -- Clear segment color overrides button
       clearSegmentOverrides = {
         type = "execute",
-        name = "Clear Overrides",
+        name = "Clear Segment Overrides",
         desc = "Clear all per-segment color overrides so they inherit from spec colors (or bar color).",
         func = function()
           local cfg = GetSelectedConfig()
           if cfg then
             cfg.display.fragmentedColors = {}
+            cfg.stackColors = nil
             RefreshBar()
+            LibStub("AceConfigRegistry-3.0"):NotifyChange("ArcUI")
           end
         end,
         order = 30.3996,
@@ -7143,6 +8006,80 @@ function ns.AppearanceOptions.GetOptionsTable()
           return not (cfg and cfg.display.showTickMarks)
         end
       },
+      tickHeightPercent = {
+        type = "range",
+        name = "Tick Height %",
+        desc = "How tall each tick mark is relative to the bar. 100% = full bar height, 50% = half height.",
+        min = 10, max = 100, step = 5,
+        get = function()
+          local cfg = GetSelectedConfig()
+          return cfg and cfg.display.tickHeightPercent or 100
+        end,
+        set = function(info, value)
+          local cfg = GetSelectedConfig()
+          if cfg then
+            cfg.display.tickHeightPercent = value
+            RefreshBar()
+          end
+        end,
+        order = 65.1,
+        width = 1.2,
+        hidden = function()
+          if IsIconMode() or IsFragmentedOrIconsMode() or collapsedSections.tickMarks then return true end
+          local cfg = GetSelectedConfig()
+          return not (cfg and cfg.display.showTickMarks)
+        end
+      },
+      tickHeightAnchor = {
+        type = "select",
+        name = "Height Anchor",
+        desc = "Where the tick height is anchored. Center grows from the middle, Top/Bottom grows from that edge.",
+        values = { center = "Center", top = "Top / Left", bottom = "Bottom / Right" },
+        sorting = { "center", "top", "bottom" },
+        get = function()
+          local cfg = GetSelectedConfig()
+          return cfg and cfg.display.tickHeightAnchor or "center"
+        end,
+        set = function(info, value)
+          local cfg = GetSelectedConfig()
+          if cfg then
+            cfg.display.tickHeightAnchor = value
+            RefreshBar()
+          end
+        end,
+        order = 65.2,
+        width = 0.65,
+        hidden = function()
+          if IsIconMode() or IsFragmentedOrIconsMode() or collapsedSections.tickMarks then return true end
+          local cfg = GetSelectedConfig()
+          return not (cfg and cfg.display.showTickMarks)
+        end
+      },
+      tickThicknessAnchor = {
+        type = "select",
+        name = "Thickness Anchor",
+        desc = "How the tick thickness is drawn around its position. Center straddles the position, Start/End grows in one direction.",
+        values = { center = "Center", start = "Start", ["end"] = "End" },
+        sorting = { "center", "start", "end" },
+        get = function()
+          local cfg = GetSelectedConfig()
+          return cfg and cfg.display.tickThicknessAnchor or "center"
+        end,
+        set = function(info, value)
+          local cfg = GetSelectedConfig()
+          if cfg then
+            cfg.display.tickThicknessAnchor = value
+            RefreshBar()
+          end
+        end,
+        order = 65.3,
+        width = 0.65,
+        hidden = function()
+          if IsIconMode() or IsFragmentedOrIconsMode() or collapsedSections.tickMarks then return true end
+          local cfg = GetSelectedConfig()
+          return not (cfg and cfg.display.showTickMarks)
+        end
+      },
       customTickValues = {
         type = "input",
         dialogControl = "ArcUI_EditBox",
@@ -7198,7 +8135,7 @@ function ns.AppearanceOptions.GetOptionsTable()
         order = 68,
         width = "full",
         hidden = function()
-          return not HasCooldownSegments() or not IsFragmentedOrIconsMode()
+          return not HasCooldownSegments()
         end
       },
       cdTextShow = {
@@ -7219,7 +8156,7 @@ function ns.AppearanceOptions.GetOptionsTable()
         order = 68.1,
         width = 0.65,
         hidden = function()
-          return collapsedSections.cdText or not HasCooldownSegments() or not IsFragmentedOrIconsMode()
+          return collapsedSections.cdText or not HasCooldownSegments()
         end
       },
       cdTextFont = {
@@ -7241,7 +8178,7 @@ function ns.AppearanceOptions.GetOptionsTable()
         order = 68.2,
         width = 1.0,
         hidden = function()
-          if collapsedSections.cdText or not HasCooldownSegments() or not IsFragmentedOrIconsMode() then return true end
+          if collapsedSections.cdText or not HasCooldownSegments() then return true end
           local cfg = GetSelectedConfig()
           return not cfg or not cfg.display.cdTextShow
         end
@@ -7264,7 +8201,7 @@ function ns.AppearanceOptions.GetOptionsTable()
         order = 68.3,
         width = 0.6,
         hidden = function()
-          if collapsedSections.cdText or not HasCooldownSegments() or not IsFragmentedOrIconsMode() then return true end
+          if collapsedSections.cdText or not HasCooldownSegments() then return true end
           local cfg = GetSelectedConfig()
           return not cfg or not cfg.display.cdTextShow
         end
@@ -7287,7 +8224,7 @@ function ns.AppearanceOptions.GetOptionsTable()
         order = 68.4,
         width = 0.55,
         hidden = function()
-          if collapsedSections.cdText or not HasCooldownSegments() or not IsFragmentedOrIconsMode() then return true end
+          if collapsedSections.cdText or not HasCooldownSegments() then return true end
           local cfg = GetSelectedConfig()
           return not cfg or not cfg.display.cdTextShow
         end
@@ -7314,7 +8251,7 @@ function ns.AppearanceOptions.GetOptionsTable()
         order = 68.5,
         width = 0.45,
         hidden = function()
-          if collapsedSections.cdText or not HasCooldownSegments() or not IsFragmentedOrIconsMode() then return true end
+          if collapsedSections.cdText or not HasCooldownSegments() then return true end
           local cfg = GetSelectedConfig()
           return not cfg or not cfg.display.cdTextShow
         end
@@ -7342,7 +8279,7 @@ function ns.AppearanceOptions.GetOptionsTable()
         order = 68.6,
         width = 0.65,
         hidden = function()
-          if collapsedSections.cdText or not HasCooldownSegments() or not IsFragmentedOrIconsMode() then return true end
+          if collapsedSections.cdText or not HasCooldownSegments() then return true end
           local cfg = GetSelectedConfig()
           return not cfg or not cfg.display.cdTextShow
         end
@@ -7369,7 +8306,7 @@ function ns.AppearanceOptions.GetOptionsTable()
         order = 68.7,
         width = 0.45,
         hidden = function()
-          if collapsedSections.cdText or not HasCooldownSegments() or not IsFragmentedOrIconsMode() then return true end
+          if collapsedSections.cdText or not HasCooldownSegments() then return true end
           local cfg = GetSelectedConfig()
           return not cfg or not cfg.display.cdTextShow
         end
@@ -7396,7 +8333,7 @@ function ns.AppearanceOptions.GetOptionsTable()
         order = 68.8,
         width = 0.45,
         hidden = function()
-          if collapsedSections.cdText or not HasCooldownSegments() or not IsFragmentedOrIconsMode() then return true end
+          if collapsedSections.cdText or not HasCooldownSegments() then return true end
           local cfg = GetSelectedConfig()
           return not cfg or not cfg.display.cdTextShow
         end
@@ -7612,6 +8549,224 @@ function ns.AppearanceOptions.GetOptionsTable()
           return not cfg or not cfg.tracking or cfg.tracking.secondaryType ~= "soulShards"
         end
       },
+      forecastSpellsHeader = {
+        type = "toggle", name = "Forecast Spell List",
+        desc = "Configure which spells generate soul shards for the prediction overlay.",
+        dialogControl = "CollapsibleHeader",
+        get = function() return not collapsedSections.forecastSpells end,
+        set = function(info, value) collapsedSections.forecastSpells = not value end,
+        order = 69.81, width = "full",
+        hidden = function()
+          if collapsedSections.prediction or not IsResourceBar() then return true end
+          local cfg = GetSelectedConfig()
+          return not cfg or not cfg.tracking or cfg.tracking.secondaryType ~= "soulShards"
+        end
+      },
+      forecastSpellsDesc = {
+        type = "description",
+        name = "|cff888888Spells that generate soul shards (costs are detected automatically). Enter gain as shards (e.g. 0.4, 1, 2). Click an icon to edit or remove.|r",
+        fontSize = "small", order = 69.82, width = "full",
+        hidden = function()
+          if collapsedSections.prediction or collapsedSections.forecastSpells or not IsResourceBar() then return true end
+          local cfg = GetSelectedConfig()
+          return not cfg or not cfg.tracking or cfg.tracking.secondaryType ~= "soulShards"
+        end
+      },
+      forecastAddSpellID = {
+        type = "input", dialogControl = "ArcUI_EditBox", name = "Spell ID",
+        get = function() return forecastAddState.spellID or "" end,
+        set = function(info, value) forecastAddState.spellID = value end,
+        order = 69.830, width = 0.5,
+        hidden = function()
+          if collapsedSections.prediction or collapsedSections.forecastSpells or not IsResourceBar() then return true end
+          local cfg = GetSelectedConfig(); return not cfg or not cfg.tracking or cfg.tracking.secondaryType ~= "soulShards"
+        end
+      },
+      forecastAddGain = {
+        type = "input", dialogControl = "ArcUI_EditBox", name = "Shards",
+        desc = "Soul shards generated (e.g. 0.4 for Incinerate, 2 for Demonbolt).",
+        get = function() return forecastAddState.gain or "" end,
+        set = function(info, value) forecastAddState.gain = value end,
+        order = 69.831, width = 0.35,
+        hidden = function()
+          if collapsedSections.prediction or collapsedSections.forecastSpells or not IsResourceBar() then return true end
+          local cfg = GetSelectedConfig(); return not cfg or not cfg.tracking or cfg.tracking.secondaryType ~= "soulShards"
+        end
+      },
+      forecastAddBtn = {
+        type = "execute", name = "Add", order = 69.832, width = 0.35,
+        disabled = function() return (tonumber(forecastAddState.spellID) or 0) <= 0 end,
+        func = function()
+          local cfg = GetSelectedConfig(); if not cfg then return end
+          if not cfg.prediction then cfg.prediction = {} end
+          if not cfg.prediction.spells then cfg.prediction.spells = {} end
+          local sid = tonumber(forecastAddState.spellID); local gain = tonumber(forecastAddState.gain)
+          if not sid or sid <= 0 then print("|cffff6600ArcUI:|r Enter a valid spell ID."); return end
+          if not gain or gain <= 0 then print("|cffff6600ArcUI:|r Enter shard gain (e.g. 0.4)."); return end
+          for _, e in ipairs(cfg.prediction.spells) do if e.spellID == sid then print("|cffff6600ArcUI:|r Already in list."); return end end
+          table.insert(cfg.prediction.spells, { spellID = sid, gain = gain, enabled = true })
+          forecastAddState.spellID = ""; forecastAddState.gain = ""
+          if ns.Resources._prediction then ns.Resources._prediction:InvalidateCache() end
+          local CGB = LibStub("ArcUI-CatalogGridBuilder-1.0", true)
+          if CGB then local g = CGB:GetGrid("forecastGrid"); if g then g:InvalidateCache() end end
+          RefreshBar(); LibStub("AceConfigRegistry-3.0"):NotifyChange("ArcUI")
+        end,
+        hidden = function()
+          if collapsedSections.prediction or collapsedSections.forecastSpells or not IsResourceBar() then return true end
+          local cfg = GetSelectedConfig(); return not cfg or not cfg.tracking or cfg.tracking.secondaryType ~= "soulShards"
+        end
+      },
+      forecastResetDefaults = {
+        type = "execute", name = "Reset to Defaults", order = 69.833, width = 0.55,
+        confirm = true, confirmText = "Replace all forecast spells with defaults?",
+        func = function()
+          local cfg = GetSelectedConfig(); if not cfg then return end
+          if not cfg.prediction then cfg.prediction = {} end; cfg.prediction.spells = {}
+          for _, def in ipairs(ns.Resources.GetDefaultForecastSpells()) do
+            table.insert(cfg.prediction.spells, { spellID = def.spellID, gain = def.gain, enabled = true })
+          end
+          if ns.Resources._prediction then ns.Resources._prediction:InvalidateCache() end
+          local CGB = LibStub("ArcUI-CatalogGridBuilder-1.0", true)
+          if CGB then local g = CGB:GetGrid("forecastGrid"); if g then g:ClearSelection(); g:InvalidateCache() end end
+          RefreshBar(); LibStub("AceConfigRegistry-3.0"):NotifyChange("ArcUI")
+        end,
+        hidden = function()
+          if collapsedSections.prediction or collapsedSections.forecastSpells or not IsResourceBar() then return true end
+          local cfg = GetSelectedConfig(); return not cfg or not cfg.tracking or cfg.tracking.secondaryType ~= "soulShards"
+        end
+      },
+      forecastClearAll = {
+        type = "execute", name = "Clear All", order = 69.834, width = 0.55,
+        confirm = true, confirmText = "Remove all forecast spells?",
+        func = function()
+          local cfg = GetSelectedConfig(); if not cfg then return end
+          if cfg.prediction then cfg.prediction.spells = {} end
+          if ns.Resources._prediction then ns.Resources._prediction:InvalidateCache() end
+          local CGB = LibStub("ArcUI-CatalogGridBuilder-1.0", true)
+          if CGB then local g = CGB:GetGrid("forecastGrid"); if g then g:ClearSelection(); g:InvalidateCache() end end
+          RefreshBar(); LibStub("AceConfigRegistry-3.0"):NotifyChange("ArcUI")
+        end,
+        hidden = function()
+          if collapsedSections.prediction or collapsedSections.forecastSpells or not IsResourceBar() then return true end
+          local cfg = GetSelectedConfig(); return not cfg or not cfg.tracking or cfg.tracking.secondaryType ~= "soulShards"
+        end
+      },
+      forecastGridLabel = {
+        type = "description", order = 69.839, width = "full",
+        name = function()
+          local cfg = GetSelectedConfig(); local spells = cfg and cfg.prediction and cfg.prediction.spells
+          return (not spells or #spells == 0) and "|cff666666No forecast spells.|r" or ""
+        end,
+        hidden = function()
+          if collapsedSections.prediction or collapsedSections.forecastSpells or not IsResourceBar() then return true end
+          local cfg = GetSelectedConfig(); return not cfg or not cfg.tracking or cfg.tracking.secondaryType ~= "soulShards"
+        end
+      },
+      forecastSelectedLabel = {
+        type = "description", fontSize = "medium", order = 69.861, width = "full",
+        name = function()
+          local CGB = LibStub("ArcUI-CatalogGridBuilder-1.0", true); if not CGB then return "" end
+          local grid = CGB:GetGrid("forecastGrid"); if not grid or not grid:HasSelection() then return "" end
+          local entry = grid:GetSelectedEntry(); if not entry then return "" end
+          local n = C_Spell and C_Spell.GetSpellName and C_Spell.GetSpellName(entry.spellID) or "Unknown"
+          local t = C_Spell and C_Spell.GetSpellTexture and C_Spell.GetSpellTexture(entry.spellID) or 134400
+          local e = (entry.enabled ~= false) and "|cff00ff00On|r" or "|cffff4444Off|r"
+          return string.format("|T%d:16:16:0:0|t |cffffd700%s|r  (ID: %d)  %s  |cff88ff88+%s shards|r", t, n, entry.spellID, e, tostring(entry.gain or 0))
+        end,
+        hidden = function()
+          if collapsedSections.prediction or collapsedSections.forecastSpells or not IsResourceBar() then return true end
+          local CGB = LibStub("ArcUI-CatalogGridBuilder-1.0", true); if not CGB then return true end
+          local grid = CGB:GetGrid("forecastGrid"); return not grid or not grid:HasSelection()
+        end
+      },
+      forecastEditEnabled = {
+        type = "toggle", name = "Enabled", order = 69.862, width = 0.45,
+        get = function()
+          local CGB = LibStub("ArcUI-CatalogGridBuilder-1.0", true); if not CGB then return false end
+          local grid = CGB:GetGrid("forecastGrid"); local e = grid and grid:GetSelectedEntry(); return e and e.enabled ~= false
+        end,
+        set = function(info, value)
+          local CGB = LibStub("ArcUI-CatalogGridBuilder-1.0", true); if not CGB then return end
+          local grid = CGB:GetGrid("forecastGrid"); local e = grid and grid:GetSelectedEntry()
+          if e then e.enabled = value; grid:InvalidateCache()
+            if ns.Resources._prediction then ns.Resources._prediction:InvalidateCache() end; RefreshBar() end
+        end,
+        hidden = function()
+          if collapsedSections.prediction or collapsedSections.forecastSpells or not IsResourceBar() then return true end
+          local CGB = LibStub("ArcUI-CatalogGridBuilder-1.0", true); if not CGB then return true end
+          local grid = CGB:GetGrid("forecastGrid"); return not grid or not grid:HasSelection()
+        end
+      },
+      forecastEditGain = {
+        type = "input", dialogControl = "ArcUI_EditBox", name = "Shards",
+        desc = "Soul shards generated per cast (e.g. 0.4, 1, 2, 3).",
+        order = 69.863, width = 0.35,
+        get = function()
+          local CGB = LibStub("ArcUI-CatalogGridBuilder-1.0", true); if not CGB then return "0" end
+          local grid = CGB:GetGrid("forecastGrid"); local e = grid and grid:GetSelectedEntry()
+          return e and tostring(e.gain or 0) or "0"
+        end,
+        set = function(info, value)
+          local CGB = LibStub("ArcUI-CatalogGridBuilder-1.0", true); if not CGB then return end
+          local grid = CGB:GetGrid("forecastGrid"); local e = grid and grid:GetSelectedEntry()
+          if e then e.gain = tonumber(value) or 0; grid:InvalidateCache()
+            if ns.Resources._prediction then ns.Resources._prediction:InvalidateCache() end; RefreshBar() end
+        end,
+        hidden = function()
+          if collapsedSections.prediction or collapsedSections.forecastSpells or not IsResourceBar() then return true end
+          local CGB = LibStub("ArcUI-CatalogGridBuilder-1.0", true); if not CGB then return true end
+          local grid = CGB:GetGrid("forecastGrid"); return not grid or not grid:HasSelection()
+        end
+      },
+      forecastEditTalent = {
+        type = "execute", order = 69.864, width = 0.45,
+        name = function()
+          local CGB = LibStub("ArcUI-CatalogGridBuilder-1.0", true); if not CGB then return "Talent" end
+          local grid = CGB:GetGrid("forecastGrid"); local e = grid and grid:GetSelectedEntry()
+          return (e and e.talentConditions and #e.talentConditions > 0) and "|cff00ff00Talent *|r" or "Talent"
+        end,
+        desc = "Restrict to specific talents.",
+        func = function()
+          local CGB = LibStub("ArcUI-CatalogGridBuilder-1.0", true); if not CGB then return end
+          local grid = CGB:GetGrid("forecastGrid"); local e = grid and grid:GetSelectedEntry()
+          if not e or not ns.TalentPicker or not ns.TalentPicker.OpenPicker then return end
+          ns.TalentPicker.OpenPicker(e.talentConditions, e.talentMatchMode or "all", function(conds, mode)
+            e.talentConditions = conds; e.talentMatchMode = mode; grid:InvalidateCache()
+            if ns.Resources._prediction then ns.Resources._prediction:InvalidateCache() end
+            RefreshBar(); LibStub("AceConfigRegistry-3.0"):NotifyChange("ArcUI")
+          end)
+        end,
+        hidden = function()
+          if collapsedSections.prediction or collapsedSections.forecastSpells or not IsResourceBar() then return true end
+          local CGB = LibStub("ArcUI-CatalogGridBuilder-1.0", true); if not CGB then return true end
+          local grid = CGB:GetGrid("forecastGrid"); return not grid or not grid:HasSelection()
+        end
+      },
+      forecastRemoveBtn = {
+        type = "execute", name = "|cffff4444Remove|r", order = 69.865, width = 0.4,
+        confirm = function()
+          local CGB = LibStub("ArcUI-CatalogGridBuilder-1.0", true); if not CGB then return false end
+          local grid = CGB:GetGrid("forecastGrid"); local e = grid and grid:GetSelectedEntry()
+          return e and ("Remove: " .. (C_Spell and C_Spell.GetSpellName and C_Spell.GetSpellName(e.spellID) or ("ID:" .. e.spellID)) .. "?") or false
+        end,
+        func = function()
+          local CGB = LibStub("ArcUI-CatalogGridBuilder-1.0", true); if not CGB then return end
+          local grid = CGB:GetGrid("forecastGrid"); if not grid then return end
+          local e = grid:GetSelectedEntry(); if not e then return end
+          local cfg = GetSelectedConfig()
+          if cfg and cfg.prediction and cfg.prediction.spells then
+            for i, sp in ipairs(cfg.prediction.spells) do if sp.spellID == e.spellID then table.remove(cfg.prediction.spells, i); break end end
+          end
+          grid:ClearSelection(); grid:InvalidateCache()
+          if ns.Resources._prediction then ns.Resources._prediction:InvalidateCache() end
+          RefreshBar(); LibStub("AceConfigRegistry-3.0"):NotifyChange("ArcUI")
+        end,
+        hidden = function()
+          if collapsedSections.prediction or collapsedSections.forecastSpells or not IsResourceBar() then return true end
+          local CGB = LibStub("ArcUI-CatalogGridBuilder-1.0", true); if not CGB then return true end
+          local grid = CGB:GetGrid("forecastGrid"); return not grid or not grid:HasSelection()
+        end
+      },
 
       -- ============================================================
       -- STACK TEXT
@@ -7732,7 +8887,139 @@ function ns.AppearanceOptions.GetOptionsTable()
         hidden = function()
           if IsIconMode() or collapsedSections.stackText then return true end
           local cfg = GetSelectedConfig()
+          if not (cfg and cfg.display.showText) then return true end
+          -- Hide static color when colorByState is active (usable/unusable colors take over)
+          return cfg.display.textColorByState == true
+        end
+      },
+      textColorByState = {
+        type = "toggle",
+        name = "Color by Usable State",
+        desc = "Change text color based on whether the spell is currently usable (enough charges) or not",
+        get = function()
+          local cfg = GetSelectedConfig()
+          return cfg and cfg.display.textColorByState
+        end,
+        set = function(info, value)
+          local cfg = GetSelectedConfig()
+          if cfg then
+            cfg.display.textColorByState = value
+            -- Force usable state re-evaluation on next update
+            local barType, barNum = GetSelectedBarType()
+            if barType and barType:find("^cd_") then
+              local cdBarType = barType:gsub("^cd_", "")
+              local spellID = barNum
+              -- Reset lastUsableState so colors re-apply immediately
+              local baseType = cdBarType:match("^(%a+)") or cdBarType
+              if baseType == "charge" and ns.CooldownBars then
+                local _, inst = cdBarType:match("^(%a+)_(%d+)$")
+                local instance = inst and tonumber(inst) or 1
+                local barID = ns.CooldownBars.MakeBarID(spellID, instance)
+                local barIndex = ns.CooldownBars.activeCharges[barID]
+                if barIndex then
+                  local barData = ns.CooldownBars.chargeBars[barIndex]
+                  if barData then barData.lastUsableState = nil end
+                end
+              end
+            end
+            RefreshBar()
+          end
+        end,
+        order = 72.1,
+        width = 1.1,
+        hidden = function()
+          if IsIconMode() or collapsedSections.stackText then return true end
+          if not IsChargeBar() then return true end  -- Only for charge bars
+          local cfg = GetSelectedConfig()
           return not (cfg and cfg.display.showText)
+        end
+      },
+      textUsableColor = {
+        type = "color",
+        name = "Usable",
+        desc = "Text color when spell has charges available",
+        hasAlpha = true,
+        get = function()
+          local cfg = GetSelectedConfig()
+          if cfg and cfg.display.textUsableColor then
+            local c = cfg.display.textUsableColor
+            return c.r, c.g, c.b, c.a
+          end
+          return 0.5, 1, 0.8, 1
+        end,
+        set = function(info, r, g, b, a)
+          local cfg = GetSelectedConfig()
+          if cfg then
+            cfg.display.textUsableColor = {r=r, g=g, b=b, a=a}
+            -- Reset usable state so color re-applies
+            local barType, barNum = GetSelectedBarType()
+            if barType and barType:find("^cd_") then
+              local cdBarType = barType:gsub("^cd_", "")
+              local baseType = cdBarType:match("^(%a+)") or cdBarType
+              if baseType == "charge" and ns.CooldownBars then
+                local _, inst = cdBarType:match("^(%a+)_(%d+)$")
+                local instance = inst and tonumber(inst) or 1
+                local barID = ns.CooldownBars.MakeBarID(barNum, instance)
+                local barIndex = ns.CooldownBars.activeCharges[barID]
+                if barIndex then
+                  local barData = ns.CooldownBars.chargeBars[barIndex]
+                  if barData then barData.lastUsableState = nil end
+                end
+              end
+            end
+            RefreshBar()
+          end
+        end,
+        order = 72.2,
+        width = 0.45,
+        hidden = function()
+          if IsIconMode() or collapsedSections.stackText then return true end
+          local cfg = GetSelectedConfig()
+          return not (cfg and cfg.display.showText and cfg.display.textColorByState)
+        end
+      },
+      textUnusableColor = {
+        type = "color",
+        name = "Unusable",
+        desc = "Text color when spell has no charges available",
+        hasAlpha = true,
+        get = function()
+          local cfg = GetSelectedConfig()
+          if cfg and cfg.display.textUnusableColor then
+            local c = cfg.display.textUnusableColor
+            return c.r, c.g, c.b, c.a
+          end
+          return 1, 0.4, 0.4, 1
+        end,
+        set = function(info, r, g, b, a)
+          local cfg = GetSelectedConfig()
+          if cfg then
+            cfg.display.textUnusableColor = {r=r, g=g, b=b, a=a}
+            -- Reset usable state so color re-applies
+            local barType, barNum = GetSelectedBarType()
+            if barType and barType:find("^cd_") then
+              local cdBarType = barType:gsub("^cd_", "")
+              local baseType = cdBarType:match("^(%a+)") or cdBarType
+              if baseType == "charge" and ns.CooldownBars then
+                local _, inst = cdBarType:match("^(%a+)_(%d+)$")
+                local instance = inst and tonumber(inst) or 1
+                local barID = ns.CooldownBars.MakeBarID(barNum, instance)
+                local barIndex = ns.CooldownBars.activeCharges[barID]
+                if barIndex then
+                  local barData = ns.CooldownBars.chargeBars[barIndex]
+                  if barData then barData.lastUsableState = nil end
+                end
+              end
+            end
+            RefreshBar()
+          end
+        end,
+        order = 72.3,
+        width = 0.45,
+        hidden = function()
+          if IsIconMode() or collapsedSections.stackText then return true end
+          local cfg = GetSelectedConfig()
+          return not (cfg and cfg.display.showText and cfg.display.textColorByState)
         end
       },
       font = {
@@ -9750,14 +11037,46 @@ function ns.AppearanceOptions.GetOptionsTable()
           end
         end,
         values = function()
-          if ns.CooldownBars and ns.CooldownBars.HIDE_CONDITIONS then
-            return ns.CooldownBars.HIDE_CONDITIONS
+          if ns.CooldownBars and ns.CooldownBars.GetHideConditions then
+            return ns.CooldownBars.GetHideConditions()
           end
           return { hideOOC = "Out of Combat" }  -- Fallback
         end,
         order = 91,
         width = 1.5,
         hidden = function() return GetSelectedConfig() == nil or collapsedSections.behavior end
+      },
+      hideLogic = {
+        type = "select",
+        name = "Condition Match Mode",
+        desc = "Controls how multiple hide conditions combine:\n\n"
+            .. "|cff00ff00Match Any|r (default): Bar hides if ANY checked condition is true.\n"
+            .. "Example: 'Out of Combat' + 'Not Casting' = show ONLY when in combat AND casting.\n\n"
+            .. "|cff00ff00Match All|r: Bar hides only when ALL checked conditions are true simultaneously.\n"
+            .. "Example: 'Out of Combat' + 'Not Casting' = show when in combat OR casting.",
+        values = {
+          ["any"] = "Match Any (hide if any condition met)",
+          ["all"] = "Match All (hide only if all conditions met)",
+        },
+        sorting = { "any", "all" },
+        get = function()
+          local cfg = GetSelectedConfig()
+          if not cfg or not cfg.behavior then return "any" end
+          return cfg.behavior.hideLogic or "any"
+        end,
+        set = function(_, value)
+          local cfg = GetSelectedConfig()
+          if cfg then
+            if not cfg.behavior then cfg.behavior = {} end
+            cfg.behavior.hideLogic = value
+            UpdateBar()
+          end
+        end,
+        order = 91.5,
+        width = 1.5,
+        hidden = function()
+          return GetSelectedConfig() == nil or collapsedSections.behavior
+        end
       },
       hideWhenInactive = {
         type = "toggle",
@@ -9834,55 +11153,40 @@ function ns.AppearanceOptions.GetOptionsTable()
         end
       },
       
-      -- Druid form visibility: show bar only in selected forms
-      showInFormsDesc = {
-        type = "description",
-        name = "|cff00cc66Druid Form Visibility|r  —  Select which forms show this bar. If none selected, the bar shows in all forms.",
-        fontSize = "medium",
-        order = 95,
-        width = "full",
-        hidden = function()
-          if GetSelectedConfig() == nil or collapsedSections.behavior then return true end
-          local _, playerClass = UnitClass("player")
-          return playerClass ~= "DRUID"
-        end
-      },
-      showInForms = {
-        type = "multiselect",
-        name = "Show in Forms",
-        desc = "Select which Druid forms will show this bar.\nIf none selected, the bar is visible in ALL forms.",
-        get = function(_, key)
+      -- Hide When Alpha: opacity applied when hideWhen conditions trigger
+      -- Default 0 = fully hidden. Set > 0 to fade instead of fully hiding.
+      hideWhenAlpha = {
+        type = "range",
+        name = "Hidden Opacity",
+        desc = "The opacity of the bar when hidden by a 'Hide When' condition.\n0%% = fully hidden (default), 100%% = fully visible (effectively disabling the hide).",
+        min = 0, max = 1, step = 0.05,
+        isPercent = true,
+        get = function()
           local cfg = GetSelectedConfig()
-          if not cfg or not cfg.behavior then return false end
-          local forms = cfg.behavior.showInForms
-          if type(forms) ~= "table" then return false end
-          return forms[key] or false
+          if not cfg or not cfg.behavior then return 0 end
+          return cfg.behavior.hideWhenAlpha or 0
         end,
-        set = function(_, key, val)
+        set = function(_, val)
           local cfg = GetSelectedConfig()
           if cfg then
             if not cfg.behavior then cfg.behavior = {} end
-            if not cfg.behavior.showInForms or type(cfg.behavior.showInForms) ~= "table" then
-              cfg.behavior.showInForms = {}
-            end
-            cfg.behavior.showInForms[key] = val or nil
+            cfg.behavior.hideWhenAlpha = val
             RefreshBar()
           end
         end,
-        values = {
-          caster  = "Caster / No Form",
-          cat     = "Cat Form",
-          bear    = "Bear Form",
-          moonkin = "Moonkin Form",
-          travel  = "Travel / Flight / Aquatic",
-          tree    = "Tree of Life",
-        },
-        order = 95.1,
+        order = 95.2,
         width = 1.5,
         hidden = function()
           if GetSelectedConfig() == nil or collapsedSections.behavior then return true end
-          local _, playerClass = UnitClass("player")
-          return playerClass ~= "DRUID"
+          -- Only show when at least one hideWhen condition is checked
+          local cfg = GetSelectedConfig()
+          if not cfg or not cfg.behavior then return true end
+          local hideWhen = cfg.behavior.hideWhen
+          if type(hideWhen) ~= "table" then return true end
+          for _, v in pairs(hideWhen) do
+            if v then return false end
+          end
+          return true
         end
       },
       
@@ -9895,10 +11199,460 @@ function ns.AppearanceOptions.GetOptionsTable()
         fontSize = "medium",
         order = 100,
         hidden = function() return GetSelectedConfig() == nil or IsIconMode() or collapsedSections.behavior end
+      },
+
+      -- ============================================================
+      -- SKINS (consolidated at top)
+      -- ============================================================
+      presetsHeader = {
+        type = "toggle",
+        name = "Skins",
+        desc = "Click to expand/collapse",
+        dialogControl = "CollapsibleHeader",
+        get = function() return not collapsedSections.presets end,
+        set = function(info, value) collapsedSections.presets = not value end,
+        order = 2.70,
+        width = "full",
+        hidden = function() return GetSelectedConfig() == nil end
+      },
+      presetsDesc = {
+        type = "description",
+        name = "Save named skins and apply them across bars of the same type.",
+        fontSize = "small",
+        order = 2.701,
+        hidden = function() return GetSelectedConfig() == nil or collapsedSections.presets end
+      },
+
+      -- --- Active Skin dropdown (this IS the load) ---
+      activeSkinSelect = {
+        type = "select",
+        name = "Skin",
+        desc = "Select a saved skin to apply to this bar instantly.\n\n'Custom' means manual settings not linked to any skin.",
+        values = function()
+          if not ns.Presets then return { [""] = "Custom" } end
+          local barType = GetSelectedBarType()
+          local names = ns.Presets.GetSkinNames(barType)
+          local vals = { [""] = "|cff888888Custom|r" }
+          for name in pairs(names) do vals[name] = name end
+          return vals
+        end,
+        sorting = function()
+          if not ns.Presets then return { "" } end
+          local barType = GetSelectedBarType()
+          local names = ns.Presets.GetSkinNames(barType)
+          local sorted = { "" }
+          local nameList = {}
+          for name in pairs(names) do nameList[#nameList + 1] = name end
+          table.sort(nameList)
+          for _, name in ipairs(nameList) do sorted[#sorted + 1] = name end
+          return sorted
+        end,
+        get = function()
+          local cfg = GetSelectedConfig()
+          if not cfg or not ns.Presets then return "" end
+          return ns.Presets.GetActiveSkin(cfg) or ""
+        end,
+        set = function(info, value)
+          local cfg = GetSelectedConfig()
+          local barType = GetSelectedBarType()
+          if not cfg or not barType or not ns.Presets then return end
+          if value == "" then
+            ns.Presets.DetachSkin(cfg)
+          else
+            local ok, err = ns.Presets.SetActiveSkin(cfg, barType, value)
+            if ok then
+              RefreshBar()
+            else
+              print("|cff00ccffArcUI|r: " .. (err or "Failed to load skin"))
+            end
+          end
+          if LibStub and LibStub("AceConfigRegistry-3.0", true) then
+            LibStub("AceConfigRegistry-3.0"):NotifyChange("ArcUI")
+          end
+        end,
+        order = 2.1,
+        width = 0.7,
+        hidden = function()
+          if GetSelectedConfig() == nil then return true end
+          if not ns.Presets then return true end
+          local barType = GetSelectedBarType()
+          return ns.Presets.GetSkinCount(barType) == 0
+        end
+      },
+
+      -- --- Save row: Name + Save + Delete ---
+      skinSaveName = {
+        type = "input",
+        name = "Save As",
+        desc = "Enter a name to save as a new skin, or type an existing name to update it.",
+        get = function() return _presetSaveName end,
+        set = function(info, value) _presetSaveName = strtrim(value) end,
+        order = 2.720,
+        width = 1.0,
+        hidden = function() return GetSelectedConfig() == nil or collapsedSections.presets end
+      },
+      skinSave = {
+        type = "execute",
+        name = "Save",
+        desc = "Save this bar's current style. If a skin with this name already exists it will be updated.\nCategories below control what is included.",
+        func = function()
+          local cfg = GetSelectedConfig()
+          local barType = GetSelectedBarType()
+          if cfg and barType and ns.Presets and _presetSaveName ~= "" then
+            local exists = ns.Presets.SkinExists(_presetSaveName)
+            local cats = EnsureSaveCategories()
+            ns.Presets.SaveSkin(_presetSaveName, cfg, barType, cats)
+            if not cfg.presets then cfg.presets = {} end
+            cfg.presets.activeProfile = _presetSaveName
+            print("|cff00ccffArcUI|r: Skin '" .. _presetSaveName .. (exists and "' updated." or "' saved!"))
+            LibStub("AceConfigRegistry-3.0"):NotifyChange("ArcUI")
+          end
+        end,
+        order = 2.721,
+        width = 0.5,
+        disabled = function() return _presetSaveName == "" end,
+        hidden = function() return GetSelectedConfig() == nil or collapsedSections.presets end
+      },
+      skinDelete = {
+        type = "execute",
+        name = "Delete",
+        desc = "Delete the skin matching the name above.",
+        confirm = true,
+        confirmText = "Delete this skin? Bars using it will revert to Custom.",
+        func = function()
+          if ns.Presets and _presetSaveName ~= "" and ns.Presets.SkinExists(_presetSaveName) then
+            ns.Presets.DeleteSkin(_presetSaveName)
+            print("|cff00ccffArcUI|r: Skin '" .. _presetSaveName .. "' deleted.")
+            _presetSaveName = ""
+            LibStub("AceConfigRegistry-3.0"):NotifyChange("ArcUI")
+          end
+        end,
+        order = 2.722,
+        width = 0.5,
+        disabled = function()
+          return _presetSaveName == "" or not ns.Presets or not ns.Presets.SkinExists(_presetSaveName)
+        end,
+        hidden = function() return GetSelectedConfig() == nil or collapsedSections.presets end
+      },
+
+      -- --- Category toggles ---
+      skinCatsBreak = {
+        type = "description",
+        name = " ",
+        order = 2.7289,
+        width = "full",
+        hidden = function() return GetSelectedConfig() == nil or collapsedSections.presets end
+      },
+      skinCatsLabel = {
+        type = "description",
+        name = "|cffffd700Include:|r",
+        fontSize = "small",
+        order = 2.729,
+        width = 0.4,
+        hidden = function() return GetSelectedConfig() == nil or collapsedSections.presets end
+      },
+      skinCatColors = {
+        type = "toggle", name = "Colors",
+        desc = function() return ns.Presets and ns.Presets.CATEGORY_DESCS.colors or "" end,
+        get = function() return EnsureSaveCategories().colors end,
+        set = function(_, v) EnsureSaveCategories().colors = v end,
+        order = 2.7300, width = 0.5,
+        hidden = function() return GetSelectedConfig() == nil or collapsedSections.presets end
+      },
+      skinCatFill = {
+        type = "toggle", name = "Fill",
+        desc = function() return ns.Presets and ns.Presets.CATEGORY_DESCS.fill or "" end,
+        get = function() return EnsureSaveCategories().fill end,
+        set = function(_, v) EnsureSaveCategories().fill = v end,
+        order = 2.7301, width = 0.4,
+        hidden = function() return GetSelectedConfig() == nil or collapsedSections.presets end
+      },
+      skinCatSize = {
+        type = "toggle", name = "Size",
+        desc = function() return ns.Presets and ns.Presets.CATEGORY_DESCS.size or "" end,
+        get = function() return EnsureSaveCategories().size end,
+        set = function(_, v) EnsureSaveCategories().size = v end,
+        order = 2.7302, width = 0.4,
+        hidden = function() return GetSelectedConfig() == nil or collapsedSections.presets end
+      },
+      skinCatText = {
+        type = "toggle", name = "Text",
+        desc = function() return ns.Presets and ns.Presets.CATEGORY_DESCS.text or "" end,
+        get = function() return EnsureSaveCategories().text end,
+        set = function(_, v) EnsureSaveCategories().text = v end,
+        order = 2.7303, width = 0.4,
+        hidden = function() return GetSelectedConfig() == nil or collapsedSections.presets end
+      },
+      skinCatBG = {
+        type = "toggle", name = "Background",
+        desc = function() return ns.Presets and ns.Presets.CATEGORY_DESCS.background or "" end,
+        get = function() return EnsureSaveCategories().background end,
+        set = function(_, v) EnsureSaveCategories().background = v end,
+        order = 2.7304, width = 0.6,
+        hidden = function() return GetSelectedConfig() == nil or collapsedSections.presets end
+      },
+      skinCatBorder = {
+        type = "toggle", name = "Border",
+        desc = function() return ns.Presets and ns.Presets.CATEGORY_DESCS.border or "" end,
+        get = function() return EnsureSaveCategories().border end,
+        set = function(_, v) EnsureSaveCategories().border = v end,
+        order = 2.7305, width = 0.5,
+        hidden = function() return GetSelectedConfig() == nil or collapsedSections.presets end
+      },
+      skinCatTicks = {
+        type = "toggle", name = "Tick Marks",
+        desc = function() return ns.Presets and ns.Presets.CATEGORY_DESCS.tickMarks or "" end,
+        get = function() return EnsureSaveCategories().tickMarks end,
+        set = function(_, v) EnsureSaveCategories().tickMarks = v end,
+        order = 2.7306, width = 0.55,
+        hidden = function() return GetSelectedConfig() == nil or collapsedSections.presets end
+      },
+
+      skinLibraryCount = {
+        type = "description",
+        name = function()
+          if not ns.Presets then return "" end
+          local barType = GetSelectedBarType()
+          local count = ns.Presets.GetSkinCount(barType)
+          if count == 0 then return "|cff888888No saved skins yet.|r" end
+          return "|cff888888" .. count .. " skin(s) in library|r"
+        end,
+        order = 2.745,
+        hidden = function() return GetSelectedConfig() == nil or collapsedSections.presets end
+      },
+      
+      -- ═══════════════════════════════════════════════════════════════
+      -- AUTO-SWITCH (rules exist = auto-switch is active)
+      -- ═══════════════════════════════════════════════════════════════
+      autoSwitchAddRule = {
+        type = "execute",
+        name = "+ Add Auto-Switch Rule",
+        desc = "Add a rule to automatically load a skin on spec or talent change.\nRules are checked top-down, first match wins.",
+        func = function()
+          local cfg = GetSelectedConfig()
+          if cfg then
+            if not cfg.presets then cfg.presets = {} end
+            if not cfg.presets.autoSwitch then cfg.presets.autoSwitch = { rules = {} } end
+            local rules = cfg.presets.autoSwitch.rules
+            rules[#rules + 1] = { specIndices = {}, skinName = nil, talentConditions = nil, talentMatchMode = "all" }
+            LibStub("AceConfigRegistry-3.0"):NotifyChange("ArcUI")
+          end
+        end,
+        order = 2.87,
+        width = 1.2,
+        hidden = function()
+          if GetSelectedConfig() == nil or collapsedSections.presets then return true end
+          return not ns.Presets or ns.Presets.GetSkinCount() == 0
+        end
       }
     }
   }
   
+  local CGB = LibStub("ArcUI-CatalogGridBuilder-1.0", true)
+  if CGB then
+    local forecastGrid = CGB:GetGrid("forecastGrid")
+    if not forecastGrid then
+      forecastGrid = CGB:New({
+        id = "forecastGrid", maxIcons = 20, iconWidth = 28, iconHeight = 28,
+        cellWidth = 0.20, orderBase = 69.840, orderStep = 0.001, selectionMode = "toggle",
+        dataProvider = function(grid)
+          local cfg = GetSelectedConfig()
+          return cfg and cfg.prediction and cfg.prediction.spells or {}
+        end,
+        getEntryID = function(entry) return "spell:" .. tostring(entry.spellID or 0) end,
+        getEntryIcon = function(entry) return C_Spell and C_Spell.GetSpellTexture and C_Spell.GetSpellTexture(entry.spellID) or 134400 end,
+        getEntryName = function(entry, state)
+          local g = entry.gain or 0
+          local gs = (g == math.floor(g)) and tostring(math.floor(g)) or tostring(g)
+          local dim = (entry.enabled == false) and "|cff666666" or ""
+          local dimE = (entry.enabled == false) and "|r" or ""
+          local tm = (entry.talentConditions and #entry.talentConditions > 0) and "|cffffd700*|r" or ""
+          return dim .. tm .. (state.selected and "|cff00ff00+" or "|cff88ff88+") .. gs .. "|r" .. dimE
+        end,
+        getEntryDesc = function(entry, state)
+          local n = C_Spell and C_Spell.GetSpellName and C_Spell.GetSpellName(entry.spellID) or "Unknown"
+          local d = n .. "\nSpell ID: " .. (entry.spellID or "?") .. "\nGain: +" .. tostring(entry.gain or 0) .. " shards"
+              .. "\nEnabled: " .. ((entry.enabled ~= false) and "Yes" or "No")
+          if entry.talentConditions and #entry.talentConditions > 0 and ns.TalentPicker and ns.TalentPicker.GetConditionSummary then
+            d = d .. "\n" .. ns.TalentPicker.GetConditionSummary(entry.talentConditions, entry.talentMatchMode)
+          end
+          return d .. (state.selected and "\n|cff00ff00Selected - edit below|r" or "\n|cff888888Click to select|r")
+        end,
+        onSelectionChanged = function(grid) LibStub("AceConfigRegistry-3.0"):NotifyChange("ArcUI") end,
+      })
+    end
+    local fh = function()
+      if collapsedSections.prediction or collapsedSections.forecastSpells or not IsResourceBar() then return true end
+      local cfg = GetSelectedConfig(); return not cfg or not cfg.tracking or cfg.tracking.secondaryType ~= "soulShards"
+    end
+    for k, v in pairs(forecastGrid:GetArgs()) do
+      local oh = v.hidden
+      v.hidden = function() if fh() then return true end; return oh and oh() end
+      appearanceOptions.args[k] = v
+    end
+  end
+  
+  -- ═══════════════════════════════════════════════════════════════
+  -- COMPACT AUTO-SWITCH RULES (up to 10)
+  -- Per rule: [Rule N  Skin▼] [Talents] [×]
+  --           ☑Spec1 ☑Spec2 ☑Spec3
+  --           Talent summary
+  -- ═══════════════════════════════════════════════════════════════
+  local MAX_AUTOSWITCH_RULES = 10
+
+  local function asHidden(ruleIndex)
+    if GetSelectedConfig() == nil or collapsedSections.presets then return true end
+    if not ns.Presets or ns.Presets.GetSkinCount() == 0 then return true end
+    local cfg = GetSelectedConfig()
+    if not cfg or not cfg.presets or not cfg.presets.autoSwitch then return true end
+    local rules = cfg.presets.autoSwitch.rules
+    return not rules or ruleIndex > #rules
+  end
+
+  local function asGetRule(ruleIndex)
+    local cfg = GetSelectedConfig()
+    if not cfg or not cfg.presets or not cfg.presets.autoSwitch then return nil end
+    return cfg.presets.autoSwitch.rules and cfg.presets.autoSwitch.rules[ruleIndex]
+  end
+
+  local function asGetSkinNames()
+    if not ns.Presets then return {} end
+    return ns.Presets.GetSkinNames()
+  end
+
+  local function asToggleSpec(rule, specNum, value)
+    if not rule.specIndices then rule.specIndices = {} end
+    if value then
+      for _, s in ipairs(rule.specIndices) do if s == specNum then return end end
+      table.insert(rule.specIndices, specNum)
+    else
+      if #rule.specIndices == 0 then
+        for i = 1, (GetNumSpecializations() or 4) do table.insert(rule.specIndices, i) end
+      end
+      for i = #rule.specIndices, 1, -1 do
+        if rule.specIndices[i] == specNum then table.remove(rule.specIndices, i) end
+      end
+    end
+  end
+
+  local function asHasSpec(rule, specNum)
+    if not rule.specIndices or #rule.specIndices == 0 then return true end
+    for _, s in ipairs(rule.specIndices) do if s == specNum then return true end end
+    return false
+  end
+
+  for ri = 1, MAX_AUTOSWITCH_RULES do
+    local ruleIdx = ri
+    local base = 2.76 + (ruleIdx - 1) * 0.01
+
+    -- Row 1: Skin dropdown + Talents button + Remove
+    appearanceOptions.args["asR" .. ruleIdx .. "Skin"] = {
+      type = "select",
+      name = "|cffffd700Rule " .. ruleIdx .. "|r  Skin",
+      desc = "The skin to load when this rule matches.",
+      values = asGetSkinNames,
+      get = function()
+        local rule = asGetRule(ruleIdx)
+        return rule and rule.skinName
+      end,
+      set = function(info, value)
+        local rule = asGetRule(ruleIdx)
+        if rule then rule.skinName = value end
+      end,
+      order = base,
+      width = 1.1,
+      hidden = function() return asHidden(ruleIdx) end
+    }
+
+    appearanceOptions.args["asR" .. ruleIdx .. "Talents"] = {
+      type = "execute",
+      name = function()
+        local rule = asGetRule(ruleIdx)
+        if rule and rule.talentConditions and #rule.talentConditions > 0 then
+          return "|cff00ff00Talents *|r"
+        end
+        return "Talents"
+      end,
+      desc = "Open the talent tree to set conditions.\nGreen = required, Red = excluded.\nLeave empty to match by spec only.",
+      func = function()
+        if ns.TalentPicker and ns.TalentPicker.OpenPicker then
+          local rule = asGetRule(ruleIdx)
+          if not rule then return end
+          ns.TalentPicker.OpenPicker(rule.talentConditions, rule.talentMatchMode or "all", function(conditions, newMatchMode)
+            local r = asGetRule(ruleIdx)
+            if r then
+              r.talentConditions = conditions
+              r.talentMatchMode = newMatchMode
+              LibStub("AceConfigRegistry-3.0"):NotifyChange("ArcUI")
+            end
+          end)
+        else
+          print("|cff00ccffArcUI|r: Talent picker not available")
+        end
+      end,
+      order = base + 0.001,
+      width = 0.6,
+      hidden = function() return asHidden(ruleIdx) end
+    }
+
+    appearanceOptions.args["asR" .. ruleIdx .. "Remove"] = {
+      type = "execute",
+      name = "X",
+      desc = "Remove this rule.",
+      func = function()
+        local cfg = GetSelectedConfig()
+        if cfg and cfg.presets and cfg.presets.autoSwitch and cfg.presets.autoSwitch.rules then
+          table.remove(cfg.presets.autoSwitch.rules, ruleIdx)
+          LibStub("AceConfigRegistry-3.0"):NotifyChange("ArcUI")
+        end
+      end,
+      order = base + 0.002,
+      width = 0.3,
+      hidden = function() return asHidden(ruleIdx) end
+    }
+
+    -- Row 2: Spec toggles (with spec icons)
+    local numSpecs = GetNumSpecializations and GetNumSpecializations() or 4
+    for si = 1, numSpecs do
+      local specIdx = si
+      local _, specName, _, specIcon = GetSpecializationInfo(specIdx)
+      local iconStr = specIcon and ("|T" .. specIcon .. ":14:14|t") or ("Spec " .. specIdx)
+      appearanceOptions.args["asR" .. ruleIdx .. "Spec" .. specIdx] = {
+        type = "toggle",
+        name = iconStr,
+        desc = specName or ("Spec " .. specIdx),
+        get = function()
+          local rule = asGetRule(ruleIdx)
+          return rule and asHasSpec(rule, specIdx)
+        end,
+        set = function(info, value)
+          local rule = asGetRule(ruleIdx)
+          if rule then asToggleSpec(rule, specIdx, value) end
+        end,
+        order = base + 0.003 + specIdx * 0.0001,
+        width = 0.3,
+        hidden = function() return asHidden(ruleIdx) end
+      }
+    end
+
+    -- Row 3: Talent condition summary
+    appearanceOptions.args["asR" .. ruleIdx .. "Summary"] = {
+      type = "description",
+      name = function()
+        local rule = asGetRule(ruleIdx)
+        if not rule then return "" end
+        if rule.talentConditions and #rule.talentConditions > 0 and ns.TalentPicker and ns.TalentPicker.GetConditionSummary then
+          return ns.TalentPicker.GetConditionSummary(rule.talentConditions, rule.talentMatchMode)
+        end
+        return "|cff666666No talent conditions - matches checked specs only|r"
+      end,
+      fontSize = "small",
+      order = base + 0.005,
+      width = "full",
+      hidden = function() return asHidden(ruleIdx) end
+    }
+  end
+
   return appearanceOptions
 end
 

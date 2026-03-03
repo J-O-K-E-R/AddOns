@@ -153,21 +153,45 @@ BigWigs:AddSounds("Degentrius", {
 })
 
 BigWigs:AddColors("Muro'jin and Nekraxx", {
+	[1243900] = "red",
+	[1246666] = "yellow",
+	[1260643] = "yellow",
+	[1260731] = "orange",
+	[1266480] = "purple",
 })
 
 BigWigs:AddSounds("Muro'jin and Nekraxx", {
+	[1243900] = "alarm",
+	[1246666] = "alert",
+	[1260643] = "info",
+	[1260731] = "alarm",
+	[1266480] = "alert",
 })
 
 BigWigs:AddColors("Vordaza", {
+	[1250708] = "yellow",
+	[1251204] = "cyan",
+	[1251554] = "purple",
+	[1252054] = "orange",
 })
 
 BigWigs:AddSounds("Vordaza", {
+	[1250708] = "long",
+	[1251204] = "info",
+	[1251554] = "alert",
+	[1252054] = "alarm",
 })
 
 BigWigs:AddColors("Rak'tul, Vessel of Souls", {
+	[1251023] = "purple",
+	[1252676] = "orange",
+	[1253788] = "yellow",
 })
 
 BigWigs:AddSounds("Rak'tul, Vessel of Souls", {
+	[1251023] = "alert",
+	[1252676] = "alarm",
+	[1253788] = "long",
 })
 
 BigWigs:AddColors("Maisara Caverns Trash", {
@@ -271,25 +295,55 @@ BigWigs:AddSounds("Charonus", {
 })
 
 BigWigs:AddColors("Emberdawn", {
+	[465904] = "yellow",
+	[466064] = "purple",
+	[466556] = "orange",
 })
 
 BigWigs:AddSounds("Emberdawn", {
+	[465904] = "long",
+	[466064] = "alert",
+	[466556] = "alarm",
 })
 
 BigWigs:AddColors("Derelict Duo", {
+	[472736] = "yellow",
+	[472745] = "orange",
+	[472888] = "purple",
+	[474105] = "red",
 })
 
 BigWigs:AddSounds("Derelict Duo", {
+	[472736] = "long",
+	[472745] = "alarm",
+	[472888] = "alarm",
+	[474105] = "alert",
 })
 
 BigWigs:AddColors("Commander Kroluk", {
+	[472053] = "orange",
+	[1250851] = "cyan",
+	[1253272] = "red",
+	[1283335] = "purple",
 })
 
 BigWigs:AddSounds("Commander Kroluk", {
+	[472053] = "alarm",
+	[1250851] = "long",
+	[1253272] = "warning",
+	[1283335] = "alert",
 })
 
 BigWigs:AddColors("Restless Heart", {
+	[472556] = "cyan",
+	[472662] = "purple",
+	[474528] = "yellow",
+	[1253986] = "red",
 })
 
 BigWigs:AddSounds("Restless Heart", {
+	[472556] = "info",
+	[472662] = "alert",
+	[474528] = "long",
+	[1253986] = "alarm",
 })

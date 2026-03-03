@@ -506,10 +506,15 @@ do
 		end
 	end
 	local branSkills = {
-		[222]=true,[217]=true,[212]=true,[260]=true,[220]=true,[219]=true,[218]=true,[221]=true,[223]=true,
-		[213]=true,[215]=true,[178]=true,[209]=true,[214]=true,[216]=true,
-		[208]=true,[211]=true,[224]=true,[225]=true,[210]=true,
-		[279]=true,[280]=true,[281]=true,[282]=true,[283]=true,[284]=true,[285]=true,[286]=true,
+		[178]=true,[208]=true,[209]=true,[210]=true,[211]=true,[212]=true,[213]=true,[214]=true,[215]=true,
+		[216]=true,[217]=true,[218]=true,[219]=true,[220]=true,[221]=true,[222]=true,[223]=true,[224]=true,
+		[225]=true,[260]=true,[279]=true,[280]=true,[281]=true,[282]=true,[283]=true,[284]=true,[285]=true,
+		[286]=true,
+	}
+	local valeeraSkills = {
+		[343]=true,[344]=true,[345]=true,[346]=true,[347]=true,[348]=true,[349]=true,[350]=true,[351]=true,
+		[352]=true,[353]=true,[354]=true,[355]=true,[356]=true,[357]=true,[358]=true,[359]=true,[360]=true,
+		[361]=true,[362]=true,[363]=true,[364]=true,[365]=true,[366]=true,[367]=true,[368]=true,[369]=true,
 	}
 	local nemesisBoxCounts = {0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4}
 	local GetNextToastToDisplay = C_EventToastManager and C_EventToastManager.GetNextToastToDisplay
@@ -605,9 +610,13 @@ do
 					tbl.title = nil
 					tbl.bwDuration = 3
 					printMessage(self, tbl)
-				elseif branSkills[tbl.eventToastID] then -- Brann Ability, Brann power increase
+				elseif branSkills[tbl.eventToastID] or valeeraSkills[tbl.eventToastID] then -- Ability / power increase
+					-- Brann
 					-- tbl.title is "Combat Curios" / "Explorer's Ammunition Journal"
 					-- tbl.subtitle is "Brann Ability Unlocked!" / "Brann's power increased!"
+					-- Valeera
+					-- tbl.title is "Unrelenting" / "Uncrowned's Alchemical Codex"
+					-- tbl.subtitle is "Valeera Ability Unlocked!" / "Valeera's power increased!"
 					tbl.subtitle = CL.other:format(tbl.subtitle, tbl.title) -- Combine, without uppercase
 					tbl.title = nil
 					tbl.bwDuration = 3

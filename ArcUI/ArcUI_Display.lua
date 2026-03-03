@@ -2190,12 +2190,19 @@ function ns.Display.UpdateBar(barNumber, stacks, maxStacks, active, durationFont
   end
   
   -- Hide When conditions check (uses CDMGroups state via shared evaluator)
+  local hideWhenFadeAlpha = 1.0
   if shouldShow and not optionsOpen and ns.CooldownBars and ns.CooldownBars.GetHideWhen then
     local hideWhen = ns.CooldownBars.GetHideWhen(barConfig)
-    if hideWhen and ns.CooldownBars.EvaluateHideConditions(hideWhen) then
-      shouldShow = false
+    if hideWhen and ns.CooldownBars.EvaluateHideConditions(hideWhen, barConfig.behavior and barConfig.behavior.hideLogic) then
+      local hAlpha = ns.CooldownBars.GetHideWhenAlpha(barConfig)
+      if hAlpha <= 0 then
+        shouldShow = false
+      else
+        hideWhenFadeAlpha = hAlpha
+      end
     end
   end
+  if barFrames[barNumber] then barFrames[barNumber]._arcHideWhenAlpha = hideWhenFadeAlpha end
   
   -- Inactive check
   if shouldShow and not optionsOpen and not active and barConfig.behavior and barConfig.behavior.hideWhenInactive then
@@ -2880,14 +2887,21 @@ function ns.Display.UpdateBar(barNumber, stacks, maxStacks, active, durationFont
     
     -- Visibility logic
     local shouldShow = true
+    local hideWhenFadeAlpha = 1.0
     
     -- Hide When conditions (but not if options panel is open)
     if not optionsOpen and ns.CooldownBars and ns.CooldownBars.GetHideWhen then
       local hideWhen = ns.CooldownBars.GetHideWhen(barConfig)
-      if hideWhen and ns.CooldownBars.EvaluateHideConditions(hideWhen) then
-        shouldShow = false
+      if hideWhen and ns.CooldownBars.EvaluateHideConditions(hideWhen, barConfig.behavior and barConfig.behavior.hideLogic) then
+        local hAlpha = ns.CooldownBars.GetHideWhenAlpha(barConfig)
+        if hAlpha <= 0 then
+          shouldShow = false
+        else
+          hideWhenFadeAlpha = hAlpha
+        end
       end
     end
+    if barFrames[barNumber] then barFrames[barNumber]._arcHideWhenAlpha = hideWhenFadeAlpha end
     
     -- Hide when inactive (but not if options panel is open for preview)
     if not active and barConfig.behavior.hideWhenInactive and not optionsOpen then
@@ -2901,6 +2915,7 @@ function ns.Display.UpdateBar(barNumber, stacks, maxStacks, active, durationFont
     
     if shouldShow and cfg.enabled then
       SafeShow(iconFrame)
+      if hideWhenFadeAlpha < 1.0 then iconFrame:SetAlpha(hideWhenFadeAlpha) end
     else
       SafeHide(iconFrame)
     end
@@ -4161,12 +4176,19 @@ function ns.Display.UpdateCustomBar(barNumber, stacks, maxStacks, active, remain
       end
     end
     
+    local hideWhenFadeAlpha = 1.0
     if not optionsOpen and ns.CooldownBars and ns.CooldownBars.GetHideWhen then
       local hideWhen = ns.CooldownBars.GetHideWhen(barConfig)
-      if hideWhen and ns.CooldownBars.EvaluateHideConditions(hideWhen) then
-        shouldShow = false
+      if hideWhen and ns.CooldownBars.EvaluateHideConditions(hideWhen, barConfig.behavior and barConfig.behavior.hideLogic) then
+        local hAlpha = ns.CooldownBars.GetHideWhenAlpha(barConfig)
+        if hAlpha <= 0 then
+          shouldShow = false
+        else
+          hideWhenFadeAlpha = hAlpha
+        end
       end
     end
+    if barFrames[barNumber] then barFrames[barNumber]._arcHideWhenAlpha = hideWhenFadeAlpha end
     
     if not active and barConfig.behavior.hideWhenInactive and not optionsOpen then
       shouldShow = false
@@ -4179,6 +4201,7 @@ function ns.Display.UpdateCustomBar(barNumber, stacks, maxStacks, active, remain
     if shouldShow and cfg.enabled then
       ReactivateBar(barNumber)
       iconFrame:Show()
+      if hideWhenFadeAlpha < 1.0 then iconFrame:SetAlpha(hideWhenFadeAlpha) end
     elseif deactivate and not optionsOpen then
       DeactivateBar(barNumber)
       return
@@ -4248,12 +4271,19 @@ function ns.Display.UpdateCustomBar(barNumber, stacks, maxStacks, active, remain
   end
   
   -- Hide When conditions
+  local hideWhenFadeAlpha = 1.0
   if ns.CooldownBars and ns.CooldownBars.GetHideWhen then
     local hideWhen = ns.CooldownBars.GetHideWhen(barConfig)
-    if hideWhen and ns.CooldownBars.EvaluateHideConditions(hideWhen) then
-      shouldShow = false
+    if hideWhen and ns.CooldownBars.EvaluateHideConditions(hideWhen, barConfig.behavior and barConfig.behavior.hideLogic) then
+      local hAlpha = ns.CooldownBars.GetHideWhenAlpha(barConfig)
+      if hAlpha <= 0 then
+        shouldShow = false
+      else
+        hideWhenFadeAlpha = hAlpha
+      end
     end
   end
+  if barFrames[barNumber] then barFrames[barNumber]._arcHideWhenAlpha = hideWhenFadeAlpha end
   
   -- Hide if at zero and configured to do so
   if barConfig.behavior.hideWhenEmpty and stacks == 0 then
@@ -4380,12 +4410,19 @@ function ns.Display.UpdateDurationBar(barNumber, stacks, maxStacks, active, sour
   end
   
   -- Hide When conditions (only if not in options - we want to show bars for editing)
+  local hideWhenFadeAlpha = 1.0
   if shouldShow and not optionsOpen and ns.CooldownBars and ns.CooldownBars.GetHideWhen then
     local hideWhen = ns.CooldownBars.GetHideWhen(barConfig)
-    if hideWhen and ns.CooldownBars.EvaluateHideConditions(hideWhen) then
-      shouldShow = false
+    if hideWhen and ns.CooldownBars.EvaluateHideConditions(hideWhen, barConfig.behavior and barConfig.behavior.hideLogic) then
+      local hAlpha = ns.CooldownBars.GetHideWhenAlpha(barConfig)
+      if hAlpha <= 0 then
+        shouldShow = false
+      else
+        hideWhenFadeAlpha = hAlpha
+      end
     end
   end
+  if barFrames[barNumber] then barFrames[barNumber]._arcHideWhenAlpha = hideWhenFadeAlpha end
   
   -- Inactive check (if hideWhenInactive and not active, but show in options for editing)
   if shouldShow and not optionsOpen and not active and barConfig.behavior and barConfig.behavior.hideWhenInactive then
@@ -5804,7 +5841,7 @@ function ns.Display.ApplyAppearance(barNumber)
   
   -- NOTE: We do NOT use SetScale anymore - it causes position drift
   -- barFrame:SetScale(cfg.barScale) -- REMOVED - scale is now applied to size
-  barFrame:SetAlpha(cfg.opacity)
+  barFrame:SetAlpha(cfg.opacity * (barFrames[barNumber] and barFrames[barNumber]._arcHideWhenAlpha or 1.0))
   
   -- Bar padding (always 0 - no UI option exposed)
   barFrame.bar:ClearAllPoints()
@@ -6166,7 +6203,9 @@ function ns.Display.ApplyAppearance(barNumber)
   -- Border - uses 4 manual textures for pixel-perfect borders
   if barFrame.barBorderFrame then
     if cfg.showBorder then
-      local bt = cfg.drawnBorderThickness or 2
+      local btRaw = cfg.drawnBorderThickness or 2
+      -- Snap to nearest physical pixel so every edge is uniform and crisp
+      local bt = PixelUtil.GetNearestPixelSize(btRaw, barFrame:GetEffectiveScale(), btRaw)
       local bc = cfg.borderColor or {r = 0, g = 0, b = 0, a = 1}
       
       -- Top border (spans full width at top)

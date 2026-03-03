@@ -1,7 +1,11 @@
 -- ═══════════════════════════════════════════════════════════════════════════
 -- ArcUI Arc Auras - Custom Tracking System
 -- Track items (trinkets, potions) and spells not covered by CDM
--- v1.1 - Performance optimized: caching, event-driven stack updates
+-- v1.3 - Fix: Ready glow stuck on during cooldown. _arcReadyGlowActive was
+--        cleared BEFORE calling HideReadyGlow(), causing its early-exit guard
+--        to skip the actual glow stop. Now call HideReadyGlow first, then clear flags.
+-- v1.2 - Fix: Potion ready-glow during active CD (C_Container returns nil when consumed)
+--        Added C_Item.GetItemCooldown fallback, continuity protection, glow debounce
 -- 
 -- NOTE: Item cooldowns are NON-SECRET in WoW 12.0!
 -- This means direct numeric comparisons work in combat.
@@ -73,6 +77,7 @@ end
 -- Settings cache per frame - invalidated only when settings change
 local settingsCache = {}  -- arcID -> { settings = {}, timestamp = time }
 local SETTINGS_CACHE_TTL = 5  -- Re-validate cache every 5 seconds max
+local settingsCacheGeneration = 0  -- Bumped on explicit invalidation (not TTL expiry)
 
 -- Apply swipe/edge colors from settings, skipping when Masque controls cooldowns
 -- Masque's skin owns swipe/edge colors when useMasqueCooldowns is enabled.
@@ -96,6 +101,7 @@ local function InvalidateSettingsCache(arcID)
     else
         wipe(settingsCache)
     end
+    settingsCacheGeneration = settingsCacheGeneration + 1
 end
 
 -- Stack/charge cache per frame - updated on events, not polling
@@ -112,6 +118,10 @@ end
 -- Export cache invalidation for external use
 ArcAuras.InvalidateSettingsCache = InvalidateSettingsCache
 ArcAuras.InvalidateStackCache = InvalidateStackCache
+ArcAuras.GetSettingsCacheGeneration = function() return settingsCacheGeneration end
+
+-- Global bridge for GlowDebugger (debug only)
+_G.ArcUI_ArcAuras = ArcAuras
 
 -- ═══════════════════════════════════════════════════════════════════════════
 -- DATABASE
@@ -804,10 +814,11 @@ local function CreateArcAuraFrame(arcID, config)
         end)
         
         -- Visible cooldown: OnCooldownDone → re-feed for instant visual update
+        -- NOTE: Do NOT set desat here — desat is driven by the shadow frame (desatCooldown).
+        -- Unconditionally clearing desat causes a visible flash when recasting instantly.
         cooldown:HookScript("OnCooldownDone", function(self)
             local fd = self._arcFrameData
             if not fd then return end
-            if fd.icon then fd.icon:SetDesaturated(false) end
             if ns.ArcAurasCooldown and ns.ArcAurasCooldown.FeedCooldown then
                 ns.ArcAurasCooldown.FeedCooldown(fd)
             end
@@ -1053,6 +1064,9 @@ function ArcAuras.CreateFrame(arcID, config)
     -- Register with Masque for skinning via unified system (if available)
     if ns.Masque and ns.Masque.AddFrame then
         ns.Masque.AddFrame(frame, "ArcAuras", arcID)
+        -- Store the size Masque was registered at for stale-skin detection
+        frame._arcMasqueSkinW = frame:GetWidth()
+        frame._arcMasqueSkinH = frame:GetHeight()
     end
     
     -- Initialize stack cache for this frame
@@ -1081,11 +1095,8 @@ function ArcAuras.DestroyFrame(arcID)
         local fd = ns.ArcAurasCooldown.spellData and ns.ArcAurasCooldown.spellData[arcID]
         if fd then
             -- Stop proc glows
-            local LCGRef = GetLCG()
-            if LCGRef then
-                pcall(LCGRef.PixelGlow_Stop, frame, "proc")
-                pcall(LCGRef.AutoCastGlow_Stop, frame, "proc")
-                pcall(LCGRef.ButtonGlow_Stop, frame)
+            if ns.Glows then
+                ns.Glows.StopAll(frame)
             end
             if ActionButtonSpellAlertManager then
                 pcall(function() ActionButtonSpellAlertManager:HideAlert(frame) end)
@@ -1119,24 +1130,11 @@ function ArcAuras.DestroyFrame(arcID)
     -- ═══════════════════════════════════════════════════════════════════════════
     -- STEP 2: Stop any visual effects (glows, animations)
     -- ═══════════════════════════════════════════════════════════════════════════
-    if ns.CDMEnhance and ns.CDMEnhance.StopAllGlows then
-        pcall(ns.CDMEnhance.StopAllGlows, frame, "ArcUI_Glow")
-        pcall(ns.CDMEnhance.StopAllGlows, frame, "ArcAura_ReadyGlow")
-        pcall(ns.CDMEnhance.StopAllGlows, frame, "ArcAura_ThresholdGlow")
-        if frame._arcGlowAnchor then
-            pcall(ns.CDMEnhance.StopAllGlows, frame._arcGlowAnchor, "ArcUI_Glow")
+    if ns.Glows then
+        ns.Glows.StopAll(frame)
+        if frame._arcGlowAnchor and frame._arcGlowAnchor ~= frame then
+            ns.Glows.StopAll(frame._arcGlowAnchor)
         end
-    end
-    
-    -- Stop glows via LibCustomGlow directly as backup
-    local LCG = GetLCG()
-    if LCG then
-        pcall(LCG.PixelGlow_Stop, frame, "ArcAura_ReadyGlow")
-        pcall(LCG.PixelGlow_Stop, frame, "ArcUI_ReadyGlow")
-        pcall(LCG.PixelGlow_Stop, frame, "ArcAura_ThresholdGlow")
-        pcall(LCG.AutoCastGlow_Stop, frame, "ArcAura_ReadyGlow")
-        pcall(LCG.AutoCastGlow_Stop, frame, "ArcUI_ReadyGlow")
-        pcall(LCG.ButtonGlow_Stop, frame)
     end
     
     -- ═══════════════════════════════════════════════════════════════════════════
@@ -1417,26 +1415,40 @@ local function UpdateItemCooldown(frame, itemID)
     
     local startTime, duration, enable = C_Container.GetItemCooldown(itemID)
     
-    -- Smart GCD filtering: Compare current duration to item's base cooldown
-    -- If they don't match and duration is short, it's GCD not a real cooldown
+    -- FALLBACK: C_Container.GetItemCooldown returns nil when item is consumed (not in bags).
+    -- C_Item.GetItemCooldown still reports the cooldown even when the item is gone.
+    if startTime == nil and C_Item and C_Item.GetItemCooldown then
+        local ok, s, d, e = pcall(C_Item.GetItemCooldown, itemID)
+        if ok and s then
+            startTime, duration = s, d
+            enable = e and 1 or 0
+        end
+    end
+    
+    -- Smart GCD filtering for items:
+    -- GCD should NEVER cause a state flip (ready↔cooldown) for items.
+    -- C_Container.GetItemCooldown returns GCD duration when player uses ANY ability,
+    -- causing visual flicker between cooldown/ready branches with different desat/alpha.
+    -- The noGCDSwipe setting controls the swipe animation only.
     local arcID = frame._arcAuraID
     local settings = ArcAuras.GetCachedSettings(arcID)
     local noGCDSwipe = settings and settings.cooldownSwipe and settings.cooldownSwipe.noGCDSwipe
     
-    if noGCDSwipe and duration and duration > 0 and IsLikelyGCD(itemID, duration) then
-        -- This is GCD, not a real cooldown - hide it
-        if frame._lastDuration ~= 0 then
-            frame.Cooldown:Clear()
-            frame._lastStartTime = 0
-            frame._lastDuration = 0
+    if duration and duration > 0 and IsLikelyGCD(itemID, duration) then
+        -- This is GCD, not a real cooldown
+        -- Always suppress state change for items (prevents flicker)
+        if noGCDSwipe then
+            -- Also clear the swipe visual
+            if frame._lastDuration ~= 0 then
+                frame.Cooldown:Clear()
+                frame._lastStartTime = 0
+                frame._lastDuration = 0
+            end
         end
         
-        frame._isOnCooldown = false
+        -- Keep previous state - don't let GCD flip isOnCooldown
         frame._remaining = 0
-        frame._startTime = 0
-        frame._duration = 0
-        
-        return false, 0
+        return frame._isOnCooldown or false, 0
     end
     
     -- Detect cooldown STARTING (was off, now on) - item was just used!
@@ -1449,11 +1461,25 @@ local function UpdateItemCooldown(frame, itemID)
         frame._lastUsableCheckTime = nil
     end
     
+    -- COOLDOWN CONTINUITY PROTECTION (potions, consumables):
+    -- Even after C_Item fallback, if ALL APIs return nil/0 but we had a valid cooldown with
+    -- significant remaining time, hold the previous data to prevent false "ready" flashes.
+    if (not duration or duration <= 0) and frame._lastDuration and frame._lastDuration > 2 
+       and frame._startTime and frame._startTime > 0 then
+        local expectedRemaining = (frame._startTime + frame._lastDuration) - GetTime()
+        if expectedRemaining > 1 then
+            startTime = frame._startTime
+            duration = frame._lastDuration
+        end
+    end
+    
     -- Detect cooldown ENDING (was on, now off) - item may be usable again
     local cooldownJustEnded = (frame._lastDuration and frame._lastDuration > 1) and (not duration or duration <= 0)
     if cooldownJustEnded then
         -- Force usability recheck
         frame._lastUsableCheckTime = nil
+        -- Reset ready confirmation counter so glow doesn't flash on immediately
+        frame._arcReadyConfirmTicks = 0
     end
     
     -- Check if item is actually usable (handles once-per-combat items like Healthstone)
@@ -1618,8 +1644,6 @@ end
 -- Main update function - Updates cooldown display AND visual state
 -- OPTIMIZED: Uses cached settings, cached LCG reference, state-change detection
 local function OnArcAurasUpdate()
-    local LCG = GetLCG()  -- Cached reference
-    
     for arcID, frame in pairs(ArcAuras.frames) do
         if frame and frame:IsShown() then
             -- SKIP spell frames - they are fully event-driven (no polling needed)
@@ -1647,15 +1671,26 @@ local function OnArcAurasUpdate()
                 local settings = ArcAuras.GetCachedSettings(arcID)
                 
                 -- Get properly formatted state visuals from CDMEnhance if available
-                -- OPTIMIZED: Only fetch once per state change, not every tick
+                -- OPTIMIZED: Refresh stateVisuals on state change OR when settings invalidated
                 local stateVisuals = frame._cachedStateVisuals
                 local stateChanged = (frame._lastVisualState == "ready") ~= (not isOnCooldown)
+                local settingsChanged = (frame._settingsGeneration ~= settingsCacheGeneration)
                 
-                if stateChanged or not stateVisuals then
+                if stateChanged or settingsChanged or not stateVisuals then
                     if ns.CDMEnhance and ns.CDMEnhance.GetEffectiveStateVisuals then
                         stateVisuals = ns.CDMEnhance.GetEffectiveStateVisuals(settings)
                     end
                     frame._cachedStateVisuals = stateVisuals
+                    frame._settingsGeneration = settingsCacheGeneration
+                    -- Settings explicitly changed — kill any active glow, let this tick re-evaluate
+                    if settingsChanged then
+                        local hasActiveGlow = ns.Glows and ns.Glows.IsActive(frame, "ArcUI_ReadyGlow")
+                        if hasActiveGlow then
+                            ns.Glows.Stop(frame, "ArcUI_ReadyGlow")
+                        end
+                        frame._arcReadyGlowActive = false
+                        frame._arcCurrentGlowSig = nil
+                    end
                 end
                 
                 -- Check if glow preview is active for this icon
@@ -1758,31 +1793,32 @@ local function OnArcAurasUpdate()
                     -- Stop ready glows (only on state change)
                     if frame._lastVisualState ~= "cooldown" then
                         frame._lastVisualState = "cooldown"
-                        frame._arcReadyGlowActive = false  -- Clear flag so glow can restart when ready
+                        frame._arcReadyConfirmTicks = 0  -- Reset debounce counter
+                        if ns.Glows and (frame._arcReadyGlowActive or ns.Glows.IsActive(frame, "ArcUI_ReadyGlow")) then
+                            ns.Glows.Stop(frame, "ArcUI_ReadyGlow")
+                        end
+                        frame._arcReadyGlowActive = false
                         frame._arcPreviewGlowActive = false
-                        -- Use CDMEnhance's HideReadyGlow if available
-                        if ns.CDMEnhance and ns.CDMEnhance.HideReadyGlow then
-                            ns.CDMEnhance.HideReadyGlow(frame)
-                        elseif LCG then
-                            pcall(LCG.PixelGlow_Stop, frame, "ArcAura_ReadyGlow")
-                            pcall(LCG.PixelGlow_Stop, frame, "ArcUI_ReadyGlow")
-                            pcall(LCG.AutoCastGlow_Stop, frame, "ArcAura_ReadyGlow")
-                            pcall(LCG.AutoCastGlow_Stop, frame, "ArcUI_ReadyGlow")
-                            pcall(LCG.ButtonGlow_Stop, frame)
+                        frame._arcCurrentGlowSig = nil
+                        -- Update custom label visibility on state change
+                        if ns.CustomLabel and ns.CustomLabel.UpdateVisibility then
+                            ns.CustomLabel.UpdateVisibility(frame)
                         end
                     end
                     
                     -- Threshold glow (when almost ready)
                     local tg = settings and settings.thresholdGlow
-                    if tg and tg.enabled and remaining > 0 and LCG then
+                    if tg and tg.enabled and remaining > 0 and ns.Glows then
                         if remaining <= (tg.seconds or 5) then
                             if not frame._thresholdGlowActive then
-                                local color = tg.color or {1, 0.5, 0, 1}
-                                pcall(LCG.PixelGlow_Start, frame, color, 8, 0.25, nil, 2, 0, 0, true, "ArcAura_ThresholdGlow")
+                                ns.Glows.Start(frame, "ArcAura_ThresholdGlow", "pixel", {
+                                    color = tg.color or {1, 0.5, 0, 1},
+                                    lines = 8, frequency = 0.25, thickness = 2,
+                                })
                                 frame._thresholdGlowActive = true
                             end
                         elseif frame._thresholdGlowActive then
-                            pcall(LCG.PixelGlow_Stop, frame, "ArcAura_ThresholdGlow")
+                            ns.Glows.Stop(frame, "ArcAura_ThresholdGlow")
                             frame._thresholdGlowActive = false
                         end
                     end
@@ -1818,6 +1854,12 @@ local function OnArcAurasUpdate()
                     if config.type == "item" and config.itemID then
                         -- Use cached usability from UpdateItemCooldown
                         isUnusable = (frame._lastUsableResult == false) or isLockedOut
+                        -- DIRECT COUNT CHECK: If item count is 0 (potion consumed, no stock),
+                        -- treat as unusable immediately. This is non-secret and cheap.
+                        -- Prevents glow/desat fighting when CD is "ready" but player has no items.
+                        if not isUnusable and GetItemCount(config.itemID, false, false) == 0 then
+                            isUnusable = true
+                        end
                     elseif isLockedOut then
                         isUnusable = true
                     end
@@ -1858,14 +1900,31 @@ local function OnArcAurasUpdate()
                     end
                     
                     -- Stop threshold glow when ready
-                    if LCG and frame._thresholdGlowActive then
-                        pcall(LCG.PixelGlow_Stop, frame, "ArcAura_ThresholdGlow")
+                    if ns.Glows and frame._thresholdGlowActive then
+                        ns.Glows.Stop(frame, "ArcAura_ThresholdGlow")
                         frame._thresholdGlowActive = false
                     end
                     
                     -- Track state change for other purposes
                     local stateJustChanged = (frame._lastVisualState ~= "ready")
                     frame._lastVisualState = "ready"
+                    
+                    -- Update custom label visibility on state change
+                    if stateJustChanged and ns.CustomLabel and ns.CustomLabel.UpdateVisibility then
+                        ns.CustomLabel.UpdateVisibility(frame)
+                    end
+                    
+                    -- READY GLOW DEBOUNCE: For item frames, require several consecutive
+                    -- "ready" ticks before showing glow. Prevents sporadic glow flashes
+                    -- from momentary API data gaps.
+                    local readyConfirmed = true
+                    if config.type == "item" and not isGlowPreview then
+                        local ticks = frame._arcReadyConfirmTicks or 0
+                        if ticks < 3 then
+                            frame._arcReadyConfirmTicks = ticks + 1
+                            readyConfirmed = false
+                        end
+                    end
                     
                     -- GLOW HANDLING: Only update on state change or preview toggle
                     local shouldShowGlow = isGlowPreview or (stateVisuals and stateVisuals.readyGlow) or (rs.glow == true)
@@ -1882,8 +1941,25 @@ local function OnArcAurasUpdate()
                         shouldShowGlow = false
                     end
                     
-                    -- Track current glow state
-                    local glowCurrentlyShowing = frame._arcReadyGlowActive or false
+                    -- Suppress glow for consumed items (count = 0) — can't use what you don't have
+                    if shouldShowGlow and not isGlowPreview and config.type == "item" and config.itemID then
+                        local count = GetItemCount(config.itemID, false, false)
+                        if count == 0 then
+                            shouldShowGlow = false
+                        end
+                    end
+                    
+                    -- Block glow until debounce confirms ready state
+                    if not readyConfirmed then
+                        shouldShowGlow = false
+                    end
+                    
+                    -- Track current glow state (ns.Glows is the authority, not the flag)
+                    local glowCurrentlyShowing = ns.Glows and ns.Glows.IsActive(frame, "ArcUI_ReadyGlow") and true or false
+                    -- Sync flag if it drifted
+                    if frame._arcReadyGlowActive ~= glowCurrentlyShowing then
+                        frame._arcReadyGlowActive = glowCurrentlyShowing
+                    end
                     -- Detect if glow needs restart (sig cleared by resize in ApplySettingsToFrame)
                     local glowNeedsRestart = glowCurrentlyShowing and not frame._arcCurrentGlowSig
                     
@@ -1912,53 +1988,41 @@ local function OnArcAurasUpdate()
                             }
                         end
                         
-                        -- Use CDMEnhance's ShowReadyGlow (has signature check for efficient updates)
-                        if ns.CDMEnhance and ns.CDMEnhance.ShowReadyGlow then
-                            ns.CDMEnhance.ShowReadyGlow(frame, glowSettings)
-                        elseif LCG then
-                            -- Fallback: manual glow
-                            local glowType = glowSettings.readyGlowType or "button"
-                            local glowColor = glowSettings.readyGlowColor
-                            local intensity = glowSettings.readyGlowIntensity or 1.0
-                            local speed = glowSettings.readyGlowSpeed or 0.25
-                            local lines = glowSettings.readyGlowLines or 8
-                            local thickness = glowSettings.readyGlowThickness or 2
-                            local particles = glowSettings.readyGlowParticles or 4
-                            local xOffset = glowSettings.readyGlowXOffset or 0
-                            local yOffset = glowSettings.readyGlowYOffset or 0
-                            
-                            -- Build color table
+                        -- Start glow via unified Glows module
+                        if ns.Glows then
+                            local gc = glowSettings.readyGlowColor
                             local r, g, b = 1, 0.85, 0
-                            if glowColor then
-                                r = glowColor.r or glowColor[1] or 1
-                                g = glowColor.g or glowColor[2] or 0.85
-                                b = glowColor.b or glowColor[3] or 0
+                            if gc then
+                                r = gc.r or gc[1] or 1
+                                g = gc.g or gc[2] or 0.85
+                                b = gc.b or gc[3] or 0
                             end
-                            local color = {r, g, b, intensity}
-                            
-                            if glowType == "pixel" then
-                                pcall(LCG.PixelGlow_Start, frame, color, lines, speed, nil, thickness, xOffset, yOffset, true, "ArcAura_ReadyGlow")
-                            elseif glowType == "autocast" then
-                                pcall(LCG.AutoCastGlow_Start, frame, color, particles, speed, 1, xOffset, yOffset, "ArcAura_ReadyGlow")
-                            else
-                                pcall(LCG.ButtonGlow_Start, frame, color, speed)
-                            end
+                            local intensity = glowSettings.readyGlowIntensity or 1.0
+                            ns.Glows.Start(frame, "ArcUI_ReadyGlow", glowSettings.readyGlowType or "button", {
+                                color = {r, g, b, intensity},
+                                intensity = intensity,
+                                scale = glowSettings.readyGlowScale or 1.0,
+                                frequency = glowSettings.readyGlowSpeed or 0.25,
+                                lines = glowSettings.readyGlowLines or 8,
+                                thickness = glowSettings.readyGlowThickness or 2,
+                                particles = glowSettings.readyGlowParticles or 4,
+                                xOffset = glowSettings.readyGlowXOffset or 0,
+                                yOffset = glowSettings.readyGlowYOffset or 0,
+                                strata = glowSettings.readyGlowFrameStrata,
+                                frameLevel = glowSettings.readyGlowFrameLevel,
+                            })
+                            -- Set signature to prevent restart-every-tick
+                            frame._arcCurrentGlowSig = glowSettings.readyGlowType or "button"
                         end
                         
                     elseif not shouldShowGlow and glowCurrentlyShowing then
                         -- STOP glow
+                        if ns.Glows then
+                            ns.Glows.Stop(frame, "ArcUI_ReadyGlow")
+                        end
                         frame._arcReadyGlowActive = false
                         frame._arcPreviewGlowActive = false
-                        
-                        if ns.CDMEnhance and ns.CDMEnhance.HideReadyGlow then
-                            ns.CDMEnhance.HideReadyGlow(frame)
-                        elseif LCG then
-                            pcall(LCG.PixelGlow_Stop, frame, "ArcAura_ReadyGlow")
-                            pcall(LCG.PixelGlow_Stop, frame, "ArcUI_ReadyGlow")
-                            pcall(LCG.AutoCastGlow_Stop, frame, "ArcAura_ReadyGlow")
-                            pcall(LCG.AutoCastGlow_Stop, frame, "ArcUI_ReadyGlow")
-                            pcall(LCG.ButtonGlow_Stop, frame)
-                        end
+                        frame._arcCurrentGlowSig = nil
                     end
                 end
                 
@@ -2158,6 +2222,25 @@ function ArcAuras.ApplySettingsToFrame(arcID, frame)
     -- This prevents visual conflicts during zone load when frames are updated before Masque registration
     local masqueActive = ns.Masque and ns.Masque.IsEnabled and ns.Masque.IsEnabled()
     
+    -- ═══════════════════════════════════════════════════════════════════════════
+    -- MASQUE RE-SKIN: When Masque is active, it calculates Icon insets based on
+    -- the frame size at registration time. If frame:SetSize() above changed the
+    -- size (e.g. group layout assigns 36x36 but frame was registered at 40x40),
+    -- Masque's insets go stale — Icon bleeds past the Masque border artwork.
+    -- Fix: Detect size change and force Masque to re-register at the new size.
+    -- ═══════════════════════════════════════════════════════════════════════════
+    if masqueActive and frame._arcMasqueAdded and ns.Masque then
+        local oldW = frame._arcMasqueSkinW or 0
+        local oldH = frame._arcMasqueSkinH or 0
+        if math.abs(oldW - width) > 0.1 or math.abs(oldH - height) > 0.1 then
+            frame._arcMasqueSkinW = width
+            frame._arcMasqueSkinH = height
+            -- Force re-registration: clear guard flag so AddFrame doesn't skip
+            frame._arcMasqueAdded = nil
+            ns.Masque.AddFrame(frame, "ArcAuras", arcID)
+        end
+    end
+    
     -- Get zoom and padding from config (needed for cooldown positioning even when Masque is active)
     local zoom = cfg.zoom or 0.08
     local padding = cfg.padding or 0
@@ -2225,7 +2308,18 @@ function ArcAuras.ApplySettingsToFrame(arcID, frame)
         
         -- Swipe insets (adjust cooldown frame positioning)
         -- Skip positioning when Masque is active - Masque controls size and position
-        if not masqueActive then
+        if masqueActive then
+            if not masqueControlsCooldowns then
+                -- MASQUE ACTIVE but not controlling cooldowns: Anchor cooldown to the Icon texture.
+                -- Masque skins inset the Icon within the button frame. Anchoring to Icon ensures
+                -- the cooldown swipe perfectly matches the visible icon area, not the full button.
+                frame.Cooldown:ClearAllPoints()
+                frame.Cooldown:SetAllPoints(frame.Icon or frame)
+                frame.Cooldown._arcPaddingX = 0
+                frame.Cooldown._arcPaddingY = 0
+            end
+            -- When masqueControlsCooldowns: Masque owns cooldown completely, don't touch
+        else
             local swipeInsetX, swipeInsetY
             
             if swipe.separateInsets then
@@ -2270,6 +2364,39 @@ function ArcAuras.ApplySettingsToFrame(arcID, frame)
     -- Apply border if CDMEnhance has border functions
     if ns.CDMEnhance and ns.CDMEnhance.ApplyBorder then
         ns.CDMEnhance.ApplyBorder(frame, arcID)
+        
+        -- Track the size at which border was applied
+        frame._arcBorderAppliedW = frame:GetWidth()
+        frame._arcBorderAppliedH = frame:GetHeight()
+        
+        -- Hook SetSize (once) so that when external systems (FrameController, CDMGroups)
+        -- resize the frame AFTER ApplySettingsToFrame, the border gets re-applied.
+        -- Without this, borders draw at the old size until the options panel triggers a refresh.
+        if not frame._arcBorderSizeHooked then
+            frame._arcBorderSizeHooked = true
+            hooksecurefunc(frame, "SetSize", function(self, w, h)
+                -- Only re-apply if size actually changed from what border was drawn at
+                local bw = self._arcBorderAppliedW or 0
+                local bh = self._arcBorderAppliedH or 0
+                if math.abs(bw - w) > 0.5 or math.abs(bh - h) > 0.5 then
+                    self._arcBorderAppliedW = w
+                    self._arcBorderAppliedH = h
+                    -- Defer to next frame to avoid re-entrance during layout passes
+                    if not self._arcBorderResizePending then
+                        self._arcBorderResizePending = true
+                        C_Timer.After(0, function()
+                            self._arcBorderResizePending = nil
+                            if self:IsShown() and ns.CDMEnhance and ns.CDMEnhance.ApplyBorder then
+                                local aid = self._arcAuraID
+                                if aid then
+                                    ns.CDMEnhance.ApplyBorder(self, aid)
+                                end
+                            end
+                        end)
+                    end
+                end
+            end)
+        end
     end
 end
 
@@ -2758,6 +2885,17 @@ function ArcAuras.ShowTrinketSlotFrame(arcID)
     local frame = ArcAuras.frames[arcID]
     if not frame then return end
     
+    -- ═══════════════════════════════════════════════════════════════════════════
+    -- GUARD: If this is an auto-track slot and the per-slot toggle is OFF,
+    -- refuse to show. The user's toggle takes absolute priority.
+    -- ═══════════════════════════════════════════════════════════════════════════
+    local config = frame._arcConfig
+    if config and config.isAutoTrackSlot and config.slotID then
+        if not ArcAuras.IsAutoTrackSlotEnabled(config.slotID) then
+            return  -- Slot toggle is OFF - do not show
+        end
+    end
+    
     -- Clear empty slot flag
     frame._arcSlotEmpty = nil
     
@@ -2842,12 +2980,10 @@ end
 -- Check if auto-track equipped trinkets is enabled
 function ArcAuras.IsAutoTrackEquippedTrinketsEnabled()
     local db = GetDB()
-    if not db then return true end  -- Default to enabled
-    -- Handle nil (not set yet) as true (enabled by default)
-    if db.autoTrackEquippedTrinkets == nil then
-        return true
-    end
-    return db.autoTrackEquippedTrinkets
+    if not db then return false end
+    -- db.autoTrackEquippedTrinkets defaults to false (line 168)
+    -- Treat nil as false to match the DB default
+    return db.autoTrackEquippedTrinkets == true
 end
 
 -- Set auto-track equipped trinkets
@@ -3021,16 +3157,24 @@ function ArcAuras.SetOnlyOnUseTrinkets(enabled)
                 local frame = ArcAuras.frames[arcID]
                 
                 if config and config.isAutoTrackSlot then
-                    local itemID = GetInventoryItemID("player", slot.slotID)
-                    if frame and frame._arcSlotEmpty and itemID then
-                        -- Frame was hidden due to filter - restore it
-                        ArcAuras.ShowTrinketSlotFrame(arcID)
-                    elseif not frame and itemID and ArcAuras.IsAutoTrackSlotEnabled(slot.slotID) then
-                        -- Frame doesn't exist (maybe was removed) - recreate it
-                        local newFrame = ArcAuras.CreateFrame(arcID, config)
-                        if newFrame then
-                            ArcAuras.LoadFramePosition(arcID, newFrame)
-                            newFrame:Show()
+                    -- GUARD: Skip if per-slot toggle is OFF
+                    if not ArcAuras.IsAutoTrackSlotEnabled(slot.slotID) then
+                        -- Slot toggle is OFF - don't restore, keep hidden
+                    elseif frame and frame._arcSlotEmpty then
+                        local itemID = GetInventoryItemID("player", slot.slotID)
+                        if itemID then
+                            -- Frame was hidden due to filter - restore it
+                            ArcAuras.ShowTrinketSlotFrame(arcID)
+                        end
+                    elseif not frame then
+                        local itemID = GetInventoryItemID("player", slot.slotID)
+                        if itemID then
+                            -- Frame doesn't exist (maybe was removed) - recreate it
+                            local newFrame = ArcAuras.CreateFrame(arcID, config)
+                            if newFrame then
+                                ArcAuras.LoadFramePosition(arcID, newFrame)
+                                newFrame:Show()
+                            end
                         end
                     end
                 end
@@ -3396,14 +3540,22 @@ function ArcAuras.Enable()
                 
                 -- For trinket slot trackers, check visibility conditions
                 if config.type == "trinket" and config.slotID then
-                    local itemID = GetInventoryItemID("player", config.slotID)
-                    
-                    if not itemID then
-                        -- Slot is empty
+                    -- If auto-track is globally disabled, hide auto-track slot frames
+                    if config.isAutoTrackSlot and not ArcAuras.IsAutoTrackEquippedTrinketsEnabled() then
                         shouldHide = true
-                    elseif config.isAutoTrackSlot and onlyOnUse and IsItemPassive(itemID) then
-                        -- Passive trinket with on-use filter
+                    elseif config.isAutoTrackSlot and not ArcAuras.IsAutoTrackSlotEnabled(config.slotID) then
+                        -- Individual slot disabled
                         shouldHide = true
+                    else
+                        local itemID = GetInventoryItemID("player", config.slotID)
+                        
+                        if not itemID then
+                            -- Slot is empty
+                            shouldHide = true
+                        elseif config.isAutoTrackSlot and onlyOnUse and IsItemPassive(itemID) then
+                            -- Passive trinket with on-use filter
+                            shouldHide = true
+                        end
                     end
                     
                 -- For item-based frames, check hideWhenUnequipped
@@ -3493,6 +3645,114 @@ function ArcAuras.Enable()
             end
         end
     end)
+    
+    -- ═══════════════════════════════════════════════════════════════════════════
+    -- POST-ENABLE VERIFICATION SWEEP
+    -- After all frames (items + spells) are created and RegisterExternalFrame has
+    -- run, verify each frame is in the correct group according to savedPositions.
+    -- This catches cases where RegisterExternalFrame didn't check savedPositions
+    -- (e.g., after import/reload when profile data has arc_ IDs in specific groups
+    -- but RegisterExternalFrame defaulted them to "Essential" or left them free).
+    -- Runs at +1.5s to ensure both item frames (immediate) and spell frames (+0.3s)
+    -- have been created and CDMGroups has fully loaded the active profile.
+    -- ═══════════════════════════════════════════════════════════════════════════
+    C_Timer.After(1.5, function()
+        if not ArcAuras.isEnabled then return end
+        if not ns.CDMGroups then return end
+        
+        -- Ensure savedPositions reference is current
+        if ns.CDMGroups.GetProfileSavedPositions then
+            ns.CDMGroups.GetProfileSavedPositions()
+        end
+        
+        if not ns.CDMGroups.savedPositions then return end
+        
+        local correctedCount = 0
+        for arcID, frame in pairs(ArcAuras.frames) do
+            if frame and frame:IsShown() then
+                local saved = ns.CDMGroups.savedPositions[arcID]
+                if saved then
+                    if saved.type == "group" and saved.target then
+                        -- Check if frame is already in the CORRECT group
+                        local currentGroup = nil
+                        if ns.CDMGroups.groups then
+                            for gName, group in pairs(ns.CDMGroups.groups) do
+                                if group.members and group.members[arcID] then
+                                    currentGroup = gName
+                                    break
+                                end
+                            end
+                        end
+                        
+                        if currentGroup ~= saved.target then
+                            -- Frame is in wrong group (or no group) - fix it
+                            local targetGroup = ns.CDMGroups.groups and ns.CDMGroups.groups[saved.target]
+                            if targetGroup then
+                                -- Remove from current group if any
+                                if currentGroup and ns.CDMGroups.groups[currentGroup] then
+                                    local oldGroup = ns.CDMGroups.groups[currentGroup]
+                                    if oldGroup.members then
+                                        oldGroup.members[arcID] = nil
+                                    end
+                                end
+                                
+                                -- Also remove from freeIcons if tracked there
+                                if ns.CDMGroups.freeIcons and ns.CDMGroups.freeIcons[arcID] then
+                                    ns.CDMGroups.freeIcons[arcID] = nil
+                                end
+                                
+                                -- Register into correct group
+                                if targetGroup.AddMemberAtWithFrame then
+                                    targetGroup:AddMemberAtWithFrame(arcID, saved.row or 0, saved.col or 0, frame, nil)
+                                elseif ns.CDMGroups.RegisterExternalFrame then
+                                    ns.CDMGroups.RegisterExternalFrame(arcID, frame, "cooldown", saved.target)
+                                end
+                                correctedCount = correctedCount + 1
+                            end
+                        end
+                    elseif saved.type == "free" then
+                        -- Check if frame is tracked as free icon
+                        local inGroup = false
+                        if ns.CDMGroups.groups then
+                            for _, group in pairs(ns.CDMGroups.groups) do
+                                if group.members and group.members[arcID] then
+                                    inGroup = true
+                                    break
+                                end
+                            end
+                        end
+                        
+                        if inGroup then
+                            -- Frame is in a group but should be free - remove and make free
+                            for _, group in pairs(ns.CDMGroups.groups) do
+                                if group.members and group.members[arcID] then
+                                    group.members[arcID] = nil
+                                    break
+                                end
+                            end
+                        end
+                        
+                        if not (ns.CDMGroups.freeIcons and ns.CDMGroups.freeIcons[arcID]) then
+                            -- Track as free icon at saved position
+                            if ns.CDMGroups.TrackFreeIcon then
+                                ns.CDMGroups.TrackFreeIcon(arcID, saved.x or 0, saved.y or 0, saved.iconSize or 36, frame)
+                                correctedCount = correctedCount + 1
+                            end
+                        end
+                    end
+                end
+            end
+        end
+        
+        -- If any frames were corrected, re-layout all groups
+        if correctedCount > 0 then
+            if ns.CDMGroups.groups then
+                for _, group in pairs(ns.CDMGroups.groups) do
+                    if group.Layout then group:Layout() end
+                end
+            end
+        end
+    end)
 end
 
 function ArcAuras.Disable()
@@ -3578,13 +3838,11 @@ function ArcAuras.RefreshAllFrames()
         end
         
         -- Stop glows
-        local LCG = GetLCG()
-        if LCG then
-            pcall(LCG.PixelGlow_Stop, frame._arcGlowAnchor or frame)
-            pcall(LCG.PixelGlow_Stop, frame)
-            pcall(LCG.AutoCastGlow_Stop, frame._arcGlowAnchor or frame)
-            pcall(LCG.ButtonGlow_Stop, frame._arcGlowAnchor or frame)
-            pcall(LCG.ProcGlow_Stop, frame._arcGlowAnchor or frame)
+        if ns.Glows then
+            ns.Glows.StopAll(frame)
+            if frame._arcGlowAnchor and frame._arcGlowAnchor ~= frame then
+                ns.Glows.StopAll(frame._arcGlowAnchor)
+            end
         end
         
         frame:Hide()
@@ -4058,6 +4316,8 @@ function ArcAuras.RefreshMasqueState()
             if not frame._arcMasqueAdded then
                 if ns.Masque and ns.Masque.AddFrame then
                     ns.Masque.AddFrame(frame, "ArcAuras", arcID)
+                    frame._arcMasqueSkinW = frame:GetWidth()
+                    frame._arcMasqueSkinH = frame:GetHeight()
                 end
             end
             -- Reset icon texture to default 1:1 for Masque to control
@@ -4070,6 +4330,8 @@ function ArcAuras.RefreshMasqueState()
                 if ns.Masque and ns.Masque.RemoveFrame then
                     ns.Masque.RemoveFrame(frame)
                 end
+                frame._arcMasqueSkinW = nil
+                frame._arcMasqueSkinH = nil
                 -- Reset icon texture to default
                 if frame.Icon and frame.Icon.SetTexCoord then
                     frame.Icon:SetTexCoord(0, 1, 0, 1)
@@ -4212,6 +4474,14 @@ eventFrame:SetScript("OnEvent", function(self, event, arg1)
                 if itemID then
                     -- Trinket equipped - check on-use filter for auto-track slots
                     if savedConfig and savedConfig.isAutoTrackSlot then
+                        -- GUARD: If the per-slot toggle is OFF, don't show or update
+                        if not ArcAuras.IsAutoTrackSlotEnabled(slot) then
+                            -- Slot toggle is OFF - keep hidden, just update icon for when re-enabled
+                            ArcAuras.UpdateFrameIcon(frame, config)
+                            ArcAuras.UpdateItemFrameVisibility()
+                            return
+                        end
+                        
                         local onlyOnUse = db and db.onlyOnUseTrinkets
                         if onlyOnUse and IsItemPassive(itemID) then
                             -- Passive trinket with on-use filter - hide it (keep position)

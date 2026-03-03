@@ -14,12 +14,12 @@ local strfind = string.find
 
 local BIGWIGS_VERSION = 407
 local CONTENT_PACK_VERSIONS = {
-	["LittleWigs"] = {12, 0, 13},
+	["LittleWigs"] = {12, 0, 17},
 	["BigWigs_Classic"] = {12, 0, 9},
-	["BigWigs_BurningCrusade"] = {12, 0, 6},
-	["BigWigs_WrathOfTheLichKing"] = {12, 0, 2},
+	["BigWigs_BurningCrusade"] = {12, 0, 9},
+	["BigWigs_WrathOfTheLichKing"] = {12, 0, 3},
 	["BigWigs_Cataclysm"] = {12, 0, 0},
-	["BigWigs_MistsOfPandaria"] = {12, 0, 1},
+	["BigWigs_MistsOfPandaria"] = {12, 0, 2},
 	["BigWigs_WarlordsOfDraenor"] = {12, 0, 0},
 	["BigWigs_Legion"] = {12, 0, 0},
 	["BigWigs_BattleForAzeroth"] = {12, 0, 0},
@@ -57,7 +57,7 @@ do
 	local ALPHA = "ALPHA"
 
 	local releaseType
-	local myGitHash = "a8dc1a4" -- The ZIP packager will replace this with the Git hash.
+	local myGitHash = "fde5d44" -- The ZIP packager will replace this with the Git hash.
 	local releaseString
 	--[=[@alpha@
 	-- The following code will only be present in alpha ZIPs.
@@ -333,25 +333,14 @@ do
 				lw_cs,
 			},
 			currentSeason = {
-				[2212] = lw_cs, -- Horrific Vision of Orgrimmar
-				[2213] = lw_cs, -- Horrific Vision of Stormwind
-				[2287] = lw_cs, -- Halls of Atonement
-				[2441] = lw_cs, -- Tazavesh, the Veiled Market
-				[2649] = lw_cs, -- Priory of the Sacred Flame
-				[2660] = lw_cs, -- Ara-Kara, City of Echoes
-				[2662] = lw_cs, -- The Dawnbreaker
-				[2773] = lw_cs, -- Operation: Floodgate
-				[2830] = lw_cs, -- Eco-Dome Al'dani
-				[369] = UnitFactionGroup("player") == "Alliance" and lw_cs or nil, -- Deeprun Tram
-				[1043] = UnitFactionGroup("player") == "Horde" and lw_cs or nil, -- Brawl'gar Arena
-				--[2805] = lw_cs, -- Windrunner Spire
-				--[2811] = lw_cs, -- Magisters' Terrace
-				--[2874] = lw_cs, -- Maisara Caverns
-				--[2915] = lw_cs, -- Nexus-Point Xenas
-				--[2526] = lw_cs, -- Algeth'ar Academy
-				--[1753] = lw_cs, -- Seat of the Triumvirate
-				--[1209] = lw_cs, -- Skyreach
-				--[658] = lw_cs, -- Pit of Saron
+				[2805] = lw_cs, -- Windrunner Spire
+				[2811] = lw_cs, -- Magisters' Terrace
+				[2874] = lw_cs, -- Maisara Caverns
+				[2915] = lw_cs, -- Nexus-Point Xenas
+				[2526] = lw_cs, -- Algeth'ar Academy
+				[1753] = lw_cs, -- Seat of the Triumvirate
+				[1209] = lw_cs, -- Skyreach
+				[658] = lw_cs, -- Pit of Saron
 			},
 			zones = {
 				[2939] = "BigWigs_TheDreamrift",
@@ -1618,9 +1607,9 @@ end
 --
 
 do
-	local DBMdotRevision = "20260224045406" -- The changing version of the local client, changes with every new zip using the project-date-integer packager replacement.
-	local DBMdotDisplayVersion = "12.0.25" -- "N.N.N" for a release and "N.N.N alpha" for the alpha duration.
-	local DBMdotReleaseRevision = "20260223000000" -- Hardcoded time, manually changed every release, they use it to track the highest release version, a new DBM release is the only time it will change.
+	local DBMdotRevision = "20260226080850" -- The changing version of the local client, changes with every new zip using the project-date-integer packager replacement.
+	local DBMdotDisplayVersion = "12.0.26" -- "N.N.N" for a release and "N.N.N alpha" for the alpha duration.
+	local DBMdotReleaseRevision = "20260225000000" -- Hardcoded time, manually changed every release, they use it to track the highest release version, a new DBM release is the only time it will change.
 	local protocol = 3
 	local versionPrefix = "V"
 	local PForceDisable = 22

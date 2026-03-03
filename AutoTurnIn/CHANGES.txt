@@ -1,16 +1,12 @@
-lightweight tag 0e0a09c466479cfca783dc63e55e4fe89e4ef951 11.1.0
-Author:	Aleksandr Shubert <alex.shubert@gmail.com>
-Date:	Wed Feb 18 12:28:28 2026 -0500
+tag bfc971bfd5a1000ebb004e8733753e87b45584c5 11.1.1
+Author:	Lure <alex.shubert@gmail.com>
+Date:	Fri Feb 27 22:31:55 2026 -0500
 
-commit 0e0a09c466479cfca783dc63e55e4fe89e4ef951
-Author: Aleksandr Shubert <alex.shubert@gmail.com>
-Date:   Wed Feb 18 12:28:28 2026 -0500
+11.1.1
 
-    attemp to fix repair with guild money
+commit 3e9252bf544a2df97d20218c2c44995cdfe7e154
+Author: Lure <alex.shubert@gmail.com>
+Date:   Fri Feb 27 22:31:19 2026 -0500
 
-commit ce3fd5cd097c624933d349fe48b6517ec0f2d3c1
-Author: Aleksandr Shubert <alex.shubert@gmail.com>
-Date:   Wed Feb 18 12:18:41 2026 -0500
-
-    refactor: group deferred taint actions under AutoTurnIn.defer
+    fix IsArtifactRelicItem
 

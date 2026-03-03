@@ -562,6 +562,8 @@ end
 
 local function bgUpdate(self, elapsed)
     AnimateTexCoords(self.ants, 256, 256, 48, 48, 22, elapsed, self.throttle);
+    -- ArcUI: skip alpha override when external forced alpha is active (secret-safe threshold curves)
+    if self._arcForceAlpha then return end
     local cooldown = self:GetParent().cooldown;
     local duration = cooldown and cooldown:IsShown() and cooldown:GetCooldownDuration()
     if((not issecretvalue or not issecretvalue(duration)) and duration and duration > 3000) then
@@ -701,8 +703,10 @@ function lib.ButtonGlow_Start(r,color,frequency,frameLevel,key)
             for texture in pairs(ButtonGlowTextures) do
                 f[texture]:SetDesaturated(nil)
                 f[texture]:SetVertexColor(1,1,1)
-                local alpha = math.min(f[texture]:GetAlpha()/noZero(f.color and f.color[4] or 1), 1)
-                f[texture]:SetAlpha(alpha)
+                local ok, alpha = pcall(function()
+                    return math.min(f[texture]:GetAlpha()/noZero(f.color and f.color[4] or 1), 1)
+                end)
+                if ok then f[texture]:SetAlpha(alpha) end
                 updateAlphaAnim(f, 1)
             end
             f.color = false
@@ -715,8 +719,10 @@ function lib.ButtonGlow_Start(r,color,frequency,frameLevel,key)
                 else
                     f[texture]:SetVertexColor(color[1],color[2],color[3])
                 end
-                local alpha = math.min(f[texture]:GetAlpha()/noZero(f.color and f.color[4] or 1)*color[4], 1)
-                f[texture]:SetAlpha(alpha)
+                local ok, alpha = pcall(function()
+                    return math.min(f[texture]:GetAlpha()/noZero(f.color and f.color[4] or 1)*color[4], 1)
+                end)
+                if ok then f[texture]:SetAlpha(alpha) end
                 updateAlphaAnim(f,color and color[4] or 1)
             end
             f.color = color

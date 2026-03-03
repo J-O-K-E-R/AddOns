@@ -164,25 +164,26 @@ function ME.ScanAllProfiles()
                             if profileData.iconSettings then
                                 for _ in pairs(profileData.iconSettings) do iconSettingsCount = iconSettingsCount + 1 end
                             end
-                        
-                        table.insert(results, {
-                            charKey = charKey,
-                            specKey = specKey,
-                            classID = classID or 0,
-                            specIndex = specIndex or 0,
-                            specName = specName,
-                            profileName = profileName,
-                            profileData = profileData,
-                            uniqueKey = uniqueKey,
-                            posCount = posCount,
-                            iconSettingsCount = iconSettingsCount,
-                            groupSettings = specData.groupSettings,
-                            globalIconSettings = {
-                                disableTooltips = charData.cdmGroups.disableTooltips,
-                                clickThrough = charData.cdmGroups.clickThrough,
-                            },
-                        })
-                        end -- if type(profileData) == "table"
+                            
+                            table.insert(results, {
+                                charKey = charKey,
+                                specKey = specKey,
+                                classID = classID or 0,
+                                specIndex = specIndex or 0,
+                                specName = specName,
+                                profileName = profileName,
+                                profileData = profileData,
+                                uniqueKey = uniqueKey,
+                                posCount = posCount,
+                                iconSettingsCount = iconSettingsCount,
+                                groupSettings = specData.groupSettings,
+                                globalIconSettings = {
+                                    disableTooltips = charData.cdmGroups.disableTooltips,
+                                    clickThrough = charData.cdmGroups.clickThrough,
+                                },
+                                charArcAuras = charData.arcAuras or nil,
+                            })
+                        end
                     end
                 end
             end
@@ -234,10 +235,27 @@ function ME.Export(selectedKeys)
                     profiles = {},
                     groupSettings = entry.groupSettings and DeepCopy(entry.groupSettings) or nil,
                     globalIconSettings = entry.globalIconSettings and DeepCopy(entry.globalIconSettings) or nil,
+                    -- Include character-level Arc Auras tracked spells (not stored in profiles)
+                    arcAuras = entry.charArcAuras and entry.charArcAuras.trackedSpells and next(entry.charArcAuras.trackedSpells)
+                        and { trackedSpells = DeepCopy(entry.charArcAuras.trackedSpells) }
+                        or nil,
                 }
             end
             
-            exportPayload.specs[specKey].profiles[entry.profileName] = DeepCopy(entry.profileData)
+            -- Deduplicate: if same profile name already exists for this spec
+            -- (e.g. two chars both have "Default" for Enhancement), rename the duplicate
+            local finalName = entry.profileName
+            if exportPayload.specs[specKey].profiles[finalName] then
+                local charName = GetCharName(entry.charKey)
+                finalName = entry.profileName .. " (" .. charName .. ")"
+                local counter = 2
+                while exportPayload.specs[specKey].profiles[finalName] do
+                    finalName = entry.profileName .. " (" .. charName .. " " .. counter .. ")"
+                    counter = counter + 1
+                end
+            end
+            
+            exportPayload.specs[specKey].profiles[finalName] = DeepCopy(entry.profileData)
             totalProfiles = totalProfiles + 1
         end
     end
@@ -377,6 +395,13 @@ function ME.GenerateImportPreview(data)
         if specEntry.sourceChar then
             table.insert(lines, "    |cff666666from " .. specEntry.sourceChar .. "|r")
         end
+        if specEntry.arcAuras and specEntry.arcAuras.trackedSpells then
+            local spellCount = 0
+            for _ in pairs(specEntry.arcAuras.trackedSpells) do spellCount = spellCount + 1 end
+            if spellCount > 0 then
+                table.insert(lines, "    |cff00ccff+ " .. spellCount .. " Arc Aura spell(s)|r")
+            end
+        end
     end
     
     table.insert(lines, "")
@@ -422,6 +447,9 @@ local function MergeProfilesIntoSpec(cdmGroupsDB, specKey, specEntry, sourceLabe
     
     if specEntry.profiles then
         for profileName, profileData in pairs(specEntry.profiles) do
+            if type(profileData) ~= "table" then
+                -- Skip corrupted/non-table entries
+            else
             local finalName = profileName
             
             if targetSpec.layoutProfiles[profileName] then
@@ -439,6 +467,7 @@ local function MergeProfilesIntoSpec(cdmGroupsDB, specKey, specEntry, sourceLabe
             mergedCount = mergedCount + 1
             firstImportedName = firstImportedName or finalName
             print(MSG_PREFIX .. "Added profile: " .. finalName)
+            end
         end
     end
     
@@ -479,6 +508,7 @@ local function MergeProfilesIntoSpec(cdmGroupsDB, specKey, specEntry, sourceLabe
                         showBackground = groupData.showBackground or false,
                         autoReflow = groupData.autoReflow or false,
                         dynamicLayout = groupData.dynamicLayout or false,
+                        dynamicContainerSize = groupData.dynamicContainerSize,
                         lockGridSize = groupData.lockGridSize or false,
                         containerPadding = groupData.containerPadding or 0,
                         borderColor = groupData.borderColor and DeepCopy(groupData.borderColor) or { r = 0.5, g = 0.5, b = 0.5, a = 1 },
@@ -558,10 +588,13 @@ function ME.Import(data, importMode)
     local currentSpecProfileName = nil  -- Track which profile to load for current spec
     
     -- Replace mode: wipe specData for matching class specs first
+    -- Backup wiped data in case merge fails
+    local replaceBackup = {}
     if importMode == "replace" then
         for specKey, specEntry in pairs(data.specs) do
             local classID = ParseSpecKey(specKey)
-            if classID == myClassID then
+            if classID == myClassID and cdmGroupsDB.specData[specKey] then
+                replaceBackup[specKey] = cdmGroupsDB.specData[specKey]
                 cdmGroupsDB.specData[specKey] = nil
             end
         end
@@ -580,6 +613,35 @@ function ME.Import(data, importMode)
             -- If this is the current spec, remember which profile to load
             if specKey == currentSpec and firstProfileName then
                 currentSpecProfileName = firstProfileName
+            end
+            
+            -- Apply character-level Arc Auras tracked spells (wipe+replace)
+            if specEntry.arcAuras and specEntry.arcAuras.trackedSpells and next(specEntry.arcAuras.trackedSpells) then
+                -- Ensure char arcAuras DB exists
+                if not ArcUIDB then ArcUIDB = {} end
+                if not ArcUIDB.char then ArcUIDB.char = {} end
+                local charKey = UnitName("player") .. " - " .. GetRealmName()
+                if not ArcUIDB.char[charKey] then ArcUIDB.char[charKey] = {} end
+                if not ArcUIDB.char[charKey].arcAuras then
+                    ArcUIDB.char[charKey].arcAuras = {
+                        enabled = true,
+                        trackedItems = {},
+                        trackedSpells = {},
+                        positions = {},
+                        globalSettings = {},
+                    }
+                end
+                local arcAuras = ArcUIDB.char[charKey].arcAuras
+                if not arcAuras.trackedSpells then arcAuras.trackedSpells = {} end
+                wipe(arcAuras.trackedSpells)
+                local spellCount = 0
+                for arcID, config in pairs(specEntry.arcAuras.trackedSpells) do
+                    arcAuras.trackedSpells[arcID] = DeepCopy(config)
+                    spellCount = spellCount + 1
+                end
+                if spellCount > 0 then
+                    print(MSG_PREFIX .. "|cff00ccffImported " .. spellCount .. " Arc Aura spell(s)|r")
+                end
             end
             
             print(MSG_PREFIX .. "|cff00ff00Merged " .. merged .. " profile(s) into " ..
@@ -614,6 +676,15 @@ function ME.Import(data, importMode)
             enhance.globalApplyHideShadow = data.cdmEnhance.globalApplyHideShadow
         end
     end
+    
+    -- Replace mode: if nothing was imported, restore the backup
+    if importMode == "replace" and importedProfiles == 0 and next(replaceBackup) then
+        for specKey, backup in pairs(replaceBackup) do
+            cdmGroupsDB.specData[specKey] = backup
+        end
+        print(MSG_PREFIX .. "|cffff8800No profiles imported — restored original data.|r")
+    end
+    replaceBackup = nil  -- Release reference
     
     if Shared.ClearDBCache then Shared.ClearDBCache() end
     
@@ -687,6 +758,27 @@ function ME.AutoApplyPendingProfiles()
                 -- Track which profile to load for current spec
                 if specKey == currentSpec and firstProfileName then
                     currentSpecProfileName = firstProfileName
+                end
+            end
+            
+            -- Apply character-level Arc Auras tracked spells (wipe+replace)
+            if specEntry.arcAuras and specEntry.arcAuras.trackedSpells and next(specEntry.arcAuras.trackedSpells) then
+                local charKey = UnitName("player") .. " - " .. GetRealmName()
+                if ArcUIDB and ArcUIDB.char and ArcUIDB.char[charKey] then
+                    local charDB = ArcUIDB.char[charKey]
+                    if not charDB.arcAuras then
+                        charDB.arcAuras = { enabled = true, trackedItems = {}, trackedSpells = {}, positions = {}, globalSettings = {} }
+                    end
+                    if not charDB.arcAuras.trackedSpells then charDB.arcAuras.trackedSpells = {} end
+                    wipe(charDB.arcAuras.trackedSpells)
+                    local spellCount = 0
+                    for arcID, config in pairs(specEntry.arcAuras.trackedSpells) do
+                        charDB.arcAuras.trackedSpells[arcID] = DeepCopy(config)
+                        spellCount = spellCount + 1
+                    end
+                    if spellCount > 0 then
+                        print(MSG_PREFIX .. "|cff00ccffAuto-imported " .. spellCount .. " Arc Aura spell(s)|r")
+                    end
                 end
             end
             

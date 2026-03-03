@@ -341,9 +341,10 @@ L.titan = "25人泰坦" -- Chinese-only "Titan Reforged" servers
 -----------------------------------------------------------------------
 
 L.tools = "工具"
-L.toolsDesc = "BigWigs 提供多种工具和\"便利功能\"，让你可以轻松的简化首领战斗流程。"
+L.toolsDesc = "BigWigs 提供多种工具和\"便利功能\"，帮你更快、更轻松地应对首领战。"
 
 L.reloadUIWarning = "更改此选项将重载界面，并短暂显示载入画面。你确定要继续吗？"
+L.qualityOfLife = "便利功能"
 
 -----------------------------------------------------------------------
 -- AutoRole.lua
@@ -1108,12 +1109,12 @@ L.newFastestVictoryPrint = "新的最快获胜：（-%s）" -- New fastest victo
 L.timeline = "暴雪首领预警"
 L.blizzTimelineSettings = "暴雪首领预警设置"
 L.blizzTimelineSettingsNote = "|cffff4411本页选项仅控制暴雪内置的首领预警设置，此处提供是为了方便你与 BigWigs 的选项一起设置。|r"
-L.enableBlizzTimeline = "启用暴雪的内置首领预警"
-L.enableBlizzTimelineDesc = "在暴雪的内置的首领技能“类型”上显示所有的首领战计时。"
+L.enableBlizzTimeline = "启用暴雪内置的首领预警"
+L.enableBlizzTimelineDesc = "在暴雪内置的首领技能“类型”上显示所有的首领战计时。"
 L.show_bars = "显示来源"
-L.bigwigsEnhancedTimers = "将 BigWigs 强化的首领预警，显示为 BigWigs 计时条|cFF33FF99（推荐）|r"
-L.blizzBasicAsBars = "暴雪内置的首领预警，显示为 BigWigs 计时条"
-L.blizzBasicAsBlizzTimeline = "暴雪内置的首领预警，显示在暴雪内置的首领技能“类型”上"
+L.bigwigsEnhancedTimers = "BigWigs 增强的首领预警及计时条|cFF33FF99（推荐）|r"
+L.blizzBasicAsBars = "暴雪内置的首领预警显示在 BigWigs 计时条上"
+L.blizzBasicAsBlizzTimeline = "暴雪内置的首领预警及暴雪内置首领技能“类型”"
 L.developerMode = "开发者模式"
 
 -----------------------------------------------------------------------

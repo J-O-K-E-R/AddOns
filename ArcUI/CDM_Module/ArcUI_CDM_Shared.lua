@@ -829,18 +829,10 @@ local panelHooksInstalled = false
 local widgetFrameHooked = false
 
 local function HookWidgetFrame(ACD)
-    if widgetFrameHooked then return end
-    local widget = ACD.OpenFrames and ACD.OpenFrames["ArcUI"]
-    if not widget or not widget.frame then return end
-
-    widget.frame:HookScript("OnShow", function()
-        SetPanelState(true)
-    end)
-    widget.frame:HookScript("OnHide", function()
-        SetPanelState(false)
-    end)
-    widgetFrameHooked = true
-    Shared._widgetFrameHooked = true
+    -- DISABLED: AceConfigDialog reuses the widget frame for ALL addons.
+    -- OnShow/OnHide fires when ANY addon opens/closes their AceConfig panel,
+    -- falsely toggling ns.optionsPanelOpen. The ACD:Open/Close/CloseAll hooks
+    -- already check appName == "ArcUI" and handle state correctly.
 end
 
 function Shared.InstallPanelHooks()
