@@ -1,7 +1,13 @@
+@Terciob:
+- Additions and fixes for the Designer.
+
 @cont1nuity:
-- Fixed an issue with pet recognition erroring out in some cases.
-- Fixed issues around blizzards new threat secrecy.
-- Fixed a bug regarding health updates for non-retail clients.
-- Fixed friendly player auto toggle.
-- Adding 'Blizzard Nameplate' type buff filter which copies blizzard nameplate behavior.
+- Fixing an issue with now secret soft-interact information.
+- Removing several no longer used options for Midnight from the options panel.
+- Fixing an issue with tank recognition in TBC.
+- Fixing some color refresh issues.
+- Adding option to select the execute range alpha value.
+- Adding option for 'Empowered' cast color.
+- The 'Only Damaged' option for friendly players is no longer available in Midnight.
+- Fixing Midnight CC aura tracking filter option.
 

@@ -475,6 +475,7 @@ function platerInternal.CreateAdvancedOptions()
             name = "Larger Scale" .. CVarIcon,
             desc = "Scale applied to important monsters (such as bosses).\n\n|cFFFFFFFFDefault: 1.2|r" .. CVarDesc,
             nocombat = true,
+            hidden = IS_WOW_PROJECT_MIDNIGHT,
         },
 
         {
@@ -484,6 +485,7 @@ function platerInternal.CreateAdvancedOptions()
             name = "Anchor Point" .. CVarIcon,
             desc = "Where the nameplate is anchored to.\n\n|cFFFFFFFFDefault: Head|r" .. CVarDesc,
             nocombat = true,
+            hidden = IS_WOW_PROJECT_MIDNIGHT,
         },
         {
             type = "toggle",
@@ -979,7 +981,7 @@ function platerInternal.CreateAdvancedOptions()
 
         {
             type = "toggle",
-            get = function() return GetCVar ("nameplateShowFriendlyMinions") == CVAR_ENABLED end,
+            get = function() return GetCVar ("nameplateShowFriendlyPlayerMinions") == CVAR_ENABLED end,
             set = function (self, fixedparam, value)
                 if (not InCombatLockdown()) then
                     SetCVar ("nameplateShowFriendlyPlayerMinions", math.abs (tonumber (GetCVar ("nameplateShowFriendlyPlayerMinions"))-1))
@@ -1340,7 +1342,7 @@ function platerInternal.CreateAdvancedOptions()
             nocombat = true,
             name = "Top Constrain" .. CVarIcon,
             desc = "Adjust the top constrain position where the personal bar cannot pass.\n\n|cFFFFFFFFDefault: 50|r" .. CVarDesc,
-            hidden = IS_WOW_PROJECT_NOT_MAINLINE or IS_WOW_PROJECT_MIDNIGHT,
+            hidden = true,
         },
 
         {
@@ -1407,7 +1409,7 @@ function platerInternal.CreateAdvancedOptions()
             nocombat = true,
             name = "Bottom Constrain" .. CVarIcon,
             desc = "Adjust the bottom constrain position where the personal bar cannot pass.\n\n|cFFFFFFFFDefault: 20|r" .. CVarDesc,
-            hidden = IS_WOW_PROJECT_NOT_MAINLINE or IS_WOW_PROJECT_MIDNIGHT,
+            hidden = true,
         },
 
         {type = "blank", hidden = IS_WOW_PROJECT_MIDNIGHT},
