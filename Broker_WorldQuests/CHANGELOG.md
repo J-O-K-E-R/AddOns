@@ -1,3 +1,8 @@
+### 12.0.1.1
+* Added support for Midnight Expansion including the first 4 zones and first 3 currencies
+* Fixed bounty tooltip crash during combat caused by secret value taint in 12.0.0+
+* Added support for Midnight pre-patch (Legion) world quests, etc. (contributed by yoshimo)
+
 ### 12.0.0.2
 * Added support for Twighlight Highlands (Midnight Pre-patch)
 * Added support for Twilight's Blade Insignia currency

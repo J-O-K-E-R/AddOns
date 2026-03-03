@@ -11,10 +11,40 @@ local CONSTANTS = addon.CONSTANTS
 --
 --]]----
 
+local function IsLegionInvasionActive()
+	local BROKEN_ISLES_MAP_ID = 619
+	local INVASION_ATLAS = "legioninvasion-map-icon-portal"
+	local pois = C_AreaPoiInfo.GetAreaPOIForMap(BROKEN_ISLES_MAP_ID)
+
+	if not pois then
+		return false
+	end
+
+	for _, poiID in ipairs(pois) do
+		local info = C_AreaPoiInfo.GetAreaPOIInfo(BROKEN_ISLES_MAP_ID, poiID)
+		--print(info.atlasName)
+		if info and info.atlasName == INVASION_ATLAS then
+			return true
+		end
+	end
+	return false
+end
+
+
+local function TwilightHighlandWQsUnlocked()
+	-- "<Name>, Definitely Not a Cultist" is awarded at the end of the Midnight prepatch event intro quest chain, spanning "The Cult Within" to "Cult It Out" and unlocks WQ in Twilight Highlands for the warband for all character levels, lvl 1 Bloodelfes work, level 4 pandaren without allegiance don't.
+    local f = UnitFactionGroup("player")
+    return IsTitleKnown(643) and (f == "Alliance" or f == "Horde")
+end
+
+
+
 function BWQ:WorldQuestsUnlocked()
 	if not BWQ.hasUnlockedWorldQuests then
-		if (BWQ.expansion == CONSTANTS.EXPANSIONS.THEWARWITHIN) then
-			BWQ.hasUnlockedWorldQuests = C_QuestLog.IsQuestFlaggedCompleted(79573) -- See effect #1 under https://www.wowhead.com/spell=434027/world-quests-adventure-mode
+		if (BWQ.expansion == CONSTANTS.EXPANSIONS.MIDNIGHT) then
+			BWQ.hasUnlockedWorldQuests = (C_QuestLog.IsQuestFlaggedCompleted(90806)) -- See effect #1 under https://www.wowhead.com/spell=1234841/world-quests-adventure-mode
+		elseif (BWQ.expansion == CONSTANTS.EXPANSIONS.THEWARWITHIN) then
+			BWQ.hasUnlockedWorldQuests = (C_QuestLog.IsQuestFlaggedCompleted(79573) or TwilightHighlandWQsUnlocked()) -- See effect #1 under https://www.wowhead.com/spell=434027/world-quests-adventure-mode
 		elseif (BWQ.expansion == CONSTANTS.EXPANSIONS.DRAGONFLIGHT) then
 			_, _, _, BWQ.hasUnlockedWorldQuests = GetAchievementInfo(16326)
 			if not BWQ.hasUnlockedWorldQuests then
@@ -25,8 +55,8 @@ function BWQ:WorldQuestsUnlocked()
 				or (BWQ.expansion == CONSTANTS.EXPANSIONS.BFA and UnitLevel("player") >= 50 and
 					(C_QuestLog.IsQuestFlaggedCompleted(51916) or C_QuestLog.IsQuestFlaggedCompleted(52451) -- horde
 					or C_QuestLog.IsQuestFlaggedCompleted(51918) or C_QuestLog.IsQuestFlaggedCompleted(52450))) -- alliance
-				or (BWQ.expansion == CONSTANTS.EXPANSIONS.LEGION and UnitLevel("player") >= 45 and
-					(C_QuestLog.IsQuestFlaggedCompleted(43341) or C_QuestLog.IsQuestFlaggedCompleted(45727))) -- broken isles
+				or (BWQ.expansion == CONSTANTS.EXPANSIONS.LEGION and (UnitLevel("player") >= 45 or (PlayerIsTimerunning() and PlayerGetTimerunningSeasonID() == 2 and UnitLevel("player") >= 30) and C_QuestLog.IsQuestFlaggedCompleted(41694)) or IsLegionInvasionActive()) -- broken isles
+			print("IsLegionInvasionActive: ", IsLegionInvasionActive())
 		end
 	end
 
@@ -34,7 +64,9 @@ function BWQ:WorldQuestsUnlocked()
 		if not BWQ.errorFS then BWQ:CreateErrorFS() end
 
 		local level, quest, errorText
-		if BWQ.expansion == CONSTANTS.EXPANSIONS.THEWARWITHIN then
+		if BWQ.expansion == CONSTANTS.EXPANSIONS.MIDNIGHT then
+			errorText = "You need to unlock Midnight World Quests\non one of your characters."
+		elseif BWQ.expansion == CONSTANTS.EXPANSIONS.THEWARWITHIN then
 			errorText = "You need to unlock The War Within World Quests\non one of your characters."
 		elseif BWQ.expansion == CONSTANTS.EXPANSIONS.DRAGONFLIGHT then
 			errorText = "You need to unlock Dragonflight World Quests\non one of your characters."
@@ -77,7 +109,7 @@ function BWQ:ShowNoWorldQuestsInfo()
 end
 
 function BWQ:SetErrorFSPosition(offsetTop)
-	if (BWQ.expansion == CONSTANTS.EXPANSIONS.SHADOWLANDS or BWQ.expansion == CONSTANTS.EXPANSIONS.DRAGONFLIGHT or BWQ.expansion == CONSTANTS.EXPANSIONS.THEWARWITHIN) then  -- TODO:  We are not supporting bounty quests for these expansions atm, so the ErrorFS position should be at the top of BWQ
+	if (BWQ.expansion == CONSTANTS.EXPANSIONS.SHADOWLANDS or BWQ.expansion == CONSTANTS.EXPANSIONS.DRAGONFLIGHT or BWQ.expansion == CONSTANTS.EXPANSIONS.THEWARWITHIN or BWQ.expansion == CONSTANTS.EXPANSIONS.MIDNIGHT) then  -- TODO:  We are not supporting bounty quests for these expansions atm, so the ErrorFS position should be at the top of BWQ
 		BWQ.errorFS:SetPoint("TOP", BWQ, "TOP", 0, offsetTop)
 	else
 		if BWQ.factionDisplay:IsShown() then
@@ -260,10 +292,10 @@ local RetrieveWorldQuests = function(mapId)
 	local currentTime = GetTime()
 	local questList = C_TaskQuest.GetQuestsOnMap(mapId)
 	BWQ.warmodeEnabled = C_PvP.IsWarModeDesired()
+	BWQ.MAP_ZONES[BWQ.expansion][mapId].questsSort = {}
 
 	if questList then
 		numQuests = 0
-		BWQ.MAP_ZONES[BWQ.expansion][mapId].questsSort = {}
 
 		local timeLeft, questTagInfo, title, factionId
 		for i, q in ipairs(questList) do
@@ -609,7 +641,19 @@ local RetrieveWorldQuests = function(mapId)
 								elseif currencyId == 3284 then -- Weathered Ethereal Crest
 									rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.WEATHERED_ETHEREAL_CREST
 									quest.reward.WeatheredEtherealCrestAmount = currency.amount
-									if BWQ:C("showWeatheredEtherealCrest") then quest.hide = false end								
+									if BWQ:C("showWeatheredEtherealCrest") then quest.hide = false end			
+								elseif currencyId == 3316 then -- Voidlight Marl
+									rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.VOIDLIGHT_MARL
+									quest.reward.VoidlightMarlAmount = currency.amount
+									if BWQ:C("showVoidlightMarl") then quest.hide = false end		
+								elseif currencyId == 3354 then -- The Amani Tribe
+									rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.THE_AMANI_TRIBE
+									quest.reward.TheAmaniTribeAmount = currency.amount
+									if BWQ:C("showTheAmaniTribe") then quest.hide = false end		
+								elseif currencyId == 3389 then -- The Singularity
+									rewardType[#rewardType+1] = CONSTANTS.REWARD_TYPES.THE_SINGULARITY
+									quest.reward.TheSingularityAmount = currency.amount
+									if BWQ:C("showTheSingularity") then quest.hide = false end		
 								else 
 									if BWQcfg.spewDebugInfo then print(string.format("[BWQ] Unhandled currency: ID %s", currencyId)) end
 								end
@@ -658,7 +702,6 @@ local RetrieveWorldQuests = function(mapId)
 						quest.isMissingAchievementCriteria = BWQ:IsQuestAchievementCriteriaMissing(CONSTANTS.ACHIEVEMENT_IDS.PET_BATTLE_WQ[BWQ.expansion], quest.questID)
 					elseif quest.worldQuestType == Enum.QuestTagType.Profession then
 						if BWQ:C("showProfession") then
-
 							if quest.tagId == 119 then
 								questType[#questType+1] = CONSTANTS.QUEST_TYPES.HERBALISM
 								if BWQ:C("showProfessionHerbalism")	then quest.hide = false else quest.hide = true end
@@ -850,6 +893,12 @@ local RetrieveWorldQuests = function(mapId)
 									BWQ.totalTheVentureCompany = BWQ.totalTheVentureCompany + quest.reward.TheVentureCompanyAmount										
 								elseif rtype == CONSTANTS.REWARD_TYPES.WEATHERED_ETHEREAL_CREST then
 									BWQ.totalWeatheredEtherealCrest = BWQ.totalWeatheredEtherealCrest + quest.reward.WeatheredEtherealCrestAmount
+								elseif rtype == CONSTANTS.REWARD_TYPES.VOIDLIGHT_MARL then
+									BWQ.totalVoidlightMarl = BWQ.totalVoidlightMarl + quest.reward.VoidlightMarlAmount
+								elseif rtype == CONSTANTS.REWARD_TYPES.THE_AMANI_TRIBE then
+									BWQ.totalTheAmaniTribe = BWQ.totalTheAmaniTribe + quest.reward.TheAmaniTribeAmount
+								elseif rtype == CONSTANTS.REWARD_TYPES.THE_SINGULARITY then
+									BWQ.totalTheSingularity = BWQ.totalTheSingularity + quest.reward.TheSingularityAmount
 								end
 							end
 						end
@@ -1041,6 +1090,7 @@ function BWQ:UpdateQuestData()
 	BWQ.totalPolishedPetCharms, BWQ.totalCouncilofDornogal, BWQ.totalTheWeaver, BWQ.totalTheGeneral, BWQ.totalTheVizier = 0, 0, 0, 0, 0
 	BWQ.totalXP, BWQ.totalBronzeCelebrationToken, BWQ.totalWeatheredUndermineCrest, BWQ.totalCarvedUndermineCrest, BWQ.totalTheCartelsOfUndermine = 0, 0, 0, 0, 0
 	BWQ.totalTheBilgewaterCartel, BWQ.totalTheBlackwaterCartel, BWQ.totalTheSteamwheedleCartel, BWQ.totalTheVentureCompany, BWQ.totalWeatheredEtherealCrest = 0, 0, 0, 0, 0
+	BWQ.totalVoidlightMarl, BWQ.totalTheAmaniTribe, BWQ.totalTheSingularity = 0, 0, 0
 	BWQ.totalTwilightsBladeInsignia = 0
 
 	for mapId in next, BWQ.MAP_ZONES[BWQ.expansion] do
@@ -1182,6 +1232,7 @@ function BWQ:SwitchExpansion(expac)
 	end
 	BWQ:SetParagonFactionsByActiveExpansion()
 
+	BWQ.buttonMidnight:SetAlpha(expac == CONSTANTS.EXPANSIONS.MIDNIGHT and 1 or 0.4)
 	BWQ.buttonTheWarWithin:SetAlpha(expac == CONSTANTS.EXPANSIONS.THEWARWITHIN and 1 or 0.4)
 	BWQ.buttonDragonflight:SetAlpha(expac == CONSTANTS.EXPANSIONS.DRAGONFLIGHT and 1 or 0.4)
 	BWQ.buttonShadowlands:SetAlpha(expac == CONSTANTS.EXPANSIONS.SHADOWLANDS and 1 or 0.4)
@@ -1659,6 +1710,9 @@ function BWQ:UpdateBlock()
 		if BWQ:C("brokerShowTheSteamwheedleCartel") and BWQ.totalTheSteamwheedleCartel > 0	then brokerString = string.format("%s|TInterface\\Icons\\inv_1115_reputationcurrencies_steamwheedle:16:16|t %d  ", brokerString, BWQ.totalTheSteamwheedleCartel) end
 		if BWQ:C("brokerShowTheVentureCompany") 	and BWQ.totalTheVentureCompany > 0		then brokerString = string.format("%s|TInterface\\Icons\\inv_1115_reputationcurrencies_ventureco:16:16|t %d  ", brokerString, BWQ.totalTheVentureCompany) end
 		if BWQ:C("brokerShowWeatheredEtherealCrest") and BWQ.totalWeatheredEtherealCrest > 0	then brokerString = string.format("%s|TInterface\\Icons\\inv_crestupgrade_ethereal_weathered:16:16|t %d  ", brokerString, BWQ.totalWeatheredEtherealCrest) end
+		if BWQ:C("brokerShowVoidlightMarl") 		and BWQ.totalVoidlightMarl > 0			then brokerString = string.format("%s|TInterface\\Icons\\inv_112_raidtrinkets_voidprism:16:16|t %d  ", brokerString, BWQ.totalVoidlightMarl) end
+		if BWQ:C("brokerShowTheAmaniTribe") 		and BWQ.totalTheAmaniTribe > 0			then brokerString = string.format("%s|TInterface\\Icons\\ui_majorfaction_-flames:16:16|t %d  ", brokerString, BWQ.totalTheAmaniTribe) end
+		if BWQ:C("brokerShowTheSingularity") 		and BWQ.totalTheSingularity > 0 		then brokerString = string.format("%s|TInterface\\Icons\\ui_majorfaction_-sky:16:16|t %d  ", brokerString, BWQ.totalTheSingularity) end
 
 		if brokerString and brokerString ~= "" then
 			BWQ.WorldQuestsBroker.text = brokerString

@@ -7,21 +7,8 @@ local GetQuestObjectiveInfo = C_QuestLog and C_QuestLog.GetQuestObjectiveInfo or
 BWQ.bountyCache = {}
 BWQ.bountyDisplay = CreateFrame("Frame", "BWQ_BountyDisplay", BWQ)
 function BWQ:UpdateBountyData()
-	if BWQ.expansion == CONSTANTS.EXPANSIONS.THEWARWITHIN then -- TODO: get map id for retrieving bounties
-		BWQ.bountyDisplay:Hide()
-		for i, item in pairs(BWQ.bountyCache) do
-			item.button:Hide()
-		end
-		return
-	end
-	if BWQ.expansion == CONSTANTS.EXPANSIONS.DRAGONFLIGHT then -- TODO: get map id for retrieving bounties
-		BWQ.bountyDisplay:Hide()
-		for i, item in pairs(BWQ.bountyCache) do
-			item.button:Hide()
-		end
-		return
-	end
-	if BWQ.expansion == CONSTANTS.EXPANSIONS.SHADOWLANDS then -- TODO: get map id for retrieving bounties
+	-- TODO: get map id for retrieving bounties
+	if (BWQ.expansion == CONSTANTS.EXPANSIONS.MIDNIGHT or BWQ.expansion == CONSTANTS.EXPANSIONS.THEWARWITHIN or BWQ.expansion == CONSTANTS.EXPANSIONS.DRAGONFLIGHT or BWQ.expansion == CONSTANTS.EXPANSIONS.SHADOWLANDS) then
 		BWQ.bountyDisplay:Hide()
 		for i, item in pairs(BWQ.bountyCache) do
 			item.button:Hide()
@@ -126,14 +113,24 @@ function BWQ:ShowBountyTooltip(button, questID)
 		end
 
 		GameTooltip:AddLine(questDescription, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true)
-	
+
 		local objectiveText, objectiveType, finished = GetQuestObjectiveInfo(questID, 1, false)
 		if objectiveText and #objectiveText > 0 then
 			local color = finished and GRAY_FONT_COLOR or HIGHLIGHT_FONT_COLOR;
 			GameTooltip:AddLine(QUEST_DASH .. objectiveText, color.r, color.g, color.b, true);
 		end
 
-		GameTooltip_AddQuestRewardsToTooltip(GameTooltip, questID, TOOLTIP_QUEST_REWARDS_STYLE_EMISSARY_REWARD)
+		-- Skip quest rewards tooltip during combat to avoid secret value taint errors.
+		-- In 12.0.0+, calling GameTooltip_AddQuestRewardsToTooltip from addon code during
+		-- combat causes EmbeddedItemTooltip_UpdateSize to crash because GetWidth()/GetHeight()
+		-- return secret values in a tainted execution context, and Blizzard's own code performs
+		-- arithmetic on them.
+		if not InCombatLockdown() then
+			GameTooltip_AddQuestRewardsToTooltip(GameTooltip, questID, TOOLTIP_QUEST_REWARDS_STYLE_EMISSARY_REWARD)
+		else
+			GameTooltip:AddLine(" ")
+			GameTooltip:AddLine("Quest rewards unavailable during combat.", GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b, true)
+		end
 		GameTooltip:Show()
 		GameTooltip.recalculatePadding = true
 		button.UpdateTooltip = function(self) BWQ:ShowBountyTooltip(button, questID) end
